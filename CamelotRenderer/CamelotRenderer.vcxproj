@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9B21D41C-516B-43BF-9B10-E99B599C7589}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>CamelotRenderer</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;OGRE_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;OGRE_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="asm_math.h" />
+    <ClInclude Include="OgreAlignedAllocator.h" />
+    <ClInclude Include="OgreAxisAlignedBox.h" />
+    <ClInclude Include="OgreBitwise.h" />
+    <ClInclude Include="OgreBuildSettings.h" />
+    <ClInclude Include="OgreColourValue.h" />
+    <ClInclude Include="OgreConfig.h" />
+    <ClInclude Include="OgreD3D9Prerequisites.h" />
+    <ClInclude Include="OgreD3D9Resource.h" />
+    <ClInclude Include="OgreD3D9VideoMode.h" />
+    <ClInclude Include="OgreDefaultHardwareBufferManager.h" />
+    <ClInclude Include="OgreException.h" />
+    <ClInclude Include="OgreFrustum.h" />
+    <ClInclude Include="OgreHardwareBuffer.h" />
+    <ClInclude Include="OgreHardwareBufferManager.h" />
+    <ClInclude Include="OgreHardwareIndexBuffer.h" />
+    <ClInclude Include="OgreHardwareVertexBuffer.h" />
+    <ClInclude Include="OgreHeaderPrefix.h" />
+    <ClInclude Include="OgreHeaderSuffix.h" />
+    <ClInclude Include="OgreMath.h" />
+    <ClInclude Include="OgreMatrix3.h" />
+    <ClInclude Include="OgreMatrix4.h" />
+    <ClInclude Include="OgrePlane.h" />
+    <ClInclude Include="OgrePlatform.h" />
+    <ClInclude Include="OgrePlatformInformation.h" />
+    <ClInclude Include="OgrePortMemory.h" />
+    <ClInclude Include="OgrePrerequisites.h" />
+    <ClInclude Include="OgreQuaternion.h" />
+    <ClInclude Include="OgreRay.h" />
+    <ClInclude Include="OgreRenderSystemCapabilities.h" />
+    <ClInclude Include="OgreSharedPtr.h" />
+    <ClInclude Include="OgreSingleton.h" />
+    <ClInclude Include="OgreSphere.h" />
+    <ClInclude Include="OgreStdHeaders.h" />
+    <ClInclude Include="OgreString.h" />
+    <ClInclude Include="OgreStringConverter.h" />
+    <ClInclude Include="OgreStringVector.h" />
+    <ClInclude Include="OgreThreadDefines.h" />
+    <ClInclude Include="OgreVector2.h" />
+    <ClInclude Include="OgreVector3.h" />
+    <ClInclude Include="OgreVector4.h" />
+    <ClInclude Include="OgreVertexIndexData.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CamelotRenderer.cpp" />
+    <ClCompile Include="OgreAlignedAllocator.cpp" />
+    <ClCompile Include="OgreAxisAlignedBox.cpp" />
+    <ClCompile Include="OgreColourValue.cpp" />
+    <ClCompile Include="OgreD3D9Resource.cpp" />
+    <ClCompile Include="OgreD3D9VideoMode.cpp" />
+    <ClCompile Include="OgreDefaultHardwareBufferManager.cpp" />
+    <ClCompile Include="OgreException.cpp" />
+    <ClCompile Include="OgreFrustum.cpp" />
+    <ClCompile Include="OgreHardwareBufferManager.cpp" />
+    <ClCompile Include="OgreHardwareIndexBuffer.cpp" />
+    <ClCompile Include="OgreHardwareVertexBuffer.cpp" />
+    <ClCompile Include="OgreMath.cpp" />
+    <ClCompile Include="OgreMatrix3.cpp" />
+    <ClCompile Include="OgreMatrix4.cpp" />
+    <ClCompile Include="OgrePlane.cpp" />
+    <ClCompile Include="OgreQuaternion.cpp" />
+    <ClCompile Include="OgreRenderSystemCapabilities.cpp" />
+    <ClCompile Include="OgreString.cpp" />
+    <ClCompile Include="OgreStringConverter.cpp" />
+    <ClCompile Include="OgreVector2.cpp" />
+    <ClCompile Include="OgreVector3.cpp" />
+    <ClCompile Include="OgreVector4.cpp" />
+    <ClCompile Include="OgreVertexIndexData.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
