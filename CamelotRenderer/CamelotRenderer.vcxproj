@@ -86,6 +86,7 @@
     <ClInclude Include="OgreBitwise.h" />
     <ClInclude Include="OgreBuildSettings.h" />
     <ClInclude Include="OgreColourValue.h" />
+    <ClInclude Include="OgreCommon.h" />
     <ClInclude Include="OgreConfig.h" />
     <ClInclude Include="OgreD3D9Prerequisites.h" />
     <ClInclude Include="OgreD3D9Resource.h" />
@@ -102,6 +103,7 @@
     <ClInclude Include="OgreMath.h" />
     <ClInclude Include="OgreMatrix3.h" />
     <ClInclude Include="OgreMatrix4.h" />
+    <ClInclude Include="OgrePixelFormat.h" />
     <ClInclude Include="OgrePlane.h" />
     <ClInclude Include="OgrePlatform.h" />
     <ClInclude Include="OgrePlatformInformation.h" />
@@ -110,6 +112,7 @@
     <ClInclude Include="OgreQuaternion.h" />
     <ClInclude Include="OgreRay.h" />
     <ClInclude Include="OgreRenderSystemCapabilities.h" />
+    <ClInclude Include="OgreRenderTarget.h" />
     <ClInclude Include="OgreSharedPtr.h" />
     <ClInclude Include="OgreSingleton.h" />
     <ClInclude Include="OgreSphere.h" />
@@ -122,6 +125,7 @@
     <ClInclude Include="OgreVector3.h" />
     <ClInclude Include="OgreVector4.h" />
     <ClInclude Include="OgreVertexIndexData.h" />
+    <ClInclude Include="OgreViewport.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -141,15 +145,18 @@
     <ClCompile Include="OgreMath.cpp" />
     <ClCompile Include="OgreMatrix3.cpp" />
     <ClCompile Include="OgreMatrix4.cpp" />
+    <ClCompile Include="OgrePixelFormat.cpp" />
     <ClCompile Include="OgrePlane.cpp" />
     <ClCompile Include="OgreQuaternion.cpp" />
     <ClCompile Include="OgreRenderSystemCapabilities.cpp" />
+    <ClCompile Include="OgreRenderTarget.cpp" />
     <ClCompile Include="OgreString.cpp" />
     <ClCompile Include="OgreStringConverter.cpp" />
     <ClCompile Include="OgreVector2.cpp" />
     <ClCompile Include="OgreVector3.cpp" />
     <ClCompile Include="OgreVector4.cpp" />
     <ClCompile Include="OgreVertexIndexData.cpp" />
+    <ClCompile Include="OgreViewport.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

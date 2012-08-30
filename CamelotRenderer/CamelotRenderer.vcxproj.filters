@@ -168,6 +168,18 @@
     <ClInclude Include="OgreFrustum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OgreViewport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreRenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OgrePixelFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -243,6 +255,15 @@
       <Filter>Source Files\ForRemoval</Filter>
     </ClCompile>
     <ClCompile Include="OgreFrustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OgreViewport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OgreRenderTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OgrePixelFormat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
