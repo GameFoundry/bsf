@@ -180,6 +180,18 @@
     <ClInclude Include="OgrePixelFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OgreGpuProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreRenderOperation.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreGpuProgramParams.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreStringInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -264,6 +276,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OgrePixelFormat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OgreGpuProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OgreGpuProgramParams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OgreStringInterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
