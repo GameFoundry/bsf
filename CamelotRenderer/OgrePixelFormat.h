@@ -500,6 +500,25 @@ namespace Ogre {
          	dimensions. In case the source and destination format match, a plain copy is done.
         */
         static void bulkPixelConversion(const PixelBox &src, const PixelBox &dst);
+
+		enum Filter
+		{
+			FILTER_NEAREST,
+			FILTER_LINEAR,
+			FILTER_BILINEAR,
+			FILTER_BOX,
+			FILTER_TRIANGLE,
+			FILTER_BICUBIC
+		};
+
+		/** Scale a 1D, 2D or 3D image volume. 
+			@param 	src			PixelBox containing the source pointer, dimensions and format
+			@param 	dst			PixelBox containing the destination pointer, dimensions and format
+			@param 	filter		Which filter to use
+			@remarks 	This function can do pixel format conversion in the process.
+			@note	dst and src can point to the same PixelBox object without any problem
+		*/
+		static void scale(const PixelBox &src, const PixelBox &dst, Filter filter = FILTER_BILINEAR);
     };
 	/** @} */
 	/** @} */
