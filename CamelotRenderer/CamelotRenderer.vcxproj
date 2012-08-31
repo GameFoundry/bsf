@@ -99,9 +99,11 @@
     <ClInclude Include="OgreHardwareBuffer.h" />
     <ClInclude Include="OgreHardwareBufferManager.h" />
     <ClInclude Include="OgreHardwareIndexBuffer.h" />
+    <ClInclude Include="OgreHardwareOcclusionQuery.h" />
     <ClInclude Include="OgreHardwareVertexBuffer.h" />
     <ClInclude Include="OgreHeaderPrefix.h" />
     <ClInclude Include="OgreHeaderSuffix.h" />
+    <ClInclude Include="OgreHighLevelGpuProgram.h" />
     <ClInclude Include="OgreMath.h" />
     <ClInclude Include="OgreMatrix3.h" />
     <ClInclude Include="OgreMatrix4.h" />
@@ -147,7 +149,9 @@
     <ClCompile Include="OgreGpuProgramParams.cpp" />
     <ClCompile Include="OgreHardwareBufferManager.cpp" />
     <ClCompile Include="OgreHardwareIndexBuffer.cpp" />
+    <ClCompile Include="OgreHardwareOcclusionQuery.cpp" />
     <ClCompile Include="OgreHardwareVertexBuffer.cpp" />
+    <ClCompile Include="OgreHighLevelGpuProgram.cpp" />
     <ClCompile Include="OgreMath.cpp" />
     <ClCompile Include="OgreMatrix3.cpp" />
     <ClCompile Include="OgreMatrix4.cpp" />

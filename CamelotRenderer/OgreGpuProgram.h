@@ -433,9 +433,8 @@ namespace Ogre {
 		explicit GpuProgramPtr(GpuProgram* rep) : SharedPtr<GpuProgram>(rep) {}
 		GpuProgramPtr(const GpuProgramPtr& r) : SharedPtr<GpuProgram>(r) {} 
 
-		// TODO PORT - I've hidden this cast until it will be needed
-        ///// Operator used to convert a HighLevelGpuProgramPtr to a GpuProgramPtr
-        //GpuProgramPtr& operator=(const HighLevelGpuProgramPtr& r);
+        /// Operator used to convert a HighLevelGpuProgramPtr to a GpuProgramPtr
+        GpuProgramPtr& operator=(const HighLevelGpuProgramPtr& r);
 	};
 	/** @} */
 	/** @} */
