@@ -25,31 +25,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreD3D9Resource.h"
 
-namespace Ogre
-{
-	OGRE_STATIC_MUTEX_INSTANCE(D3D9Resource::msDeviceAccessMutex)
+#include "OgreD3D9HLSLProgramFactory.h"
+#include "OgreString.h"
+#include "OgreD3D9HLSLProgram.h"
 
-	D3D9Resource::D3D9Resource()
-	{				
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		// D3D9RenderSystem::getResourceManager()->_notifyResourceCreated(static_cast<D3D9Resource*>(this));		
-	}
+namespace Ogre {
+    //-----------------------------------------------------------------------
+    String D3D9HLSLProgramFactory::sLanguageName = "hlsl";
+    //-----------------------------------------------------------------------
+    D3D9HLSLProgramFactory::D3D9HLSLProgramFactory()
+    {
+    }
+    //-----------------------------------------------------------------------
+    D3D9HLSLProgramFactory::~D3D9HLSLProgramFactory()
+    {
+    }
+    //-----------------------------------------------------------------------
+    const String& D3D9HLSLProgramFactory::getLanguage(void) const
+    {
+        return sLanguageName;
+    }
+    //-----------------------------------------------------------------------
+    HighLevelGpuProgram* D3D9HLSLProgramFactory::create()
+    {
+        return new D3D9HLSLProgram();
+    }
+    //-----------------------------------------------------------------------
+	void D3D9HLSLProgramFactory::destroy(HighLevelGpuProgram* prog)
+    {
+        delete prog;
+    }
+    //-----------------------------------------------------------------------
 
-	D3D9Resource::~D3D9Resource()
-	{		
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		//D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
-	}
-	
-	void D3D9Resource::lockDeviceAccess()
-	{		
-		D3D9_DEVICE_ACCESS_LOCK;								
-	}
-	
-	void D3D9Resource::unlockDeviceAccess()
-	{		
-		D3D9_DEVICE_ACCESS_UNLOCK;				
-	}
 }

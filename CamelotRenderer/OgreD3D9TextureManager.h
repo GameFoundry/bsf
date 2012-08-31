@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -25,31 +25,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreD3D9Resource.h"
+#ifndef __D3D9TEXTUREMANAGER_H__
+#define __D3D9TEXTUREMANAGER_H__
 
-namespace Ogre
+#include "OgreD3D9Prerequisites.h"
+#include "OgreD3D9Texture.h"
+
+namespace Ogre 
 {
-	OGRE_STATIC_MUTEX_INSTANCE(D3D9Resource::msDeviceAccessMutex)
+	class _OgreD3D9Export D3D9TextureManager
+	{
+	public:		
+        /// @copydoc ResourceManager::createImpl
+        static D3D9Texture* create(const NameValuePairList* createParams);
 
-	D3D9Resource::D3D9Resource()
-	{				
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		// D3D9RenderSystem::getResourceManager()->_notifyResourceCreated(static_cast<D3D9Resource*>(this));		
-	}
+	public:
+		D3D9TextureManager();
+		~D3D9TextureManager();
 
-	D3D9Resource::~D3D9Resource()
-	{		
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		//D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
-	}
-	
-	void D3D9Resource::lockDeviceAccess()
-	{		
-		D3D9_DEVICE_ACCESS_LOCK;								
-	}
-	
-	void D3D9Resource::unlockDeviceAccess()
-	{		
-		D3D9_DEVICE_ACCESS_UNLOCK;				
-	}
+
+		/// @copydoc TextureManager::getNativeFormat
+		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
+
+        /// @copydoc TextureManager::isHardwareFilteringSupported
+        bool isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,
+            bool preciseFormatOnly = false);		
+	};
 }
+#endif

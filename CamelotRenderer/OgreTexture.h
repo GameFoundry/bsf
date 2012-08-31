@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "OgrePrerequisites.h"
 #include "OgreSharedPtr.h"
 #include "OgreHardwareBuffer.h"
+#include "OgrePixelFormat.h"
 
 namespace Ogre {
 

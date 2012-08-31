@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -25,31 +25,64 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreD3D9Resource.h"
+#include "OgreD3D9DriverList.h"
+#include "OgreException.h"
+#include "OgreD3D9RenderSystem.h"
 
-namespace Ogre
+namespace Ogre 
 {
-	OGRE_STATIC_MUTEX_INSTANCE(D3D9Resource::msDeviceAccessMutex)
-
-	D3D9Resource::D3D9Resource()
-	{				
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		// D3D9RenderSystem::getResourceManager()->_notifyResourceCreated(static_cast<D3D9Resource*>(this));		
+	D3D9DriverList::D3D9DriverList()
+	{
+		enumerate();
 	}
 
-	D3D9Resource::~D3D9Resource()
-	{		
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		//D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
+	D3D9DriverList::~D3D9DriverList(void)
+	{
+		mDriverList.clear();
 	}
-	
-	void D3D9Resource::lockDeviceAccess()
-	{		
-		D3D9_DEVICE_ACCESS_LOCK;								
+
+	BOOL D3D9DriverList::enumerate()
+	{
+		IDirect3D9* lpD3D9 = D3D9RenderSystem::getDirect3D9();
+
+		for( UINT iAdapter=0; iAdapter < lpD3D9->GetAdapterCount(); ++iAdapter )
+		{
+			D3DADAPTER_IDENTIFIER9 adapterIdentifier;
+			D3DDISPLAYMODE d3ddm;
+			D3DCAPS9 d3dcaps9;
+			
+			lpD3D9->GetAdapterIdentifier( iAdapter, 0, &adapterIdentifier );
+			lpD3D9->GetAdapterDisplayMode( iAdapter, &d3ddm );
+			lpD3D9->GetDeviceCaps( iAdapter, D3DDEVTYPE_HAL, &d3dcaps9 );
+
+			mDriverList.push_back( D3D9Driver( iAdapter, d3dcaps9, adapterIdentifier, d3ddm ) );
+		}
+
+		return TRUE;
 	}
-	
-	void D3D9Resource::unlockDeviceAccess()
-	{		
-		D3D9_DEVICE_ACCESS_UNLOCK;				
+
+	size_t D3D9DriverList::count() const 
+	{
+		return mDriverList.size();
+	}
+
+	D3D9Driver* D3D9DriverList::item( size_t index )
+	{
+		return &mDriverList.at( index );
+	}
+
+	D3D9Driver* D3D9DriverList::item( const String &name )
+	{
+		vector<D3D9Driver>::type::iterator it = mDriverList.begin();
+		if (it == mDriverList.end())
+			return NULL;
+
+		for (;it != mDriverList.end(); ++it)
+		{
+			if (it->DriverDescription() == name)
+				return &(*it);
+		}
+
+		return NULL;
 	}
 }

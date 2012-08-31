@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -25,31 +25,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreD3D9Resource.h"
+#ifndef __D3D9DRIVERLIST_H__
+#define __D3D9DRIVERLIST_H__
 
-namespace Ogre
+#include "OgreD3D9Prerequisites.h"
+#include "OgreD3D9Driver.h"
+
+namespace Ogre 
 {
-	OGRE_STATIC_MUTEX_INSTANCE(D3D9Resource::msDeviceAccessMutex)
+	class _OgreD3D9Export D3D9DriverList
+	{
+	private:
+		vector<D3D9Driver>::type mDriverList;
+		
+	public:
+		D3D9DriverList();
+		~D3D9DriverList();
 
-	D3D9Resource::D3D9Resource()
-	{				
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		// D3D9RenderSystem::getResourceManager()->_notifyResourceCreated(static_cast<D3D9Resource*>(this));		
-	}
+		BOOL enumerate();
+		size_t count() const;
+		D3D9Driver* item( size_t index );
 
-	D3D9Resource::~D3D9Resource()
-	{		
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		//D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
-	}
-	
-	void D3D9Resource::lockDeviceAccess()
-	{		
-		D3D9_DEVICE_ACCESS_LOCK;								
-	}
-	
-	void D3D9Resource::unlockDeviceAccess()
-	{		
-		D3D9_DEVICE_ACCESS_UNLOCK;				
-	}
+		D3D9Driver* item( const String &name );
+	};
 }
+#endif

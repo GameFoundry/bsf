@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -25,31 +25,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreD3D9Resource.h"
+#ifndef __D3D9MULTIRENDERTARGET_H__
+#define __D3D9MULTIRENDERTARGET_H__
 
-namespace Ogre
-{
-	OGRE_STATIC_MUTEX_INSTANCE(D3D9Resource::msDeviceAccessMutex)
+#include "OgreD3D9Prerequisites.h"
+#include "OgreTexture.h"
+#include "OgreRenderTexture.h"
+#include "OgreException.h"
+#include "OgreD3D9HardwarePixelBuffer.h"
 
-	D3D9Resource::D3D9Resource()
-	{				
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		// D3D9RenderSystem::getResourceManager()->_notifyResourceCreated(static_cast<D3D9Resource*>(this));		
-	}
+namespace Ogre {
+	class _OgreD3D9Export D3D9MultiRenderTarget : public MultiRenderTarget
+	{
+	public:
+		D3D9MultiRenderTarget(const String &name);
+		~D3D9MultiRenderTarget();
 
-	D3D9Resource::~D3D9Resource()
-	{		
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		//D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
-	}
-	
-	void D3D9Resource::lockDeviceAccess()
-	{		
-		D3D9_DEVICE_ACCESS_LOCK;								
-	}
-	
-	void D3D9Resource::unlockDeviceAccess()
-	{		
-		D3D9_DEVICE_ACCESS_UNLOCK;				
-	}
-}
+        virtual void update(bool swapBuffers);
+
+		virtual void getCustomAttribute( const String& name, void *pData );
+
+		bool requiresTextureFlipping() const { return false; }
+	private:
+		D3D9HardwarePixelBuffer *mRenderTargets[OGRE_MAX_MULTIPLE_RENDER_TARGETS];
+		virtual void bindSurfaceImpl(size_t attachment, RenderTexture *target);
+		virtual void unbindSurfaceImpl(size_t attachment);
+
+		/** Check surfaces and update RenderTarget extent */
+		void checkAndUpdate();
+	};
+};
+
+#endif
