@@ -222,6 +222,9 @@
     <ClInclude Include="OgreTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OgreD3D9Mappings.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -340,6 +343,9 @@
     </ClCompile>
     <ClCompile Include="OgreTexture.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OgreD3D9Mappings.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

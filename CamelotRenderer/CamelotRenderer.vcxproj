@@ -89,6 +89,7 @@
     <ClInclude Include="OgreColourValue.h" />
     <ClInclude Include="OgreCommon.h" />
     <ClInclude Include="OgreConfig.h" />
+    <ClInclude Include="OgreD3D9Mappings.h" />
     <ClInclude Include="OgreD3D9Prerequisites.h" />
     <ClInclude Include="OgreD3D9Resource.h" />
     <ClInclude Include="OgreD3D9VideoMode.h" />
@@ -148,6 +149,7 @@
     <ClCompile Include="OgreAlignedAllocator.cpp" />
     <ClCompile Include="OgreAxisAlignedBox.cpp" />
     <ClCompile Include="OgreColourValue.cpp" />
+    <ClCompile Include="OgreD3D9Mappings.cpp" />
     <ClCompile Include="OgreD3D9Resource.cpp" />
     <ClCompile Include="OgreD3D9VideoMode.cpp" />
     <ClCompile Include="OgreDefaultHardwareBufferManager.cpp" />
