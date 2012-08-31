@@ -84,6 +84,7 @@
     <ClInclude Include="OgreAlignedAllocator.h" />
     <ClInclude Include="OgreAxisAlignedBox.h" />
     <ClInclude Include="OgreBitwise.h" />
+    <ClInclude Include="OgreBlendMode.h" />
     <ClInclude Include="OgreBuildSettings.h" />
     <ClInclude Include="OgreColourValue.h" />
     <ClInclude Include="OgreCommon.h" />
@@ -118,6 +119,7 @@
     <ClInclude Include="OgreQuaternion.h" />
     <ClInclude Include="OgreRay.h" />
     <ClInclude Include="OgreRenderOperation.h" />
+    <ClInclude Include="OgreRenderSystem.h" />
     <ClInclude Include="OgreRenderSystemCapabilities.h" />
     <ClInclude Include="OgreRenderTarget.h" />
     <ClInclude Include="OgreRenderTexture.h" />
@@ -130,6 +132,8 @@
     <ClInclude Include="OgreStringConverter.h" />
     <ClInclude Include="OgreStringInterface.h" />
     <ClInclude Include="OgreStringVector.h" />
+    <ClInclude Include="OgreTexture.h" />
+    <ClInclude Include="OgreTextureUnitState.h" />
     <ClInclude Include="OgreThreadDefines.h" />
     <ClInclude Include="OgreVector2.h" />
     <ClInclude Include="OgreVector3.h" />
@@ -163,6 +167,7 @@
     <ClCompile Include="OgrePixelFormat.cpp" />
     <ClCompile Include="OgrePlane.cpp" />
     <ClCompile Include="OgreQuaternion.cpp" />
+    <ClCompile Include="OgreRenderSystem.cpp" />
     <ClCompile Include="OgreRenderSystemCapabilities.cpp" />
     <ClCompile Include="OgreRenderTarget.cpp" />
     <ClCompile Include="OgreRenderTexture.cpp" />
@@ -170,6 +175,8 @@
     <ClCompile Include="OgreString.cpp" />
     <ClCompile Include="OgreStringConverter.cpp" />
     <ClCompile Include="OgreStringInterface.cpp" />
+    <ClCompile Include="OgreTexture.cpp" />
+    <ClCompile Include="OgreTextureUnitState.cpp" />
     <ClCompile Include="OgreVector2.cpp" />
     <ClCompile Include="OgreVector3.cpp" />
     <ClCompile Include="OgreVector4.cpp" />
