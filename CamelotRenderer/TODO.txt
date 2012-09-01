@@ -1,0 +1,86 @@
+1. Search for all "TODO PORT" comments and fix them
+  - First I should create a render system singleton other classes can easily access
+2. Try to reproduce minimal functionality by rendering a cube (Similar like OgreToCamelotPort project does)
+3. Start stripping down the classes and see what I really need
+4. Port OpenGL render system as well
+
+DefaultHardwareBufferManager - Provides emulation of hardware buffers
+ - I think this class is okay to stay, although I'm not sure where its used, but its simple enough
+
+Frustum
+ - Reflect plane/matrix/methods need to be removed
+ - Oblique plane/matrix/methods need to be removed (AKA custom clip plane)
+ - Remove orientation stuff because it's iPhone only
+ - World space methods need to be updated. I still need them but they need to get their data from Transform
+
+GpuProgram - Most low level shader program. Single pixel/vertex/geometry shader.
+ - keeps a lot of data specific to skeletal anim, morphing and similar. It should be more generic
+ - has code that points to the source file, that should be at a higher level
+ - also has code for loading directly from source file, but it should be loaded from string
+ - has fixed pipeline code like surface and light states, fog states and transform states
+ - ParamCommand and specific parameters that inherit from it should also be removed. Together with StringInterface.h
+
+GpuProgramParams - Holds all parameters used in a shader program and allows us to set them by index or name
+ - Explore if we can remove GpuSharedParameters. I'm not exactly sure what they're used for
+
+HardwareBuffer - Base class for all buffers
+ - Everything seems fine although I /might/ want to explore how the shadow buffer works and if I want to implement it differently?
+
+HardwareBufferManager - Abstracts whether I'm creating D3D9 or OpenGL buffers
+ - License stuff needs to be removed. I'm not sure what it's used for
+
+HardwareIndexBuffer - Everything OK
+
+HardwareOcclusionQuery - OK, but I might consider a more generic interface for queries (I'll need profiling queries too for example)
+
+HardwarePixelBuffer 
+ - I might consider giving PixelBox a better name. Also rename PixelFormat.h to PixelUtil.h or similar. Makes more sense.
+ - _clearSliceRTT method I'm not sure what is it used for, but I might want to remove it
+
+HardwareVertexBuffer - Very neat file
+ - VertexDeclaration::getAutoOrganisedDeclaration is my only complaint. It has some vertex/skeletal animation specifics I don't want.
+
+HighLevelGpuProgram - Mostly okay
+ - Has some methods for loading from a file, which I wont do
+
+RenderSystemCapabilities - I think I need all of that
+
+RenderTarget:
+ - update() causes rendering to start - This probably need to be moved to camera, as I want it to be responsible for rendering
+ - keeps a viewport list, which I also don't think I'll need
+ - autoUpdate and various update methods that I probably don't need
+
+RenderTexture - Everything OK
+
+RenderWindow - Everything OK
+
+Texture
+ - mTreatLuminanceAsAlpha and corresponding methods - I dont think I need that or that it's used
+
+TextureUnitState - Try to remove this class completely
+ - Texture transform and effect stuff should be removed completely
+ - Texture addressing mode/vert,frag binding/anisotropy/mipbias/min,mag,mip filters, should be specified per-material
+ - Move the rest somewhere else (Needs further study)
+
+VertexIndexData - Just data structures
+ - VertexCacheProfiler is a weird one, but I think I don't have to remove it as it might come in handy
+
+Viewport - MERGE WITH CAMERA
+ - Remove orientation mode
+ - Remove various update/clearEveryFrame methods
+ - Remove material scheme
+ - Remove Overlays/skies/shadows/visibility mask (I'll be needing all at some point but not now)
+ - Remove renderqueue invoication sequence
+
+TODO:
+ - Make sure to parse D3D9 implementations of above classes and see what needs removing there as well
+
+
+Other notes:
+ - Make sure to remove all ogre memory allocators and memory category bullshit (Possibly replace with Camelot versions?)
+ - Remove Ogre::String and Ogre::Real (Possibly replace with Camelot versions?)
+ - Because HardwareBufferManager is quite useful I will probably need to reintroduce GpuProgramManager as well - Probably not until I add OpenGL
+   - As well as TextureManager
+ - Ogre::ColourValue -> CamelotEngine::Color (Other struct names are okay for the most part)
+ - Port all math methods to Camelot
+ - Rename all macros and other OGRE references to CM

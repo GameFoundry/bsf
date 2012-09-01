@@ -31,18 +31,22 @@
     <Filter Include="Source Files\ForRemoval">
       <UniqueIdentifier>{004ec8e4-409f-4bc2-b697-f24c707a2429}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{2c09857e-4a4a-480f-8ebb-1661a9ce78dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{48d2fcc6-cfa6-4d2f-a83c-d16ec65eb96b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreColourValue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OgreD3D9Prerequisites.h">
@@ -171,13 +175,7 @@
     <ClInclude Include="OgreViewport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OgreCommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OgreRenderTarget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgrePixelFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OgreGpuProgram.h">
@@ -187,9 +185,6 @@
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
     <ClInclude Include="OgreGpuProgramParams.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreStringInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OgreHighLevelGpuProgram.h">
@@ -207,13 +202,7 @@
     <ClInclude Include="OgreHardwarePixelBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OgreImageResampler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OgreRenderSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreBlendMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OgreTextureUnitState.h">
@@ -288,8 +277,26 @@
     <ClInclude Include="OgreD3D9VideoModeList.h">
       <Filter>Header Files\D3D9RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="OgreBlendMode.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreColourValue.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreCommon.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreImageResampler.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="OgrePixelFormat.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreStringInterface.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
     <ClInclude Include="OgreWindowEventUtilities.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -321,9 +328,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OgreDefaultHardwareBufferManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreColourValue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OgreMath.cpp">
@@ -374,16 +378,10 @@
     <ClCompile Include="OgreRenderTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OgrePixelFormat.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OgreGpuProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OgreGpuProgramParams.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreStringInterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OgreHighLevelGpuProgram.cpp">
@@ -476,8 +474,17 @@
     <ClCompile Include="OgreD3D9VideoModeList.cpp">
       <Filter>Source Files\D3D9RenderSystem</Filter>
     </ClCompile>
+    <ClCompile Include="OgreColourValue.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="OgrePixelFormat.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="OgreStringInterface.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
     <ClCompile Include="OgreWindowEventUtilities.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
