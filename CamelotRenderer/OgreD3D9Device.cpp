@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "OgreD3D9RenderWindow.h"
 #include "OgreHardwareBufferManager.h"
 #include "OgreException.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre
 {
@@ -204,8 +205,7 @@ namespace Ogre
 	{
 		if (mpDevice != NULL)
 		{
-			// TODO PORT - Make sure to call this once rendersystem is active
-			//D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(Root::getSingleton().getRenderSystem());
+			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
 
 			//// Clean up depth stencil surfaces
 			//renderSystem->_cleanupDepthStencils(mpDevice);	
@@ -243,11 +243,10 @@ namespace Ogre
 
 		// Case we just moved from valid state to lost state.
 		mDeviceLost = true;	
-		
-		// TODO PORT - Make sure to call this once rendersystem is active
-		//D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(Root::getSingleton().getRenderSystem());
-		//
-		//renderSystem->notifyOnDeviceLost(this);
+
+		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+
+		renderSystem->notifyOnDeviceLost(this);
 	}	
 
 	//---------------------------------------------------------------------
@@ -371,8 +370,7 @@ namespace Ogre
 		// Lock access to rendering device.
 		D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
 					
-		// TODO PORT - Make sure to call this once rendersystem is active
-		//D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(Root::getSingleton().getRenderSystem());
+		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
 
 		// Inform all resources that device lost.
 		D3D9RenderSystem::getResourceManager()->notifyOnDeviceLost(mpDevice);
@@ -598,8 +596,7 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	void D3D9Device::clearDeviceStreams()
 	{
-		// TODO PORT - Make sure to call this once rendersystem is active
-		//D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(Root::getSingleton().getRenderSystem());
+		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
 
 		// Set all texture units to nothing to release texture surfaces
 		for (DWORD stage = 0; stage < mD3D9DeviceCaps.MaxSimultaneousTextures; ++stage)

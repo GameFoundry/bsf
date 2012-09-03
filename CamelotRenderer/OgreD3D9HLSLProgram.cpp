@@ -30,6 +30,8 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #include "OgreD3D9GpuProgram.h"
 #include "OgreException.h"
+#include "OgreRenderSystem.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre {
     //-----------------------------------------------------------------------
@@ -545,10 +547,8 @@ namespace Ogre {
         if (mCompileError || !isRequiredCapabilitiesSupported())
             return false;
 
-		// TODO PORT - Enable this once rendersystem has a singleton, for now just return true
-		//RenderSystem* rs = Root::getSingleton().getRenderSystem();
-		//return rs->getCapabilities()->isShaderProfileSupported(mTarget);
-		return true;
+		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
+		return rs->getCapabilities()->isShaderProfileSupported(mTarget);
     }
     //-----------------------------------------------------------------------
     GpuProgramParametersSharedPtr D3D9HLSLProgram::createParameters(void)

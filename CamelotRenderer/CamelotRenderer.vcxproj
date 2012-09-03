@@ -91,6 +91,7 @@
     <ClInclude Include="CmApplication.h" />
     <ClInclude Include="CmD3D9RenderSystemFactory.h" />
     <ClInclude Include="CmRenderSystemFactory.h" />
+    <ClInclude Include="CmRenderSystemManager.h" />
     <ClInclude Include="OgreAlignedAllocator.h" />
     <ClInclude Include="OgreAxisAlignedBox.h" />
     <ClInclude Include="OgreBitwise.h" />
@@ -99,6 +100,7 @@
     <ClInclude Include="OgreColourValue.h" />
     <ClInclude Include="OgreCommon.h" />
     <ClInclude Include="OgreConfig.h" />
+    <ClInclude Include="OgreConfigOptionMap.h" />
     <ClInclude Include="OgreD3D9Device.h" />
     <ClInclude Include="OgreD3D9DeviceManager.h" />
     <ClInclude Include="OgreD3D9Driver.h" />
@@ -180,7 +182,7 @@
     <ClCompile Include="CamelotRenderer.cpp" />
     <ClCompile Include="CmApplication.cpp" />
     <ClCompile Include="CmD3D9RenderSystemFactory.cpp" />
-    <ClCompile Include="CmRenderSystemFactory.cpp" />
+    <ClCompile Include="CmRenderSystemManager.cpp" />
     <ClCompile Include="OgreAlignedAllocator.cpp" />
     <ClCompile Include="OgreAxisAlignedBox.cpp" />
     <ClCompile Include="OgreColourValue.cpp" />

@@ -32,6 +32,8 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #include "OgreHardwareBufferManager.h"
 #include "OgreDefaultHardwareBufferManager.h"
+#include "OgreRenderSystem.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre {
 
@@ -186,13 +188,11 @@ namespace Ogre {
 	VertexElementType VertexElement::getBestColourVertexElementType(void)
 	{
 		// Use the current render system to determine if possible
-		// TODO PORT - Requires singleton to render system and I don't have that yet, but I will once port is complete
-		//if (Root::getSingletonPtr() && Root::getSingletonPtr()->getRenderSystem())
-		//{
-		//	return Root::getSingleton().getRenderSystem()->getColourVertexElementType();
-		//}
-		//else
-		// END PORT
+		if (CamelotEngine::RenderSystemManager::getActive())
+		{
+			return CamelotEngine::RenderSystemManager::getActive()->getColourVertexElementType();
+		}
+		else
 		{
 			// We can't know the specific type right now, so pick a type
 			// based on platform

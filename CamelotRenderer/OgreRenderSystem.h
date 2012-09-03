@@ -31,6 +31,8 @@ THE SOFTWARE.
 // Precompiler options
 #include "OgrePrerequisites.h"
 
+#include <memory>
+
 #include "OgreString.h"
 
 #include "OgreTextureUnitState.h"
@@ -1306,8 +1308,6 @@ namespace Ogre
 		*/
 		virtual unsigned int getDisplayMonitorCount() const = 0;
 	protected:
-
-
 		/** The render targets. */
 		RenderTargetMap mRenderTargets;
 		/** The render targets, ordered by priority. */

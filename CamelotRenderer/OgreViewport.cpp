@@ -30,7 +30,8 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreRenderTarget.h"
 #include "OgreMath.h"
-//#include "OgreRenderWindow.h"
+#include "OgreRenderSystem.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre {
     OrientationMode Viewport::mDefaultOrientationMode = OR_DEGREE_0;
@@ -168,15 +169,14 @@ namespace Ogre {
             setDefaultOrientationMode(orientationMode);
         }
 
-		// TODO PORT - Enable this once I port rendersystem
-	//// Update the render system config
- //       RenderSystem* rs = Root::getSingleton().getRenderSystem();
- //       if(mOrientationMode == OR_LANDSCAPELEFT)
- //           rs->setConfigOption("Orientation", "Landscape Left");
- //       else if(mOrientationMode == OR_LANDSCAPERIGHT)
- //           rs->setConfigOption("Orientation", "Landscape Right");
- //       else if(mOrientationMode == OR_PORTRAIT)
- //           rs->setConfigOption("Orientation", "Portrait");
+		// Update the render system config
+        RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
+        if(mOrientationMode == OR_LANDSCAPELEFT)
+            rs->setConfigOption("Orientation", "Landscape Left");
+        else if(mOrientationMode == OR_LANDSCAPERIGHT)
+            rs->setConfigOption("Orientation", "Landscape Right");
+        else if(mOrientationMode == OR_PORTRAIT)
+            rs->setConfigOption("Orientation", "Portrait");
     }
     //---------------------------------------------------------------------
     OrientationMode Viewport::getOrientationMode() const
@@ -238,20 +238,19 @@ namespace Ogre {
 	void Viewport::clear(unsigned int buffers, const ColourValue& col,  
 						 Real depth, unsigned short stencil)
 	{
-		// TODO PORT - Enable this once I port rendersystem
-		//RenderSystem* rs = Root::getSingleton().getRenderSystem();
-		//if (rs)
-		//{
-		//	Viewport* currentvp = rs->_getViewport();
-		//	if (currentvp && currentvp == this)
-		//		rs->clearFrameBuffer(buffers, col, depth, stencil);
-		//	else if (currentvp)
-		//	{
-		//		rs->_setViewport(this);
-		//		rs->clearFrameBuffer(buffers, col, depth, stencil);
-		//		rs->_setViewport(currentvp);
-		//	}
-		//}
+		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
+		if (rs)
+		{
+			Viewport* currentvp = rs->_getViewport();
+			if (currentvp && currentvp == this)
+				rs->clearFrameBuffer(buffers, col, depth, stencil);
+			else if (currentvp)
+			{
+				rs->_setViewport(this);
+				rs->clearFrameBuffer(buffers, col, depth, stencil);
+				rs->_setViewport(currentvp);
+			}
+		}
 	}
     //---------------------------------------------------------------------
     void Viewport::getActualDimensions(int &left, int&top, int &width, int &height) const

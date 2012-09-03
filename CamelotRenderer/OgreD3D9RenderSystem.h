@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "OgreD3D9Prerequisites.h"
 #include "OgreString.h"
 #include "OgreStringConverter.h"
+#include "OgreConfigOptionMap.h"
 #include "OgreRenderSystem.h"
 #include "OgreRenderSystemCapabilities.h"
 #include "OgreD3D9Mappings.h"
@@ -53,6 +54,8 @@ namespace Ogre
 	private:
 		/// Direct3D
 		IDirect3D9*	 mpD3D;		
+		// Stored options
+		ConfigOptionMap mOptions;
 		size_t mFSAASamples;
 		String mFSAAHint;
 

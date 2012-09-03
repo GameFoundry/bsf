@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #include "OgreD3D9Mappings.h"
 #include "OgreD3D9RenderSystem.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre 
 {
@@ -94,11 +95,9 @@ namespace Ogre
         if (!preciseFormatOnly)
             format = getNativeFormat(ttype, format, usage);
 
-		// TODO PORT - Enable once rendersystem singleton is active, for now assume its true
-        //D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(
-        //    Root::getSingleton().getRenderSystem());
+        D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(
+            CamelotEngine::RenderSystemManager::getActive());
 
-        //return rs->_checkTextureFilteringSupported(ttype, format, usage);
-		return true;
+        return rs->_checkTextureFilteringSupported(ttype, format, usage);
     }
 }

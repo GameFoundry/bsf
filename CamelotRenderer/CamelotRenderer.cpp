@@ -35,7 +35,13 @@ using namespace CamelotEngine;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	const Ogre::String& name = CamelotEngine::gApplication().getRenderSystem()->getName();
+	//const Ogre::String& name = CamelotEngine::gApplication().getRenderSystem()->getName();
+
+	gApplication().startUp();
+
+	int a = 5;
+
+	gApplication().shutDown();
 
 	return 0;
 }

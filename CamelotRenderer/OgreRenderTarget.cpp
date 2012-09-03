@@ -30,6 +30,8 @@ THE SOFTWARE.
 
 #include "OgreViewport.h"
 #include "OgreException.h"
+#include "OgreRenderSystem.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre {
 
@@ -238,9 +240,7 @@ namespace Ogre {
 		if (swap)
 		{
 			// Swap buffers
-			// TODO PORT - Make sure to enable this line and disable next line, once render system is ported
-    	    //swapBuffers(Root::getSingleton().getRenderSystem()->getWaitForVerticalBlank());
-			swapBuffers(false);
+    	    swapBuffers(CamelotEngine::RenderSystemManager::getActive()->getWaitForVerticalBlank());
 		}
     }
 	

@@ -35,6 +35,8 @@ THE SOFTWARE.
 #include "OgreHardwareBufferManager.h"
 #include "OgreHardwareVertexBuffer.h"
 #include "OgreHardwareIndexBuffer.h"
+#include "OgreRenderSystem.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre {
 
@@ -531,12 +533,11 @@ namespace Ogre {
         mProjMatrix = mProjMatrix * Quaternion(Degree(mOrientationMode * 90.f), Vector3::UNIT_Z);
 #endif
 
-		// TODO PORT - IMPORTANT - After I have render system ported make sure to enable this
-		//RenderSystem* renderSystem = Root::getSingleton().getRenderSystem();
-		//// API specific
-		//renderSystem->_convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
-		//// API specific for Gpu Programs
-		//renderSystem->_convertProjectionMatrix(mProjMatrix, mProjMatrixRSDepth, true);
+		RenderSystem* renderSystem = CamelotEngine::RenderSystemManager::getActive();
+		// API specific
+		renderSystem->_convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
+		// API specific for Gpu Programs
+		renderSystem->_convertProjectionMatrix(mProjMatrix, mProjMatrixRSDepth, true);
 
 
 		// Calculate bounding box (local)

@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "OgreD3D9RenderSystem.h"
 #include "OgreD3D9Device.h"
 #include "OgreD3D9DeviceManager.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre 
 {
@@ -73,17 +74,16 @@ namespace Ogre
 					"D3D9MultiRenderTarget::bindSurface");
 			}
 
-			// TODO PORT - Not checking capabilities until I can get rendersystem singleton
-			//if (!Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS)
-			//	&& (PixelUtil::getNumElemBits(mRenderTargets[y]->getFormat()) != 
-			//		PixelUtil::getNumElemBits(buffer->getFormat())))
-			//{
-			//	OGRE_EXCEPT(
-			//		Exception::ERR_INVALIDPARAMS, 
-			//		"MultiRenderTarget surfaces are not of same bit depth and hardware requires it", 
-			//		"D3D9MultiRenderTarget::bindSurface"
-			//	);
-			//}
+			if (!CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->hasCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS)
+				&& (PixelUtil::getNumElemBits(mRenderTargets[y]->getFormat()) != 
+				PixelUtil::getNumElemBits(buffer->getFormat())))
+			{
+				OGRE_EXCEPT(
+					Exception::ERR_INVALIDPARAMS, 
+					"MultiRenderTarget surfaces are not of same bit depth and hardware requires it", 
+					"D3D9MultiRenderTarget::bindSurface"
+					);
+			}
 		}
 
 		mRenderTargets[attachment] = buffer;

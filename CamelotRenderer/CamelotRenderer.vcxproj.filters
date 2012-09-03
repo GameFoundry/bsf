@@ -307,6 +307,12 @@
     <ClInclude Include="CmApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OgreConfigOptionMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmRenderSystemManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -501,7 +507,7 @@
     <ClCompile Include="CmApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CmRenderSystemFactory.cpp">
+    <ClCompile Include="CmRenderSystemManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

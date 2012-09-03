@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #include "OgreBitwise.h"
 #include "OgreRenderSystem.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre {
 
@@ -972,8 +973,7 @@ void D3D9HardwarePixelBuffer::updateRenderTexture(bool writeGamma, uint fsaa, co
 
 		mRenderTexture = new D3D9RenderTexture(name, this, writeGamma, fsaa);		
 
-		// TODO PORT - Call once I have rendersystem singleton
-		//Root::getSingleton().getRenderSystem()->attachRenderTarget(*mRenderTexture);
+		CamelotEngine::RenderSystemManager::getActive()->attachRenderTarget(*mRenderTexture);
 	}
 }
 //-----------------------------------------------------------------------------    
@@ -981,8 +981,7 @@ void D3D9HardwarePixelBuffer::destroyRenderTexture()
 {
 	if (mRenderTexture != NULL)
 	{
-		// TODO PORT - Call once I have rendersystem singleton
-		//Root::getSingleton().getRenderSystem()->destroyRenderTarget(mRenderTexture->getName());
+		CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget(mRenderTexture->getName());
 		mRenderTexture = NULL;
 	}
 }

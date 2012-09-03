@@ -169,110 +169,109 @@ namespace Ogre
 		D3D9DriverList* driverList;
 		D3D9Driver* driver;
 
-		// TODO PORT - I'm not going to use these config options, but I need to find another way to initialize the render system
-//		ConfigOption optDevice;
-//		ConfigOption optVideoMode;
-//		ConfigOption optFullScreen;
-//		ConfigOption optVSync;
-//		ConfigOption optVSyncInterval;
-//		ConfigOption optAA;
-//		ConfigOption optFPUMode;
-//		ConfigOption optNVPerfHUD;
-//		ConfigOption optSRGB;
-//		ConfigOption optResourceCeationPolicy;
-//
-//		driverList = this->getDirect3DDrivers();
-//
-//		optDevice.name = "Rendering Device";
-//		optDevice.currentValue.clear();
-//		optDevice.possibleValues.clear();
-//		optDevice.immutable = false;
-//
-//		optVideoMode.name = "Video Mode";
-//		optVideoMode.currentValue = "800 x 600 @ 32-bit colour";
-//		optVideoMode.immutable = false;
-//
-//		optFullScreen.name = "Full Screen";
-//		optFullScreen.possibleValues.push_back( "Yes" );
-//		optFullScreen.possibleValues.push_back( "No" );
-//		optFullScreen.currentValue = "Yes";
-//		optFullScreen.immutable = false;
-//
-//		optResourceCeationPolicy.name = "Resource Creation Policy";		
-//		optResourceCeationPolicy.possibleValues.push_back( "Create on all devices" );
-//		optResourceCeationPolicy.possibleValues.push_back( "Create on active device" );
-//
-//		if (mResourceManager->getCreationPolicy() == RCP_CREATE_ON_ACTIVE_DEVICE)
-//			optResourceCeationPolicy.currentValue = "Create on active device";			
-//		else if (mResourceManager->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
-//			optResourceCeationPolicy.currentValue = "Create on all devices";
-//		else
-//			optResourceCeationPolicy.currentValue = "N/A";
-//		optResourceCeationPolicy.immutable = false;
-//
-//		for( unsigned j=0; j < driverList->count(); j++ )
-//		{
-//			driver = driverList->item(j);
-//			optDevice.possibleValues.push_back( driver->DriverDescription() );
-//			// Make first one default
-//			if( j==0 )
-//				optDevice.currentValue = driver->DriverDescription();
-//		}
-//
-//		optVSync.name = "VSync";
-//		optVSync.immutable = false;
-//		optVSync.possibleValues.push_back( "Yes" );
-//		optVSync.possibleValues.push_back( "No" );
-//		optVSync.currentValue = "No";
-//
-//		optVSyncInterval.name = "VSync Interval";
-//		optVSyncInterval.immutable = false;
-//		optVSyncInterval.possibleValues.push_back( "1" );
-//		optVSyncInterval.possibleValues.push_back( "2" );
-//		optVSyncInterval.possibleValues.push_back( "3" );
-//		optVSyncInterval.possibleValues.push_back( "4" );
-//		optVSyncInterval.currentValue = "1";
-//
-//		optAA.name = "FSAA";
-//		optAA.immutable = false;
-//		optAA.possibleValues.push_back( "None" );
-//		optAA.currentValue = "None";
-//
-//		optFPUMode.name = "Floating-point mode";
-//#if OGRE_DOUBLE_PRECISION
-//		optFPUMode.currentValue = "Consistent";
-//#else
-//		optFPUMode.currentValue = "Fastest";
-//#endif
-//		optFPUMode.possibleValues.clear();
-//		optFPUMode.possibleValues.push_back("Fastest");
-//		optFPUMode.possibleValues.push_back("Consistent");
-//		optFPUMode.immutable = false;
-//
-//		optNVPerfHUD.currentValue = "No";
-//		optNVPerfHUD.immutable = false;
-//		optNVPerfHUD.name = "Allow NVPerfHUD";
-//		optNVPerfHUD.possibleValues.push_back( "Yes" );
-//		optNVPerfHUD.possibleValues.push_back( "No" );
-//
-//
-//		// SRGB on auto window
-//		optSRGB.name = "sRGB Gamma Conversion";
-//		optSRGB.possibleValues.push_back("Yes");
-//		optSRGB.possibleValues.push_back("No");
-//		optSRGB.currentValue = "No";
-//		optSRGB.immutable = false;
-//
-//		mOptions[optDevice.name] = optDevice;
-//		mOptions[optVideoMode.name] = optVideoMode;
-//		mOptions[optFullScreen.name] = optFullScreen;
-//		mOptions[optVSync.name] = optVSync;
-//		mOptions[optVSyncInterval.name] = optVSyncInterval;
-//		mOptions[optAA.name] = optAA;
-//		mOptions[optFPUMode.name] = optFPUMode;
-//		mOptions[optNVPerfHUD.name] = optNVPerfHUD;
-//		mOptions[optSRGB.name] = optSRGB;
-//		mOptions[optResourceCeationPolicy.name] = optResourceCeationPolicy;
+		ConfigOption optDevice;
+		ConfigOption optVideoMode;
+		ConfigOption optFullScreen;
+		ConfigOption optVSync;
+		ConfigOption optVSyncInterval;
+		ConfigOption optAA;
+		ConfigOption optFPUMode;
+		ConfigOption optNVPerfHUD;
+		ConfigOption optSRGB;
+		ConfigOption optResourceCeationPolicy;
+
+		driverList = this->getDirect3DDrivers();
+
+		optDevice.name = "Rendering Device";
+		optDevice.currentValue.clear();
+		optDevice.possibleValues.clear();
+		optDevice.immutable = false;
+
+		optVideoMode.name = "Video Mode";
+		optVideoMode.currentValue = "800 x 600 @ 32-bit colour";
+		optVideoMode.immutable = false;
+
+		optFullScreen.name = "Full Screen";
+		optFullScreen.possibleValues.push_back( "Yes" );
+		optFullScreen.possibleValues.push_back( "No" );
+		optFullScreen.currentValue = "Yes";
+		optFullScreen.immutable = false;
+
+		optResourceCeationPolicy.name = "Resource Creation Policy";		
+		optResourceCeationPolicy.possibleValues.push_back( "Create on all devices" );
+		optResourceCeationPolicy.possibleValues.push_back( "Create on active device" );
+
+		if (mResourceManager->getCreationPolicy() == RCP_CREATE_ON_ACTIVE_DEVICE)
+			optResourceCeationPolicy.currentValue = "Create on active device";			
+		else if (mResourceManager->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
+			optResourceCeationPolicy.currentValue = "Create on all devices";
+		else
+			optResourceCeationPolicy.currentValue = "N/A";
+		optResourceCeationPolicy.immutable = false;
+
+		for( unsigned j=0; j < driverList->count(); j++ )
+		{
+			driver = driverList->item(j);
+			optDevice.possibleValues.push_back( driver->DriverDescription() );
+			// Make first one default
+			if( j==0 )
+				optDevice.currentValue = driver->DriverDescription();
+		}
+
+		optVSync.name = "VSync";
+		optVSync.immutable = false;
+		optVSync.possibleValues.push_back( "Yes" );
+		optVSync.possibleValues.push_back( "No" );
+		optVSync.currentValue = "No";
+
+		optVSyncInterval.name = "VSync Interval";
+		optVSyncInterval.immutable = false;
+		optVSyncInterval.possibleValues.push_back( "1" );
+		optVSyncInterval.possibleValues.push_back( "2" );
+		optVSyncInterval.possibleValues.push_back( "3" );
+		optVSyncInterval.possibleValues.push_back( "4" );
+		optVSyncInterval.currentValue = "1";
+
+		optAA.name = "FSAA";
+		optAA.immutable = false;
+		optAA.possibleValues.push_back( "None" );
+		optAA.currentValue = "None";
+
+		optFPUMode.name = "Floating-point mode";
+#if OGRE_DOUBLE_PRECISION
+		optFPUMode.currentValue = "Consistent";
+#else
+		optFPUMode.currentValue = "Fastest";
+#endif
+		optFPUMode.possibleValues.clear();
+		optFPUMode.possibleValues.push_back("Fastest");
+		optFPUMode.possibleValues.push_back("Consistent");
+		optFPUMode.immutable = false;
+
+		optNVPerfHUD.currentValue = "No";
+		optNVPerfHUD.immutable = false;
+		optNVPerfHUD.name = "Allow NVPerfHUD";
+		optNVPerfHUD.possibleValues.push_back( "Yes" );
+		optNVPerfHUD.possibleValues.push_back( "No" );
+
+
+		// SRGB on auto window
+		optSRGB.name = "sRGB Gamma Conversion";
+		optSRGB.possibleValues.push_back("Yes");
+		optSRGB.possibleValues.push_back("No");
+		optSRGB.currentValue = "No";
+		optSRGB.immutable = false;
+
+		mOptions[optDevice.name] = optDevice;
+		mOptions[optVideoMode.name] = optVideoMode;
+		mOptions[optFullScreen.name] = optFullScreen;
+		mOptions[optVSync.name] = optVSync;
+		mOptions[optVSyncInterval.name] = optVSyncInterval;
+		mOptions[optAA.name] = optAA;
+		mOptions[optFPUMode.name] = optFPUMode;
+		mOptions[optNVPerfHUD.name] = optNVPerfHUD;
+		mOptions[optSRGB.name] = optSRGB;
+		mOptions[optResourceCeationPolicy.name] = optResourceCeationPolicy;
 
 		refreshD3DSettings();
 
@@ -280,216 +279,212 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::refreshD3DSettings()
 	{
-		// TODO PORT - I'm not going to use these config options, but I need to find another way to initialize the render system
-		//ConfigOption* optVideoMode;
-		//D3D9Driver* driver = 0;
-		//D3D9VideoMode* videoMode;
+		ConfigOption* optVideoMode;
+		D3D9Driver* driver = 0;
+		D3D9VideoMode* videoMode;
 
-		//ConfigOptionMap::iterator opt = mOptions.find( "Rendering Device" );
-		//if( opt != mOptions.end() )
-		//{
-		//	for( unsigned j=0; j < getDirect3DDrivers()->count(); j++ )
-		//	{
-		//		D3D9Driver* curDriver = getDirect3DDrivers()->item(j);
-		//		if( curDriver->DriverDescription() == opt->second.currentValue )
-		//		{
-		//			driver = curDriver;
-		//			break;
-		//		}
-		//	}
+		ConfigOptionMap::iterator opt = mOptions.find( "Rendering Device" );
+		if( opt != mOptions.end() )
+		{
+			for( unsigned j=0; j < getDirect3DDrivers()->count(); j++ )
+			{
+				D3D9Driver* curDriver = getDirect3DDrivers()->item(j);
+				if( curDriver->DriverDescription() == opt->second.currentValue )
+				{
+					driver = curDriver;
+					break;
+				}
+			}
 
-		//	if (driver)
-		//	{
-		//		opt = mOptions.find( "Video Mode" );
-		//		optVideoMode = &opt->second;
-		//		optVideoMode->possibleValues.clear();
-		//		// get vide modes for this device
-		//		for( unsigned k=0; k < driver->getVideoModeList()->count(); k++ )
-		//		{
-		//			videoMode = driver->getVideoModeList()->item( k );
-		//			optVideoMode->possibleValues.push_back( videoMode->getDescription() );
-		//		}
+			if (driver)
+			{
+				opt = mOptions.find( "Video Mode" );
+				optVideoMode = &opt->second;
+				optVideoMode->possibleValues.clear();
+				// get vide modes for this device
+				for( unsigned k=0; k < driver->getVideoModeList()->count(); k++ )
+				{
+					videoMode = driver->getVideoModeList()->item( k );
+					optVideoMode->possibleValues.push_back( videoMode->getDescription() );
+				}
 
-		//		// Reset video mode to default if previous doesn't avail in new possible values
-		//		StringVector::const_iterator itValue =
-		//			std::find(optVideoMode->possibleValues.begin(),
-		//			optVideoMode->possibleValues.end(),
-		//			optVideoMode->currentValue);
-		//		if (itValue == optVideoMode->possibleValues.end())
-		//		{
-		//			optVideoMode->currentValue = "800 x 600 @ 32-bit colour";
-		//		}
+				// Reset video mode to default if previous doesn't avail in new possible values
+				StringVector::const_iterator itValue =
+					std::find(optVideoMode->possibleValues.begin(),
+					optVideoMode->possibleValues.end(),
+					optVideoMode->currentValue);
+				if (itValue == optVideoMode->possibleValues.end())
+				{
+					optVideoMode->currentValue = "800 x 600 @ 32-bit colour";
+				}
 
-		//		// Also refresh FSAA options
-		//		refreshFSAAOptions();
-		//	}
-		//}
+				// Also refresh FSAA options
+				refreshFSAAOptions();
+			}
+		}
 
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setConfigOption( const String &name, const String &value )
 	{
-		// TODO PORT - I'm not going to use these config options, but I need to find another way to initialize the render system
-		//bool viewModeChanged = false;
+		bool viewModeChanged = false;
 
-		//// Find option
-		//ConfigOptionMap::iterator it = mOptions.find( name );
+		// Find option
+		ConfigOptionMap::iterator it = mOptions.find( name );
 
-		//// Update
-		//if( it != mOptions.end() )
-		//	it->second.currentValue = value;
-		//else
-		//{
-		//	StringUtil::StrStreamType str;
-		//	str << "Option named '" << name << "' does not exist.";
-		//	OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, str.str(), "D3D9RenderSystem::setConfigOption" );
-		//}
+		// Update
+		if( it != mOptions.end() )
+			it->second.currentValue = value;
+		else
+		{
+			StringUtil::StrStreamType str;
+			str << "Option named '" << name << "' does not exist.";
+			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, str.str(), "D3D9RenderSystem::setConfigOption" );
+		}
 
-		//// Refresh other options if D3DDriver changed
-		//if( name == "Rendering Device" )
-		//	refreshD3DSettings();
+		// Refresh other options if D3DDriver changed
+		if( name == "Rendering Device" )
+			refreshD3DSettings();
 
-		//if( name == "Full Screen" )
-		//{
-		//	// Video mode is applicable
-		//	it = mOptions.find( "Video Mode" );
-		//	if (it->second.currentValue.empty())
-		//	{
-		//		it->second.currentValue = "800 x 600 @ 32-bit colour";
-		//		viewModeChanged = true;
-		//	}
-		//}
+		if( name == "Full Screen" )
+		{
+			// Video mode is applicable
+			it = mOptions.find( "Video Mode" );
+			if (it->second.currentValue.empty())
+			{
+				it->second.currentValue = "800 x 600 @ 32-bit colour";
+				viewModeChanged = true;
+			}
+		}
 
-		//if( name == "FSAA" )
-		//{
-		//	StringVector values = StringUtil::split(value, " ", 1);
-		//	mFSAASamples = StringConverter::parseUnsignedInt(values[0]);
-		//	if (values.size() > 1)
-		//		mFSAAHint = values[1];
+		if( name == "FSAA" )
+		{
+			StringVector values = StringUtil::split(value, " ", 1);
+			mFSAASamples = StringConverter::parseUnsignedInt(values[0]);
+			if (values.size() > 1)
+				mFSAAHint = values[1];
 
-		//}
+		}
 
-		//if( name == "VSync" )
-		//{
-		//	if (value == "Yes")
-		//		mVSync = true;
-		//	else
-		//		mVSync = false;
-		//}
+		if( name == "VSync" )
+		{
+			if (value == "Yes")
+				mVSync = true;
+			else
+				mVSync = false;
+		}
 
-		//if( name == "VSync Interval" )
-		//{
-		//	mVSyncInterval = StringConverter::parseUnsignedInt(value);
-		//}
+		if( name == "VSync Interval" )
+		{
+			mVSyncInterval = StringConverter::parseUnsignedInt(value);
+		}
 
-		//if( name == "Allow NVPerfHUD" )
-		//{
-		//	if (value == "Yes")
-		//		mUseNVPerfHUD = true;
-		//	else
-		//		mUseNVPerfHUD = false;
-		//}
+		if( name == "Allow NVPerfHUD" )
+		{
+			if (value == "Yes")
+				mUseNVPerfHUD = true;
+			else
+				mUseNVPerfHUD = false;
+		}
 
-		//if (viewModeChanged || name == "Video Mode")
-		//{
-		//	refreshFSAAOptions();
-		//}
+		if (viewModeChanged || name == "Video Mode")
+		{
+			refreshFSAAOptions();
+		}
 
-		//if (name == "Resource Creation Policy")
-		//{
-		//	if (value == "Create on active device")
-		//		mResourceManager->setCreationPolicy(RCP_CREATE_ON_ACTIVE_DEVICE);
-		//	else if (value == "Create on all devices")
-		//		mResourceManager->setCreationPolicy(RCP_CREATE_ON_ALL_DEVICES);		
-		//}
+		if (name == "Resource Creation Policy")
+		{
+			if (value == "Create on active device")
+				mResourceManager->setCreationPolicy(RCP_CREATE_ON_ACTIVE_DEVICE);
+			else if (value == "Create on all devices")
+				mResourceManager->setCreationPolicy(RCP_CREATE_ON_ALL_DEVICES);		
+		}
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::refreshFSAAOptions()
 	{
-		// TODO PORT - I'm not going to use these config options, but I need to find another way to initialize the render system
-		//ConfigOptionMap::iterator it = mOptions.find( "FSAA" );
-		//ConfigOption* optFSAA = &it->second;
-		//optFSAA->possibleValues.clear();
-		//optFSAA->possibleValues.push_back("0");
+		ConfigOptionMap::iterator it = mOptions.find( "FSAA" );
+		ConfigOption* optFSAA = &it->second;
+		optFSAA->possibleValues.clear();
+		optFSAA->possibleValues.push_back("0");
 
-		//it = mOptions.find("Rendering Device");
-		//D3D9Driver *driver = getDirect3DDrivers()->item(it->second.currentValue);
-		//if (driver)
-		//{
-		//	it = mOptions.find("Video Mode");
-		//	D3D9VideoMode *videoMode = driver->getVideoModeList()->item(it->second.currentValue);
-		//	if (videoMode)
-		//	{
-		//		DWORD numLevels = 0;
-		//		bool bOK;
+		it = mOptions.find("Rendering Device");
+		D3D9Driver *driver = getDirect3DDrivers()->item(it->second.currentValue);
+		if (driver)
+		{
+			it = mOptions.find("Video Mode");
+			D3D9VideoMode *videoMode = driver->getVideoModeList()->item(it->second.currentValue);
+			if (videoMode)
+			{
+				DWORD numLevels = 0;
+				bool bOK;
 
-		//		for (unsigned int n = 2; n < 25; n++)
-		//		{
-		//			bOK = this->_checkMultiSampleQuality(
-		//				(D3DMULTISAMPLE_TYPE)n, 
-		//				&numLevels, 
-		//				videoMode->getFormat(), 
-		//				driver->getAdapterNumber(),
-		//				D3DDEVTYPE_HAL,
-		//				TRUE);
-		//			if (bOK)
-		//			{
-		//				optFSAA->possibleValues.push_back(StringConverter::toString(n));
-		//				if (n >= 8)
-		//					optFSAA->possibleValues.push_back(StringConverter::toString(n) + " [Quality]");
-		//			}
-		//		}
+				for (unsigned int n = 2; n < 25; n++)
+				{
+					bOK = this->_checkMultiSampleQuality(
+						(D3DMULTISAMPLE_TYPE)n, 
+						&numLevels, 
+						videoMode->getFormat(), 
+						driver->getAdapterNumber(),
+						D3DDEVTYPE_HAL,
+						TRUE);
+					if (bOK)
+					{
+						optFSAA->possibleValues.push_back(StringConverter::toString(n));
+						if (n >= 8)
+							optFSAA->possibleValues.push_back(StringConverter::toString(n) + " [Quality]");
+					}
+				}
 
-		//	}
-		//}
+			}
+		}
 
-		//// Reset FSAA to none if previous doesn't avail in new possible values
-		//StringVector::const_iterator itValue =
-		//	std::find(optFSAA->possibleValues.begin(),
-		//	optFSAA->possibleValues.end(),
-		//	optFSAA->currentValue);
-		//if (itValue == optFSAA->possibleValues.end())
-		//{
-		//	optFSAA->currentValue = "0";
-		//}
+		// Reset FSAA to none if previous doesn't avail in new possible values
+		StringVector::const_iterator itValue =
+			std::find(optFSAA->possibleValues.begin(),
+			optFSAA->possibleValues.end(),
+			optFSAA->currentValue);
+		if (itValue == optFSAA->possibleValues.end())
+		{
+			optFSAA->currentValue = "0";
+		}
 
 	}
 	//---------------------------------------------------------------------
 	String D3D9RenderSystem::validateConfigOptions()
 	{
-		// TODO PORT - I'm not going to use these config options, but I need to find another way to initialize the render system
-		//ConfigOptionMap::iterator it;
+		ConfigOptionMap::iterator it;
 
-		//// check if video mode is selected
-		//it = mOptions.find( "Video Mode" );
-		//if (it->second.currentValue.empty())
-		//	return "A video mode must be selected.";
+		// check if video mode is selected
+		it = mOptions.find( "Video Mode" );
+		if (it->second.currentValue.empty())
+			return "A video mode must be selected.";
 
-		//it = mOptions.find( "Rendering Device" );
-		//bool foundDriver = false;
-		//D3D9DriverList* driverList = getDirect3DDrivers();
-		//for( ushort j=0; j < driverList->count(); j++ )
-		//{
-		//	if( driverList->item(j)->DriverDescription() == it->second.currentValue )
-		//	{
-		//		foundDriver = true;
-		//		break;
-		//	}
-		//}
+		it = mOptions.find( "Rendering Device" );
+		bool foundDriver = false;
+		D3D9DriverList* driverList = getDirect3DDrivers();
+		for( ushort j=0; j < driverList->count(); j++ )
+		{
+			if( driverList->item(j)->DriverDescription() == it->second.currentValue )
+			{
+				foundDriver = true;
+				break;
+			}
+		}
 
-		//if (!foundDriver)
-		//{
-		//	// Just pick the first driver
-		//	setConfigOption("Rendering Device", driverList->item(0)->DriverDescription());
-		//	return "Your DirectX driver name has changed since the last time you ran OGRE; "
-		//		"the 'Rendering Device' has been changed.";
-		//}
+		if (!foundDriver)
+		{
+			// Just pick the first driver
+			setConfigOption("Rendering Device", driverList->item(0)->DriverDescription());
+			return "Your DirectX driver name has changed since the last time you ran OGRE; "
+				"the 'Rendering Device' has been changed.";
+		}
 
-		//it = mOptions.find( "VSync" );
-		//if( it->second.currentValue == "Yes" )
-		//	mVSync = true;
-		//else
-		//	mVSync = false;
+		it = mOptions.find( "VSync" );
+		if( it->second.currentValue == "Yes" )
+			mVSync = true;
+		else
+			mVSync = false;
 
 		return StringUtil::BLANK;
 	}
@@ -500,15 +495,15 @@ namespace Ogre
 
 		// Init using current settings
 		mActiveD3DDriver = NULL;
-		//ConfigOptionMap::iterator opt = mOptions.find( "Rendering Device" );
-		//for( uint j=0; j < getDirect3DDrivers()->count(); j++ )
-		//{
-		//	if( getDirect3DDrivers()->item(j)->DriverDescription() == opt->second.currentValue )
-		//	{
-		//		mActiveD3DDriver = getDirect3DDrivers()->item(j);
-		//		break;
-		//	}
-		//}
+		ConfigOptionMap::iterator opt = mOptions.find( "Rendering Device" );
+		for( uint j=0; j < getDirect3DDrivers()->count(); j++ )
+		{
+			if( getDirect3DDrivers()->item(j)->DriverDescription() == opt->second.currentValue )
+			{
+				mActiveD3DDriver = getDirect3DDrivers()->item(j);
+				break;
+			}
+		}
 
 		if( !mActiveD3DDriver )
 			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, "Problems finding requested Direct3D driver!", "D3D9RenderSystem::initialise" );
@@ -537,39 +532,30 @@ namespace Ogre
 		
 		if( autoCreateWindow )
 		{
-			//bool fullScreen;
-			//opt = mOptions.find( "Full Screen" );
-			//if( opt == mOptions.end() )
-			//	OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Can't find full screen option!", "D3D9RenderSystem::initialise" );
-			//fullScreen = opt->second.currentValue == "Yes";
-			// TODO PORT - Not loading fullscreen from options, assume its false
-			bool fullScreen = false;
-
+			bool fullScreen;
+			opt = mOptions.find( "Full Screen" );
+			if( opt == mOptions.end() )
+				OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Can't find full screen option!", "D3D9RenderSystem::initialise" );
+			fullScreen = opt->second.currentValue == "Yes";
 
 			D3D9VideoMode* videoMode = NULL;
 			unsigned int width, height;
 			String temp;
 
-			// TODO - Not loading video mode from the list, instead we assume 800x600 @ 32-bit
-			//opt = mOptions.find( "Video Mode" );
-			//if( opt == mOptions.end() )
-			//	OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Can't find Video Mode option!", "D3D9RenderSystem::initialise" );
+			opt = mOptions.find( "Video Mode" );
+			if( opt == mOptions.end() )
+				OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Can't find Video Mode option!", "D3D9RenderSystem::initialise" );
 
-			//// The string we are manipulating looks like this :width x height @ colourDepth
-			//// Pull out the colour depth by getting what comes after the @ and a space
-			//String colourDepth = opt->second.currentValue.substr(opt->second.currentValue.rfind('@')+1);
-			//// Now we know that the width starts a 0, so if we can find the end we can parse that out
-			//String::size_type widthEnd = opt->second.currentValue.find(' ');
-			//// we know that the height starts 3 characters after the width and goes until the next space
-			//String::size_type heightEnd = opt->second.currentValue.find(' ', widthEnd+3);
-			//// Now we can parse out the values
-			//width = StringConverter::parseInt(opt->second.currentValue.substr(0, widthEnd));
-			//height = StringConverter::parseInt(opt->second.currentValue.substr(widthEnd+3, heightEnd));
-
-			width = 800;
-			height = 600;
-			String colourDepth = "32-bit";
-			String resValue = "800 x 600 @ 32-bit";
+			// The string we are manipulating looks like this :width x height @ colourDepth
+			// Pull out the colour depth by getting what comes after the @ and a space
+			String colourDepth = opt->second.currentValue.substr(opt->second.currentValue.rfind('@')+1);
+			// Now we know that the width starts a 0, so if we can find the end we can parse that out
+			String::size_type widthEnd = opt->second.currentValue.find(' ');
+			// we know that the height starts 3 characters after the width and goes until the next space
+			String::size_type heightEnd = opt->second.currentValue.find(' ', widthEnd+3);
+			// Now we can parse out the values
+			width = StringConverter::parseInt(opt->second.currentValue.substr(0, widthEnd));
+			height = StringConverter::parseInt(opt->second.currentValue.substr(widthEnd+3, heightEnd));
 
 			for( unsigned j=0; j < mActiveD3DDriver->getVideoModeList()->count(); j++ )
 			{
@@ -578,7 +564,7 @@ namespace Ogre
 				// In full screen we only want to allow supported resolutions, so temp and opt->second.currentValue need to 
 				// match exactly, but in windowed mode we can allow for arbitrary window sized, so we only need
 				// to match the colour values
-				if(fullScreen && (temp == resValue) ||
+				if(fullScreen && (temp == opt->second.currentValue) ||
 					!fullScreen && (temp.substr(temp.rfind('@')+1) == colourDepth))
 				{
 					videoMode = mActiveD3DDriver->getVideoModeList()->item(j);
@@ -591,13 +577,11 @@ namespace Ogre
 
 			// sRGB window option
 			bool hwGamma = false;
-			// TODO PORT - Not loading this from config so assume false for now
-			//opt = mOptions.find( "sRGB Gamma Conversion" );
-			//if( opt == mOptions.end() )
-			//	OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Can't find sRGB option!", "D3D9RenderSystem::initialise" );
-			//hwGamma = opt->second.currentValue == "Yes";
 
-			
+			opt = mOptions.find( "sRGB Gamma Conversion" );
+			if( opt == mOptions.end() )
+				OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Can't find sRGB option!", "D3D9RenderSystem::initialise" );
+			hwGamma = opt->second.currentValue == "Yes";
 
 			NameValuePairList miscParams;
 			miscParams["colourDepth"] = StringConverter::toString(videoMode->getColourDepth());

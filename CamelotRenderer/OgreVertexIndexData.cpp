@@ -33,6 +33,8 @@ THE SOFTWARE.
 #include "OgreVector3.h"
 #include "OgreAxisAlignedBox.h"
 #include "OgreException.h"
+#include "OgreRenderSystem.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre {
 
@@ -150,9 +152,9 @@ namespace Ogre {
 
         // Upfront, lets check whether we have vertex program capability
         bool useVertexPrograms = false;
-		// TODO PORT - Don't have access to render system yet, but will after the port is done. For now assume we always can use vertex programs.
-		//RenderSystem* rend = Root::getSingleton().getRenderSystem();
-        //if (rend && rend->getCapabilities()->hasCapability(RSC_VERTEX_PROGRAM))
+
+		RenderSystem* rend = CamelotEngine::RenderSystemManager::getActive();
+        if (rend && rend->getCapabilities()->hasCapability(RSC_VERTEX_PROGRAM))
         {
             useVertexPrograms = true;
         }

@@ -36,6 +36,7 @@ THE SOFTWARE.
 #include "OgreD3D9Device.h"
 #include "OgreD3D9DeviceManager.h"
 #include "OgreD3D9ResourceManager.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre 
 {
@@ -976,12 +977,9 @@ namespace Ogre
 		// Check FSAA level
 		if (mUsage & TU_RENDERTARGET)
 		{
-			// TODO PORT - Enable when rendersystem is active, for now set to no FSAA
-			//D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(Root::getSingleton().getRenderSystem());
-			//rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
-			//	&mFSAAType, &mFSAAQuality);
-			mFSAAType = D3DMULTISAMPLE_NONE;
-			mFSAAQuality = 0;
+			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
+				&mFSAAType, &mFSAAQuality);
 		}
 		else
 		{
@@ -1139,12 +1137,9 @@ namespace Ogre
 		// Check FSAA level
 		if (mUsage & TU_RENDERTARGET)
 		{
-			// TODO PORT - Enable when rendersystem is active, for now set to no FSAA
-			//D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(Root::getSingleton().getRenderSystem());
-			//rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
-			//	&mFSAAType, &mFSAAQuality);
-			mFSAAType = D3DMULTISAMPLE_NONE;
-			mFSAAQuality = 0;
+			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
+				&mFSAAType, &mFSAAQuality);
 		}
 		else
 		{

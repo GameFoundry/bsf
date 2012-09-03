@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "OgreD3D9Driver.h"
 #include "OgreD3D9DriverList.h"
 #include "OgreException.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre
 {
@@ -62,23 +63,22 @@ namespace Ogre
 		{
 			mActiveDevice = device;
 
-			// TODO PORT - Make sure to enable once rendersystem is active
-			//D3D9RenderSystem*	renderSystem = static_cast<D3D9RenderSystem*>(Root::getSingleton().getRenderSystem());
-			//D3D9DriverList*		driverList	 = renderSystem->getDirect3DDrivers();
+			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+			D3D9DriverList*		driverList	 = renderSystem->getDirect3DDrivers();
 
-			//// Update the active driver member.
-			//for (uint i=0; i < driverList->count(); ++i)
-			//{
-			//	D3D9Driver* currDriver = driverList->item(i);
-			//	if (currDriver->getAdapterNumber() == mActiveDevice->getAdapterNumber())
-			//	{
-			//		renderSystem->mActiveD3DDriver = currDriver;
-			//		break;
-			//	}				
-			//}	
+			// Update the active driver member.
+			for (uint i=0; i < driverList->count(); ++i)
+			{
+				D3D9Driver* currDriver = driverList->item(i);
+				if (currDriver->getAdapterNumber() == mActiveDevice->getAdapterNumber())
+				{
+					renderSystem->mActiveD3DDriver = currDriver;
+					break;
+				}				
+			}	
 
-			//// Invalidate active view port.
-			//renderSystem->mActiveViewport = NULL;
+			// Invalidate active view port.
+			renderSystem->mActiveViewport = NULL;
 		}						
 	}
 
@@ -155,8 +155,8 @@ namespace Ogre
 	D3D9Device* D3D9DeviceManager::selectDevice(D3D9RenderWindow* renderWindow, D3D9RenderWindowList& renderWindowsGroup)
 	{
 		// TODO PORT - Make sure to enable once rendersystem is active
-		/*
-		D3D9RenderSystem*		renderSystem	 = static_cast<D3D9RenderSystem*>(Root::getSingleton().getRenderSystem());
+		
+		D3D9RenderSystem*		renderSystem	 = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
 		D3D9Device*				renderDevice	 = NULL;	
 		IDirect3D9*				direct3D9	     = D3D9RenderSystem::getDirect3D9();
 		UINT					nAdapterOrdinal  = D3DADAPTER_DEFAULT;
@@ -415,37 +415,32 @@ namespace Ogre
 		}				
 
 		return renderDevice;	
-		*/
-		return NULL;
 	}
 
 	//-----------------------------------------------------------------------
 	D3D9Driver* D3D9DeviceManager::findDriver(D3D9RenderWindow* renderWindow)
 	{
-		// TODO PORT - Make sure to enable once rendersystem is active
-		//D3D9RenderSystem*		renderSystem	 = static_cast<D3D9RenderSystem*>(Root::getSingleton().getRenderSystem());		
-		//IDirect3D9*				direct3D9	     = D3D9RenderSystem::getDirect3D9();
-		//UINT					nAdapterOrdinal  = D3DADAPTER_DEFAULT;						
-		//HMONITOR				hRenderWindowMonitor = NULL;			
-		//D3D9DriverList*			driverList = renderSystem->getDirect3DDrivers();
+		D3D9RenderSystem*		renderSystem	 = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());		
+		IDirect3D9*				direct3D9	     = D3D9RenderSystem::getDirect3D9();
+		UINT					nAdapterOrdinal  = D3DADAPTER_DEFAULT;						
+		HMONITOR				hRenderWindowMonitor = NULL;			
+		D3D9DriverList*			driverList = renderSystem->getDirect3DDrivers();
 
-		//// Find the monitor this render window belongs to.
-		//hRenderWindowMonitor = MonitorFromWindow(renderWindow->getWindowHandle(), MONITOR_DEFAULTTONEAREST);
+		// Find the monitor this render window belongs to.
+		hRenderWindowMonitor = MonitorFromWindow(renderWindow->getWindowHandle(), MONITOR_DEFAULTTONEAREST);
 
 
-		//// Find the matching driver using window monitor handle.
-		//for (uint i = 0; i < driverList->count(); ++i)
-		//{
-		//	D3D9Driver* currDriver       = driverList->item(i);
-		//	HMONITOR hCurrAdpaterMonitor = direct3D9->GetAdapterMonitor(currDriver->getAdapterNumber());
+		// Find the matching driver using window monitor handle.
+		for (uint i = 0; i < driverList->count(); ++i)
+		{
+			D3D9Driver* currDriver       = driverList->item(i);
+			HMONITOR hCurrAdpaterMonitor = direct3D9->GetAdapterMonitor(currDriver->getAdapterNumber());
 
-		//	if (hCurrAdpaterMonitor == hRenderWindowMonitor)
-		//	{
-		//		return currDriver;				
-		//	}
-		//}
-
-		return NULL;
+			if (hCurrAdpaterMonitor == hRenderWindowMonitor)
+			{
+				return currDriver;				
+			}
+		}
 	}
 
 	//-----------------------------------------------------------------------

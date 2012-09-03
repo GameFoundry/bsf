@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #include "OgreWindowEventUtilities.h"
 #include "OgreD3D9DeviceManager.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre
 {
@@ -601,14 +602,11 @@ namespace Ogre
 			// 16-bit depth, software stencil
 			presentParams->AutoDepthStencilFormat	= D3DFMT_D16;
 
-		// TODO PORT - Enable this once I have RenderSystem singleton set up. For now set no FSAA
-		//D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(Root::getSingleton().getRenderSystem());
-		//
-		//rsys->determineFSAASettings(mDevice->getD3D9Device(),
-		//	mFSAA, mFSAAHint, presentParams->BackBufferFormat, mIsFullScreen, 
-		//	&mFSAAType, &mFSAAQuality);
-		mFSAAType = D3DMULTISAMPLE_NONE;
-		mFSAAQuality = 0;
+		D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+
+		rsys->determineFSAASettings(mDevice->getD3D9Device(),
+			mFSAA, mFSAAHint, presentParams->BackBufferFormat, mIsFullScreen, 
+			&mFSAAType, &mFSAAQuality);
 
 		presentParams->MultiSampleType = mFSAAType;
 		presentParams->MultiSampleQuality = (mFSAAQuality == 0) ? 0 : mFSAAQuality;

@@ -32,6 +32,8 @@ THE SOFTWARE.
 #include "OgreRenderSystemCapabilities.h"
 #include "OgreStringConverter.h"
 #include "OgreException.h"
+#include "OgreRenderSystem.h"
+#include "CmRenderSystemManager.h"
 
 namespace Ogre
 {
@@ -121,7 +123,7 @@ namespace Ogre
     //-----------------------------------------------------------------------------
     bool GpuProgram::isRequiredCapabilitiesSupported(void) const
     {
-		// TODO PORT- Enable once I port rendersystem. Right now just assume everything is supported and return true
+		// TODO PORT- I dont think I'll be using these capabilities
 		return true;
 
 		//const RenderSystemCapabilities* caps = 
@@ -149,11 +151,8 @@ namespace Ogre
         if (mCompileError || !isRequiredCapabilitiesSupported())
             return false;
 
-		// TODO PORT - Enable this once I have ported the render system, for now just return true
-		//RenderSystem* rs = Root::getSingleton().getRenderSystem();
-		//return rs->getCapabilities()->isShaderProfileSupported(mSyntaxCode);
-
-        return true;
+		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
+		return rs->getCapabilities()->isShaderProfileSupported(mSyntaxCode);
     }
 	//---------------------------------------------------------------------
 	void GpuProgram::createParameterMappingStructures(bool recreateIfExists) const
