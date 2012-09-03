@@ -88,6 +88,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="asm_math.h" />
+    <ClInclude Include="CmApplication.h" />
+    <ClInclude Include="CmD3D9RenderSystemFactory.h" />
+    <ClInclude Include="CmRenderSystemFactory.h" />
     <ClInclude Include="OgreAlignedAllocator.h" />
     <ClInclude Include="OgreAxisAlignedBox.h" />
     <ClInclude Include="OgreBitwise.h" />
@@ -175,6 +178,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CamelotRenderer.cpp" />
+    <ClCompile Include="CmApplication.cpp" />
+    <ClCompile Include="CmD3D9RenderSystemFactory.cpp" />
+    <ClCompile Include="CmRenderSystemFactory.cpp" />
     <ClCompile Include="OgreAlignedAllocator.cpp" />
     <ClCompile Include="OgreAxisAlignedBox.cpp" />
     <ClCompile Include="OgreColourValue.cpp" />

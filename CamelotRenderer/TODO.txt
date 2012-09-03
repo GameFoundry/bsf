@@ -84,3 +84,4 @@ Other notes:
  - Ogre::ColourValue -> CamelotEngine::Color (Other struct names are okay for the most part)
  - Port all math methods to Camelot
  - Rename all macros and other OGRE references to CM
+ - How am I notified on device reset? (When I need to reload my resources)

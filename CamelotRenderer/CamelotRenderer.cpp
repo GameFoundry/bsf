@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 
+#include <string>
+
 #include "OgreBuildSettings.h"
 #include "OgreColourValue.h"
 #include "OgreConfig.h"
@@ -25,9 +27,16 @@
 
 #include "OgreD3D9Prerequisites.h"
 #include "OgreD3D9VideoMode.h"
+#include "OgreRenderSystem.h"
+
+#include "CmApplication.h"
+
+using namespace CamelotEngine;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	const Ogre::String& name = CamelotEngine::gApplication().getRenderSystem()->getName();
+
 	return 0;
 }
 

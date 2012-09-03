@@ -298,6 +298,15 @@
     <ClInclude Include="OgreWindowEventUtilities.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="CmRenderSystemFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9RenderSystemFactory.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -485,6 +494,15 @@
     </ClCompile>
     <ClCompile Include="OgreWindowEventUtilities.cpp">
       <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9RenderSystemFactory.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmRenderSystemFactory.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
