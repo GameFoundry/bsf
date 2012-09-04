@@ -8,15 +8,19 @@
 #include "OgreRenderWindow.h"
 #include "OgreCamera.h"
 #include "OgreViewport.h"
+#include "OgreHighLevelGpuProgram.h"
+#include "OgreHighLevelGpuProgramManager.h"
 
 namespace CamelotEngine
 {
 	Application::Application()
-		:mRenderWindow(nullptr), mViewport(nullptr)
+		:mRenderWindow(nullptr), mViewport(nullptr), mCamera(nullptr), mGpuProgramManager(nullptr)
 	{ }
 
 	void Application::startUp()
 	{
+		mGpuProgramManager = new Ogre::HighLevelGpuProgramManager(); // TODO - Use Camelot::Module for instantiating this
+
 		RenderSystemManager::initialize("D3D9RenderSystem");
 		
 		Ogre::RenderSystem* renderSystem = RenderSystemManager::getActive();
@@ -35,6 +39,9 @@ namespace CamelotEngine
 
 		mViewport = mRenderWindow->addViewport();
 
+		Ogre::HighLevelGpuProgramPtr fragProg = mGpuProgramManager->createProgram("barg", "barg", "hlsl", Ogre::GPT_FRAGMENT_PROGRAM, Ogre::GPP_PS_1_1);
+		fragProg->load();
+
 		while(true)
 		{
 			Ogre::WindowEventUtilities::messagePump();
@@ -47,6 +54,9 @@ namespace CamelotEngine
 	{
 		if(RenderSystemManager::getActive() != nullptr)
 			RenderSystemManager::getActive()->shutdown();
+
+		if(mGpuProgramManager != nullptr)
+			delete mGpuProgramManager;
 	}
 
 	void Application::DBG_renderSimpleFrame()

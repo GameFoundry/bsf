@@ -36,7 +36,7 @@ namespace Ogre
 	class _OgreD3D9Export D3D9TextureManager
 	{
 	public:		
-        /// @copydoc ResourceManager::createImpl
+        /// @copydoc ResourceManager::create
         static D3D9Texture* create(const NameValuePairList* createParams);
 
 	public:

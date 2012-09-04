@@ -137,16 +137,6 @@ namespace Ogre {
 		}
 		else
 		{
-			// Normal load-from-source approach
-			if (mLoadFromFile)
-			{
-				//// find & load source code
-				//DataStreamPtr stream = 
-				//	ResourceGroupManager::getSingleton().openResource(
-				//	mFilename, mGroup, true, this);
-				//mSource = stream->getAsString();
-			}
-
 			// Call polymorphic load
 			loadFromSource(d3d9Device);
 		}
@@ -266,7 +256,7 @@ namespace Ogre {
 		}
     }
 	//-----------------------------------------------------------------------------
-    void D3D9GpuVertexProgram::unloadImpl(void)
+    void D3D9GpuVertexProgram::unload(void)
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -373,7 +363,7 @@ namespace Ogre {
 		}
     }
 	//-----------------------------------------------------------------------------
-    void D3D9GpuFragmentProgram::unloadImpl(void)
+    void D3D9GpuFragmentProgram::unload(void)
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 

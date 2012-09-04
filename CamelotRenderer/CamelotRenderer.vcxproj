@@ -142,6 +142,7 @@
     <ClInclude Include="OgreHeaderPrefix.h" />
     <ClInclude Include="OgreHeaderSuffix.h" />
     <ClInclude Include="OgreHighLevelGpuProgram.h" />
+    <ClInclude Include="OgreHighLevelGpuProgramManager.h" />
     <ClInclude Include="OgreImageResampler.h" />
     <ClInclude Include="OgreMath.h" />
     <ClInclude Include="OgreMatrix3.h" />
@@ -225,6 +226,7 @@
     <ClCompile Include="OgreHardwarePixelBuffer.cpp" />
     <ClCompile Include="OgreHardwareVertexBuffer.cpp" />
     <ClCompile Include="OgreHighLevelGpuProgram.cpp" />
+    <ClCompile Include="OgreHighLevelGpuProgramManager.cpp" />
     <ClCompile Include="OgreMath.cpp" />
     <ClCompile Include="OgreMatrix3.cpp" />
     <ClCompile Include="OgreMatrix4.cpp" />

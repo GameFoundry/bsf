@@ -47,6 +47,7 @@ THE SOFTWARE.
 #include "OgreD3D9MultiRenderTarget.h"
 #include "OgreD3D9DeviceManager.h"
 #include "OgreD3D9ResourceManager.h"
+#include "OgreHighLevelGpuProgramManager.h"
 
 #define FLOAT2DWORD(f) *((DWORD*)&f)
 
@@ -1317,9 +1318,9 @@ namespace Ogre
 				"Trying to initialize D3D9RenderSystem from RenderSystemCapabilities that do not support Direct3D9",
 				"D3D9RenderSystem::initialiseFromRenderSystemCapabilities");
 		}
-		// TODO PORT - If i'll be supporting factories enable this
-		//if (caps->isShaderProfileSupported("hlsl"))
-		//	HighLevelGpuProgramManager::getSingleton().addFactory(mHLSLProgramFactory);
+
+		if (caps->isShaderProfileSupported("hlsl"))
+			HighLevelGpuProgramManager::getSingleton().addFactory(mHLSLProgramFactory);
 	}
 
 	//-----------------------------------------------------------------------

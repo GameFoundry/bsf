@@ -29,11 +29,12 @@ THE SOFTWARE.
 #define __D3D9HLSLProgramFactory_H__
 
 #include "OgreD3D9Prerequisites.h"
+#include "OgreHighLevelGpuProgramManager.h"
 
 namespace Ogre
 {
     /** Factory class for D3D9 HLSL programs. */
-    class _OgreD3D9Export D3D9HLSLProgramFactory
+    class _OgreD3D9Export D3D9HLSLProgramFactory : public HighLevelGpuProgramFactory
     {
     protected:
 		static String sLanguageName;
@@ -42,8 +43,8 @@ namespace Ogre
         ~D3D9HLSLProgramFactory();
 		/// Get the name of the language this factory creates programs for
 		const String& getLanguage(void) const;
-        static HighLevelGpuProgram* create();
-		static void destroy(HighLevelGpuProgram* prog);
+        HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramProfile profile);
+		void destroy(HighLevelGpuProgram* prog);
 
     };
 }

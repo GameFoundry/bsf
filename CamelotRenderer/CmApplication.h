@@ -7,6 +7,7 @@ namespace Ogre
 	class RenderWindow;
 	class Viewport;
 	class Camera;
+	class HighLevelGpuProgramManager;
 }
 
 namespace CamelotEngine
@@ -22,6 +23,8 @@ namespace CamelotEngine
 			void DBG_renderSimpleFrame();
 
 		private:
+			Ogre::HighLevelGpuProgramManager* mGpuProgramManager;
+
 			Ogre::RenderWindow* mRenderWindow;
 			Ogre::Viewport* mViewport;
 			Ogre::Camera* mCamera;

@@ -319,6 +319,9 @@
     <ClInclude Include="OgreGpuProgramManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OgreHighLevelGpuProgramManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -520,6 +523,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OgreGpuProgramManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OgreHighLevelGpuProgramManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

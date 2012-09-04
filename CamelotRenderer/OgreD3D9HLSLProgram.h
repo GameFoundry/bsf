@@ -119,8 +119,6 @@ namespace Ogre {
         void processParamElement(D3DXHANDLE parent, String prefix, unsigned int index) const;
 		void populateDef(D3DXCONSTANT_DESC& d3dDesc, GpuConstantDefinition& def) const;
 
-        String mTarget;
-        String mEntryPoint;
         String mPreprocessorDefines;
         bool mColumnMajorMatrices;
 
@@ -160,7 +158,7 @@ namespace Ogre {
         /** Sets the shader target to compile down to, e.g. 'vs_1_1'. */
         void setTarget(const String& target);
         /** Gets the shader target to compile down to, e.g. 'vs_1_1'. */
-        const String& getTarget(void) const { return mTarget; }
+        const String& getTarget(void) const { return ""; }
         /** Sets the preprocessor defines use to compile the program. */
         void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
         /** Sets the preprocessor defines use to compile the program. */

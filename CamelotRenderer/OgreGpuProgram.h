@@ -51,6 +51,21 @@ namespace Ogre {
 		GPT_GEOMETRY_PROGRAM
 	};
 
+	enum GpuProgramProfile
+	{
+		GPP_PS_1_1,
+		GPP_PS_1_2,
+		GPP_PS_1_3,
+		GPP_PS_1_4,
+		GPP_PS_2_0,
+		GPP_PS_2_a,
+		GPP_PS_2_b,
+		GPP_PS_3_0,
+		GPP_VS_1_1,
+		GPP_VS_2_0,
+		GPP_VS_2_a,
+		GPP_VS_3_0
+	};
 
     // Forward declaration 
     class GpuProgramPtr;
@@ -127,6 +142,10 @@ namespace Ogre {
 		static CmdAdjacency msAdjacencyCmd;
 		/// The type of the program
 		GpuProgramType mType;
+		/// Name of the shader entry method
+		String mEntryPoint;
+		/// Shader profiler that we are targeting (e.g. vs_1_1, etc.). Make sure profile matches the type.
+		GpuProgramProfile mProfile;
 		/// The name of the file to load source from (may be blank)
 		String mFilename;
         /// The assembler source of the program (may be blank until file loaded)
@@ -227,6 +246,12 @@ namespace Ogre {
 		virtual void setType(GpuProgramType t);
         /// Get the program type
         virtual GpuProgramType getType(void) const { return mType; }
+		/// Sets the gpu program profile (e.g. vs_1_1, etc.). Make sure it matches the program type.
+		virtual void setProfile(GpuProgramProfile profile) { mProfile = profile; }
+		virtual GpuProgramProfile getProfile() const { return mProfile; }
+		/// Sets the name of the entry method for the program
+		virtual void setEntryPoint(const String& entryPoint) { mEntryPoint = entryPoint; }
+		virtual const String& getEntryPoint() const { return mEntryPoint; }
 
         /** Returns the GpuProgram which should be bound to the pipeline.
         @remarks

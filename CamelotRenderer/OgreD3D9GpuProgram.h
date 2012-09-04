@@ -111,6 +111,8 @@ namespace Ogre {
         D3D9GpuVertexProgram();
 		~D3D9GpuVertexProgram();
         
+		void unload(void);
+
 		/// Gets the vertex shader
         IDirect3DVertexShader9* getVertexShader(void);
 
@@ -121,8 +123,6 @@ namespace Ogre {
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
     protected:
-        /** @copydoc Resource::unloadImpl */
-        void unloadImpl(void);
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 
 	protected:
@@ -138,6 +138,9 @@ namespace Ogre {
     public:
         D3D9GpuFragmentProgram();
 		~D3D9GpuFragmentProgram();
+
+		void unload(void);
+
         /// Gets the pixel shader
         IDirect3DPixelShader9* getPixelShader(void);
 
@@ -148,8 +151,6 @@ namespace Ogre {
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
     protected:
-        /** @copydoc Resource::unloadImpl */
-        void unloadImpl(void);
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 
 	protected:

@@ -90,6 +90,39 @@ namespace Ogre {
 
 	};
 
+	String gpuProgramProfileToHLSLProfile(GpuProgramProfile profile)
+	{
+		switch(profile)
+		{
+		case GPP_PS_1_1:
+			return "ps_1_1";
+		case GPP_PS_1_2:
+			return "ps_1_2";
+		case GPP_PS_1_3:
+			return "ps_1_3";
+		case GPP_PS_1_4:
+			return "ps_1_4";
+		case GPP_PS_2_0:
+			return "ps_2_0";
+		case GPP_PS_2_a:
+			return "ps_2_a";
+		case GPP_PS_2_b:
+			return "ps_2_b";
+		case GPP_PS_3_0:
+			return "ps_3_0";
+		case GPP_VS_1_1:
+			return "vs_1_1";
+		case GPP_VS_2_0:
+			return "vs_2_0";
+		case GPP_VS_2_a:
+			return "vs_2_a";
+		case GPP_VS_3_0:
+			return "vs_3_1";
+		default:
+			assert(false); // Unsupported profile
+		}
+	}
+
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     void D3D9HLSLProgram::loadFromSource(void)
@@ -208,6 +241,8 @@ namespace Ogre {
 		// include handler
 		HLSLIncludeHandler includeHandler(this);
 
+		String hlslProfile = gpuProgramProfileToHLSLProfile(mProfile);
+
         // Compile & assemble into microcode
         HRESULT hr = D3DXCompileShader(
             mSource.c_str(),
@@ -215,7 +250,7 @@ namespace Ogre {
             pDefines,
             &includeHandler, 
             mEntryPoint.c_str(),
-            mTarget.c_str(),
+            hlslProfile.c_str(),
             compileFlags,
             &mpMicroCode,
             &errors,
@@ -242,12 +277,14 @@ namespace Ogre {
     {
 		if (!mCompileError)
 		{
+			String hlslProfile = gpuProgramProfileToHLSLProfile(mProfile);
+
 			// Create a low-level program, give it the same name as us
 			mAssemblerProgram = 
 				GpuProgramManager::getSingleton().createProgram(
 					"",// dummy source, since we'll be using microcode
 					mType, 
-					mTarget);
+					hlslProfile);
 			static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);
 		}
 
@@ -501,8 +538,6 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     D3D9HLSLProgram::D3D9HLSLProgram()
         : HighLevelGpuProgram()
-        , mTarget()
-        , mEntryPoint()
         , mPreprocessorDefines()
         , mColumnMajorMatrices(true)
         , mpMicroCode(NULL), mpConstTable(NULL)
@@ -549,8 +584,10 @@ namespace Ogre {
         if (mCompileError || !isRequiredCapabilitiesSupported())
             return false;
 
+		String hlslProfile = gpuProgramProfileToHLSLProfile(mProfile);
+
 		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
-		return rs->getCapabilities()->isShaderProfileSupported(mTarget);
+		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile);
     }
     //-----------------------------------------------------------------------
     GpuProgramParametersSharedPtr D3D9HLSLProgram::createParameters(void)
@@ -566,7 +603,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void D3D9HLSLProgram::setTarget(const String& target)
     {
-        mTarget = target;
+        //mTarget = target;
     }
 
     //-----------------------------------------------------------------------

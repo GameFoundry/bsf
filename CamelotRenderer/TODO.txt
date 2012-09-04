@@ -93,6 +93,7 @@ Other notes:
  - Port all math methods to Camelot
  - Rename all macros and other OGRE references to CM
  - How am I notified on device reset? (When I need to reload my resources)
+ - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
  
 After everything is polished:
  - Make sure the renderer can run on a separate thread

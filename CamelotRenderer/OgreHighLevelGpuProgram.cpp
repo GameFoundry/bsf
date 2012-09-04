@@ -124,6 +124,7 @@ namespace Ogre
 				//	<< e.getFullDescription();
 
 				mCompileError = true;
+				throw;
 			}
         }
     }
