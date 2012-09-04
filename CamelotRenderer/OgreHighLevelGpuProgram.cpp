@@ -37,7 +37,7 @@ namespace Ogre
     {
     }
     //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::loadImpl()
+    void HighLevelGpuProgram::load()
     {
 		if (isSupported())
 		{
@@ -50,7 +50,7 @@ namespace Ogre
 		}
     }
     //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::unloadImpl()
+    void HighLevelGpuProgram::unload()
     {   
         if (!mAssemblerProgram.isNull() && mAssemblerProgram.getPointer() != this)
         {

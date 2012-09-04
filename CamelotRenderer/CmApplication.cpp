@@ -21,7 +21,11 @@ namespace CamelotEngine
 		
 		Ogre::RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_initialise(false, "Camelot Renderer");
+
 		mRenderWindow = renderSystem->_createRenderWindow("Camelot Renderer", 800, 600, false);
+
+		//renderSystem->setAmbientLight(1.0f, 1.0f, 1.0f);
+		renderSystem->setLightingEnabled(false);
 
 		mCamera = new Ogre::Camera("SimpleCam", nullptr);
 		mCamera->setPosition(Ogre::Vector3(0,0,80));

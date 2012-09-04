@@ -60,6 +60,11 @@ namespace Ogre {
         D3D9GpuProgram();
         ~D3D9GpuProgram();
 
+		void load(void);
+		/** Loads this program to specified device */
+		void load(IDirect3DDevice9* d3d9Device);
+		/** Overridden from GpuProgram */
+		void unload(void);
 
         /** Sets whether matrix packing in column-major order. */ 
         void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }
@@ -77,12 +82,6 @@ namespace Ogre {
         /** Gets the external microcode buffer, if any. */
         LPD3DXBUFFER getExternalMicrocode(void);
     protected:
-        /** @copydoc Resource::loadImpl */
-        void loadImpl(void);
-		/** Loads this program to specified device */
-		void loadImpl(IDirect3DDevice9* d3d9Device);
-		/** Overridden from GpuProgram */
-		void unloadImpl(void);
         /** Overridden from GpuProgram */
         void loadFromSource(void);
 		/** Loads this program from source to specified device */

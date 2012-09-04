@@ -131,6 +131,7 @@
     <ClInclude Include="OgreException.h" />
     <ClInclude Include="OgreFrustum.h" />
     <ClInclude Include="OgreGpuProgram.h" />
+    <ClInclude Include="OgreGpuProgramManager.h" />
     <ClInclude Include="OgreGpuProgramParams.h" />
     <ClInclude Include="OgreHardwareBuffer.h" />
     <ClInclude Include="OgreHardwareBufferManager.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="OgreException.cpp" />
     <ClCompile Include="OgreFrustum.cpp" />
     <ClCompile Include="OgreGpuProgram.cpp" />
+    <ClCompile Include="OgreGpuProgramManager.cpp" />
     <ClCompile Include="OgreGpuProgramParams.cpp" />
     <ClCompile Include="OgreHardwareBufferManager.cpp" />
     <ClCompile Include="OgreHardwareIndexBuffer.cpp" />

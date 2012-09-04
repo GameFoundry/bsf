@@ -30,21 +30,20 @@ THE SOFTWARE.
 
 #include "OgreD3D9Prerequisites.h"
 #include "OgreGpuProgram.h"
+#include "OgreGpuProgramManager.h"
 
 namespace Ogre {
 
-    class _OgreD3D9Export D3D9GpuProgramManager 
+    class _OgreD3D9Export D3D9GpuProgramManager : public GpuProgramManager
     {
     public:
-        /// @copydoc ResourceManager::createImpl
-        static GpuProgram* create(const NameValuePairList* params);
-        /// Specialised create method with specific parameters
-        static GpuProgram* create( GpuProgramType gptype, const String& syntaxCode);
-
-		static GpuProgramPtr createProgramFromString(const String& code, GpuProgramType gptype, const String& syntaxCode);
+		GpuProgramPtr createProgram(const String& code, GpuProgramType gptype, const String& syntaxCode);
     public:
         D3D9GpuProgramManager();
 		~D3D9GpuProgramManager();
+
+	protected:
+		GpuProgram* create( GpuProgramType gptype, const String& syntaxCode);
     };
 
 }

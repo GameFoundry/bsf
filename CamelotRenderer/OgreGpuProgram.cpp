@@ -86,7 +86,7 @@ namespace Ogre
 		
 
     //-----------------------------------------------------------------------------
-    void GpuProgram::loadImpl(void)
+    void GpuProgram::load(void)
     {
         // Call polymorphic load
 		try 

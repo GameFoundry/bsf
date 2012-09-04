@@ -93,15 +93,13 @@ namespace Ogre {
 		*/
 		virtual void buildConstantDefinitions() const = 0;
 
-        /** @copydoc Resource::loadImpl */
-        void loadImpl();
-        /** @copydoc Resource::unloadImpl */
-        void unloadImpl();
     public:
         /** Constructor, should be used only by factory classes. */
         HighLevelGpuProgram();
         ~HighLevelGpuProgram();
 
+		void load();
+		void unload();
 
         /** Creates a new parameters object compatible with this program definition. 
         @remarks

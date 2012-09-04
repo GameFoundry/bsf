@@ -186,9 +186,6 @@ namespace Ogre {
 		/// @copydoc Resource::calculateSize
 		size_t calculateSize(void) const { return 0; } // TODO 
 
-		/// @copydoc Resource::loadImpl
-		void loadImpl(void);
-
 		/// Create the internal params logical & named mapping structures
 		void createParameterMappingStructures(bool recreateIfExists = true) const;
 		/// Create the internal params logical mapping structures
@@ -201,6 +198,8 @@ namespace Ogre {
 		GpuProgram();
 
 		virtual ~GpuProgram() {}
+
+		void load(void);
 
         /** Sets the filename of the source assembly for this program.
         @remarks

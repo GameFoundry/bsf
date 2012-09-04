@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "OgreD3D9HLSLProgram.h"
-#include "OgreD3D9GpuProgramManager.h"
+#include "OgreGpuProgramManager.h"
 #include "OgreStringConverter.h"
 #include "OgreD3D9GpuProgram.h"
 #include "OgreException.h"
@@ -59,7 +59,7 @@ namespace Ogre {
 		{
 			// TODO PORT - I'm not sure what to do with this. It will probably break something in its current state.
 
-			// find & load source code
+			//// find & load source code
 			//DataStreamPtr stream = 
 			//	ResourceGroupManager::getSingleton().openResource(
 			//	String(pFileName), mProgram->getGroup(), true, mProgram);
@@ -72,6 +72,8 @@ namespace Ogre {
 			//char* pChar = new char[*pByteLen];
 			//memcpy(pChar, source.c_str(), *pByteLen);
 			//*ppData = pChar;
+
+			assert(false); // TODO - Include files not supported until I can figure out how to handle them
 
 			return S_OK;
 		}
@@ -242,7 +244,7 @@ namespace Ogre {
 		{
 			// Create a low-level program, give it the same name as us
 			mAssemblerProgram = 
-				D3D9GpuProgramManager::createProgramFromString(
+				GpuProgramManager::getSingleton().createProgram(
 					"",// dummy source, since we'll be using microcode
 					mType, 
 					mTarget);

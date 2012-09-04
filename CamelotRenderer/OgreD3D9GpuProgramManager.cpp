@@ -32,6 +32,7 @@ THE SOFTWARE.
 namespace Ogre {
     //-----------------------------------------------------------------------------
     D3D9GpuProgramManager::D3D9GpuProgramManager()
+		:GpuProgramManager()
     {
 
     }
@@ -39,27 +40,6 @@ namespace Ogre {
     D3D9GpuProgramManager::~D3D9GpuProgramManager()
     {
 
-    }
-    //-----------------------------------------------------------------------------
-    GpuProgram* D3D9GpuProgramManager::create(const NameValuePairList* params)
-    {
-        NameValuePairList::const_iterator paramIt;
-
-        if (!params || (paramIt = params->find("type")) == params->end())
-        {
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-                "You must supply a 'type' parameter",
-                "D3D9GpuProgramManager::createImpl");
-        }
-
-        if (paramIt->second == "vertex_program")
-        {
-            return new D3D9GpuVertexProgram();
-        }
-        else
-        {
-            return new D3D9GpuFragmentProgram();
-        }
     }
     //-----------------------------------------------------------------------------
     GpuProgram* D3D9GpuProgramManager::create(GpuProgramType gptype, const String& syntaxCode)
@@ -74,7 +54,7 @@ namespace Ogre {
         }
     }
 
-	GpuProgramPtr D3D9GpuProgramManager::createProgramFromString(const String& code, GpuProgramType gptype, const String& syntaxCode)
+	GpuProgramPtr D3D9GpuProgramManager::createProgram(const String& code, GpuProgramType gptype, const String& syntaxCode)
     {
 		GpuProgramPtr prg = GpuProgramPtr(create(gptype, syntaxCode));
         // Set all prarmeters (create does not set, just determines factory)
