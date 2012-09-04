@@ -97,6 +97,7 @@
     <ClInclude Include="OgreBitwise.h" />
     <ClInclude Include="OgreBlendMode.h" />
     <ClInclude Include="OgreBuildSettings.h" />
+    <ClInclude Include="OgreCamera.h" />
     <ClInclude Include="OgreColourValue.h" />
     <ClInclude Include="OgreCommon.h" />
     <ClInclude Include="OgreConfig.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="CmRenderSystemManager.cpp" />
     <ClCompile Include="OgreAlignedAllocator.cpp" />
     <ClCompile Include="OgreAxisAlignedBox.cpp" />
+    <ClCompile Include="OgreCamera.cpp" />
     <ClCompile Include="OgreColourValue.cpp" />
     <ClCompile Include="OgreD3D9Device.cpp" />
     <ClCompile Include="OgreD3D9DeviceManager.cpp" />

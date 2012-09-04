@@ -5,6 +5,9 @@
 
 #include "OgreWindowEventUtilities.h"
 #include "OgreHardwareBufferManager.h"
+#include "OgreRenderWindow.h"
+#include "OgreCamera.h"
+#include "OgreViewport.h"
 
 namespace CamelotEngine
 {
@@ -20,9 +23,19 @@ namespace CamelotEngine
 		renderSystem->_initialise(false, "Camelot Renderer");
 		mRenderWindow = renderSystem->_createRenderWindow("Camelot Renderer", 800, 600, false);
 
+		mCamera = new Ogre::Camera("SimpleCam", nullptr);
+		mCamera->setPosition(Ogre::Vector3(0,0,80));
+		mCamera->lookAt(Ogre::Vector3(0,0,-300));
+		mCamera->setNearClipDistance(5);
+		mCamera->setAspectRatio(480.0f / 640.0f);
+
+		mViewport = mRenderWindow->addViewport();
+
 		while(true)
 		{
 			Ogre::WindowEventUtilities::messagePump();
+
+			DBG_renderSimpleFrame();
 		}
 	}
 

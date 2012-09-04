@@ -4,6 +4,14 @@
 3. Start stripping down the classes and see what I really need
 4. Port OpenGL render system as well
 
+Camera:
+ - Remove auto tracking
+ - Merge with Viewport
+ - Lod stuff? Probably need to remove as well
+ - Num render batches and other statistics
+ - Position/rotation should be inherit from transform
+ - Listeners
+
 DefaultHardwareBufferManager - Provides emulation of hardware buffers
  - I think this class is okay to stay, although I'm not sure where its used, but its simple enough
 

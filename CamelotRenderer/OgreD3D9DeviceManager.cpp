@@ -491,20 +491,20 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	void D3D9DeviceManager::destroyInactiveRenderDevices()
 	{
-		DeviceIterator itDevice = mRenderDevices.begin();
-		while (itDevice != mRenderDevices.end())
-		{			
-			// TODO PORT - This is supposed to destroy inactive render devices but lastPresentFrame isn't being set properly at the moment, so this wont work properly
-			//if ((*itDevice)->getRenderWindowCount() == 0 &&
-			//	(*itDevice)->getLastPresentFrame() + 1 < Root::getSingleton().getNextFrameNumber())
-			//{		
-			//	if (*itDevice == mActiveRenderWindowDevice)
-			//		setActiveRenderTargetDevice(NULL);
-			//	(*itDevice)->destroy();
-			//	break;
-			//}												
-			//++itDevice;
-		}
+		// TODO PORT - This is supposed to destroy inactive render devices but lastPresentFrame isn't being set properly at the moment, so this wont work properly
+		//DeviceIterator itDevice = mRenderDevices.begin();
+		//while (itDevice != mRenderDevices.end())
+		//{			
+		//	if ((*itDevice)->getRenderWindowCount() == 0 &&
+		//		(*itDevice)->getLastPresentFrame() + 1 < Root::getSingleton().getNextFrameNumber())
+		//	{		
+		//		if (*itDevice == mActiveRenderWindowDevice)
+		//			setActiveRenderTargetDevice(NULL);
+		//		(*itDevice)->destroy();
+		//		break;
+		//	}												
+		//	++itDevice;
+		//}
 	}
 
 }

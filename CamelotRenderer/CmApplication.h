@@ -6,6 +6,7 @@ namespace Ogre
 {
 	class RenderWindow;
 	class Viewport;
+	class Camera;
 }
 
 namespace CamelotEngine
@@ -23,6 +24,7 @@ namespace CamelotEngine
 		private:
 			Ogre::RenderWindow* mRenderWindow;
 			Ogre::Viewport* mViewport;
+			Ogre::Camera* mCamera;
 	};
 
 	Application& gApplication();
