@@ -39,8 +39,25 @@ namespace CamelotEngine
 
 		mViewport = mRenderWindow->addViewport();
 
-		Ogre::HighLevelGpuProgramPtr fragProg = mGpuProgramManager->createProgram("barg", "barg", "hlsl", Ogre::GPT_FRAGMENT_PROGRAM, Ogre::GPP_PS_1_1);
-		fragProg->load();
+		Ogre::String fragShaderCode = "float4 ps_main() : COLOR0	\
+		{														\
+			float4 color = float4(0, 0, 0, 0);					\
+			color.r = 1.0f;										\
+			color.a = 1.0f;										\
+			return color;										\
+		}";
+
+		mFragProg = mGpuProgramManager->createProgram(fragShaderCode, "ps_main", "hlsl", Ogre::GPT_FRAGMENT_PROGRAM, Ogre::GPP_PS_2_0);
+		mFragProg->load();
+
+		Ogre::String vertShaderCode = "float4x4 matViewProjection; \
+		float4 vs_main(float4 inPos : POSITION) : POSITION \
+		{ \
+			return mul(matViewProjection, inPos); \
+		}";
+
+		mVertProg = mGpuProgramManager->createProgram(vertShaderCode, "vs_main", "hlsl", Ogre::GPT_VERTEX_PROGRAM, Ogre::GPP_VS_2_0);
+		mVertProg->load();
 
 		while(true)
 		{
@@ -160,16 +177,28 @@ namespace CamelotEngine
 		Ogre::RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_setViewport(mViewport);
 
-		Ogre::Matrix4 projMatrix = mCamera->getProjectionMatrixRS();
-		renderSystem->_setProjectionMatrix(projMatrix);
+		//Ogre::Matrix4 projMatrix = mCamera->getProjectionMatrixRS();
+		//renderSystem->_setProjectionMatrix(projMatrix);
 
+		//Ogre::Matrix4 viewMatrix = mCamera->getViewMatrix(true);
+		//renderSystem->_setViewMatrix(viewMatrix);
+
+		Ogre::Matrix4 projMatrix = mCamera->getProjectionMatrix();
 		Ogre::Matrix4 viewMatrix = mCamera->getViewMatrix(true);
-		renderSystem->_setViewMatrix(viewMatrix);
+
+		Ogre::Matrix4 viewProjMatrix = projMatrix * viewMatrix;
 
 		renderSystem->setInvertVertexWinding(true);
 		renderSystem->clearFrameBuffer(Ogre::FBT_COLOUR | Ogre::FBT_DEPTH, Ogre::ColourValue::Blue);
 		renderSystem->_beginFrame();
 
+		mVertProg->getDefaultParameters()->setNamedConstant("matViewProjection", viewProjMatrix);
+
+		renderSystem->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), Ogre::GPV_ALL);
+		renderSystem->bindGpuProgram(mVertProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
+		renderSystem->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), Ogre::GPV_ALL);
+
+		renderSystem->bindGpuProgram(mFragProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
 		renderSystem->_render(ro);
 
 		renderSystem->_endFrame();

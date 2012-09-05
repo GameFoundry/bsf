@@ -93,21 +93,9 @@ namespace Ogre
 		{
 			loadFromSource();
 
-			if (!mDefaultParams.isNull())
-			{
-				// Keep a reference to old ones to copy
-				GpuProgramParametersSharedPtr savedParams = mDefaultParams;
-				// reset params to stop them being referenced in the next create
-				mDefaultParams.setNull();
+			assert(mDefaultParams.isNull());
 
-				// Create new params
-				mDefaultParams = createParameters();
-
-				// Copy old (matching) values across
-				// Don't use copyConstantsFrom since program may be different
-				mDefaultParams->copyMatchingNamedConstantsFrom(*savedParams.get());
-
-			}
+			mDefaultParams = createParameters();
 		}
 		catch (const Exception&)
 		{

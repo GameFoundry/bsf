@@ -60,11 +60,11 @@ namespace Ogre {
         D3D9GpuProgram();
         ~D3D9GpuProgram();
 
-		void load(void);
+		virtual void load(void);
 		/** Loads this program to specified device */
-		void load(IDirect3DDevice9* d3d9Device);
+		virtual void load(IDirect3DDevice9* d3d9Device);
 		/** Overridden from GpuProgram */
-		void unload(void);
+		virtual void unload(void);
 
         /** Sets whether matrix packing in column-major order. */ 
         void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }

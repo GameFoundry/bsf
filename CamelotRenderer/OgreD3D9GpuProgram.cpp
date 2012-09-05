@@ -248,6 +248,10 @@ namespace Ogre {
 		}
 		else
 		{
+			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
+				"Specified D3D9 vertex shader is not supported!",
+				"D3D9GpuVertexProgram::loadFromMicrocode");
+
 			// TODO PORT - Log this error somewhere
 			//LogManager::getSingleton().logMessage(
 			//	"Unsupported D3D9 vertex shader '" + mName + "' was not loaded.");

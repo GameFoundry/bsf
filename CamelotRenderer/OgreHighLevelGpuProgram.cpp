@@ -47,6 +47,11 @@ namespace Ogre
 			// create low-level implementation
 			createLowLevelImpl();
 
+			// load constructed assembler program (if it exists)
+			if (!mAssemblerProgram.isNull() && mAssemblerProgram.getPointer() != this)
+			{
+				mAssemblerProgram->load();
+			}
 		}
     }
     //---------------------------------------------------------------------------
@@ -77,13 +82,9 @@ namespace Ogre
 		// Only populate named parameters if we can support this program
 		if (this->isSupported())
 		{
-			loadHighLevel();
-			// Errors during load may have prevented compile
-			if (this->isSupported())
-			{
-				populateParameterNames(params);
-			}
+			populateParameterNames(params);
 		}
+
 		// Copy in default parameters if present
 		if (!mDefaultParams.isNull())
 			params->copyConstantsFrom(*(mDefaultParams.get()));
@@ -98,21 +99,9 @@ namespace Ogre
 			{
 				loadHighLevelImpl();
 				mHighLevelLoaded = true;
-				if (!mDefaultParams.isNull())
-				{
-					// Keep a reference to old ones to copy
-					GpuProgramParametersSharedPtr savedParams = mDefaultParams;
-					// reset params to stop them being referenced in the next create
-					mDefaultParams.setNull();
 
-					// Create new params
-					mDefaultParams = createParameters();
-
-					// Copy old (matching) values across
-					// Don't use copyConstantsFrom since program may be different
-					mDefaultParams->copyMatchingNamedConstantsFrom(*savedParams.get());
-
-				}
+				assert(mDefaultParams.isNull()); // TODO - These two lines and replicated both here and in GpuProgram. I should probably add another load method that holds it all in one place?
+				mDefaultParams = createParameters();
 
 			}
 			catch (const Exception& e)

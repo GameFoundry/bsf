@@ -218,7 +218,8 @@ namespace Ogre {
 
 		virtual ~GpuProgram() {}
 
-		void load(void);
+		virtual void load(void);
+		virtual void unload() {}
 
         /** Sets the filename of the source assembly for this program.
         @remarks

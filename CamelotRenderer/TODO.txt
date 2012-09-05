@@ -83,6 +83,7 @@ Viewport - MERGE WITH CAMERA
 TODO:
  - Make sure to parse D3D9 implementations of above classes and see what needs removing there as well
 
+IMPORTANT: After I set up a test case and remove irrelevant Ogre stuff, make sure to port OpenGL, before renaming anything or removing major files
 
 Other notes:
  - Make sure to remove all ogre memory allocators and memory category bullshit (Possibly replace with Camelot versions?)

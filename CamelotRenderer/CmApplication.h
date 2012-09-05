@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include "OgreHighLevelGpuProgram.h"
 
 namespace Ogre
 {
@@ -28,6 +29,8 @@ namespace CamelotEngine
 			Ogre::RenderWindow* mRenderWindow;
 			Ogre::Viewport* mViewport;
 			Ogre::Camera* mCamera;
+			Ogre::HighLevelGpuProgramPtr mFragProg;
+			Ogre::HighLevelGpuProgramPtr mVertProg;
 	};
 
 	Application& gApplication();

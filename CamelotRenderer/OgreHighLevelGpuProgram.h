@@ -98,8 +98,8 @@ namespace Ogre {
         HighLevelGpuProgram();
         ~HighLevelGpuProgram();
 
-		void load();
-		void unload();
+		virtual void load();
+		virtual void unload();
 
         /** Creates a new parameters object compatible with this program definition. 
         @remarks
