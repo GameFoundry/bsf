@@ -815,7 +815,7 @@ namespace Ogre {
 			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
 			{
 				// Create FBO manager
-				// TODO PORT - Log this somewhere?
+				// TODO LOG PORT - Log this somewhere?
 				//LogManager::getSingleton().logMessage("GL: Using GL_EXT_framebuffer_object for rendering to textures (best)");
 				mRTTManager = new GLFBOManager(false);
 			}
@@ -831,7 +831,7 @@ namespace Ogre {
 					// Use PBuffers
 					mRTTManager = new GLPBRTTManager(mGLSupport, primary);
 
-					// TODO PORT - Log this somewhere?
+					// TODO LOG PORT - Log this somewhere?
 					//LogManager::getSingleton().logMessage("GL: Using PBuffers for rendering to textures");
 				}
 			}
@@ -839,7 +839,7 @@ namespace Ogre {
 			{
 				// No pbuffer support either -- fallback to simplest copying from framebuffer
 				mRTTManager = new GLCopyingRTTManager();
-				// TODO PORT - Log this somewhere?
+				// TODO LOG PORT - Log this somewhere?
 				//LogManager::getSingleton().logMessage("GL: Using framebuffer copy for rendering to textures (worst)");
 				//LogManager::getSingleton().logMessage("GL: Warning: RenderTexture size is restricted to size of framebuffer. If you are on Linux, consider using GLX instead of SDL.");
 			}
@@ -849,7 +849,7 @@ namespace Ogre {
 		}
 
 		/// Create the texture manager        
-		//mTextureManager = new GLTextureManager(*mGLSupport); 
+		mTextureManager = new GLTextureManager(*mGLSupport); 
 
 		mGLInitialised = true;
 	}
@@ -1352,8 +1352,7 @@ namespace Ogre {
 				glBindTexture( mTextureTypes[stage], tex->getGLID() );
 			else
 			{
-				// TODO PORT - IMPORTANT - This is broken until I add proper TextureManager
-				//glBindTexture( mTextureTypes[stage], static_cast<GLTextureManager*>(mTextureManager)->getWarningTextureID() );
+				glBindTexture( mTextureTypes[stage], static_cast<GLTextureManager*>(mTextureManager)->getWarningTextureID() );
 			}
 		}
 		else

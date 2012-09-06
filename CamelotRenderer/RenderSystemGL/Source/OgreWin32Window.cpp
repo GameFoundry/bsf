@@ -331,14 +331,14 @@ namespace Ogre {
 					displayDeviceMode.dmFields |= DM_DISPLAYFREQUENCY;
 					if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN | CDS_TEST, NULL) != DISP_CHANGE_SUCCESSFUL)
 					{
-						// TODO PORT - Log this somewhere
+						// TODO LOG PORT - Log this somewhere
 						//LogManager::getSingleton().logMessage(LML_NORMAL, "ChangeDisplaySettings with user display frequency failed");
 						//displayDeviceMode.dmFields ^= DM_DISPLAYFREQUENCY;
 					}
 				}
 				if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
 				{
-					// TODO PORT - Log this somewhere
+					// TODO LOG PORT - Log this somewhere
 					//LogManager::getSingleton().logMessage(LML_CRITICAL, "ChangeDisplaySettings failed");
 				}
 			}
@@ -498,7 +498,7 @@ namespace Ogre {
 					if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, 
 						CDS_FULLSCREEN | CDS_TEST, NULL) != DISP_CHANGE_SUCCESSFUL)					
 					{
-						// TODO PORT - Log this somewhere
+						// TODO LOG PORT - Log this somewhere
 						//LogManager::getSingleton().logMessage(LML_NORMAL, "ChangeDisplaySettings with user display frequency failed");
 						displayDeviceMode.dmFields ^= DM_DISPLAYFREQUENCY;
 					}
@@ -525,7 +525,7 @@ namespace Ogre {
 
 				if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)				
 				{
-					// TODO PORT - Log this somewhere
+					// TODO LOG PORT - Log this somewhere
 					//LogManager::getSingleton().logMessage(LML_CRITICAL, "ChangeDisplaySettings failed");
 				}
 

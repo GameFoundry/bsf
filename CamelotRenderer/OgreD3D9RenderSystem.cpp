@@ -78,7 +78,6 @@ namespace Ogre
 		// Create the resource manager.
 		mResourceManager = new D3D9ResourceManager();
 
-		
 		// init lights
 		for(int i = 0; i < MAX_LIGHTS; i++ )
 			mLights[i] = 0;
@@ -120,10 +119,8 @@ namespace Ogre
 		// Deleting the HLSL program factory
 		if (mHLSLProgramFactory)
 		{
-			// TODO PORT - If i'll be supporting factories in this way, enable this
-			//// Remove from manager safely
-			//if (HighLevelGpuProgramManager::getSingletonPtr())
-			//	HighLevelGpuProgramManager::getSingleton().removeFactory(mHLSLProgramFactory);
+			if (HighLevelGpuProgramManager::getSingletonPtr())
+				HighLevelGpuProgramManager::getSingleton().removeFactory(mHLSLProgramFactory);
 			delete mHLSLProgramFactory;
 			mHLSLProgramFactory = 0;
 		}
@@ -519,8 +516,7 @@ namespace Ogre
 		mDeviceManager = new D3D9DeviceManager();
 
 		// Create the texture manager for use by others		
-		// TODO PORT - Texture manager is null! This is bound to cause problems but I need to get this compiling
-		//mTextureManager = new D3D9TextureManager();
+		mTextureManager = new D3D9TextureManager();
 
 		// Also create hardware buffer manager		
 		mHardwareBufferManager = new D3D9HardwareBufferManager();

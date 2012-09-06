@@ -26,6 +26,8 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "OgreD3D9Resource.h"
+#include "OgreD3D9ResourceManager.h"
+#include "OgreD3D9RenderSystem.h"
 
 namespace Ogre
 {
@@ -33,14 +35,12 @@ namespace Ogre
 
 	D3D9Resource::D3D9Resource()
 	{				
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		// D3D9RenderSystem::getResourceManager()->_notifyResourceCreated(static_cast<D3D9Resource*>(this));		
+		D3D9RenderSystem::getResourceManager()->_notifyResourceCreated(static_cast<D3D9Resource*>(this));		
 	}
 
 	D3D9Resource::~D3D9Resource()
 	{		
-		// TODO PORT - Ignored temporarily until I get resource manager set up
-		//D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
+		D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
 	}
 	
 	void D3D9Resource::lockDeviceAccess()

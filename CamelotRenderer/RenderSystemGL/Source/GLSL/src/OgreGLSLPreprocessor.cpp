@@ -235,7 +235,7 @@ static void DefaultError (void *iData, int iLine, const char *iError,
     else
         snprintf (line, sizeof (line), "line %d: %s\n", iLine, iError);
 
-	// TODO PORT - Log this somewhere?
+	// TODO LOG PORT - Log this somewhere?
     //LogManager::getSingleton ().logMessage (line);
 }
 

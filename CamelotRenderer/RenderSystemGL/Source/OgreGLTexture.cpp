@@ -36,6 +36,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreStringConverter.h"
 #include "OgreBitwise.h"
+#include "OgreTextureManager.h"
 #include "CmRenderSystemManager.h"
 
 #include "OgreGLFBORenderTexture.h"
@@ -97,8 +98,7 @@ namespace Ogre {
 		
 
 		// Adjust format if required
-		// TODO PORT - Enable this when I have TextureManager set up
-		//mFormat = TextureManager::getSingleton().getNativeFormat(mTextureType, mFormat, mUsage);
+		mFormat = TextureManager::getSingleton().getNativeFormat(mTextureType, mFormat, mUsage);
 		
 		// Check requested number of mipmaps
 		size_t maxMips = GLPixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);

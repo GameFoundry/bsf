@@ -100,7 +100,7 @@ void GLGpuNvparseProgram::loadFromSource(void)
 
         for (char* const * errors= nvparse_get_errors(); *errors; errors++)
         {
-			// TODO PORT - Log this somewhere
+			// TODO LOG PORT - Log this somewhere
             //LogManager::getSingleton().logMessage("Warning: nvparse reported the following errors:");
             //LogManager::getSingleton().logMessage("\t" + String(*errors));
         }

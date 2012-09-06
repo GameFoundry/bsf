@@ -265,7 +265,7 @@ namespace Ogre {
             }
         }
 
-		// TODO PORT - Log ignored
+		// TODO LOG PORT - Log ignored
         //StringUtil::StrStreamType str;
         //if (numFreed)
         //{

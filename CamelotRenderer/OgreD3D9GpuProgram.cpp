@@ -183,10 +183,9 @@ namespace Ogre {
 
 		if (FAILED(hr))
 		{
-			// TODO PORT - Not printing out errors yet
-			//String message = "Cannot assemble D3D9 shader. Errors:\n" +
-			//	static_cast<const char*>(errors->GetBufferPointer());
-			String message = "Cannot assemble D3D9 shader. Errors:\n NoErrorsPort";
+			String message = "Cannot assemble D3D9 shader. Errors:\n";
+			message += static_cast<const char*>(errors->GetBufferPointer());
+
 			errors->Release();
 			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, message,
 				"D3D9GpuProgram::loadFromSource");
@@ -252,7 +251,7 @@ namespace Ogre {
 				"Specified D3D9 vertex shader is not supported!",
 				"D3D9GpuVertexProgram::loadFromMicrocode");
 
-			// TODO PORT - Log this error somewhere
+			// TODO LOG PORT - Log this error somewhere
 			//LogManager::getSingleton().logMessage(
 			//	"Unsupported D3D9 vertex shader '" + mName + "' was not loaded.");
 
@@ -359,7 +358,7 @@ namespace Ogre {
 		}
 		else
 		{
-			// TODO PORT - Log this somewhere
+			// TODO LOG PORT - Log this somewhere
 			//LogManager::getSingleton().logMessage(
 			//	"Unsupported D3D9 pixel shader was not loaded.");
 

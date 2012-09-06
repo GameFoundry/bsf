@@ -514,6 +514,9 @@
     <ClInclude Include="RenderSystemGL\Include\CmGLRenderSystemFactory.h">
       <Filter>RenderSystemGL\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OgreTextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -896,6 +899,9 @@
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\CmGLRenderSystemFactory.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OgreTextureManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

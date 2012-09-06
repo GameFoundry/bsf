@@ -112,7 +112,7 @@ static const size_t depthBits[] =
 	{
 		if(!mRenderBufferMap.empty())
 		{
-			// TODO PORT - Log this somewhere
+			// TODO LOG PORT - Log this somewhere
 			//LogManager::getSingleton().logMessage("GL: Warning! GLFBOManager destructor called, but not all renderbuffers were released.");
 		}
         

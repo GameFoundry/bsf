@@ -556,7 +556,7 @@ namespace Ogre
 			// low is < 200fps in this context
 			if (!mIsFullScreen)
 			{
-				// TODO PORT - Enable this warning later?
+				// TODO LOG PORT - Enable this warning later?
 				//LogManager::getSingleton().logMessage("D3D9 : WARNING - "
 				//	"disabling VSync in windowed mode can cause timing issues at lower "
 				//	"frame rates, turn VSync on if you observe this problem.");

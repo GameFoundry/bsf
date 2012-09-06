@@ -215,7 +215,7 @@ void GLArbGpuProgram::unloadImpl(void)
 void GLArbGpuProgram::loadFromSource(void)
 {
     if (GL_INVALID_OPERATION == glGetError()) {
-		// TODO PORT LOG - Log this somewhere
+		// TODO LOG PORT LOG - Log this somewhere
         //LogManager::getSingleton().logMessage("Invalid Operation before loading program "+mName);
 
     }

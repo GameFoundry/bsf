@@ -35,9 +35,6 @@ THE SOFTWARE.
 #include "OgreHardwareVertexBuffer.h"
 #include "OgreHardwareIndexBuffer.h"
 
-// TODO PORT - Removed this include because I don't think it's implemented, nor do I need it for default funcionality
-//#include "OgreRenderToVertexBuffer.h"
-
 namespace Ogre {
 	/** \addtogroup Core
 	*  @{

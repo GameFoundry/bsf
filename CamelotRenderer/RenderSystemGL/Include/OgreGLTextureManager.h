@@ -32,10 +32,11 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreGLTexture.h"
 #include "OgreGLSupport.h"
+#include "OgreTextureManager.h"
 
 namespace Ogre {
     /** GL-specific implementation of a TextureManager */
-    class _OgreGLExport GLTextureManager
+    class _OgreGLExport GLTextureManager : public TextureManager
     {
     public:
         GLTextureManager(GLSupport& support);
@@ -52,7 +53,7 @@ namespace Ogre {
 
     protected:
         /// @copydoc ResourceManager::createImpl
-        Texture* createImpl(const NameValuePairList* createParams);
+        Texture* createImpl();
 
 		/// Internal method to create a warning texture (bound when a texture unit is blank)
 		void createWarningTexture();

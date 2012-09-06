@@ -375,9 +375,8 @@ namespace Ogre
 		// Inform all resources that device lost.
 		D3D9RenderSystem::getResourceManager()->notifyOnDeviceLost(mpDevice);
 
-		// TODO PORT - Make sure to call this once rendersystem is active
 		// Notify all listener before device is rested
-		//renderSystem->notifyOnDeviceLost(this);
+		renderSystem->notifyOnDeviceLost(this);
 
 		// Release all automatic temporary buffers and free unused
 		// temporary buffers, so we doesn't need to recreate them,
@@ -386,9 +385,8 @@ namespace Ogre
 		// wasn't need at all.
 		HardwareBufferManager::getSingleton()._releaseBufferCopies(true);
 
-		// TODO PORT - Make sure to call this once rendersystem is active
 		// Cleanup depth stencils surfaces.
-		//renderSystem->_cleanupDepthStencils(mpDevice);
+		renderSystem->_cleanupDepthStencils(mpDevice);
 
 		updatePresentationParameters();
 
@@ -446,8 +444,7 @@ namespace Ogre
 
 		mpDeviceManager->setActiveDevice(pCurActiveDevice);
 		
-		// TODO PORT - Make sure to call this once rendersystem is active
-		//renderSystem->notifyOnDeviceReset(this);
+		renderSystem->notifyOnDeviceReset(this);
 
 		// UnLock access to rendering device.
 		D3D9RenderSystem::getResourceManager()->unlockDeviceAccess();
@@ -623,12 +620,11 @@ namespace Ogre
 				}
 			}			
 		
-			// TODO PORT - Make sure to call this once rendersystem is active
 			// set stage desc. to defaults
-			//renderSystem->mTexStageDesc[stage].pTex = 0;
-			//renderSystem->mTexStageDesc[stage].autoTexCoordType = TEXCALC_NONE;
-			//renderSystem->mTexStageDesc[stage].coordIndex = 0;
-			//renderSystem->mTexStageDesc[stage].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
+			renderSystem->mTexStageDesc[stage].pTex = 0;
+			renderSystem->mTexStageDesc[stage].autoTexCoordType = TEXCALC_NONE;
+			renderSystem->mTexStageDesc[stage].coordIndex = 0;
+			renderSystem->mTexStageDesc[stage].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
 		}
 
 		// Unbind any vertex streams to avoid memory leaks				

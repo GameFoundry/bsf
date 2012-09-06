@@ -154,8 +154,6 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	D3D9Device* D3D9DeviceManager::selectDevice(D3D9RenderWindow* renderWindow, D3D9RenderWindowList& renderWindowsGroup)
 	{
-		// TODO PORT - Make sure to enable once rendersystem is active
-		
 		D3D9RenderSystem*		renderSystem	 = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
 		D3D9Device*				renderDevice	 = NULL;	
 		IDirect3D9*				direct3D9	     = D3D9RenderSystem::getDirect3D9();
@@ -218,7 +216,7 @@ namespace Ogre
 				if (osVersionInfo.dwMajorVersion <= 5 && renderWindow->isVSync())
 				{
 					bTryUsingMultiheadDevice = FALSE;
-					// TODO PORT - Log this somewhere
+					// TODO LOG PORT - Log this somewhere
 					//LogManager::getSingleton().logMessage("D3D9 : Multi head disabled. It causes horizontal line when used in XP + VSync combination");
 				}		
 
@@ -229,7 +227,7 @@ namespace Ogre
 
 				{
 					bTryUsingMultiheadDevice = FALSE;
-					// TODO PORT - Log this somewhere
+					// TODO LOG PORT - Log this somewhere
 					//LogManager::getSingleton().logMessage("D3D9 : Multi head disabled. It causes application run time crashes when used in Vista + SP 1 or 2 combination");
 				}				
 			}

@@ -85,7 +85,7 @@ namespace Ogre
 
 				glGetInfoLogARB(obj, infologLength, &charsWritten, infoLog);
 				logMessage += String(infoLog);
-				// TODO PORT - Log this somewhere
+				// TODO LOG PORT - Log this somewhere
 				//LogManager::getSingleton().logMessage(logMessage);
 
 				delete [] infoLog;

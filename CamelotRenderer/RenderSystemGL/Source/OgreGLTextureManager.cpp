@@ -34,7 +34,7 @@ THE SOFTWARE.
 namespace Ogre {
     //-----------------------------------------------------------------------------
     GLTextureManager::GLTextureManager(GLSupport& support)
-        : mGLSupport(support), mWarningTextureID(0)
+        :TextureManager(), mGLSupport(support), mWarningTextureID(0)
     {
 		createWarningTexture();
     }
@@ -45,7 +45,7 @@ namespace Ogre {
 		glDeleteTextures(1, &mWarningTextureID);
     }
     //-----------------------------------------------------------------------------
-    Texture* GLTextureManager::createImpl(const NameValuePairList* createParams)
+    Texture* GLTextureManager::createImpl()
     {
         return new GLTexture(mGLSupport);
     }

@@ -36,6 +36,7 @@ THE SOFTWARE.
 namespace Ogre 
 {
 	D3D9TextureManager::D3D9TextureManager()
+		:TextureManager()
 	{		
 	}
 	
@@ -44,10 +45,9 @@ namespace Ogre
 
 	}
 
-    D3D9Texture* D3D9TextureManager::create(const NameValuePairList* createParams)
+    D3D9Texture* D3D9TextureManager::createImpl()
     {
-        D3D9Texture* ret = new D3D9Texture(); 		
-		return ret;
+		return new D3D9Texture();
     }
 
 	PixelFormat D3D9TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)

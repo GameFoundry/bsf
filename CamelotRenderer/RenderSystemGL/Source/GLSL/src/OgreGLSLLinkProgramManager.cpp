@@ -486,7 +486,7 @@ namespace Ogre {
 						// this part once for each name mentioned 
 						if (def.constType == GCT_UNKNOWN)
 						{
-							// TODO PORT - Log this somewhere?
+							// TODO LOG PORT - Log this somewhere?
 							//LogManager::getSingleton().logMessage(
 							//	"Problem parsing the following GLSL Uniform: '"
 							//	+ line + "' in file " + filename);

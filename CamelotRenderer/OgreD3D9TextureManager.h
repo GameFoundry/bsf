@@ -30,19 +30,15 @@ THE SOFTWARE.
 
 #include "OgreD3D9Prerequisites.h"
 #include "OgreD3D9Texture.h"
+#include "OgreTextureManager.h"
 
 namespace Ogre 
 {
-	class _OgreD3D9Export D3D9TextureManager
+	class _OgreD3D9Export D3D9TextureManager : public TextureManager
 	{
-	public:		
-        /// @copydoc ResourceManager::create
-        static D3D9Texture* create(const NameValuePairList* createParams);
-
 	public:
 		D3D9TextureManager();
 		~D3D9TextureManager();
-
 
 		/// @copydoc TextureManager::getNativeFormat
 		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
@@ -50,6 +46,9 @@ namespace Ogre
         /// @copydoc TextureManager::isHardwareFilteringSupported
         bool isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,
             bool preciseFormatOnly = false);		
+
+	protected:		
+		D3D9Texture* createImpl();
 	};
 }
 #endif
