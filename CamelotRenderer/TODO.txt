@@ -84,6 +84,8 @@ TODO:
  - Make sure to parse D3D9 implementations of above classes and see what needs removing there as well
 
 IMPORTANT: After I set up a test case and remove irrelevant Ogre stuff, make sure to port OpenGL, before renaming anything or removing major files
+IMPORTANT: I think I should strive to make the renderer one unique CmRenderSystem.dll (Log manager, exceptions, math can go in a separate CmUtility library?)
+   - Later separate out OpenGL and D3D9 dlls as well, since I want to support D3D11. And I want to keep the framework separate from implementation
 
 Other notes:
  - Make sure to remove all ogre memory allocators and memory category bullshit (Possibly replace with Camelot versions?)

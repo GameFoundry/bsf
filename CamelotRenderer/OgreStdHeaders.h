@@ -85,6 +85,9 @@ extern "C" {
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #  undef min
 #  undef max
+#	if !defined(NOMINMAX) && defined(_MSC_VER)
+#		define NOMINMAX // required to stop windows.h messing up std::min
+#	endif
 #  if defined( __MINGW32__ )
 #    include <unistd.h>
 #  endif
@@ -108,9 +111,6 @@ extern "C" {
 #endif
 
 #if OGRE_THREAD_SUPPORT
-#	if !defined(NOMINMAX) && defined(_MSC_VER)
-#		define NOMINMAX // required to stop windows.h messing up std::min
-#	endif
 #   include "Threading/OgreThreadHeaders.h"
 #endif
 

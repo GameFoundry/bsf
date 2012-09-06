@@ -56,12 +56,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;OGRE_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;RenderSystemGL/Source/nvparse;RenderSystemGL/Source/atifs/include;RenderSystemGL/Source/GLSL/include;RenderSystemGL/Source/win32;RenderSystemGL/Source/nvparse/winheaders;.;RenderSystemGL/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;DxErr.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;DxErr.lib;dxguid.lib;glu32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -73,13 +73,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;OGRE_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;RenderSystemGL/Source/nvparse;RenderSystemGL/Source/atifs/include;RenderSystemGL/Source/GLSL/include;RenderSystemGL/Source/win32;RenderSystemGL/Source/nvparse/winheaders;.;RenderSystemGL/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;DxErr.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;DxErr.lib;dxguid.lib;glu32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -178,6 +179,62 @@
     <ClInclude Include="OgreVertexIndexData.h" />
     <ClInclude Include="OgreViewport.h" />
     <ClInclude Include="OgreWindowEventUtilities.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLATIFSInit.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLContext.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLDefaultHardwareBufferManager.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLFBOMultiRenderTarget.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLFBORenderTexture.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLFrameBufferObject.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLGpuNvparseProgram.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLGpuProgram.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLGpuProgramManager.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLHardwareBufferManager.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLHardwareIndexBuffer.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLHardwareOcclusionQuery.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLHardwarePixelBuffer.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLHardwareVertexBuffer.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLPBRenderTexture.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLPBuffer.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLPixelFormat.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLPrerequisites.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLRenderSystem.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLRenderTexture.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLSupport.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLTexture.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreGLTextureManager.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreWin32Context.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreWin32GLSupport.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreWin32Prerequisites.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreWin32RenderTexture.h" />
+    <ClInclude Include="RenderSystemGL\Include\OgreWin32Window.h" />
+    <ClInclude Include="RenderSystemGL\Source\atifs\include\ATI_FS_GLGpuProgram.h" />
+    <ClInclude Include="RenderSystemGL\Source\atifs\include\Compiler2Pass.h" />
+    <ClInclude Include="RenderSystemGL\Source\atifs\include\ps_1_4.h" />
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLExtSupport.h" />
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLGpuProgram.h" />
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLLinkProgram.h" />
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLLinkProgramManager.h" />
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLPreprocessor.h" />
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLProgram.h" />
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLProgramFactory.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\macro.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\nvparse.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\nvparse_errors.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\nvparse_externs.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\ps1.0_program.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\rc1.0_combiners.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\rc1.0_final.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\rc1.0_general.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\rc1.0_register.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\ts1.0_inst.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\ts1.0_inst_list.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\vs1.0_inst.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\vs1.0_inst_list.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\_ps1.0_parser.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\_rc1.0_parser.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\_ts1.0_parser.h" />
+    <ClInclude Include="RenderSystemGL\Source\nvparse\_vs1.0_parser.h" />
+    <ClInclude Include="RenderSystemGL\Source\win32\OgreGLUtil.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -249,6 +306,64 @@
     <ClCompile Include="OgreVertexIndexData.cpp" />
     <ClCompile Include="OgreViewport.cpp" />
     <ClCompile Include="OgreWindowEventUtilities.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\atifs\src\ATI_FS_GLGpuProgram.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\atifs\src\Compiler2Pass.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\atifs\src\ps_1_4.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\glew.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLExtSupport.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLGpuProgram.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLLinkProgram.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLLinkProgramManager.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLPreprocessor.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLProgram.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLProgramFactory.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\avp1.0_impl.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\nvparse.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\nvparse_errors.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\ps1.0_program.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\rc1.0_combiners.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\rc1.0_final.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\rc1.0_general.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\ts1.0_inst.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\ts1.0_inst_list.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\vcp1.0_impl.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\vp1.0_impl.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\vs1.0_inst.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\vs1.0_inst_list.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\vsp1.0_impl.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\_ps1.0_lexer.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\_ps1.0_parser.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\_rc1.0_lexer.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\_rc1.0_parser.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\_ts1.0_lexer.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\_ts1.0_parser.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\_vs1.0_lexer.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\nvparse\_vs1.0_parser.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLATIFSInit.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLContext.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLDefaultHardwareBufferManager.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLFBOMultiRenderTarget.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLFBORenderTexture.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLFrameBufferObject.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLGpuNvparseProgram.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLGpuProgram.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLGpuProgramManager.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLHardwareBufferManager.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLHardwareIndexBuffer.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLHardwareOcclusionQuery.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLHardwarePixelBuffer.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLHardwareVertexBuffer.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLPBRenderTexture.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLPixelFormat.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLRenderSystem.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLRenderTexture.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLSupport.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLTexture.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreGLTextureManager.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreWin32GLSupport.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreWin32RenderTexture.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\OgreWin32Window.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\win32\OgreWin32Context.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
