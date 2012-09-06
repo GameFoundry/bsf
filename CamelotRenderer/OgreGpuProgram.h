@@ -53,6 +53,7 @@ namespace Ogre {
 
 	enum GpuProgramProfile
 	{
+		GPP_NONE,
 		GPP_PS_1_1,
 		GPP_PS_1_2,
 		GPP_PS_1_3,

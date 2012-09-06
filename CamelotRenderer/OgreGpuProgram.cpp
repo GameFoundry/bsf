@@ -53,7 +53,7 @@ namespace Ogre
         :mType(GPT_VERTEX_PROGRAM), mLoadFromFile(true), mSkeletalAnimation(false),
 		mMorphAnimation(false), mPoseAnimation(0),
         mVertexTextureFetch(false), mNeedsAdjacencyInfo(false),
-		mCompileError(false), mLoadedManualNamedConstants(false)
+		mCompileError(false), mLoadedManualNamedConstants(false), mProfile(GPP_NONE)
     {
 		createParameterMappingStructures();
     }

@@ -219,6 +219,10 @@ namespace Ogre {
 
 			glLinkProgramARB( mGLHandle );
 			glGetObjectParameterivARB( mGLHandle, GL_OBJECT_LINK_STATUS_ARB, &mLinked );
+
+			if(!mLinked)
+				logObjectInfo( String("GLSL link FAILED : "), mGLHandle );
+
 			// force logging and raise exception if not linked
 			checkForGLSLError( "GLSLLinkProgram::Activate",
 				"Error linking GLSL Program Object : ", mGLHandle, !mLinked, !mLinked );

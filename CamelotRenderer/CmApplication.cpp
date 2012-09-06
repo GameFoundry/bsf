@@ -21,8 +21,9 @@ namespace CamelotEngine
 	{
 		mGpuProgramManager = new Ogre::HighLevelGpuProgramManager(); // TODO - Use Camelot::Module for instantiating this
 
-		RenderSystemManager::initialize("D3D9RenderSystem");
-		
+		//RenderSystemManager::initialize("D3D9RenderSystem");
+		RenderSystemManager::initialize("GLRenderSystem");
+
 		Ogre::RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_initialise(false, "Camelot Renderer");
 
@@ -39,25 +40,48 @@ namespace CamelotEngine
 
 		mViewport = mRenderWindow->addViewport();
 
-		Ogre::String fragShaderCode = "float4 ps_main() : COLOR0	\
-		{														\
-			float4 color = float4(0, 0, 0, 0);					\
-			color.r = 1.0f;										\
-			color.a = 1.0f;										\
-			return color;										\
-		}";
+		/////////////////// HLSL SHADERS //////////////////////////
 
-		mFragProg = mGpuProgramManager->createProgram(fragShaderCode, "ps_main", "hlsl", Ogre::GPT_FRAGMENT_PROGRAM, Ogre::GPP_PS_2_0);
+		//Ogre::String fragShaderCode = "float4 ps_main() : COLOR0	\
+		//{														\
+		//	float4 color = float4(0, 0, 0, 0);					\
+		//	color.r = 1.0f;										\
+		//	color.a = 1.0f;										\
+		//	return color;										\
+		//}";
+
+		//mFragProg = mGpuProgramManager->createProgram(fragShaderCode, "ps_main", "hlsl", Ogre::GPT_FRAGMENT_PROGRAM, Ogre::GPP_PS_2_0);
+		//mFragProg->load();
+
+		//Ogre::String vertShaderCode = "float4x4 matViewProjection; \
+		//float4 vs_main(float4 inPos : POSITION) : POSITION \
+		//{ \
+		//	return mul(matViewProjection, inPos); \
+		//}";
+
+		//mVertProg = mGpuProgramManager->createProgram(vertShaderCode, "vs_main", "hlsl", Ogre::GPT_VERTEX_PROGRAM, Ogre::GPP_VS_2_0);
+		//mVertProg->load();
+
+		///////////////// GLSL SHADERS ////////////////////////////
+		Ogre::String fragShaderCode = "void main() \
+									  {\
+									  gl_FragColor = vec4(0.0,1.0,0.0,1.0); \
+									  }";
+
+		mFragProg = mGpuProgramManager->createProgram(fragShaderCode, "main", "glsl", Ogre::GPT_FRAGMENT_PROGRAM, Ogre::GPP_PS_2_0);
 		mFragProg->load();
 
-		Ogre::String vertShaderCode = "float4x4 matViewProjection; \
-		float4 vs_main(float4 inPos : POSITION) : POSITION \
-		{ \
-			return mul(matViewProjection, inPos); \
-		}";
+		// TODO - Ogres GLSL parsing requires some strict parameter naming, can that be avoided?
+		Ogre::String vertShaderCode = "uniform mat4 matViewProjection; \
+									  attribute vec4 vertex; \
+								void main() \
+									  { \
+									  gl_Position = matViewProjection * vertex; \
+									  }";
 
-		mVertProg = mGpuProgramManager->createProgram(vertShaderCode, "vs_main", "hlsl", Ogre::GPT_VERTEX_PROGRAM, Ogre::GPP_VS_2_0);
+		mVertProg = mGpuProgramManager->createProgram(vertShaderCode, "main", "glsl", Ogre::GPT_VERTEX_PROGRAM, Ogre::GPP_VS_2_0);
 		mVertProg->load();
+
 
 		while(true)
 		{
@@ -183,10 +207,10 @@ namespace CamelotEngine
 		//Ogre::Matrix4 viewMatrix = mCamera->getViewMatrix(true);
 		//renderSystem->_setViewMatrix(viewMatrix);
 
-		Ogre::Matrix4 projMatrix = mCamera->getProjectionMatrix();
-		Ogre::Matrix4 viewMatrix = mCamera->getViewMatrix(true);
+		Ogre::Matrix4 projMatrixCstm = mCamera->getProjectionMatrix();
+		Ogre::Matrix4 viewMatrixCstm = mCamera->getViewMatrix(true);
 
-		Ogre::Matrix4 viewProjMatrix = projMatrix * viewMatrix;
+		Ogre::Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
 		renderSystem->setInvertVertexWinding(true);
 		renderSystem->clearFrameBuffer(Ogre::FBT_COLOUR | Ogre::FBT_DEPTH, Ogre::ColourValue::Blue);
@@ -194,11 +218,17 @@ namespace CamelotEngine
 
 		mVertProg->getDefaultParameters()->setNamedConstant("matViewProjection", viewProjMatrix);
 
-		renderSystem->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), Ogre::GPV_ALL);
-		renderSystem->bindGpuProgram(mVertProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
-		renderSystem->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), Ogre::GPV_ALL);
+		//renderSystem->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), Ogre::GPV_ALL);
 
 		renderSystem->bindGpuProgram(mFragProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
+		renderSystem->bindGpuProgram(mVertProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
+
+		// TODO - Shaders need to be bound and only then parameters can be set. I need to encapuslate this better because I can't expect users to know that
+		renderSystem->bindGpuProgramParameters(Ogre::GPT_FRAGMENT_PROGRAM, mFragProg->getDefaultParameters(), Ogre::GPV_ALL); // TODO - If I dont call bind parameters before shader wont activate? I think I should handle that differently
+		renderSystem->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), Ogre::GPV_ALL);
+
+		
+		
 		renderSystem->_render(ro);
 
 		renderSystem->_endFrame();
