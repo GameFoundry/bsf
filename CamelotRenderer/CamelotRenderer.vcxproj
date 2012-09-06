@@ -198,6 +198,7 @@
     <ClInclude Include="RenderSystemGL\Include\OgreGLPixelFormat.h" />
     <ClInclude Include="RenderSystemGL\Include\OgreGLPrerequisites.h" />
     <ClInclude Include="RenderSystemGL\Include\OgreGLRenderSystem.h" />
+    <ClInclude Include="RenderSystemGL\Include\CmGLRenderSystemFactory.h" />
     <ClInclude Include="RenderSystemGL\Include\OgreGLRenderTexture.h" />
     <ClInclude Include="RenderSystemGL\Include\OgreGLSupport.h" />
     <ClInclude Include="RenderSystemGL\Include\OgreGLTexture.h" />
@@ -356,6 +357,7 @@
     <ClCompile Include="RenderSystemGL\Source\OgreGLPBRenderTexture.cpp" />
     <ClCompile Include="RenderSystemGL\Source\OgreGLPixelFormat.cpp" />
     <ClCompile Include="RenderSystemGL\Source\OgreGLRenderSystem.cpp" />
+    <ClCompile Include="RenderSystemGL\Source\CmGLRenderSystemFactory.cpp" />
     <ClCompile Include="RenderSystemGL\Source\OgreGLRenderTexture.cpp" />
     <ClCompile Include="RenderSystemGL\Source\OgreGLSupport.cpp" />
     <ClCompile Include="RenderSystemGL\Source\OgreGLTexture.cpp" />

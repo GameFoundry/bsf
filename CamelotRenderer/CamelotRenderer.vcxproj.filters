@@ -511,6 +511,9 @@
     <ClInclude Include="RenderSystemGL\Source\win32\OgreGLUtil.h">
       <Filter>RenderSystemGL\Win32</Filter>
     </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLRenderSystemFactory.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -890,6 +893,9 @@
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\win32\OgreWin32Context.cpp">
       <Filter>RenderSystemGL\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLRenderSystemFactory.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

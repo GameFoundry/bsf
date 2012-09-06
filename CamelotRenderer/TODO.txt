@@ -86,6 +86,7 @@ TODO:
 IMPORTANT: After I set up a test case and remove irrelevant Ogre stuff, make sure to port OpenGL, before renaming anything or removing major files
 IMPORTANT: I think I should strive to make the renderer one unique CmRenderSystem.dll (Log manager, exceptions, math can go in a separate CmUtility library?)
    - Later separate out OpenGL and D3D9 dlls as well, since I want to support D3D11. And I want to keep the framework separate from implementation
+     - AND because I need to have it separated since I can't expect DirectX to compile on OSX or Linux
 
 Other notes:
  - Make sure to remove all ogre memory allocators and memory category bullshit (Possibly replace with Camelot versions?)
@@ -102,3 +103,5 @@ After everything is polished:
  - Make sure the renderer can run on a separate thread
  - Get 64bit version working
  - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)
+    - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 
+	  further modifications.
