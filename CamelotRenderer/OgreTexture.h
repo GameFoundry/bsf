@@ -29,7 +29,6 @@ THE SOFTWARE.
 #define _Texture_H__
 
 #include "OgrePrerequisites.h"
-#include "OgreSharedPtr.h"
 #include "OgreHardwareBuffer.h"
 #include "OgrePixelFormat.h"
 
@@ -85,9 +84,6 @@ namespace Ogre {
 		/// Use TextureManager default
 		MIP_DEFAULT = -1
 	};
-
-    // Forward declaration
-    class TexturePtr;
 
     /** Abstract class representing a Texture resource.
         @remarks
@@ -335,7 +331,7 @@ namespace Ogre {
 			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
 						Do not use it after the lifetime of the containing texture.
 		*/
-		virtual HardwarePixelBufferSharedPtr getBuffer(size_t face=0, size_t mipmap=0) = 0;
+		virtual HardwarePixelBufferPtr getBuffer(size_t face=0, size_t mipmap=0) = 0;
 		
 		/** Retrieve a platform or API-specific piece of information from this texture.
 		 This method of retrieving information should only be used if you know what you're doing.
@@ -393,20 +389,6 @@ namespace Ogre {
 
     };
 
-    /** Specialisation of SharedPtr to allow SharedPtr to be assigned to TexturePtr 
-    @note Has to be a subclass since we need operator=.
-    We could templatise this instead of repeating per Resource subclass, 
-    except to do so requires a form VC6 does not support i.e.
-    ResourceSubclassPtr<T> : public SharedPtr<T>
-    */
-    class _OgreExport TexturePtr : public SharedPtr<Texture> 
-    {
-    public:
-        TexturePtr() : SharedPtr<Texture>() {}
-        explicit TexturePtr(Texture* rep) : SharedPtr<Texture>(rep) {}
-        TexturePtr(const TexturePtr& r) : SharedPtr<Texture>(r) {} 
-    };
-	/** @} */
 	/** @} */
 
 }

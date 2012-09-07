@@ -27,6 +27,8 @@
 #include <cstdarg>
 #include <cmath>
 
+#include <memory>
+
 // STL containers
 #include <vector>
 #include <map>

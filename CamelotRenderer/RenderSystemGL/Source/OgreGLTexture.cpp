@@ -369,7 +369,7 @@ namespace Ogre {
 	{
 		mSurfaceList.clear();
 		
-		// For all faces and mipmaps, store surfaces as HardwarePixelBufferSharedPtr
+		// For all faces and mipmaps, store surfaces as HardwarePixelBufferPtr
 		bool wantGeneratedMips = (mUsage & TU_AUTOMIPMAP)!=0;
 		
 		// Do mipmapping in software? (uses GLU) For some cards, this is still needed. Of course,
@@ -382,7 +382,7 @@ namespace Ogre {
 			{
                 GLHardwarePixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget(), mTextureID, face, mip,
 						static_cast<HardwareBuffer::Usage>(mUsage), doSoftware && mip==0, mHwGamma, mFSAA);
-				mSurfaceList.push_back(HardwarePixelBufferSharedPtr(buf));
+				mSurfaceList.push_back(HardwarePixelBufferPtr(buf));
                 
                 /// Check for error
                 if(buf->getWidth()==0 || buf->getHeight()==0 || buf->getDepth()==0)
@@ -400,7 +400,7 @@ namespace Ogre {
 	}
 	
 	//---------------------------------------------------------------------------------------------
-	HardwarePixelBufferSharedPtr GLTexture::getBuffer(size_t face, size_t mipmap)
+	HardwarePixelBufferPtr GLTexture::getBuffer(size_t face, size_t mipmap)
 	{
 		if(face >= getNumFaces())
 			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Face index out of range",

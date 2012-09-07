@@ -162,7 +162,6 @@
     <ClInclude Include="OgreRenderTarget.h" />
     <ClInclude Include="OgreRenderTexture.h" />
     <ClInclude Include="OgreRenderWindow.h" />
-    <ClInclude Include="OgreSharedPtr.h" />
     <ClInclude Include="OgreSingleton.h" />
     <ClInclude Include="OgreSphere.h" />
     <ClInclude Include="OgreStdHeaders.h" />

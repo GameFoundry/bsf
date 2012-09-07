@@ -1317,7 +1317,7 @@ namespace Ogre {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::_setTexture(size_t stage, bool enabled, const TexturePtr &texPtr)
 	{
-		GLTexturePtr tex = texPtr;
+		GLTexturePtr tex = std::static_pointer_cast<GLTexture>(texPtr);
 
 		GLenum lastTextureType = mTextureTypes[stage];
 
@@ -1326,7 +1326,7 @@ namespace Ogre {
 
 		if (enabled)
 		{
-			if (!tex.isNull())
+			if (tex)
 			{
 				// note used
 				mTextureTypes[stage] = tex->getGLTextureTarget();
@@ -1348,7 +1348,7 @@ namespace Ogre {
 				glEnable( mTextureTypes[stage] );
 			}
 
-			if(!tex.isNull())
+			if(tex)
 				glBindTexture( mTextureTypes[stage], tex->getGLID() );
 			else
 			{
@@ -2603,7 +2603,7 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 			if (!op.vertexData->vertexBufferBinding->isBufferBound(elem->getSource()))
 				continue; // skip unbound elements
 
-			HardwareVertexBufferSharedPtr vertexBuffer = 
+			HardwareVertexBufferPtr vertexBuffer = 
 				op.vertexData->vertexBufferBinding->getBuffer(elem->getSource());
 			if(mCurrentCapabilities->hasCapability(RSC_VBO))
 			{
@@ -2923,19 +2923,19 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 
 		if (gptype == GPT_VERTEX_PROGRAM && mCurrentVertexProgram)
 		{
-			mActiveVertexGpuProgramParameters.setNull();
+			mActiveVertexGpuProgramParameters = nullptr;
 			mCurrentVertexProgram->unbindProgram();
 			mCurrentVertexProgram = 0;
 		}
 		else if (gptype == GPT_GEOMETRY_PROGRAM && mCurrentGeometryProgram)
 		{
-			mActiveGeometryGpuProgramParameters.setNull();
+			mActiveGeometryGpuProgramParameters = nullptr;
 			mCurrentGeometryProgram->unbindProgram();
 			mCurrentGeometryProgram = 0;
 		}
 		else if (gptype == GPT_FRAGMENT_PROGRAM && mCurrentFragmentProgram)
 		{
-			mActiveFragmentGpuProgramParameters.setNull();
+			mActiveFragmentGpuProgramParameters = nullptr;
 			mCurrentFragmentProgram->unbindProgram();
 			mCurrentFragmentProgram = 0;
 		}

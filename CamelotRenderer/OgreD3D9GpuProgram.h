@@ -159,20 +159,8 @@ namespace Ogre {
 
 		DeviceToPixelShaderMap		mMapDeviceToPixelShader;			
     };
-    /** Specialisation of SharedPtr to allow SharedPtr to be assigned to D3D9GpuProgramPtr 
-    @note Has to be a subclass since we need operator=.
-    We could templatise this instead of repeating per Resource subclass, 
-    except to do so requires a form VC6 does not support i.e.
-    ResourceSubclassPtr<T> : public SharedPtr<T>
-    */
-    class _OgreExport D3D9GpuProgramPtr : public SharedPtr<D3D9GpuProgram> 
-    {
-    public:
-        D3D9GpuProgramPtr() : SharedPtr<D3D9GpuProgram>() {}
-        explicit D3D9GpuProgramPtr(D3D9GpuProgram* rep) : SharedPtr<D3D9GpuProgram>(rep) {}
-        D3D9GpuProgramPtr(const D3D9GpuProgramPtr& r) : SharedPtr<D3D9GpuProgram>(r) {} 
-    };
 
+	typedef std::shared_ptr<D3D9GpuProgram> D3D9GpuProgramPtr;
 }
 
 

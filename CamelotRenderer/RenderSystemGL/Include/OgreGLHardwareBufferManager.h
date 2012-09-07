@@ -49,10 +49,10 @@ namespace Ogre {
         GLHardwareBufferManagerBase();
         ~GLHardwareBufferManagerBase();
         /// Creates a vertex buffer
-        HardwareVertexBufferSharedPtr createVertexBuffer(size_t vertexSize, 
+        HardwareVertexBufferPtr createVertexBuffer(size_t vertexSize, 
             size_t numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer = false);
         /// Create a hardware vertex buffer
-        HardwareIndexBufferSharedPtr createIndexBuffer(
+        HardwareIndexBufferPtr createIndexBuffer(
             HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
             HardwareBuffer::Usage usage, bool useShadowBuffer = false);
         /// Utility function to get the correct GL usage based on HBU's

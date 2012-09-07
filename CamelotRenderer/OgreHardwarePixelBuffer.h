@@ -31,7 +31,6 @@ THE SOFTWARE.
 // Precompiler options
 #include "OgrePrerequisites.h"
 #include "OgreHardwareBuffer.h"
-#include "OgreSharedPtr.h"
 #include "OgrePixelFormat.h"
 
 namespace Ogre {
@@ -122,14 +121,14 @@ namespace Ogre {
             but it is faster to pass the source image in the right dimensions.
 			@note Only call this function when both  buffers are unlocked. 
          */        
-        virtual void blit(const HardwarePixelBufferSharedPtr &src, const Box &srcBox, const Box &dstBox);
+        virtual void blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
 
 		/** Convenience function that blits the entire source pixel buffer to this buffer. 
 			If source and destination dimensions don't match, scaling is done.
 			@param src		PixelBox containing the source pixels and format in memory
 			@note Only call this function when the buffer is unlocked. 
 		*/
-		void blit(const HardwarePixelBufferSharedPtr &src); 
+		void blit(const HardwarePixelBufferPtr &src); 
 		
 		/** Copies a region from normal memory to a region of this pixelbuffer. The source
 			image can be in any pixel format supported by OGRE, and in any size. 
@@ -190,17 +189,6 @@ namespace Ogre {
         PixelFormat getFormat() const { return mFormat; }
     };
 
-    /** Shared pointer implementation used to share pixel buffers. */
-    class _OgreExport HardwarePixelBufferSharedPtr : public SharedPtr<HardwarePixelBuffer>
-    {
-    public:
-        HardwarePixelBufferSharedPtr() : SharedPtr<HardwarePixelBuffer>() {}
-        explicit HardwarePixelBufferSharedPtr(HardwarePixelBuffer* buf);
-
-
-    };
-
-	/** @} */
 	/** @} */
 }
 #endif

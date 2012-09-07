@@ -48,7 +48,7 @@ namespace Ogre
 			createLowLevelImpl();
 
 			// load constructed assembler program (if it exists)
-			if (!mAssemblerProgram.isNull() && mAssemblerProgram.getPointer() != this)
+			if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
 			{
 				mAssemblerProgram->load();
 			}
@@ -57,9 +57,9 @@ namespace Ogre
     //---------------------------------------------------------------------------
     void HighLevelGpuProgram::unload()
     {   
-        if (!mAssemblerProgram.isNull() && mAssemblerProgram.getPointer() != this)
+        if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
         {
-            mAssemblerProgram.setNull();
+            mAssemblerProgram = nullptr;
         }
 
         unloadHighLevel();
@@ -86,7 +86,7 @@ namespace Ogre
 		}
 
 		// Copy in default parameters if present
-		if (!mDefaultParams.isNull())
+		if (mDefaultParams != nullptr)
 			params->copyConstantsFrom(*(mDefaultParams.get()));
         return params;
     }
@@ -100,7 +100,7 @@ namespace Ogre
 				loadHighLevelImpl();
 				mHighLevelLoaded = true;
 
-				assert(mDefaultParams.isNull()); // TODO - These two lines and replicated both here and in GpuProgram. I should probably add another load method that holds it all in one place?
+				assert(mDefaultParams == nullptr); // TODO - These two lines and replicated both here and in GpuProgram. I should probably add another load method that holds it all in one place?
 				mDefaultParams = createParameters();
 
 			}
@@ -166,34 +166,4 @@ namespace Ogre
 		// also set logical / physical maps for programs which use this
 		params->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical);
 	}
-	//-----------------------------------------------------------------------
-	//-----------------------------------------------------------------------
-	HighLevelGpuProgramPtr& HighLevelGpuProgramPtr::operator=(const GpuProgramPtr& r)
-	{
-		// Can assign direct
-		if (pRep == static_cast<HighLevelGpuProgram*>(r.getPointer()))
-			return *this;
-		release();
-		// lock & copy other mutex pointer
-        OGRE_MUTEX_CONDITIONAL(r.OGRE_AUTO_MUTEX_NAME)
-        {
-		    OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
-		    OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
-		    pRep = static_cast<HighLevelGpuProgram*>(r.getPointer());
-		    pUseCount = r.useCountPointer();
-		    if (pUseCount)
-		    {
-			    ++(*pUseCount);
-		    }
-        }
-		else
-		{
-			// RHS must be a null pointer
-			assert(r.isNull() && "RHS must be null if it has no mutex!");
-			setNull();
-		}
-		return *this;
-	}
-
-
 }

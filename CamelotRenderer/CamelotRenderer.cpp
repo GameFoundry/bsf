@@ -15,7 +15,6 @@
 #include "OgrePlatform.h"
 #include "OgrePrerequisites.h"
 #include "OgreQuaternion.h"
-#include "OgreSharedPtr.h"
 #include "OgreString.h"
 #include "OgreStringConverter.h"
 #include "OgreThreadDefines.h"

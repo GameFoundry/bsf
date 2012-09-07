@@ -85,8 +85,8 @@ namespace Ogre {
 		vbend = bindings.end();
 		for (vbi = bindings.begin(); vbi != vbend; ++vbi)
 		{
-			HardwareVertexBufferSharedPtr srcbuf = vbi->second;
-            HardwareVertexBufferSharedPtr dstBuf;
+			HardwareVertexBufferPtr srcbuf = vbi->second;
+            HardwareVertexBufferPtr dstBuf;
             if (copyData)
             {
 			    // create new buffer with the same settings
@@ -167,7 +167,7 @@ namespace Ogre {
             size_t v;
             unsigned short posOldSource = posElem->getSource();
 
-            HardwareVertexBufferSharedPtr vbuf = vertexBufferBinding->getBuffer(posOldSource);
+            HardwareVertexBufferPtr vbuf = vertexBufferBinding->getBuffer(posOldSource);
             bool wasSharedBuffer = false;
             // Are there other elements in the buffer except for the position?
             if (vbuf->getVertexSize() > posElem->getSize())
@@ -176,7 +176,7 @@ namespace Ogre {
                 // Most drivers don't like gaps in the declaration, and in any case it's waste
                 wasSharedBuffer = true;
             }
-            HardwareVertexBufferSharedPtr newPosBuffer, newRemainderBuffer;
+            HardwareVertexBufferPtr newPosBuffer, newRemainderBuffer;
             if (wasSharedBuffer)
             {
                 newRemainderBuffer = vbuf->getManager()->createVertexBuffer(
@@ -372,7 +372,7 @@ namespace Ogre {
 		{
             size_t vertexSize = newDeclaration->getVertexSize(buf);
 
-			HardwareVertexBufferSharedPtr vbuf = 
+			HardwareVertexBufferPtr vbuf = 
 				pManager->createVertexBuffer(
 					vertexSize,
 					vertexCount, 
@@ -480,7 +480,7 @@ namespace Ogre {
                     vertexDeclaration->findElementBySemantic(
                         destelem.getSemantic(), destelem.getIndex());
                 // get buffer
-                HardwareVertexBufferSharedPtr srcbuf = 
+                HardwareVertexBufferPtr srcbuf = 
                     vertexBufferBinding->getBuffer(srcelem->getSource());
                 // improve flexibility only
                 if (srcbuf->getUsage() & HardwareBuffer::HBU_DYNAMIC)
@@ -934,7 +934,7 @@ namespace Ogre {
 	}
 	//-----------------------------------------------------------------------
 	//-----------------------------------------------------------------------
-	void VertexCacheProfiler::profile(const HardwareIndexBufferSharedPtr& indexBuffer)
+	void VertexCacheProfiler::profile(const HardwareIndexBufferPtr& indexBuffer)
     {
 		if (indexBuffer->isLocked()) return;
 

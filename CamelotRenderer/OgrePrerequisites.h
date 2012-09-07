@@ -159,16 +159,13 @@ namespace Ogre {
     class FrameListener;
     class Frustum;
     class GpuProgram;
-    class GpuProgramPtr;
     class GpuProgramManager;
 	class GpuProgramUsage;
     class HardwareIndexBuffer;
     class HardwareOcclusionQuery;
     class HardwareVertexBuffer;
 	class HardwarePixelBuffer;
-    class HardwarePixelBufferSharedPtr;
 	class HighLevelGpuProgram;
-    class HighLevelGpuProgramPtr;
 	class HighLevelGpuProgramManager;
 	class HighLevelGpuProgramFactory;
     class IndexData;
@@ -286,7 +283,6 @@ namespace Ogre {
 	class ExternalTextureSource;
     class TextureUnitState;
     class Texture;
-    class TexturePtr;
     class TextureManager;
     class TransformKeyFrame;
 	class Timer;
@@ -317,6 +313,15 @@ namespace Ogre {
 settings have been made.
 */
 #include "OgreStdHeaders.h"
+
+/* Shared pointer typedefs*/
+namespace Ogre
+{
+	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
+	typedef std::shared_ptr<HighLevelGpuProgram> HighLevelGpuProgramPtr;
+	typedef std::shared_ptr<HardwarePixelBuffer> HardwarePixelBufferPtr;
+	typedef std::shared_ptr<Texture> TexturePtr;
+}
 
 namespace Ogre
 {

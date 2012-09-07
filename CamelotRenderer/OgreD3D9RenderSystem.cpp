@@ -1691,8 +1691,8 @@ namespace Ogre
 	void D3D9RenderSystem::_setTexture( size_t stage, bool enabled, const TexturePtr& tex )
 	{
 		HRESULT hr;
-		D3D9TexturePtr dt = tex;
-		if (enabled && !dt.isNull())
+		D3D9TexturePtr dt = std::static_pointer_cast<D3D9Texture>(tex);
+		if (enabled && (dt != nullptr))
 		{
 			IDirect3DBaseTexture9 *pTex = dt->getTexture();
 			if (mTexStageDesc[stage].pTex != pTex)
@@ -1748,7 +1748,7 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setVertexTexture(size_t stage, const TexturePtr& tex)
 	{
-		if (tex.isNull())
+		if (tex == nullptr)
 		{
 
 			if (mTexStageDesc[stage].pVertexTex != 0)
@@ -1767,7 +1767,7 @@ namespace Ogre
 		}
 		else
 		{
-			D3D9TexturePtr dt = tex;
+			D3D9TexturePtr dt = std::static_pointer_cast<D3D9Texture>(tex);
 
 			IDirect3DBaseTexture9 *pTex = dt->getTexture();
 			if (mTexStageDesc[stage].pVertexTex != pTex)
@@ -3086,7 +3086,7 @@ namespace Ogre
 		switch(gptype)
 		{
 		case GPT_VERTEX_PROGRAM:
-			mActiveVertexGpuProgramParameters.setNull();
+			mActiveVertexGpuProgramParameters = nullptr;
 			hr = getActiveD3D9Device()->SetVertexShader(NULL);
 			if (FAILED(hr))
 			{
@@ -3095,7 +3095,7 @@ namespace Ogre
 			}
 			break;
 		case GPT_FRAGMENT_PROGRAM:
-			mActiveFragmentGpuProgramParameters.setNull();
+			mActiveFragmentGpuProgramParameters = nullptr;
 			hr = getActiveD3D9Device()->SetPixelShader(NULL);
 			if (FAILED(hr))
 			{

@@ -151,19 +151,19 @@ namespace Ogre {
         destroyAllBindings();
 	}
     //-----------------------------------------------------------------------
-	HardwareVertexBufferSharedPtr 
+	HardwareVertexBufferPtr 
         GLDefaultHardwareBufferManagerBase::createVertexBuffer(size_t vertexSize, 
 		size_t numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
 	{
-		return HardwareVertexBufferSharedPtr(
+		return HardwareVertexBufferPtr(
 			new GLDefaultHardwareVertexBuffer(this, vertexSize, numVerts, usage));
 	}
     //-----------------------------------------------------------------------
-	HardwareIndexBufferSharedPtr 
+	HardwareIndexBufferPtr 
         GLDefaultHardwareBufferManagerBase::createIndexBuffer(HardwareIndexBuffer::IndexType itype, 
 		size_t numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer)
 	{
-		return HardwareIndexBufferSharedPtr(
+		return HardwareIndexBufferPtr(
 			new GLDefaultHardwareIndexBuffer(itype, numIndexes, usage) );
 	}
 }

@@ -149,7 +149,7 @@ namespace CamelotEngine
 		//decl->addElement(0, offset, Ogre::VET_COLOUR, Ogre::VES_DIFFUSE);
 		//offset += Ogre::VertexElement::getTypeSize(Ogre::VET_COLOUR);
 
-		Ogre::HardwareVertexBufferSharedPtr vertexBuffer = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
+		Ogre::HardwareVertexBufferPtr vertexBuffer = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
 			vertexData->vertexDeclaration->getVertexSize(0),
 			vertexData->vertexCount,
 			Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);

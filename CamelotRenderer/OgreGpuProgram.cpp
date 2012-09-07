@@ -93,7 +93,7 @@ namespace Ogre
 		{
 			loadFromSource();
 
-			assert(mDefaultParams.isNull());
+			assert(mDefaultParams == nullptr);
 
 			mDefaultParams = createParameters();
 		}
@@ -151,15 +151,15 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	void GpuProgram::createLogicalParameterMappingStructures(bool recreateIfExists) const
 	{
-		if (recreateIfExists || mFloatLogicalToPhysical.isNull())
+		if (recreateIfExists || (mFloatLogicalToPhysical == nullptr))
 			mFloatLogicalToPhysical = GpuLogicalBufferStructPtr(OGRE_NEW GpuLogicalBufferStruct());
-		if (recreateIfExists || mIntLogicalToPhysical.isNull())
+		if (recreateIfExists || (mIntLogicalToPhysical == nullptr))
 			mIntLogicalToPhysical = GpuLogicalBufferStructPtr(OGRE_NEW GpuLogicalBufferStruct());
 	}
 	//---------------------------------------------------------------------
 	void GpuProgram::createNamedParameterMappingStructures(bool recreateIfExists) const
 	{
-		if (recreateIfExists || mConstantDefs.isNull())
+		if (recreateIfExists || (mConstantDefs == nullptr))
 			mConstantDefs = GpuNamedConstantsPtr(OGRE_NEW GpuNamedConstants());
 	}
 	//---------------------------------------------------------------------
@@ -209,7 +209,7 @@ namespace Ogre
         GpuProgramParametersSharedPtr ret = GpuProgramParametersSharedPtr(OGRE_NEW GpuProgramParameters());	
 		
 		// set up named parameters, if any
-		if (!mConstantDefs.isNull() && !mConstantDefs->map.empty())
+		if ((mConstantDefs != nullptr) && !mConstantDefs->map.empty())
 		{
 			ret->_setNamedConstants(mConstantDefs);
 		}
@@ -217,7 +217,7 @@ namespace Ogre
 		ret->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical);
 
         // Copy in default parameters if present
-        if (!mDefaultParams.isNull())
+        if (mDefaultParams != nullptr)
             ret->copyConstantsFrom(*(mDefaultParams.get()));
         
         return ret;
@@ -225,7 +225,7 @@ namespace Ogre
     //-----------------------------------------------------------------------------
     GpuProgramParametersSharedPtr GpuProgram::getDefaultParameters(void)
     {
-        if (mDefaultParams.isNull())
+        if (mDefaultParams == nullptr)
         {
             mDefaultParams = createParameters();
         }
@@ -386,34 +386,5 @@ namespace Ogre
 		GpuProgram* t = static_cast<GpuProgram*>(target);
 		t->setAdjacencyInfoRequired(StringConverter::parseBool(val));
 	}
-
-    //-----------------------------------------------------------------------
-    GpuProgramPtr& GpuProgramPtr::operator=(const HighLevelGpuProgramPtr& r)
-    {
-        // Can assign direct
-        if (pRep == r.getPointer())
-            return *this;
-        release();
-		// lock & copy other mutex pointer
-        OGRE_MUTEX_CONDITIONAL(r.OGRE_AUTO_MUTEX_NAME)
-        {
-		    OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
-		    OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
-            pRep = r.getPointer();
-            pUseCount = r.useCountPointer();
-            if (pUseCount)
-            {
-                ++(*pUseCount);
-            }
-        }
-		else
-		{
-			// RHS must be a null pointer
-			assert(r.isNull() && "RHS must be null if it has no mutex!");
-			setNull();
-		}
-        return *this;
-    }
-
 }
 

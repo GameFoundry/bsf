@@ -613,17 +613,17 @@ namespace Ogre {
 
         --mCurrentPassIterationCount;
 		++mCurrentPassIterationNum;
-        if (!mActiveVertexGpuProgramParameters.isNull())
+        if (mActiveVertexGpuProgramParameters != nullptr)
         {
             mActiveVertexGpuProgramParameters->incPassIterationNumber();
             bindGpuProgramPassIterationParameters(GPT_VERTEX_PROGRAM);
         }
-        if (!mActiveGeometryGpuProgramParameters.isNull())
+        if (mActiveGeometryGpuProgramParameters != nullptr)
         {
             mActiveGeometryGpuProgramParameters->incPassIterationNumber();
             bindGpuProgramPassIterationParameters(GPT_GEOMETRY_PROGRAM);
         }
-        if (!mActiveFragmentGpuProgramParameters.isNull())
+        if (mActiveFragmentGpuProgramParameters != nullptr)
         {
             mActiveFragmentGpuProgramParameters->incPassIterationNumber();
             bindGpuProgramPassIterationParameters(GPT_FRAGMENT_PROGRAM);

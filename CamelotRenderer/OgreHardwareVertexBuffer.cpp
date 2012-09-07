@@ -594,7 +594,7 @@ namespace Ogre {
         unsetAllBindings();
 	}
     //-----------------------------------------------------------------------------
-	void VertexBufferBinding::setBinding(unsigned short index, const HardwareVertexBufferSharedPtr& buffer)
+	void VertexBufferBinding::setBinding(unsigned short index, const HardwareVertexBufferPtr& buffer)
 	{
         // NB will replace any existing buffer ptr at this index, and will thus cause
         // reference count to decrement on that buffer (possibly destroying it)
@@ -626,7 +626,7 @@ namespace Ogre {
 		return mBindingMap;
 	}
     //-----------------------------------------------------------------------------
-	const HardwareVertexBufferSharedPtr& VertexBufferBinding::getBuffer(unsigned short index) const
+	const HardwareVertexBufferPtr& VertexBufferBinding::getBuffer(unsigned short index) const
 	{
 		VertexBufferBindingMap::const_iterator i = mBindingMap.find(index);
 		if (i == mBindingMap.end())
@@ -673,14 +673,4 @@ namespace Ogre {
         mBindingMap.swap(newBindingMap);
         mHighIndex = targetIndex;
     }
-    //-----------------------------------------------------------------------------
-    HardwareVertexBufferSharedPtr::HardwareVertexBufferSharedPtr(HardwareVertexBuffer* buf)
-        : SharedPtr<HardwareVertexBuffer>(buf)
-    {
-
-    }
-
-
-
-
 }

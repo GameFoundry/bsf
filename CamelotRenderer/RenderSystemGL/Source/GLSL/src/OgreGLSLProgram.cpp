@@ -196,7 +196,7 @@ namespace Ogre {
 		// We didn't create mAssemblerProgram through a manager, so override this
 		// implementation so that we don't try to remove it from one. Since getCreator()
 		// is used, it might target a different matching handle!
-		mAssemblerProgram.setNull();
+		mAssemblerProgram = nullptr;
 
 		unloadHighLevel();
 	}

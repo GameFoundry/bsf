@@ -104,7 +104,7 @@ namespace Ogre {
         /// Copy from framebuffer
         void copyFromFramebuffer(size_t zoffset);
         /// @copydoc HardwarePixelBuffer::blit
-        void blit(const HardwarePixelBufferSharedPtr &src, const Box &srcBox, const Box &dstBox);
+        void blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
         // Blitting implementation
         void blitFromTexture(GLTextureBuffer *src, const Box &srcBox, const Box &dstBox);
     protected:

@@ -67,11 +67,11 @@ namespace Ogre {
     {
     private:
         // Pre-blended 
-        HardwareVertexBufferSharedPtr srcPositionBuffer;
-        HardwareVertexBufferSharedPtr srcNormalBuffer;
+        HardwareVertexBufferPtr srcPositionBuffer;
+        HardwareVertexBufferPtr srcNormalBuffer;
         // Post-blended 
-        HardwareVertexBufferSharedPtr destPositionBuffer;
-        HardwareVertexBufferSharedPtr destNormalBuffer;
+        HardwareVertexBufferPtr destPositionBuffer;
+        HardwareVertexBufferPtr destNormalBuffer;
         /// Both positions and normals are contained in the same buffer
         bool posNormalShareBuffer;
         unsigned short posBindIndex;
@@ -107,8 +107,6 @@ namespace Ogre {
 	*/
 	class _OgreExport HardwareBufferManagerBase
 	{
-        friend class HardwareVertexBufferSharedPtr;
-        friend class HardwareIndexBufferSharedPtr;
     protected:
         /** WARNING: The following two members should place before all other members.
             Members destruct order is very important here, because destructing other
@@ -165,13 +163,13 @@ namespace Ogre {
             HardwareVertexBuffer* originalBufferPtr;
             BufferLicenseType licenseType;
             size_t expiredDelay;
-            HardwareVertexBufferSharedPtr buffer;
+            HardwareVertexBufferPtr buffer;
             HardwareBufferLicensee* licensee;
             VertexBufferLicense(
                 HardwareVertexBuffer* orig,
                 BufferLicenseType ltype, 
                 size_t delay,
-                HardwareVertexBufferSharedPtr buf, 
+                HardwareVertexBufferPtr buf, 
                 HardwareBufferLicensee* lic) 
                 : originalBufferPtr(orig)
                 , licenseType(ltype)
@@ -183,7 +181,7 @@ namespace Ogre {
         };
 
         /// Map from original buffer to temporary buffers
-        typedef multimap<HardwareVertexBuffer*, HardwareVertexBufferSharedPtr>::type FreeTemporaryVertexBufferMap;
+        typedef multimap<HardwareVertexBuffer*, HardwareVertexBufferPtr>::type FreeTemporaryVertexBufferMap;
         /// Map of current available temp buffers 
         FreeTemporaryVertexBufferMap mFreeTempVertexBufferMap;
         /// Map from temporary buffer to details of a license
@@ -201,8 +199,8 @@ namespace Ogre {
 
 
         /// Creates  a new buffer as a copy of the source, does not copy data
-        virtual HardwareVertexBufferSharedPtr makeBufferCopy(
-            const HardwareVertexBufferSharedPtr& source, 
+        virtual HardwareVertexBufferPtr makeBufferCopy(
+            const HardwareVertexBufferPtr& source, 
             HardwareBuffer::Usage usage, bool useShadowBuffer);
 
     public:
@@ -236,7 +234,7 @@ namespace Ogre {
             reads and writes will be done to the shadow buffer, and the shadow buffer will
             be synchronised with the real buffer at an appropriate time.
         */
-		virtual HardwareVertexBufferSharedPtr 
+		virtual HardwareVertexBufferPtr 
             createVertexBuffer(size_t vertexSize, size_t numVerts, HardwareBuffer::Usage usage, 
 			bool useShadowBuffer = false) = 0;
 		/** Create a hardware index buffer.
@@ -255,7 +253,7 @@ namespace Ogre {
             reads and writes will be done to the shadow buffer, and the shadow buffer will
             be synchronised with the real buffer at an appropriate time.
         */
-		virtual HardwareIndexBufferSharedPtr 
+		virtual HardwareIndexBufferPtr 
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
 			HardwareBuffer::Usage usage, bool useShadowBuffer = false) = 0;
 
@@ -275,8 +273,8 @@ namespace Ogre {
 			which can be allocated just like a copy.
 		*/
 		virtual void registerVertexBufferSourceAndCopy(
-			const HardwareVertexBufferSharedPtr& sourceBuffer,
-			const HardwareVertexBufferSharedPtr& copy);
+			const HardwareVertexBufferPtr& sourceBuffer,
+			const HardwareVertexBufferPtr& copy);
 
         /** Allocates a copy of a given vertex buffer.
         @remarks
@@ -294,8 +292,8 @@ namespace Ogre {
         @param copyData If true, the current data is copied as well as the 
             structure of the buffer
         */
-        virtual HardwareVertexBufferSharedPtr allocateVertexBufferCopy(
-            const HardwareVertexBufferSharedPtr& sourceBuffer, 
+        virtual HardwareVertexBufferPtr allocateVertexBufferCopy(
+            const HardwareVertexBufferPtr& sourceBuffer, 
             BufferLicenseType licenseType,
             HardwareBufferLicensee* licensee,
             bool copyData = false);
@@ -309,7 +307,7 @@ namespace Ogre {
             well begin to modify the contents of the buffer.
         */
         virtual void releaseVertexBufferCopy(
-            const HardwareVertexBufferSharedPtr& bufferCopy); 
+            const HardwareVertexBufferPtr& bufferCopy); 
 
         /** Tell engine that the vertex buffer copy intent to reuse.
         @remarks
@@ -322,7 +320,7 @@ namespace Ogre {
             buffer copy for use.
         */
         virtual void touchVertexBufferCopy(
-            const HardwareVertexBufferSharedPtr& bufferCopy);
+            const HardwareVertexBufferPtr& bufferCopy);
 
         /** Free all unused vertex buffer copies.
         @remarks
@@ -353,7 +351,7 @@ namespace Ogre {
             are deleted.
         */
         virtual void _forceReleaseBufferCopies(
-            const HardwareVertexBufferSharedPtr& sourceBuffer);
+            const HardwareVertexBufferPtr& sourceBuffer);
 
         /** Internal method that forces the release of copies of a given buffer.
         @remarks
@@ -376,8 +374,6 @@ namespace Ogre {
     /** Singleton wrapper for hardware buffer manager. */
     class _OgreExport HardwareBufferManager : public HardwareBufferManagerBase, public Singleton<HardwareBufferManager>
     {
-        friend class HardwareVertexBufferSharedPtr;
-        friend class HardwareIndexBufferSharedPtr;
     protected:
 		HardwareBufferManagerBase* mImpl;
 	public:
@@ -385,14 +381,14 @@ namespace Ogre {
 		~HardwareBufferManager();
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexBuffer */
-		HardwareVertexBufferSharedPtr 
+		HardwareVertexBufferPtr 
             createVertexBuffer(size_t vertexSize, size_t numVerts, HardwareBuffer::Usage usage, 
 			bool useShadowBuffer = false)
 		{
 			return mImpl->createVertexBuffer(vertexSize, numVerts, usage, useShadowBuffer);
 		}
 		/** @copydoc HardwareBufferManagerInterface::createIndexBuffer */
-		HardwareIndexBufferSharedPtr 
+		HardwareIndexBufferPtr 
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
 			HardwareBuffer::Usage usage, bool useShadowBuffer = false)
 		{
@@ -422,14 +418,14 @@ namespace Ogre {
 		}
 		/** @copydoc HardwareBufferManagerInterface::registerVertexBufferSourceAndCopy */
 		virtual void registerVertexBufferSourceAndCopy(
-			const HardwareVertexBufferSharedPtr& sourceBuffer,
-			const HardwareVertexBufferSharedPtr& copy)
+			const HardwareVertexBufferPtr& sourceBuffer,
+			const HardwareVertexBufferPtr& copy)
 		{
 			mImpl->registerVertexBufferSourceAndCopy(sourceBuffer, copy);
 		}
 		/** @copydoc HardwareBufferManagerInterface::allocateVertexBufferCopy */
-        virtual HardwareVertexBufferSharedPtr allocateVertexBufferCopy(
-            const HardwareVertexBufferSharedPtr& sourceBuffer, 
+        virtual HardwareVertexBufferPtr allocateVertexBufferCopy(
+            const HardwareVertexBufferPtr& sourceBuffer, 
             BufferLicenseType licenseType,
             HardwareBufferLicensee* licensee,
             bool copyData = false)
@@ -438,14 +434,14 @@ namespace Ogre {
 		}
 		/** @copydoc HardwareBufferManagerInterface::releaseVertexBufferCopy */
         virtual void releaseVertexBufferCopy(
-            const HardwareVertexBufferSharedPtr& bufferCopy)
+            const HardwareVertexBufferPtr& bufferCopy)
 		{
 			mImpl->releaseVertexBufferCopy(bufferCopy);
 		}
 
 		/** @copydoc HardwareBufferManagerInterface::touchVertexBufferCopy */
         virtual void touchVertexBufferCopy(
-            const HardwareVertexBufferSharedPtr& bufferCopy)
+            const HardwareVertexBufferPtr& bufferCopy)
 		{
 			mImpl->touchVertexBufferCopy(bufferCopy);
 		}
@@ -462,7 +458,7 @@ namespace Ogre {
 		}
 		/** @copydoc HardwareBufferManagerInterface::_forceReleaseBufferCopies */
         virtual void _forceReleaseBufferCopies(
-            const HardwareVertexBufferSharedPtr& sourceBuffer)
+            const HardwareVertexBufferPtr& sourceBuffer)
 		{
 			mImpl->_forceReleaseBufferCopies(sourceBuffer);
 		}

@@ -76,12 +76,5 @@ namespace Ogre {
             OGRE_DELETE mpShadowBuffer;
         }
     }
-    //-----------------------------------------------------------------------------
-    HardwareIndexBufferSharedPtr::HardwareIndexBufferSharedPtr(HardwareIndexBuffer* buf)
-        : SharedPtr<HardwareIndexBuffer>(buf)
-    {
-
-    }
-
 }
 

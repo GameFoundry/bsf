@@ -185,7 +185,7 @@ namespace Ogre {
             mFrames.resize(1);
 			mFramePtrs.resize(1);
             mFrames[0] = name;
-			mFramePtrs[0].setNull();
+			mFramePtrs[0] = nullptr;
 			// defer load until used, so don't grab pointer yet
             mCurrentFrame = 0;
             mCubic = false;
@@ -225,7 +225,7 @@ namespace Ogre {
 			mFrames.clear();
 			// One reference space, set manually through _setTexturePtr
 			mFramePtrs.resize(1);
-			mFramePtrs[0].setNull();
+			mFramePtrs[0] = nullptr;
 		}
 	}
 	//-----------------------------------------------------------------------
@@ -282,7 +282,7 @@ namespace Ogre {
         for (unsigned int i = 0; i < mFrames.size(); ++i)
         {
             mFrames[i] = names[i];
-			mFramePtrs[i].setNull();
+			mFramePtrs[i] = nullptr;
         }
     }
     //-----------------------------------------------------------------------
@@ -310,7 +310,7 @@ namespace Ogre {
         {
             mFrames[frameNumber] = name;
 			// reset pointer (don't populate until requested)
-			mFramePtrs[frameNumber].setNull();	
+			mFramePtrs[frameNumber] = nullptr;
 
             if (isLoaded())
             {
@@ -387,7 +387,7 @@ namespace Ogre {
 			StringUtil::StrStreamType str;
             str << baseName << "_" << i << ext;
             mFrames[i] = str.str();
-			mFramePtrs[i].setNull();
+			mFramePtrs[i] = nullptr;
         }
 
         // Load immediately if Material loaded
@@ -412,7 +412,7 @@ namespace Ogre {
         for (unsigned int i = 0; i < mFrames.size(); ++i)
         {
             mFrames[i] = names[i];
-			mFramePtrs[i].setNull();
+			mFramePtrs[i] = nullptr;
         }
 
         // Load immediately if Material loaded
@@ -426,7 +426,7 @@ namespace Ogre {
     {
 		
 		TexturePtr tex = _getTexturePtr(frame);
-	    if (tex.isNull())
+	    if (tex == nullptr)
 		    OGRE_EXCEPT( Exception::ERR_ITEM_NOT_FOUND, "Could not find texture " + mFrames[ frame ],
 		    "TextureUnitState::getTextureDimensions" );
 
@@ -956,7 +956,7 @@ namespace Ogre {
         tiend = mFramePtrs.end();
         for (ti = mFramePtrs.begin(); ti != tiend; ++ti)
         {
-            ti->setNull();
+            (*ti) = nullptr;
         }
     }
 	//-----------------------------------------------------------------------
@@ -967,7 +967,7 @@ namespace Ogre {
         tiend = mFramePtrs.end();
         for (ti = mFramePtrs.begin(); ti != tiend; ++ti)
         {
-            ti->setNull();
+            (*ti) = nullptr;
         }
     }
     //-----------------------------------------------------------------------------

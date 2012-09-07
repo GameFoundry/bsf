@@ -169,9 +169,6 @@
     <ClInclude Include="OgrePrerequisites.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="OgreSharedPtr.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
     <ClInclude Include="OgreSingleton.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>

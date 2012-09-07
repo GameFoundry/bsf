@@ -31,7 +31,6 @@ THE SOFTWARE.
 // Precompiler options
 #include "OgrePrerequisites.h"
 #include "OgreHardwareBuffer.h"
-#include "OgreSharedPtr.h"
 #include "OgreColourValue.h"
 
 namespace Ogre {
@@ -70,15 +69,7 @@ namespace Ogre {
 
     };
 
-    /** Shared pointer implementation used to share index buffers. */
-    class _OgreExport HardwareVertexBufferSharedPtr : public SharedPtr<HardwareVertexBuffer>
-    {
-    public:
-        HardwareVertexBufferSharedPtr() : SharedPtr<HardwareVertexBuffer>() {}
-        explicit HardwareVertexBufferSharedPtr(HardwareVertexBuffer* buf);
-
-
-    };
+	typedef std::shared_ptr<HardwareVertexBuffer> HardwareVertexBufferPtr;
 
     /// Vertex element semantics, used to identify the meaning of vertex buffer contents
 	enum VertexElementSemantic {
@@ -484,7 +475,7 @@ namespace Ogre {
 	{
 	public:
 		/// Defines the vertex buffer bindings used as source for vertex declarations
-		typedef map<unsigned short, HardwareVertexBufferSharedPtr>::type VertexBufferBindingMap;
+		typedef map<unsigned short, HardwareVertexBufferPtr>::type VertexBufferBindingMap;
 	protected:
 		VertexBufferBindingMap mBindingMap;
 		mutable unsigned short mHighIndex;
@@ -500,7 +491,7 @@ namespace Ogre {
 			You should assign bindings from 0 and not leave gaps, although you can
 			bind them in any order.
 		*/
-		virtual void setBinding(unsigned short index, const HardwareVertexBufferSharedPtr& buffer);
+		virtual void setBinding(unsigned short index, const HardwareVertexBufferPtr& buffer);
 		/** Removes an existing binding. */
 		virtual void unsetBinding(unsigned short index);
 
@@ -511,7 +502,7 @@ namespace Ogre {
 		virtual const VertexBufferBindingMap& getBindings(void) const;
 
 		/// Gets the buffer bound to the given source index
-		virtual const HardwareVertexBufferSharedPtr& getBuffer(unsigned short index) const;
+		virtual const HardwareVertexBufferPtr& getBuffer(unsigned short index) const;
 		/// Gets whether a buffer is bound to the given source index
 		virtual bool isBufferBound(unsigned short index) const;
 

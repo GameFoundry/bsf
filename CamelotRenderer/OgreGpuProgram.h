@@ -30,7 +30,6 @@ THE SOFTWARE.
 
 // Precompiler options
 #include "OgrePrerequisites.h"
-#include "OgreSharedPtr.h"
 #include "OgreRenderOperation.h"
 #include "OgreStringInterface.h"
 #include "OgreGpuProgramParams.h"
@@ -67,9 +66,6 @@ namespace Ogre {
 		GPP_VS_2_a,
 		GPP_VS_3_0
 	};
-
-    // Forward declaration 
-    class GpuProgramPtr;
 
 	/** Defines a program which runs on the GPU such as a vertex or fragment program. 
 	@remarks
@@ -360,7 +356,7 @@ namespace Ogre {
 
         /** Returns true if default parameters have been set up.  
         */
-        virtual bool hasDefaultParameters(void) const { return !mDefaultParams.isNull(); }
+        virtual bool hasDefaultParameters(void) const { return mDefaultParams != nullptr; }
 
 		/** Returns whether a vertex program wants light and material states to be passed
 		through fixed pipeline low level API rendering calls (default false, subclasses can override)
@@ -445,24 +441,6 @@ namespace Ogre {
 
 	};
 
-
-	/** Specialisation of SharedPtr to allow SharedPtr to be assigned to GpuProgramPtr 
-	@note Has to be a subclass since we need operator=.
-	We could templatise this instead of repeating per Resource subclass, 
-	except to do so requires a form VC6 does not support i.e.
-	ResourceSubclassPtr<T> : public SharedPtr<T>
-	*/
-	class _OgreExport GpuProgramPtr : public SharedPtr<GpuProgram> 
-	{
-	public:
-		GpuProgramPtr() : SharedPtr<GpuProgram>() {}
-		explicit GpuProgramPtr(GpuProgram* rep) : SharedPtr<GpuProgram>(rep) {}
-		GpuProgramPtr(const GpuProgramPtr& r) : SharedPtr<GpuProgram>(r) {} 
-
-        /// Operator used to convert a HighLevelGpuProgramPtr to a GpuProgramPtr
-        GpuProgramPtr& operator=(const HighLevelGpuProgramPtr& r);
-	};
-	/** @} */
 	/** @} */
 }
 

@@ -34,7 +34,6 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreD3D9HardwarePixelBuffer.h"
 #include "OgreD3D9Resource.h"
-#include "OgreSharedPtr.h"
 
 namespace Ogre {
 	class _OgreD3D9Export D3D9Texture : public Texture, public D3D9Resource
@@ -63,7 +62,7 @@ namespace Ogre {
 
 
 		/// Vector of pointers to subsurfaces
-		typedef vector<HardwarePixelBufferSharedPtr>::type SurfaceList;
+		typedef vector<HardwarePixelBufferPtr>::type SurfaceList;
 		SurfaceList	mSurfaceList;
 		/// cube texture individual face names
 		String							mCubeFaceNames[6];	
@@ -185,7 +184,7 @@ namespace Ogre {
 
 
 		/// @copydoc Texture::getBuffer
-		HardwarePixelBufferSharedPtr getBuffer(size_t face, size_t mipmap);
+		HardwarePixelBufferPtr getBuffer(size_t face, size_t mipmap);
 		
 		/// retrieves a pointer to the actual texture
 		IDirect3DBaseTexture9 *getTexture();		
@@ -219,50 +218,7 @@ namespace Ogre {
 		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);	
     };
 
-    /** Specialisation of SharedPtr to allow SharedPtr to be assigned to D3D9TexturePtr 
-    @note Has to be a subclass since we need operator=.
-    We could templatise this instead of repeating per Resource subclass, 
-    except to do so requires a form VC6 does not support i.e.
-    ResourceSubclassPtr<T> : public SharedPtr<T>
-    */
-    class _OgreD3D9Export D3D9TexturePtr : public SharedPtr<D3D9Texture> 
-    {
-    public:
-        D3D9TexturePtr() : SharedPtr<D3D9Texture>() {}
-        explicit D3D9TexturePtr(D3D9Texture* rep) : SharedPtr<D3D9Texture>(rep) {}
-        D3D9TexturePtr(const D3D9TexturePtr& r) : SharedPtr<D3D9Texture>(r) {} 
-		D3D9TexturePtr(const TexturePtr& r) : SharedPtr<D3D9Texture>()
-		{
-			*this = r;
-		}
-
-        /// Operator used to convert a TexturePtr to a D3D9TexturePtr
-        D3D9TexturePtr& operator=(const TexturePtr& r)
-        {
-            if (pRep == static_cast<D3D9Texture*>(r.getPointer()))
-                return *this;
-            release();
-			// lock & copy other mutex pointer
-            OGRE_MUTEX_CONDITIONAL(r.OGRE_AUTO_MUTEX_NAME)
-            {
-			    OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
-			    OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
-                pRep = static_cast<D3D9Texture*>(r.getPointer());
-                pUseCount = r.useCountPointer();
-                if (pUseCount)
-                {
-                    ++(*pUseCount);
-                }
-            }
-			else
-			{
-				// RHS must be a null pointer
-				assert(r.isNull() && "RHS must be null if it has no mutex!");
-				setNull();
-			}
-            return *this;
-        }
-    };
+	typedef std::shared_ptr<D3D9Texture> D3D9TexturePtr;
 
     /// RenderTexture implementation for D3D9
     class _OgreD3D9Export D3D9RenderTexture : public RenderTexture

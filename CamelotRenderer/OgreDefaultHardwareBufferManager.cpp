@@ -151,19 +151,19 @@ namespace Ogre {
         destroyAllBindings(); 
 	}
     //-----------------------------------------------------------------------
-	HardwareVertexBufferSharedPtr 
+	HardwareVertexBufferPtr 
         DefaultHardwareBufferManagerBase::createVertexBuffer(size_t vertexSize, 
 		size_t numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
 	{
         DefaultHardwareVertexBuffer* vb = OGRE_NEW DefaultHardwareVertexBuffer(this, vertexSize, numVerts, usage);
-        return HardwareVertexBufferSharedPtr(vb);
+        return HardwareVertexBufferPtr(vb);
 	}
     //-----------------------------------------------------------------------
-	HardwareIndexBufferSharedPtr 
+	HardwareIndexBufferPtr 
         DefaultHardwareBufferManagerBase::createIndexBuffer(HardwareIndexBuffer::IndexType itype, 
 		size_t numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer)
 	{
         DefaultHardwareIndexBuffer* ib = OGRE_NEW DefaultHardwareIndexBuffer(itype, numIndexes, usage);
-		return HardwareIndexBufferSharedPtr(ib);
+		return HardwareIndexBufferPtr(ib);
 	}
 }

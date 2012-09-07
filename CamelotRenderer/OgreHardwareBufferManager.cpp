@@ -152,8 +152,8 @@ namespace Ogre {
     }
 	//-----------------------------------------------------------------------
     void HardwareBufferManagerBase::registerVertexBufferSourceAndCopy(
-			const HardwareVertexBufferSharedPtr& sourceBuffer,
-			const HardwareVertexBufferSharedPtr& copy)
+			const HardwareVertexBufferPtr& sourceBuffer,
+			const HardwareVertexBufferPtr& copy)
 	{
 		OGRE_LOCK_MUTEX(mTempBuffersMutex)
 		// Add copy to free temporary vertex buffers
@@ -161,9 +161,9 @@ namespace Ogre {
             FreeTemporaryVertexBufferMap::value_type(sourceBuffer.get(), copy));
 	}
 	//-----------------------------------------------------------------------
-    HardwareVertexBufferSharedPtr 
+    HardwareVertexBufferPtr 
     HardwareBufferManagerBase::allocateVertexBufferCopy(
-        const HardwareVertexBufferSharedPtr& sourceBuffer, 
+        const HardwareVertexBufferPtr& sourceBuffer, 
         BufferLicenseType licenseType, HardwareBufferLicensee* licensee,
         bool copyData)
     {
@@ -174,7 +174,7 @@ namespace Ogre {
 		OGRE_LOCK_MUTEX(mVertexBuffersMutex)
 		{
 			OGRE_LOCK_MUTEX(mTempBuffersMutex)
-			HardwareVertexBufferSharedPtr vbuf;
+			HardwareVertexBufferPtr vbuf;
 
 			// Locate existing buffer copy in temporary vertex buffers
 			FreeTemporaryVertexBufferMap::iterator i = 
@@ -211,7 +211,7 @@ namespace Ogre {
     }
     //-----------------------------------------------------------------------
     void HardwareBufferManagerBase::releaseVertexBufferCopy(
-        const HardwareVertexBufferSharedPtr& bufferCopy)
+        const HardwareVertexBufferPtr& bufferCopy)
     {
 		OGRE_LOCK_MUTEX(mTempBuffersMutex)
 
@@ -230,7 +230,7 @@ namespace Ogre {
     }
     //-----------------------------------------------------------------------
     void HardwareBufferManagerBase::touchVertexBufferCopy(
-            const HardwareVertexBufferSharedPtr& bufferCopy)
+            const HardwareVertexBufferPtr& bufferCopy)
     {
 		OGRE_LOCK_MUTEX(mTempBuffersMutex)
         TemporaryVertexBufferLicenseMap::iterator i =
@@ -258,7 +258,7 @@ namespace Ogre {
             // Free the temporary buffer that referenced by ourself only.
             // TODO: Some temporary buffers are bound to vertex buffer bindings
             // but not checked out, need to sort out method to unbind them.
-            if (icur->second.useCount() <= 1)
+            if (icur->second.use_count() <= 1)
             {
                 ++numFreed;
                 mFreeTempVertexBufferMap.erase(icur);
@@ -330,7 +330,7 @@ namespace Ogre {
     }
     //-----------------------------------------------------------------------
     void HardwareBufferManagerBase::_forceReleaseBufferCopies(
-        const HardwareVertexBufferSharedPtr& sourceBuffer)
+        const HardwareVertexBufferPtr& sourceBuffer)
     {
         _forceReleaseBufferCopies(sourceBuffer.get());
     }
@@ -374,10 +374,10 @@ namespace Ogre {
         std::pair<_Iter, _Iter> range = mFreeTempVertexBufferMap.equal_range(sourceBuffer);
         if (range.first != range.second)
         {
-            list<HardwareVertexBufferSharedPtr>::type holdForDelayDestroy;
+            list<HardwareVertexBufferPtr>::type holdForDelayDestroy;
             for (_Iter it = range.first; it != range.second; ++it)
             {
-                if (it->second.useCount() <= 1)
+                if (it->second.use_count() <= 1)
                 {
                     holdForDelayDestroy.push_back(it->second);
                 }
@@ -413,9 +413,9 @@ namespace Ogre {
 		}
 	}
     //-----------------------------------------------------------------------
-    HardwareVertexBufferSharedPtr 
+    HardwareVertexBufferPtr 
     HardwareBufferManagerBase::makeBufferCopy(
-        const HardwareVertexBufferSharedPtr& source,
+        const HardwareVertexBufferPtr& source,
         HardwareBuffer::Usage usage, bool useShadowBuffer)
     {
         return this->createVertexBuffer(
@@ -429,9 +429,9 @@ namespace Ogre {
     TempBlendedBufferInfo::~TempBlendedBufferInfo(void)
     {
         // check that temp buffers have been released
-        if (!destPositionBuffer.isNull())
+        if (destPositionBuffer != nullptr)
             destPositionBuffer->getManager()->releaseVertexBufferCopy(destPositionBuffer);
-        if (!destNormalBuffer.isNull())
+        if (destNormalBuffer != nullptr)
             destNormalBuffer->getManager()->releaseVertexBufferCopy(destNormalBuffer);
 
     }
@@ -439,15 +439,15 @@ namespace Ogre {
     void TempBlendedBufferInfo::extractFrom(const VertexData* sourceData)
     {
         // Release old buffer copies first
-        if (!destPositionBuffer.isNull())
+        if (destPositionBuffer != nullptr)
         {
             destPositionBuffer->getManager()->releaseVertexBufferCopy(destPositionBuffer);
-            assert(destPositionBuffer.isNull());
+            assert(destPositionBuffer == nullptr);
         }
-        if (!destNormalBuffer.isNull())
+        if (destNormalBuffer != nullptr)
         {
             destNormalBuffer->getManager()->releaseVertexBufferCopy(destNormalBuffer);
-            assert(destNormalBuffer.isNull());
+            assert(destNormalBuffer == nullptr);
         }
 
         VertexDeclaration* decl = sourceData->vertexDeclaration;
@@ -463,7 +463,7 @@ namespace Ogre {
         if (!normElem)
         {
             posNormalShareBuffer = false;
-            srcNormalBuffer.setNull();
+            srcNormalBuffer = nullptr;
         }
         else
         {
@@ -471,7 +471,7 @@ namespace Ogre {
             if (normBindIndex == posBindIndex)
             {
                 posNormalShareBuffer = true;
-                srcNormalBuffer.setNull();
+                srcNormalBuffer = nullptr;
             }
             else
             {
@@ -486,12 +486,12 @@ namespace Ogre {
         bindPositions = positions;
         bindNormals = normals;
 
-        if (positions && destPositionBuffer.isNull())
+        if (positions && destPositionBuffer == nullptr)
         {
             destPositionBuffer = srcPositionBuffer->getManager()->allocateVertexBufferCopy(srcPositionBuffer, 
                 HardwareBufferManagerBase::BLT_AUTOMATIC_RELEASE, this);
         }
-        if (normals && !posNormalShareBuffer && !srcNormalBuffer.isNull() && destNormalBuffer.isNull())
+        if (normals && !posNormalShareBuffer && (srcNormalBuffer != nullptr) && (destNormalBuffer == nullptr))
         {
             destNormalBuffer = srcNormalBuffer->getManager()->allocateVertexBufferCopy(srcNormalBuffer, 
                 HardwareBufferManagerBase::BLT_AUTOMATIC_RELEASE, this);
@@ -502,7 +502,7 @@ namespace Ogre {
 	{
         if (positions || (normals && posNormalShareBuffer))
         {
-            if (destPositionBuffer.isNull())
+            if (destPositionBuffer == nullptr)
                 return false;
 
             destPositionBuffer->getManager()->touchVertexBufferCopy(destPositionBuffer);
@@ -510,7 +510,7 @@ namespace Ogre {
 
         if (normals && !posNormalShareBuffer)
         {
-            if (destNormalBuffer.isNull())
+            if (destNormalBuffer == nullptr)
                 return false;
 
             destNormalBuffer->getManager()->touchVertexBufferCopy(destNormalBuffer);
@@ -524,7 +524,7 @@ namespace Ogre {
         this->destPositionBuffer->suppressHardwareUpdate(suppressHardwareUpload);
         targetData->vertexBufferBinding->setBinding(
             this->posBindIndex, this->destPositionBuffer);
-        if (bindNormals && !posNormalShareBuffer && !destNormalBuffer.isNull())
+        if (bindNormals && !posNormalShareBuffer && (destNormalBuffer != nullptr))
         {
             this->destNormalBuffer->suppressHardwareUpdate(suppressHardwareUpload);
             targetData->vertexBufferBinding->setBinding(
@@ -538,9 +538,9 @@ namespace Ogre {
             || buffer == destNormalBuffer.get());
 
         if (buffer == destPositionBuffer.get())
-            destPositionBuffer.setNull();
+            destPositionBuffer = nullptr;
         if (buffer == destNormalBuffer.get())
-            destNormalBuffer.setNull();
+            destNormalBuffer = nullptr;
 
     }
 

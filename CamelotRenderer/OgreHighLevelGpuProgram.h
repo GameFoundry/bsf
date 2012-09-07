@@ -110,7 +110,7 @@ namespace Ogre {
         */
         GpuProgramParametersSharedPtr createParameters(void);
         /** @copydoc GpuProgram::getBindingDelegate */
-        GpuProgram* _getBindingDelegate(void) { return mAssemblerProgram.getPointer(); }
+        GpuProgram* _getBindingDelegate(void) { return mAssemblerProgram.get(); }
 
 		/** Get the full list of GpuConstantDefinition instances.
 		@note
@@ -120,30 +120,8 @@ namespace Ogre {
 
 		/// Override GpuProgram::getNamedConstants to ensure built
 		const GpuNamedConstants& getNamedConstants() const { return getConstantDefinitions(); }
-
-
-
-
-
     };
 
-    /** Specialisation of SharedPtr to allow SharedPtr to be assigned to HighLevelGpuProgramPtr 
-    @note Has to be a subclass since we need operator=.
-    We could templatise this instead of repeating per Resource subclass, 
-    except to do so requires a form VC6 does not support i.e.
-    ResourceSubclassPtr<T> : public SharedPtr<T>
-    */
-    class _OgreExport HighLevelGpuProgramPtr : public SharedPtr<HighLevelGpuProgram> 
-    {
-    public:
-        HighLevelGpuProgramPtr() : SharedPtr<HighLevelGpuProgram>() {}
-        explicit HighLevelGpuProgramPtr(HighLevelGpuProgram* rep) : SharedPtr<HighLevelGpuProgram>(rep) {}
-        HighLevelGpuProgramPtr(const HighLevelGpuProgramPtr& r) : SharedPtr<HighLevelGpuProgram>(r) {} 
-
-		/// Operator used to convert a GpuProgramPtr to a HighLevelGpuProgramPtr
-		HighLevelGpuProgramPtr& operator=(const GpuProgramPtr& r);
-    };
-	/** @} */
 	/** @} */
 
 }

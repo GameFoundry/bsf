@@ -142,7 +142,7 @@ namespace Ogre {
             Note that we don't store any vertex declaration or vertex buffer binding here because this
             can be reused in the shadow algorithm.
         */
-        HardwareVertexBufferSharedPtr hardwareShadowVolWBuffer;
+        HardwareVertexBufferPtr hardwareShadowVolWBuffer;
 
 
 		/** Reorganises the data in the vertex buffers according to the 
@@ -247,7 +247,7 @@ namespace Ogre {
         IndexData();
         ~IndexData();
 		/// pointer to the HardwareIndexBuffer to use, must be specified if useIndexes = true
-		HardwareIndexBufferSharedPtr indexBuffer;
+		HardwareIndexBufferPtr indexBuffer;
 
 		/// index in the buffer to start from for this operation
 		size_t indexStart;
@@ -297,7 +297,7 @@ namespace Ogre {
 				OGRE_FREE(cache, MEMCATEGORY_GEOMETRY);
 			}
 
-			void profile(const HardwareIndexBufferSharedPtr& indexBuffer);
+			void profile(const HardwareIndexBufferPtr& indexBuffer);
 			void reset() { hit = 0; miss = 0; tail = 0; buffersize = 0; }
 			void flush() { tail = 0; buffersize = 0; }
 

@@ -44,7 +44,7 @@ namespace Ogre {
         destroyAllBindings();
     }
     //-----------------------------------------------------------------------
-    HardwareVertexBufferSharedPtr 
+    HardwareVertexBufferPtr 
     D3D9HardwareBufferManagerBase::
     createVertexBuffer(size_t vertexSize, size_t numVerts, HardwareBuffer::Usage usage,
 		bool useShadowBuffer)
@@ -75,10 +75,10 @@ namespace Ogre {
 			OGRE_LOCK_MUTEX(mVertexBuffersMutex)
 			mVertexBuffers.insert(vbuf);
 		}
-        return HardwareVertexBufferSharedPtr(vbuf);
+        return HardwareVertexBufferPtr(vbuf);
     }
     //-----------------------------------------------------------------------
-	HardwareIndexBufferSharedPtr 
+	HardwareIndexBufferPtr 
     D3D9HardwareBufferManagerBase::
     createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
         HardwareBuffer::Usage usage, bool useShadowBuffer)
@@ -107,7 +107,7 @@ namespace Ogre {
 			OGRE_LOCK_MUTEX(mIndexBuffersMutex)
 			mIndexBuffers.insert(idx);
 		}
-		return HardwareIndexBufferSharedPtr(idx);
+		return HardwareIndexBufferPtr(idx);
             
     }
     //-----------------------------------------------------------------------

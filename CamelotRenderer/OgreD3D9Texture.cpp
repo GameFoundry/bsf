@@ -1636,7 +1636,7 @@ namespace Ogre
 				for(size_t mip=0; mip<=mNumMipmaps; ++mip)
 				{
 					buffer = new D3D9HardwarePixelBuffer((HardwareBuffer::Usage)bufusage, this);
-					mSurfaceList.push_back(HardwarePixelBufferSharedPtr(buffer));
+					mSurfaceList.push_back(HardwarePixelBufferPtr(buffer));
 				}
 			}
 		}
@@ -1647,7 +1647,7 @@ namespace Ogre
 		case TEX_TYPE_2D:
 		case TEX_TYPE_1D:
 			assert(textureResources->pNormTex);
-			// For all mipmaps, store surfaces as HardwarePixelBufferSharedPtr
+			// For all mipmaps, store surfaces as HardwarePixelBufferPtr
 			for(mip=0; mip<=mNumMipmaps; ++mip)
 			{
 				if(textureResources->pNormTex->GetSurfaceLevel(static_cast<UINT>(mip), &surface) != D3D_OK)
@@ -1670,7 +1670,7 @@ namespace Ogre
 			break;
 		case TEX_TYPE_CUBE_MAP:
 			assert(textureResources->pCubeTex);
-			// For all faces and mipmaps, store surfaces as HardwarePixelBufferSharedPtr
+			// For all faces and mipmaps, store surfaces as HardwarePixelBufferPtr
 			for(face=0; face<6; ++face)
 			{
 				for(mip=0; mip<=mNumMipmaps; ++mip)
@@ -1696,7 +1696,7 @@ namespace Ogre
 			break;
 		case TEX_TYPE_3D:
 			assert(textureResources->pVolumeTex);
-			// For all mipmaps, store surfaces as HardwarePixelBufferSharedPtr
+			// For all mipmaps, store surfaces as HardwarePixelBufferPtr
 			for(mip=0; mip<=mNumMipmaps; ++mip)
 			{
 				if(textureResources->pVolumeTex->GetVolumeLevel(static_cast<UINT>(mip), &volume) != D3D_OK)
@@ -1719,7 +1719,7 @@ namespace Ogre
 	}
 	#undef GETLEVEL
 	/****************************************************************************************/
-	HardwarePixelBufferSharedPtr D3D9Texture::getBuffer(size_t face, size_t mipmap) 
+	HardwarePixelBufferPtr D3D9Texture::getBuffer(size_t face, size_t mipmap) 
 	{
 		if(face >= getNumFaces())
 			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "A three dimensional cube has six faces",

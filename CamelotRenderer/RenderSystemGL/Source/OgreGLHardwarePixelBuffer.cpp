@@ -544,9 +544,9 @@ void GLTextureBuffer::copyFromFramebuffer(size_t zoffset)
     }
 }
 //-----------------------------------------------------------------------------  
-void GLTextureBuffer::blit(const HardwarePixelBufferSharedPtr &src, const Box &srcBox, const Box &dstBox)
+void GLTextureBuffer::blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox)
 {
-    GLTextureBuffer *srct = static_cast<GLTextureBuffer *>(src.getPointer());
+    GLTextureBuffer *srct = static_cast<GLTextureBuffer *>(src.get());
     /// Check for FBO support first
     /// Destination texture must be 1D, 2D, 3D, or Cube
     /// Source texture must be 1D, 2D or 3D

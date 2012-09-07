@@ -30,7 +30,6 @@ THE SOFTWARE.
 
 // Precompiler options
 #include "OgrePrerequisites.h"
-#include "OgreSharedPtr.h"
 #include "OgreRenderOperation.h"
 
 namespace Ogre {
@@ -303,7 +302,7 @@ namespace Ogre {
 		*/
 		static bool msGenerateAllConstantDefinitionArrayEntries;
 	};
-	typedef SharedPtr<GpuNamedConstants> GpuNamedConstantsPtr;
+	typedef std::shared_ptr<GpuNamedConstants> GpuNamedConstantsPtr;
 
 	/** Structure recording the use of a physical buffer by a logical parameter
 	index. Only used for low-level programs.
@@ -333,7 +332,7 @@ namespace Ogre {
 		size_t bufferSize;
 		GpuLogicalBufferStruct() : bufferSize(0) {}
 	};
-	typedef SharedPtr<GpuLogicalBufferStruct> GpuLogicalBufferStructPtr;
+	typedef std::shared_ptr<GpuLogicalBufferStruct> GpuLogicalBufferStructPtr;
 
 	/** Definition of container that holds the current float constants.
 	@note Not necessarily in direct index order to constant indexes, logical
@@ -458,7 +457,7 @@ namespace Ogre {
 	};
 
 	/// Shared pointer used to hold references to GpuProgramParameters instances
-	typedef SharedPtr<GpuSharedParameters> GpuSharedParametersPtr;
+	typedef std::shared_ptr<GpuSharedParameters> GpuSharedParametersPtr;
 
 	class GpuProgramParameters;
 
@@ -1123,13 +1122,13 @@ namespace Ogre {
 
 
 		/// Does this parameter set include named parameters?
-		bool hasNamedParameters() const { return !mNamedConstants.isNull(); }
+		bool hasNamedParameters() const { return mNamedConstants != nullptr; }
 		/** Does this parameter set include logically indexed parameters?
 		@note Not mutually exclusive with hasNamedParameters since some high-level
 		programs still use logical indexes to set the parameters on the 
 		rendersystem.
 		*/
-		bool hasLogicalIndexedParameters() const { return !mFloatLogicalToPhysical.isNull(); }
+		bool hasLogicalIndexedParameters() const { return mFloatLogicalToPhysical != nullptr; }
 
 		/** Sets a 4-element floating-point parameter to the program.
 		@param index The logical constant index at which to place the parameter 
@@ -1761,7 +1760,7 @@ namespace Ogre {
 	};
 
 	/// Shared pointer used to hold references to GpuProgramParameters instances
-	typedef SharedPtr<GpuProgramParameters> GpuProgramParametersSharedPtr;
+	typedef std::shared_ptr<GpuProgramParameters> GpuProgramParametersSharedPtr;
 
 	/** @} */
 	/** @} */

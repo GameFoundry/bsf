@@ -103,7 +103,7 @@ namespace Ogre
 
     //-----------------------------------------------------------------------------    
 
-    void HardwarePixelBuffer::blit(const HardwarePixelBufferSharedPtr &src, const Box &srcBox, const Box &dstBox)
+    void HardwarePixelBuffer::blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox)
 	{
 		if(isLocked() || src->isLocked())
 		{
@@ -111,7 +111,7 @@ namespace Ogre
 				"Source and destination buffer may not be locked!",
 				"HardwarePixelBuffer::blit");
 		}
-		if(src.getPointer() == this)
+		if(src.get() == this)
 		{
 			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS,
                 "Source must not be the same object",
@@ -144,7 +144,7 @@ namespace Ogre
 		src->unlock();
 	}
     //-----------------------------------------------------------------------------       
-    void HardwarePixelBuffer::blit(const HardwarePixelBufferSharedPtr &src)
+    void HardwarePixelBuffer::blit(const HardwarePixelBufferPtr &src)
     {
         blit(src, 
             Box(0,0,0,src->getWidth(),src->getHeight(),src->getDepth()), 
@@ -178,13 +178,6 @@ namespace Ogre
 				"HardwarePixelBuffer::getRenderTarget");
     }
 
-    //-----------------------------------------------------------------------------    
-    
-    HardwarePixelBufferSharedPtr::HardwarePixelBufferSharedPtr(HardwarePixelBuffer* buf)
-        : SharedPtr<HardwarePixelBuffer>(buf)
-    {
-
-    }   
 	//-----------------------------------------------------------------------------    
 
 	void HardwarePixelBuffer::_clearSliceRTT(size_t zoffset)

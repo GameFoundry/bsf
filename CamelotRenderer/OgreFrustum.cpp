@@ -618,7 +618,7 @@ namespace Ogre {
             // 0 is the origin
             // 1, 2, 3, 4 are the points on the near plane, top left first, clockwise
             // 5, 6, 7, 8 are the points on the far plane, top left first, clockwise
-            HardwareVertexBufferSharedPtr vbuf = mVertexData.vertexBufferBinding->getBuffer(0);
+            HardwareVertexBufferPtr vbuf = mVertexData.vertexBufferBinding->getBuffer(0);
             float* pFloat = static_cast<float*>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
 
             // near plane (remember frustum is going in -Z direction)

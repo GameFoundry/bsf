@@ -468,13 +468,13 @@ void D3D9HardwarePixelBuffer::unlockBuffer(BufferResources* bufferResources)
 }
 
 //-----------------------------------------------------------------------------  
-void D3D9HardwarePixelBuffer::blit(const HardwarePixelBufferSharedPtr &rsrc, 
+void D3D9HardwarePixelBuffer::blit(const HardwarePixelBufferPtr &rsrc, 
 								   const Box &srcBox, 
 								   const Box &dstBox)
 {
 	D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-	D3D9HardwarePixelBuffer *src = static_cast<D3D9HardwarePixelBuffer*>(rsrc.getPointer());
+	D3D9HardwarePixelBuffer *src = static_cast<D3D9HardwarePixelBuffer*>(rsrc.get());
 	DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
 
 	// Update all the buffer copies.
@@ -496,7 +496,7 @@ void D3D9HardwarePixelBuffer::blit(const HardwarePixelBufferSharedPtr &rsrc,
 
 //-----------------------------------------------------------------------------  
 void D3D9HardwarePixelBuffer::blit(IDirect3DDevice9* d3d9Device, 
-								   const HardwarePixelBufferSharedPtr &rsrc, 
+								   const HardwarePixelBufferPtr &rsrc, 
 								   const Box &srcBox, 
 								   const Box &dstBox,
 								   BufferResources* srcBufferResources, 

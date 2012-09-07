@@ -82,7 +82,7 @@ namespace Ogre {
 		OGRE_FREE_ALIGN(mScratchBufferPool, MEMCATEGORY_GEOMETRY, SCRATCH_ALIGNMENT);
     }
     //-----------------------------------------------------------------------
-    HardwareVertexBufferSharedPtr GLHardwareBufferManagerBase::createVertexBuffer(
+    HardwareVertexBufferPtr GLHardwareBufferManagerBase::createVertexBuffer(
         size_t vertexSize, size_t numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
     {
 		GLHardwareVertexBuffer* buf = 
@@ -91,10 +91,10 @@ namespace Ogre {
 			OGRE_LOCK_MUTEX(mVertexBuffersMutex)
 			mVertexBuffers.insert(buf);
 		}
-		return HardwareVertexBufferSharedPtr(buf);
+		return HardwareVertexBufferPtr(buf);
     }
     //-----------------------------------------------------------------------
-    HardwareIndexBufferSharedPtr 
+    HardwareIndexBufferPtr 
     GLHardwareBufferManagerBase::createIndexBuffer(
         HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
         HardwareBuffer::Usage usage, bool useShadowBuffer)
@@ -105,7 +105,7 @@ namespace Ogre {
 			OGRE_LOCK_MUTEX(mIndexBuffersMutex)
 			mIndexBuffers.insert(buf);
 		}
-		return HardwareIndexBufferSharedPtr(buf);
+		return HardwareIndexBufferPtr(buf);
     }
     //---------------------------------------------------------------------
     GLenum GLHardwareBufferManagerBase::getGLUsage(unsigned int usage)

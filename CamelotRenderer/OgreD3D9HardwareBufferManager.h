@@ -46,10 +46,10 @@ namespace Ogre {
         D3D9HardwareBufferManagerBase();
         ~D3D9HardwareBufferManagerBase();
         /// Creates a vertex buffer
-		HardwareVertexBufferSharedPtr 
+		HardwareVertexBufferPtr 
             createVertexBuffer(size_t vertexSize, size_t numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer = false);
 		/// Create a hardware vertex buffer
-		HardwareIndexBufferSharedPtr 
+		HardwareIndexBufferPtr 
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer = false);
     };
 

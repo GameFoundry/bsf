@@ -93,7 +93,7 @@ namespace Ogre {
 		/// destroy render texture.
 		void destroyRenderTexture();
 
-		void blit(IDirect3DDevice9* d3d9Device, const HardwarePixelBufferSharedPtr &src,
+		void blit(IDirect3DDevice9* d3d9Device, const HardwarePixelBufferPtr &src,
 				const Box &srcBox, const Box &dstBox, 
 				BufferResources* srcBufferResources, 
 				BufferResources* dstBufferResources);
@@ -112,7 +112,7 @@ namespace Ogre {
 		void bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *mVolume, IDirect3DBaseTexture9 *mipTex);
 		
 		/// @copydoc HardwarePixelBuffer::blit
-        void blit(const HardwarePixelBufferSharedPtr &src, const Box &srcBox, const Box &dstBox);
+        void blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
 		
 		/// @copydoc HardwarePixelBuffer::blitFromMemory
 		void blitFromMemory(const PixelBox &src, const Box &dstBox);
