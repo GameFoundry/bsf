@@ -42,13 +42,11 @@ namespace Ogre {
 
     String Camera::msMovableType = "Camera";
     //-----------------------------------------------------------------------
-    Camera::Camera( const String& name, SceneManager* sm)
+    Camera::Camera( const String& name)
         : Frustum(name),
-		mSceneMgr(sm),
 		mOrientation(Quaternion::IDENTITY),
 		mPosition(Vector3::ZERO),
 		mSceneDetail(PM_SOLID),
-		mAutoTrackTarget(0),
 		mAutoTrackOffset(Vector3::ZERO),
 		mSceneLodFactor(1.0f),
 		mSceneLodFactorInv(1.0f),
@@ -87,13 +85,6 @@ namespace Ogre {
 			(*i)->cameraDestroyed(this);
 		}
     }
-    //-----------------------------------------------------------------------
-    SceneManager* Camera::getSceneManager(void) const
-    {
-        return mSceneMgr;
-    }
-
-
     //-----------------------------------------------------------------------
     void Camera::setPolygonMode(PolygonMode sd)
     {
@@ -540,30 +531,6 @@ namespace Ogre {
     const String& Camera::getMovableType(void) const
     {
         return msMovableType;
-    }
-    //-----------------------------------------------------------------------
-    void Camera::setAutoTracking(bool enabled, SceneNode* target, 
-        const Vector3& offset)
-    {
-        if (enabled)
-        {
-            assert (target != 0 && "target cannot be a null pointer if tracking is enabled");
-            mAutoTrackTarget = target;
-            mAutoTrackOffset = offset;
-        }
-        else
-        {
-            mAutoTrackTarget = 0;
-        }
-    }
-    //-----------------------------------------------------------------------
-    void Camera::_autoTrack(void)
-    {
-        // NB assumes that all scene nodes have been updated
-        if (mAutoTrackTarget)
-        {
-            //lookAt(mAutoTrackTarget->_getDerivedPosition() + mAutoTrackOffset);
-        }
     }
     //-----------------------------------------------------------------------
 	void Camera::setLodBias(Real factor)

@@ -105,9 +105,6 @@ namespace Ogre {
 
 		};
     protected:
-        /// Scene manager responsible for the scene
-        SceneManager *mSceneMgr;
-
         /// Camera orientation, quaternion style
         Quaternion mOrientation;
 
@@ -139,8 +136,6 @@ namespace Ogre {
         /// Shared class-level name for Movable type
         static String msMovableType;
 
-        /// SceneNode which this Camera will automatically track
-        SceneNode* mAutoTrackTarget;
         /// Tracking offset for fine tuning
         Vector3 mAutoTrackOffset;
 
@@ -198,7 +193,7 @@ namespace Ogre {
     public:
         /** Standard constructor.
         */
-        Camera( const String& name, SceneManager* sm);
+        Camera( const String& name);
 
         /** Standard destructor.
         */
@@ -208,10 +203,6 @@ namespace Ogre {
 		virtual void addListener(Listener* l);
 		/// Remove a listener to this camera
 		virtual void removeListener(Listener* l);
-
-        /** Returns a pointer to the SceneManager this camera is rendering through.
-        */
-        SceneManager* getSceneManager(void) const;
 
         /** Sets the level of rendering detail required from this camera.
             @remarks
@@ -403,29 +394,6 @@ namespace Ogre {
         /** Overridden from MovableObject */
         const String& getMovableType(void) const;
 
-        /** Enables / disables automatic tracking of a SceneNode.
-        @remarks
-            If you enable auto-tracking, this Camera will automatically rotate to
-            look at the target SceneNode every frame, no matter how 
-            it or SceneNode move. This is handy if you want a Camera to be focused on a
-            single object or group of objects. Note that by default the Camera looks at the 
-            origin of the SceneNode, if you want to tweak this, e.g. if the object which is
-            attached to this target node is quite big and you want to point the camera at
-            a specific point on it, provide a vector in the 'offset' parameter and the 
-            camera's target point will be adjusted.
-        @param enabled If true, the Camera will track the SceneNode supplied as the next 
-            parameter (cannot be null). If false the camera will cease tracking and will
-            remain in it's current orientation.
-        @param target Pointer to the SceneNode which this Camera will track. Make sure you don't
-            delete this SceneNode before turning off tracking (e.g. SceneManager::clearScene will
-            delete it so be careful of this). Can be null if and only if the enabled param is false.
-        @param offset If supplied, the camera targets this point in local space of the target node
-            instead of the origin of the target node. Good for fine tuning the look at point.
-        */
-        void setAutoTracking(bool enabled, SceneNode* target = 0, 
-            const Vector3& offset = Vector3::ZERO);
-
-
 		/** Sets the level-of-detail factor for this Camera.
 		@remarks
 			This method can be used to influence the overall level of detail of the scenes 
@@ -487,11 +455,6 @@ namespace Ogre {
 		/** Internal method for OGRE to use for LOD calculations. */
 		Real _getLodBiasInverse(void) const;
 
-
-        /** Internal method used by OGRE to update auto-tracking cameras. */
-        void _autoTrack(void);
-
-
         /** Sets the viewing window inside of viewport.
         @remarks
         This method can be used to set a subset of the viewport as the rendering
@@ -511,10 +474,6 @@ namespace Ogre {
 
         /** Overridden from MovableObject */
         Real getBoundingRadius(void) const;
-		/** Get the auto tracking target for this camera, if any. */
-        SceneNode* getAutoTrackTarget(void) const { return mAutoTrackTarget; }
-		/** Get the auto tracking offset for this camera, if it is auto tracking. */
-		const Vector3& getAutoTrackOffset(void) const { return mAutoTrackOffset; }
 		
         /** Get the last viewport which was attached to this camera. 
         @note This is not guaranteed to be the only viewport which is

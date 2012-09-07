@@ -60,7 +60,6 @@ namespace Ogre {
 		, mBindingType(BT_FRAGMENT)
 		, mContentType(CONTENT_NAMED)
 		, mParent(parent)
-		, mAnimController(0)
     {
 		mColourBlendMode.blendType = LBT_COLOUR;
 		mAlphaBlendMode.operation = LBX_MODULATE;
@@ -75,7 +74,6 @@ namespace Ogre {
     TextureUnitState::TextureUnitState(Pass* parent, const TextureUnitState& oth )
     {
         mParent = parent;
-        mAnimController = 0;
         *this = oth;
     }
 
@@ -109,7 +107,6 @@ namespace Ogre {
 		, mBindingType(BT_FRAGMENT)
 		, mContentType(CONTENT_NAMED)
 		, mParent(parent)
-		, mAnimController(0)
     {
 		mColourBlendMode.blendType = LBT_COLOUR;
 		mAlphaBlendMode.operation = LBX_MODULATE;
@@ -132,7 +129,6 @@ namespace Ogre {
     TextureUnitState & TextureUnitState::operator = ( 
         const TextureUnitState &oth )
     {
-        assert(mAnimController == 0);
         assert(mEffects.empty());
 
         // copy basic members (int's, real's)
@@ -146,11 +142,6 @@ namespace Ogre {
         mTextureNameAlias = oth.mTextureNameAlias;
 		mCompositorRefName = oth.mCompositorRefName;
 		mCompositorRefTexName = oth.mCompositorRefTexName;
-        // Can't sharing controllers with other TUS, reset to null to avoid potential bug.
-        for (EffectMap::iterator j = mEffects.begin(); j != mEffects.end(); ++j)
-        {
-            j->second.controller = 0;
-        }
 
         // Load immediately if Material loaded
         if (isLoaded())

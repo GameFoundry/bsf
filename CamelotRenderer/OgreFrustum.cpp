@@ -41,7 +41,7 @@ THE SOFTWARE.
 namespace Ogre {
 
     String Frustum::msMovableType = "Frustum";
-    const Real Frustum::INFINITE_FAR_PLANE_ADJUST = 0.00001;
+    const Real Frustum::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
     //-----------------------------------------------------------------------
     Frustum::Frustum(const String& name) : 
         mProjType(PT_PERSPECTIVE), 

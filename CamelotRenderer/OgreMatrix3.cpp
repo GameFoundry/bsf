@@ -33,10 +33,10 @@ THE SOFTWARE.
 
 namespace Ogre
 {
-    const Real Matrix3::EPSILON = 1e-06;
+    const Real Matrix3::EPSILON = 1e-06f;
     const Matrix3 Matrix3::ZERO(0,0,0,0,0,0,0,0,0);
     const Matrix3 Matrix3::IDENTITY(1,0,0,0,1,0,0,0,1);
-    const Real Matrix3::ms_fSvdEpsilon = 1e-04;
+    const Real Matrix3::ms_fSvdEpsilon = 1e-04f;
     const unsigned int Matrix3::ms_iSvdMaxIterations = 32;
 
     //-----------------------------------------------------------------------
@@ -801,8 +801,8 @@ namespace Ogre
         // This yields the assertions c[0] < 0 and c[2]*c[2] >= 3*c[1].
 
         // quick out for uniform scale (triple root)
-        const Real fOneThird = 1.0/3.0;
-        const Real fEpsilon = 1e-06;
+        const Real fOneThird = 1.0f/3.0f;
+        const Real fEpsilon = 1e-06f;
         Real fDiscr = afCoeff[2]*afCoeff[2] - 3.0f*afCoeff[1];
         if ( fDiscr <= fEpsilon )
             return -fOneThird*afCoeff[2];

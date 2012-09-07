@@ -158,7 +158,7 @@ namespace Ogre {
         /** Sets the shader target to compile down to, e.g. 'vs_1_1'. */
         void setTarget(const String& target);
         /** Gets the shader target to compile down to, e.g. 'vs_1_1'. */
-        const String& getTarget(void) const { return ""; }
+        const String getTarget(void) const;
         /** Sets the preprocessor defines use to compile the program. */
         void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
         /** Sets the preprocessor defines use to compile the program. */

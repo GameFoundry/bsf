@@ -52,7 +52,6 @@ namespace Ogre {
         , mShowSkies(true)
 		, mShowShadows(true)
 		, mVisibilityMask(0xFFFFFFFF)
-		, mRQSequence(0)
 		, mMaterialSchemeName("NotUsedInPort")
 		, mIsAutoUpdated(true)
     {
@@ -301,31 +300,6 @@ namespace Ogre {
     {
         return mShowShadows;
     }
-	//-----------------------------------------------------------------------
-	void Viewport::setRenderQueueInvocationSequenceName(const String& sequenceName)
-	{
-		mRQSequenceName = sequenceName;
-		if (mRQSequenceName.empty())
-		{
-			mRQSequence = 0;
-		}
-		else
-		{
-			// TODO PORT - Not sure if this is needed but I might need to enable it later once I have rendersystem running? (Probably not)
-			//mRQSequence =
-			//	Root::getSingleton().getRenderQueueInvocationSequence(mRQSequenceName);
-		}
-	}
-	//-----------------------------------------------------------------------
-	const String& Viewport::getRenderQueueInvocationSequenceName(void) const
-	{
-		return mRQSequenceName;
-	}
-	//-----------------------------------------------------------------------
-	RenderQueueInvocationSequence* Viewport::_getRenderQueueInvocationSequence(void)
-	{
-		return mRQSequence;
-	}
 	//-----------------------------------------------------------------------
     void Viewport::pointOrientedToScreen(const Vector2 &v, int orientationMode, Vector2 &outv)
     {

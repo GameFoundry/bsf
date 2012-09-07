@@ -221,8 +221,8 @@ namespace Ogre
 				int screenh = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
 
 				// clamp window dimensions to screen size
-				int outerw = (winWidth < screenw)? winWidth : screenw;
-				int outerh = (winHeight < screenh)? winHeight : screenh;
+				int outerw = (int(winWidth) < screenw)? int(winWidth) : screenw;
+				int outerh = (int(winHeight) < screenh)? int(winHeight) : screenh;
 
 				if (left == INT_MAX)
 					left = monitorInfo.rcWork.left + (screenw - outerw) / 2;
@@ -467,8 +467,8 @@ namespace Ogre
 			LONG screenh = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
 
 
-			int left = screenw > winWidth ? ((screenw - winWidth) / 2) : 0;
-			int top = screenh > winHeight ? ((screenh - winHeight) / 2) : 0;
+			int left = screenw > int(winWidth) ? ((screenw - int(winWidth)) / 2) : 0;
+			int top = screenh > int(winHeight) ? ((screenh - int(winHeight)) / 2) : 0;
 			SetWindowPos(mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
 				SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 

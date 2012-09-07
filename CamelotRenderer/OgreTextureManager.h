@@ -109,7 +109,7 @@ namespace Ogre {
 				not support it.
         */
         TexturePtr create(TextureType texType, uint width, uint height, uint depth, 
-			int num_mips, PixelFormat format, int usage = TU_DEFAULT, ManualResourceLoader* loader = 0,
+			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, uint fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
 			
         /** Create a manual texture with a depth of 1 (not loaded from a file).
@@ -155,11 +155,11 @@ namespace Ogre {
 				not support it.
         */
         TexturePtr create(TextureType texType, uint width, uint height, int num_mips,
-            PixelFormat format, int usage = TU_DEFAULT, ManualResourceLoader* loader = 0,
+            PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, uint fsaa = 0, const String& fsaaHint = StringUtil::BLANK)
 		{
 			return create(texType, width, height, 1, 
-				num_mips, format, usage, loader, hwGammaCorrection, fsaa, fsaaHint);
+				num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 		}
 
         /** Sets preferred bit depth for integer pixel format textures.

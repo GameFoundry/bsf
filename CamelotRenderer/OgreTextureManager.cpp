@@ -57,7 +57,7 @@ namespace Ogre {
     }
     //-----------------------------------------------------------------------
     TexturePtr TextureManager::create(TextureType texType, uint width, uint height, uint depth, int numMipmaps,
-        PixelFormat format, int usage, ManualResourceLoader* loader, bool hwGamma, 
+        PixelFormat format, int usage, bool hwGamma, 
 		uint fsaa, const String& fsaaHint)
     {
         TexturePtr ret = TexturePtr(createImpl());

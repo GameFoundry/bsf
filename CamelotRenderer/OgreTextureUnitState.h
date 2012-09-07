@@ -163,7 +163,6 @@ namespace Ogre {
             Real frequency;
             Real phase;
             Real amplitude;
-            Controller<Real>* controller;
             const Frustum* frustum;
         };
 
@@ -989,10 +988,6 @@ namespace Ogre {
 		/** Set the texture pointer for a given frame (internal use only!). */
 		void _setTexturePtr(const TexturePtr& texptr, size_t frame);
 
-		/** Gets the animation controller (as created because of setAnimatedTexture)
-			if it exists.
-		*/
-		Controller<Real>* _getAnimController() const { return mAnimController; }
 protected:
         // State
         /// The current animation frame.
@@ -1064,7 +1059,6 @@ protected:
         // preserving even if assign from others
         //
         Pass* mParent;
-        Controller<Real>* mAnimController;
         //-----------------------------------------------------------------------------
 
 

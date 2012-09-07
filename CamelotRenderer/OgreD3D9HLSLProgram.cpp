@@ -121,6 +121,8 @@ namespace Ogre {
 		default:
 			assert(false); // Unsupported profile
 		}
+
+		return "";
 	}
 
     //-----------------------------------------------------------------------
@@ -533,6 +535,11 @@ namespace Ogre {
 	LPD3DXBUFFER D3D9HLSLProgram::getMicroCode()
 	{
 		return mpMicroCode;
+	}
+
+	const String D3D9HLSLProgram::getTarget(void) const
+	{
+		return gpuProgramProfileToHLSLProfile(mProfile);
 	}
 
     //-----------------------------------------------------------------------

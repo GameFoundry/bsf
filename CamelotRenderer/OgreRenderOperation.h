@@ -73,16 +73,10 @@ namespace Ogre {
 
 		/// Index data - only valid if useIndexes is true
 		IndexData *indexData;
-		/// Debug pointer back to renderable which created this
-		const Renderable* srcRenderable;
-
-
 
         RenderOperation() :
             vertexData(0), operationType(OT_TRIANGLE_LIST), useIndexes(true),
-                indexData(0), srcRenderable(0) {}
-
-
+                indexData(0) {}
 	};
 	/** @} */
 	/** @} */

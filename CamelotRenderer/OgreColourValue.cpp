@@ -371,7 +371,7 @@ namespace Ogre {
 
 		*brightness = vMax;
 
-		if (Math::RealEqual(delta, 0.0f, 1e-6))
+		if (Math::RealEqual(delta, 0.0f, 1e-6f))
 		{
 			// grey
 			*hue = 0;

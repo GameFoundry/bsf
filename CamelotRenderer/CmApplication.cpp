@@ -32,7 +32,7 @@ namespace CamelotEngine
 		//renderSystem->setAmbientLight(1.0f, 1.0f, 1.0f);
 		renderSystem->setLightingEnabled(false);
 
-		mCamera = new Ogre::Camera("SimpleCam", nullptr);
+		mCamera = new Ogre::Camera("SimpleCam");
 		mCamera->setPosition(Ogre::Vector3(0,0,80));
 		mCamera->lookAt(Ogre::Vector3(0,0,-300));
 		mCamera->setNearClipDistance(5);
