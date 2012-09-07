@@ -40,15 +40,6 @@ THE SOFTWARE.
 #include "OgreGLSLPreprocessor.h"
 
 namespace Ogre {
-
-    //-----------------------------------------------------------------------
-	GLSLProgram::CmdPreprocessorDefines GLSLProgram::msCmdPreprocessorDefines;
-    GLSLProgram::CmdAttach GLSLProgram::msCmdAttach;
-	GLSLProgram::CmdInputOperationType GLSLProgram::msInputOperationTypeCmd;
-	GLSLProgram::CmdOutputOperationType GLSLProgram::msOutputOperationTypeCmd;
-	GLSLProgram::CmdMaxOutputVertices GLSLProgram::msMaxOutputVerticesCmd;
-
-    //-----------------------------------------------------------------------
     //---------------------------------------------------------------------------
     GLSLProgram::~GLSLProgram()
     {
@@ -246,35 +237,6 @@ namespace Ogre {
             mInputOperationType(RenderOperation::OT_TRIANGLE_LIST),
             mOutputOperationType(RenderOperation::OT_TRIANGLE_LIST), mMaxOutputVertices(3)
     {
-		// add parameter command "attach" to the material serializer dictionary
-   //     if (createParamDictionary("GLSLProgram"))
-   //     {
-   //         setupBaseParamDictionary();
-   //         ParamDictionary* dict = getParamDictionary();
-
-			//dict->addParameter(ParameterDef("preprocessor_defines", 
-			//	"Preprocessor defines use to compile the program.",
-			//	PT_STRING),&msCmdPreprocessorDefines);
-   //         dict->addParameter(ParameterDef("attach", 
-   //             "name of another GLSL program needed by this program",
-   //             PT_STRING),&msCmdAttach);
-			//dict->addParameter(
-			//	ParameterDef("input_operation_type",
-			//	"The input operation type for this geometry program. \
-			//	Can be 'point_list', 'line_list', 'line_strip', 'triangle_list', \
-			//	'triangle_strip' or 'triangle_fan'", PT_STRING),
-			//	&msInputOperationTypeCmd);
-			//dict->addParameter(
-			//	ParameterDef("output_operation_type",
-			//	"The input operation type for this geometry program. \
-			//	Can be 'point_list', 'line_strip' or 'triangle_strip'",
-			//	 PT_STRING),
-			//	 &msOutputOperationTypeCmd);
-			//dict->addParameter(
-			//	ParameterDef("max_output_vertices", 
-			//	"The maximum number of vertices a single run of this geometry program can output",
-			//	PT_INT),&msMaxOutputVerticesCmd);
-   //     }
         // Manually assign language now since we use it immediately
         mSyntaxCode = "glsl";
         
@@ -290,32 +252,6 @@ namespace Ogre {
 	{
 		// scenemanager should pass on transform state to the rendersystem
 		return true;
-	}
-	//-----------------------------------------------------------------------
-    String GLSLProgram::CmdAttach::doGet(const void *target) const
-    {
-        return (static_cast<const GLSLProgram*>(target))->getAttachedShaderNames();
-    }
-	//-----------------------------------------------------------------------
-    void GLSLProgram::CmdAttach::doSet(void *target, const String& shaderNames)
-    {
-		//get all the shader program names: there could be more than one
-		std::vector<Ogre::String> vecShaderNames = StringUtil::split(shaderNames, " \t", 0);
-
-		size_t programNameCount = vecShaderNames.size();
-		for ( size_t i = 0; i < programNameCount; ++i )
-		{
-	        static_cast<GLSLProgram*>(target)->attachChildShader(vecShaderNames[i]);
-		}
-    }
-	//-----------------------------------------------------------------------
-	String GLSLProgram::CmdPreprocessorDefines::doGet(const void *target) const
-	{
-		return static_cast<const GLSLProgram*>(target)->getPreprocessorDefines();
-	}
-	void GLSLProgram::CmdPreprocessorDefines::doSet(void *target, const String& val)
-	{
-		static_cast<GLSLProgram*>(target)->setPreprocessorDefines(val);
 	}
 
 	//-----------------------------------------------------------------------
@@ -453,39 +389,4 @@ namespace Ogre {
 			break;
 		}
 	}
-	//-----------------------------------------------------------------------
-    String GLSLProgram::CmdInputOperationType::doGet(const void* target) const
-    {
-        const GLSLProgram* t = static_cast<const GLSLProgram*>(target);
-		return operationTypeToString(t->getInputOperationType());
-    }
-    void GLSLProgram::CmdInputOperationType::doSet(void* target, const String& val)
-    {
-        GLSLProgram* t = static_cast<GLSLProgram*>(target);
-		t->setInputOperationType(parseOperationType(val));
-    }
-	//-----------------------------------------------------------------------
-	String GLSLProgram::CmdOutputOperationType::doGet(const void* target) const
-    {
-        const GLSLProgram* t = static_cast<const GLSLProgram*>(target);
-		return operationTypeToString(t->getOutputOperationType());
-    }
-    void GLSLProgram::CmdOutputOperationType::doSet(void* target, const String& val)
-    {
-        GLSLProgram* t = static_cast<GLSLProgram*>(target);
-		t->setOutputOperationType(parseOperationType(val));
-    }
-	//-----------------------------------------------------------------------
-	String GLSLProgram::CmdMaxOutputVertices::doGet(const void* target) const
-	{
-		const GLSLProgram* t = static_cast<const GLSLProgram*>(target);
-		return StringConverter::toString(t->getMaxOutputVertices());
-	}
-	void GLSLProgram::CmdMaxOutputVertices::doSet(void* target, const String& val)
-	{
-		GLSLProgram* t = static_cast<GLSLProgram*>(target);
-		t->setMaxOutputVertices(StringConverter::parseInt(val));
-	}
-
-  
 }

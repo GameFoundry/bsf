@@ -34,15 +34,6 @@ THE SOFTWARE.
 #include "CmRenderSystemManager.h"
 
 namespace Ogre {
-    //-----------------------------------------------------------------------
-    D3D9HLSLProgram::CmdEntryPoint D3D9HLSLProgram::msCmdEntryPoint;
-    D3D9HLSLProgram::CmdTarget D3D9HLSLProgram::msCmdTarget;
-    D3D9HLSLProgram::CmdPreprocessorDefines D3D9HLSLProgram::msCmdPreprocessorDefines;
-    D3D9HLSLProgram::CmdColumnMajorMatrices D3D9HLSLProgram::msCmdColumnMajorMatrices;
-	D3D9HLSLProgram::CmdOptimisation D3D9HLSLProgram::msCmdOptimisation;
-	D3D9HLSLProgram::CmdMicrocode D3D9HLSLProgram::msCmdMicrocode;
-	D3D9HLSLProgram::CmdAssemblerCode D3D9HLSLProgram::msCmdAssemblerCode;
-
 	class _OgreD3D9Export HLSLIncludeHandler : public ID3DXInclude
 	{
 	public:
@@ -550,35 +541,6 @@ namespace Ogre {
         , mpMicroCode(NULL), mpConstTable(NULL)
 		, mOptimisationLevel(OPT_DEFAULT)
 	{
-		// TODO PORT - I'm not sure if this is needed but I won't be doing things this way
-   //     if (createParamDictionary("D3D9HLSLProgram"))
-   //     {
-   //         setupBaseParamDictionary();
-   //         ParamDictionary* dict = getParamDictionary();
-
-   //         dict->addParameter(ParameterDef("entry_point", 
-   //             "The entry point for the HLSL program.",
-   //             PT_STRING),&msCmdEntryPoint);
-   //         dict->addParameter(ParameterDef("target", 
-   //             "Name of the assembler target to compile down to.",
-   //             PT_STRING),&msCmdTarget);
-   //         dict->addParameter(ParameterDef("preprocessor_defines", 
-   //             "Preprocessor defines use to compile the program.",
-   //             PT_STRING),&msCmdPreprocessorDefines);
-   //         dict->addParameter(ParameterDef("column_major_matrices", 
-   //             "Whether matrix packing in column-major order.",
-   //             PT_BOOL),&msCmdColumnMajorMatrices);
-			//dict->addParameter(ParameterDef("optimisation_level", 
-			//	"The optimisation level to use.",
-			//	PT_STRING),&msCmdOptimisation);
-			//dict->addParameter(ParameterDef("micro_code", 
-			//	"the micro code.",
-			//	PT_STRING),&msCmdMicrocode);
-			//dict->addParameter(ParameterDef("assemble_code", 
-			//	"the assemble code.",
-			//	PT_STRING),&msCmdAssemblerCode);
-   //     }
-        
     }
     //-----------------------------------------------------------------------
     D3D9HLSLProgram::~D3D9HLSLProgram()
@@ -619,133 +581,5 @@ namespace Ogre {
         static const String language = "hlsl";
 
         return language;
-    }
-
-    //-----------------------------------------------------------------------
-    //-----------------------------------------------------------------------
-    String D3D9HLSLProgram::CmdEntryPoint::doGet(const void *target) const
-    {
-        return static_cast<const D3D9HLSLProgram*>(target)->getEntryPoint();
-    }
-    void D3D9HLSLProgram::CmdEntryPoint::doSet(void *target, const String& val)
-    {
-        static_cast<D3D9HLSLProgram*>(target)->setEntryPoint(val);
-    }
-    //-----------------------------------------------------------------------
-    String D3D9HLSLProgram::CmdTarget::doGet(const void *target) const
-    {
-        return static_cast<const D3D9HLSLProgram*>(target)->getTarget();
-    }
-    void D3D9HLSLProgram::CmdTarget::doSet(void *target, const String& val)
-    {
-        static_cast<D3D9HLSLProgram*>(target)->setTarget(val);
-    }
-    //-----------------------------------------------------------------------
-    String D3D9HLSLProgram::CmdPreprocessorDefines::doGet(const void *target) const
-    {
-        return static_cast<const D3D9HLSLProgram*>(target)->getPreprocessorDefines();
-    }
-    void D3D9HLSLProgram::CmdPreprocessorDefines::doSet(void *target, const String& val)
-    {
-        static_cast<D3D9HLSLProgram*>(target)->setPreprocessorDefines(val);
-    }
-    //-----------------------------------------------------------------------
-    String D3D9HLSLProgram::CmdColumnMajorMatrices::doGet(const void *target) const
-    {
-        return StringConverter::toString(static_cast<const D3D9HLSLProgram*>(target)->getColumnMajorMatrices());
-    }
-    void D3D9HLSLProgram::CmdColumnMajorMatrices::doSet(void *target, const String& val)
-    {
-        static_cast<D3D9HLSLProgram*>(target)->setColumnMajorMatrices(StringConverter::parseBool(val));
-    }
-	//-----------------------------------------------------------------------
-	String D3D9HLSLProgram::CmdOptimisation::doGet(const void *target) const
-	{
-		switch(static_cast<const D3D9HLSLProgram*>(target)->getOptimisationLevel())
-		{
-		default:
-		case OPT_DEFAULT:
-			return "default";
-		case OPT_NONE:
-			return "none";
-		case OPT_0:
-			return "0";
-		case OPT_1:
-			return "1";
-		case OPT_2:
-			return "2";
-		case OPT_3:
-			return "3";
-		}
-	}
-	void D3D9HLSLProgram::CmdOptimisation::doSet(void *target, const String& val)
-	{
-		if (StringUtil::startsWith(val, "default", true))
-			static_cast<D3D9HLSLProgram*>(target)->setOptimisationLevel(OPT_DEFAULT);
-		else if (StringUtil::startsWith(val, "none", true))
-			static_cast<D3D9HLSLProgram*>(target)->setOptimisationLevel(OPT_NONE);
-		else if (StringUtil::startsWith(val, "0", true))
-			static_cast<D3D9HLSLProgram*>(target)->setOptimisationLevel(OPT_0);
-		else if (StringUtil::startsWith(val, "1", true))
-			static_cast<D3D9HLSLProgram*>(target)->setOptimisationLevel(OPT_1);
-		else if (StringUtil::startsWith(val, "2", true))
-			static_cast<D3D9HLSLProgram*>(target)->setOptimisationLevel(OPT_2);
-		else if (StringUtil::startsWith(val, "3", true))
-			static_cast<D3D9HLSLProgram*>(target)->setOptimisationLevel(OPT_3);
-	}
-
-    //-----------------------------------------------------------------------
-    String D3D9HLSLProgram::CmdMicrocode::doGet(const void *target) const
-    {
-		D3D9HLSLProgram* program=const_cast<D3D9HLSLProgram*>(static_cast<const D3D9HLSLProgram*>(target));
-		LPD3DXBUFFER buffer=program->getMicroCode();
-		if(buffer)
-		{
-			char* str  =static_cast<Ogre::String::value_type*>(buffer->GetBufferPointer());
-			size_t size=static_cast<size_t>(buffer->GetBufferSize());
-			Ogre::String code;
-			code.assign(str,size);
-			return code;
-		}
-		else
-		{
-			return String();
-		}
-    }
-    void D3D9HLSLProgram::CmdMicrocode::doSet(void *target, const String& val)
-    {
-		//nothing to do 
-		//static_cast<D3D9HLSLProgram*>(target)->setColumnMajorMatrices(StringConverter::parseBool(val));
-    }
-    //-----------------------------------------------------------------------
-    String D3D9HLSLProgram::CmdAssemblerCode::doGet(const void *target) const
-    {
-		D3D9HLSLProgram* program=const_cast<D3D9HLSLProgram*>(static_cast<const D3D9HLSLProgram*>(target));
-		LPD3DXBUFFER buffer=program->getMicroCode();
-		if(buffer)
-		{
-			CONST DWORD* code =static_cast<CONST DWORD*>(buffer->GetBufferPointer());
-			LPD3DXBUFFER pDisassembly=0;
-			HRESULT hr=D3DXDisassembleShader(code,FALSE,"// assemble code from D3D9HLSLProgram\n",&pDisassembly);
-			if(pDisassembly)
-			{
-				char* str  =static_cast<Ogre::String::value_type*>(pDisassembly->GetBufferPointer());
-				size_t size=static_cast<size_t>(pDisassembly->GetBufferSize());
-				Ogre::String assemble_code;
-				assemble_code.assign(str,size);
-				pDisassembly->Release();
-				return assemble_code;
-			}
-			return String();
-		}
-		else
-		{
-			return String();
-		}
-    }
-    void D3D9HLSLProgram::CmdAssemblerCode::doSet(void *target, const String& val)
-    {
-		//nothing to do 
-		//static_cast<D3D9HLSLProgram*>(target)->setColumnMajorMatrices(StringConverter::parseBool(val));
     }
 }

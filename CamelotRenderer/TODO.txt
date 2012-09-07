@@ -82,8 +82,8 @@ Viewport - MERGE WITH CAMERA
 
 TODO:
  - Make sure to parse D3D9 implementations of above classes and see what needs removing there as well
+ - OpenGL too
 
-IMPORTANT: After I set up a test case and remove irrelevant Ogre stuff, make sure to port OpenGL, before renaming anything or removing major files
 IMPORTANT: I think I should strive to make the renderer one unique CmRenderSystem.dll (Log manager, exceptions, math can go in a separate CmUtility library?)
    - Later separate out OpenGL and D3D9 dlls as well, since I want to support D3D11. And I want to keep the framework separate from implementation
      - AND because I need to have it separated since I can't expect DirectX to compile on OSX or Linux
@@ -91,14 +91,16 @@ IMPORTANT: I think I should strive to make the renderer one unique CmRenderSyste
 Other notes:
  - Make sure to remove all ogre memory allocators and memory category bullshit (Possibly replace with Camelot versions?)
  - Remove Ogre::String and Ogre::Real (Possibly replace with Camelot versions?)
- - Because HardwareBufferManager is quite useful I will probably need to reintroduce GpuProgramManager as well - Probably not until I add OpenGL
-   - As well as TextureManager
  - Ogre::ColourValue -> CamelotEngine::Color (Other struct names are okay for the most part)
  - Port all math methods to Camelot
  - Rename all macros and other OGRE references to CM
  - How am I notified on device reset? (When I need to reload my resources)
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
  
+ At one point rebuild everything and make sure all warnings are gone
+Figure out how to ignore those warnings in NVparse
+String stuff should go to a single StringUtil file
+
 After everything is polished:
  - Make sure the renderer can run on a separate thread
  - Get 64bit version working

@@ -307,9 +307,6 @@
     <ClInclude Include="OgrePixelFormat.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="OgreStringInterface.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="OgreWindowEventUtilities.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
@@ -691,9 +688,6 @@
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="OgrePixelFormat.cpp">
-      <Filter>Source Files\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreStringInterface.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="OgreWindowEventUtilities.cpp">

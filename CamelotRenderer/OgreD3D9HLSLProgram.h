@@ -42,68 +42,7 @@ namespace Ogre {
     */
     class _OgreD3D9Export D3D9HLSLProgram : public HighLevelGpuProgram
     {
-    public:
-        /// Command object for setting entry point
-        class CmdEntryPoint : public ParamCommand
-        {
-        public:
-            String doGet(const void* target) const;
-            void doSet(void* target, const String& val);
-        };
-        /// Command object for setting target assembler
-        class CmdTarget : public ParamCommand
-        {
-        public:
-            String doGet(const void* target) const;
-            void doSet(void* target, const String& val);
-        };
-        /// Command object for setting macro defines
-        class CmdPreprocessorDefines : public ParamCommand
-        {
-        public:
-            String doGet(const void* target) const;
-            void doSet(void* target, const String& val);
-        };
-        /// Command object for setting matrix packing in column-major order
-        class CmdColumnMajorMatrices : public ParamCommand
-        {
-        public:
-            String doGet(const void* target) const;
-            void doSet(void* target, const String& val);
-        };
-		/// Command object for setting optimisation level
-		class CmdOptimisation : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-
-		/// Command object for getting/setting micro code
-		class CmdMicrocode : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-
-		/// Command object for getting/setting assembler code
-		class CmdAssemblerCode : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
     protected:
-
-        static CmdEntryPoint msCmdEntryPoint;
-        static CmdTarget msCmdTarget;
-        static CmdPreprocessorDefines msCmdPreprocessorDefines;
-        static CmdColumnMajorMatrices msCmdColumnMajorMatrices;
-		static CmdOptimisation msCmdOptimisation;
-		static CmdMicrocode msCmdMicrocode;
-		static CmdAssemblerCode msCmdAssemblerCode;
-
         /** Internal load implementation, must be implemented by subclasses.
         */
         void loadFromSource(void);

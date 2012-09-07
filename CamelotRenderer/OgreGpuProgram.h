@@ -31,7 +31,6 @@ THE SOFTWARE.
 // Precompiler options
 #include "OgrePrerequisites.h"
 #include "OgreRenderOperation.h"
-#include "OgreStringInterface.h"
 #include "OgreGpuProgramParams.h"
 
 namespace Ogre {
@@ -79,64 +78,6 @@ namespace Ogre {
 	class _OgreExport GpuProgram
 	{
 	protected:
-		/// Command object - see ParamCommand 
-		class _OgreExport CmdType : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		class _OgreExport CmdSyntax : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		class _OgreExport CmdSkeletal : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		class _OgreExport CmdMorph : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		class _OgreExport CmdPose : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		class _OgreExport CmdVTF : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		class _OgreExport CmdManualNamedConstsFile : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		class _OgreExport CmdAdjacency : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		// Command object for setting / getting parameters
-		static CmdType msTypeCmd;
-		static CmdSyntax msSyntaxCmd;
-		static CmdSkeletal msSkeletalCmd;
-		static CmdMorph msMorphCmd;
-		static CmdPose msPoseCmd;
-		static CmdVTF msVTFCmd;
-		static CmdManualNamedConstsFile msManNamedConstsFileCmd;
-		static CmdAdjacency msAdjacencyCmd;
 		/// The type of the program
 		GpuProgramType mType;
 		/// Name of the shader entry method

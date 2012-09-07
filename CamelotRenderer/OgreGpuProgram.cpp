@@ -38,17 +38,6 @@ THE SOFTWARE.
 namespace Ogre
 {
     //-----------------------------------------------------------------------------
-    GpuProgram::CmdType GpuProgram::msTypeCmd;
-    GpuProgram::CmdSyntax GpuProgram::msSyntaxCmd;
-    GpuProgram::CmdSkeletal GpuProgram::msSkeletalCmd;
-	GpuProgram::CmdMorph GpuProgram::msMorphCmd;
-	GpuProgram::CmdPose GpuProgram::msPoseCmd;
-	GpuProgram::CmdVTF GpuProgram::msVTFCmd;
-	GpuProgram::CmdManualNamedConstsFile GpuProgram::msManNamedConstsFileCmd;
-	GpuProgram::CmdAdjacency GpuProgram::msAdjacencyCmd;
-	
-
-    //-----------------------------------------------------------------------------
     GpuProgram::GpuProgram() 
         :mType(GPT_VERTEX_PROGRAM), mLoadFromFile(true), mSkeletalAnimation(false),
 		mMorphAnimation(false), mPoseAnimation(0),
@@ -234,38 +223,6 @@ namespace Ogre
     //-----------------------------------------------------------------------------
     void GpuProgram::setupBaseParamDictionary(void)
     {
-		// TODO PORT - I'm not really sure what this will do and will it be needed in my port, but its calling a method from Resource, and we don't inherit from it
-  //      ParamDictionary* dict = getParamDictionary();
-
-  //      dict->addParameter(
-  //          ParameterDef("type", "'vertex_program', 'geometry_program' or 'fragment_program'",
-  //              PT_STRING), &msTypeCmd);
-  //      dict->addParameter(
-  //          ParameterDef("syntax", "Syntax code, e.g. vs_1_1", PT_STRING), &msSyntaxCmd);
-  //      dict->addParameter(
-  //          ParameterDef("includes_skeletal_animation", 
-  //          "Whether this vertex program includes skeletal animation", PT_BOOL), 
-  //          &msSkeletalCmd);
-		//dict->addParameter(
-		//	ParameterDef("includes_morph_animation", 
-		//	"Whether this vertex program includes morph animation", PT_BOOL), 
-		//	&msMorphCmd);
-		//dict->addParameter(
-		//	ParameterDef("includes_pose_animation", 
-		//	"The number of poses this vertex program supports for pose animation", PT_INT), 
-		//	&msPoseCmd);
-		//dict->addParameter(
-		//	ParameterDef("uses_vertex_texture_fetch", 
-		//	"Whether this vertex program requires vertex texture fetch support.", PT_BOOL), 
-		//	&msVTFCmd);
-		//dict->addParameter(
-		//	ParameterDef("manual_named_constants", 
-		//	"File containing named parameter mappings for low-level programs.", PT_BOOL), 
-		//	&msManNamedConstsFileCmd);
-		//dict->addParameter(
-		//	ParameterDef("uses_adjacency_information",
-		//	"Whether this geometry program requires adjacency information from the input primitives.", PT_BOOL),
-		//	&msAdjacencyCmd);
     }
 
     //-----------------------------------------------------------------------
@@ -275,116 +232,5 @@ namespace Ogre
 
         return language;
     }
-    //-----------------------------------------------------------------------
-    //-----------------------------------------------------------------------
-    String GpuProgram::CmdType::doGet(const void* target) const
-    {
-        const GpuProgram* t = static_cast<const GpuProgram*>(target);
-        if (t->getType() == GPT_VERTEX_PROGRAM)
-        {
-            return "vertex_program";
-        }
-		else if (t->getType() == GPT_GEOMETRY_PROGRAM)
-		{
-			return "geometry_program";
-		}
-		else
-        {
-            return "fragment_program";
-        }
-    }
-    void GpuProgram::CmdType::doSet(void* target, const String& val)
-    {
-        GpuProgram* t = static_cast<GpuProgram*>(target);
-        if (val == "vertex_program")
-        {
-            t->setType(GPT_VERTEX_PROGRAM);
-        }
-        else if (val == "geometry_program")
-		{
-			t->setType(GPT_GEOMETRY_PROGRAM);
-		}
-		else
-        {
-            t->setType(GPT_FRAGMENT_PROGRAM);
-        }
-    }
-    //-----------------------------------------------------------------------
-    String GpuProgram::CmdSyntax::doGet(const void* target) const
-    {
-        const GpuProgram* t = static_cast<const GpuProgram*>(target);
-        return t->getSyntaxCode();
-    }
-    void GpuProgram::CmdSyntax::doSet(void* target, const String& val)
-    {
-        GpuProgram* t = static_cast<GpuProgram*>(target);
-        t->setSyntaxCode(val);
-    }
-    //-----------------------------------------------------------------------
-    String GpuProgram::CmdSkeletal::doGet(const void* target) const
-    {
-        const GpuProgram* t = static_cast<const GpuProgram*>(target);
-        return StringConverter::toString(t->isSkeletalAnimationIncluded());
-    }
-    void GpuProgram::CmdSkeletal::doSet(void* target, const String& val)
-    {
-        GpuProgram* t = static_cast<GpuProgram*>(target);
-        t->setSkeletalAnimationIncluded(StringConverter::parseBool(val));
-    }
-	//-----------------------------------------------------------------------
-	String GpuProgram::CmdMorph::doGet(const void* target) const
-	{
-		const GpuProgram* t = static_cast<const GpuProgram*>(target);
-		return StringConverter::toString(t->isMorphAnimationIncluded());
-	}
-	void GpuProgram::CmdMorph::doSet(void* target, const String& val)
-	{
-		GpuProgram* t = static_cast<GpuProgram*>(target);
-		t->setMorphAnimationIncluded(StringConverter::parseBool(val));
-	}
-	//-----------------------------------------------------------------------
-	String GpuProgram::CmdPose::doGet(const void* target) const
-	{
-		const GpuProgram* t = static_cast<const GpuProgram*>(target);
-		return StringConverter::toString(t->getNumberOfPosesIncluded());
-	}
-	void GpuProgram::CmdPose::doSet(void* target, const String& val)
-	{
-		GpuProgram* t = static_cast<GpuProgram*>(target);
-		t->setPoseAnimationIncluded((ushort)StringConverter::parseUnsignedInt(val));
-	}
-	//-----------------------------------------------------------------------
-	String GpuProgram::CmdVTF::doGet(const void* target) const
-	{
-		const GpuProgram* t = static_cast<const GpuProgram*>(target);
-		return StringConverter::toString(t->isVertexTextureFetchRequired());
-	}
-	void GpuProgram::CmdVTF::doSet(void* target, const String& val)
-	{
-		GpuProgram* t = static_cast<GpuProgram*>(target);
-		t->setVertexTextureFetchRequired(StringConverter::parseBool(val));
-	}
-	//-----------------------------------------------------------------------
-	String GpuProgram::CmdManualNamedConstsFile::doGet(const void* target) const
-	{
-		const GpuProgram* t = static_cast<const GpuProgram*>(target);
-		return t->getManualNamedConstantsFile();
-	}
-	void GpuProgram::CmdManualNamedConstsFile::doSet(void* target, const String& val)
-	{
-		GpuProgram* t = static_cast<GpuProgram*>(target);
-		t->setManualNamedConstantsFile(val);
-	}
-    //-----------------------------------------------------------------------
-	String GpuProgram::CmdAdjacency::doGet(const void* target) const
-	{
-		const GpuProgram* t = static_cast<const GpuProgram*>(target);
-		return StringConverter::toString(t->isAdjacencyInfoRequired());
-	}
-	void GpuProgram::CmdAdjacency::doSet(void* target, const String& val)
-	{
-		GpuProgram* t = static_cast<GpuProgram*>(target);
-		t->setAdjacencyInfoRequired(StringConverter::parseBool(val));
-	}
 }
 

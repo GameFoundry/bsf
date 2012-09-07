@@ -32,51 +32,10 @@ THE SOFTWARE.
 #include "OgreD3D9RenderSystem.h"
 
 namespace Ogre {
-
-    D3D9GpuProgram::CmdColumnMajorMatrices D3D9GpuProgram::msCmdColumnMajorMatrices;
-	D3D9GpuProgram::CmdExternalMicrocode D3D9GpuProgram::msCmdExternalMicrocode;
-
-   //-----------------------------------------------------------------------
-    String D3D9GpuProgram::CmdColumnMajorMatrices::doGet(const void *target) const
-    {
-        return StringConverter::toString(static_cast<const D3D9GpuProgram*>(target)->getColumnMajorMatrices());
-    }
-    void D3D9GpuProgram::CmdColumnMajorMatrices::doSet(void *target, const String& val)
-    {
-        static_cast<D3D9GpuProgram*>(target)->setColumnMajorMatrices(StringConverter::parseBool(val));
-    }
-    //-----------------------------------------------------------------------
-    String D3D9GpuProgram::CmdExternalMicrocode::doGet(const void *target) const
-    {
-		//D3D9GpuProgram* program=const_cast<D3D9GpuProgram*>(static_cast<const D3D9GpuProgram*>(target));
-		//LPD3DXBUFFER ptr=program->getExternalMicrocode();
-		//nothing to do
-		return String();
-    }
-    void D3D9GpuProgram::CmdExternalMicrocode::doSet(void *target, const String& val)
-    {
-		D3D9GpuProgram* program = const_cast<D3D9GpuProgram*>(static_cast<const D3D9GpuProgram*>(target));
-		const void* buffer = val.data();
-		program->setExternalMicrocode(buffer, val.size());
-    }
-
     //-----------------------------------------------------------------------------
     D3D9GpuProgram::D3D9GpuProgram() 
         : GpuProgram(), mpExternalMicrocode(NULL), mColumnMajorMatrices(false)
     {
-		// TODO PORT - Not using these param dictionaries but I'm not sure what that breaks
-   //     if (createParamDictionary("D3D9GpuProgram"))
-   //     {
-   //         setupBaseParamDictionary();
-
-   //         ParamDictionary* dict = getParamDictionary();
-   //         dict->addParameter(ParameterDef("column_major_matrices", 
-   //             "Whether matrix packing in column-major order.",
-   //             PT_BOOL),&msCmdColumnMajorMatrices);
-			//dict->addParameter(ParameterDef("external_micro_code", 
-			//	"the cached external micro code data.",
-			//	PT_STRING),&msCmdExternalMicrocode);
-   //     }
     }
 
 	//-----------------------------------------------------------------------------

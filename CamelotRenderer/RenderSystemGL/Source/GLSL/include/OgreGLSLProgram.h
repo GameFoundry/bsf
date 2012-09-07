@@ -56,14 +56,6 @@ namespace Ogre {
     class _OgreGLExport GLSLProgram : public HighLevelGpuProgram
     {
     public:
-        /// Command object for attaching another GLSL Program 
-        class CmdAttach : public ParamCommand
-        {
-        public:
-            String doGet(const void* target) const;
-            void doSet(void* target, const String& shaderNames);
-        };
-
         GLSLProgram();
 		~GLSLProgram();
 
@@ -115,40 +107,7 @@ namespace Ogre {
 		virtual void setMaxOutputVertices(int maxOutputVertices) 
 		{ mMaxOutputVertices = maxOutputVertices; }
 
-		/// Command object for setting macro defines
-		class CmdPreprocessorDefines : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		/// Command object for setting the input operation type (geometry shader only)
-		class _OgreGLExport CmdInputOperationType : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		/// Command object for setting the output operation type (geometry shader only)
-		class _OgreGLExport CmdOutputOperationType : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-		/// Command object for setting the maximum output vertices (geometry shader only)
-		class _OgreGLExport CmdMaxOutputVertices : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
 	protected:
-		static CmdPreprocessorDefines msCmdPreprocessorDefines;
-        static CmdAttach msCmdAttach;
-		static CmdInputOperationType msInputOperationTypeCmd;
-		static CmdOutputOperationType msOutputOperationTypeCmd;
-		static CmdMaxOutputVertices msMaxOutputVerticesCmd;
 
         /** Internal load implementation, must be implemented by subclasses.
         */

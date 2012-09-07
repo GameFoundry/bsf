@@ -38,24 +38,6 @@ namespace Ogre {
     /** Direct3D implementation of a few things common to low-level vertex & fragment programs. */
     class _OgreD3D9Export D3D9GpuProgram : public GpuProgram, public D3D9Resource
     {   
-	public:
-        /// Command object for setting matrix packing in column-major order
-        class CmdColumnMajorMatrices : public ParamCommand
-        {
-        public:
-            String doGet(const void* target) const;
-            void doSet(void* target, const String& val);
-        };
-		/// Command object for getting/setting external micro code (void*)
-		class CmdExternalMicrocode : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
-	protected:
-		static CmdColumnMajorMatrices msCmdColumnMajorMatrices;
-		static CmdExternalMicrocode msCmdExternalMicrocode;
     public:
         D3D9GpuProgram();
         ~D3D9GpuProgram();
