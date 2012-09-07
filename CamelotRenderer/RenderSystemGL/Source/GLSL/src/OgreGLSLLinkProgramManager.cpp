@@ -440,9 +440,9 @@ namespace Ogre {
 					 sqp = line.find (" ["))
 					line.erase (sqp, 1);
 				// Split into tokens
-				StringVector parts = StringUtil::split(line, ", \t\r\n");
+				std::vector<Ogre::String> parts = StringUtil::split(line, ", \t\r\n");
 
-				for (StringVector::iterator i = parts.begin(); i != parts.end(); ++i)
+				for (std::vector<Ogre::String>::iterator i = parts.begin(); i != parts.end(); ++i)
 				{
 					// Is this a type?
 					StringToEnumMap::iterator typei = mTypeEnumMap.find(*i);

@@ -307,7 +307,7 @@ namespace Ogre
 				}
 
 				// Reset video mode to default if previous doesn't avail in new possible values
-				StringVector::const_iterator itValue =
+				std::vector<Ogre::String>::const_iterator itValue =
 					std::find(optVideoMode->possibleValues.begin(),
 					optVideoMode->possibleValues.end(),
 					optVideoMode->currentValue);
@@ -357,7 +357,7 @@ namespace Ogre
 
 		if( name == "FSAA" )
 		{
-			StringVector values = StringUtil::split(value, " ", 1);
+			std::vector<Ogre::String> values = StringUtil::split(value, " ", 1);
 			mFSAASamples = StringConverter::parseUnsignedInt(values[0]);
 			if (values.size() > 1)
 				mFSAAHint = values[1];
@@ -438,7 +438,7 @@ namespace Ogre
 		}
 
 		// Reset FSAA to none if previous doesn't avail in new possible values
-		StringVector::const_iterator itValue =
+		std::vector<Ogre::String>::const_iterator itValue =
 			std::find(optFSAA->possibleValues.begin(),
 			optFSAA->possibleValues.end(),
 			optFSAA->currentValue);

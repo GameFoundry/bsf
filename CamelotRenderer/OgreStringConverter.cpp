@@ -229,10 +229,10 @@ namespace Ogre {
         return stream.str();
     }
     //-----------------------------------------------------------------------
-    String StringConverter::toString(const StringVector& val)
+    String StringConverter::toString(const std::vector<Ogre::String>& val)
     {
 		stringstream stream;
-        StringVector::const_iterator i, iend, ibegin;
+        std::vector<Ogre::String>::const_iterator i, iend, ibegin;
         ibegin = val.begin();
         iend = val.end();
         for (i = ibegin; i != iend; ++i)
@@ -421,7 +421,7 @@ namespace Ogre {
         }
     }
     //-----------------------------------------------------------------------
-    StringVector StringConverter::parseStringVector(const String& val)
+    std::vector<Ogre::String> StringConverter::parseStringVector(const String& val)
     {
         return StringUtil::split(val);
     }

@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include "OgrePrerequisites.h"
 #include "OgreString.h"
 #include "OgreStringConverter.h"
-#include "OgreStringVector.h"
 
 // Because there are more than 32 possible Capabilities, more than 1 int is needed to store them all.
 // In fact, an array of integers is used to store capabilities. However all the capabilities are defined in the single
@@ -190,7 +189,7 @@ namespace Ogre
 
 		void fromString(const String& versionString)
 		{
-			StringVector tokens = StringUtil::split(versionString, ".");
+			std::vector<Ogre::String> tokens = StringUtil::split(versionString, ".");
 			if(!tokens.empty())
 			{
 				major = StringConverter::parseInt(tokens[0]);
@@ -243,7 +242,7 @@ namespace Ogre
 		/// GPU Vendor
 		GPUVendor mVendor;
 
-		static StringVector msGPUVendorStrings;
+		static std::vector<Ogre::String> msGPUVendorStrings;
 		static void initVendorStrings();
 
 		/// The number of world matrices available

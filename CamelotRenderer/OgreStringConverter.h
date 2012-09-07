@@ -30,7 +30,7 @@ THE SOFTWARE.
 #define __StringConverter_H__
 
 #include "OgrePrerequisites.h"
-#include "OgreStringVector.h"
+#include "OgreString.h"
 #include "OgreColourValue.h"
 #include "OgreMath.h"
 #include "OgreMatrix3.h"
@@ -166,7 +166,7 @@ namespace Ogre {
             Strings must not contain spaces since space is used as a delimiter in
             the output.
         */
-        static String toString(const StringVector& val);
+        static String toString(const std::vector<Ogre::String>& val);
 
         /** Converts a String to a Real. 
         @returns
@@ -254,7 +254,7 @@ namespace Ogre {
             Strings must not contain spaces since space is used as a delimiter in
             the output.
         */
-        static StringVector parseStringVector(const String& val);
+        static std::vector<Ogre::String> parseStringVector(const String& val);
         /** Checks the String is a valid number value. */
         static bool isNumber(const String& val);
     };

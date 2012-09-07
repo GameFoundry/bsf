@@ -18,7 +18,6 @@
 #include "OgreSharedPtr.h"
 #include "OgreString.h"
 #include "OgreStringConverter.h"
-#include "OgreStringVector.h"
 #include "OgreThreadDefines.h"
 #include "OgreVector2.h"
 #include "OgreVector3.h"

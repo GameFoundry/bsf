@@ -977,7 +977,7 @@ namespace Ogre {
 			// set up glew and GLSupport
 			initialiseContext(win);
 
-			StringVector tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+			std::vector<Ogre::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
 
 			if (!tokens.empty())
 			{

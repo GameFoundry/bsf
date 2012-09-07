@@ -300,7 +300,7 @@ namespace Ogre {
     void GLSLProgram::CmdAttach::doSet(void *target, const String& shaderNames)
     {
 		//get all the shader program names: there could be more than one
-		StringVector vecShaderNames = StringUtil::split(shaderNames, " \t", 0);
+		std::vector<Ogre::String> vecShaderNames = StringUtil::split(shaderNames, " \t", 0);
 
 		size_t programNameCount = vecShaderNames.size();
 		for ( size_t i = 0; i < programNameCount; ++i )

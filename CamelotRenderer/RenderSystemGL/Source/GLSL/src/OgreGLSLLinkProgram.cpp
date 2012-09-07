@@ -183,7 +183,7 @@ namespace Ogre {
 						{
 							// final check 
 							String expr = vpSource.substr(startpos, pos + a.name.length() - startpos);
-							StringVector vec = StringUtil::split(expr);
+							std::vector<Ogre::String> vec = StringUtil::split(expr);
 							if ((vec[0] == "in" || vec[0] == "attribute") && vec[2] == a.name)
 								glBindAttribLocationARB(mGLHandle, a.attrib, a.name.c_str());
 						}

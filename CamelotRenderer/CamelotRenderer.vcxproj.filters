@@ -184,9 +184,6 @@
     <ClInclude Include="OgreStringConverter.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="OgreStringVector.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
     <ClInclude Include="OgreThreadDefines.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
@@ -326,9 +323,6 @@
       <Filter>Header Files\D3D9RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="CmApplication.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreConfigOptionMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CmRenderSystemManager.h">
@@ -516,6 +510,9 @@
     </ClInclude>
     <ClInclude Include="OgreTextureManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreConfigOptionMap.h">
+      <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

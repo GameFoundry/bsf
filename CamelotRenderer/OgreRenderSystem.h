@@ -1257,7 +1257,7 @@ namespace Ogre
 		can raise.
 		@see RenderSystem::addListener
 		*/
-		virtual const StringVector& getRenderSystemEvents(void) const { return mEventNames; }
+		virtual const std::vector<Ogre::String>& getRenderSystemEvents(void) const { return mEventNames; }
 
 		/** Tell the rendersystem to perform any prep tasks it needs to directly
 		before other threads which might access the rendering API are registered.
@@ -1362,7 +1362,7 @@ namespace Ogre
 		bool updatePassIterationRenderState(void);
 
 		/// List of names of events this rendersystem may raise
-		StringVector mEventNames;
+		std::vector<Ogre::String> mEventNames;
 
 		/// Internal method for firing a rendersystem event
 		virtual void fireEvent(const String& name, const NameValuePairList* params = 0);

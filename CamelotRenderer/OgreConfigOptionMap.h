@@ -31,7 +31,6 @@ THE SOFTWARE.
 
 #include "OgrePrerequisites.h"
 
-#include "OgreStringVector.h"
 #include "OgreString.h"
 
 
@@ -51,7 +50,7 @@ namespace Ogre {
     {
         String name;
         String currentValue;
-        StringVector possibleValues;
+        std::vector<Ogre::String> possibleValues;
         bool immutable;
     } ConfigOption;
 

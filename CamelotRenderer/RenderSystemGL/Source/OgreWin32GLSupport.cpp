@@ -273,7 +273,7 @@ namespace Ogre {
 			opt = mOptions.find("FSAA");
 			if (opt == mOptions.end())
 				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find FSAA options!", "Win32GLSupport::createWindow");
-			StringVector aavalues = StringUtil::split(opt->second.currentValue, " ", 1);
+			std::vector<Ogre::String> aavalues = StringUtil::split(opt->second.currentValue, " ", 1);
 			unsigned int multisample = StringConverter::parseUnsignedInt(aavalues[0]);
 			String multisample_hint;
 			if (aavalues.size() > 1)

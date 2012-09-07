@@ -60,7 +60,7 @@ namespace Ogre {
 	{
 	}
 	//---------------------------------------------------------------------
-	StringVector RenderSystemCapabilities::msGPUVendorStrings;
+	std::vector<Ogre::String> RenderSystemCapabilities::msGPUVendorStrings;
 	//---------------------------------------------------------------------
 	GPUVendor RenderSystemCapabilities::vendorFromString(const String& vendorString)
 	{
