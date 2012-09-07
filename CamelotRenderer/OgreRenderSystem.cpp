@@ -281,12 +281,11 @@ namespace Ogre {
         return mActiveViewport;
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::_setTextureUnitSettings(size_t texUnit, TextureUnitState& tl)
+    void RenderSystem::_setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, TextureUnitState& tl)
     {
         // This method is only ever called to set a texture unit to valid details
         // The method _disableTextureUnit is called to turn a unit off
 
-        const TexturePtr& tex = tl._getTexturePtr();
 		// Vertex texture binding?
 		if (mCurrentCapabilities->hasCapability(RSC_VERTEX_TEXTURE_FETCH) &&
 			!mCurrentCapabilities->getVertexTextureUnitsShared())
@@ -313,9 +312,6 @@ namespace Ogre {
 			_setTexture(texUnit, true, tex);
 		}
 
-        // Set texture coordinate set
-        _setTextureCoordSet(texUnit, tl.getTextureCoordSet());
-
         // Set texture layer filtering
         _setTextureUnitFiltering(texUnit, 
             tl.getTextureFiltering(FT_MIN), 
@@ -328,75 +324,9 @@ namespace Ogre {
 		// Set mipmap biasing
 		_setTextureMipmapBias(texUnit, tl.getTextureMipmapBias());
 
-		// Set blend modes
-		// Note, colour before alpha is important
-        _setTextureBlendMode(texUnit, tl.getColourBlendMode());
-        _setTextureBlendMode(texUnit, tl.getAlphaBlendMode());
-
         // Texture addressing mode
         const TextureUnitState::UVWAddressingMode& uvw = tl.getTextureAddressingMode();
         _setTextureAddressingMode(texUnit, uvw);
-        // Set texture border colour only if required
-        if (uvw.u == TextureUnitState::TAM_BORDER ||
-            uvw.v == TextureUnitState::TAM_BORDER ||
-            uvw.w == TextureUnitState::TAM_BORDER)
-        {
-            _setTextureBorderColour(texUnit, tl.getTextureBorderColour());
-        }
-
-        // Set texture effects
-        TextureUnitState::EffectMap::iterator effi;
-        // Iterate over new effects
-        bool anyCalcs = false;
-        for (effi = tl.mEffects.begin(); effi != tl.mEffects.end(); ++effi)
-        {
-            switch (effi->second.type)
-            {
-            case TextureUnitState::ET_ENVIRONMENT_MAP:
-                if (effi->second.subtype == TextureUnitState::ENV_CURVED)
-                {
-                    _setTextureCoordCalculation(texUnit, TEXCALC_ENVIRONMENT_MAP);
-                    anyCalcs = true;
-                }
-                else if (effi->second.subtype == TextureUnitState::ENV_PLANAR)
-                {
-                    _setTextureCoordCalculation(texUnit, TEXCALC_ENVIRONMENT_MAP_PLANAR);
-                    anyCalcs = true;
-                }
-                else if (effi->second.subtype == TextureUnitState::ENV_REFLECTION)
-                {
-                    _setTextureCoordCalculation(texUnit, TEXCALC_ENVIRONMENT_MAP_REFLECTION);
-                    anyCalcs = true;
-                }
-                else if (effi->second.subtype == TextureUnitState::ENV_NORMAL)
-                {
-                    _setTextureCoordCalculation(texUnit, TEXCALC_ENVIRONMENT_MAP_NORMAL);
-                    anyCalcs = true;
-                }
-                break;
-            case TextureUnitState::ET_UVSCROLL:
-			case TextureUnitState::ET_USCROLL:
-			case TextureUnitState::ET_VSCROLL:
-            case TextureUnitState::ET_ROTATE:
-            case TextureUnitState::ET_TRANSFORM:
-                break;
-            case TextureUnitState::ET_PROJECTIVE_TEXTURE:
-                _setTextureCoordCalculation(texUnit, TEXCALC_PROJECTIVE_TEXTURE, 
-                    effi->second.frustum);
-                anyCalcs = true;
-                break;
-            }
-        }
-        // Ensure any previous texcoord calc settings are reset if there are now none
-        if (!anyCalcs)
-        {
-            _setTextureCoordCalculation(texUnit, TEXCALC_NONE);
-        }
-
-        // Change tetxure matrix 
-        _setTextureMatrix(texUnit, tl.getTextureTransform());
-
-
     }
 	//-----------------------------------------------------------------------
 	void RenderSystem::_setVertexTexture(size_t unit, const TexturePtr& tex)
