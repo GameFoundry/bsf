@@ -25,8 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __TextureUnitState_H__
-#define __TextureUnitState_H__
+#ifndef __TextureState_H__
+#define __TextureState_H__
 
 #include "OgrePrerequisites.h"
 #include "OgreCommon.h"
@@ -58,9 +58,8 @@ namespace Ogre {
         where you do not use vertex or fragment programs (shaders). Programmable 
         pipeline means that for this pass you are using vertex or fragment programs.
     */
-	class _OgreExport TextureUnitState
+	class _OgreExport TextureState
     {
-        friend class RenderSystem;
     public:
 
         /** Texture addressing modes - default is TAM_WRAP.
@@ -100,15 +99,15 @@ namespace Ogre {
 
         /** Default constructor.
         */
-        TextureUnitState(TextureType type);
+        TextureState(TextureType type);
 
-        TextureUnitState(const TextureUnitState& oth );
+        TextureState(const TextureState& oth );
 
-        TextureUnitState & operator = ( const TextureUnitState& oth );
+        TextureState & operator = ( const TextureState& oth );
 
         /** Default destructor.
         */
-        ~TextureUnitState();
+        ~TextureState();
 
 		/** The type of unit to bind the texture settings to. */
 		enum BindingType

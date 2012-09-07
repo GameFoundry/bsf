@@ -1242,7 +1242,7 @@ namespace Ogre {
 			
 			// XXX: why do I need this for results to be consistent with D3D?
 			// Equations are supposedly the same once you factor in vp height
-			Real correction = 0.005;
+			Real correction = 0.005f;
 			// scaling required
 			val[0] = constant;
 			val[1] = linear * correction;
@@ -1527,24 +1527,24 @@ namespace Ogre {
 	}
 	//-----------------------------------------------------------------------------
 	GLint GLRenderSystem::getTextureAddressingMode(
-		TextureUnitState::TextureAddressingMode tam) const
+		TextureState::TextureAddressingMode tam) const
 	{
 		switch(tam)
 		{
 		default:
-		case TextureUnitState::TAM_WRAP:
+		case TextureState::TAM_WRAP:
 			return GL_REPEAT;
-		case TextureUnitState::TAM_MIRROR:
+		case TextureState::TAM_MIRROR:
 			return GL_MIRRORED_REPEAT;
-		case TextureUnitState::TAM_CLAMP:
+		case TextureState::TAM_CLAMP:
 			return GL_CLAMP_TO_EDGE;
-		case TextureUnitState::TAM_BORDER:
+		case TextureState::TAM_BORDER:
 			return GL_CLAMP_TO_BORDER;
 		}
 
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setTextureAddressingMode(size_t stage, const TextureUnitState::UVWAddressingMode& uvw)
+	void GLRenderSystem::_setTextureAddressingMode(size_t stage, const TextureState::UVWAddressingMode& uvw)
 	{
 		if (!activateGLTextureUnit(stage))
 			return;
@@ -2348,7 +2348,7 @@ namespace Ogre {
 			maxAnisotropy = largest_supported_anisotropy ? 
 			static_cast<uint>(largest_supported_anisotropy) : 1;
 		if (_getCurrentAnisotropy(unit) != maxAnisotropy)
-			glTexParameterf(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
+			glTexParameterf(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
 
 		activateGLTextureUnit(0);
 	}

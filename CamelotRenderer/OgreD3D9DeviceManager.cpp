@@ -439,6 +439,8 @@ namespace Ogre
 				return currDriver;				
 			}
 		}
+
+		return nullptr;
 	}
 
 	//-----------------------------------------------------------------------

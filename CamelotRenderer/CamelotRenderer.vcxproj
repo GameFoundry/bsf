@@ -169,7 +169,7 @@
     <ClInclude Include="OgreStringConverter.h" />
     <ClInclude Include="OgreTexture.h" />
     <ClInclude Include="OgreTextureManager.h" />
-    <ClInclude Include="OgreTextureUnitState.h" />
+    <ClInclude Include="OgreTextureState.h" />
     <ClInclude Include="OgreThreadDefines.h" />
     <ClInclude Include="OgreVector2.h" />
     <ClInclude Include="OgreVector3.h" />
@@ -298,7 +298,7 @@
     <ClCompile Include="OgreStringConverter.cpp" />
     <ClCompile Include="OgreTexture.cpp" />
     <ClCompile Include="OgreTextureManager.cpp" />
-    <ClCompile Include="OgreTextureUnitState.cpp" />
+    <ClCompile Include="OgreTextureState.cpp" />
     <ClCompile Include="OgreVector2.cpp" />
     <ClCompile Include="OgreVector3.cpp" />
     <ClCompile Include="OgreVector4.cpp" />

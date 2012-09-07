@@ -35,7 +35,7 @@ THE SOFTWARE.
 
 #include "OgreString.h"
 
-#include "OgreTextureUnitState.h"
+#include "OgreTextureState.h"
 #include "OgreCommon.h"
 
 #include "OgreRenderOperation.h"
@@ -545,7 +545,7 @@ namespace Ogre
 		only sets those settings which are different from the current settings for this
 		unit, thus minimising render state changes.
 		*/
-		virtual void _setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, TextureUnitState& tl);
+		virtual void _setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, TextureState& tl);
 		/** Turns off a texture unit. */
 		virtual void _disableTextureUnit(size_t texUnit);
 		/** Disables all texture units from the given unit upwards */
@@ -684,7 +684,7 @@ namespace Ogre
 		virtual void _setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy) = 0;
 
 		/** Sets the texture addressing mode for a texture unit.*/
-		virtual void _setTextureAddressingMode(size_t unit, const TextureUnitState::UVWAddressingMode& uvw) = 0;
+		virtual void _setTextureAddressingMode(size_t unit, const TextureState::UVWAddressingMode& uvw) = 0;
 
 		/** Sets the texture border colour for a texture unit.*/
 		virtual void _setTextureBorderColour(size_t unit, const ColourValue& colour) = 0;

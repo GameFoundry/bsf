@@ -25,13 +25,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreTextureUnitState.h"
+#include "OgreTextureState.h"
 #include "OgreException.h"
 
 namespace Ogre {
 
     //-----------------------------------------------------------------------
-    TextureUnitState::TextureUnitState(TextureType type)
+    TextureState::TextureState(TextureType type)
 		: mTextureType(type)
         , mDesiredFormat(PF_UNKNOWN)
 		, mTextureSrcMipmaps(MIP_DEFAULT)
@@ -50,119 +50,119 @@ namespace Ogre {
     }
 
     //-----------------------------------------------------------------------
-    TextureUnitState::TextureUnitState(const TextureUnitState& oth )
+    TextureState::TextureState(const TextureState& oth )
     {
         *this = oth;
     }
 
     //-----------------------------------------------------------------------
-    TextureUnitState::~TextureUnitState()
+    TextureState::~TextureState()
     {
     }
     //-----------------------------------------------------------------------
-    TextureUnitState & TextureUnitState::operator = ( 
-        const TextureUnitState &oth )
+    TextureState & TextureState::operator = ( 
+        const TextureState &oth )
     {
         return *this;
     }
 	//-----------------------------------------------------------------------
-	void TextureUnitState::setBindingType(TextureUnitState::BindingType bt)
+	void TextureState::setBindingType(TextureState::BindingType bt)
 	{
 		mBindingType = bt;
 
 	}
 	//-----------------------------------------------------------------------
-	TextureUnitState::BindingType TextureUnitState::getBindingType(void) const
+	TextureState::BindingType TextureState::getBindingType(void) const
 	{
 		return mBindingType;
 	}
     //-----------------------------------------------------------------------
-    bool TextureUnitState::isCubic(void) const
+    bool TextureState::isCubic(void) const
     {
         return mTextureType == TEX_TYPE_CUBE_MAP;
     }
     //-----------------------------------------------------------------------
-    bool TextureUnitState::is3D(void) const
+    bool TextureState::is3D(void) const
     {
         return mTextureType == TEX_TYPE_3D;
     }
     //-----------------------------------------------------------------------
-    TextureType TextureUnitState::getTextureType(void) const
+    TextureType TextureState::getTextureType(void) const
     {
         return mTextureType;
 	}
     //-----------------------------------------------------------------------
-    void TextureUnitState::setDesiredFormat(PixelFormat desiredFormat)
+    void TextureState::setDesiredFormat(PixelFormat desiredFormat)
     {
         mDesiredFormat = desiredFormat;
     }
     //-----------------------------------------------------------------------
-    PixelFormat TextureUnitState::getDesiredFormat(void) const
+    PixelFormat TextureState::getDesiredFormat(void) const
     {
         return mDesiredFormat;
     }
     //-----------------------------------------------------------------------
-    void TextureUnitState::setNumMipmaps(int numMipmaps)
+    void TextureState::setNumMipmaps(int numMipmaps)
     {
         mTextureSrcMipmaps = numMipmaps;
     }
     //-----------------------------------------------------------------------
-    int TextureUnitState::getNumMipmaps(void) const
+    int TextureState::getNumMipmaps(void) const
     {
         return mTextureSrcMipmaps;
     }
     //-----------------------------------------------------------------------
-    void TextureUnitState::setIsAlpha(bool isAlpha)
+    void TextureState::setIsAlpha(bool isAlpha)
     {
         mIsAlpha = isAlpha;
     }
     //-----------------------------------------------------------------------
-    bool TextureUnitState::getIsAlpha(void) const
+    bool TextureState::getIsAlpha(void) const
     {
         return mIsAlpha;
     }
 	//-----------------------------------------------------------------------
-	void TextureUnitState::setHardwareGammaEnabled(bool g)
+	void TextureState::setHardwareGammaEnabled(bool g)
 	{
 		mHwGamma = g;
 	}
 	//-----------------------------------------------------------------------
-	bool TextureUnitState::isHardwareGammaEnabled() const
+	bool TextureState::isHardwareGammaEnabled() const
 	{
 		return mHwGamma;
 	}
     //-----------------------------------------------------------------------
-    const TextureUnitState::UVWAddressingMode& 
-	TextureUnitState::getTextureAddressingMode(void) const
+    const TextureState::UVWAddressingMode& 
+	TextureState::getTextureAddressingMode(void) const
     {
         return mAddressMode;
     }
     //-----------------------------------------------------------------------
-    void TextureUnitState::setTextureAddressingMode(
-		TextureUnitState::TextureAddressingMode tam)
+    void TextureState::setTextureAddressingMode(
+		TextureState::TextureAddressingMode tam)
     {
         mAddressMode.u = tam;
         mAddressMode.v = tam;
         mAddressMode.w = tam;
     }
     //-----------------------------------------------------------------------
-    void TextureUnitState::setTextureAddressingMode(
-		TextureUnitState::TextureAddressingMode u, 
-		TextureUnitState::TextureAddressingMode v,
-		TextureUnitState::TextureAddressingMode w)
+    void TextureState::setTextureAddressingMode(
+		TextureState::TextureAddressingMode u, 
+		TextureState::TextureAddressingMode v,
+		TextureState::TextureAddressingMode w)
     {
         mAddressMode.u = u;
         mAddressMode.v = v;
         mAddressMode.w = w;
     }
     //-----------------------------------------------------------------------
-    void TextureUnitState::setTextureAddressingMode(
-		const TextureUnitState::UVWAddressingMode& uvw)
+    void TextureState::setTextureAddressingMode(
+		const TextureState::UVWAddressingMode& uvw)
     {
         mAddressMode = uvw;
     }
 	//-----------------------------------------------------------------------
-	void TextureUnitState::setTextureFiltering(TextureFilterOptions filterType)
+	void TextureState::setTextureFiltering(TextureFilterOptions filterType)
 	{
         switch (filterType)
         {
@@ -182,7 +182,7 @@ namespace Ogre {
         mIsDefaultFiltering = false;
 	}
 	//-----------------------------------------------------------------------
-    void TextureUnitState::setTextureFiltering(FilterType ft, FilterOptions fo)
+    void TextureState::setTextureFiltering(FilterType ft, FilterOptions fo)
     {
         switch (ft)
         {
@@ -199,7 +199,7 @@ namespace Ogre {
         mIsDefaultFiltering = false;
     }
 	//-----------------------------------------------------------------------
-    void TextureUnitState::setTextureFiltering(FilterOptions minFilter, 
+    void TextureState::setTextureFiltering(FilterOptions minFilter, 
         FilterOptions magFilter, FilterOptions mipFilter)
     {
         mMinFilter = minFilter;
@@ -208,7 +208,7 @@ namespace Ogre {
         mIsDefaultFiltering = false;
     }
 	//-----------------------------------------------------------------------
-	FilterOptions TextureUnitState::getTextureFiltering(FilterType ft) const
+	FilterOptions TextureState::getTextureFiltering(FilterType ft) const
 	{
         switch (ft)
         {
@@ -224,13 +224,13 @@ namespace Ogre {
 	}
 
 	//-----------------------------------------------------------------------
-	void TextureUnitState::setTextureAnisotropy(unsigned int maxAniso)
+	void TextureState::setTextureAnisotropy(unsigned int maxAniso)
 	{
 		mMaxAniso = maxAniso;
         mIsDefaultAniso = false;
 	}
 	//-----------------------------------------------------------------------
-	unsigned int TextureUnitState::getTextureAnisotropy() const
+	unsigned int TextureState::getTextureAnisotropy() const
 	{
         return mMaxAniso;
 	}

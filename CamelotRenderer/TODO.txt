@@ -65,10 +65,8 @@ RenderWindow - Everything OK
 Texture
  - mTreatLuminanceAsAlpha and corresponding methods - I dont think I need that or that it's used
 
-TextureUnitState - Try to remove this class completely
- - Texture transform and effect stuff should be removed completely
- - Texture addressing mode/vert,frag binding/anisotropy/mipbias/min,mag,mip filters, should be specified per-material
- - Move the rest somewhere else (Needs further study)
+TextureState - PARSED!
+ - This is just an utility class representing texture state
 
 VertexIndexData - Just data structures
  - VertexCacheProfiler is a weird one, but I think I don't have to remove it as it might come in handy

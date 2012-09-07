@@ -85,17 +85,17 @@ namespace Ogre
 		return 0;
 	}
 	//---------------------------------------------------------------------
-	D3DTEXTUREADDRESS D3D9Mappings::get(TextureUnitState::TextureAddressingMode tam, const D3DCAPS9& devCaps)
+	D3DTEXTUREADDRESS D3D9Mappings::get(TextureState::TextureAddressingMode tam, const D3DCAPS9& devCaps)
 	{
 		switch( tam )
 		{
-		case TextureUnitState::TAM_WRAP:
+		case TextureState::TAM_WRAP:
 			return D3DTADDRESS_WRAP;
-		case TextureUnitState::TAM_MIRROR:
+		case TextureState::TAM_MIRROR:
 			return D3DTADDRESS_MIRROR;
-		case TextureUnitState::TAM_CLAMP:
+		case TextureState::TAM_CLAMP:
 			return D3DTADDRESS_CLAMP;
-        case TextureUnitState::TAM_BORDER:
+        case TextureState::TAM_BORDER:
             if (devCaps.TextureAddressCaps & D3DPTADDRESSCAPS_BORDER)
                 return D3DTADDRESS_BORDER;
             else

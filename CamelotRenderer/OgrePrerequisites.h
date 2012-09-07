@@ -154,7 +154,7 @@ namespace Ogre {
     class Sphere;
     class StringConverter;
     class StringInterface;
-    class TextureUnitState;
+    class TextureState;
     class Texture;
     class TextureManager;
     class Vector2;

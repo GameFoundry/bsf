@@ -281,7 +281,7 @@ namespace Ogre {
         return mActiveViewport;
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::_setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, TextureUnitState& tl)
+    void RenderSystem::_setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, TextureState& tl)
     {
         // This method is only ever called to set a texture unit to valid details
         // The method _disableTextureUnit is called to turn a unit off
@@ -290,7 +290,7 @@ namespace Ogre {
 		if (mCurrentCapabilities->hasCapability(RSC_VERTEX_TEXTURE_FETCH) &&
 			!mCurrentCapabilities->getVertexTextureUnitsShared())
 		{
-			if (tl.getBindingType() == TextureUnitState::BT_VERTEX)
+			if (tl.getBindingType() == TextureState::BT_VERTEX)
 			{
 				// Bind vertex texture
 				_setVertexTexture(texUnit, tex);
@@ -325,7 +325,7 @@ namespace Ogre {
 		_setTextureMipmapBias(texUnit, tl.getTextureMipmapBias());
 
         // Texture addressing mode
-        const TextureUnitState::UVWAddressingMode& uvw = tl.getTextureAddressingMode();
+        const TextureState::UVWAddressingMode& uvw = tl.getTextureAddressingMode();
         _setTextureAddressingMode(texUnit, uvw);
     }
 	//-----------------------------------------------------------------------
