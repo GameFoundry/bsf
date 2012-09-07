@@ -133,16 +133,6 @@ namespace Ogre
     //---------------------------------------------------------------------------
     void HighLevelGpuProgram::loadHighLevelImpl(void)
     {
-        if (mLoadFromFile)
-        {
-            //// find & load source code
-            //DataStreamPtr stream = 
-            //    ResourceGroupManager::getSingleton().openResource(
-            //        mFilename, mGroup, true, this);
-
-            //mSource = stream->getAsString();
-        }
-
         loadFromSource();
 
 

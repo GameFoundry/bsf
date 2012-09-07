@@ -1,8 +1,16 @@
-1. Search for all "TODO PORT" comments and fix them
-  - First I should create a render system singleton other classes can easily access
-2. Try to reproduce minimal functionality by rendering a cube (Similar like OgreToCamelotPort project does)
-3. Start stripping down the classes and see what I really need
-4. Port OpenGL render system as well
+PARSED FILES:
+
+GpuProgram - PARSED!
+TextureState - PARSED!
+ - This is just an utility class representing texture state
+VertexIndexData - Just data structures
+ - VertexCacheProfiler is a weird one, but I think I don't have to remove it as it might come in handy
+RenderTexture - Everything OK
+RenderWindow - Everything OK
+HardwareIndexBuffer - Everything OK
+RenderSystemCapabilities - I think I need all of that
+
+TODO FILES:
 
 Camera:
  - Remove auto tracking
@@ -21,13 +29,6 @@ Frustum
  - Remove orientation stuff because it's iPhone only
  - World space methods need to be updated. I still need them but they need to get their data from Transform
 
-GpuProgram - Most low level shader program. Single pixel/vertex/geometry shader.
- - keeps a lot of data specific to skeletal anim, morphing and similar. It should be more generic
- - has code that points to the source file, that should be at a higher level
- - also has code for loading directly from source file, but it should be loaded from string
- - has fixed pipeline code like surface and light states, fog states and transform states
- - ParamCommand and specific parameters that inherit from it should also be removed. Together with StringInterface.h
-
 GpuProgramParams - Holds all parameters used in a shader program and allows us to set them by index or name
  - Explore if we can remove GpuSharedParameters. I'm not exactly sure what they're used for
 
@@ -36,8 +37,6 @@ HardwareBuffer - Base class for all buffers
 
 HardwareBufferManager - Abstracts whether I'm creating D3D9 or OpenGL buffers
  - License stuff needs to be removed. I'm not sure what it's used for
-
-HardwareIndexBuffer - Everything OK
 
 HardwareOcclusionQuery - OK, but I might consider a more generic interface for queries (I'll need profiling queries too for example)
 
@@ -51,25 +50,13 @@ HardwareVertexBuffer - Very neat file
 HighLevelGpuProgram - Mostly okay
  - Has some methods for loading from a file, which I wont do
 
-RenderSystemCapabilities - I think I need all of that
-
 RenderTarget:
  - update() causes rendering to start - This probably need to be moved to camera, as I want it to be responsible for rendering
  - keeps a viewport list, which I also don't think I'll need
  - autoUpdate and various update methods that I probably don't need
 
-RenderTexture - Everything OK
-
-RenderWindow - Everything OK
-
 Texture
  - mTreatLuminanceAsAlpha and corresponding methods - I dont think I need that or that it's used
-
-TextureState - PARSED!
- - This is just an utility class representing texture state
-
-VertexIndexData - Just data structures
- - VertexCacheProfiler is a weird one, but I think I don't have to remove it as it might come in handy
 
 Viewport - MERGE WITH CAMERA
  - Remove orientation mode
@@ -87,6 +74,7 @@ IMPORTANT: I think I should strive to make the renderer one unique CmRenderSyste
      - AND because I need to have it separated since I can't expect DirectX to compile on OSX or Linux
 
 Other notes:
+ - Search for all remaining "TODO PORT" comments and fix them
  - Make sure to remove all ogre memory allocators and memory category bullshit (Possibly replace with Camelot versions?)
  - Remove Ogre::String and Ogre::Real (Possibly replace with Camelot versions?)
  - Ogre::ColourValue -> CamelotEngine::Color (Other struct names are okay for the most part)

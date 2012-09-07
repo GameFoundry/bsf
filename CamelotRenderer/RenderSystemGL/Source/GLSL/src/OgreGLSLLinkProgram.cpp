@@ -126,7 +126,6 @@ namespace Ogre {
 			if (mVertexProgram)
 			{
 				mVertexProgram->getGLSLProgram()->attachToProgramObject(mGLHandle);
-				setSkeletalAnimationIncluded(mVertexProgram->isSkeletalAnimationIncluded());
 			}
 			if (mGeometryProgram)
 			{

@@ -39,10 +39,8 @@ namespace Ogre
 {
     //-----------------------------------------------------------------------------
     GpuProgram::GpuProgram() 
-        :mType(GPT_VERTEX_PROGRAM), mLoadFromFile(true), mSkeletalAnimation(false),
-		mMorphAnimation(false), mPoseAnimation(0),
-        mVertexTextureFetch(false), mNeedsAdjacencyInfo(false),
-		mCompileError(false), mLoadedManualNamedConstants(false), mProfile(GPP_NONE)
+        :mType(GPT_VERTEX_PROGRAM),
+		mCompileError(false), mProfile(GPP_NONE)
     {
 		createParameterMappingStructures();
     }
@@ -57,19 +55,9 @@ namespace Ogre
         mSyntaxCode = syntax;
     }
     //-----------------------------------------------------------------------------
-    void GpuProgram::setSourceFile(const String& filename)
-    {
-        mFilename = filename;
-        mSource.clear();
-        mLoadFromFile = true;
-		mCompileError = false;
-    }
-    //-----------------------------------------------------------------------------
     void GpuProgram::setSource(const String& source)
     {
         mSource = source;
-        mFilename.clear();
-        mLoadFromFile = false;
 		mCompileError = false;
     }
 		
@@ -98,31 +86,6 @@ namespace Ogre
 
     }
     //-----------------------------------------------------------------------------
-    bool GpuProgram::isRequiredCapabilitiesSupported(void) const
-    {
-		// TODO PORT- I dont think I'll be using these capabilities
-		return true;
-
-		//const RenderSystemCapabilities* caps = 
-		//	Root::getSingleton().getRenderSystem()->getCapabilities();
-
-  //      // If skeletal animation is being done, we need support for UBYTE4
-  //      if (isSkeletalAnimationIncluded() && 
-  //          !caps->hasCapability(RSC_VERTEX_FORMAT_UBYTE4))
-  //      {
-  //          return false;
-  //      }
-
-		//// Vertex texture fetch required?
-		//if (isVertexTextureFetchRequired() && 
-		//	!caps->hasCapability(RSC_VERTEX_TEXTURE_FETCH))
-		//{
-		//	return false;
-		//}
-
-  //      return true;
-    }
-    //-----------------------------------------------------------------------------
     bool GpuProgram::isSupported(void) const
     {
         if (mCompileError || !isRequiredCapabilitiesSupported())
@@ -131,6 +94,11 @@ namespace Ogre
 		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
 		return rs->getCapabilities()->isShaderProfileSupported(mSyntaxCode);
     }
+	//-----------------------------------------------------------------------------
+	bool GpuProgram::isRequiredCapabilitiesSupported(void) const
+	{
+		return true;
+	}
 	//---------------------------------------------------------------------
 	void GpuProgram::createParameterMappingStructures(bool recreateIfExists) const
 	{
@@ -150,46 +118,6 @@ namespace Ogre
 	{
 		if (recreateIfExists || (mConstantDefs == nullptr))
 			mConstantDefs = GpuNamedConstantsPtr(OGRE_NEW GpuNamedConstants());
-	}
-	//---------------------------------------------------------------------
-	void GpuProgram::setManualNamedConstantsFile(const String& paramDefFile)
-	{
-		mManualNamedConstantsFile = paramDefFile;
-		mLoadedManualNamedConstants = false;
-	}
-	//---------------------------------------------------------------------
-	void GpuProgram::setManualNamedConstants(const GpuNamedConstants& namedConstants)
-	{
-		createParameterMappingStructures();
-		*mConstantDefs.get() = namedConstants;
-
-		mFloatLogicalToPhysical->bufferSize = mConstantDefs->floatBufferSize;
-		mIntLogicalToPhysical->bufferSize = mConstantDefs->intBufferSize;
-		mFloatLogicalToPhysical->map.clear();
-		mIntLogicalToPhysical->map.clear();
-		// need to set up logical mappings too for some rendersystems
-		for (GpuConstantDefinitionMap::const_iterator i = mConstantDefs->map.begin();
-			i != mConstantDefs->map.end(); ++i)
-		{
-			const String& name = i->first;
-			const GpuConstantDefinition& def = i->second;
-			// only consider non-array entries
-			if (name.find("[") == String::npos)
-			{
-				GpuLogicalIndexUseMap::value_type val(def.logicalIndex, 
-					GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, def.variability));
-				if (def.isFloat())
-				{
-					mFloatLogicalToPhysical->map.insert(val);
-				}
-				else
-				{
-					mIntLogicalToPhysical->map.insert(val);
-				}
-			}
-		}
-
-
 	}
     //-----------------------------------------------------------------------------
     GpuProgramParametersSharedPtr GpuProgram::createParameters(void)
@@ -219,10 +147,6 @@ namespace Ogre
             mDefaultParams = createParameters();
         }
         return mDefaultParams;
-    }
-    //-----------------------------------------------------------------------------
-    void GpuProgram::setupBaseParamDictionary(void)
-    {
     }
 
     //-----------------------------------------------------------------------

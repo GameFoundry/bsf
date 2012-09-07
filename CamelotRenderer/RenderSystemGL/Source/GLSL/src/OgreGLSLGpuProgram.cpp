@@ -57,12 +57,6 @@ namespace Ogre {
 		{
 			mProgramID = ++mGeometryShaderCount;
 		}
-
-        // transfer skeletal animation status from parent
-        mSkeletalAnimation = mGLSLProgram->isSkeletalAnimationIncluded();
-		// there is nothing to load
-		mLoadFromFile = false;
-
     }
     //-----------------------------------------------------------------------
     GLSLGpuProgram::~GLSLGpuProgram()
