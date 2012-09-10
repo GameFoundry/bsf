@@ -47,7 +47,6 @@ namespace Ogre {
 		mDeleteDclBinding = true;
 		vertexCount = 0;
 		vertexStart = 0;
-		hwAnimDataItemsUsed = 0;
 
 	}
 	//---------------------------------------------------------------------
@@ -60,7 +59,6 @@ namespace Ogre {
 		mDeleteDclBinding = false;
 		vertexCount = 0;
 		vertexStart = 0;
-		hwAnimDataItemsUsed = 0;
 	}
     //-----------------------------------------------------------------------
 	VertexData::~VertexData()
@@ -127,11 +125,6 @@ namespace Ogre {
 
 		// Copy reference to hardware shadow buffer, no matter whether copy data or not
         dest->hardwareShadowVolWBuffer = hardwareShadowVolWBuffer;
-
-		// copy anim data
-		dest->hwAnimationDataList = hwAnimationDataList;
-		dest->hwAnimDataItemsUsed = hwAnimDataItemsUsed;
-
         
         return dest;
 	}
@@ -666,38 +659,6 @@ namespace Ogre {
 
 
 		} // each buffer
-
-
-	}
-	//-----------------------------------------------------------------------
-	void VertexData::allocateHardwareAnimationElements(ushort count)
-	{
-		// Find first free texture coord set
-		unsigned short texCoord = 0;
-		const VertexDeclaration::VertexElementList& vel = vertexDeclaration->getElements();
-		for (VertexDeclaration::VertexElementList::const_iterator i = vel.begin(); 
-			i != vel.end(); ++i)
-		{
-			const VertexElement& el = *i;
-			if (el.getSemantic() == VES_TEXTURE_COORDINATES)
-			{
-				++texCoord;
-			}
-		}
-		assert(texCoord <= OGRE_MAX_TEXTURE_COORD_SETS);
-
-		// Increase to correct size
-		for (size_t c = hwAnimationDataList.size(); c < count; ++c)
-		{
-			// Create a new 3D texture coordinate set
-			HardwareAnimationData data;
-			data.targetVertexElement = &(vertexDeclaration->addElement(
-				vertexBufferBinding->getNextIndex(), 0, VET_FLOAT3, VES_TEXTURE_COORDINATES, texCoord++));
-
-			hwAnimationDataList.push_back(data);
-			// Vertex buffer will not be bound yet, we expect this to be done by the
-			// caller when it becomes appropriate (e.g. through a VertexAnimationTrack)
-		}
 	}
     //-----------------------------------------------------------------------
 	//-----------------------------------------------------------------------

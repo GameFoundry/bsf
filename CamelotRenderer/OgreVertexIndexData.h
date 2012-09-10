@@ -87,19 +87,6 @@ namespace Ogre {
 		size_t vertexStart;
 		/// The number of vertices used in this operation
 		size_t vertexCount;
-
-
-		/// Struct used to hold hardware morph / pose vertex data information
-		struct HardwareAnimationData
-		{
-			const VertexElement* targetVertexElement;
-			Real parametric;
-		};
-		typedef vector<HardwareAnimationData>::type HardwareAnimationDataList;
-		/// VertexElements used for hardware morph / pose animation
-		HardwareAnimationDataList hwAnimationDataList;
-		/// Number of hardware animation data items used
-		size_t hwAnimDataItemsUsed;
 		
 		/** Clones this vertex data, potentially including replicating any vertex buffers.
 		@param copyData Whether to create new vertex buffers too or just reference the existing ones
@@ -214,25 +201,6 @@ namespace Ogre {
 			VET_COLOUR_ARGB.
 		*/
 		void convertPackedColour(VertexElementType srcType, VertexElementType destType);
-
-
-		/** Allocate elements to serve a holder of morph / pose target data 
-			for hardware morphing / pose blending.
-		@remarks
-			This method will allocate the given number of 3D texture coordinate 
-			sets for use as a morph target or target pose offset (3D position).
-			These elements will be saved in hwAnimationDataList.
-			It will also assume that the source of these new elements will be new
-			buffers which are not bound at this time, so will start the sources to 
-			1 higher than the current highest binding source. The caller is
-			expected to bind these new buffers when appropriate. For morph animation
-			the original position buffer will be the 'from' keyframe data, whilst
-			for pose animation it will be the original vertex data.
-		*/
-		void allocateHardwareAnimationElements(ushort count);
-
-
-
 	};
 
 	/** Summary class collecting together index data source information. */

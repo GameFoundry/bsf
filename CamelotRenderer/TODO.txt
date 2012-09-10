@@ -3,6 +3,7 @@ PARSED FILES:
 GpuProgram - PARSED!
 TextureState - PARSED!
  - This is just an utility class representing texture state
+HardwareVertexBuffer - PARSED!
 VertexIndexData - Just data structures
  - VertexCacheProfiler is a weird one, but I think I don't have to remove it as it might come in handy
 RenderTexture - Everything OK
@@ -43,9 +44,6 @@ HardwareOcclusionQuery - OK, but I might consider a more generic interface for q
 HardwarePixelBuffer 
  - I might consider giving PixelBox a better name. Also rename PixelFormat.h to PixelUtil.h or similar. Makes more sense.
  - _clearSliceRTT method I'm not sure what is it used for, but I might want to remove it
-
-HardwareVertexBuffer - Very neat file
- - VertexDeclaration::getAutoOrganisedDeclaration is my only complaint. It has some vertex/skeletal animation specifics I don't want.
 
 HighLevelGpuProgram - Mostly okay
  - Has some methods for loading from a file, which I wont do

@@ -336,19 +336,6 @@ namespace Ogre {
         */
         void closeGapsInSource(void);
 
-        /** Generates a new VertexDeclaration for optimal usage based on the current
-            vertex declaration, which can be used with VertexData::reorganiseBuffers later
-            if you wish, or simply used as a template.
-		@remarks
-			Different buffer organisations and buffer usages will be returned
-            depending on the parameters passed to this method.
-        @param skeletalAnimation Whether this vertex data is going to be
-			skeletally animated
-		@param vertexAnimation Whether this vertex data is going to be vertex animated
-        */
-        VertexDeclaration* getAutoOrganisedDeclaration(bool skeletalAnimation,
-			bool vertexAnimation);
-
         /** Gets the index of the highest source value referenced by this declaration. */
         unsigned short getMaxSource(void) const;
 
