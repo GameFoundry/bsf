@@ -4,6 +4,9 @@ GpuProgram - PARSED!
 TextureState - PARSED!
  - This is just an utility class representing texture state
 HardwareVertexBuffer - PARSED!
+Viewport - PARSED!
+HardwareBufferManager - PARSED!
+HighLevelGpuProgram - PARSED!
 VertexIndexData - Just data structures
  - VertexCacheProfiler is a weird one, but I think I don't have to remove it as it might come in handy
 RenderTexture - Everything OK
@@ -12,19 +15,18 @@ HardwareIndexBuffer - Everything OK
 RenderSystemCapabilities - I think I need all of that
 HardwareBuffer - Base class for all buffers
  - Everything seems fine although I /might/ want to explore how the shadow buffer works and if I want to implement it differently?
+DefaultHardwareBufferManager - Provides emulation of hardware buffers
+ - I think this class is okay to stay, although I'm not sure where its used, but its simple enough
+Texture - PARSED!
 
 TODO FILES:
 
-Camera:
+Camera - MERGE WITH VIEWPORT
  - Remove auto tracking
- - Merge with Viewport
  - Lod stuff? Probably need to remove as well
  - Num render batches and other statistics
  - Position/rotation should be inherit from transform
  - Listeners
-
-DefaultHardwareBufferManager - Provides emulation of hardware buffers
- - I think this class is okay to stay, although I'm not sure where its used, but its simple enough
 
 Frustum
  - Reflect plane/matrix/methods need to be removed
@@ -35,32 +37,16 @@ Frustum
 GpuProgramParams - Holds all parameters used in a shader program and allows us to set them by index or name
  - Explore if we can remove GpuSharedParameters. I'm not exactly sure what they're used for
 
-HardwareBufferManager - Abstracts whether I'm creating D3D9 or OpenGL buffers
- - License stuff needs to be removed. I'm not sure what it's used for
-
 HardwareOcclusionQuery - OK, but I might consider a more generic interface for queries (I'll need profiling queries too for example)
 
 HardwarePixelBuffer 
  - I might consider giving PixelBox a better name. Also rename PixelFormat.h to PixelUtil.h or similar. Makes more sense.
  - _clearSliceRTT method I'm not sure what is it used for, but I might want to remove it
 
-HighLevelGpuProgram - Mostly okay
- - Has some methods for loading from a file, which I wont do
-
 RenderTarget:
  - update() causes rendering to start - This probably need to be moved to camera, as I want it to be responsible for rendering
  - keeps a viewport list, which I also don't think I'll need
  - autoUpdate and various update methods that I probably don't need
-
-Texture
- - mTreatLuminanceAsAlpha and corresponding methods - I dont think I need that or that it's used
-
-Viewport - MERGE WITH CAMERA
- - Remove orientation mode
- - Remove various update/clearEveryFrame methods
- - Remove material scheme
- - Remove Overlays/skies/shadows/visibility mask (I'll be needing all at some point but not now)
- - Remove renderqueue invoication sequence
 
 TODO:
  - Make sure to parse D3D9 implementations of above classes and see what needs removing there as well

@@ -52,7 +52,6 @@ namespace Ogre {
             mDesiredFormat(PF_UNKNOWN),
             mDesiredIntegerBitDepth(0),
             mDesiredFloatBitDepth(0),
-            mTreatLuminanceAsAlpha(false),
             mInternalResourcesCreated(false)
     {
         
@@ -94,16 +93,6 @@ namespace Ogre {
     {
         mDesiredIntegerBitDepth = integerBits;
         mDesiredFloatBitDepth = floatBits;
-    }
-    //--------------------------------------------------------------------------
-    void Texture::setTreatLuminanceAsAlpha(bool asAlpha)
-    {
-        mTreatLuminanceAsAlpha = asAlpha;
-    }
-    //--------------------------------------------------------------------------
-    bool Texture::getTreatLuminanceAsAlpha(void) const
-    {
-        return mTreatLuminanceAsAlpha;
     }
     //--------------------------------------------------------------------------
 	size_t Texture::calculateSize(void) const

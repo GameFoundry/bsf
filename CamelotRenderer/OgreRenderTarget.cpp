@@ -83,28 +83,11 @@ namespace Ogre {
     void RenderTarget::updateImpl(void)
     {
 		_beginUpdate();
-		_updateAutoUpdatedViewports(true);
 		_endUpdate();
     }
 
 	void RenderTarget::_beginUpdate()
 	{
-	}
-
-	void RenderTarget::_updateAutoUpdatedViewports(bool updateStatistics)
-	{
-		// Go through viewports in Z-order
-        // Tell each to refresh
-		ViewportList::iterator it = mViewportList.begin();
-        while (it != mViewportList.end())
-        {
-			Viewport* viewport = (*it).second;
-			if(viewport->isAutoUpdated())
-			{
-				_updateViewport(viewport,updateStatistics);
-			}
-			++it;
-		}
 	}
 
 	void RenderTarget::_endUpdate()

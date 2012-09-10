@@ -2693,7 +2693,7 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setViewport( Viewport *vp )
 	{
-		if( vp != mActiveViewport || vp->_isUpdated() )
+		if( vp != mActiveViewport)
 		{
 			mActiveViewport = vp;
 
@@ -2728,8 +2728,6 @@ namespace Ogre
 
 			// Set sRGB write mode
 			__SetRenderState(D3DRS_SRGBWRITEENABLE, target->isHardwareGammaEnabled());
-
-			vp->_clearUpdatedFlag();
 		}
 	}
 	//---------------------------------------------------------------------

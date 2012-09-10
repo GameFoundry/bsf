@@ -313,16 +313,6 @@ namespace Ogre {
 		@param updateStatistics Whether you want to update statistics or not.
 		*/
 		virtual void _updateViewport(Viewport* viewport, bool updateStatistics = true);
-
-		/** Method for manual management of rendering - renders only viewports that are auto updated
-		@remarks
-		This also fires preViewportUpdate and postViewportUpdate, and manages statistics.
-		You should call it between _beginUpdate() and _endUpdate().
-		See _beginUpdate for more details.
-		@param updateStatistics Whether you want to update statistics or not.
-		@see _beginUpdate()
-		*/
-		virtual void _updateAutoUpdatedViewports(bool updateStatistics = true);
 		
 		/** Method for manual management of rendering - finishes statistics calculation 
 			and fires 'postRenderTargetUpdate'.

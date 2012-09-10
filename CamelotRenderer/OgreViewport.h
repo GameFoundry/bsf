@@ -177,22 +177,6 @@ namespace Ogre {
         */
         void setDimensions(Real left, Real top, Real width, Real height);
 
-        /** Set the orientation mode of the viewport.
-        */
-        void setOrientationMode(OrientationMode orientationMode, bool setDefault = true);
-
-        /** Get the orientation mode of the viewport.
-        */
-        OrientationMode getOrientationMode() const;
-
-        /** Set the initial orientation mode of viewports.
-        */
-        static void setDefaultOrientationMode(OrientationMode orientationMode);
-
-        /** Get the initial orientation mode of viewports.
-        */
-        static OrientationMode getDefaultOrientationMode();
-
         /** Sets the initial background colour of the viewport (before
             rendering).
         */
@@ -220,112 +204,10 @@ namespace Ogre {
 		/** Gets which buffers are to be cleared each frame. */
         unsigned int getClearBuffers(void) const;
 
-		/** Sets whether this viewport should be automatically updated 
-			if Ogre's rendering loop or RenderTarget::update is being used.
-        @remarks
-            By default, if you use Ogre's own rendering loop (Root::startRendering)
-            or call RenderTarget::update, all viewports are updated automatically.
-            This method allows you to control that behaviour, if for example you 
-			have a viewport which you only want to update periodically.
-        @param autoupdate If true, the viewport is updated during the automatic
-            render loop or when RenderTarget::update() is called. If false, the 
-            viewport is only updated when its update() method is called explicitly.
-        */
-		void setAutoUpdated(bool autoupdate);
-		/** Gets whether this viewport is automatically updated if 
-			Ogre's rendering loop or RenderTarget::update is being used.
-        */
-		bool isAutoUpdated() const;
-
-		/** Set the material scheme which the viewport should use.
-		@remarks
-			This allows you to tell the system to use a particular
-			material scheme when rendering this viewport, which can 
-			involve using different techniques to render your materials.
-		@see Technique::setSchemeName
-		*/
-		void setMaterialScheme(const String& schemeName)
-		{ mMaterialSchemeName = schemeName; }
-		
-		/** Get the material scheme which the viewport should use.
-		*/
-		const String& getMaterialScheme(void) const
-		{ return mMaterialSchemeName; }
-
 		/** Access to actual dimensions (based on target size).
         */
         void getActualDimensions(
             int &left, int &top, int &width, int &height ) const;
-
-        bool _isUpdated(void) const;
-        void _clearUpdatedFlag(void);
-
-        /** Tells this viewport whether it should display Overlay objects.
-        @remarks
-            Overlay objects are layers which appear on top of the scene. They are created via
-            SceneManager::createOverlay and every viewport displays these by default.
-            However, you probably don't want this if you're using multiple viewports,
-            because one of them is probably a picture-in-picture which is not supposed to
-            have overlays of it's own. In this case you can turn off overlays on this viewport
-            by calling this method.
-        @param enabled If true, any overlays are displayed, if false they are not.
-        */
-        void setOverlaysEnabled(bool enabled);
-
-        /** Returns whether or not Overlay objects (created in the SceneManager) are displayed in this
-            viewport. */
-        bool getOverlaysEnabled(void) const;
-
-        /** Tells this viewport whether it should display skies.
-        @remarks
-            Skies are layers which appear on background of the scene. They are created via
-            SceneManager::setSkyBox, SceneManager::setSkyPlane and SceneManager::setSkyDome and
-            every viewport displays these by default. However, you probably don't want this if
-            you're using multiple viewports, because one of them is probably a picture-in-picture
-            which is not supposed to have skies of it's own. In this case you can turn off skies
-            on this viewport by calling this method.
-        @param enabled If true, any skies are displayed, if false they are not.
-        */
-        void setSkiesEnabled(bool enabled);
-
-        /** Returns whether or not skies (created in the SceneManager) are displayed in this
-            viewport. */
-        bool getSkiesEnabled(void) const;
-
-        /** Tells this viewport whether it should display shadows.
-        @remarks
-            This setting enables you to disable shadow rendering for a given viewport. The global
-			shadow technique set on SceneManager still controls the type and nature of shadows,
-			but this flag can override the setting so that no shadows are rendered for a given
-			viewport to save processing time where they are not required.
-        @param enabled If true, any shadows are displayed, if false they are not.
-        */
-        void setShadowsEnabled(bool enabled);
-
-        /** Returns whether or not shadows (defined in the SceneManager) are displayed in this
-            viewport. */
-        bool getShadowsEnabled(void) const;
-
-
-		/** Sets a per-viewport visibility mask.
-		@remarks
-			The visibility mask is a way to exclude objects from rendering for
-			a given viewport. For each object in the frustum, a check is made
-			between this mask and the objects visibility flags 
-			(@see MovableObject::setVisibilityFlags), and if a binary 'and'
-			returns zero, the object will not be rendered.
-		*/
-		void setVisibilityMask(uint32 mask) { mVisibilityMask = mask; }
-
-		/** Gets a per-viewport visibility mask.
-		@see Viewport::setVisibilityMask
-		*/
-		uint getVisibilityMask(void) const { return mVisibilityMask; }
-
-        /** Convert oriented input point coordinates to screen coordinates. */
-        void pointOrientedToScreen(const Vector2 &v, int orientationMode, Vector2 &outv);
-        void pointOrientedToScreen(Real orientedX, Real orientedY, int orientationMode,
-                                   Real &screenX, Real &screenY);
 
     protected:
         RenderTarget* mTarget;
@@ -339,19 +221,6 @@ namespace Ogre {
         ColourValue mBackColour;
         bool mClearEveryFrame;
 		unsigned int mClearBuffers;
-        bool mUpdated;
-        bool mShowOverlays;
-        bool mShowSkies;
-		bool mShowShadows;
-		uint32 mVisibilityMask;
-		/// Material scheme
-		String mMaterialSchemeName;
-        /// Viewport orientation mode
-        OrientationMode mOrientationMode;
-        static OrientationMode mDefaultOrientationMode;
-
-		/// Automatic rendering on/off
-		bool mIsAutoUpdated;
     };
 	/** @} */
 	/** @} */

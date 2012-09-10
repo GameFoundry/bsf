@@ -306,14 +306,6 @@ namespace Ogre {
         */
         virtual void setDesiredBitDepths(ushort integerBits, ushort floatBits);
 
-        /** Sets whether luminace pixel format will treated as alpha format when load this texture.
-        */
-        virtual void setTreatLuminanceAsAlpha(bool asAlpha);
-
-        /** Gets whether luminace pixel format will treated as alpha format when load this texture.
-        */
-        virtual bool getTreatLuminanceAsAlpha(void) const;
-
         /** Return the number of faces this texture has. This will be 6 for a cubemap
         	texture and 1 for a 1D, 2D or 3D one.
         */
@@ -363,7 +355,6 @@ namespace Ogre {
         PixelFormat mDesiredFormat;
         unsigned short mDesiredIntegerBitDepth;
         unsigned short mDesiredFloatBitDepth;
-        bool mTreatLuminanceAsAlpha;
 
 		bool mInternalResourcesCreated;
 

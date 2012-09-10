@@ -1781,7 +1781,7 @@ namespace Ogre {
 	void GLRenderSystem::_setViewport(Viewport *vp)
 	{
 		// Check if viewport is different
-		if (vp != mActiveViewport || vp->_isUpdated())
+		if (vp != mActiveViewport)
 		{
 			RenderTarget* target;
 			target = vp->getTarget();
@@ -1804,8 +1804,6 @@ namespace Ogre {
 
 			// Configure the viewport clipping
 			glScissor(x, y, w, h);
-
-			vp->_clearUpdatedFlag();
 		}
 	}
 
