@@ -43,57 +43,6 @@ namespace Ogre {
 	*  @{
 	*/
 
-    /** Abstract interface representing a 'licensee' of a hardware buffer copy.
-    remarks
-        Often it's useful to have temporary buffers which are used for working
-        but are not necessarily needed permanently. However, creating and 
-        destroying buffers is expensive, so we need a way to share these 
-        working areas, especially those based on existing fixed buffers. 
-        This class represents a licensee of one of those temporary buffers, 
-        and must be implemented by any user of a temporary buffer if they 
-        wish to be notified when the license is expired. 
-    */
-    class _OgreExport HardwareBufferLicensee
-    {
-    public:
-        virtual ~HardwareBufferLicensee() { }
-        /** This method is called when the buffer license is expired and is about
-        to be returned to the shared pool. */
-        virtual void licenseExpired(HardwareBuffer* buffer) = 0;
-    };
-
-    /** Structure for recording the use of temporary blend buffers */
-    class _OgreExport TempBlendedBufferInfo : public HardwareBufferLicensee
-    {
-    private:
-        // Pre-blended 
-        HardwareVertexBufferPtr srcPositionBuffer;
-        HardwareVertexBufferPtr srcNormalBuffer;
-        // Post-blended 
-        HardwareVertexBufferPtr destPositionBuffer;
-        HardwareVertexBufferPtr destNormalBuffer;
-        /// Both positions and normals are contained in the same buffer
-        bool posNormalShareBuffer;
-        unsigned short posBindIndex;
-        unsigned short normBindIndex;
-        bool bindPositions;
-        bool bindNormals;
-
-    public:
-        ~TempBlendedBufferInfo(void);
-        /// Utility method, extract info from the given VertexData
-        void extractFrom(const VertexData* sourceData);
-        /// Utility method, checks out temporary copies of src into dest
-        void checkoutTempCopies(bool positions = true, bool normals = true);
-        /// Utility method, binds dest copies into a given VertexData struct
-        void bindTempCopies(VertexData* targetData, bool suppressHardwareUpload);
-        /** Overridden member from HardwareBufferLicensee. */
-        void licenseExpired(HardwareBuffer* buffer);
-		/** Detect currently have buffer copies checked out and touch it */
-		bool buffersCheckedOut(bool positions = true, bool normals = true) const;
-    };
-
-
 	/** Base definition of a hardware buffer manager.
 	@remarks
 		This class is deliberately not a Singleton, so that multiple types can 
@@ -145,58 +94,7 @@ namespace Ogre {
 		/// Internal method for destroys a VertexBufferBinding, may be overridden by certain rendering APIs
 		virtual void destroyVertexBufferBindingImpl(VertexBufferBinding* binding);
 
-    public:
-
-        enum BufferLicenseType
-        {
-            /// Licensee will only release buffer when it says so
-            BLT_MANUAL_RELEASE,
-            /// Licensee can have license revoked
-            BLT_AUTOMATIC_RELEASE
-        };
-
     protected:
-        /** Struct holding details of a license to use a temporary shared buffer. */
-        class _OgrePrivate VertexBufferLicense
-        {
-        public:
-            HardwareVertexBuffer* originalBufferPtr;
-            BufferLicenseType licenseType;
-            size_t expiredDelay;
-            HardwareVertexBufferPtr buffer;
-            HardwareBufferLicensee* licensee;
-            VertexBufferLicense(
-                HardwareVertexBuffer* orig,
-                BufferLicenseType ltype, 
-                size_t delay,
-                HardwareVertexBufferPtr buf, 
-                HardwareBufferLicensee* lic) 
-                : originalBufferPtr(orig)
-                , licenseType(ltype)
-                , expiredDelay(delay)
-                , buffer(buf)
-                , licensee(lic)
-            {}
-
-        };
-
-        /// Map from original buffer to temporary buffers
-        typedef multimap<HardwareVertexBuffer*, HardwareVertexBufferPtr>::type FreeTemporaryVertexBufferMap;
-        /// Map of current available temp buffers 
-        FreeTemporaryVertexBufferMap mFreeTempVertexBufferMap;
-        /// Map from temporary buffer to details of a license
-        typedef map<HardwareVertexBuffer*, VertexBufferLicense>::type TemporaryVertexBufferLicenseMap;
-        /// Map of currently licensed temporary buffers
-        TemporaryVertexBufferLicenseMap mTempVertexBufferLicenses;
-        /// Number of frames elapsed since temporary buffers utilization was above half the available
-        size_t mUnderUsedFrameCount;
-        /// Number of frames to wait before free unused temporary buffers
-        static const size_t UNDER_USED_FRAME_THRESHOLD;
-        /// Frame delay for BLT_AUTOMATIC_RELEASE temporary buffers
-        static const size_t EXPIRED_DELAY_FRAME_THRESHOLD;
-		// Mutexes
-		OGRE_MUTEX(mTempBuffersMutex)
-
 
         /// Creates  a new buffer as a copy of the source, does not copy data
         virtual HardwareVertexBufferPtr makeBufferCopy(
@@ -267,15 +165,6 @@ namespace Ogre {
 		/** Destroys a VertexBufferBinding. */
 		virtual void destroyVertexBufferBinding(VertexBufferBinding* binding);
 
-		/** Registers a vertex buffer as a copy of another.
-		@remarks
-			This is useful for registering an existing buffer as a temporary buffer
-			which can be allocated just like a copy.
-		*/
-		virtual void registerVertexBufferSourceAndCopy(
-			const HardwareVertexBufferPtr& sourceBuffer,
-			const HardwareVertexBufferPtr& copy);
-
         /** Allocates a copy of a given vertex buffer.
         @remarks
             This method allocates a temporary copy of an existing vertex buffer.
@@ -293,76 +182,8 @@ namespace Ogre {
             structure of the buffer
         */
         virtual HardwareVertexBufferPtr allocateVertexBufferCopy(
-            const HardwareVertexBufferPtr& sourceBuffer, 
-            BufferLicenseType licenseType,
-            HardwareBufferLicensee* licensee,
+            const HardwareVertexBufferPtr& sourceBuffer,
             bool copyData = false);
-
-        /** Manually release a vertex buffer copy for others to subsequently use.
-        @remarks
-            Only required if the original call to allocateVertexBufferCopy
-            included a licenseType of BLT_MANUAL_RELEASE. 
-        @param bufferCopy The buffer copy. The caller is expected to delete
-            or at least no longer use this reference, since another user may
-            well begin to modify the contents of the buffer.
-        */
-        virtual void releaseVertexBufferCopy(
-            const HardwareVertexBufferPtr& bufferCopy); 
-
-        /** Tell engine that the vertex buffer copy intent to reuse.
-        @remarks
-            Ogre internal keep an expired delay counter of BLT_AUTOMATIC_RELEASE
-            buffers, when the counter count down to zero, it'll release for other
-            purposes later. But you can use this function to reset the counter to
-            the internal configured value, keep the buffer not get released for
-            some frames.
-        @param bufferCopy The buffer copy. The caller is expected to keep this
-            buffer copy for use.
-        */
-        virtual void touchVertexBufferCopy(
-            const HardwareVertexBufferPtr& bufferCopy);
-
-        /** Free all unused vertex buffer copies.
-        @remarks
-            This method free all temporary vertex buffers that not in used.
-            In normally, temporary vertex buffers are subsequently stored and can
-            be made available for other purposes later without incurring the cost
-            of construction / destruction. But in some cases you want to free them
-            to save hardware memory (e.g. application was runs in a long time, you
-            might free temporary buffers periodically to avoid memory overload).
-        */
-        virtual void _freeUnusedBufferCopies(void);
-
-        /** Internal method for releasing all temporary buffers which have been 
-           allocated using BLT_AUTOMATIC_RELEASE; is called by OGRE.
-        @param forceFreeUnused If true, free all unused temporary buffers.
-            If false, auto detect and free all unused temporary buffers based on
-            temporary buffers utilization.
-        */
-        virtual void _releaseBufferCopies(bool forceFreeUnused = false);
-
-        /** Internal method that forces the release of copies of a given buffer.
-        @remarks
-            This usually means that the buffer which the copies are based on has
-            been changed in some fundamental way, and the owner of the original 
-            wishes to make that known so that new copies will reflect the
-            changes.
-        @param sourceBuffer the source buffer as a shared pointer.  Any buffer copies created from the source buffer
-            are deleted.
-        */
-        virtual void _forceReleaseBufferCopies(
-            const HardwareVertexBufferPtr& sourceBuffer);
-
-        /** Internal method that forces the release of copies of a given buffer.
-        @remarks
-            This usually means that the buffer which the copies are based on has
-            been changed in some fundamental way, and the owner of the original 
-            wishes to make that known so that new copies will reflect the
-            changes.
-        @param sourceBuffer the source buffer as a pointer.  Any buffer copies created from the source buffer
-            are deleted.
-        */
-        virtual void _forceReleaseBufferCopies(HardwareVertexBuffer* sourceBuffer);
 
 		/// Notification that a hardware vertex buffer has been destroyed
 		void _notifyVertexBufferDestroyed(HardwareVertexBuffer* buf);
@@ -416,56 +237,12 @@ namespace Ogre {
 		{
 			mImpl->destroyVertexBufferBinding(binding);
 		}
-		/** @copydoc HardwareBufferManagerInterface::registerVertexBufferSourceAndCopy */
-		virtual void registerVertexBufferSourceAndCopy(
-			const HardwareVertexBufferPtr& sourceBuffer,
-			const HardwareVertexBufferPtr& copy)
-		{
-			mImpl->registerVertexBufferSourceAndCopy(sourceBuffer, copy);
-		}
 		/** @copydoc HardwareBufferManagerInterface::allocateVertexBufferCopy */
         virtual HardwareVertexBufferPtr allocateVertexBufferCopy(
-            const HardwareVertexBufferPtr& sourceBuffer, 
-            BufferLicenseType licenseType,
-            HardwareBufferLicensee* licensee,
+            const HardwareVertexBufferPtr& sourceBuffer,
             bool copyData = false)
 		{
-			return mImpl->allocateVertexBufferCopy(sourceBuffer, licenseType, licensee, copyData);
-		}
-		/** @copydoc HardwareBufferManagerInterface::releaseVertexBufferCopy */
-        virtual void releaseVertexBufferCopy(
-            const HardwareVertexBufferPtr& bufferCopy)
-		{
-			mImpl->releaseVertexBufferCopy(bufferCopy);
-		}
-
-		/** @copydoc HardwareBufferManagerInterface::touchVertexBufferCopy */
-        virtual void touchVertexBufferCopy(
-            const HardwareVertexBufferPtr& bufferCopy)
-		{
-			mImpl->touchVertexBufferCopy(bufferCopy);
-		}
-
-		/** @copydoc HardwareBufferManagerInterface::_freeUnusedBufferCopies */
-        virtual void _freeUnusedBufferCopies(void)
-		{
-			mImpl->_freeUnusedBufferCopies();
-		}
-		/** @copydoc HardwareBufferManagerInterface::_releaseBufferCopies */
-        virtual void _releaseBufferCopies(bool forceFreeUnused = false)
-		{
-			mImpl->_releaseBufferCopies(forceFreeUnused);
-		}
-		/** @copydoc HardwareBufferManagerInterface::_forceReleaseBufferCopies */
-        virtual void _forceReleaseBufferCopies(
-            const HardwareVertexBufferPtr& sourceBuffer)
-		{
-			mImpl->_forceReleaseBufferCopies(sourceBuffer);
-		}
-		/** @copydoc HardwareBufferManagerInterface::_forceReleaseBufferCopies */
-        virtual void _forceReleaseBufferCopies(HardwareVertexBuffer* sourceBuffer)
-		{
-			mImpl->_forceReleaseBufferCopies(sourceBuffer);
+			return mImpl->allocateVertexBufferCopy(sourceBuffer, copyData);
 		}
 		/** @copydoc HardwareBufferManagerInterface::_notifyVertexBufferDestroyed */
 		void _notifyVertexBufferDestroyed(HardwareVertexBuffer* buf)

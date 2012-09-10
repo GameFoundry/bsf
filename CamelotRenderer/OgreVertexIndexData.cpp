@@ -239,10 +239,6 @@ namespace Ogre {
             if (wasSharedBuffer)
                 newRemainderBuffer->unlock();
 
-            // At this stage, he original vertex buffer is going to be destroyed
-            // So we should force the deallocation of any temporary copies
-            vbuf->getManager()->_forceReleaseBufferCopies(vbuf);
-
             if (useVertexPrograms)
             {
                 // Now it's time to set up the w buffer

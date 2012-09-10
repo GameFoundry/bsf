@@ -378,13 +378,6 @@ namespace Ogre
 		// Notify all listener before device is rested
 		renderSystem->notifyOnDeviceLost(this);
 
-		// Release all automatic temporary buffers and free unused
-		// temporary buffers, so we doesn't need to recreate them,
-		// and they will reallocate on demand. This save a lot of
-		// release/recreate of non-managed vertex buffers which
-		// wasn't need at all.
-		HardwareBufferManager::getSingleton()._releaseBufferCopies(true);
-
 		// Cleanup depth stencils surfaces.
 		renderSystem->_cleanupDepthStencils(mpDevice);
 

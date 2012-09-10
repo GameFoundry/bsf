@@ -10,6 +10,8 @@ RenderTexture - Everything OK
 RenderWindow - Everything OK
 HardwareIndexBuffer - Everything OK
 RenderSystemCapabilities - I think I need all of that
+HardwareBuffer - Base class for all buffers
+ - Everything seems fine although I /might/ want to explore how the shadow buffer works and if I want to implement it differently?
 
 TODO FILES:
 
@@ -32,9 +34,6 @@ Frustum
 
 GpuProgramParams - Holds all parameters used in a shader program and allows us to set them by index or name
  - Explore if we can remove GpuSharedParameters. I'm not exactly sure what they're used for
-
-HardwareBuffer - Base class for all buffers
- - Everything seems fine although I /might/ want to explore how the shadow buffer works and if I want to implement it differently?
 
 HardwareBufferManager - Abstracts whether I'm creating D3D9 or OpenGL buffers
  - License stuff needs to be removed. I'm not sure what it's used for
