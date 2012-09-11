@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 
 #include "CmPrerequisitesUtil.h"
-#include "OgreMath.h"
+#include "CmMath.h"
 
 namespace CamelotEngine
 {

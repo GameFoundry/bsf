@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisitesUtil.h"
 
-#include "OgreVector3.h"
+#include "CmVector3.h"
 
 // NB All code adapted from Wild Magic 0.2 Matrix math (free source code)
 // http://www.geometrictools.com/

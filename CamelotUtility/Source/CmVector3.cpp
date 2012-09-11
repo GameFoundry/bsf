@@ -25,10 +25,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreVector4.h"
-#include "OgreMath.h"
+#include "CmVector3.h"
+#include "CmMath.h"
 
 namespace CamelotEngine
 {
-    const Vector4 Vector4::ZERO( 0, 0, 0, 0 );
+    const Vector3 Vector3::ZERO( 0, 0, 0 );
+
+    const Vector3 Vector3::UNIT_X( 1, 0, 0 );
+    const Vector3 Vector3::UNIT_Y( 0, 1, 0 );
+    const Vector3 Vector3::UNIT_Z( 0, 0, 1 );
+    const Vector3 Vector3::NEGATIVE_UNIT_X( -1,  0,  0 );
+    const Vector3 Vector3::NEGATIVE_UNIT_Y(  0, -1,  0 );
+    const Vector3 Vector3::NEGATIVE_UNIT_Z(  0,  0, -1 );
+    const Vector3 Vector3::UNIT_SCALE(1, 1, 1);
 }

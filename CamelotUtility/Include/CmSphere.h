@@ -31,7 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisitesUtil.h"
 
-#include "OgreVector3.h"
+#include "CmVector3.h"
 
 namespace CamelotEngine {
 
@@ -45,7 +45,7 @@ namespace CamelotEngine {
 	/** A sphere primitive, mostly used for bounds checking. 
     @remarks
         A sphere in math texts is normally represented by the function
-        x^2 + y^2 + z^2 = r^2 (for sphere's centered on the origin). Ogre stores spheres
+        x^2 + y^2 + z^2 = r^2 (for sphere's centered on the origin). Engine stores spheres
         simply as a center point and a radius.
     */
     class CM_EXPORT Sphere

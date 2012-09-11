@@ -16,44 +16,14 @@
     <Filter Include="Header Files\Prerequisites">
       <UniqueIdentifier>{1a68be3e-3394-4b01-9532-2fe9db03afe0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Math">
+      <UniqueIdentifier>{5423fdfe-e418-4fcd-8eae-9ab4e77856ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{6f183461-d042-41e0-9c81-aa8bc8462641}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\asm_math.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreAxisAlignedBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreMath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreMatrix3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreMatrix4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgrePlane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreQuaternion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreRay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreSphere.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreVector2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreVector3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreVector4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmTypes.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
@@ -72,34 +42,70 @@
     <ClInclude Include="Include\CmFwdDeclUtil.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmMathAsm.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmAxisAlignedBox.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmMath.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmMatrix3.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmMatrix4.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmPlane.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmQuaternion.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRay.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmSphere.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmVector2.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmVector3.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmVector4.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\OgreMath.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Include\CmAxisAlignedBox.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OgreMatrix3.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\CmMath.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OgreMatrix4.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\CmMatrix3.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OgrePlane.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\CmMatrix4.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OgreQuaternion.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\CmPlane.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OgreVector2.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\CmQuaternion.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OgreVector3.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\CmVector2.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OgreVector4.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\CmVector3.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Include\OgreAxisAlignedBox.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\CmVector4.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -31,10 +31,11 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisitesUtil.h"
 
-#include "OgreVector3.h"
-#include "OgreMatrix3.h"
-#include "OgreVector4.h"
-#include "OgrePlane.h"
+#include "CmVector3.h"
+#include "CmMatrix3.h"
+#include "CmVector4.h"
+#include "CmPlane.h"
+
 namespace CamelotEngine
 {
 	/** \addtogroup Core
@@ -45,7 +46,7 @@ namespace CamelotEngine
 	*/
 	/** Class encapsulating a standard 4x4 homogeneous matrix.
         @remarks
-            OGRE uses column vectors when applying matrix multiplications,
+            We use column vectors when applying matrix multiplications,
             This means a vector is represented as a single column, 4-row
             matrix. This has the effect that the transformations implemented
             by the matrices happens right-to-left e.g. if vector V is to be
@@ -60,10 +61,10 @@ namespace CamelotEngine
             inexplicably chosen to differ from the accepted standard and uses
             row vectors and left-to-right matrix multiplication.
         @par
-            OGRE deals with the differences between D3D and OpenGL etc.
-            internally when operating through different render systems. OGRE
-            users only need to conform to standard maths conventions, i.e.
-            right-to-left matrix multiplication, (OGRE transposes matrices it
+            We deal with the differences between D3D and OpenGL etc.
+            internally when operating through different render systems. 
+            Users only need to conform to standard maths conventions, i.e.
+            right-to-left matrix multiplication, (Engine transposes matrices it
             passes to D3D to compensate).
         @par
             The generic form M * V which shows the layout of the matrix 
@@ -640,7 +641,7 @@ namespace CamelotEngine
     };
 
     /* Removed from Vector4 and made a non-member here because otherwise
-       OgreMatrix4.h and OgreVector4.h have to try to include and inline each 
+       CmMatrix4.h and CmVector4.h have to try to include and inline each 
        other, which frankly doesn't work ;)
    */
     inline Vector4 operator * (const Vector4& v, const Matrix4& mat)

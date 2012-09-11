@@ -31,8 +31,8 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisitesUtil.h"
 
-#include "OgreVector3.h"
-#include "OgreMatrix4.h"
+#include "CmVector3.h"
+#include "CmMatrix4.h"
 
 namespace CamelotEngine {
 	/** \addtogroup Core
@@ -280,7 +280,7 @@ namespace CamelotEngine {
 		@remarks
 		If the order of these corners is important, they are as
 		follows: The 4 points of the minimum Z face (note that
-		because Ogre uses right-handed coordinates, the minimum Z is
+		because Engine uses right-handed coordinates, the minimum Z is
 		at the 'back' of the box) starting with the minimum point of
 		all, then anticlockwise around this face (if you are looking
 		onto the face from outside the box). Then the 4 points of the

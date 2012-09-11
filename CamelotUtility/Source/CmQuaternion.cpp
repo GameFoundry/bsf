@@ -33,11 +33,11 @@ THE SOFTWARE.
 // http://www.boost.org/LICENSE_1_0.txt
 // http://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
 
-#include "OgreQuaternion.h"
+#include "CmQuaternion.h"
 
-#include "OgreMath.h"
-#include "OgreMatrix3.h"
-#include "OgreVector3.h"
+#include "CmMath.h"
+#include "CmMatrix3.h"
+#include "CmVector3.h"
 
 namespace CamelotEngine {
 

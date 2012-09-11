@@ -25,9 +25,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreMatrix3.h"
+#include "CmMatrix3.h"
 
-#include "OgreMath.h"
+#include "CmMath.h"
 
 // Adapted from Matrix math by Wild Magic http://www.geometrictools.com/
 

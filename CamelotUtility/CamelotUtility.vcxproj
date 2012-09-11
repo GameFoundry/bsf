@@ -66,35 +66,35 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\asm_math.h" />
+    <ClInclude Include="Include\CmMathAsm.h" />
     <ClInclude Include="Include\CmTypes.h" />
     <ClInclude Include="Include\CmFwdDeclUtil.h" />
-    <ClInclude Include="Include\OgreAxisAlignedBox.h" />
-    <ClInclude Include="Include\OgreMath.h" />
-    <ClInclude Include="Include\OgreMatrix3.h" />
-    <ClInclude Include="Include\OgreMatrix4.h" />
-    <ClInclude Include="Include\OgrePlane.h" />
+    <ClInclude Include="Include\CmAxisAlignedBox.h" />
+    <ClInclude Include="Include\CmMath.h" />
+    <ClInclude Include="Include\CmMatrix3.h" />
+    <ClInclude Include="Include\CmMatrix4.h" />
+    <ClInclude Include="Include\CmPlane.h" />
     <ClInclude Include="Include\CmPlatform.h" />
     <ClInclude Include="Include\CmPrerequisitesUtil.h" />
-    <ClInclude Include="Include\OgreQuaternion.h" />
-    <ClInclude Include="Include\OgreRay.h" />
-    <ClInclude Include="Include\OgreSphere.h" />
+    <ClInclude Include="Include\CmQuaternion.h" />
+    <ClInclude Include="Include\CmRay.h" />
+    <ClInclude Include="Include\CmSphere.h" />
     <ClInclude Include="Include\CmStdHeaders.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
-    <ClInclude Include="Include\OgreVector2.h" />
-    <ClInclude Include="Include\OgreVector3.h" />
-    <ClInclude Include="Include\OgreVector4.h" />
+    <ClInclude Include="Include\CmVector2.h" />
+    <ClInclude Include="Include\CmVector3.h" />
+    <ClInclude Include="Include\CmVector4.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Include\OgreAxisAlignedBox.cpp" />
-    <ClCompile Include="Source\OgreMath.cpp" />
-    <ClCompile Include="Source\OgreMatrix3.cpp" />
-    <ClCompile Include="Source\OgreMatrix4.cpp" />
-    <ClCompile Include="Source\OgrePlane.cpp" />
-    <ClCompile Include="Source\OgreQuaternion.cpp" />
-    <ClCompile Include="Source\OgreVector2.cpp" />
-    <ClCompile Include="Source\OgreVector3.cpp" />
-    <ClCompile Include="Source\OgreVector4.cpp" />
+    <ClCompile Include="Include\CmAxisAlignedBox.cpp" />
+    <ClCompile Include="Source\CmMath.cpp" />
+    <ClCompile Include="Source\CmMatrix3.cpp" />
+    <ClCompile Include="Source\CmMatrix4.cpp" />
+    <ClCompile Include="Source\CmPlane.cpp" />
+    <ClCompile Include="Source\CmQuaternion.cpp" />
+    <ClCompile Include="Source\CmVector2.cpp" />
+    <ClCompile Include="Source\CmVector3.cpp" />
+    <ClCompile Include="Source\CmVector4.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

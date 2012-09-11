@@ -12,7 +12,7 @@
  * See http://gcc.gnu.org/bugzilla/show_bug.cgi?id=20218
  *
  * Due to a more strict linker included with Xcode 4, this is disabled on Mac OS X and iOS.
- * The reason? It changes the visibility of Boost functions.  The mismatch between visibility Boost when used in Ogre (default)
+ * The reason? It changes the visibility of Boost functions.  The mismatch between visibility Boost when used in the engine (default)
  * and Boost when compiled (hidden) results in mysterious link errors such as "Bad codegen, pointer diff".
  */
 #   pragma GCC visibility push(default)

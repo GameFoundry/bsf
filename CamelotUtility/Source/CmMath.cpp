@@ -25,15 +25,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreMath.h"
-#include "asm_math.h"
-#include "OgreVector2.h"
-#include "OgreVector3.h"
-#include "OgreVector4.h"
-#include "OgreRay.h"
-#include "OgreSphere.h"
-#include "OgreAxisAlignedBox.h"
-#include "OgrePlane.h"
+#include "CmMath.h"
+#include "CmMathAsm.h"
+#include "CmVector2.h"
+#include "CmVector3.h"
+#include "CmVector4.h"
+#include "CmRay.h"
+#include "CmSphere.h"
+#include "CmAxisAlignedBox.h"
+#include "CmPlane.h"
 
 
 namespace CamelotEngine
@@ -342,7 +342,7 @@ namespace CamelotEngine
         if (Math::Abs(denom) < std::numeric_limits<float>::epsilon())
         {
             // Parallel
-            return std::pair<bool, float>(false, 0);
+            return std::pair<bool, float>(false, 0.0f);
         }
         else
         {
@@ -458,7 +458,7 @@ namespace CamelotEngine
         // Check origin inside first
         if (rayorig.squaredLength() <= radius*radius && discardInside)
         {
-            return std::pair<bool, float>(true, 0);
+            return std::pair<bool, float>(true, 0.0f);
         }
 
         // Mmm, quadratics
@@ -473,7 +473,7 @@ namespace CamelotEngine
         if (d < 0)
         {
             // No intersection
-            return std::pair<bool, float>(false, 0);
+            return std::pair<bool, float>(false, 0.0f);
         }
         else
         {
@@ -491,8 +491,8 @@ namespace CamelotEngine
     //-----------------------------------------------------------------------
 	std::pair<bool, float> Math::intersects(const Ray& ray, const AxisAlignedBox& box)
 	{
-		if (box.isNull()) return std::pair<bool, float>(false, 0);
-		if (box.isInfinite()) return std::pair<bool, float>(true, 0);
+		if (box.isNull()) return std::pair<bool, float>(false, 0.0f);
+		if (box.isInfinite()) return std::pair<bool, float>(true, 0.0f);
 
 		float lowt = 0.0f;
 		float t;
@@ -506,7 +506,7 @@ namespace CamelotEngine
 		// Check origin inside first
 		if ( rayorig > min && rayorig < max )
 		{
-			return std::pair<bool, float>(true, 0);
+			return std::pair<bool, float>(true, 0.0f);
 		}
 
 		// Check each face in turn, only check closest 3
@@ -720,18 +720,18 @@ namespace CamelotEngine
             if (denom > + std::numeric_limits<float>::epsilon())
             {
                 if (!negativeSide)
-                    return std::pair<bool, float>(false, 0);
+                    return std::pair<bool, float>(false, 0.0f);
             }
             else if (denom < - std::numeric_limits<float>::epsilon())
             {
                 if (!positiveSide)
-                    return std::pair<bool, float>(false, 0);
+                    return std::pair<bool, float>(false, 0.0f);
             }
             else
             {
                 // Parallel or triangle area is close to zero when
                 // the plane normal not normalised.
-                return std::pair<bool, float>(false, 0);
+                return std::pair<bool, float>(false, 0.0f);
             }
 
             t = normal.dotProduct(a - ray.getOrigin()) / denom;
@@ -739,7 +739,7 @@ namespace CamelotEngine
             if (t < 0)
             {
                 // Intersection is behind origin
-                return std::pair<bool, float>(false, 0);
+                return std::pair<bool, float>(false, 0.0f);
             }
         }
 
@@ -786,12 +786,12 @@ namespace CamelotEngine
             if (area > 0)
             {
                 if (alpha < tolerance || beta < tolerance || alpha+beta > area-tolerance)
-                    return std::pair<bool, float>(false, 0);
+                    return std::pair<bool, float>(false, 0.0f);
             }
             else
             {
                 if (alpha > tolerance || beta > tolerance || alpha+beta < area-tolerance)
-                    return std::pair<bool, float>(false, 0);
+                    return std::pair<bool, float>(false, 0.0f);
             }
         }
 

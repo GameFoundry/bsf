@@ -38,7 +38,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisitesUtil.h"
 
-#include "OgreVector3.h"
+#include "CmVector3.h"
 
 namespace CamelotEngine {
 

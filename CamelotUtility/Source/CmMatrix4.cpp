@@ -25,10 +25,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreMatrix4.h"
+#include "CmMatrix4.h"
 
-#include "OgreVector3.h"
-#include "OgreMatrix3.h"
+#include "CmVector3.h"
+#include "CmMatrix3.h"
 
 namespace CamelotEngine
 {

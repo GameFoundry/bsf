@@ -26,9 +26,9 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "OgrePlane.h"
-#include "OgreMatrix3.h"
-#include "OgreAxisAlignedBox.h" 
+#include "CmPlane.h"
+#include "CmMatrix3.h"
+#include "CmAxisAlignedBox.h" 
 
 namespace CamelotEngine {
 	//-----------------------------------------------------------------------
