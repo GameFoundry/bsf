@@ -40,22 +40,16 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-    String Camera::msMovableType = "Camera";
     //-----------------------------------------------------------------------
     Camera::Camera( const String& name)
         : Frustum(name),
 		mOrientation(Quaternion::IDENTITY),
 		mPosition(Vector3::ZERO),
 		mSceneDetail(PM_SOLID),
-		mAutoTrackOffset(Vector3::ZERO),
-		mSceneLodFactor(1.0f),
-		mSceneLodFactorInv(1.0f),
 		mWindowSet(false),
 		mLastViewport(0),
 		mAutoAspectRatio(false),
-		mCullFrustum(0),
-		mUseRenderingDistance(true),
-		mLodCamera(0)
+		mCullFrustum(0)
     {
 
         // Reasonable defaults to camera params
@@ -72,18 +66,11 @@ namespace Ogre {
         // Init matrices
         mViewMatrix = Matrix4::ZERO;
         mProjMatrixRS = Matrix4::ZERO;
-
-        // no reflection
-        mReflect = false;
     }
 
     //-----------------------------------------------------------------------
     Camera::~Camera()
     {
-		for (ListenerList::iterator i = mListeners.begin(); i != mListeners.end(); ++i)
-		{
-			(*i)->cameraDestroyed(this);
-		}
     }
     //-----------------------------------------------------------------------
     void Camera::setPolygonMode(PolygonMode sd)
@@ -339,22 +326,8 @@ namespace Ogre {
         // Deriving reflected orientation / position
         if (mRecalcView)
         {
-            if (mReflect)
-            {
-                // Calculate reflected orientation, use up-vector as fallback axis.
-				Vector3 dir = mRealOrientation * Vector3::NEGATIVE_UNIT_Z;
-				Vector3 rdir = dir.reflect(mReflectPlane.normal);
-                Vector3 up = mRealOrientation * Vector3::UNIT_Y;
-				mDerivedOrientation = dir.getRotationTo(rdir, up) * mRealOrientation;
-
-                // Calculate reflected position.
-                mDerivedPosition = mReflectMatrix.transformAffine(mRealPosition);
-            }
-            else
-            {
-                mDerivedOrientation = mRealOrientation;
-                mDerivedPosition = mRealPosition;
-            }
+			mDerivedOrientation = mRealOrientation;
+			mDerivedPosition = mRealPosition;
         }
 
         return mRecalcView;
@@ -376,81 +349,15 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void Camera::_renderScene(Viewport *vp, bool includeOverlays)
     {
-		for (ListenerList::iterator i = mListeners.begin(); i != mListeners.end(); ++i)
-		{
-			(*i)->cameraPreRenderScene(this);
-		}
-
 		// TODO PORT - I'm not going to be rendering the scene like this (yet), but I think I will do it eventually
         //mSceneMgr->_renderScene(this, vp, includeOverlays);
-
-		for (ListenerList::iterator i = mListeners.begin(); i != mListeners.end(); ++i)
-		{
-			(*i)->cameraPostRenderScene(this);
-		}
 	}
-	//---------------------------------------------------------------------
-	void Camera::addListener(Listener* l)
-	{
-		if (std::find(mListeners.begin(), mListeners.end(), l) == mListeners.end())
-			mListeners.push_back(l);
-	}
-	//---------------------------------------------------------------------
-	void Camera::removeListener(Listener* l)
-	{
-		ListenerList::iterator i = std::find(mListeners.begin(), mListeners.end(), l);
-		if (i != mListeners.end())
-			mListeners.erase(i);
-	}
-    //-----------------------------------------------------------------------
-    std::ostream& operator<<( std::ostream& o, const Camera& c )
-    {
-        o << "Camera(pos=" << c.mPosition;
-        Vector3 dir(c.mOrientation*Vector3(0,0,-1));
-        o << ", direction=" << dir << ",near=" << c.mNearDist;
-        o << ", far=" << c.mFarDist << ", FOVy=" << c.mFOVy.valueDegrees();
-        o << ", aspect=" << c.mAspect << ", ";
-        o << ", xoffset=" << c.mFrustumOffset.x << ", yoffset=" << c.mFrustumOffset.y;
-        o << ", focalLength=" << c.mFocalLength << ", ";
-        o << "NearFrustumPlane=" << c.mFrustumPlanes[FRUSTUM_PLANE_NEAR] << ", ";
-        o << "FarFrustumPlane=" << c.mFrustumPlanes[FRUSTUM_PLANE_FAR] << ", ";
-        o << "LeftFrustumPlane=" << c.mFrustumPlanes[FRUSTUM_PLANE_LEFT] << ", ";
-        o << "RightFrustumPlane=" << c.mFrustumPlanes[FRUSTUM_PLANE_RIGHT] << ", ";
-        o << "TopFrustumPlane=" << c.mFrustumPlanes[FRUSTUM_PLANE_TOP] << ", ";
-        o << "BottomFrustumPlane=" << c.mFrustumPlanes[FRUSTUM_PLANE_BOTTOM];
-        o << ")";
-
-        return o;
-    }
 
     //-----------------------------------------------------------------------
     void Camera::setFixedYawAxis(bool useFixed, const Vector3& fixedAxis)
     {
         mYawFixed = useFixed;
         mYawFixedAxis = fixedAxis;
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::_notifyRenderedFaces(unsigned int numfaces)
-    {
-        mVisFacesLastRender = numfaces;
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::_notifyRenderedBatches(unsigned int numbatches)
-    {
-        mVisBatchesLastRender = numbatches;
-    }
-
-    //-----------------------------------------------------------------------
-    unsigned int Camera::_getNumRenderedFaces(void) const
-    {
-        return mVisFacesLastRender;
-    }
-    //-----------------------------------------------------------------------
-    unsigned int Camera::_getNumRenderedBatches(void) const
-    {
-        return mVisBatchesLastRender;
     }
     //-----------------------------------------------------------------------
     const Quaternion& Camera::getOrientation(void) const
@@ -527,41 +434,6 @@ namespace Ogre {
         updateView();
         return mRealOrientation * Vector3::UNIT_X;
     }
-    //-----------------------------------------------------------------------
-    const String& Camera::getMovableType(void) const
-    {
-        return msMovableType;
-    }
-    //-----------------------------------------------------------------------
-	void Camera::setLodBias(Real factor)
-	{
-		assert(factor > 0.0f && "Bias factor must be > 0!");
-		mSceneLodFactor = factor;
-		mSceneLodFactorInv = 1.0f / factor;
-	}
-    //-----------------------------------------------------------------------
-	Real Camera::getLodBias(void) const
-	{
-		return mSceneLodFactor;
-	}
-    //-----------------------------------------------------------------------
-	Real Camera::_getLodBiasInverse(void) const
-	{
-		return mSceneLodFactorInv;
-	}
-	//-----------------------------------------------------------------------
-	void Camera::setLodCamera(const Camera* lodCam)
-	{
-		if (lodCam == this)
-			mLodCamera = 0;
-		else
-			mLodCamera = lodCam;
-	}
-	//---------------------------------------------------------------------
-	const Camera* Camera::getLodCamera() const
-	{
-		return mLodCamera? mLodCamera : this;
-	}
     //-----------------------------------------------------------------------
 	Ray Camera::getCameraToViewportRay(Real screenX, Real screenY) const
 	{
@@ -974,7 +846,6 @@ namespace Ogre {
 		this->setAspectRatio(cam->getAspectRatio());
 		this->setNearClipDistance(cam->getNearClipDistance());
 		this->setFarClipDistance(cam->getFarClipDistance());
-		this->setUseRenderingDistance(cam->getUseRenderingDistance());
 		this->setFOVy(cam->getFOVy());
 		this->setFocalLength(cam->getFocalLength());
 

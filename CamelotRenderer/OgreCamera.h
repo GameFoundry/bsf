@@ -82,28 +82,6 @@ namespace Ogre {
     */
     class _OgreExport Camera : public Frustum
     {
-	public:
-		/** Listener interface so you can be notified of Camera events. 
-		*/
-		class _OgreExport Listener 
-		{
-		public:
-			Listener() {}
-			virtual ~Listener() {}
-
-			/// Called prior to the scene being rendered with this camera
-			virtual void cameraPreRenderScene(Camera* cam)
-                        { (void)cam; }
-
-			/// Called after the scene has been rendered with this camera
-			virtual void cameraPostRenderScene(Camera* cam)
-                        { (void)cam; }
-
-			/// Called when the camera is being destroyed
-			virtual void cameraDestroyed(Camera* cam)
-                        { (void)cam; }
-
-		};
     protected:
         /// Camera orientation, quaternion style
         Quaternion mOrientation;
@@ -127,24 +105,6 @@ namespace Ogre {
         /// Rendering type
         PolygonMode mSceneDetail;
 
-        /// Stored number of visible faces in the last render
-        unsigned int mVisFacesLastRender;
-
-        /// Stored number of visible faces in the last render
-        unsigned int mVisBatchesLastRender;
-
-        /// Shared class-level name for Movable type
-        static String msMovableType;
-
-        /// Tracking offset for fine tuning
-        Vector3 mAutoTrackOffset;
-
-		// Scene LOD factor used to adjust overall LOD
-		Real mSceneLodFactor;
-		/// Inverted scene LOD factor, can be used by Renderables to adjust their LOD
-		Real mSceneLodFactorInv;
-
-
         /** Viewing window. 
         @remarks
         Generalize camera class for the case, when viewing frustum doesn't cover all viewport.
@@ -166,12 +126,6 @@ namespace Ogre {
 		Frustum *mCullFrustum;
 		/// Whether or not the rendering distance of objects should take effect for this camera
 		bool mUseRenderingDistance;
-        /// Camera to use for LOD calculation
-        const Camera* mLodCamera;
-
-		typedef vector<Listener*>::type ListenerList;
-		ListenerList mListeners;
-
 
         // Internal functions for calcs
         bool isViewOutOfDate(void) const;
@@ -198,11 +152,6 @@ namespace Ogre {
         /** Standard destructor.
         */
         virtual ~Camera();
-
-		/// Add a listener to this camera
-		virtual void addListener(Listener* l);
-		/// Remove a listener to this camera
-		virtual void removeListener(Listener* l);
 
         /** Sets the level of rendering detail required from this camera.
             @remarks
@@ -339,26 +288,6 @@ namespace Ogre {
         */
         void _renderScene(Viewport *vp, bool includeOverlays);
 
-        /** Function for outputting to a stream.
-        */
-        _OgreExport friend std::ostream& operator<<(std::ostream& o, const Camera& c);
-
-        /** Internal method to notify camera of the visible faces in the last render.
-        */
-        void _notifyRenderedFaces(unsigned int numfaces);
-
-        /** Internal method to notify camera of the visible batches in the last render.
-        */
-        void _notifyRenderedBatches(unsigned int numbatches);
-
-        /** Internal method to retrieve the number of visible faces in the last render.
-        */
-        unsigned int _getNumRenderedFaces(void) const;
-
-        /** Internal method to retrieve the number of visible batches in the last render.
-        */
-        unsigned int _getNumRenderedBatches(void) const;
-
         /** Gets the derived orientation of the camera, including any
             rotation inherited from a node attachment and reflection matrix. */
         const Quaternion& getDerivedOrientation(void) const;
@@ -391,55 +320,6 @@ namespace Ogre {
             rotation inherited from a node attachment. */
         Vector3 getRealRight(void) const;
 
-        /** Overridden from MovableObject */
-        const String& getMovableType(void) const;
-
-		/** Sets the level-of-detail factor for this Camera.
-		@remarks
-			This method can be used to influence the overall level of detail of the scenes 
-			rendered using this camera. Various elements of the scene have level-of-detail
-			reductions to improve rendering speed at distance; this method allows you 
-			to hint to those elements that you would like to adjust the level of detail that
-			they would normally use (up or down). 
-		@par
-			The most common use for this method is to reduce the overall level of detail used
-			for a secondary camera used for sub viewports like rear-view mirrors etc.
-			Note that scene elements are at liberty to ignore this setting if they choose,
-			this is merely a hint.
-		@param factor The factor to apply to the usual level of detail calculation. Higher
-			values increase the detail, so 2.0 doubles the normal detail and 0.5 halves it.
-		*/
-		void setLodBias(Real factor = 1.0);
-
-		/** Returns the level-of-detail bias factor currently applied to this camera. 
-		@remarks
-			See Camera::setLodBias for more details.
-		*/
-		Real getLodBias(void) const;
-
-		/** Get a pointer to the camera which should be used to determine 
-			LOD settings. 
-		@remarks
-			Sometimes you don't want the LOD of a render to be based on the camera
-			that's doing the rendering, you want it to be based on a different
-			camera. A good example is when rendering shadow maps, since they will 
-			be viewed from the perspective of another camera. Therefore this method
-			lets you associate a different camera instance to use to determine the LOD.
-		@par
-			To revert the camera to determining LOD based on itself, call this method with 
-			a pointer to itself. 
-		*/
-		virtual void setLodCamera(const Camera* lodCam);
-
-		/** Get a pointer to the camera which should be used to determine 
-			LOD settings. 
-		@remarks
-			If setLodCamera hasn't been called with a different camera, this
-			method will return 'this'. 
-		*/
-		virtual const Camera* getLodCamera() const;
-
-
         /** Gets a world space ray as cast from the camera through a viewport position.
         @param screenx, screeny The x and y position at which the ray should intersect the viewport, 
             in normalised screen coordinates [0,1]
@@ -451,9 +331,6 @@ namespace Ogre {
 		@param outRay Ray instance to populate with result
         */
         void getCameraToViewportRay(Real screenx, Real screeny, Ray* outRay) const;
-
-		/** Internal method for OGRE to use for LOD calculations. */
-		Real _getLodBiasInverse(void) const;
 
         /** Sets the viewing window inside of viewport.
         @remarks
@@ -546,16 +423,6 @@ namespace Ogre {
 			using the real view matrix in order to display the correct debug view.
 		*/
 		const Matrix4& getViewMatrix(bool ownFrustumOnly) const;
-		/** Set whether this camera should use the 'rendering distance' on
-			objects to exclude distant objects from the final image. The
-			default behaviour is to use it.
-		@param use True to use the rendering distance, false not to.
-		*/
-		virtual void setUseRenderingDistance(bool use) { mUseRenderingDistance = use; }
-		/** Get whether this camera should use the 'rendering distance' on
-			objects to exclude distant objects from the final image.
-		*/
-		virtual bool getUseRenderingDistance(void) const { return mUseRenderingDistance; }
 
 		/** Synchronise core camera settings with another. 
 		@remarks

@@ -197,23 +197,6 @@ namespace Ogre {
         */
         virtual void setActive( bool state );
 
-        /** Sets whether this target should be automatically updated if Ogre's rendering
-            loop or Root::_updateAllRenderTargets is being used.
-        @remarks
-            By default, if you use Ogre's own rendering loop (Root::startRendering)
-            or call Root::_updateAllRenderTargets, all render targets are updated 
-            automatically. This method allows you to control that behaviour, if 
-            for example you have a render target which you only want to update periodically.
-        @param autoupdate If true, the render target is updated during the automatic render
-            loop or when Root::_updateAllRenderTargets is called. If false, the 
-            target is only updated when its update() method is called explicitly.
-        */
-        virtual void setAutoUpdated(bool autoupdate);
-        /** Gets whether this target is automatically updated if Ogre's rendering
-            loop or Root::_updateAllRenderTargets is being used.
-        */
-        virtual bool isAutoUpdated(void) const;
-
 		/** Copies the current contents of the render target to a pixelbox. 
 		@remarks See suggestPixelFormat for a tip as to the best pixel format to
 			extract into, although you can use whatever format you like and the 

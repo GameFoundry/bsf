@@ -36,26 +36,6 @@ THE SOFTWARE.
 
 namespace Ogre
 {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Math
-	*  @{
-	*/
-    /** Specifies orientation mode.
-    */
-    enum OrientationMode
-    {
-        OR_DEGREE_0       = 0,
-        OR_DEGREE_90      = 1,
-        OR_DEGREE_180     = 2,
-        OR_DEGREE_270     = 3,
-
-        OR_PORTRAIT       = OR_DEGREE_0,
-        OR_LANDSCAPERIGHT = OR_DEGREE_90,
-        OR_LANDSCAPELEFT  = OR_DEGREE_270
-    };
-
 	/** Specifies perspective (realistic) or orthographic (architectural) projection.
     */
     enum ProjectionType
@@ -134,8 +114,6 @@ namespace Ogre
 		bool mFrustumExtentsManuallySet;
 		/// Frustum extents
 		mutable Real mLeft, mRight, mTop, mBottom;
-        /// Frustum orientation mode
-        mutable OrientationMode mOrientationMode;
 		
         // Internal functions for calcs
         virtual void calcProjectionParameters(Real& left, Real& right, Real& bottom, Real& top) const;
@@ -161,33 +139,10 @@ namespace Ogre
         /// Signal to update view information.
         virtual void invalidateView(void) const;
 
-        /// Shared class-level name for Movable type
-        static String msMovableType;
-
         mutable AxisAlignedBox mBoundingBox;
         mutable VertexData mVertexData;
 
         mutable Vector3 mWorldSpaceCorners[8];
-
-        /// Is this frustum to act as a reflection of itself?
-        bool mReflect;
-		/// Derived reflection matrix
-        mutable Matrix4 mReflectMatrix;
-        /// Fixed reflection plane
-		mutable Plane mReflectPlane;
-		/// Pointer to a reflection plane (automatically updated)
-		const Plane* mLinkedReflectPlane;
-		/// Record of the last world-space reflection plane info used
-		mutable Plane mLastLinkedReflectionPlane;
-		
-        /// Is this frustum using an oblique depth projection?
-		bool mObliqueDepthProjection;
-		/// Fixed oblique projection plane
-		mutable Plane mObliqueProjPlane;
-		/// Pointer to oblique projection plane (automatically updated)
-		const Plane* mLinkedObliqueProjPlane;
-		/// Record of the last world-space oblique depth projection plane info used
-		mutable Plane mLastLinkedObliqueProjPlane;
 
     public:
 
@@ -471,9 +426,6 @@ namespace Ogre
         /** Overridden from MovableObject */
 		Real getBoundingRadius(void) const;
 
-        /** Overridden from MovableObject */
-        const String& getMovableType(void) const;
-
         /** Gets the world space corners of the frustum.
         @remarks
             The corners are ordered as follows: top-right near, 
@@ -516,32 +468,6 @@ namespace Ogre
 		*/
 		virtual Real getOrthoWindowWidth() const;
 
-        /** Modifies this frustum so it always renders from the reflection of itself through the
-        plane specified.
-        @remarks
-        This is obviously useful for performing planar reflections. 
-        */
-        virtual void enableReflection(const Plane& p);
-        /** Modifies this frustum so it always renders from the reflection of itself through the
-        plane specified. Note that this version of the method links to a plane
-		so that changes to it are picked up automatically. It is important that
-		this plane continues to exist whilst this object does; do not destroy
-		the plane before the frustum.
-        @remarks
-        This is obviously useful for performing planar reflections. 
-        */
-        virtual void enableReflection(const Plane* p);
-
-        /** Disables reflection modification previously turned on with enableReflection */
-        virtual void disableReflection(void);
-
-        /// Returns whether this frustum is being reflected
-        virtual bool isReflected(void) const { return mReflect; }
-        /// Returns the reflection matrix of the frustum if appropriate
-        virtual const Matrix4& getReflectionMatrix(void) const { return mReflectMatrix; }
-        /// Returns the reflection plane of the frustum if appropriate
-        virtual const Plane& getReflectionPlane(void) const { return mReflectPlane; }
-
         /** Project a sphere onto the near plane and get the bounding rectangle. 
         @param sphere The world-space sphere to project
         @param radius Radius of the sphere
@@ -554,60 +480,6 @@ namespace Ogre
         virtual bool projectSphere(const Sphere& sphere, 
             Real* left, Real* top, Real* right, Real* bottom) const;
 
-
-		/** Links the frustum to a custom near clip plane, which can be used
-			to clip geometry in a custom manner without using user clip planes.
-		@remarks
-			There are several applications for clipping a scene arbitrarily by
-			a single plane; the most common is when rendering a reflection to 
-			a texture, and you only want to render geometry that is above the 
-			water plane (to do otherwise results in artefacts). Whilst it is
-			possible to use user clip planes, they are not supported on all
-			cards, and sometimes are not hardware accelerated when they are
-			available. Instead, where a single clip plane is involved, this
-			technique uses a 'fudging' of the near clip plane, which is 
-			available and fast on all hardware, to perform as the arbitrary
-			clip plane. This does change the shape of the frustum, leading 
-			to some depth buffer loss of precision, but for many of the uses of
-			this technique that is not an issue.
-		@par 
-			This version of the method links to a plane, rather than requiring
-			a by-value plane definition, and therefore you can 
-			make changes to the plane (e.g. by moving / rotating the node it is
-			attached to) and they will automatically affect this object.
-		@note This technique only works for perspective projection.
-		@param plane The plane to link to to perform the clipping. This plane
-			must continue to exist while the camera is linked to it; do not
-			destroy it before the frustum. 
-		*/
-		virtual void enableCustomNearClipPlane(const Plane* plane);
-		/** Links the frustum to a custom near clip plane, which can be used
-			to clip geometry in a custom manner without using user clip planes.
-		@remarks
-			There are several applications for clipping a scene arbitrarily by
-			a single plane; the most common is when rendering a reflection to  
-			a texture, and you only want to render geometry that is above the 
-			water plane (to do otherwise results in artefacts). Whilst it is
-			possible to use user clip planes, they are not supported on all
-			cards, and sometimes are not hardware accelerated when they are
-			available. Instead, where a single clip plane is involved, this
-			technique uses a 'fudging' of the near clip plane, which is 
-			available and fast on all hardware, to perform as the arbitrary
-			clip plane. This does change the shape of the frustum, leading 
-			to some depth buffer loss of precision, but for many of the uses of
-			this technique that is not an issue.
-		@note This technique only works for perspective projection.
-		@param plane The plane to link to to perform the clipping. This plane
-			must continue to exist while the camera is linked to it; do not
-			destroy it before the frustum. 
-		*/
-		virtual void enableCustomNearClipPlane(const Plane& plane);
-		/** Disables any custom near clip plane. */
-		virtual void disableCustomNearClipPlane(void);
-		/** Is a custom near clip plane in use? */
-		virtual bool isCustomNearClipPlaneEnabled(void) const 
-		{ return mObliqueDepthProjection; }
-
         /// Small constant used to reduce far plane projection to avoid inaccuracies
         static const Real INFINITE_FAR_PLANE_ADJUST;
 
@@ -615,21 +487,6 @@ namespace Ogre
 		virtual const Vector3& getPositionForViewUpdate(void) const;
 		/** Get the derived orientation of this frustum. */
 		virtual const Quaternion& getOrientationForViewUpdate(void) const;
-
-        /** Set the orientation mode of the frustum. Default is OR_DEGREE_0
-             @remarks
-                Setting the orientation of a frustum is only supported on
-                iPhone at this time.  An exception is thrown on other platforms.
-        */
-        void setOrientationMode(OrientationMode orientationMode);
-
-        /** Get the orientation mode of the frustum.
-             @remarks
-                Getting the orientation of a frustum is only supported on
-                iPhone at this time.  An exception is thrown on other platforms.
-        */
-        OrientationMode getOrientationMode() const;
-
     };
 
 	/** @} */

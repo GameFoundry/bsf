@@ -39,8 +39,6 @@ THE SOFTWARE.
 #include "CmRenderSystemManager.h"
 
 namespace Ogre {
-
-    String Frustum::msMovableType = "Frustum";
     const Real Frustum::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
     //-----------------------------------------------------------------------
     Frustum::Frustum(const String& name) : 
@@ -61,16 +59,8 @@ namespace Ogre {
         mRecalcVertexData(true),
 		mCustomViewMatrix(false),
 		mCustomProjMatrix(false),
-		mFrustumExtentsManuallySet(false),
-        mOrientationMode(OR_DEGREE_0),
-        mReflect(false), 
-        mLinkedReflectPlane(0),
-        mObliqueDepthProjection(false), 
-        mLinkedObliqueProjPlane(0)
+		mFrustumExtentsManuallySet(false)
     {
-        mLastLinkedReflectionPlane.normal = Vector3::ZERO;
-        mLastLinkedObliqueProjPlane.normal = Vector3::ZERO;
-
         updateView();
         updateFrustum();
     }
@@ -442,46 +432,6 @@ namespace Ogre {
 				mProjMatrix[2][2] = q;
 				mProjMatrix[2][3] = qn;
 				mProjMatrix[3][2] = -1;
-
-				if (mObliqueDepthProjection)
-				{
-					// Translate the plane into view space
-
-					// Don't use getViewMatrix here, incase overrided by 
-					// camera and return a cull frustum view matrix
-					updateView();
-					Plane plane = mViewMatrix * mObliqueProjPlane;
-
-					// Thanks to Eric Lenyel for posting this calculation 
-					// at www.terathon.com
-
-					// Calculate the clip-space corner point opposite the 
-					// clipping plane
-					// as (sgn(clipPlane.x), sgn(clipPlane.y), 1, 1) and
-					// transform it into camera space by multiplying it
-					// by the inverse of the projection matrix
-
-					/* generalised version
-					Vector4 q = matrix.inverse() * 
-					Vector4(Math::Sign(plane.normal.x), 
-					Math::Sign(plane.normal.y), 1.0f, 1.0f);
-					*/
-					Vector4 qVec;
-					qVec.x = (Math::Sign(plane.normal.x) + mProjMatrix[0][2]) / mProjMatrix[0][0];
-					qVec.y = (Math::Sign(plane.normal.y) + mProjMatrix[1][2]) / mProjMatrix[1][1];
-					qVec.z = -1;
-					qVec.w = (1 + mProjMatrix[2][2]) / mProjMatrix[2][3];
-
-					// Calculate the scaled plane vector
-					Vector4 clipPlane4d(plane.normal.x, plane.normal.y, plane.normal.z, plane.d);
-					Vector4 c = clipPlane4d * (2 / (clipPlane4d.dotProduct(qVec)));
-
-					// Replace the third row of the projection matrix
-					mProjMatrix[2][0] = c.x;
-					mProjMatrix[2][1] = c.y;
-					mProjMatrix[2][2] = c.z + 1;
-					mProjMatrix[2][3] = c.w; 
-				}
 			} // perspective
 			else if (mProjType == PT_ORTHOGRAPHIC)
 			{
@@ -698,15 +648,6 @@ namespace Ogre {
         //        mRecalcView = true;
         //    }
         //}
-        // Deriving reflection from linked plane?
-        if (mLinkedReflectPlane && 
-            !(mLastLinkedReflectionPlane == *mLinkedReflectPlane))
-        {
-            mReflectPlane = *mLinkedReflectPlane;
-            mReflectMatrix = Math::buildReflectionMatrix(mReflectPlane);
-            mLastLinkedReflectionPlane = *mLinkedReflectPlane;
-            mRecalcView = true;
-        }
 
         return mRecalcView;
     }
@@ -714,24 +655,6 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     bool Frustum::isFrustumOutOfDate(void) const
     {
-        // Deriving custom near plane from linked plane?
-        if (mObliqueDepthProjection)
-        {
-            // Out of date when view out of data since plane needs to be in view space
-            if (isViewOutOfDate())
-            {
-                mRecalcFrustum = true;
-            }
-            // Update derived plane
-            if (mLinkedObliqueProjPlane && 
-                !(mLastLinkedObliqueProjPlane == *mLinkedObliqueProjPlane))
-            {
-                mObliqueProjPlane = *mLinkedObliqueProjPlane;
-                mLastLinkedObliqueProjPlane = mObliqueProjPlane;
-                mRecalcFrustum = true;
-            }
-        }
-
         return mRecalcFrustum;
     }
 
@@ -750,7 +673,7 @@ namespace Ogre {
 			const Quaternion& orientation = getOrientationForViewUpdate();
 			const Vector3& position = getPositionForViewUpdate();
 
-			mViewMatrix = Math::makeViewMatrix(position, orientation, mReflect? &mReflectMatrix : 0);
+			mViewMatrix = Math::makeViewMatrix(position, orientation, 0);
 		}
 
 		mRecalcView = false;
@@ -759,12 +682,6 @@ namespace Ogre {
 		mRecalcFrustumPlanes = true;
 		// Signal to update world space corners
 		mRecalcWorldSpaceCorners = true;
-		// Signal to update frustum if oblique plane enabled,
-		// since plane needs to be in view space
-		if (mObliqueDepthProjection)
-		{
-			mRecalcFrustum = true;
-		}
 	}
 	//---------------------------------------------------------------------
 	void Frustum::calcViewMatrixRelative(const Vector3& relPos, Matrix4& matToUpdate) const
@@ -909,11 +826,6 @@ namespace Ogre {
         return mBoundingBox;
     }
     //-----------------------------------------------------------------------
-    const String& Frustum::getMovableType(void) const
-    {
-        return msMovableType;
-    }
-    //-----------------------------------------------------------------------
 	Real Frustum::getBoundingRadius(void) const
 	{
         return (mFarDist == 0)? 100000 : mFarDist;
@@ -961,34 +873,6 @@ namespace Ogre {
     const Quaternion& Frustum::getOrientationForViewUpdate(void) const
     {
         return mLastParentOrientation;
-    }
-    //-----------------------------------------------------------------------
-    void Frustum::enableReflection(const Plane& p)
-    {
-        mReflect = true;
-        mReflectPlane = p;
-        mLinkedReflectPlane = 0;
-        mReflectMatrix = Math::buildReflectionMatrix(p);
-        invalidateView();
-
-    }
-    //-----------------------------------------------------------------------
-    void Frustum::enableReflection(const Plane* p)
-    {
-        mReflect = true;
-        mLinkedReflectPlane = p;
-        mReflectPlane = *mLinkedReflectPlane;
-        mReflectMatrix = Math::buildReflectionMatrix(mReflectPlane);
-        mLastLinkedReflectionPlane = *mLinkedReflectPlane;
-        invalidateView();
-    }
-    //-----------------------------------------------------------------------
-    void Frustum::disableReflection(void)
-    {
-        mReflect = false;
-        mLinkedReflectPlane = 0;
-        mLastLinkedReflectionPlane.normal = Vector3::ZERO;
-        invalidateView();
     }
     //---------------------------------------------------------------------
     bool Frustum::projectSphere(const Sphere& sphere, 
@@ -1159,29 +1043,6 @@ namespace Ogre {
 
     }
     //---------------------------------------------------------------------
-    void Frustum::enableCustomNearClipPlane(const Plane* plane)
-    {
-        mObliqueDepthProjection = true;
-        mLinkedObliqueProjPlane = plane;
-        mObliqueProjPlane = *plane;
-        invalidateFrustum();
-    }
-    //---------------------------------------------------------------------
-    void Frustum::enableCustomNearClipPlane(const Plane& plane)
-    {
-        mObliqueDepthProjection = true;
-        mLinkedObliqueProjPlane = 0;
-        mObliqueProjPlane = plane;
-        invalidateFrustum();
-    }
-    //---------------------------------------------------------------------
-    void Frustum::disableCustomNearClipPlane(void)
-    {
-        mObliqueDepthProjection = false;
-        mLinkedObliqueProjPlane = 0;
-        invalidateFrustum();
-    }
-    //---------------------------------------------------------------------
 	void Frustum::setCustomViewMatrix(bool enable, const Matrix4& viewMatrix)
 	{
 		mCustomViewMatrix = enable;
@@ -1257,27 +1118,4 @@ namespace Ogre {
 		outtop = mTop;
 		outbottom = mBottom;
 	}
-    //---------------------------------------------------------------------
-    void Frustum::setOrientationMode(OrientationMode orientationMode)
-    {
-#if OGRE_NO_VIEWPORT_ORIENTATIONMODE != 0
-        OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
-                    "Setting Frustrum orientation mode is not supported",
-                    __FUNCTION__);
-#endif
-        mOrientationMode = orientationMode;
-        invalidateFrustum();
-    }
-    //---------------------------------------------------------------------
-    OrientationMode Frustum::getOrientationMode() const
-    {
-#if OGRE_NO_VIEWPORT_ORIENTATIONMODE != 0
-        OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
-                    "Getting Frustrum orientation mode is not supported",
-                    __FUNCTION__);
-#endif
-        return mOrientationMode;
-    }
-
-
 } // namespace Ogre

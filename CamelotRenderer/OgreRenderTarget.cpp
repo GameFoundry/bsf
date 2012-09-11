@@ -193,16 +193,6 @@ namespace Ogre {
         mActive = state;
     }
     //-----------------------------------------------------------------------
-    void RenderTarget::setAutoUpdated(bool autoup)
-    {
-        mAutoUpdate = autoup;
-    }
-    //-----------------------------------------------------------------------
-    bool RenderTarget::isAutoUpdated(void) const
-    {
-        return mAutoUpdate;
-    }
-    //-----------------------------------------------------------------------
     bool RenderTarget::isPrimary(void) const
     {
         // RenderWindow will override and return true for the primary window

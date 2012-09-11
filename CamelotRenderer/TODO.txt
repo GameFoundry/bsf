@@ -46,7 +46,6 @@ HardwarePixelBuffer
 RenderTarget:
  - update() causes rendering to start - This probably need to be moved to camera, as I want it to be responsible for rendering
  - keeps a viewport list, which I also don't think I'll need
- - autoUpdate and various update methods that I probably don't need
 
 TODO:
  - Make sure to parse D3D9 implementations of above classes and see what needs removing there as well
