@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CC7F9445-71C9-4559-9976-FF0A64DCB582}</ProjectGuid>
+    <RootNamespace>CamelotUtility</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>OGRE_STATIC_LIB</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>OGRE_STATIC_LIB</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>Include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\asm_math.h" />
+    <ClInclude Include="Include\OgreAlignedAllocator.h" />
+    <ClInclude Include="Include\OgreAxisAlignedBox.h" />
+    <ClInclude Include="Include\OgreBitwise.h" />
+    <ClInclude Include="Include\OgreBuildSettings.h" />
+    <ClInclude Include="Include\OgreConfig.h" />
+    <ClInclude Include="Include\OgreMath.h" />
+    <ClInclude Include="Include\OgreMatrix3.h" />
+    <ClInclude Include="Include\OgreMatrix4.h" />
+    <ClInclude Include="Include\OgrePlane.h" />
+    <ClInclude Include="Include\OgrePlatform.h" />
+    <ClInclude Include="Include\OgrePlatformInformation.h" />
+    <ClInclude Include="Include\OgrePortMemory.h" />
+    <ClInclude Include="Include\OgrePrerequisites.h" />
+    <ClInclude Include="Include\OgreQuaternion.h" />
+    <ClInclude Include="Include\OgreRay.h" />
+    <ClInclude Include="Include\OgreSphere.h" />
+    <ClInclude Include="Include\OgreStdHeaders.h" />
+    <ClInclude Include="Include\OgreThreadDefines.h" />
+    <ClInclude Include="Include\OgreVector2.h" />
+    <ClInclude Include="Include\OgreVector3.h" />
+    <ClInclude Include="Include\OgreVector4.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Include\OgreAlignedAllocator.cpp" />
+    <ClCompile Include="Source\OgreAxisAlignedBox.cpp" />
+    <ClCompile Include="Source\OgreMath.cpp" />
+    <ClCompile Include="Source\OgreMatrix3.cpp" />
+    <ClCompile Include="Source\OgreMatrix4.cpp" />
+    <ClCompile Include="Source\OgrePlane.cpp" />
+    <ClCompile Include="Source\OgreQuaternion.cpp" />
+    <ClCompile Include="Source\OgreVector2.cpp" />
+    <ClCompile Include="Source\OgreVector3.cpp" />
+    <ClCompile Include="Source\OgreVector4.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotRenderer", "CamelotR
 EndProject
 Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "CamelotModel", "CamelotModel\CamelotModel.modelproj", "{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotUtility", "CamelotUtility\CamelotUtility.vcxproj", "{CC7F9445-71C9-4559-9976-FF0A64DCB582}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -39,6 +41,16 @@ Global
 		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Release|Win32.ActiveCfg = Release|Any CPU
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Debug|Win32.Build.0 = Debug|Win32
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Release|Any CPU.ActiveCfg = Release|Win32
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Release|Win32.ActiveCfg = Release|Win32
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

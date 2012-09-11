@@ -22,17 +22,11 @@ Texture - PARSED!
 TODO FILES:
 
 Camera - MERGE WITH VIEWPORT
- - Remove auto tracking
- - Lod stuff? Probably need to remove as well
- - Num render batches and other statistics
  - Position/rotation should be inherit from transform
- - Listeners
 
 Frustum
- - Reflect plane/matrix/methods need to be removed
- - Oblique plane/matrix/methods need to be removed (AKA custom clip plane)
- - Remove orientation stuff because it's iPhone only
  - World space methods need to be updated. I still need them but they need to get their data from Transform
+ - Depending on how I implement the frustum, I might be able to remove those "out-of-date" checks
 
 GpuProgramParams - Holds all parameters used in a shader program and allows us to set them by index or name
  - Explore if we can remove GpuSharedParameters. I'm not exactly sure what they're used for
