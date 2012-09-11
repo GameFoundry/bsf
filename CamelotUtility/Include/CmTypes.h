@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OgrePlatform.h"
+#include "CmPlatform.h"
 
 namespace CamelotEngine
 {

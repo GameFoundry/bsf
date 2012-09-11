@@ -25,10 +25,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __Platform_H_
-#define __Platform_H_
+#pragma once
 
-namespace Ogre {
+namespace CamelotEngine {
 /* Initial platform/compiler-related stuff to set.
 */
 #define OGRE_PLATFORM_WIN32 1
@@ -40,9 +39,6 @@ namespace Ogre {
 #define OGRE_COMPILER_BORL 3
 #define OGRE_COMPILER_WINSCW 4
 #define OGRE_COMPILER_GCCE 5
-
-#define OGRE_ENDIAN_LITTLE 1
-#define OGRE_ENDIAN_BIG 2
 
 #define OGRE_ARCHITECTURE_32 1
 #define OGRE_ARCHITECTURE_64 2
@@ -202,15 +198,49 @@ namespace Ogre {
 
 //----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------
-// Endian Settings
-// check for BIG_ENDIAN config flag, set OGRE_ENDIAN correctly
-#ifdef OGRE_CONFIG_BIG_ENDIAN
-#    define OGRE_ENDIAN OGRE_ENDIAN_BIG
+/* Initial CPU stuff to set.
+*/
+#define OGRE_CPU_UNKNOWN    0
+#define OGRE_CPU_X86        1
+#define OGRE_CPU_PPC        2
+
+/* Find CPU type
+*/
+#if (defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))) || \
+    (defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))
+#   define OGRE_CPU OGRE_CPU_X86
+
+#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE && defined(__BIG_ENDIAN__)
+#   define OGRE_CPU OGRE_CPU_PPC
+#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#	define OGRE_CPU OGRE_CPU_X86
 #else
-#    define OGRE_ENDIAN OGRE_ENDIAN_LITTLE
+#   define OGRE_CPU OGRE_CPU_UNKNOWN
 #endif
+
+/* Find how to declare aligned variable.
+*/
+#if OGRE_COMPILER == OGRE_COMPILER_MSVC
+#   define OGRE_ALIGNED_DECL(type, var, alignment)  __declspec(align(alignment)) type var
+
+#elif OGRE_COMPILER == OGRE_COMPILER_GNUC
+#   define OGRE_ALIGNED_DECL(type, var, alignment)  type var __attribute__((__aligned__(alignment)))
+
+#else
+#   define OGRE_ALIGNED_DECL(type, var, alignment)  type var
+#endif
+
+/** Find perfect alignment (should supports SIMD alignment if SIMD available)
+*/
+#if OGRE_CPU == OGRE_CPU_X86
+#   define OGRE_SIMD_ALIGNMENT  16
+
+#else
+#   define OGRE_SIMD_ALIGNMENT  16
+#endif
+
+/* Declare variable aligned to SIMD alignment.
+*/
+#define OGRE_SIMD_ALIGNED_DECL(type, var)   OGRE_ALIGNED_DECL(type, var, OGRE_SIMD_ALIGNMENT)
 
 }
-
-#endif

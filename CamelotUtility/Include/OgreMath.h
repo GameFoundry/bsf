@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmUtilPrerequisites.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	/** \addtogroup Core
 	*  @{

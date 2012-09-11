@@ -23,71 +23,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
 -------------------------------------------------------------------------*/
-#ifndef __OgrePrerequisites_H__
-#define __OgrePrerequisites_H__
+#pragma once
 
 #include <assert.h>
 
 // Platform-specific stuff
-#include "OgrePlatform.h"
+#include "CmPlatform.h"
+
+// Short-hand names for various built-in types
 #include "CmTypes.h"
 
-namespace Ogre {
-    #if OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310 && !defined(STLPORT)
-	#   if OGRE_COMP_VER >= 430
-	#       define HashMap ::std::tr1::unordered_map
-	#		define HashSet ::std::tr1::unordered_set
-	#    else
-	#       define HashMap ::__gnu_cxx::hash_map
-	#       define HashSet ::__gnu_cxx::hash_set
-	#    endif
-    #else
-    #   if OGRE_COMPILER == OGRE_COMPILER_MSVC
-    #       if OGRE_COMP_VER >= 1600 // VC++ 10.0
-	#			define HashMap ::std::tr1::unordered_map
-	#           define HashSet ::std::tr1::unordered_set
-	#		elif OGRE_COMP_VER > 1300 && !defined(_STLP_MSVC)
-    #           define HashMap ::stdext::hash_map
-	#           define HashSet ::stdext::hash_set
-    #       else
-    #           define HashMap ::std::hash_map
-	#           define HashSet ::std::hash_set
-    #       endif
-    #   else
-    #       define HashMap ::std::hash_map
-	#       define HashSet ::std::hash_set
-    #   endif
-    #endif
+// Useful threading defines
+#include "CmThreadDefines.h"
 
-	// Useful threading defines
-#include "OgreThreadDefines.h"
+// Forward declarations
+#include "CmUtilFwdDecl.h"
 
-// Pre-declare classes
-// Allows use of pointers in header files without including individual .h
-// so decreases dependencies between files
-    class Angle;
-    class AxisAlignedBox;
-    class Degree;
-    class Math;
-    class Matrix3;
-    class Matrix4;
-    class Plane;
-    class Quaternion;
-	class Radian;
-    class Ray;
-    class Sphere;
-    class Vector2;
-    class Vector3;
-    class Vector4;
-}
+// Commonly used standard headers
+#include "CmStdHeaders.h"
 
-/* Include all the standard header *after* all the configuration
-settings have been made.
-*/
-#include "OgreStdHeaders.h"
-
-//for stl containter
-namespace Ogre
+// Standard containers, for easier access in my own namespace
+namespace CamelotEngine
 { 
 	template <typename T, typename A = char > 
 	struct deque 
@@ -125,8 +81,4 @@ namespace Ogre
 		typedef typename std::multimap<K, V, P> type; 
 	}; 
 
-} // Ogre
-
-#endif // __OgrePrerequisites_H__
-
-
+}

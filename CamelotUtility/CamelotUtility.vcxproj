@@ -68,19 +68,19 @@
   <ItemGroup>
     <ClInclude Include="Include\asm_math.h" />
     <ClInclude Include="Include\CmTypes.h" />
+    <ClInclude Include="Include\CmUtilFwdDecl.h" />
     <ClInclude Include="Include\OgreAxisAlignedBox.h" />
     <ClInclude Include="Include\OgreMath.h" />
     <ClInclude Include="Include\OgreMatrix3.h" />
     <ClInclude Include="Include\OgreMatrix4.h" />
     <ClInclude Include="Include\OgrePlane.h" />
-    <ClInclude Include="Include\OgrePlatform.h" />
-    <ClInclude Include="Include\OgrePlatformInformation.h" />
+    <ClInclude Include="Include\CmPlatform.h" />
     <ClInclude Include="Include\CmUtilPrerequisites.h" />
     <ClInclude Include="Include\OgreQuaternion.h" />
     <ClInclude Include="Include\OgreRay.h" />
     <ClInclude Include="Include\OgreSphere.h" />
-    <ClInclude Include="Include\OgreStdHeaders.h" />
-    <ClInclude Include="Include\OgreThreadDefines.h" />
+    <ClInclude Include="Include\CmStdHeaders.h" />
+    <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\OgreVector2.h" />
     <ClInclude Include="Include\OgreVector3.h" />
     <ClInclude Include="Include\OgreVector4.h" />

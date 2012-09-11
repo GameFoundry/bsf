@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmUtilPrerequisites.h"
 #include "OgreMath.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 
 	/** \addtogroup Core

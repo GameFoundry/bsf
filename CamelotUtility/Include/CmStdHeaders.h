@@ -1,11 +1,10 @@
-#ifndef __StdHeaders_H__
-#define __StdHeaders_H__
+#pragma once
 
 #ifdef __BORLANDC__
     #define __STD_ALGORITHM
 #endif
 
-#if defined ( OGRE_GCC_VISIBILITY ) && (OGRE_PLATFORM != OGRE_PLATFORM_APPLE && OGRE_PLATFORM != OGRE_PLATFORM_IPHONE)
+#if defined ( OGRE_GCC_VISIBILITY ) && (OGRE_PLATFORM != OGRE_PLATFORM_APPLE)
 /* Until libstdc++ for gcc 4.2 is released, we have to declare all
  * symbols in libstdc++.so externally visible, otherwise we end up
  * with them marked as hidden by -fvisible=hidden.
@@ -41,7 +40,7 @@
 
 // Note - not in the original STL, but exists in SGI STL and STLport
 // For gcc 4.3 see http://gcc.gnu.org/gcc-4.3/changes.html
-#if (OGRE_COMPILER == OGRE_COMPILER_GNUC) && !defined(STLPORT)
+#if (OGRE_COMPILER == OGRE_COMPILER_GNUC)
 #   if OGRE_COMP_VER >= 430
 #       include <tr1/unordered_map>
 #       include <tr1/unordered_set> 
@@ -50,7 +49,7 @@
 #       include <ext/hash_set>
 #   endif
 #else
-#   if (OGRE_COMPILER == OGRE_COMPILER_MSVC) && !defined(STLPORT) && OGRE_COMP_VER >= 1600 // VC++ 10.0
+#   if (OGRE_COMPILER == OGRE_COMPILER_MSVC) && OGRE_COMP_VER >= 1600 // VC++ 10.0
 #    	include <unordered_map>
 #    	include <unordered_set>
 #	else
@@ -71,7 +70,7 @@
 #include <sstream>
 
 #ifdef __BORLANDC__
-namespace Ogre
+namespace CamelotEngine
 {
     using namespace std;
 }
@@ -104,7 +103,7 @@ extern "C" {
 }
 #endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 extern "C" {
 #   include <unistd.h>
 #   include <sys/param.h>
@@ -112,11 +111,35 @@ extern "C" {
 }
 #endif
 
-#if OGRE_THREAD_SUPPORT
-#   include "Threading/OgreThreadHeaders.h"
-#endif
-
-#if defined ( OGRE_GCC_VISIBILITY ) && (OGRE_PLATFORM != OGRE_PLATFORM_APPLE && OGRE_PLATFORM != OGRE_PLATFORM_IPHONE)
+#if defined ( OGRE_GCC_VISIBILITY ) && (OGRE_PLATFORM != OGRE_PLATFORM_APPLE)
 #   pragma GCC visibility pop
 #endif
+
+namespace CamelotEngine
+{
+#if OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310
+#   if OGRE_COMP_VER >= 430
+#       define HashMap ::std::tr1::unordered_map
+#		define HashSet ::std::tr1::unordered_set
+#    else
+#       define HashMap ::__gnu_cxx::hash_map
+#       define HashSet ::__gnu_cxx::hash_set
+#    endif
+#else
+#   if OGRE_COMPILER == OGRE_COMPILER_MSVC
+#       if OGRE_COMP_VER >= 1600 // VC++ 10.0
+#			define HashMap ::std::tr1::unordered_map
+#           define HashSet ::std::tr1::unordered_set
+#		elif OGRE_COMP_VER > 1300 && !defined(_STLP_MSVC)
+#           define HashMap ::stdext::hash_map
+#           define HashSet ::stdext::hash_set
+#       else
+#           define HashMap ::std::hash_map
+#           define HashSet ::std::hash_set
+#       endif
+#   else
+#       define HashMap ::std::hash_map
+#       define HashSet ::std::hash_set
+#   endif
 #endif
+}

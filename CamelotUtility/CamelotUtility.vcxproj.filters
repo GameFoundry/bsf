@@ -54,22 +54,22 @@
     <ClInclude Include="Include\OgreVector4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\OgrePlatform.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgrePlatformInformation.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreStdHeaders.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreThreadDefines.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmUtilPrerequisites.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmTypes.h">
+      <Filter>Header Files\Prerequisites</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmPlatform.h">
+      <Filter>Header Files\Prerequisites</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmStdHeaders.h">
+      <Filter>Header Files\Prerequisites</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmThreadDefines.h">
+      <Filter>Header Files\Prerequisites</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmUtilFwdDecl.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
   </ItemGroup>

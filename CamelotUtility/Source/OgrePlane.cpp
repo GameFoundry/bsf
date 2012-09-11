@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreMatrix3.h"
 #include "OgreAxisAlignedBox.h" 
 
-namespace Ogre {
+namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	Plane::Plane ()
 	{
@@ -167,4 +167,4 @@ namespace Ogre {
 		o << "Plane(normal=" << p.normal << ", d=" << p.d << ")";
 		return o;
 	}
-} // namespace Ogre
+} // namespace CamelotEngine

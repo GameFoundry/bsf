@@ -23,8 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
 -------------------------------------------------------------------------*/
-#ifndef __OgreThreadDefines_H__
-#define __OgreThreadDefines_H__
+#pragma once
 
 #define OGRE_AUTO_MUTEX_NAME mutex
 #define OGRE_AUTO_MUTEX
@@ -56,6 +55,3 @@ THE SOFTWARE
 #define OGRE_THREAD_POINTER_DELETE(var) { OGRE_DELETE var; var = 0; }
 #define OGRE_THREAD_SLEEP(ms)
 #define OGRE_THREAD_WORKER_INHERIT
-
-#endif
-
