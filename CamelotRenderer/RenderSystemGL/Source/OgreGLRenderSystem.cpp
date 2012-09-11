@@ -217,7 +217,7 @@ namespace Ogre {
         if(GLEW_VERSION_1_4 || GLEW_SGIS_generate_mipmap)
         {
 			bool disableAutoMip = false;
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#if CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == CM_PLATFORM_LINUX
 			// Apple & Linux ATI drivers have faults in hardware mipmap generation
 			if (rsc->getVendor() == GPU_ATI)
 				disableAutoMip = true;

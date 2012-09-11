@@ -196,7 +196,7 @@ namespace Ogre {
 		{
 			// We can't know the specific type right now, so pick a type
 			// based on platform
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if CM_PLATFORM == CM_PLATFORM_WIN32
 			return VET_COLOUR_ARGB; // prefer D3D format on windows
 #else
 			return VET_COLOUR_ABGR; // prefer GL format on everything else
@@ -221,12 +221,12 @@ namespace Ogre {
 	{
 		switch(dst)
 		{
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if CM_PLATFORM == CM_PLATFORM_WIN32
         default:
 #endif
 		case VET_COLOUR_ARGB:
 			return src.getAsARGB();
-#if OGRE_PLATFORM != OGRE_PLATFORM_WIN32
+#if CM_PLATFORM != CM_PLATFORM_WIN32
         default:
 #endif
 		case VET_COLOUR_ABGR: 

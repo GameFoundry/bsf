@@ -61,7 +61,7 @@ THE SOFTWARE.
 #define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
 
 // enable extended d3d debug 
-#if OGRE_DEBUG_MODE
+#if CM_DEBUG_MODE
 #	define D3D_DEBUG_INFO
 #endif
 
@@ -102,7 +102,7 @@ namespace Ogre
     //-------------------------------------------
 	// Windows setttings
 	//-------------------------------------------
-#if (OGRE_PLATFORM == OGRE_PLATFORM_WIN32) && !defined(OGRE_STATIC_LIB)
+#if (CM_PLATFORM == CM_PLATFORM_WIN32) && !defined(CM_STATIC_LIB)
 #	ifdef OGRED3DENGINEDLL_EXPORTS
 #		define _OgreD3D9Export __declspec(dllexport)
 #	else

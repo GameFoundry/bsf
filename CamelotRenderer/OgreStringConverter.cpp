@@ -55,7 +55,7 @@ namespace Ogre {
         return stream.str();
     }
     //-----------------------------------------------------------------------
-#if OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_64 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
+#if CM_ARCH_TYPE == CM_ARCHITECTURE_64 || CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == OGRE_PLATFORM_IPHONE
     String StringConverter::toString(unsigned int val, 
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
@@ -79,7 +79,7 @@ namespace Ogre {
         stream << val;
         return stream.str();
     }
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC
+#if CM_COMPILER == CM_COMPILER_MSVC
     //-----------------------------------------------------------------------
     String StringConverter::toString(unsigned long val, 
         unsigned short width, char fill, std::ios::fmtflags flags)

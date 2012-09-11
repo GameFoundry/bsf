@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __AxisAlignedBox_H_
 
 // Precompiler options
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 
 #include "OgreVector3.h"
 #include "OgreMatrix4.h"

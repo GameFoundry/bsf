@@ -7,7 +7,7 @@
 #include "nvparse_externs.h"
 #include <string.h>
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#if CM_PLATFORM == CM_PLATFORM_APPLE
 #	include <OpenGL/glu.h>
 #else
 #	include <GL/glu.h>

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __Ray_H_
 
 // Precompiler options
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 
 #include "OgreVector3.h"
 

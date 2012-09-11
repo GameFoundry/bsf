@@ -37,71 +37,71 @@ namespace Ogre {
 
 /* Initial CPU stuff to set.
 */
-#define OGRE_CPU_UNKNOWN    0
-#define OGRE_CPU_X86        1
-#define OGRE_CPU_PPC        2
+#define CM_CPU_UNKNOWN    0
+#define CM_CPU_X86        1
+#define CM_CPU_PPC        2
 #define OGRE_CPU_ARM        3
 
 /* Find CPU type
 */
 #if (defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))) || \
     (defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))
-#   define OGRE_CPU OGRE_CPU_X86
+#   define CM_CPU CM_CPU_X86
 
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE && defined(__BIG_ENDIAN__)
-#   define OGRE_CPU OGRE_CPU_PPC
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-#	define OGRE_CPU OGRE_CPU_X86
-#elif OGRE_PLATFORM == OGRE_PLATFORM_IPHONE && (defined(__i386__) || defined(__x86_64__))
-#	define OGRE_CPU OGRE_CPU_X86
+#elif CM_PLATFORM == CM_PLATFORM_APPLE && defined(__BIG_ENDIAN__)
+#   define CM_CPU CM_CPU_PPC
+#elif CM_PLATFORM == CM_PLATFORM_APPLE
+#	define CM_CPU CM_CPU_X86
+#elif CM_PLATFORM == OGRE_PLATFORM_IPHONE && (defined(__i386__) || defined(__x86_64__))
+#	define CM_CPU CM_CPU_X86
 #elif defined(__arm__)
-#	define OGRE_CPU OGRE_CPU_ARM
+#	define CM_CPU OGRE_CPU_ARM
 #else
-#   define OGRE_CPU OGRE_CPU_UNKNOWN
+#   define CM_CPU CM_CPU_UNKNOWN
 #endif
 
 /* Find how to declare aligned variable.
 */
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC
-#   define OGRE_ALIGNED_DECL(type, var, alignment)  __declspec(align(alignment)) type var
+#if CM_COMPILER == CM_COMPILER_MSVC
+#   define CM_ALIGNED_DECL(type, var, alignment)  __declspec(align(alignment)) type var
 
-#elif OGRE_COMPILER == OGRE_COMPILER_GNUC
-#   define OGRE_ALIGNED_DECL(type, var, alignment)  type var __attribute__((__aligned__(alignment)))
+#elif CM_COMPILER == CM_COMPILER_GNUC
+#   define CM_ALIGNED_DECL(type, var, alignment)  type var __attribute__((__aligned__(alignment)))
 
 #else
-#   define OGRE_ALIGNED_DECL(type, var, alignment)  type var
+#   define CM_ALIGNED_DECL(type, var, alignment)  type var
 #endif
 
 /** Find perfect alignment (should supports SIMD alignment if SIMD available)
 */
-#if OGRE_CPU == OGRE_CPU_X86
-#   define OGRE_SIMD_ALIGNMENT  16
+#if CM_CPU == CM_CPU_X86
+#   define CM_SIMD_ALIGNMENT  16
 
 #else
-#   define OGRE_SIMD_ALIGNMENT  16
+#   define CM_SIMD_ALIGNMENT  16
 #endif
 
 /* Declare variable aligned to SIMD alignment.
 */
-#define OGRE_SIMD_ALIGNED_DECL(type, var)   OGRE_ALIGNED_DECL(type, var, OGRE_SIMD_ALIGNMENT)
+#define CM_SIMD_ALIGNED_DECL(type, var)   CM_ALIGNED_DECL(type, var, CM_SIMD_ALIGNMENT)
 
 /* Define whether or not Ogre compiled with SSE supports.
 */
-#if OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_X86 && OGRE_COMPILER == OGRE_COMPILER_MSVC
+#if OGRE_DOUBLE_PRECISION == 0 && CM_CPU == CM_CPU_X86 && CM_COMPILER == CM_COMPILER_MSVC
 #   define __OGRE_HAVE_SSE  1
-#elif OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_X86 && OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
+#elif OGRE_DOUBLE_PRECISION == 0 && CM_CPU == CM_CPU_X86 && CM_COMPILER == CM_COMPILER_GNUC && CM_PLATFORM != OGRE_PLATFORM_APPLE_IOS
 #   define __OGRE_HAVE_SSE  1
 #endif
 
 /* Define whether or not Ogre compiled with VFP supports.
  */
-#if OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_ARM && OGRE_COMPILER == OGRE_COMPILER_GNUC && defined(__ARM_ARCH_6K__) && defined(__VFP_FP__)
+#if OGRE_DOUBLE_PRECISION == 0 && CM_CPU == OGRE_CPU_ARM && CM_COMPILER == CM_COMPILER_GNUC && defined(__ARM_ARCH_6K__) && defined(__VFP_FP__)
 #   define __OGRE_HAVE_VFP  1
 #endif
 
 /* Define whether or not Ogre compiled with NEON supports.
  */
-#if OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_ARM && OGRE_COMPILER == OGRE_COMPILER_GNUC && defined(__ARM_ARCH_7A__) && defined(__ARM_NEON__)
+#if OGRE_DOUBLE_PRECISION == 0 && CM_CPU == OGRE_CPU_ARM && CM_COMPILER == CM_COMPILER_GNUC && defined(__ARM_ARCH_7A__) && defined(__ARM_NEON__)
 #   define __OGRE_HAVE_NEON  1
 #endif
 

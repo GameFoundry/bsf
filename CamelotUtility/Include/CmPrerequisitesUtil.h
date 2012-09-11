@@ -37,7 +37,7 @@ THE SOFTWARE
 #include "CmThreadDefines.h"
 
 // Forward declarations
-#include "CmUtilFwdDecl.h"
+#include "CmFwdDeclUtil.h"
 
 // Commonly used standard headers
 #include "CmStdHeaders.h"

@@ -3,7 +3,7 @@
 
 // CMake auto-generated configuration options
 
-/* #undef OGRE_STATIC_LIB */
+/* #undef CM_STATIC_LIB */
 
 #define OGRE_BUILD_RENDERSYSTEM_D3D9
 /* #undef OGRE_BUILD_RENDERSYSTEM_D3D10 */

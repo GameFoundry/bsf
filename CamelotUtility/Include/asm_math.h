@@ -1,9 +1,9 @@
 #ifndef __asm_math_H__
 #define __asm_math_H__
 
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC
+#if  CM_COMPILER == CM_COMPILER_MSVC
 #  pragma warning (push)
 // disable "instruction may be inaccurate on some Pentiums"
 #  pragma warning (disable : 4725)
@@ -20,7 +20,7 @@ const float half_pi = 0.5f * pi;
 /*=============================================================================
 	NO EXPLICIT RETURN REQUIRED FROM THESE METHODS!! 
 =============================================================================*/
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC && OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC && CM_ARCH_TYPE == CM_ARCHITECTURE_32
 #	pragma warning( push )
 #	pragma warning( disable: 4035 ) 
 #endif
@@ -28,7 +28,7 @@ const float half_pi = 0.5f * pi;
 float asm_arccos( float r ) {
     // return half_pi + arctan( r / -sqr( 1.f - r * r ) );
 	
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
     float asm_one = 1.f;
     float asm_half_pi = half_pi;
@@ -55,7 +55,7 @@ float asm_arccos( float r ) {
 float asm_arcsin( float r ) {
     // return arctan( r / sqr( 1.f - r * r ) );
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
     const float asm_one = 1.f;
     __asm {
@@ -79,7 +79,7 @@ float asm_arcsin( float r ) {
 
 float asm_arctan( float r ) {
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
     __asm {
         fld r // r0 = r
@@ -97,7 +97,7 @@ float asm_arctan( float r ) {
 
 float asm_sin( float r ) {
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
     __asm {
         fld r // r0 = r
@@ -114,7 +114,7 @@ float asm_sin( float r ) {
 
 float asm_cos( float r ) {
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
     __asm {
         fld r // r0 = r
@@ -130,7 +130,7 @@ float asm_cos( float r ) {
 
 float asm_tan( float r ) {
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
     // return sin( r ) / cos( r );
     __asm {
@@ -151,7 +151,7 @@ float asm_tan( float r ) {
 // returns a for a * a = r
 float asm_sqrt( float r )
 {
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
     __asm {
         fld r // r0 = r
@@ -169,7 +169,7 @@ float asm_sqrt( float r )
 // -- Use this for Vector normalisation!!!
 float asm_rsq( float r )
 {
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
     __asm {
         fld1 // r0 = 1.f
@@ -189,7 +189,7 @@ float asm_rsq( float r )
 // Another version
 float apx_rsq( float r ) {
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
     const float asm_dot5 = 0.5f;
     const float asm_1dot5 = 1.5f;
@@ -219,7 +219,7 @@ float apx_rsq( float r ) {
    Finally the best InvSqrt implementation?
    Use for vector normalisation instead of 1/length() * x,y,z
 */
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
 __declspec(naked) float __fastcall InvSqrt(float fValue)
 {
@@ -265,9 +265,9 @@ __declspec(naked) float __fastcall InvSqrt(float fValue)
 FORCEINLINE float asm_rand()
 {
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
   #if 0
-    #if OGRE_COMP_VER >= 1300
+    #if CM_COMP_VER >= 1300
 
 	static unsigned __int64 q = time( NULL );
 
@@ -301,9 +301,9 @@ FORCEINLINE float asm_rand()
 FORCEINLINE float asm_rand_max()
 {
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
   #if 0
-    #if OGRE_COMP_VER >= 1300
+    #if CM_COMP_VER >= 1300
 
 	return (std::numeric_limits< unsigned __int64 >::max)();
 	return 9223372036854775807.0f;
@@ -323,7 +323,7 @@ FORCEINLINE float asm_rand_max()
 // returns log2( r ) / log2( e )
 float asm_ln( float r ) {    
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 
     const float asm_1_div_log2_e = .693147180559f;
     const float asm_neg1_div_3 = -.33333333333333333333333333333f;
@@ -364,12 +364,12 @@ float asm_ln( float r ) {
 #endif
 }
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC &&  OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+#if  CM_COMPILER == CM_COMPILER_MSVC &&  CM_ARCH_TYPE == CM_ARCHITECTURE_32
 #	pragma warning( pop )
 #endif
 } // namespace
 
-#if  OGRE_COMPILER == OGRE_COMPILER_MSVC
+#if  CM_COMPILER == CM_COMPILER_MSVC
 #  pragma warning (pop)
 #endif
 

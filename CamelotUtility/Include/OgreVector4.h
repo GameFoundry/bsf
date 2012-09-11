@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __Vector4_H__
 #define __Vector4_H__
 
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 #include "OgreVector3.h"
 
 namespace CamelotEngine

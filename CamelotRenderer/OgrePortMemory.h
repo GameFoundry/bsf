@@ -32,7 +32,7 @@ namespace Ogre
 
 #define OGRE_MALLOC_SIMD(bytes, category) ::Ogre::AlignedMemory::allocate(bytes)
 #define OGRE_MALLOC_ALIGN(bytes, category, align) ::Ogre::AlignedMemory::allocate(bytes, align)
-#define OGRE_ALLOC_T_SIMD(T, count, category) static_cast<T*>(::Ogre::AlignedMemory::allocate(sizeof(T)*(count),OGRE_SIMD_ALIGNMENT))
+#define OGRE_ALLOC_T_SIMD(T, count, category) static_cast<T*>(::Ogre::AlignedMemory::allocate(sizeof(T)*(count),CM_SIMD_ALIGNMENT))
 #define OGRE_ALLOC_T_ALIGN(T, count, category, align) static_cast<T*>(::Ogre::AlignedMemory::allocate(sizeof(T)*(count), align))
 #define OGRE_FREE_SIMD(ptr, category) ::Ogre::AlignedMemory::deallocate(ptr)
 #define OGRE_FREE_ALIGN(ptr, category, align) ::Ogre::AlignedMemory::deallocate(ptr)

@@ -31,13 +31,13 @@ THE SOFTWARE.
 #include "OgrePrerequisites.h"
 #include "OgrePlatform.h"
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if CM_PLATFORM == CM_PLATFORM_WIN32
 #  define WIN32_LEAN_AND_MEAN
 #  if !defined(NOMINMAX) && defined(_MSC_VER)
 #	define NOMINMAX // required to stop windows.h messing up std::min
 #  endif
 #  include <windows.h>
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE && !defined(__LP64__)
+#elif CM_PLATFORM == CM_PLATFORM_APPLE && !defined(__LP64__)
 #  include <Carbon/Carbon.h>
 #endif
 
@@ -165,10 +165,10 @@ namespace Ogre
 		*/
 		static void _removeRenderWindow(RenderWindow* window);
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if CM_PLATFORM == CM_PLATFORM_WIN32
 		//! Internal winProc (RenderWindow's use this when creating the Win32 Window)
 		static LRESULT CALLBACK _WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE && !defined __OBJC__ && !defined(__LP64__)
+#elif CM_PLATFORM == CM_PLATFORM_APPLE && !defined __OBJC__ && !defined(__LP64__)
         //! Internal UPP Window Handler (RenderWindow's use this when creating the OS X Carbon Window
         static OSStatus _CarbonWindowHandler(EventHandlerCallRef nextHandler, EventRef event, void* wnd);
 #endif

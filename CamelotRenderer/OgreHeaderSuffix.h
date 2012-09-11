@@ -28,7 +28,7 @@ THE SOFTWARE
 
 #include "OgrePrerequisites.h"
 
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC
+#if CM_COMPILER == CM_COMPILER_MSVC
 
 // restore previous warnings settings
 #   pragma warning (pop)

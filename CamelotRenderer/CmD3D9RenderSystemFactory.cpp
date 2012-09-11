@@ -4,7 +4,7 @@ namespace CamelotEngine
 {
 	RenderSystemPtr D3D9RenderSystemFactory::create()
 	{
-	#ifdef OGRE_STATIC_LIB
+	#ifdef CM_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle( NULL );
 	#else
 		HINSTANCE hInst = GetModuleHandle( "CamelotEngine.dll" ); // TODO - Change name if I plan on using external dll

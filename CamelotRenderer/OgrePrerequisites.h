@@ -38,7 +38,7 @@ THE SOFTWARE
 
 
 // configure memory tracking
-#if OGRE_DEBUG_MODE 
+#if CM_DEBUG_MODE 
 #	if OGRE_MEMORY_TRACKER_DEBUG_MODE
 #		define OGRE_MEMORY_TRACKER 1
 #	else
@@ -79,8 +79,8 @@ namespace Ogre {
         typedef float Real;
     #endif
 
-    #if OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310 && !defined(STLPORT)
-	#   if OGRE_COMP_VER >= 430
+    #if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310 && !defined(STLPORT)
+	#   if CM_COMP_VER >= 430
 	#       define HashMap ::std::tr1::unordered_map
 	#		define HashSet ::std::tr1::unordered_set
 	#    else
@@ -88,11 +88,11 @@ namespace Ogre {
 	#       define HashSet ::__gnu_cxx::hash_set
 	#    endif
     #else
-    #   if OGRE_COMPILER == OGRE_COMPILER_MSVC
-    #       if OGRE_COMP_VER >= 1600 // VC++ 10.0
+    #   if CM_COMPILER == CM_COMPILER_MSVC
+    #       if CM_COMP_VER >= 1600 // VC++ 10.0
 	#			define HashMap ::std::tr1::unordered_map
 	#           define HashSet ::std::tr1::unordered_set
-	#		elif OGRE_COMP_VER > 1300 && !defined(_STLP_MSVC)
+	#		elif CM_COMP_VER > 1300 && !defined(_STLP_MSVC)
     #           define HashMap ::stdext::hash_map
 	#           define HashSet ::stdext::hash_set
     #       else

@@ -54,9 +54,6 @@
     <ClInclude Include="Include\OgreVector4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmUtilPrerequisites.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmTypes.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
@@ -69,7 +66,10 @@
     <ClInclude Include="Include\CmThreadDefines.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmUtilFwdDecl.h">
+    <ClInclude Include="Include\CmPrerequisitesUtil.h">
+      <Filter>Header Files\Prerequisites</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmFwdDeclUtil.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
   </ItemGroup>

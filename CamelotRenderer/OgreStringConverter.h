@@ -91,7 +91,7 @@ namespace Ogre {
         static String toString(int val, unsigned short width = 0, 
             char fill = ' ', 
             std::ios::fmtflags flags = std::ios::fmtflags(0) );
-#if OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_64 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
+#if CM_ARCH_TYPE == CM_ARCHITECTURE_64 || CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == OGRE_PLATFORM_IPHONE
         /** Converts an unsigned int to a String. */
         static String toString(unsigned int val, 
             unsigned short width = 0, char fill = ' ', 
@@ -100,7 +100,7 @@ namespace Ogre {
         static String toString(size_t val, 
             unsigned short width = 0, char fill = ' ', 
             std::ios::fmtflags flags = std::ios::fmtflags(0) );
-        #if OGRE_COMPILER == OGRE_COMPILER_MSVC
+        #if CM_COMPILER == CM_COMPILER_MSVC
                 /** Converts an unsigned long to a String. */
                 static String toString(unsigned long val, 
                     unsigned short width = 0, char fill = ' ', 

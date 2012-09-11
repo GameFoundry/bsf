@@ -438,10 +438,10 @@ namespace Ogre {
 		// take this opportunity to enumerate the valid FSAA modes.
 		
 		LPCSTR dummyText = "OgreWglDummy";
-#ifdef OGRE_STATIC_LIB
+#ifdef CM_STATIC_LIB
 		HINSTANCE hinst = GetModuleHandle( NULL );
 #else
-#  if OGRE_DEBUG_MODE == 1
+#  if CM_DEBUG_MODE == 1
 		HINSTANCE hinst = GetModuleHandle("RenderSystem_GL_d.dll");
 #  else
 		HINSTANCE hinst = GetModuleHandle("RenderSystem_GL.dll");

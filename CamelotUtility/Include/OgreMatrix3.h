@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __Matrix3_H__
 #define __Matrix3_H__
 
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 
 #include "OgreVector3.h"
 

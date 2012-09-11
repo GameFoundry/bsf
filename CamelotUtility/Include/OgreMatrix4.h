@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __Matrix4__
 
 // Precompiler options
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 
 #include "OgreVector3.h"
 #include "OgreMatrix3.h"

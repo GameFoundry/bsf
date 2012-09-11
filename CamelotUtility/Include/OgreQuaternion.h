@@ -36,7 +36,7 @@ THE SOFTWARE.
 #ifndef __Quaternion_H__
 #define __Quaternion_H__
 
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 #include "OgreMath.h"
 
 namespace CamelotEngine {

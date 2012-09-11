@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __Math_H__
 #define __Math_H__
 
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 
 namespace CamelotEngine
 {

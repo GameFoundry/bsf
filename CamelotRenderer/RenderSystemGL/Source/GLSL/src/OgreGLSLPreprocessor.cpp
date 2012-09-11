@@ -37,7 +37,7 @@ namespace Ogre {
 // Limit max number of macro arguments to this
 #define MAX_MACRO_ARGS 16
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 && !defined( __MINGW32__ )
+#if CM_PLATFORM == CM_PLATFORM_WIN32 && !defined( __MINGW32__ )
 	#define snprintf _snprintf
 #endif
 

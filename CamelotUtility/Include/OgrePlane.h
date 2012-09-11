@@ -36,7 +36,7 @@ THE SOFTWARE.
 #ifndef __Plane_H__
 #define __Plane_H__
 
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 
 #include "OgreVector3.h"
 

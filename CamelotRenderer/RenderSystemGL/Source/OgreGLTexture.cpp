@@ -41,7 +41,7 @@ THE SOFTWARE.
 
 #include "OgreGLFBORenderTexture.h"
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if CM_PLATFORM == CM_PLATFORM_WIN32
 #  define WIN32_LEAN_AND_MEAN
 #  if !defined(NOMINMAX) && defined(_MSC_VER)
 #	define NOMINMAX // required to stop windows.h messing up std::min
@@ -135,7 +135,7 @@ namespace Ogre {
 		// However DON'T do this on Apple, their drivers aren't subject to this
 		// problem yet and in fact software generation appears to cause a crash 
 		// in some cases which I've yet to track down
-#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE
+#if CM_PLATFORM != CM_PLATFORM_APPLE
 		if (CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->getVendor() == GPU_NVIDIA
 			&& !PixelUtil::isCompressed(mFormat))
 		{

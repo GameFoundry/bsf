@@ -203,7 +203,7 @@ namespace Ogre {
         else
             compileFlags |= D3DXSHADER_PACKMATRIX_ROWMAJOR;
 
-#if OGRE_DEBUG_MODE
+#if CM_DEBUG_MODE
 		compileFlags |= D3DXSHADER_DEBUG;
 #endif
 		switch (mOptimisationLevel)

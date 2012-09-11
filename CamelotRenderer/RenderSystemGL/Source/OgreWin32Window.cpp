@@ -72,10 +72,10 @@ namespace Ogre {
 		if (mHWnd)
 			destroy();
 
-#ifdef OGRE_STATIC_LIB
+#ifdef CM_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle( NULL );
 #else
-#  if OGRE_DEBUG_MODE == 1
+#  if CM_DEBUG_MODE == 1
 		HINSTANCE hInst = GetModuleHandle("RenderSystem_GL_d.dll");
 #  else
 		HINSTANCE hInst = GetModuleHandle("RenderSystem_GL.dll");

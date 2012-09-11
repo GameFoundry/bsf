@@ -2806,7 +2806,7 @@ namespace Ogre
 			ZBufferIdentifier zBufferIdentifier = getZBufferIdentifier(mActiveRenderTarget);
 			ZBufferRefQueue& zBuffers = mZBufferHash[zBufferIdentifier];
 			
-#ifdef OGRE_DEBUG_MODE
+#ifdef CM_DEBUG_MODE
 			//Check that queue handling works as expected
 			IDirect3DSurface9* pDepth;
 			getActiveD3D9Device()->GetDepthStencilSurface(&pDepth);	

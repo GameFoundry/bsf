@@ -48,7 +48,7 @@ namespace Ogre {
 #	define GLEW_MX
 #endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if CM_PLATFORM == CM_PLATFORM_WIN32
 #if !defined( __MINGW32__ )
 #   define WIN32_LEAN_AND_MEAN
 #  ifndef NOMINMAX
@@ -60,14 +60,14 @@ namespace Ogre {
 #   include <GL/glew.h>
 #   include <GL/wglew.h>
 #   include <GL/glu.h>
-#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#elif CM_PLATFORM == CM_PLATFORM_LINUX
 #   include <GL/glew.h>
 #   include <GL/glu.h>
 #   define GL_GLEXT_PROTOTYPES
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#elif CM_PLATFORM == CM_PLATFORM_APPLE
 #   include <GL/glew.h>
 #   include <OpenGL/glu.h>
-#elif OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
+#elif CM_PLATFORM == OGRE_PLATFORM_IPHONE
 #   include <OpenGLES/ES1/gl.h>
 #   include <OpenGLES/ES1/glext.h>
 #endif
@@ -76,7 +76,7 @@ namespace Ogre {
 	// implemented in OgreGLContext.cpp
 	GLEWContext * glewGetContext();
 
-#	if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#	if CM_PLATFORM == CM_PLATFORM_WIN32
 	// implemented in OgreWin32Context.cpp
 	WGLEWContext * wglewGetContext();
 #	endif
@@ -88,7 +88,7 @@ namespace Ogre {
 #define _CRT_SECURE_NO_DEPRECATE
 #endif
 
-#if (OGRE_PLATFORM == OGRE_PLATFORM_WIN32) && !defined(__MINGW32__) && !defined(OGRE_STATIC_LIB)
+#if (CM_PLATFORM == CM_PLATFORM_WIN32) && !defined(__MINGW32__) && !defined(CM_STATIC_LIB)
 #	ifdef OGRE_GLPLUGIN_EXPORTS
 #		define _OgreGLExport __declspec(dllexport)
 #	else
@@ -98,7 +98,7 @@ namespace Ogre {
 #    		define _OgreGLExport __declspec(dllimport)
 #       endif
 #	endif
-#elif defined ( OGRE_GCC_VISIBILITY )
+#elif defined ( CM_GCC_VISIBILITY )
 #    define _OgreGLExport  __attribute__ ((visibility("default")))
 #else
 #    define _OgreGLExport

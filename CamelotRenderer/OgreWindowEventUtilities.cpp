@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreRenderWindow.h"
 #include "OgreException.h"
 #include "OgreStringConverter.h"
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#if CM_PLATFORM == CM_PLATFORM_LINUX
 #include <X11/Xlib.h>
 void GLXProc( Ogre::RenderWindow *win, const XEvent &event );
 #endif
@@ -42,7 +42,7 @@ WindowEventUtilities::Windows WindowEventUtilities::_msWindows;
 //--------------------------------------------------------------------------------//
 void WindowEventUtilities::messagePump()
 {
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if CM_PLATFORM == CM_PLATFORM_WIN32
 	// Windows Message Loop (NULL means check all HWNDs belonging to this context)
 	MSG  msg;
 	while( PeekMessage( &msg, NULL, 0U, 0U, PM_REMOVE ) )
@@ -50,7 +50,7 @@ void WindowEventUtilities::messagePump()
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );
 	}
-#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#elif CM_PLATFORM == CM_PLATFORM_LINUX
 	//GLX Message Pump
 	Windows::iterator win = _msWindows.begin();
 	Windows::iterator end = _msWindows.end();
@@ -78,7 +78,7 @@ void WindowEventUtilities::messagePump()
 		GLXProc(*win, event);
 	    }
 	}
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE && !defined __OBJC__ && !defined __LP64__
+#elif CM_PLATFORM == CM_PLATFORM_APPLE && !defined __OBJC__ && !defined __LP64__
 	// OSX Message Pump
 	EventRef event = NULL;
 	EventTargetRef targetWindow;
@@ -132,7 +132,7 @@ void WindowEventUtilities::_removeRenderWindow(RenderWindow* window)
 		_msWindows.erase( i );
 }
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if CM_PLATFORM == CM_PLATFORM_WIN32
 //--------------------------------------------------------------------------------//
 LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -249,7 +249,7 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 
 	return DefWindowProc( hWnd, uMsg, wParam, lParam );
 }
-#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#elif CM_PLATFORM == CM_PLATFORM_LINUX
 //--------------------------------------------------------------------------------//
 void GLXProc( RenderWindow *win, const XEvent &event )
 {
@@ -357,7 +357,7 @@ void GLXProc( RenderWindow *win, const XEvent &event )
 		break;
 	} //End switch event.type
 }
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE && !defined __OBJC__ && !defined __LP64__
+#elif CM_PLATFORM == CM_PLATFORM_APPLE && !defined __OBJC__ && !defined __LP64__
 //--------------------------------------------------------------------------------//
 OSStatus WindowEventUtilities::_CarbonWindowHandler(EventHandlerCallRef nextHandler, EventRef event, void* wnd)
 {

@@ -424,7 +424,7 @@ namespace Ogre {
                         break;
 
 					} // end switch
-	#if OGRE_DEBUG_MODE
+	#if CM_DEBUG_MODE
 					checkForGLSLError( "GLSLLinkProgram::updateUniforms", "Error updating uniform", 0 );
 	#endif
 				} // variability & mask

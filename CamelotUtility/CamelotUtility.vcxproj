@@ -44,7 +44,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>OGRE_STATIC_LIB</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CM_STATIC_LIB</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -56,7 +56,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>OGRE_STATIC_LIB</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CM_STATIC_LIB</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -68,14 +68,14 @@
   <ItemGroup>
     <ClInclude Include="Include\asm_math.h" />
     <ClInclude Include="Include\CmTypes.h" />
-    <ClInclude Include="Include\CmUtilFwdDecl.h" />
+    <ClInclude Include="Include\CmFwdDeclUtil.h" />
     <ClInclude Include="Include\OgreAxisAlignedBox.h" />
     <ClInclude Include="Include\OgreMath.h" />
     <ClInclude Include="Include\OgreMatrix3.h" />
     <ClInclude Include="Include\OgreMatrix4.h" />
     <ClInclude Include="Include\OgrePlane.h" />
     <ClInclude Include="Include\CmPlatform.h" />
-    <ClInclude Include="Include\CmUtilPrerequisites.h" />
+    <ClInclude Include="Include\CmPrerequisitesUtil.h" />
     <ClInclude Include="Include\OgreQuaternion.h" />
     <ClInclude Include="Include\OgreRay.h" />
     <ClInclude Include="Include\OgreSphere.h" />

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __Vector2_H__
 
 
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 #include "OgreMath.h"
 
 namespace CamelotEngine

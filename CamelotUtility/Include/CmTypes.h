@@ -12,7 +12,7 @@ namespace CamelotEngine
 	typedef unsigned int UINT32;
 	typedef unsigned short WCHAR;
 
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC
+#if CM_COMPILER == CM_COMPILER_MSVC
 	typedef unsigned __int64 UINT64;
 	typedef __int64 INT64;
 #else

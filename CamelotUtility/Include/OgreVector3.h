@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __Vector3_H__
 #define __Vector3_H__
 
-#include "CmUtilPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 #include "OgreMath.h"
 #include "OgreQuaternion.h"
 

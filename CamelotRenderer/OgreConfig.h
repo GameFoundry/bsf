@@ -79,7 +79,7 @@ THE SOFTWARE.
 
 /** Define this if you want to link OGRE as a static lib (preferably as a project file)
 */
-//#define OGRE_STATIC_LIB
+//#define CM_STATIC_LIB
 
 
 // define the memory allocator configuration to use

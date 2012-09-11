@@ -31,14 +31,14 @@ THE SOFTWARE.
 
 #include "OgreString.h"
 
-#if defined ( OGRE_GCC_VISIBILITY )
+#if defined ( CM_GCC_VISIBILITY )
 #   pragma GCC visibility push(default)
 #endif
 
 #include <utility>
 #include <sstream>
 
-#if defined ( OGRE_GCC_VISIBILITY )
+#if defined ( CM_GCC_VISIBILITY )
 #   pragma GCC visibility pop
 #endif
 

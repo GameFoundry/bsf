@@ -4,7 +4,7 @@
     #define __STD_ALGORITHM
 #endif
 
-#if defined ( OGRE_GCC_VISIBILITY ) && (OGRE_PLATFORM != OGRE_PLATFORM_APPLE)
+#if defined ( CM_GCC_VISIBILITY ) && (CM_PLATFORM != CM_PLATFORM_APPLE)
 /* Until libstdc++ for gcc 4.2 is released, we have to declare all
  * symbols in libstdc++.so externally visible, otherwise we end up
  * with them marked as hidden by -fvisible=hidden.
@@ -40,8 +40,8 @@
 
 // Note - not in the original STL, but exists in SGI STL and STLport
 // For gcc 4.3 see http://gcc.gnu.org/gcc-4.3/changes.html
-#if (OGRE_COMPILER == OGRE_COMPILER_GNUC)
-#   if OGRE_COMP_VER >= 430
+#if (CM_COMPILER == CM_COMPILER_GNUC)
+#   if CM_COMP_VER >= 430
 #       include <tr1/unordered_map>
 #       include <tr1/unordered_set> 
 #   else
@@ -49,7 +49,7 @@
 #       include <ext/hash_set>
 #   endif
 #else
-#   if (OGRE_COMPILER == OGRE_COMPILER_MSVC) && OGRE_COMP_VER >= 1600 // VC++ 10.0
+#   if (CM_COMPILER == CM_COMPILER_MSVC) && CM_COMP_VER >= 1600 // VC++ 10.0
 #    	include <unordered_map>
 #    	include <unordered_set>
 #	else
@@ -83,7 +83,7 @@ extern "C" {
 
 }
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if CM_PLATFORM == CM_PLATFORM_WIN32
 #  undef min
 #  undef max
 #	if !defined(NOMINMAX) && defined(_MSC_VER)
@@ -94,7 +94,7 @@ extern "C" {
 #  endif
 #endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#if CM_PLATFORM == CM_PLATFORM_LINUX
 extern "C" {
 
 #   include <unistd.h>
@@ -103,7 +103,7 @@ extern "C" {
 }
 #endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#if CM_PLATFORM == CM_PLATFORM_APPLE
 extern "C" {
 #   include <unistd.h>
 #   include <sys/param.h>
@@ -111,14 +111,14 @@ extern "C" {
 }
 #endif
 
-#if defined ( OGRE_GCC_VISIBILITY ) && (OGRE_PLATFORM != OGRE_PLATFORM_APPLE)
+#if defined ( CM_GCC_VISIBILITY ) && (CM_PLATFORM != CM_PLATFORM_APPLE)
 #   pragma GCC visibility pop
 #endif
 
 namespace CamelotEngine
 {
-#if OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310
-#   if OGRE_COMP_VER >= 430
+#if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310
+#   if CM_COMP_VER >= 430
 #       define HashMap ::std::tr1::unordered_map
 #		define HashSet ::std::tr1::unordered_set
 #    else
@@ -126,11 +126,11 @@ namespace CamelotEngine
 #       define HashSet ::__gnu_cxx::hash_set
 #    endif
 #else
-#   if OGRE_COMPILER == OGRE_COMPILER_MSVC
-#       if OGRE_COMP_VER >= 1600 // VC++ 10.0
+#   if CM_COMPILER == CM_COMPILER_MSVC
+#       if CM_COMP_VER >= 1600 // VC++ 10.0
 #			define HashMap ::std::tr1::unordered_map
 #           define HashSet ::std::tr1::unordered_set
-#		elif OGRE_COMP_VER > 1300 && !defined(_STLP_MSVC)
+#		elif CM_COMP_VER > 1300 && !defined(_STLP_MSVC)
 #           define HashMap ::stdext::hash_map
 #           define HashSet ::stdext::hash_set
 #       else

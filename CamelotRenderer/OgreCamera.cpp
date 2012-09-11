@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreRenderSystem.h"
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
+#if CM_PLATFORM == OGRE_PLATFORM_IPHONE
 #include "macUtils.h"
 #endif
 

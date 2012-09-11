@@ -31,10 +31,10 @@ THE SOFTWARE.
 #include "OgrePrerequisites.h"
 
 // If we're using the GCC 3.1 C++ Std lib
-#if OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310 && !defined(STLPORT)
+#if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310 && !defined(STLPORT)
 
 // For gcc 4.3 see http://gcc.gnu.org/gcc-4.3/changes.html
-#   if OGRE_COMP_VER >= 430
+#   if CM_COMP_VER >= 430
 #       include <tr1/unordered_map> 
 #   else
 #       include <ext/hash_map>
@@ -181,13 +181,13 @@ namespace Ogre {
     };
 
 
-#if OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310 && !defined(STLPORT)
-#   if OGRE_COMP_VER < 430
+#if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310 && !defined(STLPORT)
+#   if CM_COMP_VER < 430
 	typedef ::__gnu_cxx::hash< _StringBase > _StringHash;
 #   else
 	typedef ::std::tr1::hash< _StringBase > _StringHash;
 #   endif
-#elif OGRE_COMPILER == OGRE_COMPILER_MSVC && OGRE_COMP_VER >= 1600 && !defined(STLPORT) // VC++ 10.0
+#elif CM_COMPILER == CM_COMPILER_MSVC && CM_COMP_VER >= 1600 && !defined(STLPORT) // VC++ 10.0
 	typedef ::std::tr1::hash< _StringBase > _StringHash;
 #elif !defined( _STLP_HASH_FUN_H )
 	typedef stdext::hash_compare< _StringBase, std::less< _StringBase > > _StringHash;
