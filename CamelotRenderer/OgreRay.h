@@ -42,7 +42,7 @@ namespace Ogre {
 	*  @{
 	*/
 	/** Representation of a ray in space, i.e. a line with an origin and direction. */
-    class _OgreExport Ray
+    class CM_EXPORT Ray
     {
     protected:
         Vector3 mOrigin;

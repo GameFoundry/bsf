@@ -42,7 +42,7 @@ namespace Ogre {
 	*  @{
 	*/
 	/** Specialisation of HardwareBuffer for vertex index buffers, still abstract. */
-    class _OgreExport HardwareIndexBuffer : public HardwareBuffer
+    class CM_EXPORT HardwareIndexBuffer : public HardwareBuffer
     {
 	    public:
 		    enum IndexType {

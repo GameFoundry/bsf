@@ -48,7 +48,7 @@ namespace Ogre {
         x^2 + y^2 + z^2 = r^2 (for sphere's centered on the origin). Ogre stores spheres
         simply as a center point and a radius.
     */
-    class _OgreExport Sphere
+    class CM_EXPORT Sphere
     {
     protected:
         Real mRadius;

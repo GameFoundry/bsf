@@ -65,7 +65,7 @@ namespace Ogre {
     @author
         Steve Streeting
     */
-    class _OgreExport StringConverter
+    class CM_EXPORT StringConverter
     {
     public:
 

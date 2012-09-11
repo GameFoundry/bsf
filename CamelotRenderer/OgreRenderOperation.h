@@ -41,7 +41,7 @@ namespace Ogre {
 	*  @{
 	*/
 	/** 'New' rendering operation using vertex buffers. */
-	class _OgrePrivate RenderOperation {
+	class RenderOperation {
 	public:
 		/// The rendering operation type to perform
 		enum OperationType {

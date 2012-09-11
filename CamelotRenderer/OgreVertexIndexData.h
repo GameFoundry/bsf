@@ -45,7 +45,7 @@ namespace Ogre {
 
 
 	/** Summary class collecting together vertex source information. */
-	class _OgreExport VertexData
+	class CM_EXPORT VertexData
 	{
     private:
         /// Protected copy constructor, to prevent misuse
@@ -204,7 +204,7 @@ namespace Ogre {
 	};
 
 	/** Summary class collecting together index data source information. */
-	class _OgreExport IndexData
+	class CM_EXPORT IndexData
 	{
     protected:
         /// Protected copy constructor, to prevent misuse
@@ -247,7 +247,7 @@ namespace Ogre {
 		Utility class for evaluating the effectiveness of the use of the vertex
 		cache by a given index buffer.
 	*/
-	class _OgreExport VertexCacheProfiler
+	class CM_EXPORT VertexCacheProfiler
     {
 		public:
 			enum CacheType {

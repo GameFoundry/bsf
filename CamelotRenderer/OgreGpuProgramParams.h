@@ -97,7 +97,7 @@ namespace Ogre {
 	@note Only available for high-level programs but is referenced generically
 	by GpuProgramParameters.
 	*/
-	struct _OgreExport GpuConstantDefinition
+	struct CM_EXPORT GpuConstantDefinition
 	{
 		/// Data type
 		GpuConstantType constType;
@@ -257,7 +257,7 @@ namespace Ogre {
 	typedef GpuConstantDefinitionMap::const_iterator GpuConstantDefinitionIterator;
 
 	/// Struct collecting together the information for named constants.
-	struct _OgreExport GpuNamedConstants
+	struct CM_EXPORT GpuNamedConstants
 	{
 		/// Total size of the float buffer required
 		size_t floatBufferSize;
@@ -307,7 +307,7 @@ namespace Ogre {
 	/** Structure recording the use of a physical buffer by a logical parameter
 	index. Only used for low-level programs.
 	*/
-	struct _OgreExport GpuLogicalIndexUse
+	struct CM_EXPORT GpuLogicalIndexUse
 	{
 		/// Physical buffer index
 		size_t physicalIndex;
@@ -323,7 +323,7 @@ namespace Ogre {
 	};
 	typedef map<size_t, GpuLogicalIndexUse>::type GpuLogicalIndexUseMap;
 	/// Container struct to allow params to safely & update shared list of logical buffer assignments
-	struct _OgreExport GpuLogicalBufferStruct
+	struct CM_EXPORT GpuLogicalBufferStruct
 	{
 		CM_MUTEX(mutex)
 			/// Map from logical index to physical buffer location
@@ -360,7 +360,7 @@ namespace Ogre {
 	@note
 		Shared parameter sets can be named, and looked up using the GpuProgramManager.
 	*/
-	class _OgreExport GpuSharedParameters
+	class CM_EXPORT GpuSharedParameters
 	{
 	protected:
 		GpuNamedConstants mNamedConstants;
@@ -464,7 +464,7 @@ namespace Ogre {
 	/** This class records the usage of a set of shared parameters in a concrete
 		set of GpuProgramParameters.
 	*/
-	class _OgreExport GpuSharedParametersUsage
+	class CM_EXPORT GpuSharedParametersUsage
 	{
 	protected:
 		GpuSharedParametersPtr mSharedParams;
@@ -537,7 +537,7 @@ namespace Ogre {
 	any of this unless you intend to read parameters back from this structure
 	rather than just setting them.
 	*/
-	class _OgreExport GpuProgramParameters
+	class CM_EXPORT GpuProgramParameters
 	{
 	public:
 		/** Defines the types of automatically updated values that may be bound to GpuProgram

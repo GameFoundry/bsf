@@ -53,7 +53,7 @@ namespace Ogre {
             viewport on a single render target and they overlap, one must
             obscure the other in some predetermined way.
     */
-	class _OgreExport Viewport
+	class CM_EXPORT Viewport
     {
     public:       
         /** The usual constructor.

@@ -42,7 +42,7 @@ namespace Ogre {
 	/** \addtogroup Resources
 	*  @{
 	*/
-	class _OgreExport GpuProgramManager : public Singleton<GpuProgramManager>
+	class CM_EXPORT GpuProgramManager : public Singleton<GpuProgramManager>
 	{
 	public:
 

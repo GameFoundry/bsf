@@ -56,7 +56,7 @@ namespace Ogre {
             created at least one window - this may be done at the
             same time as part a if you allow Ogre to autocreate one.
      */
-    class _OgreExport TextureManager : public Singleton<TextureManager>
+    class CM_EXPORT TextureManager : public Singleton<TextureManager>
     {
 		protected:
 			virtual Texture* createImpl() = 0;

@@ -117,7 +117,7 @@ namespace Ogre
 	@version
 	1.0
 	*/
-	class _OgreExport RenderSystem
+	class CM_EXPORT RenderSystem
 	{
 	public:
 		/** Default Constructor.
@@ -1221,7 +1221,7 @@ namespace Ogre
 		can raise.
 		@see RenderSystem::addListener
 		*/
-		class _OgreExport Listener
+		class CM_EXPORT Listener
 		{
 		public:
 			Listener() {}

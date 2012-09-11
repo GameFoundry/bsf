@@ -42,7 +42,7 @@ namespace CamelotEngine
 	*/
 	/** 4-dimensional homogeneous vector.
     */
-    class _OgreExport Vector4
+    class CM_EXPORT Vector4
     {
     public:
         float x, y, z, w;
@@ -397,7 +397,7 @@ namespace CamelotEngine
 		}
         /** Function for writing to a stream.
         */
-        inline _OgreExport friend std::ostream& operator <<
+        inline CM_EXPORT friend std::ostream& operator <<
             ( std::ostream& o, const Vector4& v )
         {
             o << "Vector4(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")";

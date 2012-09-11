@@ -190,7 +190,7 @@ namespace Ogre {
      	Pixels are stored as a succession of "depth" slices, each containing "height" rows of 
      	"width" pixels.
     */
-    class _OgreExport PixelBox: public Box {
+    class CM_EXPORT PixelBox: public Box {
     public:
     	/// Parameter constructor for setting the members manually
     	PixelBox() {}
@@ -298,7 +298,7 @@ namespace Ogre {
     /**
      * Some utility functions for packing and unpacking pixel data
      */
-    class _OgreExport PixelUtil {
+    class CM_EXPORT PixelUtil {
     public:
         /** Returns the size in bytes of an element of the given pixel format.
          @returns

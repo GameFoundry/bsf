@@ -89,7 +89,7 @@ namespace Ogre {
             object unless it wishes to unify its error handling using the
             same object.
     */
-	class _OgreExport Exception : public std::exception
+	class CM_EXPORT Exception : public std::exception
     {
     protected:
         long line;
@@ -192,55 +192,55 @@ namespace Ogre {
 	// Specialised exceptions allowing each to be caught specifically
 	// backwards-compatible since exception codes still used
 
-	class _OgreExport UnimplementedException : public Exception 
+	class CM_EXPORT UnimplementedException : public Exception 
 	{
 	public:
 		UnimplementedException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception(inNumber, inDescription, inSource, "UnimplementedException", inFile, inLine) {}
 	};
-	class _OgreExport FileNotFoundException : public Exception
+	class CM_EXPORT FileNotFoundException : public Exception
 	{
 	public:
 		FileNotFoundException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception(inNumber, inDescription, inSource, "FileNotFoundException", inFile, inLine) {}
 	};
-	class _OgreExport IOException : public Exception
+	class CM_EXPORT IOException : public Exception
 	{
 	public:
 		IOException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception(inNumber, inDescription, inSource, "IOException", inFile, inLine) {}
 	};
-	class _OgreExport InvalidStateException : public Exception
+	class CM_EXPORT InvalidStateException : public Exception
 	{
 	public:
 		InvalidStateException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception(inNumber, inDescription, inSource, "InvalidStateException", inFile, inLine) {}
 	};
-	class _OgreExport InvalidParametersException : public Exception
+	class CM_EXPORT InvalidParametersException : public Exception
 	{
 	public:
 		InvalidParametersException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception(inNumber, inDescription, inSource, "InvalidParametersException", inFile, inLine) {}
 	};
-	class _OgreExport ItemIdentityException : public Exception
+	class CM_EXPORT ItemIdentityException : public Exception
 	{
 	public:
 		ItemIdentityException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception(inNumber, inDescription, inSource, "ItemIdentityException", inFile, inLine) {}
 	};
-	class _OgreExport InternalErrorException : public Exception
+	class CM_EXPORT InternalErrorException : public Exception
 	{
 	public:
 		InternalErrorException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception(inNumber, inDescription, inSource, "InternalErrorException", inFile, inLine) {}
 	};
-	class _OgreExport RenderingAPIException : public Exception
+	class CM_EXPORT RenderingAPIException : public Exception
 	{
 	public:
 		RenderingAPIException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception(inNumber, inDescription, inSource, "RenderingAPIException", inFile, inLine) {}
 	};
-	class _OgreExport RuntimeAssertionException : public Exception
+	class CM_EXPORT RuntimeAssertionException : public Exception
 	{
 	public:
 		RuntimeAssertionException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)

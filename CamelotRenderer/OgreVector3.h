@@ -48,7 +48,7 @@ namespace Ogre
             scaling factors can be represented by a vector, depending on how
             you interpret the values.
     */
-    class _OgreExport Vector3
+    class CM_EXPORT Vector3
     {
     public:
 		Real x, y, z;
@@ -782,7 +782,7 @@ namespace Ogre
 
         /** Function for writing to a stream.
         */
-        inline _OgreExport friend std::ostream& operator <<
+        inline CM_EXPORT friend std::ostream& operator <<
             ( std::ostream& o, const Vector3& v )
         {
             o << "Vector3(" << v.x << ", " << v.y << ", " << v.z << ")";

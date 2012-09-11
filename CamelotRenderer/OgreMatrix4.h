@@ -75,7 +75,7 @@ namespace Ogre
                 [ m[3][0]  m[3][1]  m[3][2]  m[3][3] ]   {1}
             </pre>
     */
-    class _OgreExport Matrix4
+    class CM_EXPORT Matrix4
     {
     protected:
         /// The matrix entries, indexed by [row][col].
@@ -523,7 +523,7 @@ namespace Ogre
 
         /** Function for writing to a stream.
         */
-        inline _OgreExport friend std::ostream& operator <<
+        inline CM_EXPORT friend std::ostream& operator <<
             ( std::ostream& o, const Matrix4& mat )
         {
             o << "Matrix4(";

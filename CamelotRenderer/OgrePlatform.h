@@ -131,19 +131,17 @@ namespace Ogre {
 // should get exported. Otherwise, import it.
 #	if defined( CM_STATIC_LIB )
 		// Linux compilers don't have symbol import/export directives.
-#   	define _OgreExport
-#   	define _OgrePrivate
+#   	define CM_EXPORT
 #   else
-#   	if defined( CM_NONCLIENT_BUILD )
-#       	define _OgreExport __declspec( dllexport )
+#   	if defined( CM_DLL )
+#       	define CM_EXPORT __declspec( dllexport )
 #   	else
 #           if defined( __MINGW32__ )
-#               define _OgreExport
+#               define CM_EXPORT
 #           else
-#       	    define _OgreExport __declspec( dllimport )
+#       	    define CM_EXPORT __declspec( dllimport )
 #           endif
 #   	endif
-#   	define _OgrePrivate
 #	endif
 // Win32 compilers use _DEBUG for specifying debug builds.
 // for MinGW, we set DEBUG
@@ -183,8 +181,7 @@ namespace Ogre {
 #if CM_PLATFORM == OGRE_PLATFORM_SYMBIAN
 #	define OGRE_UNICODE_SUPPORT 1
 #   define CM_DEBUG_MODE 0
-#   define _OgreExport
-#   define _OgrePrivate
+#   define CM_EXPORT
 #	define CLOCKS_PER_SEC  1000
 // pragma def were found here: http://www.inf.pucrs.br/~eduardob/disciplinas/SistEmbarcados/Mobile/Nokia/Tools/Carbide_vs/WINSCW/Help/PDF/C_Compilers_Reference_3.2.pdf
 #	pragma warn_unusedarg off
@@ -197,11 +194,9 @@ namespace Ogre {
 
 // Enable GCC symbol visibility
 #   if defined( CM_GCC_VISIBILITY )
-#       define _OgreExport  __attribute__ ((visibility("default")))
-#       define _OgrePrivate __attribute__ ((visibility("hidden")))
+#       define CM_EXPORT  __attribute__ ((visibility("default")))
 #   else
-#       define _OgreExport
-#       define _OgrePrivate
+#       define CM_EXPORT
 #   endif
 
 // A quick define to overcome different names for the same function

@@ -42,7 +42,7 @@ namespace Ogre {
 	*  @{
 	*/
 	/** Interface definition for factories of HighLevelGpuProgram. */
-	class _OgreExport HighLevelGpuProgramFactory
+	class CM_EXPORT HighLevelGpuProgramFactory
 	{
 	public:
         HighLevelGpuProgramFactory() {}
@@ -65,7 +65,7 @@ namespace Ogre {
 		factories and as such the engine can be extended to accept virtually any kind of
 		program provided a plugin is written.
 	*/
-	class _OgreExport HighLevelGpuProgramManager : public Singleton<HighLevelGpuProgramManager>
+	class CM_EXPORT HighLevelGpuProgramManager : public Singleton<HighLevelGpuProgramManager>
 	{
 	public:
 		typedef map<String, HighLevelGpuProgramFactory*>::type FactoryMap;

@@ -75,7 +75,7 @@ namespace Ogre {
 		If you wish to use higher level shading languages like HLSL and Cg, you need to 
 		use the HighLevelGpuProgram class instead.
 	*/
-	class _OgreExport GpuProgram
+	class CM_EXPORT GpuProgram
 	{
 	protected:
 		/// The type of the program

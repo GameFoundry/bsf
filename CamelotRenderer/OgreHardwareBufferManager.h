@@ -54,7 +54,7 @@ namespace Ogre {
 		and passes it to the HardwareBufferManager superclass as a delegate. 
 		This subclass must also delete the implementation instance it creates.
 	*/
-	class _OgreExport HardwareBufferManagerBase
+	class CM_EXPORT HardwareBufferManagerBase
 	{
     protected:
         /** WARNING: The following two members should place before all other members.
@@ -193,7 +193,7 @@ namespace Ogre {
 	};
 
     /** Singleton wrapper for hardware buffer manager. */
-    class _OgreExport HardwareBufferManager : public HardwareBufferManagerBase, public Singleton<HardwareBufferManager>
+    class CM_EXPORT HardwareBufferManager : public HardwareBufferManagerBase, public Singleton<HardwareBufferManager>
     {
     protected:
 		HardwareBufferManagerBase* mImpl;

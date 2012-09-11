@@ -48,7 +48,7 @@ namespace CamelotEngine
             scaling factors can be represented by a vector, depending on how
             you interpret the values.
     */
-    class _OgreExport Vector2
+    class CM_EXPORT Vector2
     {
     public:
         float x, y;
@@ -558,7 +558,7 @@ namespace CamelotEngine
 
         /** Function for writing to a stream.
         */
-        inline _OgreExport friend std::ostream& operator <<
+        inline CM_EXPORT friend std::ostream& operator <<
             ( std::ostream& o, const Vector2& v )
         {
             o << "Vector2(" << v.x << ", " << v.y <<  ")";

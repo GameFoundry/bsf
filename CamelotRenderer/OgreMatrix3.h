@@ -65,7 +65,7 @@ namespace Ogre
         @par
             The coordinate system is assumed to be <b>right-handed</b>.
     */
-    class _OgreExport Matrix3
+    class CM_EXPORT Matrix3
     {
     public:
         /** Default constructor.
@@ -146,14 +146,14 @@ namespace Ogre
         Vector3 operator* (const Vector3& rkVector) const;
 
         // vector * matrix [1x3 * 3x3 = 1x3]
-        _OgreExport friend Vector3 operator* (const Vector3& rkVector,
+        CM_EXPORT friend Vector3 operator* (const Vector3& rkVector,
             const Matrix3& rkMatrix);
 
         // matrix * scalar
         Matrix3 operator* (Real fScalar) const;
 
         // scalar * matrix
-        _OgreExport friend Matrix3 operator* (Real fScalar, const Matrix3& rkMatrix);
+        CM_EXPORT friend Matrix3 operator* (Real fScalar, const Matrix3& rkMatrix);
 
         // utilities
         Matrix3 Transpose () const;
@@ -232,7 +232,7 @@ namespace Ogre
 
 		/** Function for writing to a stream.
 		*/
-		inline _OgreExport friend std::ostream& operator <<
+		inline CM_EXPORT friend std::ostream& operator <<
 			( std::ostream& o, const Matrix3& mat )
 		{
 			o << "Matrix3(" << mat[0][0] << ", " << mat[0][1] << ", " << mat[0][2] << ", " 

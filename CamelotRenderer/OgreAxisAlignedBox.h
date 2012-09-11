@@ -51,7 +51,7 @@ namespace Ogre {
 	for an axis-aligned bounding box (AABB) for collision and
 	visibility determination.
 	*/
-	class _OgreExport AxisAlignedBox
+	class CM_EXPORT AxisAlignedBox
 	{
 	public:
 		enum Extent
@@ -352,7 +352,7 @@ namespace Ogre {
 			}
 		}
 
-		_OgreExport friend std::ostream& operator<<( std::ostream& o, const AxisAlignedBox aab )
+		CM_EXPORT friend std::ostream& operator<<( std::ostream& o, const AxisAlignedBox aab )
 		{
 			switch (aab.mExtent)
 			{

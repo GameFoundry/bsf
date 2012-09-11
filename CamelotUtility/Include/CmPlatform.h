@@ -108,19 +108,17 @@ namespace CamelotEngine {
 // should get exported. Otherwise, import it.
 #	if defined( CM_STATIC_LIB )
 		// Linux compilers don't have symbol import/export directives.
-#   	define _OgreExport
-#   	define _OgrePrivate
+#   	define CM_EXPORT
 #   else
-#   	if defined( CM_NONCLIENT_BUILD )
-#       	define _OgreExport __declspec( dllexport )
+#   	if defined( CM_DLL )
+#       	define CM_EXPORT __declspec( dllexport )
 #   	else
 #           if defined( __MINGW32__ )
-#               define _OgreExport
+#               define CM_EXPORT
 #           else
-#       	    define _OgreExport __declspec( dllimport )
+#       	    define CM_EXPORT __declspec( dllimport )
 #           endif
 #   	endif
-#   	define _OgrePrivate
 #	endif
 // Win32 compilers use _DEBUG for specifying debug builds.
 // for MinGW, we set DEBUG
@@ -130,7 +128,7 @@ namespace CamelotEngine {
 #       define CM_DEBUG_MODE 0
 #   endif
 
-#endif // OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#endif // CM_PLATFORM == CM_PLATFORM_WIN32
 
 //----------------------------------------------------------------------------
 // Linux/Apple/Symbian Settings
@@ -138,11 +136,9 @@ namespace CamelotEngine {
 
 // Enable GCC symbol visibility
 #   if defined( CM_GCC_VISIBILITY )
-#       define _OgreExport  __attribute__ ((visibility("default")))
-#       define _OgrePrivate __attribute__ ((visibility("hidden")))
+#       define CM_EXPORT  __attribute__ ((visibility("default")))
 #   else
-#       define _OgreExport
-#       define _OgrePrivate
+#       define CM_EXPORT
 #   endif
 
 // A quick define to overcome different names for the same function
@@ -160,7 +156,7 @@ namespace CamelotEngine {
 
 #if CM_PLATFORM == CM_PLATFORM_APPLE
     #define CM_PLATFORM_LIB "CmPlatform.bundle"
-#else //OGRE_PLATFORM_LINUX
+#else //CM_PLATFORM_LINUX
     #define CM_PLATFORM_LIB "libCmPlatform.so"
 #endif
 

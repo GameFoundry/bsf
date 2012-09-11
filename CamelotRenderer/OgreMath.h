@@ -81,7 +81,7 @@ namespace Ogre
 		bool operator >= ( const Radian& r ) const { return mRad >= r.mRad; }
 		bool operator >  ( const Radian& r ) const { return mRad >  r.mRad; }
 
-		inline _OgreExport friend std::ostream& operator <<
+		inline CM_EXPORT friend std::ostream& operator <<
 			( std::ostream& o, const Radian& v )
 		{
 			o << "Radian(" << v.valueRadians() << ")";
@@ -132,7 +132,7 @@ namespace Ogre
 		bool operator >= ( const Degree& d ) const { return mDeg >= d.mDeg; }
 		bool operator >  ( const Degree& d ) const { return mDeg >  d.mDeg; }
 
-		inline _OgreExport friend std::ostream& operator <<
+		inline CM_EXPORT friend std::ostream& operator <<
 			( std::ostream& o, const Degree& v )
 		{
 			o << "Degree(" << v.valueDegrees() << ")";
@@ -187,7 +187,7 @@ namespace Ogre
             <br>This is based on MgcMath.h from
             <a href="http://www.geometrictools.com/">Wild Magic</a>.
     */
-    class _OgreExport Math 
+    class CM_EXPORT Math 
     {
    public:
        /** The angular units used by the API. This functionality is now deprecated in favor

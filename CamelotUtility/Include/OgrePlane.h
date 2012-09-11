@@ -58,7 +58,7 @@ namespace CamelotEngine {
             respectively), and a constant (D) which is the distance along
             the normal you have to go to move the plane back to the origin.
      */
-    class _OgreExport Plane
+    class CM_EXPORT Plane
     {
     public:
         /** Default constructor - sets everything to 0.
@@ -154,7 +154,7 @@ namespace CamelotEngine {
             return (rhs.d != d || rhs.normal != normal);
         }
 
-        _OgreExport friend std::ostream& operator<< (std::ostream& o, const Plane& p);
+        CM_EXPORT friend std::ostream& operator<< (std::ostream& o, const Plane& p);
     };
 
     typedef vector<Plane>::type PlaneList;

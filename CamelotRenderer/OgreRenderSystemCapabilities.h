@@ -168,7 +168,7 @@ namespace Ogre
 
 	/// DriverVersion is used by RenderSystemCapabilities and both GL and D3D9
 	/// to store the version of the current GPU driver
-	struct _OgreExport DriverVersion 
+	struct CM_EXPORT DriverVersion 
 	{
 		int major;
 		int minor;
@@ -228,7 +228,7 @@ namespace Ogre
 	This class stores the capabilities of the graphics card.  This
 	information is set by the individual render systems.
 	*/
-	class _OgreExport RenderSystemCapabilities
+	class CM_EXPORT RenderSystemCapabilities
 	{
 
 	public:

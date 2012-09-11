@@ -80,7 +80,7 @@ namespace Ogre {
             This is useful for implementing more complex Camera / object
             relationships i.e. having a camera attached to a world object.
     */
-    class _OgreExport Camera : public Frustum
+    class CM_EXPORT Camera : public Frustum
     {
     protected:
         /// Camera orientation, quaternion style

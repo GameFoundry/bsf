@@ -60,7 +60,7 @@ namespace Ogre {
         @version
             1.0
      */
-    class _OgreExport RenderTarget
+    class CM_EXPORT RenderTarget
     {
     public:
 		enum FrameBuffer

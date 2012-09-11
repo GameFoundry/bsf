@@ -43,7 +43,7 @@ namespace Ogre {
 	*/
 
     /// Specialisation of HardwareVertexBuffer for emulation
-    class _OgreExport DefaultHardwareVertexBuffer : public HardwareVertexBuffer 
+    class CM_EXPORT DefaultHardwareVertexBuffer : public HardwareVertexBuffer 
     {
 	protected:
 		unsigned char* mpData;
@@ -70,7 +70,7 @@ namespace Ogre {
     };
 
 	/// Specialisation of HardwareIndexBuffer for emulation
-    class _OgreExport DefaultHardwareIndexBuffer : public HardwareIndexBuffer
+    class CM_EXPORT DefaultHardwareIndexBuffer : public HardwareIndexBuffer
     {
 	protected:
 		unsigned char* mpData;
@@ -100,7 +100,7 @@ namespace Ogre {
 		rendering system (which is required to create a 'real' hardware
 		buffer manager.
 	*/
-	class _OgreExport DefaultHardwareBufferManagerBase : public HardwareBufferManagerBase
+	class CM_EXPORT DefaultHardwareBufferManagerBase : public HardwareBufferManagerBase
 	{
     public:
         DefaultHardwareBufferManagerBase();
@@ -116,7 +116,7 @@ namespace Ogre {
     };
 
 	/// DefaultHardwareBufferManager as a Singleton
-	class _OgreExport DefaultHardwareBufferManager : public HardwareBufferManager
+	class CM_EXPORT DefaultHardwareBufferManager : public HardwareBufferManager
 	{
 	public:
 		DefaultHardwareBufferManager()

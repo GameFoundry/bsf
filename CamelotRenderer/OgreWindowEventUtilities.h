@@ -55,7 +55,7 @@ namespace Ogre
 	@Remarks
 		Callback class used to send out window events to client app
 	*/
-	class _OgreExport WindowEventListener
+	class CM_EXPORT WindowEventListener
 	{
 	public:
 		virtual ~WindowEventListener() {}
@@ -115,7 +115,7 @@ namespace Ogre
 	@Remarks
 		Utility class to handle Window Events/Pumping/Messages
 	*/
-	class _OgreExport WindowEventUtilities
+	class CM_EXPORT WindowEventUtilities
 	{
 	public:
 		/**

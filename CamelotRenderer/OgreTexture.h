@@ -94,7 +94,7 @@ namespace Ogre {
             different in reality. Texture objects are created through
             the 'create' method of the TextureManager concrete subclass.
      */
-    class _OgreExport Texture
+    class CM_EXPORT Texture
     {
     public:
         Texture();

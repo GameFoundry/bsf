@@ -60,7 +60,7 @@ namespace Ogre
         used to represent either a visible area or a projection area. Can be used
         for a number of applications.
     */
-    class _OgreExport Frustum
+    class CM_EXPORT Frustum
     {
     protected:
         /// Orthographic or perspective?

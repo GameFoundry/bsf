@@ -71,7 +71,7 @@ namespace Ogre {
 	*/
 
     /** Utility class for manipulating Strings.  */
-    class _OgreExport StringUtil
+    class CM_EXPORT StringUtil
     {
 	public:
 		typedef StringStream StrStreamType;

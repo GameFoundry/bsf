@@ -51,7 +51,7 @@ namespace Ogre {
 	*/
 
 	/// Fast general hashing algorithm
-	uint32 _OgreExport FastHash (const char * data, int len, uint32 hashSoFar = 0);
+	uint32 CM_EXPORT FastHash (const char * data, int len, uint32 hashSoFar = 0);
 	/// Combine hashes with same style as boost::hash_combine
 	template <typename T>
 	uint32 HashCombine (uint32 hashSoFar, const T& data)
@@ -707,7 +707,7 @@ namespace Ogre {
         Should be pre-populated with, for example '-e' and the default setting. 
         Options which are found will have the value updated.
     */
-    int _OgreExport findCommandLineOpts(int numargs, char** argv, UnaryOptionList& unaryOptList, 
+    int CM_EXPORT findCommandLineOpts(int numargs, char** argv, UnaryOptionList& unaryOptList, 
         BinaryOptionList& binOptList);
 
 	/// Generic result of clipping
@@ -738,7 +738,7 @@ namespace Ogre {
 	typedef vector<RenderWindow*>::type RenderWindowList;
 
 	/// Utility class to generate a sequentially numbered series of names
-	class _OgreExport NameGenerator
+	class CM_EXPORT NameGenerator
 	{
 	protected:
 		String mPrefix;
