@@ -28,16 +28,12 @@ THE SOFTWARE.
 #ifndef __Platform_H_
 #define __Platform_H_
 
-#include "OgreConfig.h"
-
 namespace Ogre {
 /* Initial platform/compiler-related stuff to set.
 */
 #define OGRE_PLATFORM_WIN32 1
 #define OGRE_PLATFORM_LINUX 2
 #define OGRE_PLATFORM_APPLE 3
-#define OGRE_PLATFORM_SYMBIAN 4
-#define OGRE_PLATFORM_IPHONE 5
 
 #define OGRE_COMPILER_MSVC 1
 #define OGRE_COMPILER_GNUC 2
@@ -93,18 +89,10 @@ namespace Ogre {
 
 /* Finds the current platform */
 
-#if defined( __SYMBIAN32__ ) 
-#   define OGRE_PLATFORM OGRE_PLATFORM_SYMBIAN
-#elif defined( __WIN32__ ) || defined( _WIN32 )
+#if defined( __WIN32__ ) || defined( _WIN32 )
 #   define OGRE_PLATFORM OGRE_PLATFORM_WIN32
 #elif defined( __APPLE_CC__)
-    // Device                                                     Simulator
-    // Both requiring OS version 3.0 or greater
-#   if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 30000 || __IPHONE_OS_VERSION_MIN_REQUIRED >= 30000
-#       define OGRE_PLATFORM OGRE_PLATFORM_IPHONE
-#   else
-#       define OGRE_PLATFORM OGRE_PLATFORM_APPLE
-#   endif
+#   define OGRE_PLATFORM OGRE_PLATFORM_APPLE
 #else
 #   define OGRE_PLATFORM OGRE_PLATFORM_LINUX
 #endif
@@ -179,21 +167,8 @@ namespace Ogre {
 #endif // OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 
 //----------------------------------------------------------------------------
-// Symbian Settings
-#if OGRE_PLATFORM == OGRE_PLATFORM_SYMBIAN
-#	define OGRE_UNICODE_SUPPORT 1
-#   define OGRE_DEBUG_MODE 0
-#   define _OgreExport
-#   define _OgrePrivate
-#	define CLOCKS_PER_SEC  1000
-// pragma def were found here: http://www.inf.pucrs.br/~eduardob/disciplinas/SistEmbarcados/Mobile/Nokia/Tools/Carbide_vs/WINSCW/Help/PDF/C_Compilers_Reference_3.2.pdf
-#	pragma warn_unusedarg off
-#	pragma warn_emptydecl off
-#	pragma warn_possunwant off
-#endif
-//----------------------------------------------------------------------------
 // Linux/Apple/Symbian Settings
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_IPHONE || OGRE_PLATFORM == OGRE_PLATFORM_SYMBIAN
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 
 // Enable GCC symbol visibility
 #   if defined( OGRE_GCC_VISIBILITY )
@@ -218,16 +193,10 @@ namespace Ogre {
 #   endif
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-    #define OGRE_PLATFORM_LIB "OgrePlatform.bundle"
-#elif OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
-    #define OGRE_PLATFORM_LIB "OgrePlatform.a"
+    #define OGRE_PLATFORM_LIB "CmPlatform.bundle"
 #else //OGRE_PLATFORM_LINUX
-    #define OGRE_PLATFORM_LIB "libOgrePlatform.so"
+    #define OGRE_PLATFORM_LIB "libCmPlatform.so"
 #endif
-
-// Always enable unicode support for the moment
-// Perhaps disable in old versions of gcc if necessary
-#define OGRE_UNICODE_SUPPORT 1
 
 #endif
 
@@ -241,23 +210,6 @@ namespace Ogre {
 #else
 #    define OGRE_ENDIAN OGRE_ENDIAN_LITTLE
 #endif
-
-// Integer formats of fixed bit width
-typedef unsigned int uint32;
-typedef unsigned short uint16;
-typedef unsigned char uint8;
-typedef int int32;
-typedef short int16;
-typedef char int8;
-// define uint64 type
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC
-	typedef unsigned __int64 uint64;
-	typedef __int64 int64;
-#else
-	typedef unsigned long long uint64;
-	typedef long long int64;
-#endif
-
 
 }
 

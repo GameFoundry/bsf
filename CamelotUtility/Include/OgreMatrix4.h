@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __Matrix4__
 
 // Precompiler options
-#include "OgrePrerequisites.h"
+#include "CmUtilPrerequisites.h"
 
 #include "OgreVector3.h"
 #include "OgreMatrix3.h"
@@ -80,8 +80,8 @@ namespace Ogre
     protected:
         /// The matrix entries, indexed by [row][col].
         union {
-            Real m[4][4];
-            Real _m[16];
+            float m[4][4];
+            float _m[16];
         };
     public:
         /** Default constructor.
@@ -93,10 +93,10 @@ namespace Ogre
         }
 
         inline Matrix4(
-            Real m00, Real m01, Real m02, Real m03,
-            Real m10, Real m11, Real m12, Real m13,
-            Real m20, Real m21, Real m22, Real m23,
-            Real m30, Real m31, Real m32, Real m33 )
+            float m00, float m01, float m02, float m03,
+            float m10, float m11, float m12, float m13,
+            float m20, float m21, float m22, float m23,
+            float m30, float m31, float m32, float m33 )
         {
             m[0][0] = m00;
             m[0][1] = m01;
@@ -159,13 +159,13 @@ namespace Ogre
 			std::swap(m[3][3], other.m[3][3]);
 		}
 
-		inline Real* operator [] ( size_t iRow )
+		inline float* operator [] ( size_t iRow )
         {
             assert( iRow < 4 );
             return m[iRow];
         }
 
-        inline const Real *operator [] ( size_t iRow ) const
+        inline const float *operator [] ( size_t iRow ) const
         {
             assert( iRow < 4 );
             return m[iRow];
@@ -217,7 +217,7 @@ namespace Ogre
         {
             Vector3 r;
 
-            Real fInvW = 1.0f / ( m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3] );
+            float fInvW = 1.0f / ( m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3] );
 
             r.x = ( m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] ) * fInvW;
             r.y = ( m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3] ) * fInvW;
@@ -381,7 +381,7 @@ namespace Ogre
             m[3][0] = 0.0; m[3][1] = 0.0; m[3][2] = 0.0; m[3][3] = 1.0;
         }
 
-        inline void makeTrans( Real tx, Real ty, Real tz )
+        inline void makeTrans( float tx, float ty, float tz )
         {
             m[0][0] = 1.0; m[0][1] = 0.0; m[0][2] = 0.0; m[0][3] = tx;
             m[1][0] = 0.0; m[1][1] = 1.0; m[1][2] = 0.0; m[1][3] = ty;
@@ -405,7 +405,7 @@ namespace Ogre
 
         /** Gets a translation matrix - variation for not using a vector.
         */
-        inline static Matrix4 getTrans( Real t_x, Real t_y, Real t_z )
+        inline static Matrix4 getTrans( float t_x, float t_y, float t_z )
         {
             Matrix4 r;
 
@@ -446,7 +446,7 @@ namespace Ogre
 
         /** Gets a scale matrix - variation for not using a vector.
         */
-        inline static Matrix4 getScale( Real s_x, Real s_y, Real s_z )
+        inline static Matrix4 getScale( float s_x, float s_y, float s_z )
         {
             Matrix4 r;
             r.m[0][0] = s_x; r.m[0][1] = 0.0; r.m[0][2] = 0.0; r.m[0][3] = 0.0;
@@ -478,14 +478,14 @@ namespace Ogre
 		inline bool hasScale() const
 		{
 			// check magnitude of column vectors (==local axes)
-			Real t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
-			if (!Math::RealEqual(t, 1.0, (Real)1e-04))
+			float t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
+			if (!Math::RealEqual(t, 1.0, (float)1e-04))
 				return true;
 			t = m[0][1] * m[0][1] + m[1][1] * m[1][1] + m[2][1] * m[2][1];
-			if (!Math::RealEqual(t, 1.0, (Real)1e-04))
+			if (!Math::RealEqual(t, 1.0, (float)1e-04))
 				return true;
 			t = m[0][2] * m[0][2] + m[1][2] * m[1][2] + m[2][2] * m[2][2];
-			if (!Math::RealEqual(t, 1.0, (Real)1e-04))
+			if (!Math::RealEqual(t, 1.0, (float)1e-04))
 				return true;
 
 			return false;
@@ -512,7 +512,7 @@ namespace Ogre
             and inverts the Y. */
         static const Matrix4 CLIPSPACE2DTOIMAGESPACE;
 
-        inline Matrix4 operator*(Real scalar) const
+        inline Matrix4 operator*(float scalar) const
         {
             return Matrix4(
                 scalar*m[0][0], scalar*m[0][1], scalar*m[0][2], scalar*m[0][3],
@@ -541,7 +541,7 @@ namespace Ogre
         }
 		
 		Matrix4 adjoint() const;
-		Real determinant() const;
+		float determinant() const;
 		Matrix4 inverse() const;
 
         /** Building a Matrix4 from orientation / scale / position.

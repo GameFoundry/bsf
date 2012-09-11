@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __Vector4_H__
 #define __Vector4_H__
 
-#include "OgrePrerequisites.h"
+#include "CmUtilPrerequisites.h"
 #include "OgreVector3.h"
 
 namespace Ogre
@@ -45,19 +45,19 @@ namespace Ogre
     class _OgreExport Vector4
     {
     public:
-        Real x, y, z, w;
+        float x, y, z, w;
 
     public:
         inline Vector4()
         {
         }
 
-        inline Vector4( const Real fX, const Real fY, const Real fZ, const Real fW )
+        inline Vector4( const float fX, const float fY, const float fZ, const float fW )
             : x( fX ), y( fY ), z( fZ ), w( fW)
         {
         }
 
-        inline explicit Vector4( const Real afCoordinate[4] )
+        inline explicit Vector4( const float afCoordinate[4] )
             : x( afCoordinate[0] ),
               y( afCoordinate[1] ),
               z( afCoordinate[2] ),
@@ -67,18 +67,18 @@ namespace Ogre
 
         inline explicit Vector4( const int afCoordinate[4] )
         {
-            x = (Real)afCoordinate[0];
-            y = (Real)afCoordinate[1];
-            z = (Real)afCoordinate[2];
-            w = (Real)afCoordinate[3];
+            x = (float)afCoordinate[0];
+            y = (float)afCoordinate[1];
+            z = (float)afCoordinate[2];
+            w = (float)afCoordinate[3];
         }
 
-        inline explicit Vector4( Real* const r )
+        inline explicit Vector4( float* const r )
             : x( r[0] ), y( r[1] ), z( r[2] ), w( r[3] )
         {
         }
 
-        inline explicit Vector4( const Real scaler )
+        inline explicit Vector4( const float scaler )
             : x( scaler )
             , y( scaler )
             , z( scaler )
@@ -101,14 +101,14 @@ namespace Ogre
 			std::swap(w, other.w);
 		}
 	
-		inline Real operator [] ( const size_t i ) const
+		inline float operator [] ( const size_t i ) const
         {
             assert( i < 4 );
 
             return *(&x+i);
         }
 
-		inline Real& operator [] ( const size_t i )
+		inline float& operator [] ( const size_t i )
         {
             assert( i < 4 );
 
@@ -116,12 +116,12 @@ namespace Ogre
         }
 
 		/// Pointer accessor for direct copying
-		inline Real* ptr()
+		inline float* ptr()
 		{
 			return &x;
 		}
 		/// Pointer accessor for direct copying
-		inline const Real* ptr() const
+		inline const float* ptr() const
 		{
 			return &x;
 		}
@@ -140,7 +140,7 @@ namespace Ogre
             return *this;
         }
 
-		inline Vector4& operator = ( const Real fScalar)
+		inline Vector4& operator = ( const float fScalar)
 		{
 			x = fScalar;
 			y = fScalar;
@@ -193,7 +193,7 @@ namespace Ogre
                 w - rkVector.w);
         }
 
-        inline Vector4 operator * ( const Real fScalar ) const
+        inline Vector4 operator * ( const float fScalar ) const
         {
             return Vector4(
                 x * fScalar,
@@ -211,11 +211,11 @@ namespace Ogre
                 rhs.w * w);
         }
 
-        inline Vector4 operator / ( const Real fScalar ) const
+        inline Vector4 operator / ( const float fScalar ) const
         {
             assert( fScalar != 0.0 );
 
-            Real fInv = 1.0f / fScalar;
+            float fInv = 1.0f / fScalar;
 
             return Vector4(
                 x * fInv,
@@ -243,7 +243,7 @@ namespace Ogre
             return Vector4(-x, -y, -z, -w);
         }
 
-        inline friend Vector4 operator * ( const Real fScalar, const Vector4& rkVector )
+        inline friend Vector4 operator * ( const float fScalar, const Vector4& rkVector )
         {
             return Vector4(
                 fScalar * rkVector.x,
@@ -252,7 +252,7 @@ namespace Ogre
                 fScalar * rkVector.w);
         }
 
-        inline friend Vector4 operator / ( const Real fScalar, const Vector4& rkVector )
+        inline friend Vector4 operator / ( const float fScalar, const Vector4& rkVector )
         {
             return Vector4(
                 fScalar / rkVector.x,
@@ -261,7 +261,7 @@ namespace Ogre
                 fScalar / rkVector.w);
         }
 
-        inline friend Vector4 operator + (const Vector4& lhs, const Real rhs)
+        inline friend Vector4 operator + (const Vector4& lhs, const float rhs)
         {
             return Vector4(
                 lhs.x + rhs,
@@ -270,7 +270,7 @@ namespace Ogre
                 lhs.w + rhs);
         }
 
-        inline friend Vector4 operator + (const Real lhs, const Vector4& rhs)
+        inline friend Vector4 operator + (const float lhs, const Vector4& rhs)
         {
             return Vector4(
                 lhs + rhs.x,
@@ -279,7 +279,7 @@ namespace Ogre
                 lhs + rhs.w);
         }
 
-        inline friend Vector4 operator - (const Vector4& lhs, Real rhs)
+        inline friend Vector4 operator - (const Vector4& lhs, float rhs)
         {
             return Vector4(
                 lhs.x - rhs,
@@ -288,7 +288,7 @@ namespace Ogre
                 lhs.w - rhs);
         }
 
-        inline friend Vector4 operator - (const Real lhs, const Vector4& rhs)
+        inline friend Vector4 operator - (const float lhs, const Vector4& rhs)
         {
             return Vector4(
                 lhs - rhs.x,
@@ -318,7 +318,7 @@ namespace Ogre
             return *this;
         }
 
-        inline Vector4& operator *= ( const Real fScalar )
+        inline Vector4& operator *= ( const float fScalar )
         {
             x *= fScalar;
             y *= fScalar;
@@ -327,7 +327,7 @@ namespace Ogre
             return *this;
         }
 
-        inline Vector4& operator += ( const Real fScalar )
+        inline Vector4& operator += ( const float fScalar )
         {
             x += fScalar;
             y += fScalar;
@@ -336,7 +336,7 @@ namespace Ogre
             return *this;
         }
 
-        inline Vector4& operator -= ( const Real fScalar )
+        inline Vector4& operator -= ( const float fScalar )
         {
             x -= fScalar;
             y -= fScalar;
@@ -355,11 +355,11 @@ namespace Ogre
             return *this;
         }
 
-        inline Vector4& operator /= ( const Real fScalar )
+        inline Vector4& operator /= ( const float fScalar )
         {
             assert( fScalar != 0.0 );
 
-            Real fInv = 1.0f / fScalar;
+            float fInv = 1.0f / fScalar;
 
             x *= fInv;
             y *= fInv;
@@ -386,7 +386,7 @@ namespace Ogre
             @returns
                 A float representing the dot product value.
         */
-        inline Real dotProduct(const Vector4& vec) const
+        inline float dotProduct(const Vector4& vec) const
         {
             return x * vec.x + y * vec.y + z * vec.z + w * vec.w;
         }

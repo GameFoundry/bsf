@@ -33,10 +33,10 @@ THE SOFTWARE.
 
 namespace Ogre
 {
-    const Real Matrix3::EPSILON = 1e-06f;
+    const float Matrix3::EPSILON = 1e-06f;
     const Matrix3 Matrix3::ZERO(0,0,0,0,0,0,0,0,0);
     const Matrix3 Matrix3::IDENTITY(1,0,0,0,1,0,0,0,1);
-    const Real Matrix3::ms_fSvdEpsilon = 1e-04f;
+    const float Matrix3::ms_fSvdEpsilon = 1e-04f;
     const unsigned int Matrix3::ms_iSvdMaxIterations = 32;
 
     //-----------------------------------------------------------------------
@@ -160,7 +160,7 @@ namespace Ogre
         return kNeg;
     }
     //-----------------------------------------------------------------------
-    Matrix3 Matrix3::operator* (Real fScalar) const
+    Matrix3 Matrix3::operator* (float fScalar) const
     {
         Matrix3 kProd;
         for (size_t iRow = 0; iRow < 3; iRow++)
@@ -171,7 +171,7 @@ namespace Ogre
         return kProd;
     }
     //-----------------------------------------------------------------------
-    Matrix3 operator* (Real fScalar, const Matrix3& rkMatrix)
+    Matrix3 operator* (float fScalar, const Matrix3& rkMatrix)
     {
         Matrix3 kProd;
         for (size_t iRow = 0; iRow < 3; iRow++)
@@ -193,7 +193,7 @@ namespace Ogre
         return kTranspose;
     }
     //-----------------------------------------------------------------------
-    bool Matrix3::Inverse (Matrix3& rkInverse, Real fTolerance) const
+    bool Matrix3::Inverse (Matrix3& rkInverse, float fTolerance) const
     {
         // Invert a 3x3 using cofactors.  This is about 8 times faster than
         // the Numerical Recipes code which uses Gaussian elimination.
@@ -217,7 +217,7 @@ namespace Ogre
         rkInverse[2][2] = m[0][0]*m[1][1] -
             m[0][1]*m[1][0];
 
-        Real fDet =
+        float fDet =
             m[0][0]*rkInverse[0][0] +
             m[0][1]*rkInverse[1][0]+
             m[0][2]*rkInverse[2][0];
@@ -225,7 +225,7 @@ namespace Ogre
         if ( Math::Abs(fDet) <= fTolerance )
             return false;
 
-        Real fInvDet = 1.0f/fDet;
+        float fInvDet = 1.0f/fDet;
         for (size_t iRow = 0; iRow < 3; iRow++)
         {
             for (size_t iCol = 0; iCol < 3; iCol++)
@@ -235,23 +235,23 @@ namespace Ogre
         return true;
     }
     //-----------------------------------------------------------------------
-    Matrix3 Matrix3::Inverse (Real fTolerance) const
+    Matrix3 Matrix3::Inverse (float fTolerance) const
     {
         Matrix3 kInverse = Matrix3::ZERO;
         Inverse(kInverse,fTolerance);
         return kInverse;
     }
     //-----------------------------------------------------------------------
-    Real Matrix3::Determinant () const
+    float Matrix3::Determinant () const
     {
-        Real fCofactor00 = m[1][1]*m[2][2] -
+        float fCofactor00 = m[1][1]*m[2][2] -
             m[1][2]*m[2][1];
-        Real fCofactor10 = m[1][2]*m[2][0] -
+        float fCofactor10 = m[1][2]*m[2][0] -
             m[1][0]*m[2][2];
-        Real fCofactor20 = m[1][0]*m[2][1] -
+        float fCofactor20 = m[1][0]*m[2][1] -
             m[1][1]*m[2][0];
 
-        Real fDet =
+        float fDet =
             m[0][0]*fCofactor00 +
             m[0][1]*fCofactor10 +
             m[0][2]*fCofactor20;
@@ -262,8 +262,8 @@ namespace Ogre
     void Matrix3::Bidiagonalize (Matrix3& kA, Matrix3& kL,
         Matrix3& kR)
     {
-        Real afV[3], afW[3];
-        Real fLength, fSign, fT1, fInvT1, fT2;
+        float afV[3], afW[3];
+        float fLength, fSign, fT1, fInvT1, fT2;
         bool bIdentity;
 
         // map first column to (*,0,0)
@@ -348,9 +348,9 @@ namespace Ogre
             kA[1][2] += afW[2];
             kA[2][2] += afV[2]*afW[2];
 
-            Real fA = 1.0f+fT2;
-            Real fB = fT2*afV[2];
-            Real fC = 1.0f+fB*afV[2];
+            float fA = 1.0f+fT2;
+            float fB = fT2*afV[2];
+            float fC = 1.0f+fB*afV[2];
 
             if ( bIdentity )
             {
@@ -365,8 +365,8 @@ namespace Ogre
             {
                 for (int iRow = 0; iRow < 3; iRow++)
                 {
-                    Real fTmp0 = kL[iRow][1];
-                    Real fTmp1 = kL[iRow][2];
+                    float fTmp0 = kL[iRow][1];
+                    float fTmp1 = kL[iRow][2];
                     kL[iRow][1] = fA*fTmp0+fB*fTmp1;
                     kL[iRow][2] = fB*fTmp0+fC*fTmp1;
                 }
@@ -377,25 +377,25 @@ namespace Ogre
     void Matrix3::GolubKahanStep (Matrix3& kA, Matrix3& kL,
         Matrix3& kR)
     {
-        Real fT11 = kA[0][1]*kA[0][1]+kA[1][1]*kA[1][1];
-        Real fT22 = kA[1][2]*kA[1][2]+kA[2][2]*kA[2][2];
-        Real fT12 = kA[1][1]*kA[1][2];
-        Real fTrace = fT11+fT22;
-        Real fDiff = fT11-fT22;
-        Real fDiscr = Math::Sqrt(fDiff*fDiff+4.0f*fT12*fT12);
-        Real fRoot1 = 0.5f*(fTrace+fDiscr);
-        Real fRoot2 = 0.5f*(fTrace-fDiscr);
+        float fT11 = kA[0][1]*kA[0][1]+kA[1][1]*kA[1][1];
+        float fT22 = kA[1][2]*kA[1][2]+kA[2][2]*kA[2][2];
+        float fT12 = kA[1][1]*kA[1][2];
+        float fTrace = fT11+fT22;
+        float fDiff = fT11-fT22;
+        float fDiscr = Math::Sqrt(fDiff*fDiff+4.0f*fT12*fT12);
+        float fRoot1 = 0.5f*(fTrace+fDiscr);
+        float fRoot2 = 0.5f*(fTrace-fDiscr);
 
         // adjust right
-        Real fY = kA[0][0] - (Math::Abs(fRoot1-fT22) <=
+        float fY = kA[0][0] - (Math::Abs(fRoot1-fT22) <=
             Math::Abs(fRoot2-fT22) ? fRoot1 : fRoot2);
-        Real fZ = kA[0][1];
-		Real fInvLength = Math::InvSqrt(fY*fY+fZ*fZ);
-        Real fSin = fZ*fInvLength;
-        Real fCos = -fY*fInvLength;
+        float fZ = kA[0][1];
+		float fInvLength = Math::InvSqrt(fY*fY+fZ*fZ);
+        float fSin = fZ*fInvLength;
+        float fCos = -fY*fInvLength;
 
-        Real fTmp0 = kA[0][0];
-        Real fTmp1 = kA[0][1];
+        float fTmp0 = kA[0][0];
+        float fTmp1 = kA[0][1];
         kA[0][0] = fCos*fTmp0-fSin*fTmp1;
         kA[0][1] = fSin*fTmp0+fCos*fTmp1;
         kA[1][0] = -fSin*kA[1][1];
@@ -491,9 +491,9 @@ namespace Ogre
 
         for (unsigned int i = 0; i < ms_iSvdMaxIterations; i++)
         {
-            Real fTmp, fTmp0, fTmp1;
-            Real fSin0, fCos0, fTan0;
-            Real fSin1, fCos1, fTan1;
+            float fTmp, fTmp0, fTmp1;
+            float fSin0, fCos0, fTan0;
+            float fSin1, fCos1, fTan1;
 
             bool bTest1 = (Math::Abs(kA[0][1]) <=
                 ms_fSvdEpsilon*(Math::Abs(kA[0][0])+Math::Abs(kA[1][1])));
@@ -640,7 +640,7 @@ namespace Ogre
         // product of vectors A and B.
 
         // compute q0
-        Real fInvLength = Math::InvSqrt(m[0][0]*m[0][0]
+        float fInvLength = Math::InvSqrt(m[0][0]*m[0][0]
             + m[1][0]*m[1][0] +
             m[2][0]*m[2][0]);
 
@@ -649,7 +649,7 @@ namespace Ogre
         m[2][0] *= fInvLength;
 
         // compute q1
-        Real fDot0 =
+        float fDot0 =
             m[0][0]*m[0][1] +
             m[1][0]*m[1][1] +
             m[2][0]*m[2][1];
@@ -667,7 +667,7 @@ namespace Ogre
         m[2][1] *= fInvLength;
 
         // compute q2
-        Real fDot1 =
+        float fDot1 =
             m[0][1]*m[0][2] +
             m[1][1]*m[1][2] +
             m[2][1]*m[2][2];
@@ -721,14 +721,14 @@ namespace Ogre
         // U stores the entries U[0] = u01, U[1] = u02, U[2] = u12
 
         // build orthogonal matrix Q
-        Real fInvLength = Math::InvSqrt(m[0][0]*m[0][0]
+        float fInvLength = Math::InvSqrt(m[0][0]*m[0][0]
             + m[1][0]*m[1][0] +
             m[2][0]*m[2][0]);
         kQ[0][0] = m[0][0]*fInvLength;
         kQ[1][0] = m[1][0]*fInvLength;
         kQ[2][0] = m[2][0]*fInvLength;
 
-        Real fDot = kQ[0][0]*m[0][1] + kQ[1][0]*m[1][1] +
+        float fDot = kQ[0][0]*m[0][1] + kQ[1][0]*m[1][1] +
             kQ[2][0]*m[2][1];
         kQ[0][1] = m[0][1]-fDot*kQ[0][0];
         kQ[1][1] = m[1][1]-fDot*kQ[1][0];
@@ -756,7 +756,7 @@ namespace Ogre
         kQ[2][2] *= fInvLength;
 
         // guarantee that orthogonal matrix has determinant 1 (no reflections)
-        Real fDet = kQ[0][0]*kQ[1][1]*kQ[2][2] + kQ[0][1]*kQ[1][2]*kQ[2][0] +
+        float fDet = kQ[0][0]*kQ[1][1]*kQ[2][2] + kQ[0][1]*kQ[1][2]*kQ[2][0] +
             kQ[0][2]*kQ[1][0]*kQ[2][1] - kQ[0][2]*kQ[1][1]*kQ[2][0] -
             kQ[0][1]*kQ[1][0]*kQ[2][2] - kQ[0][0]*kQ[1][2]*kQ[2][1];
 
@@ -788,34 +788,34 @@ namespace Ogre
         kD[2] = kR[2][2];
 
         // the shear component
-        Real fInvD0 = 1.0f/kD[0];
+        float fInvD0 = 1.0f/kD[0];
         kU[0] = kR[0][1]*fInvD0;
         kU[1] = kR[0][2]*fInvD0;
         kU[2] = kR[1][2]/kD[1];
     }
     //-----------------------------------------------------------------------
-    Real Matrix3::MaxCubicRoot (Real afCoeff[3])
+    float Matrix3::MaxCubicRoot (float afCoeff[3])
     {
         // Spectral norm is for A^T*A, so characteristic polynomial
         // P(x) = c[0]+c[1]*x+c[2]*x^2+x^3 has three positive real roots.
         // This yields the assertions c[0] < 0 and c[2]*c[2] >= 3*c[1].
 
         // quick out for uniform scale (triple root)
-        const Real fOneThird = 1.0f/3.0f;
-        const Real fEpsilon = 1e-06f;
-        Real fDiscr = afCoeff[2]*afCoeff[2] - 3.0f*afCoeff[1];
+        const float fOneThird = 1.0f/3.0f;
+        const float fEpsilon = 1e-06f;
+        float fDiscr = afCoeff[2]*afCoeff[2] - 3.0f*afCoeff[1];
         if ( fDiscr <= fEpsilon )
             return -fOneThird*afCoeff[2];
 
         // Compute an upper bound on roots of P(x).  This assumes that A^T*A
         // has been scaled by its largest entry.
-        Real fX = 1.0;
-        Real fPoly = afCoeff[0]+fX*(afCoeff[1]+fX*(afCoeff[2]+fX));
+        float fX = 1.0;
+        float fPoly = afCoeff[0]+fX*(afCoeff[1]+fX*(afCoeff[2]+fX));
         if ( fPoly < 0.0 )
         {
             // uses a matrix norm to find an upper bound on maximum root
             fX = Math::Abs(afCoeff[0]);
-            Real fTmp = 1.0f+Math::Abs(afCoeff[1]);
+            float fTmp = 1.0f+Math::Abs(afCoeff[1]);
             if ( fTmp > fX )
                 fX = fTmp;
             fTmp = 1.0f+Math::Abs(afCoeff[2]);
@@ -824,25 +824,25 @@ namespace Ogre
         }
 
         // Newton's method to find root
-        Real fTwoC2 = 2.0f*afCoeff[2];
+        float fTwoC2 = 2.0f*afCoeff[2];
         for (int i = 0; i < 16; i++)
         {
             fPoly = afCoeff[0]+fX*(afCoeff[1]+fX*(afCoeff[2]+fX));
             if ( Math::Abs(fPoly) <= fEpsilon )
                 return fX;
 
-            Real fDeriv = afCoeff[1]+fX*(fTwoC2+3.0f*fX);
+            float fDeriv = afCoeff[1]+fX*(fTwoC2+3.0f*fX);
             fX -= fPoly/fDeriv;
         }
 
         return fX;
     }
     //-----------------------------------------------------------------------
-    Real Matrix3::SpectralNorm () const
+    float Matrix3::SpectralNorm () const
     {
         Matrix3 kP;
         size_t iRow, iCol;
-        Real fPmax = 0.0;
+        float fPmax = 0.0;
         for (iRow = 0; iRow < 3; iRow++)
         {
             for (iCol = 0; iCol < 3; iCol++)
@@ -858,14 +858,14 @@ namespace Ogre
             }
         }
 
-        Real fInvPmax = 1.0f/fPmax;
+        float fInvPmax = 1.0f/fPmax;
         for (iRow = 0; iRow < 3; iRow++)
         {
             for (iCol = 0; iCol < 3; iCol++)
                 kP[iRow][iCol] *= fInvPmax;
         }
 
-        Real afCoeff[3];
+        float afCoeff[3];
         afCoeff[0] = -(kP[0][0]*(kP[1][1]*kP[2][2]-kP[1][2]*kP[2][1]) +
             kP[0][1]*(kP[2][0]*kP[1][2]-kP[1][0]*kP[2][2]) +
             kP[0][2]*(kP[1][0]*kP[2][1]-kP[2][0]*kP[1][1]));
@@ -874,8 +874,8 @@ namespace Ogre
             kP[1][1]*kP[2][2]-kP[1][2]*kP[2][1];
         afCoeff[2] = -(kP[0][0]+kP[1][1]+kP[2][2]);
 
-        Real fRoot = MaxCubicRoot(afCoeff);
-        Real fNorm = Math::Sqrt(fPmax*fRoot);
+        float fRoot = MaxCubicRoot(afCoeff);
+        float fNorm = Math::Sqrt(fPmax*fRoot);
         return fNorm;
     }
     //-----------------------------------------------------------------------
@@ -903,8 +903,8 @@ namespace Ogre
         // z^2-1.  We can solve these for axis (x,y,z).  Because the angle is pi,
         // it does not matter which sign you choose on the square roots.
 
-        Real fTrace = m[0][0] + m[1][1] + m[2][2];
-        Real fCos = 0.5f*(fTrace-1.0f);
+        float fTrace = m[0][0] + m[1][1] + m[2][2];
+        float fCos = 0.5f*(fTrace-1.0f);
         rfRadians = Math::ACos(fCos);  // in [0,PI]
 
         if ( rfRadians > Radian(0.0) )
@@ -978,18 +978,18 @@ namespace Ogre
     //-----------------------------------------------------------------------
     void Matrix3::FromAxisAngle (const Vector3& rkAxis, const Radian& fRadians)
     {
-        Real fCos = Math::Cos(fRadians);
-        Real fSin = Math::Sin(fRadians);
-        Real fOneMinusCos = 1.0f-fCos;
-        Real fX2 = rkAxis.x*rkAxis.x;
-        Real fY2 = rkAxis.y*rkAxis.y;
-        Real fZ2 = rkAxis.z*rkAxis.z;
-        Real fXYM = rkAxis.x*rkAxis.y*fOneMinusCos;
-        Real fXZM = rkAxis.x*rkAxis.z*fOneMinusCos;
-        Real fYZM = rkAxis.y*rkAxis.z*fOneMinusCos;
-        Real fXSin = rkAxis.x*fSin;
-        Real fYSin = rkAxis.y*fSin;
-        Real fZSin = rkAxis.z*fSin;
+        float fCos = Math::Cos(fRadians);
+        float fSin = Math::Sin(fRadians);
+        float fOneMinusCos = 1.0f-fCos;
+        float fX2 = rkAxis.x*rkAxis.x;
+        float fY2 = rkAxis.y*rkAxis.y;
+        float fZ2 = rkAxis.z*rkAxis.z;
+        float fXYM = rkAxis.x*rkAxis.y*fOneMinusCos;
+        float fXZM = rkAxis.x*rkAxis.z*fOneMinusCos;
+        float fYZM = rkAxis.y*rkAxis.z*fOneMinusCos;
+        float fXSin = rkAxis.x*fSin;
+        float fYSin = rkAxis.y*fSin;
+        float fZSin = rkAxis.z*fSin;
 
         m[0][0] = fX2*fOneMinusCos+fCos;
         m[0][1] = fXYM-fZSin;
@@ -1215,7 +1215,7 @@ namespace Ogre
     void Matrix3::FromEulerAnglesXYZ (const Radian& fYAngle, const Radian& fPAngle,
         const Radian& fRAngle)
     {
-        Real fCos, fSin;
+        float fCos, fSin;
 
         fCos = Math::Cos(fYAngle);
         fSin = Math::Sin(fYAngle);
@@ -1235,7 +1235,7 @@ namespace Ogre
     void Matrix3::FromEulerAnglesXZY (const Radian& fYAngle, const Radian& fPAngle,
         const Radian& fRAngle)
     {
-        Real fCos, fSin;
+        float fCos, fSin;
 
         fCos = Math::Cos(fYAngle);
         fSin = Math::Sin(fYAngle);
@@ -1255,7 +1255,7 @@ namespace Ogre
     void Matrix3::FromEulerAnglesYXZ (const Radian& fYAngle, const Radian& fPAngle,
         const Radian& fRAngle)
     {
-        Real fCos, fSin;
+        float fCos, fSin;
 
         fCos = Math::Cos(fYAngle);
         fSin = Math::Sin(fYAngle);
@@ -1275,7 +1275,7 @@ namespace Ogre
     void Matrix3::FromEulerAnglesYZX (const Radian& fYAngle, const Radian& fPAngle,
         const Radian& fRAngle)
     {
-        Real fCos, fSin;
+        float fCos, fSin;
 
         fCos = Math::Cos(fYAngle);
         fSin = Math::Sin(fYAngle);
@@ -1295,7 +1295,7 @@ namespace Ogre
     void Matrix3::FromEulerAnglesZXY (const Radian& fYAngle, const Radian& fPAngle,
         const Radian& fRAngle)
     {
-        Real fCos, fSin;
+        float fCos, fSin;
 
         fCos = Math::Cos(fYAngle);
         fSin = Math::Sin(fYAngle);
@@ -1315,7 +1315,7 @@ namespace Ogre
     void Matrix3::FromEulerAnglesZYX (const Radian& fYAngle, const Radian& fPAngle,
         const Radian& fRAngle)
     {
-        Real fCos, fSin;
+        float fCos, fSin;
 
         fCos = Math::Cos(fYAngle);
         fSin = Math::Sin(fYAngle);
@@ -1332,7 +1332,7 @@ namespace Ogre
         *this = kZMat*(kYMat*kXMat);
     }
     //-----------------------------------------------------------------------
-    void Matrix3::Tridiagonal (Real afDiag[3], Real afSubDiag[3])
+    void Matrix3::Tridiagonal (float afDiag[3], float afSubDiag[3])
     {
         // Householder reduction T = Q^t M Q
         //   Input:
@@ -1342,22 +1342,22 @@ namespace Ogre
         //     diag, diagonal entries of T
         //     subd, subdiagonal entries of T (T is symmetric)
 
-        Real fA = m[0][0];
-        Real fB = m[0][1];
-        Real fC = m[0][2];
-        Real fD = m[1][1];
-        Real fE = m[1][2];
-        Real fF = m[2][2];
+        float fA = m[0][0];
+        float fB = m[0][1];
+        float fC = m[0][2];
+        float fD = m[1][1];
+        float fE = m[1][2];
+        float fF = m[2][2];
 
         afDiag[0] = fA;
         afSubDiag[2] = 0.0;
         if ( Math::Abs(fC) >= EPSILON )
         {
-            Real fLength = Math::Sqrt(fB*fB+fC*fC);
-            Real fInvLength = 1.0f/fLength;
+            float fLength = Math::Sqrt(fB*fB+fC*fC);
+            float fInvLength = 1.0f/fLength;
             fB *= fInvLength;
             fC *= fInvLength;
-            Real fQ = 2.0f*fB*fE+fC*(fF-fD);
+            float fQ = 2.0f*fB*fE+fC*(fF-fD);
             afDiag[1] = fD+fC*fQ;
             afDiag[2] = fF-fC*fQ;
             afSubDiag[0] = fLength;
@@ -1390,7 +1390,7 @@ namespace Ogre
         }
     }
     //-----------------------------------------------------------------------
-    bool Matrix3::QLAlgorithm (Real afDiag[3], Real afSubDiag[3])
+    bool Matrix3::QLAlgorithm (float afDiag[3], float afSubDiag[3])
     {
         // QL iteration with implicit shifting to reduce matrix from tridiagonal
         // to diagonal
@@ -1404,7 +1404,7 @@ namespace Ogre
                 int i1;
                 for (i1 = i0; i1 <= 1; i1++)
                 {
-                    Real fSum = Math::Abs(afDiag[i1]) +
+                    float fSum = Math::Abs(afDiag[i1]) +
                         Math::Abs(afDiag[i1+1]);
                     if ( Math::Abs(afSubDiag[i1]) + fSum == fSum )
                         break;
@@ -1412,19 +1412,19 @@ namespace Ogre
                 if ( i1 == i0 )
                     break;
 
-                Real fTmp0 = (afDiag[i0+1]-afDiag[i0])/(2.0f*afSubDiag[i0]);
-                Real fTmp1 = Math::Sqrt(fTmp0*fTmp0+1.0f);
+                float fTmp0 = (afDiag[i0+1]-afDiag[i0])/(2.0f*afSubDiag[i0]);
+                float fTmp1 = Math::Sqrt(fTmp0*fTmp0+1.0f);
                 if ( fTmp0 < 0.0 )
                     fTmp0 = afDiag[i1]-afDiag[i0]+afSubDiag[i0]/(fTmp0-fTmp1);
                 else
                     fTmp0 = afDiag[i1]-afDiag[i0]+afSubDiag[i0]/(fTmp0+fTmp1);
-                Real fSin = 1.0;
-                Real fCos = 1.0;
-                Real fTmp2 = 0.0;
+                float fSin = 1.0;
+                float fCos = 1.0;
+                float fTmp2 = 0.0;
                 for (int i2 = i1-1; i2 >= i0; i2--)
                 {
-                    Real fTmp3 = fSin*afSubDiag[i2];
-                    Real fTmp4 = fCos*afSubDiag[i2];
+                    float fTmp3 = fSin*afSubDiag[i2];
+                    float fTmp4 = fCos*afSubDiag[i2];
                     if ( Math::Abs(fTmp3) >= Math::Abs(fTmp0) )
                     {
                         fCos = fTmp0/fTmp3;
@@ -1471,11 +1471,11 @@ namespace Ogre
         return true;
     }
     //-----------------------------------------------------------------------
-    void Matrix3::EigenSolveSymmetric (Real afEigenvalue[3],
+    void Matrix3::EigenSolveSymmetric (float afEigenvalue[3],
         Vector3 akEigenvector[3]) const
     {
         Matrix3 kMatrix = *this;
-        Real afSubDiag[3];
+        float afSubDiag[3];
         kMatrix.Tridiagonal(afEigenvalue,afSubDiag);
         kMatrix.QLAlgorithm(afEigenvalue,afSubDiag);
 
@@ -1488,7 +1488,7 @@ namespace Ogre
 
         // make eigenvectors form a right--handed system
         Vector3 kCross = akEigenvector[1].crossProduct(akEigenvector[2]);
-        Real fDet = akEigenvector[0].dotProduct(kCross);
+        float fDet = akEigenvector[0].dotProduct(kCross);
         if ( fDet < 0.0 )
         {
             akEigenvector[2][0] = - akEigenvector[2][0];

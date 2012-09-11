@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __Matrix3_H__
 #define __Matrix3_H__
 
-#include "OgrePrerequisites.h"
+#include "CmUtilPrerequisites.h"
 
 #include "OgreVector3.h"
 
@@ -73,17 +73,17 @@ namespace Ogre
                 It does <b>NOT</b> initialize the matrix for efficiency.
         */
 		inline Matrix3 () {}
-        inline explicit Matrix3 (const Real arr[3][3])
+        inline explicit Matrix3 (const float arr[3][3])
 		{
-			memcpy(m,arr,9*sizeof(Real));
+			memcpy(m,arr,9*sizeof(float));
 		}
         inline Matrix3 (const Matrix3& rkMatrix)
 		{
-			memcpy(m,rkMatrix.m,9*sizeof(Real));
+			memcpy(m,rkMatrix.m,9*sizeof(float));
 		}
-        Matrix3 (Real fEntry00, Real fEntry01, Real fEntry02,
-                    Real fEntry10, Real fEntry11, Real fEntry12,
-                    Real fEntry20, Real fEntry21, Real fEntry22)
+        Matrix3 (float fEntry00, float fEntry01, float fEntry02,
+                    float fEntry10, float fEntry11, float fEntry12,
+                    float fEntry20, float fEntry21, float fEntry22)
 		{
 			m[0][0] = fEntry00;
 			m[0][1] = fEntry01;
@@ -112,13 +112,13 @@ namespace Ogre
 		}
 
         // member access, allows use of construct mat[r][c]
-        inline Real* operator[] (size_t iRow) const
+        inline float* operator[] (size_t iRow) const
 		{
-			return (Real*)m[iRow];
+			return (float*)m[iRow];
 		}
-        /*inline operator Real* ()
+        /*inline operator float* ()
 		{
-			return (Real*)m[0];
+			return (float*)m[0];
 		}*/
         Vector3 GetColumn (size_t iCol) const;
         void SetColumn(size_t iCol, const Vector3& vec);
@@ -127,7 +127,7 @@ namespace Ogre
         // assignment and comparison
         inline Matrix3& operator= (const Matrix3& rkMatrix)
 		{
-			memcpy(m,rkMatrix.m,9*sizeof(Real));
+			memcpy(m,rkMatrix.m,9*sizeof(float));
 			return *this;
 		}
         bool operator== (const Matrix3& rkMatrix) const;
@@ -150,16 +150,16 @@ namespace Ogre
             const Matrix3& rkMatrix);
 
         // matrix * scalar
-        Matrix3 operator* (Real fScalar) const;
+        Matrix3 operator* (float fScalar) const;
 
         // scalar * matrix
-        _OgreExport friend Matrix3 operator* (Real fScalar, const Matrix3& rkMatrix);
+        _OgreExport friend Matrix3 operator* (float fScalar, const Matrix3& rkMatrix);
 
         // utilities
         Matrix3 Transpose () const;
-        bool Inverse (Matrix3& rkInverse, Real fTolerance = 1e-06) const;
-        Matrix3 Inverse (Real fTolerance = 1e-06) const;
-        Real Determinant () const;
+        bool Inverse (Matrix3& rkInverse, float fTolerance = 1e-06) const;
+        Matrix3 Inverse (float fTolerance = 1e-06) const;
+        float Determinant () const;
 
         // singular value decomposition
         void SingularValueDecomposition (Matrix3& rkL, Vector3& rkS,
@@ -174,7 +174,7 @@ namespace Ogre
         void QDUDecomposition (Matrix3& rkQ, Vector3& rkD,
             Vector3& rkU) const;
 
-        Real SpectralNorm () const;
+        float SpectralNorm () const;
 
         // matrix must be orthonormal
         void ToAxisAngle (Vector3& rkAxis, Radian& rfAngle) const;
@@ -207,7 +207,7 @@ namespace Ogre
         void FromEulerAnglesZXY (const Radian& fYAngle, const Radian& fPAngle, const Radian& fRAngle);
         void FromEulerAnglesZYX (const Radian& fYAngle, const Radian& fPAngle, const Radian& fRAngle);
         // eigensolver, matrix must be symmetric
-        void EigenSolveSymmetric (Real afEigenvalue[3],
+        void EigenSolveSymmetric (float afEigenvalue[3],
             Vector3 akEigenvector[3]) const;
 
         static void TensorProduct (const Vector3& rkU, const Vector3& rkV,
@@ -217,14 +217,14 @@ namespace Ogre
 		inline bool hasScale() const
 		{
 			// check magnitude of column vectors (==local axes)
-			Real t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
-			if (!Math::RealEqual(t, 1.0, (Real)1e-04))
+			float t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
+			if (!Math::RealEqual(t, 1.0, (float)1e-04))
 				return true;
 			t = m[0][1] * m[0][1] + m[1][1] * m[1][1] + m[2][1] * m[2][1];
-			if (!Math::RealEqual(t, 1.0, (Real)1e-04))
+			if (!Math::RealEqual(t, 1.0, (float)1e-04))
 				return true;
 			t = m[0][2] * m[0][2] + m[1][2] * m[1][2] + m[2][2] * m[2][2];
-			if (!Math::RealEqual(t, 1.0, (Real)1e-04))
+			if (!Math::RealEqual(t, 1.0, (float)1e-04))
 				return true;
 
 			return false;
@@ -241,17 +241,17 @@ namespace Ogre
 			return o;
 		}
 
-        static const Real EPSILON;
+        static const float EPSILON;
         static const Matrix3 ZERO;
         static const Matrix3 IDENTITY;
 
     protected:
         // support for eigensolver
-        void Tridiagonal (Real afDiag[3], Real afSubDiag[3]);
-        bool QLAlgorithm (Real afDiag[3], Real afSubDiag[3]);
+        void Tridiagonal (float afDiag[3], float afSubDiag[3]);
+        bool QLAlgorithm (float afDiag[3], float afSubDiag[3]);
 
         // support for singular value decomposition
-        static const Real ms_fSvdEpsilon;
+        static const float ms_fSvdEpsilon;
         static const unsigned int ms_iSvdMaxIterations;
         static void Bidiagonalize (Matrix3& kA, Matrix3& kL,
             Matrix3& kR);
@@ -259,9 +259,9 @@ namespace Ogre
             Matrix3& kR);
 
         // support for spectral norm
-        static Real MaxCubicRoot (Real afCoeff[3]);
+        static float MaxCubicRoot (float afCoeff[3]);
 
-        Real m[3][3];
+        float m[3][3];
 
         // for faster access
         friend class Matrix4;

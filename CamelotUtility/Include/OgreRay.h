@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __Ray_H_
 
 // Precompiler options
-#include "OgrePrerequisites.h"
+#include "CmUtilPrerequisites.h"
 
 #include "OgreVector3.h"
 
@@ -63,12 +63,12 @@ namespace Ogre {
         const Vector3& getDirection(void) const {return mDirection;} 
 
 		/** Gets the position of a point t units along the ray. */
-		Vector3 getPoint(Real t) const { 
+		Vector3 getPoint(float t) const { 
 			return Vector3(mOrigin + (mDirection * t));
 		}
 		
 		/** Gets the position of a point t units along the ray. */
-		Vector3 operator*(Real t) const { 
+		Vector3 operator*(float t) const { 
 			return getPoint(t);
 		}
 
@@ -78,7 +78,7 @@ namespace Ogre {
 			indicate the distance along the ray at which it intersects. 
 			This can be converted to a point in space by calling getPoint().
 		*/
-		std::pair<bool, Real> intersects(const Plane& p) const
+		std::pair<bool, float> intersects(const Plane& p) const
 		{
 			return Math::intersects(*this, p);
 		}
@@ -88,7 +88,7 @@ namespace Ogre {
 			indicate the distance along the ray at which it intersects. 
 			This can be converted to a point in space by calling getPoint().
 		*/
-		std::pair<bool, Real> intersects(const Sphere& s) const
+		std::pair<bool, float> intersects(const Sphere& s) const
 		{
 			return Math::intersects(*this, s);
 		}
@@ -98,7 +98,7 @@ namespace Ogre {
 			indicate the distance along the ray at which it intersects. 
 			This can be converted to a point in space by calling getPoint().
 		*/
-		std::pair<bool, Real> intersects(const AxisAlignedBox& box) const
+		std::pair<bool, float> intersects(const AxisAlignedBox& box) const
 		{
 			return Math::intersects(*this, box);
 		}

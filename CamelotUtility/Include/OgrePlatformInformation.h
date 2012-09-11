@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __PlatformInformation_H__
 #define __PlatformInformation_H__
 
-#include "OgrePrerequisites.h"
+#include "CmUtilPrerequisites.h"
 
 namespace Ogre {
 //

@@ -44,13 +44,13 @@ namespace Ogre {
 		d = rhs.d;
 	}
 	//-----------------------------------------------------------------------
-	Plane::Plane (const Vector3& rkNormal, Real fConstant)
+	Plane::Plane (const Vector3& rkNormal, float fConstant)
 	{
 		normal = rkNormal;
 		d = -fConstant;
 	}
 	//---------------------------------------------------------------------
-	Plane::Plane (Real a, Real b, Real c, Real _d)
+	Plane::Plane (float a, float b, float c, float _d)
 		: normal(a, b, c), d(_d)
 	{
 	}
@@ -66,14 +66,14 @@ namespace Ogre {
 		redefine(rkPoint0, rkPoint1, rkPoint2);
 	}
 	//-----------------------------------------------------------------------
-	Real Plane::getDistance (const Vector3& rkPoint) const
+	float Plane::getDistance (const Vector3& rkPoint) const
 	{
 		return normal.dotProduct(rkPoint) + d;
 	}
 	//-----------------------------------------------------------------------
 	Plane::Side Plane::getSide (const Vector3& rkPoint) const
 	{
-		Real fDistance = getDistance(rkPoint);
+		float fDistance = getDistance(rkPoint);
 
 		if ( fDistance < 0.0 )
 			return Plane::NEGATIVE_SIDE;
@@ -99,11 +99,11 @@ namespace Ogre {
     Plane::Side Plane::getSide (const Vector3& centre, const Vector3& halfSize) const
     {
         // Calculate the distance between box centre and the plane
-        Real dist = getDistance(centre);
+        float dist = getDistance(centre);
 
         // Calculate the maximise allows absolute distance for
         // the distance between box centre and plane
-        Real maxAbsDist = normal.absDotProduct(halfSize);
+        float maxAbsDist = normal.absDotProduct(halfSize);
 
         if (dist < -maxAbsDist)
             return Plane::NEGATIVE_SIDE;
@@ -147,14 +147,14 @@ namespace Ogre {
 
 	}
 	//-----------------------------------------------------------------------
-    Real Plane::normalise(void)
+    float Plane::normalise(void)
     {
-        Real fLength = normal.length();
+        float fLength = normal.length();
 
         // Will also work for zero-sized vectors, but will change nothing
         if (fLength > 1e-08f)
         {
-            Real fInvLength = 1.0f / fLength;
+            float fInvLength = 1.0f / fLength;
             normal *= fInvLength;
             d *= fInvLength;
         }

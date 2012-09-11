@@ -30,51 +30,9 @@ THE SOFTWARE
 
 // Platform-specific stuff
 #include "OgrePlatform.h"
-
-#include "OgrePortMemory.h"
-
-// configure memory tracking
-#if OGRE_DEBUG_MODE 
-#	if OGRE_MEMORY_TRACKER_DEBUG_MODE
-#		define OGRE_MEMORY_TRACKER 1
-#	else
-#		define OGRE_MEMORY_TRACKER 0
-#	endif
-#else
-#	if OGRE_MEMORY_TRACKER_RELEASE_MODE
-#		define OGRE_MEMORY_TRACKER 1
-#	else
-#		define OGRE_MEMORY_TRACKER 0
-#	endif
-#endif
-
-
-
+#include "CmTypes.h"
 
 namespace Ogre {
-    // Define ogre version
-    #define OGRE_VERSION_MAJOR 1
-    #define OGRE_VERSION_MINOR 7
-    #define OGRE_VERSION_PATCH 4
-	#define OGRE_VERSION_SUFFIX ""
-    #define OGRE_VERSION_NAME "Cthugha"
-
-    #define OGRE_VERSION    ((OGRE_VERSION_MAJOR << 16) | (OGRE_VERSION_MINOR << 8) | OGRE_VERSION_PATCH)
-
-    // define the real number values to be used
-    // default to use 'float' unless precompiler option set
-    #if OGRE_DOUBLE_PRECISION == 1
-		/** Software floating point type.
-		@note Not valid as a pointer to GPU buffers / parameters
-		*/
-        typedef double Real;
-    #else
-		/** Software floating point type.
-		@note Not valid as a pointer to GPU buffers / parameters
-		*/
-        typedef float Real;
-    #endif
-
     #if OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310 && !defined(STLPORT)
 	#   if OGRE_COMP_VER >= 430
 	#       define HashMap ::std::tr1::unordered_map
@@ -100,14 +58,6 @@ namespace Ogre {
 	#       define HashSet ::std::hash_set
     #   endif
     #endif
-
-    /** In order to avoid finger-aches :)
-    */
-    typedef unsigned char uchar;
-    typedef unsigned short ushort;
-    typedef unsigned int uint;
-	typedef unsigned long ulong;
-
 
 	// Useful threading defines
 #include "OgreThreadDefines.h"
@@ -139,8 +89,6 @@ settings have been made.
 //for stl containter
 namespace Ogre
 { 
-
-
 	template <typename T, typename A = char > 
 	struct deque 
 	{ 

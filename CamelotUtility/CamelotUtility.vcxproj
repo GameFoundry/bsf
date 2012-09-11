@@ -67,19 +67,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\asm_math.h" />
-    <ClInclude Include="Include\OgreAlignedAllocator.h" />
+    <ClInclude Include="Include\CmTypes.h" />
     <ClInclude Include="Include\OgreAxisAlignedBox.h" />
-    <ClInclude Include="Include\OgreBitwise.h" />
-    <ClInclude Include="Include\OgreBuildSettings.h" />
-    <ClInclude Include="Include\OgreConfig.h" />
     <ClInclude Include="Include\OgreMath.h" />
     <ClInclude Include="Include\OgreMatrix3.h" />
     <ClInclude Include="Include\OgreMatrix4.h" />
     <ClInclude Include="Include\OgrePlane.h" />
     <ClInclude Include="Include\OgrePlatform.h" />
     <ClInclude Include="Include\OgrePlatformInformation.h" />
-    <ClInclude Include="Include\OgrePortMemory.h" />
-    <ClInclude Include="Include\OgrePrerequisites.h" />
+    <ClInclude Include="Include\CmUtilPrerequisites.h" />
     <ClInclude Include="Include\OgreQuaternion.h" />
     <ClInclude Include="Include\OgreRay.h" />
     <ClInclude Include="Include\OgreSphere.h" />
@@ -90,8 +86,7 @@
     <ClInclude Include="Include\OgreVector4.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Include\OgreAlignedAllocator.cpp" />
-    <ClCompile Include="Source\OgreAxisAlignedBox.cpp" />
+    <ClCompile Include="Include\OgreAxisAlignedBox.cpp" />
     <ClCompile Include="Source\OgreMath.cpp" />
     <ClCompile Include="Source\OgreMatrix3.cpp" />
     <ClCompile Include="Source\OgreMatrix4.cpp" />

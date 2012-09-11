@@ -36,7 +36,7 @@ THE SOFTWARE.
 #ifndef __Quaternion_H__
 #define __Quaternion_H__
 
-#include "OgrePrerequisites.h"
+#include "CmUtilPrerequisites.h"
 #include "OgreMath.h"
 
 namespace Ogre {
@@ -53,8 +53,8 @@ namespace Ogre {
     {
     public:
         inline Quaternion (
-            Real fW = 1.0,
-            Real fX = 0.0, Real fY = 0.0, Real fZ = 0.0)
+            float fW = 1.0,
+            float fX = 0.0, float fY = 0.0, float fZ = 0.0)
 		{
 			w = fW;
 			x = fX;
@@ -82,9 +82,9 @@ namespace Ogre {
             this->FromAxes(akAxis);
         }
 		/// Construct a quaternion from 4 manual w/x/y/z values
-		inline Quaternion(Real* valptr)
+		inline Quaternion(float* valptr)
 		{
-			memcpy(&w, valptr, sizeof(Real)*4);
+			memcpy(&w, valptr, sizeof(float)*4);
 		}
 
 		/** Exchange the contents of this quaternion with another. 
@@ -98,7 +98,7 @@ namespace Ogre {
 		}
 
 		/// Array accessor operator
-		inline Real operator [] ( const size_t i ) const
+		inline float operator [] ( const size_t i ) const
 		{
 			assert( i < 4 );
 
@@ -106,7 +106,7 @@ namespace Ogre {
 		}
 
 		/// Array accessor operator
-		inline Real& operator [] ( const size_t i )
+		inline float& operator [] ( const size_t i )
 		{
 			assert( i < 4 );
 
@@ -114,13 +114,13 @@ namespace Ogre {
 		}
 
 		/// Pointer accessor for direct copying
-		inline Real* ptr()
+		inline float* ptr()
 		{
 			return &w;
 		}
 
 		/// Pointer accessor for direct copying
-		inline const Real* ptr() const
+		inline const float* ptr() const
 		{
 			return &w;
 		}
@@ -156,8 +156,8 @@ namespace Ogre {
         Quaternion operator+ (const Quaternion& rkQ) const;
         Quaternion operator- (const Quaternion& rkQ) const;
         Quaternion operator* (const Quaternion& rkQ) const;
-        Quaternion operator* (Real fScalar) const;
-        _OgreExport friend Quaternion operator* (Real fScalar,
+        Quaternion operator* (float fScalar) const;
+        _OgreExport friend Quaternion operator* (float fScalar,
             const Quaternion& rkQ);
         Quaternion operator- () const;
         inline bool operator== (const Quaternion& rhs) const
@@ -170,10 +170,10 @@ namespace Ogre {
 			return !operator==(rhs);
 		}
         // functions of a quaternion
-        Real Dot (const Quaternion& rkQ) const;  // dot product
-        Real Norm () const;  // squared-length
+        float Dot (const Quaternion& rkQ) const;  // dot product
+        float Norm () const;  // squared-length
         /// Normalises this quaternion, and returns the previous length
-        Real normalise(void); 
+        float normalise(void); 
         Quaternion Inverse () const;  // apply to non-zero quaternion
         Quaternion UnitInverse () const;  // apply to unit-length quaternion
         Quaternion Exp () const;
@@ -213,10 +213,10 @@ namespace Ogre {
 		bool equals(const Quaternion& rhs, const Radian& tolerance) const;
 		
 	    // spherical linear interpolation
-        static Quaternion Slerp (Real fT, const Quaternion& rkP,
+        static Quaternion Slerp (float fT, const Quaternion& rkP,
             const Quaternion& rkQ, bool shortestPath = false);
 
-        static Quaternion SlerpExtraSpins (Real fT,
+        static Quaternion SlerpExtraSpins (float fT,
             const Quaternion& rkP, const Quaternion& rkQ,
             int iExtraSpins);
 
@@ -226,22 +226,22 @@ namespace Ogre {
             Quaternion& rka, Quaternion& rkB);
 
         // spherical quadratic interpolation
-        static Quaternion Squad (Real fT, const Quaternion& rkP,
+        static Quaternion Squad (float fT, const Quaternion& rkP,
             const Quaternion& rkA, const Quaternion& rkB,
             const Quaternion& rkQ, bool shortestPath = false);
 
         // normalised linear interpolation - faster but less accurate (non-constant rotation velocity)
-        static Quaternion nlerp(Real fT, const Quaternion& rkP, 
+        static Quaternion nlerp(float fT, const Quaternion& rkP, 
             const Quaternion& rkQ, bool shortestPath = false);
 
         // cutoff for sine near zero
-        static const Real ms_fEpsilon;
+        static const float ms_fEpsilon;
 
         // special values
         static const Quaternion ZERO;
         static const Quaternion IDENTITY;
 
-		Real w, x, y, z;
+		float w, x, y, z;
 
 		/// Check whether this quaternion contains valid values
 		inline bool isNaN() const

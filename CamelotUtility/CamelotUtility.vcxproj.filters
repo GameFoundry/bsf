@@ -54,28 +54,10 @@
     <ClInclude Include="Include\OgreVector4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\OgreAlignedAllocator.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreBitwise.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreBuildSettings.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgreConfig.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
     <ClInclude Include="Include\OgrePlatform.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
     <ClInclude Include="Include\OgrePlatformInformation.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgrePortMemory.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OgrePrerequisites.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
     <ClInclude Include="Include\OgreStdHeaders.h">
@@ -84,11 +66,14 @@
     <ClInclude Include="Include\OgreThreadDefines.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmUtilPrerequisites.h">
+      <Filter>Header Files\Prerequisites</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTypes.h">
+      <Filter>Header Files\Prerequisites</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\OgreAxisAlignedBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\OgreMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -113,7 +98,7 @@
     <ClCompile Include="Source\OgreVector4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Include\OgreAlignedAllocator.cpp">
+    <ClCompile Include="Include\OgreAxisAlignedBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

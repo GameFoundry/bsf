@@ -39,21 +39,21 @@ THE SOFTWARE.
 namespace Ogre
 {
 
-    const Real Math::POS_INFINITY = std::numeric_limits<Real>::infinity();
-    const Real Math::NEG_INFINITY = -std::numeric_limits<Real>::infinity();
-    const Real Math::PI = Real( 4.0 * atan( 1.0 ) );
-    const Real Math::TWO_PI = Real( 2.0 * PI );
-    const Real Math::HALF_PI = Real( 0.5 * PI );
-	const Real Math::fDeg2Rad = PI / Real(180.0);
-	const Real Math::fRad2Deg = Real(180.0) / PI;
-	const Real Math::LOG2 = log(Real(2.0));
+    const float Math::POS_INFINITY = std::numeric_limits<float>::infinity();
+    const float Math::NEG_INFINITY = -std::numeric_limits<float>::infinity();
+    const float Math::PI = float( 4.0 * atan( 1.0 ) );
+    const float Math::TWO_PI = float( 2.0 * PI );
+    const float Math::HALF_PI = float( 0.5 * PI );
+	const float Math::fDeg2Rad = PI / float(180.0);
+	const float Math::fRad2Deg = float(180.0) / PI;
+	const float Math::LOG2 = log(float(2.0));
 
     int Math::mTrigTableSize;
    Math::AngleUnit Math::msAngleUnit;
 
-    Real  Math::mTrigTableFactor;
-    Real *Math::mSinTable = NULL;
-    Real *Math::mTanTable = NULL;
+    float  Math::mTrigTableFactor;
+    float *Math::mSinTable = NULL;
+    float *Math::mTanTable = NULL;
 
     //-----------------------------------------------------------------------
     Math::Math( unsigned int trigTableSize )
@@ -63,8 +63,8 @@ namespace Ogre
         mTrigTableSize = trigTableSize;
         mTrigTableFactor = mTrigTableSize / Math::TWO_PI;
 
-        mSinTable = OGRE_ALLOC_T(Real, mTrigTableSize, MEMCATEGORY_GENERAL);
-        mTanTable = OGRE_ALLOC_T(Real, mTrigTableSize, MEMCATEGORY_GENERAL);
+        mSinTable = (float*)malloc(sizeof(float) * mTrigTableSize);
+        mTanTable = (float*)malloc(sizeof(float) * mTrigTableSize);
 
         buildTrigTables();
     }
@@ -72,8 +72,8 @@ namespace Ogre
     //-----------------------------------------------------------------------
     Math::~Math()
     {
-        OGRE_FREE(mSinTable, MEMCATEGORY_GENERAL);
-        OGRE_FREE(mTanTable, MEMCATEGORY_GENERAL);
+        free(mSinTable);
+        free(mTanTable);
     }
 
     //-----------------------------------------------------------------------
@@ -83,7 +83,7 @@ namespace Ogre
         // Could get away with building only PI sized Sin table but simpler this 
         // way. Who cares, it'll ony use an extra 8k of memory anyway and I like 
         // simplicity.
-        Real angle;
+        float angle;
         for (int i = 0; i < mTrigTableSize; ++i)
         {
             angle = Math::TWO_PI * i / mTrigTableSize;
@@ -92,7 +92,7 @@ namespace Ogre
         }
     }
 	//-----------------------------------------------------------------------	
-	Real Math::SinTable (Real fValue)
+	float Math::SinTable (float fValue)
     {
         // Convert range to index values, wrap if required
         int idx;
@@ -108,7 +108,7 @@ namespace Ogre
         return mSinTable[idx];
     }
 	//-----------------------------------------------------------------------
-	Real Math::TanTable (Real fValue)
+	float Math::TanTable (float fValue)
     {
         // Convert range to index values, wrap if required
 		int idx = int(fValue *= mTrigTableFactor) % mTrigTableSize;
@@ -120,7 +120,7 @@ namespace Ogre
         return ( iValue > 0 ? +1 : ( iValue < 0 ? -1 : 0 ) );
     }
     //-----------------------------------------------------------------------
-    Radian Math::ACos (Real fValue)
+    Radian Math::ACos (float fValue)
     {
         if ( -1.0 < fValue )
         {
@@ -135,7 +135,7 @@ namespace Ogre
         }
     }
     //-----------------------------------------------------------------------
-    Radian Math::ASin (Real fValue)
+    Radian Math::ASin (float fValue)
     {
         if ( -1.0 < fValue )
         {
@@ -150,7 +150,7 @@ namespace Ogre
         }
     }
     //-----------------------------------------------------------------------
-    Real Math::Sign (Real fValue)
+    float Math::Sign (float fValue)
     {
         if ( fValue > 0.0 )
             return 1.0;
@@ -161,24 +161,24 @@ namespace Ogre
         return 0.0;
     }
 	//-----------------------------------------------------------------------
-	Real Math::InvSqrt(Real fValue)
+	float Math::InvSqrt(float fValue)
 	{
-		return Real(asm_rsq(fValue));
+		return float(asm_rsq(fValue));
 	}
     //-----------------------------------------------------------------------
-    Real Math::UnitRandom ()
+    float Math::UnitRandom ()
     {
         return asm_rand() / asm_rand_max();
     }
     
     //-----------------------------------------------------------------------
-    Real Math::RangeRandom (Real fLow, Real fHigh)
+    float Math::RangeRandom (float fLow, float fHigh)
     {
         return (fHigh-fLow)*UnitRandom() + fLow;
     }
 
     //-----------------------------------------------------------------------
-    Real Math::SymmetricRandom ()
+    float Math::SymmetricRandom ()
     {
 		return 2.0f * UnitRandom() - 1.0f;
     }
@@ -194,7 +194,7 @@ namespace Ogre
        return msAngleUnit;
    }
     //-----------------------------------------------------------------------
-    Real Math::AngleUnitsToRadians(Real angleunits)
+    float Math::AngleUnitsToRadians(float angleunits)
     {
        if (msAngleUnit == AU_DEGREE)
            return angleunits * fDeg2Rad;
@@ -203,7 +203,7 @@ namespace Ogre
     }
 
     //-----------------------------------------------------------------------
-    Real Math::RadiansToAngleUnits(Real radians)
+    float Math::RadiansToAngleUnits(float radians)
     {
        if (msAngleUnit == AU_DEGREE)
            return radians * fRad2Deg;
@@ -212,7 +212,7 @@ namespace Ogre
     }
 
     //-----------------------------------------------------------------------
-    Real Math::AngleUnitsToDegrees(Real angleunits)
+    float Math::AngleUnitsToDegrees(float angleunits)
     {
        if (msAngleUnit == AU_RADIAN)
            return angleunits * fRad2Deg;
@@ -221,7 +221,7 @@ namespace Ogre
     }
 
     //-----------------------------------------------------------------------
-    Real Math::DegreesToAngleUnits(Real degrees)
+    float Math::DegreesToAngleUnits(float degrees)
     {
        if (msAngleUnit == AU_RADIAN)
            return degrees * fDeg2Rad;
@@ -235,7 +235,7 @@ namespace Ogre
     {
 		// Winding must be consistent from all edges for point to be inside
 		Vector2 v1, v2;
-		Real dot[3];
+		float dot[3];
 		bool zeroDot[3];
 
 		v1 = b - a;
@@ -283,7 +283,7 @@ namespace Ogre
 	{
         // Winding must be consistent from all edges for point to be inside
 		Vector3 v1, v2;
-		Real dot[3];
+		float dot[3];
 		bool zeroDot[3];
 
         v1 = b - a;
@@ -326,7 +326,7 @@ namespace Ogre
         return true;
 	}
     //-----------------------------------------------------------------------
-    bool Math::RealEqual( Real a, Real b, Real tolerance )
+    bool Math::RealEqual( float a, float b, float tolerance )
     {
         if (fabs(b-a) <= tolerance)
             return true;
@@ -335,25 +335,25 @@ namespace Ogre
     }
 
     //-----------------------------------------------------------------------
-    std::pair<bool, Real> Math::intersects(const Ray& ray, const Plane& plane)
+    std::pair<bool, float> Math::intersects(const Ray& ray, const Plane& plane)
     {
 
-        Real denom = plane.normal.dotProduct(ray.getDirection());
-        if (Math::Abs(denom) < std::numeric_limits<Real>::epsilon())
+        float denom = plane.normal.dotProduct(ray.getDirection());
+        if (Math::Abs(denom) < std::numeric_limits<float>::epsilon())
         {
             // Parallel
-            return std::pair<bool, Real>(false, 0);
+            return std::pair<bool, float>(false, 0);
         }
         else
         {
-            Real nom = plane.normal.dotProduct(ray.getOrigin()) + plane.d;
-            Real t = -(nom/denom);
-            return std::pair<bool, Real>(t >= 0, t);
+            float nom = plane.normal.dotProduct(ray.getOrigin()) + plane.d;
+            float t = -(nom/denom);
+            return std::pair<bool, float>(t >= 0, t);
         }
         
     }
     //-----------------------------------------------------------------------
-    std::pair<bool, Real> Math::intersects(const Ray& ray, 
+    std::pair<bool, float> Math::intersects(const Ray& ray, 
         const vector<Plane>::type& planes, bool normalIsOutside)
     {
 		list<Plane>::type planesList;
@@ -364,14 +364,14 @@ namespace Ogre
 		return intersects(ray, planesList, normalIsOutside);
     }
     //-----------------------------------------------------------------------
-    std::pair<bool, Real> Math::intersects(const Ray& ray, 
+    std::pair<bool, float> Math::intersects(const Ray& ray, 
         const list<Plane>::type& planes, bool normalIsOutside)
     {
 		list<Plane>::type::const_iterator planeit, planeitend;
 		planeitend = planes.end();
 		bool allInside = true;
-		std::pair<bool, Real> ret;
-		std::pair<bool, Real> end;
+		std::pair<bool, float> ret;
+		std::pair<bool, float> end;
 		ret.first = false;
 		ret.second = 0.0f;
 		end.first = false;
@@ -391,7 +391,7 @@ namespace Ogre
 			{
 				allInside = false;
 				// Test single plane
-				std::pair<bool, Real> planeRes = 
+				std::pair<bool, float> planeRes = 
 					ray.intersects(plane);
 				if (planeRes.first)
 				{
@@ -409,7 +409,7 @@ namespace Ogre
 			}
 			else
 			{
-				std::pair<bool, Real> planeRes = 
+				std::pair<bool, float> planeRes = 
 					ray.intersects(plane);
 				if (planeRes.first)
 				{
@@ -447,55 +447,55 @@ namespace Ogre
 		return ret;
     }
     //-----------------------------------------------------------------------
-    std::pair<bool, Real> Math::intersects(const Ray& ray, const Sphere& sphere, 
+    std::pair<bool, float> Math::intersects(const Ray& ray, const Sphere& sphere, 
         bool discardInside)
     {
         const Vector3& raydir = ray.getDirection();
         // Adjust ray origin relative to sphere center
         const Vector3& rayorig = ray.getOrigin() - sphere.getCenter();
-        Real radius = sphere.getRadius();
+        float radius = sphere.getRadius();
 
         // Check origin inside first
         if (rayorig.squaredLength() <= radius*radius && discardInside)
         {
-            return std::pair<bool, Real>(true, 0);
+            return std::pair<bool, float>(true, 0);
         }
 
         // Mmm, quadratics
         // Build coeffs which can be used with std quadratic solver
         // ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
-        Real a = raydir.dotProduct(raydir);
-        Real b = 2 * rayorig.dotProduct(raydir);
-        Real c = rayorig.dotProduct(rayorig) - radius*radius;
+        float a = raydir.dotProduct(raydir);
+        float b = 2 * rayorig.dotProduct(raydir);
+        float c = rayorig.dotProduct(rayorig) - radius*radius;
 
         // Calc determinant
-        Real d = (b*b) - (4 * a * c);
+        float d = (b*b) - (4 * a * c);
         if (d < 0)
         {
             // No intersection
-            return std::pair<bool, Real>(false, 0);
+            return std::pair<bool, float>(false, 0);
         }
         else
         {
             // BTW, if d=0 there is one intersection, if d > 0 there are 2
             // But we only want the closest one, so that's ok, just use the 
             // '-' version of the solver
-            Real t = ( -b - Math::Sqrt(d) ) / (2 * a);
+            float t = ( -b - Math::Sqrt(d) ) / (2 * a);
             if (t < 0)
                 t = ( -b + Math::Sqrt(d) ) / (2 * a);
-            return std::pair<bool, Real>(true, t);
+            return std::pair<bool, float>(true, t);
         }
 
 
     }
     //-----------------------------------------------------------------------
-	std::pair<bool, Real> Math::intersects(const Ray& ray, const AxisAlignedBox& box)
+	std::pair<bool, float> Math::intersects(const Ray& ray, const AxisAlignedBox& box)
 	{
-		if (box.isNull()) return std::pair<bool, Real>(false, 0);
-		if (box.isInfinite()) return std::pair<bool, Real>(true, 0);
+		if (box.isNull()) return std::pair<bool, float>(false, 0);
+		if (box.isInfinite()) return std::pair<bool, float>(true, 0);
 
-		Real lowt = 0.0f;
-		Real t;
+		float lowt = 0.0f;
+		float t;
 		bool hit = false;
 		Vector3 hitpoint;
 		const Vector3& min = box.getMinimum();
@@ -506,7 +506,7 @@ namespace Ogre
 		// Check origin inside first
 		if ( rayorig > min && rayorig < max )
 		{
-			return std::pair<bool, Real>(true, 0);
+			return std::pair<bool, float>(true, 0);
 		}
 
 		// Check each face in turn, only check closest 3
@@ -613,12 +613,12 @@ namespace Ogre
 			}
 		}
 
-		return std::pair<bool, Real>(hit, lowt);
+		return std::pair<bool, float>(hit, lowt);
 
 	} 
     //-----------------------------------------------------------------------
     bool Math::intersects(const Ray& ray, const AxisAlignedBox& box,
-        Real* d1, Real* d2)
+        float* d1, float* d2)
     {
         if (box.isNull())
             return false;
@@ -658,13 +658,13 @@ namespace Ogre
             imax = 1;
         }
 
-        Real start = 0, end = Math::POS_INFINITY;
+        float start = 0, end = Math::POS_INFINITY;
 
 #define _CALC_AXIS(i)                                       \
     do {                                                    \
-        Real denom = 1 / raydir[i];                         \
-        Real newstart = (min[i] - rayorig[i]) * denom;      \
-        Real newend = (max[i] - rayorig[i]) * denom;        \
+        float denom = 1 / raydir[i];                         \
+        float newstart = (min[i] - rayorig[i]) * denom;      \
+        float newend = (max[i] - rayorig[i]) * denom;        \
         if (newstart > newend) std::swap(newstart, newend); \
         if (newstart > end || newend < start) return false; \
         if (newstart > start) start = newstart;             \
@@ -675,7 +675,7 @@ namespace Ogre
 
         _CALC_AXIS(imax);
 
-        if (absDir[imid] < std::numeric_limits<Real>::epsilon())
+        if (absDir[imid] < std::numeric_limits<float>::epsilon())
         {
             // Parallel with middle and minimise axis, check bounds only
             if (rayorig[imid] < min[imid] || rayorig[imid] > max[imid] ||
@@ -686,7 +686,7 @@ namespace Ogre
         {
             _CALC_AXIS(imid);
 
-            if (absDir[imin] < std::numeric_limits<Real>::epsilon())
+            if (absDir[imin] < std::numeric_limits<float>::epsilon())
             {
                 // Parallel with minimise axis, check bounds only
                 if (rayorig[imin] < min[imin] || rayorig[imin] > max[imin])
@@ -705,33 +705,33 @@ namespace Ogre
         return true;
     }
     //-----------------------------------------------------------------------
-    std::pair<bool, Real> Math::intersects(const Ray& ray, const Vector3& a,
+    std::pair<bool, float> Math::intersects(const Ray& ray, const Vector3& a,
         const Vector3& b, const Vector3& c, const Vector3& normal,
         bool positiveSide, bool negativeSide)
     {
         //
         // Calculate intersection with plane.
         //
-        Real t;
+        float t;
         {
-            Real denom = normal.dotProduct(ray.getDirection());
+            float denom = normal.dotProduct(ray.getDirection());
 
             // Check intersect side
-            if (denom > + std::numeric_limits<Real>::epsilon())
+            if (denom > + std::numeric_limits<float>::epsilon())
             {
                 if (!negativeSide)
-                    return std::pair<bool, Real>(false, 0);
+                    return std::pair<bool, float>(false, 0);
             }
-            else if (denom < - std::numeric_limits<Real>::epsilon())
+            else if (denom < - std::numeric_limits<float>::epsilon())
             {
                 if (!positiveSide)
-                    return std::pair<bool, Real>(false, 0);
+                    return std::pair<bool, float>(false, 0);
             }
             else
             {
                 // Parallel or triangle area is close to zero when
                 // the plane normal not normalised.
-                return std::pair<bool, Real>(false, 0);
+                return std::pair<bool, float>(false, 0);
             }
 
             t = normal.dotProduct(a - ray.getOrigin()) / denom;
@@ -739,7 +739,7 @@ namespace Ogre
             if (t < 0)
             {
                 // Intersection is behind origin
-                return std::pair<bool, Real>(false, 0);
+                return std::pair<bool, float>(false, 0);
             }
         }
 
@@ -748,9 +748,9 @@ namespace Ogre
         //
         size_t i0, i1;
         {
-            Real n0 = Math::Abs(normal[0]);
-            Real n1 = Math::Abs(normal[1]);
-            Real n2 = Math::Abs(normal[2]);
+            float n0 = Math::Abs(normal[0]);
+            float n1 = Math::Abs(normal[1]);
+            float n2 = Math::Abs(normal[2]);
 
             i0 = 1; i1 = 2;
             if (n1 > n2)
@@ -767,38 +767,38 @@ namespace Ogre
         // Check the intersection point is inside the triangle.
         //
         {
-            Real u1 = b[i0] - a[i0];
-            Real v1 = b[i1] - a[i1];
-            Real u2 = c[i0] - a[i0];
-            Real v2 = c[i1] - a[i1];
-            Real u0 = t * ray.getDirection()[i0] + ray.getOrigin()[i0] - a[i0];
-            Real v0 = t * ray.getDirection()[i1] + ray.getOrigin()[i1] - a[i1];
+            float u1 = b[i0] - a[i0];
+            float v1 = b[i1] - a[i1];
+            float u2 = c[i0] - a[i0];
+            float v2 = c[i1] - a[i1];
+            float u0 = t * ray.getDirection()[i0] + ray.getOrigin()[i0] - a[i0];
+            float v0 = t * ray.getDirection()[i1] + ray.getOrigin()[i1] - a[i1];
 
-            Real alpha = u0 * v2 - u2 * v0;
-            Real beta  = u1 * v0 - u0 * v1;
-            Real area  = u1 * v2 - u2 * v1;
+            float alpha = u0 * v2 - u2 * v0;
+            float beta  = u1 * v0 - u0 * v1;
+            float area  = u1 * v2 - u2 * v1;
 
             // epsilon to avoid float precision error
-            const Real EPSILON = 1e-6f;
+            const float EPSILON = 1e-6f;
 
-            Real tolerance = - EPSILON * area;
+            float tolerance = - EPSILON * area;
 
             if (area > 0)
             {
                 if (alpha < tolerance || beta < tolerance || alpha+beta > area-tolerance)
-                    return std::pair<bool, Real>(false, 0);
+                    return std::pair<bool, float>(false, 0);
             }
             else
             {
                 if (alpha > tolerance || beta > tolerance || alpha+beta < area-tolerance)
-                    return std::pair<bool, Real>(false, 0);
+                    return std::pair<bool, float>(false, 0);
             }
         }
 
-        return std::pair<bool, Real>(true, t);
+        return std::pair<bool, float>(true, t);
     }
     //-----------------------------------------------------------------------
-    std::pair<bool, Real> Math::intersects(const Ray& ray, const Vector3& a,
+    std::pair<bool, float> Math::intersects(const Ray& ray, const Vector3& a,
         const Vector3& b, const Vector3& c,
         bool positiveSide, bool negativeSide)
     {
@@ -813,12 +813,12 @@ namespace Ogre
 
         // Use splitting planes
         const Vector3& center = sphere.getCenter();
-        Real radius = sphere.getRadius();
+        float radius = sphere.getRadius();
         const Vector3& min = box.getMinimum();
         const Vector3& max = box.getMaximum();
 
 		// Arvo's algorithm
-		Real s, d = 0;
+		float s, d = 0;
 		for (int i = 0; i < 3; ++i)
 		{
 			if (center.ptr()[i] < min.ptr()[i])
@@ -850,7 +850,7 @@ namespace Ogre
     //-----------------------------------------------------------------------
     Vector3 Math::calculateTangentSpaceVector(
         const Vector3& position1, const Vector3& position2, const Vector3& position3,
-        Real u1, Real v1, Real u2, Real v2, Real u3, Real v3)
+        float u1, float v1, float u2, float v2, float u3, float v3)
     {
 	    //side0 is the vector along one side of the triangle of vertices passed in, 
 	    //and side1 is the vector along another side. Taking the cross product of these returns the normal.
@@ -860,13 +860,13 @@ namespace Ogre
 	    Vector3 normal = side1.crossProduct(side0);
 	    normal.normalise();
 	    //Now we use a formula to calculate the tangent. 
-	    Real deltaV0 = v1 - v2;
-	    Real deltaV1 = v3 - v1;
+	    float deltaV0 = v1 - v2;
+	    float deltaV1 = v3 - v1;
 	    Vector3 tangent = deltaV1 * side0 - deltaV0 * side1;
 	    tangent.normalise();
 	    //Calculate binormal
-	    Real deltaU0 = u1 - u2;
-	    Real deltaU1 = u3 - u1;
+	    float deltaU0 = u1 - u2;
+	    float deltaU1 = u3 - u1;
 	    Vector3 binormal = deltaU1 * side0 - deltaU0 * side1;
 	    binormal.normalise();
 	    //Now, we take the cross product of the tangents to get a vector which 
@@ -922,11 +922,11 @@ namespace Ogre
         return normal;
     }
 	//-----------------------------------------------------------------------
-	Real Math::gaussianDistribution(Real x, Real offset, Real scale)
+	float Math::gaussianDistribution(float x, float offset, float scale)
 	{
-		Real nom = Math::Exp(
+		float nom = Math::Exp(
 			-Math::Sqr(x - offset) / (2 * Math::Sqr(scale)));
-		Real denom = scale * Math::Sqrt(2 * Math::PI);
+		float denom = scale * Math::Sqrt(2 * Math::PI);
 
 		return nom / denom;
 
@@ -971,7 +971,7 @@ namespace Ogre
 
 	}
 	//---------------------------------------------------------------------
-	Real Math::boundingRadiusFromAABB(const AxisAlignedBox& aabb)
+	float Math::boundingRadiusFromAABB(const AxisAlignedBox& aabb)
 	{
 		Vector3 max = aabb.getMaximum();
 		Vector3 min = aabb.getMinimum();

@@ -41,7 +41,7 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-    const Real Quaternion::ms_fEpsilon = 1e-03f;
+    const float Quaternion::ms_fEpsilon = 1e-03f;
     const Quaternion Quaternion::ZERO(0.0,0.0,0.0,0.0);
     const Quaternion Quaternion::IDENTITY(1.0,0.0,0.0,0.0);
 
@@ -51,8 +51,8 @@ namespace Ogre {
         // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
         // article "Quaternion Calculus and Fast Animation".
 
-        Real fTrace = kRot[0][0]+kRot[1][1]+kRot[2][2];
-        Real fRoot;
+        float fTrace = kRot[0][0]+kRot[1][1]+kRot[2][2];
+        float fRoot;
 
         if ( fTrace > 0.0 )
         {
@@ -77,7 +77,7 @@ namespace Ogre {
             size_t k = s_iNext[j];
 
             fRoot = Math::Sqrt(kRot[i][i]-kRot[j][j]-kRot[k][k] + 1.0f);
-            Real* apkQuat[3] = { &x, &y, &z };
+            float* apkQuat[3] = { &x, &y, &z };
             *apkQuat[i] = 0.5f*fRoot;
             fRoot = 0.5f/fRoot;
             w = (kRot[k][j]-kRot[j][k])*fRoot;
@@ -88,18 +88,18 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void Quaternion::ToRotationMatrix (Matrix3& kRot) const
     {
-        Real fTx  = x+x;
-        Real fTy  = y+y;
-        Real fTz  = z+z;
-        Real fTwx = fTx*w;
-        Real fTwy = fTy*w;
-        Real fTwz = fTz*w;
-        Real fTxx = fTx*x;
-        Real fTxy = fTy*x;
-        Real fTxz = fTz*x;
-        Real fTyy = fTy*y;
-        Real fTyz = fTz*y;
-        Real fTzz = fTz*z;
+        float fTx  = x+x;
+        float fTy  = y+y;
+        float fTz  = z+z;
+        float fTwx = fTx*w;
+        float fTwy = fTy*w;
+        float fTwz = fTz*w;
+        float fTxx = fTx*x;
+        float fTxy = fTy*x;
+        float fTxz = fTz*x;
+        float fTyy = fTy*y;
+        float fTyz = fTz*y;
+        float fTzz = fTz*z;
 
         kRot[0][0] = 1.0f-(fTyy+fTzz);
         kRot[0][1] = fTxy-fTwz;
@@ -121,7 +121,7 @@ namespace Ogre {
         //   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 
         Radian fHalfAngle ( 0.5*rfAngle );
-        Real fSin = Math::Sin(fHalfAngle);
+        float fSin = Math::Sin(fHalfAngle);
         w = Math::Cos(fHalfAngle);
         x = fSin*rkAxis.x;
         y = fSin*rkAxis.y;
@@ -133,11 +133,11 @@ namespace Ogre {
         // The quaternion representing the rotation is
         //   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 
-        Real fSqrLength = x*x+y*y+z*z;
+        float fSqrLength = x*x+y*y+z*z;
         if ( fSqrLength > 0.0 )
         {
             rfAngle = 2.0*Math::ACos(w);
-            Real fInvLength = Math::InvSqrt(fSqrLength);
+            float fInvLength = Math::InvSqrt(fSqrLength);
             rkAxis.x = x*fInvLength;
             rkAxis.y = y*fInvLength;
             rkAxis.z = z*fInvLength;
@@ -202,45 +202,45 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     Vector3 Quaternion::xAxis(void) const
     {
-        //Real fTx  = 2.0*x;
-        Real fTy  = 2.0f*y;
-        Real fTz  = 2.0f*z;
-        Real fTwy = fTy*w;
-        Real fTwz = fTz*w;
-        Real fTxy = fTy*x;
-        Real fTxz = fTz*x;
-        Real fTyy = fTy*y;
-        Real fTzz = fTz*z;
+        //float fTx  = 2.0*x;
+        float fTy  = 2.0f*y;
+        float fTz  = 2.0f*z;
+        float fTwy = fTy*w;
+        float fTwz = fTz*w;
+        float fTxy = fTy*x;
+        float fTxz = fTz*x;
+        float fTyy = fTy*y;
+        float fTzz = fTz*z;
 
         return Vector3(1.0f-(fTyy+fTzz), fTxy+fTwz, fTxz-fTwy);
     }
     //-----------------------------------------------------------------------
     Vector3 Quaternion::yAxis(void) const
     {
-        Real fTx  = 2.0f*x;
-        Real fTy  = 2.0f*y;
-        Real fTz  = 2.0f*z;
-        Real fTwx = fTx*w;
-        Real fTwz = fTz*w;
-        Real fTxx = fTx*x;
-        Real fTxy = fTy*x;
-        Real fTyz = fTz*y;
-        Real fTzz = fTz*z;
+        float fTx  = 2.0f*x;
+        float fTy  = 2.0f*y;
+        float fTz  = 2.0f*z;
+        float fTwx = fTx*w;
+        float fTwz = fTz*w;
+        float fTxx = fTx*x;
+        float fTxy = fTy*x;
+        float fTyz = fTz*y;
+        float fTzz = fTz*z;
 
         return Vector3(fTxy-fTwz, 1.0f-(fTxx+fTzz), fTyz+fTwx);
     }
     //-----------------------------------------------------------------------
     Vector3 Quaternion::zAxis(void) const
     {
-        Real fTx  = 2.0f*x;
-        Real fTy  = 2.0f*y;
-        Real fTz  = 2.0f*z;
-        Real fTwx = fTx*w;
-        Real fTwy = fTy*w;
-        Real fTxx = fTx*x;
-        Real fTxz = fTz*x;
-        Real fTyy = fTy*y;
-        Real fTyz = fTz*y;
+        float fTx  = 2.0f*x;
+        float fTy  = 2.0f*y;
+        float fTz  = 2.0f*z;
+        float fTwx = fTx*w;
+        float fTwy = fTy*w;
+        float fTxx = fTx*x;
+        float fTxz = fTz*x;
+        float fTyy = fTy*y;
+        float fTyz = fTz*y;
 
         return Vector3(fTxz+fTwy, fTyz-fTwx, 1.0f-(fTxx+fTyy));
     }
@@ -289,12 +289,12 @@ namespace Ogre {
         );
     }
     //-----------------------------------------------------------------------
-    Quaternion Quaternion::operator* (Real fScalar) const
+    Quaternion Quaternion::operator* (float fScalar) const
     {
         return Quaternion(fScalar*w,fScalar*x,fScalar*y,fScalar*z);
     }
     //-----------------------------------------------------------------------
-    Quaternion operator* (Real fScalar, const Quaternion& rkQ)
+    Quaternion operator* (float fScalar, const Quaternion& rkQ)
     {
         return Quaternion(fScalar*rkQ.w,fScalar*rkQ.x,fScalar*rkQ.y,
             fScalar*rkQ.z);
@@ -305,22 +305,22 @@ namespace Ogre {
         return Quaternion(-w,-x,-y,-z);
     }
     //-----------------------------------------------------------------------
-    Real Quaternion::Dot (const Quaternion& rkQ) const
+    float Quaternion::Dot (const Quaternion& rkQ) const
     {
         return w*rkQ.w+x*rkQ.x+y*rkQ.y+z*rkQ.z;
     }
     //-----------------------------------------------------------------------
-    Real Quaternion::Norm () const
+    float Quaternion::Norm () const
     {
         return w*w+x*x+y*y+z*z;
     }
     //-----------------------------------------------------------------------
     Quaternion Quaternion::Inverse () const
     {
-        Real fNorm = w*w+x*x+y*y+z*z;
+        float fNorm = w*w+x*x+y*y+z*z;
         if ( fNorm > 0.0 )
         {
-            Real fInvNorm = 1.0f/fNorm;
+            float fInvNorm = 1.0f/fNorm;
             return Quaternion(w*fInvNorm,-x*fInvNorm,-y*fInvNorm,-z*fInvNorm);
         }
         else
@@ -343,14 +343,14 @@ namespace Ogre {
         // use exp(q) = cos(A)+A*(x*i+y*j+z*k) since A/sin(A) has limit 1.
 
         Radian fAngle ( Math::Sqrt(x*x+y*y+z*z) );
-        Real fSin = Math::Sin(fAngle);
+        float fSin = Math::Sin(fAngle);
 
         Quaternion kResult;
         kResult.w = Math::Cos(fAngle);
 
         if ( Math::Abs(fSin) >= ms_fEpsilon )
         {
-            Real fCoeff = fSin/(fAngle.valueRadians());
+            float fCoeff = fSin/(fAngle.valueRadians());
             kResult.x = fCoeff*x;
             kResult.y = fCoeff*y;
             kResult.z = fCoeff*z;
@@ -377,10 +377,10 @@ namespace Ogre {
         if ( Math::Abs(w) < 1.0 )
         {
             Radian fAngle ( Math::ACos(w) );
-            Real fSin = Math::Sin(fAngle);
+            float fSin = Math::Sin(fAngle);
             if ( Math::Abs(fSin) >= ms_fEpsilon )
             {
-                Real fCoeff = fAngle.valueRadians()/fSin;
+                float fCoeff = fAngle.valueRadians()/fSin;
                 kResult.x = fCoeff*x;
                 kResult.y = fCoeff*y;
                 kResult.z = fCoeff*z;
@@ -411,7 +411,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
 	bool Quaternion::equals(const Quaternion& rhs, const Radian& tolerance) const
 	{
-        Real fCos = Dot(rhs);
+        float fCos = Dot(rhs);
         Radian angle = Math::ACos(fCos);
 
 		return (Math::Abs(angle.valueRadians()) <= tolerance.valueRadians())
@@ -420,10 +420,10 @@ namespace Ogre {
 
 	}
     //-----------------------------------------------------------------------
-    Quaternion Quaternion::Slerp (Real fT, const Quaternion& rkP,
+    Quaternion Quaternion::Slerp (float fT, const Quaternion& rkP,
         const Quaternion& rkQ, bool shortestPath)
     {
-        Real fCos = rkP.Dot(rkQ);
+        float fCos = rkP.Dot(rkQ);
         Quaternion rkT;
 
         // Do we need to invert rotation?
@@ -440,11 +440,11 @@ namespace Ogre {
         if (Math::Abs(fCos) < 1 - ms_fEpsilon)
         {
             // Standard case (slerp)
-            Real fSin = Math::Sqrt(1 - Math::Sqr(fCos));
+            float fSin = Math::Sqrt(1 - Math::Sqr(fCos));
             Radian fAngle = Math::ATan2(fSin, fCos);
-            Real fInvSin = 1.0f / fSin;
-            Real fCoeff0 = Math::Sin((1.0f - fT) * fAngle) * fInvSin;
-            Real fCoeff1 = Math::Sin(fT * fAngle) * fInvSin;
+            float fInvSin = 1.0f / fSin;
+            float fCoeff0 = Math::Sin((1.0f - fT) * fAngle) * fInvSin;
+            float fCoeff1 = Math::Sin(fT * fAngle) * fInvSin;
             return fCoeff0 * rkP + fCoeff1 * rkT;
         }
         else
@@ -462,20 +462,20 @@ namespace Ogre {
         }
     }
     //-----------------------------------------------------------------------
-    Quaternion Quaternion::SlerpExtraSpins (Real fT,
+    Quaternion Quaternion::SlerpExtraSpins (float fT,
         const Quaternion& rkP, const Quaternion& rkQ, int iExtraSpins)
     {
-        Real fCos = rkP.Dot(rkQ);
+        float fCos = rkP.Dot(rkQ);
         Radian fAngle ( Math::ACos(fCos) );
 
         if ( Math::Abs(fAngle.valueRadians()) < ms_fEpsilon )
             return rkP;
 
-        Real fSin = Math::Sin(fAngle);
+        float fSin = Math::Sin(fAngle);
         Radian fPhase ( Math::PI*iExtraSpins*fT );
-        Real fInvSin = 1.0f/fSin;
-        Real fCoeff0 = Math::Sin((1.0f-fT)*fAngle - fPhase)*fInvSin;
-        Real fCoeff1 = Math::Sin(fT*fAngle + fPhase)*fInvSin;
+        float fInvSin = 1.0f/fSin;
+        float fCoeff0 = Math::Sin((1.0f-fT)*fAngle - fPhase)*fInvSin;
+        float fCoeff1 = Math::Sin(fT*fAngle + fPhase)*fInvSin;
         return fCoeff0*rkP + fCoeff1*rkQ;
     }
     //-----------------------------------------------------------------------
@@ -496,20 +496,20 @@ namespace Ogre {
         rkB = rkQ1*kMinusArg.Exp();
     }
     //-----------------------------------------------------------------------
-    Quaternion Quaternion::Squad (Real fT,
+    Quaternion Quaternion::Squad (float fT,
         const Quaternion& rkP, const Quaternion& rkA,
         const Quaternion& rkB, const Quaternion& rkQ, bool shortestPath)
     {
-        Real fSlerpT = 2.0f*fT*(1.0f-fT);
+        float fSlerpT = 2.0f*fT*(1.0f-fT);
         Quaternion kSlerpP = Slerp(fT, rkP, rkQ, shortestPath);
         Quaternion kSlerpQ = Slerp(fT, rkA, rkB);
         return Slerp(fSlerpT, kSlerpP ,kSlerpQ);
     }
     //-----------------------------------------------------------------------
-    Real Quaternion::normalise(void)
+    float Quaternion::normalise(void)
     {
-        Real len = Norm();
-        Real factor = 1.0f / Math::Sqrt(len);
+        float len = Norm();
+        float factor = 1.0f / Math::Sqrt(len);
         *this = *this * factor;
         return len;
     }
@@ -520,13 +520,13 @@ namespace Ogre {
 		{
 			// roll = atan2(localx.y, localx.x)
 			// pick parts of xAxis() implementation that we need
-//			Real fTx  = 2.0*x;
-			Real fTy  = 2.0f*y;
-			Real fTz  = 2.0f*z;
-			Real fTwz = fTz*w;
-			Real fTxy = fTy*x;
-			Real fTyy = fTy*y;
-			Real fTzz = fTz*z;
+//			float fTx  = 2.0*x;
+			float fTy  = 2.0f*y;
+			float fTz  = 2.0f*z;
+			float fTwz = fTz*w;
+			float fTxy = fTy*x;
+			float fTyy = fTy*y;
+			float fTzz = fTz*z;
 
 			// Vector3(1.0-(fTyy+fTzz), fTxy+fTwz, fTxz-fTwy);
 
@@ -545,13 +545,13 @@ namespace Ogre {
 		{
 			// pitch = atan2(localy.z, localy.y)
 			// pick parts of yAxis() implementation that we need
-			Real fTx  = 2.0f*x;
-//			Real fTy  = 2.0f*y;
-			Real fTz  = 2.0f*z;
-			Real fTwx = fTx*w;
-			Real fTxx = fTx*x;
-			Real fTyz = fTz*y;
-			Real fTzz = fTz*z;
+			float fTx  = 2.0f*x;
+//			float fTy  = 2.0f*y;
+			float fTz  = 2.0f*z;
+			float fTwx = fTx*w;
+			float fTxx = fTx*x;
+			float fTyz = fTz*y;
+			float fTzz = fTz*z;
 
 			// Vector3(fTxy-fTwz, 1.0-(fTxx+fTzz), fTyz+fTwx);
 			return Radian(Math::ATan2(fTyz+fTwx, 1.0f-(fTxx+fTzz)));
@@ -569,13 +569,13 @@ namespace Ogre {
 		{
 			// yaw = atan2(localz.x, localz.z)
 			// pick parts of zAxis() implementation that we need
-			Real fTx  = 2.0f*x;
-			Real fTy  = 2.0f*y;
-			Real fTz  = 2.0f*z;
-			Real fTwy = fTy*w;
-			Real fTxx = fTx*x;
-			Real fTxz = fTz*x;
-			Real fTyy = fTy*y;
+			float fTx  = 2.0f*x;
+			float fTy  = 2.0f*y;
+			float fTz  = 2.0f*z;
+			float fTwy = fTy*w;
+			float fTxx = fTx*x;
+			float fTxz = fTz*x;
+			float fTyy = fTy*y;
 
 			// Vector3(fTxz+fTwy, fTyz-fTwx, 1.0-(fTxx+fTyy));
 
@@ -589,11 +589,11 @@ namespace Ogre {
 		}
 	}
     //-----------------------------------------------------------------------
-    Quaternion Quaternion::nlerp(Real fT, const Quaternion& rkP,
+    Quaternion Quaternion::nlerp(float fT, const Quaternion& rkP,
         const Quaternion& rkQ, bool shortestPath)
     {
 		Quaternion result;
-        Real fCos = rkP.Dot(rkQ);
+        float fCos = rkP.Dot(rkQ);
 		if (fCos < 0.0f && shortestPath)
 		{
 			result = rkP + fT * ((-rkQ) - rkP);

@@ -36,7 +36,7 @@ THE SOFTWARE.
 #ifndef __Plane_H__
 #define __Plane_H__
 
-#include "OgrePrerequisites.h"
+#include "CmUtilPrerequisites.h"
 
 #include "OgreVector3.h"
 
@@ -66,9 +66,9 @@ namespace Ogre {
         Plane ();
         Plane (const Plane& rhs);
         /** Construct a plane through a normal, and a distance to move the plane along the normal.*/
-        Plane (const Vector3& rkNormal, Real fConstant);
+        Plane (const Vector3& rkNormal, float fConstant);
 		/** Construct a plane using the 4 constants directly **/
-		Plane (Real a, Real b, Real c, Real d);
+		Plane (float a, float b, float c, float d);
         Plane (const Vector3& rkNormal, const Vector3& rkPoint);
         Plane (const Vector3& rkPoint0, const Vector3& rkPoint1,
             const Vector3& rkPoint2);
@@ -112,7 +112,7 @@ namespace Ogre {
             The absolute value of the return value is the true distance only
             when the plane normal is a unit length vector.
         */
-        Real getDistance (const Vector3& rkPoint) const;
+        float getDistance (const Vector3& rkPoint) const;
 
         /** Redefine this plane based on 3 points. */
         void redefine(const Vector3& rkPoint0, const Vector3& rkPoint1,
@@ -139,10 +139,10 @@ namespace Ogre {
                 will be no changes made to their components.
             @returns The previous length of the plane's normal.
         */
-        Real normalise(void);
+        float normalise(void);
 
 		Vector3 normal;
-        Real d;
+        float d;
 
         /// Comparison operator
         bool operator==(const Plane& rhs) const

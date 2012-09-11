@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __Sphere_H_
 
 // Precompiler options
-#include "OgrePrerequisites.h"
+#include "CmUtilPrerequisites.h"
 
 #include "OgreVector3.h"
 
@@ -51,7 +51,7 @@ namespace Ogre {
     class _OgreExport Sphere
     {
     protected:
-        Real mRadius;
+        float mRadius;
         Vector3 mCenter;
     public:
         /** Standard constructor - creates a unit sphere around the origin.*/
@@ -60,14 +60,14 @@ namespace Ogre {
             @param center The center point of the sphere.
             @param radius The radius of the sphere.
         */
-        Sphere(const Vector3& center, Real radius)
+        Sphere(const Vector3& center, float radius)
             : mRadius(radius), mCenter(center) {}
 
         /** Returns the radius of the sphere. */
-        Real getRadius(void) const { return mRadius; }
+        float getRadius(void) const { return mRadius; }
 
         /** Sets the radius of the sphere. */
-        void setRadius(Real radius) { mRadius = radius; }
+        void setRadius(float radius) { mRadius = radius; }
 
         /** Returns the center point of the sphere. */
         const Vector3& getCenter(void) const { return mCenter; }

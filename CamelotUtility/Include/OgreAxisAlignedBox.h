@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __AxisAlignedBox_H_
 
 // Precompiler options
-#include "OgrePrerequisites.h"
+#include "CmUtilPrerequisites.h"
 
 #include "OgreVector3.h"
 #include "OgreMatrix4.h"
@@ -119,8 +119,8 @@ namespace Ogre {
 		}
 
 		inline AxisAlignedBox(
-			Real mx, Real my, Real mz,
-			Real Mx, Real My, Real Mz ) : mMinimum(Vector3::ZERO), mMaximum(Vector3::UNIT_SCALE), mpCorners(0)
+			float mx, float my, float mz,
+			float Mx, float My, float Mz ) : mMinimum(Vector3::ZERO), mMaximum(Vector3::UNIT_SCALE), mpCorners(0)
 		{
 			setExtents( mx, my, mz, Mx, My, Mz );
 		}
@@ -141,7 +141,7 @@ namespace Ogre {
 		~AxisAlignedBox()
 		{
 			if (mpCorners)
-				OGRE_FREE(mpCorners, MEMCATEGORY_SCENE_CONTROL);
+				free(mpCorners);
 		}
 
 
@@ -184,7 +184,7 @@ namespace Ogre {
 			mMinimum = vec;
 		}
 
-		inline void setMinimum( Real x, Real y, Real z )
+		inline void setMinimum( float x, float y, float z )
 		{
 			mExtent = EXTENT_FINITE;
 			mMinimum.x = x;
@@ -195,17 +195,17 @@ namespace Ogre {
 		/** Changes one of the components of the minimum corner of the box
 		used to resize only one dimension of the box
 		*/
-		inline void setMinimumX(Real x)
+		inline void setMinimumX(float x)
 		{
 			mMinimum.x = x;
 		}
 
-		inline void setMinimumY(Real y)
+		inline void setMinimumY(float y)
 		{
 			mMinimum.y = y;
 		}
 
-		inline void setMinimumZ(Real z)
+		inline void setMinimumZ(float z)
 		{
 			mMinimum.z = z;
 		}
@@ -218,7 +218,7 @@ namespace Ogre {
 			mMaximum = vec;
 		}
 
-		inline void setMaximum( Real x, Real y, Real z )
+		inline void setMaximum( float x, float y, float z )
 		{
 			mExtent = EXTENT_FINITE;
 			mMaximum.x = x;
@@ -229,17 +229,17 @@ namespace Ogre {
 		/** Changes one of the components of the maximum corner of the box
 		used to resize only one dimension of the box
 		*/
-		inline void setMaximumX( Real x )
+		inline void setMaximumX( float x )
 		{
 			mMaximum.x = x;
 		}
 
-		inline void setMaximumY( Real y )
+		inline void setMaximumY( float y )
 		{
 			mMaximum.y = y;
 		}
 
-		inline void setMaximumZ( Real z )
+		inline void setMaximumZ( float z )
 		{
 			mMaximum.z = z;
 		}
@@ -257,8 +257,8 @@ namespace Ogre {
 		}
 
 		inline void setExtents(
-			Real mx, Real my, Real mz,
-			Real Mx, Real My, Real Mz )
+			float mx, float my, float mz,
+			float Mx, float My, float Mz )
 		{
             assert( (mx <= Mx && my <= My && mz <= Mz) &&
                 "The minimum corner of the box must be less than or equal to maximum corner" );
@@ -310,7 +310,7 @@ namespace Ogre {
 			//   around face (looking onto the face)
 			// Only for optimization/compatibility.
 			if (!mpCorners)
-				mpCorners = OGRE_ALLOC_T(Vector3, 8, MEMCATEGORY_SCENE_CONTROL);
+				mpCorners = (Vector3*)malloc(sizeof(Vector3) * 8);
 
 			mpCorners[0] = mMinimum;
 			mpCorners[1].x = mMinimum.x; mpCorners[1].y = mMaximum.y; mpCorners[1].z = mMinimum.z;
@@ -625,7 +625,7 @@ namespace Ogre {
 		}
 
 		/// Calculate the volume of this box
-		Real volume(void) const
+		float volume(void) const
 		{
 			switch (mExtent)
 			{
