@@ -27,8 +27,6 @@ THE SOFTWARE
 
 #include <assert.h>
 
-#define CM_THREAD_SUPPORT 0 // No thread support for now
-
 // Platform-specific stuff
 #include "CmPlatform.h"
 

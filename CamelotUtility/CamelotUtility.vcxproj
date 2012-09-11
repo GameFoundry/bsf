@@ -67,6 +67,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmMathAsm.h" />
+    <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmTypes.h" />
     <ClInclude Include="Include\CmFwdDeclUtil.h" />
     <ClInclude Include="Include\CmAxisAlignedBox.h" />
@@ -80,7 +81,6 @@
     <ClInclude Include="Include\CmRay.h" />
     <ClInclude Include="Include\CmSphere.h" />
     <ClInclude Include="Include\CmStdHeaders.h" />
-    <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmVector2.h" />
     <ClInclude Include="Include\CmVector3.h" />
     <ClInclude Include="Include\CmVector4.h" />

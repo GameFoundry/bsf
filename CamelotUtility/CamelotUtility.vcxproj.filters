@@ -22,6 +22,9 @@
     <Filter Include="Source Files\Math">
       <UniqueIdentifier>{6f183461-d042-41e0-9c81-aa8bc8462641}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Threading">
+      <UniqueIdentifier>{b65008fc-0109-4b6d-b82b-7c30abdbeacf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmTypes.h">
@@ -31,9 +34,6 @@
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmStdHeaders.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmThreadDefines.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmPrerequisitesUtil.h">
@@ -77,6 +77,9 @@
     </ClInclude>
     <ClInclude Include="Include\CmVector4.h">
       <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmThreadDefines.h">
+      <Filter>Header Files\Threading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

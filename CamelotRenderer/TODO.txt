@@ -49,6 +49,14 @@ IMPORTANT: I think I should strive to make the renderer one unique CmRenderSyste
    - Later separate out OpenGL and D3D9 dlls as well, since I want to support D3D11. And I want to keep the framework separate from implementation
      - AND because I need to have it separated since I can't expect DirectX to compile on OSX or Linux
 
+TOMORROW:
+ - Incorporate CamelotUtility library into CamelotRenderer
+   - First make sure to remove all Ogre namespaces and replace them with CamelotEngine
+   - Then remove all files included in CamelotUtility and add CamelotUtility include and library files
+   - Fix any errors due to missing defines (especially memory related)
+   - Move remaining Utility files to CamelotUtility (files like StringUtil, PixelUtil and similar)
+   - Remove Utility forward declarations from OgrePrerequisites. Make sure to include OgrePrerequisitesUtil in OgrePrerequisites
+
 Other notes:
  - Search for all remaining "TODO PORT" comments and fix them
  - Make sure to remove all ogre memory allocators and memory category bullshit (Possibly replace with Camelot versions?)
@@ -69,3 +77,4 @@ After everything is polished:
  - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)
     - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 
 	  further modifications.
+ - Port boost threads to std threads (CmThreadDefines.h)

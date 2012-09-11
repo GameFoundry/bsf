@@ -1,5 +1,5 @@
 Camelot use case:
- Application::startUp("RenderSystem", "RenderManager") <- Initializes all modules. Provide Reference render system and render manager
+ Application::startUp("RenderSystem", "RenderManager") <- Initializes all modules. Provide Reference render system and render manager (Maybe directly provide .dll name here)
  RenderWindow* window = new RenderWindow(width, height, /*etc*/); <- Automatically registers with Application
  
 
@@ -13,13 +13,15 @@ Camelot use case:
 
 ------------------------------------------
 
- Application::renderLoop INTERNALS: // TODO - Most of this should be a part of a RenderManager, so we can employ better rendering 
+ Application::renderLoop INTERNALS: // TODO - Most of this should be a part of a RenderManager, so we can employ better rendering 
+
 techniques like deferred and forward rendering, transparently
   Query scene manager and get all cameras
   Sort cameras based on render targets
   For each render target
   Render cameras one by one
-    - Each camera queries scene manager for all visible entities // Scene manager employs spatial partitioning and frustum culling to 
+    - Each camera queries scene manager for all visible entities // Scene manager employs spatial partitioning and frustum culling to 
+
 speed up the search
     - Objects are sorted according to a render queue
     - And sent to the render system one by one
@@ -34,10 +36,12 @@ speed up the search
 
 --------------------------------------------
 
- Loading of mesh/texture/material should be a simple Resource.Load. Returns a ResourcePtr which is a managed ptr to resource. Resource 
-holds a pointer to its source, and it can be in a loaded or unloaded state. If we try to use an unloaded resource, a dummy resource is 
+ Loading of mesh/texture/material should be a simple Resource.Load. Returns a ResourcePtr which is a managed ptr to resource. Resource 
+
+holds a pointer to its source, and it can be in a loaded or unloaded state. If we try to use an unloaded resource, a dummy resource is 
+
 provided.
 
 --------------------------------------------
 
- IMPORTANT: Develop scene manager and rest of things mentioned here in CamelotRenderer project, and then port it all together to 
+ IMPORTANT: Develop scene manager and rest of things mentioned here in CamelotRenderer project, and then port it all together to 

@@ -111,6 +111,13 @@ extern "C" {
 }
 #endif
 
+#if CM_THREAD_SUPPORT
+#	if !defined(NOMINMAX) && defined(_MSC_VER)
+#		define NOMINMAX // required to stop windows.h messing up std::min
+#	endif
+#	include "CmThreadHeaders.h"
+#endif
+
 #if defined ( CM_GCC_VISIBILITY ) && (CM_PLATFORM != CM_PLATFORM_APPLE)
 #   pragma GCC visibility pop
 #endif
