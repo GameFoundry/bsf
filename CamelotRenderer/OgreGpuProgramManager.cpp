@@ -58,7 +58,7 @@ namespace Ogre {
     {
 		GpuProgramPtr prg;
 		{
-			OGRE_LOCK_AUTO_MUTEX
+			CM_LOCK_AUTO_MUTEX
 			prg = createProgram( code, gptype, syntaxCode);
 		}
         prg->load();

@@ -1023,7 +1023,7 @@ namespace Ogre
 			return 0;
 
 		GpuLogicalIndexUse* indexUse = 0;
-		OGRE_LOCK_MUTEX(mFloatLogicalToPhysical->mutex)
+		CM_LOCK_MUTEX(mFloatLogicalToPhysical->mutex)
 
 			GpuLogicalIndexUseMap::iterator logi = mFloatLogicalToPhysical->map.find(logicalIndex);
 		if (logi == mFloatLogicalToPhysical->map.end())
@@ -1130,7 +1130,7 @@ namespace Ogre
 			"GpuProgramParameters::_getIntConstantPhysicalIndex");
 
 		GpuLogicalIndexUse* indexUse = 0;
-		OGRE_LOCK_MUTEX(mIntLogicalToPhysical->mutex)
+		CM_LOCK_MUTEX(mIntLogicalToPhysical->mutex)
 
 			GpuLogicalIndexUseMap::iterator logi = mIntLogicalToPhysical->map.find(logicalIndex);
 		if (logi == mIntLogicalToPhysical->map.end())

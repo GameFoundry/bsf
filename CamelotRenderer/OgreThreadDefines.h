@@ -23,39 +23,36 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
 -------------------------------------------------------------------------*/
-#ifndef __OgreThreadDefines_H__
-#define __OgreThreadDefines_H__
+#pragma once
 
-#define OGRE_AUTO_MUTEX_NAME mutex
-#define OGRE_AUTO_MUTEX
-#define OGRE_LOCK_AUTO_MUTEX
-#define OGRE_MUTEX(name)
-#define OGRE_STATIC_MUTEX(name)
-#define OGRE_STATIC_MUTEX_INSTANCE(name)
-#define OGRE_LOCK_MUTEX(name)
-#define OGRE_LOCK_MUTEX_NAMED(mutexName, lockName)
-#define OGRE_AUTO_SHARED_MUTEX
-#define OGRE_LOCK_AUTO_SHARED_MUTEX
-#define OGRE_NEW_AUTO_SHARED_MUTEX
-#define OGRE_DELETE_AUTO_SHARED_MUTEX
-#define OGRE_COPY_AUTO_SHARED_MUTEX(from)
-#define OGRE_SET_AUTO_SHARED_MUTEX_NULL
-#define OGRE_MUTEX_CONDITIONAL(name) if(true)
-#define OGRE_RW_MUTEX(name)
-#define OGRE_LOCK_RW_MUTEX_READ(name)
-#define OGRE_LOCK_RW_MUTEX_WRITE(name)
-#define OGRE_THREAD_SYNCHRONISER(sync) 
-#define OGRE_THREAD_WAIT(sync, lock) 
-#define OGRE_THREAD_NOTIFY_ONE(sync) 
-#define OGRE_THREAD_NOTIFY_ALL(sync) 
-#define OGRE_THREAD_POINTER(T, var) T* var
-#define OGRE_THREAD_POINTER_INIT(var) var(0)
-#define OGRE_THREAD_POINTER_VAR(T, var) T* var = 0
-#define OGRE_THREAD_POINTER_SET(var, expr) var = expr
-#define OGRE_THREAD_POINTER_GET(var) var
-#define OGRE_THREAD_POINTER_DELETE(var) { OGRE_DELETE var; var = 0; }
-#define OGRE_THREAD_SLEEP(ms)
-#define OGRE_THREAD_WORKER_INHERIT
-
-#endif
+#define CM_AUTO_MUTEX_NAME mutex
+#define CM_AUTO_MUTEX
+#define CM_LOCK_AUTO_MUTEX
+#define CM_MUTEX(name)
+#define CM_STATIC_MUTEX(name)
+#define CM_STATIC_MUTEX_INSTANCE(name)
+#define CM_LOCK_MUTEX(name)
+#define CM_LOCK_MUTEX_NAMED(mutexName, lockName)
+#define CM_AUTO_SHARED_MUTEX
+#define CM_LOCK_AUTO_SHARED_MUTEX
+#define CM_NEW_AUTO_SHARED_MUTEX
+#define CM_DELETE_AUTO_SHARED_MUTEX
+#define CM_COPY_AUTO_SHARED_MUTEX(from)
+#define CM_SET_AUTO_SHARED_MUTEX_NULL
+#define CM_MUTEX_CONDITIONAL(name) if(true)
+#define CM_RW_MUTEX(name)
+#define CM_LOCK_RW_MUTEX_READ(name)
+#define CM_LOCK_RW_MUTEX_WRITE(name)
+#define CM_THREAD_SYNCHRONISER(sync) 
+#define CM_THREAD_WAIT(sync, lock) 
+#define CM_THREAD_NOTIFY_ONE(sync) 
+#define CM_THREAD_NOTIFY_ALL(sync) 
+#define CM_THREAD_POINTER(T, var) T* var
+#define CM_THREAD_POINTER_INIT(var) var(0)
+#define CM_THREAD_POINTER_VAR(T, var) T* var = 0
+#define CM_THREAD_POINTER_SET(var, expr) var = expr
+#define CM_THREAD_POINTER_GET(var) var
+#define CM_THREAD_POINTER_DELETE(var) { delete var; var = 0; }
+#define CM_THREAD_SLEEP(ms)
+#define CM_THREAD_WORKER_INHERIT
 

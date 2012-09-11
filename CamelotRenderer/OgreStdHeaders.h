@@ -112,7 +112,7 @@ extern "C" {
 }
 #endif
 
-#if OGRE_THREAD_SUPPORT
+#if CM_THREAD_SUPPORT
 #   include "Threading/OgreThreadHeaders.h"
 #endif
 

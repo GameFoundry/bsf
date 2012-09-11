@@ -120,16 +120,16 @@ THE SOFTWARE.
 
 /** Support for multithreading, there are 3 options
 
-OGRE_THREAD_SUPPORT = 0
+CM_THREAD_SUPPORT = 0
 	No support for threading.		
-OGRE_THREAD_SUPPORT = 1
+CM_THREAD_SUPPORT = 1
 	Thread support for background loading, by both loading and constructing resources
 	in a background thread. Resource management and SharedPtr handling becomes
 	thread-safe, and resources may be completely loaded in the background. 
 	The places where threading is available are clearly
 	marked, you should assume state is NOT thread safe unless otherwise
 	stated in relation to this flag.
-OGRE_THREAD_SUPPORT = 2
+CM_THREAD_SUPPORT = 2
 	Thread support for background resource preparation. This means that resource
 	data can streamed into memory in the background, but the final resource
 	construction (including RenderSystem dependencies) is still done in the primary
@@ -137,11 +137,11 @@ OGRE_THREAD_SUPPORT = 2
 	while still allowing the major blocking aspects of resource management (I/O)
 	to be done in the background.
 */
-#ifndef OGRE_THREAD_SUPPORT
-#define OGRE_THREAD_SUPPORT 0
+#ifndef CM_THREAD_SUPPORT
+#define CM_THREAD_SUPPORT 0
 #endif
-#if OGRE_THREAD_SUPPORT != 0 && OGRE_THREAD_SUPPORT != 1 && OGRE_THREAD_SUPPORT != 2
-#define OGRE_THREAD_SUPPORT 0
+#if CM_THREAD_SUPPORT != 0 && CM_THREAD_SUPPORT != 1 && CM_THREAD_SUPPORT != 2
+#define CM_THREAD_SUPPORT 0
 #endif
 
 /** Provider for threading functionality, there are 4 options.

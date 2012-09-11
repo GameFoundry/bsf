@@ -11,7 +11,7 @@
 
 using namespace Ogre;
 
-#if OGRE_THREAD_SUPPORT != 1
+#if CM_THREAD_SUPPORT != 1
 GLenum wglewContextInit (Ogre::GLSupport *glSupport);
 #endif
 
@@ -397,7 +397,7 @@ namespace Ogre {
 		// First, initialise the normal extensions
 		GLSupport::initialiseExtensions();
 		// wglew init
-#if OGRE_THREAD_SUPPORT != 1
+#if CM_THREAD_SUPPORT != 1
 		wglewContextInit(this);
 #endif
 

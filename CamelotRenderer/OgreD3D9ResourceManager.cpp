@@ -60,7 +60,7 @@ namespace Ogre
 	 //-----------------------------------------------------------------------
 	void D3D9ResourceManager::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{				
-		OGRE_LOCK_MUTEX(mResourcesMutex)
+		CM_LOCK_MUTEX(mResourcesMutex)
 
 		ResourceContainerIterator it = mResources.begin();
 		while (it != mResources.end())
@@ -73,7 +73,7 @@ namespace Ogre
 	 //-----------------------------------------------------------------------
 	void D3D9ResourceManager::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
-		OGRE_LOCK_MUTEX(mResourcesMutex)
+		CM_LOCK_MUTEX(mResourcesMutex)
 
 		ResourceContainerIterator it = mResources.begin();
 		while (it != mResources.end())
@@ -86,7 +86,7 @@ namespace Ogre
 	 //-----------------------------------------------------------------------
 	void D3D9ResourceManager::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
 	{
-		OGRE_LOCK_MUTEX(mResourcesMutex)
+		CM_LOCK_MUTEX(mResourcesMutex)
 
 		ResourceContainerIterator it = mResources.begin();
 		while (it != mResources.end())
@@ -99,7 +99,7 @@ namespace Ogre
 	 //-----------------------------------------------------------------------
 	void D3D9ResourceManager::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
 	{		
-		OGRE_LOCK_MUTEX(mResourcesMutex)
+		CM_LOCK_MUTEX(mResourcesMutex)
 
 		ResourceContainerIterator it = mResources.begin();
 		while (it != mResources.end())
@@ -112,14 +112,14 @@ namespace Ogre
 	//-----------------------------------------------------------------------
 	void D3D9ResourceManager::_notifyResourceCreated(D3D9Resource* pResource)
 	{		
-		OGRE_LOCK_MUTEX(mResourcesMutex)		
+		CM_LOCK_MUTEX(mResourcesMutex)		
 		mResources.push_back(pResource);
 	}
 	
 	//-----------------------------------------------------------------------
 	void D3D9ResourceManager::_notifyResourceDestroyed(D3D9Resource* pResource)
 	{		
-		OGRE_LOCK_MUTEX(mResourcesMutex)
+		CM_LOCK_MUTEX(mResourcesMutex)
 
 		ResourceContainerIterator it = mResources.begin();
 

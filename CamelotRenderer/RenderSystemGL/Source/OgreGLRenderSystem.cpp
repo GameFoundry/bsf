@@ -52,7 +52,7 @@ THE SOFTWARE.s
 // Convenience macro from ARB_vertex_buffer_object spec
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-#if OGRE_THREAD_SUPPORT != 1
+#if CM_THREAD_SUPPORT != 1
 GLenum glewContextInit (Ogre::GLSupport *glSupport);
 #endif
 
@@ -1022,7 +1022,7 @@ namespace Ogre {
 		mGLSupport->initialiseExtensions();
 
 		// Get extension function pointers
-#if OGRE_THREAD_SUPPORT != 1
+#if CM_THREAD_SUPPORT != 1
 		glewContextInit(mGLSupport);
 #endif
 	}
@@ -3382,7 +3382,7 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 	//---------------------------------------------------------------------
 	void GLRenderSystem::registerThread()
 	{
-		OGRE_LOCK_MUTEX(mThreadInitMutex)
+		CM_LOCK_MUTEX(mThreadInitMutex)
 		// This is only valid once we've created the main context
 		if (!mMainContext)
 		{
@@ -3418,14 +3418,14 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 	//---------------------------------------------------------------------
 	void GLRenderSystem::preExtraThreadsStarted()
 	{
-		OGRE_LOCK_MUTEX(mThreadInitMutex)
+		CM_LOCK_MUTEX(mThreadInitMutex)
 		// free context, we'll need this to share lists
 		mCurrentContext->endCurrent();
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::postExtraThreadsStarted()
 	{
-		OGRE_LOCK_MUTEX(mThreadInitMutex)
+		CM_LOCK_MUTEX(mThreadInitMutex)
 		// reacquire context
 		mCurrentContext->setCurrent();
 	}

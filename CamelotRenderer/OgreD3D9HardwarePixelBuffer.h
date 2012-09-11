@@ -75,7 +75,7 @@ namespace Ogre {
 		DWORD mLockFlags;
 
 		// Device access mutex.
-		OGRE_STATIC_MUTEX(msDeviceAccessMutex)		
+		CM_STATIC_MUTEX(msDeviceAccessMutex)		
 	protected:
 		/// Lock a box
 		PixelBox lockImpl(const Box lockBox,  LockOptions options);

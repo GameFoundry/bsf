@@ -88,7 +88,7 @@ namespace Ogre {
 		GLHardwareVertexBuffer* buf = 
 			new GLHardwareVertexBuffer(this, vertexSize, numVerts, usage, useShadowBuffer);
 		{
-			OGRE_LOCK_MUTEX(mVertexBuffersMutex)
+			CM_LOCK_MUTEX(mVertexBuffersMutex)
 			mVertexBuffers.insert(buf);
 		}
 		return HardwareVertexBufferPtr(buf);
@@ -102,7 +102,7 @@ namespace Ogre {
 		GLHardwareIndexBuffer* buf = 
 			new GLHardwareIndexBuffer(this, itype, numIndexes, usage, useShadowBuffer);
 		{
-			OGRE_LOCK_MUTEX(mIndexBuffersMutex)
+			CM_LOCK_MUTEX(mIndexBuffersMutex)
 			mIndexBuffers.insert(buf);
 		}
 		return HardwareIndexBufferPtr(buf);
@@ -155,7 +155,7 @@ namespace Ogre {
 		// simple forward link search based on alloc sizes
 		// not that fast but the list should never get that long since not many
 		// locks at once (hopefully)
-		OGRE_LOCK_MUTEX(mScratchMutex)
+		CM_LOCK_MUTEX(mScratchMutex)
 
 
 		// Alignment - round up the size to 32 bits
@@ -205,7 +205,7 @@ namespace Ogre {
 	//---------------------------------------------------------------------
 	void GLHardwareBufferManagerBase::deallocateScratch(void* ptr)
 	{
-		OGRE_LOCK_MUTEX(mScratchMutex)
+		CM_LOCK_MUTEX(mScratchMutex)
 
 		// Simple linear search dealloc
 		uint32 bufferPos = 0;

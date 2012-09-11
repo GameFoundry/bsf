@@ -325,7 +325,7 @@ namespace Ogre {
 	/// Container struct to allow params to safely & update shared list of logical buffer assignments
 	struct _OgreExport GpuLogicalBufferStruct
 	{
-		OGRE_MUTEX(mutex)
+		CM_MUTEX(mutex)
 			/// Map from logical index to physical buffer location
 			GpuLogicalIndexUseMap map;
 		/// Shortcut to know the buffer size needs

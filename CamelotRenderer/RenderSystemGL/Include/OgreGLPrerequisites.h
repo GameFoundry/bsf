@@ -44,7 +44,7 @@ namespace Ogre {
     class GLRenderBuffer;
 }
 
-#if OGRE_THREAD_SUPPORT == 1
+#if CM_THREAD_SUPPORT == 1
 #	define GLEW_MX
 #endif
 
@@ -72,7 +72,7 @@ namespace Ogre {
 #   include <OpenGLES/ES1/glext.h>
 #endif
 
-#if OGRE_THREAD_SUPPORT == 1
+#if CM_THREAD_SUPPORT == 1
 	// implemented in OgreGLContext.cpp
 	GLEWContext * glewGetContext();
 

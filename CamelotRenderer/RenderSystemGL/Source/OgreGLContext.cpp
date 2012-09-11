@@ -42,19 +42,19 @@ namespace Ogre {
     
 }
 
-#if OGRE_THREAD_SUPPORT == 1
+#if CM_THREAD_SUPPORT == 1
 
 // declared in OgreGLPrerequisites.h 
 GLEWContext * glewGetContext()
 {
 	using namespace Ogre;
-	static OGRE_THREAD_POINTER_VAR(GLEWContext, GLEWContextsPtr);
+	static CM_THREAD_POINTER_VAR(GLEWContext, GLEWContextsPtr);
 
-	GLEWContext * currentGLEWContextsPtr =  OGRE_THREAD_POINTER_GET(GLEWContextsPtr);
+	GLEWContext * currentGLEWContextsPtr =  CM_THREAD_POINTER_GET(GLEWContextsPtr);
 	if (currentGLEWContextsPtr == NULL)
 	{
 		currentGLEWContextsPtr = new GLEWContext();
-		OGRE_THREAD_POINTER_SET(GLEWContextsPtr, currentGLEWContextsPtr);
+		CM_THREAD_POINTER_SET(GLEWContextsPtr, currentGLEWContextsPtr);
 		memset(currentGLEWContextsPtr, 0, sizeof(GLEWContext));
 		glewInit();
 	}

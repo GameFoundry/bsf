@@ -3130,7 +3130,7 @@ namespace Ogre
 		case GPT_VERTEX_PROGRAM:
 			mActiveVertexGpuProgramParameters = params;
 			{
-				OGRE_LOCK_MUTEX(floatLogical->mutex)
+				CM_LOCK_MUTEX(floatLogical->mutex)
 
 					for (GpuLogicalIndexUseMap::const_iterator i = floatLogical->map.begin();
 						i != floatLogical->map.end(); ++i)
@@ -3157,7 +3157,7 @@ namespace Ogre
 			}
 			// bind ints
 			{
-				OGRE_LOCK_MUTEX(intLogical->mutex)
+				CM_LOCK_MUTEX(intLogical->mutex)
 
 					for (GpuLogicalIndexUseMap::const_iterator i = intLogical->map.begin();
 						i != intLogical->map.end(); ++i)
@@ -3186,7 +3186,7 @@ namespace Ogre
 		case GPT_FRAGMENT_PROGRAM:
 			mActiveFragmentGpuProgramParameters = params;
 			{
-				OGRE_LOCK_MUTEX(floatLogical->mutex)
+				CM_LOCK_MUTEX(floatLogical->mutex)
 
 					for (GpuLogicalIndexUseMap::const_iterator i = floatLogical->map.begin();
 						i != floatLogical->map.end(); ++i)
@@ -3212,7 +3212,7 @@ namespace Ogre
 			}
 			// bind ints
 			{
-				OGRE_LOCK_MUTEX(intLogical->mutex)
+				CM_LOCK_MUTEX(intLogical->mutex)
 
 					for (GpuLogicalIndexUseMap::const_iterator i = intLogical->map.begin();
 						i != intLogical->map.end(); ++i)

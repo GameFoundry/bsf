@@ -33,7 +33,7 @@ THE SOFTWARE.
 #  include "WIN32/OgreMinGWSupport.h" // extra defines for MinGW to deal with DX SDK
 #endif
 
-#if OGRE_THREAD_SUPPORT
+#if CM_THREAD_SUPPORT
 #define OGRE_LOCK_RECURSIVE_MUTEX(name)   name.lock();
 #define OGRE_UNLOCK_RECURSIVE_MUTEX(name) name.unlock();
 #else
@@ -42,10 +42,10 @@ THE SOFTWARE.
 #endif
 
 
-#if OGRE_THREAD_SUPPORT == 1
+#if CM_THREAD_SUPPORT == 1
 #define D3D9_DEVICE_ACCESS_LOCK				OGRE_LOCK_RECURSIVE_MUTEX(msDeviceAccessMutex);
 #define D3D9_DEVICE_ACCESS_UNLOCK			OGRE_UNLOCK_RECURSIVE_MUTEX(msDeviceAccessMutex);
-#define D3D9_DEVICE_ACCESS_CRITICAL_SECTION	OGRE_LOCK_MUTEX(msDeviceAccessMutex)
+#define D3D9_DEVICE_ACCESS_CRITICAL_SECTION	CM_LOCK_MUTEX(msDeviceAccessMutex)
 #else
 #define D3D9_DEVICE_ACCESS_LOCK	
 #define D3D9_DEVICE_ACCESS_UNLOCK

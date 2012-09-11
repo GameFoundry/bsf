@@ -74,10 +74,10 @@ namespace Ogre {
 		VertexBufferBindingList mVertexBufferBindings;
 
 		// Mutexes
-		OGRE_MUTEX(mVertexBuffersMutex)
-		OGRE_MUTEX(mIndexBuffersMutex)
-		OGRE_MUTEX(mVertexDeclarationsMutex)
-		OGRE_MUTEX(mVertexBufferBindingsMutex)
+		CM_MUTEX(mVertexBuffersMutex)
+		CM_MUTEX(mIndexBuffersMutex)
+		CM_MUTEX(mVertexDeclarationsMutex)
+		CM_MUTEX(mVertexBufferBindingsMutex)
 
         /// Internal method for destroys all vertex declarations
         virtual void destroyAllDeclarations(void);
