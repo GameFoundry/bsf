@@ -65,15 +65,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OgreD3D9Prerequisites.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9VideoMode.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9Resource.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="OgreBitwise.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
@@ -100,72 +91,6 @@
     </ClInclude>
     <ClInclude Include="OgreRenderOperation.h">
       <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9Mappings.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9Device.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9DeviceManager.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9Driver.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9DriverList.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9GpuProgram.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9GpuProgramManager.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9HardwareBufferManager.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9HardwareIndexBuffer.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9HardwareOcclusionQuery.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9HardwarePixelBuffer.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9HardwareVertexBuffer.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9HLSLProgram.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9HLSLProgramFactory.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9MultiRenderTarget.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9RenderSystem.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9RenderWindow.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9ResourceManager.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9Texture.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9TextureManager.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9VertexDeclaration.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreD3D9VideoModeList.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="OgreBlendMode.h">
       <Filter>Header Files\Utility</Filter>
@@ -443,6 +368,81 @@
     <ClInclude Include="CmViewport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CmD3D9Device.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9DeviceManager.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9Driver.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9DriverList.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9GpuProgram.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9GpuProgramManager.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9HardwareBufferManager.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9HardwareIndexBuffer.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9HardwareOcclusionQuery.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9HardwarePixelBuffer.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9HardwareVertexBuffer.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9HLSLProgram.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9HLSLProgramFactory.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9Mappings.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9MultiRenderTarget.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9Prerequisites.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9RenderSystem.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9RenderWindow.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9Resource.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9ResourceManager.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9Texture.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9TextureManager.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9VertexDeclaration.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9VideoMode.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CmD3D9VideoModeList.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -450,12 +450,6 @@
     </ClCompile>
     <ClCompile Include="CamelotRenderer.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9VideoMode.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9Resource.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="OgreException.cpp">
       <Filter>Source Files\ForRemoval</Filter>
@@ -465,72 +459,6 @@
     </ClCompile>
     <ClCompile Include="OgreStringConverter.cpp">
       <Filter>Source Files\ForRemoval</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9Mappings.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9Device.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9DeviceManager.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9Driver.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9DriverList.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9GpuProgram.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9GpuProgramManager.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9HardwareBufferManager.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9HardwareIndexBuffer.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9HardwareOcclusionQuery.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9HardwarePixelBuffer.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9HardwareVertexBuffer.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9HLSLProgram.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9HLSLProgramFactory.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9MultiRenderTarget.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9RenderSystem.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9RenderWindow.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9ResourceManager.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9Texture.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9TextureManager.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9VertexDeclaration.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreD3D9VideoModeList.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="OgreColourValue.cpp">
       <Filter>Source Files\Utility</Filter>
@@ -795,6 +723,78 @@
     </ClCompile>
     <ClCompile Include="CmViewport.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9Device.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9DeviceManager.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9Driver.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9DriverList.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9GpuProgram.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9GpuProgramManager.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9HardwareBufferManager.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9HardwareIndexBuffer.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9HardwareOcclusionQuery.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9HardwarePixelBuffer.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9HardwareVertexBuffer.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9HLSLProgram.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9HLSLProgramFactory.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9Mappings.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9MultiRenderTarget.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9RenderSystem.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9RenderWindow.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9Resource.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9ResourceManager.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9Texture.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9TextureManager.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9VertexDeclaration.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9VideoMode.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CmD3D9VideoModeList.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

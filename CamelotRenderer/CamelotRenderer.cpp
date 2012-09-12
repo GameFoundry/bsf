@@ -19,8 +19,8 @@
 #include "CmVector4.h"
 #include "CmHardwareBuffer.h"
 
-#include "OgreD3D9Prerequisites.h"
-#include "OgreD3D9VideoMode.h"
+#include "CmD3D9Prerequisites.h"
+#include "CmD3D9VideoMode.h"
 #include "CmRenderSystem.h"
 
 #include "CmApplication.h"
