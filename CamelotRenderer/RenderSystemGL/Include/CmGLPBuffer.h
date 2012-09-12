@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -26,46 +26,37 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
+#ifndef __GLPBUFFER_H__
+#define __GLPBUFFER_H__
 
 #include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
 
 namespace CamelotEngine {
-
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
-	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
-
-
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
+    /** An off-screen rendering context. These contexts are always RGBA for simplicity, speed and
+        convience, but the component format is configurable.
+    */
+    class _OgreGLExport GLPBuffer
+    {
+    public:
+        GLPBuffer(PixelComponentType format, size_t width, size_t height);
+        virtual ~GLPBuffer();
+        
+        /** Get the GL context that needs to be active to render to this PBuffer.
         */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
+        virtual GLContext *getContext() = 0;
+        
+        PixelComponentType getFormat() { return mFormat; }
+        size_t getWidth() { return mWidth; }
+        size_t getHeight() { return mHeight; }
+        
+        /** Get PBuffer component format for an OGRE pixel format.
+         */
+        static PixelComponentType getPixelComponentType(PixelFormat fmt);
+    protected:
+        PixelComponentType mFormat;
+        size_t mWidth, mHeight;
+    };
+    
+}
 
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
-
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
-
-	}; // class ATI_FS_GLGpuProgram
-
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__
+#endif // __GLPBRENDERTEXTURE_H__

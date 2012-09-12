@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -25,47 +25,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
+#ifndef __GLHARDWAREVERTEXBUFFER_H__
+#define __GLHARDWAREVERTEXBUFFER_H__
 
 #include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
+#include "CmHardwareVertexBuffer.h"
 
 namespace CamelotEngine {
 
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
-	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
+    /// Specialisation of HardwareVertexBuffer for OpenGL
+    class _OgreGLExport GLHardwareVertexBuffer : public HardwareVertexBuffer 
+    {
+    private:
+        GLuint mBufferId;
+		// Scratch buffer handling
+		bool mLockedToScratch;
+		size_t mScratchOffset;
+		size_t mScratchSize;
+		void* mScratchPtr;
+		bool mScratchUploadOnUnlock;
 
+    protected:
+        /** See HardwareBuffer. */
+        void* lockImpl(size_t offset, size_t length, LockOptions options);
+        /** See HardwareBuffer. */
+        void unlockImpl(void);
+    public:
+        GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices, 
+            HardwareBuffer::Usage usage, bool useShadowBuffer); 
+        ~GLHardwareVertexBuffer();
+        /** See HardwareBuffer. */
+        void readData(size_t offset, size_t length, void* pDest);
+        /** See HardwareBuffer. */
+        void writeData(size_t offset, size_t length, 
+            const void* pSource, bool discardWholeBuffer = false);
+        /** See HardwareBuffer. */
+        void _updateFromShadow(void);
 
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
+        GLuint getGLBufferId(void) const { return mBufferId; }
+    };
 
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
-
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
-
-	}; // class ATI_FS_GLGpuProgram
-
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__
+}
+#endif // __GLHARDWAREVERTEXBUFFER_H__

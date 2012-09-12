@@ -26,46 +26,18 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
+#ifndef INCL_OGRE_GLUTIL_H
+#define INCL_OGRE_GLUTIL_H
 
-#include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
+#include "CmWin32GLSupport.h"
 
 namespace CamelotEngine {
+    
+inline GLSupport* getGLSupport()
+{
+    return new Win32GLSupport();
+}
 
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
-	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
+};
 
-
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
-
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
-
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
-
-	}; // class ATI_FS_GLGpuProgram
-
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__
+#endif // INCL_OGRE_GLUTIL_H

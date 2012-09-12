@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -26,46 +26,40 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
+#ifndef __GLTextureManager_H__
+#define __GLTextureManager_H__
 
 #include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
+#include "CmGLTexture.h"
+#include "CmGLSupport.h"
+#include "CmTextureManager.h"
 
 namespace CamelotEngine {
+    /** GL-specific implementation of a TextureManager */
+    class _OgreGLExport GLTextureManager : public TextureManager
+    {
+    public:
+        GLTextureManager(GLSupport& support);
+        virtual ~GLTextureManager();
 
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
-	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
+		GLuint getWarningTextureID() { return mWarningTextureID; }
 
+		/// @copydoc TextureManager::getNativeFormat
+		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
 
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
+        /// @copydoc TextureManager::isHardwareFilteringSupported
+        bool isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,
+            bool preciseFormatOnly = false);
 
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
+    protected:
+        /// @copydoc ResourceManager::createImpl
+        Texture* createImpl();
 
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
+		/// Internal method to create a warning texture (bound when a texture unit is blank)
+		void createWarningTexture();
 
-	}; // class ATI_FS_GLGpuProgram
-
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__
+        GLSupport& mGLSupport;
+		GLuint mWarningTextureID;
+    };
+}
+#endif

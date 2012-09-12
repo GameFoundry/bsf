@@ -131,27 +131,6 @@
     <ClInclude Include="RenderSystemGL\Source\atifs\include\ps_1_4.h">
       <Filter>RenderSystemGL\ATIFS</Filter>
     </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLExtSupport.h">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLGpuProgram.h">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLLinkProgram.h">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLLinkProgramManager.h">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLPreprocessor.h">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLProgram.h">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\GLSL\include\OgreGLSLProgramFactory.h">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClInclude>
     <ClInclude Include="RenderSystemGL\Source\nvparse\_ps1.0_parser.h">
       <Filter>RenderSystemGL\NVparse</Filter>
     </ClInclude>
@@ -202,93 +181,6 @@
     </ClInclude>
     <ClInclude Include="RenderSystemGL\Source\nvparse\vs1.0_inst_list.h">
       <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLPrerequisites.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLATIFSInit.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLContext.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLDefaultHardwareBufferManager.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLFBOMultiRenderTarget.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLFBORenderTexture.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLFrameBufferObject.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLGpuNvparseProgram.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLGpuProgram.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLGpuProgramManager.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLHardwareBufferManager.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLHardwareIndexBuffer.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLHardwareOcclusionQuery.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLHardwarePixelBuffer.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLHardwareVertexBuffer.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLPBRenderTexture.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLPBuffer.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLPixelFormat.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLRenderSystem.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLRenderTexture.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLSupport.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLTexture.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreGLTextureManager.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreWin32Context.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreWin32GLSupport.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreWin32Prerequisites.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreWin32RenderTexture.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\OgreWin32Window.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\win32\OgreGLUtil.h">
-      <Filter>RenderSystemGL\Win32</Filter>
     </ClInclude>
     <ClInclude Include="RenderSystemGL\Include\CmGLRenderSystemFactory.h">
       <Filter>RenderSystemGL\Header Files</Filter>
@@ -443,6 +335,114 @@
     <ClInclude Include="CmD3D9VideoModeList.h">
       <Filter>Header Files\D3D9RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="RenderSystemGL\Source\win32\CmGLUtil.h">
+      <Filter>RenderSystemGL\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\CmGLSLExtSupport.h">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\CmGLSLGpuProgram.h">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\CmGLSLLinkProgram.h">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\CmGLSLLinkProgramManager.h">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\CmGLSLPreprocessor.h">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\CmGLSLProgram.h">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Source\GLSL\include\CmGLSLProgramFactory.h">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLATIFSInit.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLContext.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLDefaultHardwareBufferManager.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLFBOMultiRenderTarget.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLFBORenderTexture.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLFrameBufferObject.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLGpuNvparseProgram.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLGpuProgram.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLGpuProgramManager.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLHardwareBufferManager.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLHardwareIndexBuffer.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLHardwareOcclusionQuery.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLHardwarePixelBuffer.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLHardwareVertexBuffer.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLPBRenderTexture.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLPBuffer.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLPixelFormat.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLPrerequisites.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLRenderSystem.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLRenderTexture.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLSupport.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLTexture.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmGLTextureManager.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmWin32Context.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmWin32GLSupport.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmWin32Prerequisites.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmWin32RenderTexture.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemGL\Include\CmWin32Window.h">
+      <Filter>RenderSystemGL\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -486,27 +486,6 @@
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\atifs\src\ps_1_4.cpp">
       <Filter>RenderSystemGL\ATIFS</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLExtSupport.cpp">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLGpuProgram.cpp">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLLinkProgram.cpp">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLLinkProgramManager.cpp">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLPreprocessor.cpp">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLProgram.cpp">
-      <Filter>RenderSystemGL\GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\GLSL\src\OgreGLSLProgramFactory.cpp">
-      <Filter>RenderSystemGL\GLSL</Filter>
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\nvparse\_ps1.0_lexer.cpp">
       <Filter>RenderSystemGL\NVparse</Filter>
@@ -576,81 +555,6 @@
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\glew.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLATIFSInit.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLContext.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLDefaultHardwareBufferManager.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLFBOMultiRenderTarget.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLFBORenderTexture.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLFrameBufferObject.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLGpuNvparseProgram.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLGpuProgram.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLGpuProgramManager.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLHardwareBufferManager.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLHardwareIndexBuffer.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLHardwareOcclusionQuery.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLHardwarePixelBuffer.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLHardwareVertexBuffer.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLPBRenderTexture.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLPixelFormat.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLRenderSystem.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLRenderTexture.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLSupport.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLTexture.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreGLTextureManager.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreWin32GLSupport.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreWin32RenderTexture.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\OgreWin32Window.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\win32\OgreWin32Context.cpp">
-      <Filter>RenderSystemGL\Win32</Filter>
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\CmGLRenderSystemFactory.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
@@ -795,6 +699,102 @@
     </ClCompile>
     <ClCompile Include="CmD3D9VideoModeList.cpp">
       <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\win32\CmWin32Context.cpp">
+      <Filter>RenderSystemGL\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\CmGLSLExtSupport.cpp">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\CmGLSLGpuProgram.cpp">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\CmGLSLLinkProgram.cpp">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\CmGLSLLinkProgramManager.cpp">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\CmGLSLPreprocessor.cpp">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\CmGLSLProgram.cpp">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\GLSL\src\CmGLSLProgramFactory.cpp">
+      <Filter>RenderSystemGL\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLATIFSInit.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLContext.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLDefaultHardwareBufferManager.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLFBOMultiRenderTarget.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLFBORenderTexture.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLFrameBufferObject.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLGpuNvparseProgram.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLGpuProgram.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLGpuProgramManager.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLHardwareBufferManager.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLHardwareIndexBuffer.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLHardwareOcclusionQuery.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLHardwarePixelBuffer.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLHardwareVertexBuffer.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLPBRenderTexture.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLPixelFormat.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLRenderSystem.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLRenderTexture.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLSupport.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLTexture.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmGLTextureManager.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmWin32GLSupport.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmWin32RenderTexture.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemGL\Source\CmWin32Window.cpp">
+      <Filter>RenderSystemGL\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

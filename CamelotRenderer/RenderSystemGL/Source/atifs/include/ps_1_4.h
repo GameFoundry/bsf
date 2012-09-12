@@ -50,7 +50,7 @@ THE SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 
-#include "OgreGLPrerequisites.h"
+#include "CmGLPrerequisites.h"
 #include "Compiler2Pass.h"
 
 

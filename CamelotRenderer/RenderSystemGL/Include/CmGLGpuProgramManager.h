@@ -26,46 +26,34 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
+#ifndef __GLGpuProgramManager_H__
+#define __GLGpuProgramManager_H__
 
 #include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
+#include "CmGpuProgramManager.h"
 
 namespace CamelotEngine {
 
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
-	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
+class _OgreGLExport GLGpuProgramManager : public GpuProgramManager
+{
+public:
+    typedef GpuProgram* (*CreateGpuProgramCallback)(GpuProgramType gptype, const String& syntaxCode);
 
+private:
+    typedef map<String, CreateGpuProgramCallback>::type ProgramMap;
+    ProgramMap mProgramMap;
 
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
+protected:
+    /// Specialised create method with specific parameters
+    GpuProgram* create(GpuProgramType gptype, const String& syntaxCode);
 
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
+public:
+    GLGpuProgramManager();
+    ~GLGpuProgramManager();
+    bool registerProgramFactory(const String& syntaxCode, CreateGpuProgramCallback createFn);
+    bool unregisterProgramFactory(const String& syntaxCode);
+};
 
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
+}; //namespace CamelotEngine
 
-	}; // class ATI_FS_GLGpuProgram
-
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__
+#endif //__GLGpuProgramManager_H__

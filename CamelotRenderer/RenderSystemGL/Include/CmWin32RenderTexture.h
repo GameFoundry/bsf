@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -26,46 +26,30 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
+#ifndef __Win32RT_H__
+#define __Win32RT_H__
 
-#include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
+#include "CmWin32Prerequisites.h"
+#include "CmWin32Context.h"
+#include "CmGLPBuffer.h"
 
 namespace CamelotEngine {
-
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
-	{
+    class _OgreGLExport Win32PBuffer : public GLPBuffer
+    {
 	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
+		Win32PBuffer(PixelComponentType format, size_t width, size_t height);
+		~Win32PBuffer();
+	    
+		virtual GLContext *getContext() { return mContext; }
+    protected:
+        void createPBuffer();
+		void destroyPBuffer();
 
+		HDC		mHDC;
+		HGLRC	mGlrc;
+		HPBUFFERARB mPBuffer;
+        Win32Context *mContext;
+    };
+}
 
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
-
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
-
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
-
-	}; // class ATI_FS_GLGpuProgram
-
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__
+#endif

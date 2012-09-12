@@ -26,46 +26,41 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
-
-#include "CmGLPrerequisites.h"
+#include "CmGLGpuProgramManager.h"
 #include "CmGLGpuProgram.h"
 
-namespace CamelotEngine {
+using namespace CamelotEngine;
 
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
-	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
+GLGpuProgramManager::GLGpuProgramManager()
+{
+    // Superclass sets up members 
+}
 
 
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
+GLGpuProgramManager::~GLGpuProgramManager()
+{
+}
 
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
+bool GLGpuProgramManager::registerProgramFactory(const String& syntaxCode, CreateGpuProgramCallback createFn)
+{
+    return mProgramMap.insert(ProgramMap::value_type(syntaxCode, createFn)).second;
+}
 
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
+bool GLGpuProgramManager::unregisterProgramFactory(const String& syntaxCode)
+{
+    return mProgramMap.erase(syntaxCode) != 0;
+}
 
-	}; // class ATI_FS_GLGpuProgram
+GpuProgram* GLGpuProgramManager::create(GpuProgramType gptype, const String& syntaxCode)
+{
+    ProgramMap::const_iterator iter = mProgramMap.find(syntaxCode);
+    if(iter == mProgramMap.end())
+    {
+        // No factory, this is an unsupported syntax code, probably for another rendersystem
+        // Create a basic one, it doesn't matter what it is since it won't be used
+        return new GLGpuProgram();
+    }
+    
+    return (iter->second)(gptype, syntaxCode);
+}
 
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__

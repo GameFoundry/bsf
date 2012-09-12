@@ -26,46 +26,33 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
 
-#include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
+#ifndef __GLSLProgramFactory_H__
+#define __GLSLProgramFactory_H__
 
-namespace CamelotEngine {
+#include "CmHighLevelGpuProgramManager.h"
+#include "CmGLSLExtSupport.h"
 
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
-	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
+namespace CamelotEngine
+{
+    /** Factory class for GLSL programs. */
+    class _OgreGLExport GLSLProgramFactory : public HighLevelGpuProgramFactory
+    {
+    protected:
+		static String sLanguageName;
+    public:
+        GLSLProgramFactory(void);
+        ~GLSLProgramFactory(void);
+		/// Get the name of the language this factory creates programs for
+		const String& getLanguage(void) const;
+		/// create an instance of GLSLProgram
+        HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramProfile profile);
+		void destroy(HighLevelGpuProgram* prog);
 
+	private:
+		GLSLLinkProgramManager* mLinkProgramManager;
 
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
+    };
+}
 
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
-
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
-
-	}; // class ATI_FS_GLGpuProgram
-
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__
+#endif // __GLSLProgramFactory_H__

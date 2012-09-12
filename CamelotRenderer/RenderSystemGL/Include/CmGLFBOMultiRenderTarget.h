@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -26,46 +26,29 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
+#ifndef __GLMULTIRENDERTARGET_H__
+#define __GLMULTIRENDERTARGET_H__
 
-#include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
+#include "CmGLFrameBufferObject.h"
 
 namespace CamelotEngine {
-
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
+	/** MultiRenderTarget for GL. Requires the FBO extension.
+	*/
+	class _OgreGLExport GLFBOMultiRenderTarget : public MultiRenderTarget
 	{
 	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
+		GLFBOMultiRenderTarget(GLFBOManager *manager, const String &name);
+		~GLFBOMultiRenderTarget();
 
+		virtual void getCustomAttribute( const String& name, void *pData );
 
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
+		bool requiresTextureFlipping() const { return true; }
+	private:
+		virtual void bindSurfaceImpl(size_t attachment, RenderTexture *target);
+		virtual void unbindSurfaceImpl(size_t attachment); 
+		GLFrameBufferObject fbo;
+	};
 
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
+}
 
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
-
-	}; // class ATI_FS_GLGpuProgram
-
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__
+#endif // __GLTEXTURE_H__

@@ -30,7 +30,7 @@
 */
 
 // SJS
-#include "OgreGLSupport.h"
+#include "CmGLSupport.h"
 // SJS
 
 #include <GL/glew.h>

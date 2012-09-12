@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -26,46 +26,65 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
-
-#include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
+#include "CmGLFBOMultiRenderTarget.h"
+#include "CmGLPixelFormat.h"
+#include "OgreStringConverter.h"
+#include "CmGLHardwarePixelBuffer.h"
 
 namespace CamelotEngine {
 
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
+	GLFBOMultiRenderTarget::GLFBOMultiRenderTarget(GLFBOManager *manager, const String &name):
+		MultiRenderTarget(name),
+		fbo(manager, 0 /* TODO: multisampling on MRTs? */)
 	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
+	}
+	GLFBOMultiRenderTarget::~GLFBOMultiRenderTarget()
+	{
+	}
 
 
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
+	void GLFBOMultiRenderTarget::bindSurfaceImpl(size_t attachment, RenderTexture *target)
 
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
+	{
 
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
-
-	}; // class ATI_FS_GLGpuProgram
+		/// Check if the render target is in the rendertarget->FBO map
+        GLFrameBufferObject *fbobj = 0;
+        target->getCustomAttribute("FBO", &fbobj);
+		assert(fbobj);
+		fbo.bindSurface(attachment, fbobj->getSurface(0));
 
 
 
-}; // namespace CamelotEngine
+		// Initialise?
 
-#endif // __ATI_FS_GLGpuProgram_H__
+		
+
+		// Set width and height
+
+		mWidth = fbo.getWidth();
+
+		mHeight = fbo.getHeight();
+
+	}
+
+
+
+	void GLFBOMultiRenderTarget::unbindSurfaceImpl(size_t attachment)
+	{
+		fbo.unbindSurface(attachment);
+
+		// Set width and height
+
+		mWidth = fbo.getWidth();
+
+		mHeight = fbo.getHeight();
+	}
+
+	void GLFBOMultiRenderTarget::getCustomAttribute( const String& name, void *pData )
+	{
+		if(name=="FBO")
+        {
+            *static_cast<GLFrameBufferObject **>(pData) = &fbo;
+        }
+	}
+}

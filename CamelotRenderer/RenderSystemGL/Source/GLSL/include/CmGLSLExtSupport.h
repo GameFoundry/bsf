@@ -26,46 +26,41 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
+
+
+#ifndef __GLSLExtSupport_H__
+#define __GLSLExtSupport_H__
 
 #include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
 
-namespace CamelotEngine {
+//
+// OpenGL Shading Language entry points
+//
+namespace CamelotEngine
+{
 
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
-	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
-
-
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
-
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
-
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
-
-	}; // class ATI_FS_GLGpuProgram
+	// forward declarations
+	class GLSLProgram;
+	class GLSLGpuProgram;
+	class GLSLLinkProgram;
+	class GLSLLinkProgramManager;
+	class GLSLProgramFactory;
 
 
+	/** Check for GL errors and report them in the Ogre Log.
 
-}; // namespace CamelotEngine
+	@param forceInfoLog if true then message from GL info log is obtained
+	@param forceException if true then exception is generated if a GL error found
+	*/
+    void checkForGLSLError(const String& ogreMethod, const String& errorTextPrefix, const GLhandleARB obj, const bool forceInfoLog = false, const bool forceException = false);
 
-#endif // __ATI_FS_GLGpuProgram_H__
+	/** if there is a message in GL info log then post it in the Ogre Log
+	@param msg the info log message string is appended to this string
+	@param obj the GL object that is used to retrieve the info log
+	*/
+	String logObjectInfo(const String& msg, const GLhandleARB obj);
+
+
+} // namespace CamelotEngine
+
+#endif // __GLSLExtSupport_H__

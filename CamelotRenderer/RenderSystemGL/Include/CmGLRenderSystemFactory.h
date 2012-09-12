@@ -3,7 +3,7 @@
 #include <string>
 #include "CmRenderSystemFactory.h"
 #include "CmRenderSystemManager.h"
-#include "OgreGLRenderSystem.h"
+#include "CmGLRenderSystem.h"
 
 namespace CamelotEngine
 {

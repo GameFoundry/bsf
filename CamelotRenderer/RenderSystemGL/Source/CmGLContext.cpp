@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -26,46 +26,38 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
-
-#include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
+#include "CmGLContext.h"
 
 namespace CamelotEngine {
+    // Empty base class
+    GLContext::GLContext():
+        initialized(false) {
+    }
+    
+    GLContext::~GLContext() {        
+    }
+    
+    void GLContext::endCurrent() {
+    }
+    
+}
 
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
+#if CM_THREAD_SUPPORT == 1
+
+// declared in CmGLPrerequisites.h 
+GLEWContext * glewGetContext()
+{
+	using namespace CamelotEngine;
+	static CM_THREAD_POINTER_VAR(GLEWContext, GLEWContextsPtr);
+
+	GLEWContext * currentGLEWContextsPtr =  CM_THREAD_POINTER_GET(GLEWContextsPtr);
+	if (currentGLEWContextsPtr == NULL)
 	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
-
-
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
-
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
-
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
-
-	}; // class ATI_FS_GLGpuProgram
-
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__
+		currentGLEWContextsPtr = new GLEWContext();
+		CM_THREAD_POINTER_SET(GLEWContextsPtr, currentGLEWContextsPtr);
+		memset(currentGLEWContextsPtr, 0, sizeof(GLEWContext));
+		glewInit();
+	}
+	return currentGLEWContextsPtr;
+}
+#endif

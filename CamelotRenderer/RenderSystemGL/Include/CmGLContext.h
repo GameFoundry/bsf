@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
+    (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
@@ -25,47 +25,51 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-
-#ifndef __ATI_FS_GLGpuProgram_H__
-#define __ATI_FS_GLGpuProgram_H__
+#ifndef __OgreGLContext_H__
+#define __OgreGLContext_H__
 
 #include "CmGLPrerequisites.h"
-#include "CmGLGpuProgram.h"
 
 namespace CamelotEngine {
 
-	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
-	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
-	{
-	public:
-        ATI_FS_GLGpuProgram();
-		virtual ~ATI_FS_GLGpuProgram();
+    /**
+     * Class that encapsulates an GL context. (IE a window/pbuffer). This is a 
+     * virtual base class which should be implemented in a GLSupport.
+     * This object can also be used to cache renderstate if we decide to do so
+     * in the future.
+     */
+    class _OgreGLExport GLContext
+    {
+    public:
+        GLContext();
+        virtual ~GLContext();
 
+        /**
+         * Enable the context. All subsequent rendering commands will go here.
+         */
+        virtual void setCurrent() = 0;
+        /**
+         * This is called before another context is made current. By default,
+         * nothing is done here.
+         */
+        virtual void endCurrent() = 0;
+        
+        bool getInitialized() { return initialized; };
+        void setInitialized() { initialized = true; };
 
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
+		/** Create a new context based on the same window/pbuffer as this
+			context - mostly useful for additional threads.
+		@note The caller is responsible for deleting the returned context.
+		*/
+		virtual GLContext* clone() const = 0;
 
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
+		/**
+		* Release the render context.
+		*/
+		virtual void releaseContext() {}
+    protected:
+        bool initialized;
+    };
+}
 
-	protected:
-		/// @copydoc Resource::unload
-		void unloadImpl(void);
-		void loadFromSource(void);
-
-	}; // class ATI_FS_GLGpuProgram
-
-
-
-}; // namespace CamelotEngine
-
-#endif // __ATI_FS_GLGpuProgram_H__
+#endif
