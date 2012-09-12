@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreHardwareIndexBuffer.h"
 #include "OgreD3D9Resource.h"
 
-namespace Ogre { 
+namespace CamelotEngine { 
 
 
     class _OgreD3D9Export D3D9HardwareIndexBuffer : public HardwareIndexBuffer, public D3D9Resource

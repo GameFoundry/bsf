@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "OgreD3D9VideoMode.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	String D3D9VideoMode::getDescription() const
 	{

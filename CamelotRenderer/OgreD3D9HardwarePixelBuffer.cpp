@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 CM_STATIC_MUTEX_INSTANCE(D3D9HardwarePixelBuffer::msDeviceAccessMutex)
 //-----------------------------------------------------------------------------  
@@ -372,7 +372,7 @@ PixelBox D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions optio
 }
 
 //-----------------------------------------------------------------------------  
-Ogre::PixelBox D3D9HardwarePixelBuffer::lockBuffer(BufferResources* bufferResources, 
+CamelotEngine::PixelBox D3D9HardwarePixelBuffer::lockBuffer(BufferResources* bufferResources, 
 												   const Box &lockBox, 
 												   DWORD flags)
 {
@@ -969,7 +969,7 @@ void D3D9HardwarePixelBuffer::updateRenderTexture(bool writeGamma, uint fsaa, co
 	if (mRenderTexture == NULL)
 	{
 		String name;
-		name = "rtt/" +Ogre::StringConverter::toString((size_t)this) + "/" + srcName;
+		name = "rtt/" +CamelotEngine::StringConverter::toString((size_t)this) + "/" + srcName;
 
 		mRenderTexture = new D3D9RenderTexture(name, this, writeGamma, fsaa);		
 

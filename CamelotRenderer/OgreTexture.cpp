@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreTexture.h"
 #include "OgreException.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	//--------------------------------------------------------------------------
     Texture::Texture()
         : // init defaults; can be overridden before load()

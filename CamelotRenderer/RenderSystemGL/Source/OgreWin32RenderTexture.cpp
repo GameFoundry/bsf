@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreWin32GLSupport.h"
 #include "OgreWin32Context.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	 Win32PBuffer::Win32PBuffer(PixelComponentType format, size_t width, size_t height):
 		GLPBuffer(format, width, height),

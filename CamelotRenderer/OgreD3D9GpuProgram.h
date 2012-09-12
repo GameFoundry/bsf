@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreGpuProgram.h"
 #include "OgreD3D9Resource.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     /** Direct3D implementation of a few things common to low-level vertex & fragment programs. */
     class _OgreD3D9Export D3D9GpuProgram : public GpuProgram, public D3D9Resource

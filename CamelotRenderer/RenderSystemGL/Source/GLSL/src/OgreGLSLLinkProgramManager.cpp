@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreGLSLProgram.h"
 #include "OgreStringConverter.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	//-----------------------------------------------------------------------
 	template<> GLSLLinkProgramManager* Singleton<GLSLLinkProgramManager>::ms_Singleton = 0;
@@ -440,9 +440,9 @@ namespace Ogre {
 					 sqp = line.find (" ["))
 					line.erase (sqp, 1);
 				// Split into tokens
-				std::vector<Ogre::String> parts = StringUtil::split(line, ", \t\r\n");
+				std::vector<CamelotEngine::String> parts = StringUtil::split(line, ", \t\r\n");
 
-				for (std::vector<Ogre::String>::iterator i = parts.begin(); i != parts.end(); ++i)
+				for (std::vector<CamelotEngine::String>::iterator i = parts.begin(); i != parts.end(); ++i)
 				{
 					// Is this a type?
 					StringToEnumMap::iterator typei = mTypeEnumMap.find(*i);

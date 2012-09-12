@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreString.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	//-----------------------------------------------------------------------
 	RenderSystemCapabilities::RenderSystemCapabilities()
@@ -60,7 +60,7 @@ namespace Ogre {
 	{
 	}
 	//---------------------------------------------------------------------
-	std::vector<Ogre::String> RenderSystemCapabilities::msGPUVendorStrings;
+	std::vector<CamelotEngine::String> RenderSystemCapabilities::msGPUVendorStrings;
 	//---------------------------------------------------------------------
 	GPUVendor RenderSystemCapabilities::vendorFromString(const String& vendorString)
 	{

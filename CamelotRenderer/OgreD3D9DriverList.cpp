@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreD3D9RenderSystem.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	D3D9DriverList::D3D9DriverList()
 	{

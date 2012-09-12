@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreWin32Prerequisites.h"
 #include "OgreGLContext.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     class _OgreGLExport Win32Context: public GLContext
     {

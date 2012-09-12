@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "OgreGLContext.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     // Empty base class
     GLContext::GLContext():
         initialized(false) {
@@ -47,7 +47,7 @@ namespace Ogre {
 // declared in OgreGLPrerequisites.h 
 GLEWContext * glewGetContext()
 {
-	using namespace Ogre;
+	using namespace CamelotEngine;
 	static CM_THREAD_POINTER_VAR(GLEWContext, GLEWContextsPtr);
 
 	GLEWContext * currentGLEWContextsPtr =  CM_THREAD_POINTER_GET(GLEWContextsPtr);

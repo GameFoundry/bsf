@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "OgreConfigOptionMap.h"
 #include "OgreGLPBuffer.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
     
 class _OgreGLExport GLSupport
@@ -132,6 +132,6 @@ private:
 
 }; // class GLSupport
 
-}; // namespace Ogre
+}; // namespace CamelotEngine
 
 #endif // OGRE_GLSUPPORT_H

@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreVertexIndexData.h"
 #include "OgreString.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	/** Specifies perspective (realistic) or orthographic (architectural) projection.
     */

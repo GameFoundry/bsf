@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreD3D9Prerequisites.h"
 #include "OgreHighLevelGpuProgramManager.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
     /** Factory class for D3D9 HLSL programs. */
     class _OgreD3D9Export D3D9HLSLProgramFactory : public HighLevelGpuProgramFactory

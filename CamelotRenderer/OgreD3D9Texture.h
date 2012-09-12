@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "OgreD3D9HardwarePixelBuffer.h"
 #include "OgreD3D9Resource.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	class _OgreD3D9Export D3D9Texture : public Texture, public D3D9Resource
 	{
 	protected:	

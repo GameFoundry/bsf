@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreMath.h"
 #include "OgreQuaternion.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 
 	/** \addtogroup Core

@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreGpuProgram.h"
 #include "OgreGpuProgramManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     class _OgreD3D9Export D3D9GpuProgramManager : public GpuProgramManager
     {

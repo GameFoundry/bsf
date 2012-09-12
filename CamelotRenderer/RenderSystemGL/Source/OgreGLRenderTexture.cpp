@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #include "OgreGLHardwarePixelBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 
 //-----------------------------------------------------------------------------

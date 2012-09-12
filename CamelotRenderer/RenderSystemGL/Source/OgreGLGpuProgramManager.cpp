@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreGLGpuProgramManager.h"
 #include "OgreGLGpuProgram.h"
 
-using namespace Ogre;
+using namespace CamelotEngine;
 
 GLGpuProgramManager::GLGpuProgramManager()
 {

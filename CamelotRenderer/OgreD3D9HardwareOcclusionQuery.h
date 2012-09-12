@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreD3D9Resource.h"
 
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	// If you use multiple rendering passes you can test only the first pass and all other passes don't have to be rendered 
 	// if the first pass results has too few pixels visible.

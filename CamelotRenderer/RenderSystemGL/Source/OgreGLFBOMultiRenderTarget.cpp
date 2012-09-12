@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #include "OgreGLHardwarePixelBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	GLFBOMultiRenderTarget::GLFBOMultiRenderTarget(GLFBOManager *manager, const String &name):
 		MultiRenderTarget(name),

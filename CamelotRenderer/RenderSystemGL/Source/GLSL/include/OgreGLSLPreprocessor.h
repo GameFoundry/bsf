@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 #include "OgrePrerequisites.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 /**
  * This is a simplistic C/C++-like preprocessor.
@@ -521,6 +521,6 @@ public:
     void *ErrorData;
 };
 
-} // namespace Ogre
+} // namespace CamelotEngine
 
 #endif // __OGRE_CPREPROCESSOR_H__

@@ -40,7 +40,7 @@ THE SOFTWARE.
 #include "OgreVector3.h"
 #include "OgreVector4.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	/** \addtogroup Core
 	*  @{
@@ -166,7 +166,7 @@ namespace Ogre {
             Strings must not contain spaces since space is used as a delimiter in
             the output.
         */
-        static String toString(const std::vector<Ogre::String>& val);
+        static String toString(const std::vector<CamelotEngine::String>& val);
 
         /** Converts a String to a Real. 
         @returns
@@ -254,7 +254,7 @@ namespace Ogre {
             Strings must not contain spaces since space is used as a delimiter in
             the output.
         */
-        static std::vector<Ogre::String> parseStringVector(const String& val);
+        static std::vector<CamelotEngine::String> parseStringVector(const String& val);
         /** Checks the String is a valid number value. */
         static bool isNumber(const String& val);
     };

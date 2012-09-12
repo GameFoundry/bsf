@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "OgreRenderSystemCapabilities.h"
 #include "OgreD3D9Mappings.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 #define MAX_LIGHTS 8
 

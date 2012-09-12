@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 
 
-namespace Ogre {
+namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
     /**

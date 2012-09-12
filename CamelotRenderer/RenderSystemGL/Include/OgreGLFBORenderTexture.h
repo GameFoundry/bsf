@@ -36,7 +36,7 @@ THE SOFTWARE.
 #define GL_DEPTH24_STENCIL8_EXT                           0x88F0
 
 
-namespace Ogre {
+namespace CamelotEngine {
     class GLFBOManager;
 
     /** RenderTexture for GL FBO

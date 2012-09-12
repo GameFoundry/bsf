@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgrePixelFormat.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     //-----------------------------------------------------------------------
     template<> TextureManager* Singleton<TextureManager>::ms_Singleton = 0;
     TextureManager* TextureManager::getSingletonPtr(void)

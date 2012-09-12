@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreDefaultHardwareBufferManager.h"
 
 
-namespace Ogre {
+namespace CamelotEngine {
 
     //-----------------------------------------------------------------------------
     HardwareIndexBuffer::HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, 

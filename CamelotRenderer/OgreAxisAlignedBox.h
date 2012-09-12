@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreVector3.h"
 #include "OgreMatrix4.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -808,6 +808,6 @@ namespace Ogre {
 
 	/** @} */
 	/** @} */
-} // namespace Ogre
+} // namespace CamelotEngine
 
 #endif

@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "OgreHighLevelGpuProgramManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	String sNullLang = "null";
 	class NullProgram : public HighLevelGpuProgram

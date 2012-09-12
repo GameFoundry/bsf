@@ -32,7 +32,7 @@ PFNGLALPHAFRAGMENTOP2ATIPROC          glAlphaFragmentOp2ATI_ptr=NULL;
 PFNGLALPHAFRAGMENTOP3ATIPROC          glAlphaFragmentOp3ATI_ptr=NULL;
 PFNGLSETFRAGMENTSHADERCONSTANTATIPROC glSetFragmentShaderConstantATI_ptr=NULL;
 
-bool InitATIFragmentShaderExtensions(Ogre::GLSupport& glSupport)
+bool InitATIFragmentShaderExtensions(CamelotEngine::GLSupport& glSupport)
 {
     static bool init = false;
     //char *extList;

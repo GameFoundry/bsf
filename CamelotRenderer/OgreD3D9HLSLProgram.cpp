@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	class _OgreD3D9Export HLSLIncludeHandler : public ID3DXInclude
 	{
 	public:

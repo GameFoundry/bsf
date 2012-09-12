@@ -46,7 +46,7 @@ THE SOFTWARE.
 #define CAPS_CATEGORY_MASK (((1 << CAPS_CATEGORY_SIZE) - 1) << OGRE_CAPS_BITSHIFT)
 #define OGRE_CAPS_VALUE(cat, val) ((cat << OGRE_CAPS_BITSHIFT) | (1 << val))
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	/** \addtogroup Core
 	*  @{
@@ -189,7 +189,7 @@ namespace Ogre
 
 		void fromString(const String& versionString)
 		{
-			std::vector<Ogre::String> tokens = StringUtil::split(versionString, ".");
+			std::vector<CamelotEngine::String> tokens = StringUtil::split(versionString, ".");
 			if(!tokens.empty())
 			{
 				major = StringConverter::parseInt(tokens[0]);
@@ -242,7 +242,7 @@ namespace Ogre
 		/// GPU Vendor
 		GPUVendor mVendor;
 
-		static std::vector<Ogre::String> msGPUVendorStrings;
+		static std::vector<CamelotEngine::String> msGPUVendorStrings;
 		static void initVendorStrings();
 
 		/// The number of world matrices available

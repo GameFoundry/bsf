@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 // Adapted from Matrix math by Wild Magic http://www.geometrictools.com/
 
-namespace Ogre
+namespace CamelotEngine
 {
     const Real Matrix3::EPSILON = 1e-06f;
     const Matrix3 Matrix3::ZERO(0,0,0,0,0,0,0,0,0);

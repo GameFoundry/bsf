@@ -30,7 +30,7 @@ THE SOFTWARE
 
 #include "OgreRenderTarget.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	/** \addtogroup Core
 	*  @{
@@ -176,8 +176,7 @@ namespace Ogre
         int mLeft;
         int mTop;
         
-        /** Indicates that this is the primary window. Only to be called by
-            Ogre::Root
+        /** Indicates that this is the primary window. 
         */
         void _setPrimary() { mIsPrimary = true; }
         

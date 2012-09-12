@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #include "OgreException.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	//---------------------------------------------------------------------
 	DWORD D3D9Mappings::get(ShadeOptions so)
@@ -206,7 +206,7 @@ namespace Ogre
 		return D3DBLEND_FORCE_DWORD;
 	}
 	//---------------------------------------------------------------------
-	D3DBLENDOP D3D9Mappings::get(Ogre::SceneBlendOperation sbo)
+	D3DBLENDOP D3D9Mappings::get(CamelotEngine::SceneBlendOperation sbo)
 	{
 		switch(sbo)
 		{

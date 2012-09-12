@@ -41,7 +41,7 @@ THE SOFTWARE.
 	#define OGRE_REND_TO_TEX_RT_GROUP 2
 #endif
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	/** \addtogroup Core
 	*  @{

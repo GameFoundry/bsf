@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "OgrePrerequisites.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	/** \addtogroup Core
 	*  @{

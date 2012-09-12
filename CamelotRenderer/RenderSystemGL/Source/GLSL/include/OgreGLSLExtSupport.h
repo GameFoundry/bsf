@@ -36,7 +36,7 @@ THE SOFTWARE.
 //
 // OpenGL Shading Language entry points
 //
-namespace Ogre
+namespace CamelotEngine
 {
 
 	// forward declarations
@@ -61,6 +61,6 @@ namespace Ogre
 	String logObjectInfo(const String& msg, const GLhandleARB obj);
 
 
-} // namespace Ogre
+} // namespace CamelotEngine
 
 #endif // __GLSLExtSupport_H__

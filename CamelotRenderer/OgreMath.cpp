@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "OgrePlane.h"
 
 
-namespace Ogre
+namespace CamelotEngine
 {
 
     const Real Math::POS_INFINITY = std::numeric_limits<Real>::infinity();

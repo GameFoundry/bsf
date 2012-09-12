@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreHardwareBuffer.h"
 #include "OgrePixelFormat.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	/** \addtogroup Core
 	*  @{

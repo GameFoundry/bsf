@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreD3D9GpuProgram.h"
 #include "OgreException.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     //-----------------------------------------------------------------------------
     D3D9GpuProgramManager::D3D9GpuProgramManager()
 		:GpuProgramManager()

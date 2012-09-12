@@ -9,13 +9,13 @@
 #include <GL/wglext.h>
 #include "OgreWin32RenderTexture.h"
 
-using namespace Ogre;
+using namespace CamelotEngine;
 
 #if CM_THREAD_SUPPORT != 1
-GLenum wglewContextInit (Ogre::GLSupport *glSupport);
+GLenum wglewContextInit (CamelotEngine::GLSupport *glSupport);
 #endif
 
-namespace Ogre {
+namespace CamelotEngine {
 	Win32GLSupport::Win32GLSupport()
         : mInitialWindow(0)
         , mHasPixelFormatARB(false)
@@ -273,7 +273,7 @@ namespace Ogre {
 			opt = mOptions.find("FSAA");
 			if (opt == mOptions.end())
 				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find FSAA options!", "Win32GLSupport::createWindow");
-			std::vector<Ogre::String> aavalues = StringUtil::split(opt->second.currentValue, " ", 1);
+			std::vector<CamelotEngine::String> aavalues = StringUtil::split(opt->second.currentValue, " ", 1);
 			unsigned int multisample = StringConverter::parseUnsignedInt(aavalues[0]);
 			String multisample_hint;
 			if (aavalues.size() > 1)

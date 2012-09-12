@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "OgreGLPixelFormat.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	#define _MAX_CLASS_NAME_ 128
 
@@ -719,8 +719,8 @@ namespace Ogre {
 			buffer = mIsFullScreen? FB_FRONT : FB_BACK;
 		}
 
-		GLenum format = Ogre::GLPixelUtil::getGLOriginFormat(dst.format);
-		GLenum type = Ogre::GLPixelUtil::getGLOriginDataType(dst.format);
+		GLenum format = CamelotEngine::GLPixelUtil::getGLOriginFormat(dst.format);
+		GLenum type = CamelotEngine::GLPixelUtil::getGLOriginDataType(dst.format);
 
 		if ((format == GL_NONE) || (type == 0))
 		{

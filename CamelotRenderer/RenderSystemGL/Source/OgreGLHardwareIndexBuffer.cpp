@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreGLHardwareBufferManager.h"
 #include "OgreException.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
     GLHardwareIndexBuffer::GLHardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType,

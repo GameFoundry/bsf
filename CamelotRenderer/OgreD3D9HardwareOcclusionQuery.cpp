@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreD3D9RenderSystem.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	/**
 	* This is a class that is the DirectX9 implementation of 

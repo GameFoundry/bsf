@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreD3D9Device.h"
 #include "OgreD3D9ResourceManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
     D3D9HardwareIndexBuffer::D3D9HardwareIndexBuffer(HardwareBufferManagerBase* mgr, HardwareIndexBuffer::IndexType idxType, 

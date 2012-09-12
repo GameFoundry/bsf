@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreRenderOperation.h"
 #include "OgreGpuProgramParams.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	/** \addtogroup Core
 	*  @{

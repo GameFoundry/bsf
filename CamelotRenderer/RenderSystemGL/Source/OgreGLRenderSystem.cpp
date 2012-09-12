@@ -53,10 +53,10 @@ THE SOFTWARE.s
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #if CM_THREAD_SUPPORT != 1
-GLenum glewContextInit (Ogre::GLSupport *glSupport);
+GLenum glewContextInit (CamelotEngine::GLSupport *glSupport);
 #endif
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	// Callback function used when registering GLGpuPrograms
 	GpuProgram* createGLArbGpuProgram(GpuProgramType gptype, const String& syntaxCode)
@@ -572,7 +572,7 @@ namespace Ogre {
 		{
 			GLint vSize[2];
 			glGetIntegerv(GL_POINT_SIZE_RANGE,vSize);
-			rsc->setMaxPointSize((Ogre::Real)vSize[1]);
+			rsc->setMaxPointSize((CamelotEngine::Real)vSize[1]);
 		}
 
 		// Vertex texture fetching
@@ -977,7 +977,7 @@ namespace Ogre {
 			// set up glew and GLSupport
 			initialiseContext(win);
 
-			std::vector<Ogre::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+			std::vector<CamelotEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
 
 			if (!tokens.empty())
 			{

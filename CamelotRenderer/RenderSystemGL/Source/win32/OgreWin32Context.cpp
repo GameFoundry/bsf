@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreGLRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     Win32Context::Win32Context(HDC     HDC,
                  HGLRC   Glrc):
@@ -104,7 +104,7 @@ namespace Ogre {
 // declared in OgreGLPrerequisites.h 
 WGLEWContext * wglewGetContext()
 {
-	using namespace Ogre;
+	using namespace CamelotEngine;
 	static CM_THREAD_POINTER_VAR(WGLEWContext, WGLEWContextsPtr);
 
 	WGLEWContext * currentWGLEWContextsPtr = CM_THREAD_POINTER_GET(WGLEWContextsPtr);

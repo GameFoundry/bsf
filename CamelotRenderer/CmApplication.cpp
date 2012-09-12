@@ -19,12 +19,12 @@ namespace CamelotEngine
 
 	void Application::startUp()
 	{
-		mGpuProgramManager = new Ogre::HighLevelGpuProgramManager(); // TODO - Use Camelot::Module for instantiating this
+		mGpuProgramManager = new HighLevelGpuProgramManager(); // TODO - Use Camelot::Module for instantiating this
 
 		//RenderSystemManager::initialize("D3D9RenderSystem");
 		RenderSystemManager::initialize("GLRenderSystem");
 
-		Ogre::RenderSystem* renderSystem = RenderSystemManager::getActive();
+		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_initialise(false, "Camelot Renderer");
 
 		mRenderWindow = renderSystem->_createRenderWindow("Camelot Renderer", 800, 600, false);
@@ -32,9 +32,9 @@ namespace CamelotEngine
 		//renderSystem->setAmbientLight(1.0f, 1.0f, 1.0f);
 		renderSystem->setLightingEnabled(false);
 
-		mCamera = new Ogre::Camera("SimpleCam");
-		mCamera->setPosition(Ogre::Vector3(0,0,80));
-		mCamera->lookAt(Ogre::Vector3(0,0,-300));
+		mCamera = new Camera("SimpleCam");
+		mCamera->setPosition(Vector3(0,0,80));
+		mCamera->lookAt(Vector3(0,0,-300));
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(480.0f / 640.0f);
 
@@ -42,7 +42,7 @@ namespace CamelotEngine
 
 		/////////////////// HLSL SHADERS //////////////////////////
 
-		//Ogre::String fragShaderCode = "float4 ps_main() : COLOR0	\
+		//String fragShaderCode = "float4 ps_main() : COLOR0	\
 		//{														\
 		//	float4 color = float4(0, 0, 0, 0);					\
 		//	color.r = 1.0f;										\
@@ -50,42 +50,42 @@ namespace CamelotEngine
 		//	return color;										\
 		//}";
 
-		//mFragProg = mGpuProgramManager->createProgram(fragShaderCode, "ps_main", "hlsl", Ogre::GPT_FRAGMENT_PROGRAM, Ogre::GPP_PS_2_0);
+		//mFragProg = mGpuProgramManager->createProgram(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 		//mFragProg->load();
 
-		//Ogre::String vertShaderCode = "float4x4 matViewProjection; \
+		//String vertShaderCode = "float4x4 matViewProjection; \
 		//float4 vs_main(float4 inPos : POSITION) : POSITION \
 		//{ \
 		//	return mul(matViewProjection, inPos); \
 		//}";
 
-		//mVertProg = mGpuProgramManager->createProgram(vertShaderCode, "vs_main", "hlsl", Ogre::GPT_VERTEX_PROGRAM, Ogre::GPP_VS_2_0);
+		//mVertProg = mGpuProgramManager->createProgram(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		//mVertProg->load();
 
 		///////////////// GLSL SHADERS ////////////////////////////
-		Ogre::String fragShaderCode = "void main() \
+		String fragShaderCode = "void main() \
 									  {\
 									  gl_FragColor = vec4(0.0,1.0,0.0,1.0); \
 									  }";
 
-		mFragProg = mGpuProgramManager->createProgram(fragShaderCode, "main", "glsl", Ogre::GPT_FRAGMENT_PROGRAM, Ogre::GPP_PS_2_0);
+		mFragProg = mGpuProgramManager->createProgram(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 		mFragProg->load();
 
 		// TODO - Ogres GLSL parsing requires some strict parameter naming, can that be avoided?
-		Ogre::String vertShaderCode = "uniform mat4 matViewProjection; \
+		String vertShaderCode = "uniform mat4 matViewProjection; \
 									  attribute vec4 vertex; \
 								void main() \
 									  { \
 									  gl_Position = matViewProjection * vertex; \
 									  }";
 
-		mVertProg = mGpuProgramManager->createProgram(vertShaderCode, "main", "glsl", Ogre::GPT_VERTEX_PROGRAM, Ogre::GPP_VS_2_0);
+		mVertProg = mGpuProgramManager->createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		mVertProg->load();
 
 
 		while(true)
 		{
-			Ogre::WindowEventUtilities::messagePump();
+			WindowEventUtilities::messagePump();
 
 			DBG_renderSimpleFrame();
 		}
@@ -102,16 +102,16 @@ namespace CamelotEngine
 
 	void Application::DBG_renderSimpleFrame()
 	{
-		Ogre::RenderOperation ro;
-		Ogre::IndexData* indexData = new Ogre::IndexData();
+		RenderOperation ro;
+		IndexData* indexData = new IndexData();
 
 		indexData->indexCount = 36;
-		indexData->indexBuffer = Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
-			Ogre::HardwareIndexBuffer::IT_16BIT,
+		indexData->indexBuffer = HardwareBufferManager::getSingleton().createIndexBuffer(
+			HardwareIndexBuffer::IT_16BIT,
 			36, 
-			Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+			HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
-		unsigned short* idxData = static_cast<unsigned short*>(indexData->indexBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL));
+		unsigned short* idxData = static_cast<unsigned short*>(indexData->indexBuffer->lock(HardwareBuffer::HBL_NORMAL));
 
 		idxData[0] = 0; idxData[1] = 1; idxData[2] = 2;
 		idxData[3] = 2; idxData[4] = 3; idxData[5] = 0;
@@ -134,60 +134,60 @@ namespace CamelotEngine
 		indexData->indexBuffer->unlock();
 
 
-		Ogre::VertexData* vertexData = new Ogre::VertexData();
+		VertexData* vertexData = new VertexData();
 
 		vertexData->vertexStart = 0;
 		vertexData->vertexCount = 8;
 
-		Ogre::VertexDeclaration* decl = vertexData->vertexDeclaration;
+		VertexDeclaration* decl = vertexData->vertexDeclaration;
 		decl->removeAllElements();
 
 		size_t offset = 0;
-		decl->addElement(0, offset, Ogre::VET_FLOAT3, Ogre::VES_POSITION);
-		offset += Ogre::VertexElement::getTypeSize(Ogre::VET_FLOAT3);
+		decl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
+		offset += VertexElement::getTypeSize(VET_FLOAT3);
 
-		//decl->addElement(0, offset, Ogre::VET_COLOUR, Ogre::VES_DIFFUSE);
-		//offset += Ogre::VertexElement::getTypeSize(Ogre::VET_COLOUR);
+		//decl->addElement(0, offset, VET_COLOUR, VES_DIFFUSE);
+		//offset += VertexElement::getTypeSize(VET_COLOUR);
 
-		Ogre::HardwareVertexBufferPtr vertexBuffer = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
+		HardwareVertexBufferPtr vertexBuffer = HardwareBufferManager::getSingleton().createVertexBuffer(
 			vertexData->vertexDeclaration->getVertexSize(0),
 			vertexData->vertexCount,
-			Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+			HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
 		vertexData->vertexBufferBinding->setBinding(0, vertexBuffer);
 
 		size_t vertexSize = vertexBuffer->getVertexSize();
-		char* vertBufferData = static_cast<char*>(vertexBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL));
+		char* vertBufferData = static_cast<char*>(vertexBuffer->lock(HardwareBuffer::HBL_NORMAL));
 
-		Ogre::Vector3 position(-5.0f, -5.0f, -5.0f);
+		Vector3 position(-5.0f, -5.0f, -5.0f);
 		memcpy(vertBufferData, &position, vertexSize);
 		vertBufferData += vertexSize;
 
-		position = 	Ogre::Vector3(-5.0f, 5.0f, -5.0f);
+		position = 	Vector3(-5.0f, 5.0f, -5.0f);
 		memcpy(vertBufferData, &position, vertexSize);
 		vertBufferData += vertexSize;
 
-		position = 	Ogre::Vector3(5.0f, 5.0f, -5.0f);
+		position = 	Vector3(5.0f, 5.0f, -5.0f);
 		memcpy(vertBufferData, &position, vertexSize);
 		vertBufferData += vertexSize;
 
-		position = 	Ogre::Vector3(5.0f, -5.0f, -5.0f);
+		position = 	Vector3(5.0f, -5.0f, -5.0f);
 		memcpy(vertBufferData, &position, vertexSize);
 		vertBufferData += vertexSize;
 
-		position = 	Ogre::Vector3(-5.0f, -5.0f, 5.0f);
+		position = 	Vector3(-5.0f, -5.0f, 5.0f);
 		memcpy(vertBufferData, &position, vertexSize);
 		vertBufferData += vertexSize;
 
-		position = 	Ogre::Vector3(5.0f, -5.0f, 5.0f);
+		position = 	Vector3(5.0f, -5.0f, 5.0f);
 		memcpy(vertBufferData, &position, vertexSize);
 		vertBufferData += vertexSize;
 
-		position = 	Ogre::Vector3(5.0f, 5.0f, 5.0f);
+		position = 	Vector3(5.0f, 5.0f, 5.0f);
 		memcpy(vertBufferData, &position, vertexSize);
 		vertBufferData += vertexSize;
 
-		position = 	Ogre::Vector3(-5.0f, 5.0f, 5.0f);
+		position = 	Vector3(-5.0f, 5.0f, 5.0f);
 		memcpy(vertBufferData, &position, vertexSize);
 		vertBufferData += vertexSize;
 
@@ -196,36 +196,36 @@ namespace CamelotEngine
 		ro.indexData = indexData;
 		ro.vertexData = vertexData;
 		ro.useIndexes = true;
-		ro.operationType = Ogre::RenderOperation::OT_TRIANGLE_LIST;
+		ro.operationType = RenderOperation::OT_TRIANGLE_LIST;
 
-		Ogre::RenderSystem* renderSystem = RenderSystemManager::getActive();
+		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_setViewport(mViewport);
 
-		//Ogre::Matrix4 projMatrix = mCamera->getProjectionMatrixRS();
+		//Matrix4 projMatrix = mCamera->getProjectionMatrixRS();
 		//renderSystem->_setProjectionMatrix(projMatrix);
 
-		//Ogre::Matrix4 viewMatrix = mCamera->getViewMatrix(true);
+		//Matrix4 viewMatrix = mCamera->getViewMatrix(true);
 		//renderSystem->_setViewMatrix(viewMatrix);
 
-		Ogre::Matrix4 projMatrixCstm = mCamera->getProjectionMatrix();
-		Ogre::Matrix4 viewMatrixCstm = mCamera->getViewMatrix(true);
+		Matrix4 projMatrixCstm = mCamera->getProjectionMatrix();
+		Matrix4 viewMatrixCstm = mCamera->getViewMatrix(true);
 
-		Ogre::Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
+		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
 		renderSystem->setInvertVertexWinding(true);
-		renderSystem->clearFrameBuffer(Ogre::FBT_COLOUR | Ogre::FBT_DEPTH, Ogre::ColourValue::Blue);
+		renderSystem->clearFrameBuffer(FBT_COLOUR | FBT_DEPTH, ColourValue::Blue);
 		renderSystem->_beginFrame();
 
 		mVertProg->getDefaultParameters()->setNamedConstant("matViewProjection", viewProjMatrix);
 
-		//renderSystem->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), Ogre::GPV_ALL);
+		//renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), GPV_ALL);
 
 		renderSystem->bindGpuProgram(mFragProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
 		renderSystem->bindGpuProgram(mVertProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
 
 		// TODO - Shaders need to be bound and only then parameters can be set. I need to encapuslate this better because I can't expect users to know that
-		renderSystem->bindGpuProgramParameters(Ogre::GPT_FRAGMENT_PROGRAM, mFragProg->getDefaultParameters(), Ogre::GPV_ALL); // TODO - If I dont call bind parameters before shader wont activate? I think I should handle that differently
-		renderSystem->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), Ogre::GPV_ALL);
+		renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, mFragProg->getDefaultParameters(), GPV_ALL); // TODO - If I dont call bind parameters before shader wont activate? I think I should handle that differently
+		renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), GPV_ALL);
 
 		
 		

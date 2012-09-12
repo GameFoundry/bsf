@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreGLHardwareOcclusionQuery.h"
 #include "OgreException.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 /**
   * This is a class that is the base class of the query class for 

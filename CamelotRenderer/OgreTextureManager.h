@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "OgreSingleton.h"
 
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	/** \addtogroup Core
 	*  @{

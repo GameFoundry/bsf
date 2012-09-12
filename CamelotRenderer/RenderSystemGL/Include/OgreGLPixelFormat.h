@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "OgreGLPrerequisites.h"
 #include "OgrePixelFormat.h"
-namespace Ogre {
+namespace CamelotEngine {
     
 	/**
 	* Class to do pixel format mapping between GL and OGRE

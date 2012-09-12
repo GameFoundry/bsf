@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreGpuProgram.h"
 #include "OgreHardwareVertexBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	/// structure used to keep track of named uniforms in the linked program object
 	struct GLUniformReference
 	{

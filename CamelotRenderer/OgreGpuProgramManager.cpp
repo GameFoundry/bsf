@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmRenderSystemManager.h"
 
 
-namespace Ogre {
+namespace CamelotEngine {
     //-----------------------------------------------------------------------
     template<> GpuProgramManager* Singleton<GpuProgramManager>::ms_Singleton = 0;
     GpuProgramManager* GpuProgramManager::getSingletonPtr(void)

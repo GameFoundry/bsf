@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreD3D9Texture.h"
 #include "OgreTextureManager.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	class _OgreD3D9Export D3D9TextureManager : public TextureManager
 	{

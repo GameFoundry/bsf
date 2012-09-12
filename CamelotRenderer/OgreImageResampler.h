@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 // this file is inlined into OgreImage.cpp!
 // do not include anywhere else.
-namespace Ogre {
+namespace CamelotEngine {
 	/** \addtogroup Core
 	*  @{
 	*/

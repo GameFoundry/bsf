@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreGpuProgramManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 class _OgreGLExport GLGpuProgramManager : public GpuProgramManager
 {
@@ -54,6 +54,6 @@ public:
     bool unregisterProgramFactory(const String& syntaxCode);
 };
 
-}; //namespace Ogre
+}; //namespace CamelotEngine
 
 #endif //__GLGpuProgramManager_H__

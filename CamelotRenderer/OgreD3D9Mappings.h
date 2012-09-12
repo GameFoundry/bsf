@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreHardwareBuffer.h"
 #include "OgreHardwareIndexBuffer.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	class _OgreD3D9Export D3D9Mappings
 	{

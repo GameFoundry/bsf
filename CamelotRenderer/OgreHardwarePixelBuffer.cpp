@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "OgreHardwarePixelBuffer.h"
 #include "OgreException.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
   
     //-----------------------------------------------------------------------------    

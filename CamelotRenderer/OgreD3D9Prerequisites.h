@@ -74,7 +74,7 @@ THE SOFTWARE.
 #include <DxErr.h>
 
 
-namespace Ogre
+namespace CamelotEngine
 {
 	// Predefine classes
 	class D3D9RenderSystem;

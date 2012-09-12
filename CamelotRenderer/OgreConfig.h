@@ -97,7 +97,7 @@ THE SOFTWARE.
 #  define OGRE_CONTAINERS_USE_CUSTOM_MEMORY_ALLOCATOR 1
 #endif
 
-//if you want to make Ogre::String use the custom memory allocator then set:
+//if you want to make String use the custom memory allocator then set:
 //#define OGRE_STRING_USE_CUSTOM_MEMORY_ALLOCATOR 1
 // Doing this will mean Ogre's strings will not be compatible with std::string however
 #ifndef OGRE_STRING_USE_CUSTOM_MEMORY_ALLOCATOR

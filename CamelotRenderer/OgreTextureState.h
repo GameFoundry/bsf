@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "OgrePixelFormat.h"
 #include "OgreTexture.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	/** \addtogroup Core
 	*  @{
 	*/

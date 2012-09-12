@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "OgreD3D9Prerequisites.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	/** Represents a Direct3D rendering resource.
 	Provide unified interface to

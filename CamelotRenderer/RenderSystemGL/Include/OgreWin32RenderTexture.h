@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreWin32Context.h"
 #include "OgreGLPBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     class _OgreGLExport Win32PBuffer : public GLPBuffer
     {
 	public:

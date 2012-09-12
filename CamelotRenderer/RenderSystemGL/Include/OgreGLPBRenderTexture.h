@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 #include "OgreGLRenderTexture.h"
 #include "OgreGLPBuffer.h"
-namespace Ogre {
+namespace CamelotEngine {
     
     /** RenderTexture that uses a PBuffer (offscreen rendering context) for rendering.
     */

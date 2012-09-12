@@ -45,7 +45,7 @@ THE SOFTWARE.
 #include "OgreGpuProgram.h"
 #include "OgrePlane.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	/** \addtogroup Core
 	*  @{
@@ -489,7 +489,7 @@ namespace Ogre
 		virtual RenderTarget * detachRenderTarget( const String &name );
 
 		/// Iterator over RenderTargets
-		typedef Ogre::RenderTargetMap::iterator RenderTargetIterator;
+		typedef CamelotEngine::RenderTargetMap::iterator RenderTargetIterator;
 
 		/** Returns a specialised MapIterator over all render targets attached to the RenderSystem. */
 		virtual RenderTargetIterator getRenderTargetIterator(void) {
@@ -1257,7 +1257,7 @@ namespace Ogre
 		can raise.
 		@see RenderSystem::addListener
 		*/
-		virtual const std::vector<Ogre::String>& getRenderSystemEvents(void) const { return mEventNames; }
+		virtual const std::vector<CamelotEngine::String>& getRenderSystemEvents(void) const { return mEventNames; }
 
 		/** Tell the rendersystem to perform any prep tasks it needs to directly
 		before other threads which might access the rendering API are registered.
@@ -1362,7 +1362,7 @@ namespace Ogre
 		bool updatePassIterationRenderState(void);
 
 		/// List of names of events this rendersystem may raise
-		std::vector<Ogre::String> mEventNames;
+		std::vector<CamelotEngine::String> mEventNames;
 
 		/// Internal method for firing a rendersystem event
 		virtual void fireEvent(const String& name, const NameValuePairList* params = 0);

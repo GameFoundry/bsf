@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreHardwareVertexBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     /// Specialisation of HardwareVertexBuffer for OpenGL
     class _OgreGLExport GLHardwareVertexBuffer : public HardwareVertexBuffer 

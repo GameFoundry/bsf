@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreHardwareVertexBuffer.h"
 #include "OgreD3D9Resource.h"
 
-namespace Ogre { 
+namespace CamelotEngine { 
 
     /** Specialisation of VertexDeclaration for D3D9 */
     class _OgreD3D9Export D3D9VertexDeclaration : public VertexDeclaration, public D3D9Resource

@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 #include "OgreRenderTarget.h"
 
-namespace Ogre
+namespace CamelotEngine
 {    
 	/** \addtogroup Core
 	*  @{

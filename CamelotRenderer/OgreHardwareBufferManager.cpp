@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreVertexIndexData.h"
 
 
-namespace Ogre {
+namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
     template<> HardwareBufferManager* Singleton<HardwareBufferManager>::ms_Singleton = 0;

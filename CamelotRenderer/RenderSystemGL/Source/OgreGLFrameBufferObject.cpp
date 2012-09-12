@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreGLFBORenderTexture.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 //-----------------------------------------------------------------------------
     GLFrameBufferObject::GLFrameBufferObject(GLFBOManager *manager, uint fsaa):

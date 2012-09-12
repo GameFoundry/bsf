@@ -33,7 +33,7 @@ THE SOFTWARE.
 // the prerequisites header (circlar reference)
 //#include "OgrePrerequisites.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	/** \addtogroup Core
 	*  @{

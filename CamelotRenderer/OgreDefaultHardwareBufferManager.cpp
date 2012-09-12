@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "OgreDefaultHardwareBufferManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	DefaultHardwareVertexBuffer::DefaultHardwareVertexBuffer(size_t vertexSize, size_t numVertices, 
 															 HardwareBuffer::Usage usage)

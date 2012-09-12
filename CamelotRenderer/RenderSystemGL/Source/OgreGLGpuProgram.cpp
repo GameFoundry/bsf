@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreStringConverter.h"
 
-using namespace Ogre;
+using namespace CamelotEngine;
 
 GLenum getGLShaderType(GpuProgramType programType)
 {

@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreVector3.h"
 #include "OgreMatrix3.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 
     const Matrix4 Matrix4::ZERO(

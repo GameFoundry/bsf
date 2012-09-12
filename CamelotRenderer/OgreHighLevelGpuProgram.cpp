@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "OgreHighLevelGpuProgram.h"
 #include "OgreException.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
     //---------------------------------------------------------------------------
     HighLevelGpuProgram::HighLevelGpuProgram()

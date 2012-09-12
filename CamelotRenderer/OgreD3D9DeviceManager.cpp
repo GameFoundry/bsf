@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	//---------------------------------------------------------------------
 	D3D9DeviceManager::D3D9DeviceManager()

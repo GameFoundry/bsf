@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreHardwareBuffer.h"
 #include "OgreColourValue.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	class HardwareBufferManagerBase;
 
 	/** \addtogroup Core

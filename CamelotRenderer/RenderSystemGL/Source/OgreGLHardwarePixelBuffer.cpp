@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "OgreGLFBORenderTexture.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 //----------------------------------------------------------------------------- 
 GLHardwarePixelBuffer::GLHardwarePixelBuffer(size_t inWidth, size_t inHeight, size_t inDepth,
                 PixelFormat inFormat,

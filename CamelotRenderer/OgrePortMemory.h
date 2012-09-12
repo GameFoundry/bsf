@@ -17,7 +17,7 @@
 #define OGRE_DELETE_T(ptr, T, category) if(ptr){delete ptr;}
 #define OGRE_DELETE_ARRAY_T(ptr, T, count, category) if(ptr){delete[] ptr;}
 
-namespace Ogre
+namespace CamelotEngine
 {
 	template<typename T>
 	T* constructN(T* basePtr, size_t count)
@@ -30,23 +30,23 @@ namespace Ogre
 	}
 }
 
-#define OGRE_MALLOC_SIMD(bytes, category) ::Ogre::AlignedMemory::allocate(bytes)
-#define OGRE_MALLOC_ALIGN(bytes, category, align) ::Ogre::AlignedMemory::allocate(bytes, align)
-#define OGRE_ALLOC_T_SIMD(T, count, category) static_cast<T*>(::Ogre::AlignedMemory::allocate(sizeof(T)*(count),CM_SIMD_ALIGNMENT))
-#define OGRE_ALLOC_T_ALIGN(T, count, category, align) static_cast<T*>(::Ogre::AlignedMemory::allocate(sizeof(T)*(count), align))
-#define OGRE_FREE_SIMD(ptr, category) ::Ogre::AlignedMemory::deallocate(ptr)
-#define OGRE_FREE_ALIGN(ptr, category, align) ::Ogre::AlignedMemory::deallocate(ptr)
+#define OGRE_MALLOC_SIMD(bytes, category) ::CamelotEngine::AlignedMemory::allocate(bytes)
+#define OGRE_MALLOC_ALIGN(bytes, category, align) ::CamelotEngine::AlignedMemory::allocate(bytes, align)
+#define OGRE_ALLOC_T_SIMD(T, count, category) static_cast<T*>(::CamelotEngine::AlignedMemory::allocate(sizeof(T)*(count),CM_SIMD_ALIGNMENT))
+#define OGRE_ALLOC_T_ALIGN(T, count, category, align) static_cast<T*>(::CamelotEngine::AlignedMemory::allocate(sizeof(T)*(count), align))
+#define OGRE_FREE_SIMD(ptr, category) ::CamelotEngine::AlignedMemory::deallocate(ptr)
+#define OGRE_FREE_ALIGN(ptr, category, align) ::CamelotEngine::AlignedMemory::deallocate(ptr)
 //
-#define OGRE_NEW_T_SIMD(T, category) new (::Ogre::AlignedMemory::allocate(sizeof(T))) T
-#define OGRE_NEW_ARRAY_T_SIMD(T, count, category) ::Ogre::constructN(static_cast<T*>(::Ogre::AlignedMemory::allocate(sizeof(T)*(count))), count) 
-#define OGRE_DELETE_T_SIMD(ptr, T, category) if(ptr){(ptr)->~T(); ::Ogre::AlignedMemory::deallocate(ptr);}
-#define OGRE_DELETE_ARRAY_T_SIMD(ptr, T, count, category) if(ptr){for (size_t b = 0; b < count; ++b) { (ptr)[b].~T();} ::Ogre::AlignedMemory::deallocate(ptr);}
-#define OGRE_NEW_T_ALIGN(T, category, align) new (::Ogre::AlignedMemory::allocate(sizeof(T), align)) T
-#define OGRE_NEW_ARRAY_T_ALIGN(T, count, category, align) ::Ogre::constructN(static_cast<T*>(::Ogre::AlignedMemory::allocate(sizeof(T)*(count), align)), count) 
-#define OGRE_DELETE_T_ALIGN(ptr, T, category, align) if(ptr){(ptr)->~T(); ::Ogre::AlignedMemory::deallocate(ptr);}
-#define OGRE_DELETE_ARRAY_T_ALIGN(ptr, T, count, category, align) if(ptr){for (size_t _b = 0; _b < count; ++_b) { (ptr)[_b].~T();} ::Ogre::AlignedMemory::deallocate(ptr);}
+#define OGRE_NEW_T_SIMD(T, category) new (::CamelotEngine::AlignedMemory::allocate(sizeof(T))) T
+#define OGRE_NEW_ARRAY_T_SIMD(T, count, category) ::CamelotEngine::constructN(static_cast<T*>(::CamelotEngine::AlignedMemory::allocate(sizeof(T)*(count))), count) 
+#define OGRE_DELETE_T_SIMD(ptr, T, category) if(ptr){(ptr)->~T(); ::CamelotEngine::AlignedMemory::deallocate(ptr);}
+#define OGRE_DELETE_ARRAY_T_SIMD(ptr, T, count, category) if(ptr){for (size_t b = 0; b < count; ++b) { (ptr)[b].~T();} ::CamelotEngine::AlignedMemory::deallocate(ptr);}
+#define OGRE_NEW_T_ALIGN(T, category, align) new (::CamelotEngine::AlignedMemory::allocate(sizeof(T), align)) T
+#define OGRE_NEW_ARRAY_T_ALIGN(T, count, category, align) ::CamelotEngine::constructN(static_cast<T*>(::CamelotEngine::AlignedMemory::allocate(sizeof(T)*(count), align)), count) 
+#define OGRE_DELETE_T_ALIGN(ptr, T, category, align) if(ptr){(ptr)->~T(); ::CamelotEngine::AlignedMemory::deallocate(ptr);}
+#define OGRE_DELETE_ARRAY_T_ALIGN(ptr, T, count, category, align) if(ptr){for (size_t _b = 0; _b < count; ++_b) { (ptr)[_b].~T();} ::CamelotEngine::AlignedMemory::deallocate(ptr);}
 
-namespace Ogre
+namespace CamelotEngine
 {
 	enum MemoryCategory
 	{

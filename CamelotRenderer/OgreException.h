@@ -48,9 +48,9 @@ THE SOFTWARE.
 
 #   else
 #       if OGRE_COMP != CM_COMPILER_BORL
-#           define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( Ogre::Exception::ERR_RT_ASSERTION_FAILED, (b), "no function info")
+#           define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( CamelotEngine::Exception::ERR_RT_ASSERTION_FAILED, (b), "no function info")
 #       else
-#           define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( Ogre::Exception::ERR_RT_ASSERTION_FAILED, (b), __FUNC__ )
+#           define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( CamelotEngine::Exception::ERR_RT_ASSERTION_FAILED, (b), __FUNC__ )
 #       endif
 
 #   endif
@@ -58,9 +58,9 @@ THE SOFTWARE.
 // EXCEPTIONS mode
 #elif OGRE_ASSERT_MODE == 2
 #   if OGRE_COMP != CM_COMPILER_BORL
-#       define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( Ogre::Exception::ERR_RT_ASSERTION_FAILED, (b), "no function info")
+#       define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( CamelotEngine::Exception::ERR_RT_ASSERTION_FAILED, (b), "no function info")
 #   else
-#       define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( Ogre::Exception::ERR_RT_ASSERTION_FAILED, (b), __FUNC__ )
+#       define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( CamelotEngine::Exception::ERR_RT_ASSERTION_FAILED, (b), __FUNC__ )
 #   endif
 
 // STANDARD mode
@@ -69,7 +69,7 @@ THE SOFTWARE.
 
 #endif
 
-namespace Ogre {
+namespace CamelotEngine {
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -83,7 +83,7 @@ namespace Ogre {
             encapsulates the detail of the problem. The application using
             OGRE should always ensure that the exceptions are caught, so all
             OGRE engine functions should occur within a
-            try{} catch(Ogre::Exception& e) {} block.
+            try{} catch(CamelotEngine::Exception& e) {} block.
         @par
             The user application should never create any instances of this
             object unless it wishes to unify its error handling using the
@@ -339,13 +339,13 @@ namespace Ogre {
 
 	
 #ifndef OGRE_EXCEPT
-#define OGRE_EXCEPT(num, desc, src) throw Ogre::ExceptionFactory::create( \
-	Ogre::ExceptionCodeType<num>(), desc, src, __FILE__, __LINE__ );
+#define OGRE_EXCEPT(num, desc, src) throw CamelotEngine::ExceptionFactory::create( \
+	CamelotEngine::ExceptionCodeType<num>(), desc, src, __FILE__, __LINE__ );
 #endif
 	/** @} */
 	/** @} */
 
-} // Namespace Ogre
+} // namespace CamelotEngine
 
 #include "OgreHeaderSuffix.h"
 #endif

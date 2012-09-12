@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreHardwareBufferManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 // Default threshold at which glMapBuffer becomes more efficient than glBufferSubData (32k?)
 #	define OGRE_GL_DEFAULT_MAP_BUFFER_THRESHOLD (1024 * 32)

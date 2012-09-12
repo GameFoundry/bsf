@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreRenderWindow.h"
 #include "OgreD3D9Device.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	class _OgreD3D9Export D3D9RenderWindow : public RenderWindow
 	{

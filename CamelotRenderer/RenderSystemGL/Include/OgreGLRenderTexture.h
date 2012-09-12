@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 #include "OgreGLTexture.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     /** GL surface descriptor. Points to a 2D surface that can be rendered to. 
     */
     struct GLSurfaceDesc

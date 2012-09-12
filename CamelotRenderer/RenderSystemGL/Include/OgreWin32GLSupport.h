@@ -5,7 +5,7 @@
 #include "OgreGLSupport.h"
 #include "OgreGLRenderSystem.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
     
 	class _OgreGLExport Win32GLSupport : public GLSupport

@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreGLSLExtSupport.h"
 #include "OgreGLSLLinkProgram.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 
 	/** Ogre assumes that there are seperate vertex and fragment programs to deal with but

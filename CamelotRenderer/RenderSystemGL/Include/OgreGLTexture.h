@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "OgreGLSupport.h"
 #include "OgreHardwarePixelBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     class _OgreGLExport GLTexture : public Texture
     {

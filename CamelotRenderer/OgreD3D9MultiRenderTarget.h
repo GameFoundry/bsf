@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreD3D9HardwarePixelBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	class _OgreD3D9Export D3D9MultiRenderTarget : public MultiRenderTarget
 	{
 	public:

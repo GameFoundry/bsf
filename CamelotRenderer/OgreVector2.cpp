@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreVector2.h"
 #include "OgreMath.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
     const Vector2 Vector2::ZERO( 0, 0);
 

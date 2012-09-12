@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreGLSLExtSupport.h"
 #include "OgreGLSupport.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 
     //-----------------------------------------------------------------------------
@@ -97,4 +97,4 @@ namespace Ogre
 	}
 
 
-} // namespace Ogre
+} // namespace CamelotEngine

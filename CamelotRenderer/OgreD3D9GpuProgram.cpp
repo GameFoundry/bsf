@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreD3D9Mappings.h"
 #include "OgreD3D9RenderSystem.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     //-----------------------------------------------------------------------------
     D3D9GpuProgram::D3D9GpuProgram() 
         : GpuProgram(), mpExternalMicrocode(NULL), mColumnMajorMatrices(false)

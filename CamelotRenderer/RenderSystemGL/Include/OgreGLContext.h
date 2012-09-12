@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "OgreGLPrerequisites.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     /**
      * Class that encapsulates an GL context. (IE a window/pbuffer). This is a 

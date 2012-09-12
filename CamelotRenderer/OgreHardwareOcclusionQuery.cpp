@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "OgreHardwareOcclusionQuery.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 
     HardwareOcclusionQuery::HardwareOcclusionQuery() : 

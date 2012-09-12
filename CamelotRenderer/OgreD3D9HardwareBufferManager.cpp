@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #include "OgreException.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     //-----------------------------------------------------------------------
     D3D9HardwareBufferManagerBase::D3D9HardwareBufferManagerBase()       
     {

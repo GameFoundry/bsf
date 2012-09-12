@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreRenderSystemCapabilities.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	// Scratch pool management (32 bit structure)
 	struct GLScratchBufferAlloc

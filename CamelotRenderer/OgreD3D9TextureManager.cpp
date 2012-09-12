@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreD3D9RenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	D3D9TextureManager::D3D9TextureManager()
 		:TextureManager()

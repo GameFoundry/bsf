@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "OgreD3D9DeviceManager.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	D3D9MultiRenderTarget::D3D9MultiRenderTarget(const String &name):
 		MultiRenderTarget(name)

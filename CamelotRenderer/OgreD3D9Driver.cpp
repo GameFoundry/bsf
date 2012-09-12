@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreD3D9VideoModeList.h"
 #include "OgreD3D9VideoMode.h"
 
-namespace Ogre
+namespace CamelotEngine
 {   
 	D3D9Driver::D3D9Driver()
 	{						

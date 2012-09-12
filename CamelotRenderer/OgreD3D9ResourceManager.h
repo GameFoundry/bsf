@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "OgreD3D9Prerequisites.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	enum D3D9ResourceCreationPolicy
 	{

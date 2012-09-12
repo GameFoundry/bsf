@@ -50,7 +50,7 @@ THE SOFTWARE.
 #if defined ( CM_GCC_VISIBILITY )
 #   pragma GCC visibility push(default)
 #endif
-namespace Ogre {
+namespace CamelotEngine {
 	/** \addtogroup Core
 	*  @{
 	*/

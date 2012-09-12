@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include <OgreGLPrerequisites.h>
 
 
-namespace Ogre {
+namespace CamelotEngine {
     // Forward declarations
     class Win32GLSupport;
     class Win32Window;

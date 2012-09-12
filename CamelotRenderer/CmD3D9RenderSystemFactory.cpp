@@ -10,7 +10,7 @@ namespace CamelotEngine
 		HINSTANCE hInst = GetModuleHandle( "CamelotEngine.dll" ); // TODO - Change name if I plan on using external dll
 	#endif
 
-		return RenderSystemPtr(new Ogre::D3D9RenderSystem(hInst));
+		return RenderSystemPtr(new D3D9RenderSystem(hInst));
 	}
 
 	D3D9RenderSystemFactory::InitOnStart D3D9RenderSystemFactory::initOnStart;

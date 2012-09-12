@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 #include "OgreWin32GLSupport.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     
 inline GLSupport* getGLSupport()
 {

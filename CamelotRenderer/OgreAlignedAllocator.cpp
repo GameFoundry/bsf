@@ -47,7 +47,7 @@ THE SOFTWARE.
 * 6 -> Wasted memory at rear of data block.
 */
 
-namespace Ogre {
+namespace CamelotEngine {
 
     //---------------------------------------------------------------------
     void* AlignedMemory::allocate(size_t size, size_t alignment)

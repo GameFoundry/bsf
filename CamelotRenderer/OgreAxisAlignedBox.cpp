@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "OgreAxisAlignedBox.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	const AxisAlignedBox AxisAlignedBox::BOX_NULL;
 	const AxisAlignedBox AxisAlignedBox::BOX_INFINITE(AxisAlignedBox::EXTENT_INFINITE);

@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     //---------------------------------------------------------------------
     Viewport::Viewport(RenderTarget* target, Real left, Real top, Real width, Real height, int ZOrder)
          :mTarget(target)

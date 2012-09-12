@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreRenderSystemCapabilities.h"
 #include "nvparse.h"
 
-using namespace Ogre;
+using namespace CamelotEngine;
 
 GLGpuNvparseProgram::GLGpuNvparseProgram() 
         : GLGpuProgram()

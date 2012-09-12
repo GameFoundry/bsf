@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "OgreD3D9Prerequisites.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	class D3D9Device;
 	class D3D9RenderWindow;

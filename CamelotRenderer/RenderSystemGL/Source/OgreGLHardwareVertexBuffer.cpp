@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreGLHardwareVertexBuffer.h"
 #include "OgreException.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
     GLHardwareVertexBuffer::GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, 

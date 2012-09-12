@@ -50,7 +50,7 @@ THE SOFTWARE.
 #  include <wingdi.h>
 #endif
 
-namespace Ogre {
+namespace CamelotEngine {
 
 
 

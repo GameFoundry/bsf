@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreD3D9Prerequisites.h"
 #include "OgreHardwarePixelBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	class D3D9Texture;
 	class D3D9RenderTexture;

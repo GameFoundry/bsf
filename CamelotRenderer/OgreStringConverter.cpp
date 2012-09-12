@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "OgreStringConverter.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
     String StringConverter::toString(Real val, unsigned short precision, 
@@ -229,10 +229,10 @@ namespace Ogre {
         return stream.str();
     }
     //-----------------------------------------------------------------------
-    String StringConverter::toString(const std::vector<Ogre::String>& val)
+    String StringConverter::toString(const std::vector<CamelotEngine::String>& val)
     {
 		stringstream stream;
-        std::vector<Ogre::String>::const_iterator i, iend, ibegin;
+        std::vector<CamelotEngine::String>::const_iterator i, iend, ibegin;
         ibegin = val.begin();
         iend = val.end();
         for (i = ibegin; i != iend; ++i)
@@ -421,7 +421,7 @@ namespace Ogre {
         }
     }
     //-----------------------------------------------------------------------
-    std::vector<Ogre::String> StringConverter::parseStringVector(const String& val)
+    std::vector<CamelotEngine::String> StringConverter::parseStringVector(const String& val)
     {
         return StringUtil::split(val);
     }

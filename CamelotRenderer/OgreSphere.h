@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 #include "OgreVector3.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 
 	/** \addtogroup Core

@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #include "OgreGLHardwarePixelBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 //-----------------------------------------------------------------------------  
     GLPBuffer::GLPBuffer(PixelComponentType format, size_t width, size_t height):
         mFormat(format),

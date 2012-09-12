@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "OgrePrerequisites.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     // Forward declarations
     class GLSupport;
     class GLRenderSystem;

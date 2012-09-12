@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     RenderTarget::RenderTarget()
 		:mPriority(OGRE_DEFAULT_RT_GROUP),

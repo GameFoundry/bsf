@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreColourValue.h"
 #include "OgreMath.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     const ColourValue ColourValue::ZERO = ColourValue(0.0,0.0,0.0,0.0);
     const ColourValue ColourValue::Black = ColourValue(0.0,0.0,0.0);

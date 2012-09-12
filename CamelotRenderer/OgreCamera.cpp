@@ -38,7 +38,7 @@ THE SOFTWARE.
 #include "macUtils.h"
 #endif
 
-namespace Ogre {
+namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
     Camera::Camera( const String& name)
@@ -856,4 +856,4 @@ namespace Ogre {
 	}
 
 
-} // namespace Ogre
+} // namespace CamelotEngine

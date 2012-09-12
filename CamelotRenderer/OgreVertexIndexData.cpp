@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "OgreRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
 	VertexData::VertexData(HardwareBufferManagerBase* mgr)

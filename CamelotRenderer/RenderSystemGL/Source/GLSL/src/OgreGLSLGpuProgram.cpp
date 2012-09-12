@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreGLSLLinkProgram.h"
 #include "OgreGLSLProgram.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	GLuint GLSLGpuProgram::mVertexShaderCount = 0;
 	GLuint GLSLGpuProgram::mFragmentShaderCount = 0;

@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	HWND D3D9Device::msSharedFocusWindow = NULL;
 
@@ -1414,7 +1414,7 @@ namespace Ogre
 			}
 		}
 
-		PixelFormat format = Ogre::D3D9Mappings::_getPF(desc.Format);
+		PixelFormat format = CamelotEngine::D3D9Mappings::_getPF(desc.Format);
 
 		if (format == PF_UNKNOWN)
 		{

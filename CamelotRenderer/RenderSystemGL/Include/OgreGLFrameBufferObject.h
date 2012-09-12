@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreGLRenderTexture.h"
 #include "OgreGLContext.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     
     /** Frame Buffer Object abstraction.
     */

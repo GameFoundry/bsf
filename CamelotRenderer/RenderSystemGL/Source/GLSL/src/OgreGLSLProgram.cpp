@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "OgreGLSLLinkProgramManager.h"
 #include "OgreGLSLPreprocessor.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     //---------------------------------------------------------------------------
     GLSLProgram::~GLSLProgram()
     {

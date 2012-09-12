@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreGLHardwarePixelBuffer.h"
 #include "OgreGLFBOMultiRenderTarget.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 //-----------------------------------------------------------------------------    
     GLFBORenderTexture::GLFBORenderTexture(GLFBOManager *manager, const String &name,

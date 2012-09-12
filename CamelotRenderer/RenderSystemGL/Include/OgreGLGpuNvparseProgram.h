@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreGLGpuProgram.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 class _OgreGLExport GLGpuNvparseProgram : public GLGpuProgram
 {
@@ -62,6 +62,6 @@ private:
     GLenum mProgramType;
 };
 
-}; // namespace Ogre
+}; // namespace CamelotEngine
 
 #endif // __GLGpuNvparseProgram_H__

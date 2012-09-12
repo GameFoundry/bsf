@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreGLSupport.h"
 #include "OgreGLTexture.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	void GLSupport::setConfigOption(const String &name, const String &value)
 	{

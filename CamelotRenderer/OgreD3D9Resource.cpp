@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreD3D9ResourceManager.h"
 #include "OgreD3D9RenderSystem.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	CM_STATIC_MUTEX_INSTANCE(D3D9Resource::msDeviceAccessMutex)
 

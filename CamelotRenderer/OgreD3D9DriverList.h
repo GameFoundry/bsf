@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreD3D9Prerequisites.h"
 #include "OgreD3D9Driver.h"
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	class _OgreD3D9Export D3D9DriverList
 	{

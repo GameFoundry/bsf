@@ -15,7 +15,7 @@ namespace CamelotEngine
 	{
 	public:
 		static void initialize(const std::string& name);
-		static Ogre::RenderSystem* getActive() { return mActiveRenderSystem.get(); }
+		static RenderSystem* getActive() { return mActiveRenderSystem.get(); }
 
 		static void registerRenderSystemFactory(RenderSystemFactoryPtr factory);
 	private:

@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreD3D9Prerequisites.h"
 #include "OgreString.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 
 	class D3D9VideoModeList;

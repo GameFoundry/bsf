@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreHardwarePixelBuffer.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 
     //-----------------------------------------------------------------------------
@@ -41,7 +41,7 @@ namespace Ogre
 		mWidth = static_cast<unsigned int>(mBuffer->getWidth());
 		mHeight = static_cast<unsigned int>(mBuffer->getHeight());
         mColourDepth = static_cast<unsigned int>(
-			Ogre::PixelUtil::getNumElemBits(mBuffer->getFormat()));
+			CamelotEngine::PixelUtil::getNumElemBits(mBuffer->getFormat()));
     }
     RenderTexture::~RenderTexture()
     {

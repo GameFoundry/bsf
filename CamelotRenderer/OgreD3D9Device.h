@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreD3D9Prerequisites.h"
 #include "OgreRenderTarget.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	class D3D9RenderWindow;
 	class D3D9DeviceManager;

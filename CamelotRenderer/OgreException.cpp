@@ -31,7 +31,7 @@ THE SOFTWARE.
     #include <stdio.h>
 #endif
 
-namespace Ogre {
+namespace CamelotEngine {
 
     Exception::Exception(int num, const String& desc, const String& src) :
         line( 0 ),

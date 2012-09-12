@@ -3,14 +3,14 @@
 #include <string>
 #include <memory>
 
-namespace Ogre
+namespace CamelotEngine
 {
 	class RenderSystem;
 }
 
 namespace CamelotEngine
 {
-	typedef std::shared_ptr<Ogre::RenderSystem> RenderSystemPtr;
+	typedef std::shared_ptr<RenderSystem> RenderSystemPtr;
 
 	class RenderSystemFactory
 	{

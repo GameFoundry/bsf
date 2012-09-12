@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreString.h"
 
 
-namespace Ogre {
+namespace CamelotEngine {
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -50,7 +50,7 @@ namespace Ogre {
     {
         String name;
         String currentValue;
-        std::vector<Ogre::String> possibleValues;
+        std::vector<String> possibleValues;
         bool immutable;
     } ConfigOption;
 

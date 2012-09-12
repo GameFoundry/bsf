@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgrePrerequisites.h"
 #include "OgreHardwareBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	class HardwareBufferManagerBase;
 
 	/** \addtogroup Core

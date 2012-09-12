@@ -38,7 +38,7 @@ THE SOFTWARE.
 #include "OgreRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     const Real Frustum::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
     //-----------------------------------------------------------------------
     Frustum::Frustum(const String& name) : 
@@ -1118,4 +1118,4 @@ namespace Ogre {
 		outtop = mTop;
 		outbottom = mBottom;
 	}
-} // namespace Ogre
+} // namespace CamelotEngine

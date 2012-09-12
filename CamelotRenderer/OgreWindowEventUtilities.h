@@ -43,7 +43,7 @@ THE SOFTWARE.
 
 
 
-namespace Ogre
+namespace CamelotEngine
 {
 	/** \addtogroup Core
 	*  @{

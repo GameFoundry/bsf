@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "OgreMatrix3.h"
 #include "OgreVector3.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     const Real Quaternion::ms_fEpsilon = 1e-03f;
     const Quaternion Quaternion::ZERO(0.0,0.0,0.0,0.0);

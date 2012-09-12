@@ -37,7 +37,7 @@ THE SOFTWARE.
 #include "OgreConfigOptionMap.h"
 #include "OgreVector4.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     /**
       Implementation of GL as a rendering system.
      */

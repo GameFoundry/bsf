@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "OgreGLDefaultHardwareBufferManager.h"
 #include "OgreException.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	GLDefaultHardwareVertexBuffer::GLDefaultHardwareVertexBuffer(size_t vertexSize, size_t numVertices, 
 																 HardwareBuffer::Usage usage)

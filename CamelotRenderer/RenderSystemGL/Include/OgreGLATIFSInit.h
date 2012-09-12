@@ -35,7 +35,7 @@ extern PFNGLALPHAFRAGMENTOP2ATIPROC          glAlphaFragmentOp2ATI_ptr;
 extern PFNGLALPHAFRAGMENTOP3ATIPROC          glAlphaFragmentOp3ATI_ptr;
 extern PFNGLSETFRAGMENTSHADERCONSTANTATIPROC glSetFragmentShaderConstantATI_ptr;
 
-bool InitATIFragmentShaderExtensions(Ogre::GLSupport& glSupport);
+bool InitATIFragmentShaderExtensions(CamelotEngine::GLSupport& glSupport);
 
 #endif	//_GL_ATI_FRAGMENT_SHADER_H_
 

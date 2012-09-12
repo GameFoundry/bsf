@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreHardwareVertexBuffer.h"
 #include "OgreHardwareIndexBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     /// Specialisation of HardwareVertexBuffer for emulation
     class _OgreGLExport GLDefaultHardwareVertexBuffer : public HardwareVertexBuffer 

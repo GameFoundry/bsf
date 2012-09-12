@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreGpuProgram.h"
 #include "OgreHardwareVertexBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     /** Generalised low-level GL program, can be applied to multiple types (eg ARB and NV) */
     class _OgreGLExport GLGpuProgram : public GpuProgram
@@ -113,6 +113,6 @@ namespace Ogre {
 
 
 
-}; // namespace Ogre
+}; // namespace CamelotEngine
 
 #endif // __GLGpuProgram_H__

@@ -40,9 +40,9 @@ THE SOFTWARE.
 #       include <ext/hash_map>
 namespace __gnu_cxx
 {
-    template <> struct hash< Ogre::_StringBase >
+    template <> struct hash< CamelotEngine::_StringBase >
     {
-        size_t operator()( const Ogre::_StringBase _stringBase ) const
+        size_t operator()( const CamelotEngine::_StringBase _stringBase ) const
         {
             /* This is the PRO-STL way, but it seems to cause problems with VC7.1
                and in some other cases (although I can't recreate it)
@@ -51,7 +51,7 @@ namespace __gnu_cxx
             */
             /** This is our custom way */
             register size_t ret = 0;
-            for( Ogre::_StringBase::const_iterator it = _stringBase.begin(); it != _stringBase.end(); ++it )
+            for( CamelotEngine::_StringBase::const_iterator it = _stringBase.begin(); it != _stringBase.end(); ++it )
                 ret = 5 * ret + *it;
 
             return ret;
@@ -62,7 +62,7 @@ namespace __gnu_cxx
 
 #endif
 
-namespace Ogre {
+namespace CamelotEngine {
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -149,15 +149,15 @@ namespace Ogre {
 		@remarks
 		Path is standardised as in standardisePath
 		*/
-		static void splitFullFilename(const Ogre::String& qualifiedName, 
-			Ogre::String& outBasename, Ogre::String& outExtention, 
-			Ogre::String& outPath);
+		static void splitFullFilename(const CamelotEngine::String& qualifiedName, 
+			CamelotEngine::String& outBasename, CamelotEngine::String& outExtention, 
+			CamelotEngine::String& outPath);
 
 		/** Method for splitting a filename into the base name
 		and extension.
 		*/
-		static void splitBaseFilename(const Ogre::String& fullName, 
-			Ogre::String& outBasename, Ogre::String& outExtention);
+		static void splitBaseFilename(const CamelotEngine::String& fullName, 
+			CamelotEngine::String& outBasename, CamelotEngine::String& outExtention);
 
 
         /** Simple pattern-matching routine allowing a wildcard pattern.
@@ -197,6 +197,6 @@ namespace Ogre {
 	/** @} */
 	/** @} */
 
-} // namespace Ogre
+} // namespace CamelotEngine
 
 #endif // _String_H__

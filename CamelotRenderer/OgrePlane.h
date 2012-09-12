@@ -40,7 +40,7 @@ THE SOFTWARE.
 
 #include "OgreVector3.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	/** \addtogroup Core
 	*  @{
@@ -161,6 +161,6 @@ namespace Ogre {
 	/** @} */
 	/** @} */
 
-} // namespace Ogre
+} // namespace CamelotEngine
 
 #endif

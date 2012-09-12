@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreGLRenderTexture.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     //-----------------------------------------------------------------------------
     GLTextureManager::GLTextureManager(GLSupport& support)
         :TextureManager(), mGLSupport(support), mWarningTextureID(0)

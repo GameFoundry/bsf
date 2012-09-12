@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreHardwareIndexBuffer.h"
 
-namespace Ogre { 
+namespace CamelotEngine { 
 
 
     class _OgreGLExport GLHardwareIndexBuffer : public HardwareIndexBuffer

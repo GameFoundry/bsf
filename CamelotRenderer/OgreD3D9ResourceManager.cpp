@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "OgreD3D9ResourceManager.h"
 #include "OgreD3D9HardwarePixelBuffer.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	
 	//-----------------------------------------------------------------------

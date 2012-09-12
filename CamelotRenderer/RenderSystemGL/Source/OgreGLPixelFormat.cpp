@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreBitwise.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre  {
+namespace CamelotEngine  {
 	//-----------------------------------------------------------------------------
     GLenum GLPixelUtil::getGLOriginFormat(PixelFormat mFormat)
     {

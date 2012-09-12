@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "OgreString.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	//-----------------------------------------------------------------------
 	const String StringUtil::BLANK;
@@ -66,9 +66,9 @@ namespace Ogre {
     }
 
     //-----------------------------------------------------------------------
-    std::vector<Ogre::String> StringUtil::split( const String& str, const String& delims, unsigned int maxSplits)
+    std::vector<CamelotEngine::String> StringUtil::split( const String& str, const String& delims, unsigned int maxSplits)
     {
-        std::vector<Ogre::String> ret;
+        std::vector<CamelotEngine::String> ret;
         // Pre-allocate some space for performance
         ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
 
@@ -108,9 +108,9 @@ namespace Ogre {
         return ret;
     }
 	//-----------------------------------------------------------------------
-	std::vector<Ogre::String> StringUtil::tokenise( const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
+	std::vector<CamelotEngine::String> StringUtil::tokenise( const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
 	{
-        std::vector<Ogre::String> ret;
+        std::vector<CamelotEngine::String> ret;
         // Pre-allocate some space for performance
         ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
 
@@ -256,11 +256,11 @@ namespace Ogre {
 
     }
 	//-----------------------------------------------------------------------
-	void StringUtil::splitBaseFilename(const Ogre::String& fullName, 
-		Ogre::String& outBasename, Ogre::String& outExtention)
+	void StringUtil::splitBaseFilename(const CamelotEngine::String& fullName, 
+		CamelotEngine::String& outBasename, CamelotEngine::String& outExtention)
 	{
 		size_t i = fullName.find_last_of(".");
-		if (i == Ogre::String::npos)
+		if (i == CamelotEngine::String::npos)
 		{
 			outExtention.clear();
 			outBasename = fullName;
@@ -272,10 +272,10 @@ namespace Ogre {
 		}
 	}
 	// ----------------------------------------------------------------------------------------------------------------------------------------------
-	void StringUtil::splitFullFilename(	const Ogre::String& qualifiedName, 
-		Ogre::String& outBasename, Ogre::String& outExtention, Ogre::String& outPath )
+	void StringUtil::splitFullFilename(	const CamelotEngine::String& qualifiedName, 
+		CamelotEngine::String& outBasename, CamelotEngine::String& outExtention, CamelotEngine::String& outPath )
 	{
-		Ogre::String fullName;
+		CamelotEngine::String fullName;
 		splitFilename( qualifiedName, fullName, outPath );
 		splitBaseFilename( fullName, outBasename, outExtention );
 	}

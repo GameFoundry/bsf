@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 #include "OgreViewport.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     RenderWindow::RenderWindow()
         : RenderTarget(), mIsPrimary(false)

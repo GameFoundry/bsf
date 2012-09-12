@@ -4,7 +4,7 @@ namespace CamelotEngine
 {
 	RenderSystemPtr GLRenderSystemFactory::create()
 	{
-		return RenderSystemPtr(new Ogre::GLRenderSystem());
+		return RenderSystemPtr(new GLRenderSystem());
 	}
 
 	GLRenderSystemFactory::InitOnStart GLRenderSystemFactory::initOnStart;

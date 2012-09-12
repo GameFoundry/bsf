@@ -31,10 +31,10 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 #if CM_PLATFORM == CM_PLATFORM_LINUX
 #include <X11/Xlib.h>
-void GLXProc( Ogre::RenderWindow *win, const XEvent &event );
+void GLXProc( CamelotEngine::RenderWindow *win, const XEvent &event );
 #endif
 
-using namespace Ogre;
+using namespace CamelotEngine;
 
 WindowEventUtilities::WindowEventListeners WindowEventUtilities::_msListeners;
 WindowEventUtilities::Windows WindowEventUtilities::_msWindows;

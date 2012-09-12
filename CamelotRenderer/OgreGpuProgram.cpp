@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "OgreRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
     //-----------------------------------------------------------------------------
     GpuProgram::GpuProgram() 

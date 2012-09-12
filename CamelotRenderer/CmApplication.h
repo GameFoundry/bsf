@@ -3,7 +3,7 @@
 #include <memory>
 #include "OgreHighLevelGpuProgram.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	class RenderWindow;
 	class Viewport;
@@ -24,13 +24,13 @@ namespace CamelotEngine
 			void DBG_renderSimpleFrame();
 
 		private:
-			Ogre::HighLevelGpuProgramManager* mGpuProgramManager;
+			HighLevelGpuProgramManager* mGpuProgramManager;
 
-			Ogre::RenderWindow* mRenderWindow;
-			Ogre::Viewport* mViewport;
-			Ogre::Camera* mCamera;
-			Ogre::HighLevelGpuProgramPtr mFragProg;
-			Ogre::HighLevelGpuProgramPtr mVertProg;
+			RenderWindow* mRenderWindow;
+			Viewport* mViewport;
+			Camera* mCamera;
+			HighLevelGpuProgramPtr mFragProg;
+			HighLevelGpuProgramPtr mVertProg;
 	};
 
 	Application& gApplication();

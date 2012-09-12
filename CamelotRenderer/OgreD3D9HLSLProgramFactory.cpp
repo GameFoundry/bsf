@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreString.h"
 #include "OgreD3D9HLSLProgram.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     //-----------------------------------------------------------------------
     String D3D9HLSLProgramFactory::sLanguageName = "hlsl";
     //-----------------------------------------------------------------------

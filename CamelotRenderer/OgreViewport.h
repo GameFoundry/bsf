@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreColourValue.h"
 #include "OgreFrustum.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	/** \addtogroup Core
 	*  @{
 	*/

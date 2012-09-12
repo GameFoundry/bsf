@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "OgreTextureState.h"
 #include "OgreException.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
     TextureState::TextureState(TextureType type)

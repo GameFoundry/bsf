@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "OgreD3D9DeviceManager.h"
 #include "CmRenderSystemManager.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
 	D3D9RenderWindow::D3D9RenderWindow(HINSTANCE instance)
         : mInstance(instance)        

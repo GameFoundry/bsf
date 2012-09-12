@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreHighLevelGpuProgram.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     /** Specialisation of HighLevelGpuProgram to provide support for OpenGL 
         Shader Language (GLSL).
     @remarks

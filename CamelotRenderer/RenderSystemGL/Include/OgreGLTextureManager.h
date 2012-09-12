@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreGLSupport.h"
 #include "OgreTextureManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     /** GL-specific implementation of a TextureManager */
     class _OgreGLExport GLTextureManager : public TextureManager
     {

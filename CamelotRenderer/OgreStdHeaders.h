@@ -71,7 +71,7 @@
 #include <sstream>
 
 #ifdef __BORLANDC__
-namespace Ogre
+namespace CamelotEngine
 {
     using namespace std;
 }

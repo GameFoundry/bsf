@@ -51,7 +51,7 @@ THE SOFTWARE.
 
 #define FLOAT2DWORD(f) *((DWORD*)&f)
 
-namespace Ogre 
+namespace CamelotEngine 
 {
 	D3D9RenderSystem* D3D9RenderSystem::msD3D9RenderSystem = NULL;
 
@@ -307,7 +307,7 @@ namespace Ogre
 				}
 
 				// Reset video mode to default if previous doesn't avail in new possible values
-				std::vector<Ogre::String>::const_iterator itValue =
+				std::vector<CamelotEngine::String>::const_iterator itValue =
 					std::find(optVideoMode->possibleValues.begin(),
 					optVideoMode->possibleValues.end(),
 					optVideoMode->currentValue);
@@ -357,7 +357,7 @@ namespace Ogre
 
 		if( name == "FSAA" )
 		{
-			std::vector<Ogre::String> values = StringUtil::split(value, " ", 1);
+			std::vector<CamelotEngine::String> values = StringUtil::split(value, " ", 1);
 			mFSAASamples = StringConverter::parseUnsignedInt(values[0]);
 			if (values.size() > 1)
 				mFSAAHint = values[1];
@@ -438,7 +438,7 @@ namespace Ogre
 		}
 
 		// Reset FSAA to none if previous doesn't avail in new possible values
-		std::vector<Ogre::String>::const_iterator itValue =
+		std::vector<CamelotEngine::String>::const_iterator itValue =
 			std::find(optFSAA->possibleValues.begin(),
 			optFSAA->possibleValues.end(),
 			optFSAA->currentValue);
@@ -675,7 +675,7 @@ namespace Ogre
         {
 		    mDeviceManager->linkRenderWindow(renderWindow);
         }
-        catch (const Ogre::RenderingAPIException&)
+        catch (const CamelotEngine::RenderingAPIException&)
         {
             // after catching the exception, clean up
             mResourceManager->unlockDeviceAccess();

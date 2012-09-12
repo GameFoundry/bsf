@@ -40,7 +40,7 @@ THE SOFTWARE.
 #include "OgreHardwarePixelBuffer.h"
 #include "OgreHardwareOcclusionQuery.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     static const TexturePtr sNullTexPtr;
 

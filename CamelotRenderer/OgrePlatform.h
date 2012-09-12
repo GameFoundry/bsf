@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "OgreConfig.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 /* Initial platform/compiler-related stuff to set.
 */
 #define CM_PLATFORM_WIN32 1

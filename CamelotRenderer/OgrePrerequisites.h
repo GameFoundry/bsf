@@ -55,7 +55,7 @@ THE SOFTWARE
 
 
 
-namespace Ogre {
+namespace CamelotEngine {
     // Define ogre version
     #define OGRE_VERSION_MAJOR 1
     #define OGRE_VERSION_MINOR 7
@@ -172,7 +172,7 @@ settings have been made.
 #include "OgreStdHeaders.h"
 
 /* Shared pointer typedefs*/
-namespace Ogre
+namespace CamelotEngine
 {
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
 	typedef std::shared_ptr<HighLevelGpuProgram> HighLevelGpuProgramPtr;
@@ -180,7 +180,7 @@ namespace Ogre
 	typedef std::shared_ptr<Texture> TexturePtr;
 }
 
-namespace Ogre
+namespace CamelotEngine
 {
 	#if OGRE_WCHAR_T_STRINGS
 		typedef std::wstring _StringBase;
@@ -201,7 +201,7 @@ namespace Ogre
 }
 
 //for stl containter
-namespace Ogre
+namespace CamelotEngine
 { 
 
 

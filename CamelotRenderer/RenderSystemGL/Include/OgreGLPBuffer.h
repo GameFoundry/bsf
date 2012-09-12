@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 #include "OgreGLPrerequisites.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     /** An off-screen rendering context. These contexts are always RGBA for simplicity, speed and
         convience, but the component format is configurable.
     */

@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreD3D9Prerequisites.h"
 #include "OgreHardwareBufferManager.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
     /** Implementation of HardwareBufferManager for D3D9. */
     class _OgreD3D9Export D3D9HardwareBufferManagerBase : public HardwareBufferManagerBase

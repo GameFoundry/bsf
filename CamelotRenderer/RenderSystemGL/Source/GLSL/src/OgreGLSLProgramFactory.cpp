@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "OgreGLSLLinkProgramManager.h"
 #include "OgreGLSLProgram.h"
 
-namespace Ogre {
+namespace CamelotEngine {
     //-----------------------------------------------------------------------
     String GLSLProgramFactory::sLanguageName = "glsl";
     //-----------------------------------------------------------------------

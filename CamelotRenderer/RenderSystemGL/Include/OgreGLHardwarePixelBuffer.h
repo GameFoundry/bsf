@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreHardwarePixelBuffer.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 	class _OgreGLExport GLHardwarePixelBuffer: public HardwarePixelBuffer
 	{
 	protected:  
