@@ -97,7 +97,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	GpuProgramParametersSharedPtr GpuProgramManager::createParameters(void)
 	{
-		return GpuProgramParametersSharedPtr(OGRE_NEW GpuProgramParameters());
+		return GpuProgramParametersSharedPtr(new GpuProgramParameters());
 	}
 	//---------------------------------------------------------------------
 	GpuSharedParametersPtr GpuProgramManager::createSharedParameters(const String& name)
@@ -108,7 +108,7 @@ namespace CamelotEngine {
 				"The shared parameter set '" + name + "' already exists!", 
 				"GpuProgramManager::createSharedParameters");
 		}
-		GpuSharedParametersPtr ret(OGRE_NEW GpuSharedParameters(name));
+		GpuSharedParametersPtr ret(new GpuSharedParameters(name));
 		mSharedParametersMap[name] = ret;
 		return ret;
 	}

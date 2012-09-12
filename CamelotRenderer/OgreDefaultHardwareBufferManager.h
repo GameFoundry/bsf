@@ -120,13 +120,13 @@ namespace CamelotEngine {
 	{
 	public:
 		DefaultHardwareBufferManager()
-			: HardwareBufferManager(OGRE_NEW DefaultHardwareBufferManagerBase()) 
+			: HardwareBufferManager(new DefaultHardwareBufferManagerBase()) 
 		{
 
 		}
 		~DefaultHardwareBufferManager()
 		{
-			OGRE_DELETE mImpl;
+			delete mImpl;
 		}
 	};
 

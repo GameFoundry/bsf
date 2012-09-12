@@ -75,7 +75,7 @@ namespace CamelotEngine {
     RenderSystem::~RenderSystem()
     {
         shutdown();
-		OGRE_DELETE mRealCapabilities;
+		delete mRealCapabilities;
 		mRealCapabilities = 0;
 		// Current capabilities managed externally
 		mCurrentCapabilities = 0;
@@ -220,7 +220,7 @@ namespace CamelotEngine {
     void RenderSystem::destroyRenderTarget(const String& name)
     {
         RenderTarget* rt = detachRenderTarget(name);
-        OGRE_DELETE rt;
+        delete rt;
     }
     //---------------------------------------------------------------------------------------------
     void RenderSystem::attachRenderTarget( RenderTarget &target )
@@ -393,7 +393,7 @@ namespace CamelotEngine {
 		for (HardwareOcclusionQueryList::iterator i = mHwOcclusionQueries.begin();
 			i != mHwOcclusionQueries.end(); ++i)
 		{
-			OGRE_DELETE *i;
+			delete *i;
 		}
 		mHwOcclusionQueries.clear();
 
@@ -405,9 +405,9 @@ namespace CamelotEngine {
 			if (!primary && it->second->isPrimary())
 				primary = it->second;
 			else
-				OGRE_DELETE it->second;
+				delete it->second;
 		}
-		OGRE_DELETE primary;
+		delete primary;
 		mRenderTargets.clear();
 
 		mPrioritisedRenderTargets.clear();
@@ -588,7 +588,7 @@ namespace CamelotEngine {
 		if (i != mHwOcclusionQueries.end())
 		{
 			mHwOcclusionQueries.erase(i);
-			OGRE_DELETE hq;
+			delete hq;
 		}
 	}
 	//-----------------------------------------------------------------------

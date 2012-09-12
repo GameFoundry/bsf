@@ -141,7 +141,7 @@ namespace CamelotEngine {
 		~AxisAlignedBox()
 		{
 			if (mpCorners)
-				OGRE_FREE(mpCorners, MEMCATEGORY_SCENE_CONTROL);
+				free(mpCorners);
 		}
 
 
@@ -310,7 +310,7 @@ namespace CamelotEngine {
 			//   around face (looking onto the face)
 			// Only for optimization/compatibility.
 			if (!mpCorners)
-				mpCorners = OGRE_ALLOC_T(Vector3, 8, MEMCATEGORY_SCENE_CONTROL);
+				mpCorners = (Vector3*)malloc(sizeof(Vector3) * 8);
 
 			mpCorners[0] = mMinimum;
 			mpCorners[1].x = mMinimum.x; mpCorners[1].y = mMaximum.y; mpCorners[1].z = mMinimum.z;

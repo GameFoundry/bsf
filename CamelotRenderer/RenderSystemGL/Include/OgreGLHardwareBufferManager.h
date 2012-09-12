@@ -84,13 +84,13 @@ namespace CamelotEngine {
 	{
 	public:
 		GLHardwareBufferManager()
-			: HardwareBufferManager(OGRE_NEW GLHardwareBufferManagerBase()) 
+			: HardwareBufferManager(new GLHardwareBufferManagerBase()) 
 		{
 
 		}
 		~GLHardwareBufferManager()
 		{
-			OGRE_DELETE mImpl;
+			delete mImpl;
 		}
 
 

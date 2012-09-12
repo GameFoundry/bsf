@@ -35,7 +35,7 @@ namespace CamelotEngine {
 	: HardwareVertexBuffer(0, vertexSize, numVertices, usage, true, false) // always software, never shadowed
 	{
         // Allocate aligned memory for better SIMD processing friendly.
-        mpData = static_cast<unsigned char*>(OGRE_MALLOC_SIMD(mSizeInBytes, MEMCATEGORY_GEOMETRY));
+        mpData = static_cast<unsigned char*>(_aligned_malloc(mSizeInBytes, CM_SIMD_ALIGNMENT));
 	}
 	//-----------------------------------------------------------------------
 	DefaultHardwareVertexBuffer::DefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices, 
@@ -43,12 +43,12 @@ namespace CamelotEngine {
         : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, true, false) // always software, never shadowed
 	{
         // Allocate aligned memory for better SIMD processing friendly.
-        mpData = static_cast<unsigned char*>(OGRE_MALLOC_SIMD(mSizeInBytes, MEMCATEGORY_GEOMETRY));
+        mpData = static_cast<unsigned char*>(_aligned_malloc(mSizeInBytes, CM_SIMD_ALIGNMENT));
 	}
 	//-----------------------------------------------------------------------
     DefaultHardwareVertexBuffer::~DefaultHardwareVertexBuffer()
 	{
-		OGRE_FREE_SIMD(mpData, MEMCATEGORY_GEOMETRY);
+		_aligned_free(mpData);
 	}
 	//-----------------------------------------------------------------------
     void* DefaultHardwareVertexBuffer::lockImpl(size_t offset, size_t length, LockOptions options)
@@ -94,12 +94,12 @@ namespace CamelotEngine {
 		size_t numIndexes, HardwareBuffer::Usage usage) 
 		: HardwareIndexBuffer(0, idxType, numIndexes, usage, true, false) // always software, never shadowed
 	{
-		mpData = OGRE_ALLOC_T(unsigned char, mSizeInBytes, MEMCATEGORY_GEOMETRY);
+		mpData = (unsigned char*)malloc(sizeof(unsigned char) * mSizeInBytes);
 	}
 	//-----------------------------------------------------------------------
     DefaultHardwareIndexBuffer::~DefaultHardwareIndexBuffer()
 	{
-		OGRE_FREE(mpData, MEMCATEGORY_GEOMETRY);
+		free(mpData);
 	}
 	//-----------------------------------------------------------------------
     void* DefaultHardwareIndexBuffer::lockImpl(size_t offset, size_t length, LockOptions options)
@@ -155,7 +155,7 @@ namespace CamelotEngine {
         DefaultHardwareBufferManagerBase::createVertexBuffer(size_t vertexSize, 
 		size_t numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
 	{
-        DefaultHardwareVertexBuffer* vb = OGRE_NEW DefaultHardwareVertexBuffer(this, vertexSize, numVerts, usage);
+        DefaultHardwareVertexBuffer* vb = new DefaultHardwareVertexBuffer(this, vertexSize, numVerts, usage);
         return HardwareVertexBufferPtr(vb);
 	}
     //-----------------------------------------------------------------------
@@ -163,7 +163,7 @@ namespace CamelotEngine {
         DefaultHardwareBufferManagerBase::createIndexBuffer(HardwareIndexBuffer::IndexType itype, 
 		size_t numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer)
 	{
-        DefaultHardwareIndexBuffer* ib = OGRE_NEW DefaultHardwareIndexBuffer(itype, numIndexes, usage);
+        DefaultHardwareIndexBuffer* ib = new DefaultHardwareIndexBuffer(itype, numIndexes, usage);
 		return HardwareIndexBufferPtr(ib);
 	}
 }

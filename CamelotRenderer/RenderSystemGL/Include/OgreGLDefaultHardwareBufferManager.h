@@ -119,13 +119,13 @@ namespace CamelotEngine {
 	{
 	public:
 		GLDefaultHardwareBufferManager()
-			: HardwareBufferManager(OGRE_NEW GLDefaultHardwareBufferManagerBase()) 
+			: HardwareBufferManager(new GLDefaultHardwareBufferManagerBase()) 
 		{
 
 		}
 		~GLDefaultHardwareBufferManager()
 		{
-			OGRE_DELETE mImpl;
+			delete mImpl;
 		}
 	};
 }

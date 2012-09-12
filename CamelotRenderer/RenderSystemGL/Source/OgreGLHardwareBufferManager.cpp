@@ -52,7 +52,7 @@ namespace CamelotEngine {
 		// Init scratch pool
 		// TODO make it a configurable size?
 		// 32-bit aligned buffer
-		mScratchBufferPool = static_cast<char*>(OGRE_MALLOC_ALIGN(SCRATCH_POOL_SIZE, MEMCATEGORY_GEOMETRY, SCRATCH_ALIGNMENT));
+		mScratchBufferPool = static_cast<char*>(_aligned_malloc(SCRATCH_POOL_SIZE, SCRATCH_ALIGNMENT));
 		GLScratchBufferAlloc* ptrAlloc = (GLScratchBufferAlloc*)mScratchBufferPool;
 		ptrAlloc->size = SCRATCH_POOL_SIZE - sizeof(GLScratchBufferAlloc);
 		ptrAlloc->free = 1;
@@ -79,7 +79,7 @@ namespace CamelotEngine {
         destroyAllDeclarations();
         destroyAllBindings();
 
-		OGRE_FREE_ALIGN(mScratchBufferPool, MEMCATEGORY_GEOMETRY, SCRATCH_ALIGNMENT);
+		_aligned_free(mScratchBufferPool);
     }
     //-----------------------------------------------------------------------
     HardwareVertexBufferPtr GLHardwareBufferManagerBase::createVertexBuffer(

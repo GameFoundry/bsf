@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "OgreHighLevelGpuProgramManager.h"
 #include "OgreGLSLExtSupport.h"
 
-namespace Ogre
+namespace CamelotEngine
 {
     /** Factory class for GLSL programs. */
     class _OgreGLExport GLSLProgramFactory : public HighLevelGpuProgramFactory

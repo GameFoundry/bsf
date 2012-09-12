@@ -78,7 +78,7 @@ namespace CamelotEngine
 		CM_LOCK_AUTO_MUTEX
 
         // Make sure param defs are loaded
-        GpuProgramParametersSharedPtr params = GpuProgramParametersSharedPtr(OGRE_NEW GpuProgramParameters());
+        GpuProgramParametersSharedPtr params = GpuProgramParametersSharedPtr(new GpuProgramParameters());
 		// Only populate named parameters if we can support this program
 		if (this->isSupported())
 		{

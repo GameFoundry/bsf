@@ -109,21 +109,21 @@ namespace CamelotEngine
 	void GpuProgram::createLogicalParameterMappingStructures(bool recreateIfExists) const
 	{
 		if (recreateIfExists || (mFloatLogicalToPhysical == nullptr))
-			mFloatLogicalToPhysical = GpuLogicalBufferStructPtr(OGRE_NEW GpuLogicalBufferStruct());
+			mFloatLogicalToPhysical = GpuLogicalBufferStructPtr(new GpuLogicalBufferStruct());
 		if (recreateIfExists || (mIntLogicalToPhysical == nullptr))
-			mIntLogicalToPhysical = GpuLogicalBufferStructPtr(OGRE_NEW GpuLogicalBufferStruct());
+			mIntLogicalToPhysical = GpuLogicalBufferStructPtr(new GpuLogicalBufferStruct());
 	}
 	//---------------------------------------------------------------------
 	void GpuProgram::createNamedParameterMappingStructures(bool recreateIfExists) const
 	{
 		if (recreateIfExists || (mConstantDefs == nullptr))
-			mConstantDefs = GpuNamedConstantsPtr(OGRE_NEW GpuNamedConstants());
+			mConstantDefs = GpuNamedConstantsPtr(new GpuNamedConstants());
 	}
     //-----------------------------------------------------------------------------
     GpuProgramParametersSharedPtr GpuProgram::createParameters(void)
     {
         // Default implementation simply returns standard parameters.
-        GpuProgramParametersSharedPtr ret = GpuProgramParametersSharedPtr(OGRE_NEW GpuProgramParameters());	
+        GpuProgramParametersSharedPtr ret = GpuProgramParametersSharedPtr(new GpuProgramParameters());	
 		
 		// set up named parameters, if any
 		if ((mConstantDefs != nullptr) && !mConstantDefs->map.empty())

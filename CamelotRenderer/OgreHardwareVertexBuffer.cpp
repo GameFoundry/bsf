@@ -52,7 +52,7 @@ namespace CamelotEngine {
         // Create a shadow buffer if required
         if (mUseShadowBuffer)
         {
-            mpShadowBuffer = OGRE_NEW DefaultHardwareVertexBuffer(mMgr, mVertexSize, 
+            mpShadowBuffer = new DefaultHardwareVertexBuffer(mMgr, mVertexSize, 
                     mNumVertices, HardwareBuffer::HBU_DYNAMIC);
         }
 
@@ -66,7 +66,7 @@ namespace CamelotEngine {
 		}
         if (mpShadowBuffer)
         {
-            OGRE_DELETE mpShadowBuffer;
+            delete mpShadowBuffer;
         }
     }
     //-----------------------------------------------------------------------------

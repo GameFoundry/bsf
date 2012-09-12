@@ -50,7 +50,7 @@ namespace CamelotEngine {
         for (ViewportList::iterator i = mViewportList.begin();
             i != mViewportList.end(); ++i)
         {
-            OGRE_DELETE (*i).second;
+            delete (*i).second;
         }
     }
 
@@ -133,7 +133,7 @@ namespace CamelotEngine {
         }
         // Add viewport to list
         // Order based on Z-Order
-        Viewport* vp = OGRE_NEW Viewport(this, left, top, width, height, ZOrder);
+        Viewport* vp = new Viewport(this, left, top, width, height, ZOrder);
 
         mViewportList.insert(ViewportList::value_type(ZOrder, vp));
 
@@ -146,7 +146,7 @@ namespace CamelotEngine {
 
         if (it != mViewportList.end())
         {
-            OGRE_DELETE (*it).second;
+            delete (*it).second;
             mViewportList.erase(ZOrder);
         }
     }
@@ -155,7 +155,7 @@ namespace CamelotEngine {
     {
         for (ViewportList::iterator it = mViewportList.begin(); it != mViewportList.end(); ++it)
         {
-            OGRE_DELETE (*it).second;
+            delete (*it).second;
         }
 
         mViewportList.clear();

@@ -83,11 +83,11 @@ namespace CamelotEngine {
 		}
 		HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramProfile profile)
 		{
-			return OGRE_NEW NullProgram();
+			return new NullProgram();
 		}
 		void destroy(HighLevelGpuProgram* prog)
 		{
-			OGRE_DELETE prog;
+			delete prog;
 		}
 
 	};
@@ -105,13 +105,13 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	HighLevelGpuProgramManager::HighLevelGpuProgramManager()
 	{
-		mNullFactory = OGRE_NEW NullProgramFactory();
+		mNullFactory = new NullProgramFactory();
 		addFactory(mNullFactory);
 	}
 	//-----------------------------------------------------------------------
 	HighLevelGpuProgramManager::~HighLevelGpuProgramManager()
 	{
-		OGRE_DELETE mNullFactory;
+		delete mNullFactory;
 	}
     //---------------------------------------------------------------------------
 	void HighLevelGpuProgramManager::addFactory(HighLevelGpuProgramFactory* factory)

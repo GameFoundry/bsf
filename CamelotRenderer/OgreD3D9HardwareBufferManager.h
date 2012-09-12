@@ -58,13 +58,13 @@ namespace CamelotEngine {
 	{
 	public:
 		D3D9HardwareBufferManager()
-			: HardwareBufferManager(OGRE_NEW D3D9HardwareBufferManagerBase()) 
+			: HardwareBufferManager(new D3D9HardwareBufferManagerBase()) 
 		{
 
 		}
 		~D3D9HardwareBufferManager()
 		{
-			OGRE_DELETE mImpl;
+			delete mImpl;
 		}
 	};
 

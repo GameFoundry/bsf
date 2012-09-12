@@ -57,7 +57,7 @@ namespace CamelotEngine {
         // Create a shadow buffer if required
         if (mUseShadowBuffer)
         {
-            mpShadowBuffer = OGRE_NEW DefaultHardwareIndexBuffer(mIndexType, 
+            mpShadowBuffer = new DefaultHardwareIndexBuffer(mIndexType, 
                 mNumIndexes, HardwareBuffer::HBU_DYNAMIC);
         }
 
@@ -73,7 +73,7 @@ namespace CamelotEngine {
 
         if (mpShadowBuffer)
         {
-            OGRE_DELETE mpShadowBuffer;
+            delete mpShadowBuffer;
         }
     }
 }

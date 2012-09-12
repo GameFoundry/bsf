@@ -63,8 +63,8 @@ namespace CamelotEngine
         mTrigTableSize = trigTableSize;
         mTrigTableFactor = mTrigTableSize / Math::TWO_PI;
 
-        mSinTable = OGRE_ALLOC_T(Real, mTrigTableSize, MEMCATEGORY_GENERAL);
-        mTanTable = OGRE_ALLOC_T(Real, mTrigTableSize, MEMCATEGORY_GENERAL);
+        mSinTable = (Real*)malloc(sizeof(Real) * mTrigTableSize);
+        mTanTable = (Real*)malloc(sizeof(Real) * mTrigTableSize);
 
         buildTrigTables();
     }
@@ -72,8 +72,8 @@ namespace CamelotEngine
     //-----------------------------------------------------------------------
     Math::~Math()
     {
-        OGRE_FREE(mSinTable, MEMCATEGORY_GENERAL);
-        OGRE_FREE(mTanTable, MEMCATEGORY_GENERAL);
+        free(mSinTable);
+        free(mTanTable);
     }
 
     //-----------------------------------------------------------------------

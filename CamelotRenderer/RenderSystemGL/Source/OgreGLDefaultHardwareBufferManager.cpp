@@ -34,19 +34,19 @@ namespace CamelotEngine {
 																 HardwareBuffer::Usage usage)
 	: HardwareVertexBuffer(0, vertexSize, numVertices, usage, true, false) // always software, never shadowed
 	{
-        mpData = static_cast<unsigned char*>(OGRE_MALLOC_SIMD(mSizeInBytes, MEMCATEGORY_GEOMETRY));
+		mpData = static_cast<unsigned char*>(_aligned_malloc(mSizeInBytes, CM_SIMD_ALIGNMENT));
 	}
 	//-----------------------------------------------------------------------
 	GLDefaultHardwareVertexBuffer::GLDefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices, 
 		HardwareBuffer::Usage usage)
         : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, true, false) // always software, never shadowed
 	{
-        mpData = static_cast<unsigned char*>(OGRE_MALLOC_SIMD(mSizeInBytes, MEMCATEGORY_GEOMETRY));
+        mpData = static_cast<unsigned char*>(_aligned_malloc(mSizeInBytes, CM_SIMD_ALIGNMENT));
 	}
 	//-----------------------------------------------------------------------
     GLDefaultHardwareVertexBuffer::~GLDefaultHardwareVertexBuffer()
 	{
-		OGRE_FREE_SIMD(mpData, MEMCATEGORY_GEOMETRY);
+		_aligned_free(mpData);
 	}
 	//-----------------------------------------------------------------------
     void* GLDefaultHardwareVertexBuffer::lockImpl(size_t offset, size_t length, LockOptions options)

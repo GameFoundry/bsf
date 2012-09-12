@@ -1382,7 +1382,7 @@ namespace CamelotEngine {
 			{
 				// Allocate temporary buffer of destination size in source format 
 				temp = PixelBox(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.format);
-				temp.data = OGRE_MALLOC(temp.getConsecutiveSize(), 0);
+				temp.data = malloc(temp.getConsecutiveSize());
 			}
 			// super-optimized: no conversion
 			switch (PixelUtil::getNumElemBytes(src.format)) 
@@ -1404,7 +1404,7 @@ namespace CamelotEngine {
 				// Blit temp buffer
 				PixelUtil::bulkPixelConversion(temp, scaled);
 
-				OGRE_FREE(temp.data, 0);
+				free(temp.data);
 			}
 			break;
 
@@ -1426,7 +1426,7 @@ namespace CamelotEngine {
 				{
 					// Allocate temp buffer of destination size in source format 
 					temp = PixelBox(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.format);
-					temp.data = OGRE_MALLOC(temp.getConsecutiveSize(), 0);
+					temp.data = malloc(temp.getConsecutiveSize());
 				}
 				// super-optimized: byte-oriented math, no conversion
 				switch (PixelUtil::getNumElemBytes(src.format)) 
@@ -1443,7 +1443,7 @@ namespace CamelotEngine {
 				{
 					// Blit temp buffer
 					PixelUtil::bulkPixelConversion(temp, scaled);
-					OGRE_FREE(temp.data, 0);
+					free(temp.data);
 				}
 				break;
 			case PF_FLOAT32_RGB:

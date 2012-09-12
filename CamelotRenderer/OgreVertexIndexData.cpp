@@ -74,7 +74,7 @@ namespace CamelotEngine {
 	{
 		HardwareBufferManagerBase* pManager = mgr ? mgr : mMgr;
 
-		VertexData* dest = OGRE_NEW VertexData(mgr);
+		VertexData* dest = new VertexData(mgr);
 
 		// Copy vertex buffers in turn
 		const VertexBufferBinding::VertexBufferBindingMap& bindings = 
@@ -672,7 +672,7 @@ namespace CamelotEngine {
 	IndexData* IndexData::clone(bool copyData, HardwareBufferManagerBase* mgr) const
 	{
 		HardwareBufferManagerBase* pManager = mgr ? mgr : HardwareBufferManager::getSingletonPtr();
-		IndexData* dest = OGRE_NEW IndexData();
+		IndexData* dest = new IndexData();
 		if (indexBuffer.get())
 		{
             if (copyData)
@@ -800,7 +800,7 @@ namespace CamelotEngine {
 
 		if (indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT)
 		{
-			triangles = OGRE_ALLOC_T(Triangle, nTriangles, MEMCATEGORY_GEOMETRY);
+			triangles = (Triangle*) malloc(sizeof(Triangle) * nTriangles);
 			source = (uint16 *)buffer;
 			dest = (uint32 *)triangles;
 			for (i = 0; i < nIndexes; ++i) dest[i] = source[i];
@@ -809,8 +809,8 @@ namespace CamelotEngine {
 			triangles = (Triangle*)buffer;
 
 		// sort triangles based on shared edges
-		uint32 *destlist = OGRE_ALLOC_T(uint32, nTriangles, MEMCATEGORY_GEOMETRY);
-		unsigned char *visited = OGRE_ALLOC_T(unsigned char, nTriangles, MEMCATEGORY_GEOMETRY);
+		uint32 *destlist = (uint32*)malloc(sizeof(uint32) * nTriangles);
+		unsigned char *visited = (unsigned char*)malloc(sizeof(unsigned char) * nTriangles);
 
 		for (i = 0; i < nTriangles; ++i) visited[i] = 0;
 
@@ -854,11 +854,11 @@ namespace CamelotEngine {
 				source[j++] = (uint16)t->b;
 				source[j++] = (uint16)t->c;
 			}
-			OGRE_FREE(triangles, MEMCATEGORY_GEOMETRY);
+			free(triangles);
 		}
 		else
 		{
-			uint32 *reflist = OGRE_ALLOC_T(uint32, nTriangles, MEMCATEGORY_GEOMETRY);
+			uint32 *reflist = (uint32*)malloc(sizeof(uint32) * nTriangles);
 
 			// fill the referencebuffer
 			for (i = 0; i < nTriangles; ++i)
@@ -881,11 +881,11 @@ namespace CamelotEngine {
 				// destlist[i] = i; // not needed, it will not be used
 			}
 
-			OGRE_FREE(reflist, MEMCATEGORY_GEOMETRY);
+			free(reflist);
 		}
 
-		OGRE_FREE(destlist, MEMCATEGORY_GEOMETRY);
-		OGRE_FREE(visited, MEMCATEGORY_GEOMETRY);
+		free(destlist);
+		free(visited);
 					
 		indexBuffer->unlock();
 	}

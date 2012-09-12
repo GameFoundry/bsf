@@ -105,22 +105,22 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     VertexDeclaration* HardwareBufferManagerBase::createVertexDeclarationImpl(void)
     {
-        return OGRE_NEW VertexDeclaration();
+        return new VertexDeclaration();
     }
     //-----------------------------------------------------------------------
     void HardwareBufferManagerBase::destroyVertexDeclarationImpl(VertexDeclaration* decl)
     {
-        OGRE_DELETE decl;
+        delete decl;
     }
     //-----------------------------------------------------------------------
 	VertexBufferBinding* HardwareBufferManagerBase::createVertexBufferBindingImpl(void)
 	{
-		return OGRE_NEW VertexBufferBinding();
+		return new VertexBufferBinding();
 	}
     //-----------------------------------------------------------------------
 	void HardwareBufferManagerBase::destroyVertexBufferBindingImpl(VertexBufferBinding* binding)
 	{
-		OGRE_DELETE binding;
+		delete binding;
 	}
     //-----------------------------------------------------------------------
     void HardwareBufferManagerBase::destroyAllDeclarations(void)

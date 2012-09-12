@@ -257,12 +257,12 @@ namespace CamelotEngine {
 			VertexCacheProfiler(unsigned int cachesize = 16, CacheType cachetype = FIFO )
 				: size ( cachesize ), type ( cachetype ), tail (0), buffersize (0), hit (0), miss (0)
 			{
-				cache = OGRE_ALLOC_T(uint32, size, MEMCATEGORY_GEOMETRY);
+				cache = (uint32*)malloc(sizeof(uint32) * size);
 			}
 
 			~VertexCacheProfiler()
 			{
-				OGRE_FREE(cache, MEMCATEGORY_GEOMETRY);
+				free(cache);
 			}
 
 			void profile(const HardwareIndexBufferPtr& indexBuffer);

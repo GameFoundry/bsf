@@ -253,6 +253,87 @@ typedef char int8;
 	typedef long long int64;
 #endif
 
+/* Initial CPU stuff to set.
+*/
+#define CM_CPU_UNKNOWN    0
+#define CM_CPU_X86        1
+#define CM_CPU_PPC        2
+#define OGRE_CPU_ARM        3
+
+/* Find CPU type
+*/
+#if (defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))) || \
+    (defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))
+#   define CM_CPU CM_CPU_X86
+
+#elif CM_PLATFORM == CM_PLATFORM_APPLE && defined(__BIG_ENDIAN__)
+#   define CM_CPU CM_CPU_PPC
+#elif CM_PLATFORM == CM_PLATFORM_APPLE
+#	define CM_CPU CM_CPU_X86
+#elif CM_PLATFORM == OGRE_PLATFORM_IPHONE && (defined(__i386__) || defined(__x86_64__))
+#	define CM_CPU CM_CPU_X86
+#elif defined(__arm__)
+#	define CM_CPU OGRE_CPU_ARM
+#else
+#   define CM_CPU CM_CPU_UNKNOWN
+#endif
+
+/* Find how to declare aligned variable.
+*/
+#if CM_COMPILER == CM_COMPILER_MSVC
+#   define CM_ALIGNED_DECL(type, var, alignment)  __declspec(align(alignment)) type var
+
+#elif CM_COMPILER == CM_COMPILER_GNUC
+#   define CM_ALIGNED_DECL(type, var, alignment)  type var __attribute__((__aligned__(alignment)))
+
+#else
+#   define CM_ALIGNED_DECL(type, var, alignment)  type var
+#endif
+
+/** Find perfect alignment (should supports SIMD alignment if SIMD available)
+*/
+#if CM_CPU == CM_CPU_X86
+#   define CM_SIMD_ALIGNMENT  16
+
+#else
+#   define CM_SIMD_ALIGNMENT  16
+#endif
+
+/* Declare variable aligned to SIMD alignment.
+*/
+#define CM_SIMD_ALIGNED_DECL(type, var)   CM_ALIGNED_DECL(type, var, CM_SIMD_ALIGNMENT)
+
+/* Define whether or not Ogre compiled with SSE supports.
+*/
+#if OGRE_DOUBLE_PRECISION == 0 && CM_CPU == CM_CPU_X86 && CM_COMPILER == CM_COMPILER_MSVC
+#   define __OGRE_HAVE_SSE  1
+#elif OGRE_DOUBLE_PRECISION == 0 && CM_CPU == CM_CPU_X86 && CM_COMPILER == CM_COMPILER_GNUC && CM_PLATFORM != OGRE_PLATFORM_APPLE_IOS
+#   define __OGRE_HAVE_SSE  1
+#endif
+
+/* Define whether or not Ogre compiled with VFP supports.
+ */
+#if OGRE_DOUBLE_PRECISION == 0 && CM_CPU == OGRE_CPU_ARM && CM_COMPILER == CM_COMPILER_GNUC && defined(__ARM_ARCH_6K__) && defined(__VFP_FP__)
+#   define __OGRE_HAVE_VFP  1
+#endif
+
+/* Define whether or not Ogre compiled with NEON supports.
+ */
+#if OGRE_DOUBLE_PRECISION == 0 && CM_CPU == OGRE_CPU_ARM && CM_COMPILER == CM_COMPILER_GNUC && defined(__ARM_ARCH_7A__) && defined(__ARM_NEON__)
+#   define __OGRE_HAVE_NEON  1
+#endif
+
+#ifndef __OGRE_HAVE_SSE
+#   define __OGRE_HAVE_SSE  0
+#endif
+
+#ifndef __OGRE_HAVE_VFP
+#   define __OGRE_HAVE_VFP  0
+#endif
+
+#ifndef __OGRE_HAVE_NEON
+#   define __OGRE_HAVE_NEON  0
+#endif
 
 }
 
