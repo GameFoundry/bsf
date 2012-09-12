@@ -29,8 +29,7 @@ THE SOFTWARE.
 #define __GLRenderSystem_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgrePlatform.h"
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 #include "OgreGLHardwareBufferManager.h"
 #include "OgreGLGpuProgramManager.h"
 #include "OgreGLSLProgramFactory.h"

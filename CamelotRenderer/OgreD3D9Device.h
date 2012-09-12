@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __D3D9Device_H__
 
 #include "OgreD3D9Prerequisites.h"
-#include "OgreRenderTarget.h"
+#include "CmRenderTarget.h"
 
 namespace CamelotEngine {
 

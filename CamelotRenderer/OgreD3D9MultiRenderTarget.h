@@ -29,8 +29,8 @@ THE SOFTWARE.
 #define __D3D9MULTIRENDERTARGET_H__
 
 #include "OgreD3D9Prerequisites.h"
-#include "OgreTexture.h"
-#include "OgreRenderTexture.h"
+#include "CmTexture.h"
+#include "CmRenderTexture.h"
 #include "OgreException.h"
 #include "OgreD3D9HardwarePixelBuffer.h"
 

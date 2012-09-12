@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "OgreD3D9Prerequisites.h"
 #include "OgreD3D9Texture.h"
-#include "OgreTextureManager.h"
+#include "CmTextureManager.h"
 
 namespace CamelotEngine 
 {

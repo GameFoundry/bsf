@@ -26,10 +26,10 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "OgreD3D9RenderWindow.h"
-#include "OgreViewport.h"
+#include "CmViewport.h"
 #include "OgreException.h"
 #include "OgreD3D9RenderSystem.h"
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 #include "OgreBitwise.h"
 #include "OgreStringConverter.h"
 #include "OgreWindowEventUtilities.h"

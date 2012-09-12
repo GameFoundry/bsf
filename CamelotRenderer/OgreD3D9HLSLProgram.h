@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __D3D9HLSLProgram_H__
 
 #include "OgreD3D9Prerequisites.h"
-#include "OgreHighLevelGpuProgram.h"
+#include "CmHighLevelGpuProgram.h"
 
 namespace CamelotEngine {
     /** Specialisation of HighLevelGpuProgram to provide support for D3D9 

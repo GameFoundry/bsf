@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreGLTexture.h"
 #include "OgreGLSupport.h"
-#include "OgreTextureManager.h"
+#include "CmTextureManager.h"
 
 namespace CamelotEngine {
     /** GL-specific implementation of a TextureManager */

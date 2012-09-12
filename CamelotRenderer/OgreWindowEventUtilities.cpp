@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "OgreWindowEventUtilities.h"
-#include "OgreRenderWindow.h"
+#include "CmRenderWindow.h"
 #include "OgreException.h"
 #include "OgreStringConverter.h"
 #if CM_PLATFORM == CM_PLATFORM_LINUX

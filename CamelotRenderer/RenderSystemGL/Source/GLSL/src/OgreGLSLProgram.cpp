@@ -25,12 +25,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreGpuProgram.h"
-#include "OgreRenderSystem.h"
-#include "OgreRenderSystemCapabilities.h"
+#include "CmGpuProgram.h"
+#include "CmRenderSystem.h"
+#include "CmRenderSystemCapabilities.h"
 #include "OgreStringConverter.h"
-#include "OgreGpuProgramManager.h"
-#include "OgreHighLevelGpuProgramManager.h"
+#include "CmGpuProgramManager.h"
+#include "CmHighLevelGpuProgramManager.h"
 #include "OgreException.h"
 
 #include "OgreGLSLProgram.h"

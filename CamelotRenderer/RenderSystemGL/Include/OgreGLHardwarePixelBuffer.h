@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __GLPIXELBUFFER_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgreHardwarePixelBuffer.h"
+#include "CmHardwarePixelBuffer.h"
 
 namespace CamelotEngine {
 	class _OgreGLExport GLHardwarePixelBuffer: public HardwarePixelBuffer

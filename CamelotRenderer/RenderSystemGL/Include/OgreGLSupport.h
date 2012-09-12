@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreGLRenderSystem.h"
 
-#include "OgreRenderWindow.h"
+#include "CmRenderWindow.h"
 #include "OgreConfigOptionMap.h"
 #include "OgreGLPBuffer.h"
 

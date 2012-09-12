@@ -48,7 +48,7 @@ initialised and used in glRenderSystem and copy what is done there.
 #define __GLHARDWAREOCCLUSIONQUERY_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgreHardwareOcclusionQuery.h"
+#include "CmHardwareOcclusionQuery.h"
 
 
 namespace CamelotEngine { 

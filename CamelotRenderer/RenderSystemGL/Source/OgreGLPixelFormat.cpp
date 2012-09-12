@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 
 #include "OgreGLPixelFormat.h"
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 #include "OgreBitwise.h"
 #include "CmRenderSystemManager.h"
 

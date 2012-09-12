@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __D3D9PIXELBUFFER_H__
 
 #include "OgreD3D9Prerequisites.h"
-#include "OgreHardwarePixelBuffer.h"
+#include "CmHardwarePixelBuffer.h"
 
 namespace CamelotEngine {
 

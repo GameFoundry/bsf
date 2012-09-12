@@ -30,8 +30,8 @@ THE SOFTWARE.
 #define __GLGpuProgram_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgreGpuProgram.h"
-#include "OgreHardwareVertexBuffer.h"
+#include "CmGpuProgram.h"
+#include "CmHardwareVertexBuffer.h"
 
 namespace CamelotEngine {
 

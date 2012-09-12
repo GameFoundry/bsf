@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "OgreD3D9HardwareOcclusionQuery.h"
-#include "OgreRenderSystemCapabilities.h"
+#include "CmRenderSystemCapabilities.h"
 #include "OgreException.h"
 #include "OgreD3D9RenderSystem.h"
 

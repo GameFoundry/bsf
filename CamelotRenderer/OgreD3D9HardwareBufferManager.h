@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __D3D9HARWAREBUFFERMANAGER_H__
 
 #include "OgreD3D9Prerequisites.h"
-#include "OgreHardwareBufferManager.h"
+#include "CmHardwareBufferManager.h"
 
 namespace CamelotEngine {
 

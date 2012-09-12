@@ -51,9 +51,6 @@ IMPORTANT: I think I should strive to make the renderer one unique CmRenderSyste
 
 TOMORROW:
  - Incorporate CamelotUtility library into CamelotRenderer
-   - First make sure to remove all Ogre namespaces and replace them with CamelotEngine
-   - Then remove all files included in CamelotUtility and add CamelotUtility include and library files
-   - Fix any errors due to missing defines (especially memory related)
    - Move remaining Utility files to CamelotUtility (files like StringUtil, PixelUtil and similar)
    - Remove Utility forward declarations from OgrePrerequisites. Make sure to include OgrePrerequisitesUtil in OgrePrerequisites
 

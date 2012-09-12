@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __GLHARDWAREVERTEXBUFFER_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgreHardwareVertexBuffer.h"
+#include "CmHardwareVertexBuffer.h"
 
 namespace CamelotEngine {
 

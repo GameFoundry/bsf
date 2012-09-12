@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define _RenderOperation_H__
 
 #include "OgrePrerequisites.h"
-#include "OgreVertexIndexData.h"
+#include "CmVertexIndexData.h"
 
 namespace CamelotEngine {
 

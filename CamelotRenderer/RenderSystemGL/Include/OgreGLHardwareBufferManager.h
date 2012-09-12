@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __GLHARWAREBUFFERMANAGER_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgreHardwareBufferManager.h"
+#include "CmHardwareBufferManager.h"
 
 namespace CamelotEngine {
 

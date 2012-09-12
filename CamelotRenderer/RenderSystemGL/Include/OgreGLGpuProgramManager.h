@@ -30,7 +30,7 @@ THE SOFTWARE.
 #define __GLGpuProgramManager_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgreGpuProgramManager.h"
+#include "CmGpuProgramManager.h"
 
 namespace CamelotEngine {
 

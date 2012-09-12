@@ -30,7 +30,7 @@ THE SOFTWARE.
 #define _WIN32_WINNT 0x0500
 #endif
 #include "OgreWin32Window.h"
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 #include "OgreStringConverter.h"
 #include "OgreException.h"
 #include "OgreWin32GLSupport.h"

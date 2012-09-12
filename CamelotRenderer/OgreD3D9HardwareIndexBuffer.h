@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __D3D9HARDWAREINDEXBUFFER_H__
 
 #include "OgreD3D9Prerequisites.h"
-#include "OgreHardwareIndexBuffer.h"
+#include "CmHardwareIndexBuffer.h"
 #include "OgreD3D9Resource.h"
 
 namespace CamelotEngine { 

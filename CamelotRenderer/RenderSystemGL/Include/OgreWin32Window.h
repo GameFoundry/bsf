@@ -30,7 +30,7 @@ THE SOFTWARE.
 #define __Win32Window_H__
 
 #include "OgreWin32Prerequisites.h"
-#include "OgreRenderWindow.h"
+#include "CmRenderWindow.h"
 
 namespace CamelotEngine {
     class _OgreGLExport Win32Window : public RenderWindow

@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 #include "OgreException.h"
 #include "OgreStringConverter.h"
 #include "OgreWin32RenderTexture.h"

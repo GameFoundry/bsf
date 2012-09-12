@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __GLSLProgram_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgreHighLevelGpuProgram.h"
+#include "CmHighLevelGpuProgram.h"
 
 namespace CamelotEngine {
     /** Specialisation of HighLevelGpuProgram to provide support for OpenGL 

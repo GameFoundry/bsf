@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __GLHARDWAREINDEXBUFFER_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgreHardwareIndexBuffer.h"
+#include "CmHardwareIndexBuffer.h"
 
 namespace CamelotEngine { 
 

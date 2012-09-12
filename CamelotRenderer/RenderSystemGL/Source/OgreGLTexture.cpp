@@ -31,12 +31,12 @@ THE SOFTWARE.
 #include "OgreGLPixelFormat.h"
 #include "OgreGLHardwarePixelBuffer.h"
 
-//#include "OgreTextureManager.h"
-#include "OgreCamera.h"
+//#include "CmTextureManager.h"
+#include "CmCamera.h"
 #include "OgreException.h"
 #include "OgreStringConverter.h"
 #include "OgreBitwise.h"
-#include "OgreTextureManager.h"
+#include "CmTextureManager.h"
 #include "CmRenderSystemManager.h"
 
 #include "OgreGLFBORenderTexture.h"

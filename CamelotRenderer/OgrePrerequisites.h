@@ -36,11 +36,8 @@ namespace CamelotEngine {
 // Pre-declare classes
 // Allows use of pointers in header files without including individual .h
 // so decreases dependencies between files
-    class Angle;
-    class AxisAlignedBox;
     class Camera;
     class ColourValue;
-    class Degree;
     class Frustum;
     class GpuProgram;
     class GpuProgramManager;
@@ -53,14 +50,7 @@ namespace CamelotEngine {
 	class HighLevelGpuProgramManager;
 	class HighLevelGpuProgramFactory;
     class IndexData;
-    class Math;
-    class Matrix3;
-    class Matrix4;
     class Pass;
-    class Plane;
-    class Quaternion;
-	class Radian;
-    class Ray;
     class RenderSystem;
     class RenderSystemCapabilities;
     class RenderTarget;
@@ -68,15 +58,11 @@ namespace CamelotEngine {
 	class MultiRenderTarget;
     class RenderWindow;
     class RenderOperation;
-    class Sphere;
     class StringConverter;
     class StringInterface;
     class TextureState;
     class Texture;
     class TextureManager;
-    class Vector2;
-    class Vector3;
-    class Vector4;
     class Viewport;
     class VertexBufferBinding;
     class VertexData;

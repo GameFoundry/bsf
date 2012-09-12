@@ -30,9 +30,9 @@ THE SOFTWARE.
 #define __GLDefaultHardwareBufferManager_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgreHardwareBufferManager.h"
-#include "OgreHardwareVertexBuffer.h"
-#include "OgreHardwareIndexBuffer.h"
+#include "CmHardwareBufferManager.h"
+#include "CmHardwareVertexBuffer.h"
+#include "CmHardwareIndexBuffer.h"
 
 namespace CamelotEngine {
 

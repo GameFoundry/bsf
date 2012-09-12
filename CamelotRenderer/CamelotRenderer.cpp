@@ -5,27 +5,23 @@
 
 #include <string>
 
-#include "OgreBuildSettings.h"
 #include "OgreColourValue.h"
-#include "OgreConfig.h"
 #include "CmMath.h"
 #include "CmMatrix3.h"
 #include "CmMatrix4.h"
 #include "CmPlane.h"
-#include "OgrePlatform.h"
 #include "OgrePrerequisites.h"
 #include "CmQuaternion.h"
 #include "OgreString.h"
 #include "OgreStringConverter.h"
-#include "OgreThreadDefines.h"
 #include "CmVector2.h"
 #include "CmVector3.h"
 #include "CmVector4.h"
-#include "OgreHardwareBuffer.h"
+#include "CmHardwareBuffer.h"
 
 #include "OgreD3D9Prerequisites.h"
 #include "OgreD3D9VideoMode.h"
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 
 #include "CmApplication.h"
 

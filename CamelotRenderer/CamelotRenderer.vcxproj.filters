@@ -71,40 +71,10 @@
     <ClInclude Include="OgreD3D9VideoMode.h">
       <Filter>Header Files\D3D9RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="OgreRenderSystemCapabilities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OgreD3D9Resource.h">
       <Filter>Header Files\D3D9RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="OgreHardwareBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreHardwareVertexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreHardwareIndexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreHardwareBufferManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreVertexIndexData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreDefaultHardwareBufferManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OgreBitwise.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreAlignedAllocator.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreBuildSettings.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreConfig.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
     <ClInclude Include="OgreException.h">
@@ -116,22 +86,10 @@
     <ClInclude Include="OgreHeaderSuffix.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="OgrePlatform.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgrePlatformInformation.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgrePortMemory.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
     <ClInclude Include="OgrePrerequisites.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
     <ClInclude Include="OgreSingleton.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreStdHeaders.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
     <ClInclude Include="OgreString.h">
@@ -140,47 +98,8 @@
     <ClInclude Include="OgreStringConverter.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="OgreThreadDefines.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreFrustum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreViewport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreRenderTarget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreGpuProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OgreRenderOperation.h">
       <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreGpuProgramParams.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreHighLevelGpuProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreHardwareOcclusionQuery.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreRenderWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreRenderTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreHardwarePixelBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreRenderSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreTexture.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OgreD3D9Mappings.h">
       <Filter>Header Files\D3D9RenderSystem</Filter>
@@ -276,15 +195,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CmRenderSystemManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreGpuProgramManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreHighLevelGpuProgramManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RenderSystemGL\Source\atifs\include\ATI_FS_GLGpuProgram.h">
@@ -458,13 +368,79 @@
     <ClInclude Include="RenderSystemGL\Include\CmGLRenderSystemFactory.h">
       <Filter>RenderSystemGL\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OgreTextureManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OgreConfigOptionMap.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="OgreTextureState.h">
+    <ClInclude Include="CmCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmDefaultHardwareBufferManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmFrustum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmGpuProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmGpuProgramManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmGpuProgramParams.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmHardwareBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmHardwareBufferManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmHardwareIndexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmHardwareOcclusionQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmHardwarePixelBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmHardwareVertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmHighLevelGpuProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmHighLevelGpuProgramManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmRenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmRenderSystemCapabilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmRenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmRenderTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmRenderWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmTextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmTextureState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmVertexIndexData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CmViewport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -478,29 +454,8 @@
     <ClCompile Include="OgreD3D9VideoMode.cpp">
       <Filter>Source Files\D3D9RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="OgreRenderSystemCapabilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OgreD3D9Resource.cpp">
       <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreHardwareVertexBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreHardwareIndexBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreHardwareBufferManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreVertexIndexData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreDefaultHardwareBufferManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreAlignedAllocator.cpp">
-      <Filter>Source Files\ForRemoval</Filter>
     </ClCompile>
     <ClCompile Include="OgreException.cpp">
       <Filter>Source Files\ForRemoval</Filter>
@@ -510,42 +465,6 @@
     </ClCompile>
     <ClCompile Include="OgreStringConverter.cpp">
       <Filter>Source Files\ForRemoval</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreFrustum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreViewport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreRenderTarget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreGpuProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreGpuProgramParams.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreHighLevelGpuProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreHardwareOcclusionQuery.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreRenderWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreRenderTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreHardwarePixelBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreRenderSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreTexture.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OgreD3D9Mappings.cpp">
       <Filter>Source Files\D3D9RenderSystem</Filter>
@@ -629,15 +548,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CmRenderSystemManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreGpuProgramManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreHighLevelGpuProgramManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\atifs\src\ATI_FS_GLGpuProgram.cpp">
@@ -817,10 +727,73 @@
     <ClCompile Include="RenderSystemGL\Source\CmGLRenderSystemFactory.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OgreTextureManager.cpp">
+    <ClCompile Include="CmCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OgreTextureState.cpp">
+    <ClCompile Include="CmDefaultHardwareBufferManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmFrustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmGpuProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmGpuProgramManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmGpuProgramParams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmHardwareBufferManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmHardwareIndexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmHardwareOcclusionQuery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmHardwarePixelBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmHardwareVertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmHighLevelGpuProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmHighLevelGpuProgramManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmRenderSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmRenderSystemCapabilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmRenderTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmRenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmRenderWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmTextureManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmTextureState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmVertexIndexData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmViewport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

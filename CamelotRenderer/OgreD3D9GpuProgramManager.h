@@ -29,8 +29,8 @@ THE SOFTWARE.
 #define __D3D9GpuProgramManager_H__
 
 #include "OgreD3D9Prerequisites.h"
-#include "OgreGpuProgram.h"
-#include "OgreGpuProgramManager.h"
+#include "CmGpuProgram.h"
+#include "CmGpuProgramManager.h"
 
 namespace CamelotEngine {
 

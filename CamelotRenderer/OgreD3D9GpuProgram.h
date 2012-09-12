@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 // Precompiler options
 #include "OgreD3D9Prerequisites.h"
-#include "OgreGpuProgram.h"
+#include "CmGpuProgram.h"
 #include "OgreD3D9Resource.h"
 
 namespace CamelotEngine {

@@ -1,15 +1,15 @@
 #include "CmApplication.h"
 
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
 #include "OgreWindowEventUtilities.h"
-#include "OgreHardwareBufferManager.h"
-#include "OgreRenderWindow.h"
-#include "OgreCamera.h"
-#include "OgreViewport.h"
-#include "OgreHighLevelGpuProgram.h"
-#include "OgreHighLevelGpuProgramManager.h"
+#include "CmHardwareBufferManager.h"
+#include "CmRenderWindow.h"
+#include "CmCamera.h"
+#include "CmViewport.h"
+#include "CmHighLevelGpuProgram.h"
+#include "CmHighLevelGpuProgramManager.h"
 
 namespace CamelotEngine
 {

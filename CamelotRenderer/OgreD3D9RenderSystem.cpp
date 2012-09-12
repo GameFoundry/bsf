@@ -43,11 +43,11 @@ THE SOFTWARE.
 #include "OgreD3D9GpuProgramManager.h"
 #include "OgreD3D9HLSLProgramFactory.h"
 #include "OgreD3D9HardwareOcclusionQuery.h"
-#include "OgreFrustum.h"
+#include "CmFrustum.h"
 #include "OgreD3D9MultiRenderTarget.h"
 #include "OgreD3D9DeviceManager.h"
 #include "OgreD3D9ResourceManager.h"
-#include "OgreHighLevelGpuProgramManager.h"
+#include "CmHighLevelGpuProgramManager.h"
 
 #define FLOAT2DWORD(f) *((DWORD*)&f)
 

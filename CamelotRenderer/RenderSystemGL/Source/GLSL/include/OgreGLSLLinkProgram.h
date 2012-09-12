@@ -29,8 +29,8 @@ THE SOFTWARE.
 #define __GLSLLinkProgram_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgreGpuProgram.h"
-#include "OgreHardwareVertexBuffer.h"
+#include "CmGpuProgram.h"
+#include "CmHardwareVertexBuffer.h"
 
 namespace CamelotEngine {
 	/// structure used to keep track of named uniforms in the linked program object

@@ -30,11 +30,10 @@ THE SOFTWARE.
 #define __GLTEXTURE_H__
 
 #include "OgreGLPrerequisites.h"
-#include "OgrePlatform.h"
-#include "OgreRenderTexture.h"
-#include "OgreTexture.h"
+#include "CmRenderTexture.h"
+#include "CmTexture.h"
 #include "OgreGLSupport.h"
-#include "OgreHardwarePixelBuffer.h"
+#include "CmHardwarePixelBuffer.h"
 
 namespace CamelotEngine {
 

@@ -32,8 +32,8 @@ THE SOFTWARE.
 #include "OgreString.h"
 #include "OgreStringConverter.h"
 #include "OgreConfigOptionMap.h"
-#include "OgreRenderSystem.h"
-#include "OgreRenderSystemCapabilities.h"
+#include "CmRenderSystem.h"
+#include "CmRenderSystemCapabilities.h"
 #include "OgreD3D9Mappings.h"
 
 namespace CamelotEngine 

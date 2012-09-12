@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreStringConverter.h"
 #include "OgreBitwise.h"
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {

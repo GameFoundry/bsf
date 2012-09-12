@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 #include "ps_1_4.h"
 #include "OgreException.h"
-#include "OgreRenderSystem.h"
-#include "OgreRenderSystemCapabilities.h"
+#include "CmRenderSystem.h"
+#include "CmRenderSystemCapabilities.h"
 #include "ATI_FS_GLGpuProgram.h"
 
 using namespace CamelotEngine;

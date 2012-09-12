@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __D3D9RENDERWINDOW_H__
 
 #include "OgreD3D9Prerequisites.h"
-#include "OgreRenderWindow.h"
+#include "CmRenderWindow.h"
 #include "OgreD3D9Device.h"
 
 namespace CamelotEngine 

@@ -30,9 +30,9 @@ THE SOFTWARE.
 
 #include "OgreD3D9Prerequisites.h"
 #include "OgreCommon.h"
-#include "OgreRenderSystem.h"
-#include "OgreHardwareBuffer.h"
-#include "OgreHardwareIndexBuffer.h"
+#include "CmRenderSystem.h"
+#include "CmHardwareBuffer.h"
+#include "CmHardwareIndexBuffer.h"
 
 namespace CamelotEngine 
 {

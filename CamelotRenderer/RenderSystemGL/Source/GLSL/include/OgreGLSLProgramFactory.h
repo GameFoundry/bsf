@@ -30,7 +30,7 @@ THE SOFTWARE.
 #ifndef __GLSLProgramFactory_H__
 #define __GLSLProgramFactory_H__
 
-#include "OgreHighLevelGpuProgramManager.h"
+#include "CmHighLevelGpuProgramManager.h"
 #include "OgreGLSLExtSupport.h"
 
 namespace CamelotEngine

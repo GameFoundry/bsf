@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "OgreHighLevelGpuProgram.h"
+#include "CmHighLevelGpuProgram.h"
 
 namespace CamelotEngine
 {

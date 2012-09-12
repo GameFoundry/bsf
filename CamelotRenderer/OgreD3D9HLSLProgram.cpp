@@ -26,11 +26,11 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "OgreD3D9HLSLProgram.h"
-#include "OgreGpuProgramManager.h"
+#include "CmGpuProgramManager.h"
 #include "OgreStringConverter.h"
 #include "OgreD3D9GpuProgram.h"
 #include "OgreException.h"
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {

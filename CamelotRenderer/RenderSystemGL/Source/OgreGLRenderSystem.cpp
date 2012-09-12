@@ -28,9 +28,9 @@ THE SOFTWARE.s
 
 
 #include "OgreGLRenderSystem.h"
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 #include "OgreStringConverter.h"
-#include "OgreCamera.h"
+#include "CmCamera.h"
 #include "OgreGLTextureManager.h"
 #include "OgreGLHardwareVertexBuffer.h"
 #include "OgreGLHardwareIndexBuffer.h"
@@ -47,7 +47,6 @@ THE SOFTWARE.s
 
 #include "OgreGLFBORenderTexture.h"
 #include "OgreGLPBRenderTexture.h"
-#include "OgreConfig.h"
 
 // Convenience macro from ARB_vertex_buffer_object spec
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))

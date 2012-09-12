@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 #include "OgreGLGpuNvparseProgram.h"
 #include "OgreException.h"
-#include "OgreRenderSystem.h"
-#include "OgreRenderSystemCapabilities.h"
+#include "CmRenderSystem.h"
+#include "CmRenderSystemCapabilities.h"
 #include "nvparse.h"
 
 using namespace CamelotEngine;

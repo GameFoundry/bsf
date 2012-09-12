@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 
 #include "OgreGLTextureManager.h"
-#include "OgreRenderSystem.h"
+#include "CmRenderSystem.h"
 #include "OgreGLRenderTexture.h"
 #include "CmRenderSystemManager.h"
 

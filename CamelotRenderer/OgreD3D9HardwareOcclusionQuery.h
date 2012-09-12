@@ -30,7 +30,7 @@ THE SOFTWARE.
 #define _D3D9HARWAREOCCLUSIONQUERY_H__
 
 #include "OgreD3D9Prerequisites.h"
-#include "OgreHardwareOcclusionQuery.h"
+#include "CmHardwareOcclusionQuery.h"
 #include "OgreD3D9Resource.h"
 
 

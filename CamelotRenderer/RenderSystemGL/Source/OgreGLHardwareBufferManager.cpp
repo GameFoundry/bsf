@@ -28,9 +28,9 @@ THE SOFTWARE.
 #include "OgreGLHardwareBufferManager.h"
 #include "OgreGLHardwareVertexBuffer.h"
 #include "OgreGLHardwareIndexBuffer.h"
-#include "OgreHardwareBuffer.h"
-#include "OgreRenderSystem.h"
-#include "OgreRenderSystemCapabilities.h"
+#include "CmHardwareBuffer.h"
+#include "CmRenderSystem.h"
+#include "CmRenderSystemCapabilities.h"
 #include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
