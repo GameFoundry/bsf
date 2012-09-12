@@ -108,9 +108,9 @@ namespace CamelotEngine {
 				if usage does not include TU_RENDERTARGET or if the device does
 				not support it.
         */
-        TexturePtr create(TextureType texType, uint width, uint height, uint depth, 
+        TexturePtr create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
 			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, uint fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
 			
         /** Create a manual texture with a depth of 1 (not loaded from a file).
             @param
@@ -154,9 +154,9 @@ namespace CamelotEngine {
 				if usage does not include TU_RENDERTARGET or if the device does
 				not support it.
         */
-        TexturePtr create(TextureType texType, uint width, uint height, int num_mips,
+        TexturePtr create(TextureType texType, UINT32 width, UINT32 height, int num_mips,
             PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, uint fsaa = 0, const String& fsaaHint = StringUtil::BLANK)
+			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK)
 		{
 			return create(texType, width, height, 1, 
 				num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
@@ -167,22 +167,22 @@ namespace CamelotEngine {
             bits Number of bits. Available values: 0, 16 and 32, where 0 (the default) means keep
             original format as it is. This value is number of bits for the pixel.
         */
-        virtual void setPreferredIntegerBitDepth(ushort bits);
+        virtual void setPreferredIntegerBitDepth(UINT16 bits);
 
         /** gets preferred bit depth for integer pixel format textures.
         */
-        virtual ushort getPreferredIntegerBitDepth(void) const;
+        virtual UINT16 getPreferredIntegerBitDepth(void) const;
 
         /** Sets preferred bit depth for float pixel format textures.
         @param
             bits Number of bits. Available values: 0, 16 and 32, where 0 (the default) means keep
             original format as it is. This value is number of bits for a channel of the pixel.
         */
-        virtual void setPreferredFloatBitDepth(ushort bits);
+        virtual void setPreferredFloatBitDepth(UINT16 bits);
 
         /** gets preferred bit depth for float pixel format textures.
         */
-        virtual ushort getPreferredFloatBitDepth(void) const;
+        virtual UINT16 getPreferredFloatBitDepth(void) const;
 
         /** Sets preferred bit depth for integer and float pixel format.
         @param
@@ -192,7 +192,7 @@ namespace CamelotEngine {
             floatBits Number of bits. Available values: 0, 16 and 32, where 0 (the default) means keep
             original format as it is. This value is number of bits for a channel of the pixel.
         */
-        virtual void setPreferredBitDepths(ushort integerBits, ushort floatBits);
+        virtual void setPreferredBitDepths(UINT16 integerBits, UINT16 floatBits);
 
 		/** Returns whether this render system can natively support the precise texture 
 			format requested with the given usage options.
@@ -316,8 +316,8 @@ namespace CamelotEngine {
 
     protected:
 
-        ushort mPreferredIntegerBitDepth;
-        ushort mPreferredFloatBitDepth;
+        UINT16 mPreferredIntegerBitDepth;
+        UINT16 mPreferredFloatBitDepth;
         size_t mDefaultNumMipmaps;
     };
 	/** @} */

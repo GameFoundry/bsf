@@ -266,13 +266,13 @@ namespace CamelotEngine
 	}
 
 	//---------------------------------------------------------------------
-	uint D3D9Device::getRenderWindowCount() const
+	UINT32 D3D9Device::getRenderWindowCount() const
 	{
-		return static_cast<uint>(mMapRenderWindowToResoruces.size());
+		return static_cast<UINT32>(mMapRenderWindowToResoruces.size());
 	}
 
 	//---------------------------------------------------------------------
-	D3D9RenderWindow* D3D9Device::getRenderWindow(uint index)
+	D3D9RenderWindow* D3D9Device::getRenderWindow(UINT32 index)
 	{
 		if (index >= mMapRenderWindowToResoruces.size())
 		{
@@ -296,7 +296,7 @@ namespace CamelotEngine
 	}
 
 	//---------------------------------------------------------------------
-	void D3D9Device::setAdapterOrdinalIndex(D3D9RenderWindow* renderWindow, uint adapterOrdinalInGroupIndex)
+	void D3D9Device::setAdapterOrdinalIndex(D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 
@@ -1053,8 +1053,8 @@ namespace CamelotEngine
 			}
 			else
 			{
-				uint targetWidth  = renderWindow->getWidth();
-				uint targetHeight = renderWindow->getHeight();
+				UINT32 targetWidth  = renderWindow->getWidth();
+				UINT32 targetHeight = renderWindow->getHeight();
 
 				if (targetWidth == 0)
 					targetWidth = 1;
@@ -1156,7 +1156,7 @@ namespace CamelotEngine
 			// 1. Single full screen window - only one allowed per device (this is not multi-head case).
 			// 2. Multiple window mode windows.
 
-			uint nextPresParamIndex = 0;
+			UINT32 nextPresParamIndex = 0;
 
 			RenderWindowToResorucesIterator it;
 			D3D9RenderWindow* deviceFocusWindow = NULL;

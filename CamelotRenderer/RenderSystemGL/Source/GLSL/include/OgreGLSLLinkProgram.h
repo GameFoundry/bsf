@@ -108,7 +108,7 @@ namespace CamelotEngine {
 		/** updates program object uniforms using data from GpuProgramParamters.
 		normally called by GLSLGpuProgram::bindParameters() just before rendering occurs.
 		*/
-		void updateUniforms(GpuProgramParametersSharedPtr params, uint16 mask, GpuProgramType fromProgType);
+		void updateUniforms(GpuProgramParametersSharedPtr params, UINT16 mask, GpuProgramType fromProgType);
 		/** updates program object uniforms using data from pass iteration GpuProgramParamters.
 		normally called by GLSLGpuProgram::bindMultiPassParameters() just before multi pass rendering occurs.
 		*/
@@ -133,9 +133,9 @@ namespace CamelotEngine {
         bool isSkeletalAnimationIncluded(void) const { return mSkeletalAnimation; }
 
 		/// Get the index of a non-standard attribute bound in the linked code
-		GLuint getAttributeIndex(VertexElementSemantic semantic, uint index);
+		GLuint getAttributeIndex(VertexElementSemantic semantic, UINT32 index);
 		/// Is a non-standard attribute bound in the linked code?
-		bool isAttributeValid(VertexElementSemantic semantic, uint index);
+		bool isAttributeValid(VertexElementSemantic semantic, UINT32 index);
 
 	};
 

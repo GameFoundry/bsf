@@ -44,7 +44,7 @@ namespace CamelotEngine {
     class _OgreGLExport GLFBORenderTexture: public GLRenderTexture
     {
     public:
-        GLFBORenderTexture(GLFBOManager *manager, const String &name, const GLSurfaceDesc &target, bool writeGamma, uint fsaa);
+        GLFBORenderTexture(GLFBOManager *manager, const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
 
         virtual void getCustomAttribute(const String& name, void* pData);
 
@@ -78,7 +78,7 @@ namespace CamelotEngine {
         /** Create a texture rendertarget object
         */
         virtual GLFBORenderTexture *createRenderTexture(const String &name, 
-			const GLSurfaceDesc &target, bool writeGamma, uint fsaa);
+			const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
 
 		/** Create a multi render target 
 		*/
@@ -86,7 +86,7 @@ namespace CamelotEngine {
         
         /** Request a render buffer. If format is GL_NONE, return a zero buffer.
         */
-        GLSurfaceDesc requestRenderBuffer(GLenum format, size_t width, size_t height, uint fsaa);
+        GLSurfaceDesc requestRenderBuffer(GLenum format, size_t width, size_t height, UINT32 fsaa);
         /** Request the specify render buffer in case shared somewhere. Ignore
             silently if surface.buffer is 0.
         */
@@ -129,13 +129,13 @@ namespace CamelotEngine {
         */
         struct RBFormat
         {
-            RBFormat(GLenum inFormat, size_t inWidth, size_t inHeight, uint fsaa):
+            RBFormat(GLenum inFormat, size_t inWidth, size_t inHeight, UINT32 fsaa):
                 format(inFormat), width(inWidth), height(inHeight), samples(fsaa)
             {}
             GLenum format;
             size_t width;
             size_t height;
-			uint samples;
+			UINT32 samples;
             // Overloaded comparison operator for usage in map
             bool operator < (const RBFormat &other) const
             {

@@ -153,11 +153,11 @@ namespace CamelotEngine {
         /// Manual colour value for manual source2
         ColourValue colourArg2;
         /// Manual alpha value for manual source1
-        Real alphaArg1;
+        float alphaArg1;
         /// Manual alpha value for manual source2
-        Real alphaArg2;
+        float alphaArg2;
         /// Manual blending factor
-        Real factor;
+        float factor;
 
         bool operator==(const LayerBlendModeEx& rhs) const
         {

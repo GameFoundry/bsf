@@ -80,7 +80,7 @@ namespace CamelotEngine {
 		if( length < glBufManager->getGLMapBufferThreshold() )
 		{
 			// if this fails, we fall back on mapping
-			retPtr = glBufManager->allocateScratch((uint32)length);
+			retPtr = glBufManager->allocateScratch((UINT32)length);
 
 			if (retPtr)
 			{

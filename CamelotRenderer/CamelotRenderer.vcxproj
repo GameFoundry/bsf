@@ -56,12 +56,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;CM_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;RenderSystemGL/Source/nvparse;RenderSystemGL/Source/atifs/include;RenderSystemGL/Source/GLSL/include;RenderSystemGL/Source/win32;RenderSystemGL/Source/nvparse/winheaders;.;RenderSystemGL/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;RenderSystemGL/Source/nvparse;RenderSystemGL/Source/atifs/include;RenderSystemGL/Source/GLSL/include;RenderSystemGL/Source/win32;RenderSystemGL/Source/nvparse/winheaders;.;RenderSystemGL/Include;../CamelotUtility/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;DxErr.lib;dxguid.lib;glu32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;DxErr.lib;dxguid.lib;glu32.lib;opengl32.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -73,14 +74,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;CM_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;RenderSystemGL/Source/nvparse;RenderSystemGL/Source/atifs/include;RenderSystemGL/Source/GLSL/include;RenderSystemGL/Source/win32;RenderSystemGL/Source/nvparse/winheaders;.;RenderSystemGL/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;RenderSystemGL/Source/nvparse;RenderSystemGL/Source/atifs/include;RenderSystemGL/Source/GLSL/include;RenderSystemGL/Source/win32;RenderSystemGL/Source/nvparse/winheaders;.;RenderSystemGL/Include;../CamelotUtility/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;DxErr.lib;dxguid.lib;glu32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;DxErr.lib;dxguid.lib;glu32.lib;opengl32.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -89,13 +91,11 @@
     <Text Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="asm_math.h" />
     <ClInclude Include="CmApplication.h" />
     <ClInclude Include="CmD3D9RenderSystemFactory.h" />
     <ClInclude Include="CmRenderSystemFactory.h" />
     <ClInclude Include="CmRenderSystemManager.h" />
     <ClInclude Include="OgreAlignedAllocator.h" />
-    <ClInclude Include="OgreAxisAlignedBox.h" />
     <ClInclude Include="OgreBitwise.h" />
     <ClInclude Include="OgreBlendMode.h" />
     <ClInclude Include="OgreBuildSettings.h" />
@@ -146,17 +146,11 @@
     <ClInclude Include="OgreHighLevelGpuProgram.h" />
     <ClInclude Include="OgreHighLevelGpuProgramManager.h" />
     <ClInclude Include="OgreImageResampler.h" />
-    <ClInclude Include="OgreMath.h" />
-    <ClInclude Include="OgreMatrix3.h" />
-    <ClInclude Include="OgreMatrix4.h" />
     <ClInclude Include="OgrePixelFormat.h" />
-    <ClInclude Include="OgrePlane.h" />
     <ClInclude Include="OgrePlatform.h" />
     <ClInclude Include="OgrePlatformInformation.h" />
     <ClInclude Include="OgrePortMemory.h" />
     <ClInclude Include="OgrePrerequisites.h" />
-    <ClInclude Include="OgreQuaternion.h" />
-    <ClInclude Include="OgreRay.h" />
     <ClInclude Include="OgreRenderOperation.h" />
     <ClInclude Include="OgreRenderSystem.h" />
     <ClInclude Include="OgreRenderSystemCapabilities.h" />
@@ -164,7 +158,6 @@
     <ClInclude Include="OgreRenderTexture.h" />
     <ClInclude Include="OgreRenderWindow.h" />
     <ClInclude Include="OgreSingleton.h" />
-    <ClInclude Include="OgreSphere.h" />
     <ClInclude Include="OgreStdHeaders.h" />
     <ClInclude Include="OgreString.h" />
     <ClInclude Include="OgreStringConverter.h" />
@@ -172,9 +165,6 @@
     <ClInclude Include="OgreTextureManager.h" />
     <ClInclude Include="OgreTextureState.h" />
     <ClInclude Include="OgreThreadDefines.h" />
-    <ClInclude Include="OgreVector2.h" />
-    <ClInclude Include="OgreVector3.h" />
-    <ClInclude Include="OgreVector4.h" />
     <ClInclude Include="OgreVertexIndexData.h" />
     <ClInclude Include="OgreViewport.h" />
     <ClInclude Include="OgreWindowEventUtilities.h" />
@@ -244,7 +234,6 @@
     <ClCompile Include="CmD3D9RenderSystemFactory.cpp" />
     <ClCompile Include="CmRenderSystemManager.cpp" />
     <ClCompile Include="OgreAlignedAllocator.cpp" />
-    <ClCompile Include="OgreAxisAlignedBox.cpp" />
     <ClCompile Include="OgreCamera.cpp" />
     <ClCompile Include="OgreColourValue.cpp" />
     <ClCompile Include="OgreD3D9Device.cpp" />
@@ -284,12 +273,7 @@
     <ClCompile Include="OgreHardwareVertexBuffer.cpp" />
     <ClCompile Include="OgreHighLevelGpuProgram.cpp" />
     <ClCompile Include="OgreHighLevelGpuProgramManager.cpp" />
-    <ClCompile Include="OgreMath.cpp" />
-    <ClCompile Include="OgreMatrix3.cpp" />
-    <ClCompile Include="OgreMatrix4.cpp" />
     <ClCompile Include="OgrePixelFormat.cpp" />
-    <ClCompile Include="OgrePlane.cpp" />
-    <ClCompile Include="OgreQuaternion.cpp" />
     <ClCompile Include="OgreRenderSystem.cpp" />
     <ClCompile Include="OgreRenderSystemCapabilities.cpp" />
     <ClCompile Include="OgreRenderTarget.cpp" />
@@ -300,9 +284,6 @@
     <ClCompile Include="OgreTexture.cpp" />
     <ClCompile Include="OgreTextureManager.cpp" />
     <ClCompile Include="OgreTextureState.cpp" />
-    <ClCompile Include="OgreVector2.cpp" />
-    <ClCompile Include="OgreVector3.cpp" />
-    <ClCompile Include="OgreVector4.cpp" />
     <ClCompile Include="OgreVertexIndexData.cpp" />
     <ClCompile Include="OgreViewport.cpp" />
     <ClCompile Include="OgreWindowEventUtilities.cpp" />

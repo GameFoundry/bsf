@@ -71,11 +71,11 @@ namespace CamelotEngine {
 		IDirect3DSurface9*		getDepthBuffer			(D3D9RenderWindow* renderWindow);
 		IDirect3DSurface9*		getBackBuffer			(D3D9RenderWindow* renderWindow);
 
-		uint					getRenderWindowCount	() const;
-		D3D9RenderWindow*		getRenderWindow			(uint index);
-		uint					getLastPresentFrame		() const { return mLastPresentFrame; }
+		UINT32					getRenderWindowCount	() const;
+		D3D9RenderWindow*		getRenderWindow			(UINT32 index);
+		UINT32					getLastPresentFrame		() const { return mLastPresentFrame; }
 
-		void					setAdapterOrdinalIndex  (D3D9RenderWindow* renderWindow, uint adapterOrdinalInGroupIndex);
+		void					setAdapterOrdinalIndex  (D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex);
 		void					copyContentsToMemory(D3D9RenderWindow* window, const PixelBox &dst, RenderTarget::FrameBuffer buffer);
 		void					clearDeviceStreams		();
 	
@@ -102,14 +102,14 @@ namespace CamelotEngine {
 		D3DCAPS9						mD3D9DeviceCaps;			// Device caps.	
 		bool							mD3D9DeviceCapsValid;		// True if device caps initialized.				
 		D3DDEVICE_CREATION_PARAMETERS	mCreationParams;			// Creation parameters.
-		uint							mLastPresentFrame;			// Last frame that this device present method called.
+		UINT32							mLastPresentFrame;			// Last frame that this device present method called.
 		bool							mDeviceLost;				// True if device entered lost state.
 	
 		struct RenderWindowResources
 		{
 			IDirect3DSwapChain9* 	swapChain;						// Swap chain interface.
-			uint					adapterOrdinalInGroupIndex;		// Relative index of the render window in the group.
-			uint					presentParametersIndex;			// Index of present parameter in the shared array of the device.
+			UINT32					adapterOrdinalInGroupIndex;		// Relative index of the render window in the group.
+			UINT32					presentParametersIndex;			// Index of present parameter in the shared array of the device.
 			IDirect3DSurface9*	 	backBuffer;						// The back buffer of the render window.
 			IDirect3DSurface9*	 	depthBuffer;					// The depth buffer of the render window.
 			D3DPRESENT_PARAMETERS	presentParameters;				// Present parameters of the render window.

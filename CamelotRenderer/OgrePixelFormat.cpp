@@ -47,7 +47,7 @@ namespace CamelotEngine {
         /* Pixel format flags, see enum PixelFormatFlags for the bit field
         * definitions
         */
-        uint32 flags;
+        UINT32 flags;
         /** Component type
          */
         PixelComponentType componentType;
@@ -59,7 +59,7 @@ namespace CamelotEngine {
         unsigned char rbits,gbits,bbits,abits; /*, ibits, dbits, ... */
 
         /* Masks and shifts as used by packers/unpackers */
-        uint32 rmask, gmask, bmask, amask;
+        UINT32 rmask, gmask, bmask, amask;
         unsigned char rshift, gshift, bshift, ashift;
     };
     //-----------------------------------------------------------------------
@@ -654,7 +654,7 @@ namespace CamelotEngine {
 		// Notice how we do not propagate left/top/front from the incoming box, since
 		// the returned pointer is already offset
 		PixelBox rval(def.getWidth(), def.getHeight(), def.getDepth(), format, 
-			((uint8*)data) + ((def.left-left)*elemSize)
+			((UINT8*)data) + ((def.left-left)*elemSize)
 			+ ((def.top-top)*rowPitch*elemSize)
 			+ ((def.front-front)*slicePitch*elemSize)
 		);
@@ -792,7 +792,7 @@ namespace CamelotEngine {
         rgba[3] = des.abits;
     }
 	//-----------------------------------------------------------------------
-	void PixelUtil::getBitMasks(PixelFormat format, uint32 rgba[4])
+	void PixelUtil::getBitMasks(PixelFormat format, UINT32 rgba[4])
     {
         const PixelFormatDescription &des = getDescriptionFor(format);
         rgba[0] = des.rmask;
@@ -885,7 +885,7 @@ namespace CamelotEngine {
         return result;
     }
     //-----------------------------------------------------------------------
-    PixelFormat PixelUtil::getFormatForBitDepths(PixelFormat fmt, ushort integerBits, ushort floatBits)
+    PixelFormat PixelUtil::getFormatForBitDepths(PixelFormat fmt, UINT16 integerBits, UINT16 floatBits)
     {
         switch (integerBits)
         {
@@ -996,7 +996,7 @@ namespace CamelotEngine {
         packColour(colour.r, colour.g, colour.b, colour.a, pf, dest);
     }
     //-----------------------------------------------------------------------
-    void PixelUtil::packColour(const uint8 r, const uint8 g, const uint8 b, const uint8 a, const PixelFormat pf,  void* dest)
+    void PixelUtil::packColour(const UINT8 r, const UINT8 g, const UINT8 b, const UINT8 a, const PixelFormat pf,  void* dest)
     {
         const PixelFormatDescription &des = getDescriptionFor(pf);
         if(des.flags & PFF_NATIVEENDIAN) {
@@ -1048,37 +1048,37 @@ namespace CamelotEngine {
                 ((float*)dest)[3] = a;
                 break;
             case PF_FLOAT16_R:
-                ((uint16*)dest)[0] = Bitwise::floatToHalf(r);
+                ((UINT16*)dest)[0] = Bitwise::floatToHalf(r);
                 break;
 			case PF_FLOAT16_GR:
-				((uint16*)dest)[0] = Bitwise::floatToHalf(g);
-				((uint16*)dest)[1] = Bitwise::floatToHalf(r);
+				((UINT16*)dest)[0] = Bitwise::floatToHalf(g);
+				((UINT16*)dest)[1] = Bitwise::floatToHalf(r);
 				break;
             case PF_FLOAT16_RGB:
-                ((uint16*)dest)[0] = Bitwise::floatToHalf(r);
-                ((uint16*)dest)[1] = Bitwise::floatToHalf(g);
-                ((uint16*)dest)[2] = Bitwise::floatToHalf(b);
+                ((UINT16*)dest)[0] = Bitwise::floatToHalf(r);
+                ((UINT16*)dest)[1] = Bitwise::floatToHalf(g);
+                ((UINT16*)dest)[2] = Bitwise::floatToHalf(b);
                 break;
             case PF_FLOAT16_RGBA:
-                ((uint16*)dest)[0] = Bitwise::floatToHalf(r);
-                ((uint16*)dest)[1] = Bitwise::floatToHalf(g);
-                ((uint16*)dest)[2] = Bitwise::floatToHalf(b);
-                ((uint16*)dest)[3] = Bitwise::floatToHalf(a);
+                ((UINT16*)dest)[0] = Bitwise::floatToHalf(r);
+                ((UINT16*)dest)[1] = Bitwise::floatToHalf(g);
+                ((UINT16*)dest)[2] = Bitwise::floatToHalf(b);
+                ((UINT16*)dest)[3] = Bitwise::floatToHalf(a);
                 break;
             case PF_SHORT_RGB:
-				((uint16*)dest)[0] = (uint16)Bitwise::floatToFixed(r, 16);
-                ((uint16*)dest)[1] = (uint16)Bitwise::floatToFixed(g, 16);
-                ((uint16*)dest)[2] = (uint16)Bitwise::floatToFixed(b, 16);
+				((UINT16*)dest)[0] = (UINT16)Bitwise::floatToFixed(r, 16);
+                ((UINT16*)dest)[1] = (UINT16)Bitwise::floatToFixed(g, 16);
+                ((UINT16*)dest)[2] = (UINT16)Bitwise::floatToFixed(b, 16);
                 break;
 			case PF_SHORT_RGBA:
-				((uint16*)dest)[0] = (uint16)Bitwise::floatToFixed(r, 16);
-                ((uint16*)dest)[1] = (uint16)Bitwise::floatToFixed(g, 16);
-                ((uint16*)dest)[2] = (uint16)Bitwise::floatToFixed(b, 16);
-                ((uint16*)dest)[3] = (uint16)Bitwise::floatToFixed(a, 16);
+				((UINT16*)dest)[0] = (UINT16)Bitwise::floatToFixed(r, 16);
+                ((UINT16*)dest)[1] = (UINT16)Bitwise::floatToFixed(g, 16);
+                ((UINT16*)dest)[2] = (UINT16)Bitwise::floatToFixed(b, 16);
+                ((UINT16*)dest)[3] = (UINT16)Bitwise::floatToFixed(a, 16);
 				break;
 			case PF_BYTE_LA:
-				((uint8*)dest)[0] = (uint8)Bitwise::floatToFixed(r, 8);
-                ((uint8*)dest)[1] = (uint8)Bitwise::floatToFixed(a, 8);
+				((UINT8*)dest)[0] = (UINT8)Bitwise::floatToFixed(r, 8);
+                ((UINT8*)dest)[1] = (UINT8)Bitwise::floatToFixed(a, 8);
 				break;
             default:
                 // Not yet supported
@@ -1096,7 +1096,7 @@ namespace CamelotEngine {
         unpackColour(&colour->r, &colour->g, &colour->b, &colour->a, pf, src);
     }
     //-----------------------------------------------------------------------
-    void PixelUtil::unpackColour(uint8 *r, uint8 *g, uint8 *b, uint8 *a, PixelFormat pf,  const void* src)
+    void PixelUtil::unpackColour(UINT8 *r, UINT8 *g, UINT8 *b, UINT8 *a, PixelFormat pf,  const void* src)
     {
         const PixelFormatDescription &des = getDescriptionFor(pf);
         if(des.flags & PFF_NATIVEENDIAN) {
@@ -1105,18 +1105,18 @@ namespace CamelotEngine {
             if(des.flags & PFF_LUMINANCE)
             {
                 // Luminance format -- only rbits used
-                *r = *g = *b = (uint8)Bitwise::fixedToFixed(
+                *r = *g = *b = (UINT8)Bitwise::fixedToFixed(
                     (value & des.rmask)>>des.rshift, des.rbits, 8);
             }
             else
             {
-                *r = (uint8)Bitwise::fixedToFixed((value & des.rmask)>>des.rshift, des.rbits, 8);
-                *g = (uint8)Bitwise::fixedToFixed((value & des.gmask)>>des.gshift, des.gbits, 8);
-                *b = (uint8)Bitwise::fixedToFixed((value & des.bmask)>>des.bshift, des.bbits, 8);
+                *r = (UINT8)Bitwise::fixedToFixed((value & des.rmask)>>des.rshift, des.rbits, 8);
+                *g = (UINT8)Bitwise::fixedToFixed((value & des.gmask)>>des.gshift, des.gbits, 8);
+                *b = (UINT8)Bitwise::fixedToFixed((value & des.bmask)>>des.bshift, des.bbits, 8);
             }
             if(des.flags & PFF_HASALPHA)
             {
-                *a = (uint8)Bitwise::fixedToFixed((value & des.amask)>>des.ashift, des.abits, 8);
+                *a = (UINT8)Bitwise::fixedToFixed((value & des.amask)>>des.ashift, des.abits, 8);
             }
             else
             {
@@ -1126,10 +1126,10 @@ namespace CamelotEngine {
             // Do the operation with the more generic floating point
             float rr, gg, bb, aa;
             unpackColour(&rr,&gg,&bb,&aa, pf, src);
-            *r = (uint8)Bitwise::floatToFixed(rr, 8);
-            *g = (uint8)Bitwise::floatToFixed(gg, 8);
-            *b = (uint8)Bitwise::floatToFixed(bb, 8);
-            *a = (uint8)Bitwise::floatToFixed(aa, 8);
+            *r = (UINT8)Bitwise::floatToFixed(rr, 8);
+            *g = (UINT8)Bitwise::floatToFixed(gg, 8);
+            *b = (UINT8)Bitwise::floatToFixed(bb, 8);
+            *a = (UINT8)Bitwise::floatToFixed(aa, 8);
         }
     }
     //-----------------------------------------------------------------------
@@ -1185,41 +1185,41 @@ namespace CamelotEngine {
                 *a = ((float*)src)[3];
                 break;
             case PF_FLOAT16_R:
-                *r = *g = *b = Bitwise::halfToFloat(((uint16*)src)[0]);
+                *r = *g = *b = Bitwise::halfToFloat(((UINT16*)src)[0]);
                 *a = 1.0f;
                 break;
 			case PF_FLOAT16_GR:
-				*g = Bitwise::halfToFloat(((uint16*)src)[0]);
-				*r = *b = Bitwise::halfToFloat(((uint16*)src)[1]);
+				*g = Bitwise::halfToFloat(((UINT16*)src)[0]);
+				*r = *b = Bitwise::halfToFloat(((UINT16*)src)[1]);
 				*a = 1.0f;
 				break;
             case PF_FLOAT16_RGB:
-                *r = Bitwise::halfToFloat(((uint16*)src)[0]);
-                *g = Bitwise::halfToFloat(((uint16*)src)[1]);
-                *b = Bitwise::halfToFloat(((uint16*)src)[2]);
+                *r = Bitwise::halfToFloat(((UINT16*)src)[0]);
+                *g = Bitwise::halfToFloat(((UINT16*)src)[1]);
+                *b = Bitwise::halfToFloat(((UINT16*)src)[2]);
                 *a = 1.0f;
                 break;
             case PF_FLOAT16_RGBA:
-                *r = Bitwise::halfToFloat(((uint16*)src)[0]);
-                *g = Bitwise::halfToFloat(((uint16*)src)[1]);
-                *b = Bitwise::halfToFloat(((uint16*)src)[2]);
-                *a = Bitwise::halfToFloat(((uint16*)src)[3]);
+                *r = Bitwise::halfToFloat(((UINT16*)src)[0]);
+                *g = Bitwise::halfToFloat(((UINT16*)src)[1]);
+                *b = Bitwise::halfToFloat(((UINT16*)src)[2]);
+                *a = Bitwise::halfToFloat(((UINT16*)src)[3]);
                 break;
 			case PF_SHORT_RGB:
-				*r = Bitwise::fixedToFloat(((uint16*)src)[0], 16);
-                *g = Bitwise::fixedToFloat(((uint16*)src)[1], 16);
-				*b = Bitwise::fixedToFloat(((uint16*)src)[2], 16);
+				*r = Bitwise::fixedToFloat(((UINT16*)src)[0], 16);
+                *g = Bitwise::fixedToFloat(((UINT16*)src)[1], 16);
+				*b = Bitwise::fixedToFloat(((UINT16*)src)[2], 16);
 				*a = 1.0f;
 				break;
 			case PF_SHORT_RGBA:
-				*r = Bitwise::fixedToFloat(((uint16*)src)[0], 16);
-                *g = Bitwise::fixedToFloat(((uint16*)src)[1], 16);
-				*b = Bitwise::fixedToFloat(((uint16*)src)[2], 16);
-				*a = Bitwise::fixedToFloat(((uint16*)src)[3], 16);
+				*r = Bitwise::fixedToFloat(((UINT16*)src)[0], 16);
+                *g = Bitwise::fixedToFloat(((UINT16*)src)[1], 16);
+				*b = Bitwise::fixedToFloat(((UINT16*)src)[2], 16);
+				*a = Bitwise::fixedToFloat(((UINT16*)src)[3], 16);
 				break;
 			case PF_BYTE_LA:
-				*r = *g = *b = Bitwise::fixedToFloat(((uint8*)src)[0], 8);
-				*a = Bitwise::fixedToFloat(((uint8*)src)[1], 8);
+				*r = *g = *b = Bitwise::fixedToFloat(((UINT8*)src)[0], 8);
+				*a = Bitwise::fixedToFloat(((UINT8*)src)[1], 8);
 				break;
             default:
                 // Not yet supported
@@ -1274,9 +1274,9 @@ namespace CamelotEngine {
 
             const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.format);
             const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.format);
-            uint8 *srcptr = static_cast<uint8*>(src.data)
+            UINT8 *srcptr = static_cast<UINT8*>(src.data)
                 + (src.left + src.top * src.rowPitch + src.front * src.slicePitch) * srcPixelSize;
-            uint8 *dstptr = static_cast<uint8*>(dst.data)
+            UINT8 *dstptr = static_cast<UINT8*>(dst.data)
 				+ (dst.left + dst.top * dst.rowPitch + dst.front * dst.slicePitch) * dstPixelSize;
 
             // Calculate pitches+skips in bytes
@@ -1328,13 +1328,13 @@ namespace CamelotEngine {
 
         const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.format);
         const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.format);
-        uint8 *srcptr = static_cast<uint8*>(src.data)
+        UINT8 *srcptr = static_cast<UINT8*>(src.data)
             + (src.left + src.top * src.rowPitch + src.front * src.slicePitch) * srcPixelSize;
-        uint8 *dstptr = static_cast<uint8*>(dst.data)
+        UINT8 *dstptr = static_cast<UINT8*>(dst.data)
             + (dst.left + dst.top * dst.rowPitch + dst.front * dst.slicePitch) * dstPixelSize;
 		
 		// Old way, not taking into account box dimensions
-		//uint8 *srcptr = static_cast<uint8*>(src.data), *dstptr = static_cast<uint8*>(dst.data);
+		//UINT8 *srcptr = static_cast<UINT8*>(src.data), *dstptr = static_cast<UINT8*>(dst.data);
 
         // Calculate pitches+skips in bytes
         const size_t srcRowSkipBytes = src.getRowSkip()*srcPixelSize;

@@ -79,7 +79,7 @@ namespace CamelotEngine {
 		// Try to use scratch buffers for smaller buffers
 		if( length < glBufManager->getGLMapBufferThreshold() )
 		{
-			retPtr = glBufManager->allocateScratch((uint32)length);
+			retPtr = glBufManager->allocateScratch((UINT32)length);
 			if (retPtr)
 			{
 				mLockedToScratch = true;

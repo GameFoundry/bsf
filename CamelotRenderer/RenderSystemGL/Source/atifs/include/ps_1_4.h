@@ -35,7 +35,7 @@ THE SOFTWARE.
 		2. Wolfgang F. Engel "Fundamentals of Pixel Shaders - Introduction to Shader Programming Part III" on gamedev.net
 		3. Martin Ecker - XEngine
 		4. Shawn Kirst - ps14toATIfs
-		5. Jason L. Mitchell "Real-Time 3D Graphics With Pixel Shaders" 
+		5. Jason L. Mitchell "float-Time 3D Graphics With Pixel Shaders" 
 		6. Jason L. Mitchell "1.4 Pixel Shaders"
 		7. Jason L. Mitchell and Evan Hart "Hardware Shading with EXT_vertex_shader and ATI_fragment_shader"
 		6. ATI 8500 SDK
@@ -177,7 +177,7 @@ private:
 	  GLuint Mod;		// argument modifier
 	};
 
-	typedef std::vector<uint> MachineInstContainer;
+	typedef std::vector<UINT32> MachineInstContainer;
 	//typedef MachineInstContainer::iterator MachineInstIterator;
 
 
@@ -185,16 +185,16 @@ private:
 	enum PhaseType {ptPHASE1TEX, ptPHASE1ALU, ptPHASE2TEX, ptPHASE2ALU };
 
 	struct RegModOffset {
-		uint MacroOffset;
-		uint RegisterBase;
-		uint OpParramsIndex;
+		UINT32 MacroOffset;
+		UINT32 RegisterBase;
+		UINT32 OpParramsIndex;
 	};
 
 	struct MacroRegModify {
 		TokenInst *		Macro;
-		uint			MacroSize;
+		UINT32			MacroSize;
 		RegModOffset *	RegMods;
-		uint			RegModSize;
+		UINT32			RegModSize;
 
 	};
 
@@ -255,7 +255,7 @@ private:
 	MachineInstContainer* mActivePhaseMachineInstructions;
 	// vars used during pass 2
 	MachineInstID mOpType;
-	uint mOpInst;
+	UINT32 mOpInst;
 	bool mDo_Alpha;
 	PhaseType mInstructionPhase;
 	int mArgCnt;
@@ -276,7 +276,7 @@ private:
 
 	bool mMacroOn; // if true then put all ALU instructions in phase 1
 
-	uint mTexm3x3padCount; // keep track of how many texm3x3pad instructions are used so know which mask to use
+	UINT32 mTexm3x3padCount; // keep track of how many texm3x3pad instructions are used so know which mask to use
 
 	size_t mLastInstructionPos; // keep track of last phase 2 ALU instruction to check for R0 setting
 	size_t mSecondLastInstructionPos;
@@ -288,7 +288,7 @@ private:
 	FILE* fp;
 	// full compiler test with output results going to a text file
 	void testCompile(char* testname, char* teststr, SymbolID* testresult,
-		uint testresultsize, GLuint* MachinInstResults = NULL, uint MachinInstResultsSize = 0);
+		UINT32 testresultsize, GLuint* MachinInstResults = NULL, UINT32 MachinInstResultsSize = 0);
 #endif // _DEBUG
 
 
@@ -338,7 +338,7 @@ private:
 
 	size_t getMachineInstCount();
 
-	void addMachineInst(PhaseType phase, const uint inst);
+	void addMachineInst(PhaseType phase, const UINT32 inst);
 
 	void clearAllMachineInst();
 

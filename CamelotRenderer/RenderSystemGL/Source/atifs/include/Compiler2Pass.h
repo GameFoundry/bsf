@@ -43,7 +43,7 @@ THE SOFTWARE.
 // FIX ME - should not be hard coded
 #define BAD_TOKEN 999
 
-typedef unsigned int uint;
+typedef unsigned int UINT32;
 
 
 
@@ -75,23 +75,23 @@ protected:
 	*/
 	struct TokenRule {
 		OperationType mOperation;
-		uint mTokenID;
+		UINT32 mTokenID;
 		const char* mSymbol;
-		uint mErrorID;
+		UINT32 mErrorID;
 
 	};
 
 	/** structure used to build Symbol Type library */
 	struct SymbolDef {
-	  uint mID;					// Token ID which is the index into the Token Type library
-	  uint mPass2Data;			// data used by pass 2 to build native instructions
+	  UINT32 mID;					// Token ID which is the index into the Token Type library
+	  UINT32 mPass2Data;			// data used by pass 2 to build native instructions
 
-	  uint mContextKey;			// context key to fit the Active Context
-	  uint mContextPatternSet;	// new pattern to set for Active Context bits
-	  uint mContextPatternClear;// Contexts bits to clear Active Context bits
+	  UINT32 mContextKey;			// context key to fit the Active Context
+	  UINT32 mContextPatternSet;	// new pattern to set for Active Context bits
+	  UINT32 mContextPatternClear;// Contexts bits to clear Active Context bits
 
 	  int mDefTextID;			// index into text table for default name : set at runtime
-	  uint mRuleID;				// index into Rule database for non-terminal toke rulepath
+	  UINT32 mRuleID;				// index into Rule database for non-terminal toke rulepath
 								// if RuleID is zero the token is terminal
 
 	};
@@ -99,8 +99,8 @@ protected:
 
 	/** structure for Token instructions */
 	struct TokenInst {
-	  uint mNTTRuleID;			// Non-Terminal Token Rule ID that generated Token
-	  uint mID;					// Token ID
+	  UINT32 mNTTRuleID;			// Non-Terminal Token Rule ID that generated Token
+	  UINT32 mID;					// Token ID
 	  int mLine;				// line number in source code where Token was found
 	  int mPos;					// Character position in source where Token was found
 
@@ -128,14 +128,14 @@ protected:
 
 	/// mVauleID needs to be initialized by the subclass before compiling occurs
 	/// it defines the token ID used in the symbol type library
-	uint mValueID;
+	UINT32 mValueID;
 
 
 	/// storage container for constants defined in source
 	std::vector<float> mConstants;
 
 	/// Active Contexts pattern used in pass 1 to determine which tokens are valid for a certain context
-	uint mActiveContexts;
+	UINT32 mActiveContexts;
 
 	/** check token semantics between ID1 and ID2 using left/right semantic data in Token Type library
 	@param ID1 token ID on the left
@@ -145,7 +145,7 @@ protected:
 		false if either fails the semantic bind test
 
 	*/
-	//bool checkTokenSemantics(uint ID1, uint ID2);
+	//bool checkTokenSemantics(UINT32 ID1, UINT32 ID2);
 
 	/** perform pass 1 of compile process
 		scans source for symbols that can be tokenized and then
@@ -172,7 +172,7 @@ protected:
 	@param sid is the token ID
 	@return a pointer to the string text
 	*/
-	const char* getTypeDefText(const uint sid);
+	const char* getTypeDefText(const UINT32 sid);
 
 	/** check to see if the text at the present position in the source is a numerical constant
 	@param fvalue is a reference that will receive the float value that is in the source
@@ -215,11 +215,11 @@ protected:
 		true if rule passed - all required tokens found
 		false if one or more tokens required to complete the rule were not found
 	*/
-	bool processRulePath( uint rulepathIDX);
+	bool processRulePath( UINT32 rulepathIDX);
 
 
 	// setup ActiveContexts - should be called by subclass to setup initial language contexts
-	void setActiveContexts(const uint contexts){ mActiveContexts = contexts; }
+	void setActiveContexts(const UINT32 contexts){ mActiveContexts = contexts; }
 
 
 	/// comment specifiers are hard coded
@@ -240,7 +240,7 @@ protected:
 		false if token symbol text does not match the source text
 		if token is non-terminal then processRulePath is called
 	*/
-	bool ValidateToken(const uint rulepathIDX, const uint activeRuleID);
+	bool ValidateToken(const UINT32 rulepathIDX, const UINT32 activeRuleID);
 
 
 public:

@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreGLPrerequisites.h"
 #include "OgreGLGpuProgram.h"
 
-namespace Ogre {
+namespace CamelotEngine {
 
 	/** Specialisation of the GL low-level program for ATI Fragment Shader programs. */
 	class _OgreGLExport ATI_FS_GLGpuProgram : public GLGpuProgram
@@ -47,7 +47,7 @@ namespace Ogre {
 		/// Execute the unbinding functions for this program
 		void unbindProgram(void);
 		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, uint16 mask);
+		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
 		/** Execute the pass iteration param binding functions for this program.
             Only binds those parameters used for multipass rendering
         */
@@ -66,6 +66,6 @@ namespace Ogre {
 
 
 
-}; // namespace Ogre
+}; // namespace CamelotEngine
 
 #endif // __ATI_FS_GLGpuProgram_H__

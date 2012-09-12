@@ -6,7 +6,7 @@
 #include "nvparse_errors.h"
 #include "nvparse_externs.h"
 
-using namespace Ogre;
+using namespace CamelotEngine;
 
 const int instListInc = 4;
 

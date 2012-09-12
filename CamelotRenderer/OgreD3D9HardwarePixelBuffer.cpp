@@ -66,7 +66,7 @@ D3D9HardwarePixelBuffer::~D3D9HardwarePixelBuffer()
 //-----------------------------------------------------------------------------  
 void D3D9HardwarePixelBuffer::bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *surface, 
 								   IDirect3DSurface9* fsaaSurface,
-								   bool writeGamma, uint fsaa, const String& srcName,
+								   bool writeGamma, UINT32 fsaa, const String& srcName,
 								   IDirect3DBaseTexture9 *mipTex)
 {
 	D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -964,7 +964,7 @@ RenderTexture *D3D9HardwarePixelBuffer::getRenderTarget(size_t zoffset)
 	return mRenderTexture;
 }
 //-----------------------------------------------------------------------------    
-void D3D9HardwarePixelBuffer::updateRenderTexture(bool writeGamma, uint fsaa, const String& srcName)
+void D3D9HardwarePixelBuffer::updateRenderTexture(bool writeGamma, UINT32 fsaa, const String& srcName)
 {
 	if (mRenderTexture == NULL)
 	{

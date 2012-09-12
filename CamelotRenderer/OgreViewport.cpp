@@ -29,13 +29,13 @@ THE SOFTWARE.
 
 #include "OgreException.h"
 #include "OgreRenderTarget.h"
-#include "OgreMath.h"
+#include "CmMath.h"
 #include "OgreRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
     //---------------------------------------------------------------------
-    Viewport::Viewport(RenderTarget* target, Real left, Real top, Real width, Real height, int ZOrder)
+    Viewport::Viewport(RenderTarget* target, float left, float top, float width, float height, int ZOrder)
          :mTarget(target)
         , mRelLeft(left)
         , mRelTop(top)
@@ -58,8 +58,8 @@ namespace CamelotEngine {
     //---------------------------------------------------------------------
     void Viewport::_updateDimensions(void)
     {
-        Real height = (Real) mTarget->getHeight();
-        Real width = (Real) mTarget->getWidth();
+        float height = (float) mTarget->getHeight();
+        float width = (float) mTarget->getWidth();
 
         mActLeft = (int) (mRelLeft * width);
         mActTop = (int) (mRelTop * height);
@@ -77,22 +77,22 @@ namespace CamelotEngine {
         return mTarget;
     }
     //---------------------------------------------------------------------
-    Real Viewport::getLeft(void) const
+    float Viewport::getLeft(void) const
     {
         return mRelLeft;
     }
     //---------------------------------------------------------------------
-    Real Viewport::getTop(void) const
+    float Viewport::getTop(void) const
     {
         return mRelTop;
     }
     //---------------------------------------------------------------------
-    Real Viewport::getWidth(void) const
+    float Viewport::getWidth(void) const
     {
         return mRelWidth;
     }
     //---------------------------------------------------------------------
-    Real Viewport::getHeight(void) const
+    float Viewport::getHeight(void) const
     {
         return mRelHeight;
     }
@@ -117,7 +117,7 @@ namespace CamelotEngine {
         return mActHeight;
     }
     //---------------------------------------------------------------------
-    void Viewport::setDimensions(Real left, Real top, Real width, Real height)
+    void Viewport::setDimensions(float left, float top, float width, float height)
     {
         mRelLeft = left;
         mRelTop = top;
@@ -158,7 +158,7 @@ namespace CamelotEngine {
     }
     //---------------------------------------------------------------------
 	void Viewport::clear(unsigned int buffers, const ColourValue& col,  
-						 Real depth, unsigned short stencil)
+						 float depth, unsigned short stencil)
 	{
 		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
 		if (rs)

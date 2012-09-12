@@ -88,7 +88,7 @@ namespace CamelotEngine
 			IDirect3DBaseTexture9 *pTex;
 			/// vertex texture 
 			IDirect3DBaseTexture9 *pVertexTex;
-		} mTexStageDesc[OGRE_MAX_TEXTURE_LAYERS];
+		} mTexStageDesc[CM_MAX_TEXTURE_LAYERS];
 
 		// Array of up to 8 lights, indexed as per API
 		// Note that a null value indicates a free slot
@@ -104,7 +104,7 @@ namespace CamelotEngine
 		HRESULT __SetSamplerState(DWORD sampler, D3DSAMPLERSTATETYPE type, DWORD value);
 		HRESULT __SetTextureStageState(DWORD stage, D3DTEXTURESTAGESTATETYPE type, DWORD value);
 
-		HRESULT __SetFloatRenderState(D3DRENDERSTATETYPE state, Real value)
+		HRESULT __SetFloatRenderState(D3DRENDERSTATETYPE state, float value)
 		{
 #if OGRE_DOUBLE_PRECISION == 1
 			float temp = static_cast<float>(value);
@@ -222,7 +222,7 @@ namespace CamelotEngine
 		VertexElementType getColourVertexElementType() const;
 		void setStencilCheckEnabled(bool enabled);
         void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
-            uint32 refValue = 0, uint32 mask = 0xFFFFFFFF, 
+            UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
             StencilOperation stencilFailOp = SOP_KEEP, 
             StencilOperation depthFailOp = SOP_KEEP,
             StencilOperation passOp = SOP_KEEP, 
@@ -234,10 +234,10 @@ namespace CamelotEngine
 		void _setWorldMatrix( const Matrix4 &m );
 		void _setViewMatrix( const Matrix4 &m );
 		void _setProjectionMatrix( const Matrix4 &m );
-		void _setSurfaceParams( const ColourValue &ambient, const ColourValue &diffuse, const ColourValue &specular, const ColourValue &emissive, Real shininess, TrackVertexColourType tracking );
+		void _setSurfaceParams( const ColourValue &ambient, const ColourValue &diffuse, const ColourValue &specular, const ColourValue &emissive, float shininess, TrackVertexColourType tracking );
 		void _setPointSpritesEnabled(bool enabled);
-		void _setPointParameters(Real size, bool attenuationEnabled, 
-			Real constant, Real linear, Real quadratic, Real minSize, Real maxSize);
+		void _setPointParameters(float size, bool attenuationEnabled, 
+			float constant, float linear, float quadratic, float minSize, float maxSize);
 		void _setTexture(size_t unit, bool enabled, const TexturePtr &texPtr);
 		void _setVertexTexture(size_t unit, const TexturePtr& tex);
 		void _disableTextureUnit(size_t texUnit);
@@ -264,14 +264,14 @@ namespace CamelotEngine
 		void _setDepthBufferWriteEnabled(bool enabled = true);
 		void _setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
 		void _setDepthBias(float constantBias, float slopeScaleBias);
-		void _setFog( FogMode mode = FOG_NONE, const ColourValue& colour = ColourValue::White, Real expDensity = 1.0, Real linearStart = 0.0, Real linearEnd = 1.0 );
+		void _setFog( FogMode mode = FOG_NONE, const ColourValue& colour = ColourValue::White, float expDensity = 1.0, float linearStart = 0.0, float linearEnd = 1.0 );
 		void _convertProjectionMatrix(const Matrix4& matrix,
             Matrix4& dest, bool forGpuProgram = false);
-		void _makeProjectionMatrix(const Radian& fovy, Real aspect, Real nearPlane, Real farPlane, 
+		void _makeProjectionMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
             Matrix4& dest, bool forGpuProgram = false);
-		void _makeProjectionMatrix(Real left, Real right, Real bottom, Real top, Real nearPlane, 
-            Real farPlane, Matrix4& dest, bool forGpuProgram = false);
-		void _makeOrthoMatrix(const Radian& fovy, Real aspect, Real nearPlane, Real farPlane, 
+		void _makeProjectionMatrix(float left, float right, float bottom, float top, float nearPlane, 
+            float farPlane, Matrix4& dest, bool forGpuProgram = false);
+		void _makeOrthoMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
             Matrix4& dest, bool forGpuProgram = false);
         void _applyObliqueDepthProjection(Matrix4& matrix, const Plane& plane, 
             bool forGpuProgram);
@@ -293,20 +293,20 @@ namespace CamelotEngine
           RenderSystem
          */
 		void bindGpuProgramParameters(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, uint16 variabilityMask);
+			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
         void bindGpuProgramPassIterationParameters(GpuProgramType gptype);
 
         void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600);
         void clearFrameBuffer(unsigned int buffers, 
             const ColourValue& colour = ColourValue::Black, 
-            Real depth = 1.0f, unsigned short stencil = 0);
-		void setClipPlane (ushort index, Real A, Real B, Real C, Real D);
-		void enableClipPlane (ushort index, bool enable);
+            float depth = 1.0f, unsigned short stencil = 0);
+		void setClipPlane (UINT16 index, float A, float B, float C, float D);
+		void enableClipPlane (UINT16 index, bool enable);
         HardwareOcclusionQuery* createHardwareOcclusionQuery();
-        Real getHorizontalTexelOffset();
-        Real getVerticalTexelOffset();
-        Real getMinimumDepthInputValue();
-        Real getMaximumDepthInputValue();
+        float getHorizontalTexelOffset();
+        float getVerticalTexelOffset();
+        float getMinimumDepthInputValue();
+        float getMaximumDepthInputValue();
 		void registerThread();
 		void unregisterThread();
 		void preExtraThreadsStarted();

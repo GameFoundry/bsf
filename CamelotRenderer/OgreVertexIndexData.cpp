@@ -30,8 +30,8 @@ THE SOFTWARE.
 #include "OgreHardwareBufferManager.h"
 #include "OgreHardwareVertexBuffer.h"
 #include "OgreHardwareIndexBuffer.h"
-#include "OgreVector3.h"
-#include "OgreAxisAlignedBox.h"
+#include "CmVector3.h"
+#include "CmAxisAlignedBox.h"
 #include "OgreException.h"
 #include "OgreRenderSystem.h"
 #include "CmRenderSystemManager.h"
@@ -534,7 +534,7 @@ namespace CamelotEngine {
             VertexBufferBinding::BindingIndexMap::const_iterator it =
                 bindingIndexMap.find(elem.getSource());
             assert(it != bindingIndexMap.end());
-            ushort targetSource = it->second;
+            UINT16 targetSource = it->second;
             if (elem.getSource() != targetSource)
             {
                 vertexDeclaration->modifyElement(elemIndex, 
@@ -546,7 +546,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     void VertexData::removeUnusedBuffers(void)
     {
-        set<ushort>::type usedBuffers;
+        set<UINT16>::type usedBuffers;
 
         // Collect used buffers
         const VertexDeclaration::VertexElementList& allelems = 
@@ -559,8 +559,8 @@ namespace CamelotEngine {
         }
 
         // Unset unused buffer bindings
-        ushort count = vertexBufferBinding->getLastBoundIndex();
-        for (ushort index = 0; index < count; ++index)
+        UINT16 count = vertexBufferBinding->getLastBoundIndex();
+        for (UINT16 index = 0; index < count; ++index)
         {
             if (usedBuffers.find(index) == usedBuffers.end() &&
                 vertexBufferBinding->isBufferBound(index))
@@ -623,7 +623,7 @@ namespace CamelotEngine {
 							((elem.getType() == VET_COLOUR_ABGR || elem.getType() == VET_COLOUR_ARGB) 
 							&& elem.getType() != destType))
 						{
-							uint32* pRGBA;
+							UINT32* pRGBA;
 							elem.baseVertexPointerToElement(pBase, &pRGBA);
 							VertexElement::convertColourValue(currType, destType, pRGBA);
 						}
@@ -700,18 +700,18 @@ namespace CamelotEngine {
 			AB, BC, CA, ANY, NONE
 		};
 
-		uint32 a, b, c;		
+		UINT32 a, b, c;		
 
 		inline Triangle()
 		{
 		}
 
-		inline Triangle( uint32 ta, uint32 tb, uint32 tc ) 
+		inline Triangle( UINT32 ta, UINT32 tb, UINT32 tc ) 
 			: a( ta ), b( tb ), c( tc )
 		{
 		}
 
-		inline Triangle( uint32 t[3] )
+		inline Triangle( UINT32 t[3] )
 			: a( t[0] ), b( t[1] ), c( t[2] )
 		{
 		}
@@ -734,7 +734,7 @@ namespace CamelotEngine {
 					c == t.c && a == t.b );
 		}
 
-		inline bool sharesEdge(const uint32 ea, const uint32 eb, const Triangle& t) const
+		inline bool sharesEdge(const UINT32 ea, const UINT32 eb, const Triangle& t) const
 		{
 			return(	ea == t.a && eb == t.c ||
 					ea == t.b && eb == t.a ||
@@ -768,7 +768,7 @@ namespace CamelotEngine {
 
 		inline void shiftClockwise()
 		{
-			uint32 t = a;
+			UINT32 t = a;
 			a = c;
 			c = b;
 			b = t;
@@ -776,7 +776,7 @@ namespace CamelotEngine {
 
 		inline void shiftCounterClockwise()
 		{
-			uint32 t = a;
+			UINT32 t = a;
 			a = b;
 			b = c;
 			c = t;
@@ -791,30 +791,30 @@ namespace CamelotEngine {
 		void *buffer = indexBuffer->lock(HardwareBuffer::HBL_NORMAL);
 
 		Triangle* triangles;
-		uint32 *dest;
+		UINT32 *dest;
 
 		size_t nIndexes = indexCount;
 		size_t nTriangles = nIndexes / 3;
 		size_t i, j;
-		uint16 *source = 0;
+		UINT16 *source = 0;
 
 		if (indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT)
 		{
 			triangles = (Triangle*) malloc(sizeof(Triangle) * nTriangles);
-			source = (uint16 *)buffer;
-			dest = (uint32 *)triangles;
+			source = (UINT16 *)buffer;
+			dest = (UINT32 *)triangles;
 			for (i = 0; i < nIndexes; ++i) dest[i] = source[i];
 		}
 		else
 			triangles = (Triangle*)buffer;
 
 		// sort triangles based on shared edges
-		uint32 *destlist = (uint32*)malloc(sizeof(uint32) * nTriangles);
+		UINT32 *destlist = (UINT32*)malloc(sizeof(UINT32) * nTriangles);
 		unsigned char *visited = (unsigned char*)malloc(sizeof(unsigned char) * nTriangles);
 
 		for (i = 0; i < nTriangles; ++i) visited[i] = 0;
 
-		uint32 start = 0, ti = 0, destcount = 0;
+		UINT32 start = 0, ti = 0, destcount = 0;
 
 		bool found = false;
 		for (i = 0; i < nTriangles; ++i)
@@ -837,7 +837,7 @@ namespace CamelotEngine {
 				if (triangles[ti].sharesEdge(triangles[j]))
 				{
 					found = true;
-					ti = static_cast<uint32>(j);
+					ti = static_cast<UINT32>(j);
 					break;
 				}
 			}
@@ -850,19 +850,19 @@ namespace CamelotEngine {
 			for (i = 0; i < nTriangles; ++i)
 			{
 				Triangle *t = &triangles[destlist[i]];
-				source[j++] = (uint16)t->a;
-				source[j++] = (uint16)t->b;
-				source[j++] = (uint16)t->c;
+				source[j++] = (UINT16)t->a;
+				source[j++] = (UINT16)t->b;
+				source[j++] = (UINT16)t->c;
 			}
 			free(triangles);
 		}
 		else
 		{
-			uint32 *reflist = (uint32*)malloc(sizeof(uint32) * nTriangles);
+			UINT32 *reflist = (UINT32*)malloc(sizeof(UINT32) * nTriangles);
 
 			// fill the referencebuffer
 			for (i = 0; i < nTriangles; ++i)
-				reflist[destlist[i]] = static_cast<uint32>(i);
+				reflist[destlist[i]] = static_cast<UINT32>(i);
 			
 			// reorder the indexbuffer
 			for (i = 0; i < nTriangles; ++i)
@@ -877,7 +877,7 @@ namespace CamelotEngine {
 				triangles[j] = t;
 
 				// change reference
-				destlist[reflist[i]] = static_cast<uint32>(j);
+				destlist[reflist[i]] = static_cast<UINT32>(j);
 				// destlist[i] = i; // not needed, it will not be used
 			}
 
@@ -895,14 +895,14 @@ namespace CamelotEngine {
     {
 		if (indexBuffer->isLocked()) return;
 
-		uint16 *shortbuffer = (uint16 *)indexBuffer->lock(HardwareBuffer::HBL_READ_ONLY);
+		UINT16 *shortbuffer = (UINT16 *)indexBuffer->lock(HardwareBuffer::HBL_READ_ONLY);
 
 		if (indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT)
 			for (unsigned int i = 0; i < indexBuffer->getNumIndexes(); ++i)
 				inCache(shortbuffer[i]);
 		else
 		{
-			uint32 *buffer = (uint32 *)shortbuffer;
+			UINT32 *buffer = (UINT32 *)shortbuffer;
 			for (unsigned int i = 0; i < indexBuffer->getNumIndexes(); ++i)
 				inCache(buffer[i]);
 		}

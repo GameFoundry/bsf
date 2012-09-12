@@ -45,7 +45,7 @@ namespace CamelotEngine {
 
 //-----------------------------------------------------------------------------  
     GLPBRenderTexture::GLPBRenderTexture(GLPBRTTManager *manager, const String &name, 
-		const GLSurfaceDesc &target, bool writeGamma, uint fsaa):
+		const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa):
         GLRenderTexture(name, target, writeGamma, fsaa),
         mManager(manager)
     {
@@ -90,7 +90,7 @@ namespace CamelotEngine {
     }
 
     RenderTexture *GLPBRTTManager::createRenderTexture(const String &name, 
-		const GLSurfaceDesc &target, bool writeGamma, uint fsaa)
+		const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa)
     {
         return new GLPBRenderTexture(this, name, target, writeGamma, fsaa);
     }

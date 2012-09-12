@@ -39,7 +39,7 @@ namespace CamelotEngine {
     public:
         GLHardwarePixelBuffer *buffer;
         size_t zoffset;
-		uint numSamples;
+		UINT32 numSamples;
 
 		GLSurfaceDesc() :buffer(0), zoffset(0), numSamples(0) {}
     };
@@ -49,7 +49,7 @@ namespace CamelotEngine {
     class _OgreGLExport GLRenderTexture: public RenderTexture
     {
     public:
-        GLRenderTexture(const String &name, const GLSurfaceDesc &target, bool writeGamma, uint fsaa);
+        GLRenderTexture(const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
         virtual ~GLRenderTexture();
         
         bool requiresTextureFlipping() const { return true; }
@@ -64,7 +64,7 @@ namespace CamelotEngine {
         
         /** Create a texture rendertarget object
         */
-        virtual RenderTexture *createRenderTexture(const String &name, const GLSurfaceDesc &target, bool writeGamma, uint fsaa) = 0;
+        virtual RenderTexture *createRenderTexture(const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa) = 0;
         
          /** Check if a certain format is usable as rendertexture format
         */
@@ -96,7 +96,7 @@ namespace CamelotEngine {
     {
     public:
         GLCopyingRenderTexture(GLCopyingRTTManager *manager, const String &name, const GLSurfaceDesc &target, 
-			bool writeGamma, uint fsaa);
+			bool writeGamma, UINT32 fsaa);
         
         virtual void getCustomAttribute(const String& name, void* pData);
     };
@@ -112,7 +112,7 @@ namespace CamelotEngine {
         
         /** @copydoc GLRTTManager::createRenderTexture
         */
-        virtual RenderTexture *createRenderTexture(const String &name, const GLSurfaceDesc &target, bool writeGamma, uint fsaa);
+        virtual RenderTexture *createRenderTexture(const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
         
         /** @copydoc GLRTTManager::checkFormat
         */

@@ -30,7 +30,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
-    String StringConverter::toString(Real val, unsigned short precision, 
+    String StringConverter::toString(float val, unsigned short precision, 
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
         stringstream stream;
@@ -245,11 +245,11 @@ namespace CamelotEngine {
         return stream.str();
     }
     //-----------------------------------------------------------------------
-    Real StringConverter::parseReal(const String& val, Real defaultValue)
+    float StringConverter::parseReal(const String& val, float defaultValue)
     {
 		// Use istringstream for direct correspondence with toString
 		StringStream str(val);
-		Real ret = defaultValue;
+		float ret = defaultValue;
 		str >> ret;
 
         return ret;

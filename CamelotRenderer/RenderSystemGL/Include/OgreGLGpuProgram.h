@@ -48,7 +48,7 @@ namespace CamelotEngine {
         virtual void unbindProgram(void) {}
 
         /// Execute the param binding functions for this program
-		virtual void bindProgramParameters(GpuProgramParametersSharedPtr params, uint16 mask) {}
+		virtual void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask) {}
 		/// Bind just the pass iteration parameters
 		virtual void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params) {}
 
@@ -62,13 +62,13 @@ namespace CamelotEngine {
 			This can be used to identify the attribute index to bind non-builtin
 			attributes like tangent and binormal.
 		*/
-		virtual GLuint getAttributeIndex(VertexElementSemantic semantic, uint index);
+		virtual GLuint getAttributeIndex(VertexElementSemantic semantic, UINT32 index);
 		/** Test whether attribute index for a given semantic is valid. 
 		*/
-		virtual bool isAttributeValid(VertexElementSemantic semantic, uint index);
+		virtual bool isAttributeValid(VertexElementSemantic semantic, UINT32 index);
 
 		/** Get the fixed attribute bindings normally used by GL for a semantic. */
-		static GLuint getFixedAttributeIndex(VertexElementSemantic semantic, uint index);
+		static GLuint getFixedAttributeIndex(VertexElementSemantic semantic, UINT32 index);
 
     protected:
 		/** Overridden from GpuProgram, do nothing */
@@ -96,7 +96,7 @@ namespace CamelotEngine {
         /// Execute the unbinding functions for this program
         void unbindProgram(void);
         /// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, uint16 mask);
+		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
 		/// Bind just the pass iteration parameters
 		void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
 

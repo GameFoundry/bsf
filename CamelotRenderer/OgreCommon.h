@@ -51,10 +51,10 @@ namespace CamelotEngine {
 	*/
 
 	/// Fast general hashing algorithm
-	uint32 CM_EXPORT FastHash (const char * data, int len, uint32 hashSoFar = 0);
+	UINT32 CM_EXPORT FastHash (const char * data, int len, UINT32 hashSoFar = 0);
 	/// Combine hashes with same style as boost::hash_combine
 	template <typename T>
-	uint32 HashCombine (uint32 hashSoFar, const T& data)
+	UINT32 HashCombine (UINT32 hashSoFar, const T& data)
 	{
 		return FastHash((const char*)&data, sizeof(T), hashSoFar);
 	}
@@ -309,7 +309,7 @@ namespace CamelotEngine {
 		typedef std::vector<T> VectorImpl;
 	protected:
 		VectorImpl mList;
-		mutable uint32 mListHash;
+		mutable UINT32 mListHash;
 		mutable bool mListHashDirty;
 
 		void addToHash(const T& newPtr) const
@@ -499,7 +499,7 @@ namespace CamelotEngine {
 
 
 		/// Get the hash value
-		uint32 getHash() const 
+		UINT32 getHash() const 
 		{ 
 			if (isHashDirty())
 				recalcHash();
@@ -620,7 +620,7 @@ namespace CamelotEngine {
 		/** Structure used to define a rectangle in a 2-D floating point space, 
 			subject to double / single floating point settings.
 		*/
-		typedef TRect<Real> RealRect;
+		typedef TRect<float> RealRect;
 
         /** Structure used to define a rectangle in a 2-D integer space.
         */

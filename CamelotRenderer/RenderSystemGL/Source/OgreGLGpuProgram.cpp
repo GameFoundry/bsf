@@ -62,12 +62,12 @@ GLGpuProgram::~GLGpuProgram()
     unload(); 
 }
 
-GLuint GLGpuProgram::getAttributeIndex(VertexElementSemantic semantic, uint index)
+GLuint GLGpuProgram::getAttributeIndex(VertexElementSemantic semantic, CamelotEngine::UINT32 index)
 {
 	return getFixedAttributeIndex(semantic, index);
 }
 
-GLuint GLGpuProgram::getFixedAttributeIndex(VertexElementSemantic semantic, uint index)
+GLuint GLGpuProgram::getFixedAttributeIndex(VertexElementSemantic semantic, CamelotEngine::UINT32 index)
 {
 	// Some drivers (e.g. OS X on nvidia) incorrectly determine the attribute binding automatically
 	// and end up aliasing existing built-ins. So avoid! Fixed builtins are: 
@@ -116,7 +116,7 @@ GLuint GLGpuProgram::getFixedAttributeIndex(VertexElementSemantic semantic, uint
 
 }
 
-bool GLGpuProgram::isAttributeValid(VertexElementSemantic semantic, uint index)
+bool GLGpuProgram::isAttributeValid(VertexElementSemantic semantic, CamelotEngine::UINT32 index)
 {
 	// default implementation
 	switch(semantic)
@@ -168,7 +168,7 @@ void GLArbGpuProgram::unbindProgram(void)
     glDisable(mProgramType);
 }
 
-void GLArbGpuProgram::bindProgramParameters(GpuProgramParametersSharedPtr params, uint16 mask)
+void GLArbGpuProgram::bindProgramParameters(GpuProgramParametersSharedPtr params, CamelotEngine::UINT16 mask)
 {
     GLenum type = getGLShaderType(mType);
     

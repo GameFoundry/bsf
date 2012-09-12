@@ -57,7 +57,7 @@ namespace CamelotEngine {
             @note 0 and 1 are powers of two, so 
                 firstPO2From(0)==0 and firstPO2From(1)==1.
         */
-        static FORCEINLINE uint32 firstPO2From(uint32 n)
+        static FORCEINLINE UINT32 firstPO2From(UINT32 n)
         {
             --n;            
             n |= n >> 16;
@@ -124,7 +124,7 @@ namespace CamelotEngine {
          * Convert N bit colour channel value to P bits. It fills P bits with the
          * bit pattern repeated. (this is /((1<<n)-1) in fixed point)
          */
-        static inline unsigned int fixedToFixed(uint32 value, unsigned int n, unsigned int p) 
+        static inline unsigned int fixedToFixed(UINT32 value, unsigned int n, unsigned int p) 
         {
             if(n > p) 
             {
@@ -170,24 +170,24 @@ namespace CamelotEngine {
         {
             switch(n) {
                 case 1:
-                    ((uint8*)dest)[0] = (uint8)value;
+                    ((UINT8*)dest)[0] = (UINT8)value;
                     break;
                 case 2:
-                    ((uint16*)dest)[0] = (uint16)value;
+                    ((UINT16*)dest)[0] = (UINT16)value;
                     break;
                 case 3:
 #if OGRE_ENDIAN == OGRE_ENDIAN_BIG      
-                    ((uint8*)dest)[0] = (uint8)((value >> 16) & 0xFF);
-                    ((uint8*)dest)[1] = (uint8)((value >> 8) & 0xFF);
-                    ((uint8*)dest)[2] = (uint8)(value & 0xFF);
+                    ((UINT8*)dest)[0] = (UINT8)((value >> 16) & 0xFF);
+                    ((UINT8*)dest)[1] = (UINT8)((value >> 8) & 0xFF);
+                    ((UINT8*)dest)[2] = (UINT8)(value & 0xFF);
 #else
-                    ((uint8*)dest)[2] = (uint8)((value >> 16) & 0xFF);
-                    ((uint8*)dest)[1] = (uint8)((value >> 8) & 0xFF);
-                    ((uint8*)dest)[0] = (uint8)(value & 0xFF);
+                    ((UINT8*)dest)[2] = (UINT8)((value >> 16) & 0xFF);
+                    ((UINT8*)dest)[1] = (UINT8)((value >> 8) & 0xFF);
+                    ((UINT8*)dest)[0] = (UINT8)(value & 0xFF);
 #endif
                     break;
                 case 4:
-                    ((uint32*)dest)[0] = (uint32)value;                
+                    ((UINT32*)dest)[0] = (UINT32)value;                
                     break;                
             }        
         }
@@ -197,21 +197,21 @@ namespace CamelotEngine {
         static inline unsigned int intRead(const void *src, int n) {
             switch(n) {
                 case 1:
-                    return ((uint8*)src)[0];
+                    return ((UINT8*)src)[0];
                 case 2:
-                    return ((uint16*)src)[0];
+                    return ((UINT16*)src)[0];
                 case 3:
 #if OGRE_ENDIAN == OGRE_ENDIAN_BIG      
-                    return ((uint32)((uint8*)src)[0]<<16)|
-                            ((uint32)((uint8*)src)[1]<<8)|
-                            ((uint32)((uint8*)src)[2]);
+                    return ((UINT32)((UINT8*)src)[0]<<16)|
+                            ((UINT32)((UINT8*)src)[1]<<8)|
+                            ((UINT32)((UINT8*)src)[2]);
 #else
-                    return ((uint32)((uint8*)src)[0])|
-                            ((uint32)((uint8*)src)[1]<<8)|
-                            ((uint32)((uint8*)src)[2]<<16);
+                    return ((UINT32)((UINT8*)src)[0])|
+                            ((UINT32)((UINT8*)src)[1]<<8)|
+                            ((UINT32)((UINT8*)src)[2]<<16);
 #endif
                 case 4:
-                    return ((uint32*)src)[0];
+                    return ((UINT32*)src)[0];
             } 
             return 0; // ?
         }
@@ -219,15 +219,15 @@ namespace CamelotEngine {
         /** Convert a float32 to a float16 (NV_half_float)
          	Courtesy of OpenEXR
         */
-        static inline uint16 floatToHalf(float i)
+        static inline UINT16 floatToHalf(float i)
         {
-            union { float f; uint32 i; } v;
+            union { float f; UINT32 i; } v;
             v.f = i;
             return floatToHalfI(v.i);
         }
-		/** Converts float in uint32 format to a a half in uint16 format
+		/** Converts float in UINT32 format to a a half in UINT16 format
 		*/
-        static inline uint16 floatToHalfI(uint32 i)
+        static inline UINT16 floatToHalfI(UINT32 i)
         {
             register int s =  (i >> 16) & 0x00008000;
             register int e = ((i >> 23) & 0x000000ff) - (127 - 15);
@@ -241,28 +241,28 @@ namespace CamelotEngine {
                 }
                 m = (m | 0x00800000) >> (1 - e);
         
-                return static_cast<uint16>(s | (m >> 13));
+                return static_cast<UINT16>(s | (m >> 13));
             }
             else if (e == 0xff - (127 - 15))
             {
                 if (m == 0) // Inf
                 {
-                    return static_cast<uint16>(s | 0x7c00);
+                    return static_cast<UINT16>(s | 0x7c00);
                 } 
                 else    // NAN
                 {
                     m >>= 13;
-                    return static_cast<uint16>(s | 0x7c00 | m | (m == 0));
+                    return static_cast<UINT16>(s | 0x7c00 | m | (m == 0));
                 }
             }
             else
             {
                 if (e > 30) // Overflow
                 {
-                    return static_cast<uint16>(s | 0x7c00);
+                    return static_cast<UINT16>(s | 0x7c00);
                 }
         
-                return static_cast<uint16>(s | (e << 10) | (m >> 13));
+                return static_cast<UINT16>(s | (e << 10) | (m >> 13));
             }
         }
         
@@ -270,16 +270,16 @@ namespace CamelotEngine {
          * Convert a float16 (NV_half_float) to a float32
          * Courtesy of OpenEXR
          */
-        static inline float halfToFloat(uint16 y)
+        static inline float halfToFloat(UINT16 y)
         {
-            union { float f; uint32 i; } v;
+            union { float f; UINT32 i; } v;
             v.i = halfToFloatI(y);
             return v.f;
         }
-		/** Converts a half in uint16 format to a float
-		 	in uint32 format
+		/** Converts a half in UINT16 format to a float
+		 	in UINT32 format
 		 */
-        static inline uint32 halfToFloatI(uint16 y)
+        static inline UINT32 halfToFloatI(UINT16 y)
         {
             register int s = (y >> 15) & 0x00000001;
             register int e = (y >> 10) & 0x0000001f;

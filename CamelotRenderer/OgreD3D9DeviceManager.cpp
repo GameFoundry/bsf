@@ -67,7 +67,7 @@ namespace CamelotEngine
 			D3D9DriverList*		driverList	 = renderSystem->getDirect3DDrivers();
 
 			// Update the active driver member.
-			for (uint i=0; i < driverList->count(); ++i)
+			for (UINT32 i=0; i < driverList->count(); ++i)
 			{
 				D3D9Driver* currDriver = driverList->item(i);
 				if (currDriver->getAdapterNumber() == mActiveDevice->getAdapterNumber())
@@ -137,7 +137,7 @@ namespace CamelotEngine
 		renderDevice = selectDevice(renderWindow, renderWindowsGroup);
 
 		// Link the windows group to the new device.
-		for (uint i = 0; i < renderWindowsGroup.size(); ++i)
+		for (UINT32 i = 0; i < renderWindowsGroup.size(); ++i)
 		{
 			D3D9RenderWindow* currWindow = renderWindowsGroup[i];
 
@@ -247,7 +247,7 @@ namespace CamelotEngine
 				}
 				else
 				{
-					for (uint i = 0; i < driverList->count(); ++i)
+					for (UINT32 i = 0; i < driverList->count(); ++i)
 					{
 						D3D9Driver* currDriver = driverList->item(i);
 						const D3DCAPS9& currDeviceCaps = currDriver->getD3D9DeviceCaps();
@@ -265,7 +265,7 @@ namespace CamelotEngine
 				{				
 					// Create empty list of render windows composing this group.
 					renderWindowsGroup.resize(masterAdapterCaps.NumberOfAdaptersInGroup);
-					for (uint i = 0; i < renderWindowsGroup.size(); ++i)
+					for (UINT32 i = 0; i < renderWindowsGroup.size(); ++i)
 						renderWindowsGroup[i] = NULL;
 
 
@@ -274,7 +274,7 @@ namespace CamelotEngine
 
 
 					// For each existing window - check if it belongs to the group.
-					for (uint i = 0; i < renderSystem->mRenderWindows.size(); ++i)
+					for (UINT32 i = 0; i < renderSystem->mRenderWindows.size(); ++i)
 					{
 						D3D9RenderWindow* currRenderWindow = renderSystem->mRenderWindows[i];
 
@@ -296,7 +296,7 @@ namespace CamelotEngine
 
 					// Check if render windows group is full and ready to be driven by
 					// the master device.
-					for (uint i = 0; i < renderWindowsGroup.size(); ++i)
+					for (UINT32 i = 0; i < renderWindowsGroup.size(); ++i)
 					{
 						// This group misses required window -> go back to default.
 						if (renderWindowsGroup[i] == NULL)
@@ -313,7 +313,7 @@ namespace CamelotEngine
 					{
 						bool validateAllDevices = false;
 
-						for (uint i = 0; i < renderWindowsGroup.size(); ++i)
+						for (UINT32 i = 0; i < renderWindowsGroup.size(); ++i)
 						{
 							D3D9RenderWindow* currRenderWindow = renderWindowsGroup[i];
 							D3D9Device* currDevice = currRenderWindow->getDevice();
@@ -347,7 +347,7 @@ namespace CamelotEngine
 						// recreated using other handles otherwise create device will fail. 
 						if (validateAllDevices)
 						{
-							for (uint i = 0; i < mRenderDevices.size(); ++i)
+							for (UINT32 i = 0; i < mRenderDevices.size(); ++i)
 								mRenderDevices[i]->validateFocusWindow();
 						}	
 					}				
@@ -371,7 +371,7 @@ namespace CamelotEngine
 		// Try to find a matching device from current device list.
 		if (renderDevice == NULL)
 		{
-			for (uint i = 0; i < mRenderDevices.size(); ++i)
+			for (UINT32 i = 0; i < mRenderDevices.size(); ++i)
 			{
 				D3D9Device* currDevice = mRenderDevices[i];
 
@@ -389,7 +389,7 @@ namespace CamelotEngine
 		// should be preferred on creation)
 		if (renderDevice == NULL)
 		{
-			for (uint i = 0; i < mRenderDevices.size(); ++i)
+			for (UINT32 i = 0; i < mRenderDevices.size(); ++i)
 			{
 				D3D9Device* currDevice = mRenderDevices[i];
 
@@ -429,7 +429,7 @@ namespace CamelotEngine
 
 
 		// Find the matching driver using window monitor handle.
-		for (uint i = 0; i < driverList->count(); ++i)
+		for (UINT32 i = 0; i < driverList->count(); ++i)
 		{
 			D3D9Driver* currDriver       = driverList->item(i);
 			HMONITOR hCurrAdpaterMonitor = direct3D9->GetAdapterMonitor(currDriver->getAdapterNumber());

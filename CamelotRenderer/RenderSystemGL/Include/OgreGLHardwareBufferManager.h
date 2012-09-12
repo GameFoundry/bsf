@@ -68,7 +68,7 @@ namespace CamelotEngine {
 			memory pool, and use glBufferSubDataARB / glGetBufferSubDataARB
 			instead.
 		*/
-		void* allocateScratch(uint32 size);
+		void* allocateScratch(UINT32 size);
 
 		/// @see allocateScratch
 		void deallocateScratch(void* ptr);
@@ -110,7 +110,7 @@ namespace CamelotEngine {
 		memory pool, and use glBufferSubDataARB / glGetBufferSubDataARB
 		instead.
 		*/
-		void* allocateScratch(uint32 size)
+		void* allocateScratch(UINT32 size)
 		{
 			return static_cast<GLHardwareBufferManagerBase*>(mImpl)->allocateScratch(size);
 		}

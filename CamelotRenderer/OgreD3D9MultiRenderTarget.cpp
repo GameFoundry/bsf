@@ -41,7 +41,7 @@ namespace CamelotEngine
 		MultiRenderTarget(name)
 	{
 		/// Clear targets
-		for(size_t x=0; x<OGRE_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+		for(size_t x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
 		{
 			mRenderTargets[x] = 0;
 		}
@@ -52,7 +52,7 @@ namespace CamelotEngine
 
 	void D3D9MultiRenderTarget::bindSurfaceImpl(size_t attachment, RenderTexture *target)
 	{
-		assert(attachment<OGRE_MAX_MULTIPLE_RENDER_TARGETS);
+		assert(attachment<CM_MAX_MULTIPLE_RENDER_TARGETS);
 		/// Get buffer and surface to bind to
 		D3D9HardwarePixelBuffer *buffer = 0;
 		target->getCustomAttribute("BUFFER", &buffer);
@@ -60,9 +60,9 @@ namespace CamelotEngine
 
 		/// Find first non-null target
 		int y;
-		for(y=0; y<OGRE_MAX_MULTIPLE_RENDER_TARGETS && !mRenderTargets[y]; ++y) ;
+		for(y=0; y<CM_MAX_MULTIPLE_RENDER_TARGETS && !mRenderTargets[y]; ++y) ;
 		
-		if(y!=OGRE_MAX_MULTIPLE_RENDER_TARGETS)
+		if(y!=CM_MAX_MULTIPLE_RENDER_TARGETS)
 		{
 			/// If there is another target bound, compare sizes
 			if (mRenderTargets[y]->getWidth() != buffer->getWidth() ||
@@ -92,7 +92,7 @@ namespace CamelotEngine
 
 	void D3D9MultiRenderTarget::unbindSurfaceImpl(size_t attachment)
 	{
-		assert(attachment<OGRE_MAX_MULTIPLE_RENDER_TARGETS);
+		assert(attachment<CM_MAX_MULTIPLE_RENDER_TARGETS);
 		mRenderTargets[attachment] = 0;
 		checkAndUpdate();
 	}
@@ -129,7 +129,7 @@ namespace CamelotEngine
         {
             IDirect3DSurface9 ** pSurf = (IDirect3DSurface9 **)pData;
 			/// Transfer surfaces
-			for(size_t x=0; x<OGRE_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+			for(size_t x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
 			{
 				if(mRenderTargets[x] != NULL)								
 					pSurf[x] = mRenderTargets[x]->getSurface(D3D9RenderSystem::getActiveD3D9Device());			

@@ -81,7 +81,7 @@ namespace CamelotEngine {
     public:
         /** Texture constructor */
 		GLTextureBuffer(const String &baseName, GLenum target, GLuint id, GLint face, 
-			GLint level, Usage usage, bool softwareMipmap, bool writeGamma, uint fsaa);
+			GLint level, Usage usage, bool softwareMipmap, bool writeGamma, UINT32 fsaa);
         ~GLTextureBuffer();
         
         /// @copydoc HardwarePixelBuffer::bindToFramebuffer

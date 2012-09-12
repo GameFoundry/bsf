@@ -74,7 +74,7 @@ namespace CamelotEngine {
 			size_t						mLockOffset;
 			size_t						mLockLength;
 			LockOptions					mLockOptions;
-			uint						mLastUsedFrame;
+			UINT32						mLastUsedFrame;
 		};
 
 	protected:

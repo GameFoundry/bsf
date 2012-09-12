@@ -36,7 +36,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
 //-----------------------------------------------------------------------------
-    GLFrameBufferObject::GLFrameBufferObject(GLFBOManager *manager, uint fsaa):
+    GLFrameBufferObject::GLFrameBufferObject(GLFBOManager *manager, UINT32 fsaa):
         mManager(manager), mNumSamples(fsaa)
     {
         /// Generate framebuffer object
@@ -67,7 +67,7 @@ namespace CamelotEngine {
         /// Initialise state
         mDepth.buffer=0;
         mStencil.buffer=0;
-        for(size_t x=0; x<OGRE_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+        for(size_t x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
         {
             mColour[x].buffer=0;
         }
@@ -85,7 +85,7 @@ namespace CamelotEngine {
     }
     void GLFrameBufferObject::bindSurface(size_t attachment, const GLSurfaceDesc &target)
     {
-        assert(attachment < OGRE_MAX_MULTIPLE_RENDER_TARGETS);
+        assert(attachment < CM_MAX_MULTIPLE_RENDER_TARGETS);
         mColour[attachment] = target;
 		// Re-initialise
 		if(mColour[0].buffer)
@@ -93,7 +93,7 @@ namespace CamelotEngine {
     }
     void GLFrameBufferObject::unbindSurface(size_t attachment)
     {
-        assert(attachment < OGRE_MAX_MULTIPLE_RENDER_TARGETS);
+        assert(attachment < CM_MAX_MULTIPLE_RENDER_TARGETS);
         mColour[attachment].buffer = 0;
 		// Re-initialise if buffer 0 still bound
 		if(mColour[0].buffer)
@@ -125,7 +125,7 @@ namespace CamelotEngine {
         size_t height = mColour[0].buffer->getHeight();
         GLuint format = mColour[0].buffer->getGLFormat();
         PixelFormat ogreFormat = mColour[0].buffer->getFormat();
-        ushort maxSupportedMRTs = CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->getNumMultiRenderTargets();
+        UINT16 maxSupportedMRTs = CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->getNumMultiRenderTargets();
 
 		// Bind simple buffer to add colour attachments
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mFB);
@@ -220,9 +220,9 @@ namespace CamelotEngine {
         }
 
 		/// Do glDrawBuffer calls
-		GLenum bufs[OGRE_MAX_MULTIPLE_RENDER_TARGETS];
+		GLenum bufs[CM_MAX_MULTIPLE_RENDER_TARGETS];
 		GLsizei n=0;
-		for(size_t x=0; x<OGRE_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+		for(size_t x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
 		{
 			// Fill attached colour buffers
 			if(mColour[x].buffer)

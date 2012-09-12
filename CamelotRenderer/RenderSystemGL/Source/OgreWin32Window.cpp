@@ -749,8 +749,8 @@ namespace CamelotEngine {
 		{
 			size_t rowSpan = dst.getWidth() * PixelUtil::getNumElemBytes(dst.format);
 			size_t height = dst.getHeight();
-			uchar *tmpData = new uchar[rowSpan * height];
-			uchar *srcRow = (uchar *)dst.data, *tmpRow = tmpData + (height - 1) * rowSpan;
+			UINT8 *tmpData = new UINT8[rowSpan * height];
+			UINT8 *srcRow = (UINT8 *)dst.data, *tmpRow = tmpData + (height - 1) * rowSpan;
 
 			while (tmpRow >= tmpData)
 			{

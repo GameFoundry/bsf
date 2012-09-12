@@ -69,27 +69,27 @@ namespace CamelotEngine {
         return PixelUtil::hasAlpha(mFormat);
     }
     //--------------------------------------------------------------------------
-    void Texture::setDesiredIntegerBitDepth(ushort bits)
+    void Texture::setDesiredIntegerBitDepth(UINT16 bits)
     {
         mDesiredIntegerBitDepth = bits;
     }
     //--------------------------------------------------------------------------
-    ushort Texture::getDesiredIntegerBitDepth(void) const
+    UINT16 Texture::getDesiredIntegerBitDepth(void) const
     {
         return mDesiredIntegerBitDepth;
     }
     //--------------------------------------------------------------------------
-    void Texture::setDesiredFloatBitDepth(ushort bits)
+    void Texture::setDesiredFloatBitDepth(UINT16 bits)
     {
         mDesiredFloatBitDepth = bits;
     }
     //--------------------------------------------------------------------------
-    ushort Texture::getDesiredFloatBitDepth(void) const
+    UINT16 Texture::getDesiredFloatBitDepth(void) const
     {
         return mDesiredFloatBitDepth;
     }
     //--------------------------------------------------------------------------
-    void Texture::setDesiredBitDepths(ushort integerBits, ushort floatBits)
+    void Texture::setDesiredBitDepths(UINT16 integerBits, UINT16 floatBits)
     {
         mDesiredIntegerBitDepth = integerBits;
         mDesiredFloatBitDepth = floatBits;

@@ -68,7 +68,7 @@ namespace CamelotEngine {
 		/// Execute the unbinding functions for this program
 		void unbindProgram(void);
 		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, uint16 mask);
+		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
 		/// Execute the pass iteration param binding functions for this program
 		void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
 
@@ -80,10 +80,10 @@ namespace CamelotEngine {
 		GLSLProgram* getGLSLProgram(void) const { return mGLSLProgram; }
 
 		/// @copydoc GLGpuProgram::getAttributeIndex
-		GLuint getAttributeIndex(VertexElementSemantic semantic, uint index);
+		GLuint getAttributeIndex(VertexElementSemantic semantic, UINT32 index);
 		
 		/// @copydoc GLGpuProgram::isAttributeValid
-		bool isAttributeValid(VertexElementSemantic semantic, uint index);
+		bool isAttributeValid(VertexElementSemantic semantic, UINT32 index);
 		
 
     protected:

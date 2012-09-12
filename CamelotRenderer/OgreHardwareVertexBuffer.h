@@ -174,14 +174,14 @@ namespace CamelotEngine {
 		@param ptr Read / write value to change
 		*/
 		static void convertColourValue(VertexElementType srcType,
-			VertexElementType dstType, uint32* ptr);
+			VertexElementType dstType, UINT32* ptr);
 
 		/** Utility method for converting colour to
 			a packed 32-bit colour type.
 		@param src source colour
 		@param dst The destination type
 		*/
-		static uint32 convertColourValue(const ColourValue& src,
+		static UINT32 convertColourValue(const ColourValue& src,
 			VertexElementType dst);
 
 		/** Utility method to get the most appropriate packed colour vertex element format. */
@@ -257,7 +257,7 @@ namespace CamelotEngine {
 
         /** Adjusts a pointer to the base of a vertex to point at this element.
         @remarks
-        This variant is for ushort pointers, passed as a parameter because we can't
+        This variant is for UINT16 pointers, passed as a parameter because we can't
         rely on covariant return types.
         @param pBase Pointer to the start of a vertex in this buffer.
         @param pElem Pointer to a pointer which will be set to the start of this element.
@@ -506,7 +506,7 @@ namespace CamelotEngine {
         */
         virtual unsigned short getLastBoundIndex(void) const;
 
-        typedef map<ushort, ushort>::type BindingIndexMap;
+        typedef map<UINT16, UINT16>::type BindingIndexMap;
 
         /** Check whether any gaps in the bindings.
         */

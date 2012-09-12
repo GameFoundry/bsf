@@ -27,8 +27,8 @@ THE SOFTWARE.
 */
 #include "OgreGpuProgram.h"
 #include "OgreHighLevelGpuProgram.h"
-#include "OgreVector3.h"
-#include "OgreVector4.h"
+#include "CmVector3.h"
+#include "CmVector4.h"
 #include "OgreRenderSystemCapabilities.h"
 #include "OgreStringConverter.h"
 #include "OgreException.h"

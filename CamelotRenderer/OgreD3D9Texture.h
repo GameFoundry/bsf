@@ -224,7 +224,7 @@ namespace CamelotEngine {
     class _OgreD3D9Export D3D9RenderTexture : public RenderTexture
     {
     public:
-		D3D9RenderTexture(const String &name, D3D9HardwarePixelBuffer *buffer, bool writeGamma, uint fsaa);
+		D3D9RenderTexture(const String &name, D3D9HardwarePixelBuffer *buffer, bool writeGamma, UINT32 fsaa);
         ~D3D9RenderTexture() {}
 
 		virtual void update(bool swap);

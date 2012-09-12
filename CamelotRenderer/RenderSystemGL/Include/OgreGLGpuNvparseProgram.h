@@ -46,7 +46,7 @@ public:
     /// Execute the unbinding functions for this program
     void unbindProgram(void);
     /// Execute the param binding functions for this program
-	void bindProgramParameters(GpuProgramParametersSharedPtr params, uint16 mask);
+	void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
 
     /// Get the assigned GL program id
     const GLuint getProgramID(void) const

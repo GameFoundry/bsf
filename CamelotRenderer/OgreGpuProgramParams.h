@@ -111,7 +111,7 @@ namespace CamelotEngine {
 		/// Length of array
 		size_t arraySize;
 		/// How this parameter varies (bitwise combination of GpuProgramVariability)
-		mutable uint16 variability;
+		mutable UINT16 variability;
 
 		bool isFloat() const
 		{
@@ -314,11 +314,11 @@ namespace CamelotEngine {
 		/// Current physical size allocation
 		size_t currentSize;
 		/// How the contents of this slot vary
-		mutable uint16 variability;
+		mutable UINT16 variability;
 
 		GpuLogicalIndexUse() 
 			: physicalIndex(99999), currentSize(0), variability(GPV_GLOBAL) {}
-		GpuLogicalIndexUse(size_t bufIdx, size_t curSz, uint16 v) 
+		GpuLogicalIndexUse(size_t bufIdx, size_t curSz, UINT16 v) 
 			: physicalIndex(bufIdx), currentSize(curSz), variability(v) {}
 	};
 	typedef map<size_t, GpuLogicalIndexUse>::type GpuLogicalIndexUseMap;
@@ -426,7 +426,7 @@ namespace CamelotEngine {
 		const GpuNamedConstants& getConstantDefinitions() const;
 	
 		/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, Real val);
+		void setNamedConstant(const String& name, float val);
 		/** @copydoc GpuProgramParameters::setNamedConstant */
 		void setNamedConstant(const String& name, int val);
 		/** @copydoc GpuProgramParameters::setNamedConstant */
@@ -1044,18 +1044,18 @@ namespace CamelotEngine {
 			/// Additional information to go with the parameter
 			union{
 				size_t data;
-				Real fData;
+				float fData;
 			};
 			/// The variability of this parameter (see GpuParamVariability)
-			uint16 variability;
+			UINT16 variability;
 
 			AutoConstantEntry(AutoConstantType theType, size_t theIndex, size_t theData, 
-				uint16 theVariability, size_t theElemCount = 4)
+				UINT16 theVariability, size_t theElemCount = 4)
 				: paramType(theType), physicalIndex(theIndex), elementCount(theElemCount), 
 				data(theData), variability(theVariability) {}
 
-			AutoConstantEntry(AutoConstantType theType, size_t theIndex, Real theData, 
-				uint16 theVariability, size_t theElemCount = 4)
+			AutoConstantEntry(AutoConstantType theType, size_t theIndex, float theData, 
+				UINT16 theVariability, size_t theElemCount = 4)
 				: paramType(theType), physicalIndex(theIndex), elementCount(theElemCount), 
 				fData(theData), variability(theVariability) {}
 
@@ -1082,7 +1082,7 @@ namespace CamelotEngine {
 		/// List of automatically updated parameters
 		AutoConstantList mAutoConstants;
 		/// The combined variability masks of all parameters
-		uint16 mCombinedVariability;
+		UINT16 mCombinedVariability;
 		/// Do we need to transpose matrices?
 		bool mTransposeMatrices;
 		/// flag to indicate if names not found will be ignored
@@ -1092,13 +1092,13 @@ namespace CamelotEngine {
 
 		/** Gets the low-level structure for a logical index. 
 		*/
-		GpuLogicalIndexUse* _getFloatConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, uint16 variability);
+		GpuLogicalIndexUse* _getFloatConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, UINT16 variability);
 		/** Gets the physical buffer index associated with a logical int constant index. 
 		*/
-		GpuLogicalIndexUse* _getIntConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, uint16 variability);
+		GpuLogicalIndexUse* _getIntConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, UINT16 variability);
 
 		/// Return the variability for an auto constant
-		uint16 deriveVariability(AutoConstantType act);
+		UINT16 deriveVariability(AutoConstantType act);
 
 		void copySharedParamSetUsage(const GpuSharedParamUsageList& srcList);
 
@@ -1143,7 +1143,7 @@ namespace CamelotEngine {
 		a 4D float)
 		@param val The value to set
 		*/
-		void setConstant(size_t index, Real val);
+		void setConstant(size_t index, float val);
 		/** Sets a 4-element floating-point parameter to the program via Vector3.
 		@param index The logical constant index at which to place the parameter (each constant is
 		a 4D float).
@@ -1259,7 +1259,7 @@ namespace CamelotEngine {
 		@param physicalIndex The physical buffer index at which to place the parameter 
 		@param val The value to set
 		*/
-		void _writeRawConstant(size_t physicalIndex, Real val);
+		void _writeRawConstant(size_t physicalIndex, float val);
 		/** Write a single integer parameter to the program.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -1380,7 +1380,7 @@ namespace CamelotEngine {
 		@param extraInfo If the constant type needs more information (like a light index) put it here.
 		*/
 		void setAutoConstant(size_t index, AutoConstantType acType, size_t extraInfo = 0);
-		void setAutoConstantReal(size_t index, AutoConstantType acType, Real rData);
+		void setAutoConstantReal(size_t index, AutoConstantType acType, float rData);
 
 		/** Sets up a constant which will automatically be updated by the system.
 		@remarks
@@ -1396,18 +1396,18 @@ namespace CamelotEngine {
 		@param extraInfo1 The first extra parameter required by the auto constant type
 		@param extraInfo2 The first extra parameter required by the auto constant type
 		*/
-		void setAutoConstant(size_t index, AutoConstantType acType, uint16 extraInfo1, uint16 extraInfo2);
+		void setAutoConstant(size_t index, AutoConstantType acType, UINT16 extraInfo1, UINT16 extraInfo2);
 
 		/** As setAutoConstant, but sets up the auto constant directly against a
 		physical buffer index.
 		*/
 		void _setRawAutoConstant(size_t physicalIndex, AutoConstantType acType, size_t extraInfo, 
-			uint16 variability, size_t elementSize = 4);
+			UINT16 variability, size_t elementSize = 4);
 		/** As setAutoConstantReal, but sets up the auto constant directly against a
 		physical buffer index.
 		*/
-		void _setRawAutoConstantReal(size_t physicalIndex, AutoConstantType acType, Real rData, 
-			uint16 variability, size_t elementSize = 4);
+		void _setRawAutoConstantReal(size_t physicalIndex, AutoConstantType acType, float rData, 
+			UINT16 variability, size_t elementSize = 4);
 
 
 		/** Unbind an auto constant so that the constant is manually controlled again. */
@@ -1417,7 +1417,7 @@ namespace CamelotEngine {
 		@param index The index of the parameter
 		@param factor The amount by which to scale the time value
 		*/  
-		void setConstantFromTime(size_t index, Real factor);
+		void setConstantFromTime(size_t index, float factor);
 
 		/** Clears all the existing automatic constants. */
 		void clearAutoConstants(void);
@@ -1479,7 +1479,7 @@ namespace CamelotEngine {
 		@param name The name of the parameter
 		@param val The value to set
 		*/
-		void setNamedConstant(const String& name, Real val);
+		void setNamedConstant(const String& name, float val);
 		/** Sets a single value constant integer parameter to the program.
 		@remarks
 		Different types of GPU programs support different types of constant parameters.
@@ -1607,7 +1607,7 @@ namespace CamelotEngine {
 		@param extraInfo If the constant type needs more information (like a light index) put it here.
 		*/
 		void setNamedAutoConstant(const String& name, AutoConstantType acType, size_t extraInfo = 0);
-		void setNamedAutoConstantReal(const String& name, AutoConstantType acType, Real rData);
+		void setNamedAutoConstantReal(const String& name, AutoConstantType acType, float rData);
 
 		/** Sets up a constant which will automatically be updated by the system.
 		@remarks
@@ -1624,7 +1624,7 @@ namespace CamelotEngine {
 		@param extraInfo1 The first extra info required by this auto constant type
 		@param extraInfo2 The first extra info required by this auto constant type
 		*/
-		void setNamedAutoConstant(const String& name, AutoConstantType acType, uint16 extraInfo1, uint16 extraInfo2);
+		void setNamedAutoConstant(const String& name, AutoConstantType acType, UINT16 extraInfo1, UINT16 extraInfo2);
 
 		/** Sets a named parameter up to track a derivation of the current time.
 		@note
@@ -1633,7 +1633,7 @@ namespace CamelotEngine {
 		@param name The name of the parameter
 		@param factor The amount by which to scale the time value
 		*/  
-		void setNamedConstantFromTime(const String& name, Real factor);
+		void setNamedConstantFromTime(const String& name, float factor);
 
 		/** Unbind an auto constant so that the constant is manually controlled again. */
 		void clearNamedAutoConstant(const String& name);
@@ -1655,14 +1655,14 @@ namespace CamelotEngine {
 		@param requestedSize The requested size - pass 0 to ignore missing entries
 		and return std::numeric_limits<size_t>::max() 
 		*/
-		size_t _getFloatConstantPhysicalIndex(size_t logicalIndex, size_t requestedSize, uint16 variability);
+		size_t _getFloatConstantPhysicalIndex(size_t logicalIndex, size_t requestedSize, UINT16 variability);
 		/** Gets the physical buffer index associated with a logical int constant index. 
 		@note Only applicable to low-level programs.
 		@param logicalIndex The logical parameter index
 		@param requestedSize The requested size - pass 0 to ignore missing entries
 		and return std::numeric_limits<size_t>::max() 
 		*/
-		size_t _getIntConstantPhysicalIndex(size_t logicalIndex, size_t requestedSize, uint16 variability);
+		size_t _getIntConstantPhysicalIndex(size_t logicalIndex, size_t requestedSize, UINT16 variability);
 
 		/** Sets whether or not we need to transpose the matrices passed in from the rest of OGRE.
 		@remarks

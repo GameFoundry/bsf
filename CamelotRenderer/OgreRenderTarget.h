@@ -185,9 +185,9 @@ namespace CamelotEngine {
             at the time the render target is attached to the render system, changes
             afterwards will not affect the ordering.
         */
-        virtual void setPriority( uchar priority ) { mPriority = priority; }
+        virtual void setPriority( UINT8 priority ) { mPriority = priority; }
         /** Gets the priority of a render target. */
-		virtual uchar getPriority() const { return mPriority; }
+		virtual UINT8 getPriority() const { return mPriority; }
 
         /** Used to retrieve or set the active state of the render target.
         */
@@ -230,7 +230,7 @@ namespace CamelotEngine {
 
 		/** Indicates whether multisampling is performed on rendering and at what level.
 		*/
-		virtual uint getFSAA() const { return mFSAA; }
+		virtual UINT32 getFSAA() const { return mFSAA; }
 
 		/** Gets the FSAA hint (@see Root::createRenderWindow)
 		*/
@@ -309,7 +309,7 @@ namespace CamelotEngine {
         /// The name of this target.
         String mName;
 		/// The priority of the render target.
-		uchar mPriority;
+		UINT8 mPriority;
 
         unsigned int mWidth;
         unsigned int mHeight;
@@ -321,7 +321,7 @@ namespace CamelotEngine {
 		// Hardware sRGB gamma conversion done on write?
 		bool mHwGamma;
 		// FSAA performed?
-		uint mFSAA;
+		UINT32 mFSAA;
 		String mFSAAHint;
 
 		typedef map<int, Viewport*>::type ViewportList;

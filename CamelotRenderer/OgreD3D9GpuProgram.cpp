@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "OgreD3D9GpuProgram.h"
-#include "OgreMatrix4.h"
+#include "CmMatrix4.h"
 #include "OgreException.h"
 #include "OgreD3D9Mappings.h"
 #include "OgreD3D9RenderSystem.h"
@@ -77,7 +77,7 @@ namespace CamelotEngine {
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		for (uint i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
 		{
 			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
 
@@ -110,7 +110,7 @@ namespace CamelotEngine {
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		for (uint i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
 		{
 			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
 

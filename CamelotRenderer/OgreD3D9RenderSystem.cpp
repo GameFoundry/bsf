@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "OgreD3D9RenderWindow.h"
 #include "OgreD3D9TextureManager.h"
 #include "OgreD3D9Texture.h"
-#include "OgreMath.h"
+#include "CmMath.h"
 #include "OgreD3D9HardwareBufferManager.h"
 #include "OgreD3D9HardwareIndexBuffer.h"
 #include "OgreD3D9HardwareVertexBuffer.h"
@@ -94,7 +94,7 @@ namespace CamelotEngine
 		mFSAASamples = 0;
 		
 		// set stages desc. to defaults
-		for (size_t n = 0; n < OGRE_MAX_TEXTURE_LAYERS; n++)
+		for (size_t n = 0; n < CM_MAX_TEXTURE_LAYERS; n++)
 		{
 			mTexStageDesc[n].autoTexCoordType = TEXCALC_NONE;
 			mTexStageDesc[n].coordIndex = 0;
@@ -461,7 +461,7 @@ namespace CamelotEngine
 		it = mOptions.find( "Rendering Device" );
 		bool foundDriver = false;
 		D3D9DriverList* driverList = getDirect3DDrivers();
-		for( ushort j=0; j < driverList->count(); j++ )
+		for( UINT16 j=0; j < driverList->count(); j++ )
 		{
 			if( driverList->item(j)->DriverDescription() == it->second.currentValue )
 			{
@@ -494,7 +494,7 @@ namespace CamelotEngine
 		// Init using current settings
 		mActiveD3DDriver = NULL;
 		ConfigOptionMap::iterator opt = mOptions.find( "Rendering Device" );
-		for( uint j=0; j < getDirect3DDrivers()->count(); j++ )
+		for( UINT32 j=0; j < getDirect3DDrivers()->count(); j++ )
 		{
 			if( getDirect3DDrivers()->item(j)->DriverDescription() == opt->second.currentValue )
 			{
@@ -752,7 +752,7 @@ namespace CamelotEngine
 		rsc->setCapability(RSC_TEXTURE_3D);			
 		rsc->setCapability(RSC_NON_POWER_OF_2_TEXTURES);
 		rsc->setNonPOW2TexturesLimited(false);
-		rsc->setNumMultiRenderTargets(OGRE_MAX_MULTIPLE_RENDER_TARGETS);
+		rsc->setNumMultiRenderTargets(CM_MAX_MULTIPLE_RENDER_TARGETS);
 		rsc->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);		
 		rsc->setCapability(RSC_POINT_SPRITES);			
 		rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS);								
@@ -763,7 +763,7 @@ namespace CamelotEngine
 		rsc->setStencilBufferBitDepth(8);
 		rsc->setCapability(RSC_ADVANCED_BLEND_OPERATIONS);
 
-		for (uint i=0; i < mDeviceManager->getDeviceCount(); ++i)
+		for (UINT32 i=0; i < mDeviceManager->getDeviceCount(); ++i)
 		{
 			D3D9Device* device			 = mDeviceManager->getDevice(i);
 			IDirect3DDevice9* d3d9Device = device->getD3D9Device();
@@ -803,7 +803,7 @@ namespace CamelotEngine
 
 			if (rkCurCaps.MaxSimultaneousTextures < rsc->getNumTextureUnits())
 			{
-				rsc->setNumTextureUnits(static_cast<ushort>(rkCurCaps.MaxSimultaneousTextures));
+				rsc->setNumTextureUnits(static_cast<UINT16>(rkCurCaps.MaxSimultaneousTextures));
 			}
 
 			// Check for Anisotropy.
@@ -862,7 +862,7 @@ namespace CamelotEngine
 			// Number of render targets
 			if (rkCurCaps.NumSimultaneousRTs < rsc->getNumMultiRenderTargets())
 			{
-				rsc->setNumMultiRenderTargets(std::min((ushort)rkCurCaps.NumSimultaneousRTs, (ushort)OGRE_MAX_MULTIPLE_RENDER_TARGETS));
+				rsc->setNumMultiRenderTargets(std::min((UINT16)rkCurCaps.NumSimultaneousRTs, (UINT16)CM_MAX_MULTIPLE_RENDER_TARGETS));
 			}	
 
 			if((rkCurCaps.PrimitiveMiscCaps & D3DPMISCCAPS_MRTINDEPENDENTBITDEPTHS) == 0)
@@ -1054,8 +1054,8 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::convertVertexShaderCaps(RenderSystemCapabilities* rsc) const
 	{
-		ushort major = 0xFF;
-		ushort minor = 0xFF;
+		UINT16 major = 0xFF;
+		UINT16 minor = 0xFF;
 		D3DCAPS9 minVSCaps;
 
 		// Find the device with the lowest vertex shader caps.
@@ -1063,8 +1063,8 @@ namespace CamelotEngine
 		{
 			D3D9Driver* pCurDriver      = mDriverList->item(i);			
 			const D3DCAPS9& rkCurCaps   = pCurDriver->getD3D9DeviceCaps();
-			ushort currMajor			= static_cast<ushort>((rkCurCaps.VertexShaderVersion & 0x0000FF00) >> 8);
-			ushort currMinor			= static_cast<ushort>(rkCurCaps.VertexShaderVersion & 0x000000FF);
+			UINT16 currMajor			= static_cast<UINT16>((rkCurCaps.VertexShaderVersion & 0x0000FF00) >> 8);
+			UINT16 currMinor			= static_cast<UINT16>(rkCurCaps.VertexShaderVersion & 0x000000FF);
 
 			if (currMajor < major)	
 			{
@@ -1087,8 +1087,8 @@ namespace CamelotEngine
 			IDirect3DDevice9* lpD3DDevice9 = getActiveD3D9Device();
 			D3DCAPS9 d3dDeviceCaps9;
 			lpD3DDevice9->GetDeviceCaps(&d3dDeviceCaps9);
-			major = static_cast<ushort>((d3dDeviceCaps9.VertexShaderVersion & 0x0000FF00) >> 8);
-			minor = static_cast<ushort>(d3dDeviceCaps9.VertexShaderVersion & 0x000000FF);
+			major = static_cast<UINT16>((d3dDeviceCaps9.VertexShaderVersion & 0x0000FF00) >> 8);
+			minor = static_cast<UINT16>(d3dDeviceCaps9.VertexShaderVersion & 0x000000FF);
 		}
 		
 		bool vs2x = false;
@@ -1121,7 +1121,7 @@ namespace CamelotEngine
 			// No integer params allowed
 			rsc->setVertexProgramConstantIntCount(0);
 			// float params, always 4D
-			rsc->setVertexProgramConstantFloatCount(static_cast<ushort>(minVSCaps.MaxVertexShaderConst));
+			rsc->setVertexProgramConstantFloatCount(static_cast<UINT16>(minVSCaps.MaxVertexShaderConst));
 
 			break;
 		case 2:
@@ -1130,7 +1130,7 @@ namespace CamelotEngine
 			// 16 integer params allowed, 4D
 			rsc->setVertexProgramConstantIntCount(16);
 			// float params, always 4D
-			rsc->setVertexProgramConstantFloatCount(static_cast<ushort>(minVSCaps.MaxVertexShaderConst));
+			rsc->setVertexProgramConstantFloatCount(static_cast<UINT16>(minVSCaps.MaxVertexShaderConst));
 			break;
 		case 3:
 			// 16 boolean params allowed
@@ -1138,7 +1138,7 @@ namespace CamelotEngine
 			// 16 integer params allowed, 4D
 			rsc->setVertexProgramConstantIntCount(16);
 			// float params, always 4D
-			rsc->setVertexProgramConstantFloatCount(static_cast<ushort>(minVSCaps.MaxVertexShaderConst));
+			rsc->setVertexProgramConstantFloatCount(static_cast<UINT16>(minVSCaps.MaxVertexShaderConst));
 			break;
 		}
 
@@ -1162,8 +1162,8 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::convertPixelShaderCaps(RenderSystemCapabilities* rsc) const
 	{
-		ushort major = 0xFF;
-		ushort minor = 0xFF;
+		UINT16 major = 0xFF;
+		UINT16 minor = 0xFF;
 		D3DCAPS9 minPSCaps;
 
 		// Find the device with the lowest pixel shader caps.
@@ -1171,8 +1171,8 @@ namespace CamelotEngine
 		{
 			D3D9Driver* pCurDriver      = mDriverList->item(i);			
 			const D3DCAPS9& currCaps    = pCurDriver->getD3D9DeviceCaps();
-			ushort currMajor			= static_cast<ushort>((currCaps.PixelShaderVersion & 0x0000FF00) >> 8);
-			ushort currMinor			= static_cast<ushort>(currCaps.PixelShaderVersion & 0x000000FF);
+			UINT16 currMajor			= static_cast<UINT16>((currCaps.PixelShaderVersion & 0x0000FF00) >> 8);
+			UINT16 currMinor			= static_cast<UINT16>(currCaps.PixelShaderVersion & 0x000000FF);
 
 			if (currMajor < major)	
 			{
@@ -1286,7 +1286,7 @@ namespace CamelotEngine
 		D3DSURFACE_DESC bbSurfDesc;
 		bbSurf->GetDesc(&bbSurfDesc);
 
-		for (uint ipf = static_cast<uint>(PF_L8); ipf < static_cast<uint>(PF_COUNT); ++ipf)
+		for (UINT32 ipf = static_cast<UINT32>(PF_L8); ipf < static_cast<UINT32>(PF_COUNT); ++ipf)
 		{
 			PixelFormat pf = (PixelFormat)ipf;
 
@@ -1327,7 +1327,7 @@ namespace CamelotEngine
 		if (d3dPF == D3DFMT_UNKNOWN)
 			return false;
 
-		for (uint i = 0; i < mDeviceManager->getDeviceCount(); ++i)
+		for (UINT32 i = 0; i < mDeviceManager->getDeviceCount(); ++i)
 		{
 			D3D9Device* currDevice = mDeviceManager->getDevice(i);
 			D3D9RenderWindow* currDevicePrimaryWindow = currDevice->getPrimaryWindow();
@@ -1442,13 +1442,13 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_makeProjectionMatrix(const Radian& fovy, Real aspect, Real nearPlane, 
-		Real farPlane, Matrix4& dest, bool forGpuProgram)
+	void D3D9RenderSystem::_makeProjectionMatrix(const Radian& fovy, float aspect, float nearPlane, 
+		float farPlane, Matrix4& dest, bool forGpuProgram)
 	{
 		Radian theta ( fovy * 0.5 );
-		Real h = 1 / Math::Tan(theta);
-		Real w = h / aspect;
-		Real q, qn;
+		float h = 1 / Math::Tan(theta);
+		float w = h / aspect;
+		float q, qn;
 		if (farPlane == 0)
 		{
 			q = 1 - Frustum::INFINITE_FAR_PLANE_ADJUST;
@@ -1478,26 +1478,26 @@ namespace CamelotEngine
 		dest[2][3] = qn;
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_makeOrthoMatrix(const Radian& fovy, Real aspect, Real nearPlane, Real farPlane, 
+	void D3D9RenderSystem::_makeOrthoMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
 		Matrix4& dest, bool forGpuProgram )
 	{
 		Radian thetaY (fovy / 2.0f);
-		Real tanThetaY = Math::Tan(thetaY);
+		float tanThetaY = Math::Tan(thetaY);
 
-		//Real thetaX = thetaY * aspect;
-		Real tanThetaX = tanThetaY * aspect; //Math::Tan(thetaX);
-		Real half_w = tanThetaX * nearPlane;
-		Real half_h = tanThetaY * nearPlane;
-		Real iw = static_cast<Real>(1.0 / half_w);
-		Real ih = static_cast<Real>(1.0 / half_h);
-		Real q;
+		//float thetaX = thetaY * aspect;
+		float tanThetaX = tanThetaY * aspect; //Math::Tan(thetaX);
+		float half_w = tanThetaX * nearPlane;
+		float half_h = tanThetaY * nearPlane;
+		float iw = static_cast<float>(1.0 / half_w);
+		float ih = static_cast<float>(1.0 / half_h);
+		float q;
 		if (farPlane == 0)
 		{
 			q = 0;
 		}
 		else
 		{
-			q = static_cast<Real>(1.0 / (farPlane - nearPlane));
+			q = static_cast<float>(1.0 / (farPlane - nearPlane));
 		}
 
 		dest = Matrix4::ZERO;
@@ -1619,7 +1619,7 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setSurfaceParams( const ColourValue &ambient, const ColourValue &diffuse,
-		const ColourValue &specular, const ColourValue &emissive, Real shininess,
+		const ColourValue &specular, const ColourValue &emissive, float shininess,
 		TrackVertexColourType tracking )
 	{
 
@@ -1650,9 +1650,9 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setPointParameters(Real size, 
-		bool attenuationEnabled, Real constant, Real linear, Real quadratic,
-		Real minSize, Real maxSize)
+	void D3D9RenderSystem::_setPointParameters(float size, 
+		bool attenuationEnabled, float constant, float linear, float quadratic,
+		float minSize, float maxSize)
 	{
 		if(attenuationEnabled)
 		{
@@ -2407,7 +2407,7 @@ namespace CamelotEngine
 			"D3D9RenderSystem::_setColourBufferWriteEnabled");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setFog( FogMode mode, const ColourValue& colour, Real densitiy, Real start, Real end )
+	void D3D9RenderSystem::_setFog( FogMode mode, const ColourValue& colour, float densitiy, float start, float end )
 	{
 		HRESULT hr;
 
@@ -2464,7 +2464,7 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setStencilBufferParams(CompareFunction func, 
-		uint32 refValue, uint32 mask, StencilOperation stencilFailOp, 
+		UINT32 refValue, UINT32 mask, StencilOperation stencilFailOp, 
 		StencilOperation depthFailOp, StencilOperation passOp, 
 		bool twoSidedOperation)
 	{
@@ -2644,8 +2644,8 @@ namespace CamelotEngine
 			window->_validateDevice();
 		}
 
-		// Retrieve render surfaces (up to OGRE_MAX_MULTIPLE_RENDER_TARGETS)
-		IDirect3DSurface9* pBack[OGRE_MAX_MULTIPLE_RENDER_TARGETS];
+		// Retrieve render surfaces (up to CM_MAX_MULTIPLE_RENDER_TARGETS)
+		IDirect3DSurface9* pBack[CM_MAX_MULTIPLE_RENDER_TARGETS];
 		memset(pBack, 0, sizeof(pBack));
 		target->getCustomAttribute( "DDBACKBUFFER", &pBack );
 		if (!pBack[0])
@@ -2673,8 +2673,8 @@ namespace CamelotEngine
 			pDepth = _getDepthStencilFor(srfDesc.Format, srfDesc.MultiSampleType, srfDesc.MultiSampleQuality, srfDesc.Width, srfDesc.Height);
 		}
 		// Bind render targets
-		uint count = mCurrentCapabilities->getNumMultiRenderTargets();
-		for(uint x=0; x<count; ++x)
+		UINT32 count = mCurrentCapabilities->getNumMultiRenderTargets();
+		for(UINT32 x=0; x<count; ++x)
 		{
 			hr = getActiveD3D9Device()->SetRenderTarget(x, pBack[x]);
 			if (FAILED(hr))
@@ -2769,8 +2769,8 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	D3D9RenderSystem::ZBufferIdentifier D3D9RenderSystem::getZBufferIdentifier(RenderTarget* rt)
 	{
-		// Retrieve render surfaces (up to OGRE_MAX_MULTIPLE_RENDER_TARGETS)
-		IDirect3DSurface9* pBack[OGRE_MAX_MULTIPLE_RENDER_TARGETS];
+		// Retrieve render surfaces (up to CM_MAX_MULTIPLE_RENDER_TARGETS)
+		IDirect3DSurface9* pBack[CM_MAX_MULTIPLE_RENDER_TARGETS];
 		memset(pBack, 0, sizeof(pBack));
 		rt->getCustomAttribute( "DDBACKBUFFER", &pBack );
 		assert(pBack[0]);
@@ -3106,16 +3106,16 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, 
-		GpuProgramParametersSharedPtr params, uint16 variability)
+		GpuProgramParametersSharedPtr params, UINT16 variability)
 	{
 		// special case pass iteration
-		if (variability == (uint16)GPV_PASS_ITERATION_NUMBER)
+		if (variability == (UINT16)GPV_PASS_ITERATION_NUMBER)
 		{
 			bindGpuProgramPassIterationParameters(gptype);
 			return;
 		}
 		
-		if (variability & (uint16)GPV_GLOBAL)
+		if (variability & (UINT16)GPV_GLOBAL)
 		{
 			// D3D9 doesn't support shared constant buffers, so use copy routine
 			params->_copySharedParams();
@@ -3367,7 +3367,7 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::clearFrameBuffer(unsigned int buffers, 
-		const ColourValue& colour, Real depth, unsigned short stencil)
+		const ColourValue& colour, float depth, unsigned short stencil)
 	{
 		DWORD flags = 0;
 		if (buffers & FBT_COLOUR)
@@ -3398,15 +3398,15 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_makeProjectionMatrix(Real left, Real right, 
-		Real bottom, Real top, Real nearPlane, Real farPlane, Matrix4& dest,
+	void D3D9RenderSystem::_makeProjectionMatrix(float left, float right, 
+		float bottom, float top, float nearPlane, float farPlane, Matrix4& dest,
 		bool forGpuProgram)
 	{
 		// Correct position for off-axis projection matrix
 		if (!forGpuProgram)
 		{
-			Real offsetX = left + right;
-			Real offsetY = top + bottom;
+			float offsetX = left + right;
+			float offsetY = top + bottom;
 
 			left -= offsetX;
 			right -= offsetX;
@@ -3414,9 +3414,9 @@ namespace CamelotEngine
 			bottom -= offsetY;
 		}
 
-		Real width = right - left;
-		Real height = top - bottom;
-		Real q, qn;
+		float width = right - left;
+		float height = top - bottom;
+		float q, qn;
 		if (farPlane == 0)
 		{
 			q = 1 - Frustum::INFINITE_FAR_PLANE_ADJUST;
@@ -3446,14 +3446,14 @@ namespace CamelotEngine
 	}
 
 	// ------------------------------------------------------------------
-	void D3D9RenderSystem::setClipPlane (ushort index, Real A, Real B, Real C, Real D)
+	void D3D9RenderSystem::setClipPlane (UINT16 index, float A, float B, float C, float D)
 	{
 		float plane[4] = { A, B, C, D };
 		getActiveD3D9Device()->SetClipPlane (index, plane);
 	}
 
 	// ------------------------------------------------------------------
-	void D3D9RenderSystem::enableClipPlane (ushort index, bool enable)
+	void D3D9RenderSystem::enableClipPlane (UINT16 index, bool enable)
 	{
 		DWORD prev;
 		getActiveD3D9Device()->GetRenderState(D3DRS_CLIPPLANEENABLE, &prev);
@@ -3468,13 +3468,13 @@ namespace CamelotEngine
 		return ret;
 	}
 	//---------------------------------------------------------------------
-	Real D3D9RenderSystem::getHorizontalTexelOffset()
+	float D3D9RenderSystem::getHorizontalTexelOffset()
 	{
 		// D3D considers the origin to be in the center of a pixel
 		return -0.5f;
 	}
 	//---------------------------------------------------------------------
-	Real D3D9RenderSystem::getVerticalTexelOffset()
+	float D3D9RenderSystem::getVerticalTexelOffset()
 	{
 		// D3D considers the origin to be in the center of a pixel
 		return -0.5f;
@@ -3527,13 +3527,13 @@ namespace CamelotEngine
 		matrix[2][3] = c.w;        
 	}
 	//---------------------------------------------------------------------
-	Real D3D9RenderSystem::getMinimumDepthInputValue()
+	float D3D9RenderSystem::getMinimumDepthInputValue()
 	{
 		// Range [0.0f, 1.0f]
 		return 0.0f;
 	}
 	//---------------------------------------------------------------------
-	Real D3D9RenderSystem::getMaximumDepthInputValue()
+	float D3D9RenderSystem::getMaximumDepthInputValue()
 	{
 		// Range [0.0f, 1.0f]
 		// D3D inverts even identity view matrices, so maximum INPUT is -1.0
@@ -3825,7 +3825,7 @@ namespace CamelotEngine
 		mActiveViewport = NULL;
 
 		// Reset the texture stages, they will need to be rebound
-		for (size_t i = 0; i < OGRE_MAX_TEXTURE_LAYERS; ++i)
+		for (size_t i = 0; i < CM_MAX_TEXTURE_LAYERS; ++i)
 			_setTexture(i, false, TexturePtr());
 
 		fireEvent("DeviceRestored");
@@ -3865,7 +3865,7 @@ namespace CamelotEngine
 		D3D9Driver* deviceDriver = mActiveD3DDriver;
 		D3D9Device* device = mDeviceManager->getDeviceFromD3D9Device(d3d9Device);
 
-		for (uint i = 0; i < driverList->count(); ++i)
+		for (UINT32 i = 0; i < driverList->count(); ++i)
 		{
 			D3D9Driver* currDriver = driverList->item(i);
 

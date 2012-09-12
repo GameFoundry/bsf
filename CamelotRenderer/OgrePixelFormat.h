@@ -379,7 +379,7 @@ namespace CamelotEngine {
 		/** Gives the masks for the R, G, B and A component
 		  @note			Only valid for native endian formats
         */
-        static void getBitMasks(PixelFormat format, uint32 rgba[4]);
+        static void getBitMasks(PixelFormat format, UINT32 rgba[4]);
 
 		/** Gives the bit shifts for R, G, B and A component
 		@note			Only valid for native endian formats
@@ -437,7 +437,7 @@ namespace CamelotEngine {
             @returns        The format that similar original format with bit depth according
                             with preferred bit depth, or original format if no convertion occuring.
         */
-        static PixelFormat getFormatForBitDepths(PixelFormat fmt, ushort integerBits, ushort floatBits);
+        static PixelFormat getFormatForBitDepths(PixelFormat fmt, UINT16 integerBits, UINT16 floatBits);
 
         /** Pack a colour value to memory
         	@param colour	The colour
@@ -450,7 +450,7 @@ namespace CamelotEngine {
         	@param pf		Pixelformat in which to write the colour
         	@param dest		Destination memory location
         */
-        static void packColour(const uint8 r, const uint8 g, const uint8 b, const uint8 a, const PixelFormat pf,  void* dest);
+        static void packColour(const UINT8 r, const UINT8 g, const UINT8 b, const UINT8 a, const PixelFormat pf,  void* dest);
          /** Pack a colour value to memory
         	@param r,g,b,a	The four colour components, range 0.0f to 1.0f
         					(an exception to this case exists for floating point pixel
@@ -474,7 +474,7 @@ namespace CamelotEngine {
         		this will lose precision when coming from PF_A2R10G10B10 or floating
         		point formats.  
         */
-        static void unpackColour(uint8 *r, uint8 *g, uint8 *b, uint8 *a, PixelFormat pf,  const void* src);
+        static void unpackColour(UINT8 *r, UINT8 *g, UINT8 *b, UINT8 *a, PixelFormat pf,  const void* src);
         /** Unpack a colour value from memory
         	@param r,g,b,a	The colour is returned here (as float)
         	@param pf		Pixelformat in which to read the colour

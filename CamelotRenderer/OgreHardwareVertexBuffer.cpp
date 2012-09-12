@@ -206,7 +206,7 @@ namespace CamelotEngine {
 	}
 	//--------------------------------------------------------------------------
 	void VertexElement::convertColourValue(VertexElementType srcType, 
-		VertexElementType dstType, uint32* ptr)
+		VertexElementType dstType, UINT32* ptr)
 	{
 		if (srcType == dstType)
 			return;
@@ -216,7 +216,7 @@ namespace CamelotEngine {
 		   ((*ptr&0x00FF0000)>>16)|((*ptr&0x000000FF)<<16)|(*ptr&0xFF00FF00);				
 	}
 	//--------------------------------------------------------------------------
-	uint32 VertexElement::convertColourValue(const ColourValue& src, 
+	UINT32 VertexElement::convertColourValue(const ColourValue& src, 
 		VertexElementType dst)
 	{
 		switch(dst)
@@ -582,7 +582,7 @@ namespace CamelotEngine {
         VertexBufferBindingMap newBindingMap;
 
         VertexBufferBindingMap::const_iterator it;
-        ushort targetIndex = 0;
+        UINT16 targetIndex = 0;
         for (it = mBindingMap.begin(); it != mBindingMap.end(); ++it, ++targetIndex)
         {
             bindingIndexMap[it->first] = targetIndex;

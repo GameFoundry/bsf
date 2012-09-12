@@ -196,7 +196,7 @@ namespace CamelotEngine
 
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		for (uint i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
 		{
 			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
 
@@ -222,7 +222,7 @@ namespace CamelotEngine
 		//
 
 		//// Set reading positions of loaded streams to the beginning.
-		//for (uint i = 0; i < mLoadedStreams->size(); ++i)
+		//for (UINT32 i = 0; i < mLoadedStreams->size(); ++i)
 		//{
 		//	MemoryDataStreamPtr curDataStream = (*mLoadedStreams)[i];
 
@@ -892,7 +892,7 @@ namespace CamelotEngine
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		for (uint i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
 		{
 			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
 
@@ -1625,7 +1625,7 @@ namespace CamelotEngine
 			bufusage |= TU_RENDERTARGET;
 		}
 		
-		uint surfaceCount  = static_cast<uint>((getNumFaces() * (mNumMipmaps + 1)));
+		UINT32 surfaceCount  = static_cast<UINT32>((getNumFaces() * (mNumMipmaps + 1)));
 		bool updateOldList = mSurfaceList.size() == surfaceCount;
 		if(!updateOldList)
 		{			
@@ -1880,7 +1880,7 @@ namespace CamelotEngine
 	D3D9RenderTexture::D3D9RenderTexture(const String &name, 
 		D3D9HardwarePixelBuffer *buffer, 
 		bool writeGamma, 
-		uint fsaa) : RenderTexture(buffer, 0)
+		UINT32 fsaa) : RenderTexture(buffer, 0)
 	{
 		mName = name;
 		mHwGamma = writeGamma;

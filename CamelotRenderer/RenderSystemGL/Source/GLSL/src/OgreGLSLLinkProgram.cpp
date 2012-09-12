@@ -263,12 +263,12 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	GLuint GLSLLinkProgram::getAttributeIndex(VertexElementSemantic semantic, uint index)
+	GLuint GLSLLinkProgram::getAttributeIndex(VertexElementSemantic semantic, UINT32 index)
 	{
 		return GLGpuProgram::getFixedAttributeIndex(semantic, index);
 	}
 	//-----------------------------------------------------------------------
-	bool GLSLLinkProgram::isAttributeValid(VertexElementSemantic semantic, uint index)
+	bool GLSLLinkProgram::isAttributeValid(VertexElementSemantic semantic, UINT32 index)
 	{
 		return mValidAttributes.find(getAttributeIndex(semantic, index)) != mValidAttributes.end();
 	}
@@ -302,7 +302,7 @@ namespace CamelotEngine {
 
 	//-----------------------------------------------------------------------
 	void GLSLLinkProgram::updateUniforms(GpuProgramParametersSharedPtr params, 
-		uint16 mask, GpuProgramType fromProgType)
+		UINT16 mask, GpuProgramType fromProgType)
 	{
 		// iterate through uniform reference list and update uniform values
 		GLUniformReferenceIterator currentUniform = mGLUniformReferences.begin();

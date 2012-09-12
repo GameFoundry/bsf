@@ -32,13 +32,13 @@ THE SOFTWARE.
 #include "OgrePrerequisites.h"
 #include "OgreString.h"
 #include "OgreColourValue.h"
-#include "OgreMath.h"
-#include "OgreMatrix3.h"
-#include "OgreMatrix4.h"
-#include "OgreQuaternion.h"
-#include "OgreVector2.h"
-#include "OgreVector3.h"
-#include "OgreVector4.h"
+#include "CmMath.h"
+#include "CmMatrix3.h"
+#include "CmMatrix4.h"
+#include "CmQuaternion.h"
+#include "CmVector2.h"
+#include "CmVector3.h"
+#include "CmVector4.h"
 
 namespace CamelotEngine {
 
@@ -59,7 +59,7 @@ namespace CamelotEngine {
         class.
     @par
         The String formats of each of the major types is listed with the methods. The basic types
-        like int and Real just use the underlying C runtime library atof and atoi family methods,
+        like int and float just use the underlying C runtime library atof and atoi family methods,
         however custom types like Vector3, ColourValue and Matrix4 are also supported by this class
         using custom formats.
     @author
@@ -69,8 +69,8 @@ namespace CamelotEngine {
     {
     public:
 
-        /** Converts a Real to a String. */
-        static String toString(Real val, unsigned short precision = 6, 
+        /** Converts a float to a String. */
+        static String toString(float val, unsigned short precision = 6, 
             unsigned short width = 0, char fill = ' ', 
             std::ios::fmtflags flags = std::ios::fmtflags(0) );
         /** Converts a Radian to a String. */
@@ -127,17 +127,17 @@ namespace CamelotEngine {
         static String toString(bool val, bool yesNo = false);
 		/** Converts a Vector2 to a String. 
         @remarks
-            Format is "x y" (i.e. 2x Real values, space delimited)
+            Format is "x y" (i.e. 2x float values, space delimited)
         */
         static String toString(const Vector2& val);
         /** Converts a Vector3 to a String. 
         @remarks
-            Format is "x y z" (i.e. 3x Real values, space delimited)
+            Format is "x y z" (i.e. 3x float values, space delimited)
         */
         static String toString(const Vector3& val);
 		/** Converts a Vector4 to a String. 
         @remarks
-            Format is "x y z w" (i.e. 4x Real values, space delimited)
+            Format is "x y z w" (i.e. 4x float values, space delimited)
         */
         static String toString(const Vector4& val);
         /** Converts a Matrix3 to a String. 
@@ -153,12 +153,12 @@ namespace CamelotEngine {
         static String toString(const Matrix4& val);
         /** Converts a Quaternion to a String. 
         @remarks
-            Format is "w x y z" (i.e. 4x Real values, space delimited)
+            Format is "w x y z" (i.e. 4x float values, space delimited)
         */
         static String toString(const Quaternion& val);
         /** Converts a ColourValue to a String. 
         @remarks
-            Format is "r g b a" (i.e. 4x Real values, space delimited). 
+            Format is "r g b a" (i.e. 4x float values, space delimited). 
         */
         static String toString(const ColourValue& val);
         /** Converts a StringVector to a string.
@@ -168,11 +168,11 @@ namespace CamelotEngine {
         */
         static String toString(const std::vector<CamelotEngine::String>& val);
 
-        /** Converts a String to a Real. 
+        /** Converts a String to a float. 
         @returns
-            0.0 if the value could not be parsed, otherwise the Real version of the String.
+            0.0 if the value could not be parsed, otherwise the float version of the String.
         */
-        static Real parseReal(const String& val, Real defaultValue = 0);
+        static float parseReal(const String& val, float defaultValue = 0);
         /** Converts a String to a Angle. 
         @returns
             0.0 if the value could not be parsed, otherwise the Angle version of the String.
@@ -208,19 +208,19 @@ namespace CamelotEngine {
         static bool parseBool(const String& val, bool defaultValue = 0);
 		/** Parses a Vector2 out of a String.
         @remarks
-            Format is "x y" ie. 2 Real components, space delimited. Failure to parse returns
+            Format is "x y" ie. 2 float components, space delimited. Failure to parse returns
             Vector2::ZERO.
         */
 		static Vector2 parseVector2(const String& val, const Vector2& defaultValue = Vector2::ZERO);
 		/** Parses a Vector3 out of a String.
         @remarks
-            Format is "x y z" ie. 3 Real components, space delimited. Failure to parse returns
+            Format is "x y z" ie. 3 float components, space delimited. Failure to parse returns
             Vector3::ZERO.
         */
         static Vector3 parseVector3(const String& val, const Vector3& defaultValue = Vector3::ZERO);
         /** Parses a Vector4 out of a String.
         @remarks
-            Format is "x y z w" ie. 4 Real components, space delimited. Failure to parse returns
+            Format is "x y z w" ie. 4 float components, space delimited. Failure to parse returns
             Vector4::ZERO.
         */
         static Vector4 parseVector4(const String& val, const Vector4& defaultValue = Vector4::ZERO);
@@ -238,13 +238,13 @@ namespace CamelotEngine {
         static Matrix4 parseMatrix4(const String& val, const Matrix4& defaultValue = Matrix4::IDENTITY);
         /** Parses a Quaternion out of a String. 
         @remarks
-            Format is "w x y z" (i.e. 4x Real values, space delimited). 
+            Format is "w x y z" (i.e. 4x float values, space delimited). 
             Failure to parse returns Quaternion::IDENTITY.
         */
         static Quaternion parseQuaternion(const String& val, const Quaternion& defaultValue = Quaternion::IDENTITY);
         /** Parses a ColourValue out of a String. 
         @remarks
-            Format is "r g b a" (i.e. 4x Real values, space delimited), or "r g b" which implies
+            Format is "r g b a" (i.e. 4x float values, space delimited), or "r g b" which implies
             an alpha value of 1.0 (opaque). Failure to parse returns ColourValue::Black.
         */
         static ColourValue parseColourValue(const String& val, const ColourValue& defaultValue = ColourValue::Black);

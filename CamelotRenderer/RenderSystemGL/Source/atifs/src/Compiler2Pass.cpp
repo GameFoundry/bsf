@@ -46,7 +46,7 @@ Compiler2Pass::Compiler2Pass()
 
 void Compiler2Pass::InitSymbolTypeLib()
 {
-	uint token_ID;
+	UINT32 token_ID;
 	// find a default text for all Symbol Types in library
 
 	// scan through all the rules and initialize TypeLib with index to text and index to rules for non-terminal tokens
@@ -116,7 +116,7 @@ bool Compiler2Pass::doPass1()
 }
 
 
-bool Compiler2Pass::processRulePath( uint rulepathIDX)
+bool Compiler2Pass::processRulePath( UINT32 rulepathIDX)
 {
 	// rule path determines what tokens and therefore what symbols are acceptable from the source
 	// it is assumed that the tokens with the longest similar symbols are arranged first so
@@ -124,13 +124,13 @@ bool Compiler2Pass::processRulePath( uint rulepathIDX)
 
 	// record position of last token in container
 	// to be used as the rollback position if a valid token is not found
-	uint TokenContainerOldSize = mTokenInstructions.size();
+	UINT32 TokenContainerOldSize = mTokenInstructions.size();
 	int OldCharPos = mCharPos;
 	int OldLinePos = mCurrentLine;
-	uint OldConstantsSize = mConstants.size();
+	UINT32 OldConstantsSize = mConstants.size();
 
 	// keep track of what non-terminal token activated the rule
-	uint ActiveNTTRule = mRootRulePath[rulepathIDX].mTokenID;
+	UINT32 ActiveNTTRule = mRootRulePath[rulepathIDX].mTokenID;
 	// start rule path at next position for definition
 	rulepathIDX++;
 
@@ -213,12 +213,12 @@ bool Compiler2Pass::processRulePath( uint rulepathIDX)
 }
 
 
-bool Compiler2Pass::ValidateToken(const uint rulepathIDX, const uint activeRuleID)
+bool Compiler2Pass::ValidateToken(const UINT32 rulepathIDX, const UINT32 activeRuleID)
 {
 	int tokenlength = 0;
 	// assume the test is going to fail
 	bool Passed = false;
-	uint TokenID = mRootRulePath[rulepathIDX].mTokenID;
+	UINT32 TokenID = mRootRulePath[rulepathIDX].mTokenID;
 	// only validate token if context is correct
 	if (mSymbolTypeLib[TokenID].mContextKey & mActiveContexts) {
 	
@@ -273,7 +273,7 @@ bool Compiler2Pass::ValidateToken(const uint rulepathIDX, const uint activeRuleI
 }
 
 
-const char* Compiler2Pass::getTypeDefText(const uint sid)
+const char* Compiler2Pass::getTypeDefText(const UINT32 sid)
 {
 	return mRootRulePath[mSymbolTypeLib[sid].mDefTextID].mSymbol;
 }

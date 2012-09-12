@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "OgreGLGpuProgramManager.h"
 #include "OgreGLSLProgramFactory.h"
 #include "OgreConfigOptionMap.h"
-#include "OgreVector4.h"
+#include "CmVector4.h"
 
 namespace CamelotEngine {
     /**
@@ -63,10 +63,10 @@ namespace CamelotEngine {
         FilterOptions mMipFilter;
 
         /// What texture coord set each texture unit is using
-        size_t mTextureCoordIndex[OGRE_MAX_TEXTURE_LAYERS];
+        size_t mTextureCoordIndex[CM_MAX_TEXTURE_LAYERS];
 
         /// Holds texture type settings for every stage
-        GLenum mTextureTypes[OGRE_MAX_TEXTURE_LAYERS];
+        GLenum mTextureTypes[CM_MAX_TEXTURE_LAYERS];
 
 		/// Number of fixed-function texture units
 		unsigned short mFixedFunctionTextureUnits;
@@ -86,7 +86,7 @@ namespace CamelotEngine {
         /// Store last depth write state
         bool mDepthWrite;
 		/// Store last stencil mask state
-		uint32 mStencilMask;
+		UINT32 mStencilMask;
 		/// Store last colour write state
 		bool mColourWrite[4];
 
@@ -132,7 +132,7 @@ namespace CamelotEngine {
         */
         GLRTTManager *mRTTManager;
 
-		ushort mActiveTextureUnit;
+		UINT16 mActiveTextureUnit;
 
 	protected:
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
@@ -253,13 +253,13 @@ namespace CamelotEngine {
          */
         void _setSurfaceParams(const ColourValue &ambient,
             const ColourValue &diffuse, const ColourValue &specular,
-            const ColourValue &emissive, Real shininess,
+            const ColourValue &emissive, float shininess,
             TrackVertexColourType tracking);
         /** See
           RenderSystem
          */
-		void _setPointParameters(Real size, bool attenuationEnabled, 
-			Real constant, Real linear, Real quadratic, Real minSize, Real maxSize);
+		void _setPointParameters(float size, bool attenuationEnabled, 
+			float constant, float linear, float quadratic, float minSize, float maxSize);
         /** See
           RenderSystem
          */
@@ -360,7 +360,7 @@ namespace CamelotEngine {
 		/** See
           RenderSystem
          */
-        void _setFog(FogMode mode, const ColourValue& colour, Real density, Real start, Real end);
+        void _setFog(FogMode mode, const ColourValue& colour, float density, float start, float end);
         /** See
           RenderSystem
          */
@@ -369,17 +369,17 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void _makeProjectionMatrix(const Radian& fovy, Real aspect, Real nearPlane, Real farPlane, 
+        void _makeProjectionMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
             Matrix4& dest, bool forGpuProgram = false);
         /** See
           RenderSystem
          */
-        void _makeProjectionMatrix(Real left, Real right, Real bottom, Real top, 
-            Real nearPlane, Real farPlane, Matrix4& dest, bool forGpuProgram = false);
+        void _makeProjectionMatrix(float left, float right, float bottom, float top, 
+            float nearPlane, float farPlane, Matrix4& dest, bool forGpuProgram = false);
         /** See
           RenderSystem
          */
-		void _makeOrthoMatrix(const Radian& fovy, Real aspect, Real nearPlane, Real farPlane, 
+		void _makeOrthoMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
             Matrix4& dest, bool forGpuProgram = false);
         /** See
         RenderSystem
@@ -389,11 +389,11 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setClipPlane (ushort index, Real A, Real B, Real C, Real D);
+        void setClipPlane (UINT16 index, float A, float B, float C, float D);
         /** See
           RenderSystem
          */
-        void enableClipPlane (ushort index, bool enable);
+        void enableClipPlane (UINT16 index, bool enable);
         /** See
           RenderSystem
          */
@@ -406,7 +406,7 @@ namespace CamelotEngine {
           RenderSystem.
          */
         void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
-            uint32 refValue = 0, uint32 mask = 0xFFFFFFFF, 
+            UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
             StencilOperation stencilFailOp = SOP_KEEP, 
             StencilOperation depthFailOp = SOP_KEEP,
             StencilOperation passOp = SOP_KEEP, 
@@ -443,7 +443,7 @@ namespace CamelotEngine {
           RenderSystem
          */
 		void bindGpuProgramParameters(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, uint16 variabilityMask);
+			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
 		/** See
 		  RenderSystem
 		 */
@@ -454,12 +454,12 @@ namespace CamelotEngine {
         void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600) ;
         void clearFrameBuffer(unsigned int buffers, 
             const ColourValue& colour = ColourValue::Black, 
-            Real depth = 1.0f, unsigned short stencil = 0);
+            float depth = 1.0f, unsigned short stencil = 0);
         HardwareOcclusionQuery* createHardwareOcclusionQuery(void);
-        Real getHorizontalTexelOffset(void);
-        Real getVerticalTexelOffset(void);
-        Real getMinimumDepthInputValue(void);
-        Real getMaximumDepthInputValue(void);
+        float getHorizontalTexelOffset(void);
+        float getVerticalTexelOffset(void);
+        float getMinimumDepthInputValue(void);
+        float getMaximumDepthInputValue(void);
 		CM_MUTEX(mThreadInitMutex)
 		void registerThread();
 		void unregisterThread();

@@ -39,9 +39,9 @@ namespace CamelotEngine {
 	struct GLScratchBufferAlloc
 	{
 		/// Size in bytes
-		uint32 size: 31;
+		UINT32 size: 31;
 		/// Free? (pack with size)
-		uint32 free: 1;
+		UINT32 free: 1;
 	};
 	#define SCRATCH_POOL_SIZE 1 * 1024 * 1024
 	#define SCRATCH_ALIGNMENT 32
@@ -150,7 +150,7 @@ namespace CamelotEngine {
     }
 	//---------------------------------------------------------------------
 	//---------------------------------------------------------------------
-	void* GLHardwareBufferManagerBase::allocateScratch(uint32 size)
+	void* GLHardwareBufferManagerBase::allocateScratch(UINT32 size)
 	{
 		// simple forward link search based on alloc sizes
 		// not that fast but the list should never get that long since not many
@@ -165,7 +165,7 @@ namespace CamelotEngine {
 			size += 4 - (size % 4);
 		}
 
-		uint32 bufferPos = 0;
+		UINT32 bufferPos = 0;
 		while (bufferPos < SCRATCH_POOL_SIZE)
 		{
 			GLScratchBufferAlloc* pNext = (GLScratchBufferAlloc*)(mScratchBufferPool + bufferPos);
@@ -175,7 +175,7 @@ namespace CamelotEngine {
 				// split? And enough space for control block
 				if(pNext->size > size + sizeof(GLScratchBufferAlloc))
 				{
-					uint32 offset = (uint32)sizeof(GLScratchBufferAlloc) + size;
+					UINT32 offset = (UINT32)sizeof(GLScratchBufferAlloc) + size;
 
 					GLScratchBufferAlloc* pSplitAlloc = (GLScratchBufferAlloc*)
 						(mScratchBufferPool + bufferPos + offset);
@@ -194,7 +194,7 @@ namespace CamelotEngine {
 
 			}
 
-			bufferPos += (uint32)sizeof(GLScratchBufferAlloc) + pNext->size;
+			bufferPos += (UINT32)sizeof(GLScratchBufferAlloc) + pNext->size;
 
 		}
 
@@ -208,7 +208,7 @@ namespace CamelotEngine {
 		CM_LOCK_MUTEX(mScratchMutex)
 
 		// Simple linear search dealloc
-		uint32 bufferPos = 0;
+		UINT32 bufferPos = 0;
 		GLScratchBufferAlloc* pLast = 0;
 		while (bufferPos < SCRATCH_POOL_SIZE)
 		{
@@ -225,14 +225,14 @@ namespace CamelotEngine {
 				if (pLast && pLast->free)
 				{
 					// adjust buffer pos
-					bufferPos -= (pLast->size + (uint32)sizeof(GLScratchBufferAlloc));
+					bufferPos -= (pLast->size + (UINT32)sizeof(GLScratchBufferAlloc));
 					// merge free space
 					pLast->size += pCurrent->size + sizeof(GLScratchBufferAlloc);
 					pCurrent = pLast;
 				}
 
 				// merge with next
-				uint32 offset = bufferPos + pCurrent->size + (uint32)sizeof(GLScratchBufferAlloc);
+				UINT32 offset = bufferPos + pCurrent->size + (UINT32)sizeof(GLScratchBufferAlloc);
 				if (offset < SCRATCH_POOL_SIZE)
 				{
 					GLScratchBufferAlloc* pNext = (GLScratchBufferAlloc*)(
@@ -247,7 +247,7 @@ namespace CamelotEngine {
 				return;
 			}
 
-			bufferPos += (uint32)sizeof(GLScratchBufferAlloc) + pCurrent->size;
+			bufferPos += (UINT32)sizeof(GLScratchBufferAlloc) + pCurrent->size;
 			pLast = pCurrent;
 
 		}

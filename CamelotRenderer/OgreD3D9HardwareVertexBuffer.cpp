@@ -64,7 +64,7 @@ namespace CamelotEngine {
 		// Case we have to create this buffer resource on loading.
 		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
 		{
-			for (uint i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+			for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
 			{
 				IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
 
@@ -135,8 +135,8 @@ namespace CamelotEngine {
 
 		DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
 		// TODO PORT - Don't know what the next frame number is. Add a method for that
-		//uint nextFrameNumber = Root::getSingleton().getNextFrameNumber();
-		uint nextFrameNumber = 0;
+		//UINT32 nextFrameNumber = Root::getSingleton().getNextFrameNumber();
+		UINT32 nextFrameNumber = 0;
 
 		while (it != mMapDeviceToBufferResources.end())
 		{

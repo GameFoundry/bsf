@@ -89,7 +89,7 @@ namespace CamelotEngine {
 		BufferResources* createBufferResources();
 	
 		/// updates render texture.
-		void updateRenderTexture(bool writeGamma, uint fsaa, const String& srcName);
+		void updateRenderTexture(bool writeGamma, UINT32 fsaa, const String& srcName);
 		/// destroy render texture.
 		void destroyRenderTexture();
 
@@ -108,7 +108,7 @@ namespace CamelotEngine {
 
 		/// Call this to associate a D3D surface or volume with this pixel buffer
 		void bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *mSurface, IDirect3DSurface9* fsaaSurface,
-				  bool writeGamma, uint fsaa, const String& srcName, IDirect3DBaseTexture9 *mipTex);
+				  bool writeGamma, UINT32 fsaa, const String& srcName, IDirect3DBaseTexture9 *mipTex);
 		void bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *mVolume, IDirect3DBaseTexture9 *mipTex);
 		
 		/// @copydoc HardwarePixelBuffer::blit

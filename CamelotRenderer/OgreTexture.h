@@ -169,12 +169,12 @@ namespace CamelotEngine {
 		@param fsaa The number of samples
 		@param fsaaHint Any hinting text (@see Root::createRenderWindow)
 		*/
-		virtual void setFSAA(uint fsaa, const String& fsaaHint) { mFSAA = fsaa; mFSAAHint = fsaaHint; }
+		virtual void setFSAA(UINT32 fsaa, const String& fsaaHint) { mFSAA = fsaa; mFSAAHint = fsaaHint; }
 
 		/** Get the level of multisample AA to be used if this texture is a 
 		rendertarget.
 		*/
-		virtual uint getFSAA() const { return mFSAA; }
+		virtual UINT32 getFSAA() const { return mFSAA; }
 
 		/** Get the multisample AA hint if this texture is a rendertarget.
 		*/
@@ -285,26 +285,26 @@ namespace CamelotEngine {
             Available values: 0, 16 and 32, where 0 (the default) means keep original format
             as it is. This value is number of bits for the pixel.
         */
-        virtual void setDesiredIntegerBitDepth(ushort bits);
+        virtual void setDesiredIntegerBitDepth(UINT16 bits);
 
         /** gets desired bit depth for integer pixel format textures.
         */
-        virtual ushort getDesiredIntegerBitDepth(void) const;
+        virtual UINT16 getDesiredIntegerBitDepth(void) const;
 
         /** Sets desired bit depth for float pixel format textures.
         @note
             Available values: 0, 16 and 32, where 0 (the default) means keep original format
             as it is. This value is number of bits for a channel of the pixel.
         */
-        virtual void setDesiredFloatBitDepth(ushort bits);
+        virtual void setDesiredFloatBitDepth(UINT16 bits);
 
         /** gets desired bit depth for float pixel format textures.
         */
-        virtual ushort getDesiredFloatBitDepth(void) const;
+        virtual UINT16 getDesiredFloatBitDepth(void) const;
 
         /** Sets desired bit depth for integer and float pixel format.
         */
-        virtual void setDesiredBitDepths(ushort integerBits, ushort floatBits);
+        virtual void setDesiredBitDepths(UINT16 integerBits, UINT16 floatBits);
 
         /** Return the number of faces this texture has. This will be 6 for a cubemap
         	texture and 1 for a 1D, 2D or 3D one.
@@ -342,7 +342,7 @@ namespace CamelotEngine {
 		bool mMipmapsHardwareGenerated;
         float mGamma;
 		bool mHwGamma;
-		uint mFSAA;
+		UINT32 mFSAA;
 		String mFSAAHint;
 
         TextureType mTextureType;

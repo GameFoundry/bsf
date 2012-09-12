@@ -179,7 +179,7 @@ namespace CamelotEngine
 			{
 				IDirect3D9* direct3D9 = D3D9RenderSystem::getDirect3D9();
 
-				for (uint i=0; i < direct3D9->GetAdapterCount(); ++i)
+				for (UINT32 i=0; i < direct3D9->GetAdapterCount(); ++i)
 				{
 					if (i == monitorIndex)
 					{

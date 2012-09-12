@@ -51,7 +51,7 @@ GLHardwarePixelBuffer::GLHardwarePixelBuffer(size_t inWidth, size_t inHeight, si
 GLHardwarePixelBuffer::~GLHardwarePixelBuffer()
 {
 	// Force free buffer
-	delete [] (uint8*)mBuffer.data;
+	delete [] (UINT8*)mBuffer.data;
 }
 //-----------------------------------------------------------------------------  
 void GLHardwarePixelBuffer::allocateBuffer()
@@ -59,7 +59,7 @@ void GLHardwarePixelBuffer::allocateBuffer()
 	if(mBuffer.data)
 		// Already allocated
 		return;
-	mBuffer.data = new uint8[mSizeInBytes];
+	mBuffer.data = new UINT8[mSizeInBytes];
 	// TODO: use PBO if we're HBU_DYNAMIC
 }
 //-----------------------------------------------------------------------------  
@@ -68,7 +68,7 @@ void GLHardwarePixelBuffer::freeBuffer()
 	// Free buffer if we're STATIC to save memory
 	if(mUsage & HBU_STATIC)
 	{
-		delete [] (uint8*)mBuffer.data;
+		delete [] (UINT8*)mBuffer.data;
 		mBuffer.data = 0;
 	}
 }
@@ -195,7 +195,7 @@ void GLHardwarePixelBuffer::bindToFramebuffer(GLenum attachment, size_t zoffset)
 //********* GLTextureBuffer
 GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint id, 
 								 GLint face, GLint level, Usage usage, bool crappyCard, 
-								 bool writeGamma, uint fsaa):
+								 bool writeGamma, UINT32 fsaa):
 	GLHardwarePixelBuffer(0, 0, 0, PF_UNKNOWN, usage),
 	mTarget(target), mFaceTarget(0), mTextureID(id), mFace(face), mLevel(level),
     mSoftwareMipmap(crappyCard), mSliceTRT(0)

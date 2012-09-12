@@ -29,8 +29,8 @@ THE SOFTWARE.
 #define __Frustum_H__
 
 #include "OgrePrerequisites.h"
-#include "OgreVector2.h"
-#include "OgreAxisAlignedBox.h"
+#include "CmVector2.h"
+#include "CmAxisAlignedBox.h"
 #include "OgreVertexIndexData.h"
 #include "OgreString.h"
 
@@ -69,17 +69,17 @@ namespace CamelotEngine
         /// y-direction field-of-view (default 45)
         Radian mFOVy;
         /// Far clip distance - default 10000
-        Real mFarDist;
+        float mFarDist;
         /// Near clip distance - default 100
-        Real mNearDist;
+        float mNearDist;
         /// x/y viewport ratio - default 1.3333
-        Real mAspect;
+        float mAspect;
 		/// Ortho height size (world units)
-		Real mOrthoHeight;
+		float mOrthoHeight;
         /// Off-axis frustum center offset - default (0.0, 0.0)
         Vector2 mFrustumOffset;
         /// Focal length of frustum (for stereo rendering, defaults to 1.0)
-        Real mFocalLength;
+        float mFocalLength;
 
         /// The 6 main clipping planes
         mutable Plane mFrustumPlanes[6];
@@ -113,10 +113,10 @@ namespace CamelotEngine
 		/// Have the frustum extents been manually set?
 		bool mFrustumExtentsManuallySet;
 		/// Frustum extents
-		mutable Real mLeft, mRight, mTop, mBottom;
+		mutable float mLeft, mRight, mTop, mBottom;
 		
         // Internal functions for calcs
-        virtual void calcProjectionParameters(Real& left, Real& right, Real& bottom, Real& top) const;
+        virtual void calcProjectionParameters(float& left, float& right, float& bottom, float& top) const;
 		/// Update frustum if out of date
         virtual void updateFrustum(void) const;
 		/// Update view if out of date
@@ -179,11 +179,11 @@ namespace CamelotEngine
             @param
                 near The distance to the near clipping plane from the frustum in world coordinates.
          */
-        virtual void setNearClipDistance(Real nearDist);
+        virtual void setNearClipDistance(float nearDist);
 
         /** Sets the position of the near clipping plane.
         */
-        virtual Real getNearClipDistance(void) const;
+        virtual float getNearClipDistance(void) const;
 
         /** Sets the distance to the far clipping plane.
             @remarks
@@ -205,11 +205,11 @@ namespace CamelotEngine
                 distance which is useful especially when projecting shadows; but
                 be careful not to use a near distance too close.
         */
-        virtual void setFarClipDistance(Real farDist);
+        virtual void setFarClipDistance(float farDist);
 
         /** Retrieves the distance from the frustum to the far clipping plane.
         */
-        virtual Real getFarClipDistance(void) const;
+        virtual float getFarClipDistance(void) const;
 
         /** Sets the aspect ratio for the frustum viewport.
             @remarks
@@ -219,11 +219,11 @@ namespace CamelotEngine
                 The default for most fullscreen windows is 1.3333 - this is also assumed by Ogre unless you
                 use this method to state otherwise.
         */
-        virtual void setAspectRatio(Real ratio);
+        virtual void setAspectRatio(float ratio);
 
         /** Retreives the current aspect ratio.
         */
-        virtual Real getAspectRatio(void) const;
+        virtual float getAspectRatio(void) const;
 
         /** Sets frustum offsets, used in stereo rendering.
             @remarks
@@ -251,7 +251,7 @@ namespace CamelotEngine
             @param
                 vertical The vertical plane offset.
         */
-        virtual void setFrustumOffset(Real horizontal = 0.0, Real vertical = 0.0);
+        virtual void setFrustumOffset(float horizontal = 0.0, float vertical = 0.0);
 
         /** Retrieves the frustum offsets.
         */
@@ -261,21 +261,21 @@ namespace CamelotEngine
             @param
                 focalLength The distance to the focal plane from the frustum in world coordinates.
         */
-        virtual void setFocalLength(Real focalLength = 1.0);
+        virtual void setFocalLength(float focalLength = 1.0);
 
         /** Returns focal length of frustum.
         */
-        virtual Real getFocalLength() const;
+        virtual float getFocalLength() const;
 
 		/** Manually set the extents of the frustum.
 		@param left, right, top, bottom The position where the side clip planes intersect
 			the near clip plane, in eye space
 		*/
-		virtual void setFrustumExtents(Real left, Real right, Real top, Real bottom);
+		virtual void setFrustumExtents(float left, float right, float top, float bottom);
 		/** Reset the frustum extents to be automatically derived from other params. */
 		virtual void resetFrustumExtents(); 
 		/** Get the extents of the frustum in view space. */
-		virtual void getFrustumExtents(Real& outleft, Real& outright, Real& outtop, Real& outbottom) const;
+		virtual void getFrustumExtents(float& outleft, float& outright, float& outtop, float& outbottom) const;
 
 
         /** Gets the projection matrix for this frustum adjusted for the current
@@ -424,7 +424,7 @@ namespace CamelotEngine
         const AxisAlignedBox& getBoundingBox(void) const;
 
         /** Overridden from MovableObject */
-		Real getBoundingRadius(void) const;
+		float getBoundingRadius(void) const;
 
         /** Gets the world space corners of the frustum.
         @remarks
@@ -449,24 +449,24 @@ namespace CamelotEngine
 			particular size.
 		@param w, h The dimensions of the view window in world units
 		*/
-		virtual void setOrthoWindow(Real w, Real h);
+		virtual void setOrthoWindow(float w, float h);
 		/** Sets the orthographic window height, for use with orthographic rendering only. 
 		@note The width of the window will be calculated from the aspect ratio. 
 		@param h The height of the view window in world units
 		*/
-		virtual void setOrthoWindowHeight(Real h);
+		virtual void setOrthoWindowHeight(float h);
 		/** Sets the orthographic window width, for use with orthographic rendering only. 
 		@note The height of the window will be calculated from the aspect ratio. 
 		@param w The width of the view window in world units
 		*/
-		virtual void setOrthoWindowWidth(Real w);
+		virtual void setOrthoWindowWidth(float w);
 		/** Gets the orthographic window height, for use with orthographic rendering only. 
 		*/
-		virtual Real getOrthoWindowHeight() const;
+		virtual float getOrthoWindowHeight() const;
 		/** Gets the orthographic window width, for use with orthographic rendering only. 
 		@note This is calculated from the orthographic height and the aspect ratio
 		*/
-		virtual Real getOrthoWindowWidth() const;
+		virtual float getOrthoWindowWidth() const;
 
         /** Project a sphere onto the near plane and get the bounding rectangle. 
         @param sphere The world-space sphere to project
@@ -478,10 +478,10 @@ namespace CamelotEngine
             false if the entire near plane was contained
         */
         virtual bool projectSphere(const Sphere& sphere, 
-            Real* left, Real* top, Real* right, Real* bottom) const;
+            float* left, float* top, float* right, float* bottom) const;
 
         /// Small constant used to reduce far plane projection to avoid inaccuracies
-        static const Real INFINITE_FAR_PLANE_ADJUST;
+        static const float INFINITE_FAR_PLANE_ADJUST;
 
 		/** Get the derived position of this frustum. */
 		virtual const Vector3& getPositionForViewUpdate(void) const;

@@ -162,7 +162,7 @@ namespace CamelotEngine {
 			// Provide temporary buffer filled with zeroes as glCompressedTexImageXD does not
 			// accept a 0 pointer like normal glTexImageXD
 			// Run through this process for every mipmap to pregenerate mipmap piramid
-			uint8 *tmpdata = new uint8[size];
+			UINT8 *tmpdata = new UINT8[size];
 			memset(tmpdata, 0, size);
 			
 			for(size_t mip=0; mip<=mNumMipmaps; mip++)

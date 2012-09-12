@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 
 #include "OgreColourValue.h"
-#include "OgreMath.h"
+#include "CmMath.h"
 
 namespace CamelotEngine {
 
@@ -45,26 +45,26 @@ namespace CamelotEngine {
     RGBA ColourValue::getAsRGBA(void) const
 #endif
     {
-        uint8 val8;
-        uint32 val32 = 0;
+        UINT8 val8;
+        UINT32 val32 = 0;
 
         // Convert to 32bit pattern
         // (RGBA = 8888)
 
         // Red
-        val8 = static_cast<uint8>(r * 255);
+        val8 = static_cast<UINT8>(r * 255);
         val32 = val8 << 24;
 
         // Green
-        val8 = static_cast<uint8>(g * 255);
+        val8 = static_cast<UINT8>(g * 255);
         val32 += val8 << 16;
 
         // Blue
-        val8 = static_cast<uint8>(b * 255);
+        val8 = static_cast<UINT8>(b * 255);
         val32 += val8 << 8;
 
         // Alpha
-        val8 = static_cast<uint8>(a * 255);
+        val8 = static_cast<UINT8>(a * 255);
         val32 += val8;
 
         return val32;
@@ -76,26 +76,26 @@ namespace CamelotEngine {
     ARGB ColourValue::getAsARGB(void) const
 #endif
     {
-        uint8 val8;
-        uint32 val32 = 0;
+        UINT8 val8;
+        UINT32 val32 = 0;
 
         // Convert to 32bit pattern
         // (ARGB = 8888)
 
         // Alpha
-        val8 = static_cast<uint8>(a * 255);
+        val8 = static_cast<UINT8>(a * 255);
         val32 = val8 << 24;
 
         // Red
-        val8 = static_cast<uint8>(r * 255);
+        val8 = static_cast<UINT8>(r * 255);
         val32 += val8 << 16;
 
         // Green
-        val8 = static_cast<uint8>(g * 255);
+        val8 = static_cast<UINT8>(g * 255);
         val32 += val8 << 8;
 
         // Blue
-        val8 = static_cast<uint8>(b * 255);
+        val8 = static_cast<UINT8>(b * 255);
         val32 += val8;
 
 
@@ -108,26 +108,26 @@ namespace CamelotEngine {
 	BGRA ColourValue::getAsBGRA(void) const
 #endif
 	{
-		uint8 val8;
-		uint32 val32 = 0;
+		UINT8 val8;
+		UINT32 val32 = 0;
 
 		// Convert to 32bit pattern
 		// (ARGB = 8888)
 
 		// Blue
-		val8 = static_cast<uint8>(b * 255);
+		val8 = static_cast<UINT8>(b * 255);
 		val32 = val8 << 24;
 
 		// Green
-		val8 = static_cast<uint8>(g * 255);
+		val8 = static_cast<UINT8>(g * 255);
 		val32 += val8 << 16;
 
 		// Red
-		val8 = static_cast<uint8>(r * 255);
+		val8 = static_cast<UINT8>(r * 255);
 		val32 += val8 << 8;
 
 		// Alpha
-		val8 = static_cast<uint8>(a * 255);
+		val8 = static_cast<UINT8>(a * 255);
 		val32 += val8;
 
 
@@ -140,26 +140,26 @@ namespace CamelotEngine {
     ABGR ColourValue::getAsABGR(void) const
 #endif
     {
-        uint8 val8;
-        uint32 val32 = 0;
+        UINT8 val8;
+        UINT32 val32 = 0;
 
         // Convert to 32bit pattern
         // (ABRG = 8888)
 
         // Alpha
-        val8 = static_cast<uint8>(a * 255);
+        val8 = static_cast<UINT8>(a * 255);
         val32 = val8 << 24;
 
         // Blue
-        val8 = static_cast<uint8>(b * 255);
+        val8 = static_cast<UINT8>(b * 255);
         val32 += val8 << 16;
 
         // Green
-        val8 = static_cast<uint8>(g * 255);
+        val8 = static_cast<UINT8>(g * 255);
         val32 += val8 << 8;
 
         // Red
-        val8 = static_cast<uint8>(r * 255);
+        val8 = static_cast<UINT8>(r * 255);
         val32 += val8;
 
 
@@ -172,7 +172,7 @@ namespace CamelotEngine {
     void ColourValue::setAsRGBA(const RGBA val)
 #endif
     {
-        uint32 val32 = val;
+        UINT32 val32 = val;
 
         // Convert from 32bit pattern
         // (RGBA = 8888)
@@ -196,7 +196,7 @@ namespace CamelotEngine {
     void ColourValue::setAsARGB(const ARGB val)
 #endif
     {
-        uint32 val32 = val;
+        UINT32 val32 = val;
 
         // Convert from 32bit pattern
         // (ARGB = 8888)
@@ -220,7 +220,7 @@ namespace CamelotEngine {
 	void ColourValue::setAsBGRA(const BGRA val)
 #endif
 	{
-		uint32 val32 = val;
+		UINT32 val32 = val;
 
 		// Convert from 32bit pattern
 		// (ARGB = 8888)
@@ -244,7 +244,7 @@ namespace CamelotEngine {
     void ColourValue::setAsABGR(const ABGR val)
 #endif
     {
-        uint32 val32 = val;
+        UINT32 val32 = val;
 
         // Convert from 32bit pattern
         // (ABGR = 8888)
@@ -275,7 +275,7 @@ namespace CamelotEngine {
         return !(*this == rhs);
     }
 	//---------------------------------------------------------------------
-	void ColourValue::setHSB(Real hue, Real saturation, Real brightness)
+	void ColourValue::setHSB(float hue, float saturation, float brightness)
 	{
 		// wrap hue
 		if (hue > 1.0f)
@@ -287,10 +287,10 @@ namespace CamelotEngine {
 			hue += (int)hue + 1;
 		}
 		// clamp saturation / brightness
-		saturation = std::min(saturation, (Real)1.0);
-		saturation = std::max(saturation, (Real)0.0);
-		brightness = std::min(brightness, (Real)1.0);
-		brightness = std::max(brightness, (Real)0.0);
+		saturation = std::min(saturation, (float)1.0);
+		saturation = std::max(saturation, (float)0.0);
+		brightness = std::min(brightness, (float)1.0);
+		brightness = std::max(brightness, (float)0.0);
 
 		if (brightness == 0.0f)
 		{   
@@ -308,16 +308,16 @@ namespace CamelotEngine {
 		}
 
 
-		Real hueDomain  = hue * 6.0f;
+		float hueDomain  = hue * 6.0f;
 		if (hueDomain >= 6.0f)
 		{
 			// wrap around, and allow mathematical errors
 			hueDomain = 0.0f;
 		}
 		unsigned short domain = (unsigned short)hueDomain;
-		Real f1 = brightness * (1 - saturation);
-		Real f2 = brightness * (1 - saturation * (hueDomain - domain));
-		Real f3 = brightness * (1 - saturation * (1 - (hueDomain - domain)));
+		float f1 = brightness * (1 - saturation);
+		float f2 = brightness * (1 - saturation * (hueDomain - domain));
+		float f3 = brightness * (1 - saturation * (1 - (hueDomain - domain)));
 
 		switch (domain)
 		{
@@ -362,12 +362,12 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void ColourValue::getHSB(Real* hue, Real* saturation, Real* brightness) const
+	void ColourValue::getHSB(float* hue, float* saturation, float* brightness) const
 	{
 
-		Real vMin = std::min(r, std::min(g, b));
-		Real vMax = std::max(r, std::max(g, b));
-		Real delta = vMax - vMin;
+		float vMin = std::min(r, std::min(g, b));
+		float vMax = std::max(r, std::max(g, b));
+		float delta = vMax - vMin;
 
 		*brightness = vMax;
 
@@ -382,9 +382,9 @@ namespace CamelotEngine {
 			// a colour
 			*saturation = delta / vMax;
 
-			Real deltaR = (((vMax - r) / 6.0f) + (delta / 2.0f)) / delta;
-			Real deltaG = (((vMax - g) / 6.0f) + (delta / 2.0f)) / delta;
-			Real deltaB = (((vMax - b) / 6.0f) + (delta / 2.0f)) / delta;
+			float deltaR = (((vMax - r) / 6.0f) + (delta / 2.0f)) / delta;
+			float deltaG = (((vMax - g) / 6.0f) + (delta / 2.0f)) / delta;
+			float deltaB = (((vMax - b) / 6.0f) + (delta / 2.0f)) / delta;
 
 			if (Math::RealEqual(r, vMax))
 				*hue = deltaB - deltaG;

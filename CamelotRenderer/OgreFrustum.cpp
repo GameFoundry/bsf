@@ -28,9 +28,9 @@ THE SOFTWARE.
 
 #include "OgreFrustum.h"
 
-#include "OgreMath.h"
-#include "OgreMatrix3.h"
-#include "OgreSphere.h"
+#include "CmMath.h"
+#include "CmMatrix3.h"
+#include "CmSphere.h"
 #include "OgreException.h"
 #include "OgreHardwareBufferManager.h"
 #include "OgreHardwareVertexBuffer.h"
@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
-    const Real Frustum::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
+    const float Frustum::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
     //-----------------------------------------------------------------------
     Frustum::Frustum(const String& name) : 
         mProjType(PT_PERSPECTIVE), 
@@ -86,20 +86,20 @@ namespace CamelotEngine {
 
 
     //-----------------------------------------------------------------------
-    void Frustum::setFarClipDistance(Real farPlane)
+    void Frustum::setFarClipDistance(float farPlane)
     {
         mFarDist = farPlane;
         invalidateFrustum();
     }
 
     //-----------------------------------------------------------------------
-    Real Frustum::getFarClipDistance(void) const
+    float Frustum::getFarClipDistance(void) const
     {
         return mFarDist;
     }
 
     //-----------------------------------------------------------------------
-    void Frustum::setNearClipDistance(Real nearPlane)
+    void Frustum::setNearClipDistance(float nearPlane)
     {
         if (nearPlane <= 0)
             OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Near clip distance must be greater than zero.",
@@ -109,7 +109,7 @@ namespace CamelotEngine {
     }
 
     //-----------------------------------------------------------------------
-    Real Frustum::getNearClipDistance(void) const
+    float Frustum::getNearClipDistance(void) const
     {
         return mNearDist;
     }
@@ -121,7 +121,7 @@ namespace CamelotEngine {
         invalidateFrustum();
     }
     //---------------------------------------------------------------------
-    void Frustum::setFrustumOffset(Real horizontal, Real vertical)
+    void Frustum::setFrustumOffset(float horizontal, float vertical)
     {
         setFrustumOffset(Vector2(horizontal, vertical));
     }
@@ -131,7 +131,7 @@ namespace CamelotEngine {
         return mFrustumOffset;
     }
     //---------------------------------------------------------------------
-    void Frustum::setFocalLength(Real focalLength)
+    void Frustum::setFocalLength(float focalLength)
     {
         if (focalLength <= 0)
         {
@@ -144,7 +144,7 @@ namespace CamelotEngine {
         invalidateFrustum();
     }
     //---------------------------------------------------------------------
-    Real Frustum::getFocalLength() const
+    float Frustum::getFocalLength() const
     {
         return mFocalLength;
     }
@@ -294,7 +294,7 @@ namespace CamelotEngine {
         return true;
     }
     //-----------------------------------------------------------------------
-    void Frustum::calcProjectionParameters(Real& left, Real& right, Real& bottom, Real& top) const
+    void Frustum::calcProjectionParameters(float& left, float& right, float& bottom, float& top) const
     { 
 		if (mCustomProjMatrix)
 		{
@@ -325,14 +325,14 @@ namespace CamelotEngine {
 			else if (mProjType == PT_PERSPECTIVE)
 			{
 				Radian thetaY (mFOVy * 0.5f);
-				Real tanThetaY = Math::Tan(thetaY);
-				Real tanThetaX = tanThetaY * mAspect;
+				float tanThetaY = Math::Tan(thetaY);
+				float tanThetaX = tanThetaY * mAspect;
 
-				Real nearFocal = mNearDist / mFocalLength;
-				Real nearOffsetX = mFrustumOffset.x * nearFocal;
-				Real nearOffsetY = mFrustumOffset.y * nearFocal;
-				Real half_w = tanThetaX * mNearDist;
-				Real half_h = tanThetaY * mNearDist;
+				float nearFocal = mNearDist / mFocalLength;
+				float nearOffsetX = mFrustumOffset.x * nearFocal;
+				float nearOffsetY = mFrustumOffset.y * nearFocal;
+				float half_w = tanThetaX * mNearDist;
+				float half_h = tanThetaY * mNearDist;
 
 				left   = - half_w + nearOffsetX;
 				right  = + half_w + nearOffsetX;
@@ -347,8 +347,8 @@ namespace CamelotEngine {
 			else
 			{
 				// Unknown how to apply frustum offset to orthographic camera, just ignore here
-				Real half_w = getOrthoWindowWidth() * 0.5f;
-				Real half_h = getOrthoWindowHeight() * 0.5f;
+				float half_w = getOrthoWindowWidth() * 0.5f;
+				float half_h = getOrthoWindowHeight() * 0.5f;
 
 				left   = - half_w;
 				right  = + half_w;
@@ -367,14 +367,9 @@ namespace CamelotEngine {
 	void Frustum::updateFrustumImpl(void) const
 	{
 		// Common calcs
-		Real left, right, bottom, top;
+		float left, right, bottom, top;
 
-#if OGRE_NO_VIEWPORT_ORIENTATIONMODE == 0
-        if (mOrientationMode != OR_PORTRAIT)
-            calcProjectionParameters(bottom, top, left, right);
-        else
-#endif
-            calcProjectionParameters(left, right, bottom, top);
+        calcProjectionParameters(left, right, bottom, top);
 
 		if (!mCustomProjMatrix)
 		{
@@ -384,19 +379,19 @@ namespace CamelotEngine {
 			// Doesn't optimise manually except division operator, so the 
 			// code more self-explaining.
 
-			Real inv_w = 1 / (right - left);
-			Real inv_h = 1 / (top - bottom);
-			Real inv_d = 1 / (mFarDist - mNearDist);
+			float inv_w = 1 / (right - left);
+			float inv_h = 1 / (top - bottom);
+			float inv_d = 1 / (mFarDist - mNearDist);
 
 			// Recalc if frustum params changed
 			if (mProjType == PT_PERSPECTIVE)
 			{
 				// Calc matrix elements
-				Real A = 2 * mNearDist * inv_w;
-				Real B = 2 * mNearDist * inv_h;
-				Real C = (right + left) * inv_w;
-				Real D = (top + bottom) * inv_h;
-				Real q, qn;
+				float A = 2 * mNearDist * inv_w;
+				float B = 2 * mNearDist * inv_h;
+				float C = (right + left) * inv_w;
+				float D = (top + bottom) * inv_h;
+				float q, qn;
 				if (mFarDist == 0)
 				{
 					// Infinite far plane
@@ -435,11 +430,11 @@ namespace CamelotEngine {
 			} // perspective
 			else if (mProjType == PT_ORTHOGRAPHIC)
 			{
-				Real A = 2 * inv_w;
-				Real B = 2 * inv_h;
-				Real C = - (right + left) * inv_w;
-				Real D = - (top + bottom) * inv_h;
-				Real q, qn;
+				float A = 2 * inv_w;
+				float B = 2 * inv_h;
+				float C = - (right + left) * inv_w;
+				float D = - (top + bottom) * inv_h;
+				float q, qn;
 				if (mFarDist == 0)
 				{
 					// Can not do infinite far plane here, avoid divided zero only
@@ -478,11 +473,6 @@ namespace CamelotEngine {
 			} // ortho            
 		} // !mCustomProjMatrix
 
-#if OGRE_NO_VIEWPORT_ORIENTATIONMODE == 0
-        // Deal with orientation mode
-        mProjMatrix = mProjMatrix * Quaternion(Degree(mOrientationMode * 90.f), Vector3::UNIT_Z);
-#endif
-
 		RenderSystem* renderSystem = CamelotEngine::RenderSystemManager::getActive();
 		// API specific
 		renderSystem->_convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
@@ -493,7 +483,7 @@ namespace CamelotEngine {
 		// Calculate bounding box (local)
 		// Box is from 0, down -Z, max dimensions as determined from far plane
 		// If infinite view frustum just pick a far value
-		Real farDist = (mFarDist == 0) ? 100000 : mFarDist;
+		float farDist = (mFarDist == 0) ? 100000 : mFarDist;
 		// Near plane bounds
 		Vector3 min(left, bottom, -farDist);
 		Vector3 max(right, top, 0);
@@ -510,7 +500,7 @@ namespace CamelotEngine {
 		if (mProjType == PT_PERSPECTIVE)
 		{
 			// Merge with far plane bounds
-			Real radio = farDist / mNearDist;
+			float radio = farDist / mNearDist;
 			min.makeFloor(Vector3(left * radio, bottom * radio, -farDist));
 			max.makeCeil(Vector3(right * radio, top * radio, 0));
 		}
@@ -551,18 +541,18 @@ namespace CamelotEngine {
             //       still need to working with projection parameters.
 
             // Calc near plane corners
-            Real vpLeft, vpRight, vpBottom, vpTop;
+            float vpLeft, vpRight, vpBottom, vpTop;
             calcProjectionParameters(vpLeft, vpRight, vpBottom, vpTop);
 
             // Treat infinite fardist as some arbitrary far value
-            Real farDist = (mFarDist == 0) ? 100000 : mFarDist;
+            float farDist = (mFarDist == 0) ? 100000 : mFarDist;
 
             // Calc far plane corners
-            Real radio = mProjType == PT_PERSPECTIVE ? farDist / mNearDist : 1;
-            Real farLeft = vpLeft * radio;
-            Real farRight = vpRight * radio;
-            Real farBottom = vpBottom * radio;
-            Real farTop = vpTop * radio;
+            float radio = mProjType == PT_PERSPECTIVE ? farDist / mNearDist : 1;
+            float farLeft = vpLeft * radio;
+            float farRight = vpRight * radio;
+            float farBottom = vpBottom * radio;
+            float farTop = vpTop * radio;
 
             // Calculate vertex positions (local)
             // 0 is the origin
@@ -741,7 +731,7 @@ namespace CamelotEngine {
 		// Renormalise any normals which were not unit length
 		for(int i=0; i<6; i++ ) 
 		{
-			Real length = mFrustumPlanes[i].normal.normalise();
+			float length = mFrustumPlanes[i].normal.normalise();
 			mFrustumPlanes[i].d /= length;
 		}
 
@@ -768,18 +758,18 @@ namespace CamelotEngine {
 		//       still need to working with projection parameters.
 
 		// Calc near plane corners
-		Real nearLeft, nearRight, nearBottom, nearTop;
+		float nearLeft, nearRight, nearBottom, nearTop;
 		calcProjectionParameters(nearLeft, nearRight, nearBottom, nearTop);
 
 		// Treat infinite fardist as some arbitrary far value
-		Real farDist = (mFarDist == 0) ? 100000 : mFarDist;
+		float farDist = (mFarDist == 0) ? 100000 : mFarDist;
 
 		// Calc far palne corners
-		Real radio = mProjType == PT_PERSPECTIVE ? farDist / mNearDist : 1;
-		Real farLeft = nearLeft * radio;
-		Real farRight = nearRight * radio;
-		Real farBottom = nearBottom * radio;
-		Real farTop = nearTop * radio;
+		float radio = mProjType == PT_PERSPECTIVE ? farDist / mNearDist : 1;
+		float farLeft = nearLeft * radio;
+		float farRight = nearRight * radio;
+		float farBottom = nearBottom * radio;
+		float farTop = nearTop * radio;
 
 		// near
 		mWorldSpaceCorners[0] = eyeToWorld.transformAffine(Vector3(nearRight, nearTop,    -mNearDist));
@@ -808,13 +798,13 @@ namespace CamelotEngine {
     }
 
     //-----------------------------------------------------------------------
-    Real Frustum::getAspectRatio(void) const
+    float Frustum::getAspectRatio(void) const
     {
         return mAspect;
     }
 
     //-----------------------------------------------------------------------
-    void Frustum::setAspectRatio(Real r)
+    void Frustum::setAspectRatio(float r)
     {
         mAspect = r;
         invalidateFrustum();
@@ -826,7 +816,7 @@ namespace CamelotEngine {
         return mBoundingBox;
     }
     //-----------------------------------------------------------------------
-	Real Frustum::getBoundingRadius(void) const
+	float Frustum::getBoundingRadius(void) const
 	{
         return (mFarDist == 0)? 100000 : mFarDist;
 	}
@@ -876,7 +866,7 @@ namespace CamelotEngine {
     }
     //---------------------------------------------------------------------
     bool Frustum::projectSphere(const Sphere& sphere, 
-        Real* left, Real* top, Real* right, Real* bottom) const
+        float* left, float* top, float* right, float* bottom) const
     {
 		// See http://www.gamasutra.com/features/20021011/lengyel_06.htm
         // Transform light position into camera space
@@ -892,15 +882,15 @@ namespace CamelotEngine {
         {
 			updateFrustum();
 			const Matrix4& projMatrix = getProjectionMatrix();
-            Real r = sphere.getRadius();
-			Real rsq = r * r;
+            float r = sphere.getRadius();
+			float rsq = r * r;
 
             // early-exit
             if (eyeSpacePos.squaredLength() <= rsq)
                 return false;
 
-			Real Lxz = Math::Sqr(eyeSpacePos.x) + Math::Sqr(eyeSpacePos.z);
-			Real Lyz = Math::Sqr(eyeSpacePos.y) + Math::Sqr(eyeSpacePos.z);
+			float Lxz = Math::Sqr(eyeSpacePos.x) + Math::Sqr(eyeSpacePos.z);
+			float Lyz = Math::Sqr(eyeSpacePos.y) + Math::Sqr(eyeSpacePos.z);
 
 			// Find the tangent planes to the sphere
 			// XZ first
@@ -909,36 +899,36 @@ namespace CamelotEngine {
 			// a = Lx^2 + Lz^2
 			// b = -2rLx
 			// c = r^2 - Lz^2
-			Real a = Lxz;
-			Real b = -2.0f * r * eyeSpacePos.x;
-			Real c = rsq - Math::Sqr(eyeSpacePos.z);
-			Real D = b*b - 4.0f*a*c;
+			float a = Lxz;
+			float b = -2.0f * r * eyeSpacePos.x;
+			float c = rsq - Math::Sqr(eyeSpacePos.z);
+			float D = b*b - 4.0f*a*c;
 
 			// two roots?
 			if (D > 0)
 			{
-				Real sqrootD = Math::Sqrt(D);
+				float sqrootD = Math::Sqrt(D);
 				// solve the quadratic to get the components of the normal
-				Real Nx0 = (-b + sqrootD) / (2 * a);
-				Real Nx1 = (-b - sqrootD) / (2 * a);
+				float Nx0 = (-b + sqrootD) / (2 * a);
+				float Nx1 = (-b - sqrootD) / (2 * a);
 				
 				// Derive Z from this
-				Real Nz0 = (r - Nx0 * eyeSpacePos.x) / eyeSpacePos.z;
-				Real Nz1 = (r - Nx1 * eyeSpacePos.x) / eyeSpacePos.z;
+				float Nz0 = (r - Nx0 * eyeSpacePos.x) / eyeSpacePos.z;
+				float Nz1 = (r - Nx1 * eyeSpacePos.x) / eyeSpacePos.z;
 
 				// Get the point of tangency
 				// Only consider points of tangency in front of the camera
-				Real Pz0 = (Lxz - rsq) / (eyeSpacePos.z - ((Nz0 / Nx0) * eyeSpacePos.x));
+				float Pz0 = (Lxz - rsq) / (eyeSpacePos.z - ((Nz0 / Nx0) * eyeSpacePos.x));
 				if (Pz0 < 0)
 				{
 					// Project point onto near plane in worldspace
-					Real nearx0 = (Nz0 * mNearDist) / Nx0;
+					float nearx0 = (Nz0 * mNearDist) / Nx0;
 					// now we need to map this to viewport coords
 					// use projection matrix since that will take into account all factors
 					Vector3 relx0 = projMatrix * Vector3(nearx0, 0, -mNearDist);
 
 					// find out whether this is a left side or right side
-					Real Px0 = -(Pz0 * Nz0) / Nx0;
+					float Px0 = -(Pz0 * Nz0) / Nx0;
 					if (Px0 > eyeSpacePos.x)
 					{
 						*right = std::min(*right, relx0.x);
@@ -948,17 +938,17 @@ namespace CamelotEngine {
 						*left = std::max(*left, relx0.x);
 					}
 				}
-				Real Pz1 = (Lxz - rsq) / (eyeSpacePos.z - ((Nz1 / Nx1) * eyeSpacePos.x));
+				float Pz1 = (Lxz - rsq) / (eyeSpacePos.z - ((Nz1 / Nx1) * eyeSpacePos.x));
 				if (Pz1 < 0)
 				{
 					// Project point onto near plane in worldspace
-					Real nearx1 = (Nz1 * mNearDist) / Nx1;
+					float nearx1 = (Nz1 * mNearDist) / Nx1;
 					// now we need to map this to viewport coords
 					// use projection matrix since that will take into account all factors
 					Vector3 relx1 = projMatrix * Vector3(nearx1, 0, -mNearDist);
 
 					// find out whether this is a left side or right side
-					Real Px1 = -(Pz1 * Nz1) / Nx1;
+					float Px1 = -(Pz1 * Nz1) / Nx1;
 					if (Px1 > eyeSpacePos.x)
 					{
 						*right = std::min(*right, relx1.x);
@@ -985,28 +975,28 @@ namespace CamelotEngine {
 			// two roots?
 			if (D > 0)
 			{
-				Real sqrootD = Math::Sqrt(D);
+				float sqrootD = Math::Sqrt(D);
 				// solve the quadratic to get the components of the normal
-				Real Ny0 = (-b + sqrootD) / (2 * a);
-				Real Ny1 = (-b - sqrootD) / (2 * a);
+				float Ny0 = (-b + sqrootD) / (2 * a);
+				float Ny1 = (-b - sqrootD) / (2 * a);
 
 				// Derive Z from this
-				Real Nz0 = (r - Ny0 * eyeSpacePos.y) / eyeSpacePos.z;
-				Real Nz1 = (r - Ny1 * eyeSpacePos.y) / eyeSpacePos.z;
+				float Nz0 = (r - Ny0 * eyeSpacePos.y) / eyeSpacePos.z;
+				float Nz1 = (r - Ny1 * eyeSpacePos.y) / eyeSpacePos.z;
 
 				// Get the point of tangency
 				// Only consider points of tangency in front of the camera
-				Real Pz0 = (Lyz - rsq) / (eyeSpacePos.z - ((Nz0 / Ny0) * eyeSpacePos.y));
+				float Pz0 = (Lyz - rsq) / (eyeSpacePos.z - ((Nz0 / Ny0) * eyeSpacePos.y));
 				if (Pz0 < 0)
 				{
 					// Project point onto near plane in worldspace
-					Real neary0 = (Nz0 * mNearDist) / Ny0;
+					float neary0 = (Nz0 * mNearDist) / Ny0;
 					// now we need to map this to viewport coords
 					// use projection matriy since that will take into account all factors
 					Vector3 rely0 = projMatrix * Vector3(0, neary0, -mNearDist);
 
 					// find out whether this is a top side or bottom side
-					Real Py0 = -(Pz0 * Nz0) / Ny0;
+					float Py0 = -(Pz0 * Nz0) / Ny0;
 					if (Py0 > eyeSpacePos.y)
 					{
 						*top = std::min(*top, rely0.y);
@@ -1016,17 +1006,17 @@ namespace CamelotEngine {
 						*bottom = std::max(*bottom, rely0.y);
 					}
 				}
-				Real Pz1 = (Lyz - rsq) / (eyeSpacePos.z - ((Nz1 / Ny1) * eyeSpacePos.y));
+				float Pz1 = (Lyz - rsq) / (eyeSpacePos.z - ((Nz1 / Ny1) * eyeSpacePos.y));
 				if (Pz1 < 0)
 				{
 					// Project point onto near plane in worldspace
-					Real neary1 = (Nz1 * mNearDist) / Ny1;
+					float neary1 = (Nz1 * mNearDist) / Ny1;
 					// now we need to map this to viewport coords
 					// use projection matriy since that will take into account all factors
 					Vector3 rely1 = projMatrix * Vector3(0, neary1, -mNearDist);
 
 					// find out whether this is a top side or bottom side
-					Real Py1 = -(Pz1 * Nz1) / Ny1;
+					float Py1 = -(Pz1 * Nz1) / Ny1;
 					if (Py1 > eyeSpacePos.y)
 					{
 						*top = std::min(*top, rely1.y);
@@ -1064,36 +1054,36 @@ namespace CamelotEngine {
 		invalidateFrustum();
 	}
 	//---------------------------------------------------------------------
-	void Frustum::setOrthoWindow(Real w, Real h)
+	void Frustum::setOrthoWindow(float w, float h)
 	{
 		mOrthoHeight = h;
 		mAspect = w / h;
 		invalidateFrustum();
 	}
 	//---------------------------------------------------------------------
-	void Frustum::setOrthoWindowHeight(Real h)
+	void Frustum::setOrthoWindowHeight(float h)
 	{
 		mOrthoHeight = h;
 		invalidateFrustum();
 	}
 	//---------------------------------------------------------------------
-	void Frustum::setOrthoWindowWidth(Real w)
+	void Frustum::setOrthoWindowWidth(float w)
 	{
 		mOrthoHeight = w / mAspect;
 		invalidateFrustum();
 	}
 	//---------------------------------------------------------------------
-	Real Frustum::getOrthoWindowHeight() const
+	float Frustum::getOrthoWindowHeight() const
 	{
 		return mOrthoHeight;
 	}
 	//---------------------------------------------------------------------
-	Real Frustum::getOrthoWindowWidth() const
+	float Frustum::getOrthoWindowWidth() const
 	{
 		return mOrthoHeight * mAspect;	
 	}
 	//---------------------------------------------------------------------
-	void Frustum::setFrustumExtents(Real left, Real right, Real top, Real bottom)
+	void Frustum::setFrustumExtents(float left, float right, float top, float bottom)
 	{
 		mFrustumExtentsManuallySet = true;
 		mLeft = left;
@@ -1110,7 +1100,7 @@ namespace CamelotEngine {
 		invalidateFrustum();
 	}
 	//---------------------------------------------------------------------
-	void Frustum::getFrustumExtents(Real& outleft, Real& outright, Real& outtop, Real& outbottom) const
+	void Frustum::getFrustumExtents(float& outleft, float& outright, float& outtop, float& outbottom) const
 	{
 		updateFrustum();
 		outleft = mLeft;

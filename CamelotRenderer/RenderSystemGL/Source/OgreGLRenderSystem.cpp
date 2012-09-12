@@ -105,7 +105,7 @@ namespace CamelotEngine {
 
 		mColourWrite[0] = mColourWrite[1] = mColourWrite[2] = mColourWrite[3] = true;
 
-		for (i = 0; i < OGRE_MAX_TEXTURE_LAYERS; i++)
+		for (i = 0; i < CM_MAX_TEXTURE_LAYERS; i++)
 		{
 			// Dummy value
 			mTextureCoordIndex[i] = 99;
@@ -536,7 +536,7 @@ namespace CamelotEngine {
 			{
 				GLint buffers;
 				glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &buffers);
-				rsc->setNumMultiRenderTargets(std::min<int>(buffers, (GLint)OGRE_MAX_MULTIPLE_RENDER_TARGETS));
+				rsc->setNumMultiRenderTargets(std::min<int>(buffers, (GLint)CM_MAX_MULTIPLE_RENDER_TARGETS));
 				rsc->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);
 				if(!GLEW_VERSION_2_0)
 				{
@@ -572,7 +572,7 @@ namespace CamelotEngine {
 		{
 			GLint vSize[2];
 			glGetIntegerv(GL_POINT_SIZE_RANGE,vSize);
-			rsc->setMaxPointSize((CamelotEngine::Real)vSize[1]);
+			rsc->setMaxPointSize((float)vSize[1]);
 		}
 
 		// Vertex texture fetching
@@ -580,7 +580,7 @@ namespace CamelotEngine {
 		{
 		GLint vUnits;
 		glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, &vUnits);
-		rsc->setNumVertexTextureUnits(static_cast<ushort>(vUnits));
+		rsc->setNumVertexTextureUnits(static_cast<UINT16>(vUnits));
 		if (vUnits > 0)
 		{
 			rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
@@ -989,7 +989,7 @@ namespace CamelotEngine {
 			}
 			mDriverVersion.build = 0;
 			// Initialise GL after the first window has been created
-			// TODO: fire this from emulation options, and don't duplicate Real and Current capabilities
+			// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
 			mRealCapabilities = createRenderSystemCapabilities();
 
 			// use real capabilities if custom capabilities are not available
@@ -1152,7 +1152,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::_setSurfaceParams(const ColourValue &ambient,
 		const ColourValue &diffuse, const ColourValue &specular,
-		const ColourValue &emissive, Real shininess,
+		const ColourValue &emissive, float shininess,
 		TrackVertexColourType tracking)
 	{
 
@@ -1219,9 +1219,9 @@ namespace CamelotEngine {
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setPointParameters(Real size, 
-		bool attenuationEnabled, Real constant, Real linear, Real quadratic,
-		Real minSize, Real maxSize)
+	void GLRenderSystem::_setPointParameters(float size, 
+		bool attenuationEnabled, float constant, float linear, float quadratic,
+		float minSize, float maxSize)
 	{
 		
 		float val[4] = {1, 0, 0, 1};
@@ -1242,7 +1242,7 @@ namespace CamelotEngine {
 			
 			// XXX: why do I need this for results to be consistent with D3D?
 			// Equations are supposedly the same once you factor in vp height
-			Real correction = 0.005f;
+			float correction = 0.005f;
 			// scaling required
 			val[0] = constant;
 			val[1] = linear * correction;
@@ -1305,7 +1305,7 @@ namespace CamelotEngine {
 
 		// Set sprite texture coord generation
 		// Don't offer this as an option since D3D links it to sprite enabled
-		for (ushort i = 0; i < mFixedFunctionTextureUnits; ++i)
+		for (UINT16 i = 0; i < mFixedFunctionTextureUnits; ++i)
 		{
 			activateGLTextureUnit(i);
 			glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, 
@@ -1970,7 +1970,7 @@ namespace CamelotEngine {
         }
     }
     //-----------------------------------------------------------------------------
-    void GLRenderSystem::_setFog(FogMode mode, const ColourValue& colour, Real density, Real start, Real end)
+    void GLRenderSystem::_setFog(FogMode mode, const ColourValue& colour, float density, float start, float end)
     {
 
         GLint fogMode;
@@ -2013,18 +2013,18 @@ namespace CamelotEngine {
 		dest = matrix;
 	}
 
-	void GLRenderSystem::_makeProjectionMatrix(const Radian& fovy, Real aspect, Real nearPlane, 
-		Real farPlane, Matrix4& dest, bool forGpuProgram)
+	void GLRenderSystem::_makeProjectionMatrix(const Radian& fovy, float aspect, float nearPlane, 
+		float farPlane, Matrix4& dest, bool forGpuProgram)
 	{
 		Radian thetaY ( fovy / 2.0f );
-		Real tanThetaY = Math::Tan(thetaY);
-		//Real thetaX = thetaY * aspect;
-		//Real tanThetaX = Math::Tan(thetaX);
+		float tanThetaY = Math::Tan(thetaY);
+		//float thetaX = thetaY * aspect;
+		//float tanThetaX = Math::Tan(thetaX);
 
 		// Calc matrix elements
-		Real w = (1.0f / tanThetaY) / aspect;
-		Real h = 1.0f / tanThetaY;
-		Real q, qn;
+		float w = (1.0f / tanThetaY) / aspect;
+		float h = 1.0f / tanThetaY;
+		float q, qn;
 		if (farPlane == 0)
 		{
 			// Infinite far plane
@@ -2053,19 +2053,19 @@ namespace CamelotEngine {
 
 	}
 
-	void GLRenderSystem::_makeOrthoMatrix(const Radian& fovy, Real aspect, Real nearPlane, 
-		Real farPlane, Matrix4& dest, bool forGpuProgram)
+	void GLRenderSystem::_makeOrthoMatrix(const Radian& fovy, float aspect, float nearPlane, 
+		float farPlane, Matrix4& dest, bool forGpuProgram)
 	{
 		Radian thetaY (fovy / 2.0f);
-		Real tanThetaY = Math::Tan(thetaY);
+		float tanThetaY = Math::Tan(thetaY);
 
-		//Real thetaX = thetaY * aspect;
-		Real tanThetaX = tanThetaY * aspect; //Math::Tan(thetaX);
-		Real half_w = tanThetaX * nearPlane;
-		Real half_h = tanThetaY * nearPlane;
-		Real iw = 1.0f / half_w;
-		Real ih = 1.0f / half_h;
-		Real q;
+		//float thetaX = thetaY * aspect;
+		float tanThetaX = tanThetaY * aspect; //Math::Tan(thetaX);
+		float half_w = tanThetaX * nearPlane;
+		float half_h = tanThetaY * nearPlane;
+		float iw = 1.0f / half_w;
+		float ih = 1.0f / half_h;
+		float q;
 		if (farPlane == 0)
 		{
 			q = 0;
@@ -2114,7 +2114,7 @@ namespace CamelotEngine {
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setStencilBufferParams(CompareFunction func, 
-		uint32 refValue, uint32 mask, StencilOperation stencilFailOp, 
+		UINT32 refValue, UINT32 mask, StencilOperation stencilFailOp, 
 		StencilOperation depthFailOp, StencilOperation passOp, 
 		bool twoSidedOperation)
 	{
@@ -2344,7 +2344,7 @@ namespace CamelotEngine {
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
 		if (maxAnisotropy > largest_supported_anisotropy)
 			maxAnisotropy = largest_supported_anisotropy ? 
-			static_cast<uint>(largest_supported_anisotropy) : 1;
+			static_cast<UINT32>(largest_supported_anisotropy) : 1;
 		if (_getCurrentAnisotropy(unit) != maxAnisotropy)
 			glTexParameterf(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
 
@@ -2941,9 +2941,9 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, uint16 mask)
+	void GLRenderSystem::bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask)
 	{
-		if (mask & (uint16)GPV_GLOBAL)
+		if (mask & (UINT16)GPV_GLOBAL)
 		{
 			// We could maybe use GL_EXT_bindable_uniform here to produce Dx10-style
 			// shared constant buffers, but GPU support seems fairly weak?
@@ -3076,7 +3076,7 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::clearFrameBuffer(unsigned int buffers, 
-		const ColourValue& colour, Real depth, unsigned short stencil)
+		const ColourValue& colour, float depth, unsigned short stencil)
 	{
 		bool colourMask = !mColourWrite[0] || !mColourWrite[1] 
 		|| !mColourWrite[2] || !mColourWrite[3]; 
@@ -3161,13 +3161,13 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 		}
 	}
 	// ------------------------------------------------------------------
-	void GLRenderSystem::_makeProjectionMatrix(Real left, Real right, 
-		Real bottom, Real top, Real nearPlane, Real farPlane, Matrix4& dest, 
+	void GLRenderSystem::_makeProjectionMatrix(float left, float right, 
+		float bottom, float top, float nearPlane, float farPlane, Matrix4& dest, 
 		bool forGpuProgram)
 	{
-		Real width = right - left;
-		Real height = top - bottom;
-		Real q, qn;
+		float width = right - left;
+		float height = top - bottom;
+		float q, qn;
 		if (farPlane == 0)
 		{
 			// Infinite far plane
@@ -3196,13 +3196,13 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 		return ret;
 	}
 	//---------------------------------------------------------------------
-	Real GLRenderSystem::getHorizontalTexelOffset(void)
+	float GLRenderSystem::getHorizontalTexelOffset(void)
 	{
 		// No offset in GL
 		return 0.0f;
 	}
 	//---------------------------------------------------------------------
-	Real GLRenderSystem::getVerticalTexelOffset(void)
+	float GLRenderSystem::getVerticalTexelOffset(void)
 	{
 		// No offset in GL
 		return 0.0f;
@@ -3368,13 +3368,13 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 		}
 	}
 	//---------------------------------------------------------------------
-	Real GLRenderSystem::getMinimumDepthInputValue(void)
+	float GLRenderSystem::getMinimumDepthInputValue(void)
 	{
 		// Range [-1.0f, 1.0f]
 		return -1.0f;
 	}
 	//---------------------------------------------------------------------
-	Real GLRenderSystem::getMaximumDepthInputValue(void)
+	float GLRenderSystem::getMaximumDepthInputValue(void)
 	{
 		// Range [-1.0f, 1.0f]
 		return 1.0f;

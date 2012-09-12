@@ -26,95 +26,12 @@ THE SOFTWARE
 #ifndef __OgrePrerequisites_H__
 #define __OgrePrerequisites_H__
 
-#include <assert.h>
+#include "CmPrerequisitesUtil.h"
 
-// Platform-specific stuff
-#include "OgrePlatform.h"
-
-#include "OgrePortMemory.h"
-
-// Needed for OGRE_WCHAR_T_STRINGS below
-#include <string>
-
-
-// configure memory tracking
-#if CM_DEBUG_MODE 
-#	if OGRE_MEMORY_TRACKER_DEBUG_MODE
-#		define OGRE_MEMORY_TRACKER 1
-#	else
-#		define OGRE_MEMORY_TRACKER 0
-#	endif
-#else
-#	if OGRE_MEMORY_TRACKER_RELEASE_MODE
-#		define OGRE_MEMORY_TRACKER 1
-#	else
-#		define OGRE_MEMORY_TRACKER 0
-#	endif
-#endif
-
-
-
+#define CM_MAX_TEXTURE_LAYERS 16
+#define CM_MAX_MULTIPLE_RENDER_TARGETS 8
 
 namespace CamelotEngine {
-    // Define ogre version
-    #define OGRE_VERSION_MAJOR 1
-    #define OGRE_VERSION_MINOR 7
-    #define OGRE_VERSION_PATCH 4
-	#define OGRE_VERSION_SUFFIX ""
-    #define OGRE_VERSION_NAME "Cthugha"
-
-    #define OGRE_VERSION    ((OGRE_VERSION_MAJOR << 16) | (OGRE_VERSION_MINOR << 8) | OGRE_VERSION_PATCH)
-
-    // define the real number values to be used
-    // default to use 'float' unless precompiler option set
-    #if OGRE_DOUBLE_PRECISION == 1
-		/** Software floating point type.
-		@note Not valid as a pointer to GPU buffers / parameters
-		*/
-        typedef double Real;
-    #else
-		/** Software floating point type.
-		@note Not valid as a pointer to GPU buffers / parameters
-		*/
-        typedef float Real;
-    #endif
-
-    #if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310 && !defined(STLPORT)
-	#   if CM_COMP_VER >= 430
-	#       define HashMap ::std::tr1::unordered_map
-	#		define HashSet ::std::tr1::unordered_set
-	#    else
-	#       define HashMap ::__gnu_cxx::hash_map
-	#       define HashSet ::__gnu_cxx::hash_set
-	#    endif
-    #else
-    #   if CM_COMPILER == CM_COMPILER_MSVC
-    #       if CM_COMP_VER >= 1600 // VC++ 10.0
-	#			define HashMap ::std::tr1::unordered_map
-	#           define HashSet ::std::tr1::unordered_set
-	#		elif CM_COMP_VER > 1300 && !defined(_STLP_MSVC)
-    #           define HashMap ::stdext::hash_map
-	#           define HashSet ::stdext::hash_set
-    #       else
-    #           define HashMap ::std::hash_map
-	#           define HashSet ::std::hash_set
-    #       endif
-    #   else
-    #       define HashMap ::std::hash_map
-	#       define HashSet ::std::hash_set
-    #   endif
-    #endif
-
-    /** In order to avoid finger-aches :)
-    */
-    typedef unsigned char uchar;
-    typedef unsigned short ushort;
-    typedef unsigned int uint;
-	typedef unsigned long ulong;
-
-
-	// Useful threading defines
-#include "OgreThreadDefines.h"
 
 // Pre-declare classes
 // Allows use of pointers in header files without including individual .h
@@ -166,11 +83,6 @@ namespace CamelotEngine {
     class VertexDeclaration;
 }
 
-/* Include all the standard header *after* all the configuration
-settings have been made.
-*/
-#include "OgreStdHeaders.h"
-
 /* Shared pointer typedefs*/
 namespace CamelotEngine
 {
@@ -200,48 +112,6 @@ namespace CamelotEngine
 
 }
 
-//for stl containter
-namespace CamelotEngine
-{ 
-
-
-	template <typename T, typename A = char > 
-	struct deque 
-	{ 
-		typedef typename std::deque<T> type;    
-	}; 
-
-	template <typename T, typename A = char > 
-	struct vector 
-	{ 
-		typedef typename std::vector<T> type;    
-	}; 
-
-	template <typename T, typename A = char > 
-	struct list 
-	{ 
-		typedef typename std::list<T> type;    
-	}; 
-
-	template <typename T, typename P = std::less<T>, typename A = char > 
-	struct set 
-	{ 
-		typedef typename std::set<T, P> type;    
-	}; 
-
-	template <typename K, typename V, typename P = std::less<K>, typename A = char > 
-	struct map 
-	{ 
-		typedef typename std::map<K, V, P> type; 
-	}; 
-
-	template <typename K, typename V, typename P = std::less<K>, typename A = char > 
-	struct multimap 
-	{ 
-		typedef typename std::multimap<K, V, P> type; 
-	}; 
-
-} // Ogre
 
 #endif // __OgrePrerequisites_H__
 

@@ -246,13 +246,13 @@ namespace CamelotEngine
 		static void initVendorStrings();
 
 		/// The number of world matrices available
-		ushort mNumWorldMatrices;
+		UINT16 mNumWorldMatrices;
 		/// The number of texture units available
-		ushort mNumTextureUnits;
+		UINT16 mNumTextureUnits;
 		/// The stencil buffer bit depth
-		ushort mStencilBufferBitDepth;
+		UINT16 mStencilBufferBitDepth;
 		/// The number of matrices available for hardware blending
-		ushort mNumVertexBlendMatrices;
+		UINT16 mNumVertexBlendMatrices;
 		/// Stores the capabilities flags.
 		int mCapabilities[CAPS_CATEGORY_COUNT];
 		/// Which categories are relevant
@@ -263,31 +263,31 @@ namespace CamelotEngine
 		String mRenderSystemName;
 
 		/// The number of floating-point constants vertex programs support
-		ushort mVertexProgramConstantFloatCount;           
+		UINT16 mVertexProgramConstantFloatCount;           
 		/// The number of integer constants vertex programs support
-		ushort mVertexProgramConstantIntCount;           
+		UINT16 mVertexProgramConstantIntCount;           
 		/// The number of boolean constants vertex programs support
-		ushort mVertexProgramConstantBoolCount;           
+		UINT16 mVertexProgramConstantBoolCount;           
 		/// The number of floating-point constants geometry programs support
-		ushort mGeometryProgramConstantFloatCount;           
+		UINT16 mGeometryProgramConstantFloatCount;           
 		/// The number of integer constants vertex geometry support
-		ushort mGeometryProgramConstantIntCount;           
+		UINT16 mGeometryProgramConstantIntCount;           
 		/// The number of boolean constants vertex geometry support
-		ushort mGeometryProgramConstantBoolCount;           
+		UINT16 mGeometryProgramConstantBoolCount;           
 		/// The number of floating-point constants fragment programs support
-		ushort mFragmentProgramConstantFloatCount;           
+		UINT16 mFragmentProgramConstantFloatCount;           
 		/// The number of integer constants fragment programs support
-		ushort mFragmentProgramConstantIntCount;           
+		UINT16 mFragmentProgramConstantIntCount;           
 		/// The number of boolean constants fragment programs support
-		ushort mFragmentProgramConstantBoolCount;
+		UINT16 mFragmentProgramConstantBoolCount;
 		/// The number of simultaneous render targets supported
-		ushort mNumMultiRenderTargets;
+		UINT16 mNumMultiRenderTargets;
 		/// The maximum point size
-		Real mMaxPointSize;
+		float mMaxPointSize;
 		/// Are non-POW2 textures feature-limited?
 		bool mNonPOW2TexturesLimited;
 		/// The number of vertex texture units supported
-		ushort mNumVertexTextureUnits;
+		UINT16 mNumVertexTextureUnits;
 		/// Are vertex texture units shared with fragment processor?
 		bool mVertexTextureUnitsShared;
 		/// The number of vertices a geometry program can emit in a single run
@@ -362,33 +362,33 @@ namespace CamelotEngine
 			return false;
 		}
 
-		void setNumWorldMatrices(ushort num)
+		void setNumWorldMatrices(UINT16 num)
 		{
 			mNumWorldMatrices = num;
 		}
 
-		void setNumTextureUnits(ushort num)
+		void setNumTextureUnits(UINT16 num)
 		{
 			mNumTextureUnits = num;
 		}
 
-		void setStencilBufferBitDepth(ushort num)
+		void setStencilBufferBitDepth(UINT16 num)
 		{
 			mStencilBufferBitDepth = num;
 		}
 
-		void setNumVertexBlendMatrices(ushort num)
+		void setNumVertexBlendMatrices(UINT16 num)
 		{
 			mNumVertexBlendMatrices = num;
 		}
 
 		/// The number of simultaneous render targets supported
-		void setNumMultiRenderTargets(ushort num)
+		void setNumMultiRenderTargets(UINT16 num)
 		{
 			mNumMultiRenderTargets = num;
 		}
 
-		ushort getNumWorldMatrices(void) const
+		UINT16 getNumWorldMatrices(void) const
 		{ 
 			return mNumWorldMatrices;
 		}
@@ -405,7 +405,7 @@ namespace CamelotEngine
 		to the fixed-function pipeline, the number available to the 
 		programmable pipeline depends on the shader model in use.
 		*/
-		ushort getNumTextureUnits(void) const
+		UINT16 getNumTextureUnits(void) const
 		{
 			return mNumTextureUnits;
 		}
@@ -416,20 +416,20 @@ namespace CamelotEngine
 		If hardware stencilling is not supported, the software will
 		provide an 8-bit software stencil.
 		*/
-		ushort getStencilBufferBitDepth(void) const
+		UINT16 getStencilBufferBitDepth(void) const
 		{
 			return mStencilBufferBitDepth;
 		}
 
 		/** Returns the number of matrices available to hardware vertex 
 		blending for this rendering system. */
-		ushort getNumVertexBlendMatrices(void) const
+		UINT16 getNumVertexBlendMatrices(void) const
 		{
 			return mNumVertexBlendMatrices;
 		}
 
 		/// The number of simultaneous render targets supported
-		ushort getNumMultiRenderTargets(void) const
+		UINT16 getNumMultiRenderTargets(void) const
 		{
 			return mNumMultiRenderTargets;
 		}
@@ -510,47 +510,47 @@ namespace CamelotEngine
 
 
 		/// The number of floating-point constants vertex programs support
-		ushort getVertexProgramConstantFloatCount(void) const
+		UINT16 getVertexProgramConstantFloatCount(void) const
 		{
 			return mVertexProgramConstantFloatCount;           
 		}
 		/// The number of integer constants vertex programs support
-		ushort getVertexProgramConstantIntCount(void) const
+		UINT16 getVertexProgramConstantIntCount(void) const
 		{
 			return mVertexProgramConstantIntCount;           
 		}
 		/// The number of boolean constants vertex programs support
-		ushort getVertexProgramConstantBoolCount(void) const
+		UINT16 getVertexProgramConstantBoolCount(void) const
 		{
 			return mVertexProgramConstantBoolCount;           
 		}
 		/// The number of floating-point constants geometry programs support
-		ushort getGeometryProgramConstantFloatCount(void) const
+		UINT16 getGeometryProgramConstantFloatCount(void) const
 		{
 			return mGeometryProgramConstantFloatCount;           
 		}
 		/// The number of integer constants geometry programs support
-		ushort getGeometryProgramConstantIntCount(void) const
+		UINT16 getGeometryProgramConstantIntCount(void) const
 		{
 			return mGeometryProgramConstantIntCount;           
 		}
 		/// The number of boolean constants geometry programs support
-		ushort getGeometryProgramConstantBoolCount(void) const
+		UINT16 getGeometryProgramConstantBoolCount(void) const
 		{
 			return mGeometryProgramConstantBoolCount;           
 		}
 		/// The number of floating-point constants fragment programs support
-		ushort getFragmentProgramConstantFloatCount(void) const
+		UINT16 getFragmentProgramConstantFloatCount(void) const
 		{
 			return mFragmentProgramConstantFloatCount;           
 		}
 		/// The number of integer constants fragment programs support
-		ushort getFragmentProgramConstantIntCount(void) const
+		UINT16 getFragmentProgramConstantIntCount(void) const
 		{
 			return mFragmentProgramConstantIntCount;           
 		}
 		/// The number of boolean constants fragment programs support
-		ushort getFragmentProgramConstantBoolCount(void) const
+		UINT16 getFragmentProgramConstantBoolCount(void) const
 		{
 			return mFragmentProgramConstantBoolCount;           
 		}
@@ -568,57 +568,57 @@ namespace CamelotEngine
 		}
 
 		/// The number of floating-point constants vertex programs support
-		void setVertexProgramConstantFloatCount(ushort c)
+		void setVertexProgramConstantFloatCount(UINT16 c)
 		{
 			mVertexProgramConstantFloatCount = c;           
 		}
 		/// The number of integer constants vertex programs support
-		void setVertexProgramConstantIntCount(ushort c)
+		void setVertexProgramConstantIntCount(UINT16 c)
 		{
 			mVertexProgramConstantIntCount = c;           
 		}
 		/// The number of boolean constants vertex programs support
-		void setVertexProgramConstantBoolCount(ushort c)
+		void setVertexProgramConstantBoolCount(UINT16 c)
 		{
 			mVertexProgramConstantBoolCount = c;           
 		}
 		/// The number of floating-point constants geometry programs support
-		void setGeometryProgramConstantFloatCount(ushort c)
+		void setGeometryProgramConstantFloatCount(UINT16 c)
 		{
 			mGeometryProgramConstantFloatCount = c;           
 		}
 		/// The number of integer constants geometry programs support
-		void setGeometryProgramConstantIntCount(ushort c)
+		void setGeometryProgramConstantIntCount(UINT16 c)
 		{
 			mGeometryProgramConstantIntCount = c;           
 		}
 		/// The number of boolean constants geometry programs support
-		void setGeometryProgramConstantBoolCount(ushort c)
+		void setGeometryProgramConstantBoolCount(UINT16 c)
 		{
 			mGeometryProgramConstantBoolCount = c;           
 		}
 		/// The number of floating-point constants fragment programs support
-		void setFragmentProgramConstantFloatCount(ushort c)
+		void setFragmentProgramConstantFloatCount(UINT16 c)
 		{
 			mFragmentProgramConstantFloatCount = c;           
 		}
 		/// The number of integer constants fragment programs support
-		void setFragmentProgramConstantIntCount(ushort c)
+		void setFragmentProgramConstantIntCount(UINT16 c)
 		{
 			mFragmentProgramConstantIntCount = c;           
 		}
 		/// The number of boolean constants fragment programs support
-		void setFragmentProgramConstantBoolCount(ushort c)
+		void setFragmentProgramConstantBoolCount(UINT16 c)
 		{
 			mFragmentProgramConstantBoolCount = c;           
 		}
 		/// Maximum point screen size in pixels
-		void setMaxPointSize(Real s)
+		void setMaxPointSize(float s)
 		{
 			mMaxPointSize = s;
 		}
 		/// Maximum point screen size in pixels
-		Real getMaxPointSize(void) const
+		float getMaxPointSize(void) const
 		{
 			return mMaxPointSize;
 		}
@@ -641,12 +641,12 @@ namespace CamelotEngine
 		}
 
 		/// Set the number of vertex texture units supported
-		void setNumVertexTextureUnits(ushort n)
+		void setNumVertexTextureUnits(UINT16 n)
 		{
 			mNumVertexTextureUnits = n;
 		}
 		/// Get the number of vertex texture units supported
-		ushort getNumVertexTextureUnits(void) const
+		UINT16 getNumVertexTextureUnits(void) const
 		{
 			return mNumVertexTextureUnits;
 		}

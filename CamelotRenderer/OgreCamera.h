@@ -34,13 +34,13 @@ THE SOFTWARE.
 #include "OgreString.h"
 
 // Matrices & Vectors
-#include "OgreMatrix4.h"
-#include "OgreVector3.h"
-#include "OgrePlane.h"
-#include "OgreQuaternion.h"
+#include "CmMatrix4.h"
+#include "CmVector3.h"
+#include "CmPlane.h"
+#include "CmQuaternion.h"
 #include "OgreCommon.h"
 #include "OgreFrustum.h"
-#include "OgreRay.h"
+#include "CmRay.h"
 
 
 namespace CamelotEngine {
@@ -93,7 +93,7 @@ namespace CamelotEngine {
         mutable Quaternion mDerivedOrientation;
         mutable Vector3 mDerivedPosition;
 
-        /// Real world orientation/position of the camera
+        /// float world orientation/position of the camera
         mutable Quaternion mRealOrientation;
         mutable Vector3 mRealPosition;
 
@@ -109,7 +109,7 @@ namespace CamelotEngine {
         @remarks
         Generalize camera class for the case, when viewing frustum doesn't cover all viewport.
         */
-        Real mWLeft, mWTop, mWRight, mWBottom;
+        float mWLeft, mWTop, mWRight, mWBottom;
         /// Is viewing window used.
         bool mWindowSet;
         /// Windowed viewport clip planes 
@@ -142,7 +142,7 @@ namespace CamelotEngine {
         virtual void setWindowImpl(void) const;
 
 		/** Helper function for forwardIntersect that intersects rays with canonical plane */
-		virtual vector<Vector4>::type getRayForwardIntersect(const Vector3& anchor, const Vector3 *dir, Real planeOffset) const;
+		virtual vector<Vector4>::type getRayForwardIntersect(const Vector3& anchor, const Vector3 *dir, float planeOffset) const;
 
     public:
         /** Standard constructor.
@@ -168,7 +168,7 @@ namespace CamelotEngine {
 
         /** Sets the camera's position.
         */
-        void setPosition(Real x, Real y, Real z);
+        void setPosition(float x, float y, float z);
 
         /** Sets the camera's position.
         */
@@ -191,7 +191,7 @@ namespace CamelotEngine {
                 Note that the 'up' vector for the camera will automatically be recalculated based on the
                 current 'up' vector (i.e. the roll will remain the same).
         */
-        void setDirection(Real x, Real y, Real z);
+        void setDirection(float x, float y, float z);
 
         /** Sets the camera's direction vector.
         */
@@ -230,7 +230,7 @@ namespace CamelotEngine {
             @param
                 z Co-ordinates of the point to look at.
         */
-        void lookAt(Real x, Real y, Real z);
+        void lookAt(float x, float y, float z);
 
         /** Rolls the camera anticlockwise, around its local z axis.
         */
@@ -324,13 +324,13 @@ namespace CamelotEngine {
         @param screenx, screeny The x and y position at which the ray should intersect the viewport, 
             in normalised screen coordinates [0,1]
         */
-        Ray getCameraToViewportRay(Real screenx, Real screeny) const;
+        Ray getCameraToViewportRay(float screenx, float screeny) const;
         /** Gets a world space ray as cast from the camera through a viewport position.
         @param screenx, screeny The x and y position at which the ray should intersect the viewport, 
             in normalised screen coordinates [0,1]
 		@param outRay Ray instance to populate with result
         */
-        void getCameraToViewportRay(Real screenx, Real screeny, Ray* outRay) const;
+        void getCameraToViewportRay(float screenx, float screeny, Ray* outRay) const;
 
         /** Sets the viewing window inside of viewport.
         @remarks
@@ -341,7 +341,7 @@ namespace CamelotEngine {
         @param Right Relative to Viewport - 0 corresponds to left edge, 1 - to right edge (default - 1).
         @param Bottom Relative to Viewport - 0 corresponds to top edge, 1 - to bottom edge (default - 1).
         */
-        virtual void setWindow (Real Left, Real Top, Real Right, Real Bottom);
+        virtual void setWindow (float Left, float Top, float Right, float Bottom);
         /// Cancel view window.
         virtual void resetWindow (void);
         /// Returns if a viewport window is being used
@@ -350,7 +350,7 @@ namespace CamelotEngine {
         const vector<Plane>::type& getWindowPlanes(void) const;
 
         /** Overridden from MovableObject */
-        Real getBoundingRadius(void) const;
+        float getBoundingRadius(void) const;
 		
         /** Get the last viewport which was attached to this camera. 
         @note This is not guaranteed to be the only viewport which is
@@ -407,11 +407,11 @@ namespace CamelotEngine {
 		const Plane& getFrustumPlane( unsigned short plane ) const;
 		/// @copydoc Frustum::projectSphere
 		bool projectSphere(const Sphere& sphere, 
-			Real* left, Real* top, Real* right, Real* bottom) const;
+			float* left, float* top, float* right, float* bottom) const;
 		/// @copydoc Frustum::getNearClipDistance
-		Real getNearClipDistance(void) const;
+		float getNearClipDistance(void) const;
 		/// @copydoc Frustum::getFarClipDistance
-		Real getFarClipDistance(void) const;
+		float getFarClipDistance(void) const;
 		/// @copydoc Frustum::getViewMatrix
 		const Matrix4& getViewMatrix(void) const;
 		/** Specialised version of getViewMatrix allowing caller to differentiate

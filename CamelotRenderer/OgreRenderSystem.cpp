@@ -345,7 +345,7 @@ namespace CamelotEngine {
     //---------------------------------------------------------------------
     void RenderSystem::_disableTextureUnitsFrom(size_t texUnit)
     {
-        size_t disableTo = OGRE_MAX_TEXTURE_LAYERS;
+        size_t disableTo = CM_MAX_TEXTURE_LAYERS;
         if (disableTo > mDisabledTexUnitsFrom)
             disableTo = mDisabledTexUnitsFrom;
         mDisabledTexUnitsFrom = texUnit;
@@ -434,7 +434,7 @@ namespace CamelotEngine {
         return static_cast< unsigned int >( mVertexCount );
     }
     //-----------------------------------------------------------------------
-	void RenderSystem::convertColourValue(const ColourValue& colour, uint32* pDest)
+	void RenderSystem::convertColourValue(const ColourValue& colour, UINT32* pDest)
 	{
 		*pDest = VertexElement::convertColourValue(colour, getColourVertexElementType());
 
@@ -507,7 +507,7 @@ namespace CamelotEngine {
 		mClipPlanesDirty = true;
 	}
 	//---------------------------------------------------------------------
-	void RenderSystem::addClipPlane (Real A, Real B, Real C, Real D)
+	void RenderSystem::addClipPlane (float A, float B, float C, float D)
 	{
 		addClipPlane(Plane(A, B, C, D));
 	}

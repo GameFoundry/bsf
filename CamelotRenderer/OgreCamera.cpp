@@ -27,10 +27,10 @@ THE SOFTWARE.
 */
 #include "OgreCamera.h"
 
-#include "OgreMath.h"
-#include "OgreMatrix3.h"
-#include "OgreAxisAlignedBox.h"
-#include "OgreSphere.h"
+#include "CmMath.h"
+#include "CmMatrix3.h"
+#include "CmAxisAlignedBox.h"
+#include "CmSphere.h"
 #include "OgreException.h"
 #include "OgreRenderSystem.h"
 
@@ -85,7 +85,7 @@ namespace CamelotEngine {
     }
 
     //-----------------------------------------------------------------------
-    void Camera::setPosition(Real x, Real y, Real z)
+    void Camera::setPosition(float x, float y, float z)
     {
         mPosition.x = x;
         mPosition.y = y;
@@ -124,7 +124,7 @@ namespace CamelotEngine {
     }
 
     //-----------------------------------------------------------------------
-    void Camera::setDirection(Real x, Real y, Real z)
+    void Camera::setDirection(float x, float y, float z)
     {
         setDirection(Vector3(x,y,z));
     }
@@ -225,7 +225,7 @@ namespace CamelotEngine {
     }
 
     //-----------------------------------------------------------------------
-    void Camera::lookAt( Real x, Real y, Real z )
+    void Camera::lookAt( float x, float y, float z )
     {
         Vector3 vTemp( x, y, z );
         this->lookAt(vTemp);
@@ -435,27 +435,19 @@ namespace CamelotEngine {
         return mRealOrientation * Vector3::UNIT_X;
     }
     //-----------------------------------------------------------------------
-	Ray Camera::getCameraToViewportRay(Real screenX, Real screenY) const
+	Ray Camera::getCameraToViewportRay(float screenX, float screenY) const
 	{
 		Ray ret;
 		getCameraToViewportRay(screenX, screenY, &ret);
 		return ret;
 	}
 	//---------------------------------------------------------------------
-    void Camera::getCameraToViewportRay(Real screenX, Real screenY, Ray* outRay) const
+    void Camera::getCameraToViewportRay(float screenX, float screenY, Ray* outRay) const
     {
 		Matrix4 inverseVP = (getProjectionMatrix() * getViewMatrix(true)).inverse();
 
-#if OGRE_NO_VIEWPORT_ORIENTATIONMODE == 0
-        // We need to convert screen point to our oriented viewport (temp solution)
-        Real tX = screenX; Real a = getOrientationMode() * Math::HALF_PI;
-        screenX = Math::Cos(a) * (tX-0.5f) + Math::Sin(a) * (screenY-0.5f) + 0.5f;
-        screenY = Math::Sin(a) * (tX-0.5f) + Math::Cos(a) * (screenY-0.5f) + 0.5f;
-        if ((int)getOrientationMode()&1) screenY = 1.f - screenY;
-#endif
-
-		Real nx = (2.0f * screenX) - 1.0f;
-		Real ny = 1.0f - (2.0f * screenY);
+		float nx = (2.0f * screenX) - 1.0f;
+		float ny = 1.0f - (2.0f * screenY);
 		Vector3 nearPoint(nx, ny, -1.f);
 		// Use midPoint rather than far point to avoid issues with infinite projection
 		Vector3 midPoint (nx, ny,  0.0f);
@@ -473,7 +465,7 @@ namespace CamelotEngine {
 		outRay->setDirection(rayDirection);
     } 
     // -------------------------------------------------------------------
-    void Camera::setWindow (Real Left, Real Top, Real Right, Real Bottom)
+    void Camera::setWindow (float Left, float Top, float Right, float Bottom)
     {
         mWLeft = Left;
         mWTop = Top;
@@ -495,16 +487,16 @@ namespace CamelotEngine {
             return;
 
         // Calculate general projection parameters
-        Real vpLeft, vpRight, vpBottom, vpTop;
+        float vpLeft, vpRight, vpBottom, vpTop;
         calcProjectionParameters(vpLeft, vpRight, vpBottom, vpTop);
 
-        Real vpWidth = vpRight - vpLeft;
-        Real vpHeight = vpTop - vpBottom;
+        float vpWidth = vpRight - vpLeft;
+        float vpHeight = vpTop - vpBottom;
 
-        Real wvpLeft   = vpLeft + mWLeft * vpWidth;
-        Real wvpRight  = vpLeft + mWRight * vpWidth;
-        Real wvpTop    = vpTop - mWTop * vpHeight;
-        Real wvpBottom = vpTop - mWBottom * vpHeight;
+        float wvpLeft   = vpLeft + mWLeft * vpWidth;
+        float wvpRight  = vpLeft + mWRight * vpWidth;
+        float wvpTop    = vpTop - mWTop * vpHeight;
+        float wvpBottom = vpTop - mWBottom * vpHeight;
 
         Vector3 vp_ul (wvpLeft, wvpTop, -mNearDist);
         Vector3 vp_ur (wvpRight, wvpTop, -mNearDist);
@@ -550,7 +542,7 @@ namespace CamelotEngine {
         return mWindowClipPlanes;
     }
     // -------------------------------------------------------------------
-    Real Camera::getBoundingRadius(void) const
+    float Camera::getBoundingRadius(void) const
     {
         // return a little bigger than the near distance
         // just to keep things just outside
@@ -640,7 +632,7 @@ namespace CamelotEngine {
 	}
 	//-----------------------------------------------------------------------
 	bool Camera::projectSphere(const Sphere& sphere, 
-		Real* left, Real* top, Real* right, Real* bottom) const
+		float* left, float* top, float* right, float* bottom) const
 	{
 		if (mCullFrustum)
 		{
@@ -652,7 +644,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	Real Camera::getNearClipDistance(void) const
+	float Camera::getNearClipDistance(void) const
 	{
 		if (mCullFrustum)
 		{
@@ -664,7 +656,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	Real Camera::getFarClipDistance(void) const
+	float Camera::getFarClipDistance(void) const
 	{
 		if (mCullFrustum)
 		{
@@ -711,7 +703,7 @@ namespace CamelotEngine {
 	//| coordinate system in which this is true.			|
 	//|_____________________________________________________|
 	//
-	vector<Vector4>::type Camera::getRayForwardIntersect(const Vector3& anchor, const Vector3 *dir, Real planeOffset) const
+	vector<Vector4>::type Camera::getRayForwardIntersect(const Vector3& anchor, const Vector3 *dir, float planeOffset) const
 	{
 		vector<Vector4>::type res;
 
@@ -723,20 +715,20 @@ namespace CamelotEngine {
 
 		// find how much the anchor point must be displaced in the plane's
 		// constant variable
-		Real delta = planeOffset - anchor.z;
+		float delta = planeOffset - anchor.z;
 
 		// now set the intersection point and note whether it is a 
 		// point at infinity or straddles infinity
 		unsigned int i;
 		for (i=0; i<4; i++)
 		{
-			Real test = dir[i].z * delta;
+			float test = dir[i].z * delta;
 			if (test == 0.0) {
 				vec[i] = dir[i];
 				infpt[i] = 1;
 			}
 			else {
-				Real lambda = delta / dir[i].z;
+				float lambda = delta / dir[i].z;
 				vec[i] = anchor + (lambda * dir[i]);
 				if(test < 0.0)
 					infpt[i] = 2;

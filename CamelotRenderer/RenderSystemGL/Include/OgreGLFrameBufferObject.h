@@ -38,11 +38,11 @@ namespace CamelotEngine {
     class _OgreGLExport GLFrameBufferObject
     {
     public:
-        GLFrameBufferObject(GLFBOManager *manager, uint fsaa);
+        GLFrameBufferObject(GLFBOManager *manager, UINT32 fsaa);
         ~GLFrameBufferObject();
         //void bindSurface(size_t attachment, RenderTarget *target);
         /** Bind a surface to a certain attachment point.
-            attachment: 0..OGRE_MAX_MULTIPLE_RENDER_TARGETS-1
+            attachment: 0..CM_MAX_MULTIPLE_RENDER_TARGETS-1
         */
         void bindSurface(size_t attachment, const GLSurfaceDesc &target);
         /** Unbind attachment
@@ -78,7 +78,7 @@ namespace CamelotEngine {
         GLSurfaceDesc mDepth;
         GLSurfaceDesc mStencil;
         // Arbitrary number of texture surfaces
-        GLSurfaceDesc mColour[OGRE_MAX_MULTIPLE_RENDER_TARGETS];
+        GLSurfaceDesc mColour[CM_MAX_MULTIPLE_RENDER_TARGETS];
 
 
 		/** Initialise object (find suitable depth and stencil format).

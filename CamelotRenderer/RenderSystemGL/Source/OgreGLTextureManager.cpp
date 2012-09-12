@@ -56,7 +56,7 @@ namespace CamelotEngine {
 		// Generate warning texture
 		size_t width = 8;
 		size_t height = 8;
-		uint32 *data = new uint32[width*height];		// 0xXXRRGGBB
+		UINT32 *data = new UINT32[width*height];		// 0xXXRRGGBB
 		// Yellow/black stripes
 		for(size_t y=0; y<height; ++y)
 		{

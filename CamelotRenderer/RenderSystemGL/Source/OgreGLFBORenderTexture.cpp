@@ -36,7 +36,7 @@ namespace CamelotEngine {
 
 //-----------------------------------------------------------------------------    
     GLFBORenderTexture::GLFBORenderTexture(GLFBOManager *manager, const String &name,
-        const GLSurfaceDesc &target, bool writeGamma, uint fsaa):
+        const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa):
         GLRenderTexture(name, target, writeGamma, fsaa),
         mFB(manager, fsaa)
     {
@@ -415,7 +415,7 @@ static const size_t depthBits[] =
     }
 
     GLFBORenderTexture *GLFBOManager::createRenderTexture(const String &name, 
-		const GLSurfaceDesc &target, bool writeGamma, uint fsaa)
+		const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa)
     {
         GLFBORenderTexture *retval = new GLFBORenderTexture(this, name, target, writeGamma, fsaa);
         return retval;
@@ -437,7 +437,7 @@ static const size_t depthBits[] =
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
     }
     
-    GLSurfaceDesc GLFBOManager::requestRenderBuffer(GLenum format, size_t width, size_t height, uint fsaa)
+    GLSurfaceDesc GLFBOManager::requestRenderBuffer(GLenum format, size_t width, size_t height, UINT32 fsaa)
     {
         GLSurfaceDesc retval;
         retval.buffer = 0; // Return 0 buffer if GL_NONE is requested

@@ -377,7 +377,7 @@ namespace CamelotEngine  {
         if(caps->hasCapability(RSC_NON_POWER_OF_2_TEXTURES))
             return value;
         else
-            return Bitwise::firstPO2From((uint32)value);
+            return Bitwise::firstPO2From((UINT32)value);
     }   
 
 	

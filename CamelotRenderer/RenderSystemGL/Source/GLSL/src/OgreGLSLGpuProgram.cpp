@@ -121,7 +121,7 @@ namespace CamelotEngine {
 	}
 
 	//-----------------------------------------------------------------------------
-	void GLSLGpuProgram::bindProgramParameters(GpuProgramParametersSharedPtr params, uint16 mask)
+	void GLSLGpuProgram::bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask)
 	{
 		// link can throw exceptions, ignore them at this point
 		try
@@ -148,7 +148,7 @@ namespace CamelotEngine {
 		
 	}
 	//-----------------------------------------------------------------------------
-	GLuint GLSLGpuProgram::getAttributeIndex(VertexElementSemantic semantic, uint index)
+	GLuint GLSLGpuProgram::getAttributeIndex(VertexElementSemantic semantic, UINT32 index)
 	{
 		// get link program - only call this in the context of bound program
 		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::getSingleton().getActiveLinkProgram();
@@ -165,7 +165,7 @@ namespace CamelotEngine {
 		
 	}
 	//-----------------------------------------------------------------------------
-	bool GLSLGpuProgram::isAttributeValid(VertexElementSemantic semantic, uint index)
+	bool GLSLGpuProgram::isAttributeValid(VertexElementSemantic semantic, UINT32 index)
 	{
 		// get link program - only call this in the context of bound program
 		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::getSingleton().getActiveLinkProgram();

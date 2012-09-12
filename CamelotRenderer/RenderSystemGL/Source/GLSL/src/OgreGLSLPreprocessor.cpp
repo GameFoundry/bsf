@@ -760,7 +760,7 @@ CPreprocessor::Token CPreprocessor::GetArgument (Token &oArg, bool iExpand)
             return Token (Token::TK_ERROR);
         }
 
-    uint len = oArg.Length;
+    UINT32 len = oArg.Length;
     while (true)
     {
         Token t = GetToken (iExpand);

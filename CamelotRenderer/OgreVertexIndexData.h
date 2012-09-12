@@ -257,7 +257,7 @@ namespace CamelotEngine {
 			VertexCacheProfiler(unsigned int cachesize = 16, CacheType cachetype = FIFO )
 				: size ( cachesize ), type ( cachetype ), tail (0), buffersize (0), hit (0), miss (0)
 			{
-				cache = (uint32*)malloc(sizeof(uint32) * size);
+				cache = (UINT32*)malloc(sizeof(UINT32) * size);
 			}
 
 			~VertexCacheProfiler()
@@ -274,7 +274,7 @@ namespace CamelotEngine {
 			unsigned int getSize() { return size; }
 		private:
 			unsigned int size;
-			uint32 *cache;
+			UINT32 *cache;
 			CacheType type;
 
 			unsigned int tail, buffersize;

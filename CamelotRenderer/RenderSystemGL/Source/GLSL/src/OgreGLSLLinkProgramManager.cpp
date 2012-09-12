@@ -104,19 +104,19 @@ namespace CamelotEngine {
 
 		// no active link program so find one or make a new one
 		// is there an active key?
-		uint64 activeKey = 0;
+		UINT64 activeKey = 0;
 
 		if (mActiveVertexGpuProgram)
 		{
-			activeKey = static_cast<uint64>(mActiveVertexGpuProgram->getProgramID()) << 32;
+			activeKey = static_cast<UINT64>(mActiveVertexGpuProgram->getProgramID()) << 32;
 		}
 		if (mActiveGeometryGpuProgram)
 		{
-			activeKey += static_cast<uint64>(mActiveGeometryGpuProgram->getProgramID()) << 16;
+			activeKey += static_cast<UINT64>(mActiveGeometryGpuProgram->getProgramID()) << 16;
 		}
 		if (mActiveFragmentGpuProgram)
 		{
-			activeKey += static_cast<uint64>(mActiveFragmentGpuProgram->getProgramID());
+			activeKey += static_cast<UINT64>(mActiveFragmentGpuProgram->getProgramID());
 		}
 
 		// only return a link program object if a vertex, geometry or fragment program exist

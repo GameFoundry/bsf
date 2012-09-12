@@ -38,10 +38,10 @@ namespace CamelotEngine {
 	*  @{
 	*/
 
-    typedef uint32 RGBA;
-    typedef uint32 ARGB;
-    typedef uint32 ABGR;
-	typedef uint32 BGRA;
+    typedef UINT32 RGBA;
+    typedef UINT32 ARGB;
+    typedef UINT32 ABGR;
+	typedef UINT32 BGRA;
 
     /** Class representing colour.
 	    @remarks
@@ -305,14 +305,14 @@ namespace CamelotEngine {
 		@param saturation Saturation level, [0,1]
 		@param brightness Brightness level, [0,1]
 		*/
-		void setHSB(Real hue, Real saturation, Real brightness);
+		void setHSB(float hue, float saturation, float brightness);
 
 		/** Convert the current colour to Hue, Saturation and Brightness values. 
 		@param hue Output hue value, scaled to the [0,1] range as opposed to the 0-360
 		@param saturation Output saturation level, [0,1]
 		@param brightness Output brightness level, [0,1]
 		*/
-		void getHSB(Real* hue, Real* saturation, Real* brightness) const;
+		void getHSB(float* hue, float* saturation, float* brightness) const;
 
 
 

@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "OgrePrerequisites.h"
 #include "OgreCommon.h"
 #include "OgreBlendMode.h"
-#include "OgreMatrix4.h"
+#include "CmMatrix4.h"
 #include "OgreString.h"
 #include "OgrePixelFormat.h"
 #include "OgreTexture.h"
@@ -291,7 +291,7 @@ protected:
         FilterOptions mMipFilter;
         ///Texture anisotropy
         unsigned int mMaxAniso;
-		/// Mipmap bias (always float, not Real)
+		/// Mipmap bias (always float, not float)
 		float mMipmapBias;
 
         bool mIsDefaultAniso;

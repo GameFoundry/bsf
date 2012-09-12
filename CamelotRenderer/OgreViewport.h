@@ -80,8 +80,8 @@ namespace CamelotEngine {
         */
         Viewport(
             RenderTarget* target,
-            Real left, Real top,
-            Real width, Real height,
+            float left, float top,
+            float width, float height,
             int ZOrder);
 
         /** Default destructor.
@@ -115,7 +115,7 @@ namespace CamelotEngine {
 		*/
 		void clear(unsigned int buffers = FBT_COLOUR | FBT_DEPTH,
 				   const ColourValue& colour = ColourValue::Black, 
-				   Real depth = 1.0f, unsigned short stencil = 0);
+				   float depth = 1.0f, unsigned short stencil = 0);
 
         /** Retrieves a pointer to the render target for this viewport.
         */
@@ -126,23 +126,23 @@ namespace CamelotEngine {
 		/** Gets one of the relative dimensions of the viewport,
             a value between 0.0 and 1.0.
         */
-        Real getLeft(void) const;
+        float getLeft(void) const;
 
         /** Gets one of the relative dimensions of the viewport, a value
             between 0.0 and 1.0.
         */
-        Real getTop(void) const;
+        float getTop(void) const;
 
         /** Gets one of the relative dimensions of the viewport, a value
             between 0.0 and 1.0.
         */
 
-        Real getWidth(void) const;
+        float getWidth(void) const;
         /** Gets one of the relative dimensions of the viewport, a value
             between 0.0 and 1.0.
         */
 
-        Real getHeight(void) const;
+        float getHeight(void) const;
         /** Gets one of the actual dimensions of the viewport, a value in
             pixels.
         */
@@ -175,7 +175,7 @@ namespace CamelotEngine {
                 represented as real values between 0 and 1. i.e. the full
                 target area is 0, 0, 1, 1.
         */
-        void setDimensions(Real left, Real top, Real width, Real height);
+        void setDimensions(float left, float top, float width, float height);
 
         /** Sets the initial background colour of the viewport (before
             rendering).

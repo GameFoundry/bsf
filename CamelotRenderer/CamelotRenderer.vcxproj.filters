@@ -19,12 +19,6 @@
     <Filter Include="Source Files\D3D9RenderSystem">
       <UniqueIdentifier>{5ab8878b-6adb-4f4a-84c4-9315abf782d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Math">
-      <UniqueIdentifier>{7b4cde3b-6ac1-46bc-aa5b-c642d1e86d27}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Math">
-      <UniqueIdentifier>{8eee0d37-16d4-4894-aa09-7103c1d2b9c4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\ForRemoval">
       <UniqueIdentifier>{f916bd59-03a7-42a7-9b9c-60abe94020bc}</UniqueIdentifier>
     </Filter>
@@ -100,42 +94,6 @@
     </ClInclude>
     <ClInclude Include="OgreDefaultHardwareBufferManager.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="asm_math.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreAxisAlignedBox.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreMath.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreMatrix3.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreMatrix4.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgrePlane.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreQuaternion.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreRay.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreSphere.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreVector2.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreVector3.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreVector4.h">
-      <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="OgreBitwise.h">
       <Filter>Header Files\ForRemoval</Filter>
@@ -540,33 +498,6 @@
     </ClCompile>
     <ClCompile Include="OgreDefaultHardwareBufferManager.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreMath.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreMatrix3.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreMatrix4.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="OgrePlane.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreQuaternion.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreVector2.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreVector3.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreVector4.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreAxisAlignedBox.cpp">
-      <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="OgreAlignedAllocator.cpp">
       <Filter>Source Files\ForRemoval</Filter>

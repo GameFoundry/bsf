@@ -43,7 +43,7 @@ THE SOFTWARE.
 #include "OgreRenderTarget.h"
 #include "OgreRenderTexture.h"
 #include "OgreGpuProgram.h"
-#include "OgrePlane.h"
+#include "CmPlane.h"
 
 namespace CamelotEngine
 {
@@ -55,7 +55,7 @@ namespace CamelotEngine
 	*/
 
 	typedef map< String, RenderTarget * >::type RenderTargetMap;
-	typedef multimap<uchar, RenderTarget * >::type RenderTargetPriorityMap;
+	typedef multimap<UINT8, RenderTarget * >::type RenderTargetPriorityMap;
 
 	class TextureManager;
 	/// Enum describing the ways to generate texture coordinates
@@ -585,7 +585,7 @@ namespace CamelotEngine
 		*/
 		virtual void _setSurfaceParams(const ColourValue &ambient,
 			const ColourValue &diffuse, const ColourValue &specular,
-			const ColourValue &emissive, Real shininess,
+			const ColourValue &emissive, float shininess,
 			TrackVertexColourType tracking = TVC_NONE) = 0;
 
 		/** Sets whether or not rendering points using OT_POINT_LIST will 
@@ -605,8 +605,8 @@ namespace CamelotEngine
 		you would set constant to 1, and linear and quadratic to 0. A
 		standard perspective attenuation would be 0, 1, 0 respectively.
 		*/
-		virtual void _setPointParameters(Real size, bool attenuationEnabled, 
-			Real constant, Real linear, Real quadratic, Real minSize, Real maxSize) = 0;
+		virtual void _setPointParameters(float size, bool attenuationEnabled, 
+			float constant, float linear, float quadratic, float minSize, float maxSize) = 0;
 
 
 		/**
@@ -872,7 +872,7 @@ namespace CamelotEngine
 		@param linearEnd Distance at which linear fog becomes completely opaque.The distance must be passed
 		as a parametric value between 0 and 1, with 0 being the near clipping plane, and 1 being the far clipping plane. Only applicable if mode is FOG_LINEAR.
 		*/
-		virtual void _setFog(FogMode mode = FOG_NONE, const ColourValue& colour = ColourValue::White, Real expDensity = 1.0, Real linearStart = 0.0, Real linearEnd = 1.0) = 0;
+		virtual void _setFog(FogMode mode = FOG_NONE, const ColourValue& colour = ColourValue::White, float expDensity = 1.0, float linearStart = 0.0, float linearEnd = 1.0) = 0;
 
 
 		/** The RenderSystem will keep a count of tris rendered, this resets the count. */
@@ -892,7 +892,7 @@ namespace CamelotEngine
 		@param colour The colour to convert
 		@param pDest Pointer to location to put the result.
 		*/
-		virtual void convertColourValue(const ColourValue& colour, uint32* pDest);
+		virtual void convertColourValue(const ColourValue& colour, UINT32* pDest);
 		/** Get the native VertexElementType for a compact 32-bit colour value
 		for this rendersystem.
 		*/
@@ -913,7 +913,7 @@ namespace CamelotEngine
 		projection matrix, this method allows each to implement their own correctly and pass
 		back a generic OGRE matrix for storage in the engine.
 		*/
-		virtual void _makeProjectionMatrix(const Radian& fovy, Real aspect, Real nearPlane, Real farPlane, 
+		virtual void _makeProjectionMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
 			Matrix4& dest, bool forGpuProgram = false) = 0;
 
 		/** Builds a perspective projection matrix for the case when frustum is
@@ -922,15 +922,15 @@ namespace CamelotEngine
 		Viewport coordinates are in camera coordinate frame, i.e. camera is 
 		at the origin.
 		*/
-		virtual void _makeProjectionMatrix(Real left, Real right, Real bottom, Real top, 
-			Real nearPlane, Real farPlane, Matrix4& dest, bool forGpuProgram = false) = 0;
+		virtual void _makeProjectionMatrix(float left, float right, float bottom, float top, 
+			float nearPlane, float farPlane, Matrix4& dest, bool forGpuProgram = false) = 0;
 		/** Builds an orthographic projection matrix suitable for this render system.
 		@remarks
 		Because different APIs have different requirements (some incompatible) for the
 		projection matrix, this method allows each to implement their own correctly and pass
 		back a generic OGRE matrix for storage in the engine.
 		*/
-		virtual void _makeOrthoMatrix(const Radian& fovy, Real aspect, Real nearPlane, Real farPlane, 
+		virtual void _makeOrthoMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
 			Matrix4& dest, bool forGpuProgram = false) = 0;
 
 		/** Update a perspective projection matrix to use 'oblique depth projection'.
@@ -1015,7 +1015,7 @@ namespace CamelotEngine
 		and the inverse of them will happen for back faces (keep remains the same).
 		*/
 		virtual void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
-			uint32 refValue = 0, uint32 mask = 0xFFFFFFFF, 
+			UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
 			StencilOperation stencilFailOp = SOP_KEEP, 
 			StencilOperation depthFailOp = SOP_KEEP,
 			StencilOperation passOp = SOP_KEEP, 
@@ -1074,7 +1074,7 @@ namespace CamelotEngine
 		@param variabilityMask A mask of GpuParamVariability identifying which params need binding
 		*/
 		virtual void bindGpuProgramParameters(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, uint16 variabilityMask) = 0;
+			GpuProgramParametersSharedPtr params, UINT16 variabilityMask) = 0;
 
 		/** Only binds Gpu program parameters used for passes that have more than one iteration rendering
 		*/
@@ -1095,7 +1095,7 @@ namespace CamelotEngine
 		/** Add a user clipping plane. */
 		virtual void addClipPlane (const Plane &p);
 		/** Add a user clipping plane. */
-		virtual void addClipPlane (Real A, Real B, Real C, Real D);
+		virtual void addClipPlane (float A, float B, float C, float D);
 
 		/** Clears the user clipping region.
 		*/
@@ -1147,7 +1147,7 @@ namespace CamelotEngine
 		*/
 		virtual void clearFrameBuffer(unsigned int buffers, 
 			const ColourValue& colour = ColourValue::Black, 
-			Real depth = 1.0f, unsigned short stencil = 0) = 0;
+			float depth = 1.0f, unsigned short stencil = 0) = 0;
 		/** Returns the horizontal texel offset value required for mapping 
 		texel origins to pixel origins in this rendersystem.
 		@remarks
@@ -1157,7 +1157,7 @@ namespace CamelotEngine
 		required to map the origin of a texel to the origin of a pixel in
 		the horizontal direction.
 		*/
-		virtual Real getHorizontalTexelOffset(void) = 0;
+		virtual float getHorizontalTexelOffset(void) = 0;
 		/** Returns the vertical texel offset value required for mapping 
 		texel origins to pixel origins in this rendersystem.
 		@remarks
@@ -1167,7 +1167,7 @@ namespace CamelotEngine
 		required to map the origin of a texel to the origin of a pixel in
 		the vertical direction.
 		*/
-		virtual Real getVerticalTexelOffset(void) = 0;
+		virtual float getVerticalTexelOffset(void) = 0;
 
 		/** Gets the minimum (closest) depth value to be used when rendering
 		using identity transforms.
@@ -1177,7 +1177,7 @@ namespace CamelotEngine
 		rendersystem. This method lets you retrieve the correct value.
 		@see Renderable::getUseIdentityView, Renderable::getUseIdentityProjection
 		*/
-		virtual Real getMinimumDepthInputValue(void) = 0;
+		virtual float getMinimumDepthInputValue(void) = 0;
 		/** Gets the maximum (farthest) depth value to be used when rendering
 		using identity transforms.
 		@remarks
@@ -1186,7 +1186,7 @@ namespace CamelotEngine
 		rendersystem. This method lets you retrieve the correct value.
 		@see Renderable::getUseIdentityView, Renderable::getUseIdentityProjection
 		*/
-		virtual Real getMaximumDepthInputValue(void) = 0;
+		virtual float getMaximumDepthInputValue(void) = 0;
 		/** set the current multi pass count value.  This must be set prior to 
 		calling _render() if multiple renderings of the same pass state are 
 		required.
@@ -1339,7 +1339,7 @@ namespace CamelotEngine
 		size_t mVertexCount;
 
 		/// Saved manual colour blends
-		ColourValue mManualBlendColours[OGRE_MAX_TEXTURE_LAYERS][2];
+		ColourValue mManualBlendColours[CM_MAX_TEXTURE_LAYERS][2];
 
 		bool mInvertVertexWinding;
 

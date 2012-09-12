@@ -52,7 +52,7 @@ THE SOFTWARE.
 */
 #define OGRE_PRETEND_TEXTURE_UNITS 0
 
-/** If set to 1, Real is typedef'ed to double. Otherwise, Real is typedef'ed
+/** If set to 1, float is typedef'ed to double. Otherwise, float is typedef'ed
     to float. Setting this allows you to perform mathematical operations in the
 	CPU (Quaternion, Vector3 etc) with more precision, but bear in mind that the
 	GPU still operates in single-precision mode.
@@ -67,7 +67,7 @@ THE SOFTWARE.
 
 /** Define max number of texture layers allowed per pass on any card.
 */
-#define OGRE_MAX_TEXTURE_LAYERS 16
+#define CM_MAX_TEXTURE_LAYERS 16
 
 /** Define max number of lights allowed per pass.
 */
@@ -116,7 +116,7 @@ THE SOFTWARE.
 #endif
 /** Define max number of multiple render targets (MRTs) to render to at once.
 */
-#define OGRE_MAX_MULTIPLE_RENDER_TARGETS 8
+#define CM_MAX_MULTIPLE_RENDER_TARGETS 8
 
 /** Support for multithreading, there are 3 options
 

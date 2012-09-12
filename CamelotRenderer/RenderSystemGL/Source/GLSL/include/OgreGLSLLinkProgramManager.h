@@ -54,7 +54,7 @@ namespace CamelotEngine {
 
 	private:
 	
-		typedef map<uint64, GLSLLinkProgram*>::type LinkProgramMap;
+		typedef map<UINT64, GLSLLinkProgram*>::type LinkProgramMap;
 		typedef LinkProgramMap::iterator LinkProgramIterator;
 
 		/// container holding previously created program objects 

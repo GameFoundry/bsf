@@ -27,8 +27,8 @@ THE SOFTWARE.
 */
 #include "OgreGpuProgramParams.h"
 //#include "OgreHighLevelGpuProgram.h"
-#include "OgreVector3.h"
-#include "OgreVector4.h"
+#include "CmVector3.h"
+#include "CmVector4.h"
 #include "OgreRenderSystemCapabilities.h"
 #include "OgreStringConverter.h"
 #include "OgreException.h"
@@ -260,7 +260,7 @@ namespace CamelotEngine
 
 		// not used
 		def.logicalIndex = 0;
-		def.variability = (uint16)GPV_GLOBAL;
+		def.variability = (UINT16)GPV_GLOBAL;
 
 		if (def.isFloat())
 		{
@@ -362,7 +362,7 @@ namespace CamelotEngine
 		return mNamedConstants;
 	}
 	//---------------------------------------------------------------------
-	void GpuSharedParameters::setNamedConstant(const String& name, Real val)
+	void GpuSharedParameters::setNamedConstant(const String& name, float val)
 	{
 		setNamedConstant(name, &val, 1);
 	}
@@ -668,7 +668,7 @@ namespace CamelotEngine
 		setConstant(index, vec.ptr(), 1);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setConstant(size_t index, Real val)
+	void GpuProgramParameters::setConstant(size_t index, float val)
 	{
 		setConstant(index, Vector4(val, 0.0f, 0.0f, 0.0f));
 	}
@@ -769,7 +769,7 @@ namespace CamelotEngine
 		_writeRawConstants(physicalIndex, vec.ptr(), std::min(count, (size_t)4));
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, Real val)
+	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, float val)
 	{
 		_writeRawConstants(physicalIndex, &val, 1);
 	}
@@ -860,7 +860,7 @@ namespace CamelotEngine
 		memcpy(dest, &mIntConstants[physicalIndex], sizeof(int) * count);
 	}
 	//---------------------------------------------------------------------
-	uint16 GpuProgramParameters::deriveVariability(GpuProgramParameters::AutoConstantType act)
+	UINT16 GpuProgramParameters::deriveVariability(GpuProgramParameters::AutoConstantType act)
 	{
 		switch(act)
 		{
@@ -927,7 +927,7 @@ namespace CamelotEngine
 		case ACT_TEXTURE_MATRIX:
 		case ACT_LOD_CAMERA_POSITION:
 
-			return (uint16)GPV_GLOBAL;
+			return (UINT16)GPV_GLOBAL;
 
 		case ACT_WORLD_MATRIX:
 		case ACT_INVERSE_WORLD_MATRIX:
@@ -948,7 +948,7 @@ namespace CamelotEngine
 		case ACT_CUSTOM:
 		case ACT_ANIMATION_PARAMETRIC:
 
-			return (uint16)GPV_PER_OBJECT;
+			return (UINT16)GPV_PER_OBJECT;
 
 		case ACT_LIGHT_POSITION_OBJECT_SPACE:
 		case ACT_LIGHT_DIRECTION_OBJECT_SPACE:
@@ -961,7 +961,7 @@ namespace CamelotEngine
 		case ACT_SPOTLIGHT_WORLDVIEWPROJ_MATRIX:
 
 			// These depend on BOTH lights and objects
-			return ((uint16)GPV_PER_OBJECT) | ((uint16)GPV_LIGHTS);
+			return ((UINT16)GPV_PER_OBJECT) | ((UINT16)GPV_LIGHTS);
 
 		case ACT_LIGHT_COUNT:
 		case ACT_LIGHT_DIFFUSE_COLOUR:
@@ -997,27 +997,27 @@ namespace CamelotEngine
 		case ACT_SPOTLIGHT_VIEWPROJ_MATRIX_ARRAY:
 		case ACT_LIGHT_CUSTOM:
 
-			return (uint16)GPV_LIGHTS;
+			return (UINT16)GPV_LIGHTS;
 
 		case ACT_DERIVED_LIGHT_DIFFUSE_COLOUR:
 		case ACT_DERIVED_LIGHT_SPECULAR_COLOUR:
 		case ACT_DERIVED_LIGHT_DIFFUSE_COLOUR_ARRAY:
 		case ACT_DERIVED_LIGHT_SPECULAR_COLOUR_ARRAY:
 
-			return ((uint16)GPV_GLOBAL | (uint16)GPV_LIGHTS);
+			return ((UINT16)GPV_GLOBAL | (UINT16)GPV_LIGHTS);
 
 		case ACT_PASS_ITERATION_NUMBER:
 
-			return (uint16)GPV_PASS_ITERATION_NUMBER;
+			return (UINT16)GPV_PASS_ITERATION_NUMBER;
 
 		default:
-			return (uint16)GPV_GLOBAL;
+			return (UINT16)GPV_GLOBAL;
 		};
 
 	}
 	//---------------------------------------------------------------------
 	GpuLogicalIndexUse* GpuProgramParameters::_getFloatConstantLogicalIndexUse(
-		size_t logicalIndex, size_t requestedSize, uint16 variability)
+		size_t logicalIndex, size_t requestedSize, UINT16 variability)
 	{
 		if (mFloatLogicalToPhysical == nullptr)
 			return 0;
@@ -1122,7 +1122,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------()
-	GpuLogicalIndexUse* GpuProgramParameters::_getIntConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, uint16 variability)
+	GpuLogicalIndexUse* GpuProgramParameters::_getIntConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, UINT16 variability)
 	{
 		if (mIntLogicalToPhysical == nullptr)
 			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
@@ -1229,14 +1229,14 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------------
 	size_t GpuProgramParameters::_getFloatConstantPhysicalIndex(
-		size_t logicalIndex, size_t requestedSize, uint16 variability) 
+		size_t logicalIndex, size_t requestedSize, UINT16 variability) 
 	{
 		GpuLogicalIndexUse* indexUse = _getFloatConstantLogicalIndexUse(logicalIndex, requestedSize, variability);
 		return indexUse ? indexUse->physicalIndex : 0;
 	}
 	//-----------------------------------------------------------------------------
 	size_t GpuProgramParameters::_getIntConstantPhysicalIndex(
-		size_t logicalIndex, size_t requestedSize, uint16 variability)
+		size_t logicalIndex, size_t requestedSize, UINT16 variability)
 	{
 		GpuLogicalIndexUse* indexUse = _getIntConstantLogicalIndexUse(logicalIndex, requestedSize, variability);
 		return indexUse ? indexUse->physicalIndex : 0;
@@ -1349,7 +1349,7 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------------
 	void GpuProgramParameters::_setRawAutoConstant(size_t physicalIndex, 
-		AutoConstantType acType, size_t extraInfo, uint16 variability, size_t elementSize)
+		AutoConstantType acType, size_t extraInfo, UINT16 variability, size_t elementSize)
 	{
 		// update existing index if it exists
 		bool found = false;
@@ -1374,7 +1374,7 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setAutoConstant(size_t index, AutoConstantType acType, uint16 extraInfo1, uint16 extraInfo2)
+	void GpuProgramParameters::setAutoConstant(size_t index, AutoConstantType acType, UINT16 extraInfo1, UINT16 extraInfo2)
 	{
 		size_t extraInfo = (size_t)extraInfo1 | ((size_t)extraInfo2) << 16;
 
@@ -1393,7 +1393,7 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------------
 	void GpuProgramParameters::_setRawAutoConstantReal(size_t physicalIndex, 
-		AutoConstantType acType, Real rData, uint16 variability, size_t elementSize)
+		AutoConstantType acType, float rData, UINT16 variability, size_t elementSize)
 	{
 		// update existing index if it exists
 		bool found = false;
@@ -1472,7 +1472,7 @@ namespace CamelotEngine
 		return mAutoConstants.begin();
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setAutoConstantReal(size_t index, AutoConstantType acType, Real rData)
+	void GpuProgramParameters::setAutoConstantReal(size_t index, AutoConstantType acType, float rData)
 	{
 		// Get auto constant definition for sizing
 		const AutoConstantDefinition* autoDef = getAutoConstantDefinition(acType);
@@ -1488,7 +1488,7 @@ namespace CamelotEngine
 		_setRawAutoConstantReal(indexUse->physicalIndex, acType, rData, indexUse->variability, sz);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setNamedConstant(const String& name, Real val)
+	void GpuProgramParameters::setNamedConstant(const String& name, float val)
 	{
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 
@@ -1605,7 +1605,7 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------------
 	void GpuProgramParameters::setNamedAutoConstantReal(const String& name, 
-		AutoConstantType acType, Real rData)
+		AutoConstantType acType, float rData)
 	{
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 
@@ -1622,7 +1622,7 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------------
 	void GpuProgramParameters::setNamedAutoConstant(const String& name, 
-		AutoConstantType acType, uint16 extraInfo1, uint16 extraInfo2)
+		AutoConstantType acType, UINT16 extraInfo1, UINT16 extraInfo2)
 	{
 		size_t extraInfo = (size_t)extraInfo1 | ((size_t)extraInfo2) << 16;
 
@@ -1642,12 +1642,12 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------------
-	void GpuProgramParameters::setConstantFromTime(size_t index, Real factor)
+	void GpuProgramParameters::setConstantFromTime(size_t index, float factor)
 	{
 		setAutoConstantReal(index, ACT_TIME, factor);
 	}
 	//---------------------------------------------------------------------------
-	void GpuProgramParameters::setNamedConstantFromTime(const String& name, Real factor)
+	void GpuProgramParameters::setNamedConstantFromTime(const String& name, float factor)
 	{
 		setNamedAutoConstantReal(name, ACT_TIME, factor);
 	}

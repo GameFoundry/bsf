@@ -60,7 +60,7 @@ TOMORROW:
 Other notes:
  - Search for all remaining "TODO PORT" comments and fix them
  - Make sure to remove all ogre memory allocators and memory category bullshit (Possibly replace with Camelot versions?)
- - Remove Ogre::String and Ogre::Real (Possibly replace with Camelot versions?)
+ - Remove Ogre::String and Ogre::float (Possibly replace with Camelot versions?)
  - Ogre::ColourValue -> CamelotEngine::Color (Other struct names are okay for the most part)
  - Port all math methods to Camelot
  - Rename all macros and other OGRE references to CM

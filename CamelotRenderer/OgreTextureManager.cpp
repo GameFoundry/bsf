@@ -56,9 +56,9 @@ namespace CamelotEngine {
 
     }
     //-----------------------------------------------------------------------
-    TexturePtr TextureManager::create(TextureType texType, uint width, uint height, uint depth, int numMipmaps,
+    TexturePtr TextureManager::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
         PixelFormat format, int usage, bool hwGamma, 
-		uint fsaa, const String& fsaaHint)
+		UINT32 fsaa, const String& fsaaHint)
     {
         TexturePtr ret = TexturePtr(createImpl());
         ret->setTextureType(texType);
@@ -75,27 +75,27 @@ namespace CamelotEngine {
 		return ret;
     }
     //-----------------------------------------------------------------------
-    void TextureManager::setPreferredIntegerBitDepth(ushort bits)
+    void TextureManager::setPreferredIntegerBitDepth(UINT16 bits)
     {
         mPreferredIntegerBitDepth = bits;
     }
     //-----------------------------------------------------------------------
-    ushort TextureManager::getPreferredIntegerBitDepth(void) const
+    UINT16 TextureManager::getPreferredIntegerBitDepth(void) const
     {
         return mPreferredIntegerBitDepth;
     }
     //-----------------------------------------------------------------------
-    void TextureManager::setPreferredFloatBitDepth(ushort bits)
+    void TextureManager::setPreferredFloatBitDepth(UINT16 bits)
     {
         mPreferredFloatBitDepth = bits;
     }
     //-----------------------------------------------------------------------
-    ushort TextureManager::getPreferredFloatBitDepth(void) const
+    UINT16 TextureManager::getPreferredFloatBitDepth(void) const
     {
         return mPreferredFloatBitDepth;
     }
     //-----------------------------------------------------------------------
-    void TextureManager::setPreferredBitDepths(ushort integerBits, ushort floatBits)
+    void TextureManager::setPreferredBitDepths(UINT16 integerBits, UINT16 floatBits)
     {
         mPreferredIntegerBitDepth = integerBits;
         mPreferredFloatBitDepth = floatBits;

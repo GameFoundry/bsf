@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreRenderSystemCapabilities.h"
 #include "ATI_FS_GLGpuProgram.h"
 
-using namespace Ogre;
+using namespace CamelotEngine;
 
 
 ATI_FS_GLGpuProgram::ATI_FS_GLGpuProgram() :
@@ -61,7 +61,7 @@ void ATI_FS_GLGpuProgram::unbindProgram(void)
 }
 
 
-void ATI_FS_GLGpuProgram::bindProgramParameters(GpuProgramParametersSharedPtr params, uint16 mask)
+void ATI_FS_GLGpuProgram::bindProgramParameters(GpuProgramParametersSharedPtr params, CamelotEngine::UINT16 mask)
 {
 	// only supports float constants
 	GpuLogicalBufferStructPtr floatStruct = params->getFloatLogicalBufferStruct();

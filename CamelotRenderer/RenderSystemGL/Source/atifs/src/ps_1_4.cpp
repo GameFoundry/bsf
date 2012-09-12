@@ -1206,7 +1206,7 @@ size_t PS_1_4::getMachineInst( size_t Idx)
 }
 
 
-void PS_1_4::addMachineInst(const PhaseType phase, const uint inst)
+void PS_1_4::addMachineInst(const PhaseType phase, const UINT32 inst)
 {
 	switch(phase) {
 
@@ -1259,7 +1259,7 @@ bool PS_1_4::expandMacro(const MacroRegModify & MacroMod)
 	RegModOffset * regmod;
 
 	// set source and destination registers in macro expansion
-	for (uint i = 0; i < MacroMod.RegModSize; i++) {
+	for (UINT32 i = 0; i < MacroMod.RegModSize; i++) {
 		regmod = &MacroMod.RegMods[i];
 		MacroMod.Macro[regmod->MacroOffset].mID = regmod->RegisterBase + mOpParrams[regmod->OpParramsIndex].Arg;
 
@@ -1680,14 +1680,14 @@ bool PS_1_4::Pass2scan(const TokenInst * Tokens, const size_t size)
 	// execute TokenInstructions to build MachineInstructions
 	bool passed = true;
 	SymbolDef* cursymboldef;
-	uint ActiveNTTRuleID;
+	UINT32 ActiveNTTRuleID;
 
 	clearMachineInstState();
 
 
 	// iterate through all the tokens and build machine instruction
 	// for each machine instruction need: optype, opinst, and up to 5 parameters
-	for(uint i = 0; i < size; i++) {
+	for(UINT32 i = 0; i < size; i++) {
 		// lookup instruction type in library
 
 		cursymboldef = &mSymbolTypeLib[Tokens[i].mID];
@@ -2071,7 +2071,7 @@ void PS_1_4::test()
 // **************************************************************
 }
 
-void PS_1_4::testCompile(char* testname, char* teststr, SymbolID* testresult, uint testresultsize, GLuint* MachinInstResults, uint MachinInstResultsSize)
+void PS_1_4::testCompile(char* testname, char* teststr, SymbolID* testresult, UINT32 testresultsize, GLuint* MachinInstResults, UINT32 MachinInstResultsSize)
 {
 
 	char passed[] = "PASSED\n";
@@ -2084,16 +2084,16 @@ void PS_1_4::testCompile(char* testname, char* teststr, SymbolID* testresult, ui
 	bool compiled = compile(teststr);
 	fprintf(fp, "  Pass 1 Lines scaned: %d, Tokens produced: %d out of %d: %s",
 		mCurrentLine, mTokenInstructions.size(), testresultsize,
-		(mTokenInstructions.size() == (uint)testresultsize) ? passed : failed);
+		(mTokenInstructions.size() == (UINT32)testresultsize) ? passed : failed);
 
 	fprintf(fp, "\n  Validating Pass 1:\n");
 
 	fprintf(fp, "\n  Tokens:\n");
-    uint i;
+    UINT32 i;
 	for(i = 0; i<(mTokenInstructions.size()); i++) {
 		fprintf(fp,"    Token[%d] [%s] %d: [%s] %d: %s", i, getTypeDefText(mTokenInstructions[i].mID),
 			mTokenInstructions[i].mID, getTypeDefText(testresult[i]), testresult[i],
-			(mTokenInstructions[i].mID == (uint)testresult[i]) ? passed : failed);
+			(mTokenInstructions[i].mID == (UINT32)testresult[i]) ? passed : failed);
 	}
 
 	if(MachinInstResults != NULL) {

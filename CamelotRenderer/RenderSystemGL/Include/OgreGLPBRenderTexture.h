@@ -39,7 +39,7 @@ namespace CamelotEngine {
     class _OgreGLExport GLPBRenderTexture: public GLRenderTexture
     {
     public:
-        GLPBRenderTexture(GLPBRTTManager *manager, const String &name, const GLSurfaceDesc &target, bool writeGamma, uint fsaa);
+        GLPBRenderTexture(GLPBRTTManager *manager, const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
         virtual ~GLPBRenderTexture();
         
         virtual void getCustomAttribute(const String& name, void* pData);
@@ -59,7 +59,7 @@ namespace CamelotEngine {
         /** @copydoc GLRTTManager::createRenderTexture
         */
         virtual RenderTexture *createRenderTexture(const String &name, 
-			const GLSurfaceDesc &target, bool writeGamma, uint fsaa);
+			const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
         
          /** @copydoc GLRTTManager::checkFormat
         */
