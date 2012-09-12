@@ -26,10 +26,10 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmRenderTarget.h"
-#include "OgreStringConverter.h"
+#include "CmStringConverter.h"
 
 #include "CmViewport.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
 

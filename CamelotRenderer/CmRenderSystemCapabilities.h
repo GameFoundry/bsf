@@ -29,9 +29,9 @@ THE SOFTWARE.
 #define __RenderSystemCapabilities__ 1
 
 // Precompiler options
-#include "OgrePrerequisites.h"
-#include "OgreString.h"
-#include "OgreStringConverter.h"
+#include "CmPrerequisites.h"
+#include "CmString.h"
+#include "CmStringConverter.h"
 
 // Because there are more than 32 possible Capabilities, more than 1 int is needed to store them all.
 // In fact, an array of integers is used to store capabilities. However all the capabilities are defined in the single

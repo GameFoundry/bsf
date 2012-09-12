@@ -65,51 +65,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OgreBitwise.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreException.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreHeaderPrefix.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreHeaderSuffix.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgrePrerequisites.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreSingleton.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreString.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreStringConverter.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreRenderOperation.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreBlendMode.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreColourValue.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreCommon.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreImageResampler.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="OgrePixelFormat.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreWindowEventUtilities.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="CmRenderSystemFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -184,9 +139,6 @@
     </ClInclude>
     <ClInclude Include="RenderSystemGL\Include\CmGLRenderSystemFactory.h">
       <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OgreConfigOptionMap.h">
-      <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
     <ClInclude Include="CmCamera.h">
       <Filter>Header Files</Filter>
@@ -443,6 +395,54 @@
     <ClInclude Include="RenderSystemGL\Include\CmWin32Window.h">
       <Filter>RenderSystemGL\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CmBitwise.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="CmConfigOptionMap.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="CmException.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="CmHeaderPrefix.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="CmHeaderSuffix.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="CmPrerequisites.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="CmRenderOperation.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="CmSingleton.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="CmString.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="CmStringConverter.h">
+      <Filter>Header Files\ForRemoval</Filter>
+    </ClInclude>
+    <ClInclude Include="CmBlendMode.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="CmColourValue.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="CmCommon.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="CmImageResampler.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="CmPixelFormat.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="CmWindowEventUtilities.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -450,24 +450,6 @@
     </ClCompile>
     <ClCompile Include="CamelotRenderer.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreException.cpp">
-      <Filter>Source Files\ForRemoval</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreString.cpp">
-      <Filter>Source Files\ForRemoval</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreStringConverter.cpp">
-      <Filter>Source Files\ForRemoval</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreColourValue.cpp">
-      <Filter>Source Files\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="OgrePixelFormat.cpp">
-      <Filter>Source Files\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="OgreWindowEventUtilities.cpp">
-      <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="CmD3D9RenderSystemFactory.cpp">
       <Filter>Source Files\D3D9RenderSystem</Filter>
@@ -795,6 +777,24 @@
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\CmWin32Window.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmException.cpp">
+      <Filter>Source Files\ForRemoval</Filter>
+    </ClCompile>
+    <ClCompile Include="CmString.cpp">
+      <Filter>Source Files\ForRemoval</Filter>
+    </ClCompile>
+    <ClCompile Include="CmStringConverter.cpp">
+      <Filter>Source Files\ForRemoval</Filter>
+    </ClCompile>
+    <ClCompile Include="CmColourValue.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="CmPixelFormat.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="CmWindowEventUtilities.cpp">
+      <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

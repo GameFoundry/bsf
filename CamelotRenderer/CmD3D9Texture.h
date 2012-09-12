@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmD3D9Prerequisites.h"
 #include "CmTexture.h"
 #include "CmRenderTexture.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmD3D9HardwarePixelBuffer.h"
 #include "CmD3D9Resource.h"
 

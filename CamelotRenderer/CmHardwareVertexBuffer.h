@@ -29,9 +29,9 @@ THE SOFTWARE.
 #define __HardwareVertexBuffer__
 
 // Precompiler options
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "OgreColourValue.h"
+#include "CmColourValue.h"
 
 namespace CamelotEngine {
 	class HardwareBufferManagerBase;

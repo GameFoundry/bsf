@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmGLRenderSystem.h"
 
 #include "CmRenderWindow.h"
-#include "OgreConfigOptionMap.h"
+#include "CmConfigOptionMap.h"
 #include "CmGLPBuffer.h"
 
 namespace CamelotEngine

@@ -29,9 +29,9 @@ THE SOFTWARE.
 #define __Exception_H_
 
 // Precompiler options
-#include "OgrePrerequisites.h"
-#include "OgreHeaderPrefix.h"
-#include "OgreString.h"
+#include "CmPrerequisites.h"
+#include "CmHeaderPrefix.h"
+#include "CmString.h"
 #include <exception>
 
 // Backwards compatibility with old assert mode definitions
@@ -347,5 +347,5 @@ namespace CamelotEngine {
 
 } // namespace CamelotEngine
 
-#include "OgreHeaderSuffix.h"
+#include "CmHeaderSuffix.h"
 #endif

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #ifndef __DefaultHardwareBufferManager_H__
 #define __DefaultHardwareBufferManager_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 #include "CmHardwareBufferManager.h"
 #include "CmHardwareVertexBuffer.h"
 #include "CmHardwareIndexBuffer.h"

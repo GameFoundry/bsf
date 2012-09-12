@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "CmD3D9GpuProgram.h"
 #include "CmMatrix4.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmD3D9Mappings.h"
 #include "CmD3D9RenderSystem.h"
 

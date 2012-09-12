@@ -26,8 +26,8 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmTextureManager.h"
-#include "OgreException.h"
-#include "OgrePixelFormat.h"
+#include "CmException.h"
+#include "CmPixelFormat.h"
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------

@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "CmGLPixelFormat.h"
 #include "CmRenderSystem.h"
-#include "OgreBitwise.h"
+#include "CmBitwise.h"
 #include "CmRenderSystemManager.h"
 
 namespace CamelotEngine  {

@@ -29,7 +29,7 @@ THE SOFTWARE.s
 
 #include "CmGLRenderSystem.h"
 #include "CmRenderSystem.h"
-#include "OgreStringConverter.h"
+#include "CmStringConverter.h"
 #include "CmCamera.h"
 #include "CmGLTextureManager.h"
 #include "CmGLHardwareVertexBuffer.h"
@@ -40,7 +40,7 @@ THE SOFTWARE.s
 #include "CmGLGpuNvparseProgram.h"
 #include "ATI_FS_GLGpuProgram.h"
 #include "CmGLGpuProgramManager.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmGLSLExtSupport.h"
 #include "CmGLHardwareOcclusionQuery.h"
 #include "CmGLContext.h"

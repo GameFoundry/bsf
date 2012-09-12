@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "CmViewport.h"
 
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmRenderTarget.h"
 #include "CmMath.h"
 #include "CmRenderSystem.h"

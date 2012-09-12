@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __GLPrerequisites_H__
 #define __GLPrerequisites_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 namespace CamelotEngine {
     // Forward declarations

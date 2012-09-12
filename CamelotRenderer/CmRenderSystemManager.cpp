@@ -1,5 +1,5 @@
 #include "CmRenderSystemManager.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmRenderSystem.h"
 
 namespace CamelotEngine

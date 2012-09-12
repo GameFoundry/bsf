@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef _COLOURVALUE_H__
 #define _COLOURVALUE_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 namespace CamelotEngine {
 	/** \addtogroup Core

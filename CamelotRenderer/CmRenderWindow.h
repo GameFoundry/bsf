@@ -26,7 +26,7 @@ THE SOFTWARE
 #ifndef __RenderWindow_H__
 #define __RenderWindow_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 #include "CmRenderTarget.h"
 

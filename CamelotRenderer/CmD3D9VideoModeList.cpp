@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmD3D9VideoModeList.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmD3D9RenderSystem.h"
 
 namespace CamelotEngine 

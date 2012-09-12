@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmGLSLExtSupport.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLLinkProgramManager.h"

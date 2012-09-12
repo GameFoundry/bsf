@@ -5,15 +5,15 @@
 
 #include <string>
 
-#include "OgreColourValue.h"
+#include "CmColourValue.h"
 #include "CmMath.h"
 #include "CmMatrix3.h"
 #include "CmMatrix4.h"
 #include "CmPlane.h"
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 #include "CmQuaternion.h"
-#include "OgreString.h"
-#include "OgreStringConverter.h"
+#include "CmString.h"
+#include "CmStringConverter.h"
 #include "CmVector2.h"
 #include "CmVector3.h"
 #include "CmVector4.h"

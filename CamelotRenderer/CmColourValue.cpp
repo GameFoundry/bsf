@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "OgreColourValue.h"
+#include "CmColourValue.h"
 #include "CmMath.h"
 
 namespace CamelotEngine {

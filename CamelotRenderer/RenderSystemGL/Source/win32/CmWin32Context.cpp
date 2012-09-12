@@ -30,7 +30,7 @@ THE SOFTWARE.
 #define _WIN32_WINNT 0x0500
 #endif
 #include "CmWin32Context.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmGLRenderSystem.h"
 #include "CmRenderSystemManager.h"
 

@@ -26,7 +26,7 @@ THE SOFTWARE
 #ifndef __OgreHeaderPrefix_H__
 #define __OgreHeaderPrefix_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 #if CM_COMPILER == CM_COMPILER_MSVC
 

@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "CmD3D9GpuProgramManager.h"
 #include "CmD3D9GpuProgram.h"
-#include "OgreException.h"
+#include "CmException.h"
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------------

@@ -29,8 +29,8 @@ THE SOFTWARE.
 #include "CmD3D9HardwareVertexBuffer.h"
 #include "CmD3D9HardwareIndexBuffer.h"
 #include "CmD3D9VertexDeclaration.h"
-#include "OgreStringConverter.h"
-#include "OgreException.h"
+#include "CmStringConverter.h"
+#include "CmException.h"
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------

@@ -26,9 +26,9 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmRenderSystemCapabilities.h"
-#include "OgreStringConverter.h"
-#include "OgreException.h"
-#include "OgreString.h"
+#include "CmStringConverter.h"
+#include "CmException.h"
+#include "CmString.h"
 
 namespace CamelotEngine {
 

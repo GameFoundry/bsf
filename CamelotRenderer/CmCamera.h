@@ -29,16 +29,16 @@ THE SOFTWARE.
 #define __Camera_H__
 
 // Default options
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
-#include "OgreString.h"
+#include "CmString.h"
 
 // Matrices & Vectors
 #include "CmMatrix4.h"
 #include "CmVector3.h"
 #include "CmPlane.h"
 #include "CmQuaternion.h"
-#include "OgreCommon.h"
+#include "CmCommon.h"
 #include "CmFrustum.h"
 #include "CmRay.h"
 

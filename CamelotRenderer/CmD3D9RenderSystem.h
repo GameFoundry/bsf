@@ -29,9 +29,9 @@ THE SOFTWARE.
 #define __D3D9RENDERSYSTEM_H__
 
 #include "CmD3D9Prerequisites.h"
-#include "OgreString.h"
-#include "OgreStringConverter.h"
-#include "OgreConfigOptionMap.h"
+#include "CmString.h"
+#include "CmStringConverter.h"
+#include "CmConfigOptionMap.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmD3D9Mappings.h"

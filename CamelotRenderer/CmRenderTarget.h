@@ -28,10 +28,10 @@ THE SOFTWARE.
 #ifndef __RenderTarget_H__
 #define __RenderTarget_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
-#include "OgreString.h"
-#include "OgrePixelFormat.h"
+#include "CmString.h"
+#include "CmPixelFormat.h"
 #include "CmViewport.h"
 
 /* Define the number of priority groups for the render system's render targets. */

@@ -1,5 +1,5 @@
-#include "OgreException.h"
-#include "OgreStringConverter.h"
+#include "CmException.h"
+#include "CmStringConverter.h"
 
 #include <algorithm>
 

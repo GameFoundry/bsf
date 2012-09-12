@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 
 #include "CmGLHardwareOcclusionQuery.h"
-#include "OgreException.h"
+#include "CmException.h"
 
 namespace CamelotEngine {
 

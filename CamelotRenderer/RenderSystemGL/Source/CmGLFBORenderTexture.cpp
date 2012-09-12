@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "CmGLFBORenderTexture.h"
 #include "CmGLPixelFormat.h"
-#include "OgreStringConverter.h"
+#include "CmStringConverter.h"
 #include "CmGLHardwarePixelBuffer.h"
 #include "CmGLFBOMultiRenderTarget.h"
 

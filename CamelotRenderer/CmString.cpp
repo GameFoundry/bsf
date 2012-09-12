@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "OgreString.h"
+#include "CmString.h"
 
 namespace CamelotEngine {
 

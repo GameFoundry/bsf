@@ -27,9 +27,9 @@ THE SOFTWARE.
 */
 #include "CmD3D9MultiRenderTarget.h"
 #include "CmD3D9HardwarePixelBuffer.h"
-#include "OgreException.h"
-#include "OgreStringConverter.h"
-#include "OgreBitwise.h"
+#include "CmException.h"
+#include "CmStringConverter.h"
+#include "CmBitwise.h"
 #include "CmD3D9RenderSystem.h"
 #include "CmD3D9Device.h"
 #include "CmD3D9DeviceManager.h"

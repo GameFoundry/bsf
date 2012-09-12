@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __Common_H__
 // Common stuff
 
-#include "OgreString.h"
+#include "CmString.h"
 
 #if defined ( CM_GCC_VISIBILITY )
 #   pragma GCC visibility push(default)

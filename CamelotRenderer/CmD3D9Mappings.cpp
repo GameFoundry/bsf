@@ -26,9 +26,9 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmD3D9Mappings.h"
-#include "OgreString.h"
-#include "OgreStringConverter.h"
-#include "OgreException.h"
+#include "CmString.h"
+#include "CmStringConverter.h"
+#include "CmException.h"
 
 namespace CamelotEngine 
 {

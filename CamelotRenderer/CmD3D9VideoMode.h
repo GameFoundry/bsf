@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __D3D9VIDEOMODE_H__
 
 #include "CmD3D9Prerequisites.h"
-#include "OgreString.h"
+#include "CmString.h"
 
 namespace CamelotEngine 
 {

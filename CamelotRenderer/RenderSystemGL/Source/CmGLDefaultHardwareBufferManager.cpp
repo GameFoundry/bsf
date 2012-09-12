@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmGLDefaultHardwareBufferManager.h"
-#include "OgreException.h"
+#include "CmException.h"
 
 namespace CamelotEngine {
 

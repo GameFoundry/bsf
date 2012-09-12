@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef _RenderOperation_H__
 #define _RenderOperation_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 #include "CmVertexIndexData.h"
 
 namespace CamelotEngine {

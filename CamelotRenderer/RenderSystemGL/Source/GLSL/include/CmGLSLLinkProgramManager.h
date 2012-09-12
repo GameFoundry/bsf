@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __GLSLLinkProgramManager_H__
 
 #include "CmGLPrerequisites.h"
-#include "OgreSingleton.h"
+#include "CmSingleton.h"
 
 #include "CmGLSLExtSupport.h"
 #include "CmGLSLLinkProgram.h"

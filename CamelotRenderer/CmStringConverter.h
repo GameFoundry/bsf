@@ -29,9 +29,9 @@ THE SOFTWARE.
 #ifndef __StringConverter_H__
 #define __StringConverter_H__
 
-#include "OgrePrerequisites.h"
-#include "OgreString.h"
-#include "OgreColourValue.h"
+#include "CmPrerequisites.h"
+#include "CmString.h"
+#include "CmColourValue.h"
 #include "CmMath.h"
 #include "CmMatrix3.h"
 #include "CmMatrix4.h"

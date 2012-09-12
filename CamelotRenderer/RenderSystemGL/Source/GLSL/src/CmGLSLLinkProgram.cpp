@@ -28,11 +28,11 @@ THE SOFTWARE.
 
 #include "CmGLSLExtSupport.h"
 #include "CmGLSLLinkProgram.h"
-#include "OgreStringConverter.h"
+#include "CmStringConverter.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
 #include "CmGLSLLinkProgramManager.h"
-#include "OgreException.h"
+#include "CmException.h"
 
 namespace CamelotEngine {
 

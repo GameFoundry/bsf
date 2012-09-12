@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmTextureState.h"
-#include "OgreException.h"
+#include "CmException.h"
 
 namespace CamelotEngine {
 

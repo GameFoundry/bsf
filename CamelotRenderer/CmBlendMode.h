@@ -28,8 +28,8 @@ THE SOFTWARE.
 #ifndef __BLENDMODE_H__
 #define __BLENDMODE_H__
 
-#include "OgrePrerequisites.h"
-#include "OgreColourValue.h"
+#include "CmPrerequisites.h"
+#include "CmColourValue.h"
 
 namespace CamelotEngine {
 	/** \addtogroup Core

@@ -28,8 +28,8 @@ THE SOFTWARE.
 #ifndef _PixelFormat_H__
 #define _PixelFormat_H__
 
-#include "OgrePrerequisites.h"
-#include "OgreCommon.h"
+#include "CmPrerequisites.h"
+#include "CmCommon.h"
 
 namespace CamelotEngine {
 	/** \addtogroup Core

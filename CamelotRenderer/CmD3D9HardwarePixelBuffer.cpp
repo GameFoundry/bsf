@@ -28,9 +28,9 @@ THE SOFTWARE.
 #include "CmD3D9HardwarePixelBuffer.h"
 #include "CmD3D9Texture.h"
 #include "CmD3D9Mappings.h"
-#include "OgreException.h"
-#include "OgreStringConverter.h"
-#include "OgreBitwise.h"
+#include "CmException.h"
+#include "CmStringConverter.h"
+#include "CmBitwise.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
 

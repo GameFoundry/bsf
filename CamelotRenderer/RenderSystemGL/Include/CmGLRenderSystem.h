@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmGLHardwareBufferManager.h"
 #include "CmGLGpuProgramManager.h"
 #include "CmGLSLProgramFactory.h"
-#include "OgreConfigOptionMap.h"
+#include "CmConfigOptionMap.h"
 #include "CmVector4.h"
 
 namespace CamelotEngine {

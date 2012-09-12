@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "CmGLRenderTexture.h"
 #include "CmGLPixelFormat.h"
-#include "OgreStringConverter.h"
+#include "CmStringConverter.h"
 #include "CmGLHardwarePixelBuffer.h"
 
 namespace CamelotEngine {

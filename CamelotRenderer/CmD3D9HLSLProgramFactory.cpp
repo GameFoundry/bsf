@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 
 #include "CmD3D9HLSLProgramFactory.h"
-#include "OgreString.h"
+#include "CmString.h"
 #include "CmD3D9HLSLProgram.h"
 
 namespace CamelotEngine {

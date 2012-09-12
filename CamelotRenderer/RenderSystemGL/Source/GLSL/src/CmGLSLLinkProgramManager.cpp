@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmGLSLLinkProgramManager.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
-#include "OgreStringConverter.h"
+#include "CmStringConverter.h"
 
 namespace CamelotEngine {
 

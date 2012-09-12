@@ -28,10 +28,10 @@ THE SOFTWARE.
 #include "CmGpuProgram.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"
-#include "OgreStringConverter.h"
+#include "CmStringConverter.h"
 #include "CmGpuProgramManager.h"
 #include "CmHighLevelGpuProgramManager.h"
-#include "OgreException.h"
+#include "CmException.h"
 
 #include "CmGLSLProgram.h"
 #include "CmGLSLGpuProgram.h"

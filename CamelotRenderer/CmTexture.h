@@ -28,9 +28,9 @@ THE SOFTWARE.
 #ifndef _Texture_H__
 #define _Texture_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "OgrePixelFormat.h"
+#include "CmPixelFormat.h"
 
 namespace CamelotEngine {
 

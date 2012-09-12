@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __HighLevelGpuProgram_H__
 #define __HighLevelGpuProgram_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 #include "CmGpuProgram.h"
 
 namespace CamelotEngine {

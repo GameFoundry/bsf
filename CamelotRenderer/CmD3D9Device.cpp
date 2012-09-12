@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmD3D9ResourceManager.h"
 #include "CmD3D9RenderWindow.h"
 #include "CmHardwareBufferManager.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmRenderSystemManager.h"
 
 namespace CamelotEngine

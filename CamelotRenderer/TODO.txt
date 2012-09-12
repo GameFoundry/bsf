@@ -52,7 +52,11 @@ IMPORTANT: I think I should strive to make the renderer one unique CmRenderSyste
 TOMORROW:
  - Incorporate CamelotUtility library into CamelotRenderer
    - Move remaining Utility files to CamelotUtility (files like StringUtil, PixelUtil and similar)
-   - Remove Utility forward declarations from OgrePrerequisites. Make sure to include OgrePrerequisitesUtil in OgrePrerequisites
+     - Port exceptions
+	 - Add log
+   - Remove remaining not-needed headers
+   - Split D3D9 and OpenGL into their own projects
+     - There's _OgreGLExport and _OgreD3D9Export that i should probably port as well
 
 Other notes:
  - Search for all remaining "TODO PORT" comments and fix them
@@ -75,3 +79,10 @@ After everything is polished:
     - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 
 	  further modifications.
  - Port boost threads to std threads (CmThreadDefines.h)
+ - I should move boost so it resides in CamelotUtility
+ - Also, create all file format parsers and also make them reside in CamelotUtility
+   (Actual importers will still be implemented in Editor, but parsing capabilities should be available for camelotutility)
+
+ - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
+ - Go to GEA book and read about resource managers before implementing them
+   - Actually I should re-read most of the chapers in the book, or all of it

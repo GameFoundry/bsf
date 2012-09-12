@@ -28,12 +28,12 @@ THE SOFTWARE.
 #ifndef __TextureState_H__
 #define __TextureState_H__
 
-#include "OgrePrerequisites.h"
-#include "OgreCommon.h"
-#include "OgreBlendMode.h"
+#include "CmPrerequisites.h"
+#include "CmCommon.h"
+#include "CmBlendMode.h"
 #include "CmMatrix4.h"
-#include "OgreString.h"
-#include "OgrePixelFormat.h"
+#include "CmString.h"
+#include "CmPixelFormat.h"
 #include "CmTexture.h"
 
 namespace CamelotEngine {

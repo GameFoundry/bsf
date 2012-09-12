@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __OgreWindowEventUtils_H__
 #define __OgreWindowEventUtils_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 #if CM_PLATFORM == CM_PLATFORM_WIN32
 #  define WIN32_LEAN_AND_MEAN

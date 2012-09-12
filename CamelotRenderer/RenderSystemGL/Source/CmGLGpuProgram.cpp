@@ -27,8 +27,8 @@ THE SOFTWARE.
 */
 
 #include "CmGLGpuProgram.h"
-#include "OgreException.h"
-#include "OgreStringConverter.h"
+#include "CmException.h"
+#include "CmStringConverter.h"
 
 using namespace CamelotEngine;
 

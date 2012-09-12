@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define _HardwareOcclusionQuery__
 
 // Precompiler options
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 namespace CamelotEngine {
 

@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 
 #include "CmRenderTexture.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmHardwarePixelBuffer.h"
 
 namespace CamelotEngine

@@ -27,12 +27,12 @@ THE SOFTWARE.
 */
 #include "CmD3D9RenderWindow.h"
 #include "CmViewport.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmD3D9RenderSystem.h"
 #include "CmRenderSystem.h"
-#include "OgreBitwise.h"
-#include "OgreStringConverter.h"
-#include "OgreWindowEventUtilities.h"
+#include "CmBitwise.h"
+#include "CmStringConverter.h"
+#include "CmWindowEventUtilities.h"
 #include "CmD3D9DeviceManager.h"
 #include "CmRenderSystemManager.h"
 

@@ -26,11 +26,11 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "OgrePixelFormat.h"
-#include "OgreBitwise.h"
-#include "OgreColourValue.h"
-#include "OgreImageResampler.h"
-#include "OgreException.h"
+#include "CmPixelFormat.h"
+#include "CmBitwise.h"
+#include "CmColourValue.h"
+#include "CmImageResampler.h"
+#include "CmException.h"
 
 
 namespace CamelotEngine {

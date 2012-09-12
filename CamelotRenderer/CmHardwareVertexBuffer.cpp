@@ -27,9 +27,9 @@ THE SOFTWARE.
 */
 
 #include "CmHardwareVertexBuffer.h"
-#include "OgreColourValue.h"
-#include "OgreException.h"
-#include "OgreStringConverter.h"
+#include "CmColourValue.h"
+#include "CmException.h"
+#include "CmStringConverter.h"
 #include "CmHardwareBufferManager.h"
 #include "CmDefaultHardwareBufferManager.h"
 #include "CmRenderSystem.h"

@@ -29,9 +29,9 @@ THE SOFTWARE.
 #define __HardwareBufferManager__
 
 // Precompiler options
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
-#include "OgreSingleton.h"
+#include "CmSingleton.h"
 #include "CmHardwareVertexBuffer.h"
 #include "CmHardwareIndexBuffer.h"
 

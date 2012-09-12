@@ -31,11 +31,11 @@ THE SOFTWARE.
 #endif
 #include "CmWin32Window.h"
 #include "CmRenderSystem.h"
-#include "OgreStringConverter.h"
-#include "OgreException.h"
+#include "CmStringConverter.h"
+#include "CmException.h"
 #include "CmWin32GLSupport.h"
 #include "CmWin32Context.h"
-#include "OgreWindowEventUtilities.h"
+#include "CmWindowEventUtilities.h"
 #include "CmGLPixelFormat.h"
 #include "CmRenderSystemManager.h"
 

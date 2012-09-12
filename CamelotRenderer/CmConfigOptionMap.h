@@ -29,9 +29,9 @@ THE SOFTWARE.
 #ifndef _ConfigOptionMap_H__
 #define _ConfigOptionMap_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
-#include "OgreString.h"
+#include "CmString.h"
 
 
 namespace CamelotEngine {

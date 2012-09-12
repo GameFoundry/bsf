@@ -27,8 +27,8 @@ THE SOFTWARE.
 */
 #include "CmD3D9TextureManager.h"
 #include "CmD3D9Texture.h"
-#include "OgreException.h"
-#include "OgreStringConverter.h"
+#include "CmException.h"
+#include "CmStringConverter.h"
 #include "CmD3D9Mappings.h"
 #include "CmD3D9RenderSystem.h"
 #include "CmRenderSystemManager.h"

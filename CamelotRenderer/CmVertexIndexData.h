@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __VertexIndexData_H__
 #define __VertexIndexData_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 #include "CmHardwareVertexBuffer.h"
 #include "CmHardwareIndexBuffer.h"
 

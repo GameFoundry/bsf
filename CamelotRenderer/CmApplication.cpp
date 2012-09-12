@@ -3,7 +3,7 @@
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-#include "OgreWindowEventUtilities.h"
+#include "CmWindowEventUtilities.h"
 #include "CmHardwareBufferManager.h"
 #include "CmRenderWindow.h"
 #include "CmCamera.h"

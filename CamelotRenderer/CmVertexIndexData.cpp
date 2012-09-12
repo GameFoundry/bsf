@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmHardwareIndexBuffer.h"
 #include "CmVector3.h"
 #include "CmAxisAlignedBox.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
 

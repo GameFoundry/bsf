@@ -25,10 +25,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreWindowEventUtilities.h"
+#include "CmWindowEventUtilities.h"
 #include "CmRenderWindow.h"
-#include "OgreException.h"
-#include "OgreStringConverter.h"
+#include "CmException.h"
+#include "CmStringConverter.h"
 #if CM_PLATFORM == CM_PLATFORM_LINUX
 #include <X11/Xlib.h>
 void GLXProc( CamelotEngine::RenderWindow *win, const XEvent &event );

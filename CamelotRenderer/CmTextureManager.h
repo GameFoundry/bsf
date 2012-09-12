@@ -29,10 +29,10 @@ THE SOFTWARE.
 #define _TextureManager_H__
 
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 #include "CmTexture.h"
-#include "OgreSingleton.h"
+#include "CmSingleton.h"
 
 
 namespace CamelotEngine {

@@ -29,10 +29,10 @@ THE SOFTWARE.
 #define __GpuProgramManager_H_
 
 // Precompiler options
-#include "OgrePrerequisites.h"
-#include "OgreException.h"
+#include "CmPrerequisites.h"
+#include "CmException.h"
 #include "CmGpuProgram.h"
-#include "OgreSingleton.h"
+#include "CmSingleton.h"
 
 namespace CamelotEngine {
 

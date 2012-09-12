@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __GLPIXELFORMAT_H__
 
 #include "CmGLPrerequisites.h"
-#include "OgrePixelFormat.h"
+#include "CmPixelFormat.h"
 namespace CamelotEngine {
     
 	/**

@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include <string.h>
 #include <stdlib.h>
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 namespace CamelotEngine {
 

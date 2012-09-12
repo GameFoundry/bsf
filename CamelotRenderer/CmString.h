@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef _String_H__
 #define _String_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 // If we're using the GCC 3.1 C++ Std lib
 #if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310 && !defined(STLPORT)

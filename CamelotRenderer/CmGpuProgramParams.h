@@ -29,8 +29,8 @@ THE SOFTWARE.
 #define __GpuProgramParams_H_
 
 // Precompiler options
-#include "OgrePrerequisites.h"
-#include "OgreRenderOperation.h"
+#include "CmPrerequisites.h"
+#include "CmRenderOperation.h"
 
 namespace CamelotEngine {
 

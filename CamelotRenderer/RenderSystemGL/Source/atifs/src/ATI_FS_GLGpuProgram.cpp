@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 
 #include "ps_1_4.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"
 #include "ATI_FS_GLGpuProgram.h"

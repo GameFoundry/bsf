@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef _Bitwise_H__
 #define _Bitwise_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 namespace CamelotEngine {
 	/** \addtogroup Core

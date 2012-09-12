@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 
 #include "CmGLGpuNvparseProgram.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"
 #include "nvparse.h"

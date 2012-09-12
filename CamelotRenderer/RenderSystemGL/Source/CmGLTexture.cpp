@@ -33,9 +33,9 @@ THE SOFTWARE.
 
 //#include "CmTextureManager.h"
 #include "CmCamera.h"
-#include "OgreException.h"
-#include "OgreStringConverter.h"
-#include "OgreBitwise.h"
+#include "CmException.h"
+#include "CmStringConverter.h"
+#include "CmBitwise.h"
 #include "CmTextureManager.h"
 #include "CmRenderSystemManager.h"
 

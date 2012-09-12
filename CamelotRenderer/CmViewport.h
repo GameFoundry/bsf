@@ -28,9 +28,9 @@ THE SOFTWARE.
 #ifndef __Viewport_H__
 #define __Viewport_H__
 
-#include "OgrePrerequisites.h"
-#include "OgreCommon.h"
-#include "OgreColourValue.h"
+#include "CmPrerequisites.h"
+#include "CmCommon.h"
+#include "CmColourValue.h"
 #include "CmFrustum.h"
 
 namespace CamelotEngine {

@@ -29,16 +29,16 @@ THE SOFTWARE.
 #define __RenderSystem_H_
 
 // Precompiler options
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 #include <memory>
 
-#include "OgreString.h"
+#include "CmString.h"
 
 #include "CmTextureState.h"
-#include "OgreCommon.h"
+#include "CmCommon.h"
 
-#include "OgreRenderOperation.h"
+#include "CmRenderOperation.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmRenderTarget.h"
 #include "CmRenderTexture.h"

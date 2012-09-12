@@ -30,8 +30,8 @@ THE SOFTWARE.
 #include "CmVector3.h"
 #include "CmVector4.h"
 #include "CmRenderSystemCapabilities.h"
-#include "OgreStringConverter.h"
-#include "OgreException.h"
+#include "CmStringConverter.h"
+#include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
 

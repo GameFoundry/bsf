@@ -28,11 +28,11 @@ THE SOFTWARE.
 #ifndef __Frustum_H__
 #define __Frustum_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 #include "CmVector2.h"
 #include "CmAxisAlignedBox.h"
 #include "CmVertexIndexData.h"
-#include "OgreString.h"
+#include "CmString.h"
 
 namespace CamelotEngine
 {

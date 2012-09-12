@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __D3D9MAPPINGS_H__
 
 #include "CmD3D9Prerequisites.h"
-#include "OgreCommon.h"
+#include "CmCommon.h"
 #include "CmRenderSystem.h"
 #include "CmHardwareBuffer.h"
 #include "CmHardwareIndexBuffer.h"

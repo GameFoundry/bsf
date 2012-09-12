@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmD3D9RenderWindow.h"
 #include "CmD3D9Driver.h"
 #include "CmD3D9DriverList.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmRenderSystemManager.h"
 
 namespace CamelotEngine

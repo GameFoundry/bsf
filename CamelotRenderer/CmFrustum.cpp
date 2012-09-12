@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmMath.h"
 #include "CmMatrix3.h"
 #include "CmSphere.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmHardwareBufferManager.h"
 #include "CmHardwareVertexBuffer.h"
 #include "CmHardwareIndexBuffer.h"

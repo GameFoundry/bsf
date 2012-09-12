@@ -29,9 +29,9 @@ THE SOFTWARE.
 #include "CmGLTexture.h"
 #include "CmGLSupport.h"
 #include "CmGLPixelFormat.h"
-#include "OgreException.h"
-#include "OgreStringConverter.h"
-#include "OgreBitwise.h"
+#include "CmException.h"
+#include "CmStringConverter.h"
+#include "CmBitwise.h"
 #include "CmGLFBORenderTexture.h"
 #include "CmRenderSystemManager.h"
 

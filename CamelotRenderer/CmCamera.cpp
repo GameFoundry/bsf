@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmMatrix3.h"
 #include "CmAxisAlignedBox.h"
 #include "CmSphere.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmRenderSystem.h"
 
 #if CM_PLATFORM == OGRE_PLATFORM_IPHONE

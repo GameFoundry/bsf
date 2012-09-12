@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 
 #include "CmViewport.h"
-#include "OgreException.h"
+#include "CmException.h"
 #include "CmRenderTarget.h"
 #include "CmRenderWindow.h"
 #include "CmHardwarePixelBuffer.h"

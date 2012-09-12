@@ -29,9 +29,9 @@ THE SOFTWARE.
 #define __HardwarePixelBuffer__
 
 // Precompiler options
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "OgrePixelFormat.h"
+#include "CmPixelFormat.h"
 
 namespace CamelotEngine {
 

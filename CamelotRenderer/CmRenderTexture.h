@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef __RenderTexture_H__
 #define __RenderTexture_H__
 
-#include "OgrePrerequisites.h"
+#include "CmPrerequisites.h"
 
 #include "CmRenderTarget.h"
 
