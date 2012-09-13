@@ -90,7 +90,7 @@
     <ClInclude Include="Include\CmString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmColourValue.h">
+    <ClInclude Include="Include\CmColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,7 +131,7 @@
     <ClCompile Include="Source\CmString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmColourValue.cpp">
+    <ClCompile Include="Source\CmColor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

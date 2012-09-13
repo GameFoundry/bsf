@@ -84,9 +84,6 @@ namespace CamelotEngine {
 		// Get our GLSupport
 		mGLSupport = getGLSupport();
 
-		for( i=0; i<MAX_LIGHTS; i++ )
-			mLights[i] = NULL;
-
 		mWorldMatrix = Matrix4::IDENTITY;
 		mViewMatrix = Matrix4::IDENTITY;
 
@@ -1035,44 +1032,6 @@ namespace CamelotEngine {
 			}
 		}
 	}
-
-	//---------------------------------------------------------------------
-	void GLRenderSystem::_useLights(const LightList& lights, unsigned short limit)
-	{
-		// TODO PORT - I don't use fixed pipleline lights. Remove this
-		assert(false);
-
-		//// Save previous modelview
-		//glMatrixMode(GL_MODELVIEW);
-		//glPushMatrix();
-		//// just load view matrix (identity world)
-		//GLfloat mat[16];
-		//makeGLMatrix(mat, mViewMatrix);
-		//glLoadMatrixf(mat);
-
-		//LightList::const_iterator i, iend;
-		//iend = lights.end();
-		//unsigned short num = 0;
-		//for (i = lights.begin(); i != iend && num < limit; ++i, ++num)
-		//{
-		//	setGLLight(num, *i);
-		//	mLights[num] = *i;
-		//}
-		//// Disable extra lights
-		//for (; num < mCurrentLights; ++num)
-		//{
-		//	setGLLight(num, NULL);
-		//	mLights[num] = NULL;
-		//}
-		//mCurrentLights = std::min(limit, static_cast<unsigned short>(lights.size()));
-
-		//setLights();
-
-		//// restore previous
-		//glPopMatrix();
-
-	}
-
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m)
 	{
@@ -3257,10 +3216,6 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 			mCurrentFragmentProgram->unbindProgram();
 
 		// Disable lights
-		for (unsigned short i = 0; i < mCurrentLights; ++i)
-		{
-			mLights[i] = NULL;
-		}
 		mCurrentLights = 0;
 
 		// Disable textures

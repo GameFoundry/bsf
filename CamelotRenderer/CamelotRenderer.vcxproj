@@ -98,7 +98,6 @@
     <ClInclude Include="CmBitwise.h" />
     <ClInclude Include="CmBlendMode.h" />
     <ClInclude Include="CmCamera.h" />
-    <ClInclude Include="CmColourValue.h" />
     <ClInclude Include="CmCommon.h" />
     <ClInclude Include="CmConfigOptionMap.h" />
     <ClInclude Include="CmD3D9Device.h" />
@@ -205,7 +204,6 @@
     <ClCompile Include="CmD3D9RenderSystemFactory.cpp" />
     <ClCompile Include="CmRenderSystemManager.cpp" />
     <ClCompile Include="CmCamera.cpp" />
-    <ClCompile Include="CmColourValue.cpp" />
     <ClCompile Include="CmD3D9Device.cpp" />
     <ClCompile Include="CmD3D9DeviceManager.cpp" />
     <ClCompile Include="CmD3D9Driver.cpp" />

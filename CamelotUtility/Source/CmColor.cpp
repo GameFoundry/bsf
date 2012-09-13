@@ -26,23 +26,23 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "CmColourValue.h"
+#include "CmColor.h"
 #include "CmMath.h"
 
 namespace CamelotEngine {
 
-    const ColourValue ColourValue::ZERO = ColourValue(0.0,0.0,0.0,0.0);
-    const ColourValue ColourValue::Black = ColourValue(0.0,0.0,0.0);
-    const ColourValue ColourValue::White = ColourValue(1.0,1.0,1.0);
-    const ColourValue ColourValue::Red = ColourValue(1.0,0.0,0.0);
-    const ColourValue ColourValue::Green = ColourValue(0.0,1.0,0.0);
-    const ColourValue ColourValue::Blue = ColourValue(0.0,0.0,1.0);
+    const Color Color::ZERO = Color(0.0,0.0,0.0,0.0);
+    const Color Color::Black = Color(0.0,0.0,0.0);
+    const Color Color::White = Color(1.0,1.0,1.0);
+    const Color Color::Red = Color(1.0,0.0,0.0);
+    const Color Color::Green = Color(0.0,1.0,0.0);
+    const Color Color::Blue = Color(0.0,0.0,1.0);
 
     //---------------------------------------------------------------------
-#if OGRE_ENDIAN == OGRE_ENDIAN_BIG
-    ABGR ColourValue::getAsABGR(void) const
+#if CM_ENDIAN == CM_ENDIAN_BIG
+    ABGR Color::getAsABGR(void) const
 #else
-    RGBA ColourValue::getAsRGBA(void) const
+    RGBA Color::getAsRGBA(void) const
 #endif
     {
         UINT8 val8;
@@ -70,10 +70,10 @@ namespace CamelotEngine {
         return val32;
     }
     //---------------------------------------------------------------------
-#if OGRE_ENDIAN == OGRE_ENDIAN_BIG
-    BGRA ColourValue::getAsBGRA(void) const
+#if CM_ENDIAN == CM_ENDIAN_BIG
+    BGRA Color::getAsBGRA(void) const
 #else
-    ARGB ColourValue::getAsARGB(void) const
+    ARGB Color::getAsARGB(void) const
 #endif
     {
         UINT8 val8;
@@ -102,10 +102,10 @@ namespace CamelotEngine {
         return val32;
     }
 	//---------------------------------------------------------------------
-#if OGRE_ENDIAN == OGRE_ENDIAN_BIG
-	ARGB ColourValue::getAsARGB(void) const
+#if CM_ENDIAN == CM_ENDIAN_BIG
+	ARGB Color::getAsARGB(void) const
 #else
-	BGRA ColourValue::getAsBGRA(void) const
+	BGRA Color::getAsBGRA(void) const
 #endif
 	{
 		UINT8 val8;
@@ -134,10 +134,10 @@ namespace CamelotEngine {
 		return val32;
 	}
     //---------------------------------------------------------------------
-#if OGRE_ENDIAN == OGRE_ENDIAN_BIG
-    RGBA ColourValue::getAsRGBA(void) const
+#if CM_ENDIAN == CM_ENDIAN_BIG
+    RGBA Color::getAsRGBA(void) const
 #else
-    ABGR ColourValue::getAsABGR(void) const
+    ABGR Color::getAsABGR(void) const
 #endif
     {
         UINT8 val8;
@@ -166,10 +166,10 @@ namespace CamelotEngine {
         return val32;
     }
     //---------------------------------------------------------------------
-#if OGRE_ENDIAN == OGRE_ENDIAN_BIG
-    void ColourValue::setAsABGR(const ABGR val)
+#if CM_ENDIAN == CM_ENDIAN_BIG
+    void Color::setAsABGR(const ABGR val)
 #else
-    void ColourValue::setAsRGBA(const RGBA val)
+    void Color::setAsRGBA(const RGBA val)
 #endif
     {
         UINT32 val32 = val;
@@ -190,10 +190,10 @@ namespace CamelotEngine {
         a = (val32 & 0xFF) / 255.0f;
     }
     //---------------------------------------------------------------------
-#if OGRE_ENDIAN == OGRE_ENDIAN_BIG
-    void ColourValue::setAsBGRA(const BGRA val)
+#if CM_ENDIAN == CM_ENDIAN_BIG
+    void Color::setAsBGRA(const BGRA val)
 #else
-    void ColourValue::setAsARGB(const ARGB val)
+    void Color::setAsARGB(const ARGB val)
 #endif
     {
         UINT32 val32 = val;
@@ -214,10 +214,10 @@ namespace CamelotEngine {
         b = (val32 & 0xFF) / 255.0f;
     }
 	//---------------------------------------------------------------------
-#if OGRE_ENDIAN == OGRE_ENDIAN_BIG
-	void ColourValue::setAsARGB(const ARGB val)
+#if CM_ENDIAN == CM_ENDIAN_BIG
+	void Color::setAsARGB(const ARGB val)
 #else
-	void ColourValue::setAsBGRA(const BGRA val)
+	void Color::setAsBGRA(const BGRA val)
 #endif
 	{
 		UINT32 val32 = val;
@@ -238,10 +238,10 @@ namespace CamelotEngine {
 		a = (val32 & 0xFF) / 255.0f;
 	}
     //---------------------------------------------------------------------
-#if OGRE_ENDIAN == OGRE_ENDIAN_BIG
-    void ColourValue::setAsRGBA(const RGBA val)
+#if CM_ENDIAN == CM_ENDIAN_BIG
+    void Color::setAsRGBA(const RGBA val)
 #else
-    void ColourValue::setAsABGR(const ABGR val)
+    void Color::setAsABGR(const ABGR val)
 #endif
     {
         UINT32 val32 = val;
@@ -262,7 +262,7 @@ namespace CamelotEngine {
         r = (val32 & 0xFF) / 255.0f;
     }
     //---------------------------------------------------------------------
-    bool ColourValue::operator==(const ColourValue& rhs) const
+    bool Color::operator==(const Color& rhs) const
     {
         return (r == rhs.r &&
             g == rhs.g &&
@@ -270,12 +270,12 @@ namespace CamelotEngine {
             a == rhs.a);
     }
     //---------------------------------------------------------------------
-    bool ColourValue::operator!=(const ColourValue& rhs) const
+    bool Color::operator!=(const Color& rhs) const
     {
         return !(*this == rhs);
     }
 	//---------------------------------------------------------------------
-	void ColourValue::setHSB(float hue, float saturation, float brightness)
+	void Color::setHSB(float hue, float saturation, float brightness)
 	{
 		// wrap hue
 		if (hue > 1.0f)
@@ -362,7 +362,7 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void ColourValue::getHSB(float* hue, float* saturation, float* brightness) const
+	void Color::getHSB(float* hue, float* saturation, float* brightness) const
 	{
 
 		float vMin = std::min(r, std::min(g, b));

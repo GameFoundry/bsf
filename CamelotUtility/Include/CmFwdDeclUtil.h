@@ -18,5 +18,5 @@ namespace CamelotEngine {
 	class Vector2;
 	class Vector3;
 	class Vector4;
-	class ColourValue;
+	class Color;
 }

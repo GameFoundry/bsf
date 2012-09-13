@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 
 #include "CmString.h"
-#include "CmColourValue.h"
+#include "CmColor.h"
 #include "CmMath.h"
 #include "CmMatrix3.h"
 #include "CmMatrix4.h"
@@ -575,7 +575,7 @@ namespace CamelotEngine {
 		return stream.str();
 	}
 	//-----------------------------------------------------------------------
-	String toString(const ColourValue& val)
+	String toString(const Color& val)
 	{
 		stringstream stream;
 		stream << val.r << " " << val.g << " " << val.b << " " << val.a;

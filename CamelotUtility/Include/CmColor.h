@@ -54,24 +54,24 @@ namespace CamelotEngine {
 		    transparency. In this case, 0.0 is completely transparent and 1.0 is
 		    fully opaque.
     */
-    class CM_EXPORT ColourValue
+    class CM_EXPORT Color
     {
     public:
-        static const ColourValue ZERO;
-        static const ColourValue Black;
-        static const ColourValue White;
-        static const ColourValue Red;
-        static const ColourValue Green;
-        static const ColourValue Blue;
+        static const Color ZERO;
+        static const Color Black;
+        static const Color White;
+        static const Color Red;
+        static const Color Green;
+        static const Color Blue;
 
-	    explicit ColourValue( float red = 1.0f,
+	    explicit Color( float red = 1.0f,
 				    float green = 1.0f,
 				    float blue = 1.0f,
 				    float alpha = 1.0f ) : r(red), g(green), b(blue), a(alpha)
         { }
 
-	    bool operator==(const ColourValue& rhs) const;
-	    bool operator!=(const ColourValue& rhs) const;
+	    bool operator==(const Color& rhs) const;
+	    bool operator!=(const Color& rhs) const;
 
         float r,g,b,a;
 
@@ -133,9 +133,9 @@ namespace CamelotEngine {
 
         /** As saturate, except that this colour value is unaffected and
             the saturated colour value is returned as a copy. */
-        ColourValue saturateCopy(void) const
+        Color saturateCopy(void) const
         {
-            ColourValue ret = *this;
+            Color ret = *this;
             ret.saturate();
             return ret;
         }
@@ -169,9 +169,9 @@ namespace CamelotEngine {
 
 		
 		// arithmetic operations
-        inline ColourValue operator + ( const ColourValue& rkVector ) const
+        inline Color operator + ( const Color& rkVector ) const
         {
-            ColourValue kSum;
+            Color kSum;
 
             kSum.r = r + rkVector.r;
             kSum.g = g + rkVector.g;
@@ -181,9 +181,9 @@ namespace CamelotEngine {
             return kSum;
         }
 
-        inline ColourValue operator - ( const ColourValue& rkVector ) const
+        inline Color operator - ( const Color& rkVector ) const
         {
-            ColourValue kDiff;
+            Color kDiff;
 
             kDiff.r = r - rkVector.r;
             kDiff.g = g - rkVector.g;
@@ -193,9 +193,9 @@ namespace CamelotEngine {
             return kDiff;
         }
 
-        inline ColourValue operator * (const float fScalar ) const
+        inline Color operator * (const float fScalar ) const
         {
-            ColourValue kProd;
+            Color kProd;
 
             kProd.r = fScalar*r;
             kProd.g = fScalar*g;
@@ -205,9 +205,9 @@ namespace CamelotEngine {
             return kProd;
         }
 
-        inline ColourValue operator * ( const ColourValue& rhs) const
+        inline Color operator * ( const Color& rhs) const
         {
-            ColourValue kProd;
+            Color kProd;
 
             kProd.r = rhs.r * r;
             kProd.g = rhs.g * g;
@@ -217,9 +217,9 @@ namespace CamelotEngine {
             return kProd;
         }
 
-        inline ColourValue operator / ( const ColourValue& rhs) const
+        inline Color operator / ( const Color& rhs) const
         {
-            ColourValue kProd;
+            Color kProd;
 
             kProd.r = rhs.r / r;
             kProd.g = rhs.g / g;
@@ -229,11 +229,11 @@ namespace CamelotEngine {
             return kProd;
         }
 
-        inline ColourValue operator / (const float fScalar ) const
+        inline Color operator / (const float fScalar ) const
         {
             assert( fScalar != 0.0 );
 
-            ColourValue kDiv;
+            Color kDiv;
 
             float fInv = 1.0f / fScalar;
             kDiv.r = r * fInv;
@@ -244,9 +244,9 @@ namespace CamelotEngine {
             return kDiv;
         }
 
-        inline friend ColourValue operator * (const float fScalar, const ColourValue& rkVector )
+        inline friend Color operator * (const float fScalar, const Color& rkVector )
         {
-            ColourValue kProd;
+            Color kProd;
 
             kProd.r = fScalar * rkVector.r;
             kProd.g = fScalar * rkVector.g;
@@ -257,7 +257,7 @@ namespace CamelotEngine {
         }
 
         // arithmetic updates
-        inline ColourValue& operator += ( const ColourValue& rkVector )
+        inline Color& operator += ( const Color& rkVector )
         {
             r += rkVector.r;
             g += rkVector.g;
@@ -267,7 +267,7 @@ namespace CamelotEngine {
             return *this;
         }
 
-        inline ColourValue& operator -= ( const ColourValue& rkVector )
+        inline Color& operator -= ( const Color& rkVector )
         {
             r -= rkVector.r;
             g -= rkVector.g;
@@ -277,7 +277,7 @@ namespace CamelotEngine {
             return *this;
         }
 
-        inline ColourValue& operator *= (const float fScalar )
+        inline Color& operator *= (const float fScalar )
         {
             r *= fScalar;
             g *= fScalar;
@@ -286,7 +286,7 @@ namespace CamelotEngine {
             return *this;
         }
 
-        inline ColourValue& operator /= (const float fScalar )
+        inline Color& operator /= (const float fScalar )
         {
             assert( fScalar != 0.0 );
 
@@ -319,7 +319,7 @@ namespace CamelotEngine {
 		/** Function for writing to a stream.
 		*/
 		inline CM_EXPORT friend std::ostream& operator <<
-			( std::ostream& o, const ColourValue& c )
+			( std::ostream& o, const Color& c )
 		{
 			o << "ColourValue(" << c.r << ", " << c.g << ", " << c.b << ", " << c.a << ")";
 			return o;

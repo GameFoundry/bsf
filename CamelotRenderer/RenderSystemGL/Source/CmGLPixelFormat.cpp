@@ -55,7 +55,7 @@ namespace CamelotEngine  {
 				return GL_BGR;
 			case PF_A4R4G4B4:
 				return GL_BGRA;
-#if OGRE_ENDIAN == OGRE_ENDIAN_BIG
+#if CM_ENDIAN == CM_ENDIAN_BIG
             // Formats are in native endian, so R8G8B8 on little endian is
             // BGR, on big endian it is RGB.
             case PF_R8G8B8:
@@ -136,7 +136,7 @@ namespace CamelotEngine  {
 				return GL_UNSIGNED_SHORT_4_4_4_4_REV;
             case PF_L16:
                 return GL_UNSIGNED_SHORT;
-#if OGRE_ENDIAN == OGRE_ENDIAN_BIG
+#if CM_ENDIAN == CM_ENDIAN_BIG
 			case PF_X8B8G8R8:
 			case PF_A8B8G8R8:
                 return GL_UNSIGNED_INT_8_8_8_8_REV;

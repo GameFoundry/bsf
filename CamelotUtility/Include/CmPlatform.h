@@ -43,6 +43,11 @@ namespace CamelotEngine {
 #define CM_ARCHITECTURE_32 1
 #define CM_ARCHITECTURE_64 2
 
+#define CM_ENDIAN_LITTLE 1
+#define CM_ENDIAN_BIG 2
+
+#define CM_ENDIAN CM_ENDIAN_LITTLE
+
 /* Finds the compiler type and version.
 */
 #if defined( __GCCE__ )

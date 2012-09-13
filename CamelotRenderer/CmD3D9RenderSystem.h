@@ -37,8 +37,6 @@ THE SOFTWARE.
 
 namespace CamelotEngine 
 {
-#define MAX_LIGHTS 8
-
 	class D3D9DriverList;
 	class D3D9Driver;
 	class D3D9Device;
@@ -89,15 +87,10 @@ namespace CamelotEngine
 			IDirect3DBaseTexture9 *pVertexTex;
 		} mTexStageDesc[CM_MAX_TEXTURE_LAYERS];
 
-		// Array of up to 8 lights, indexed as per API
-		// Note that a null value indicates a free slot
-		Light* mLights[MAX_LIGHTS];		
 		D3D9DriverList* getDirect3DDrivers();
 		void refreshD3DSettings();
         void refreshFSAAOptions();
-		
-		void setD3D9Light( size_t index, Light* light );
-		
+				
 		// state management methods, very primitive !!!
 		HRESULT __SetRenderState(D3DRENDERSTATETYPE state, DWORD value);
 		HRESULT __SetSamplerState(DWORD sampler, D3DSAMPLERSTATETYPE type, DWORD value);
@@ -229,7 +222,6 @@ namespace CamelotEngine
         void setNormaliseNormals(bool normalise);
 
 		// Low-level overridden members, mainly for internal use
-        void _useLights(const LightList& lights, unsigned short limit);
 		void _setWorldMatrix( const Matrix4 &m );
 		void _setViewMatrix( const Matrix4 &m );
 		void _setProjectionMatrix( const Matrix4 &m );

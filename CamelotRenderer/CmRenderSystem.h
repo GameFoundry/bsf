@@ -524,11 +524,6 @@ namespace CamelotEngine
 		// They can be called by library user if required
 		// ------------------------------------------------------------------------
 
-
-		/** Tells the rendersystem to use the attached set of lights (and no others) 
-		up to the number specified (this allows the same list to be used with different
-		count limits) */
-		virtual void _useLights(const LightList& lights, unsigned short limit) = 0;
 		/** Are fixed-function lights provided in view space? Affects optimisation. 
 		*/
 		virtual bool areFixedFunctionLightsInViewSpace() const { return false; }

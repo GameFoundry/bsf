@@ -362,9 +362,6 @@
     <ClInclude Include="CmBlendMode.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="CmColourValue.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="CmCommon.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
@@ -642,9 +639,6 @@
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\CmWin32Window.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmColourValue.cpp">
-      <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="CmPixelFormat.cpp">
       <Filter>Source Files\Utility</Filter>

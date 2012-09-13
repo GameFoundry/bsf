@@ -46,12 +46,6 @@ namespace CamelotEngine {
         /// Rendering loop control
         bool mStopRendering;
 
-        /** Array of up to 8 lights, indexed as per API
-            Note that a null value indicates a free slot
-          */ 
-        #define MAX_LIGHTS 8
-        Light* mLights[MAX_LIGHTS];
-
         /// View matrix to set world against
         Matrix4 mViewMatrix;
         Matrix4 mWorldMatrix;
@@ -227,10 +221,6 @@ namespace CamelotEngine {
         // -----------------------------
         // Low-level overridden members
         // -----------------------------
-        /** See
-          RenderSystem
-         */
-        void _useLights(const LightList& lights, unsigned short limit);
         /** See
           RenderSystem
          */

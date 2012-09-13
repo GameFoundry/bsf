@@ -71,7 +71,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmColourValue.h" />
+    <ClInclude Include="Include\CmColor.h" />
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmMathAsm.h" />
     <ClInclude Include="Include\CmString.h" />
@@ -96,7 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp" />
-    <ClCompile Include="Source\CmColourValue.cpp" />
+    <ClCompile Include="Source\CmColor.cpp" />
     <ClCompile Include="Source\CmException.cpp" />
     <ClCompile Include="Source\CmMath.cpp" />
     <ClCompile Include="Source\CmMatrix3.cpp" />

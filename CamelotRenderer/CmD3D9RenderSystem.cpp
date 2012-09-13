@@ -78,10 +78,6 @@ namespace CamelotEngine
 		// Create the resource manager.
 		mResourceManager = new D3D9ResourceManager();
 
-		// init lights
-		for(int i = 0; i < MAX_LIGHTS; i++ )
-			mLights[i] = 0;
-
 		// Create our Direct3D object
 		if( NULL == (mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) )
 			OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Failed to create Direct3D9 object", "D3D9RenderSystem::D3D9RenderSystem" );
@@ -1521,25 +1517,6 @@ namespace CamelotEngine
 			"Failed to set render stat D3DRS_AMBIENT", "D3D9RenderSystem::setAmbientLight" );
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_useLights(const LightList& lights, unsigned short limit)
-	{
-		IDirect3DDevice9* activeDevice = getActiveD3D9Device();
-		LightList::const_iterator i, iend;
-		iend = lights.end();
-		unsigned short num = 0;
-		for (i = lights.begin(); i != iend && num < limit; ++i, ++num)
-		{
-			setD3D9Light(num, *i);
-		}
-		// Disable extra lights
-		for (; num < mCurrentLights[activeDevice]; ++num)
-		{
-			setD3D9Light(num, NULL);
-		}
-		mCurrentLights[activeDevice] = std::min(limit, static_cast<unsigned short>(lights.size()));
-
-	}
-	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setShadingType( ShadeOptions so )
 	{
 		HRESULT hr = __SetRenderState( D3DRS_SHADEMODE, D3D9Mappings::get(so) );
@@ -1554,14 +1531,6 @@ namespace CamelotEngine
 		if( FAILED( hr = __SetRenderState( D3DRS_LIGHTING, enabled ) ) )
 			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
 			"Failed to set render state D3DRS_LIGHTING", "D3D9RenderSystem::setLightingEnabled" );
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setD3D9Light( size_t index, Light* lt )
-	{
-		// TODO PORT - D3D9 lights not supported
-		assert(false);
-
-
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setViewMatrix( const Matrix4 &m )

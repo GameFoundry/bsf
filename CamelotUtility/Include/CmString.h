@@ -302,7 +302,7 @@ namespace CamelotEngine {
     @remarks
         Format is "r g b a" (i.e. 4x float values, space delimited). 
     */
-    CM_EXPORT String toString(const ColourValue& val);
+    CM_EXPORT String toString(const Color& val);
     /** Converts a StringVector to a string.
     @remarks
         Strings must not contain spaces since space is used as a delimiter in
