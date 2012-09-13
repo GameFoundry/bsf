@@ -442,7 +442,7 @@ namespace CamelotEngine {
 		/** @copydoc GpuProgramParameters::setNamedConstant */
 		void setNamedConstant(const String& name, const double *val, size_t count);
 			/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, const ColourValue& colour);
+		void setNamedConstant(const String& name, const Color& colour);
 		/** @copydoc GpuProgramParameters::setNamedConstant */
 		void setNamedConstant(const String& name, const int *val, size_t count);
 
@@ -1186,7 +1186,7 @@ namespace CamelotEngine {
 		a 4D float)
 		@param colour The value to set
 		*/
-		void setConstant(size_t index, const ColourValue& colour);
+		void setConstant(size_t index, const Color& colour);
 
 		/** Sets a multiple value constant integer parameter to the program.
 		@remarks
@@ -1302,7 +1302,7 @@ namespace CamelotEngine {
 		@param count The number of floats to write; if for example
 		the uniform constant 'slot' is smaller than a Vector4
 		*/
-		void _writeRawConstant(size_t physicalIndex, const ColourValue& colour, 
+		void _writeRawConstant(size_t physicalIndex, const Color& colour, 
 			size_t count = 4);
 
 
@@ -1571,7 +1571,7 @@ namespace CamelotEngine {
 		@param name The name of the parameter
 		@param colour The value to set
 		*/
-		void setNamedConstant(const String& name, const ColourValue& colour);
+		void setNamedConstant(const String& name, const Color& colour);
 
 		/** Sets a multiple value constant floating-point parameter to the program.
 		@par

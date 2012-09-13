@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "CmPixelFormat.h"
 #include "CmBitwise.h"
-#include "CmColourValue.h"
+#include "CmColor.h"
 #include "CmImageResampler.h"
 #include "CmException.h"
 
@@ -991,7 +991,7 @@ namespace CamelotEngine {
     /*************************************************************************
     * Pixel packing/unpacking utilities
     */
-    void PixelUtil::packColour(const ColourValue &colour, const PixelFormat pf,  void* dest)
+    void PixelUtil::packColour(const Color &colour, const PixelFormat pf,  void* dest)
     {
         packColour(colour.r, colour.g, colour.b, colour.a, pf, dest);
     }
@@ -1091,7 +1091,7 @@ namespace CamelotEngine {
         }
     }
     //-----------------------------------------------------------------------
-    void PixelUtil::unpackColour(ColourValue *colour, PixelFormat pf,  const void* src)
+    void PixelUtil::unpackColour(Color *colour, PixelFormat pf,  const void* src)
     {
         unpackColour(&colour->r, &colour->g, &colour->b, &colour->a, pf, src);
     }
@@ -1463,9 +1463,9 @@ namespace CamelotEngine {
 		}
 	}
 
-    ColourValue PixelBox::getColourAt(size_t x, size_t y, size_t z)
+    Color PixelBox::getColourAt(size_t x, size_t y, size_t z)
     {
-        ColourValue cv;
+        Color cv;
 
         unsigned char pixelSize = PixelUtil::getNumElemBytes(format);
         size_t pixelOffset = pixelSize * (z * slicePitch + y * rowPitch + x);
@@ -1474,7 +1474,7 @@ namespace CamelotEngine {
         return cv;
     }
 
-    void PixelBox::setColourAt(ColourValue const &cv, size_t x, size_t y, size_t z)
+    void PixelBox::setColourAt(Color const &cv, size_t x, size_t y, size_t z)
     {
         unsigned char pixelSize = PixelUtil::getNumElemBytes(format);
         size_t pixelOffset = pixelSize * (z * slicePitch + y * rowPitch + x);

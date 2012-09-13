@@ -213,7 +213,7 @@ namespace CamelotEngine
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
 		renderSystem->setInvertVertexWinding(true);
-		renderSystem->clearFrameBuffer(FBT_COLOUR | FBT_DEPTH, ColourValue::Blue);
+		renderSystem->clearFrameBuffer(FBT_COLOUR | FBT_DEPTH, Color::Blue);
 		renderSystem->_beginFrame();
 
 		mVertProg->getDefaultParameters()->setNamedConstant("matViewProjection", viewProjMatrix);

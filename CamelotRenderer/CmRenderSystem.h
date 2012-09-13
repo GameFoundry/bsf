@@ -583,9 +583,9 @@ namespace CamelotEngine
 		taken from shininess) and TVC_EMISSIVE. TVC_NONE means that there will be no material property
 		tracking the vertex colours.
 		*/
-		virtual void _setSurfaceParams(const ColourValue &ambient,
-			const ColourValue &diffuse, const ColourValue &specular,
-			const ColourValue &emissive, float shininess,
+		virtual void _setSurfaceParams(const Color &ambient,
+			const Color &diffuse, const Color &specular,
+			const Color &emissive, float shininess,
 			TrackVertexColourType tracking = TVC_NONE) = 0;
 
 		/** Sets whether or not rendering points using OT_POINT_LIST will 
@@ -687,7 +687,7 @@ namespace CamelotEngine
 		virtual void _setTextureAddressingMode(size_t unit, const TextureState::UVWAddressingMode& uvw) = 0;
 
 		/** Sets the texture border colour for a texture unit.*/
-		virtual void _setTextureBorderColour(size_t unit, const ColourValue& colour) = 0;
+		virtual void _setTextureBorderColour(size_t unit, const Color& colour) = 0;
 
 		/** Sets the mipmap bias value for a given texture unit.
 		@remarks
@@ -872,7 +872,7 @@ namespace CamelotEngine
 		@param linearEnd Distance at which linear fog becomes completely opaque.The distance must be passed
 		as a parametric value between 0 and 1, with 0 being the near clipping plane, and 1 being the far clipping plane. Only applicable if mode is FOG_LINEAR.
 		*/
-		virtual void _setFog(FogMode mode = FOG_NONE, const ColourValue& colour = ColourValue::White, float expDensity = 1.0, float linearStart = 0.0, float linearEnd = 1.0) = 0;
+		virtual void _setFog(FogMode mode = FOG_NONE, const Color& colour = Color::White, float expDensity = 1.0, float linearStart = 0.0, float linearEnd = 1.0) = 0;
 
 
 		/** The RenderSystem will keep a count of tris rendered, this resets the count. */
@@ -892,7 +892,7 @@ namespace CamelotEngine
 		@param colour The colour to convert
 		@param pDest Pointer to location to put the result.
 		*/
-		virtual void convertColourValue(const ColourValue& colour, UINT32* pDest);
+		virtual void convertColourValue(const Color& colour, UINT32* pDest);
 		/** Get the native VertexElementType for a compact 32-bit colour value
 		for this rendersystem.
 		*/
@@ -1146,7 +1146,7 @@ namespace CamelotEngine
 		@param stencil The value to initialise the stencil buffer with, if enabled.
 		*/
 		virtual void clearFrameBuffer(unsigned int buffers, 
-			const ColourValue& colour = ColourValue::Black, 
+			const Color& colour = Color::Black, 
 			float depth = 1.0f, unsigned short stencil = 0) = 0;
 		/** Returns the horizontal texel offset value required for mapping 
 		texel origins to pixel origins in this rendersystem.
@@ -1339,7 +1339,7 @@ namespace CamelotEngine
 		size_t mVertexCount;
 
 		/// Saved manual colour blends
-		ColourValue mManualBlendColours[CM_MAX_TEXTURE_LAYERS][2];
+		Color mManualBlendColours[CM_MAX_TEXTURE_LAYERS][2];
 
 		bool mInvertVertexWinding;
 

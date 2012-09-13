@@ -284,14 +284,14 @@ namespace CamelotEngine {
          * is only valid for cubemaps and volume textures. This uses the first (largest)
          * mipmap.
          */
-        ColourValue getColourAt(size_t x, size_t y, size_t z);
+        Color getColourAt(size_t x, size_t y, size_t z);
 
         /**
          * Set colour value at a certain location in the PixelBox. The z coordinate
          * is only valid for cubemaps and volume textures. This uses the first (largest)
          * mipmap.
          */
-        void setColourAt(ColourValue const &cv, size_t x, size_t y, size_t z);
+        void setColourAt(Color const &cv, size_t x, size_t y, size_t z);
     };
     
 
@@ -444,7 +444,7 @@ namespace CamelotEngine {
         	@param pf		Pixelformat in which to write the colour
         	@param dest		Destination memory location
         */
-        static void packColour(const ColourValue &colour, const PixelFormat pf,  void* dest);
+        static void packColour(const Color &colour, const PixelFormat pf,  void* dest);
         /** Pack a colour value to memory
         	@param r,g,b,a	The four colour components, range 0x00 to 0xFF
         	@param pf		Pixelformat in which to write the colour
@@ -465,7 +465,7 @@ namespace CamelotEngine {
         	@param pf		Pixelformat in which to read the colour
         	@param src		Source memory location
         */
-        static void unpackColour(ColourValue *colour, PixelFormat pf,  const void* src);
+        static void unpackColour(Color *colour, PixelFormat pf,  const void* src);
         /** Unpack a colour value from memory
         	@param r,g,b,a	The colour is returned here (as byte)
         	@param pf		Pixelformat in which to read the colour

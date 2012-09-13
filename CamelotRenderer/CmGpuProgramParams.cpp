@@ -425,7 +425,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void GpuSharedParameters::setNamedConstant(const String& name, const ColourValue& colour)
+	void GpuSharedParameters::setNamedConstant(const String& name, const Color& colour)
 	{
 		setNamedConstant(name, colour.ptr(), 4);
 	}
@@ -711,7 +711,7 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setConstant(size_t index, const ColourValue& colour)
+	void GpuProgramParameters::setConstant(size_t index, const Color& colour)
 	{
 		setConstant(index, colour.ptr(), 1);
 	}
@@ -820,7 +820,7 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------------
 	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, 
-		const ColourValue& colour, size_t count)
+		const Color& colour, size_t count)
 	{
 		// write either the number requested (for packed types) or up to 4
 		_writeRawConstants(physicalIndex, colour.ptr(), std::min(count, (size_t)4));
@@ -1564,7 +1564,7 @@ namespace CamelotEngine
 			_writeRawConstants(def->physicalIndex, val, rawCount);
 	}
 	//---------------------------------------------------------------------------
-	void GpuProgramParameters::setNamedConstant(const String& name, const ColourValue& colour)
+	void GpuProgramParameters::setNamedConstant(const String& name, const Color& colour)
 	{
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 

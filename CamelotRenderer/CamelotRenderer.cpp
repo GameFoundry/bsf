@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "CmColourValue.h"
+#include "CmColor.h"
 #include "CmMath.h"
 #include "CmMatrix3.h"
 #include "CmMatrix4.h"

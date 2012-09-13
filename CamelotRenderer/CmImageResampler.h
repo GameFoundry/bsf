@@ -138,8 +138,8 @@ struct LinearResampler {
 					size_t sx2 = std::min(sx1+1,src.getWidth()-1);// src x #2
 					float sxf = (temp & 0xFFFF) / 65536.f; // weight of #2
 				
-					ColourValue x1y1z1, x2y1z1, x1y2z1, x2y2z1;
-					ColourValue x1y1z2, x2y1z2, x1y2z2, x2y2z2;
+					Color x1y1z1, x2y1z1, x1y2z1, x2y2z1;
+					Color x1y1z2, x2y1z2, x1y2z2, x2y2z2;
 
 #define UNPACK(dst,x,y,z) PixelUtil::unpackColour(&dst, src.format, \
 	srcdata + srcelemsize*((x)+(y)*src.rowPitch+(z)*src.slicePitch))
@@ -150,7 +150,7 @@ struct LinearResampler {
 					UNPACK(x1y2z2,sx1,sy2,sz2); UNPACK(x2y2z2,sx2,sy2,sz2);
 #undef UNPACK
 
-					ColourValue accum =
+					Color accum =
 						x1y1z1 * ((1.0f - sxf)*(1.0f - syf)*(1.0f - szf)) +
 						x2y1z1 * (        sxf *(1.0f - syf)*(1.0f - szf)) +
 						x1y2z1 * ((1.0f - sxf)*        syf *(1.0f - szf)) +

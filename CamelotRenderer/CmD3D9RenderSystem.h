@@ -233,7 +233,7 @@ namespace CamelotEngine
 		void _setWorldMatrix( const Matrix4 &m );
 		void _setViewMatrix( const Matrix4 &m );
 		void _setProjectionMatrix( const Matrix4 &m );
-		void _setSurfaceParams( const ColourValue &ambient, const ColourValue &diffuse, const ColourValue &specular, const ColourValue &emissive, float shininess, TrackVertexColourType tracking );
+		void _setSurfaceParams( const Color &ambient, const Color &diffuse, const Color &specular, const Color &emissive, float shininess, TrackVertexColourType tracking );
 		void _setPointSpritesEnabled(bool enabled);
 		void _setPointParameters(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize);
@@ -245,7 +245,7 @@ namespace CamelotEngine
             const Frustum* frustum = 0);
 		void _setTextureBlendMode( size_t unit, const LayerBlendModeEx& bm );
         void _setTextureAddressingMode(size_t stage, const TextureState::UVWAddressingMode& uvw);
-        void _setTextureBorderColour(size_t stage, const ColourValue& colour);
+        void _setTextureBorderColour(size_t stage, const Color& colour);
 		void _setTextureMipmapBias(size_t unit, float bias);
 		void _setTextureMatrix( size_t unit, const Matrix4 &xform );
 		void _setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
@@ -263,7 +263,7 @@ namespace CamelotEngine
 		void _setDepthBufferWriteEnabled(bool enabled = true);
 		void _setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
 		void _setDepthBias(float constantBias, float slopeScaleBias);
-		void _setFog( FogMode mode = FOG_NONE, const ColourValue& colour = ColourValue::White, float expDensity = 1.0, float linearStart = 0.0, float linearEnd = 1.0 );
+		void _setFog( FogMode mode = FOG_NONE, const Color& colour = Color::White, float expDensity = 1.0, float linearStart = 0.0, float linearEnd = 1.0 );
 		void _convertProjectionMatrix(const Matrix4& matrix,
             Matrix4& dest, bool forGpuProgram = false);
 		void _makeProjectionMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
@@ -297,7 +297,7 @@ namespace CamelotEngine
 
         void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600);
         void clearFrameBuffer(unsigned int buffers, 
-            const ColourValue& colour = ColourValue::Black, 
+            const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
 		void setClipPlane (UINT16 index, float A, float B, float C, float D);
 		void enableClipPlane (UINT16 index, bool enable);

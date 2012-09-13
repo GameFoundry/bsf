@@ -250,9 +250,9 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void _setSurfaceParams(const ColourValue &ambient,
-            const ColourValue &diffuse, const ColourValue &specular,
-            const ColourValue &emissive, float shininess,
+        void _setSurfaceParams(const Color &ambient,
+            const Color &diffuse, const Color &specular,
+            const Color &emissive, float shininess,
             TrackVertexColourType tracking);
         /** See
           RenderSystem
@@ -287,7 +287,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void _setTextureBorderColour(size_t stage, const ColourValue& colour);
+        void _setTextureBorderColour(size_t stage, const Color& colour);
 		/** See
 		  RenderSystem
 		 */
@@ -359,7 +359,7 @@ namespace CamelotEngine {
 		/** See
           RenderSystem
          */
-        void _setFog(FogMode mode, const ColourValue& colour, float density, float start, float end);
+        void _setFog(FogMode mode, const Color& colour, float density, float start, float end);
         /** See
           RenderSystem
          */
@@ -452,7 +452,7 @@ namespace CamelotEngine {
          */
         void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600) ;
         void clearFrameBuffer(unsigned int buffers, 
-            const ColourValue& colour = ColourValue::Black, 
+            const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
         HardwareOcclusionQuery* createHardwareOcclusionQuery(void);
         float getHorizontalTexelOffset(void);

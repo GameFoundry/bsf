@@ -1618,8 +1618,8 @@ namespace CamelotEngine
 			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Cannot set D3D9 world matrix", "D3D9RenderSystem::_setWorldMatrix" );
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setSurfaceParams( const ColourValue &ambient, const ColourValue &diffuse,
-		const ColourValue &specular, const ColourValue &emissive, float shininess,
+	void D3D9RenderSystem::_setSurfaceParams( const Color &ambient, const Color &diffuse,
+		const Color &specular, const Color &emissive, float shininess,
 		TrackVertexColourType tracking )
 	{
 
@@ -2055,7 +2055,7 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------------
 	void D3D9RenderSystem::_setTextureBorderColour(size_t stage,
-		const ColourValue& colour)
+		const Color& colour)
 	{
 		HRESULT hr;
 		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_BORDERCOLOR, colour.getAsARGB()) ) )
@@ -2407,7 +2407,7 @@ namespace CamelotEngine
 			"D3D9RenderSystem::_setColourBufferWriteEnabled");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setFog( FogMode mode, const ColourValue& colour, float densitiy, float start, float end )
+	void D3D9RenderSystem::_setFog( FogMode mode, const Color& colour, float densitiy, float start, float end )
 	{
 		HRESULT hr;
 
@@ -3367,7 +3367,7 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::clearFrameBuffer(unsigned int buffers, 
-		const ColourValue& colour, float depth, unsigned short stencil)
+		const Color& colour, float depth, unsigned short stencil)
 	{
 		DWORD flags = 0;
 		if (buffers & FBT_COLOUR)

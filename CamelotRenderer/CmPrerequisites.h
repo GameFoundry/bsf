@@ -37,7 +37,7 @@ namespace CamelotEngine {
 // Allows use of pointers in header files without including individual .h
 // so decreases dependencies between files
     class Camera;
-    class ColourValue;
+    class Color;
     class Frustum;
     class GpuProgram;
     class GpuProgramManager;

@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 
 #include "CmHardwareVertexBuffer.h"
-#include "CmColourValue.h"
+#include "CmColor.h"
 #include "CmException.h"
 #include "CmHardwareBufferManager.h"
 #include "CmDefaultHardwareBufferManager.h"
@@ -215,7 +215,7 @@ namespace CamelotEngine {
 		   ((*ptr&0x00FF0000)>>16)|((*ptr&0x000000FF)<<16)|(*ptr&0xFF00FF00);				
 	}
 	//--------------------------------------------------------------------------
-	UINT32 VertexElement::convertColourValue(const ColourValue& src, 
+	UINT32 VertexElement::convertColourValue(const Color& src, 
 		VertexElementType dst)
 	{
 		switch(dst)

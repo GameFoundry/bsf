@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __BLENDMODE_H__
 
 #include "CmPrerequisites.h"
-#include "CmColourValue.h"
+#include "CmColor.h"
 
 namespace CamelotEngine {
 	/** \addtogroup Core
@@ -149,9 +149,9 @@ namespace CamelotEngine {
         LayerBlendSource source2;
 
         /// Manual colour value for manual source1
-        ColourValue colourArg1;
+        Color colourArg1;
         /// Manual colour value for manual source2
-        ColourValue colourArg2;
+        Color colourArg2;
         /// Manual alpha value for manual source1
         float alphaArg1;
         /// Manual alpha value for manual source2

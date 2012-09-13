@@ -31,7 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "CmColourValue.h"
+#include "CmColor.h"
 
 namespace CamelotEngine {
 	class HardwareBufferManagerBase;
@@ -181,7 +181,7 @@ namespace CamelotEngine {
 		@param src source colour
 		@param dst The destination type
 		*/
-		static UINT32 convertColourValue(const ColourValue& src,
+		static UINT32 convertColourValue(const Color& src,
 			VertexElementType dst);
 
 		/** Utility method to get the most appropriate packed colour vertex element format. */

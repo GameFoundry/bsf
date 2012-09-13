@@ -434,7 +434,7 @@ namespace CamelotEngine {
         return static_cast< unsigned int >( mVertexCount );
     }
     //-----------------------------------------------------------------------
-	void RenderSystem::convertColourValue(const ColourValue& colour, UINT32* pDest)
+	void RenderSystem::convertColourValue(const Color& colour, UINT32* pDest)
 	{
 		*pDest = VertexElement::convertColourValue(colour, getColourVertexElementType());
 

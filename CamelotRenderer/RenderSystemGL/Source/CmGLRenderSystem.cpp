@@ -1132,9 +1132,9 @@ namespace CamelotEngine {
 			mClipPlanesDirty = true;
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setSurfaceParams(const ColourValue &ambient,
-		const ColourValue &diffuse, const ColourValue &specular,
-		const ColourValue &emissive, float shininess,
+	void GLRenderSystem::_setSurfaceParams(const Color &ambient,
+		const Color &diffuse, const Color &specular,
+		const Color &emissive, float shininess,
 		TrackVertexColourType tracking)
 	{
 
@@ -1539,7 +1539,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setTextureBorderColour(size_t stage, const ColourValue& colour)
+	void GLRenderSystem::_setTextureBorderColour(size_t stage, const Color& colour)
 	{
 		GLfloat border[4] = { colour.r, colour.g, colour.b, colour.a };
 		if (activateGLTextureUnit(stage))
@@ -1952,7 +1952,7 @@ namespace CamelotEngine {
         }
     }
     //-----------------------------------------------------------------------------
-    void GLRenderSystem::_setFog(FogMode mode, const ColourValue& colour, float density, float start, float end)
+    void GLRenderSystem::_setFog(FogMode mode, const Color& colour, float density, float start, float end)
     {
 
         GLint fogMode;
@@ -3058,7 +3058,7 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::clearFrameBuffer(unsigned int buffers, 
-		const ColourValue& colour, float depth, unsigned short stencil)
+		const Color& colour, float depth, unsigned short stencil)
 	{
 		bool colourMask = !mColourWrite[0] || !mColourWrite[1] 
 		|| !mColourWrite[2] || !mColourWrite[3]; 

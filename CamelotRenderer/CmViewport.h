@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 #include "CmCommon.h"
-#include "CmColourValue.h"
+#include "CmColor.h"
 #include "CmFrustum.h"
 
 namespace CamelotEngine {
@@ -114,7 +114,7 @@ namespace CamelotEngine {
 		 @param stencil The stencil value to clear to, if FBT_STENCIL is included
 		*/
 		void clear(unsigned int buffers = FBT_COLOUR | FBT_DEPTH,
-				   const ColourValue& colour = ColourValue::Black, 
+				   const Color& colour = Color::Black, 
 				   float depth = 1.0f, unsigned short stencil = 0);
 
         /** Retrieves a pointer to the render target for this viewport.
@@ -180,11 +180,11 @@ namespace CamelotEngine {
         /** Sets the initial background colour of the viewport (before
             rendering).
         */
-        void setBackgroundColour(const ColourValue& colour);
+        void setBackgroundColour(const Color& colour);
 
         /** Gets the background colour.
         */
-        const ColourValue& getBackgroundColour(void) const;
+        const Color& getBackgroundColour(void) const;
 
         /** Determines whether to clear the viewport before rendering.
 		@remarks
@@ -218,7 +218,7 @@ namespace CamelotEngine {
         /// ZOrder
         int mZOrder;
         /// Background options
-        ColourValue mBackColour;
+        Color mBackColour;
         bool mClearEveryFrame;
 		unsigned int mClearBuffers;
     };
