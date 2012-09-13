@@ -1,17 +1,13 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <memory>
-#include <assert.h>
-
+#include "CmPrerequisites.h"
 #include "CmRenderSystemFactory.h"
 
 namespace CamelotEngine
 {
 	typedef std::shared_ptr<RenderSystemFactory> RenderSystemFactoryPtr;
 
-	class RenderSystemManager
+	class CM_EXPORT RenderSystemManager
 	{
 	public:
 		static void initialize(const std::string& name);
