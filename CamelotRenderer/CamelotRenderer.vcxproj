@@ -95,7 +95,6 @@
     <ClInclude Include="CmD3D9RenderSystemFactory.h" />
     <ClInclude Include="CmRenderSystemFactory.h" />
     <ClInclude Include="CmRenderSystemManager.h" />
-    <ClInclude Include="CmBitwise.h" />
     <ClInclude Include="CmCamera.h" />
     <ClInclude Include="CmCommon.h" />
     <ClInclude Include="CmConfigOptionMap.h" />
@@ -137,7 +136,6 @@
     <ClInclude Include="CmHardwareVertexBuffer.h" />
     <ClInclude Include="CmHighLevelGpuProgram.h" />
     <ClInclude Include="CmHighLevelGpuProgramManager.h" />
-    <ClInclude Include="CmPixelUtil.h" />
     <ClInclude Include="CmPrerequisites.h" />
     <ClInclude Include="CmRenderOperation.h" />
     <ClInclude Include="CmRenderSystem.h" />
@@ -236,7 +234,6 @@
     <ClCompile Include="CmHardwareVertexBuffer.cpp" />
     <ClCompile Include="CmHighLevelGpuProgram.cpp" />
     <ClCompile Include="CmHighLevelGpuProgramManager.cpp" />
-    <ClCompile Include="CmPixelUtil.cpp" />
     <ClCompile Include="CmRenderSystem.cpp" />
     <ClCompile Include="CmRenderSystemCapabilities.cpp" />
     <ClCompile Include="CmRenderTarget.cpp" />

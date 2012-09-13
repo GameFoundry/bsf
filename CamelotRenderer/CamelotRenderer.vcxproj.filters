@@ -338,9 +338,6 @@
     <ClInclude Include="RenderSystemGL\Include\CmWin32Window.h">
       <Filter>RenderSystemGL\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CmBitwise.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
     <ClInclude Include="CmConfigOptionMap.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
@@ -357,9 +354,6 @@
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="CmWindowEventUtilities.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="CmPixelUtil.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
   </ItemGroup>
@@ -629,9 +623,6 @@
       <Filter>RenderSystemGL\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CmWindowEventUtilities.cpp">
-      <Filter>Source Files\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="CmPixelUtil.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
