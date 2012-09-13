@@ -29,45 +29,8 @@ THE SOFTWARE.
 #define __Exception_H_
 
 // Precompiler options
-#include "CmPrerequisites.h"
-#include "CmHeaderPrefix.h"
 #include "CmString.h"
 #include <exception>
-
-// Backwards compatibility with old assert mode definitions
-#if OGRE_RELEASE_ASSERT == 1
-#   define OGRE_ASSERT_MODE 1
-#endif
-
-// Check for OGRE assert mode
-
-// RELEASE_EXCEPTIONS mode
-#if OGRE_ASSERT_MODE == 1
-#   ifdef _DEBUG
-#       define OgreAssert( a, b ) assert( (a) && (b) )
-
-#   else
-#       if OGRE_COMP != CM_COMPILER_BORL
-#           define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( CamelotEngine::Exception::ERR_RT_ASSERTION_FAILED, (b), "no function info")
-#       else
-#           define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( CamelotEngine::Exception::ERR_RT_ASSERTION_FAILED, (b), __FUNC__ )
-#       endif
-
-#   endif
-
-// EXCEPTIONS mode
-#elif OGRE_ASSERT_MODE == 2
-#   if OGRE_COMP != CM_COMPILER_BORL
-#       define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( CamelotEngine::Exception::ERR_RT_ASSERTION_FAILED, (b), "no function info")
-#   else
-#       define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( CamelotEngine::Exception::ERR_RT_ASSERTION_FAILED, (b), __FUNC__ )
-#   endif
-
-// STANDARD mode
-#else
-#   define OgreAssert( a, b ) assert( (a) && (b) )
-
-#endif
 
 namespace CamelotEngine {
 	/** \addtogroup Core
@@ -347,5 +310,4 @@ namespace CamelotEngine {
 
 } // namespace CamelotEngine
 
-#include "CmHeaderSuffix.h"
 #endif

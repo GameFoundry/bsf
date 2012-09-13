@@ -58,7 +58,6 @@ namespace CamelotEngine {
 	class MultiRenderTarget;
     class RenderWindow;
     class RenderOperation;
-    class StringConverter;
     class StringInterface;
     class TextureState;
     class Texture;
@@ -77,27 +76,6 @@ namespace CamelotEngine
 	typedef std::shared_ptr<HardwarePixelBuffer> HardwarePixelBufferPtr;
 	typedef std::shared_ptr<Texture> TexturePtr;
 }
-
-namespace CamelotEngine
-{
-	#if OGRE_WCHAR_T_STRINGS
-		typedef std::wstring _StringBase;
-	#else
-		typedef std::string _StringBase;
-	#endif
-
-	#if OGRE_WCHAR_T_STRINGS
-		typedef std::basic_stringstream<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t> > _StringStreamBase;
-	#else
-		typedef std::basic_stringstream<char,std::char_traits<char>,std::allocator<char> > _StringStreamBase;
-	#endif
-
-	typedef _StringBase String;
-	typedef _StringStreamBase StringStream;
-	typedef StringStream stringstream;
-
-}
-
 
 #endif // __OgrePrerequisites_H__
 

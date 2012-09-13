@@ -2,10 +2,13 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotRenderer", "CamelotRenderer\CamelotRenderer.vcxproj", "{9B21D41C-516B-43BF-9B10-E99B599C7589}"
-EndProject
-Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "CamelotModel", "CamelotModel\CamelotModel.modelproj", "{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotUtility", "CamelotUtility\CamelotUtility.vcxproj", "{CC7F9445-71C9-4559-9976-FF0A64DCB582}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotD3D9Renderer", "CamelotD3D9Renderer\CamelotD3D9Renderer.vcxproj", "{796B6DFF-BA04-42B7-A43A-2B14D707A33A}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -31,16 +34,6 @@ Global
 		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Release|Win32.ActiveCfg = Release|Win32
 		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Release|Win32.Build.0 = Release|Win32
-		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{CF27AA3E-CBE5-48FA-9562-12B4BF474ACD}.Release|Win32.ActiveCfg = Release|Any CPU
 		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Debug|Mixed Platforms.Build.0 = Debug|Win32
@@ -51,6 +44,16 @@ Global
 		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Release|Win32.ActiveCfg = Release|Win32
 		{CC7F9445-71C9-4559-9976-FF0A64DCB582}.Release|Win32.Build.0 = Release|Win32
+		{796B6DFF-BA04-42B7-A43A-2B14D707A33A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{796B6DFF-BA04-42B7-A43A-2B14D707A33A}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{796B6DFF-BA04-42B7-A43A-2B14D707A33A}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{796B6DFF-BA04-42B7-A43A-2B14D707A33A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{796B6DFF-BA04-42B7-A43A-2B14D707A33A}.Debug|Win32.Build.0 = Debug|Win32
+		{796B6DFF-BA04-42B7-A43A-2B14D707A33A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{796B6DFF-BA04-42B7-A43A-2B14D707A33A}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{796B6DFF-BA04-42B7-A43A-2B14D707A33A}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{796B6DFF-BA04-42B7-A43A-2B14D707A33A}.Release|Win32.ActiveCfg = Release|Win32
+		{796B6DFF-BA04-42B7-A43A-2B14D707A33A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

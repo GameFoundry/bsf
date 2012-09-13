@@ -401,9 +401,6 @@
     <ClInclude Include="CmConfigOptionMap.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="CmException.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
     <ClInclude Include="CmHeaderPrefix.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
@@ -417,12 +414,6 @@
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
     <ClInclude Include="CmSingleton.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="CmString.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="CmStringConverter.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
     <ClInclude Include="CmBlendMode.h">
@@ -777,15 +768,6 @@
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\CmWin32Window.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmException.cpp">
-      <Filter>Source Files\ForRemoval</Filter>
-    </ClCompile>
-    <ClCompile Include="CmString.cpp">
-      <Filter>Source Files\ForRemoval</Filter>
-    </ClCompile>
-    <ClCompile Include="CmStringConverter.cpp">
-      <Filter>Source Files\ForRemoval</Filter>
     </ClCompile>
     <ClCompile Include="CmColourValue.cpp">
       <Filter>Source Files\Utility</Filter>

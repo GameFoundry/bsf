@@ -42,43 +42,4 @@ THE SOFTWARE
 // Commonly used standard headers
 #include "CmStdHeaders.h"
 
-// Standard containers, for easier access in my own namespace
-namespace CamelotEngine
-{ 
-	template <typename T, typename A = char > 
-	struct deque 
-	{ 
-		typedef typename std::deque<T> type;    
-	}; 
-
-	template <typename T, typename A = char > 
-	struct vector 
-	{ 
-		typedef typename std::vector<T> type;    
-	}; 
-
-	template <typename T, typename A = char > 
-	struct list 
-	{ 
-		typedef typename std::list<T> type;    
-	}; 
-
-	template <typename T, typename P = std::less<T>, typename A = char > 
-	struct set 
-	{ 
-		typedef typename std::set<T, P> type;    
-	}; 
-
-	template <typename K, typename V, typename P = std::less<K>, typename A = char > 
-	struct map 
-	{ 
-		typedef typename std::map<K, V, P> type; 
-	}; 
-
-	template <typename K, typename V, typename P = std::less<K>, typename A = char > 
-	struct multimap 
-	{ 
-		typedef typename std::multimap<K, V, P> type; 
-	}; 
-
-}
+#include "CmString.h"

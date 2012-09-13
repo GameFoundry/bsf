@@ -18,7 +18,7 @@ namespace CamelotEngine
 		public:
 			Application();
 
-			void startUp();
+			void startUp(String renderSystemDll);
 			void shutDown();
 
 			void DBG_renderSimpleFrame();

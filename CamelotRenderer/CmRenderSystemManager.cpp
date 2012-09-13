@@ -8,6 +8,8 @@ namespace CamelotEngine
 
 	void RenderSystemManager::initialize(const std::string& name)
 	{
+		assert(mActiveRenderSystem == nullptr); // Once loaded the render system is set for life
+
 		for(auto iter = getAvailableFactories().begin(); iter != getAvailableFactories().end(); ++iter)
 		{
 			if((*iter)->name() == name)

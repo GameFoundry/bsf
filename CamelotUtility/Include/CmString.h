@@ -28,7 +28,7 @@ THE SOFTWARE.
 #ifndef _String_H__
 #define _String_H__
 
-#include "CmPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 
 // If we're using the GCC 3.1 C++ Std lib
 #if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310 && !defined(STLPORT)
@@ -63,6 +63,23 @@ namespace __gnu_cxx
 #endif
 
 namespace CamelotEngine {
+
+#if CM_WCHAR_T_STRINGS
+		typedef std::wstring _StringBase;
+#else
+		typedef std::string _StringBase;
+#endif
+
+#if CM_WCHAR_T_STRINGS
+		typedef std::basic_stringstream<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t> > _StringStreamBase;
+#else
+		typedef std::basic_stringstream<char,std::char_traits<char>,std::allocator<char> > _StringStreamBase;
+#endif
+
+		typedef _StringBase String;
+		typedef _StringStreamBase StringStream;
+		typedef StringStream stringstream;
+
 	/** \addtogroup Core
 	*  @{
 	*/

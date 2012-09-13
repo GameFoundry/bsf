@@ -11,22 +11,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CC7F9445-71C9-4559-9976-FF0A64DCB582}</ProjectGuid>
-    <RootNamespace>CamelotUtility</RootNamespace>
+    <ProjectGuid>{796B6DFF-BA04-42B7-A43A-2B14D707A33A}</ProjectGuid>
+    <RootNamespace>CamelotD3D9Renderer</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -38,18 +38,11 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\lib\$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\lib\$(Configuration)\</OutDir>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CM_STATIC_LIB</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -61,8 +54,6 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>CM_STATIC_LIB</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -71,45 +62,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmColourValue.h" />
-    <ClInclude Include="Include\CmException.h" />
-    <ClInclude Include="Include\CmMathAsm.h" />
-    <ClInclude Include="Include\CmString.h" />
-    <ClInclude Include="Include\CmStringConverter.h" />
-    <ClInclude Include="Include\CmThreadDefines.h" />
-    <ClInclude Include="Include\CmTypes.h" />
-    <ClInclude Include="Include\CmFwdDeclUtil.h" />
-    <ClInclude Include="Include\CmAxisAlignedBox.h" />
-    <ClInclude Include="Include\CmMath.h" />
-    <ClInclude Include="Include\CmMatrix3.h" />
-    <ClInclude Include="Include\CmMatrix4.h" />
-    <ClInclude Include="Include\CmPlane.h" />
-    <ClInclude Include="Include\CmPlatform.h" />
-    <ClInclude Include="Include\CmPrerequisitesUtil.h" />
-    <ClInclude Include="Include\CmQuaternion.h" />
-    <ClInclude Include="Include\CmRay.h" />
-    <ClInclude Include="Include\CmSphere.h" />
-    <ClInclude Include="Include\CmStdHeaders.h" />
-    <ClInclude Include="Include\CmVector2.h" />
-    <ClInclude Include="Include\CmVector3.h" />
-    <ClInclude Include="Include\CmVector4.h" />
-    <ClInclude Include="Include\CmDynLib.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Include\CmAxisAlignedBox.cpp" />
-    <ClCompile Include="Source\CmColourValue.cpp" />
-    <ClCompile Include="Source\CmException.cpp" />
-    <ClCompile Include="Source\CmMath.cpp" />
-    <ClCompile Include="Source\CmMatrix3.cpp" />
-    <ClCompile Include="Source\CmMatrix4.cpp" />
-    <ClCompile Include="Source\CmPlane.cpp" />
-    <ClCompile Include="Source\CmQuaternion.cpp" />
-    <ClCompile Include="Source\CmString.cpp" />
-    <ClCompile Include="Source\CmStringConverter.cpp" />
-    <ClCompile Include="Source\CmVector2.cpp" />
-    <ClCompile Include="Source\CmVector3.cpp" />
-    <ClCompile Include="Source\CmVector4.cpp" />
-    <ClCompile Include="Source\CmDynLib.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

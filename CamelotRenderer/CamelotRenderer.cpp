@@ -31,7 +31,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	//const String& name = CamelotEngine::gApplication().getRenderSystem()->getName();
 
-	gApplication().startUp();
+	gApplication().startUp("RenderSystemD3D9.dll");
 
 	int a = 5;
 

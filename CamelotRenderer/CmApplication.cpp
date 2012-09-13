@@ -17,7 +17,7 @@ namespace CamelotEngine
 		:mRenderWindow(nullptr), mViewport(nullptr), mCamera(nullptr), mGpuProgramManager(nullptr)
 	{ }
 
-	void Application::startUp()
+	void Application::startUp(String renderSystemDll)
 	{
 		mGpuProgramManager = new HighLevelGpuProgramManager(); // TODO - Use Camelot::Module for instantiating this
 

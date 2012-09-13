@@ -29,7 +29,7 @@ THE SOFTWARE.
 #ifndef __StringConverter_H__
 #define __StringConverter_H__
 
-#include "CmPrerequisites.h"
+#include "CmPrerequisitesUtil.h"
 #include "CmString.h"
 #include "CmColourValue.h"
 #include "CmMath.h"
@@ -91,7 +91,7 @@ namespace CamelotEngine {
         static String toString(int val, unsigned short width = 0, 
             char fill = ' ', 
             std::ios::fmtflags flags = std::ios::fmtflags(0) );
-#if CM_ARCH_TYPE == CM_ARCHITECTURE_64 || CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == OGRE_PLATFORM_IPHONE
+#if CM_ARCH_TYPE == CM_ARCHITECTURE_64 || CM_PLATFORM == CM_PLATFORM_APPLE
         /** Converts an unsigned int to a String. */
         static String toString(unsigned int val, 
             unsigned short width = 0, char fill = ' ', 

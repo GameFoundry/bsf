@@ -127,7 +127,6 @@
     <ClInclude Include="CmD3D9VideoMode.h" />
     <ClInclude Include="CmD3D9VideoModeList.h" />
     <ClInclude Include="CmDefaultHardwareBufferManager.h" />
-    <ClInclude Include="CmException.h" />
     <ClInclude Include="CmFrustum.h" />
     <ClInclude Include="CmGpuProgram.h" />
     <ClInclude Include="CmGpuProgramManager.h" />
@@ -152,8 +151,6 @@
     <ClInclude Include="CmRenderTexture.h" />
     <ClInclude Include="CmRenderWindow.h" />
     <ClInclude Include="CmSingleton.h" />
-    <ClInclude Include="CmString.h" />
-    <ClInclude Include="CmStringConverter.h" />
     <ClInclude Include="CmTexture.h" />
     <ClInclude Include="CmTextureManager.h" />
     <ClInclude Include="CmTextureState.h" />
@@ -252,7 +249,6 @@
     <ClCompile Include="CmD3D9VideoMode.cpp" />
     <ClCompile Include="CmD3D9VideoModeList.cpp" />
     <ClCompile Include="CmDefaultHardwareBufferManager.cpp" />
-    <ClCompile Include="CmException.cpp" />
     <ClCompile Include="CmFrustum.cpp" />
     <ClCompile Include="CmGpuProgram.cpp" />
     <ClCompile Include="CmGpuProgramManager.cpp" />
@@ -270,8 +266,6 @@
     <ClCompile Include="CmRenderTarget.cpp" />
     <ClCompile Include="CmRenderTexture.cpp" />
     <ClCompile Include="CmRenderWindow.cpp" />
-    <ClCompile Include="CmString.cpp" />
-    <ClCompile Include="CmStringConverter.cpp" />
     <ClCompile Include="CmTexture.cpp" />
     <ClCompile Include="CmTextureManager.cpp" />
     <ClCompile Include="CmTextureState.cpp" />

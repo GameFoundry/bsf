@@ -60,10 +60,8 @@ TOMORROW:
 
 Other notes:
  - Search for all remaining "TODO PORT" comments and fix them
- - Make sure to remove all ogre memory allocators and memory category bullshit (Possibly replace with Camelot versions?)
  - Remove Ogre::String and Ogre::float (Possibly replace with Camelot versions?)
  - Ogre::ColourValue -> CamelotEngine::Color (Other struct names are okay for the most part)
- - Port all math methods to Camelot
  - Rename all macros and other OGRE references to CM
  - How am I notified on device reset? (When I need to reload my resources)
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
@@ -86,3 +84,6 @@ After everything is polished:
  - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
  - Go to GEA book and read about resource managers before implementing them
    - Actually I should re-read most of the chapers in the book, or all of it
+
+ - OpenGL non-Win32 window files haven't been properly parsed or tested
+   - Since I probably can't compile them, try adding them to VS and see what intellisense says?
