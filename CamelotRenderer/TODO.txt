@@ -65,7 +65,8 @@ Other notes:
  - Rename all macros and other OGRE references to CM
  - How am I notified on device reset? (When I need to reload my resources)
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
- 
+ - Remove all fixed pipeline methods from D3D9 and OpenGL renderers
+
  At one point rebuild everything and make sure all warnings are gone
 Figure out how to ignore those warnings in NVparse
 String stuff should go to a single StringUtil file
@@ -80,7 +81,7 @@ After everything is polished:
  - I should move boost so it resides in CamelotUtility
  - Also, create all file format parsers and also make them reside in CamelotUtility
    (Actual importers will still be implemented in Editor, but parsing capabilities should be available for camelotutility)
-
+ 
  - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
  - Go to GEA book and read about resource managers before implementing them
    - Actually I should re-read most of the chapers in the book, or all of it

@@ -344,12 +344,6 @@
     <ClInclude Include="CmConfigOptionMap.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="CmHeaderPrefix.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="CmHeaderSuffix.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
     <ClInclude Include="CmPrerequisites.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
@@ -358,9 +352,6 @@
     </ClInclude>
     <ClInclude Include="CmSingleton.h">
       <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="CmBlendMode.h">
-      <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="CmCommon.h">
       <Filter>Header Files\Utility</Filter>

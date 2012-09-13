@@ -269,10 +269,6 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void _setTextureBlendMode(size_t stage, const LayerBlendModeEx& bm);
-        /** See
-          RenderSystem
-         */
         void _setTextureAddressingMode(size_t stage, const TextureState::UVWAddressingMode& uvw);
         /** See
           RenderSystem

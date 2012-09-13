@@ -30,7 +30,6 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 #include "CmCommon.h"
-#include "CmBlendMode.h"
 #include "CmMatrix4.h"
 #include "CmString.h"
 #include "CmPixelFormat.h"

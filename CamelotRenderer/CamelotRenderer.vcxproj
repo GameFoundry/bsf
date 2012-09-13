@@ -96,7 +96,6 @@
     <ClInclude Include="CmRenderSystemFactory.h" />
     <ClInclude Include="CmRenderSystemManager.h" />
     <ClInclude Include="CmBitwise.h" />
-    <ClInclude Include="CmBlendMode.h" />
     <ClInclude Include="CmCamera.h" />
     <ClInclude Include="CmCommon.h" />
     <ClInclude Include="CmConfigOptionMap.h" />
@@ -136,8 +135,6 @@
     <ClInclude Include="CmHardwareOcclusionQuery.h" />
     <ClInclude Include="CmHardwarePixelBuffer.h" />
     <ClInclude Include="CmHardwareVertexBuffer.h" />
-    <ClInclude Include="CmHeaderPrefix.h" />
-    <ClInclude Include="CmHeaderSuffix.h" />
     <ClInclude Include="CmHighLevelGpuProgram.h" />
     <ClInclude Include="CmHighLevelGpuProgramManager.h" />
     <ClInclude Include="CmImageResampler.h" />

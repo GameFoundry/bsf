@@ -235,7 +235,6 @@ namespace CamelotEngine
 		void _setTextureCoordSet( size_t unit, size_t index );
         void _setTextureCoordCalculation(size_t unit, TexCoordCalcMethod m, 
             const Frustum* frustum = 0);
-		void _setTextureBlendMode( size_t unit, const LayerBlendModeEx& bm );
         void _setTextureAddressingMode(size_t stage, const TextureState::UVWAddressingMode& uvw);
         void _setTextureBorderColour(size_t stage, const Color& colour);
 		void _setTextureMipmapBias(size_t unit, float bias);

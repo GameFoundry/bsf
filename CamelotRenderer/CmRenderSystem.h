@@ -651,14 +651,6 @@ namespace CamelotEngine
 		virtual void _setTextureCoordCalculation(size_t unit, TexCoordCalcMethod m, 
 			const Frustum* frustum = 0) = 0;
 
-		/** Sets the texture blend modes from a TextureUnitState record.
-		Meant for use internally only - apps should use the Material
-		and TextureUnitState classes.
-		@param unit Texture unit as above
-		@param bm Details of the blending mode
-		*/
-		virtual void _setTextureBlendMode(size_t unit, const LayerBlendModeEx& bm) = 0;
-
 		/** Sets the filtering options for a given texture unit.
 		@param unit The texture unit to set the filtering options for
 		@param minFilter The filter used when a texture is reduced in size

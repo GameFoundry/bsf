@@ -69,12 +69,6 @@ namespace CamelotEngine
 		static DWORD get(TexCoordCalcMethod m, const D3DCAPS9& caps);
 		/// return a D3D9 equivalent for a Ogre TextureAddressingMode value
 		static D3DTEXTUREADDRESS get(TextureState::TextureAddressingMode tam, const D3DCAPS9& devCaps);
-		/// return a D3D9 equivalent for a Ogre LayerBlendType value
-		static D3DTEXTURESTAGESTATETYPE get(LayerBlendType lbt);
-		/// return a D3D9 equivalent for a Ogre LayerBlendOperationEx value
-		static DWORD get(LayerBlendOperationEx lbo, const D3DCAPS9& devCaps);
-		/// return a D3D9 equivalent for a Ogre LayerBlendSource value
-		static DWORD get(LayerBlendSource lbs, bool perStageConstants);
 		/// return a D3D9 equivalent for a Ogre SceneBlendFactor value
 		static D3DBLEND get(SceneBlendFactor sbf);
 		/// return a D3D9 equivlalent for a Ogre SceneBlendOperation value
