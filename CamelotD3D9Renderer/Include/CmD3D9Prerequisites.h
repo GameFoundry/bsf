@@ -97,23 +97,23 @@ namespace CamelotEngine
 // Should we ask D3D to manage vertex/index buffers automatically?
 // Doing so avoids lost devices, but also has a performance impact
 // which is unacceptably bad when using very large buffers
-#define OGRE_D3D_MANAGE_BUFFERS 1
+#define OGRE_D3D_MANAGE_BUFFERS 1 // TODO - Keep this on or off? I'll probably want to turn it off at some point
 
     //-------------------------------------------
 	// Windows setttings
 	//-------------------------------------------
 #if (CM_PLATFORM == CM_PLATFORM_WIN32) && !defined(CM_STATIC_LIB)
-#	ifdef OGRED3DENGINEDLL_EXPORTS
-#		define _OgreD3D9Export __declspec(dllexport)
+#	ifdef CM_RSD3D9_DLL
+#		define CM_D3D9_EXPORT __declspec(dllexport)
 #	else
 #       if defined( __MINGW32__ )
-#           define _OgreD3D9Export
+#           define CM_D3D9_EXPORT
 #       else
-#    		define _OgreD3D9Export __declspec(dllimport)
+#    		define CM_D3D9_EXPORT __declspec(dllimport)
 #       endif
 #	endif
 #else
-#	define _OgreD3D9Export
+#	define CM_D3D9_EXPORT
 #endif	// OGRE_WIN32
 }
 #endif

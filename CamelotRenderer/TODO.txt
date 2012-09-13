@@ -56,7 +56,7 @@ TOMORROW:
 	 - Add log
    - Remove remaining not-needed headers
    - Split D3D9 and OpenGL into their own projects
-     - There's _OgreGLExport and _OgreD3D9Export that i should probably port as well
+     - There's _OgreGLExport and CM_D3D9_EXPORT that i should probably port as well
 
 Other notes:
  - Search for all remaining "TODO PORT" comments and fix them

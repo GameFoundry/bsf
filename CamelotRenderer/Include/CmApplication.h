@@ -13,7 +13,7 @@ namespace CamelotEngine
 
 namespace CamelotEngine
 {
-	class Application
+	class CM_EXPORT Application
 	{
 		public:
 			Application();
@@ -33,5 +33,5 @@ namespace CamelotEngine
 			HighLevelGpuProgramPtr mVertProg;
 	};
 
-	Application& gApplication();
+	CM_EXPORT Application& gApplication();
 }

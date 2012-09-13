@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F58FF869-2EA6-4FFF-AB84-328C531BA9D9}</ProjectGuid>
+    <RootNamespace>CamelotGLRenderer</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>./Source/win32;./Source/GLSL/include;./Source/atifs/include;../CamelotUtility/Include;../CamelotRenderer/Include;./Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;CM_RSGL_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;CamelotRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>./Source/win32;./Source/GLSL/include;./Source/atifs/include;../CamelotUtility/Include;../CamelotRenderer/Include;./Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;CM_RSGL_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;CamelotRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\$(Configuration)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\CmGLATIFSInit.h" />
+    <ClInclude Include="Include\CmGLContext.h" />
+    <ClInclude Include="Include\CmGLDefaultHardwareBufferManager.h" />
+    <ClInclude Include="Include\CmGLFBOMultiRenderTarget.h" />
+    <ClInclude Include="Include\CmGLFBORenderTexture.h" />
+    <ClInclude Include="Include\CmGLFrameBufferObject.h" />
+    <ClInclude Include="Include\CmGLGpuProgram.h" />
+    <ClInclude Include="Include\CmGLGpuProgramManager.h" />
+    <ClInclude Include="Include\CmGLHardwareBufferManager.h" />
+    <ClInclude Include="Include\CmGLHardwareIndexBuffer.h" />
+    <ClInclude Include="Include\CmGLHardwareOcclusionQuery.h" />
+    <ClInclude Include="Include\CmGLHardwarePixelBuffer.h" />
+    <ClInclude Include="Include\CmGLHardwareVertexBuffer.h" />
+    <ClInclude Include="Include\CmGLPBRenderTexture.h" />
+    <ClInclude Include="Include\CmGLPBuffer.h" />
+    <ClInclude Include="Include\CmGLPixelFormat.h" />
+    <ClInclude Include="Include\CmGLPrerequisites.h" />
+    <ClInclude Include="Include\CmGLRenderSystem.h" />
+    <ClInclude Include="Include\CmGLRenderSystemFactory.h" />
+    <ClInclude Include="Include\CmGLRenderTexture.h" />
+    <ClInclude Include="Include\CmGLSupport.h" />
+    <ClInclude Include="Include\CmGLTexture.h" />
+    <ClInclude Include="Include\CmGLTextureManager.h" />
+    <ClInclude Include="Include\CmWin32Context.h" />
+    <ClInclude Include="Include\CmWin32GLSupport.h" />
+    <ClInclude Include="Include\CmWin32Prerequisites.h" />
+    <ClInclude Include="Include\CmWin32RenderTexture.h" />
+    <ClInclude Include="Include\CmWin32Window.h" />
+    <ClInclude Include="Source\atifs\include\ATI_FS_GLGpuProgram.h" />
+    <ClInclude Include="Source\atifs\include\Compiler2Pass.h" />
+    <ClInclude Include="Source\atifs\include\ps_1_4.h" />
+    <ClInclude Include="Source\GLSL\include\CmGLSLExtSupport.h" />
+    <ClInclude Include="Source\GLSL\include\CmGLSLGpuProgram.h" />
+    <ClInclude Include="Source\GLSL\include\CmGLSLLinkProgram.h" />
+    <ClInclude Include="Source\GLSL\include\CmGLSLLinkProgramManager.h" />
+    <ClInclude Include="Source\GLSL\include\CmGLSLPreprocessor.h" />
+    <ClInclude Include="Source\GLSL\include\CmGLSLProgram.h" />
+    <ClInclude Include="Source\GLSL\include\CmGLSLProgramFactory.h" />
+    <ClInclude Include="Source\win32\CmGLUtil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\atifs\src\ATI_FS_GLGpuProgram.cpp" />
+    <ClCompile Include="Source\atifs\src\Compiler2Pass.cpp" />
+    <ClCompile Include="Source\atifs\src\ps_1_4.cpp" />
+    <ClCompile Include="Source\CmGLATIFSInit.cpp" />
+    <ClCompile Include="Source\CmGLContext.cpp" />
+    <ClCompile Include="Source\CmGLDefaultHardwareBufferManager.cpp" />
+    <ClCompile Include="Source\CmGLFBOMultiRenderTarget.cpp" />
+    <ClCompile Include="Source\CmGLFBORenderTexture.cpp" />
+    <ClCompile Include="Source\CmGLFrameBufferObject.cpp" />
+    <ClCompile Include="Source\CmGLGpuProgram.cpp" />
+    <ClCompile Include="Source\CmGLGpuProgramManager.cpp" />
+    <ClCompile Include="Source\CmGLHardwareBufferManager.cpp" />
+    <ClCompile Include="Source\CmGLHardwareIndexBuffer.cpp" />
+    <ClCompile Include="Source\CmGLHardwareOcclusionQuery.cpp" />
+    <ClCompile Include="Source\CmGLHardwarePixelBuffer.cpp" />
+    <ClCompile Include="Source\CmGLHardwareVertexBuffer.cpp" />
+    <ClCompile Include="Source\CmGLPBRenderTexture.cpp" />
+    <ClCompile Include="Source\CmGLPixelFormat.cpp" />
+    <ClCompile Include="Source\CmGLRenderSystem.cpp" />
+    <ClCompile Include="Source\CmGLRenderSystemFactory.cpp" />
+    <ClCompile Include="Source\CmGLRenderTexture.cpp" />
+    <ClCompile Include="Source\CmGLSupport.cpp" />
+    <ClCompile Include="Source\CmGLTexture.cpp" />
+    <ClCompile Include="Source\CmGLTextureManager.cpp" />
+    <ClCompile Include="Source\CmWin32GLSupport.cpp" />
+    <ClCompile Include="Source\CmWin32RenderTexture.cpp" />
+    <ClCompile Include="Source\CmWin32Window.cpp" />
+    <ClCompile Include="Source\glew.cpp" />
+    <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp" />
+    <ClCompile Include="Source\GLSL\src\CmGLSLGpuProgram.cpp" />
+    <ClCompile Include="Source\GLSL\src\CmGLSLLinkProgram.cpp" />
+    <ClCompile Include="Source\GLSL\src\CmGLSLLinkProgramManager.cpp" />
+    <ClCompile Include="Source\GLSL\src\CmGLSLPreprocessor.cpp" />
+    <ClCompile Include="Source\GLSL\src\CmGLSLProgram.cpp" />
+    <ClCompile Include="Source\GLSL\src\CmGLSLProgramFactory.cpp" />
+    <ClCompile Include="Source\win32\CmWin32Context.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

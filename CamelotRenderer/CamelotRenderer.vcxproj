@@ -17,13 +17,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -43,11 +43,13 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>..\bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>..\bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -55,14 +57,15 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;CM_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;RenderSystemGL/Source/nvparse;RenderSystemGL/Source/atifs/include;RenderSystemGL/Source/GLSL/include;RenderSystemGL/Source/win32;RenderSystemGL/Source/nvparse/winheaders;.;RenderSystemGL/Include;../CamelotUtility/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;CM_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;RenderSystemGL/Source/atifs/include;RenderSystemGL/Source/GLSL/include;RenderSystemGL/Source/win32;./Include;RenderSystemGL/Include;../CamelotUtility/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;DxErr.lib;dxguid.lib;glu32.lib;opengl32.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Configuration)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -73,8 +76,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;CM_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;RenderSystemGL/Source/nvparse;RenderSystemGL/Source/atifs/include;RenderSystemGL/Source/GLSL/include;RenderSystemGL/Source/win32;RenderSystemGL/Source/nvparse/winheaders;.;RenderSystemGL/Include;../CamelotUtility/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;CM_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;RenderSystemGL/Source/atifs/include;RenderSystemGL/Source/GLSL/include;RenderSystemGL/Source/win32;./Include;RenderSystemGL/Include;../CamelotUtility/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
@@ -83,6 +86,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;DxErr.lib;dxguid.lib;glu32.lib;opengl32.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Configuration)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -91,65 +95,67 @@
     <Text Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CmApplication.h" />
-    <ClInclude Include="CmD3D9RenderSystemFactory.h" />
-    <ClInclude Include="CmRenderSystemFactory.h" />
-    <ClInclude Include="CmRenderSystemManager.h" />
-    <ClInclude Include="CmCamera.h" />
-    <ClInclude Include="CmCommon.h" />
-    <ClInclude Include="CmConfigOptionMap.h" />
-    <ClInclude Include="CmD3D9Device.h" />
-    <ClInclude Include="CmD3D9DeviceManager.h" />
-    <ClInclude Include="CmD3D9Driver.h" />
-    <ClInclude Include="CmD3D9DriverList.h" />
-    <ClInclude Include="CmD3D9GpuProgram.h" />
-    <ClInclude Include="CmD3D9GpuProgramManager.h" />
-    <ClInclude Include="CmD3D9HardwareBufferManager.h" />
-    <ClInclude Include="CmD3D9HardwareIndexBuffer.h" />
-    <ClInclude Include="CmD3D9HardwareOcclusionQuery.h" />
-    <ClInclude Include="CmD3D9HardwarePixelBuffer.h" />
-    <ClInclude Include="CmD3D9HardwareVertexBuffer.h" />
-    <ClInclude Include="CmD3D9HLSLProgram.h" />
-    <ClInclude Include="CmD3D9HLSLProgramFactory.h" />
-    <ClInclude Include="CmD3D9Mappings.h" />
-    <ClInclude Include="CmD3D9MultiRenderTarget.h" />
-    <ClInclude Include="CmD3D9Prerequisites.h" />
-    <ClInclude Include="CmD3D9RenderSystem.h" />
-    <ClInclude Include="CmD3D9RenderWindow.h" />
-    <ClInclude Include="CmD3D9Resource.h" />
-    <ClInclude Include="CmD3D9ResourceManager.h" />
-    <ClInclude Include="CmD3D9Texture.h" />
-    <ClInclude Include="CmD3D9TextureManager.h" />
-    <ClInclude Include="CmD3D9VertexDeclaration.h" />
-    <ClInclude Include="CmD3D9VideoMode.h" />
-    <ClInclude Include="CmD3D9VideoModeList.h" />
-    <ClInclude Include="CmDefaultHardwareBufferManager.h" />
-    <ClInclude Include="CmFrustum.h" />
-    <ClInclude Include="CmGpuProgram.h" />
-    <ClInclude Include="CmGpuProgramManager.h" />
-    <ClInclude Include="CmGpuProgramParams.h" />
-    <ClInclude Include="CmHardwareBuffer.h" />
-    <ClInclude Include="CmHardwareBufferManager.h" />
-    <ClInclude Include="CmHardwareIndexBuffer.h" />
-    <ClInclude Include="CmHardwareOcclusionQuery.h" />
-    <ClInclude Include="CmHardwarePixelBuffer.h" />
-    <ClInclude Include="CmHardwareVertexBuffer.h" />
-    <ClInclude Include="CmHighLevelGpuProgram.h" />
-    <ClInclude Include="CmHighLevelGpuProgramManager.h" />
-    <ClInclude Include="CmPrerequisites.h" />
-    <ClInclude Include="CmRenderOperation.h" />
-    <ClInclude Include="CmRenderSystem.h" />
-    <ClInclude Include="CmRenderSystemCapabilities.h" />
-    <ClInclude Include="CmRenderTarget.h" />
-    <ClInclude Include="CmRenderTexture.h" />
-    <ClInclude Include="CmRenderWindow.h" />
-    <ClInclude Include="CmSingleton.h" />
-    <ClInclude Include="CmTexture.h" />
-    <ClInclude Include="CmTextureManager.h" />
-    <ClInclude Include="CmTextureState.h" />
-    <ClInclude Include="CmVertexIndexData.h" />
-    <ClInclude Include="CmViewport.h" />
-    <ClInclude Include="CmWindowEventUtilities.h" />
+    <ClInclude Include="Include\CmApplication.h" />
+    <ClInclude Include="Include\CmCamera.h" />
+    <ClInclude Include="Include\CmCommon.h" />
+    <ClInclude Include="Include\CmConfigOptionMap.h" />
+    <ClInclude Include="Include\CmD3D9Device.h" />
+    <ClInclude Include="Include\CmD3D9DeviceManager.h" />
+    <ClInclude Include="Include\CmD3D9Driver.h" />
+    <ClInclude Include="Include\CmD3D9DriverList.h" />
+    <ClInclude Include="Include\CmD3D9GpuProgram.h" />
+    <ClInclude Include="Include\CmD3D9GpuProgramManager.h" />
+    <ClInclude Include="Include\CmD3D9HardwareBufferManager.h" />
+    <ClInclude Include="Include\CmD3D9HardwareIndexBuffer.h" />
+    <ClInclude Include="Include\CmD3D9HardwareOcclusionQuery.h" />
+    <ClInclude Include="Include\CmD3D9HardwarePixelBuffer.h" />
+    <ClInclude Include="Include\CmD3D9HardwareVertexBuffer.h" />
+    <ClInclude Include="Include\CmD3D9HLSLProgram.h" />
+    <ClInclude Include="Include\CmD3D9HLSLProgramFactory.h" />
+    <ClInclude Include="Include\CmD3D9Mappings.h" />
+    <ClInclude Include="Include\CmD3D9MultiRenderTarget.h" />
+    <ClInclude Include="Include\CmD3D9Prerequisites.h" />
+    <ClInclude Include="Include\CmD3D9RenderSystem.h" />
+    <ClInclude Include="Include\CmD3D9RenderSystemFactory.h" />
+    <ClInclude Include="Include\CmD3D9RenderWindow.h" />
+    <ClInclude Include="Include\CmD3D9Resource.h" />
+    <ClInclude Include="Include\CmD3D9ResourceManager.h" />
+    <ClInclude Include="Include\CmD3D9Texture.h" />
+    <ClInclude Include="Include\CmD3D9TextureManager.h" />
+    <ClInclude Include="Include\CmD3D9VertexDeclaration.h" />
+    <ClInclude Include="Include\CmD3D9VideoMode.h" />
+    <ClInclude Include="Include\CmD3D9VideoModeList.h" />
+    <ClInclude Include="Include\CmDefaultHardwareBufferManager.h" />
+    <ClInclude Include="Include\CmFrustum.h" />
+    <ClInclude Include="Include\CmGpuProgram.h" />
+    <ClInclude Include="Include\CmGpuProgramManager.h" />
+    <ClInclude Include="Include\CmGpuProgramParams.h" />
+    <ClInclude Include="Include\CmHardwareBuffer.h" />
+    <ClInclude Include="Include\CmHardwareBufferManager.h" />
+    <ClInclude Include="Include\CmHardwareIndexBuffer.h" />
+    <ClInclude Include="Include\CmHardwareOcclusionQuery.h" />
+    <ClInclude Include="Include\CmHardwarePixelBuffer.h" />
+    <ClInclude Include="Include\CmHardwareVertexBuffer.h" />
+    <ClInclude Include="Include\CmHighLevelGpuProgram.h" />
+    <ClInclude Include="Include\CmHighLevelGpuProgramManager.h" />
+    <ClInclude Include="Include\CmPrerequisites.h" />
+    <ClInclude Include="Include\CmRenderOperation.h" />
+    <ClInclude Include="Include\CmRenderSystem.h" />
+    <ClInclude Include="Include\CmRenderSystemCapabilities.h" />
+    <ClInclude Include="Include\CmRenderSystemFactory.h" />
+    <ClInclude Include="Include\CmRenderSystemManager.h" />
+    <ClInclude Include="Include\CmRenderTarget.h" />
+    <ClInclude Include="Include\CmRenderTexture.h" />
+    <ClInclude Include="Include\CmRenderWindow.h" />
+    <ClInclude Include="Include\CmSingleton.h" />
+    <ClInclude Include="Include\CmTexture.h" />
+    <ClInclude Include="Include\CmTextureManager.h" />
+    <ClInclude Include="Include\CmTextureState.h" />
+    <ClInclude Include="Include\CmVertexIndexData.h" />
+    <ClInclude Include="Include\CmViewport.h" />
+    <ClInclude Include="Include\CmWindowEventUtilities.h" />
+    <ClInclude Include="Include\stdafx.h" />
+    <ClInclude Include="Include\targetver.h" />
     <ClInclude Include="RenderSystemGL\Include\CmGLATIFSInit.h" />
     <ClInclude Include="RenderSystemGL\Include\CmGLContext.h" />
     <ClInclude Include="RenderSystemGL\Include\CmGLDefaultHardwareBufferManager.h" />
@@ -189,62 +195,8 @@
     <ClInclude Include="RenderSystemGL\Source\GLSL\include\CmGLSLProgram.h" />
     <ClInclude Include="RenderSystemGL\Source\GLSL\include\CmGLSLProgramFactory.h" />
     <ClInclude Include="RenderSystemGL\Source\win32\CmGLUtil.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CamelotRenderer.cpp" />
-    <ClCompile Include="CmApplication.cpp" />
-    <ClCompile Include="CmD3D9RenderSystemFactory.cpp" />
-    <ClCompile Include="CmRenderSystemManager.cpp" />
-    <ClCompile Include="CmCamera.cpp" />
-    <ClCompile Include="CmD3D9Device.cpp" />
-    <ClCompile Include="CmD3D9DeviceManager.cpp" />
-    <ClCompile Include="CmD3D9Driver.cpp" />
-    <ClCompile Include="CmD3D9DriverList.cpp" />
-    <ClCompile Include="CmD3D9GpuProgram.cpp" />
-    <ClCompile Include="CmD3D9GpuProgramManager.cpp" />
-    <ClCompile Include="CmD3D9HardwareBufferManager.cpp" />
-    <ClCompile Include="CmD3D9HardwareIndexBuffer.cpp" />
-    <ClCompile Include="CmD3D9HardwareOcclusionQuery.cpp" />
-    <ClCompile Include="CmD3D9HardwarePixelBuffer.cpp" />
-    <ClCompile Include="CmD3D9HardwareVertexBuffer.cpp" />
-    <ClCompile Include="CmD3D9HLSLProgram.cpp" />
-    <ClCompile Include="CmD3D9HLSLProgramFactory.cpp" />
-    <ClCompile Include="CmD3D9Mappings.cpp" />
-    <ClCompile Include="CmD3D9MultiRenderTarget.cpp" />
-    <ClCompile Include="CmD3D9RenderSystem.cpp" />
-    <ClCompile Include="CmD3D9RenderWindow.cpp" />
-    <ClCompile Include="CmD3D9Resource.cpp" />
-    <ClCompile Include="CmD3D9ResourceManager.cpp" />
-    <ClCompile Include="CmD3D9Texture.cpp" />
-    <ClCompile Include="CmD3D9TextureManager.cpp" />
-    <ClCompile Include="CmD3D9VertexDeclaration.cpp" />
-    <ClCompile Include="CmD3D9VideoMode.cpp" />
-    <ClCompile Include="CmD3D9VideoModeList.cpp" />
-    <ClCompile Include="CmDefaultHardwareBufferManager.cpp" />
-    <ClCompile Include="CmFrustum.cpp" />
-    <ClCompile Include="CmGpuProgram.cpp" />
-    <ClCompile Include="CmGpuProgramManager.cpp" />
-    <ClCompile Include="CmGpuProgramParams.cpp" />
-    <ClCompile Include="CmHardwareBufferManager.cpp" />
-    <ClCompile Include="CmHardwareIndexBuffer.cpp" />
-    <ClCompile Include="CmHardwareOcclusionQuery.cpp" />
-    <ClCompile Include="CmHardwarePixelBuffer.cpp" />
-    <ClCompile Include="CmHardwareVertexBuffer.cpp" />
-    <ClCompile Include="CmHighLevelGpuProgram.cpp" />
-    <ClCompile Include="CmHighLevelGpuProgramManager.cpp" />
-    <ClCompile Include="CmRenderSystem.cpp" />
-    <ClCompile Include="CmRenderSystemCapabilities.cpp" />
-    <ClCompile Include="CmRenderTarget.cpp" />
-    <ClCompile Include="CmRenderTexture.cpp" />
-    <ClCompile Include="CmRenderWindow.cpp" />
-    <ClCompile Include="CmTexture.cpp" />
-    <ClCompile Include="CmTextureManager.cpp" />
-    <ClCompile Include="CmTextureState.cpp" />
-    <ClCompile Include="CmVertexIndexData.cpp" />
-    <ClCompile Include="CmViewport.cpp" />
-    <ClCompile Include="CmWindowEventUtilities.cpp" />
     <ClCompile Include="RenderSystemGL\Source\atifs\src\ATI_FS_GLGpuProgram.cpp" />
     <ClCompile Include="RenderSystemGL\Source\atifs\src\Compiler2Pass.cpp" />
     <ClCompile Include="RenderSystemGL\Source\atifs\src\ps_1_4.cpp" />
@@ -281,7 +233,59 @@
     <ClCompile Include="RenderSystemGL\Source\CmWin32RenderTexture.cpp" />
     <ClCompile Include="RenderSystemGL\Source\CmWin32Window.cpp" />
     <ClCompile Include="RenderSystemGL\Source\win32\CmWin32Context.cpp" />
-    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Source\CamelotRenderer.cpp" />
+    <ClCompile Include="Source\CmApplication.cpp" />
+    <ClCompile Include="Source\CmCamera.cpp" />
+    <ClCompile Include="Source\CmD3D9Device.cpp" />
+    <ClCompile Include="Source\CmD3D9DeviceManager.cpp" />
+    <ClCompile Include="Source\CmD3D9Driver.cpp" />
+    <ClCompile Include="Source\CmD3D9DriverList.cpp" />
+    <ClCompile Include="Source\CmD3D9GpuProgram.cpp" />
+    <ClCompile Include="Source\CmD3D9GpuProgramManager.cpp" />
+    <ClCompile Include="Source\CmD3D9HardwareBufferManager.cpp" />
+    <ClCompile Include="Source\CmD3D9HardwareIndexBuffer.cpp" />
+    <ClCompile Include="Source\CmD3D9HardwareOcclusionQuery.cpp" />
+    <ClCompile Include="Source\CmD3D9HardwarePixelBuffer.cpp" />
+    <ClCompile Include="Source\CmD3D9HardwareVertexBuffer.cpp" />
+    <ClCompile Include="Source\CmD3D9HLSLProgram.cpp" />
+    <ClCompile Include="Source\CmD3D9HLSLProgramFactory.cpp" />
+    <ClCompile Include="Source\CmD3D9Mappings.cpp" />
+    <ClCompile Include="Source\CmD3D9MultiRenderTarget.cpp" />
+    <ClCompile Include="Source\CmD3D9RenderSystem.cpp" />
+    <ClCompile Include="Source\CmD3D9RenderSystemFactory.cpp" />
+    <ClCompile Include="Source\CmD3D9RenderWindow.cpp" />
+    <ClCompile Include="Source\CmD3D9Resource.cpp" />
+    <ClCompile Include="Source\CmD3D9ResourceManager.cpp" />
+    <ClCompile Include="Source\CmD3D9Texture.cpp" />
+    <ClCompile Include="Source\CmD3D9TextureManager.cpp" />
+    <ClCompile Include="Source\CmD3D9VertexDeclaration.cpp" />
+    <ClCompile Include="Source\CmD3D9VideoMode.cpp" />
+    <ClCompile Include="Source\CmD3D9VideoModeList.cpp" />
+    <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp" />
+    <ClCompile Include="Source\CmFrustum.cpp" />
+    <ClCompile Include="Source\CmGpuProgram.cpp" />
+    <ClCompile Include="Source\CmGpuProgramManager.cpp" />
+    <ClCompile Include="Source\CmGpuProgramParams.cpp" />
+    <ClCompile Include="Source\CmHardwareBufferManager.cpp" />
+    <ClCompile Include="Source\CmHardwareIndexBuffer.cpp" />
+    <ClCompile Include="Source\CmHardwareOcclusionQuery.cpp" />
+    <ClCompile Include="Source\CmHardwarePixelBuffer.cpp" />
+    <ClCompile Include="Source\CmHardwareVertexBuffer.cpp" />
+    <ClCompile Include="Source\CmHighLevelGpuProgram.cpp" />
+    <ClCompile Include="Source\CmHighLevelGpuProgramManager.cpp" />
+    <ClCompile Include="Source\CmRenderSystem.cpp" />
+    <ClCompile Include="Source\CmRenderSystemCapabilities.cpp" />
+    <ClCompile Include="Source\CmRenderSystemManager.cpp" />
+    <ClCompile Include="Source\CmRenderTarget.cpp" />
+    <ClCompile Include="Source\CmRenderTexture.cpp" />
+    <ClCompile Include="Source\CmRenderWindow.cpp" />
+    <ClCompile Include="Source\CmTexture.cpp" />
+    <ClCompile Include="Source\CmTextureManager.cpp" />
+    <ClCompile Include="Source\CmTextureState.cpp" />
+    <ClCompile Include="Source\CmVertexIndexData.cpp" />
+    <ClCompile Include="Source\CmViewport.cpp" />
+    <ClCompile Include="Source\CmWindowEventUtilities.cpp" />
+    <ClCompile Include="Source\stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

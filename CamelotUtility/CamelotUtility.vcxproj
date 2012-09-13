@@ -71,9 +71,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\CmBitwise.h" />
+    <ClInclude Include="Include\CmBox.h" />
     <ClInclude Include="Include\CmColor.h" />
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmMathAsm.h" />
+    <ClInclude Include="Include\CmPixelUtil.h" />
     <ClInclude Include="Include\CmString.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmTypes.h" />
@@ -101,6 +104,7 @@
     <ClCompile Include="Source\CmMath.cpp" />
     <ClCompile Include="Source\CmMatrix3.cpp" />
     <ClCompile Include="Source\CmMatrix4.cpp" />
+    <ClCompile Include="Source\CmPixelUtil.cpp" />
     <ClCompile Include="Source\CmPlane.cpp" />
     <ClCompile Include="Source\CmQuaternion.cpp" />
     <ClCompile Include="Source\CmString.cpp" />

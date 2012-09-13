@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ATIFS">
+      <UniqueIdentifier>{2c02e8a0-bcb2-415a-8740-10cb94cfbb80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GLSL">
+      <UniqueIdentifier>{23f5e949-4542-49d4-86f9-d24656b5de08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32">
+      <UniqueIdentifier>{c85ecca8-4719-49f1-879b-93a27c8da4aa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\CmGLATIFSInit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLDefaultHardwareBufferManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLFBOMultiRenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLFBORenderTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLFrameBufferObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLGpuProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLGpuProgramManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLHardwareBufferManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLHardwareIndexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLHardwareOcclusionQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLHardwarePixelBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLHardwareVertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLPBRenderTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLPBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLPixelFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLPrerequisites.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLRenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLRenderSystemFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLRenderTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLSupport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLTextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmWin32Context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmWin32GLSupport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmWin32Prerequisites.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmWin32RenderTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmWin32Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\atifs\include\ATI_FS_GLGpuProgram.h">
+      <Filter>ATIFS</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\atifs\include\Compiler2Pass.h">
+      <Filter>ATIFS</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\atifs\include\ps_1_4.h">
+      <Filter>ATIFS</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLExtSupport.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLGpuProgram.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLLinkProgram.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLLinkProgramManager.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLPreprocessor.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLProgram.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLProgramFactory.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\win32\CmGLUtil.h">
+      <Filter>Win32</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\atifs\src\ATI_FS_GLGpuProgram.cpp">
+      <Filter>ATIFS</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\atifs\src\Compiler2Pass.cpp">
+      <Filter>ATIFS</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\atifs\src\ps_1_4.cpp">
+      <Filter>ATIFS</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLGpuProgram.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLLinkProgram.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLLinkProgramManager.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLPreprocessor.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLProgram.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLProgramFactory.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\win32\CmWin32Context.cpp">
+      <Filter>Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLATIFSInit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLDefaultHardwareBufferManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLFBOMultiRenderTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLFBORenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLFrameBufferObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLGpuProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLGpuProgramManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLHardwareBufferManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLHardwareIndexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLHardwareOcclusionQuery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLHardwarePixelBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLHardwareVertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLPBRenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLPixelFormat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLRenderSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLRenderSystemFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLRenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLSupport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLTextureManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmWin32GLSupport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmWin32RenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmWin32Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\glew.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

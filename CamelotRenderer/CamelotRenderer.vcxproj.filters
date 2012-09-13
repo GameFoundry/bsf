@@ -56,24 +56,6 @@
     <Text Include="HighLevelTODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmRenderSystemFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9RenderSystemFactory.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmApplication.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmRenderSystemManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RenderSystemGL\Source\atifs\include\ATI_FS_GLGpuProgram.h">
       <Filter>RenderSystemGL\ATIFS</Filter>
     </ClInclude>
@@ -85,153 +67,6 @@
     </ClInclude>
     <ClInclude Include="RenderSystemGL\Include\CmGLRenderSystemFactory.h">
       <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmDefaultHardwareBufferManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmFrustum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmGpuProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmGpuProgramManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmGpuProgramParams.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmHardwareBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmHardwareBufferManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmHardwareIndexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmHardwareOcclusionQuery.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmHardwarePixelBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmHardwareVertexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmHighLevelGpuProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmHighLevelGpuProgramManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmRenderSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmRenderSystemCapabilities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmRenderTarget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmRenderTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmRenderWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmTextureManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmTextureState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmVertexIndexData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmViewport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9Device.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9DeviceManager.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9Driver.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9DriverList.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9GpuProgram.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9GpuProgramManager.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9HardwareBufferManager.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9HardwareIndexBuffer.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9HardwareOcclusionQuery.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9HardwarePixelBuffer.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9HardwareVertexBuffer.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9HLSLProgram.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9HLSLProgramFactory.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9Mappings.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9MultiRenderTarget.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9Prerequisites.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9RenderSystem.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9RenderWindow.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9Resource.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9ResourceManager.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9Texture.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9TextureManager.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9VertexDeclaration.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9VideoMode.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="CmD3D9VideoModeList.h">
-      <Filter>Header Files\D3D9RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="RenderSystemGL\Source\win32\CmGLUtil.h">
       <Filter>RenderSystemGL\Win32</Filter>
@@ -338,41 +173,191 @@
     <ClInclude Include="RenderSystemGL\Include\CmWin32Window.h">
       <Filter>RenderSystemGL\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CmConfigOptionMap.h">
+    <ClInclude Include="Include\CmD3D9Device.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9DeviceManager.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9Driver.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9DriverList.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9GpuProgram.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9GpuProgramManager.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9HardwareBufferManager.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9HardwareIndexBuffer.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9HardwareOcclusionQuery.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9HardwarePixelBuffer.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9HardwareVertexBuffer.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9HLSLProgram.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9HLSLProgramFactory.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9Mappings.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9MultiRenderTarget.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9Prerequisites.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9RenderSystem.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9RenderSystemFactory.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9RenderWindow.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9Resource.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9ResourceManager.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9Texture.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9TextureManager.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9VertexDeclaration.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9VideoMode.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D9VideoModeList.h">
+      <Filter>Header Files\D3D9RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmConfigOptionMap.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="CmPrerequisites.h">
+    <ClInclude Include="Include\CmPrerequisites.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="CmRenderOperation.h">
+    <ClInclude Include="Include\CmRenderOperation.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="CmSingleton.h">
+    <ClInclude Include="Include\CmSingleton.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
-    <ClInclude Include="CmCommon.h">
+    <ClInclude Include="Include\CmCommon.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="CmWindowEventUtilities.h">
+    <ClInclude Include="Include\CmWindowEventUtilities.h">
       <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmDefaultHardwareBufferManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmFrustum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGpuProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGpuProgramManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGpuProgramParams.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmHardwareBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmHardwareBufferManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmHardwareIndexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmHardwareOcclusionQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmHardwarePixelBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmHardwareVertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmHighLevelGpuProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmHighLevelGpuProgramManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderSystemCapabilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderSystemFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderSystemManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTextureState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmVertexIndexData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmViewport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\targetver.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CamelotRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9RenderSystemFactory.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmApplication.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmRenderSystemManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\atifs\src\ATI_FS_GLGpuProgram.cpp">
       <Filter>RenderSystemGL\ATIFS</Filter>
     </ClCompile>
@@ -387,147 +372,6 @@
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\CmGLRenderSystemFactory.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmDefaultHardwareBufferManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmFrustum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmGpuProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmGpuProgramManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmGpuProgramParams.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmHardwareBufferManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmHardwareIndexBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmHardwareOcclusionQuery.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmHardwarePixelBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmHardwareVertexBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmHighLevelGpuProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmHighLevelGpuProgramManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmRenderSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmRenderSystemCapabilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmRenderTarget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmRenderTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmRenderWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmTextureManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmTextureState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmVertexIndexData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmViewport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9Device.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9DeviceManager.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9Driver.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9DriverList.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9GpuProgram.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9GpuProgramManager.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9HardwareBufferManager.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9HardwareIndexBuffer.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9HardwareOcclusionQuery.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9HardwarePixelBuffer.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9HardwareVertexBuffer.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9HLSLProgram.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9HLSLProgramFactory.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9Mappings.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9MultiRenderTarget.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9RenderSystem.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9RenderWindow.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9Resource.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9ResourceManager.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9Texture.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9TextureManager.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9VertexDeclaration.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9VideoMode.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="CmD3D9VideoModeList.cpp">
-      <Filter>Source Files\D3D9RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\win32\CmWin32Context.cpp">
       <Filter>RenderSystemGL\Win32</Filter>
@@ -622,7 +466,163 @@
     <ClCompile Include="RenderSystemGL\Source\CmWin32Window.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CmWindowEventUtilities.cpp">
+    <ClCompile Include="Source\CamelotRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmFrustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuProgramManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuProgramParams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHardwareBufferManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHardwareIndexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHardwareOcclusionQuery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHardwarePixelBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHardwareVertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHighLevelGpuProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHighLevelGpuProgramManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRenderSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRenderSystemCapabilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRenderSystemManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRenderTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRenderWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTextureManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTextureState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmVertexIndexData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmViewport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9Device.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9DeviceManager.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9Driver.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9DriverList.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9GpuProgram.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9GpuProgramManager.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9HardwareBufferManager.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9HardwareIndexBuffer.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9HardwareOcclusionQuery.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9HardwarePixelBuffer.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9HardwareVertexBuffer.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9HLSLProgram.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9HLSLProgramFactory.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9Mappings.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9MultiRenderTarget.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9RenderSystem.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9RenderSystemFactory.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9RenderWindow.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9Resource.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9ResourceManager.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9Texture.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9TextureManager.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9VertexDeclaration.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9VideoMode.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D9VideoModeList.cpp">
+      <Filter>Source Files\D3D9RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmWindowEventUtilities.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
