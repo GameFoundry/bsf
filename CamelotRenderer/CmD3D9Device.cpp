@@ -597,7 +597,7 @@ namespace CamelotEngine
 			hr = mpDevice->SetTexture(stage, NULL);
 			if( hr != S_OK )
 			{
-				String str = "Unable to disable texture '" + StringConverter::toString((unsigned int)stage) + "' in D3D9";
+				String str = "Unable to disable texture '" + toString((unsigned int)stage) + "' in D3D9";
 				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9Device::clearDeviceStreams" );
 			}
 		
@@ -608,7 +608,7 @@ namespace CamelotEngine
 				hr = mpDevice->SetTextureStageState(static_cast<DWORD>(stage), D3DTSS_COLOROP, D3DTOP_DISABLE);
 				if( hr != S_OK )
 				{
-					String str = "Unable to disable texture '" + StringConverter::toString((unsigned)stage) + "' in D3D9";
+					String str = "Unable to disable texture '" + toString((unsigned)stage) + "' in D3D9";
 					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9Device::clearDeviceStreams" );
 				}
 			}			

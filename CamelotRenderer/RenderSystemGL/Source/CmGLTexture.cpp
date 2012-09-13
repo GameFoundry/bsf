@@ -34,7 +34,6 @@ THE SOFTWARE.
 //#include "CmTextureManager.h"
 #include "CmCamera.h"
 #include "CmException.h"
-#include "CmStringConverter.h"
 #include "CmBitwise.h"
 #include "CmTextureManager.h"
 #include "CmRenderSystemManager.h"
@@ -390,8 +389,8 @@ namespace CamelotEngine {
                     OGRE_EXCEPT(
                         Exception::ERR_RENDERINGAPI_ERROR, 
                         "Zero sized texture surface on texture face "
-						+ StringConverter::toString(face) 
-						+ " mipmap "+StringConverter::toString(mip)
+						+ toString(face) 
+						+ " mipmap "+toString(mip)
 						+ ". Probably, the GL driver refused to create the texture.", 
                             "GLTexture::_createSurfaceList");
                 }

@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 #include "CmGLSLExtSupport.h"
 #include "CmGLSLLinkProgram.h"
-#include "CmStringConverter.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
 #include "CmGLSLLinkProgramManager.h"

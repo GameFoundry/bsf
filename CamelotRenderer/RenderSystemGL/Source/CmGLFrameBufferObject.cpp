@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 #include "CmGLFrameBufferObject.h"
 #include "CmGLPixelFormat.h"
-#include "CmStringConverter.h"
 #include "CmGLHardwarePixelBuffer.h"
 #include "CmGLFBORenderTexture.h"
 #include "CmRenderSystemManager.h"

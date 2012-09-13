@@ -30,7 +30,6 @@ THE SOFTWARE.
 
 #include "CmD3D9Prerequisites.h"
 #include "CmString.h"
-#include "CmStringConverter.h"
 #include "CmConfigOptionMap.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"

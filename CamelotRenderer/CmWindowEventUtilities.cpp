@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include "CmWindowEventUtilities.h"
 #include "CmRenderWindow.h"
 #include "CmException.h"
-#include "CmStringConverter.h"
 #if CM_PLATFORM == CM_PLATFORM_LINUX
 #include <X11/Xlib.h>
 void GLXProc( CamelotEngine::RenderWindow *win, const XEvent &event );

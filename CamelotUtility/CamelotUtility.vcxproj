@@ -75,7 +75,6 @@
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmMathAsm.h" />
     <ClInclude Include="Include\CmString.h" />
-    <ClInclude Include="Include\CmStringConverter.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmTypes.h" />
     <ClInclude Include="Include\CmFwdDeclUtil.h" />
@@ -105,7 +104,6 @@
     <ClCompile Include="Source\CmPlane.cpp" />
     <ClCompile Include="Source\CmQuaternion.cpp" />
     <ClCompile Include="Source\CmString.cpp" />
-    <ClCompile Include="Source\CmStringConverter.cpp" />
     <ClCompile Include="Source\CmVector2.cpp" />
     <ClCompile Include="Source\CmVector3.cpp" />
     <ClCompile Include="Source\CmVector4.cpp" />

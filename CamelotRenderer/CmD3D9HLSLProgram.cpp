@@ -27,7 +27,6 @@ THE SOFTWARE.
 */
 #include "CmD3D9HLSLProgram.h"
 #include "CmGpuProgramManager.h"
-#include "CmStringConverter.h"
 #include "CmD3D9GpuProgram.h"
 #include "CmException.h"
 #include "CmRenderSystem.h"

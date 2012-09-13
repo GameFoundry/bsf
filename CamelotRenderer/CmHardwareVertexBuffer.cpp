@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include "CmHardwareVertexBuffer.h"
 #include "CmColourValue.h"
 #include "CmException.h"
-#include "CmStringConverter.h"
 #include "CmHardwareBufferManager.h"
 #include "CmDefaultHardwareBufferManager.h"
 #include "CmRenderSystem.h"
@@ -527,7 +526,7 @@ namespace CamelotEngine {
 		if (i == mBindingMap.end())
 		{
 			OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
-				"Cannot find buffer binding for index " + StringConverter::toString(index),
+				"Cannot find buffer binding for index " + toString(index),
 				"VertexBufferBinding::unsetBinding");
 		}
 		mBindingMap.erase(i);

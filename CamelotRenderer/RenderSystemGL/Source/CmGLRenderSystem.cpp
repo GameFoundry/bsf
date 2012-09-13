@@ -29,7 +29,6 @@ THE SOFTWARE.s
 
 #include "CmGLRenderSystem.h"
 #include "CmRenderSystem.h"
-#include "CmStringConverter.h"
 #include "CmCamera.h"
 #include "CmGLTextureManager.h"
 #include "CmGLHardwareVertexBuffer.h"
@@ -980,11 +979,11 @@ namespace CamelotEngine {
 
 			if (!tokens.empty())
 			{
-				mDriverVersion.major = StringConverter::parseInt(tokens[0]);
+				mDriverVersion.major = parseInt(tokens[0]);
 				if (tokens.size() > 1)
-					mDriverVersion.minor = StringConverter::parseInt(tokens[1]);
+					mDriverVersion.minor = parseInt(tokens[1]);
 				if (tokens.size() > 2)
-					mDriverVersion.release = StringConverter::parseInt(tokens[2]); 
+					mDriverVersion.release = parseInt(tokens[2]); 
 			}
 			mDriverVersion.build = 0;
 			// Initialise GL after the first window has been created

@@ -26,11 +26,10 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmGpuProgramParams.h"
-//#include "CmHighLevelGpuProgram.h"
+#include "CmMatrix4.h"
 #include "CmVector3.h"
 #include "CmVector4.h"
 #include "CmRenderSystemCapabilities.h"
-#include "CmStringConverter.h"
 #include "CmException.h"
 
 
@@ -205,7 +204,7 @@ namespace CamelotEngine
 
 		for (size_t i = 0; i < maxArrayIndex; i++)
 		{
-			arrayName = paramName + "[" + StringConverter::toString(i) + "]";
+			arrayName = paramName + "[" + toString(i) + "]";
 			map.insert(GpuConstantDefinitionMap::value_type(arrayName, arrayDef));
 			// increment location
 			arrayDef.physicalIndex += arrayDef.elementSize;

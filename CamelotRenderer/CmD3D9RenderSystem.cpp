@@ -358,7 +358,7 @@ namespace CamelotEngine
 		if( name == "FSAA" )
 		{
 			std::vector<CamelotEngine::String> values = StringUtil::split(value, " ", 1);
-			mFSAASamples = StringConverter::parseUnsignedInt(values[0]);
+			mFSAASamples = parseUnsignedInt(values[0]);
 			if (values.size() > 1)
 				mFSAAHint = values[1];
 
@@ -374,7 +374,7 @@ namespace CamelotEngine
 
 		if( name == "VSync Interval" )
 		{
-			mVSyncInterval = StringConverter::parseUnsignedInt(value);
+			mVSyncInterval = parseUnsignedInt(value);
 		}
 
 		if( name == "Allow NVPerfHUD" )
@@ -428,9 +428,9 @@ namespace CamelotEngine
 						TRUE);
 					if (bOK)
 					{
-						optFSAA->possibleValues.push_back(StringConverter::toString(n));
+						optFSAA->possibleValues.push_back(toString(n));
 						if (n >= 8)
-							optFSAA->possibleValues.push_back(StringConverter::toString(n) + " [Quality]");
+							optFSAA->possibleValues.push_back(toString(n) + " [Quality]");
 					}
 				}
 
@@ -551,8 +551,8 @@ namespace CamelotEngine
 			// we know that the height starts 3 characters after the width and goes until the next space
 			String::size_type heightEnd = opt->second.currentValue.find(' ', widthEnd+3);
 			// Now we can parse out the values
-			width = StringConverter::parseInt(opt->second.currentValue.substr(0, widthEnd));
-			height = StringConverter::parseInt(opt->second.currentValue.substr(widthEnd+3, heightEnd));
+			width = parseInt(opt->second.currentValue.substr(0, widthEnd));
+			height = parseInt(opt->second.currentValue.substr(widthEnd+3, heightEnd));
 
 			for( unsigned j=0; j < mActiveD3DDriver->getVideoModeList()->count(); j++ )
 			{
@@ -581,14 +581,14 @@ namespace CamelotEngine
 			hwGamma = opt->second.currentValue == "Yes";
 
 			NameValuePairList miscParams;
-			miscParams["colourDepth"] = StringConverter::toString(videoMode->getColourDepth());
-			miscParams["FSAA"] = StringConverter::toString(mFSAASamples);
+			miscParams["colourDepth"] = toString(videoMode->getColourDepth());
+			miscParams["FSAA"] = toString(mFSAASamples);
 			miscParams["FSAAHint"] = mFSAAHint;
-			miscParams["vsync"] = StringConverter::toString(mVSync);
-			miscParams["vsyncInterval"] = StringConverter::toString(mVSyncInterval);
-			miscParams["useNVPerfHUD"] = StringConverter::toString(mUseNVPerfHUD);
-			miscParams["gamma"] = StringConverter::toString(hwGamma);
-			miscParams["monitorIndex"] = StringConverter::toString(static_cast<int>(mActiveD3DDriver->getAdapterNumber()));
+			miscParams["vsync"] = toString(mVSync);
+			miscParams["vsyncInterval"] = toString(mVSyncInterval);
+			miscParams["useNVPerfHUD"] = toString(mUseNVPerfHUD);
+			miscParams["gamma"] = toString(hwGamma);
+			miscParams["monitorIndex"] = toString(static_cast<int>(mActiveD3DDriver->getAdapterNumber()));
 
 			autoWindow = _createRenderWindow( windowTitle, width, height, 
 				fullScreen, &miscParams );
@@ -1726,7 +1726,7 @@ namespace CamelotEngine
 				hr = getActiveD3D9Device()->SetTexture(static_cast<DWORD>(stage), 0);
 				if( hr != S_OK )
 				{
-					String str = "Unable to disable texture '" + StringConverter::toString(stage) + "' in D3D9";
+					String str = "Unable to disable texture '" + toString(stage) + "' in D3D9";
 					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9RenderSystem::_setTexture" );
 				}
 			}
@@ -1734,7 +1734,7 @@ namespace CamelotEngine
 			hr = __SetTextureStageState(static_cast<DWORD>(stage), D3DTSS_COLOROP, D3DTOP_DISABLE);
 			if( hr != S_OK )
 			{
-				String str = "Unable to disable texture '" + StringConverter::toString(stage) + "' in D3D9";
+				String str = "Unable to disable texture '" + toString(stage) + "' in D3D9";
 				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9RenderSystem::_setTexture" );
 			}
 
@@ -1757,7 +1757,7 @@ namespace CamelotEngine
 				if( hr != S_OK )
 				{
 					String str = "Unable to disable vertex texture '" 
-						+ StringConverter::toString(stage) + "' in D3D9";
+						+ toString(stage) + "' in D3D9";
 					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9RenderSystem::_setVertexTexture" );
 				}
 			}

@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 #include "CmRenderSystem.h"
 #include "CmException.h"
-#include "CmStringConverter.h"
 #include "CmWin32RenderTexture.h"
 #include "CmWin32GLSupport.h"
 #include "CmWin32Context.h"

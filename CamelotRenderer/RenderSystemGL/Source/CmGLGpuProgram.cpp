@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 #include "CmGLGpuProgram.h"
 #include "CmException.h"
-#include "CmStringConverter.h"
 
 using namespace CamelotEngine;
 
@@ -226,7 +225,7 @@ void GLArbGpuProgram::loadFromSource(void)
     {
         GLint errPos;
         glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, &errPos);
-		String errPosStr = StringConverter::toString(errPos);
+		String errPosStr = toString(errPos);
         char* errStr = (char*)glGetString(GL_PROGRAM_ERROR_STRING_ARB);
         // XXX New exception code?
         OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 

@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include "CmGLSLLinkProgramManager.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
-#include "CmStringConverter.h"
 
 namespace CamelotEngine {
 
@@ -472,7 +471,7 @@ namespace CamelotEngine {
 							// an expression (e.g. 24*3) or refer to a constant expression
 							// we'd have to evaluate the expression which could get nasty
 							// TODO
-							def.arraySize = StringConverter::parseInt(arrayDimTerm);
+							def.arraySize = parseInt(arrayDimTerm);
 
 						}
 						else

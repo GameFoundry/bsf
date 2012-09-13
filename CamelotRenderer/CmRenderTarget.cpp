@@ -26,7 +26,6 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmRenderTarget.h"
-#include "CmStringConverter.h"
 
 #include "CmViewport.h"
 #include "CmException.h"
@@ -113,7 +112,7 @@ namespace CamelotEngine {
 		else
 		{
 			OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,"No viewport with given zorder : "
-				+ StringConverter::toString(zorder), "RenderTarget::_updateViewport");
+				+ toString(zorder), "RenderTarget::_updateViewport");
 		}
 	}
 

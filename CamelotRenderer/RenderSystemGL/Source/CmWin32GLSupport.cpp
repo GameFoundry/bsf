@@ -1,5 +1,4 @@
 #include "CmException.h"
-#include "CmStringConverter.h"
 
 #include <algorithm>
 
@@ -106,7 +105,7 @@ namespace CamelotEngine {
 		optFSAA.possibleValues.push_back("0");
 		for (vector<int>::type::iterator it = mFSAALevels.begin(); it != mFSAALevels.end(); ++it)
 		{
-			String val = StringConverter::toString(*it);
+			String val = toString(*it);
 			optFSAA.possibleValues.push_back(val);
 			/* not implementing CSAA in GL for now
 			if (*it >= 8)
@@ -159,15 +158,15 @@ namespace CamelotEngine {
 		String::size_type pos = val.find('x');
 		if (pos == String::npos)
 			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Invalid Video Mode provided", "Win32GLSupport::refreshConfig");
-		DWORD width = StringConverter::parseUnsignedInt(val.substr(0, pos));
-		DWORD height = StringConverter::parseUnsignedInt(val.substr(pos+1, String::npos));
+		DWORD width = parseUnsignedInt(val.substr(0, pos));
+		DWORD height = parseUnsignedInt(val.substr(pos+1, String::npos));
 
 		for(vector<DEVMODE>::type::const_iterator i = mDevModes.begin(); i != mDevModes.end(); ++i)
 		{
 			if (i->dmPelsWidth != width || i->dmPelsHeight != height)
 				continue;
-			optColourDepth->possibleValues.push_back(StringConverter::toString((unsigned int)i->dmBitsPerPel));
-			optDisplayFrequency->possibleValues.push_back(StringConverter::toString((unsigned int)i->dmDisplayFrequency));
+			optColourDepth->possibleValues.push_back(toString((unsigned int)i->dmBitsPerPel));
+			optDisplayFrequency->possibleValues.push_back(toString((unsigned int)i->dmDisplayFrequency));
 		}
 		remove_duplicates(optColourDepth->possibleValues);
 		remove_duplicates(optDisplayFrequency->possibleValues);
@@ -237,8 +236,8 @@ namespace CamelotEngine {
             if (pos == String::npos)
                 OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Invalid Video Mode provided", "Win32GLSupport::createWindow");
 
-			unsigned int w = StringConverter::parseUnsignedInt(val.substr(0, pos));
-            unsigned int h = StringConverter::parseUnsignedInt(val.substr(pos + 1));
+			unsigned int w = parseUnsignedInt(val.substr(0, pos));
+            unsigned int h = parseUnsignedInt(val.substr(pos + 1));
 
 			// Parse optional parameters
 			NameValuePairList winOptions;
@@ -246,14 +245,14 @@ namespace CamelotEngine {
 			if (opt == mOptions.end())
 				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find Colour Depth options!", "Win32GLSupport::createWindow");
 			unsigned int colourDepth =
-				StringConverter::parseUnsignedInt(opt->second.currentValue);
-			winOptions["colourDepth"] = StringConverter::toString(colourDepth);
+				parseUnsignedInt(opt->second.currentValue);
+			winOptions["colourDepth"] = toString(colourDepth);
 
 			opt = mOptions.find("VSync");
 			if (opt == mOptions.end())
 				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find VSync options!", "Win32GLSupport::createWindow");
 			bool vsync = (opt->second.currentValue == "Yes");
-			winOptions["vsync"] = StringConverter::toString(vsync);
+			winOptions["vsync"] = toString(vsync);
 			renderSystem->setWaitForVerticalBlank(vsync);
 
 			opt = mOptions.find("VSync Interval");
@@ -266,27 +265,27 @@ namespace CamelotEngine {
 			if (opt != mOptions.end())
 			{
 				unsigned int displayFrequency =
-					StringConverter::parseUnsignedInt(opt->second.currentValue);
-				winOptions["displayFrequency"] = StringConverter::toString(displayFrequency);
+					parseUnsignedInt(opt->second.currentValue);
+				winOptions["displayFrequency"] = toString(displayFrequency);
 			}
 
 			opt = mOptions.find("FSAA");
 			if (opt == mOptions.end())
 				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find FSAA options!", "Win32GLSupport::createWindow");
 			std::vector<CamelotEngine::String> aavalues = StringUtil::split(opt->second.currentValue, " ", 1);
-			unsigned int multisample = StringConverter::parseUnsignedInt(aavalues[0]);
+			unsigned int multisample = parseUnsignedInt(aavalues[0]);
 			String multisample_hint;
 			if (aavalues.size() > 1)
 				multisample_hint = aavalues[1];
 
-			winOptions["FSAA"] = StringConverter::toString(multisample);
+			winOptions["FSAA"] = toString(multisample);
 			winOptions["FSAAHint"] = multisample_hint;
 
 			opt = mOptions.find("sRGB Gamma Conversion");
 			if (opt == mOptions.end())
 				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find sRGB options!", "Win32GLSupport::createWindow");
 			bool hwGamma = (opt->second.currentValue == "Yes");
-			winOptions["gamma"] = StringConverter::toString(hwGamma);
+			winOptions["gamma"] = toString(hwGamma);
 
             return renderSystem->_createRenderWindow(windowTitle, w, h, fullscreen, &winOptions);
         }
@@ -342,7 +341,7 @@ namespace CamelotEngine {
 				if (mMonitorInfoList.empty())		
 					EnumDisplayMonitors(NULL, NULL, sCreateMonitorsInfoEnumProc, (LPARAM)&mMonitorInfoList);			
 
-				monitorIndex = StringConverter::parseInt(monitorIndexIt->second);
+				monitorIndex = parseInt(monitorIndexIt->second);
 				if (monitorIndex < (int)mMonitorInfoList.size())
 				{						
 					hMonitor = mMonitorInfoList[monitorIndex].hMonitor;					
@@ -358,10 +357,10 @@ namespace CamelotEngine {
 				int top  = -1;
 
 				if ((opt = newParams.find("left")) != newParams.end())
-					left = StringConverter::parseInt(opt->second);
+					left = parseInt(opt->second);
 
 				if ((opt = newParams.find("top")) != newParams.end())
-					top = StringConverter::parseInt(opt->second);
+					top = parseInt(opt->second);
 
 				// Fill in anchor point.
 				windowAnchorPoint.x = left;
@@ -372,7 +371,7 @@ namespace CamelotEngine {
 				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTONEAREST);				
 			}
 
-			newParams["monitorHandle"] = StringConverter::toString((size_t)hMonitor);																
+			newParams["monitorHandle"] = toString((size_t)hMonitor);																
 		}
 
 		window->create(name, width, height, fullScreen, miscParams);

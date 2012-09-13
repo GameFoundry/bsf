@@ -31,7 +31,6 @@ THE SOFTWARE.
 #endif
 #include "CmWin32Window.h"
 #include "CmRenderSystem.h"
-#include "CmStringConverter.h"
 #include "CmException.h"
 #include "CmWin32GLSupport.h"
 #include "CmWin32Context.h"
@@ -111,32 +110,32 @@ namespace CamelotEngine {
 				title = opt->second;
 
 			if ((opt = miscParams->find("left")) != end)
-				left = StringConverter::parseInt(opt->second);
+				left = parseInt(opt->second);
 
 			if ((opt = miscParams->find("top")) != end)
-				top = StringConverter::parseInt(opt->second);
+				top = parseInt(opt->second);
 
 			if ((opt = miscParams->find("depthBuffer")) != end)
-				mIsDepthBuffered = StringConverter::parseBool(opt->second);
+				mIsDepthBuffered = parseBool(opt->second);
 
 			if ((opt = miscParams->find("vsync")) != end)
-				vsync = StringConverter::parseBool(opt->second);
+				vsync = parseBool(opt->second);
 
 			if ((opt = miscParams->find("vsyncInterval")) != end)
-				vsyncInterval = StringConverter::parseUnsignedInt(opt->second);
+				vsyncInterval = parseUnsignedInt(opt->second);
 
 			if ((opt = miscParams->find("FSAA")) != end)
-				mFSAA = StringConverter::parseUnsignedInt(opt->second);
+				mFSAA = parseUnsignedInt(opt->second);
 
 			if ((opt = miscParams->find("FSAAHint")) != end)
 				mFSAAHint = opt->second;
 
 			if ((opt = miscParams->find("gamma")) != end)
-				hwGamma = StringConverter::parseBool(opt->second);
+				hwGamma = parseBool(opt->second);
 
 			if ((opt = miscParams->find("externalWindowHandle")) != end)
 			{
-				mHWnd = (HWND)StringConverter::parseUnsignedInt(opt->second);
+				mHWnd = (HWND)parseUnsignedInt(opt->second);
 				if (mHWnd)
 				{
 					mIsExternal = true;
@@ -144,12 +143,12 @@ namespace CamelotEngine {
 				}
 
 				if ((opt = miscParams->find("externalGLControl")) != end) {
-				  mIsExternalGLControl = StringConverter::parseBool(opt->second);
+				  mIsExternalGLControl = parseBool(opt->second);
 				}
 			}
 			if ((opt = miscParams->find("externalGLContext")) != end)
 			{
-				mGlrc = (HGLRC)StringConverter::parseUnsignedLong(opt->second);
+				mGlrc = (HGLRC)parseUnsignedLong(opt->second);
 				if( mGlrc )
 					mIsExternalGLContext = true;
 			}
@@ -161,14 +160,14 @@ namespace CamelotEngine {
 			// set outer dimensions?
 			opt = miscParams->find("outerDimensions");
 			if(opt != miscParams->end())
-				outerSize = StringConverter::parseBool(opt->second);
+				outerSize = parseBool(opt->second);
 
 			// only available with fullscreen
 			if ((opt = miscParams->find("displayFrequency")) != end)
-				mDisplayFrequency = StringConverter::parseUnsignedInt(opt->second);
+				mDisplayFrequency = parseUnsignedInt(opt->second);
 			if ((opt = miscParams->find("colourDepth")) != end)
 			{
-				mColourDepth = StringConverter::parseUnsignedInt(opt->second);
+				mColourDepth = parseUnsignedInt(opt->second);
 				if (!mIsFullScreen)
 				{
 					// make sure we don't exceed desktop colour depth
@@ -179,16 +178,16 @@ namespace CamelotEngine {
 
 			// incompatible with fullscreen
 			if ((opt = miscParams->find("parentWindowHandle")) != end)
-				parent = (HWND)StringConverter::parseUnsignedInt(opt->second);
+				parent = (HWND)parseUnsignedInt(opt->second);
 
 
 			// monitor index
 			if ((opt = miscParams->find("monitorIndex")) != end)
-				monitorIndex = StringConverter::parseInt(opt->second);
+				monitorIndex = parseInt(opt->second);
 			
 			// monitor handle
 			if ((opt = miscParams->find("monitorHandle")) != end)
-				hMonitor = (HMONITOR)StringConverter::parseInt(opt->second);			
+				hMonitor = (HMONITOR)parseInt(opt->second);			
 		}
 
 		if (!mIsExternal)

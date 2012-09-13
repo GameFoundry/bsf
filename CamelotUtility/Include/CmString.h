@@ -214,6 +214,144 @@ namespace CamelotEngine {
 	/** @} */
 	/** @} */
 
+	    /** Converts a float to a String. */
+    CM_EXPORT String toString(float val, unsigned short precision = 6, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+    /** Converts a Radian to a String. */
+    CM_EXPORT String toString(Radian val, unsigned short precision = 6, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+    /** Converts a Degree to a String. */
+    CM_EXPORT String toString(Degree val, unsigned short precision = 6, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+    /** Converts an int to a String. */
+    CM_EXPORT String toString(int val, unsigned short width = 0, 
+        char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+#if CM_ARCH_TYPE == CM_ARCHITECTURE_64 || CM_PLATFORM == CM_PLATFORM_APPLE
+    /** Converts an unsigned int to a String. */
+    CM_EXPORT String toString(unsigned int val, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+    /** Converts a size_t to a String. */
+    CM_EXPORT String toString(size_t val, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+    #if CM_COMPILER == CM_COMPILER_MSVC
+            /** Converts an unsigned long to a String. */
+            CM_EXPORT String toString(unsigned long val, 
+                unsigned short width = 0, char fill = ' ', 
+                std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+    #endif
+#else
+    /** Converts a size_t to a String. */
+    CM_EXPORT String toString(size_t val, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+    /** Converts an unsigned long to a String. */
+    CM_EXPORT String toString(unsigned long val, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+#endif
+    /** Converts a long to a String. */
+    CM_EXPORT String toString(long val, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+	/** Global conversion methods **/
+
+    /** Converts a boolean to a String. 
+    @param yesNo If set to true, result is 'yes' or 'no' instead of 'true' or 'false'
+    */
+    CM_EXPORT String toString(bool val, bool yesNo = false);
+	/** Converts a Vector2 to a String. 
+    @remarks
+        Format is "x y" (i.e. 2x float values, space delimited)
+    */
+    CM_EXPORT String toString(const Vector2& val);
+    /** Converts a Vector3 to a String. 
+    @remarks
+        Format is "x y z" (i.e. 3x float values, space delimited)
+    */
+    CM_EXPORT String toString(const Vector3& val);
+	/** Converts a Vector4 to a String. 
+    @remarks
+        Format is "x y z w" (i.e. 4x float values, space delimited)
+    */
+    CM_EXPORT String toString(const Vector4& val);
+    /** Converts a Matrix3 to a String. 
+    @remarks
+        Format is "00 01 02 10 11 12 20 21 22" where '01' means row 0 column 1 etc.
+    */
+    CM_EXPORT String toString(const Matrix3& val);
+    /** Converts a Matrix4 to a String. 
+    @remarks
+        Format is "00 01 02 03 10 11 12 13 20 21 22 23 30 31 32 33" where 
+        '01' means row 0 column 1 etc.
+    */
+    CM_EXPORT String toString(const Matrix4& val);
+    /** Converts a Quaternion to a String. 
+    @remarks
+        Format is "w x y z" (i.e. 4x float values, space delimited)
+    */
+    CM_EXPORT String toString(const Quaternion& val);
+    /** Converts a ColourValue to a String. 
+    @remarks
+        Format is "r g b a" (i.e. 4x float values, space delimited). 
+    */
+    CM_EXPORT String toString(const ColourValue& val);
+    /** Converts a StringVector to a string.
+    @remarks
+        Strings must not contain spaces since space is used as a delimiter in
+        the output.
+    */
+    CM_EXPORT String toString(const std::vector<CamelotEngine::String>& val);
+
+    /** Converts a String to a float. 
+    @returns
+        0.0 if the value could not be parsed, otherwise the float version of the String.
+    */
+    CM_EXPORT float parseReal(const String& val, float defaultValue = 0);
+    /** Converts a String to a whole number. 
+    @returns
+        0.0 if the value could not be parsed, otherwise the numeric version of the String.
+    */
+    CM_EXPORT int parseInt(const String& val, int defaultValue = 0);
+    /** Converts a String to a whole number. 
+    @returns
+        0.0 if the value could not be parsed, otherwise the numeric version of the String.
+    */
+    CM_EXPORT unsigned int parseUnsignedInt(const String& val, unsigned int defaultValue = 0);
+    /** Converts a String to a whole number. 
+    @returns
+        0.0 if the value could not be parsed, otherwise the numeric version of the String.
+    */
+    CM_EXPORT long parseLong(const String& val, long defaultValue = 0);
+    /** Converts a String to a whole number. 
+    @returns
+        0.0 if the value could not be parsed, otherwise the numeric version of the String.
+    */
+    CM_EXPORT unsigned long parseUnsignedLong(const String& val, unsigned long defaultValue = 0);
+    /** Converts a String to a boolean. 
+    @remarks
+        Returns true if case-insensitive match of the start of the string
+		matches "true", "yes" or "1", false otherwise.
+    */
+    CM_EXPORT bool parseBool(const String& val, bool defaultValue = 0);
+
+    /** Pareses a StringVector from a string.
+    @remarks
+        Strings must not contain spaces since space is used as a delimiter in
+        the output.
+    */
+    CM_EXPORT std::vector<CamelotEngine::String> parseStringVector(const String& val);
+    /** Checks the String is a valid number value. */
+    CM_EXPORT bool isNumber(const String& val);
+	/** @} */
+
 } // namespace CamelotEngine
 
 #endif // _String_H__

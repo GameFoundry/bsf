@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include "CmGLSupport.h"
 #include "CmGLPixelFormat.h"
 #include "CmException.h"
-#include "CmStringConverter.h"
 #include "CmBitwise.h"
 #include "CmGLFBORenderTexture.h"
 #include "CmRenderSystemManager.h"
@@ -266,7 +265,7 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
         for(size_t zoffset=0; zoffset<mDepth; ++zoffset)
         {
             String name;
-			name = "rtt/" + StringConverter::toString((size_t)this) + "/" + baseName;
+			name = "rtt/" + toString((size_t)this) + "/" + baseName;
             GLSurfaceDesc surface;
             surface.buffer = this;
             surface.zoffset = zoffset;

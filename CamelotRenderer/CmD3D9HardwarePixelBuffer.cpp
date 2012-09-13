@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include "CmD3D9Texture.h"
 #include "CmD3D9Mappings.h"
 #include "CmException.h"
-#include "CmStringConverter.h"
 #include "CmBitwise.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
@@ -969,7 +968,7 @@ void D3D9HardwarePixelBuffer::updateRenderTexture(bool writeGamma, UINT32 fsaa, 
 	if (mRenderTexture == NULL)
 	{
 		String name;
-		name = "rtt/" +CamelotEngine::StringConverter::toString((size_t)this) + "/" + srcName;
+		name = "rtt/" +CamelotEngine::toString((size_t)this) + "/" + srcName;
 
 		mRenderTexture = new D3D9RenderTexture(name, this, writeGamma, fsaa);		
 

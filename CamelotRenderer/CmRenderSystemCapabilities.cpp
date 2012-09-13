@@ -26,7 +26,6 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmRenderSystemCapabilities.h"
-#include "CmStringConverter.h"
 #include "CmException.h"
 #include "CmString.h"
 

@@ -31,7 +31,6 @@ THE SOFTWARE.
 #include "CmD3D9RenderSystem.h"
 #include "CmRenderSystem.h"
 #include "CmBitwise.h"
-#include "CmStringConverter.h"
 #include "CmWindowEventUtilities.h"
 #include "CmD3D9DeviceManager.h"
 #include "CmRenderSystemManager.h"
@@ -89,11 +88,11 @@ namespace CamelotEngine
 			// left (x)
 			opt = miscParams->find("left");
 			if(opt != miscParams->end())
-				left = StringConverter::parseInt(opt->second);
+				left = parseInt(opt->second);
 			// top (y)
 			opt = miscParams->find("top");
 			if(opt != miscParams->end())
-				top = StringConverter::parseInt(opt->second);
+				top = parseInt(opt->second);
 			// Window title
 			opt = miscParams->find("title");
 			if(opt != miscParams->end())
@@ -101,36 +100,36 @@ namespace CamelotEngine
 			// parentWindowHandle		-> parentHWnd
 			opt = miscParams->find("parentWindowHandle");
 			if(opt != miscParams->end())
-				parentHWnd = (HWND)StringConverter::parseUnsignedInt(opt->second);
+				parentHWnd = (HWND)parseUnsignedInt(opt->second);
 			// externalWindowHandle		-> externalHandle
 			opt = miscParams->find("externalWindowHandle");
 			if(opt != miscParams->end())
-				externalHandle = (HWND)StringConverter::parseUnsignedInt(opt->second);
+				externalHandle = (HWND)parseUnsignedInt(opt->second);
 			// vsync	[parseBool]
 			opt = miscParams->find("vsync");
 			if(opt != miscParams->end())
-				mVSync = StringConverter::parseBool(opt->second);
+				mVSync = parseBool(opt->second);
 			// vsyncInterval	[parseUnsignedInt]
 			opt = miscParams->find("vsyncInterval");
 			if(opt != miscParams->end())
-				mVSyncInterval = StringConverter::parseUnsignedInt(opt->second);
+				mVSyncInterval = parseUnsignedInt(opt->second);
 			// displayFrequency
 			opt = miscParams->find("displayFrequency");
 			if(opt != miscParams->end())
-				mDisplayFrequency = StringConverter::parseUnsignedInt(opt->second);
+				mDisplayFrequency = parseUnsignedInt(opt->second);
 			// colourDepth
 			opt = miscParams->find("colourDepth");
 			if(opt != miscParams->end())
-				colourDepth = StringConverter::parseUnsignedInt(opt->second);
+				colourDepth = parseUnsignedInt(opt->second);
 			// depthBuffer [parseBool]
 			opt = miscParams->find("depthBuffer");
 			if(opt != miscParams->end())
-				depthBuffer = StringConverter::parseBool(opt->second);
+				depthBuffer = parseBool(opt->second);
 			// FSAA settings
 			opt = miscParams->find("FSAA");
 			if(opt != miscParams->end())
 			{
-				mFSAA = StringConverter::parseUnsignedInt(opt->second);
+				mFSAA = parseUnsignedInt(opt->second);
 			}
 			opt = miscParams->find("FSAAHint");
 			if(opt != miscParams->end())
@@ -145,19 +144,19 @@ namespace CamelotEngine
 			// set outer dimensions?
 			opt = miscParams->find("outerDimensions");
 			if(opt != miscParams->end())
-				outerSize = StringConverter::parseBool(opt->second);
+				outerSize = parseBool(opt->second);
 			// NV perf HUD?
 			opt = miscParams->find("useNVPerfHUD");
 			if(opt != miscParams->end())
-				mUseNVPerfHUD = StringConverter::parseBool(opt->second);
+				mUseNVPerfHUD = parseBool(opt->second);
 			// sRGB?
 			opt = miscParams->find("gamma");
 			if(opt != miscParams->end())
-				mHwGamma = StringConverter::parseBool(opt->second);
+				mHwGamma = parseBool(opt->second);
 			// monitor index
 			opt = miscParams->find("monitorIndex");
 			if(opt != miscParams->end())
-				monitorIndex = StringConverter::parseInt(opt->second);
+				monitorIndex = parseInt(opt->second);
 
 		}
 

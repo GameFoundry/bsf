@@ -31,7 +31,6 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmString.h"
-#include "CmStringConverter.h"
 
 // Because there are more than 32 possible Capabilities, more than 1 int is needed to store them all.
 // In fact, an array of integers is used to store capabilities. However all the capabilities are defined in the single
@@ -192,13 +191,13 @@ namespace CamelotEngine
 			std::vector<CamelotEngine::String> tokens = StringUtil::split(versionString, ".");
 			if(!tokens.empty())
 			{
-				major = StringConverter::parseInt(tokens[0]);
+				major = parseInt(tokens[0]);
 				if (tokens.size() > 1)
-					minor = StringConverter::parseInt(tokens[1]);
+					minor = parseInt(tokens[1]);
 				if (tokens.size() > 2)
-					release = StringConverter::parseInt(tokens[2]);
+					release = parseInt(tokens[2]);
 				if (tokens.size() > 3)
-					build = StringConverter::parseInt(tokens[3]);
+					build = parseInt(tokens[3]);
 			}
 
 		}

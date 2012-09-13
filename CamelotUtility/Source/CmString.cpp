@@ -27,6 +27,14 @@ THE SOFTWARE.
 */
 
 #include "CmString.h"
+#include "CmColourValue.h"
+#include "CmMath.h"
+#include "CmMatrix3.h"
+#include "CmMatrix4.h"
+#include "CmQuaternion.h"
+#include "CmVector2.h"
+#include "CmVector3.h"
+#include "CmVector4.h"
 
 namespace CamelotEngine {
 
@@ -362,5 +370,306 @@ namespace CamelotEngine {
 		}
 		return result;
 	}
+	//-----------------------------------------------------------------------
+	String toString(float val, unsigned short precision, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		stringstream stream;
+		stream.precision(precision);
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(Radian val, unsigned short precision, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		return toString(val.valueAngleUnits(), precision, width, fill, flags);
+	}
+	//-----------------------------------------------------------------------
+	String toString(Degree val, unsigned short precision, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		return toString(val.valueAngleUnits(), precision, width, fill, flags);
+	}
+	//-----------------------------------------------------------------------
+	String toString(int val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		stringstream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+#if CM_ARCH_TYPE == CM_ARCHITECTURE_64 || CM_PLATFORM == CM_PLATFORM_APPLE
+	String toString(unsigned int val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		stringstream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(size_t val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		stringstream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+#if CM_COMPILER == CM_COMPILER_MSVC
+	//-----------------------------------------------------------------------
+	String toString(unsigned long val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		stringstream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
 
+#endif
+	//-----------------------------------------------------------------------
+#else
+	String toString(size_t val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		stringstream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(unsigned long val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		stringstream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+#endif
+	String toString(long val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		stringstream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(const Vector2& val)
+	{
+		stringstream stream;
+		stream << val.x << " " << val.y;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(const Vector3& val)
+	{
+		stringstream stream;
+		stream << val.x << " " << val.y << " " << val.z;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(const Vector4& val)
+	{
+		stringstream stream;
+		stream << val.x << " " << val.y << " " << val.z << " " << val.w;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(const Matrix3& val)
+	{
+		stringstream stream;
+		stream << val[0][0] << " " 
+			<< val[0][1] << " "             
+			<< val[0][2] << " "             
+			<< val[1][0] << " "             
+			<< val[1][1] << " "             
+			<< val[1][2] << " "             
+			<< val[2][0] << " "             
+			<< val[2][1] << " "             
+			<< val[2][2];
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(bool val, bool yesNo)
+	{
+		if (val)
+		{
+			if (yesNo)
+			{
+				return "yes";
+			}
+			else
+			{
+				return "true";
+			}
+		}
+		else
+			if (yesNo)
+			{
+				return "no";
+			}
+			else
+			{
+				return "false";
+			}
+	}
+	//-----------------------------------------------------------------------
+	String toString(const Matrix4& val)
+	{
+		stringstream stream;
+		stream << val[0][0] << " " 
+			<< val[0][1] << " "             
+			<< val[0][2] << " "             
+			<< val[0][3] << " "             
+			<< val[1][0] << " "             
+			<< val[1][1] << " "             
+			<< val[1][2] << " "             
+			<< val[1][3] << " "             
+			<< val[2][0] << " "             
+			<< val[2][1] << " "             
+			<< val[2][2] << " "             
+			<< val[2][3] << " "             
+			<< val[3][0] << " "             
+			<< val[3][1] << " "             
+			<< val[3][2] << " "             
+			<< val[3][3];
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(const Quaternion& val)
+	{
+		stringstream stream;
+		stream  << val.w << " " << val.x << " " << val.y << " " << val.z;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(const ColourValue& val)
+	{
+		stringstream stream;
+		stream << val.r << " " << val.g << " " << val.b << " " << val.a;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	String toString(const std::vector<CamelotEngine::String>& val)
+	{
+		stringstream stream;
+		std::vector<CamelotEngine::String>::const_iterator i, iend, ibegin;
+		ibegin = val.begin();
+		iend = val.end();
+		for (i = ibegin; i != iend; ++i)
+		{
+			if (i != ibegin)
+				stream << " ";
+
+			stream << *i; 
+		}
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
+	float parseReal(const String& val, float defaultValue)
+	{
+		// Use istringstream for direct correspondence with toString
+		StringStream str(val);
+		float ret = defaultValue;
+		str >> ret;
+
+		return ret;
+	}
+	//-----------------------------------------------------------------------
+	int parseInt(const String& val, int defaultValue)
+	{
+		// Use istringstream for direct correspondence with toString
+		StringStream str(val);
+		int ret = defaultValue;
+		str >> ret;
+
+		return ret;
+	}
+	//-----------------------------------------------------------------------
+	unsigned int parseUnsignedInt(const String& val, unsigned int defaultValue)
+	{
+		// Use istringstream for direct correspondence with toString
+		StringStream str(val);
+		unsigned int ret = defaultValue;
+		str >> ret;
+
+		return ret;
+	}
+	//-----------------------------------------------------------------------
+	long parseLong(const String& val, long defaultValue)
+	{
+		// Use istringstream for direct correspondence with toString
+		StringStream str(val);
+		long ret = defaultValue;
+		str >> ret;
+
+		return ret;
+	}
+	//-----------------------------------------------------------------------
+	unsigned long parseUnsignedLong(const String& val, unsigned long defaultValue)
+	{
+		// Use istringstream for direct correspondence with toString
+		StringStream str(val);
+		unsigned long ret = defaultValue;
+		str >> ret;
+
+		return ret;
+	}
+	//-----------------------------------------------------------------------
+	bool parseBool(const String& val, bool defaultValue)
+	{
+		if ((StringUtil::startsWith(val, "true") || StringUtil::startsWith(val, "yes")
+			|| StringUtil::startsWith(val, "1")))
+			return true;
+		else if ((StringUtil::startsWith(val, "false") || StringUtil::startsWith(val, "no")
+			|| StringUtil::startsWith(val, "0")))
+			return false;
+		else
+			return defaultValue;
+	}
+	//-----------------------------------------------------------------------
+	std::vector<CamelotEngine::String> parseStringVector(const String& val)
+	{
+		return StringUtil::split(val);
+	}
+	//-----------------------------------------------------------------------
+	bool isNumber(const String& val)
+	{
+		StringStream str(val);
+		float tst;
+		str >> tst;
+		return !str.fail() && str.eof();
+	}
 }
