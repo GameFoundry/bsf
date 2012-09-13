@@ -51,7 +51,7 @@ namespace CamelotEngine
         RenderTexture(HardwarePixelBuffer *buffer, size_t zoffset);
         virtual ~RenderTexture();
 
-		virtual void copyContentsToMemory(const PixelBox &dst, FrameBuffer buffer);
+		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
 		PixelFormat suggestPixelFormat() const;
 
 	protected:
@@ -106,7 +106,7 @@ namespace CamelotEngine
 		/** Error throwing implementation, it's not possible to write a MultiRenderTarget
 			to disk. 
 		*/
-		virtual void copyContentsToMemory(const PixelBox &dst, FrameBuffer buffer);
+		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
 
 		/// Irrelevant implementation since cannot copy
 		PixelFormat suggestPixelFormat() const { return PF_UNKNOWN; }

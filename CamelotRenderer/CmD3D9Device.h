@@ -76,7 +76,7 @@ namespace CamelotEngine {
 		UINT32					getLastPresentFrame		() const { return mLastPresentFrame; }
 
 		void					setAdapterOrdinalIndex  (D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex);
-		void					copyContentsToMemory(D3D9RenderWindow* window, const PixelBox &dst, RenderTarget::FrameBuffer buffer);
+		void					copyContentsToMemory(D3D9RenderWindow* window, const PixelData &dst, RenderTarget::FrameBuffer buffer);
 		void					clearDeviceStreams		();
 	
 	public:

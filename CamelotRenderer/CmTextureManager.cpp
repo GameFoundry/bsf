@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "CmTextureManager.h"
 #include "CmException.h"
-#include "CmPixelFormat.h"
+#include "CmPixelUtil.h"
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------

@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "CmPixelFormat.h"
+#include "CmPixelUtil.h"
 
 namespace CamelotEngine {
 

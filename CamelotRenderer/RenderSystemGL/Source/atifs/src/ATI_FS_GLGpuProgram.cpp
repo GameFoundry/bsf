@@ -134,7 +134,7 @@ void ATI_FS_GLGpuProgram::loadFromSource(void)
 	{
 		// an error occured when compiling the ps_1_4 source code
 		char buff[50];
-        sprintf(buff,"error on line %d in pixel shader source\n", PS1_4Assembler.mCurrentLine);
+        sprintf_s(buff, 50, "error on line %d in pixel shader source\n", PS1_4Assembler.mCurrentLine);
 
 		// TODO LOG PORT - Log this somewhere
 		//LogManager::getSingleton().logMessage("Warning: atifs compiler reported the following errors:");

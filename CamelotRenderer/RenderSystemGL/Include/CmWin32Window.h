@@ -51,7 +51,7 @@ namespace CamelotEngine {
         void swapBuffers(bool waitForVSync);
 
 		/** Overridden - see RenderTarget. */
-		virtual void copyContentsToMemory(const PixelBox &dst, FrameBuffer buffer);
+		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
 
 		bool requiresTextureFlipping() const { return false; }
 

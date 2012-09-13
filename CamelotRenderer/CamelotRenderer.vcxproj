@@ -137,8 +137,7 @@
     <ClInclude Include="CmHardwareVertexBuffer.h" />
     <ClInclude Include="CmHighLevelGpuProgram.h" />
     <ClInclude Include="CmHighLevelGpuProgramManager.h" />
-    <ClInclude Include="CmImageResampler.h" />
-    <ClInclude Include="CmPixelFormat.h" />
+    <ClInclude Include="CmPixelUtil.h" />
     <ClInclude Include="CmPrerequisites.h" />
     <ClInclude Include="CmRenderOperation.h" />
     <ClInclude Include="CmRenderSystem.h" />
@@ -237,7 +236,7 @@
     <ClCompile Include="CmHardwareVertexBuffer.cpp" />
     <ClCompile Include="CmHighLevelGpuProgram.cpp" />
     <ClCompile Include="CmHighLevelGpuProgramManager.cpp" />
-    <ClCompile Include="CmPixelFormat.cpp" />
+    <ClCompile Include="CmPixelUtil.cpp" />
     <ClCompile Include="CmRenderSystem.cpp" />
     <ClCompile Include="CmRenderSystemCapabilities.cpp" />
     <ClCompile Include="CmRenderTarget.cpp" />

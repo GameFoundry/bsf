@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmPrerequisites.h"
 
 #include "CmString.h"
-#include "CmPixelFormat.h"
+#include "CmPixelUtil.h"
 #include "CmViewport.h"
 
 /* Define the number of priority groups for the render system's render targets. */
@@ -202,7 +202,7 @@ namespace CamelotEngine {
 			extract into, although you can use whatever format you like and the 
 			results will be converted.
 		*/
-		virtual void copyContentsToMemory(const PixelBox &dst, FrameBuffer buffer = FB_AUTO) = 0;
+		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO) = 0;
 
 		/** Suggests a pixel format to use for extracting the data in this target, 
 			when calling copyContentsToMemory.

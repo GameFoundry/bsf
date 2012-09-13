@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmCommon.h"
 #include "CmMatrix4.h"
 #include "CmString.h"
-#include "CmPixelFormat.h"
+#include "CmPixelUtil.h"
 #include "CmTexture.h"
 
 namespace CamelotEngine {

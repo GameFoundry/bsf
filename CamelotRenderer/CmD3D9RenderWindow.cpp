@@ -737,7 +737,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D9RenderWindow::copyContentsToMemory(const PixelBox &dst, FrameBuffer buffer)
+	void D3D9RenderWindow::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
 		mDevice->copyContentsToMemory(this, dst, buffer);
 	}

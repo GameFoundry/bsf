@@ -57,12 +57,12 @@ namespace CamelotEngine
         assert(offset == 0 && length == mSizeInBytes && "Cannot lock memory region, most lock box or entire buffer");
         
         Box myBox(0, 0, 0, mWidth, mHeight, mDepth);
-        const PixelBox &rv = lock(myBox, options);
+        const PixelData &rv = lock(myBox, options);
         return rv.data;
     }
     
     //-----------------------------------------------------------------------------    
-    const PixelBox& HardwarePixelBuffer::lock(const Box& lockBox, LockOptions options)
+    const PixelData& HardwarePixelBuffer::lock(const Box& lockBox, LockOptions options)
     {
         if (mUseShadowBuffer)
         {
@@ -86,7 +86,7 @@ namespace CamelotEngine
     }
     
     //-----------------------------------------------------------------------------    
-    const PixelBox& HardwarePixelBuffer::getCurrentLock() 
+    const PixelData& HardwarePixelBuffer::getCurrentLock() 
 	{ 
         assert(isLocked() && "Cannot get current lock: buffer not locked");
         
@@ -117,7 +117,7 @@ namespace CamelotEngine
                 "Source must not be the same object",
                 "HardwarePixelBuffer::blit" ) ;
 		}
-		const PixelBox &srclock = src->lock(srcBox, HBL_READ_ONLY);
+		const PixelData &srclock = src->lock(srcBox, HBL_READ_ONLY);
 
 		LockOptions method = HBL_NORMAL;
 		if(dstBox.left == 0 && dstBox.top == 0 && dstBox.front == 0 &&
@@ -126,7 +126,7 @@ namespace CamelotEngine
 			// Entire buffer -- we can discard the previous contents
 			method = HBL_DISCARD;
 			
-		const PixelBox &dstlock = lock(dstBox, method);
+		const PixelData &dstlock = lock(dstBox, method);
 		if(dstlock.getWidth() != srclock.getWidth() ||
         	dstlock.getHeight() != srclock.getHeight() ||
         	dstlock.getDepth() != srclock.getDepth())

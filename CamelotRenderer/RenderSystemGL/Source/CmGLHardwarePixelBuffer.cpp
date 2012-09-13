@@ -72,7 +72,7 @@ void GLHardwarePixelBuffer::freeBuffer()
 	}
 }
 //-----------------------------------------------------------------------------  
-PixelBox GLHardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions options)
+PixelData GLHardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions options)
 {
 	allocateBuffer();
 	if(options != HardwareBuffer::HBL_DISCARD) 
@@ -97,12 +97,12 @@ void GLHardwarePixelBuffer::unlockImpl(void)
 }
 
 //-----------------------------------------------------------------------------  
-void GLHardwarePixelBuffer::blitFromMemory(const PixelBox &src, const Box &dstBox)
+void GLHardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox)
 {
 	if(!mBuffer.contains(dstBox))
 		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "destination box out of range",
 		 "GLHardwarePixelBuffer::blitFromMemory");
-	PixelBox scaled;
+	PixelData scaled;
 	
 	if(src.getWidth() != dstBox.getWidth() ||
 		src.getHeight() != dstBox.getHeight() ||
@@ -134,7 +134,7 @@ void GLHardwarePixelBuffer::blitFromMemory(const PixelBox &src, const Box &dstBo
 	freeBuffer();
 }
 //-----------------------------------------------------------------------------  
-void GLHardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelBox &dst)
+void GLHardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst)
 {
 	if(!mBuffer.contains(srcBox))
 		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "source box out of range",
@@ -173,14 +173,14 @@ void GLHardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelBox &dst)
 	}
 }
 //-----------------------------------------------------------------------------
-void GLHardwarePixelBuffer::upload(const PixelBox &data, const Box &dest)
+void GLHardwarePixelBuffer::upload(const PixelData &data, const Box &dest)
 {
     OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
 		"Upload not possible for this pixelbuffer type",
         "GLHardwarePixelBuffer::upload");
 }
 //-----------------------------------------------------------------------------  
-void GLHardwarePixelBuffer::download(const PixelBox &data)
+void GLHardwarePixelBuffer::download(const PixelData &data)
 {
     OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Download not possible for this pixelbuffer type",
         "GLHardwarePixelBuffer::download");
@@ -249,7 +249,7 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
                 LML_NORMAL, str.str());
 	*/
 	// Set up pixel box
-	mBuffer = PixelBox(mWidth, mHeight, mDepth, mFormat);
+	mBuffer = PixelData(mWidth, mHeight, mDepth, mFormat);
 	
     if(mWidth==0 || mHeight==0 || mDepth==0)
         /// We are invalid, do not allocate a buffer
@@ -288,7 +288,7 @@ GLTextureBuffer::~GLTextureBuffer()
 	}
 }
 //-----------------------------------------------------------------------------
-void GLTextureBuffer::upload(const PixelBox &data, const Box &dest)
+void GLTextureBuffer::upload(const PixelData &data, const Box &dest)
 {
 	glBindTexture( mTarget, mTextureID );
 	if(PixelUtil::isCompressed(data.format))
@@ -462,7 +462,7 @@ void GLTextureBuffer::upload(const PixelBox &data, const Box &dest)
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 //-----------------------------------------------------------------------------  
-void GLTextureBuffer::download(const PixelBox &data)
+void GLTextureBuffer::download(const PixelData &data)
 {
 	if(data.getWidth() != getWidth() ||
 		data.getHeight() != getHeight() ||
@@ -777,7 +777,7 @@ void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, c
 }
 //-----------------------------------------------------------------------------  
 /// blitFromMemory doing hardware trilinear scaling
-void GLTextureBuffer::blitFromMemory(const PixelBox &src_orig, const Box &dstBox)
+void GLTextureBuffer::blitFromMemory(const PixelData &src_orig, const Box &dstBox)
 {
     /// Fall back to normal GLHardwarePixelBuffer::blitFromMemory in case 
     /// - FBO is not supported
@@ -798,14 +798,14 @@ void GLTextureBuffer::blitFromMemory(const PixelBox &src_orig, const Box &dstBox
                     "GLTextureBuffer::blitFromMemory");
     /// For scoped deletion of conversion buffer
 	void* data = NULL;
-    PixelBox src;
+    PixelData src;
     
     /// First, convert the srcbox to a OpenGL compatible pixel format
     if(GLPixelUtil::getGLOriginFormat(src_orig.format) == 0)
     {
         /// Convert to buffer internal format
 		data = new void*[PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat)];
-        src = PixelBox(src_orig.getWidth(), src_orig.getHeight(), src_orig.getDepth(), mFormat, data);
+        src = PixelData(src_orig.getWidth(), src_orig.getHeight(), src_orig.getDepth(), mFormat, data);
         PixelUtil::bulkPixelConversion(src_orig, src);
     }
     else

@@ -67,7 +67,7 @@ namespace CamelotEngine
 		
 		/** Overridden - see RenderTarget.
 		*/
-		void				copyContentsToMemory	(const PixelBox &dst, FrameBuffer buffer);
+		void				copyContentsToMemory	(const PixelData &dst, FrameBuffer buffer);
 		bool				requiresTextureFlipping	() const { return false; }
 
 		// Method for dealing with resize / move & 3d library

@@ -78,8 +78,8 @@ namespace CamelotEngine {
 		CM_STATIC_MUTEX(msDeviceAccessMutex)		
 	protected:
 		/// Lock a box
-		PixelBox lockImpl(const Box lockBox,  LockOptions options);
-		PixelBox lockBuffer(BufferResources* bufferResources, const Box &lockBox, DWORD flags);
+		PixelData lockImpl(const Box lockBox,  LockOptions options);
+		PixelData lockBuffer(BufferResources* bufferResources, const Box &lockBox, DWORD flags);
 
 		/// Unlock a box
 		void unlockImpl(void);
@@ -97,9 +97,9 @@ namespace CamelotEngine {
 				const Box &srcBox, const Box &dstBox, 
 				BufferResources* srcBufferResources, 
 				BufferResources* dstBufferResources);
-		void blitFromMemory(const PixelBox &src, const Box &dstBox, BufferResources* dstBufferResources);
+		void blitFromMemory(const PixelData &src, const Box &dstBox, BufferResources* dstBufferResources);
 
-		void blitToMemory(const Box &srcBox, const PixelBox &dst, BufferResources* srcBufferResources, IDirect3DDevice9* d3d9Device);
+		void blitToMemory(const Box &srcBox, const PixelData &dst, BufferResources* srcBufferResources, IDirect3DDevice9* d3d9Device);
 			
 	public:
 		D3D9HardwarePixelBuffer(HardwareBuffer::Usage usage, 
@@ -115,10 +115,10 @@ namespace CamelotEngine {
         void blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
 		
 		/// @copydoc HardwarePixelBuffer::blitFromMemory
-		void blitFromMemory(const PixelBox &src, const Box &dstBox);
+		void blitFromMemory(const PixelData &src, const Box &dstBox);
 	
 		/// @copydoc HardwarePixelBuffer::blitToMemory
-		void blitToMemory(const Box &srcBox, const PixelBox &dst);
+		void blitToMemory(const Box &srcBox, const PixelData &dst);
 		
 		/// Internal function to update mipmaps on update of level 0
 		void _genMipmaps(IDirect3DBaseTexture9* mipTex);

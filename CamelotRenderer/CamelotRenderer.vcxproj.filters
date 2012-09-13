@@ -356,13 +356,10 @@
     <ClInclude Include="CmCommon.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="CmImageResampler.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="CmPixelFormat.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="CmWindowEventUtilities.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="CmPixelUtil.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
   </ItemGroup>
@@ -631,10 +628,10 @@
     <ClCompile Include="RenderSystemGL\Source\CmWin32Window.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CmPixelFormat.cpp">
+    <ClCompile Include="CmWindowEventUtilities.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="CmWindowEventUtilities.cpp">
+    <ClCompile Include="CmPixelUtil.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>

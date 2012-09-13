@@ -218,9 +218,8 @@ namespace CamelotEngine {
 
 			size_t devNameLen = strlen(monitorInfoEx.szDevice);
 			mDeviceName = new char[devNameLen + 1];
-
-			strcpy(mDeviceName, monitorInfoEx.szDevice);			
-
+	
+			strcpy_s(mDeviceName, devNameLen + 1, monitorInfoEx.szDevice);
 
 			// No specified top left -> Center the window in the middle of the monitor
 			if (left == -1 || top == -1)
@@ -702,7 +701,7 @@ namespace CamelotEngine {
 	  }
 	}
 
-	void Win32Window::copyContentsToMemory(const PixelBox &dst, FrameBuffer buffer)
+	void Win32Window::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
 		if ((dst.left < 0) || (dst.right > mWidth) ||
 			(dst.top < 0) || (dst.bottom > mHeight) ||

@@ -36,14 +36,14 @@ namespace CamelotEngine {
 	{
 	protected:  
 		/// Lock a box
-		PixelBox lockImpl(const Box lockBox,  LockOptions options);
+		PixelData lockImpl(const Box lockBox,  LockOptions options);
 
 		/// Unlock a box
 		void unlockImpl(void);
         
 		// Internal buffer; either on-card or in system memory, freed/allocated on demand
 		// depending on buffer usage
-		PixelBox mBuffer;
+		PixelData mBuffer;
         GLenum mGLInternalFormat; // GL internal format
 		LockOptions mCurrentLockOptions;
 		
@@ -51,9 +51,9 @@ namespace CamelotEngine {
 		void allocateBuffer();
 		void freeBuffer();
 		// Upload a box of pixels to this buffer on the card
-		virtual void upload(const PixelBox &data, const Box &dest);
+		virtual void upload(const PixelData &data, const Box &dest);
 		// Download a box of pixels from the card
-		virtual void download(const PixelBox &data);
+		virtual void download(const PixelData &data);
 	public:
         /// Should be called by HardwareBufferManager
         GLHardwarePixelBuffer(size_t mWidth, size_t mHeight, size_t mDepth,
@@ -61,10 +61,10 @@ namespace CamelotEngine {
                 HardwareBuffer::Usage usage);
 		
 		/// @copydoc HardwarePixelBuffer::blitFromMemory
-		void blitFromMemory(const PixelBox &src, const Box &dstBox);
+		void blitFromMemory(const PixelData &src, const Box &dstBox);
 		
 		/// @copydoc HardwarePixelBuffer::blitToMemory
-		void blitToMemory(const Box &srcBox, const PixelBox &dst);
+		void blitToMemory(const Box &srcBox, const PixelData &dst);
 		
 		~GLHardwarePixelBuffer();
         
@@ -89,12 +89,12 @@ namespace CamelotEngine {
         /// @copydoc HardwarePixelBuffer::getRenderTarget
         RenderTexture* getRenderTarget(size_t);
         /// Upload a box of pixels to this buffer on the card
-		virtual void upload(const PixelBox &data, const Box &dest);
+		virtual void upload(const PixelData &data, const Box &dest);
 		// Download a box of pixels from the card
-		virtual void download(const PixelBox &data);
+		virtual void download(const PixelData &data);
   
         /// Hardware implementation of blitFromMemory
-        virtual void blitFromMemory(const PixelBox &src_orig, const Box &dstBox);
+        virtual void blitFromMemory(const PixelData &src_orig, const Box &dstBox);
         
         /// Notify TextureBuffer of destruction of render target
         void _clearSliceRTT(size_t zoffset)

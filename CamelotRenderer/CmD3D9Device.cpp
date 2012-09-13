@@ -1196,7 +1196,7 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------
 	void D3D9Device::copyContentsToMemory(D3D9RenderWindow* renderWindow, 
-		const PixelBox &dst, RenderTarget::FrameBuffer buffer)
+		const PixelData &dst, RenderTarget::FrameBuffer buffer)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		RenderWindowResources* resources = it->second;
@@ -1423,7 +1423,7 @@ namespace CamelotEngine
 				"Unsupported format", "D3D9Device::copyContentsToMemory");
 		}
 
-		PixelBox src(dst.getWidth(), dst.getHeight(), 1, format, lockedRect.pBits);
+		PixelData src(dst.getWidth(), dst.getHeight(), 1, format, lockedRect.pBits);
 		src.rowPitch = lockedRect.Pitch / PixelUtil::getNumElemBytes(format);
 		src.slicePitch = desc.Height * src.rowPitch;
 

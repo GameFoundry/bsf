@@ -31,7 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "CmPixelFormat.h"
+#include "CmPixelUtil.h"
 
 namespace CamelotEngine {
 
@@ -57,13 +57,13 @@ namespace CamelotEngine {
         // Internal format
         PixelFormat mFormat;
         // Currently locked region (local coords)
-        PixelBox mCurrentLock;
+        PixelData mCurrentLock;
 		// The current locked box of this surface (entire surface coords)
 		Box mLockedBox;
 
         
         /// Internal implementation of lock(), must be overridden in subclasses
-        virtual PixelBox lockImpl(const Box lockBox,  LockOptions options) = 0;
+        virtual PixelData lockImpl(const Box lockBox,  LockOptions options) = 0;
 
         /// Internal implementation of lock(), do not OVERRIDE or CALL this
         /// for HardwarePixelBuffer implementations, but override the previous method
@@ -95,7 +95,7 @@ namespace CamelotEngine {
 		    @returns PixelBox containing the locked region, the pitches and
 		    	the pixel format
 		*/
-		virtual const PixelBox& lock(const Box& lockBox, LockOptions options);
+		virtual const PixelData& lock(const Box& lockBox, LockOptions options);
 		/// @copydoc HardwareBuffer::lock
         virtual void* lock(size_t offset, size_t length, LockOptions options);
 
@@ -103,7 +103,7 @@ namespace CamelotEngine {
 		    by lock(const Image::Box, LockOptions)
 		    @returns PixelBox containing the locked region
 		*/        
-        const PixelBox& getCurrentLock();
+        const PixelData& getCurrentLock();
 		
 		/// @copydoc HardwareBuffer::readData
 		virtual void readData(size_t offset, size_t length, void* pDest);
@@ -139,14 +139,14 @@ namespace CamelotEngine {
             but it is faster to pass the source image in the right dimensions.
 			@note Only call this function when the buffer is unlocked. 
 		*/
-		virtual void blitFromMemory(const PixelBox &src, const Box &dstBox) = 0;
+		virtual void blitFromMemory(const PixelData &src, const Box &dstBox) = 0;
 		
 		/** Convenience function that blits a pixelbox from memory to the entire 
 			buffer. The source image is scaled as needed.
 			@param src		PixelBox containing the source pixels and format in memory
 			@note Only call this function when the buffer is unlocked. 
 		*/
-		void blitFromMemory(const PixelBox &src)
+		void blitFromMemory(const PixelData &src)
 		{
 			blitFromMemory(src, Box(0,0,0,mWidth,mHeight,mDepth));
 		}
@@ -158,14 +158,14 @@ namespace CamelotEngine {
 		   	case scaling is done.
 			@note Only call this function when the buffer is unlocked. 
 		 */
-		virtual void blitToMemory(const Box &srcBox, const PixelBox &dst) = 0;
+		virtual void blitToMemory(const Box &srcBox, const PixelData &dst) = 0;
 
 		/** Convience function that blits this entire buffer to a pixelbox.
 			The image is scaled as needed.
 			@param src		PixelBox containing the source pixels and format in memory
 			@note Only call this function when the buffer is unlocked. 
 		*/
-		void blitToMemory(const PixelBox &dst)
+		void blitToMemory(const PixelData &dst)
 		{
 			blitToMemory(Box(0,0,0,mWidth,mHeight,mDepth), dst);
 		}

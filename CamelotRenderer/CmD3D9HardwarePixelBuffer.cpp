@@ -116,7 +116,7 @@ void D3D9HardwarePixelBuffer::bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *sur
 				dev->TestCooperativeLevel() == D3D_OK)
 			{
 				Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
-				PixelBox dstBox(fullBufferBox, mFormat);
+				PixelData dstBox(fullBufferBox, mFormat);
 
 				dstBox.data = new char[getSizeInBytes()];
 				blitToMemory(fullBufferBox, dstBox, it->second, it->first);
@@ -174,7 +174,7 @@ void D3D9HardwarePixelBuffer::bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *volu
 				dev->TestCooperativeLevel() == D3D_OK)
 			{
 				Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
-				PixelBox dstBox(fullBufferBox, mFormat);
+				PixelData dstBox(fullBufferBox, mFormat);
 
 				dstBox.data = new char[getSizeInBytes()];
 				blitToMemory(fullBufferBox, dstBox, it->second, it->first);
@@ -238,7 +238,7 @@ void D3D9HardwarePixelBuffer::unlockDeviceAccess()
 
 //-----------------------------------------------------------------------------  
 // Util functions to convert a D3D locked box to a pixel box
-void fromD3DLock(PixelBox &rval, const D3DLOCKED_RECT &lrect)
+void fromD3DLock(PixelData &rval, const D3DLOCKED_RECT &lrect)
 {
 	size_t bpp = PixelUtil::getNumElemBytes(rval.format);
 	if (bpp != 0)
@@ -260,7 +260,7 @@ void fromD3DLock(PixelBox &rval, const D3DLOCKED_RECT &lrect)
 
 	rval.data = lrect.pBits;
 }
-void fromD3DLock(PixelBox &rval, const D3DLOCKED_BOX &lbox)
+void fromD3DLock(PixelData &rval, const D3DLOCKED_BOX &lbox)
 {
 	size_t bpp = PixelUtil::getNumElemBytes(rval.format);
 	if (bpp != 0)
@@ -307,7 +307,7 @@ D3DBOX toD3DBOX(const Box &lockBox)
 	return pbox;
 }
 // Convert Ogre pixelbox extent to D3D rectangle
-RECT toD3DRECTExtent(const PixelBox &lockBox)
+RECT toD3DRECTExtent(const PixelData &lockBox)
 {
 	RECT prect;
 	assert(lockBox.getDepth() == 1);
@@ -318,7 +318,7 @@ RECT toD3DRECTExtent(const PixelBox &lockBox)
 	return prect;
 }
 // Convert Ogre pixelbox extent to D3D box
-D3DBOX toD3DBOXExtent(const PixelBox &lockBox)
+D3DBOX toD3DBOXExtent(const PixelData &lockBox)
 {
 	D3DBOX pbox;
 	pbox.Left = 0;
@@ -330,7 +330,7 @@ D3DBOX toD3DBOXExtent(const PixelBox &lockBox)
 	return pbox;
 }
 //-----------------------------------------------------------------------------  
-PixelBox D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions options)
+PixelData D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions options)
 {	
 	D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -371,14 +371,14 @@ PixelBox D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions optio
 }
 
 //-----------------------------------------------------------------------------  
-CamelotEngine::PixelBox D3D9HardwarePixelBuffer::lockBuffer(BufferResources* bufferResources, 
+CamelotEngine::PixelData D3D9HardwarePixelBuffer::lockBuffer(BufferResources* bufferResources, 
 												   const Box &lockBox, 
 												   DWORD flags)
 {
 	// Set extents and format
 	// Note that we do not carry over the left/top/front here, since the returned
 	// PixelBox will be re-based from the locking point onwards
-	PixelBox rval(lockBox.getWidth(), lockBox.getHeight(), lockBox.getDepth(), mFormat);
+	PixelData rval(lockBox.getWidth(), lockBox.getHeight(), lockBox.getDepth(), mFormat);
 
 
 	if (bufferResources->surface != NULL) 
@@ -597,7 +597,7 @@ void D3D9HardwarePixelBuffer::blit(IDirect3DDevice9* d3d9Device,
 }
 
 //-----------------------------------------------------------------------------  
-void D3D9HardwarePixelBuffer::blitFromMemory(const PixelBox &src, const Box &dstBox)
+void D3D9HardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox)
 {	
 	D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -613,17 +613,17 @@ void D3D9HardwarePixelBuffer::blitFromMemory(const PixelBox &src, const Box &dst
 }
 
 //-----------------------------------------------------------------------------  
-void D3D9HardwarePixelBuffer::blitFromMemory(const PixelBox &src, const Box &dstBox, BufferResources* dstBufferResources)
+void D3D9HardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox, BufferResources* dstBufferResources)
 {
 	// for scoped deletion of conversion buffer
 	void* data = NULL;
-	PixelBox converted = src;
+	PixelData converted = src;
 
 	// convert to pixelbuffer's native format if necessary
 	if (D3D9Mappings::_getPF(src.format) == D3DFMT_UNKNOWN)
 	{
 		data = new void*[PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat)];
-		converted = PixelBox(src.getWidth(), src.getHeight(), src.getDepth(), mFormat, data);
+		converted = PixelData(src.getWidth(), src.getHeight(), src.getDepth(), mFormat, data);
 		PixelUtil::bulkPixelConversion(src, converted);
 	}
 
@@ -707,7 +707,7 @@ void D3D9HardwarePixelBuffer::blitFromMemory(const PixelBox &src, const Box &dst
 }
 
 //-----------------------------------------------------------------------------  
-void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelBox &dst)
+void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst)
 {
 	D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -718,7 +718,7 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelBox &ds
 }
 
 //-----------------------------------------------------------------------------  
-void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelBox &dst, 
+void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst, 
 										   BufferResources* srcBufferResources,
 										   IDirect3DDevice9* d3d9Device)
 {
@@ -815,7 +815,7 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelBox &ds
 				"D3D9HardwarePixelBuffer::blitToMemory");
 		}
 		// Copy it
-		PixelBox locked(dst.getWidth(), dst.getHeight(), dst.getDepth(), tmpFormat);
+		PixelData locked(dst.getWidth(), dst.getHeight(), dst.getDepth(), tmpFormat);
 		fromD3DLock(locked, lrect);
 		PixelUtil::bulkPixelConversion(locked, dst);
 		surface->UnlockRect();
@@ -872,7 +872,7 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelBox &ds
 				"D3D9HardwarePixelBuffer::blitToMemory");
 		}
 		// Copy it
-		PixelBox locked(dst.getWidth(), dst.getHeight(), dst.getDepth(), tmpFormat);
+		PixelData locked(dst.getWidth(), dst.getHeight(), dst.getDepth(), tmpFormat);
 		fromD3DLock(locked, lbox);
 		PixelUtil::bulkPixelConversion(locked, dst);
 		surface->UnlockBox();

@@ -190,11 +190,11 @@ namespace CamelotEngine {
      	Pixels are stored as a succession of "depth" slices, each containing "height" rows of 
      	"width" pixels.
     */
-    class CM_EXPORT PixelBox: public Box {
+    class CM_EXPORT PixelData: public Box {
     public:
     	/// Parameter constructor for setting the members manually
-    	PixelBox() {}
-		~PixelBox() {}
+    	PixelData() {}
+		~PixelData() {}
 		/** Constructor providing extents in the form of a Box object. This constructor
     		assumes the pixel data is laid out consecutively in memory. (this
     		means row after row, slice after slice, with no space in between)
@@ -202,7 +202,7 @@ namespace CamelotEngine {
     		@param pixelFormat	Format of this buffer
     		@param pixelData	Pointer to the actual data
     	*/
-		PixelBox(const Box &extents, PixelFormat pixelFormat, void *pixelData=0):
+		PixelData(const Box &extents, PixelFormat pixelFormat, void *pixelData=0):
 			Box(extents), data(pixelData), format(pixelFormat)
 		{
 			setConsecutive();
@@ -216,7 +216,7 @@ namespace CamelotEngine {
     		@param pixelFormat	Format of this buffer
     		@param pixelData    Pointer to the actual data
     	*/
-    	PixelBox(size_t width, size_t height, size_t depth, PixelFormat pixelFormat, void *pixelData=0):
+    	PixelData(size_t width, size_t height, size_t depth, PixelFormat pixelFormat, void *pixelData=0):
     		Box(0, 0, 0, width, height, depth),
     		data(pixelData), format(pixelFormat)
     	{
@@ -277,7 +277,7 @@ namespace CamelotEngine {
       			the data of object.
       		@throws	Exception(ERR_INVALIDPARAMS) if def is not fully contained
       	*/
-      	PixelBox getSubVolume(const Box &def) const;
+      	PixelData getSubVolume(const Box &def) const;
         
         /**
          * Get colour value from a certain location in the PixelBox. The z coordinate
@@ -499,7 +499,7 @@ namespace CamelotEngine {
 		 	@remarks The source and destination boxes must have the same
          	dimensions. In case the source and destination format match, a plain copy is done.
         */
-        static void bulkPixelConversion(const PixelBox &src, const PixelBox &dst);
+        static void bulkPixelConversion(const PixelData &src, const PixelData &dst);
 
 		enum Filter
 		{
@@ -518,7 +518,7 @@ namespace CamelotEngine {
 			@remarks 	This function can do pixel format conversion in the process.
 			@note	dst and src can point to the same PixelBox object without any problem
 		*/
-		static void scale(const PixelBox &src, const PixelBox &dst, Filter filter = FILTER_BILINEAR);
+		static void scale(const PixelData &src, const PixelData &dst, Filter filter = FILTER_BILINEAR);
     };
 	/** @} */
 	/** @} */
