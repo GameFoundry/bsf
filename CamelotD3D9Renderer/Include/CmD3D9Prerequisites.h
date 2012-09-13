@@ -103,7 +103,7 @@ namespace CamelotEngine
 	// Windows setttings
 	//-------------------------------------------
 #if (CM_PLATFORM == CM_PLATFORM_WIN32) && !defined(CM_STATIC_LIB)
-#	ifdef CM_RSD3D9_DLL
+#	ifdef CM_RSD3D9_EXPORTS
 #		define CM_D3D9_EXPORT __declspec(dllexport)
 #	else
 #       if defined( __MINGW32__ )

@@ -115,7 +115,7 @@ namespace CamelotEngine {
 		// Linux compilers don't have symbol import/export directives.
 #   	define CM_EXPORT
 #   else
-#   	if defined( CM_DLL )
+#   	if defined( CM_EXPORTS )
 #       	define CM_EXPORT __declspec( dllexport )
 #   	else
 #           if defined( __MINGW32__ )

@@ -89,7 +89,7 @@ namespace CamelotEngine {
 #endif
 
 #if (CM_PLATFORM == CM_PLATFORM_WIN32) && !defined(__MINGW32__) && !defined(CM_STATIC_LIB)
-#	ifdef CM_RSGL_DLL
+#	ifdef CM_RSGL_EXPORTS
 #		define CM_RSGL_EXPORT __declspec(dllexport)
 #	else
 #       if defined( __MINGW32__ )
