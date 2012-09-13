@@ -36,7 +36,6 @@ THE SOFTWARE.s
 #include "CmGLDefaultHardwareBufferManager.h"
 #include "CmGLUtil.h"
 #include "CmGLGpuProgram.h"
-#include "CmGLGpuNvparseProgram.h"
 #include "ATI_FS_GLGpuProgram.h"
 #include "CmGLGpuProgramManager.h"
 #include "CmException.h"
@@ -60,14 +59,6 @@ namespace CamelotEngine {
 	GpuProgram* createGLArbGpuProgram(GpuProgramType gptype, const String& syntaxCode)
 	{
 		GLArbGpuProgram* ret = new GLArbGpuProgram();
-		ret->setType(gptype);
-		ret->setSyntaxCode(syntaxCode);
-		return ret;
-	}
-
-	GpuProgram* createGLGpuNvparseProgram(GpuProgramType gptype, const String& syntaxCode)
-	{
-		GLGpuNvparseProgram* ret = new GLGpuNvparseProgram();
 		ret->setType(gptype);
 		ret->setSyntaxCode(syntaxCode);
 		return ret;
@@ -362,7 +353,6 @@ namespace CamelotEngine {
 			GLEW_NV_texture_shader)
 		{
 			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
-			rsc->addShaderProfile("fp20");
 		}
 
 		// NFZ - check for ATI fragment shader support
@@ -713,12 +703,6 @@ namespace CamelotEngine {
 
 		if(caps->hasCapability(RSC_FRAGMENT_PROGRAM))
 		{
-
-			if(caps->isShaderProfileSupported("fp20"))
-			{
-				mGpuProgramManager->registerProgramFactory("fp20", createGLGpuNvparseProgram);
-			}
-
 			if(caps->isShaderProfileSupported("ps_1_4"))
 			{
 				mGpuProgramManager->registerProgramFactory("ps_1_4", createGL_ATI_FS_GpuProgram);

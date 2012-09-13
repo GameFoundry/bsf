@@ -46,9 +46,6 @@
     <Filter Include="RenderSystemGL\GLSL">
       <UniqueIdentifier>{bc8cc9fd-f7d3-46f6-9d0d-d0d8dbb080c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RenderSystemGL\NVparse">
-      <UniqueIdentifier>{457140bf-9c61-4b2a-9e2f-e5e7f97348b7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="RenderSystemGL\Win32">
       <UniqueIdentifier>{7c0425d8-c90d-4dce-89f6-11eeafe1efd9}</UniqueIdentifier>
     </Filter>
@@ -85,57 +82,6 @@
     </ClInclude>
     <ClInclude Include="RenderSystemGL\Source\atifs\include\ps_1_4.h">
       <Filter>RenderSystemGL\ATIFS</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\_ps1.0_parser.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\_rc1.0_parser.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\_ts1.0_parser.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\_vs1.0_parser.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\macro.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\nvparse.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\nvparse_errors.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\nvparse_externs.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\ps1.0_program.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\rc1.0_combiners.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\rc1.0_final.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\rc1.0_general.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\rc1.0_register.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\ts1.0_inst.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\ts1.0_inst_list.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\vs1.0_inst.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystemGL\Source\nvparse\vs1.0_inst_list.h">
-      <Filter>RenderSystemGL\NVparse</Filter>
     </ClInclude>
     <ClInclude Include="RenderSystemGL\Include\CmGLRenderSystemFactory.h">
       <Filter>RenderSystemGL\Header Files</Filter>
@@ -329,9 +275,6 @@
     <ClInclude Include="RenderSystemGL\Include\CmGLFrameBufferObject.h">
       <Filter>RenderSystemGL\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderSystemGL\Include\CmGLGpuNvparseProgram.h">
-      <Filter>RenderSystemGL\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RenderSystemGL\Include\CmGLGpuProgram.h">
       <Filter>RenderSystemGL\Header Files</Filter>
     </ClInclude>
@@ -459,72 +402,6 @@
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\atifs\src\ps_1_4.cpp">
       <Filter>RenderSystemGL\ATIFS</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\_ps1.0_lexer.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\_ps1.0_parser.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\_rc1.0_lexer.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\_rc1.0_parser.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\_ts1.0_lexer.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\_ts1.0_parser.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\_vs1.0_lexer.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\_vs1.0_parser.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\avp1.0_impl.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\nvparse.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\nvparse_errors.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\ps1.0_program.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\rc1.0_combiners.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\rc1.0_final.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\rc1.0_general.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\ts1.0_inst.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\ts1.0_inst_list.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\vcp1.0_impl.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\vp1.0_impl.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\vs1.0_inst.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\vs1.0_inst_list.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\nvparse\vsp1.0_impl.cpp">
-      <Filter>RenderSystemGL\NVparse</Filter>
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\glew.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
@@ -713,9 +590,6 @@
       <Filter>RenderSystemGL\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\CmGLFrameBufferObject.cpp">
-      <Filter>RenderSystemGL\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSystemGL\Source\CmGLGpuNvparseProgram.cpp">
       <Filter>RenderSystemGL\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RenderSystemGL\Source\CmGLGpuProgram.cpp">
