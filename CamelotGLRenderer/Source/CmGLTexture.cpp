@@ -96,7 +96,7 @@ namespace CamelotEngine {
 		
 
 		// Adjust format if required
-		mFormat = TextureManager::getSingleton().getNativeFormat(mTextureType, mFormat, mUsage);
+		mFormat = TextureManager::instance().getNativeFormat(mTextureType, mFormat, mUsage);
 		
 		// Check requested number of mipmaps
 		size_t maxMips = GLPixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);

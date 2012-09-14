@@ -68,7 +68,6 @@ namespace CamelotEngine
 		mpD3D = NULL;		
 		mDriverList = NULL;
 		mActiveD3DDriver = NULL;
-		mTextureManager = NULL;
 		mHardwareBufferManager = NULL;
 		mGpuProgramManager = NULL;			
 		mUseNVPerfHUD = false;
@@ -512,7 +511,7 @@ namespace CamelotEngine
 		mDeviceManager = new D3D9DeviceManager();
 
 		// Create the texture manager for use by others		
-		mTextureManager = new D3D9TextureManager();
+		TextureManager::startUp(new D3D9TextureManager());
 
 		// Also create hardware buffer manager		
 		mHardwareBufferManager = new D3D9HardwareBufferManager();
@@ -623,7 +622,7 @@ namespace CamelotEngine
 		SAFE_DELETE( mDriverList );
 		mActiveD3DDriver = NULL;	
 						
-		SAFE_DELETE( mTextureManager );
+		TextureManager::shutDown();
 		SAFE_DELETE( mHardwareBufferManager );
 		SAFE_DELETE( mGpuProgramManager );			
 	}

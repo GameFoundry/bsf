@@ -129,9 +129,11 @@ namespace CamelotEngine {
 		size_t src_len = mSource.size ();
 		char *out = cpp.Parse (src, src_len, out_size);
 		if (!out || !out_size)
+		{
 			// Failed to preprocess, break out
 			CM_EXCEPT(RenderingAPIException,
 						 "Failed to preprocess shader ");
+		}
 
 		mSource = String (out, out_size);
 		if (out < src || out > src + src_len)

@@ -2,8 +2,8 @@
 
 #include "CmPrerequisitesUtil.h"
 
-//#include <boost/static_assert.hpp>
-//#include <boost/type_traits.hpp>
+#include <boost/static_assert.hpp>
+#include <boost/type_traits.hpp>
 
 #if defined(_MSC_VER)
 #undef __PRETTY_FUNCTION__
@@ -133,9 +133,10 @@ namespace CamelotEngine
 	// TODO - Temporarily disabled until I include boost
 #ifndef CM_EXCEPT
 #define CM_EXCEPT(type, desc)	\
-	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__);
-//	BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Exception, type##>::value), "Invalid exception type (" #type ") for CM_EXCEPT macro. It needs to derive from CamelotEngine::Exception."); \
-//	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+	{                           \
+	BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Exception, type##>::value), "Invalid exception type (" #type ") for CM_EXCEPT macro. It needs to derive from CamelotEngine::Exception."); \
+	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
+	}
 #endif
 }
 

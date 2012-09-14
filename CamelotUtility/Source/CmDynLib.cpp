@@ -78,9 +78,11 @@ namespace CamelotEngine {
         m_hInst = (DYNLIB_HANDLE)DYNLIB_LOAD( name.c_str() );
 
         if( !m_hInst )
+		{
             CM_EXCEPT(InternalErrorException, 
                 "Could not load dynamic library " + mName + 
                 ".  System Error: " + dynlibError());
+		}
     }
 
     //-----------------------------------------------------------------------

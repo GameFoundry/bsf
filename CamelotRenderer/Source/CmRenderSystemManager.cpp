@@ -10,7 +10,7 @@ namespace CamelotEngine
 
 	void RenderSystemManager::initialize(const String& pluginFilename)
 	{
-		DynLib* loadedLibrary = DynLibManager::getSingleton().load(pluginFilename);
+		DynLib* loadedLibrary = gDynLibManager().load(pluginFilename);
 		String name = "";
 
 		if(loadedLibrary != nullptr)

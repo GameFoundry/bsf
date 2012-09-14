@@ -31,8 +31,6 @@ namespace CamelotEngine
 			Camera* mCamera;
 			HighLevelGpuProgramPtr mFragProg;
 			HighLevelGpuProgramPtr mVertProg;
-
-			DynLibManager* mDynLibManager; // TODO - Handle singletons differently
 	};
 
 	CM_EXPORT Application& gApplication();

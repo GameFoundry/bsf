@@ -31,16 +31,6 @@ THE SOFTWARE.
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------
-    template<> TextureManager* Singleton<TextureManager>::ms_Singleton = 0;
-    TextureManager* TextureManager::getSingletonPtr(void)
-    {
-        return ms_Singleton;
-    }
-    TextureManager& TextureManager::getSingleton(void)
-    {  
-        assert( ms_Singleton );  return ( *ms_Singleton );  
-    }
-    //-----------------------------------------------------------------------
     TextureManager::TextureManager(void)
          : mPreferredIntegerBitDepth(0)
          , mPreferredFloatBitDepth(0)

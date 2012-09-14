@@ -406,11 +406,16 @@ namespace CamelotEngine {
 		{
 			mGlrc = wglCreateContext(mHDC);
 			if (!mGlrc)
+			{
 				CM_EXCEPT(RenderingAPIException, 
 				"wglCreateContext failed: " + translateWGLError());
+			}
 		}
+
 		if (!wglMakeCurrent(mHDC, mGlrc))
+		{
 			CM_EXCEPT(RenderingAPIException, "wglMakeCurrent");
+		}
 
 		// Do not change vsync if the external window has the OpenGL control
 		if (!mIsExternalGLControl) {

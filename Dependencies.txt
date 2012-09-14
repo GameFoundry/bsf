@@ -1,0 +1,8 @@
+Camelot relies on following 3rd party libraries:
+ - Boost 1.49
+
+
+Make sure to include:
+ - Library include file in /Dependencies/Include
+ - Static library files in /Dependencies/lib/Debug and /Dependencies/lib/Release
+ - Dynamic library files in /bin/Debug and /bin/Release (Possibly others if you define other configuration types)

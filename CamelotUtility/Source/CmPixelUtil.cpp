@@ -953,7 +953,9 @@ namespace CamelotEngine {
 			CM_EXCEPT(InvalidParametersException, "Cannot return subvolume of compressed PixelBuffer");
 		}
 		if(!contains(def))
+		{
 			CM_EXCEPT(InvalidParametersException, "Bounds out of range");
+		}
 
 		const size_t elemSize = PixelUtil::getNumElemBytes(format);
 		// Calculate new data origin

@@ -1306,12 +1306,6 @@ namespace CamelotEngine
 		GpuProgramParametersSharedPtr mActiveGeometryGpuProgramParameters;
 		GpuProgramParametersSharedPtr mActiveFragmentGpuProgramParameters;
 
-		// Texture manager
-		// A concrete class of this will be created and
-		// made available under the TextureManager singleton,
-		// managed by the RenderSystem
-		TextureManager* mTextureManager;
-
 		// Active viewport (dest for future rendering operations)
 		Viewport* mActiveViewport;
 

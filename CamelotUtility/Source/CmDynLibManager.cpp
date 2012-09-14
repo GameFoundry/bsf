@@ -31,17 +31,6 @@ THE SOFTWARE.
 namespace CamelotEngine
 {
     //-----------------------------------------------------------------------
-    template<> DynLibManager* Singleton<DynLibManager>::ms_Singleton = 0;
-    DynLibManager* DynLibManager::getSingletonPtr(void)
-    {
-        return ms_Singleton;
-    }
-	//-----------------------------------------------------------------------
-    DynLibManager& DynLibManager::getSingleton(void)
-    {  
-        assert( ms_Singleton );  return ( *ms_Singleton );  
-    }
-    //-----------------------------------------------------------------------
 	DynLibManager::DynLibManager()
 	{
 	}
@@ -85,4 +74,9 @@ namespace CamelotEngine
         // Empty the list
         mLibList.clear();
     }
+
+	DynLibManager& gDynLibManager()
+	{
+		return DynLibManager::instance();
+	}
 }

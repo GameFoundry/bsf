@@ -827,7 +827,7 @@ namespace CamelotEngine {
 		}
 
 		/// Create the texture manager        
-		mTextureManager = new GLTextureManager(*mGLSupport); 
+		TextureManager::startUp(new GLTextureManager(*mGLSupport)); 
 
 		mGLInitialised = true;
 	}
@@ -877,8 +877,7 @@ namespace CamelotEngine {
 		mGLSupport->stop();
 		mStopRendering = true;
 
-		delete mTextureManager;
-		mTextureManager = 0;
+		TextureManager::shutDown();
 
 		// There will be a new initial window and so forth, thus any call to test
 		//  some params will access an invalid pointer, so it is best to reset
@@ -1290,7 +1289,7 @@ namespace CamelotEngine {
 				glBindTexture( mTextureTypes[stage], tex->getGLID() );
 			else
 			{
-				glBindTexture( mTextureTypes[stage], static_cast<GLTextureManager*>(mTextureManager)->getWarningTextureID() );
+				glBindTexture( mTextureTypes[stage], static_cast<GLTextureManager*>(&TextureManager::instance())->getWarningTextureID() );
 			}
 		}
 		else

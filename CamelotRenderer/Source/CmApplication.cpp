@@ -21,7 +21,7 @@ namespace CamelotEngine
 	void Application::startUp(String renderSystemDll)
 	{
 		mGpuProgramManager = new HighLevelGpuProgramManager(); // TODO - Use Camelot::Module for instantiating this
-		mDynLibManager = new DynLibManager(); // TODO - Same as above, use Module
+		DynLibManager::startUp(new DynLibManager());
 
 		RenderSystemManager::initialize(renderSystemDll);
 
@@ -99,6 +99,8 @@ namespace CamelotEngine
 
 		if(mGpuProgramManager != nullptr)
 			delete mGpuProgramManager;
+
+		DynLibManager::shutDown();
 	}
 
 	void Application::DBG_renderSimpleFrame()

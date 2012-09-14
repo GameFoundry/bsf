@@ -102,7 +102,9 @@ namespace CamelotEngine {
     void Frustum::setNearClipDistance(float nearPlane)
     {
         if (nearPlane <= 0)
+		{
             CM_EXCEPT(InvalidParametersException, "Near clip distance must be greater than zero.");
+		}
         mNearDist = nearPlane;
         invalidateFrustum();
     }

@@ -47,7 +47,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     RenderSystem::RenderSystem()
         : mActiveRenderTarget(0)
-        , mTextureManager(0)
         , mActiveViewport(0)
         // This means CULL clockwise vertices, i.e. front of poly is counter-clockwise
         // This makes it the same as OpenGL and other right-handed systems
