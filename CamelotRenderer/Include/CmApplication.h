@@ -24,8 +24,6 @@ namespace CamelotEngine
 			void DBG_renderSimpleFrame();
 
 		private:
-			HighLevelGpuProgramManager* mGpuProgramManager;
-
 			RenderWindow* mRenderWindow;
 			Viewport* mViewport;
 			Camera* mCamera;

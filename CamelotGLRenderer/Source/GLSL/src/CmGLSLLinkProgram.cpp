@@ -291,7 +291,7 @@ namespace CamelotEngine {
 				fragParams = &(mFragmentProgram->getGLSLProgram()->getConstantDefinitions().map);
 			}
 
-			GLSLLinkProgramManager::getSingleton().extractUniforms(
+			GLSLLinkProgramManager::instance().extractUniforms(
 				mGLHandle, vertParams, geomParams, fragParams, mGLUniformReferences);
 
 			mUniformRefsBuilt = true;

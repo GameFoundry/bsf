@@ -30,6 +30,7 @@ THE SOFTWARE.
 #define __GLRENDERTEXTURE_H__
 
 #include "CmGLTexture.h"
+#include "CmModule.h"
 
 namespace CamelotEngine {
     /** GL surface descriptor. Points to a 2D surface that can be rendered to. 
@@ -57,7 +58,7 @@ namespace CamelotEngine {
     
     /** Manager/factory for RenderTextures.
     */
-    class CM_RSGL_EXPORT GLRTTManager: public Singleton<GLRTTManager>
+    class CM_RSGL_EXPORT GLRTTManager: public Module<GLRTTManager>
     {
     public:
         virtual ~GLRTTManager();

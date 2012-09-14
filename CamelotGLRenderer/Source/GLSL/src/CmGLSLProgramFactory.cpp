@@ -36,13 +36,12 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	GLSLProgramFactory::GLSLProgramFactory(void)
     {
-		mLinkProgramManager = new GLSLLinkProgramManager();
+		GLSLLinkProgramManager::startUp(new GLSLLinkProgramManager());
     }
     //-----------------------------------------------------------------------
     GLSLProgramFactory::~GLSLProgramFactory(void)
     {
-		if (mLinkProgramManager)
-			delete mLinkProgramManager;
+		GLSLLinkProgramManager::shutDown();
     }
     //-----------------------------------------------------------------------
     const String& GLSLProgramFactory::getLanguage(void) const

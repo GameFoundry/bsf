@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __GLSLLinkProgramManager_H__
 
 #include "CmGLPrerequisites.h"
-#include "CmSingleton.h"
+#include "CmModule.h"
 
 #include "CmGLSLExtSupport.h"
 #include "CmGLSLLinkProgram.h"
@@ -49,7 +49,7 @@ namespace CamelotEngine {
 
 	*/
 
-	class CM_RSGL_EXPORT GLSLLinkProgramManager : public Singleton<GLSLLinkProgramManager>
+	class CM_RSGL_EXPORT GLSLLinkProgramManager : public Module<GLSLLinkProgramManager>
 	{
 
 	private:
@@ -133,10 +133,6 @@ namespace CamelotEngine {
 		*/
 		void extractConstantDefs(const String& src, GpuNamedConstants& constantDefs, 
 			const String& filename);
-
-		static GLSLLinkProgramManager& getSingleton(void);
-        static GLSLLinkProgramManager* getSingletonPtr(void);
-
 	};
 
 }

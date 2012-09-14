@@ -32,16 +32,6 @@ THE SOFTWARE.
 
 
 namespace CamelotEngine {
-    //-----------------------------------------------------------------------
-    template<> GpuProgramManager* Singleton<GpuProgramManager>::ms_Singleton = 0;
-    GpuProgramManager* GpuProgramManager::getSingletonPtr(void)
-    {
-        return ms_Singleton;
-    }
-    GpuProgramManager& GpuProgramManager::getSingleton(void)
-    {  
-        assert( ms_Singleton );  return ( *ms_Singleton );  
-    }
 	//---------------------------------------------------------------------------
 	GpuProgramManager::GpuProgramManager()
 	{

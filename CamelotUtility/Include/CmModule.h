@@ -29,6 +29,23 @@ namespace CamelotEngine
 			return *_instance;
 		}
 
+		static T* instancePtr()
+		{
+			if(isShutDown)
+			{
+				CM_EXCEPT(InternalErrorException, 
+					"Trying to access a module but it hasn't been started up yet.");
+			}
+
+			if(isDestroyed)
+			{
+				CM_EXCEPT(InternalErrorException, 
+					"Trying to access a destroyed module.");
+			}
+
+			return _instance;
+		}
+
 		/**
 		 * @brief	Initializes the module.
 		 *

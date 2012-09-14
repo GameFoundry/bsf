@@ -15,13 +15,13 @@
 namespace CamelotEngine
 {
 	Application::Application()
-		:mRenderWindow(nullptr), mViewport(nullptr), mCamera(nullptr), mGpuProgramManager(nullptr)
+		:mRenderWindow(nullptr), mViewport(nullptr), mCamera(nullptr)
 	{ }
 
 	void Application::startUp(String renderSystemDll)
 	{
-		mGpuProgramManager = new HighLevelGpuProgramManager(); // TODO - Use Camelot::Module for instantiating this
 		DynLibManager::startUp(new DynLibManager());
+		HighLevelGpuProgramManager::startUp(new HighLevelGpuProgramManager());
 
 		RenderSystemManager::initialize(renderSystemDll);
 
@@ -69,7 +69,7 @@ namespace CamelotEngine
 									  gl_FragColor = vec4(0.0,1.0,0.0,1.0); \
 									  }";
 
-		mFragProg = mGpuProgramManager->createProgram(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+		mFragProg = HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 		mFragProg->load();
 
 		// TODO - Ogres GLSL parsing requires some strict parameter naming, can that be avoided?
@@ -80,7 +80,7 @@ namespace CamelotEngine
 									  gl_Position = matViewProjection * vertex; \
 									  }";
 
-		mVertProg = mGpuProgramManager->createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+		mVertProg = HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		mVertProg->load();
 
 
@@ -97,9 +97,7 @@ namespace CamelotEngine
 		if(RenderSystemManager::getActive() != nullptr)
 			RenderSystemManager::getActive()->shutdown();
 
-		if(mGpuProgramManager != nullptr)
-			delete mGpuProgramManager;
-
+		HighLevelGpuProgramManager::shutDown();
 		DynLibManager::shutDown();
 	}
 
@@ -109,7 +107,7 @@ namespace CamelotEngine
 		IndexData* indexData = new IndexData();
 
 		indexData->indexCount = 36;
-		indexData->indexBuffer = HardwareBufferManager::getSingleton().createIndexBuffer(
+		indexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
 			HardwareIndexBuffer::IT_16BIT,
 			36, 
 			HardwareBuffer::HBU_STATIC_WRITE_ONLY);
@@ -152,7 +150,7 @@ namespace CamelotEngine
 		//decl->addElement(0, offset, VET_COLOUR, VES_DIFFUSE);
 		//offset += VertexElement::getTypeSize(VET_COLOUR);
 
-		HardwareVertexBufferPtr vertexBuffer = HardwareBufferManager::getSingleton().createVertexBuffer(
+		HardwareVertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
 			vertexData->vertexDeclaration->getVertexSize(0),
 			vertexData->vertexCount,
 			HardwareBuffer::HBU_STATIC_WRITE_ONLY);

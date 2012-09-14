@@ -105,7 +105,7 @@ namespace CamelotEngine {
         {
             /// Get closest supported alternative
             /// If mFormat is supported it's returned
-            return GLRTTManager::getSingleton().getSupportedAlternative(format);
+            return GLRTTManager::instance().getSupportedAlternative(format);
         }
 
 		// Supported

@@ -73,10 +73,8 @@ namespace CamelotEngine {
 	}
 
 	GLRenderSystem::GLRenderSystem()
-		: mDepthWrite(true), mStencilMask(0xFFFFFFFF), mHardwareBufferManager(0),
-		mGpuProgramManager(0),
+		: mDepthWrite(true), mStencilMask(0xFFFFFFFF),
 		mGLSLProgramFactory(0),
-		mRTTManager(0),
 		mActiveTextureUnit(0)
 	{
 		size_t i;
@@ -639,44 +637,42 @@ namespace CamelotEngine {
 
 		if(caps->hasCapability(RSC_VBO))
 		{
-
-			mHardwareBufferManager = new GLHardwareBufferManager;
+			HardwareBufferManager::startUp(new GLHardwareBufferManager);
 		}
 		else
 		{
-			mHardwareBufferManager = new GLDefaultHardwareBufferManager;
+			HardwareBufferManager::startUp(new GLDefaultHardwareBufferManager);
 		}
 
-		// XXX Need to check for nv2 support and make a program manager for it
-		// XXX Probably nv1 as well for older cards
 		// GPU Program Manager setup
-		mGpuProgramManager = new GLGpuProgramManager();
+		GpuProgramManager::startUp(new GLGpuProgramManager());
+		GLGpuProgramManager* gpuProgramManager = static_cast<GLGpuProgramManager*>(GpuProgramManager::instancePtr());
 
 		if(caps->hasCapability(RSC_VERTEX_PROGRAM))
 		{
 			if(caps->isShaderProfileSupported("arbvp1"))
 			{
-				mGpuProgramManager->registerProgramFactory("arbvp1", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("arbvp1", createGLArbGpuProgram);
 			}
 
 			if(caps->isShaderProfileSupported("vp30"))
 			{
-				mGpuProgramManager->registerProgramFactory("vp30", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("vp30", createGLArbGpuProgram);
 			}
 
 			if(caps->isShaderProfileSupported("vp40"))
 			{
-				mGpuProgramManager->registerProgramFactory("vp40", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("vp40", createGLArbGpuProgram);
 			}
 
 			if(caps->isShaderProfileSupported("gp4vp"))
 			{
-				mGpuProgramManager->registerProgramFactory("gp4vp", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("gp4vp", createGLArbGpuProgram);
 			}
 
 			if(caps->isShaderProfileSupported("gpu_vp"))
 			{
-				mGpuProgramManager->registerProgramFactory("gpu_vp", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("gpu_vp", createGLArbGpuProgram);
 			}
 		}
 
@@ -685,15 +681,15 @@ namespace CamelotEngine {
 			//TODO : Should these be createGLArbGpuProgram or createGLGpuNVparseProgram?
 			if(caps->isShaderProfileSupported("nvgp4"))
 			{
-				mGpuProgramManager->registerProgramFactory("nvgp4", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("nvgp4", createGLArbGpuProgram);
 			}
 			if(caps->isShaderProfileSupported("gp4gp"))
 			{
-				mGpuProgramManager->registerProgramFactory("gp4gp", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("gp4gp", createGLArbGpuProgram);
 			}
 			if(caps->isShaderProfileSupported("gpu_gp"))
 			{
-				mGpuProgramManager->registerProgramFactory("gpu_gp", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("gpu_gp", createGLArbGpuProgram);
 			}
 		}
 
@@ -701,37 +697,37 @@ namespace CamelotEngine {
 		{
 			if(caps->isShaderProfileSupported("ps_1_4"))
 			{
-				mGpuProgramManager->registerProgramFactory("ps_1_4", createGL_ATI_FS_GpuProgram);
+				gpuProgramManager->registerProgramFactory("ps_1_4", createGL_ATI_FS_GpuProgram);
 			}
 
 			if(caps->isShaderProfileSupported("ps_1_3"))
 			{
-				mGpuProgramManager->registerProgramFactory("ps_1_3", createGL_ATI_FS_GpuProgram);
+				gpuProgramManager->registerProgramFactory("ps_1_3", createGL_ATI_FS_GpuProgram);
 			}
 
 			if(caps->isShaderProfileSupported("ps_1_2"))
 			{
-				mGpuProgramManager->registerProgramFactory("ps_1_2", createGL_ATI_FS_GpuProgram);
+				gpuProgramManager->registerProgramFactory("ps_1_2", createGL_ATI_FS_GpuProgram);
 			}
 
 			if(caps->isShaderProfileSupported("ps_1_1"))
 			{
-				mGpuProgramManager->registerProgramFactory("ps_1_1", createGL_ATI_FS_GpuProgram);
+				gpuProgramManager->registerProgramFactory("ps_1_1", createGL_ATI_FS_GpuProgram);
 			}
 
 			if(caps->isShaderProfileSupported("arbfp1"))
 			{
-				mGpuProgramManager->registerProgramFactory("arbfp1", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("arbfp1", createGLArbGpuProgram);
 			}
 
 			if(caps->isShaderProfileSupported("fp40"))
 			{
-				mGpuProgramManager->registerProgramFactory("fp40", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("fp40", createGLArbGpuProgram);
 			}
 
 			if(caps->isShaderProfileSupported("fp30"))
 			{
-				mGpuProgramManager->registerProgramFactory("fp30", createGLArbGpuProgram);
+				gpuProgramManager->registerProgramFactory("fp30", createGLArbGpuProgram);
 			}
 
 		}
@@ -740,7 +736,7 @@ namespace CamelotEngine {
 		{
 			// NFZ - check for GLSL vertex and fragment shader support successful
 			mGLSLProgramFactory = new GLSLProgramFactory();
-			HighLevelGpuProgramManager::getSingleton().addFactory(mGLSLProgramFactory);
+			HighLevelGpuProgramManager::instance().addFactory(mGLSLProgramFactory);
 		}
 
 		if(caps->hasCapability(RSC_HWOCCLUSION))
@@ -795,7 +791,7 @@ namespace CamelotEngine {
 				// Create FBO manager
 				// TODO LOG PORT - Log this somewhere?
 				//LogManager::getSingleton().logMessage("GL: Using GL_EXT_framebuffer_object for rendering to textures (best)");
-				mRTTManager = new GLFBOManager(false);
+				GLRTTManager::startUp(new GLFBOManager(false));
 			}
 
 		}
@@ -807,7 +803,7 @@ namespace CamelotEngine {
 				if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
 				{
 					// Use PBuffers
-					mRTTManager = new GLPBRTTManager(mGLSupport, primary);
+					GLRTTManager::startUp(new GLPBRTTManager(mGLSupport, primary));
 
 					// TODO LOG PORT - Log this somewhere?
 					//LogManager::getSingleton().logMessage("GL: Using PBuffers for rendering to textures");
@@ -816,7 +812,7 @@ namespace CamelotEngine {
 			else
 			{
 				// No pbuffer support either -- fallback to simplest copying from framebuffer
-				mRTTManager = new GLCopyingRTTManager();
+				GLRTTManager::startUp(new GLCopyingRTTManager());
 				// TODO LOG PORT - Log this somewhere?
 				//LogManager::getSingleton().logMessage("GL: Using framebuffer copy for rendering to textures (worst)");
 				//LogManager::getSingleton().logMessage("GL: Warning: RenderTexture size is restricted to size of framebuffer. If you are on Linux, consider using GLX instead of SDL.");
@@ -846,21 +842,15 @@ namespace CamelotEngine {
 		if (mGLSLProgramFactory)
 		{
 			// Remove from manager safely
-			if (HighLevelGpuProgramManager::getSingletonPtr())
-				HighLevelGpuProgramManager::getSingleton().removeFactory(mGLSLProgramFactory);
+			HighLevelGpuProgramManager::instance().removeFactory(mGLSLProgramFactory);
 			delete mGLSLProgramFactory;
 			mGLSLProgramFactory = 0;
 		}
 
 		// Deleting the GPU program manager and hardware buffer manager.  Has to be done before the mGLSupport->stop().
-		delete mGpuProgramManager;
-		mGpuProgramManager = 0;
-
-		delete mHardwareBufferManager;
-		mHardwareBufferManager = 0;
-
-		delete mRTTManager;
-		mRTTManager = 0;
+		GpuProgramManager::shutDown();
+		HardwareBufferManager::shutDown();
+		GLRTTManager::shutDown();
 
 		// Delete extra threads contexts
 		for (GLContextList::iterator i = mBackgroundContextList.begin(); 
@@ -1007,7 +997,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	MultiRenderTarget * GLRenderSystem::createMultiRenderTarget(const String & name)
 	{
-		MultiRenderTarget *retval = mRTTManager->createMultiRenderTarget(name);
+		MultiRenderTarget *retval = GLRTTManager::instancePtr()->createMultiRenderTarget(name);
 		attachRenderTarget( *retval );
 		return retval;
 	}
@@ -3026,7 +3016,7 @@ namespace CamelotEngine {
 	{
 		// Unbind frame buffer object
 		if(mActiveRenderTarget)
-			mRTTManager->unbind(mActiveRenderTarget);
+			GLRTTManager::instancePtr()->unbind(mActiveRenderTarget);
 
 		mActiveRenderTarget = target;
 
@@ -3039,7 +3029,7 @@ namespace CamelotEngine {
 		}
 
 		// Bind frame buffer object
-		mRTTManager->bind(target);
+		GLRTTManager::instancePtr()->bind(target);
 
 		if (GLEW_EXT_framebuffer_sRGB)
 		{

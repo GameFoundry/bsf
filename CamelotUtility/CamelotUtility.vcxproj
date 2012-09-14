@@ -79,7 +79,6 @@
     <ClInclude Include="Include\CmMathAsm.h" />
     <ClInclude Include="Include\CmModule.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
-    <ClInclude Include="Include\CmSingleton.h" />
     <ClInclude Include="Include\CmString.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmTypes.h" />

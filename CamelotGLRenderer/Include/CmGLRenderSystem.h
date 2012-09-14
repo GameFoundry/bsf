@@ -98,8 +98,6 @@ namespace CamelotEngine {
         /// Check if the GL system has already been initialised
         bool mGLInitialised;
 
-        HardwareBufferManager* mHardwareBufferManager;
-        GLGpuProgramManager* mGpuProgramManager;
 		GLSLProgramFactory* mGLSLProgramFactory;
 
         unsigned short mCurrentLights;
@@ -117,13 +115,6 @@ namespace CamelotEngine {
 		typedef list<GLContext*>::type GLContextList;
 		/// List of background thread contexts
 		GLContextList mBackgroundContextList;
-
-        /** Manager object for creating render textures.
-            Direct render to texture via GL_EXT_framebuffer_object is preferable 
-			to pbuffers, which depend on the GL support used and are generally 
-			unwieldy and slow. However, FBO support for stencil buffers is poor.
-        */
-        GLRTTManager *mRTTManager;
 
 		UINT16 mActiveTextureUnit;
 

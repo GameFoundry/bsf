@@ -532,7 +532,7 @@ namespace CamelotEngine {
                 mVertexData.vertexCount = 32;
                 mVertexData.vertexStart = 0;
                 mVertexData.vertexBufferBinding->setBinding( 0,
-                    HardwareBufferManager::getSingleton().createVertexBuffer(
+                    HardwareBufferManager::instance().createVertexBuffer(
                         sizeof(float)*3, 32, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY) );
             }
 

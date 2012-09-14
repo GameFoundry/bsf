@@ -34,7 +34,6 @@ namespace CamelotEngine {
 
 //-----------------------------------------------------------------------------
 
-template<> GLRTTManager* Singleton<GLRTTManager>::ms_Singleton = 0;
     GLRTTManager::~GLRTTManager()
     {
     }

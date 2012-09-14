@@ -272,7 +272,7 @@ namespace CamelotEngine {
 
 			// Create a low-level program, give it the same name as us
 			mAssemblerProgram = 
-				GpuProgramManager::getSingleton().createProgram(
+				GpuProgramManager::instance().createProgram(
 					"",// dummy source, since we'll be using microcode
 					mType, 
 					hlslProfile);

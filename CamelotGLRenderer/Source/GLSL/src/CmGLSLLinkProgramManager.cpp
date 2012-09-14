@@ -33,21 +33,6 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
 	//-----------------------------------------------------------------------
-	template<> GLSLLinkProgramManager* Singleton<GLSLLinkProgramManager>::ms_Singleton = 0;
-
-	//-----------------------------------------------------------------------
-    GLSLLinkProgramManager* GLSLLinkProgramManager::getSingletonPtr(void)
-    {
-        return ms_Singleton;
-    }
-
-	//-----------------------------------------------------------------------
-    GLSLLinkProgramManager& GLSLLinkProgramManager::getSingleton(void)
-    {  
-        assert( ms_Singleton );  return ( *ms_Singleton );  
-    }
-
-	//-----------------------------------------------------------------------
 	GLSLLinkProgramManager::GLSLLinkProgramManager(void) : mActiveVertexGpuProgram(NULL),
 		mActiveGeometryGpuProgram(NULL), mActiveFragmentGpuProgram(NULL), mActiveLinkProgram(NULL)
 	{

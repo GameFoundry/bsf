@@ -92,17 +92,6 @@ namespace CamelotEngine {
 
 	};
 	//-----------------------------------------------------------------------
-	template<> HighLevelGpuProgramManager* 
-	Singleton<HighLevelGpuProgramManager>::ms_Singleton = 0;
-    HighLevelGpuProgramManager* HighLevelGpuProgramManager::getSingletonPtr(void)
-    {
-        return ms_Singleton;
-    }
-    HighLevelGpuProgramManager& HighLevelGpuProgramManager::getSingleton(void)
-    {  
-        assert( ms_Singleton );  return ( *ms_Singleton );  
-    }
-	//-----------------------------------------------------------------------
 	HighLevelGpuProgramManager::HighLevelGpuProgramManager()
 	{
 		mNullFactory = new NullProgramFactory();

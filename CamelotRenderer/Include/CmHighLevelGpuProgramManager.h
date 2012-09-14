@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __HighLevelGpuProgramManager_H__
 
 #include "CmPrerequisites.h"
-#include "CmSingleton.h"
+#include "CmModule.h"
 #include "CmException.h"
 #include "CmHighLevelGpuProgram.h"
 
@@ -65,7 +65,7 @@ namespace CamelotEngine {
 		factories and as such the engine can be extended to accept virtually any kind of
 		program provided a plugin is written.
 	*/
-	class CM_EXPORT HighLevelGpuProgramManager : public Singleton<HighLevelGpuProgramManager>
+	class CM_EXPORT HighLevelGpuProgramManager : public Module<HighLevelGpuProgramManager>
 	{
 	public:
 		typedef map<String, HighLevelGpuProgramFactory*>::type FactoryMap;
@@ -101,41 +101,6 @@ namespace CamelotEngine {
 		@param gptype The type of program to create
 		*/
 		HighLevelGpuProgramPtr createProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
-
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
-        static HighLevelGpuProgramManager& getSingleton(void);
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
-        static HighLevelGpuProgramManager* getSingletonPtr(void);
-
-
 	};
 	/** @} */
 	/** @} */

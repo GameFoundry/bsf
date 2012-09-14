@@ -90,13 +90,13 @@ namespace CamelotEngine {
 		switch (mType)
 		{
 		case GPT_VERTEX_PROGRAM:
-			GLSLLinkProgramManager::getSingleton().setActiveVertexShader( this );
+			GLSLLinkProgramManager::instance().setActiveVertexShader( this );
 			break;
 		case GPT_FRAGMENT_PROGRAM:
-			GLSLLinkProgramManager::getSingleton().setActiveFragmentShader( this );
+			GLSLLinkProgramManager::instance().setActiveFragmentShader( this );
 			break;
 		case GPT_GEOMETRY_PROGRAM:
-			GLSLLinkProgramManager::getSingleton().setActiveGeometryShader( this );
+			GLSLLinkProgramManager::instance().setActiveGeometryShader( this );
 			break;
 		}
 	}
@@ -107,15 +107,15 @@ namespace CamelotEngine {
 		// tell the Link Program Manager what shader is to become inactive
 		if (mType == GPT_VERTEX_PROGRAM)
 		{
-			GLSLLinkProgramManager::getSingleton().setActiveVertexShader( NULL );
+			GLSLLinkProgramManager::instance().setActiveVertexShader( NULL );
 		}
 		else if (mType == GPT_GEOMETRY_PROGRAM)
 		{
-			GLSLLinkProgramManager::getSingleton().setActiveGeometryShader( NULL );
+			GLSLLinkProgramManager::instance().setActiveGeometryShader( NULL );
 		}
 		else // its a fragment shader
 		{
-			GLSLLinkProgramManager::getSingleton().setActiveFragmentShader( NULL );
+			GLSLLinkProgramManager::instance().setActiveFragmentShader( NULL );
 		}
 
 	}
@@ -124,7 +124,7 @@ namespace CamelotEngine {
 	void GLSLGpuProgram::bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask)
 	{
 		// activate the link program object
-		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::getSingleton().getActiveLinkProgram();
+		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::instance().getActiveLinkProgram();
 		// pass on parameters from params to program object uniforms
 		linkProgram->updateUniforms(params, mask, mType);
 	}
@@ -133,7 +133,7 @@ namespace CamelotEngine {
 	void GLSLGpuProgram::bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params)
 	{
 		// activate the link program object
-		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::getSingleton().getActiveLinkProgram();
+		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::instance().getActiveLinkProgram();
 		// pass on parameters from params to program object uniforms
 		linkProgram->updatePassIterationUniforms( params );
 		
@@ -142,7 +142,7 @@ namespace CamelotEngine {
 	GLuint GLSLGpuProgram::getAttributeIndex(VertexElementSemantic semantic, UINT32 index)
 	{
 		// get link program - only call this in the context of bound program
-		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::getSingleton().getActiveLinkProgram();
+		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::instance().getActiveLinkProgram();
 
 		if (linkProgram->isAttributeValid(semantic, index))
 		{
@@ -159,7 +159,7 @@ namespace CamelotEngine {
 	bool GLSLGpuProgram::isAttributeValid(VertexElementSemantic semantic, UINT32 index)
 	{
 		// get link program - only call this in the context of bound program
-		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::getSingleton().getActiveLinkProgram();
+		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::instance().getActiveLinkProgram();
 
 		if (linkProgram->isAttributeValid(semantic, index))
 		{

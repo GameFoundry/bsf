@@ -264,7 +264,7 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
             GLSurfaceDesc surface;
             surface.buffer = this;
             surface.zoffset = zoffset;
-            RenderTexture *trt = GLRTTManager::getSingleton().createRenderTexture(name, surface, writeGamma, fsaa);
+            RenderTexture *trt = GLRTTManager::instance().createRenderTexture(name, surface, writeGamma, fsaa);
             mSliceTRT.push_back(trt);
             CamelotEngine::RenderSystemManager::getActive()->attachRenderTarget(*mSliceTRT[zoffset]);
         }
@@ -568,7 +568,7 @@ void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, c
     //src->mTextureID << ":" << srcBox.left << "," << srcBox.top << "," << srcBox.right << "," << srcBox.bottom << " " << 
     //mTextureID << ":" << dstBox.left << "," << dstBox.top << "," << dstBox.right << "," << dstBox.bottom << std::endl;
     /// Store reference to FBO manager
-    GLFBOManager *fboMan = static_cast<GLFBOManager *>(GLRTTManager::getSingletonPtr());
+    GLFBOManager *fboMan = static_cast<GLFBOManager *>(GLRTTManager::instancePtr());
     
     /// Save and clear GL state for rendering
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT | 

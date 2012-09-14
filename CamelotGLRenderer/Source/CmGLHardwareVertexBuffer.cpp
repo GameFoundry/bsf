@@ -72,7 +72,7 @@ namespace CamelotEngine {
 
 		void* retPtr = 0;
 
-		GLHardwareBufferManager* glBufManager = static_cast<GLHardwareBufferManager*>(HardwareBufferManager::getSingletonPtr());
+		GLHardwareBufferManager* glBufManager = static_cast<GLHardwareBufferManager*>(HardwareBufferManager::instancePtr());
 
 		// Try to use scratch buffers for smaller buffers
 		if( length < glBufManager->getGLMapBufferThreshold() )
@@ -145,7 +145,7 @@ namespace CamelotEngine {
 
 			// deallocate from scratch buffer
 			static_cast<GLHardwareBufferManager*>(
-				HardwareBufferManager::getSingletonPtr())->deallocateScratch(mScratchPtr);
+				HardwareBufferManager::instancePtr())->deallocateScratch(mScratchPtr);
 
 			mLockedToScratch = false;
 		}

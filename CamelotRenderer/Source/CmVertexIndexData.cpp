@@ -41,7 +41,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	VertexData::VertexData(HardwareBufferManagerBase* mgr)
 	{
-		mMgr = mgr ? mgr : HardwareBufferManager::getSingletonPtr();
+		mMgr = mgr ? mgr : HardwareBufferManager::instancePtr();
 		vertexBufferBinding = mMgr->createVertexBufferBinding();
 		vertexDeclaration = mMgr->createVertexDeclaration();
 		mDeleteDclBinding = true;
@@ -53,7 +53,7 @@ namespace CamelotEngine {
 	VertexData::VertexData(VertexDeclaration* dcl, VertexBufferBinding* bind)
 	{
 		// this is a fallback rather than actively used
-		mMgr = HardwareBufferManager::getSingletonPtr();
+		mMgr = HardwareBufferManager::instancePtr();
 		vertexDeclaration = dcl;
 		vertexBufferBinding = bind;
 		mDeleteDclBinding = false;
@@ -669,7 +669,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	IndexData* IndexData::clone(bool copyData, HardwareBufferManagerBase* mgr) const
 	{
-		HardwareBufferManagerBase* pManager = mgr ? mgr : HardwareBufferManager::getSingletonPtr();
+		HardwareBufferManagerBase* pManager = mgr ? mgr : HardwareBufferManager::instancePtr();
 		IndexData* dest = new IndexData();
 		if (indexBuffer.get())
 		{

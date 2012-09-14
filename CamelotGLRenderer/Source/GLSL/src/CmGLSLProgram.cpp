@@ -216,7 +216,7 @@ namespace CamelotEngine {
 
 		// Therefore instead, parse the source code manually and extract the uniforms
 		createParameterMappingStructures(true);
-		GLSLLinkProgramManager::getSingleton().extractConstantDefs(
+		GLSLLinkProgramManager::instance().extractConstantDefs(
 			mSource, *mConstantDefs.get(), "");
 
 		// Also parse any attached sources
@@ -225,7 +225,7 @@ namespace CamelotEngine {
 		{
 			GLSLProgram* childShader = *i;
 
-			GLSLLinkProgramManager::getSingleton().extractConstantDefs(
+			GLSLLinkProgramManager::instance().extractConstantDefs(
 				childShader->getSource(), *mConstantDefs.get(), "");
 
 		}

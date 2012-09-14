@@ -111,8 +111,6 @@ namespace CamelotEngine
 		/// check if a FSAA is supported
 		bool _checkMultiSampleQuality(D3DMULTISAMPLE_TYPE type, DWORD *outQuality, D3DFORMAT format, UINT adapterNum, D3DDEVTYPE deviceType, BOOL fullScreen);
 		
-		D3D9HardwareBufferManager* mHardwareBufferManager;
-		D3D9GpuProgramManager* mGpuProgramManager;
         D3D9HLSLProgramFactory* mHLSLProgramFactory;
 		D3D9ResourceManager* mResourceManager;
 		D3D9DeviceManager* mDeviceManager;

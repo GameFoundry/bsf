@@ -67,9 +67,7 @@ namespace CamelotEngine
 		// set pointers to NULL
 		mpD3D = NULL;		
 		mDriverList = NULL;
-		mActiveD3DDriver = NULL;
-		mHardwareBufferManager = NULL;
-		mGpuProgramManager = NULL;			
+		mActiveD3DDriver = NULL;	
 		mUseNVPerfHUD = false;
 		mHLSLProgramFactory = NULL;		
 		mDeviceManager = NULL;	
@@ -114,8 +112,7 @@ namespace CamelotEngine
 		// Deleting the HLSL program factory
 		if (mHLSLProgramFactory)
 		{
-			if (HighLevelGpuProgramManager::getSingletonPtr())
-				HighLevelGpuProgramManager::getSingleton().removeFactory(mHLSLProgramFactory);
+			HighLevelGpuProgramManager::instance().removeFactory(mHLSLProgramFactory);
 			delete mHLSLProgramFactory;
 			mHLSLProgramFactory = 0;
 		}
@@ -514,10 +511,10 @@ namespace CamelotEngine
 		TextureManager::startUp(new D3D9TextureManager());
 
 		// Also create hardware buffer manager		
-		mHardwareBufferManager = new D3D9HardwareBufferManager();
+		HardwareBufferManager::startUp(new D3D9HardwareBufferManager());
 
 		// Create the GPU program manager		
-		mGpuProgramManager = new D3D9GpuProgramManager();
+		GpuProgramManager::startUp(new D3D9GpuProgramManager());
 
 		// Create & register HLSL factory		
 		mHLSLProgramFactory = new D3D9HLSLProgramFactory();
@@ -623,8 +620,8 @@ namespace CamelotEngine
 		mActiveD3DDriver = NULL;	
 						
 		TextureManager::shutDown();
-		SAFE_DELETE( mHardwareBufferManager );
-		SAFE_DELETE( mGpuProgramManager );			
+		HardwareBufferManager::shutDown();
+		GpuProgramManager::shutDown();		
 	}
 	//---------------------------------------------------------------------
 	RenderWindow* D3D9RenderSystem::_createRenderWindow(const String &name, 
@@ -1310,7 +1307,7 @@ namespace CamelotEngine
 		}
 
 		if (caps->isShaderProfileSupported("hlsl"))
-			HighLevelGpuProgramManager::getSingleton().addFactory(mHLSLProgramFactory);
+			HighLevelGpuProgramManager::instance().addFactory(mHLSLProgramFactory);
 	}
 
 	//-----------------------------------------------------------------------
