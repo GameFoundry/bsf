@@ -18,6 +18,7 @@ HardwareBuffer - Base class for all buffers
 DefaultHardwareBufferManager - Provides emulation of hardware buffers
  - I think this class is okay to stay, although I'm not sure where its used, but its simple enough
 Texture - PARSED!
+HardwareOcclusionQuery - OK, but I might consider a more generic interface for queries (I'll need profiling queries too for example)
 
 TODO FILES:
 
@@ -31,8 +32,6 @@ Frustum
 GpuProgramParams - Holds all parameters used in a shader program and allows us to set them by index or name
  - Explore if we can remove GpuSharedParameters. I'm not exactly sure what they're used for
 
-HardwareOcclusionQuery - OK, but I might consider a more generic interface for queries (I'll need profiling queries too for example)
-
 HardwarePixelBuffer 
  - I might consider giving PixelBox a better name. Also rename PixelFormat.h to PixelUtil.h or similar. Makes more sense.
  - _clearSliceRTT method I'm not sure what is it used for, but I might want to remove it
@@ -45,27 +44,19 @@ TODO:
  - Make sure to parse D3D9 implementations of above classes and see what needs removing there as well
  - OpenGL too
 
-IMPORTANT: I think I should strive to make the renderer one unique CmRenderSystem.dll (Log manager, exceptions, math can go in a separate CmUtility library?)
-   - Later separate out OpenGL and D3D9 dlls as well, since I want to support D3D11. And I want to keep the framework separate from implementation
-     - AND because I need to have it separated since I can't expect DirectX to compile on OSX or Linux
-
 TOMORROW:
- - Incorporate CamelotUtility library into CamelotRenderer
-   - Move remaining Utility files to CamelotUtility (files like StringUtil, PixelUtil and similar)
-     - Port exceptions
-	 - Add log
-   - Remove remaining not-needed headers
+ - Add precompiled headers to all projects
+ - Make sure they include Exception & Log classes
 
 Other notes:
  - Search for all remaining "TODO PORT" comments and fix them
- - Rename all macros and other OGRE references to CM
  - How am I notified on device reset? (When I need to reload my resources)
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
  - Remove all fixed pipeline methods from D3D9 and OpenGL renderers
+ - Make CamelotRenderer a project on its own?
 
  At one point rebuild everything and make sure all warnings are gone
-Figure out how to ignore those warnings in NVparse
-String stuff should go to a single StringUtil file
+  - Also scan everything for "Ogre" and remove any references to it
 
 After everything is polished:
  - Make sure the renderer can run on a separate thread
@@ -74,7 +65,6 @@ After everything is polished:
     - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 
 	  further modifications.
  - Port boost threads to std threads (CmThreadDefines.h)
- - I should move boost so it resides in CamelotUtility
  - Also, create all file format parsers and also make them reside in CamelotUtility
    (Actual importers will still be implemented in Editor, but parsing capabilities should be available for camelotutility)
  

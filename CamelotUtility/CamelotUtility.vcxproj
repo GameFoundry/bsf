@@ -76,6 +76,7 @@
     <ClInclude Include="Include\CmColor.h" />
     <ClInclude Include="Include\CmDynLibManager.h" />
     <ClInclude Include="Include\CmException.h" />
+    <ClInclude Include="Include\CmLog.h" />
     <ClInclude Include="Include\CmMathAsm.h" />
     <ClInclude Include="Include\CmModule.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="Source\CmColor.cpp" />
     <ClCompile Include="Source\CmDynLibManager.cpp" />
     <ClCompile Include="Source\CmException.cpp" />
+    <ClCompile Include="Source\CmLog.cpp" />
     <ClCompile Include="Source\CmMath.cpp" />
     <ClCompile Include="Source\CmMatrix3.cpp" />
     <ClCompile Include="Source\CmMatrix4.cpp" />
