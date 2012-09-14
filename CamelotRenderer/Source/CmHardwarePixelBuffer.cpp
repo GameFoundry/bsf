@@ -97,8 +97,7 @@ namespace CamelotEngine
     /// Internal implementation of lock()
     void* HardwarePixelBuffer::lockImpl(size_t offset, size_t length, LockOptions options)
     {
-        OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "lockImpl(offset,length) is not valid for PixelBuffers and should never be called",
-            "HardwarePixelBuffer::lockImpl");
+		CM_EXCEPT(InternalErrorException, "lockImpl(offset,length) is not valid for PixelBuffers and should never be called");
     }
 
     //-----------------------------------------------------------------------------    
@@ -107,15 +106,13 @@ namespace CamelotEngine
 	{
 		if(isLocked() || src->isLocked())
 		{
-			OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR,
-				"Source and destination buffer may not be locked!",
-				"HardwarePixelBuffer::blit");
+			CM_EXCEPT(InternalErrorException,
+				"Source and destination buffer may not be locked!");
 		}
 		if(src.get() == this)
 		{
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS,
-                "Source must not be the same object",
-                "HardwarePixelBuffer::blit" ) ;
+			CM_EXCEPT(InternalErrorException,
+                "Source must not be the same object") ;
 		}
 		const PixelData &srclock = src->lock(srcBox, HBL_READ_ONLY);
 
@@ -155,9 +152,8 @@ namespace CamelotEngine
 	void HardwarePixelBuffer::readData(size_t offset, size_t length, void* pDest)
 	{
 		// TODO
-		OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
-				"Reading a byte range is not implemented. Use blitToMemory.",
-				"HardwarePixelBuffer::readData");
+		CM_EXCEPT(NotImplementedException,
+				"Reading a byte range is not implemented. Use blitToMemory.");
 	}
 	//-----------------------------------------------------------------------------    
 
@@ -165,17 +161,15 @@ namespace CamelotEngine
 			bool discardWholeBuffer)
 	{
 		// TODO
-		OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
-				"Writing a byte range is not implemented. Use blitFromMemory.",
-				"HardwarePixelBuffer::writeData");
+		CM_EXCEPT(NotImplementedException,
+				"Writing a byte range is not implemented. Use blitFromMemory.");
 	}
     //-----------------------------------------------------------------------------    
     
     RenderTexture *HardwarePixelBuffer::getRenderTarget(size_t)
     {
-        OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
-				"Not yet implemented for this rendersystem.",
-				"HardwarePixelBuffer::getRenderTarget");
+        CM_EXCEPT(NotImplementedException,
+				"Not yet implemented for this rendersystem.");
     }
 
 	//-----------------------------------------------------------------------------    

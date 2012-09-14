@@ -67,8 +67,7 @@ namespace CamelotEngine {
 		
 		if (!newCtx)
 		{
-			OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-				"Error calling wglCreateContext", "Win32Context::clone");
+			CM_EXCEPT(InternalErrorException, "Error calling wglCreateContext");
 		}
 
 		HGLRC oldrc = wglGetCurrentContext();
@@ -79,7 +78,7 @@ namespace CamelotEngine {
 		{
 			String errorMsg = translateWGLError();
 			wglDeleteContext(newCtx);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, String("wglShareLists() failed: ") + errorMsg, "Win32Context::clone");
+			CM_EXCEPT(RenderingAPIException, String("wglShareLists() failed: ") + errorMsg);
 		}
 		// restore old context
 		wglMakeCurrent(oldhdc, oldrc);

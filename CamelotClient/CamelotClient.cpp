@@ -9,7 +9,8 @@ using namespace CamelotEngine;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	gApplication().startUp("RenderSystemD3D9.dll");
+	gApplication().startUp("CamelotGLRenderer.dll");
+	//gApplication().startUp("CamelotD3D9Renderer.dll");
 
 	int a = 5;
 

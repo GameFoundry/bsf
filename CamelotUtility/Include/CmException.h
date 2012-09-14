@@ -1,93 +1,34 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
+#pragma once
 
-Copyright (c) 2000-2011 Torus Knot Software Ltd
+#include "CmPrerequisitesUtil.h"
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+//#include <boost/static_assert.hpp>
+//#include <boost/type_traits.hpp>
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+#if defined(_MSC_VER)
+#undef __PRETTY_FUNCTION__
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __Exception_H_
-#define __Exception_H_
-
-// Precompiler options
-#include "CmString.h"
-#include <exception>
-
-namespace CamelotEngine {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup General
-	*  @{
-	*/
-	/** When thrown, provides information about an error that has occurred inside the engine.
-        @remarks
-            OGRE never uses return values to indicate errors. Instead, if an
-            error occurs, an exception is thrown, and this is the object that
-            encapsulates the detail of the problem. The application using
-            OGRE should always ensure that the exceptions are caught, so all
-            OGRE engine functions should occur within a
-            try{} catch(CamelotEngine::Exception& e) {} block.
-        @par
-            The user application should never create any instances of this
-            object unless it wishes to unify its error handling using the
-            same object.
-    */
+namespace CamelotEngine
+{
 	class CM_EXPORT Exception : public std::exception
     {
     protected:
-        long line;
-        int number;
-		String typeName;
-        String description;
-        String source;
-        String file;
-		mutable String fullDesc;
+        long mLine;
+		String mTypeName;
+        String mDescription;
+        String mSource;
+        String mFile;
+		mutable String mFullDesc;
     public:
-        /** Static definitions of error codes.
-            @todo
-                Add many more exception codes, since we want the user to be able
-                to catch most of them.
-        */
-        enum ExceptionCodes {
-            ERR_CANNOT_WRITE_TO_FILE,
-            ERR_INVALID_STATE,
-            ERR_INVALIDPARAMS,
-            ERR_RENDERINGAPI_ERROR,
-            ERR_DUPLICATE_ITEM,
-            ERR_ITEM_NOT_FOUND,
-            ERR_FILE_NOT_FOUND,
-            ERR_INTERNAL_ERROR,
-            ERR_RT_ASSERTION_FAILED, 
-			ERR_NOT_IMPLEMENTED
-        };
-
         /** Default constructor.
         */
-        Exception( int number, const String& description, const String& source );
+		Exception(const char* type, const String& description, const String& source);
 
         /** Advanced constructor.
         */
-        Exception( int number, const String& description, const String& source, const char* type, const char* file, long line );
+		Exception(const char* type, const String& description, const String& source, const char* file, long line);
 
         /** Copy constructor.
         */
@@ -110,204 +51,91 @@ namespace CamelotEngine {
                 the place in which OGRE found the problem, and a text
                 description from the 3D rendering library, if available.
         */
-        virtual const String& getFullDescription(void) const;
-
-        /** Gets the error code.
-        */
-        virtual int getNumber(void) const throw();
+		virtual const String& getFullDescription() const;
 
         /** Gets the source function.
         */
-        virtual const String &getSource() const { return source; }
+		virtual const String& getSource() const { return mSource; }
 
         /** Gets source file name.
         */
-        virtual const String &getFile() const { return file; }
+		virtual const String& getFile() const { return mFile; }
 
         /** Gets line number.
         */
-        virtual long getLine() const { return line; }
+        virtual long getLine() const { return mLine; }
 
 		/** Returns a string with only the 'description' field of this exception. Use 
 			getFullDescriptionto get a full description of the error including line number,
 			error number and what function threw the exception.
         */
-		virtual const String &getDescription(void) const { return description; }
+		virtual const String& getDescription(void) const { return mDescription; }
 
 		/// Override std::exception::what
 		const char* what() const throw() { return getFullDescription().c_str(); }
-        
     };
 
-
-	/** Template struct which creates a distinct type for each exception code.
-	@note
-	This is useful because it allows us to create an overloaded method
-	for returning different exception types by value without ambiguity. 
-	From 'Modern C++ Design' (Alexandrescu 2001).
-	*/
-	template <int num>
-	struct ExceptionCodeType
-	{
-		enum { number = num };
-	};
-
-	// Specialised exceptions allowing each to be caught specifically
-	// backwards-compatible since exception codes still used
-
-	class CM_EXPORT UnimplementedException : public Exception 
+	class CM_EXPORT NotImplementedException : public Exception 
 	{
 	public:
-		UnimplementedException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception(inNumber, inDescription, inSource, "UnimplementedException", inFile, inLine) {}
+		NotImplementedException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
+			: Exception("NotImplementedException", inDescription, inSource, inFile, inLine) {}
 	};
 	class CM_EXPORT FileNotFoundException : public Exception
 	{
 	public:
-		FileNotFoundException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception(inNumber, inDescription, inSource, "FileNotFoundException", inFile, inLine) {}
+		FileNotFoundException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
+			: Exception("FileNotFoundException", inDescription, inSource, inFile, inLine) {}
 	};
 	class CM_EXPORT IOException : public Exception
 	{
 	public:
-		IOException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception(inNumber, inDescription, inSource, "IOException", inFile, inLine) {}
+		IOException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
+			: Exception("IOException", inDescription, inSource, inFile, inLine) {}
 	};
 	class CM_EXPORT InvalidStateException : public Exception
 	{
 	public:
-		InvalidStateException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception(inNumber, inDescription, inSource, "InvalidStateException", inFile, inLine) {}
+		InvalidStateException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
+			: Exception("InvalidStateException", inDescription, inSource, inFile, inLine) {}
 	};
 	class CM_EXPORT InvalidParametersException : public Exception
 	{
 	public:
-		InvalidParametersException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception(inNumber, inDescription, inSource, "InvalidParametersException", inFile, inLine) {}
+		InvalidParametersException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
+			: Exception("InvalidParametersException", inDescription, inSource, inFile, inLine) {}
 	};
 	class CM_EXPORT ItemIdentityException : public Exception
 	{
 	public:
-		ItemIdentityException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception(inNumber, inDescription, inSource, "ItemIdentityException", inFile, inLine) {}
+		ItemIdentityException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
+			: Exception("ItemIdentityException", inDescription, inSource, inFile, inLine) {}
 	};
 	class CM_EXPORT InternalErrorException : public Exception
 	{
 	public:
-		InternalErrorException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception(inNumber, inDescription, inSource, "InternalErrorException", inFile, inLine) {}
+		InternalErrorException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
+			: Exception("InternalErrorException", inDescription, inSource, inFile, inLine) {}
 	};
 	class CM_EXPORT RenderingAPIException : public Exception
 	{
 	public:
-		RenderingAPIException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception(inNumber, inDescription, inSource, "RenderingAPIException", inFile, inLine) {}
+		RenderingAPIException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
+			: Exception("RenderingAPIException", inDescription, inSource, inFile, inLine) {}
 	};
 	class CM_EXPORT RuntimeAssertionException : public Exception
 	{
 	public:
-		RuntimeAssertionException(int inNumber, const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception(inNumber, inDescription, inSource, "RuntimeAssertionException", inFile, inLine) {}
+		RuntimeAssertionException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
+			: Exception("RuntimeAssertionException", inDescription, inSource, inFile, inLine) {}
 	};
 
-
-	/** Class implementing dispatch methods in order to construct by-value
-		exceptions of a derived type based just on an exception code.
-	@remarks
-		This nicely handles construction of derived Exceptions by value (needed
-		for throwing) without suffering from ambiguity - each code is turned into
-		a distinct type so that methods can be overloaded. This allows OGRE_EXCEPT
-		to stay small in implementation (desirable since it is embedded) whilst
-		still performing rich code-to-type mapping. 
-	*/
-	class ExceptionFactory
-	{
-	private:
-		/// Private constructor, no construction
-		ExceptionFactory() {}
-	public:
-		static UnimplementedException create(
-			ExceptionCodeType<Exception::ERR_NOT_IMPLEMENTED> code, 
-			const String& desc, 
-			const String& src, const char* file, long line)
-		{
-			return UnimplementedException(code.number, desc, src, file, line);
-		}
-		static FileNotFoundException create(
-			ExceptionCodeType<Exception::ERR_FILE_NOT_FOUND> code, 
-			const String& desc, 
-			const String& src, const char* file, long line)
-		{
-			return FileNotFoundException(code.number, desc, src, file, line);
-		}
-		static IOException create(
-			ExceptionCodeType<Exception::ERR_CANNOT_WRITE_TO_FILE> code, 
-			const String& desc, 
-			const String& src, const char* file, long line)
-		{
-			return IOException(code.number, desc, src, file, line);
-		}
-		static InvalidStateException create(
-			ExceptionCodeType<Exception::ERR_INVALID_STATE> code, 
-			const String& desc, 
-			const String& src, const char* file, long line)
-		{
-			return InvalidStateException(code.number, desc, src, file, line);
-		}
-		static InvalidParametersException create(
-			ExceptionCodeType<Exception::ERR_INVALIDPARAMS> code, 
-			const String& desc, 
-			const String& src, const char* file, long line)
-		{
-			return InvalidParametersException(code.number, desc, src, file, line);
-		}
-		static ItemIdentityException create(
-			ExceptionCodeType<Exception::ERR_ITEM_NOT_FOUND> code, 
-			const String& desc, 
-			const String& src, const char* file, long line)
-		{
-			return ItemIdentityException(code.number, desc, src, file, line);
-		}
-		static ItemIdentityException create(
-			ExceptionCodeType<Exception::ERR_DUPLICATE_ITEM> code, 
-			const String& desc, 
-			const String& src, const char* file, long line)
-		{
-			return ItemIdentityException(code.number, desc, src, file, line);
-		}
-		static InternalErrorException create(
-			ExceptionCodeType<Exception::ERR_INTERNAL_ERROR> code, 
-			const String& desc, 
-			const String& src, const char* file, long line)
-		{
-			return InternalErrorException(code.number, desc, src, file, line);
-		}
-		static RenderingAPIException create(
-			ExceptionCodeType<Exception::ERR_RENDERINGAPI_ERROR> code, 
-			const String& desc, 
-			const String& src, const char* file, long line)
-		{
-			return RenderingAPIException(code.number, desc, src, file, line);
-		}
-		static RuntimeAssertionException create(
-			ExceptionCodeType<Exception::ERR_RT_ASSERTION_FAILED> code, 
-			const String& desc, 
-			const String& src, const char* file, long line)
-		{
-			return RuntimeAssertionException(code.number, desc, src, file, line);
-		}
-
-	};
-	
-
-	
-#ifndef OGRE_EXCEPT
-#define OGRE_EXCEPT(num, desc, src) throw CamelotEngine::ExceptionFactory::create( \
-	CamelotEngine::ExceptionCodeType<num>(), desc, src, __FILE__, __LINE__ );
+	// TODO - Temporarily disabled until I include boost
+#ifndef CM_EXCEPT
+#define CM_EXCEPT(type, desc)	\
+	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+//	BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Exception, type##>::value), "Invalid exception type (" #type ") for CM_EXCEPT macro. It needs to derive from CamelotEngine::Exception."); \
+//	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__);
 #endif
-	/** @} */
-	/** @} */
+}
 
-} // namespace CamelotEngine
-
-#endif

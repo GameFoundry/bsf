@@ -109,9 +109,8 @@ namespace CamelotEngine {
         /// First buffer must be bound
         if(!mColour[0].buffer)
         {
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-            "Attachment 0 must have surface attached",
-		 	"GLFrameBufferObject::initialise");
+			CM_EXCEPT(InvalidParametersException, 
+            "Attachment 0 must have surface attached");
         }
 
 		// If we're doing multisampling, then we need another FBO which contains a
@@ -142,13 +141,13 @@ namespace CamelotEngine {
                     ss << ". It must be of the same as the size of surface 0, ";
                     ss << width << "x" << height;
                     ss << ".";
-                    OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, ss.str(), "GLFrameBufferObject::initialise");
+                    CM_EXCEPT(InvalidParametersException, ss.str());
                 }
                 if(mColour[x].buffer->getGLFormat() != format)
                 {
                     StringStream ss;
                     ss << "Attachment " << x << " has incompatible format.";
-                    OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, ss.str(), "GLFrameBufferObject::initialise");
+                    CM_EXCEPT(InvalidParametersException, ss.str());
                 }
 	            mColour[x].buffer->bindToFramebuffer(GL_COLOR_ATTACHMENT0_EXT+x, mColour[x].zoffset);
             }
@@ -269,13 +268,11 @@ namespace CamelotEngine {
             // All is good
             break;
         case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-            "All framebuffer formats with this texture internal format unsupported",
-		 	"GLFrameBufferObject::initialise");
+            CM_EXCEPT(InvalidParametersException, 
+            "All framebuffer formats with this texture internal format unsupported");
         default:
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-            "Framebuffer incomplete or other FBO status error",
-		 	"GLFrameBufferObject::initialise");
+            CM_EXCEPT(InvalidParametersException, 
+            "Framebuffer incomplete or other FBO status error");
         }
         
     }

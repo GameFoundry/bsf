@@ -263,18 +263,14 @@ namespace CamelotEngine {
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Cannot restore D3D9 vertex buffer: " + msg, 
-				"D3D9HardwareVertexBuffer::createBuffer");
+			CM_EXCEPT(RenderingAPIException, "Cannot restore D3D9 vertex buffer: " + msg);
 		}
 
 		hr = bufferResources->mBuffer->GetDesc(&mBufferDesc);
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Cannot get D3D9 Vertex buffer desc: " + msg, 
-				"D3D9HardwareVertexBuffer::createBuffer");
+			CM_EXCEPT(RenderingAPIException, "Cannot get D3D9 Vertex buffer desc: " + msg);
 		}		
 	}
 	//---------------------------------------------------------------------
@@ -324,9 +320,7 @@ namespace CamelotEngine {
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Cannot lock D3D9 vertex buffer: " + msg, 
-				"D3D9HardwareVertexBuffer::updateBuffer");
+			CM_EXCEPT(RenderingAPIException, "Cannot lock D3D9 vertex buffer: " + msg);
 		}
 
 		memcpy(dstBytes, systemMemoryBuffer + bufferResources->mLockOffset, bufferResources->mLockLength);
@@ -336,9 +330,7 @@ namespace CamelotEngine {
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Cannot unlock D3D9 vertex buffer: " + msg, 
-				"D3D9HardwareVertexBuffer::updateBuffer");
+			CM_EXCEPT(RenderingAPIException, "Cannot unlock D3D9 vertex buffer: " + msg);
 		}
 
 		bufferResources->mOutOfDate = false;

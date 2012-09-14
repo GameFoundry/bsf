@@ -150,14 +150,14 @@ namespace CamelotEngine {
 		ConfigOptionMap::iterator moptColourDepth = mOptions.find("Colour Depth");
 		ConfigOptionMap::iterator moptDisplayFrequency = mOptions.find("Display Frequency");
 		if(optVideoMode == mOptions.end() || moptColourDepth == mOptions.end() || moptDisplayFrequency == mOptions.end())
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find mOptions!", "Win32GLSupport::refreshConfig");
+			CM_EXCEPT(InvalidParametersException, "Can't find mOptions!");
 		ConfigOption* optColourDepth = &moptColourDepth->second;
 		ConfigOption* optDisplayFrequency = &moptDisplayFrequency->second;
 
 		const String& val = optVideoMode->second.currentValue;
 		String::size_type pos = val.find('x');
 		if (pos == String::npos)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Invalid Video Mode provided", "Win32GLSupport::refreshConfig");
+			CM_EXCEPT(InvalidParametersException, "Invalid Video Mode provided");
 		DWORD width = parseUnsignedInt(val.substr(0, pos));
 		DWORD height = parseUnsignedInt(val.substr(pos+1, String::npos));
 
@@ -190,7 +190,7 @@ namespace CamelotEngine {
 		{
             StringUtil::StrStreamType str;
             str << "Option named '" << name << "' does not exist.";
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, str.str(), "Win32GLSupport::setConfigOption" );
+			CM_EXCEPT(InvalidParametersException, str.str());
 		}
 
 		if( name == "Video Mode" )
@@ -225,16 +225,16 @@ namespace CamelotEngine {
         {
             ConfigOptionMap::iterator opt = mOptions.find("Full Screen");
             if (opt == mOptions.end())
-                OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find full screen options!", "Win32GLSupport::createWindow");
+                CM_EXCEPT(InvalidParametersException, "Can't find full screen options!");
             bool fullscreen = (opt->second.currentValue == "Yes");
 
             opt = mOptions.find("Video Mode");
             if (opt == mOptions.end())
-                OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find video mode options!", "Win32GLSupport::createWindow");
+                CM_EXCEPT(InvalidParametersException, "Can't find video mode options!");
             String val = opt->second.currentValue;
             String::size_type pos = val.find('x');
             if (pos == String::npos)
-                OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Invalid Video Mode provided", "Win32GLSupport::createWindow");
+                CM_EXCEPT(InvalidParametersException, "Invalid Video Mode provided");
 
 			unsigned int w = parseUnsignedInt(val.substr(0, pos));
             unsigned int h = parseUnsignedInt(val.substr(pos + 1));
@@ -243,21 +243,21 @@ namespace CamelotEngine {
 			NameValuePairList winOptions;
 			opt = mOptions.find("Colour Depth");
 			if (opt == mOptions.end())
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find Colour Depth options!", "Win32GLSupport::createWindow");
+				CM_EXCEPT(InvalidParametersException, "Can't find Colour Depth options!");
 			unsigned int colourDepth =
 				parseUnsignedInt(opt->second.currentValue);
 			winOptions["colourDepth"] = toString(colourDepth);
 
 			opt = mOptions.find("VSync");
 			if (opt == mOptions.end())
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find VSync options!", "Win32GLSupport::createWindow");
+				CM_EXCEPT(InvalidParametersException, "Can't find VSync options!");
 			bool vsync = (opt->second.currentValue == "Yes");
 			winOptions["vsync"] = toString(vsync);
 			renderSystem->setWaitForVerticalBlank(vsync);
 
 			opt = mOptions.find("VSync Interval");
 			if (opt == mOptions.end())
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find VSync Interval options!", "Win32GLSupport::createWindow");
+				CM_EXCEPT(InvalidParametersException, "Can't find VSync Interval options!");
 			winOptions["vsyncInterval"] = opt->second.currentValue;
 
 
@@ -271,7 +271,7 @@ namespace CamelotEngine {
 
 			opt = mOptions.find("FSAA");
 			if (opt == mOptions.end())
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find FSAA options!", "Win32GLSupport::createWindow");
+				CM_EXCEPT(InvalidParametersException, "Can't find FSAA options!");
 			std::vector<CamelotEngine::String> aavalues = StringUtil::split(opt->second.currentValue, " ", 1);
 			unsigned int multisample = parseUnsignedInt(aavalues[0]);
 			String multisample_hint;
@@ -283,7 +283,7 @@ namespace CamelotEngine {
 
 			opt = mOptions.find("sRGB Gamma Conversion");
 			if (opt == mOptions.end())
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find sRGB options!", "Win32GLSupport::createWindow");
+				CM_EXCEPT(InvalidParametersException, "Can't find sRGB options!");
 			bool hwGamma = (opt->second.currentValue == "Yes");
 			winOptions["gamma"] = toString(hwGamma);
 
@@ -461,7 +461,7 @@ namespace CamelotEngine {
 
 		// if a simple CreateWindow fails, then boy are we in trouble...
 		if (hwnd == NULL)
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "CreateWindow() failed", "Win32GLSupport::initializeWGL");
+			CM_EXCEPT(RenderingAPIException, "CreateWindow() failed");
 
 
 		// no chance of failure and no need to release thanks to CS_OWNDC

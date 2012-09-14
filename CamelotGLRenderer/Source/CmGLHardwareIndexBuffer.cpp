@@ -40,9 +40,8 @@ namespace CamelotEngine {
 
         if (!mBufferId)
         {
-            OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-                "Cannot create GL index buffer", 
-                "GLHardwareIndexBuffer::GLHardwareIndexBuffer");
+			CM_EXCEPT(InternalErrorException, 
+                "Cannot create GL index buffer");
         }
 
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId);
@@ -66,9 +65,8 @@ namespace CamelotEngine {
 
         if(mIsLocked)
         {
-            OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-                "Invalid attempt to lock an index buffer that has already been locked",
-                    "GLHardwareIndexBuffer::lock");
+            CM_EXCEPT(InternalErrorException, 
+                "Invalid attempt to lock an index buffer that has already been locked");
         }
 
         
@@ -117,9 +115,8 @@ namespace CamelotEngine {
 
 			if(pBuffer == 0)
 			{
-				OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-					"Index Buffer: Out of memory", 
-					"GLHardwareIndexBuffer::lock");
+				CM_EXCEPT(InternalErrorException, 
+					"Index Buffer: Out of memory");
 			}
 
 			// return offsetted
@@ -157,9 +154,8 @@ namespace CamelotEngine {
 
 			if(!glUnmapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB ))
 			{
-				OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-					"Buffer data corrupted, please reload", 
-					"GLHardwareIndexBuffer::unlock");
+				CM_EXCEPT(InternalErrorException, 
+					"Buffer data corrupted, please reload");
 			}
 		}
 

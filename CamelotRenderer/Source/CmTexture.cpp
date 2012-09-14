@@ -132,9 +132,8 @@ namespace CamelotEngine {
     {
         if(target->getNumFaces() != getNumFaces())
         {
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-                "Texture types must match",
-                "Texture::copyToTexture");
+            CM_EXCEPT(InvalidParametersException, 
+                "Texture types must match");
         }
         size_t numMips = std::min(getNumMipmaps(), target->getNumMipmaps());
         if((mUsage & TU_AUTOMIPMAP) || (target->getUsage()&TU_AUTOMIPMAP))

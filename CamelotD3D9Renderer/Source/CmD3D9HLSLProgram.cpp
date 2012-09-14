@@ -258,8 +258,7 @@ namespace CamelotEngine {
 				errors->Release();
 			}
 
-            OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, message,
-                "D3D9HLSLProgram::loadFromSource");
+            CM_EXCEPT(RenderingAPIException, message);
         }
 
 
@@ -301,9 +300,7 @@ namespace CamelotEngine {
 
         if (FAILED(hr))
         {
-            OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-                "Cannot retrieve constant descriptions from HLSL program.", 
-                "D3D9HLSLProgram::buildParameterNameMap");
+			CM_EXCEPT(InternalErrorException, "Cannot retrieve constant descriptions from HLSL program.");
         }
         // Iterate over the constants
         for (unsigned int i = 0; i < desc.Constants; ++i)
@@ -328,9 +325,7 @@ namespace CamelotEngine {
         HRESULT hr = mpConstTable->GetConstantDesc(hConstant, &desc, &numParams);
         if (FAILED(hr))
         {
-            OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-                "Cannot retrieve constant description from HLSL program.", 
-                "D3D9HLSLProgram::processParamElement");
+            CM_EXCEPT(InternalErrorException, "Cannot retrieve constant description from HLSL program.");
         }
 
         String paramName = desc.Name;

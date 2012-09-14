@@ -59,9 +59,8 @@ GLHardwareOcclusionQuery::GLHardwareOcclusionQuery()
 	}
 	else
     {
-        OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, 
-                    "Cannot allocate a Hardware query. This video card doesn't supports it, sorry.", 
-                    "GLHardwareOcclusionQuery::GLHardwareOcclusionQuery" );
+		CM_EXCEPT(InternalErrorException, 
+                    "Cannot allocate a Hardware query. This video card doesn't supports it, sorry.");
     }
 	
 }

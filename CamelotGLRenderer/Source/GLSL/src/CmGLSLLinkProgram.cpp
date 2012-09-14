@@ -99,10 +99,9 @@ namespace CamelotEngine {
 		case RenderOperation::OT_TRIANGLE_STRIP:
 			return GL_TRIANGLE_STRIP;
 		default:
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
+			CM_EXCEPT(RenderingAPIException,
 				"Geometry shader output operation type can only be point list,"
-				"line strip or triangle strip",
-				"GLSLLinkProgram::activate");
+				"line strip or triangle strip");
 		}
 	}
 	//-----------------------------------------------------------------------

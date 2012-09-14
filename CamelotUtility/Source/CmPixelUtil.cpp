@@ -950,10 +950,10 @@ namespace CamelotEngine {
 				// Entire buffer is being queried
 				return *this;
 			}
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Cannot return subvolume of compressed PixelBuffer", "PixelBox::getSubVolume");
+			CM_EXCEPT(InvalidParametersException, "Cannot return subvolume of compressed PixelBuffer");
 		}
 		if(!contains(def))
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Bounds out of range", "PixelBox::getSubVolume");
+			CM_EXCEPT(InvalidParametersException, "Bounds out of range");
 
 		const size_t elemSize = PixelUtil::getNumElemBytes(format);
 		// Calculate new data origin
@@ -1017,8 +1017,7 @@ namespace CamelotEngine {
 					assert(depth == 1);
                     return (std::max((int)width, 8) * std::max((int)height, 8) * 4 + 7) / 8;
 				default:
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Invalid compressed pixel format",
-					"PixelUtil::getMemorySize");
+				CM_EXCEPT(InvalidParametersException, "Invalid compressed pixel format");
 			}
 		}
 		else
@@ -1388,10 +1387,8 @@ namespace CamelotEngine {
 				break;
             default:
                 // Not yet supported
-                OGRE_EXCEPT(
-                    Exception::ERR_NOT_IMPLEMENTED,
-                    "pack to "+getFormatName(pf)+" not implemented",
-                    "PixelUtil::packColour");
+                CM_EXCEPT(NotImplementedException,
+                    "pack to "+getFormatName(pf)+" not implemented");
                 break;
             }
         }
@@ -1529,9 +1526,8 @@ namespace CamelotEngine {
 				break;
             default:
                 // Not yet supported
-                OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
-                    "unpack from "+getFormatName(pf)+" not implemented",
-                    "PixelUtil::unpackColour");
+                CM_EXCEPT(NotImplementedException,
+                    "unpack from "+getFormatName(pf)+" not implemented");
                 break;
             }
         }
@@ -1563,9 +1559,7 @@ namespace CamelotEngine {
 			}
 			else
 			{
-				OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
-					"This method can not be used to compress or decompress images",
-					"PixelUtil::bulkPixelConversion");
+				CM_EXCEPT(NotImplementedException, "This method can not be used to compress or decompress images");
 			}
 		}
 

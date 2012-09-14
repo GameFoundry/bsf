@@ -80,7 +80,7 @@ namespace CamelotEngine
 
 		// Create our Direct3D object
 		if( NULL == (mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) )
-			OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Failed to create Direct3D9 object", "D3D9RenderSystem::D3D9RenderSystem" );
+			CM_EXCEPT(InternalErrorException, "Failed to create Direct3D9 object");
 
 		// set config options defaults
 		initConfigOptions();
@@ -333,7 +333,7 @@ namespace CamelotEngine
 		{
 			StringUtil::StrStreamType str;
 			str << "Option named '" << name << "' does not exist.";
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, str.str(), "D3D9RenderSystem::setConfigOption" );
+			CM_EXCEPT(InvalidParametersException, str.str() );
 		}
 
 		// Refresh other options if D3DDriver changed
@@ -500,7 +500,7 @@ namespace CamelotEngine
 		}
 
 		if( !mActiveD3DDriver )
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, "Problems finding requested Direct3D driver!", "D3D9RenderSystem::initialise" );
+			CM_EXCEPT(InvalidParametersException, "Problems finding requested Direct3D driver!" );
 
 		// get driver version
 		mDriverVersion.major = HIWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.HighPart);
@@ -528,7 +528,7 @@ namespace CamelotEngine
 			bool fullScreen;
 			opt = mOptions.find( "Full Screen" );
 			if( opt == mOptions.end() )
-				OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Can't find full screen option!", "D3D9RenderSystem::initialise" );
+				CM_EXCEPT(InternalErrorException, "Can't find full screen option!");
 			fullScreen = opt->second.currentValue == "Yes";
 
 			D3D9VideoMode* videoMode = NULL;
@@ -537,7 +537,7 @@ namespace CamelotEngine
 
 			opt = mOptions.find( "Video Mode" );
 			if( opt == mOptions.end() )
-				OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Can't find Video Mode option!", "D3D9RenderSystem::initialise" );
+				CM_EXCEPT(InternalErrorException, "Can't find Video Mode option!");
 
 			// The string we are manipulating looks like this :width x height @ colourDepth
 			// Pull out the colour depth by getting what comes after the @ and a space
@@ -566,14 +566,14 @@ namespace CamelotEngine
 			}
 
 			if( !videoMode )
-				OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Can't find requested video mode.", "D3D9RenderSystem::initialise" );
+				CM_EXCEPT(InternalErrorException, "Can't find requested video mode.");
 
 			// sRGB window option
 			bool hwGamma = false;
 
 			opt = mOptions.find( "sRGB Gamma Conversion" );
 			if( opt == mOptions.end() )
-				OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Can't find sRGB option!", "D3D9RenderSystem::initialise" );
+				CM_EXCEPT(InternalErrorException, "Can't find sRGB option!");
 			hwGamma = opt->second.currentValue == "Yes";
 
 			NameValuePairList miscParams;
@@ -658,7 +658,7 @@ namespace CamelotEngine
 		{
 			msg = "A render target of the same name '" + name + "' already "
 				"exists.  You cannot create a new window with this name.";
-			OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, msg, "D3D9RenderSystem::_createRenderWindow" );
+			CM_EXCEPT(InternalErrorException, msg);
 		}
 				
 		D3D9RenderWindow* renderWindow = new D3D9RenderWindow(mhInstance);
@@ -1306,9 +1306,8 @@ namespace CamelotEngine
 	{
 		if (caps->getRenderSystemName() != getName())
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Trying to initialize D3D9RenderSystem from RenderSystemCapabilities that do not support Direct3D9",
-				"D3D9RenderSystem::initialiseFromRenderSystemCapabilities");
+			CM_EXCEPT(InvalidParametersException, 
+				"Trying to initialize D3D9RenderSystem from RenderSystemCapabilities that do not support Direct3D9");
 		}
 
 		if (caps->isShaderProfileSupported("hlsl"))
@@ -1513,24 +1512,21 @@ namespace CamelotEngine
 	{
 		HRESULT hr = __SetRenderState( D3DRS_AMBIENT, D3DCOLOR_COLORVALUE( r, g, b, 1.0f ) );
 		if( FAILED( hr ) )
-			OGRE_EXCEPT( Exception::ERR_RENDERINGAPI_ERROR, 
-			"Failed to set render stat D3DRS_AMBIENT", "D3D9RenderSystem::setAmbientLight" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set render stat D3DRS_AMBIENT");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setShadingType( ShadeOptions so )
 	{
 		HRESULT hr = __SetRenderState( D3DRS_SHADEMODE, D3D9Mappings::get(so) );
 		if( FAILED( hr ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-			"Failed to set render stat D3DRS_SHADEMODE", "D3D9RenderSystem::setShadingType" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set render stat D3DRS_SHADEMODE");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setLightingEnabled( bool enabled )
 	{
 		HRESULT hr;
 		if( FAILED( hr = __SetRenderState( D3DRS_LIGHTING, enabled ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-			"Failed to set render state D3DRS_LIGHTING", "D3D9RenderSystem::setLightingEnabled" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set render state D3DRS_LIGHTING");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setViewMatrix( const Matrix4 &m )
@@ -1546,7 +1542,7 @@ namespace CamelotEngine
 
 		HRESULT hr;
 		if( FAILED( hr = getActiveD3D9Device()->SetTransform( D3DTS_VIEW, &mDxViewMat ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Cannot set D3D9 view matrix", "D3D9RenderSystem::_setViewMatrix" );
+			CM_EXCEPT(RenderingAPIException, "Cannot set D3D9 view matrix");
 
 		// also mark clip planes dirty
 		if (!mClipPlanes.empty())
@@ -1569,7 +1565,7 @@ namespace CamelotEngine
 
 		HRESULT hr;
 		if( FAILED( hr = getActiveD3D9Device()->SetTransform( D3DTS_PROJECTION, &mDxProjMat ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Cannot set D3D9 projection matrix", "D3D9RenderSystem::_setProjectionMatrix" );
+			CM_EXCEPT(RenderingAPIException, "Cannot set D3D9 projection matrix");
 
 		// also mark clip planes dirty
 		if (!mClipPlanes.empty())
@@ -1584,7 +1580,7 @@ namespace CamelotEngine
 
 		HRESULT hr;
 		if( FAILED( hr = getActiveD3D9Device()->SetTransform( D3DTS_WORLD, &mDxWorldMat ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Cannot set D3D9 world matrix", "D3D9RenderSystem::_setWorldMatrix" );
+			CM_EXCEPT(RenderingAPIException, "Cannot set D3D9 world matrix");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setSurfaceParams( const Color &ambient, const Color &diffuse,
@@ -1601,7 +1597,7 @@ namespace CamelotEngine
 
 		HRESULT hr = getActiveD3D9Device()->SetMaterial( &material );
 		if( FAILED( hr ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting D3D material", "D3D9RenderSystem::_setSurfaceParams" );
+			CM_EXCEPT(RenderingAPIException, "Error setting D3D material");
 
 
 		if(tracking != TVC_NONE) 
@@ -1670,7 +1666,7 @@ namespace CamelotEngine
 				if( hr != S_OK )
 				{
 					String str = "Unable to set texture in D3D9";
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9RenderSystem::_setTexture" );
+					CM_EXCEPT(RenderingAPIException, str);
 				}
 
 				// set stage desc.
@@ -1696,7 +1692,7 @@ namespace CamelotEngine
 				if( hr != S_OK )
 				{
 					String str = "Unable to disable texture '" + toString(stage) + "' in D3D9";
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9RenderSystem::_setTexture" );
+					CM_EXCEPT(RenderingAPIException, str);
 				}
 			}
 
@@ -1704,7 +1700,7 @@ namespace CamelotEngine
 			if( hr != S_OK )
 			{
 				String str = "Unable to disable texture '" + toString(stage) + "' in D3D9";
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9RenderSystem::_setTexture" );
+				CM_EXCEPT(RenderingAPIException, str);
 			}
 
 			// set stage desc. to defaults
@@ -1727,7 +1723,7 @@ namespace CamelotEngine
 				{
 					String str = "Unable to disable vertex texture '" 
 						+ toString(stage) + "' in D3D9";
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9RenderSystem::_setVertexTexture" );
+					CM_EXCEPT(RenderingAPIException, str);
 				}
 			}
 
@@ -1745,7 +1741,7 @@ namespace CamelotEngine
 				if( hr != S_OK )
 				{
 					String str = "Unable to set vertex texture in D3D9";
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9RenderSystem::_setVertexTexture" );
+					CM_EXCEPT(RenderingAPIException, str);
 				}
 
 				// set stage desc.
@@ -1776,7 +1772,7 @@ namespace CamelotEngine
 
 		hr = __SetTextureStageState( static_cast<DWORD>(stage), D3DTSS_TEXCOORDINDEX, D3D9Mappings::get(mTexStageDesc[stage].autoTexCoordType, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps()) | index );
 		if( FAILED( hr ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set texture coord. set index", "D3D9RenderSystem::_setTextureCoordSet" );
+			CM_EXCEPT(RenderingAPIException, "Unable to set texture coord. set index");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setTextureCoordCalculation( size_t stage, TexCoordCalcMethod m,
@@ -1789,7 +1785,7 @@ namespace CamelotEngine
 
 		hr = __SetTextureStageState( static_cast<DWORD>(stage), D3DTSS_TEXCOORDINDEX, D3D9Mappings::get(m, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps()) | mTexStageDesc[stage].coordIndex );
 		if(FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set texture auto tex.coord. generation mode", "D3D9RenderSystem::_setTextureCoordCalculation" );
+			CM_EXCEPT(RenderingAPIException, "Unable to set texture auto tex.coord. generation mode");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setTextureMipmapBias(size_t unit, float bias)
@@ -1800,8 +1796,7 @@ namespace CamelotEngine
 			HRESULT hr = __SetSamplerState(static_cast<DWORD>(unit), D3DSAMP_MIPMAPLODBIAS, 
 				*(DWORD*)&bias);
 			if(FAILED(hr))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set texture mipmap bias", 
-				"D3D9RenderSystem::_setTextureMipmapBias" );
+				CM_EXCEPT(RenderingAPIException, "Unable to set texture mipmap bias");
 
 		}
 	}
@@ -1819,7 +1814,7 @@ namespace CamelotEngine
 		{
 			hr = __SetTextureStageState( static_cast<DWORD>(stage), D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
 			if( FAILED( hr ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to disable texture coordinate transform", "D3D9RenderSystem::_setTextureMatrix" );
+				CM_EXCEPT(RenderingAPIException, "Unable to disable texture coordinate transform");
 			return;
 		}
 
@@ -1994,18 +1989,18 @@ namespace CamelotEngine
 
 			hr = __SetTextureStageState( static_cast<DWORD>(stage), D3DTSS_TEXTURETRANSFORMFLAGS, texCoordDim );
 			if (FAILED(hr))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set texture coord. dimension", "D3D9RenderSystem::_setTextureMatrix" );
+				CM_EXCEPT(RenderingAPIException, "Unable to set texture coord. dimension");
 
 			hr = getActiveD3D9Device()->SetTransform( (D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0 + stage), &d3dMat );
 			if (FAILED(hr))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set texture matrix", "D3D9RenderSystem::_setTextureMatrix" );
+				CM_EXCEPT(RenderingAPIException, "Unable to set texture matrix");
 		}
 		else
 		{
 			// disable all of this
 			hr = __SetTextureStageState( static_cast<DWORD>(stage), D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
 			if( FAILED( hr ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to disable texture coordinate transform", "D3D9RenderSystem::_setTextureMatrix" );
+				CM_EXCEPT(RenderingAPIException, "Unable to disable texture coordinate transform");
 
 			// Needless to sets texture transform here, it's never used at all
 		}
@@ -2016,11 +2011,11 @@ namespace CamelotEngine
 	{
 		HRESULT hr;
 		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_ADDRESSU, D3D9Mappings::get(uvw.u, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps()) ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set texture addressing mode for U", "D3D9RenderSystem::_setTextureAddressingMode" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set texture addressing mode for U" );
 		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_ADDRESSV, D3D9Mappings::get(uvw.v, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps()) ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set texture addressing mode for V", "D3D9RenderSystem::_setTextureAddressingMode" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set texture addressing mode for V");
 		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_ADDRESSW, D3D9Mappings::get(uvw.w, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps()) ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set texture addressing mode for W", "D3D9RenderSystem::_setTextureAddressingMode" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set texture addressing mode for W");
 	}
 	//-----------------------------------------------------------------------------
 	void D3D9RenderSystem::_setTextureBorderColour(size_t stage,
@@ -2028,7 +2023,7 @@ namespace CamelotEngine
 	{
 		HRESULT hr;
 		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_BORDERCOLOR, colour.getAsARGB()) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set texture border colour", "D3D9RenderSystem::_setTextureBorderColour" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set texture border colour");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
@@ -2037,24 +2032,24 @@ namespace CamelotEngine
 		if( sourceFactor == SBF_ONE && destFactor == SBF_ZERO)
 		{
 			if (FAILED(hr = __SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE)))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha blending option", "D3D9RenderSystem::_setSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set alpha blending option");
 		}
 		else
 		{
 			if (FAILED(hr = __SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE)))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha blending option", "D3D9RenderSystem::_setSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set alpha blending option");
 			if (FAILED(hr = __SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, FALSE)))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set separate alpha blending option", "D3D9RenderSystem::_setSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set separate alpha blending option");
 			if( FAILED( hr = __SetRenderState( D3DRS_SRCBLEND, D3D9Mappings::get(sourceFactor) ) ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set source blend", "D3D9RenderSystem::_setSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set source blend");
 			if( FAILED( hr = __SetRenderState( D3DRS_DESTBLEND, D3D9Mappings::get(destFactor) ) ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set destination blend", "D3D9RenderSystem::_setSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set destination blend");
 		}
 
 		if (FAILED(hr = __SetRenderState(D3DRS_BLENDOP, D3D9Mappings::get(op))))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set scene blending operation option", "D3D9RenderSystem::_setSceneBlendingOperation" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set scene blending operation option");
 		if (FAILED(hr = __SetRenderState(D3DRS_BLENDOPALPHA, D3D9Mappings::get(op))))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set scene blending operation option", "D3D9RenderSystem::_setSceneBlendingOperation" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set scene blending operation option");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
@@ -2065,28 +2060,28 @@ namespace CamelotEngine
 			sourceFactorAlpha == SBF_ONE && destFactorAlpha == SBF_ZERO)
 		{
 			if (FAILED(hr = __SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE)))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha blending option", "D3D9RenderSystem::_setSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set alpha blending option");
 		}
 		else
 		{
 			if (FAILED(hr = __SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE)))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha blending option", "D3D9RenderSystem::_setSeperateSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set alpha blending option");
 			if (FAILED(hr = __SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE)))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set separate alpha blending option", "D3D9RenderSystem::_setSeperateSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set separate alpha blending option");
 			if( FAILED( hr = __SetRenderState( D3DRS_SRCBLEND, D3D9Mappings::get(sourceFactor) ) ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set source blend", "D3D9RenderSystem::_setSeperateSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set source blend");
 			if( FAILED( hr = __SetRenderState( D3DRS_DESTBLEND, D3D9Mappings::get(destFactor) ) ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set destination blend", "D3D9RenderSystem::_setSeperateSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set destination blend");
 			if( FAILED( hr = __SetRenderState( D3DRS_SRCBLENDALPHA, D3D9Mappings::get(sourceFactorAlpha) ) ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha source blend", "D3D9RenderSystem::_setSeperateSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set alpha source blend");
 			if( FAILED( hr = __SetRenderState( D3DRS_DESTBLENDALPHA, D3D9Mappings::get(destFactorAlpha) ) ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha destination blend", "D3D9RenderSystem::_setSeperateSceneBlending" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set alpha destination blend");
 		}
 
 		if (FAILED(hr = __SetRenderState(D3DRS_BLENDOP, D3D9Mappings::get(op))))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set scene blending operation option", "D3D9RenderSystem::_setSceneBlendingOperation" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set scene blending operation option");
 		if (FAILED(hr = __SetRenderState(D3DRS_BLENDOPALPHA, D3D9Mappings::get(alphaOp))))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha scene blending operation option", "D3D9RenderSystem::_setSceneBlendingOperation" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set alpha scene blending operation option");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage )
@@ -2098,22 +2093,20 @@ namespace CamelotEngine
 		if (func != CMPF_ALWAYS_PASS)
 		{
 			if( FAILED( hr = __SetRenderState( D3DRS_ALPHATESTENABLE,  TRUE ) ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to enable alpha testing", 
-				"D3D9RenderSystem::_setAlphaRejectSettings" );
+				CM_EXCEPT(RenderingAPIException, "Failed to enable alpha testing");
 
 			a2c = alphaToCoverage;
 		}
 		else
 		{
 			if( FAILED( hr = __SetRenderState( D3DRS_ALPHATESTENABLE,  FALSE ) ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to disable alpha testing", 
-				"D3D9RenderSystem::_setAlphaRejectSettings" );
+				CM_EXCEPT(RenderingAPIException, "Failed to disable alpha testing");
 		}
 		// Set always just be sure
 		if( FAILED( hr = __SetRenderState( D3DRS_ALPHAFUNC, D3D9Mappings::get(func) ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha reject function", "D3D9RenderSystem::_setAlphaRejectSettings" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set alpha reject function");
 		if( FAILED( hr = __SetRenderState( D3DRS_ALPHAREF, value ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set render state D3DRS_ALPHAREF", "D3D9RenderSystem::_setAlphaRejectSettings" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set render state D3DRS_ALPHAREF");
 
 		// Alpha to coverage
 		if (getCapabilities()->hasCapability(RSC_ALPHA_TO_COVERAGE))
@@ -2124,12 +2117,12 @@ namespace CamelotEngine
 				if (a2c)
 				{
 					if( FAILED( hr = __SetRenderState( D3DRS_ADAPTIVETESS_Y,  (D3DFORMAT)MAKEFOURCC('A', 'T', 'O', 'C') ) ) )
-						OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha to coverage option", "D3D9RenderSystem::_setAlphaRejectSettings" );
+						CM_EXCEPT(RenderingAPIException, "Failed to set alpha to coverage option");
 				}
 				else
 				{
 					if( FAILED( hr = __SetRenderState( D3DRS_ADAPTIVETESS_Y,  D3DFMT_UNKNOWN ) ) )
-						OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha to coverage option", "D3D9RenderSystem::_setAlphaRejectSettings" );
+						CM_EXCEPT(RenderingAPIException, "Failed to set alpha to coverage option");
 				}
 
 			}
@@ -2138,13 +2131,13 @@ namespace CamelotEngine
 				if (a2c)
 				{
 					if( FAILED( hr = __SetRenderState( D3DRS_POINTSIZE,  MAKEFOURCC('A','2','M','1') ) ) )
-						OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha to coverage option", "D3D9RenderSystem::_setAlphaRejectSettings" );
+						CM_EXCEPT(RenderingAPIException, "Failed to set alpha to coverage option");
 				}
 				else
 				{
 					// discovered this through trial and error, seems to work
 					if( FAILED( hr = __SetRenderState( D3DRS_POINTSIZE,  MAKEFOURCC('A','2','M','0') ) ) )
-						OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set alpha to coverage option", "D3D9RenderSystem::_setAlphaRejectSettings" );
+						CM_EXCEPT(RenderingAPIException, "Failed to set alpha to coverage option");
 				}
 			}
 			// no hacks available for any other vendors?
@@ -2162,7 +2155,7 @@ namespace CamelotEngine
 
 		if( FAILED (hr = __SetRenderState(D3DRS_CULLMODE, 
 			D3D9Mappings::get(mode, flip))) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set culling mode", "D3D9RenderSystem::_setCullingMode" );
+			CM_EXCEPT(RenderingAPIException, "Failed to set culling mode");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setDepthBufferParams( bool depthTest, bool depthWrite, CompareFunction depthFunction )
@@ -2188,7 +2181,7 @@ namespace CamelotEngine
 			hr = __SetRenderState( D3DRS_ZENABLE, D3DZB_FALSE );
 
 		if( FAILED( hr ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting depth buffer test state", "D3D9RenderSystem::_setDepthBufferCheckEnabled" );
+			CM_EXCEPT(RenderingAPIException, "Error setting depth buffer test state");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setDepthBufferWriteEnabled( bool enabled )
@@ -2196,14 +2189,14 @@ namespace CamelotEngine
 		HRESULT hr;
 
 		if( FAILED( hr = __SetRenderState( D3DRS_ZWRITEENABLE, enabled ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting depth buffer write state", "D3D9RenderSystem::_setDepthBufferWriteEnabled" );
+			CM_EXCEPT(RenderingAPIException, "Error setting depth buffer write state");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setDepthBufferFunction( CompareFunction func )
 	{
 		HRESULT hr;
 		if( FAILED( hr = __SetRenderState( D3DRS_ZFUNC, D3D9Mappings::get(func) ) ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting depth buffer test function", "D3D9RenderSystem::_setDepthBufferFunction" );
+			CM_EXCEPT(RenderingAPIException, "Error setting depth buffer test function");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setDepthBias(float constantBias, float slopeScaleBias)
@@ -2217,8 +2210,7 @@ namespace CamelotEngine
 			constantBias = -constantBias / 250000.0f;
 			HRESULT hr = __SetRenderState(D3DRS_DEPTHBIAS, FLOAT2DWORD(constantBias));
 			if (FAILED(hr))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting constant depth bias", 
-				"D3D9RenderSystem::_setDepthBias");
+				CM_EXCEPT(RenderingAPIException, "Error setting constant depth bias");
 		}
 
 		if ((mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().RasterCaps & D3DPRASTERCAPS_SLOPESCALEDEPTHBIAS) != 0)
@@ -2227,8 +2219,7 @@ namespace CamelotEngine
 			slopeScaleBias = -slopeScaleBias;
 			HRESULT hr = __SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, FLOAT2DWORD(slopeScaleBias));
 			if (FAILED(hr))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting slope scale depth bias", 
-				"D3D9RenderSystem::_setDepthBias");
+				CM_EXCEPT(RenderingAPIException, "Error setting slope scale depth bias");
 		}
 
 
@@ -2248,8 +2239,7 @@ namespace CamelotEngine
 			val |= D3DCOLORWRITEENABLE_ALPHA;
 		HRESULT hr = __SetRenderState(D3DRS_COLORWRITEENABLE, val); 
 		if (FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting colour write enable flags", 
-			"D3D9RenderSystem::_setColourBufferWriteEnabled");
+			CM_EXCEPT(RenderingAPIException, "Error setting colour write enable flags");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setFog( FogMode mode, const Color& colour, float densitiy, float start, float end )
@@ -2289,14 +2279,14 @@ namespace CamelotEngine
 		}
 
 		if( FAILED( hr ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting render state", "D3D9RenderSystem::_setFog" );
+			CM_EXCEPT(RenderingAPIException, "Error setting render state");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setPolygonMode(PolygonMode level)
 	{
 		HRESULT hr = __SetRenderState(D3DRS_FILLMODE, D3D9Mappings::get(level));
 		if (FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting polygon mode.", "D3D9RenderSystem::setPolygonMode");
+			CM_EXCEPT(RenderingAPIException, "Error setting polygon mode.");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setStencilCheckEnabled(bool enabled)
@@ -2304,8 +2294,7 @@ namespace CamelotEngine
 		// Allow stencilling
 		HRESULT hr = __SetRenderState(D3DRS_STENCILENABLE, enabled);
 		if (FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error enabling / disabling stencilling.",
-			"D3D9RenderSystem::setStencilCheckEnabled");
+			CM_EXCEPT(RenderingAPIException, "Error enabling / disabling stencilling.");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setStencilBufferParams(CompareFunction func, 
@@ -2320,12 +2309,10 @@ namespace CamelotEngine
 		if (twoSidedOperation)
 		{
 			if (!mCurrentCapabilities->hasCapability(RSC_TWO_SIDED_STENCIL))
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "2-sided stencils are not supported",
-				"D3D9RenderSystem::setStencilBufferParams");
+				CM_EXCEPT(InvalidParametersException, "2-sided stencils are not supported");
 			hr = __SetRenderState(D3DRS_TWOSIDEDSTENCILMODE, TRUE);
 			if (FAILED(hr))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting 2-sided stencil mode.",
-				"D3D9RenderSystem::setStencilBufferParams");
+				CM_EXCEPT(RenderingAPIException, "Error setting 2-sided stencil mode.");
 			// NB: We should always treat CCW as front face for consistent with default
 			// culling mode. Therefore, we must take care with two-sided stencil settings.
 			flip = (mInvertVertexWinding && mActiveRenderTarget->requiresTextureFlipping()) ||
@@ -2335,65 +2322,55 @@ namespace CamelotEngine
 			// fail op
 			hr = __SetRenderState(D3DRS_CCW_STENCILFAIL, D3D9Mappings::get(stencilFailOp, !flip));
 			if (FAILED(hr))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting stencil fail operation (2-sided).",
-				"D3D9RenderSystem::setStencilBufferParams");
+				CM_EXCEPT(RenderingAPIException, "Error setting stencil fail operation (2-sided).");
 
 			// depth fail op
 			hr = __SetRenderState(D3DRS_CCW_STENCILZFAIL, D3D9Mappings::get(depthFailOp, !flip));
 			if (FAILED(hr))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting stencil depth fail operation (2-sided).",
-				"D3D9RenderSystem::setStencilBufferParams");
+				CM_EXCEPT(RenderingAPIException, "Error setting stencil depth fail operation (2-sided).");
 
 			// pass op
 			hr = __SetRenderState(D3DRS_CCW_STENCILPASS, D3D9Mappings::get(passOp, !flip));
 			if (FAILED(hr))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting stencil pass operation (2-sided).",
-				"D3D9RenderSystem::setStencilBufferParams");
+				CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation (2-sided).");
 		}
 		else
 		{
 			hr = __SetRenderState(D3DRS_TWOSIDEDSTENCILMODE, FALSE);
 			if (FAILED(hr))
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting 1-sided stencil mode.",
-				"D3D9RenderSystem::setStencilBufferParams");
+				CM_EXCEPT(RenderingAPIException, "Error setting 1-sided stencil mode.");
 			flip = false;
 		}
 
 		// func
 		hr = __SetRenderState(D3DRS_STENCILFUNC, D3D9Mappings::get(func));
 		if (FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting stencil buffer test function.",
-			"D3D9RenderSystem::setStencilBufferParams");
+			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer test function.");
 
 		// reference value
 		hr = __SetRenderState(D3DRS_STENCILREF, refValue);
 		if (FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting stencil buffer reference value.",
-			"D3D9RenderSystem::setStencilBufferParams");
+			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer reference value.");
 
 		// mask
 		hr = __SetRenderState(D3DRS_STENCILMASK, mask);
 		if (FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting stencil buffer mask.",
-			"D3D9RenderSystem::setStencilBufferParams");
+			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer mask.");
 
 		// fail op
 		hr = __SetRenderState(D3DRS_STENCILFAIL, D3D9Mappings::get(stencilFailOp, flip));
 		if (FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting stencil fail operation.",
-			"D3D9RenderSystem::setStencilBufferParams");
+			CM_EXCEPT(RenderingAPIException, "Error setting stencil fail operation.");
 
 		// depth fail op
 		hr = __SetRenderState(D3DRS_STENCILZFAIL, D3D9Mappings::get(depthFailOp, flip));
 		if (FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting stencil depth fail operation.",
-			"D3D9RenderSystem::setStencilBufferParams");
+			CM_EXCEPT(RenderingAPIException, "Error setting stencil depth fail operation.");
 
 		// pass op
 		hr = __SetRenderState(D3DRS_STENCILPASS, D3D9Mappings::get(passOp, flip));
 		if (FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error setting stencil pass operation.",
-			"D3D9RenderSystem::setStencilBufferParams");
+			CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation.");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setTextureUnitFiltering(size_t unit, FilterType ftype, 
@@ -2404,7 +2381,7 @@ namespace CamelotEngine
 		hr = __SetSamplerState( static_cast<DWORD>(unit), D3D9Mappings::get(ftype), 
 			D3D9Mappings::get(ftype, filter, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps(), texType));
 		if (FAILED(hr))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set texture filter ", "D3D9RenderSystem::_setTextureUnitFiltering");
+			CM_EXCEPT(RenderingAPIException, "Failed to set texture filter ");
 	}
 	//---------------------------------------------------------------------
 	DWORD D3D9RenderSystem::_getCurrentAnisotropy(size_t unit)
@@ -2525,14 +2502,14 @@ namespace CamelotEngine
 			if (FAILED(hr))
 			{
 				String msg = DXGetErrorDescription(hr);
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to setRenderTarget : " + msg, "D3D9RenderSystem::_setViewport" );
+				CM_EXCEPT(RenderingAPIException, "Failed to setRenderTarget : " + msg);
 			}
 		}
 		hr = getActiveD3D9Device()->SetDepthStencilSurface(pDepth);
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to setDepthStencil : " + msg, "D3D9RenderSystem::_setViewport" );
+			CM_EXCEPT(RenderingAPIException, "Failed to setDepthStencil : " + msg);
 		}
 	}
 	//---------------------------------------------------------------------
@@ -2569,7 +2546,7 @@ namespace CamelotEngine
 			d3dvp.MaxZ = 1.0f;
 
 			if( FAILED( hr = getActiveD3D9Device()->SetViewport( &d3dvp ) ) )
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set viewport.", "D3D9RenderSystem::_setViewport" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set viewport.");
 
 			// Set sRGB write mode
 			__SetRenderState(D3DRS_SRGBWRITEENABLE, target->isHardwareGammaEnabled());
@@ -2581,12 +2558,12 @@ namespace CamelotEngine
 		HRESULT hr;
 
 		if( !mActiveViewport )
-			OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Cannot begin frame - no viewport selected.", "D3D9RenderSystem::_beginFrame" );
+			CM_EXCEPT(InternalErrorException, "Cannot begin frame - no viewport selected.");
 
 		if( FAILED( hr = getActiveD3D9Device()->BeginScene() ) )
 		{
 			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error beginning frame :" + msg, "D3D9RenderSystem::_beginFrame" );
+			CM_EXCEPT(RenderingAPIException, "Error beginning frame :" + msg);
 		}
 
 		mLastVertexSourceCount = 0;
@@ -2602,7 +2579,7 @@ namespace CamelotEngine
 	{
 		HRESULT hr;
 		if( FAILED( hr = getActiveD3D9Device()->EndScene() ) )
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error ending frame", "D3D9RenderSystem::_endFrame" );
+			CM_EXCEPT(RenderingAPIException, "Error ending frame");
 
 		mDeviceManager->destroyInactiveRenderDevices();
 	}
@@ -2704,8 +2681,7 @@ namespace CamelotEngine
 
 		if (FAILED(hr = getActiveD3D9Device()->SetVertexDeclaration(d3ddecl->getD3DVertexDeclaration())))
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set D3D9 vertex declaration", 
-				"D3D9RenderSystem::setVertexDeclaration");
+			CM_EXCEPT(RenderingAPIException, "Unable to set D3D9 vertex declaration");
 		}
 
 	}
@@ -2727,8 +2703,7 @@ namespace CamelotEngine
 				hr = getActiveD3D9Device()->SetStreamSource(static_cast<UINT>(source), NULL, 0, 0);
 				if (FAILED(hr))
 				{
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to reset unused D3D9 stream source", 
-						"D3D9RenderSystem::setVertexBufferBinding");
+					CM_EXCEPT(RenderingAPIException, "Unable to reset unused D3D9 stream source");
 				}
 			}
 
@@ -2742,8 +2717,7 @@ namespace CamelotEngine
 				);
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set D3D9 stream source for buffer binding", 
-					"D3D9RenderSystem::setVertexBufferBinding");
+				CM_EXCEPT(RenderingAPIException, "Unable to set D3D9 stream source for buffer binding");
 			}
 
 
@@ -2756,8 +2730,7 @@ namespace CamelotEngine
 			hr = getActiveD3D9Device()->SetStreamSource(static_cast<UINT>(unused), NULL, 0, 0);
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to reset unused D3D9 stream source", 
-					"D3D9RenderSystem::setVertexBufferBinding");
+				CM_EXCEPT(RenderingAPIException, "Unable to reset unused D3D9 stream source");
 			}
 
 		}
@@ -2829,7 +2802,7 @@ namespace CamelotEngine
 			hr = getActiveD3D9Device()->SetIndices( d3dIdxBuf->getD3DIndexBuffer() );
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to set index buffer", "D3D9RenderSystem::_render" );
+				CM_EXCEPT(RenderingAPIException, "Failed to set index buffer");
 			}
 
 			do
@@ -2878,7 +2851,7 @@ namespace CamelotEngine
 		if( FAILED( hr ) )
 		{
 			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Failed to DrawPrimitive : " + msg, "D3D9RenderSystem::_render" );
+			CM_EXCEPT(RenderingAPIException, "Failed to DrawPrimitive : " + msg);
 		}
 
 	}
@@ -2899,7 +2872,7 @@ namespace CamelotEngine
 				static_cast<D3D9GpuVertexProgram*>(prg)->getVertexShader());
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error calling SetVertexShader", "D3D9RenderSystem::bindGpuProgram");
+				CM_EXCEPT(RenderingAPIException, "Error calling SetVertexShader");
 			}
 			break;
 		case GPT_FRAGMENT_PROGRAM:
@@ -2907,7 +2880,7 @@ namespace CamelotEngine
 				static_cast<D3D9GpuFragmentProgram*>(prg)->getPixelShader());
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error calling SetPixelShader", "D3D9RenderSystem::bindGpuProgram");
+				CM_EXCEPT(RenderingAPIException, "Error calling SetPixelShader");
 			}
 			break;
 		};
@@ -2933,8 +2906,7 @@ namespace CamelotEngine
 			hr = getActiveD3D9Device()->SetVertexShader(NULL);
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error resetting SetVertexShader to NULL", 
-					"D3D9RenderSystem::unbindGpuProgram");
+				CM_EXCEPT(RenderingAPIException, "Error resetting SetVertexShader to NULL");
 			}
 			break;
 		case GPT_FRAGMENT_PROGRAM:
@@ -2942,8 +2914,7 @@ namespace CamelotEngine
 			hr = getActiveD3D9Device()->SetPixelShader(NULL);
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error resetting SetPixelShader to NULL", 
-					"D3D9RenderSystem::unbindGpuProgram");
+				CM_EXCEPT(RenderingAPIException, "Error resetting SetPixelShader to NULL");
 			}
 			break;
 		};
@@ -2991,9 +2962,7 @@ namespace CamelotEngine
 						if (FAILED(hr = getActiveD3D9Device()->SetVertexShaderConstantF(
 							(UINT)logicalIndex, pFloat, (UINT)slotCount)))
 							{
-								OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-									"Unable to upload vertex shader float parameters", 
-									"D3D9RenderSystem::bindGpuProgramParameters");
+								CM_EXCEPT(RenderingAPIException, "Unable to upload vertex shader float parameters");
 							}
 						}
 
@@ -3018,9 +2987,7 @@ namespace CamelotEngine
 						if (FAILED(hr = getActiveD3D9Device()->SetVertexShaderConstantI(
 							static_cast<UINT>(logicalIndex), pInt, static_cast<UINT>(slotCount))))
 							{
-								OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-									"Unable to upload vertex shader int parameters", 
-									"D3D9RenderSystem::bindGpuProgramParameters");
+								CM_EXCEPT(RenderingAPIException, "Unable to upload vertex shader int parameters");
 							}
 						}
 					}
@@ -3047,9 +3014,7 @@ namespace CamelotEngine
 						if (FAILED(hr = getActiveD3D9Device()->SetPixelShaderConstantF(
 							static_cast<UINT>(logicalIndex), pFloat, static_cast<UINT>(slotCount))))
 							{
-								OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-									"Unable to upload pixel shader float parameters", 
-									"D3D9RenderSystem::bindGpuProgramParameters");
+								CM_EXCEPT(RenderingAPIException, "Unable to upload pixel shader float parameters");
 							}
 						}
 					}
@@ -3073,9 +3038,7 @@ namespace CamelotEngine
 						if (FAILED(hr = getActiveD3D9Device()->SetPixelShaderConstantI(
 							static_cast<UINT>(logicalIndex), pInt, static_cast<UINT>(slotCount))))
 							{
-								OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-									"Unable to upload pixel shader int parameters", 
-									"D3D9RenderSystem::bindGpuProgramParameters");
+								CM_EXCEPT(RenderingAPIException, "Unable to upload pixel shader int parameters");
 							}
 						}
 
@@ -3106,9 +3069,7 @@ namespace CamelotEngine
 				if (FAILED(hr = getActiveD3D9Device()->SetVertexShaderConstantF(
 					static_cast<UINT>(logicalIndex), pFloat, 1)))
 				{
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-						"Unable to upload vertex shader multi pass parameters", 
-						"D3D9RenderSystem::bindGpuProgramMultiPassParameters");
+					CM_EXCEPT(RenderingAPIException, "Unable to upload vertex shader multi pass parameters");
 				}
 			}
 			break;
@@ -3122,9 +3083,7 @@ namespace CamelotEngine
 				if (FAILED(hr = getActiveD3D9Device()->SetPixelShaderConstantF(
 					static_cast<UINT>(logicalIndex), pFloat, 1)))
 				{
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-						"Unable to upload pixel shader multi pass parameters", 
-						"D3D9RenderSystem::bindGpuProgramMultiPassParameters");
+					CM_EXCEPT(RenderingAPIException, "Unable to upload pixel shader multi pass parameters");
 				}
 			}
 			break;
@@ -3164,8 +3123,7 @@ namespace CamelotEngine
 			hr = getActiveD3D9Device()->SetClipPlane(static_cast<DWORD>(i), dx9ClipPlane);
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set clip plane", 
-					"D3D9RenderSystem::setClipPlanes");
+				CM_EXCEPT(RenderingAPIException, "Unable to set clip plane");
 			}
 
 			mask |= (1 << i);
@@ -3174,8 +3132,7 @@ namespace CamelotEngine
 		hr = __SetRenderState(D3DRS_CLIPPLANEENABLE, mask);
 		if (FAILED(hr))
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set render state for clip planes", 
-				"D3D9RenderSystem::setClipPlanes");
+			CM_EXCEPT(RenderingAPIException, "Unable to set render state for clip planes");
 		}
 	}
 	//---------------------------------------------------------------------
@@ -3187,8 +3144,7 @@ namespace CamelotEngine
 		{
 			if (FAILED(hr = __SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE)))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to enable scissor rendering state; " + getErrorDescription(hr), 
-					"D3D9RenderSystem::setScissorTest");
+				CM_EXCEPT(RenderingAPIException, "Unable to enable scissor rendering state; " + getErrorDescription(hr));
 			}
 			RECT rect;
 			rect.left = static_cast<LONG>(left);
@@ -3197,16 +3153,14 @@ namespace CamelotEngine
 			rect.right = static_cast<LONG>(right);
 			if (FAILED(hr = getActiveD3D9Device()->SetScissorRect(&rect)))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set scissor rectangle; " + getErrorDescription(hr), 
-					"D3D9RenderSystem::setScissorTest");
+				CM_EXCEPT(RenderingAPIException, "Unable to set scissor rectangle; " + getErrorDescription(hr));
 			}
 		}
 		else
 		{
 			if (FAILED(hr = __SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE)))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to disable scissor rendering state; " + getErrorDescription(hr), 
-					"D3D9RenderSystem::setScissorTest");
+				CM_EXCEPT(RenderingAPIException, "Unable to disable scissor rendering state; " + getErrorDescription(hr));
 			}
 		}
 	}
@@ -3238,8 +3192,7 @@ namespace CamelotEngine
 			stencil ) ) )
 		{
 			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error clearing frame buffer : " 
-				+ msg, "D3D9RenderSystem::clearFrameBuffer" );
+			CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
 		}
 	}
 	//---------------------------------------------------------------------
@@ -3391,9 +3344,7 @@ namespace CamelotEngine
 
 		if (pDirect3D9 == NULL)
 		{
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, 
-				"Direct3D9 interface is NULL !!!", 
-				"D3D9RenderSystem::getDirect3D9" );
+			CM_EXCEPT(InvalidParametersException, "Direct3D9 interface is NULL !!!");
 		}
 
 		return pDirect3D9;
@@ -3413,9 +3364,7 @@ namespace CamelotEngine
 			return msD3D9RenderSystem->mDeviceManager->getDeviceCount();
 		}
 
-		OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, 
-			"Invalid resource creation policy !!!", 
-			"D3D9RenderSystem::getResourceCreationDeviceCount" );
+		CM_EXCEPT(InvalidParametersException, "Invalid resource creation policy !!!" );
 
 		return 0;
 	}
@@ -3436,9 +3385,7 @@ namespace CamelotEngine
 		}
 		else
 		{
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, 
-				"Invalid resource creation policy !!!", 
-				"D3D9RenderSystem::getResourceCreationDevice" );
+			CM_EXCEPT(InvalidParametersException, "Invalid resource creation policy !!!" );
 		}
 
 		return d3d9Device;
@@ -3454,9 +3401,7 @@ namespace CamelotEngine
 
 		if (d3d9Device == NULL)
 		{
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, 
-				"Current d3d9 device is NULL !!!", 
-				"D3D9RenderSystem::getActiveD3D9Device" );
+			CM_EXCEPT(InvalidParametersException, "Current d3d9 device is NULL !!!" );
 		}
 
 		return d3d9Device;
@@ -3570,7 +3515,7 @@ namespace CamelotEngine
 			if(FAILED(hr))
 			{
 				String msg = DXGetErrorDescription(hr);
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error CreateDepthStencilSurface : " + msg, "D3D9RenderSystem::_getDepthStencilFor" );
+				CM_EXCEPT(InvalidParametersException, "Error CreateDepthStencilSurface : " + msg);
 			}
 			/// And cache it
 			ZBufferRef zb;

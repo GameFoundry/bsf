@@ -138,8 +138,7 @@ namespace CamelotEngine {
         case VET_UBYTE4:
             return 4;
 		}
-		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Invalid type", 
-			"VertexElement::getTypeCount");
+		CM_EXCEPT(InvalidParametersException, "Invalid type");
 	}
 	//-----------------------------------------------------------------------------
 	VertexElementType VertexElement::multiplyTypeCount(VertexElementType baseType, 
@@ -180,8 +179,7 @@ namespace CamelotEngine {
         default:
             break;
 		}
-		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Invalid base type", 
-			"VertexElement::multiplyTypeCount");
+		CM_EXCEPT(InvalidParametersException, "Invalid base type");
 	}
 	//--------------------------------------------------------------------------
 	VertexElementType VertexElement::getBestColourVertexElementType(void)
@@ -525,9 +523,8 @@ namespace CamelotEngine {
 		VertexBufferBindingMap::iterator i = mBindingMap.find(index);
 		if (i == mBindingMap.end())
 		{
-			OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
-				"Cannot find buffer binding for index " + toString(index),
-				"VertexBufferBinding::unsetBinding");
+			CM_EXCEPT(ItemIdentityException,
+				"Cannot find buffer binding for index " + toString(index));
 		}
 		mBindingMap.erase(i);
 	}
@@ -549,8 +546,7 @@ namespace CamelotEngine {
 		VertexBufferBindingMap::const_iterator i = mBindingMap.find(index);
 		if (i == mBindingMap.end())
 		{
-			OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "No buffer is bound to that index.",
-				"VertexBufferBinding::getBuffer");
+			CM_EXCEPT(ItemIdentityException, "No buffer is bound to that index.");
 		}
 		return i->second;
 	}

@@ -155,9 +155,7 @@ namespace CamelotEngine {
 
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-					"Cannot create D3D9 vertex declaration: ", 
-					"Direct3D9VertexDeclaration::getD3DVertexDeclaration");
+				CM_EXCEPT(InternalErrorException, "Cannot create D3D9 vertex declaration: ");
 			}
 
 			delete [] d3delems;

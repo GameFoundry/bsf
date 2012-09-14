@@ -78,11 +78,9 @@ namespace CamelotEngine {
         m_hInst = (DYNLIB_HANDLE)DYNLIB_LOAD( name.c_str() );
 
         if( !m_hInst )
-            OGRE_EXCEPT(
-                Exception::ERR_INTERNAL_ERROR, 
+            CM_EXCEPT(InternalErrorException, 
                 "Could not load dynamic library " + mName + 
-                ".  System Error: " + dynlibError(),
-                "DynLib::load" );
+                ".  System Error: " + dynlibError());
     }
 
     //-----------------------------------------------------------------------
@@ -90,11 +88,9 @@ namespace CamelotEngine {
     {
         if( DYNLIB_UNLOAD( m_hInst ) )
 		{
-            OGRE_EXCEPT(
-                Exception::ERR_INTERNAL_ERROR, 
+			CM_EXCEPT(InternalErrorException, 
                 "Could not unload dynamic library " + mName +
-                ".  System Error: " + dynlibError(),
-                "DynLib::unload");
+                ".  System Error: " + dynlibError());
 		}
 
     }

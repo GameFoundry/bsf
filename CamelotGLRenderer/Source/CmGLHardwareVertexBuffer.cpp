@@ -40,9 +40,8 @@ namespace CamelotEngine {
 
         if (!mBufferId)
         {
-            OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-                "Cannot create GL vertex buffer", 
-                "GLHardwareVertexBuffer::GLHardwareVertexBuffer");
+            CM_EXCEPT(InternalErrorException, 
+                "Cannot create GL vertex buffer");
         }
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
@@ -66,9 +65,8 @@ namespace CamelotEngine {
 
         if(mIsLocked)
         {
-            OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR,
-                "Invalid attempt to lock an index buffer that has already been locked",
-                "GLHardwareVertexBuffer::lock");
+			CM_EXCEPT(InternalErrorException,
+                "Invalid attempt to lock an index buffer that has already been locked");
         }
 
 
@@ -121,8 +119,7 @@ namespace CamelotEngine {
 
 			if(pBuffer == 0)
 			{
-				OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-					"Vertex Buffer: Out of memory", "GLHardwareVertexBuffer::lock");
+				CM_EXCEPT(InternalErrorException, "Vertex Buffer: Out of memory");
 			}
 
 			// return offsetted
@@ -159,9 +156,7 @@ namespace CamelotEngine {
 
 			if(!glUnmapBufferARB( GL_ARRAY_BUFFER_ARB ))
 			{
-				OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-					"Buffer data corrupted, please reload", 
-					"GLHardwareVertexBuffer::unlock");
+				CM_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload");
 			}
 		}
 

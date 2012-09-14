@@ -38,9 +38,8 @@ namespace CamelotEngine
 
 		if(mActiveRenderSystem == nullptr)
 		{
-			OGRE_EXCEPT(CamelotEngine::Exception::ERR_INTERNAL_ERROR, 
-				"Cannot initialize render system. Renderer with the name '" + name + "' cannot be found.",
-				"RenderSystemManager::initialize")
+			CM_EXCEPT(InternalErrorException, 
+				"Cannot initialize render system. Renderer with the name '" + name + "' cannot be found.")
 		}
 	}
 

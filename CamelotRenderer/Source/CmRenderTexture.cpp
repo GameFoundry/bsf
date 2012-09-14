@@ -53,9 +53,8 @@ namespace CamelotEngine
 		if (buffer == FB_AUTO) buffer = FB_FRONT;
 		if (buffer != FB_FRONT)
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-						"Invalid buffer.",
-						"RenderTexture::copyContentsToMemory" );
+			CM_EXCEPT(InvalidParametersException,
+						"Invalid buffer.");
 		}
 
 		mBuffer->blitToMemory(dst);
@@ -76,8 +75,7 @@ namespace CamelotEngine
 	//-----------------------------------------------------------------------------
 	void MultiRenderTarget::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
-		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-					"Cannot get MultiRenderTargets pixels",
-					"MultiRenderTarget::copyContentsToMemory");
+		CM_EXCEPT(InvalidParametersException, 
+					"Cannot get MultiRenderTargets pixels");
 	}
 }

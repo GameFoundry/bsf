@@ -246,9 +246,8 @@ namespace CamelotEngine
 	{
 		if (mNamedConstants.map.find(name) != mNamedConstants.map.end())
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Constant entry with name '" + name + "' already exists. ", 
-				"GpuSharedParameters::addConstantDefinition");
+			CM_EXCEPT(InvalidParametersException, 
+				"Constant entry with name '" + name + "' already exists. ");
 		}
 		GpuConstantDefinition def;
 		def.arraySize = arraySize;
@@ -349,9 +348,8 @@ namespace CamelotEngine
 		GpuConstantDefinitionMap::const_iterator i = mNamedConstants.map.find(name);
 		if (i == mNamedConstants.map.end())
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Constant entry with name '" + name + "' does not exist. ", 
-				"GpuSharedParameters::getConstantDefinition");
+			CM_EXCEPT(InvalidParametersException, 
+				"Constant entry with name '" + name + "' does not exist. ");
 		}
 		return i->second;
 	}
@@ -1124,9 +1122,8 @@ namespace CamelotEngine
 	GpuLogicalIndexUse* GpuProgramParameters::_getIntConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, UINT16 variability)
 	{
 		if (mIntLogicalToPhysical == nullptr)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"This is not a low-level parameter parameter object",
-			"GpuProgramParameters::_getIntConstantPhysicalIndex");
+			CM_EXCEPT(InvalidParametersException, 
+			"This is not a low-level parameter parameter object");
 
 		GpuLogicalIndexUse* indexUse = 0;
 		CM_LOCK_MUTEX(mIntLogicalToPhysical->mutex)
@@ -1270,9 +1267,8 @@ namespace CamelotEngine
 	GpuConstantDefinitionIterator GpuProgramParameters::getConstantDefinitionIterator(void) const
 	{
 		if (mNamedConstants == nullptr)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"This params object is not based on a program with named parameters.",
-			"GpuProgramParameters::getConstantDefinitionIterator");
+			CM_EXCEPT(InvalidParametersException, 
+			"This params object is not based on a program with named parameters.");
 
 		return mNamedConstants->map.begin();
 
@@ -1281,9 +1277,8 @@ namespace CamelotEngine
 	const GpuNamedConstants& GpuProgramParameters::getConstantDefinitions() const
 	{
 		if (mNamedConstants == nullptr)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"This params object is not based on a program with named parameters.",
-			"GpuProgramParameters::getConstantDefinitionIterator");
+			CM_EXCEPT(InvalidParametersException, 
+			"This params object is not based on a program with named parameters.");
 
 		return *mNamedConstants;
 	}
@@ -1291,9 +1286,8 @@ namespace CamelotEngine
 	const GpuConstantDefinition& GpuProgramParameters::getConstantDefinition(const String& name) const
 	{
 		if (mNamedConstants == nullptr)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"This params object is not based on a program with named parameters.",
-			"GpuProgramParameters::getConstantDefinitionIterator");
+			CM_EXCEPT(InvalidParametersException, 
+			"This params object is not based on a program with named parameters.");
 
 
 		// locate, and throw exception if not found
@@ -1310,9 +1304,8 @@ namespace CamelotEngine
 		if (mNamedConstants == nullptr)
 		{
 			if (throwExceptionIfNotFound)
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Named constants have not been initialised, perhaps a compile error.",
-				"GpuProgramParameters::_findNamedConstantDefinition");
+				CM_EXCEPT(InvalidParametersException, 
+				"Named constants have not been initialised, perhaps a compile error.");
 			return 0;
 		}
 
@@ -1320,9 +1313,8 @@ namespace CamelotEngine
 		if (i == mNamedConstants->map.end())
 		{
 			if (throwExceptionIfNotFound)
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Parameter called " + name + " does not exist. ",
-				"GpuProgramParameters::_findNamedConstantDefinition");
+				CM_EXCEPT(InvalidParametersException, 
+				"Parameter called " + name + " does not exist. ");
 			return 0;
 		}
 		else
@@ -1667,9 +1659,8 @@ namespace CamelotEngine
 		GpuProgramParameters::findFloatAutoConstantEntry(size_t logicalIndex)
 	{
 		if (mFloatLogicalToPhysical == nullptr)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"This is not a low-level parameter parameter object",
-			"GpuProgramParameters::findFloatAutoConstantEntry");
+			CM_EXCEPT(InvalidParametersException, 
+			"This is not a low-level parameter parameter object");
 
 		return _findRawAutoConstantEntryFloat(
 			_getFloatConstantPhysicalIndex(logicalIndex, 0, GPV_GLOBAL));
@@ -1680,9 +1671,8 @@ namespace CamelotEngine
 		GpuProgramParameters::findIntAutoConstantEntry(size_t logicalIndex)
 	{
 		if (mIntLogicalToPhysical == nullptr)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"This is not a low-level parameter parameter object",
-			"GpuProgramParameters::findIntAutoConstantEntry");
+			CM_EXCEPT(InvalidParametersException, 
+			"This is not a low-level parameter parameter object");
 
 		return _findRawAutoConstantEntryInt(
 			_getIntConstantPhysicalIndex(logicalIndex, 0, GPV_GLOBAL));
@@ -1694,9 +1684,8 @@ namespace CamelotEngine
 		GpuProgramParameters::findAutoConstantEntry(const String& paramName)
 	{
 		if (mNamedConstants == nullptr)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"This params object is not based on a program with named parameters.",
-			"GpuProgramParameters::findAutoConstantEntry");
+			CM_EXCEPT(InvalidParametersException, 
+			"This params object is not based on a program with named parameters.");
 
 		const GpuConstantDefinition& def = getConstantDefinition(paramName);
 		if (def.isFloat())

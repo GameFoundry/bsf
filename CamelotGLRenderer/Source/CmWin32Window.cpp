@@ -394,8 +394,7 @@ namespace CamelotEngine {
 				}
 
 				if (!formatOk)
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-						"selectPixelFormat failed", "Win32Window::create");
+					CM_EXCEPT(RenderingAPIException, "selectPixelFormat failed");
 
 			}
 			// record what gamma option we used in the end
@@ -407,11 +406,11 @@ namespace CamelotEngine {
 		{
 			mGlrc = wglCreateContext(mHDC);
 			if (!mGlrc)
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"wglCreateContext failed: " + translateWGLError(), "Win32Window::create");
+				CM_EXCEPT(RenderingAPIException, 
+				"wglCreateContext failed: " + translateWGLError());
 		}
 		if (!wglMakeCurrent(mHDC, mGlrc))
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "wglMakeCurrent", "Win32Window::create");
+			CM_EXCEPT(RenderingAPIException, "wglMakeCurrent");
 
 		// Do not change vsync if the external window has the OpenGL control
 		if (!mIsExternalGLControl) {
@@ -426,11 +425,11 @@ namespace CamelotEngine {
         {
             // Restore old context
 		    if (!wglMakeCurrent(old_hdc, old_context))
-			    OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "wglMakeCurrent() failed", "Win32Window::create");
+			    CM_EXCEPT(RenderingAPIException, "wglMakeCurrent() failed");
 
             // Share lists with old context
 		    if (!wglShareLists(old_context, mGlrc))
-			    OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "wglShareLists() failed", " Win32Window::create");
+			    CM_EXCEPT(RenderingAPIException, "wglShareLists() failed");
         }
 
 		// Create RenderSystem context
@@ -707,9 +706,7 @@ namespace CamelotEngine {
 			(dst.top < 0) || (dst.bottom > mHeight) ||
 			(dst.front != 0) || (dst.back != 1))
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-						"Invalid box.",
-						"Win32Window::copyContentsToMemory" );
+			CM_EXCEPT(InvalidParametersException, "Invalid box.");
 		}
 
 		if (buffer == FB_AUTO)
@@ -722,9 +719,7 @@ namespace CamelotEngine {
 
 		if ((format == GL_NONE) || (type == 0))
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-						"Unsupported format.",
-						"Win32Window::copyContentsToMemory" );
+			CM_EXCEPT(InvalidParametersException, "Unsupported format.");
 		}
 
 

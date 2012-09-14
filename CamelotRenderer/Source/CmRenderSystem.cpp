@@ -139,9 +139,8 @@ namespace CamelotEngine {
 	{
     if (mRealCapabilities != 0)
     {
-      OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-          "Custom render capabilities must be set before the RenderSystem is initialised.",
-          "RenderSystem::useCustomRenderSystemCapabilities");
+		CM_EXCEPT(InternalErrorException, 
+          "Custom render capabilities must be set before the RenderSystem is initialised.");
     }
 
 		mCurrentCapabilities = capabilities;
@@ -187,7 +186,7 @@ namespace CamelotEngine {
 
 				msg = "A render target of the same name '" + String(curDesc->name) + "' already "
 					"exists.  You cannot create a new window with this name.";
-				OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, msg, "RenderSystem::createRenderWindow" );
+				CM_EXCEPT(InternalErrorException, msg);
 			}
 		}
 		
@@ -197,9 +196,8 @@ namespace CamelotEngine {
 			// Can not mix full screen and windowed rendering windows.
 			if (fullscreenWindowsCount != renderWindowDescriptions.size())
 			{
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-					"Can not create mix of full screen and windowed rendering windows",
-					"RenderSystem::createRenderWindows");
+				CM_EXCEPT(InvalidParametersException, 
+					"Can not create mix of full screen and windowed rendering windows");
 			}					
 		}
 
@@ -331,11 +329,10 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::_setVertexTexture(size_t unit, const TexturePtr& tex)
 	{
-		OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED, 
+		CM_EXCEPT(NotImplementedException, 
 			"This rendersystem does not support separate vertex texture samplers, "
 			"you should use the regular texture samplers which are shared between "
-			"the vertex and fragment units.", 
-			"RenderSystem::_setVertexTexture");
+			"the vertex and fragment units.");
 	}
     //-----------------------------------------------------------------------
     void RenderSystem::_disableTextureUnit(size_t texUnit)

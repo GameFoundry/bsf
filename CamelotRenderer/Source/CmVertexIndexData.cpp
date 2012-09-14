@@ -389,9 +389,8 @@ namespace CamelotEngine {
 			if (!oldElem)
 			{
 				// Error, cannot create new elements with this method
-				OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, 
-					"Element not found in old vertex declaration", 
-					"VertexData::reorganiseBuffers");
+				CM_EXCEPT(ItemIdentityException, 
+					"Element not found in old vertex declaration");
 			}
 			newToOldElementMap[&(*ei)] = oldElem;
 		}
@@ -516,9 +515,8 @@ namespace CamelotEngine {
             const VertexElement& elem = *ai;
             if (!vertexBufferBinding->isBufferBound(elem.getSource()))
             {
-                OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
-                    "No buffer is bound to that element source.",
-                    "VertexData::closeGapsInBindings");
+                CM_EXCEPT(ItemIdentityException,
+                    "No buffer is bound to that element source.");
             }
         }
 
@@ -578,13 +576,13 @@ namespace CamelotEngine {
 	{
 		if (destType != VET_COLOUR_ABGR && destType != VET_COLOUR_ARGB)
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-				"Invalid destType parameter", "VertexData::convertPackedColour");
+			CM_EXCEPT(InvalidParametersException,
+				"Invalid destType parameter");
 		}
 		if (srcType != VET_COLOUR_ABGR && srcType != VET_COLOUR_ARGB)
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-				"Invalid srcType parameter", "VertexData::convertPackedColour");
+			CM_EXCEPT(InvalidParametersException,
+				"Invalid srcType parameter");
 		}
 
 		const VertexBufferBinding::VertexBufferBindingMap& bindMap = 

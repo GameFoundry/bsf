@@ -100,8 +100,7 @@ void GLHardwarePixelBuffer::unlockImpl(void)
 void GLHardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox)
 {
 	if(!mBuffer.contains(dstBox))
-		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "destination box out of range",
-		 "GLHardwarePixelBuffer::blitFromMemory");
+		CM_EXCEPT(InvalidParametersException, "destination box out of range");
 	PixelData scaled;
 	
 	if(src.getWidth() != dstBox.getWidth() ||
@@ -137,8 +136,7 @@ void GLHardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &dstB
 void GLHardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst)
 {
 	if(!mBuffer.contains(srcBox))
-		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "source box out of range",
-		 "GLHardwarePixelBuffer::blitToMemory");
+		CM_EXCEPT(InvalidParametersException, "source box out of range");
 	if(srcBox.left == 0 && srcBox.right == getWidth() &&
 	   srcBox.top == 0 && srcBox.bottom == getHeight() &&
 	   srcBox.front == 0 && srcBox.back == getDepth() &&
@@ -175,21 +173,18 @@ void GLHardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst
 //-----------------------------------------------------------------------------
 void GLHardwarePixelBuffer::upload(const PixelData &data, const Box &dest)
 {
-    OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-		"Upload not possible for this pixelbuffer type",
-        "GLHardwarePixelBuffer::upload");
+    CM_EXCEPT(RenderingAPIException, 
+		"Upload not possible for this pixelbuffer type");
 }
 //-----------------------------------------------------------------------------  
 void GLHardwarePixelBuffer::download(const PixelData &data)
 {
-    OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Download not possible for this pixelbuffer type",
-        "GLHardwarePixelBuffer::download");
+    CM_EXCEPT(RenderingAPIException, "Download not possible for this pixelbuffer type");
 }
 //-----------------------------------------------------------------------------  
 void GLHardwarePixelBuffer::bindToFramebuffer(GLenum attachment, size_t zoffset)
 {
-    OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Framebuffer bind not possible for this pixelbuffer type",
-        "GLHardwarePixelBuffer::bindToFramebuffer");
+    CM_EXCEPT(RenderingAPIException, "Framebuffer bind not possible for this pixelbuffer type");
 }
 //********* GLTextureBuffer
 GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint id, 
@@ -294,9 +289,8 @@ void GLTextureBuffer::upload(const PixelData &data, const Box &dest)
 	if(PixelUtil::isCompressed(data.format))
 	{
 		if(data.format != mFormat || !data.isConsecutive())
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"Compressed images must be consecutive, in the source format",
-		 	"GLTextureBuffer::upload");
+			CM_EXCEPT(InvalidParametersException, 
+			"Compressed images must be consecutive, in the source format");
 		GLenum format = GLPixelUtil::getClosestGLInternalFormat(mFormat);
 		// Data must be consecutive and at beginning of buffer as PixelStorei not allowed
 		// for compressed formats
@@ -467,15 +461,13 @@ void GLTextureBuffer::download(const PixelData &data)
 	if(data.getWidth() != getWidth() ||
 		data.getHeight() != getHeight() ||
 		data.getDepth() != getDepth())
-		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "only download of entire buffer is supported by GL",
-		 	"GLTextureBuffer::download");
+		CM_EXCEPT(InvalidParametersException, "only download of entire buffer is supported by GL");
 	glBindTexture( mTarget, mTextureID );
 	if(PixelUtil::isCompressed(data.format))
 	{
 		if(data.format != mFormat || !data.isConsecutive())
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"Compressed images must be consecutive, in the source format",
-		 	"GLTextureBuffer::download");
+			CM_EXCEPT(InvalidParametersException, 
+			"Compressed images must be consecutive, in the source format");
 		// Data must be consecutive and at beginning of buffer as PixelStorei not allowed
 		// for compressed formate
 		glGetCompressedTexImageARB(mFaceTarget, mLevel, data.data);
@@ -794,8 +786,7 @@ void GLTextureBuffer::blitFromMemory(const PixelData &src_orig, const Box &dstBo
         return;
     }
     if(!mBuffer.contains(dstBox))
-        OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "destination box out of range",
-                    "GLTextureBuffer::blitFromMemory");
+        CM_EXCEPT(InvalidParametersException, "destination box out of range");
     /// For scoped deletion of conversion buffer
 	void* data = NULL;
     PixelData src;

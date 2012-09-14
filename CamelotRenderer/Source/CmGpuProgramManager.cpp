@@ -104,9 +104,8 @@ namespace CamelotEngine {
 	{
 		if (mSharedParametersMap.find(name) != mSharedParametersMap.end())
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"The shared parameter set '" + name + "' already exists!", 
-				"GpuProgramManager::createSharedParameters");
+			CM_EXCEPT(InvalidParametersException, 
+				"The shared parameter set '" + name + "' already exists!");
 		}
 		GpuSharedParametersPtr ret(new GpuSharedParameters(name));
 		mSharedParametersMap[name] = ret;
@@ -118,9 +117,8 @@ namespace CamelotEngine {
 		SharedParametersMap::const_iterator i = mSharedParametersMap.find(name);
 		if (i == mSharedParametersMap.end())
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"No shared parameter set with name '" + name + "'!", 
-				"GpuProgramManager::createSharedParameters");
+			CM_EXCEPT(InvalidParametersException, 
+				"No shared parameter set with name '" + name + "'!");
 		}
 		return i->second;
 	}

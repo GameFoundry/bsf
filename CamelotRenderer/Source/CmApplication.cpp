@@ -23,8 +23,7 @@ namespace CamelotEngine
 		mGpuProgramManager = new HighLevelGpuProgramManager(); // TODO - Use Camelot::Module for instantiating this
 		mDynLibManager = new DynLibManager(); // TODO - Same as above, use Module
 
-		//RenderSystemManager::initialize("CamelotD3D9Renderer.dll");
-		RenderSystemManager::initialize("CamelotGLRenderer.dll");
+		RenderSystemManager::initialize(renderSystemDll);
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_initialise(false, "Camelot Renderer");

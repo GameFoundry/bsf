@@ -87,8 +87,7 @@ void D3D9HardwarePixelBuffer::bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *sur
 
 	D3DSURFACE_DESC desc;
 	if(surface->GetDesc(&desc) != D3D_OK)
-		OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Could not get surface information",
-		 "D3D9HardwarePixelBuffer::D3D9HardwarePixelBuffer");
+		CM_EXCEPT(RenderingAPIException, "Could not get surface information");
 
 	mWidth = desc.Width;
 	mHeight = desc.Height;
@@ -149,8 +148,7 @@ void D3D9HardwarePixelBuffer::bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *volu
 	
 	D3DVOLUME_DESC desc;
 	if(volume->GetDesc(&desc) != D3D_OK)
-		OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Could not get volume information",
-		 "D3D9HardwarePixelBuffer::D3D9HardwarePixelBuffer");
+		CM_EXCEPT(RenderingAPIException, "Could not get volume information");
 	mWidth = desc.Width;
 	mHeight = desc.Height;
 	mDepth = desc.Depth;
@@ -254,8 +252,7 @@ void fromD3DLock(PixelData &rval, const D3DLOCKED_RECT &lrect)
 	}
 	else
 	{
-		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"Invalid pixel format", "fromD3DLock");
+		CM_EXCEPT(InvalidParametersException, "Invalid pixel format");
 	}
 
 	rval.data = lrect.pBits;
@@ -277,8 +274,7 @@ void fromD3DLock(PixelData &rval, const D3DLOCKED_BOX &lbox)
 	}
 	else
 	{
-		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"Invalid pixel format", "fromD3DLock");
+		CM_EXCEPT(InvalidParametersException, "Invalid pixel format");
 	}
 	rval.data = lbox.pBits;
 }
@@ -336,8 +332,7 @@ PixelData D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions opti
 
 	// Check for misuse
 	if(mUsage & TU_RENDERTARGET)
-		OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "DirectX does not allow locking of or directly writing to RenderTargets. Use blitFromMemory if you need the contents.",
-		 	"D3D9HardwarePixelBuffer::lockImpl");		
+		CM_EXCEPT(RenderingAPIException, "DirectX does not allow locking of or directly writing to RenderTargets. Use blitFromMemory if you need the contents.");		
 	// Set locking flags according to options
 	DWORD flags = 0;
 	switch(options)
@@ -357,8 +352,7 @@ PixelData D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions opti
 
 	if (mMapDeviceToBufferResources.size() == 0)
 	{
-		OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "There are no resources attached to this pixel buffer !!",
-			"D3D9HardwarePixelBuffer::lockImpl");	
+		CM_EXCEPT(RenderingAPIException, "There are no resources attached to this pixel buffer !!");	
 	}
 	
 	mLockedBox = lockBox;
@@ -399,8 +393,7 @@ CamelotEngine::PixelData D3D9HardwarePixelBuffer::lockBuffer(BufferResources* bu
 			hr = bufferResources->surface->LockRect(&lrect, &prect, flags);
 		}
 		if (FAILED(hr))		
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Surface locking failed",
-			"D3D9HardwarePixelBuffer::lockImpl");
+			CM_EXCEPT(RenderingAPIException, "Surface locking failed");
 		fromD3DLock(rval, lrect);
 	} 
 	else if(bufferResources->volume) 
@@ -410,8 +403,7 @@ CamelotEngine::PixelData D3D9HardwarePixelBuffer::lockBuffer(BufferResources* bu
 		D3DLOCKED_BOX lbox; // Filled in by D3D
 
 		if(bufferResources->volume->LockBox(&lbox, &pbox, flags) != D3D_OK)
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Volume locking failed",
-			"D3D9HardwarePixelBuffer::lockImpl");
+			CM_EXCEPT(RenderingAPIException, "Volume locking failed");
 		fromD3DLock(rval, lbox);
 	}
 
@@ -426,8 +418,7 @@ void D3D9HardwarePixelBuffer::unlockImpl(void)
 
 	if (mMapDeviceToBufferResources.size() == 0)
 	{
-		OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "There are no resources attached to this pixel buffer !!",
-			"D3D9HardwarePixelBuffer::lockImpl");	
+		CM_EXCEPT(RenderingAPIException, "There are no resources attached to this pixel buffer !!");	
 	}
 
 	DeviceToBufferResourcesIterator it;
@@ -484,8 +475,7 @@ void D3D9HardwarePixelBuffer::blit(const HardwarePixelBufferPtr &rsrc,
 
 		if (srcBufferResources == NULL)
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "There are no matching resources attached to the source pixel buffer !!",
-				"D3D9HardwarePixelBuffer::blit");	
+			CM_EXCEPT(RenderingAPIException, "There are no matching resources attached to the source pixel buffer !!");	
 		}
 
 		blit(it->first, rsrc, srcBox, dstBox, srcBufferResources, dstBufferResources);
@@ -509,8 +499,7 @@ void D3D9HardwarePixelBuffer::blit(IDirect3DDevice9* d3d9Device,
 
 		D3DSURFACE_DESC srcDesc;
 		if(srcBufferResources->surface->GetDesc(&srcDesc) != D3D_OK)
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Could not get surface information",
-			"D3D9HardwarePixelBuffer::blit");
+			CM_EXCEPT(RenderingAPIException, "Could not get surface information");
 
 		// If we're blitting from a RTT, try GetRenderTargetData
 		// if we're going to try to use GetRenderTargetData, need to use system mem pool
@@ -531,14 +520,12 @@ void D3D9HardwarePixelBuffer::blit(IDirect3DDevice9* d3d9Device,
 				&tmptex
 				) != D3D_OK)
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Create temporary texture failed",
-					"D3D9HardwarePixelBuffer::blit");
+				CM_EXCEPT(RenderingAPIException, "Create temporary texture failed");
 			}
 			if(tmptex->GetSurfaceLevel(0, &tmpsurface) != D3D_OK)
 			{
 				tmptex->Release();
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Get surface level failed",
-					"D3D9HardwarePixelBuffer::blit");
+				CM_EXCEPT(RenderingAPIException, "Get surface level failed");
 			}
 			if(d3d9Device->GetRenderTargetData(srcBufferResources->surface, tmpsurface) == D3D_OK)
 			{
@@ -551,8 +538,7 @@ void D3D9HardwarePixelBuffer::blit(IDirect3DDevice9* d3d9Device,
 				{
 					tmpsurface->Release();
 					tmptex->Release();
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadSurfaceFromSurface failed",
-						"D3D9HardwarePixelBuffer::blit");
+					CM_EXCEPT(RenderingAPIException, "D3DXLoadSurfaceFromSurface failed");
 				}
 				tmpsurface->Release();
 				tmptex->Release();
@@ -569,8 +555,7 @@ void D3D9HardwarePixelBuffer::blit(IDirect3DDevice9* d3d9Device,
 			srcBufferResources->surface, NULL, &dsrcRect,
 			D3DX_DEFAULT, 0) != D3D_OK)
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadSurfaceFromSurface failed",
-				"D3D9HardwarePixelBuffer::blit");
+			CM_EXCEPT(RenderingAPIException, "D3DXLoadSurfaceFromSurface failed");
 		}
 	}
 	else if(dstBufferResources->volume && srcBufferResources->volume)
@@ -585,8 +570,7 @@ void D3D9HardwarePixelBuffer::blit(IDirect3DDevice9* d3d9Device,
 			srcBufferResources->volume, NULL, &dsrcBox,
 			D3DX_DEFAULT, 0) != D3D_OK)
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadVolumeFromVolume failed",
-				"D3D9HardwarePixelBuffer::blit");
+			CM_EXCEPT(RenderingAPIException, "D3DXLoadVolumeFromVolume failed");
 		}
 	}
 	else
@@ -659,8 +643,7 @@ void D3D9HardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &ds
 			static_cast<UINT>(rowWidth),
 			NULL, &srcRect, D3DX_DEFAULT, 0) != D3D_OK)
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadSurfaceFromMemory failed",
-				"D3D9HardwarePixelBuffer::blitFromMemory");
+			CM_EXCEPT(RenderingAPIException, "D3DXLoadSurfaceFromMemory failed");
 		}
 	}
 	else if (dstBufferResources->volume)
@@ -694,8 +677,7 @@ void D3D9HardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &ds
 			static_cast<UINT>(rowWidth), static_cast<UINT>(sliceWidth),
 			NULL, &srcBox, D3DX_DEFAULT, 0) != D3D_OK)
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadSurfaceFromMemory failed",
-				"D3D9HardwarePixelBuffer::blitFromMemory");
+			CM_EXCEPT(RenderingAPIException, "D3DXLoadSurfaceFromMemory failed");
 		}
 	}
 
@@ -738,8 +720,7 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &d
 
 		D3DSURFACE_DESC srcDesc;
 		if(srcBufferResources->surface->GetDesc(&srcDesc) != D3D_OK)
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Could not get surface information",
-			"D3D9HardwarePixelBuffer::blitToMemory");
+			CM_EXCEPT(RenderingAPIException, "Could not get surface information");
 
 		D3DPOOL temppool = D3DPOOL_SCRATCH;
 		// if we're going to try to use GetRenderTargetData, need to use system mem pool
@@ -761,14 +742,12 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &d
 			&tmp
 			) != D3D_OK)
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Create temporary texture failed",
-				"D3D9HardwarePixelBuffer::blitToMemory");
+			CM_EXCEPT(RenderingAPIException, "Create temporary texture failed");
 		}
 		if(tmp->GetSurfaceLevel(0, &surface) != D3D_OK)
 		{
 			tmp->Release();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Get surface level failed",
-				"D3D9HardwarePixelBuffer::blitToMemory");
+			CM_EXCEPT(RenderingAPIException, "Get surface level failed");
 		}
 		// Copy texture to this temp surface
 		RECT destRect, srcRect;
@@ -778,8 +757,7 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &d
 		// Get the real temp surface format
 		D3DSURFACE_DESC dstDesc;
 		if(surface->GetDesc(&dstDesc) != D3D_OK)
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Could not get surface information",
-			"D3D9HardwarePixelBuffer::blitToMemory");
+			CM_EXCEPT(RenderingAPIException, "Could not get surface information");
 		tmpFormat = D3D9Mappings::_getPF(dstDesc.Format);
 
 		// Use fast GetRenderTargetData if we are in its usage conditions
@@ -800,8 +778,7 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &d
 			{
 				surface->Release();
 				tmp->Release();
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadSurfaceFromSurface failed",
-					"D3D9HardwarePixelBuffer::blitToMemory");
+				CM_EXCEPT(RenderingAPIException, "D3DXLoadSurfaceFromSurface failed");
 			}
 		}
 
@@ -811,8 +788,7 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &d
 		{
 			surface->Release();
 			tmp->Release();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "surface->LockRect",
-				"D3D9HardwarePixelBuffer::blitToMemory");
+			CM_EXCEPT(RenderingAPIException, "surface->LockRect");
 		}
 		// Copy it
 		PixelData locked(dst.getWidth(), dst.getHeight(), dst.getDepth(), tmpFormat);
@@ -838,14 +814,12 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &d
 			&tmp
 			) != D3D_OK)
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Create temporary texture failed",
-				"D3D9HardwarePixelBuffer::blitToMemory");
+			CM_EXCEPT(RenderingAPIException, "Create temporary texture failed");
 		}
 		if(tmp->GetVolumeLevel(0, &surface) != D3D_OK)
 		{
 			tmp->Release();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Get volume level failed",
-				"D3D9HardwarePixelBuffer::blitToMemory");
+			CM_EXCEPT(RenderingAPIException, "Get volume level failed");
 		}
 		// Volume
 		D3DBOX ddestBox, dsrcBox;
@@ -859,8 +833,7 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &d
 		{
 			surface->Release();
 			tmp->Release();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadVolumeFromVolume failed",
-				"D3D9HardwarePixelBuffer::blitToMemory");
+			CM_EXCEPT(RenderingAPIException, "D3DXLoadVolumeFromVolume failed");
 		}
 		// Lock temp surface and copy it to memory
 		D3DLOCKED_BOX lbox; // Filled in by D3D
@@ -868,8 +841,7 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &d
 		{
 			surface->Release();
 			tmp->Release();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "surface->LockBox",
-				"D3D9HardwarePixelBuffer::blitToMemory");
+			CM_EXCEPT(RenderingAPIException, "surface->LockBox");
 		}
 		// Copy it
 		PixelData locked(dst.getWidth(), dst.getHeight(), dst.getDepth(), tmpFormat);
@@ -898,9 +870,7 @@ void D3D9HardwarePixelBuffer::_genMipmaps(IDirect3DBaseTexture9* mipTex)
 		// Software mipmaps
 		if( D3DXFilterTexture( mipTex, NULL, D3DX_DEFAULT, D3DX_DEFAULT ) != D3D_OK )
 		{
-			OGRE_EXCEPT( Exception::ERR_RENDERINGAPI_ERROR, 
-			"Failed to filter texture (generate mipmaps)",
-			 "D3D9HardwarePixelBuffer::_genMipmaps" );
+			CM_EXCEPT(RenderingAPIException, "Failed to filter texture (generate mipmaps)");
 		}
 	}
 

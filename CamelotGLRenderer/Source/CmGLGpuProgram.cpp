@@ -228,8 +228,8 @@ void GLArbGpuProgram::loadFromSource(void)
 		String errPosStr = toString(errPos);
         char* errStr = (char*)glGetString(GL_PROGRAM_ERROR_STRING_ARB);
         // XXX New exception code?
-        OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-            "Cannot load GL vertex program.  Line " + errPosStr + ":\n" + errStr, "");
+		CM_EXCEPT(InternalErrorException, 
+            "Cannot load GL vertex program.  Line " + errPosStr + ":\n" + errStr);
     }
     glBindProgramARB(mProgramType, 0);
 }

@@ -97,9 +97,7 @@ namespace CamelotEngine {
 		
 		if (it == mMapDeviceToQuery.end())
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"End occlusion called without matching begin call !!", 
-				"D3D9HardwareOcclusionQuery::endOcclusionQuery" );
+			CM_EXCEPT(RenderingAPIException, "End occlusion called without matching begin call !!" );
 		}
 
 		IDirect3DQuery9* pOccQuery = mMapDeviceToQuery[pCurDevice];

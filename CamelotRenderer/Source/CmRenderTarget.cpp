@@ -111,8 +111,8 @@ namespace CamelotEngine {
 		}
 		else
 		{
-			OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,"No viewport with given zorder : "
-				+ toString(zorder), "RenderTarget::_updateViewport");
+			CM_EXCEPT(ItemIdentityException,"No viewport with given zorder : "
+				+ toString(zorder));
 		}
 	}
 
@@ -128,7 +128,7 @@ namespace CamelotEngine {
 			str << "Can't create another viewport for "
 				<< mName << " with Z-Order " << ZOrder
 				<< " because a viewport exists with this Z-Order already.";
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, str.str(), "RenderTarget::addViewport");
+			CM_EXCEPT(InvalidParametersException, str.str());
         }
         // Add viewport to list
         // Order based on Z-Order
@@ -163,7 +163,7 @@ namespace CamelotEngine {
 
     void RenderTarget::getCustomAttribute(const String& name, void* pData)
     {
-        OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Attribute not found.", "RenderTarget::getCustomAttribute");
+        CM_EXCEPT(InvalidParametersException, "Attribute not found.");
     }
     //-----------------------------------------------------------------------
     unsigned short RenderTarget::getNumViewports(void) const

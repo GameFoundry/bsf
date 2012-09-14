@@ -102,8 +102,7 @@ namespace CamelotEngine {
     void Frustum::setNearClipDistance(float nearPlane)
     {
         if (nearPlane <= 0)
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Near clip distance must be greater than zero.",
-                "Frustum::setNearClipDistance");
+            CM_EXCEPT(InvalidParametersException, "Near clip distance must be greater than zero.");
         mNearDist = nearPlane;
         invalidateFrustum();
     }
@@ -135,9 +134,8 @@ namespace CamelotEngine {
     {
         if (focalLength <= 0)
         {
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-                "Focal length must be greater than zero.",
-                "Frustum::setFocalLength");
+            CM_EXCEPT(InvalidParametersException,
+                "Focal length must be greater than zero.");
         }
 
         mFocalLength = focalLength;

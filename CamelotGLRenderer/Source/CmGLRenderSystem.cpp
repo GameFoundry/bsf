@@ -601,9 +601,8 @@ namespace CamelotEngine {
 	{
 		if(caps->getRenderSystemName() != getName())
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Trying to initialize GLRenderSystem from RenderSystemCapabilities that do not support OpenGL",
-				"GLRenderSystem::initialiseFromRenderSystemCapabilities");
+			CM_EXCEPT(InvalidParametersException, 
+				"Trying to initialize GLRenderSystem from RenderSystemCapabilities that do not support OpenGL");
 		}
 
 		// set texture the number of texture units
@@ -938,10 +937,8 @@ namespace CamelotEngine {
 	{
 		if (mRenderTargets.find(name) != mRenderTargets.end())
 		{
-			OGRE_EXCEPT(
-				Exception::ERR_INVALIDPARAMS, 
-				"Window with name '" + name + "' already exists",
-				"GLRenderSystem::_createRenderWindow" );
+			CM_EXCEPT(InvalidParametersException, 
+				"Window with name '" + name + "' already exists");
 		}
 
 		// Create the window
@@ -1765,9 +1762,8 @@ namespace CamelotEngine {
 	void GLRenderSystem::_beginFrame(void)
 	{
 		if (!mActiveViewport)
-			OGRE_EXCEPT(Exception::ERR_INVALID_STATE, 
-			"Cannot begin frame - no viewport selected.",
-			"GLRenderSystem::_beginFrame");
+			CM_EXCEPT(InvalidStateException, 
+			"Cannot begin frame - no viewport selected.");
 
 		// Activate the viewport clipping
 		glEnable(GL_SCISSOR_TEST);
@@ -2065,8 +2061,7 @@ namespace CamelotEngine {
 		if (twoSidedOperation)
 		{
 			if (!mCurrentCapabilities->hasCapability(RSC_TWO_SIDED_STENCIL))
-				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "2-sided stencils are not supported",
-				"GLRenderSystem::setStencilBufferParams");
+				CM_EXCEPT(InvalidParametersException, "2-sided stencils are not supported");
 
 			// NB: We should always treat CCW as front face for consistent with default
 			// culling mode. Therefore, we must take care with two-sided stencil settings.
@@ -2733,8 +2728,7 @@ namespace CamelotEngine {
 
 			if (i >= 6/*GL_MAX_CLIP_PLANES*/)
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Unable to set clip plane", 
-					"GLRenderSystem::setClipPlanes");
+				CM_EXCEPT(RenderingAPIException, "Unable to set clip plane");
 			}
 
 			clipPlane[0] = plane.normal.x;
@@ -3101,10 +3095,8 @@ namespace CamelotEngine {
 		// This is only valid once we've created the main context
 		if (!mMainContext)
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Cannot register a background thread before the main context "
-				"has been created.", 
-				"GLRenderSystem::registerThread");
+			CM_EXCEPT(InvalidParametersException, 
+				"Cannot register a background thread before the main context has been created.");
 		}
 
 		// Create a new context for this thread. Cloning from the main context

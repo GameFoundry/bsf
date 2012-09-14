@@ -87,9 +87,7 @@ namespace CamelotEngine
 	{	
 		if (mActiveDevice == NULL)
 		{
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, 
-				"Current active device is NULL !!!", 
-				"D3D9RenderSystem::getActiveDevice" );
+			CM_EXCEPT(InvalidParametersException, "Current active device is NULL !!!" );
 		}
 
 		return mActiveDevice;		

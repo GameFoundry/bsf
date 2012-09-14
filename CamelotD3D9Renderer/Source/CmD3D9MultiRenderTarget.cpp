@@ -67,21 +67,14 @@ namespace CamelotEngine
 			if (mRenderTargets[y]->getWidth() != buffer->getWidth() ||
 				mRenderTargets[y]->getHeight() != buffer->getHeight())
 			{
-				OGRE_EXCEPT(
-					Exception::ERR_INVALIDPARAMS, 
-					"MultiRenderTarget surfaces are not of same size", 
-					"D3D9MultiRenderTarget::bindSurface");
+				CM_EXCEPT(InvalidParametersException, "MultiRenderTarget surfaces are not of same size");
 			}
 
 			if (!CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->hasCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS)
 				&& (PixelUtil::getNumElemBits(mRenderTargets[y]->getFormat()) != 
 				PixelUtil::getNumElemBits(buffer->getFormat())))
 			{
-				OGRE_EXCEPT(
-					Exception::ERR_INVALIDPARAMS, 
-					"MultiRenderTarget surfaces are not of same bit depth and hardware requires it", 
-					"D3D9MultiRenderTarget::bindSurface"
-					);
+				CM_EXCEPT(InvalidParametersException, "MultiRenderTarget surfaces are not of same bit depth and hardware requires it");
 			}
 		}
 

@@ -80,9 +80,8 @@ namespace CamelotEngine
 		if (target->getUsage() != getUsage() ||
 			target->getTextureType() != getTextureType())
 		{
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, 
-					"Src. and dest. textures must be of same type and must have the same usage !!!", 
-					"D3D9Texture::copyToTexture" );
+			CM_EXCEPT(InvalidParametersException, 
+					"Src. and dest. textures must be of same type and must have the same usage !!!");
 		}
 
         HRESULT hr;
@@ -109,7 +108,7 @@ namespace CamelotEngine
 				if( FAILED( hr = srcTextureResource->pNormTex->GetSurfaceLevel(0, &pSrcSurface) ) )
 				{
 					String msg = DXGetErrorDescription(hr);
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Couldn't blit : " + msg, "D3D9Texture::copyToTexture" );
+					CM_EXCEPT(RenderingAPIException, "Couldn't blit : " + msg);
 				}
 
 				// get our target surface
@@ -118,7 +117,7 @@ namespace CamelotEngine
 				{
 					String msg = DXGetErrorDescription(hr);
 					SAFE_RELEASE(pSrcSurface);
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Couldn't blit : " + msg, "D3D9Texture::copyToTexture" );
+					CM_EXCEPT(RenderingAPIException, "Couldn't blit : " + msg );
 				}
 
 				// do the blit, it's called StretchRect in D3D9 :)
@@ -127,7 +126,7 @@ namespace CamelotEngine
 					String msg = DXGetErrorDescription(hr);
 					SAFE_RELEASE(pSrcSurface);
 					SAFE_RELEASE(pDstSurface);
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Couldn't blit : " + msg, "D3D9Texture::copyToTexture" );
+					CM_EXCEPT(RenderingAPIException, "Couldn't blit : " + msg);
 				}
 
 				// release temp. surfaces
@@ -146,7 +145,7 @@ namespace CamelotEngine
 					if( FAILED( hr =srcTextureResource->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)face, 0, &pSrcSurface) ) )
 					{
 						String msg = DXGetErrorDescription(hr);
-						OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Couldn't blit : " + msg, "D3D9Texture::copyToTexture" );
+						CM_EXCEPT(RenderingAPIException, "Couldn't blit : " + msg);
 					}
 
 					// get our target surface
@@ -155,7 +154,7 @@ namespace CamelotEngine
 					{
 						String msg = DXGetErrorDescription(hr);
 						SAFE_RELEASE(pSrcSurface);
-						OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Couldn't blit : " + msg, "D3D9Texture::copyToTexture" );
+						CM_EXCEPT(RenderingAPIException, "Couldn't blit : " + msg);
 					}
 
 					// do the blit, it's called StretchRect in D3D9 :)
@@ -164,7 +163,7 @@ namespace CamelotEngine
 						String msg = DXGetErrorDescription(hr);
 						SAFE_RELEASE(pSrcSurface);
 						SAFE_RELEASE(pDstSurface);
-						OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Couldn't blit : " + msg, "D3D9Texture::copyToTexture" );
+						CM_EXCEPT(RenderingAPIException, "Couldn't blit : " + msg);
 					}
 
 					// release temp. surfaces
@@ -174,9 +173,7 @@ namespace CamelotEngine
 			}
 			else
 			{
-				OGRE_EXCEPT( Exception::ERR_NOT_IMPLEMENTED, 
-					"Copy to texture is implemented only for 2D and cube textures !!!", 
-					"D3D9Texture::copyToTexture" );
+				CM_EXCEPT(NotImplementedException, "Copy to texture is implemented only for 2D and cube textures !!!");
 			}
 
 			++it;
@@ -932,7 +929,7 @@ namespace CamelotEngine
 			break;
 		default:
 			freeInternalResources();
-			OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Unknown texture type", "D3D9Texture::createInternalResources" );
+			CM_EXCEPT(InternalErrorException, "Unknown texture type");
 		}
 	}
 
@@ -1039,8 +1036,7 @@ namespace CamelotEngine
 		if (FAILED(hr))
 		{
 			freeInternalResources();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error creating texture: " + String(DXGetErrorDescription(hr)), 
-				"D3D9Texture::_createNormTex" );
+			CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
 		}
 		
 		// set the base texture we'll use in the render system
@@ -1048,8 +1044,7 @@ namespace CamelotEngine
 		if (FAILED(hr))
 		{
 			freeInternalResources();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Can't get base texture: " + String(DXGetErrorDescription(hr)), 
-				"D3D9Texture::_createNormTex" );
+			CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
 		}
 		
 		// set final tex. attributes from tex. description
@@ -1059,8 +1054,7 @@ namespace CamelotEngine
 		if (FAILED(hr))
 		{
 			freeInternalResources();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Can't get texture description: " + String(DXGetErrorDescription(hr)), 
-				"D3D9Texture::_createNormTex" );
+			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 		}
 
 		if (mFSAAType)
@@ -1074,9 +1068,7 @@ namespace CamelotEngine
 
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-					"Unable to create AA render target: " + String(DXGetErrorDescription(hr)), 
-					"D3D9Texture::_createNormTex");
+				CM_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
 			}
 
 		}
@@ -1090,8 +1082,7 @@ namespace CamelotEngine
 			hr = textureResources->pBaseTex->SetAutoGenFilterType(_getBestFilterMethod(d3d9Device));
 			if(FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Could not set best autogen filter type: "  + String(DXGetErrorDescription(hr)), 
-					"D3D9Texture::_createNormTex" );
+				CM_EXCEPT(RenderingAPIException, "Could not set best autogen filter type: "  + String(DXGetErrorDescription(hr)));
 			}
 		}
 
@@ -1196,8 +1187,7 @@ namespace CamelotEngine
 		if (FAILED(hr))
 		{
 			freeInternalResources();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error creating texture: " + String(DXGetErrorDescription(hr)), 
-				"D3D9Texture::_createCubeTex" );
+			CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
 		}
 
 		// set the base texture we'll use in the render system
@@ -1205,8 +1195,7 @@ namespace CamelotEngine
 		if (FAILED(hr))
 		{
 			freeInternalResources();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Can't get base texture: " + String(DXGetErrorDescription(hr)), 
-				"D3D9Texture::_createCubeTex" );
+			CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
 		}
 		
 		// set final tex. attributes from tex. description
@@ -1216,8 +1205,7 @@ namespace CamelotEngine
 		if (FAILED(hr))
 		{
 			freeInternalResources();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Can't get texture description: " + String(DXGetErrorDescription(hr)), 
-				"D3D9Texture::_createCubeTex" );
+			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 		}
 
 		if (mFSAAType)
@@ -1231,9 +1219,7 @@ namespace CamelotEngine
 
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-					"Unable to create AA render target: " + String(DXGetErrorDescription(hr)), 
-					"D3D9Texture::_createCubeTex");
+				CM_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
 			}
 		}
 
@@ -1246,8 +1232,7 @@ namespace CamelotEngine
 			hr = textureResources->pBaseTex->SetAutoGenFilterType(_getBestFilterMethod(d3d9Device));
 			if(FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Could not set best autogen filter type: " + String(DXGetErrorDescription(hr)), 
-					"D3D9Texture::_createCubeTex" );
+				CM_EXCEPT(RenderingAPIException, "Could not set best autogen filter type: " + String(DXGetErrorDescription(hr)));
 			}
 		}
 
@@ -1260,8 +1245,7 @@ namespace CamelotEngine
 
 		if (mUsage & TU_RENDERTARGET)
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3D9 Volume texture can not be created as render target !!", 
-				"D3D9Texture::_createVolumeTex" );
+			CM_EXCEPT(RenderingAPIException, "D3D9 Volume texture can not be created as render target !!");
 		}
 
 		// determine which D3D9 pixel format we'll use
@@ -1348,8 +1332,7 @@ namespace CamelotEngine
 		if (FAILED(hr))
 		{
 			freeInternalResources();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Error creating texture: " + String(DXGetErrorDescription(hr)), 
-				"D3D9Texture::_createVolumeTex" );
+			CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
 		}
 
 		// set the base texture we'll use in the render system
@@ -1357,8 +1340,7 @@ namespace CamelotEngine
 		if (FAILED(hr))
 		{
 			freeInternalResources();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Can't get base texture: " + String(DXGetErrorDescription(hr)), 
-				"D3D9Texture::_createVolumeTex" );
+			CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
 		}
 		
 		// set final tex. attributes from tex. description
@@ -1368,8 +1350,7 @@ namespace CamelotEngine
 		if (FAILED(hr))
 		{
 			freeInternalResources();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Can't get texture description: " + String(DXGetErrorDescription(hr)), 
-				"D3D9Texture::_createVolumeTex" );
+			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 		}
 		_setFinalAttributes(d3d9Device, textureResources,
 			desc.Width, desc.Height, desc.Depth, D3D9Mappings::_getPF(desc.Format));
@@ -1380,8 +1361,7 @@ namespace CamelotEngine
 			hr = textureResources->pBaseTex->SetAutoGenFilterType(_getBestFilterMethod(d3d9Device));
 			if(FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Could not set best autogen filter type: " + String(DXGetErrorDescription(hr)), 
-					"D3D9Texture::_createCubeTex" );
+				CM_EXCEPT(RenderingAPIException, "Could not set best autogen filter type: " + String(DXGetErrorDescription(hr)));
 			}
 		}
 	}
@@ -1457,9 +1437,7 @@ namespace CamelotEngine
 		hr = d3d9Device->GetDirect3D(&pD3D);
 		if (FAILED(hr))
 		{
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, 
-				"GetDirect3D failed !!!", 				
-				"D3D9Texture::_canUseDynamicTextures" );
+			CM_EXCEPT(InvalidParametersException, "GetDirect3D failed !!!");
 		}
 		if (pD3D != NULL)
 			pD3D->Release();
@@ -1496,9 +1474,7 @@ namespace CamelotEngine
 		hr = d3d9Device->GetDirect3D(&pD3D);
 		if (FAILED(hr))
 		{
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, 
-				"GetDirect3D failed !!!", 
-				"D3D9Texture::_canUseDynamicTextures" );
+			CM_EXCEPT(InvalidParametersException, "GetDirect3D failed !!!" );
 		}
 		if (pD3D != NULL)
 			pD3D->Release();
@@ -1540,9 +1516,7 @@ namespace CamelotEngine
 		hr = d3d9Device->GetDirect3D(&pD3D);
 		if (FAILED(hr))
 		{
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, 
-				"GetDirect3D failed !!!", 
-				"D3D9Texture::_canUseDynamicTextures" );
+			CM_EXCEPT(InvalidParametersException, "GetDirect3D failed !!!");
 		}
 		if (pD3D != NULL)
 			pD3D->Release();
@@ -1650,8 +1624,7 @@ namespace CamelotEngine
 			for(mip=0; mip<=mNumMipmaps; ++mip)
 			{
 				if(textureResources->pNormTex->GetSurfaceLevel(static_cast<UINT>(mip), &surface) != D3D_OK)
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Get surface level failed",
-		 				"D3D9Texture::_createSurfaceList");
+					CM_EXCEPT(RenderingAPIException, "Get surface level failed");
 
 				D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
 								
@@ -1675,8 +1648,7 @@ namespace CamelotEngine
 				for(mip=0; mip<=mNumMipmaps; ++mip)
 				{
 					if(textureResources->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)face, static_cast<UINT>(mip), &surface) != D3D_OK)
-						OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Get cubemap surface failed",
-		 				"D3D9Texture::getBuffer");
+						CM_EXCEPT(RenderingAPIException, "Get cubemap surface failed");
 
 					D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(face, mip);
 					
@@ -1699,8 +1671,7 @@ namespace CamelotEngine
 			for(mip=0; mip<=mNumMipmaps; ++mip)
 			{
 				if(textureResources->pVolumeTex->GetVolumeLevel(static_cast<UINT>(mip), &volume) != D3D_OK)
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Get volume level failed",
-		 				"D3D9Texture::getBuffer");	
+					CM_EXCEPT(RenderingAPIException, "Get volume level failed");	
 						
 				D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
 
@@ -1721,11 +1692,9 @@ namespace CamelotEngine
 	HardwarePixelBufferPtr D3D9Texture::getBuffer(size_t face, size_t mipmap) 
 	{
 		if(face >= getNumFaces())
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "A three dimensional cube has six faces",
-					"D3D9Texture::getBuffer");
+			CM_EXCEPT(InvalidParametersException, "A three dimensional cube has six faces");
 		if(mipmap > mNumMipmaps)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Mipmap index out of range",
-					"D3D9Texture::getBuffer");
+			CM_EXCEPT(InvalidParametersException, "Mipmap index out of range");
 		size_t idx = face*(mNumMipmaps+1) + mipmap;
 
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
@@ -1964,9 +1933,7 @@ namespace CamelotEngine
 
 					if (FAILED(hr))
 					{
-						OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-							"Unable to copy AA buffer to final buffer: " + String(DXGetErrorDescription(hr)), 
-							"D3D9RenderTexture::swapBuffers");
+						CM_EXCEPT(InternalErrorException, "Unable to copy AA buffer to final buffer: " + String(DXGetErrorDescription(hr)));
 					}
 				}								
 			}																		

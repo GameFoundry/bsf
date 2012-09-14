@@ -146,8 +146,7 @@ namespace CamelotEngine {
 			message += static_cast<const char*>(errors->GetBufferPointer());
 
 			errors->Release();
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, message,
-				"D3D9GpuProgram::loadFromSource");
+			CM_EXCEPT(RenderingAPIException, message);
 		}
 	
 		loadFromMicrocode(d3d9Device, microcode);		
@@ -196,19 +195,14 @@ namespace CamelotEngine {
 
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-					"Cannot create D3D9 vertex shader from microcode",
-					"D3D9GpuVertexProgram::loadFromMicrocode");
-	            
+				CM_EXCEPT(RenderingAPIException, "Cannot create D3D9 vertex shader from microcode");
 			}
 
 			mMapDeviceToVertexShader[d3d9Device] = pVertexShader;
 		}
 		else
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Specified D3D9 vertex shader is not supported!",
-				"D3D9GpuVertexProgram::loadFromMicrocode");
+			CM_EXCEPT(RenderingAPIException, "Specified D3D9 vertex shader is not supported!");
 
 			// TODO LOG PORT - Log this error somewhere
 			//LogManager::getSingleton().logMessage(
@@ -307,10 +301,7 @@ namespace CamelotEngine {
 
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-					"Cannot create D3D9 pixel shader from microcode.",
-					"D3D9GpuFragmentProgram::loadFromMicrocode");
-	            
+				CM_EXCEPT(RenderingAPIException, "Cannot create D3D9 pixel shader from microcode.");
 			}
 
 			mMapDeviceToPixelShader[d3d9Device] = pPixelShader;

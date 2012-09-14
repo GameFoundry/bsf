@@ -74,9 +74,8 @@ namespace CamelotEngine
 
 		if (it == mMapRenderWindowToResoruces.end())
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Render window was not attached to this device !!", 
-				"D3D9Device::getRenderWindowIterator" );
+			CM_EXCEPT(RenderingAPIException, 
+				"Render window was not attached to this device !!");
 		}
 
 		return it;
@@ -155,9 +154,7 @@ namespace CamelotEngine
 				hr = itPrimary->second->swapChain->GetPresentParameters(&currentPresentParams);
 				if (FAILED(hr))
 				{
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-						"GetPresentParameters failed", 
-						"D3D9RenderWindow::acquire");
+					CM_EXCEPT(RenderingAPIException, "GetPresentParameters failed");
 				}
 				
 				// Desired parameters are different then current parameters.
@@ -276,9 +273,8 @@ namespace CamelotEngine
 	{
 		if (index >= mMapRenderWindowToResoruces.size())
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Index of render window is out of bounds!", 
-				"D3D9RenderWindow::getRenderWindow");
+			CM_EXCEPT(RenderingAPIException, 
+				"Index of render window is out of bounds!");
 		}
 		
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
@@ -409,9 +405,7 @@ namespace CamelotEngine
 		}
 		else if (FAILED(hr))
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Cannot reset device!", 
-				"D3D9RenderWindow::reset");
+			CM_EXCEPT(RenderingAPIException, "Cannot reset device!");
 		}
 
 		mDeviceLost = false;
@@ -473,9 +467,7 @@ namespace CamelotEngine
 	{
 		if (mD3D9DeviceCapsValid == false)
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Device caps are invalid!", 
-				"D3D9Device::getD3D9DeviceCaps" );
+			CM_EXCEPT(RenderingAPIException, "Device caps are invalid!");
 		}
 
 		return mD3D9DeviceCaps;
@@ -486,9 +478,7 @@ namespace CamelotEngine
 	{		
 		if (mPresentationParams == NULL || mPresentationParamsCount == 0)
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Presentation parameters are invalid!", 
-				"D3D9Device::getBackBufferFormat" );
+			CM_EXCEPT(RenderingAPIException, "Presentation parameters are invalid!");
 		}
 
 		return mPresentationParams[0].BackBufferFormat;
@@ -598,7 +588,7 @@ namespace CamelotEngine
 			if( hr != S_OK )
 			{
 				String str = "Unable to disable texture '" + toString((unsigned int)stage) + "' in D3D9";
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9Device::clearDeviceStreams" );
+				CM_EXCEPT(RenderingAPIException, str);
 			}
 		
 			mpDevice->GetTextureStageState(static_cast<DWORD>(stage), D3DTSS_COLOROP, &dwCurValue);
@@ -609,7 +599,7 @@ namespace CamelotEngine
 				if( hr != S_OK )
 				{
 					String str = "Unable to disable texture '" + toString((unsigned)stage) + "' in D3D9";
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, str, "D3D9Device::clearDeviceStreams" );
+					CM_EXCEPT(RenderingAPIException, str);
 				}
 			}			
 		
@@ -694,9 +684,7 @@ namespace CamelotEngine
 
 			if ( FAILED( hr ) )
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-					"Cannot create device!", 
-					"D3D9Device::createD3D9Device" );
+				CM_EXCEPT(RenderingAPIException, "Cannot create device!");
 			}
 		}
 
@@ -704,18 +692,14 @@ namespace CamelotEngine
 		hr = mpDevice->GetDeviceCaps(&mD3D9DeviceCaps);
 		if( FAILED( hr ) )
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Cannot get device caps!", 
-				"D3D9Device::createD3D9Device" );
+			CM_EXCEPT(RenderingAPIException, "Cannot get device caps!");
 		}
 
 		// Get current creation parameters caps.
 		hr = mpDevice->GetCreationParameters(&mCreationParams);
 		if ( FAILED(hr) )
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Error Get Creation Parameters", 
-				"D3D9Device:createD3D9Device" );
+			CM_EXCEPT(RenderingAPIException, "Error Get Creation Parameters");
 		}
 
 		mD3D9DeviceCapsValid = true;
@@ -980,9 +964,7 @@ namespace CamelotEngine
 		}
 		else if( FAILED(hr) )
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Error Presenting surfaces", 
-				"D3D9Device::present" );
+			CM_EXCEPT(RenderingAPIException, "Error Presenting surfaces");
 		}
 		else
 		{
@@ -1017,9 +999,7 @@ namespace CamelotEngine
 
 			if (FAILED(hr))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-					"Unable to create an additional swap chain",
-					"D3D9RenderWindow::acquireRenderWindowResources");
+				CM_EXCEPT(RenderingAPIException, "Unable to create an additional swap chain");
 			}
 		}
 		else
@@ -1029,9 +1009,7 @@ namespace CamelotEngine
 				&renderWindowResources->swapChain);
 			if (FAILED(hr)) 
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-					"Unable to get the swap chain",
-					"D3D9RenderWindow::acquireRenderWindowResources");
+				CM_EXCEPT(RenderingAPIException, "Unable to get the swap chain");
 			}
 		}
 
@@ -1073,9 +1051,7 @@ namespace CamelotEngine
 
 				if (FAILED(hr)) 
 				{
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-						"Unable to create a depth buffer for the swap chain",
-						"D3D9RenderWindow::acquireRenderWindowResources");
+					CM_EXCEPT(RenderingAPIException, "Unable to create a depth buffer for the swap chain");
 				}
 
 				if (isSwapChainWindow(renderWindow) == false)
@@ -1095,9 +1071,7 @@ namespace CamelotEngine
 		
 		if (FAILED(hr)) 
 		{
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Unable to apply render state: D3DRS_SPECULARENABLE <- TRUE",
-				"D3D9Device::setupDeviceStates");
+			CM_EXCEPT(RenderingAPIException, "Unable to apply render state: D3DRS_SPECULARENABLE <- TRUE");
 		}		
 	}
 
@@ -1208,9 +1182,7 @@ namespace CamelotEngine
 			(dst.top < 0) || (dst.bottom > renderWindow->getHeight()) ||
 			(dst.front != 0) || (dst.back != 1))
 		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-				"Invalid box.",
-				"D3D9Device::copyContentsToMemory" );
+			CM_EXCEPT(InvalidParametersException, "Invalid box.");
 		}
 
 		HRESULT hr;
@@ -1232,9 +1204,7 @@ namespace CamelotEngine
 
 			if (FAILED(hr = mpDevice->GetDisplayMode(0, &dm)))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-					"Can't get display mode: TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-					"D3D9Device::copyContentsToMemory");
+				CM_EXCEPT(RenderingAPIException, "Can't get display mode: TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			desc.Width = dm.Width;
@@ -1246,18 +1216,14 @@ namespace CamelotEngine
 				&pTempSurf,
 				0)))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-					"Can't create offscreen buffer: TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-					"D3D9Device::copyContentsToMemory");
+				CM_EXCEPT(RenderingAPIException, "Can't create offscreen buffer: TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			if (FAILED(hr = swapChain ? resources->swapChain->GetFrontBufferData(pTempSurf) :
 				mpDevice->GetFrontBufferData(0, pTempSurf)))
 			{
 				SAFE_RELEASE(pTempSurf);
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-					"Can't get front buffer: TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-					"D3D9Device::copyContentsToMemory");
+				CM_EXCEPT(RenderingAPIException, "Can't get front buffer: TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			if(renderWindow->isFullScreen())
@@ -1280,9 +1246,7 @@ namespace CamelotEngine
 				if (FAILED(hr))
 				{
 					SAFE_RELEASE(pTempSurf);
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-						"Can't lock rect:  TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-						"D3D9Device::copyContentsToMemory");
+					CM_EXCEPT(RenderingAPIException, "Can't lock rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				} 
 			}
 			else
@@ -1308,9 +1272,7 @@ namespace CamelotEngine
 				if (FAILED(hr = pTempSurf->LockRect(&lockedRect, &srcRect, D3DLOCK_READONLY | D3DLOCK_NOSYSLOCK)))
 				{
 					SAFE_RELEASE(pTempSurf);
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-						"Can't lock rect:  TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-						"D3D9Device::copyContentsToMemory");
+					CM_EXCEPT(RenderingAPIException, "Can't lock rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				} 
 			}
 		}
@@ -1320,16 +1282,12 @@ namespace CamelotEngine
 			if(FAILED(hr = swapChain? resources->swapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &pSurf) :
 				mpDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pSurf)))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-					"Can't get back buffer:  TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-					"D3D9Device::copyContentsToMemory");
+				CM_EXCEPT(RenderingAPIException, "Can't get back buffer:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			if(FAILED(hr = pSurf->GetDesc(&desc)))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-					"Can't get description:  TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-					"D3D9Device::copyContentsToMemory");
+				CM_EXCEPT(RenderingAPIException, "Can't get description:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			if (FAILED(hr = mpDevice->CreateOffscreenPlainSurface(desc.Width, desc.Height,
@@ -1338,9 +1296,7 @@ namespace CamelotEngine
 				&pTempSurf,
 				0)))
 			{
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-					"Can't create offscreen surface:  TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-					"D3D9Device::copyContentsToMemory");
+				CM_EXCEPT(RenderingAPIException, "Can't create offscreen surface:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			if (desc.MultiSampleType == D3DMULTISAMPLE_NONE)
@@ -1348,9 +1304,7 @@ namespace CamelotEngine
 				if (FAILED(hr = mpDevice->GetRenderTargetData(pSurf, pTempSurf)))
 				{
 					SAFE_RELEASE(pTempSurf);
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-						"Can't get render target data:  TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-						"D3D9Device::copyContentsToMemory");
+					CM_EXCEPT(RenderingAPIException, "Can't get render target data:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				}
 			}
 			else
@@ -1366,26 +1320,20 @@ namespace CamelotEngine
 					0)))
 				{
 					SAFE_RELEASE(pTempSurf);
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-						"Can't create render target:  TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-						"D3D9Device::copyContentsToMemory");
+					CM_EXCEPT(RenderingAPIException, "Can't create render target:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				}
 
 				if (FAILED(hr = mpDevice->StretchRect(pSurf, 0, pStretchSurf, 0, D3DTEXF_NONE)))
 				{
 					SAFE_RELEASE(pTempSurf);
 					SAFE_RELEASE(pStretchSurf);
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-						"Can't stretch rect:  TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-						"D3D9Device::copyContentsToMemory");
+					CM_EXCEPT(RenderingAPIException, "Can't stretch rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				}
 				if (FAILED(hr = mpDevice->GetRenderTargetData(pStretchSurf, pTempSurf)))
 				{
 					SAFE_RELEASE(pTempSurf);
 					SAFE_RELEASE(pStretchSurf);
-					OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-						"Can't get render target data:  TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-						"D3D9Device::copyContentsToMemory");
+					CM_EXCEPT(RenderingAPIException, "Can't get render target data:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				}
 				SAFE_RELEASE(pStretchSurf);
 			}
@@ -1408,9 +1356,7 @@ namespace CamelotEngine
 			if (FAILED(hr))
 			{
 				SAFE_RELEASE(pTempSurf);
-				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-					"Can't lock rect:  TODO PORT NO ERROR", // TODO PORT - Translate HR to error
-					"D3D9Device::copyContentsToMemory");
+				CM_EXCEPT(RenderingAPIException, "Can't lock rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 		}
 
@@ -1419,8 +1365,7 @@ namespace CamelotEngine
 		if (format == PF_UNKNOWN)
 		{
 			SAFE_RELEASE(pTempSurf);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
-				"Unsupported format", "D3D9Device::copyContentsToMemory");
+			CM_EXCEPT(RenderingAPIException, "Unsupported format");
 		}
 
 		PixelData src(dst.getWidth(), dst.getHeight(), 1, format, lockedRect.pBits);

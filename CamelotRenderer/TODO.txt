@@ -50,7 +50,6 @@ IMPORTANT: I think I should strive to make the renderer one unique CmRenderSyste
      - AND because I need to have it separated since I can't expect DirectX to compile on OSX or Linux
 
 TOMORROW:
- - Add plugin loading for D3D9 and GL plugins and make sure everything works once more
  - Incorporate CamelotUtility library into CamelotRenderer
    - Move remaining Utility files to CamelotUtility (files like StringUtil, PixelUtil and similar)
      - Port exceptions

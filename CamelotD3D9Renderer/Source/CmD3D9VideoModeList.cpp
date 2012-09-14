@@ -34,7 +34,7 @@ namespace CamelotEngine
 	D3D9VideoModeList::D3D9VideoModeList( D3D9Driver* pDriver )
 	{
 		if( NULL == pDriver )
-			OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, "pDriver parameter is NULL", "D3D9VideoModeList::D3D9VideoModeList" );
+			CM_EXCEPT(InvalidParametersException, "pDriver parameter is NULL");
 
 		mpDriver = pDriver;
 		enumerate();
