@@ -121,7 +121,6 @@
     <ClInclude Include="Include\CmRenderTarget.h" />
     <ClInclude Include="Include\CmRenderTexture.h" />
     <ClInclude Include="Include\CmRenderWindow.h" />
-    <ClInclude Include="Include\CmSingleton.h" />
     <ClInclude Include="Include\CmTexture.h" />
     <ClInclude Include="Include\CmTextureManager.h" />
     <ClInclude Include="Include\CmTextureState.h" />

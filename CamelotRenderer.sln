@@ -9,10 +9,19 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotUtility", "CamelotUtility\CamelotUtility.vcxproj", "{CC7F9445-71C9-4559-9976-FF0A64DCB582}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotD3D9Renderer", "CamelotD3D9Renderer\CamelotD3D9Renderer.vcxproj", "{796B6DFF-BA04-42B7-A43A-2B14D707A33A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotClient", "CamelotClient\CamelotClient.vcxproj", "{67137A0D-7A67-4D0C-9FBF-AF904FABEF05}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotGLRenderer", "CamelotGLRenderer\CamelotGLRenderer.vcxproj", "{F58FF869-2EA6-4FFF-AB84-328C531BA9D9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution

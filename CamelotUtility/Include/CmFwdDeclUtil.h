@@ -19,4 +19,6 @@ namespace CamelotEngine {
 	class Vector3;
 	class Vector4;
 	class Color;
+	class DynLib;
+	class DynLibManager;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+#include "CmPrerequisites.h"
 #include "CmHighLevelGpuProgram.h"
 
 namespace CamelotEngine
@@ -31,6 +31,8 @@ namespace CamelotEngine
 			Camera* mCamera;
 			HighLevelGpuProgramPtr mFragProg;
 			HighLevelGpuProgramPtr mVertProg;
+
+			DynLibManager* mDynLibManager; // TODO - Handle singletons differently
 	};
 
 	CM_EXPORT Application& gApplication();

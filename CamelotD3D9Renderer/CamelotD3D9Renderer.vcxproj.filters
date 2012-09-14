@@ -170,5 +170,8 @@
     <ClCompile Include="Source\CmD3D9VideoModeList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CmD3D9Plugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

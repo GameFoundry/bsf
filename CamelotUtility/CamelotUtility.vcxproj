@@ -74,9 +74,11 @@
     <ClInclude Include="Include\CmBitwise.h" />
     <ClInclude Include="Include\CmBox.h" />
     <ClInclude Include="Include\CmColor.h" />
+    <ClInclude Include="Include\CmDynLibManager.h" />
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmMathAsm.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
+    <ClInclude Include="Include\CmSingleton.h" />
     <ClInclude Include="Include\CmString.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmTypes.h" />
@@ -100,6 +102,7 @@
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp" />
     <ClCompile Include="Source\CmColor.cpp" />
+    <ClCompile Include="Source\CmDynLibManager.cpp" />
     <ClCompile Include="Source\CmException.cpp" />
     <ClCompile Include="Source\CmMath.cpp" />
     <ClCompile Include="Source\CmMatrix3.cpp" />

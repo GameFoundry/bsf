@@ -16,9 +16,6 @@
     <Filter Include="Header Files\ForRemoval">
       <UniqueIdentifier>{f916bd59-03a7-42a7-9b9c-60abe94020bc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\ForRemoval">
-      <UniqueIdentifier>{004ec8e4-409f-4bc2-b697-f24c707a2429}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Utility">
       <UniqueIdentifier>{2c09857e-4a4a-480f-8ebb-1661a9ce78dd}</UniqueIdentifier>
     </Filter>
@@ -33,15 +30,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmConfigOptionMap.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmPrerequisites.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmRenderOperation.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmSingleton.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmCommon.h">
@@ -135,6 +123,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderOperation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmPrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,6 +10,7 @@
 #include "CmViewport.h"
 #include "CmHighLevelGpuProgram.h"
 #include "CmHighLevelGpuProgramManager.h"
+#include "CmDynLibManager.h"
 
 namespace CamelotEngine
 {
@@ -20,9 +21,10 @@ namespace CamelotEngine
 	void Application::startUp(String renderSystemDll)
 	{
 		mGpuProgramManager = new HighLevelGpuProgramManager(); // TODO - Use Camelot::Module for instantiating this
+		mDynLibManager = new DynLibManager(); // TODO - Same as above, use Module
 
-		//RenderSystemManager::initialize("D3D9RenderSystem");
-		RenderSystemManager::initialize("GLRenderSystem");
+		//RenderSystemManager::initialize("CamelotD3D9Renderer.dll");
+		RenderSystemManager::initialize("CamelotGLRenderer.dll");
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_initialise(false, "Camelot Renderer");

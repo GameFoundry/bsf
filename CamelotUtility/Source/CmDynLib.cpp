@@ -37,7 +37,7 @@ THE SOFTWARE.
 #  include <windows.h>
 #endif
 
-#if CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == CM_PLATFORM_IPHONE
+#if CM_PLATFORM == CM_PLATFORM_APPLE
 #   include "macUtils.h"
 #   include <dlfcn.h>
 #endif
@@ -61,15 +61,15 @@ namespace CamelotEngine {
     void DynLib::load()
     {
 		String name = mName;
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#if CM_PLATFORM == CM_PLATFORM_LINUX
         // dlopen() does not add .so to the filename, like windows does for .dll
         if (name.substr(name.length() - 3, 3) != ".so")
            name += ".so";
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#elif CM_PLATFORM == CM_PLATFORM_APPLE
         // dlopen() does not add .dylib to the filename, like windows does for .dll
         if (name.substr(name.length() - 6, 6) != ".dylib")
 			name += ".dylib";
-#elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#elif CM_PLATFORM == CM_PLATFORM_WIN32
 		// Although LoadLibraryEx will add .dll itself when you only specify the library name,
 		// if you include a relative path then it does not. So, add it to be sure.
 		if (name.substr(name.length() - 4, 4) != ".dll")

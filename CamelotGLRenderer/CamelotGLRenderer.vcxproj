@@ -118,6 +118,7 @@
     <ClInclude Include="Source\win32\CmGLUtil.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CmGLPlugin.cpp" />
     <ClCompile Include="Source\atifs\src\ATI_FS_GLGpuProgram.cpp" />
     <ClCompile Include="Source\atifs\src\Compiler2Pass.cpp" />
     <ClCompile Include="Source\atifs\src\ps_1_4.cpp" />

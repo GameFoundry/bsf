@@ -251,5 +251,8 @@
     <ClCompile Include="Source\glew.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CmGLPlugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
