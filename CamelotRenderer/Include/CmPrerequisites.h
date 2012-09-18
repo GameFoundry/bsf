@@ -66,6 +66,12 @@ namespace CamelotEngine {
     class VertexBufferBinding;
     class VertexData;
     class VertexDeclaration;
+	// Asset import
+	class SpecificImporter;
+	class Importer;
+	// Resources
+	class Resource;
+	class Resources;
 }
 
 /* Shared pointer typedefs*/
@@ -75,6 +81,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<HighLevelGpuProgram> HighLevelGpuProgramPtr;
 	typedef std::shared_ptr<HardwarePixelBuffer> HardwarePixelBufferPtr;
 	typedef std::shared_ptr<Texture> TexturePtr;
+	typedef std::shared_ptr<Resource> ResourcePtr;
 }
 
 #endif // __OgrePrerequisites_H__

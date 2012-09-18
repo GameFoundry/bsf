@@ -74,11 +74,13 @@
     <ClInclude Include="Include\CmBitwise.h" />
     <ClInclude Include="Include\CmBox.h" />
     <ClInclude Include="Include\CmColor.h" />
+    <ClInclude Include="Include\CmDebug.h" />
     <ClInclude Include="Include\CmDynLibManager.h" />
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmLog.h" />
     <ClInclude Include="Include\CmMathAsm.h" />
     <ClInclude Include="Include\CmModule.h" />
+    <ClInclude Include="Include\CmPath.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
     <ClInclude Include="Include\CmString.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
@@ -95,6 +97,7 @@
     <ClInclude Include="Include\CmRay.h" />
     <ClInclude Include="Include\CmSphere.h" />
     <ClInclude Include="Include\CmStdHeaders.h" />
+    <ClInclude Include="Include\CmUUID.h" />
     <ClInclude Include="Include\CmVector2.h" />
     <ClInclude Include="Include\CmVector3.h" />
     <ClInclude Include="Include\CmVector4.h" />
@@ -103,6 +106,7 @@
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp" />
     <ClCompile Include="Source\CmColor.cpp" />
+    <ClCompile Include="Source\CmDebug.cpp" />
     <ClCompile Include="Source\CmDynLibManager.cpp" />
     <ClCompile Include="Source\CmException.cpp" />
     <ClCompile Include="Source\CmLog.cpp" />

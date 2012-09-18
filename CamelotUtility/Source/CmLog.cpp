@@ -13,7 +13,7 @@ namespace CamelotEngine
 
 	Log::~Log()
 	{
-		save();
+		flush();
 
 		for(auto iter = mEntries.begin(); iter != mEntries.end(); ++iter)
 			delete *iter;
@@ -27,7 +27,7 @@ namespace CamelotEngine
 		doOnEntryAdded(*newEntry);
 
 		if(mAutoSave)
-			save();
+			flush();
 	}
 
 	void Log::clear()
@@ -38,10 +38,10 @@ namespace CamelotEngine
 		mEntries.clear();
 
 		if(mAutoSave)
-			save();
+			flush();
 	}
 
-	void Log::save()
+	void Log::flush()
 	{
 		if(mSuppressFileOutput)
 			return;

@@ -186,4 +186,21 @@ namespace CamelotEngine
 	{ 
 		typedef typename std::multimap<K, V, P> type; 
 	}; 
+	//template <typename T, typename A = char> 
+	//using deque = std::deque<T, A>;    
+
+	//template <typename T, typename A = char >
+	//using vector = std::vector<T, A>;
+
+	//template <typename T, typename A = char > 
+	//using list = std::list<T, A>;    
+
+	//template <typename T, typename P = std::less<T>, typename A = char > 
+	//using set = std::set<T, P, A>;    
+
+	//template <typename K, typename V, typename P = std::less<K>, typename A = char > 
+	//using map = std::map<K, V, P, A>; 
+
+	//template <typename K, typename V, typename P = std::less<K>, typename A = char > 
+	//using multimap = std::multimap<K, V, P, A>; 
 }

@@ -112,6 +112,7 @@
     <ClInclude Include="Include\CmHardwareVertexBuffer.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgram.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgramManager.h" />
+    <ClInclude Include="Include\CmImporter.h" />
     <ClInclude Include="Include\CmPrerequisites.h" />
     <ClInclude Include="Include\CmRenderOperation.h" />
     <ClInclude Include="Include\CmRenderSystem.h" />
@@ -121,6 +122,9 @@
     <ClInclude Include="Include\CmRenderTarget.h" />
     <ClInclude Include="Include\CmRenderTexture.h" />
     <ClInclude Include="Include\CmRenderWindow.h" />
+    <ClInclude Include="Include\CmResource.h" />
+    <ClInclude Include="Include\CmResources.h" />
+    <ClInclude Include="Include\CmSpecificImporter.h" />
     <ClInclude Include="Include\CmTexture.h" />
     <ClInclude Include="Include\CmTextureManager.h" />
     <ClInclude Include="Include\CmTextureState.h" />
@@ -146,12 +150,14 @@
     <ClCompile Include="Source\CmHardwareVertexBuffer.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgram.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgramManager.cpp" />
+    <ClCompile Include="Source\CmImporter.cpp" />
     <ClCompile Include="Source\CmRenderSystem.cpp" />
     <ClCompile Include="Source\CmRenderSystemCapabilities.cpp" />
     <ClCompile Include="Source\CmRenderSystemManager.cpp" />
     <ClCompile Include="Source\CmRenderTarget.cpp" />
     <ClCompile Include="Source\CmRenderTexture.cpp" />
     <ClCompile Include="Source\CmRenderWindow.cpp" />
+    <ClCompile Include="Source\CmResources.cpp" />
     <ClCompile Include="Source\CmTexture.cpp" />
     <ClCompile Include="Source\CmTextureManager.cpp" />
     <ClCompile Include="Source\CmTextureState.cpp" />

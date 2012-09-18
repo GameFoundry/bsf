@@ -51,7 +51,7 @@ namespace CamelotEngine
 		 * @param	suppressFileOutput	(optional) If true, log won't be saved to a file, even if you
 		 * 								call save manually.
 		 */
-		Log(const String& logFilePath, bool autoSave = true, bool suppressFileOutput = false);
+		Log(const String& logFilePath = "", bool autoSave = true, bool suppressFileOutput = false);
 		~Log();
 
 		/**
@@ -71,7 +71,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Saves the log file to disk.
 		 */
-		void save();
+		void flush();
 
 	private:
 		std::vector<LogEntry*> mEntries;
