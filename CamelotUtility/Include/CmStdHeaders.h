@@ -186,6 +186,8 @@ namespace CamelotEngine
 	{ 
 		typedef typename std::multimap<K, V, P> type; 
 	}; 
+
+	// TODO - Once VC2012 grows up and adds proper C++11 support, uncomment this
 	//template <typename T, typename A = char> 
 	//using deque = std::deque<T, A>;    
 
