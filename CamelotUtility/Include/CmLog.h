@@ -5,17 +5,6 @@
 
 namespace CamelotEngine
 {
-	/**	   
-	* @brief	Different log levels that log entries may be assigned.
-	 */
-	enum LogLevel
-	{
-		LL_DEBUG = 0x1,
-		LL_INFO = 0x2,
-		LL_WARNING = 0x4,
-		LL_ERROR = 0x8
-	};
-
 	/**
 	 * @brief	A single log entry, usually used in QtLogModel as
 	 * 			a representation of a log entry in the Console window.
@@ -23,14 +12,14 @@ namespace CamelotEngine
 	class CM_EXPORT LogEntry
 	{
 	public:
-		LogEntry(const String& msg, LogLevel level);
+		LogEntry(const String& msg, const String& channel);
 
-		LogLevel getLevel(void) { return mLevel; }
+		const String& getChannel(void) { return mChannel; }
 		const String& getMessage(void) { return mMsg; }
 
 	private:
 		String mMsg;
-		LogLevel mLevel;
+		String mChannel;
 	};
 
 	/**
@@ -59,9 +48,9 @@ namespace CamelotEngine
 		 * 			disk.
 		 *
 		 * @param	message	The message describing the log entry.
-		 * @param	level  	Severity of the log entry.
+		 * @param	channel Channel in which to store the log entry.
 		 */
-		void logMsg(const String& message, LogLevel level);
+		void logMsg(const String& message, const String& channel);
 
 		/**
 		 * @brief	Removes all log entries. If autoSave is enabled the file on disk will be cleared too.

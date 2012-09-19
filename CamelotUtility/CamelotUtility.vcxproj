@@ -102,6 +102,7 @@
     <ClInclude Include="Include\CmVector3.h" />
     <ClInclude Include="Include\CmVector4.h" />
     <ClInclude Include="Include\CmDynLib.h" />
+    <ClInclude Include="Include\CmDataStream.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp" />
@@ -121,6 +122,7 @@
     <ClCompile Include="Source\CmVector3.cpp" />
     <ClCompile Include="Source\CmVector4.cpp" />
     <ClCompile Include="Source\CmDynLib.cpp" />
+    <ClCompile Include="Source\CmDataStream.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

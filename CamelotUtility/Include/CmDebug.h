@@ -14,6 +14,7 @@ namespace CamelotEngine
 		void logInfo(std::string msg);
 		void logWarning(std::string msg);
 		void logError(std::string msg);
+		void log(const String& msg, const String& channel);
 
 		Log& getLog() { return mLog; }
 

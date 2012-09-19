@@ -2,8 +2,8 @@
 
 namespace CamelotEngine
 {
-	LogEntry::LogEntry(const String& msg, LogLevel level)
-		:mMsg(msg), mLevel(level)
+	LogEntry::LogEntry(const String& msg, const String& level)
+		:mMsg(msg), mChannel(level)
 	{ }
 
 	Log::Log(const String& logFilePath, bool autoSave, bool suppressFileOutput)
@@ -19,7 +19,7 @@ namespace CamelotEngine
 			delete *iter;
 	}
 
-	void Log::logMsg(const String& message, LogLevel level)
+	void Log::logMsg(const String& message, const String& level)
 	{
 		LogEntry* newEntry = new LogEntry(message, level);
 		mEntries.push_back(newEntry);

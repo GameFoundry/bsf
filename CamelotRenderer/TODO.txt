@@ -45,6 +45,14 @@ TODO:
  - OpenGL too
 
 TOMORROW:
+ Add wrapper around IO methods
+ Continue working on Importer, Resources (IMPORTANT - AssetDatabase in a single file probably won't work. Multiple people won't be able to work on it. Unless we make it part of a local cache?)
+ Try to fully implement free image and maybe FBX importers
+ Log class should be able to accept different channels, other than the predetermined ones
+ Extend the Path library
+  - Less important notes:
+    - All of this must be thread safe to allow for background loading
+    - Make sure all resources have default resource that will be used before actual resource is loaded
  - Add precompiled headers to all projects
  - Make sure they include Exception & Log classes
 

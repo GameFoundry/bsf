@@ -5,22 +5,27 @@ namespace CamelotEngine
 {
 	void Debug::logDebug(std::string msg)
 	{
-		mLog.logMsg(msg, LL_DEBUG);
+		mLog.logMsg(msg, "GlobalDebug");
 	}
 
 	void Debug::logInfo(std::string msg)
 	{
-		mLog.logMsg(msg, LL_INFO);
+		mLog.logMsg(msg, "GlobalInfo");
 	}
 
 	void Debug::logWarning(std::string msg)
 	{
-		mLog.logMsg(msg, LL_WARNING);
+		mLog.logMsg(msg, "GlobalWarning");
 	}
 
 	void Debug::logError(std::string msg)
 	{
-		mLog.logMsg(msg, LL_ERROR);
+		mLog.logMsg(msg, "GlobalError");
+	}
+
+	void Debug::log(const String& msg, const String& channel)
+	{
+		mLog.logMsg(msg, channel);
 	}
 
 	CM_EXPORT Debug& gDebug()

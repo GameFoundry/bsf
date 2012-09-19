@@ -11,9 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\CmFreeImgImporter.h" />
     <ClInclude Include="Include\CmFreeImgPrerequisites.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\CmFreeImgImporter.cpp" />
     <ClCompile Include="Source\CmFreeImgPlugin.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -45,22 +47,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\bin\$(Configuration)</OutDir>
+    <OutDir>..\bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\bin\$(Configuration)</OutDir>
+    <OutDir>..\bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>CM_FREEIMG_EXPORTS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../CamelotRenderer/Include;../CamelotUtility/Include;./Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../CamelotRenderer/Include;../CamelotUtility/Include;./Include;./Dependencies/Include;../Dependencies/Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../lib/$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotRenderer.lib;FreeImaged.lib;libboost_signals-vc110-mt-gd-1_49.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(Configuration);./Dependencies/lib/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -71,14 +73,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>CM_FREEIMG_EXPORTS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../CamelotRenderer/Include;../CamelotUtility/Include;./Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../CamelotRenderer/Include;../CamelotUtility/Include;./Include;./Dependencies/Include;../Dependencies/Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../lib/$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotRenderer.lib;FreeImage.lib;libboost_signals-vc110-mt-1_49.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(Configuration);./Dependencies/lib/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
