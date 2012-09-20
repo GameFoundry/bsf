@@ -45,11 +45,17 @@ TODO:
  - OpenGL too
 
 TOMORROW:
- Add wrapper around IO methods
+TextureData
+ - Keeps num mips, width, height, depth, format, flags and raw image data that can be used for initializing textures
+ - Will need some methods like getPixelBox, from OgreImage
+ - Cube textures require 6 of these
+ - When serializing this texture, request data from GPU, populate TextureData array and return
+
+Texture
+ - Gets initialized by calling SetData(vector<TextureData). 
+ - Returns TextureData by GetData (retrieves data from GPU)
  Continue working on Importer, Resources (IMPORTANT - AssetDatabase in a single file probably won't work. Multiple people won't be able to work on it. Unless we make it part of a local cache?)
  Try to fully implement free image and maybe FBX importers
- Log class should be able to accept different channels, other than the predetermined ones
- Extend the Path library
   - Less important notes:
     - All of this must be thread safe to allow for background loading
     - Make sure all resources have default resource that will be used before actual resource is loaded
@@ -59,6 +65,8 @@ TOMORROW:
 Other notes:
  - Search for all remaining "TODO PORT" comments and fix them
  - How am I notified on device reset? (When I need to reload my resources)
+ - D3D9Texture::createTextureResources is commented out at the moment. It gets called on device reset, and at that point
+     I should reload texture resources.
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
  - Remove all fixed pipeline methods from D3D9 and OpenGL renderers
  - Make CamelotRenderer a project on its own?
@@ -82,3 +90,5 @@ After everything is polished:
 
  - OpenGL non-Win32 window files haven't been properly parsed or tested
    - Since I probably can't compile them, try adding them to VS and see what intellisense says?
+
+ - Textures and all other buffers keep a copy of their data in system memory. If there are memory constraints we might need a way to avoid this.

@@ -109,6 +109,10 @@
     <ClInclude Include="Include\CmVector4.h" />
     <ClInclude Include="Include\CmDynLib.h" />
     <ClInclude Include="Include\CmDataStream.h" />
+    <ClInclude Include="Include\CmTextureData.h" />
+    <ClCompile Include="Source\CmTextureData.cpp">
+      <FileType>CppHeader</FileType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp" />

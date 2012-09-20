@@ -371,7 +371,7 @@ namespace CamelotEngine
     /** Common subclass of DataStream for handling data from 
 		std::basic_istream.
 	*/
-	class CM_UTILITY_EXPORT FileStreamDataStream : DataStream
+	class CM_UTILITY_EXPORT FileDataStream : DataStream
 	{
 	protected:
 		/// Reference to source stream (read)
@@ -389,14 +389,14 @@ namespace CamelotEngine
         @param freeOnClose Whether to delete the underlying stream on 
             destruction of this class
         */
-		FileStreamDataStream(std::ifstream* s, 
+		FileDataStream(std::ifstream* s, 
             bool freeOnClose = true);
 		/** Construct a read-write stream from an STL stream
 		@param s Pointer to source stream
 		@param freeOnClose Whether to delete the underlying stream on 
 		destruction of this class
 		*/
-		FileStreamDataStream(std::fstream* s, 
+		FileDataStream(std::fstream* s, 
 			bool freeOnClose = true);
 
 		/** Construct named read-only stream from an STL stream
@@ -405,7 +405,7 @@ namespace CamelotEngine
         @param freeOnClose Whether to delete the underlying stream on 
             destruction of this class
         */
-		FileStreamDataStream(const String& name, 
+		FileDataStream(const String& name, 
             std::ifstream* s, 
             bool freeOnClose = true);
 
@@ -415,7 +415,7 @@ namespace CamelotEngine
 		@param freeOnClose Whether to delete the underlying stream on 
 		destruction of this class
 		*/
-		FileStreamDataStream(const String& name, 
+		FileDataStream(const String& name, 
 			std::fstream* s, 
 			bool freeOnClose = true);
 
@@ -433,7 +433,7 @@ namespace CamelotEngine
 			must ensure that the stream was allocated using OGRE_NEW_T with 
 			MEMCATEGRORY_GENERAL.
         */
-		FileStreamDataStream(const String& name, 
+		FileDataStream(const String& name, 
             std::ifstream* s, 
             size_t size, 
             bool freeOnClose = true);
@@ -452,12 +452,12 @@ namespace CamelotEngine
 		must ensure that the stream was allocated using OGRE_NEW_T with 
 		MEMCATEGRORY_GENERAL.
 		*/
-		FileStreamDataStream(const String& name, 
+		FileDataStream(const String& name, 
 			std::fstream* s, 
 			size_t size, 
 			bool freeOnClose = true);
 
-		~FileStreamDataStream();
+		~FileDataStream();
 
 		/** @copydoc DataStream::read
 		*/

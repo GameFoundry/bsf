@@ -1,7 +1,6 @@
 #include "CmFreeImgPrerequisites.h"
 #include "CmSpecificImporter.h"
 #include "CmImporter.h"
-#include "CmPixelUtil.h"
 
 namespace CamelotEngine
 {
@@ -27,20 +26,7 @@ namespace CamelotEngine
 		std::unordered_map<String, int> mExtensionToFID;
 
 		String magicNumToExtension(const UINT8* magic, UINT32 maxBytes) const;
-		RawImageData importRawImage(DataStream* fileData);
-
-		struct RawImageData
-		{
-			RawImageData()
-				:width(0), height(0), size(0), format(PF_UNKNOWN)
-			{ }
-
-			UINT32 width;
-			UINT32 height;
-			UINT32 size;
-			PixelFormat format;
-			MemoryDataStreamPtr data;
-		};
+		TextureDataPtr importRawImage(DataStream* fileData);
 
 		class InitOnStart
 		{

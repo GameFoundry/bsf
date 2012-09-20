@@ -3,6 +3,7 @@
 #include "CmDebug.h"
 #include "CmDataStream.h"
 #include "CmPath.h"
+#include "CmTextureData.h"
 
 #include "FreeImage.h"
 
@@ -125,15 +126,15 @@ namespace CamelotEngine
 
 	ResourcePtr FreeImgImporter::import(DataStream* fileData)
 	{
-		RawImageData imgData = importRawImage(fileData);
-		if(imgData.data == nullptr)
+		TextureDataPtr imgData = importRawImage(fileData);
+		if(imgData == nullptr || imgData->getData() == nullptr)
 			return nullptr;
 
 
 		return nullptr;
 	}
 
-	FreeImgImporter::RawImageData FreeImgImporter::importRawImage(DataStream* fileData)
+	TextureDataPtr FreeImgImporter::importRawImage(DataStream* fileData)
 	{
 		size_t magicLen = std::min(fileData->size(), (size_t)32);
 		UINT8 magicBuf[32];
@@ -165,10 +166,9 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, "Error decoding image");
 		}
 
-		RawImageData imageData;
-		imageData.width = FreeImage_GetWidth(fiBitmap);
-		imageData.height = FreeImage_GetHeight(fiBitmap);
-		imageData.format = PF_UNKNOWN;
+		UINT32 width = FreeImage_GetWidth(fiBitmap);
+		UINT32 height = FreeImage_GetHeight(fiBitmap);
+		PixelFormat format = PF_UNKNOWN;
 
 		// Must derive format first, this may perform conversions
 
@@ -216,19 +216,19 @@ namespace CamelotEngine
 			switch(bpp)
 			{
 			case 8:
-				imageData.format = PF_L8;
+				format = PF_L8;
 				break;
 			case 16:
 				// Determine 555 or 565 from green mask
 				// cannot be 16-bit greyscale since that's FIT_UINT16
 				if(FreeImage_GetGreenMask(fiBitmap) == FI16_565_GREEN_MASK)
 				{
-					imageData.format = PF_R5G6B5;
+					format = PF_R5G6B5;
 				}
 				else
 				{
 					// FreeImage doesn't support 4444 format so must be 1555
-					imageData.format = PF_A1R5G5B5;
+					format = PF_A1R5G5B5;
 				}
 				break;
 			case 24:
@@ -236,16 +236,16 @@ namespace CamelotEngine
 				//     PF_BYTE_BGR[A] for little endian (== PF_ARGB native)
 				//     PF_BYTE_RGB[A] for big endian (== PF_RGBA native)
 #if FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_RGB
-				imageData.format = PF_BYTE_RGB;
+				format = PF_BYTE_RGB;
 #else
-				imageData.format = PF_BYTE_BGR;
+				format = PF_BYTE_BGR;
 #endif
 				break;
 			case 32:
 #if FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_RGB
-				imageData.format = PF_BYTE_RGBA;
+				format = PF_BYTE_RGBA;
 #else
-				imageData.format = PF_BYTE_BGRA;
+				format = PF_BYTE_BGRA;
 #endif
 				break;
 
@@ -255,23 +255,23 @@ namespace CamelotEngine
 		case FIT_UINT16:
 		case FIT_INT16:
 			// 16-bit greyscale
-			imageData.format = PF_L16;
+			format = PF_L16;
 			break;
 		case FIT_FLOAT:
 			// Single-component floating point data
-			imageData.format = PF_FLOAT32_R;
+			format = PF_FLOAT32_R;
 			break;
 		case FIT_RGB16:
-			imageData.format = PF_SHORT_RGB;
+			format = PF_SHORT_RGB;
 			break;
 		case FIT_RGBA16:
-			imageData.format = PF_SHORT_RGBA;
+			format = PF_SHORT_RGBA;
 			break;
 		case FIT_RGBF:
-			imageData.format = PF_FLOAT32_RGB;
+			format = PF_FLOAT32_RGB;
 			break;
 		case FIT_RGBAF:
-			imageData.format = PF_FLOAT32_RGBA;
+			format = PF_FLOAT32_RGBA;
 			break;
 
 
@@ -281,16 +281,17 @@ namespace CamelotEngine
 		unsigned srcPitch = FreeImage_GetPitch(fiBitmap);
 
 		// Final data - invert image and trim pitch at the same time
-		size_t dstPitch = imageData.width * PixelUtil::getNumElemBytes(imageData.format);
-		size_t size = dstPitch * imageData.height;
+		size_t dstPitch = width * PixelUtil::getNumElemBytes(format);
+		size_t size = dstPitch * height;
+
 		// Bind output buffer
-		MemoryDataStreamPtr output(new MemoryDataStream(size));
+		UINT8* output = new UINT8[size]; // TextureData frees this when its released
 
 		UINT8* pSrc;
-		UINT8* pDst = output->getPtr();
-		for (size_t y = 0; y < imageData.height; ++y)
+		UINT8* pDst = output;
+		for (size_t y = 0; y < height; ++y)
 		{
-			pSrc = srcData + (imageData.height - y - 1) * srcPitch;
+			pSrc = srcData + (height - y - 1) * srcPitch;
 			memcpy(pDst, pSrc, dstPitch);
 			pDst += dstPitch;
 		}
@@ -298,8 +299,7 @@ namespace CamelotEngine
 		FreeImage_Unload(fiBitmap);
 		FreeImage_CloseMemory(fiMem);
 
-		imageData.data = output;
-
-		return imageData;
+		TextureDataPtr texData(new TextureData(width, height, size, format, output, 1, 0, 1));
+		return texData;
 	}
 }

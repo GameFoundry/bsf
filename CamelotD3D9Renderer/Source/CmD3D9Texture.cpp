@@ -245,129 +245,6 @@ namespace CamelotEngine
 		//	OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Unknown texture type", "D3D9Texture::loadImpl" );
 		//}				
 	}
-	/****************************************************************************************/
-	void D3D9Texture::prepareImpl()
-	{		
-		if (mUsage & TU_RENDERTARGET)
-		{
-			return;
-		}
-
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-		
-		// TODO PORT - Loading tex from streams not supported
-  //      LoadedStreams loadedStreams;
-
-		//// prepare load based on tex.type
-		//switch (getTextureType())
-		//{
-		//case TEX_TYPE_1D:
-		//case TEX_TYPE_2D:
-		//	loadedStreams = _prepareNormTex();
-		//	break;
-		//case TEX_TYPE_3D:
-		//	loadedStreams = _prepareVolumeTex();
-		//	break;
-		//case TEX_TYPE_CUBE_MAP:
-		//	loadedStreams = _prepareCubeTex();
-		//	break;
-		//default:
-		//	OGRE_EXCEPT( Exception::ERR_INTERNAL_ERROR, "Unknown texture type", "D3D9Texture::prepareImpl" );
-		//}
-
-		//mLoadedStreams = loadedStreams;		
-	}
-    /****************************************************************************************/
-	// TODO PORT - Loading tex from streams not supported
-	//D3D9Texture::LoadedStreams D3D9Texture::_prepareCubeTex()
-	//{
-	//	assert(getTextureType() == TEX_TYPE_CUBE_MAP);
-
- //       LoadedStreams loadedStreams = LoadedStreams(new vector<MemoryDataStreamPtr>::type());
- //       // DDS load?
-	//	if (getSourceFileType() == "dds")
-	//	{
- //           // find & load resource data
-	//		DataStreamPtr dstream = 
-	//			ResourceGroupManager::getSingleton().openResource(
-	//				mName, mGroup, true, this);
- //           loadedStreams->push_back(MemoryDataStreamPtr(new MemoryDataStream(dstream)));
- //       }
- //       else
- //       {
-	//		// Load from 6 separate files
-	//		// Use OGRE its own codecs
-	//		String baseName, ext;
-	//		size_t pos = mName.find_last_of(".");
-	//		baseName = mName.substr(0, pos);
-	//		if ( pos != String::npos )
-	//			ext = mName.substr(pos+1);
-	//		static const String suffixes[6] = {"_rt", "_lf", "_up", "_dn", "_fr", "_bk"};
-
-	//		for(size_t i = 0; i < 6; i++)
-	//		{
-	//			String fullName = baseName + suffixes[i];
-	//			if (!ext.empty())
-	//				fullName = fullName + "." + ext;
-
- //           	// find & load resource data intro stream to allow resource
-	//			// group changes if required
-	//			DataStreamPtr dstream = 
-	//				ResourceGroupManager::getSingleton().openResource(
-	//					fullName, mGroup, true, this);
-
- //               loadedStreams->push_back(MemoryDataStreamPtr(new MemoryDataStream(dstream)));
-	//		}
- //       }
-
- //       return loadedStreams;
-	//}
-	/****************************************************************************************/
-	// TODO PORT - Loading tex from streams not supported
-	//D3D9Texture::LoadedStreams D3D9Texture::_prepareVolumeTex()
-	//{
-	//	assert(getTextureType() == TEX_TYPE_3D);
-
-	//	// find & load resource data
-	//	DataStreamPtr dstream = 
-	//		ResourceGroupManager::getSingleton().openResource(
-	//			mName, mGroup, true, this);
-
- //       LoadedStreams loadedStreams = LoadedStreams(new vector<MemoryDataStreamPtr>::type());
- //       loadedStreams->push_back(MemoryDataStreamPtr(new MemoryDataStream(dstream)));
- //       return loadedStreams;
- //   }
-	/****************************************************************************************/
-	// TODO PORT - Loading tex from streams not supported
-	//D3D9Texture::LoadedStreams D3D9Texture::_prepareNormTex()
-	//{
-	//	assert(getTextureType() == TEX_TYPE_1D || getTextureType() == TEX_TYPE_2D);
-
-	//	// find & load resource data
-	//	DataStreamPtr dstream = 
-	//		ResourceGroupManager::getSingleton().openResource(
-	//			mName, mGroup, true, this);
-
- //       LoadedStreams loadedStreams = LoadedStreams(new vector<MemoryDataStreamPtr>::type());
- //       loadedStreams->push_back(MemoryDataStreamPtr(new MemoryDataStream(dstream)));
- //       return loadedStreams;
-	//}
-	/****************************************************************************************/
-	void D3D9Texture::unprepareImpl()
-	{		
-		if (mUsage & TU_RENDERTARGET)
-		{
-			return;
-		}   
-	}
-
-	/****************************************************************************************/
-	void D3D9Texture::postLoadImpl(void)
-	{
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-		// TODO PORT - Loading tex from streams not supported
-		//mLoadedStreams.setNull();
-	}	
 
 	/****************************************************************************************/
 	void D3D9Texture::freeInternalResources(void)
@@ -425,11 +302,11 @@ namespace CamelotEngine
 	{				
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 			
-		prepareImpl();		
+			/*		prepareImpl();		
 
-		loadImpl(d3d9Device);
+			loadImpl(d3d9Device);
 
-		postLoadImpl();				
+			postLoadImpl();	*/			
 	}
 
 	/****************************************************************************************/
@@ -715,146 +592,145 @@ namespace CamelotEngine
 		//}
 //    }
 	/****************************************************************************************/
-// TODO PORT - Loading tex from streams not supported
-//	void D3D9Texture::_loadNormTex(IDirect3DDevice9* d3d9Device, const D3D9Texture::LoadedStreams &loadedStreams)
-//	{
-		// TODO PORT - Loading tex from streams not supported
-		//assert(getTextureType() == TEX_TYPE_1D || getTextureType() == TEX_TYPE_2D);
-		//// DDS load?
-		//if (getSourceFileType() == "dds")
-		//{
-		//	// Use D3DX
-  //          assert(loadedStreams->size()==1);
-	
-		//	DWORD usage = 0;
-		//	UINT numMips;
+ 
+	//void D3D9Texture::_loadNormTex(IDirect3DDevice9* d3d9Device, const vector<DataStreamPtr>::type& imageDataStreams)
+	//{
+	//	assert(getTextureType() == TEX_TYPE_1D || getTextureType() == TEX_TYPE_2D);
+	//	// DDS load?
+	//	if (getSourceFileType() == "dds")
+	//	{
+	//		// Use D3DX
+ //           assert(imageDataStreams->size()==1);
+	//
+	//		DWORD usage = 0;
+	//		UINT numMips;
 
-		//	if (mNumRequestedMipmaps == MIP_UNLIMITED)
-		//		numMips = D3DX_DEFAULT;
-		//	else if (mNumRequestedMipmaps == 0)			
-		//		numMips = D3DX_FROM_FILE;
-		//	else
-		//		numMips = static_cast<UINT>(mNumRequestedMipmaps + 1);
-		//		
-		//	D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
-		//	const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
+	//		if (mNumRequestedMipmaps == MIP_UNLIMITED)
+	//			numMips = D3DX_DEFAULT;
+	//		else if (mNumRequestedMipmaps == 0)			
+	//			numMips = D3DX_FROM_FILE;
+	//		else
+	//			numMips = static_cast<UINT>(mNumRequestedMipmaps + 1);
+	//			
+	//		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
+	//		const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
 
 
-		//	// check if mip map volume textures are supported
-		//	if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPMAP))
-		//	{
-		//		// no mip map support for this kind of textures :(
-		//		mNumMipmaps = 0;
-		//		numMips = 1;
-		//	}
+	//		// check if mip map volume textures are supported
+	//		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPMAP))
+	//		{
+	//			// no mip map support for this kind of textures :(
+	//			mNumMipmaps = 0;
+	//			numMips = 1;
+	//		}
 
-  //          // Determine D3D pool to use
-  //          D3DPOOL pool;
-  //          if (useDefaultPool())
-  //          {
-  //              pool = D3DPOOL_DEFAULT;
-  //          }
-  //          else
-  //          {
-  //              pool = D3DPOOL_MANAGED;
-  //          }
-		//				
-		//	TextureResources* textureResources;			
-		//	
-		//	// Get or create new texture resources structure.
-		//	textureResources = getTextureResources(d3d9Device);
-		//	if (textureResources != NULL)
-		//		freeTextureResources(d3d9Device, textureResources);
-		//	else
-		//		textureResources = allocateTextureResources(d3d9Device);
+ //           // Determine D3D pool to use
+ //           D3DPOOL pool;
+ //           if (useDefaultPool())
+ //           {
+ //               pool = D3DPOOL_DEFAULT;
+ //           }
+ //           else
+ //           {
+ //               pool = D3DPOOL_MANAGED;
+ //           }
+	//					
+	//		TextureResources* textureResources;			
+	//		
+	//		// Get or create new texture resources structure.
+	//		textureResources = getTextureResources(d3d9Device);
+	//		if (textureResources != NULL)
+	//			freeTextureResources(d3d9Device, textureResources);
+	//		else
+	//			textureResources = allocateTextureResources(d3d9Device);
 
-		//	HRESULT hr;
+	//		HRESULT hr;
 
-		//	hr = D3DXCreateTextureFromFileInMemoryEx(
-		//		d3d9Device,
-		//		(*loadedStreams)[0]->getPtr(),
-		//		static_cast<UINT>((*loadedStreams)[0]->size()),
-		//		D3DX_DEFAULT, D3DX_DEFAULT, // dims
-		//		numMips,
-		//		usage,
-		//		D3DFMT_UNKNOWN,
-		//		pool,
-		//		D3DX_DEFAULT,
-		//		D3DX_DEFAULT,
-		//		0,  // colour key
-		//		NULL, // src box
-		//		NULL, // palette
-		//		&textureResources->pNormTex); 
-	
-		//	if (FAILED(hr))
-		//	{
-		//		OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-		//			"Unable to load texture from :" + String(DXGetErrorDescription(hr)),
-		//			"D3D9Texture::_loadNormTex");
-		//	}
-	
-		//	hr = textureResources->pNormTex->QueryInterface(IID_IDirect3DBaseTexture9, (void **)&textureResources->pBaseTex);
-	
-		//	if (FAILED(hr))
-		//	{
-		//		freeInternalResources();
-		//		OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Can't get base texture: " + String(DXGetErrorDescription(hr)), 
-		//			"D3D9Texture::_loadNormTex" );
-		//	}
-	
-		//	D3DSURFACE_DESC texDesc;
-		//	textureResources->pNormTex->GetLevelDesc(0, &texDesc);
-  //          mD3DPool = texDesc.Pool;
-		//	// set src and dest attributes to the same, we can't know
-		//	_setSrcAttributes(texDesc.Width, texDesc.Height, 1, D3D9Mappings::_getPF(texDesc.Format));
-		//	_setFinalAttributes(d3d9Device, textureResources, 
-		//		texDesc.Width, texDesc.Height, 1, D3D9Mappings::_getPF(texDesc.Format));
+	//		hr = D3DXCreateTextureFromFileInMemoryEx(
+	//			d3d9Device,
+	//			(*loadedStreams)[0]->getPtr(),
+	//			static_cast<UINT>((*loadedStreams)[0]->size()),
+	//			D3DX_DEFAULT, D3DX_DEFAULT, // dims
+	//			numMips,
+	//			usage,
+	//			D3DFMT_UNKNOWN,
+	//			pool,
+	//			D3DX_DEFAULT,
+	//			D3DX_DEFAULT,
+	//			0,  // colour key
+	//			NULL, // src box
+	//			NULL, // palette
+	//			&textureResources->pNormTex); 
+	//
+	//		if (FAILED(hr))
+	//		{
+	//			OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
+	//				"Unable to load texture from :" + String(DXGetErrorDescription(hr)),
+	//				"D3D9Texture::_loadNormTex");
+	//		}
+	//
+	//		hr = textureResources->pNormTex->QueryInterface(IID_IDirect3DBaseTexture9, (void **)&textureResources->pBaseTex);
+	//
+	//		if (FAILED(hr))
+	//		{
+	//			freeInternalResources();
+	//			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "Can't get base texture: " + String(DXGetErrorDescription(hr)), 
+	//				"D3D9Texture::_loadNormTex" );
+	//		}
+	//
+	//		D3DSURFACE_DESC texDesc;
+	//		textureResources->pNormTex->GetLevelDesc(0, &texDesc);
+ //           mD3DPool = texDesc.Pool;
+	//		// set src and dest attributes to the same, we can't know
+	//		_setSrcAttributes(texDesc.Width, texDesc.Height, 1, D3D9Mappings::_getPF(texDesc.Format));
+	//		_setFinalAttributes(d3d9Device, textureResources, 
+	//			texDesc.Width, texDesc.Height, 1, D3D9Mappings::_getPF(texDesc.Format));
 
-		//	if( mHwGamma )
-		//	{
-		//		mHwGammaReadSupported = _canUseHardwareGammaCorrection( d3d9Device, texDesc.Usage,
-		//																D3DRTYPE_TEXTURE,
-		//																texDesc.Format, false);
-		//	}
-		//	mInternalResourcesCreated = true;
-  //      }
-		//else
-		//{
-		//	Image img;
-  //         	// find & load resource data intro stream to allow resource
-		//	// group changes if required
-  //          assert(loadedStreams->size()==1);
-	
-		//	size_t pos = mName.find_last_of(".");
-		//	String ext; 
-		//	if ( pos != String::npos )
-		//		ext = mName.substr(pos+1);
+	//		if( mHwGamma )
+	//		{
+	//			mHwGammaReadSupported = _canUseHardwareGammaCorrection( d3d9Device, texDesc.Usage,
+	//																	D3DRTYPE_TEXTURE,
+	//																	texDesc.Format, false);
+	//		}
+	//		mInternalResourcesCreated = true;
+ //       }
+	//	else
+	//	{
+	//		Image img;
+ //          	// find & load resource data intro stream to allow resource
+	//		// group changes if required
+ //           assert(loadedStreams->size()==1);
+	//
+	//		size_t pos = mName.find_last_of(".");
+	//		String ext; 
+	//		if ( pos != String::npos )
+	//			ext = mName.substr(pos+1);
 
-		//	DataStreamPtr stream((*loadedStreams)[0]);
-		//	img.load(stream, ext);
+	//		DataStreamPtr stream((*loadedStreams)[0]);
+	//		img.load(stream, ext);
 
-		//	if (img.getHeight() == 0)
-		//	{
-		//		OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-		//			"Image height == 0 in " + getName(),
-		//			"D3D9Texture::_loadNormTex");
-		//	}
+	//		if (img.getHeight() == 0)
+	//		{
+	//			OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
+	//				"Image height == 0 in " + getName(),
+	//				"D3D9Texture::_loadNormTex");
+	//		}
 
-		//	if (img.getWidth() == 0)
-		//	{
-		//		OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
-		//			"Image width == 0 in " + getName(),
-		//			"D3D9Texture::_loadNormTex");
-		//	}
+	//		if (img.getWidth() == 0)
+	//		{
+	//			OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, 
+	//				"Image width == 0 in " + getName(),
+	//				"D3D9Texture::_loadNormTex");
+	//		}
 
-		//	// Call internal _loadImages, not loadImage since that's external and 
-		//	// will determine load status etc again
-		//	ConstImagePtrList imagePtrs;
-		//	imagePtrs.push_back(&img);
-		//	_loadImages( imagePtrs );
-		//}
+	//		// Call internal _loadImages, not loadImage since that's external and 
+	//		// will determine load status etc again
+	//		ConstImagePtrList imagePtrs;
+	//		imagePtrs.push_back(&img);
+	//		_loadImages( imagePtrs );
+	//	}
 
-//	}
+	//}
 
 	/****************************************************************************************/
 	size_t D3D9Texture::calculateSize(void) const

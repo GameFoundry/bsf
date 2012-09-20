@@ -24,6 +24,10 @@ namespace CamelotEngine {
 	class DataStream;
 	class MemoryDataStream;
 	class FileDataStream;
+	class TextureData;
 
+	typedef std::shared_ptr<DataStream> DataStreamPtr;
 	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
+	typedef std::shared_ptr<FileDataStream> FileDataStreamPtr;
+	typedef std::shared_ptr<TextureData> TextureDataPtr;
 }

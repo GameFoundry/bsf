@@ -77,24 +77,13 @@ namespace CamelotEngine {
 		bool mHwGammaWriteSupported;
 		D3DMULTISAMPLE_TYPE mFSAAType;
 		DWORD mFSAAQuality;
-		
-		// TODO PORT - Loading tex from streams not supported
-        // needed to store data between prepareImpl and loadImpl
-        //typedef SharedPtr<vector<MemoryDataStreamPtr>::type > LoadedStreams;
 
 		/// internal method, load a cube texture
-		//void _loadCubeTex(IDirect3DDevice9* d3d9Device, const LoadedStreams &loadedStreams);
+		//void _loadCubeTex(IDirect3DDevice9* d3d9Device, const vector<DataStreamPtr>::type& imageDataStreams);
 		/// internal method, load a normal texture
-		//void _loadNormTex(IDirect3DDevice9* d3d9Device, const LoadedStreams &loadedStreams);
+		//void _loadNormTex(IDirect3DDevice9* d3d9Device, const vector<DataStreamPtr>::type& imageDataStreams);
 		/// internal method, load a volume texture
-		//void _loadVolumeTex(IDirect3DDevice9* d3d9Device, const LoadedStreams &loadedStreams);
-
-		/// internal method, prepare a cube texture
-		//LoadedStreams _prepareCubeTex();
-		/// internal method, prepare a normal texture
-		//LoadedStreams _prepareNormTex();
-		/// internal method, prepare a volume texture
-		//LoadedStreams _prepareVolumeTex();
+		//void _loadVolumeTex(IDirect3DDevice9* d3d9Device, const vector<DataStreamPtr>::type& imageDataStreams);
 
 		/// internal method, create a blank normal 1D/2D texture		
 		void _createNormTex(IDirect3DDevice9* d3d9Device);
@@ -144,12 +133,6 @@ namespace CamelotEngine {
         void loadImpl();		 
 		/// Loads this texture into the specified device.
 		void loadImpl(IDirect3DDevice9* d3d9Device);
-        /// overriden from Resource
-        void prepareImpl();
-        /// overriden from Resource
-        void unprepareImpl();
-		/// overriden from Resource
-		void postLoadImpl();
 
 		/// gets the texture resources attached to the given device.
 		TextureResources* getTextureResources(IDirect3DDevice9* d3d9Device);

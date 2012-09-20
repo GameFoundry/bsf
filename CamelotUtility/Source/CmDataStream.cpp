@@ -469,7 +469,7 @@ namespace CamelotEngine
     }
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
-    FileStreamDataStream::FileStreamDataStream(std::ifstream* s, bool freeOnClose)
+    FileDataStream::FileDataStream(std::ifstream* s, bool freeOnClose)
         : DataStream(), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
     {
         // calculate the size
@@ -479,7 +479,7 @@ namespace CamelotEngine
 		determineAccess();
     }
     //-----------------------------------------------------------------------
-    FileStreamDataStream::FileStreamDataStream(const String& name, 
+    FileDataStream::FileDataStream(const String& name, 
         std::ifstream* s, bool freeOnClose)
         : DataStream(name), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
     {
@@ -490,7 +490,7 @@ namespace CamelotEngine
 		determineAccess();
     }
     //-----------------------------------------------------------------------
-    FileStreamDataStream::FileStreamDataStream(const String& name, 
+    FileDataStream::FileDataStream(const String& name, 
         std::ifstream* s, size_t inSize, bool freeOnClose)
         : DataStream(name), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
     {
@@ -499,7 +499,7 @@ namespace CamelotEngine
 		determineAccess();
     }
 	//---------------------------------------------------------------------
-	FileStreamDataStream::FileStreamDataStream(std::fstream* s, bool freeOnClose)
+	FileDataStream::FileDataStream(std::fstream* s, bool freeOnClose)
 		: DataStream(false), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
 	{
 		// writeable!
@@ -511,7 +511,7 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------
-	FileStreamDataStream::FileStreamDataStream(const String& name, 
+	FileDataStream::FileDataStream(const String& name, 
 		std::fstream* s, bool freeOnClose)
 		: DataStream(name, false), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
 	{
@@ -523,7 +523,7 @@ namespace CamelotEngine
 		determineAccess();
 	}
 	//-----------------------------------------------------------------------
-	FileStreamDataStream::FileStreamDataStream(const String& name, 
+	FileDataStream::FileDataStream(const String& name, 
 		std::fstream* s, size_t inSize, bool freeOnClose)
 		: DataStream(name, false), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
 	{
@@ -533,7 +533,7 @@ namespace CamelotEngine
 		determineAccess();
 	}
 	//---------------------------------------------------------------------
-	void FileStreamDataStream::determineAccess()
+	void FileDataStream::determineAccess()
 	{
 		mAccess = 0;
 		if (mpInStream)
@@ -542,18 +542,18 @@ namespace CamelotEngine
 			mAccess |= WRITE;
 	}
     //-----------------------------------------------------------------------
-    FileStreamDataStream::~FileStreamDataStream()
+    FileDataStream::~FileDataStream()
     {
         close();
     }
     //-----------------------------------------------------------------------
-    size_t FileStreamDataStream::read(void* buf, size_t count)
+    size_t FileDataStream::read(void* buf, size_t count)
     {
 		mpInStream->read(static_cast<char*>(buf), static_cast<std::streamsize>(count));
         return mpInStream->gcount();
     }
 	//-----------------------------------------------------------------------
-	size_t FileStreamDataStream::write(const void* buf, size_t count)
+	size_t FileDataStream::write(const void* buf, size_t count)
 	{
 		size_t written = 0;
 		if (isWriteable() && mpFStream)
@@ -564,7 +564,7 @@ namespace CamelotEngine
 		return written;
 	}
     //-----------------------------------------------------------------------
-    size_t FileStreamDataStream::readLine(char* buf, size_t maxCount, 
+    size_t FileDataStream::readLine(char* buf, size_t maxCount, 
         const String& delim)
     {
 		if (delim.empty())
@@ -627,7 +627,7 @@ namespace CamelotEngine
 		return ret;
 	}
     //-----------------------------------------------------------------------
-    void FileStreamDataStream::skip(long count)
+    void FileDataStream::skip(long count)
     {
 #if defined(STLPORT)
 		// Workaround for STLport issues: After reached eof of file stream,
@@ -646,24 +646,24 @@ namespace CamelotEngine
 		mpInStream->seekg(static_cast<std::ifstream::pos_type>(count), std::ios::cur);
     }
     //-----------------------------------------------------------------------
-    void FileStreamDataStream::seek( size_t pos )
+    void FileDataStream::seek( size_t pos )
     {
 		mpInStream->clear(); //Clear fail status in case eof was set
 		mpInStream->seekg(static_cast<std::streamoff>(pos), std::ios::beg);
 	}
 	//-----------------------------------------------------------------------
-    size_t FileStreamDataStream::tell(void) const
+    size_t FileDataStream::tell(void) const
 	{
 		mpInStream->clear(); //Clear fail status in case eof was set
 		return (size_t)mpInStream->tellg();
 	}
 	//-----------------------------------------------------------------------
-    bool FileStreamDataStream::eof(void) const
+    bool FileDataStream::eof(void) const
     {
         return mpInStream->eof();
     }
     //-----------------------------------------------------------------------
-    void FileStreamDataStream::close(void)
+    void FileDataStream::close(void)
     {
         if (mpInStream)
         {
