@@ -27,7 +27,10 @@ THE SOFTWARE.
 */
 #include "CmHardwarePixelBuffer.h"
 #include "CmTexture.h"
+#include "CmTextureData.h"
+#include "CmDataStream.h"
 #include "CmException.h"
+#include "CmDebug.h"
 
 namespace CamelotEngine {
 	//--------------------------------------------------------------------------
@@ -123,6 +126,109 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
+	void Texture::loadFromTextureData(const vector<TextureDataPtr>::type& textureData)
+	{
+		if(textureData.size() < 1)
+			CM_EXCEPT(InvalidParametersException, "Cannot load empty vector of images");
+
+		if(getTextureType() == TEX_TYPE_CUBE_MAP)
+		{
+			if(textureData.size() != 6)
+				CM_EXCEPT(InvalidParametersException, "Cube map textures require six faces.");
+		}
+		else
+		{
+			if(textureData.size() > 1)
+			{
+				gDebug().log("Non-cube textures can only have one face. Loading only first face from the provided array.", "D3D9RenderSystem");
+			}
+		}
+
+		// Set desired texture size and properties from images[0]
+		mSrcWidth = mWidth = textureData[0]->getWidth();
+		mSrcHeight = mHeight = textureData[0]->getHeight();
+		mSrcDepth = mDepth = textureData[0]->getDepth();
+
+		// Get source image format and adjust if required
+		mSrcFormat = textureData[0]->getFormat();
+
+		if (mDesiredFormat != PF_UNKNOWN)
+		{
+			// If have desired format, use it
+			mFormat = mDesiredFormat;
+		}
+		else
+		{
+			// Get the format according with desired bit depth
+			mFormat = PixelUtil::getFormatForBitDepths(mSrcFormat, mDesiredIntegerBitDepth, mDesiredFloatBitDepth);
+		}
+
+		// The custom mipmaps in the image have priority over everything
+		size_t imageMips = textureData[0]->getNumMipmaps();
+
+		if(imageMips > 0)
+		{
+			mNumMipmaps = mNumRequestedMipmaps = textureData[0]->getNumMipmaps();
+			// Disable flag for auto mip generation
+			mUsage &= ~TU_AUTOMIPMAP;
+		}
+
+		// Create the texture
+		createInternalResources();
+		// Check if we're loading one image with multiple faces
+		// or a vector of images representing the faces
+		size_t faces;
+		if(textureData.size() > 1)
+			faces = textureData.size();
+		else
+			faces = 1;
+
+		// Check wether number of faces in images exceeds number of faces
+		// in this texture. If so, clamp it.
+		if(faces > getNumFaces())
+			faces = getNumFaces();
+
+		// Main loading loop
+		// imageMips == 0 if the image has no custom mipmaps, otherwise contains the number of custom mips
+		for(size_t mip = 0; mip<=imageMips; ++mip)
+		{
+			for(size_t i = 0; i < faces; ++i)
+			{
+				PixelData src = textureData[i]->getPixels(mip);
+
+				// Sets to treated format in case is difference
+				src.format = mSrcFormat;
+
+				if(mGamma != 1.0f) {
+					// Apply gamma correction
+					// Do not overwrite original image but do gamma correction in temporary buffer
+					MemoryDataStreamPtr buf(new MemoryDataStream(
+						PixelUtil::getMemorySize(
+						src.getWidth(), src.getHeight(), src.getDepth(), src.format)));
+
+					PixelData corrected = PixelData(src.getWidth(), src.getHeight(), src.getDepth(), src.format, buf->getPtr());
+					PixelUtil::bulkPixelConversion(src, corrected);
+
+					PixelUtil::applyGamma(static_cast<UINT8*>(corrected.data), mGamma, corrected.getConsecutiveSize(), 
+						static_cast<UINT8>(PixelUtil::getNumElemBits(src.format)));
+
+					// Destination: entire texture. blitFromMemory does the scaling to
+					// a power of two for us when needed
+					getBuffer(i, mip)->blitFromMemory(corrected);
+				}
+				else 
+				{
+					// Destination: entire texture. blitFromMemory does the scaling to
+					// a power of two for us when needed
+					getBuffer(i, mip)->blitFromMemory(src);
+				}
+
+			}
+		}
+		// Update size (the final size, not including temp space)
+		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
+	}
+	//-----------------------------------------------------------------------------
 	void Texture::unloadImpl(void)
 	{
 		freeInternalResources();
@@ -146,10 +252,4 @@ namespace CamelotEngine {
             }
         }
     }
-	//---------------------------------------------------------------------
-	String Texture::getSourceFileType() const
-	{
-		// TODO PORT - This requires Resource specific stuff I don't have
-		return StringUtil::BLANK;
-	}
 }

@@ -29,6 +29,7 @@ THE SOFTWARE.
 #define _Texture_H__
 
 #include "CmPrerequisites.h"
+#include "CmResource.h"
 #include "CmHardwareBuffer.h"
 #include "CmPixelUtil.h"
 
@@ -94,7 +95,7 @@ namespace CamelotEngine {
             different in reality. Texture objects are created through
             the 'create' method of the TextureManager concrete subclass.
      */
-    class CM_EXPORT Texture
+    class CM_EXPORT Texture : public Resource
     {
     public:
         Texture();
@@ -331,7 +332,7 @@ namespace CamelotEngine {
 		 @param pData Pointer to memory matching the type of data you want to retrieve.
 		*/
 		virtual void getCustomAttribute(const String& name, void* pData) {}
-		
+
     protected:
         size_t mHeight;
         size_t mWidth;
@@ -370,14 +371,17 @@ namespace CamelotEngine {
 		*/
 		virtual void freeInternalResourcesImpl(void) = 0;
 
+		/**
+		 * @brief	Loads the texture from TextureData array. Each entry in the array represents a single
+		 * 			face of the texture. For cubemaps there need be six faces in this order:
+		 * 			+X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
+		 *
+		 * @param	textureData	Array with texture data for each face of the texture.
+		 */
+		virtual void loadFromTextureData(const vector<TextureDataPtr>::type& textureData);
+
 		/** Default implementation of unload which calls freeInternalResources */
 		void unloadImpl(void);
-
-		/** Identify the source file type as a string, either from the extension
-			or from a magic number.
-		*/
-		String getSourceFileType() const;
-
     };
 
 	/** @} */

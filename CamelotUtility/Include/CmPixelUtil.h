@@ -519,6 +519,13 @@ namespace CamelotEngine {
 			@note	dst and src can point to the same PixelBox object without any problem
 		*/
 		static void scale(const PixelData &src, const PixelData &dst, Filter filter = FILTER_BILINEAR);
+
+		/** Does gamma adjustment.
+            @note
+                Basic algo taken from Titan Engine, copyright (c) 2000 Ignacio 
+                Castano Iguado
+        */
+        static void applyGamma(UINT8 *buffer, float gamma, size_t size, UINT8 bpp);
     };
 	/** @} */
 	/** @} */

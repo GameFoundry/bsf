@@ -1765,6 +1765,46 @@ namespace CamelotEngine {
 		}
 	}
 
+	//-----------------------------------------------------------------------------
+	void PixelUtil::applyGamma(UINT8 *buffer, float gamma, size_t size, UINT8 bpp)
+	{
+		if( gamma == 1.0f )
+			return;
+
+		//NB only 24/32-bit supported
+		if( bpp != 24 && bpp != 32 ) return;
+
+		UINT32 stride = bpp >> 3;
+
+		for( size_t i = 0, j = size / stride; i < j; i++, buffer += stride )
+		{
+			float r, g, b;
+
+			r = (float)buffer[0];
+			g = (float)buffer[1];
+			b = (float)buffer[2];
+
+			r = r * gamma;
+			g = g * gamma;
+			b = b * gamma;
+
+			float scale = 1.0f, tmp;
+
+			if( r > 255.0f && (tmp=(255.0f/r)) < scale )
+				scale = tmp;
+			if( g > 255.0f && (tmp=(255.0f/g)) < scale )
+				scale = tmp;
+			if( b > 255.0f && (tmp=(255.0f/b)) < scale )
+				scale = tmp;
+
+			r *= scale; g *= scale; b *= scale;
+
+			buffer[0] = (UINT8)r;
+			buffer[1] = (UINT8)g;
+			buffer[2] = (UINT8)b;
+		}
+	}
+
     Color PixelData::getColourAt(size_t x, size_t y, size_t z)
     {
         Color cv;
@@ -1782,5 +1822,4 @@ namespace CamelotEngine {
         size_t pixelOffset = pixelSize * (z * slicePitch + y * rowPitch + x);
         PixelUtil::packColour(cv, format, (unsigned char *)data + pixelOffset);
     }
-
 }
