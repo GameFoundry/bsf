@@ -190,7 +190,7 @@ namespace CamelotEngine {
      	Pixels are stored as a succession of "depth" slices, each containing "height" rows of 
      	"width" pixels.
     */
-    class CM_EXPORT PixelData: public Box {
+    class CM_UTILITY_EXPORT PixelData: public Box {
     public:
     	/// Parameter constructor for setting the members manually
     	PixelData() {}
@@ -298,7 +298,7 @@ namespace CamelotEngine {
     /**
      * Some utility functions for packing and unpacking pixel data
      */
-    class CM_EXPORT PixelUtil {
+    class CM_UTILITY_EXPORT PixelUtil {
     public:
         /** Returns the size in bytes of an element of the given pixel format.
          @returns

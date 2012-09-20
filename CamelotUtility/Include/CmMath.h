@@ -81,7 +81,7 @@ namespace CamelotEngine
 		bool operator >= ( const Radian& r ) const { return mRad >= r.mRad; }
 		bool operator >  ( const Radian& r ) const { return mRad >  r.mRad; }
 
-		inline CM_EXPORT friend std::ostream& operator <<
+		inline CM_UTILITY_EXPORT friend std::ostream& operator <<
 			( std::ostream& o, const Radian& v )
 		{
 			o << "Radian(" << v.valueRadians() << ")";
@@ -132,7 +132,7 @@ namespace CamelotEngine
 		bool operator >= ( const Degree& d ) const { return mDeg >= d.mDeg; }
 		bool operator >  ( const Degree& d ) const { return mDeg >  d.mDeg; }
 
-		inline CM_EXPORT friend std::ostream& operator <<
+		inline CM_UTILITY_EXPORT friend std::ostream& operator <<
 			( std::ostream& o, const Degree& v )
 		{
 			o << "Degree(" << v.valueDegrees() << ")";
@@ -187,7 +187,7 @@ namespace CamelotEngine
             <br>This is based on MgcMath.h from
             <a href="http://www.geometrictools.com/">Wild Magic</a>.
     */
-    class CM_EXPORT Math 
+    class CM_UTILITY_EXPORT Math 
     {
    public:
        /** The angular units used by the API. This functionality is now deprecated in favor

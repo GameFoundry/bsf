@@ -18,12 +18,8 @@ namespace CamelotEngine
 		SpecificImporter() {}
 		virtual ~SpecificImporter() {}
 
-		/**
-		 * @brief	Returns the list of extensions this importer is responsible for importing.
-		 *
-		 * @return	A list of extensions, without a leading dot.
-		 */
-		virtual const std::vector<String>& extensions() const = 0;
+		virtual bool isExtensionSupported(const String& ext) const = 0;
+		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const = 0; 
 
 		/**
 		 * @brief	Imports the given file.
@@ -32,6 +28,6 @@ namespace CamelotEngine
 		 *
 		 * @return	null if it fails, otherwise the loaded object.
 		 */
-		virtual ResourcePtr import(const String& filePath) = 0;
+		virtual ResourcePtr import(DataStream* fileData) = 0;
 	};
 }

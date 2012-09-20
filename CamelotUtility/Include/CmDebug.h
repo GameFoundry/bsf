@@ -7,7 +7,7 @@ namespace CamelotEngine
 {
 	class Log;
 
-	class CM_EXPORT Debug
+	class CM_UTILITY_EXPORT Debug
 	{
 	public:
 		void logDebug(std::string msg);
@@ -22,7 +22,7 @@ namespace CamelotEngine
 		Log mLog;
 	};
 
-	CM_EXPORT Debug& gDebug();
+	CM_UTILITY_EXPORT Debug& gDebug();
 
 	template <typename T>
 	std::string toStr(T number)

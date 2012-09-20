@@ -10,29 +10,31 @@ namespace CamelotEngine
 	{
 		for(auto i = mAssetImporters.begin(); i != mAssetImporters.end(); ++i)
 		{
-			SpecificImporter* curImporter = i->second;
-			if(curImporter != nullptr)
-			{
-				const std::vector<String>& supportedExtensions = curImporter->extensions();
-				for(auto j = supportedExtensions.begin(); j != supportedExtensions.end(); ++j)
-				{
-					if(mAssetImporters[*j] == curImporter)
-						mAssetImporters[*j] = nullptr;
-				}
-
-				delete curImporter;
-			}
+			if((*i) != nullptr)
+				delete *i;
 		}
 
 		mAssetImporters.clear();
 	}
 
-	bool Importer::supportsFileType(const std::string& extension)
+	bool Importer::supportsFileType(const std::string& extension) const
 	{
-		auto found = mAssetImporters.find(extension);
+		for(auto iter = mAssetImporters.begin(); iter != mAssetImporters.end(); ++iter)
+		{
+			if(*iter != nullptr && (*iter)->isExtensionSupported(extension))
+				return true;
+		}
 
-		if(found != mAssetImporters.end())
-			return found->second != nullptr; // Even if we found it, it can still be null
+		return false;
+	}
+
+	bool Importer::supportsFileType(const UINT8* magicNumber, UINT32 magicNumSize) const
+	{
+		for(auto iter = mAssetImporters.begin(); iter != mAssetImporters.end(); ++iter)
+		{
+			if(*iter != nullptr && (*iter)->isMagicNumberSupported(magicNumber, magicNumSize))
+				return true;
+		}
 
 		return false;
 	}
@@ -53,9 +55,9 @@ namespace CamelotEngine
 			return;
 		}
 
-		SpecificImporter* importer = mAssetImporters[ext];
+		//SpecificImporter* importer = mAssetImporters[ext];
 
-		ResourcePtr importedResource = importer->import(inputFilePath);
+		//ResourcePtr importedResource = importer->import(inputFilePath);
 
 		// TODO - Use AssetDatabase for loading the resource
 		// TODO - Serialize the resource to output location
@@ -69,14 +71,6 @@ namespace CamelotEngine
 			return;
 		}
 
-		const std::vector<String>& supportedExtensions = importer->extensions();
-		for(auto i = supportedExtensions.begin(); i != supportedExtensions.end(); ++i)
-		{
-			SpecificImporter* existingImporter = mAssetImporters[*i];
-			if(existingImporter != nullptr)
-				delete existingImporter;
-
-			mAssetImporters[*i] = importer;
-		}
+		mAssetImporters.push_back(importer);
 	}
 }

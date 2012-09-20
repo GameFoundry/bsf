@@ -28,7 +28,7 @@ namespace CamelotEngine
 		mLog.logMsg(msg, channel);
 	}
 
-	CM_EXPORT Debug& gDebug()
+	CM_UTILITY_EXPORT Debug& gDebug()
 	{
 		static Debug debug;
 		return debug;

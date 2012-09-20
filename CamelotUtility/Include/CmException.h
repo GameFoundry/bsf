@@ -12,7 +12,7 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT Exception : public std::exception
+	class CM_UTILITY_EXPORT Exception : public std::exception
     {
     protected:
         long mLine;
@@ -75,55 +75,55 @@ namespace CamelotEngine
 		const char* what() const throw() { return getFullDescription().c_str(); }
     };
 
-	class CM_EXPORT NotImplementedException : public Exception 
+	class CM_UTILITY_EXPORT NotImplementedException : public Exception 
 	{
 	public:
 		NotImplementedException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
 			: Exception("NotImplementedException", inDescription, inSource, inFile, inLine) {}
 	};
-	class CM_EXPORT FileNotFoundException : public Exception
+	class CM_UTILITY_EXPORT FileNotFoundException : public Exception
 	{
 	public:
 		FileNotFoundException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
 			: Exception("FileNotFoundException", inDescription, inSource, inFile, inLine) {}
 	};
-	class CM_EXPORT IOException : public Exception
+	class CM_UTILITY_EXPORT IOException : public Exception
 	{
 	public:
 		IOException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
 			: Exception("IOException", inDescription, inSource, inFile, inLine) {}
 	};
-	class CM_EXPORT InvalidStateException : public Exception
+	class CM_UTILITY_EXPORT InvalidStateException : public Exception
 	{
 	public:
 		InvalidStateException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
 			: Exception("InvalidStateException", inDescription, inSource, inFile, inLine) {}
 	};
-	class CM_EXPORT InvalidParametersException : public Exception
+	class CM_UTILITY_EXPORT InvalidParametersException : public Exception
 	{
 	public:
 		InvalidParametersException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
 			: Exception("InvalidParametersException", inDescription, inSource, inFile, inLine) {}
 	};
-	class CM_EXPORT ItemIdentityException : public Exception
+	class CM_UTILITY_EXPORT ItemIdentityException : public Exception
 	{
 	public:
 		ItemIdentityException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
 			: Exception("ItemIdentityException", inDescription, inSource, inFile, inLine) {}
 	};
-	class CM_EXPORT InternalErrorException : public Exception
+	class CM_UTILITY_EXPORT InternalErrorException : public Exception
 	{
 	public:
 		InternalErrorException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
 			: Exception("InternalErrorException", inDescription, inSource, inFile, inLine) {}
 	};
-	class CM_EXPORT RenderingAPIException : public Exception
+	class CM_UTILITY_EXPORT RenderingAPIException : public Exception
 	{
 	public:
 		RenderingAPIException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)
 			: Exception("RenderingAPIException", inDescription, inSource, inFile, inLine) {}
 	};
-	class CM_EXPORT RuntimeAssertionException : public Exception
+	class CM_UTILITY_EXPORT RuntimeAssertionException : public Exception
 	{
 	public:
 		RuntimeAssertionException(const std::string& inDescription, const std::string& inSource, const char* inFile, long inLine)

@@ -51,7 +51,7 @@ namespace CamelotEngine {
 	for an axis-aligned bounding box (AABB) for collision and
 	visibility determination.
 	*/
-	class CM_EXPORT AxisAlignedBox
+	class CM_UTILITY_EXPORT AxisAlignedBox
 	{
 	public:
 		enum Extent
@@ -352,7 +352,7 @@ namespace CamelotEngine {
 			}
 		}
 
-		CM_EXPORT friend std::ostream& operator<<( std::ostream& o, const AxisAlignedBox aab )
+		CM_UTILITY_EXPORT friend std::ostream& operator<<( std::ostream& o, const AxisAlignedBox aab )
 		{
 			switch (aab.mExtent)
 			{

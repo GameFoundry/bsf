@@ -72,7 +72,7 @@ namespace CamelotEngine {
         @see
             Resource
     */
-	class CM_EXPORT DynLib
+	class CM_UTILITY_EXPORT DynLib
     {
 	protected:
 		String mName;

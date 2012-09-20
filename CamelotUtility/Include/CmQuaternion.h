@@ -49,7 +49,7 @@ namespace CamelotEngine {
 	*/
 	/** Implementation of a Quaternion, i.e. a rotation around an axis.
     */
-    class CM_EXPORT Quaternion
+    class CM_UTILITY_EXPORT Quaternion
     {
     public:
         inline Quaternion (
@@ -157,7 +157,7 @@ namespace CamelotEngine {
         Quaternion operator- (const Quaternion& rkQ) const;
         Quaternion operator* (const Quaternion& rkQ) const;
         Quaternion operator* (float fScalar) const;
-        CM_EXPORT friend Quaternion operator* (float fScalar,
+        CM_UTILITY_EXPORT friend Quaternion operator* (float fScalar,
             const Quaternion& rkQ);
         Quaternion operator- () const;
         inline bool operator== (const Quaternion& rhs) const
@@ -252,7 +252,7 @@ namespace CamelotEngine {
         /** Function for writing to a stream. Outputs "Quaternion(w, x, y, z)" with w,x,y,z
             being the member values of the quaternion.
         */
-        inline CM_EXPORT friend std::ostream& operator <<
+        inline CM_UTILITY_EXPORT friend std::ostream& operator <<
             ( std::ostream& o, const Quaternion& q )
         {
             o << "Quaternion(" << q.w << ", " << q.x << ", " << q.y << ", " << q.z << ")";

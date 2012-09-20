@@ -8,7 +8,7 @@ namespace CamelotEngine
     Note that the left, top, and front edges are included but the right, 
     bottom and back ones are not.
     */
-	struct CM_EXPORT Box
+	struct CM_UTILITY_EXPORT Box
 	{
 		size_t left, top, right, bottom, front, back;
 		/// Parameterless constructor for setting the members manually

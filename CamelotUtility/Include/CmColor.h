@@ -54,7 +54,7 @@ namespace CamelotEngine {
 		    transparency. In this case, 0.0 is completely transparent and 1.0 is
 		    fully opaque.
     */
-    class CM_EXPORT Color
+    class CM_UTILITY_EXPORT Color
     {
     public:
         static const Color ZERO;
@@ -318,7 +318,7 @@ namespace CamelotEngine {
 
 		/** Function for writing to a stream.
 		*/
-		inline CM_EXPORT friend std::ostream& operator <<
+		inline CM_UTILITY_EXPORT friend std::ostream& operator <<
 			( std::ostream& o, const Color& c )
 		{
 			o << "ColourValue(" << c.r << ", " << c.g << ", " << c.b << ", " << c.a << ")";

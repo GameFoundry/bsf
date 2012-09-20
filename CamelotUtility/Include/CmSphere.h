@@ -48,7 +48,7 @@ namespace CamelotEngine {
         x^2 + y^2 + z^2 = r^2 (for sphere's centered on the origin). Engine stores spheres
         simply as a center point and a radius.
     */
-    class CM_EXPORT Sphere
+    class CM_UTILITY_EXPORT Sphere
     {
     protected:
         float mRadius;

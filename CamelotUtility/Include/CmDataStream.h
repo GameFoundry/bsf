@@ -58,7 +58,7 @@ namespace CamelotEngine
 		If you wish to access stream data asynchronously then you should
 		organise your own mutexes to avoid race conditions. 
 	*/
-	class CM_EXPORT DataStream
+	class CM_UTILITY_EXPORT DataStream
 	{
 	public:
 		enum AccessMode
@@ -199,7 +199,7 @@ namespace CamelotEngine
 
 	/** Common subclass of DataStream for handling data from chunks of memory.
 	*/
-	class CM_EXPORT MemoryDataStream : public DataStream
+	class CM_UTILITY_EXPORT MemoryDataStream : public DataStream
 	{
 	protected:
         /// Pointer to the start of the data area
@@ -371,7 +371,7 @@ namespace CamelotEngine
     /** Common subclass of DataStream for handling data from 
 		std::basic_istream.
 	*/
-	class CM_EXPORT FileStreamDataStream : DataStream
+	class CM_UTILITY_EXPORT FileStreamDataStream : DataStream
 	{
 	protected:
 		/// Reference to source stream (read)

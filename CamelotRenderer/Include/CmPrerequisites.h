@@ -31,6 +31,36 @@ THE SOFTWARE
 #define CM_MAX_TEXTURE_LAYERS 16
 #define CM_MAX_MULTIPLE_RENDER_TARGETS 8
 
+//----------------------------------------------------------------------------
+// Windows Settings
+#if CM_PLATFORM == CM_PLATFORM_WIN32
+
+// If we're not including this from a client build, specify that the stuff
+// should get exported. Otherwise, import it.
+#	if defined( CM_STATIC_LIB )
+// Linux compilers don't have symbol import/export directives.
+#   	define CM_EXPORT
+#   else
+#   	if defined( CM_EXPORTS )
+#       	define CM_EXPORT __declspec( dllexport )
+#   	else
+#           if defined( __MINGW32__ )
+#               define CM_EXPORT
+#           else
+#       	    define CM_EXPORT __declspec( dllimport )
+#           endif
+#   	endif
+#	endif
+// Win32 compilers use _DEBUG for specifying debug builds.
+// for MinGW, we set DEBUG
+#   if defined(_DEBUG) || defined(DEBUG)
+#       define CM_DEBUG_MODE 1
+#   else
+#       define CM_DEBUG_MODE 0
+#   endif
+
+#endif // CM_PLATFORM == CM_PLATFORM_WIN32
+
 namespace CamelotEngine {
 
 // Pre-declare classes

@@ -45,7 +45,15 @@ namespace CamelotEngine
 		 *
 		 * @param	extension	The extension without leading dot.
 		 */
-		bool supportsFileType(const std::string& extension);
+		bool supportsFileType(const std::string& extension) const;
+
+		/**
+		 * @brief	Checks if we can import a file with the specified magic number.
+		 *
+		 * @param	magicNumber 	The buffer containing the magic number.
+		 * @param	magicNumSize	Size of the magic number buffer.
+		 */
+		bool supportsFileType(const UINT8* magicNumber, UINT32 magicNumSize) const;
 
 		/**
 		 * @brief	Adds a new asset importer for the specified file extension. If an asset importer for that extension
@@ -58,6 +66,6 @@ namespace CamelotEngine
 		 */
 		void registerAssetImporter(SpecificImporter* importer);
 	private:
-		std::unordered_map<std::string, SpecificImporter*> mAssetImporters;
+		vector<SpecificImporter*>::type mAssetImporters;
 	};
 }

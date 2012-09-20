@@ -21,4 +21,9 @@ namespace CamelotEngine {
 	class Color;
 	class DynLib;
 	class DynLibManager;
+	class DataStream;
+	class MemoryDataStream;
+	class FileDataStream;
+
+	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
 }

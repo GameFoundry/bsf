@@ -76,7 +76,7 @@ namespace CamelotEngine
                 [ m[3][0]  m[3][1]  m[3][2]  m[3][3] ]   {1}
             </pre>
     */
-    class CM_EXPORT Matrix4
+    class CM_UTILITY_EXPORT Matrix4
     {
     protected:
         /// The matrix entries, indexed by [row][col].
@@ -524,7 +524,7 @@ namespace CamelotEngine
 
         /** Function for writing to a stream.
         */
-        inline CM_EXPORT friend std::ostream& operator <<
+        inline CM_UTILITY_EXPORT friend std::ostream& operator <<
             ( std::ostream& o, const Matrix4& mat )
         {
             o << "Matrix4(";

@@ -9,7 +9,7 @@ namespace CamelotEngine
 	 * @brief	A single log entry, usually used in QtLogModel as
 	 * 			a representation of a log entry in the Console window.
 	 */
-	class CM_EXPORT LogEntry
+	class CM_UTILITY_EXPORT LogEntry
 	{
 	public:
 		LogEntry(const String& msg, const String& channel);
@@ -26,7 +26,7 @@ namespace CamelotEngine
 	 * @brief	Used for logging messages to a file. Can also send out callbacks to
 	 * 			registered classes when a message is received, so they can do with it as they wish.
 	 */
-	class CM_EXPORT Log
+	class CM_UTILITY_EXPORT Log
 	{
 	public:
 		/**

@@ -55,10 +55,10 @@ THE SOFTWARE
 // Useful threading defines
 #include "CmThreadDefines.h"
 
-// Forward declarations
-#include "CmFwdDeclUtil.h"
-
 // Commonly used standard headers
 #include "CmStdHeaders.h"
+
+// Forward declarations
+#include "CmFwdDeclUtil.h"
 
 #include "CmString.h"

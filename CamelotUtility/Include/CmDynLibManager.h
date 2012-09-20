@@ -43,7 +43,7 @@ namespace CamelotEngine {
             libraries, opens them and returns references to already-open
             libraries.
     */
-    class CM_EXPORT DynLibManager: public Module<DynLibManager>
+    class CM_UTILITY_EXPORT DynLibManager: public Module<DynLibManager>
     {
 	protected:
 		typedef map<String, DynLib*>::type DynLibList;
@@ -77,7 +77,7 @@ namespace CamelotEngine {
 		void unload(DynLib* lib);
     };
 
-	DynLibManager& gDynLibManager();
+	CM_UTILITY_EXPORT DynLibManager& gDynLibManager();
 	/** @} */
 	/** @} */
 }

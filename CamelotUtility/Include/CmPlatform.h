@@ -113,15 +113,15 @@ namespace CamelotEngine {
 // should get exported. Otherwise, import it.
 #	if defined( CM_STATIC_LIB )
 		// Linux compilers don't have symbol import/export directives.
-#   	define CM_EXPORT
+#   	define CM_UTILITY_EXPORT
 #   else
-#   	if defined( CM_EXPORTS )
-#       	define CM_EXPORT __declspec( dllexport )
+#   	if defined( CM_UTILITY_EXPORTS )
+#       	define CM_UTILITY_EXPORT __declspec( dllexport )
 #   	else
 #           if defined( __MINGW32__ )
-#               define CM_EXPORT
+#               define CM_UTILITY_EXPORT
 #           else
-#       	    define CM_EXPORT __declspec( dllimport )
+#       	    define CM_UTILITY_EXPORT __declspec( dllimport )
 #           endif
 #   	endif
 #	endif
@@ -141,9 +141,9 @@ namespace CamelotEngine {
 
 // Enable GCC symbol visibility
 #   if defined( CM_GCC_VISIBILITY )
-#       define CM_EXPORT  __attribute__ ((visibility("default")))
+#       define CM_UTILITY_EXPORT  __attribute__ ((visibility("default")))
 #   else
-#       define CM_EXPORT
+#       define CM_UTILITY_EXPORT
 #   endif
 
 // A quick define to overcome different names for the same function
