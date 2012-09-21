@@ -12,6 +12,9 @@ namespace CamelotEngine
 	class CM_EXPORT Resource : public ISerializable
 	{
 	public:
+		Resource(/*const UUID& sourceUUID*/) // TODO - Temporarily don't initialize UUID, because I want texture to inherit from resource and UUIDs arent set up yet
+			:mSize(0) /*mSourceUUID(sourceUUID),*/
+		{}
 		virtual ~Resource() {};
 
 		//public 
@@ -19,9 +22,7 @@ namespace CamelotEngine
 	protected:
 		friend class Resources;
 
-		Resource(/*const UUID& sourceUUID*/) // TODO - Temporarily don't initialize UUID, because I want texture to inherit from resource and UUIDs arent set up yet
-			:mSize(0) /*mSourceUUID(sourceUUID),*/
-		{}
+
 
 		//virtual void load() = 0;
 		//virtual void unload() = 0;

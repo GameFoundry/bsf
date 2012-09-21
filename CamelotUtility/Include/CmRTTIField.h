@@ -4,6 +4,7 @@
 
 #include <boost/function.hpp>
 #include <boost/any.hpp>
+#include <boost/static_assert.hpp>
 
 #include "CmPrerequisitesUtil.h"
 #include "CmIReflectable.h"
@@ -15,24 +16,25 @@ namespace CamelotEngine
 	struct RTTIField;
 
 	template<class T>
-	struct SerializableSimpleType { enum { id = T::TYPE_ID }; enum { isNativeType = 0 }; };
-	
-#define SERIALIZABLE_SIMPLE_TYPE(type, type_id) \
-	template<> struct SerializableSimpleType<##type##> { enum { id=##type_id }; enum { isNativeType = 1 }; }; 
+	struct SerializableSimpleType 
+	{ 
+		BOOST_STATIC_ASSERT_MSG(sizeof(T) == 0, // We need this hacky check, otherwise if we only use "false" compiler will evaluate the template and trigger this message 
+			"Provided serializable data type doesn't define have a type ID. Use CM_SERIALIZABLE_SIMPLE_TYPE(type, id) macro to define a unique ID for the type.");
 
-	SERIALIZABLE_SIMPLE_TYPE(UINT8, 0);
-	SERIALIZABLE_SIMPLE_TYPE(UINT16, 1);
-	SERIALIZABLE_SIMPLE_TYPE(UINT32, 2);
-	SERIALIZABLE_SIMPLE_TYPE(UINT64, 3);
-	SERIALIZABLE_SIMPLE_TYPE(INT8, 4);
-	SERIALIZABLE_SIMPLE_TYPE(INT16, 5);
-	SERIALIZABLE_SIMPLE_TYPE(INT32, 6);
-	SERIALIZABLE_SIMPLE_TYPE(INT64, 7);
-	SERIALIZABLE_SIMPLE_TYPE(float, 8);
-	SERIALIZABLE_SIMPLE_TYPE(double, 9);
-	SERIALIZABLE_SIMPLE_TYPE(bool, 10);
+		enum { id = T::TYPE_ID }; enum { isNativeType = 0 }; 
+	};
 
-#undef SERIALIZABLE_SIMPLE_TYPE
+	CM_SERIALIZABLE_SIMPLE_TYPE(UINT8, 0);
+	CM_SERIALIZABLE_SIMPLE_TYPE(UINT16, 1);
+	CM_SERIALIZABLE_SIMPLE_TYPE(UINT32, 2);
+	CM_SERIALIZABLE_SIMPLE_TYPE(UINT64, 3);
+	CM_SERIALIZABLE_SIMPLE_TYPE(INT8, 4);
+	CM_SERIALIZABLE_SIMPLE_TYPE(INT16, 5);
+	CM_SERIALIZABLE_SIMPLE_TYPE(INT32, 6);
+	CM_SERIALIZABLE_SIMPLE_TYPE(INT64, 7);
+	CM_SERIALIZABLE_SIMPLE_TYPE(float, 8);
+	CM_SERIALIZABLE_SIMPLE_TYPE(double, 9);
+	CM_SERIALIZABLE_SIMPLE_TYPE(bool, 10);
 
 	/**
 	 * @brief	Types of fields we can serialize:

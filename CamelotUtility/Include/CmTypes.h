@@ -19,4 +19,7 @@ namespace CamelotEngine
 	typedef unsigned long long UINT64;
 	typedef long long INT64;
 #endif
+
+#define CM_SERIALIZABLE_SIMPLE_TYPE(type, type_id) \
+	template<> struct SerializableSimpleType<##type##> { enum { id=##type_id }; enum { isNativeType = 1 }; }; 
 }
