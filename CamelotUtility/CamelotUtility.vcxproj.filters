@@ -25,6 +25,18 @@
     <Filter Include="Header Files\Threading">
       <UniqueIdentifier>{b65008fc-0109-4b6d-b82b-7c30abdbeacf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\RTTI">
+      <UniqueIdentifier>{ceeeab21-95fc-4e22-922c-7c91ecaba0df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RTTI">
+      <UniqueIdentifier>{11d535e6-1203-47ca-9062-8548e4d71027}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization">
+      <UniqueIdentifier>{4af02e17-2cf7-4e71-a749-58e0ba71625e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization">
+      <UniqueIdentifier>{155906c8-9f79-4f86-835a-eb8f5c2f66bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmTypes.h">
@@ -126,6 +138,42 @@
     <ClInclude Include="Include\CmTextureData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmIReflectable.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRTTIField.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRTTIManagedDataBlockField.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRTTIPlainField.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRTTIReflectableField.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRTTIReflectablePtrField.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRTTIType.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmBinarySerializer.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmFileSerializer.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmManagedDataBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmISerializable.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmSerializableType.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp">
@@ -184,6 +232,21 @@
     </ClCompile>
     <ClCompile Include="Source\CmTextureData.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRTTIField.cpp">
+      <Filter>Source Files\RTTI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRTTIType.cpp">
+      <Filter>Source Files\RTTI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmBinarySerializer.cpp">
+      <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmFileSerializer.cpp">
+      <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmIReflectable.cpp">
+      <Filter>Source Files\RTTI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

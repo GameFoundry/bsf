@@ -157,6 +157,7 @@
     <ClCompile Include="Source\CmRenderTarget.cpp" />
     <ClCompile Include="Source\CmRenderTexture.cpp" />
     <ClCompile Include="Source\CmRenderWindow.cpp" />
+    <ClCompile Include="Source\CmResource.cpp" />
     <ClCompile Include="Source\CmResources.cpp" />
     <ClCompile Include="Source\CmTexture.cpp" />
     <ClCompile Include="Source\CmTextureManager.cpp" />

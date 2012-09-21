@@ -25,6 +25,12 @@ namespace CamelotEngine {
 	class MemoryDataStream;
 	class FileDataStream;
 	class TextureData;
+	// Reflection
+	class IReflectable;
+	class RTTITypeBase;
+	// Serialization
+	class ISerializable;
+	class SerializableType;
 
 	typedef std::shared_ptr<DataStream> DataStreamPtr;
 	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;

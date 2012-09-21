@@ -256,5 +256,8 @@
     <ClCompile Include="Source\CmResources.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmResource.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
