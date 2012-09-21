@@ -94,7 +94,7 @@ namespace CamelotEngine
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
 			DataType& castDataObj = static_cast<DataType&>(value);
-			boost::function<void(ObjectType*, DataType)> f = boost::any_cast<boost::function<void(ObjectType*, DataType)>>(valueSetter);
+			boost::function<void(ObjectType*, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, DataType&)>>(valueSetter);
 			f(castObjType, castDataObj);
 		}
 
@@ -110,7 +110,7 @@ namespace CamelotEngine
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
 			DataType& castDataObj = static_cast<DataType&>(value);
-			boost::function<void(ObjectType*, UINT32, DataType)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, DataType)>>(valueSetter);
+			boost::function<void(ObjectType*, UINT32, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, DataType&)>>(valueSetter);
 			f(castObjType, index, castDataObj);
 		}
 

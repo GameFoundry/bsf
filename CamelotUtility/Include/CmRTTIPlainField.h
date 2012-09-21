@@ -36,7 +36,7 @@ namespace CamelotEngine
 			checkIsArray(false);
 			checkType<DataType>();
 
-			boost::function<DataType(ObjectType*)> f = boost::any_cast<boost::function<DataType(ObjectType*)>>(valueGetter);
+			boost::function<DataType&(ObjectType*)> f = boost::any_cast<boost::function<DataType&(ObjectType*)>>(valueGetter);
 			value = f(object);
 		}
 
@@ -46,7 +46,7 @@ namespace CamelotEngine
 			checkIsArray(true);
 			checkType<DataType>();
 
-			boost::function<DataType(ObjectType*, UINT32)> f = boost::any_cast<boost::function<DataType(ObjectType*, UINT32)>>(valueGetter);
+			boost::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<boost::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
 			value = f(object, index);
 		}
 
@@ -62,7 +62,7 @@ namespace CamelotEngine
 					"Specified field (" + mName + ") has no setter.");
 			}
 
-			boost::function<void(ObjectType*, DataType)> f = boost::any_cast<boost::function<void(ObjectType*, DataType)>>(valueSetter);
+			boost::function<void(ObjectType*, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, DataType&)>>(valueSetter);
 			f(object, value);
 		}
 
@@ -78,7 +78,7 @@ namespace CamelotEngine
 					"Specified field (" + mName + ") has no setter.");
 			}
 
-			boost::function<void(ObjectType*, UINT32, DataType)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, DataType)>>(valueSetter);
+			boost::function<void(ObjectType*, UINT32, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, DataType&)>>(valueSetter);
 			f(object, index, value);
 		}
 

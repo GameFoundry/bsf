@@ -254,19 +254,19 @@ namespace CamelotEngine
 		/* 			FIELDS OPERATING DIRECTLY ON SERIALIZABLE OBJECT            */
 		/************************************************************************/
 		template<class ObjectType, class DataType>
-		void addPlainField(const std::string& name, UINT32 uniqueId, DataType (ObjectType::*getter)(), void (ObjectType::*setter)(DataType) = nullptr)
+		void addPlainField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), void (ObjectType::*setter)(DataType&) = nullptr)
 		{
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType(ObjectType*)>(getter), 
-				boost::function<void(ObjectType*, DataType)>(setter));
+				boost::function<DataType&(ObjectType*)>(getter), 
+				boost::function<void(ObjectType*, DataType&)>(setter));
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectableField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), void (ObjectType::*setter)(DataType) = nullptr)
+		void addReflectableField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), void (ObjectType::*setter)(DataType&) = nullptr)
 		{
 			addReflectableField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*)>(getter), 
-				boost::function<void(ObjectType*, DataType)>(setter));
+				boost::function<void(ObjectType*, DataType&)>(setter));
 		}
 
 		template<class ObjectType, class DataType>
@@ -278,24 +278,24 @@ namespace CamelotEngine
 		}
 
 		template<class ObjectType, class DataType>
-		void addPlainArrayField(const std::string& name, UINT32 uniqueId, DataType (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
-			void (ObjectType::*setter)(UINT32, DataType) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr)
+		void addPlainArrayField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
+			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr)
 		{
 			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType(ObjectType*, UINT32)>(getter), 
+				boost::function<DataType&(ObjectType*, UINT32)>(getter), 
 				boost::function<UINT32(ObjectType*)>(getSize), 
-				boost::function<void(ObjectType*, UINT32, DataType)>(setter), 
+				boost::function<void(ObjectType*, UINT32, DataType&)>(setter), 
 				boost::function<void(ObjectType*, UINT32)>(setSize));
 		}	
 
 		template<class ObjectType, class DataType>
 		void addReflectableArrayField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
-			void (ObjectType::*setter)(UINT32, DataType) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr)
+			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr)
 		{
 			addReflectableArrayField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*, UINT32)>(getter), 
 				boost::function<UINT32(ObjectType*)>(getSize), 
-				boost::function<void(ObjectType*, UINT32, DataType)>(setter), 
+				boost::function<void(ObjectType*, UINT32, DataType&)>(setter), 
 				boost::function<void(ObjectType*, UINT32)>(setSize));
 		}
 
@@ -328,25 +328,25 @@ namespace CamelotEngine
 		/************************************************************************/
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addPlainField(const std::string& name, UINT32 uniqueId, 
-			DataType (InterfaceType::*getter)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, DataType) = nullptr)
+			DataType& (InterfaceType::*getter)(ObjectType*), 
+			void (InterfaceType::*setter)(ObjectType*, DataType&) = nullptr)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::RTTIType, InterfaceType>::value), 
 				"Class with the get/set methods must derive from CamelotEngine::SerializationInterface.");
 
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, DataType)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)));
+				boost::function<DataType&(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
+				boost::function<void(ObjectType*, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)));
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectableField(const std::string& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, DataType) = nullptr)
+			void (InterfaceType::*setter)(ObjectType*, DataType&) = nullptr)
 		{
 			addReflectableField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, DataType)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)));
+				boost::function<void(ObjectType*, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)));
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
@@ -361,15 +361,15 @@ namespace CamelotEngine
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addPlainArrayField(const std::string& name, UINT32 uniqueId, 
-			DataType (InterfaceType::*getter)(ObjectType*, UINT32), 
+			DataType& (InterfaceType::*getter)(ObjectType*, UINT32), 
 			UINT32 (InterfaceType::*getSize)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType) = nullptr, 
+			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&) = nullptr, 
 			void(InterfaceType::*setSize)(ObjectType*, UINT32) = nullptr)
 		{
 			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
+				boost::function<DataType&(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
 				boost::function<UINT32(ObjectType*)>(boost::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, UINT32, DataType)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
+				boost::function<void(ObjectType*, UINT32, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
 				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)));
 		}	
 
@@ -377,13 +377,13 @@ namespace CamelotEngine
 		void addReflectableArrayField(const std::string& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*, UINT32), 
 			UINT32 (InterfaceType::*getSize)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType) = nullptr, 
+			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&) = nullptr, 
 			void(InterfaceType::*setSize)(ObjectType*, UINT32) = nullptr)
 		{
 			addReflectableArrayField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
 				boost::function<UINT32(ObjectType*)>(boost::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, UINT32, DataType)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
+				boost::function<void(ObjectType*, UINT32, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
 				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)));
 		}
 
