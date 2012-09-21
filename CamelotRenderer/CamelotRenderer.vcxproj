@@ -131,6 +131,7 @@
     <ClInclude Include="Include\CmVertexIndexData.h" />
     <ClInclude Include="Include\CmViewport.h" />
     <ClInclude Include="Include\CmWindowEventUtilities.h" />
+    <ClInclude Include="Include\CmResourceST.h" />
     <ClInclude Include="Include\stdafx.h" />
     <ClInclude Include="Include\targetver.h" />
   </ItemGroup>

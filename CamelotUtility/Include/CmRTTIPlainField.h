@@ -2,6 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 #include "CmRTTIField.h"
+#include "CmException.h"
 
 namespace CamelotEngine
 {

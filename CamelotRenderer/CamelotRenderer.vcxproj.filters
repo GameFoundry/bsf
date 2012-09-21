@@ -43,6 +43,9 @@
     <Filter Include="Source Files\Resources">
       <UniqueIdentifier>{6df1cc13-bf9e-45e7-90ae-337999c702cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Serialization">
+      <UniqueIdentifier>{75249db9-4f2e-43c3-8df4-37250c4b60a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -163,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="Include\CmResources.h">
       <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmResourceST.h">
+      <Filter>Header Files\Serialization</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

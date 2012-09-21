@@ -248,5 +248,11 @@
     <ClCompile Include="Source\CmIReflectable.cpp">
       <Filter>Source Files\RTTI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmSerializableType.cpp">
+      <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmISerializable.cpp">
+      <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

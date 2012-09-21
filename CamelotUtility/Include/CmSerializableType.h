@@ -5,7 +5,7 @@
 
 namespace CamelotEngine
 {
-	class CM_UTILITY_EXPORT SerializableType : public RTTITypeBase
+	class CM_UTILITY_EXPORT SerializableType : public RTTIType
 	{
 	public:
 		virtual void beginSerialization() {}

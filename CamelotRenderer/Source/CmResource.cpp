@@ -1,4 +1,5 @@
 #include "CmResource.h"
+#include "CmResourceST.h"
 
 namespace CamelotEngine
 {
@@ -45,4 +46,10 @@ namespace CamelotEngine
 	//			load();
 	//		}
 	//}
+	
+	SerializableType* Resource::getSerializable() const
+	{
+		static ResourceST serializableType;
+		return &serializableType;
+	}
 }
