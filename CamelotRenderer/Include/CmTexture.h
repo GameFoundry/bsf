@@ -333,6 +333,14 @@ namespace CamelotEngine {
 		*/
 		virtual void getCustomAttribute(const String& name, void* pData) {}
 
+		/**
+		 * @brief	Retrieves the texture data from the GPU, loads it into system memory
+		 * 			and returns it in the form of TextureData for each face.
+		 *
+		 * @return	The texture data.
+		 */
+		vector<TextureDataPtr>::type getTextureData();
+
     protected:
         size_t mHeight;
         size_t mWidth;

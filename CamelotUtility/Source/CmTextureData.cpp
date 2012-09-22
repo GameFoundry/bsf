@@ -1,5 +1,6 @@
 #include "CmTextureData.h"
 #include "CmException.h"
+#include "CmTextureDataST.h"
 
 namespace CamelotEngine
 {
@@ -51,5 +52,19 @@ namespace CamelotEngine
 		// Return subface as pixelbox
 		PixelData src(finalWidth, finalHeight, finalDepth, getFormat(), offset);
 		return src;
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	SerializableType* TextureData::getSerializable() const
+	{
+		static TextureDataST serializableType;
+		return &serializableType;
+	}
+
+	TextureData* TextureData::newObject()
+	{
+		return new TextureData();
 	}
 }

@@ -15,17 +15,54 @@ namespace CamelotEngine
 	class RTTITypeBase;
 	struct RTTIField;
 
-	CM_SERIALIZABLE_SIMPLE_TYPE(UINT8, 0);
-	CM_SERIALIZABLE_SIMPLE_TYPE(UINT16, 1);
-	CM_SERIALIZABLE_SIMPLE_TYPE(UINT32, 2);
-	CM_SERIALIZABLE_SIMPLE_TYPE(UINT64, 3);
-	CM_SERIALIZABLE_SIMPLE_TYPE(INT8, 4);
-	CM_SERIALIZABLE_SIMPLE_TYPE(INT16, 5);
-	CM_SERIALIZABLE_SIMPLE_TYPE(INT32, 6);
-	CM_SERIALIZABLE_SIMPLE_TYPE(INT64, 7);
-	CM_SERIALIZABLE_SIMPLE_TYPE(float, 8);
-	CM_SERIALIZABLE_SIMPLE_TYPE(double, 9);
-	CM_SERIALIZABLE_SIMPLE_TYPE(bool, 10);
+	template<class T>
+	struct SerializableSimpleType 
+	{ 
+		//BOOST_STATIC_ASSERT_MSG(sizeof(T) == 0, // We need this hacky check, otherwise if we only use "false" compiler will evaluate the template and trigger this message 
+		//	"Provided data type isn't marked as serializable. Declare SerializableSimpleType template specialization to define a unique ID and needed methods for the type.");
+
+		enum { id = 0 }; 
+		enum { hasDynamicSize = 0 };
+
+		static void toMemory(T& data, char* memory)	
+		{ 
+			memcpy(memory, &data, sizeof(T)); 
+		}
+
+		static void fromMemory(T& data, char* memory)
+		{
+			memcpy(&data, memory, sizeof(T)); 
+		}
+
+		static UINT32 getDynamicSize(T& data)
+		{ 
+			assert(false); 
+			return sizeof(T);
+		}
+	};
+
+#define CM_SERIALIZABLE_SIMPLE_TYPE(type, type_id)				\
+	template<> struct SerializableSimpleType<##type##>			\
+	{	enum { id=##type_id }; enum { hasDynamicSize = 0 };		\
+	static void toMemory(##type##& data, char* memory)		\
+	{ memcpy(memory, &data, sizeof(##type##)); }			\
+	static void fromMemory(##type##& data, char* memory)	\
+	{ memcpy(&data, memory, sizeof(##type##)); }			\
+	static UINT32 getDynamicSize(##type##& data)			\
+	{ assert(false); return sizeof(##type##); }				\
+	}; 
+
+	CM_SERIALIZABLE_SIMPLE_TYPE(UINT8, 1);
+	CM_SERIALIZABLE_SIMPLE_TYPE(UINT16, 2);
+	CM_SERIALIZABLE_SIMPLE_TYPE(UINT32, 3);
+	CM_SERIALIZABLE_SIMPLE_TYPE(UINT64, 4);
+	CM_SERIALIZABLE_SIMPLE_TYPE(INT8, 5);
+	CM_SERIALIZABLE_SIMPLE_TYPE(INT16, 6);
+	CM_SERIALIZABLE_SIMPLE_TYPE(INT32, 7);
+	CM_SERIALIZABLE_SIMPLE_TYPE(INT64, 8);
+	CM_SERIALIZABLE_SIMPLE_TYPE(float, 9);
+	CM_SERIALIZABLE_SIMPLE_TYPE(double, 10);
+	CM_SERIALIZABLE_SIMPLE_TYPE(bool, 11);
 		
 	/**
 	 * @brief	Strings need to copy their data in a slightly more intricate way than just memcpy.

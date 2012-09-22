@@ -98,9 +98,9 @@
     <ClInclude Include="Include\CmRTTIReflectableField.h" />
     <ClInclude Include="Include\CmRTTIReflectablePtrField.h" />
     <ClInclude Include="Include\CmRTTIType.h" />
-    <ClInclude Include="Include\CmRTTITypes.h" />
     <ClInclude Include="Include\CmSerializableType.h" />
     <ClInclude Include="Include\CmString.h" />
+    <ClInclude Include="Include\CmTextureDataST.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmTypes.h" />
     <ClInclude Include="Include\CmFwdDeclUtil.h" />

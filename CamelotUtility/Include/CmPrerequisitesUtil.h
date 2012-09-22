@@ -56,9 +56,6 @@ THE SOFTWARE
 // Short-hand names for various built-in types
 #include "CmTypes.h"
 
-// RTTI supported types and a macro for defining new ones
-#include "CmRTTITypes.h"
-
 // Useful threading defines
 #include "CmThreadDefines.h"
 

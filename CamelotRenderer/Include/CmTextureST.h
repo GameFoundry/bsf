@@ -3,6 +3,8 @@
 #include "CmPrerequisites.h"
 #include "CmSerializableType.h"
 #include "CmTexture.h"
+#include "CmTextureData.h"
+#include "CmManagedDataBlock.h"
 
 namespace CamelotEngine
 {
@@ -21,6 +23,38 @@ namespace CamelotEngine
 		CM_SETGET_MEMBER(mHwGamma, bool, Texture)
 		CM_SETGET_MEMBER(mFSAA, UINT32, Texture)
 		CM_SETGET_MEMBER(mFSAAHint, String, Texture)
+		CM_SETGET_MEMBER(mTextureType, TextureType, Texture)
+		CM_SETGET_MEMBER(mFormat, PixelFormat, Texture)
+		CM_SETGET_MEMBER(mUsage, INT32, Texture)
+		CM_SETGET_MEMBER(mDesiredFormat, PixelFormat, Texture)
+		CM_SETGET_MEMBER(mDesiredIntegerBitDepth, UINT16, Texture)
+		CM_SETGET_MEMBER(mDesiredFloatBitDepth, UINT16, Texture)
+
+		//ManagedDataBlock getFaceData(Texture* obj)
+		//{
+		//	UINT32 totalSize = 0;
+		//	vector<TextureDataPtr>::type faces = obj->getTextureData();
+
+		//	for(auto iter = faces.begin(); iter != faces.end(); ++iter)
+		//	{
+		//		totalSize += (*iter)->getSize();
+		//	}
+
+		//	UINT8* faceData = new UINT8[totalSize]; // TODO - Any way to avoid this reallocation? getTextureData allocates the same amount of memory and then
+		//											// we allocate it again, copy from buffers and throw away getTextureData memory
+		//											//   - TextureData should store everything in one big buffer?
+		//											//   - OR make TextureData ISerializable?!
+
+		//	//ManagedDataBlock dataBlock()
+
+		//	return obj->getTextureData(face).get();
+		//}
+
+		//void setFaceData(Texture* obj, UINT32 face, TextureData* data)
+		//{
+		//	return obj->getTextureData(face).get();
+		//}
+
 	public:
 		TextureST()
 		{
@@ -36,6 +70,12 @@ namespace CamelotEngine
 			CM_ADD_PLAINFIELD(mHwGamma, 9, TextureST)
 			CM_ADD_PLAINFIELD(mFSAA, 10, TextureST)
 			CM_ADD_PLAINFIELD(mFSAAHint, 11, TextureST)
+			CM_ADD_PLAINFIELD(mTextureType, 12, TextureST)
+			CM_ADD_PLAINFIELD(mFormat, 13, TextureST)
+			CM_ADD_PLAINFIELD(mUsage, 14, TextureST)
+			CM_ADD_PLAINFIELD(mDesiredFormat, 15, TextureST)
+			CM_ADD_PLAINFIELD(mDesiredIntegerBitDepth, 16, TextureST)
+			CM_ADD_PLAINFIELD(mDesiredFloatBitDepth, 17, TextureST)
 		}
 	};
 }

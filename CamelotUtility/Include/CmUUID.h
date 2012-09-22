@@ -6,6 +6,4 @@
 namespace CamelotEngine
 {
 	typedef boost::uuids::uuid UUID;
-
-	CM_SERIALIZABLE_SIMPLE_TYPE(UUID, 51);
 }

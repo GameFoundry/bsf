@@ -37,6 +37,9 @@
     <Filter Include="Source Files\Serialization">
       <UniqueIdentifier>{155906c8-9f79-4f86-835a-eb8f5c2f66bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SerializationTypes">
+      <UniqueIdentifier>{e58e84a8-5f39-4bbd-874e-cfa000ebd881}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmTypes.h">
@@ -174,8 +177,8 @@
     <ClInclude Include="Include\CmSerializableType.h">
       <Filter>Header Files\Serialization</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmRTTITypes.h">
-      <Filter>Header Files\Prerequisites</Filter>
+    <ClInclude Include="Include\CmTextureDataST.h">
+      <Filter>Header Files\SerializationTypes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

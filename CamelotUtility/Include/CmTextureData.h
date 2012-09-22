@@ -2,6 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 #include "CmPixelUtil.h"
+#include "CmISerializable.h"
 
 namespace CamelotEngine
 {
@@ -12,7 +13,7 @@ namespace CamelotEngine
 		TDF_3D_TEXTURE = 0x00000004
 	};
 
-	class CM_UTILITY_EXPORT TextureData
+	class CM_UTILITY_EXPORT TextureData : public ISerializable
 	{
 	public:
 		TextureData(UINT32 width, UINT32 height, UINT32 size, 
@@ -83,5 +84,15 @@ namespace CamelotEngine
 		UINT8 mBPP;
 		PixelFormat mFormat;
 		UINT8* mData;
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	public:
+		friend class TextureDataST;
+		virtual SerializableType* getSerializable() const;
+		static TextureData* newObject();
+	private:
+		TextureData() {} // Only for serialization
 	};
 }

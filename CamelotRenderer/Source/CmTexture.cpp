@@ -127,6 +127,47 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
+	vector<TextureDataPtr>::type Texture::getTextureData()
+	{
+		vector<TextureDataPtr>::type output;
+
+		UINT32 numFaces = getNumFaces();
+		UINT32 numMips = getNumMipmaps();
+
+		for(int i = 0; i < numFaces; i++)
+		{
+			UINT32 totalSize = 0;
+			UINT32 width = getWidth();
+			UINT32 height = getHeight();
+			UINT32 depth = getDepth();
+
+			for(int j = 0; j < numMips; j++)
+			{
+				UINT32 currentMipSize = PixelUtil::getMemorySize(
+						width, height, depth, mFormat);
+
+				totalSize += currentMipSize;
+
+				if(width != 1) width /= 2;
+				if(height != 1) height /= 2;
+				if(depth != 1) depth /= 2;
+			}
+
+			UINT8* buffer = new UINT8[totalSize]; // TextureData frees this
+			TextureDataPtr texData(new TextureData(getWidth(), getHeight(), totalSize, mFormat, buffer, getDepth(), 0, getNumMipmaps()));
+
+			for(int j = 0; j < numMips; j++)
+			{
+				PixelData pixels = texData->getPixels(j);
+				getBuffer(i, j)->blitToMemory(pixels);
+			}
+
+			output.push_back(texData);
+		}
+
+		return output;
+	}
+	//-----------------------------------------------------------------------------
 	void Texture::loadFromTextureData(const vector<TextureDataPtr>::type& textureData)
 	{
 		if(textureData.size() < 1)
