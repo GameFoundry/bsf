@@ -36,6 +36,11 @@ namespace CamelotEngine
 			return 0; // Data block types don't store size the conventional way
 		}
 
+		virtual bool hasDynamicSize()
+		{
+			return true;
+		}
+
 		virtual UINT32 getArraySize(void* object)
 		{
 			CM_EXCEPT(InternalErrorException, 

@@ -177,7 +177,8 @@ namespace CamelotEngine
 			RTTIField* curGenericField = si->getField(i);
 
 			// Copy field ID & other meta-data like field size and type
-			int metaData = encodeFieldMetaData(curGenericField->mUniqueId, curGenericField->getTypeSize(), curGenericField->mIsVectorType, curGenericField->mType);
+			int metaData = encodeFieldMetaData(curGenericField->mUniqueId, curGenericField->getTypeSize(), 
+				curGenericField->mIsVectorType, curGenericField->mType, curGenericField->hasDynamicSize());
 			COPY_TO_BUFFER(&metaData, META_SIZE)
 
 			if(curGenericField->mIsVectorType)
@@ -222,9 +223,14 @@ namespace CamelotEngine
 					{
 						RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
 
-						UINT32 typeSize = curField->getTypeSize();
 						for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
 						{
+							UINT32 typeSize = 0;
+							if(curField->hasDynamicSize())
+								typeSize = curField->getArrayElemDynamicSize(object, arrIdx);
+							else
+								typeSize = curField->getTypeSize();
+
 							if((*bytesWritten + typeSize) > bufferLength)
 							{
 								mTotalBytesWritten += *bytesWritten;
@@ -275,7 +281,11 @@ namespace CamelotEngine
 					{
 						RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
 
-						UINT32 typeSize = curField->getTypeSize();
+						UINT32 typeSize = 0;
+						if(curField->hasDynamicSize())
+							typeSize = curField->getDynamicSize(object);
+						else
+							typeSize = curField->getTypeSize();
 
 						if((*bytesWritten + typeSize) > bufferLength)
 						{
@@ -284,6 +294,7 @@ namespace CamelotEngine
 							if(buffer == nullptr || bufferLength < typeSize) return nullptr;
 							*bytesWritten = 0;
 						}
+
 
 						curField->toBuffer(object, buffer);
 						buffer += typeSize;
@@ -396,7 +407,8 @@ namespace CamelotEngine
 			SerializableFieldType fieldType;
 			UINT16 fieldId;
 			UINT8 fieldSize;
-			decodeFieldMetaData(metaData, fieldId, fieldSize, isArray, fieldType);
+			bool hasDynamicSize;
+			decodeFieldMetaData(metaData, fieldId, fieldSize, isArray, fieldType, hasDynamicSize);
 			
 			RTTIField* curGenericField = nullptr;
 			
@@ -497,11 +509,15 @@ namespace CamelotEngine
 
 						for(int i = 0; i < arrayNumElems; i++)
 						{
+							UINT32 typeSize = fieldSize;
+							if(hasDynamicSize)
+								memcpy(&typeSize, data, sizeof(UINT32));
+
 							if(curField != nullptr)
 								curField->arrayElemFromBuffer(object, i, data);
 
-							data += fieldSize;
-							bytesRead += fieldSize;
+							data += typeSize;
+							bytesRead += typeSize;
 						}
 						break;
 					}
@@ -562,11 +578,15 @@ namespace CamelotEngine
 					{
 						RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
 
+						UINT32 typeSize = fieldSize;
+						if(hasDynamicSize)
+							memcpy(&typeSize, data, sizeof(UINT32));
+
 						if(curField != nullptr)
 							curField->fromBuffer(object, data);
 
-						data += fieldSize;
-						bytesRead += fieldSize;
+						data += typeSize;
+						bytesRead += typeSize;
 						break;
 					}
 				case SerializableFT_DataBlock:
@@ -721,10 +741,10 @@ namespace CamelotEngine
 		return objectSize;
 	}
 
-	UINT32 BinarySerializer::encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type)
+	UINT32 BinarySerializer::encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type, bool hasDynamicSize)
 	{
 		// If O == 0 - Meta contains field information (Encoded using this method)
-		//// Encoding: IIII IIII IIII IIII SSSS SSSS xxxP DCAO
+		//// Encoding: IIII IIII IIII IIII SSSS SSSS xxYP DCAO
 		//// I - Id
 		//// S - Size
 		//// C - Complex
@@ -732,21 +752,25 @@ namespace CamelotEngine
 		//// D - Data block
 		//// P - Complex ptr
 		//// O - Object descriptor
- 
+		//// Y - Simple field has dynamic size
+
 		return (id << 16 | size << 8 | 
 			(array ? 0x02 : 0) | 
 			((type == SerializableFT_DataBlock) ? 0x04 : 0) | 
 			((type == SerializableFT_Reflectable) ? 0x08 : 0) | 
-			((type == SerializableFT_ReflectablePtr) ? 0x10 : 0)); // TODO - Low priority. Technically I could encode this much more tightly, and use var-ints for ID
+			((type == SerializableFT_ReflectablePtr) ? 0x10 : 0) | 
+			(hasDynamicSize ? 0x20 : 0)); // TODO - Low priority. Technically I could encode this much more tightly, and use var-ints for ID
 	}
 
-	void BinarySerializer::decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, SerializableFieldType& type)
+	void BinarySerializer::decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, SerializableFieldType& type, bool& hasDynamicSize)
 	{
 		if(isObjectMetaData(encodedData))
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Meta data represents an object description but is trying to be decoded as a field descriptor.");
 		}
+
+		hasDynamicSize = (encodedData & 0x20) != 0;
 
 		if((encodedData & 0x10) != 0)
 			type = SerializableFT_ReflectablePtr;

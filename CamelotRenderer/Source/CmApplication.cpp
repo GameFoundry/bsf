@@ -82,8 +82,10 @@ namespace CamelotEngine
 
 		mVertProg = HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		mVertProg->load();
+	}
 
-
+	void Application::runMainLoop()
+	{
 		while(true)
 		{
 			WindowEventUtilities::messagePump();

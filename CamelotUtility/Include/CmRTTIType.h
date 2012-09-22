@@ -20,6 +20,13 @@
 
 namespace CamelotEngine
 {
+#define CM_SETGET_MEMBER(name, type, parentType)								\
+	type##& get##name(parentType##* obj) { return obj->##name; }				\
+	void set##name(parentType##* obj, type##& val) { obj->##name = val; } 
+
+#define CM_ADD_PLAINFIELD(name, id, parentType) \
+	addPlainField(#name, id##, &##parentType##::get##name, &##parentType##::set##name);
+
 	/**
 	 * @brief	Provides an interface for accessing fields of a certain class.
 	 * 			Data can be easily accessed by getter and setter methods.

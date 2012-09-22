@@ -15,15 +15,6 @@ namespace CamelotEngine
 	class RTTITypeBase;
 	struct RTTIField;
 
-	template<class T>
-	struct SerializableSimpleType 
-	{ 
-		BOOST_STATIC_ASSERT_MSG(sizeof(T) == 0, // We need this hacky check, otherwise if we only use "false" compiler will evaluate the template and trigger this message 
-			"Provided serializable data type doesn't define have a type ID. Use CM_SERIALIZABLE_SIMPLE_TYPE(type, id) macro to define a unique ID for the type.");
-
-		enum { id = T::TYPE_ID }; enum { isNativeType = 0 }; 
-	};
-
 	CM_SERIALIZABLE_SIMPLE_TYPE(UINT8, 0);
 	CM_SERIALIZABLE_SIMPLE_TYPE(UINT16, 1);
 	CM_SERIALIZABLE_SIMPLE_TYPE(UINT32, 2);
@@ -35,12 +26,48 @@ namespace CamelotEngine
 	CM_SERIALIZABLE_SIMPLE_TYPE(float, 8);
 	CM_SERIALIZABLE_SIMPLE_TYPE(double, 9);
 	CM_SERIALIZABLE_SIMPLE_TYPE(bool, 10);
+		
+	/**
+	 * @brief	Strings need to copy their data in a slightly more intricate way than just memcpy.
+	 */
+	template<> struct SerializableSimpleType<String>
+	{	
+		enum { id = 20 }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(String& data, char* memory)
+		{ 
+			UINT32 size = getDynamicSize(data);
+
+			memcpy(memory, &size, sizeof(UINT32));
+			memory += sizeof(UINT32);
+			memcpy(memory, data.data(), size); 
+		}
+
+		static void fromMemory(String& data, char* memory)
+		{ 
+			UINT32 size;
+			memcpy(&size, memory, sizeof(UINT32)); 
+			memory += sizeof(UINT32);
+
+			size -= sizeof(UINT32);
+			char* buffer = new char[size + 1]; // TODO - Use a better allocator
+			memcpy(buffer, memory, size); 
+			buffer[size] = '\0';
+			data = String(buffer);
+
+			delete[] buffer; 
+		}
+
+		static UINT32 getDynamicSize(String& data)	
+		{ 
+			return data.size() + sizeof(UINT32);
+		}	
+	}; 
 
 	/**
 	 * @brief	Types of fields we can serialize:
 	 * 			
-	 * - Simple - Native data types and POD (Plain old data) structures. POD structures  
-	 *			  need to define a static TYPE_ID field with a unique ID. (IDs 0-31 are reserved for native types)
+	 * - Simple - Native data types, POD (Plain old data) structures, or in general types we don't want to (or can't) inherit from IReflectable. 
 	 *			  
 	 * - DataBlock - Array of bytes of a certain size. When returning a data block you may specify if its managed or unmanaged.  
 	 *				 Managed data blocks have their buffers deleted after they go out of scope. This is useful if you need to return some
@@ -83,6 +110,7 @@ namespace CamelotEngine
 		virtual void setArraySize(void* object, UINT32 size) = 0;
 
 		virtual UINT32 getTypeSize() = 0;
+		virtual bool hasDynamicSize() = 0;
 
 		/**
 		 * @brief	Throws an exception if this field doesn't contain a simple value.

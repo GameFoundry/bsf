@@ -45,12 +45,15 @@ TODO:
  - OpenGL too
 
 TOMORROW:
+ - How do I serialize derived classes, without rewriting all the base class serialization?
+   - Unless something better dawns on me by Monday, just inherit from parents SerializableType and manually make sure no IDs overlap.
+     - We can improve later if needed. I though about it too much for now.
+ - How do I deserialize binary data without knowing what type of class (i.e. Resource) is it?
+  - Each Resource (i.e. Texture, Mesh) needs to have its own manager, which then hooks into the global Resources class
+  - When saving resources, save an unique resource identifier
+  - Then we can call individual resource manager and it can create proper resource based on active render system and whatever else
 TextureData
- - Keeps num mips, width, height, depth, format, flags and raw image data that can be used for initializing textures
- - Will need some methods like getPixelBox, from OgreImage
- - Cube textures require 6 of these
  - When serializing this texture, request data from GPU, populate TextureData array and return
-
 Texture
  - Gets initialized by calling SetData(vector<TextureData). 
  - Returns TextureData by GetData (retrieves data from GPU)

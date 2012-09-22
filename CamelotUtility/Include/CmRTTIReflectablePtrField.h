@@ -15,6 +15,8 @@ namespace CamelotEngine
 		virtual void setArrayValue(void* object, UINT32 index, IReflectable* value) = 0;
 
 		virtual IReflectable* newObject() = 0;
+
+		virtual bool hasDynamicSize() { return true; }
 	};
 
 	template <class DataType, class ObjectType>

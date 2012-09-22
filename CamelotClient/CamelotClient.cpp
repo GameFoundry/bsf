@@ -11,10 +11,12 @@ using namespace CamelotEngine;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	test();
-
 	gApplication().startUp("CamelotGLRenderer.dll");
 	//gApplication().startUp("CamelotD3D9Renderer.dll");
+
+	test();
+
+	gApplication().runMainLoop();
 
 	int a = 5;
 

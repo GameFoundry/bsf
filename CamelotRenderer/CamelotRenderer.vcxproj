@@ -127,6 +127,7 @@
     <ClInclude Include="Include\CmSpecificImporter.h" />
     <ClInclude Include="Include\CmTexture.h" />
     <ClInclude Include="Include\CmTextureManager.h" />
+    <ClInclude Include="Include\CmTextureST.h" />
     <ClInclude Include="Include\CmTextureState.h" />
     <ClInclude Include="Include\CmVertexIndexData.h" />
     <ClInclude Include="Include\CmViewport.h" />

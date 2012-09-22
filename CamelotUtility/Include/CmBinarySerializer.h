@@ -123,12 +123,12 @@ namespace CamelotEngine
 		/**
 		* @brief	Encodes data required for representing a serialized field, into 4 bytes.
 		*/
-		UINT32 encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type);
+		UINT32 encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type, bool hasDynamicSize);
 
 		/**
 		* @brief	Decode meta field that was encoded using encodeFieldMetaData.
 		*/
-		void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, SerializableFieldType& type);
+		void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, SerializableFieldType& type, bool& hasDynamicSize);
 
 		/**
 		* @brief	Encodes data required for representing an object identifier, into 4 bytes.

@@ -382,6 +382,14 @@ namespace CamelotEngine {
 
 		/** Default implementation of unload which calls freeInternalResources */
 		void unloadImpl(void);
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class TextureST;
+		virtual SerializableType* getSerializable() const;
+		static Texture* newObject();
     };
 
 	/** @} */

@@ -30,6 +30,21 @@ namespace CamelotEngine
 			return 0;
 		}
 
+		virtual bool hasDynamicSize()
+		{
+			return false;
+		}
+
+		virtual UINT32 getDynamicSize(void* object)
+		{
+			return 0;
+		}
+
+		virtual UINT32 getArrayElemDynamicSize(void* object, int index)
+		{
+			return 0;
+		}
+
 		template<class ObjectType, class DataType>
 		void getValue(ObjectType* object, DataType& value)
 		{
@@ -181,6 +196,35 @@ namespace CamelotEngine
 			return SerializableSimpleType<DataType>::id;
 		}
 
+		virtual bool hasDynamicSize()
+		{
+			return SerializableSimpleType<DataType>::hasDynamicSize != 0;
+		}
+
+		virtual UINT32 getDynamicSize(void* object)
+		{
+			checkIsArray(false);
+			checkType<DataType>();
+
+			ObjectType* castObject = static_cast<ObjectType*>(object);
+
+			DataType value;
+			getValue(castObject, value);
+			return SerializableSimpleType<DataType>::getDynamicSize(value);
+		}
+
+		virtual UINT32 getArrayElemDynamicSize(void* object, int index)
+		{
+			checkIsArray(true);
+			checkType<DataType>();
+
+			ObjectType* castObject = static_cast<ObjectType*>(object);
+
+			DataType value;
+			getArrayValue(castObject, index, value);
+			return SerializableSimpleType<DataType>::getDynamicSize(value);
+		}
+
 		virtual UINT32 getArraySize(void* object)
 		{
 			checkIsArray(true);
@@ -214,7 +258,7 @@ namespace CamelotEngine
 
 			DataType value;
 			getValue(castObject, value);
-			memcpy(buffer, &value, getTypeSize());
+			SerializableSimpleType<DataType>::toMemory(value, (char*)buffer);
 		}
 
 		virtual void arrayElemToBuffer(void* object, int index, void* buffer)
@@ -226,7 +270,7 @@ namespace CamelotEngine
 
 			DataType value;
 			getArrayValue(castObject, index, value);
-			memcpy(buffer, &value, getTypeSize());
+			SerializableSimpleType<DataType>::toMemory(value, (char*)buffer);
 		}
 
 		virtual void fromBuffer(void* object, void* buffer)
@@ -237,7 +281,7 @@ namespace CamelotEngine
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
 			DataType value;
-			memcpy(&value, buffer, getTypeSize());
+			SerializableSimpleType<DataType>::fromMemory(value, (char*)buffer);
 			setValue(castObject, value);
 		}
 
@@ -249,7 +293,7 @@ namespace CamelotEngine
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
 			DataType value;
-			memcpy(&value, buffer, getTypeSize());
+			SerializableSimpleType<DataType>::fromMemory(value, (char*)buffer);
 			setArrayValue(castObject, index, value);
 		}
 	};

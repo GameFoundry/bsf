@@ -27,6 +27,7 @@ THE SOFTWARE.
 */
 #include "CmHardwarePixelBuffer.h"
 #include "CmTexture.h"
+#include "CmTextureST.h"
 #include "CmTextureData.h"
 #include "CmDataStream.h"
 #include "CmException.h"
@@ -252,4 +253,19 @@ namespace CamelotEngine {
             }
         }
     }
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+
+	SerializableType* Texture::getSerializable() const
+	{
+		static TextureST serializableType;
+		return &serializableType;
+	}
+
+	Texture* Texture::newObject()
+	{
+		CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class!");
+	}
 }
