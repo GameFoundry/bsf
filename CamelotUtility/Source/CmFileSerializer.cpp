@@ -31,7 +31,7 @@ namespace CamelotEngine
 		mOutputStream.clear();
 	}
 
-	void FileSerializer::decode(IReflectable* object, std::string fileLocation)
+	void FileSerializer::decode(std::shared_ptr<IReflectable> object, std::string fileLocation)
 	{
 		mInputStream.open(fileLocation.c_str(), std::ios::in | std::ios::ate | std::ios::binary);
 		

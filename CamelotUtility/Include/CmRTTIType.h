@@ -102,7 +102,7 @@ namespace CamelotEngine
 
 
 		template <class ObjectType, class DataType>
-		void setReflectablePtrValue(ObjectType* object, const std::string& name, DataType* value)
+		void setReflectablePtrValue(ObjectType* object, const std::string& name, std::shared_ptr<DataType> value)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
@@ -115,7 +115,7 @@ namespace CamelotEngine
 		}
 
 		template <class ObjectType, class DataType>
-		void setReflectablePtrArrayValue(ObjectType* object, const std::string& name, UINT32 index, DataType* value)
+		void setReflectablePtrArrayValue(ObjectType* object, const std::string& name, UINT32 index, std::shared_ptr<DataType> value)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
@@ -178,7 +178,7 @@ namespace CamelotEngine
 		}
 
 		template <class ObjectType>
-		IReflectable* getReflectablePtrValue(ObjectType* object, const std::string& name)
+		std::shared_ptr<IReflectable> getReflectablePtrValue(ObjectType* object, const std::string& name)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplexPtr(false);
@@ -188,7 +188,7 @@ namespace CamelotEngine
 		}
 
 		template <class ObjectType>
-		IReflectable* getReflectablePtrArrayValue(ObjectType* object, const std::string& name, UINT32 index)
+		std::shared_ptr<IReflectable> getReflectablePtrArrayValue(ObjectType* object, const std::string& name, UINT32 index)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplexPtr(true);
@@ -277,11 +277,11 @@ namespace CamelotEngine
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, DataType* (ObjectType::*getter)(), void (ObjectType::*setter)(DataType*) = nullptr)
+		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(), void (ObjectType::*setter)(std::shared_ptr<DataType>) = nullptr)
 		{
 			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType*(ObjectType*)>(getter), 
-				boost::function<void(ObjectType*, DataType*)>(setter));
+				boost::function<std::shared_ptr<DataType>(ObjectType*)>(getter), 
+				boost::function<void(ObjectType*, std::shared_ptr<DataType>)>(setter));
 		}
 
 		template<class ObjectType, class DataType>
@@ -307,13 +307,13 @@ namespace CamelotEngine
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectablePtrArrayField(const std::string& name, UINT32 uniqueId, DataType* (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
-			void (ObjectType::*setter)(UINT32, DataType*) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr)
+		void addReflectablePtrArrayField(const std::string& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
+			void (ObjectType::*setter)(UINT32, std::shared_ptr<DataType>) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr)
 		{
 			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType*(ObjectType*, UINT32)>(getter), 
+				boost::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>(getter), 
 				boost::function<UINT32(ObjectType*)>(getSize), 
-				boost::function<void(ObjectType*, UINT32, DataType*)>(setter), 
+				boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>(setter), 
 				boost::function<void(ObjectType*, UINT32)>(setSize));
 		}
 
@@ -358,12 +358,12 @@ namespace CamelotEngine
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, 
-			DataType* (InterfaceType::*getter)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, DataType*) = nullptr)
+			std::shared_ptr<DataType> (InterfaceType::*getter)(ObjectType*), 
+			void (InterfaceType::*setter)(ObjectType*, std::shared_ptr<DataType>) = nullptr)
 		{
 			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType*(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, DataType*)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)));
+				boost::function<std::shared_ptr<DataType>(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
+				boost::function<void(ObjectType*, std::shared_ptr<DataType>)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)));
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
@@ -396,15 +396,15 @@ namespace CamelotEngine
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectablePtrArrayField(const std::string& name, UINT32 uniqueId, 
-			DataType* (InterfaceType::*getter)(ObjectType*, UINT32), 
+			std::shared_ptr<DataType> (InterfaceType::*getter)(ObjectType*, UINT32), 
 			UINT32 (InterfaceType::*getSize)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType*) = nullptr, 
+			void (InterfaceType::*setter)(ObjectType*, UINT32, std::shared_ptr<DataType>) = nullptr, 
 			void(InterfaceType::*setSize)(ObjectType*, UINT32) = nullptr)
 		{
 			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType*(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
+				boost::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
 				boost::function<UINT32(ObjectType*)>(boost::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, UINT32, DataType*)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
+				boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
 				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)));
 		}
 

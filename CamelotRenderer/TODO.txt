@@ -45,6 +45,8 @@ TODO:
  - OpenGL too
 
 TOMORROW:
+ - I moved ReflectionPtr serialization to use shared_ptrs, but haven't tested it one bit
+ - When serializing, encode requires normal ptr, while decode required shared_ptr. Standardize that
  - How do I serialize derived classes, without rewriting all the base class serialization?
    - Unless something better dawns on me by Monday, just inherit from parents SerializableType and manually make sure no IDs overlap.
      - We can improve later if needed. I though about it too much for now.

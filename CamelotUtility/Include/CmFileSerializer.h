@@ -13,7 +13,7 @@ namespace CamelotEngine
 		~FileSerializer();
 
 		void encode(IReflectable* object, std::string fileLocation);
-		void decode(IReflectable* object, std::string fileLocation);
+		void decode(std::shared_ptr<IReflectable> object, std::string fileLocation);
 
 	private:
 		std::ofstream mOutputStream;

@@ -8,13 +8,13 @@ namespace CamelotEngine
 {
 	struct RTTIReflectablePtrFieldBase : public RTTIField
 	{
-		virtual IReflectable* getValue(void* object) = 0;
-		virtual IReflectable* getArrayValue(void* object, UINT32 index) = 0;
+		virtual std::shared_ptr<IReflectable> getValue(void* object) = 0;
+		virtual std::shared_ptr<IReflectable> getArrayValue(void* object, UINT32 index) = 0;
 
-		virtual void setValue(void* object, IReflectable* value) = 0;
-		virtual void setArrayValue(void* object, UINT32 index, IReflectable* value) = 0;
+		virtual void setValue(void* object, std::shared_ptr<IReflectable> value) = 0;
+		virtual void setArrayValue(void* object, UINT32 index, std::shared_ptr<IReflectable> value) = 0;
 
-		virtual IReflectable* newObject() = 0;
+		virtual std::shared_ptr<IReflectable> newObject() = 0;
 
 		virtual bool hasDynamicSize() { return true; }
 	};
@@ -62,29 +62,29 @@ namespace CamelotEngine
 			return 0; // Complex types don't store size the conventional way
 		}
 
-		virtual IReflectable* getValue(void* object)
+		virtual std::shared_ptr<IReflectable> getValue(void* object)
 		{
 			checkIsArray(false);
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			boost::function<DataType*(ObjectType*)> f = boost::any_cast<boost::function<DataType*(ObjectType*)>>(valueGetter);
-			IReflectable* castDataType = f(castObjType);
+			boost::function<std::shared_ptr<DataType>(ObjectType*)> f = boost::any_cast<boost::function<std::shared_ptr<DataType>(ObjectType*)>>(valueGetter);
+			std::shared_ptr<IReflectable> castDataType = f(castObjType);
 
 			return castDataType;
 		}
 
-		virtual IReflectable* getArrayValue(void* object, UINT32 index)
+		virtual std::shared_ptr<IReflectable> getArrayValue(void* object, UINT32 index)
 		{
 			checkIsArray(true);
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			boost::function<DataType*(ObjectType*, UINT32)> f = boost::any_cast<boost::function<DataType*(ObjectType*, UINT32)>>(valueGetter);
+			boost::function<std::shared_ptr<DataType>(ObjectType*, UINT32)> f = boost::any_cast<boost::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>>(valueGetter);
 
-			IReflectable* castDataType = f(castObjType, index);
+			std::shared_ptr<IReflectable> castDataType = f(castObjType, index);
 			return castDataType;
 		}
 
-		virtual void setValue(void* object, IReflectable* value)
+		virtual void setValue(void* object, std::shared_ptr<IReflectable> value)
 		{
 			checkIsArray(false);
 
@@ -95,12 +95,12 @@ namespace CamelotEngine
 			}
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			DataType* castDataObj = static_cast<DataType*>(value);
-			boost::function<void(ObjectType*, DataType*)> f = boost::any_cast<boost::function<void(ObjectType*, DataType*)>>(valueSetter);
+			std::shared_ptr<DataType> castDataObj = std::static_pointer_cast<DataType>(value);
+			boost::function<void(ObjectType*, std::shared_ptr<DataType>)> f = boost::any_cast<boost::function<void(ObjectType*, std::shared_ptr<DataType>)>>(valueSetter);
 			f(castObjType, castDataObj);
 		}
 
-		virtual void setArrayValue(void* object, UINT32 index, IReflectable* value)
+		virtual void setArrayValue(void* object, UINT32 index, std::shared_ptr<IReflectable> value)
 		{
 			checkIsArray(true);
 
@@ -111,8 +111,8 @@ namespace CamelotEngine
 			}
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			DataType* castDataObj = static_cast<DataType*>(value);
-			boost::function<void(ObjectType*, UINT32, DataType*)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, DataType*)>>(valueSetter);
+			std::shared_ptr<DataType> castDataObj = static_pointer_cast<DataType>(value);
+			boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>>(valueSetter);
 			f(castObjType, index, castDataObj);
 		}
 
@@ -140,9 +140,9 @@ namespace CamelotEngine
 			f(castObject, size);
 		}
 
-		virtual IReflectable* newObject()
+		virtual std::shared_ptr<IReflectable> newObject()
 		{
-			return DataType::newObject();
+			return std::shared_ptr<IReflectable>(DataType::newObject());
 		}
 	};
 }

@@ -61,17 +61,17 @@ namespace CamelotEngine
 		 * @param [in]	data  	Binary data to decode.
 		 * @param	dataLength	Length of the data.
 		 */
-		void decode(IReflectable* object, UINT8* data, UINT32 dataLength);
+		void decode(std::shared_ptr<IReflectable> object, UINT8* data, UINT32 dataLength);
 
 	private:
 		struct ObjectToEncode
 		{
-			ObjectToEncode(UINT32 _objectId, IReflectable* _object)
+			ObjectToEncode(UINT32 _objectId, std::shared_ptr<IReflectable> _object)
 				:objectId(_objectId), object(_object)
 			{ }
 
 			UINT32 objectId;
-			IReflectable* object;
+			std::shared_ptr<IReflectable> object;
 		};
 
 		/**
@@ -84,17 +84,17 @@ namespace CamelotEngine
 				:field(nullptr), object(nullptr), id(0)
 			{ }
 
-			PtrToResolve(RTTIReflectablePtrFieldBase* _field, IReflectable* _object, UINT32 _id)
+			PtrToResolve(RTTIReflectablePtrFieldBase* _field, std::shared_ptr<IReflectable> _object, UINT32 _id)
 				:field(_field), object(_object), id(_id), arrIdx(0)
 			{ }
 
-			PtrToResolve(RTTIReflectablePtrFieldBase* _field, IReflectable* _object, UINT32 _id, UINT32 _arrIdx)
+			PtrToResolve(RTTIReflectablePtrFieldBase* _field, std::shared_ptr<IReflectable> _object, UINT32 _id, UINT32 _arrIdx)
 				:field(_field), object(_object), id(_id), arrIdx(_arrIdx)
 			{ }
 
 			RTTIReflectablePtrFieldBase* field;
 			UINT32 arrIdx;
-			IReflectable* object;
+			std::shared_ptr<IReflectable> object;
 			UINT32 id;
 		};
 
@@ -104,7 +104,7 @@ namespace CamelotEngine
 		int mTotalBytesWritten;
 
 		std::vector<PtrToResolve> mPtrsToResolve;
-		std::unordered_map<UINT32, IReflectable*> mDecodedObjects;
+		std::unordered_map<UINT32, std::shared_ptr<IReflectable>> mDecodedObjects;
 
 
 		UINT32 getObjectSize(IReflectable* object);
@@ -118,7 +118,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Decodes a single IReflectable object.
 		 */
-		bool decodeInternal(IReflectable* object, UINT8* data, UINT32 dataLength, UINT32& bytesRead);
+		bool decodeInternal(std::shared_ptr<IReflectable> object, UINT8* data, UINT32 dataLength, UINT32& bytesRead);
 
 		/**
 		* @brief	Encodes data required for representing a serialized field, into 4 bytes.
@@ -158,7 +158,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Helper method for decoding a complex object from the provided data buffer.
 		 */
-		IReflectable* complexTypeFromBuffer(RTTIReflectableFieldBase* field, UINT8* data, int* complexTypeSize);
+		std::shared_ptr<IReflectable> complexTypeFromBuffer(RTTIReflectableFieldBase* field, UINT8* data, int* complexTypeSize);
 
 		/**
 		 * @brief	Finds an existing, or creates a unique unique identifier for the specified object. 
@@ -170,6 +170,6 @@ namespace CamelotEngine
 		 * 			And it adds the object to a list of objects that need to be encoded,
 		 * 			if it's not already there.
 		 */
-		UINT32 registerObjectPtr(IReflectable* object);
+		UINT32 registerObjectPtr(std::shared_ptr<IReflectable> object);
 	};
 }

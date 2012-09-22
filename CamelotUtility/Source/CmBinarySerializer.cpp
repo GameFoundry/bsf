@@ -73,8 +73,8 @@ namespace CamelotEngine
 				if(foundExisting != serializedObjects.end())
 					continue; // Already processed
 
-				IReflectable* curObject = iter->object;
-				buffer = encodeInternal(curObject, iter->objectId, buffer, bufferLength, bytesWritten, flushBufferCallback);
+				std::shared_ptr<IReflectable> curObject = iter->object;
+				buffer = encodeInternal(curObject.get(), iter->objectId, buffer, bufferLength, bytesWritten, flushBufferCallback);
 				if(buffer == nullptr)
 				{
 					CM_EXCEPT(InternalErrorException, 
@@ -101,7 +101,7 @@ namespace CamelotEngine
 		*bytesWritten = mTotalBytesWritten;
 	}
 
-	void BinarySerializer::decode(IReflectable* object, UINT8* data, UINT32 dataLength)
+	void BinarySerializer::decode(std::shared_ptr<IReflectable> object, UINT8* data, UINT32 dataLength)
 	{
 		mPtrsToResolve.clear();
 		mDecodedObjects.clear();
@@ -142,7 +142,7 @@ namespace CamelotEngine
 
 		for(auto iter = mPtrsToResolve.begin(); iter != mPtrsToResolve.end(); ++iter)
 		{
-			IReflectable* resolvedObject = nullptr;
+			std::shared_ptr<IReflectable> resolvedObject = nullptr;
 
 			PtrToResolve curPtr = *iter;
 			if(curPtr.id != 0)
@@ -153,9 +153,9 @@ namespace CamelotEngine
 			}
 
 			if(curPtr.field->mIsVectorType)
-				curPtr.field->setArrayValue(curPtr.object, curPtr.arrIdx, resolvedObject);
+				curPtr.field->setArrayValue(curPtr.object.get(), curPtr.arrIdx, resolvedObject);
 			else
-				curPtr.field->setValue(curPtr.object, resolvedObject);
+				curPtr.field->setValue(curPtr.object.get(), resolvedObject);
 		}
 	}
 
@@ -196,7 +196,7 @@ namespace CamelotEngine
 
 						for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
 						{
-							IReflectable* childObject = curField->getArrayValue(object, arrIdx); 
+							std::shared_ptr<IReflectable> childObject = curField->getArrayValue(object, arrIdx); 
 
 							UINT32 objId = registerObjectPtr(childObject);
 							COPY_TO_BUFFER(&objId, sizeof(UINT32))
@@ -259,7 +259,7 @@ namespace CamelotEngine
 				case SerializableFT_ReflectablePtr:
 					{
 						RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
-						IReflectable* childObject = curField->getValue(object); 
+						std::shared_ptr<IReflectable> childObject = curField->getValue(object); 
 
 						UINT32 objId = registerObjectPtr(childObject);
 						COPY_TO_BUFFER(&objId, sizeof(UINT32))
@@ -351,7 +351,7 @@ namespace CamelotEngine
 		return buffer;
 	}
 
-	bool BinarySerializer::decodeInternal(IReflectable* object, UINT8* data, UINT32 dataLength, UINT32& bytesRead)
+	bool BinarySerializer::decodeInternal(std::shared_ptr<IReflectable> object, UINT8* data, UINT32 dataLength, UINT32& bytesRead)
 	{
 		static const int META_SIZE = 4; // Meta field size
 		static const int NUM_ELEM_FIELD_SIZE = 4; // Size of the field storing number of array elements
@@ -451,7 +451,7 @@ namespace CamelotEngine
 				bytesRead += NUM_ELEM_FIELD_SIZE;
 
 				if(curGenericField != nullptr)
-					curGenericField->setArraySize(object, arrayNumElems);
+					curGenericField->setArraySize(object.get(), arrayNumElems);
 
 				switch(fieldType)
 				{
@@ -493,9 +493,8 @@ namespace CamelotEngine
 							int complexTypeSize = COMPLEX_TYPE_FIELD_SIZE;
 							if(curField != nullptr)
 							{
-								IReflectable* complexType = complexTypeFromBuffer(curField, data, &complexTypeSize);
-								curField->setArrayValue(object, i, *complexType);
-								delete complexType;
+								std::shared_ptr<IReflectable> complexType = complexTypeFromBuffer(curField, data, &complexTypeSize);
+								curField->setArrayValue(object.get(), i, *complexType);
 							}
 
 							data += complexTypeSize;
@@ -514,7 +513,7 @@ namespace CamelotEngine
 								memcpy(&typeSize, data, sizeof(UINT32));
 
 							if(curField != nullptr)
-								curField->arrayElemFromBuffer(object, i, data);
+								curField->arrayElemFromBuffer(object.get(), i, data);
 
 							data += typeSize;
 							bytesRead += typeSize;
@@ -564,9 +563,8 @@ namespace CamelotEngine
 						int complexTypeSize = COMPLEX_TYPE_FIELD_SIZE;
 						if(curField != nullptr)
 						{
-							IReflectable* complexType = complexTypeFromBuffer(curField, data, &complexTypeSize);
-							curField->setValue(object, *complexType);
-							delete complexType;
+							std::shared_ptr<IReflectable> complexType = complexTypeFromBuffer(curField, data, &complexTypeSize);
+							curField->setValue(object.get(), *complexType);
 						}
 
 						data += complexTypeSize;
@@ -583,7 +581,7 @@ namespace CamelotEngine
 							memcpy(&typeSize, data, sizeof(UINT32));
 
 						if(curField != nullptr)
-							curField->fromBuffer(object, data);
+							curField->fromBuffer(object.get(), data);
 
 						data += typeSize;
 						bytesRead += typeSize;
@@ -618,7 +616,7 @@ namespace CamelotEngine
 							memcpy(dataCopy, data, dataBlockSize);		//    can just pass the buffer pointer directly without copying (possibly large amounts of data)
 
 							ManagedDataBlock value(dataCopy, dataBlockSize, false); // Not managed because I assume the owner class will decide whether to delete the data or keep it
-							curField->setValue(object, value);
+							curField->setValue(object.get(), value);
 						}
 
 						data += dataBlockSize;
@@ -812,7 +810,8 @@ namespace CamelotEngine
 		return ((encodedData & 0x01) != 0);
 	}
 
-	UINT8* BinarySerializer::complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, int* bytesWritten, boost::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
+	UINT8* BinarySerializer::complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, 
+		int* bytesWritten, boost::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
 	{
 		static const UINT32 COMPLEX_TYPE_FIELD_SIZE = 4; // Size of the field storing the size of a child complex type
 
@@ -828,17 +827,17 @@ namespace CamelotEngine
 		return buffer;
 	}
 
-	IReflectable* BinarySerializer::complexTypeFromBuffer(RTTIReflectableFieldBase* field, UINT8* data, int* complexTypeSize)
+	std::shared_ptr<IReflectable> BinarySerializer::complexTypeFromBuffer(RTTIReflectableFieldBase* field, UINT8* data, int* complexTypeSize)
 	{
 		static const int COMPLEX_TYPE_FIELD_SIZE = 4; // Size of the field storing the size of a child complex type
 
 		memcpy(complexTypeSize, data, COMPLEX_TYPE_FIELD_SIZE);
 		data += COMPLEX_TYPE_FIELD_SIZE;
 
-		IReflectable* emptyObject = nullptr;
+		std::shared_ptr<IReflectable> emptyObject = nullptr;
 		if(*complexTypeSize > 0)
 		{
-			emptyObject = field->newObject();
+			emptyObject = std::shared_ptr<IReflectable>(field->newObject());
 			UINT32 dummy = 0;
 			decodeInternal(emptyObject, data, *complexTypeSize, dummy);
 		}
@@ -862,17 +861,17 @@ namespace CamelotEngine
 		return objId;
 	}
 
-	UINT32 BinarySerializer::registerObjectPtr(IReflectable* object)
+	UINT32 BinarySerializer::registerObjectPtr(std::shared_ptr<IReflectable> object)
 	{
 		if(object == nullptr)
 			return 0;
 
-		UINT32 ptrAddress = (UINT32)object;
+		UINT32 ptrAddress = (UINT32)object.get();
 
 		auto iterFind = mObjectAddrToId.find(ptrAddress);
 		if(iterFind == mObjectAddrToId.end())
 		{
-			UINT32 objId = findOrCreatePersistentId(object);
+			UINT32 objId = findOrCreatePersistentId(object.get());
 
 			mObjectsToEncode.push_back(ObjectToEncode(objId, object));
 			mObjectAddrToId.insert(std::make_pair(ptrAddress, objId));
