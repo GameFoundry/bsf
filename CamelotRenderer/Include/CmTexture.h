@@ -339,7 +339,7 @@ namespace CamelotEngine {
 		 *
 		 * @return	Texture data for the wanted face.
 		 */
-		TextureDataPtr getTextureData(int face);
+		TextureDataPtr getTextureData(UINT32 face);
 
 		/**
 		 * @brief	Sets the texture data that will be used for initializing the texture.
@@ -350,7 +350,7 @@ namespace CamelotEngine {
 		 * 						+X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
 		 * @param	textureData	Texture data for the face.
 		 */
-		void setTextureData(int face, TextureDataPtr textureData);
+		void setTextureData(UINT32 face, TextureDataPtr textureData);
 
     protected:
         size_t mHeight;

@@ -20,7 +20,7 @@ namespace CamelotEngine
 
 	PixelData TextureData::getPixels(UINT32 mip)
 	{
-		if(mip < 0 || mip >= mNumMipmaps)
+		if(mip < 0 || mip > mNumMipmaps)
 		{
 			CM_EXCEPT(InvalidParametersException, "Mip out of range: " + toString(mip) + ". While maximum available mip is: " + toString((mNumMipmaps)));
 		}

@@ -28,12 +28,10 @@ namespace CamelotEngine
 		 * 										references to temporary resource objects because they won't
 		 * 										persist after application shut-down, but otherwise they act
 		 * 										the same as normal resources.
-		 * @param	onlyLoadIfFoundInAssetDB	(optional) If true, we disallow loading of temporary resources,
-		 * 										i.e. resources that can't be found in the asset database.
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		ResourcePtr load(const String& filePath, bool onlyLoadIfFoundInAssetDB = false);
+		ResourcePtr load(const String& filePath);
 
 		/**
 		 * @brief	Loads the resource with the given uuid.
@@ -43,5 +41,13 @@ namespace CamelotEngine
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
 		ResourcePtr load(const UUID& uuid);
+
+		/**
+		 * @brief	Saves the resource at the specified location.
+		 *
+		 * @param	resource	The resource.
+		 * @param	filePath	Full pathname of the file.
+		 */
+		void save(ResourcePtr resource, const String& filePath);
 	};
 }

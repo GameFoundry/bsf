@@ -1,5 +1,6 @@
 #include "CmImporter.h"
 #include "CmPath.h"
+#include "CmResource.h"
 #include "CmFileSystem.h"
 #include "CmSpecificImporter.h"
 #include "CmDebug.h"
@@ -71,6 +72,7 @@ namespace CamelotEngine
 
 		DataStreamPtr fileSteam = FileSystem::open(inputFilePath, true);
 		ResourcePtr importedResource = importer->import(fileSteam);
+		importedResource->load();
 
 		return importedResource;
 	}

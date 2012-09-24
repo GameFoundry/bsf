@@ -9,7 +9,7 @@ namespace CamelotEngine
 	 * 			a certain asset type into an engine usable resource. 
 	 * 			(e.g. a .png file into an engine usable texture).
 	 * 			
-	 *			On initialization this class registers itself with the Importer module,
+	 *			On initialization this class must register itself with the Importer module,
 	 *			which delegates asset import calls to a specific importer.
 	 */
 	class SpecificImporter

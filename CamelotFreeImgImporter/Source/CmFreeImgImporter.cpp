@@ -305,7 +305,7 @@ namespace CamelotEngine
 		FreeImage_Unload(fiBitmap);
 		FreeImage_CloseMemory(fiMem);
 
-		TextureDataPtr texData(new TextureData(width, height, size, format, output, 1, 0, 1));
+		TextureDataPtr texData(new TextureData(width, height, size, format, output, 1, 0, 0));
 		return texData;
 	}
 }

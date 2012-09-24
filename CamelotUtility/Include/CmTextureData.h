@@ -46,7 +46,7 @@ namespace CamelotEngine
 
         /** Returns true if the image has the appropriate flag set.
         */
-		bool hasFlag(const TextureDataFlags flag) const { return (mFlags & flag); }
+		bool hasFlag(const TextureDataFlags flag) const { return (mFlags & flag) != 0; }
 
         /** Gets the width of the image in pixels.
         */

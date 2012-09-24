@@ -127,7 +127,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	TextureDataPtr Texture::getTextureData(int face)
+	TextureDataPtr Texture::getTextureData(UINT32 face)
 	{
 		if(face < 0 || face >= getNumFaces())
 		{
@@ -141,7 +141,7 @@ namespace CamelotEngine {
 		UINT32 height = getHeight();
 		UINT32 depth = getDepth();
 
-		for(int j = 0; j < numMips; j++)
+		for(UINT32 j = 0; j < numMips; j++)
 		{
 			UINT32 currentMipSize = PixelUtil::getMemorySize(
 					width, height, depth, mFormat);
@@ -156,7 +156,7 @@ namespace CamelotEngine {
 		UINT8* buffer = new UINT8[totalSize]; // TextureData frees this
 		TextureDataPtr texData(new TextureData(getWidth(), getHeight(), totalSize, mFormat, buffer, getDepth(), 0, getNumMipmaps()));
 
-		for(int j = 0; j < numMips; j++)
+		for(UINT32 j = 0; j < numMips; j++)
 		{
 			PixelData pixels = texData->getPixels(j);
 			getBuffer(face, j)->blitToMemory(pixels);
@@ -165,7 +165,7 @@ namespace CamelotEngine {
 		return texData;
 	}
 	//-----------------------------------------------------------------------------
-	void Texture::setTextureData(int face, TextureDataPtr textureData)
+	void Texture::setTextureData(UINT32 face, TextureDataPtr textureData)
 	{
 		if(face < 0 || face >= getNumFaces())
 		{
@@ -235,7 +235,7 @@ namespace CamelotEngine {
 		else
 			faces = 1;
 
-		// Check wether number of faces in images exceeds number of faces
+		// Check whether number of faces in images exceeds number of faces
 		// in this texture. If so, clamp it.
 		if(faces > getNumFaces())
 			faces = getNumFaces();
