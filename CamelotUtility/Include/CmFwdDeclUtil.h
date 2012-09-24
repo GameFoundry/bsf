@@ -25,6 +25,7 @@ namespace CamelotEngine {
 	class MemoryDataStream;
 	class FileDataStream;
 	class TextureData;
+	class FileSystem;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;

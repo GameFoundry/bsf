@@ -4,6 +4,7 @@
 #include "CmResource.h"
 #include "CmTextureData.h"
 #include "CmTextureManager.h"
+#include "CmImporter.h"
 
 using namespace CamelotEngine;
 

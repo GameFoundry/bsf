@@ -2,6 +2,7 @@
 #include "CmPath.h"
 #include "CmSpecificImporter.h"
 #include "CmDebug.h"
+#include "CmDataStream.h"
 #include "CmException.h"
 
 namespace CamelotEngine
@@ -56,6 +57,8 @@ namespace CamelotEngine
 		}
 
 		//SpecificImporter* importer = mAssetImporters[ext];
+
+		//FileDataStream fileSteam()
 
 		//ResourcePtr importedResource = importer->import(inputFilePath);
 

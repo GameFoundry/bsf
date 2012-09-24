@@ -85,6 +85,7 @@
     <ClInclude Include="Include\CmDynLibManager.h" />
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmFileSerializer.h" />
+    <ClInclude Include="Include\CmFileSystem.h" />
     <ClInclude Include="Include\CmIReflectable.h" />
     <ClInclude Include="Include\CmLog.h" />
     <ClInclude Include="Include\CmManagedDataBlock.h" />
@@ -124,6 +125,7 @@
     <ClInclude Include="Include\CmTextureData.h" />
     <ClCompile Include="Source\CmBinarySerializer.cpp" />
     <ClCompile Include="Source\CmFileSerializer.cpp" />
+    <ClCompile Include="Source\CmFileSystem.cpp" />
     <ClCompile Include="Source\CmIReflectable.cpp" />
     <ClCompile Include="Source\CmISerializable.cpp" />
     <ClCompile Include="Source\CmRTTIField.cpp" />

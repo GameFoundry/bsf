@@ -20,5 +20,23 @@ namespace CamelotEngine
 		{
 			return boost::filesystem::extension(path);
 		}
+
+
+		static bool isAbsolute(const String& path)
+		{
+#if CM_PLATFORM == CM_PLATFORM_WIN32
+			if (isalpha(UINT8(path[0])) && path[1] == ':')
+				return true;
+#endif
+			return path[0] == '/' || path[0] == '\\';
+		}
+
+		static String concatenatePath(const String& base, const String& name)
+		{
+			if (base.empty() || isAbsolute(name.c_str()))
+				return name;
+			else
+				return base + '/' + name;
+		}
 	};
 }

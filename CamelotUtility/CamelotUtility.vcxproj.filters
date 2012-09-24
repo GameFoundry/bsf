@@ -180,6 +180,9 @@
     <ClInclude Include="Include\CmTextureDataST.h">
       <Filter>Header Files\SerializationTypes</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmFileSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp">
@@ -259,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmISerializable.cpp">
       <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmFileSystem.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

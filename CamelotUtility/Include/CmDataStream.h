@@ -371,7 +371,7 @@ namespace CamelotEngine
     /** Common subclass of DataStream for handling data from 
 		std::basic_istream.
 	*/
-	class CM_UTILITY_EXPORT FileDataStream : DataStream
+	class CM_UTILITY_EXPORT FileDataStream : public DataStream
 	{
 	protected:
 		/// Reference to source stream (read)

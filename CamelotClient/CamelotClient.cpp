@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include "CmApplication.h"
+#include "CmDynLibManager.h"
 
 #include "TestingGround.h"
 
@@ -13,6 +14,9 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	gApplication().startUp("CamelotGLRenderer.dll");
 	//gApplication().startUp("CamelotD3D9Renderer.dll");
+
+	DynLib* loadedLibrary = gDynLibManager().load("CamelotFreeImgImporter.dll"); // TODO - Load this automatically somehow
+
 
 	test();
 
