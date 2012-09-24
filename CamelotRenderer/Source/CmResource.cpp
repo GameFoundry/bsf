@@ -52,4 +52,10 @@ namespace CamelotEngine
 		static ResourceST serializableType;
 		return &serializableType;
 	}
+
+
+	Resource* newObject()
+	{
+		CM_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
+	}
 }

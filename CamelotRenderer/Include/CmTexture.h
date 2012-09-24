@@ -394,7 +394,7 @@ namespace CamelotEngine {
 
 		/**
 		 * @brief	Initializes the texture from texture data array that was previously populated using
-		 * 			setTextureData. Array is cleared after this method finished.
+		 * 			setTextureData.
 		 *
 		 * @param	textureData	Array with texture data for each face of the texture.
 		 */

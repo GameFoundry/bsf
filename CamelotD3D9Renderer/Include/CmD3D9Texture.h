@@ -79,11 +79,11 @@ namespace CamelotEngine {
 		DWORD mFSAAQuality;
 
 		/// internal method, load a cube texture
-		//void _loadCubeTex(IDirect3DDevice9* d3d9Device, const vector<DataStreamPtr>::type& imageDataStreams);
+		void _loadCubeTex(IDirect3DDevice9* d3d9Device);
 		/// internal method, load a normal texture
-		//void _loadNormTex(IDirect3DDevice9* d3d9Device, const vector<DataStreamPtr>::type& imageDataStreams);
+		void _loadNormTex(IDirect3DDevice9* d3d9Device);
 		/// internal method, load a volume texture
-		//void _loadVolumeTex(IDirect3DDevice9* d3d9Device, const vector<DataStreamPtr>::type& imageDataStreams);
+		void _loadVolumeTex(IDirect3DDevice9* d3d9Device);
 
 		/// internal method, create a blank normal 1D/2D texture		
 		void _createNormTex(IDirect3DDevice9* d3d9Device);
@@ -128,11 +128,9 @@ namespace CamelotEngine {
 		/// internal method, create D3D9HardwarePixelBuffers for every face and
 		/// mipmap level. This method must be called after the D3D texture object was created
 		void _createSurfaceList(IDirect3DDevice9* d3d9Device, TextureResources* textureResources);
-
-        /// overriden from Resource
-        void loadImpl();		 
+	 
 		/// Loads this texture into the specified device.
-		void loadImpl(IDirect3DDevice9* d3d9Device);
+		void load(IDirect3DDevice9* d3d9Device);
 
 		/// gets the texture resources attached to the given device.
 		TextureResources* getTextureResources(IDirect3DDevice9* d3d9Device);
@@ -148,13 +146,6 @@ namespace CamelotEngine {
 
 		void determinePool();
 
-        /** Vector of pointers to streams that were pulled from disk by
-            prepareImpl  but have yet to be pushed into texture memory
-            by loadImpl.  Should be cleared on load and on unprepare.
-        */
-		// TODO PORT - Loading tex from streams not supported
-        //LoadedStreams mLoadedStreams;
-
 		friend class D3D9HardwarePixelBuffer;
 	public:
 		/// constructor 
@@ -165,6 +156,8 @@ namespace CamelotEngine {
 		/// overridden from Texture
 		void copyToTexture( TexturePtr& target );
 
+		/// overriden from Resource
+		void load();	
 
 		/// @copydoc Texture::getBuffer
 		HardwarePixelBufferPtr getBuffer(size_t face, size_t mipmap);

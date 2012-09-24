@@ -279,8 +279,6 @@ namespace CamelotEngine {
 		}
 		// Update size (the final size, not including temp space)
 		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
-
-		mTextureData.clear();
 	}
 	//-----------------------------------------------------------------------------
 	void Texture::unloadImpl(void)

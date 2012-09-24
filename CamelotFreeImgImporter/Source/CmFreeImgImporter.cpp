@@ -4,6 +4,8 @@
 #include "CmDataStream.h"
 #include "CmPath.h"
 #include "CmTextureData.h"
+#include "CmTextureManager.h"
+#include "CmTexture.h"
 
 #include "FreeImage.h"
 
@@ -130,8 +132,12 @@ namespace CamelotEngine
 		if(imgData == nullptr || imgData->getData() == nullptr)
 			return nullptr;
 
+		TexturePtr newTexture = TextureManager::instance().create(TEX_TYPE_2D, 
+			imgData->getWidth(), imgData->getHeight(), imgData->getNumMipmaps(), imgData->getFormat());
 
-		return nullptr;
+		newTexture->setTextureData(0, imgData);
+
+		return newTexture;
 	}
 
 	TextureDataPtr FreeImgImporter::importRawImage(DataStream* fileData)

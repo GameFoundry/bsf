@@ -246,89 +246,7 @@ namespace CamelotEngine {
         createInternalResources();
     }
 
-	// TODO PORT - Not supported in port. Not sure what its used for
-  //  static inline void do_image_io(const String &name, const String &group,
-  //                                 const String &ext,
-  //                                 vector<Image>::type &images,
-  //                                 Resource *r)
-  //  {
-		//size_t imgIdx = images.size();
-  //      images.push_back(Image());
-
-  //      DataStreamPtr dstream = 
-  //          ResourceGroupManager::getSingleton().openResource(
-  //              name, group, true, r);
-
-  //      images[imgIdx].load(dstream, ext);
-  //  }
-
-	
-    void GLTexture::prepareImpl()
-    {
-        if( mUsage & TU_RENDERTARGET ) return;
-
-		// TODO PORT - Image loading not supported
-
-        //String baseName, ext;
-        //size_t pos = mName.find_last_of(".");
-        //baseName = mName.substr(0, pos);
-        //if( pos != String::npos )
-        //    ext = mName.substr(pos+1);
-
-        //LoadedImages loadedImages = LoadedImages(new vector<Image>::type());
-
-        //if(mTextureType == TEX_TYPE_1D || mTextureType == TEX_TYPE_2D || 
-        //    mTextureType == TEX_TYPE_3D)
-        //{
-
-        //    do_image_io(mName, mGroup, ext, *loadedImages, this);
-
-
-        //    // If this is a cube map, set the texture type flag accordingly.
-        //    if ((*loadedImages)[0].hasFlag(IF_CUBEMAP))
-        //        mTextureType = TEX_TYPE_CUBE_MAP;
-        //    // If this is a volumetric texture set the texture type flag accordingly.
-        //    if((*loadedImages)[0].getDepth() > 1)
-        //        mTextureType = TEX_TYPE_3D;
-
-        //}
-        //else if (mTextureType == TEX_TYPE_CUBE_MAP)
-        //{
-        //    if(getSourceFileType() == "dds")
-        //    {
-        //        // XX HACK there should be a better way to specify whether 
-        //        // all faces are in the same file or not
-        //        do_image_io(mName, mGroup, ext, *loadedImages, this);
-        //    }
-        //    else
-        //    {
-        //        vector<Image>::type images(6);
-        //        ConstImagePtrList imagePtrs;
-        //        static const String suffixes[6] = {"_rt", "_lf", "_up", "_dn", "_fr", "_bk"};
-
-        //        for(size_t i = 0; i < 6; i++)
-        //        {
-        //            String fullName = baseName + suffixes[i];
-        //            if (!ext.empty())
-        //                fullName = fullName + "." + ext;
-        //            // find & load resource data intro stream to allow resource
-        //            // group changes if required
-        //            do_image_io(fullName,mGroup,ext,*loadedImages,this);
-        //        }
-        //    }
-        //}
-        //else
-        //    OGRE_EXCEPT( Exception::ERR_NOT_IMPLEMENTED, "**** Unknown texture type ****", "GLTexture::prepare" );
-
-        //mLoadedImages = loadedImages;
-    }
-	
-    void GLTexture::unprepareImpl()
-    {
-        //mLoadedImages.setNull();
-    }
-
-    void GLTexture::loadImpl()
+    void GLTexture::load()
     {
         if( mUsage & TU_RENDERTARGET )
         {
@@ -336,21 +254,9 @@ namespace CamelotEngine {
             return;
         }
 
-		// TODO PORT - Image loading not supported
-        //// Now the only copy is on the stack and will be cleaned in case of
-        //// exceptions being thrown from _loadImages
-        //LoadedImages loadedImages = mLoadedImages;
-        //mLoadedImages.setNull();
+		initializeFromTextureData();
 
-        //// Call internal _loadImages, not loadImage since that's external and 
-        //// will determine load status etc again
-        //ConstImagePtrList imagePtrs;
-        //for (size_t i=0 ; i<loadedImages->size() ; ++i) {
-        //    imagePtrs.push_back(&(*loadedImages)[i]);
-        //}
-
-        //_loadImages(imagePtrs);
-
+		mTextureData.clear();
     }
 
 	//*************************************************************************

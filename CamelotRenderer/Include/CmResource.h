@@ -17,14 +17,10 @@ namespace CamelotEngine
 		{}
 		virtual ~Resource() {};
 
-		//public 
+		virtual void load() = 0;
 
 	protected:
 		friend class Resources;
-
-
-
-		//virtual void load() = 0;
 		//virtual void unload() = 0;
 
 		//virtual void calculateSize() = 0;
@@ -40,10 +36,6 @@ namespace CamelotEngine
 		friend class ResourceST;
 
 		virtual SerializableType* getSerializable() const;
-
-		static Resource* newObject()
-		{
-			return new Resource();
-		}
+		static Resource* newObject();
 	};
 }
