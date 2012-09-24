@@ -30,6 +30,7 @@ namespace CamelotEngine
 			Camera* mCamera;
 			HighLevelGpuProgramPtr mFragProg;
 			HighLevelGpuProgramPtr mVertProg;
+			TexturePtr mDbgTexture;
 	};
 
 	CM_EXPORT Application& gApplication();

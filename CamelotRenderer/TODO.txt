@@ -45,7 +45,9 @@ TODO:
  - OpenGL too
 
 TOMORROW:
- - I moved ReflectionPtr serialization to use shared_ptrs, but haven't tested it one bit
+ - Non-dynamic-size types cannot have size over 255 bytes but that isn't marked or checked anywhere!
+ - Serializable callbacks can't be null otherwise compiler complains
+ - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
  - When serializing, encode requires normal ptr, while decode required shared_ptr. Standardize that
  - How do I serialize derived classes, without rewriting all the base class serialization?
    - Unless something better dawns on me by Monday, just inherit from parents SerializableType and manually make sure no IDs overlap.

@@ -36,10 +36,10 @@ namespace CamelotEngine
 		renderSystem->setLightingEnabled(false);
 
 		mCamera = new Camera("SimpleCam");
-		mCamera->setPosition(Vector3(0,0,80));
+		mCamera->setPosition(Vector3(0,0,40));
 		mCamera->lookAt(Vector3(0,0,-300));
 		mCamera->setNearClipDistance(5);
-		mCamera->setAspectRatio(480.0f / 640.0f);
+		mCamera->setAspectRatio(600.0f / 800.0f);
 
 		mViewport = mRenderWindow->addViewport();
 
@@ -66,9 +66,11 @@ namespace CamelotEngine
 		//mVertProg->load();
 
 		///////////////// GLSL SHADERS ////////////////////////////
-		String fragShaderCode = "void main() \
+		String fragShaderCode = "uniform sampler2D tex; \
+									void main() \
 									  {\
-									  gl_FragColor = vec4(0.0,1.0,0.0,1.0); \
+									  vec4 texColor = texture2D(tex,gl_TexCoord[0].st);\
+									  gl_FragColor = texColor; \
 									  }";
 
 		mFragProg = HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
@@ -79,6 +81,7 @@ namespace CamelotEngine
 									  attribute vec4 vertex; \
 								void main() \
 									  { \
+									  gl_TexCoord[0] = gl_MultiTexCoord0; \
 									  gl_Position = matViewProjection * vertex; \
 									  }";
 
@@ -98,7 +101,7 @@ namespace CamelotEngine
 			loadPluginFunc();
 		}
 
-		TexturePtr loadedTexture = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
+		mDbgTexture = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
 	}
 
 	void Application::runMainLoop()
@@ -165,6 +168,8 @@ namespace CamelotEngine
 		size_t offset = 0;
 		decl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
 		offset += VertexElement::getTypeSize(VET_FLOAT3);
+		decl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES);
+		offset += VertexElement::getTypeSize(VET_FLOAT2);
 
 		//decl->addElement(0, offset, VET_COLOUR, VES_DIFFUSE);
 		//offset += VertexElement::getTypeSize(VET_COLOUR);
@@ -179,37 +184,79 @@ namespace CamelotEngine
 		size_t vertexSize = vertexBuffer->getVertexSize();
 		char* vertBufferData = static_cast<char*>(vertexBuffer->lock(HardwareBuffer::HBL_NORMAL));
 
+		size_t posSize = VertexElement::getTypeSize(VET_FLOAT3);
+		size_t uvSize = VertexElement::getTypeSize(VET_FLOAT2);
+
 		Vector3 position(-5.0f, -5.0f, -5.0f);
-		memcpy(vertBufferData, &position, vertexSize);
-		vertBufferData += vertexSize;
+		memcpy(vertBufferData, &position, posSize);
+		vertBufferData += posSize;
+
+		Vector2 uv(0.0f, 0.0f);
+		memcpy(vertBufferData, &uv, uvSize);
+		vertBufferData += uvSize;
+
 
 		position = 	Vector3(-5.0f, 5.0f, -5.0f);
-		memcpy(vertBufferData, &position, vertexSize);
-		vertBufferData += vertexSize;
+		memcpy(vertBufferData, &position, posSize);
+		vertBufferData += posSize;
+
+		uv = Vector2(0.0f, 1.0f);
+		memcpy(vertBufferData, &uv, uvSize);
+		vertBufferData += uvSize;
+
 
 		position = 	Vector3(5.0f, 5.0f, -5.0f);
-		memcpy(vertBufferData, &position, vertexSize);
-		vertBufferData += vertexSize;
+		memcpy(vertBufferData, &position, posSize);
+		vertBufferData += posSize;
+
+		uv = Vector2(1.0f, 1.0f);
+		memcpy(vertBufferData, &uv, uvSize);
+		vertBufferData += uvSize;
+
 
 		position = 	Vector3(5.0f, -5.0f, -5.0f);
-		memcpy(vertBufferData, &position, vertexSize);
-		vertBufferData += vertexSize;
+		memcpy(vertBufferData, &position, posSize);
+		vertBufferData += posSize;
+
+		uv = Vector2(1.0f, 0.0f);
+		memcpy(vertBufferData, &uv, uvSize);
+		vertBufferData += uvSize;
+
 
 		position = 	Vector3(-5.0f, -5.0f, 5.0f);
-		memcpy(vertBufferData, &position, vertexSize);
-		vertBufferData += vertexSize;
+		memcpy(vertBufferData, &position, posSize);
+		vertBufferData += posSize;
+
+		uv = Vector2(0.0f, 0.0f);
+		memcpy(vertBufferData, &uv, uvSize);
+		vertBufferData += uvSize;
+
 
 		position = 	Vector3(5.0f, -5.0f, 5.0f);
-		memcpy(vertBufferData, &position, vertexSize);
-		vertBufferData += vertexSize;
+		memcpy(vertBufferData, &position, posSize);
+		vertBufferData += posSize;
+
+		uv = Vector2(1.0f, 0.0f);
+		memcpy(vertBufferData, &uv, uvSize);
+		vertBufferData += uvSize;
+
 
 		position = 	Vector3(5.0f, 5.0f, 5.0f);
-		memcpy(vertBufferData, &position, vertexSize);
-		vertBufferData += vertexSize;
+		memcpy(vertBufferData, &position, posSize);
+		vertBufferData += posSize;
+
+		uv = Vector2(1.0f, 1.0f);
+		memcpy(vertBufferData, &uv, uvSize);
+		vertBufferData += uvSize;
+
 
 		position = 	Vector3(-5.0f, 5.0f, 5.0f);
-		memcpy(vertBufferData, &position, vertexSize);
-		vertBufferData += vertexSize;
+		memcpy(vertBufferData, &position, posSize);
+		vertBufferData += posSize;
+
+		uv = Vector2(0.0f, 1.0f);
+		memcpy(vertBufferData, &uv, uvSize);
+		vertBufferData += uvSize;
 
 		vertexBuffer->unlock();
 
@@ -232,13 +279,16 @@ namespace CamelotEngine
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
-		renderSystem->setInvertVertexWinding(true);
+		renderSystem->setInvertVertexWinding(false);
+		renderSystem->_setDepthBufferParams();
 		renderSystem->clearFrameBuffer(FBT_COLOUR | FBT_DEPTH, Color::Blue);
 		renderSystem->_beginFrame();
 
 		mVertProg->getDefaultParameters()->setNamedConstant("matViewProjection", viewProjMatrix);
 
 		//renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), GPV_ALL);
+
+		renderSystem->_setTexture(0, true, mDbgTexture);
 
 		renderSystem->bindGpuProgram(mFragProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
 		renderSystem->bindGpuProgram(mVertProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
