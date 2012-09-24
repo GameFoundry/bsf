@@ -111,7 +111,7 @@ namespace CamelotEngine
 			}
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			std::shared_ptr<DataType> castDataObj = static_pointer_cast<DataType>(value);
+			std::shared_ptr<DataType> castDataObj = std::static_pointer_cast<DataType>(value);
 			boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>>(valueSetter);
 			f(castObjType, index, castDataObj);
 		}

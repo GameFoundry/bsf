@@ -127,72 +127,82 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	vector<TextureDataPtr>::type Texture::getTextureData()
+	TextureDataPtr Texture::getTextureData(int face)
 	{
-		vector<TextureDataPtr>::type output;
-
-		UINT32 numFaces = getNumFaces();
-		UINT32 numMips = getNumMipmaps();
-
-		for(int i = 0; i < numFaces; i++)
+		if(face < 0 || face >= getNumFaces())
 		{
-			UINT32 totalSize = 0;
-			UINT32 width = getWidth();
-			UINT32 height = getHeight();
-			UINT32 depth = getDepth();
-
-			for(int j = 0; j < numMips; j++)
-			{
-				UINT32 currentMipSize = PixelUtil::getMemorySize(
-						width, height, depth, mFormat);
-
-				totalSize += currentMipSize;
-
-				if(width != 1) width /= 2;
-				if(height != 1) height /= 2;
-				if(depth != 1) depth /= 2;
-			}
-
-			UINT8* buffer = new UINT8[totalSize]; // TextureData frees this
-			TextureDataPtr texData(new TextureData(getWidth(), getHeight(), totalSize, mFormat, buffer, getDepth(), 0, getNumMipmaps()));
-
-			for(int j = 0; j < numMips; j++)
-			{
-				PixelData pixels = texData->getPixels(j);
-				getBuffer(i, j)->blitToMemory(pixels);
-			}
-
-			output.push_back(texData);
+			CM_EXCEPT(InvalidParametersException, "Face index out of range: " + toString(face));
 		}
 
-		return output;
+		UINT32 numMips = getNumMipmaps();
+
+		UINT32 totalSize = 0;
+		UINT32 width = getWidth();
+		UINT32 height = getHeight();
+		UINT32 depth = getDepth();
+
+		for(int j = 0; j < numMips; j++)
+		{
+			UINT32 currentMipSize = PixelUtil::getMemorySize(
+					width, height, depth, mFormat);
+
+			totalSize += currentMipSize;
+
+			if(width != 1) width /= 2;
+			if(height != 1) height /= 2;
+			if(depth != 1) depth /= 2;
+		}
+
+		UINT8* buffer = new UINT8[totalSize]; // TextureData frees this
+		TextureDataPtr texData(new TextureData(getWidth(), getHeight(), totalSize, mFormat, buffer, getDepth(), 0, getNumMipmaps()));
+
+		for(int j = 0; j < numMips; j++)
+		{
+			PixelData pixels = texData->getPixels(j);
+			getBuffer(face, j)->blitToMemory(pixels);
+		}
+
+		return texData;
 	}
 	//-----------------------------------------------------------------------------
-	void Texture::loadFromTextureData(const vector<TextureDataPtr>::type& textureData)
+	void Texture::setTextureData(int face, TextureDataPtr textureData)
 	{
-		if(textureData.size() < 1)
+		if(face < 0 || face >= getNumFaces())
+		{
+			CM_EXCEPT(InvalidParametersException, "Face index out of range: " + toString(face));
+		}
+
+		if(mTextureData.size() <= face)
+			mTextureData.resize(face + 1);
+
+		mTextureData[face] = textureData;
+	}
+	//-----------------------------------------------------------------------------
+	void Texture::initializeFromTextureData()
+	{
+		if(mTextureData.size() < 1)
 			CM_EXCEPT(InvalidParametersException, "Cannot load empty vector of images");
 
 		if(getTextureType() == TEX_TYPE_CUBE_MAP)
 		{
-			if(textureData.size() != 6)
+			if(mTextureData.size() != 6)
 				CM_EXCEPT(InvalidParametersException, "Cube map textures require six faces.");
 		}
 		else
 		{
-			if(textureData.size() > 1)
+			if(mTextureData.size() > 1)
 			{
 				gDebug().log("Non-cube textures can only have one face. Loading only first face from the provided array.", "D3D9RenderSystem");
 			}
 		}
 
 		// Set desired texture size and properties from images[0]
-		mSrcWidth = mWidth = textureData[0]->getWidth();
-		mSrcHeight = mHeight = textureData[0]->getHeight();
-		mSrcDepth = mDepth = textureData[0]->getDepth();
+		mSrcWidth = mWidth = mTextureData[0]->getWidth();
+		mSrcHeight = mHeight = mTextureData[0]->getHeight();
+		mSrcDepth = mDepth = mTextureData[0]->getDepth();
 
 		// Get source image format and adjust if required
-		mSrcFormat = textureData[0]->getFormat();
+		mSrcFormat = mTextureData[0]->getFormat();
 
 		if (mDesiredFormat != PF_UNKNOWN)
 		{
@@ -206,11 +216,11 @@ namespace CamelotEngine {
 		}
 
 		// The custom mipmaps in the image have priority over everything
-		size_t imageMips = textureData[0]->getNumMipmaps();
+		size_t imageMips = mTextureData[0]->getNumMipmaps();
 
 		if(imageMips > 0)
 		{
-			mNumMipmaps = mNumRequestedMipmaps = textureData[0]->getNumMipmaps();
+			mNumMipmaps = mNumRequestedMipmaps = mTextureData[0]->getNumMipmaps();
 			// Disable flag for auto mip generation
 			mUsage &= ~TU_AUTOMIPMAP;
 		}
@@ -220,8 +230,8 @@ namespace CamelotEngine {
 		// Check if we're loading one image with multiple faces
 		// or a vector of images representing the faces
 		size_t faces;
-		if(textureData.size() > 1)
-			faces = textureData.size();
+		if(mTextureData.size() > 1)
+			faces = mTextureData.size();
 		else
 			faces = 1;
 
@@ -236,7 +246,7 @@ namespace CamelotEngine {
 		{
 			for(size_t i = 0; i < faces; ++i)
 			{
-				PixelData src = textureData[i]->getPixels(mip);
+				PixelData src = mTextureData[i]->getPixels(mip);
 
 				// Sets to treated format in case is difference
 				src.format = mSrcFormat;
@@ -269,6 +279,8 @@ namespace CamelotEngine {
 		}
 		// Update size (the final size, not including temp space)
 		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
+
+		mTextureData.clear();
 	}
 	//-----------------------------------------------------------------------------
 	void Texture::unloadImpl(void)

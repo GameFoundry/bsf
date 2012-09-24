@@ -27,6 +27,7 @@ namespace CamelotEngine
 
 		// Calculate mipmap offset and size
 		UINT8 *offset = const_cast<UINT8*>(getData());
+		UINT8 offsetSoFar = 0;
 
 		UINT32 width = getWidth(), height = getHeight(), depth = getDepth();
 		UINT32 numMips = getNumMipmaps();
@@ -37,11 +38,12 @@ namespace CamelotEngine
 		{
 			if (curMip == mip)
 			{
+				offset += offsetSoFar;
 				finalWidth = width;
 				finalHeight = height;
 				finalDepth = depth;
 			}
-			offset += PixelUtil::getMemorySize(width, height, depth, getFormat());
+			offsetSoFar += PixelUtil::getMemorySize(width, height, depth, getFormat());
 
 			/// Half size in each dimension
 			if(width!=1) width /= 2;

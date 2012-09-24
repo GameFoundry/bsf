@@ -335,11 +335,22 @@ namespace CamelotEngine {
 
 		/**
 		 * @brief	Retrieves the texture data from the GPU, loads it into system memory
-		 * 			and returns it in the form of TextureData for each face.
+		 * 			and returns it in the form of TextureData for the specified.
 		 *
-		 * @return	The texture data.
+		 * @return	Texture data for the wanted face.
 		 */
-		vector<TextureDataPtr>::type getTextureData();
+		TextureDataPtr getTextureData(int face);
+
+		/**
+		 * @brief	Sets the texture data that will be used for initializing the texture.
+		 * 			You must call loadFromTextureData after setting the data for all faces. 
+		 * 			Texture data array will be cleared after the texture is fully loaded.
+		 *
+		 * @param	face	  	The face index. Cubemaps have six faces in this order:
+		 * 						+X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
+		 * @param	textureData	Texture data for the face.
+		 */
+		void setTextureData(int face, TextureDataPtr textureData);
 
     protected:
         size_t mHeight;
@@ -367,10 +378,12 @@ namespace CamelotEngine {
 
 		bool mInternalResourcesCreated;
 
+		public:
+		vector<TextureDataPtr>::type mTextureData;
+		protected:
 		/// @copydoc Resource::calculateSize
 		size_t calculateSize(void) const;
 		
-
 		/** Implementation of creating internal texture resources 
 		*/
 		virtual void createInternalResourcesImpl(void) = 0;
@@ -380,13 +393,12 @@ namespace CamelotEngine {
 		virtual void freeInternalResourcesImpl(void) = 0;
 
 		/**
-		 * @brief	Loads the texture from TextureData array. Each entry in the array represents a single
-		 * 			face of the texture. For cubemaps there need be six faces in this order:
-		 * 			+X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
+		 * @brief	Initializes the texture from texture data array that was previously populated using
+		 * 			setTextureData. Array is cleared after this method finished.
 		 *
 		 * @param	textureData	Array with texture data for each face of the texture.
 		 */
-		virtual void loadFromTextureData(const vector<TextureDataPtr>::type& textureData);
+		virtual void initializeFromTextureData();
 
 		/** Default implementation of unload which calls freeInternalResources */
 		void unloadImpl(void);

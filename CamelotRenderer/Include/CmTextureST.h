@@ -30,6 +30,26 @@ namespace CamelotEngine
 		CM_SETGET_MEMBER(mDesiredIntegerBitDepth, UINT16, Texture)
 		CM_SETGET_MEMBER(mDesiredFloatBitDepth, UINT16, Texture)
 
+		std::shared_ptr<TextureData> getTextureData(Texture* obj, UINT32 face)
+		{
+			return obj->getTextureData(face);
+		}
+
+		void setTextureData(Texture* obj, UINT32 face, TextureDataPtr data)
+		{
+			return obj->setTextureData(face, data);
+		}
+
+		UINT32 getTextureDataArraySize(Texture* obj)
+		{
+			return obj->getNumFaces();
+		}
+
+		void setTextureDataArraySize(Texture* obj, UINT32 size)
+		{
+			// Not allowed to change size this way
+		}
+
 		//ManagedDataBlock getFaceData(Texture* obj)
 		//{
 		//	UINT32 totalSize = 0;
@@ -76,6 +96,9 @@ namespace CamelotEngine
 			CM_ADD_PLAINFIELD(mDesiredFormat, 15, TextureST)
 			CM_ADD_PLAINFIELD(mDesiredIntegerBitDepth, 16, TextureST)
 			CM_ADD_PLAINFIELD(mDesiredFloatBitDepth, 17, TextureST)
+
+			addReflectablePtrArrayField("mTextureData", 18, &TextureST::getTextureData, &TextureST::getTextureDataArraySize, 
+				&TextureST::setTextureData, &TextureST::setTextureDataArraySize);
 		}
 	};
 }
