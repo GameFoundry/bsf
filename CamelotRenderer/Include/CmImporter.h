@@ -9,35 +9,21 @@ namespace CamelotEngine
 	 * @brief	Module responsible for importing various asset types and converting
 	 * 			them to types usable by the engine.
 	 */
-	class Importer : public Module<Importer>
+	class CM_EXPORT Importer : public Module<Importer>
 	{
 	public:
 		/**
 		 * @brief	Constructor.
-		 *
-		 * @param	assetDatabasePath	Pathname of the asset database file. Path should not include file extension.
-		 * 								If the database file doesn't exist it will be created in that location.
-		 * 								Meta data for imported resources will be stored in the asset database.
 		 */
-		Importer(const String& assetDatabasePath); 
+		Importer(); 
 		~Importer(); 
 
 		/**
-		 * @brief	Imports a resource at the specified location, and saves the imported data into the
-		 * 			output location. This data can then be loaded with Resources.load. Existing files
-		 * 			will be replaced.
+		 * @brief	Imports a resource at the specified location, and returns the loaded data.
 		 *
 		 * @param	inputFilePath 	Pathname of the input file.
-		 * @param	outputFilePath	Pathname of the output file, without extension.
-		 * @param	keepReferences	(optional) If file is being replaced we can keep all references to it and
-		 * 							just make sure they point to the new file data (default), or we can invalidate all
-		 * 							references and treat it as a completely new file. 
-		 * 							
-		 *							If you're just updating a file keep this set to true, and if you're
-		 * 							replacing a file, set it to false. 
-		 * 							In order for the references to be kept asset types must match.
 		 */
-		void import(const String& inputFilePath, const String& outputFilePath, bool keepReferences = true);
+		ResourcePtr import(const String& inputFilePath);
 
 
 		/**

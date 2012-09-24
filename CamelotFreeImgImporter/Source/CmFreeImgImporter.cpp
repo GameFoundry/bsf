@@ -126,7 +126,7 @@ namespace CamelotEngine
 		}
 	}
 
-	ResourcePtr FreeImgImporter::import(DataStream* fileData)
+	ResourcePtr FreeImgImporter::import(DataStreamPtr fileData)
 	{
 		TextureDataPtr imgData = importRawImage(fileData);
 		if(imgData == nullptr || imgData->getData() == nullptr)
@@ -140,7 +140,7 @@ namespace CamelotEngine
 		return newTexture;
 	}
 
-	TextureDataPtr FreeImgImporter::importRawImage(DataStream* fileData)
+	TextureDataPtr FreeImgImporter::importRawImage(DataStreamPtr fileData)
 	{
 		size_t magicLen = std::min(fileData->size(), (size_t)32);
 		UINT8 magicBuf[32];

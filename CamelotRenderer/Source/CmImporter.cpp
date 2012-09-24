@@ -1,5 +1,6 @@
 #include "CmImporter.h"
 #include "CmPath.h"
+#include "CmFileSystem.h"
 #include "CmSpecificImporter.h"
 #include "CmDebug.h"
 #include "CmDataStream.h"
@@ -7,6 +8,9 @@
 
 namespace CamelotEngine
 {
+	Importer::Importer()
+	{ }
+
 	Importer::~Importer()
 	{
 		for(auto i = mAssetImporters.begin(); i != mAssetImporters.end(); ++i)
@@ -40,12 +44,12 @@ namespace CamelotEngine
 		return false;
 	}
 
-	void Importer::import(const String& inputFilePath, const String& outputFilePath, bool keepReferences)
+	ResourcePtr Importer::import(const String& inputFilePath)
 	{
 		if(!Path::exists(inputFilePath))
 		{
 			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath);
-			return;
+			return nullptr;
 		}
 
 		String ext = Path::getExtension(inputFilePath);
@@ -53,17 +57,22 @@ namespace CamelotEngine
 		if(!supportsFileType(ext))
 		{
 			LOGWRN("There is no importer for the provided file type. (" + inputFilePath + ")");
-			return;
+			return nullptr;
 		}
 
-		//SpecificImporter* importer = mAssetImporters[ext];
+		SpecificImporter* importer = nullptr;
+		for(auto iter = mAssetImporters.begin(); iter != mAssetImporters.end(); ++iter)
+		{
+			if(*iter != nullptr && (*iter)->isExtensionSupported(ext))
+			{
+				importer = *iter;
+			}
+		}
 
-		//FileDataStream fileSteam()
+		DataStreamPtr fileSteam = FileSystem::open(inputFilePath, true);
+		ResourcePtr importedResource = importer->import(fileSteam);
 
-		//ResourcePtr importedResource = importer->import(inputFilePath);
-
-		// TODO - Use AssetDatabase for loading the resource
-		// TODO - Serialize the resource to output location
+		return importedResource;
 	}
 
 	void Importer::registerAssetImporter(SpecificImporter* importer)

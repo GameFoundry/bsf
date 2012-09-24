@@ -10,7 +10,9 @@
 #include "CmViewport.h"
 #include "CmHighLevelGpuProgram.h"
 #include "CmHighLevelGpuProgramManager.h"
+#include "CmDynLib.h"
 #include "CmDynLibManager.h"
+#include "CmImporter.h"
 
 namespace CamelotEngine
 {
@@ -82,6 +84,21 @@ namespace CamelotEngine
 
 		mVertProg = HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		mVertProg->load();
+
+
+		// IMPORTER TEST
+		Importer::startUp(new Importer());
+		DynLib* loadedLibrary = gDynLibManager().load("CamelotFreeImgImporter.dll"); // TODO - Load this automatically somehow
+
+		if(loadedLibrary != nullptr)
+		{
+			typedef const void (*LoadPluginFunc)();
+
+			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)loadedLibrary->getSymbol("loadPlugin");
+			loadPluginFunc();
+		}
+
+		TexturePtr loadedTexture = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
 	}
 
 	void Application::runMainLoop()

@@ -1,4 +1,5 @@
 #include "CmFreeImgPrerequisites.h"
+#include "CmFreeImgImporter.h"
 
 namespace CamelotEngine
 {
@@ -6,5 +7,10 @@ namespace CamelotEngine
 	{
 		static String pluginName = "FreeImageImporter";
 		return pluginName;
+	}
+
+	extern "C" CM_FREEIMG_EXPORT void loadPlugin()
+	{
+		FreeImgImporter::startUp();
 	}
 }

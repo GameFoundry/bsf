@@ -4,8 +4,9 @@
 
 namespace CamelotEngine
 {
-	class FileSystem
+	class CM_UTILITY_EXPORT FileSystem
 	{
+	public:
 		static DataStreamPtr open(const String& fullPath, bool readOnly = true);
 
 		static DataStreamPtr create(const String& fullPath);
