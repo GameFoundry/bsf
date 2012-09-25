@@ -45,6 +45,8 @@ TODO:
  - OpenGL too
 
 TOMORROW:
+ - ISerializable class and begin/endSerialization are probably not needed and can be removed
+ - Depth test is disabled by default (OpenGL renderer at least)
  - Non-dynamic-size types cannot have size over 255 bytes but that isn't marked or checked anywhere!
  - Serializable callbacks can't be null otherwise compiler complains
  - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
