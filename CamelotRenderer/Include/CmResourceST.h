@@ -21,6 +21,17 @@ namespace CamelotEngine
 			addPlainField("UUID", 1, &ResourceST::getUUID, &ResourceST::setUUID);
 		}
 
+		virtual const String& getRTTIName()
+		{
+			static String name = "Resource";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId()
+		{
+			return 100;
+		}
+
 		virtual Resource* newRTTIObject()
 		{
 			CM_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");

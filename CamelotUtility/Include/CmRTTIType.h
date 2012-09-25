@@ -46,6 +46,8 @@ namespace CamelotEngine
 
 		virtual void registerDerivedClass(RTTITypeBase* derivedClass) = 0;
 		virtual IReflectable* newRTTIObject() = 0;
+		virtual const String& getRTTIName() = 0;
+		virtual UINT32 getRTTIId() = 0;
 
 		template <class ObjectType, class DataType>
 		void setPlainValue(ObjectType* object, const std::string& name, DataType& value)
@@ -256,6 +258,7 @@ namespace CamelotEngine
 	public:
 		InitRTTIOnStart()
 		{
+			// TODO - Check if type ID is unique
 			BaseType::getRTTIStatic()->registerDerivedClass(Type::getRTTIStatic());
 		}
 	};
@@ -269,6 +272,7 @@ namespace CamelotEngine
 	public:
 		InitRTTIOnStart()
 		{
+			// TODO - Check if type ID is unique
 			IReflectable::registerDerivedClass(Type::getRTTIStatic());
 		}
 	};

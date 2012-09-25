@@ -45,6 +45,8 @@ TODO:
  - OpenGL too
 
 TOMORROW:
+ - Check for duplicate type IDs in InitRTTIOnStart
+ - Actually serialize type ID into a file, and use them when deserializing
  - ISerializable class and begin/endSerialization are probably not needed and can be removed
  - Depth test is disabled by default (OpenGL renderer at least)
  - Non-dynamic-size types cannot have size over 255 bytes but that isn't marked or checked anywhere!

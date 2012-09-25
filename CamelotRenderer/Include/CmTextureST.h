@@ -76,6 +76,17 @@ namespace CamelotEngine
 				&TextureST::setTextureData, &TextureST::setTextureDataArraySize);
 		}
 
+		virtual const String& getRTTIName()
+		{
+			static String name = "Texture";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId()
+		{
+			return 101;
+		}
+
 		virtual Texture* newRTTIObject()
 		{
 			CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class!");

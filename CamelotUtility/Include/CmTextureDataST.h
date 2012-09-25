@@ -44,6 +44,17 @@ namespace CamelotEngine
 			addDataBlockField("Data", 8, &TextureDataST::getData, &TextureDataST::setData);
 		}
 
+		virtual const String& getRTTIName()
+		{
+			static String name = "TextureData";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId()
+		{
+			return 102;
+		}
+
 		virtual TextureData* newRTTIObject()
 		{
 			return new TextureData();
