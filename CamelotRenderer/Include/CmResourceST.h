@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmSerializableType.h"
+#include "CmRTTIType.h"
 #include "CmResource.h"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT ResourceST : public SerializableType
+	class CM_EXPORT ResourceST : public RTTIType
 	{
 	private:
 		UINT32& getSize(Resource* obj) { return obj->mSize; }

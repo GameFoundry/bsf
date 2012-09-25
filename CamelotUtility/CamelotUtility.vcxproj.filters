@@ -171,12 +171,6 @@
     <ClInclude Include="Include\CmManagedDataBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmISerializable.h">
-      <Filter>Header Files\Serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmSerializableType.h">
-      <Filter>Header Files\Serialization</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmTextureDataST.h">
       <Filter>Header Files\SerializationTypes</Filter>
     </ClInclude>
@@ -256,12 +250,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmIReflectable.cpp">
       <Filter>Source Files\RTTI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmSerializableType.cpp">
-      <Filter>Source Files\Serialization</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmISerializable.cpp">
-      <Filter>Source Files\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmFileSystem.cpp">
       <Filter>Source Files</Filter>

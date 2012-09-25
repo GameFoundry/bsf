@@ -47,10 +47,10 @@ namespace CamelotEngine
 	//		}
 	//}
 	
-	SerializableType* Resource::getSerializable() const
+	RTTITypeBase* Resource::getRTTI() const
 	{
-		static ResourceST serializableType;
-		return &serializableType;
+		static ResourceST rttiType;
+		return &rttiType;
 	}
 
 

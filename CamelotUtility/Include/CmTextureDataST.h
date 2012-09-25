@@ -2,12 +2,12 @@
 
 #include "CmPrerequisitesUtil.h"
 #include "CmTextureData.h"
-#include "CmSerializableType.h"
+#include "CmRTTIType.h"
 #include "CmManagedDataBlock.h"
 
 namespace CamelotEngine
 {
-	class TextureDataST : public SerializableType
+	class TextureDataST : public RTTIType
 	{
 		CM_SETGET_MEMBER(mNumMipmaps, UINT32, TextureData)
 		CM_SETGET_MEMBER(mWidth, UINT32, TextureData)

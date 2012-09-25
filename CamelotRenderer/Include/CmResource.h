@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmISerializable.h"
+#include "CmIReflectable.h"
 #include "CmUUID.h"
 
 namespace CamelotEngine
@@ -9,7 +9,7 @@ namespace CamelotEngine
 	/**
 	 * @brief	Base class for all resources used in the engine.
 	 */
-	class CM_EXPORT Resource : public ISerializable
+	class CM_EXPORT Resource : public IReflectable
 	{
 	public:
 		Resource(/*const UUID& sourceUUID*/) // TODO - Temporarily don't initialize UUID, because I want texture to inherit from resource and UUIDs arent set up yet
@@ -35,30 +35,30 @@ namespace CamelotEngine
 	public:
 		friend class ResourceST;
 
-		virtual SerializableType* getSerializable() const;
+		virtual RTTITypeBase* getRTTI() const;
 		static Resource* newObject();
 
-	protected:
-		struct RTTIInitOnStart
-		{
-			RTTIInitOnStart()
-			{
-				static RTTIMetaType<Resource> myClassMetaType;
-				ISerializable::registerRTTIDerivedClass(&myClassMetaType);
-			}
-		};
+	//protected:
+	//	struct RTTIInitOnStart
+	//	{
+	//		RTTIInitOnStart()
+	//		{
+	//			static RTTIMetaType<Resource> myClassMetaType;
+	//			ISerializable::registerRTTIDerivedClass(&myClassMetaType);
+	//		}
+	//	};
 
-		static RTTIInitOnStart initOnStart;
+	//	static RTTIInitOnStart initOnStart;
 
-		static vector<RTTIMetaTypeBase*>::type& getRTTIDerivedClasses()
-		{
-			static vector<RTTIMetaTypeBase*>::type mRTTIDerivedClasses;
-			return mRTTIDerivedClasses;
-		}
+	//	static vector<RTTIMetaTypeBase*>::type& getRTTIDerivedClasses()
+	//	{
+	//		static vector<RTTIMetaTypeBase*>::type mRTTIDerivedClasses;
+	//		return mRTTIDerivedClasses;
+	//	}
 
-		static void registerRTTIDerivedClass(RTTIMetaTypeBase* derivedClass)
-		{
-			getRTTIDerivedClasses().push_back(derivedClass);
-		}
+	//	static void registerRTTIDerivedClass(RTTIMetaTypeBase* derivedClass)
+	//	{
+	//		getRTTIDerivedClasses().push_back(derivedClass);
+	//	}
 	};
 }

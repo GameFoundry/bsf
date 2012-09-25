@@ -309,7 +309,7 @@ namespace CamelotEngine {
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/
 
-	SerializableType* Texture::getSerializable() const
+	RTTITypeBase* Texture::getRTTI() const
 	{
 		static TextureST serializableType;
 		return &serializableType;

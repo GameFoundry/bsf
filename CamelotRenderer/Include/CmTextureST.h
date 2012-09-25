@@ -1,14 +1,14 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmSerializableType.h"
+#include "CmRTTIType.h"
 #include "CmTexture.h"
 #include "CmTextureData.h"
 #include "CmManagedDataBlock.h"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT TextureST : public SerializableType
+	class CM_EXPORT TextureST : public RTTIType
 	{
 	private:
 		CM_SETGET_MEMBER(mSize, UINT32, Texture)

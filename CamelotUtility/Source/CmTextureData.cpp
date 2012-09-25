@@ -59,10 +59,10 @@ namespace CamelotEngine
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/
-	SerializableType* TextureData::getSerializable() const
+	RTTITypeBase* TextureData::getRTTI() const
 	{
-		static TextureDataST serializableType;
-		return &serializableType;
+		static TextureDataST rttiType;
+		return &rttiType;
 	}
 
 	TextureData* TextureData::newObject()

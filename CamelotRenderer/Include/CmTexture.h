@@ -408,7 +408,7 @@ namespace CamelotEngine {
 		/************************************************************************/
 	public:
 		friend class TextureST;
-		virtual SerializableType* getSerializable() const;
+		virtual RTTITypeBase* getRTTI() const;
 		static Texture* newObject();
     };
 
