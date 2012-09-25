@@ -15,6 +15,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	gApplication().startUp("CamelotGLRenderer.dll");
 	//gApplication().startUp("CamelotD3D9Renderer.dll");
 
+	//RTTITypeBase* st = DbgSrlzTest::getRTTIStatic();
+
+//	DbgSrlzTestST::startUp();
+//	TextureST::startUp();
+
 	test();
 
 	gApplication().runMainLoop();

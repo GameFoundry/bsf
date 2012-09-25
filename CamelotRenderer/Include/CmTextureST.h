@@ -8,7 +8,7 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT TextureST : public RTTIType
+	class CM_EXPORT TextureST : public RTTIType<Texture, Resource, TextureST>
 	{
 	private:
 		CM_SETGET_MEMBER(mSize, UINT32, Texture)
@@ -50,31 +50,6 @@ namespace CamelotEngine
 			// Not allowed to change size this way
 		}
 
-		//ManagedDataBlock getFaceData(Texture* obj)
-		//{
-		//	UINT32 totalSize = 0;
-		//	vector<TextureDataPtr>::type faces = obj->getTextureData();
-
-		//	for(auto iter = faces.begin(); iter != faces.end(); ++iter)
-		//	{
-		//		totalSize += (*iter)->getSize();
-		//	}
-
-		//	UINT8* faceData = new UINT8[totalSize]; // TODO - Any way to avoid this reallocation? getTextureData allocates the same amount of memory and then
-		//											// we allocate it again, copy from buffers and throw away getTextureData memory
-		//											//   - TextureData should store everything in one big buffer?
-		//											//   - OR make TextureData ISerializable?!
-
-		//	//ManagedDataBlock dataBlock()
-
-		//	return obj->getTextureData(face).get();
-		//}
-
-		//void setFaceData(Texture* obj, UINT32 face, TextureData* data)
-		//{
-		//	return obj->getTextureData(face).get();
-		//}
-
 	public:
 		TextureST()
 		{
@@ -99,6 +74,11 @@ namespace CamelotEngine
 
 			addReflectablePtrArrayField("mTextureData", 18, &TextureST::getTextureData, &TextureST::getTextureDataArraySize, 
 				&TextureST::setTextureData, &TextureST::setTextureDataArraySize);
+		}
+
+		virtual Texture* newRTTIObject()
+		{
+			CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class!");
 		}
 	};
 }

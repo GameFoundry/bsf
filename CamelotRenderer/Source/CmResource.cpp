@@ -46,16 +46,14 @@ namespace CamelotEngine
 	//			load();
 	//		}
 	//}
-	
-	RTTITypeBase* Resource::getRTTI() const
+		
+	RTTITypeBase* Resource::getRTTIStatic()
 	{
-		static ResourceST rttiType;
-		return &rttiType;
+		return ResourceST::instance();
 	}
 
-
-	Resource* newObject()
+	RTTITypeBase* Resource::getRTTI() const
 	{
-		CM_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
+		return Resource::getRTTIStatic();
 	}
 }

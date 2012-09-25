@@ -408,8 +408,8 @@ namespace CamelotEngine {
 		/************************************************************************/
 	public:
 		friend class TextureST;
+		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
-		static Texture* newObject();
     };
 
 	/** @} */

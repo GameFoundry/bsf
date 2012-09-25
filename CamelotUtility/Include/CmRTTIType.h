@@ -44,6 +44,9 @@ namespace CamelotEngine
 		RTTITypeBase();
 		virtual ~RTTITypeBase();
 
+		virtual void registerDerivedClass(RTTITypeBase* derivedClass) = 0;
+		virtual IReflectable* newRTTIObject() = 0;
+
 		template <class ObjectType, class DataType>
 		void setPlainValue(ObjectType* object, const std::string& name, DataType& value)
 		{
@@ -245,17 +248,66 @@ namespace CamelotEngine
 	};
 
 	/**
-	 * @brief	Pretty much just an extension of SerializationInterfaceBase. Feel free to derive from this class and return
-	 * 			the derived class from IReflectable::getSerializationInterface. This way you can separate serialization logic from
+	 * @brief	Used for initializing a certain type as soon as the program is loaded.
+	 */
+	template<typename Type, typename BaseType>
+	struct InitRTTIOnStart
+	{
+	public:
+		InitRTTIOnStart()
+		{
+			BaseType::getRTTIStatic()->registerDerivedClass(Type::getRTTIStatic());
+		}
+	};
+
+	/**
+	 * @brief	Specialization for root class of RTTI hierarchy - IReflectable
+	 */
+	template<typename Type>
+	struct InitRTTIOnStart<Type, IReflectable>
+	{
+	public:
+		InitRTTIOnStart()
+		{
+			IReflectable::registerDerivedClass(Type::getRTTIStatic());
+		}
+	};
+
+	/**
+	 * @brief	Pretty much just an extension of RTTITypeBase. Feel free to derive from this class and return
+	 * 			the derived class from IReflectable::getRTTI. This way you can separate serialization logic from
 	 * 			the actual class you're serializing.
 	 */
-	// TODO - Low priority. This class is separate from SerializationInterfaceBase because of obsolete reasons. It might be okay to merge them in the future, provided there will be
-	// no more changes to serialization.
-	class CM_UTILITY_EXPORT RTTIType : public RTTITypeBase
+	template <typename Type, typename BaseType, typename MyRTTIType>
+	class RTTIType : public RTTITypeBase
 	{
+	protected:
+		/************************************************************************/
+		/* 						RTTI CLASS META DATA							*/
+		/************************************************************************/
+
+		static vector<RTTITypeBase*>::type& getDerivedClasses()
+		{
+			static vector<RTTITypeBase*>::type mRTTIDerivedClasses;
+			return mRTTIDerivedClasses;
+		}
+
+		static InitRTTIOnStart<Type, BaseType> initOnStart;
+
 	public:
 		RTTIType() {}
 		virtual ~RTTIType() {}
+
+		static MyRTTIType* instance()
+		{
+			static MyRTTIType inst;
+			return &inst;
+		}
+
+		virtual void registerDerivedClass(RTTITypeBase* derivedClass)
+		{
+			getDerivedClasses().push_back(derivedClass);
+		}
 
 		/************************************************************************/
 		/* 			FIELDS OPERATING DIRECTLY ON SERIALIZABLE OBJECT            */
@@ -338,7 +390,7 @@ namespace CamelotEngine
 			DataType& (InterfaceType::*getter)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, DataType&) = nullptr)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::RTTIType, InterfaceType>::value), 
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
 				"Class with the get/set methods must derive from CamelotEngine::SerializationInterface.");
 
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
@@ -489,4 +541,7 @@ namespace CamelotEngine
 			addNewField(newField);
 		}	
 	};
+
+	template <typename Type, typename BaseType, typename MyRTTIType>
+	InitRTTIOnStart<Type, BaseType> RTTIType<Type, BaseType, MyRTTIType>::initOnStart;
 }

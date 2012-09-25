@@ -309,14 +309,13 @@ namespace CamelotEngine {
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/
 
-	RTTITypeBase* Texture::getRTTI() const
+	RTTITypeBase* Texture::getRTTIStatic()
 	{
-		static TextureST serializableType;
-		return &serializableType;
+		return TextureST::instance();
 	}
 
-	Texture* Texture::newObject()
+	RTTITypeBase* Texture::getRTTI() const
 	{
-		CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class!");
+		return Texture::getRTTIStatic();
 	}
 }

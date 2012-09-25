@@ -142,7 +142,7 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newObject()
 		{
-			return std::shared_ptr<IReflectable>(DataType::newObject());
+			return std::shared_ptr<IReflectable>(DataType::getRTTIStatic()->newRTTIObject());
 		}
 	};
 }

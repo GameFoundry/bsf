@@ -56,6 +56,10 @@
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>libboost_signals-vc110-mt-gd-1_49.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/Debug</AdditionalLibraryDirectories>
+      <SubSystem>NotSet</SubSystem>
+      <NoEntryPoint>false</NoEntryPoint>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -74,6 +78,7 @@
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>libboost_signals-vc110-mt-1_49.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/Release</AdditionalLibraryDirectories>
+      <NoEntryPoint>false</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

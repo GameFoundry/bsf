@@ -7,7 +7,7 @@
 
 namespace CamelotEngine
 {
-	class TextureDataST : public RTTIType
+	class CM_UTILITY_EXPORT TextureDataST : public RTTIType<TextureData, IReflectable, TextureDataST>
 	{
 		CM_SETGET_MEMBER(mNumMipmaps, UINT32, TextureData)
 		CM_SETGET_MEMBER(mWidth, UINT32, TextureData)
@@ -42,6 +42,11 @@ namespace CamelotEngine
 			CM_ADD_PLAINFIELD(mFormat, 7, TextureDataST);
 
 			addDataBlockField("Data", 8, &TextureDataST::getData, &TextureDataST::setData);
+		}
+
+		virtual TextureData* newRTTIObject()
+		{
+			return new TextureData();
 		}
 	};
 }

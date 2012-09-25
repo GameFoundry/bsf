@@ -6,7 +6,7 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT ResourceST : public RTTIType
+	class CM_EXPORT ResourceST : public RTTIType<Resource, IReflectable, ResourceST>
 	{
 	private:
 		UINT32& getSize(Resource* obj) { return obj->mSize; }
@@ -19,6 +19,11 @@ namespace CamelotEngine
 		{
 			addPlainField("Size", 0, &ResourceST::getSize, &ResourceST::setSize);
 			addPlainField("UUID", 1, &ResourceST::getUUID, &ResourceST::setUUID);
+		}
+
+		virtual Resource* newRTTIObject()
+		{
+			CM_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 		}
 	};
 }

@@ -142,7 +142,7 @@ namespace CamelotEngine
 
 		virtual IReflectable* newObject()
 		{
-			return DataType::newObject();
+			return DataType::getRTTIStatic()->newRTTIObject();
 		}
 	};
 }
