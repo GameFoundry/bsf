@@ -4,7 +4,7 @@
 
 namespace CamelotEngine
 {
-	IReflectable* IReflectable::createInstanceFromTypeId(UINT32 rttiTypeId)
+	std::shared_ptr<IReflectable> IReflectable::createInstanceFromTypeId(UINT32 rttiTypeId)
 	{
 		stack<RTTITypeBase*>::type todo;
 		vector<RTTITypeBase*>::type& rootClasses = getDerivedClasses();

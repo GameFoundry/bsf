@@ -55,9 +55,9 @@ namespace CamelotEngine
 			return 102;
 		}
 
-		virtual TextureData* newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return new TextureData();
+			return std::shared_ptr<TextureData>(new TextureData());
 		}
 	};
 }

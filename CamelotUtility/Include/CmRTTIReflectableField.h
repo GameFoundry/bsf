@@ -14,7 +14,7 @@ namespace CamelotEngine
 		virtual void setValue(void* object, IReflectable& value) = 0;
 		virtual void setArrayValue(void* object, UINT32 index, IReflectable& value) = 0;
 
-		virtual IReflectable* newObject() = 0;
+		virtual std::shared_ptr<IReflectable> newObject() = 0;
 
 		virtual bool hasDynamicSize() { return true; }
 	};
@@ -140,7 +140,7 @@ namespace CamelotEngine
 			f(castObject, size);
 		}
 
-		virtual IReflectable* newObject()
+		virtual std::shared_ptr<IReflectable> newObject()
 		{
 			return DataType::getRTTIStatic()->newRTTIObject();
 		}

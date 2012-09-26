@@ -23,8 +23,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	test();
 
-	IReflectable* refl = IReflectable::createInstanceFromTypeId(102);
-
 	gApplication().runMainLoop();
 
 	int a = 5;

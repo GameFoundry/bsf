@@ -32,7 +32,7 @@ namespace CamelotEngine
 			return 100;
 		}
 
-		virtual Resource* newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
 			CM_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 		}

@@ -38,6 +38,6 @@ namespace CamelotEngine
 			getDerivedClasses().push_back(derivedClass);
 		}
 
-		static IReflectable* createInstanceFromTypeId(UINT32 rttiTypeId);
+		static std::shared_ptr<IReflectable> createInstanceFromTypeId(UINT32 rttiTypeId);
 	};
 }

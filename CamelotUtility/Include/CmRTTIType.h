@@ -46,7 +46,7 @@ namespace CamelotEngine
 
 		virtual vector<RTTITypeBase*>::type& getDerivedClasses() = 0;
 		virtual void registerDerivedClass(RTTITypeBase* derivedClass) = 0;
-		virtual IReflectable* newRTTIObject() = 0;
+		virtual std::shared_ptr<IReflectable> newRTTIObject() = 0;
 		virtual const String& getRTTIName() = 0;
 		virtual UINT32 getRTTIId() = 0;
 

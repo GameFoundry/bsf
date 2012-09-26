@@ -90,12 +90,11 @@ namespace CamelotEngine
 			return 101;
 		}
 
-		TexturePtr texPtr; // HACK - this is just for testing before I port all newRTTI methods to use shared_ptr
-		virtual Resource* newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			// DEBUG ONLY
-			texPtr = TextureManager::instance().create(TEX_TYPE_2D, 128, 128, 1, PF_A8B8G8R8);
-			return texPtr.get();
+			// DEBUG ONLY - Remove this after I implement RTTI types for specific texture types
+			return TextureManager::instance().create(TEX_TYPE_2D, 128, 128, 1, PF_A8B8G8R8);
+
 			//CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class!");
 		}
 	};

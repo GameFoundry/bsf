@@ -122,7 +122,7 @@ namespace CamelotEngine
 		UINT32 objectTypeId = 0;
 		decodeObjectMetaData(objectMetaData, objectId, objectTypeId);
 
-		std::shared_ptr<IReflectable> object = std::shared_ptr<IReflectable>(IReflectable::createInstanceFromTypeId(objectTypeId));
+		std::shared_ptr<IReflectable> object = IReflectable::createInstanceFromTypeId(objectTypeId);
 		std::shared_ptr<IReflectable> rootObject = object;
 
 		// Create initial object + all other objects that are being referenced.
@@ -153,7 +153,7 @@ namespace CamelotEngine
 
 				if(iterFind != mPtrsToResolve.end())
 				{
-					object = std::shared_ptr<IReflectable>(IReflectable::createInstanceFromTypeId(objectTypeId));
+					object = IReflectable::createInstanceFromTypeId(objectTypeId);
 				}
 			}
 		}
@@ -881,7 +881,7 @@ namespace CamelotEngine
 		std::shared_ptr<IReflectable> emptyObject = nullptr;
 		if(*complexTypeSize > 0)
 		{
-			emptyObject = std::shared_ptr<IReflectable>(field->newObject());
+			emptyObject = field->newObject();
 			UINT32 dummy = 0;
 			decodeInternal(emptyObject, data, *complexTypeSize, dummy);
 		}
