@@ -259,7 +259,6 @@ namespace CamelotEngine
 	public:
 		InitRTTIOnStart()
 		{
-			// TODO - Check if type ID is unique
 			BaseType::getRTTIStatic()->registerDerivedClass(Type::getRTTIStatic());
 		}
 
@@ -275,7 +274,6 @@ namespace CamelotEngine
 	public:
 		InitRTTIOnStart()
 		{
-			// TODO - Check if type ID is unique
 			IReflectable::registerDerivedClass(Type::getRTTIStatic());
 		}
 

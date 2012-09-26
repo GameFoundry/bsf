@@ -149,13 +149,14 @@ namespace CamelotEngine
 		 * @param	getter  	The getter method for the field. Cannot be null. Must be a specific signature: DataType(ObjectType*).
 		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, DataType)
 		 * 						
-		 * @note	IMPORTANT - Type returned/set by getter/setter must provide "public static int TYPE_ID" field, which can be used for identifying the
-		 * 			type. You can set the ID to anything you wish, as it is not used internally. However its possible that other engine modules do require
-		 * 			you to set this field to a unique value. Native types do not need (or can) set this field. 
 		 */
 		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter)
 		{
 			int typeId = SerializableSimpleType<DataType>::id; // Just making sure provided type has a type ID
+
+			BOOST_STATIC_ASSERT_MSG((SerializableSimpleType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
+				"Trying to create a plain RTTI field with size larger than 255. In order to use larger sizes for plain types please specialize " \
+				" SerializableSimpleType, set hasDynamicSize to true.");
 
 			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_Plain);
 		}
@@ -174,14 +175,15 @@ namespace CamelotEngine
 		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, UINT32, DataType)
 		 * @param	setSize 	Setter method that allows you to resize an array. Can be null. Must be a specific signature: void(ObjectType*, UINT32)
 		 * 						
-		 * @note	IMPORTANT - Type returned/set by getter/setter must provide "public static UINT32 TYPE_ID" field, which can be used for identifying the
-		 * 			type. You can set the ID to anything you wish, as it is not used internally. However its possible that other engine modules do require
-		 * 			you to set this field to a unique value. Native types do not need (or can) set this field.
 		 */
 		void initArray(const std::string& name, UINT16 uniqueId, boost::any getter, 
 			boost::any getSize, boost::any setter, boost::any setSize)
 		{
 			int typeId = SerializableSimpleType<DataType>::id; // Just making sure provided type has a type ID
+
+			BOOST_STATIC_ASSERT_MSG((SerializableSimpleType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
+				"Trying to create a plain RTTI field with size larger than 255. In order to use larger sizes for plain types please specialize " \
+				" SerializableSimpleType, set hasDynamicSize to true.");
 
 			initAll(getter, setter, getSize, setSize, name, uniqueId, true, SerializableFT_Plain);
 		}

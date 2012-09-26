@@ -45,9 +45,7 @@ TODO:
  - OpenGL too
 
 TOMORROW:
- - Check for duplicate type IDs in InitRTTIOnStart
  - Depth test is disabled by default (OpenGL renderer at least)
- - Non-dynamic-size types cannot have size over 255 bytes but that isn't marked or checked anywhere!
  - Serializable callbacks can't be null otherwise compiler complains
  - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
  - How do I serialize derived classes, without rewriting all the base class serialization?
