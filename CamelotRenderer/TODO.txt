@@ -46,20 +46,13 @@ TODO:
 
 TOMORROW:
  - Check for duplicate type IDs in InitRTTIOnStart
- - Actually serialize type ID into a file, and use them when deserializing
- - ISerializable class and begin/endSerialization are probably not needed and can be removed
  - Depth test is disabled by default (OpenGL renderer at least)
  - Non-dynamic-size types cannot have size over 255 bytes but that isn't marked or checked anywhere!
  - Serializable callbacks can't be null otherwise compiler complains
  - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
- - When serializing, encode requires normal ptr, while decode required shared_ptr. Standardize that
  - How do I serialize derived classes, without rewriting all the base class serialization?
    - Unless something better dawns on me by Monday, just inherit from parents SerializableType and manually make sure no IDs overlap.
      - We can improve later if needed. I though about it too much for now.
- - How do I deserialize binary data without knowing what type of class (i.e. Resource) is it?
-  - Each Resource (i.e. Texture, Mesh) needs to have its own manager, which then hooks into the global Resources class
-  - When saving resources, save an unique resource identifier
-  - Then we can call individual resource manager and it can create proper resource based on active render system and whatever else
 TextureData
  - When serializing this texture, request data from GPU, populate TextureData array and return
 Texture

@@ -262,6 +262,8 @@ namespace CamelotEngine
 			// TODO - Check if type ID is unique
 			BaseType::getRTTIStatic()->registerDerivedClass(Type::getRTTIStatic());
 		}
+
+		void makeSureIAmInstantiated() { }
 	};
 
 	/**
@@ -276,6 +278,8 @@ namespace CamelotEngine
 			// TODO - Check if type ID is unique
 			IReflectable::registerDerivedClass(Type::getRTTIStatic());
 		}
+
+		void makeSureIAmInstantiated() { }
 	};
 
 	/**
@@ -294,7 +298,13 @@ namespace CamelotEngine
 		static InitRTTIOnStart<Type, BaseType> initOnStart;
 
 	public:
-		RTTIType() {}
+		RTTIType() 
+		{
+			// Templates only actually generate code for stuff that is directly used, including static data members,
+			// so we fool it here like we're using the class directly. Otherwise compiler won't generate the code for the member
+			// and our type won't get initialized on start (Actual behavior is a bit more random)
+			initOnStart.makeSureIAmInstantiated();
+		}
 		virtual ~RTTIType() {}
 
 		static MyRTTIType* instance()
