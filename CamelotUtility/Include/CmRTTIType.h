@@ -44,6 +44,7 @@ namespace CamelotEngine
 		RTTITypeBase();
 		virtual ~RTTITypeBase();
 
+		virtual vector<RTTITypeBase*>::type& getDerivedClasses() = 0;
 		virtual void registerDerivedClass(RTTITypeBase* derivedClass) = 0;
 		virtual IReflectable* newRTTIObject() = 0;
 		virtual const String& getRTTIName() = 0;
@@ -290,12 +291,6 @@ namespace CamelotEngine
 		/* 						RTTI CLASS META DATA							*/
 		/************************************************************************/
 
-		static vector<RTTITypeBase*>::type& getDerivedClasses()
-		{
-			static vector<RTTITypeBase*>::type mRTTIDerivedClasses;
-			return mRTTIDerivedClasses;
-		}
-
 		static InitRTTIOnStart<Type, BaseType> initOnStart;
 
 	public:
@@ -306,6 +301,12 @@ namespace CamelotEngine
 		{
 			static MyRTTIType inst;
 			return &inst;
+		}
+
+		virtual vector<RTTITypeBase*>::type& getDerivedClasses()
+		{
+			static vector<RTTITypeBase*>::type mRTTIDerivedClasses;
+			return mRTTIDerivedClasses;
 		}
 
 		virtual void registerDerivedClass(RTTITypeBase* derivedClass)

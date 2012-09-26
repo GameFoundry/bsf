@@ -7,6 +7,7 @@
 #include "CmDynLibManager.h"
 
 #include "TestingGround.h"
+#include "CmIReflectable.h"
 
 using namespace CamelotEngine;
 
@@ -21,6 +22,8 @@ int _tmain(int argc, _TCHAR* argv[])
 //	TextureST::startUp();
 
 	test();
+
+	IReflectable* refl = IReflectable::createInstanceFromTypeId(102);
 
 	gApplication().runMainLoop();
 

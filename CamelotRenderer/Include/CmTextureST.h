@@ -6,6 +6,9 @@
 #include "CmTextureData.h"
 #include "CmManagedDataBlock.h"
 
+// DEBUG ONLY
+#include "CmTextureManager.h"
+
 namespace CamelotEngine
 {
 	class CM_EXPORT TextureST : public RTTIType<Texture, Resource, TextureST>
@@ -87,9 +90,13 @@ namespace CamelotEngine
 			return 101;
 		}
 
-		virtual Texture* newRTTIObject()
+		TexturePtr texPtr; // HACK - this is just for testing before I port all newRTTI methods to use shared_ptr
+		virtual Resource* newRTTIObject()
 		{
-			CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class!");
+			// DEBUG ONLY
+			texPtr = TextureManager::instance().create(TEX_TYPE_2D, 128, 128, 1, PF_A8B8G8R8);
+			return texPtr.get();
+			//CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class!");
 		}
 	};
 }

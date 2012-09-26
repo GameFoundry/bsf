@@ -37,5 +37,7 @@ namespace CamelotEngine
 		{
 			getDerivedClasses().push_back(derivedClass);
 		}
+
+		static IReflectable* createInstanceFromTypeId(UINT32 rttiTypeId);
 	};
 }

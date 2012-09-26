@@ -55,13 +55,12 @@ namespace CamelotEngine
 			boost::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
 
 		/**
-		 * @brief	Decodes all of the fields of the provided object from a binary format.
+		 * @brief	Decodes an object from a binary format.
 		 *
-		 * @param [in]	object	Object whos fields to decode.
 		 * @param [in]	data  	Binary data to decode.
 		 * @param	dataLength	Length of the data.
 		 */
-		void decode(std::shared_ptr<IReflectable> object, UINT8* data, UINT32 dataLength);
+		std::shared_ptr<IReflectable> decode(UINT8* data, UINT32 dataLength);
 
 	private:
 		struct ObjectToEncode
@@ -98,6 +97,12 @@ namespace CamelotEngine
 			UINT32 id;
 		};
 
+		struct ObjectMetaData
+		{
+			UINT32 objectMeta;
+			UINT32 typeId;
+		};
+
 		std::unordered_map<UINT32, UINT32> mObjectAddrToId;
 		UINT32 mLastUsedObjectId;
 		std::vector<ObjectToEncode> mObjectsToEncode;
@@ -131,18 +136,18 @@ namespace CamelotEngine
 		void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, SerializableFieldType& type, bool& hasDynamicSize);
 
 		/**
-		* @brief	Encodes data required for representing an object identifier, into 4 bytes.
+		* @brief	Encodes data required for representing an object identifier, into 8 bytes.
 		*
 		* @note		Id can be a maximum of 31 bits, as one bit is reserved.
 		*/
-		UINT32 encodeObjectMetaData(UINT32 objId);
+		ObjectMetaData encodeObjectMetaData(UINT32 objId, UINT32 objTypeId);
 
 		/**
 		* @brief	Decode meta field that was encoded using encodeObjectMetaData.
 		* 			
 		* @note		Id can be a maximum of 31 bits, as one bit is reserved.
 		*/
-		void decodeObjectMetaData(UINT32 encodedData, UINT32& objId);
+		void decodeObjectMetaData(ObjectMetaData encodedData, UINT32& objId, UINT32& objTypeId);
 
 		/**
 		 * @brief	Returns true if the provided encoded meta data represents object meta data.

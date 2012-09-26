@@ -31,7 +31,7 @@ namespace CamelotEngine
 		mOutputStream.clear();
 	}
 
-	void FileSerializer::decode(std::shared_ptr<IReflectable> object, std::string fileLocation)
+	std::shared_ptr<IReflectable> FileSerializer::decode(std::string fileLocation)
 	{
 		mInputStream.open(fileLocation.c_str(), std::ios::in | std::ios::ate | std::ios::binary);
 		
@@ -48,12 +48,14 @@ namespace CamelotEngine
 		mInputStream.read((char*)readBuffer, fileSize);
 
 		BinarySerializer bs;
-		bs.decode(object, readBuffer, (UINT32)fileSize);
+		std::shared_ptr<IReflectable> object = bs.decode(readBuffer, (UINT32)fileSize);
 
 		mInputStream.close();
 		mInputStream.clear();
 
 		delete[] readBuffer;
+
+		return object;
 	}
 
 	UINT8* FileSerializer::flushBuffer(UINT8* bufferStart, int bytesWritten, UINT32& newBufferSize)

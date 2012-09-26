@@ -101,10 +101,29 @@ namespace CamelotEngine
 		*bytesWritten = mTotalBytesWritten;
 	}
 
-	void BinarySerializer::decode(std::shared_ptr<IReflectable> object, UINT8* data, UINT32 dataLength)
+	std::shared_ptr<IReflectable> BinarySerializer::decode(UINT8* data, UINT32 dataLength)
 	{
 		mPtrsToResolve.clear();
 		mDecodedObjects.clear();
+
+		// Find and instantiate root object
+		if(sizeof(UINT32) > dataLength)
+		{
+			CM_EXCEPT(InternalErrorException, 
+				"Error decoding data.");
+		}
+
+		ObjectMetaData objectMetaData;
+		objectMetaData.objectMeta = 0;
+		objectMetaData.typeId = 0;
+		memcpy(&objectMetaData, data, sizeof(ObjectMetaData));
+
+		UINT32 objectId = 0;
+		UINT32 objectTypeId = 0;
+		decodeObjectMetaData(objectMetaData, objectId, objectTypeId);
+
+		std::shared_ptr<IReflectable> object = std::shared_ptr<IReflectable>(IReflectable::createInstanceFromTypeId(objectTypeId));
+		std::shared_ptr<IReflectable> rootObject = object;
 
 		// Create initial object + all other objects that are being referenced.
 		// Use fields to find the type of referenced object.
@@ -113,22 +132,19 @@ namespace CamelotEngine
 		{
 			data += bytesRead;
 
-			UINT8* localDataPtr = data;
-			UINT32 localBytesRead = bytesRead;
-
 			if((bytesRead + sizeof(UINT32)) > dataLength)
 			{
 				CM_EXCEPT(InternalErrorException, 
 					"Error decoding data.");
 			}
 
-			UINT32 objectMetaData = 0;
-			memcpy(&objectMetaData, localDataPtr, sizeof(UINT32));
-			localDataPtr += sizeof(UINT32);
-			localBytesRead += sizeof(UINT32);
+			objectMetaData.objectMeta = 0;
+			objectMetaData.typeId = 0;
+			memcpy(&objectMetaData, data, sizeof(ObjectMetaData));
 
-			UINT32 objectId = 0;
-			decodeObjectMetaData(objectMetaData, objectId);
+			objectId = 0;
+			objectTypeId = 0;
+			decodeObjectMetaData(objectMetaData, objectId, objectTypeId);
 
 			object = nullptr;
 			if(objectId != 0)
@@ -136,7 +152,9 @@ namespace CamelotEngine
 				auto iterFind = std::find_if(mPtrsToResolve.begin(), mPtrsToResolve.end(), [objectId](PtrToResolve x) { return x.id == objectId; });
 
 				if(iterFind != mPtrsToResolve.end())
-					object = iterFind->field->newObject();
+				{
+					object = std::shared_ptr<IReflectable>(IReflectable::createInstanceFromTypeId(objectTypeId));
+				}
 			}
 		}
 
@@ -157,9 +175,12 @@ namespace CamelotEngine
 			else
 				curPtr.field->setValue(curPtr.object.get(), resolvedObject);
 		}
+
+		return rootObject;
 	}
 
-	UINT8* BinarySerializer::encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, int* bytesWritten, boost::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
+	UINT8* BinarySerializer::encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, 
+		int* bytesWritten, boost::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
 	{
 		static const UINT32 META_SIZE = 4; // Meta field size
 		static const UINT32 NUM_ELEM_FIELD_SIZE = 4; // Size of the field storing number of array elements
@@ -167,9 +188,9 @@ namespace CamelotEngine
 
 		RTTITypeBase* si = object->getRTTI();
 
-		// Encode object ID if it has one
-		UINT32 objectMetaData = encodeObjectMetaData(objectId);
-		COPY_TO_BUFFER(&objectMetaData, sizeof(UINT32))
+		// Encode object ID & type
+		ObjectMetaData objectMetaData = encodeObjectMetaData(objectId, si->getRTTIId());
+		COPY_TO_BUFFER(&objectMetaData, sizeof(ObjectMetaData))
 
 		int numFields = si->getNumFields();
 		for(int i = 0; i < numFields; i++)
@@ -362,19 +383,22 @@ namespace CamelotEngine
 		if(object != nullptr)
 			si = object->getRTTI();
 
-		if((bytesRead + sizeof(UINT32)) > dataLength)
+		if((bytesRead + sizeof(ObjectMetaData)) > dataLength)
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Error decoding data.");
 		}
 
-		UINT32 objectMetaData = 0;
-		memcpy(&objectMetaData, data, sizeof(UINT32));
-		data += sizeof(UINT32);
-		bytesRead += sizeof(UINT32);
+		ObjectMetaData objectMetaData;
+		objectMetaData.objectMeta = 0;
+		objectMetaData.typeId = 0;
+		memcpy(&objectMetaData, data, sizeof(ObjectMetaData));
+		data += sizeof(ObjectMetaData);
+		bytesRead += sizeof(ObjectMetaData);
 
 		UINT32 objectId = 0;
-		decodeObjectMetaData(objectMetaData, objectId);
+		UINT32 objectTypeId = 0;
+		decodeObjectMetaData(objectMetaData, objectId, objectTypeId);
 
 		if(object != nullptr && objectId != 0)
 			mDecodedObjects.insert(std::make_pair(objectId, object));
@@ -393,11 +417,27 @@ namespace CamelotEngine
 
 			if(isObjectMetaData(metaData)) // We've reached a new object
 			{
-				UINT32 objId = 0;
-				decodeObjectMetaData(metaData, objId);
+				if((bytesRead + sizeof(ObjectMetaData)) > dataLength)
+				{
+					CM_EXCEPT(InternalErrorException, 
+						"Error decoding data.");
+				}
 
-				if(objId != 0) // Objects with 0 ID represent complex types serialized by value, in which case we just decode them on the spot
-					return true;
+				ObjectMetaData objMetaData;
+				objMetaData.objectMeta = 0;
+				objMetaData.typeId = 0;
+				memcpy(&objMetaData, data, sizeof(ObjectMetaData));
+
+				UINT32 objId = 0;
+				UINT32 objTypeId = 0;
+				decodeObjectMetaData(objMetaData, objId, objTypeId);
+
+				if(objId != 0) 
+					return true; // Pointers we decode later, only if they're being referenced by something
+
+				// Objects with ID == 0 represent complex types serialized by value, but they should only get serialized
+				// if we encounter a field with one, not by just iterating through the file.
+				CM_EXCEPT(InternalErrorException, "Object with ID 0 encountered. Cannot proceed with serialization.");
 			}
 
 			data += META_SIZE;
@@ -784,25 +824,29 @@ namespace CamelotEngine
 		id = (UINT16)((encodedData >> 16) & 0xFFFF);
 	}
 
-	UINT32 BinarySerializer::encodeObjectMetaData(UINT32 objId)
+	BinarySerializer::ObjectMetaData BinarySerializer::encodeObjectMetaData(UINT32 objId, UINT32 objTypeId)
 	{
 		// If O == 1 - Meta contains object instance information (Encoded using encodeObjectMetaData)
 		//// Encoding: SSSS SSSS SSSS SSSS xxxx xxxx xxxx xxxO
 		//// S - Size of the object identifier
 		//// O - Object descriptor
 
-		return (objId << 1) | 0x01;
+		ObjectMetaData metaData;
+		metaData.objectMeta = (objId << 1) | 0x01;
+		metaData.typeId = objTypeId;
+		return metaData;
 	}
 
-	void BinarySerializer::decodeObjectMetaData(UINT32 encodedData, UINT32& objId)
+	void BinarySerializer::decodeObjectMetaData(BinarySerializer::ObjectMetaData encodedData, UINT32& objId, UINT32& objTypeId)
 	{
-		if(!isObjectMetaData(encodedData))
+		if(!isObjectMetaData(encodedData.objectMeta))
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Meta data represents a field description but is trying to be decoded as an object descriptor.");
 		}
 
-		objId = (encodedData >> 1) & 0x7FFFFFFF;
+		objId = (encodedData.objectMeta >> 1) & 0x7FFFFFFF;
+		objTypeId = encodedData.typeId;
 	}
 
 	bool BinarySerializer::isObjectMetaData(UINT32 encodedData)

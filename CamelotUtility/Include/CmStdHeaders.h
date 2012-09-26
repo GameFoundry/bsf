@@ -30,6 +30,7 @@
 
 // STL containers
 #include <vector>
+#include <stack>
 #include <map>
 #include <string>
 #include <set>
@@ -167,6 +168,12 @@ namespace CamelotEngine
 	struct list 
 	{ 
 		typedef typename std::list<T> type;    
+	}; 
+
+	template <typename T, typename A = char > 
+	struct stack 
+	{ 
+		typedef typename std::stack<T> type;    
 	}; 
 
 	template <typename T, typename P = std::less<T>, typename A = char > 

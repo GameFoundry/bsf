@@ -16,10 +16,8 @@ void test()
 	dbgTexture->setFSAA(0, "test");
 	fs.encode(dbgTexture.get(), "C:\\DbgTexture.tex");
 
-	TexturePtr emptyTexture = TextureManager::instance().create(TEX_TYPE_2D, 512, 512, 1, PF_UNKNOWN);
-	fs.decode(emptyTexture, "C:\\DbgTexture.tex");
-
-
+	TexturePtr emptyTexture = std::static_pointer_cast<Texture>(fs.decode("C:\\DbgTexture.tex"));
+	
 	TextureDataPtr data = emptyTexture->mTextureData[0];
 	UINT32 size2 = data->getSize();
 
