@@ -321,6 +321,12 @@ namespace CamelotEngine
 
 		virtual void registerDerivedClass(RTTITypeBase* derivedClass)
 		{
+			if(IReflectable::isTypeIdDuplicate(derivedClass->getRTTIId()))
+			{
+				CM_EXCEPT(InternalErrorException, "RTTI type \"" + derivedClass->getRTTIName() + 
+					"\" has a duplicate ID: " + toString(derivedClass->getRTTIId()));
+			}
+
 			getDerivedClasses().push_back(derivedClass);
 		}
 
