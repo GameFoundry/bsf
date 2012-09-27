@@ -83,15 +83,15 @@ namespace CamelotEngine
 		mFragProg->load();
 
 		String vertShaderCode = "float4x4 matViewProjection;	\
-			void vs_main(										\
-			float4 inPos : POSITION,							\
-			float2 uv : TEXCOORD0,								\
-			out float4 oPosition : POSITION,					\
-			out float2 oUv : TEXCOORD0)							\
-		{														\
-			oPosition = mul(matViewProjection, inPos);			\
-			oUv = uv;											\
-		}";
+								void vs_main(										\
+								float4 inPos : POSITION,							\
+								float2 uv : TEXCOORD0,								\
+								out float4 oPosition : POSITION,					\
+								out float2 oUv : TEXCOORD0)							\
+								{														\
+								oPosition = mul(matViewProjection, inPos);			\
+								oUv = uv;											\
+								}";
 
 		mVertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		mVertProg->load();

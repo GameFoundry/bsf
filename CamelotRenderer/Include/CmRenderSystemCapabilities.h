@@ -222,6 +222,28 @@ namespace CamelotEngine
 		GPU_VENDOR_COUNT = 11
 	};
 
+	enum GpuProgramProfile
+	{
+		GPP_NONE,
+		GPP_PS_1_1,
+		GPP_PS_1_2,
+		GPP_PS_1_3,
+		GPP_PS_1_4,
+		GPP_PS_2_0,
+		GPP_PS_2_x,
+		GPP_PS_2_a,
+		GPP_PS_2_b,
+		GPP_PS_3_0,
+		GPP_PS_3_x,
+		GPP_PS_4_0,
+		GPP_VS_1_1,
+		GPP_VS_2_0,
+		GPP_VS_2_x,
+		GPP_VS_2_a,
+		GPP_VS_3_0,
+		GPP_VS_4_0
+	};
+
 	/** singleton class for storing the capabilities of the graphics card. 
 	@remarks
 	This class stores the capabilities of the graphics card.  This
@@ -296,6 +318,8 @@ namespace CamelotEngine
 		/// The list of supported shader profiles
 		ShaderProfiles mSupportedShaderProfiles;
 
+		// Allows us to convert a generic shader profile to a render-system specific one
+		unordered_map<GpuProgramProfile, String>::type mGenericToSpecificShaderProfileMap;
 	public:	
 		RenderSystemCapabilities ();
 		virtual ~RenderSystemCapabilities ();
@@ -485,6 +509,13 @@ namespace CamelotEngine
 
 		}
 
+		/** Adds the profile to the list of supported profiles
+		*/
+		void addGpuProgramProfile(GpuProgramProfile gpuProgProfile, const String& rsSpecificProfile)
+		{
+			mGenericToSpecificShaderProfileMap[gpuProgProfile] = rsSpecificProfile;
+		}
+
 		/** Remove a given shader profile, if present.
 		*/
 		void removeShaderProfile(const String& profile)
@@ -507,6 +538,20 @@ namespace CamelotEngine
 			return mSupportedShaderProfiles;
 		}
 
+		/** Converts a generic GpuProgramProfile identifier into a render-system specific one.  
+		* 
+		*  Returns an empty string if it can't convert it.
+		*/
+		String gpuProgProfileToRSSpecificProfile(GpuProgramProfile gpuProgProfile) const
+		{
+			auto iterFind = mGenericToSpecificShaderProfileMap.find(gpuProgProfile);
+			if(mGenericToSpecificShaderProfileMap.end() != iterFind)
+			{
+				return iterFind->second;
+			}
+
+			return "";
+		}
 
 		/// The number of floating-point constants vertex programs support
 		UINT16 getVertexProgramConstantFloatCount(void) const

@@ -45,7 +45,9 @@ TODO:
  - OpenGL too
 
 TOMORROW:
- - Incorporate CG into the engine!
+ - Profile checking in isSupported and setProfile for CG shaders is temporarily disabled
+   - In general I need to handle this better. 
+   - CG shaders don't work with OpenGL
  - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?
  - Depth test is disabled by default (OpenGL renderer at least)
  - Serializable callbacks can't be null otherwise compiler complains

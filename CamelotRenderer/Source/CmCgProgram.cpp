@@ -49,99 +49,23 @@ namespace CamelotEngine {
 			CM_EXCEPT(InternalErrorException, msg);
 		}
 	}
-
-	GpuProgramProfile cgProfileToGpuProgramProfile(const String& profile)
-	{
-		if(profile == "ps_1_1")
-			return GPP_PS_1_1;
-		else if(profile == "ps_1_2")
-			return GPP_PS_1_2;
-		else if(profile == "ps_1_3")
-			return GPP_PS_1_3;
-		else if(profile == "ps_1_4")
-			return GPP_PS_1_4;
-		else if(profile == "ps_2_0")
-			return GPP_PS_2_0;
-		else if(profile == "ps_2_a")
-			return GPP_PS_2_a;
-		else if(profile == "ps_2_b")
-			return GPP_PS_2_b;
-		else if(profile == "ps_3_0")
-			return GPP_PS_3_0;
-		else if(profile == "ps_4_0")
-			return GPP_PS_4_0;
-		else if(profile == "vs_1_1")
-			return GPP_VS_1_1;
-		else if(profile == "vs_2_0")
-			return GPP_VS_2_0;
-		else if(profile == "vs_2_a")
-			return GPP_VS_2_a;
-		else if(profile == "vs_3_0")
-			return GPP_VS_3_0;
-		else if(profile == "vs_4_0")
-			return GPP_VS_4_0;
-		else
-			assert(false); // Unsupported profile
-
-		return GPP_NONE;
-	}
-
-	String gpuProgramProfileToCgProfile(GpuProgramProfile profile)
-	{
-		switch(profile)
-		{
-		case GPP_PS_1_1:
-			return "ps_1_1";
-		case GPP_PS_1_2:
-			return "ps_1_2";
-		case GPP_PS_1_3:
-			return "ps_1_3";
-		case GPP_PS_1_4:
-			return "ps_1_4";
-		case GPP_PS_2_0:
-			return "ps_2_0";
-		case GPP_PS_2_a:
-			return "ps_2_a";
-		case GPP_PS_2_b:
-			return "ps_2_b";
-		case GPP_PS_3_0:
-			return "ps_3_0";
-		case GPP_PS_4_0:
-			return "ps_4_0";
-		case GPP_VS_1_1:
-			return "vs_1_1";
-		case GPP_VS_2_0:
-			return "vs_2_0";
-		case GPP_VS_2_a:
-			return "vs_2_a";
-		case GPP_VS_3_0:
-			return "vs_3_0";
-		case GPP_VS_4_0:
-			return "vs_4_0";
-		default:
-			assert(false); // Unsupported profile
-		}
-
-		return "";
-	}
-
     //-----------------------------------------------------------------------
     void CgProgram::selectProfile(void)
     {
         mSelectedProfile.clear();
         mSelectedCgProfile = CG_PROFILE_UNKNOWN;
 
-		mSelectedProfile = gpuProgramProfileToCgProfile(mProfile);
+		mSelectedProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 		GpuProgramManager& gpuMgr = GpuProgramManager::instance();
-		//if (gpuMgr.isSyntaxSupported(mSelectedProfile))
+		if (gpuMgr.isSyntaxSupported(mSelectedProfile))
 		{
 			mSelectedCgProfile = cgGetProfile(mSelectedProfile.c_str());
 			// Check for errors
 			checkForCgError("CgProgram::selectProfile", 
 				"Unable to find CG profile enum for program.", mCgContext);
 		}
-		//else
-		//	mSelectedProfile.clear();
+		else
+			mSelectedProfile.clear();
     }
     //-----------------------------------------------------------------------
     void CgProgram::buildArgs(void)
@@ -242,7 +166,7 @@ namespace CamelotEngine {
 				// Create a high-level program, give it the same name as us
 				HighLevelGpuProgramPtr vp = 
 					HighLevelGpuProgramManager::instance().createProgram(
-					hlslSourceFromCg, "main", "hlsl", mType, cgProfileToGpuProgramProfile(mSelectedProfile));
+					hlslSourceFromCg, "main", "hlsl", mType, mProfile);
 
 				vp->load();
 
@@ -532,8 +456,8 @@ namespace CamelotEngine {
         if (mCompileError || !isRequiredCapabilitiesSupported())
             return false;
 
-		//String selectedProfile = gpuProgramProfileToCgProfile(mProfile);
-		//if (GpuProgramManager::instance().isSyntaxSupported(selectedProfile))
+		String selectedProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
+		if (GpuProgramManager::instance().isSyntaxSupported(selectedProfile))
 			return true;
 
         return false;

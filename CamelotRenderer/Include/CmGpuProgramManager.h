@@ -83,6 +83,13 @@ namespace CamelotEngine {
         /** Returns whether a given syntax code (e.g. "ps_1_3", "fp20", "arbvp1") is supported. */
         virtual bool isSyntaxSupported(const String& syntaxCode) const;
 		
+		
+		/** Converts a generic GpuProgramProfile identifier into a render-system specific one.  
+		* 
+		*  Returns an empty string if it can't convert it.
+		*/
+		virtual String gpuProgProfileToRSSpecificProfile(GpuProgramProfile gpuProgProfile) const;
+
 		/** Creates a new GpuProgramParameters instance which can be used to bind
             parameters to your programs.
         @remarks

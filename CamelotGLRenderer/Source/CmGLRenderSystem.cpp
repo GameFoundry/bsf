@@ -328,14 +328,23 @@ namespace CamelotEngine {
 			rsc->setVertexProgramConstantFloatCount(floatConstantCount);
 
 			rsc->addShaderProfile("arbvp1");
+			rsc->addGpuProgramProfile(GPP_VS_1_1, "arbvp1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+			rsc->addGpuProgramProfile(GPP_VS_2_0, "arbvp1");
+			rsc->addGpuProgramProfile(GPP_VS_2_a, "arbvp1");
+			rsc->addGpuProgramProfile(GPP_VS_2_x, "arbvp1");
+
 			if (GLEW_NV_vertex_program2_option)
 			{
 				rsc->addShaderProfile("vp30");
+				rsc->addGpuProgramProfile(GPP_VS_3_0, "vp30"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+				rsc->addGpuProgramProfile(GPP_VS_4_0, "vp30");
 			}
 
 			if (GLEW_NV_vertex_program3)
 			{
 				rsc->addShaderProfile("vp40");
+				rsc->addGpuProgramProfile(GPP_VS_3_0, "vp40"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+				rsc->addGpuProgramProfile(GPP_VS_4_0, "vp40");
 			}
 
 			if (GLEW_NV_vertex_program4)
@@ -367,6 +376,11 @@ namespace CamelotEngine {
 			rsc->addShaderProfile("ps_1_3");
 			rsc->addShaderProfile("ps_1_2");
 			rsc->addShaderProfile("ps_1_1");
+
+			rsc->addGpuProgramProfile(GPP_PS_1_1, "ps_1_1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+			rsc->addGpuProgramProfile(GPP_PS_1_2, "ps_1_2");
+			rsc->addGpuProgramProfile(GPP_PS_1_3, "ps_1_3");
+			rsc->addGpuProgramProfile(GPP_PS_1_4, "ps_1_4");
 		}
 
 		if (GLEW_ARB_fragment_program)
@@ -382,14 +396,29 @@ namespace CamelotEngine {
 			rsc->setFragmentProgramConstantFloatCount(floatConstantCount);
 
 			rsc->addShaderProfile("arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_1_1, "arbfp1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+			rsc->addGpuProgramProfile(GPP_PS_1_2, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_1_3, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_1_4, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_2_0, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_2_a, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_2_b, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_2_x, "arbfp1");
+
 			if (GLEW_NV_fragment_program_option)
 			{
 				rsc->addShaderProfile("fp30");
+				rsc->addGpuProgramProfile(GPP_PS_3_0, "fp30"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+				rsc->addGpuProgramProfile(GPP_PS_3_x, "fp30");
+				rsc->addGpuProgramProfile(GPP_PS_4_0, "fp30");
 			}
 
 			if (GLEW_NV_fragment_program2)
 			{
 				rsc->addShaderProfile("fp40");
+				rsc->addGpuProgramProfile(GPP_PS_3_0, "fp40"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+				rsc->addGpuProgramProfile(GPP_PS_3_x, "fp40");
+				rsc->addGpuProgramProfile(GPP_PS_4_0, "fp40");
 			}        
 		}
 

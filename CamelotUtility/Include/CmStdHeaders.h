@@ -194,22 +194,22 @@ namespace CamelotEngine
 		typedef typename std::multimap<K, V, P> type; 
 	}; 
 
-	template <typename T, typename P = std::less<T>, typename A = char > 
+	template <typename T, typename A = char, typename B = char, typename C = char> 
 	struct unordered_set 
 	{ 
-		typedef typename std::unordered_set<T, P> type;    
+		typedef typename std::unordered_set<T> type;    
 	}; 
 
-	template <typename K, typename V, typename P = std::less<K>, typename A = char > 
+	template <typename K, typename V, typename A = char, typename B = char, typename C = char> 
 	struct unordered_map 
 	{ 
-		typedef typename std::unordered_map<K, V, P> type; 
+		typedef typename std::unordered_map<K, V> type; 
 	}; 
 
-	template <typename K, typename V, typename P = std::less<K>, typename A = char > 
+	template <typename K, typename V, typename A = char, typename B = char, typename C = char> 
 	struct unordered_multimap 
 	{ 
-		typedef typename std::unordered_multimap<K, V, P> type; 
+		typedef typename std::unordered_multimap<K, V> type; 
 	}; 
 
 	// TODO - Once VC2012 grows up and adds proper C++11 support, uncomment this

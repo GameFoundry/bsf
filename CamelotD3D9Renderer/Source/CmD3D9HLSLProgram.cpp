@@ -80,45 +80,6 @@ namespace CamelotEngine {
 
 	};
 
-	String gpuProgramProfileToHLSLProfile(GpuProgramProfile profile)
-	{
-		switch(profile)
-		{
-		case GPP_PS_1_1:
-			return "ps_1_1";
-		case GPP_PS_1_2:
-			return "ps_1_2";
-		case GPP_PS_1_3:
-			return "ps_1_3";
-		case GPP_PS_1_4:
-			return "ps_1_4";
-		case GPP_PS_2_0:
-			return "ps_2_0";
-		case GPP_PS_2_a:
-			return "ps_2_a";
-		case GPP_PS_2_b:
-			return "ps_2_b";
-		case GPP_PS_3_0:
-			return "ps_3_0";
-		case GPP_PS_4_0:
-			return "ps_4_0";
-		case GPP_VS_1_1:
-			return "vs_1_1";
-		case GPP_VS_2_0:
-			return "vs_2_0";
-		case GPP_VS_2_a:
-			return "vs_2_a";
-		case GPP_VS_3_0:
-			return "vs_3_0";
-		case GPP_VS_4_0:
-			return "vs_4_0";
-		default:
-			assert(false); // Unsupported profile
-		}
-
-		return "";
-	}
-
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     void D3D9HLSLProgram::loadFromSource(void)
@@ -237,7 +198,7 @@ namespace CamelotEngine {
 		// include handler
 		HLSLIncludeHandler includeHandler(this);
 
-		String hlslProfile = gpuProgramProfileToHLSLProfile(mProfile);
+		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 
         // Compile & assemble into microcode
         HRESULT hr = D3DXCompileShader(
@@ -272,7 +233,7 @@ namespace CamelotEngine {
     {
 		if (!mCompileError)
 		{
-			String hlslProfile = gpuProgramProfileToHLSLProfile(mProfile);
+			String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 
 			// Create a low-level program, give it the same name as us
 			mAssemblerProgram = 
@@ -528,7 +489,7 @@ namespace CamelotEngine {
 
 	const String D3D9HLSLProgram::getTarget(void) const
 	{
-		return gpuProgramProfileToHLSLProfile(mProfile);
+		return GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 	}
 
     //-----------------------------------------------------------------------
@@ -551,7 +512,7 @@ namespace CamelotEngine {
         if (mCompileError || !isRequiredCapabilitiesSupported())
             return false;
 
-		String hlslProfile = gpuProgramProfileToHLSLProfile(mProfile);
+		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 
 		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
 		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile);

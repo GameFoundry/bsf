@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "CmPrerequisites.h"
 #include "CmRenderOperation.h"
 #include "CmGpuProgramParams.h"
+#include "CmRenderSystemCapabilities.h"
 
 namespace CamelotEngine {
 
@@ -47,25 +48,6 @@ namespace CamelotEngine {
 		GPT_VERTEX_PROGRAM,
 		GPT_FRAGMENT_PROGRAM,
 		GPT_GEOMETRY_PROGRAM
-	};
-
-	enum GpuProgramProfile
-	{
-		GPP_NONE,
-		GPP_PS_1_1,
-		GPP_PS_1_2,
-		GPP_PS_1_3,
-		GPP_PS_1_4,
-		GPP_PS_2_0,
-		GPP_PS_2_a,
-		GPP_PS_2_b,
-		GPP_PS_3_0,
-		GPP_PS_4_0,
-		GPP_VS_1_1,
-		GPP_VS_2_0,
-		GPP_VS_2_a,
-		GPP_VS_3_0,
-		GPP_VS_4_0
 	};
 
 	/** Defines a program which runs on the GPU such as a vertex or fragment program. 
