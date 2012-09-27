@@ -75,6 +75,7 @@ namespace CamelotEngine {
 	GLRenderSystem::GLRenderSystem()
 		: mDepthWrite(true), mStencilMask(0xFFFFFFFF),
 		mGLSLProgramFactory(0),
+		mCgProgramFactory(0),
 		mActiveTextureUnit(0)
 	{
 		size_t i;
@@ -391,6 +392,8 @@ namespace CamelotEngine {
 				rsc->addShaderProfile("fp40");
 			}        
 		}
+
+		rsc->addShaderProfile("cg");
 
 		// NFZ - Check if GLSL is supported
 		if ( GLEW_VERSION_2_0 || 
@@ -739,6 +742,13 @@ namespace CamelotEngine {
 			HighLevelGpuProgramManager::instance().addFactory(mGLSLProgramFactory);
 		}
 
+		if(caps->isShaderProfileSupported("cg"))
+		{
+			// NFZ - check for GLSL vertex and fragment shader support successful
+			mCgProgramFactory = new CgProgramFactory();
+			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
+		}
+
 		if(caps->hasCapability(RSC_HWOCCLUSION))
 		{
 			if(caps->hasCapability(RSC_GL1_5_NOHWOCCLUSION))
@@ -845,6 +855,15 @@ namespace CamelotEngine {
 			HighLevelGpuProgramManager::instance().removeFactory(mGLSLProgramFactory);
 			delete mGLSLProgramFactory;
 			mGLSLProgramFactory = 0;
+		}
+
+		// Deleting Cg GLSL program factory
+		if (mCgProgramFactory)
+		{
+			// Remove from manager safely
+			HighLevelGpuProgramManager::instance().removeFactory(mCgProgramFactory);
+			delete mCgProgramFactory;
+			mCgProgramFactory = 0;
 		}
 
 		// Deleting the GPU program manager and hardware buffer manager.  Has to be done before the mGLSupport->stop().

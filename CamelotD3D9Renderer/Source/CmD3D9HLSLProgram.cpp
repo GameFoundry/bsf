@@ -109,7 +109,7 @@ namespace CamelotEngine {
 		case GPP_VS_2_a:
 			return "vs_2_a";
 		case GPP_VS_3_0:
-			return "vs_3_1";
+			return "vs_3_0";
 		case GPP_VS_4_0:
 			return "vs_4_0";
 		default:

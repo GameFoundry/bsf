@@ -70,6 +70,7 @@ namespace CamelotEngine
 		mActiveD3DDriver = NULL;	
 		mUseNVPerfHUD = false;
 		mHLSLProgramFactory = NULL;		
+		mCgProgramFactory = NULL;
 		mDeviceManager = NULL;	
 
 		// Create the resource manager.
@@ -115,6 +116,13 @@ namespace CamelotEngine
 			HighLevelGpuProgramManager::instance().removeFactory(mHLSLProgramFactory);
 			delete mHLSLProgramFactory;
 			mHLSLProgramFactory = 0;
+		}
+
+		if(mCgProgramFactory)
+		{
+			HighLevelGpuProgramManager::instance().removeFactory(mCgProgramFactory);
+			delete mCgProgramFactory;
+			mCgProgramFactory = 0;
 		}
 		
 		SAFE_RELEASE( mpD3D );
@@ -519,6 +527,9 @@ namespace CamelotEngine
 		// Create & register HLSL factory		
 		mHLSLProgramFactory = new D3D9HLSLProgramFactory();
 		
+		// Create & register Cg factory		
+		mCgProgramFactory = new CgProgramFactory();
+
 		if( autoCreateWindow )
 		{
 			bool fullScreen;
@@ -1032,6 +1043,7 @@ namespace CamelotEngine
 		{		
 			mRealCapabilities = rsc;
 			mRealCapabilities->addShaderProfile("hlsl");
+			mRealCapabilities->addShaderProfile("cg");
 
 			// if we are using custom capabilities, then 
 			// mCurrentCapabilities has already been loaded
@@ -1308,6 +1320,9 @@ namespace CamelotEngine
 
 		if (caps->isShaderProfileSupported("hlsl"))
 			HighLevelGpuProgramManager::instance().addFactory(mHLSLProgramFactory);
+
+		if (caps->isShaderProfileSupported("cg"))
+			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
 	}
 
 	//-----------------------------------------------------------------------

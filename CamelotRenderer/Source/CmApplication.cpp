@@ -45,7 +45,6 @@ namespace CamelotEngine
 		mViewport = mRenderWindow->addViewport();
 
 		/////////////////// HLSL SHADERS //////////////////////////
-
 		//String fragShaderCode = "sampler2D diffuseMap;			\
 		//	float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
 		//{														\
@@ -69,29 +68,58 @@ namespace CamelotEngine
 
 		//mVertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		//mVertProg->load();
+		
 
-		///////////////// GLSL SHADERS ////////////////////////////
-		String fragShaderCode = "uniform sampler2D tex; \
-									void main() \
-									  {\
-									  vec4 texColor = texture2D(tex,gl_TexCoord[0].st);\
-									  gl_FragColor = texColor; \
-									  }";
 
-		mFragProg = HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+		/////////////////// CG SHADERS //////////////////////////
+		String fragShaderCode = "sampler2D diffuseMap;			\
+			float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
+		{														\
+			float4 color = tex2D(diffuseMap, uv);				\
+			return color;										\
+		}";
+
+		mFragProg =  HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "ps_main", "cg", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 		mFragProg->load();
 
-		// TODO - Ogres GLSL parsing requires some strict parameter naming, can that be avoided?
-		String vertShaderCode = "uniform mat4 matViewProjection; \
-									  attribute vec4 vertex; \
-								void main() \
-									  { \
-									  gl_TexCoord[0] = gl_MultiTexCoord0; \
-									  gl_Position = matViewProjection * vertex; \
-									  }";
+		String vertShaderCode = "float4x4 matViewProjection;	\
+			void vs_main(										\
+			float4 inPos : POSITION,							\
+			float2 uv : TEXCOORD0,								\
+			out float4 oPosition : POSITION,					\
+			out float2 oUv : TEXCOORD0)							\
+		{														\
+			oPosition = mul(matViewProjection, inPos);			\
+			oUv = uv;											\
+		}";
 
-		mVertProg = HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+		mVertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		mVertProg->load();
+		
+
+
+		///////////////// GLSL SHADERS ////////////////////////////
+		//String fragShaderCode = "uniform sampler2D tex; \
+		//							void main() \
+		//							  {\
+		//							  vec4 texColor = texture2D(tex,gl_TexCoord[0].st);\
+		//							  gl_FragColor = texColor; \
+		//							  }";
+
+		//mFragProg = HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+		//mFragProg->load();
+
+		//// TODO - Ogres GLSL parsing requires some strict parameter naming, can that be avoided?
+		//String vertShaderCode = "uniform mat4 matViewProjection; \
+		//							  attribute vec4 vertex; \
+		//						void main() \
+		//							  { \
+		//							  gl_TexCoord[0] = gl_MultiTexCoord0; \
+		//							  gl_Position = matViewProjection * vertex; \
+		//							  }";
+
+		//mVertProg = HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+		//mVertProg->load();
 
 
 		// IMPORTER TEST

@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmD3D9Mappings.h"
+#include "CmCgProgramFactory.h"
 
 namespace CamelotEngine 
 {
@@ -112,6 +113,7 @@ namespace CamelotEngine
 		bool _checkMultiSampleQuality(D3DMULTISAMPLE_TYPE type, DWORD *outQuality, D3DFORMAT format, UINT adapterNum, D3DDEVTYPE deviceType, BOOL fullScreen);
 		
         D3D9HLSLProgramFactory* mHLSLProgramFactory;
+		CgProgramFactory* mCgProgramFactory;
 		D3D9ResourceManager* mResourceManager;
 		D3D9DeviceManager* mDeviceManager;
 

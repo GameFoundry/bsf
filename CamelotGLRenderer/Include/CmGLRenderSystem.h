@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "CmGLGpuProgramManager.h"
 #include "CmGLSLProgramFactory.h"
 #include "CmConfigOptionMap.h"
+#include "CmCgProgramFactory.h"
 #include "CmVector4.h"
 
 namespace CamelotEngine {
@@ -99,6 +100,7 @@ namespace CamelotEngine {
         bool mGLInitialised;
 
 		GLSLProgramFactory* mGLSLProgramFactory;
+		CgProgramFactory* mCgProgramFactory;
 
         unsigned short mCurrentLights;
 

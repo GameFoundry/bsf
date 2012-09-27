@@ -35,7 +35,7 @@ THE SOFTWARE.
 namespace CamelotEngine
 {
     /** Factory class for Cg programs. */
-    class CgProgramFactory : public HighLevelGpuProgramFactory
+    class CM_EXPORT CgProgramFactory : public HighLevelGpuProgramFactory
     {
     protected:
         CGcontext mCgContext;

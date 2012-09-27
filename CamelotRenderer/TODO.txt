@@ -61,6 +61,7 @@ TOMORROW:
  - Add precompiled headers to all projects
  - Make sure they include Exception & Log classes
  - HLSL & Cg don't handle include files yet
+ - Shader profiles need to be manually added. Check GpuProgramProfiler, and conversions from/to that type in HLSL/Cg files. Cg also needs some special profile setup.
 
 Other notes:
  - Search for all remaining "TODO PORT" comments and fix them

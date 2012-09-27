@@ -76,7 +76,7 @@ namespace CamelotEngine {
 			return GPP_VS_2_0;
 		else if(profile == "vs_2_a")
 			return GPP_VS_2_a;
-		else if(profile == "vs_3_1")
+		else if(profile == "vs_3_0")
 			return GPP_VS_3_0;
 		else if(profile == "vs_4_0")
 			return GPP_VS_4_0;
@@ -86,27 +86,62 @@ namespace CamelotEngine {
 		return GPP_NONE;
 	}
 
+	String gpuProgramProfileToCgProfile(GpuProgramProfile profile)
+	{
+		switch(profile)
+		{
+		case GPP_PS_1_1:
+			return "ps_1_1";
+		case GPP_PS_1_2:
+			return "ps_1_2";
+		case GPP_PS_1_3:
+			return "ps_1_3";
+		case GPP_PS_1_4:
+			return "ps_1_4";
+		case GPP_PS_2_0:
+			return "ps_2_0";
+		case GPP_PS_2_a:
+			return "ps_2_a";
+		case GPP_PS_2_b:
+			return "ps_2_b";
+		case GPP_PS_3_0:
+			return "ps_3_0";
+		case GPP_PS_4_0:
+			return "ps_4_0";
+		case GPP_VS_1_1:
+			return "vs_1_1";
+		case GPP_VS_2_0:
+			return "vs_2_0";
+		case GPP_VS_2_a:
+			return "vs_2_a";
+		case GPP_VS_3_0:
+			return "vs_3_0";
+		case GPP_VS_4_0:
+			return "vs_4_0";
+		default:
+			assert(false); // Unsupported profile
+		}
+
+		return "";
+	}
+
     //-----------------------------------------------------------------------
     void CgProgram::selectProfile(void)
     {
         mSelectedProfile.clear();
         mSelectedCgProfile = CG_PROFILE_UNKNOWN;
 
-        vector<String>::type::iterator i, iend;
-        iend = mProfiles.end();
-        GpuProgramManager& gpuMgr = GpuProgramManager::instance();
-        for (i = mProfiles.begin(); i != iend; ++i)
-        {
-            if (gpuMgr.isSyntaxSupported(*i))
-            {
-                mSelectedProfile = *i;
-                mSelectedCgProfile = cgGetProfile(mSelectedProfile.c_str());
-                // Check for errors
-                checkForCgError("CgProgram::selectProfile", 
-                    "Unable to find CG profile enum for program.", mCgContext);
-                break;
-            }
-        }
+		mSelectedProfile = gpuProgramProfileToCgProfile(mProfile);
+		GpuProgramManager& gpuMgr = GpuProgramManager::instance();
+		//if (gpuMgr.isSyntaxSupported(mSelectedProfile))
+		{
+			mSelectedCgProfile = cgGetProfile(mSelectedProfile.c_str());
+			// Check for errors
+			checkForCgError("CgProgram::selectProfile", 
+				"Unable to find CG profile enum for program.", mCgContext);
+		}
+		//else
+		//	mSelectedProfile.clear();
     }
     //-----------------------------------------------------------------------
     void CgProgram::buildArgs(void)
@@ -497,18 +532,11 @@ namespace CamelotEngine {
         if (mCompileError || !isRequiredCapabilitiesSupported())
             return false;
 
-		vector<String>::type::const_iterator i, iend;
-        iend = mProfiles.end();
-        // Check to see if any of the profiles are supported
-        for (i = mProfiles.begin(); i != iend; ++i)
-        {
-            if (GpuProgramManager::instance().isSyntaxSupported(*i))
-            {
-                return true;
-            }
-        }
-        return false;
+		//String selectedProfile = gpuProgramProfileToCgProfile(mProfile);
+		//if (GpuProgramManager::instance().isSyntaxSupported(selectedProfile))
+			return true;
 
+        return false;
     }
     //-----------------------------------------------------------------------
     void CgProgram::setProfiles(const vector<String>::type& profiles)
