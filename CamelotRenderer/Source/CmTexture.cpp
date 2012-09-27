@@ -141,7 +141,7 @@ namespace CamelotEngine {
 		UINT32 height = getHeight();
 		UINT32 depth = getDepth();
 
-		for(UINT32 j = 0; j < numMips; j++)
+		for(UINT32 j = 0; j <= numMips; j++)
 		{
 			UINT32 currentMipSize = PixelUtil::getMemorySize(
 					width, height, depth, mFormat);
@@ -156,7 +156,7 @@ namespace CamelotEngine {
 		UINT8* buffer = new UINT8[totalSize]; // TextureData frees this
 		TextureDataPtr texData(new TextureData(getWidth(), getHeight(), totalSize, mFormat, buffer, getDepth(), 0, getNumMipmaps()));
 
-		for(UINT32 j = 0; j < numMips; j++)
+		for(UINT32 j = 0; j <= numMips; j++)
 		{
 			PixelData pixels = texData->getPixels(j);
 			getBuffer(face, j)->blitToMemory(pixels);

@@ -50,4 +50,6 @@ namespace CamelotEngine
 		 */
 		void save(ResourcePtr resource, const String& filePath);
 	};
+
+	CM_EXPORT Resources& gResources();
 }

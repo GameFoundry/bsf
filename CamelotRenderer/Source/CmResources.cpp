@@ -18,17 +18,20 @@ namespace CamelotEngine
 	ResourcePtr Resources::load(const String& filePath)
 	{
 		FileSerializer fs;
-		std::shared_ptr<IReflectable> resource = fs.decode(filePath);
+		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
 
 		// TODO - Low priority. Check is file path valid?
 
-		if(resource == nullptr)
+		if(loadedData == nullptr)
 			CM_EXCEPT(InternalErrorException, "Unable to load resource.");
 
-		if(!resource->isDerivedFrom(Resource::getRTTIStatic()))
+		if(!loadedData->isDerivedFrom(Resource::getRTTIStatic()))
 			CM_EXCEPT(InternalErrorException, "Loaded class doesn't derive from Resource.");
 
-		return std::static_pointer_cast<Resource>(resource);
+		ResourcePtr resource = std::static_pointer_cast<Resource>(loadedData);
+		resource->load();
+
+		return resource;
 	}
 
 	ResourcePtr Resources::load(const UUID& uuid)
@@ -44,5 +47,10 @@ namespace CamelotEngine
 		
 		FileSerializer fs;
 		fs.encode(resource.get(), filePath);
+	}
+
+	CM_EXPORT Resources& gResources()
+	{
+		return Resources::instance();
 	}
 }

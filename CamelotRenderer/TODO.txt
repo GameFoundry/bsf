@@ -45,6 +45,7 @@ TODO:
  - OpenGL too
 
 TOMORROW:
+ - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?
  - Depth test is disabled by default (OpenGL renderer at least)
  - Serializable callbacks can't be null otherwise compiler complains
  - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?

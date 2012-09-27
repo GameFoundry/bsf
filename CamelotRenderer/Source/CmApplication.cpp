@@ -13,6 +13,7 @@
 #include "CmDynLib.h"
 #include "CmDynLibManager.h"
 #include "CmImporter.h"
+#include "CmResources.h"
 
 namespace CamelotEngine
 {
@@ -101,7 +102,14 @@ namespace CamelotEngine
 			loadPluginFunc();
 		}
 
-		mDbgTexture = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
+		//mDbgTexture = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
+		TexturePtr testTex = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
+		Resources::startUp(new Resources());
+
+		gResources().save(testTex, "C:\\ExportTest.tex");
+		mDbgTexture = std::static_pointer_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
+		mDbgTexture = testTex;
+		// TODO - Compare first few bytes of TextureData before and after save
 	}
 
 	void Application::runMainLoop()
@@ -121,6 +129,7 @@ namespace CamelotEngine
 
 		HighLevelGpuProgramManager::shutDown();
 		DynLibManager::shutDown();
+		Resources::shutDown();
 	}
 
 	void Application::DBG_renderSimpleFrame()
