@@ -37,5 +37,11 @@ namespace CamelotEngine
 		static std::shared_ptr<IReflectable> createInstanceFromTypeId(UINT32 rttiTypeId);
 		static RTTITypeBase* getRTTIfromTypeId(UINT32 rttiTypeId);
 		static bool isTypeIdDuplicate(UINT32 typeId);
+
+		/**
+		 * @brief	Returns true if current RTTI class is derived from "base".
+		 * 			(Or if it is the same type as base)
+		 */
+		bool isDerivedFrom(RTTITypeBase* base);
 	};
 }

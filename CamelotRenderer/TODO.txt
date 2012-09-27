@@ -51,11 +51,6 @@ TOMORROW:
  - How do I serialize derived classes, without rewriting all the base class serialization?
    - Unless something better dawns on me by Monday, just inherit from parents SerializableType and manually make sure no IDs overlap.
      - We can improve later if needed. I though about it too much for now.
-TextureData
- - When serializing this texture, request data from GPU, populate TextureData array and return
-Texture
- - Gets initialized by calling SetData(vector<TextureData). 
- - Returns TextureData by GetData (retrieves data from GPU)
  Continue working on Importer, Resources (IMPORTANT - AssetDatabase in a single file probably won't work. Multiple people won't be able to work on it. Unless we make it part of a local cache?)
  Try to fully implement free image and maybe FBX importers
   - Less important notes:

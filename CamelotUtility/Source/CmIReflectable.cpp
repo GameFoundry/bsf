@@ -53,4 +53,27 @@ namespace CamelotEngine
 	{
 		return IReflectable::getRTTIfromTypeId(typeId) != nullptr;
 	}
+
+	bool IReflectable::isDerivedFrom(RTTITypeBase* base)
+	{
+		assert(base != nullptr);
+
+		stack<RTTITypeBase*>::type todo;
+		todo.push(base);
+
+		while (!todo.empty())
+		{
+			RTTITypeBase* currentType = todo.top();
+			todo.pop();
+
+			if(currentType->getRTTIId() == getRTTI()->getRTTIId())
+				return true;
+
+			vector<RTTITypeBase*>::type& derivedClasses = currentType->getDerivedClasses();
+			for(auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
+				todo.push(*iter);
+		}
+
+		return false;
+	}
 }

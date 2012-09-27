@@ -16,8 +16,8 @@ namespace CamelotEngine
 		 * 								If the database file doesn't exist it will be created in that location.
 		 * 								Meta data for resources is stored in the asset database.
 		 */
-		Resources(const String& assetDatabasePath); // TODO
-		~Resources(); // TODO
+		Resources();
+		~Resources();
 
 		/**
 		 * @brief	Loads the resource from a given path. Returns null if resource can't be loaded.
