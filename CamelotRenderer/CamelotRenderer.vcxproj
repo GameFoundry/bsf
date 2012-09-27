@@ -63,7 +63,7 @@
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotUtility.lib;libboost_signals-vc110-mt-gd-1_49.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;libboost_signals-vc110-mt-gd-1_49.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Configuration);../Dependencies/lib/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -84,19 +84,20 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotUtility.lib;libboost_signals-vc110-mt-1_49.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;libboost_signals-vc110-mt-1_49.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Configuration);../Dependencies/lib/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="HighLevelTODO.txt" />
-    <Text Include="ReadMe.txt" />
     <Text Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmApplication.h" />
     <ClInclude Include="Include\CmCamera.h" />
+    <ClInclude Include="Include\CmCgProgram.h" />
+    <ClInclude Include="Include\CmCgProgramFactory.h" />
     <ClInclude Include="Include\CmCommon.h" />
     <ClInclude Include="Include\CmConfigOptionMap.h" />
     <ClInclude Include="Include\CmDefaultHardwareBufferManager.h" />
@@ -140,6 +141,8 @@
     <ClCompile Include="Source\CamelotRenderer.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
     <ClCompile Include="Source\CmCamera.cpp" />
+    <ClCompile Include="Source\CmCgProgram.cpp" />
+    <ClCompile Include="Source\CmCgProgramFactory.cpp" />
     <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmFrustum.cpp" />
     <ClCompile Include="Source\CmGpuProgram.cpp" />

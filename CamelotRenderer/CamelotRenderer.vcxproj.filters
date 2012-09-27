@@ -46,9 +46,14 @@
     <Filter Include="Header Files\Serialization">
       <UniqueIdentifier>{75249db9-4f2e-43c3-8df4-37250c4b60a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Cg">
+      <UniqueIdentifier>{7477862a-2ebf-43ed-adb9-725c453b0b50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Cg">
+      <UniqueIdentifier>{eeb7d0ea-f842-4f3c-b462-135af2eff493}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
     <Text Include="TODO.txt" />
     <Text Include="HighLevelTODO.txt" />
   </ItemGroup>
@@ -173,6 +178,12 @@
     <ClInclude Include="Include\CmTextureST.h">
       <Filter>Header Files\Serialization</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmCgProgram.h">
+      <Filter>Header Files\Cg</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmCgProgramFactory.h">
+      <Filter>Header Files\Cg</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -267,6 +278,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmResource.cpp">
       <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCgProgram.cpp">
+      <Filter>Source Files\Cg</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCgProgramFactory.cpp">
+      <Filter>Source Files\Cg</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

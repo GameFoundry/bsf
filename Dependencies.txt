@@ -1,8 +1,14 @@
 Camelot relies on following 3rd party libraries:
  - Boost 1.49 (Later versions might work as well, but you need to test it on your own)
+    - http://www.boost.org
+ - Cg 3.1
+    - http://developer.nvidia.com/cg-toolkit
 
-
-Make sure to include:
+Place dependency files in:
  - Library include files in /Dependencies/Include
  - Static library files in /Dependencies/lib/Debug and /Dependencies/lib/Release
  - Dynamic library files in /bin/Debug and /bin/Release (Possibly others if you define other configuration types)
+
+Listed dependencies have not been provided with the engine source code. 
+You will need to grab them manually from the specified links, and place them 
+in the above specified folders. 

@@ -45,6 +45,7 @@ TODO:
  - OpenGL too
 
 TOMORROW:
+ - Incorporate CG into the engine!
  - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?
  - Depth test is disabled by default (OpenGL renderer at least)
  - Serializable callbacks can't be null otherwise compiler complains
@@ -59,6 +60,7 @@ TOMORROW:
     - Make sure all resources have default resource that will be used before actual resource is loaded
  - Add precompiled headers to all projects
  - Make sure they include Exception & Log classes
+ - HLSL & Cg don't handle include files yet
 
 Other notes:
  - Search for all remaining "TODO PORT" comments and fix them

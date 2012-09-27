@@ -46,24 +46,28 @@ namespace CamelotEngine
 
 		/////////////////// HLSL SHADERS //////////////////////////
 
-		//String fragShaderCode = "float4 ps_main() : COLOR0	\
+		//String fragShaderCode = "sampler2D diffuseMap;			\
+		//	float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
 		//{														\
-		//	float4 color = float4(0, 0, 0, 0);					\
-		//	color.r = 1.0f;										\
-		//	color.a = 1.0f;										\
+		//	float4 color = tex2D(diffuseMap, uv);				\
 		//	return color;										\
 		//}";
 
-		//mFragProg = mGpuProgramManager->createProgram(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+		//mFragProg =  HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 		//mFragProg->load();
 
-		//String vertShaderCode = "float4x4 matViewProjection; \
-		//float4 vs_main(float4 inPos : POSITION) : POSITION \
-		//{ \
-		//	return mul(matViewProjection, inPos); \
+		//String vertShaderCode = "float4x4 matViewProjection;	\
+		//	void vs_main(										\
+		//	float4 inPos : POSITION,							\
+		//	float2 uv : TEXCOORD0,								\
+		//	out float4 oPosition : POSITION,					\
+		//	out float2 oUv : TEXCOORD0)							\
+		//{														\
+		//	oPosition = mul(matViewProjection, inPos);			\
+		//	oUv = uv;											\
 		//}";
 
-		//mVertProg = mGpuProgramManager->createProgram(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+		//mVertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		//mVertProg->load();
 
 		///////////////// GLSL SHADERS ////////////////////////////
@@ -109,7 +113,6 @@ namespace CamelotEngine
 		gResources().save(testTex, "C:\\ExportTest.tex");
 		mDbgTexture = std::static_pointer_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
 		mDbgTexture = testTex;
-		// TODO - Compare first few bytes of TextureData before and after save
 	}
 
 	void Application::runMainLoop()

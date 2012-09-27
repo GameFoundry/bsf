@@ -100,6 +100,8 @@ namespace CamelotEngine {
 			return "ps_2_b";
 		case GPP_PS_3_0:
 			return "ps_3_0";
+		case GPP_PS_4_0:
+			return "ps_4_0";
 		case GPP_VS_1_1:
 			return "vs_1_1";
 		case GPP_VS_2_0:
@@ -108,6 +110,8 @@ namespace CamelotEngine {
 			return "vs_2_a";
 		case GPP_VS_3_0:
 			return "vs_3_1";
+		case GPP_VS_4_0:
+			return "vs_4_0";
 		default:
 			assert(false); // Unsupported profile
 		}
