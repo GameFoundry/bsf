@@ -135,6 +135,7 @@
     <ClInclude Include="Include\CmWindowEventUtilities.h" />
     <ClInclude Include="Include\CmResourceST.h" />
     <ClInclude Include="Include\CmGameObject.h" />
+    <ClInclude Include="Include\CmComponent.h" />
     <ClInclude Include="Include\stdafx.h" />
     <ClInclude Include="Include\targetver.h" />
   </ItemGroup>
@@ -165,6 +166,7 @@
     <ClCompile Include="Source\CmRenderWindow.cpp" />
     <ClCompile Include="Source\CmResource.cpp" />
     <ClCompile Include="Source\CmResources.cpp" />
+    <ClCompile Include="Source\CmSceneManager.cpp" />
     <ClCompile Include="Source\CmTexture.cpp" />
     <ClCompile Include="Source\CmTextureManager.cpp" />
     <ClCompile Include="Source\CmTextureState.cpp" />
@@ -172,6 +174,7 @@
     <ClCompile Include="Source\CmViewport.cpp" />
     <ClCompile Include="Source\CmWindowEventUtilities.cpp" />
     <ClCompile Include="Source\CmGameObject.cpp" />
+    <ClCompile Include="Source\CmComponent.cpp" />
     <ClCompile Include="Source\stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

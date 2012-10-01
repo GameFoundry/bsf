@@ -193,6 +193,9 @@
     <ClInclude Include="Include\CmGameObject.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmComponent.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -296,6 +299,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmGameObject.cpp">
       <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmComponent.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmSceneManager.cpp">
+      <Filter>Header Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

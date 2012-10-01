@@ -1,5 +1,7 @@
 #include "CmGameObject.h"
+#include "CmComponent.h"
 #include "CmException.h"
+#include "CmDebug.h"
 
 namespace CamelotEngine
 {
@@ -8,13 +10,31 @@ namespace CamelotEngine
 		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
 		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false),
 		mCustomWorldTfrm(Matrix4::IDENTITY), mIsCustomTfrmModeActive(false),
-		mParent(nullptr)
+		mParent(nullptr), mIsDestroyed(false)
 	{ }
 
 	GameObject::~GameObject()
 	{
+		if(!mIsDestroyed)
+			destroy();
+	}
+
+	void GameObject::destroy()
+	{
+		mIsDestroyed = true;
+
 		if(mParent != nullptr)
 			mParent->removeChild(this);
+
+		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
+			(*iter)->destroy();
+
+		mChildren.clear();
+
+		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
+			(*iter)->destroy();
+
+		mComponents.clear();
 	}
 
 	/************************************************************************/
@@ -49,7 +69,7 @@ namespace CamelotEngine
 
 	const Matrix4& GameObject::getLocalTfrm()
 	{
-		if(!mIsCachedLocalTfrmUpToDate) // TODO - Low priority - This unnecessarily updates world transform as well
+		if(!mIsCachedLocalTfrmUpToDate)
 			updateLocalTfrm();
 
 		return mCachedLocalTfrm;
@@ -91,7 +111,7 @@ namespace CamelotEngine
 	/* 								Hierarchy	                     		*/
 	/************************************************************************/
 
-	void GameObject::setParent(GameObject* parent)
+	void GameObject::setParent(GameObjectPtr parent)
 	{
 		if(parent == nullptr)
 		{
@@ -112,7 +132,7 @@ namespace CamelotEngine
 		}
 	}
 
-	GameObject* GameObject::getChild(unsigned int idx) const
+	GameObjectPtr GameObject::getChild(unsigned int idx) const
 	{
 		if(idx < 0 || idx >= mChildren.size())
 		{
@@ -123,7 +143,7 @@ namespace CamelotEngine
 		return mChildren[idx];
 	}
 
-	int GameObject::indexOfChild(const GameObject* child) const
+	int GameObject::indexOfChild(const GameObjectPtr child) const
 	{
 		for(int i = 0; i < (int)mChildren.size(); i++)
 		{
@@ -136,19 +156,38 @@ namespace CamelotEngine
 
 	void GameObject::addChild(GameObject* object)
 	{
-		mChildren.push_back(object);
+		//mChildren.push_back(object); // TODO - Not implemented. I'm not sure what's the best way to handle "this" ptr and smart ptrs
 	}
 
 	void GameObject::removeChild(GameObject* object)
 	{
-		auto result = find(mChildren.begin(), mChildren.end(), object);
+		//auto result = find(mChildren.begin(), mChildren.end(), object);
 
-		if(result != mChildren.end())
-			mChildren.erase(result);
-		else
+		//if(result != mChildren.end())
+		//	mChildren.erase(result);
+		//else
+		//{
+		//	CM_EXCEPT(InternalErrorException, 
+		//		"Trying to remove a child but it's not a child of the transform.");
+		//}
+	}
+
+	void GameObject::destroyComponent(ComponentPtr component)
+	{
+		if(component == nullptr)
 		{
-			CM_EXCEPT(InternalErrorException, 
-				"Trying to remove a child but it's not a child of the transform.");
+			LOGDBG("Trying to remove a null component");
+			return;
 		}
+
+		auto iter = std::find(mComponents.begin(), mComponents.end(), component);
+
+		if(iter != mComponents.end())
+		{
+			(*iter)->destroy();
+			mComponents.erase(iter);
+		}
+		else
+			LOGDBG("Trying to remove a component that doesn't exist on this GameObject.");
 	}
 }

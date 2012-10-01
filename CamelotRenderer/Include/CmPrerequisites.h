@@ -102,6 +102,9 @@ namespace CamelotEngine {
 	// Resources
 	class Resource;
 	class Resources;
+	// Scene
+	class GameObject;
+	class Component;
 }
 
 /* Shared pointer typedefs*/
@@ -112,6 +115,9 @@ namespace CamelotEngine
 	typedef std::shared_ptr<HardwarePixelBuffer> HardwarePixelBufferPtr;
 	typedef std::shared_ptr<Texture> TexturePtr;
 	typedef std::shared_ptr<Resource> ResourcePtr;
+
+	typedef std::shared_ptr<Component> ComponentPtr;
+	typedef std::shared_ptr<GameObject> GameObjectPtr;
 }
 
 #endif // __OgrePrerequisites_H__

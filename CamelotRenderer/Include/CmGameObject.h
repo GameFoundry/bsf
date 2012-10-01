@@ -5,6 +5,8 @@
 #include "CmVector3.h"
 #include "CmQuaternion.h"
 
+#include "boost/static_assert.hpp"
+
 namespace CamelotEngine
 {
 	class CM_EXPORT GameObject
@@ -12,6 +14,11 @@ namespace CamelotEngine
 	public:
 		GameObject(const String& name);
 		~GameObject();
+
+		void destroy();
+
+	private:
+		bool mIsDestroyed;
 
 		/************************************************************************/
 		/* 								Transform	                     		*/
@@ -59,14 +66,14 @@ namespace CamelotEngine
 		 *
 		 * @param [in]	parent	New parent.
 		 */
-		void setParent(GameObject* parent);
+		void setParent(GameObjectPtr parent);
 
 		/**
 		 * @brief	Gets the parent of this object.
 		 *
 		 * @return	Parent object, or nullptr if this GameObject is at root level.
 		 */
-		GameObject* getParent() const { return mParent; }
+		GameObjectPtr getParent() const { return mParent; }
 
 		/**
 		 * @brief	Gets a child of this item.
@@ -77,7 +84,7 @@ namespace CamelotEngine
 		 * 			
 		 * @throws ERR_INVALIDPARAMS If the index is out of range.
 		 */
-		GameObject* getChild(unsigned int idx) const;
+		GameObjectPtr getChild(unsigned int idx) const;
 
 		/**
 		 * @brief	Find the index of the specified child. Don't persist this value as
@@ -87,7 +94,7 @@ namespace CamelotEngine
 		 *
 		 * @return	The zero-based index of the found child, or -1 if no match was found.
 		 */
-		int indexOfChild(const GameObject* child) const;
+		int indexOfChild(const GameObjectPtr child) const;
 
 		/**
 		 * @brief	Gets the number of all child GameObjects.
@@ -95,8 +102,8 @@ namespace CamelotEngine
 		int getNumChildren() const { return mChildren.size(); }
 
 	private:
-		GameObject* mParent;
-		vector<GameObject*>::type mChildren;
+		GameObjectPtr mParent;
+		vector<GameObjectPtr>::type mChildren;
 
 		/**
 		 * @brief	Adds a child to the child array. This method doesn't check for null or duplicate values.
@@ -113,5 +120,31 @@ namespace CamelotEngine
 		 * @throws INTERNAL_ERROR If the provided child isn't a child of the current object.
 		 */
 		void removeChild(GameObject* object);
+
+		/************************************************************************/
+		/* 								Component	                     		*/
+		/************************************************************************/
+	public:
+		template <typename T>
+		std::shared_ptr<T> addComponent()
+		{
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
+				"Specified type is not a valid Component.");
+
+			std::shared_ptr<T> newComponent = std::shared_ptr<T>(new T(this));
+			mComponents.push_back(newComponent);
+
+			return newComponent;
+		}
+
+		/**
+		 * @brief	Removes the component from this GameObject, and deallocates it.
+		 *
+		 * @param [in]	component	The component to destroy.
+		 */
+		void destroyComponent(ComponentPtr component);
+
+	private:
+		vector<ComponentPtr>::type mComponents;
 	};
 }
