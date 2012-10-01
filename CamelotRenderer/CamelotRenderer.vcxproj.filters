@@ -52,6 +52,12 @@
     <Filter Include="Source Files\Cg">
       <UniqueIdentifier>{eeb7d0ea-f842-4f3c-b462-135af2eff493}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Scene">
+      <UniqueIdentifier>{327fbccb-fd0d-4fb1-af08-5d00cd7d56a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scene">
+      <UniqueIdentifier>{2211ce11-e426-4aad-a5e6-73727d44bb98}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />
@@ -184,6 +190,9 @@
     <ClInclude Include="Include\CmCgProgramFactory.h">
       <Filter>Header Files\Cg</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGameObject.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -284,6 +293,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmCgProgramFactory.cpp">
       <Filter>Source Files\Cg</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGameObject.cpp">
+      <Filter>Source Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
