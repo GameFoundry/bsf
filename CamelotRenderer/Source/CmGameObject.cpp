@@ -1,5 +1,6 @@
 #include "CmGameObject.h"
 #include "CmComponent.h"
+#include "CmSceneManager.h"
 #include "CmException.h"
 #include "CmDebug.h"
 
@@ -10,7 +11,7 @@ namespace CamelotEngine
 		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
 		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false),
 		mCustomWorldTfrm(Matrix4::IDENTITY), mIsCustomTfrmModeActive(false),
-		mParent(nullptr), mIsDestroyed(false)
+		mIsDestroyed(false)
 	{ }
 
 	GameObject::~GameObject()
@@ -19,12 +20,26 @@ namespace CamelotEngine
 			destroy();
 	}
 
+	GameObjectPtr GameObject::create(const String& name)
+	{
+		GameObjectPtr newObject = createInternal(name);
+
+		gSceneManager().registerNewGO(newObject);
+
+		return newObject;
+	}
+
+	GameObjectPtr GameObject::createInternal(const String& name)
+	{
+		GameObjectPtr newObject = GameObjectPtr(new GameObject(name));
+		newObject->mThis = newObject;
+
+		return newObject;
+	}
+
 	void GameObject::destroy()
 	{
 		mIsDestroyed = true;
-
-		if(mParent != nullptr)
-			mParent->removeChild(this);
 
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 			(*iter)->destroy();
@@ -35,6 +50,16 @@ namespace CamelotEngine
 			(*iter)->destroy();
 
 		mComponents.clear();
+
+		// Parent is our owner, so when his reference to us is removed, delete might be called.
+		// So make sure this is the last thing we do.
+		if(!mParent.expired())
+		{
+			GameObjectPtr parentPtr = mParent.lock();
+
+			if(!parentPtr->isDestroyed())
+				parentPtr->removeChild(mThis.lock());
+		}
 	}
 
 	/************************************************************************/
@@ -92,8 +117,8 @@ namespace CamelotEngine
 
 	void GameObject::updateWorldTfrm()
 	{
-		if(mParent != nullptr)
-			mCachedWorldTfrm = getLocalTfrm() * mParent->getWorldTfrm();
+		if(!mParent.expired())
+			mCachedWorldTfrm = getLocalTfrm() * mParent.lock()->getWorldTfrm();
 		else
 			mCachedWorldTfrm = getLocalTfrm();
 
@@ -113,19 +138,19 @@ namespace CamelotEngine
 
 	void GameObject::setParent(GameObjectPtr parent)
 	{
-		if(parent == nullptr)
+		if(parent == nullptr || parent->isDestroyed())
 		{
 			CM_EXCEPT(InternalErrorException, 
-				"Parent is not allowed to be NULL.");
+				"Parent is not allowed to be NULL or destroyed.");
 		}
 
-		if(mParent != parent)
+		if(mParent.expired() || mParent.lock() != parent)
 		{
-			if(mParent != nullptr)
-				mParent->removeChild(this);
+			if(!mParent.expired())
+				mParent.lock()->removeChild(mThis.lock());
 
 			if(parent != nullptr)
-				parent->addChild(this);
+				parent->addChild(mThis.lock());
 
 			mParent = parent;
 			markTfrmDirty();
@@ -154,22 +179,22 @@ namespace CamelotEngine
 		return -1;
 	}
 
-	void GameObject::addChild(GameObject* object)
+	void GameObject::addChild(GameObjectPtr object)
 	{
-		//mChildren.push_back(object); // TODO - Not implemented. I'm not sure what's the best way to handle "this" ptr and smart ptrs
+		mChildren.push_back(object); 
 	}
 
-	void GameObject::removeChild(GameObject* object)
+	void GameObject::removeChild(GameObjectPtr object)
 	{
-		//auto result = find(mChildren.begin(), mChildren.end(), object);
+		auto result = find(mChildren.begin(), mChildren.end(), object);
 
-		//if(result != mChildren.end())
-		//	mChildren.erase(result);
-		//else
-		//{
-		//	CM_EXCEPT(InternalErrorException, 
-		//		"Trying to remove a child but it's not a child of the transform.");
-		//}
+		if(result != mChildren.end())
+			mChildren.erase(result);
+		else
+		{
+			CM_EXCEPT(InternalErrorException, 
+				"Trying to remove a child but it's not a child of the transform.");
+		}
 	}
 
 	void GameObject::destroyComponent(ComponentPtr component)

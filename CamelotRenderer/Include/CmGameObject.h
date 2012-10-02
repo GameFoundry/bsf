@@ -11,13 +11,19 @@ namespace CamelotEngine
 {
 	class CM_EXPORT GameObject
 	{
+		friend class SceneManager;
 	public:
-		GameObject(const String& name);
+		static GameObjectPtr create(const String& name);
 		~GameObject();
 
 		void destroy();
+		bool isDestroyed() { return mIsDestroyed; }
 
 	private:
+		GameObject(const String& name);
+		static GameObjectPtr createInternal(const String& name);
+
+		std::weak_ptr<GameObject> mThis;
 		bool mIsDestroyed;
 
 		/************************************************************************/
@@ -73,7 +79,7 @@ namespace CamelotEngine
 		 *
 		 * @return	Parent object, or nullptr if this GameObject is at root level.
 		 */
-		GameObjectPtr getParent() const { return mParent; }
+		GameObjectPtr getParent() const { return mParent.lock(); }
 
 		/**
 		 * @brief	Gets a child of this item.
@@ -102,7 +108,7 @@ namespace CamelotEngine
 		int getNumChildren() const { return mChildren.size(); }
 
 	private:
-		GameObjectPtr mParent;
+		std::weak_ptr<GameObject> mParent;
 		vector<GameObjectPtr>::type mChildren;
 
 		/**
@@ -110,7 +116,7 @@ namespace CamelotEngine
 		 *
 		 * @param [in]	object	New child.
 		 */
-		void addChild(GameObject* object);
+		void addChild(GameObjectPtr object);
 		
 		/**
 		 * @brief	Removes the child from the object. 
@@ -119,7 +125,7 @@ namespace CamelotEngine
 		 * 					
 		 * @throws INTERNAL_ERROR If the provided child isn't a child of the current object.
 		 */
-		void removeChild(GameObject* object);
+		void removeChild(GameObjectPtr object);
 
 		/************************************************************************/
 		/* 								Component	                     		*/

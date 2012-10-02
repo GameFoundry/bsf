@@ -12,6 +12,7 @@
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmDynLib.h"
 #include "CmDynLibManager.h"
+#include "CmSceneManager.h"
 #include "CmImporter.h"
 #include "CmResources.h"
 
@@ -30,6 +31,8 @@ namespace CamelotEngine
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_initialise(false, "Camelot Renderer");
+
+		SceneManager::startUp(new SceneManager());
 
 		mRenderWindow = renderSystem->_createRenderWindow("Camelot Renderer", 800, 600, false);
 
@@ -155,6 +158,8 @@ namespace CamelotEngine
 
 	void Application::shutDown()
 	{
+		SceneManager::shutDown();
+
 		if(RenderSystemManager::getActive() != nullptr)
 			RenderSystemManager::getActive()->shutdown();
 

@@ -105,6 +105,7 @@ namespace CamelotEngine {
 	// Scene
 	class GameObject;
 	class Component;
+	class SceneManager;
 }
 
 /* Shared pointer typedefs*/

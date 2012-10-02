@@ -196,6 +196,9 @@
     <ClInclude Include="Include\CmComponent.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmSceneManager.h">
+      <Filter>Source Files\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
