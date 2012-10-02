@@ -257,11 +257,6 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void _setTextureCoordCalculation(size_t stage, TexCoordCalcMethod m, 
-            const Frustum* frustum = 0);
-        /** See
-          RenderSystem
-         */
         void _setTextureAddressingMode(size_t stage, const TextureState::UVWAddressingMode& uvw);
         /** See
           RenderSystem
@@ -271,10 +266,6 @@ namespace CamelotEngine {
 		  RenderSystem
 		 */
 		void _setTextureMipmapBias(size_t unit, float bias);
-        /** See
-          RenderSystem
-         */
-        void _setTextureMatrix(size_t stage, const Matrix4& xform);
         /** See
           RenderSystem
          */

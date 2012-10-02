@@ -1490,8 +1490,8 @@ namespace CamelotEngine
 		float q, qn;
 		if (farPlane == 0)
 		{
-			q = 1 - Frustum::INFINITE_FAR_PLANE_ADJUST;
-			qn = nearPlane * (Frustum::INFINITE_FAR_PLANE_ADJUST - 1);
+			q = 1 - Camera::INFINITE_FAR_PLANE_ADJUST;
+			qn = nearPlane * (Camera::INFINITE_FAR_PLANE_ADJUST - 1);
 		}
 		else
 		{
@@ -1819,19 +1819,6 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Unable to set texture coord. set index");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setTextureCoordCalculation( size_t stage, TexCoordCalcMethod m,
-		const Frustum* frustum)
-	{
-		HRESULT hr;
-		// record the stage state
-		mTexStageDesc[stage].autoTexCoordType = m;
-		mTexStageDesc[stage].frustum = frustum;
-
-		hr = __SetTextureStageState( static_cast<DWORD>(stage), D3DTSS_TEXCOORDINDEX, D3D9Mappings::get(m, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps()) | mTexStageDesc[stage].coordIndex );
-		if(FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Unable to set texture auto tex.coord. generation mode");
-	}
-	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setTextureMipmapBias(size_t unit, float bias)
 	{
 		if (mCurrentCapabilities->hasCapability(RSC_MIPMAP_LOD_BIAS))
@@ -1842,211 +1829,6 @@ namespace CamelotEngine
 			if(FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Unable to set texture mipmap bias");
 
-		}
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setTextureMatrix( size_t stage, const Matrix4& xForm )
-	{
-		HRESULT hr;
-		D3DXMATRIX d3dMat; // the matrix we'll maybe apply
-		Matrix4 newMat = xForm; // the matrix we'll apply after conv. to D3D format
-		// Cache texcoord calc method to register
-		TexCoordCalcMethod autoTexCoordType = mTexStageDesc[stage].autoTexCoordType;
-
-		// if a vertex program is bound, we mustn't set texture transforms
-		if (mVertexProgramBound)
-		{
-			hr = __SetTextureStageState( static_cast<DWORD>(stage), D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
-			if( FAILED( hr ) )
-				CM_EXCEPT(RenderingAPIException, "Unable to disable texture coordinate transform");
-			return;
-		}
-
-
-		if (autoTexCoordType == TEXCALC_ENVIRONMENT_MAP)
-		{
-			if (mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().VertexProcessingCaps & D3DVTXPCAPS_TEXGEN_SPHEREMAP)
-			{
-				/** Invert the texture for the spheremap */
-				Matrix4 ogreMatEnvMap = Matrix4::IDENTITY;
-				// set env_map values
-				ogreMatEnvMap[1][1] = -1.0f;
-				// concatenate with the xForm
-				newMat = newMat.concatenate(ogreMatEnvMap);
-			}
-			else
-			{
-				/* If envmap is applied, but device doesn't support spheremap,
-				then we have to use texture transform to make the camera space normal
-				reference the envmap properly. This isn't exactly the same as spheremap
-				(it looks nasty on flat areas because the camera space normals are the same)
-				but it's the best approximation we have in the absence of a proper spheremap */
-				// concatenate with the xForm
-				newMat = newMat.concatenate(Matrix4::CLIPSPACE2DTOIMAGESPACE);
-			}
-		}
-
-		// If this is a cubic reflection, we need to modify using the view matrix
-		if (autoTexCoordType == TEXCALC_ENVIRONMENT_MAP_REFLECTION)
-		{
-			// Get transposed 3x3
-			// We want to transpose since that will invert an orthonormal matrix ie rotation
-			Matrix4 ogreViewTransposed;
-			ogreViewTransposed[0][0] = mViewMatrix[0][0];
-			ogreViewTransposed[0][1] = mViewMatrix[1][0];
-			ogreViewTransposed[0][2] = mViewMatrix[2][0];
-			ogreViewTransposed[0][3] = 0.0f;
-
-			ogreViewTransposed[1][0] = mViewMatrix[0][1];
-			ogreViewTransposed[1][1] = mViewMatrix[1][1];
-			ogreViewTransposed[1][2] = mViewMatrix[2][1];
-			ogreViewTransposed[1][3] = 0.0f;
-
-			ogreViewTransposed[2][0] = mViewMatrix[0][2];
-			ogreViewTransposed[2][1] = mViewMatrix[1][2];
-			ogreViewTransposed[2][2] = mViewMatrix[2][2];
-			ogreViewTransposed[2][3] = 0.0f;
-
-			ogreViewTransposed[3][0] = 0.0f;
-			ogreViewTransposed[3][1] = 0.0f;
-			ogreViewTransposed[3][2] = 0.0f;
-			ogreViewTransposed[3][3] = 1.0f;
-
-			newMat = newMat.concatenate(ogreViewTransposed);
-		}
-
-		if (autoTexCoordType == TEXCALC_PROJECTIVE_TEXTURE)
-		{
-			// Derive camera space to projector space transform
-			// To do this, we need to undo the camera view matrix, then 
-			// apply the projector view & projection matrices
-			newMat = mViewMatrix.inverse();
-			if(mTexProjRelative)
-			{
-				Matrix4 viewMatrix;
-				mTexStageDesc[stage].frustum->calcViewMatrixRelative(mTexProjRelativeOrigin, viewMatrix);
-				newMat = viewMatrix * newMat;
-			}
-			else
-			{
-				newMat = mTexStageDesc[stage].frustum->getViewMatrix() * newMat;
-			}
-			newMat = mTexStageDesc[stage].frustum->getProjectionMatrix() * newMat;
-			newMat = Matrix4::CLIPSPACE2DTOIMAGESPACE * newMat;
-			newMat = xForm * newMat;
-		}
-
-		// need this if texture is a cube map, to invert D3D's z coord
-		if (autoTexCoordType != TEXCALC_NONE &&
-			autoTexCoordType != TEXCALC_PROJECTIVE_TEXTURE)
-		{
-			newMat[2][0] = -newMat[2][0];
-			newMat[2][1] = -newMat[2][1];
-			newMat[2][2] = -newMat[2][2];
-			newMat[2][3] = -newMat[2][3];
-		}
-
-		// convert our matrix to D3D format
-		d3dMat = D3D9Mappings::makeD3DXMatrix(newMat);
-
-		// set the matrix if it's not the identity
-		if (!D3DXMatrixIsIdentity(&d3dMat))
-		{
-			/* It's seems D3D automatically add a texture coordinate with value 1,
-			and fill up the remaining texture coordinates with 0 for the input
-			texture coordinates before pass to texture coordinate transformation.
-
-			NOTE: It's difference with D3DDECLTYPE enumerated type expand in
-			DirectX SDK documentation!
-
-			So we should prepare the texcoord transform, make the transformation
-			just like standardized vector expand, thus, fill w with value 1 and
-			others with 0.
-			*/
-			if (autoTexCoordType == TEXCALC_NONE)
-			{
-				/* FIXME: The actually input texture coordinate dimensions should
-				be determine by texture coordinate vertex element. Now, just trust
-				user supplied texture type matchs texture coordinate vertex element.
-				*/
-				if (mTexStageDesc[stage].texType == D3D9Mappings::D3D_TEX_TYPE_NORMAL)
-				{
-					/* It's 2D input texture coordinate:
-
-					texcoord in vertex buffer     D3D expanded to     We are adjusted to
-					-->                 -->
-					(u, v)               (u, v, 1, 0)          (u, v, 0, 1)
-					*/
-					std::swap(d3dMat._31, d3dMat._41);
-					std::swap(d3dMat._32, d3dMat._42);
-					std::swap(d3dMat._33, d3dMat._43);
-					std::swap(d3dMat._34, d3dMat._44);
-				}
-			}
-			else
-			{
-				// All texgen generate 3D input texture coordinates.
-			}
-
-			// tell D3D the dimension of tex. coord.
-			int texCoordDim = D3DTTFF_COUNT2;
-			if (mTexStageDesc[stage].autoTexCoordType == TEXCALC_PROJECTIVE_TEXTURE)
-			{
-				/* We want texcoords (u, v, w, q) always get divided by q, but D3D
-				projected texcoords is divided by the last element (in the case of
-				2D texcoord, is w). So we tweak the transform matrix, transform the
-				texcoords with w and q swapped: (u, v, q, w), and then D3D will
-				divide u, v by q. The w and q just ignored as it wasn't used by
-				rasterizer.
-				*/
-				switch (mTexStageDesc[stage].texType)
-				{
-				case D3D9Mappings::D3D_TEX_TYPE_NORMAL:
-					std::swap(d3dMat._13, d3dMat._14);
-					std::swap(d3dMat._23, d3dMat._24);
-					std::swap(d3dMat._33, d3dMat._34);
-					std::swap(d3dMat._43, d3dMat._44);
-
-					texCoordDim = D3DTTFF_PROJECTED | D3DTTFF_COUNT3;
-					break;
-
-				case D3D9Mappings::D3D_TEX_TYPE_CUBE:
-				case D3D9Mappings::D3D_TEX_TYPE_VOLUME:
-					// Yes, we support 3D projective texture.
-					texCoordDim = D3DTTFF_PROJECTED | D3DTTFF_COUNT4;
-					break;
-				}
-			}
-			else
-			{
-				switch (mTexStageDesc[stage].texType)
-				{
-				case D3D9Mappings::D3D_TEX_TYPE_NORMAL:
-					texCoordDim = D3DTTFF_COUNT2;
-					break;
-				case D3D9Mappings::D3D_TEX_TYPE_CUBE:
-				case D3D9Mappings::D3D_TEX_TYPE_VOLUME:
-					texCoordDim = D3DTTFF_COUNT3;
-					break;
-				}
-			}
-
-			hr = __SetTextureStageState( static_cast<DWORD>(stage), D3DTSS_TEXTURETRANSFORMFLAGS, texCoordDim );
-			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Unable to set texture coord. dimension");
-
-			hr = getActiveD3D9Device()->SetTransform( (D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0 + stage), &d3dMat );
-			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Unable to set texture matrix");
-		}
-		else
-		{
-			// disable all of this
-			hr = __SetTextureStageState( static_cast<DWORD>(stage), D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
-			if( FAILED( hr ) )
-				CM_EXCEPT(RenderingAPIException, "Unable to disable texture coordinate transform");
-
-			// Needless to sets texture transform here, it's never used at all
 		}
 	}
 	//---------------------------------------------------------------------
@@ -3261,8 +3043,8 @@ namespace CamelotEngine
 		float q, qn;
 		if (farPlane == 0)
 		{
-			q = 1 - Frustum::INFINITE_FAR_PLANE_ADJUST;
-			qn = nearPlane * (Frustum::INFINITE_FAR_PLANE_ADJUST - 1);
+			q = 1 - Camera::INFINITE_FAR_PLANE_ADJUST;
+			qn = nearPlane * (Camera::INFINITE_FAR_PLANE_ADJUST - 1);
 		}
 		else
 		{

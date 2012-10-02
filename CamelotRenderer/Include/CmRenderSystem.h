@@ -641,16 +641,6 @@ namespace CamelotEngine
 		*/
 		virtual void _setTextureCoordSet(size_t unit, size_t index) = 0;
 
-		/**
-		Sets a method for automatically calculating texture coordinates for a stage.
-		Should not be used by apps - for use by Ogre only.
-		@param unit Texture unit as above
-		@param m Calculation method to use
-		@param frustum Optional Frustum param, only used for projective effects
-		*/
-		virtual void _setTextureCoordCalculation(size_t unit, TexCoordCalcMethod m, 
-			const Frustum* frustum = 0) = 0;
-
 		/** Sets the filtering options for a given texture unit.
 		@param unit The texture unit to set the filtering options for
 		@param minFilter The filter used when a texture is reduced in size
@@ -685,12 +675,6 @@ namespace CamelotEngine
 		@note Only does something if render system has capability RSC_MIPMAP_LOD_BIAS.
 		*/
 		virtual void _setTextureMipmapBias(size_t unit, float bias) = 0;
-
-		/** Sets the texture coordinate transformation matrix for a texture unit.
-		@param unit Texture unit to affect
-		@param xform The 4x4 matrix
-		*/
-		virtual void _setTextureMatrix(size_t unit, const Matrix4& xform) = 0;
 
 		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
 		The result of the blending operation is:</p>

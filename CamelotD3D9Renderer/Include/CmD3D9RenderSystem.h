@@ -80,8 +80,6 @@ namespace CamelotEngine
 			size_t coordIndex;
 			/// type of auto tex. calc. used
 			TexCoordCalcMethod autoTexCoordType;
-            /// Frustum, used if the above is projection
-            const Frustum *frustum;
 			/// texture 
 			IDirect3DBaseTexture9 *pTex;
 			/// vertex texture 
@@ -233,12 +231,9 @@ namespace CamelotEngine
 		void _setVertexTexture(size_t unit, const TexturePtr& tex);
 		void _disableTextureUnit(size_t texUnit);
 		void _setTextureCoordSet( size_t unit, size_t index );
-        void _setTextureCoordCalculation(size_t unit, TexCoordCalcMethod m, 
-            const Frustum* frustum = 0);
         void _setTextureAddressingMode(size_t stage, const TextureState::UVWAddressingMode& uvw);
         void _setTextureBorderColour(size_t stage, const Color& colour);
 		void _setTextureMipmapBias(size_t unit, float bias);
-		void _setTextureMatrix( size_t unit, const Matrix4 &xform );
 		void _setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
 		void _setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
 		void _setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage );

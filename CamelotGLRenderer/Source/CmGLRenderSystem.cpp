@@ -1353,154 +1353,6 @@ namespace CamelotEngine {
 		mTextureCoordIndex[stage] = index;
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setTextureCoordCalculation(size_t stage, TexCoordCalcMethod m, 
-		const Frustum* frustum)
-	{
-		if (stage >= mFixedFunctionTextureUnits)
-		{
-			// Can't do this
-			return;
-		}
-
-
-		GLfloat M[16];
-		Matrix4 projectionBias;
-
-		// Default to no extra auto texture matrix
-		mUseAutoTextureMatrix = false;
-
-		GLfloat eyePlaneS[] = {1.0, 0.0, 0.0, 0.0};
-		GLfloat eyePlaneT[] = {0.0, 1.0, 0.0, 0.0};
-		GLfloat eyePlaneR[] = {0.0, 0.0, 1.0, 0.0};
-		GLfloat eyePlaneQ[] = {0.0, 0.0, 0.0, 1.0};
-
-		if (!activateGLTextureUnit(stage))
-			return;
-
-		switch( m )
-		{
-		case TEXCALC_NONE:
-			glDisable( GL_TEXTURE_GEN_S );
-			glDisable( GL_TEXTURE_GEN_T );
-			glDisable( GL_TEXTURE_GEN_R );
-			glDisable( GL_TEXTURE_GEN_Q );
-			break;
-
-		case TEXCALC_ENVIRONMENT_MAP:
-			glTexGeni( GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
-			glTexGeni( GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
-
-			glEnable( GL_TEXTURE_GEN_S );
-			glEnable( GL_TEXTURE_GEN_T );
-			glDisable( GL_TEXTURE_GEN_R );
-			glDisable( GL_TEXTURE_GEN_Q );
-
-			// Need to use a texture matrix to flip the spheremap
-			mUseAutoTextureMatrix = true;
-			memset(mAutoTextureMatrix, 0, sizeof(GLfloat)*16);
-			mAutoTextureMatrix[0] = mAutoTextureMatrix[10] = mAutoTextureMatrix[15] = 1.0f;
-			mAutoTextureMatrix[5] = -1.0f;
-
-			break;
-
-		case TEXCALC_ENVIRONMENT_MAP_PLANAR:            
-			// XXX This doesn't seem right?!
-#ifdef GL_VERSION_1_3
-			glTexGeni( GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP );
-			glTexGeni( GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP );
-			glTexGeni( GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP );
-
-			glEnable( GL_TEXTURE_GEN_S );
-			glEnable( GL_TEXTURE_GEN_T );
-			glEnable( GL_TEXTURE_GEN_R );
-			glDisable( GL_TEXTURE_GEN_Q );
-#else
-			glTexGeni( GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
-			glTexGeni( GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
-
-			glEnable( GL_TEXTURE_GEN_S );
-			glEnable( GL_TEXTURE_GEN_T );
-			glDisable( GL_TEXTURE_GEN_R );
-			glDisable( GL_TEXTURE_GEN_Q );
-#endif
-			break;
-		case TEXCALC_ENVIRONMENT_MAP_REFLECTION:
-
-			glTexGeni( GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP );
-			glTexGeni( GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP );
-			glTexGeni( GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP );
-
-			glEnable( GL_TEXTURE_GEN_S );
-			glEnable( GL_TEXTURE_GEN_T );
-			glEnable( GL_TEXTURE_GEN_R );
-			glDisable( GL_TEXTURE_GEN_Q );
-
-			// We need an extra texture matrix here
-			// This sets the texture matrix to be the inverse of the view matrix
-			mUseAutoTextureMatrix = true;
-			makeGLMatrix( M, mViewMatrix);
-
-			// Transpose 3x3 in order to invert matrix (rotation)
-			// Note that we need to invert the Z _before_ the rotation
-			// No idea why we have to invert the Z at all, but reflection is wrong without it
-			mAutoTextureMatrix[0] = M[0]; mAutoTextureMatrix[1] = M[4]; mAutoTextureMatrix[2] = -M[8];
-			mAutoTextureMatrix[4] = M[1]; mAutoTextureMatrix[5] = M[5]; mAutoTextureMatrix[6] = -M[9];
-			mAutoTextureMatrix[8] = M[2]; mAutoTextureMatrix[9] = M[6]; mAutoTextureMatrix[10] = -M[10];
-			mAutoTextureMatrix[3] = mAutoTextureMatrix[7] = mAutoTextureMatrix[11] = 0.0f;
-			mAutoTextureMatrix[12] = mAutoTextureMatrix[13] = mAutoTextureMatrix[14] = 0.0f;
-			mAutoTextureMatrix[15] = 1.0f;
-
-			break;
-		case TEXCALC_ENVIRONMENT_MAP_NORMAL:
-			glTexGeni( GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP );
-			glTexGeni( GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP );
-			glTexGeni( GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP );
-
-			glEnable( GL_TEXTURE_GEN_S );
-			glEnable( GL_TEXTURE_GEN_T );
-			glEnable( GL_TEXTURE_GEN_R );
-			glDisable( GL_TEXTURE_GEN_Q );
-			break;
-		case TEXCALC_PROJECTIVE_TEXTURE:
-			glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-			glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-			glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-			glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-			glTexGenfv(GL_S, GL_EYE_PLANE, eyePlaneS);
-			glTexGenfv(GL_T, GL_EYE_PLANE, eyePlaneT);
-			glTexGenfv(GL_R, GL_EYE_PLANE, eyePlaneR);
-			glTexGenfv(GL_Q, GL_EYE_PLANE, eyePlaneQ);
-			glEnable(GL_TEXTURE_GEN_S);
-			glEnable(GL_TEXTURE_GEN_T);
-			glEnable(GL_TEXTURE_GEN_R);
-			glEnable(GL_TEXTURE_GEN_Q);
-
-			mUseAutoTextureMatrix = true;
-
-			// Set scale and translation matrix for projective textures
-			projectionBias = Matrix4::CLIPSPACE2DTOIMAGESPACE;
-
-			projectionBias = projectionBias * frustum->getProjectionMatrix();
-			if(mTexProjRelative)
-			{
-				Matrix4 viewMatrix;
-				frustum->calcViewMatrixRelative(mTexProjRelativeOrigin, viewMatrix);
-				projectionBias = projectionBias * viewMatrix;
-			}
-			else
-			{
-				projectionBias = projectionBias * frustum->getViewMatrix();
-			}
-			projectionBias = projectionBias * mWorldMatrix;
-
-			makeGLMatrix(mAutoTextureMatrix, projectionBias);
-			break;
-		default:
-			break;
-		}
-		activateGLTextureUnit(0);
-	}
-	//-----------------------------------------------------------------------------
 	GLint GLRenderSystem::getTextureAddressingMode(
 		TextureState::TextureAddressingMode tam) const
 	{
@@ -1553,34 +1405,6 @@ namespace CamelotEngine {
 		}
 		}
 
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setTextureMatrix(size_t stage, const Matrix4& xform)
-	{
-		if (stage >= mFixedFunctionTextureUnits)
-		{
-			// Can't do this
-			return;
-		}
-
-		GLfloat mat[16];
-		makeGLMatrix(mat, xform);
-
-		if (!activateGLTextureUnit(stage))
-			return;
-		glMatrixMode(GL_TEXTURE);
-
-		// Load this matrix in
-		glLoadMatrixf(mat);
-
-		if (mUseAutoTextureMatrix)
-		{
-			// Concat auto matrix
-			glMultMatrixf(mAutoTextureMatrix);
-		}
-
-		glMatrixMode(GL_MODELVIEW);
-		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------------
 	GLint GLRenderSystem::getBlendMode(SceneBlendFactor ogreBlend) const
@@ -2002,8 +1826,8 @@ namespace CamelotEngine {
 		if (farPlane == 0)
 		{
 			// Infinite far plane
-			q = Frustum::INFINITE_FAR_PLANE_ADJUST - 1;
-			qn = nearPlane * (Frustum::INFINITE_FAR_PLANE_ADJUST - 2);
+			q = Camera::INFINITE_FAR_PLANE_ADJUST - 1;
+			qn = nearPlane * (Camera::INFINITE_FAR_PLANE_ADJUST - 2);
 		}
 		else
 		{
@@ -2921,8 +2745,8 @@ namespace CamelotEngine {
 		if (farPlane == 0)
 		{
 			// Infinite far plane
-			q = Frustum::INFINITE_FAR_PLANE_ADJUST - 1;
-			qn = nearPlane * (Frustum::INFINITE_FAR_PLANE_ADJUST - 2);
+			q = Camera::INFINITE_FAR_PLANE_ADJUST - 1;
+			qn = nearPlane * (Camera::INFINITE_FAR_PLANE_ADJUST - 2);
 		}
 		else
 		{

@@ -68,7 +68,6 @@ namespace CamelotEngine {
 // so decreases dependencies between files
     class Camera;
     class Color;
-    class Frustum;
     class GpuProgram;
     class GpuProgramManager;
 	class GpuProgramUsage;

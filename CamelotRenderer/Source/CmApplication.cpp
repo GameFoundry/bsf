@@ -8,6 +8,7 @@
 #include "CmRenderWindow.h"
 #include "CmCamera.h"
 #include "CmViewport.h"
+#include "CmVector2.h"
 #include "CmHighLevelGpuProgram.h"
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmDynLib.h"
@@ -318,7 +319,7 @@ namespace CamelotEngine
 		//renderSystem->_setViewMatrix(viewMatrix);
 
 		Matrix4 projMatrixCstm = mCamera->getProjectionMatrix();
-		Matrix4 viewMatrixCstm = mCamera->getViewMatrix(true);
+		Matrix4 viewMatrixCstm = mCamera->getViewMatrix();
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 

@@ -31,7 +31,6 @@ THE SOFTWARE.
 #include "CmPrerequisites.h"
 #include "CmCommon.h"
 #include "CmColor.h"
-#include "CmFrustum.h"
 
 namespace CamelotEngine {
 	/** \addtogroup Core
