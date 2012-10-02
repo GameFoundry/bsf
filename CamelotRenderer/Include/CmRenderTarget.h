@@ -129,44 +129,6 @@ namespace CamelotEngine {
         virtual void swapBuffers(bool waitForVSync = true)
         { (void)waitForVSync; }
 
-        /** Adds a viewport to the rendering target.
-            @remarks
-                A viewport is the rectangle into which rendering output is sent. This method adds
-                a viewport to the render target, rendering from the supplied camera. The
-                rest of the parameters are only required if you wish to add more than one viewport
-                to a single rendering target. Note that size information passed to this method is
-                passed as a parametric, i.e. it is relative rather than absolute. This is to allow
-                viewports to automatically resize along with the target.
-            @param
-                ZOrder The relative order of the viewport with others on the target (allows overlapping
-                viewports i.e. picture-in-picture). Higher ZOrders are on top of lower ones. The actual number
-                is irrelevant, only the relative ZOrder matters (you can leave gaps in the numbering)
-            @param
-                left The relative position of the left of the viewport on the target, as a value between 0 and 1.
-            @param
-                top The relative position of the top of the viewport on the target, as a value between 0 and 1.
-            @param
-                width The relative width of the viewport on the target, as a value between 0 and 1.
-            @param
-                height The relative height of the viewport on the target, as a value between 0 and 1.
-        */
-        virtual Viewport* addViewport(int ZOrder = 0, float left = 0.0f, float top = 0.0f ,
-            float width = 1.0f, float height = 1.0f);
-
-        /** Returns the number of viewports attached to this target.*/
-        virtual unsigned short getNumViewports(void) const;
-
-        /** Retrieves a pointer to the viewport with the given index. */
-        virtual Viewport* getViewport(unsigned short index);
-
-        /** Removes a viewport at a given ZOrder.
-        */
-        virtual void removeViewport(int ZOrder);
-
-        /** Removes all viewports on this target.
-        */
-        virtual void removeAllViewports(void);
-
         /** Gets a custom (maybe platform-specific) attribute.
             @remarks
                 This is a nasty way of satisfying any API's need to see platform-specific details.
@@ -275,27 +237,6 @@ namespace CamelotEngine {
 			since you are responsible for calling _updateViewport in the correct order.
         */
 		virtual void _beginUpdate();
-
-		/** Method for manual management of rendering - renders the given 
-		viewport (even if it is not autoupdated)
-		@remarks
-		This also fires preViewportUpdate and postViewportUpdate, and manages statistics.
-		You should call it between _beginUpdate() and _endUpdate().
-		@see _beginUpdate for more details.
-		@param zorder The zorder of the viewport to update.
-		@param updateStatistics Whether you want to update statistics or not.
-		*/
-		virtual void _updateViewport(int zorder, bool updateStatistics = true);
-
-		/** Method for manual management of rendering - renders the given viewport (even if it is not autoupdated)
-		@remarks
-		This also fires preViewportUpdate and postViewportUpdate, and manages statistics
-		if needed. You should call it between _beginUpdate() and _endUpdate().
-		@see _beginUpdate for more details.
-		@param viewport The viewport you want to update, it must be bound to the rendertarget.
-		@param updateStatistics Whether you want to update statistics or not.
-		*/
-		virtual void _updateViewport(Viewport* viewport, bool updateStatistics = true);
 		
 		/** Method for manual management of rendering - finishes statistics calculation 
 			and fires 'postRenderTargetUpdate'.
@@ -323,10 +264,6 @@ namespace CamelotEngine {
 		// FSAA performed?
 		UINT32 mFSAA;
 		String mFSAAHint;
-
-		typedef map<int, Viewport*>::type ViewportList;
-        /// List of viewports, map on Z-order
-        ViewportList mViewportList;
 			
 		/// Internal implementation of update()
 		virtual void updateImpl();

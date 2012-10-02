@@ -24,6 +24,7 @@ TODO FILES:
 
 Camera - MERGE WITH VIEWPORT
  - Position/rotation should be inherit from transform
+ - Viewport needs to be updated when I call RenderTarget::setFullscreen/finishSwitchingFullscreen/updateWindowRect/windowMovedOrResized. Currently it's not
 
 Frustum
  - World space methods need to be updated. I still need them but they need to get their data from Transform

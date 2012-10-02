@@ -179,8 +179,6 @@ namespace CamelotEngine
         /** Indicates that this is the primary window. 
         */
         void _setPrimary() { mIsPrimary = true; }
-        
-        friend class Root;
     };
 	/** @} */
 	/** @} */

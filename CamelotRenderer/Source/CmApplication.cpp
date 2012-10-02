@@ -45,7 +45,7 @@ namespace CamelotEngine
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(600.0f / 800.0f);
 
-		mViewport = mRenderWindow->addViewport();
+		mViewport = new Viewport(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
 
 		/////////////////// HLSL SHADERS //////////////////////////
 		//String fragShaderCode = "sampler2D diffuseMap;			\

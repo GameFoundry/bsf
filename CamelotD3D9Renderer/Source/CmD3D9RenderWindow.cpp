@@ -401,9 +401,8 @@ namespace CamelotEngine
 			// NB don't use windowMovedOrResized since Win32 doesn't know
 			// about the size change yet				
 			mDevice->invalidate(this);
-			// Notify viewports of resize
-			ViewportList::iterator it = mViewportList.begin();
-			while(it != mViewportList.end()) (*it++).second->_updateDimensions();
+
+			// TODO - Notify viewports of resize
 		}
 	} 
 
@@ -476,10 +475,8 @@ namespace CamelotEngine
 			{
 				mWidth = mDesiredWidth;
 				mHeight = mDesiredHeight;
-				// Notify viewports of resize
-				ViewportList::iterator it = mViewportList.begin();
-				while( it != mViewportList.end() )
-					(*it++).second->_updateDimensions();			
+
+				// TODO - Notify viewports of resize		
 			}
 		}
 		mSwitchingFullscreen = false;
@@ -866,10 +863,7 @@ namespace CamelotEngine
 			mWidth  = rc.right - rc.left;
 			mHeight = rc.bottom - rc.top;
 
-			// Notify viewports of resize
-			ViewportList::iterator it = mViewportList.begin();
-			while( it != mViewportList.end() )
-				(*it++).second->_updateDimensions();			
+			// TODO - Notify viewports of resize		
 		}	
 
 	}

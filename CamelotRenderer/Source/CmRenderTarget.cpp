@@ -45,12 +45,6 @@ namespace CamelotEngine {
 
     RenderTarget::~RenderTarget()
     {
-        // Delete viewports
-        for (ViewportList::iterator i = mViewportList.begin();
-            i != mViewportList.end(); ++i)
-        {
-            delete (*i).second;
-        }
     }
 
     const String& RenderTarget::getName(void) const
@@ -93,93 +87,9 @@ namespace CamelotEngine {
 	{
 	}
 
-	void RenderTarget::_updateViewport(Viewport* viewport, bool updateStatistics)
-	{
-		assert(viewport->getTarget() == this &&
-				"RenderTarget::_updateViewport the requested viewport is "
-				"not bound to the rendertarget!");
-
-		viewport->update();
-	}
-
-	void RenderTarget::_updateViewport(int zorder, bool updateStatistics)
-	{
-		ViewportList::iterator it = mViewportList.find(zorder);
-        if (it != mViewportList.end())
-        {
-			_updateViewport((*it).second,updateStatistics);
-		}
-		else
-		{
-			CM_EXCEPT(ItemIdentityException,"No viewport with given zorder : "
-				+ toString(zorder));
-		}
-	}
-
-    Viewport* RenderTarget::addViewport(int ZOrder, float left, float top ,
-        float width , float height)
-    {
-        // Check no existing viewport with this Z-order
-        ViewportList::iterator it = mViewportList.find(ZOrder);
-
-        if (it != mViewportList.end())
-        {
-			StringUtil::StrStreamType str;
-			str << "Can't create another viewport for "
-				<< mName << " with Z-Order " << ZOrder
-				<< " because a viewport exists with this Z-Order already.";
-			CM_EXCEPT(InvalidParametersException, str.str());
-        }
-        // Add viewport to list
-        // Order based on Z-Order
-        Viewport* vp = new Viewport(this, left, top, width, height, ZOrder);
-
-        mViewportList.insert(ViewportList::value_type(ZOrder, vp));
-
-        return vp;
-    }
-	//-----------------------------------------------------------------------
-    void RenderTarget::removeViewport(int ZOrder)
-    {
-        ViewportList::iterator it = mViewportList.find(ZOrder);
-
-        if (it != mViewportList.end())
-        {
-            delete (*it).second;
-            mViewportList.erase(ZOrder);
-        }
-    }
-
-    void RenderTarget::removeAllViewports(void)
-    {
-        for (ViewportList::iterator it = mViewportList.begin(); it != mViewportList.end(); ++it)
-        {
-            delete (*it).second;
-        }
-
-        mViewportList.clear();
-
-    }
-
-    void RenderTarget::getCustomAttribute(const String& name, void* pData)
+	void RenderTarget::getCustomAttribute(const String& name, void* pData)
     {
         CM_EXCEPT(InvalidParametersException, "Attribute not found.");
-    }
-    //-----------------------------------------------------------------------
-    unsigned short RenderTarget::getNumViewports(void) const
-    {
-        return (unsigned short)mViewportList.size();
-
-    }
-    //-----------------------------------------------------------------------
-    Viewport* RenderTarget::getViewport(unsigned short index)
-    {
-        assert (index < mViewportList.size() && "Index out of bounds");
-
-        ViewportList::iterator i = mViewportList.begin();
-        while (index--)
-            ++i;
-        return i->second;
     }
     //-----------------------------------------------------------------------
     bool RenderTarget::isActive() const

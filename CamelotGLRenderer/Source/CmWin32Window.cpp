@@ -691,11 +691,7 @@ namespace CamelotEngine {
 		mWidth = rc.right - rc.left;
 		mHeight = rc.bottom - rc.top;
 
-		// Notify viewports of resize
-		ViewportList::iterator it, itend;
-		itend = mViewportList.end();
-		for( it = mViewportList.begin(); it != itend; ++it )
-			(*it).second->_updateDimensions();
+		// TODO - Notify viewports of resize
 	}
 
 	void Win32Window::swapBuffers(bool waitForVSync)
@@ -726,11 +722,6 @@ namespace CamelotEngine {
 		{
 			CM_EXCEPT(InvalidParametersException, "Unsupported format.");
 		}
-
-
-		// Switch context if different from current one
-		RenderSystem* rsys = CamelotEngine::RenderSystemManager::getActive();
-		rsys->_setViewport(this->getViewport(0));
 
 		// Must change the packing to ensure no overruns!
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
