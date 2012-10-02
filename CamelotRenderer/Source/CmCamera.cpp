@@ -41,8 +41,11 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
-    Camera::Camera( const String& name)
-        : Frustum(name),
+	Camera::Camera(RenderTarget* target,
+		float left, float top,
+		float width, float height,
+		int ZOrder)
+        : Frustum(),
 		mOrientation(Quaternion::IDENTITY),
 		mPosition(Vector3::ZERO),
 		mSceneDetail(PM_SOLID),
@@ -66,11 +69,15 @@ namespace CamelotEngine {
         // Init matrices
         mViewMatrix = Matrix4::ZERO;
         mProjMatrixRS = Matrix4::ZERO;
+
+		mViewport = new Viewport(target, left, top, width, height, ZOrder);
     }
 
     //-----------------------------------------------------------------------
     Camera::~Camera()
     {
+		if(mViewport != nullptr)
+			delete mViewport;
     }
     //-----------------------------------------------------------------------
     void Camera::setPolygonMode(PolygonMode sd)

@@ -41,7 +41,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
     const float Frustum::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
     //-----------------------------------------------------------------------
-    Frustum::Frustum(const String& name) : 
+    Frustum::Frustum() : 
         mProjType(PT_PERSPECTIVE), 
         mFOVy(Radian(Math::PI/4.0f)), 
         mFarDist(100000.0f), 

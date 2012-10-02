@@ -147,7 +147,7 @@ namespace CamelotEngine
     public:
 
 		/// Named constructor
-		Frustum(const String& name = StringUtil::BLANK);
+		Frustum();
 
         virtual ~Frustum();
         /** Sets the Y-dimension Field Of View (FOV) of the frustum.

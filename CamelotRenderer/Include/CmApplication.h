@@ -26,7 +26,6 @@ namespace CamelotEngine
 
 		private:
 			RenderWindow* mRenderWindow;
-			Viewport* mViewport;
 			Camera* mCamera;
 			HighLevelGpuProgramPtr mFragProg;
 			HighLevelGpuProgramPtr mVertProg;

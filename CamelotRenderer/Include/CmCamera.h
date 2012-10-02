@@ -127,6 +127,8 @@ namespace CamelotEngine {
 		/// Whether or not the rendering distance of objects should take effect for this camera
 		bool mUseRenderingDistance;
 
+		Viewport* mViewport;
+
         // Internal functions for calcs
         bool isViewOutOfDate(void) const;
         /// Signal to update frustum information.
@@ -147,11 +149,16 @@ namespace CamelotEngine {
     public:
         /** Standard constructor.
         */
-        Camera( const String& name);
+		Camera(RenderTarget* target,
+			float left = 0.0f, float top = 0.0f,
+			float width = 1.0f, float height = 1.0f,
+			int ZOrder = 0);
 
         /** Standard destructor.
         */
         virtual ~Camera();
+
+		Viewport* getViewport() { return mViewport; }
 
         /** Sets the level of rendering detail required from this camera.
             @remarks

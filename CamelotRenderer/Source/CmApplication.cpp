@@ -19,7 +19,7 @@
 namespace CamelotEngine
 {
 	Application::Application()
-		:mRenderWindow(nullptr), mViewport(nullptr), mCamera(nullptr)
+		:mRenderWindow(nullptr), mCamera(nullptr)
 	{ }
 
 	void Application::startUp(String renderSystemDll)
@@ -39,13 +39,11 @@ namespace CamelotEngine
 		//renderSystem->setAmbientLight(1.0f, 1.0f, 1.0f);
 		renderSystem->setLightingEnabled(false);
 
-		mCamera = new Camera("SimpleCam");
+		mCamera = new Camera(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
 		mCamera->setPosition(Vector3(0,0,40));
 		mCamera->lookAt(Vector3(0,0,-300));
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(600.0f / 800.0f);
-
-		mViewport = new Viewport(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
 
 		/////////////////// HLSL SHADERS //////////////////////////
 		//String fragShaderCode = "sampler2D diffuseMap;			\
@@ -311,7 +309,7 @@ namespace CamelotEngine
 		ro.operationType = RenderOperation::OT_TRIANGLE_LIST;
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
-		renderSystem->_setViewport(mViewport);
+		renderSystem->_setViewport(mCamera->getViewport());
 
 		//Matrix4 projMatrix = mCamera->getProjectionMatrixRS();
 		//renderSystem->_setProjectionMatrix(projMatrix);
