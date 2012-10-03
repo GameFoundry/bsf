@@ -43,7 +43,7 @@ THE SOFTWARE.
 #include "CmQuaternion.h"
 #include "CmCommon.h"
 #include "CmRay.h"
-
+#include "CmComponent.h"
 
 namespace CamelotEngine {
 
@@ -102,7 +102,7 @@ namespace CamelotEngine {
             This is useful for implementing more complex Camera / object
             relationships i.e. having a camera attached to a world object.
     */
-    class CM_EXPORT Camera
+    class CM_EXPORT Camera : public Component
     {
 	protected:
         /// Orthographic or perspective?
@@ -140,8 +140,6 @@ namespace CamelotEngine {
         mutable Matrix4 mViewMatrix;
         /// Something's changed in the frustum shape?
         mutable bool mRecalcFrustum;
-        /// Something re the view pos has changed
-        mutable bool mRecalcView;
         /// Something re the frustum planes has changed
         mutable bool mRecalcFrustumPlanes;
         /// Something re the world space corners has changed
@@ -161,12 +159,8 @@ namespace CamelotEngine {
         virtual void calcProjectionParameters(float& left, float& right, float& bottom, float& top) const;
 		/// Update frustum if out of date
         virtual void updateFrustum(void) const;
-		/// Update view if out of date
-        virtual void updateView(void) const;
 		/// Implementation of updateFrustum (called if out of date)
 		virtual void updateFrustumImpl(void) const;
-		/// Implementation of updateView (called if out of date)
-		virtual void updateViewImpl(void) const;
         virtual void updateFrustumPlanes(void) const;
 		/// Implementation of updateFrustumPlanes (called if out of date)
 		virtual void updateFrustumPlanesImpl(void) const;
@@ -174,12 +168,10 @@ namespace CamelotEngine {
 		/// Implementation of updateWorldSpaceCorners (called if out of date)
 		virtual void updateWorldSpaceCornersImpl(void) const;
         virtual void updateVertexData(void) const;
-        virtual bool isViewOutOfDate(void) const;
+		virtual void updateView(void) const;
         virtual bool isFrustumOutOfDate(void) const;
         /// Signal to update frustum information.
         virtual void invalidateFrustum(void) const;
-        /// Signal to update view information.
-        virtual void invalidateView(void) const;
 
         mutable AxisAlignedBox mBoundingBox;
         mutable VertexData mVertexData;
@@ -352,12 +344,6 @@ namespace CamelotEngine {
         */
         virtual const Matrix4& getViewMatrix(void) const;
 
-		/** Calculate a view matrix for this frustum, relative to a potentially dynamic point. 
-			Mainly for use by OGRE internally when using camera-relative rendering
-			for frustums that are not the centre (e.g. texture projection)
-		*/
-		virtual void calcViewMatrixRelative(const Vector3& relPos, Matrix4& matToUpdate) const;
-
 		/** Set whether to use a custom view matrix on this frustum.
 		@remarks
 			This is an advanced method which allows you to manually set
@@ -519,31 +505,7 @@ namespace CamelotEngine {
 
         /// Small constant used to reduce far plane projection to avoid inaccuracies
         static const float INFINITE_FAR_PLANE_ADJUST;
-
-		/** Get the derived position of this frustum. */
-		virtual const Vector3& getPositionForViewUpdate(void) const;
-		/** Get the derived orientation of this frustum. */
-		virtual const Quaternion& getOrientationForViewUpdate(void) const;
     protected:
-        /// Camera orientation, quaternion style
-        Quaternion mOrientation;
-
-        /// Camera position - default (0,0,0)
-        Vector3 mPosition;
-
-        /// Derived orientation/position of the camera, including reflection
-        mutable Quaternion mDerivedOrientation;
-        mutable Vector3 mDerivedPosition;
-
-        /// float world orientation/position of the camera
-        mutable Quaternion mRealOrientation;
-        mutable Vector3 mRealPosition;
-
-        /// Whether to yaw around a fixed axis.
-        bool mYawFixed;
-        /// Fixed axis to yaw around
-        Vector3 mYawFixedAxis;
-
         /// Rendering type
         PolygonMode mSceneDetail;
 
@@ -558,8 +520,6 @@ namespace CamelotEngine {
         mutable vector<Plane>::type mWindowClipPlanes;
         // Was viewing window changed.
         mutable bool mRecalcWindow;
-        /// The last viewport to be added using this camera
-        Viewport* mLastViewport;
         /** Whether aspect ratio will automatically be recalculated 
             when a viewport changes its size
         */
@@ -579,16 +539,18 @@ namespace CamelotEngine {
 		vector<Vector4>::type getRayForwardIntersect(const Vector3& anchor, const Vector3 *dir, float planeOffset) const;
 
     public:
-        /** Standard constructor.
+		/** Standard constructor.
         */
-		Camera(RenderTarget* target,
-			float left = 0.0f, float top = 0.0f,
-			float width = 1.0f, float height = 1.0f,
-			int ZOrder = 0);
+		Camera(GameObjectPtr parent);
 
         /** Standard destructor.
         */
-        ~Camera();
+        virtual ~Camera();
+
+		void init(RenderTarget* target = nullptr,
+			float left = 0.0f, float top = 0.0f,
+			float width = 1.0f, float height = 1.0f,
+			int ZOrder = 0);
 
 		Viewport* getViewport() { return mViewport; }
 
@@ -605,159 +567,11 @@ namespace CamelotEngine {
         */
         PolygonMode getPolygonMode(void) const;
 
-        /** Sets the camera's position.
-        */
-        void setPosition(float x, float y, float z);
-
-        /** Sets the camera's position.
-        */
-        void setPosition(const Vector3& vec);
-
-        /** Retrieves the camera's position.
-        */
-        const Vector3& getPosition(void) const;
-
-        /** Moves the camera's position by the vector offset provided along world axes.
-        */
-        void move(const Vector3& vec);
-
-        /** Moves the camera's position by the vector offset provided along it's own axes (relative to orientation).
-        */
-        void moveRelative(const Vector3& vec);
-
-        /** Sets the camera's direction vector.
-            @remarks
-                Note that the 'up' vector for the camera will automatically be recalculated based on the
-                current 'up' vector (i.e. the roll will remain the same).
-        */
-        void setDirection(float x, float y, float z);
-
-        /** Sets the camera's direction vector.
-        */
-        void setDirection(const Vector3& vec);
-
-        /* Gets the camera's direction.
-        */
-        Vector3 getDirection(void) const;
-
-        /** Gets the camera's up vector.
-        */
-        Vector3 getUp(void) const;
-
-        /** Gets the camera's right vector.
-        */
-        Vector3 getRight(void) const;
-
-        /** Points the camera at a location in worldspace.
-            @remarks
-                This is a helper method to automatically generate the
-                direction vector for the camera, based on it's current position
-                and the supplied look-at point.
-            @param
-                targetPoint A vector specifying the look at point.
-        */
-        void lookAt( const Vector3& targetPoint );
-        /** Points the camera at a location in worldspace.
-            @remarks
-                This is a helper method to automatically generate the
-                direction vector for the camera, based on it's current position
-                and the supplied look-at point.
-            @param
-                x
-            @param
-                y
-            @param
-                z Co-ordinates of the point to look at.
-        */
-        void lookAt(float x, float y, float z);
-
-        /** Rolls the camera anticlockwise, around its local z axis.
-        */
-        void roll(const Radian& angle);
-
-        /** Rotates the camera anticlockwise around it's local y axis.
-        */
-        void yaw(const Radian& angle);
-
-        /** Pitches the camera up/down anticlockwise around it's local z axis.
-        */
-        void pitch(const Radian& angle);
-
-        /** Rotate the camera around an arbitrary axis.
-        */
-        void rotate(const Vector3& axis, const Radian& angle);
-
-        /** Rotate the camera around an arbitrary axis using a Quaternion.
-        */
-        void rotate(const Quaternion& q);
-
-        /** Tells the camera whether to yaw around it's own local Y axis or a 
-			fixed axis of choice.
-            @remarks
-                This method allows you to change the yaw behaviour of the camera
-				- by default, the camera yaws around a fixed Y axis. This is 
-				often what you want - for example if you're making a first-person 
-				shooter, you really don't want the yaw axis to reflect the local 
-				camera Y, because this would mean a different yaw axis if the 
-				player is looking upwards rather than when they are looking
-                straight ahead. You can change this behaviour by calling this 
-				method, which you will want to do if you are making a completely
-				free camera like the kind used in a flight simulator. 
-            @param
-                useFixed If true, the axis passed in the second parameter will 
-				always be the yaw axis no matter what the camera orientation. 
-				If false, the camera yaws around the local Y.
-            @param
-                fixedAxis The axis to use if the first parameter is true.
-        */
-        void setFixedYawAxis( bool useFixed, const Vector3& fixedAxis = Vector3::UNIT_Y );
-
-
-        /** Returns the camera's current orientation.
-        */
-        const Quaternion& getOrientation(void) const;
-
-        /** Sets the camera's orientation.
-        */
-        void setOrientation(const Quaternion& q);
-
         /** Tells the Camera to contact the SceneManager to render from it's viewpoint.
         @param vp The viewport to render to
         @param includeOverlays Whether or not any overlay objects should be included
         */
         void _renderScene(Viewport *vp, bool includeOverlays);
-
-        /** Gets the derived orientation of the camera, including any
-            rotation inherited from a node attachment and reflection matrix. */
-        const Quaternion& getDerivedOrientation(void) const;
-        /** Gets the derived position of the camera, including any
-            translation inherited from a node attachment and reflection matrix. */
-        const Vector3& getDerivedPosition(void) const;
-        /** Gets the derived direction vector of the camera, including any
-            rotation inherited from a node attachment and reflection matrix. */
-        Vector3 getDerivedDirection(void) const;
-        /** Gets the derived up vector of the camera, including any
-            rotation inherited from a node attachment and reflection matrix. */
-        Vector3 getDerivedUp(void) const;
-        /** Gets the derived right vector of the camera, including any
-            rotation inherited from a node attachment and reflection matrix. */
-        Vector3 getDerivedRight(void) const;
-
-        /** Gets the real world orientation of the camera, including any
-            rotation inherited from a node attachment */
-        const Quaternion& getRealOrientation(void) const;
-        /** Gets the real world position of the camera, including any
-            translation inherited from a node attachment. */
-        const Vector3& getRealPosition(void) const;
-        /** Gets the real world direction vector of the camera, including any
-            rotation inherited from a node attachment. */
-        Vector3 getRealDirection(void) const;
-        /** Gets the real world up vector of the camera, including any
-            rotation inherited from a node attachment. */
-        Vector3 getRealUp(void) const;
-        /** Gets the real world right vector of the camera, including any
-            rotation inherited from a node attachment. */
-        Vector3 getRealRight(void) const;
 
         /** Gets a world space ray as cast from the camera through a viewport position.
         @param screenx, screeny The x and y position at which the ray should intersect the viewport, 
@@ -787,15 +601,6 @@ namespace CamelotEngine {
         virtual bool isWindowSet(void) const { return mWindowSet; }
         /// Gets the window clip planes, only applicable if isWindowSet == true
         const vector<Plane>::type& getWindowPlanes(void) const;
-		
-        /** Get the last viewport which was attached to this camera. 
-        @note This is not guaranteed to be the only viewport which is
-        using this camera, just the last once which was created referring
-        to it.
-        */
-        Viewport* getViewport(void) const {return mLastViewport;}
-        /** Notifies this camera that a viewport is using it.*/
-        void _notifyViewport(Viewport* viewport) {mLastViewport = viewport;}
 
         /** If set to true a viewport that owns this frustum will be able to 
             recalculate the aspect ratio whenever the frustum is resized.
@@ -815,14 +620,6 @@ namespace CamelotEngine {
 		    Forward projection may lead to intersections at infinity.
 		*/
 		void forwardIntersect(const Plane& worldPlane, vector<Vector4>::type* intersect3d) const;
-
-		/** Synchronise core camera settings with another. 
-		@remarks
-			Copies the position, orientation, clip distances, projection type, 
-			FOV, focal length and aspect ratio from another camera. Other settings like query flags, 
-			reflection etc are preserved.
-		*/
-		void synchroniseBaseSettingsWith(const Camera* cam);
      };
 	 /** @} */
 	 /** @} */

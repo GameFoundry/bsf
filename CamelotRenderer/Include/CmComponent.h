@@ -4,13 +4,17 @@
 
 namespace CamelotEngine
 {
-	class Component
+	class CM_EXPORT Component
 	{
-	private:
-		friend class GameObject;
+	public:
+		GameObjectPtr getGameObject() const { return mParent.lock(); }
 
+		// TODO - This shouldn't really be public since only GameObject should be allowed to add components.
+		// But then I have a problem that all derived classes need to have GameObject as a friend class.
 		Component(GameObjectPtr parent);
 		virtual ~Component();
+	protected:
+		friend class GameObject;
 
 		/**
 		 * @brief	Destroys the Component and makes it unusable, without actually deleting it.
@@ -19,7 +23,7 @@ namespace CamelotEngine
 		 */
 		void destroy();
 
-		GameObjectPtr mParent;
+		std::weak_ptr<GameObject> mParent;
 		bool mIsDestroyed;
 	};
 }

@@ -26,10 +26,11 @@ namespace CamelotEngine
 
 		private:
 			RenderWindow* mRenderWindow;
-			Camera* mCamera;
+			std::shared_ptr<Camera> mCamera;
 			HighLevelGpuProgramPtr mFragProg;
 			HighLevelGpuProgramPtr mVertProg;
 			TexturePtr mDbgTexture;
+			GameObjectPtr mCameraGO;
 	};
 
 	CM_EXPORT Application& gApplication();

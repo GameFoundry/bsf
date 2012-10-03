@@ -7,7 +7,8 @@
 namespace CamelotEngine
 {
 	GameObject::GameObject(const String& name)
-		:mName(name), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ZERO),
+		:mName(name), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::UNIT_SCALE),
+		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::UNIT_SCALE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
 		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false),
 		mCustomWorldTfrm(Matrix4::IDENTITY), mIsCustomTfrmModeActive(false),
@@ -84,7 +85,48 @@ namespace CamelotEngine
 		markTfrmDirty();
 	}
 
-	const Matrix4& GameObject::getWorldTfrm()
+	const Vector3& GameObject::getWorldPosition() const
+	{ 
+		if(!mIsCachedWorldTfrmUpToDate)
+			updateWorldTfrm();
+
+		return mWorldPosition; 
+	}
+
+	const Quaternion& GameObject::getWorldRotation() const 
+	{ 
+		if(!mIsCachedWorldTfrmUpToDate)
+			updateWorldTfrm();
+
+		return mWorldRotation; 
+	}
+
+	const Vector3& GameObject::getWorldScale() const 
+	{ 
+		if(!mIsCachedWorldTfrmUpToDate)
+			updateWorldTfrm();
+
+		return mWorldScale; 
+	}
+
+	void GameObject::lookAt(const Vector3& location, const Vector3& up)
+	{
+		Vector3 forward = location - mPosition;
+		forward.normalise();
+
+		Vector3 upCopy = up;
+		upCopy.normalise();
+
+		Vector3 right = forward.crossProduct(up);
+		right.normalise();
+
+		Quaternion newRotation;
+		newRotation.FromAxes(right, upCopy, forward);
+
+		setRotation(newRotation);
+	}
+
+	const Matrix4& GameObject::getWorldTfrm() const
 	{
 		if(!mIsCachedWorldTfrmUpToDate)
 			updateWorldTfrm();
@@ -92,7 +134,7 @@ namespace CamelotEngine
 		return mCachedWorldTfrm;
 	}
 
-	const Matrix4& GameObject::getLocalTfrm()
+	const Matrix4& GameObject::getLocalTfrm() const
 	{
 		if(!mIsCachedLocalTfrmUpToDate)
 			updateLocalTfrm();
@@ -100,7 +142,7 @@ namespace CamelotEngine
 		return mCachedLocalTfrm;
 	}
 
-	void GameObject::markTfrmDirty()
+	void GameObject::markTfrmDirty() const
 	{
 		mIsCachedLocalTfrmUpToDate = false;
 
@@ -115,17 +157,43 @@ namespace CamelotEngine
 		}
 	}
 
-	void GameObject::updateWorldTfrm()
+	void GameObject::updateWorldTfrm() const
 	{
 		if(!mParent.expired())
-			mCachedWorldTfrm = getLocalTfrm() * mParent.lock()->getWorldTfrm();
+		{
+			GameObjectPtr tempParentPtr = mParent.lock();
+
+			mCachedWorldTfrm = getLocalTfrm() * tempParentPtr->getWorldTfrm();
+
+			// Update orientation
+			const Quaternion& parentOrientation = tempParentPtr->getWorldRotation();
+			mWorldRotation = parentOrientation * mRotation;
+
+			// Update scale
+			const Vector3& parentScale = tempParentPtr->getWorldScale();
+			// Scale own position by parent scale, NB just combine
+			// as equivalent axes, no shearing
+			mWorldScale = parentScale * mScale;
+
+			// Change position vector based on parent's orientation & scale
+			mWorldPosition = parentOrientation * (parentScale * mPosition);
+
+			// Add altered position vector to parents
+			mWorldPosition += tempParentPtr->getWorldPosition();
+		}
 		else
+		{
 			mCachedWorldTfrm = getLocalTfrm();
+
+			mWorldRotation = mRotation;
+			mWorldPosition = mPosition;
+			mWorldScale = mScale;
+		}
 
 		mIsCachedWorldTfrmUpToDate = true;
 	}
 
-	void GameObject::updateLocalTfrm()
+	void GameObject::updateLocalTfrm() const
 	{
 		mCachedLocalTfrm.makeTransform(mPosition, mScale, mRotation);
 

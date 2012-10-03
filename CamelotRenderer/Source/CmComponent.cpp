@@ -17,6 +17,5 @@ namespace CamelotEngine
 	void Component::destroy()
 	{
 		mIsDestroyed = true;
-		mParent = nullptr;
 	}
 }

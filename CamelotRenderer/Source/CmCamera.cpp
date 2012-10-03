@@ -38,6 +38,7 @@ THE SOFTWARE.
 #include "CmRenderSystemManager.h"
 #include "CmException.h"
 #include "CmRenderSystem.h"
+#include "CmGameObject.h"
 
 #if CM_PLATFORM == OGRE_PLATFORM_IPHONE
 #include "macUtils.h"
@@ -47,11 +48,9 @@ namespace CamelotEngine {
 	const float Camera::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
     //-----------------------------------------------------------------------
-	Camera::Camera(RenderTarget* target,
-		float left, float top,
-		float width, float height,
-		int ZOrder)
-        : mProjType(PT_PERSPECTIVE), 
+	Camera::Camera(GameObjectPtr parent)
+        : Component(parent),
+		mProjType(PT_PERSPECTIVE), 
 		mFOVy(Radian(Math::PI/4.0f)), 
 		mFarDist(100000.0f), 
 		mNearDist(100.0f), 
@@ -62,19 +61,16 @@ namespace CamelotEngine {
 		mLastParentOrientation(Quaternion::IDENTITY),
 		mLastParentPosition(Vector3::ZERO),
 		mRecalcFrustum(true), 
-		mRecalcView(true), 
 		mRecalcFrustumPlanes(true),
 		mRecalcWorldSpaceCorners(true),
 		mRecalcVertexData(true),
 		mCustomViewMatrix(false),
 		mCustomProjMatrix(false),
 		mFrustumExtentsManuallySet(false),
-		mOrientation(Quaternion::IDENTITY),
-		mPosition(Vector3::ZERO),
 		mSceneDetail(PM_SOLID),
 		mWindowSet(false),
-		mLastViewport(0),
-		mAutoAspectRatio(false)
+		mAutoAspectRatio(false),
+		mViewport(nullptr)
     {
 		updateView();
 		updateFrustum();
@@ -85,16 +81,12 @@ namespace CamelotEngine {
         mFarDist = 100000.0f;
         mAspect = 1.33333333333333f;
         mProjType = PT_PERSPECTIVE;
-        setFixedYawAxis(true);    // Default to fixed yaw, like freelook since most people expect this
 
         invalidateFrustum();
-        invalidateView();
 
         // Init matrices
         mViewMatrix = Matrix4::ZERO;
         mProjMatrixRS = Matrix4::ZERO;
-
-		mViewport = new Viewport(target, left, top, width, height, ZOrder);
     }
 
     //-----------------------------------------------------------------------
@@ -103,6 +95,10 @@ namespace CamelotEngine {
 		if(mViewport != nullptr)
 			delete mViewport;
     }
+	void Camera::init(RenderTarget* target, float left, float top, float width, float height, int ZOrder)
+	{
+		mViewport = new Viewport(target, left, top, width, height, ZOrder);
+	}
 	//-----------------------------------------------------------------------
 	void Camera::setFOVy(const Radian& fov)
 	{
@@ -657,49 +653,18 @@ namespace CamelotEngine {
 	{
 		return mRecalcFrustum;
 	}
-
-	//-----------------------------------------------------------------------
-	void Camera::updateViewImpl(void) const
-	{
-		// ----------------------
-		// Update the view matrix
-		// ----------------------
-
-		// Get orientation from quaternion
-
-		if (!mCustomViewMatrix)
-		{
-			Matrix3 rot;
-			const Quaternion& orientation = getOrientationForViewUpdate();
-			const Vector3& position = getPositionForViewUpdate();
-
-			mViewMatrix = Math::makeViewMatrix(position, orientation, 0);
-		}
-
-		mRecalcView = false;
-
-		// Signal to update frustum clipping planes
-		mRecalcFrustumPlanes = true;
-		// Signal to update world space corners
-		mRecalcWorldSpaceCorners = true;
-	}
-	//---------------------------------------------------------------------
-	void Camera::calcViewMatrixRelative(const Vector3& relPos, Matrix4& matToUpdate) const
-	{
-		Matrix4 matTrans = Matrix4::IDENTITY;
-		matTrans.setTrans(relPos);
-		matToUpdate = getViewMatrix() * matTrans;
-
-	}
 	//-----------------------------------------------------------------------
 	void Camera::updateView(void) const
 	{
-		if (isViewOutOfDate())
+		if (!mCustomViewMatrix)
 		{
-			updateViewImpl();
+			Matrix3 rot;
+			const Quaternion& orientation = getGameObject()->getWorldRotation();
+			const Vector3& position = getGameObject()->getWorldPosition();
+
+			mViewMatrix = Math::makeViewMatrix(position, orientation, 0);
 		}
 	}
-
 	//-----------------------------------------------------------------------
 	void Camera::updateFrustumPlanesImpl(void) const
 	{
@@ -1021,7 +986,6 @@ namespace CamelotEngine {
 			assert(viewMatrix.isAffine());
 			mViewMatrix = viewMatrix;
 		}
-		invalidateView();
 	}
 	//---------------------------------------------------------------------
 	void Camera::setCustomProjectionMatrix(bool enable, const Matrix4& projMatrix)
@@ -1099,265 +1063,6 @@ namespace CamelotEngine {
     {
         return mSceneDetail;
     }
-
-    //-----------------------------------------------------------------------
-    void Camera::setPosition(float x, float y, float z)
-    {
-        mPosition.x = x;
-        mPosition.y = y;
-        mPosition.z = z;
-        invalidateView();
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::setPosition(const Vector3& vec)
-    {
-        mPosition = vec;
-        invalidateView();
-    }
-
-    //-----------------------------------------------------------------------
-    const Vector3& Camera::getPosition(void) const
-    {
-        return mPosition;
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::move(const Vector3& vec)
-    {
-        mPosition = mPosition + vec;
-        invalidateView();
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::moveRelative(const Vector3& vec)
-    {
-        // Transform the axes of the relative vector by camera's local axes
-        Vector3 trans = mOrientation * vec;
-
-        mPosition = mPosition + trans;
-        invalidateView();
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::setDirection(float x, float y, float z)
-    {
-        setDirection(Vector3(x,y,z));
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::setDirection(const Vector3& vec)
-    {
-        // Do nothing if given a zero vector
-        // (Replaced assert since this could happen with auto tracking camera and
-        //  camera passes through the lookAt point)
-        if (vec == Vector3::ZERO) return;
-
-        // Remember, camera points down -Z of local axes!
-        // Therefore reverse direction of direction vector before determining local Z
-        Vector3 zAdjustVec = -vec;
-        zAdjustVec.normalise();
-
-		Quaternion targetWorldOrientation;
-
-
-        if( mYawFixed )
-        {
-            Vector3 xVec = mYawFixedAxis.crossProduct( zAdjustVec );
-            xVec.normalise();
-
-            Vector3 yVec = zAdjustVec.crossProduct( xVec );
-            yVec.normalise();
-
-            targetWorldOrientation.FromAxes( xVec, yVec, zAdjustVec );
-        }
-        else
-        {
-
-            // Get axes from current quaternion
-            Vector3 axes[3];
-            updateView();
-            mRealOrientation.ToAxes(axes);
-            Quaternion rotQuat;
-            if ( (axes[2]+zAdjustVec).squaredLength() <  0.00005f) 
-            {
-                // Oops, a 180 degree turn (infinite possible rotation axes)
-                // Default to yaw i.e. use current UP
-                rotQuat.FromAngleAxis(Radian(Math::PI), axes[1]);
-            }
-            else
-            {
-                // Derive shortest arc to new direction
-                rotQuat = axes[2].getRotationTo(zAdjustVec);
-
-            }
-            targetWorldOrientation = rotQuat * mRealOrientation;
-        }
-
-        // transform to parent space
-		// TODO PORT -  Can't get orientation from parent until we hook it up properly as a Component
-  //      if (mParentNode)
-  //      {
-  //          mOrientation =
-  //              mParentNode->_getDerivedOrientation().Inverse() * targetWorldOrientation;
-  //      }
-		//else
-		{
-			mOrientation = targetWorldOrientation;
-		}
-
-        // TODO If we have a fixed yaw axis, we mustn't break it by using the
-        // shortest arc because this will sometimes cause a relative yaw
-        // which will tip the camera
-
-        invalidateView();
-
-    }
-
-    //-----------------------------------------------------------------------
-    Vector3 Camera::getDirection(void) const
-    {
-        // Direction points down -Z by default
-        return mOrientation * -Vector3::UNIT_Z;
-    }
-
-    //-----------------------------------------------------------------------
-    Vector3 Camera::getUp(void) const
-    {
-        return mOrientation * Vector3::UNIT_Y;
-    }
-
-    //-----------------------------------------------------------------------
-    Vector3 Camera::getRight(void) const
-    {
-        return mOrientation * Vector3::UNIT_X;
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::lookAt(const Vector3& targetPoint)
-    {
-        updateView();
-        this->setDirection(targetPoint - mRealPosition);
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::lookAt( float x, float y, float z )
-    {
-        Vector3 vTemp( x, y, z );
-        this->lookAt(vTemp);
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::roll(const Radian& angle)
-    {
-        // Rotate around local Z axis
-        Vector3 zAxis = mOrientation * Vector3::UNIT_Z;
-        rotate(zAxis, angle);
-
-        invalidateView();
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::yaw(const Radian& angle)
-    {
-        Vector3 yAxis;
-
-        if (mYawFixed)
-        {
-            // Rotate around fixed yaw axis
-            yAxis = mYawFixedAxis;
-        }
-        else
-        {
-            // Rotate around local Y axis
-            yAxis = mOrientation * Vector3::UNIT_Y;
-        }
-
-        rotate(yAxis, angle);
-
-        invalidateView();
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::pitch(const Radian& angle)
-    {
-        // Rotate around local X axis
-        Vector3 xAxis = mOrientation * Vector3::UNIT_X;
-        rotate(xAxis, angle);
-
-        invalidateView();
-
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::rotate(const Vector3& axis, const Radian& angle)
-    {
-        Quaternion q;
-        q.FromAngleAxis(angle,axis);
-        rotate(q);
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::rotate(const Quaternion& q)
-    {
-        // Note the order of the mult, i.e. q comes after
-
-		// Normalise the quat to avoid cumulative problems with precision
-		Quaternion qnorm = q;
-		qnorm.normalise();
-        mOrientation = qnorm * mOrientation;
-
-        invalidateView();
-
-    }
-
-    //-----------------------------------------------------------------------
-    bool Camera::isViewOutOfDate(void) const
-    {
-        // Overridden from Frustum to use local orientation / position offsets
-        // Attached to node?
-		// TODO PORT -  Can't get orientation/position from parent until we hook it up properly as a Component
-        //if (mParentNode != 0)
-        //{
-        //    if (mRecalcView ||
-        //        mParentNode->_getDerivedOrientation() != mLastParentOrientation ||
-        //        mParentNode->_getDerivedPosition() != mLastParentPosition)
-        //    {
-        //        // Ok, we're out of date with SceneNode we're attached to
-        //        mLastParentOrientation = mParentNode->_getDerivedOrientation();
-        //        mLastParentPosition = mParentNode->_getDerivedPosition();
-        //        mRealOrientation = mLastParentOrientation * mOrientation;
-        //        mRealPosition = (mLastParentOrientation * mPosition) + mLastParentPosition;
-        //        mRecalcView = true;
-        //        mRecalcWindow = true;
-        //    }
-        //}
-        //else
-        {
-            // Rely on own updates
-            mRealOrientation = mOrientation;
-            mRealPosition = mPosition;
-        }
-
-        // Deriving reflected orientation / position
-        if (mRecalcView)
-        {
-			mDerivedOrientation = mRealOrientation;
-			mDerivedPosition = mRealPosition;
-        }
-
-        return mRecalcView;
-
-    }
-
-    // -------------------------------------------------------------------
-    void Camera::invalidateView() const
-    {
-        mRecalcWindow = true;
-		mRecalcView = true;
-		mRecalcFrustumPlanes = true;
-		mRecalcWorldSpaceCorners = true;
-    }
     // -------------------------------------------------------------------
     void Camera::invalidateFrustum(void) const
     {
@@ -1373,88 +1078,6 @@ namespace CamelotEngine {
 		// TODO PORT - I'm not going to be rendering the scene like this (yet), but I think I will do it eventually
         //mSceneMgr->_renderScene(this, vp, includeOverlays);
 	}
-
-    //-----------------------------------------------------------------------
-    void Camera::setFixedYawAxis(bool useFixed, const Vector3& fixedAxis)
-    {
-        mYawFixed = useFixed;
-        mYawFixedAxis = fixedAxis;
-    }
-    //-----------------------------------------------------------------------
-    const Quaternion& Camera::getOrientation(void) const
-    {
-        return mOrientation;
-    }
-
-    //-----------------------------------------------------------------------
-    void Camera::setOrientation(const Quaternion& q)
-    {
-        mOrientation = q;
-		mOrientation.normalise();
-        invalidateView();
-    }
-    //-----------------------------------------------------------------------
-    const Quaternion& Camera::getDerivedOrientation(void) const
-    {
-        updateView();
-        return mDerivedOrientation;
-    }
-    //-----------------------------------------------------------------------
-    const Vector3& Camera::getDerivedPosition(void) const
-    {
-        updateView();
-        return mDerivedPosition;
-    }
-    //-----------------------------------------------------------------------
-    Vector3 Camera::getDerivedDirection(void) const
-    {
-        // Direction points down -Z
-        updateView();
-        return mDerivedOrientation * Vector3::NEGATIVE_UNIT_Z;
-    }
-    //-----------------------------------------------------------------------
-    Vector3 Camera::getDerivedUp(void) const
-    {
-        updateView();
-        return mDerivedOrientation * Vector3::UNIT_Y;
-    }
-    //-----------------------------------------------------------------------
-    Vector3 Camera::getDerivedRight(void) const
-    {
-        updateView();
-        return mDerivedOrientation * Vector3::UNIT_X;
-    }
-    //-----------------------------------------------------------------------
-    const Quaternion& Camera::getRealOrientation(void) const
-    {
-        updateView();
-        return mRealOrientation;
-    }
-    //-----------------------------------------------------------------------
-    const Vector3& Camera::getRealPosition(void) const
-    {
-        updateView();
-        return mRealPosition;
-    }
-    //-----------------------------------------------------------------------
-    Vector3 Camera::getRealDirection(void) const
-    {
-        // Direction points down -Z
-        updateView();
-        return mRealOrientation * Vector3::NEGATIVE_UNIT_Z;
-    }
-    //-----------------------------------------------------------------------
-    Vector3 Camera::getRealUp(void) const
-    {
-        updateView();
-        return mRealOrientation * Vector3::UNIT_Y;
-    }
-    //-----------------------------------------------------------------------
-    Vector3 Camera::getRealRight(void) const
-    {
-        updateView();
-        return mRealOrientation * Vector3::UNIT_X;
-    }
     //-----------------------------------------------------------------------
 	Ray Camera::getCameraToViewportRay(float screenX, float screenY) const
 	{
@@ -1534,7 +1157,7 @@ namespace CamelotEngine {
 		mWindowClipPlanes.clear();
         if (mProjType == PT_PERSPECTIVE)
         {
-            Vector3 position = getPositionForViewUpdate();
+            Vector3 position = getGameObject()->getWorldPosition();
             mWindowClipPlanes.push_back(Plane(position, vw_bl, vw_ul));
             mWindowClipPlanes.push_back(Plane(position, vw_ul, vw_ur));
             mWindowClipPlanes.push_back(Plane(position, vw_ur, vw_br));
@@ -1569,17 +1192,6 @@ namespace CamelotEngine {
         // just to keep things just outside
         return mNearDist * 1.5f;
 
-    }
-    //-----------------------------------------------------------------------
-    const Vector3& Camera::getPositionForViewUpdate(void) const
-    {
-        // Note no update, because we're calling this from the update!
-        return mRealPosition;
-    }
-    //-----------------------------------------------------------------------
-    const Quaternion& Camera::getOrientationForViewUpdate(void) const
-    {
-        return mRealOrientation;
     }
     //-----------------------------------------------------------------------
     bool Camera::getAutoAspectRatio(void) const
@@ -1706,7 +1318,7 @@ namespace CamelotEngine {
 		Quaternion invPlaneRot = pval.normal.getRotationTo(Vector3::UNIT_Z);
 
 		// get rotated light
-		Vector3 lPos = invPlaneRot * getDerivedPosition();
+		Vector3 lPos = invPlaneRot * getGameObject()->getWorldPosition();
 		Vector3 vec[4];
 		vec[0] = invPlaneRot * trCorner - lPos;
 		vec[1] = invPlaneRot * tlCorner - lPos; 
@@ -1729,23 +1341,4 @@ namespace CamelotEngine {
 			}
 		}
 	}
-	//-----------------------------------------------------------------------
-	void Camera::synchroniseBaseSettingsWith(const Camera* cam)
-	{
-		this->setPosition(cam->getPosition());
-		this->setProjectionType(cam->getProjectionType());
-		this->setOrientation(cam->getOrientation());
-		this->setAspectRatio(cam->getAspectRatio());
-		this->setNearClipDistance(cam->getNearClipDistance());
-		this->setFarClipDistance(cam->getFarClipDistance());
-		this->setFOVy(cam->getFOVy());
-		this->setFocalLength(cam->getFocalLength());
-
-		// Don't do these, they're not base settings and can cause referencing issues
-		//this->setLodCamera(cam->getLodCamera());
-		//this->setCullingFrustum(cam->getCullingFrustum());
-
-	}
-
-
 } // namespace CamelotEngine

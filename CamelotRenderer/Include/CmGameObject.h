@@ -31,16 +31,21 @@ namespace CamelotEngine
 		/************************************************************************/
 	public:
 		void setPosition(const Vector3& position);
-		Vector3 getPosition() const { return mPosition; }
+		const Vector3& getPosition() const { return mPosition; }
+		const Vector3& getWorldPosition() const;
 
 		void setRotation(const Quaternion& rotation);
-		Quaternion getRotation() const { return mRotation; }
+		const Quaternion& getRotation() const { return mRotation; }
+		const Quaternion& getWorldRotation() const;
 
 		void setScale(const Vector3& scale);
-		Vector3 getScale() const { return mScale; }
+		const Vector3& getScale() const { return mScale; }
+		const Vector3& getWorldScale() const;
 
-		const Matrix4& getWorldTfrm();
-		const Matrix4& getLocalTfrm();
+		void lookAt(const Vector3& location, const Vector3& up = Vector3::UNIT_Y);
+
+		const Matrix4& getWorldTfrm() const;
+		const Matrix4& getLocalTfrm() const;
 
 	private:
 		String mName;
@@ -49,18 +54,22 @@ namespace CamelotEngine
 		Quaternion mRotation;
 		Vector3 mScale;
 
-		Matrix4 mCachedLocalTfrm;
-		bool mIsCachedLocalTfrmUpToDate;
+		mutable Vector3 mWorldPosition;
+		mutable Quaternion mWorldRotation;
+		mutable Vector3 mWorldScale;
 
-		Matrix4 mCachedWorldTfrm;
-		bool mIsCachedWorldTfrmUpToDate;
+		mutable Matrix4 mCachedLocalTfrm;
+		mutable bool mIsCachedLocalTfrmUpToDate;
+
+		mutable Matrix4 mCachedWorldTfrm;
+		mutable bool mIsCachedWorldTfrmUpToDate;
 
 		Matrix4 mCustomWorldTfrm; // TODO
 		bool mIsCustomTfrmModeActive; // TODO
 
-		void markTfrmDirty();
-		void updateLocalTfrm();
-		void updateWorldTfrm();
+		void markTfrmDirty() const;
+		void updateLocalTfrm() const;
+		void updateWorldTfrm() const;
 
 		/************************************************************************/
 		/* 								Hierarchy	                     		*/
@@ -137,7 +146,7 @@ namespace CamelotEngine
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
-			std::shared_ptr<T> newComponent = std::shared_ptr<T>(new T(this));
+			std::shared_ptr<T> newComponent = std::shared_ptr<T>(new T(mThis.lock()));
 			mComponents.push_back(newComponent);
 
 			return newComponent;

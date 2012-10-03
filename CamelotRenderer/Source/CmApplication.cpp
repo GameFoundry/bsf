@@ -16,6 +16,7 @@
 #include "CmSceneManager.h"
 #include "CmImporter.h"
 #include "CmResources.h"
+#include "CmGameObject.h"
 
 namespace CamelotEngine
 {
@@ -40,9 +41,12 @@ namespace CamelotEngine
 		//renderSystem->setAmbientLight(1.0f, 1.0f, 1.0f);
 		renderSystem->setLightingEnabled(false);
 
-		mCamera = new Camera(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
-		mCamera->setPosition(Vector3(0,0,40));
-		mCamera->lookAt(Vector3(0,0,-300));
+		mCameraGO = GameObject::create("MainCamera");
+		mCamera = mCameraGO->addComponent<Camera>();
+
+		mCamera->init(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
+		mCameraGO->setPosition(Vector3(0,0,40));
+		mCameraGO->lookAt(Vector3(0,0,-300));
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(600.0f / 800.0f);
 

@@ -58,13 +58,16 @@ namespace CamelotEngine {
     //---------------------------------------------------------------------
     void Viewport::_updateDimensions(void)
     {
-        float height = (float) mTarget->getHeight();
-        float width = (float) mTarget->getWidth();
+		if(mTarget != nullptr)
+		{
+			float height = (float) mTarget->getHeight();
+			float width = (float) mTarget->getWidth();
 
-        mActLeft = (int) (mRelLeft * width);
-        mActTop = (int) (mRelTop * height);
-        mActWidth = (int) (mRelWidth * width);
-        mActHeight = (int) (mRelHeight * height);
+			mActLeft = (int) (mRelLeft * width);
+			mActTop = (int) (mRelTop * height);
+			mActWidth = (int) (mRelWidth * width);
+			mActHeight = (int) (mRelHeight * height);
+		}
     }
 	//---------------------------------------------------------------------
 	int Viewport::getZOrder(void) const
