@@ -70,8 +70,7 @@ namespace CamelotEngine
 			}
 		}
 
-		DataStreamPtr fileSteam = FileSystem::open(inputFilePath, true);
-		ResourcePtr importedResource = importer->import(fileSteam);
+		ResourcePtr importedResource = importer->import(inputFilePath);
 		importedResource->load();
 
 		return importedResource;

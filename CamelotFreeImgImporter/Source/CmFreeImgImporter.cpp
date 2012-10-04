@@ -6,6 +6,7 @@
 #include "CmTextureData.h"
 #include "CmTextureManager.h"
 #include "CmTexture.h"
+#include "CmFileSystem.h"
 
 #include "FreeImage.h"
 
@@ -126,8 +127,10 @@ namespace CamelotEngine
 		}
 	}
 
-	ResourcePtr FreeImgImporter::import(DataStreamPtr fileData)
+	ResourcePtr FreeImgImporter::import(const String& filePath)
 	{
+		DataStreamPtr fileData = FileSystem::open(filePath, true);
+
 		TextureDataPtr imgData = importRawImage(fileData);
 		if(imgData == nullptr || imgData->getData() == nullptr)
 			return nullptr;
@@ -136,6 +139,8 @@ namespace CamelotEngine
 			imgData->getWidth(), imgData->getHeight(), imgData->getNumMipmaps(), imgData->getFormat());
 
 		newTexture->setTextureData(0, imgData);
+
+		fileData->close();
 
 		return newTexture;
 	}
