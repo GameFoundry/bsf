@@ -12,7 +12,7 @@ namespace CamelotEngine
 	 *			On initialization this class must register itself with the Importer module,
 	 *			which delegates asset import calls to a specific importer.
 	 */
-	class SpecificImporter
+	class CM_EXPORT SpecificImporter
 	{
 	public:
 		SpecificImporter() {}
