@@ -28,9 +28,6 @@
     <Filter Include="Source Files\RenderSystem">
       <UniqueIdentifier>{e0bdc5fc-afd1-46f9-9e3e-f85ca3e220b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\AssetImporter">
-      <UniqueIdentifier>{ce5fd26d-808e-4914-b478-3099834f03df}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Importer">
       <UniqueIdentifier>{f1fb2bc5-43c6-476a-89e3-b7de86c5aebe}</UniqueIdentifier>
     </Filter>
@@ -95,12 +92,6 @@
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmTextureState.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmTextureManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmTexture.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmRenderWindow.h">
@@ -194,7 +185,19 @@
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmSceneManager.h">
-      <Filter>Source Files\Scene</Filter>
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTexture.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTextureManager.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmMesh.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CmMeshST.h">
+      <Filter>Header Files\Serialization</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -267,12 +270,6 @@
     <ClCompile Include="Source\CmRenderWindow.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmTexture.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmTextureManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmTextureState.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
@@ -301,7 +298,16 @@
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmSceneManager.cpp">
-      <Filter>Header Files\Scene</Filter>
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTexture.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTextureManager.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmMesh.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

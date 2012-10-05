@@ -3,6 +3,7 @@
 #include "CmDebug.h"
 #include "CmDataStream.h"
 #include "CmPath.h"
+#include "CmMeshData.h"
 #include "CmVector2.h"
 #include "CmVector3.h"
 #include "CmVector4.h"
@@ -43,7 +44,7 @@ namespace CamelotEngine
 		startUpSdk(fbxManager, fbxScene);
 		loadScene(fbxManager, fbxScene, filePath);
 
-		FBXMeshData* mesh = parseScene(fbxManager, fbxScene);	
+		MeshDataPtr mesh = parseScene(fbxManager, fbxScene);	
 
 		shutDownSdk(fbxManager);
 
@@ -110,7 +111,7 @@ namespace CamelotEngine
 		importer->Destroy();
 	}
 
-	FBXImporter::FBXMeshData* FBXImporter::parseScene(FbxManager* manager, FbxScene* scene)
+	MeshDataPtr FBXImporter::parseScene(FbxManager* manager, FbxScene* scene)
 	{
 		stack<FbxNode*>::type todo;
 		todo.push(scene->GetRootNode());
@@ -158,9 +159,9 @@ namespace CamelotEngine
 		return nullptr;
 	}
 
-	FBXImporter::FBXMeshData* FBXImporter::parseMesh(FbxMesh* mesh, bool createTangentsIfMissing)
+	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, bool createTangentsIfMissing)
 	{
-		FBXMeshData* meshData = new FBXMeshData();
+		MeshDataPtr meshData = MeshDataPtr(new MeshData());
 
 		if (!mesh->GetNode())
 			return meshData;

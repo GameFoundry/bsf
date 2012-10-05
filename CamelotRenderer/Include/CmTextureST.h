@@ -87,7 +87,7 @@ namespace CamelotEngine
 
 		virtual UINT32 getRTTIId()
 		{
-			return 101;
+			return RID_Texture;
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()

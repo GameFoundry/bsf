@@ -89,7 +89,6 @@ namespace CamelotEngine {
     class RenderOperation;
     class StringInterface;
     class TextureState;
-    class Texture;
     class TextureManager;
     class Viewport;
     class VertexBufferBinding;
@@ -101,10 +100,14 @@ namespace CamelotEngine {
 	// Resources
 	class Resource;
 	class Resources;
+	class Texture;
+	class Mesh;
 	// Scene
 	class GameObject;
 	class Component;
 	class SceneManager;
+	// Serialization
+	class MeshST;
 }
 
 /* Shared pointer typedefs*/

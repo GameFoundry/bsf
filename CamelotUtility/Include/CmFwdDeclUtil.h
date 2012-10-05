@@ -25,6 +25,7 @@ namespace CamelotEngine {
 	class MemoryDataStream;
 	class FileDataStream;
 	class TextureData;
+	class MeshData;
 	class FileSystem;
 	// Reflection
 	class IReflectable;
@@ -37,4 +38,5 @@ namespace CamelotEngine {
 	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
 	typedef std::shared_ptr<FileDataStream> FileDataStreamPtr;
 	typedef std::shared_ptr<TextureData> TextureDataPtr;
+	typedef std::shared_ptr<MeshData> MeshDataPtr;
 }

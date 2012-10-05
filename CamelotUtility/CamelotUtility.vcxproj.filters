@@ -177,6 +177,12 @@
     <ClInclude Include="Include\CmFileSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmMeshData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmMeshDataST.h">
+      <Filter>Header Files\SerializationTypes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp">
@@ -252,6 +258,9 @@
       <Filter>Source Files\RTTI</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmFileSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmMeshData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
