@@ -14,7 +14,7 @@ Place dependency files in:
 Camelot plug-in dependencies:
 
 CamelotFBXImporter (optional) relies on:
- - FBX SDK 2013.2
+ - FBX SDK 2013.3
    - http://usa.autodesk.com/fbx
 
 CamelotFreeImgImporter (optional) relies on:

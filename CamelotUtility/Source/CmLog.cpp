@@ -1,4 +1,5 @@
 #include "CmLog.h"
+#include "boost/signal.hpp"
 
 namespace CamelotEngine
 {
