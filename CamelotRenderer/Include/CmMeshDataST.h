@@ -78,12 +78,12 @@ namespace CamelotEngine
 	public:
 		MeshDataST()
 		{
-			CM_ADD_DATABLOCKFIELD(index, 6, MeshDataST)
+			CM_ADD_DATABLOCKFIELD(index, 0, MeshDataST)
 
-			CM_ADD_PLAINFIELD(indexCount, 7, MeshDataST)
-			CM_ADD_PLAINFIELD(vertexCount, 8, MeshDataST)
+			CM_ADD_PLAINFIELD(indexCount, 1, MeshDataST)
+			CM_ADD_PLAINFIELD(vertexCount, 2, MeshDataST)
 
-			addPlainArrayField("subMeshes", 9, &MeshDataST::getSubmesh, &MeshDataST::getSubmeshArraySize, &MeshDataST::setSubmesh, &MeshDataST::setSubmeshArraySize);
+			addPlainArrayField("subMeshes", 3, &MeshDataST::getSubmesh, &MeshDataST::getSubmeshArraySize, &MeshDataST::setSubmesh, &MeshDataST::setSubmeshArraySize);
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
@@ -99,7 +99,7 @@ namespace CamelotEngine
 
 		virtual UINT32 getRTTIId() 
 		{
-			return 103;
+			return TID_MeshData;
 		}
 	};
 }

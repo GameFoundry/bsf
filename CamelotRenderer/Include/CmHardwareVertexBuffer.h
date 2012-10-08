@@ -31,6 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
+#include "CmIReflectable.h"
 #include "CmColor.h"
 
 namespace CamelotEngine {
@@ -293,7 +294,7 @@ namespace CamelotEngine {
 	Like the other classes in this functional area, these declarations should be created and
 	destroyed using the HardwareBufferManager.
     */
-	class CM_EXPORT VertexDeclaration
+	class CM_EXPORT VertexDeclaration : public IReflectable
     {
     public:
 		/// Defines the list of vertex elements that makes up this declaration
@@ -443,6 +444,13 @@ namespace CamelotEngine {
             return !(*this == rhs);
         }
 
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class VertexDeclarationST;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
     };
 
 	/** Records the state of all the vertex buffer bindings required to provide a vertex declaration

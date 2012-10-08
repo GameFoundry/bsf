@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "CmDefaultHardwareBufferManager.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
+#include "CmVertexDeclarationST.h"
 
 namespace CamelotEngine {
 
@@ -500,6 +501,19 @@ namespace CamelotEngine {
         }
         return ret;
     }
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* VertexDeclaration::getRTTIStatic()
+	{
+		return VertexDeclarationST::instance();
+	}
+
+	RTTITypeBase* VertexDeclaration::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
     //-----------------------------------------------------------------------------
 	VertexBufferBinding::VertexBufferBinding() : mHighIndex(0)
 	{

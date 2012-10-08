@@ -123,6 +123,18 @@ namespace CamelotEngine
 	typedef std::shared_ptr<GameObject> GameObjectPtr;
 }
 
+// All type IDs
+namespace CamelotEngine
+{
+	enum TypeID_Core
+	{
+		TID_Texture = 1001,
+		TID_Mesh = 1002,
+		TID_MeshData = 1003,
+		TID_VertexDeclaration = 1004
+	};
+}
+
 #endif // __OgrePrerequisites_H__
 
 

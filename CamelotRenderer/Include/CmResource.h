@@ -6,12 +6,6 @@
 
 namespace CamelotEngine
 {
-	enum ResourceIds
-	{
-		RID_Texture = 1001,
-		RID_Mesh = 1002
-	};
-
 	/**
 	 * @brief	Base class for all resources used in the engine.
 	 */

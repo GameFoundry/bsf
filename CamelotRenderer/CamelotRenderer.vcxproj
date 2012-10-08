@@ -141,6 +141,7 @@
     <ClInclude Include="Include\CmComponent.h" />
     <ClInclude Include="Include\stdafx.h" />
     <ClInclude Include="Include\targetver.h" />
+    <ClInclude Include="Include\CmVertexDeclarationST.h" />
     <ClInclude Include="Source\CmMeshST.h" />
   </ItemGroup>
   <ItemGroup>

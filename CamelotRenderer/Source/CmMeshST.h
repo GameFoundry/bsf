@@ -27,7 +27,7 @@ namespace CamelotEngine
 
 		virtual UINT32 getRTTIId() 
 		{
-			return RID_Mesh;
+			return TID_Mesh;
 		}
 	};
 }
