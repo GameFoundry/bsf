@@ -199,6 +199,12 @@
     <ClInclude Include="Source\CmMeshST.h">
       <Filter>Header Files\Serialization</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmMeshDataST.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmMeshData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -308,6 +314,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmMesh.cpp">
       <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmMeshData.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

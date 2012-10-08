@@ -5,19 +5,14 @@
 
 namespace CamelotEngine
 {
-	MeshData::MeshData()
-	   :vertex(nullptr),
-		normal(nullptr),
-		tangent(nullptr),
-		bitangent(nullptr),
-		uv0(nullptr),
-		uv1(nullptr),
-		index(nullptr),
-		indexCount(0),
-		vertexCount(0)
-	{ }
+	MeshData::VertexData::VertexData(UINT32 vertexCount)
+		:vertex(nullptr), normal(nullptr), tangent(nullptr), 
+		bitangent(nullptr), uv0(nullptr), uv1(nullptr)
+	{
+		this->vertexCount = vertexCount;
+	}
 
-	MeshData::~MeshData()
+	MeshData::VertexData::~VertexData()
 	{
 		if(vertex != nullptr)
 			delete [] vertex;
@@ -36,9 +31,30 @@ namespace CamelotEngine
 
 		if(uv1 != nullptr)
 			delete [] uv1;
+	}
 
+	RTTITypeBase* MeshData::VertexData::getRTTIStatic()
+	{
+		return VertexDataST::instance();
+	}
+
+	RTTITypeBase* MeshData::VertexData::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	MeshData::MeshData()
+	   :index(nullptr),
+		indexCount(0),
+		vertexCount(0)
+	{ }
+
+	MeshData::~MeshData()
+	{
 		if(index != nullptr)
 			delete [] index;
+
+		vertexBuffers.clear();
 	}
 
 	/************************************************************************/

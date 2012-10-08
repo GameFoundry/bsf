@@ -82,7 +82,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmMeshData.cpp" />
     <ClInclude Include="Include\CmBinarySerializer.h" />
     <ClInclude Include="Include\CmBitwise.h" />
     <ClInclude Include="Include\CmBox.h" />
@@ -96,7 +95,6 @@
     <ClInclude Include="Include\CmLog.h" />
     <ClInclude Include="Include\CmManagedDataBlock.h" />
     <ClInclude Include="Include\CmMathAsm.h" />
-    <ClInclude Include="Include\CmMeshDataST.h" />
     <ClInclude Include="Include\CmModule.h" />
     <ClInclude Include="Include\CmPath.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
@@ -138,7 +136,6 @@
     <ClCompile Include="Source\CmTextureData.cpp">
       <FileType>CppHeader</FileType>
     </ClCompile>
-    <ClInclude Include="Include\CmMeshData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp" />

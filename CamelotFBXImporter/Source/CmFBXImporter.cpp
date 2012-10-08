@@ -298,30 +298,33 @@ namespace CamelotEngine
 		meshData->vertexCount = lPolygonVertexCount;
 		
 		meshData->index = new int[lPolygonCount * 3];
-		meshData->vertex = new Vector3[lPolygonVertexCount];
+
+		std::shared_ptr<MeshData::VertexData> vertexData = std::shared_ptr<MeshData::VertexData>(new MeshData::VertexData(lPolygonVertexCount));
+		meshData->vertexBuffers.insert(std::make_pair(0, vertexData));
+		vertexData->vertex = new Vector3[lPolygonVertexCount];
 
 		if (hasNormal)
-			meshData->normal = new Vector3[lPolygonVertexCount];
+			vertexData->normal = new Vector3[lPolygonVertexCount];
 
 		if (hasTangent)
-			meshData->tangent = new Vector3[lPolygonVertexCount];
+			vertexData->tangent = new Vector3[lPolygonVertexCount];
 
 		if (hasBitangent)
-			meshData->bitangent = new Vector3[lPolygonVertexCount];
+			vertexData->bitangent = new Vector3[lPolygonVertexCount];
 
 		FbxStringList lUVNames;
 		mesh->GetUVSetNames(lUVNames);
 		const char * lUVName0 = NULL;
 		if (hasUV0 && lUVNames.GetCount() > 0)
 		{
-			meshData->uv0 = new Vector2[lPolygonVertexCount];
+			vertexData->uv0 = new Vector2[lPolygonVertexCount];
 			lUVName0 = lUVNames[0];
 		}
 
 		const char * lUVName1 = NULL;
 		if (hasUV1 && lUVNames.GetCount() > 1)
 		{
-			meshData->uv1 = new Vector2[lPolygonVertexCount];
+			vertexData->uv1 = new Vector2[lPolygonVertexCount];
 			lUVName1 = lUVNames[1];
 		}
 
@@ -357,9 +360,9 @@ namespace CamelotEngine
 			{
 				// Save the vertex position.
 				lCurrentVertex = lControlPoints[lIndex];
-				meshData->vertex[lIndex][0] = static_cast<float>(lCurrentVertex[0]);
-				meshData->vertex[lIndex][1] = static_cast<float>(lCurrentVertex[1]);
-				meshData->vertex[lIndex][2] = static_cast<float>(lCurrentVertex[2]);
+				vertexData->vertex[lIndex][0] = static_cast<float>(lCurrentVertex[0]);
+				vertexData->vertex[lIndex][1] = static_cast<float>(lCurrentVertex[1]);
+				vertexData->vertex[lIndex][2] = static_cast<float>(lCurrentVertex[2]);
 
 				// Save the normal.
 				if (hasNormal)
@@ -369,9 +372,9 @@ namespace CamelotEngine
 						lNormalIndex = lNormalElement->GetIndexArray().GetAt(lIndex);
 
 					lCurrentNormal = lNormalElement->GetDirectArray().GetAt(lNormalIndex);
-					meshData->normal[lIndex][0] = static_cast<float>(lCurrentNormal[0]);
-					meshData->normal[lIndex][1] = static_cast<float>(lCurrentNormal[1]);
-					meshData->normal[lIndex][2] = static_cast<float>(lCurrentNormal[2]);
+					vertexData->normal[lIndex][0] = static_cast<float>(lCurrentNormal[0]);
+					vertexData->normal[lIndex][1] = static_cast<float>(lCurrentNormal[1]);
+					vertexData->normal[lIndex][2] = static_cast<float>(lCurrentNormal[2]);
 				}
 
 				// Save the tangent.
@@ -382,9 +385,9 @@ namespace CamelotEngine
 						lTangentIndex = lTangentElement->GetIndexArray().GetAt(lIndex);
 
 					FbxVector4 lCurrentTangent = lTangentElement->GetDirectArray().GetAt(lTangentIndex);
-					meshData->tangent[lIndex][0] = static_cast<float>(lCurrentTangent[0]);
-					meshData->tangent[lIndex][1] = static_cast<float>(lCurrentTangent[1]);
-					meshData->tangent[lIndex][2] = static_cast<float>(lCurrentTangent[2]);
+					vertexData->tangent[lIndex][0] = static_cast<float>(lCurrentTangent[0]);
+					vertexData->tangent[lIndex][1] = static_cast<float>(lCurrentTangent[1]);
+					vertexData->tangent[lIndex][2] = static_cast<float>(lCurrentTangent[2]);
 				}
 
 				// Save the tangent.
@@ -395,9 +398,9 @@ namespace CamelotEngine
 						lBitangentIndex = lBitangentElement->GetIndexArray().GetAt(lIndex);
 
 					FbxVector4 lCurrentBitangent = lBitangentElement->GetDirectArray().GetAt(lBitangentIndex);
-					meshData->bitangent[lIndex][0] = static_cast<float>(lCurrentBitangent[0]);
-					meshData->bitangent[lIndex][1] = static_cast<float>(lCurrentBitangent[1]);
-					meshData->bitangent[lIndex][2] = static_cast<float>(lCurrentBitangent[2]);
+					vertexData->bitangent[lIndex][0] = static_cast<float>(lCurrentBitangent[0]);
+					vertexData->bitangent[lIndex][1] = static_cast<float>(lCurrentBitangent[1]);
+					vertexData->bitangent[lIndex][2] = static_cast<float>(lCurrentBitangent[2]);
 				}
 
 				// Save the UV.
@@ -408,8 +411,8 @@ namespace CamelotEngine
 						lUVIndex = lUVElement0->GetIndexArray().GetAt(lIndex);
 
 					lCurrentUV = lUVElement0->GetDirectArray().GetAt(lUVIndex);
-					meshData->uv0[lIndex][0] = static_cast<float>(lCurrentUV[0]);
-					meshData->uv0[lIndex][1] = static_cast<float>(lCurrentUV[1]);
+					vertexData->uv0[lIndex][0] = static_cast<float>(lCurrentUV[0]);
+					vertexData->uv0[lIndex][1] = static_cast<float>(lCurrentUV[1]);
 				}
 
 				if (hasUV1)
@@ -419,8 +422,8 @@ namespace CamelotEngine
 						lUVIndex = lUVElement1->GetIndexArray().GetAt(lIndex);
 
 					lCurrentUV = lUVElement1->GetDirectArray().GetAt(lUVIndex);
-					meshData->uv1[lIndex][0] = static_cast<float>(lCurrentUV[0]);
-					meshData->uv1[lIndex][1] = static_cast<float>(lCurrentUV[1]);
+					vertexData->uv1[lIndex][0] = static_cast<float>(lCurrentUV[0]);
+					vertexData->uv1[lIndex][1] = static_cast<float>(lCurrentUV[1]);
 				}
 			}
 		}
@@ -451,16 +454,16 @@ namespace CamelotEngine
 					meshData->index[lIndexOffset + lVerticeIndex] = static_cast<unsigned int>(lVertexCount);
 
 					lCurrentVertex = lControlPoints[lControlPointIndex];
-					meshData->vertex[lVertexCount][0] = static_cast<float>(lCurrentVertex[0]);
-					meshData->vertex[lVertexCount][1] = static_cast<float>(lCurrentVertex[1]);
-					meshData->vertex[lVertexCount][2] = static_cast<float>(lCurrentVertex[2]);
+					vertexData->vertex[lVertexCount][0] = static_cast<float>(lCurrentVertex[0]);
+					vertexData->vertex[lVertexCount][1] = static_cast<float>(lCurrentVertex[1]);
+					vertexData->vertex[lVertexCount][2] = static_cast<float>(lCurrentVertex[2]);
 
 					if (hasNormal)
 					{
 						mesh->GetPolygonVertexNormal(lPolygonIndex, lVerticeIndex, lCurrentNormal);
-						meshData->normal[lVertexCount][0] = static_cast<float>(lCurrentNormal[0]);
-						meshData->normal[lVertexCount][1] = static_cast<float>(lCurrentNormal[1]);
-						meshData->normal[lVertexCount][2] = static_cast<float>(lCurrentNormal[2]);
+						vertexData->normal[lVertexCount][0] = static_cast<float>(lCurrentNormal[0]);
+						vertexData->normal[lVertexCount][1] = static_cast<float>(lCurrentNormal[1]);
+						vertexData->normal[lVertexCount][2] = static_cast<float>(lCurrentNormal[2]);
 					}
 
 					if (hasTangent)
@@ -470,9 +473,9 @@ namespace CamelotEngine
 							lTangentIndex = lTangentElement->GetIndexArray().GetAt(lTangentIndex);
 
 						FbxVector4 lCurrentTangent = lTangentElement->GetDirectArray().GetAt(lTangentIndex);
-						meshData->tangent[lVertexCount][0] = static_cast<float>(lCurrentTangent[0]);
-						meshData->tangent[lVertexCount][1] = static_cast<float>(lCurrentTangent[1]);
-						meshData->tangent[lVertexCount][2] = static_cast<float>(lCurrentTangent[2]);
+						vertexData->tangent[lVertexCount][0] = static_cast<float>(lCurrentTangent[0]);
+						vertexData->tangent[lVertexCount][1] = static_cast<float>(lCurrentTangent[1]);
+						vertexData->tangent[lVertexCount][2] = static_cast<float>(lCurrentTangent[2]);
 					}
 
 					if (hasBitangent)
@@ -482,31 +485,31 @@ namespace CamelotEngine
 							lBitangentIndex = lBitangentElement->GetIndexArray().GetAt(lBitangentIndex);
 
 						FbxVector4 lCurrentBitangent = lBitangentElement->GetDirectArray().GetAt(lBitangentIndex);
-						meshData->bitangent[lVertexCount][0] = static_cast<float>(lCurrentBitangent[0]);
-						meshData->bitangent[lVertexCount][1] = static_cast<float>(lCurrentBitangent[1]);
-						meshData->bitangent[lVertexCount][2] = static_cast<float>(lCurrentBitangent[2]);
+						vertexData->bitangent[lVertexCount][0] = static_cast<float>(lCurrentBitangent[0]);
+						vertexData->bitangent[lVertexCount][1] = static_cast<float>(lCurrentBitangent[1]);
+						vertexData->bitangent[lVertexCount][2] = static_cast<float>(lCurrentBitangent[2]);
 					}
 
 					if (hasNormal)
 					{
 						mesh->GetPolygonVertexNormal(lPolygonIndex, lVerticeIndex, lCurrentNormal);
-						meshData->normal[lVertexCount][0] = static_cast<float>(lCurrentNormal[0]);
-						meshData->normal[lVertexCount][1] = static_cast<float>(lCurrentNormal[1]);
-						meshData->normal[lVertexCount][2] = static_cast<float>(lCurrentNormal[2]);
+						vertexData->normal[lVertexCount][0] = static_cast<float>(lCurrentNormal[0]);
+						vertexData->normal[lVertexCount][1] = static_cast<float>(lCurrentNormal[1]);
+						vertexData->normal[lVertexCount][2] = static_cast<float>(lCurrentNormal[2]);
 					}
 
 					if (hasUV0)
 					{
 						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName0, lCurrentUV);
-						meshData->uv0[lVertexCount][0] = static_cast<float>(lCurrentUV[0]);
-						meshData->uv0[lVertexCount][1] = static_cast<float>(lCurrentUV[1]);
+						vertexData->uv0[lVertexCount][0] = static_cast<float>(lCurrentUV[0]);
+						vertexData->uv0[lVertexCount][1] = static_cast<float>(lCurrentUV[1]);
 					}
 
 					if (hasUV1)
 					{
 						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName1, lCurrentUV);
-						meshData->uv1[lVertexCount][0] = static_cast<float>(lCurrentUV[0]);
-						meshData->uv1[lVertexCount][1] = static_cast<float>(lCurrentUV[1]);
+						vertexData->uv1[lVertexCount][0] = static_cast<float>(lCurrentUV[0]);
+						vertexData->uv1[lVertexCount][1] = static_cast<float>(lCurrentUV[1]);
 					}
 				}
 				++lVertexCount;
