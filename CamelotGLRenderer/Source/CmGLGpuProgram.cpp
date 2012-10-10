@@ -106,7 +106,7 @@ GLuint GLGpuProgram::getFixedAttributeIndex(VertexElementSemantic semantic, Came
 		return 8 + index;
 	case VES_TANGENT:
 		return 14;
-	case VES_BINORMAL:
+	case VES_BITANGENT:
 		return 15;
 	default:
 		assert(false && "Missing attribute!");
@@ -128,7 +128,7 @@ bool GLGpuProgram::isAttributeValid(VertexElementSemantic semantic, CamelotEngin
 			return false;
 		case VES_BLEND_WEIGHTS:
 		case VES_BLEND_INDICES:
-		case VES_BINORMAL:
+		case VES_BITANGENT:
 		case VES_TANGENT:
 			return true; // with default binding
 	}

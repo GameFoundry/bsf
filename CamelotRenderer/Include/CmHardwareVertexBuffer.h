@@ -89,7 +89,7 @@ namespace CamelotEngine {
 		/// Texture coordinates
 		VES_TEXTURE_COORDINATES = 7,
         /// Binormal (Y axis if normal is Z)
-        VES_BINORMAL = 8,
+        VES_BITANGENT = 8,
         /// Tangent (X axis if normal is Z)
         VES_TANGENT = 9
 

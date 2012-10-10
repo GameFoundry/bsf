@@ -11,6 +11,7 @@ namespace CamelotEngine
 	{
 	private:
 		CM_SETGET_DATABLOCK_MEMBER(vertex, vertexCount, Vector3, MeshData::VertexData)
+		CM_SETGET_DATABLOCK_MEMBER(color, vertexCount, Color, MeshData::VertexData)
 		CM_SETGET_DATABLOCK_MEMBER(normal, vertexCount, Vector3, MeshData::VertexData)
 		CM_SETGET_DATABLOCK_MEMBER(tangent, vertexCount, Vector3, MeshData::VertexData)
 		CM_SETGET_DATABLOCK_MEMBER(bitangent, vertexCount, Vector3, MeshData::VertexData)
@@ -23,11 +24,12 @@ namespace CamelotEngine
 		VertexDataST()
 		{
 			CM_ADD_DATABLOCKFIELD(vertex, 0, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(normal, 1, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(tangent, 2, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(bitangent, 3, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(uv0, 4, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(uv1, 5, VertexDataST)
+			CM_ADD_DATABLOCKFIELD(color, 1, VertexDataST)
+			CM_ADD_DATABLOCKFIELD(normal, 2, VertexDataST)
+			CM_ADD_DATABLOCKFIELD(tangent, 3, VertexDataST)
+			CM_ADD_DATABLOCKFIELD(bitangent, 4, VertexDataST)
+			CM_ADD_DATABLOCKFIELD(uv0, 5, VertexDataST)
+			CM_ADD_DATABLOCKFIELD(uv1, 6, VertexDataST)
 
 			CM_ADD_PLAINFIELD(vertexCount, 7, VertexDataST)
 			CM_ADD_PLAINFIELD(streamIdx, 8, VertexDataST)

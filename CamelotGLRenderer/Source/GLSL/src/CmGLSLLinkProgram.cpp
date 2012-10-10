@@ -68,7 +68,7 @@ namespace CamelotEngine {
 		CustomAttribute("uv6", GLGpuProgram::getFixedAttributeIndex(VES_TEXTURE_COORDINATES, 6)),
 		CustomAttribute("uv7", GLGpuProgram::getFixedAttributeIndex(VES_TEXTURE_COORDINATES, 7)),
 		CustomAttribute("tangent", GLGpuProgram::getFixedAttributeIndex(VES_TANGENT, 0)),
-		CustomAttribute("binormal", GLGpuProgram::getFixedAttributeIndex(VES_BINORMAL, 0)),
+		CustomAttribute("binormal", GLGpuProgram::getFixedAttributeIndex(VES_BITANGENT, 0)),
 	};
 
 	GLint getGLGeometryInputPrimitiveType(RenderOperation::OperationType operationType, bool requiresAdjacency)

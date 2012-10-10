@@ -508,7 +508,7 @@ namespace CamelotEngine
 		case VES_TEXTURE_COORDINATES:
 			return D3DDECLUSAGE_TEXCOORD;
 			break;
-		case VES_BINORMAL:
+		case VES_BITANGENT:
 			return D3DDECLUSAGE_BINORMAL;
 			break;
 		case VES_TANGENT:

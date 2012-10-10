@@ -6,7 +6,7 @@
 namespace CamelotEngine
 {
 	MeshData::VertexData::VertexData(UINT32 vertexCount, UINT32 streamIdx)
-		:vertex(nullptr), normal(nullptr), tangent(nullptr), 
+		:vertex(nullptr), color(nullptr), normal(nullptr), tangent(nullptr), 
 		bitangent(nullptr), uv0(nullptr), uv1(nullptr), 
 		streamIdx(streamIdx), vertexCount(vertexCount)
 	{
@@ -16,6 +16,9 @@ namespace CamelotEngine
 	{
 		if(vertex != nullptr)
 			delete [] vertex;
+
+		if(color != nullptr)
+			delete [] color;
 
 		if(normal != nullptr)
 			delete [] normal;

@@ -165,7 +165,7 @@ namespace CamelotEngine
 
 		if (!mesh->GetNode())
 			return meshData;
-
+		
 		if(createTangentsIfMissing && mesh->GetElementUVCount() > 0)
 			mesh->GenerateTangentsData(0, false);
 
@@ -216,6 +216,22 @@ namespace CamelotEngine
 
 		// Find out which vertex attributes exist
 		bool allByControlPoint = true;
+
+		bool hasColor = mesh->GetElementVertexColorCount() > 0;
+		FbxGeometryElement::EMappingMode lColorMappingMode = FbxGeometryElement::eNone;
+
+		if(hasColor)
+		{
+			lColorMappingMode = mesh->GetElementVertexColor(0)->GetMappingMode();
+			if (lColorMappingMode == FbxGeometryElement::eNone)
+			{
+				hasColor = false;
+			}
+			if (hasColor && lColorMappingMode != FbxGeometryElement::eByControlPoint)
+			{
+				allByControlPoint = false;
+			}
+		}
 
 		bool hasNormal = mesh->GetElementNormalCount() > 0;
 		FbxGeometryElement::EMappingMode lNormalMappingMode = FbxGeometryElement::eNone;
@@ -303,6 +319,9 @@ namespace CamelotEngine
 		meshData->vertexBuffers.insert(std::make_pair(0, vertexData));
 		vertexData->vertex = new Vector3[lPolygonVertexCount];
 
+		if(hasColor)
+			vertexData->color = new Color[lPolygonVertexCount];
+
 		if (hasNormal)
 			vertexData->normal = new Vector3[lPolygonVertexCount];
 
@@ -334,6 +353,10 @@ namespace CamelotEngine
 		FbxVector4 lCurrentNormal;
 		FbxVector2 lCurrentUV;
 
+		const FbxGeometryElementVertexColor * lColorElement = NULL;
+		if (hasColor)
+			lColorElement = mesh->GetElementVertexColor(0);
+
 		const FbxGeometryElementTangent * lTangentElement = NULL;
 		if (hasTangent)
 			lTangentElement = mesh->GetElementTangent(0);
@@ -363,6 +386,20 @@ namespace CamelotEngine
 				vertexData->vertex[lIndex][0] = static_cast<float>(lCurrentVertex[0]);
 				vertexData->vertex[lIndex][1] = static_cast<float>(lCurrentVertex[1]);
 				vertexData->vertex[lIndex][2] = static_cast<float>(lCurrentVertex[2]);
+
+				// Save vertex color
+				if(hasColor)
+				{
+					int lColorIndex = lIndex;
+					if (lColorElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+						lColorIndex = lColorElement->GetIndexArray().GetAt(lIndex);
+
+					FbxColor lCurrentColor = lColorElement->GetDirectArray().GetAt(lColorIndex);
+					vertexData->color[lIndex][0] = static_cast<float>(lCurrentColor[0]);
+					vertexData->color[lIndex][1] = static_cast<float>(lCurrentColor[1]);
+					vertexData->color[lIndex][2] = static_cast<float>(lCurrentColor[2]);
+					vertexData->color[lIndex][3] = static_cast<float>(lCurrentColor[3]);
+				}
 
 				// Save the normal.
 				if (hasNormal)
@@ -458,6 +495,19 @@ namespace CamelotEngine
 					vertexData->vertex[lVertexCount][1] = static_cast<float>(lCurrentVertex[1]);
 					vertexData->vertex[lVertexCount][2] = static_cast<float>(lCurrentVertex[2]);
 
+					if(hasColor)
+					{
+						int lColorIndex = lIndexOffset + lVerticeIndex; // TODO - Is this right?
+						if (lColorElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+							lColorIndex = lColorElement->GetIndexArray().GetAt(lColorIndex);
+
+						FbxColor lCurrentColor = lColorElement->GetDirectArray().GetAt(lColorIndex);
+						vertexData->color[lVertexCount][0] = static_cast<float>(lCurrentColor[0]);
+						vertexData->color[lVertexCount][1] = static_cast<float>(lCurrentColor[1]);
+						vertexData->color[lVertexCount][2] = static_cast<float>(lCurrentColor[2]);
+						vertexData->color[lVertexCount][3] = static_cast<float>(lCurrentColor[3]);
+					}
+
 					if (hasNormal)
 					{
 						mesh->GetPolygonVertexNormal(lPolygonIndex, lVerticeIndex, lCurrentNormal);
@@ -490,14 +540,6 @@ namespace CamelotEngine
 						vertexData->bitangent[lVertexCount][2] = static_cast<float>(lCurrentBitangent[2]);
 					}
 
-					if (hasNormal)
-					{
-						mesh->GetPolygonVertexNormal(lPolygonIndex, lVerticeIndex, lCurrentNormal);
-						vertexData->normal[lVertexCount][0] = static_cast<float>(lCurrentNormal[0]);
-						vertexData->normal[lVertexCount][1] = static_cast<float>(lCurrentNormal[1]);
-						vertexData->normal[lVertexCount][2] = static_cast<float>(lCurrentNormal[2]);
-					}
-
 					if (hasUV0)
 					{
 						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName0, lCurrentUV);
@@ -518,5 +560,45 @@ namespace CamelotEngine
 			meshData->subMeshes[lMaterialIndex].indexCount += 3;
 		}
 
+		UINT32 offset = 0;
+		meshData->declaration.addElement(0, offset, VET_FLOAT3, VES_POSITION, 0);
+		offset += VertexElement::getTypeSize(VET_FLOAT3);
+
+		if(vertexData->color)
+		{
+			meshData->declaration.addElement(0, offset, VET_COLOUR, VES_DIFFUSE, 0);
+			offset += VertexElement::getTypeSize(VET_COLOUR);
+		}
+
+		if(vertexData->normal)
+		{
+			meshData->declaration.addElement(0, offset, VET_FLOAT3, VES_NORMAL, 0);
+			offset += VertexElement::getTypeSize(VET_FLOAT3);
+		}
+
+		if(vertexData->tangent)
+		{
+			meshData->declaration.addElement(0, offset, VET_FLOAT3, VES_TANGENT, 0);
+			offset += VertexElement::getTypeSize(VET_FLOAT3);
+		}
+
+		// TODO - Storing bitangents with the mesh is probably not a good idea. It's likely cheaper to recreate them in the shader
+		if(vertexData->bitangent)
+		{
+			meshData->declaration.addElement(0, offset, VET_FLOAT3, VES_BITANGENT, 0);
+			offset += VertexElement::getTypeSize(VET_FLOAT3);
+		}
+
+		if(vertexData->uv0)
+		{
+			meshData->declaration.addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
+			offset += VertexElement::getTypeSize(VET_FLOAT2);
+		}
+
+		if(vertexData->uv1)
+		{
+			meshData->declaration.addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 1);
+			offset += VertexElement::getTypeSize(VET_FLOAT2);
+		}
 	}
 }
