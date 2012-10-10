@@ -1,6 +1,6 @@
 #include "CmTextureData.h"
 #include "CmException.h"
-#include "CmTextureDataST.h"
+#include "CmTextureDataRTTI.h"
 
 namespace CamelotEngine
 {

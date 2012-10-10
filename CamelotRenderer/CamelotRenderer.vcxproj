@@ -115,7 +115,7 @@
     <ClInclude Include="Include\CmImporter.h" />
     <ClInclude Include="Include\CmMesh.h" />
     <ClInclude Include="Include\CmMeshData.h" />
-    <ClInclude Include="Include\CmMeshDataST.h" />
+    <ClInclude Include="Include\CmMeshDataRTTI.h" />
     <ClInclude Include="Include\CmPrerequisites.h" />
     <ClInclude Include="Include\CmRenderOperation.h" />
     <ClInclude Include="Include\CmRenderSystem.h" />
@@ -131,18 +131,18 @@
     <ClInclude Include="Include\CmSpecificImporter.h" />
     <ClInclude Include="Include\CmTexture.h" />
     <ClInclude Include="Include\CmTextureManager.h" />
-    <ClInclude Include="Include\CmTextureST.h" />
+    <ClInclude Include="Include\CmTextureRTTI.h" />
     <ClInclude Include="Include\CmTextureState.h" />
     <ClInclude Include="Include\CmVertexIndexData.h" />
     <ClInclude Include="Include\CmViewport.h" />
     <ClInclude Include="Include\CmWindowEventUtilities.h" />
-    <ClInclude Include="Include\CmResourceST.h" />
+    <ClInclude Include="Include\CmResourceRTTI.h" />
     <ClInclude Include="Include\CmGameObject.h" />
     <ClInclude Include="Include\CmComponent.h" />
     <ClInclude Include="Include\stdafx.h" />
     <ClInclude Include="Include\targetver.h" />
-    <ClInclude Include="Include\CmVertexDeclarationST.h" />
-    <ClInclude Include="Source\CmMeshST.h" />
+    <ClInclude Include="Include\CmVertexDeclarationRTTI.h" />
+    <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp" />

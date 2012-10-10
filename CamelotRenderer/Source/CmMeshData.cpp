@@ -1,7 +1,7 @@
 #include "CmMeshData.h"
 #include "CmVector2.h"
 #include "CmVector3.h"
-#include "CmMeshDataST.h"
+#include "CmMeshDataRTTI.h"
 
 namespace CamelotEngine
 {

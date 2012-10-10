@@ -105,7 +105,7 @@
     <ClInclude Include="Include\CmRTTIReflectablePtrField.h" />
     <ClInclude Include="Include\CmRTTIType.h" />
     <ClInclude Include="Include\CmString.h" />
-    <ClInclude Include="Include\CmTextureDataST.h" />
+    <ClInclude Include="Include\CmTextureDataRTTI.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmTypes.h" />
     <ClInclude Include="Include\CmFwdDeclUtil.h" />

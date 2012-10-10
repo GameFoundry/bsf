@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "CmHardwarePixelBuffer.h"
 #include "CmTexture.h"
-#include "CmTextureST.h"
+#include "CmTextureRTTI.h"
 #include "CmTextureData.h"
 #include "CmDataStream.h"
 #include "CmException.h"

@@ -40,9 +40,6 @@
     <Filter Include="Source Files\Resources">
       <UniqueIdentifier>{6df1cc13-bf9e-45e7-90ae-337999c702cf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Serialization">
-      <UniqueIdentifier>{75249db9-4f2e-43c3-8df4-37250c4b60a2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Cg">
       <UniqueIdentifier>{7477862a-2ebf-43ed-adb9-725c453b0b50}</UniqueIdentifier>
     </Filter>
@@ -54,6 +51,9 @@
     </Filter>
     <Filter Include="Source Files\Scene">
       <UniqueIdentifier>{2211ce11-e426-4aad-a5e6-73727d44bb98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RTTI">
+      <UniqueIdentifier>{75249db9-4f2e-43c3-8df4-37250c4b60a2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -166,12 +166,6 @@
     <ClInclude Include="Include\CmResources.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmResourceST.h">
-      <Filter>Header Files\Serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmTextureST.h">
-      <Filter>Header Files\Serialization</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmCgProgram.h">
       <Filter>Header Files\Cg</Filter>
     </ClInclude>
@@ -196,17 +190,23 @@
     <ClInclude Include="Include\CmMesh.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CmMeshST.h">
-      <Filter>Header Files\Serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmMeshDataST.h">
-      <Filter>Header Files\Serialization</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmMeshData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmVertexDeclarationST.h">
-      <Filter>Header Files\Serialization</Filter>
+    <ClInclude Include="Include\CmMeshDataRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CmMeshRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmResourceRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTextureRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmVertexDeclarationRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

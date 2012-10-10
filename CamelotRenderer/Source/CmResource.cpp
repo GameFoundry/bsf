@@ -1,5 +1,5 @@
 #include "CmResource.h"
-#include "CmResourceST.h"
+#include "CmResourceRTTI.h"
 
 namespace CamelotEngine
 {

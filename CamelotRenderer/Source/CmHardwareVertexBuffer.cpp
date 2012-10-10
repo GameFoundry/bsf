@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmDefaultHardwareBufferManager.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
-#include "CmVertexDeclarationST.h"
+#include "CmVertexDeclarationRTTI.h"
 
 namespace CamelotEngine {
 

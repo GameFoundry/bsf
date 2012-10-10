@@ -1,5 +1,5 @@
 #include "CmMesh.h"
-#include "CmMeshST.h"
+#include "CmMeshRTTI.h"
 
 namespace CamelotEngine
 {
