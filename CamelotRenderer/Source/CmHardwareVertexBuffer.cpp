@@ -506,7 +506,7 @@ namespace CamelotEngine {
 	/************************************************************************/
 	RTTITypeBase* VertexDeclaration::getRTTIStatic()
 	{
-		return VertexDeclarationST::instance();
+		return VertexDeclarationRTTI::instance();
 	}
 
 	RTTITypeBase* VertexDeclaration::getRTTI() const

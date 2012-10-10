@@ -33,7 +33,7 @@ namespace CamelotEngine
 
 	RTTITypeBase* Mesh::getRTTIStatic()
 	{
-		return MeshST::instance();
+		return MeshRTTI::instance();
 	}
 
 	RTTITypeBase* Mesh::getRTTI() const

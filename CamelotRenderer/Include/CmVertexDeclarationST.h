@@ -6,7 +6,7 @@
 
 namespace CamelotEngine
 {
-	class VertexDeclarationST : public RTTIType<VertexDeclaration, IReflectable, VertexDeclarationST>
+	class VertexDeclarationRTTI : public RTTIType<VertexDeclaration, IReflectable, VertexDeclarationRTTI>
 	{
 	private:
 		VertexElement& getElement(VertexDeclaration* obj, UINT32 idx)
@@ -39,10 +39,10 @@ namespace CamelotEngine
 		}
 
 	public:
-		VertexDeclarationST()
+		VertexDeclarationRTTI()
 		{
-			addPlainArrayField("mElementList", 0, &VertexDeclarationST::getElement, &VertexDeclarationST::getElementArraySize, 
-				&VertexDeclarationST::setElement, &VertexDeclarationST::setElementArraySize);
+			addPlainArrayField("mElementList", 0, &VertexDeclarationRTTI::getElement, &VertexDeclarationRTTI::getElementArraySize, 
+				&VertexDeclarationRTTI::setElement, &VertexDeclarationRTTI::setElementArraySize);
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 

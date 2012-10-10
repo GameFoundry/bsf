@@ -11,7 +11,7 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT TextureST : public RTTIType<Texture, Resource, TextureST>
+	class CM_EXPORT TextureRTTI : public RTTIType<Texture, Resource, TextureRTTI>
 	{
 	private:
 		CM_SETGET_MEMBER(mSize, UINT32, Texture)
@@ -54,29 +54,29 @@ namespace CamelotEngine
 		}
 
 	public:
-		TextureST()
+		TextureRTTI()
 		{
-			CM_ADD_PLAINFIELD(mSize, 0, TextureST)
-			CM_ADD_PLAINFIELD(mSourceUUID, 1, TextureST)
-			CM_ADD_PLAINFIELD(mHeight, 2, TextureST)
-			CM_ADD_PLAINFIELD(mWidth, 3, TextureST)
-			CM_ADD_PLAINFIELD(mDepth, 4, TextureST)
-			CM_ADD_PLAINFIELD(mNumRequestedMipmaps, 5, TextureST)
-			CM_ADD_PLAINFIELD(mNumMipmaps, 6, TextureST)
-			CM_ADD_PLAINFIELD(mMipmapsHardwareGenerated, 7, TextureST)
-			CM_ADD_PLAINFIELD(mGamma, 8, TextureST)
-			CM_ADD_PLAINFIELD(mHwGamma, 9, TextureST)
-			CM_ADD_PLAINFIELD(mFSAA, 10, TextureST)
-			CM_ADD_PLAINFIELD(mFSAAHint, 11, TextureST)
-			CM_ADD_PLAINFIELD(mTextureType, 12, TextureST)
-			CM_ADD_PLAINFIELD(mFormat, 13, TextureST)
-			CM_ADD_PLAINFIELD(mUsage, 14, TextureST)
-			CM_ADD_PLAINFIELD(mDesiredFormat, 15, TextureST)
-			CM_ADD_PLAINFIELD(mDesiredIntegerBitDepth, 16, TextureST)
-			CM_ADD_PLAINFIELD(mDesiredFloatBitDepth, 17, TextureST)
+			CM_ADD_PLAINFIELD(mSize, 0, TextureRTTI)
+			CM_ADD_PLAINFIELD(mSourceUUID, 1, TextureRTTI)
+			CM_ADD_PLAINFIELD(mHeight, 2, TextureRTTI)
+			CM_ADD_PLAINFIELD(mWidth, 3, TextureRTTI)
+			CM_ADD_PLAINFIELD(mDepth, 4, TextureRTTI)
+			CM_ADD_PLAINFIELD(mNumRequestedMipmaps, 5, TextureRTTI)
+			CM_ADD_PLAINFIELD(mNumMipmaps, 6, TextureRTTI)
+			CM_ADD_PLAINFIELD(mMipmapsHardwareGenerated, 7, TextureRTTI)
+			CM_ADD_PLAINFIELD(mGamma, 8, TextureRTTI)
+			CM_ADD_PLAINFIELD(mHwGamma, 9, TextureRTTI)
+			CM_ADD_PLAINFIELD(mFSAA, 10, TextureRTTI)
+			CM_ADD_PLAINFIELD(mFSAAHint, 11, TextureRTTI)
+			CM_ADD_PLAINFIELD(mTextureType, 12, TextureRTTI)
+			CM_ADD_PLAINFIELD(mFormat, 13, TextureRTTI)
+			CM_ADD_PLAINFIELD(mUsage, 14, TextureRTTI)
+			CM_ADD_PLAINFIELD(mDesiredFormat, 15, TextureRTTI)
+			CM_ADD_PLAINFIELD(mDesiredIntegerBitDepth, 16, TextureRTTI)
+			CM_ADD_PLAINFIELD(mDesiredFloatBitDepth, 17, TextureRTTI)
 
-			addReflectablePtrArrayField("mTextureData", 18, &TextureST::getTextureData, &TextureST::getTextureDataArraySize, 
-				&TextureST::setTextureData, &TextureST::setTextureDataArraySize);
+			addReflectablePtrArrayField("mTextureData", 18, &TextureRTTI::getTextureData, &TextureRTTI::getTextureDataArraySize, 
+				&TextureRTTI::setTextureData, &TextureRTTI::setTextureDataArraySize);
 		}
 
 		virtual const String& getRTTIName()

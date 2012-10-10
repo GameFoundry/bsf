@@ -5,11 +5,11 @@
 
 namespace CamelotEngine
 {
-	MeshData::VertexData::VertexData(UINT32 vertexCount)
+	MeshData::VertexData::VertexData(UINT32 vertexCount, UINT32 streamIdx)
 		:vertex(nullptr), normal(nullptr), tangent(nullptr), 
-		bitangent(nullptr), uv0(nullptr), uv1(nullptr)
+		bitangent(nullptr), uv0(nullptr), uv1(nullptr), 
+		streamIdx(streamIdx), vertexCount(vertexCount)
 	{
-		this->vertexCount = vertexCount;
 	}
 
 	MeshData::VertexData::~VertexData()
@@ -63,7 +63,7 @@ namespace CamelotEngine
 
 	RTTITypeBase* MeshData::getRTTIStatic()
 	{
-		return MeshDataST::instance();
+		return MeshDataRTTI::instance();
 	}
 
 	RTTITypeBase* MeshData::getRTTI() const

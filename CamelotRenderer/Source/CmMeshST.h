@@ -6,10 +6,10 @@
 
 namespace CamelotEngine
 {
-	class MeshST : public RTTIType<Mesh, Resource, MeshST>
+	class MeshRTTI : public RTTIType<Mesh, Resource, MeshRTTI>
 	{
 	public:
-		MeshST()
+		MeshRTTI()
 		{
 
 		}

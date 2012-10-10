@@ -7,7 +7,7 @@
 
 namespace CamelotEngine
 {
-	class CM_UTILITY_EXPORT TextureDataST : public RTTIType<TextureData, IReflectable, TextureDataST>
+	class CM_UTILITY_EXPORT TextureDataRTTI : public RTTIType<TextureData, IReflectable, TextureDataRTTI>
 	{
 		CM_SETGET_MEMBER(mNumMipmaps, UINT32, TextureData)
 		CM_SETGET_MEMBER(mWidth, UINT32, TextureData)
@@ -30,18 +30,18 @@ namespace CamelotEngine
 		} 
 
 	public:
-		TextureDataST()
+		TextureDataRTTI()
 		{
-			CM_ADD_PLAINFIELD(mNumMipmaps, 0, TextureDataST);
-			CM_ADD_PLAINFIELD(mWidth, 1, TextureDataST);
-			CM_ADD_PLAINFIELD(mHeight, 2, TextureDataST);
-			CM_ADD_PLAINFIELD(mSize, 3, TextureDataST);
-			CM_ADD_PLAINFIELD(mDepth, 4, TextureDataST);
-			CM_ADD_PLAINFIELD(mFlags, 5, TextureDataST);
-			CM_ADD_PLAINFIELD(mBPP, 6, TextureDataST);
-			CM_ADD_PLAINFIELD(mFormat, 7, TextureDataST);
+			CM_ADD_PLAINFIELD(mNumMipmaps, 0, TextureDataRTTI);
+			CM_ADD_PLAINFIELD(mWidth, 1, TextureDataRTTI);
+			CM_ADD_PLAINFIELD(mHeight, 2, TextureDataRTTI);
+			CM_ADD_PLAINFIELD(mSize, 3, TextureDataRTTI);
+			CM_ADD_PLAINFIELD(mDepth, 4, TextureDataRTTI);
+			CM_ADD_PLAINFIELD(mFlags, 5, TextureDataRTTI);
+			CM_ADD_PLAINFIELD(mBPP, 6, TextureDataRTTI);
+			CM_ADD_PLAINFIELD(mFormat, 7, TextureDataRTTI);
 
-			addDataBlockField("Data", 8, &TextureDataST::getData, &TextureDataST::setData);
+			addDataBlockField("Data", 8, &TextureDataRTTI::getData, &TextureDataRTTI::setData);
 		}
 
 		virtual const String& getRTTIName()

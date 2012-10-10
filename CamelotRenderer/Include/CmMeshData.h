@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
+#include "CmHardwareVertexBuffer.h"
 
 namespace CamelotEngine
 {
@@ -20,7 +21,7 @@ namespace CamelotEngine
 
 		struct VertexData : public IReflectable
 		{
-			VertexData(UINT32 vertexCount);
+			VertexData(UINT32 vertexCount, UINT32 streamIdx = 0);
 			~VertexData();
 
 			Vector3* vertex;
@@ -31,6 +32,7 @@ namespace CamelotEngine
 			Vector2* uv1;
 
 			UINT32 vertexCount;
+			UINT32 streamIdx;
 
 			/************************************************************************/
 			/* 								SERIALIZATION                      		*/
@@ -49,7 +51,7 @@ namespace CamelotEngine
 		int indexCount;
 		int vertexCount;
 
-		VertexDeclaration* declaration;
+		VertexDeclaration declaration;
 		map<int, std::shared_ptr<VertexData>>::type vertexBuffers;
 		vector<SubMeshData>::type subMeshes;
 
@@ -57,7 +59,7 @@ namespace CamelotEngine
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
 	public:
-		friend class MeshDataST;
+		friend class MeshDataRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
 	};

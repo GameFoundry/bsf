@@ -6,7 +6,7 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT ResourceST : public RTTIType<Resource, IReflectable, ResourceST>
+	class CM_EXPORT ResourceRTTI : public RTTIType<Resource, IReflectable, ResourceRTTI>
 	{
 	private:
 		UINT32& getSize(Resource* obj) { return obj->mSize; }
@@ -15,10 +15,10 @@ namespace CamelotEngine
 		void setUUID(Resource* obj, UUID& uuid) { obj->mSourceUUID = uuid; }
 
 	public:
-		ResourceST()
+		ResourceRTTI()
 		{
-			addPlainField("Size", 0, &ResourceST::getSize, &ResourceST::setSize);
-			addPlainField("UUID", 1, &ResourceST::getUUID, &ResourceST::setUUID);
+			addPlainField("Size", 0, &ResourceRTTI::getSize, &ResourceRTTI::setSize);
+			addPlainField("UUID", 1, &ResourceRTTI::getUUID, &ResourceRTTI::setUUID);
 		}
 
 		virtual const String& getRTTIName()

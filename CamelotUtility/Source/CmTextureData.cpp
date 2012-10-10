@@ -62,7 +62,7 @@ namespace CamelotEngine
 
 	RTTITypeBase* TextureData::getRTTIStatic()
 	{
-		return TextureDataST::instance();
+		return TextureDataRTTI::instance();
 	}
 
 	RTTITypeBase* TextureData::getRTTI() const

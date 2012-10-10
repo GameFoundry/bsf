@@ -49,7 +49,7 @@ namespace CamelotEngine
 		
 	RTTITypeBase* Resource::getRTTIStatic()
 	{
-		return ResourceST::instance();
+		return ResourceRTTI::instance();
 	}
 
 	RTTITypeBase* Resource::getRTTI() const

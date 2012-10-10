@@ -107,7 +107,7 @@ namespace CamelotEngine {
 	class Component;
 	class SceneManager;
 	// Serialization
-	class MeshST;
+	class MeshRTTI;
 }
 
 /* Shared pointer typedefs*/
@@ -131,7 +131,8 @@ namespace CamelotEngine
 		TID_Texture = 1001,
 		TID_Mesh = 1002,
 		TID_MeshData = 1003,
-		TID_VertexDeclaration = 1004
+		TID_VertexDeclaration = 1004,
+		TID_VertexData = 1005
 	};
 }
 

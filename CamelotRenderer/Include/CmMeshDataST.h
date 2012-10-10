@@ -18,6 +18,7 @@ namespace CamelotEngine
 		CM_SETGET_DATABLOCK_MEMBER(uv1, vertexCount, Vector2, MeshData::VertexData)
 
 		CM_SETGET_MEMBER(vertexCount, UINT32, MeshData::VertexData);
+		CM_SETGET_MEMBER(streamIdx, UINT32, MeshData::VertexData);
 	public:
 		VertexDataST()
 		{
@@ -29,6 +30,7 @@ namespace CamelotEngine
 			CM_ADD_DATABLOCKFIELD(uv1, 5, VertexDataST)
 
 			CM_ADD_PLAINFIELD(vertexCount, 7, VertexDataST)
+			CM_ADD_PLAINFIELD(streamIdx, 8, VertexDataST)
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
@@ -44,11 +46,11 @@ namespace CamelotEngine
 
 		virtual UINT32 getRTTIId() 
 		{
-			return 104;
+			return TID_VertexData;
 		}
 	};
 
-	class CM_EXPORT MeshDataST : public RTTIType<MeshData, IReflectable, MeshDataST>
+	class CM_EXPORT MeshDataRTTI : public RTTIType<MeshData, IReflectable, MeshDataRTTI>
 	{
 	private:
 		CM_SETGET_MEMBER(indexCount, INT32, MeshData)
@@ -56,6 +58,9 @@ namespace CamelotEngine
 
 		CM_SETGET_DATABLOCK_MEMBER(index, indexCount, int, MeshData)
 
+		/************************************************************************/
+		/* 								subMeshes                      			*/
+		/************************************************************************/
 		MeshData::SubMeshData& getSubmesh(MeshData* obj, UINT32 idx)
 		{
 			return obj->subMeshes[idx];
@@ -75,15 +80,57 @@ namespace CamelotEngine
 		{
 			obj->subMeshes.resize(size);
 		}
-	public:
-		MeshDataST()
+
+		/************************************************************************/
+		/* 								vertexDeclaration                  		*/
+		/************************************************************************/
+
+		VertexDeclaration& getVertexDecl(MeshData* obj) { return obj->declaration; }
+		void setVertexDecl(MeshData* obj, VertexDeclaration& vertexDecl) { obj->declaration = vertexDecl; }
+
+		/************************************************************************/
+		/* 								vertexData                      		*/
+		/************************************************************************/
+		std::shared_ptr<MeshData::VertexData> getVertexData(MeshData* obj, UINT32 idx)
 		{
-			CM_ADD_DATABLOCKFIELD(index, 0, MeshDataST)
+			int curIdx = 0;
+			for(auto iter = obj->vertexBuffers.begin(); iter != obj->vertexBuffers.end(); ++iter)
+			{
+				if(curIdx == idx)
+					return iter->second;
 
-			CM_ADD_PLAINFIELD(indexCount, 1, MeshDataST)
-			CM_ADD_PLAINFIELD(vertexCount, 2, MeshDataST)
+				curIdx++;
+			}
 
-			addPlainArrayField("subMeshes", 3, &MeshDataST::getSubmesh, &MeshDataST::getSubmeshArraySize, &MeshDataST::setSubmesh, &MeshDataST::setSubmeshArraySize);
+			CM_EXCEPT(InvalidParametersException, "Invalid index: " + toString(idx));
+		}
+
+		void setVertexData(MeshData* obj, UINT32 idx, std::shared_ptr<MeshData::VertexData> data)
+		{
+			obj->vertexBuffers[data->streamIdx] = data;
+		}
+
+		UINT32 getVertexDataArraySize(MeshData* obj)
+		{
+			return obj->vertexBuffers.size();
+		}
+
+		void setVertexDataArraySize(MeshData* obj, UINT32 size)
+		{
+			// Do nothing, map will expand as entries are added
+		}
+	public:
+		MeshDataRTTI()
+		{
+			CM_ADD_DATABLOCKFIELD(index, 0, MeshDataRTTI)
+
+			CM_ADD_PLAINFIELD(indexCount, 1, MeshDataRTTI)
+			CM_ADD_PLAINFIELD(vertexCount, 2, MeshDataRTTI)
+
+			addPlainArrayField("subMeshes", 3, &MeshDataRTTI::getSubmesh, &MeshDataRTTI::getSubmeshArraySize, &MeshDataRTTI::setSubmesh, &MeshDataRTTI::setSubmeshArraySize);
+			addReflectableField("vertexDeclaration", 4, &MeshDataRTTI::getVertexDecl, &MeshDataRTTI::setVertexDecl);
+			addReflectablePtrArrayField("vertexBuffer", 5, &MeshDataRTTI::getVertexData, &MeshDataRTTI::getVertexDataArraySize, 
+				&MeshDataRTTI::setVertexData, &MeshDataRTTI::setVertexDataArraySize);
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
