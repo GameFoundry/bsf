@@ -13,8 +13,12 @@ namespace CamelotEngine
 			indexOffset(0), indexCount(0)
 		{ }
 
-		int indexOffset;
-		int indexCount;
+		SubMesh(UINT32 indexOffset, UINT32 indexCount):
+			indexOffset(indexOffset), indexCount(indexCount)
+		{ }
+
+		UINT32 indexOffset;
+		UINT32 indexCount;
 	};
 
 	class Mesh : public Resource
@@ -28,7 +32,7 @@ namespace CamelotEngine
 		 */
 		void prepare(MeshDataPtr meshData);
 
-		virtual void load();
+		virtual void loadImpl();
 
 	private:
 		MeshDataPtr mMeshData;

@@ -6,6 +6,12 @@
 
 namespace CamelotEngine
 {
+	enum ResourceState
+	{
+		RS_Unloaded,
+		RS_Loaded
+	};
+
 	/**
 	 * @brief	Base class for all resources used in the engine.
 	 */
@@ -13,11 +19,12 @@ namespace CamelotEngine
 	{
 	public:
 		Resource(/*const UUID& sourceUUID*/) // TODO - Temporarily don't initialize UUID, because I want texture to inherit from resource and UUIDs arent set up yet
-			:mSize(0) /*mSourceUUID(sourceUUID),*/
+			:mSize(0), mLoadState(RS_Unloaded) /*mSourceUUID(sourceUUID),*/
 		{}
 		virtual ~Resource() {};
 
-		virtual void load() = 0;
+		void load();
+		virtual void loadImpl() = 0;
 
 	protected:
 		friend class Resources;
@@ -28,6 +35,9 @@ namespace CamelotEngine
 
 		UUID mSourceUUID; 
 		UINT32 mSize;
+
+		// Transient
+		ResourceState mLoadState;
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

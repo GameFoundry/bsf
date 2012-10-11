@@ -60,8 +60,8 @@ namespace CamelotEngine {
 		
 		void getCustomAttribute(const String& name, void* pData);
 
-		/// @copydoc Resource::load
-		void load();
+		/// @copydoc Resource::loadImpl
+		void loadImpl();
 
     protected:
 		/// @copydoc Texture::createInternalResourcesImpl
