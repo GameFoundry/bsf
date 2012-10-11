@@ -46,7 +46,7 @@ namespace CamelotEngine
 		mCamera = mCameraGO->addComponent<Camera>();
 
 		mCamera->init(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
-		mCameraGO->setPosition(Vector3(0,50,240));
+		mCameraGO->setPosition(Vector3(0,50,1240));
 		mCameraGO->lookAt(Vector3(0,50,-300));
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(800.0f / 600.0f);
@@ -153,12 +153,17 @@ namespace CamelotEngine
 
 		//mDbgTexture = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
 		TexturePtr testTex = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
-		mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\BarrelMesh.fbx"));
+		mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
+		//mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\TestFBX.fbx"));
 
 		Resources::startUp(new Resources());
 
 		gResources().save(testTex, "C:\\ExportTest.tex");
+		gResources().save(mDbgMesh, "C:\\ExportMesh.mesh");
+
 		mDbgTexture = std::static_pointer_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
+		mDbgMesh = std::static_pointer_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
+
 		mDbgTexture = testTex;
 	}
 

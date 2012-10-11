@@ -39,7 +39,7 @@ namespace CamelotEngine
 
 	RTTITypeBase* MeshData::VertexData::getRTTIStatic()
 	{
-		return VertexDataST::instance();
+		return VertexDataRTTI::instance();
 	}
 
 	RTTITypeBase* MeshData::VertexData::getRTTI() const

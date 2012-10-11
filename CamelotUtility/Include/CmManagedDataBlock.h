@@ -44,7 +44,7 @@ namespace CamelotEngine
 		}
 
 		UINT8* getData() { return mData; }
-		UINT32 getSize() { return mSize; }
+		UINT32 getSize() { return mData ? mSize : 0; }
 
 	private:
 		UINT8* mData;

@@ -7,32 +7,45 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT VertexDataST : public RTTIType<MeshData::VertexData, IReflectable, VertexDataST>
+	class CM_EXPORT VertexDataRTTI : public RTTIType<MeshData::VertexData, IReflectable, VertexDataRTTI>
 	{
 	private:
-		CM_SETGET_DATABLOCK_MEMBER(vertex, vertexCount, Vector3, MeshData::VertexData)
-		CM_SETGET_DATABLOCK_MEMBER(color, vertexCount, Color, MeshData::VertexData)
-		CM_SETGET_DATABLOCK_MEMBER(normal, vertexCount, Vector3, MeshData::VertexData)
-		CM_SETGET_DATABLOCK_MEMBER(tangent, vertexCount, Vector3, MeshData::VertexData)
-		CM_SETGET_DATABLOCK_MEMBER(bitangent, vertexCount, Vector3, MeshData::VertexData)
-		CM_SETGET_DATABLOCK_MEMBER(uv0, vertexCount, Vector2, MeshData::VertexData)
-		CM_SETGET_DATABLOCK_MEMBER(uv1, vertexCount, Vector2, MeshData::VertexData)
+		ManagedDataBlock getVertex(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->vertex, obj->vertexCount * sizeof(Vector3), false); }	
+		void setVertex(MeshData::VertexData* obj, ManagedDataBlock val) { obj->vertex = (Vector3*)val.getData(); } 
+
+		ManagedDataBlock getColor(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->color, obj->vertexCount * sizeof(Color), false); }	
+		void setColor(MeshData::VertexData* obj, ManagedDataBlock val) { obj->color = (Color*)val.getData(); } 
+
+		ManagedDataBlock getNormal(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->normal, obj->vertexCount * sizeof(Vector3), false); }	
+		void setNormal(MeshData::VertexData* obj, ManagedDataBlock val) { obj->normal = (Vector3*)val.getData(); } 
+
+		ManagedDataBlock getTangent(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->tangent, obj->vertexCount * sizeof(Vector3), false); }	
+		void setTangent(MeshData::VertexData* obj, ManagedDataBlock val) { obj->tangent = (Vector3*)val.getData(); } 
+
+		ManagedDataBlock getBitangent(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->bitangent, obj->vertexCount * sizeof(Vector3), false); }	
+		void setBitangent(MeshData::VertexData* obj, ManagedDataBlock val) { obj->bitangent = (Vector3*)val.getData(); } 
+
+		ManagedDataBlock getUV0(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->uv0, obj->vertexCount * sizeof(Vector2), false); }	
+		void setUV0(MeshData::VertexData* obj, ManagedDataBlock val) { obj->uv0 = (Vector2*)val.getData(); } 
+
+		ManagedDataBlock getUV1(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->uv1, obj->vertexCount * sizeof(Vector2), false); }	
+		void setUV1(MeshData::VertexData* obj, ManagedDataBlock val) { obj->uv1 = (Vector2*)val.getData(); } 
 
 		CM_SETGET_MEMBER(vertexCount, UINT32, MeshData::VertexData);
 		CM_SETGET_MEMBER(streamIdx, UINT32, MeshData::VertexData);
 	public:
-		VertexDataST()
+		VertexDataRTTI()
 		{
-			CM_ADD_DATABLOCKFIELD(vertex, 0, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(color, 1, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(normal, 2, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(tangent, 3, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(bitangent, 4, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(uv0, 5, VertexDataST)
-			CM_ADD_DATABLOCKFIELD(uv1, 6, VertexDataST)
+			addDataBlockField("vertex", 0, &VertexDataRTTI::getVertex, &VertexDataRTTI::setVertex);
+			addDataBlockField("color", 1, &VertexDataRTTI::getColor, &VertexDataRTTI::setColor);
+			addDataBlockField("normal", 2, &VertexDataRTTI::getNormal, &VertexDataRTTI::setNormal);
+			addDataBlockField("tangent", 3, &VertexDataRTTI::getTangent, &VertexDataRTTI::setTangent);
+			addDataBlockField("bitangent", 4, &VertexDataRTTI::getBitangent, &VertexDataRTTI::setBitangent);
+			addDataBlockField("uv0", 5, &VertexDataRTTI::getUV0, &VertexDataRTTI::setUV0);
+			addDataBlockField("uv1", 6, &VertexDataRTTI::getUV1, &VertexDataRTTI::setUV1);
 
-			CM_ADD_PLAINFIELD(vertexCount, 7, VertexDataST)
-			CM_ADD_PLAINFIELD(streamIdx, 8, VertexDataST)
+			CM_ADD_PLAINFIELD(vertexCount, 7, VertexDataRTTI)
+			CM_ADD_PLAINFIELD(streamIdx, 8, VertexDataRTTI)
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
@@ -58,7 +71,8 @@ namespace CamelotEngine
 		CM_SETGET_MEMBER(indexCount, INT32, MeshData)
 		CM_SETGET_MEMBER(vertexCount, INT32, MeshData);
 
-		CM_SETGET_DATABLOCK_MEMBER(index, indexCount, int, MeshData)
+		ManagedDataBlock getIndex(MeshData* obj) { return ManagedDataBlock((UINT8*)obj->index, obj->indexCount * sizeof(int), false); }	
+		void setIndex(MeshData* obj, ManagedDataBlock val) { obj->index = (int*)val.getData(); } 
 
 		/************************************************************************/
 		/* 								subMeshes                      			*/
@@ -124,7 +138,7 @@ namespace CamelotEngine
 	public:
 		MeshDataRTTI()
 		{
-			CM_ADD_DATABLOCKFIELD(index, 0, MeshDataRTTI)
+			addDataBlockField("index", 0, &MeshDataRTTI::getIndex, &MeshDataRTTI::setIndex);
 
 			CM_ADD_PLAINFIELD(indexCount, 1, MeshDataRTTI)
 			CM_ADD_PLAINFIELD(vertexCount, 2, MeshDataRTTI)

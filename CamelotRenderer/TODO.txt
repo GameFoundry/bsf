@@ -46,6 +46,10 @@ TODO:
  - OpenGL too
 
 TOMORROW:
+ - Mesh loading:
+   - GetRenderOperation doesn't consider sub-meshes
+   - FBX importer only imports the first mesh, while it should import them all
+   - Imported FBX meshes are too big
  - Remove template from RTTIType and move it to IReflectable? This way i can hopefully move GetRTTITypeStatic and GetRTTIType to IReflectable so I don't
    need to manually implement those for every method.
  - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?
@@ -55,7 +59,6 @@ TOMORROW:
  - How do I serialize derived classes, without rewriting all the base class serialization?
    - Unless something better dawns on me by Monday, just inherit from parents SerializableType and manually make sure no IDs overlap.
      - We can improve later if needed. I though about it too much for now.
- Continue working on Importer, Resources (IMPORTANT - AssetDatabase in a single file probably won't work. Multiple people won't be able to work on it. Unless we make it part of a local cache?)
  Try to fully implement free image and maybe FBX importers
   - Less important notes:
     - All of this must be thread safe to allow for background loading

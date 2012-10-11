@@ -24,15 +24,8 @@ namespace CamelotEngine
 	type##& get##name(parentType##* obj) { return obj->##name; }				\
 	void set##name(parentType##* obj, type##& val) { obj->##name = val; } 
 
-#define CM_SETGET_DATABLOCK_MEMBER(name, sizeField, type, parentType)								\
-	ManagedDataBlock get##name(parentType##* obj) { return ManagedDataBlock((UINT8*)obj->##name, obj->##sizeField, false); }				\
-	void set##name(parentType##* obj, ManagedDataBlock val) { obj->##name = (##type##*)val.getData(); } 
-
 #define CM_ADD_PLAINFIELD(name, id, parentType) \
 	addPlainField(#name, id##, &##parentType##::get##name, &##parentType##::set##name);
-
-#define CM_ADD_DATABLOCKFIELD(name, id, parentType) \
-	addDataBlockField(#name, id##, &##parentType##::get##name, &##parentType##::set##name);
 
 	/**
 	 * @brief	Provides an interface for accessing fields of a certain class.

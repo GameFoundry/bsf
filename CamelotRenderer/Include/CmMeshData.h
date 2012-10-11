@@ -39,7 +39,7 @@ namespace CamelotEngine
 			/* 								SERIALIZATION                      		*/
 			/************************************************************************/
 		public:
-			friend class VertexDataST;
+			friend class VertexDataRTTI;
 			static RTTITypeBase* getRTTIStatic();
 			virtual RTTITypeBase* getRTTI() const;
 		};

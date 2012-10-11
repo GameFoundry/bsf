@@ -22,7 +22,7 @@
  * @param	dataPtr	Pointer to data which to copy.
  * @param	size   	Size of the data to copy
  */
-#define COPY_TO_BUFFER(dataPtr, size)									\
+#define COPY_TO_BUFFER(dataIter, size)									\
 if((*bytesWritten + size##) > bufferLength)								\
 {																		\
 	mTotalBytesWritten += *bytesWritten;								\
@@ -31,7 +31,7 @@ if((*bytesWritten + size##) > bufferLength)								\
 	*bytesWritten = 0;													\
 }																		\
 																		\
-memcpy(buffer, dataPtr##, size##);										\
+memcpy(buffer, dataIter##, size##);										\
 buffer += size##;														\
 *bytesWritten += size##;
 
@@ -74,15 +74,17 @@ namespace CamelotEngine
 					continue; // Already processed
 
 				std::shared_ptr<IReflectable> curObject = iter->object;
-				buffer = encodeInternal(curObject.get(), iter->objectId, buffer, bufferLength, bytesWritten, flushBufferCallback);
+				UINT32 curObjectid = iter->objectId;
+				serializedObjects.insert(curObjectid);
+				mObjectsToEncode.erase(iter);
+
+				buffer = encodeInternal(curObject.get(), curObjectid, buffer, bufferLength, bytesWritten, flushBufferCallback);
 				if(buffer == nullptr)
 				{
 					CM_EXCEPT(InternalErrorException, 
 						"Destination buffer is null or not large enough.");
 				}
 
-				serializedObjects.insert(iter->objectId);
-				mObjectsToEncode.erase(iter);
 				foundObjectToProcess = true;
 				break; // Need to start over as mObjectsToSerialize was possibly modified
 			}
@@ -128,9 +130,10 @@ namespace CamelotEngine
 		// Create initial object + all other objects that are being referenced.
 		// Use fields to find the type of referenced object.
 		UINT32 bytesRead = 0;
-		while(decodeInternal(object, data, dataLength, bytesRead))
+		UINT8* dataIter = data + bytesRead;
+		while(decodeInternal(object, dataIter, dataLength, bytesRead))
 		{
-			data += bytesRead;
+			dataIter = data + bytesRead;
 
 			if((bytesRead + sizeof(UINT32)) > dataLength)
 			{
@@ -140,7 +143,7 @@ namespace CamelotEngine
 
 			objectMetaData.objectMeta = 0;
 			objectMetaData.typeId = 0;
-			memcpy(&objectMetaData, data, sizeof(ObjectMetaData));
+			memcpy(&objectMetaData, dataIter, sizeof(ObjectMetaData));
 
 			objectId = 0;
 			objectTypeId = 0;

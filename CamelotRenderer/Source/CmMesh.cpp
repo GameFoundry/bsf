@@ -51,7 +51,7 @@ namespace CamelotEngine
 			UINT16* idxData = static_cast<UINT16*>(mIndexData->indexBuffer->lock(HardwareBuffer::HBL_READ_ONLY));
 
 			for(UINT32 i = 0; i < mIndexData->indexCount; i++)
-				mMeshData->index[i] = (UINT32)idxData[i];
+				meshData->index[i] = (UINT32)idxData[i];
 
 			mIndexData->indexBuffer->unlock();
 		}
@@ -85,39 +85,39 @@ namespace CamelotEngine
 					switch(semantic)
 					{
 					case VES_POSITION:
-						vertexData->vertex = new Vector3[mMeshData->vertexCount];
+						vertexData->vertex = new Vector3[meshData->vertexCount];
 						dest = (UINT8*)vertexData->vertex;
 
 						break;
 					case VES_DIFFUSE:
-						vertexData->color = new Color[mMeshData->vertexCount];
+						vertexData->color = new Color[meshData->vertexCount];
 						dest = (UINT8*)vertexData->color;
 
 						break;
 					case VES_NORMAL:
-						vertexData->normal = new Vector3[mMeshData->vertexCount];
+						vertexData->normal = new Vector3[meshData->vertexCount];
 						dest = (UINT8*)vertexData->normal;	
 
 						break;
 					case VES_TANGENT:
-						vertexData->tangent = new Vector3[mMeshData->vertexCount];
+						vertexData->tangent = new Vector3[meshData->vertexCount];
 						dest = (UINT8*)vertexData->tangent;	
 
 						break;
 					case VES_BITANGENT:
-						vertexData->bitangent = new Vector3[mMeshData->vertexCount];
+						vertexData->bitangent = new Vector3[meshData->vertexCount];
 						dest = (UINT8*)vertexData->bitangent;	
 
 						break;
 					case VES_TEXTURE_COORDINATES:
 						if(element->getIndex() == 0)
 						{
-							vertexData->uv0 = new Vector2[mMeshData->vertexCount];
+							vertexData->uv0 = new Vector2[meshData->vertexCount];
 							dest = (UINT8*)vertexData->uv0;	
 						}
 						else if(element->getIndex() == 1)
 						{
-							vertexData->uv1 = new Vector2[mMeshData->vertexCount];
+							vertexData->uv1 = new Vector2[meshData->vertexCount];
 							dest = (UINT8*)vertexData->uv1;	
 						}
 
@@ -139,7 +139,7 @@ namespace CamelotEngine
 			}
 		}		
 
-		return nullptr;
+		return meshData;
 	}
 
 	RenderOperation Mesh::getRenderOperation(UINT32 subMeshIdx) const
