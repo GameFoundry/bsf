@@ -263,7 +263,7 @@ namespace CamelotEngine
 		void _setPolygonMode(PolygonMode level);
         void _setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter);
 		void _setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy);
-		void setVertexDeclaration(VertexDeclaration* decl);
+		void setVertexDeclaration(VertexDeclarationPtr decl);
 		void setVertexBufferBinding(VertexBufferBinding* binding);
         void _render(const RenderOperation& op);
         /** See

@@ -68,26 +68,19 @@ namespace CamelotEngine {
         IndexBufferList mIndexBuffers;
 
 
-        typedef set<VertexDeclaration*>::type VertexDeclarationList;
 		typedef set<VertexBufferBinding*>::type VertexBufferBindingList;
-        VertexDeclarationList mVertexDeclarations;
 		VertexBufferBindingList mVertexBufferBindings;
 
 		// Mutexes
 		CM_MUTEX(mVertexBuffersMutex)
 		CM_MUTEX(mIndexBuffersMutex)
-		CM_MUTEX(mVertexDeclarationsMutex)
 		CM_MUTEX(mVertexBufferBindingsMutex)
 
-        /// Internal method for destroys all vertex declarations
-        virtual void destroyAllDeclarations(void);
         /// Internal method for destroys all vertex buffer bindings
         virtual void destroyAllBindings(void);
 
         /// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
-        virtual VertexDeclaration* createVertexDeclarationImpl(void);
-        /// Internal method for destroys a vertex declaration, may be overridden by certain rendering APIs
-        virtual void destroyVertexDeclarationImpl(VertexDeclaration* decl);
+        virtual VertexDeclarationPtr createVertexDeclarationImpl(void);
 
 		/// Internal method for creates a new VertexBufferBinding, may be overridden by certain rendering APIs
 		virtual VertexBufferBinding* createVertexBufferBindingImpl(void);
@@ -156,9 +149,7 @@ namespace CamelotEngine {
 			HardwareBuffer::Usage usage, bool useShadowBuffer = false) = 0;
 
         /** Creates a new vertex declaration. */
-        virtual VertexDeclaration* createVertexDeclaration(void);
-        /** Destroys a vertex declaration. */
-        virtual void destroyVertexDeclaration(VertexDeclaration* decl);
+        virtual VertexDeclarationPtr createVertexDeclaration(void);
 
 		/** Creates a new VertexBufferBinding. */
 		virtual VertexBufferBinding* createVertexBufferBinding(void);
@@ -217,14 +208,9 @@ namespace CamelotEngine {
 		}
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexDeclaration */
-		virtual VertexDeclaration* createVertexDeclaration(void)
+		virtual VertexDeclarationPtr createVertexDeclaration(void)
 		{
 			return mImpl->createVertexDeclaration();
-		}
-		/** @copydoc HardwareBufferManagerInterface::destroyVertexDeclaration */
-        virtual void destroyVertexDeclaration(VertexDeclaration* decl)
-		{
-			mImpl->destroyVertexDeclaration(decl);
 		}
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexBufferBinding */

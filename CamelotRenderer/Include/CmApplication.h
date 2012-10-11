@@ -30,6 +30,7 @@ namespace CamelotEngine
 			HighLevelGpuProgramPtr mFragProg;
 			HighLevelGpuProgramPtr mVertProg;
 			TexturePtr mDbgTexture;
+			MeshPtr mDbgMesh;
 			GameObjectPtr mCameraGO;
 	};
 

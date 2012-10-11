@@ -19,7 +19,7 @@ namespace CamelotEngine
 			int indexCount;
 		};
 
-		struct VertexData : public IReflectable
+		struct CM_EXPORT VertexData : public IReflectable
 		{
 			VertexData(UINT32 vertexCount, UINT32 streamIdx = 0);
 			~VertexData();
@@ -52,7 +52,7 @@ namespace CamelotEngine
 		int indexCount;
 		int vertexCount;
 
-		VertexDeclaration declaration;
+		VertexDeclarationPtr declaration;
 		map<int, std::shared_ptr<VertexData>>::type vertexBuffers;
 		vector<SubMeshData>::type subMeshes;
 

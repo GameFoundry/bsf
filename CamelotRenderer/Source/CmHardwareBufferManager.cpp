@@ -55,26 +55,16 @@ namespace CamelotEngine {
 		mIndexBuffers.clear();
 
         // Destroy everything
-        destroyAllDeclarations();
         destroyAllBindings();
         // No need to destroy main buffers - they will be destroyed by removal of bindings
 
         // No need to destroy temp buffers - they will be destroyed automatically.
     }
     //-----------------------------------------------------------------------
-    VertexDeclaration* HardwareBufferManagerBase::createVertexDeclaration(void)
+    VertexDeclarationPtr HardwareBufferManagerBase::createVertexDeclaration(void)
     {
-        VertexDeclaration* decl = createVertexDeclarationImpl();
-		CM_LOCK_MUTEX(mVertexDeclarationsMutex)
-        mVertexDeclarations.insert(decl);
+        VertexDeclarationPtr decl = createVertexDeclarationImpl();
         return decl;
-    }
-    //-----------------------------------------------------------------------
-    void HardwareBufferManagerBase::destroyVertexDeclaration(VertexDeclaration* decl)
-    {
-		CM_LOCK_MUTEX(mVertexDeclarationsMutex)
-        mVertexDeclarations.erase(decl);
-        destroyVertexDeclarationImpl(decl);
     }
     //-----------------------------------------------------------------------
 	VertexBufferBinding* HardwareBufferManagerBase::createVertexBufferBinding(void)
@@ -92,14 +82,9 @@ namespace CamelotEngine {
 		destroyVertexBufferBindingImpl(binding);
 	}
     //-----------------------------------------------------------------------
-    VertexDeclaration* HardwareBufferManagerBase::createVertexDeclarationImpl(void)
+    VertexDeclarationPtr HardwareBufferManagerBase::createVertexDeclarationImpl(void)
     {
-        return new VertexDeclaration();
-    }
-    //-----------------------------------------------------------------------
-    void HardwareBufferManagerBase::destroyVertexDeclarationImpl(VertexDeclaration* decl)
-    {
-        delete decl;
+        return VertexDeclarationPtr(new VertexDeclaration());
     }
     //-----------------------------------------------------------------------
 	VertexBufferBinding* HardwareBufferManagerBase::createVertexBufferBindingImpl(void)
@@ -111,17 +96,6 @@ namespace CamelotEngine {
 	{
 		delete binding;
 	}
-    //-----------------------------------------------------------------------
-    void HardwareBufferManagerBase::destroyAllDeclarations(void)
-    {
-		CM_LOCK_MUTEX(mVertexDeclarationsMutex)
-        VertexDeclarationList::iterator decl;
-        for (decl = mVertexDeclarations.begin(); decl != mVertexDeclarations.end(); ++decl)
-        {
-            destroyVertexDeclarationImpl(*decl);
-        }
-        mVertexDeclarations.clear();
-    }
     //-----------------------------------------------------------------------
     void HardwareBufferManagerBase::destroyAllBindings(void)
     {

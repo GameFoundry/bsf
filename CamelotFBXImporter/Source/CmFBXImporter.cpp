@@ -4,6 +4,7 @@
 #include "CmDataStream.h"
 #include "CmPath.h"
 #include "CmMeshData.h"
+#include "CmMesh.h"
 #include "CmVector2.h"
 #include "CmVector3.h"
 #include "CmVector4.h"
@@ -44,13 +45,14 @@ namespace CamelotEngine
 		startUpSdk(fbxManager, fbxScene);
 		loadScene(fbxManager, fbxScene, filePath);
 
-		MeshDataPtr mesh = parseScene(fbxManager, fbxScene);	
+		MeshDataPtr meshData = parseScene(fbxManager, fbxScene);	
 
 		shutDownSdk(fbxManager);
 
-		// TODO - Free FBXMeshData
+		MeshPtr mesh(new Mesh());
+		mesh->setMeshData(meshData);
 
-		return nullptr;
+		return mesh;
 	}
 
 	void FBXImporter::startUpSdk(FbxManager*& manager, FbxScene*& scene)
@@ -186,7 +188,7 @@ namespace CamelotEngine
 					// Count the faces of each material
 					for (int lPolygonIndex = 0; lPolygonIndex < lPolygonCount; ++lPolygonIndex)
 					{
-						const int lMaterialIndex = lMaterialIndice->GetAt(lPolygonIndex);
+						const UINT32 lMaterialIndex = (UINT32)lMaterialIndice->GetAt(lPolygonIndex);
 						if (meshData->subMeshes.size() < lMaterialIndex + 1)
 						{
 							meshData->subMeshes.resize(lMaterialIndex + 1);
@@ -561,44 +563,46 @@ namespace CamelotEngine
 		}
 
 		UINT32 offset = 0;
-		meshData->declaration.addElement(0, offset, VET_FLOAT3, VES_POSITION, 0);
+		meshData->declaration->addElement(0, offset, VET_FLOAT3, VES_POSITION, 0);
 		offset += VertexElement::getTypeSize(VET_FLOAT3);
 
 		if(vertexData->color)
 		{
-			meshData->declaration.addElement(0, offset, VET_COLOUR, VES_DIFFUSE, 0);
+			meshData->declaration->addElement(0, offset, VET_COLOUR, VES_DIFFUSE, 0);
 			offset += VertexElement::getTypeSize(VET_COLOUR);
 		}
 
 		if(vertexData->normal)
 		{
-			meshData->declaration.addElement(0, offset, VET_FLOAT3, VES_NORMAL, 0);
+			meshData->declaration->addElement(0, offset, VET_FLOAT3, VES_NORMAL, 0);
 			offset += VertexElement::getTypeSize(VET_FLOAT3);
 		}
 
 		if(vertexData->tangent)
 		{
-			meshData->declaration.addElement(0, offset, VET_FLOAT3, VES_TANGENT, 0);
+			meshData->declaration->addElement(0, offset, VET_FLOAT3, VES_TANGENT, 0);
 			offset += VertexElement::getTypeSize(VET_FLOAT3);
 		}
 
 		// TODO - Storing bitangents with the mesh is probably not a good idea. It's likely cheaper to recreate them in the shader
 		if(vertexData->bitangent)
 		{
-			meshData->declaration.addElement(0, offset, VET_FLOAT3, VES_BITANGENT, 0);
+			meshData->declaration->addElement(0, offset, VET_FLOAT3, VES_BITANGENT, 0);
 			offset += VertexElement::getTypeSize(VET_FLOAT3);
 		}
 
 		if(vertexData->uv0)
 		{
-			meshData->declaration.addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
+			meshData->declaration->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
 			offset += VertexElement::getTypeSize(VET_FLOAT2);
 		}
 
 		if(vertexData->uv1)
 		{
-			meshData->declaration.addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 1);
+			meshData->declaration->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 1);
 			offset += VertexElement::getTypeSize(VET_FLOAT2);
 		}
+
+		return meshData;
 	}
 }

@@ -1,6 +1,7 @@
 #include "CmMeshData.h"
 #include "CmVector2.h"
 #include "CmVector3.h"
+#include "CmHardwareBufferManager.h"
 #include "CmMeshDataRTTI.h"
 
 namespace CamelotEngine
@@ -50,7 +51,9 @@ namespace CamelotEngine
 	   :index(nullptr),
 		indexCount(0),
 		vertexCount(0)
-	{ }
+	{
+		declaration = HardwareBufferManager::instance().createVertexDeclaration();
+	}
 
 	MeshData::~MeshData()
 	{

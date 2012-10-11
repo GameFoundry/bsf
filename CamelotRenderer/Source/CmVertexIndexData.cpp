@@ -50,7 +50,7 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	VertexData::VertexData(VertexDeclaration* dcl, VertexBufferBinding* bind)
+	VertexData::VertexData(VertexDeclarationPtr dcl, VertexBufferBinding* bind)
 	{
 		// this is a fallback rather than actively used
 		mMgr = HardwareBufferManager::instancePtr();
@@ -66,7 +66,6 @@ namespace CamelotEngine {
 		if (mDeleteDclBinding)
 		{
 			mMgr->destroyVertexBufferBinding(vertexBufferBinding);
-			mMgr->destroyVertexDeclaration(vertexDeclaration);
 		}
 	}
     //-----------------------------------------------------------------------
@@ -319,7 +318,7 @@ namespace CamelotEngine {
         }
     }
 	//-----------------------------------------------------------------------
-	void VertexData::reorganiseBuffers(VertexDeclaration* newDeclaration, 
+	void VertexData::reorganiseBuffers(VertexDeclarationPtr newDeclaration, 
 		const BufferUsageList& bufferUsages, HardwareBufferManagerBase* mgr)
 	{
 		HardwareBufferManagerBase* pManager = mgr ? mgr : mMgr;
@@ -435,7 +434,6 @@ namespace CamelotEngine {
 		if (mDeleteDclBinding)
 		{
 			pManager->destroyVertexBufferBinding(vertexBufferBinding);
-			pManager->destroyVertexDeclaration(vertexDeclaration);
 		}
 
 		// Assign new binding and declaration
@@ -447,7 +445,7 @@ namespace CamelotEngine {
 
 	}
     //-----------------------------------------------------------------------
-    void VertexData::reorganiseBuffers(VertexDeclaration* newDeclaration, HardwareBufferManagerBase* mgr)
+    void VertexData::reorganiseBuffers(VertexDeclarationPtr newDeclaration, HardwareBufferManagerBase* mgr)
     {
         // Derive the buffer usages from looking at where the source has come
         // from

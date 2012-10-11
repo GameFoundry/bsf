@@ -39,7 +39,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     D3D9HardwareBufferManagerBase::~D3D9HardwareBufferManagerBase()
     {
-        destroyAllDeclarations();
         destroyAllBindings();
     }
     //-----------------------------------------------------------------------
@@ -110,9 +109,9 @@ namespace CamelotEngine {
             
     }
     //-----------------------------------------------------------------------
-    VertexDeclaration* D3D9HardwareBufferManagerBase::createVertexDeclarationImpl(void)
+    VertexDeclarationPtr D3D9HardwareBufferManagerBase::createVertexDeclarationImpl(void)
     {
-        return new D3D9VertexDeclaration();
+        return VertexDeclarationPtr(new D3D9VertexDeclaration());
     }
     //-----------------------------------------------------------------------
     void D3D9HardwareBufferManagerBase::destroyVertexDeclarationImpl(VertexDeclaration* decl)

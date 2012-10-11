@@ -4,10 +4,11 @@
 #include "CmResource.h"
 #include "CmMeshData.h"
 #include "CmVertexIndexData.h"
+#include "CmRenderOperation.h"
 
 namespace CamelotEngine
 {
-	struct SubMesh
+	struct CM_EXPORT SubMesh
 	{
 		SubMesh():
 			indexOffset(0), indexCount(0)
@@ -21,7 +22,7 @@ namespace CamelotEngine
 		UINT32 indexCount;
 	};
 
-	class Mesh : public Resource
+	class CM_EXPORT Mesh : public Resource
 	{
 	public:
 		Mesh();
@@ -30,7 +31,14 @@ namespace CamelotEngine
 		/**
 		 * @brief	Mesh data that is used for initializing the mesh. Needs to be set before calling load.
 		 */
-		void prepare(MeshDataPtr meshData);
+		void setMeshData(MeshDataPtr meshData);
+
+		/**
+		 * @brief	Gets the mesh data from the GPU. This method is slow so be careful when you call it.
+		 */
+		MeshDataPtr getMeshData();
+
+		RenderOperation getRenderOperation(UINT32 subMeshIdx = 0) const;
 
 		virtual void loadImpl();
 

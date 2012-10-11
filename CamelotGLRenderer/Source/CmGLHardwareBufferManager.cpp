@@ -76,7 +76,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     GLHardwareBufferManagerBase::~GLHardwareBufferManagerBase()
     {
-        destroyAllDeclarations();
         destroyAllBindings();
 
 		_aligned_free(mScratchBufferPool);

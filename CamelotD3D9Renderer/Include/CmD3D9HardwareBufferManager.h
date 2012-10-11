@@ -38,7 +38,7 @@ namespace CamelotEngine {
     {
     protected:     
         /// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
-        VertexDeclaration* createVertexDeclarationImpl(void);
+        VertexDeclarationPtr createVertexDeclarationImpl(void);
         /// Internal method for destroys a vertex declaration, may be overridden by certain rendering APIs
         void destroyVertexDeclarationImpl(VertexDeclaration* decl);
 

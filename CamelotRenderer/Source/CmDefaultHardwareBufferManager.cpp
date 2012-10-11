@@ -147,7 +147,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     DefaultHardwareBufferManagerBase::~DefaultHardwareBufferManagerBase()
 	{
-        destroyAllDeclarations();
         destroyAllBindings(); 
 	}
     //-----------------------------------------------------------------------

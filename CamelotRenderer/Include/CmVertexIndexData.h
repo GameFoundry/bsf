@@ -70,13 +70,13 @@ namespace CamelotEngine {
 		@param dcl The VertexDeclaration to use
 		@param bind The VertexBufferBinding to use
 		*/
-		VertexData(VertexDeclaration* dcl, VertexBufferBinding* bind);
+		VertexData(VertexDeclarationPtr dcl, VertexBufferBinding* bind);
         ~VertexData();
 
 		/** Declaration of the vertex to be used in this operation. 
 		@remarks Note that this is created for you on construction.
 		*/
-		VertexDeclaration* vertexDeclaration;
+		VertexDeclarationPtr vertexDeclaration;
 		/** The vertex buffer bindings to be used. 
 		@remarks Note that this is created for you on construction.
 		*/
@@ -150,7 +150,7 @@ namespace CamelotEngine {
 		@param mgr Optional pointer to the manager to use to create new declarations
 			and buffers etc. If not supplied, the HardwareBufferManager singleton will be used
 		*/
-		void reorganiseBuffers(VertexDeclaration* newDeclaration, const BufferUsageList& bufferUsage, 
+		void reorganiseBuffers(VertexDeclarationPtr newDeclaration, const BufferUsageList& bufferUsage, 
 			HardwareBufferManagerBase* mgr = 0);
 
 		/** Reorganises the data in the vertex buffers according to the 
@@ -170,7 +170,7 @@ namespace CamelotEngine {
 		@param mgr Optional pointer to the manager to use to create new declarations
 			and buffers etc. If not supplied, the HardwareBufferManager singleton will be used
 		*/
-		void reorganiseBuffers(VertexDeclaration* newDeclaration, HardwareBufferManagerBase* mgr = 0);
+		void reorganiseBuffers(VertexDeclarationPtr newDeclaration, HardwareBufferManagerBase* mgr = 0);
 
         /** Remove any gaps in the vertex buffer bindings.
         @remarks

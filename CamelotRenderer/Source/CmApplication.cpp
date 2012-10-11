@@ -16,6 +16,7 @@
 #include "CmSceneManager.h"
 #include "CmImporter.h"
 #include "CmResources.h"
+#include "CmMesh.h"
 #include "CmGameObject.h"
 
 namespace CamelotEngine
@@ -45,10 +46,10 @@ namespace CamelotEngine
 		mCamera = mCameraGO->addComponent<Camera>();
 
 		mCamera->init(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
-		mCameraGO->setPosition(Vector3(0,0,40));
-		mCameraGO->lookAt(Vector3(0,0,-300));
+		mCameraGO->setPosition(Vector3(0,50,240));
+		mCameraGO->lookAt(Vector3(0,50,-300));
 		mCamera->setNearClipDistance(5);
-		mCamera->setAspectRatio(600.0f / 800.0f);
+		mCamera->setAspectRatio(800.0f / 600.0f);
 
 		/////////////////// HLSL SHADERS //////////////////////////
 		//String fragShaderCode = "sampler2D diffuseMap;			\
@@ -130,18 +131,30 @@ namespace CamelotEngine
 
 		// IMPORTER TEST
 		Importer::startUp(new Importer());
-		DynLib* loadedLibrary = gDynLibManager().load("CamelotFreeImgImporter.dll"); // TODO - Load this automatically somehow
+		DynLib* freeImgLibrary = gDynLibManager().load("CamelotFreeImgImporter.dll"); // TODO - Load this automatically somehow
 
-		if(loadedLibrary != nullptr)
+		if(freeImgLibrary != nullptr)
 		{
 			typedef const void (*LoadPluginFunc)();
 
-			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)loadedLibrary->getSymbol("loadPlugin");
+			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)freeImgLibrary->getSymbol("loadPlugin");
+			loadPluginFunc();
+		}
+
+		DynLib* fbxLibrary = gDynLibManager().load("CamelotFBXImporter.dll"); // TODO - Load this automatically somehow
+
+		if(fbxLibrary != nullptr)
+		{
+			typedef const void (*LoadPluginFunc)();
+
+			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)fbxLibrary->getSymbol("loadPlugin");
 			loadPluginFunc();
 		}
 
 		//mDbgTexture = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
 		TexturePtr testTex = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
+		mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\BarrelMesh.fbx"));
+
 		Resources::startUp(new Resources());
 
 		gResources().save(testTex, "C:\\ExportTest.tex");
@@ -210,7 +223,7 @@ namespace CamelotEngine
 		vertexData->vertexStart = 0;
 		vertexData->vertexCount = 8;
 
-		VertexDeclaration* decl = vertexData->vertexDeclaration;
+		VertexDeclarationPtr decl = vertexData->vertexDeclaration;
 		decl->removeAllElements();
 
 		size_t offset = 0;
@@ -347,7 +360,8 @@ namespace CamelotEngine
 
 		
 		
-		renderSystem->_render(ro);
+		/*renderSystem->_render(ro);*/
+		renderSystem->_render(mDbgMesh->getRenderOperation());
 
 		renderSystem->_endFrame();
 

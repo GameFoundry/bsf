@@ -116,6 +116,8 @@ namespace CamelotEngine
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
 	typedef std::shared_ptr<HighLevelGpuProgram> HighLevelGpuProgramPtr;
 	typedef std::shared_ptr<HardwarePixelBuffer> HardwarePixelBufferPtr;
+	typedef std::shared_ptr<VertexDeclaration> VertexDeclarationPtr;
+	typedef std::shared_ptr<Mesh> MeshPtr;
 	typedef std::shared_ptr<Texture> TexturePtr;
 	typedef std::shared_ptr<Resource> ResourcePtr;
 

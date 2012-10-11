@@ -87,8 +87,8 @@ namespace CamelotEngine
 		/* 								vertexDeclaration                  		*/
 		/************************************************************************/
 
-		VertexDeclaration& getVertexDecl(MeshData* obj) { return obj->declaration; }
-		void setVertexDecl(MeshData* obj, VertexDeclaration& vertexDecl) { obj->declaration = vertexDecl; }
+		VertexDeclarationPtr getVertexDecl(MeshData* obj) { return obj->declaration; }
+		void setVertexDecl(MeshData* obj, VertexDeclarationPtr vertexDecl) { obj->declaration = vertexDecl; }
 
 		/************************************************************************/
 		/* 								vertexData                      		*/
@@ -130,7 +130,7 @@ namespace CamelotEngine
 			CM_ADD_PLAINFIELD(vertexCount, 2, MeshDataRTTI)
 
 			addPlainArrayField("subMeshes", 3, &MeshDataRTTI::getSubmesh, &MeshDataRTTI::getSubmeshArraySize, &MeshDataRTTI::setSubmesh, &MeshDataRTTI::setSubmeshArraySize);
-			addReflectableField("vertexDeclaration", 4, &MeshDataRTTI::getVertexDecl, &MeshDataRTTI::setVertexDecl);
+			addReflectablePtrField("vertexDeclaration", 4, &MeshDataRTTI::getVertexDecl, &MeshDataRTTI::setVertexDecl);
 			addReflectablePtrArrayField("vertexBuffer", 5, &MeshDataRTTI::getVertexData, &MeshDataRTTI::getVertexDataArraySize, 
 				&MeshDataRTTI::setVertexData, &MeshDataRTTI::setVertexDataArraySize);
 		}

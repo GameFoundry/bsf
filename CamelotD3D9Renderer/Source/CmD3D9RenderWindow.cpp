@@ -772,14 +772,6 @@ namespace CamelotEngine
 		RenderWindow::_beginUpdate();
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderWindow::_updateViewport(Viewport* viewport, bool updateStatistics)
-	{
-		if (mDeviceValid)
-		{
-			RenderWindow::_updateViewport(viewport, updateStatistics);
-		}
-	}
-	//---------------------------------------------------------------------
 	void D3D9RenderWindow::_endUpdate()
 	{
 		RenderWindow::_endUpdate();

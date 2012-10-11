@@ -80,9 +80,6 @@ namespace CamelotEngine
 		/// @copydoc RenderTarget::_beginUpdate
 		void _beginUpdate();
 	
-		/// @copydoc RenderTarget::_updateViewport
-		void _updateViewport(Viewport* viewport, bool updateStatistics = true);
-
 		/// @copydoc RenderTarget::_endUpdate
 		void _endUpdate();
 

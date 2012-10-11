@@ -391,7 +391,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-		void setVertexDeclaration(VertexDeclaration* decl);
+		void setVertexDeclaration(VertexDeclarationPtr decl);
         /** See
           RenderSystem
          */

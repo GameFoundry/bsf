@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include "CmD3D9TextureManager.h"
 #include "CmD3D9Texture.h"
 #include "CmMath.h"
+#include "CmCamera.h"
 #include "CmD3D9HardwareBufferManager.h"
 #include "CmD3D9HardwareIndexBuffer.h"
 #include "CmD3D9HardwareVertexBuffer.h"
@@ -43,7 +44,6 @@ THE SOFTWARE.
 #include "CmD3D9GpuProgramManager.h"
 #include "CmD3D9HLSLProgramFactory.h"
 #include "CmD3D9HardwareOcclusionQuery.h"
-#include "CmFrustum.h"
 #include "CmD3D9MultiRenderTarget.h"
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
@@ -2498,12 +2498,12 @@ namespace CamelotEngine
 		delete context;
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setVertexDeclaration(VertexDeclaration* decl)
+	void D3D9RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
 	{
 		HRESULT hr;
 
-		D3D9VertexDeclaration* d3ddecl = 
-			static_cast<D3D9VertexDeclaration*>(decl);
+		std::shared_ptr<D3D9VertexDeclaration> d3ddecl = 
+			std::static_pointer_cast<D3D9VertexDeclaration>(decl);
 
 		if (FAILED(hr = getActiveD3D9Device()->SetVertexDeclaration(d3ddecl->getD3DVertexDeclaration())))
 		{

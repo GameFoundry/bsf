@@ -420,7 +420,7 @@ namespace CamelotEngine {
 		@param mgr Optional HardwareBufferManager to use for creating the clone
 			(if null, use the current default).
 		*/
-        virtual VertexDeclaration* clone(HardwareBufferManagerBase* mgr = 0);
+        virtual VertexDeclarationPtr clone(HardwareBufferManagerBase* mgr = 0);
 
         inline bool operator== (const VertexDeclaration& rhs) const
         {

@@ -2148,7 +2148,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setVertexDeclaration(VertexDeclaration* decl)
+	void GLRenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
 	{
 	}
 	//---------------------------------------------------------------------

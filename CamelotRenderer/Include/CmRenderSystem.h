@@ -995,7 +995,7 @@ namespace CamelotEngine
 
 
 		/** Sets the current vertex declaration, ie the source of vertex data. */
-		virtual void setVertexDeclaration(VertexDeclaration* decl) = 0;
+		virtual void setVertexDeclaration(VertexDeclarationPtr decl) = 0;
 		/** Sets the current vertex buffer binding state. */
 		virtual void setVertexBufferBinding(VertexBufferBinding* binding) = 0;
 
