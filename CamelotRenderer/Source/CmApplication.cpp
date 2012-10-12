@@ -154,7 +154,7 @@ namespace CamelotEngine
 		//mDbgTexture = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
 		TexturePtr testTex = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
 		mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
-		//mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\TestFBX.fbx"));
+		//mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\BarrelMesh.fbx"));
 
 		Resources::startUp(new Resources());
 

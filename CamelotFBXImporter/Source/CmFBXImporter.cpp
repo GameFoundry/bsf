@@ -120,6 +120,8 @@ namespace CamelotEngine
 		stack<FbxNode*>::type todo;
 		todo.push(scene->GetRootNode());
 
+		vector<MeshDataPtr>::type allMeshes;
+
 		while(!todo.empty())
 		{
 			FbxNode* curNode = todo.top();
@@ -145,9 +147,10 @@ namespace CamelotEngine
 							mesh = static_cast<FbxMesh*>(attrib);
 						}
 
-						// TODO - We only parse the first mesh in the file. Later when I have prefabs or something similar
-						// we can parse an entire hierarchy
-						return parseMesh(mesh); 
+						MeshDataPtr meshData = parseMesh(mesh); 
+						allMeshes.push_back(meshData);
+
+						// TODO - Transform meshes based on node transform
 					}
 					break;
 				case FbxNodeAttribute::eSkeleton:
@@ -160,7 +163,12 @@ namespace CamelotEngine
 				todo.push(curNode->GetChild(i));
 		}
 
-		return nullptr;
+		if(allMeshes.size() == 0)
+			return nullptr;
+		else if(allMeshes.size() == 1)
+			return allMeshes[0];
+		else
+			return mergeMeshData(allMeshes);
 	}
 
 	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, bool createTangentsIfMissing)
@@ -564,9 +572,21 @@ namespace CamelotEngine
 			meshData->subMeshes[lMaterialIndex].indexCount += 3;
 		}
 
+		initDeclarationForMeshData(meshData);
+
+		return meshData;
+	}
+
+	void FBXImporter::initDeclarationForMeshData(MeshDataPtr meshData)
+	{
+		std::shared_ptr<MeshData::VertexData> vertexData = meshData->vertexBuffers[0];
+
 		UINT32 offset = 0;
-		meshData->declaration->addElement(0, offset, VET_FLOAT3, VES_POSITION, 0);
-		offset += VertexElement::getTypeSize(VET_FLOAT3);
+		if(vertexData->vertex)
+		{
+			meshData->declaration->addElement(0, offset, VET_FLOAT3, VES_POSITION, 0);
+			offset += VertexElement::getTypeSize(VET_FLOAT3);
+		}
 
 		if(vertexData->color)
 		{
@@ -604,6 +624,180 @@ namespace CamelotEngine
 			meshData->declaration->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 1);
 			offset += VertexElement::getTypeSize(VET_FLOAT2);
 		}
+	}
+
+	MeshDataPtr FBXImporter::mergeMeshData(vector<MeshDataPtr>::type meshes)
+	{
+		// TODO Low priority - Throughout this method we're assuming mesh data only has a single stream, which is a fair assumption now, but that might change later.
+
+		MeshDataPtr meshData = MeshDataPtr(new MeshData());
+
+		bool hasPosition = false;
+		bool hasColors = false;
+		bool hasNormals = false;
+		bool hasTangents = false;
+		bool hasBitangents = false;
+		bool hasUV0 = false;
+		bool hasUV1 = false;
+
+		// Count all vertices and indexes. And determine all data types.
+		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
+		{
+			meshData->indexCount += (*iter)->indexCount;
+			meshData->vertexCount += (*iter)->vertexCount;
+
+			std::shared_ptr<MeshData::VertexData> vertData = (*iter)->vertexBuffers[0];
+			if(vertData)
+			{
+				if(vertData->vertex)
+					hasPosition = true;
+
+				if(vertData->color)
+					hasColors = true;
+
+				if(vertData->normal)
+					hasNormals = true;
+
+				if(vertData->tangent)
+					hasTangents = true;
+
+				if(vertData->bitangent)
+					hasBitangents = true;
+
+				if(vertData->uv0)
+					hasUV0 = true;
+
+				if(vertData->uv1)
+					hasUV1 = true;
+			}
+		}
+
+		// Copy indices
+		meshData->index = new int[meshData->indexCount];
+
+		int currentIndexIdx = 0;
+		int currentVertIdx = 0;
+		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
+		{
+			int indexCount = (*iter)->indexCount;
+
+			for(int i = 0; i < indexCount; i++)
+				meshData->index[currentIndexIdx + i] = (*iter)->index[i] + currentVertIdx;
+
+			currentIndexIdx += indexCount;
+			currentVertIdx += (*iter)->vertexCount;
+		}
+
+		// Copy vertex data
+		std::shared_ptr<MeshData::VertexData> combinedVertData(new MeshData::VertexData(meshData->vertexCount, 0));
+		meshData->vertexBuffers[0] = combinedVertData;
+
+		if(hasPosition)
+			combinedVertData->vertex = new Vector3[meshData->vertexCount];
+
+		if(hasColors)
+			combinedVertData->color = new Color[meshData->vertexCount];
+
+		if(hasNormals)
+			combinedVertData->normal = new Vector3[meshData->vertexCount];
+
+		if(hasTangents)
+			combinedVertData->tangent = new Vector3[meshData->vertexCount];
+
+		if(hasBitangents)
+			combinedVertData->bitangent = new Vector3[meshData->vertexCount];
+
+		if(hasUV0)
+			combinedVertData->uv0 = new Vector2[meshData->vertexCount];
+
+		if(hasUV1)
+			combinedVertData->uv1 = new Vector2[meshData->vertexCount];
+
+		currentVertIdx = 0;
+		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
+		{
+			int indexCount = (*iter)->indexCount;
+
+			std::shared_ptr<MeshData::VertexData> vertData = (*iter)->vertexBuffers[0];
+
+			if(hasPosition)
+			{
+				if(vertData && vertData->vertex)
+					memcpy(&combinedVertData->vertex[currentVertIdx], vertData->vertex, (*iter)->vertexCount * sizeof(Vector3));
+				else
+					memset(&combinedVertData->vertex[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector3));
+			}
+
+			if(hasColors)
+			{
+				if(vertData && vertData->color)
+					memcpy(&combinedVertData->color[currentVertIdx], vertData->color, (*iter)->vertexCount * sizeof(Color));
+				else
+					memset(&combinedVertData->color[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Color));
+			}
+
+			if(hasNormals)
+			{
+				if(vertData && vertData->normal)
+					memcpy(&combinedVertData->normal[currentVertIdx], vertData->normal, (*iter)->vertexCount * sizeof(Vector3));
+				else
+					memset(&combinedVertData->normal[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector3));
+			}
+
+			if(hasTangents)
+			{
+				if(vertData && vertData->tangent)
+					memcpy(&combinedVertData->tangent[currentVertIdx], vertData->tangent, (*iter)->vertexCount * sizeof(Vector3));
+				else
+					memset(&combinedVertData->tangent[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector3));
+			}
+
+			if(hasBitangents)
+			{
+				if(vertData && vertData->bitangent)
+					memcpy(&combinedVertData->bitangent[currentVertIdx], vertData->bitangent, (*iter)->vertexCount * sizeof(Vector3));
+				else
+					memset(&combinedVertData->bitangent[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector3));
+			}
+
+			if(hasUV0)
+			{
+				if(vertData && vertData->uv0)
+					memcpy(&combinedVertData->uv0[currentVertIdx], vertData->uv0, (*iter)->vertexCount * sizeof(Vector2));
+				else
+					memset(&combinedVertData->uv0[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector2));
+			}
+
+			if(hasUV1)
+			{
+				if(vertData && vertData->uv1)
+					memcpy(&combinedVertData->uv1[currentVertIdx], vertData->uv1, (*iter)->vertexCount * sizeof(Vector2));
+				else
+					memset(&combinedVertData->uv1[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector2));
+			}
+
+			currentVertIdx += (*iter)->vertexCount;
+		}
+
+		// Copy submesh data
+		currentIndexIdx = 0;
+		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
+		{
+			UINT32 subMeshCount = (*iter)->subMeshes.size();
+
+			for(int i = 0; i < subMeshCount; i++)
+			{
+				MeshData::SubMeshData newSubMesh;
+				newSubMesh.indexCount = (*iter)->subMeshes[i].indexCount;
+				newSubMesh.indexOffset = (*iter)->subMeshes[i].indexOffset + currentIndexIdx;
+
+				meshData->subMeshes.push_back(newSubMesh);
+			}
+
+			currentIndexIdx += (*iter)->indexCount;
+		}
+
+		initDeclarationForMeshData(meshData);
 
 		return meshData;
 	}

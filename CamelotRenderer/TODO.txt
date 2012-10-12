@@ -51,8 +51,8 @@ TOMORROW:
    - World grid
  - Mesh loading:
    - GetRenderOperation doesn't consider sub-meshes
-   - FBX importer only imports the first mesh, while it should import them all
    - Imported FBX meshes are too big
+   - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
  - Remove template from RTTIType and move it to IReflectable? This way i can hopefully move GetRTTITypeStatic and GetRTTIType to IReflectable so I don't
    need to manually implement those for every method.
  - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?
