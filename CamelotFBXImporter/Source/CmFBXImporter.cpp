@@ -40,8 +40,6 @@ namespace CamelotEngine
 		FbxManager* fbxManager = nullptr;
 		FbxScene* fbxScene = nullptr;
 
-		// TODO - Set up FBX allocators
-
 		startUpSdk(fbxManager, fbxScene);
 		loadScene(fbxManager, fbxScene, filePath);
 
@@ -57,6 +55,9 @@ namespace CamelotEngine
 
 	void FBXImporter::startUpSdk(FbxManager*& manager, FbxScene*& scene)
 	{
+		// TODO Low priority - Initialize allocator methods for FBX. It calls a lot of heap allocs (200 000 calls for a simple 2k poly mesh) which slows down the import.
+		// Custom allocator would help a lot.
+
 		manager = FbxManager::Create();
 		if(manager == nullptr)
 			CM_EXCEPT(InternalErrorException, "FBX SDK failed to initialize. FbxManager::Create() failed.");
@@ -72,6 +73,7 @@ namespace CamelotEngine
 	void FBXImporter::shutDownSdk(FbxManager* manager)
 	{
 		manager->Destroy();
+
 	}
 
 	void FBXImporter::loadScene(FbxManager* manager, FbxScene* scene, const String& filePath)

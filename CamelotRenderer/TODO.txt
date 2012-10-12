@@ -46,6 +46,9 @@ TODO:
  - OpenGL too
 
 TOMORROW:
+ - DEBUG TOOLS
+   - Input & camera controls
+   - World grid
  - Mesh loading:
    - GetRenderOperation doesn't consider sub-meshes
    - FBX importer only imports the first mesh, while it should import them all
@@ -98,3 +101,7 @@ After everything is polished:
    - Since I probably can't compile them, try adding them to VS and see what intellisense says?
 
  - Textures and all other buffers keep a copy of their data in system memory. If there are memory constraints we might need a way to avoid this.
+
+
+ Low priority:
+  FBX import needs a custom allocator, because its very slow and does a lot of heap allocs
