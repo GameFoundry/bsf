@@ -135,25 +135,8 @@ namespace CamelotEngine
 
 		// IMPORTER TEST
 		Importer::startUp(new Importer());
-		DynLib* freeImgLibrary = gDynLibManager().load("CamelotFreeImgImporter.dll"); // TODO - Load this automatically somehow
-
-		if(freeImgLibrary != nullptr)
-		{
-			typedef const void (*LoadPluginFunc)();
-
-			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)freeImgLibrary->getSymbol("loadPlugin");
-			loadPluginFunc();
-		}
-
-		DynLib* fbxLibrary = gDynLibManager().load("CamelotFBXImporter.dll"); // TODO - Load this automatically somehow
-
-		if(fbxLibrary != nullptr)
-		{
-			typedef const void (*LoadPluginFunc)();
-
-			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)fbxLibrary->getSymbol("loadPlugin");
-			loadPluginFunc();
-		}
+		loadPlugin("CamelotFreeImgImporter"); // TODO - Load this automatically somehow
+		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow
 
 		//mDbgTexture = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
 		TexturePtr testTex = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
@@ -169,6 +152,8 @@ namespace CamelotEngine
 		mDbgMesh = std::static_pointer_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
 
 		mDbgTexture = testTex;
+
+		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
 	}
 
 	void Application::runMainLoop()
@@ -180,6 +165,7 @@ namespace CamelotEngine
 			DBG_renderSimpleFrame();
 
 			gTime().update();
+			gInput().update();
 		}
 	}
 
@@ -195,6 +181,48 @@ namespace CamelotEngine
 		Resources::shutDown();
 		Input::shutDown();
 		Time::shutDown();
+	}
+
+	void Application::loadPlugin(const String& pluginName)
+	{
+		String name = pluginName;
+#if CM_PLATFORM == CM_PLATFORM_LINUX
+		// dlopen() does not add .so to the filename, like windows does for .dll
+		if (name.substr(name.length() - 3, 3) != ".so")
+			name += ".so";
+#elif CM_PLATFORM == CM_PLATFORM_APPLE
+		// dlopen() does not add .dylib to the filename, like windows does for .dll
+		if (name.substr(name.length() - 6, 6) != ".dylib")
+			name += ".dylib";
+#elif CM_PLATFORM == CM_PLATFORM_WIN32
+		// Although LoadLibraryEx will add .dll itself when you only specify the library name,
+		// if you include a relative path then it does not. So, add it to be sure.
+		if (name.substr(name.length() - 4, 4) != ".dll")
+			name += ".dll";
+#endif
+
+		DynLib* library = gDynLibManager().load(name);
+
+		if(library != nullptr)
+		{
+			typedef const void (*LoadPluginFunc)();
+
+			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)library->getSymbol("loadPlugin");
+			loadPluginFunc();
+		}
+	}
+
+	UINT32 Application::getAppWindowId()
+	{
+		if(!mRenderWindow)
+		{
+			CM_EXCEPT(InternalErrorException, "Unable to get window handle. No active window is set!");
+		}
+
+		UINT32 windowId;
+		mRenderWindow->getCustomAttribute("WINDOW", &windowId);
+
+		return windowId;
 	}
 
 	void Application::DBG_renderSimpleFrame()

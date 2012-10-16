@@ -2,6 +2,7 @@
 #include "CmTime.h"
 #include "CmMath.h"
 #include "CmRect.h"
+#include "CmDebug.h"
 
 #include <boost/bind.hpp>
 
@@ -12,7 +13,7 @@ namespace CamelotEngine
 
 	Input::Input()
 		:mSmoothHorizontalAxis(0.0f), mSmoothVerticalAxis(0.0f), mCurrentBufferIdx(0), mMouseLastRel(0, 0),
-		mUsingClipRect(false), mClipRect(0, 0, 0, 0)
+		mUsingClipRect(false), mClipRect(0, 0, 0, 0), mInputHandler(nullptr)
 	{ 
 		mHorizontalHistoryBuffer = new float[HISTORY_BUFFER_SIZE];
 		mVerticalHistoryBuffer = new float[HISTORY_BUFFER_SIZE];
@@ -33,23 +34,42 @@ namespace CamelotEngine
 		delete[] mTimesHistoryBuffer;
 	}
 
-	void Input::init(std::shared_ptr<InputHandler> inputHandler, Rect& clipRect)
+	void Input::initClipRect(Rect& clipRect)
 	{
-		mInputHandler = inputHandler;
 		mClipRect = clipRect;
 
 		mUsingClipRect = (clipRect.width > 0 && clipRect.height > 0);
+	}
 
-		mInputHandler->onKeyDown.connect(boost::bind(&Input::keyDown, this, _1));
-		mInputHandler->onKeyUp.connect(boost::bind(&Input::keyUp, this, _1));
+	void Input::registerInputHandler(InputHandler* inputHandler)
+	{
+		if(mInputHandler != inputHandler)
+		{
+			if(mInputHandler != nullptr)
+				delete mInputHandler;
 
-		mInputHandler->onMouseMoved.connect(boost::bind(&Input::mouseMoved, this, _1));
-		mInputHandler->onMouseDown.connect(boost::bind(&Input::mouseDown, this, _1, _2));
-		mInputHandler->onMouseUp.connect(boost::bind(&Input::mouseUp, this, _1, _2));
+			mInputHandler = inputHandler;
+
+			if(mInputHandler != nullptr)
+			{
+				mInputHandler->onKeyDown.connect(boost::bind(&Input::keyDown, this, _1));
+				mInputHandler->onKeyUp.connect(boost::bind(&Input::keyUp, this, _1));
+
+				mInputHandler->onMouseMoved.connect(boost::bind(&Input::mouseMoved, this, _1));
+				mInputHandler->onMouseDown.connect(boost::bind(&Input::mouseDown, this, _1, _2));
+				mInputHandler->onMouseUp.connect(boost::bind(&Input::mouseUp, this, _1, _2));
+			}
+		}
 	}
 
 	void Input::update()
 	{
+		if(mInputHandler == nullptr)
+		{
+			LOGERR("Input handler not initialized!");
+			return;
+		}
+
 		mInputHandler->update();
 
 		updateSmoothInput();

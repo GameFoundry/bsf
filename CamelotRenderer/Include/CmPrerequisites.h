@@ -94,6 +94,8 @@ namespace CamelotEngine {
     class VertexBufferBinding;
     class VertexData;
     class VertexDeclaration;
+	class Input;
+	class InputHandler;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

@@ -174,9 +174,10 @@ namespace CamelotEngine
 	 * @brief	Represents a specific way of acquiring low-level input. InputManager (which provides a higher level input)
 	 * 			must have at least one InputHandler attached. Attach events handler to the provided signals to handle input.
 	 */
-	class InputHandler
+	class CM_EXPORT InputHandler
 	{
 	public:
+		InputHandler() {}
 		virtual ~InputHandler() {}
 
 		boost::signal<void(KeyCode)> onKeyDown;

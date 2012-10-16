@@ -20,14 +20,9 @@ namespace CamelotEngine
 		boost::signal<void(const MouseEvent&, MouseButton)> onMouseDown;
 		boost::signal<void(const MouseEvent&, MouseButton)> onMouseUp;
 
-		/**
-		 * @brief	Initializes the input manager with a specific input handler that sends input events
-		 * 			to the manager. Should only be called by Application.
-		 *
-		 * @param [in]	inputHandler	Input handler that determines how do we capture input.
-		 * @param [in]	clipRect		If non-zero, mouse input will be ignored unless within the specified area.
-		 */
-		void init(std::shared_ptr<InputHandler> inputHandler, Rect& clipRect);
+
+		void initClipRect(Rect& clipRect);
+		void registerInputHandler(InputHandler* inputHandler);
 
 		/**
 		 * @brief	Called every frame. Should only be called by Application.
@@ -49,7 +44,7 @@ namespace CamelotEngine
 		float getVerticalAxis() const;
 
 	private:
-		std::shared_ptr<InputHandler> mInputHandler;
+		InputHandler* mInputHandler;
 
 		float mSmoothHorizontalAxis;
 		float mSmoothVerticalAxis;
