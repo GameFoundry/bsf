@@ -1,87 +1,50 @@
-PARSED FILES:
 
-GpuProgram - PARSED!
-TextureState - PARSED!
- - This is just an utility class representing texture state
-HardwareVertexBuffer - PARSED!
-Viewport - PARSED!
-HardwareBufferManager - PARSED!
-HighLevelGpuProgram - PARSED!
-VertexIndexData - Just data structures
- - VertexCacheProfiler is a weird one, but I think I don't have to remove it as it might come in handy
-RenderTexture - Everything OK
-RenderWindow - Everything OK
-HardwareIndexBuffer - Everything OK
-RenderSystemCapabilities - I think I need all of that
-HardwareBuffer - Base class for all buffers
- - Everything seems fine although I /might/ want to explore how the shadow buffer works and if I want to implement it differently?
-DefaultHardwareBufferManager - Provides emulation of hardware buffers
- - I think this class is okay to stay, although I'm not sure where its used, but its simple enough
-Texture - PARSED!
-HardwareOcclusionQuery - OK, but I might consider a more generic interface for queries (I'll need profiling queries too for example)
+High-level TODO:
+ - Debug tools 
+   - Camera controls + world grid
+ - Renderable (contains mesh/material)
+ - RenderManager (iterated through Renderables and displays them on screen)
+   - And its plugin implementation ForwardRenderingManager
+ - Material/Pass
+ - Resource loading thread safety and background loading
+   - Make sure all resources have default resource that will be used before actual resource is loaded
+ - Integrate with Camelot Editor
+ - SceneManager plugin
+   - Frustum culling and octree (or some other) acceleration structure
+   - Render queue and sorting
+ - DX11 render system
 
-TODO FILES:
+HIGH PRIORITY TODO:
+ - GetRenderOperation doesn't consider sub-meshes
+ - HLSL & Cg don't handle include files yet
 
-Camera - MERGE WITH VIEWPORT
- - Position/rotation should be inherit from transform
- - Viewport needs to be updated when I call RenderTarget::setFullscreen/finishSwitchingFullscreen/updateWindowRect/windowMovedOrResized. Currently it's not
-
-Frustum
- - World space methods need to be updated. I still need them but they need to get their data from Transform
- - Depending on how I implement the frustum, I might be able to remove those "out-of-date" checks
-
-GpuProgramParams - Holds all parameters used in a shader program and allows us to set them by index or name
- - Explore if we can remove GpuSharedParameters. I'm not exactly sure what they're used for
-
-HardwarePixelBuffer 
- - I might consider giving PixelBox a better name. Also rename PixelFormat.h to PixelUtil.h or similar. Makes more sense.
- - _clearSliceRTT method I'm not sure what is it used for, but I might want to remove it
-
-RenderTarget:
- - update() causes rendering to start - This probably need to be moved to camera, as I want it to be responsible for rendering
- - keeps a viewport list, which I also don't think I'll need
-
-TODO:
- - Make sure to parse D3D9 implementations of above classes and see what needs removing there as well
- - OpenGL too
-
-TOMORROW:
- - DEBUG TOOLS
-   - Input & camera controls
-   - World grid
+Mid priority TODO:
  - Mesh loading:
-   - GetRenderOperation doesn't consider sub-meshes
-   - Imported FBX meshes are too big
-   - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
+  - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
+  - Imported FBX meshes are too big
+  - Search for all remaining "TODO PORT" comments and fix them
+  - How do I serialize derived classes, without rewriting all the base class serialization?
+  - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
+
+Low priority TODO:
+ - Mesh loading:
+  - Sub-meshes aren't being transformed by world matrices of their nodes
+  - FBX importer can be greatly sped up by implementing a better allocator
+ - Serializable callbacks can't be null otherwise compiler complains
+ - Depth test is disabled by default (OpenGL renderer at least)
+ - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?
  - Remove template from RTTIType and move it to IReflectable? This way i can hopefully move GetRTTITypeStatic and GetRTTIType to IReflectable so I don't
    need to manually implement those for every method.
- - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?
- - Depth test is disabled by default (OpenGL renderer at least)
- - Serializable callbacks can't be null otherwise compiler complains
- - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
- - How do I serialize derived classes, without rewriting all the base class serialization?
-   - Unless something better dawns on me by Monday, just inherit from parents SerializableType and manually make sure no IDs overlap.
-     - We can improve later if needed. I though about it too much for now.
- Try to fully implement free image and maybe FBX importers
-  - Less important notes:
-    - All of this must be thread safe to allow for background loading
-    - Make sure all resources have default resource that will be used before actual resource is loaded
+ - Removed unused methods from D3D9 and GL render systems (mostly fixed function stuff)
+ - Viewport needs to be updated when I call RenderTarget::setFullscreen/finishSwitchingFullscreen/updateWindowRect/windowMovedOrResized. Currently it's not
+ - D3D9Texture::createTextureResources is commented out at the moment. It gets called on device reset, and at that point I should reload texture resources.
+ - Device reset and resource re-loading in general
+
+Optional TODO:
  - Add precompiled headers to all projects
- - Make sure they include Exception & Log classes
- - HLSL & Cg don't handle include files yet
- - Shader profiles need to be manually added. Check GpuProgramProfiler, and conversions from/to that type in HLSL/Cg files. Cg also needs some special profile setup.
-
-Other notes:
- - Search for all remaining "TODO PORT" comments and fix them
- - How am I notified on device reset? (When I need to reload my resources)
- - D3D9Texture::createTextureResources is commented out at the moment. It gets called on device reset, and at that point
-     I should reload texture resources.
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
- - Remove all fixed pipeline methods from D3D9 and OpenGL renderers
- - Make CamelotRenderer a project on its own?
 
- At one point rebuild everything and make sure all warnings are gone
-  - Also scan everything for "Ogre" and remove any references to it
+ -----------------------------------------------------------------------------------------------
 
 After everything is polished:
  - Make sure the renderer can run on a separate thread
@@ -90,8 +53,6 @@ After everything is polished:
     - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 
 	  further modifications.
  - Port boost threads to std threads (CmThreadDefines.h)
- - Also, create all file format parsers and also make them reside in CamelotUtility
-   (Actual importers will still be implemented in Editor, but parsing capabilities should be available for camelotutility)
  
  - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
  - Go to GEA book and read about resource managers before implementing them
@@ -102,6 +63,3 @@ After everything is polished:
 
  - Textures and all other buffers keep a copy of their data in system memory. If there are memory constraints we might need a way to avoid this.
 
-
- Low priority:
-  FBX import needs a custom allocator, because its very slow and does a lot of heap allocs

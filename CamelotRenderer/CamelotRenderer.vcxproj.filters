@@ -55,6 +55,12 @@
     <Filter Include="Header Files\RTTI">
       <UniqueIdentifier>{75249db9-4f2e-43c3-8df4-37250c4b60a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{724588b9-04e2-4e9b-9467-b064ed44f05e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Input">
+      <UniqueIdentifier>{7f8e94f3-6990-4723-965a-2b4f9346a7ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />
@@ -208,6 +214,12 @@
     <ClInclude Include="Include\CmVertexDeclarationRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmInput.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmInputHandler.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -320,6 +332,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmMeshData.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmInput.cpp">
+      <Filter>Source Files\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

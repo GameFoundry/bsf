@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Win32\CmTimer.cpp" />
     <ClInclude Include="Include\CmBinarySerializer.h" />
     <ClInclude Include="Include\CmBitwise.h" />
     <ClInclude Include="Include\CmBox.h" />
@@ -98,6 +99,8 @@
     <ClInclude Include="Include\CmModule.h" />
     <ClInclude Include="Include\CmPath.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
+    <ClInclude Include="Include\CmPoint.h" />
+    <ClInclude Include="Include\CmRect.h" />
     <ClInclude Include="Include\CmRTTIField.h" />
     <ClInclude Include="Include\CmRTTIManagedDataBlockField.h" />
     <ClInclude Include="Include\CmRTTIPlainField.h" />
@@ -107,6 +110,8 @@
     <ClInclude Include="Include\CmString.h" />
     <ClInclude Include="Include\CmTextureDataRTTI.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
+    <ClInclude Include="Include\CmTime.h" />
+    <ClInclude Include="Include\CmTimer.h" />
     <ClInclude Include="Include\CmTypes.h" />
     <ClInclude Include="Include\CmFwdDeclUtil.h" />
     <ClInclude Include="Include\CmAxisAlignedBox.h" />
@@ -151,6 +156,7 @@
     <ClCompile Include="Source\CmPlane.cpp" />
     <ClCompile Include="Source\CmQuaternion.cpp" />
     <ClCompile Include="Source\CmString.cpp" />
+    <ClCompile Include="Source\CmTime.cpp" />
     <ClCompile Include="Source\CmVector2.cpp" />
     <ClCompile Include="Source\CmVector3.cpp" />
     <ClCompile Include="Source\CmVector4.cpp" />

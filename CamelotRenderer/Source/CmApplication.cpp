@@ -18,6 +18,8 @@
 #include "CmResources.h"
 #include "CmMesh.h"
 #include "CmGameObject.h"
+#include "CmTime.h"
+#include "CmInput.h"
 
 namespace CamelotEngine
 {
@@ -27,6 +29,8 @@ namespace CamelotEngine
 
 	void Application::startUp(String renderSystemDll)
 	{
+		Time::startUp(new Time());
+		Input::startUp(new Input());
 		DynLibManager::startUp(new DynLibManager());
 		HighLevelGpuProgramManager::startUp(new HighLevelGpuProgramManager());
 
@@ -174,6 +178,8 @@ namespace CamelotEngine
 			WindowEventUtilities::messagePump();
 
 			DBG_renderSimpleFrame();
+
+			gTime().update();
 		}
 	}
 
@@ -187,6 +193,8 @@ namespace CamelotEngine
 		HighLevelGpuProgramManager::shutDown();
 		DynLibManager::shutDown();
 		Resources::shutDown();
+		Input::shutDown();
+		Time::shutDown();
 	}
 
 	void Application::DBG_renderSimpleFrame()
