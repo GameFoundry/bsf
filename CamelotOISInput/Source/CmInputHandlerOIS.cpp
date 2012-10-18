@@ -1,5 +1,6 @@
 #include "CmInputHandlerOIS.h"
 #include "CmPoint.h"
+#include "OIS/OISException.h"
 
 namespace CamelotEngine
 {
@@ -22,8 +23,14 @@ namespace CamelotEngine
 		pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
 		pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
 #endif
-
-		mInputManager = OIS::InputManager::createInputSystem(pl);
+		try
+		{
+			mInputManager = OIS::InputManager::createInputSystem(pl);
+		}
+		catch(OIS::Exception &e)
+		{
+			std::cout << e.eText << std::endl;
+		} 
 
 		mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, true));
 		mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject(OIS::OISMouse, true));

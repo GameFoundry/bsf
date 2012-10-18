@@ -15,6 +15,7 @@ High-level TODO:
  - DX11 render system
 
 HIGH PRIORITY TODO:
+ - OIS doesn't initialize properly!
  - GetRenderOperation doesn't consider sub-meshes
  - HLSL & Cg don't handle include files yet
 

@@ -28,6 +28,10 @@ Place plug-in specific dependency files in:
 
  ----------------------------------------------------------------------------------
 
+Other notes:
+ - If possible all dependencies should be compiled without unicode or multi-character support, in case you experience any issues when passing strings between
+	module boundaries.
+
 Listed dependencies have not been provided with the engine source code. 
 You will need to grab them manually from the specified links, 
 (compile them, depending if library comes pre-compiled or not), 
