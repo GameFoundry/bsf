@@ -96,6 +96,7 @@ namespace CamelotEngine {
     class VertexDeclaration;
 	class Input;
 	class InputHandler;
+	class Renderable;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -108,7 +109,7 @@ namespace CamelotEngine {
 	class GameObject;
 	class Component;
 	class SceneManager;
-	// Serialization
+	// RTTI
 	class MeshRTTI;
 }
 
@@ -122,6 +123,8 @@ namespace CamelotEngine
 	typedef std::shared_ptr<Mesh> MeshPtr;
 	typedef std::shared_ptr<Texture> TexturePtr;
 	typedef std::shared_ptr<Resource> ResourcePtr;
+	typedef std::shared_ptr<Camera> CameraPtr;
+	typedef std::shared_ptr<Renderable> RenderablePtr;
 
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;
@@ -136,7 +139,10 @@ namespace CamelotEngine
 		TID_Mesh = 1002,
 		TID_MeshData = 1003,
 		TID_VertexDeclaration = 1004,
-		TID_VertexData = 1005
+		TID_VertexData = 1005,
+		TID_Component = 1006,
+		TID_Camera = 1007,
+		TID_Renderable = 1008
 	};
 }
 

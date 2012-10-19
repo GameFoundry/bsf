@@ -149,6 +149,8 @@ namespace CamelotEngine
 			std::shared_ptr<T> newComponent = std::shared_ptr<T>(new T(mThis.lock()));
 			mComponents.push_back(newComponent);
 
+			gSceneManager().notifyComponentAdded(newComponent);
+
 			return newComponent;
 		}
 

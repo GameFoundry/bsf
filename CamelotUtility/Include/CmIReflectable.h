@@ -43,5 +43,7 @@ namespace CamelotEngine
 		 * 			(Or if it is the same type as base)
 		 */
 		bool isDerivedFrom(RTTITypeBase* base);
+
+		UINT32 getTypeId();
 	};
 }

@@ -1,4 +1,5 @@
 #include "CmComponent.h"
+#include "CmComponentRTTI.h"
 
 namespace CamelotEngine
 {
@@ -17,5 +18,15 @@ namespace CamelotEngine
 	void Component::destroy()
 	{
 		mIsDestroyed = true;
+	}
+
+	RTTITypeBase* Component::getRTTIStatic()
+	{
+		return ComponentRTTI::instance();
+	}
+
+	RTTITypeBase* Component::getRTTI() const
+	{
+		return Component::getRTTIStatic();
 	}
 }

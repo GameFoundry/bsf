@@ -76,4 +76,9 @@ namespace CamelotEngine
 
 		return false;
 	}
+
+	UINT32 IReflectable::getTypeId()
+	{ 
+		return getRTTI()->getRTTIId(); 
+	}
 }

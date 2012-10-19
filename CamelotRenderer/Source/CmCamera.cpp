@@ -26,6 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmCamera.h"
+#include "CmCameraRTTI.h"
 
 #include "CmMath.h"
 #include "CmMatrix3.h"
@@ -39,10 +40,6 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmGameObject.h"
-
-#if CM_PLATFORM == OGRE_PLATFORM_IPHONE
-#include "macUtils.h"
-#endif
 
 namespace CamelotEngine {
 	const float Camera::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
@@ -1340,5 +1337,15 @@ namespace CamelotEngine {
 				(*intersect3d).push_back(Vector4(intersection.x, intersection.y, intersection.z, iPnt[i].w));
 			}
 		}
+	}
+
+	RTTITypeBase* Camera::getRTTIStatic()
+	{
+		return CameraRTTI::instance();
+	}
+
+	RTTITypeBase* Camera::getRTTI() const
+	{
+		return Camera::getRTTIStatic();
 	}
 } // namespace CamelotEngine

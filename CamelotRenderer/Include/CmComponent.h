@@ -1,10 +1,11 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmIReflectable.h"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT Component
+	class CM_EXPORT Component : public IReflectable
 	{
 	public:
 		GameObjectPtr getGameObject() const { return mParent.lock(); }
@@ -25,5 +26,16 @@ namespace CamelotEngine
 
 		std::weak_ptr<GameObject> mParent;
 		bool mIsDestroyed;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ComponentRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
+
+	protected:
+		Component() {} // Serialization only
 	};
 }

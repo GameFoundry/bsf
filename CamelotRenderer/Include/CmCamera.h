@@ -620,6 +620,17 @@ namespace CamelotEngine {
 		    Forward projection may lead to intersections at infinity.
 		*/
 		void forwardIntersect(const Plane& worldPlane, vector<Vector4>::type* intersect3d) const;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class CameraRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
+
+	protected:
+		Camera() {} // Serialization only
      };
 	 /** @} */
 	 /** @} */

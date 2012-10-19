@@ -19,6 +19,13 @@ namespace CamelotEngine
 
 		GameObjectPtr getRootNode() const { return mRootNode; }
 
+		/**
+		 * @brief	Returns all cameras in the scene.
+		 */
+		const vector<CameraPtr>::type& getAllCameras() const { return mCachedCameras; }
+
+		vector<RenderablePtr>::type getVisibleRenderables(const CameraPtr camera) const;
+
 	private:
 		friend class GameObject;
 		GameObjectPtr mRootNode;
@@ -32,6 +39,11 @@ namespace CamelotEngine
 		 * @param [in]	node	Node you wish to add. It's your responsibility not to add duplicate or null nodes. This method won't check.
 		 */
 		void registerNewGO(GameObjectPtr node);
+
+		void notifyComponentAdded(ComponentPtr component);
+		void notifyComponentRemoved(ComponentPtr component);
+
+		vector<CameraPtr>::type mCachedCameras;
 	};
 
 	CM_EXPORT SceneManager& gSceneManager();

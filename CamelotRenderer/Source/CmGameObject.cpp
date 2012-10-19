@@ -279,6 +279,8 @@ namespace CamelotEngine
 		{
 			(*iter)->destroy();
 			mComponents.erase(iter);
+
+			gSceneManager().notifyComponentRemoved((*iter));
 		}
 		else
 			LOGDBG("Trying to remove a component that doesn't exist on this GameObject.");

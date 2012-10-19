@@ -61,6 +61,12 @@
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{7f8e94f3-6990-4723-965a-2b4f9346a7ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\MOVETODLL">
+      <UniqueIdentifier>{f42d28e0-bbe6-4f52-a574-0e2725e3c223}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MOVETODLL">
+      <UniqueIdentifier>{677211c0-a3d1-4e6a-8acf-f457349f1777}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />
@@ -220,6 +226,24 @@
     <ClInclude Include="Include\CmInputHandler.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmRenderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmForwardRenderManager.h">
+      <Filter>Header Files\MOVETODLL</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmComponentRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmCameraRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderableRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -335,6 +359,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmInput.cpp">
       <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmForwardRenderManager.cpp">
+      <Filter>Source Files\MOVETODLL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRenderable.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
