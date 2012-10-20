@@ -19,6 +19,7 @@ HIGH PRIORITY TODO:
  - HLSL & Cg don't handle include files yet
 
 Mid priority TODO:
+ - GpuProgram default parameters might not be needed. The parameters change with each use of the gpu program anyway
  - Mesh loading:
   - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
   - Imported FBX meshes are too big

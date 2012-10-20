@@ -55,9 +55,6 @@
     <Filter Include="Header Files\RTTI">
       <UniqueIdentifier>{75249db9-4f2e-43c3-8df4-37250c4b60a2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Input">
-      <UniqueIdentifier>{724588b9-04e2-4e9b-9467-b064ed44f05e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{7f8e94f3-6990-4723-965a-2b4f9346a7ee}</UniqueIdentifier>
     </Filter>
@@ -66,6 +63,15 @@
     </Filter>
     <Filter Include="Source Files\MOVETODLL">
       <UniqueIdentifier>{677211c0-a3d1-4e6a-8acf-f457349f1777}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{724588b9-04e2-4e9b-9467-b064ed44f05e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Material">
+      <UniqueIdentifier>{299ec378-4e67-4818-92f6-ab5ffb9aa9ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Material">
+      <UniqueIdentifier>{96caf3fa-c267-4fb4-aaa8-83519666d079}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +250,15 @@
     <ClInclude Include="Include\CmRenderableRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmTechnique.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmPass.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmShader.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -365,6 +380,15 @@
     </ClCompile>
     <ClCompile Include="Source\CmRenderable.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmPass.cpp">
+      <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmShader.cpp">
+      <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTechnique.cpp">
+      <Filter>Source Files\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

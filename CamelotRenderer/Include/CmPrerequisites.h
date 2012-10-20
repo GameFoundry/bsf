@@ -70,7 +70,6 @@ namespace CamelotEngine {
     class Color;
     class GpuProgram;
     class GpuProgramManager;
-	class GpuProgramUsage;
     class HardwareIndexBuffer;
     class HardwareOcclusionQuery;
     class HardwareVertexBuffer;
@@ -80,6 +79,9 @@ namespace CamelotEngine {
 	class HighLevelGpuProgramFactory;
     class IndexData;
     class Pass;
+	class Technique;
+	class Shader;
+	class Material;
     class RenderSystem;
     class RenderSystemCapabilities;
     class RenderTarget;
@@ -125,6 +127,9 @@ namespace CamelotEngine
 	typedef std::shared_ptr<Resource> ResourcePtr;
 	typedef std::shared_ptr<Camera> CameraPtr;
 	typedef std::shared_ptr<Renderable> RenderablePtr;
+	typedef std::shared_ptr<Technique> TechniquePtr;
+	typedef std::shared_ptr<Pass> PassPtr;
+	typedef std::shared_ptr<Shader> ShaderPtr;
 
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;

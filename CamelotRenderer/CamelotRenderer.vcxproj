@@ -121,6 +121,7 @@
     <ClInclude Include="Include\CmMesh.h" />
     <ClInclude Include="Include\CmMeshData.h" />
     <ClInclude Include="Include\CmMeshDataRTTI.h" />
+    <ClInclude Include="Include\CmPass.h" />
     <ClInclude Include="Include\CmPrerequisites.h" />
     <ClInclude Include="Include\CmRenderable.h" />
     <ClInclude Include="Include\CmRenderableRTTI.h" />
@@ -147,9 +148,11 @@
     <ClInclude Include="Include\CmResourceRTTI.h" />
     <ClInclude Include="Include\CmGameObject.h" />
     <ClInclude Include="Include\CmComponent.h" />
+    <ClInclude Include="Include\CmShader.h" />
     <ClInclude Include="Include\stdafx.h" />
     <ClInclude Include="Include\targetver.h" />
     <ClInclude Include="Include\CmVertexDeclarationRTTI.h" />
+    <ClInclude Include="Include\CmTechnique.h" />
     <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +177,7 @@
     <ClCompile Include="Source\CmInput.cpp" />
     <ClCompile Include="Source\CmMesh.cpp" />
     <ClCompile Include="Source\CmMeshData.cpp" />
+    <ClCompile Include="Source\CmPass.cpp" />
     <ClCompile Include="Source\CmRenderable.cpp" />
     <ClCompile Include="Source\CmRenderSystem.cpp" />
     <ClCompile Include="Source\CmRenderSystemCapabilities.cpp" />
@@ -184,6 +188,8 @@
     <ClCompile Include="Source\CmResource.cpp" />
     <ClCompile Include="Source\CmResources.cpp" />
     <ClCompile Include="Source\CmSceneManager.cpp" />
+    <ClCompile Include="Source\CmShader.cpp" />
+    <ClCompile Include="Source\CmTechnique.cpp" />
     <ClCompile Include="Source\CmTexture.cpp" />
     <ClCompile Include="Source\CmTextureManager.cpp" />
     <ClCompile Include="Source\CmTextureState.cpp" />
