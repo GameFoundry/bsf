@@ -103,7 +103,7 @@
     <ClInclude Include="Include\CmComponentRTTI.h" />
     <ClInclude Include="Include\CmConfigOptionMap.h" />
     <ClInclude Include="Include\CmDefaultHardwareBufferManager.h" />
-    <ClInclude Include="Include\CmForwardRenderManager.h" />
+    <ClInclude Include="Include\CmForwardRenderer.h" />
     <ClInclude Include="Include\CmGpuProgram.h" />
     <ClInclude Include="Include\CmGpuProgramManager.h" />
     <ClInclude Include="Include\CmGpuProgramParams.h" />
@@ -118,6 +118,7 @@
     <ClInclude Include="Include\CmImporter.h" />
     <ClInclude Include="Include\CmInput.h" />
     <ClInclude Include="Include\CmInputHandler.h" />
+    <ClInclude Include="Include\CmMaterial.h" />
     <ClInclude Include="Include\CmMesh.h" />
     <ClInclude Include="Include\CmMeshData.h" />
     <ClInclude Include="Include\CmMeshDataRTTI.h" />
@@ -125,7 +126,9 @@
     <ClInclude Include="Include\CmPrerequisites.h" />
     <ClInclude Include="Include\CmRenderable.h" />
     <ClInclude Include="Include\CmRenderableRTTI.h" />
-    <ClInclude Include="Include\CmRenderManager.h" />
+    <ClInclude Include="Include\CmRenderer.h" />
+    <ClInclude Include="Include\CmRendererFactory.h" />
+    <ClInclude Include="Include\CmRendererManager.h" />
     <ClInclude Include="Include\CmRenderOperation.h" />
     <ClInclude Include="Include\CmRenderSystem.h" />
     <ClInclude Include="Include\CmRenderSystemCapabilities.h" />
@@ -162,7 +165,7 @@
     <ClCompile Include="Source\CmCgProgram.cpp" />
     <ClCompile Include="Source\CmCgProgramFactory.cpp" />
     <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp" />
-    <ClCompile Include="Source\CmForwardRenderManager.cpp" />
+    <ClCompile Include="Source\CmForwardRenderer.cpp" />
     <ClCompile Include="Source\CmGpuProgram.cpp" />
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />
@@ -175,10 +178,12 @@
     <ClCompile Include="Source\CmHighLevelGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmImporter.cpp" />
     <ClCompile Include="Source\CmInput.cpp" />
+    <ClCompile Include="Source\CmMaterial.cpp" />
     <ClCompile Include="Source\CmMesh.cpp" />
     <ClCompile Include="Source\CmMeshData.cpp" />
     <ClCompile Include="Source\CmPass.cpp" />
     <ClCompile Include="Source\CmRenderable.cpp" />
+    <ClCompile Include="Source\CmRendererManager.cpp" />
     <ClCompile Include="Source\CmRenderSystem.cpp" />
     <ClCompile Include="Source\CmRenderSystemCapabilities.cpp" />
     <ClCompile Include="Source\CmRenderSystemManager.cpp" />

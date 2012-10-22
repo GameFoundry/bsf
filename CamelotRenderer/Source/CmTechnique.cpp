@@ -1,10 +1,14 @@
 #include "CmTechnique.h"
 #include "CmException.h"
+#include "CmRenderSystemManager.h"
+#include "CmRenderSystem.h"
+#include "CmRendererManager.h"
+#include "CmRenderer.h"
 
 namespace CamelotEngine
 {
-	Technique::Technique(const String& renderSystem, const String& renderManager)
-		:mRenderSystem(renderSystem), mRenderManager(renderManager)
+	Technique::Technique(const String& renderSystem, const String& renderer)
+		:mRenderSystem(renderSystem), mRenderer(renderer)
 	{
 
 	}
@@ -28,5 +32,16 @@ namespace CamelotEngine
 		}
 
 		mPasses.erase(iter);
+	}
+
+	bool Technique::isSupported() const
+	{
+		if(RenderSystemManager::getActive()->getName() == mRenderSystem &&
+			RendererManager::getActive()->getName() == mRenderer)
+		{
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -7,16 +7,18 @@ namespace CamelotEngine
 	class CM_EXPORT Technique
 	{
 	public:
-		Technique(const String& renderSystem, const String& renderManager);
+		Technique(const String& renderSystem, const String& renderer);
 
 		void addPass(PassPtr pass);
 		void removePass(UINT32 idx);
 
-		UINT32 getNumPassess() const { return mPasses.size(); }
+		UINT32 getNumPasses() const { return mPasses.size(); }
+
+		bool isSupported() const;
 
 	private:
 		String mRenderSystem;
-		String mRenderManager;
+		String mRenderer;
 
 		vector<PassPtr>::type mPasses;
 	};

@@ -1,10 +1,16 @@
-#include "CmForwardRenderManager.h"
+#include "CmForwardRenderer.h"
 #include "CmCamera.h"
 #include "CmSceneManager.h"
 
 namespace CamelotEngine
 {
-	void ForwardRenderManager::renderAll() 
+	const String& ForwardRenderer::getName() const
+	{
+		static String name = "ForwardRenderer";
+		return name;
+	}
+
+	void ForwardRenderer::renderAll() 
 	{
 		const vector<CameraPtr>::type& allCameras = gSceneManager().getAllCameras();
 
@@ -14,7 +20,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void ForwardRenderManager::render(const CameraPtr camera) 
+	void ForwardRenderer::render(const CameraPtr camera) 
 	{
 		vector<RenderablePtr>::type allRenderables = gSceneManager().getVisibleRenderables(camera);
 

@@ -232,12 +232,6 @@
     <ClInclude Include="Include\CmInputHandler.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmRenderManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmForwardRenderManager.h">
-      <Filter>Header Files\MOVETODLL</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmComponentRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -258,6 +252,21 @@
     </ClInclude>
     <ClInclude Include="Include\CmShader.h">
       <Filter>Header Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmMaterial.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmForwardRenderer.h">
+      <Filter>Header Files\MOVETODLL</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRendererManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRendererFactory.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -375,9 +384,6 @@
     <ClCompile Include="Source\CmInput.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmForwardRenderManager.cpp">
-      <Filter>Source Files\MOVETODLL</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmRenderable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -389,6 +395,15 @@
     </ClCompile>
     <ClCompile Include="Source\CmTechnique.cpp">
       <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmMaterial.cpp">
+      <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmForwardRenderer.cpp">
+      <Filter>Source Files\MOVETODLL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRendererManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

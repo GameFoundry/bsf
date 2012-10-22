@@ -25,6 +25,12 @@ namespace CamelotEngine
 
 		UINT32 getNumTechniques() const { return mTechniques.size(); }
 
+		/**
+		 * @brief	Gets the best supported technique based on current render and other systems.
+		 * 			Throws an exception if not a single technique is supported.
+		 */
+		TechniquePtr getBestTechnique() const;
+
 	private:
 		String mName;
 		vector<TechniquePtr>::type mTechniques;

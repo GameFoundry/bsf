@@ -1,4 +1,5 @@
 #include "CmShader.h"
+#include "CmTechnique.h"
 #include "CmException.h"
 #include "CmDebug.h"
 
@@ -44,5 +45,18 @@ namespace CamelotEngine
 			CM_EXCEPT(InvalidParametersException, "Cannot remove specified technique because it wasn't found in this shader.");
 
 		mTechniques.erase(iterFind);
+	}
+
+	TechniquePtr Shader::getBestTechnique() const
+	{
+		for(auto iter = mTechniques.begin(); iter != mTechniques.end(); ++iter)
+		{
+			if((*iter)->isSupported())
+				return *iter;
+		}
+
+		CM_EXCEPT(InternalErrorException, "No techniques are supported!");
+
+		// TODO - Low priority. Instead of throwing an exception use an extremely simple technique that will be supported almost everywhere as a fallback.
 	}
 }
