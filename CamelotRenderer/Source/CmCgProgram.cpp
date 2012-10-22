@@ -219,16 +219,12 @@ namespace CamelotEngine {
 	{
 		while (parameter != 0)
         {
-            // Look for uniform (non-sampler) parameters only
+            // Look for parameters
             // Don't bother enumerating unused parameters, especially since they will
             // be optimised out and therefore not in the indexed versions
             CGtype paramType = cgGetParameterType(parameter);
 
             if (cgGetParameterVariability(parameter) == CG_UNIFORM &&
-                paramType != CG_SAMPLER1D &&
-                paramType != CG_SAMPLER2D &&
-                paramType != CG_SAMPLER3D &&
-                paramType != CG_SAMPLERCUBE &&
                 paramType != CG_SAMPLERRECT &&
                 cgGetParameterDirection(parameter) != CG_OUT && 
                 cgIsParameterReferenced(parameter))
@@ -360,6 +356,18 @@ namespace CamelotEngine {
 		{
 			switch(cgType)
 			{
+			case CG_SAMPLER1D:
+				def.constType = GCT_SAMPLER1D;
+				break;
+			case CG_SAMPLER2D:
+				def.constType = GCT_SAMPLER2D;
+				break;
+			case CG_SAMPLER3D:
+				def.constType = GCT_SAMPLER3D;
+				break;
+			case CG_SAMPLERCUBE:
+				def.constType = GCT_SAMPLERCUBE;
+				break;
 			case CG_FLOAT:
 			case CG_FLOAT1:
 			case CG_HALF:

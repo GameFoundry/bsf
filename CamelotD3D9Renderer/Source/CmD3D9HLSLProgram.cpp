@@ -318,7 +318,8 @@ namespace CamelotEngine {
         else
         {
             // Process params
-            if (desc.Type == D3DXPT_FLOAT || desc.Type == D3DXPT_INT || desc.Type == D3DXPT_BOOL)
+            if (desc.Type == D3DXPT_FLOAT || desc.Type == D3DXPT_INT || desc.Type == D3DXPT_BOOL ||
+				desc.Type == D3DXPT_SAMPLER1D || desc.Type == D3DXPT_SAMPLER2D || desc.Type == D3DXPT_SAMPLER3D || desc.Type == D3DXPT_SAMPLERCUBE)
             {
                 size_t paramIndex = desc.RegisterIndex;
                 String name = prefix + paramName;
@@ -362,6 +363,18 @@ namespace CamelotEngine {
 		def.arraySize = d3dDesc.Elements;
 		switch(d3dDesc.Type)
 		{
+		case D3DXPT_SAMPLER1D:
+			def.constType = GCT_SAMPLER1D;
+			break;
+		case D3DXPT_SAMPLER2D:
+			def.constType = GCT_SAMPLER2D;
+			break;
+		case D3DXPT_SAMPLER3D:
+			def.constType = GCT_SAMPLER3D;
+			break;
+		case D3DXPT_SAMPLERCUBE:
+			def.constType = GCT_SAMPLERCUBE;
+			break;
 		case D3DXPT_INT:
 			switch(d3dDesc.Columns)
 			{
