@@ -34,7 +34,7 @@ namespace CamelotEngine
 
 		void setElementArraySize(VertexDeclaration* obj, UINT32 size)
 		{
-			for(int i = obj->mElementList.size(); i <= size; i++)
+			for(int i = obj->mElementList.size(); i < size; i++)
 				obj->mElementList.push_back(VertexElement());
 		}
 
