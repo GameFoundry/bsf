@@ -88,6 +88,11 @@ namespace CamelotEngine {
 			This is a shared pointer because if the program is recompiled and the parameters
 			change, this definition will alter, but previous params may reference the old def.*/
 		mutable GpuLogicalBufferStructPtr mIntLogicalToPhysical;
+		/** Record of logical to physical buffer maps. Mandatory for low-level
+			programs or high-level programs which set their params the same way. 
+			This is a shared pointer because if the program is recompiled and the parameters
+			change, this definition will alter, but previous params may reference the old def.*/
+		mutable GpuLogicalBufferStructPtr mSamplerLogicalToPhysical;
 		/** Parameter name -> ConstantDefinition map, shared instance used by all parameter objects.
 		This is a shared pointer because if the program is recompiled and the parameters
 		change, this definition will alter, but previous params may reference the old def.

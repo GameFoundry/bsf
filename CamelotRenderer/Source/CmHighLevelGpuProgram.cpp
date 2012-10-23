@@ -154,6 +154,6 @@ namespace CamelotEngine
 		getConstantDefinitions();
 		params->_setNamedConstants(mConstantDefs);
 		// also set logical / physical maps for programs which use this
-		params->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical);
+		params->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical);
 	}
 }

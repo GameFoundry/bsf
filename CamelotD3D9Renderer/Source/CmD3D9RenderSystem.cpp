@@ -2757,15 +2757,28 @@ namespace CamelotEngine
 			return;
 		}
 		
-		if (variability & (UINT16)GPV_GLOBAL)
-		{
-			// D3D9 doesn't support shared constant buffers, so use copy routine
-			params->_copySharedParams();
-		}
-
 		HRESULT hr;
 		GpuLogicalBufferStructPtr floatLogical = params->getFloatLogicalBufferStruct();
 		GpuLogicalBufferStructPtr intLogical = params->getIntLogicalBufferStruct();
+
+		GpuLogicalBufferStructPtr samplerLogical = params->getSamplerLogicalBufferStruct();
+
+		// Set texture sampler
+		{
+			CM_LOCK_MUTEX(samplerLogical->mutex)
+
+			for (GpuLogicalIndexUseMap::const_iterator i = samplerLogical->map.begin();
+				i != samplerLogical->map.end(); ++i)
+			{
+				if (i->second.variability & variability)
+				{
+					size_t logicalIndex = i->first;
+					TexturePtr texture = params->getTexture(i->second.physicalIndex);
+
+					_setTexture(logicalIndex, true, texture);
+				}
+			}
+		}
 
 		switch(gptype)
 		{
@@ -2785,8 +2798,8 @@ namespace CamelotEngine
 							assert (i->second.currentSize % 4 == 0 && "Should not have any "
 								"elements less than 4 wide for D3D9");
 
-						if (FAILED(hr = getActiveD3D9Device()->SetVertexShaderConstantF(
-							(UINT)logicalIndex, pFloat, (UINT)slotCount)))
+						if (FAILED(hr = getActiveD3D9Device()->SetVertexShaderConstantF( // TODO Low priority. Binding parameters 1 by 1 is slow. It would be better to keep them in a sequential
+							(UINT)logicalIndex, pFloat, (UINT)slotCount)))               // buffer and then only call this method once
 							{
 								CM_EXCEPT(RenderingAPIException, "Unable to upload vertex shader float parameters");
 							}

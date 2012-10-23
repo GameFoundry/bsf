@@ -478,18 +478,26 @@ namespace CamelotEngine {
 							break;
 						}
 
-						// Complete def and add
-						// increment physical buffer location
-						def.logicalIndex = 0; // not valid in GLSL
-						if (def.isFloat())
+						if(def.isSampler())
 						{
-							def.physicalIndex = defs.floatBufferSize;
-							defs.floatBufferSize += def.arraySize * def.elementSize;
+							def.physicalIndex = defs.samplerCount;
+							defs.samplerCount++;
 						}
 						else
 						{
-							def.physicalIndex = defs.intBufferSize;
-							defs.intBufferSize += def.arraySize * def.elementSize;
+							// Complete def and add
+							// increment physical buffer location
+							def.logicalIndex = 0; // not valid in GLSL
+							if (def.isFloat())
+							{
+								def.physicalIndex = defs.floatBufferSize;
+								defs.floatBufferSize += def.arraySize * def.elementSize;
+							}
+							else
+							{
+								def.physicalIndex = defs.intBufferSize;
+								defs.intBufferSize += def.arraySize * def.elementSize;
+							}
 						}
 						defs.map.insert(GpuConstantDefinitionMap::value_type(paramName, def));
 

@@ -263,10 +263,12 @@ namespace CamelotEngine {
 		size_t floatBufferSize;
 		/// Total size of the int buffer required
 		size_t intBufferSize;
+		/// Total number of samplers referenced
+		size_t samplerCount;
 		/// Map of parameter names to GpuConstantDefinition
 		GpuConstantDefinitionMap map;
 
-		GpuNamedConstants() : floatBufferSize(0), intBufferSize(0) {}
+		GpuNamedConstants() : floatBufferSize(0), intBufferSize(0), samplerCount(0) {}
 
 		/** Generate additional constant entries for arrays based on a base definition.
 		@remarks
@@ -344,168 +346,11 @@ namespace CamelotEngine {
 	to physical index map is derived from GpuProgram
 	*/
 	typedef vector<int>::type IntConstantList;
-
-	/** A group of manually updated parameters that are shared between many parameter sets.
-	@remarks
-		Sometimes you want to set some common parameters across many otherwise 
-		different parameter sets, and keep them all in sync together. This class
-		allows you to define a set of parameters that you can share across many
-		parameter sets and have the parameters that match automatically be pulled
-		from the shared set, rather than you having to set them on all the parameter
-		sets individually.
-	@par
-		Parameters in a shared set are matched up with instances in a GpuProgramParameters
-		structure by matching names. It is up to you to define the named parameters
-		that a shared set contains, and ensuring the definition matches.
-	@note
-		Shared parameter sets can be named, and looked up using the GpuProgramManager.
+	/** Definition of container that holds the current float constants.
+	@note Not necessarily in direct index order to constant indexes, logical
+	to physical index map is derived from GpuProgram
 	*/
-	class CM_EXPORT GpuSharedParameters
-	{
-	protected:
-		GpuNamedConstants mNamedConstants;
-		FloatConstantList mFloatConstants;
-		IntConstantList mIntConstants;
-		String mName;
-
-		/// Not used when copying data, but might be useful to RS using shared buffers
-		size_t mFrameLastUpdated;
-
-		/// Version number of the definitions in this buffer
-		unsigned long mVersion; 
-
-	public:
-		GpuSharedParameters(const String& name);
-		virtual ~GpuSharedParameters();
-
-		/// Get the name of this shared parameter set
-		const String& getName() { return mName; }
-
-		/** Add a new constant definition to this shared set of parameters.
-		@remarks
-			Unlike GpuProgramParameters, where the parameter list is defined by the
-			program being compiled, this shared parameter set is defined by the
-			user. Only parameters which have been predefined here may be later
-			updated.
-		*/
-		void addConstantDefinition(const String& name, GpuConstantType constType, size_t arraySize = 1);
-
-		/** Remove a constant definition from this shared set of parameters.
-		*/
-		void removeConstantDefinition(const String& name);
-
-		/** Remove a constant definition from this shared set of parameters.
-		*/
-		void removeAllConstantDefinitions();
-
-		/** Get the version number of this shared parameter set, can be used to identify when 
-			changes have occurred. 
-		*/
-		unsigned long getVersion() const { return mVersion; }
-
-		/** Mark the shared set as being dirty (values modified).
-		@remarks
-		You do not need to call this yourself, set is marked as dirty whenever
-		setNamedConstant or (non const) getFloatPointer et al are called.
-		*/
-		void _markDirty();
-		/// Get the frame in which this shared parameter set was last updated
-		size_t getFrameLastUpdated() const { return mFrameLastUpdated; }
-
-		/** Gets an iterator over the named GpuConstantDefinition instances as defined
-			by the user. 
-		*/
-		GpuConstantDefinitionIterator getConstantDefinitionIterator(void) const;
-
-		/** Get a specific GpuConstantDefinition for a named parameter.
-		*/
-		const GpuConstantDefinition& getConstantDefinition(const String& name) const;
-
-		/** Get the full list of GpuConstantDefinition instances.
-		*/
-		const GpuNamedConstants& getConstantDefinitions() const;
-	
-		/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, float val);
-		/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, int val);
-		/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, const Vector4& vec);
-		/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, const Vector3& vec);
-		/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, const Matrix4& m);
-		/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, const Matrix4* m, size_t numEntries);
-		/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, const float *val, size_t count);
-		/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, const double *val, size_t count);
-			/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, const Color& colour);
-		/** @copydoc GpuProgramParameters::setNamedConstant */
-		void setNamedConstant(const String& name, const int *val, size_t count);
-
-		/// Get a pointer to the 'nth' item in the float buffer
-		float* getFloatPointer(size_t pos) { _markDirty(); return &mFloatConstants[pos]; }
-		/// Get a pointer to the 'nth' item in the float buffer
-		const float* getFloatPointer(size_t pos) const { return &mFloatConstants[pos]; }
-		/// Get a pointer to the 'nth' item in the int buffer
-		int* getIntPointer(size_t pos) { _markDirty(); return &mIntConstants[pos]; }
-		/// Get a pointer to the 'nth' item in the int buffer
-		const int* getIntPointer(size_t pos) const { return &mIntConstants[pos]; }
-	};
-
-	/// Shared pointer used to hold references to GpuProgramParameters instances
-	typedef std::shared_ptr<GpuSharedParameters> GpuSharedParametersPtr;
-
-	class GpuProgramParameters;
-
-	/** This class records the usage of a set of shared parameters in a concrete
-		set of GpuProgramParameters.
-	*/
-	class CM_EXPORT GpuSharedParametersUsage
-	{
-	protected:
-		GpuSharedParametersPtr mSharedParams;
-		// Not a shared pointer since this is also parent
-		GpuProgramParameters* mParams;
-		// list of physical mappings that we are going to bring in
-		struct CopyDataEntry
-		{
-			const GpuConstantDefinition* srcDefinition;
-			const GpuConstantDefinition* dstDefinition;
-		};
-		typedef vector<CopyDataEntry>::type CopyDataList;
-
-		CopyDataList mCopyDataList;
-
-		/// Version of shared params we based the copydata on
-		unsigned long mCopyDataVersion;
-
-		void initCopyData();
-
-
-	public:
-		/// Construct usage
-		GpuSharedParametersUsage(GpuSharedParametersPtr sharedParams, 
-			GpuProgramParameters* params);
-
-		/** Update the target parameters by copying the data from the shared
-			parameters.
-		@note This method  may not actually be called if the RenderSystem
-			supports using shared parameters directly in their own shared buffer; in
-			which case the values should not be copied out of the shared area
-			into the individual parameter set, but bound separately.
-		*/
-		void _copySharedParamsToTargetParams();
-
-		/// Get the name of the shared parameter set
-		const String& getName() const { return mSharedParams->getName(); }
-
-		GpuSharedParametersPtr getSharedParams() const { return mSharedParams; }
-		GpuProgramParameters* getTargetParams() const { return mParams; }
-	};
+	typedef vector<TexturePtr>::type TextureList;
 
 	/** Collects together the program parameters used for a GpuProgram.
 	@remarks
@@ -559,19 +404,22 @@ namespace CamelotEngine {
 			ET_REAL
 		};
 
-		typedef vector<GpuSharedParametersUsage>::type GpuSharedParamUsageList;
-
 	protected:
 		/// Packed list of floating-point constants (physical indexing)
 		FloatConstantList mFloatConstants;
 		/// Packed list of integer constants (physical indexing)
 		IntConstantList mIntConstants;
+		/// List of all texture parameters
+		TextureList mTextures;
 		/** Logical index to physical index map - for low-level programs
 		or high-level programs which pass params this way. */
 		GpuLogicalBufferStructPtr mFloatLogicalToPhysical;
 		/** Logical index to physical index map - for low-level programs
 		or high-level programs which pass params this way. */
 		GpuLogicalBufferStructPtr mIntLogicalToPhysical;
+		/** Logical index to physical index map - for low-level programs
+		or high-level programs which pass params this way. */
+		GpuLogicalBufferStructPtr mSamplerLogicalToPhysical;
 		/// Mapping from parameter names to def - high-level programs are expected to populate this
 		GpuNamedConstantsPtr mNamedConstants;
 		/// The combined variability masks of all parameters
@@ -590,10 +438,6 @@ namespace CamelotEngine {
 		*/
 		GpuLogicalIndexUse* _getIntConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, UINT16 variability);
 
-		void copySharedParamSetUsage(const GpuSharedParamUsageList& srcList);
-
-		GpuSharedParamUsageList mSharedParamSets;
-
 	public:
 		GpuProgramParameters();
 		~GpuProgramParameters() {}
@@ -608,7 +452,7 @@ namespace CamelotEngine {
 
 		/** Internal method for providing a link to a logical index->physical index map for parameters. */
 		void _setLogicalIndexes(const GpuLogicalBufferStructPtr& floatIndexMap, 
-			const GpuLogicalBufferStructPtr&  intIndexMap);
+			const GpuLogicalBufferStructPtr&  intIndexMap, const GpuLogicalBufferStructPtr& samplerIndexMap);
 
 
 		/// Does this parameter set include named parameters?
@@ -853,10 +697,35 @@ namespace CamelotEngine {
 		int* getIntPointer(size_t pos) { return &mIntConstants[pos]; }
 		/// Get a pointer to the 'nth' item in the int buffer
 		const int* getIntPointer(size_t pos) const { return &mIntConstants[pos]; }
+		const GpuLogicalBufferStructPtr& getSamplerLogicalBufferStruct() const { return mSamplerLogicalToPhysical; }
+		TexturePtr getTexture(size_t pos) const { return mTextures[pos];}
+		/// Get a reference to the list of textures
+		const TextureList& getTextureList() const { return mTextures; }
 
 		/** Tells the program whether to ignore missing parameters or not.
 		*/
 		void setIgnoreMissingParams(bool state) { mIgnoreMissingParams = state; }
+
+		/** Sets a texture parameter to the program.
+		@remarks
+		Different types of GPU programs support different types of constant parameters.
+		For example, it's relatively common to find that vertex programs only support
+		floating point constants, and that fragment programs only support integer (fixed point)
+		parameters. This can vary depending on the program version supported by the
+		graphics card being used. You should consult the documentation for the type of
+		low level program you are using, or alternatively use the methods
+		provided on RenderSystemCapabilities to determine the options.
+		@par
+		Another possible limitation is that some systems only allow constants to be set
+		on certain boundaries, e.g. in sets of 4 values for example. Again, see
+		RenderSystemCapabilities for full details.
+		@note
+		This named option will only work if you are using a parameters object created
+		from a high-level program (HighLevelGpuProgram).
+		@param name The name of the parameter
+		@param val The value to set
+		*/
+		void setNamedConstant(const String& name, TexturePtr val);
 
 		/** Sets a single value constant floating-point parameter to the program.
 		@remarks
@@ -1035,16 +904,6 @@ namespace CamelotEngine {
 		*/
 		void copyConstantsFrom(const GpuProgramParameters& source);
 
-		/** Copies the values of all matching named constants (including auto constants) from 
-		another GpuProgramParameters object. 
-		@remarks
-		This method iterates over the named constants in another parameters object
-		and copies across the values where they match. This method is safe to
-		use when the 2 parameters objects came from different programs, but only
-		works for named parameters.
-		*/
-		void copyMatchingNamedConstantsFrom(const GpuProgramParameters& source);
-
 		/** increments the multipass number entry by 1 if it exists
 		*/
 		void incPassIterationNumber(void);
@@ -1054,47 +913,6 @@ namespace CamelotEngine {
 		/** Get the physical buffer index of the pass iteration number constant */
 		size_t getPassIterationNumberIndex() const 
 		{ return mActivePassIterationIndex; }
-
-
-		/** Use a set of shared parameters in this parameters object.
-		@remarks
-			Allows you to use a set of shared parameters to automatically update 
-			this parameter set.
-		*/
-		void addSharedParameters(GpuSharedParametersPtr sharedParams);
-
-		/** Use a set of shared parameters in this parameters object.
-		@remarks
-			Allows you to use a set of shared parameters to automatically update 
-			this parameter set.
-		@param sharedParamsName The name of a shared parameter set as defined in
-			GpuProgramManager
-		*/
-		void addSharedParameters(const String& sharedParamsName);
-
-		/** Returns whether this parameter set is using the named shared parameter set. */
-		bool isUsingSharedParameters(const String& sharedParamsName) const;
-
-		/** Stop using the named shared parameter set. */
-		void removeSharedParameters(const String& sharedParamsName);
-
-		/** Stop using all shared parameter sets. */
-		void removeAllSharedParameters();
-
-		/** Get the list of shared parameter sets. */
-		const GpuSharedParamUsageList& getSharedParameters() const;
-
-		/** Update the parameters by copying the data from the shared
-		parameters.
-		@note This method  may not actually be called if the RenderSystem
-		supports using shared parameters directly in their own shared buffer; in
-		which case the values should not be copied out of the shared area
-		into the individual parameter set, but bound separately.
-		*/
-		void _copySharedParams();
-
-
-
 	};
 
 	/// Shared pointer used to hold references to GpuProgramParameters instances

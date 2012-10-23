@@ -99,34 +99,4 @@ namespace CamelotEngine {
 		return GpuProgramParametersSharedPtr(new GpuProgramParameters());
 	}
 	//---------------------------------------------------------------------
-	GpuSharedParametersPtr GpuProgramManager::createSharedParameters(const String& name)
-	{
-		if (mSharedParametersMap.find(name) != mSharedParametersMap.end())
-		{
-			CM_EXCEPT(InvalidParametersException, 
-				"The shared parameter set '" + name + "' already exists!");
-		}
-		GpuSharedParametersPtr ret(new GpuSharedParameters(name));
-		mSharedParametersMap[name] = ret;
-		return ret;
-	}
-	//---------------------------------------------------------------------
-	GpuSharedParametersPtr GpuProgramManager::getSharedParameters(const String& name) const
-	{
-		SharedParametersMap::const_iterator i = mSharedParametersMap.find(name);
-		if (i == mSharedParametersMap.end())
-		{
-			CM_EXCEPT(InvalidParametersException, 
-				"No shared parameter set with name '" + name + "'!");
-		}
-		return i->second;
-	}
-	//---------------------------------------------------------------------
-	const GpuProgramManager::SharedParametersMap& 
-	GpuProgramManager::getAvailableSharedParameters() const
-	{
-		return mSharedParametersMap;
-	}
-	//---------------------------------------------------------------------
-
 }

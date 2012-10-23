@@ -294,38 +294,56 @@ namespace CamelotEngine {
 					else
 					{
 						// base position on existing buffer contents
-						if (def.isFloat())
+						if(def.isSampler())
 						{
-							def.physicalIndex = mFloatLogicalToPhysical->bufferSize;
+							def.physicalIndex = mSamplerLogicalToPhysical->bufferSize;
 						}
 						else
 						{
-							def.physicalIndex = mIntLogicalToPhysical->bufferSize;
+							if (def.isFloat())
+							{
+								def.physicalIndex = mFloatLogicalToPhysical->bufferSize;
+							}
+							else
+							{
+								def.physicalIndex = mIntLogicalToPhysical->bufferSize;
+							}
 						}
 					}
-
 
 					def.logicalIndex = logicalIndex;
 					mConstantDefs->map.insert(GpuConstantDefinitionMap::value_type(paramName, def));
 
 					// Record logical / physical mapping
-					if (def.isFloat())
+					if(def.isSampler())
 					{
-						CM_LOCK_MUTEX(mFloatLogicalToPhysical->mutex)
-						mFloatLogicalToPhysical->map.insert(
+						CM_LOCK_MUTEX(mSamplerLogicalToPhysical->mutex)
+							mSamplerLogicalToPhysical->map.insert(
 							GpuLogicalIndexUseMap::value_type(logicalIndex, 
-								GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
-						mFloatLogicalToPhysical->bufferSize += def.arraySize * def.elementSize;
-						mConstantDefs->floatBufferSize = mFloatLogicalToPhysical->bufferSize;
+							GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
+						mSamplerLogicalToPhysical->bufferSize += def.arraySize;
+						mConstantDefs->samplerCount = mSamplerLogicalToPhysical->bufferSize;
 					}
 					else
 					{
-						CM_LOCK_MUTEX(mIntLogicalToPhysical->mutex)
-						mIntLogicalToPhysical->map.insert(
-							GpuLogicalIndexUseMap::value_type(logicalIndex, 
+						if (def.isFloat())
+						{
+							CM_LOCK_MUTEX(mFloatLogicalToPhysical->mutex)
+								mFloatLogicalToPhysical->map.insert(
+								GpuLogicalIndexUseMap::value_type(logicalIndex, 
 								GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
-						mIntLogicalToPhysical->bufferSize += def.arraySize * def.elementSize;
-						mConstantDefs->intBufferSize = mIntLogicalToPhysical->bufferSize;
+							mFloatLogicalToPhysical->bufferSize += def.arraySize * def.elementSize;
+							mConstantDefs->floatBufferSize = mFloatLogicalToPhysical->bufferSize;
+						}
+						else
+						{
+							CM_LOCK_MUTEX(mIntLogicalToPhysical->mutex)
+								mIntLogicalToPhysical->map.insert(
+								GpuLogicalIndexUseMap::value_type(logicalIndex, 
+								GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
+							mIntLogicalToPhysical->bufferSize += def.arraySize * def.elementSize;
+							mConstantDefs->intBufferSize = mIntLogicalToPhysical->bufferSize;
+						}
 					}
 
 					// Deal with array indexing

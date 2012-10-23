@@ -56,10 +56,10 @@ namespace CamelotEngine
 		mCamera->setAspectRatio(800.0f / 600.0f);
 
 		/////////////////// HLSL SHADERS //////////////////////////
-		String fragShaderCode = "sampler2D diffuseMap;			\
+		String fragShaderCode = "sampler2D tex;			\
 								float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
 								{														\
-								float4 color = tex2D(diffuseMap, uv);				\
+								float4 color = tex2D(tex, uv);				\
 								return color;										\
 								}";
 
@@ -387,10 +387,10 @@ namespace CamelotEngine
 		renderSystem->_beginFrame();
 
 		mVertProg->getDefaultParameters()->setNamedConstant("matViewProjection", viewProjMatrix);
-
+		mFragProg->getDefaultParameters()->setNamedConstant("tex", mDbgTexture);
 		//renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), GPV_ALL);
 
-		renderSystem->_setTexture(0, true, mDbgTexture);
+		//renderSystem->_setTexture(0, true, mDbgTexture);
 
 		renderSystem->bindGpuProgram(mFragProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
 		renderSystem->bindGpuProgram(mVertProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!

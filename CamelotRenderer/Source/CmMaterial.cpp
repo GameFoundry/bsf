@@ -69,6 +69,7 @@ namespace CamelotEngine
 	{
 		throwIfNotInitialized();
 
+		// TODO - It's going to be very important to minimize the amount of texture (and less importantly) constant changes
 
 	}
 }

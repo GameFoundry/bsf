@@ -415,8 +415,8 @@ namespace CamelotEngine {
 					case GCT_SAMPLER3D:
 					case GCT_SAMPLERCUBE:
 						// samplers handled like 1-element ints
-						glUniform1ivARB(currentUniform->mLocation, 1, 
-							(GLint*)params->getIntPointer(def->physicalIndex));
+						glUniform1iARB(currentUniform->mLocation, def->physicalIndex);
+						
 						break;
                     case GCT_UNKNOWN:
                         break;

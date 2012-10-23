@@ -47,13 +47,8 @@ namespace CamelotEngine {
 	public:
 
 		typedef set<String>::type SyntaxCodes;
-		typedef map<String, GpuSharedParametersPtr>::type SharedParametersMap;
-
 
 	protected:
-
-		SharedParametersMap mSharedParametersMap;
-
 		/** General create method
         */
         virtual GpuProgram* create(GpuProgramType gptype, const String& syntaxCode) = 0;
@@ -113,22 +108,6 @@ namespace CamelotEngine {
 		*/
 		virtual GpuProgramPtr createProgram(const String& code, 
             GpuProgramType gptype, const String& syntaxCode);
-
-		/** Create a new set of shared parameters, which can be used across many 
-			GpuProgramParameters objects of different structures.
-		@param name The name to give the shared parameters so you can refer to them
-			later.
-		*/
-		virtual GpuSharedParametersPtr createSharedParameters(const String& name);
-
-		/** Retrieve a set of shared parameters, which can be used across many 
-		GpuProgramParameters objects of different structures.
-		*/
-		virtual GpuSharedParametersPtr getSharedParameters(const String& name) const;
-
-		/** Get (const) access to the available shared parameter sets. 
-		*/
-		virtual const SharedParametersMap& getAvailableSharedParameters() const;
 	};
 
 	/** @} */

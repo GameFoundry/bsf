@@ -2518,12 +2518,21 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void GLRenderSystem::bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask)
 	{
-		if (mask & (UINT16)GPV_GLOBAL)
+		// Set textures
+		const GpuNamedConstants& consts = params->getConstantDefinitions();
+		for(auto iter = consts.map.begin(); iter != consts.map.end(); ++iter)
 		{
-			// We could maybe use GL_EXT_bindable_uniform here to produce Dx10-style
-			// shared constant buffers, but GPU support seems fairly weak?
-			// for now, just copy
-			params->_copySharedParams();
+			const GpuConstantDefinition& def = iter->second;
+
+			if(def.variability & mask)
+			{
+				if(def.constType == GCT_SAMPLER2D || def.constType == GCT_SAMPLERCUBE || def.constType == GCT_SAMPLER1D 
+					|| def.constType == GCT_SAMPLER2DSHADOW || def.constType == GCT_SAMPLER3D || def.constType == GCT_SAMPLER1DSHADOW)
+				{
+					TexturePtr curTexture = params->getTexture(def.physicalIndex);
+					_setTexture(def.physicalIndex, true, curTexture);
+				}
+			}
 		}
 
 		switch (gptype)
