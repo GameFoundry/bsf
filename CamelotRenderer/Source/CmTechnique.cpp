@@ -34,6 +34,14 @@ namespace CamelotEngine
 		mPasses.erase(iter);
 	}
 
+	PassPtr Technique::getPass(UINT32 idx)
+	{
+		if(idx < 0 || idx >= mPasses.size())
+			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
+
+		return mPasses[idx];
+	}
+
 	bool Technique::isSupported() const
 	{
 		if(RenderSystemManager::getActive()->getName() == mRenderSystem &&

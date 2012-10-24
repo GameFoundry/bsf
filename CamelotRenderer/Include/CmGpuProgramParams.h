@@ -610,6 +610,14 @@ namespace CamelotEngine {
 		@param vec The value to set
 		*/
 		void _writeRawConstant(size_t physicalIndex, const Vector3& vec);
+		/** Write a 2-element floating-point parameter to the program via Vector2.
+		@note You can use these methods if you have already derived the physical
+		constant buffer location, for a slight speed improvement over using
+		the named / logical index versions.
+		@param physicalIndex The physical buffer index at which to place the parameter 
+		@param vec The value to set
+		*/
+		void _writeRawConstant(size_t physicalIndex, const Vector2& vec);
 		/** Write a Matrix4 parameter to the program.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -627,6 +635,15 @@ namespace CamelotEngine {
 		@param numEntries Number of Matrix4 entries
 		*/
 		void _writeRawConstant(size_t physicalIndex, const Matrix4* m, size_t numEntries);
+		/** Write a Matrix3 parameter to the program.
+		@note You can use these methods if you have already derived the physical
+		constant buffer location, for a slight speed improvement over using
+		the named / logical index versions.
+		@param physicalIndex The physical buffer index at which to place the parameter 
+		@param m The value to set
+		@param elementCount actual element count used with shader
+		*/
+		void _writeRawConstant(size_t physicalIndex, const Matrix3& m, size_t elementCount);
 		/** Write a ColourValue parameter to the program.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -785,6 +802,13 @@ namespace CamelotEngine {
 		@param vec The value to set
 		*/
 		void setNamedConstant(const String& name, const Vector3& vec);
+		/** Sets a Vector2 parameter to the program.
+		@note
+		This named option will only work if you are using a parameters object created
+		from a high-level program (HighLevelGpuProgram).
+		@param vec The value to set
+		*/
+		void setNamedConstant(const String& name, const Vector2& vec);
 		/** Sets a Matrix4 parameter to the program.
 		@param name The name of the parameter
 		@param m The value to set
@@ -798,6 +822,11 @@ namespace CamelotEngine {
 		@param numEntries Number of Matrix4 entries
 		*/
 		void setNamedConstant(const String& name, const Matrix4* m, size_t numEntries);
+		/** Sets a Matrix3 parameter to the program.
+		@param name The name of the parameter
+		@param m The value to set
+		*/
+		void setNamedConstant(const String& name, const Matrix3& m);
 		/** Sets a multiple value constant floating-point parameter to the program.
 		@par
 		Some systems only allow constants to be set on certain boundaries, 
@@ -858,6 +887,11 @@ namespace CamelotEngine {
 		*/
 		void setNamedConstant(const String& name, const int *val, size_t count, 
 			size_t multiple = 4);
+
+		/**
+		 * @brief	Returns true if a named constant with the specified name exists.
+		 */
+		bool hasNamedConstant(const String& name) const;
 
 		/** Find a constant definition for a named parameter.
 		@remarks

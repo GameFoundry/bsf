@@ -27,6 +27,8 @@ THE SOFTWARE.
 */
 #include "CmGpuProgramParams.h"
 #include "CmMatrix4.h"
+#include "CmMatrix3.h"
+#include "CmVector2.h"
 #include "CmVector3.h"
 #include "CmVector4.h"
 #include "CmTexture.h"
@@ -295,6 +297,11 @@ namespace CamelotEngine
 		_writeRawConstants(physicalIndex, vec.ptr(), 3);		
 	}
 	//-----------------------------------------------------------------------------
+	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, const Vector2& vec)
+	{
+		_writeRawConstants(physicalIndex, vec.ptr(), 2);		
+	}
+	//-----------------------------------------------------------------------------
 	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, const Matrix4& m,size_t elementCount)
 	{
 
@@ -328,6 +335,21 @@ namespace CamelotEngine
 			_writeRawConstants(physicalIndex, pMatrix[0][0], 16 * numEntries);
 		}
 
+
+	}
+	//-----------------------------------------------------------------------------
+	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, const Matrix3& m,size_t elementCount)
+	{
+		// remember, raw content access uses raw float count rather than float4
+		if (mTransposeMatrices)
+		{
+			Matrix3 t = m.Transpose();
+			_writeRawConstants(physicalIndex, t[0], elementCount>9?9:elementCount);
+		}
+		else
+		{
+			_writeRawConstants(physicalIndex, m[0], elementCount>9?9:elementCount);
+		}
 
 	}
 	//-----------------------------------------------------------------------------
@@ -645,6 +667,11 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------------
+	bool GpuProgramParameters::hasNamedConstant(const String& name) const
+	{
+		return _findNamedConstantDefinition(name) != nullptr;
+	}
+	//-----------------------------------------------------------------------------
 	const GpuConstantDefinition* 
 		GpuProgramParameters::_findNamedConstantDefinition(const String& name, 
 		bool throwExceptionIfNotFound) const
@@ -723,6 +750,15 @@ namespace CamelotEngine
 			_writeRawConstant(def->physicalIndex, vec);
 	}
 	//---------------------------------------------------------------------------
+	void GpuProgramParameters::setNamedConstant(const String& name, const Vector2& vec)
+	{
+		// look up, and throw an exception if we're not ignoring missing
+		const GpuConstantDefinition* def = 
+			_findNamedConstantDefinition(name, !mIgnoreMissingParams);
+		if (def)
+			_writeRawConstant(def->physicalIndex, vec);
+	}
+	//---------------------------------------------------------------------------
 	void GpuProgramParameters::setNamedConstant(const String& name, const Matrix4& m)
 	{
 		// look up, and throw an exception if we're not ignoring missing
@@ -740,6 +776,15 @@ namespace CamelotEngine
 			_findNamedConstantDefinition(name, !mIgnoreMissingParams);
 		if (def)
 			_writeRawConstant(def->physicalIndex, m, numEntries);
+	}
+	//---------------------------------------------------------------------------
+	void GpuProgramParameters::setNamedConstant(const String& name, const Matrix3& m)
+	{
+		// look up, and throw an exception if we're not ignoring missing
+		const GpuConstantDefinition* def = 
+			_findNamedConstantDefinition(name, !mIgnoreMissingParams);
+		if (def)
+			_writeRawConstant(def->physicalIndex, m, def->elementSize);
 	}
 	//---------------------------------------------------------------------------
 	void GpuProgramParameters::setNamedConstant(const String& name, 

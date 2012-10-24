@@ -52,7 +52,9 @@ namespace CamelotEngine
 		for(auto iter = mTechniques.begin(); iter != mTechniques.end(); ++iter)
 		{
 			if((*iter)->isSupported())
+			{
 				return *iter;
+			}
 		}
 
 		CM_EXCEPT(InternalErrorException, "No techniques are supported!");

@@ -70,6 +70,7 @@ namespace CamelotEngine {
     class Color;
     class GpuProgram;
     class GpuProgramManager;
+	class GpuProgramParameters;
     class HardwareIndexBuffer;
     class HardwareOcclusionQuery;
     class HardwareVertexBuffer;
@@ -121,6 +122,7 @@ namespace CamelotEngine {
 namespace CamelotEngine
 {
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
+	typedef std::shared_ptr<GpuProgramParameters> GpuProgramParametersPtr;
 	typedef std::shared_ptr<HighLevelGpuProgram> HighLevelGpuProgramPtr;
 	typedef std::shared_ptr<HardwarePixelBuffer> HardwarePixelBufferPtr;
 	typedef std::shared_ptr<VertexDeclaration> VertexDeclarationPtr;

@@ -11,6 +11,7 @@ namespace CamelotEngine
 
 		void addPass(PassPtr pass);
 		void removePass(UINT32 idx);
+		PassPtr getPass(UINT32 idx);
 
 		UINT32 getNumPasses() const { return mPasses.size(); }
 

@@ -12,7 +12,7 @@ namespace CamelotEngine
 		VertexElement& getElement(VertexDeclaration* obj, UINT32 idx)
 		{
 			auto iter = obj->mElementList.begin();
-			for(int i = 0; i < idx; i++)
+			for(UINT32 i = 0; i < idx; i++)
 				++iter;
 
 			return *iter;
@@ -21,7 +21,7 @@ namespace CamelotEngine
 		void setElement(VertexDeclaration* obj, UINT32 idx, VertexElement& data)
 		{
 			auto iter = obj->mElementList.begin();
-			for(int i = 0; i < idx; i++)
+			for(UINT32 i = 0; i < idx; i++)
 				++iter;
 
 			*iter = data;
@@ -34,7 +34,7 @@ namespace CamelotEngine
 
 		void setElementArraySize(VertexDeclaration* obj, UINT32 size)
 		{
-			for(int i = obj->mElementList.size(); i < size; i++)
+			for(UINT32 i = obj->mElementList.size(); i < size; i++)
 				obj->mElementList.push_back(VertexElement());
 		}
 
