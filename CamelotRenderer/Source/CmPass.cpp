@@ -4,7 +4,7 @@
 namespace CamelotEngine
 {
     //-----------------------------------------------------------------------------
-	Pass::Pass(Technique* parent, unsigned short index)
+	Pass::Pass(const Technique* parent, unsigned short index)
         : mParent(parent)
 		, mIndex(index)
 		, mSourceBlendFactor(SBF_ONE)
@@ -39,7 +39,7 @@ namespace CamelotEngine
    }
 
     //-----------------------------------------------------------------------------
-	Pass::Pass(Technique *parent, unsigned short index, const Pass& oth)
+	Pass::Pass(const Technique *parent, unsigned short index, const Pass& oth)
         :mParent(parent), mIndex(index), mPassIterationCount(1)
     {
         *this = oth;

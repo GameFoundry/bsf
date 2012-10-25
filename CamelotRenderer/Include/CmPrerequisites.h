@@ -157,6 +157,19 @@ namespace CamelotEngine
 	};
 }
 
+/************************************************************************/
+/* 							Resource references                   		*/
+/************************************************************************/
+
+#include "CmResourceRef.h"
+
+namespace CamelotEngine
+{
+	typedef ResourceRef<Resource> BaseResourceRef;
+	typedef ResourceRef<Texture> TextureRef;
+	typedef ResourceRef<Mesh> MeshRef;
+}
+
 #endif // __OgrePrerequisites_H__
 
 

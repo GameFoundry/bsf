@@ -28,6 +28,6 @@ namespace CamelotEngine
 		 *
 		 * @return	null if it fails, otherwise the loaded object.
 		 */
-		virtual ResourcePtr import(const String& filePath) = 0;
+		virtual BaseResourceRef import(const String& filePath) = 0;
 	};
 }

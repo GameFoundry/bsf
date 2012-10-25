@@ -23,7 +23,7 @@ namespace CamelotEngine
 		 *
 		 * @param	inputFilePath 	Pathname of the input file.
 		 */
-		ResourcePtr import(const String& inputFilePath);
+		BaseResourceRef import(const String& inputFilePath);
 
 
 		/**

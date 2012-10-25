@@ -2529,8 +2529,8 @@ namespace CamelotEngine {
 				if(def.constType == GCT_SAMPLER2D || def.constType == GCT_SAMPLERCUBE || def.constType == GCT_SAMPLER1D 
 					|| def.constType == GCT_SAMPLER2DSHADOW || def.constType == GCT_SAMPLER3D || def.constType == GCT_SAMPLER1DSHADOW)
 				{
-					TexturePtr curTexture = params->getTexture(def.physicalIndex);
-					_setTexture(def.physicalIndex, true, curTexture);
+					TextureRef curTexture = params->getTexture(def.physicalIndex);
+					_setTexture(def.physicalIndex, true, curTexture.getInternalPtr());
 				}
 			}
 		}

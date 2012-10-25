@@ -35,7 +35,7 @@ namespace CamelotEngine
 		return true; // FBX files can be plain-text so I don't even check for magic number
 	}
 
-	ResourcePtr FBXImporter::import(const String& filePath)
+	BaseResourceRef FBXImporter::import(const String& filePath)
 	{
 		FbxManager* fbxManager = nullptr;
 		FbxScene* fbxScene = nullptr;
@@ -47,7 +47,7 @@ namespace CamelotEngine
 
 		shutDownSdk(fbxManager);
 
-		MeshPtr mesh(new Mesh());
+		MeshRef mesh(new Mesh());
 		mesh->setMeshData(meshData);
 
 		return mesh;
@@ -785,7 +785,7 @@ namespace CamelotEngine
 		{
 			UINT32 subMeshCount = (*iter)->subMeshes.size();
 
-			for(int i = 0; i < subMeshCount; i++)
+			for(UINT32 i = 0; i < subMeshCount; i++)
 			{
 				MeshData::SubMeshData newSubMesh;
 				newSubMesh.indexCount = (*iter)->subMeshes[i].indexCount;

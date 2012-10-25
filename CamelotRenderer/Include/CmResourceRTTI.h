@@ -11,8 +11,8 @@ namespace CamelotEngine
 	private:
 		UINT32& getSize(Resource* obj) { return obj->mSize; }
 		void setSize(Resource* obj, UINT32& size) { obj->mSize = size; } 
-		UUID& getUUID(Resource* obj) { return obj->mSourceUUID; }
-		void setUUID(Resource* obj, UUID& uuid) { obj->mSourceUUID = uuid; }
+		String& getUUID(Resource* obj) { return obj->mUUID; }
+		void setUUID(Resource* obj, String& uuid) { obj->mUUID = uuid; }
 
 	public:
 		ResourceRTTI()

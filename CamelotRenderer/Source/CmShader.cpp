@@ -11,14 +11,12 @@ namespace CamelotEngine
 
 	}
 
-	void Shader::addTechnique(TechniquePtr technique)
+	TechniquePtr Shader::addTechnique(const String& renderSystem, const String& renderer)
 	{
-		auto iterFind = std::find(mTechniques.begin(), mTechniques.end(), technique);
-
-		if(iterFind != mTechniques.end())
-			CM_EXCEPT(InvalidParametersException, "Identical technique already exists in this shader.");
-
+		TechniquePtr technique = TechniquePtr(new Technique(renderSystem, renderer));
 		mTechniques.push_back(technique);
+
+		return technique;
 	}
 
 	void Shader::removeTechnique(UINT32 idx)

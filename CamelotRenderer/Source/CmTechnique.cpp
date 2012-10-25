@@ -3,6 +3,7 @@
 #include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 #include "CmRendererManager.h"
+#include "CmPass.h"
 #include "CmRenderer.h"
 
 namespace CamelotEngine
@@ -13,9 +14,12 @@ namespace CamelotEngine
 
 	}
 
-	void Technique::addPass(PassPtr pass)
+	PassPtr Technique::addPass()
 	{
-		mPasses.push_back(pass);
+		PassPtr newPass(new Pass(this, mPasses.size()));
+
+		mPasses.push_back(newPass);
+		return newPass;
 	}
 
 	void Technique::removePass(UINT32 idx)
@@ -34,7 +38,7 @@ namespace CamelotEngine
 		mPasses.erase(iter);
 	}
 
-	PassPtr Technique::getPass(UINT32 idx)
+	PassPtr Technique::getPass(UINT32 idx) const
 	{
 		if(idx < 0 || idx >= mPasses.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));

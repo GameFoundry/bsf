@@ -21,6 +21,11 @@
 #include "CmTime.h"
 #include "CmInput.h"
 
+#include "CmMaterial.h"
+#include "CmShader.h"
+#include "CmTechnique.h"
+#include "CmPass.h"
+
 namespace CamelotEngine
 {
 	Application::Application()
@@ -132,6 +137,18 @@ namespace CamelotEngine
 		//mVertProg = HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		//mVertProg->load();
 
+		//ShaderPtr newShader(new Shader("TestShader"));
+		//TechniquePtr newTechnique = newShader->addTechnique("GLRenderSystem", "ForwardRenderer");
+		//PassPtr newPass = newTechnique->addPass();
+		//newPass->setVertexProgram(mVertProg);
+		//newPass->setFragmentProgram(mFragProg);
+
+		//Material newMat;
+		//newMat.setShader(newShader);
+		
+		//newShader.
+		
+
 
 		// IMPORTER TEST
 		Importer::startUp(new Importer());
@@ -139,17 +156,17 @@ namespace CamelotEngine
 		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow
 
 		//mDbgTexture = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
-		TexturePtr testTex = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
-		mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
+		TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
+		mDbgMesh = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
 		//mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\BarrelMesh.fbx"));
 
 		Resources::startUp(new Resources());
 
-		gResources().save(testTex, "C:\\ExportTest.tex");
-		gResources().save(mDbgMesh, "C:\\ExportMesh.mesh");
+		//gResources().save(testTex, "C:\\ExportTest.tex");
+		//gResources().save(mDbgMesh, "C:\\ExportMesh.mesh");
 
-		mDbgTexture = std::static_pointer_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
-		mDbgMesh = std::static_pointer_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
+		//mDbgTexture = std::static_pointer_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
+		//mDbgMesh = std::static_pointer_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
 
 		mDbgTexture = testTex;
 

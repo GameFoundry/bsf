@@ -38,8 +38,8 @@ namespace CamelotEngine
 			std::shared_ptr<Camera> mCamera;
 			HighLevelGpuProgramPtr mFragProg;
 			HighLevelGpuProgramPtr mVertProg;
-			TexturePtr mDbgTexture;
-			MeshPtr mDbgMesh;
+			TextureRef mDbgTexture;
+			MeshRef mDbgMesh;
 			GameObjectPtr mCameraGO;
 	};
 

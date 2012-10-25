@@ -2773,9 +2773,9 @@ namespace CamelotEngine
 				if (i->second.variability & variability)
 				{
 					size_t logicalIndex = i->first;
-					TexturePtr texture = params->getTexture(i->second.physicalIndex);
+					TextureRef texture = params->getTexture(i->second.physicalIndex);
 
-					_setTexture(logicalIndex, true, texture);
+					_setTexture(logicalIndex, true, texture.getInternalPtr());
 				}
 			}
 		}

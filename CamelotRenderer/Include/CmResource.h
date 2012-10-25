@@ -18,13 +18,15 @@ namespace CamelotEngine
 	class CM_EXPORT Resource : public IReflectable
 	{
 	public:
-		Resource(/*const UUID& sourceUUID*/) // TODO - Temporarily don't initialize UUID, because I want texture to inherit from resource and UUIDs arent set up yet
-			:mSize(0), mLoadState(RS_Unloaded) /*mSourceUUID(sourceUUID),*/
+		Resource(/*UUID& _UUID*/) // TODO - Temporarily don't initialize UUID, because I want texture to inherit from resource and UUIDs arent set up yet
+			:mSize(0), mLoadState(RS_Unloaded) /*mUUID(_UUID),*/
 		{}
 		virtual ~Resource() {};
 
 		void load();
 		virtual void loadImpl() = 0;
+
+		const String& getUUID() const { return mUUID; }
 
 	protected:
 		friend class Resources;
@@ -33,7 +35,7 @@ namespace CamelotEngine
 		//virtual void calculateSize() = 0;
 		//virtual void reload();
 
-		UUID mSourceUUID; 
+		String mUUID; 
 		UINT32 mSize;
 
 		// Transient

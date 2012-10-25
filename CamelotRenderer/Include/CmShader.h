@@ -18,7 +18,7 @@ namespace CamelotEngine
 	public:
 		Shader(const String& name);
 
-		void addTechnique(TechniquePtr technique);
+		TechniquePtr addTechnique(const String& renderSystem, const String& renderer);
 		
 		void removeTechnique(UINT32 idx);
 		void removeTechnique(TechniquePtr technique);

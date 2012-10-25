@@ -704,7 +704,7 @@ namespace CamelotEngine
 		}
 	}
 	//----------------------------------------------------------------------------
-	void GpuProgramParameters::setNamedConstant(const String& name, TexturePtr val)
+	void GpuProgramParameters::setNamedConstant(const String& name, TextureRef val)
 	{
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 

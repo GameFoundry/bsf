@@ -350,7 +350,7 @@ namespace CamelotEngine {
 	@note Not necessarily in direct index order to constant indexes, logical
 	to physical index map is derived from GpuProgram
 	*/
-	typedef vector<TexturePtr>::type TextureList;
+	typedef vector<TextureRef>::type TextureList;
 
 	/** Collects together the program parameters used for a GpuProgram.
 	@remarks
@@ -715,7 +715,7 @@ namespace CamelotEngine {
 		/// Get a pointer to the 'nth' item in the int buffer
 		const int* getIntPointer(size_t pos) const { return &mIntConstants[pos]; }
 		const GpuLogicalBufferStructPtr& getSamplerLogicalBufferStruct() const { return mSamplerLogicalToPhysical; }
-		TexturePtr getTexture(size_t pos) const { return mTextures[pos];}
+		TextureRef getTexture(size_t pos) const { return mTextures[pos];}
 		/// Get a reference to the list of textures
 		const TextureList& getTextureList() const { return mTextures; }
 
@@ -742,7 +742,7 @@ namespace CamelotEngine {
 		@param name The name of the parameter
 		@param val The value to set
 		*/
-		void setNamedConstant(const String& name, TexturePtr val);
+		void setNamedConstant(const String& name, TextureRef val);
 
 		/** Sets a single value constant floating-point parameter to the program.
 		@remarks

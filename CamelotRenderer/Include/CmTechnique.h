@@ -9,9 +9,9 @@ namespace CamelotEngine
 	public:
 		Technique(const String& renderSystem, const String& renderer);
 
-		void addPass(PassPtr pass);
+		PassPtr addPass();
 		void removePass(UINT32 idx);
-		PassPtr getPass(UINT32 idx);
+		PassPtr getPass(UINT32 idx) const;
 
 		UINT32 getNumPasses() const { return mPasses.size(); }
 

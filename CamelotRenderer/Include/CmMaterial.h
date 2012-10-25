@@ -13,6 +13,7 @@ namespace CamelotEngine
 			GpuProgramParametersPtr mGeomParams;
 		};
 
+	public:
 		/**
 		 * @brief	Sets a shader that will be used by the material. 
 		 * 			Shaders best technique will be retrieved and used in all subsequent Material

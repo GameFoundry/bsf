@@ -16,7 +16,7 @@ namespace CamelotEngine
 	class CM_EXPORT Pass
     {
     protected:
-        Technique* mParent;
+        const Technique* mParent;
         unsigned short mIndex; // pass index
         String mName; // optional name for the pass
         //-------------------------------------------------------------------------
@@ -87,9 +87,9 @@ namespace CamelotEngine
     public:
 		CM_MUTEX(mGpuProgramChangeMutex)
         /// Default constructor
-		Pass(Technique* parent, unsigned short index);
+		Pass(const Technique* parent, unsigned short index);
         /// Copy constructor
-        Pass(Technique* parent, unsigned short index, const Pass& oth );
+        Pass(const Technique* parent, unsigned short index, const Pass& oth );
         /// Operator = overload
         Pass& operator=(const Pass& oth);
         virtual ~Pass();
@@ -464,7 +464,7 @@ namespace CamelotEngine
 		bool getTransparentSortingForced(void) const;
 
 		/// Gets the parent Technique
-        Technique* getParent(void) const { return mParent; }
+        const Technique* getParent(void) const { return mParent; }
 
 		/** Sets the details of the vertex program to use.
 		*/
