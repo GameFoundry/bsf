@@ -15,7 +15,7 @@ namespace CamelotEngine
 
 	}
 
-	ResourcePtr Resources::load(const String& filePath)
+	BaseResourceRef Resources::load(const String& filePath)
 	{
 		FileSerializer fs;
 		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
@@ -31,17 +31,17 @@ namespace CamelotEngine
 		ResourcePtr resource = std::static_pointer_cast<Resource>(loadedData);
 		resource->load();
 
-		return resource;
+		return BaseResourceRef(resource);
 	}
 
-	ResourcePtr Resources::load(const UUID& uuid)
+	BaseResourceRef Resources::load(const UUID& uuid)
 	{
 		CM_EXCEPT(NotImplementedException, "Not implemented");
 	}
 
-	void Resources::save(ResourcePtr resource, const String& filePath)
+	void Resources::save(BaseResourceRef resource, const String& filePath)
 	{
-		assert(resource != nullptr);
+		assert(resource.get() != nullptr);
 
 		// TODO - Low priority. Check is file path valid?
 		

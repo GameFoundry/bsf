@@ -31,7 +31,7 @@ namespace CamelotEngine
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		ResourcePtr load(const String& filePath);
+		BaseResourceRef load(const String& filePath);
 
 		/**
 		 * @brief	Loads the resource with the given uuid.
@@ -40,7 +40,7 @@ namespace CamelotEngine
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		ResourcePtr load(const UUID& uuid);
+		BaseResourceRef load(const UUID& uuid);
 
 		/**
 		 * @brief	Saves the resource at the specified location.
@@ -48,7 +48,7 @@ namespace CamelotEngine
 		 * @param	resource	The resource.
 		 * @param	filePath	Full pathname of the file.
 		 */
-		void save(ResourcePtr resource, const String& filePath);
+		void save(BaseResourceRef resource, const String& filePath);
 	};
 
 	CM_EXPORT Resources& gResources();

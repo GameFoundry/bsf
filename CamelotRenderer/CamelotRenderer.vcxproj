@@ -139,6 +139,7 @@
     <ClInclude Include="Include\CmRenderWindow.h" />
     <ClInclude Include="Include\CmResource.h" />
     <ClInclude Include="Include\CmResourceRef.h" />
+    <ClInclude Include="Include\CmResourceRefRTTI.h" />
     <ClInclude Include="Include\CmResources.h" />
     <ClInclude Include="Include\CmSceneManager.h" />
     <ClInclude Include="Include\CmSpecificImporter.h" />

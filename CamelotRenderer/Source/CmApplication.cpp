@@ -162,11 +162,11 @@ namespace CamelotEngine
 
 		Resources::startUp(new Resources());
 
-		//gResources().save(testTex, "C:\\ExportTest.tex");
-		//gResources().save(mDbgMesh, "C:\\ExportMesh.mesh");
+		gResources().save(testTex, "C:\\ExportTest.tex");
+		gResources().save(mDbgMesh, "C:\\ExportMesh.mesh");
 
-		//mDbgTexture = std::static_pointer_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
-		//mDbgMesh = std::static_pointer_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
+		mDbgTexture = static_resource_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
+		mDbgMesh = static_resource_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
 
 		mDbgTexture = testTex;
 

@@ -153,7 +153,8 @@ namespace CamelotEngine
 		TID_VertexData = 1005,
 		TID_Component = 1006,
 		TID_Camera = 1007,
-		TID_Renderable = 1008
+		TID_Renderable = 1008,
+		TID_ResourceRef = 1009
 	};
 }
 

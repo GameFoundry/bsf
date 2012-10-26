@@ -1,6 +1,7 @@
 #include "CmPrerequisites.h"
 #include "CmResourceRef.h"
 #include "CmResource.h"
+#include "CmResourceRefRTTI.h"
 
 namespace CamelotEngine
 {
@@ -18,5 +19,15 @@ namespace CamelotEngine
 			mUUID = mPtr->getUUID();
 			mUUIDSet = true;
 		}
+	}
+
+	RTTITypeBase* ResourceRefBase::getRTTIStatic()
+	{
+		return ResourceRefRTTI::instance();
+	}
+
+	RTTITypeBase* ResourceRefBase::getRTTI() const
+	{
+		return ResourceRefBase::getRTTIStatic();
 	}
 }

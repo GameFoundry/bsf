@@ -1,11 +1,13 @@
 #pragma once
 
+#include "CmIReflectable.h"
+
 namespace CamelotEngine
 {
 	template <typename T>
 	class ResourceRef;
 
-	class CM_EXPORT ResourceRefBase
+	class CM_EXPORT ResourceRefBase : public IReflectable
 	{
 	protected:
 		ResourceRefBase()
@@ -24,6 +26,14 @@ namespace CamelotEngine
 		{
 			init(std::static_pointer_cast<Resource>(ptr.mPtr));
 		}
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ResourceRefRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	template <typename T>
@@ -53,9 +63,9 @@ namespace CamelotEngine
 			init(ptr);
 		}
 
-		operator ResourceRef<Resource>&() 
+		operator ResourceRef<Resource>() 
 		{
-			return *this; 
+			return ResourceRef<Resource>(this->mPtr); 
 		}
 
 		const T* get() const { return static_cast<T*>(mPtr.get()); }
