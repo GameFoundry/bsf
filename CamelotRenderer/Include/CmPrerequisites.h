@@ -154,7 +154,8 @@ namespace CamelotEngine
 		TID_Component = 1006,
 		TID_Camera = 1007,
 		TID_Renderable = 1008,
-		TID_ResourceRef = 1009
+		TID_ResourceRef = 1009,
+		TID_GpuProgram = 1010
 	};
 }
 

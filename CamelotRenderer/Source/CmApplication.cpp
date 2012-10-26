@@ -136,6 +136,9 @@ namespace CamelotEngine
 
 		//mVertProg = HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		//mVertProg->load();
+		
+		mVertParams = mVertProg->createParameters();
+		mFragParams = mFragProg->createParameters();
 
 		//ShaderPtr newShader(new Shader("TestShader"));
 		//TechniquePtr newTechnique = newShader->addTechnique("GLRenderSystem", "ForwardRenderer");
@@ -403,8 +406,8 @@ namespace CamelotEngine
 		renderSystem->clearFrameBuffer(FBT_COLOUR | FBT_DEPTH, Color::Blue);
 		renderSystem->_beginFrame();
 
-		mVertProg->getDefaultParameters()->setNamedConstant("matViewProjection", viewProjMatrix);
-		mFragProg->getDefaultParameters()->setNamedConstant("tex", mDbgTexture);
+		mVertParams->setNamedConstant("matViewProjection", viewProjMatrix);
+		mFragParams->setNamedConstant("tex", mDbgTexture);
 		//renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), GPV_ALL);
 
 		//renderSystem->_setTexture(0, true, mDbgTexture);
@@ -413,8 +416,8 @@ namespace CamelotEngine
 		renderSystem->bindGpuProgram(mVertProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
 
 		// TODO - Shaders need to be bound and only then parameters can be set. I need to encapuslate this better because I can't expect users to know that
-		renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, mFragProg->getDefaultParameters(), GPV_ALL); // TODO - If I dont call bind parameters before shader wont activate? I think I should handle that differently
-		renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), GPV_ALL);
+		renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, mFragParams, GPV_ALL); // TODO - If I dont call bind parameters before shader wont activate? I think I should handle that differently
+		renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, mVertParams, GPV_ALL);
 
 		
 		

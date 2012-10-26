@@ -41,6 +41,8 @@ namespace CamelotEngine
 			TextureRef mDbgTexture;
 			MeshRef mDbgMesh;
 			GameObjectPtr mCameraGO;
+			GpuProgramParametersPtr mVertParams;
+			GpuProgramParametersPtr mFragParams;
 	};
 
 	CM_EXPORT Application& gApplication();

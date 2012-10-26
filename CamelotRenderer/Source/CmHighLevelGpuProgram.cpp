@@ -37,7 +37,7 @@ namespace CamelotEngine
     {
     }
     //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::load()
+    void HighLevelGpuProgram::loadImpl()
     {
 		if (isSupported())
 		{
@@ -85,9 +85,6 @@ namespace CamelotEngine
 			populateParameterNames(params);
 		}
 
-		// Copy in default parameters if present
-		if (mDefaultParams != nullptr)
-			params->copyConstantsFrom(*(mDefaultParams.get()));
         return params;
     }
     //---------------------------------------------------------------------------
@@ -99,10 +96,6 @@ namespace CamelotEngine
 			{
 				loadHighLevelImpl();
 				mHighLevelLoaded = true;
-
-				assert(mDefaultParams == nullptr); // TODO - These two lines and replicated both here and in GpuProgram. I should probably add another load method that holds it all in one place?
-				mDefaultParams = createParameters();
-
 			}
 			catch (const Exception& e)
 			{

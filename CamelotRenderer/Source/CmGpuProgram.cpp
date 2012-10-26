@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
+#include "CmGpuProgramRTTI.h"
 
 namespace CamelotEngine
 {
@@ -59,19 +60,13 @@ namespace CamelotEngine
         mSource = source;
 		mCompileError = false;
     }
-		
-
     //-----------------------------------------------------------------------------
-    void GpuProgram::load(void)
+    void GpuProgram::loadImpl(void)
     {
         // Call polymorphic load
 		try 
 		{
 			loadFromSource();
-
-			assert(mDefaultParams == nullptr);
-
-			mDefaultParams = createParameters();
 		}
 		catch (const Exception&)
 		{
@@ -134,22 +129,8 @@ namespace CamelotEngine
 		// link shared logical / physical map for low-level use
 		ret->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical);
 
-        // Copy in default parameters if present
-        if (mDefaultParams != nullptr)
-            ret->copyConstantsFrom(*(mDefaultParams.get()));
-        
         return ret;
     }
-    //-----------------------------------------------------------------------------
-    GpuProgramParametersSharedPtr GpuProgram::getDefaultParameters(void)
-    {
-        if (mDefaultParams == nullptr)
-        {
-            mDefaultParams = createParameters();
-        }
-        return mDefaultParams;
-    }
-
     //-----------------------------------------------------------------------
     const String& GpuProgram::getLanguage(void) const
     {
@@ -157,5 +138,18 @@ namespace CamelotEngine
 
         return language;
     }
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* GpuProgram::getRTTIStatic()
+	{
+		return GpuProgramRTTI::instance();
+	}
+
+	RTTITypeBase* GpuProgram::getRTTI() const
+	{
+		return GpuProgram::getRTTIStatic();
+	}
 }
 

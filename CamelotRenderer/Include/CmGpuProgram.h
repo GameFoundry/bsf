@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "CmRenderOperation.h"
 #include "CmGpuProgramParams.h"
 #include "CmRenderSystemCapabilities.h"
+#include "CmResource.h"
 
 namespace CamelotEngine {
 
@@ -59,7 +60,7 @@ namespace CamelotEngine {
 		If you wish to use higher level shading languages like HLSL and Cg, you need to 
 		use the HighLevelGpuProgram class instead.
 	*/
-	class CM_EXPORT GpuProgram
+	class CM_EXPORT GpuProgram : public Resource
 	{
 	protected:
 		/// The type of the program
@@ -74,8 +75,6 @@ namespace CamelotEngine {
         String mSource;
         /// Syntax code e.g. arbvp1, vs_2_0 etc
         String mSyntaxCode;
-		/// The default parameters for use with this object
-		GpuProgramParametersSharedPtr mDefaultParams;
 		/// Did we encounter a compilation error?
 		bool mCompileError;
 		/** Record of logical to physical buffer maps. Mandatory for low-level
@@ -119,7 +118,7 @@ namespace CamelotEngine {
 
 		virtual ~GpuProgram() {}
 
-		virtual void load(void);
+		virtual void loadImpl();
 		virtual void unload() {}
 
 		/** Sets the source assembly for this program from an in-memory string.
@@ -173,22 +172,6 @@ namespace CamelotEngine {
             they are appropriate.
         */
         virtual GpuProgramParametersSharedPtr createParameters(void);
-		
-		/** Get a reference to the default parameters which are to be used for all
-			uses of this program.
-		@remarks
-			A program can be set up with a list of default parameters, which can save time when 
-			using a program many times in a material with roughly the same settings. By 
-			retrieving the default parameters and populating it with the most used options, 
-			any new parameter objects created from this program afterwards will automatically include
-			the default parameters; thus users of the program need only change the parameters
-			which are unique to their own usage of the program.
-		*/
-		virtual GpuProgramParametersSharedPtr getDefaultParameters(void);
-
-        /** Returns true if default parameters have been set up.  
-        */
-        virtual bool hasDefaultParameters(void) const { return mDefaultParams != nullptr; }
 
 		/** Returns a string that specifies the language of the gpu programs as specified
         in a material script. ie: asm, cg, hlsl, glsl
@@ -219,6 +202,13 @@ namespace CamelotEngine {
         /// Virtual method which must be implemented by subclasses, load from mSource
         virtual void loadFromSource(void) = 0;
 
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class GpuProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	/** @} */

@@ -107,6 +107,7 @@
     <ClInclude Include="Include\CmGpuProgram.h" />
     <ClInclude Include="Include\CmGpuProgramManager.h" />
     <ClInclude Include="Include\CmGpuProgramParams.h" />
+    <ClInclude Include="Include\CmGpuProgramRTTI.h" />
     <ClInclude Include="Include\CmHardwareBuffer.h" />
     <ClInclude Include="Include\CmHardwareBufferManager.h" />
     <ClInclude Include="Include\CmHardwareIndexBuffer.h" />
