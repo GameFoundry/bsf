@@ -12,11 +12,25 @@ namespace CamelotEngine
 		CM_SETGET_MEMBER(mSize, UINT32, GpuProgram)
 		CM_SETGET_MEMBER(mUUID, String, GpuProgram);
 
+		CM_SETGET_MEMBER(mType, GpuProgramType, GpuProgram);
+		CM_SETGET_MEMBER(mNeedsAdjacencyInfo, bool, GpuProgram);
+		CM_SETGET_MEMBER(mEntryPoint, String, GpuProgram);
+		CM_SETGET_MEMBER(mProfile, GpuProgramProfile, GpuProgram);
+		CM_SETGET_MEMBER(mSource, String, GpuProgram);
+		CM_SETGET_MEMBER(mSyntaxCode, String, GpuProgram);
+
 	public:
 		GpuProgramRTTI()
 		{
 			CM_ADD_PLAINFIELD(mSize, 0, GpuProgramRTTI)
 			CM_ADD_PLAINFIELD(mUUID, 1, GpuProgramRTTI)
+
+			CM_ADD_PLAINFIELD(mType, 2, GpuProgramRTTI)
+			CM_ADD_PLAINFIELD(mNeedsAdjacencyInfo, 3, GpuProgramRTTI)
+			CM_ADD_PLAINFIELD(mEntryPoint, 4, GpuProgramRTTI)
+			CM_ADD_PLAINFIELD(mProfile, 5, GpuProgramRTTI)
+			CM_ADD_PLAINFIELD(mSource, 6, GpuProgramRTTI)
+			CM_ADD_PLAINFIELD(mSyntaxCode, 7, GpuProgramRTTI)
 		}
 
 		virtual const String& getRTTIName()
