@@ -45,6 +45,7 @@ namespace CamelotEngine
 		virtual ~RTTITypeBase();
 
 		virtual vector<RTTITypeBase*>::type& getDerivedClasses() = 0;
+		virtual RTTITypeBase* getBaseClass() = 0;
 		virtual void registerDerivedClass(RTTITypeBase* derivedClass) = 0;
 		virtual std::shared_ptr<IReflectable> newRTTIObject() = 0;
 		virtual const String& getRTTIName() = 0;
@@ -281,6 +282,22 @@ namespace CamelotEngine
 	};
 
 	/**
+	 * @brief	Template that returns RTTI type of the specified type, unless the specified
+	 * 			type is IReflectable in which case it returns a null.
+	 */
+	template<typename Type>
+	struct GetRTTIType
+	{
+		RTTITypeBase* operator()() { return Type::getRTTIStatic(); }
+	};
+
+	template<>
+	struct GetRTTIType<IReflectable>
+	{
+		RTTITypeBase* operator()() { return nullptr; }
+	};
+
+	/**
 	 * @brief	Pretty much just an extension of RTTITypeBase. Feel free to derive from this class and return
 	 * 			the derived class from IReflectable::getRTTI. This way you can separate serialization logic from
 	 * 			the actual class you're serializing.
@@ -315,6 +332,11 @@ namespace CamelotEngine
 		{
 			static vector<RTTITypeBase*>::type mRTTIDerivedClasses;
 			return mRTTIDerivedClasses;
+		}
+
+		virtual RTTITypeBase* getBaseClass()
+		{
+			return GetRTTIType<BaseType>()();
 		}
 
 		virtual void registerDerivedClass(RTTITypeBase* derivedClass)

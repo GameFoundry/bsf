@@ -122,7 +122,14 @@ namespace CamelotEngine
 
 		UINT32 objectId = 0;
 		UINT32 objectTypeId = 0;
-		decodeObjectMetaData(objectMetaData, objectId, objectTypeId);
+		bool isBaseClass = false;
+		decodeObjectMetaData(objectMetaData, objectId, objectTypeId, isBaseClass);
+
+		if(isBaseClass)
+		{
+			CM_EXCEPT(InternalErrorException, "Encountered a base-class object while looking for a new object. " \
+				"Base class objects are only supposed to be parts of a larger object.");
+		}
 
 		std::shared_ptr<IReflectable> object = IReflectable::createInstanceFromTypeId(objectTypeId);
 		std::shared_ptr<IReflectable> rootObject = object;
@@ -147,7 +154,13 @@ namespace CamelotEngine
 
 			objectId = 0;
 			objectTypeId = 0;
-			decodeObjectMetaData(objectMetaData, objectId, objectTypeId);
+			decodeObjectMetaData(objectMetaData, objectId, objectTypeId, isBaseClass);
+
+			if(isBaseClass)
+			{
+				CM_EXCEPT(InternalErrorException, "Encountered a base-class object while looking for a new object. " \
+					"Base class objects are only supposed to be parts of a larger object.");
+			}
 
 			object = nullptr;
 			if(objectId != 0)
@@ -190,68 +203,128 @@ namespace CamelotEngine
 		static const UINT32 COMPLEX_TYPE_SIZE = 4; // Size of the field storing the size of a child complex type
 
 		RTTITypeBase* si = object->getRTTI();
+		bool isBaseClass = false;
 
-		// Encode object ID & type
-		ObjectMetaData objectMetaData = encodeObjectMetaData(objectId, si->getRTTIId());
-		COPY_TO_BUFFER(&objectMetaData, sizeof(ObjectMetaData))
-
-		int numFields = si->getNumFields();
-		for(int i = 0; i < numFields; i++)
+		// If an object has base classes, we need to iterate through all of them
+		do
 		{
-			RTTIField* curGenericField = si->getField(i);
+			// Encode object ID & type
+			ObjectMetaData objectMetaData = encodeObjectMetaData(objectId, si->getRTTIId(), isBaseClass);
+			COPY_TO_BUFFER(&objectMetaData, sizeof(ObjectMetaData))
 
-			// Copy field ID & other meta-data like field size and type
-			int metaData = encodeFieldMetaData(curGenericField->mUniqueId, curGenericField->getTypeSize(), 
-				curGenericField->mIsVectorType, curGenericField->mType, curGenericField->hasDynamicSize());
-			COPY_TO_BUFFER(&metaData, META_SIZE)
-
-			if(curGenericField->mIsVectorType)
+			int numFields = si->getNumFields();
+			for(int i = 0; i < numFields; i++)
 			{
-				UINT32 arrayNumElems = curGenericField->getArraySize(object);
+				RTTIField* curGenericField = si->getField(i);
 
-				// Copy num vector elements
-				COPY_TO_BUFFER(&arrayNumElems, NUM_ELEM_FIELD_SIZE)
+				// Copy field ID & other meta-data like field size and type
+				int metaData = encodeFieldMetaData(curGenericField->mUniqueId, curGenericField->getTypeSize(), 
+					curGenericField->mIsVectorType, curGenericField->mType, curGenericField->hasDynamicSize());
+				COPY_TO_BUFFER(&metaData, META_SIZE)
 
-				switch(curGenericField->mType)
+				if(curGenericField->mIsVectorType)
 				{
-				case SerializableFT_ReflectablePtr:
-					{
-						RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
+					UINT32 arrayNumElems = curGenericField->getArraySize(object);
 
-						for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
+					// Copy num vector elements
+					COPY_TO_BUFFER(&arrayNumElems, NUM_ELEM_FIELD_SIZE)
+
+					switch(curGenericField->mType)
+					{
+					case SerializableFT_ReflectablePtr:
 						{
-							std::shared_ptr<IReflectable> childObject = curField->getArrayValue(object, arrIdx); 
+							RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
+
+							for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
+							{
+								std::shared_ptr<IReflectable> childObject = curField->getArrayValue(object, arrIdx); 
+
+								UINT32 objId = registerObjectPtr(childObject);
+								COPY_TO_BUFFER(&objId, sizeof(UINT32))
+							}
+
+							break;
+						}
+					case SerializableFT_Reflectable:
+						{
+							RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
+
+							for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
+							{
+								IReflectable& childObject = curField->getArrayValue(object, arrIdx);
+
+								buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, bytesWritten, flushBufferCallback);
+								if(buffer == nullptr)
+									return nullptr;
+							}
+
+							break;
+						}
+					case SerializableFT_Plain:
+						{
+							RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
+
+							for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
+							{
+								UINT32 typeSize = 0;
+								if(curField->hasDynamicSize())
+									typeSize = curField->getArrayElemDynamicSize(object, arrIdx);
+								else
+									typeSize = curField->getTypeSize();
+
+								if((*bytesWritten + typeSize) > bufferLength)
+								{
+									mTotalBytesWritten += *bytesWritten;
+									buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
+									if(buffer == nullptr || bufferLength < typeSize) return nullptr;
+									*bytesWritten = 0;
+								}
+
+								curField->arrayElemToBuffer(object, arrIdx, buffer);
+								buffer += typeSize;
+								*bytesWritten += typeSize;
+							}
+
+							break;
+						}
+					default:
+						CM_EXCEPT(InternalErrorException, 
+							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
+							", Is array: " + toString(curGenericField->mIsVectorType));
+					}
+				}
+				else
+				{
+					switch(curGenericField->mType)
+					{
+					case SerializableFT_ReflectablePtr:
+						{
+							RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
+							std::shared_ptr<IReflectable> childObject = curField->getValue(object); 
 
 							UINT32 objId = registerObjectPtr(childObject);
 							COPY_TO_BUFFER(&objId, sizeof(UINT32))
+
+							break;
 						}
-
-						break;
-					}
-				case SerializableFT_Reflectable:
-					{
-						RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
-
-						for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
+					case SerializableFT_Reflectable:
 						{
-							IReflectable& childObject = curField->getArrayValue(object, arrIdx);
+							RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
+							IReflectable& childObject = curField->getValue(object);
 
 							buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, bytesWritten, flushBufferCallback);
 							if(buffer == nullptr)
 								return nullptr;
+
+							break;
 						}
-
-						break;
-					}
-				case SerializableFT_Plain:
-					{
-						RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
-
-						for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
+					case SerializableFT_Plain:
 						{
+							RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
+
 							UINT32 typeSize = 0;
 							if(curField->hasDynamicSize())
-								typeSize = curField->getArrayElemDynamicSize(object, arrIdx);
+								typeSize = curField->getDynamicSize(object);
 							else
 								typeSize = curField->getTypeSize();
 
@@ -263,114 +336,63 @@ namespace CamelotEngine
 								*bytesWritten = 0;
 							}
 
-							curField->arrayElemToBuffer(object, arrIdx, buffer);
+
+							curField->toBuffer(object, buffer);
 							buffer += typeSize;
 							*bytesWritten += typeSize;
+
+							break;
 						}
-
-						break;
-					}
-				default:
-					CM_EXCEPT(InternalErrorException, 
-						"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
-						", Is array: " + toString(curGenericField->mIsVectorType));
-				}
-			}
-			else
-			{
-				switch(curGenericField->mType)
-				{
-				case SerializableFT_ReflectablePtr:
-					{
-						RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
-						std::shared_ptr<IReflectable> childObject = curField->getValue(object); 
-
-						UINT32 objId = registerObjectPtr(childObject);
-						COPY_TO_BUFFER(&objId, sizeof(UINT32))
-
-						break;
-					}
-				case SerializableFT_Reflectable:
-					{
-						RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
-						IReflectable& childObject = curField->getValue(object);
-
-						buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, bytesWritten, flushBufferCallback);
-						if(buffer == nullptr)
-							return nullptr;
-
-						break;
-					}
-				case SerializableFT_Plain:
-					{
-						RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
-
-						UINT32 typeSize = 0;
-						if(curField->hasDynamicSize())
-							typeSize = curField->getDynamicSize(object);
-						else
-							typeSize = curField->getTypeSize();
-
-						if((*bytesWritten + typeSize) > bufferLength)
+					case SerializableFT_DataBlock:
 						{
-							mTotalBytesWritten += *bytesWritten;
-							buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
-							if(buffer == nullptr || bufferLength < typeSize) return nullptr;
-							*bytesWritten = 0;
-						}
+							RTTIManagedDataBlockFieldBase* curField = static_cast<RTTIManagedDataBlockFieldBase*>(curGenericField);
+							ManagedDataBlock value = curField->getValue(object);
 
+							// Data block size
+							UINT32 dataBlockSize = value.getSize();
+							COPY_TO_BUFFER(&dataBlockSize, sizeof(UINT32))
 
-						curField->toBuffer(object, buffer);
-						buffer += typeSize;
-						*bytesWritten += typeSize;
-
-						break;
-					}
-				case SerializableFT_DataBlock:
-					{
-						RTTIManagedDataBlockFieldBase* curField = static_cast<RTTIManagedDataBlockFieldBase*>(curGenericField);
-						ManagedDataBlock value = curField->getValue(object);
-
-						// Data block size
-						UINT32 dataBlockSize = value.getSize();
-						COPY_TO_BUFFER(&dataBlockSize, sizeof(UINT32))
-
-						// Data block data
-						UINT8* dataToStore = value.getData();
-						UINT32 remainingSize = dataBlockSize;
-						while(remainingSize > 0)
-						{
-							UINT32 remainingSpaceInBuffer = bufferLength - *bytesWritten;
-
-							if(remainingSize <= remainingSpaceInBuffer)
+							// Data block data
+							UINT8* dataToStore = value.getData();
+							UINT32 remainingSize = dataBlockSize;
+							while(remainingSize > 0)
 							{
-								COPY_TO_BUFFER(dataToStore, remainingSize);
-								remainingSize = 0;
-							}
-							else
-							{
-								memcpy(buffer, dataToStore, remainingSpaceInBuffer);
-								buffer += remainingSpaceInBuffer;
-								*bytesWritten += remainingSpaceInBuffer;
-								dataToStore += remainingSpaceInBuffer;
-								remainingSize -= remainingSpaceInBuffer;
+								UINT32 remainingSpaceInBuffer = bufferLength - *bytesWritten;
+
+								if(remainingSize <= remainingSpaceInBuffer)
+								{
+									COPY_TO_BUFFER(dataToStore, remainingSize);
+									remainingSize = 0;
+								}
+								else
+								{
+									memcpy(buffer, dataToStore, remainingSpaceInBuffer);
+									buffer += remainingSpaceInBuffer;
+									*bytesWritten += remainingSpaceInBuffer;
+									dataToStore += remainingSpaceInBuffer;
+									remainingSize -= remainingSpaceInBuffer;
 								
-								mTotalBytesWritten += *bytesWritten;
-								buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
-								if(buffer == nullptr || bufferLength == 0) return nullptr;
-								*bytesWritten = 0;
+									mTotalBytesWritten += *bytesWritten;
+									buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
+									if(buffer == nullptr || bufferLength == 0) return nullptr;
+									*bytesWritten = 0;
+								}
 							}
-						}
 
-						break;
+							break;
+						}
+					default:
+						CM_EXCEPT(InternalErrorException, 
+							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
+							", Is array: " + toString(curGenericField->mIsVectorType));
 					}
-				default:
-					CM_EXCEPT(InternalErrorException, 
-						"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
-						", Is array: " + toString(curGenericField->mIsVectorType));
 				}
 			}
-		}
+
+			si = si->getBaseClass();
+			isBaseClass = true;
+
+		} while(si != nullptr); // Repeat until we reach the top of the inheritance hierarchy
 
 		return buffer;
 	}
@@ -401,9 +423,10 @@ namespace CamelotEngine
 
 		UINT32 objectId = 0;
 		UINT32 objectTypeId = 0;
-		decodeObjectMetaData(objectMetaData, objectId, objectTypeId);
+		bool objectIsBaseClass = false;
+		decodeObjectMetaData(objectMetaData, objectId, objectTypeId, objectIsBaseClass);
 
-		if(object != nullptr && objectId != 0)
+		if(object != nullptr && objectId != 0 && !objectIsBaseClass)
 			mDecodedObjects.insert(std::make_pair(objectId, object));
 		
 		while(bytesRead < dataLength)
@@ -433,14 +456,34 @@ namespace CamelotEngine
 
 				UINT32 objId = 0;
 				UINT32 objTypeId = 0;
-				decodeObjectMetaData(objMetaData, objId, objTypeId);
+				bool objIsBaseClass = false;
+				decodeObjectMetaData(objMetaData, objId, objTypeId, objIsBaseClass);
 
-				if(objId != 0) 
-					return true; // Pointers we decode later, only if they're being referenced by something
+				// If it's a base class, get base class RTTI and handle that
+				if(objIsBaseClass)
+				{
+					if(si != nullptr)
+						si = si->getBaseClass();
 
-				// Objects with ID == 0 represent complex types serialized by value, but they should only get serialized
-				// if we encounter a field with one, not by just iterating through the file.
-				CM_EXCEPT(InternalErrorException, "Object with ID 0 encountered. Cannot proceed with serialization.");
+					// Saved and current base classes don't match, so just skip over all that data
+					if(si == nullptr || si->getRTTIId() != objTypeId)
+					{
+						si = nullptr;	
+					}
+
+					data += sizeof(ObjectMetaData);
+					bytesRead += sizeof(ObjectMetaData);
+					continue;
+				}
+				else
+				{
+					if(objId != 0) 
+						return true; // New object, break out of this method and begin processing it from scratch
+
+					// Objects with ID == 0 represent complex types serialized by value, but they should only get serialized
+					// if we encounter a field with one, not by just iterating through the file.
+					CM_EXCEPT(InternalErrorException, "Object with ID 0 encountered. Cannot proceed with serialization.");
+				}
 			}
 
 			data += META_SIZE;
@@ -678,6 +721,7 @@ namespace CamelotEngine
 		return false;
 	}
 
+	// TODO - This needs serious fixing, it doesn't account for all properties
 	UINT32 BinarySerializer::getObjectSize(IReflectable* object)
 	{
 		if(object == nullptr)
@@ -686,47 +730,106 @@ namespace CamelotEngine
 		UINT32 objectSize = 0;
 		RTTITypeBase* si = object->getRTTI();
 
-		// Object ID
-		objectSize += sizeof(UINT32);
-
-		int numFields = si->getNumFields();
-		for(int i = 0; i < numFields; i++)
+		do 
 		{
-			RTTIField* curGenericField = si->getField(i);
+			// Object ID + type data
+			objectSize += sizeof(ObjectMetaData);
 
-			// Field meta data
-			objectSize += sizeof(UINT32);
-
-			if(curGenericField->mIsVectorType)
+			int numFields = si->getNumFields();
+			for(int i = 0; i < numFields; i++)
 			{
-				UINT32 arrayNumElems = curGenericField->getArraySize(object);
+				RTTIField* curGenericField = si->getField(i);
 
-				// Num array elems
+				// Field meta data
 				objectSize += sizeof(UINT32);
 
-				switch(curGenericField->mType)
+				if(curGenericField->mIsVectorType)
 				{
+					UINT32 arrayNumElems = curGenericField->getArraySize(object);
+
+					// Num array elems
+					objectSize += sizeof(UINT32);
+
+					switch(curGenericField->mType)
+					{
+						case SerializableFT_ReflectablePtr:
+							{
+								objectSize += sizeof(UINT32) * arrayNumElems;
+								break;
+							}
+						case SerializableFT_Reflectable:
+							{
+								RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
+
+								for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
+								{
+									IReflectable& childObject = curField->getArrayValue(object, arrIdx);
+									objectSize += getObjectSize(&childObject);
+								}
+
+								break;
+							}
+						case SerializableFT_Plain:
+							{
+								RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
+								for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
+								{
+									UINT32 typeSize = 0;
+									if(curField->hasDynamicSize())
+										typeSize = curField->getArrayElemDynamicSize(object, arrIdx);
+									else
+										typeSize = curField->getTypeSize();
+
+									objectSize += typeSize;
+								}
+
+								break;
+							}
+						default:
+							CM_EXCEPT(InternalErrorException, 
+								"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
+								", Is array: " + toString(curGenericField->mIsVectorType));
+					}
+				}
+				else
+				{
+					switch(curGenericField->mType)
+					{
 					case SerializableFT_ReflectablePtr:
 						{
-							objectSize += sizeof(UINT32) * arrayNumElems;
+							objectSize += sizeof(UINT32);
 							break;
 						}
 					case SerializableFT_Reflectable:
 						{
 							RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
-
-							for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
-							{
-								IReflectable& childObject = curField->getArrayValue(object, arrIdx);
-								objectSize += getObjectSize(&childObject);
-							}
+							IReflectable& childObject = curField->getValue(object);
+							objectSize += getObjectSize(&childObject);
 
 							break;
 						}
 					case SerializableFT_Plain:
 						{
 							RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
-							objectSize += arrayNumElems * curField->getTypeSize();
+
+							UINT32 typeSize = 0;
+							if(curField->hasDynamicSize())
+								typeSize = curField->getDynamicSize(object);
+							else
+								typeSize = curField->getTypeSize();
+
+							objectSize += typeSize;
+
+							break;
+						}
+					case SerializableFT_DataBlock:
+						{
+							RTTIManagedDataBlockFieldBase* curField = static_cast<RTTIManagedDataBlockFieldBase*>(curGenericField);
+							ManagedDataBlock value = curField->getValue(object);
+
+							// Data block size
+							UINT32 dataBlockSize = value.getSize();
+							objectSize += sizeof(UINT32) + dataBlockSize;
 
 							break;
 						}
@@ -734,50 +837,13 @@ namespace CamelotEngine
 						CM_EXCEPT(InternalErrorException, 
 							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
 							", Is array: " + toString(curGenericField->mIsVectorType));
+					}
 				}
 			}
-			else
-			{
-				switch(curGenericField->mType)
-				{
-				case SerializableFT_ReflectablePtr:
-					{
-						objectSize += sizeof(UINT32);
-						break;
-					}
-				case SerializableFT_Reflectable:
-					{
-						RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
-						IReflectable& childObject = curField->getValue(object);
-						objectSize += getObjectSize(&childObject);
 
-						break;
-					}
-				case SerializableFT_Plain:
-					{
-						RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
-						objectSize += curField->getTypeSize();
+			si = si->getBaseClass();
 
-						break;
-					}
-				case SerializableFT_DataBlock:
-					{
-						RTTIManagedDataBlockFieldBase* curField = static_cast<RTTIManagedDataBlockFieldBase*>(curGenericField);
-						ManagedDataBlock value = curField->getValue(object);
-
-						// Data block size
-						UINT32 dataBlockSize = value.getSize();
-						objectSize += sizeof(UINT32) + dataBlockSize;
-
-						break;
-					}
-				default:
-					CM_EXCEPT(InternalErrorException, 
-						"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
-						", Is array: " + toString(curGenericField->mIsVectorType));
-				}
-			}
-		}
+		} while (si != nullptr);
 
 		return objectSize;
 	}
@@ -827,20 +893,26 @@ namespace CamelotEngine
 		id = (UINT16)((encodedData >> 16) & 0xFFFF);
 	}
 
-	BinarySerializer::ObjectMetaData BinarySerializer::encodeObjectMetaData(UINT32 objId, UINT32 objTypeId)
+	BinarySerializer::ObjectMetaData BinarySerializer::encodeObjectMetaData(UINT32 objId, UINT32 objTypeId, bool isBaseClass)
 	{
 		// If O == 1 - Meta contains object instance information (Encoded using encodeObjectMetaData)
-		//// Encoding: SSSS SSSS SSSS SSSS xxxx xxxx xxxx xxxO
+		//// Encoding: SSSS SSSS SSSS SSSS xxxx xxxx xxxx xxBO
 		//// S - Size of the object identifier
 		//// O - Object descriptor
+		//// B - Base class indicator
+		
+		if(objId > 1073741823)
+		{
+			CM_EXCEPT(InvalidParametersException, "Object ID is larger than we can store (max 30 bits): " + toString(objId));
+		}
 
 		ObjectMetaData metaData;
-		metaData.objectMeta = (objId << 1) | 0x01;
+		metaData.objectMeta = (objId << 2) | (isBaseClass ? 0x02 : 0) | 0x01;
 		metaData.typeId = objTypeId;
 		return metaData;
 	}
 
-	void BinarySerializer::decodeObjectMetaData(BinarySerializer::ObjectMetaData encodedData, UINT32& objId, UINT32& objTypeId)
+	void BinarySerializer::decodeObjectMetaData(BinarySerializer::ObjectMetaData encodedData, UINT32& objId, UINT32& objTypeId, bool& isBaseClass)
 	{
 		if(!isObjectMetaData(encodedData.objectMeta))
 		{
@@ -848,7 +920,8 @@ namespace CamelotEngine
 				"Meta data represents a field description but is trying to be decoded as an object descriptor.");
 		}
 
-		objId = (encodedData.objectMeta >> 1) & 0x7FFFFFFF;
+		objId = (encodedData.objectMeta >> 2) & 0x3FFFFFFF;
+		isBaseClass = (encodedData.objectMeta & 0x02) != 0;
 		objTypeId = encodedData.typeId;
 	}
 

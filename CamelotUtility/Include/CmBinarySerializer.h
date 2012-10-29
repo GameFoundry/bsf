@@ -136,18 +136,20 @@ namespace CamelotEngine
 		void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, SerializableFieldType& type, bool& hasDynamicSize);
 
 		/**
-		* @brief	Encodes data required for representing an object identifier, into 8 bytes.
-		*
-		* @note		Id can be a maximum of 31 bits, as one bit is reserved.
-		*/
-		ObjectMetaData encodeObjectMetaData(UINT32 objId, UINT32 objTypeId);
+		 * @brief	Encodes data required for representing an object identifier, into 8 bytes.
+		 * 			
+		 * 			@note		Id can be a maximum of 30 bits, as two bits are reserved.
+		 *
+		 * @param	objId	   	Unique ID of the object instance.
+		 * @param	objTypeId  	Unique ID of the object type.
+		 * @param	isBaseClass	true if this object is base class (i.e. just a part of a larger object).
+		 */
+		ObjectMetaData encodeObjectMetaData(UINT32 objId, UINT32 objTypeId, bool isBaseClass);
 
 		/**
 		* @brief	Decode meta field that was encoded using encodeObjectMetaData.
-		* 			
-		* @note		Id can be a maximum of 31 bits, as one bit is reserved.
 		*/
-		void decodeObjectMetaData(ObjectMetaData encodedData, UINT32& objId, UINT32& objTypeId);
+		void decodeObjectMetaData(ObjectMetaData encodedData, UINT32& objId, UINT32& objTypeId, bool& isBaseClass);
 
 		/**
 		 * @brief	Returns true if the provided encoded meta data represents object meta data.
