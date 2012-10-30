@@ -5,6 +5,22 @@
 
 namespace CamelotEngine
 {
+	RTTITypeBase* ResourceRefData::getRTTIStatic()
+	{
+		return ResourceRefDataRTTI::instance();
+	}
+
+	RTTITypeBase* ResourceRefData::getRTTI() const
+	{
+		return ResourceRefData::getRTTIStatic();
+	}
+
+	ResourceRefBase::ResourceRefBase()
+	{
+		mData = std::shared_ptr<ResourceRefData>(new ResourceRefData());
+		mData->mUUIDSet = false;
+	}
+
 	void ResourceRefBase::init(Resource* ptr)
 	{
 		init(std::shared_ptr<Resource>(ptr));
@@ -12,12 +28,12 @@ namespace CamelotEngine
 
 	void ResourceRefBase::init(std::shared_ptr<Resource> ptr)
 	{
-		mPtr = ptr;
+		mData->mPtr = ptr;
 
-		if(mPtr)
+		if(mData->mPtr)
 		{
-			mUUID = mPtr->getUUID();
-			mUUIDSet = true;
+			mData->mUUID = mData->mPtr->getUUID();
+			mData->mUUIDSet = true;
 		}
 	}
 

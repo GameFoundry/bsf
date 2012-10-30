@@ -7,10 +7,9 @@ namespace CamelotEngine
 	template <typename T>
 	class ResourceRef;
 
-	class CM_EXPORT ResourceRefBase : public IReflectable
+	struct CM_EXPORT ResourceRefData : public IReflectable
 	{
-	protected:
-		ResourceRefBase()
+		ResourceRefData()
 			:mUUIDSet(false)
 		{ }
 
@@ -18,13 +17,25 @@ namespace CamelotEngine
 		String mUUID;
 		bool mUUIDSet;
 
+		friend class ResourceRefDataRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
+	};
+
+	class CM_EXPORT ResourceRefBase : public IReflectable
+	{
+	protected:
+		ResourceRefBase();
+
+		std::shared_ptr<ResourceRefData> mData;
+
 		void init(Resource* ptr);
 		void init(std::shared_ptr<Resource> ptr);
 
 		template <typename T1>
 		void init(const ResourceRef<T1>& ptr)
 		{
-			init(std::static_pointer_cast<Resource>(ptr.mPtr));
+			init(std::static_pointer_cast<Resource>(ptr.mData->mPtr));
 		}
 
 		/************************************************************************/
@@ -65,18 +76,18 @@ namespace CamelotEngine
 
 		operator ResourceRef<Resource>() 
 		{
-			return ResourceRef<Resource>(this->mPtr); 
+			return ResourceRef<Resource>(mData->mPtr); 
 		}
 
-		const T* get() const { return static_cast<T*>(mPtr.get()); }
+		const T* get() const { return static_cast<T*>(mData->mPtr.get()); }
 		const T* operator-> () const { return get(); }
 		const T& operator* () const { return *get(); }
 
-		T* get() { return static_cast<T*>(mPtr.get()); }
+		T* get() { return static_cast<T*>(mData->mPtr.get()); }
 		T* operator-> () { return get(); }
 		T& operator* () { return *get(); }
 
-		std::shared_ptr<T> getInternalPtr() { return std::static_pointer_cast<T>(mPtr); }
+		std::shared_ptr<T> getInternalPtr() { return std::static_pointer_cast<T>(mData->mPtr); }
 	};
 
 	template<class _Ty1, class _Ty2>
