@@ -85,6 +85,11 @@ namespace CamelotEngine {
 		{
 			return new NullProgram();
 		}
+		HighLevelGpuProgram* create()
+		{
+			return new NullProgram();
+		}
+
 		void destroy(HighLevelGpuProgram* prog)
 		{
 			delete prog;
@@ -150,6 +155,13 @@ namespace CamelotEngine {
 
         return prg;
     }
+	//---------------------------------------------------------------------------
+	HighLevelGpuProgramPtr HighLevelGpuProgramManager::createProgram(const String& language)
+	{
+		HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(getFactory(language)->create());
+
+		return ret;
+	}
     //---------------------------------------------------------------------------
     HighLevelGpuProgramFactory::~HighLevelGpuProgramFactory() 
     {

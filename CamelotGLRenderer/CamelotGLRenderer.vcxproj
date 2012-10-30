@@ -98,6 +98,7 @@
     <ClInclude Include="Include\CmGLRenderSystem.h" />
     <ClInclude Include="Include\CmGLRenderSystemFactory.h" />
     <ClInclude Include="Include\CmGLRenderTexture.h" />
+    <ClInclude Include="Include\CmGLSLProgramRTTI.h" />
     <ClInclude Include="Include\CmGLSupport.h" />
     <ClInclude Include="Include\CmGLTexture.h" />
     <ClInclude Include="Include\CmGLTextureManager.h" />

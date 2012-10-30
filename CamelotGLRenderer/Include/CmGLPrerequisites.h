@@ -42,6 +42,11 @@ namespace CamelotEngine {
     class GLFBOManager;
     class GLHardwarePixelBuffer;
     class GLRenderBuffer;
+
+	enum TypeID_D3D9
+	{
+		TID_GL_GLSLProgram = 11000
+	};
 }
 
 #if CM_THREAD_SUPPORT == 1

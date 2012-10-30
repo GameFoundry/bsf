@@ -56,6 +56,13 @@ namespace CamelotEngine {
 
         return prog;
     }
+	//-----------------------------------------------------------------------
+	HighLevelGpuProgram* D3D9HLSLProgramFactory::create()
+	{
+		D3D9HLSLProgram* prog = new D3D9HLSLProgram();
+
+		return prog;
+	}
     //-----------------------------------------------------------------------
 	void D3D9HLSLProgramFactory::destroy(HighLevelGpuProgram* prog)
     {

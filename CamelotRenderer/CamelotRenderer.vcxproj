@@ -99,6 +99,7 @@
     <ClInclude Include="Include\CmCameraRTTI.h" />
     <ClInclude Include="Include\CmCgProgram.h" />
     <ClInclude Include="Include\CmCgProgramFactory.h" />
+    <ClInclude Include="Include\CmCgProgramRTTI.h" />
     <ClInclude Include="Include\CmCommon.h" />
     <ClInclude Include="Include\CmComponentRTTI.h" />
     <ClInclude Include="Include\CmConfigOptionMap.h" />

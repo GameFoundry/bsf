@@ -50,6 +50,7 @@ namespace CamelotEngine {
 		/// Get the name of the language this factory creates programs for
 		virtual const String& getLanguage(void) const = 0;
         virtual HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramProfile profile) = 0;
+		virtual HighLevelGpuProgram* create() = 0;
 		virtual void destroy(HighLevelGpuProgram* prog) = 0;
 	};
 	/** This ResourceManager manages high-level vertex and fragment programs. 
@@ -101,6 +102,14 @@ namespace CamelotEngine {
 		@param gptype The type of program to create
 		*/
 		HighLevelGpuProgramPtr createProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+
+		/** Create a new, unloaded HighLevelGpuProgram. 
+		@par
+			This method creates a new program of the specified language. You need to set other 
+			properties like source, entry point, type, profile manually.
+		@param language Code of the language to use (e.g. "cg")
+		*/
+		HighLevelGpuProgramPtr createProgram(const String& language);
 	};
 	/** @} */
 	/** @} */

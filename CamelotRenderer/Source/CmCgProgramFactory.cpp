@@ -63,6 +63,13 @@ namespace CamelotEngine {
 
 		return prog;
     }
+	//----------------------------------------------------------------------
+	HighLevelGpuProgram* CgProgramFactory::create()
+	{
+		CgProgram* prog = new CgProgram(mCgContext);
+
+		return prog;
+	}
     //-----------------------------------------------------------------------
 	void CgProgramFactory::destroy(HighLevelGpuProgram* prog)
     {

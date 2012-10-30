@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmDebug.h"
 #include "CmException.h"
+#include "CmCgProgramRTTI.h"
 
 namespace CamelotEngine {
 
@@ -620,4 +621,17 @@ namespace CamelotEngine {
 
         return language;
     }
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* CgProgram::getRTTIStatic()
+	{
+		return CgProgramRTTI::instance();
+	}
+
+	RTTITypeBase* CgProgram::getRTTI() const
+	{
+		return CgProgram::getRTTIStatic();
+	}
 }

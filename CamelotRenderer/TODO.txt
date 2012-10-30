@@ -26,6 +26,10 @@ Mid priority TODO:
   - Search for all remaining "TODO PORT" comments and fix them
   - How do I serialize derived classes, without rewriting all the base class serialization?
   - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
+ - RTTI:
+     When defining RTTIType like so: 
+      RTTIType<D3D9HLSLProgram, HighLevelGpuProgram, D3D9HLSLProgramRTTI>
+     I need to make sure that HighLevelGpuProgram class has valid RTTI type as well. Otherwise the inheritance hierarchy will not be correct. Right now this isn't checked anywhere.
 
 Low priority TODO:
  - Mesh loading:

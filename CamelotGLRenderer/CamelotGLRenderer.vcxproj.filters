@@ -22,6 +22,9 @@
     <Filter Include="Win32">
       <UniqueIdentifier>{c85ecca8-4719-49f1-879b-93a27c8da4aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\RTTI">
+      <UniqueIdentifier>{f65cdae4-61c9-4f4f-a4af-9fc39a49704d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmGLATIFSInit.h">
@@ -140,6 +143,9 @@
     </ClInclude>
     <ClInclude Include="Source\win32\CmGLUtil.h">
       <Filter>Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLSLProgramRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
+#include "CmD3D9HLSLProgramRTTI.h"
 
 namespace CamelotEngine {
 	class CM_D3D9_EXPORT HLSLIncludeHandler : public ID3DXInclude
@@ -568,4 +569,17 @@ namespace CamelotEngine {
 
         return language;
     }
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D9HLSLProgram::getRTTIStatic()
+	{
+		return D3D9HLSLProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D9HLSLProgram::getRTTI() const
+	{
+		return D3D9HLSLProgram::getRTTIStatic();
+	}
 }

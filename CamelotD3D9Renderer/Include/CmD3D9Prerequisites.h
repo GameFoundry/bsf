@@ -94,6 +94,11 @@ namespace CamelotEngine
     class D3D9VertexDeclaration;
 	class D3D9Resource;
 
+	enum TypeID_D3D9
+	{
+		TID_D3D9_HLSLProgram = 10000
+	};
+
 // Should we ask D3D to manage vertex/index buffers automatically?
 // Doing so avoids lost devices, but also has a performance impact
 // which is unacceptably bad when using very large buffers

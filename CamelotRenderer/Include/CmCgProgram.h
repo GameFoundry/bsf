@@ -106,6 +106,13 @@ namespace CamelotEngine {
 		/// scan the file for #include and replace with source from the OGRE resources
 		static String resolveCgIncludes(const String& source, Resource* resourceBeingLoaded, const String& fileName);
 
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class CgProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
     };
 
 	/** Utility function, checks Cg for errors, throw exception if detected.

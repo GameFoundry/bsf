@@ -38,6 +38,8 @@ THE SOFTWARE.
 #include "CmGLSLLinkProgramManager.h"
 #include "CmGLSLPreprocessor.h"
 
+#include "CmGLSLProgramRTTI.h"
+
 namespace CamelotEngine {
     //---------------------------------------------------------------------------
     GLSLProgram::~GLSLProgram()
@@ -334,6 +336,20 @@ namespace CamelotEngine {
 
         return language;
     }
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* GLSLProgram::getRTTIStatic()
+	{
+		return GLSLProgramRTTI::instance();
+	}
+
+	RTTITypeBase* GLSLProgram::getRTTI() const
+	{
+		return GLSLProgram::getRTTIStatic();
+	}
+
 	//-----------------------------------------------------------------------
 	RenderOperation::OperationType parseOperationType(const String& val)
 	{
