@@ -60,7 +60,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void Material::setTexture(const String& name, TexturePtr value)
+	void Material::setTexture(const String& name, TextureRef& value)
 	{
 		throwIfNotInitialized();
 		setParam(name, value);

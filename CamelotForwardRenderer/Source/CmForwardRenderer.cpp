@@ -6,7 +6,7 @@ namespace CamelotEngine
 {
 	const String& ForwardRenderer::getName() const
 	{
-		static String name = "Forward Renderer";
+		static String name = "ForwardRenderer";
 		return name;
 	}
 

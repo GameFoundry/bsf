@@ -130,7 +130,7 @@ namespace CamelotEngine {
 
 	const String& GLRenderSystem::getName(void) const
 	{
-		static String strName("OpenGL Rendering Subsystem");
+		static String strName("GLRenderSystem");
 		return strName;
 	}
 

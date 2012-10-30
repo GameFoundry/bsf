@@ -43,6 +43,9 @@ namespace CamelotEngine
 			GameObjectPtr mCameraGO;
 			GpuProgramParametersPtr mVertParams;
 			GpuProgramParametersPtr mFragParams;
+
+			ShaderPtr mTestShader;
+			MaterialPtr mTestMaterial;
 	};
 
 	CM_EXPORT Application& gApplication();

@@ -347,13 +347,13 @@ namespace CamelotEngine
 	void Pass::setVertexProgram(GpuProgramPtr gpuProgram)
 	{
 		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
-		mGeometryProgram = gpuProgram;
+		mVertexProgram = gpuProgram;
 	}
     //-----------------------------------------------------------------------
 	void Pass::setFragmentProgram(GpuProgramPtr gpuProgram)
 	{
 		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
-		mGeometryProgram = gpuProgram;
+		mFragmentProgram = gpuProgram;
 	}
 	//-----------------------------------------------------------------------
 	void Pass::setGeometryProgram(GpuProgramPtr gpuProgram)

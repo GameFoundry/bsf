@@ -134,6 +134,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<Technique> TechniquePtr;
 	typedef std::shared_ptr<Pass> PassPtr;
 	typedef std::shared_ptr<Shader> ShaderPtr;
+	typedef std::shared_ptr<Material> MaterialPtr;
 	typedef std::shared_ptr<Renderer> RendererPtr;
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
 

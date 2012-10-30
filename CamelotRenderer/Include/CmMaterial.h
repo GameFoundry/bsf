@@ -24,7 +24,7 @@ namespace CamelotEngine
 		 */
 		void setShader(ShaderPtr shader);
 
-		void setTexture(const String& name, TexturePtr value);
+		void setTexture(const String& name, TextureRef& value);
 		void setFloat(const String& name, float value);
 		void setColor(const String& name, const Color& value);
 		void setVec2(const String& name, const Vector2& value);

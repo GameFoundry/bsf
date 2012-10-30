@@ -133,7 +133,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	const String& D3D9RenderSystem::getName() const
 	{
-		static String strName( "Direct3D9 Rendering Subsystem");
+		static String strName( "D3D9RenderSystem");
 		return strName;
 	}
 	//---------------------------------------------------------------------

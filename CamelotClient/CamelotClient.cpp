@@ -13,8 +13,8 @@ using namespace CamelotEngine;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	//gApplication().startUp("CamelotGLRenderSystem");
-	gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
+	gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
+	//gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
 
 	//RTTITypeBase* st = DbgSrlzTest::getRTTIStatic();
 

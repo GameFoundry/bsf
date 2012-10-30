@@ -66,41 +66,14 @@ namespace CamelotEngine
 		mCamera->setAspectRatio(800.0f / 600.0f);
 
 		/////////////////// HLSL SHADERS //////////////////////////
-		String fragShaderCode = "sampler2D tex;			\
-								float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
-								{														\
-								float4 color = tex2D(tex, uv);				\
-								return color;										\
-								}";
+		//String fragShaderCode = "sampler2D tex;			\
+		//						float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
+		//						{														\
+		//						float4 color = tex2D(tex, uv);				\
+		//						return color;										\
+		//						}";
 
-		mFragProg =  HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
-		mFragProg->load();
-
-		String vertShaderCode = "float4x4 matViewProjection;	\
-								void vs_main(										\
-								float4 inPos : POSITION,							\
-								float2 uv : TEXCOORD0,								\
-								out float4 oPosition : POSITION,					\
-								out float2 oUv : TEXCOORD0)							\
-								{														\
-								oPosition = mul(matViewProjection, inPos);			\
-								oUv = uv;											\
-								}";
-
-		mVertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
-		mVertProg->load();
-		
-
-
-		/////////////////// CG SHADERS //////////////////////////
-		//String fragShaderCode = "sampler2D diffuseMap;			\
-		//	float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
-		//{														\
-		//	float4 color = tex2D(diffuseMap, uv);				\
-		//	return color;										\
-		//}";
-
-		//mFragProg =  HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "ps_main", "cg", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+		//mFragProg =  HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 		//mFragProg->load();
 
 		//String vertShaderCode = "float4x4 matViewProjection;	\
@@ -114,8 +87,35 @@ namespace CamelotEngine
 		//						oUv = uv;											\
 		//						}";
 
-		//mVertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+		//mVertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		//mVertProg->load();
+		
+
+
+		/////////////////// CG SHADERS //////////////////////////
+		String fragShaderCode = "sampler2D tex;					\
+			float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
+		{														\
+			float4 color = tex2D(tex, uv);						\
+			return color;										\
+		}";
+
+		mFragProg =  HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "ps_main", "cg", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+		mFragProg->load();
+
+		String vertShaderCode = "float4x4 matViewProjection;	\
+								void vs_main(										\
+								float4 inPos : POSITION,							\
+								float2 uv : TEXCOORD0,								\
+								out float4 oPosition : POSITION,					\
+								out float2 oUv : TEXCOORD0)							\
+								{														\
+								oPosition = mul(matViewProjection, inPos);			\
+								oUv = uv;											\
+								}";
+
+		mVertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+		mVertProg->load();
 		
 
 
@@ -145,18 +145,14 @@ namespace CamelotEngine
 		mVertParams = mVertProg->createParameters();
 		mFragParams = mFragProg->createParameters();
 
-		//ShaderPtr newShader(new Shader("TestShader"));
-		//TechniquePtr newTechnique = newShader->addTechnique("GLRenderSystem", "ForwardRenderer");
-		//PassPtr newPass = newTechnique->addPass();
-		//newPass->setVertexProgram(mVertProg);
-		//newPass->setFragmentProgram(mFragProg);
+		mTestShader = ShaderPtr(new Shader("TestShader"));
+		TechniquePtr newTechnique = mTestShader->addTechnique("GLRenderSystem", "ForwardRenderer");
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(mVertProg);
+		newPass->setFragmentProgram(mFragProg);
 
-		//Material newMat;
-		//newMat.setShader(newShader);
-		
-		//newShader.
-		
-
+		mTestMaterial = MaterialPtr(new Material());
+		mTestMaterial->setShader(mTestShader);
 
 		// IMPORTER TEST
 		Importer::startUp(new Importer());
@@ -252,146 +248,6 @@ namespace CamelotEngine
 
 	void Application::DBG_renderSimpleFrame()
 	{
-		RenderOperation ro;
-		IndexData* indexData = new IndexData();
-
-		indexData->indexCount = 36;
-		indexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
-			HardwareIndexBuffer::IT_16BIT,
-			36, 
-			HardwareBuffer::HBU_STATIC_WRITE_ONLY);
-
-		unsigned short* idxData = static_cast<unsigned short*>(indexData->indexBuffer->lock(HardwareBuffer::HBL_NORMAL));
-
-		idxData[0] = 0; idxData[1] = 1; idxData[2] = 2;
-		idxData[3] = 2; idxData[4] = 3; idxData[5] = 0;
-
-		idxData[6] = 4; idxData[7] = 5; idxData[8] = 6;
-		idxData[9] = 6; idxData[10] = 7; idxData[11] = 4;
-
-		idxData[12] = 0; idxData[13] = 3; idxData[14] = 5;
-		idxData[15] = 5; idxData[16] = 4; idxData[17] = 0;
-
-		idxData[18] = 3; idxData[19] = 2; idxData[20] = 6;
-		idxData[21] = 6; idxData[22] = 5; idxData[23] = 3;
-
-		idxData[24] = 2; idxData[25] = 1; idxData[26] = 7;
-		idxData[27] = 7; idxData[28] = 6; idxData[29] = 2;
-
-		idxData[30] = 1; idxData[31] = 0; idxData[32] = 4;
-		idxData[33] = 4; idxData[34] = 7; idxData[35] = 1;
-
-		indexData->indexBuffer->unlock();
-
-
-		VertexData* vertexData = new VertexData();
-
-		vertexData->vertexStart = 0;
-		vertexData->vertexCount = 8;
-
-		VertexDeclarationPtr decl = vertexData->vertexDeclaration;
-		decl->removeAllElements();
-
-		size_t offset = 0;
-		decl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
-		offset += VertexElement::getTypeSize(VET_FLOAT3);
-		decl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES);
-		offset += VertexElement::getTypeSize(VET_FLOAT2);
-
-		//decl->addElement(0, offset, VET_COLOUR, VES_DIFFUSE);
-		//offset += VertexElement::getTypeSize(VET_COLOUR);
-
-		HardwareVertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
-			vertexData->vertexDeclaration->getVertexSize(0),
-			vertexData->vertexCount,
-			HardwareBuffer::HBU_STATIC_WRITE_ONLY);
-
-		vertexData->vertexBufferBinding->setBinding(0, vertexBuffer);
-
-		size_t vertexSize = vertexBuffer->getVertexSize();
-		char* vertBufferData = static_cast<char*>(vertexBuffer->lock(HardwareBuffer::HBL_NORMAL));
-
-		size_t posSize = VertexElement::getTypeSize(VET_FLOAT3);
-		size_t uvSize = VertexElement::getTypeSize(VET_FLOAT2);
-
-		Vector3 position(-5.0f, -5.0f, -5.0f);
-		memcpy(vertBufferData, &position, posSize);
-		vertBufferData += posSize;
-
-		Vector2 uv(0.0f, 0.0f);
-		memcpy(vertBufferData, &uv, uvSize);
-		vertBufferData += uvSize;
-
-
-		position = 	Vector3(-5.0f, 5.0f, -5.0f);
-		memcpy(vertBufferData, &position, posSize);
-		vertBufferData += posSize;
-
-		uv = Vector2(0.0f, 1.0f);
-		memcpy(vertBufferData, &uv, uvSize);
-		vertBufferData += uvSize;
-
-
-		position = 	Vector3(5.0f, 5.0f, -5.0f);
-		memcpy(vertBufferData, &position, posSize);
-		vertBufferData += posSize;
-
-		uv = Vector2(1.0f, 1.0f);
-		memcpy(vertBufferData, &uv, uvSize);
-		vertBufferData += uvSize;
-
-
-		position = 	Vector3(5.0f, -5.0f, -5.0f);
-		memcpy(vertBufferData, &position, posSize);
-		vertBufferData += posSize;
-
-		uv = Vector2(1.0f, 0.0f);
-		memcpy(vertBufferData, &uv, uvSize);
-		vertBufferData += uvSize;
-
-
-		position = 	Vector3(-5.0f, -5.0f, 5.0f);
-		memcpy(vertBufferData, &position, posSize);
-		vertBufferData += posSize;
-
-		uv = Vector2(0.0f, 0.0f);
-		memcpy(vertBufferData, &uv, uvSize);
-		vertBufferData += uvSize;
-
-
-		position = 	Vector3(5.0f, -5.0f, 5.0f);
-		memcpy(vertBufferData, &position, posSize);
-		vertBufferData += posSize;
-
-		uv = Vector2(1.0f, 0.0f);
-		memcpy(vertBufferData, &uv, uvSize);
-		vertBufferData += uvSize;
-
-
-		position = 	Vector3(5.0f, 5.0f, 5.0f);
-		memcpy(vertBufferData, &position, posSize);
-		vertBufferData += posSize;
-
-		uv = Vector2(1.0f, 1.0f);
-		memcpy(vertBufferData, &uv, uvSize);
-		vertBufferData += uvSize;
-
-
-		position = 	Vector3(-5.0f, 5.0f, 5.0f);
-		memcpy(vertBufferData, &position, posSize);
-		vertBufferData += posSize;
-
-		uv = Vector2(0.0f, 1.0f);
-		memcpy(vertBufferData, &uv, uvSize);
-		vertBufferData += uvSize;
-
-		vertexBuffer->unlock();
-
-		ro.indexData = indexData;
-		ro.vertexData = vertexData;
-		ro.useIndexes = true;
-		ro.operationType = RenderOperation::OT_TRIANGLE_LIST;
-
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_setViewport(mCamera->getViewport());
 
@@ -411,22 +267,11 @@ namespace CamelotEngine
 		renderSystem->clearFrameBuffer(FBT_COLOUR | FBT_DEPTH, Color::Blue);
 		renderSystem->_beginFrame();
 
-		mVertParams->setNamedConstant("matViewProjection", viewProjMatrix);
-		mFragParams->setNamedConstant("tex", mDbgTexture);
-		//renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, mVertProg->getDefaultParameters(), GPV_ALL);
+		mTestMaterial->setMat4("matViewProjection", viewProjMatrix);
+		mTestMaterial->setTexture("tex", mDbgTexture);
 
-		//renderSystem->_setTexture(0, true, mDbgTexture);
-
-		renderSystem->bindGpuProgram(mFragProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
-		renderSystem->bindGpuProgram(mVertProg->_getBindingDelegate()); // TODO - I don't like this. Shader should be able to be bound directly!
-
-		// TODO - Shaders need to be bound and only then parameters can be set. I need to encapuslate this better because I can't expect users to know that
-		renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, mFragParams, GPV_ALL); // TODO - If I dont call bind parameters before shader wont activate? I think I should handle that differently
-		renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, mVertParams, GPV_ALL);
-
+		mTestMaterial->applyPass(0);
 		
-		
-		/*renderSystem->_render(ro);*/
 		renderSystem->_render(mDbgMesh->getRenderOperation());
 
 		renderSystem->_endFrame();
