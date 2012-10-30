@@ -18,7 +18,7 @@ namespace CamelotEngine
 		public:
 			Application();
 
-			void startUp(String renderSystemDll);
+			void startUp(const String& renderSystemDll, const String& rendererDll);
 			void runMainLoop();
 			void shutDown();
 

@@ -1,34 +1,21 @@
 #include "CmRendererManager.h"
-#include "CmException.h"
 #include "CmRenderer.h"
-#include "CmDynLib.h"
-#include "CmDynLibManager.h"
+#include "CmException.h"
 
 namespace CamelotEngine
 {
 	RendererPtr RendererManager::mActiveRenderer;
 
-	void RendererManager::initialize(const String& pluginFilename)
+	void RendererManager::setActive(const String& name)
 	{
-		DynLib* loadedLibrary = gDynLibManager().load(pluginFilename);
-		String name = "";
-
-		if(loadedLibrary != nullptr)
-		{
-			typedef const String& (*GetPluginNameFunc)();
-
-			GetPluginNameFunc getPluginNameFunc = (GetPluginNameFunc)loadedLibrary->getSymbol("getPluginName");
-			name = getPluginNameFunc();
-		}
-
 		for(auto iter = getAvailableFactories().begin(); iter != getAvailableFactories().end(); ++iter)
 		{
 			if((*iter)->name() == name)
 			{
-				RendererPtr newRenderSystem = (*iter)->create();
-				if(newRenderSystem != nullptr)
+				RendererPtr newRenderer = (*iter)->create();
+				if(newRenderer != nullptr)
 				{
-					mActiveRenderer = newRenderSystem;
+					mActiveRenderer = newRenderer;
 				}				
 			}
 		}

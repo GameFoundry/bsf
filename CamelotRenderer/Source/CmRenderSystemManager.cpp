@@ -8,7 +8,7 @@ namespace CamelotEngine
 {
 	RenderSystemPtr RenderSystemManager::mActiveRenderSystem;
 
-	void RenderSystemManager::initialize(const String& pluginFilename)
+	void RenderSystemManager::startUp(const String& pluginFilename)
 	{
 		DynLib* loadedLibrary = gDynLibManager().load(pluginFilename);
 		String name = "";

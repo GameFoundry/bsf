@@ -26,20 +26,25 @@
 #include "CmTechnique.h"
 #include "CmPass.h"
 
+#include "CmRendererManager.h"
+
 namespace CamelotEngine
 {
 	Application::Application()
 		:mRenderWindow(nullptr), mCamera(nullptr)
 	{ }
 
-	void Application::startUp(String renderSystemDll)
+	void Application::startUp(const String& renderSystemDll, const String& rendererDll)
 	{
 		Time::startUp(new Time());
 		Input::startUp(new Input());
 		DynLibManager::startUp(new DynLibManager());
 		HighLevelGpuProgramManager::startUp(new HighLevelGpuProgramManager());
 
-		RenderSystemManager::initialize(renderSystemDll);
+		RenderSystemManager::startUp(renderSystemDll);
+
+		loadPlugin(rendererDll);
+		RendererManager::setActive("ForwardRenderer");
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_initialise(false, "Camelot Renderer");

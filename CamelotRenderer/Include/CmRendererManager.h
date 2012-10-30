@@ -8,7 +8,7 @@ namespace CamelotEngine
 	class CM_EXPORT RendererManager
 	{
 	public:
-		static void initialize(const String& name);
+		static void setActive(const String& name);
 		static RendererPtr getActive() { return mActiveRenderer; }
 
 		static void registerFactory(RendererFactoryPtr factory);

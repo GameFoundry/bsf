@@ -4,7 +4,7 @@
 
 namespace CamelotEngine
 {
-	class RendererFactory
+	class CM_EXPORT RendererFactory
 	{
 	public:
 		virtual RendererPtr create() = 0;

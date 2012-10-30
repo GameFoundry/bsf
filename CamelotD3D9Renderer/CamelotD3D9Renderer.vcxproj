@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{796B6DFF-BA04-42B7-A43A-2B14D707A33A}</ProjectGuid>
     <RootNamespace>CamelotD3D9Renderer</RootNamespace>
+    <ProjectName>CamelotD3D9RenderSystem</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
