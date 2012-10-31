@@ -66,7 +66,6 @@ namespace CamelotEngine {
 		void mapTypeAndElementSize(CGtype cgType, bool isRegisterCombiner, GpuConstantDefinition& def) const;
 
         vector<String>::type mProfiles;
-        String mEntryPoint;
         String mSelectedProfile;
         CGprofile mSelectedCgProfile;
         String mCompileArgs;

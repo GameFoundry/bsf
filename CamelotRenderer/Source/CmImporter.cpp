@@ -47,7 +47,7 @@ namespace CamelotEngine
 
 	BaseResourceRef Importer::import(const String& inputFilePath)
 	{
-		if(!Path::exists(inputFilePath))
+		if(!FileSystem::fileExists(inputFilePath))
 		{
 			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath);
 			return nullptr;

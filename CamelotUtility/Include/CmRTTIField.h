@@ -97,7 +97,7 @@ namespace CamelotEngine
 
 		static UINT32 getDynamicSize(String& data)	
 		{ 
-			return data.size() + sizeof(UINT32);
+			return data.size() * sizeof(String::value_type) + sizeof(UINT32);
 		}	
 	}; 
 

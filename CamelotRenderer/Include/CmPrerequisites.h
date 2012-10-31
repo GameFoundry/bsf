@@ -158,7 +158,8 @@ namespace CamelotEngine
 		TID_ResourceRef = 1009,
 		TID_GpuProgram = 1010,
 		TID_ResourceRefData = 1011,
-		TID_CgProgram = 1012
+		TID_CgProgram = 1012,
+		TID_ResourceMetaData = 1013
 	};
 }
 
@@ -173,6 +174,8 @@ namespace CamelotEngine
 	typedef ResourceRef<Resource> BaseResourceRef;
 	typedef ResourceRef<Texture> TextureRef;
 	typedef ResourceRef<Mesh> MeshRef;
+	typedef ResourceRef<GpuProgram> GpuProgramRef;
+	typedef ResourceRef<HighLevelGpuProgram> HighLevelGpuProgramRef;
 }
 
 #endif // __OgrePrerequisites_H__

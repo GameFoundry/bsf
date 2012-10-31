@@ -50,6 +50,7 @@ namespace CamelotEngine
 		renderSystem->_initialise(false, "Camelot Renderer");
 
 		SceneManager::startUp(new SceneManager());
+		Resources::startUp(new Resources("D:\\CamelotResourceMetas"));
 
 		mRenderWindow = renderSystem->_createRenderWindow("Camelot Renderer", 800, 600, false);
 
@@ -116,8 +117,16 @@ namespace CamelotEngine
 
 		mVertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		mVertProg->load();
-		
 
+		HighLevelGpuProgramRef vertProgRef(mVertProg);
+
+		gResources().save(vertProgRef, "C:\\vertProgCg.vprog");
+		vertProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\vertProgCg.vprog"));
+
+		HighLevelGpuProgramRef fragProgRef(mFragProg);
+
+		gResources().save(fragProgRef, "C:\\fragProgCg.vprog");
+		fragProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\fragProgCg.vprog"));
 
 		///////////////// GLSL SHADERS ////////////////////////////
 		//String fragShaderCode = "uniform sampler2D tex; \
@@ -141,15 +150,12 @@ namespace CamelotEngine
 
 		//mVertProg = HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 		//mVertProg->load();
-		
-		mVertParams = mVertProg->createParameters();
-		mFragParams = mFragProg->createParameters();
 
 		mTestShader = ShaderPtr(new Shader("TestShader"));
 		TechniquePtr newTechnique = mTestShader->addTechnique("GLRenderSystem", "ForwardRenderer");
 		PassPtr newPass = newTechnique->addPass();
-		newPass->setVertexProgram(mVertProg);
-		newPass->setFragmentProgram(mFragProg);
+		newPass->setVertexProgram(vertProgRef);
+		newPass->setFragmentProgram(fragProgRef);
 
 		mTestMaterial = MaterialPtr(new Material());
 		mTestMaterial->setShader(mTestShader);
@@ -163,8 +169,6 @@ namespace CamelotEngine
 		TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
 		mDbgMesh = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
 		//mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\BarrelMesh.fbx"));
-
-		Resources::startUp(new Resources());
 
 		gResources().save(testTex, "C:\\ExportTest.tex");
 		gResources().save(mDbgMesh, "C:\\ExportMesh.mesh");

@@ -344,37 +344,37 @@ namespace CamelotEngine
 		return mDepthBiasPerIteration;
 	}
     //-----------------------------------------------------------------------
-	void Pass::setVertexProgram(GpuProgramPtr gpuProgram)
+	void Pass::setVertexProgram(GpuProgramRef gpuProgram)
 	{
 		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		mVertexProgram = gpuProgram;
 	}
     //-----------------------------------------------------------------------
-	void Pass::setFragmentProgram(GpuProgramPtr gpuProgram)
+	void Pass::setFragmentProgram(GpuProgramRef gpuProgram)
 	{
 		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		mFragmentProgram = gpuProgram;
 	}
 	//-----------------------------------------------------------------------
-	void Pass::setGeometryProgram(GpuProgramPtr gpuProgram)
+	void Pass::setGeometryProgram(GpuProgramRef gpuProgram)
 	{
 		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		mGeometryProgram = gpuProgram;
 	}
 	//-----------------------------------------------------------------------
-	const GpuProgramPtr& Pass::getVertexProgram(void) const
+	const GpuProgramRef& Pass::getVertexProgram(void) const
 	{
 		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		return mVertexProgram;
 	}
 	//-----------------------------------------------------------------------
-	const GpuProgramPtr& Pass::getFragmentProgram(void) const
+	const GpuProgramRef& Pass::getFragmentProgram(void) const
 	{
 		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		return mFragmentProgram;
 	}
 	//-----------------------------------------------------------------------
-	const GpuProgramPtr& Pass::getGeometryProgram(void) const
+	const GpuProgramRef& Pass::getGeometryProgram(void) const
 	{
 		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		return mGeometryProgram;

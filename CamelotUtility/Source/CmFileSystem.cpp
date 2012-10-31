@@ -3,6 +3,8 @@
 #include "CmPath.h"
 #include "CmException.h"
 
+#include <boost/filesystem.hpp>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -106,5 +108,43 @@ namespace CamelotEngine
 	void FileSystem::remove(const String& fullPath)
 	{
 		::remove(fullPath.c_str());
+	}
+
+	bool FileSystem::fileExists(const String& fullPath)
+	{
+		if(boost::filesystem::exists(fullPath) && !boost::filesystem::is_directory(fullPath))
+			return true;
+
+		return false;
+	}
+
+	bool FileSystem::dirExists(const String& fullPath)
+	{
+		if(boost::filesystem::exists(fullPath) && boost::filesystem::is_directory(fullPath))
+			return true;
+
+		return false;
+	}
+
+	void FileSystem::createDir(const String& fullPath)
+	{
+		boost::filesystem::create_directory(fullPath);
+	}
+
+	vector<String>::type FileSystem::getFiles(const String& dirPath)
+	{
+		boost::filesystem::directory_iterator dirIter(dirPath);
+
+		vector<String>::type foundFiles;
+		
+		while(dirIter != boost::filesystem::directory_iterator())
+		{
+			if(boost::filesystem::is_regular_file(dirIter->path()))
+				foundFiles.push_back(dirIter->path().string());
+
+			dirIter++;
+		}
+
+		return foundFiles;
 	}
 }

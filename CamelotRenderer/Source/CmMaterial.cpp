@@ -29,15 +29,15 @@ namespace CamelotEngine
 
 					ParamsPerPass params;
 
-					GpuProgramPtr vertProgram = curPass->getVertexProgram();
+					GpuProgramRef vertProgram = curPass->getVertexProgram();
 					if(vertProgram)
 						params.mVertParams = vertProgram->createParameters();
 
-					GpuProgramPtr fragProgram = curPass->getFragmentProgram();
+					GpuProgramRef fragProgram = curPass->getFragmentProgram();
 					if(fragProgram)
 						params.mFragParams = fragProgram->createParameters();
 
-					GpuProgramPtr geomProgram = curPass->getGeometryProgram();
+					GpuProgramRef geomProgram = curPass->getGeometryProgram();
 					if(geomProgram)
 						params.mGeomParams = geomProgram->createParameters();	
 
@@ -125,21 +125,21 @@ namespace CamelotEngine
 		PassPtr curPass = mBestTechnique->getPass(passIdx);
 		ParamsPerPass params = mParameters[passIdx];
 
-		GpuProgramPtr vertProgram = curPass->getVertexProgram();
+		GpuProgramRef vertProgram = curPass->getVertexProgram();
 		if(vertProgram)
 		{
 			renderSystem->bindGpuProgram(vertProgram->_getBindingDelegate());
 			renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, params.mVertParams, GPV_ALL);
 		}
 
-		GpuProgramPtr fragProgram = curPass->getFragmentProgram();
+		GpuProgramRef fragProgram = curPass->getFragmentProgram();
 		if(fragProgram)
 		{
 			renderSystem->bindGpuProgram(fragProgram->_getBindingDelegate());
 			renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, params.mFragParams, GPV_ALL);
 		}
 
-		GpuProgramPtr geomProgram = curPass->getGeometryProgram();
+		GpuProgramRef geomProgram = curPass->getGeometryProgram();
 		if(geomProgram)
 		{
 			renderSystem->bindGpuProgram(geomProgram->_getBindingDelegate());

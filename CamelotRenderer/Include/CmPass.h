@@ -70,11 +70,11 @@ namespace CamelotEngine
         //-------------------------------------------------------------------------
 
 		// Vertex program
-		GpuProgramPtr mVertexProgram;
+		GpuProgramRef mVertexProgram;
 		// Fragment program
-		GpuProgramPtr mFragmentProgram;
+		GpuProgramRef mFragmentProgram;
 		// Geometry program
-		GpuProgramPtr mGeometryProgram;
+		GpuProgramRef mGeometryProgram;
 
         // number of pass iterations to perform
         size_t mPassIterationCount;
@@ -468,23 +468,23 @@ namespace CamelotEngine
 
 		/** Sets the details of the vertex program to use.
 		*/
-		void setVertexProgram(GpuProgramPtr gpuProgram);
+		void setVertexProgram(GpuProgramRef gpuProgram);
 
 		/** Gets the vertex program used by this pass, only available after _load(). */
-		const GpuProgramPtr& getVertexProgram(void) const;
+		const GpuProgramRef& getVertexProgram(void) const;
 
 		/** Sets the details of the fragment program to use.
 		*/
-		void setFragmentProgram(GpuProgramPtr gpuProgram);
+		void setFragmentProgram(GpuProgramRef gpuProgram);
 		
 		/** Gets the fragment program used by this pass, only available after _load(). */
-		const GpuProgramPtr& getFragmentProgram(void) const;
+		const GpuProgramRef& getFragmentProgram(void) const;
 
 		/** Sets the details of the geometry program to use.
 		*/
-		void setGeometryProgram(GpuProgramPtr gpuProgram);
+		void setGeometryProgram(GpuProgramRef gpuProgram);
 		
 		/** Gets the geometry program used by this pass, only available after _load(). */
-		const GpuProgramPtr& getGeometryProgram(void) const;
+		const GpuProgramRef& getGeometryProgram(void) const;
     };
 }
