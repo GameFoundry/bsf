@@ -120,13 +120,13 @@ namespace CamelotEngine
 
 		HighLevelGpuProgramRef vertProgRef(mVertProg);
 
-		gResources().save(vertProgRef, "C:\\vertProgCg.vprog");
-		vertProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\vertProgCg.vprog"));
+		gResources().create(vertProgRef, "C:\\vertProgCg.vprog", true);
+		vertProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().loadFromPath("C:\\vertProgCg.vprog"));
 
 		HighLevelGpuProgramRef fragProgRef(mFragProg);
 
-		gResources().save(fragProgRef, "C:\\fragProgCg.vprog");
-		fragProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\fragProgCg.vprog"));
+		gResources().create(fragProgRef, "C:\\fragProgCg.vprog", true);
+		fragProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().loadFromPath("C:\\fragProgCg.vprog"));
 
 		///////////////// GLSL SHADERS ////////////////////////////
 		//String fragShaderCode = "uniform sampler2D tex; \
@@ -170,11 +170,11 @@ namespace CamelotEngine
 		mDbgMesh = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
 		//mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\BarrelMesh.fbx"));
 
-		gResources().save(testTex, "C:\\ExportTest.tex");
-		gResources().save(mDbgMesh, "C:\\ExportMesh.mesh");
+		gResources().create(testTex, "C:\\ExportTest.tex", true);
+		gResources().create(mDbgMesh, "C:\\ExportMesh.mesh", true);
 
-		mDbgTexture = static_resource_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
-		mDbgMesh = static_resource_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
+		mDbgTexture = static_resource_cast<Texture>(gResources().loadFromPath("C:\\ExportTest.tex"));
+		mDbgMesh = static_resource_cast<Mesh>(gResources().loadFromPath("C:\\ExportMesh.mesh"));
 
 		mDbgTexture = testTex;
 

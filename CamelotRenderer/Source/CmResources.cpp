@@ -27,7 +27,7 @@ namespace CamelotEngine
 
 	}
 
-	BaseResourceRef Resources::load(const String& filePath)
+	BaseResourceRef Resources::loadFromPath(const String& filePath)
 	{
 		FileSerializer fs;
 		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
@@ -43,12 +43,18 @@ namespace CamelotEngine
 		ResourcePtr resource = std::static_pointer_cast<Resource>(loadedData);
 		resource->load();
 
+		if(!metaExists_UUID(resource->getUUID()))
+		{
+			gDebug().logWarning("Loading a resource that doesn't have meta-data. Creating meta-data automatically. Resource path: " + filePath);
+			addMetaData(resource->getUUID(), filePath);
+		}
+
 		return BaseResourceRef(resource);
 	}
 
 	BaseResourceRef Resources::loadFromUUID(const String& uuid)
 	{
-		if(!exists(uuid))
+		if(!metaExists_UUID(uuid))
 		{
 			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
 			return nullptr;
@@ -56,25 +62,46 @@ namespace CamelotEngine
 
 		ResourceMetaDataPtr metaEntry = mResourceMetaData[uuid];
 
-		return load(metaEntry->mPath);
+		return loadFromPath(metaEntry->mPath);
 	}
 
-	void Resources::save(BaseResourceRef resource, const String& filePath)
+	void Resources::create(BaseResourceRef resource, const String& filePath, bool overwrite)
 	{
 		assert(resource.get() != nullptr);
 
-		// TODO - Low priority. Check is file path valid?
+		if(metaExists_UUID(resource->getUUID()))
+			CM_EXCEPT(InvalidParametersException, "Specified resource already exists.");
 		
-		// TODO - When saving we just overwrite any existing resource and generate new meta file
-		//         - What if we just want to update existing resource, ie. reimport it?
-		
+		bool fileExists = FileSystem::fileExists(filePath);
+		const String& existingUUID = getUUIDFromPath(filePath);
+		bool metaExists = metaExists_UUID(existingUUID);
+
+		if(fileExists)
+		{
+			if(overwrite)
+				FileSystem::remove(filePath);
+			else
+				CM_EXCEPT(InvalidParametersException, "Another file exists at the specified location.");
+		}
+
+		if(metaExists)
+			removeMetaData(existingUUID);
+
+		addMetaData(resource->getUUID(), filePath);
+		save(resource);
+	}
+
+	void Resources::save(BaseResourceRef resource)
+	{
+		assert(resource.get() != nullptr);
+
+		if(!metaExists_UUID(resource->getUUID()))
+			CM_EXCEPT(InvalidParametersException, "Cannot find resource meta-data. Please call Resources::create before trying to save the resource.");
+
+		const String& filePath = getPathFromUUID(resource->getUUID());
+
 		FileSerializer fs;
 		fs.encode(resource.get(), filePath);
-
-		if(exists(resource->getUUID()))
-			updateMetaData(resource->getUUID(), filePath);
-		else
-			addMetaData(resource->getUUID(), filePath);
 	}
 
 	void Resources::loadMetaData()
@@ -103,20 +130,21 @@ namespace CamelotEngine
 		fs.encode(metaData.get(), fullPath);
 	}
 
+	void Resources::removeMetaData(const String& uuid)
+	{
+		String fullPath = Path::combine(mMetaDataFolderPath, uuid + ".resmeta");
+		FileSystem::remove(fullPath);
+
+		mResourceMetaData.erase(uuid);
+	}
+
 	void Resources::addMetaData(const String& uuid, const String& filePath)
 	{
-		for(auto iter = mResourceMetaData.begin(); iter != mResourceMetaData.end(); ++iter)
-		{
-			if(iter->second->mPath == filePath)
-			{
-				CM_EXCEPT(InvalidParametersException, "Resource with the path '" + filePath + "' already exists.");
-			}
-		}
+		if(metaExists_Path(filePath))
+			CM_EXCEPT(InvalidParametersException, "Resource with the path '" + filePath + "' already exists.");
 
-		if(exists(uuid))
-		{
+		if(metaExists_UUID(uuid))
 			CM_EXCEPT(InternalErrorException, "Resource with the same UUID already exists. UUID: " + uuid);
-		}
 
 		ResourceMetaDataPtr dbEntry(new ResourceMetaData());
 		dbEntry->mPath = filePath;
@@ -129,7 +157,7 @@ namespace CamelotEngine
 
 	void Resources::updateMetaData(const String& uuid, const String& newFilePath)
 	{
-		if(!exists(uuid))
+		if(!metaExists_UUID(uuid))
 		{
 			CM_EXCEPT(InvalidParametersException, "Cannot update a resource that doesn't exist. UUID: " + uuid + ". File path: " + newFilePath);
 		}
@@ -140,11 +168,47 @@ namespace CamelotEngine
 		saveMetaData(dbEntry);
 	}
 
-	bool Resources::exists(const String& uuid) const
+	const String& Resources::getPathFromUUID(const String& uuid) const
+	{
+		auto findIter = mResourceMetaData.find(uuid);
+
+		if(findIter != mResourceMetaData.end())
+			return findIter->second->mPath;
+		else
+			return "";
+	}
+
+	const String& Resources::getUUIDFromPath(const String& path) const
+	{
+		for(auto iter = mResourceMetaData.begin(); iter != mResourceMetaData.end(); ++iter)
+		{
+			if(iter->second->mPath == path)
+			{
+				return iter->second->mUUID;
+			}
+		}
+
+		return StringUtil::BLANK;
+	}
+
+	bool Resources::metaExists_UUID(const String& uuid) const
 	{
 		auto findIter = mResourceMetaData.find(uuid);
 
 		return findIter != mResourceMetaData.end();
+	}
+
+	bool Resources::metaExists_Path(const String& path) const
+	{
+		for(auto iter = mResourceMetaData.begin(); iter != mResourceMetaData.end(); ++iter)
+		{
+			if(iter->second->mPath == path)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	CM_EXPORT Resources& gResources()

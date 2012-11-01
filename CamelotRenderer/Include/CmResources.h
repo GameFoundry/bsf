@@ -29,7 +29,7 @@ namespace CamelotEngine
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		BaseResourceRef load(const String& filePath);
+		BaseResourceRef loadFromPath(const String& filePath);
 
 		/**
 		 * @brief	Loads the resource with the given uuid.
@@ -41,12 +41,22 @@ namespace CamelotEngine
 		BaseResourceRef loadFromUUID(const String& uuid);
 
 		/**
-		 * @brief	Saves the resource at the specified location.
+		 * @brief	Saves the resource. Resource must be registered using Resources::create beforehand.
 		 *
-		 * @param	resource	The resource.
-		 * @param	filePath	Full pathname of the file.
+		 * @param	resource   	The resource.
 		 */
-		void save(BaseResourceRef resource, const String& filePath);
+		void save(BaseResourceRef resource);
+
+		/**
+		 * @brief	Creates a new resource at the specified location. Throws an exception if resource already exists.
+		 * 			Automatically calls Resources::save.
+		 *
+		 * @param	resource 	The resource.
+		 * @param	filePath 	Full pathname of the file.
+		 * @param	overwrite	(optional) If true, any existing resource at the specified location
+		 * 						will be overwritten.
+		 */
+		void create(BaseResourceRef resource, const String& filePath, bool overwrite = false);
 
 	public:
 		struct ResourceMetaData : public IReflectable
@@ -70,10 +80,16 @@ namespace CamelotEngine
 		void loadMetaData();
 		void saveMetaData(const ResourceMetaDataPtr metaData);
 
+		void createMetaData(const String& uuid, const String& filePath);
 		void addMetaData(const String& uuid, const String& filePath);
 		void updateMetaData(const String& uuid, const String& newFilePath);
+		void removeMetaData(const String& uuid);
 
-		bool exists(const String& uuid) const;
+		bool metaExists_UUID(const String& uuid) const;
+		bool metaExists_Path(const String& path) const;
+
+		const String& getPathFromUUID(const String& uuid) const;
+		const String& getUUIDFromPath(const String& path) const;
 
 		String mMetaDataFolderPath;
 	};
