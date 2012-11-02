@@ -27,6 +27,7 @@ namespace CamelotEngine
 
 		mFrameDelta = (float)((currentFrameTime - mLastFrameTime) * MICROSEC_TO_SEC);
 		mTimeSinceStart = (float)(currentFrameTime * MICROSEC_TO_SEC);
+		mTimeSinceStartMs = (UINT64)(currentFrameTime / 1000);
 
 		mLastFrameTime = currentFrameTime;
 

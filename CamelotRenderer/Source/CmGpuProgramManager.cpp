@@ -48,7 +48,6 @@ namespace CamelotEngine {
     {
 		GpuProgramPtr prg;
 		{
-			CM_LOCK_AUTO_MUTEX
 			prg = createProgram( code, gptype, syntaxCode);
 		}
         prg->load();

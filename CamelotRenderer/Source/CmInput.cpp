@@ -132,7 +132,7 @@ namespace CamelotEngine
 
 	void Input::updateSmoothInput()
 	{
-		float currentTime = gTime().getTimeSinceApplicationStart();
+		float currentTime = gTime().getTime();
 
 		mHorizontalHistoryBuffer[mCurrentBufferIdx] = (float)mMouseLastRel.x;
 		mVerticalHistoryBuffer[mCurrentBufferIdx] = (float)mMouseLastRel.y;

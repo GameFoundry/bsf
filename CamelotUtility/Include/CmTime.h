@@ -19,7 +19,14 @@ namespace CamelotEngine
 		 *
 		 * @return	The time since application start, in seconds.
 		 */
-		float getTimeSinceApplicationStart() { return mTimeSinceStart; }
+		float getTime() { return mTimeSinceStart; }
+
+		/**
+		 * @brief	Gets the time elapsed since application start.
+		 *
+		 * @return	The time since application start, in miliseconds.
+		 */
+		UINT64 getTimeMs() { return mTimeSinceStartMs; }
 
 		/**
 		 * @brief	Gets the time since last frame was executed.
@@ -48,6 +55,7 @@ namespace CamelotEngine
 	private:
 		float mFrameDelta; // Frame delta in seconds
 		float mTimeSinceStart; // Time since start in seconds
+		UINT64 mTimeSinceStartMs;
 
 		unsigned long mAppStartTime; // Time the application started, in microseconds
 		unsigned long mLastFrameTime; // Time since last runOneFrame call, In microseconds

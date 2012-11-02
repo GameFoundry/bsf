@@ -54,7 +54,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>libboost_signals-vc110-mt-gd-1_49.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/Debug</AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
       <NoEntryPoint>false</NoEntryPoint>
@@ -76,13 +76,14 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>libboost_signals-vc110-mt-1_49.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/Release</AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmUUID.cpp" />
+    <ClCompile Include="Source\CmWorkQueue.cpp" />
     <ClCompile Include="Source\Win32\CmTimer.cpp" />
     <ClInclude Include="Include\CmBinarySerializer.h" />
     <ClInclude Include="Include\CmBitwise.h" />
@@ -142,6 +143,7 @@
     <ClCompile Include="Source\CmTextureData.cpp">
       <FileType>CppHeader</FileType>
     </ClCompile>
+    <ClInclude Include="Include\CmWorkQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp" />

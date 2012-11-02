@@ -486,6 +486,18 @@ namespace CamelotEngine {
 		return stream.str();
 	}
 	//-----------------------------------------------------------------------
+	String toString(unsigned long long int val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		stringstream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+	//-----------------------------------------------------------------------
 	String toString(const Vector2& val)
 	{
 		stringstream stream;

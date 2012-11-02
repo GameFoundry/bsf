@@ -56,7 +56,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glu32.lib;opengl32.lib;CamelotRenderer.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>..\lib\$(Configuration);..\Dependencies\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\$(Configuration);..\Dependencies\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -74,7 +74,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>glu32.lib;opengl32.lib;CamelotRenderer.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>..\lib\$(Configuration);..\Dependencies\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\$(Configuration);..\Dependencies\lib\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

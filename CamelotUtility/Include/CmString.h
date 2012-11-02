@@ -261,6 +261,11 @@ namespace CamelotEngine {
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
+	/** Converts a long long to a String. */
+	CM_UTILITY_EXPORT String toString(unsigned long long int val, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
 	/** Global conversion methods **/
 
     /** Converts a boolean to a String. 

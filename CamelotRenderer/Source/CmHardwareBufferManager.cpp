@@ -119,7 +119,6 @@ namespace CamelotEngine {
 		// which locks the same mutexes (via other methods) but in reverse order
 		CM_LOCK_MUTEX(mVertexBuffersMutex)
 		{
-			CM_LOCK_MUTEX(mTempBuffersMutex)
 			HardwareVertexBufferPtr vbuf;
 
 			// Locate existing buffer copy in temporary vertex buffers
