@@ -71,7 +71,7 @@ namespace CamelotEngine
 		}
 
 		BaseResourceRef importedResource = importer->import(inputFilePath);
-		importedResource->load();
+		importedResource->init();
 
 		return importedResource;
 	}

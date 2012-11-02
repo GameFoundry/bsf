@@ -10,7 +10,50 @@
 
 namespace CamelotEngine
 {
+	bool Resources::ResourceRequestHandler::canHandleRequest(const WorkQueue::Request* req, const WorkQueue* srcQ)
+	{
+		return true;
+	}
+
+	WorkQueue::Response* Resources::ResourceRequestHandler::handleRequest(const WorkQueue::Request* req, const WorkQueue* srcQ)
+	{
+		ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(req->getData());
+
+		ResourceLoadResponsePtr resResponse = ResourceLoadResponsePtr(new Resources::ResourceLoadResponse());
+		resResponse->rawResource = gResources().loadInternal(resRequest->filePath);
+
+		return new WorkQueue::Response(req, true, resResponse);
+	}
+
+	bool Resources::ResourceResponseHandler::canHandleResponse(const WorkQueue::Response* res, const WorkQueue* srcQ)
+	{
+		return true;
+	}
+
+	void Resources::ResourceResponseHandler::handleResponse(const WorkQueue::Response* res, const WorkQueue* srcQ)
+	{
+		if(res->getRequest()->getAborted())
+			return;
+
+		if(res->succeeded())
+		{
+			ResourceLoadResponsePtr resResponse = boost::any_cast<ResourceLoadResponsePtr>(res->getData());
+			ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(res->getRequest()->getData());
+
+			if(resRequest->resource != nullptr)
+			{
+				resResponse->rawResource->init();
+				resRequest->resource.resolve(resResponse->rawResource);
+			}
+		}
+		else
+		{
+			gDebug().logWarning("Resource load request failed.");
+		}
+	}
+
 	Resources::Resources(const String& metaDataFolder)
+		:mRequestHandler(nullptr), mResponseHandler(nullptr)
 	{
 		mMetaDataFolderPath = metaDataFolder;
 
@@ -20,36 +63,75 @@ namespace CamelotEngine
 		}
 
 		loadMetaData();
+
+		mWorkQueue = WorkQueuePtr(new WorkQueue());
+		mWorkQueueChannel = mWorkQueue->getChannel("Resources");
+		mRequestHandler = new ResourceRequestHandler();
+		mResponseHandler = new ResourceResponseHandler();
+
+		mWorkQueue->addRequestHandler(mWorkQueueChannel, mRequestHandler);
+		mWorkQueue->addResponseHandler(mWorkQueueChannel, mResponseHandler);
+
+		// TODO Low priority - I might want to make this more global so other classes can use it
+#if CM_THREAD_SUPPORT
+		mWorkQueue->setWorkerThreadCount(CM_THREAD_HARDWARE_CONCURRENCY);
+#endif
+		mWorkQueue->startup();
 	}
 
 	Resources::~Resources()
 	{
+		if(mWorkQueue)
+		{
+			if(mRequestHandler != nullptr)
+				mWorkQueue->removeRequestHandler(mWorkQueueChannel, mRequestHandler);
 
+			if(mResponseHandler != nullptr)
+				mWorkQueue->removeResponseHandler(mWorkQueueChannel, mResponseHandler);
+
+			mWorkQueue->shutdown();
+		}
+
+		if(mRequestHandler != nullptr)
+			delete mRequestHandler;
+
+		if(mResponseHandler != nullptr)
+			delete mResponseHandler;
 	}
 
-	BaseResourceRef Resources::loadFromPath(const String& filePath)
+	BaseResourceRef Resources::load(const String& filePath)
 	{
-		FileSerializer fs;
-		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
+		// TODO - Make sure this uses the same code as loadAsync. Only forceSyncronous
 
 		// TODO - Low priority. Check is file path valid?
 
-		if(loadedData == nullptr)
-			CM_EXCEPT(InternalErrorException, "Unable to load resource.");
+		BaseResourceRef resource = loadInternal(filePath);
+		resource->init();
 
-		if(!loadedData->isDerivedFrom(Resource::getRTTIStatic()))
-			CM_EXCEPT(InternalErrorException, "Loaded class doesn't derive from Resource.");
-
-		ResourcePtr resource = std::static_pointer_cast<Resource>(loadedData);
-		resource->load();
-
+		// TODO - This should probably be called in loadInternal, but it isn't thread safe
+		//        - loadAsync never calls this code and it should
 		if(!metaExists_UUID(resource->getUUID()))
 		{
 			gDebug().logWarning("Loading a resource that doesn't have meta-data. Creating meta-data automatically. Resource path: " + filePath);
 			addMetaData(resource->getUUID(), filePath);
 		}
 
-		return BaseResourceRef(resource);
+		return resource;
+	}
+
+	BaseResourceRef Resources::loadAsync(const String& filePath)
+	{
+		// TODO - Low priority. Check is file path valid?
+
+		BaseResourceRef newResource;
+
+		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(new Resources::ResourceLoadRequest());
+		resRequest->filePath = filePath;
+		resRequest->resource = newResource;
+
+		mWorkQueue->addRequest(mWorkQueueChannel, resRequest, 0, false);
+
+		return newResource;
 	}
 
 	BaseResourceRef Resources::loadFromUUID(const String& uuid)
@@ -62,7 +144,22 @@ namespace CamelotEngine
 
 		ResourceMetaDataPtr metaEntry = mResourceMetaData[uuid];
 
-		return loadFromPath(metaEntry->mPath);
+		return load(metaEntry->mPath);
+	}
+
+	ResourcePtr Resources::loadInternal(const String& filePath)
+	{
+		FileSerializer fs;
+		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
+
+		if(loadedData == nullptr)
+			CM_EXCEPT(InternalErrorException, "Unable to load resource.");
+
+		if(!loadedData->isDerivedFrom(Resource::getRTTIStatic()))
+			CM_EXCEPT(InternalErrorException, "Loaded class doesn't derive from Resource.");
+
+		ResourcePtr resource = std::static_pointer_cast<Resource>(loadedData);
+		return resource;
 	}
 
 	void Resources::create(BaseResourceRef resource, const String& filePath, bool overwrite)

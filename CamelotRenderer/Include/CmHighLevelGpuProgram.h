@@ -98,7 +98,7 @@ namespace CamelotEngine {
         HighLevelGpuProgram();
         ~HighLevelGpuProgram();
 
-		virtual void loadImpl();
+		virtual void initImpl();
 		virtual void unload();
 
         /** Creates a new parameters object compatible with this program definition. 

@@ -181,7 +181,7 @@ namespace CamelotEngine
 		}		
 	}
 	/****************************************************************************************/
-	void D3D9Texture::loadImpl()
+	void D3D9Texture::initImpl()
 	{
 		if (!mInternalResourcesCreated)
 		{
@@ -197,12 +197,12 @@ namespace CamelotEngine
 		{
 			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
 
-			loadImpl(d3d9Device);
+			initImpl(d3d9Device);
 		}		
 	}
 
 	/****************************************************************************************/
-	void D3D9Texture::loadImpl(IDirect3DDevice9* d3d9Device)
+	void D3D9Texture::initImpl(IDirect3DDevice9* d3d9Device)
 	{		
 		if (mUsage & TU_RENDERTARGET)
 		{

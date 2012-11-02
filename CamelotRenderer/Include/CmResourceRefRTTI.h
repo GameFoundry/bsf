@@ -16,7 +16,6 @@ namespace CamelotEngine
 
 			if(uuid != "")
 			{
-				obj->mUUIDSet = true;
 				// TODO - I probably want to load the resource here
 				//   - Important: consider that user might just want to load the level meta data and not the actual resources
 				//     (Maybe he wants to stream them in as player goes through the world?)

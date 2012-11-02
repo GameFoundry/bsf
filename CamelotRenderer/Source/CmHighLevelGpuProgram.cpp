@@ -37,7 +37,7 @@ namespace CamelotEngine
     {
     }
     //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::loadImpl()
+    void HighLevelGpuProgram::initImpl()
     {
 		if (isSupported())
 		{
@@ -50,7 +50,7 @@ namespace CamelotEngine
 			// load constructed assembler program (if it exists)
 			if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
 			{
-				mAssemblerProgram->load();
+				mAssemblerProgram->init();
 			}
 		}
     }

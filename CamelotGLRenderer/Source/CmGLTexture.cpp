@@ -246,7 +246,7 @@ namespace CamelotEngine {
         createInternalResources();
     }
 
-    void GLTexture::loadImpl()
+    void GLTexture::initImpl()
     {
         if( mUsage & TU_RENDERTARGET )
         {

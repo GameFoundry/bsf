@@ -130,7 +130,7 @@ namespace CamelotEngine {
 		void _createSurfaceList(IDirect3DDevice9* d3d9Device, TextureResources* textureResources);
 	 
 		/// Loads this texture into the specified device.
-		void loadImpl(IDirect3DDevice9* d3d9Device);
+		void initImpl(IDirect3DDevice9* d3d9Device);
 
 		/// gets the texture resources attached to the given device.
 		TextureResources* getTextureResources(IDirect3DDevice9* d3d9Device);
@@ -157,7 +157,7 @@ namespace CamelotEngine {
 		void copyToTexture( TexturePtr& target );
 
 		/// overriden from Resource
-		void loadImpl();	
+		void initImpl();	
 
 		/// @copydoc Texture::getBuffer
 		HardwarePixelBufferPtr getBuffer(size_t face, size_t mipmap);

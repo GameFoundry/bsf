@@ -66,7 +66,7 @@ namespace CamelotEngine {
         unload(); 
     }
 	//-----------------------------------------------------------------------------
-    void GLSLGpuProgram::loadImpl(void)
+    void GLSLGpuProgram::initImpl(void)
     {
 		// nothing to load
     }

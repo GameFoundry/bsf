@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmIReflectable.h"
+#include <atomic>
 
 template<class _Ty>
 struct CM_Bool_struct
@@ -16,20 +17,31 @@ namespace CamelotEngine
 	struct CM_EXPORT ResourceRefData : public IReflectable
 	{
 		ResourceRefData()
-			:mUUIDSet(false)
-		{ }
+		{
+			mIsResolved.store(false);
+		}
 
 		std::shared_ptr<Resource> mPtr;
 		String mUUID;
-		bool mUUIDSet;
+		std::atomic_bool mIsResolved; // TODO Low priority. I might not need an atomic here. Volatile bool should do.
 
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
 		friend class ResourceRefDataRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const;		
 	};
 
 	class CM_EXPORT ResourceRefBase : public IReflectable
 	{
+	public:
+		/**
+		 * @brief	Checks if the resource is loaded
+		 */
+		bool isResolved() { return mData->mIsResolved.load(); }
+
 	protected:
 		ResourceRefBase();
 
@@ -43,6 +55,13 @@ namespace CamelotEngine
 		{
 			init(std::static_pointer_cast<Resource>(ptr.mData->mPtr));
 		}
+	private:
+		friend class Resources;
+		/**
+		 * @brief	Sets the resolved flag to true. Should only be called
+		 * 			by Resources class after loading of the resource is fully done.
+		 */
+		void resolve(std::shared_ptr<Resource> ptr);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -85,6 +104,7 @@ namespace CamelotEngine
 			return ResourceRef<Resource>(mData->mPtr); 
 		}
 
+		// TODO Low priority - User can currently try to access these even if resource ptr is not resolved
 		T* get() const { return static_cast<T*>(mData->mPtr.get()); }
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }

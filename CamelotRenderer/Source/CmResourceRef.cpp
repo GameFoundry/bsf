@@ -2,6 +2,7 @@
 #include "CmResourceRef.h"
 #include "CmResource.h"
 #include "CmResourceRefRTTI.h"
+#include "CmResources.h"
 
 namespace CamelotEngine
 {
@@ -18,7 +19,11 @@ namespace CamelotEngine
 	ResourceRefBase::ResourceRefBase()
 	{
 		mData = std::shared_ptr<ResourceRefData>(new ResourceRefData());
-		mData->mUUIDSet = false;
+	}
+
+	void ResourceRefBase::resolve(std::shared_ptr<Resource> ptr) 
+	{ 
+		init(ptr);
 	}
 
 	void ResourceRefBase::init(Resource* ptr)
@@ -33,7 +38,7 @@ namespace CamelotEngine
 		if(mData->mPtr)
 		{
 			mData->mUUID = mData->mPtr->getUUID();
-			mData->mUUIDSet = true;
+			mData->mIsResolved.store(true); 
 		}
 	}
 

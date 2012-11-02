@@ -371,7 +371,7 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void WorkQueue::processResponses() 
 	{
-		// keep going until we run out of responses or out of time
+		// keep going until we run out of responses
 		while(true)
 		{
 			Response* response = 0;

@@ -2,11 +2,39 @@
 
 #include "CmPrerequisites.h"
 #include "CmModule.h"
+#include "CmWorkQueue.h"
 
 namespace CamelotEngine
 {
-	class Resources : public Module<Resources>
+	class CM_EXPORT Resources : public Module<Resources>
 	{
+	private:
+		class CM_EXPORT ResourceRequestHandler : public WorkQueue::RequestHandler
+		{
+			virtual bool canHandleRequest( const WorkQueue::Request* req, const WorkQueue* srcQ );
+			virtual WorkQueue::Response* handleRequest( const WorkQueue::Request* req, const WorkQueue* srcQ );
+		};
+
+		class CM_EXPORT ResourceResponseHandler : public WorkQueue::ResponseHandler
+		{
+			virtual bool canHandleResponse( const WorkQueue::Response* res, const WorkQueue* srcQ );
+			virtual void handleResponse( const WorkQueue::Response* res, const WorkQueue* srcQ );
+		};
+
+		struct CM_EXPORT ResourceLoadRequest
+		{
+			String filePath;
+			BaseResourceRef resource;
+		};
+
+		struct CM_EXPORT ResourceLoadResponse
+		{
+			ResourcePtr rawResource;
+		};
+
+		typedef std::shared_ptr<ResourceLoadRequest> ResourceLoadRequestPtr;
+		typedef std::shared_ptr<ResourceLoadResponse> ResourceLoadResponsePtr;
+
 	public:
 		/**
 		 * @brief	Constructor.
@@ -29,7 +57,9 @@ namespace CamelotEngine
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		BaseResourceRef loadFromPath(const String& filePath);
+		BaseResourceRef load(const String& filePath);
+
+		BaseResourceRef loadAsync(const String& filePath);
 
 		/**
 		 * @brief	Loads the resource with the given uuid.
@@ -76,6 +106,14 @@ namespace CamelotEngine
 	private:
 		typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
 		map<String, ResourceMetaDataPtr>::type mResourceMetaData;
+
+		ResourceRequestHandler* mRequestHandler;
+		ResourceResponseHandler* mResponseHandler;
+
+		WorkQueuePtr mWorkQueue; // TODO Low priority - I might want to make this more global so other classes can use it
+		UINT16 mWorkQueueChannel;
+
+		ResourcePtr loadInternal(const String& filePath);
 
 		void loadMetaData();
 		void saveMetaData(const ResourceMetaDataPtr metaData);

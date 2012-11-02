@@ -5,12 +5,6 @@
 
 namespace CamelotEngine
 {
-	enum ResourceState
-	{
-		RS_Unloaded,
-		RS_Loaded
-	};
-
 	/**
 	 * @brief	Base class for all resources used in the engine.
 	 */
@@ -20,8 +14,8 @@ namespace CamelotEngine
 		Resource();
 		virtual ~Resource() {};
 
-		void load();
-		virtual void loadImpl() = 0;
+		void init();
+		virtual void initImpl() = 0;
 
 		const String& getUUID() const { return mUUID; }
 
@@ -36,7 +30,7 @@ namespace CamelotEngine
 		UINT32 mSize;
 
 		// Transient
-		ResourceState mLoadState;
+		bool mInitialized;
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

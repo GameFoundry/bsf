@@ -61,7 +61,7 @@ namespace CamelotEngine
 		mCompileError = false;
     }
     //-----------------------------------------------------------------------------
-    void GpuProgram::loadImpl(void)
+    void GpuProgram::initImpl(void)
     {
         // Call polymorphic load
 		try 

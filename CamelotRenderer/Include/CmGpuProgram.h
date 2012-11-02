@@ -118,7 +118,7 @@ namespace CamelotEngine {
 
 		virtual ~GpuProgram() {}
 
-		virtual void loadImpl();
+		virtual void initImpl();
 		virtual void unload() {}
 
 		/** Sets the source assembly for this program from an in-memory string.

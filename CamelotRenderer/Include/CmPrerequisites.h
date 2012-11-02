@@ -102,6 +102,7 @@ namespace CamelotEngine {
 	class Renderable;
 	class Renderer;
 	class RendererFactory;
+	class WorkQueue;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -137,6 +138,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<Material> MaterialPtr;
 	typedef std::shared_ptr<Renderer> RendererPtr;
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
+	typedef std::shared_ptr<WorkQueue> WorkQueuePtr;
 
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;

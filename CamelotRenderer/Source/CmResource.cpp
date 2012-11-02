@@ -5,20 +5,20 @@
 namespace CamelotEngine
 {
 	Resource::Resource()
-		:mSize(0), mLoadState(RS_Unloaded)
+		:mSize(0), mInitialized(false)
 	{
 		// We always generate a random UUID, and then overwrite it with the actual one 
 		// during loading if one was previously generated and saved.
 		mUUID = UUIDGenerator::generateRandom();
 	}
 
-	void Resource::load()
+	void Resource::init()
 	{
-		if(mLoadState != RS_Loaded)
+		if(!mInitialized)
 		{
-			loadImpl();
+			initImpl();
 
-			mLoadState = RS_Loaded;
+			mInitialized = true;
 		}
 	}
 		
