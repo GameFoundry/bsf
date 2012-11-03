@@ -46,6 +46,11 @@ namespace CamelotEngine
 		~Resources();
 
 		/**
+		 * @brief	Called every frame by the main loop.
+		 */
+		void update();
+
+		/**
 		 * @brief	Loads the resource from a given path. Returns null if resource can't be loaded.
 		 *
 		 * @param	filePath					The path of the file to load. The file is searched for in

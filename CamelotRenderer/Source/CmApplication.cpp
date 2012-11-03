@@ -173,10 +173,8 @@ namespace CamelotEngine
 		gResources().create(testTex, "C:\\ExportTest.tex", true);
 		gResources().create(mDbgMesh, "C:\\ExportMesh.mesh", true);
 
-		mDbgTexture = static_resource_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
-		mDbgMesh = static_resource_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
-
-		mDbgTexture = testTex;
+		mDbgTexture = static_resource_cast<Texture>(gResources().loadAsync("C:\\ExportTest.tex"));
+		mDbgMesh = static_resource_cast<Mesh>(gResources().loadAsync("C:\\ExportMesh.mesh"));
 
 		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
 	}
@@ -191,6 +189,7 @@ namespace CamelotEngine
 
 			gTime().update();
 			gInput().update();
+			gResources().update();
 		}
 	}
 
@@ -252,6 +251,11 @@ namespace CamelotEngine
 
 	void Application::DBG_renderSimpleFrame()
 	{
+		if(!mDbgTexture.isResolved() || !mDbgMesh.isResolved())
+		{
+			return;
+		}
+
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->_setViewport(mCamera->getViewport());
 

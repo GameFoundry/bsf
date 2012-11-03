@@ -371,6 +371,8 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void WorkQueue::processResponses() 
 	{
+		// TODO Low priority - Processing a lot of responses can cause a frame rate spike. Maybe limit the processing to Xms?
+
 		// keep going until we run out of responses
 		while(true)
 		{

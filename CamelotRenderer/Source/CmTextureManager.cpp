@@ -61,7 +61,6 @@ namespace CamelotEngine {
         ret->setUsage(usage);
 		ret->setHardwareGammaEnabled(hwGamma);
 		ret->setFSAA(fsaa, fsaaHint);
-		ret->createInternalResources();
 		return ret;
     }
     //-----------------------------------------------------------------------

@@ -393,17 +393,14 @@ namespace CamelotEngine
 		/** Returns whether the queue is trying to shut down. */
 		bool isShuttingDown() const { return mShuttingDown; }
 
-	protected:
 		/** Process the responses in the queue.
 		@remarks
 			This method is public, and must be called from the main render
-			thread to 'pump' responses through the system. The method will usually
-			try to clear all responses before returning = 0; however, you can specify
-			a time limit on the response processing to limit the impact of
-			spikes in demand by calling setResponseProcessingTimeLimit.
+			thread to 'pump' responses through the system.
 		*/
 		void processResponses(); 
 
+	protected:
 		void processRequestResponse(Request* r, bool synchronous);
 		Response* processRequest(Request* r);
 		void processResponse(Response* r);

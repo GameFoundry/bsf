@@ -53,7 +53,7 @@ namespace CamelotEngine
 		template <typename T1>
 		void init(const ResourceRef<T1>& ptr)
 		{
-			init(std::static_pointer_cast<Resource>(ptr.mData->mPtr));
+			mData = ptr.mData;
 		}
 	private:
 		friend class Resources;

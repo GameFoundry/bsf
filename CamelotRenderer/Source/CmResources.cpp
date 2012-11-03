@@ -40,11 +40,8 @@ namespace CamelotEngine
 			ResourceLoadResponsePtr resResponse = boost::any_cast<ResourceLoadResponsePtr>(res->getData());
 			ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(res->getRequest()->getData());
 
-			if(resRequest->resource != nullptr)
-			{
-				resResponse->rawResource->init();
-				resRequest->resource.resolve(resResponse->rawResource);
-			}
+			resResponse->rawResource->init();
+			resRequest->resource.resolve(resResponse->rawResource);
 		}
 		else
 		{
@@ -97,6 +94,11 @@ namespace CamelotEngine
 
 		if(mResponseHandler != nullptr)
 			delete mResponseHandler;
+	}
+
+	void Resources::update()
+	{
+		mWorkQueue->processResponses();
 	}
 
 	BaseResourceRef Resources::load(const String& filePath)
