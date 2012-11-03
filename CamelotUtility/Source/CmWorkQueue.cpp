@@ -182,6 +182,17 @@ namespace CamelotEngine {
 		}
 	}
 	//---------------------------------------------------------------------
+	WorkQueue::RequestID WorkQueue::peekNextFreeRequestId()
+	{
+		{
+			// lock to acquire rid and push request to the queue
+			CM_LOCK_MUTEX(mRequestMutex)
+
+			RequestID rid = mRequestCount + 1;
+			return rid;
+		}
+	}
+	//---------------------------------------------------------------------
 	WorkQueue::RequestID WorkQueue::addRequest(UINT16 channel, 
 		const boost::any& rData, UINT8 retryCount, bool forceSynchronous)
 	{
@@ -213,6 +224,25 @@ namespace CamelotEngine {
 
 		return rid;
 
+	}
+	//---------------------------------------------------------------------
+	void WorkQueue::addRequestWithRID(WorkQueue::RequestID rid, UINT16 channel, 
+		const boost::any& rData, UINT8 retryCount)
+	{
+		// lock to push request to the queue
+		CM_LOCK_MUTEX(mRequestMutex)
+
+		if (mShuttingDown)
+			return;
+
+		Request* req = new Request(channel, rData, retryCount, rid);
+
+#if CM_THREAD_SUPPORT
+		mRequestQueue.push_back(req);
+		notifyWorkers();
+#else
+		processRequestResponse(req, true);
+#endif
 	}
 	//---------------------------------------------------------------------
 	void WorkQueue::abortRequest(RequestID id)
@@ -503,25 +533,6 @@ namespace CamelotEngine {
 				}
 			}
 		}
-	}
-	//---------------------------------------------------------------------
-	void WorkQueue::addRequestWithRID(WorkQueue::RequestID rid, UINT16 channel, 
-		const boost::any& rData, UINT8 retryCount)
-	{
-		// lock to push request to the queue
-		CM_LOCK_MUTEX(mRequestMutex)
-
-			if (mShuttingDown)
-				return;
-
-		Request* req = new Request(channel, rData, retryCount, rid);
-
-#if CM_THREAD_SUPPORT
-		mRequestQueue.push_back(req);
-		notifyWorkers();
-#else
-		processRequestResponse(req, true);
-#endif
 	}
 	//---------------------------------------------------------------------
 	void WorkQueue::processNextRequest()

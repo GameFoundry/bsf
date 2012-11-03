@@ -19,6 +19,12 @@ HIGH PRIORITY TODO:
  - HLSL & Cg don't handle include files yet
 
 Mid priority TODO:
+ - Separate render thread
+   - CommandBuffer (technically it should be just a RenderQueue I think)
+   - Main thread updates components, finds visible meshes and creates render device. At end of execution it fills up render queue
+   - Render thread renders everything in the render queue, and also creates resources (although RenderQueue name doesn't make sense if its used for resources too)
+   - Before I start with this I should probably strip down render system to a bare minimum
+
  - GpuProgram default parameters might not be needed. The parameters change with each use of the gpu program anyway
  - Mesh loading:
   - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
@@ -43,6 +49,7 @@ Low priority TODO:
  - Removed unused methods from D3D9 and GL render systems (mostly fixed function stuff)
  - Viewport needs to be updated when I call RenderTarget::setFullscreen/finishSwitchingFullscreen/updateWindowRect/windowMovedOrResized. Currently it's not
  - D3D9Texture::createTextureResources is commented out at the moment. It gets called on device reset, and at that point I should reload texture resources.
+  - I should probably keep all resources by DX managed. OpenGL apparently keeps a mirror of all its resources anyway.
  - Device reset and resource re-loading in general
 
 Optional TODO:

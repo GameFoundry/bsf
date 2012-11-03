@@ -317,6 +317,13 @@ namespace CamelotEngine
 		/** Remove a Response handler. */
 		void removeResponseHandler(UINT16 channel, ResponseHandler* rh);
 
+		/**
+		 * @brief	Gets the next free request identifier.
+		 *
+		 * @return	The next free request identifier.
+		 */
+		RequestID peekNextFreeRequestId();
+
 		/** Add a new request to the queue.
 		@param channel The channel this request will go into = 0; the channel is the top-level
 			categorisation of the request
@@ -331,6 +338,9 @@ namespace CamelotEngine
 		*/
 		RequestID addRequest(UINT16 channel, const boost::any& rData, UINT8 retryCount = 0, 
 			bool forceSynchronous = false);
+
+		/// Put a Request on the queue with a specific RequestID.
+		void addRequestWithRID(RequestID rid, UINT16 channel, const boost::any& rData, UINT8 retryCount);
 
 		/** Abort a previously issued request.
 		If the request is still waiting to be processed, it will be 
@@ -404,9 +414,6 @@ namespace CamelotEngine
 		void processRequestResponse(Request* r, bool synchronous);
 		Response* processRequest(Request* r);
 		void processResponse(Response* r);
-
-		/// Put a Request on the queue with a specific RequestID.
-		void addRequestWithRID(RequestID rid, UINT16 channel, const boost::any& rData, UINT8 retryCount);
 
 		/** To be called by a separate thread; will return immediately if there
 			are items in the queue, or suspend the thread until new items are added

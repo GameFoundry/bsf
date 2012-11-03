@@ -32,6 +32,12 @@ namespace CamelotEngine
 			ResourcePtr rawResource;
 		};
 
+		struct CM_EXPORT ResourceAsyncOp
+		{
+			BaseResourceRef resource;
+			WorkQueue::RequestID requestID;
+		};
+
 		typedef std::shared_ptr<ResourceLoadRequest> ResourceLoadRequestPtr;
 		typedef std::shared_ptr<ResourceLoadResponse> ResourceLoadResponsePtr;
 
@@ -136,7 +142,11 @@ namespace CamelotEngine
 		WorkQueuePtr mWorkQueue; // TODO Low priority - I might want to make this more global so other classes can use it
 		UINT16 mWorkQueueChannel;
 
-		ResourcePtr loadInternal(const String& filePath);
+		unordered_map<String, BaseResourceRef>::type mLoadedResources; // TODO Low priority - I'm not sure how will filePath as key do performance wise
+		unordered_map<String, ResourceAsyncOp>::type mInProgressResources; // Resources that are being asynchronously loaded
+
+		BaseResourceRef loadInternal(const String& filePath, bool synchronous); 
+		ResourcePtr loadFromDiskAndDeserialize(const String& filePath);
 
 		void loadMetaData();
 		void saveMetaData(const ResourceMetaDataPtr metaData);

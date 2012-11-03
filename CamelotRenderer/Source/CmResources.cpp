@@ -20,7 +20,7 @@ namespace CamelotEngine
 		ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(req->getData());
 
 		ResourceLoadResponsePtr resResponse = ResourceLoadResponsePtr(new Resources::ResourceLoadResponse());
-		resResponse->rawResource = gResources().loadInternal(resRequest->filePath);
+		resResponse->rawResource = gResources().loadFromDiskAndDeserialize(resRequest->filePath);
 
 		return new WorkQueue::Response(req, true, resResponse);
 	}
@@ -32,16 +32,28 @@ namespace CamelotEngine
 
 	void Resources::ResourceResponseHandler::handleResponse(const WorkQueue::Response* res, const WorkQueue* srcQ)
 	{
+		ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(res->getRequest()->getData());
+
+		auto iterFind = gResources().mInProgressResources.find(resRequest->filePath);
+		gResources().mInProgressResources.erase(iterFind);
+
 		if(res->getRequest()->getAborted())
 			return;
 
 		if(res->succeeded())
 		{
 			ResourceLoadResponsePtr resResponse = boost::any_cast<ResourceLoadResponsePtr>(res->getData());
-			ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(res->getRequest()->getData());
-
+			
 			resResponse->rawResource->init();
 			resRequest->resource.resolve(resResponse->rawResource);
+
+			if(!gResources().metaExists_UUID(resResponse->rawResource->getUUID()))
+			{
+				gDebug().logWarning("Loading a resource that doesn't have meta-data. Creating meta-data automatically. Resource path: " + resRequest->filePath);
+				gResources().addMetaData(resResponse->rawResource->getUUID(), resRequest->filePath);
+			}
+
+			gResources().mLoadedResources[resRequest->filePath] = resRequest->resource;
 		}
 		else
 		{
@@ -103,47 +115,12 @@ namespace CamelotEngine
 
 	BaseResourceRef Resources::load(const String& filePath)
 	{
-		// TODO - Make sure this uses the same code as loadAsync. Only forceSyncronous
-
-		// TODO - Low priority. Check is file path valid?
-
-		//BaseResourceRef resource = loadInternal(filePath);
-		//resource->init();
-
-		//// TODO - This should probably be called in loadInternal, but it isn't thread safe
-		////        - loadAsync never calls this code and it should
-		//if(!metaExists_UUID(resource->getUUID()))
-		//{
-		//	gDebug().logWarning("Loading a resource that doesn't have meta-data. Creating meta-data automatically. Resource path: " + filePath);
-		//	addMetaData(resource->getUUID(), filePath);
-		//}
-
-		//return resource;
-		
-		BaseResourceRef newResource;
-
-		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(new Resources::ResourceLoadRequest());
-		resRequest->filePath = filePath;
-		resRequest->resource = newResource;
-
-		mWorkQueue->addRequest(mWorkQueueChannel, resRequest, 0, true);
-
-		return newResource;
+		return loadInternal(filePath, true);
 	}
 
 	BaseResourceRef Resources::loadAsync(const String& filePath)
 	{
-		// TODO - Low priority. Check is file path valid?
-
-		BaseResourceRef newResource;
-
-		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(new Resources::ResourceLoadRequest());
-		resRequest->filePath = filePath;
-		resRequest->resource = newResource;
-
-		mWorkQueue->addRequest(mWorkQueueChannel, resRequest, 0, false);
-
-		return newResource;
+		return loadInternal(filePath, false);
 	}
 
 	BaseResourceRef Resources::loadFromUUID(const String& uuid)
@@ -172,7 +149,53 @@ namespace CamelotEngine
 		return loadAsync(metaEntry->mPath);
 	}
 
-	ResourcePtr Resources::loadInternal(const String& filePath)
+	BaseResourceRef Resources::loadInternal(const String& filePath, bool synchronous)
+	{
+		auto iterFind = mLoadedResources.find(filePath);
+		if(iterFind != mLoadedResources.end()) // Resource is already loaded
+		{
+			return iterFind->second;
+		}
+
+		auto iterFind2 = mInProgressResources.find(filePath);
+		if(iterFind2 != mInProgressResources.end()) // We're already loading this resource
+		{
+			ResourceAsyncOp& asyncOp = iterFind2->second;
+
+			if(!synchronous)
+				return asyncOp.resource;
+			else
+			{
+				// It's already being loaded asynchronously but we want it right away,
+				// so abort the async operation and load it right away.
+				mWorkQueue->abortRequest(asyncOp.requestID);
+			}
+		}
+
+		if(!FileSystem::fileExists(filePath))
+		{
+			gDebug().logWarning("Specified file: " + filePath + " doesn't exist.");
+			return nullptr;
+		}
+
+		BaseResourceRef newResource;
+
+		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(new Resources::ResourceLoadRequest());
+		resRequest->filePath = filePath;
+		resRequest->resource = newResource;
+
+		WorkQueue::RequestID requestId = mWorkQueue->peekNextFreeRequestId();
+		ResourceAsyncOp newAsyncOp;
+		newAsyncOp.resource = newResource;
+		newAsyncOp.requestID = requestId;
+
+		mInProgressResources[filePath] = newAsyncOp;
+
+		mWorkQueue->addRequest(mWorkQueueChannel, resRequest, 0, synchronous);
+		return newResource;
+	}
+
+	ResourcePtr Resources::loadFromDiskAndDeserialize(const String& filePath)
 	{
 		FileSerializer fs;
 		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
@@ -297,7 +320,7 @@ namespace CamelotEngine
 		if(findIter != mResourceMetaData.end())
 			return findIter->second->mPath;
 		else
-			return "";
+			return StringUtil::BLANK;
 	}
 
 	const String& Resources::getUUIDFromPath(const String& path) const
