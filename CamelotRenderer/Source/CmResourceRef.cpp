@@ -38,7 +38,7 @@ namespace CamelotEngine
 		if(mData->mPtr)
 		{
 			mData->mUUID = mData->mPtr->getUUID();
-			mData->mIsResolved.store(true); 
+			mData->mIsResolved = true; 
 		}
 	}
 

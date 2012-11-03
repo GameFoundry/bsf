@@ -64,6 +64,14 @@ namespace CamelotEngine
 		 */
 		BaseResourceRef load(const String& filePath);
 
+		/**
+		 * @brief	Loads the resource asynchronously. Initially returned resource should not be used
+		 * 			until BaseResourceRef.isResolved gets set to true. (Set only at the end of each frame)
+		 *
+		 * @param	filePath	Full pathname of the file.
+		 * 						
+		 * @return	Resource where the data will eventually be loaded, or null if the file cannot be found.
+		 */
 		BaseResourceRef loadAsync(const String& filePath);
 
 		/**
@@ -74,6 +82,16 @@ namespace CamelotEngine
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
 		BaseResourceRef loadFromUUID(const String& uuid);
+
+		/**
+		* @brief	Loads the resource with the given UUID asynchronously. Initially returned resource should not be used
+		* 			until BaseResourceRef.isResolved gets set to true. (Set only at the end of each frame)
+		 *
+		 * @param	uuid	UUID of the resource to load. 
+		 *
+		 * @return	Resource where the data will eventually be loaded, or null if the file cannot be found.
+		 */
+		BaseResourceRef loadFromUUIDAsync(const String& uuid);
 
 		/**
 		 * @brief	Saves the resource. Resource must be registered using Resources::create beforehand.

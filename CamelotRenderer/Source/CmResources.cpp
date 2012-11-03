@@ -107,18 +107,28 @@ namespace CamelotEngine
 
 		// TODO - Low priority. Check is file path valid?
 
-		BaseResourceRef resource = loadInternal(filePath);
-		resource->init();
+		//BaseResourceRef resource = loadInternal(filePath);
+		//resource->init();
 
-		// TODO - This should probably be called in loadInternal, but it isn't thread safe
-		//        - loadAsync never calls this code and it should
-		if(!metaExists_UUID(resource->getUUID()))
-		{
-			gDebug().logWarning("Loading a resource that doesn't have meta-data. Creating meta-data automatically. Resource path: " + filePath);
-			addMetaData(resource->getUUID(), filePath);
-		}
+		//// TODO - This should probably be called in loadInternal, but it isn't thread safe
+		////        - loadAsync never calls this code and it should
+		//if(!metaExists_UUID(resource->getUUID()))
+		//{
+		//	gDebug().logWarning("Loading a resource that doesn't have meta-data. Creating meta-data automatically. Resource path: " + filePath);
+		//	addMetaData(resource->getUUID(), filePath);
+		//}
 
-		return resource;
+		//return resource;
+		
+		BaseResourceRef newResource;
+
+		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(new Resources::ResourceLoadRequest());
+		resRequest->filePath = filePath;
+		resRequest->resource = newResource;
+
+		mWorkQueue->addRequest(mWorkQueueChannel, resRequest, 0, true);
+
+		return newResource;
 	}
 
 	BaseResourceRef Resources::loadAsync(const String& filePath)
@@ -147,6 +157,19 @@ namespace CamelotEngine
 		ResourceMetaDataPtr metaEntry = mResourceMetaData[uuid];
 
 		return load(metaEntry->mPath);
+	}
+
+	BaseResourceRef Resources::loadFromUUIDAsync(const String& uuid)
+	{
+		if(!metaExists_UUID(uuid))
+		{
+			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
+			return nullptr;
+		}
+
+		ResourceMetaDataPtr metaEntry = mResourceMetaData[uuid];
+
+		return loadAsync(metaEntry->mPath);
 	}
 
 	ResourcePtr Resources::loadInternal(const String& filePath)

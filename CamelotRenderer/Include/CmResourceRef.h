@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CmIReflectable.h"
-#include <atomic>
 
 template<class _Ty>
 struct CM_Bool_struct
@@ -17,13 +16,12 @@ namespace CamelotEngine
 	struct CM_EXPORT ResourceRefData : public IReflectable
 	{
 		ResourceRefData()
-		{
-			mIsResolved.store(false);
-		}
+			:mIsResolved(false)
+		{ }
 
 		std::shared_ptr<Resource> mPtr;
 		String mUUID;
-		std::atomic_bool mIsResolved; // TODO Low priority. I might not need an atomic here. Volatile bool should do.
+		bool mIsResolved;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -40,7 +38,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Checks if the resource is loaded
 		 */
-		bool isResolved() { return mData->mIsResolved.load(); }
+		bool isResolved() const { return mData->mIsResolved; }
 
 	protected:
 		ResourceRefBase();
@@ -105,17 +103,17 @@ namespace CamelotEngine
 		}
 
 		// TODO Low priority - User can currently try to access these even if resource ptr is not resolved
-		T* get() const { return static_cast<T*>(mData->mPtr.get()); }
+		T* get() const { if(!isResolved()) return nullptr; return static_cast<T*>(mData->mPtr.get()); }
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
-		std::shared_ptr<T> getInternalPtr() { return std::static_pointer_cast<T>(mData->mPtr); }
+		std::shared_ptr<T> getInternalPtr() { if(!isResolved()) return nullptr; return std::static_pointer_cast<T>(mData->mPtr); }
 
 		// Conversion to bool
 		// (Why not just directly convert to bool? Because then we can assign pointer to bool and that's weird)
 		operator int CM_Bool_struct<T>::*() const
 		{
-			return (mData->mPtr.get() != 0 ? &CM_Bool_struct<T>::_Member : 0);
+			return ((isResolved() && (mData->mPtr.get() != 0)) ? &CM_Bool_struct<T>::_Member : 0);
 		}
 	};
 
