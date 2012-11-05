@@ -7,6 +7,7 @@
 #include "CmRenderSystem.h"
 #include "CmGpuProgramParams.h"
 #include "CmGpuProgram.h"
+#include "CmMaterialRTTI.h"
 
 namespace CamelotEngine
 {
@@ -145,5 +146,15 @@ namespace CamelotEngine
 			renderSystem->bindGpuProgram(geomProgram->_getBindingDelegate());
 			renderSystem->bindGpuProgramParameters(GPT_GEOMETRY_PROGRAM, params.mGeomParams, GPV_ALL);
 		}	
+	}
+
+	RTTITypeBase* Material::getRTTIStatic()
+	{
+		return MaterialRTTI::instance();
+	}
+
+	RTTITypeBase* Material::getRTTI() const
+	{
+		return Material::getRTTIStatic();
 	}
 }

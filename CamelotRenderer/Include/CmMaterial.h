@@ -1,10 +1,11 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmResource.h"
 
 namespace CamelotEngine
 {
-	class Material
+	class Material : public Resource
 	{
 		struct ParamsPerPass
 		{
@@ -14,6 +15,13 @@ namespace CamelotEngine
 		};
 
 	public:
+		Material() {}
+
+		/**
+		 * @brief	Overridden from Resource.
+		 */
+		virtual void initImpl() { }
+
 		/**
 		 * @brief	Sets a shader that will be used by the material. 
 		 * 			Shaders best technique will be retrieved and used in all subsequent Material
@@ -23,6 +31,8 @@ namespace CamelotEngine
 		 * 			you will need to call this method again on all your Materials to make sure technique used is updated.
 		 */
 		void setShader(ShaderPtr shader);
+
+		ShaderPtr getShader() const { return mShader; }
 
 		void setTexture(const String& name, TextureRef& value);
 		void setFloat(const String& name, float value);
@@ -73,5 +83,14 @@ namespace CamelotEngine
 				}
 			}
 		}
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+		
+	public:
+		friend class MaterialRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
 	};
 }

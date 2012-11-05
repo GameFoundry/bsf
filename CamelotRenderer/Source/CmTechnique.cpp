@@ -5,6 +5,7 @@
 #include "CmRendererManager.h"
 #include "CmPass.h"
 #include "CmRenderer.h"
+#include "CmTechniqueRTTI.h"
 
 namespace CamelotEngine
 {
@@ -16,7 +17,7 @@ namespace CamelotEngine
 
 	PassPtr Technique::addPass()
 	{
-		PassPtr newPass(new Pass(this, mPasses.size()));
+		PassPtr newPass(new Pass());
 
 		mPasses.push_back(newPass);
 		return newPass;
@@ -55,5 +56,15 @@ namespace CamelotEngine
 		}
 
 		return false;
+	}
+
+	RTTITypeBase* Technique::getRTTIStatic()
+	{
+		return TechniqueRTTI::instance();
+	}
+
+	RTTITypeBase* Technique::getRTTI() const
+	{
+		return Technique::getRTTIStatic();
 	}
 }

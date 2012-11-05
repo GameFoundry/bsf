@@ -15,10 +15,14 @@ High-level TODO:
  - DX11 render system
 
 HIGH PRIORITY TODO:
+ - I need to store material parameters somewhere as well
+  - GpuProgramParams won't work because I want shader parameters to be stored independantly from the shader itself
  - GetRenderOperation doesn't consider sub-meshes
  - HLSL & Cg don't handle include files yet
 
 Mid priority TODO:
+ - Add a field that tracks % of resource deserialization in BinarySerializer
+
  - Separate render thread
    - CommandBuffer (technically it should be just a RenderQueue I think)
    - Main thread updates components, finds visible meshes and creates render device. At end of execution it fills up render queue
@@ -60,6 +64,8 @@ Optional TODO:
 
 After everything is polished:
  - Make sure the renderer can run on a separate thread
+  - Command buffers that allow dx9, dx11 and opengl all use a separate render thread
+ - Load texture mips separately so we can unload HQ textures from far away objects (like UE3)
  - Get 64bit version working
  - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)
     - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 

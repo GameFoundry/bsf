@@ -121,10 +121,12 @@
     <ClInclude Include="Include\CmInput.h" />
     <ClInclude Include="Include\CmInputHandler.h" />
     <ClInclude Include="Include\CmMaterial.h" />
+    <ClInclude Include="Include\CmMaterialRTTI.h" />
     <ClInclude Include="Include\CmMesh.h" />
     <ClInclude Include="Include\CmMeshData.h" />
     <ClInclude Include="Include\CmMeshDataRTTI.h" />
     <ClInclude Include="Include\CmPass.h" />
+    <ClInclude Include="Include\CmPassRTTI.h" />
     <ClInclude Include="Include\CmPrerequisites.h" />
     <ClInclude Include="Include\CmRenderable.h" />
     <ClInclude Include="Include\CmRenderableRTTI.h" />
@@ -145,7 +147,9 @@
     <ClInclude Include="Include\CmResources.h" />
     <ClInclude Include="Include\CmResourcesRTTI.h" />
     <ClInclude Include="Include\CmSceneManager.h" />
+    <ClInclude Include="Include\CmShaderRTTI.h" />
     <ClInclude Include="Include\CmSpecificImporter.h" />
+    <ClInclude Include="Include\CmTechniqueRTTI.h" />
     <ClInclude Include="Include\CmTexture.h" />
     <ClInclude Include="Include\CmTextureManager.h" />
     <ClInclude Include="Include\CmTextureRTTI.h" />

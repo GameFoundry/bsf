@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmResource.h"
 
 namespace CamelotEngine
 {
@@ -13,10 +14,15 @@ namespace CamelotEngine
 	 *			system, render manager and other properties. So make sure to add most important techniques
 	 *			first so you make sure they are used if they are supported.
 	 */
-	class CM_EXPORT Shader
+	class CM_EXPORT Shader : public Resource
 	{
 	public:
 		Shader(const String& name);
+
+		/**
+		 * @brief	Inherited from Resource.
+		 */
+		virtual void initImpl();
 
 		TechniquePtr addTechnique(const String& renderSystem, const String& renderer);
 		
@@ -34,5 +40,19 @@ namespace CamelotEngine
 	private:
 		String mName;
 		vector<TechniquePtr>::type mTechniques;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+		
+		/**
+		 * @brief	Serialization only
+		 */
+		Shader() {}
+
+	public:
+		friend class ShaderRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
 	};
 }

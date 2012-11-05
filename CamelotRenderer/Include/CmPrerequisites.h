@@ -161,7 +161,11 @@ namespace CamelotEngine
 		TID_GpuProgram = 1010,
 		TID_ResourceRefData = 1011,
 		TID_CgProgram = 1012,
-		TID_ResourceMetaData = 1013
+		TID_ResourceMetaData = 1013,
+		TID_Pass = 1014,
+		TID_Technique = 1015,
+		TID_Shader = 1016,
+		TID_Material = 1017
 	};
 }
 

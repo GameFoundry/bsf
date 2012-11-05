@@ -1,13 +1,12 @@
 #include "CmPass.h"
+#include "CmPassRTTI.h"
 #include "CmException.h"
 
 namespace CamelotEngine
 {
     //-----------------------------------------------------------------------------
-	Pass::Pass(const Technique* parent, unsigned short index)
-        : mParent(parent)
-		, mIndex(index)
-		, mSourceBlendFactor(SBF_ONE)
+	Pass::Pass()
+		: mSourceBlendFactor(SBF_ONE)
 		, mDestBlendFactor(SBF_ZERO)
 		, mSourceBlendFactorAlpha(SBF_ONE)
 		, mDestBlendFactorAlpha(SBF_ZERO)
@@ -34,17 +33,14 @@ namespace CamelotEngine
 		, mPointMinSize(0.0f)
 		, mPointMaxSize(0.0f)	
     {
-        // default name to index
-        mName = toString(mIndex);
+
    }
 
     //-----------------------------------------------------------------------------
-	Pass::Pass(const Technique *parent, unsigned short index, const Pass& oth)
-        :mParent(parent), mIndex(index), mPassIterationCount(1)
+	Pass::Pass(const Pass& oth)
+        :mPassIterationCount(1)
     {
         *this = oth;
-        mParent = parent;
-        mIndex = index;
     }
     //-----------------------------------------------------------------------------
     Pass::~Pass()
@@ -54,8 +50,6 @@ namespace CamelotEngine
     //-----------------------------------------------------------------------------
     Pass& Pass::operator=(const Pass& oth)
     {
-        mName = oth.mName;
-
 	    // Default blending (overwrite)
 	    mSourceBlendFactor = oth.mSourceBlendFactor;
 	    mDestBlendFactor = oth.mDestBlendFactor;
@@ -91,11 +85,6 @@ namespace CamelotEngine
 		mGeometryProgram = oth.mGeometryProgram;
 
 		return *this;
-    }
-    //-----------------------------------------------------------------------
-    void Pass::setName(const String& name)
-    {
-        mName = name;
     }
     //-----------------------------------------------------------------------
     void Pass::setPointSize(float ps)
@@ -378,5 +367,15 @@ namespace CamelotEngine
 	{
 		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		return mGeometryProgram;
+	}
+	//----------------------------------------------------------------------
+	RTTITypeBase* Pass::getRTTIStatic()
+	{
+		return PassRTTI::instance();
+	}
+	//----------------------------------------------------------------------
+	RTTITypeBase* Pass::getRTTI() const
+	{
+		return Pass::getRTTIStatic();
 	}
 }

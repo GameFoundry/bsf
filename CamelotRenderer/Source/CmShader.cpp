@@ -2,6 +2,7 @@
 #include "CmTechnique.h"
 #include "CmException.h"
 #include "CmDebug.h"
+#include "CmShaderRTTI.h"
 
 namespace CamelotEngine
 {
@@ -10,6 +11,9 @@ namespace CamelotEngine
 	{
 
 	}
+
+	void Shader::initImpl()
+	{	}
 
 	TechniquePtr Shader::addTechnique(const String& renderSystem, const String& renderer)
 	{
@@ -58,5 +62,15 @@ namespace CamelotEngine
 		CM_EXCEPT(InternalErrorException, "No techniques are supported!");
 
 		// TODO - Low priority. Instead of throwing an exception use an extremely simple technique that will be supported almost everywhere as a fallback.
+	}
+
+	RTTITypeBase* Shader::getRTTIStatic()
+	{
+		return ShaderRTTI::instance();
+	}
+
+	RTTITypeBase* Shader::getRTTI() const
+	{
+		return Shader::getRTTIStatic();
 	}
 }

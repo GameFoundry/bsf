@@ -1,10 +1,11 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmIReflectable.h"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT Technique
+	class CM_EXPORT Technique : public IReflectable
 	{
 	public:
 		Technique(const String& renderSystem, const String& renderer);
@@ -22,5 +23,19 @@ namespace CamelotEngine
 		String mRenderer;
 
 		vector<PassPtr>::type mPasses;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+		
+		/**
+		 * @brief	Serialization only constructor.
+		 */
+		Technique() {}
+
+	public:
+		friend class TechniqueRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
 	};
 }

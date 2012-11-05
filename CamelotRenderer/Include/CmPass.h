@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmCommon.h"
 #include "CmColor.h"
+#include "CmIReflectable.h"
 
 namespace CamelotEngine
 {
@@ -13,12 +14,9 @@ namespace CamelotEngine
         Each pass is a programmable pass (meaning it does
         use either a vertex and fragment program, or both).
     */
-	class CM_EXPORT Pass
+	class CM_EXPORT Pass : public IReflectable
     {
     protected:
-        const Technique* mParent;
-        unsigned short mIndex; // pass index
-        String mName; // optional name for the pass
         //-------------------------------------------------------------------------
         // Blending factors
         SceneBlendFactor mSourceBlendFactor;
@@ -82,14 +80,12 @@ namespace CamelotEngine
 		float mPointSize;
 		float mPointMinSize;
 		float mPointMaxSize;
-	public:
-		typedef set<Pass*>::type PassSet;
     public:
 		CM_MUTEX(mGpuProgramChangeMutex)
         /// Default constructor
-		Pass(const Technique* parent, unsigned short index);
+		Pass();
         /// Copy constructor
-        Pass(const Technique* parent, unsigned short index, const Pass& oth );
+        Pass(const Pass& oth );
         /// Operator = overload
         Pass& operator=(const Pass& oth);
         virtual ~Pass();
@@ -100,17 +96,6 @@ namespace CamelotEngine
         bool hasFragmentProgram(void) const { return mFragmentProgram != nullptr; }
         /// Returns true if this pass uses a programmable geometry pipeline
         bool hasGeometryProgram(void) const { return mGeometryProgram != nullptr; }
-
-        /// Gets the index of this Pass in the parent Technique
-        unsigned short getIndex(void) const { return mIndex; }
-        /* Set the name of the pass
-        @remarks
-        The name of the pass is optional.  Its useful in material scripts where a material could inherit
-        from another material and only want to modify a particular pass.
-        */
-        void setName(const String& name);
-        /// get the name of the pass
-        const String& getName(void) const { return mName; }
 
         /** Gets the point size of the pass.
 		@remarks
@@ -463,9 +448,6 @@ namespace CamelotEngine
         */
 		bool getTransparentSortingForced(void) const;
 
-		/// Gets the parent Technique
-        const Technique* getParent(void) const { return mParent; }
-
 		/** Sets the details of the vertex program to use.
 		*/
 		void setVertexProgram(GpuProgramRef gpuProgram);
@@ -486,5 +468,13 @@ namespace CamelotEngine
 		
 		/** Gets the geometry program used by this pass, only available after _load(). */
 		const GpuProgramRef& getGeometryProgram(void) const;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class PassRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
     };
 }

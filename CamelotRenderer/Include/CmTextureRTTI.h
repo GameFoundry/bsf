@@ -40,7 +40,7 @@ namespace CamelotEngine
 
 		void setTextureData(Texture* obj, UINT32 face, TextureDataPtr data)
 		{
-			return obj->setTextureData(face, data);
+			obj->setTextureData(face, data);
 		}
 
 		UINT32 getTextureDataArraySize(Texture* obj)
