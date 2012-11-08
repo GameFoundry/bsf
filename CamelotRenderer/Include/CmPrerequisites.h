@@ -165,7 +165,10 @@ namespace CamelotEngine
 		TID_Pass = 1014,
 		TID_Technique = 1015,
 		TID_Shader = 1016,
-		TID_Material = 1017
+		TID_Material = 1017,
+		TID_MaterialParams = 1018,
+		TID_FloatParamKVP = 1019,
+		TID_MaterialTexParamKVP = 1020
 	};
 }
 

@@ -19,4 +19,9 @@ namespace CamelotEngine
 	typedef unsigned long long UINT64;
 	typedef long long INT64;
 #endif
+
+	enum TypeID_Utility
+	{
+		TID_Abstract = 50 // Special type ID used for Abstract classes. Only type ID that may be used by more than one class.
+	};
 }

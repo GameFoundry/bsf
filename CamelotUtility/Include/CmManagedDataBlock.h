@@ -7,7 +7,7 @@ namespace CamelotEngine
 	/**
 	 * @brief	Data block holding an array of bytes, usually used in serialization.
 	 */
-	class ManagedDataBlock
+	class CM_UTILITY_EXPORT ManagedDataBlock
 	{
 	public:
 		/**
@@ -23,25 +23,15 @@ namespace CamelotEngine
 		 * 							instead (e.g. maybe it's needed in a different format). 
 		 * 							In that case set managed to true so it can be properly freed.
 		 */
-		ManagedDataBlock(UINT8* data, UINT32 size, bool managed)
-			:mData(data), mSize(size), mManaged(managed), mIsDataOwner(true)
-		{ }
+		ManagedDataBlock(UINT8* data, UINT32 size, bool managed);
+		ManagedDataBlock(const ManagedDataBlock& source);
 
-		ManagedDataBlock(const ManagedDataBlock& source)
-		{
-			mData = source.mData;
-			mSize = source.mSize;
-			mManaged = source.mManaged;
+		~ManagedDataBlock();
 
-			mIsDataOwner = true;
-			source.mIsDataOwner = false;
-		}
-
-		~ManagedDataBlock()
-		{
-			if(mManaged && mIsDataOwner)
-				delete[] mData;
-		}
+		/**
+		 * @brief	Destroy underlying buffers for unmanaged data blocks.
+		 */
+		void destroy();
 
 		UINT8* getData() { return mData; }
 		UINT32 getSize() { return mData ? mSize : 0; }

@@ -188,6 +188,7 @@
     <ClCompile Include="Source\CmImporter.cpp" />
     <ClCompile Include="Source\CmInput.cpp" />
     <ClCompile Include="Source\CmMaterial.cpp" />
+    <ClCompile Include="Source\CmMaterialRTTI.cpp" />
     <ClCompile Include="Source\CmMesh.cpp" />
     <ClCompile Include="Source\CmMeshData.cpp" />
     <ClCompile Include="Source\CmPass.cpp" />

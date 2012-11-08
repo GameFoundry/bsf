@@ -51,6 +51,11 @@ namespace CamelotEngine
 		virtual const String& getRTTIName() = 0;
 		virtual UINT32 getRTTIId() = 0;
 
+		virtual void onSerializationStarted(IReflectable* obj) {}
+		virtual void onSerializationEnded(IReflectable* obj) {}
+		virtual void onDeserializationStarted(IReflectable* obj) {}
+		virtual void onDeserializationEnded(IReflectable* obj) {}
+
 		template <class ObjectType, class DataType>
 		void setPlainValue(ObjectType* object, const std::string& name, DataType& value)
 		{

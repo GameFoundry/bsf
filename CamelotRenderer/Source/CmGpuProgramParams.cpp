@@ -392,6 +392,12 @@ namespace CamelotEngine
 		assert(physicalIndex + count <= mIntConstants.size());
 		memcpy(dest, &mIntConstants[physicalIndex], sizeof(int) * count);
 	}
+	//-----------------------------------------------------------------------------
+	void GpuProgramParameters::_readTexture(size_t physicalIndex, TextureRef& dest)
+	{
+		assert(physicalIndex < mTextures.size());
+		dest = mTextures[physicalIndex];
+	}
 	//---------------------------------------------------------------------
 	GpuLogicalIndexUse* GpuProgramParameters::_getFloatConstantLogicalIndexUse(
 		size_t logicalIndex, size_t requestedSize, UINT16 variability)

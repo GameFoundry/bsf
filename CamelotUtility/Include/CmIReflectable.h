@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
+#include <boost/any.hpp>
 
 namespace CamelotEngine
 {
@@ -45,5 +46,9 @@ namespace CamelotEngine
 		bool isDerivedFrom(RTTITypeBase* base);
 
 		UINT32 getTypeId();
+
+	protected:
+		boost::any mRTTIData; // Temporary per-instance data storage used during various RTTI operations.
+							  // Needed since there is one RTTI class instance per type and sometimes we need per-instance data.
 	};
 }

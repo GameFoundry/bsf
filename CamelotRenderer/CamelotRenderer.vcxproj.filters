@@ -79,6 +79,9 @@
     <Filter Include="Source Files\Renderer">
       <UniqueIdentifier>{307618fb-e6a0-41ed-b274-fb1f5f4c6f74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\RTTI">
+      <UniqueIdentifier>{dc50e07b-6351-4bc2-8bfa-cc3fc1d26c39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />
@@ -440,6 +443,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmRendererManager.cpp">
       <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmMaterialRTTI.cpp">
+      <Filter>Source Files\RTTI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -573,7 +573,12 @@ namespace CamelotEngine {
 		@param dest Pointer to a buffer to receive the values
 		*/
 		void _readRawConstants(size_t physicalIndex, size_t count, int* dest);
-
+		/** Read a texture from the underlying texture 
+		array at the given physical index.
+		@param physicalIndex The array position of the texture
+		@param dest Reference of the texture to store
+		*/
+		void _readTexture(size_t physicalIndex, TextureRef& dest);
 		/** Write a 4-element floating-point parameter to the program directly to 
 		the underlying constants buffer.
 		@note You can use these methods if you have already derived the physical

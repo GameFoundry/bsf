@@ -51,6 +51,9 @@ namespace CamelotEngine
 
 	bool IReflectable::isTypeIdDuplicate(UINT32 typeId)
 	{
+		if(typeId == TID_Abstract)
+			return false;
+
 		return IReflectable::getRTTIfromTypeId(typeId) != nullptr;
 	}
 

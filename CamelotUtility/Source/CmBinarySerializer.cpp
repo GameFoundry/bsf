@@ -208,6 +208,8 @@ namespace CamelotEngine
 		// If an object has base classes, we need to iterate through all of them
 		do
 		{
+			si->onSerializationStarted(object);
+
 			// Encode object ID & type
 			ObjectMetaData objectMetaData = encodeObjectMetaData(objectId, si->getRTTIId(), isBaseClass);
 			COPY_TO_BUFFER(&objectMetaData, sizeof(ObjectMetaData))
@@ -255,7 +257,10 @@ namespace CamelotEngine
 
 								buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, bytesWritten, flushBufferCallback);
 								if(buffer == nullptr)
+								{
+									si->onSerializationEnded(object);
 									return nullptr;
+								}
 							}
 
 							break;
@@ -276,7 +281,12 @@ namespace CamelotEngine
 								{
 									mTotalBytesWritten += *bytesWritten;
 									buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
-									if(buffer == nullptr || bufferLength < typeSize) return nullptr;
+									if(buffer == nullptr || bufferLength < typeSize)
+									{
+										return nullptr;
+										si->onSerializationEnded(object);
+									}
+
 									*bytesWritten = 0;
 								}
 
@@ -314,7 +324,10 @@ namespace CamelotEngine
 
 							buffer = complexTypeToBuffer(&childObject, buffer, bufferLength, bytesWritten, flushBufferCallback);
 							if(buffer == nullptr)
+							{
+								si->onSerializationEnded(object);
 								return nullptr;
+							}
 
 							break;
 						}
@@ -332,7 +345,11 @@ namespace CamelotEngine
 							{
 								mTotalBytesWritten += *bytesWritten;
 								buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
-								if(buffer == nullptr || bufferLength < typeSize) return nullptr;
+								if(buffer == nullptr || bufferLength < typeSize)
+								{
+									si->onSerializationEnded(object);
+									return nullptr;
+								}
 								*bytesWritten = 0;
 							}
 
@@ -374,7 +391,11 @@ namespace CamelotEngine
 								
 									mTotalBytesWritten += *bytesWritten;
 									buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);
-									if(buffer == nullptr || bufferLength == 0) return nullptr;
+									if(buffer == nullptr || bufferLength == 0) 
+									{
+										si->onSerializationEnded(object);
+										return nullptr;
+									}
 									*bytesWritten = 0;
 								}
 							}
@@ -388,6 +409,8 @@ namespace CamelotEngine
 					}
 				}
 			}
+
+			si->onSerializationEnded(object);
 
 			si = si->getBaseClass();
 			isBaseClass = true;
@@ -406,7 +429,12 @@ namespace CamelotEngine
 
 		RTTITypeBase* si = nullptr;
 		if(object != nullptr)
+		{
 			si = object->getRTTI();
+
+			if(si != nullptr)
+				si->onDeserializationStarted(object.get());
+		}
 
 		if((bytesRead + sizeof(ObjectMetaData)) > dataLength)
 		{
@@ -443,6 +471,9 @@ namespace CamelotEngine
 
 			if(isObjectMetaData(metaData)) // We've reached a new object
 			{
+				if(si != nullptr)
+					si->onDeserializationEnded(object.get());
+
 				if((bytesRead + sizeof(ObjectMetaData)) > dataLength)
 				{
 					CM_EXCEPT(InternalErrorException, 
@@ -469,6 +500,11 @@ namespace CamelotEngine
 					if(si == nullptr || si->getRTTIId() != objTypeId)
 					{
 						si = nullptr;	
+					}
+
+					if(si != nullptr)
+					{
+						si->onDeserializationStarted(object.get());
 					}
 
 					data += sizeof(ObjectMetaData);
@@ -717,6 +753,9 @@ namespace CamelotEngine
 				}
 			}
 		}
+
+		if(si != nullptr)
+			si->onDeserializationEnded(object.get());
 
 		return false;
 	}
