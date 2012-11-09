@@ -61,6 +61,12 @@ namespace CamelotEngine
 		 */
 		void resolve(std::shared_ptr<Resource> ptr);
 
+		/**
+		 * @brief	Sets an uuid of the ResourceRef. Should only be called by
+		 * 			Resources class.
+		 */
+		void ResourceRefBase::setUUID(const String& uuid);
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/

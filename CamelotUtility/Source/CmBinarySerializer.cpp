@@ -192,6 +192,27 @@ namespace CamelotEngine
 				curPtr.field->setValue(curPtr.object.get(), resolvedObject);
 		}
 
+		// Finish serialization for all objects
+		// TODO Low priority - If we're decoding a very large class hierarchy, finishing serialization
+		// only at the end of the entire decode process could cause issues. It would be better if I can do it 
+		// every time I know a certain object has been fully decoded. (This would probably involve resolving 
+		// pointers at an earlier stage as well)
+		for(auto iter = mDecodedObjects.rbegin(); iter != mDecodedObjects.rend(); ++iter)
+		{
+			std::shared_ptr<IReflectable> resolvedObject = iter->second;
+
+			if(resolvedObject != nullptr)
+			{
+				RTTITypeBase* si = object->getRTTI();
+
+				while(si != nullptr)
+				{
+					si->onDeserializationEnded(object.get());
+					si = si->getBaseClass();
+				}
+			}
+		}
+
 		return rootObject;
 	}
 
@@ -471,9 +492,6 @@ namespace CamelotEngine
 
 			if(isObjectMetaData(metaData)) // We've reached a new object
 			{
-				if(si != nullptr)
-					si->onDeserializationEnded(object.get());
-
 				if((bytesRead + sizeof(ObjectMetaData)) > dataLength)
 				{
 					CM_EXCEPT(InternalErrorException, 
@@ -753,9 +771,6 @@ namespace CamelotEngine
 				}
 			}
 		}
-
-		if(si != nullptr)
-			si->onDeserializationEnded(object.get());
 
 		return false;
 	}

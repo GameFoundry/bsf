@@ -176,6 +176,11 @@ namespace CamelotEngine
 		mDbgTexture = static_resource_cast<Texture>(gResources().loadAsync("C:\\ExportTest.tex"));
 		mDbgMesh = static_resource_cast<Mesh>(gResources().loadAsync("C:\\ExportMesh.mesh"));
 
+		mTestMaterial->setTexture("tex", mDbgTexture);
+		gResources().create(mTestMaterial, "C:\\ExportMaterial.mat", true);
+
+		mTestMaterial = gResources().load("C:\\ExportMaterial.mat");
+
 		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
 	}
 
@@ -276,7 +281,6 @@ namespace CamelotEngine
 		renderSystem->_beginFrame();
 
 		mTestMaterial->setMat4("matViewProjection", viewProjMatrix);
-		mTestMaterial->setTexture("tex", mDbgTexture);
 
 		mTestMaterial->applyPass(0);
 		

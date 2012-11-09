@@ -43,7 +43,7 @@ namespace CamelotEngine
 			GameObjectPtr mCameraGO;
 
 			ShaderPtr mTestShader;
-			MaterialPtr mTestMaterial;
+			MaterialRef mTestMaterial;
 	};
 
 	CM_EXPORT Application& gApplication();

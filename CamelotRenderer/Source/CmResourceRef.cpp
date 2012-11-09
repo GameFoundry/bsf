@@ -26,6 +26,11 @@ namespace CamelotEngine
 		init(ptr);
 	}
 
+	void ResourceRefBase::setUUID(const String& uuid) 
+	{ 
+		mData->mUUID = uuid;
+	}
+
 	void ResourceRefBase::init(Resource* ptr)
 	{
 		init(std::shared_ptr<Resource>(ptr));

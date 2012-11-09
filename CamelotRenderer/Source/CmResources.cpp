@@ -178,7 +178,19 @@ namespace CamelotEngine
 			return nullptr;
 		}
 
+		// TODO Low priority - Right now I don't allow loading of resources that don't have meta-data, because I need to know resources UUID
+		// at this point. And I can't do that without having meta-data. Other option is to partially load the resource to read the UUID but due to the
+		// nature of the serializer it could complicate things. (But possible if this approach proves troublesome)
+		// The reason I need the UUID is that when resource is loaded Async, the returned ResourceRef needs to have a valid UUID, in case I assign that
+		// ResourceRef to something and then save that something. If I didn't assign it, the saved ResourceRef would have a blank (i.e. invalid) UUID.
+		if(!metaExists_Path(filePath))
+		{
+			CM_EXCEPT(InternalErrorException, "Cannot load resource that isn't registered in the meta database. Call Resources::create first.");
+		}
+
+		String uuid = getUUIDFromPath(filePath);
 		BaseResourceRef newResource;
+		newResource.setUUID(uuid); // UUID needs to be set immediately if the resource gets loaded async
 
 		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(new Resources::ResourceLoadRequest());
 		resRequest->filePath = filePath;
@@ -263,6 +275,7 @@ namespace CamelotEngine
 
 				ResourceMetaDataPtr metaData = std::static_pointer_cast<ResourceMetaData>(loadedData);
 				mResourceMetaData[metaData->mUUID] = metaData;
+				mResourceMetaData_FilePath[metaData->mPath] = metaData;
 			}
 		}
 	}
@@ -280,7 +293,15 @@ namespace CamelotEngine
 		String fullPath = Path::combine(mMetaDataFolderPath, uuid + ".resmeta");
 		FileSystem::remove(fullPath);
 
-		mResourceMetaData.erase(uuid);
+		auto iter = mResourceMetaData.find(uuid);
+
+		if(iter != mResourceMetaData.end())
+		{
+			mResourceMetaData.erase(iter);
+			mResourceMetaData_FilePath.erase(iter->second->mPath);
+		}
+		else
+			gDebug().logWarning("Trying to remove meta data that doesn't exist.");
 	}
 
 	void Resources::addMetaData(const String& uuid, const String& filePath)
@@ -296,6 +317,7 @@ namespace CamelotEngine
 		dbEntry->mUUID = uuid;
 
 		mResourceMetaData[uuid] = dbEntry;
+		mResourceMetaData_FilePath[filePath] = dbEntry;
 
 		saveMetaData(dbEntry);
 	}
@@ -325,15 +347,12 @@ namespace CamelotEngine
 
 	const String& Resources::getUUIDFromPath(const String& path) const
 	{
-		for(auto iter = mResourceMetaData.begin(); iter != mResourceMetaData.end(); ++iter)
-		{
-			if(iter->second->mPath == path)
-			{
-				return iter->second->mUUID;
-			}
-		}
+		auto findIter = mResourceMetaData_FilePath.find(path);
 
-		return StringUtil::BLANK;
+		if(findIter != mResourceMetaData_FilePath.end())
+			return findIter->second->mUUID;
+		else
+			return StringUtil::BLANK;
 	}
 
 	bool Resources::metaExists_UUID(const String& uuid) const
@@ -345,15 +364,9 @@ namespace CamelotEngine
 
 	bool Resources::metaExists_Path(const String& path) const
 	{
-		for(auto iter = mResourceMetaData.begin(); iter != mResourceMetaData.end(); ++iter)
-		{
-			if(iter->second->mPath == path)
-			{
-				return true;
-			}
-		}
+		auto findIter = mResourceMetaData_FilePath.find(path);
 
-		return false;
+		return findIter != mResourceMetaData_FilePath.end();
 	}
 
 	CM_EXPORT Resources& gResources()

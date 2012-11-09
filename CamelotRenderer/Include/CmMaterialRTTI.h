@@ -42,7 +42,7 @@ namespace CamelotEngine
 		class FloatParamKVPRTTI;
 		typedef KeyValuePair<String, FloatParam, FloatParamKVPRTTI> FloatParamKVP;
 
-		class FloatParamKVPRTTI : public KeyValuePairRTTI<String, FloatParam>
+		class FloatParamKVPRTTI : public KeyValuePairRTTI<String, FloatParam, FloatParamKVP>
 		{
 		public:
 			virtual const String& getRTTIName()
@@ -65,7 +65,7 @@ namespace CamelotEngine
 		class TexParamKVPRTTI;
 		typedef KeyValuePair<String, TextureRef, TexParamKVPRTTI> TexParamKVP;
 
-		class TexParamKVPRTTI : public KeyValuePairRTTI<String, TextureRef>
+		class TexParamKVPRTTI : public KeyValuePairRTTI<String, TextureRef, TexParamKVP>
 		{
 		public:
 			virtual const String& getRTTIName()
@@ -134,7 +134,7 @@ namespace CamelotEngine
 
 			UINT32 getNumFloatParams(MaterialParams* obj)
 			{
-				obj->mFloatParams.size();
+				return obj->mFloatParams.size();
 			}
 
 			std::shared_ptr<TexParamKVP> getTexParam(MaterialParams* obj, UINT32 idx)
@@ -165,7 +165,7 @@ namespace CamelotEngine
 
 			UINT32 getNumTexParams(MaterialParams* obj)
 			{
-				obj->mTextureParams.size();
+				return obj->mTextureParams.size();
 			}
 
 			ManagedDataBlock getFloatBuffer(MaterialParams* obj)
@@ -193,7 +193,11 @@ namespace CamelotEngine
 		public:
 			MaterialParamsRTTI()
 			{
-				
+				addReflectablePtrArrayField("mFloatParams", 0, &MaterialParamsRTTI::getFloatParam, &MaterialParamsRTTI::getNumFloatParams, 
+					&MaterialParamsRTTI::setFloatParam, &MaterialParamsRTTI::setNumFloatParams);
+				addReflectablePtrArrayField("mTexParams", 1, &MaterialParamsRTTI::getTexParam, &MaterialParamsRTTI::getNumTexParams, 
+					&MaterialParamsRTTI::setTexParam, &MaterialParamsRTTI::setNumTexParams);
+				addDataBlockField("mFloatBuffer", 2, &MaterialParamsRTTI::getFloatBuffer, &MaterialParamsRTTI::setFloatBuffer);
 			}
 
 			virtual const String& getRTTIName()

@@ -135,6 +135,7 @@ namespace CamelotEngine
 	private:
 		typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
 		map<String, ResourceMetaDataPtr>::type mResourceMetaData;
+		map<String, ResourceMetaDataPtr>::type mResourceMetaData_FilePath;
 
 		ResourceRequestHandler* mRequestHandler;
 		ResourceResponseHandler* mResponseHandler;

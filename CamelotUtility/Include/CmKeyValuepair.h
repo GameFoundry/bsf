@@ -6,7 +6,7 @@
 
 namespace CamelotEngine
 {
-	template <typename Key, typename Value>
+	template <typename Key, typename Value, typename RTTIType>
 	class KeyValuePairRTTI;
 
 	template <typename Key, typename Value>
@@ -28,17 +28,17 @@ namespace CamelotEngine
 	public:
 		static RTTITypeBase* getRTTIStatic()
 		{
-			return KeyValuePairRTTI<Key, Value>::instance();
+			return nullptr;
 		}
 
 		RTTITypeBase* getRTTI() const
 		{
-			return KeyValuePairBase<Key, Value>::getRTTIStatic();
+			return nullptr;
 		}
 	};
 
-	template <typename Key, typename Value>
-	class KeyValuePairRTTI : public RTTIType<KeyValuePairBase<Key, Value>, IReflectable, KeyValuePairRTTI<Key, Value>>
+	template <typename Key, typename Value, typename MyType>
+	class KeyValuePairRTTI : public RTTIType<MyType, IReflectable, KeyValuePairRTTI<Key, Value, MyType>>
 	{
 	private:
 		Key& getKey(KeyValuePairBase<Key, Value>* obj) { return obj->mKey; }
@@ -91,7 +91,7 @@ namespace CamelotEngine
 			return RTTIClass::instance();
 		}
 
-		RTTITypeBase* getRTTI() const
+		virtual RTTITypeBase* getRTTI() const
 		{
 			return KeyValuePair<Key, Value, RTTIClass>::getRTTIStatic();
 		}

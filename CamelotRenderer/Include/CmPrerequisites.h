@@ -185,6 +185,7 @@ namespace CamelotEngine
 	typedef ResourceRef<Mesh> MeshRef;
 	typedef ResourceRef<GpuProgram> GpuProgramRef;
 	typedef ResourceRef<HighLevelGpuProgram> HighLevelGpuProgramRef;
+	typedef ResourceRef<Material> MaterialRef;
 }
 
 #endif // __OgrePrerequisites_H__
