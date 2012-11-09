@@ -37,40 +37,40 @@ namespace CamelotEngine
 		}
 	};
 
-	template <typename Key, typename Value, typename MyType>
-	class KeyValuePairRTTI : public RTTIType<MyType, IReflectable, KeyValuePairRTTI<Key, Value, MyType>>
-	{
-	private:
-		Key& getKey(KeyValuePairBase<Key, Value>* obj) { return obj->mKey; }
-		void setKey(KeyValuePairBase<Key, Value>* obj,  Key& val) { obj->mKey = val; }
+	//template <typename Key, typename Value, typename MyType>
+	//class KeyValuePairRTTI : public RTTIType<MyType, IReflectable, KeyValuePairRTTI<Key, Value, MyType>>
+	//{
+	//private:
+	//	Key& getKey(KeyValuePairBase<Key, Value>* obj) { return obj->mKey; }
+	//	void setKey(KeyValuePairBase<Key, Value>* obj,  Key& val) { obj->mKey = val; }
 
-		Value& getValue(KeyValuePairBase<Key, Value>* obj) { return obj->mValue; }
-		void setValue(KeyValuePairBase<Key, Value>* obj,  Value& val) { obj->mValue = val; }
+	//	Value& getValue(KeyValuePairBase<Key, Value>* obj) { return obj->mValue; }
+	//	void setValue(KeyValuePairBase<Key, Value>* obj,  Value& val) { obj->mValue = val; }
 
-	public:
-		KeyValuePairRTTI()
-		{
-			addPlainField("mKey", 0, &KeyValuePairRTTI::getKey, &KeyValuePairRTTI::setKey);
-			addPlainField("mValue", 1, &KeyValuePairRTTI::getValue, &KeyValuePairRTTI::setValue);
-		}
+	//public:
+	//	KeyValuePairRTTI()
+	//	{
+	//		addPlainField("mKey", 0, &KeyValuePairRTTI::getKey, &KeyValuePairRTTI::setKey);
+	//		addPlainField("mValue", 1, &KeyValuePairRTTI::getValue, &KeyValuePairRTTI::setValue);
+	//	}
 
-	public:
-		virtual const String& getRTTIName()
-		{
-			static String name = "Abstract";
-			return name;
-		}
+	//public:
+	//	virtual const String& getRTTIName()
+	//	{
+	//		static String name = "Abstract";
+	//		return name;
+	//	}
 
-		virtual UINT32 getRTTIId()
-		{
-			return TID_Abstract;
-		}
+	//	virtual UINT32 getRTTIId()
+	//	{
+	//		return TID_Abstract;
+	//	}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
-		{
-			CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class.");
-		}
-	};
+	//	virtual std::shared_ptr<IReflectable> newRTTIObject()
+	//	{
+	//		CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class.");
+	//	}
+	//};
 
 	template <typename Key, typename Value, typename RTTIClass>
 	class KeyValuePair : public KeyValuePairBase<Key, Value>

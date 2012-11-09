@@ -42,8 +42,22 @@ namespace CamelotEngine
 		class FloatParamKVPRTTI;
 		typedef KeyValuePair<String, FloatParam, FloatParamKVPRTTI> FloatParamKVP;
 
-		class FloatParamKVPRTTI : public KeyValuePairRTTI<String, FloatParam, FloatParamKVP>
+		class FloatParamKVPRTTI : public RTTIType<FloatParamKVP, IReflectable, FloatParamKVPRTTI>
 		{
+		private:
+			String& getKey(FloatParamKVP* obj) { return obj->mKey; }
+			void setKey(FloatParamKVP* obj,  String& val) { obj->mKey = val; }
+
+			FloatParam& getValue(FloatParamKVP* obj) { return obj->mValue; }
+			void setValue(FloatParamKVP* obj,  FloatParam& val) { obj->mValue = val; }
+
+		public:
+			FloatParamKVPRTTI()
+			{
+				addPlainField("mKey", 0, &FloatParamKVPRTTI::getKey, &FloatParamKVPRTTI::setKey);
+				addPlainField("mValue", 1, &FloatParamKVPRTTI::getValue, &FloatParamKVPRTTI::setValue);
+			}
+
 		public:
 			virtual const String& getRTTIName()
 			{
@@ -65,8 +79,22 @@ namespace CamelotEngine
 		class TexParamKVPRTTI;
 		typedef KeyValuePair<String, TextureRef, TexParamKVPRTTI> TexParamKVP;
 
-		class TexParamKVPRTTI : public KeyValuePairRTTI<String, TextureRef, TexParamKVP>
+		class TexParamKVPRTTI : public RTTIType<TexParamKVP, IReflectable, TexParamKVPRTTI>
 		{
+		private:
+			String& getKey(TexParamKVP* obj) { return obj->mKey; }
+			void setKey(TexParamKVP* obj,  String& val) { obj->mKey = val; }
+
+			TextureRef& getValue(TexParamKVP* obj) { return obj->mValue; }
+			void setValue(TexParamKVP* obj,  TextureRef& val) { obj->mValue = val; }
+
+		public:
+			TexParamKVPRTTI()
+			{
+				addPlainField("mKey", 0, &TexParamKVPRTTI::getKey, &TexParamKVPRTTI::setKey);
+				addPlainField("mValue", 1, &TexParamKVPRTTI::getValue, &TexParamKVPRTTI::setValue);
+			}
+
 		public:
 			virtual const String& getRTTIName()
 			{
