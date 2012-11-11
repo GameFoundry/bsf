@@ -437,7 +437,10 @@ namespace CamelotEngine
 			void (InterfaceType::*setter)(ObjectType*, DataType&) = nullptr)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
-				"Class with the get/set methods must derive from CamelotEngine::SerializationInterface.");
+				"Class with the get/set methods must derive from CamelotEngine::RTTIType.");
+
+			BOOST_STATIC_ASSERT_MSG(!(boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
+				"Data type derives from IReflectable but it is being added as a plain field.");
 
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
@@ -471,6 +474,12 @@ namespace CamelotEngine
 			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&) = nullptr, 
 			void(InterfaceType::*setSize)(ObjectType*, UINT32) = nullptr)
 		{
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
+				"Class with the get/set methods must derive from CamelotEngine::RTTIType.");
+
+			BOOST_STATIC_ASSERT_MSG(!(boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
+				"Data type derives from IReflectable but it is being added as a plain field.");
+
 			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
 				boost::function<UINT32(ObjectType*)>(boost::bind(getSize, static_cast<InterfaceType*>(this), _1)), 

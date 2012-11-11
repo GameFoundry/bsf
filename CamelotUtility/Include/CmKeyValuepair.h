@@ -6,80 +6,17 @@
 
 namespace CamelotEngine
 {
-	template <typename Key, typename Value, typename RTTIType>
-	class KeyValuePairRTTI;
-
-	template <typename Key, typename Value>
-	class KeyValuePairBase : public IReflectable
+	template <typename Key, typename Value, typename RTTIClass>
+	class KeyValuePair : public IReflectable
 	{
 	public:
-		KeyValuePairBase() {}
-		KeyValuePairBase(const Key& key, const Value& value)
+		KeyValuePair() {}
+		KeyValuePair(const Key& key, const Value& value)
 			:mKey(key), mValue(value)
 		{ }
 
 		Key mKey;
 		Value mValue;
-
-		/************************************************************************/
-		/* 								RTTI		                     		*/
-		/************************************************************************/
-
-	public:
-		static RTTITypeBase* getRTTIStatic()
-		{
-			return nullptr;
-		}
-
-		RTTITypeBase* getRTTI() const
-		{
-			return nullptr;
-		}
-	};
-
-	//template <typename Key, typename Value, typename MyType>
-	//class KeyValuePairRTTI : public RTTIType<MyType, IReflectable, KeyValuePairRTTI<Key, Value, MyType>>
-	//{
-	//private:
-	//	Key& getKey(KeyValuePairBase<Key, Value>* obj) { return obj->mKey; }
-	//	void setKey(KeyValuePairBase<Key, Value>* obj,  Key& val) { obj->mKey = val; }
-
-	//	Value& getValue(KeyValuePairBase<Key, Value>* obj) { return obj->mValue; }
-	//	void setValue(KeyValuePairBase<Key, Value>* obj,  Value& val) { obj->mValue = val; }
-
-	//public:
-	//	KeyValuePairRTTI()
-	//	{
-	//		addPlainField("mKey", 0, &KeyValuePairRTTI::getKey, &KeyValuePairRTTI::setKey);
-	//		addPlainField("mValue", 1, &KeyValuePairRTTI::getValue, &KeyValuePairRTTI::setValue);
-	//	}
-
-	//public:
-	//	virtual const String& getRTTIName()
-	//	{
-	//		static String name = "Abstract";
-	//		return name;
-	//	}
-
-	//	virtual UINT32 getRTTIId()
-	//	{
-	//		return TID_Abstract;
-	//	}
-
-	//	virtual std::shared_ptr<IReflectable> newRTTIObject()
-	//	{
-	//		CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class.");
-	//	}
-	//};
-
-	template <typename Key, typename Value, typename RTTIClass>
-	class KeyValuePair : public KeyValuePairBase<Key, Value>
-	{
-	public:
-		KeyValuePair() {}
-		KeyValuePair(const Key& key, const Value& value)
-			:KeyValuePairBase<Key, Value>(key, value)
-		{ }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

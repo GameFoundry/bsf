@@ -109,7 +109,13 @@ namespace CamelotEngine
 		}
 
 		// TODO Low priority - User can currently try to access these even if resource ptr is not resolved
-		T* get() const { if(!isResolved()) return nullptr; return static_cast<T*>(mData->mPtr.get()); }
+		T* get() const 
+		{ 
+			if(!isResolved()) 
+				return nullptr; 
+			
+			return static_cast<T*>(mData->mPtr.get()); 
+		}
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 

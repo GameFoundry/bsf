@@ -92,7 +92,7 @@ namespace CamelotEngine
 			TexParamKVPRTTI()
 			{
 				addPlainField("mKey", 0, &TexParamKVPRTTI::getKey, &TexParamKVPRTTI::setKey);
-				addPlainField("mValue", 1, &TexParamKVPRTTI::getValue, &TexParamKVPRTTI::setValue);
+				addReflectableField("mValue", 1, &TexParamKVPRTTI::getValue, &TexParamKVPRTTI::setValue);
 			}
 
 		public:
@@ -225,7 +225,7 @@ namespace CamelotEngine
 					&MaterialParamsRTTI::setFloatParam, &MaterialParamsRTTI::setNumFloatParams);
 				addReflectablePtrArrayField("mTexParams", 1, &MaterialParamsRTTI::getTexParam, &MaterialParamsRTTI::getNumTexParams, 
 					&MaterialParamsRTTI::setTexParam, &MaterialParamsRTTI::setNumTexParams);
-				addDataBlockField("mFloatBuffer", 2, &MaterialParamsRTTI::getFloatBuffer, &MaterialParamsRTTI::setFloatBuffer);
+				//addDataBlockField("mFloatBuffer", 2, &MaterialParamsRTTI::getFloatBuffer, &MaterialParamsRTTI::setFloatBuffer);
 			}
 
 			virtual const String& getRTTIName()
@@ -247,28 +247,26 @@ namespace CamelotEngine
 
 		ShaderPtr getShader(Material* obj)
 		{
-			return obj->getShader();
+			return obj->mShader;
 		}
 
 		void setShader(Material* obj,  ShaderPtr val)
 		{
-			obj->setShader(val);
+			obj->mShader = val;
 		}
 
 		std::shared_ptr<MaterialParams> getMaterialParams(Material* obj)
 		{
+			if(obj->mRTTIData.empty())
+				return nullptr;
+
 			return boost::any_cast<std::shared_ptr<MaterialParams>>(obj->mRTTIData);
 		}
 
 		void setMaterialParams(Material* obj, std::shared_ptr<MaterialParams> value)
 		{
-			obj->mRTTIData = value;
+			//obj->mRTTIData = value;
 		}
-
-		virtual void onSerializationStarted(IReflectable* obj);
-		virtual void onSerializationEnded(IReflectable* obj);
-		virtual void onDeserializationStarted(IReflectable* obj);
-		virtual void onDeserializationEnded(IReflectable* obj);
 
 	public:
 		MaterialRTTI()
@@ -276,6 +274,11 @@ namespace CamelotEngine
 			addReflectablePtrField("mShader", 0, &MaterialRTTI::getShader, &MaterialRTTI::setShader);
 			addReflectablePtrField("mMaterialParams", 1, &MaterialRTTI::getMaterialParams, &MaterialRTTI::setMaterialParams);
 		}
+
+		virtual void onSerializationStarted(IReflectable* obj);
+		virtual void onSerializationEnded(IReflectable* obj);
+		virtual void onDeserializationStarted(IReflectable* obj);
+		virtual void onDeserializationEnded(IReflectable* obj);
 
 		virtual const String& getRTTIName()
 		{

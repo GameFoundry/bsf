@@ -101,6 +101,9 @@ namespace CamelotEngine
 		}
 
 		*bytesWritten = mTotalBytesWritten;
+
+		mObjectsToEncode.clear();
+		mObjectAddrToId.clear();
 	}
 
 	std::shared_ptr<IReflectable> BinarySerializer::decode(UINT8* data, UINT32 dataLength)
@@ -203,14 +206,22 @@ namespace CamelotEngine
 
 			if(resolvedObject != nullptr)
 			{
-				RTTITypeBase* si = object->getRTTI();
+				RTTITypeBase* si = resolvedObject->getRTTI();
 
 				while(si != nullptr)
 				{
-					si->onDeserializationEnded(object.get());
+					si->onDeserializationEnded(resolvedObject.get());
 					si = si->getBaseClass();
 				}
 			}
+		}
+
+		mPtrsToResolve.clear();
+		//mDecodedObjects.clear();
+
+		while(mDecodedObjects.size() > 0)
+		{
+			mDecodedObjects.erase(mDecodedObjects.begin());
 		}
 
 		return rootObject;

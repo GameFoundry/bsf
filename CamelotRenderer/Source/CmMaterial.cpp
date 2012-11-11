@@ -15,12 +15,17 @@ namespace CamelotEngine
 	{
 		mShader = shader;
 
+		initBestTechnique();
+	}
+
+	void Material::initBestTechnique()
+	{
 		mBestTechnique = nullptr;
 		mParameters.clear();
 
-		if(shader)
+		if(mShader)
 		{
-			mBestTechnique = shader->getBestTechnique();
+			mBestTechnique = mShader->getBestTechnique();
 
 			if(mBestTechnique)
 			{

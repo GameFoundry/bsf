@@ -170,16 +170,33 @@ namespace CamelotEngine
 		mDbgMesh = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
 		//mDbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\BarrelMesh.fbx"));
 
+		//// Get current flag
+		//int tmpFlag = _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG );
+		//tmpFlag |= _CRTDBG_CHECK_ALWAYS_DF;
+		//// Set flag to the new value.
+		//_CrtSetDbgFlag( tmpFlag );
+
 		gResources().create(testTex, "C:\\ExportTest.tex", true);
 		gResources().create(mDbgMesh, "C:\\ExportMesh.mesh", true);
 
-		mDbgTexture = static_resource_cast<Texture>(gResources().loadAsync("C:\\ExportTest.tex"));
-		mDbgMesh = static_resource_cast<Mesh>(gResources().loadAsync("C:\\ExportMesh.mesh"));
+		mDbgTexture = static_resource_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
+		mDbgMesh = static_resource_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
 
-		mTestMaterial->setTexture("tex", mDbgTexture);
+		//mTestMaterial->setTexture("tex", mDbgTexture);
 		gResources().create(mTestMaterial, "C:\\ExportMaterial.mat", true);
 
-		mTestMaterial = gResources().load("C:\\ExportMaterial.mat");
+		//if(!_CrtCheckMemory())
+		//{
+		//	assert(false);
+		//}
+
+		MaterialRef newMat = gResources().load("C:\\ExportMaterial.mat");
+//		mTestMaterial = gResources().load("C:\\ExportMaterial.mat");
+
+		//if(!_CrtCheckMemory())
+		//{
+		//	assert(false);
+		//}
 
 		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
 	}
