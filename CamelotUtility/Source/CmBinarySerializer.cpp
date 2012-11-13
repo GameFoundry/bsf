@@ -108,55 +108,31 @@ namespace CamelotEngine
 
 	std::shared_ptr<IReflectable> BinarySerializer::decode(UINT8* data, UINT32 dataLength)
 	{
-		mPtrsToResolve.clear();
+		mObjectMap.clear();
 		mDecodedObjects.clear();
 
-		// Find and instantiate root object
-		if(sizeof(UINT32) > dataLength)
-		{
-			CM_EXCEPT(InternalErrorException, 
-				"Error decoding data.");
-		}
-
-		ObjectMetaData objectMetaData;
-		objectMetaData.objectMeta = 0;
-		objectMetaData.typeId = 0;
-		memcpy(&objectMetaData, data, sizeof(ObjectMetaData));
-
-		UINT32 objectId = 0;
-		UINT32 objectTypeId = 0;
-		bool isBaseClass = false;
-		decodeObjectMetaData(objectMetaData, objectId, objectTypeId, isBaseClass);
-
-		if(isBaseClass)
-		{
-			CM_EXCEPT(InternalErrorException, "Encountered a base-class object while looking for a new object. " \
-				"Base class objects are only supposed to be parts of a larger object.");
-		}
-
-		std::shared_ptr<IReflectable> object = IReflectable::createInstanceFromTypeId(objectTypeId);
-		std::shared_ptr<IReflectable> rootObject = object;
-
-		// Create initial object + all other objects that are being referenced.
-		// Use fields to find the type of referenced object.
+		// Create empty instances of all ptr objects
 		UINT32 bytesRead = 0;
-		UINT8* dataIter = data + bytesRead;
-		while(decodeInternal(object, dataIter, dataLength, bytesRead))
+		UINT8* dataIter = nullptr;
+		std::shared_ptr<IReflectable> rootObject = nullptr;
+		do 
 		{
 			dataIter = data + bytesRead;
 
-			if((bytesRead + sizeof(UINT32)) > dataLength)
+			if(sizeof(UINT32) > dataLength)
 			{
 				CM_EXCEPT(InternalErrorException, 
 					"Error decoding data.");
 			}
 
+			ObjectMetaData objectMetaData;
 			objectMetaData.objectMeta = 0;
 			objectMetaData.typeId = 0;
 			memcpy(&objectMetaData, dataIter, sizeof(ObjectMetaData));
 
-			objectId = 0;
-			objectTypeId = 0;
+			UINT32 objectId = 0;
+			UINT32 objectTypeId = 0;
+			bool isBaseClass = false;
 			decodeObjectMetaData(objectMetaData, objectId, objectTypeId, isBaseClass);
 
 			if(isBaseClass)
@@ -165,34 +141,21 @@ namespace CamelotEngine
 					"Base class objects are only supposed to be parts of a larger object.");
 			}
 
-			object = nullptr;
-			if(objectId != 0)
-			{
-				auto iterFind = std::find_if(mPtrsToResolve.begin(), mPtrsToResolve.end(), [objectId](PtrToResolve x) { return x.id == objectId; });
+			std::shared_ptr<IReflectable> object = IReflectable::createInstanceFromTypeId(objectTypeId);
+			mObjectMap.insert(std::make_pair(objectId, object));
+			mObjectsToDecode.push_back(object);
 
-				if(iterFind != mPtrsToResolve.end())
-				{
-					object = IReflectable::createInstanceFromTypeId(objectTypeId);
-				}
-			}
-		}
+			if(rootObject == nullptr)
+				rootObject = object;
 
-		for(auto iter = mPtrsToResolve.begin(); iter != mPtrsToResolve.end(); ++iter)
+		} while (decodeInternal(nullptr, dataIter, dataLength, bytesRead));
+
+		bytesRead = 0;
+		for(auto objIter = mObjectsToDecode.begin(); objIter != mObjectsToDecode.end(); ++objIter)
 		{
-			std::shared_ptr<IReflectable> resolvedObject = nullptr;
+			dataIter = data + bytesRead;
 
-			PtrToResolve curPtr = *iter;
-			if(curPtr.id != 0)
-			{
-				auto iterFind = mDecodedObjects.find(curPtr.id);
-				if(iterFind != mDecodedObjects.end())
-					resolvedObject = iterFind->second;
-			}
-
-			if(curPtr.field->mIsVectorType)
-				curPtr.field->setArrayValue(curPtr.object.get(), curPtr.arrIdx, resolvedObject);
-			else
-				curPtr.field->setValue(curPtr.object.get(), resolvedObject);
+			decodeInternal(*objIter, dataIter, dataLength, bytesRead);
 		}
 
 		// Finish serialization for all objects
@@ -202,7 +165,7 @@ namespace CamelotEngine
 		// pointers at an earlier stage as well)
 		for(auto iter = mDecodedObjects.rbegin(); iter != mDecodedObjects.rend(); ++iter)
 		{
-			std::shared_ptr<IReflectable> resolvedObject = iter->second;
+			std::shared_ptr<IReflectable> resolvedObject = *iter;
 
 			if(resolvedObject != nullptr)
 			{
@@ -216,13 +179,8 @@ namespace CamelotEngine
 			}
 		}
 
-		mPtrsToResolve.clear();
-		//mDecodedObjects.clear();
-
-		while(mDecodedObjects.size() > 0)
-		{
-			mDecodedObjects.erase(mDecodedObjects.begin());
-		}
+		mObjectMap.clear();
+		mDecodedObjects.clear();
 
 		return rootObject;
 	}
@@ -486,8 +444,8 @@ namespace CamelotEngine
 		bool objectIsBaseClass = false;
 		decodeObjectMetaData(objectMetaData, objectId, objectTypeId, objectIsBaseClass);
 
-		if(object != nullptr && objectId != 0 && !objectIsBaseClass)
-			mDecodedObjects.insert(std::make_pair(objectId, object));
+		if(object != nullptr && !objectIsBaseClass)
+			mDecodedObjects.push_back(object);
 		
 		while(bytesRead < dataLength)
 		{
@@ -624,7 +582,15 @@ namespace CamelotEngine
 							bytesRead += COMPLEX_TYPE_FIELD_SIZE;
 
 							if(curField != nullptr)
-								mPtrsToResolve.push_back(PtrToResolve(curField, object, objectId, i));
+							{
+								std::shared_ptr<IReflectable> resolvedObject = nullptr;
+
+								auto findIter = mObjectMap.find(objectId);
+								if(findIter != mObjectMap.end())
+									resolvedObject = findIter->second;
+
+								curField->setArrayValue(object.get(), i, resolvedObject);
+							}
 						}
 
 						break;
@@ -641,11 +607,16 @@ namespace CamelotEngine
 									"Error decoding data.");
 							}
 
-							int complexTypeSize = COMPLEX_TYPE_FIELD_SIZE;
+							int complexTypeSize = 0;
 							if(curField != nullptr)
 							{
 								std::shared_ptr<IReflectable> complexType = complexTypeFromBuffer(curField, data, &complexTypeSize);
 								curField->setArrayValue(object.get(), i, *complexType);
+							}
+							else
+							{
+								memcpy(&complexTypeSize, data, COMPLEX_TYPE_FIELD_SIZE);
+								complexTypeSize += COMPLEX_TYPE_FIELD_SIZE;
 							}
 
 							data += complexTypeSize;
@@ -697,7 +668,15 @@ namespace CamelotEngine
 						bytesRead += COMPLEX_TYPE_FIELD_SIZE;
 
 						if(curField != nullptr)
-							mPtrsToResolve.push_back(PtrToResolve(curField, object, objectId));
+						{
+							std::shared_ptr<IReflectable> resolvedObject = nullptr;
+
+							auto findIter = mObjectMap.find(objectId);
+							if(findIter != mObjectMap.end())
+								resolvedObject = findIter->second;
+
+							curField->setValue(object.get(), resolvedObject);
+						}
 
 						break;
 					}
@@ -711,11 +690,16 @@ namespace CamelotEngine
 								"Error decoding data.");
 						}
 
-						int complexTypeSize = COMPLEX_TYPE_FIELD_SIZE;
+						int complexTypeSize = 0;
 						if(curField != nullptr)
 						{
 							std::shared_ptr<IReflectable> complexType = complexTypeFromBuffer(curField, data, &complexTypeSize);
 							curField->setValue(object.get(), *complexType);
+						}
+						else
+						{
+							memcpy(&complexTypeSize, data, COMPLEX_TYPE_FIELD_SIZE);
+							complexTypeSize += COMPLEX_TYPE_FIELD_SIZE;
 						}
 
 						data += complexTypeSize;

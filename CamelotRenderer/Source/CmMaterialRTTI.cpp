@@ -99,63 +99,66 @@ namespace CamelotEngine
 	void MaterialRTTI::onDeserializationEnded(IReflectable* obj)
 	{
 		Material* material = static_cast<Material*>(obj);
-		//std::shared_ptr<MaterialParams> params = boost::any_cast<std::shared_ptr<MaterialParams>>(material->mRTTIData);
+		if(material->mRTTIData.empty())
+			return;
 
-		//vector<GpuProgramParametersPtr>::type allParams;
-		//for(size_t i = 0; i < material->mParameters.size(); i++)
-		//{
-		//	if(material->mParameters[i].mFragParams != nullptr)
-		//		allParams.push_back(material->mParameters[i].mFragParams);
+		material->initBestTechnique();
 
-		//	if(material->mParameters[i].mVertParams != nullptr)
-		//		allParams.push_back(material->mParameters[i].mVertParams);
+		std::shared_ptr<MaterialParams> params = boost::any_cast<std::shared_ptr<MaterialParams>>(material->mRTTIData);
 
-		//	if(material->mParameters[i].mGeomParams != nullptr)
-		//		allParams.push_back(material->mParameters[i].mGeomParams);
-		//}
+		vector<GpuProgramParametersPtr>::type allParams;
+		for(size_t i = 0; i < material->mParameters.size(); i++)
+		{
+			if(material->mParameters[i].mFragParams != nullptr)
+				allParams.push_back(material->mParameters[i].mFragParams);
 
-		//for(size_t i = 0; i < allParams.size(); i++)
-		//{
-		//	const GpuNamedConstants& namedConstants = allParams[i]->getConstantDefinitions();
+			if(material->mParameters[i].mVertParams != nullptr)
+				allParams.push_back(material->mParameters[i].mVertParams);
 
-		//	float tempValue[16];
-		//	for(auto iter = namedConstants.map.begin(); iter != namedConstants.map.end(); ++iter)
-		//	{
-		//		const GpuConstantDefinition& def = iter->second;
+			if(material->mParameters[i].mGeomParams != nullptr)
+				allParams.push_back(material->mParameters[i].mGeomParams);
+		}
 
-		//		if(def.constType == GCT_SAMPLER2D)
-		//		{
-		//			auto iterFind = params->mTextureParams.find(iter->first);
+		for(size_t i = 0; i < allParams.size(); i++)
+		{
+			const GpuNamedConstants& namedConstants = allParams[i]->getConstantDefinitions();
 
-		//			if(iterFind != params->mTextureParams.end())
-		//				allParams[i]->setNamedConstant(iter->first, iterFind->second);
-		//		}
-		//		else
-		//		{
-		//			auto iterFind = params->mFloatParams.find(iter->first);
+			float tempValue[16];
+			for(auto iter = namedConstants.map.begin(); iter != namedConstants.map.end(); ++iter)
+			{
+				const GpuConstantDefinition& def = iter->second;
 
-		//			if(iterFind != params->mFloatParams.end() && iterFind->second.mType == def.constType)
-		//			{
-		//				FloatParam param = iterFind->second;
-		//				UINT32 fieldSize = def.getElementSize(def.constType, false);
+				if(def.constType == GCT_SAMPLER2D)
+				{
+					auto iterFind = params->mTextureParams.find(iter->first);
 
-		//				if(fieldSize != param.mCount)
-		//					CM_EXCEPT(InternalErrorException, "Deserializing material parameter but field sizes don't match.");
+					if(iterFind != params->mTextureParams.end())
+						allParams[i]->setNamedConstant(iter->first, iterFind->second);
+				}
+				else
+				{
+					auto iterFind = params->mFloatParams.find(iter->first);
 
-		//				if(fieldSize > 16)
-		//					CM_EXCEPT(InternalErrorException, "Field size larger than the supported size.");
+					if(iterFind != params->mFloatParams.end() && iterFind->second.mType == def.constType)
+					{
+						FloatParam param = iterFind->second;
+						UINT32 fieldSize = def.getElementSize(def.constType, false);
 
-		//				for(size_t j = 0; j < fieldSize; j++)
-		//					tempValue[j] = params->mFloatBuffer[param.mBufferIdx + j];
+						if(fieldSize != param.mCount)
+							CM_EXCEPT(InternalErrorException, "Deserializing material parameter but field sizes don't match.");
 
-		//				allParams[i]->_writeRawConstants(def.physicalIndex, tempValue, fieldSize);
-		//			}
-		//		}
-		//	}
-		//}
+						if(fieldSize > 16)
+							CM_EXCEPT(InternalErrorException, "Field size larger than the supported size.");
+
+						for(size_t j = 0; j < fieldSize; j++)
+							tempValue[j] = params->mFloatBuffer[param.mBufferIdx + j];
+
+						allParams[i]->_writeRawConstants(def.physicalIndex, tempValue, fieldSize);
+					}
+				}
+			}
+		}
 
 		material->mRTTIData = nullptr; // This will delete temporary data as it's stored in a unique ptr
-
-		//material->initBestTechnique();
 	}
 }

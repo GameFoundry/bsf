@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
 #include "CmResourceRef.h"
+#include "CmResources.h"
 
 namespace CamelotEngine
 {
@@ -13,14 +14,6 @@ namespace CamelotEngine
 		void setUUID(ResourceRefData* obj, String& uuid) 
 		{ 
 			obj->mUUID = uuid; 
-
-			if(uuid != "")
-			{
-				// TODO - I probably want to load the resource here
-				//   - Important: consider that user might just want to load the level meta data and not the actual resources
-				//     (Maybe he wants to stream them in as player goes through the world?)
-				//       - Although this should probably be handled on a higher level. Here we just load.
-			}
 		} 
 	public:
 		ResourceRefDataRTTI()
@@ -54,6 +47,21 @@ namespace CamelotEngine
 		ResourceRefRTTI()
 		{
 			addReflectablePtrField("mData", 0, &ResourceRefRTTI::getResData, &ResourceRefRTTI::setResData);
+		}
+
+		void onDeserializationEnded(IReflectable* obj)
+		{
+			ResourceRefBase* resourceRef = static_cast<ResourceRefBase*>(obj);
+
+			if(resourceRef->mData && resourceRef->mData->mUUID != "")
+			{
+				// NOTE: This will cause Resources::load to be called recursively with resources that contain other
+				// resources. This might cause problems. Keep this note here as a warning until I prove otherwise.
+				BaseResourceRef loadedResource = gResources().loadFromUUID(resourceRef->mData->mUUID);
+
+				if(loadedResource)
+					resourceRef->resolve(loadedResource.getInternalPtr());
+			}
 		}
 
 		virtual const String& getRTTIName()

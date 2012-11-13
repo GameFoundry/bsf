@@ -182,7 +182,7 @@ namespace CamelotEngine
 		mDbgTexture = static_resource_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
 		mDbgMesh = static_resource_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
 
-		//mTestMaterial->setTexture("tex", mDbgTexture);
+		mTestMaterial->setTexture("tex", mDbgTexture);
 		gResources().create(mTestMaterial, "C:\\ExportMaterial.mat", true);
 
 		//if(!_CrtCheckMemory())
@@ -190,8 +190,7 @@ namespace CamelotEngine
 		//	assert(false);
 		//}
 
-		MaterialRef newMat = gResources().load("C:\\ExportMaterial.mat");
-//		mTestMaterial = gResources().load("C:\\ExportMaterial.mat");
+		mTestMaterial = gResources().load("C:\\ExportMaterial.mat");
 
 		//if(!_CrtCheckMemory())
 		//{

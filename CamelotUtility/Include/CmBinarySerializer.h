@@ -30,6 +30,10 @@ namespace CamelotEngine
 	 * 			Any data the object or its children are pointing to will also be serialized (unless the pointer isn't
 	 * 			registered in RTTIType). Upon decoding the pointer addresses will be set
 	 * 			to proper values.
+	 * 			
+	 * @note	When deserializing make sure not to access any child members of a deserialized object in your RTTIType class.
+	 * 			Objects might be deserialized in an unknown order, so it is not guaranteed that child elements have been
+	 * 			deserialized before their parent. 
 	 */
 	class CM_UTILITY_EXPORT BinarySerializer
 	{
@@ -73,29 +77,7 @@ namespace CamelotEngine
 			std::shared_ptr<IReflectable> object;
 		};
 
-		/**
-		 * @brief	Pointer fields get resolved after everything is loaded. Store their
-		 * 			temporary data here until then.
-		 */
-		struct PtrToResolve
-		{
-			PtrToResolve()
-				:field(nullptr), object(nullptr), id(0)
-			{ }
 
-			PtrToResolve(RTTIReflectablePtrFieldBase* _field, std::shared_ptr<IReflectable> _object, UINT32 _id)
-				:field(_field), object(_object), id(_id), arrIdx(0)
-			{ }
-
-			PtrToResolve(RTTIReflectablePtrFieldBase* _field, std::shared_ptr<IReflectable> _object, UINT32 _id, UINT32 _arrIdx)
-				:field(_field), object(_object), id(_id), arrIdx(_arrIdx)
-			{ }
-
-			RTTIReflectablePtrFieldBase* field;
-			UINT32 arrIdx;
-			std::shared_ptr<IReflectable> object;
-			UINT32 id;
-		};
 
 		struct ObjectMetaData
 		{
@@ -108,9 +90,9 @@ namespace CamelotEngine
 		std::vector<ObjectToEncode> mObjectsToEncode;
 		int mTotalBytesWritten;
 
-		std::vector<PtrToResolve> mPtrsToResolve;
-		std::unordered_map<UINT32, std::shared_ptr<IReflectable>> mDecodedObjects;
-
+		std::unordered_map<UINT32, std::shared_ptr<IReflectable>> mObjectMap;
+		std::vector<std::shared_ptr<IReflectable>> mObjectsToDecode;
+		std::vector<std::shared_ptr<IReflectable>> mDecodedObjects;
 
 		UINT32 getObjectSize(IReflectable* object);
 

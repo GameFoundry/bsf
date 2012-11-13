@@ -15,8 +15,9 @@ High-level TODO:
  - DX11 render system
 
 HIGH PRIORITY TODO:
- - I need to store material parameters somewhere as well
-  - GpuProgramParams won't work because I want shader parameters to be stored independantly from the shader itself
+ - Issue with deserialization and value types:
+  - Value types are only set at the end of deserialization, because I want to be sure all of their fields are initialized. However there is nothing stopping a custom RTTI method from accessing a (yet uninitialized) value in a ptr field. (See CmMaterialRTTI, setTexParam). I need to initialize fields in a better order.
+   - Solution?: Set (empty) ptr values immediately, and only load them later
  - GetRenderOperation doesn't consider sub-meshes
  - HLSL & Cg don't handle include files yet
 
@@ -55,6 +56,9 @@ Low priority TODO:
  - D3D9Texture::createTextureResources is commented out at the moment. It gets called on device reset, and at that point I should reload texture resources.
   - I should probably keep all resources by DX managed. OpenGL apparently keeps a mirror of all its resources anyway.
  - Device reset and resource re-loading in general
+ - In RTTIType it is possible to add a non-plain data type using addPlainField. This can cause memory corruption issues
+   if pointer is saved/loaded as a plain field. I need to add a check that ensures the type is POD. 
+   See: http://www.boost.org/doc/libs/1_51_0/boost/mpi/datatype.hpp for a possible implementation of a compile time check.
 
 Optional TODO:
  - Add precompiled headers to all projects

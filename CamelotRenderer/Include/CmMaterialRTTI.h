@@ -113,6 +113,8 @@ namespace CamelotEngine
 			}
 		};
 
+		class MaterialParamsRTTI;
+
 		struct MaterialParams : public IReflectable
 		{
 			map<String, FloatParam>::type mFloatParams;
@@ -125,7 +127,7 @@ namespace CamelotEngine
 			/************************************************************************/
 
 		public:
-			friend class MaterialParamsRTTI;
+			friend class MaterialRTTI::MaterialParamsRTTI;
 
 			static RTTITypeBase* getRTTIStatic();
 			RTTITypeBase* getRTTI() const;
@@ -134,6 +136,12 @@ namespace CamelotEngine
 		class MaterialParamsRTTI : public RTTIType<MaterialParams, IReflectable, MaterialParamsRTTI>
 		{
 		private:
+			struct TempParams
+			{
+				vector<std::shared_ptr<FloatParamKVP>>::type mFloatParams;
+				vector<std::shared_ptr<TexParamKVP>>::type mTexParams;
+			};
+
 			std::shared_ptr<FloatParamKVP> getFloatParam(MaterialParams* obj, UINT32 idx)
 			{
 				UINT32 curIdx = 0;
@@ -152,7 +160,8 @@ namespace CamelotEngine
 
 			void setFloatParam(MaterialParams* obj, UINT32 idx, std::shared_ptr<FloatParamKVP> value)
 			{
-				obj->mFloatParams[value->mKey] = value->mValue;
+				TempParams* tempParams = boost::any_cast<TempParams*>(obj->mRTTIData);
+				tempParams->mFloatParams.push_back(value);
 			}
 
 			void setNumFloatParams(MaterialParams* obj, UINT32 size)
@@ -183,7 +192,8 @@ namespace CamelotEngine
 
 			void setTexParam(MaterialParams* obj, UINT32 idx, std::shared_ptr<TexParamKVP> value)
 			{
-				obj->mTextureParams[value->mKey] = value->mValue;
+				TempParams* tempParams = boost::any_cast<TempParams*>(obj->mRTTIData);
+				tempParams->mTexParams.push_back(value);
 			}
 
 			void setNumTexParams(MaterialParams* obj, UINT32 size)
@@ -225,7 +235,42 @@ namespace CamelotEngine
 					&MaterialParamsRTTI::setFloatParam, &MaterialParamsRTTI::setNumFloatParams);
 				addReflectablePtrArrayField("mTexParams", 1, &MaterialParamsRTTI::getTexParam, &MaterialParamsRTTI::getNumTexParams, 
 					&MaterialParamsRTTI::setTexParam, &MaterialParamsRTTI::setNumTexParams);
-				//addDataBlockField("mFloatBuffer", 2, &MaterialParamsRTTI::getFloatBuffer, &MaterialParamsRTTI::setFloatBuffer);
+				addDataBlockField("mFloatBuffer", 2, &MaterialParamsRTTI::getFloatBuffer, &MaterialParamsRTTI::setFloatBuffer);
+			}
+
+			virtual void onDeserializationStarted(IReflectable* obj)
+			{
+				MaterialParams* materialParams = static_cast<MaterialParams*>(obj);
+				materialParams->mRTTIData = new TempParams();
+			}
+
+			virtual void onDeserializationEnded(IReflectable* obj)
+			{
+				// TODO Low priority:
+				// Due to the way serialization is done I cannot guarantee "value"s key/value fields
+				// have been set, so I need to delay accessing them until the end of serialization.
+				// I'd really like to avoid this as its not intuitive to think in this way.
+
+				MaterialParams* materialParams = static_cast<MaterialParams*>(obj);
+
+				if(materialParams->mRTTIData.empty())
+					return;
+
+				TempParams* tempParams = boost::any_cast<TempParams*>(materialParams->mRTTIData);
+
+				for(auto iter = tempParams->mFloatParams.begin(); iter != tempParams->mFloatParams.end(); ++iter)
+				{
+					std::shared_ptr<FloatParamKVP> floatParam = *iter;
+					materialParams->mFloatParams[floatParam->mKey] = floatParam->mValue;
+				}
+
+				for(auto iter = tempParams->mTexParams.begin(); iter != tempParams->mTexParams.end(); ++iter)
+				{
+					std::shared_ptr<TexParamKVP> texParam = *iter;
+					materialParams->mTextureParams[texParam->mKey] = texParam->mValue;
+				}
+
+				materialParams->mRTTIData = nullptr;
 			}
 
 			virtual const String& getRTTIName()
@@ -265,7 +310,7 @@ namespace CamelotEngine
 
 		void setMaterialParams(Material* obj, std::shared_ptr<MaterialParams> value)
 		{
-			//obj->mRTTIData = value;
+			obj->mRTTIData = value;
 		}
 
 	public:
