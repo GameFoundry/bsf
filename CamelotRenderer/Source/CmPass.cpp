@@ -24,8 +24,6 @@ namespace CamelotEngine
 		, mAlphaRejectFunc(CMPF_ALWAYS_PASS)
 		, mAlphaRejectVal(0)
 		, mAlphaToCoverageEnabled(false)
-		, mTransparentSorting(true)
-		, mTransparentSortingForced(false)
 		, mCullMode(CULL_CLOCKWISE)
 		, mPolygonMode(PM_SOLID)
 		, mPassIterationCount(1)
@@ -66,8 +64,6 @@ namespace CamelotEngine
 		mAlphaRejectFunc = oth.mAlphaRejectFunc;
 		mAlphaRejectVal = oth.mAlphaRejectVal;
 		mAlphaToCoverageEnabled = oth.mAlphaToCoverageEnabled;
-		mTransparentSorting = oth.mTransparentSorting;
-		mTransparentSortingForced = oth.mTransparentSortingForced;
         mColourWrite = oth.mColourWrite;
 	    mDepthFunc = oth.mDepthFunc;
         mDepthBiasConstant = oth.mDepthBiasConstant;
@@ -255,26 +251,6 @@ namespace CamelotEngine
 	void Pass::setAlphaToCoverageEnabled(bool enabled)
 	{
 		mAlphaToCoverageEnabled = enabled;
-	}
-	//-----------------------------------------------------------------------
-	void Pass::setTransparentSortingEnabled(bool enabled)
-	{
-		mTransparentSorting = enabled;
-	}
-	//-----------------------------------------------------------------------
-	bool Pass::getTransparentSortingEnabled(void) const
-	{
-		return mTransparentSorting;
-	}
-	//-----------------------------------------------------------------------
-	void Pass::setTransparentSortingForced(bool enabled)
-	{
-		mTransparentSortingForced = enabled;
-	}
-	//-----------------------------------------------------------------------
-	bool Pass::getTransparentSortingForced(void) const
-	{
-		return mTransparentSortingForced;
 	}
     //-----------------------------------------------------------------------
 	void Pass::setColourWriteEnabled(bool enabled)

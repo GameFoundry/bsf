@@ -520,7 +520,7 @@ namespace CamelotEngine
 
 		// ------------------------------------------------------------------------
 		//                     Internal Rendering Access
-		// All methods below here are normally only called by other OGRE classes
+		// All methods below here are normally only called by other Camelot classes
 		// They can be called by library user if required
 		// ------------------------------------------------------------------------
 

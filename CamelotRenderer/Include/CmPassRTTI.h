@@ -63,12 +63,6 @@ namespace CamelotEngine
 		bool& getAlphaToCoverageEnabled(Pass* obj) { return obj->mAlphaToCoverageEnabled; }
 		void setAlphaToCoverageEnabled(Pass* obj, bool& val) { obj->mAlphaToCoverageEnabled = val; } 
 
-		bool& getTransparentSorting(Pass* obj) { return obj->mTransparentSorting; }
-		void setTransparentSorting(Pass* obj, bool& val) { obj->mTransparentSorting = val; } 
-
-		bool& getTransparentSortingForced(Pass* obj) { return obj->mTransparentSortingForced; }
-		void setTransparentSortingForced(Pass* obj, bool& val) { obj->mTransparentSortingForced = val; } 
-
 		CullingMode& getCullMode(Pass* obj) { return obj->mCullMode; }
 		void setCullMode(Pass* obj, CullingMode& val) { obj->mCullMode = val; } 
 
@@ -119,8 +113,6 @@ namespace CamelotEngine
 			addPlainField("mAlphaRejectFunc", 15, &PassRTTI::getAlphaRejectFunc, &PassRTTI::setAlphaRejectFunc);
 			addPlainField("mAlphaRejectVal", 16, &PassRTTI::getAlphaRejectVal, &PassRTTI::setAlphaRejectVal);
 			addPlainField("mAlphaToCoverageEnabled", 17, &PassRTTI::getAlphaToCoverageEnabled, &PassRTTI::setAlphaToCoverageEnabled);
-			addPlainField("mTransparentSorting", 18, &PassRTTI::getTransparentSorting, &PassRTTI::setTransparentSorting);
-			addPlainField("mTransparentSortingForced", 19, &PassRTTI::getTransparentSortingForced, &PassRTTI::setTransparentSortingForced);
 
 			addPlainField("mCullMode", 20, &PassRTTI::getCullMode, &PassRTTI::setCullMode);
 			addPlainField("mPolygonMode", 21, &PassRTTI::getPolygonMode, &PassRTTI::setPolygonMode);

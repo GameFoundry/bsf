@@ -52,10 +52,6 @@ namespace CamelotEngine
 		unsigned char mAlphaRejectVal;
 		bool mAlphaToCoverageEnabled;
 
-		// Transparent depth sorting
-		bool mTransparentSorting;
-		// Transparent depth sorting forced
-		bool mTransparentSortingForced;
         //-------------------------------------------------------------------------
 
         //-------------------------------------------------------------------------
@@ -414,39 +410,6 @@ namespace CamelotEngine
 		/** Gets whether to use alpha to coverage (A2C) when blending alpha rejected values. 
 		*/
 		bool isAlphaToCoverageEnabled() const { return mAlphaToCoverageEnabled; }
-
-        /** Sets whether or not transparent sorting is enabled.
-        @param enabled
-			If false depth sorting of this material will be disabled.
-        @remarks
-			By default all transparent materials are sorted such that renderables furthest
-			away from the camera are rendered first. This is usually the desired behaviour
-			but in certain cases this depth sorting may be unnecessary and undesirable. If
-			for example it is necessary to ensure the rendering order does not change from
-			one frame to the next.
-		@note
-			This will have no effect on non-transparent materials.
-        */
-        void setTransparentSortingEnabled(bool enabled);
-
-        /** Returns whether or not transparent sorting is enabled.
-        */
-		bool getTransparentSortingEnabled(void) const;
-
-        /** Sets whether or not transparent sorting is forced.
-        @param enabled
-			If true depth sorting of this material will be depend only on the value of
-            getTransparentSortingEnabled().
-        @remarks
-			By default even if transparent sorting is enabled, depth sorting will only be
-            performed when the material is transparent and depth write/check are disabled.
-            This function disables these extra conditions.
-        */
-        void setTransparentSortingForced(bool enabled);
-
-        /** Returns whether or not transparent sorting is forced.
-        */
-		bool getTransparentSortingForced(void) const;
 
 		/** Sets the details of the vertex program to use.
 		*/

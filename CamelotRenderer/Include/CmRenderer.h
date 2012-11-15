@@ -18,5 +18,11 @@ namespace CamelotEngine
 		 * @brief	 Renders the scene from the perspective of a single camera
 		 */
 		virtual void render(const CameraPtr camera) = 0;
+
+	protected:
+		/**
+		 * @brief	Sets the currently active pass.
+		 */
+		virtual void setPass(const Pass* pass) = 0;
 	};
 }
