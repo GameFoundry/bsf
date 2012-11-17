@@ -142,6 +142,56 @@ namespace CamelotEngine
 		return mCachedLocalTfrm;
 	}
 
+	void GameObject::move(const Vector3& vec)
+	{
+		setPosition(mPosition + vec);
+	}
+
+	void GameObject::moveRelative(const Vector3& vec)
+	{
+		// Transform the axes of the relative vector by camera's local axes
+		Vector3 trans = mRotation * vec;
+
+		setPosition(mPosition + trans);
+	}
+
+	void GameObject::rotate(const Vector3& axis, const Radian& angle)
+	{
+		Quaternion q;
+		q.FromAngleAxis(angle,axis);
+		rotate(q);
+	}
+
+	void GameObject::rotate(const Quaternion& q)
+	{
+		// Note the order of the mult, i.e. q comes after
+
+		// Normalize the quat to avoid cumulative problems with precision
+		Quaternion qnorm = q;
+		qnorm.normalise();
+		setRotation(qnorm * mRotation);
+	}
+
+	void GameObject::roll(const Radian& angle)
+	{
+		// Rotate around local Z axis
+		Vector3 zAxis = mRotation * Vector3::UNIT_Z;
+		rotate(zAxis, angle);
+	}
+
+	void GameObject::yaw(const Radian& angle)
+	{
+		Vector3 yAxis = mRotation * Vector3::UNIT_Y;
+		rotate(yAxis, angle);
+	}
+
+	void GameObject::pitch(const Radian& angle)
+	{
+		// Rotate around local X axis
+		Vector3 xAxis = mRotation * Vector3::UNIT_X;
+		rotate(xAxis, angle);
+	}
+
 	void GameObject::markTfrmDirty() const
 	{
 		mIsCachedLocalTfrmUpToDate = false;
@@ -263,6 +313,17 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, 
 				"Trying to remove a child but it's not a child of the transform.");
 		}
+	}
+
+	ComponentPtr GameObject::getComponent(UINT32 typeId) const
+	{
+		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
+		{
+			if((*iter)->getRTTI()->getRTTIId() == typeId)
+				return *iter;
+		}
+
+		return nullptr;
 	}
 
 	void GameObject::destroyComponent(ComponentPtr component)

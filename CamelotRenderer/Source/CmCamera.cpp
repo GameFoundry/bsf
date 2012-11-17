@@ -656,8 +656,8 @@ namespace CamelotEngine {
 		if (!mCustomViewMatrix)
 		{
 			Matrix3 rot;
-			const Quaternion& orientation = getGameObject()->getWorldRotation();
-			const Vector3& position = getGameObject()->getWorldPosition();
+			const Quaternion& orientation = getGO()->getWorldRotation();
+			const Vector3& position = getGO()->getWorldPosition();
 
 			mViewMatrix = Math::makeViewMatrix(position, orientation, 0);
 		}
@@ -1154,7 +1154,7 @@ namespace CamelotEngine {
 		mWindowClipPlanes.clear();
         if (mProjType == PT_PERSPECTIVE)
         {
-            Vector3 position = getGameObject()->getWorldPosition();
+            Vector3 position = getGO()->getWorldPosition();
             mWindowClipPlanes.push_back(Plane(position, vw_bl, vw_ul));
             mWindowClipPlanes.push_back(Plane(position, vw_ul, vw_ur));
             mWindowClipPlanes.push_back(Plane(position, vw_ur, vw_br));
@@ -1315,7 +1315,7 @@ namespace CamelotEngine {
 		Quaternion invPlaneRot = pval.normal.getRotationTo(Vector3::UNIT_Z);
 
 		// get rotated light
-		Vector3 lPos = invPlaneRot * getGameObject()->getWorldPosition();
+		Vector3 lPos = invPlaneRot * getGO()->getWorldPosition();
 		Vector3 vec[4];
 		vec[0] = invPlaneRot * trCorner - lPos;
 		vec[1] = invPlaneRot * tlCorner - lPos; 

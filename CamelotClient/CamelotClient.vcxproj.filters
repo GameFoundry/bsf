@@ -27,6 +27,9 @@
     <ClInclude Include="TestingGround.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CmDebugCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestingGround.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmDebugCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

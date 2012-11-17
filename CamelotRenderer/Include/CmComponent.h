@@ -8,14 +8,21 @@ namespace CamelotEngine
 	class CM_EXPORT Component : public IReflectable
 	{
 	public:
-		GameObjectPtr getGameObject() const { return mParent.lock(); }
+		/**
+		 * @brief	Returns the GameObject this Component is assigned to.
+		 */
+		GameObjectPtr getGO() const { return mParent.lock(); }
 
-		// TODO - This shouldn't really be public since only GameObject should be allowed to add components.
-		// But then I have a problem that all derived classes need to have GameObject as a friend class.
-		Component(GameObjectPtr parent);
+		/**
+		 * @brief	Called once per frame on all components.
+		 */
+		virtual void update() = 0;
+
 		virtual ~Component();
 	protected:
 		friend class GameObject;
+
+		Component(GameObjectPtr parent);
 
 		/**
 		 * @brief	Destroys the Component and makes it unusable, without actually deleting it.

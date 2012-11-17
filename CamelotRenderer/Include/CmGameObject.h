@@ -4,6 +4,7 @@
 #include "CmMatrix4.h"
 #include "CmVector3.h"
 #include "CmQuaternion.h"
+#include "CmRTTIType.h"
 
 #include "boost/static_assert.hpp"
 
@@ -46,6 +47,64 @@ namespace CamelotEngine
 
 		const Matrix4& getWorldTfrm() const;
 		const Matrix4& getLocalTfrm() const;
+
+		/** Moves the object's position by the vector offset provided along world axes.
+        */
+        void move(const Vector3& vec);
+
+        /** Moves the object's position by the vector offset provided along it's own axes (relative to orientation).
+        */
+        void moveRelative(const Vector3& vec);
+
+		/**
+		 * @brief	Gets the Z (forward) axis of the object, in world space.
+		 *
+		 * @return	Forward axis of the object.
+		 */
+		Vector3 getForward() const { return mRotation * Vector3::UNIT_Z; }
+
+		/**
+		 * @brief	Gets the Y (up) axis of the object, in world space.
+		 *
+		 * @return	Up axis of the object.
+		 */
+		Vector3 getUp() const { return mRotation * Vector3::UNIT_Y; }
+
+		/**
+		 * @brief	Gets the X (right) axis of the object, in world space.
+		 *
+		 * @return	Right axis of the object.
+		 */
+		Vector3 getRight() const { return mRotation * Vector3::UNIT_X; }
+
+		/** Rotate the object around an arbitrary axis.
+        */
+        void rotate(const Vector3& axis, const Radian& angle);
+
+        /** Rotate the object around an arbitrary axis using a Quaternion.
+        */
+        void rotate(const Quaternion& q);
+
+		/**
+		 * @brief	Rotates around local Z axis.
+		 *
+		 * @param	angle	Angle to rotate by.
+		 */
+		void roll(const Radian& angle);
+
+		/**
+		 * @brief	Rotates around Y axis.
+		 *
+		 * @param	angle	Angle to rotate by.
+		 */
+		void yaw(const Radian& angle);
+
+		/**
+		 * @brief	Rotates around X axis
+		 *
+		 * @param	angle	Angle to rotate by.
+		 */
+		void pitch(const Radian& angle);
 
 	private:
 		String mName;
@@ -153,6 +212,39 @@ namespace CamelotEngine
 
 			return newComponent;
 		}
+
+		/**
+		 * @brief	Searches for a component with the specific type and returns the first one
+		 * 			it finds. 
+		 * 			
+		 * @note	Don't call this too often as it is relatively slow. It is more efficient 
+		 * 			to call it once and store the result for further use.
+		 *
+		 * @tparam	typename T	Type of the component.
+		 *
+		 * @return	Component if found, nullptr otherwise.
+		 */
+		template <typename T>
+		std::shared_ptr<T> getComponent()
+		{
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
+				"Specified type is not a valid Component.");
+
+			return std::static_pointer_cast<T>(getComponent(T::getRTTIStatic()->getRTTIId()));
+		}
+
+		/**
+		 * @brief	Searches for a component with the specified type id and returns the first one it
+		 * 			finds.
+		 * 			
+		 * 			@note	Don't call this too often as it is relatively slow. It is more efficient to
+		 * 			call it once and store the result for further use.
+		 *
+		 * @param	typeId	Identifier for the type.
+		 *
+		 * @return	Component if found, nullptr otherwise.
+		 */
+		ComponentPtr getComponent(UINT32 typeId) const;
 
 		/**
 		 * @brief	Removes the component from this GameObject, and deallocates it.

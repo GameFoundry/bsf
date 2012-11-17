@@ -539,10 +539,6 @@ namespace CamelotEngine {
 		vector<Vector4>::type getRayForwardIntersect(const Vector3& anchor, const Vector3 *dir, float planeOffset) const;
 
     public:
-		/** Standard constructor.
-        */
-		Camera(GameObjectPtr parent);
-
         /** Standard destructor.
         */
         virtual ~Camera();
@@ -620,6 +616,19 @@ namespace CamelotEngine {
 		    Forward projection may lead to intersections at infinity.
 		*/
 		void forwardIntersect(const Plane& worldPlane, vector<Vector4>::type* intersect3d) const;
+
+		/************************************************************************/
+		/* 						COMPONENT OVERRIDES                      		*/
+		/************************************************************************/
+	private:
+		friend class GameObject;
+
+		/** Standard constructor.
+        */
+		Camera(GameObjectPtr parent);
+
+	public:
+		virtual void update() {}
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
