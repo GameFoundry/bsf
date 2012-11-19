@@ -439,7 +439,7 @@ namespace CamelotEngine
 			<td>&nbsp;</td>
 		</tr>
 		*/
-		virtual RenderWindow* _createRenderWindow(const String &name, unsigned int width, unsigned int height, 
+		virtual RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList *miscParams = 0) = 0;
 
 		/** Creates multiple rendering windows.		

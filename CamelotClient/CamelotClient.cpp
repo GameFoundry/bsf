@@ -6,8 +6,20 @@
 #include "CmApplication.h"
 #include "CmDynLibManager.h"
 
-#include "TestingGround.h"
-#include "CmIReflectable.h"
+#include "CmGameObject.h"
+#include "CmCamera.h"
+#include "CmHighLevelGpuProgramManager.h"
+#include "CmRenderSystemManager.h"
+#include "CmRenderSystem.h"
+#include "CmRenderWindow.h"
+#include "CmResources.h"
+#include "CmRenderable.h"
+#include "CmMaterial.h"
+#include "CmShader.h"
+#include "CmTechnique.h"
+#include "CmPass.h"
+#include "CmImporter.h"
+#include "CmMesh.h"
 
 using namespace CamelotEngine;
 
@@ -16,16 +28,136 @@ int _tmain(int argc, _TCHAR* argv[])
 	gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
 	//gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
 
-	//RTTITypeBase* st = DbgSrlzTest::getRTTIStatic();
+	RenderSystem* renderSystem = RenderSystemManager::getActive();
+	RenderWindow* renderWindow = gApplication().getPrimaryRenderWindow();
 
-//	DbgSrlzTestST::startUp();
-//	TextureST::startUp();
+	GameObjectPtr cameraGO = GameObject::create("MainCamera");
+	CameraPtr camera = cameraGO->addComponent<Camera>();
 
-	test();
+	camera->init(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
+	cameraGO->setPosition(Vector3(0,50,1240));
+	cameraGO->lookAt(Vector3(0,50,-300));
+	camera->setNearClipDistance(5);
+	camera->setAspectRatio(800.0f / 600.0f);
+
+	GameObjectPtr testModelGO = GameObject::create("TestMesh");
+	RenderablePtr testRenderable = testModelGO->addComponent<Renderable>();
+
+	HighLevelGpuProgramPtr fragProg;
+	HighLevelGpuProgramPtr vertProg;
+
+	/////////////////// HLSL SHADERS //////////////////////////
+	//String fragShaderCode = "sampler2D tex;			\
+	//						float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
+	//						{														\
+	//						float4 color = tex2D(tex, uv);				\
+	//						return color;										\
+	//						}";
+
+	//fragProg =  HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	//fragProg->load();
+
+	//String vertShaderCode = "float4x4 matViewProjection;	\
+	//						void vs_main(										\
+	//						float4 inPos : POSITION,							\
+	//						float2 uv : TEXCOORD0,								\
+	//						out float4 oPosition : POSITION,					\
+	//						out float2 oUv : TEXCOORD0)							\
+	//						{														\
+	//						oPosition = mul(matViewProjection, inPos);			\
+	//						oUv = uv;											\
+	//						}";
+
+	//vertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	//vertProg->load();
+
+
+
+	/////////////////// CG SHADERS //////////////////////////
+	String fragShaderCode = "sampler2D tex;					\
+							float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
+							{														\
+							float4 color = tex2D(tex, uv);						\
+							return color;										\
+							}";
+
+	fragProg =  HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "ps_main", "cg", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	fragProg->init();
+
+	String vertShaderCode = "float4x4 matViewProjection;	\
+							void vs_main(										\
+							float4 inPos : POSITION,							\
+							float2 uv : TEXCOORD0,								\
+							out float4 oPosition : POSITION,					\
+							out float2 oUv : TEXCOORD0)							\
+							{														\
+							oPosition = mul(matViewProjection, inPos);			\
+							oUv = uv;											\
+							}";
+
+	vertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	vertProg->init();
+
+	HighLevelGpuProgramRef vertProgRef(vertProg);
+
+	gResources().create(vertProgRef, "C:\\vertProgCg.vprog", true);
+	vertProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\vertProgCg.vprog"));
+
+	HighLevelGpuProgramRef fragProgRef(fragProg);
+
+	gResources().create(fragProgRef, "C:\\fragProgCg.vprog", true);
+	fragProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\fragProgCg.vprog"));
+
+	///////////////// GLSL SHADERS ////////////////////////////
+	//String fragShaderCode = "uniform sampler2D tex; \
+	//							void main() \
+	//							  {\
+	//							  vec4 texColor = texture2D(tex,gl_TexCoord[0].st);\
+	//							  gl_FragColor = texColor; \
+	//							  }";
+
+	//fragProg = HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	//fragProg->load();
+
+	//// TODO - Ogres GLSL parsing requires some strict parameter naming, can that be avoided?
+	//String vertShaderCode = "uniform mat4 matViewProjection; \
+	//							  attribute vec4 vertex; \
+	//						void main() \
+	//							  { \
+	//							  gl_TexCoord[0] = gl_MultiTexCoord0; \
+	//							  gl_Position = matViewProjection * vertex; \
+	//							  }";
+
+	//vertProg = HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	//vertProg->load();
+
+	ShaderPtr testShader = ShaderPtr(new Shader("TestShader"));
+	TechniquePtr newTechnique = testShader->addTechnique("GLRenderSystem", "ForwardRenderer");
+	PassPtr newPass = newTechnique->addPass();
+	newPass->setVertexProgram(vertProgRef);
+	newPass->setFragmentProgram(fragProgRef);
+
+	MaterialRef testMaterial = MaterialPtr(new Material());
+	testMaterial->setShader(testShader);
+
+	TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
+	MeshRef dbgMesh = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
+
+	gResources().create(testTex, "C:\\ExportTest.tex", true);
+	gResources().create(dbgMesh, "C:\\ExportMesh.mesh", true);
+
+	testTex = static_resource_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
+	dbgMesh = static_resource_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
+
+	testMaterial->setTexture("tex", testTex);
+	gResources().create(testMaterial, "C:\\ExportMaterial.mat", true);
+
+	testMaterial = gResources().load("C:\\ExportMaterial.mat");
+
+	testRenderable->setMesh(dbgMesh);
+	testRenderable->setMaterial(testMaterial);
 
 	gApplication().runMainLoop();
-
-	int a = 5;
 
 	gApplication().shutDown();
 

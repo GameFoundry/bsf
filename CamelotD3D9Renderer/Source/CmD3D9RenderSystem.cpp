@@ -593,7 +593,7 @@ namespace CamelotEngine
 			miscParams["gamma"] = toString(hwGamma);
 			miscParams["monitorIndex"] = toString(static_cast<int>(mActiveD3DDriver->getAdapterNumber()));
 
-			autoWindow = _createRenderWindow( windowTitle, width, height, 
+			autoWindow = createRenderWindow( windowTitle, width, height, 
 				fullScreen, &miscParams );
 
 			// If we have 16bit depth buffer enable w-buffering.
@@ -635,7 +635,7 @@ namespace CamelotEngine
 		GpuProgramManager::shutDown();		
 	}
 	//---------------------------------------------------------------------
-	RenderWindow* D3D9RenderSystem::_createRenderWindow(const String &name, 
+	RenderWindow* D3D9RenderSystem::createRenderWindow(const String &name, 
 		unsigned int width, unsigned int height, bool fullScreen,
 		const NameValuePairList *miscParams)
 	{		
@@ -712,7 +712,7 @@ namespace CamelotEngine
 			const RenderWindowDescription& curRenderWindowDescription = renderWindowDescriptions[i];			
 			RenderWindow* curWindow = NULL;
 
-			curWindow = _createRenderWindow(curRenderWindowDescription.name, 
+			curWindow = createRenderWindow(curRenderWindowDescription.name, 
 				curRenderWindowDescription.width, 
 				curRenderWindowDescription.height, 
 				curRenderWindowDescription.useFullScreen, 

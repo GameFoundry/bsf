@@ -5,7 +5,7 @@
 
 namespace CamelotEngine
 {
-	class Material : public Resource
+	class CM_EXPORT Material : public Resource
 	{
 		struct ParamsPerPass
 		{
@@ -49,6 +49,8 @@ namespace CamelotEngine
 		void applyPass(UINT32 passIdx);
 
 		UINT32 getNumPasses() const;
+
+		PassPtr getPass(UINT32 passIdx) const;
 
 	private:
 		ShaderPtr mShader;

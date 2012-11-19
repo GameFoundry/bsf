@@ -2,6 +2,7 @@
 #include "CmGameObject.h"
 #include "CmComponent.h"
 #include "CmCamera.h"
+#include "CmRenderable.h"
 
 namespace CamelotEngine
 {
@@ -18,9 +19,27 @@ namespace CamelotEngine
 
 	vector<RenderablePtr>::type SceneManager::getVisibleRenderables(const CameraPtr camera) const
 	{
-		// TODO - Actually iterate over all game objects and find visible renderables
+		// TODO - Cull invisible objects
 
-		return vector<RenderablePtr>::type();
+		vector<RenderablePtr>::type renderables;
+
+		stack<GameObjectPtr>::type todo;
+		todo.push(mRootNode);
+
+		while(!todo.empty())
+		{
+			GameObjectPtr currentGO = todo.top();
+			todo.pop();
+
+			RenderablePtr curRenderable = currentGO->getComponent<Renderable>();
+			if(curRenderable != nullptr)
+				renderables.push_back(curRenderable);
+
+			for(int i = 0; i < currentGO->getNumChildren(); i++)
+				todo.push(currentGO->getChild(i));
+		}
+
+		return renderables;
 	}
 
 	void SceneManager::registerNewGO(GameObjectPtr node) 

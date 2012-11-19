@@ -121,6 +121,14 @@ namespace CamelotEngine
 		return mShader->getBestTechnique()->getNumPasses();
 	}
 
+	PassPtr Material::getPass(UINT32 passIdx) const
+	{
+		if(passIdx < 0 || passIdx >= mShader->getBestTechnique()->getNumPasses())
+			CM_EXCEPT(InvalidParametersException, "Invalid pass index.");
+
+		return mShader->getBestTechnique()->getPass(passIdx);
+	}
+
 	void Material::applyPass(UINT32 passIdx)
 	{
 		throwIfNotInitialized();

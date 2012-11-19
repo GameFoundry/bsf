@@ -58,12 +58,6 @@
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{7f8e94f3-6990-4723-965a-2b4f9346a7ee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\MOVETODLL">
-      <UniqueIdentifier>{f42d28e0-bbe6-4f52-a574-0e2725e3c223}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\MOVETODLL">
-      <UniqueIdentifier>{677211c0-a3d1-4e6a-8acf-f457349f1777}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Input">
       <UniqueIdentifier>{724588b9-04e2-4e9b-9467-b064ed44f05e}</UniqueIdentifier>
     </Filter>
@@ -265,9 +259,6 @@
     <ClInclude Include="Include\CmMaterial.h">
       <Filter>Header Files\Material</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmForwardRenderer.h">
-      <Filter>Header Files\MOVETODLL</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmResourceRef.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
@@ -434,9 +425,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmMaterial.cpp">
       <Filter>Source Files\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmForwardRenderer.cpp">
-      <Filter>Source Files\MOVETODLL</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmResourceRef.cpp">
       <Filter>Source Files\Resources</Filter>

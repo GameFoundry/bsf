@@ -956,7 +956,7 @@ namespace CamelotEngine {
 			const RenderWindowDescription& curRenderWindowDescription = renderWindowDescriptions[i];			
 			RenderWindow* curWindow = NULL;
 
-			curWindow = _createRenderWindow(curRenderWindowDescription.name, 
+			curWindow = createRenderWindow(curRenderWindowDescription.name, 
 				curRenderWindowDescription.width, 
 				curRenderWindowDescription.height, 
 				curRenderWindowDescription.useFullScreen, 
@@ -968,7 +968,7 @@ namespace CamelotEngine {
 		return true;
 	}
 	//---------------------------------------------------------------------
-	RenderWindow* GLRenderSystem::_createRenderWindow(const String &name, 
+	RenderWindow* GLRenderSystem::createRenderWindow(const String &name, 
 		unsigned int width, unsigned int height, bool fullScreen,
 		const NameValuePairList *miscParams)
 	{

@@ -24,9 +24,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TestingGround.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CmDebugCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -36,9 +33,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CamelotClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestingGround.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CmDebugCamera.cpp">

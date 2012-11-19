@@ -90,13 +90,11 @@
     <ClInclude Include="CmDebugCamera.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TestingGround.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CamelotClient.cpp" />
     <ClCompile Include="CmDebugCamera.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="TestingGround.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,9 +22,9 @@ namespace CamelotEngine
 			void runMainLoop();
 			void shutDown();
 
-			void DBG_renderSimpleFrame();
-
 			UINT32 getAppWindowId();
+
+			RenderWindow* getPrimaryRenderWindow() const { return mPrimaryRenderWindow; }
 
 			/**
 			 * @brief	Loads a plugin.
@@ -33,17 +33,8 @@ namespace CamelotEngine
 			 */
 			void loadPlugin(const String& pluginName);
 
-		private:
-			RenderWindow* mRenderWindow;
-			std::shared_ptr<Camera> mCamera;
-			HighLevelGpuProgramPtr mFragProg;
-			HighLevelGpuProgramPtr mVertProg;
-			TextureRef mDbgTexture;
-			MeshRef mDbgMesh;
-			GameObjectPtr mCameraGO;
-
-			ShaderPtr mTestShader;
-			MaterialRef mTestMaterial;
+	private:
+		RenderWindow* mPrimaryRenderWindow;
 	};
 
 	CM_EXPORT Application& gApplication();

@@ -5,6 +5,7 @@
 #include "CmVector3.h"
 #include "CmQuaternion.h"
 #include "CmRTTIType.h"
+#include "CmSceneManager.h"
 
 #include "boost/static_assert.hpp"
 
@@ -205,7 +206,7 @@ namespace CamelotEngine
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
-			std::shared_ptr<T> newComponent = std::shared_ptr<T>(new T(mThis.lock()));
+			std::shared_ptr<T> newComponent(new T(mThis.lock()));
 			mComponents.push_back(newComponent);
 
 			gSceneManager().notifyComponentAdded(newComponent);

@@ -184,7 +184,7 @@ namespace CamelotEngine
 		String validateConfigOptions();
 		RenderWindow* _initialise( bool autoCreateWindow, const String& windowTitle = "OGRE Render Window"  );
 		/// @copydoc RenderSystem::_createRenderWindow
-		RenderWindow* _createRenderWindow(const String &name, unsigned int width, unsigned int height, 
+		RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList *miscParams = 0);
 		
 		/// @copydoc RenderSystem::_createRenderWindows

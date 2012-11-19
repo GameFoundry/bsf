@@ -287,7 +287,7 @@ namespace CamelotEngine {
 			bool hwGamma = (opt->second.currentValue == "Yes");
 			winOptions["gamma"] = toString(hwGamma);
 
-            return renderSystem->_createRenderWindow(windowTitle, w, h, fullscreen, &winOptions);
+            return renderSystem->createRenderWindow(windowTitle, w, h, fullscreen, &winOptions);
         }
         else
         {

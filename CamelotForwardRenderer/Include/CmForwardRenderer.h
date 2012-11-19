@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "CmForwardRendererPrerequisites.h"
 #include "CmRenderer.h"
 
 namespace CamelotEngine
@@ -11,6 +11,12 @@ namespace CamelotEngine
 		virtual const String& getName() const;
 
 		virtual void renderAll();
-		virtual void render(const CameraPtr camera);
+		virtual void render(CameraPtr camera);
+
+	protected:
+		/**
+		 * @brief	Overriden from Renderer
+		 */
+		virtual void setPass(const PassPtr pass);
 	};
 }

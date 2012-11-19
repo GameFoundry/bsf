@@ -182,7 +182,7 @@ namespace CamelotEngine {
         void setLightingEnabled(bool enabled);
         
 		/// @copydoc RenderSystem::_createRenderWindow
-		RenderWindow* _createRenderWindow(const String &name, unsigned int width, unsigned int height, 
+		RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList *miscParams = 0);
 
 		/// @copydoc RenderSystem::_createRenderWindows
