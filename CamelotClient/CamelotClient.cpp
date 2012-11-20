@@ -21,12 +21,14 @@
 #include "CmImporter.h"
 #include "CmMesh.h"
 
+#include "CmDebugCamera.h"
+
 using namespace CamelotEngine;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
-	//gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
+	//gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
+	gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
 
 	RenderSystem* renderSystem = RenderSystemManager::getActive();
 	RenderWindow* renderWindow = gApplication().getPrimaryRenderWindow();
@@ -39,6 +41,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	cameraGO->lookAt(Vector3(0,50,-300));
 	camera->setNearClipDistance(5);
 	camera->setAspectRatio(800.0f / 600.0f);
+
+	std::shared_ptr<DebugCamera> debugCamera = cameraGO->addComponent<DebugCamera>();
 
 	GameObjectPtr testModelGO = GameObject::create("TestMesh");
 	RenderablePtr testRenderable = testModelGO->addComponent<Renderable>();
@@ -132,10 +136,19 @@ int _tmain(int argc, _TCHAR* argv[])
 	//vertProg->load();
 
 	ShaderPtr testShader = ShaderPtr(new Shader("TestShader"));
-	TechniquePtr newTechnique = testShader->addTechnique("GLRenderSystem", "ForwardRenderer");
-	PassPtr newPass = newTechnique->addPass();
-	newPass->setVertexProgram(vertProgRef);
-	newPass->setFragmentProgram(fragProgRef);
+	TechniquePtr newTechniqueGL = testShader->addTechnique("GLRenderSystem", "ForwardRenderer");
+	PassPtr newPassGL = newTechniqueGL->addPass();
+	newPassGL->setVertexProgram(vertProgRef);
+	newPassGL->setFragmentProgram(fragProgRef);
+
+
+	// TODO - I need to create different techniques for different render systems (and renderers, if there were any),
+	// which is redundant as some techniques can be reused. I should add a functionality that supports multiple
+	// render systems/renderers per technique
+	TechniquePtr newTechniqueDX = testShader->addTechnique("D3D9RenderSystem", "ForwardRenderer");
+	PassPtr newPassDX = newTechniqueDX->addPass();
+	newPassDX->setVertexProgram(vertProgRef);
+	newPassDX->setFragmentProgram(fragProgRef);
 
 	MaterialRef testMaterial = MaterialPtr(new Material());
 	testMaterial->setShader(testShader);

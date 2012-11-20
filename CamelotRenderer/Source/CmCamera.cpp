@@ -176,7 +176,6 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	const Matrix4& Camera::getProjectionMatrix(void) const
 	{
-
 		updateFrustum();
 
 		return mProjMatrix;
@@ -184,7 +183,6 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	const Matrix4& Camera::getProjectionMatrixWithRSDepth(void) const
 	{
-
 		updateFrustum();
 
 		return mProjMatrixRSDepth;
@@ -192,7 +190,6 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	const Matrix4& Camera::getProjectionMatrixRS(void) const
 	{
-
 		updateFrustum();
 
 		return mProjMatrixRS;
@@ -656,8 +653,8 @@ namespace CamelotEngine {
 		if (!mCustomViewMatrix)
 		{
 			Matrix3 rot;
-			const Quaternion& orientation = getGO()->getWorldRotation();
-			const Vector3& position = getGO()->getWorldPosition();
+			const Quaternion& orientation = gameObject()->getWorldRotation();
+			const Vector3& position = gameObject()->getWorldPosition();
 
 			mViewMatrix = Math::makeViewMatrix(position, orientation, 0);
 		}
@@ -1154,7 +1151,7 @@ namespace CamelotEngine {
 		mWindowClipPlanes.clear();
         if (mProjType == PT_PERSPECTIVE)
         {
-            Vector3 position = getGO()->getWorldPosition();
+            Vector3 position = gameObject()->getWorldPosition();
             mWindowClipPlanes.push_back(Plane(position, vw_bl, vw_ul));
             mWindowClipPlanes.push_back(Plane(position, vw_ul, vw_ur));
             mWindowClipPlanes.push_back(Plane(position, vw_ur, vw_br));
@@ -1315,7 +1312,7 @@ namespace CamelotEngine {
 		Quaternion invPlaneRot = pval.normal.getRotationTo(Vector3::UNIT_Z);
 
 		// get rotated light
-		Vector3 lPos = invPlaneRot * getGO()->getWorldPosition();
+		Vector3 lPos = invPlaneRot * gameObject()->getWorldPosition();
 		Vector3 vec[4];
 		vec[0] = invPlaneRot * trCorner - lPos;
 		vec[1] = invPlaneRot * tlCorner - lPos; 

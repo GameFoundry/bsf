@@ -84,6 +84,8 @@ namespace CamelotEngine {
             *apkQuat[j] = (kRot[j][i]+kRot[i][j])*fRoot;
             *apkQuat[k] = (kRot[k][i]+kRot[i][k])*fRoot;
         }
+
+		normalise();
     }
     //-----------------------------------------------------------------------
     void Quaternion::ToRotationMatrix (Matrix3& kRot) const

@@ -11,7 +11,12 @@ namespace CamelotEngine
 		/**
 		 * @brief	Returns the GameObject this Component is assigned to.
 		 */
-		GameObjectPtr getGO() const { return mParent.lock(); }
+		GameObjectPtr gameObject() const { return mParent.lock(); }
+
+		/**
+		 * @brief	Same as gameObject(), just a shorter name.
+		 */
+		GameObjectPtr GO() const { return gameObject(); }
 
 		/**
 		 * @brief	Called once per frame on all components.

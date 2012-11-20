@@ -17,11 +17,14 @@ namespace CamelotEngine
 	DebugCamera::DebugCamera(GameObjectPtr parent)
 		:Component(parent), mGoingForward(false), mGoingBack(false), mGoingLeft(false), mGoingRight(false), mFastMove(false), mCameraRotating(false)
 	{
-		mCamera = getGO()->getComponent<Camera>();
-
-		mCamera->getGO()->setPosition(Vector3(0,0,80));
-		mCamera->getGO()->lookAt(Vector3(0,0,-300));
+		mCamera = gameObject()->getComponent<Camera>();
 		mCamera->setNearClipDistance(5);
+
+		//gameObject()->setPosition(Vector3(0,0,5050));
+		//gameObject()->lookAt(Vector3(0,0,-300));
+
+		gameObject()->setPosition(Vector3(0,0,0));
+		gameObject()->lookAt(Vector3(0,0,-1));
 
 		gInput().onKeyDown.connect(boost::bind(&DebugCamera::keyDown, this, _1));
 		gInput().onKeyUp.connect(boost::bind(&DebugCamera::keyUp, this, _1));
@@ -77,10 +80,10 @@ namespace CamelotEngine
 	void DebugCamera::update()
 	{
 		Vector3 direction = Vector3::ZERO;
-		if (mGoingForward) direction += mCamera->getGO()->getForward();
-		if (mGoingBack) direction -= mCamera->getGO()->getForward();
-		if (mGoingRight) direction += mCamera->getGO()->getRight();
-		if (mGoingLeft) direction -= mCamera->getGO()->getRight();
+		if (mGoingForward) direction += GO()->getForward();
+		if (mGoingBack) direction -= GO()->getForward();
+		if (mGoingRight) direction += GO()->getRight();
+		if (mGoingLeft) direction -= GO()->getRight();
 
 		if (direction.squaredLength() != 0)
 		{
@@ -102,15 +105,32 @@ namespace CamelotEngine
 		if(mCurrentSpeed > tooSmall)
 		{
 			Vector3 velocity = direction * mCurrentSpeed;
-			mCamera->getGO()->move(velocity * gTime().getFrameDelta());
+			GO()->move(velocity * gTime().getFrameDelta());
 		}
 
 		if(mCameraRotating)
 		{
 			//float horizontalSpeed = event.relX / gTime().getFrameDelta();
 
-			mCamera->getGO()->yaw(Degree(gInput().getHorizontalAxis() * ROTATION_SPEED));
-			mCamera->getGO()->pitch(Degree(gInput().getVerticalAxis() * ROTATION_SPEED));
+			GO()->yaw(Degree(gInput().getHorizontalAxis() * ROTATION_SPEED));
+			GO()->pitch(Degree(gInput().getVerticalAxis() * ROTATION_SPEED));
+
+			// Prevent roll due to inprecision
+			Vector3 validRight = GO()->getForward().crossProduct(Vector3::UP);
+
+			if(GO()->getForward().dotProduct(Vector3::UP) > 0.5f)
+			{
+				validRight = GO()->getForward().crossProduct(-Vector3::FORWARD);
+			}
+
+			Quaternion rightRot = GO()->getRight().getRotationTo(validRight);
+			//if(validRight.dotProduct(Vector3::RIGHT) < 0.0f)
+			//{
+			//	rightRot.w = -rightRot.w;
+			//}
+
+
+			GO()->setRotation(GO()->getRotation() * rightRot);
 		}
 	}
 }

@@ -114,16 +114,11 @@ namespace CamelotEngine
 		Vector3 forward = location - mPosition;
 		forward.normalise();
 
-		Vector3 upCopy = up;
-		upCopy.normalise();
+		// TODO - I'm ignoring "up" direction
+		setForward(forward);
 
-		Vector3 right = forward.crossProduct(up);
-		right.normalise();
-
-		Quaternion newRotation;
-		newRotation.FromAxes(right, upCopy, forward);
-
-		setRotation(newRotation);
+		Quaternion upRot = getUp().getRotationTo(up);
+		setRotation(getRotation() * upRot);
 	}
 
 	const Matrix4& GameObject::getWorldTfrm() const
@@ -190,6 +185,32 @@ namespace CamelotEngine
 		// Rotate around local X axis
 		Vector3 xAxis = mRotation * Vector3::UNIT_X;
 		rotate(xAxis, angle);
+	}
+
+	void GameObject::setForward(const Vector3& forwardDir)
+	{
+		if (forwardDir == Vector3::ZERO) 
+			return;
+
+		Vector3 nrmForwardDir = forwardDir.normalisedCopy();
+		Vector3 currentForwardDir = getForward();
+		
+		const Quaternion& currentRotation = getWorldRotation();
+		Quaternion targetRotation;
+		if ((nrmForwardDir+currentForwardDir).squaredLength() < 0.00005f)
+		{
+			// Oops, a 180 degree turn (infinite possible rotation axes)
+			// Default to yaw i.e. use current UP
+			targetRotation = Quaternion(-currentRotation.y, -currentRotation.z, currentRotation.w, currentRotation.x);
+		}
+		else
+		{
+			// Derive shortest arc to new direction
+			Quaternion rotQuat = currentForwardDir.getRotationTo(nrmForwardDir);
+			targetRotation = rotQuat * currentRotation;
+		}
+
+		setRotation(targetRotation);
 	}
 
 	void GameObject::markTfrmDirty() const

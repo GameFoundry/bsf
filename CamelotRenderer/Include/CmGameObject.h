@@ -62,21 +62,31 @@ namespace CamelotEngine
 		 *
 		 * @return	Forward axis of the object.
 		 */
-		Vector3 getForward() const { return mRotation * Vector3::UNIT_Z; }
+		Vector3 getForward() const { return getWorldRotation() * Vector3::NEGATIVE_UNIT_Z; }
 
 		/**
 		 * @brief	Gets the Y (up) axis of the object, in world space.
 		 *
 		 * @return	Up axis of the object.
 		 */
-		Vector3 getUp() const { return mRotation * Vector3::UNIT_Y; }
+		Vector3 getUp() const { return getWorldRotation() * Vector3::UNIT_Y; }
 
 		/**
 		 * @brief	Gets the X (right) axis of the object, in world space.
 		 *
 		 * @return	Right axis of the object.
 		 */
-		Vector3 getRight() const { return mRotation * Vector3::UNIT_X; }
+		Vector3 getRight() const { return getWorldRotation() * Vector3::UNIT_X; }
+
+		/**
+		 * @brief	Rotates the game object so it's forward axis faces the provided
+		 * 			direction.
+		 * 			
+		 * @note	Local forward axis is considered to be negative Z.
+		 *
+		 * @param	forwardDir	The forward direction to face, in world space.
+		 */
+		void setForward(const Vector3& forwardDir);
 
 		/** Rotate the object around an arbitrary axis.
         */
@@ -253,6 +263,11 @@ namespace CamelotEngine
 		 * @param [in]	component	The component to destroy.
 		 */
 		void destroyComponent(ComponentPtr component);
+
+		/**
+		 * @brief	Returns all components on this GameObject.
+		 */
+		vector<ComponentPtr>::type& getComponents() { return mComponents; }
 
 	private:
 		vector<ComponentPtr>::type mComponents;

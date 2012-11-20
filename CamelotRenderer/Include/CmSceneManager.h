@@ -19,6 +19,8 @@ namespace CamelotEngine
 
 		GameObjectPtr getRootNode() const { return mRootNode; }
 
+		virtual void update();
+
 		/**
 		 * @brief	Returns all cameras in the scene.
 		 */

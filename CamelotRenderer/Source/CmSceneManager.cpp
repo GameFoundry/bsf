@@ -17,6 +17,28 @@ namespace CamelotEngine
 			mRootNode->destroy();
 	}
 
+	void SceneManager::update()
+	{
+		stack<GameObjectPtr>::type todo;
+		todo.push(mRootNode);
+
+		while(!todo.empty())
+		{
+			GameObjectPtr currentGO = todo.top();
+			todo.pop();
+			                  
+			vector<ComponentPtr>::type components = currentGO->getComponents();
+
+			for(auto iter = components.begin(); iter != components.end(); ++iter)
+			{
+				(*iter)->update();
+			}
+
+			for(int i = 0; i < currentGO->getNumChildren(); i++)
+				todo.push(currentGO->getChild(i));
+		}
+	}
+
 	vector<RenderablePtr>::type SceneManager::getVisibleRenderables(const CameraPtr camera) const
 	{
 		// TODO - Cull invisible objects

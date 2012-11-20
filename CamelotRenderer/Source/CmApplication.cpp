@@ -71,6 +71,8 @@ namespace CamelotEngine
 		{
 			WindowEventUtilities::messagePump();
 
+			gSceneManager().update();
+
 			RendererManager::getActive()->renderAll();
 
 			gTime().update();

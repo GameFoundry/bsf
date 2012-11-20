@@ -16,36 +16,47 @@ namespace CamelotEngine
 
 		/**
 		 * @brief	Gets the time elapsed since application start.
+		 * 			Only gets updated once per frame.
 		 *
 		 * @return	The time since application start, in seconds.
 		 */
-		float getTime() { return mTimeSinceStart; }
+		float getTime() const { return mTimeSinceStart; }
 
 		/**
 		 * @brief	Gets the time elapsed since application start.
+		 * 			Only gets updated once per frame.
 		 *
 		 * @return	The time since application start, in miliseconds.
 		 */
-		UINT64 getTimeMs() { return mTimeSinceStartMs; }
+		UINT64 getTimeMs() const { return mTimeSinceStartMs; }
 
 		/**
 		 * @brief	Gets the time since last frame was executed.
+		 * 			Only gets updated once per frame.
 		 *
 		 * @return	Time since last frame was executed, in seconds.
 		 */
-		float getFrameDelta() { return mFrameDelta; }
+		float getFrameDelta() const { return mFrameDelta; }
 
 		/**
 		 * @brief	Returns the number of the current frame. First frame is 0.
 		 *
 		 * @return	The current frame.
 		 */
-		unsigned long getCurrentFrameNumber() { return mCurrentFrame; }
+		unsigned long getCurrentFrameNumber() const { return mCurrentFrame; }
 
 		/**
-		 * @brief	Called when the application is first started. Should only be called by Application.
+		 * @brief	Returns the precise time since application start, in microseconds.
+		 * 			Unlike other getTime methods this time is not only updated every frame,
+		 * 			but will return exact time at the moment it is called.
+		 * 			
+		 * @note	You will generally only want to use this for performance measurements and similar.
+		 * 			Use non-precise methods in majority of code as it is useful to keep the time value equal
+		 * 			in all methods during a single frame.
+		 *
+		 * @return	Time in microseconds.
 		 */
-		void init();
+		UINT64 getTimePrecise() const;
 
 		/**
 		 * @brief	Called every frame. Should only be called by Application.
