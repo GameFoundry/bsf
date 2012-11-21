@@ -23,6 +23,6 @@ namespace CamelotEngine
 		/**
 		 * @brief	Sets the currently active pass.
 		 */
-		virtual void setPass(PassPtr pass) = 0;
+		virtual void setPass(const PassPtr pass) = 0;
 	};
 }

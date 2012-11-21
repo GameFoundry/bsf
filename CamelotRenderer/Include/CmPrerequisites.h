@@ -91,7 +91,7 @@ namespace CamelotEngine {
     class RenderWindow;
     class RenderOperation;
     class StringInterface;
-    class TextureState;
+    class SamplerState;
     class TextureManager;
     class Viewport;
     class VertexBufferBinding;
@@ -168,7 +168,9 @@ namespace CamelotEngine
 		TID_Material = 1017,
 		TID_MaterialParams = 1018,
 		TID_FloatParamKVP = 1019,
-		TID_MaterialTexParamKVP = 1020
+		TID_MaterialTexParamKVP = 1020,
+		TID_SamplerState = 1021,
+		TID_SamplerStateParamKVP = 1022
 	};
 }
 

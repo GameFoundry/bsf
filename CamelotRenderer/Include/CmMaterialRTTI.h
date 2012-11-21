@@ -113,12 +113,50 @@ namespace CamelotEngine
 			}
 		};
 
+		class SamplerStateParamKVPRTTI;
+		typedef KeyValuePair<String, SamplerState, SamplerStateParamKVPRTTI> SamplerStateKVP;
+
+		class SamplerStateParamKVPRTTI : public RTTIType<SamplerStateKVP, IReflectable, SamplerStateParamKVPRTTI>
+		{
+		private:
+			String& getKey(SamplerStateKVP* obj) { return obj->mKey; }
+			void setKey(SamplerStateKVP* obj,  String& val) { obj->mKey = val; }
+
+			SamplerState& getValue(SamplerStateKVP* obj) { return obj->mValue; }
+			void setValue(SamplerStateKVP* obj,  SamplerState& val) { obj->mValue = val; }
+
+		public:
+			SamplerStateParamKVPRTTI()
+			{
+				addPlainField("mKey", 0, &SamplerStateParamKVPRTTI::getKey, &SamplerStateParamKVPRTTI::setKey);
+				addPlainField("mValue", 1, &SamplerStateParamKVPRTTI::getValue, &SamplerStateParamKVPRTTI::setValue);
+			}
+
+		public:
+			virtual const String& getRTTIName()
+			{
+				static String name = "SamplerStateKVP";
+				return name;
+			}
+
+			virtual UINT32 getRTTIId()
+			{
+				return TID_SamplerStateParamKVP;
+			}
+
+			virtual std::shared_ptr<IReflectable> newRTTIObject()
+			{
+				return std::shared_ptr<SamplerStateKVP>(new SamplerStateKVP());
+			}
+		};
+
 		class MaterialParamsRTTI;
 
 		struct MaterialParams : public IReflectable
 		{
 			map<String, FloatParam>::type mFloatParams;
 			map<String, TextureRef>::type mTextureParams;
+			map<String, SamplerState>::type mSamplerStateParams;
 
 			vector<float>::type mFloatBuffer;
 
@@ -140,6 +178,7 @@ namespace CamelotEngine
 			{
 				vector<std::shared_ptr<FloatParamKVP>>::type mFloatParams;
 				vector<std::shared_ptr<TexParamKVP>>::type mTexParams;
+				vector<std::shared_ptr<SamplerStateKVP>>::type mSamplerStateParams;
 			};
 
 			std::shared_ptr<FloatParamKVP> getFloatParam(MaterialParams* obj, UINT32 idx)
@@ -206,6 +245,38 @@ namespace CamelotEngine
 				return obj->mTextureParams.size();
 			}
 
+			std::shared_ptr<SamplerStateKVP> getSamplerStateParam(MaterialParams* obj, UINT32 idx)
+			{
+				UINT32 curIdx = 0;
+				for(auto iter = obj->mSamplerStateParams.begin(); iter != obj->mSamplerStateParams.end(); ++iter)
+				{
+					if(curIdx == idx)
+					{
+						return std::shared_ptr<SamplerStateKVP>(new SamplerStateKVP(iter->first, iter->second));
+					}
+
+					curIdx++;
+				}
+
+				CM_EXCEPT(InternalErrorException, "Invalid index.");
+			}
+
+			void setSamplerStateParam(MaterialParams* obj, UINT32 idx, std::shared_ptr<SamplerStateKVP> value)
+			{
+				TempParams* tempParams = boost::any_cast<TempParams*>(obj->mRTTIData);
+				tempParams->mSamplerStateParams.push_back(value);
+			}
+
+			void setNumSamplerStateParams(MaterialParams* obj, UINT32 size)
+			{
+				// Do nothing. Map is expanded automatically as entries are added
+			}
+
+			UINT32 getNumSamplerStateParams(MaterialParams* obj)
+			{
+				return obj->mSamplerStateParams.size();
+			}
+
 			ManagedDataBlock getFloatBuffer(MaterialParams* obj)
 			{
 				size_t bufferSize = obj->mFloatBuffer.size();
@@ -235,7 +306,9 @@ namespace CamelotEngine
 					&MaterialParamsRTTI::setFloatParam, &MaterialParamsRTTI::setNumFloatParams);
 				addReflectablePtrArrayField("mTexParams", 1, &MaterialParamsRTTI::getTexParam, &MaterialParamsRTTI::getNumTexParams, 
 					&MaterialParamsRTTI::setTexParam, &MaterialParamsRTTI::setNumTexParams);
-				addDataBlockField("mFloatBuffer", 2, &MaterialParamsRTTI::getFloatBuffer, &MaterialParamsRTTI::setFloatBuffer);
+				addReflectablePtrArrayField("mSamplerStateParams", 2, &MaterialParamsRTTI::getSamplerStateParam, &MaterialParamsRTTI::getNumSamplerStateParams, 
+					&MaterialParamsRTTI::setSamplerStateParam, &MaterialParamsRTTI::setNumSamplerStateParams);
+				addDataBlockField("mFloatBuffer", 3, &MaterialParamsRTTI::getFloatBuffer, &MaterialParamsRTTI::setFloatBuffer);
 			}
 
 			virtual void onDeserializationStarted(IReflectable* obj)
@@ -268,6 +341,12 @@ namespace CamelotEngine
 				{
 					std::shared_ptr<TexParamKVP> texParam = *iter;
 					materialParams->mTextureParams[texParam->mKey] = texParam->mValue;
+				}
+
+				for(auto iter = tempParams->mSamplerStateParams.begin(); iter != tempParams->mSamplerStateParams.end(); ++iter)
+				{
+					std::shared_ptr<SamplerStateKVP> samplerStateParam = *iter;
+					materialParams->mSamplerStateParams[samplerStateParam->mKey] = samplerStateParam->mValue;
 				}
 
 				materialParams->mRTTIData = nullptr;

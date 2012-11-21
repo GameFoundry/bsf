@@ -25,8 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __TextureState_H__
-#define __TextureState_H__
+#pragma once
 
 #include "CmPrerequisites.h"
 #include "CmCommon.h"
@@ -42,24 +41,17 @@ namespace CamelotEngine {
 	/** \addtogroup Materials
 	*  @{
 	*/
-	/** Class representing the state of a single texture unit during a Pass of a
+	/** Class representing the state of a single sampler unit during a Pass of a
         Technique, of a Material.
     @remarks
-        Texture units are pipelines for retrieving texture data for rendering onto
-        your objects in the world. Using them is common to both the fixed-function and 
-        the programmable (vertex and fragment program) pipeline, but some of the 
-        settings will only have an effect in the fixed-function pipeline (for example, 
-        setting a texture rotation will have no effect if you use the programmable
-        pipeline, because this is overridden by the fragment program). The effect
-        of each setting as regards the 2 pipelines is commented in each setting.
-    @par
-        When I use the term 'fixed-function pipeline' I mean traditional rendering
-        where you do not use vertex or fragment programs (shaders). Programmable 
-        pipeline means that for this pass you are using vertex or fragment programs.
+        Sampler units are pipelines for retrieving texture data for rendering onto
+        your objects in the world. 
     */
-	class CM_EXPORT TextureState
+	class CM_EXPORT SamplerState
     {
     public:
+
+		static SamplerState EMPTY;
 
         /** Texture addressing modes - default is TAM_WRAP.
         @note
@@ -98,15 +90,15 @@ namespace CamelotEngine {
 
         /** Default constructor.
         */
-        TextureState(TextureType type);
+        SamplerState();
 
-        TextureState(const TextureState& oth );
+        SamplerState(const SamplerState& oth );
 
-        TextureState & operator = ( const TextureState& oth );
+        SamplerState & operator = ( const SamplerState& oth );
 
         /** Default destructor.
         */
-        ~TextureState();
+        ~SamplerState();
 
 		/** The type of unit to bind the texture settings to. */
 		enum BindingType
@@ -133,50 +125,6 @@ namespace CamelotEngine {
 		/** Gets the type of unit these texture settings should be bound to.  
 		*/
 		BindingType getBindingType(void) const;
-
-        /** Returns true if this texture unit is either a series of 6 2D textures, each
-            in it's own frame, or is a full 3D cube map. You can tell which by checking
-            getTextureType.
-        @note
-        Applies to both fixed-function and programmable pipeline.
-        */
-        bool isCubic(void) const;
-
-        /** Returns true if this texture layer uses a composite 3D cubic texture.
-        @note
-        Applies to both fixed-function and programmable pipeline.
-        */
-        bool is3D(void) const;
-
-        /** Returns the type of this texture.
-        @note
-        Applies to both fixed-function and programmable pipeline.
-        */
-        TextureType getTextureType(void) const;
-
-        /** Sets the desired pixel format when load the texture.
-        */
-        void setDesiredFormat(PixelFormat desiredFormat);
-
-        /** Gets the desired pixel format when load the texture.
-        */
-        PixelFormat getDesiredFormat(void) const;
-
-        /** Sets how many mipmaps have been requested for the texture.
-		*/
-        void setNumMipmaps(int numMipmaps);
-
-        /** Gets how many mipmaps have been requested for the texture.
-		*/
-        int getNumMipmaps(void) const;
-
-		/** Sets whether this texture is requested to be loaded as alpha if single channel
-		*/
-        void setIsAlpha(bool isAlpha);
-
-		/** Gets whether this texture is requested to be loaded as alpha if single channel
-		*/
-        bool getIsAlpha(void) const;
 
 		/// @copydoc Texture::setHardwareGammaEnabled
 		void setHardwareGammaEnabled(bool enabled);
@@ -272,14 +220,8 @@ namespace CamelotEngine {
 		*/
 		float getTextureMipmapBias(void) const { return mMipmapBias; }
 protected:
-        // State
-        TextureType mTextureType; 
-        PixelFormat mDesiredFormat;
-		int mTextureSrcMipmaps; // Request number of mipmaps
-
         UVWAddressingMode mAddressMode;
 
-        bool mIsAlpha;
 		bool mHwGamma;
 
         /// Texture filtering - minification
@@ -293,8 +235,6 @@ protected:
 		/// Mipmap bias (always float, not float)
 		float mMipmapBias;
 
-        bool mIsDefaultAniso;
-        bool mIsDefaultFiltering;
 		/// Binding type (fragment or vertex pipeline)
 		BindingType mBindingType;
     };
@@ -303,5 +243,3 @@ protected:
 	/** @} */
 
 }
-
-#endif

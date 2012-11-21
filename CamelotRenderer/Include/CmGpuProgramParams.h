@@ -31,6 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmRenderOperation.h"
+#include "CmSamplerState.h"
 
 namespace CamelotEngine {
 
@@ -336,6 +337,17 @@ namespace CamelotEngine {
 	};
 	typedef std::shared_ptr<GpuLogicalBufferStruct> GpuLogicalBufferStructPtr;
 
+	/**
+	 * @brief	Contains a reference to a texture together with it's sampler properties
+	 */
+	struct GpuTextureEntry
+	{
+		TextureRef texture;
+		SamplerState samplerState;
+	};
+
+	typedef std::shared_ptr<GpuTextureEntry> GpuTextureEntryPtr;
+
 	/** Definition of container that holds the current float constants.
 	@note Not necessarily in direct index order to constant indexes, logical
 	to physical index map is derived from GpuProgram
@@ -350,7 +362,7 @@ namespace CamelotEngine {
 	@note Not necessarily in direct index order to constant indexes, logical
 	to physical index map is derived from GpuProgram
 	*/
-	typedef vector<TextureRef>::type TextureList;
+	typedef vector<GpuTextureEntryPtr>::type TextureList;
 
 	/** Collects together the program parameters used for a GpuProgram.
 	@remarks
@@ -720,7 +732,8 @@ namespace CamelotEngine {
 		/// Get a pointer to the 'nth' item in the int buffer
 		const int* getIntPointer(size_t pos) const { return &mIntConstants[pos]; }
 		const GpuLogicalBufferStructPtr& getSamplerLogicalBufferStruct() const { return mSamplerLogicalToPhysical; }
-		TextureRef getTexture(size_t pos) const { return mTextures[pos];}
+		TextureRef getTexture(size_t pos) const;
+		const SamplerState& getSamplerState(size_t pos) const;
 		/// Get a reference to the list of textures
 		const TextureList& getTextureList() const { return mTextures; }
 
@@ -748,6 +761,28 @@ namespace CamelotEngine {
 		@param val The value to set
 		*/
 		void setNamedConstant(const String& name, TextureRef val);
+
+		/** Sets a sampler state to the program. Name of the sampler should be the same
+		as the name of the texture parameter it is being set for.
+		@remarks
+		Different types of GPU programs support different types of constant parameters.
+		For example, it's relatively common to find that vertex programs only support
+		floating point constants, and that fragment programs only support integer (fixed point)
+		parameters. This can vary depending on the program version supported by the
+		graphics card being used. You should consult the documentation for the type of
+		low level program you are using, or alternatively use the methods
+		provided on RenderSystemCapabilities to determine the options.
+		@par
+		Another possible limitation is that some systems only allow constants to be set
+		on certain boundaries, e.g. in sets of 4 values for example. Again, see
+		RenderSystemCapabilities for full details.
+		@note
+		This named option will only work if you are using a parameters object created
+		from a high-level program (HighLevelGpuProgram).
+		@param name The name of the parameter
+		@param val The value to set
+		*/
+		void setNamedConstant(const String& name, const SamplerState& val);
 
 		/** Sets a single value constant floating-point parameter to the program.
 		@remarks

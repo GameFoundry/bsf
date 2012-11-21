@@ -231,7 +231,7 @@ namespace CamelotEngine
 		void _setVertexTexture(size_t unit, const TexturePtr& tex);
 		void _disableTextureUnit(size_t texUnit);
 		void _setTextureCoordSet( size_t unit, size_t index );
-        void _setTextureAddressingMode(size_t stage, const TextureState::UVWAddressingMode& uvw);
+        void _setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw);
         void _setTextureBorderColour(size_t stage, const Color& colour);
 		void _setTextureMipmapBias(size_t unit, float bias);
 		void _setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );

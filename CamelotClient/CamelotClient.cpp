@@ -153,7 +153,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	MaterialRef testMaterial = MaterialPtr(new Material());
 	testMaterial->setShader(testShader);
 
-	TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));
+	/*TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));*/
+	TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));
 	MeshRef dbgMesh = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
 
 	gResources().create(testTex, "C:\\ExportTest.tex", true);

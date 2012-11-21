@@ -118,9 +118,6 @@
     <ClInclude Include="Include\CmVertexIndexData.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmTextureState.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmRenderWindow.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -307,6 +304,9 @@
     <ClInclude Include="Include\Win32\CmOSCursorImpl.h">
       <Filter>Header Files\Win32</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmSamplerState.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -378,9 +378,6 @@
     <ClCompile Include="Source\CmRenderWindow.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmTextureState.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmVertexIndexData.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
@@ -449,6 +446,9 @@
     </ClCompile>
     <ClCompile Include="Source\Win32\CmOSCursorImpl.cpp">
       <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmSamplerState.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

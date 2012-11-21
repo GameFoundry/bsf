@@ -278,7 +278,7 @@ namespace CamelotEngine {
         return mActiveViewport;
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::_setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, TextureState& tl)
+    void RenderSystem::_setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, SamplerState& tl)
     {
         // This method is only ever called to set a texture unit to valid details
         // The method _disableTextureUnit is called to turn a unit off
@@ -287,7 +287,7 @@ namespace CamelotEngine {
 		if (mCurrentCapabilities->hasCapability(RSC_VERTEX_TEXTURE_FETCH) &&
 			!mCurrentCapabilities->getVertexTextureUnitsShared())
 		{
-			if (tl.getBindingType() == TextureState::BT_VERTEX)
+			if (tl.getBindingType() == SamplerState::BT_VERTEX)
 			{
 				// Bind vertex texture
 				_setVertexTexture(texUnit, tex);
@@ -322,7 +322,7 @@ namespace CamelotEngine {
 		_setTextureMipmapBias(texUnit, tl.getTextureMipmapBias());
 
         // Texture addressing mode
-        const TextureState::UVWAddressingMode& uvw = tl.getTextureAddressingMode();
+        const SamplerState::UVWAddressingMode& uvw = tl.getTextureAddressingMode();
         _setTextureAddressingMode(texUnit, uvw);
     }
 	//-----------------------------------------------------------------------

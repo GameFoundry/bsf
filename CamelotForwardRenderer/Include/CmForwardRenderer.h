@@ -11,7 +11,7 @@ namespace CamelotEngine
 		virtual const String& getName() const;
 
 		virtual void renderAll();
-		virtual void render(CameraPtr camera);
+		virtual void render(const CameraPtr camera);
 
 	protected:
 		/**

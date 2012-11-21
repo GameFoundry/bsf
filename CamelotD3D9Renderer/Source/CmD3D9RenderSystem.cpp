@@ -1833,7 +1833,7 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setTextureAddressingMode( size_t stage, 
-		const TextureState::UVWAddressingMode& uvw )
+		const SamplerState::UVWAddressingMode& uvw )
 	{
 		HRESULT hr;
 		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_ADDRESSU, D3D9Mappings::get(uvw.u, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps()) ) ) )

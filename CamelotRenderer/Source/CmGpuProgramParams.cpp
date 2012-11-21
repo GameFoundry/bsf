@@ -396,7 +396,7 @@ namespace CamelotEngine
 	void GpuProgramParameters::_readTexture(size_t physicalIndex, TextureRef& dest)
 	{
 		assert(physicalIndex < mTextures.size());
-		dest = mTextures[physicalIndex];
+		dest = mTextures[physicalIndex]->texture;
 	}
 	//---------------------------------------------------------------------
 	GpuLogicalIndexUse* GpuProgramParameters::_getFloatConstantLogicalIndexUse(
@@ -670,7 +670,26 @@ namespace CamelotEngine
 		const GpuConstantDefinition* def = _findNamedConstantDefinition(name, true);
 
 		return *def;
+	}
+	//----------------------------------------------------------------------------
+	TextureRef GpuProgramParameters::getTexture(size_t pos) const 
+	{ 
+		if(mTextures[pos] == nullptr)
+		{
+			return TextureRef();
+		}
 
+		return mTextures[pos]->texture; 
+	}
+	//----------------------------------------------------------------------------
+	const SamplerState& GpuProgramParameters::getSamplerState(size_t pos) const 
+	{ 
+		if(mTextures[pos] == nullptr)
+		{
+			return SamplerState::EMPTY;
+		}
+
+		return mTextures[pos]->samplerState; 
 	}
 	//-----------------------------------------------------------------------------
 	bool GpuProgramParameters::hasNamedConstant(const String& name) const
@@ -717,7 +736,27 @@ namespace CamelotEngine
 			_findNamedConstantDefinition(name, !mIgnoreMissingParams);
 
 		if (def)
-			mTextures[def->physicalIndex] = val;
+		{
+			if(mTextures[def->physicalIndex] == nullptr)
+				mTextures[def->physicalIndex] = GpuTextureEntryPtr(new GpuTextureEntry());
+
+			mTextures[def->physicalIndex]->texture = val;
+		}
+	}
+	//-----------------------------------------------------------------------------
+	void GpuProgramParameters::setNamedConstant(const String& name, const SamplerState& val)
+	{
+		// look up, and throw an exception if we're not ignoring missing
+		const GpuConstantDefinition* def = 
+			_findNamedConstantDefinition(name, !mIgnoreMissingParams);
+
+		if (def)
+		{
+			if(mTextures[def->physicalIndex] == nullptr)
+				mTextures[def->physicalIndex] = GpuTextureEntryPtr(new GpuTextureEntry());
+
+			mTextures[def->physicalIndex]->samplerState = val;
+		}
 	}
 	//-----------------------------------------------------------------------------
 	void GpuProgramParameters::setNamedConstant(const String& name, float val)

@@ -35,7 +35,7 @@ THE SOFTWARE.
 
 #include "CmString.h"
 
-#include "CmTextureState.h"
+#include "CmSamplerState.h"
 #include "CmCommon.h"
 
 #include "CmRenderOperation.h"
@@ -540,7 +540,7 @@ namespace CamelotEngine
 		only sets those settings which are different from the current settings for this
 		unit, thus minimising render state changes.
 		*/
-		virtual void _setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, TextureState& tl);
+		virtual void _setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, SamplerState& tl);
 		/** Turns off a texture unit. */
 		virtual void _disableTextureUnit(size_t texUnit);
 		/** Disables all texture units from the given unit upwards */
@@ -661,7 +661,7 @@ namespace CamelotEngine
 		virtual void _setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy) = 0;
 
 		/** Sets the texture addressing mode for a texture unit.*/
-		virtual void _setTextureAddressingMode(size_t unit, const TextureState::UVWAddressingMode& uvw) = 0;
+		virtual void _setTextureAddressingMode(size_t unit, const SamplerState::UVWAddressingMode& uvw) = 0;
 
 		/** Sets the texture border colour for a texture unit.*/
 		virtual void _setTextureBorderColour(size_t unit, const Color& colour) = 0;

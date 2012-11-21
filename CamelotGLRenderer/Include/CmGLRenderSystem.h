@@ -72,7 +72,7 @@ namespace CamelotEngine {
         void makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m);
  
         GLint getBlendMode(SceneBlendFactor ogreBlend) const;
-		GLint getTextureAddressingMode(TextureState::TextureAddressingMode tam) const;
+		GLint getTextureAddressingMode(SamplerState::TextureAddressingMode tam) const;
 				void initialiseContext(RenderWindow* primary);
 
         void setLights();
@@ -257,7 +257,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void _setTextureAddressingMode(size_t stage, const TextureState::UVWAddressingMode& uvw);
+        void _setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw);
         /** See
           RenderSystem
          */

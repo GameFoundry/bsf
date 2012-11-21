@@ -1354,24 +1354,24 @@ namespace CamelotEngine {
 	}
 	//-----------------------------------------------------------------------------
 	GLint GLRenderSystem::getTextureAddressingMode(
-		TextureState::TextureAddressingMode tam) const
+		SamplerState::TextureAddressingMode tam) const
 	{
 		switch(tam)
 		{
 		default:
-		case TextureState::TAM_WRAP:
+		case SamplerState::TAM_WRAP:
 			return GL_REPEAT;
-		case TextureState::TAM_MIRROR:
+		case SamplerState::TAM_MIRROR:
 			return GL_MIRRORED_REPEAT;
-		case TextureState::TAM_CLAMP:
+		case SamplerState::TAM_CLAMP:
 			return GL_CLAMP_TO_EDGE;
-		case TextureState::TAM_BORDER:
+		case SamplerState::TAM_BORDER:
 			return GL_CLAMP_TO_BORDER;
 		}
 
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setTextureAddressingMode(size_t stage, const TextureState::UVWAddressingMode& uvw)
+	void GLRenderSystem::_setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw)
 	{
 		if (!activateGLTextureUnit(stage))
 			return;

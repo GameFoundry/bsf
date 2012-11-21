@@ -41,9 +41,12 @@ namespace CamelotEngine
 
 				if(def.constType == GCT_SAMPLER2D)
 				{
-					TextureRef value;
-					allParams[i]->_readTexture(iter->second.physicalIndex, value);
-					params->mTextureParams[iter->first] = value;
+					TextureRef texture;
+					allParams[i]->_readTexture(iter->second.physicalIndex, texture);
+					params->mTextureParams[iter->first] = texture;
+
+					SamplerState samplerState = allParams[i]->getSamplerState(iter->second.physicalIndex);
+					params->mSamplerStateParams[iter->first] = samplerState;
 				}
 				else
 				{
@@ -134,6 +137,11 @@ namespace CamelotEngine
 
 					if(iterFind != params->mTextureParams.end())
 						allParams[i]->setNamedConstant(iter->first, iterFind->second);
+
+					auto iterFind2 = params->mSamplerStateParams.find(iter->first);
+
+					if(iterFind2 != params->mSamplerStateParams.end())
+						allParams[i]->setNamedConstant(iter->first, iterFind2->second);
 				}
 				else
 				{
