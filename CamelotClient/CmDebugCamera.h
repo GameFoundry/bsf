@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmComponent.h"
 #include "CmInputHandler.h"
+#include "CmMath.h"
 
 namespace CamelotEngine
 {
@@ -17,6 +18,9 @@ namespace CamelotEngine
 		bool mGoingRight;
 		bool mFastMove;
 		bool mCameraRotating;
+
+		Degree mPitch;
+		Degree mYaw;
 
 		CameraPtr mCamera;
 

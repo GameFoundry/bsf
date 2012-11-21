@@ -15,7 +15,8 @@ namespace CamelotEngine
 	const float DebugCamera::ROTATION_SPEED = 0.5f; // Degrees/pixel
 
 	DebugCamera::DebugCamera(GameObjectPtr parent)
-		:Component(parent), mGoingForward(false), mGoingBack(false), mGoingLeft(false), mGoingRight(false), mFastMove(false), mCameraRotating(false)
+		:Component(parent), mGoingForward(false), mGoingBack(false), mGoingLeft(false), mGoingRight(false), 
+		mFastMove(false), mCameraRotating(false), mPitch(0.0f), mYaw(0.0f)
 	{
 		mCamera = gameObject()->getComponent<Camera>();
 		mCamera->setNearClipDistance(5);
@@ -110,27 +111,18 @@ namespace CamelotEngine
 
 		if(mCameraRotating)
 		{
-			//float horizontalSpeed = event.relX / gTime().getFrameDelta();
+			mYaw += Degree(gInput().getHorizontalAxis() * ROTATION_SPEED);
+			mPitch += Degree(gInput().getVerticalAxis() * ROTATION_SPEED);
 
-			GO()->yaw(Degree(gInput().getHorizontalAxis() * ROTATION_SPEED));
-			GO()->pitch(Degree(gInput().getVerticalAxis() * ROTATION_SPEED));
+			Quaternion yRot;
+			yRot.FromAngleAxis(Radian(mYaw), Vector3::UP);
 
-			// Prevent roll due to inprecision
-			Vector3 validRight = GO()->getForward().crossProduct(Vector3::UP);
+			Quaternion xRot;
+			xRot.FromAngleAxis(Radian(mPitch), yRot.xAxis());
 
-			if(GO()->getForward().dotProduct(Vector3::UP) > 0.5f)
-			{
-				validRight = GO()->getForward().crossProduct(-Vector3::FORWARD);
-			}
+			Quaternion camRot = xRot * yRot;
 
-			Quaternion rightRot = GO()->getRight().getRotationTo(validRight);
-			//if(validRight.dotProduct(Vector3::RIGHT) < 0.0f)
-			//{
-			//	rightRot.w = -rightRot.w;
-			//}
-
-
-			GO()->setRotation(GO()->getRotation() * rightRot);
+			GO()->setRotation(camRot);
 		}
 	}
 }
