@@ -5,6 +5,7 @@
 #include "CmMath.h"
 #include "CmGameObject.h"
 #include "CmCamera.h"
+#include "CmOSCursor.h"
 
 namespace CamelotEngine
 {
@@ -67,6 +68,8 @@ namespace CamelotEngine
 		if(buttonID == MB_Right)
 		{
 			mCameraRotating = true;
+
+			OSCursor::hide();
 		}
 	}
 
@@ -75,6 +78,8 @@ namespace CamelotEngine
 		if(buttonID == MB_Right)
 		{
 			mCameraRotating = false;
+
+			OSCursor::show();
 		}
 	}
 

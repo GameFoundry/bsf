@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\CamelotRenderer\Source\CmManagedDataBlock.cpp" />
+    <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmUUID.cpp" />
     <ClCompile Include="Source\CmWorkQueue.cpp" />
     <ClCompile Include="Source\Win32\CmTimer.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmFileSerializer.h" />
     <ClInclude Include="Include\CmFileSystem.h" />
+    <ClInclude Include="Include\CmInt2.h" />
     <ClInclude Include="Include\CmIReflectable.h" />
     <ClInclude Include="Include\CmKeyValuePair.h" />
     <ClInclude Include="Include\CmLog.h" />

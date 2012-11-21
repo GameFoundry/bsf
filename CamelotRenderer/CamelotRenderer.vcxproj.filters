@@ -76,6 +76,12 @@
     <Filter Include="Source Files\RTTI">
       <UniqueIdentifier>{dc50e07b-6351-4bc2-8bfa-cc3fc1d26c39}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Win32">
+      <UniqueIdentifier>{1d3fe8eb-ec10-4356-90f0-b27f89f01a13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Win32">
+      <UniqueIdentifier>{5a1e28c5-e784-44e6-974f-f1d0d66474ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />
@@ -295,6 +301,12 @@
     <ClInclude Include="Include\CmMaterialRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmOSCursor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\CmOSCursorImpl.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -434,6 +446,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmMaterialRTTI.cpp">
       <Filter>Source Files\RTTI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\CmOSCursorImpl.cpp">
+      <Filter>Source Files\Win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
