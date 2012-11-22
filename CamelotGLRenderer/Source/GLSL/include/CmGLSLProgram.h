@@ -82,11 +82,11 @@ namespace CamelotEngine {
 		/** Returns the operation type that this geometry program expects to
 			receive as input
 		*/
-		virtual RenderCommand::OperationType getInputOperationType(void) const 
+		virtual RenderOperation::OperationType getInputOperationType(void) const 
 		{ return mInputOperationType; }
 		/** Returns the operation type that this geometry program will emit
 		*/
-		virtual RenderCommand::OperationType getOutputOperationType(void) const 
+		virtual RenderOperation::OperationType getOutputOperationType(void) const 
 		{ return mOutputOperationType; }
 		/** Returns the maximum number of vertices that this geometry program can
 			output in a single run
@@ -95,11 +95,11 @@ namespace CamelotEngine {
 
 		/** Sets the operation type that this geometry program expects to receive
 		*/
-		virtual void setInputOperationType(RenderCommand::OperationType operationType) 
+		virtual void setInputOperationType(RenderOperation::OperationType operationType) 
 		{ mInputOperationType = operationType; }
 		/** Set the operation type that this geometry program will emit
 		*/
-		virtual void setOutputOperationType(RenderCommand::OperationType operationType) 
+		virtual void setOutputOperationType(RenderOperation::OperationType operationType) 
 		{ mOutputOperationType = operationType; }
 		/** Set the maximum number of vertices that a single run of this geometry program
 			can emit.
@@ -136,9 +136,9 @@ namespace CamelotEngine {
 		/// flag indicating if shader object successfully compiled
 		GLint mCompiled;
 		/// The input operation type for this (geometry) program
-		RenderCommand::OperationType mInputOperationType;
+		RenderOperation::OperationType mInputOperationType;
 		/// The output operation type for this (geometry) program
-		RenderCommand::OperationType mOutputOperationType;
+		RenderOperation::OperationType mOutputOperationType;
 		/// The maximum amount of vertices that this (geometry) program can output
 		int mMaxOutputVertices;
 		/// attached Shader names

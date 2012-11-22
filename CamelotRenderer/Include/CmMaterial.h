@@ -44,11 +44,6 @@ namespace CamelotEngine
 		void setMat3(const String& name, const Matrix3& value);
 		void setMat4(const String& name, const Matrix4& value);
 
-		/**
-		 * @brief	Use the provided pass for rendering of all following objects.
-		 */
-		void applyPassParameters(UINT32 passIdx);
-
 		UINT32 getNumPasses() const;
 
 		PassPtr getPass(UINT32 passIdx) const;

@@ -69,9 +69,6 @@ namespace CamelotEngine
 		PolygonMode& getPolygonMode(Pass* obj) { return obj->mPolygonMode; }
 		void setPolygonMode(Pass* obj, PolygonMode& val) { obj->mPolygonMode = val; } 
 
-		size_t& getPassIterationCount(Pass* obj) { return obj->mPassIterationCount; }
-		void setPassIterationCount(Pass* obj, size_t& val) { obj->mPassIterationCount = val; } 
-
 		float& getPointSize(Pass* obj) { return obj->mPointSize; }
 		void setPointSize(Pass* obj, float& val) { obj->mPointSize = val; } 
 
@@ -116,7 +113,6 @@ namespace CamelotEngine
 
 			addPlainField("mCullMode", 20, &PassRTTI::getCullMode, &PassRTTI::setCullMode);
 			addPlainField("mPolygonMode", 21, &PassRTTI::getPolygonMode, &PassRTTI::setPolygonMode);
-			addPlainField("mPassIterationCount", 22, &PassRTTI::getPassIterationCount, &PassRTTI::setPassIterationCount);
 
 			addPlainField("mPointSize", 23, &PassRTTI::getPointSize, &PassRTTI::setPointSize);
 			addPlainField("mPointMinSize", 24, &PassRTTI::getPointMinSize, &PassRTTI::setPointMinSize);

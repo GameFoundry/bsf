@@ -137,29 +137,6 @@ namespace CamelotEngine
 		return mParameters[passIdx];
 	}
 
-	void Material::applyPassParameters(UINT32 passIdx)
-	{
-		throwIfNotInitialized();
-
-		// TODO - I need to take care to minimize shader and shader constant (especially texture) changes
-		RenderSystem* renderSystem = RenderSystemManager::getActive();
-
-		PassPtr curPass = mBestTechnique->getPass(passIdx);
-		PassParametersPtr params = mParameters[passIdx];
-
-		GpuProgramRef vertProgram = curPass->getVertexProgram();
-		if(vertProgram)
-			renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, params->mVertParams, GPV_ALL);
-
-		GpuProgramRef fragProgram = curPass->getFragmentProgram();
-		if(fragProgram)
-			renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, params->mFragParams, GPV_ALL);
-
-		GpuProgramRef geomProgram = curPass->getGeometryProgram();
-		if(geomProgram)
-			renderSystem->bindGpuProgramParameters(GPT_GEOMETRY_PROGRAM, params->mGeomParams, GPV_ALL);
-	}
-
 	RTTITypeBase* Material::getRTTIStatic()
 	{
 		return MaterialRTTI::instance();

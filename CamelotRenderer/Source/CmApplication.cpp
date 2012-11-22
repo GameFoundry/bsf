@@ -135,6 +135,20 @@ namespace CamelotEngine
 		return windowId;
 	}
 
+	CM_THREAD_ID_TYPE Application::getMainThreadId() const
+	{
+#if CM_THREAD_SUPPORT != 0
+		return CM_THREAD_CURRENT_ID;
+#else
+		return 0;
+#endif
+	}
+
+	CM_THREAD_ID_TYPE Application::getRenderThreadId() const
+	{
+		return mRenderThreadId;
+	}
+
 	Application& gApplication()
 	{
 		static Application application;

@@ -26,6 +26,9 @@ namespace CamelotEngine
 
 			RenderWindow* getPrimaryRenderWindow() const { return mPrimaryRenderWindow; }
 
+			inline CM_THREAD_ID_TYPE getMainThreadId() const;
+			inline CM_THREAD_ID_TYPE getRenderThreadId() const;
+
 			/**
 			 * @brief	Loads a plugin.
 			 *
@@ -35,6 +38,8 @@ namespace CamelotEngine
 
 	private:
 		RenderWindow* mPrimaryRenderWindow;
+
+		CM_THREAD_ID_TYPE mRenderThreadId;
 	};
 
 	CM_EXPORT Application& gApplication();

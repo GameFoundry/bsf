@@ -14,9 +14,16 @@ namespace CamelotEngine
 		virtual void render(const CameraPtr camera);
 
 	protected:
+		PassPtr mActivePass;
+
 		/**
 		 * @brief	Overriden from Renderer
 		 */
-		virtual void setPass(const PassPtr pass);
+		virtual void setPass(PassPtr pass);
+
+		/**
+		 * @brief	Overriden from Renderer
+		 */
+		virtual void setPassParameters(PassParametersPtr params);
 	};
 }

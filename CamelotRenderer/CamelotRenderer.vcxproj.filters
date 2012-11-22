@@ -304,13 +304,13 @@
     <ClInclude Include="Include\CmSamplerState.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmCommandBuffer.h">
+    <ClInclude Include="Include\CmRenderOperation.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderContext.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmRenderCommand.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmApplyPassCommand.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
   </ItemGroup>
@@ -456,7 +456,7 @@
     <ClCompile Include="Source\CmSamplerState.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Include\CmCommandBuffer.cpp">
+    <ClCompile Include="Include\CmRenderContext.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>

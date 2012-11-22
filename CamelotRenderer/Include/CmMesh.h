@@ -4,7 +4,7 @@
 #include "CmResource.h"
 #include "CmMeshData.h"
 #include "CmVertexIndexData.h"
-#include "CmRenderCommand.h"
+#include "CmRenderOperation.h"
 
 namespace CamelotEngine
 {
@@ -38,7 +38,7 @@ namespace CamelotEngine
 		 */
 		MeshDataPtr getMeshData();
 
-		RenderCommand getRenderOperation(UINT32 subMeshIdx = 0) const;
+		RenderOperation getRenderOperation(UINT32 subMeshIdx = 0) const;
 
 		virtual void initImpl();
 

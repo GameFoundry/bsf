@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 // Precompiler options
 #include "CmPrerequisites.h"
-#include "CmRenderCommand.h"
+#include "CmRenderOperation.h"
 #include "CmSamplerState.h"
 
 namespace CamelotEngine {
@@ -731,6 +731,7 @@ namespace CamelotEngine {
 		const SamplerState& getSamplerState(size_t pos) const;
 		/// Get a reference to the list of textures
 		const TextureList& getTextureList() const { return mTextures; }
+		UINT32 getNumTextures() const { return mTextures.size(); }
 
 		/** Tells the program whether to ignore missing parameters or not.
 		*/

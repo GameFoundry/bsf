@@ -71,32 +71,32 @@ namespace CamelotEngine {
 		CustomAttribute("binormal", GLGpuProgram::getFixedAttributeIndex(VES_BITANGENT, 0)),
 	};
 
-	GLint getGLGeometryInputPrimitiveType(RenderCommand::OperationType operationType, bool requiresAdjacency)
+	GLint getGLGeometryInputPrimitiveType(RenderOperation::OperationType operationType, bool requiresAdjacency)
 	{
 		switch (operationType)
 		{
-		case RenderCommand::OT_POINT_LIST:
+		case RenderOperation::OT_POINT_LIST:
 			return GL_POINTS;
-		case RenderCommand::OT_LINE_LIST:
-		case RenderCommand::OT_LINE_STRIP:
+		case RenderOperation::OT_LINE_LIST:
+		case RenderOperation::OT_LINE_STRIP:
 			return requiresAdjacency ? GL_LINES_ADJACENCY_EXT : GL_LINES;
 		default:
-		case RenderCommand::OT_TRIANGLE_LIST:
-		case RenderCommand::OT_TRIANGLE_STRIP:
-		case RenderCommand::OT_TRIANGLE_FAN:
+		case RenderOperation::OT_TRIANGLE_LIST:
+		case RenderOperation::OT_TRIANGLE_STRIP:
+		case RenderOperation::OT_TRIANGLE_FAN:
 			return requiresAdjacency ? GL_TRIANGLES_ADJACENCY_EXT : GL_TRIANGLES;
 		}
 	}
 	//-----------------------------------------------------------------------
-	GLint getGLGeometryOutputPrimitiveType(RenderCommand::OperationType operationType)
+	GLint getGLGeometryOutputPrimitiveType(RenderOperation::OperationType operationType)
 	{
 		switch (operationType)
 		{
-		case RenderCommand::OT_POINT_LIST:
+		case RenderOperation::OT_POINT_LIST:
 			return GL_POINTS;
-		case RenderCommand::OT_LINE_STRIP:
+		case RenderOperation::OT_LINE_STRIP:
 			return GL_LINE_STRIP;
-		case RenderCommand::OT_TRIANGLE_STRIP:
+		case RenderOperation::OT_TRIANGLE_STRIP:
 			return GL_TRIANGLE_STRIP;
 		default:
 			CM_EXCEPT(RenderingAPIException,
@@ -191,19 +191,19 @@ namespace CamelotEngine {
 
 			if (mGeometryProgram)
 			{
-				RenderCommand::OperationType inputOperationType = mGeometryProgram->getGLSLProgram()->getInputOperationType();
+				RenderOperation::OperationType inputOperationType = mGeometryProgram->getGLSLProgram()->getInputOperationType();
 				glProgramParameteriEXT(mGLHandle,GL_GEOMETRY_INPUT_TYPE_EXT,
 					getGLGeometryInputPrimitiveType(inputOperationType, mGeometryProgram->isAdjacencyInfoRequired()));
 				
-				RenderCommand::OperationType outputOperationType = mGeometryProgram->getGLSLProgram()->getOutputOperationType();
+				RenderOperation::OperationType outputOperationType = mGeometryProgram->getGLSLProgram()->getOutputOperationType();
 				switch (outputOperationType)
 				{
-				case RenderCommand::OT_POINT_LIST:
-				case RenderCommand::OT_LINE_STRIP:
-				case RenderCommand::OT_TRIANGLE_STRIP:
-                case RenderCommand::OT_LINE_LIST:
-                case RenderCommand::OT_TRIANGLE_LIST:
-                case RenderCommand::OT_TRIANGLE_FAN:
+				case RenderOperation::OT_POINT_LIST:
+				case RenderOperation::OT_LINE_STRIP:
+				case RenderOperation::OT_TRIANGLE_STRIP:
+                case RenderOperation::OT_LINE_LIST:
+                case RenderOperation::OT_TRIANGLE_LIST:
+                case RenderOperation::OT_TRIANGLE_FAN:
 					break;
 				
 				}

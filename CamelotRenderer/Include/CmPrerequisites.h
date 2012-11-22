@@ -89,7 +89,7 @@ namespace CamelotEngine {
     class RenderTexture;
 	class MultiRenderTarget;
     class RenderWindow;
-    class RenderCommand;
+    class RenderOperation;
     class StringInterface;
     class SamplerState;
     class TextureManager;

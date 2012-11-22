@@ -20,9 +20,15 @@ namespace CamelotEngine
 		virtual void render(const CameraPtr camera) = 0;
 
 	protected:
+		friend class RenderContext;
 		/**
 		 * @brief	Sets the currently active pass.
 		 */
-		virtual void setPass(const PassPtr pass) = 0;
+		virtual void setPass(PassPtr pass) = 0;
+
+		/**
+		 * @brief	Sets the parameters for the current pass;
+		 */
+		virtual void setPassParameters(PassParametersPtr params) = 0;
 	};
 }

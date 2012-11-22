@@ -1878,7 +1878,7 @@ namespace CamelotEngine {
 	{
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::_render(const RenderCommand& op)
+	void GLRenderSystem::_render(const RenderOperation& op)
 	{
 		// Call super class
 		RenderSystem::_render(op);
@@ -2043,23 +2043,23 @@ namespace CamelotEngine {
 		bool useAdjacency = (mGeometryProgramBound && mCurrentGeometryProgram->isAdjacencyInfoRequired());
 		switch (op.operationType)
 		{
-		case RenderCommand::OT_POINT_LIST:
+		case RenderOperation::OT_POINT_LIST:
 			primType = GL_POINTS;
 			break;
-		case RenderCommand::OT_LINE_LIST:
+		case RenderOperation::OT_LINE_LIST:
 			primType = useAdjacency ? GL_LINES_ADJACENCY_EXT : GL_LINES;
 			break;
-		case RenderCommand::OT_LINE_STRIP:
+		case RenderOperation::OT_LINE_STRIP:
 			primType = useAdjacency ? GL_LINE_STRIP_ADJACENCY_EXT : GL_LINE_STRIP;
 			break;
 		default:
-		case RenderCommand::OT_TRIANGLE_LIST:
+		case RenderOperation::OT_TRIANGLE_LIST:
 			primType = useAdjacency ? GL_TRIANGLES_ADJACENCY_EXT : GL_TRIANGLES;
 			break;
-		case RenderCommand::OT_TRIANGLE_STRIP:
+		case RenderOperation::OT_TRIANGLE_STRIP:
 			primType = useAdjacency ? GL_TRIANGLE_STRIP_ADJACENCY_EXT : GL_TRIANGLE_STRIP;
 			break;
-		case RenderCommand::OT_TRIANGLE_FAN:
+		case RenderOperation::OT_TRIANGLE_FAN:
 			primType = GL_TRIANGLE_FAN;
 			break;
 		}

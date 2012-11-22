@@ -327,7 +327,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void _render(const RenderCommand& op);
+        void _render(const RenderOperation& op);
         /** See
           RenderSystem
          */

@@ -74,6 +74,7 @@ THE SOFTWARE
 #define CM_THREAD_DESTROY(name) delete name;
 #define CM_THREAD_HARDWARE_CONCURRENCY boost::thread::hardware_concurrency()
 #define CM_THREAD_CURRENT_ID boost::this_thread::get_id()
+#define CM_THREAD_ID_TYPE boost::thread::id
 #define CM_THREAD_WORKER_INHERIT
 // Utility
 #define CM_THREAD_SLEEP(ms) boost::this_thread::sleep(boost::posix_time::millisec(ms));
@@ -108,6 +109,7 @@ THE SOFTWARE
 #define CM_THREAD_POINTER_GET(var) var
 #define CM_THREAD_POINTER_DELETE(var) { delete var; var = 0; }
 #define CM_THREAD_SLEEP(ms)
+#define CM_THREAD_ID_TYPE UINT32
 #define CM_THREAD_WORKER_INHERIT
 
 #endif

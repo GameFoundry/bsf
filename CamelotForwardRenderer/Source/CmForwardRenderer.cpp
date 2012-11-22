@@ -70,8 +70,8 @@ namespace CamelotEngine
 			for(int i = 0; i < material->getNumPasses(); i++)
 			{
 				setPass(material->getPass(i));
+				setPassParameters(material->getPassParameters(i));
 
-				material->applyPassParameters(i); // TODO - applyPass method should be more like RenderSystem::applyPass(Material, passIdx)
 				renderSystem->_render(mesh->getRenderOperation());
 			}
 		}
@@ -84,6 +84,11 @@ namespace CamelotEngine
 
 	void ForwardRenderer::setPass(PassPtr pass)
 	{
+		// TODO - When applying passes, don't re-apply states that are already the same as from previous pass.
+		// Also check if it's maybe the exactly the same pass as the previous one.
+
+		mActivePass = pass;
+
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
 
 		GpuProgramRef vertProgram = pass->getVertexProgram();
@@ -156,18 +161,10 @@ namespace CamelotEngine
 			pass->getPointMinSize(), 
 			pass->getPointMaxSize());
 
-
-
-
-
-		// TODO - Set texture sampler states!
-
 		// TODO - Try to limit amount of state changes, if previous state is already the same (especially with textures)
 
 		// TODO: Disable remaining texture units
-		//renderSystem->_disableTextureUnitsFrom(pass->getNumTextureUnitStates());
-
-
+		//renderSystem->_disableTextureUnitsFrom(pass->getNumTextures());
 
 
 		// Set up non-texture related material settings
@@ -191,5 +188,27 @@ namespace CamelotEngine
 
 		// Polygon mode
 		renderSystem->_setPolygonMode(pass->getPolygonMode());
+	}
+
+	void ForwardRenderer::setPassParameters(PassParametersPtr params)
+	{
+		// TODO - When applying passes, don't re-apply states that are already the same as from previous pass.
+
+		RenderSystem* renderSystem = RenderSystemManager::getActive();
+
+		if(mActivePass == nullptr)
+			CM_EXCEPT(InternalErrorException, "Trying to set pass parameters, but no pass is set.");
+
+		GpuProgramRef vertProgram = mActivePass->getVertexProgram();
+		if(vertProgram)
+			renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, params->mVertParams, GPV_ALL);
+
+		GpuProgramRef fragProgram = mActivePass->getFragmentProgram();
+		if(fragProgram)
+			renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, params->mFragParams, GPV_ALL);
+
+		GpuProgramRef geomProgram = mActivePass->getGeometryProgram();
+		if(geomProgram)
+			renderSystem->bindGpuProgramParameters(GPT_GEOMETRY_PROGRAM, params->mGeomParams, GPV_ALL);
 	}
 }

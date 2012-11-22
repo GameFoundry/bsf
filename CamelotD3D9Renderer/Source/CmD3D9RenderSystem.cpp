@@ -2234,7 +2234,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_render(const RenderCommand& op)
+	void D3D9RenderSystem::_render(const RenderOperation& op)
 	{
 		// Exit immediately if there is nothing to render
 		// This caused a problem on FireGL 8800
@@ -2255,32 +2255,32 @@ namespace CamelotEngine
 		DWORD primCount = 0;
 		switch( op.operationType )
 		{
-		case RenderCommand::OT_POINT_LIST:
+		case RenderOperation::OT_POINT_LIST:
 			primType = D3DPT_POINTLIST;
 			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount);
 			break;
 
-		case RenderCommand::OT_LINE_LIST:
+		case RenderOperation::OT_LINE_LIST:
 			primType = D3DPT_LINELIST;
 			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount) / 2;
 			break;
 
-		case RenderCommand::OT_LINE_STRIP:
+		case RenderOperation::OT_LINE_STRIP:
 			primType = D3DPT_LINESTRIP;
 			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount) - 1;
 			break;
 
-		case RenderCommand::OT_TRIANGLE_LIST:
+		case RenderOperation::OT_TRIANGLE_LIST:
 			primType = D3DPT_TRIANGLELIST;
 			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount) / 3;
 			break;
 
-		case RenderCommand::OT_TRIANGLE_STRIP:
+		case RenderOperation::OT_TRIANGLE_STRIP:
 			primType = D3DPT_TRIANGLESTRIP;
 			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount) - 2;
 			break;
 
-		case RenderCommand::OT_TRIANGLE_FAN:
+		case RenderOperation::OT_TRIANGLE_FAN:
 			primType = D3DPT_TRIANGLEFAN;
 			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount) - 2;
 			break;

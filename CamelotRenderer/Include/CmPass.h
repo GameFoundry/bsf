@@ -70,8 +70,6 @@ namespace CamelotEngine
 		// Geometry program
 		GpuProgramRef mGeometryProgram;
 
-        // number of pass iterations to perform
-        size_t mPassIterationCount;
 		// point size, applies when not using per-vertex point size
 		float mPointSize;
 		float mPointMinSize;

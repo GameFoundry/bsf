@@ -26,7 +26,6 @@ namespace CamelotEngine
 		, mAlphaToCoverageEnabled(false)
 		, mCullMode(CULL_CLOCKWISE)
 		, mPolygonMode(PM_SOLID)
-		, mPassIterationCount(1)
 		, mPointSize(1.0f)
 		, mPointMinSize(0.0f)
 		, mPointMaxSize(0.0f)	
@@ -36,7 +35,6 @@ namespace CamelotEngine
 
     //-----------------------------------------------------------------------------
 	Pass::Pass(const Pass& oth)
-        :mPassIterationCount(1)
     {
         *this = oth;
     }
@@ -71,7 +69,6 @@ namespace CamelotEngine
 		mDepthBiasPerIteration = oth.mDepthBiasPerIteration;
 	    mCullMode = oth.mCullMode;
 		mPolygonMode = oth.mPolygonMode;
-        mPassIterationCount = oth.mPassIterationCount;
 		mPointSize = oth.mPointSize;
 		mPointMinSize = oth.mPointMinSize;
 		mPointMaxSize = oth.mPointMaxSize;

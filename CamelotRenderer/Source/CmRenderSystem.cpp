@@ -396,7 +396,7 @@ namespace CamelotEngine {
 
 	}
     //-----------------------------------------------------------------------
-    void RenderSystem::_render(const RenderCommand& op)
+    void RenderSystem::_render(const RenderOperation& op)
     {
         // Update stats
         size_t val;
@@ -408,16 +408,16 @@ namespace CamelotEngine {
 
         switch(op.operationType)
         {
-		case RenderCommand::OT_TRIANGLE_LIST:
+		case RenderOperation::OT_TRIANGLE_LIST:
             mFaceCount += val / 3;
             break;
-        case RenderCommand::OT_TRIANGLE_STRIP:
-        case RenderCommand::OT_TRIANGLE_FAN:
+        case RenderOperation::OT_TRIANGLE_STRIP:
+        case RenderOperation::OT_TRIANGLE_FAN:
             mFaceCount += val - 2;
             break;
-	    case RenderCommand::OT_POINT_LIST:
-	    case RenderCommand::OT_LINE_LIST:
-	    case RenderCommand::OT_LINE_STRIP:
+	    case RenderOperation::OT_POINT_LIST:
+	    case RenderOperation::OT_LINE_LIST:
+	    case RenderOperation::OT_LINE_STRIP:
 	        break;
 	    }
 
