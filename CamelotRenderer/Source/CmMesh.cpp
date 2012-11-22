@@ -142,7 +142,7 @@ namespace CamelotEngine
 		return meshData;
 	}
 
-	RenderOperation Mesh::getRenderOperation(UINT32 subMeshIdx) const
+	RenderCommand Mesh::getRenderOperation(UINT32 subMeshIdx) const
 	{
 		if(subMeshIdx < 0 || subMeshIdx >= mSubMeshes.size())
 		{
@@ -151,11 +151,11 @@ namespace CamelotEngine
 		}
 
 		// TODO - BIG TODO - Completely ignores subMeshIdx and always renders the entire thing
-		RenderOperation ro;
+		RenderCommand ro;
 		ro.indexData = mIndexData;
 		ro.vertexData = mVertexData;
 		ro.useIndexes = true;
-		ro.operationType = RenderOperation::OT_TRIANGLE_LIST;
+		ro.operationType = RenderCommand::OT_TRIANGLE_LIST;
 
 		return ro;
 	}

@@ -243,7 +243,7 @@ namespace CamelotEngine
 		void _setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy);
 		void setVertexDeclaration(VertexDeclarationPtr decl);
 		void setVertexBufferBinding(VertexBufferBinding* binding);
-        void _render(const RenderOperation& op);
+        void _render(const RenderCommand& op);
         /** See
           RenderSystem
          */

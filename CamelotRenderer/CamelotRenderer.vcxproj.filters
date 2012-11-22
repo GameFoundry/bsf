@@ -139,9 +139,6 @@
     <ClInclude Include="Include\CmRenderSystemCapabilities.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmRenderOperation.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmHighLevelGpuProgramManager.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -307,6 +304,15 @@
     <ClInclude Include="Include\CmSamplerState.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmCommandBuffer.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderCommand.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmApplyPassCommand.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -448,6 +454,9 @@
       <Filter>Source Files\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmSamplerState.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\CmCommandBuffer.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>

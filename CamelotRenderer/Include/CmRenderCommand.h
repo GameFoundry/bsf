@@ -25,8 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef _RenderOperation_H__
-#define _RenderOperation_H__
+#pragma once
 
 #include "CmPrerequisites.h"
 #include "CmVertexIndexData.h"
@@ -40,8 +39,9 @@ namespace CamelotEngine {
 	/** \addtogroup RenderSystem
 	*  @{
 	*/
-	/** 'New' rendering operation using vertex buffers. */
-	class RenderOperation {
+	/** Rendering command that is used for rendering of a single object
+	 using a single pass */
+	class RenderCommand {
 	public:
 		/// The rendering operation type to perform
 		enum OperationType {
@@ -74,14 +74,10 @@ namespace CamelotEngine {
 		/// Index data - only valid if useIndexes is true
 		IndexData *indexData;
 
-        RenderOperation() :
+        RenderCommand() :
             vertexData(0), operationType(OT_TRIANGLE_LIST), useIndexes(true),
                 indexData(0) {}
 	};
 	/** @} */
 	/** @} */
 }
-
-
-
-#endif

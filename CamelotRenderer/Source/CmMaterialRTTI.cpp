@@ -20,14 +20,14 @@ namespace CamelotEngine
 		vector<GpuProgramParametersPtr>::type allParams;
 		for(size_t i = 0; i < material->mParameters.size(); i++)
 		{
-			if(material->mParameters[i].mFragParams != nullptr)
-				allParams.push_back(material->mParameters[i].mFragParams);
+			if(material->mParameters[i]->mFragParams != nullptr)
+				allParams.push_back(material->mParameters[i]->mFragParams);
 
-			if(material->mParameters[i].mVertParams != nullptr)
-				allParams.push_back(material->mParameters[i].mVertParams);
+			if(material->mParameters[i]->mVertParams != nullptr)
+				allParams.push_back(material->mParameters[i]->mVertParams);
 
-			if(material->mParameters[i].mGeomParams != nullptr)
-				allParams.push_back(material->mParameters[i].mGeomParams);
+			if(material->mParameters[i]->mGeomParams != nullptr)
+				allParams.push_back(material->mParameters[i]->mGeomParams);
 		}
 
 		for(size_t i = 0; i < allParams.size(); i++)
@@ -112,14 +112,14 @@ namespace CamelotEngine
 		vector<GpuProgramParametersPtr>::type allParams;
 		for(size_t i = 0; i < material->mParameters.size(); i++)
 		{
-			if(material->mParameters[i].mFragParams != nullptr)
-				allParams.push_back(material->mParameters[i].mFragParams);
+			if(material->mParameters[i]->mFragParams != nullptr)
+				allParams.push_back(material->mParameters[i]->mFragParams);
 
-			if(material->mParameters[i].mVertParams != nullptr)
-				allParams.push_back(material->mParameters[i].mVertParams);
+			if(material->mParameters[i]->mVertParams != nullptr)
+				allParams.push_back(material->mParameters[i]->mVertParams);
 
-			if(material->mParameters[i].mGeomParams != nullptr)
-				allParams.push_back(material->mParameters[i].mGeomParams);
+			if(material->mParameters[i]->mGeomParams != nullptr)
+				allParams.push_back(material->mParameters[i]->mGeomParams);
 		}
 
 		for(size_t i = 0; i < allParams.size(); i++)

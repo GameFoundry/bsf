@@ -77,7 +77,6 @@ namespace CamelotEngine
 		float mPointMinSize;
 		float mPointMaxSize;
     public:
-		CM_MUTEX(mGpuProgramChangeMutex)
         /// Default constructor
 		Pass();
         /// Copy constructor

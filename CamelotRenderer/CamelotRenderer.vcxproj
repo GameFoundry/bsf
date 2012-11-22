@@ -95,11 +95,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmApplication.h" />
+    <ClInclude Include="Include\CmApplyPassCommand.h" />
     <ClInclude Include="Include\CmCamera.h" />
     <ClInclude Include="Include\CmCameraRTTI.h" />
     <ClInclude Include="Include\CmCgProgram.h" />
     <ClInclude Include="Include\CmCgProgramFactory.h" />
     <ClInclude Include="Include\CmCgProgramRTTI.h" />
+    <ClInclude Include="Include\CmCommandBuffer.h" />
     <ClInclude Include="Include\CmCommon.h" />
     <ClInclude Include="Include\CmComponentRTTI.h" />
     <ClInclude Include="Include\CmConfigOptionMap.h" />
@@ -133,7 +135,7 @@
     <ClInclude Include="Include\CmRenderer.h" />
     <ClInclude Include="Include\CmRendererFactory.h" />
     <ClInclude Include="Include\CmRendererManager.h" />
-    <ClInclude Include="Include\CmRenderOperation.h" />
+    <ClInclude Include="Include\CmRenderCommand.h" />
     <ClInclude Include="Include\CmRenderSystem.h" />
     <ClInclude Include="Include\CmRenderSystemCapabilities.h" />
     <ClInclude Include="Include\CmRenderSystemFactory.h" />
@@ -169,6 +171,7 @@
     <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Include\CmCommandBuffer.cpp" />
     <ClCompile Include="Source\CamelotRenderer.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
     <ClCompile Include="Source\CmCamera.cpp" />

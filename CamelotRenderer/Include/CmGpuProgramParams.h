@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 // Precompiler options
 #include "CmPrerequisites.h"
-#include "CmRenderOperation.h"
+#include "CmRenderCommand.h"
 #include "CmSamplerState.h"
 
 namespace CamelotEngine {

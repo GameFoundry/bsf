@@ -352,19 +352,6 @@ namespace CamelotEngine
 				}
 			}		
 		}
-		
-		
-
-		// Do we want to preserve the FPU mode? Might be useful for scientific apps
-		//ConfigOptionMap& options = renderSystem->getConfigOptions();
-		//ConfigOptionMap::iterator opti = options.find("Floating-point mode");
-		//if (opti != options.end() && opti->second.currentValue == "Consistent")
-		//	extraFlags |= D3DCREATE_FPU_PRESERVE;
-
-#if CM_THREAD_SUPPORT == 1
-		extraFlags |= D3DCREATE_MULTITHREADED;
-#endif
-
 
 		// Try to find a matching device from current device list.
 		if (renderDevice == NULL)

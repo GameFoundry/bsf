@@ -5,15 +5,16 @@
 
 namespace CamelotEngine
 {
+	class CM_EXPORT PassParameters
+	{
+	public:
+		GpuProgramParametersPtr mVertParams;
+		GpuProgramParametersPtr mFragParams;
+		GpuProgramParametersPtr mGeomParams;
+	};
+
 	class CM_EXPORT Material : public Resource
 	{
-		struct ParamsPerPass
-		{
-			GpuProgramParametersPtr mVertParams;
-			GpuProgramParametersPtr mFragParams;
-			GpuProgramParametersPtr mGeomParams;
-		};
-
 	public:
 		Material() {}
 
@@ -52,10 +53,12 @@ namespace CamelotEngine
 
 		PassPtr getPass(UINT32 passIdx) const;
 
+		PassParametersPtr getPassParameters(UINT32 passIdx) const;
+
 	private:
 		ShaderPtr mShader;
 		TechniquePtr mBestTechnique;
-		vector<ParamsPerPass>::type mParameters;
+		vector<PassParametersPtr>::type mParameters;
 
 		void throwIfNotInitialized() const;
 
@@ -64,24 +67,24 @@ namespace CamelotEngine
 		{
 			for(auto iter = mParameters.begin(); iter != mParameters.end(); ++iter)
 			{
-				ParamsPerPass params = *iter;
+				PassParametersPtr params = *iter;
 
-				if(params.mVertParams)
+				if(params->mVertParams)
 				{
-					if(params.mVertParams->hasNamedConstant(name))
-						params.mVertParams->setNamedConstant(name, value);
+					if(params->mVertParams->hasNamedConstant(name))
+						params->mVertParams->setNamedConstant(name, value);
 				}
 
-				if(params.mFragParams)
+				if(params->mFragParams)
 				{
-					if(params.mFragParams->hasNamedConstant(name))
-						params.mFragParams->setNamedConstant(name, value);
+					if(params->mFragParams->hasNamedConstant(name))
+						params->mFragParams->setNamedConstant(name, value);
 				}
 
-				if(params.mGeomParams)
+				if(params->mGeomParams)
 				{
-					if(params.mGeomParams->hasNamedConstant(name))
-						params.mGeomParams->setNamedConstant(name, value);
+					if(params->mGeomParams->hasNamedConstant(name))
+						params->mGeomParams->setNamedConstant(name, value);
 				}
 			}
 		}

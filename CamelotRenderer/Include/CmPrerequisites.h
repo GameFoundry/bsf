@@ -89,7 +89,7 @@ namespace CamelotEngine {
     class RenderTexture;
 	class MultiRenderTarget;
     class RenderWindow;
-    class RenderOperation;
+    class RenderCommand;
     class StringInterface;
     class SamplerState;
     class TextureManager;
@@ -103,6 +103,7 @@ namespace CamelotEngine {
 	class Renderer;
 	class RendererFactory;
 	class WorkQueue;
+	class PassParameters;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -139,6 +140,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<Renderer> RendererPtr;
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
 	typedef std::shared_ptr<WorkQueue> WorkQueuePtr;
+	typedef std::shared_ptr<PassParameters> PassParametersPtr;
 
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;

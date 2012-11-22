@@ -236,8 +236,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
     GLSLProgram::GLSLProgram()
         : HighLevelGpuProgram(),
-            mInputOperationType(RenderOperation::OT_TRIANGLE_LIST),
-            mOutputOperationType(RenderOperation::OT_TRIANGLE_LIST), mMaxOutputVertices(3)
+            mInputOperationType(RenderCommand::OT_TRIANGLE_LIST),
+            mOutputOperationType(RenderCommand::OT_TRIANGLE_LIST), mMaxOutputVertices(3)
     {
         // Manually assign language now since we use it immediately
         mSyntaxCode = "glsl";
@@ -351,55 +351,55 @@ namespace CamelotEngine {
 	}
 
 	//-----------------------------------------------------------------------
-	RenderOperation::OperationType parseOperationType(const String& val)
+	RenderCommand::OperationType parseOperationType(const String& val)
 	{
 		if (val == "point_list")
 		{
-			return RenderOperation::OT_POINT_LIST;
+			return RenderCommand::OT_POINT_LIST;
 		}
 		else if (val == "line_list")
 		{
-			return RenderOperation::OT_LINE_LIST;
+			return RenderCommand::OT_LINE_LIST;
 		}
 		else if (val == "line_strip")
 		{
-			return RenderOperation::OT_LINE_STRIP;
+			return RenderCommand::OT_LINE_STRIP;
 		}
 		else if (val == "triangle_strip")
 		{
-			return RenderOperation::OT_TRIANGLE_STRIP;
+			return RenderCommand::OT_TRIANGLE_STRIP;
 		}
 		else if (val == "triangle_fan")
 		{
-			return RenderOperation::OT_TRIANGLE_FAN;
+			return RenderCommand::OT_TRIANGLE_FAN;
 		}
 		else 
 		{
 			//Triangle list is the default fallback. Keep it this way?
-			return RenderOperation::OT_TRIANGLE_LIST;
+			return RenderCommand::OT_TRIANGLE_LIST;
 		}
 	}
 	//-----------------------------------------------------------------------
-	String operationTypeToString(RenderOperation::OperationType val)
+	String operationTypeToString(RenderCommand::OperationType val)
 	{
 		switch (val)
 		{
-		case RenderOperation::OT_POINT_LIST:
+		case RenderCommand::OT_POINT_LIST:
 			return "point_list";
 			break;
-		case RenderOperation::OT_LINE_LIST:
+		case RenderCommand::OT_LINE_LIST:
 			return "line_list";
 			break;
-		case RenderOperation::OT_LINE_STRIP:
+		case RenderCommand::OT_LINE_STRIP:
 			return "line_strip";
 			break;
-		case RenderOperation::OT_TRIANGLE_STRIP:
+		case RenderCommand::OT_TRIANGLE_STRIP:
 			return "triangle_strip";
 			break;
-		case RenderOperation::OT_TRIANGLE_FAN:
+		case RenderCommand::OT_TRIANGLE_FAN:
 			return "triangle_fan";
 			break;
-		case RenderOperation::OT_TRIANGLE_LIST:
+		case RenderCommand::OT_TRIANGLE_LIST:
 		default:
 			return "triangle_list";
 			break;

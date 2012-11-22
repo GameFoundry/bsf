@@ -311,37 +311,31 @@ namespace CamelotEngine
     //-----------------------------------------------------------------------
 	void Pass::setVertexProgram(GpuProgramRef gpuProgram)
 	{
-		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		mVertexProgram = gpuProgram;
 	}
     //-----------------------------------------------------------------------
 	void Pass::setFragmentProgram(GpuProgramRef gpuProgram)
 	{
-		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		mFragmentProgram = gpuProgram;
 	}
 	//-----------------------------------------------------------------------
 	void Pass::setGeometryProgram(GpuProgramRef gpuProgram)
 	{
-		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		mGeometryProgram = gpuProgram;
 	}
 	//-----------------------------------------------------------------------
 	const GpuProgramRef& Pass::getVertexProgram(void) const
 	{
-		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		return mVertexProgram;
 	}
 	//-----------------------------------------------------------------------
 	const GpuProgramRef& Pass::getFragmentProgram(void) const
 	{
-		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		return mFragmentProgram;
 	}
 	//-----------------------------------------------------------------------
 	const GpuProgramRef& Pass::getGeometryProgram(void) const
 	{
-		CM_LOCK_MUTEX(mGpuProgramChangeMutex)
 		return mGeometryProgram;
 	}
 	//----------------------------------------------------------------------

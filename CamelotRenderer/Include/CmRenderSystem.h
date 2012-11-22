@@ -38,7 +38,7 @@ THE SOFTWARE.
 #include "CmSamplerState.h"
 #include "CmCommon.h"
 
-#include "CmRenderOperation.h"
+#include "CmRenderCommand.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmRenderTarget.h"
 #include "CmRenderTexture.h"
@@ -830,7 +830,7 @@ namespace CamelotEngine
 		@param op A rendering operation instance, which contains
 		details of the operation to be performed.
 		*/
-		virtual void _render(const RenderOperation& op);
+		virtual void _render(const RenderCommand& op);
 
 		/** Gets the capabilities of the render system. */
 		const RenderSystemCapabilities* getCapabilities(void) const { return mCurrentCapabilities; }
