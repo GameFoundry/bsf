@@ -216,17 +216,11 @@ namespace CamelotEngine
             bool twoSidedOperation = false);
 
 		// Low-level overridden members, mainly for internal use
-		void _setWorldMatrix( const Matrix4 &m );
-		void _setViewMatrix( const Matrix4 &m );
-		void _setProjectionMatrix( const Matrix4 &m );
-		void _setSurfaceParams( const Color &ambient, const Color &diffuse, const Color &specular, const Color &emissive, float shininess, TrackVertexColourType tracking );
-		void _setPointSpritesEnabled(bool enabled);
 		void _setPointParameters(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize);
 		void _setTexture(size_t unit, bool enabled, const TexturePtr &texPtr);
 		void _setVertexTexture(size_t unit, const TexturePtr& tex);
 		void _disableTextureUnit(size_t texUnit);
-		void _setTextureCoordSet( size_t unit, size_t index );
         void _setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw);
         void _setTextureBorderColour(size_t stage, const Color& colour);
 		void _setTextureMipmapBias(size_t unit, float bias);
@@ -243,7 +237,6 @@ namespace CamelotEngine
 		void _setDepthBufferWriteEnabled(bool enabled = true);
 		void _setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
 		void _setDepthBias(float constantBias, float slopeScaleBias);
-		void _setFog( FogMode mode = FOG_NONE, const Color& colour = Color::White, float expDensity = 1.0, float linearStart = 0.0, float linearEnd = 1.0 );
 		void _convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
 		void _setPolygonMode(PolygonMode level);
         void _setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter);
@@ -271,7 +264,6 @@ namespace CamelotEngine
             float depth = 1.0f, unsigned short stencil = 0);
 		void setClipPlane (UINT16 index, float A, float B, float C, float D);
 		void enableClipPlane (UINT16 index, bool enable);
-        HardwareOcclusionQuery* createHardwareOcclusionQuery();
         float getHorizontalTexelOffset();
         float getVerticalTexelOffset();
         float getMinimumDepthInputValue();

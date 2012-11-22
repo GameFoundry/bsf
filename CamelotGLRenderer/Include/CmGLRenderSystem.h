@@ -200,43 +200,12 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-		bool areFixedFunctionLightsInViewSpace() const { return true; }
-        /** See
-          RenderSystem
-         */
-        void _setWorldMatrix(const Matrix4 &m);
-        /** See
-          RenderSystem
-         */
-        void _setViewMatrix(const Matrix4 &m);
-        /** See
-          RenderSystem
-         */
-        void _setProjectionMatrix(const Matrix4 &m);
-        /** See
-          RenderSystem
-         */
-        void _setSurfaceParams(const Color &ambient,
-            const Color &diffuse, const Color &specular,
-            const Color &emissive, float shininess,
-            TrackVertexColourType tracking);
-        /** See
-          RenderSystem
-         */
 		void _setPointParameters(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize);
-        /** See
-          RenderSystem
-         */
-		void _setPointSpritesEnabled(bool enabled);
 		/** See
           RenderSystem
          */
         void _setTexture(size_t unit, bool enabled, const TexturePtr &tex);
-        /** See
-          RenderSystem
-         */
-        void _setTextureCoordSet(size_t stage, size_t index);
         /** See
           RenderSystem
          */
@@ -309,10 +278,6 @@ namespace CamelotEngine {
           RenderSystem
          */
         void _setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
-		/** See
-          RenderSystem
-         */
-        void _setFog(FogMode mode, const Color& colour, float density, float start, float end);
         /** See
           RenderSystem
          */
@@ -383,7 +348,6 @@ namespace CamelotEngine {
         void clearFrameBuffer(unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
-        HardwareOcclusionQuery* createHardwareOcclusionQuery(void);
         float getHorizontalTexelOffset(void);
         float getVerticalTexelOffset(void);
         float getMinimumDepthInputValue(void);

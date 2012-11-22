@@ -153,14 +153,6 @@ namespace CamelotEngine
 		*/
 		virtual void setConfigOption(const String &name, const String &value) = 0;
 
-		/** Create an object for performing hardware occlusion queries. 
-		*/
-		virtual HardwareOcclusionQuery* createHardwareOcclusionQuery(void) = 0;
-
-		/** Destroy a hardware occlusion query object. 
-		*/
-		virtual void destroyHardwareOcclusionQuery(HardwareOcclusionQuery *hq);
-
 		/** Validates the options set for the rendering system, returning a message if there are problems.
 		@note
 		If the returned string is empty, there are no problems.
@@ -496,17 +488,6 @@ namespace CamelotEngine
 		// They can be called by library user if required
 		// ------------------------------------------------------------------------
 
-		/** Are fixed-function lights provided in view space? Affects optimisation. 
-		*/
-		virtual bool areFixedFunctionLightsInViewSpace() const { return false; }
-		/** Sets the world transform matrix. */
-		virtual void _setWorldMatrix(const Matrix4 &m) = 0;
-		/** Sets multiple world matrices (vertex blending). */
-		virtual void _setWorldMatrices(const Matrix4* m, unsigned short count);
-		/** Sets the view transform matrix */
-		virtual void _setViewMatrix(const Matrix4 &m) = 0;
-		/** Sets the projection transform matrix */
-		virtual void _setProjectionMatrix(const Matrix4 &m) = 0;
 		/** Utility function for setting all the properties of a texture unit at once.
 		This method is also worth using over the individual texture unit settings because it
 		only sets those settings which are different from the current settings for this
@@ -517,50 +498,6 @@ namespace CamelotEngine
 		virtual void _disableTextureUnit(size_t texUnit);
 		/** Disables all texture units from the given unit upwards */
 		virtual void _disableTextureUnitsFrom(size_t texUnit);
-		/** Sets the surface properties to be used for future rendering.
-
-		This method sets the the properties of the surfaces of objects
-		to be rendered after it. In this context these surface properties
-		are the amount of each type of light the object reflects (determining
-		it's colour under different types of light), whether it emits light
-		itself, and how shiny it is. Textures are not dealt with here,
-		see the _setTetxure method for details.
-		This method is used by _setMaterial so does not need to be called
-		direct if that method is being used.
-
-		@param ambient The amount of ambient (sourceless and directionless)
-		light an object reflects. Affected by the colour/amount of ambient light in the scene.
-		@param diffuse The amount of light from directed sources that is
-		reflected (affected by colour/amount of point, directed and spot light sources)
-		@param specular The amount of specular light reflected. This is also
-		affected by directed light sources but represents the colour at the
-		highlights of the object.
-		@param emissive The colour of light emitted from the object. Note that
-		this will make an object seem brighter and not dependent on lights in
-		the scene, but it will not act as a light, so will not illuminate other
-		objects. Use a light attached to the same SceneNode as the object for this purpose.
-		@param shininess A value which only has an effect on specular highlights (so
-		specular must be non-black). The higher this value, the smaller and crisper the
-		specular highlights will be, imitating a more highly polished surface.
-		This value is not constrained to 0.0-1.0, in fact it is likely to
-		be more (10.0 gives a modest sheen to an object).
-		@param tracking A bit field that describes which of the ambient, diffuse, specular
-		and emissive colours follow the vertex colour of the primitive. When a bit in this field is set
-		its ColourValue is ignored. This is a combination of TVC_AMBIENT, TVC_DIFFUSE, TVC_SPECULAR(note that the shininess value is still
-		taken from shininess) and TVC_EMISSIVE. TVC_NONE means that there will be no material property
-		tracking the vertex colours.
-		*/
-		virtual void _setSurfaceParams(const Color &ambient,
-			const Color &diffuse, const Color &specular,
-			const Color &emissive, float shininess,
-			TrackVertexColourType tracking = TVC_NONE) = 0;
-
-		/** Sets whether or not rendering points using OT_POINT_LIST will 
-		render point sprites (textured quads) or plain points.
-		@param enabled True enables point sprites, false returns to normal
-		point rendering.
-		*/	
-		virtual void _setPointSpritesEnabled(bool enabled) = 0;
 
 		/** Sets the size of points and how they are attenuated with distance.
 		@remarks
@@ -601,17 +538,6 @@ namespace CamelotEngine
 		@see RenderSystemCapabilites::getVertexTextureUnitsShared
 		*/
 		virtual void _setVertexTexture(size_t unit, const TexturePtr& tex);
-
-		/**
-		Sets the texture coordinate set to use for a texture unit.
-
-		Meant for use internally - not generally used directly by apps - the Material and TextureUnitState
-		classes let you manage textures far more easily.
-
-		@param unit Texture unit as above
-		@param index The index of the texture coordinate set to use.
-		*/
-		virtual void _setTextureCoordSet(size_t unit, size_t index) = 0;
 
 		/** Sets the filtering options for a given texture unit.
 		@param unit The texture unit to set the filtering options for
@@ -783,19 +709,6 @@ namespace CamelotEngine
 
 		*/
 		virtual void _setDepthBias(float constantBias, float slopeScaleBias = 0.0f) = 0;
-		/** Sets the fogging mode for future geometry.
-		@param mode Set up the mode of fog as described in the FogMode enum, or set to FOG_NONE to turn off.
-		@param colour The colour of the fog. Either set this to the same as your viewport background colour,
-		or to blend in with a skydome or skybox.
-		@param expDensity The density of the fog in FOG_EXP or FOG_EXP2 mode, as a value between 0 and 1. The default is 1. i.e. completely opaque, lower values can mean
-		that fog never completely obscures the scene.
-		@param linearStart Distance at which linear fog starts to encroach. The distance must be passed
-		as a parametric value between 0 and 1, with 0 being the near clipping plane, and 1 being the far clipping plane. Only applicable if mode is FOG_LINEAR.
-		@param linearEnd Distance at which linear fog becomes completely opaque.The distance must be passed
-		as a parametric value between 0 and 1, with 0 being the near clipping plane, and 1 being the far clipping plane. Only applicable if mode is FOG_LINEAR.
-		*/
-		virtual void _setFog(FogMode mode = FOG_NONE, const Color& colour = Color::White, float expDensity = 1.0, float linearStart = 0.0, float linearEnd = 1.0) = 0;
-
 
 		/** The RenderSystem will keep a count of tris rendered, this resets the count. */
 		virtual void _beginGeometryCount(void);
@@ -1093,16 +1006,10 @@ namespace CamelotEngine
 		size_t mFaceCount;
 		size_t mVertexCount;
 
-		/// Saved manual colour blends
-		Color mManualBlendColours[CM_MAX_TEXTURE_LAYERS][2];
-
 		bool mInvertVertexWinding;
 
 		/// Texture units from this upwards are disabled
 		size_t mDisabledTexUnitsFrom;
-
-		typedef list<HardwareOcclusionQuery*>::type HardwareOcclusionQueryList;
-		HardwareOcclusionQueryList mHwOcclusionQueries;
 
 		bool mVertexProgramBound;
 		bool mGeometryProgramBound;

@@ -1060,120 +1060,6 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setWorldMatrix( const Matrix4 &m )
-	{
-		GLfloat mat[16];
-		mWorldMatrix = m;
-		makeGLMatrix( mat, mViewMatrix * mWorldMatrix );
-		glMatrixMode(GL_MODELVIEW);
-		glLoadMatrixf(mat);
-	}
-
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setViewMatrix( const Matrix4 &m )
-	{
-		mViewMatrix = m;
-
-		GLfloat mat[16];
-		makeGLMatrix( mat, mViewMatrix * mWorldMatrix );
-		glMatrixMode(GL_MODELVIEW);
-		glLoadMatrixf(mat);
-
-		// also mark clip planes dirty
-		if (!mClipPlanes.empty())
-			mClipPlanesDirty = true;
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setProjectionMatrix(const Matrix4 &m)
-	{
-		GLfloat mat[16];
-		makeGLMatrix(mat, m);
-		if (mActiveRenderTarget->requiresTextureFlipping())
-		{
-			// Invert transformed y
-			mat[1] = -mat[1];
-			mat[5] = -mat[5];
-			mat[9] = -mat[9];
-			mat[13] = -mat[13];
-		}
-		glMatrixMode(GL_PROJECTION);
-		glLoadMatrixf(mat);
-		glMatrixMode(GL_MODELVIEW);
-
-		// also mark clip planes dirty
-		if (!mClipPlanes.empty())
-			mClipPlanesDirty = true;
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setSurfaceParams(const Color &ambient,
-		const Color &diffuse, const Color &specular,
-		const Color &emissive, float shininess,
-		TrackVertexColourType tracking)
-	{
-
-		// Track vertex colour
-		if(tracking != TVC_NONE) 
-		{
-			GLenum gt = GL_DIFFUSE;
-			// There are actually 15 different combinations for tracking, of which
-			// GL only supports the most used 5. This means that we have to do some
-			// magic to find the best match. NOTE: 
-			//  GL_AMBIENT_AND_DIFFUSE != GL_AMBIENT | GL__DIFFUSE
-			if(tracking & TVC_AMBIENT) 
-			{
-				if(tracking & TVC_DIFFUSE)
-				{
-					gt = GL_AMBIENT_AND_DIFFUSE;
-				} 
-				else 
-				{
-					gt = GL_AMBIENT;
-				}
-			}
-			else if(tracking & TVC_DIFFUSE) 
-			{
-				gt = GL_DIFFUSE;
-			}
-			else if(tracking & TVC_SPECULAR) 
-			{
-				gt = GL_SPECULAR;              
-			}
-			else if(tracking & TVC_EMISSIVE) 
-			{
-				gt = GL_EMISSION;
-			}
-			glColorMaterial(GL_FRONT_AND_BACK, gt);
-
-			glEnable(GL_COLOR_MATERIAL);
-		} 
-		else 
-		{
-			glDisable(GL_COLOR_MATERIAL);          
-		}
-
-		// XXX Cache previous values?
-		// XXX Front or Front and Back?
-
-		GLfloat f4val[4] = {diffuse.r, diffuse.g, diffuse.b, diffuse.a};
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, f4val);
-		f4val[0] = ambient.r;
-		f4val[1] = ambient.g;
-		f4val[2] = ambient.b;
-		f4val[3] = ambient.a;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, f4val);
-		f4val[0] = specular.r;
-		f4val[1] = specular.g;
-		f4val[2] = specular.b;
-		f4val[3] = specular.a;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, f4val);
-		f4val[0] = emissive.r;
-		f4val[1] = emissive.g;
-		f4val[2] = emissive.b;
-		f4val[3] = emissive.a;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, f4val);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
-	}
-	//-----------------------------------------------------------------------------
 	void GLRenderSystem::_setPointParameters(float size, 
 		bool attenuationEnabled, float constant, float linear, float quadratic,
 		float minSize, float maxSize)
@@ -1243,32 +1129,6 @@ namespace CamelotEngine {
 		
 		
 	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::_setPointSpritesEnabled(bool enabled)
-	{
-		if (!getCapabilities()->hasCapability(RSC_POINT_SPRITES))
-			return;
-
-		if (enabled)
-		{
-			glEnable(GL_POINT_SPRITE);
-		}
-		else
-		{
-			glDisable(GL_POINT_SPRITE);
-		}
-
-		// Set sprite texture coord generation
-		// Don't offer this as an option since D3D links it to sprite enabled
-		for (UINT16 i = 0; i < mFixedFunctionTextureUnits; ++i)
-		{
-			activateGLTextureUnit(i);
-			glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, 
-				enabled ? GL_TRUE : GL_FALSE);
-		}
-		activateGLTextureUnit(0);
-
-	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::_setTexture(size_t stage, bool enabled, const TexturePtr &texPtr)
 	{
@@ -1325,12 +1185,6 @@ namespace CamelotEngine {
 		}
 
 		activateGLTextureUnit(0);
-	}
-
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setTextureCoordSet(size_t stage, size_t index)
-	{
-		mTextureCoordIndex[stage] = index;
 	}
 	//-----------------------------------------------------------------------------
 	GLint GLRenderSystem::getTextureAddressingMode(
@@ -1734,37 +1588,6 @@ namespace CamelotEngine {
     {
         const GLubyte *errString = gluErrorString (errCode);
 		return (errString != 0) ? String((const char*) errString) : StringUtil::BLANK;
-    }
-    //-----------------------------------------------------------------------------
-    void GLRenderSystem::_setFog(FogMode mode, const Color& colour, float density, float start, float end)
-    {
-
-        GLint fogMode;
-        switch (mode)
-        {
-        case FOG_EXP:
-            fogMode = GL_EXP;
-            break;
-        case FOG_EXP2:
-            fogMode = GL_EXP2;
-            break;
-        case FOG_LINEAR:
-            fogMode = GL_LINEAR;
-            break;
-        default:
-            // Give up on it
-            glDisable(GL_FOG);
-            return;
-        }
-
-        glEnable(GL_FOG);
-        glFogi(GL_FOG_MODE, fogMode);
-        GLfloat fogColor[4] = {colour.r, colour.g, colour.b, colour.a};
-        glFogfv(GL_FOG_COLOR, fogColor);
-        glFogf(GL_FOG_DENSITY, density);
-        glFogf(GL_FOG_START, start);
-        glFogf(GL_FOG_END, end);
-        // XXX Hint here?
     }
 
 	VertexElementType GLRenderSystem::getColourVertexElementType(void) const
@@ -2599,13 +2422,6 @@ namespace CamelotEngine {
 		{
 			glStencilMask(mStencilMask);
 		}
-	}
-	//---------------------------------------------------------------------
-	HardwareOcclusionQuery* GLRenderSystem::createHardwareOcclusionQuery(void)
-	{
-		GLHardwareOcclusionQuery* ret = new GLHardwareOcclusionQuery(); 
-		mHwOcclusionQueries.push_back(ret);
-		return ret;
 	}
 	//---------------------------------------------------------------------
 	float GLRenderSystem::getHorizontalTexelOffset(void)

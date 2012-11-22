@@ -1466,92 +1466,6 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setViewMatrix( const Matrix4 &m )
-	{
-		// save latest view matrix
-		mViewMatrix = m;
-		mViewMatrix[2][0] = -mViewMatrix[2][0];
-		mViewMatrix[2][1] = -mViewMatrix[2][1];
-		mViewMatrix[2][2] = -mViewMatrix[2][2];
-		mViewMatrix[2][3] = -mViewMatrix[2][3];
-
-		mDxViewMat = D3D9Mappings::makeD3DXMatrix( mViewMatrix );
-
-		HRESULT hr;
-		if( FAILED( hr = getActiveD3D9Device()->SetTransform( D3DTS_VIEW, &mDxViewMat ) ) )
-			CM_EXCEPT(RenderingAPIException, "Cannot set D3D9 view matrix");
-
-		// also mark clip planes dirty
-		if (!mClipPlanes.empty())
-			mClipPlanesDirty = true;
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setProjectionMatrix( const Matrix4 &m )
-	{
-		// save latest matrix
-		mDxProjMat = D3D9Mappings::makeD3DXMatrix( m );
-
-		if( mActiveRenderTarget->requiresTextureFlipping() )
-		{
-			// Invert transformed y
-			mDxProjMat._12 = - mDxProjMat._12;
-			mDxProjMat._22 = - mDxProjMat._22;
-			mDxProjMat._32 = - mDxProjMat._32;
-			mDxProjMat._42 = - mDxProjMat._42;
-		}
-
-		HRESULT hr;
-		if( FAILED( hr = getActiveD3D9Device()->SetTransform( D3DTS_PROJECTION, &mDxProjMat ) ) )
-			CM_EXCEPT(RenderingAPIException, "Cannot set D3D9 projection matrix");
-
-		// also mark clip planes dirty
-		if (!mClipPlanes.empty())
-			mClipPlanesDirty = true;
-
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setWorldMatrix( const Matrix4 &m )
-	{
-		// save latest matrix
-		mDxWorldMat = D3D9Mappings::makeD3DXMatrix( m );
-
-		HRESULT hr;
-		if( FAILED( hr = getActiveD3D9Device()->SetTransform( D3DTS_WORLD, &mDxWorldMat ) ) )
-			CM_EXCEPT(RenderingAPIException, "Cannot set D3D9 world matrix");
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setSurfaceParams( const Color &ambient, const Color &diffuse,
-		const Color &specular, const Color &emissive, float shininess,
-		TrackVertexColourType tracking )
-	{
-
-		D3DMATERIAL9 material;
-		material.Diffuse = D3DXCOLOR( diffuse.r, diffuse.g, diffuse.b, diffuse.a );
-		material.Ambient = D3DXCOLOR( ambient.r, ambient.g, ambient.b, ambient.a );
-		material.Specular = D3DXCOLOR( specular.r, specular.g, specular.b, specular.a );
-		material.Emissive = D3DXCOLOR( emissive.r, emissive.g, emissive.b, emissive.a );
-		material.Power = shininess;
-
-		HRESULT hr = getActiveD3D9Device()->SetMaterial( &material );
-		if( FAILED( hr ) )
-			CM_EXCEPT(RenderingAPIException, "Error setting D3D material");
-
-
-		if(tracking != TVC_NONE) 
-		{
-			__SetRenderState(D3DRS_COLORVERTEX, TRUE);
-			__SetRenderState(D3DRS_AMBIENTMATERIALSOURCE, (tracking&TVC_AMBIENT)?D3DMCS_COLOR1:D3DMCS_MATERIAL);
-			__SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, (tracking&TVC_DIFFUSE)?D3DMCS_COLOR1:D3DMCS_MATERIAL);
-			__SetRenderState(D3DRS_SPECULARMATERIALSOURCE, (tracking&TVC_SPECULAR)?D3DMCS_COLOR1:D3DMCS_MATERIAL);
-			__SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE, (tracking&TVC_EMISSIVE)?D3DMCS_COLOR1:D3DMCS_MATERIAL);
-		} 
-		else 
-		{
-			__SetRenderState(D3DRS_COLORVERTEX, FALSE);               
-		}
-
-	}
-	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setPointParameters(float size, 
 		bool attenuationEnabled, float constant, float linear, float quadratic,
 		float minSize, float maxSize)
@@ -1576,18 +1490,6 @@ namespace CamelotEngine
 		__SetFloatRenderState(D3DRS_POINTSIZE_MAX, maxSize);
 
 
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setPointSpritesEnabled(bool enabled)
-	{
-		if (enabled)
-		{
-			__SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
-		}
-		else
-		{
-			__SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
-		}
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setTexture( size_t stage, bool enabled, const TexturePtr& tex )
@@ -1695,21 +1597,6 @@ namespace CamelotEngine
 		// also disable vertex texture unit
 		static TexturePtr nullPtr;
 		_setVertexTexture(texUnit, nullPtr);
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setTextureCoordSet( size_t stage, size_t index )
-	{
-		// if vertex shader is being used, stage and index must match
-		if (mVertexProgramBound)
-			index = stage;
-
-		HRESULT hr;
-		// Record settings
-		mTexStageDesc[stage].coordIndex = index;
-
-		hr = __SetTextureStageState( static_cast<DWORD>(stage), D3DTSS_TEXCOORDINDEX, D3D9Mappings::get(mTexStageDesc[stage].autoTexCoordType, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps()) | index );
-		if( FAILED( hr ) )
-			CM_EXCEPT(RenderingAPIException, "Unable to set texture coord. set index");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setTextureMipmapBias(size_t unit, float bias)
@@ -1953,46 +1840,6 @@ namespace CamelotEngine
 		HRESULT hr = __SetRenderState(D3DRS_COLORWRITEENABLE, val); 
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting colour write enable flags");
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setFog( FogMode mode, const Color& colour, float densitiy, float start, float end )
-	{
-		HRESULT hr;
-
-		D3DRENDERSTATETYPE fogType, fogTypeNot;
-
-		if (mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().RasterCaps & D3DPRASTERCAPS_FOGTABLE)
-		{
-			fogType = D3DRS_FOGTABLEMODE;
-			fogTypeNot = D3DRS_FOGVERTEXMODE;
-		}
-		else
-		{
-			fogType = D3DRS_FOGVERTEXMODE;
-			fogTypeNot = D3DRS_FOGTABLEMODE;
-		}
-
-		if( mode == FOG_NONE)
-		{
-			// just disable
-			hr = __SetRenderState(fogType, D3DFOG_NONE );
-			hr = __SetRenderState(D3DRS_FOGENABLE, FALSE);
-		}
-		else
-		{
-			// Allow fog
-			hr = __SetRenderState( D3DRS_FOGENABLE, TRUE );
-			hr = __SetRenderState( fogTypeNot, D3DFOG_NONE );
-			hr = __SetRenderState( fogType, D3D9Mappings::get(mode) );
-
-			hr = __SetRenderState( D3DRS_FOGCOLOR, colour.getAsARGB() );
-			hr = __SetFloatRenderState( D3DRS_FOGSTART, start );
-			hr = __SetFloatRenderState( D3DRS_FOGEND, end );
-			hr = __SetFloatRenderState( D3DRS_FOGDENSITY, densitiy );
-		}
-
-		if( FAILED( hr ) )
-			CM_EXCEPT(RenderingAPIException, "Error setting render state");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setPolygonMode(PolygonMode level)
@@ -2795,13 +2642,6 @@ namespace CamelotEngine
 		getActiveD3D9Device()->GetRenderState(D3DRS_CLIPPLANEENABLE, &prev);
 		__SetRenderState(D3DRS_CLIPPLANEENABLE, enable?
 			(prev | (1 << index)) : (prev & ~(1 << index)));
-	}
-	//---------------------------------------------------------------------
-	HardwareOcclusionQuery* D3D9RenderSystem::createHardwareOcclusionQuery()
-	{
-		D3D9HardwareOcclusionQuery* ret = new D3D9HardwareOcclusionQuery(); 
-		mHwOcclusionQueries.push_back(ret);
-		return ret;
 	}
 	//---------------------------------------------------------------------
 	float D3D9RenderSystem::getHorizontalTexelOffset()

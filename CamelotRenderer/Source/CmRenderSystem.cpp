@@ -353,14 +353,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     void RenderSystem::shutdown(void)
     {
-		// Remove occlusion queries
-		for (HardwareOcclusionQueryList::iterator i = mHwOcclusionQueries.begin();
-			i != mHwOcclusionQueries.end(); ++i)
-		{
-			delete *i;
-		}
-		mHwOcclusionQueries.clear();
-
         // Remove all the render targets.
 		// (destroy primary target last since others may depend on it)
 		RenderTarget* primary = 0;
@@ -403,15 +395,6 @@ namespace CamelotEngine {
 		*pDest = VertexElement::convertColourValue(colour, getColourVertexElementType());
 
 	}
-    //-----------------------------------------------------------------------
-    void RenderSystem::_setWorldMatrices(const Matrix4* m, unsigned short count)
-    {
-        // Do nothing with these matrices here, it never used for now,
-		// derived class should take care with them if required.
-
-        // Set hardware matrix to nothing
-        _setWorldMatrix(Matrix4::IDENTITY);
-    }
     //-----------------------------------------------------------------------
     void RenderSystem::_render(const RenderOperation& op)
     {
@@ -486,17 +469,6 @@ namespace CamelotEngine {
 		{
 			mClipPlanes.clear();
 			mClipPlanesDirty = true;
-		}
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::destroyHardwareOcclusionQuery( HardwareOcclusionQuery *hq)
-	{
-		HardwareOcclusionQueryList::iterator i =
-			std::find(mHwOcclusionQueries.begin(), mHwOcclusionQueries.end(), hq);
-		if (i != mHwOcclusionQueries.end())
-		{
-			mHwOcclusionQueries.erase(i);
-			delete hq;
 		}
 	}
 	//-----------------------------------------------------------------------
