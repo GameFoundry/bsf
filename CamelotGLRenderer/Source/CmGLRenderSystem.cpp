@@ -2531,6 +2531,10 @@ namespace CamelotEngine {
 				{
 					TextureRef curTexture = params->getTexture(def.physicalIndex);
 					_setTexture(def.physicalIndex, true, curTexture.getInternalPtr());
+
+					const SamplerState& samplerState = params->getSamplerState(def.physicalIndex);
+
+					_setTextureUnitSettings(def.physicalIndex, curTexture.getInternalPtr(), samplerState);
 				}
 			}
 		}

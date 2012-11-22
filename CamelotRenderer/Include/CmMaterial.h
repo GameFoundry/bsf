@@ -46,7 +46,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Use the provided pass for rendering of all following objects.
 		 */
-		void applyPass(UINT32 passIdx);
+		void applyPassParameters(UINT32 passIdx);
 
 		UINT32 getNumPasses() const;
 

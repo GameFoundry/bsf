@@ -540,7 +540,7 @@ namespace CamelotEngine
 		only sets those settings which are different from the current settings for this
 		unit, thus minimising render state changes.
 		*/
-		virtual void _setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, SamplerState& tl);
+		virtual void _setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, const SamplerState& tl);
 		/** Turns off a texture unit. */
 		virtual void _disableTextureUnit(size_t texUnit);
 		/** Disables all texture units from the given unit upwards */

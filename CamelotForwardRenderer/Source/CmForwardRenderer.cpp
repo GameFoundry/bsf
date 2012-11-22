@@ -71,7 +71,7 @@ namespace CamelotEngine
 			{
 				setPass(material->getPass(i));
 
-				material->applyPass(i); // TODO - applyPass method should be more like RenderSystem::applyPass(Material, passIdx)
+				material->applyPassParameters(i); // TODO - applyPass method should be more like RenderSystem::applyPass(Material, passIdx)
 				renderSystem->_render(mesh->getRenderOperation());
 			}
 		}

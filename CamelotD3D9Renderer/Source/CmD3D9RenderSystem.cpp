@@ -2775,7 +2775,9 @@ namespace CamelotEngine
 					size_t logicalIndex = i->first;
 					TextureRef texture = params->getTexture(i->second.physicalIndex);
 
-					_setTexture(logicalIndex, true, texture.getInternalPtr());
+					const SamplerState& samplerState = params->getSamplerState(i->second.physicalIndex);
+
+					_setTextureUnitSettings(logicalIndex, texture.getInternalPtr(), samplerState);
 				}
 			}
 		}

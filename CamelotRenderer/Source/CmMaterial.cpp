@@ -129,7 +129,7 @@ namespace CamelotEngine
 		return mShader->getBestTechnique()->getPass(passIdx);
 	}
 
-	void Material::applyPass(UINT32 passIdx)
+	void Material::applyPassParameters(UINT32 passIdx)
 	{
 		throwIfNotInitialized();
 
@@ -141,24 +141,15 @@ namespace CamelotEngine
 
 		GpuProgramRef vertProgram = curPass->getVertexProgram();
 		if(vertProgram)
-		{
-			renderSystem->bindGpuProgram(vertProgram->_getBindingDelegate());
 			renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, params.mVertParams, GPV_ALL);
-		}
 
 		GpuProgramRef fragProgram = curPass->getFragmentProgram();
 		if(fragProgram)
-		{
-			renderSystem->bindGpuProgram(fragProgram->_getBindingDelegate());
 			renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, params.mFragParams, GPV_ALL);
-		}
 
 		GpuProgramRef geomProgram = curPass->getGeometryProgram();
 		if(geomProgram)
-		{
-			renderSystem->bindGpuProgram(geomProgram->_getBindingDelegate());
 			renderSystem->bindGpuProgramParameters(GPT_GEOMETRY_PROGRAM, params.mGeomParams, GPV_ALL);
-		}	
 	}
 
 	RTTITypeBase* Material::getRTTIStatic()

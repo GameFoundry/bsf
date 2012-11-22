@@ -278,7 +278,7 @@ namespace CamelotEngine {
         return mActiveViewport;
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::_setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, SamplerState& tl)
+    void RenderSystem::_setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, const SamplerState& tl)
     {
         // This method is only ever called to set a texture unit to valid details
         // The method _disableTextureUnit is called to turn a unit off
