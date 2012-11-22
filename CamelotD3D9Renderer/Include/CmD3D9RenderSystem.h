@@ -214,7 +214,6 @@ namespace CamelotEngine
             StencilOperation depthFailOp = SOP_KEEP,
             StencilOperation passOp = SOP_KEEP, 
             bool twoSidedOperation = false);
-        void setNormaliseNormals(bool normalise);
 
 		// Low-level overridden members, mainly for internal use
 		void _setWorldMatrix( const Matrix4 &m );
@@ -245,16 +244,7 @@ namespace CamelotEngine
 		void _setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
 		void _setDepthBias(float constantBias, float slopeScaleBias);
 		void _setFog( FogMode mode = FOG_NONE, const Color& colour = Color::White, float expDensity = 1.0, float linearStart = 0.0, float linearEnd = 1.0 );
-		void _convertProjectionMatrix(const Matrix4& matrix,
-            Matrix4& dest, bool forGpuProgram = false);
-		void _makeProjectionMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
-            Matrix4& dest, bool forGpuProgram = false);
-		void _makeProjectionMatrix(float left, float right, float bottom, float top, float nearPlane, 
-            float farPlane, Matrix4& dest, bool forGpuProgram = false);
-		void _makeOrthoMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
-            Matrix4& dest, bool forGpuProgram = false);
-        void _applyObliqueDepthProjection(Matrix4& matrix, const Plane& plane, 
-            bool forGpuProgram);
+		void _convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
 		void _setPolygonMode(PolygonMode level);
         void _setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter);
 		void _setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy);

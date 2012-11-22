@@ -193,10 +193,6 @@ namespace CamelotEngine {
           RenderSystem
          */
         VertexElementType getColourVertexElementType(void) const;
-        /** See
-          RenderSystem
-         */
-        void setNormaliseNormals(bool normalise);
 
         // -----------------------------
         // Low-level overridden members
@@ -322,26 +318,6 @@ namespace CamelotEngine {
          */
         void _convertProjectionMatrix(const Matrix4& matrix,
             Matrix4& dest, bool forGpuProgram = false);
-        /** See
-          RenderSystem
-         */
-        void _makeProjectionMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
-            Matrix4& dest, bool forGpuProgram = false);
-        /** See
-          RenderSystem
-         */
-        void _makeProjectionMatrix(float left, float right, float bottom, float top, 
-            float nearPlane, float farPlane, Matrix4& dest, bool forGpuProgram = false);
-        /** See
-          RenderSystem
-         */
-		void _makeOrthoMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
-            Matrix4& dest, bool forGpuProgram = false);
-        /** See
-        RenderSystem
-        */
-        void _applyObliqueDepthProjection(Matrix4& matrix, const Plane& plane, 
-            bool forGpuProgram);
         /** See
           RenderSystem
          */

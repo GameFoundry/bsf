@@ -75,24 +75,6 @@ namespace CamelotEngine {
 		mCurrentCapabilities = 0;
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::_initRenderTargets(void)
-    {
-
-    }
-    //-----------------------------------------------------------------------
-    void RenderSystem::_updateAllRenderTargets(bool swapBuffers)
-    {
-        // Update all in order of priority
-        // This ensures render-to-texture targets get updated before render windows
-		RenderTargetPriorityMap::iterator itarg, itargend;
-		itargend = mPrioritisedRenderTargets.end();
-		for( itarg = mPrioritisedRenderTargets.begin(); itarg != itargend; ++itarg )
-		{
-			if( itarg->second->isActive())
-				itarg->second->update(swapBuffers);
-		}
-    }
-    //-----------------------------------------------------------------------
     void RenderSystem::_swapAllRenderTargetBuffers(bool waitForVSync)
     {
         // Update all in order of priority
@@ -506,11 +488,6 @@ namespace CamelotEngine {
 			mClipPlanesDirty = true;
 		}
 	}
-    //-----------------------------------------------------------------------
-    void RenderSystem::_notifyCameraRemoved(const Camera* cam)
-    {
-		// TODO PORT - Not used in the port. Should probably be removed
-    }
 	//-----------------------------------------------------------------------
 	void RenderSystem::destroyHardwareOcclusionQuery( HardwareOcclusionQuery *hq)
 	{

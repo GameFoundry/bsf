@@ -1778,76 +1778,7 @@ namespace CamelotEngine {
 		// no any conversion request for OpenGL
 		dest = matrix;
 	}
-
-	void GLRenderSystem::_makeProjectionMatrix(const Radian& fovy, float aspect, float nearPlane, 
-		float farPlane, Matrix4& dest, bool forGpuProgram)
-	{
-		Radian thetaY ( fovy / 2.0f );
-		float tanThetaY = Math::Tan(thetaY);
-		//float thetaX = thetaY * aspect;
-		//float tanThetaX = Math::Tan(thetaX);
-
-		// Calc matrix elements
-		float w = (1.0f / tanThetaY) / aspect;
-		float h = 1.0f / tanThetaY;
-		float q, qn;
-		if (farPlane == 0)
-		{
-			// Infinite far plane
-			q = Camera::INFINITE_FAR_PLANE_ADJUST - 1;
-			qn = nearPlane * (Camera::INFINITE_FAR_PLANE_ADJUST - 2);
-		}
-		else
-		{
-			q = -(farPlane + nearPlane) / (farPlane - nearPlane);
-			qn = -2 * (farPlane * nearPlane) / (farPlane - nearPlane);
-		}
-
-		// NB This creates Z in range [-1,1]
-		//
-		// [ w   0   0   0  ]
-		// [ 0   h   0   0  ]
-		// [ 0   0   q   qn ]
-		// [ 0   0   -1  0  ]
-
-		dest = Matrix4::ZERO;
-		dest[0][0] = w;
-		dest[1][1] = h;
-		dest[2][2] = q;
-		dest[2][3] = qn;
-		dest[3][2] = -1;
-
-	}
-
-	void GLRenderSystem::_makeOrthoMatrix(const Radian& fovy, float aspect, float nearPlane, 
-		float farPlane, Matrix4& dest, bool forGpuProgram)
-	{
-		Radian thetaY (fovy / 2.0f);
-		float tanThetaY = Math::Tan(thetaY);
-
-		//float thetaX = thetaY * aspect;
-		float tanThetaX = tanThetaY * aspect; //Math::Tan(thetaX);
-		float half_w = tanThetaX * nearPlane;
-		float half_h = tanThetaY * nearPlane;
-		float iw = 1.0f / half_w;
-		float ih = 1.0f / half_h;
-		float q;
-		if (farPlane == 0)
-		{
-			q = 0;
-		}
-		else
-		{
-			q = 2.0f / (farPlane - nearPlane);
-		}
-		dest = Matrix4::ZERO;
-		dest[0][0] = iw;
-		dest[1][1] = ih;
-		dest[2][2] = -q;
-		dest[2][3] = - (farPlane + nearPlane)/(farPlane - nearPlane);
-		dest[3][3] = 1;
-	}
-
+	//---------------------------------------------------------------------
 	void GLRenderSystem::_setPolygonMode(PolygonMode level)
 	{
 		GLenum glmode;
@@ -2373,15 +2304,6 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setNormaliseNormals(bool normalise)
-	{
-		if (normalise)
-			glEnable(GL_NORMALIZE);
-		else
-			glDisable(GL_NORMALIZE);
-
-	}
-	//---------------------------------------------------------------------
 	void GLRenderSystem::bindGpuProgram(GpuProgram* prg)
 	{
 		GLGpuProgram* glprg = static_cast<GLGpuProgram*>(prg);
@@ -2678,34 +2600,6 @@ namespace CamelotEngine {
 			glStencilMask(mStencilMask);
 		}
 	}
-	// ------------------------------------------------------------------
-	void GLRenderSystem::_makeProjectionMatrix(float left, float right, 
-		float bottom, float top, float nearPlane, float farPlane, Matrix4& dest, 
-		bool forGpuProgram)
-	{
-		float width = right - left;
-		float height = top - bottom;
-		float q, qn;
-		if (farPlane == 0)
-		{
-			// Infinite far plane
-			q = Camera::INFINITE_FAR_PLANE_ADJUST - 1;
-			qn = nearPlane * (Camera::INFINITE_FAR_PLANE_ADJUST - 2);
-		}
-		else
-		{
-			q = -(farPlane + nearPlane) / (farPlane - nearPlane);
-			qn = -2 * (farPlane * nearPlane) / (farPlane - nearPlane);
-		}
-		dest = Matrix4::ZERO;
-		dest[0][0] = 2 * nearPlane / width;
-		dest[0][2] = (right+left) / width;
-		dest[1][1] = 2 * nearPlane / height;
-		dest[1][2] = (top+bottom) / height;
-		dest[2][2] = q;
-		dest[2][3] = qn;
-		dest[3][2] = -1;
-	}
 	//---------------------------------------------------------------------
 	HardwareOcclusionQuery* GLRenderSystem::createHardwareOcclusionQuery(void)
 	{
@@ -2724,33 +2618,6 @@ namespace CamelotEngine {
 	{
 		// No offset in GL
 		return 0.0f;
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::_applyObliqueDepthProjection(Matrix4& matrix, const Plane& plane, 
-		bool forGpuProgram)
-	{
-		// Thanks to Eric Lenyel for posting this calculation at www.terathon.com
-
-		// Calculate the clip-space corner point opposite the clipping plane
-		// as (sgn(clipPlane.x), sgn(clipPlane.y), 1, 1) and
-		// transform it into camera space by multiplying it
-		// by the inverse of the projection matrix
-
-		Vector4 q;
-		q.x = (Math::Sign(plane.normal.x) + matrix[0][2]) / matrix[0][0];
-		q.y = (Math::Sign(plane.normal.y) + matrix[1][2]) / matrix[1][1];
-		q.z = -1.0F;
-		q.w = (1.0F + matrix[2][2]) / matrix[2][3];
-
-		// Calculate the scaled plane vector
-		Vector4 clipPlane4d(plane.normal.x, plane.normal.y, plane.normal.z, plane.d);
-		Vector4 c = clipPlane4d * (2.0F / (clipPlane4d.dotProduct(q)));
-
-		// Replace the third row of the projection matrix
-		matrix[2][0] = c.x;
-		matrix[2][1] = c.y;
-		matrix[2][2] = c.z + 1.0F;
-		matrix[2][3] = c.w; 
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::_oneTimeContextInitialization()

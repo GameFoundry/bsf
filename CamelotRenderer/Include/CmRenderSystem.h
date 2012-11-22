@@ -824,55 +824,10 @@ namespace CamelotEngine
 		@remarks
 		Because different APIs have different requirements (some incompatible) for the
 		projection matrix, this method allows each to implement their own correctly and pass
-		back a generic OGRE matrix for storage in the engine.
+		back a generic Camelot matrix for storage in the engine.
 		*/
 		virtual void _convertProjectionMatrix(const Matrix4& matrix,
 			Matrix4& dest, bool forGpuProgram = false) = 0;
-
-		/** Builds a perspective projection matrix suitable for this render system.
-		@remarks
-		Because different APIs have different requirements (some incompatible) for the
-		projection matrix, this method allows each to implement their own correctly and pass
-		back a generic OGRE matrix for storage in the engine.
-		*/
-		virtual void _makeProjectionMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
-			Matrix4& dest, bool forGpuProgram = false) = 0;
-
-		/** Builds a perspective projection matrix for the case when frustum is
-		not centered around camera.
-		@remarks
-		Viewport coordinates are in camera coordinate frame, i.e. camera is 
-		at the origin.
-		*/
-		virtual void _makeProjectionMatrix(float left, float right, float bottom, float top, 
-			float nearPlane, float farPlane, Matrix4& dest, bool forGpuProgram = false) = 0;
-		/** Builds an orthographic projection matrix suitable for this render system.
-		@remarks
-		Because different APIs have different requirements (some incompatible) for the
-		projection matrix, this method allows each to implement their own correctly and pass
-		back a generic OGRE matrix for storage in the engine.
-		*/
-		virtual void _makeOrthoMatrix(const Radian& fovy, float aspect, float nearPlane, float farPlane, 
-			Matrix4& dest, bool forGpuProgram = false) = 0;
-
-		/** Update a perspective projection matrix to use 'oblique depth projection'.
-		@remarks
-		This method can be used to change the nature of a perspective 
-		transform in order to make the near plane not perpendicular to the 
-		camera view direction, but to be at some different orientation. 
-		This can be useful for performing arbitrary clipping (e.g. to a 
-		reflection plane) which could otherwise only be done using user
-		clip planes, which are more expensive, and not necessarily supported
-		on all cards.
-		@param matrix The existing projection matrix. Note that this must be a
-		perspective transform (not orthographic), and must not have already
-		been altered by this method. The matrix will be altered in-place.
-		@param plane The plane which is to be used as the clipping plane. This
-		plane must be in CAMERA (view) space.
-		@param forGpuProgram Is this for use with a Gpu program or fixed-function
-		*/
-		virtual void _applyObliqueDepthProjection(Matrix4& matrix, const Plane& plane, 
-			bool forGpuProgram) = 0;
 
 		/** Sets how to rasterise triangles, as points, wireframe or solid polys. */
 		virtual void _setPolygonMode(PolygonMode level) = 0;
@@ -950,18 +905,6 @@ namespace CamelotEngine
 		/** Sets the current vertex buffer binding state. */
 		virtual void setVertexBufferBinding(VertexBufferBinding* binding) = 0;
 
-		/** Sets whether or not normals are to be automatically normalised.
-		@remarks
-		This is useful when, for example, you are scaling SceneNodes such that
-		normals may not be unit-length anymore. Note though that this has an
-		overhead so should not be turn on unless you really need it.
-		@par
-		You should not normally call this direct unless you are rendering
-		world geometry; set it on the Renderable because otherwise it will be
-		overridden by material settings. 
-		*/
-		virtual void setNormaliseNormals(bool normalise) = 0;
-
 		/**
 		Render something to the active viewport.
 
@@ -1020,16 +963,6 @@ namespace CamelotEngine
 		*/
 		virtual void resetClipPlanes();
 
-		/** Utility method for initialising all render targets attached to this rendering system. */
-		virtual void _initRenderTargets(void);
-
-		/** Utility method to notify all render targets that a camera has been removed, 
-		in case they were referring to it as their viewer. 
-		*/
-		virtual void _notifyCameraRemoved(const Camera* cam);
-
-		/** Internal method for updating all render targets attached to this rendering system. */
-		virtual void _updateAllRenderTargets(bool swapBuffers = true);
 		/** Internal method for swapping all the buffers on all render targets,
 		if _updateAllRenderTargets was called with a 'false' parameter. */
 		virtual void _swapAllRenderTargetBuffers(bool waitForVsync = true);
