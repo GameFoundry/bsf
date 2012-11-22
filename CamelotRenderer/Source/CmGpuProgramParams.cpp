@@ -89,7 +89,6 @@ namespace CamelotEngine
 		mCombinedVariability(GPV_GLOBAL)
 		, mTransposeMatrices(false)
 		, mIgnoreMissingParams(false)
-		, mActivePassIterationIndex(std::numeric_limits<size_t>::max())	
 	{
 	}
 	//-----------------------------------------------------------------------------
@@ -114,7 +113,6 @@ namespace CamelotEngine
 		mCombinedVariability = oth.mCombinedVariability;
 		mTransposeMatrices = oth.mTransposeMatrices;
 		mIgnoreMissingParams  = oth.mIgnoreMissingParams;
-		mActivePassIterationIndex = oth.mActivePassIterationIndex;
 
 		return *this;
 	}
@@ -880,15 +878,6 @@ namespace CamelotEngine
 		mFloatConstants = source.getFloatConstantList();
 		mIntConstants = source.getIntConstantList();
 		mCombinedVariability = source.mCombinedVariability;
-	}
-	//-----------------------------------------------------------------------
-	void GpuProgramParameters::incPassIterationNumber(void)
-	{
-		if (mActivePassIterationIndex != std::numeric_limits<size_t>::max())
-		{
-			// This is a physical index
-			++mFloatConstants[mActivePassIterationIndex];
-		}
 	}
 }
 

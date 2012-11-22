@@ -99,11 +99,7 @@ namespace CamelotEngine
 
 		mLastVertexSourceCount = 0;
 
-		mCurrentLights.clear();
-
-		// Enumerate events
-		mEventNames.push_back("DeviceLost");
-		mEventNames.push_back("DeviceRestored");			
+		mCurrentLights.clear();			
 	}
 	//---------------------------------------------------------------------
 	D3D9RenderSystem::~D3D9RenderSystem()
@@ -595,17 +591,6 @@ namespace CamelotEngine
 
 			autoWindow = createRenderWindow( windowTitle, width, height, 
 				fullScreen, &miscParams );
-
-			// If we have 16bit depth buffer enable w-buffering.
-			assert( autoWindow );
-			if ( autoWindow->getColourDepth() == 16 ) 
-			{ 
-				mWBuffer = true;
-			} 
-			else 
-			{
-				mWBuffer = false;
-			}
 		}	
 
 		// call superclass method
@@ -1975,13 +1960,7 @@ namespace CamelotEngine
 		HRESULT hr;
 
 		if( enabled )
-		{
-			// Use w-buffer if available and enabled
-			if( mWBuffer && mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().RasterCaps & D3DPRASTERCAPS_WBUFFER )
-				hr = __SetRenderState( D3DRS_ZENABLE, D3DZB_USEW );
-			else
-				hr = __SetRenderState( D3DRS_ZENABLE, D3DZB_TRUE );
-		}
+			hr = __SetRenderState( D3DRS_ZENABLE, D3DZB_TRUE );
 		else
 			hr = __SetRenderState( D3DRS_ZENABLE, D3DZB_FALSE );
 
@@ -2546,47 +2525,24 @@ namespace CamelotEngine
 				CM_EXCEPT(RenderingAPIException, "Failed to set index buffer");
 			}
 
-			do
-			{
-				// Update derived depth bias
-				if (mDerivedDepthBias && mCurrentPassIterationNum > 0)
-				{
-					_setDepthBias(mDerivedDepthBiasBase + 
-						mDerivedDepthBiasMultiplier * mCurrentPassIterationNum, 
-						mDerivedDepthBiasSlopeScale);
-				}
-				// do indexed draw operation
-				hr = getActiveD3D9Device()->DrawIndexedPrimitive(
-					primType, 
-					static_cast<INT>(op.vertexData->vertexStart), 
-					0, // Min vertex index - assume we can go right down to 0 
-					static_cast<UINT>(op.vertexData->vertexCount), 
-					static_cast<UINT>(op.indexData->indexStart), 
-					static_cast<UINT>(primCount)
-					);
-
-			} while (updatePassIterationRenderState());
+			// do indexed draw operation
+			hr = getActiveD3D9Device()->DrawIndexedPrimitive(
+				primType, 
+				static_cast<INT>(op.vertexData->vertexStart), 
+				0, // Min vertex index - assume we can go right down to 0 
+				static_cast<UINT>(op.vertexData->vertexCount), 
+				static_cast<UINT>(op.indexData->indexStart), 
+				static_cast<UINT>(primCount)
+				);
 		}
 		else
 		{
-			// nfz: gpu_iterate
-			do
-			{
-				// Update derived depth bias
-				if (mDerivedDepthBias && mCurrentPassIterationNum > 0)
-				{
-					_setDepthBias(mDerivedDepthBiasBase + 
-						mDerivedDepthBiasMultiplier * mCurrentPassIterationNum, 
-						mDerivedDepthBiasSlopeScale);
-				}
-				// Unindexed, a little simpler!
-				hr = getActiveD3D9Device()->DrawPrimitive(
-					primType, 
-					static_cast<UINT>(op.vertexData->vertexStart), 
-					static_cast<UINT>(primCount)
-					); 
-
-			} while (updatePassIterationRenderState());
+			// Unindexed, a little simpler!
+			hr = getActiveD3D9Device()->DrawPrimitive(
+				primType, 
+				static_cast<UINT>(op.vertexData->vertexStart), 
+				static_cast<UINT>(primCount)
+				); 
 		} 
 
 		if( FAILED( hr ) )
@@ -2665,13 +2621,6 @@ namespace CamelotEngine
 	void D3D9RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, 
 		GpuProgramParametersSharedPtr params, UINT16 variability)
 	{
-		// special case pass iteration
-		if (variability == (UINT16)GPV_PASS_ITERATION_NUMBER)
-		{
-			bindGpuProgramPassIterationParameters(gptype);
-			return;
-		}
-		
 		HRESULT hr;
 		GpuLogicalBufferStructPtr floatLogical = params->getFloatLogicalBufferStruct();
 		GpuLogicalBufferStructPtr intLogical = params->getIntLogicalBufferStruct();
@@ -2803,48 +2752,6 @@ namespace CamelotEngine
 			}
 			break;
 		};
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::bindGpuProgramPassIterationParameters(GpuProgramType gptype)
-	{
-
-		HRESULT hr;
-		size_t physicalIndex = 0;
-		size_t logicalIndex = 0;
-		const float* pFloat;
-
-		switch(gptype)
-		{
-		case GPT_VERTEX_PROGRAM:
-			if (mActiveVertexGpuProgramParameters->hasPassIterationNumber())
-			{
-				physicalIndex = mActiveVertexGpuProgramParameters->getPassIterationNumberIndex();
-				logicalIndex = mActiveVertexGpuProgramParameters->getFloatLogicalIndexForPhysicalIndex(physicalIndex);
-				pFloat = mActiveVertexGpuProgramParameters->getFloatPointer(physicalIndex);
-
-				if (FAILED(hr = getActiveD3D9Device()->SetVertexShaderConstantF(
-					static_cast<UINT>(logicalIndex), pFloat, 1)))
-				{
-					CM_EXCEPT(RenderingAPIException, "Unable to upload vertex shader multi pass parameters");
-				}
-			}
-			break;
-
-		case GPT_FRAGMENT_PROGRAM:
-			if (mActiveFragmentGpuProgramParameters->hasPassIterationNumber())
-			{
-				physicalIndex = mActiveFragmentGpuProgramParameters->getPassIterationNumberIndex();
-				logicalIndex = mActiveFragmentGpuProgramParameters->getFloatLogicalIndexForPhysicalIndex(physicalIndex);
-				pFloat = mActiveFragmentGpuProgramParameters->getFloatPointer(physicalIndex);
-				if (FAILED(hr = getActiveD3D9Device()->SetPixelShaderConstantF(
-					static_cast<UINT>(logicalIndex), pFloat, 1)))
-				{
-					CM_EXCEPT(RenderingAPIException, "Unable to upload pixel shader multi pass parameters");
-				}
-			}
-			break;
-
-		}
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
@@ -3317,16 +3224,6 @@ namespace CamelotEngine
 		// nothing to do - D3D9 shares rendering context already
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::preExtraThreadsStarted()
-	{
-		// nothing to do - D3D9 shares rendering context already
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::postExtraThreadsStarted()
-	{
-		// nothing to do - D3D9 shares rendering context already
-	}
-	//---------------------------------------------------------------------
 	D3D9ResourceManager* D3D9RenderSystem::getResourceManager()
 	{
 		return msD3D9RenderSystem->mResourceManager;
@@ -3353,8 +3250,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::notifyOnDeviceLost(D3D9Device* device)
 	{	
-		// you need to stop the physics or game engines after this event
-		fireEvent("DeviceLost");
+
 	}
 
 	//---------------------------------------------------------------------
@@ -3373,8 +3269,6 @@ namespace CamelotEngine
 		// Reset the texture stages, they will need to be rebound
 		for (size_t i = 0; i < CM_MAX_TEXTURE_LAYERS; ++i)
 			_setTexture(i, false, TexturePtr());
-
-		fireEvent("DeviceRestored");
 	}
 	
 	//---------------------------------------------------------------------

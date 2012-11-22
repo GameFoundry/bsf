@@ -85,9 +85,6 @@ namespace CamelotEngine {
 		GPV_PER_OBJECT = 2, 
 		/// Varies with light setup
 		GPV_LIGHTS = 4, 
-		/// Varies with pass iteration number
-		GPV_PASS_ITERATION_NUMBER = 8,
-
 
 		/// Full mask (16-bit)
 		GPV_ALL = 0xFFFF
@@ -440,8 +437,6 @@ namespace CamelotEngine {
 		bool mTransposeMatrices;
 		/// flag to indicate if names not found will be ignored
 		bool mIgnoreMissingParams;
-		/// physical index for active pass iteration parameter real constant entry;
-		size_t mActivePassIterationIndex;
 
 		/** Gets the low-level structure for a logical index. 
 		*/
@@ -977,16 +972,6 @@ namespace CamelotEngine {
 		To merge parameters that match from different programs, use copyMatchingNamedConstantsFrom.
 		*/
 		void copyConstantsFrom(const GpuProgramParameters& source);
-
-		/** increments the multipass number entry by 1 if it exists
-		*/
-		void incPassIterationNumber(void);
-		/** Does this parameters object have a pass iteration number constant? */
-		bool hasPassIterationNumber() const 
-		{ return mActivePassIterationIndex != (std::numeric_limits<size_t>::max)(); }
-		/** Get the physical buffer index of the pass iteration number constant */
-		size_t getPassIterationNumberIndex() const 
-		{ return mActivePassIterationIndex; }
 	};
 
 	/// Shared pointer used to hold references to GpuProgramParameters instances

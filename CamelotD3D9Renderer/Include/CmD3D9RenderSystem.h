@@ -274,7 +274,6 @@ namespace CamelotEngine
          */
 		void bindGpuProgramParameters(GpuProgramType gptype, 
 			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
-        void bindGpuProgramPassIterationParameters(GpuProgramType gptype);
 
         void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600);
         void clearFrameBuffer(unsigned int buffers, 
@@ -288,9 +287,7 @@ namespace CamelotEngine
         float getMinimumDepthInputValue();
         float getMaximumDepthInputValue();
 		void registerThread();
-		void unregisterThread();
-		void preExtraThreadsStarted();
-		void postExtraThreadsStarted();		
+		void unregisterThread();	
 		
 		static D3D9ResourceManager* getResourceManager();
 		static D3D9DeviceManager* getDeviceManager();

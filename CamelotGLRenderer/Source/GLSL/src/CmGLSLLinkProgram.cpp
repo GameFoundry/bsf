@@ -430,30 +430,4 @@ namespace CamelotEngine {
   
   		} // end for
 	}
-
-
-	//-----------------------------------------------------------------------
-	void GLSLLinkProgram::updatePassIterationUniforms(GpuProgramParametersSharedPtr params)
-	{
-		if (params->hasPassIterationNumber())
-		{
-			size_t index = params->getPassIterationNumberIndex();
-
-			GLUniformReferenceIterator currentUniform = mGLUniformReferences.begin();
-			GLUniformReferenceIterator endUniform = mGLUniformReferences.end();
-
-			// need to find the uniform that matches the multi pass entry
-			for (;currentUniform != endUniform; ++currentUniform)
-			{
-				// get the index in the parameter real list
-				if (index == currentUniform->mConstantDef->physicalIndex)
-				{
-					glUniform1fvARB( currentUniform->mLocation, 1, params->getFloatPointer(index));
-					// there will only be one multipass entry
-					return;
-				}
-			}
-		}
-
-    }
 } // namespace CamelotEngine

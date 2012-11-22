@@ -13,7 +13,7 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in
+The above copyright notice and this permission notice shall be included in*
 all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -2330,32 +2330,11 @@ namespace CamelotEngine {
 
 			GLenum indexType = (op.indexData->indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
-			do
-			{
-				// Update derived depth bias
-				if (mDerivedDepthBias && mCurrentPassIterationNum > 0)
-				{
-					_setDepthBias(mDerivedDepthBiasBase + 
-						mDerivedDepthBiasMultiplier * mCurrentPassIterationNum, 
-						mDerivedDepthBiasSlopeScale);
-				}
-				glDrawElements(primType, op.indexData->indexCount, indexType, pBufferData);
-			} while (updatePassIterationRenderState());
-
+			glDrawElements(primType, op.indexData->indexCount, indexType, pBufferData);
 		}
 		else
 		{
-			do
-			{
-				// Update derived depth bias
-				if (mDerivedDepthBias && mCurrentPassIterationNum > 0)
-				{
-					_setDepthBias(mDerivedDepthBiasBase + 
-						mDerivedDepthBiasMultiplier * mCurrentPassIterationNum, 
-						mDerivedDepthBiasSlopeScale);
-				}
-				glDrawArrays(primType, 0, op.vertexData->vertexCount);
-			} while (updatePassIterationRenderState());
+			glDrawArrays(primType, 0, op.vertexData->vertexCount);
 		}
 
         glDisableClientState( GL_VERTEX_ARRAY );
@@ -2520,22 +2499,6 @@ namespace CamelotEngine {
 		case GPT_FRAGMENT_PROGRAM:
 			mActiveFragmentGpuProgramParameters = params;
 			mCurrentFragmentProgram->bindProgramParameters(params, mask);
-			break;
-		}
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::bindGpuProgramPassIterationParameters(GpuProgramType gptype)
-	{
-		switch (gptype)
-		{
-		case GPT_VERTEX_PROGRAM:
-			mCurrentVertexProgram->bindProgramPassIterationParameters(mActiveVertexGpuProgramParameters);
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			mCurrentGeometryProgram->bindProgramPassIterationParameters(mActiveGeometryGpuProgramParameters);
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-			mCurrentFragmentProgram->bindProgramPassIterationParameters(mActiveFragmentGpuProgramParameters);
 			break;
 		}
 	}
@@ -2963,20 +2926,6 @@ namespace CamelotEngine {
 		// Don't need to worry about active context, just make sure we delete
 		// on shutdown.
 
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::preExtraThreadsStarted()
-	{
-		CM_LOCK_MUTEX(mThreadInitMutex)
-		// free context, we'll need this to share lists
-		mCurrentContext->endCurrent();
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::postExtraThreadsStarted()
-	{
-		CM_LOCK_MUTEX(mThreadInitMutex)
-		// reacquire context
-		mCurrentContext->setCurrent();
 	}
 	//---------------------------------------------------------------------
 	bool GLRenderSystem::activateGLTextureUnit(size_t unit)

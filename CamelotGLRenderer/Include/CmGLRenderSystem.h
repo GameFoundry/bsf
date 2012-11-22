@@ -400,10 +400,6 @@ namespace CamelotEngine {
          */
 		void bindGpuProgramParameters(GpuProgramType gptype, 
 			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
-		/** See
-		  RenderSystem
-		 */
-		void bindGpuProgramPassIterationParameters(GpuProgramType gptype);
         /** See
           RenderSystem
          */
@@ -419,8 +415,6 @@ namespace CamelotEngine {
 		CM_MUTEX(mThreadInitMutex)
 		void registerThread();
 		void unregisterThread();
-		void preExtraThreadsStarted();
-		void postExtraThreadsStarted();
 
         // ----------------------------------
         // GLRenderSystem specific members

@@ -53,11 +53,8 @@ namespace CamelotEngine {
         , mCullingMode(CULL_CLOCKWISE)
         , mVSync(true)
 		, mVSyncInterval(1)
-		, mWBuffer(false)
         , mInvertVertexWinding(false)
         , mDisabledTexUnitsFrom(0)
-        , mCurrentPassIterationCount(0)
-		, mDerivedDepthBias(false)
         , mVertexProgramBound(false)
 		, mGeometryProgramBound(false)
         , mFragmentProgramBound(false)
@@ -65,8 +62,6 @@ namespace CamelotEngine {
 		, mRealCapabilities(0)
 		, mCurrentCapabilities(0)
 		, mUseCustomCapabilities(false)
-		, mTexProjRelative(false)
-		, mTexProjRelativeOrigin(Vector3::ZERO)
     {
     }
 
@@ -373,15 +368,6 @@ namespace CamelotEngine {
     {
         mVSync = enabled;
     }
-    bool RenderSystem::getWBufferEnabled(void) const
-    {
-        return mWBuffer;
-    }
-    //-----------------------------------------------------------------------
-    void RenderSystem::setWBufferEnabled(bool enabled)
-    {
-        mWBuffer = enabled;
-    }
     //-----------------------------------------------------------------------
     void RenderSystem::shutdown(void)
     {
@@ -455,11 +441,6 @@ namespace CamelotEngine {
         else
             val = op.vertexData->vertexCount;
 
-        // account for a pass having multiple iterations
-        if (mCurrentPassIterationCount > 1)
-            val *= mCurrentPassIterationCount;
-		mCurrentPassIterationNum = 0;
-
         switch(op.operationType)
         {
 		case RenderOperation::OT_TRIANGLE_LIST:
@@ -476,7 +457,7 @@ namespace CamelotEngine {
 	    }
 
         mVertexCount += op.vertexData->vertexCount;
-        mBatchCount += mCurrentPassIterationCount;
+        mBatchCount += 1;
 
 		// sort out clip planes
 		// have to do it here in case of matrix issues
@@ -530,52 +511,6 @@ namespace CamelotEngine {
     {
 		// TODO PORT - Not used in the port. Should probably be removed
     }
-
-	//---------------------------------------------------------------------
-    bool RenderSystem::updatePassIterationRenderState(void)
-    {
-        if (mCurrentPassIterationCount <= 1)
-            return false;
-
-        --mCurrentPassIterationCount;
-		++mCurrentPassIterationNum;
-        if (mActiveVertexGpuProgramParameters != nullptr)
-        {
-            mActiveVertexGpuProgramParameters->incPassIterationNumber();
-            bindGpuProgramPassIterationParameters(GPT_VERTEX_PROGRAM);
-        }
-        if (mActiveGeometryGpuProgramParameters != nullptr)
-        {
-            mActiveGeometryGpuProgramParameters->incPassIterationNumber();
-            bindGpuProgramPassIterationParameters(GPT_GEOMETRY_PROGRAM);
-        }
-        if (mActiveFragmentGpuProgramParameters != nullptr)
-        {
-            mActiveFragmentGpuProgramParameters->incPassIterationNumber();
-            bindGpuProgramPassIterationParameters(GPT_FRAGMENT_PROGRAM);
-        }
-        return true;
-    }
-
-	//-----------------------------------------------------------------------
-	void RenderSystem::addListener(Listener* l)
-	{
-		mEventListeners.push_back(l);
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::removeListener(Listener* l)
-	{
-		mEventListeners.remove(l);
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::fireEvent(const String& name, const NameValuePairList* params)
-	{
-		for(ListenerList::iterator i = mEventListeners.begin(); 
-			i != mEventListeners.end(); ++i)
-		{
-			(*i)->eventOccurred(name, params);
-		}
-	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::destroyHardwareOcclusionQuery( HardwareOcclusionQuery *hq)
 	{

@@ -205,18 +205,6 @@ namespace CamelotEngine
 		*/
 		virtual void shutdown(void);
 
-		/** Sets whether or not W-buffers are enabled if they are available for this renderer.
-		@param
-		enabled If true and the renderer supports them W-buffers will be used.  If false 
-		W-buffers will not be used even if available.  W-buffers are enabled by default 
-		for 16bit depth buffers and disabled for all other depths.
-		*/
-		void setWBufferEnabled(bool enabled);
-
-		/** Returns true if the renderer will try to use W-buffers when avalible.
-		*/
-		bool getWBufferEnabled(void) const;
-
 		/** Creates a new rendering window.
 		@remarks
 		This method creates a new rendering window as specified
@@ -1010,9 +998,6 @@ namespace CamelotEngine
 		virtual void bindGpuProgramParameters(GpuProgramType gptype, 
 			GpuProgramParametersSharedPtr params, UINT16 variabilityMask) = 0;
 
-		/** Only binds Gpu program parameters used for passes that have more than one iteration rendering
-		*/
-		virtual void bindGpuProgramPassIterationParameters(GpuProgramType gptype) = 0;
 		/** Unbinds GpuPrograms of a given GpuProgramType.
 		@remarks
 		This returns the pipeline to fixed-function processing for this type.
@@ -1121,101 +1106,11 @@ namespace CamelotEngine
 		@see Renderable::getUseIdentityView, Renderable::getUseIdentityProjection
 		*/
 		virtual float getMaximumDepthInputValue(void) = 0;
-		/** set the current multi pass count value.  This must be set prior to 
-		calling _render() if multiple renderings of the same pass state are 
-		required.
-		@param count Number of times to render the current state.
-		*/
-		virtual void setCurrentPassIterationCount(const size_t count) { mCurrentPassIterationCount = count; }
-
-		/** Tell the render system whether to derive a depth bias on its own based on 
-		the values passed to it in setCurrentPassIterationCount.
-		The depth bias set will be baseValue + iteration * multiplier
-		@param derive True to tell the RS to derive this automatically
-		@param baseValue The base value to which the multiplier should be
-		added
-		@param multiplier The amount of depth bias to apply per iteration
-		@param slopeScale The constant slope scale bias for completeness
-		*/
-		virtual void setDeriveDepthBias(bool derive, float baseValue = 0.0f,
-			float multiplier = 0.0f, float slopeScale = 0.0f)
-		{
-			mDerivedDepthBias = derive;
-			mDerivedDepthBiasBase = baseValue;
-			mDerivedDepthBiasMultiplier = multiplier;
-			mDerivedDepthBiasSlopeScale = slopeScale;
-		}
 
 		/**
          * Set current render target to target, enabling its device context if needed
          */
         virtual void _setRenderTarget(RenderTarget *target) = 0;
-
-		/** Defines a listener on the custom events that this render system 
-		can raise.
-		@see RenderSystem::addListener
-		*/
-		class CM_EXPORT Listener
-		{
-		public:
-			Listener() {}
-			virtual ~Listener() {}
-
-			/** A rendersystem-specific event occurred.
-			@param eventName The name of the event which has occurred
-			@param parameters A list of parameters that may belong to this event,
-			may be null if there are no parameters
-			*/
-			virtual void eventOccurred(const String& eventName, 
-				const NameValuePairList* parameters = 0) = 0;
-		};
-		/** Adds a listener to the custom events that this render system can raise.
-		@remarks
-		Some render systems have quite specific, internally generated events 
-		that the application may wish to be notified of. Many applications
-		don't have to worry about these events, and can just trust OGRE to 
-		handle them, but if you want to know, you can add a listener here.
-		@par
-		Events are raised very generically by string name. Perhaps the most 
-		common example of a render system specific event is the loss and 
-		restoration of a device in DirectX; which OGRE deals with, but you 
-		may wish to know when it happens. 
-		@see RenderSystem::getRenderSystemEvents
-		*/
-		virtual void addListener(Listener* l);
-		/** Remove a listener to the custom events that this render system can raise.
-		*/
-		virtual void removeListener(Listener* l);
-
-		/** Gets a list of the rendersystem specific events that this rendersystem
-		can raise.
-		@see RenderSystem::addListener
-		*/
-		virtual const std::vector<CamelotEngine::String>& getRenderSystemEvents(void) const { return mEventNames; }
-
-		/** Tell the rendersystem to perform any prep tasks it needs to directly
-		before other threads which might access the rendering API are registered.
-		@remarks
-		Call this from your main thread before starting your other threads
-		(which themselves should call registerThread()). Note that if you
-		start your own threads, there is a specific startup sequence which 
-		must be respected and requires synchronisation between the threads:
-		<ol>
-		<li>[Main thread]Call preExtraThreadsStarted</li>
-		<li>[Main thread]Start other thread, wait</li>
-		<li>[Other thread]Call registerThread, notify main thread & continue</li>
-		<li>[Main thread]Wake up & call postExtraThreadsStarted</li>
-		</ol>
-		Once this init sequence is completed the threads are independent but
-		this startup sequence must be respected.
-		*/
-		virtual void preExtraThreadsStarted() = 0;
-
-		/* Tell the rendersystem to perform any tasks it needs to directly
-		after other threads which might access the rendering API are registered.
-		@see RenderSystem::preExtraThreadsStarted
-		*/
-		virtual void postExtraThreadsStarted() = 0;
 
 		/** Register the an additional thread which may make calls to rendersystem-related 
 		objects.
@@ -1260,7 +1155,6 @@ namespace CamelotEngine
 
 		bool mVSync;
 		unsigned int mVSyncInterval;
-		bool mWBuffer;
 
 		size_t mBatchCount;
 		size_t mFaceCount;
@@ -1273,30 +1167,6 @@ namespace CamelotEngine
 
 		/// Texture units from this upwards are disabled
 		size_t mDisabledTexUnitsFrom;
-
-		/// number of times to render the current state
-		size_t mCurrentPassIterationCount;
-		size_t mCurrentPassIterationNum;
-		/// Whether to update the depth bias per render call
-		bool mDerivedDepthBias;
-		float mDerivedDepthBiasBase;
-		float mDerivedDepthBiasMultiplier;
-		float mDerivedDepthBiasSlopeScale;
-
-		/** updates pass iteration rendering state including bound gpu program parameter
-		pass iteration auto constant entry
-		@returns True if more iterations are required
-		*/
-		bool updatePassIterationRenderState(void);
-
-		/// List of names of events this rendersystem may raise
-		std::vector<CamelotEngine::String> mEventNames;
-
-		/// Internal method for firing a rendersystem event
-		virtual void fireEvent(const String& name, const NameValuePairList* params = 0);
-
-		typedef list<Listener*>::type ListenerList;
-		ListenerList mEventListeners;
 
 		typedef list<HardwareOcclusionQuery*>::type HardwareOcclusionQueryList;
 		HardwareOcclusionQueryList mHwOcclusionQueries;
@@ -1321,14 +1191,7 @@ namespace CamelotEngine
 		/** Initialize the render system from the capabilities*/
 		virtual void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary) = 0;
 
-
 		DriverVersion mDriverVersion;
-
-		bool mTexProjRelative;
-		Vector3 mTexProjRelativeOrigin;
-
-
-
 	};
 	/** @} */
 	/** @} */

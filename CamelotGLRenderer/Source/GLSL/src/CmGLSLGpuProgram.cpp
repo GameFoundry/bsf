@@ -130,15 +130,6 @@ namespace CamelotEngine {
 	}
 
 	//-----------------------------------------------------------------------------
-	void GLSLGpuProgram::bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params)
-	{
-		// activate the link program object
-		GLSLLinkProgram* linkProgram = GLSLLinkProgramManager::instance().getActiveLinkProgram();
-		// pass on parameters from params to program object uniforms
-		linkProgram->updatePassIterationUniforms( params );
-		
-	}
-	//-----------------------------------------------------------------------------
 	GLuint GLSLGpuProgram::getAttributeIndex(VertexElementSemantic semantic, UINT32 index)
 	{
 		// get link program - only call this in the context of bound program

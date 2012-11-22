@@ -48,10 +48,6 @@ namespace CamelotEngine {
 		void unbindProgram(void);
 		/// Execute the param binding functions for this program
 		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** Execute the pass iteration param binding functions for this program.
-            Only binds those parameters used for multipass rendering
-        */
-        void bindProgramPassIterationParameters(GpuProgramParametersSharedPtr params);
 
 		/// Get the assigned GL program id
 		const GLuint getProgramID(void) const
