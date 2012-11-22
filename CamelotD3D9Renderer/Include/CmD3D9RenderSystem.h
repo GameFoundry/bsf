@@ -205,9 +205,6 @@ namespace CamelotEngine
 		void setConfigOption( const String &name, const String &value );
 		void reinitialise();
 		void shutdown();
-		void setAmbientLight( float r, float g, float b );
-		void setShadingType( ShadeOptions so );
-		void setLightingEnabled( bool enabled );
 		void destroyRenderTarget(const String& name);
 		VertexElementType getColourVertexElementType() const;
 		void setStencilCheckEnabled(bool enabled);
@@ -239,8 +236,6 @@ namespace CamelotEngine
 		void _setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage );
 		void _setViewport( Viewport *vp );		
 		void _beginFrame();
-		virtual RenderSystemContext* _pauseFrame(void);
-		virtual void _resumeFrame(RenderSystemContext* context);
 		void _endFrame();		
 		void _setCullingMode( CullingMode mode );
 		void _setDepthBufferParams( bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL );

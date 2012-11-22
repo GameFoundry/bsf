@@ -183,7 +183,7 @@ namespace CamelotEngine
 		@returns
 		A pointer to the automatically created window, if requested, otherwise null.
 		*/
-		virtual RenderWindow* _initialise(bool autoCreateWindow, const String& windowTitle = "OGRE Render Window");
+		virtual RenderWindow* _initialise(bool autoCreateWindow, const String& windowTitle = "Camelot Render Window");
 
 
 		/** Query the real capabilities of the GPU and driver in the RenderSystem*/
@@ -204,22 +204,6 @@ namespace CamelotEngine
 		/** Shutdown the renderer and cleanup resources.
 		*/
 		virtual void shutdown(void);
-
-
-		/** Sets the colour & strength of the ambient (global directionless) light in the world.
-		*/
-		virtual void setAmbientLight(float r, float g, float b) = 0;
-
-		/** Sets the type of light shading required (default = Gouraud).
-		*/
-		virtual void setShadingType(ShadeOptions so) = 0;
-
-		/** Sets whether or not dynamic lighting is enabled.
-		@param
-		enabled If true, dynamic lighting is performed on geometry with normals supplied, geometry without
-		normals will not be displayed. If false, no lighting is applied and all geometry will be full brightness.
-		*/
-		virtual void setLightingEnabled(bool enabled) = 0;
 
 		/** Sets whether or not W-buffers are enabled if they are available for this renderer.
 		@param
@@ -711,33 +695,12 @@ namespace CamelotEngine
 		*/
 		virtual void _setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage) = 0;
 
-		/** Notify the rendersystem that it should adjust texture projection to be 
-			relative to a different origin.
-		*/
-		virtual void _setTextureProjectionRelativeTo(bool enabled, const Vector3& pos);
 		/**
 		* Signifies the beginning of a frame, i.e. the start of rendering on a single viewport. Will occur
 		* several times per complete frame if multiple viewports exist.
 		*/
 		virtual void _beginFrame(void) = 0;
 		
-		//Dummy structure for render system contexts - implementing RenderSystems can extend
-		//as needed
-		struct RenderSystemContext { };
-		/**
-		* Pause rendering for a frame. This has to be called after _beginFrame and before _endFrame.
-		* Will usually be called by the SceneManager, don't use this manually unless you know what
-		* you are doing.
-		*/
-		virtual RenderSystemContext* _pauseFrame(void);
-		/**
-		* Resume rendering for a frame. This has to be called after a _pauseFrame call
-		* Will usually be called by the SceneManager, don't use this manually unless you know what
-		* you are doing.
-		* @param context the render system context, as returned by _pauseFrame
-		*/
-		virtual void _resumeFrame(RenderSystemContext* context);
-
 		/**
 		* Ends rendering of a frame to the current viewport.
 		*/

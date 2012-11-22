@@ -167,19 +167,6 @@ namespace CamelotEngine {
           RenderSystem
          */
         void shutdown(void);
-
-        /** See
-          RenderSystem
-         */
-        void setAmbientLight(float r, float g, float b);
-        /** See
-          RenderSystem
-         */
-        void setShadingType(ShadeOptions so);
-        /** See
-          RenderSystem
-         */
-        void setLightingEnabled(bool enabled);
         
 		/// @copydoc RenderSystem::_createRenderWindow
 		RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 

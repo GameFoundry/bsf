@@ -56,8 +56,6 @@ namespace CamelotEngine
 		SceneManager::startUp(new SceneManager());
 		Resources::startUp(new Resources("D:\\CamelotResourceMetas"));
 
-		renderSystem->setLightingEnabled(false);
-
 		Importer::startUp(new Importer());
 		loadPlugin("CamelotFreeImgImporter"); // TODO - Load this automatically somehow
 		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow

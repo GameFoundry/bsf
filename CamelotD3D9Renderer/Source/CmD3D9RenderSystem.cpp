@@ -1552,27 +1552,6 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setAmbientLight( float r, float g, float b )
-	{
-		HRESULT hr = __SetRenderState( D3DRS_AMBIENT, D3DCOLOR_COLORVALUE( r, g, b, 1.0f ) );
-		if( FAILED( hr ) )
-			CM_EXCEPT(RenderingAPIException, "Failed to set render stat D3DRS_AMBIENT");
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setShadingType( ShadeOptions so )
-	{
-		HRESULT hr = __SetRenderState( D3DRS_SHADEMODE, D3D9Mappings::get(so) );
-		if( FAILED( hr ) )
-			CM_EXCEPT(RenderingAPIException, "Failed to set render stat D3DRS_SHADEMODE");
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setLightingEnabled( bool enabled )
-	{
-		HRESULT hr;
-		if( FAILED( hr = __SetRenderState( D3DRS_LIGHTING, enabled ) ) )
-			CM_EXCEPT(RenderingAPIException, "Failed to set render state D3DRS_LIGHTING");
-	}
-	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_setViewMatrix( const Matrix4 &m )
 	{
 		// save latest view matrix
@@ -2410,11 +2389,6 @@ namespace CamelotEngine
 		mDeviceManager->destroyInactiveRenderDevices();
 	}
 	//---------------------------------------------------------------------
-	struct D3D9RenderContext : public RenderSystem::RenderSystemContext
-	{
-		RenderTarget* target;
-	};
-	//---------------------------------------------------------------------
 	D3D9RenderSystem::ZBufferIdentifier D3D9RenderSystem::getZBufferIdentifier(RenderTarget* rt)
 	{
 		// Retrieve render surfaces (up to CM_MAX_MULTIPLE_RENDER_TARGETS)
@@ -2437,65 +2411,6 @@ namespace CamelotEngine
 		zBufferIdentifier.multisampleType = srfDesc.MultiSampleType;
 		zBufferIdentifier.device = getActiveD3D9Device();
 		return zBufferIdentifier;
-	}
-	//---------------------------------------------------------------------
-	RenderSystem::RenderSystemContext* D3D9RenderSystem::_pauseFrame(void)
-	{
-		//Stop rendering
-		_endFrame();
-
-		D3D9RenderContext* context = new D3D9RenderContext;
-		context->target = mActiveRenderTarget;
-
-		//Don't do this to backbuffers. Is there a more elegant way to check?
-		if (!dynamic_cast<D3D9RenderWindow*>(mActiveRenderTarget))
-		{
-			//Get the matching z buffer identifier and queue
-			ZBufferIdentifier zBufferIdentifier = getZBufferIdentifier(mActiveRenderTarget);
-			ZBufferRefQueue& zBuffers = mZBufferHash[zBufferIdentifier];
-			
-#ifdef CM_DEBUG_MODE
-			//Check that queue handling works as expected
-			IDirect3DSurface9* pDepth;
-			getActiveD3D9Device()->GetDepthStencilSurface(&pDepth);	
-			
-			// Release immediately -> each get increase the ref count.
-			if (pDepth != NULL)		
-				pDepth->Release();		
-
-			assert(zBuffers.front().surface == pDepth);
-#endif
-
-			//Store the depth buffer in the side and remove it from the queue
-			mCheckedOutTextures[mActiveRenderTarget] = zBuffers.front();
-			zBuffers.pop_front();
-		}
-		
-		
-		return context;
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_resumeFrame(RenderSystemContext* context)
-	{
-		//Resume rendering
-		_beginFrame();
-		D3D9RenderContext* d3dContext = static_cast<D3D9RenderContext*>(context);
-
-		//Don't do this to backbuffers. Is there a more elegant way to check?
-		if (!dynamic_cast<D3D9RenderWindow*>(d3dContext->target))
-		{
-			///Find the stored depth buffer
-			ZBufferIdentifier zBufferIdentifier = getZBufferIdentifier(d3dContext->target);
-			ZBufferRefQueue& zBuffers = mZBufferHash[zBufferIdentifier];
-			assert(mCheckedOutTextures.find(d3dContext->target) != mCheckedOutTextures.end());
-			
-			//Return it to the general queue
-			zBuffers.push_front(mCheckedOutTextures[d3dContext->target]);
-			mCheckedOutTextures.erase(d3dContext->target);
-		}
-		
-		
-		delete context;
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)

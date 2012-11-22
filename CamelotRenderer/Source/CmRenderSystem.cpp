@@ -641,25 +641,5 @@ namespace CamelotEngine {
         // Make compiler happy
         return false;
 	}
-	//---------------------------------------------------------------------
-	void RenderSystem::_setTextureProjectionRelativeTo(bool enabled, const Vector3& pos)
-	{
-		mTexProjRelative = enabled;
-		mTexProjRelativeOrigin = pos;
-
-	}
-	//---------------------------------------------------------------------
-	RenderSystem::RenderSystemContext* RenderSystem::_pauseFrame(void)
-	{
-		_endFrame();
-		return new RenderSystem::RenderSystemContext;
-	}
-	//---------------------------------------------------------------------
-	void RenderSystem::_resumeFrame(RenderSystemContext* context)
-	{
-		_beginFrame();
-		delete context;
-	}
-
 }
 

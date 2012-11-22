@@ -922,26 +922,6 @@ namespace CamelotEngine {
 		//  the whole state.
 		mGLInitialised = 0;
 	}
-
-	void GLRenderSystem::setAmbientLight(float r, float g, float b)
-	{
-		GLfloat lmodel_ambient[] = {r, g, b, 1.0};
-		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
-	}
-
-	void GLRenderSystem::setShadingType(ShadeOptions so)
-	{
-		switch(so)
-		{
-		case SO_FLAT:
-			glShadeModel(GL_FLAT);
-			break;
-		default:
-			glShadeModel(GL_SMOOTH);
-			break;
-		}
-	}
-
 	//---------------------------------------------------------------------
 	bool GLRenderSystem::_createRenderWindows(const RenderWindowDescriptionList& renderWindowDescriptions, 
 		RenderWindowList& createdWindows)
@@ -1754,18 +1734,6 @@ namespace CamelotEngine {
     {
         const GLubyte *errString = gluErrorString (errCode);
 		return (errString != 0) ? String((const char*) errString) : StringUtil::BLANK;
-    }
-    //-----------------------------------------------------------------------------
-    void GLRenderSystem::setLightingEnabled(bool enabled)
-    {
-        if (enabled) 
-        {      
-            glEnable(GL_LIGHTING);
-        } 
-        else 
-        {
-            glDisable(GL_LIGHTING);
-        }
     }
     //-----------------------------------------------------------------------------
     void GLRenderSystem::_setFog(FogMode mode, const Color& colour, float density, float start, float end)
