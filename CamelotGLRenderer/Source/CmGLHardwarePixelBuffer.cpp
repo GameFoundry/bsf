@@ -577,7 +577,7 @@ void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, c
 
 	// Important to disable all other texture units
 	RenderSystem* rsys = CamelotEngine::RenderSystemManager::getActive();
-	rsys->_disableTextureUnitsFrom(0);
+	rsys->disableTextureUnitsFrom(0);
 	if (GLEW_VERSION_1_2)
 	{
 		glActiveTextureARB(GL_TEXTURE0);

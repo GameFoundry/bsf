@@ -493,11 +493,11 @@ namespace CamelotEngine
 		only sets those settings which are different from the current settings for this
 		unit, thus minimising render state changes.
 		*/
-		virtual void _setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, const SamplerState& tl);
+		virtual void setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, const SamplerState& tl);
 		/** Turns off a texture unit. */
-		virtual void _disableTextureUnit(size_t texUnit);
+		virtual void disableTextureUnit(size_t texUnit);
 		/** Disables all texture units from the given unit upwards */
-		virtual void _disableTextureUnitsFrom(size_t texUnit);
+		virtual void disableTextureUnitsFrom(size_t texUnit);
 
 		/** Sets the size of points and how they are attenuated with distance.
 		@remarks
@@ -509,7 +509,7 @@ namespace CamelotEngine
 		you would set constant to 1, and linear and quadratic to 0. A
 		standard perspective attenuation would be 0, 1, 0 respectively.
 		*/
-		virtual void _setPointParameters(float size, bool attenuationEnabled, 
+		virtual void setPointParameters(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize) = 0;
 
 
@@ -525,7 +525,7 @@ namespace CamelotEngine
 		@param enabled Boolean to turn the unit on/off
 		@param texPtr Pointer to the texture to use.
 		*/
-		virtual void _setTexture(size_t unit, bool enabled, 
+		virtual void setTexture(size_t unit, bool enabled, 
 			const TexturePtr &texPtr) = 0;
 
 		/** Binds a texture to a vertex sampler.
@@ -537,7 +537,7 @@ namespace CamelotEngine
 		fragment units; calling this method will throw an exception.
 		@see RenderSystemCapabilites::getVertexTextureUnitsShared
 		*/
-		virtual void _setVertexTexture(size_t unit, const TexturePtr& tex);
+		virtual void setVertexTexture(size_t unit, const TexturePtr& tex);
 
 		/** Sets the filtering options for a given texture unit.
 		@param unit The texture unit to set the filtering options for
@@ -545,7 +545,7 @@ namespace CamelotEngine
 		@param magFilter The filter used when a texture is magnified
 		@param mipFilter The filter used between mipmap levels, FO_NONE disables mipmapping
 		*/
-		virtual void _setTextureUnitFiltering(size_t unit, FilterOptions minFilter,
+		virtual void setTextureUnitFiltering(size_t unit, FilterOptions minFilter,
 			FilterOptions magFilter, FilterOptions mipFilter);
 
 		/** Sets a single filter for a given texture unit.
@@ -553,16 +553,16 @@ namespace CamelotEngine
 		@param ftype The filter type
 		@param filter The filter to be used
 		*/
-		virtual void _setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter) = 0;
+		virtual void setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter) = 0;
 
 		/** Sets the maximal anisotropy for the specified texture unit.*/
-		virtual void _setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy) = 0;
+		virtual void setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy) = 0;
 
 		/** Sets the texture addressing mode for a texture unit.*/
-		virtual void _setTextureAddressingMode(size_t unit, const SamplerState::UVWAddressingMode& uvw) = 0;
+		virtual void setTextureAddressingMode(size_t unit, const SamplerState::UVWAddressingMode& uvw) = 0;
 
 		/** Sets the texture border colour for a texture unit.*/
-		virtual void _setTextureBorderColour(size_t unit, const Color& colour) = 0;
+		virtual void setTextureBorderColour(size_t unit, const Color& colour) = 0;
 
 		/** Sets the mipmap bias value for a given texture unit.
 		@remarks
@@ -572,7 +572,7 @@ namespace CamelotEngine
 		of levels, so +1 forces the mipmaps to one smaller level.
 		@note Only does something if render system has capability RSC_MIPMAP_LOD_BIAS.
 		*/
-		virtual void _setTextureMipmapBias(size_t unit, float bias) = 0;
+		virtual void setTextureMipmapBias(size_t unit, float bias) = 0;
 
 		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
 		The result of the blending operation is:</p>
@@ -584,7 +584,7 @@ namespace CamelotEngine
 		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
 		@param op The blend operation mode for combining pixels
 		*/
-		virtual void _setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op = SBO_ADD) = 0;
+		virtual void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op = SBO_ADD) = 0;
 
 		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
 		The result of the blending operation is:</p>
@@ -598,7 +598,7 @@ namespace CamelotEngine
 		@param op The blend operation mode for combining pixels
 		@param alphaOp The blend operation mode for combining pixel alpha values
 		*/
-		virtual void _setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
+		virtual void setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
 			SceneBlendFactor destFactorAlpha, SceneBlendOperation op = SBO_ADD, SceneBlendOperation alphaOp = SBO_ADD) = 0;
 
 		/** Sets the global alpha rejection approach for future renders.
@@ -607,18 +607,18 @@ namespace CamelotEngine
 		@param val The value to compare each pixels alpha value to (0-255)
 		@param alphaToCoverage Whether to enable alpha to coverage, if supported
 		*/
-		virtual void _setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage) = 0;
+		virtual void setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage) = 0;
 
 		/**
 		* Signifies the beginning of a frame, i.e. the start of rendering on a single viewport. Will occur
 		* several times per complete frame if multiple viewports exist.
 		*/
-		virtual void _beginFrame(void) = 0;
+		virtual void beginFrame(void) = 0;
 		
 		/**
 		* Ends rendering of a frame to the current viewport.
 		*/
-		virtual void _endFrame(void) = 0;
+		virtual void endFrame(void) = 0;
 		/**
 		Sets the provided viewport as the active one for future
 		rendering operations. This viewport is aware of it's own
@@ -626,9 +626,9 @@ namespace CamelotEngine
 
 		@param target Pointer to the appropriate viewport.
 		*/
-		virtual void _setViewport(Viewport *vp) = 0;
+		virtual void setViewport(Viewport *vp) = 0;
 		/** Get the current active viewport for rendering. */
-		virtual Viewport* _getViewport(void);
+		virtual Viewport* getViewport(void);
 
 		/** Sets the culling mode for the render system based on the 'vertex winding'.
 		A typical way for the rendering engine to cull triangles is based on the
@@ -641,9 +641,9 @@ namespace CamelotEngine
 		You may wish to use the CULL_NONE option for mesh data that you cull yourself where the vertex
 		winding is uncertain.
 		*/
-		virtual void _setCullingMode(CullingMode mode) = 0;
+		virtual void setCullingMode(CullingMode mode) = 0;
 
-		virtual CullingMode _getCullingMode(void) const;
+		virtual CullingMode getCullingMode(void) const;
 
 		/** Sets the mode of operation for depth buffer tests from this point onwards.
 		Sometimes you may wish to alter the behaviour of the depth buffer to achieve
@@ -658,18 +658,18 @@ namespace CamelotEngine
 		If false, the depth buffer is left unchanged even if a new pixel is written.
 		@param depthFunction Sets the function required for the depth test.
 		*/
-		virtual void _setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL) = 0;
+		virtual void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL) = 0;
 
 		/** Sets whether or not the depth buffer check is performed before a pixel write.
 		@param enabled If true, the depth buffer is tested for each pixel and the frame buffer is only updated
 		if the depth function test succeeds. If false, no test is performed and pixels are always written.
 		*/
-		virtual void _setDepthBufferCheckEnabled(bool enabled = true) = 0;
+		virtual void setDepthBufferCheckEnabled(bool enabled = true) = 0;
 		/** Sets whether or not the depth buffer is updated after a pixel write.
 		@param enabled If true, the depth buffer is updated with the depth of the new pixel if the depth test succeeds.
 		If false, the depth buffer is left unchanged even if a new pixel is written.
 		*/
-		virtual void _setDepthBufferWriteEnabled(bool enabled = true) = 0;
+		virtual void setDepthBufferWriteEnabled(bool enabled = true) = 0;
 		/** Sets the comparison function for the depth buffer check.
 		Advanced use only - allows you to choose the function applied to compare the depth values of
 		new and existing pixels in the depth buffer. Only an issue if the deoth buffer check is enabled
@@ -677,7 +677,7 @@ namespace CamelotEngine
 		@param  func The comparison between the new depth and the existing depth which must return true
 		for the new pixel to be written.
 		*/
-		virtual void _setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL) = 0;
+		virtual void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL) = 0;
 		/** Sets whether or not colour buffer writing is enabled, and for which channels. 
 		@remarks
 		For some advanced effects, you may wish to turn off the writing of certain colour
@@ -685,7 +685,7 @@ namespace CamelotEngine
 		in a rendering pass. However, the chances are that you really want to use this option
 		through the Material class.
 		@param red, green, blue, alpha Whether writing is enabled for each of the 4 colour channels. */
-		virtual void _setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha) = 0;
+		virtual void setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha) = 0;
 		/** Sets the depth bias, NB you should use the Material version of this. 
 		@remarks
 		When polygons are coplanar, you can get problems with 'depth fighting' where
@@ -708,16 +708,16 @@ namespace CamelotEngine
 		cards.
 
 		*/
-		virtual void _setDepthBias(float constantBias, float slopeScaleBias = 0.0f) = 0;
+		virtual void setDepthBias(float constantBias, float slopeScaleBias = 0.0f) = 0;
 
 		/** The RenderSystem will keep a count of tris rendered, this resets the count. */
-		virtual void _beginGeometryCount(void);
+		virtual void beginGeometryCount(void);
 		/** Reports the number of tris rendered since the last _beginGeometryCount call. */
-		virtual unsigned int _getFaceCount(void) const;
+		virtual unsigned int getFaceCount(void) const;
 		/** Reports the number of batches rendered since the last _beginGeometryCount call. */
-		virtual unsigned int _getBatchCount(void) const;
+		virtual unsigned int getBatchCount(void) const;
 		/** Reports the number of vertices passed to the renderer since the last _beginGeometryCount call. */
-		virtual unsigned int _getVertexCount(void) const;
+		virtual unsigned int getVertexCount(void) const;
 
 		/** Generates a packed data version of the passed in ColourValue suitable for
 		use as with this RenderSystem.
@@ -743,7 +743,7 @@ namespace CamelotEngine
 			Matrix4& dest, bool forGpuProgram = false) = 0;
 
 		/** Sets how to rasterise triangles, as points, wireframe or solid polys. */
-		virtual void _setPolygonMode(PolygonMode level) = 0;
+		virtual void setPolygonMode(PolygonMode level) = 0;
 
 		/** Turns stencil buffer checking on or off. 
 		@remarks
@@ -830,7 +830,7 @@ namespace CamelotEngine
 		@param op A rendering operation instance, which contains
 		details of the operation to be performed.
 		*/
-		virtual void _render(const RenderOperation& op);
+		virtual void render(const RenderOperation& op);
 
 		/** Gets the capabilities of the render system. */
 		const RenderSystemCapabilities* getCapabilities(void) const { return mCurrentCapabilities; }
@@ -878,7 +878,7 @@ namespace CamelotEngine
 
 		/** Internal method for swapping all the buffers on all render targets,
 		if _updateAllRenderTargets was called with a 'false' parameter. */
-		virtual void _swapAllRenderTargetBuffers(bool waitForVsync = true);
+		virtual void swapAllRenderTargetBuffers(bool waitForVsync = true);
 
 		/** Sets whether or not vertex windings set should be inverted; this can be important
 		for rendering reflections. */
@@ -956,7 +956,7 @@ namespace CamelotEngine
 		/**
          * Set current render target to target, enabling its device context if needed
          */
-        virtual void _setRenderTarget(RenderTarget *target) = 0;
+        virtual void setRenderTarget(RenderTarget *target) = 0;
 
 		/** Register the an additional thread which may make calls to rendersystem-related 
 		objects.

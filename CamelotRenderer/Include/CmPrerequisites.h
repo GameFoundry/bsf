@@ -102,8 +102,11 @@ namespace CamelotEngine {
 	class Renderable;
 	class Renderer;
 	class RendererFactory;
+	class RenderCommandBuffer;
 	class WorkQueue;
 	class PassParameters;
+	class DeferredRenderSystem;
+	class DeferredGpuCommand;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

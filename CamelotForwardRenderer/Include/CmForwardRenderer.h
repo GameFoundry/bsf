@@ -8,6 +8,9 @@ namespace CamelotEngine
 	class CM_FWDRND_EXPORT ForwardRenderer : public Renderer
 	{
 	public:
+		ForwardRenderer();
+		~ForwardRenderer();
+
 		virtual const String& getName() const;
 
 		virtual void renderAll();
@@ -15,6 +18,7 @@ namespace CamelotEngine
 
 	protected:
 		PassPtr mActivePass;
+		RenderCommandBuffer* mCommandBuffer;
 
 		/**
 		 * @brief	Overriden from Renderer

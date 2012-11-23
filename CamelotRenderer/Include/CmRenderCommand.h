@@ -16,7 +16,7 @@ namespace CamelotEngine
 		PassParametersPtr getPassParameters() const { return mPassParameters; }
 
 	private:
-		RenderOperation mRO;
+		RenderOperation mRO; // TODO Low priority - Keeping this by value is unnecessary overhead
 		PassPtr mPass;
 		PassParametersPtr mPassParameters;
 	};

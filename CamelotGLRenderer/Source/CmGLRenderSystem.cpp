@@ -1060,7 +1060,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setPointParameters(float size, 
+	void GLRenderSystem::setPointParameters(float size, 
 		bool attenuationEnabled, float constant, float linear, float quadratic,
 		float minSize, float maxSize)
 	{
@@ -1130,7 +1130,7 @@ namespace CamelotEngine {
 		
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setTexture(size_t stage, bool enabled, const TexturePtr &texPtr)
+	void GLRenderSystem::setTexture(size_t stage, bool enabled, const TexturePtr &texPtr)
 	{
 		GLTexturePtr tex = std::static_pointer_cast<GLTexture>(texPtr);
 
@@ -1205,7 +1205,7 @@ namespace CamelotEngine {
 
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw)
+	void GLRenderSystem::setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw)
 	{
 		if (!activateGLTextureUnit(stage))
 			return;
@@ -1218,7 +1218,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setTextureBorderColour(size_t stage, const Color& colour)
+	void GLRenderSystem::setTextureBorderColour(size_t stage, const Color& colour)
 	{
 		GLfloat border[4] = { colour.r, colour.g, colour.b, colour.a };
 		if (activateGLTextureUnit(stage))
@@ -1228,7 +1228,7 @@ namespace CamelotEngine {
 	}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setTextureMipmapBias(size_t stage, float bias)
+	void GLRenderSystem::setTextureMipmapBias(size_t stage, float bias)
 	{
 		if (mCurrentCapabilities->hasCapability(RSC_MIPMAP_LOD_BIAS))
 		{
@@ -1270,7 +1270,7 @@ namespace CamelotEngine {
 		return GL_ONE;
 	}
 
-	void GLRenderSystem::_setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
+	void GLRenderSystem::setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
 	{
 		GLint sourceBlend = getBlendMode(sourceFactor);
 		GLint destBlend = getBlendMode(destFactor);
@@ -1314,7 +1314,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setSeparateSceneBlending(
+	void GLRenderSystem::setSeparateSceneBlending(
 		SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, 
 		SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha,
 		SceneBlendOperation op, SceneBlendOperation alphaOp )
@@ -1383,7 +1383,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage)
+	void GLRenderSystem::setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage)
 	{
 		bool a2c = false;
 		static bool lasta2c = false;
@@ -1411,14 +1411,14 @@ namespace CamelotEngine {
 
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setViewport(Viewport *vp)
+	void GLRenderSystem::setViewport(Viewport *vp)
 	{
 		// Check if viewport is different
 		if (vp != mActiveViewport)
 		{
 			RenderTarget* target;
 			target = vp->getTarget();
-			_setRenderTarget(target);
+			setRenderTarget(target);
 			mActiveViewport = vp;
 
 			GLsizei x, y, w, h;
@@ -1454,7 +1454,7 @@ namespace CamelotEngine {
 	}
 
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_beginFrame(void)
+	void GLRenderSystem::beginFrame(void)
 	{
 		if (!mActiveViewport)
 			CM_EXCEPT(InvalidStateException, 
@@ -1465,7 +1465,7 @@ namespace CamelotEngine {
 	}
 
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_endFrame(void)
+	void GLRenderSystem::endFrame(void)
 	{
 		// Deactivate the viewport clipping.
 		glDisable(GL_SCISSOR_TEST);
@@ -1477,7 +1477,7 @@ namespace CamelotEngine {
 	}
 
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setCullingMode(CullingMode mode)
+	void GLRenderSystem::setCullingMode(CullingMode mode)
 	{
 		mCullingMode = mode;
 		// NB: Because two-sided stencil API dependence of the front face, we must
@@ -1524,14 +1524,14 @@ namespace CamelotEngine {
 		glCullFace( cullMode );
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
+	void GLRenderSystem::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
 	{
-		_setDepthBufferCheckEnabled(depthTest);
-		_setDepthBufferWriteEnabled(depthWrite);
-		_setDepthBufferFunction(depthFunction);
+		setDepthBufferCheckEnabled(depthTest);
+		setDepthBufferWriteEnabled(depthWrite);
+		setDepthBufferFunction(depthFunction);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setDepthBufferCheckEnabled(bool enabled)
+	void GLRenderSystem::setDepthBufferCheckEnabled(bool enabled)
 	{
 		if (enabled)
 		{
@@ -1544,7 +1544,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setDepthBufferWriteEnabled(bool enabled)
+	void GLRenderSystem::setDepthBufferWriteEnabled(bool enabled)
 	{
 		GLboolean flag = enabled ? GL_TRUE : GL_FALSE;
 		glDepthMask( flag );  
@@ -1552,12 +1552,12 @@ namespace CamelotEngine {
 		mDepthWrite = enabled;
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setDepthBufferFunction(CompareFunction func)
+	void GLRenderSystem::setDepthBufferFunction(CompareFunction func)
 	{
 		glDepthFunc(convertCompareFunction(func));
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setDepthBias(float constantBias, float slopeScaleBias)
+	void GLRenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
 	{
 		if (constantBias != 0 || slopeScaleBias != 0)
 		{
@@ -1574,7 +1574,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::_setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
+	void GLRenderSystem::setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
 	{
 		glColorMask(red, green, blue, alpha);
 		// record this
@@ -1602,7 +1602,7 @@ namespace CamelotEngine {
 		dest = matrix;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::_setPolygonMode(PolygonMode level)
+	void GLRenderSystem::setPolygonMode(PolygonMode level)
 	{
 		GLenum glmode;
 		switch(level)
@@ -1796,7 +1796,7 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::_setTextureUnitFiltering(size_t unit, 
+	void GLRenderSystem::setTextureUnitFiltering(size_t unit, 
 		FilterType ftype, FilterOptions fo)
 	{
 		if (!activateGLTextureUnit(unit))
@@ -1851,7 +1851,7 @@ namespace CamelotEngine {
 		return curAniso ? curAniso : 1;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::_setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy)
+	void GLRenderSystem::setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy)
 	{
 		if (!mCurrentCapabilities->hasCapability(RSC_ANISOTROPY))
 			return;
@@ -1878,10 +1878,10 @@ namespace CamelotEngine {
 	{
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::_render(const RenderOperation& op)
+	void GLRenderSystem::render(const RenderOperation& op)
 	{
 		// Call super class
-		RenderSystem::_render(op);
+		RenderSystem::render(op);
 
 		void* pBufferData = 0;
 		bool multitexturing = (getCapabilities()->getNumTextureUnits() > 1);
@@ -2222,11 +2222,11 @@ namespace CamelotEngine {
 					|| def.constType == GCT_SAMPLER2DSHADOW || def.constType == GCT_SAMPLER3D || def.constType == GCT_SAMPLER1DSHADOW)
 				{
 					TextureRef curTexture = params->getTexture(def.physicalIndex);
-					_setTexture(def.physicalIndex, true, curTexture.getInternalPtr());
+					setTexture(def.physicalIndex, true, curTexture.getInternalPtr());
 
 					const SamplerState& samplerState = params->getSamplerState(def.physicalIndex);
 
-					_setTextureUnitSettings(def.physicalIndex, curTexture.getInternalPtr(), samplerState);
+					setTextureUnitSettings(def.physicalIndex, curTexture.getInternalPtr(), samplerState);
 				}
 			}
 		}
@@ -2479,7 +2479,7 @@ namespace CamelotEngine {
 		mCurrentLights = 0;
 
 		// Disable textures
-		_disableTextureUnitsFrom(0);
+		disableTextureUnitsFrom(0);
 
 		// It's ready for switching
 		if (mCurrentContext)
@@ -2511,7 +2511,7 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::_setRenderTarget(RenderTarget *target)
+	void GLRenderSystem::setRenderTarget(RenderTarget *target)
 	{
 		// Unbind frame buffer object
 		if(mActiveRenderTarget)

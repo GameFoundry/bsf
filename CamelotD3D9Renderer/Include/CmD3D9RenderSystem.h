@@ -194,7 +194,7 @@ namespace CamelotEngine
 		/**
          * Set current render target to target, enabling its GL context if needed
          */
-		void _setRenderTarget(RenderTarget *target);
+		void setRenderTarget(RenderTarget *target);
 		
 		/// @copydoc RenderSystem::createMultiRenderTarget
 		virtual MultiRenderTarget * createMultiRenderTarget(const String & name);
@@ -216,34 +216,34 @@ namespace CamelotEngine
             bool twoSidedOperation = false);
 
 		// Low-level overridden members, mainly for internal use
-		void _setPointParameters(float size, bool attenuationEnabled, 
+		void setPointParameters(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize);
-		void _setTexture(size_t unit, bool enabled, const TexturePtr &texPtr);
-		void _setVertexTexture(size_t unit, const TexturePtr& tex);
-		void _disableTextureUnit(size_t texUnit);
-        void _setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw);
-        void _setTextureBorderColour(size_t stage, const Color& colour);
-		void _setTextureMipmapBias(size_t unit, float bias);
-		void _setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
-		void _setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
-		void _setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage );
-		void _setViewport( Viewport *vp );		
-		void _beginFrame();
-		void _endFrame();		
-		void _setCullingMode( CullingMode mode );
-		void _setDepthBufferParams( bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL );
-		void _setDepthBufferCheckEnabled( bool enabled = true );
-		void _setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
-		void _setDepthBufferWriteEnabled(bool enabled = true);
-		void _setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
-		void _setDepthBias(float constantBias, float slopeScaleBias);
+		void setTexture(size_t unit, bool enabled, const TexturePtr &texPtr);
+		void setVertexTexture(size_t unit, const TexturePtr& tex);
+		void disableTextureUnit(size_t texUnit);
+        void setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw);
+        void setTextureBorderColour(size_t stage, const Color& colour);
+		void setTextureMipmapBias(size_t unit, float bias);
+		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
+		void setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
+		void setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage );
+		void setViewport( Viewport *vp );		
+		void beginFrame();
+		void endFrame();		
+		void setCullingMode( CullingMode mode );
+		void setDepthBufferParams( bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL );
+		void setDepthBufferCheckEnabled( bool enabled = true );
+		void setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
+		void setDepthBufferWriteEnabled(bool enabled = true);
+		void setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
+		void setDepthBias(float constantBias, float slopeScaleBias);
 		void _convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
-		void _setPolygonMode(PolygonMode level);
-        void _setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter);
-		void _setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy);
+		void setPolygonMode(PolygonMode level);
+        void setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter);
+		void setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy);
 		void setVertexDeclaration(VertexDeclarationPtr decl);
 		void setVertexBufferBinding(VertexBufferBinding* binding);
-        void _render(const RenderOperation& op);
+        void render(const RenderOperation& op);
         /** See
           RenderSystem
          */

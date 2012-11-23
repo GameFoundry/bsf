@@ -1466,7 +1466,7 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setPointParameters(float size, 
+	void D3D9RenderSystem::setPointParameters(float size, 
 		bool attenuationEnabled, float constant, float linear, float quadratic,
 		float minSize, float maxSize)
 	{
@@ -1492,7 +1492,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setTexture( size_t stage, bool enabled, const TexturePtr& tex )
+	void D3D9RenderSystem::setTexture( size_t stage, bool enabled, const TexturePtr& tex )
 	{
 		HRESULT hr;
 		D3D9TexturePtr dt = std::static_pointer_cast<D3D9Texture>(tex);
@@ -1550,7 +1550,7 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setVertexTexture(size_t stage, const TexturePtr& tex)
+	void D3D9RenderSystem::setVertexTexture(size_t stage, const TexturePtr& tex)
 	{
 		if (tex == nullptr)
 		{
@@ -1591,15 +1591,15 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_disableTextureUnit(size_t texUnit)
+	void D3D9RenderSystem::disableTextureUnit(size_t texUnit)
 	{
-		RenderSystem::_disableTextureUnit(texUnit);
+		RenderSystem::disableTextureUnit(texUnit);
 		// also disable vertex texture unit
 		static TexturePtr nullPtr;
-		_setVertexTexture(texUnit, nullPtr);
+		setVertexTexture(texUnit, nullPtr);
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setTextureMipmapBias(size_t unit, float bias)
+	void D3D9RenderSystem::setTextureMipmapBias(size_t unit, float bias)
 	{
 		if (mCurrentCapabilities->hasCapability(RSC_MIPMAP_LOD_BIAS))
 		{
@@ -1612,7 +1612,7 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setTextureAddressingMode( size_t stage, 
+	void D3D9RenderSystem::setTextureAddressingMode( size_t stage, 
 		const SamplerState::UVWAddressingMode& uvw )
 	{
 		HRESULT hr;
@@ -1624,7 +1624,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set texture addressing mode for W");
 	}
 	//-----------------------------------------------------------------------------
-	void D3D9RenderSystem::_setTextureBorderColour(size_t stage,
+	void D3D9RenderSystem::setTextureBorderColour(size_t stage,
 		const Color& colour)
 	{
 		HRESULT hr;
@@ -1632,7 +1632,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set texture border colour");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
+	void D3D9RenderSystem::setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
 	{
 		HRESULT hr;
 		if( sourceFactor == SBF_ONE && destFactor == SBF_ZERO)
@@ -1658,7 +1658,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set scene blending operation option");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
+	void D3D9RenderSystem::setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
 		SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp )
 	{
 		HRESULT hr;
@@ -1690,7 +1690,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set alpha scene blending operation option");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage )
+	void D3D9RenderSystem::setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage )
 	{
 		HRESULT hr;
 		bool a2c = false;
@@ -1752,7 +1752,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setCullingMode( CullingMode mode )
+	void D3D9RenderSystem::setCullingMode( CullingMode mode )
 	{
 		mCullingMode = mode;
 		HRESULT hr;
@@ -1764,14 +1764,14 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set culling mode");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setDepthBufferParams( bool depthTest, bool depthWrite, CompareFunction depthFunction )
+	void D3D9RenderSystem::setDepthBufferParams( bool depthTest, bool depthWrite, CompareFunction depthFunction )
 	{
-		_setDepthBufferCheckEnabled( depthTest );
-		_setDepthBufferWriteEnabled( depthWrite );
-		_setDepthBufferFunction( depthFunction );
+		setDepthBufferCheckEnabled( depthTest );
+		setDepthBufferWriteEnabled( depthWrite );
+		setDepthBufferFunction( depthFunction );
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setDepthBufferCheckEnabled( bool enabled )
+	void D3D9RenderSystem::setDepthBufferCheckEnabled( bool enabled )
 	{
 		HRESULT hr;
 
@@ -1784,7 +1784,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error setting depth buffer test state");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setDepthBufferWriteEnabled( bool enabled )
+	void D3D9RenderSystem::setDepthBufferWriteEnabled( bool enabled )
 	{
 		HRESULT hr;
 
@@ -1792,14 +1792,14 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error setting depth buffer write state");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setDepthBufferFunction( CompareFunction func )
+	void D3D9RenderSystem::setDepthBufferFunction( CompareFunction func )
 	{
 		HRESULT hr;
 		if( FAILED( hr = __SetRenderState( D3DRS_ZFUNC, D3D9Mappings::get(func) ) ) )
 			CM_EXCEPT(RenderingAPIException, "Error setting depth buffer test function");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setDepthBias(float constantBias, float slopeScaleBias)
+	void D3D9RenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
 	{
 
 		if ((mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().RasterCaps & D3DPRASTERCAPS_DEPTHBIAS) != 0)
@@ -1825,7 +1825,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setColourBufferWriteEnabled(bool red, bool green, 
+	void D3D9RenderSystem::setColourBufferWriteEnabled(bool red, bool green, 
 		bool blue, bool alpha)
 	{
 		DWORD val = 0;
@@ -1842,7 +1842,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error setting colour write enable flags");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setPolygonMode(PolygonMode level)
+	void D3D9RenderSystem::setPolygonMode(PolygonMode level)
 	{
 		HRESULT hr = __SetRenderState(D3DRS_FILLMODE, D3D9Mappings::get(level));
 		if (FAILED(hr))
@@ -1933,7 +1933,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation.");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setTextureUnitFiltering(size_t unit, FilterType ftype, 
+	void D3D9RenderSystem::setTextureUnitFiltering(size_t unit, FilterType ftype, 
 		FilterOptions filter)
 	{
 		HRESULT hr;
@@ -1951,7 +1951,7 @@ namespace CamelotEngine
 		return oldVal;
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy)
+	void D3D9RenderSystem::setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy)
 	{
 		if (static_cast<DWORD>(maxAnisotropy) > mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().MaxAnisotropy)
 			maxAnisotropy = mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().MaxAnisotropy;
@@ -2007,7 +2007,7 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setRenderTarget(RenderTarget *target)
+	void D3D9RenderSystem::setRenderTarget(RenderTarget *target)
 	{
 		mActiveRenderTarget = target;
 
@@ -2073,7 +2073,7 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_setViewport( Viewport *vp )
+	void D3D9RenderSystem::setViewport( Viewport *vp )
 	{
 		if( vp != mActiveViewport)
 		{
@@ -2085,10 +2085,10 @@ namespace CamelotEngine
 
 			// Set render target
 			RenderTarget* target = vp->getTarget();
-			_setRenderTarget(target);
+			setRenderTarget(target);
 
 
-			_setCullingMode( mCullingMode );
+			setCullingMode( mCullingMode );
 
 			// set viewport dimensions
 			d3dvp.X = vp->getActualLeft();
@@ -2113,7 +2113,7 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_beginFrame()
+	void D3D9RenderSystem::beginFrame()
 	{
 		HRESULT hr;
 
@@ -2135,7 +2135,7 @@ namespace CamelotEngine
  		mDeviceManager->getActiveDevice()->clearDeviceStreams();
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_endFrame()
+	void D3D9RenderSystem::endFrame()
 	{
 		HRESULT hr;
 		if( FAILED( hr = getActiveD3D9Device()->EndScene() ) )
@@ -2234,7 +2234,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::_render(const RenderOperation& op)
+	void D3D9RenderSystem::render(const RenderOperation& op)
 	{
 		// Exit immediately if there is nothing to render
 		// This caused a problem on FireGL 8800
@@ -2242,7 +2242,7 @@ namespace CamelotEngine
 			return;
 
 		// Call super class
-		RenderSystem::_render(op);
+		RenderSystem::render(op);
 
 		// To think about: possibly remove setVertexDeclaration and 
 		// setVertexBufferBinding from RenderSystem since the sequence is
@@ -2411,7 +2411,7 @@ namespace CamelotEngine
 
 					const SamplerState& samplerState = params->getSamplerState(i->second.physicalIndex);
 
-					_setTextureUnitSettings(logicalIndex, texture.getInternalPtr(), samplerState);
+					setTextureUnitSettings(logicalIndex, texture.getInternalPtr(), samplerState);
 				}
 			}
 		}
@@ -2936,7 +2936,7 @@ namespace CamelotEngine
 
 		// Reset the texture stages, they will need to be rebound
 		for (size_t i = 0; i < CM_MAX_TEXTURE_LAYERS; ++i)
-			_setTexture(i, false, TexturePtr());
+			setTexture(i, false, TexturePtr());
 	}
 	
 	//---------------------------------------------------------------------

@@ -200,32 +200,32 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-		void _setPointParameters(float size, bool attenuationEnabled, 
+		void setPointParameters(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize);
 		/** See
           RenderSystem
          */
-        void _setTexture(size_t unit, bool enabled, const TexturePtr &tex);
+        void setTexture(size_t unit, bool enabled, const TexturePtr &tex);
         /** See
           RenderSystem
          */
-        void _setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw);
+        void setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw);
         /** See
           RenderSystem
          */
-        void _setTextureBorderColour(size_t stage, const Color& colour);
+        void setTextureBorderColour(size_t stage, const Color& colour);
 		/** See
 		  RenderSystem
 		 */
-		void _setTextureMipmapBias(size_t unit, float bias);
+		void setTextureMipmapBias(size_t unit, float bias);
         /** See
           RenderSystem
          */
-        void _setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
+        void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
         /** See
           RenderSystem
          */
-		void _setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
+		void setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
         /** See
           RenderSystem
          */
@@ -237,47 +237,47 @@ namespace CamelotEngine {
 		/** See
           RenderSystem
          */
-        void _setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage);
+        void setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage);
         /** See
           RenderSystem
          */
-        void _setViewport(Viewport *vp);
+        void setViewport(Viewport *vp);
         /** See
           RenderSystem
          */
-        void _beginFrame(void);
+        void beginFrame(void);
         /** See
           RenderSystem
          */
-        void _endFrame(void);
+        void endFrame(void);
         /** See
           RenderSystem
          */
-        void _setCullingMode(CullingMode mode);
+        void setCullingMode(CullingMode mode);
         /** See
           RenderSystem
          */
-        void _setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
+        void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
         /** See
           RenderSystem
          */
-        void _setDepthBufferCheckEnabled(bool enabled = true);
+        void setDepthBufferCheckEnabled(bool enabled = true);
         /** See
           RenderSystem
          */
-        void _setDepthBufferWriteEnabled(bool enabled = true);
+        void setDepthBufferWriteEnabled(bool enabled = true);
         /** See
           RenderSystem
          */
-        void _setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
+        void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
         /** See
           RenderSystem
          */
-        void _setDepthBias(float constantBias, float slopeScaleBias);
+        void setDepthBias(float constantBias, float slopeScaleBias);
         /** See
           RenderSystem
          */
-        void _setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
+        void setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
         /** See
           RenderSystem
          */
@@ -294,7 +294,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void _setPolygonMode(PolygonMode level);
+        void setPolygonMode(PolygonMode level);
         /** See
           RenderSystem
          */
@@ -311,11 +311,11 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void _setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter);
+        void setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter);
         /** See
           RenderSystem
          */
-		void _setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy);
+		void setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy);
         /** See
           RenderSystem
          */
@@ -327,7 +327,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void _render(const RenderOperation& op);
+        void render(const RenderOperation& op);
         /** See
           RenderSystem
          */
@@ -369,7 +369,7 @@ namespace CamelotEngine {
         /**
          * Set current render target to target, enabling its GL context if needed
          */
-        void _setRenderTarget(RenderTarget *target);
+        void setRenderTarget(RenderTarget *target);
         /** Unregister a render target->context mapping. If the context of target 
             is the current context, change the context to the main context so it
             can be destroyed safely. 

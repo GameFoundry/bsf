@@ -20,7 +20,7 @@ namespace CamelotEngine
 		virtual void render(const CameraPtr camera) = 0;
 
 	protected:
-		friend class RenderContext;
+		friend class RenderCommandBuffer;
 		/**
 		 * @brief	Sets the currently active pass.
 		 */

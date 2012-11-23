@@ -14,6 +14,33 @@ High-level TODO:
    - Render queue and sorting
  - DX11 render system
 
+
+Command buffer TODO:
+IMPORTANT:
+ I can't just do CommandBuffer->setPass and expect it to work. User can modify the materials at any point before rendering happens, which will cause all kind of problems. I'll need to copy properties one by one.
+  - In order to avoid this, GpuParameters should return a copy of its physical data. (Similar to what Mesh->GetRenderOperation does). 
+  - Pass should return a copy of its own data as well.
+
+MAYBE:
+ - Create DeferredRenderSystem class that has exactly the same public interface as RenderSystem, but defers all calls to a command buffer
+   - As its methods are called we can also filter out values that exactly match the previous ones and minimize number of state changes
+      (Although this should probably be on a higher level, because 1 class 1 use)
+
+Essential TODO for deferred rendering:
+ - Block all calls to RenderSystem outside of Render thread (or at least warn)
+ - Prevent user from accessing vertex/index buffers and similar outside of render thread as well
+ - Start render thread in application
+
+ - Modify resource creation so it calls RenderContext and just schedules resource creation
+
+ - (Optional) Add callbacks from render thread (e.g. pre/post render) and only allow users to create vertex buffer and similar manually from there? at least temporarily. "Direct" access from worker threads might be useful, although users should always be able to use abstractions like Mesh and similar.
+   - Reading from resources should however block the render thread and get the actual resource. Reading is slow anyway and won't be done often.
+   - Writing can be accomplished if RenderContext just returns temporary memory we can write to, and then actually writes it during playback.
+   - Both reading & writing can be accomplished if we keep all data in system memory, which GL does internally (but we can't access it), and optionally DX does too (but again, can't access it). Unless we can access it it's too much memory overhead.
+
+
+
+
 HIGH PRIORITY TODO:
  - Issue with deserialization and value types:
   - Value types are only set at the end of deserialization, because I want to be sure all of their fields are initialized. However there is nothing stopping a custom RTTI method from accessing a (yet uninitialized) value in a ptr field. (See CmMaterialRTTI, setTexParam). I need to initialize fields in a better order.

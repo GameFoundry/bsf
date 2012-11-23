@@ -75,7 +75,7 @@ namespace CamelotEngine {
 		mCurrentCapabilities = 0;
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::_swapAllRenderTargetBuffers(bool waitForVSync)
+    void RenderSystem::swapAllRenderTargetBuffers(bool waitForVSync)
     {
         // Update all in order of priority
         // This ensures render-to-texture targets get updated before render windows
@@ -250,12 +250,12 @@ namespace CamelotEngine {
         return ret;
     }
     //-----------------------------------------------------------------------
-    Viewport* RenderSystem::_getViewport(void)
+    Viewport* RenderSystem::getViewport(void)
     {
         return mActiveViewport;
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::_setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, const SamplerState& tl)
+    void RenderSystem::setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, const SamplerState& tl)
     {
         // This method is only ever called to set a texture unit to valid details
         // The method _disableTextureUnit is called to turn a unit off
@@ -267,43 +267,43 @@ namespace CamelotEngine {
 			if (tl.getBindingType() == SamplerState::BT_VERTEX)
 			{
 				// Bind vertex texture
-				_setVertexTexture(texUnit, tex);
+				setVertexTexture(texUnit, tex);
 				// bind nothing to fragment unit (hardware isn't shared but fragment
 				// unit can't be using the same index
-				_setTexture(texUnit, true, sNullTexPtr);
+				setTexture(texUnit, true, sNullTexPtr);
 			}
 			else
 			{
 				// vice versa
-				_setVertexTexture(texUnit, sNullTexPtr);
-				_setTexture(texUnit, true, tex);
+				setVertexTexture(texUnit, sNullTexPtr);
+				setTexture(texUnit, true, tex);
 			}
 		}
 		else
 		{
 			// Shared vertex / fragment textures or no vertex texture support
 			// Bind texture (may be blank)
-			_setTexture(texUnit, true, tex);
+			setTexture(texUnit, true, tex);
 		}
 
         // Set texture layer filtering
-        _setTextureUnitFiltering(texUnit, 
+        setTextureUnitFiltering(texUnit, 
             tl.getTextureFiltering(FT_MIN), 
             tl.getTextureFiltering(FT_MAG), 
             tl.getTextureFiltering(FT_MIP));
 
         // Set texture layer filtering
-        _setTextureLayerAnisotropy(texUnit, tl.getTextureAnisotropy());
+        setTextureLayerAnisotropy(texUnit, tl.getTextureAnisotropy());
 
 		// Set mipmap biasing
-		_setTextureMipmapBias(texUnit, tl.getTextureMipmapBias());
+		setTextureMipmapBias(texUnit, tl.getTextureMipmapBias());
 
         // Texture addressing mode
         const SamplerState::UVWAddressingMode& uvw = tl.getTextureAddressingMode();
-        _setTextureAddressingMode(texUnit, uvw);
+        setTextureAddressingMode(texUnit, uvw);
     }
 	//-----------------------------------------------------------------------
-	void RenderSystem::_setVertexTexture(size_t unit, const TexturePtr& tex)
+	void RenderSystem::setVertexTexture(size_t unit, const TexturePtr& tex)
 	{
 		CM_EXCEPT(NotImplementedException, 
 			"This rendersystem does not support separate vertex texture samplers, "
@@ -311,12 +311,12 @@ namespace CamelotEngine {
 			"the vertex and fragment units.");
 	}
     //-----------------------------------------------------------------------
-    void RenderSystem::_disableTextureUnit(size_t texUnit)
+    void RenderSystem::disableTextureUnit(size_t texUnit)
     {
-        _setTexture(texUnit, false, sNullTexPtr);
+        setTexture(texUnit, false, sNullTexPtr);
     }
     //---------------------------------------------------------------------
-    void RenderSystem::_disableTextureUnitsFrom(size_t texUnit)
+    void RenderSystem::disableTextureUnitsFrom(size_t texUnit)
     {
         size_t disableTo = CM_MAX_TEXTURE_LAYERS;
         if (disableTo > mDisabledTexUnitsFrom)
@@ -324,19 +324,19 @@ namespace CamelotEngine {
         mDisabledTexUnitsFrom = texUnit;
         for (size_t i = texUnit; i < disableTo; ++i)
         {
-            _disableTextureUnit(i);
+            disableTextureUnit(i);
         }
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::_setTextureUnitFiltering(size_t unit, FilterOptions minFilter,
+    void RenderSystem::setTextureUnitFiltering(size_t unit, FilterOptions minFilter,
             FilterOptions magFilter, FilterOptions mipFilter)
     {
-        _setTextureUnitFiltering(unit, FT_MIN, minFilter);
-        _setTextureUnitFiltering(unit, FT_MAG, magFilter);
-        _setTextureUnitFiltering(unit, FT_MIP, mipFilter);
+        setTextureUnitFiltering(unit, FT_MIN, minFilter);
+        setTextureUnitFiltering(unit, FT_MAG, magFilter);
+        setTextureUnitFiltering(unit, FT_MIP, mipFilter);
     }
     //-----------------------------------------------------------------------
-    CullingMode RenderSystem::_getCullingMode(void) const
+    CullingMode RenderSystem::getCullingMode(void) const
     {
         return mCullingMode;
     }
@@ -369,23 +369,23 @@ namespace CamelotEngine {
 		mPrioritisedRenderTargets.clear();
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::_beginGeometryCount(void)
+    void RenderSystem::beginGeometryCount(void)
     {
         mBatchCount = mFaceCount = mVertexCount = 0;
 
     }
     //-----------------------------------------------------------------------
-    unsigned int RenderSystem::_getFaceCount(void) const
+    unsigned int RenderSystem::getFaceCount(void) const
     {
         return static_cast< unsigned int >( mFaceCount );
     }
     //-----------------------------------------------------------------------
-    unsigned int RenderSystem::_getBatchCount(void) const
+    unsigned int RenderSystem::getBatchCount(void) const
     {
         return static_cast< unsigned int >( mBatchCount );
     }
     //-----------------------------------------------------------------------
-    unsigned int RenderSystem::_getVertexCount(void) const
+    unsigned int RenderSystem::getVertexCount(void) const
     {
         return static_cast< unsigned int >( mVertexCount );
     }
@@ -396,7 +396,7 @@ namespace CamelotEngine {
 
 	}
     //-----------------------------------------------------------------------
-    void RenderSystem::_render(const RenderOperation& op)
+    void RenderSystem::render(const RenderOperation& op)
     {
         // Update stats
         size_t val;
