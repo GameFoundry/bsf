@@ -1440,7 +1440,7 @@ namespace CamelotEngine
 		return errMsg;
 	}
 	//---------------------------------------------------------------------
-	VertexElementType D3D9RenderSystem::getColourVertexElementType() const
+	VertexElementType D3D9RenderSystem::getColorVertexElementType() const
 	{
 		return VET_COLOUR_ARGB;
 	}
@@ -1624,7 +1624,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set texture addressing mode for W");
 	}
 	//-----------------------------------------------------------------------------
-	void D3D9RenderSystem::setTextureBorderColour(size_t stage,
+	void D3D9RenderSystem::setTextureBorderColor(size_t stage,
 		const Color& colour)
 	{
 		HRESULT hr;
@@ -1825,7 +1825,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setColourBufferWriteEnabled(bool red, bool green, 
+	void D3D9RenderSystem::setColorBufferWriteEnabled(bool red, bool green, 
 		bool blue, bool alpha)
 	{
 		DWORD val = 0;
@@ -1933,7 +1933,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation.");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setTextureUnitFiltering(size_t unit, FilterType ftype, 
+	void D3D9RenderSystem::setTextureFiltering(size_t unit, FilterType ftype, 
 		FilterOptions filter)
 	{
 		HRESULT hr;
@@ -1951,7 +1951,7 @@ namespace CamelotEngine
 		return oldVal;
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy)
+	void D3D9RenderSystem::setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy)
 	{
 		if (static_cast<DWORD>(maxAnisotropy) > mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().MaxAnisotropy)
 			maxAnisotropy = mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().MaxAnisotropy;

@@ -188,7 +188,7 @@ namespace CamelotEngine {
 		// Use the current render system to determine if possible
 		if (CamelotEngine::RenderSystemManager::getActive())
 		{
-			return CamelotEngine::RenderSystemManager::getActive()->getColourVertexElementType();
+			return CamelotEngine::RenderSystemManager::getActive()->getColorVertexElementType();
 		}
 		else
 		{

@@ -307,12 +307,6 @@
     <ClInclude Include="Include\CmRenderOperation.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmRenderCommand.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmRenderCommandBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmDeferredRenderSystem.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -462,10 +456,10 @@
     <ClCompile Include="Source\CmSamplerState.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Include\CmRenderCommandBuffer.cpp">
+    <ClCompile Include="Source\CmDeferredRenderSystem.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmDeferredRenderSystem.cpp">
+    <ClCompile Include="Source\CmDeferredGpuCommands.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>

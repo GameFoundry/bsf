@@ -287,13 +287,13 @@ namespace CamelotEngine {
 		}
 
         // Set texture layer filtering
-        setTextureUnitFiltering(texUnit, 
+        setTextureFiltering(texUnit, 
             tl.getTextureFiltering(FT_MIN), 
             tl.getTextureFiltering(FT_MAG), 
             tl.getTextureFiltering(FT_MIP));
 
         // Set texture layer filtering
-        setTextureLayerAnisotropy(texUnit, tl.getTextureAnisotropy());
+        setTextureAnisotropy(texUnit, tl.getTextureAnisotropy());
 
 		// Set mipmap biasing
 		setTextureMipmapBias(texUnit, tl.getTextureMipmapBias());
@@ -328,12 +328,12 @@ namespace CamelotEngine {
         }
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::setTextureUnitFiltering(size_t unit, FilterOptions minFilter,
+    void RenderSystem::setTextureFiltering(size_t unit, FilterOptions minFilter,
             FilterOptions magFilter, FilterOptions mipFilter)
     {
-        setTextureUnitFiltering(unit, FT_MIN, minFilter);
-        setTextureUnitFiltering(unit, FT_MAG, magFilter);
-        setTextureUnitFiltering(unit, FT_MIP, mipFilter);
+        setTextureFiltering(unit, FT_MIN, minFilter);
+        setTextureFiltering(unit, FT_MAG, magFilter);
+        setTextureFiltering(unit, FT_MIP, mipFilter);
     }
     //-----------------------------------------------------------------------
     CullingMode RenderSystem::getCullingMode(void) const
@@ -390,9 +390,9 @@ namespace CamelotEngine {
         return static_cast< unsigned int >( mVertexCount );
     }
     //-----------------------------------------------------------------------
-	void RenderSystem::convertColourValue(const Color& colour, UINT32* pDest)
+	void RenderSystem::convertColorValue(const Color& colour, UINT32* pDest)
 	{
-		*pDest = VertexElement::convertColourValue(colour, getColourVertexElementType());
+		*pDest = VertexElement::convertColourValue(colour, getColorVertexElementType());
 
 	}
     //-----------------------------------------------------------------------

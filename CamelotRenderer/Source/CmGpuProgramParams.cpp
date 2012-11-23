@@ -105,6 +105,7 @@ namespace CamelotEngine
 		// RealConstantEntry, IntConstantEntry
 		mFloatConstants = oth.mFloatConstants;
 		mIntConstants  = oth.mIntConstants;
+		mTextures = oth.mTextures;
 		mFloatLogicalToPhysical = oth.mFloatLogicalToPhysical;
 		mIntLogicalToPhysical = oth.mIntLogicalToPhysical;
 		mSamplerLogicalToPhysical = oth.mSamplerLogicalToPhysical;
@@ -877,6 +878,7 @@ namespace CamelotEngine
 		// Pull buffers & auto constant list over directly
 		mFloatConstants = source.getFloatConstantList();
 		mIntConstants = source.getIntConstantList();
+		mTextures = source.getTextureList();
 		mCombinedVariability = source.mCombinedVariability;
 	}
 }

@@ -206,7 +206,7 @@ namespace CamelotEngine
 		void reinitialise();
 		void shutdown();
 		void destroyRenderTarget(const String& name);
-		VertexElementType getColourVertexElementType() const;
+		VertexElementType getColorVertexElementType() const;
 		void setStencilCheckEnabled(bool enabled);
         void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
             UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
@@ -222,7 +222,7 @@ namespace CamelotEngine
 		void setVertexTexture(size_t unit, const TexturePtr& tex);
 		void disableTextureUnit(size_t texUnit);
         void setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw);
-        void setTextureBorderColour(size_t stage, const Color& colour);
+        void setTextureBorderColor(size_t stage, const Color& colour);
 		void setTextureMipmapBias(size_t unit, float bias);
 		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
 		void setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
@@ -233,14 +233,14 @@ namespace CamelotEngine
 		void setCullingMode( CullingMode mode );
 		void setDepthBufferParams( bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL );
 		void setDepthBufferCheckEnabled( bool enabled = true );
-		void setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
+		void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
 		void setDepthBufferWriteEnabled(bool enabled = true);
 		void setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
 		void setDepthBias(float constantBias, float slopeScaleBias);
 		void _convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
 		void setPolygonMode(PolygonMode level);
-        void setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter);
-		void setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy);
+        void setTextureFiltering(size_t unit, FilterType ftype, FilterOptions filter);
+		void setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy);
 		void setVertexDeclaration(VertexDeclarationPtr decl);
 		void setVertexBufferBinding(VertexBufferBinding* binding);
         void render(const RenderOperation& op);

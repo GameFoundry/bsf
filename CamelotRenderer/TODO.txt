@@ -28,7 +28,7 @@ MAYBE:
 
 Essential TODO for deferred rendering:
  - Block all calls to RenderSystem outside of Render thread (or at least warn)
- - Prevent user from accessing vertex/index buffers and similar outside of render thread as well
+ - Prevent user from accessing vertex/index buffers and similar outside of render thread as well (e.g. GpuProgram, Texture)
  - Start render thread in application
 
  - Modify resource creation so it calls RenderContext and just schedules resource creation

@@ -97,13 +97,11 @@
     <ClInclude Include="Include\CmApplication.h" />
     <ClInclude Include="Include\CmDeferredGpuCommands.h" />
     <ClInclude Include="Include\CmDeferredRenderSystem.h" />
-    <ClInclude Include="Include\CmRenderCommand.h" />
     <ClInclude Include="Include\CmCamera.h" />
     <ClInclude Include="Include\CmCameraRTTI.h" />
     <ClInclude Include="Include\CmCgProgram.h" />
     <ClInclude Include="Include\CmCgProgramFactory.h" />
     <ClInclude Include="Include\CmCgProgramRTTI.h" />
-    <ClInclude Include="Include\CmRenderCommandBuffer.h" />
     <ClInclude Include="Include\CmCommon.h" />
     <ClInclude Include="Include\CmComponentRTTI.h" />
     <ClInclude Include="Include\CmConfigOptionMap.h" />
@@ -173,13 +171,13 @@
     <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Include\CmRenderCommandBuffer.cpp" />
     <ClCompile Include="Source\CamelotRenderer.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
     <ClCompile Include="Source\CmCamera.cpp" />
     <ClCompile Include="Source\CmCgProgram.cpp" />
     <ClCompile Include="Source\CmCgProgramFactory.cpp" />
     <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp" />
+    <ClCompile Include="Source\CmDeferredGpuCommands.cpp" />
     <ClCompile Include="Source\CmGpuProgram.cpp" />
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />

@@ -7,15 +7,11 @@
 #include "CmMaterial.h"
 #include "CmMesh.h"
 #include "CmPass.h"
-#include "CmRenderCommandBuffer.h"
 
 namespace CamelotEngine
 {
 	ForwardRenderer::ForwardRenderer()
 	{
-		//RenderSystem* renderSystem = RenderSystemManager::getActive();
-
-		//mCommandBuffer = renderSystem->createCommandBuffer();
 	}
 
 	ForwardRenderer::~ForwardRenderer()
@@ -84,9 +80,6 @@ namespace CamelotEngine
 				setPassParameters(material->getPassParameters(i));
 
 				renderSystem->render(mesh->getRenderOperation());
-
-				//mCommandBuffer->applyPass(material->getPass(i), material->getPassParameters(i));
-				//mCommandBuffer->render(mesh->getRenderOperation());
 			}
 		}
 
@@ -195,7 +188,7 @@ namespace CamelotEngine
 		// Set colour write mode
 		// Right now we only use on/off, not per-channel
 		bool colWrite = pass->getColourWriteEnabled();
-		renderSystem->setColourBufferWriteEnabled(colWrite, colWrite, colWrite, colWrite);
+		renderSystem->setColorBufferWriteEnabled(colWrite, colWrite, colWrite, colWrite);
 
 		// Culling mode
 		renderSystem->setCullingMode(pass->getCullingMode());

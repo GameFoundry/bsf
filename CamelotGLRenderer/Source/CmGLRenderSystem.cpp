@@ -1218,7 +1218,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureBorderColour(size_t stage, const Color& colour)
+	void GLRenderSystem::setTextureBorderColor(size_t stage, const Color& colour)
 	{
 		GLfloat border[4] = { colour.r, colour.g, colour.b, colour.a };
 		if (activateGLTextureUnit(stage))
@@ -1574,7 +1574,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
+	void GLRenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
 	{
 		glColorMask(red, green, blue, alpha);
 		// record this
@@ -1590,7 +1590,7 @@ namespace CamelotEngine {
 		return (errString != 0) ? String((const char*) errString) : StringUtil::BLANK;
     }
 
-	VertexElementType GLRenderSystem::getColourVertexElementType(void) const
+	VertexElementType GLRenderSystem::getColorVertexElementType(void) const
 	{
 		return VET_COLOUR_ABGR;
 	}
@@ -1796,7 +1796,7 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setTextureUnitFiltering(size_t unit, 
+	void GLRenderSystem::setTextureFiltering(size_t unit, 
 		FilterType ftype, FilterOptions fo)
 	{
 		if (!activateGLTextureUnit(unit))
@@ -1851,7 +1851,7 @@ namespace CamelotEngine {
 		return curAniso ? curAniso : 1;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy)
+	void GLRenderSystem::setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy)
 	{
 		if (!mCurrentCapabilities->hasCapability(RSC_ANISOTROPY))
 			return;

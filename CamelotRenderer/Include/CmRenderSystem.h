@@ -545,7 +545,7 @@ namespace CamelotEngine
 		@param magFilter The filter used when a texture is magnified
 		@param mipFilter The filter used between mipmap levels, FO_NONE disables mipmapping
 		*/
-		virtual void setTextureUnitFiltering(size_t unit, FilterOptions minFilter,
+		virtual void setTextureFiltering(size_t unit, FilterOptions minFilter,
 			FilterOptions magFilter, FilterOptions mipFilter);
 
 		/** Sets a single filter for a given texture unit.
@@ -553,16 +553,16 @@ namespace CamelotEngine
 		@param ftype The filter type
 		@param filter The filter to be used
 		*/
-		virtual void setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter) = 0;
+		virtual void setTextureFiltering(size_t unit, FilterType ftype, FilterOptions filter) = 0;
 
 		/** Sets the maximal anisotropy for the specified texture unit.*/
-		virtual void setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy) = 0;
+		virtual void setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy) = 0;
 
 		/** Sets the texture addressing mode for a texture unit.*/
 		virtual void setTextureAddressingMode(size_t unit, const SamplerState::UVWAddressingMode& uvw) = 0;
 
-		/** Sets the texture border colour for a texture unit.*/
-		virtual void setTextureBorderColour(size_t unit, const Color& colour) = 0;
+		/** Sets the texture border color for a texture unit.*/
+		virtual void setTextureBorderColor(size_t unit, const Color& colour) = 0;
 
 		/** Sets the mipmap bias value for a given texture unit.
 		@remarks
@@ -685,7 +685,7 @@ namespace CamelotEngine
 		in a rendering pass. However, the chances are that you really want to use this option
 		through the Material class.
 		@param red, green, blue, alpha Whether writing is enabled for each of the 4 colour channels. */
-		virtual void setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha) = 0;
+		virtual void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha) = 0;
 		/** Sets the depth bias, NB you should use the Material version of this. 
 		@remarks
 		When polygons are coplanar, you can get problems with 'depth fighting' where
@@ -727,11 +727,11 @@ namespace CamelotEngine
 		@param colour The colour to convert
 		@param pDest Pointer to location to put the result.
 		*/
-		virtual void convertColourValue(const Color& colour, UINT32* pDest);
+		virtual void convertColorValue(const Color& colour, UINT32* pDest);
 		/** Get the native VertexElementType for a compact 32-bit colour value
 		for this rendersystem.
 		*/
-		virtual VertexElementType getColourVertexElementType(void) const = 0;
+		virtual VertexElementType getColorVertexElementType(void) const = 0;
 
 		/** Converts a uniform projection matrix to suitable for this render system.
 		@remarks

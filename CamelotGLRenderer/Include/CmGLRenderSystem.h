@@ -192,7 +192,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        VertexElementType getColourVertexElementType(void) const;
+        VertexElementType getColorVertexElementType(void) const;
 
         // -----------------------------
         // Low-level overridden members
@@ -213,7 +213,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setTextureBorderColour(size_t stage, const Color& colour);
+        void setTextureBorderColor(size_t stage, const Color& colour);
 		/** See
 		  RenderSystem
 		 */
@@ -277,7 +277,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setColourBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
+        void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
         /** See
           RenderSystem
          */
@@ -311,11 +311,11 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setTextureUnitFiltering(size_t unit, FilterType ftype, FilterOptions filter);
+        void setTextureFiltering(size_t unit, FilterType ftype, FilterOptions filter);
         /** See
           RenderSystem
          */
-		void setTextureLayerAnisotropy(size_t unit, unsigned int maxAnisotropy);
+		void setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy);
         /** See
           RenderSystem
          */
