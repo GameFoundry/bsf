@@ -49,9 +49,11 @@ namespace CamelotEngine
 		RendererManager::setActive("ForwardRenderer");
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
-		renderSystem->startUp(false, false, "Camelot Renderer");
+		renderSystem->startUp(true, false, "Camelot Renderer");
+		renderSystem->addPreRenderThreadUpdateCallback(boost::bind(&Application::updateResourcesCallback, this));
 
-		mPrimaryRenderWindow = renderSystem->createRenderWindow("Camelot Renderer", 800, 600, false);
+		mPrimaryDeferredRenderSystem = renderSystem->createDeferredRenderSystem();
+		mPrimaryRenderWindow = renderSystem->createRenderWindow("Camelot Renderer", 1280, 720, false);
 
 		SceneManager::startUp(new SceneManager());
 		Resources::startUp(new Resources("D:\\CamelotResourceMetas"));
@@ -73,10 +75,17 @@ namespace CamelotEngine
 
 			RendererManager::getActive()->renderAll();
 
+			RenderSystem* renderSystem = RenderSystemManager::getActive();
+			renderSystem->update();
+
 			gTime().update();
 			gInput().update();
-			gResources().update();
 		}
+	}
+
+	void Application::updateResourcesCallback()
+	{
+		gResources().update();
 	}
 
 	void Application::shutDown()
@@ -133,20 +142,6 @@ namespace CamelotEngine
 		mPrimaryRenderWindow->getCustomAttribute("WINDOW", &windowId);
 
 		return windowId;
-	}
-
-	CM_THREAD_ID_TYPE Application::getMainThreadId() const
-	{
-#if CM_THREAD_SUPPORT != 0
-		return CM_THREAD_CURRENT_ID;
-#else
-		return 0;
-#endif
-	}
-
-	CM_THREAD_ID_TYPE Application::getRenderThreadId() const
-	{
-		return mRenderThreadId;
 	}
 
 	Application& gApplication()

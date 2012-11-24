@@ -5,8 +5,8 @@
 
 namespace CamelotEngine
 {
-	DeferredRenderSystem::DeferredRenderSystem(CM_THREAD_ID_TYPE threadId, boost::function<void()> commandsReadyCallback)
-		:mMyThreadId(threadId), NotifyCommandsReady(commandsReadyCallback)
+	DeferredRenderSystem::DeferredRenderSystem(CM_THREAD_ID_TYPE threadId)
+		:mMyThreadId(threadId), mReadyRenderCommandBuffer(nullptr)
 	{
 		mActiveRenderCommandBuffer = new vector<DeferredGpuCommand*>::type();
 	}
@@ -346,8 +346,6 @@ namespace CamelotEngine
 
 	void DeferredRenderSystem::submitToGpu()
 	{
-		throwIfInvalidThread();
-
 		{
 			CM_LOCK_MUTEX(mCommandBufferMutex)
 
@@ -362,9 +360,6 @@ namespace CamelotEngine
 
 			mReadyRenderCommandBuffer = mActiveRenderCommandBuffer;
 			mActiveRenderCommandBuffer = new vector<DeferredGpuCommand*>::type();
-
-			if(mReadyRenderCommandBuffer != nullptr && mReadyRenderCommandBuffer->size() > 0)
-				NotifyCommandsReady();
 		}
 	}
 

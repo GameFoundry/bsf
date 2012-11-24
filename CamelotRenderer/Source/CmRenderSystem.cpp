@@ -105,6 +105,9 @@ namespace CamelotEngine {
 		mGeometryProgramBound = false;
         mFragmentProgramBound = false;
 
+		if(runOnSeparateThread)
+			initRenderThread();
+
         return 0;
     }
 
@@ -555,13 +558,22 @@ namespace CamelotEngine {
 		{
 			if(mRenderThreadShutdown)
 				return;
-				
+
+			vector<DeferredRenderSystemPtr>::type deferredRenderSystemsCopy;
+			{
+				CM_LOCK_MUTEX(mDeferredRSMutex);
+
+				for(auto iter = mDeferredRenderSystems.begin(); iter != mDeferredRenderSystems.end(); ++iter)
+					deferredRenderSystemsCopy.push_back(*iter);
+			}
+
+
 			// Wait until we get some ready commands
 			{
 				CM_LOCK_MUTEX_NAMED(mDeferredRSMutex, lock)
 
 				bool anyCommandsReady = false;
-				for(auto iter = mDeferredRenderSystems.begin(); iter != mDeferredRenderSystems.end(); ++iter)
+				for(auto iter = deferredRenderSystemsCopy.begin(); iter != deferredRenderSystemsCopy.end(); ++iter)
 				{
 					if((*iter)->hasReadyCommands())
 					{
@@ -575,12 +587,23 @@ namespace CamelotEngine {
 			}
 
 			{
-				CM_LOCK_MUTEX(mDeferredRSMutex);
+				CM_LOCK_MUTEX(mDeferredRSCallbackMutex)
 
-				for(auto iter = mDeferredRenderSystems.begin(); iter != mDeferredRenderSystems.end(); ++iter)
-				{
-					(*iter)->playbackCommands();
-				}
+				if(!PreRenderThreadUpdateCallback.empty())
+					PreRenderThreadUpdateCallback();
+			}
+
+			// Play commands
+			for(auto iter = deferredRenderSystemsCopy.begin(); iter != deferredRenderSystemsCopy.end(); ++iter)
+			{
+				(*iter)->playbackCommands();
+			}
+
+			{
+				CM_LOCK_MUTEX(mDeferredRSCallbackMutex)
+
+				if(!PostRenderThreadUpdateCallback.empty())
+					PostRenderThreadUpdateCallback();
 			}
 		}
 
@@ -602,15 +625,15 @@ namespace CamelotEngine {
 		mDeferredRenderSystems.clear();
 	}
 
-	void RenderSystem::notifyCommandsReadyCallback()
-	{
-		CM_THREAD_NOTIFY_ALL(mDeferredRSReadyCondition)
-	}
-
 	DeferredRenderSystemPtr RenderSystem::createDeferredRenderSystem()
 	{
+		if(!mUsingSeparateRenderThread)
+		{
+			CM_EXCEPT(InternalErrorException, "Cannot create deferred rendering system because separate render thread is not active.");
+		}
+
 		DeferredRenderSystemPtr newDeferredRS = DeferredRenderSystemPtr(
-			new DeferredRenderSystem(CM_THREAD_CURRENT_ID, boost::bind(&RenderSystem::notifyCommandsReadyCallback, this))
+			new DeferredRenderSystem(CM_THREAD_CURRENT_ID)
 			);
 
 		{
@@ -619,6 +642,38 @@ namespace CamelotEngine {
 		}
 
 		return newDeferredRS;
+	}
+
+	void RenderSystem::addPreRenderThreadUpdateCallback(boost::function<void()> callback)
+	{
+		CM_LOCK_MUTEX(mDeferredRSCallbackMutex)
+
+		PreRenderThreadUpdateCallback.connect(callback);
+	}
+
+	void RenderSystem::addPostRenderThreadUpdateCallback(boost::function<void()> callback)
+	{
+		CM_LOCK_MUTEX(mDeferredRSCallbackMutex)
+
+		PostRenderThreadUpdateCallback.connect(callback);
+	}
+
+	void RenderSystem::update()
+	{
+		if(mUsingSeparateRenderThread)
+		{
+			{
+				CM_LOCK_MUTEX(mDeferredRSMutex);
+
+				for(auto iter = mDeferredRenderSystems.begin(); iter != mDeferredRenderSystems.end(); ++iter)
+				{
+					(*iter)->submitToGpu();
+				}
+			}
+
+			CM_THREAD_NOTIFY_ALL(mDeferredRSReadyCondition)
+		}
+
 	}
 
 	void RenderSystem::throwIfInvalidThread()

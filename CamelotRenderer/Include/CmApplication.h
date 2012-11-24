@@ -26,8 +26,7 @@ namespace CamelotEngine
 
 			RenderWindow* getPrimaryRenderWindow() const { return mPrimaryRenderWindow; }
 
-			inline CM_THREAD_ID_TYPE getMainThreadId() const;
-			inline CM_THREAD_ID_TYPE getRenderThreadId() const;
+			DeferredRenderSystemPtr getActiveRenderSystem() const { return mPrimaryDeferredRenderSystem; }
 
 			/**
 			 * @brief	Loads a plugin.
@@ -38,8 +37,12 @@ namespace CamelotEngine
 
 	private:
 		RenderWindow* mPrimaryRenderWindow;
+		DeferredRenderSystemPtr mPrimaryDeferredRenderSystem;
 
-		CM_THREAD_ID_TYPE mRenderThreadId;
+		/**
+		 * @brief	Callback called from the render thread in order to initialize resources.
+		 */
+		void updateResourcesCallback();
 	};
 
 	CM_EXPORT Application& gApplication();

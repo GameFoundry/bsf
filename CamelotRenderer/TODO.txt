@@ -16,20 +16,23 @@ High-level TODO:
 
 
 Command buffer TODO:
-IMPORTANT:
- I can't just do CommandBuffer->setPass and expect it to work. User can modify the materials at any point before rendering happens, which will cause all kind of problems. I'll need to copy properties one by one.
-  - In order to avoid this, GpuParameters should return a copy of its physical data. (Similar to what Mesh->GetRenderOperation does). 
-  - Pass should return a copy of its own data as well.
-
 MAYBE:
  - Create DeferredRenderSystem class that has exactly the same public interface as RenderSystem, but defers all calls to a command buffer
    - As its methods are called we can also filter out values that exactly match the previous ones and minimize number of state changes
       (Although this should probably be on a higher level, because 1 class 1 use)
 
+RESOURCE COMMANDS!!:
+ - They get queued up into the RenderSystem same like render commands
+ - They handle all resource creation/updates/destroy
+ - They are high level:
+   - i.e. CmndInitializeTexture - contains Texture to initialize and data to initialize it with
+ - This allows makes it possible not to store temporary texture or mesh data in the texture/mesh objects between initialization. The data is stored with the command instead.
+ - Also we don't need to handle resource loading in two steps. After loading is complete, resource gets queued up and initialized before next render frame.
+ - Make sure to clearly separate CPU and GPU commands on resources. Tell the user that GPU commands are deferred and will only be executed later. (Provide option to let him choose?)
+
 Essential TODO for deferred rendering:
  - Block all calls to RenderSystem outside of Render thread (or at least warn)
  - Prevent user from accessing vertex/index buffers and similar outside of render thread as well (e.g. GpuProgram, Texture)
- - Start render thread in application
 
  - Modify resource creation so it calls RenderContext and just schedules resource creation
 
@@ -86,7 +89,8 @@ Low priority TODO:
  - In RTTIType it is possible to add a non-plain data type using addPlainField. This can cause memory corruption issues
    if pointer is saved/loaded as a plain field. I need to add a check that ensures the type is POD. 
    See: http://www.boost.org/doc/libs/1_51_0/boost/mpi/datatype.hpp for a possible implementation of a compile time check.
-
+ - Fix up WorkQueue as it doesn't lock when initializing, to make sure threads are actually started before returning
+ 
 Optional TODO:
  - Add precompiled headers to all projects
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram

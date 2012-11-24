@@ -283,15 +283,6 @@ namespace CamelotEngine
 			const Color& colour = Color::Black, 
 			float depth = 1.0f, unsigned short stencil = 0);
 
-		/**
-		 * @brief	Makes all the currently queued commands available to the GPU. They will be executed
-		 * 			as soon as the render thread is ready.
-		 * 			
-		 * @note	This is expected to be called once per frame. If the previous set of commands hasn't even started rendering
-		 * 			yet, it will be discarded. This is to prevent lag if the simulation executes faster than the render thread.
-		 */
-		void submitToGpu();
-
 	private:
 		// Actively being filled up
 		vector<DeferredGpuCommand*>::type* mActiveRenderCommandBuffer;
@@ -310,18 +301,12 @@ namespace CamelotEngine
 		 */
 		void throwIfInvalidThread();
 
-		/**
-		 * @brief	Called when there are some commands ready for processing. Usually meant to signal
-		 * 			the render thread.
-		 */
-		boost::function<void()> NotifyCommandsReady;
-
 		/************************************************************************/
 		/* 					CALLABLE ONLY FROM RENDERSYSTEM                     */
 		/************************************************************************/
 		friend class RenderSystem;
 
-		DeferredRenderSystem(CM_THREAD_ID_TYPE threadId, boost::function<void()> commandsReadyCallback);
+		DeferredRenderSystem(CM_THREAD_ID_TYPE threadId);
 
 		/**
 		 * @brief	Plays all queued commands. Should only be called from the render thread,
@@ -333,5 +318,14 @@ namespace CamelotEngine
 		 * @brief	Query if this object has any commands ready for rendering.
 		 */
 		bool hasReadyCommands();
+
+		/**
+		 * @brief	Makes all the currently queued commands available to the GPU. They will be executed
+		 * 			as soon as the render thread is ready.
+		 * 			
+		 * @note	This is expected to be called once per frame. If the previous set of commands hasn't even started rendering
+		 * 			yet, it will be discarded. This is to prevent lag if the simulation executes faster than the render thread.
+		 */
+		void submitToGpu();
 	};
 }

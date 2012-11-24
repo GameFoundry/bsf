@@ -45,6 +45,9 @@ THE SOFTWARE.
 #include "CmGpuProgram.h"
 #include "CmPlane.h"
 
+#include "boost/function.hpp"
+#include "boost/signal.hpp"
+
 namespace CamelotEngine
 {
 	/** \addtogroup Core
@@ -296,7 +299,7 @@ namespace CamelotEngine
 			<td>Win32: HWND as integer<br/>
 			    GLX: poslong:posint:poslong (display*:screen:windowHandle) or poslong:posint:poslong:poslong (display*:screen:windowHandle:XVisualInfo*)</td>
 			<td>0 (none)</td>
-			<td>Parent window handle, for embedding the OGRE in a child of an external window</td>
+			<td>Parent window handle, for embedding the engine in a child of an external window</td>
 			<td>&nbsp;</td>
 		</tr>
 		<tr>
@@ -310,7 +313,7 @@ namespace CamelotEngine
 			<td>macAPICocoaUseNSView</td>
 			<td>bool "true" or "false"</td>
 			<td>"false"</td>
-			<td>On the Mac platform the most diffused method to embed OGRE in a custom application is to use Interface Builder
+			<td>On the Mac platform the most diffused method to embed engine in a custom application is to use Interface Builder
 				and add to the interface an instance of OgreView.
 				The pointer to this instance is then used as "externalWindowHandle".
 				However, there are cases where you are NOT using Interface Builder and you get the Cocoa NSView* of an existing interface.
@@ -319,17 +322,6 @@ namespace CamelotEngine
 				instead of an OgreView*. See OgreOSXCocoaView.h/mm.
 			</td>
 			<td>&nbsp;</td>
-		 </tr>
-         <tr>
-             <td>contentScalingFactor</td>
-             <td>Positive Float greater than 1.0</td>
-             <td>The default content scaling factor of the screen</td>
-             <td>Specifies the CAEAGLLayer content scaling factor.  Only supported on iOS 4 or greater.
-                 This can be useful to limit the resolution of the OpenGL ES backing store.  For example, the iPhone 4's
-                 native resolution is 960 x 640.  Windows are always 320 x 480, if you would like to limit the display
-                 to 720 x 480, specify 1.5 as the scaling factor.
-             </td>
-             <td>&nbsp;</td>
 		 </tr>
          <tr>
 			<td>FSAA</td>
@@ -1054,12 +1046,15 @@ namespace CamelotEngine
 		CM_MUTEX(mDeferredRSInitMutex)
 		CM_THREAD_SYNCHRONISER(mDeferredRSReadyCondition)
 		CM_MUTEX(mDeferredRSMutex)
+		CM_MUTEX(mDeferredRSCallbackMutex)
 
 #if CM_THREAD_SUPPORT
 		CM_THREAD_TYPE* mRenderThread;
 #endif
 
 		vector<DeferredRenderSystemPtr>::type mDeferredRenderSystems;
+		boost::signal<void()> PreRenderThreadUpdateCallback;
+		boost::signal<void()> PostRenderThreadUpdateCallback;
 
 		/**
 		 * @brief	Initializes a separate render thread. Should only be called once.
@@ -1076,12 +1071,6 @@ namespace CamelotEngine
 		 * 			before shutdown.
 		 */
 		void shutdownRenderThread();
-
-		/**
-		 * @brief	Internal method that gets called by DeferredRenderSystems when 
-		 * 			they have commands ready for rendering.
-		 */
-		void notifyCommandsReadyCallback();
 
 		/**
 		 * @brief	Throws an exception if current thread isn't the render thread;
@@ -1101,12 +1090,25 @@ namespace CamelotEngine
 		 * 			a non-render thread. You can have as many of these as you wish, the only limitation
 		 * 			is that you do not use a single instance on more than one thread. Each thread
 		 * 			requires its own deferred render system.
-		 * 			
-		 * @remark	Be aware that creating a new deferred render system requires all active render commands
-		 * 			to complete, so it can potentially be a very slow operation as the thread will be blocked
-		 * 			until rendering is done.
 		 */
 		DeferredRenderSystemPtr createDeferredRenderSystem();
+
+		/**
+		 * @brief	Callback that is called from the render thread before it starts processing
+		 * 			deferred render commands.
+		 */
+		void addPreRenderThreadUpdateCallback(boost::function<void()> callback);
+
+		/**
+		 * @brief	Callback that is called from the render thread after it ends processing
+		 * 			deferred render commands.
+		 */
+		void addPostRenderThreadUpdateCallback(boost::function<void()> callback);
+
+		/**
+		 * @brief	Called every frame
+		 */
+		void update();
 	};
 	/** @} */
 	/** @} */
