@@ -5,10 +5,33 @@
 
 namespace CamelotEngine
 {
-	DeferredRenderSystem::DeferredRenderSystem(CM_THREAD_ID_TYPE threadId)
-		:mMyThreadId(threadId)
+	DeferredRenderSystem::DeferredRenderSystem(CM_THREAD_ID_TYPE threadId, boost::function<void()> commandsReadyCallback)
+		:mMyThreadId(threadId), NotifyCommandsReady(commandsReadyCallback)
 	{
 		mActiveRenderCommandBuffer = new vector<DeferredGpuCommand*>::type();
+	}
+
+	DeferredRenderSystem::~DeferredRenderSystem()
+	{
+		CM_LOCK_MUTEX(mCommandBufferMutex)
+
+		if(mReadyRenderCommandBuffer != nullptr)
+		{
+			for(auto iter = mReadyRenderCommandBuffer->begin(); iter != mReadyRenderCommandBuffer->end(); ++iter)
+				delete *iter;
+
+			delete mReadyRenderCommandBuffer;
+			mReadyRenderCommandBuffer = nullptr;
+		}
+
+		if(mActiveRenderCommandBuffer != nullptr)
+		{
+			for(auto iter = mActiveRenderCommandBuffer->begin(); iter != mActiveRenderCommandBuffer->end(); ++iter)
+				delete *iter;
+
+			delete mActiveRenderCommandBuffer;
+			mActiveRenderCommandBuffer = nullptr;
+		}
 	}
 
 	void DeferredRenderSystem::render(const RenderOperation& op)
@@ -339,13 +362,19 @@ namespace CamelotEngine
 
 			mReadyRenderCommandBuffer = mActiveRenderCommandBuffer;
 			mActiveRenderCommandBuffer = new vector<DeferredGpuCommand*>::type();
+
+			if(mReadyRenderCommandBuffer != nullptr && mReadyRenderCommandBuffer->size() > 0)
+				NotifyCommandsReady();
 		}
 	}
 
 	void DeferredRenderSystem::playbackCommands()
 	{
-		// TODO - Throw exception if this is not called from render thread
-		
+		RenderSystem* rs = RenderSystemManager::getActive();
+
+		if(rs->getRenderThreadId() != CM_THREAD_CURRENT_ID)
+			CM_EXCEPT(InternalErrorException, "This method should only be called from the render thread.");
+
 		vector<DeferredGpuCommand*>::type* currentCommands = nullptr;
 		{
 			CM_LOCK_MUTEX(mCommandBufferMutex)
@@ -357,8 +386,6 @@ namespace CamelotEngine
 		if(currentCommands == nullptr)
 			return;
 
-		RenderSystem* rs = RenderSystemManager::getActive();
-
 		for(auto iter = currentCommands->begin(); iter != currentCommands->end(); ++iter)
 		{
 			(*iter)->submitCommand(rs);
@@ -366,6 +393,16 @@ namespace CamelotEngine
 		}
 
 		delete currentCommands;
+	}
+
+	bool DeferredRenderSystem::hasReadyCommands()
+	{
+		CM_LOCK_MUTEX(mCommandBufferMutex)
+
+			if(mReadyRenderCommandBuffer != nullptr && mReadyRenderCommandBuffer->size() > 0)
+				return true;
+
+		return false;
 	}
 
 	void DeferredRenderSystem::throwIfInvalidThread()

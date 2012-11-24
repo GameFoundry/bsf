@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmRenderSystem.h"
+#include <boost/function.hpp>
 
 namespace CamelotEngine
 {
@@ -10,7 +11,7 @@ namespace CamelotEngine
 	class CM_EXPORT DeferredRenderSystem
 	{
 	public:
-		DeferredRenderSystem(CM_THREAD_ID_TYPE threadId);
+		~DeferredRenderSystem();
 
 		/**
 		 * @brief	Wrapper around RenderSystem method of the same name. See RenderSystem doc.
@@ -298,18 +299,39 @@ namespace CamelotEngine
 		// Finalized and ready for rendering
 		vector<DeferredGpuCommand*>::type* mReadyRenderCommandBuffer;
 
+		bool mIsShutdown;
+
 		CM_THREAD_ID_TYPE mMyThreadId;
 		CM_MUTEX(mCommandBufferMutex)
-
-		/**
-		 * @brief	Plays all queued commands
-		 */
-		void playbackCommands();
 
 		/**
 		 * @brief	Throw an exception if the current thread is not the original
 		 * 			thread the DeferredRenderSystem was started on.
 		 */
 		void throwIfInvalidThread();
+
+		/**
+		 * @brief	Called when there are some commands ready for processing. Usually meant to signal
+		 * 			the render thread.
+		 */
+		boost::function<void()> NotifyCommandsReady;
+
+		/************************************************************************/
+		/* 					CALLABLE ONLY FROM RENDERSYSTEM                     */
+		/************************************************************************/
+		friend class RenderSystem;
+
+		DeferredRenderSystem(CM_THREAD_ID_TYPE threadId, boost::function<void()> commandsReadyCallback);
+
+		/**
+		 * @brief	Plays all queued commands. Should only be called from the render thread,
+		 * 			and is normally called by the RenderSystem internally.
+		 */
+		void playbackCommands();
+
+		/**
+		 * @brief	Query if this object has any commands ready for rendering.
+		 */
+		bool hasReadyCommands();
 	};
 }

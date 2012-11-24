@@ -150,7 +150,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        RenderWindow* _initialise(bool autoCreateWindow, const String& windowTitle = "OGRE Render Window");
+        RenderWindow* startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle = "Camelot Render Window");
         /** See
           RenderSystem
          */
@@ -162,13 +162,9 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void reinitialise(void); // Used if settings changed mid-rendering
-        /** See
-          RenderSystem
-         */
         void shutdown(void);
         
-		/// @copydoc RenderSystem::_createRenderWindow
+		/// @copydoc RenderSystem::createRenderWindow
 		RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList *miscParams = 0);
 

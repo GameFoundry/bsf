@@ -155,13 +155,13 @@ namespace CamelotEngine {
 		return mGLSupport->validateConfig();
 	}
 
-	RenderWindow* GLRenderSystem::_initialise(bool autoCreateWindow, const String& windowTitle)
+	RenderWindow* GLRenderSystem::startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle)
 	{
 		mGLSupport->start();
 
 		RenderWindow* autoWindow = mGLSupport->createWindow(autoCreateWindow, this, windowTitle);
 
-		RenderSystem::_initialise(autoCreateWindow, windowTitle);
+		RenderSystem::startUp(runOnSeparateThread, autoCreateWindow, windowTitle);
 
 		return autoWindow;
 	}
@@ -865,12 +865,6 @@ namespace CamelotEngine {
 		TextureManager::startUp(new GLTextureManager(*mGLSupport)); 
 
 		mGLInitialised = true;
-	}
-
-	void GLRenderSystem::reinitialise(void)
-	{
-		this->shutdown();
-		this->_initialise(true);
 	}
 
 	void GLRenderSystem::shutdown(void)

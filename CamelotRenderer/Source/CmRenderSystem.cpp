@@ -39,6 +39,8 @@ THE SOFTWARE.
 #include "CmRenderWindow.h"
 #include "CmHardwarePixelBuffer.h"
 #include "CmHardwareOcclusionQuery.h"
+#include "CmDeferredRenderSystem.h"
+#include "boost/bind.hpp"
 
 namespace CamelotEngine {
 
@@ -62,6 +64,9 @@ namespace CamelotEngine {
 		, mRealCapabilities(0)
 		, mCurrentCapabilities(0)
 		, mUseCustomCapabilities(false)
+		, mUsingSeparateRenderThread(false)
+		, mRenderThreadFunc(nullptr)
+		, mRenderThreadShutdown(false)
     {
     }
 
@@ -88,21 +93,14 @@ namespace CamelotEngine {
 		}
     }
     //-----------------------------------------------------------------------
-    RenderWindow* RenderSystem::_initialise(bool autoCreateWindow, const String& windowTitle)
+    RenderWindow* RenderSystem::startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle)
     {
-        // Have I been registered by call to Root::setRenderSystem?
-		/** Don't do this anymore, just allow via Root
-        RenderSystem* regPtr = Root::getSingleton().getRenderSystem();
-        if (!regPtr || regPtr != this)
-            // Register self - library user has come to me direct
-            Root::getSingleton().setRenderSystem(this);
-		*/
-
-
         // Subclasses should take it from here
         // They should ALL call this superclass method from
-        //   their own initialise() implementations.
-        
+        //   their own startUp() implementations.
+
+		mRenderThreadId = CM_THREAD_CURRENT_ID;
+
         mVertexProgramBound = false;
 		mGeometryProgramBound = false;
         mFragmentProgramBound = false;
@@ -367,6 +365,9 @@ namespace CamelotEngine {
 		mRenderTargets.clear();
 
 		mPrioritisedRenderTargets.clear();
+
+		if(mUsingSeparateRenderThread)
+			shutdownRenderThread();
     }
     //-----------------------------------------------------------------------
     void RenderSystem::beginGeometryCount(void)
@@ -524,6 +525,121 @@ namespace CamelotEngine {
 	    }
         // Make compiler happy
         return false;
+	}
+
+	void RenderSystem::initRenderThread()
+	{
+		mRenderThreadFunc = new RenderWorkerFunc(this);
+
+#if CM_THREAD_SUPPORT
+		CM_THREAD_CREATE(t, *mRenderThreadFunc);
+		mRenderThread = t;
+
+		CM_LOCK_MUTEX_NAMED(mDeferredRSInitMutex, lock)
+		CM_THREAD_WAIT(mDeferredRSInitCondition, mDeferredRSInitMutex, lock)
+
+		// TODO - Block here until I am sure render thread is running and initialized
+#else
+		CM_EXCEPT(InternalErrorException, "Attempting to start a render thread but Camelot isn't compiled with thread support.");
+#endif
+	}
+
+	void RenderSystem::runRenderThread()
+	{
+		mRenderThreadId = CM_THREAD_CURRENT_ID;
+		mUsingSeparateRenderThread = true;
+
+		CM_THREAD_NOTIFY_ALL(mDeferredRSInitCondition)
+
+		while(true)
+		{
+			if(mRenderThreadShutdown)
+				return;
+				
+			// Wait until we get some ready commands
+			{
+				CM_LOCK_MUTEX_NAMED(mDeferredRSMutex, lock)
+
+				bool anyCommandsReady = false;
+				for(auto iter = mDeferredRenderSystems.begin(); iter != mDeferredRenderSystems.end(); ++iter)
+				{
+					if((*iter)->hasReadyCommands())
+					{
+						anyCommandsReady = true;
+						break;
+					}
+				}
+
+				if(!anyCommandsReady)
+					CM_THREAD_WAIT(mDeferredRSReadyCondition, mDeferredRSMutex, lock)
+			}
+
+			{
+				CM_LOCK_MUTEX(mDeferredRSMutex);
+
+				for(auto iter = mDeferredRenderSystems.begin(); iter != mDeferredRenderSystems.end(); ++iter)
+				{
+					(*iter)->playbackCommands();
+				}
+			}
+		}
+
+	}
+
+	void RenderSystem::shutdownRenderThread()
+	{
+		mRenderThreadShutdown = true;
+
+		// Wake all threads. They will quit after they see the shutdown flag
+		CM_THREAD_NOTIFY_ALL(mDeferredRSReadyCondition)
+
+		mRenderThread->join();
+		CM_THREAD_DESTROY(mRenderThread);
+
+		mRenderThread = nullptr;
+		mUsingSeparateRenderThread = false;
+		mRenderThreadId = CM_THREAD_CURRENT_ID;
+		mDeferredRenderSystems.clear();
+	}
+
+	void RenderSystem::notifyCommandsReadyCallback()
+	{
+		CM_THREAD_NOTIFY_ALL(mDeferredRSReadyCondition)
+	}
+
+	DeferredRenderSystemPtr RenderSystem::createDeferredRenderSystem()
+	{
+		DeferredRenderSystemPtr newDeferredRS = DeferredRenderSystemPtr(
+			new DeferredRenderSystem(CM_THREAD_CURRENT_ID, boost::bind(&RenderSystem::notifyCommandsReadyCallback, this))
+			);
+
+		{
+			CM_LOCK_MUTEX(mDeferredRSMutex);
+			mDeferredRenderSystems.push_back(newDeferredRS);
+		}
+
+		return newDeferredRS;
+	}
+
+	void RenderSystem::throwIfInvalidThread()
+	{
+		if(CM_THREAD_CURRENT_ID != getRenderThreadId())
+			CM_EXCEPT(InternalErrorException, "Calling the render system from a non-render thread!");
+	}
+
+	/************************************************************************/
+	/* 								THREAD WORKER                      		*/
+	/************************************************************************/
+
+	RenderSystem::RenderWorkerFunc::RenderWorkerFunc(RenderSystem* rs)
+		:mRS(rs)
+	{
+		assert(mRS != nullptr);
+	}
+
+	void RenderSystem::RenderWorkerFunc::operator()()
+	{
+		mRS->runRenderThread();
 	}
 }
 

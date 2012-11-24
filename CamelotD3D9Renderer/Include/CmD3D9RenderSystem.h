@@ -182,8 +182,11 @@ namespace CamelotEngine
 
 		// Overridden RenderSystem functions
 		String validateConfigOptions();
-		RenderWindow* _initialise( bool autoCreateWindow, const String& windowTitle = "OGRE Render Window"  );
-		/// @copydoc RenderSystem::_createRenderWindow
+		/**
+		 * @copydoc RenderSystem::startUp
+		 */
+		RenderWindow* startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle = "Camelot Render Window");
+		/// @copydoc RenderSystem::createRenderWindow
 		RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList *miscParams = 0);
 		
@@ -203,7 +206,6 @@ namespace CamelotEngine
 		const String& getName() const;
 		// Low-level overridden members
 		void setConfigOption( const String &name, const String &value );
-		void reinitialise();
 		void shutdown();
 		void destroyRenderTarget(const String& name);
 		VertexElementType getColorVertexElementType() const;

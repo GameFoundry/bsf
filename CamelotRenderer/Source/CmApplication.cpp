@@ -49,7 +49,7 @@ namespace CamelotEngine
 		RendererManager::setActive("ForwardRenderer");
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
-		renderSystem->_initialise(false, "Camelot Renderer");
+		renderSystem->startUp(false, false, "Camelot Renderer");
 
 		mPrimaryRenderWindow = renderSystem->createRenderWindow("Camelot Renderer", 800, 600, false);
 

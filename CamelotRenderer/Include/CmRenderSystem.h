@@ -160,9 +160,10 @@ namespace CamelotEngine
 		virtual String validateConfigOptions(void) = 0;
 
 		/** Start up the renderer using the settings selected (Or the defaults if none have been selected).
-		@remarks
-		Called by Root::setRenderSystem. Shouldn't really be called
-		directly, although  this can be done if the app wants to.
+		@param
+		runOnSeparateThread 
+		If true, a separate internal render thread will be created, and you will only be allowed to call RenderSystem methods
+		from DeferredRenderSystem created by RenderSystem::createDeferred().
 		@param
 		autoCreateWindow If true, creates a render window
 		automatically, based on settings chosen so far. This saves
@@ -175,7 +176,7 @@ namespace CamelotEngine
 		@returns
 		A pointer to the automatically created window, if requested, otherwise null.
 		*/
-		virtual RenderWindow* _initialise(bool autoCreateWindow, const String& windowTitle = "Camelot Render Window");
+		virtual RenderWindow* startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle = "Camelot Render Window");
 
 
 		/** Query the real capabilities of the GPU and driver in the RenderSystem*/
@@ -188,10 +189,6 @@ namespace CamelotEngine
 		*		 responsible for deallocating capabilities.
 		*/
 		virtual void useCustomRenderSystemCapabilities(RenderSystemCapabilities* capabilities);
-
-		/** Restart the renderer (normally following a change in settings).
-		*/
-		virtual void reinitialise(void) = 0;
 
 		/** Shutdown the renderer and cleanup resources.
 		*/
@@ -1032,6 +1029,84 @@ namespace CamelotEngine
 		virtual void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary) = 0;
 
 		DriverVersion mDriverVersion;
+
+		/************************************************************************/
+		/* 								THREADING	                     		*/
+		/************************************************************************/
+
+		class RenderWorkerFunc CM_THREAD_WORKER_INHERIT
+		{
+		public:
+			RenderWorkerFunc(RenderSystem* rs);
+
+			void operator()();
+
+		private:
+			RenderSystem* mRS;
+		};
+
+		RenderWorkerFunc* mRenderThreadFunc;
+		bool mUsingSeparateRenderThread;
+		bool mRenderThreadShutdown;
+
+		CM_THREAD_ID_TYPE mRenderThreadId;
+		CM_THREAD_SYNCHRONISER(mDeferredRSInitCondition)
+		CM_MUTEX(mDeferredRSInitMutex)
+		CM_THREAD_SYNCHRONISER(mDeferredRSReadyCondition)
+		CM_MUTEX(mDeferredRSMutex)
+
+#if CM_THREAD_SUPPORT
+		CM_THREAD_TYPE* mRenderThread;
+#endif
+
+		vector<DeferredRenderSystemPtr>::type mDeferredRenderSystems;
+
+		/**
+		 * @brief	Initializes a separate render thread. Should only be called once.
+		 */
+		void initRenderThread();
+
+		/**
+		 * @brief	Main function of the render thread. Called once thread is started.
+		 */
+		void runRenderThread();
+
+		/**
+		 * @brief	Shutdowns the render thread. It will complete all ready commands
+		 * 			before shutdown.
+		 */
+		void shutdownRenderThread();
+
+		/**
+		 * @brief	Internal method that gets called by DeferredRenderSystems when 
+		 * 			they have commands ready for rendering.
+		 */
+		void notifyCommandsReadyCallback();
+
+		/**
+		 * @brief	Throws an exception if current thread isn't the render thread;
+		 */
+		void throwIfInvalidThread();
+
+	public:
+		/**
+		 * @brief	Returns the id of the render thread. If a separate render thread
+		 * 			is not used, then it returns the id of the thread RenderSystem
+		 * 			was initialized on.
+		 */
+		CM_THREAD_ID_TYPE getRenderThreadId() const { return mRenderThreadId; }
+
+		/**
+		 * @brief	Creates a new deferred render system that you can use for rendering on 
+		 * 			a non-render thread. You can have as many of these as you wish, the only limitation
+		 * 			is that you do not use a single instance on more than one thread. Each thread
+		 * 			requires its own deferred render system.
+		 * 			
+		 * @remark	Be aware that creating a new deferred render system requires all active render commands
+		 * 			to complete, so it can potentially be a very slow operation as the thread will be blocked
+		 * 			until rendering is done.
+		 */
+		DeferredRenderSystemPtr createDeferredRenderSystem();
 	};
 	/** @} */
 	/** @} */

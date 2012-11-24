@@ -483,7 +483,7 @@ namespace CamelotEngine
 		return StringUtil::BLANK;
 	}
 	//---------------------------------------------------------------------
-	RenderWindow* D3D9RenderSystem::_initialise( bool autoCreateWindow, const String& windowTitle )
+	RenderWindow* D3D9RenderSystem::startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle )
 	{
 		RenderWindow* autoWindow = NULL;
 
@@ -594,16 +594,9 @@ namespace CamelotEngine
 		}	
 
 		// call superclass method
-		RenderSystem::_initialise( autoCreateWindow );
-
+		RenderSystem::startUp(runOnSeparateThread, autoCreateWindow);
 
 		return autoWindow;
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::reinitialise()
-	{
-		this->shutdown();
-		this->_initialise( true );
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::shutdown()

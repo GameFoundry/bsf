@@ -144,6 +144,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
 	typedef std::shared_ptr<WorkQueue> WorkQueuePtr;
 	typedef std::shared_ptr<PassParameters> PassParametersPtr;
+	typedef std::shared_ptr<DeferredRenderSystem> DeferredRenderSystemPtr;
 
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;
