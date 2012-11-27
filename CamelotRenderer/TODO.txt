@@ -16,6 +16,13 @@ High-level TODO:
 
 
 Command buffer TODO:
+ Immediate:
+ - Rename ResourceRef to ResourceHandle?
+ - setVertexDeclaration/setVertexBufferBinding still need their deferred versions
+ - schedule startUp to happen on render thread
+   - do the same in OpenGL
+ - surround the thread checks with #if _DEBUG
+
 MAYBE:
  - Create DeferredRenderSystem class that has exactly the same public interface as RenderSystem, but defers all calls to a command buffer
    - As its methods are called we can also filter out values that exactly match the previous ones and minimize number of state changes
@@ -36,11 +43,7 @@ Essential TODO for deferred rendering:
 
  - Modify resource creation so it calls RenderContext and just schedules resource creation
 
- - (Optional) Add callbacks from render thread (e.g. pre/post render) and only allow users to create vertex buffer and similar manually from there? at least temporarily. "Direct" access from worker threads might be useful, although users should always be able to use abstractions like Mesh and similar.
-   - Reading from resources should however block the render thread and get the actual resource. Reading is slow anyway and won't be done often.
-   - Writing can be accomplished if RenderContext just returns temporary memory we can write to, and then actually writes it during playback.
-   - Both reading & writing can be accomplished if we keep all data in system memory, which GL does internally (but we can't access it), and optionally DX does too (but again, can't access it). Unless we can access it it's too much memory overhead.
-
+ - Figure out how to handle reading of resources properly
 
 
 
@@ -79,9 +82,10 @@ Low priority TODO:
  - Serializable callbacks can't be null otherwise compiler complains
  - Depth test is disabled by default (OpenGL renderer at least)
  - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?
+  - Make sure resources only get properly unloaded at end of every frame. This is because a lot of RenderSystem stuff holds raw ptrs
+	to resources, and it keeps them throughout the frame (especially with deferred rendering). Plus this can only be done on the render thread anyway.
  - Remove template from RTTIType and move it to IReflectable? This way i can hopefully move GetRTTITypeStatic and GetRTTIType to IReflectable so I don't
    need to manually implement those for every method.
- - Removed unused methods from D3D9 and GL render systems (mostly fixed function stuff)
  - Viewport needs to be updated when I call RenderTarget::setFullscreen/finishSwitchingFullscreen/updateWindowRect/windowMovedOrResized. Currently it's not
  - D3D9Texture::createTextureResources is commented out at the moment. It gets called on device reset, and at that point I should reload texture resources.
   - I should probably keep all resources by DX managed. OpenGL apparently keeps a mirror of all its resources anyway.

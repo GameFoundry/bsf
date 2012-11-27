@@ -87,6 +87,7 @@
     <ClCompile Include="Source\CmUUID.cpp" />
     <ClCompile Include="Source\CmWorkQueue.cpp" />
     <ClCompile Include="Source\Win32\CmTimer.cpp" />
+    <ClInclude Include="Include\CmAsyncOp.h" />
     <ClInclude Include="Include\CmBinarySerializer.h" />
     <ClInclude Include="Include\CmBitwise.h" />
     <ClInclude Include="Include\CmBox.h" />

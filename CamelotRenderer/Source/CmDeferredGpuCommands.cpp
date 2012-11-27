@@ -6,6 +6,14 @@ namespace CamelotEngine
 	DeferredGpuCommand::DeferredGpuCommand()
 	{ }
 
+	DfrdRSStartUpCommand::DfrdRSStartUpCommand()
+	{ }
+
+	void DfrdRSStartUpCommand::submitCommand(RenderSystem* rs)
+	{
+		//rs->startUp_internal();
+	}
+
 	DfrdRenderGpuCommand::DfrdRenderGpuCommand(RenderOperation& _renderOp)
 		:renderOp(_renderOp)
 	{ }
@@ -15,13 +23,22 @@ namespace CamelotEngine
 		rs->render(renderOp);
 	}
 
-	DfrdBindGpuProgramCommand::DfrdBindGpuProgramCommand(GpuProgramPtr _gpuProgram)
+	DfrdBindGpuProgramCommand::DfrdBindGpuProgramCommand(GpuProgramRef _gpuProgram)
 		:gpuProgram(_gpuProgram)
 	{ }
 
 	void DfrdBindGpuProgramCommand::submitCommand(RenderSystem* rs)
 	{
-		rs->bindGpuProgram(gpuProgram.get());
+		rs->bindGpuProgram(gpuProgram);
+	}
+
+	DfrdUnbindGpuProgramCommand::DfrdUnbindGpuProgramCommand(GpuProgramType _type)
+		:type(_type)
+	{ }
+
+	void DfrdUnbindGpuProgramCommand::submitCommand(RenderSystem* rs)
+	{
+		rs->unbindGpuProgram(type);
 	}
 
 	DfrdBindGpuParamsCommand::DfrdBindGpuParamsCommand(GpuProgramType _type, GpuProgramParametersPtr& _progParams)
@@ -225,13 +242,13 @@ namespace CamelotEngine
 		rs->setAlphaRejectSettings(func, value, alphaToCoverage);
 	}
 
-// TODO
-	DfrdViewportCommand::DfrdViewportCommand()
+	DfrdViewportCommand::DfrdViewportCommand(const Viewport& _vp)
+		:vp(_vp)
 	{ }
 
 	void DfrdViewportCommand::submitCommand(RenderSystem* rs)
 	{
-
+		rs->setViewport(vp);
 	}
 
 	DfrdCullingCommand::DfrdCullingCommand(CullingMode _mode)
@@ -340,5 +357,14 @@ namespace CamelotEngine
 	void DfrdClearFrameBufferCommand::submitCommand(RenderSystem* rs)
 	{
 		rs->clearFrameBuffer(buffers, color, depth, stencil);
+	}
+
+	DfrdSwapAllRenderTargetBuffersCommand::DfrdSwapAllRenderTargetBuffersCommand(bool _waitForVsync)
+		:waitForVsync(_waitForVsync)
+	{ }
+
+	void DfrdSwapAllRenderTargetBuffersCommand::submitCommand(RenderSystem* rs)
+	{
+		rs->swapAllRenderTargetBuffers(waitForVsync);
 	}
 }

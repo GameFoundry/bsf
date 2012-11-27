@@ -48,6 +48,7 @@ THE SOFTWARE.
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
 #include "CmHighLevelGpuProgramManager.h"
+#include "CmAsyncOp.h"
 
 #define FLOAT2DWORD(f) *((DWORD*)&f)
 
@@ -72,34 +73,7 @@ namespace CamelotEngine
 		mHLSLProgramFactory = NULL;		
 		mCgProgramFactory = NULL;
 		mDeviceManager = NULL;	
-
-		// Create the resource manager.
-		mResourceManager = new D3D9ResourceManager();
-
-		// Create our Direct3D object
-		if( NULL == (mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) )
-			CM_EXCEPT(InternalErrorException, "Failed to create Direct3D9 object");
-
-		// set config options defaults
-		initConfigOptions();
-
-		// fsaa options
-		mFSAAHint = "";
-		mFSAASamples = 0;
-		
-		// set stages desc. to defaults
-		for (size_t n = 0; n < CM_MAX_TEXTURE_LAYERS; n++)
-		{
-			mTexStageDesc[n].autoTexCoordType = TEXCALC_NONE;
-			mTexStageDesc[n].coordIndex = 0;
-			mTexStageDesc[n].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
-			mTexStageDesc[n].pTex = 0;
-			mTexStageDesc[n].pVertexTex = 0;
-		}
-
-		mLastVertexSourceCount = 0;
-
-		mCurrentLights.clear();			
+		mResourceManager = nullptr;		
 	}
 	//---------------------------------------------------------------------
 	D3D9RenderSystem::~D3D9RenderSystem()
@@ -483,122 +457,6 @@ namespace CamelotEngine
 		return StringUtil::BLANK;
 	}
 	//---------------------------------------------------------------------
-	RenderWindow* D3D9RenderSystem::startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle )
-	{
-		RenderWindow* autoWindow = NULL;
-
-		// Init using current settings
-		mActiveD3DDriver = NULL;
-		ConfigOptionMap::iterator opt = mOptions.find( "Rendering Device" );
-		for( UINT32 j=0; j < getDirect3DDrivers()->count(); j++ )
-		{
-			if( getDirect3DDrivers()->item(j)->DriverDescription() == opt->second.currentValue )
-			{
-				mActiveD3DDriver = getDirect3DDrivers()->item(j);
-				break;
-			}
-		}
-
-		if( !mActiveD3DDriver )
-			CM_EXCEPT(InvalidParametersException, "Problems finding requested Direct3D driver!" );
-
-		// get driver version
-		mDriverVersion.major = HIWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.HighPart);
-		mDriverVersion.minor = LOWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.HighPart);
-		mDriverVersion.release = HIWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.LowPart);
-		mDriverVersion.build = LOWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.LowPart);
-
-		// Create the device manager.
-		mDeviceManager = new D3D9DeviceManager();
-
-		// Create the texture manager for use by others		
-		TextureManager::startUp(new D3D9TextureManager());
-
-		// Also create hardware buffer manager		
-		HardwareBufferManager::startUp(new D3D9HardwareBufferManager());
-
-		// Create the GPU program manager		
-		GpuProgramManager::startUp(new D3D9GpuProgramManager());
-
-		// Create & register HLSL factory		
-		mHLSLProgramFactory = new D3D9HLSLProgramFactory();
-		
-		// Create & register Cg factory		
-		mCgProgramFactory = new CgProgramFactory();
-
-		if( autoCreateWindow )
-		{
-			bool fullScreen;
-			opt = mOptions.find( "Full Screen" );
-			if( opt == mOptions.end() )
-				CM_EXCEPT(InternalErrorException, "Can't find full screen option!");
-			fullScreen = opt->second.currentValue == "Yes";
-
-			D3D9VideoMode* videoMode = NULL;
-			unsigned int width, height;
-			String temp;
-
-			opt = mOptions.find( "Video Mode" );
-			if( opt == mOptions.end() )
-				CM_EXCEPT(InternalErrorException, "Can't find Video Mode option!");
-
-			// The string we are manipulating looks like this :width x height @ colourDepth
-			// Pull out the colour depth by getting what comes after the @ and a space
-			String colourDepth = opt->second.currentValue.substr(opt->second.currentValue.rfind('@')+1);
-			// Now we know that the width starts a 0, so if we can find the end we can parse that out
-			String::size_type widthEnd = opt->second.currentValue.find(' ');
-			// we know that the height starts 3 characters after the width and goes until the next space
-			String::size_type heightEnd = opt->second.currentValue.find(' ', widthEnd+3);
-			// Now we can parse out the values
-			width = parseInt(opt->second.currentValue.substr(0, widthEnd));
-			height = parseInt(opt->second.currentValue.substr(widthEnd+3, heightEnd));
-
-			for( unsigned j=0; j < mActiveD3DDriver->getVideoModeList()->count(); j++ )
-			{
-				temp = mActiveD3DDriver->getVideoModeList()->item(j)->getDescription();
-
-				// In full screen we only want to allow supported resolutions, so temp and opt->second.currentValue need to 
-				// match exactly, but in windowed mode we can allow for arbitrary window sized, so we only need
-				// to match the colour values
-				if(fullScreen && (temp == opt->second.currentValue) ||
-					!fullScreen && (temp.substr(temp.rfind('@')+1) == colourDepth))
-				{
-					videoMode = mActiveD3DDriver->getVideoModeList()->item(j);
-					break;
-				}
-			}
-
-			if( !videoMode )
-				CM_EXCEPT(InternalErrorException, "Can't find requested video mode.");
-
-			// sRGB window option
-			bool hwGamma = false;
-
-			opt = mOptions.find( "sRGB Gamma Conversion" );
-			if( opt == mOptions.end() )
-				CM_EXCEPT(InternalErrorException, "Can't find sRGB option!");
-			hwGamma = opt->second.currentValue == "Yes";
-
-			NameValuePairList miscParams;
-			miscParams["colourDepth"] = toString(videoMode->getColourDepth());
-			miscParams["FSAA"] = toString(mFSAASamples);
-			miscParams["FSAAHint"] = mFSAAHint;
-			miscParams["vsync"] = toString(mVSync);
-			miscParams["vsyncInterval"] = toString(mVSyncInterval);
-			miscParams["useNVPerfHUD"] = toString(mUseNVPerfHUD);
-			miscParams["gamma"] = toString(hwGamma);
-			miscParams["monitorIndex"] = toString(static_cast<int>(mActiveD3DDriver->getAdapterNumber()));
-
-			autoWindow = createRenderWindow( windowTitle, width, height, 
-				fullScreen, &miscParams );
-		}	
-
-		// call superclass method
-		RenderSystem::startUp(runOnSeparateThread, autoCreateWindow);
-
-		return autoWindow;
-	}
-	//---------------------------------------------------------------------
 	void D3D9RenderSystem::shutdown()
 	{
 		RenderSystem::shutdown();
@@ -612,96 +470,6 @@ namespace CamelotEngine
 		HardwareBufferManager::shutDown();
 		GpuProgramManager::shutDown();		
 	}
-	//---------------------------------------------------------------------
-	RenderWindow* D3D9RenderSystem::createRenderWindow(const String &name, 
-		unsigned int width, unsigned int height, bool fullScreen,
-		const NameValuePairList *miscParams)
-	{		
-		// Log a message
-		StringStream ss;
-		ss << "D3D9RenderSystem::_createRenderWindow \"" << name << "\", " <<
-			width << "x" << height << " ";
-		if(fullScreen)
-			ss << "fullscreen ";
-		else
-			ss << "windowed ";
-		if(miscParams)
-		{
-			ss << " miscParams: ";
-			NameValuePairList::const_iterator it;
-			for(it=miscParams->begin(); it!=miscParams->end(); ++it)
-			{
-				ss << it->first << "=" << it->second << " ";
-			}
-		}
-
-		String msg;
-
-		// Make sure we don't already have a render target of the 
-		// same name as the one supplied
-		if( mRenderTargets.find( name ) != mRenderTargets.end() )
-		{
-			msg = "A render target of the same name '" + name + "' already "
-				"exists.  You cannot create a new window with this name.";
-			CM_EXCEPT(InternalErrorException, msg);
-		}
-				
-		D3D9RenderWindow* renderWindow = new D3D9RenderWindow(mhInstance);
-		
-		renderWindow->create(name, width, height, fullScreen, miscParams);
-
-		mResourceManager->lockDeviceAccess();
-
-        try
-        {
-		    mDeviceManager->linkRenderWindow(renderWindow);
-        }
-        catch (const CamelotEngine::RenderingAPIException&)
-        {
-            // after catching the exception, clean up
-            mResourceManager->unlockDeviceAccess();
-            renderWindow->destroy();
-
-            // re-throw
-            throw;
-        }
-
-		mResourceManager->unlockDeviceAccess();
-	
-		mRenderWindows.push_back(renderWindow);		
-		
-		updateRenderSystemCapabilities(renderWindow);
-
-		attachRenderTarget( *renderWindow );
-		
-		return renderWindow;
-	}	
-	//---------------------------------------------------------------------
-	bool D3D9RenderSystem::_createRenderWindows(const RenderWindowDescriptionList& renderWindowDescriptions, 
-		RenderWindowList& createdWindows)
-	{
-		// Call base render system method.
-		if (false == RenderSystem::_createRenderWindows(renderWindowDescriptions, createdWindows))
-			return false;
-
-		// Simply call _createRenderWindow in a loop.
-		for (size_t i = 0; i < renderWindowDescriptions.size(); ++i)
-		{
-			const RenderWindowDescription& curRenderWindowDescription = renderWindowDescriptions[i];			
-			RenderWindow* curWindow = NULL;
-
-			curWindow = createRenderWindow(curRenderWindowDescription.name, 
-				curRenderWindowDescription.width, 
-				curRenderWindowDescription.height, 
-				curRenderWindowDescription.useFullScreen, 
-				&curRenderWindowDescription.miscParams);
-							
-			createdWindows.push_back(curWindow);											
-		}
-		
-		return true;
-	}
-
 	//---------------------------------------------------------------------
 	RenderSystemCapabilities* D3D9RenderSystem::updateRenderSystemCapabilities(D3D9RenderWindow* renderWindow)
 	{			
@@ -2066,52 +1834,45 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setViewport( Viewport *vp )
+	void D3D9RenderSystem::setViewport(const Viewport& vp)
 	{
-		if( vp != mActiveViewport)
+		mActiveViewport = vp;
+
+		// ok, it's different, time to set render target and viewport params
+		D3DVIEWPORT9 d3dvp;
+		HRESULT hr;
+
+		// Set render target
+		RenderTarget* target = vp.getTarget();
+		setRenderTarget(target);
+
+		setCullingMode( mCullingMode );
+
+		// set viewport dimensions
+		d3dvp.X = vp.getActualLeft();
+		d3dvp.Y = vp.getActualTop();
+		d3dvp.Width = vp.getActualWidth();
+		d3dvp.Height = vp.getActualHeight();
+		if (target->requiresTextureFlipping())
 		{
-			mActiveViewport = vp;
-
-			// ok, it's different, time to set render target and viewport params
-			D3DVIEWPORT9 d3dvp;
-			HRESULT hr;
-
-			// Set render target
-			RenderTarget* target = vp->getTarget();
-			setRenderTarget(target);
-
-
-			setCullingMode( mCullingMode );
-
-			// set viewport dimensions
-			d3dvp.X = vp->getActualLeft();
-			d3dvp.Y = vp->getActualTop();
-			d3dvp.Width = vp->getActualWidth();
-			d3dvp.Height = vp->getActualHeight();
-			if (target->requiresTextureFlipping())
-			{
-				// Convert "top-left" to "bottom-left"
-				d3dvp.Y = target->getHeight() - d3dvp.Height - d3dvp.Y;
-			}
-
-			// Z-values from 0.0 to 1.0 (TODO: standardise with OpenGL)
-			d3dvp.MinZ = 0.0f;
-			d3dvp.MaxZ = 1.0f;
-
-			if( FAILED( hr = getActiveD3D9Device()->SetViewport( &d3dvp ) ) )
-				CM_EXCEPT(RenderingAPIException, "Failed to set viewport.");
-
-			// Set sRGB write mode
-			__SetRenderState(D3DRS_SRGBWRITEENABLE, target->isHardwareGammaEnabled());
+			// Convert "top-left" to "bottom-left"
+			d3dvp.Y = target->getHeight() - d3dvp.Height - d3dvp.Y;
 		}
+
+		// Z-values from 0.0 to 1.0 (TODO: standardise with OpenGL)
+		d3dvp.MinZ = 0.0f;
+		d3dvp.MaxZ = 1.0f;
+
+		if( FAILED( hr = getActiveD3D9Device()->SetViewport( &d3dvp ) ) )
+			CM_EXCEPT(RenderingAPIException, "Failed to set viewport.");
+
+		// Set sRGB write mode
+		__SetRenderState(D3DRS_SRGBWRITEENABLE, target->isHardwareGammaEnabled());
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::beginFrame()
 	{
 		HRESULT hr;
-
-		if( !mActiveViewport )
-			CM_EXCEPT(InternalErrorException, "Cannot begin frame - no viewport selected.");
 
 		if( FAILED( hr = getActiveD3D9Device()->BeginScene() ) )
 		{
@@ -2322,14 +2083,16 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::bindGpuProgram(GpuProgram* prg)
+	void D3D9RenderSystem::bindGpuProgram(GpuProgramRef prg)
 	{
+		GpuProgram* bindingPrg = prg->_getBindingDelegate();
+
 		HRESULT hr;
-		switch (prg->getType())
+		switch (bindingPrg->getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			hr = getActiveD3D9Device()->SetVertexShader(
-				static_cast<D3D9GpuVertexProgram*>(prg)->getVertexShader());
+				static_cast<D3D9GpuVertexProgram*>(bindingPrg)->getVertexShader());
 			if (FAILED(hr))
 			{
 				CM_EXCEPT(RenderingAPIException, "Error calling SetVertexShader");
@@ -2337,7 +2100,7 @@ namespace CamelotEngine
 			break;
 		case GPT_FRAGMENT_PROGRAM:
 			hr = getActiveD3D9Device()->SetPixelShader(
-				static_cast<D3D9GpuFragmentProgram*>(prg)->getPixelShader());
+				static_cast<D3D9GpuFragmentProgram*>(bindingPrg)->getPixelShader());
 			if (FAILED(hr))
 			{
 				CM_EXCEPT(RenderingAPIException, "Error calling SetPixelShader");
@@ -2925,7 +2688,7 @@ namespace CamelotEngine
 		// Restore previous active device.
 
 		// Invalidate active view port.
-		mActiveViewport = NULL;
+		mActiveViewport = Viewport();
 
 		// Reset the texture stages, they will need to be rebound
 		for (size_t i = 0; i < CM_MAX_TEXTURE_LAYERS; ++i)
@@ -3080,5 +2843,127 @@ namespace CamelotEngine
 		} // while !ok
 	}
 
+	/************************************************************************/
+	/* 							INTERNAL CALLBACKS                     		*/
+	/************************************************************************/
+	void D3D9RenderSystem::startUp_internal(AsyncOp& asyncOp)
+	{
+		// Create the resource manager.
+		mResourceManager = new D3D9ResourceManager();
 
+		// Create our Direct3D object
+		if( NULL == (mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) )
+			CM_EXCEPT(InternalErrorException, "Failed to create Direct3D9 object");
+
+		// set config options defaults
+		initConfigOptions();
+
+		// fsaa options
+		mFSAAHint = "";
+		mFSAASamples = 0;
+
+		// set stages desc. to defaults
+		for (size_t n = 0; n < CM_MAX_TEXTURE_LAYERS; n++)
+		{
+			mTexStageDesc[n].autoTexCoordType = TEXCALC_NONE;
+			mTexStageDesc[n].coordIndex = 0;
+			mTexStageDesc[n].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
+			mTexStageDesc[n].pTex = 0;
+			mTexStageDesc[n].pVertexTex = 0;
+		}
+
+		mLastVertexSourceCount = 0;
+
+		mCurrentLights.clear();	
+
+		RenderWindow* autoWindow = NULL;
+
+		// Init using current settings
+		mActiveD3DDriver = NULL;
+		ConfigOptionMap::iterator opt = mOptions.find( "Rendering Device" );
+		for( UINT32 j=0; j < getDirect3DDrivers()->count(); j++ )
+		{
+			if( getDirect3DDrivers()->item(j)->DriverDescription() == opt->second.currentValue )
+			{
+				mActiveD3DDriver = getDirect3DDrivers()->item(j);
+				break;
+			}
+		}
+
+		if( !mActiveD3DDriver )
+			CM_EXCEPT(InvalidParametersException, "Problems finding requested Direct3D driver!" );
+
+		// get driver version
+		mDriverVersion.major = HIWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.HighPart);
+		mDriverVersion.minor = LOWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.HighPart);
+		mDriverVersion.release = HIWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.LowPart);
+		mDriverVersion.build = LOWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.LowPart);
+
+		// Create the device manager.
+		mDeviceManager = new D3D9DeviceManager();
+
+		// Create the texture manager for use by others		
+		TextureManager::startUp(new D3D9TextureManager());
+
+		// Also create hardware buffer manager		
+		HardwareBufferManager::startUp(new D3D9HardwareBufferManager());
+
+		// Create the GPU program manager		
+		GpuProgramManager::startUp(new D3D9GpuProgramManager());
+
+		// Create & register HLSL factory		
+		mHLSLProgramFactory = new D3D9HLSLProgramFactory();
+
+		// Create & register Cg factory		
+		mCgProgramFactory = new CgProgramFactory();
+
+		// call superclass method
+		RenderSystem::startUp_internal(asyncOp);
+	}
+
+	void D3D9RenderSystem::createRenderWindow_internal(const String &name, 
+		unsigned int width, unsigned int height, bool fullScreen,
+		const NameValuePairList& miscParams, AsyncOp& asyncOp)
+	{		
+		String msg;
+
+		// Make sure we don't already have a render target of the 
+		// same name as the one supplied
+		if( mRenderTargets.find( name ) != mRenderTargets.end() )
+		{
+			msg = "A render target of the same name '" + name + "' already "
+				"exists.  You cannot create a new window with this name.";
+			CM_EXCEPT(InternalErrorException, msg);
+		}
+
+		D3D9RenderWindow* renderWindow = new D3D9RenderWindow(mhInstance);
+
+		renderWindow->create(name, width, height, fullScreen, &miscParams);
+
+		mResourceManager->lockDeviceAccess();
+
+		try
+		{
+			mDeviceManager->linkRenderWindow(renderWindow);
+		}
+		catch (const CamelotEngine::RenderingAPIException&)
+		{
+			// after catching the exception, clean up
+			mResourceManager->unlockDeviceAccess();
+			renderWindow->destroy();
+
+			// re-throw
+			throw;
+		}
+
+		mResourceManager->unlockDeviceAccess();
+
+		mRenderWindows.push_back(renderWindow);		
+
+		updateRenderSystemCapabilities(renderWindow);
+
+		attachRenderTarget( *renderWindow );
+
+		asyncOp.completeOperation(static_cast<RenderWindow*>(renderWindow));
+	}	
 }

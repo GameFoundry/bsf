@@ -182,18 +182,7 @@ namespace CamelotEngine
 
 		// Overridden RenderSystem functions
 		String validateConfigOptions();
-		/**
-		 * @copydoc RenderSystem::startUp
-		 */
-		RenderWindow* startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle = "Camelot Render Window");
-		/// @copydoc RenderSystem::createRenderWindow
-		RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList *miscParams = 0);
 		
-		/// @copydoc RenderSystem::_createRenderWindows
-		bool _createRenderWindows(const RenderWindowDescriptionList& renderWindowDescriptions, 
-			RenderWindowList& createdWindows);
-
 		/**
          * Set current render target to target, enabling its GL context if needed
          */
@@ -229,7 +218,7 @@ namespace CamelotEngine
 		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
 		void setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
 		void setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage );
-		void setViewport( Viewport *vp );		
+		void setViewport(const Viewport& vp);		
 		void beginFrame();
 		void endFrame();		
 		void setCullingMode( CullingMode mode );
@@ -249,7 +238,7 @@ namespace CamelotEngine
         /** See
           RenderSystem
          */
-        void bindGpuProgram(GpuProgram* prg);
+        void bindGpuProgram(GpuProgramRef prg);
         /** See
           RenderSystem
          */
@@ -312,6 +301,15 @@ namespace CamelotEngine
 		/// @copydoc RenderSystem::getDisplayMonitorCount
 		unsigned int getDisplayMonitorCount() const;
 		
+		/************************************************************************/
+		/* 							INTERNAL CALLBACKS                     		*/
+		/************************************************************************/
+	protected:
+		void startUp_internal(AsyncOp& asyncOp);
+
+		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
+			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
+
 	protected:	
 		/// Notify when a device has been lost.
 		void notifyOnDeviceLost(D3D9Device* device);

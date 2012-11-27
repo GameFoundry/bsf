@@ -34,6 +34,23 @@ THE SOFTWARE.
 #include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
+
+	//---------------------------------------------------------------------
+	Viewport::Viewport()
+		:mTarget(nullptr)
+		, mRelLeft(0)
+		, mRelTop(0)
+		, mRelWidth(0)
+		, mRelHeight(0)
+		// Actual dimensions will update later
+		, mZOrder(0)
+		, mBackColour(Color::Black)
+		, mClearEveryFrame(true)
+		, mClearBuffers(FBT_COLOUR | FBT_DEPTH)
+	{
+		// Calculate actual dimensions
+		updateDimensions();
+	}
     //---------------------------------------------------------------------
     Viewport::Viewport(RenderTarget* target, float left, float top, float width, float height, int ZOrder)
          :mTarget(target)
@@ -48,7 +65,7 @@ namespace CamelotEngine {
 		, mClearBuffers(FBT_COLOUR | FBT_DEPTH)
     {
         // Calculate actual dimensions
-        _updateDimensions();
+        updateDimensions();
     }
     //---------------------------------------------------------------------
     Viewport::~Viewport()
@@ -56,7 +73,7 @@ namespace CamelotEngine {
 
     }
     //---------------------------------------------------------------------
-    void Viewport::_updateDimensions(void)
+    void Viewport::updateDimensions(void)
     {
 		if(mTarget != nullptr)
 		{
@@ -126,12 +143,7 @@ namespace CamelotEngine {
         mRelTop = top;
         mRelWidth = width;
         mRelHeight = height;
-        _updateDimensions();
-    }
-    //---------------------------------------------------------------------
-    void Viewport::update(void)
-    {
-
+        updateDimensions();
     }
     //---------------------------------------------------------------------
     void Viewport::setBackgroundColour(const Color& colour)
@@ -166,15 +178,11 @@ namespace CamelotEngine {
 		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
 		if (rs)
 		{
-			Viewport* currentvp = rs->getViewport();
-			if (currentvp && currentvp == this)
-				rs->clearFrameBuffer(buffers, col, depth, stencil);
-			else if (currentvp)
-			{
-				rs->setViewport(this);
-				rs->clearFrameBuffer(buffers, col, depth, stencil);
-				rs->setViewport(currentvp);
-			}
+			Viewport currentvp = rs->getViewport();
+
+			rs->setViewport(*this);
+			rs->clearFrameBuffer(buffers, col, depth, stencil);
+			rs->setViewport(currentvp);
 		}
 	}
     //---------------------------------------------------------------------
@@ -186,5 +194,4 @@ namespace CamelotEngine {
         height = mActHeight;
 
     }
-	//-----------------------------------------------------------------------
 }

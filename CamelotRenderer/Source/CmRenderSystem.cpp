@@ -40,6 +40,7 @@ THE SOFTWARE.
 #include "CmHardwarePixelBuffer.h"
 #include "CmHardwareOcclusionQuery.h"
 #include "CmDeferredRenderSystem.h"
+#include "CmRenderSystemContext.h"
 #include "boost/bind.hpp"
 
 namespace CamelotEngine {
@@ -49,7 +50,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     RenderSystem::RenderSystem()
         : mActiveRenderTarget(0)
-        , mActiveViewport(0)
         // This means CULL clockwise vertices, i.e. front of poly is counter-clockwise
         // This makes it the same as OpenGL and other right-handed systems
         , mCullingMode(CULL_CLOCKWISE)
@@ -64,7 +64,6 @@ namespace CamelotEngine {
 		, mRealCapabilities(0)
 		, mCurrentCapabilities(0)
 		, mUseCustomCapabilities(false)
-		, mUsingSeparateRenderThread(false)
 		, mRenderThreadFunc(nullptr)
 		, mRenderThreadShutdown(false)
     {
@@ -93,94 +92,47 @@ namespace CamelotEngine {
 		}
     }
     //-----------------------------------------------------------------------
-    RenderWindow* RenderSystem::startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle)
+    void RenderSystem::startUp()
     {
-        // Subclasses should take it from here
-        // They should ALL call this superclass method from
-        //   their own startUp() implementations.
-
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
+		mResourceContext = 	createRenderSystemContext();
 
-        mVertexProgramBound = false;
-		mGeometryProgramBound = false;
-        mFragmentProgramBound = false;
+		initRenderThread(); // TODO - Move render thread to the outside of the RS
 
-		if(runOnSeparateThread)
-			initRenderThread();
-
-        return 0;
+		{
+			CM_LOCK_MUTEX(mResourceContextMutex)
+			mResourceContext->queueCommand(boost::bind(&RenderSystem::startUp_internal, this, _1));
+		}
     }
+	//---------------------------------------------------------------------------------------------
+	RenderWindow* RenderSystem::createRenderWindow(const String &name, unsigned int width, unsigned int height, 
+		bool fullScreen, const NameValuePairList *miscParams)
+	{
+		AsyncOp op;
+		{
+			CM_LOCK_MUTEX(mResourceContextMutex)
 
+			if(miscParams != nullptr)
+				op = mResourceContext->queueCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, *miscParams, _1));
+			else
+				op = mResourceContext->queueCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, NameValuePairList(), _1));
+		}
+
+		submitToGpu(mResourceContext, true);
+		return op.getReturnValue<RenderWindow*>();
+	}
 	//---------------------------------------------------------------------------------------------
 	void RenderSystem::useCustomRenderSystemCapabilities(RenderSystemCapabilities* capabilities)
 	{
-    if (mRealCapabilities != 0)
-    {
-		CM_EXCEPT(InternalErrorException, 
-          "Custom render capabilities must be set before the RenderSystem is initialised.");
-    }
+		if (mRealCapabilities != 0)
+		{
+			CM_EXCEPT(InternalErrorException, 
+				"Custom render capabilities must be set before the RenderSystem is initialised.");
+		}
 
 		mCurrentCapabilities = capabilities;
 		mUseCustomCapabilities = true;
 	}
-
-	//---------------------------------------------------------------------------------------------
-	bool RenderSystem::_createRenderWindows(const RenderWindowDescriptionList& renderWindowDescriptions, 
-		RenderWindowList& createdWindows)
-	{
-		unsigned int fullscreenWindowsCount = 0;
-
-		// Grab some information and avoid duplicate render windows.
-		for (unsigned int nWindow=0; nWindow < renderWindowDescriptions.size(); ++nWindow)
-		{
-			const RenderWindowDescription* curDesc = &renderWindowDescriptions[nWindow];
-
-			// Count full screen windows.
-			if (curDesc->useFullScreen)			
-				fullscreenWindowsCount++;	
-
-			bool renderWindowFound = false;
-
-			if (mRenderTargets.find(curDesc->name) != mRenderTargets.end())
-				renderWindowFound = true;
-			else
-			{
-				for (unsigned int nSecWindow = nWindow + 1 ; nSecWindow < renderWindowDescriptions.size(); ++nSecWindow)
-				{
-					if (curDesc->name == renderWindowDescriptions[nSecWindow].name)
-					{
-						renderWindowFound = true;
-						break;
-					}					
-				}
-			}
-
-			// Make sure we don't already have a render target of the 
-			// same name as the one supplied
-			if(renderWindowFound)
-			{
-				String msg;
-
-				msg = "A render target of the same name '" + String(curDesc->name) + "' already "
-					"exists.  You cannot create a new window with this name.";
-				CM_EXCEPT(InternalErrorException, msg);
-			}
-		}
-		
-		// Case we have to create some full screen rendering windows.
-		if (fullscreenWindowsCount > 0)
-		{
-			// Can not mix full screen and windowed rendering windows.
-			if (fullscreenWindowsCount != renderWindowDescriptions.size())
-			{
-				CM_EXCEPT(InvalidParametersException, 
-					"Can not create mix of full screen and windowed rendering windows");
-			}					
-		}
-
-		return true;
-	}
-
     //---------------------------------------------------------------------------------------------
     void RenderSystem::destroyRenderWindow(const String& name)
     {
@@ -251,7 +203,7 @@ namespace CamelotEngine {
         return ret;
     }
     //-----------------------------------------------------------------------
-    Viewport* RenderSystem::getViewport(void)
+    Viewport RenderSystem::getViewport(void)
     {
         return mActiveViewport;
     }
@@ -369,8 +321,7 @@ namespace CamelotEngine {
 
 		mPrioritisedRenderTargets.clear();
 
-		if(mUsingSeparateRenderThread)
-			shutdownRenderThread();
+		shutdownRenderThread();
     }
     //-----------------------------------------------------------------------
     void RenderSystem::beginGeometryCount(void)
@@ -476,9 +427,9 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::bindGpuProgram(GpuProgram* prg)
+	void RenderSystem::bindGpuProgram(GpuProgramRef prg)
 	{
-	    switch(prg->getType())
+	    switch(prg->_getBindingDelegate()->getType())
 	    {
         case GPT_VERTEX_PROGRAM:
 			// mark clip planes dirty if changed (programmable can change space)
@@ -538,10 +489,9 @@ namespace CamelotEngine {
 		CM_THREAD_CREATE(t, *mRenderThreadFunc);
 		mRenderThread = t;
 
-		CM_LOCK_MUTEX_NAMED(mDeferredRSInitMutex, lock)
-		CM_THREAD_WAIT(mDeferredRSInitCondition, mDeferredRSInitMutex, lock)
+		CM_LOCK_MUTEX_NAMED(mRSContextInitMutex, lock)
+		CM_THREAD_WAIT(mRSContextInitCondition, mRSContextInitMutex, lock)
 
-		// TODO - Block here until I am sure render thread is running and initialized
 #else
 		CM_EXCEPT(InternalErrorException, "Attempting to start a render thread but Camelot isn't compiled with thread support.");
 #endif
@@ -550,30 +500,31 @@ namespace CamelotEngine {
 	void RenderSystem::runRenderThread()
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mUsingSeparateRenderThread = true;
 
-		CM_THREAD_NOTIFY_ALL(mDeferredRSInitCondition)
+		CM_THREAD_NOTIFY_ALL(mRSContextInitCondition)
 
 		while(true)
 		{
 			if(mRenderThreadShutdown)
 				return;
 
-			vector<DeferredRenderSystemPtr>::type deferredRenderSystemsCopy;
+			vector<RenderSystemContextPtr>::type renderSystemContextsCopy;
 			{
-				CM_LOCK_MUTEX(mDeferredRSMutex);
+				CM_LOCK_MUTEX(mRSContextMutex);
 
-				for(auto iter = mDeferredRenderSystems.begin(); iter != mDeferredRenderSystems.end(); ++iter)
-					deferredRenderSystemsCopy.push_back(*iter);
+				for(auto iter = mRenderSystemContexts.begin(); iter != mRenderSystemContexts.end(); ++iter)
+				{
+					renderSystemContextsCopy.push_back(*iter);
+				}
 			}
 
 
 			// Wait until we get some ready commands
 			{
-				CM_LOCK_MUTEX_NAMED(mDeferredRSMutex, lock)
+				CM_LOCK_MUTEX_NAMED(mRSContextMutex, lock)
 
 				bool anyCommandsReady = false;
-				for(auto iter = deferredRenderSystemsCopy.begin(); iter != deferredRenderSystemsCopy.end(); ++iter)
+				for(auto iter = renderSystemContextsCopy.begin(); iter != renderSystemContextsCopy.end(); ++iter)
 				{
 					if((*iter)->hasReadyCommands())
 					{
@@ -583,24 +534,24 @@ namespace CamelotEngine {
 				}
 
 				if(!anyCommandsReady)
-					CM_THREAD_WAIT(mDeferredRSReadyCondition, mDeferredRSMutex, lock)
+					CM_THREAD_WAIT(mRSContextReadyCondition, mRSContextMutex, lock)
 			}
 
 			{
-				CM_LOCK_MUTEX(mDeferredRSCallbackMutex)
+				CM_LOCK_MUTEX(mRSRenderCallbackMutex)
 
 				if(!PreRenderThreadUpdateCallback.empty())
 					PreRenderThreadUpdateCallback();
 			}
 
 			// Play commands
-			for(auto iter = deferredRenderSystemsCopy.begin(); iter != deferredRenderSystemsCopy.end(); ++iter)
+			for(auto iter = renderSystemContextsCopy.begin(); iter != renderSystemContextsCopy.end(); ++iter)
 			{
 				(*iter)->playbackCommands();
 			}
 
 			{
-				CM_LOCK_MUTEX(mDeferredRSCallbackMutex)
+				CM_LOCK_MUTEX(mRSRenderCallbackMutex)
 
 				if(!PostRenderThreadUpdateCallback.empty())
 					PostRenderThreadUpdateCallback();
@@ -614,72 +565,89 @@ namespace CamelotEngine {
 		mRenderThreadShutdown = true;
 
 		// Wake all threads. They will quit after they see the shutdown flag
-		CM_THREAD_NOTIFY_ALL(mDeferredRSReadyCondition)
+		CM_THREAD_NOTIFY_ALL(mRSContextReadyCondition)
 
 		mRenderThread->join();
 		CM_THREAD_DESTROY(mRenderThread);
 
 		mRenderThread = nullptr;
-		mUsingSeparateRenderThread = false;
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mDeferredRenderSystems.clear();
+		mRenderSystemContexts.clear();
 	}
 
-	DeferredRenderSystemPtr RenderSystem::createDeferredRenderSystem()
+	RenderSystemContextPtr RenderSystem::createRenderSystemContext()
 	{
-		if(!mUsingSeparateRenderThread)
-		{
-			CM_EXCEPT(InternalErrorException, "Cannot create deferred rendering system because separate render thread is not active.");
-		}
-
-		DeferredRenderSystemPtr newDeferredRS = DeferredRenderSystemPtr(
-			new DeferredRenderSystem(CM_THREAD_CURRENT_ID)
+		RenderSystemContextPtr newContext = RenderSystemContextPtr(
+			new RenderSystemContext(CM_THREAD_CURRENT_ID)
 			);
 
 		{
-			CM_LOCK_MUTEX(mDeferredRSMutex);
-			mDeferredRenderSystems.push_back(newDeferredRS);
+			CM_LOCK_MUTEX(mRSContextMutex);
+			mRenderSystemContexts.push_back(newContext);
 		}
 
-		return newDeferredRS;
+		return newContext;
 	}
 
 	void RenderSystem::addPreRenderThreadUpdateCallback(boost::function<void()> callback)
 	{
-		CM_LOCK_MUTEX(mDeferredRSCallbackMutex)
+		CM_LOCK_MUTEX(mRSRenderCallbackMutex)
 
 		PreRenderThreadUpdateCallback.connect(callback);
 	}
 
 	void RenderSystem::addPostRenderThreadUpdateCallback(boost::function<void()> callback)
 	{
-		CM_LOCK_MUTEX(mDeferredRSCallbackMutex)
+		CM_LOCK_MUTEX(mRSRenderCallbackMutex)
 
 		PostRenderThreadUpdateCallback.connect(callback);
 	}
 
-	void RenderSystem::update()
+	void RenderSystem::submitToGpu(RenderSystemContextPtr context, bool blockUntilComplete)
 	{
-		if(mUsingSeparateRenderThread)
 		{
-			{
-				CM_LOCK_MUTEX(mDeferredRSMutex);
+			CM_LOCK_MUTEX(mRSContextMutex);
 
-				for(auto iter = mDeferredRenderSystems.begin(); iter != mDeferredRenderSystems.end(); ++iter)
-				{
-					(*iter)->submitToGpu();
-				}
-			}
-
-			CM_THREAD_NOTIFY_ALL(mDeferredRSReadyCondition)
+			context->submitToGpu();
 		}
 
+		CM_THREAD_NOTIFY_ALL(mRSContextReadyCondition);
+
+		if(blockUntilComplete)
+			context->blockUntilExecuted();
+	}
+
+	void RenderSystem::update()
+	{
+		{
+			CM_LOCK_MUTEX(mRSContextMutex);
+
+			for(auto iter = mRenderSystemContexts.begin(); iter != mRenderSystemContexts.end(); ++iter)
+			{
+				(*iter)->submitToGpu();
+			}
+		}
+
+		CM_THREAD_NOTIFY_ALL(mRSContextReadyCondition)
 	}
 
 	void RenderSystem::throwIfInvalidThread()
 	{
 		if(CM_THREAD_CURRENT_ID != getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "Calling the render system from a non-render thread!");
+	}
+
+	/************************************************************************/
+	/* 							INTERNAL CALLBACKS                     		*/
+	/************************************************************************/
+
+	void RenderSystem::startUp_internal(AsyncOp& asyncOp)
+	{
+		mVertexProgramBound = false;
+		mGeometryProgramBound = false;
+		mFragmentProgramBound = false;
+
+		asyncOp.completeOperation();
 	}
 
 	/************************************************************************/

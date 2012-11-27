@@ -138,6 +138,7 @@
     <ClInclude Include="Include\CmRenderOperation.h" />
     <ClInclude Include="Include\CmRenderSystem.h" />
     <ClInclude Include="Include\CmRenderSystemCapabilities.h" />
+    <ClInclude Include="Include\CmRenderSystemContext.h" />
     <ClInclude Include="Include\CmRenderSystemFactory.h" />
     <ClInclude Include="Include\CmRenderSystemManager.h" />
     <ClInclude Include="Include\CmRenderTarget.h" />
@@ -199,6 +200,7 @@
     <ClCompile Include="Source\CmRendererManager.cpp" />
     <ClCompile Include="Source\CmRenderSystem.cpp" />
     <ClCompile Include="Source\CmRenderSystemCapabilities.cpp" />
+    <ClCompile Include="Source\CmRenderSystemContext.cpp" />
     <ClCompile Include="Source\CmRenderSystemManager.cpp" />
     <ClCompile Include="Source\CmRenderTarget.cpp" />
     <ClCompile Include="Source\CmRenderTexture.cpp" />

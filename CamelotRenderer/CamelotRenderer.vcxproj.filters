@@ -313,6 +313,9 @@
     <ClInclude Include="Include\CmDeferredGpuCommands.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmRenderSystemContext.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -460,6 +463,9 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmDeferredGpuCommands.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRenderSystemContext.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>

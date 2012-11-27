@@ -75,8 +75,6 @@ namespace CamelotEngine {
 		GLint getTextureAddressingMode(SamplerState::TextureAddressingMode tam) const;
 				void initialiseContext(RenderWindow* primary);
 
-        void setLights();
-
         /// Store last depth write state
         bool mDepthWrite;
 		/// Store last stencil mask state
@@ -120,6 +118,15 @@ namespace CamelotEngine {
 
 		UINT16 mActiveTextureUnit;
 
+		/************************************************************************/
+		/* 							INTERNAL CALLBACKS                     		*/
+		/************************************************************************/
+	protected:
+        void startUp_internal(AsyncOp& asyncOp);
+
+		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
+			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
+
 	protected:
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 		bool activateGLTextureUnit(size_t unit);
@@ -150,10 +157,6 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        RenderWindow* startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle = "Camelot Render Window");
-        /** See
-          RenderSystem
-         */
 				virtual RenderSystemCapabilities* createRenderSystemCapabilities() const;
         /** See
           RenderSystem
@@ -164,15 +167,6 @@ namespace CamelotEngine {
          */
         void shutdown(void);
         
-		/// @copydoc RenderSystem::createRenderWindow
-		RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList *miscParams = 0);
-
-		/// @copydoc RenderSystem::_createRenderWindows
-		bool _createRenderWindows(const RenderWindowDescriptionList& renderWindowDescriptions, 
-			RenderWindowList& createdWindows);
-
-		
 		/// @copydoc RenderSystem::createMultiRenderTarget
 		virtual MultiRenderTarget * createMultiRenderTarget(const String & name); 
 		
@@ -237,7 +231,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setViewport(Viewport *vp);
+        void setViewport(const Viewport& vp);
         /** See
           RenderSystem
          */
@@ -327,7 +321,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void bindGpuProgram(GpuProgram* prg);
+        void bindGpuProgram(GpuProgramRef prg);
         /** See
           RenderSystem
          */

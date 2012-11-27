@@ -198,6 +198,9 @@
     <ClInclude Include="Include\CmInt2.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmAsyncOp.h">
+      <Filter>Header Files\Threading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp">

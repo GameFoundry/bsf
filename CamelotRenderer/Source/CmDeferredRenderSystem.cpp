@@ -44,11 +44,19 @@ namespace CamelotEngine
 		mActiveRenderCommandBuffer->push_back(newCommand);
 	}
 
-	void DeferredRenderSystem::bindGpuProgram(GpuProgramPtr prg)
+	void DeferredRenderSystem::bindGpuProgram(GpuProgramRef prg)
 	{
 		throwIfInvalidThread();
 
 		DfrdBindGpuProgramCommand* newCommand = new DfrdBindGpuProgramCommand(prg);
+		mActiveRenderCommandBuffer->push_back(newCommand);
+	}
+
+	void DeferredRenderSystem::unbindGpuProgram(GpuProgramType gptype)
+	{
+		throwIfInvalidThread();
+
+		DfrdUnbindGpuProgramCommand* newCommand = new DfrdUnbindGpuProgramCommand(gptype);
 		mActiveRenderCommandBuffer->push_back(newCommand);
 	}
 
@@ -239,11 +247,11 @@ namespace CamelotEngine
 		mActiveRenderCommandBuffer->push_back(newCommand);
 	}
 		
-	void DeferredRenderSystem::setViewport(Viewport *vp)
+	void DeferredRenderSystem::setViewport(const Viewport& vp)
 	{
 		throwIfInvalidThread();
 
-		DfrdViewportCommand* newCommand = new DfrdViewportCommand();
+		DfrdViewportCommand* newCommand = new DfrdViewportCommand(vp);
 		mActiveRenderCommandBuffer->push_back(newCommand);
 	}
 		
@@ -341,6 +349,14 @@ namespace CamelotEngine
 		throwIfInvalidThread();
 
 		DfrdClearFrameBufferCommand* newCommand = new DfrdClearFrameBufferCommand(buffers, color, depth, stencil);
+		mActiveRenderCommandBuffer->push_back(newCommand);
+	}
+
+	void DeferredRenderSystem::swapAllRenderTargetBuffers(bool waitForVsync)
+	{
+		throwIfInvalidThread();
+
+		DfrdSwapAllRenderTargetBuffersCommand* newCommand = new DfrdSwapAllRenderTargetBuffersCommand(waitForVsync);
 		mActiveRenderCommandBuffer->push_back(newCommand);
 	}
 

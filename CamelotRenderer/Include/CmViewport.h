@@ -55,6 +55,7 @@ namespace CamelotEngine {
 	class CM_EXPORT Viewport
     {
     public:       
+		Viewport();
         /** The usual constructor.
             @param
                 cam Pointer to a camera to be the source for the image.
@@ -87,19 +88,6 @@ namespace CamelotEngine {
         */
         virtual ~Viewport();
 
-        /** Notifies the viewport of a possible change in dimensions.
-            @remarks
-                Used by the target to update the viewport's dimensions
-                (usually the result of a change in target size).
-            @note
-                Internal use by Ogre only.
-        */
-        void _updateDimensions(void);
-
-        /** Instructs the viewport to updates its contents.
-        */
-        virtual void update(void);
-		
 		/** Instructs the viewport to clear itself, without performing an update.
 		 @remarks
 			You would not normally call this method when updating the viewport, 
@@ -220,6 +208,15 @@ namespace CamelotEngine {
         Color mBackColour;
         bool mClearEveryFrame;
 		unsigned int mClearBuffers;
+
+		/** Notifies the viewport of a possible change in dimensions.
+            @remarks
+                Used by the target to update the viewport's dimensions
+                (usually the result of a change in target size).
+            @note
+                Internal use by engine only.
+        */
+        void updateDimensions(void);
     };
 	/** @} */
 	/** @} */

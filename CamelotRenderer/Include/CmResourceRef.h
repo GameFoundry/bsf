@@ -84,7 +84,7 @@ namespace CamelotEngine
 			:ResourceRefBase()
 		{	}
 
-		ResourceRef(T* ptr)
+		explicit ResourceRef(T* ptr)
 			:ResourceRefBase()
 		{
 			init(ptr);

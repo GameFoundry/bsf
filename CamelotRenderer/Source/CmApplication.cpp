@@ -49,10 +49,11 @@ namespace CamelotEngine
 		RendererManager::setActive("ForwardRenderer");
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
-		renderSystem->startUp(true, false, "Camelot Renderer");
-		renderSystem->addPreRenderThreadUpdateCallback(boost::bind(&Application::updateResourcesCallback, this));
+		renderSystem->startUp();
 
-		mPrimaryDeferredRenderSystem = renderSystem->createDeferredRenderSystem();
+		//mPrimaryDeferredRenderSystem = renderSystem->createRenderSystemContext();
+		mPrimaryDeferredRenderSystem = nullptr;
+
 		mPrimaryRenderWindow = renderSystem->createRenderWindow("Camelot Renderer", 1280, 720, false);
 
 		SceneManager::startUp(new SceneManager());
@@ -63,6 +64,8 @@ namespace CamelotEngine
 		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow
 
 		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
+
+		renderSystem->addPreRenderThreadUpdateCallback(boost::bind(&Application::updateResourcesCallback, this));
 	}
 
 	void Application::runMainLoop()

@@ -27,6 +27,8 @@ namespace CamelotEngine
 
 	void ForwardRenderer::renderAll() 
 	{
+		return; // TODO - Temporarily I don't want to run this
+
 		DeferredRenderSystemPtr renderSystem = gApplication().getActiveRenderSystem();
 		
 		//RenderSystem* renderSystem = RenderSystemManager::getActive();
@@ -50,7 +52,7 @@ namespace CamelotEngine
 
 		DeferredRenderSystemPtr renderSystem = gApplication().getActiveRenderSystem();
 		//RenderSystem* renderSystem = RenderSystemManager::getActive();
-		renderSystem->setViewport(camera->getViewport());
+		renderSystem->setViewport(*camera->getViewport());
 
 		Matrix4 projMatrixCstm = camera->getProjectionMatrix();
 		Matrix4 viewMatrixCstm = camera->getViewMatrix();
@@ -106,33 +108,33 @@ namespace CamelotEngine
 		GpuProgramRef vertProgram = pass->getVertexProgram();
 		if(vertProgram)
 		{
-			renderSystem->bindGpuProgram(vertProgram->_getBindingDelegate());
+			renderSystem->bindGpuProgram(vertProgram);
 		}
 		else
 		{
-			if(renderSystem->isGpuProgramBound(GPT_VERTEX_PROGRAM))
+			//if(renderSystem->isGpuProgramBound(GPT_VERTEX_PROGRAM))
 				renderSystem->unbindGpuProgram(GPT_VERTEX_PROGRAM);
 		}
 
 		GpuProgramRef fragProgram = pass->getFragmentProgram();
 		if(fragProgram)
 		{
-			renderSystem->bindGpuProgram(fragProgram->_getBindingDelegate());
+			renderSystem->bindGpuProgram(fragProgram);
 		}
 		else
 		{
-			if(renderSystem->isGpuProgramBound(GPT_FRAGMENT_PROGRAM))
+			//if(renderSystem->isGpuProgramBound(GPT_FRAGMENT_PROGRAM))
 				renderSystem->unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
 		}
 
 		GpuProgramRef geomProgram = pass->getGeometryProgram();
 		if(geomProgram)
 		{
-			renderSystem->bindGpuProgram(geomProgram->_getBindingDelegate());
+			renderSystem->bindGpuProgram(geomProgram);
 		}	
 		else
 		{
-			if(renderSystem->isGpuProgramBound(GPT_GEOMETRY_PROGRAM))
+			//if(renderSystem->isGpuProgramBound(GPT_GEOMETRY_PROGRAM))
 				renderSystem->unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
 		}
 

@@ -162,24 +162,14 @@ namespace CamelotEngine
 		*/
 		virtual String validateConfigOptions(void) = 0;
 
-		/** Start up the renderer using the settings selected (Or the defaults if none have been selected).
-		@param
-		runOnSeparateThread 
-		If true, a separate internal render thread will be created, and you will only be allowed to call RenderSystem methods
-		from DeferredRenderSystem created by RenderSystem::createDeferred().
-		@param
-		autoCreateWindow If true, creates a render window
-		automatically, based on settings chosen so far. This saves
-		an extra call to _createRenderWindow
-		for the main render window.
-		@par
-		If an application has more specific window requirements,
-		however (e.g. a level design app), it should specify false
-		for this parameter and do it manually.
-		@returns
-		A pointer to the automatically created window, if requested, otherwise null.
-		*/
-		virtual RenderWindow* startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle = "Camelot Render Window");
+		 /* @brief	Start up the RenderSystem. Call before doing any operations on the render system.  
+		 *			Make sure all subsequent calls to the RenderSystem are done from the same thread it was started on.  
+		 *
+		 * @remark	If you want to access the render system from other threads, call RenderSystem::createRenderContext,
+		 * 			set the active context using RenderSystem::setActiveRenderContext and call the render system normally.
+		 * 			By default an automatically created primary render context is used.
+		 */
+		void startUp();
 
 
 		/** Query the real capabilities of the GPU and driver in the RenderSystem*/
@@ -392,27 +382,8 @@ namespace CamelotEngine
 			<td>&nbsp;</td>
 		</tr>
 		*/
-		virtual RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList *miscParams = 0) = 0;
-
-		/** Creates multiple rendering windows.		
-		@param
-		renderWindowDescriptions Array of structures containing the descriptions of each render window.
-		The structure's members are the same as the parameters of _createRenderWindow:
-		* name
-		* width
-		* height
-		* fullScreen
-		* miscParams
-		See _createRenderWindow for details about each member.		
-		@param
-		createdWindows This array will hold the created render windows.
-		@returns
-		true on success.		
-		*/
-		virtual bool _createRenderWindows(const RenderWindowDescriptionList& renderWindowDescriptions, 
-			RenderWindowList& createdWindows);
-
+		RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 
+			bool fullScreen, const NameValuePairList *miscParams = 0);
 		
 		/**	Create a MultiRenderTarget, which is a render target that renders to multiple RenderTextures
 		at once. Surfaces can be bound and unbound at will.
@@ -613,11 +584,11 @@ namespace CamelotEngine
 		rendering operations. This viewport is aware of it's own
 		camera and render target. Must be implemented by subclass.
 
-		@param target Pointer to the appropriate viewport.
+		@param target Viewport to render to.
 		*/
-		virtual void setViewport(Viewport *vp) = 0;
+		virtual void setViewport(const Viewport& vp) = 0;
 		/** Get the current active viewport for rendering. */
-		virtual Viewport* getViewport(void);
+		virtual Viewport getViewport(void);
 
 		/** Sets the culling mode for the render system based on the 'vertex winding'.
 		A typical way for the rendering engine to cull triangles is based on the
@@ -833,7 +804,7 @@ namespace CamelotEngine
 		@remarks Only one GpuProgram of each type can be bound at once, binding another
 		one will simply replace the existing one.
 		*/
-		virtual void bindGpuProgram(GpuProgram* prg);
+		virtual void bindGpuProgram(GpuProgramRef prg);
 
 		/** Bind Gpu program parameters.
 		@param gptype The type of program to bind the parameters to
@@ -971,6 +942,14 @@ namespace CamelotEngine
 		@see Root::getDisplayMonitorCount
 		*/
 		virtual unsigned int getDisplayMonitorCount() const = 0;
+		/************************************************************************/
+		/* 							INTERNAL CALLBACKS                     		*/
+		/************************************************************************/
+	protected:
+		virtual void startUp_internal(AsyncOp& asyncOp);
+
+		virtual void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
+			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp) = 0;
 	protected:
 		/** The render targets. */
 		RenderTargetMap mRenderTargets;
@@ -984,7 +963,7 @@ namespace CamelotEngine
 		GpuProgramParametersSharedPtr mActiveFragmentGpuProgramParameters;
 
 		// Active viewport (dest for future rendering operations)
-		Viewport* mActiveViewport;
+		Viewport mActiveViewport;
 
 		CullingMode mCullingMode;
 
@@ -1038,21 +1017,22 @@ namespace CamelotEngine
 		};
 
 		RenderWorkerFunc* mRenderThreadFunc;
-		bool mUsingSeparateRenderThread;
 		bool mRenderThreadShutdown;
 
 		CM_THREAD_ID_TYPE mRenderThreadId;
-		CM_THREAD_SYNCHRONISER(mDeferredRSInitCondition)
-		CM_MUTEX(mDeferredRSInitMutex)
-		CM_THREAD_SYNCHRONISER(mDeferredRSReadyCondition)
-		CM_MUTEX(mDeferredRSMutex)
-		CM_MUTEX(mDeferredRSCallbackMutex)
+		CM_THREAD_SYNCHRONISER(mRSContextInitCondition)
+		CM_MUTEX(mRSContextInitMutex)
+		CM_THREAD_SYNCHRONISER(mRSContextReadyCondition)
+		CM_MUTEX(mRSContextMutex)
+		CM_MUTEX(mRSRenderCallbackMutex)
+		CM_MUTEX(mResourceContextMutex)
 
 #if CM_THREAD_SUPPORT
 		CM_THREAD_TYPE* mRenderThread;
 #endif
 
-		vector<DeferredRenderSystemPtr>::type mDeferredRenderSystems;
+		RenderSystemContextPtr mResourceContext;
+		vector<RenderSystemContextPtr>::type mRenderSystemContexts;
 		boost::signal<void()> PreRenderThreadUpdateCallback;
 		boost::signal<void()> PostRenderThreadUpdateCallback;
 
@@ -1077,6 +1057,16 @@ namespace CamelotEngine
 		 */
 		void throwIfInvalidThread();
 
+		/**
+		 * @brief	Submits the specified context to the GPU. Normally this happens automatically
+		 * 			at the end of each frame for all contexts, but in some cases you might want to do it
+		 * 			manually via this method.
+		 *
+		 * @param	context			  	The context to submit.
+		 * @param	blockUntilComplete	If true, the calling thread will block until all commands are submitted.
+		 */
+		void submitToGpu(RenderSystemContextPtr context, bool blockUntilComplete);
+
 	public:
 		/**
 		 * @brief	Returns the id of the render thread. If a separate render thread
@@ -1086,12 +1076,12 @@ namespace CamelotEngine
 		CM_THREAD_ID_TYPE getRenderThreadId() const { return mRenderThreadId; }
 
 		/**
-		 * @brief	Creates a new deferred render system that you can use for rendering on 
+		 * @brief	Creates a new render system context that you can use for rendering on 
 		 * 			a non-render thread. You can have as many of these as you wish, the only limitation
 		 * 			is that you do not use a single instance on more than one thread. Each thread
-		 * 			requires its own deferred render system.
+		 * 			requires its own context.
 		 */
-		DeferredRenderSystemPtr createDeferredRenderSystem();
+		RenderSystemContextPtr createRenderSystemContext();
 
 		/**
 		 * @brief	Callback that is called from the render thread before it starts processing

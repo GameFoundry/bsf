@@ -13,6 +13,14 @@ namespace CamelotEngine
 		virtual void submitCommand(RenderSystem* rs) = 0;
 	};
 
+	class CM_EXPORT DfrdRSStartUpCommand : public DeferredGpuCommand
+	{
+	public:
+		DfrdRSStartUpCommand();
+
+		virtual void submitCommand(RenderSystem* rs);
+	};
+
 	class CM_EXPORT DfrdRenderGpuCommand : public DeferredGpuCommand
 	{
 	public:
@@ -26,9 +34,19 @@ namespace CamelotEngine
 	class CM_EXPORT DfrdBindGpuProgramCommand : public DeferredGpuCommand
 	{
 	public:
-		DfrdBindGpuProgramCommand(GpuProgramPtr _gpuProgram);
+		DfrdBindGpuProgramCommand(GpuProgramRef _gpuProgram);
 
-		GpuProgramPtr gpuProgram;
+		GpuProgramRef gpuProgram;
+
+		virtual void submitCommand(RenderSystem* rs);
+	};
+
+	class CM_EXPORT DfrdUnbindGpuProgramCommand : public DeferredGpuCommand
+	{
+	public:
+		DfrdUnbindGpuProgramCommand(GpuProgramType _type);
+
+		GpuProgramType type;
 
 		virtual void submitCommand(RenderSystem* rs);
 	};
@@ -291,7 +309,9 @@ namespace CamelotEngine
 	class CM_EXPORT DfrdViewportCommand : public DeferredGpuCommand
 	{
 	public:
-		DfrdViewportCommand();
+		DfrdViewportCommand(const Viewport& _vp);
+
+		Viewport vp;
 
 		virtual void submitCommand(RenderSystem* rs);
 	};
@@ -419,6 +439,16 @@ namespace CamelotEngine
 		Color color;
 		float depth;
 		unsigned short stencil;
+
+		virtual void submitCommand(RenderSystem* rs);
+	};
+
+	class CM_EXPORT DfrdSwapAllRenderTargetBuffersCommand : public DeferredGpuCommand
+	{
+	public:
+		DfrdSwapAllRenderTargetBuffersCommand(bool _waitForVsync);
+
+		bool waitForVsync;
 
 		virtual void submitCommand(RenderSystem* rs);
 	};

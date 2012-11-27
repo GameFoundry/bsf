@@ -42,6 +42,7 @@ THE SOFTWARE.s
 #include "CmGLSLExtSupport.h"
 #include "CmGLHardwareOcclusionQuery.h"
 #include "CmGLContext.h"
+#include "CmAsyncOp.h"
 
 #include "CmGLFBORenderTexture.h"
 #include "CmGLPBRenderTexture.h"
@@ -153,17 +154,6 @@ namespace CamelotEngine {
 	{
 		// XXX Return an error string if something is invalid
 		return mGLSupport->validateConfig();
-	}
-
-	RenderWindow* GLRenderSystem::startUp(bool runOnSeparateThread, bool autoCreateWindow, const String& windowTitle)
-	{
-		mGLSupport->start();
-
-		RenderWindow* autoWindow = mGLSupport->createWindow(autoCreateWindow, this, windowTitle);
-
-		RenderSystem::startUp(runOnSeparateThread, autoCreateWindow, windowTitle);
-
-		return autoWindow;
 	}
 
 	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
@@ -916,83 +906,6 @@ namespace CamelotEngine {
 		//  the whole state.
 		mGLInitialised = 0;
 	}
-	//---------------------------------------------------------------------
-	bool GLRenderSystem::_createRenderWindows(const RenderWindowDescriptionList& renderWindowDescriptions, 
-		RenderWindowList& createdWindows)
-	{		
-		// Call base render system method.
-		if (false == RenderSystem::_createRenderWindows(renderWindowDescriptions, createdWindows))
-			return false;
-
-		// Simply call _createRenderWindow in a loop.
-		for (size_t i = 0; i < renderWindowDescriptions.size(); ++i)
-		{
-			const RenderWindowDescription& curRenderWindowDescription = renderWindowDescriptions[i];			
-			RenderWindow* curWindow = NULL;
-
-			curWindow = createRenderWindow(curRenderWindowDescription.name, 
-				curRenderWindowDescription.width, 
-				curRenderWindowDescription.height, 
-				curRenderWindowDescription.useFullScreen, 
-				&curRenderWindowDescription.miscParams);
-
-			createdWindows.push_back(curWindow);											
-		}
-								
-		return true;
-	}
-	//---------------------------------------------------------------------
-	RenderWindow* GLRenderSystem::createRenderWindow(const String &name, 
-		unsigned int width, unsigned int height, bool fullScreen,
-		const NameValuePairList *miscParams)
-	{
-		if (mRenderTargets.find(name) != mRenderTargets.end())
-		{
-			CM_EXCEPT(InvalidParametersException, 
-				"Window with name '" + name + "' already exists");
-		}
-
-		// Create the window
-		RenderWindow* win = mGLSupport->newWindow(name, width, height, 
-			fullScreen, miscParams);
-
-		attachRenderTarget( *win );
-
-		if (!mGLInitialised) 
-		{                
-
-			// set up glew and GLSupport
-			initialiseContext(win);
-
-			std::vector<CamelotEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
-
-			if (!tokens.empty())
-			{
-				mDriverVersion.major = parseInt(tokens[0]);
-				if (tokens.size() > 1)
-					mDriverVersion.minor = parseInt(tokens[1]);
-				if (tokens.size() > 2)
-					mDriverVersion.release = parseInt(tokens[2]); 
-			}
-			mDriverVersion.build = 0;
-			// Initialise GL after the first window has been created
-			// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
-			mRealCapabilities = createRenderSystemCapabilities();
-
-			// use real capabilities if custom capabilities are not available
-			if(!mUseCustomCapabilities)
-				mCurrentCapabilities = mRealCapabilities;
-
-			initialiseFromRenderSystemCapabilities(mCurrentCapabilities, win);
-
-			// Initialise the main context
-			_oneTimeContextInitialization();
-			if(mCurrentContext)
-				mCurrentContext->setInitialized();
-		}
-
-		return win;
-	}
 
 	void GLRenderSystem::initialiseContext(RenderWindow* primary)
 	{
@@ -1068,12 +981,12 @@ namespace CamelotEngine {
 			// independent size if you're looking for attenuation.
 			// So, scale the point size up by viewport size (this is equivalent to
 			// what D3D does as standard)
-			size = size * mActiveViewport->getActualHeight();
-			minSize = minSize * mActiveViewport->getActualHeight();
+			size = size * mActiveViewport.getActualHeight();
+			minSize = minSize * mActiveViewport.getActualHeight();
 			if (maxSize == 0.0f)
 				maxSize = mCurrentCapabilities->getMaxPointSize(); // pixels
 			else
-				maxSize = maxSize * mActiveViewport->getActualHeight();
+				maxSize = maxSize * mActiveViewport.getActualHeight();
 			
 			// XXX: why do I need this for results to be consistent with D3D?
 			// Equations are supposedly the same once you factor in vp height
@@ -1405,55 +1318,34 @@ namespace CamelotEngine {
 
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setViewport(Viewport *vp)
+	void GLRenderSystem::setViewport(const Viewport& vp)
 	{
-		// Check if viewport is different
-		if (vp != mActiveViewport)
+		RenderTarget* target;
+		target = vp.getTarget();
+		setRenderTarget(target);
+		mActiveViewport = vp;
+
+		GLsizei x, y, w, h;
+
+		// Calculate the "lower-left" corner of the viewport
+		w = vp.getActualWidth();
+		h = vp.getActualHeight();
+		x = vp.getActualLeft();
+		y = vp.getActualTop();
+		if (!target->requiresTextureFlipping())
 		{
-			RenderTarget* target;
-			target = vp->getTarget();
-			setRenderTarget(target);
-			mActiveViewport = vp;
-
-			GLsizei x, y, w, h;
-
-			// Calculate the "lower-left" corner of the viewport
-			w = vp->getActualWidth();
-			h = vp->getActualHeight();
-			x = vp->getActualLeft();
-			y = vp->getActualTop();
-			if (!target->requiresTextureFlipping())
-			{
-				// Convert "upper-left" corner to "lower-left"
-				y = target->getHeight() - h - y;
-			}
-			glViewport(x, y, w, h);
-
-			// Configure the viewport clipping
-			glScissor(x, y, w, h);
+			// Convert "upper-left" corner to "lower-left"
+			y = target->getHeight() - h - y;
 		}
-	}
+		glViewport(x, y, w, h);
 
-	void GLRenderSystem::setLights()
-	{
-		// TODO PORT - I'm not using fixed pipeline lights. Remove this later
-		//for (size_t i = 0; i < MAX_LIGHTS; ++i)
-		//{
-		//	if (mLights[i] != NULL)
-		//	{
-		//		Light* lt = mLights[i];
-		//		setGLLightPositionDirection(lt, GL_LIGHT0 + i);
-		//	}
-		//}
+		// Configure the viewport clipping
+		glScissor(x, y, w, h);
 	}
 
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::beginFrame(void)
 	{
-		if (!mActiveViewport)
-			CM_EXCEPT(InvalidStateException, 
-			"Cannot begin frame - no viewport selected.");
-
 		// Activate the viewport clipping
 		glEnable(GL_SCISSOR_TEST);
 	}
@@ -2121,9 +2013,10 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::bindGpuProgram(GpuProgram* prg)
+	void GLRenderSystem::bindGpuProgram(GpuProgramRef prg)
 	{
-		GLGpuProgram* glprg = static_cast<GLGpuProgram*>(prg);
+		GpuProgram* bindingPrg = prg->_getBindingDelegate();
+		GLGpuProgram* glprg = static_cast<GLGpuProgram*>(bindingPrg);
 
 		// Unbind previous gpu program first.
 		//
@@ -2321,13 +2214,13 @@ namespace CamelotEngine {
 		{
 			glDisable(GL_SCISSOR_TEST);
 			// GL requires you to reset the scissor when disabling
-			w = mActiveViewport->getActualWidth();
-			h = mActiveViewport->getActualHeight();
-			x = mActiveViewport->getActualLeft();
+			w = mActiveViewport.getActualWidth();
+			h = mActiveViewport.getActualHeight();
+			x = mActiveViewport.getActualLeft();
 			if (flipping)
-				y = mActiveViewport->getActualTop();
+				y = mActiveViewport.getActualTop();
 			else
-				y = targetHeight - mActiveViewport->getActualTop() - h;
+				y = targetHeight - mActiveViewport.getActualTop() - h;
 			glScissor(x, y, w, h);
 		}
 	}
@@ -2637,5 +2530,66 @@ namespace CamelotEngine {
 		return mGLSupport->getDisplayMonitorCount();
 	}
 
+	/************************************************************************/
+	/* 							INTERNAL CALLBACKS                     		*/
+	/************************************************************************/
 
+	void GLRenderSystem::startUp_internal(AsyncOp& asyncOp)
+	{
+		mGLSupport->start();
+
+		RenderSystem::startUp_internal(asyncOp);
+	}
+
+	void GLRenderSystem::createRenderWindow_internal(const String &name, 
+		unsigned int width, unsigned int height, bool fullScreen,
+		const NameValuePairList& miscParams, AsyncOp& asyncOp)
+	{
+		if (mRenderTargets.find(name) != mRenderTargets.end())
+		{
+			CM_EXCEPT(InvalidParametersException, 
+				"Window with name '" + name + "' already exists");
+		}
+
+		// Create the window
+		RenderWindow* win = mGLSupport->newWindow(name, width, height, 
+			fullScreen, &miscParams);
+
+		attachRenderTarget( *win );
+
+		if (!mGLInitialised) 
+		{                
+
+			// set up glew and GLSupport
+			initialiseContext(win);
+
+			std::vector<CamelotEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+
+			if (!tokens.empty())
+			{
+				mDriverVersion.major = parseInt(tokens[0]);
+				if (tokens.size() > 1)
+					mDriverVersion.minor = parseInt(tokens[1]);
+				if (tokens.size() > 2)
+					mDriverVersion.release = parseInt(tokens[2]); 
+			}
+			mDriverVersion.build = 0;
+			// Initialise GL after the first window has been created
+			// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
+			mRealCapabilities = createRenderSystemCapabilities();
+
+			// use real capabilities if custom capabilities are not available
+			if(!mUseCustomCapabilities)
+				mCurrentCapabilities = mRealCapabilities;
+
+			initialiseFromRenderSystemCapabilities(mCurrentCapabilities, win);
+
+			// Initialise the main context
+			_oneTimeContextInitialization();
+			if(mCurrentContext)
+				mCurrentContext->setInitialized();
+		}
+
+		asyncOp.completeOperation(win);
+	}
 }

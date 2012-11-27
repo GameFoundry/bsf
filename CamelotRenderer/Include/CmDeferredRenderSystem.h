@@ -25,7 +25,14 @@ namespace CamelotEngine
 		 * 			
 		 * @see		RenderSystem::bindGpuProgram()
 		 */
-		virtual void bindGpuProgram(GpuProgramPtr prg);
+		void bindGpuProgram(GpuProgramRef prg);
+
+		/**
+		 * @brief	Wrapper around RenderSystem method of the same name. See RenderSystem doc.
+		 * 			
+		 * @see		RenderSystem::unbindGpuProgram()
+		 */
+		void unbindGpuProgram(GpuProgramType gptype);
 
 		/**
 		 * @brief	Wrapper around RenderSystem method of the same name. See RenderSystem doc.
@@ -195,7 +202,7 @@ namespace CamelotEngine
 		 * 			
 		 * @see		RenderSystem::setViewport()
 		 */
-		void setViewport(Viewport *vp);
+		void setViewport(const Viewport& vp);
 		
 		/**
 		 * @brief	Wrapper around RenderSystem method of the same name. See RenderSystem doc.
@@ -282,6 +289,13 @@ namespace CamelotEngine
 		void clearFrameBuffer(unsigned int buffers, 
 			const Color& colour = Color::Black, 
 			float depth = 1.0f, unsigned short stencil = 0);
+
+		/**
+		 * @brief	Wrapper around RenderSystem method of the same name. See RenderSystem doc.
+		 * 			
+		 * @see		RenderSystem::swapAllRenderTargetBuffers()
+		 */
+		void swapAllRenderTargetBuffers(bool waitForVsync = true);
 
 	private:
 		// Actively being filled up
