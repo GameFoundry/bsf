@@ -105,8 +105,6 @@ namespace CamelotEngine {
 	class RenderCommandBuffer;
 	class WorkQueue;
 	class PassParameters;
-	class DeferredRenderSystem;
-	class DeferredGpuCommand;
 	class RenderSystemContext;
 	class AsyncOp;
 	// Asset import
@@ -146,7 +144,6 @@ namespace CamelotEngine
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
 	typedef std::shared_ptr<WorkQueue> WorkQueuePtr;
 	typedef std::shared_ptr<PassParameters> PassParametersPtr;
-	typedef std::shared_ptr<DeferredRenderSystem> DeferredRenderSystemPtr;
 	typedef std::shared_ptr<RenderSystemContext> RenderSystemContextPtr;
 
 	typedef std::shared_ptr<Component> ComponentPtr;

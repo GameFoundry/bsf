@@ -26,8 +26,6 @@ namespace CamelotEngine
 
 			RenderWindow* getPrimaryRenderWindow() const { return mPrimaryRenderWindow; }
 
-			DeferredRenderSystemPtr getActiveRenderSystem() const { return mPrimaryDeferredRenderSystem; }
-
 			/**
 			 * @brief	Loads a plugin.
 			 *
@@ -37,7 +35,6 @@ namespace CamelotEngine
 
 	private:
 		RenderWindow* mPrimaryRenderWindow;
-		DeferredRenderSystemPtr mPrimaryDeferredRenderSystem;
 
 		/**
 		 * @brief	Callback called from the render thread in order to initialize resources.

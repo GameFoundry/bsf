@@ -51,9 +51,6 @@ namespace CamelotEngine
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->startUp();
 
-		//mPrimaryDeferredRenderSystem = renderSystem->createRenderSystemContext();
-		mPrimaryDeferredRenderSystem = nullptr;
-
 		mPrimaryRenderWindow = renderSystem->createRenderWindow("Camelot Renderer", 1280, 720, false);
 
 		SceneManager::startUp(new SceneManager());

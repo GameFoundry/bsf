@@ -95,8 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmApplication.h" />
-    <ClInclude Include="Include\CmDeferredGpuCommands.h" />
-    <ClInclude Include="Include\CmDeferredRenderSystem.h" />
     <ClInclude Include="Include\CmCamera.h" />
     <ClInclude Include="Include\CmCameraRTTI.h" />
     <ClInclude Include="Include\CmCgProgram.h" />
@@ -178,7 +176,6 @@
     <ClCompile Include="Source\CmCgProgram.cpp" />
     <ClCompile Include="Source\CmCgProgramFactory.cpp" />
     <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp" />
-    <ClCompile Include="Source\CmDeferredGpuCommands.cpp" />
     <ClCompile Include="Source\CmGpuProgram.cpp" />
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />
@@ -219,7 +216,6 @@
     <ClCompile Include="Source\CmWindowEventUtilities.cpp" />
     <ClCompile Include="Source\CmGameObject.cpp" />
     <ClCompile Include="Source\CmComponent.cpp" />
-    <ClCompile Include="Source\CmDeferredRenderSystem.cpp" />
     <ClCompile Include="Source\stdafx.cpp" />
     <ClCompile Include="Source\Win32\CmOSCursorImpl.cpp" />
   </ItemGroup>

@@ -17,35 +17,16 @@ High-level TODO:
 
 Command buffer TODO:
  Immediate:
- - Rename ResourceRef to ResourceHandle?
- - setVertexDeclaration/setVertexBufferBinding still need their deferred versions
- - schedule startUp to happen on render thread
-   - do the same in OpenGL
- - surround the thread checks with #if _DEBUG
+  - Port the rest of the RenderSystem of use RenderContext
+  - Port resource creation to use RenderContext (texture/mesh/shader/etc initialization and updates)
+  - Make sure to add thread checks (surrounded by #if DEBUG) to RenderSystem and Vertex/Index/Pixel buffers, textures, meshes, etc.
 
-MAYBE:
- - Create DeferredRenderSystem class that has exactly the same public interface as RenderSystem, but defers all calls to a command buffer
-   - As its methods are called we can also filter out values that exactly match the previous ones and minimize number of state changes
-      (Although this should probably be on a higher level, because 1 class 1 use)
-
-RESOURCE COMMANDS!!:
- - They get queued up into the RenderSystem same like render commands
- - They handle all resource creation/updates/destroy
- - They are high level:
-   - i.e. CmndInitializeTexture - contains Texture to initialize and data to initialize it with
- - This allows makes it possible not to store temporary texture or mesh data in the texture/mesh objects between initialization. The data is stored with the command instead.
- - Also we don't need to handle resource loading in two steps. After loading is complete, resource gets queued up and initialized before next render frame.
- - Make sure to clearly separate CPU and GPU commands on resources. Tell the user that GPU commands are deferred and will only be executed later. (Provide option to let him choose?)
-
-Essential TODO for deferred rendering:
- - Block all calls to RenderSystem outside of Render thread (or at least warn)
- - Prevent user from accessing vertex/index buffers and similar outside of render thread as well (e.g. GpuProgram, Texture)
-
- - Modify resource creation so it calls RenderContext and just schedules resource creation
-
- - Figure out how to handle reading of resources properly
-
-
+ Later:
+  - Add resource creation "culling" to avoid updating some resource multiple times in a single frame
+  - Modify resource loading so we don't need a special Response handler on the main thread. We should be able to immediately queue up resource command instead.
+  - Provide Async versions of all read commands
+  - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
+  - Add documentation that tells the user that resource updates only get applied at the end of the frame, unless you manually override it.
 
 HIGH PRIORITY TODO:
  - Issue with deserialization and value types:
@@ -55,6 +36,7 @@ HIGH PRIORITY TODO:
  - HLSL & Cg don't handle include files yet
 
 Mid priority TODO:
+ - Rename ResourceRef to ResourceHandle?
  - Add a field that tracks % of resource deserialization in BinarySerializer
 
  - Separate render thread

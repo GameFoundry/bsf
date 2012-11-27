@@ -39,7 +39,6 @@ THE SOFTWARE.
 #include "CmRenderWindow.h"
 #include "CmHardwarePixelBuffer.h"
 #include "CmHardwareOcclusionQuery.h"
-#include "CmDeferredRenderSystem.h"
 #include "CmRenderSystemContext.h"
 #include "boost/bind.hpp"
 

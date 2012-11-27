@@ -8,7 +8,6 @@
 #include "CmMesh.h"
 #include "CmPass.h"
 #include "CmApplication.h"
-#include "CmDeferredRenderSystem.h"
 
 namespace CamelotEngine
 {
@@ -29,9 +28,7 @@ namespace CamelotEngine
 	{
 		return; // TODO - Temporarily I don't want to run this
 
-		DeferredRenderSystemPtr renderSystem = gApplication().getActiveRenderSystem();
-		
-		//RenderSystem* renderSystem = RenderSystemManager::getActive();
+		RenderSystem* renderSystem = RenderSystemManager::getActive();
 
 		// TODO - No point in setting these each frame?
 		renderSystem->setInvertVertexWinding(false);
@@ -50,8 +47,7 @@ namespace CamelotEngine
 	{
 		vector<RenderablePtr>::type allRenderables = gSceneManager().getVisibleRenderables(camera);
 
-		DeferredRenderSystemPtr renderSystem = gApplication().getActiveRenderSystem();
-		//RenderSystem* renderSystem = RenderSystemManager::getActive();
+		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->setViewport(*camera->getViewport());
 
 		Matrix4 projMatrixCstm = camera->getProjectionMatrix();
@@ -102,8 +98,7 @@ namespace CamelotEngine
 
 		mActivePass = pass;
 
-		DeferredRenderSystemPtr renderSystem = gApplication().getActiveRenderSystem();
-		//RenderSystem* renderSystem = RenderSystemManager::getActive();
+		RenderSystem* renderSystem = RenderSystemManager::getActive();
 
 		GpuProgramRef vertProgram = pass->getVertexProgram();
 		if(vertProgram)
@@ -207,22 +202,21 @@ namespace CamelotEngine
 	void ForwardRenderer::setPassParameters(PassParametersPtr params)
 	{
 		// TODO - When applying passes, don't re-apply states that are already the same as from previous pass.
-		DeferredRenderSystemPtr renderSystem = gApplication().getActiveRenderSystem();
-		//RenderSystem* renderSystem = RenderSystemManager::getActive();
+		RenderSystem* renderSystem = RenderSystemManager::getActive();
 
 		if(mActivePass == nullptr)
 			CM_EXCEPT(InternalErrorException, "Trying to set pass parameters, but no pass is set.");
 
 		GpuProgramRef vertProgram = mActivePass->getVertexProgram();
 		if(vertProgram)
-			renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, params->mVertParams);
+			renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, params->mVertParams, GPV_ALL);
 
 		GpuProgramRef fragProgram = mActivePass->getFragmentProgram();
 		if(fragProgram)
-			renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, params->mFragParams);
+			renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, params->mFragParams, GPV_ALL);
 
 		GpuProgramRef geomProgram = mActivePass->getGeometryProgram();
 		if(geomProgram)
-			renderSystem->bindGpuProgramParameters(GPT_GEOMETRY_PROGRAM, params->mGeomParams);
+			renderSystem->bindGpuProgramParameters(GPT_GEOMETRY_PROGRAM, params->mGeomParams, GPV_ALL);
 	}
 }
