@@ -179,9 +179,6 @@ namespace CamelotEngine
 		~D3D9RenderSystem();
 
 		virtual void initConfigOptions();
-
-		// Overridden RenderSystem functions
-		String validateConfigOptions();
 		
 		/**
          * Set current render target to target, enabling its GL context if needed
@@ -193,8 +190,6 @@ namespace CamelotEngine
 
 		String getErrorDescription( long errorNumber ) const;
 		const String& getName() const;
-		// Low-level overridden members
-		void setConfigOption( const String &name, const String &value );
 		void shutdown();
 		void destroyRenderTarget(const String& name);
 		VertexElementType getColorVertexElementType() const;
@@ -235,19 +230,6 @@ namespace CamelotEngine
 		void setVertexDeclaration(VertexDeclarationPtr decl);
 		void setVertexBufferBinding(VertexBufferBinding* binding);
         void render(const RenderOperation& op);
-        /** See
-          RenderSystem
-         */
-        void bindGpuProgram(GpuProgramRef prg);
-        /** See
-          RenderSystem
-         */
-        void unbindGpuProgram(GpuProgramType gptype);
-        /** See
-          RenderSystem
-         */
-		void bindGpuProgramParameters(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
 
         void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600);
         void clearFrameBuffer(unsigned int buffers, 
@@ -259,9 +241,7 @@ namespace CamelotEngine
         float getVerticalTexelOffset();
         float getMinimumDepthInputValue();
         float getMaximumDepthInputValue();
-		void registerThread();
-		void unregisterThread();	
-		
+
 		static D3D9ResourceManager* getResourceManager();
 		static D3D9DeviceManager* getDeviceManager();
 		static IDirect3D9* getDirect3D9();
@@ -305,10 +285,18 @@ namespace CamelotEngine
 		/* 							INTERNAL CALLBACKS                     		*/
 		/************************************************************************/
 	protected:
-		void startUp_internal(AsyncOp& asyncOp);
+		void startUp_internal();
 
 		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
+
+
+        void bindGpuProgram_internal(GpuProgramRef prg);
+
+        void unbindGpuProgram_internal(GpuProgramType gptype);
+
+		void bindGpuProgramParameters_internal(GpuProgramType gptype, 
+			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
 
 	protected:	
 		/// Notify when a device has been lost.

@@ -135,33 +135,6 @@ namespace CamelotEngine
 		*/
 		virtual const String& getName(void) const = 0;
 
-		/** Sets an option for this API
-		@remarks
-		Used to confirm the settings (normally chosen by the user) in
-		order to make the renderer able to initialise with the settings as required.
-		This may be video mode, D3D driver, full screen / windowed etc.
-		Called automatically by the default configuration
-		dialog, and by the restoration of saved settings.
-		These settings are stored and only activated when
-		RenderSystem::initialise or RenderSystem::reinitialise
-		are called.
-		@par
-		If using a custom configuration dialog, it is advised that the
-		caller calls RenderSystem::getConfigOptions
-		again, since some options can alter resulting from a selection.
-		@param
-		name The name of the option to alter.
-		@param
-		value The value to set the option to.
-		*/
-		virtual void setConfigOption(const String &name, const String &value) = 0;
-
-		/** Validates the options set for the rendering system, returning a message if there are problems.
-		@note
-		If the returned string is empty, there are no problems.
-		*/
-		virtual String validateConfigOptions(void) = 0;
-
 		 /* @brief	Start up the RenderSystem. Call before doing any operations on the render system.  
 		 *			Make sure all subsequent calls to the RenderSystem are done from the same thread it was started on.  
 		 *
@@ -170,18 +143,6 @@ namespace CamelotEngine
 		 * 			By default an automatically created primary render context is used.
 		 */
 		void startUp();
-
-
-		/** Query the real capabilities of the GPU and driver in the RenderSystem*/
-		virtual RenderSystemCapabilities* createRenderSystemCapabilities() const = 0;
-
-		/** Force the render system to use the special capabilities. Can only be called
-		*    before the render system has been fully initializer (before createWindow is called) 
-		*	@param
-		*		 capabilities has to be a subset of the real capabilities and the caller is 
-		*		 responsible for deallocating capabilities.
-		*/
-		virtual void useCustomRenderSystemCapabilities(RenderSystemCapabilities* capabilities);
 
 		/** Shutdown the renderer and cleanup resources.
 		*/
@@ -670,37 +631,7 @@ namespace CamelotEngine
 		*/
 		virtual void setDepthBias(float constantBias, float slopeScaleBias = 0.0f) = 0;
 
-		/** The RenderSystem will keep a count of tris rendered, this resets the count. */
-		virtual void beginGeometryCount(void);
-		/** Reports the number of tris rendered since the last _beginGeometryCount call. */
-		virtual unsigned int getFaceCount(void) const;
-		/** Reports the number of batches rendered since the last _beginGeometryCount call. */
-		virtual unsigned int getBatchCount(void) const;
-		/** Reports the number of vertices passed to the renderer since the last _beginGeometryCount call. */
-		virtual unsigned int getVertexCount(void) const;
-
-		/** Generates a packed data version of the passed in ColourValue suitable for
-		use as with this RenderSystem.
-		@remarks
-		Since different render systems have different colour data formats (eg
-		RGBA for GL, ARGB for D3D) this method allows you to use 1 method for all.
-		@param colour The colour to convert
-		@param pDest Pointer to location to put the result.
-		*/
-		virtual void convertColorValue(const Color& colour, UINT32* pDest);
-		/** Get the native VertexElementType for a compact 32-bit colour value
-		for this rendersystem.
-		*/
-		virtual VertexElementType getColorVertexElementType(void) const = 0;
-
-		/** Converts a uniform projection matrix to suitable for this render system.
-		@remarks
-		Because different APIs have different requirements (some incompatible) for the
-		projection matrix, this method allows each to implement their own correctly and pass
-		back a generic Camelot matrix for storage in the engine.
-		*/
-		virtual void _convertProjectionMatrix(const Matrix4& matrix,
-			Matrix4& dest, bool forGpuProgram = false) = 0;
+		
 
 		/** Sets how to rasterise triangles, as points, wireframe or solid polys. */
 		virtual void setPolygonMode(PolygonMode level) = 0;
@@ -804,21 +735,21 @@ namespace CamelotEngine
 		@remarks Only one GpuProgram of each type can be bound at once, binding another
 		one will simply replace the existing one.
 		*/
-		virtual void bindGpuProgram(GpuProgramRef prg);
+		void bindGpuProgram(GpuProgramRef prg);
 
 		/** Bind Gpu program parameters.
 		@param gptype The type of program to bind the parameters to
 		@param params The parameters to bind
 		@param variabilityMask A mask of GpuParamVariability identifying which params need binding
 		*/
-		virtual void bindGpuProgramParameters(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, UINT16 variabilityMask) = 0;
+		void bindGpuProgramParameters(GpuProgramType gptype, 
+			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
 
 		/** Unbinds GpuPrograms of a given GpuProgramType.
 		@remarks
 		This returns the pipeline to fixed-function processing for this type.
 		*/
-		virtual void unbindGpuProgram(GpuProgramType gptype);
+		void unbindGpuProgram(GpuProgramType gptype);
 
 		/** Returns whether or not a Gpu program of the given type is currently bound. */
 		virtual bool isGpuProgramBound(GpuProgramType gptype);
@@ -838,7 +769,8 @@ namespace CamelotEngine
 
 		/** Internal method for swapping all the buffers on all render targets,
 		if _updateAllRenderTargets was called with a 'false' parameter. */
-		virtual void swapAllRenderTargetBuffers(bool waitForVsync = true);
+		void swapAllRenderTargetBuffers(bool waitForVsync = true);
+		virtual void swapAllRenderTargetBuffers_internal(bool waitForVsync = true);
 
 		/** Sets whether or not vertex windings set should be inverted; this can be important
 		for rendering reflections. */
@@ -873,6 +805,46 @@ namespace CamelotEngine
 		virtual void clearFrameBuffer(unsigned int buffers, 
 			const Color& colour = Color::Black, 
 			float depth = 1.0f, unsigned short stencil = 0) = 0;
+
+		/**
+         * Set current render target to target, enabling its device context if needed
+         */
+        virtual void setRenderTarget(RenderTarget *target) = 0;
+
+		/**
+		* Gets the number of display monitors.
+		@see Root::getDisplayMonitorCount
+		*/
+		virtual unsigned int getDisplayMonitorCount() const = 0;
+
+		/************************************************************************/
+		/* 								UTILITY METHODS                    		*/
+		/************************************************************************/
+
+		/** Generates a packed data version of the passed in ColourValue suitable for
+		use as with this RenderSystem.
+		@remarks
+		Since different render systems have different colour data formats (eg
+		RGBA for GL, ARGB for D3D) this method allows you to use 1 method for all.
+		@param colour The colour to convert
+		@param pDest Pointer to location to put the result.
+		*/
+		virtual void convertColorValue(const Color& colour, UINT32* pDest);
+
+		/** Get the native VertexElementType for a compact 32-bit colour value
+		for this rendersystem.
+		*/
+		virtual VertexElementType getColorVertexElementType(void) const = 0;
+
+		/** Converts a uniform projection matrix to suitable for this render system.
+		@remarks
+		Because different APIs have different requirements (some incompatible) for the
+		projection matrix, this method allows each to implement their own correctly and pass
+		back a generic Camelot matrix for storage in the engine.
+		*/
+		virtual void _convertProjectionMatrix(const Matrix4& matrix,
+			Matrix4& dest, bool forGpuProgram = false) = 0;
+
 		/** Returns the horizontal texel offset value required for mapping 
 		texel origins to pixel origins in this rendersystem.
 		@remarks
@@ -883,6 +855,7 @@ namespace CamelotEngine
 		the horizontal direction.
 		*/
 		virtual float getHorizontalTexelOffset(void) = 0;
+
 		/** Returns the vertical texel offset value required for mapping 
 		texel origins to pixel origins in this rendersystem.
 		@remarks
@@ -903,6 +876,7 @@ namespace CamelotEngine
 		@see Renderable::getUseIdentityView, Renderable::getUseIdentityProjection
 		*/
 		virtual float getMinimumDepthInputValue(void) = 0;
+
 		/** Gets the maximum (farthest) depth value to be used when rendering
 		using identity transforms.
 		@remarks
@@ -913,43 +887,24 @@ namespace CamelotEngine
 		*/
 		virtual float getMaximumDepthInputValue(void) = 0;
 
-		/**
-         * Set current render target to target, enabling its device context if needed
-         */
-        virtual void setRenderTarget(RenderTarget *target) = 0;
-
-		/** Register the an additional thread which may make calls to rendersystem-related 
-		objects.
-		@remarks
-		This method should only be called by additional threads during their
-		initialisation. If they intend to use hardware rendering system resources 
-		they should call this method before doing anything related to the render system.
-		Some rendering APIs require a per-thread setup and this method will sort that
-		out. It is also necessary to call unregisterThread before the thread shuts down.
-		@note
-		This method takes no parameters - it must be called from the thread being
-		registered and that context is enough.
-		*/
-		virtual void registerThread() = 0;
-
-		/** Unregister an additional thread which may make calls to rendersystem-related objects.
-		@see RenderSystem::registerThread
-		*/
-		virtual void unregisterThread() = 0;
-
-		/**
-		* Gets the number of display monitors.
-		@see Root::getDisplayMonitorCount
-		*/
-		virtual unsigned int getDisplayMonitorCount() const = 0;
 		/************************************************************************/
 		/* 							INTERNAL CALLBACKS                     		*/
 		/************************************************************************/
 	protected:
-		virtual void startUp_internal(AsyncOp& asyncOp);
+		virtual void startUp_internal();
 
 		virtual void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp) = 0;
+
+		virtual void bindGpuProgram_internal(GpuProgramRef prg);
+
+		virtual void unbindGpuProgram_internal(GpuProgramType gptype);
+
+		virtual void bindGpuProgramParameters_internal(GpuProgramType gptype, 
+			GpuProgramParametersSharedPtr params, UINT16 variabilityMask) = 0;
+		/************************************************************************/
+		/* 						INTERNAL DATA & METHODS                      	*/
+		/************************************************************************/
 	protected:
 		/** The render targets. */
 		RenderTargetMap mRenderTargets;
@@ -970,10 +925,6 @@ namespace CamelotEngine
 		bool mVSync;
 		unsigned int mVSyncInterval;
 
-		size_t mBatchCount;
-		size_t mFaceCount;
-		size_t mVertexCount;
-
 		bool mInvertVertexWinding;
 
 		/// Texture units from this upwards are disabled
@@ -989,12 +940,13 @@ namespace CamelotEngine
 		bool mClipPlanesDirty;
 
 		/// Used to store the capabilities of the graphics card
-		RenderSystemCapabilities* mRealCapabilities;
 		RenderSystemCapabilities* mCurrentCapabilities;
-		bool mUseCustomCapabilities;
 
 		/// Internal method used to set the underlying clip planes when needed
 		virtual void setClipPlanesImpl(const PlaneList& clipPlanes) = 0;
+
+		/** Query the real capabilities of the GPU and driver in the RenderSystem*/
+		virtual RenderSystemCapabilities* createRenderSystemCapabilities() const = 0;
 
 		/** Initialize the render system from the capabilities*/
 		virtual void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary) = 0;
@@ -1026,12 +978,16 @@ namespace CamelotEngine
 		CM_MUTEX(mRSContextMutex)
 		CM_MUTEX(mRSRenderCallbackMutex)
 		CM_MUTEX(mResourceContextMutex)
+		CM_MUTEX(mActiveContextMutex)
 
 #if CM_THREAD_SUPPORT
 		CM_THREAD_TYPE* mRenderThread;
 #endif
 
-		RenderSystemContextPtr mResourceContext;
+		mutable RenderSystemContextPtr mResourceContext;
+		RenderSystemContextPtr mPrimaryContext;
+		mutable RenderSystemContextPtr mActiveContext;
+
 		vector<RenderSystemContextPtr>::type mRenderSystemContexts;
 		boost::signal<void()> PreRenderThreadUpdateCallback;
 		boost::signal<void()> PostRenderThreadUpdateCallback;
@@ -1066,6 +1022,13 @@ namespace CamelotEngine
 		 * @param	blockUntilComplete	If true, the calling thread will block until all commands are submitted.
 		 */
 		void submitToGpu(RenderSystemContextPtr context, bool blockUntilComplete);
+
+		/**
+		 * @brief	Sets an active context on which all subsequent RenderSystem calls will be executed on.
+		 * 			
+		 * @note	context must not be null.
+		 */
+		void setActiveContext(RenderSystemContextPtr context);
 
 	public:
 		/**

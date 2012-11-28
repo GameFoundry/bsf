@@ -8,11 +8,12 @@ namespace CamelotEngine
 {
 	RenderSystemContext::RenderSystemContext(CM_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId), mReadyCommands(nullptr), mIsExecuting(false)
+		, waitForVerticalBlank(true)
 	{
 		mCommands = new vector<RenderSystemCommand>::type();
 	}
 
-	AsyncOp RenderSystemContext::queueCommand(boost::function<void(AsyncOp&)> commandCallback)
+	AsyncOp RenderSystemContext::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, UINT32 _callbackId)
 	{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0
@@ -23,10 +24,25 @@ namespace CamelotEngine
 #endif
 #endif
 
-		RenderSystemCommand newCommand(commandCallback);
+		RenderSystemCommand newCommand(commandCallback, _callbackId);
 		mCommands->push_back(newCommand);
 
 		return newCommand.asyncOp;
+	}
+
+	void RenderSystemContext::queueCommand(boost::function<void()> commandCallback, UINT32 _callbackId)
+	{
+#if CM_DEBUG_MODE
+#if CM_THREAD_SUPPORT != 0
+		if(CM_THREAD_CURRENT_ID != mMyThreadId)
+		{
+			CM_EXCEPT(InternalErrorException, "Render system context accessed from an invalid thread.");
+		}
+#endif
+#endif
+
+		RenderSystemCommand newCommand(commandCallback, _callbackId);
+		mCommands->push_back(newCommand);
 	}
 
 	void RenderSystemContext::submitToGpu()
@@ -76,12 +92,22 @@ namespace CamelotEngine
 
 		for(auto iter = currentCommands->begin(); iter != currentCommands->end(); ++iter)
 		{
-			(*iter).callback((*iter).asyncOp);
+			RenderSystemCommand command = (*iter);
 
-			if(!(*iter).asyncOp.hasCompleted())
+			if(command.returnsValue)
 			{
-				LOGDBG("Async operation wasn't resolved properly. Resolving automatically to nullptr.");
-				(*iter).asyncOp.completeOperation(nullptr);
+				command.callbackWithReturnValue(command.asyncOp);
+
+				if(!command.asyncOp.hasCompleted())
+				{
+					LOGDBG("Async operation return value wasn't resolved properly. Resolving automatically to nullptr. " \
+						 "Make sure to complete the operation before returning from the command callback method.");
+					command.asyncOp.completeOperation(nullptr);
+				}
+			}
+			else
+			{
+				command.callback();
 			}
 		}
 

@@ -73,7 +73,16 @@ namespace CamelotEngine {
  
         GLint getBlendMode(SceneBlendFactor ogreBlend) const;
 		GLint getTextureAddressingMode(SamplerState::TextureAddressingMode tam) const;
-				void initialiseContext(RenderWindow* primary);
+		void initialiseContext(RenderWindow* primary);
+
+		/** See
+          RenderSystem
+         */
+		virtual RenderSystemCapabilities* createRenderSystemCapabilities() const;
+        /** See
+          RenderSystem
+         */
+		void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary);
 
         /// Store last depth write state
         bool mDepthWrite;
@@ -122,11 +131,14 @@ namespace CamelotEngine {
 		/* 							INTERNAL CALLBACKS                     		*/
 		/************************************************************************/
 	protected:
-        void startUp_internal(AsyncOp& asyncOp);
+        void startUp_internal();
 
 		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
 
+        void bindGpuProgram_internal(GpuProgramRef prg);
+        void unbindGpuProgram_internal(GpuProgramType gptype);
+		void bindGpuProgramParameters_internal(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
 	protected:
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 		bool activateGLTextureUnit(size_t unit);
@@ -142,26 +154,6 @@ namespace CamelotEngine {
           RenderSystem
          */
         const String& getName(void) const;
-        /** See
-          RenderSystem
-         */
-        ConfigOptionMap& getConfigOptions(void);
-        /** See
-          RenderSystem
-         */
-        void setConfigOption(const String &name, const String &value);
-        /** See
-          RenderSystem
-         */
-        String validateConfigOptions(void);
-        /** See
-          RenderSystem
-         */
-				virtual RenderSystemCapabilities* createRenderSystemCapabilities() const;
-        /** See
-          RenderSystem
-         */
-				void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary);
         /** See
           RenderSystem
          */
@@ -321,14 +313,6 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void bindGpuProgram(GpuProgramRef prg);
-        /** See
-          RenderSystem
-         */
-        void unbindGpuProgram(GpuProgramType gptype);
-        /** See
-          RenderSystem
-         */
 		void bindGpuProgramParameters(GpuProgramType gptype, 
 			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
         /** See
@@ -343,8 +327,6 @@ namespace CamelotEngine {
         float getMinimumDepthInputValue(void);
         float getMaximumDepthInputValue(void);
 		CM_MUTEX(mThreadInitMutex)
-		void registerThread();
-		void unregisterThread();
 
         // ----------------------------------
         // GLRenderSystem specific members

@@ -60,9 +60,7 @@ namespace CamelotEngine {
 		, mGeometryProgramBound(false)
         , mFragmentProgramBound(false)
 		, mClipPlanesDirty(true)
-		, mRealCapabilities(0)
-		, mCurrentCapabilities(0)
-		, mUseCustomCapabilities(false)
+		, mCurrentCapabilities(nullptr)
 		, mRenderThreadFunc(nullptr)
 		, mRenderThreadShutdown(false)
     {
@@ -72,13 +70,34 @@ namespace CamelotEngine {
     RenderSystem::~RenderSystem()
     {
         shutdown();
-		delete mRealCapabilities;
-		mRealCapabilities = 0;
-		// Current capabilities managed externally
+
+		delete mCurrentCapabilities;
 		mCurrentCapabilities = 0;
     }
+	//-----------------------------------------------------------------------
+	void RenderSystem::startUp()
+	{
+		mRenderThreadId = CM_THREAD_CURRENT_ID;
+		mResourceContext = createRenderSystemContext();
+		mPrimaryContext = createRenderSystemContext();
+		mActiveContext = mPrimaryContext;
+
+		initRenderThread(); // TODO - Move render thread to the outside of the RS
+
+		{
+			CM_LOCK_MUTEX(mResourceContextMutex)
+				mResourceContext->queueCommand(boost::bind(&RenderSystem::startUp_internal, this));
+		}
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::swapAllRenderTargetBuffers(bool waitForVSync)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::swapAllRenderTargetBuffers_internal, this, waitForVSync));
+	}
     //-----------------------------------------------------------------------
-    void RenderSystem::swapAllRenderTargetBuffers(bool waitForVSync)
+    void RenderSystem::swapAllRenderTargetBuffers_internal(bool waitForVSync)
     {
         // Update all in order of priority
         // This ensures render-to-texture targets get updated before render windows
@@ -90,19 +109,6 @@ namespace CamelotEngine {
 				itarg->second->swapBuffers(waitForVSync);
 		}
     }
-    //-----------------------------------------------------------------------
-    void RenderSystem::startUp()
-    {
-		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mResourceContext = 	createRenderSystemContext();
-
-		initRenderThread(); // TODO - Move render thread to the outside of the RS
-
-		{
-			CM_LOCK_MUTEX(mResourceContextMutex)
-			mResourceContext->queueCommand(boost::bind(&RenderSystem::startUp_internal, this, _1));
-		}
-    }
 	//---------------------------------------------------------------------------------------------
 	RenderWindow* RenderSystem::createRenderWindow(const String &name, unsigned int width, unsigned int height, 
 		bool fullScreen, const NameValuePairList *miscParams)
@@ -112,25 +118,13 @@ namespace CamelotEngine {
 			CM_LOCK_MUTEX(mResourceContextMutex)
 
 			if(miscParams != nullptr)
-				op = mResourceContext->queueCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, *miscParams, _1));
+				op = mResourceContext->queueReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, *miscParams, _1));
 			else
-				op = mResourceContext->queueCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, NameValuePairList(), _1));
+				op = mResourceContext->queueReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, NameValuePairList(), _1));
 		}
 
 		submitToGpu(mResourceContext, true);
 		return op.getReturnValue<RenderWindow*>();
-	}
-	//---------------------------------------------------------------------------------------------
-	void RenderSystem::useCustomRenderSystemCapabilities(RenderSystemCapabilities* capabilities)
-	{
-		if (mRealCapabilities != 0)
-		{
-			CM_EXCEPT(InternalErrorException, 
-				"Custom render capabilities must be set before the RenderSystem is initialised.");
-		}
-
-		mCurrentCapabilities = capabilities;
-		mUseCustomCapabilities = true;
 	}
     //---------------------------------------------------------------------------------------------
     void RenderSystem::destroyRenderWindow(const String& name)
@@ -287,21 +281,25 @@ namespace CamelotEngine {
         setTextureFiltering(unit, FT_MAG, magFilter);
         setTextureFiltering(unit, FT_MIP, mipFilter);
     }
-    //-----------------------------------------------------------------------
-    CullingMode RenderSystem::getCullingMode(void) const
-    {
-        return mCullingMode;
-    }
-    //-----------------------------------------------------------------------
-    bool RenderSystem::getWaitForVerticalBlank(void) const
-    {
-        return mVSync;
-    }
-    //-----------------------------------------------------------------------
-    void RenderSystem::setWaitForVerticalBlank(bool enabled)
-    {
-        mVSync = enabled;
-    }
+	//-----------------------------------------------------------------------
+	CullingMode RenderSystem::getCullingMode(void) const
+	{
+		return mCullingMode;
+	}
+	//-----------------------------------------------------------------------
+	bool RenderSystem::getWaitForVerticalBlank(void) const
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		return mActiveContext->waitForVerticalBlank;
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setWaitForVerticalBlank(bool enabled)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->waitForVerticalBlank = enabled;
+	}
     //-----------------------------------------------------------------------
     void RenderSystem::shutdown(void)
     {
@@ -323,27 +321,6 @@ namespace CamelotEngine {
 		shutdownRenderThread();
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::beginGeometryCount(void)
-    {
-        mBatchCount = mFaceCount = mVertexCount = 0;
-
-    }
-    //-----------------------------------------------------------------------
-    unsigned int RenderSystem::getFaceCount(void) const
-    {
-        return static_cast< unsigned int >( mFaceCount );
-    }
-    //-----------------------------------------------------------------------
-    unsigned int RenderSystem::getBatchCount(void) const
-    {
-        return static_cast< unsigned int >( mBatchCount );
-    }
-    //-----------------------------------------------------------------------
-    unsigned int RenderSystem::getVertexCount(void) const
-    {
-        return static_cast< unsigned int >( mVertexCount );
-    }
-    //-----------------------------------------------------------------------
 	void RenderSystem::convertColorValue(const Color& colour, UINT32* pDest)
 	{
 		*pDest = VertexElement::convertColourValue(colour, getColorVertexElementType());
@@ -352,32 +329,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     void RenderSystem::render(const RenderOperation& op)
     {
-        // Update stats
-        size_t val;
-
-        if (op.useIndexes)
-            val = op.indexData->indexCount;
-        else
-            val = op.vertexData->vertexCount;
-
-        switch(op.operationType)
-        {
-		case RenderOperation::OT_TRIANGLE_LIST:
-            mFaceCount += val / 3;
-            break;
-        case RenderOperation::OT_TRIANGLE_STRIP:
-        case RenderOperation::OT_TRIANGLE_FAN:
-            mFaceCount += val - 2;
-            break;
-	    case RenderOperation::OT_POINT_LIST:
-	    case RenderOperation::OT_LINE_LIST:
-	    case RenderOperation::OT_LINE_STRIP:
-	        break;
-	    }
-
-        mVertexCount += op.vertexData->vertexCount;
-        mBatchCount += 1;
-
 		// sort out clip planes
 		// have to do it here in case of matrix issues
 		if (mClipPlanesDirty)
@@ -428,41 +379,26 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::bindGpuProgram(GpuProgramRef prg)
 	{
-	    switch(prg->_getBindingDelegate()->getType())
-	    {
-        case GPT_VERTEX_PROGRAM:
-			// mark clip planes dirty if changed (programmable can change space)
-			if (!mVertexProgramBound && !mClipPlanes.empty())
-				mClipPlanesDirty = true;
+		CM_LOCK_MUTEX(mActiveContextMutex);
 
-            mVertexProgramBound = true;
-	        break;
-        case GPT_GEOMETRY_PROGRAM:
-			mGeometryProgramBound = true;
-			break;
-        case GPT_FRAGMENT_PROGRAM:
-            mFragmentProgramBound = true;
-	        break;
-	    }
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::bindGpuProgram_internal, this, prg));
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
-	    switch(gptype)
-	    {
-        case GPT_VERTEX_PROGRAM:
-			// mark clip planes dirty if changed (programmable can change space)
-			if (mVertexProgramBound && !mClipPlanes.empty())
-				mClipPlanesDirty = true;
-            mVertexProgramBound = false;
-	        break;
-        case GPT_GEOMETRY_PROGRAM:
-			mGeometryProgramBound = false;
-			break;
-        case GPT_FRAGMENT_PROGRAM:
-            mFragmentProgramBound = false;
-	        break;
-	    }
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+	    mActiveContext->queueCommand(boost::bind(&RenderSystem::unbindGpuProgram_internal, this, gptype));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, 
+		GpuProgramParametersSharedPtr params, UINT16 variabilityMask)
+	{
+		GpuProgramParametersSharedPtr paramCopy = GpuProgramParametersSharedPtr(new GpuProgramParameters(*params));
+
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::bindGpuProgramParameters_internal, this, gptype, paramCopy, variabilityMask));
 	}
 	//-----------------------------------------------------------------------
 	bool RenderSystem::isGpuProgramBound(GpuProgramType gptype)
@@ -616,6 +552,15 @@ namespace CamelotEngine {
 			context->blockUntilExecuted();
 	}
 
+	void RenderSystem::setActiveContext(RenderSystemContextPtr context)
+	{
+		assert(context != nullptr);
+
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext = context;
+	}
+
 	void RenderSystem::update()
 	{
 		{
@@ -640,13 +585,50 @@ namespace CamelotEngine {
 	/* 							INTERNAL CALLBACKS                     		*/
 	/************************************************************************/
 
-	void RenderSystem::startUp_internal(AsyncOp& asyncOp)
+	void RenderSystem::startUp_internal()
 	{
 		mVertexProgramBound = false;
 		mGeometryProgramBound = false;
 		mFragmentProgramBound = false;
+	}
 
-		asyncOp.completeOperation();
+	void RenderSystem::bindGpuProgram_internal(GpuProgramRef prg)
+	{
+		switch(prg->_getBindingDelegate()->getType())
+		{
+		case GPT_VERTEX_PROGRAM:
+			// mark clip planes dirty if changed (programmable can change space)
+			if (!mVertexProgramBound && !mClipPlanes.empty())
+				mClipPlanesDirty = true;
+
+			mVertexProgramBound = true;
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			mGeometryProgramBound = true;
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			mFragmentProgramBound = true;
+			break;
+		}
+	}
+
+	void RenderSystem::unbindGpuProgram_internal(GpuProgramType gptype)
+	{
+		switch(gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			// mark clip planes dirty if changed (programmable can change space)
+			if (mVertexProgramBound && !mClipPlanes.empty())
+				mClipPlanesDirty = true;
+			mVertexProgramBound = false;
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			mGeometryProgramBound = false;
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			mFragmentProgramBound = false;
+			break;
+		}
 	}
 
 	/************************************************************************/

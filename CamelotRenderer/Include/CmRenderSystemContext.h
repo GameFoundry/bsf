@@ -17,12 +17,19 @@ namespace CamelotEngine
 	private:
 		struct RenderSystemCommand
 		{
-			RenderSystemCommand(boost::function<void(AsyncOp&)> _callback)
-				:callback(_callback)
+			RenderSystemCommand(boost::function<void(AsyncOp&)> _callback, UINT32 _callbackId = 0)
+				:callbackWithReturnValue(_callback), returnsValue(true), callbackId(_callbackId)
 			{ }
 
-			boost::function<void(AsyncOp&)> callback;
+			RenderSystemCommand(boost::function<void()> _callback, UINT32 _callbackId = 0)
+				:callback(_callback), returnsValue(false), callbackId(_callbackId)
+			{ }
+
+			boost::function<void()> callback;
+			boost::function<void(AsyncOp&)> callbackWithReturnValue;
 			AsyncOp asyncOp;
+			bool returnsValue;
+			UINT32 callbackId;
 		};
 
 		/************************************************************************/
@@ -51,15 +58,29 @@ namespace CamelotEngine
 		 * 			This is used to signal that the command is completed, and also for storing the return
 		 * 			value.
 		 * 			
-		 * @note	Callback method also needs to call AsyncOp::markAsResolved once it is done
+		 * 			@note	Callback method also needs to call AsyncOp::markAsResolved once it is done
 		 * 			processing. (If it doesn't it will still be called automatically, but the return
 		 * 			value will default to nullptr)
 		 *
-		 * @return	Async operation object you can continuously check until the command completes.
-		 * 			After it completes AsyncOp::isResolved will return true and return data will be valid
-		 * 			(if the callback provided any).
+		 * @param	_callbackId			   	(optional) Identifier for the callback so you can then later find it
+		 * 									if needed.
+		 *
+		 * @return	Async operation object you can continuously check until the command completes. After
+		 * 			it completes AsyncOp::isResolved will return true and return data will be valid (if
+		 * 			the callback provided any).
 		 */
-		AsyncOp queueCommand(boost::function<void(AsyncOp&)> commandCallback);
+		AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, UINT32 _callbackId = 0);
+
+		/**
+		 * @brief	Queue up a new command to execute. Make sure the provided function has all of its
+		 * 			parameters properly bound. Provided command is not expected to return a value.
+		 * 			If you wish to return a value from the callback use the other overload of queueCommand 
+		 * 			which accepts AsyncOp parameter.
+		 *
+		 * @param	_callbackId			   	(optional) Identifier for the callback so you can then later find it
+		 * 									if needed.
+		 */
+		void queueCommand(boost::function<void()> commandCallback, UINT32 _callbackId = 0);
 
 		/**
 		 * @brief	Plays all queued commands. Should only be called from the render thread,
@@ -88,5 +109,17 @@ namespace CamelotEngine
 		 * 			it will cause a deadlock since processing will never be completed. 
 		 */
 		void blockUntilExecuted();
+
+		/************************************************************************/
+		/* 								STATES		                     		*/
+		/* These are various states we cache per RenderSystemContext. They are  */
+		/* used as a quick way of accessing the current state. If we didn't keep*/
+		/* these, then whenever user wanted to know a certain state we would    */
+		/* have to go and execute all commands to find what it is.				*/
+		/************************************************************************/
+
+		// TODO - This is actually a clumsy way of keeping state. Better and more generic way would be to
+		// search through all commands for a specific state change and find what it is.
+		bool waitForVerticalBlank;
 	};
 }

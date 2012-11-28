@@ -140,22 +140,6 @@ namespace CamelotEngine {
 		mGLSupport->addConfig();
 	}
 
-	ConfigOptionMap& GLRenderSystem::getConfigOptions(void)
-	{
-		return mGLSupport->getConfigOptions();
-	}
-
-	void GLRenderSystem::setConfigOption(const String &name, const String &value)
-	{
-		mGLSupport->setConfigOption(name, value);
-	}
-
-	String GLRenderSystem::validateConfigOptions(void)
-	{
-		// XXX Return an error string if something is invalid
-		return mGLSupport->validateConfig();
-	}
-
 	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
 	{
 		RenderSystemCapabilities* rsc = new RenderSystemCapabilities();
@@ -785,26 +769,8 @@ namespace CamelotEngine {
 			}
 		}
 
-
-		/// Do this after extension function pointers are initialised as the extension
-		/// is used to probe further capabilities.
-		ConfigOptionMap::iterator cfi = getConfigOptions().find("RTT Preferred Mode");
 		// RTT Mode: 0 use whatever available, 1 use PBuffers, 2 force use copying
 		int rttMode = 0;
-		if (cfi != getConfigOptions().end())
-		{
-			if (cfi->second.currentValue == "PBuffer")
-			{
-				rttMode = 1;
-			}
-			else if (cfi->second.currentValue == "Copy")
-			{
-				rttMode = 2;
-			}
-		}
-
-
-
 
 		// Check for framebuffer object extension
 		if(caps->hasCapability(RSC_FBO) && rttMode < 1)
@@ -2013,128 +1979,6 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::bindGpuProgram(GpuProgramRef prg)
-	{
-		GpuProgram* bindingPrg = prg->_getBindingDelegate();
-		GLGpuProgram* glprg = static_cast<GLGpuProgram*>(bindingPrg);
-
-		// Unbind previous gpu program first.
-		//
-		// Note:
-		//  1. Even if both previous and current are the same object, we can't
-		//     bypass re-bind completely since the object itself maybe modified.
-		//     But we can bypass unbind based on the assumption that object
-		//     internally GL program type shouldn't be changed after it has
-		//     been created. The behavior of bind to a GL program type twice
-		//     should be same as unbind and rebind that GL program type, even
-		//     for difference objects.
-		//  2. We also assumed that the program's type (vertex or fragment) should
-		//     not be changed during it's in using. If not, the following switch
-		//     statement will confuse GL state completely, and we can't fix it
-		//     here. To fix this case, we must coding the program implementation
-		//     itself, if type is changing (during load/unload, etc), and it's inuse,
-		//     unbind and notify render system to correct for its state.
-		//
-		switch (glprg->getType())
-		{
-		case GPT_VERTEX_PROGRAM:
-			if (mCurrentVertexProgram != glprg)
-			{
-				if (mCurrentVertexProgram)
-					mCurrentVertexProgram->unbindProgram();
-				mCurrentVertexProgram = glprg;
-			}
-			break;
-
-		case GPT_FRAGMENT_PROGRAM:
-			if (mCurrentFragmentProgram != glprg)
-			{
-				if (mCurrentFragmentProgram)
-					mCurrentFragmentProgram->unbindProgram();
-				mCurrentFragmentProgram = glprg;
-			}
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			if (mCurrentGeometryProgram != glprg)
-			{
-				if (mCurrentGeometryProgram)
-					mCurrentGeometryProgram->unbindProgram();
-				mCurrentGeometryProgram = glprg;
-			}
-			break;
-		}
-
-		// Bind the program
-		glprg->bindProgram();
-
-		RenderSystem::bindGpuProgram(prg);
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::unbindGpuProgram(GpuProgramType gptype)
-	{
-
-		if (gptype == GPT_VERTEX_PROGRAM && mCurrentVertexProgram)
-		{
-			mActiveVertexGpuProgramParameters = nullptr;
-			mCurrentVertexProgram->unbindProgram();
-			mCurrentVertexProgram = 0;
-		}
-		else if (gptype == GPT_GEOMETRY_PROGRAM && mCurrentGeometryProgram)
-		{
-			mActiveGeometryGpuProgramParameters = nullptr;
-			mCurrentGeometryProgram->unbindProgram();
-			mCurrentGeometryProgram = 0;
-		}
-		else if (gptype == GPT_FRAGMENT_PROGRAM && mCurrentFragmentProgram)
-		{
-			mActiveFragmentGpuProgramParameters = nullptr;
-			mCurrentFragmentProgram->unbindProgram();
-			mCurrentFragmentProgram = 0;
-		}
-		RenderSystem::unbindGpuProgram(gptype);
-
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask)
-	{
-		// Set textures
-		const GpuNamedConstants& consts = params->getConstantDefinitions();
-		for(auto iter = consts.map.begin(); iter != consts.map.end(); ++iter)
-		{
-			const GpuConstantDefinition& def = iter->second;
-
-			if(def.variability & mask)
-			{
-				if(def.constType == GCT_SAMPLER2D || def.constType == GCT_SAMPLERCUBE || def.constType == GCT_SAMPLER1D 
-					|| def.constType == GCT_SAMPLER2DSHADOW || def.constType == GCT_SAMPLER3D || def.constType == GCT_SAMPLER1DSHADOW)
-				{
-					TextureRef curTexture = params->getTexture(def.physicalIndex);
-					setTexture(def.physicalIndex, true, curTexture.getInternalPtr());
-
-					const SamplerState& samplerState = params->getSamplerState(def.physicalIndex);
-
-					setTextureUnitSettings(def.physicalIndex, curTexture.getInternalPtr(), samplerState);
-				}
-			}
-		}
-
-		switch (gptype)
-		{
-		case GPT_VERTEX_PROGRAM:
-			mActiveVertexGpuProgramParameters = params;
-			mCurrentVertexProgram->bindProgramParameters(params, mask);
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			mActiveGeometryGpuProgramParameters = params;
-			mCurrentGeometryProgram->bindProgramParameters(params, mask);
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-			mActiveFragmentGpuProgramParameters = params;
-			mCurrentFragmentProgram->bindProgramParameters(params, mask);
-			break;
-		}
-	}
-	//---------------------------------------------------------------------
 	void GLRenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
 	{
 		// A note on GL user clipping:
@@ -2464,40 +2308,6 @@ namespace CamelotEngine {
 		return 1.0f;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::registerThread()
-	{
-		CM_LOCK_MUTEX(mThreadInitMutex)
-		// This is only valid once we've created the main context
-		if (!mMainContext)
-		{
-			CM_EXCEPT(InvalidParametersException, 
-				"Cannot register a background thread before the main context has been created.");
-		}
-
-		// Create a new context for this thread. Cloning from the main context
-		// will ensure that resources are shared with the main context
-		// We want a separate context so that we can safely create GL
-		// objects in parallel with the main thread
-		GLContext* newContext = mMainContext->clone();
-		mBackgroundContextList.push_back(newContext);
-
-		// Bind this new context to this thread. 
-		newContext->setCurrent();
-
-		_oneTimeContextInitialization();
-		newContext->setInitialized();
-
-
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::unregisterThread()
-	{
-		// nothing to do here?
-		// Don't need to worry about active context, just make sure we delete
-		// on shutdown.
-
-	}
-	//---------------------------------------------------------------------
 	bool GLRenderSystem::activateGLTextureUnit(size_t unit)
 	{
 		if (mActiveTextureUnit != unit)
@@ -2534,11 +2344,11 @@ namespace CamelotEngine {
 	/* 							INTERNAL CALLBACKS                     		*/
 	/************************************************************************/
 
-	void GLRenderSystem::startUp_internal(AsyncOp& asyncOp)
+	void GLRenderSystem::startUp_internal()
 	{
 		mGLSupport->start();
 
-		RenderSystem::startUp_internal(asyncOp);
+		RenderSystem::startUp_internal();
 	}
 
 	void GLRenderSystem::createRenderWindow_internal(const String &name, 
@@ -2576,11 +2386,7 @@ namespace CamelotEngine {
 			mDriverVersion.build = 0;
 			// Initialise GL after the first window has been created
 			// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
-			mRealCapabilities = createRenderSystemCapabilities();
-
-			// use real capabilities if custom capabilities are not available
-			if(!mUseCustomCapabilities)
-				mCurrentCapabilities = mRealCapabilities;
+			mCurrentCapabilities = createRenderSystemCapabilities();
 
 			initialiseFromRenderSystemCapabilities(mCurrentCapabilities, win);
 
@@ -2591,5 +2397,128 @@ namespace CamelotEngine {
 		}
 
 		asyncOp.completeOperation(win);
+	}
+
+	//---------------------------------------------------------------------
+	void GLRenderSystem::bindGpuProgram_internal(GpuProgramRef prg)
+	{
+		GpuProgram* bindingPrg = prg->_getBindingDelegate();
+		GLGpuProgram* glprg = static_cast<GLGpuProgram*>(bindingPrg);
+
+		// Unbind previous gpu program first.
+		//
+		// Note:
+		//  1. Even if both previous and current are the same object, we can't
+		//     bypass re-bind completely since the object itself maybe modified.
+		//     But we can bypass unbind based on the assumption that object
+		//     internally GL program type shouldn't be changed after it has
+		//     been created. The behavior of bind to a GL program type twice
+		//     should be same as unbind and rebind that GL program type, even
+		//     for difference objects.
+		//  2. We also assumed that the program's type (vertex or fragment) should
+		//     not be changed during it's in using. If not, the following switch
+		//     statement will confuse GL state completely, and we can't fix it
+		//     here. To fix this case, we must coding the program implementation
+		//     itself, if type is changing (during load/unload, etc), and it's inuse,
+		//     unbind and notify render system to correct for its state.
+		//
+		switch (glprg->getType())
+		{
+		case GPT_VERTEX_PROGRAM:
+			if (mCurrentVertexProgram != glprg)
+			{
+				if (mCurrentVertexProgram)
+					mCurrentVertexProgram->unbindProgram();
+				mCurrentVertexProgram = glprg;
+			}
+			break;
+
+		case GPT_FRAGMENT_PROGRAM:
+			if (mCurrentFragmentProgram != glprg)
+			{
+				if (mCurrentFragmentProgram)
+					mCurrentFragmentProgram->unbindProgram();
+				mCurrentFragmentProgram = glprg;
+			}
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			if (mCurrentGeometryProgram != glprg)
+			{
+				if (mCurrentGeometryProgram)
+					mCurrentGeometryProgram->unbindProgram();
+				mCurrentGeometryProgram = glprg;
+			}
+			break;
+		}
+
+		// Bind the program
+		glprg->bindProgram();
+
+		RenderSystem::bindGpuProgram_internal(prg);
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::unbindGpuProgram_internal(GpuProgramType gptype)
+	{
+
+		if (gptype == GPT_VERTEX_PROGRAM && mCurrentVertexProgram)
+		{
+			mActiveVertexGpuProgramParameters = nullptr;
+			mCurrentVertexProgram->unbindProgram();
+			mCurrentVertexProgram = 0;
+		}
+		else if (gptype == GPT_GEOMETRY_PROGRAM && mCurrentGeometryProgram)
+		{
+			mActiveGeometryGpuProgramParameters = nullptr;
+			mCurrentGeometryProgram->unbindProgram();
+			mCurrentGeometryProgram = 0;
+		}
+		else if (gptype == GPT_FRAGMENT_PROGRAM && mCurrentFragmentProgram)
+		{
+			mActiveFragmentGpuProgramParameters = nullptr;
+			mCurrentFragmentProgram->unbindProgram();
+			mCurrentFragmentProgram = 0;
+		}
+		RenderSystem::unbindGpuProgram_internal(gptype);
+
+	}
+
+	void GLRenderSystem::bindGpuProgramParameters_internal(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask)
+	{
+		// Set textures
+		const GpuNamedConstants& consts = params->getConstantDefinitions();
+		for(auto iter = consts.map.begin(); iter != consts.map.end(); ++iter)
+		{
+			const GpuConstantDefinition& def = iter->second;
+
+			if(def.variability & mask)
+			{
+				if(def.constType == GCT_SAMPLER2D || def.constType == GCT_SAMPLERCUBE || def.constType == GCT_SAMPLER1D 
+					|| def.constType == GCT_SAMPLER2DSHADOW || def.constType == GCT_SAMPLER3D || def.constType == GCT_SAMPLER1DSHADOW)
+				{
+					TextureRef curTexture = params->getTexture(def.physicalIndex);
+					setTexture(def.physicalIndex, true, curTexture.getInternalPtr());
+
+					const SamplerState& samplerState = params->getSamplerState(def.physicalIndex);
+
+					setTextureUnitSettings(def.physicalIndex, curTexture.getInternalPtr(), samplerState);
+				}
+			}
+		}
+
+		switch (gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			mActiveVertexGpuProgramParameters = params;
+			mCurrentVertexProgram->bindProgramParameters(params, mask);
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			mActiveGeometryGpuProgramParameters = params;
+			mCurrentGeometryProgram->bindProgramParameters(params, mask);
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			mActiveFragmentGpuProgramParameters = params;
+			mCurrentFragmentProgram->bindProgramParameters(params, mask);
+			break;
+		}
 	}
 }

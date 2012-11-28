@@ -17,6 +17,7 @@ High-level TODO:
 
 Command buffer TODO:
  Immediate:
+  - Resource updates shouldn't happen once per frame. Resources should be submitted to render thread immediately.
   - Port the rest of the RenderSystem of use RenderContext
   - Port resource creation to use RenderContext (texture/mesh/shader/etc initialization and updates)
   - Make sure to add thread checks (surrounded by #if DEBUG) to RenderSystem and Vertex/Index/Pixel buffers, textures, meshes, etc.
@@ -27,6 +28,7 @@ Command buffer TODO:
   - Provide Async versions of all read commands
   - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
   - Add documentation that tells the user that resource updates only get applied at the end of the frame, unless you manually override it.
+  - Create render thread in Application, and not in RenderSystem?
 
 HIGH PRIORITY TODO:
  - Issue with deserialization and value types:
