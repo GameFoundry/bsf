@@ -132,12 +132,42 @@ namespace CamelotEngine {
 		bool activateGLTextureUnit(size_t unit);
 
 		/// @copydoc RenderSystem::createMultiRenderTarget
-		virtual MultiRenderTarget * createMultiRenderTarget_internal(const String & name); 
+		virtual MultiRenderTarget * createMultiRenderTarget(const String & name); 
 		
         /** See
           RenderSystem
          */
-        String getErrorDescription_internal(long errorNumber) const;
+        String getErrorDescription(long errorNumber) const;
+
+		/** See
+          RenderSystem
+         */
+        void setClipPlane (UINT16 index, float A, float B, float C, float D);
+        /** See
+          RenderSystem
+         */
+        void enableClipPlane (UINT16 index, bool enable);
+
+		// ----------------------------------
+        // GLRenderSystem specific members
+        // ----------------------------------
+        /** One time initialization for the RenderState of a context. Things that
+            only need to be set once, like the LightingModel can be defined here.
+         */
+        void oneTimeContextInitialization();
+        /** Switch GL context, dealing with involved internal cached states too
+        */
+        void switchContext(GLContext *context);
+        /** Unregister a render target->context mapping. If the context of target 
+            is the current context, change the context to the main context so it
+            can be destroyed safely. 
+            
+            @note This is automatically called by the destructor of 
+            GLContext.
+         */
+
+		/** Returns the main context */
+		GLContext* _getMainContext() {return mMainContext;} 
 
     public:
         // Default constructor / destructor
@@ -151,15 +181,6 @@ namespace CamelotEngine {
           RenderSystem
          */
         const String& getName(void) const;
-        /** See
-          RenderSystem
-         */
-        void shutdown(void);
-
-        /** See
-          RenderSystem
-         */
-        VertexElementType getColorVertexElementType(void) const;
 
         // -----------------------------
         // Low-level overridden members
@@ -168,11 +189,19 @@ namespace CamelotEngine {
           RenderSystem
          */
 		void startUp_internal();
+        /** See
+          RenderSystem
+         */
+        void shutdown(void);
 		/** See
           RenderSystem
          */
 		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
+        /**
+         * Set current render target to target, enabling its GL context if needed
+         */
+        void setRenderTarget_internal(RenderTarget *target);
         /** See
           RenderSystem
          */
@@ -278,14 +307,6 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setClipPlane (UINT16 index, float A, float B, float C, float D);
-        /** See
-          RenderSystem
-         */
-        void enableClipPlane (UINT16 index, bool enable);
-        /** See
-          RenderSystem
-         */
         void setPolygonMode_internal(PolygonMode level);
         /** See
           RenderSystem
@@ -320,11 +341,7 @@ namespace CamelotEngine {
           RenderSystem
          */
         void render_internal(const RenderOperation& op);
-        /** See
-          RenderSystem
-         */
-		void bindGpuProgramParameters(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
+
         /** See
           RenderSystem
          */
@@ -332,36 +349,17 @@ namespace CamelotEngine {
         void clearFrameBuffer_internal(unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
+
+		/** See
+          RenderSystem
+         */
+        VertexElementType getColorVertexElementType(void) const;
         float getHorizontalTexelOffset(void);
         float getVerticalTexelOffset(void);
         float getMinimumDepthInputValue(void);
         float getMaximumDepthInputValue(void);
-		CM_MUTEX(mThreadInitMutex)
 
-        // ----------------------------------
-        // GLRenderSystem specific members
-        // ----------------------------------
-        /** One time initialization for the RenderState of a context. Things that
-            only need to be set once, like the LightingModel can be defined here.
-         */
-        void _oneTimeContextInitialization();
-        /** Switch GL context, dealing with involved internal cached states too
-        */
-        void _switchContext(GLContext *context);
-        /**
-         * Set current render target to target, enabling its GL context if needed
-         */
-        void setRenderTarget_internal(RenderTarget *target);
-        /** Unregister a render target->context mapping. If the context of target 
-            is the current context, change the context to the main context so it
-            can be destroyed safely. 
-            
-            @note This is automatically called by the destructor of 
-            GLContext.
-         */
         void _unregisterContext(GLContext *context);
-		/** Returns the main context */
-		GLContext* _getMainContext() {return mMainContext;} 
     };
 }
 #endif

@@ -157,6 +157,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));
 	MeshRef dbgMesh = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
 
+	//int tmpFlag = _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_CRT_DF | _CRTDBG_DELAY_FREE_MEM_DF);
+
 	gResources().create(testTex, "C:\\ExportTest.tex", true);
 	gResources().create(dbgMesh, "C:\\ExportMesh.mesh", true);
 
@@ -168,8 +170,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	testMaterial = gResources().load("C:\\ExportMaterial.mat");
 
+	//_ASSERT(_CrtCheckMemory());
+
 	testRenderable->setMesh(dbgMesh);
 	testRenderable->setMaterial(testMaterial);
+
+	//// Set the new state for the flag
+	//_CrtSetDbgFlag( tmpFlag );
 
 	gApplication().runMainLoop();
 

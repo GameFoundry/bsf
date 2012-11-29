@@ -15,6 +15,9 @@ namespace CamelotEngine
 	 */
 	class RenderSystemContext
 	{
+	public:
+		CM_THREAD_ID_TYPE getThreadId() const { return mMyThreadId; }
+
 	private:
 		struct RenderSystemCommand
 		{

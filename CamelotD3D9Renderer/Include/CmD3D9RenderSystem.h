@@ -171,28 +171,61 @@ namespace CamelotEngine
 		ZBufferHash mZBufferHash;		
 
 	protected:
+		// I know that's a lot of friends, but I'd rather have friend classes than exposing the needed methods
+		// as public interface. 
+		friend class D3D9Texture;
+		friend class D3D9RenderWindow;
+		friend class D3D9Device;
+		friend class D3D9TextureManager;
+
 		void setClipPlanesImpl(const PlaneList& clipPlanes);	
 
 		/// @copydoc RenderSystem::createMultiRenderTarget
-		virtual MultiRenderTarget * createMultiRenderTarget_internal(const String & name);
+		virtual MultiRenderTarget * createMultiRenderTarget(const String & name);
+
+		String getErrorDescription( long errorNumber ) const;
+
+		void initConfigOptions();
+		void setClipPlane (UINT16 index, float A, float B, float C, float D);
+		void enableClipPlane (UINT16 index, bool enable);
 
 		/**
-         * Set current render target to target, enabling its GL context if needed
-         */
-		void setRenderTarget_internal(RenderTarget *target);
+			Get the matching Z-Buffer identifier for a certain render target
+		*/
+		ZBufferIdentifier getZBufferIdentifier(RenderTarget* rt);
 
-		String getErrorDescription_internal( long errorNumber ) const;
+		/** Check which depthStencil formats can be used with a certain pixel format,
+			and return the best suited.
+		*/
+		D3DFORMAT getDepthStencilFormatFor(D3DFORMAT fmt);
+
+		/** Get a depth stencil surface that is compatible with an internal pixel format and
+			multisample type.
+			@returns A directx surface, or 0 if there is no compatible depthstencil possible.
+		*/
+		IDirect3DSurface9* getDepthStencilFor(D3DFORMAT fmt, D3DMULTISAMPLE_TYPE multisample, DWORD multisample_quality, size_t width, size_t height);
+
+		/** Clear all cached depth stencil surfaces
+		*/
+		void cleanupDepthStencils(IDirect3DDevice9* d3d9Device);
+
+        /** Check whether or not filtering is supported for the precise texture format requested
+        with the given usage options.
+        */
+        bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
+
+		/// Take in some requested FSAA settings and output supported D3D settings
+		void determineFSAASettings(IDirect3DDevice9* d3d9Device, size_t fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
+			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
 	public:
 		// constructor
 		D3D9RenderSystem( HINSTANCE hInstance );
 		// destructor
 		~D3D9RenderSystem();
 
-		virtual void initConfigOptions();
-		
 		const String& getName() const;
 		void shutdown();
-		VertexElementType getColorVertexElementType() const;
+
 		void setStencilCheckEnabled_internal(bool enabled);
         void setStencilBufferParams_internal(CompareFunction func = CMPF_ALWAYS_PASS, 
             UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
@@ -205,6 +238,7 @@ namespace CamelotEngine
 		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
 		void destroyRenderTarget_internal(const String& name);
+		void setRenderTarget_internal(RenderTarget *target);
 
 		void bindGpuProgram_internal(GpuProgramRef prg);
 		void unbindGpuProgram_internal(GpuProgramType gptype);
@@ -245,12 +279,12 @@ namespace CamelotEngine
         void clearFrameBuffer_internal(unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
-		void setClipPlane (UINT16 index, float A, float B, float C, float D);
-		void enableClipPlane (UINT16 index, bool enable);
+
         float getHorizontalTexelOffset();
         float getVerticalTexelOffset();
         float getMinimumDepthInputValue();
         float getMaximumDepthInputValue();
+		VertexElementType getColorVertexElementType() const;
 
 		static D3D9ResourceManager* getResourceManager();
 		static D3D9DeviceManager* getDeviceManager();
@@ -258,35 +292,6 @@ namespace CamelotEngine
 		static UINT	getResourceCreationDeviceCount();
 		static IDirect3DDevice9* getResourceCreationDevice(UINT index);
 		static IDirect3DDevice9* getActiveD3D9Device();
-		
-		/**
-			Get the matching Z-Buffer identifier for a certain render target
-		*/
-		ZBufferIdentifier getZBufferIdentifier(RenderTarget* rt);
-
-		/** Check which depthStencil formats can be used with a certain pixel format,
-			and return the best suited.
-		*/
-		D3DFORMAT _getDepthStencilFormatFor(D3DFORMAT fmt);
-
-		/** Get a depth stencil surface that is compatible with an internal pixel format and
-			multisample type.
-			@returns A directx surface, or 0 if there is no compatible depthstencil possible.
-		*/
-		IDirect3DSurface9* _getDepthStencilFor(D3DFORMAT fmt, D3DMULTISAMPLE_TYPE multisample, DWORD multisample_quality, size_t width, size_t height);
-
-		/** Clear all cached depth stencil surfaces
-		*/
-		void _cleanupDepthStencils(IDirect3DDevice9* d3d9Device);
-
-        /** Check whether or not filtering is supported for the precise texture format requested
-        with the given usage options.
-        */
-        bool _checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
-
-		/// Take in some requested FSAA settings and output supported D3D settings
-		void determineFSAASettings(IDirect3DDevice9* d3d9Device, size_t fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
-			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
 
 	protected:	
 		/// Notify when a device has been lost.

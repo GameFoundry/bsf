@@ -42,6 +42,14 @@ THE SOFTWARE.
 #include "CmRenderSystemContext.h"
 #include "boost/bind.hpp"
 
+#if CM_DEBUG_MODE
+#define THROW_IF_INVALID_CONTEXT throwIfInvalidContextThread();
+#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
+#else
+#define THROW_IF_INVALID_CONTEXT 
+#define THROW_IF_NOT_RENDER_THREAD 
+#endif
+
 namespace CamelotEngine {
 
     static const TexturePtr sNullTexPtr;
@@ -92,6 +100,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::startUp_internal()
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		mVertexProgramBound = false;
 		mGeometryProgramBound = false;
 		mFragmentProgramBound = false;
@@ -99,6 +109,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::shutdown(void)
 	{
+		// TODO - I should probably sync this up to make sure no other threads are doing anything while shutdown is in progress
+
 		// Remove all the render targets.
 		// (destroy primary target last since others may depend on it)
 		RenderTarget* primary = 0;
@@ -119,6 +131,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::swapAllRenderTargetBuffers(bool waitForVSync)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::swapAllRenderTargetBuffers_internal, this, waitForVSync));
@@ -126,6 +139,8 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     void RenderSystem::swapAllRenderTargetBuffers_internal(bool waitForVSync)
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         // Update all in order of priority
         // This ensures render-to-texture targets get updated before render windows
 		RenderTargetPriorityMap::iterator itarg, itargend;
@@ -140,6 +155,8 @@ namespace CamelotEngine {
 	RenderWindow* RenderSystem::createRenderWindow(const String &name, unsigned int width, unsigned int height, 
 		bool fullScreen, const NameValuePairList *miscParams)
 	{
+		THROW_IF_INVALID_CONTEXT;
+
 		AsyncOp op;
 		{
 			CM_LOCK_MUTEX(mResourceContextMutex)
@@ -156,23 +173,31 @@ namespace CamelotEngine {
     //---------------------------------------------------------------------------------------------
     void RenderSystem::destroyRenderWindow_internal(const String& name)
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         destroyRenderTarget_internal(name);
     }
     //---------------------------------------------------------------------------------------------
     void RenderSystem::destroyRenderTexture_internal(const String& name)
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         destroyRenderTarget_internal(name);
     }
     //---------------------------------------------------------------------------------------------
     void RenderSystem::destroyRenderTarget_internal(const String& name)
     {
-        RenderTarget* rt = detachRenderTarget_internal(name);
+		THROW_IF_NOT_RENDER_THREAD;
+
+        RenderTarget* rt = detachRenderTarget(name);
         delete rt;
     }
     //---------------------------------------------------------------------------------------------
     void RenderSystem::attachRenderTarget_internal( RenderTarget &target )
     {
-		assert( target.getPriority() < OGRE_NUM_RENDERTARGET_GROUPS );
+		THROW_IF_NOT_RENDER_THREAD;
+
+		assert( target.getPriority() < CM_NUM_RENDERTARGET_GROUPS );
 
         mRenderTargets.insert( RenderTargetMap::value_type( target.getName(), &target ) );
         mPrioritisedRenderTargets.insert(
@@ -180,8 +205,10 @@ namespace CamelotEngine {
     }
 
     //---------------------------------------------------------------------------------------------
-    RenderTarget * RenderSystem::getRenderTarget_internal( const String &name )
+    RenderTarget * RenderSystem::getRenderTarget( const String &name )
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         RenderTargetMap::iterator it = mRenderTargets.find( name );
         RenderTarget *ret = NULL;
 
@@ -192,10 +219,25 @@ namespace CamelotEngine {
 
         return ret;
     }
+	//---------------------------------------------------------------------------------------------
+	const RenderSystemCapabilities* RenderSystem::getCapabilities_internal(void) const 
+	{ 
+		THROW_IF_NOT_RENDER_THREAD;
 
+		return mCurrentCapabilities; 
+	}
+	//---------------------------------------------------------------------------------------------
+	const DriverVersion& RenderSystem::getDriverVersion_internal(void) const 
+	{ 
+		THROW_IF_NOT_RENDER_THREAD;
+
+		return mDriverVersion; 
+	}
     //---------------------------------------------------------------------------------------------
-    RenderTarget * RenderSystem::detachRenderTarget_internal( const String &name )
+    RenderTarget * RenderSystem::detachRenderTarget( const String &name )
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         RenderTargetMap::iterator it = mRenderTargets.find( name );
         RenderTarget *ret = NULL;
 
@@ -225,6 +267,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setViewport(const Viewport& vp)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setViewport_internal, this, vp));
@@ -232,11 +275,14 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     Viewport RenderSystem::getViewport_internal(void)
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         return mActiveViewport;
     }
     //-----------------------------------------------------------------------
     void RenderSystem::setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, const SamplerState& samplerState)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureUnitSettings_internal, this, texUnit, tex, samplerState));
@@ -244,6 +290,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
     void RenderSystem::setTextureUnitSettings_internal(size_t texUnit, const TexturePtr& tex, const SamplerState& tl)
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         // This method is only ever called to set a texture unit to valid details
         // The method _disableTextureUnit is called to turn a unit off
 
@@ -292,6 +340,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setTexture(size_t unit, bool enabled, const TexturePtr &texPtr)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTexture_internal, this, unit, enabled, texPtr));
@@ -299,6 +348,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setVertexTexture(size_t unit, const TexturePtr& tex)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setVertexTexture_internal, this, unit, tex));
@@ -306,6 +356,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setVertexTexture_internal(size_t unit, const TexturePtr& tex)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		CM_EXCEPT(NotImplementedException, 
 			"This rendersystem does not support separate vertex texture samplers, "
 			"you should use the regular texture samplers which are shared between "
@@ -314,6 +366,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::disableTextureUnit(size_t texUnit)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::disableTextureUnit_internal, this, texUnit));
@@ -321,11 +374,14 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     void RenderSystem::disableTextureUnit_internal(size_t texUnit)
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         setTexture_internal(texUnit, false, sNullTexPtr);
     }
 	//---------------------------------------------------------------------
 	void RenderSystem::disableTextureUnitsFrom(size_t texUnit)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::disableTextureUnitsFrom_internal, this, texUnit));
@@ -333,6 +389,8 @@ namespace CamelotEngine {
     //---------------------------------------------------------------------
     void RenderSystem::disableTextureUnitsFrom_internal(size_t texUnit)
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         size_t disableTo = CM_MAX_TEXTURE_LAYERS;
         if (disableTo > mDisabledTexUnitsFrom)
             disableTo = mDisabledTexUnitsFrom;
@@ -346,6 +404,7 @@ namespace CamelotEngine {
 	void RenderSystem::setTextureFiltering(size_t unit, FilterOptions minFilter,
 		FilterOptions magFilter, FilterOptions mipFilter)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureFiltering_internal, this, unit, minFilter, magFilter, mipFilter));
@@ -354,6 +413,8 @@ namespace CamelotEngine {
     void RenderSystem::setTextureFiltering_internal(size_t unit, FilterOptions minFilter,
             FilterOptions magFilter, FilterOptions mipFilter)
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         setTextureFiltering_internal(unit, FT_MIN, minFilter);
         setTextureFiltering_internal(unit, FT_MAG, magFilter);
         setTextureFiltering_internal(unit, FT_MIP, mipFilter);
@@ -361,6 +422,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureAnisotropy_internal, this, unit, maxAnisotropy));
@@ -368,6 +430,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setTextureAddressingMode(size_t unit, const SamplerState::UVWAddressingMode& uvw)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureAddressingMode_internal, this, unit, uvw));
@@ -375,6 +438,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setTextureBorderColor(size_t unit, const Color& color)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureBorderColor_internal, this, unit, color));
@@ -382,6 +446,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setTextureMipmapBias(size_t unit, float bias)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureMipmapBias_internal, this, unit, bias));
@@ -390,6 +455,7 @@ namespace CamelotEngine {
 	void RenderSystem::setPointParameters(float size, bool attenuationEnabled, 
 		float constant, float linear, float quadratic, float minSize, float maxSize)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setPointParameters_internal, this, size, attenuationEnabled, constant, linear, quadratic, minSize, maxSize));
@@ -397,6 +463,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setSceneBlending_internal, this, sourceFactor, destFactor, op));
@@ -405,6 +472,7 @@ namespace CamelotEngine {
 	void RenderSystem::setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
 		SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setSeparateSceneBlending_internal, this, sourceFactor, destFactor, sourceFactorAlpha, destFactorAlpha, op, alphaOp));
@@ -412,6 +480,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setAlphaRejectSettings_internal, this, func, value, alphaToCoverage));
@@ -419,6 +488,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setScissorTest(bool enabled, size_t left, size_t top, size_t right, size_t bottom)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setScissorTest_internal, this, enabled, left, top, right, bottom));
@@ -426,6 +496,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	bool RenderSystem::getWaitForVerticalBlank(void) const
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		return mActiveContext->waitForVerticalBlank;
@@ -433,11 +504,14 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	bool RenderSystem::getWaitForVerticalBlank_internal(void) const
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		return mVsync;
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::setWaitForVerticalBlank(bool enabled)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->waitForVerticalBlank = enabled;
@@ -446,11 +520,14 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setWaitForVerticalBlank_internal(bool enabled)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		mVsync = enabled;
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::setInvertVertexWinding(bool invert)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->invertVertexWinding = invert;
@@ -459,11 +536,14 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setInvertVertexWinding_internal(bool invert)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		mInvertVertexWinding = invert;
 	}
 	//-----------------------------------------------------------------------
 	bool RenderSystem::getInvertVertexWinding(void) const
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		return mActiveContext->invertVertexWinding;
@@ -471,11 +551,14 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	bool RenderSystem::getInvertVertexWinding_internal(void) const
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		return mInvertVertexWinding;
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferParams_internal, this, depthTest, depthWrite, depthFunction));
@@ -483,6 +566,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setDepthBufferCheckEnabled(bool enabled)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferCheckEnabled_internal, this, enabled));
@@ -490,6 +574,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setDepthBufferWriteEnabled(bool enabled)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferWriteEnabled_internal, this, enabled));
@@ -497,6 +582,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setDepthBufferFunction(CompareFunction func)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferFunction_internal, this, func));
@@ -504,6 +590,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setColorBufferWriteEnabled_internal, this, red, green, blue, alpha));
@@ -511,6 +598,7 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void RenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBias_internal, this, constantBias, slopeScaleBias));
@@ -518,6 +606,7 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void RenderSystem::setPolygonMode(PolygonMode level)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setPolygonMode_internal, this, level));
@@ -525,6 +614,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setStencilCheckEnabled(bool enabled)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setStencilCheckEnabled_internal, this, enabled));
@@ -533,6 +623,7 @@ namespace CamelotEngine {
 	void RenderSystem::setStencilBufferParams(CompareFunction func, UINT32 refValue, UINT32 mask, StencilOperation stencilFailOp, 
 		StencilOperation depthFailOp, StencilOperation passOp, bool twoSidedOperation)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setStencilBufferParams_internal, this, func, refValue, mask, stencilFailOp, depthFailOp, passOp, twoSidedOperation));
@@ -540,6 +631,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	CullingMode RenderSystem::getCullingMode(void) const
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		return mActiveContext->cullingMode;
@@ -547,11 +639,13 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	CullingMode RenderSystem::getCullingMode_internal(void) const
 	{
+		THROW_IF_NOT_RENDER_THREAD;
 		return mCullingMode;
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::setCullingMode(CullingMode mode)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->cullingMode = mode;
@@ -561,6 +655,7 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void RenderSystem::addClipPlane(const Plane &p)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::addClipPlane_internal, this, p));
@@ -568,12 +663,15 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void RenderSystem::addClipPlane_internal (const Plane &p)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		mClipPlanes.push_back(p);
 		mClipPlanesDirty = true;
 	}
 	//---------------------------------------------------------------------
 	void RenderSystem::addClipPlane(float A, float B, float C, float D)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::addClipPlane_internal, this, A, B, C, D));
@@ -581,11 +679,14 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void RenderSystem::addClipPlane_internal (float A, float B, float C, float D)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		addClipPlane_internal(Plane(A, B, C, D));
 	}
 	//---------------------------------------------------------------------
 	void RenderSystem::setClipPlanes(const PlaneList& clipPlanes)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setClipPlanes_internal, this, clipPlanes));
@@ -593,6 +694,8 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void RenderSystem::setClipPlanes_internal(const PlaneList& clipPlanes)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (clipPlanes != mClipPlanes)
 		{
 			mClipPlanes = clipPlanes;
@@ -602,6 +705,7 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void RenderSystem::resetClipPlanes()
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::resetClipPlanes_internal, this));
@@ -609,6 +713,8 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void RenderSystem::resetClipPlanes_internal()
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (!mClipPlanes.empty())
 		{
 			mClipPlanes.clear();
@@ -618,6 +724,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::bindGpuProgram(GpuProgramRef prg)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::bindGpuProgram_internal, this, prg));
@@ -625,6 +732,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::bindGpuProgram_internal(GpuProgramRef prg)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		switch(prg->_getBindingDelegate()->getType())
 		{
 		case GPT_VERTEX_PROGRAM:
@@ -645,6 +754,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 	    mActiveContext->queueCommand(boost::bind(&RenderSystem::unbindGpuProgram_internal, this, gptype));
@@ -652,6 +762,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::unbindGpuProgram_internal(GpuProgramType gptype)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		switch(gptype)
 		{
 		case GPT_VERTEX_PROGRAM:
@@ -672,6 +784,8 @@ namespace CamelotEngine {
 	void RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, 
 		GpuProgramParametersSharedPtr params, UINT16 variabilityMask)
 	{
+		THROW_IF_INVALID_CONTEXT;
+
 		GpuProgramParametersSharedPtr paramCopy = GpuProgramParametersSharedPtr(new GpuProgramParameters(*params));
 
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -679,8 +793,10 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::bindGpuProgramParameters_internal, this, gptype, paramCopy, variabilityMask));
 	}
 	//-----------------------------------------------------------------------
-	bool RenderSystem::isGpuProgramBound(GpuProgramType gptype)
+	bool RenderSystem::isGpuProgramBound_internal(GpuProgramType gptype)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 	    switch(gptype)
 	    {
         case GPT_VERTEX_PROGRAM:
@@ -696,6 +812,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setRenderTarget(RenderTarget *target)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setRenderTarget_internal, this, target));
@@ -703,6 +820,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::clearFrameBuffer(unsigned int buffers, const Color& color, float depth, unsigned short stencil)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::clearFrameBuffer_internal, this, buffers, color, depth, stencil));
@@ -710,6 +828,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::beginFrame()
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::beginFrame_internal, this));
@@ -717,6 +836,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::endFrame()
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::endFrame_internal, this));
@@ -724,6 +844,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::render(const RenderOperation& op)
 	{
+		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::render_internal, this, op));
@@ -731,6 +852,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::render_internal(const RenderOperation& op)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		// sort out clip planes
 		// have to do it here in case of matrix issues
 		if (mClipPlanesDirty)
@@ -739,6 +862,10 @@ namespace CamelotEngine {
 			mClipPlanesDirty = false;
 		}
 	}
+
+	/************************************************************************/
+	/* 								PRIVATE		                     		*/
+	/************************************************************************/
 
 	void RenderSystem::initRenderThread()
 	{
@@ -907,10 +1034,16 @@ namespace CamelotEngine {
 		CM_THREAD_NOTIFY_ALL(mRSContextReadyCondition)
 	}
 
-	void RenderSystem::throwIfInvalidThread()
+	void RenderSystem::throwIfNotRenderThread() const
 	{
 		if(CM_THREAD_CURRENT_ID != getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "Calling the render system from a non-render thread!");
+	}
+
+	void RenderSystem::throwIfInvalidContextThread() const
+	{
+		if(CM_THREAD_CURRENT_ID != mActiveContext->getThreadId())
+			CM_EXCEPT(InternalErrorException, "Active context is called from a thread it was not initialized on!");
 	}
 
 	/************************************************************************/
@@ -929,3 +1062,5 @@ namespace CamelotEngine {
 	}
 }
 
+#undef THROW_IF_INVALID_CONTEXT
+#undef THROW_IF_NOT_RENDER_THREAD

@@ -47,6 +47,12 @@ THE SOFTWARE.s
 #include "CmGLFBORenderTexture.h"
 #include "CmGLPBRenderTexture.h"
 
+#if CM_DEBUG_MODE
+#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
+#else
+#define THROW_IF_NOT_RENDER_THREAD 
+#endif
+
 // Convenience macro from ARB_vertex_buffer_object spec
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -72,6 +78,10 @@ namespace CamelotEngine {
 		ret->setSyntaxCode(syntaxCode);
 		return ret;
 	}
+
+	/************************************************************************/
+	/* 								PUBLIC INTERFACE                   		*/
+	/************************************************************************/
 
 	GLRenderSystem::GLRenderSystem()
 		: mDepthWrite(true), mStencilMask(0xFFFFFFFF),
@@ -135,692 +145,13 @@ namespace CamelotEngine {
 		return strName;
 	}
 
-	void GLRenderSystem::initConfigOptions(void)
+	void GLRenderSystem::startUp_internal()
 	{
-		mGLSupport->addConfig();
-	}
+		THROW_IF_NOT_RENDER_THREAD;
 
-	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
-	{
-		RenderSystemCapabilities* rsc = new RenderSystemCapabilities();
+		mGLSupport->start();
 
-		rsc->setCategoryRelevant(CAPS_CATEGORY_GL, true);
-		rsc->setDriverVersion(mDriverVersion);
-		const char* deviceName = (const char*)glGetString(GL_RENDERER);
-		const char* vendorName = (const char*)glGetString(GL_VENDOR);
-		rsc->setDeviceName(deviceName);
-		rsc->setRenderSystemName(getName());
-
-		// determine vendor
-		if (strstr(vendorName, "NVIDIA"))
-			rsc->setVendor(GPU_NVIDIA);
-		else if (strstr(vendorName, "ATI"))
-			rsc->setVendor(GPU_ATI);
-		else if (strstr(vendorName, "Intel"))
-			rsc->setVendor(GPU_INTEL);
-		else if (strstr(vendorName, "S3"))
-			rsc->setVendor(GPU_S3);
-		else if (strstr(vendorName, "Matrox"))
-			rsc->setVendor(GPU_MATROX);
-		else if (strstr(vendorName, "3DLabs"))
-			rsc->setVendor(GPU_3DLABS);
-		else if (strstr(vendorName, "SiS"))
-			rsc->setVendor(GPU_SIS);
-		else
-			rsc->setVendor(GPU_UNKNOWN);
-
-		// Supports fixed-function
-		rsc->setCapability(RSC_FIXED_FUNCTION);
-
-        // Check for hardware mipmapping support.
-        if(GLEW_VERSION_1_4 || GLEW_SGIS_generate_mipmap)
-        {
-			bool disableAutoMip = false;
-#if CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == CM_PLATFORM_LINUX
-			// Apple & Linux ATI drivers have faults in hardware mipmap generation
-			if (rsc->getVendor() == GPU_ATI)
-				disableAutoMip = true;
-#endif
-			// The Intel 915G frequently corrupts textures when using hardware mip generation
-			// I'm not currently sure how many generations of hardware this affects, 
-			// so for now, be safe.
-			if (rsc->getVendor() == GPU_INTEL)
-				disableAutoMip = true;
-
-			// SiS chipsets also seem to have problems with this
-			if (rsc->getVendor() == GPU_SIS)
-				disableAutoMip = true;
-
-			if (!disableAutoMip)
-				rsc->setCapability(RSC_AUTOMIPMAP);
-        }
-
-		// Check for blending support
-		if(GLEW_VERSION_1_3 || 
-			GLEW_ARB_texture_env_combine || 
-			GLEW_EXT_texture_env_combine)
-		{
-			rsc->setCapability(RSC_BLENDING);
-		}
-
-		// Check for Multitexturing support and set number of texture units
-		if(GLEW_VERSION_1_3 || 
-			GLEW_ARB_multitexture)
-		{
-			GLint units;
-			glGetIntegerv( GL_MAX_TEXTURE_UNITS, &units );
-
-			if (GLEW_ARB_fragment_program)
-			{
-				// Also check GL_MAX_TEXTURE_IMAGE_UNITS_ARB since NV at least
-				// only increased this on the FX/6x00 series
-				GLint arbUnits;
-				glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &arbUnits );
-				if (arbUnits > units)
-					units = arbUnits;
-			}
-			rsc->setNumTextureUnits(units);
-		}
-		else
-		{
-			// If no multitexture support then set one texture unit
-			rsc->setNumTextureUnits(1);
-		}
-
-		// Check for Anisotropy support
-		if(GLEW_EXT_texture_filter_anisotropic)
-		{
-			rsc->setCapability(RSC_ANISOTROPY);
-		}
-
-		// Check for DOT3 support
-		if(GLEW_VERSION_1_3 ||
-			GLEW_ARB_texture_env_dot3 ||
-			GLEW_EXT_texture_env_dot3)
-		{
-			rsc->setCapability(RSC_DOT3);
-		}
-
-		// Check for cube mapping
-		if(GLEW_VERSION_1_3 || 
-			GLEW_ARB_texture_cube_map ||
-			GLEW_EXT_texture_cube_map)
-		{
-			rsc->setCapability(RSC_CUBEMAPPING);
-		}
-
-
-		// Point sprites
-		if (GLEW_VERSION_2_0 ||	GLEW_ARB_point_sprite)
-		{
-			rsc->setCapability(RSC_POINT_SPRITES);
-		}
-		// Check for point parameters
-		if (GLEW_VERSION_1_4)
-		{
-			rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS);
-		}
-		if (GLEW_ARB_point_parameters)
-		{
-			rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS_ARB);
-		}
-		if (GLEW_EXT_point_parameters)
-		{
-			rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS_EXT);
-		}
-
-		// Check for hardware stencil support and set bit depth
-		GLint stencil;
-		glGetIntegerv(GL_STENCIL_BITS,&stencil);
-
-		if(stencil)
-		{
-			rsc->setCapability(RSC_HWSTENCIL);
-			rsc->setStencilBufferBitDepth(stencil);
-		}
-
-
-		if(GLEW_VERSION_1_5 || GLEW_ARB_vertex_buffer_object)
-		{
-			if (!GLEW_ARB_vertex_buffer_object)
-			{
-				rsc->setCapability(RSC_GL1_5_NOVBO);
-			}
-			rsc->setCapability(RSC_VBO);
-		}
-
-		if(GLEW_ARB_vertex_program)
-		{
-			rsc->setCapability(RSC_VERTEX_PROGRAM);
-
-			// Vertex Program Properties
-			rsc->setVertexProgramConstantBoolCount(0);
-			rsc->setVertexProgramConstantIntCount(0);
-
-			GLint floatConstantCount;
-			glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB, &floatConstantCount);
-			rsc->setVertexProgramConstantFloatCount(floatConstantCount);
-
-			rsc->addShaderProfile("arbvp1");
-			rsc->addGpuProgramProfile(GPP_VS_1_1, "arbvp1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-			rsc->addGpuProgramProfile(GPP_VS_2_0, "arbvp1");
-			rsc->addGpuProgramProfile(GPP_VS_2_a, "arbvp1");
-			rsc->addGpuProgramProfile(GPP_VS_2_x, "arbvp1");
-
-			if (GLEW_NV_vertex_program2_option)
-			{
-				rsc->addShaderProfile("vp30");
-				rsc->addGpuProgramProfile(GPP_VS_3_0, "vp30"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-				rsc->addGpuProgramProfile(GPP_VS_4_0, "vp30");
-			}
-
-			if (GLEW_NV_vertex_program3)
-			{
-				rsc->addShaderProfile("vp40");
-				rsc->addGpuProgramProfile(GPP_VS_3_0, "vp40"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-				rsc->addGpuProgramProfile(GPP_VS_4_0, "vp40");
-			}
-
-			if (GLEW_NV_vertex_program4)
-			{
-				rsc->addShaderProfile("gp4vp");
-				rsc->addShaderProfile("gpu_vp");
-			}
-		}
-
-		if (GLEW_NV_register_combiners2 &&
-			GLEW_NV_texture_shader)
-		{
-			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
-		}
-
-		// NFZ - check for ATI fragment shader support
-		if (GLEW_ATI_fragment_shader)
-		{
-			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
-			// no boolean params allowed
-			rsc->setFragmentProgramConstantBoolCount(0);
-			// no integer params allowed
-			rsc->setFragmentProgramConstantIntCount(0);
-
-			// only 8 Vector4 constant floats supported
-			rsc->setFragmentProgramConstantFloatCount(8);
-
-			rsc->addShaderProfile("ps_1_4");
-			rsc->addShaderProfile("ps_1_3");
-			rsc->addShaderProfile("ps_1_2");
-			rsc->addShaderProfile("ps_1_1");
-
-			rsc->addGpuProgramProfile(GPP_PS_1_1, "ps_1_1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-			rsc->addGpuProgramProfile(GPP_PS_1_2, "ps_1_2");
-			rsc->addGpuProgramProfile(GPP_PS_1_3, "ps_1_3");
-			rsc->addGpuProgramProfile(GPP_PS_1_4, "ps_1_4");
-		}
-
-		if (GLEW_ARB_fragment_program)
-		{
-			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
-
-			// Fragment Program Properties
-			rsc->setFragmentProgramConstantBoolCount(0);
-			rsc->setFragmentProgramConstantIntCount(0);
-
-			GLint floatConstantCount;
-			glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB, &floatConstantCount);
-			rsc->setFragmentProgramConstantFloatCount(floatConstantCount);
-
-			rsc->addShaderProfile("arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_1_1, "arbfp1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-			rsc->addGpuProgramProfile(GPP_PS_1_2, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_1_3, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_1_4, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_2_0, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_2_a, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_2_b, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_2_x, "arbfp1");
-
-			if (GLEW_NV_fragment_program_option)
-			{
-				rsc->addShaderProfile("fp30");
-				rsc->addGpuProgramProfile(GPP_PS_3_0, "fp30"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-				rsc->addGpuProgramProfile(GPP_PS_3_x, "fp30");
-				rsc->addGpuProgramProfile(GPP_PS_4_0, "fp30");
-			}
-
-			if (GLEW_NV_fragment_program2)
-			{
-				rsc->addShaderProfile("fp40");
-				rsc->addGpuProgramProfile(GPP_PS_3_0, "fp40"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-				rsc->addGpuProgramProfile(GPP_PS_3_x, "fp40");
-				rsc->addGpuProgramProfile(GPP_PS_4_0, "fp40");
-			}        
-		}
-
-		rsc->addShaderProfile("cg");
-
-		// NFZ - Check if GLSL is supported
-		if ( GLEW_VERSION_2_0 || 
-			(GLEW_ARB_shading_language_100 &&
-			GLEW_ARB_shader_objects &&
-			GLEW_ARB_fragment_shader &&
-			GLEW_ARB_vertex_shader) )
-		{
-			rsc->addShaderProfile("glsl");
-		}
-
-		// Check if geometry shaders are supported
-		if (GLEW_VERSION_2_0 &&
-			GLEW_EXT_geometry_shader4)
-		{
-			rsc->setCapability(RSC_GEOMETRY_PROGRAM);
-			rsc->addShaderProfile("nvgp4");
-
-			//Also add the CG profiles
-			rsc->addShaderProfile("gpu_gp");
-			rsc->addShaderProfile("gp4gp");
-
-			rsc->setGeometryProgramConstantBoolCount(0);
-			rsc->setGeometryProgramConstantIntCount(0);
-
-			GLint floatConstantCount = 0;
-            glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_EXT, &floatConstantCount);
-			rsc->setGeometryProgramConstantFloatCount(floatConstantCount);
-
-			GLint maxOutputVertices;
-			glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT,&maxOutputVertices);
-			rsc->setGeometryProgramNumOutputVertices(maxOutputVertices);
-		}
-		
-		//Check if render to vertex buffer (transform feedback in OpenGL)
-		if (GLEW_VERSION_2_0 && 
-			GLEW_NV_transform_feedback)
-		{
-			rsc->setCapability(RSC_HWRENDER_TO_VERTEX_BUFFER);
-		}
-
-		// Check for texture compression
-        if(GLEW_VERSION_1_3 || GLEW_ARB_texture_compression)
-        {   
-			rsc->setCapability(RSC_TEXTURE_COMPRESSION);
-         
-            // Check for dxt compression
-            if(GLEW_EXT_texture_compression_s3tc)
-            {
-#if defined(__APPLE__) && defined(__PPC__)
-			// Apple on ATI & PPC has errors in DXT
-			if (mGLSupport->getGLVendor().find("ATI") == std::string::npos)
-#endif
-					rsc->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
-            }
-            // Check for vtc compression
-            if(GLEW_NV_texture_compression_vtc)
-            {
-                rsc->setCapability(RSC_TEXTURE_COMPRESSION_VTC);
-            }
-        }
-
-		// Scissor test is standard in GL 1.2 (is it emulated on some cards though?)
-		rsc->setCapability(RSC_SCISSOR_TEST);
-		// As are user clipping planes
-		rsc->setCapability(RSC_USER_CLIP_PLANES);
-
-		// 2-sided stencil?
-		if (GLEW_VERSION_2_0 || GLEW_EXT_stencil_two_side)
-		{
-			rsc->setCapability(RSC_TWO_SIDED_STENCIL);
-		}
-		// stencil wrapping?
-		if (GLEW_VERSION_1_4 || GLEW_EXT_stencil_wrap)
-		{
-			rsc->setCapability(RSC_STENCIL_WRAP);
-		}
-
-		// Check for hardware occlusion support
-		if(GLEW_VERSION_1_5 || GLEW_ARB_occlusion_query)
-		{
-			// Some buggy driver claim that it is GL 1.5 compliant and
-			// not support ARB_occlusion_query
-			if (!GLEW_ARB_occlusion_query)
-			{
-				rsc->setCapability(RSC_GL1_5_NOHWOCCLUSION);
-			}
-
-			rsc->setCapability(RSC_HWOCCLUSION);
-		}
-		else if (GLEW_NV_occlusion_query)
-		{
-			// Support NV extension too for old hardware
-			rsc->setCapability(RSC_HWOCCLUSION);
-		}
-
-		// UBYTE4 always supported
-		rsc->setCapability(RSC_VERTEX_FORMAT_UBYTE4);
-
-		// Infinite far plane always supported
-		rsc->setCapability(RSC_INFINITE_FAR_PLANE);
-
-		// Check for non-power-of-2 texture support
-		if(GLEW_ARB_texture_non_power_of_two)
-		{
-			rsc->setCapability(RSC_NON_POWER_OF_2_TEXTURES);
-		}
-
-		// Check for Float textures
-		if(GLEW_ATI_texture_float || GLEW_ARB_texture_float)
-		{
-			rsc->setCapability(RSC_TEXTURE_FLOAT);
-		}
-
-		// 3D textures should be supported by GL 1.2, which is our minimum version
-		rsc->setCapability(RSC_TEXTURE_3D);
-
-		// Check for framebuffer object extension
-		if(GLEW_EXT_framebuffer_object)
-		{
-			// Probe number of draw buffers
-			// Only makes sense with FBO support, so probe here
-			if(GLEW_VERSION_2_0 || 
-				GLEW_ARB_draw_buffers ||
-				GLEW_ATI_draw_buffers)
-			{
-				GLint buffers;
-				glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &buffers);
-				rsc->setNumMultiRenderTargets(std::min<int>(buffers, (GLint)CM_MAX_MULTIPLE_RENDER_TARGETS));
-				rsc->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);
-				if(!GLEW_VERSION_2_0)
-				{
-					// Before GL version 2.0, we need to get one of the extensions
-					if(GLEW_ARB_draw_buffers)
-						rsc->setCapability(RSC_FBO_ARB);
-					if(GLEW_ATI_draw_buffers)
-						rsc->setCapability(RSC_FBO_ATI);
-				}
-				// Set FBO flag for all 3 'subtypes'
-				rsc->setCapability(RSC_FBO);
-
-			}
-			rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
-		}
-
-		// Check GLSupport for PBuffer support
-		if(mGLSupport->supportsPBuffers())
-		{
-			// Use PBuffers
-			rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
-			rsc->setCapability(RSC_PBUFFER);
-		}
-
-		// Point size
-		if (GLEW_VERSION_1_4)
-		{
-		float ps;
-		glGetFloatv(GL_POINT_SIZE_MAX, &ps);
-		rsc->setMaxPointSize(ps);
-		}
-		else
-		{
-			GLint vSize[2];
-			glGetIntegerv(GL_POINT_SIZE_RANGE,vSize);
-			rsc->setMaxPointSize((float)vSize[1]);
-		}
-
-		// Vertex texture fetching
-		if (mGLSupport->checkExtension("GL_ARB_vertex_shader"))
-		{
-		GLint vUnits;
-		glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, &vUnits);
-		rsc->setNumVertexTextureUnits(static_cast<UINT16>(vUnits));
-		if (vUnits > 0)
-		{
-			rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
-		}
-		// GL always shares vertex and fragment texture units (for now?)
-		rsc->setVertexTextureUnitsShared(true);
-		}
-
-		// Mipmap LOD biasing?
-		if (GLEW_VERSION_1_4 || GLEW_EXT_texture_lod_bias)
-		{
-			rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
-		}
-
-		// Alpha to coverage?
-		if (mGLSupport->checkExtension("GL_ARB_multisample"))
-		{
-			// Alpha to coverage always 'supported' when MSAA is available
-			// although card may ignore it if it doesn't specifically support A2C
-			rsc->setCapability(RSC_ALPHA_TO_COVERAGE);
-		}
-
-		// Advanced blending operations
-		if(GLEW_VERSION_2_0)
-		{
-			rsc->setCapability(RSC_ADVANCED_BLEND_OPERATIONS);
-		}
-
-		return rsc;
-	}
-
-	void GLRenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary)
-	{
-		if(caps->getRenderSystemName() != getName())
-		{
-			CM_EXCEPT(InvalidParametersException, 
-				"Trying to initialize GLRenderSystem from RenderSystemCapabilities that do not support OpenGL");
-		}
-
-		// set texture the number of texture units
-		mFixedFunctionTextureUnits = caps->getNumTextureUnits();
-
-		//In GL there can be less fixed function texture units than general
-		//texture units. Get the minimum of the two.
-		if (caps->hasCapability(RSC_FRAGMENT_PROGRAM))
-		{
-			GLint maxTexCoords = 0;
-			glGetIntegerv(GL_MAX_TEXTURE_COORDS_ARB, &maxTexCoords);
-			if (mFixedFunctionTextureUnits > maxTexCoords)
-			{
-				mFixedFunctionTextureUnits = maxTexCoords;
-			}
-		}
-		
-		if(caps->hasCapability(RSC_GL1_5_NOVBO))
-		{
-			// Assign ARB functions same to GL 1.5 version since
-			// interface identical
-			glBindBufferARB = glBindBuffer;
-			glBufferDataARB = glBufferData;
-			glBufferSubDataARB = glBufferSubData;
-			glDeleteBuffersARB = glDeleteBuffers;
-			glGenBuffersARB = glGenBuffers;
-			glGetBufferParameterivARB = glGetBufferParameteriv;
-			glGetBufferPointervARB = glGetBufferPointerv;
-			glGetBufferSubDataARB = glGetBufferSubData;
-			glIsBufferARB = glIsBuffer;
-			glMapBufferARB = glMapBuffer;
-			glUnmapBufferARB = glUnmapBuffer;
-		}
-
-		if(caps->hasCapability(RSC_VBO))
-		{
-			HardwareBufferManager::startUp(new GLHardwareBufferManager);
-		}
-		else
-		{
-			HardwareBufferManager::startUp(new GLDefaultHardwareBufferManager);
-		}
-
-		// GPU Program Manager setup
-		GpuProgramManager::startUp(new GLGpuProgramManager());
-		GLGpuProgramManager* gpuProgramManager = static_cast<GLGpuProgramManager*>(GpuProgramManager::instancePtr());
-
-		if(caps->hasCapability(RSC_VERTEX_PROGRAM))
-		{
-			if(caps->isShaderProfileSupported("arbvp1"))
-			{
-				gpuProgramManager->registerProgramFactory("arbvp1", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("vp30"))
-			{
-				gpuProgramManager->registerProgramFactory("vp30", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("vp40"))
-			{
-				gpuProgramManager->registerProgramFactory("vp40", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("gp4vp"))
-			{
-				gpuProgramManager->registerProgramFactory("gp4vp", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("gpu_vp"))
-			{
-				gpuProgramManager->registerProgramFactory("gpu_vp", createGLArbGpuProgram);
-			}
-		}
-
-		if(caps->hasCapability(RSC_GEOMETRY_PROGRAM))
-		{
-			//TODO : Should these be createGLArbGpuProgram or createGLGpuNVparseProgram?
-			if(caps->isShaderProfileSupported("nvgp4"))
-			{
-				gpuProgramManager->registerProgramFactory("nvgp4", createGLArbGpuProgram);
-			}
-			if(caps->isShaderProfileSupported("gp4gp"))
-			{
-				gpuProgramManager->registerProgramFactory("gp4gp", createGLArbGpuProgram);
-			}
-			if(caps->isShaderProfileSupported("gpu_gp"))
-			{
-				gpuProgramManager->registerProgramFactory("gpu_gp", createGLArbGpuProgram);
-			}
-		}
-
-		if(caps->hasCapability(RSC_FRAGMENT_PROGRAM))
-		{
-			if(caps->isShaderProfileSupported("ps_1_4"))
-			{
-				gpuProgramManager->registerProgramFactory("ps_1_4", createGL_ATI_FS_GpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("ps_1_3"))
-			{
-				gpuProgramManager->registerProgramFactory("ps_1_3", createGL_ATI_FS_GpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("ps_1_2"))
-			{
-				gpuProgramManager->registerProgramFactory("ps_1_2", createGL_ATI_FS_GpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("ps_1_1"))
-			{
-				gpuProgramManager->registerProgramFactory("ps_1_1", createGL_ATI_FS_GpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("arbfp1"))
-			{
-				gpuProgramManager->registerProgramFactory("arbfp1", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("fp40"))
-			{
-				gpuProgramManager->registerProgramFactory("fp40", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("fp30"))
-			{
-				gpuProgramManager->registerProgramFactory("fp30", createGLArbGpuProgram);
-			}
-
-		}
-
-		if(caps->isShaderProfileSupported("glsl"))
-		{
-			// NFZ - check for GLSL vertex and fragment shader support successful
-			mGLSLProgramFactory = new GLSLProgramFactory();
-			HighLevelGpuProgramManager::instance().addFactory(mGLSLProgramFactory);
-		}
-
-		if(caps->isShaderProfileSupported("cg"))
-		{
-			// NFZ - check for GLSL vertex and fragment shader support successful
-			mCgProgramFactory = new CgProgramFactory();
-			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
-		}
-
-		if(caps->hasCapability(RSC_HWOCCLUSION))
-		{
-			if(caps->hasCapability(RSC_GL1_5_NOHWOCCLUSION))
-			{
-				// Assign ARB functions same to GL 1.5 version since
-				// interface identical
-				glBeginQueryARB = glBeginQuery;
-				glDeleteQueriesARB = glDeleteQueries;
-				glEndQueryARB = glEndQuery;
-				glGenQueriesARB = glGenQueries;
-				glGetQueryObjectivARB = glGetQueryObjectiv;
-				glGetQueryObjectuivARB = glGetQueryObjectuiv;
-				glGetQueryivARB = glGetQueryiv;
-				glIsQueryARB = glIsQuery;
-			}
-		}
-
-		// RTT Mode: 0 use whatever available, 1 use PBuffers, 2 force use copying
-		int rttMode = 0;
-
-		// Check for framebuffer object extension
-		if(caps->hasCapability(RSC_FBO) && rttMode < 1)
-		{
-			// Before GL version 2.0, we need to get one of the extensions
-			if(caps->hasCapability(RSC_FBO_ARB))
-				GLEW_GET_FUN(__glewDrawBuffers) = glDrawBuffersARB;
-			else if(caps->hasCapability(RSC_FBO_ATI))
-				GLEW_GET_FUN(__glewDrawBuffers) = glDrawBuffersATI;
-
-			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
-			{
-				// Create FBO manager
-				// TODO LOG PORT - Log this somewhere?
-				//LogManager::getSingleton().logMessage("GL: Using GL_EXT_framebuffer_object for rendering to textures (best)");
-				GLRTTManager::startUp(new GLFBOManager(false));
-			}
-
-		}
-		else
-		{
-			// Check GLSupport for PBuffer support
-			if(caps->hasCapability(RSC_PBUFFER) && rttMode < 2)
-			{
-				if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
-				{
-					// Use PBuffers
-					GLRTTManager::startUp(new GLPBRTTManager(mGLSupport, primary));
-
-					// TODO LOG PORT - Log this somewhere?
-					//LogManager::getSingleton().logMessage("GL: Using PBuffers for rendering to textures");
-				}
-			}
-			else
-			{
-				// No pbuffer support either -- fallback to simplest copying from framebuffer
-				GLRTTManager::startUp(new GLCopyingRTTManager());
-				// TODO LOG PORT - Log this somewhere?
-				//LogManager::getSingleton().logMessage("GL: Using framebuffer copy for rendering to textures (worst)");
-				//LogManager::getSingleton().logMessage("GL: Warning: RenderTexture size is restricted to size of framebuffer. If you are on Linux, consider using GLX instead of SDL.");
-			}
-
-			// Downgrade number of simultaneous targets
-			caps->setNumMultiRenderTargets(1);
-		}
-
-		/// Create the texture manager        
-		TextureManager::startUp(new GLTextureManager(*mGLSupport)); 
-
-		mGLInitialised = true;
+		RenderSystem::startUp_internal();
 	}
 
 	void GLRenderSystem::shutdown(void)
@@ -873,39 +204,186 @@ namespace CamelotEngine {
 		mGLInitialised = 0;
 	}
 
-	void GLRenderSystem::initialiseContext(RenderWindow* primary)
+	void GLRenderSystem::createRenderWindow_internal(const String &name, 
+		unsigned int width, unsigned int height, bool fullScreen,
+		const NameValuePairList& miscParams, AsyncOp& asyncOp)
 	{
-		// Set main and current context
-		mMainContext = 0;
-		primary->getCustomAttribute("GLCONTEXT", &mMainContext);
-		mCurrentContext = mMainContext;
+		THROW_IF_NOT_RENDER_THREAD;
 
-		// Set primary context as active
-		if(mCurrentContext)
-			mCurrentContext->setCurrent();
+		if (mRenderTargets.find(name) != mRenderTargets.end())
+		{
+			CM_EXCEPT(InvalidParametersException, 
+				"Window with name '" + name + "' already exists");
+		}
 
-		// Setup GLSupport
-		mGLSupport->initialiseExtensions();
+		// Create the window
+		RenderWindow* win = mGLSupport->newWindow(name, width, height, 
+			fullScreen, &miscParams);
 
-		// Get extension function pointers
-#if CM_THREAD_SUPPORT != 1
-		glewContextInit(mGLSupport);
-#endif
+		attachRenderTarget_internal( *win );
+
+		if (!mGLInitialised) 
+		{                
+			// set up glew and GLSupport
+			initialiseContext(win);
+
+			std::vector<CamelotEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+
+			if (!tokens.empty())
+			{
+				mDriverVersion.major = parseInt(tokens[0]);
+				if (tokens.size() > 1)
+					mDriverVersion.minor = parseInt(tokens[1]);
+				if (tokens.size() > 2)
+					mDriverVersion.release = parseInt(tokens[2]); 
+			}
+			mDriverVersion.build = 0;
+			// Initialise GL after the first window has been created
+			// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
+			mCurrentCapabilities = createRenderSystemCapabilities();
+
+			initialiseFromRenderSystemCapabilities(mCurrentCapabilities, win);
+
+			// Initialise the main context
+			oneTimeContextInitialization();
+			if(mCurrentContext)
+				mCurrentContext->setInitialized();
+		}
+
+		asyncOp.completeOperation(win);
 	}
 
-
-
-	//-----------------------------------------------------------------------
-	MultiRenderTarget * GLRenderSystem::createMultiRenderTarget_internal(const String & name)
+	//---------------------------------------------------------------------
+	void GLRenderSystem::bindGpuProgram_internal(GpuProgramRef prg)
 	{
-		MultiRenderTarget *retval = GLRTTManager::instancePtr()->createMultiRenderTarget(name);
-		attachRenderTarget_internal( *retval );
-		return retval;
+		THROW_IF_NOT_RENDER_THREAD;
+
+		GpuProgram* bindingPrg = prg->_getBindingDelegate();
+		GLGpuProgram* glprg = static_cast<GLGpuProgram*>(bindingPrg);
+
+		// Unbind previous gpu program first.
+		//
+		// Note:
+		//  1. Even if both previous and current are the same object, we can't
+		//     bypass re-bind completely since the object itself maybe modified.
+		//     But we can bypass unbind based on the assumption that object
+		//     internally GL program type shouldn't be changed after it has
+		//     been created. The behavior of bind to a GL program type twice
+		//     should be same as unbind and rebind that GL program type, even
+		//     for difference objects.
+		//  2. We also assumed that the program's type (vertex or fragment) should
+		//     not be changed during it's in using. If not, the following switch
+		//     statement will confuse GL state completely, and we can't fix it
+		//     here. To fix this case, we must coding the program implementation
+		//     itself, if type is changing (during load/unload, etc), and it's inuse,
+		//     unbind and notify render system to correct for its state.
+		//
+		switch (glprg->getType())
+		{
+		case GPT_VERTEX_PROGRAM:
+			if (mCurrentVertexProgram != glprg)
+			{
+				if (mCurrentVertexProgram)
+					mCurrentVertexProgram->unbindProgram();
+				mCurrentVertexProgram = glprg;
+			}
+			break;
+
+		case GPT_FRAGMENT_PROGRAM:
+			if (mCurrentFragmentProgram != glprg)
+			{
+				if (mCurrentFragmentProgram)
+					mCurrentFragmentProgram->unbindProgram();
+				mCurrentFragmentProgram = glprg;
+			}
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			if (mCurrentGeometryProgram != glprg)
+			{
+				if (mCurrentGeometryProgram)
+					mCurrentGeometryProgram->unbindProgram();
+				mCurrentGeometryProgram = glprg;
+			}
+			break;
+		}
+
+		// Bind the program
+		glprg->bindProgram();
+
+		RenderSystem::bindGpuProgram_internal(prg);
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::unbindGpuProgram_internal(GpuProgramType gptype)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		if (gptype == GPT_VERTEX_PROGRAM && mCurrentVertexProgram)
+		{
+			mActiveVertexGpuProgramParameters = nullptr;
+			mCurrentVertexProgram->unbindProgram();
+			mCurrentVertexProgram = 0;
+		}
+		else if (gptype == GPT_GEOMETRY_PROGRAM && mCurrentGeometryProgram)
+		{
+			mActiveGeometryGpuProgramParameters = nullptr;
+			mCurrentGeometryProgram->unbindProgram();
+			mCurrentGeometryProgram = 0;
+		}
+		else if (gptype == GPT_FRAGMENT_PROGRAM && mCurrentFragmentProgram)
+		{
+			mActiveFragmentGpuProgramParameters = nullptr;
+			mCurrentFragmentProgram->unbindProgram();
+			mCurrentFragmentProgram = 0;
+		}
+		RenderSystem::unbindGpuProgram_internal(gptype);
 	}
 
+	void GLRenderSystem::bindGpuProgramParameters_internal(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		// Set textures
+		const GpuNamedConstants& consts = params->getConstantDefinitions();
+		for(auto iter = consts.map.begin(); iter != consts.map.end(); ++iter)
+		{
+			const GpuConstantDefinition& def = iter->second;
+
+			if(def.variability & mask)
+			{
+				if(def.constType == GCT_SAMPLER2D || def.constType == GCT_SAMPLERCUBE || def.constType == GCT_SAMPLER1D 
+					|| def.constType == GCT_SAMPLER2DSHADOW || def.constType == GCT_SAMPLER3D || def.constType == GCT_SAMPLER1DSHADOW)
+				{
+					TextureRef curTexture = params->getTexture(def.physicalIndex);
+					setTexture_internal(def.physicalIndex, true, curTexture.getInternalPtr());
+
+					const SamplerState& samplerState = params->getSamplerState(def.physicalIndex);
+
+					setTextureUnitSettings_internal(def.physicalIndex, curTexture.getInternalPtr(), samplerState);
+				}
+			}
+		}
+
+		switch (gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			mActiveVertexGpuProgramParameters = params;
+			mCurrentVertexProgram->bindProgramParameters(params, mask);
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			mActiveGeometryGpuProgramParameters = params;
+			mCurrentGeometryProgram->bindProgramParameters(params, mask);
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			mActiveFragmentGpuProgramParameters = params;
+			mCurrentFragmentProgram->bindProgramParameters(params, mask);
+			break;
+		}
+	}
 	//-----------------------------------------------------------------------
 	void GLRenderSystem::destroyRenderWindow_internal(RenderWindow* pWin)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		// Find it to remove from list
 		RenderTargetMap::iterator i = mRenderTargets.begin();
 
@@ -920,24 +398,12 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m)
-	{
-		size_t x = 0;
-		for (size_t i = 0; i < 4; i++)
-		{
-			for (size_t j = 0; j < 4; j++)
-			{
-				gl_matrix[x] = m[j][i];
-				x++;
-			}
-		}
-	}
-	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setPointParameters_internal(float size, 
 		bool attenuationEnabled, float constant, float linear, float quadratic,
 		float minSize, float maxSize)
 	{
-		
+		THROW_IF_NOT_RENDER_THREAD;
+
 		float val[4] = {1, 0, 0, 1};
 		
 		if(attenuationEnabled) 
@@ -998,13 +464,12 @@ namespace CamelotEngine {
 			glPointParameterfEXT(GL_POINT_SIZE_MIN, minSize);
 			glPointParameterfEXT(GL_POINT_SIZE_MAX, maxSize);
 		}
-		
-		
-		
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTexture_internal(size_t stage, bool enabled, const TexturePtr &texPtr)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		GLTexturePtr tex = std::static_pointer_cast<GLTexture>(texPtr);
 
 		GLenum lastTextureType = mTextureTypes[stage];
@@ -1060,28 +525,13 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------------
-	GLint GLRenderSystem::getTextureAddressingMode(
-		SamplerState::TextureAddressingMode tam) const
-	{
-		switch(tam)
-		{
-		default:
-		case SamplerState::TAM_WRAP:
-			return GL_REPEAT;
-		case SamplerState::TAM_MIRROR:
-			return GL_MIRRORED_REPEAT;
-		case SamplerState::TAM_CLAMP:
-			return GL_CLAMP_TO_EDGE;
-		case SamplerState::TAM_BORDER:
-			return GL_CLAMP_TO_BORDER;
-		}
-
-	}
-	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTextureAddressingMode_internal(size_t stage, const SamplerState::UVWAddressingMode& uvw)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (!activateGLTextureUnit(stage))
 			return;
+
 		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_S, 
 			getTextureAddressingMode(uvw.u));
 		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_T, 
@@ -1093,58 +543,34 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTextureBorderColor_internal(size_t stage, const Color& colour)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		GLfloat border[4] = { colour.r, colour.g, colour.b, colour.a };
 		if (activateGLTextureUnit(stage))
 		{
-		glTexParameterfv( mTextureTypes[stage], GL_TEXTURE_BORDER_COLOR, border);
-			activateGLTextureUnit(0);
-	}
+			glTexParameterfv( mTextureTypes[stage], GL_TEXTURE_BORDER_COLOR, border);
+				activateGLTextureUnit(0);
+		}
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTextureMipmapBias_internal(size_t stage, float bias)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (mCurrentCapabilities->hasCapability(RSC_MIPMAP_LOD_BIAS))
 		{
 			if (activateGLTextureUnit(stage))
 			{
-			glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
-				activateGLTextureUnit(0);
-		}
+				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
+					activateGLTextureUnit(0);
+			}
 		}
 
 	}
-	//-----------------------------------------------------------------------------
-	GLint GLRenderSystem::getBlendMode(SceneBlendFactor ogreBlend) const
-	{
-		switch(ogreBlend)
-		{
-		case SBF_ONE:
-			return GL_ONE;
-		case SBF_ZERO:
-			return GL_ZERO;
-		case SBF_DEST_COLOUR:
-			return GL_DST_COLOR;
-		case SBF_SOURCE_COLOUR:
-			return GL_SRC_COLOR;
-		case SBF_ONE_MINUS_DEST_COLOUR:
-			return GL_ONE_MINUS_DST_COLOR;
-		case SBF_ONE_MINUS_SOURCE_COLOUR:
-			return GL_ONE_MINUS_SRC_COLOR;
-		case SBF_DEST_ALPHA:
-			return GL_DST_ALPHA;
-		case SBF_SOURCE_ALPHA:
-			return GL_SRC_ALPHA;
-		case SBF_ONE_MINUS_DEST_ALPHA:
-			return GL_ONE_MINUS_DST_ALPHA;
-		case SBF_ONE_MINUS_SOURCE_ALPHA:
-			return GL_ONE_MINUS_SRC_ALPHA;
-		};
-		// to keep compiler happy
-		return GL_ONE;
-	}
-
 	void GLRenderSystem::setSceneBlending_internal(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		GLint sourceBlend = getBlendMode(sourceFactor);
 		GLint destBlend = getBlendMode(destFactor);
 		if(sourceFactor == SBF_ONE && destFactor == SBF_ZERO)
@@ -1192,6 +618,8 @@ namespace CamelotEngine {
 		SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha,
 		SceneBlendOperation op, SceneBlendOperation alphaOp )
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		GLint sourceBlend = getBlendMode(sourceFactor);
 		GLint destBlend = getBlendMode(destFactor);
 		GLint sourceBlendAlpha = getBlendMode(sourceFactorAlpha);
@@ -1258,6 +686,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setAlphaRejectSettings_internal(CompareFunction func, unsigned char value, bool alphaToCoverage)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		bool a2c = false;
 		static bool lasta2c = false;
 
@@ -1286,6 +716,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setViewport_internal(const Viewport& vp)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		RenderTarget* target;
 		target = vp.getTarget();
 		setRenderTarget_internal(target);
@@ -1308,10 +740,50 @@ namespace CamelotEngine {
 		// Configure the viewport clipping
 		glScissor(x, y, w, h);
 	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setRenderTarget_internal(RenderTarget *target)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
 
+		// Unbind frame buffer object
+		if(mActiveRenderTarget)
+			GLRTTManager::instancePtr()->unbind(mActiveRenderTarget);
+
+		mActiveRenderTarget = target;
+
+		// Switch context if different from current one
+		GLContext *newContext = 0;
+		target->getCustomAttribute("GLCONTEXT", &newContext);
+		if(newContext && mCurrentContext != newContext) 
+		{
+			switchContext(newContext);
+		}
+
+		// Bind frame buffer object
+		GLRTTManager::instancePtr()->bind(target);
+
+		if (GLEW_EXT_framebuffer_sRGB)
+		{
+			// Enable / disable sRGB states
+			if (target->isHardwareGammaEnabled())
+			{
+				glEnable(GL_FRAMEBUFFER_SRGB_EXT);
+
+				// Note: could test GL_FRAMEBUFFER_SRGB_CAPABLE_EXT here before
+				// enabling, but GL spec says incapable surfaces ignore the setting
+				// anyway. We test the capability to enable isHardwareGammaEnabled.
+			}
+			else
+			{
+				glDisable(GL_FRAMEBUFFER_SRGB_EXT);
+			}
+		}
+	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::beginFrame_internal(void)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		// Activate the viewport clipping
 		glEnable(GL_SCISSOR_TEST);
 	}
@@ -1319,6 +791,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::endFrame_internal(void)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		// Deactivate the viewport clipping.
 		glDisable(GL_SCISSOR_TEST);
 		// unbind GPU programs at end of frame
@@ -1331,6 +805,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setCullingMode_internal(CullingMode mode)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		mCullingMode = mode;
 		// NB: Because two-sided stencil API dependence of the front face, we must
 		// use the same 'winding' for the front face everywhere. As the OGRE default
@@ -1378,6 +854,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setDepthBufferParams_internal(bool depthTest, bool depthWrite, CompareFunction depthFunction)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		setDepthBufferCheckEnabled_internal(depthTest);
 		setDepthBufferWriteEnabled_internal(depthWrite);
 		setDepthBufferFunction_internal(depthFunction);
@@ -1385,6 +863,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setDepthBufferCheckEnabled_internal(bool enabled)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (enabled)
 		{
 			glClearDepth(1.0f);
@@ -1398,6 +878,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setDepthBufferWriteEnabled_internal(bool enabled)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		GLboolean flag = enabled ? GL_TRUE : GL_FALSE;
 		glDepthMask( flag );  
 		// Store for reference in _beginFrame
@@ -1411,6 +893,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setDepthBias_internal(float constantBias, float slopeScaleBias)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (constantBias != 0 || slopeScaleBias != 0)
 		{
 			glEnable(GL_POLYGON_OFFSET_FILL);
@@ -1428,6 +912,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setColorBufferWriteEnabled_internal(bool red, bool green, bool blue, bool alpha)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		glColorMask(red, green, blue, alpha);
 		// record this
 		mColourWrite[0] = red;
@@ -1435,27 +921,11 @@ namespace CamelotEngine {
 		mColourWrite[2] = green;
 		mColourWrite[3] = alpha;
 	}
-	//-----------------------------------------------------------------------------
-    String GLRenderSystem::getErrorDescription_internal(long errCode) const
-    {
-        const GLubyte *errString = gluErrorString (errCode);
-		return (errString != 0) ? String((const char*) errString) : StringUtil::BLANK;
-    }
-
-	VertexElementType GLRenderSystem::getColorVertexElementType(void) const
-	{
-		return VET_COLOUR_ABGR;
-	}
-
-	void GLRenderSystem::convertProjectionMatrix(const Matrix4& matrix,
-		Matrix4& dest, bool forGpuProgram)
-	{
-		// no any conversion request for OpenGL
-		dest = matrix;
-	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setPolygonMode_internal(PolygonMode level)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		GLenum glmode;
 		switch(level)
 		{
@@ -1475,6 +945,8 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setStencilCheckEnabled_internal(bool enabled)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (enabled)
 		{
 			glEnable(GL_STENCIL_TEST);
@@ -1490,6 +962,8 @@ namespace CamelotEngine {
 		StencilOperation depthFailOp, StencilOperation passOp, 
 		bool twoSidedOperation)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		bool flip;
 		mStencilMask = mask;
 
@@ -1555,102 +1029,11 @@ namespace CamelotEngine {
 		}
 	}
 	//---------------------------------------------------------------------
-	GLint GLRenderSystem::convertCompareFunction(CompareFunction func) const
-	{
-		switch(func)
-		{
-		case CMPF_ALWAYS_FAIL:
-			return GL_NEVER;
-		case CMPF_ALWAYS_PASS:
-			return GL_ALWAYS;
-		case CMPF_LESS:
-			return GL_LESS;
-		case CMPF_LESS_EQUAL:
-			return GL_LEQUAL;
-		case CMPF_EQUAL:
-			return GL_EQUAL;
-		case CMPF_NOT_EQUAL:
-			return GL_NOTEQUAL;
-		case CMPF_GREATER_EQUAL:
-			return GL_GEQUAL;
-		case CMPF_GREATER:
-			return GL_GREATER;
-		};
-		// to keep compiler happy
-		return GL_ALWAYS;
-	}
-	//---------------------------------------------------------------------
-	GLint GLRenderSystem::convertStencilOp(StencilOperation op, bool invert) const
-	{
-		switch(op)
-		{
-		case SOP_KEEP:
-			return GL_KEEP;
-		case SOP_ZERO:
-			return GL_ZERO;
-		case SOP_REPLACE:
-			return GL_REPLACE;
-		case SOP_INCREMENT:
-			return invert ? GL_DECR : GL_INCR;
-		case SOP_DECREMENT:
-			return invert ? GL_INCR : GL_DECR;
-		case SOP_INCREMENT_WRAP:
-			return invert ? GL_DECR_WRAP_EXT : GL_INCR_WRAP_EXT;
-		case SOP_DECREMENT_WRAP:
-			return invert ? GL_INCR_WRAP_EXT : GL_DECR_WRAP_EXT;
-		case SOP_INVERT:
-			return GL_INVERT;
-		};
-		// to keep compiler happy
-		return SOP_KEEP;
-	}
-	//---------------------------------------------------------------------
-	GLuint GLRenderSystem::getCombinedMinMipFilter(void) const
-	{
-		switch(mMinFilter)
-		{
-		case FO_ANISOTROPIC:
-		case FO_LINEAR:
-			switch(mMipFilter)
-			{
-			case FO_ANISOTROPIC:
-			case FO_LINEAR:
-				// linear min, linear mip
-				return GL_LINEAR_MIPMAP_LINEAR;
-			case FO_POINT:
-				// linear min, point mip
-				return GL_LINEAR_MIPMAP_NEAREST;
-			case FO_NONE:
-				// linear min, no mip
-				return GL_LINEAR;
-			}
-			break;
-		case FO_POINT:
-		case FO_NONE:
-			switch(mMipFilter)
-			{
-			case FO_ANISOTROPIC:
-			case FO_LINEAR:
-				// nearest min, linear mip
-				return GL_NEAREST_MIPMAP_LINEAR;
-			case FO_POINT:
-				// nearest min, point mip
-				return GL_NEAREST_MIPMAP_NEAREST;
-			case FO_NONE:
-				// nearest min, no mip
-				return GL_NEAREST;
-			}
-			break;
-		}
-
-		// should never get here
-		return 0;
-
-	}
-	//---------------------------------------------------------------------
 	void GLRenderSystem::setTextureFiltering_internal(size_t unit, 
 		FilterType ftype, FilterOptions fo)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (!activateGLTextureUnit(unit))
 			return;
 		switch(ftype)
@@ -1695,16 +1078,10 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//---------------------------------------------------------------------
-	GLfloat GLRenderSystem::_getCurrentAnisotropy(size_t unit)
-	{
-		GLfloat curAniso = 0;
-		glGetTexParameterfv(mTextureTypes[unit], 
-			GL_TEXTURE_MAX_ANISOTROPY_EXT, &curAniso);
-		return curAniso ? curAniso : 1;
-	}
-	//---------------------------------------------------------------------
 	void GLRenderSystem::setTextureAnisotropy_internal(size_t unit, unsigned int maxAnisotropy)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (!mCurrentCapabilities->hasCapability(RSC_ANISOTROPY))
 			return;
 
@@ -1724,14 +1101,18 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setVertexDeclaration_internal(VertexDeclarationPtr decl)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setVertexBufferBinding_internal(VertexBufferBinding* binding)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::render_internal(const RenderOperation& op)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		// Call super class
 		RenderSystem::render_internal(op);
 
@@ -1979,61 +1360,11 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
-	{
-		// A note on GL user clipping:
-		// When an ARB vertex program is enabled in GL, user clipping is completely
-		// disabled. There is no way around this, it's just turned off.
-		// When using GLSL, user clipping can work but you have to include a 
-		// glClipVertex command in your vertex shader. 
-		// Thus the planes set here may not actually be respected.
-
-
-		size_t i = 0;
-		size_t numClipPlanes;
-		GLdouble clipPlane[4];
-
-		// Save previous modelview
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		// just load view matrix (identity world)
-		GLfloat mat[16];
-		makeGLMatrix(mat, mViewMatrix);
-		glLoadMatrixf(mat);
-
-		numClipPlanes = clipPlanes.size();
-		for (i = 0; i < numClipPlanes; ++i)
-		{
-			GLenum clipPlaneId = static_cast<GLenum>(GL_CLIP_PLANE0 + i);
-			const Plane& plane = clipPlanes[i];
-
-			if (i >= 6/*GL_MAX_CLIP_PLANES*/)
-			{
-				CM_EXCEPT(RenderingAPIException, "Unable to set clip plane");
-			}
-
-			clipPlane[0] = plane.normal.x;
-			clipPlane[1] = plane.normal.y;
-			clipPlane[2] = plane.normal.z;
-			clipPlane[3] = plane.d;
-
-			glClipPlane(clipPlaneId, clipPlane);
-			glEnable(clipPlaneId);
-		}
-
-		// disable remaining clip planes
-		for ( ; i < 6/*GL_MAX_CLIP_PLANES*/; ++i)
-		{
-			glDisable(static_cast<GLenum>(GL_CLIP_PLANE0 + i));
-		}
-
-		// restore matrices
-		glPopMatrix();
-	}
-	//---------------------------------------------------------------------
 	void GLRenderSystem::setScissorTest_internal(bool enabled, size_t left, 
 		size_t top, size_t right, size_t bottom)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		// If request texture flipping, use "upper-left", otherwise use "lower-left"
 		bool flipping = mActiveRenderTarget->requiresTextureFlipping();
 		//  GL measures from the bottom, not the top
@@ -2072,6 +1403,8 @@ namespace CamelotEngine {
 	void GLRenderSystem::clearFrameBuffer_internal(unsigned int buffers, 
 		const Color& colour, float depth, unsigned short stencil)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		bool colourMask = !mColourWrite[0] || !mColourWrite[1] 
 		|| !mColourWrite[2] || !mColourWrite[3]; 
 
@@ -2154,20 +1487,63 @@ namespace CamelotEngine {
 			glStencilMask(mStencilMask);
 		}
 	}
-	//---------------------------------------------------------------------
-	float GLRenderSystem::getHorizontalTexelOffset(void)
+
+	/************************************************************************/
+	/* 								PRIVATE		                     		*/
+	/************************************************************************/
+	void GLRenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
 	{
-		// No offset in GL
-		return 0.0f;
+		// A note on GL user clipping:
+		// When an ARB vertex program is enabled in GL, user clipping is completely
+		// disabled. There is no way around this, it's just turned off.
+		// When using GLSL, user clipping can work but you have to include a 
+		// glClipVertex command in your vertex shader. 
+		// Thus the planes set here may not actually be respected.
+
+
+		size_t i = 0;
+		size_t numClipPlanes;
+		GLdouble clipPlane[4];
+
+		// Save previous modelview
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		// just load view matrix (identity world)
+		GLfloat mat[16];
+		makeGLMatrix(mat, mViewMatrix);
+		glLoadMatrixf(mat);
+
+		numClipPlanes = clipPlanes.size();
+		for (i = 0; i < numClipPlanes; ++i)
+		{
+			GLenum clipPlaneId = static_cast<GLenum>(GL_CLIP_PLANE0 + i);
+			const Plane& plane = clipPlanes[i];
+
+			if (i >= 6/*GL_MAX_CLIP_PLANES*/)
+			{
+				CM_EXCEPT(RenderingAPIException, "Unable to set clip plane");
+			}
+
+			clipPlane[0] = plane.normal.x;
+			clipPlane[1] = plane.normal.y;
+			clipPlane[2] = plane.normal.z;
+			clipPlane[3] = plane.d;
+
+			glClipPlane(clipPlaneId, clipPlane);
+			glEnable(clipPlaneId);
+		}
+
+		// disable remaining clip planes
+		for ( ; i < 6/*GL_MAX_CLIP_PLANES*/; ++i)
+		{
+			glDisable(static_cast<GLenum>(GL_CLIP_PLANE0 + i));
+		}
+
+		// restore matrices
+		glPopMatrix();
 	}
 	//---------------------------------------------------------------------
-	float GLRenderSystem::getVerticalTexelOffset(void)
-	{
-		// No offset in GL
-		return 0.0f;
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::_oneTimeContextInitialization()
+	void GLRenderSystem::oneTimeContextInitialization()
 	{
 		if (GLEW_VERSION_1_2)
 		{
@@ -2194,7 +1570,7 @@ namespace CamelotEngine {
 		}
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::_switchContext(GLContext *context)
+	void GLRenderSystem::switchContext(GLContext *context)
 	{
 		// Unbind GPU programs and rebind to new context later, because
 		// scene manager treat render system as ONE 'context' ONLY, and it
@@ -2221,7 +1597,7 @@ namespace CamelotEngine {
 		// Check if the context has already done one-time initialisation
 		if(!mCurrentContext->getInitialized()) 
 		{
-			_oneTimeContextInitialization();
+			oneTimeContextInitialization();
 			mCurrentContext->setInitialized();
 		}
 
@@ -2242,43 +1618,6 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setRenderTarget_internal(RenderTarget *target)
-	{
-		// Unbind frame buffer object
-		if(mActiveRenderTarget)
-			GLRTTManager::instancePtr()->unbind(mActiveRenderTarget);
-
-		mActiveRenderTarget = target;
-
-		// Switch context if different from current one
-		GLContext *newContext = 0;
-		target->getCustomAttribute("GLCONTEXT", &newContext);
-		if(newContext && mCurrentContext != newContext) 
-		{
-			_switchContext(newContext);
-		}
-
-		// Bind frame buffer object
-		GLRTTManager::instancePtr()->bind(target);
-
-		if (GLEW_EXT_framebuffer_sRGB)
-		{
-		// Enable / disable sRGB states
-		if (target->isHardwareGammaEnabled())
-		{
-			glEnable(GL_FRAMEBUFFER_SRGB_EXT);
-			
-			// Note: could test GL_FRAMEBUFFER_SRGB_CAPABLE_EXT here before
-			// enabling, but GL spec says incapable surfaces ignore the setting
-			// anyway. We test the capability to enable isHardwareGammaEnabled.
-		}
-		else
-		{
-			glDisable(GL_FRAMEBUFFER_SRGB_EXT);
-		}
-	}
-	}
-	//---------------------------------------------------------------------
 	void GLRenderSystem::_unregisterContext(GLContext *context)
 	{
 		if(mCurrentContext == context) {
@@ -2286,7 +1625,7 @@ namespace CamelotEngine {
 			// remains active. When this is the main context being unregistered,
 			// we set the main context to 0.
 			if(mCurrentContext != mMainContext) {
-				_switchContext(mMainContext);
+				switchContext(mMainContext);
 			} else {
 				/// No contexts remain
 				mCurrentContext->endCurrent();
@@ -2294,18 +1633,6 @@ namespace CamelotEngine {
 				mMainContext = 0;
 			}
 		}
-	}
-	//---------------------------------------------------------------------
-	float GLRenderSystem::getMinimumDepthInputValue(void)
-	{
-		// Range [-1.0f, 1.0f]
-		return -1.0f;
-	}
-	//---------------------------------------------------------------------
-	float GLRenderSystem::getMaximumDepthInputValue(void)
-	{
-		// Range [-1.0f, 1.0f]
-		return 1.0f;
 	}
 	//---------------------------------------------------------------------
 	bool GLRenderSystem::activateGLTextureUnit(size_t unit)
@@ -2333,186 +1660,924 @@ namespace CamelotEngine {
 			return true;
 		}
 	}
-
-	/************************************************************************/
-	/* 							INTERNAL CALLBACKS                     		*/
-	/************************************************************************/
-
-	void GLRenderSystem::startUp_internal()
+	//---------------------------------------------------------------------
+	void GLRenderSystem::initConfigOptions(void)
 	{
-		mGLSupport->start();
-
-		RenderSystem::startUp_internal();
+		mGLSupport->addConfig();
 	}
-
-	void GLRenderSystem::createRenderWindow_internal(const String &name, 
-		unsigned int width, unsigned int height, bool fullScreen,
-		const NameValuePairList& miscParams, AsyncOp& asyncOp)
+	//---------------------------------------------------------------------
+	GLfloat GLRenderSystem::_getCurrentAnisotropy(size_t unit)
 	{
-		if (mRenderTargets.find(name) != mRenderTargets.end())
+		GLfloat curAniso = 0;
+		glGetTexParameterfv(mTextureTypes[unit], 
+			GL_TEXTURE_MAX_ANISOTROPY_EXT, &curAniso);
+		return curAniso ? curAniso : 1;
+	}
+	//---------------------------------------------------------------------
+	GLuint GLRenderSystem::getCombinedMinMipFilter(void) const
+	{
+		switch(mMinFilter)
+		{
+		case FO_ANISOTROPIC:
+		case FO_LINEAR:
+			switch(mMipFilter)
+			{
+			case FO_ANISOTROPIC:
+			case FO_LINEAR:
+				// linear min, linear mip
+				return GL_LINEAR_MIPMAP_LINEAR;
+			case FO_POINT:
+				// linear min, point mip
+				return GL_LINEAR_MIPMAP_NEAREST;
+			case FO_NONE:
+				// linear min, no mip
+				return GL_LINEAR;
+			}
+			break;
+		case FO_POINT:
+		case FO_NONE:
+			switch(mMipFilter)
+			{
+			case FO_ANISOTROPIC:
+			case FO_LINEAR:
+				// nearest min, linear mip
+				return GL_NEAREST_MIPMAP_LINEAR;
+			case FO_POINT:
+				// nearest min, point mip
+				return GL_NEAREST_MIPMAP_NEAREST;
+			case FO_NONE:
+				// nearest min, no mip
+				return GL_NEAREST;
+			}
+			break;
+		}
+
+		// should never get here
+		return 0;
+
+	}
+	//---------------------------------------------------------------------
+	GLint GLRenderSystem::convertStencilOp(StencilOperation op, bool invert) const
+	{
+		switch(op)
+		{
+		case SOP_KEEP:
+			return GL_KEEP;
+		case SOP_ZERO:
+			return GL_ZERO;
+		case SOP_REPLACE:
+			return GL_REPLACE;
+		case SOP_INCREMENT:
+			return invert ? GL_DECR : GL_INCR;
+		case SOP_DECREMENT:
+			return invert ? GL_INCR : GL_DECR;
+		case SOP_INCREMENT_WRAP:
+			return invert ? GL_DECR_WRAP_EXT : GL_INCR_WRAP_EXT;
+		case SOP_DECREMENT_WRAP:
+			return invert ? GL_INCR_WRAP_EXT : GL_DECR_WRAP_EXT;
+		case SOP_INVERT:
+			return GL_INVERT;
+		};
+		// to keep compiler happy
+		return SOP_KEEP;
+	}
+	//---------------------------------------------------------------------
+	GLint GLRenderSystem::convertCompareFunction(CompareFunction func) const
+	{
+		switch(func)
+		{
+		case CMPF_ALWAYS_FAIL:
+			return GL_NEVER;
+		case CMPF_ALWAYS_PASS:
+			return GL_ALWAYS;
+		case CMPF_LESS:
+			return GL_LESS;
+		case CMPF_LESS_EQUAL:
+			return GL_LEQUAL;
+		case CMPF_EQUAL:
+			return GL_EQUAL;
+		case CMPF_NOT_EQUAL:
+			return GL_NOTEQUAL;
+		case CMPF_GREATER_EQUAL:
+			return GL_GEQUAL;
+		case CMPF_GREATER:
+			return GL_GREATER;
+		};
+		// to keep compiler happy
+		return GL_ALWAYS;
+	}
+	//-----------------------------------------------------------------------------
+	String GLRenderSystem::getErrorDescription(long errCode) const
+	{
+		const GLubyte *errString = gluErrorString (errCode);
+		return (errString != 0) ? String((const char*) errString) : StringUtil::BLANK;
+	}
+	//-----------------------------------------------------------------------------
+	GLint GLRenderSystem::getBlendMode(SceneBlendFactor ogreBlend) const
+	{
+		switch(ogreBlend)
+		{
+		case SBF_ONE:
+			return GL_ONE;
+		case SBF_ZERO:
+			return GL_ZERO;
+		case SBF_DEST_COLOUR:
+			return GL_DST_COLOR;
+		case SBF_SOURCE_COLOUR:
+			return GL_SRC_COLOR;
+		case SBF_ONE_MINUS_DEST_COLOUR:
+			return GL_ONE_MINUS_DST_COLOR;
+		case SBF_ONE_MINUS_SOURCE_COLOUR:
+			return GL_ONE_MINUS_SRC_COLOR;
+		case SBF_DEST_ALPHA:
+			return GL_DST_ALPHA;
+		case SBF_SOURCE_ALPHA:
+			return GL_SRC_ALPHA;
+		case SBF_ONE_MINUS_DEST_ALPHA:
+			return GL_ONE_MINUS_DST_ALPHA;
+		case SBF_ONE_MINUS_SOURCE_ALPHA:
+			return GL_ONE_MINUS_SRC_ALPHA;
+		};
+		// to keep compiler happy
+		return GL_ONE;
+	}
+	//-----------------------------------------------------------------------------
+	GLint GLRenderSystem::getTextureAddressingMode(
+		SamplerState::TextureAddressingMode tam) const
+	{
+		switch(tam)
+		{
+		default:
+		case SamplerState::TAM_WRAP:
+			return GL_REPEAT;
+		case SamplerState::TAM_MIRROR:
+			return GL_MIRRORED_REPEAT;
+		case SamplerState::TAM_CLAMP:
+			return GL_CLAMP_TO_EDGE;
+		case SamplerState::TAM_BORDER:
+			return GL_CLAMP_TO_BORDER;
+		}
+
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m)
+	{
+		size_t x = 0;
+		for (size_t i = 0; i < 4; i++)
+		{
+			for (size_t j = 0; j < 4; j++)
+			{
+				gl_matrix[x] = m[j][i];
+				x++;
+			}
+		}
+	}
+	//-----------------------------------------------------------------------
+	MultiRenderTarget * GLRenderSystem::createMultiRenderTarget(const String & name)
+	{
+		MultiRenderTarget *retval = GLRTTManager::instancePtr()->createMultiRenderTarget(name);
+		attachRenderTarget_internal( *retval );
+		return retval;
+	}
+	//-----------------------------------------------------------------------
+	void GLRenderSystem::initialiseContext(RenderWindow* primary)
+	{
+		// Set main and current context
+		mMainContext = 0;
+		primary->getCustomAttribute("GLCONTEXT", &mMainContext);
+		mCurrentContext = mMainContext;
+
+		// Set primary context as active
+		if(mCurrentContext)
+			mCurrentContext->setCurrent();
+
+		// Setup GLSupport
+		mGLSupport->initialiseExtensions();
+
+		// Get extension function pointers
+#if CM_THREAD_SUPPORT != 1
+		glewContextInit(mGLSupport);
+#endif
+	}
+	void GLRenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary)
+	{
+		if(caps->getRenderSystemName() != getName())
 		{
 			CM_EXCEPT(InvalidParametersException, 
-				"Window with name '" + name + "' already exists");
+				"Trying to initialize GLRenderSystem from RenderSystemCapabilities that do not support OpenGL");
 		}
 
-		// Create the window
-		RenderWindow* win = mGLSupport->newWindow(name, width, height, 
-			fullScreen, &miscParams);
+		// set texture the number of texture units
+		mFixedFunctionTextureUnits = caps->getNumTextureUnits();
 
-		attachRenderTarget_internal( *win );
-
-		if (!mGLInitialised) 
-		{                
-
-			// set up glew and GLSupport
-			initialiseContext(win);
-
-			std::vector<CamelotEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
-
-			if (!tokens.empty())
+		//In GL there can be less fixed function texture units than general
+		//texture units. Get the minimum of the two.
+		if (caps->hasCapability(RSC_FRAGMENT_PROGRAM))
+		{
+			GLint maxTexCoords = 0;
+			glGetIntegerv(GL_MAX_TEXTURE_COORDS_ARB, &maxTexCoords);
+			if (mFixedFunctionTextureUnits > maxTexCoords)
 			{
-				mDriverVersion.major = parseInt(tokens[0]);
-				if (tokens.size() > 1)
-					mDriverVersion.minor = parseInt(tokens[1]);
-				if (tokens.size() > 2)
-					mDriverVersion.release = parseInt(tokens[2]); 
+				mFixedFunctionTextureUnits = maxTexCoords;
 			}
-			mDriverVersion.build = 0;
-			// Initialise GL after the first window has been created
-			// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
-			mCurrentCapabilities = createRenderSystemCapabilities();
-
-			initialiseFromRenderSystemCapabilities(mCurrentCapabilities, win);
-
-			// Initialise the main context
-			_oneTimeContextInitialization();
-			if(mCurrentContext)
-				mCurrentContext->setInitialized();
 		}
 
-		asyncOp.completeOperation(win);
-	}
-
-	//---------------------------------------------------------------------
-	void GLRenderSystem::bindGpuProgram_internal(GpuProgramRef prg)
-	{
-		GpuProgram* bindingPrg = prg->_getBindingDelegate();
-		GLGpuProgram* glprg = static_cast<GLGpuProgram*>(bindingPrg);
-
-		// Unbind previous gpu program first.
-		//
-		// Note:
-		//  1. Even if both previous and current are the same object, we can't
-		//     bypass re-bind completely since the object itself maybe modified.
-		//     But we can bypass unbind based on the assumption that object
-		//     internally GL program type shouldn't be changed after it has
-		//     been created. The behavior of bind to a GL program type twice
-		//     should be same as unbind and rebind that GL program type, even
-		//     for difference objects.
-		//  2. We also assumed that the program's type (vertex or fragment) should
-		//     not be changed during it's in using. If not, the following switch
-		//     statement will confuse GL state completely, and we can't fix it
-		//     here. To fix this case, we must coding the program implementation
-		//     itself, if type is changing (during load/unload, etc), and it's inuse,
-		//     unbind and notify render system to correct for its state.
-		//
-		switch (glprg->getType())
+		if(caps->hasCapability(RSC_GL1_5_NOVBO))
 		{
-		case GPT_VERTEX_PROGRAM:
-			if (mCurrentVertexProgram != glprg)
+			// Assign ARB functions same to GL 1.5 version since
+			// interface identical
+			glBindBufferARB = glBindBuffer;
+			glBufferDataARB = glBufferData;
+			glBufferSubDataARB = glBufferSubData;
+			glDeleteBuffersARB = glDeleteBuffers;
+			glGenBuffersARB = glGenBuffers;
+			glGetBufferParameterivARB = glGetBufferParameteriv;
+			glGetBufferPointervARB = glGetBufferPointerv;
+			glGetBufferSubDataARB = glGetBufferSubData;
+			glIsBufferARB = glIsBuffer;
+			glMapBufferARB = glMapBuffer;
+			glUnmapBufferARB = glUnmapBuffer;
+		}
+
+		if(caps->hasCapability(RSC_VBO))
+		{
+			HardwareBufferManager::startUp(new GLHardwareBufferManager);
+		}
+		else
+		{
+			HardwareBufferManager::startUp(new GLDefaultHardwareBufferManager);
+		}
+
+		// GPU Program Manager setup
+		GpuProgramManager::startUp(new GLGpuProgramManager());
+		GLGpuProgramManager* gpuProgramManager = static_cast<GLGpuProgramManager*>(GpuProgramManager::instancePtr());
+
+		if(caps->hasCapability(RSC_VERTEX_PROGRAM))
+		{
+			if(caps->isShaderProfileSupported("arbvp1"))
 			{
-				if (mCurrentVertexProgram)
-					mCurrentVertexProgram->unbindProgram();
-				mCurrentVertexProgram = glprg;
+				gpuProgramManager->registerProgramFactory("arbvp1", createGLArbGpuProgram);
 			}
-			break;
 
-		case GPT_FRAGMENT_PROGRAM:
-			if (mCurrentFragmentProgram != glprg)
+			if(caps->isShaderProfileSupported("vp30"))
 			{
-				if (mCurrentFragmentProgram)
-					mCurrentFragmentProgram->unbindProgram();
-				mCurrentFragmentProgram = glprg;
+				gpuProgramManager->registerProgramFactory("vp30", createGLArbGpuProgram);
 			}
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			if (mCurrentGeometryProgram != glprg)
+
+			if(caps->isShaderProfileSupported("vp40"))
 			{
-				if (mCurrentGeometryProgram)
-					mCurrentGeometryProgram->unbindProgram();
-				mCurrentGeometryProgram = glprg;
+				gpuProgramManager->registerProgramFactory("vp40", createGLArbGpuProgram);
 			}
-			break;
-		}
 
-		// Bind the program
-		glprg->bindProgram();
-
-		RenderSystem::bindGpuProgram_internal(prg);
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::unbindGpuProgram_internal(GpuProgramType gptype)
-	{
-
-		if (gptype == GPT_VERTEX_PROGRAM && mCurrentVertexProgram)
-		{
-			mActiveVertexGpuProgramParameters = nullptr;
-			mCurrentVertexProgram->unbindProgram();
-			mCurrentVertexProgram = 0;
-		}
-		else if (gptype == GPT_GEOMETRY_PROGRAM && mCurrentGeometryProgram)
-		{
-			mActiveGeometryGpuProgramParameters = nullptr;
-			mCurrentGeometryProgram->unbindProgram();
-			mCurrentGeometryProgram = 0;
-		}
-		else if (gptype == GPT_FRAGMENT_PROGRAM && mCurrentFragmentProgram)
-		{
-			mActiveFragmentGpuProgramParameters = nullptr;
-			mCurrentFragmentProgram->unbindProgram();
-			mCurrentFragmentProgram = 0;
-		}
-		RenderSystem::unbindGpuProgram_internal(gptype);
-
-	}
-
-	void GLRenderSystem::bindGpuProgramParameters_internal(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask)
-	{
-		// Set textures
-		const GpuNamedConstants& consts = params->getConstantDefinitions();
-		for(auto iter = consts.map.begin(); iter != consts.map.end(); ++iter)
-		{
-			const GpuConstantDefinition& def = iter->second;
-
-			if(def.variability & mask)
+			if(caps->isShaderProfileSupported("gp4vp"))
 			{
-				if(def.constType == GCT_SAMPLER2D || def.constType == GCT_SAMPLERCUBE || def.constType == GCT_SAMPLER1D 
-					|| def.constType == GCT_SAMPLER2DSHADOW || def.constType == GCT_SAMPLER3D || def.constType == GCT_SAMPLER1DSHADOW)
+				gpuProgramManager->registerProgramFactory("gp4vp", createGLArbGpuProgram);
+			}
+
+			if(caps->isShaderProfileSupported("gpu_vp"))
+			{
+				gpuProgramManager->registerProgramFactory("gpu_vp", createGLArbGpuProgram);
+			}
+		}
+
+		if(caps->hasCapability(RSC_GEOMETRY_PROGRAM))
+		{
+			//TODO : Should these be createGLArbGpuProgram or createGLGpuNVparseProgram?
+			if(caps->isShaderProfileSupported("nvgp4"))
+			{
+				gpuProgramManager->registerProgramFactory("nvgp4", createGLArbGpuProgram);
+			}
+			if(caps->isShaderProfileSupported("gp4gp"))
+			{
+				gpuProgramManager->registerProgramFactory("gp4gp", createGLArbGpuProgram);
+			}
+			if(caps->isShaderProfileSupported("gpu_gp"))
+			{
+				gpuProgramManager->registerProgramFactory("gpu_gp", createGLArbGpuProgram);
+			}
+		}
+
+		if(caps->hasCapability(RSC_FRAGMENT_PROGRAM))
+		{
+			if(caps->isShaderProfileSupported("ps_1_4"))
+			{
+				gpuProgramManager->registerProgramFactory("ps_1_4", createGL_ATI_FS_GpuProgram);
+			}
+
+			if(caps->isShaderProfileSupported("ps_1_3"))
+			{
+				gpuProgramManager->registerProgramFactory("ps_1_3", createGL_ATI_FS_GpuProgram);
+			}
+
+			if(caps->isShaderProfileSupported("ps_1_2"))
+			{
+				gpuProgramManager->registerProgramFactory("ps_1_2", createGL_ATI_FS_GpuProgram);
+			}
+
+			if(caps->isShaderProfileSupported("ps_1_1"))
+			{
+				gpuProgramManager->registerProgramFactory("ps_1_1", createGL_ATI_FS_GpuProgram);
+			}
+
+			if(caps->isShaderProfileSupported("arbfp1"))
+			{
+				gpuProgramManager->registerProgramFactory("arbfp1", createGLArbGpuProgram);
+			}
+
+			if(caps->isShaderProfileSupported("fp40"))
+			{
+				gpuProgramManager->registerProgramFactory("fp40", createGLArbGpuProgram);
+			}
+
+			if(caps->isShaderProfileSupported("fp30"))
+			{
+				gpuProgramManager->registerProgramFactory("fp30", createGLArbGpuProgram);
+			}
+
+		}
+
+		if(caps->isShaderProfileSupported("glsl"))
+		{
+			// NFZ - check for GLSL vertex and fragment shader support successful
+			mGLSLProgramFactory = new GLSLProgramFactory();
+			HighLevelGpuProgramManager::instance().addFactory(mGLSLProgramFactory);
+		}
+
+		if(caps->isShaderProfileSupported("cg"))
+		{
+			// NFZ - check for GLSL vertex and fragment shader support successful
+			mCgProgramFactory = new CgProgramFactory();
+			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
+		}
+
+		if(caps->hasCapability(RSC_HWOCCLUSION))
+		{
+			if(caps->hasCapability(RSC_GL1_5_NOHWOCCLUSION))
+			{
+				// Assign ARB functions same to GL 1.5 version since
+				// interface identical
+				glBeginQueryARB = glBeginQuery;
+				glDeleteQueriesARB = glDeleteQueries;
+				glEndQueryARB = glEndQuery;
+				glGenQueriesARB = glGenQueries;
+				glGetQueryObjectivARB = glGetQueryObjectiv;
+				glGetQueryObjectuivARB = glGetQueryObjectuiv;
+				glGetQueryivARB = glGetQueryiv;
+				glIsQueryARB = glIsQuery;
+			}
+		}
+
+		// RTT Mode: 0 use whatever available, 1 use PBuffers, 2 force use copying
+		int rttMode = 0;
+
+		// Check for framebuffer object extension
+		if(caps->hasCapability(RSC_FBO) && rttMode < 1)
+		{
+			// Before GL version 2.0, we need to get one of the extensions
+			if(caps->hasCapability(RSC_FBO_ARB))
+				GLEW_GET_FUN(__glewDrawBuffers) = glDrawBuffersARB;
+			else if(caps->hasCapability(RSC_FBO_ATI))
+				GLEW_GET_FUN(__glewDrawBuffers) = glDrawBuffersATI;
+
+			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
+			{
+				// Create FBO manager
+				// TODO LOG PORT - Log this somewhere?
+				//LogManager::getSingleton().logMessage("GL: Using GL_EXT_framebuffer_object for rendering to textures (best)");
+				GLRTTManager::startUp(new GLFBOManager(false));
+			}
+
+		}
+		else
+		{
+			// Check GLSupport for PBuffer support
+			if(caps->hasCapability(RSC_PBUFFER) && rttMode < 2)
+			{
+				if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
 				{
-					TextureRef curTexture = params->getTexture(def.physicalIndex);
-					setTexture_internal(def.physicalIndex, true, curTexture.getInternalPtr());
+					// Use PBuffers
+					GLRTTManager::startUp(new GLPBRTTManager(mGLSupport, primary));
 
-					const SamplerState& samplerState = params->getSamplerState(def.physicalIndex);
-
-					setTextureUnitSettings_internal(def.physicalIndex, curTexture.getInternalPtr(), samplerState);
+					// TODO LOG PORT - Log this somewhere?
+					//LogManager::getSingleton().logMessage("GL: Using PBuffers for rendering to textures");
 				}
 			}
+			else
+			{
+				// No pbuffer support either -- fallback to simplest copying from framebuffer
+				GLRTTManager::startUp(new GLCopyingRTTManager());
+				// TODO LOG PORT - Log this somewhere?
+				//LogManager::getSingleton().logMessage("GL: Using framebuffer copy for rendering to textures (worst)");
+				//LogManager::getSingleton().logMessage("GL: Warning: RenderTexture size is restricted to size of framebuffer. If you are on Linux, consider using GLX instead of SDL.");
+			}
+
+			// Downgrade number of simultaneous targets
+			caps->setNumMultiRenderTargets(1);
 		}
 
-		switch (gptype)
+		/// Create the texture manager        
+		TextureManager::startUp(new GLTextureManager(*mGLSupport)); 
+
+		mGLInitialised = true;
+	}
+	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
+	{
+		RenderSystemCapabilities* rsc = new RenderSystemCapabilities();
+
+		rsc->setCategoryRelevant(CAPS_CATEGORY_GL, true);
+		rsc->setDriverVersion(mDriverVersion);
+		const char* deviceName = (const char*)glGetString(GL_RENDERER);
+		const char* vendorName = (const char*)glGetString(GL_VENDOR);
+		rsc->setDeviceName(deviceName);
+		rsc->setRenderSystemName(getName());
+
+		// determine vendor
+		if (strstr(vendorName, "NVIDIA"))
+			rsc->setVendor(GPU_NVIDIA);
+		else if (strstr(vendorName, "ATI"))
+			rsc->setVendor(GPU_ATI);
+		else if (strstr(vendorName, "Intel"))
+			rsc->setVendor(GPU_INTEL);
+		else if (strstr(vendorName, "S3"))
+			rsc->setVendor(GPU_S3);
+		else if (strstr(vendorName, "Matrox"))
+			rsc->setVendor(GPU_MATROX);
+		else if (strstr(vendorName, "3DLabs"))
+			rsc->setVendor(GPU_3DLABS);
+		else if (strstr(vendorName, "SiS"))
+			rsc->setVendor(GPU_SIS);
+		else
+			rsc->setVendor(GPU_UNKNOWN);
+
+		// Supports fixed-function
+		rsc->setCapability(RSC_FIXED_FUNCTION);
+
+		// Check for hardware mipmapping support.
+		if(GLEW_VERSION_1_4 || GLEW_SGIS_generate_mipmap)
 		{
-		case GPT_VERTEX_PROGRAM:
-			mActiveVertexGpuProgramParameters = params;
-			mCurrentVertexProgram->bindProgramParameters(params, mask);
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			mActiveGeometryGpuProgramParameters = params;
-			mCurrentGeometryProgram->bindProgramParameters(params, mask);
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-			mActiveFragmentGpuProgramParameters = params;
-			mCurrentFragmentProgram->bindProgramParameters(params, mask);
-			break;
+			bool disableAutoMip = false;
+#if CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == CM_PLATFORM_LINUX
+			// Apple & Linux ATI drivers have faults in hardware mipmap generation
+			if (rsc->getVendor() == GPU_ATI)
+				disableAutoMip = true;
+#endif
+			// The Intel 915G frequently corrupts textures when using hardware mip generation
+			// I'm not currently sure how many generations of hardware this affects, 
+			// so for now, be safe.
+			if (rsc->getVendor() == GPU_INTEL)
+				disableAutoMip = true;
+
+			// SiS chipsets also seem to have problems with this
+			if (rsc->getVendor() == GPU_SIS)
+				disableAutoMip = true;
+
+			if (!disableAutoMip)
+				rsc->setCapability(RSC_AUTOMIPMAP);
 		}
+
+		// Check for blending support
+		if(GLEW_VERSION_1_3 || 
+			GLEW_ARB_texture_env_combine || 
+			GLEW_EXT_texture_env_combine)
+		{
+			rsc->setCapability(RSC_BLENDING);
+		}
+
+		// Check for Multitexturing support and set number of texture units
+		if(GLEW_VERSION_1_3 || 
+			GLEW_ARB_multitexture)
+		{
+			GLint units;
+			glGetIntegerv( GL_MAX_TEXTURE_UNITS, &units );
+
+			if (GLEW_ARB_fragment_program)
+			{
+				// Also check GL_MAX_TEXTURE_IMAGE_UNITS_ARB since NV at least
+				// only increased this on the FX/6x00 series
+				GLint arbUnits;
+				glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &arbUnits );
+				if (arbUnits > units)
+					units = arbUnits;
+			}
+			rsc->setNumTextureUnits(units);
+		}
+		else
+		{
+			// If no multitexture support then set one texture unit
+			rsc->setNumTextureUnits(1);
+		}
+
+		// Check for Anisotropy support
+		if(GLEW_EXT_texture_filter_anisotropic)
+		{
+			rsc->setCapability(RSC_ANISOTROPY);
+		}
+
+		// Check for DOT3 support
+		if(GLEW_VERSION_1_3 ||
+			GLEW_ARB_texture_env_dot3 ||
+			GLEW_EXT_texture_env_dot3)
+		{
+			rsc->setCapability(RSC_DOT3);
+		}
+
+		// Check for cube mapping
+		if(GLEW_VERSION_1_3 || 
+			GLEW_ARB_texture_cube_map ||
+			GLEW_EXT_texture_cube_map)
+		{
+			rsc->setCapability(RSC_CUBEMAPPING);
+		}
+
+
+		// Point sprites
+		if (GLEW_VERSION_2_0 ||	GLEW_ARB_point_sprite)
+		{
+			rsc->setCapability(RSC_POINT_SPRITES);
+		}
+		// Check for point parameters
+		if (GLEW_VERSION_1_4)
+		{
+			rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS);
+		}
+		if (GLEW_ARB_point_parameters)
+		{
+			rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS_ARB);
+		}
+		if (GLEW_EXT_point_parameters)
+		{
+			rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS_EXT);
+		}
+
+		// Check for hardware stencil support and set bit depth
+		GLint stencil;
+		glGetIntegerv(GL_STENCIL_BITS,&stencil);
+
+		if(stencil)
+		{
+			rsc->setCapability(RSC_HWSTENCIL);
+			rsc->setStencilBufferBitDepth(stencil);
+		}
+
+
+		if(GLEW_VERSION_1_5 || GLEW_ARB_vertex_buffer_object)
+		{
+			if (!GLEW_ARB_vertex_buffer_object)
+			{
+				rsc->setCapability(RSC_GL1_5_NOVBO);
+			}
+			rsc->setCapability(RSC_VBO);
+		}
+
+		if(GLEW_ARB_vertex_program)
+		{
+			rsc->setCapability(RSC_VERTEX_PROGRAM);
+
+			// Vertex Program Properties
+			rsc->setVertexProgramConstantBoolCount(0);
+			rsc->setVertexProgramConstantIntCount(0);
+
+			GLint floatConstantCount;
+			glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB, &floatConstantCount);
+			rsc->setVertexProgramConstantFloatCount(floatConstantCount);
+
+			rsc->addShaderProfile("arbvp1");
+			rsc->addGpuProgramProfile(GPP_VS_1_1, "arbvp1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+			rsc->addGpuProgramProfile(GPP_VS_2_0, "arbvp1");
+			rsc->addGpuProgramProfile(GPP_VS_2_a, "arbvp1");
+			rsc->addGpuProgramProfile(GPP_VS_2_x, "arbvp1");
+
+			if (GLEW_NV_vertex_program2_option)
+			{
+				rsc->addShaderProfile("vp30");
+				rsc->addGpuProgramProfile(GPP_VS_3_0, "vp30"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+				rsc->addGpuProgramProfile(GPP_VS_4_0, "vp30");
+			}
+
+			if (GLEW_NV_vertex_program3)
+			{
+				rsc->addShaderProfile("vp40");
+				rsc->addGpuProgramProfile(GPP_VS_3_0, "vp40"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+				rsc->addGpuProgramProfile(GPP_VS_4_0, "vp40");
+			}
+
+			if (GLEW_NV_vertex_program4)
+			{
+				rsc->addShaderProfile("gp4vp");
+				rsc->addShaderProfile("gpu_vp");
+			}
+		}
+
+		if (GLEW_NV_register_combiners2 &&
+			GLEW_NV_texture_shader)
+		{
+			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
+		}
+
+		// NFZ - check for ATI fragment shader support
+		if (GLEW_ATI_fragment_shader)
+		{
+			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
+			// no boolean params allowed
+			rsc->setFragmentProgramConstantBoolCount(0);
+			// no integer params allowed
+			rsc->setFragmentProgramConstantIntCount(0);
+
+			// only 8 Vector4 constant floats supported
+			rsc->setFragmentProgramConstantFloatCount(8);
+
+			rsc->addShaderProfile("ps_1_4");
+			rsc->addShaderProfile("ps_1_3");
+			rsc->addShaderProfile("ps_1_2");
+			rsc->addShaderProfile("ps_1_1");
+
+			rsc->addGpuProgramProfile(GPP_PS_1_1, "ps_1_1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+			rsc->addGpuProgramProfile(GPP_PS_1_2, "ps_1_2");
+			rsc->addGpuProgramProfile(GPP_PS_1_3, "ps_1_3");
+			rsc->addGpuProgramProfile(GPP_PS_1_4, "ps_1_4");
+		}
+
+		if (GLEW_ARB_fragment_program)
+		{
+			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
+
+			// Fragment Program Properties
+			rsc->setFragmentProgramConstantBoolCount(0);
+			rsc->setFragmentProgramConstantIntCount(0);
+
+			GLint floatConstantCount;
+			glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB, &floatConstantCount);
+			rsc->setFragmentProgramConstantFloatCount(floatConstantCount);
+
+			rsc->addShaderProfile("arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_1_1, "arbfp1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+			rsc->addGpuProgramProfile(GPP_PS_1_2, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_1_3, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_1_4, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_2_0, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_2_a, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_2_b, "arbfp1");
+			rsc->addGpuProgramProfile(GPP_PS_2_x, "arbfp1");
+
+			if (GLEW_NV_fragment_program_option)
+			{
+				rsc->addShaderProfile("fp30");
+				rsc->addGpuProgramProfile(GPP_PS_3_0, "fp30"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+				rsc->addGpuProgramProfile(GPP_PS_3_x, "fp30");
+				rsc->addGpuProgramProfile(GPP_PS_4_0, "fp30");
+			}
+
+			if (GLEW_NV_fragment_program2)
+			{
+				rsc->addShaderProfile("fp40");
+				rsc->addGpuProgramProfile(GPP_PS_3_0, "fp40"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
+				rsc->addGpuProgramProfile(GPP_PS_3_x, "fp40");
+				rsc->addGpuProgramProfile(GPP_PS_4_0, "fp40");
+			}        
+		}
+
+		rsc->addShaderProfile("cg");
+
+		// NFZ - Check if GLSL is supported
+		if ( GLEW_VERSION_2_0 || 
+			(GLEW_ARB_shading_language_100 &&
+			GLEW_ARB_shader_objects &&
+			GLEW_ARB_fragment_shader &&
+			GLEW_ARB_vertex_shader) )
+		{
+			rsc->addShaderProfile("glsl");
+		}
+
+		// Check if geometry shaders are supported
+		if (GLEW_VERSION_2_0 &&
+			GLEW_EXT_geometry_shader4)
+		{
+			rsc->setCapability(RSC_GEOMETRY_PROGRAM);
+			rsc->addShaderProfile("nvgp4");
+
+			//Also add the CG profiles
+			rsc->addShaderProfile("gpu_gp");
+			rsc->addShaderProfile("gp4gp");
+
+			rsc->setGeometryProgramConstantBoolCount(0);
+			rsc->setGeometryProgramConstantIntCount(0);
+
+			GLint floatConstantCount = 0;
+			glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_EXT, &floatConstantCount);
+			rsc->setGeometryProgramConstantFloatCount(floatConstantCount);
+
+			GLint maxOutputVertices;
+			glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT,&maxOutputVertices);
+			rsc->setGeometryProgramNumOutputVertices(maxOutputVertices);
+		}
+
+		//Check if render to vertex buffer (transform feedback in OpenGL)
+		if (GLEW_VERSION_2_0 && 
+			GLEW_NV_transform_feedback)
+		{
+			rsc->setCapability(RSC_HWRENDER_TO_VERTEX_BUFFER);
+		}
+
+		// Check for texture compression
+		if(GLEW_VERSION_1_3 || GLEW_ARB_texture_compression)
+		{   
+			rsc->setCapability(RSC_TEXTURE_COMPRESSION);
+
+			// Check for dxt compression
+			if(GLEW_EXT_texture_compression_s3tc)
+			{
+#if defined(__APPLE__) && defined(__PPC__)
+				// Apple on ATI & PPC has errors in DXT
+				if (mGLSupport->getGLVendor().find("ATI") == std::string::npos)
+#endif
+					rsc->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
+			}
+			// Check for vtc compression
+			if(GLEW_NV_texture_compression_vtc)
+			{
+				rsc->setCapability(RSC_TEXTURE_COMPRESSION_VTC);
+			}
+		}
+
+		// Scissor test is standard in GL 1.2 (is it emulated on some cards though?)
+		rsc->setCapability(RSC_SCISSOR_TEST);
+		// As are user clipping planes
+		rsc->setCapability(RSC_USER_CLIP_PLANES);
+
+		// 2-sided stencil?
+		if (GLEW_VERSION_2_0 || GLEW_EXT_stencil_two_side)
+		{
+			rsc->setCapability(RSC_TWO_SIDED_STENCIL);
+		}
+		// stencil wrapping?
+		if (GLEW_VERSION_1_4 || GLEW_EXT_stencil_wrap)
+		{
+			rsc->setCapability(RSC_STENCIL_WRAP);
+		}
+
+		// Check for hardware occlusion support
+		if(GLEW_VERSION_1_5 || GLEW_ARB_occlusion_query)
+		{
+			// Some buggy driver claim that it is GL 1.5 compliant and
+			// not support ARB_occlusion_query
+			if (!GLEW_ARB_occlusion_query)
+			{
+				rsc->setCapability(RSC_GL1_5_NOHWOCCLUSION);
+			}
+
+			rsc->setCapability(RSC_HWOCCLUSION);
+		}
+		else if (GLEW_NV_occlusion_query)
+		{
+			// Support NV extension too for old hardware
+			rsc->setCapability(RSC_HWOCCLUSION);
+		}
+
+		// UBYTE4 always supported
+		rsc->setCapability(RSC_VERTEX_FORMAT_UBYTE4);
+
+		// Infinite far plane always supported
+		rsc->setCapability(RSC_INFINITE_FAR_PLANE);
+
+		// Check for non-power-of-2 texture support
+		if(GLEW_ARB_texture_non_power_of_two)
+		{
+			rsc->setCapability(RSC_NON_POWER_OF_2_TEXTURES);
+		}
+
+		// Check for Float textures
+		if(GLEW_ATI_texture_float || GLEW_ARB_texture_float)
+		{
+			rsc->setCapability(RSC_TEXTURE_FLOAT);
+		}
+
+		// 3D textures should be supported by GL 1.2, which is our minimum version
+		rsc->setCapability(RSC_TEXTURE_3D);
+
+		// Check for framebuffer object extension
+		if(GLEW_EXT_framebuffer_object)
+		{
+			// Probe number of draw buffers
+			// Only makes sense with FBO support, so probe here
+			if(GLEW_VERSION_2_0 || 
+				GLEW_ARB_draw_buffers ||
+				GLEW_ATI_draw_buffers)
+			{
+				GLint buffers;
+				glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &buffers);
+				rsc->setNumMultiRenderTargets(std::min<int>(buffers, (GLint)CM_MAX_MULTIPLE_RENDER_TARGETS));
+				rsc->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);
+				if(!GLEW_VERSION_2_0)
+				{
+					// Before GL version 2.0, we need to get one of the extensions
+					if(GLEW_ARB_draw_buffers)
+						rsc->setCapability(RSC_FBO_ARB);
+					if(GLEW_ATI_draw_buffers)
+						rsc->setCapability(RSC_FBO_ATI);
+				}
+				// Set FBO flag for all 3 'subtypes'
+				rsc->setCapability(RSC_FBO);
+
+			}
+			rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
+		}
+
+		// Check GLSupport for PBuffer support
+		if(mGLSupport->supportsPBuffers())
+		{
+			// Use PBuffers
+			rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
+			rsc->setCapability(RSC_PBUFFER);
+		}
+
+		// Point size
+		if (GLEW_VERSION_1_4)
+		{
+			float ps;
+			glGetFloatv(GL_POINT_SIZE_MAX, &ps);
+			rsc->setMaxPointSize(ps);
+		}
+		else
+		{
+			GLint vSize[2];
+			glGetIntegerv(GL_POINT_SIZE_RANGE,vSize);
+			rsc->setMaxPointSize((float)vSize[1]);
+		}
+
+		// Vertex texture fetching
+		if (mGLSupport->checkExtension("GL_ARB_vertex_shader"))
+		{
+			GLint vUnits;
+			glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, &vUnits);
+			rsc->setNumVertexTextureUnits(static_cast<UINT16>(vUnits));
+			if (vUnits > 0)
+			{
+				rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
+			}
+			// GL always shares vertex and fragment texture units (for now?)
+			rsc->setVertexTextureUnitsShared(true);
+		}
+
+		// Mipmap LOD biasing?
+		if (GLEW_VERSION_1_4 || GLEW_EXT_texture_lod_bias)
+		{
+			rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
+		}
+
+		// Alpha to coverage?
+		if (mGLSupport->checkExtension("GL_ARB_multisample"))
+		{
+			// Alpha to coverage always 'supported' when MSAA is available
+			// although card may ignore it if it doesn't specifically support A2C
+			rsc->setCapability(RSC_ALPHA_TO_COVERAGE);
+		}
+
+		// Advanced blending operations
+		if(GLEW_VERSION_2_0)
+		{
+			rsc->setCapability(RSC_ADVANCED_BLEND_OPERATIONS);
+		}
+
+		return rsc;
+	}
+
+	/************************************************************************/
+	/* 								UTILITY		                     		*/
+	/************************************************************************/
+	float GLRenderSystem::getMinimumDepthInputValue(void)
+	{
+		// Range [-1.0f, 1.0f]
+		return -1.0f;
+	}
+	//---------------------------------------------------------------------
+	float GLRenderSystem::getMaximumDepthInputValue(void)
+	{
+		// Range [-1.0f, 1.0f]
+		return 1.0f;
+	}
+	//---------------------------------------------------------------------
+	float GLRenderSystem::getHorizontalTexelOffset(void)
+	{
+		// No offset in GL
+		return 0.0f;
+	}
+	//---------------------------------------------------------------------
+	float GLRenderSystem::getVerticalTexelOffset(void)
+	{
+		// No offset in GL
+		return 0.0f;
+	}
+	VertexElementType GLRenderSystem::getColorVertexElementType(void) const
+	{
+		return VET_COLOUR_ABGR;
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::convertProjectionMatrix(const Matrix4& matrix,
+		Matrix4& dest, bool forGpuProgram)
+	{
+		// no any conversion request for OpenGL
+		dest = matrix;
 	}
 }
+
+#undef THROW_IF_NOT_RENDER_THREAD

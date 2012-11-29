@@ -35,8 +35,8 @@ THE SOFTWARE.
 #include "CmViewport.h"
 
 /* Define the number of priority groups for the render system's render targets. */
-#ifndef OGRE_NUM_RENDERTARGET_GROUPS
-	#define OGRE_NUM_RENDERTARGET_GROUPS 10
+#ifndef CM_NUM_RENDERTARGET_GROUPS
+	#define CM_NUM_RENDERTARGET_GROUPS 10
 	#define OGRE_DEFAULT_RT_GROUP 4
 	#define OGRE_REND_TO_TEX_RT_GROUP 2
 #endif

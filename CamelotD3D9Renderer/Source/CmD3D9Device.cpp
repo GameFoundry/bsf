@@ -375,7 +375,7 @@ namespace CamelotEngine
 		renderSystem->notifyOnDeviceLost(this);
 
 		// Cleanup depth stencils surfaces.
-		renderSystem->_cleanupDepthStencils(mpDevice);
+		renderSystem->cleanupDepthStencils(mpDevice);
 
 		updatePresentationParameters();
 

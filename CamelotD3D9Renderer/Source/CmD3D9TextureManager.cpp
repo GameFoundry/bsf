@@ -97,6 +97,6 @@ namespace CamelotEngine
         D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(
             CamelotEngine::RenderSystemManager::getActive());
 
-        return rs->_checkTextureFilteringSupported(ttype, format, usage);
+        return rs->checkTextureFilteringSupported(ttype, format, usage);
     }
 }

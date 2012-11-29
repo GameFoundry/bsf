@@ -745,12 +745,11 @@ namespace CamelotEngine
 		virtual void render_internal(const RenderOperation& op);
 
 		/** Gets the capabilities of the render system. */
-		const RenderSystemCapabilities* getCapabilities_internal(void) const { return mCurrentCapabilities; }
-
+		const RenderSystemCapabilities* getCapabilities_internal(void) const;
 
 		/** Returns the driver version.
 		*/
-		virtual const DriverVersion& getDriverVersion_internal(void) const { return mDriverVersion; }
+		virtual const DriverVersion& getDriverVersion_internal(void) const;
 
 		/** Binds a given GpuProgram (but not the parameters). 
 		@remarks Only one GpuProgram of each type can be bound at once, binding another
@@ -777,7 +776,7 @@ namespace CamelotEngine
 		virtual void unbindGpuProgram_internal(GpuProgramType gptype);
 
 		/** Returns whether or not a Gpu program of the given type is currently bound. */
-		virtual bool isGpuProgramBound(GpuProgramType gptype);
+		virtual bool isGpuProgramBound_internal(GpuProgramType gptype);
 
 		/** Sets the user clipping region.
 		*/
@@ -960,22 +959,22 @@ namespace CamelotEngine
 		at once. Surfaces can be bound and unbound at will.
 		This fails if mCapabilities->getNumMultiRenderTargets() is smaller than 2.
 		*/
-		virtual MultiRenderTarget * createMultiRenderTarget_internal(const String & name) = 0; 
+		virtual MultiRenderTarget * createMultiRenderTarget(const String & name) = 0; 
 
 		/** Returns a pointer to the render target with the passed name, or NULL if that
 		render target cannot be found.
 		*/
-		virtual RenderTarget * getRenderTarget_internal( const String &name );
+		virtual RenderTarget * getRenderTarget( const String &name );
 		/** Detaches the render target with the passed name from the render system and
 		returns a pointer to it.
 		@note
 		If the render target cannot be found, NULL is returned.
 		*/
-		virtual RenderTarget * detachRenderTarget_internal( const String &name );
+		virtual RenderTarget * detachRenderTarget( const String &name );
 
 		/** Returns a description of an error code.
 		*/
-		virtual String getErrorDescription_internal(long errorNumber) const = 0;
+		virtual String getErrorDescription(long errorNumber) const = 0;
 
 		DriverVersion mDriverVersion;
 
@@ -1043,7 +1042,12 @@ namespace CamelotEngine
 		/**
 		 * @brief	Throws an exception if current thread isn't the render thread;
 		 */
-		void throwIfInvalidThread();
+		void throwIfNotRenderThread() const;
+
+		/**
+		 * @brief	Throws an exception if current thread isn't the thread the active context is initialized on
+		 */
+		void throwIfInvalidContextThread() const;
 
 		/**
 		 * @brief	Submits the specified context to the GPU. Normally this happens automatically
