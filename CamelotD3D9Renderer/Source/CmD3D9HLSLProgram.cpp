@@ -543,7 +543,7 @@ namespace CamelotEngine {
 		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 
 		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
-		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile);
+		return rs->getCapabilities_internal()->isShaderProfileSupported(hlslProfile);
     }
     //-----------------------------------------------------------------------
     GpuProgramParametersSharedPtr D3D9HLSLProgram::createParameters(void)

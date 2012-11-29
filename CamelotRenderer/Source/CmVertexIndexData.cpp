@@ -146,7 +146,7 @@ namespace CamelotEngine {
         bool useVertexPrograms = false;
 
 		RenderSystem* rend = CamelotEngine::RenderSystemManager::getActive();
-        if (rend && rend->getCapabilities()->hasCapability(RSC_VERTEX_PROGRAM))
+        if (rend && rend->getCapabilities_internal()->hasCapability(RSC_VERTEX_PROGRAM))
         {
             useVertexPrograms = true;
         }

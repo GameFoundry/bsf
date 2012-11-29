@@ -143,6 +143,10 @@ namespace CamelotEngine
 		 * 			By default an automatically created primary render context is used.
 		 */
 		void startUp();
+		virtual void startUp_internal();
+
+		// TODO - Classes below (shutdown to getErrorDescription) are not yet thread safe
+
 
 		/** Shutdown the renderer and cleanup resources.
 		*/
@@ -345,44 +349,19 @@ namespace CamelotEngine
 		*/
 		RenderWindow* createRenderWindow(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList *miscParams = 0);
-		
-		/**	Create a MultiRenderTarget, which is a render target that renders to multiple RenderTextures
-		at once. Surfaces can be bound and unbound at will.
-		This fails if mCapabilities->getNumMultiRenderTargets() is smaller than 2.
-		*/
-		virtual MultiRenderTarget * createMultiRenderTarget(const String & name) = 0; 
-
-		/** Destroys a render window */
-		virtual void destroyRenderWindow(const String& name);
-		/** Destroys a render texture */
-		virtual void destroyRenderTexture(const String& name);
-		/** Destroys a render target of any sort */
-		virtual void destroyRenderTarget(const String& name);
+		virtual void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
+			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp) = 0;
 
 		/** Attaches the passed render target to the render system.
 		*/
-		virtual void attachRenderTarget( RenderTarget &target );
-		/** Returns a pointer to the render target with the passed name, or NULL if that
-		render target cannot be found.
-		*/
-		virtual RenderTarget * getRenderTarget( const String &name );
-		/** Detaches the render target with the passed name from the render system and
-		returns a pointer to it.
-		@note
-		If the render target cannot be found, NULL is returned.
-		*/
-		virtual RenderTarget * detachRenderTarget( const String &name );
+		virtual void attachRenderTarget_internal( RenderTarget &target );
 
-		/// Iterator over RenderTargets
-		typedef CamelotEngine::RenderTargetMap::iterator RenderTargetIterator;
-
-		/** Returns a specialised MapIterator over all render targets attached to the RenderSystem. */
-		virtual RenderTargetIterator getRenderTargetIterator(void) {
-			return mRenderTargets.begin();
-		}
-		/** Returns a description of an error code.
-		*/
-		virtual String getErrorDescription(long errorNumber) const = 0;
+		/** Destroys a render window */
+		virtual void destroyRenderWindow_internal(const String& name);
+		/** Destroys a render texture */
+		virtual void destroyRenderTexture_internal(const String& name);
+		/** Destroys a render target of any sort */
+		virtual void destroyRenderTarget_internal(const String& name);
 
 		/** Defines whether or now fullscreen render windows wait for the vertical blank before flipping buffers.
 		@remarks
@@ -398,10 +377,12 @@ namespace CamelotEngine
 		enabled If true, the system waits for vertical blanks - quality over speed. If false it doesn't - speed over quality.
 		*/
 		void setWaitForVerticalBlank(bool enabled);
+		void setWaitForVerticalBlank_internal(bool enabled);
 
 		/** Returns true if the system is synchronising frames with the monitor vertical blank.
 		*/
 		bool getWaitForVerticalBlank(void) const;
+		bool getWaitForVerticalBlank_internal(void) const;
 
 		// ------------------------------------------------------------------------
 		//                     Internal Rendering Access
@@ -414,11 +395,14 @@ namespace CamelotEngine
 		only sets those settings which are different from the current settings for this
 		unit, thus minimising render state changes.
 		*/
-		virtual void setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, const SamplerState& tl);
+		void setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, const SamplerState& samplerState);
+		virtual void setTextureUnitSettings_internal(size_t texUnit, const TexturePtr& texture, const SamplerState& samplerState);
 		/** Turns off a texture unit. */
-		virtual void disableTextureUnit(size_t texUnit);
+		void disableTextureUnit(size_t texUnit);
+		virtual void disableTextureUnit_internal(size_t texUnit);
 		/** Disables all texture units from the given unit upwards */
-		virtual void disableTextureUnitsFrom(size_t texUnit);
+		void disableTextureUnitsFrom(size_t texUnit);
+		virtual void disableTextureUnitsFrom_internal(size_t texUnit);
 
 		/** Sets the size of points and how they are attenuated with distance.
 		@remarks
@@ -430,7 +414,9 @@ namespace CamelotEngine
 		you would set constant to 1, and linear and quadratic to 0. A
 		standard perspective attenuation would be 0, 1, 0 respectively.
 		*/
-		virtual void setPointParameters(float size, bool attenuationEnabled, 
+		void setPointParameters(float size, bool attenuationEnabled, 
+			float constant, float linear, float quadratic, float minSize, float maxSize);
+		virtual void setPointParameters_internal(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize) = 0;
 
 
@@ -446,7 +432,9 @@ namespace CamelotEngine
 		@param enabled Boolean to turn the unit on/off
 		@param texPtr Pointer to the texture to use.
 		*/
-		virtual void setTexture(size_t unit, bool enabled, 
+		void setTexture(size_t unit, bool enabled, 
+			const TexturePtr &texPtr);
+		virtual void setTexture_internal(size_t unit, bool enabled, 
 			const TexturePtr &texPtr) = 0;
 
 		/** Binds a texture to a vertex sampler.
@@ -458,7 +446,8 @@ namespace CamelotEngine
 		fragment units; calling this method will throw an exception.
 		@see RenderSystemCapabilites::getVertexTextureUnitsShared
 		*/
-		virtual void setVertexTexture(size_t unit, const TexturePtr& tex);
+		void setVertexTexture(size_t unit, const TexturePtr& tex);
+		virtual void setVertexTexture_internal(size_t unit, const TexturePtr& tex);
 
 		/** Sets the filtering options for a given texture unit.
 		@param unit The texture unit to set the filtering options for
@@ -466,7 +455,9 @@ namespace CamelotEngine
 		@param magFilter The filter used when a texture is magnified
 		@param mipFilter The filter used between mipmap levels, FO_NONE disables mipmapping
 		*/
-		virtual void setTextureFiltering(size_t unit, FilterOptions minFilter,
+		void setTextureFiltering(size_t unit, FilterOptions minFilter,
+			FilterOptions magFilter, FilterOptions mipFilter);
+		virtual void setTextureFiltering_internal(size_t unit, FilterOptions minFilter,
 			FilterOptions magFilter, FilterOptions mipFilter);
 
 		/** Sets a single filter for a given texture unit.
@@ -474,16 +465,20 @@ namespace CamelotEngine
 		@param ftype The filter type
 		@param filter The filter to be used
 		*/
-		virtual void setTextureFiltering(size_t unit, FilterType ftype, FilterOptions filter) = 0;
+		void setTextureFiltering(size_t unit, FilterType ftype, FilterOptions filter);
+		virtual void setTextureFiltering_internal(size_t unit, FilterType ftype, FilterOptions filter) = 0;
 
 		/** Sets the maximal anisotropy for the specified texture unit.*/
-		virtual void setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy) = 0;
+		void setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy);
+		virtual void setTextureAnisotropy_internal(size_t unit, unsigned int maxAnisotropy) = 0;
 
 		/** Sets the texture addressing mode for a texture unit.*/
-		virtual void setTextureAddressingMode(size_t unit, const SamplerState::UVWAddressingMode& uvw) = 0;
+		void setTextureAddressingMode(size_t unit, const SamplerState::UVWAddressingMode& uvw);
+		virtual void setTextureAddressingMode_internal(size_t unit, const SamplerState::UVWAddressingMode& uvw) = 0;
 
 		/** Sets the texture border color for a texture unit.*/
-		virtual void setTextureBorderColor(size_t unit, const Color& colour) = 0;
+		void setTextureBorderColor(size_t unit, const Color& color);
+		virtual void setTextureBorderColor_internal(size_t unit, const Color& color) = 0;
 
 		/** Sets the mipmap bias value for a given texture unit.
 		@remarks
@@ -493,7 +488,8 @@ namespace CamelotEngine
 		of levels, so +1 forces the mipmaps to one smaller level.
 		@note Only does something if render system has capability RSC_MIPMAP_LOD_BIAS.
 		*/
-		virtual void setTextureMipmapBias(size_t unit, float bias) = 0;
+		void setTextureMipmapBias(size_t unit, float bias);
+		virtual void setTextureMipmapBias_internal(size_t unit, float bias) = 0;
 
 		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
 		The result of the blending operation is:</p>
@@ -505,7 +501,8 @@ namespace CamelotEngine
 		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
 		@param op The blend operation mode for combining pixels
 		*/
-		virtual void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op = SBO_ADD) = 0;
+		void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op = SBO_ADD);
+		virtual void setSceneBlending_internal(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op = SBO_ADD) = 0;
 
 		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
 		The result of the blending operation is:</p>
@@ -519,7 +516,9 @@ namespace CamelotEngine
 		@param op The blend operation mode for combining pixels
 		@param alphaOp The blend operation mode for combining pixel alpha values
 		*/
-		virtual void setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
+		void setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
+			SceneBlendFactor destFactorAlpha, SceneBlendOperation op = SBO_ADD, SceneBlendOperation alphaOp = SBO_ADD);
+		virtual void setSeparateSceneBlending_internal(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
 			SceneBlendFactor destFactorAlpha, SceneBlendOperation op = SBO_ADD, SceneBlendOperation alphaOp = SBO_ADD) = 0;
 
 		/** Sets the global alpha rejection approach for future renders.
@@ -528,18 +527,21 @@ namespace CamelotEngine
 		@param val The value to compare each pixels alpha value to (0-255)
 		@param alphaToCoverage Whether to enable alpha to coverage, if supported
 		*/
-		virtual void setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage) = 0;
+		void setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage);
+		virtual void setAlphaRejectSettings_internal(CompareFunction func, unsigned char value, bool alphaToCoverage) = 0;
 
 		/**
 		* Signifies the beginning of a frame, i.e. the start of rendering on a single viewport. Will occur
 		* several times per complete frame if multiple viewports exist.
 		*/
-		virtual void beginFrame(void) = 0;
+		void beginFrame(void);
+		virtual void beginFrame_internal(void) = 0;
 		
 		/**
 		* Ends rendering of a frame to the current viewport.
 		*/
-		virtual void endFrame(void) = 0;
+		void endFrame(void);
+		virtual void endFrame_internal(void) = 0;
 		/**
 		Sets the provided viewport as the active one for future
 		rendering operations. This viewport is aware of it's own
@@ -547,9 +549,10 @@ namespace CamelotEngine
 
 		@param target Viewport to render to.
 		*/
-		virtual void setViewport(const Viewport& vp) = 0;
+		void setViewport(const Viewport& vp);
+		virtual void setViewport_internal(const Viewport& vp) = 0;
 		/** Get the current active viewport for rendering. */
-		virtual Viewport getViewport(void);
+		virtual Viewport getViewport_internal(void);
 
 		/** Sets the culling mode for the render system based on the 'vertex winding'.
 		A typical way for the rendering engine to cull triangles is based on the
@@ -562,8 +565,10 @@ namespace CamelotEngine
 		You may wish to use the CULL_NONE option for mesh data that you cull yourself where the vertex
 		winding is uncertain.
 		*/
-		virtual void setCullingMode(CullingMode mode) = 0;
+		void setCullingMode(CullingMode mode);
+		virtual void setCullingMode_internal(CullingMode mode) = 0;
 
+		CullingMode getCullingMode_internal(void) const;
 		virtual CullingMode getCullingMode(void) const;
 
 		/** Sets the mode of operation for depth buffer tests from this point onwards.
@@ -579,18 +584,23 @@ namespace CamelotEngine
 		If false, the depth buffer is left unchanged even if a new pixel is written.
 		@param depthFunction Sets the function required for the depth test.
 		*/
-		virtual void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL) = 0;
+		void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
+		virtual void setDepthBufferParams_internal(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL) = 0;
 
 		/** Sets whether or not the depth buffer check is performed before a pixel write.
 		@param enabled If true, the depth buffer is tested for each pixel and the frame buffer is only updated
 		if the depth function test succeeds. If false, no test is performed and pixels are always written.
 		*/
-		virtual void setDepthBufferCheckEnabled(bool enabled = true) = 0;
+		void setDepthBufferCheckEnabled(bool enabled = true);
+		virtual void setDepthBufferCheckEnabled_internal(bool enabled = true) = 0;
+
 		/** Sets whether or not the depth buffer is updated after a pixel write.
 		@param enabled If true, the depth buffer is updated with the depth of the new pixel if the depth test succeeds.
 		If false, the depth buffer is left unchanged even if a new pixel is written.
 		*/
-		virtual void setDepthBufferWriteEnabled(bool enabled = true) = 0;
+		void setDepthBufferWriteEnabled(bool enabled = true);
+		virtual void setDepthBufferWriteEnabled_internal(bool enabled = true) = 0;
+
 		/** Sets the comparison function for the depth buffer check.
 		Advanced use only - allows you to choose the function applied to compare the depth values of
 		new and existing pixels in the depth buffer. Only an issue if the deoth buffer check is enabled
@@ -598,7 +608,9 @@ namespace CamelotEngine
 		@param  func The comparison between the new depth and the existing depth which must return true
 		for the new pixel to be written.
 		*/
-		virtual void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL) = 0;
+		void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
+		virtual void setDepthBufferFunction_internal(CompareFunction func = CMPF_LESS_EQUAL) = 0;
+
 		/** Sets whether or not colour buffer writing is enabled, and for which channels. 
 		@remarks
 		For some advanced effects, you may wish to turn off the writing of certain colour
@@ -606,7 +618,9 @@ namespace CamelotEngine
 		in a rendering pass. However, the chances are that you really want to use this option
 		through the Material class.
 		@param red, green, blue, alpha Whether writing is enabled for each of the 4 colour channels. */
-		virtual void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha) = 0;
+		void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
+		virtual void setColorBufferWriteEnabled_internal(bool red, bool green, bool blue, bool alpha) = 0;
+
 		/** Sets the depth bias, NB you should use the Material version of this. 
 		@remarks
 		When polygons are coplanar, you can get problems with 'depth fighting' where
@@ -629,12 +643,12 @@ namespace CamelotEngine
 		cards.
 
 		*/
-		virtual void setDepthBias(float constantBias, float slopeScaleBias = 0.0f) = 0;
-
-		
+		void setDepthBias(float constantBias, float slopeScaleBias = 0.0f);
+		virtual void setDepthBias_internal(float constantBias, float slopeScaleBias = 0.0f) = 0;
 
 		/** Sets how to rasterise triangles, as points, wireframe or solid polys. */
-		virtual void setPolygonMode(PolygonMode level) = 0;
+		void setPolygonMode(PolygonMode level);
+		virtual void setPolygonMode_internal(PolygonMode level) = 0;
 
 		/** Turns stencil buffer checking on or off. 
 		@remarks
@@ -642,7 +656,8 @@ namespace CamelotEngine
 		buffer) can be turned on or off using this method. By default, stencilling is
 		disabled.
 		*/
-		virtual void setStencilCheckEnabled(bool enabled) = 0;
+		void setStencilCheckEnabled(bool enabled);
+		virtual void setStencilCheckEnabled_internal(bool enabled) = 0;
 		/** Determines if this system supports hardware accelerated stencil buffer. 
 		@remarks
 		Note that the lack of this function doesn't mean you can't do stencilling, but
@@ -695,19 +710,24 @@ namespace CamelotEngine
 		(you'll have to turn off culling) then these parameters will apply for front faces, 
 		and the inverse of them will happen for back faces (keep remains the same).
 		*/
-		virtual void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
+		void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
+			UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
+			StencilOperation stencilFailOp = SOP_KEEP, 
+			StencilOperation depthFailOp = SOP_KEEP,
+			StencilOperation passOp = SOP_KEEP, 
+			bool twoSidedOperation = false);
+
+		virtual void setStencilBufferParams_internal(CompareFunction func = CMPF_ALWAYS_PASS, 
 			UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
 			StencilOperation stencilFailOp = SOP_KEEP, 
 			StencilOperation depthFailOp = SOP_KEEP,
 			StencilOperation passOp = SOP_KEEP, 
 			bool twoSidedOperation = false) = 0;
 
-
-
 		/** Sets the current vertex declaration, ie the source of vertex data. */
-		virtual void setVertexDeclaration(VertexDeclarationPtr decl) = 0;
+		virtual void setVertexDeclaration_internal(VertexDeclarationPtr decl) = 0;
 		/** Sets the current vertex buffer binding state. */
-		virtual void setVertexBufferBinding(VertexBufferBinding* binding) = 0;
+		virtual void setVertexBufferBinding_internal(VertexBufferBinding* binding) = 0;
 
 		/**
 		Render something to the active viewport.
@@ -721,21 +741,23 @@ namespace CamelotEngine
 		@param op A rendering operation instance, which contains
 		details of the operation to be performed.
 		*/
-		virtual void render(const RenderOperation& op);
+		void render(const RenderOperation& op);
+		virtual void render_internal(const RenderOperation& op);
 
 		/** Gets the capabilities of the render system. */
-		const RenderSystemCapabilities* getCapabilities(void) const { return mCurrentCapabilities; }
+		const RenderSystemCapabilities* getCapabilities_internal(void) const { return mCurrentCapabilities; }
 
 
 		/** Returns the driver version.
 		*/
-		virtual const DriverVersion& getDriverVersion(void) const { return mDriverVersion; }
+		virtual const DriverVersion& getDriverVersion_internal(void) const { return mDriverVersion; }
 
 		/** Binds a given GpuProgram (but not the parameters). 
 		@remarks Only one GpuProgram of each type can be bound at once, binding another
 		one will simply replace the existing one.
 		*/
 		void bindGpuProgram(GpuProgramRef prg);
+		virtual void bindGpuProgram_internal(GpuProgramRef prg);
 
 		/** Bind Gpu program parameters.
 		@param gptype The type of program to bind the parameters to
@@ -744,28 +766,35 @@ namespace CamelotEngine
 		*/
 		void bindGpuProgramParameters(GpuProgramType gptype, 
 			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
+		virtual void bindGpuProgramParameters_internal(GpuProgramType gptype, 
+			GpuProgramParametersSharedPtr params, UINT16 variabilityMask) = 0;
 
 		/** Unbinds GpuPrograms of a given GpuProgramType.
 		@remarks
 		This returns the pipeline to fixed-function processing for this type.
 		*/
 		void unbindGpuProgram(GpuProgramType gptype);
+		virtual void unbindGpuProgram_internal(GpuProgramType gptype);
 
 		/** Returns whether or not a Gpu program of the given type is currently bound. */
 		virtual bool isGpuProgramBound(GpuProgramType gptype);
 
 		/** Sets the user clipping region.
 		*/
-		virtual void setClipPlanes(const PlaneList& clipPlanes);
+		void setClipPlanes(const PlaneList& clipPlanes);
+		virtual void setClipPlanes_internal(const PlaneList& clipPlanes);
 
 		/** Add a user clipping plane. */
-		virtual void addClipPlane (const Plane &p);
+		void addClipPlane(const Plane &p);
+		virtual void addClipPlane_internal (const Plane &p);
 		/** Add a user clipping plane. */
-		virtual void addClipPlane (float A, float B, float C, float D);
+		void addClipPlane(float A, float B, float C, float D);
+		virtual void addClipPlane_internal (float A, float B, float C, float D);
 
 		/** Clears the user clipping region.
 		*/
-		virtual void resetClipPlanes();
+		void resetClipPlanes();
+		virtual void resetClipPlanes_internal();
 
 		/** Internal method for swapping all the buffers on all render targets,
 		if _updateAllRenderTargets was called with a 'false' parameter. */
@@ -774,12 +803,14 @@ namespace CamelotEngine
 
 		/** Sets whether or not vertex windings set should be inverted; this can be important
 		for rendering reflections. */
-		virtual void setInvertVertexWinding(bool invert);
+		void setInvertVertexWinding(bool invert);
+		virtual void setInvertVertexWinding_internal(bool invert);
 
 		/** Indicates whether or not the vertex windings set will be inverted for the current render (e.g. reflections)
 		@see RenderSystem::setInvertVertexWinding
 		*/
-		virtual bool getInvertVertexWinding(void) const;
+		bool getInvertVertexWinding(void) const;
+		virtual bool getInvertVertexWinding_internal(void) const;
 
 		/** Sets the 'scissor region' ie the region of the target in which rendering can take place.
 		@remarks
@@ -792,7 +823,9 @@ namespace CamelotEngine
 		@param left, top, right, bottom The location of the corners of the rectangle, expressed in
 		<i>pixels</i>.
 		*/
-		virtual void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, 
+		void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, 
+			size_t right = 800, size_t bottom = 600);
+		virtual void setScissorTest_internal(bool enabled, size_t left = 0, size_t top = 0, 
 			size_t right = 800, size_t bottom = 600) = 0;
 
 		/** Clears one or more frame buffers on the active render target. 
@@ -802,34 +835,22 @@ namespace CamelotEngine
 		@param depth The value to initialise the depth buffer with, if enabled
 		@param stencil The value to initialise the stencil buffer with, if enabled.
 		*/
-		virtual void clearFrameBuffer(unsigned int buffers, 
-			const Color& colour = Color::Black, 
+		void clearFrameBuffer(unsigned int buffers, 
+			const Color& color = Color::Black, 
+			float depth = 1.0f, unsigned short stencil = 0);
+		virtual void clearFrameBuffer_internal(unsigned int buffers, 
+			const Color& color = Color::Black, 
 			float depth = 1.0f, unsigned short stencil = 0) = 0;
 
 		/**
          * Set current render target to target, enabling its device context if needed
          */
-        virtual void setRenderTarget(RenderTarget *target) = 0;
-
-		/**
-		* Gets the number of display monitors.
-		@see Root::getDisplayMonitorCount
-		*/
-		virtual unsigned int getDisplayMonitorCount() const = 0;
+		void setRenderTarget(RenderTarget *target);
+        virtual void setRenderTarget_internal(RenderTarget *target) = 0;
 
 		/************************************************************************/
 		/* 								UTILITY METHODS                    		*/
 		/************************************************************************/
-
-		/** Generates a packed data version of the passed in ColourValue suitable for
-		use as with this RenderSystem.
-		@remarks
-		Since different render systems have different colour data formats (eg
-		RGBA for GL, ARGB for D3D) this method allows you to use 1 method for all.
-		@param colour The colour to convert
-		@param pDest Pointer to location to put the result.
-		*/
-		virtual void convertColorValue(const Color& colour, UINT32* pDest);
 
 		/** Get the native VertexElementType for a compact 32-bit colour value
 		for this rendersystem.
@@ -842,7 +863,7 @@ namespace CamelotEngine
 		projection matrix, this method allows each to implement their own correctly and pass
 		back a generic Camelot matrix for storage in the engine.
 		*/
-		virtual void _convertProjectionMatrix(const Matrix4& matrix,
+		virtual void convertProjectionMatrix(const Matrix4& matrix,
 			Matrix4& dest, bool forGpuProgram = false) = 0;
 
 		/** Returns the horizontal texel offset value required for mapping 
@@ -886,22 +907,6 @@ namespace CamelotEngine
 		@see Renderable::getUseIdentityView, Renderable::getUseIdentityProjection
 		*/
 		virtual float getMaximumDepthInputValue(void) = 0;
-
-		/************************************************************************/
-		/* 							INTERNAL CALLBACKS                     		*/
-		/************************************************************************/
-	protected:
-		virtual void startUp_internal();
-
-		virtual void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp) = 0;
-
-		virtual void bindGpuProgram_internal(GpuProgramRef prg);
-
-		virtual void unbindGpuProgram_internal(GpuProgramType gptype);
-
-		virtual void bindGpuProgramParameters_internal(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, UINT16 variabilityMask) = 0;
 		/************************************************************************/
 		/* 						INTERNAL DATA & METHODS                      	*/
 		/************************************************************************/
@@ -922,7 +927,7 @@ namespace CamelotEngine
 
 		CullingMode mCullingMode;
 
-		bool mVSync;
+		bool mVsync;
 		unsigned int mVSyncInterval;
 
 		bool mInvertVertexWinding;
@@ -950,6 +955,27 @@ namespace CamelotEngine
 
 		/** Initialize the render system from the capabilities*/
 		virtual void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary) = 0;
+
+		/**	Create a MultiRenderTarget, which is a render target that renders to multiple RenderTextures
+		at once. Surfaces can be bound and unbound at will.
+		This fails if mCapabilities->getNumMultiRenderTargets() is smaller than 2.
+		*/
+		virtual MultiRenderTarget * createMultiRenderTarget_internal(const String & name) = 0; 
+
+		/** Returns a pointer to the render target with the passed name, or NULL if that
+		render target cannot be found.
+		*/
+		virtual RenderTarget * getRenderTarget_internal( const String &name );
+		/** Detaches the render target with the passed name from the render system and
+		returns a pointer to it.
+		@note
+		If the render target cannot be found, NULL is returned.
+		*/
+		virtual RenderTarget * detachRenderTarget_internal( const String &name );
+
+		/** Returns a description of an error code.
+		*/
+		virtual String getErrorDescription_internal(long errorNumber) const = 0;
 
 		DriverVersion mDriverVersion;
 
@@ -984,9 +1010,15 @@ namespace CamelotEngine
 		CM_THREAD_TYPE* mRenderThread;
 #endif
 
+		// Context on which all resource commands are queued
 		mutable RenderSystemContextPtr mResourceContext;
+		// Primary context created when the render system is first started up
 		RenderSystemContextPtr mPrimaryContext;
+		// Currently active context. All new commands will be executed on this context.
 		mutable RenderSystemContextPtr mActiveContext;
+
+		// Context that is currently being executed
+		RenderSystemContextPtr mExecutingContext;
 
 		vector<RenderSystemContextPtr>::type mRenderSystemContexts;
 		boost::signal<void()> PreRenderThreadUpdateCallback;
@@ -1024,11 +1056,11 @@ namespace CamelotEngine
 		void submitToGpu(RenderSystemContextPtr context, bool blockUntilComplete);
 
 		/**
-		 * @brief	Sets an active context on which all subsequent RenderSystem calls will be executed on.
-		 * 			
-		 * @note	context must not be null.
+		 * @brief	Gets the currently active render system object.
+		 *
+		 * @return	The active context.
 		 */
-		void setActiveContext(RenderSystemContextPtr context);
+		RenderSystemContextPtr getActiveContext() const;
 
 	public:
 		/**
@@ -1045,6 +1077,13 @@ namespace CamelotEngine
 		 * 			requires its own context.
 		 */
 		RenderSystemContextPtr createRenderSystemContext();
+
+		/**
+		 * @brief	Sets an active context on which all subsequent RenderSystem calls will be executed on.
+		 * 			
+		 * @note	context must not be null.
+		 */
+		void setActiveContext(RenderSystemContextPtr context);
 
 		/**
 		 * @brief	Callback that is called from the render thread before it starts processing

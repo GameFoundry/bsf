@@ -71,7 +71,7 @@ namespace CamelotEngine {
 			RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
 
 			// Get the supported syntaxed from RenderSystemCapabilities 
-			return rs->getCapabilities()->getSupportedShaderProfiles();
+			return rs->getCapabilities_internal()->getSupportedShaderProfiles();
         }
 
     //---------------------------------------------------------------------------
@@ -81,7 +81,7 @@ namespace CamelotEngine {
 			RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
 
 			// Get the supported syntaxed from RenderSystemCapabilities 
-			return rs->getCapabilities()->isShaderProfileSupported(syntaxCode);
+			return rs->getCapabilities_internal()->isShaderProfileSupported(syntaxCode);
 		}
 
 	//---------------------------------------------------------------------------
@@ -90,7 +90,7 @@ namespace CamelotEngine {
 		// Use the current render system
 		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
 
-		return  rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(gpuProgProfile);
+		return  rs->getCapabilities_internal()->gpuProgProfileToRSSpecificProfile(gpuProgProfile);
 	}
 	//-----------------------------------------------------------------------------
 	GpuProgramParametersSharedPtr GpuProgramManager::createParameters(void)

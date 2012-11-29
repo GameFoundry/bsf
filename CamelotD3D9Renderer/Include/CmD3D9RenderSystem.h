@@ -171,7 +171,17 @@ namespace CamelotEngine
 		ZBufferHash mZBufferHash;		
 
 	protected:
-		void setClipPlanesImpl(const PlaneList& clipPlanes);		
+		void setClipPlanesImpl(const PlaneList& clipPlanes);	
+
+		/// @copydoc RenderSystem::createMultiRenderTarget
+		virtual MultiRenderTarget * createMultiRenderTarget_internal(const String & name);
+
+		/**
+         * Set current render target to target, enabling its GL context if needed
+         */
+		void setRenderTarget_internal(RenderTarget *target);
+
+		String getErrorDescription_internal( long errorNumber ) const;
 	public:
 		// constructor
 		D3D9RenderSystem( HINSTANCE hInstance );
@@ -180,59 +190,59 @@ namespace CamelotEngine
 
 		virtual void initConfigOptions();
 		
-		/**
-         * Set current render target to target, enabling its GL context if needed
-         */
-		void setRenderTarget(RenderTarget *target);
-		
-		/// @copydoc RenderSystem::createMultiRenderTarget
-		virtual MultiRenderTarget * createMultiRenderTarget(const String & name);
-
-		String getErrorDescription( long errorNumber ) const;
 		const String& getName() const;
 		void shutdown();
-		void destroyRenderTarget(const String& name);
 		VertexElementType getColorVertexElementType() const;
-		void setStencilCheckEnabled(bool enabled);
-        void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
+		void setStencilCheckEnabled_internal(bool enabled);
+        void setStencilBufferParams_internal(CompareFunction func = CMPF_ALWAYS_PASS, 
             UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
             StencilOperation stencilFailOp = SOP_KEEP, 
             StencilOperation depthFailOp = SOP_KEEP,
             StencilOperation passOp = SOP_KEEP, 
             bool twoSidedOperation = false);
 
-		// Low-level overridden members, mainly for internal use
-		void setPointParameters(float size, bool attenuationEnabled, 
-			float constant, float linear, float quadratic, float minSize, float maxSize);
-		void setTexture(size_t unit, bool enabled, const TexturePtr &texPtr);
-		void setVertexTexture(size_t unit, const TexturePtr& tex);
-		void disableTextureUnit(size_t texUnit);
-        void setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw);
-        void setTextureBorderColor(size_t stage, const Color& colour);
-		void setTextureMipmapBias(size_t unit, float bias);
-		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
-		void setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
-		void setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage );
-		void setViewport(const Viewport& vp);		
-		void beginFrame();
-		void endFrame();		
-		void setCullingMode( CullingMode mode );
-		void setDepthBufferParams( bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL );
-		void setDepthBufferCheckEnabled( bool enabled = true );
-		void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
-		void setDepthBufferWriteEnabled(bool enabled = true);
-		void setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
-		void setDepthBias(float constantBias, float slopeScaleBias);
-		void _convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
-		void setPolygonMode(PolygonMode level);
-        void setTextureFiltering(size_t unit, FilterType ftype, FilterOptions filter);
-		void setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy);
-		void setVertexDeclaration(VertexDeclarationPtr decl);
-		void setVertexBufferBinding(VertexBufferBinding* binding);
-        void render(const RenderOperation& op);
+		void startUp_internal();
+		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
+			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
+		void destroyRenderTarget_internal(const String& name);
 
-        void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600);
-        void clearFrameBuffer(unsigned int buffers, 
+		void bindGpuProgram_internal(GpuProgramRef prg);
+		void unbindGpuProgram_internal(GpuProgramType gptype);
+		void bindGpuProgramParameters_internal(GpuProgramType gptype, 
+			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
+
+		// Low-level overridden members, mainly for internal use
+		void setPointParameters_internal(float size, bool attenuationEnabled, 
+			float constant, float linear, float quadratic, float minSize, float maxSize);
+		void setTexture_internal(size_t unit, bool enabled, const TexturePtr &texPtr);
+		void setVertexTexture_internal(size_t unit, const TexturePtr& tex);
+		void disableTextureUnit_internal(size_t texUnit);
+        void setTextureAddressingMode_internal(size_t stage, const SamplerState::UVWAddressingMode& uvw);
+        void setTextureBorderColor_internal(size_t stage, const Color& colour);
+		void setTextureMipmapBias_internal(size_t unit, float bias);
+		void setSceneBlending_internal( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
+		void setSeparateSceneBlending_internal( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
+		void setAlphaRejectSettings_internal( CompareFunction func, unsigned char value, bool alphaToCoverage );
+		void setViewport_internal(const Viewport& vp);		
+		void beginFrame_internal();
+		void endFrame_internal();		
+		void setCullingMode_internal( CullingMode mode );
+		void setDepthBufferParams_internal( bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL );
+		void setDepthBufferCheckEnabled_internal( bool enabled = true );
+		void setColorBufferWriteEnabled_internal(bool red, bool green, bool blue, bool alpha);
+		void setDepthBufferWriteEnabled_internal(bool enabled = true);
+		void setDepthBufferFunction_internal( CompareFunction func = CMPF_LESS_EQUAL );
+		void setDepthBias_internal(float constantBias, float slopeScaleBias);
+		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
+		void setPolygonMode_internal(PolygonMode level);
+        void setTextureFiltering_internal(size_t unit, FilterType ftype, FilterOptions filter);
+		void setTextureAnisotropy_internal(size_t unit, unsigned int maxAnisotropy);
+		void setVertexDeclaration_internal(VertexDeclarationPtr decl);
+		void setVertexBufferBinding_internal(VertexBufferBinding* binding);
+        void render_internal(const RenderOperation& op);
+
+        void setScissorTest_internal(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600);
+        void clearFrameBuffer_internal(unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
 		void setClipPlane (UINT16 index, float A, float B, float C, float D);
@@ -277,26 +287,6 @@ namespace CamelotEngine
 		/// Take in some requested FSAA settings and output supported D3D settings
 		void determineFSAASettings(IDirect3DDevice9* d3d9Device, size_t fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
 			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
-
-		/// @copydoc RenderSystem::getDisplayMonitorCount
-		unsigned int getDisplayMonitorCount() const;
-		
-		/************************************************************************/
-		/* 							INTERNAL CALLBACKS                     		*/
-		/************************************************************************/
-	protected:
-		void startUp_internal();
-
-		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
-
-
-        void bindGpuProgram_internal(GpuProgramRef prg);
-
-        void unbindGpuProgram_internal(GpuProgramType gptype);
-
-		void bindGpuProgramParameters_internal(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
 
 	protected:	
 		/// Notify when a device has been lost.

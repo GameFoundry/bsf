@@ -52,7 +52,7 @@ namespace CamelotEngine {
         // This means CULL clockwise vertices, i.e. front of poly is counter-clockwise
         // This makes it the same as OpenGL and other right-handed systems
         , mCullingMode(CULL_CLOCKWISE)
-        , mVSync(true)
+		, mVsync(false)
 		, mVSyncInterval(1)
         , mInvertVertexWinding(false)
         , mDisabledTexUnitsFrom(0)
@@ -85,9 +85,36 @@ namespace CamelotEngine {
 		initRenderThread(); // TODO - Move render thread to the outside of the RS
 
 		{
-			CM_LOCK_MUTEX(mResourceContextMutex)
-				mResourceContext->queueCommand(boost::bind(&RenderSystem::startUp_internal, this));
+			CM_LOCK_MUTEX(mResourceContextMutex);
+			mResourceContext->queueCommand(boost::bind(&RenderSystem::startUp_internal, this));
 		}
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::startUp_internal()
+	{
+		mVertexProgramBound = false;
+		mGeometryProgramBound = false;
+		mFragmentProgramBound = false;
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::shutdown(void)
+	{
+		// Remove all the render targets.
+		// (destroy primary target last since others may depend on it)
+		RenderTarget* primary = 0;
+		for (RenderTargetMap::iterator it = mRenderTargets.begin(); it != mRenderTargets.end(); ++it)
+		{
+			if (!primary && it->second->isPrimary())
+				primary = it->second;
+			else
+				delete it->second;
+		}
+		delete primary;
+		mRenderTargets.clear();
+
+		mPrioritisedRenderTargets.clear();
+
+		shutdownRenderThread();
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::swapAllRenderTargetBuffers(bool waitForVSync)
@@ -127,23 +154,23 @@ namespace CamelotEngine {
 		return op.getReturnValue<RenderWindow*>();
 	}
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderWindow(const String& name)
+    void RenderSystem::destroyRenderWindow_internal(const String& name)
     {
-        destroyRenderTarget(name);
+        destroyRenderTarget_internal(name);
     }
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderTexture(const String& name)
+    void RenderSystem::destroyRenderTexture_internal(const String& name)
     {
-        destroyRenderTarget(name);
+        destroyRenderTarget_internal(name);
     }
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderTarget(const String& name)
+    void RenderSystem::destroyRenderTarget_internal(const String& name)
     {
-        RenderTarget* rt = detachRenderTarget(name);
+        RenderTarget* rt = detachRenderTarget_internal(name);
         delete rt;
     }
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::attachRenderTarget( RenderTarget &target )
+    void RenderSystem::attachRenderTarget_internal( RenderTarget &target )
     {
 		assert( target.getPriority() < OGRE_NUM_RENDERTARGET_GROUPS );
 
@@ -153,7 +180,7 @@ namespace CamelotEngine {
     }
 
     //---------------------------------------------------------------------------------------------
-    RenderTarget * RenderSystem::getRenderTarget( const String &name )
+    RenderTarget * RenderSystem::getRenderTarget_internal( const String &name )
     {
         RenderTargetMap::iterator it = mRenderTargets.find( name );
         RenderTarget *ret = NULL;
@@ -167,7 +194,7 @@ namespace CamelotEngine {
     }
 
     //---------------------------------------------------------------------------------------------
-    RenderTarget * RenderSystem::detachRenderTarget( const String &name )
+    RenderTarget * RenderSystem::detachRenderTarget_internal( const String &name )
     {
         RenderTargetMap::iterator it = mRenderTargets.find( name );
         RenderTarget *ret = NULL;
@@ -195,13 +222,27 @@ namespace CamelotEngine {
 
         return ret;
     }
+	//-----------------------------------------------------------------------
+	void RenderSystem::setViewport(const Viewport& vp)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setViewport_internal, this, vp));
+	}
     //-----------------------------------------------------------------------
-    Viewport RenderSystem::getViewport(void)
+    Viewport RenderSystem::getViewport_internal(void)
     {
         return mActiveViewport;
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, const SamplerState& tl)
+    void RenderSystem::setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, const SamplerState& samplerState)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureUnitSettings_internal, this, texUnit, tex, samplerState));
+	}
+	//-----------------------------------------------------------------------
+    void RenderSystem::setTextureUnitSettings_internal(size_t texUnit, const TexturePtr& tex, const SamplerState& tl)
     {
         // This method is only ever called to set a texture unit to valid details
         // The method _disableTextureUnit is called to turn a unit off
@@ -213,56 +254,84 @@ namespace CamelotEngine {
 			if (tl.getBindingType() == SamplerState::BT_VERTEX)
 			{
 				// Bind vertex texture
-				setVertexTexture(texUnit, tex);
+				setVertexTexture_internal(texUnit, tex);
 				// bind nothing to fragment unit (hardware isn't shared but fragment
 				// unit can't be using the same index
-				setTexture(texUnit, true, sNullTexPtr);
+				setTexture_internal(texUnit, true, sNullTexPtr);
 			}
 			else
 			{
 				// vice versa
-				setVertexTexture(texUnit, sNullTexPtr);
-				setTexture(texUnit, true, tex);
+				setVertexTexture_internal(texUnit, sNullTexPtr);
+				setTexture_internal(texUnit, true, tex);
 			}
 		}
 		else
 		{
 			// Shared vertex / fragment textures or no vertex texture support
 			// Bind texture (may be blank)
-			setTexture(texUnit, true, tex);
+			setTexture_internal(texUnit, true, tex);
 		}
 
         // Set texture layer filtering
-        setTextureFiltering(texUnit, 
+        setTextureFiltering_internal(texUnit, 
             tl.getTextureFiltering(FT_MIN), 
             tl.getTextureFiltering(FT_MAG), 
             tl.getTextureFiltering(FT_MIP));
 
         // Set texture layer filtering
-        setTextureAnisotropy(texUnit, tl.getTextureAnisotropy());
+        setTextureAnisotropy_internal(texUnit, tl.getTextureAnisotropy());
 
 		// Set mipmap biasing
-		setTextureMipmapBias(texUnit, tl.getTextureMipmapBias());
+		setTextureMipmapBias_internal(texUnit, tl.getTextureMipmapBias());
 
         // Texture addressing mode
         const SamplerState::UVWAddressingMode& uvw = tl.getTextureAddressingMode();
-        setTextureAddressingMode(texUnit, uvw);
+        setTextureAddressingMode_internal(texUnit, uvw);
     }
 	//-----------------------------------------------------------------------
+	void RenderSystem::setTexture(size_t unit, bool enabled, const TexturePtr &texPtr)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTexture_internal, this, unit, enabled, texPtr));
+	}
+	//-----------------------------------------------------------------------
 	void RenderSystem::setVertexTexture(size_t unit, const TexturePtr& tex)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setVertexTexture_internal, this, unit, tex));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setVertexTexture_internal(size_t unit, const TexturePtr& tex)
 	{
 		CM_EXCEPT(NotImplementedException, 
 			"This rendersystem does not support separate vertex texture samplers, "
 			"you should use the regular texture samplers which are shared between "
 			"the vertex and fragment units.");
 	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::disableTextureUnit(size_t texUnit)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::disableTextureUnit_internal, this, texUnit));
+	}
     //-----------------------------------------------------------------------
-    void RenderSystem::disableTextureUnit(size_t texUnit)
+    void RenderSystem::disableTextureUnit_internal(size_t texUnit)
     {
-        setTexture(texUnit, false, sNullTexPtr);
+        setTexture_internal(texUnit, false, sNullTexPtr);
     }
+	//---------------------------------------------------------------------
+	void RenderSystem::disableTextureUnitsFrom(size_t texUnit)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::disableTextureUnitsFrom_internal, this, texUnit));
+	}
     //---------------------------------------------------------------------
-    void RenderSystem::disableTextureUnitsFrom(size_t texUnit)
+    void RenderSystem::disableTextureUnitsFrom_internal(size_t texUnit)
     {
         size_t disableTo = CM_MAX_TEXTURE_LAYERS;
         if (disableTo > mDisabledTexUnitsFrom)
@@ -270,21 +339,89 @@ namespace CamelotEngine {
         mDisabledTexUnitsFrom = texUnit;
         for (size_t i = texUnit; i < disableTo; ++i)
         {
-            disableTextureUnit(i);
+            disableTextureUnit_internal(i);
         }
     }
+	//-----------------------------------------------------------------------
+	void RenderSystem::setTextureFiltering(size_t unit, FilterOptions minFilter,
+		FilterOptions magFilter, FilterOptions mipFilter)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureFiltering_internal, this, unit, minFilter, magFilter, mipFilter));
+	}
     //-----------------------------------------------------------------------
-    void RenderSystem::setTextureFiltering(size_t unit, FilterOptions minFilter,
+    void RenderSystem::setTextureFiltering_internal(size_t unit, FilterOptions minFilter,
             FilterOptions magFilter, FilterOptions mipFilter)
     {
-        setTextureFiltering(unit, FT_MIN, minFilter);
-        setTextureFiltering(unit, FT_MAG, magFilter);
-        setTextureFiltering(unit, FT_MIP, mipFilter);
+        setTextureFiltering_internal(unit, FT_MIN, minFilter);
+        setTextureFiltering_internal(unit, FT_MAG, magFilter);
+        setTextureFiltering_internal(unit, FT_MIP, mipFilter);
     }
 	//-----------------------------------------------------------------------
-	CullingMode RenderSystem::getCullingMode(void) const
+	void RenderSystem::setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy)
 	{
-		return mCullingMode;
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureAnisotropy_internal, this, unit, maxAnisotropy));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setTextureAddressingMode(size_t unit, const SamplerState::UVWAddressingMode& uvw)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureAddressingMode_internal, this, unit, uvw));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setTextureBorderColor(size_t unit, const Color& color)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureBorderColor_internal, this, unit, color));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setTextureMipmapBias(size_t unit, float bias)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureMipmapBias_internal, this, unit, bias));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setPointParameters(float size, bool attenuationEnabled, 
+		float constant, float linear, float quadratic, float minSize, float maxSize)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setPointParameters_internal, this, size, attenuationEnabled, constant, linear, quadratic, minSize, maxSize));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setSceneBlending_internal, this, sourceFactor, destFactor, op));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
+		SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setSeparateSceneBlending_internal, this, sourceFactor, destFactor, sourceFactorAlpha, destFactorAlpha, op, alphaOp));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setAlphaRejectSettings_internal, this, func, value, alphaToCoverage));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setScissorTest(bool enabled, size_t left, size_t top, size_t right, size_t bottom)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setScissorTest_internal, this, enabled, left, top, right, bottom));
 	}
 	//-----------------------------------------------------------------------
 	bool RenderSystem::getWaitForVerticalBlank(void) const
@@ -294,72 +431,167 @@ namespace CamelotEngine {
 		return mActiveContext->waitForVerticalBlank;
 	}
 	//-----------------------------------------------------------------------
+	bool RenderSystem::getWaitForVerticalBlank_internal(void) const
+	{
+		return mVsync;
+	}
+	//-----------------------------------------------------------------------
 	void RenderSystem::setWaitForVerticalBlank(bool enabled)
 	{
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext->waitForVerticalBlank = enabled;
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setWaitForVerticalBlank_internal, this, enabled));
 	}
-    //-----------------------------------------------------------------------
-    void RenderSystem::shutdown(void)
-    {
-        // Remove all the render targets.
-		// (destroy primary target last since others may depend on it)
-		RenderTarget* primary = 0;
-		for (RenderTargetMap::iterator it = mRenderTargets.begin(); it != mRenderTargets.end(); ++it)
-		{
-			if (!primary && it->second->isPrimary())
-				primary = it->second;
-			else
-				delete it->second;
-		}
-		delete primary;
-		mRenderTargets.clear();
-
-		mPrioritisedRenderTargets.clear();
-
-		shutdownRenderThread();
-    }
-    //-----------------------------------------------------------------------
-	void RenderSystem::convertColorValue(const Color& colour, UINT32* pDest)
+	//-----------------------------------------------------------------------
+	void RenderSystem::setWaitForVerticalBlank_internal(bool enabled)
 	{
-		*pDest = VertexElement::convertColourValue(colour, getColorVertexElementType());
-
+		mVsync = enabled;
 	}
-    //-----------------------------------------------------------------------
-    void RenderSystem::render(const RenderOperation& op)
-    {
-		// sort out clip planes
-		// have to do it here in case of matrix issues
-		if (mClipPlanesDirty)
-		{
-			setClipPlanesImpl(mClipPlanes);
-			mClipPlanesDirty = false;
-		}
-    }
-    //-----------------------------------------------------------------------
-    void RenderSystem::setInvertVertexWinding(bool invert)
-    {
-        mInvertVertexWinding = invert;
-    }
+	//-----------------------------------------------------------------------
+	void RenderSystem::setInvertVertexWinding(bool invert)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->invertVertexWinding = invert;
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setInvertVertexWinding_internal, this, invert));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setInvertVertexWinding_internal(bool invert)
+	{
+		mInvertVertexWinding = invert;
+	}
 	//-----------------------------------------------------------------------
 	bool RenderSystem::getInvertVertexWinding(void) const
 	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		return mActiveContext->invertVertexWinding;
+	}
+	//-----------------------------------------------------------------------
+	bool RenderSystem::getInvertVertexWinding_internal(void) const
+	{
 		return mInvertVertexWinding;
 	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferParams_internal, this, depthTest, depthWrite, depthFunction));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setDepthBufferCheckEnabled(bool enabled)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferCheckEnabled_internal, this, enabled));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setDepthBufferWriteEnabled(bool enabled)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferWriteEnabled_internal, this, enabled));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setDepthBufferFunction(CompareFunction func)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferFunction_internal, this, func));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setColorBufferWriteEnabled_internal, this, red, green, blue, alpha));
+	}
 	//---------------------------------------------------------------------
-	void RenderSystem::addClipPlane (const Plane &p)
+	void RenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBias_internal, this, constantBias, slopeScaleBias));
+	}
+	//---------------------------------------------------------------------
+	void RenderSystem::setPolygonMode(PolygonMode level)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setPolygonMode_internal, this, level));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setStencilCheckEnabled(bool enabled)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setStencilCheckEnabled_internal, this, enabled));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setStencilBufferParams(CompareFunction func, UINT32 refValue, UINT32 mask, StencilOperation stencilFailOp, 
+		StencilOperation depthFailOp, StencilOperation passOp, bool twoSidedOperation)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setStencilBufferParams_internal, this, func, refValue, mask, stencilFailOp, depthFailOp, passOp, twoSidedOperation));
+	}
+	//-----------------------------------------------------------------------
+	CullingMode RenderSystem::getCullingMode(void) const
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		return mActiveContext->cullingMode;
+	}
+	//-----------------------------------------------------------------------
+	CullingMode RenderSystem::getCullingMode_internal(void) const
+	{
+		return mCullingMode;
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setCullingMode(CullingMode mode)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->cullingMode = mode;
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setCullingMode_internal, this, mode));
+	}
+	//---------------------------------------------------------------------
+	void RenderSystem::addClipPlane(const Plane &p)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::addClipPlane_internal, this, p));
+	}
+	//---------------------------------------------------------------------
+	void RenderSystem::addClipPlane_internal (const Plane &p)
 	{
 		mClipPlanes.push_back(p);
 		mClipPlanesDirty = true;
 	}
 	//---------------------------------------------------------------------
-	void RenderSystem::addClipPlane (float A, float B, float C, float D)
+	void RenderSystem::addClipPlane(float A, float B, float C, float D)
 	{
-		addClipPlane(Plane(A, B, C, D));
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::addClipPlane_internal, this, A, B, C, D));
+	}
+	//---------------------------------------------------------------------
+	void RenderSystem::addClipPlane_internal (float A, float B, float C, float D)
+	{
+		addClipPlane_internal(Plane(A, B, C, D));
 	}
 	//---------------------------------------------------------------------
 	void RenderSystem::setClipPlanes(const PlaneList& clipPlanes)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setClipPlanes_internal, this, clipPlanes));
+	}
+	//---------------------------------------------------------------------
+	void RenderSystem::setClipPlanes_internal(const PlaneList& clipPlanes)
 	{
 		if (clipPlanes != mClipPlanes)
 		{
@@ -369,6 +601,13 @@ namespace CamelotEngine {
 	}
 	//---------------------------------------------------------------------
 	void RenderSystem::resetClipPlanes()
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::resetClipPlanes_internal, this));
+	}
+	//---------------------------------------------------------------------
+	void RenderSystem::resetClipPlanes_internal()
 	{
 		if (!mClipPlanes.empty())
 		{
@@ -384,11 +623,50 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::bindGpuProgram_internal, this, prg));
 	}
 	//-----------------------------------------------------------------------
+	void RenderSystem::bindGpuProgram_internal(GpuProgramRef prg)
+	{
+		switch(prg->_getBindingDelegate()->getType())
+		{
+		case GPT_VERTEX_PROGRAM:
+			// mark clip planes dirty if changed (programmable can change space)
+			if (!mVertexProgramBound && !mClipPlanes.empty())
+				mClipPlanesDirty = true;
+
+			mVertexProgramBound = true;
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			mGeometryProgramBound = true;
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			mFragmentProgramBound = true;
+			break;
+		}
+	}
+	//-----------------------------------------------------------------------
 	void RenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 	    mActiveContext->queueCommand(boost::bind(&RenderSystem::unbindGpuProgram_internal, this, gptype));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::unbindGpuProgram_internal(GpuProgramType gptype)
+	{
+		switch(gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			// mark clip planes dirty if changed (programmable can change space)
+			if (mVertexProgramBound && !mClipPlanes.empty())
+				mClipPlanesDirty = true;
+			mVertexProgramBound = false;
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			mGeometryProgramBound = false;
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			mFragmentProgramBound = false;
+			break;
+		}
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, 
@@ -406,14 +684,60 @@ namespace CamelotEngine {
 	    switch(gptype)
 	    {
         case GPT_VERTEX_PROGRAM:
-            return mVertexProgramBound;
+            return mActiveContext->vertexProgramBound;
         case GPT_GEOMETRY_PROGRAM:
-            return mGeometryProgramBound;
+            return mActiveContext->geometryProgramBound;
         case GPT_FRAGMENT_PROGRAM:
-            return mFragmentProgramBound;
+            return mActiveContext->fragmentProgramBound;
 	    }
         // Make compiler happy
         return false;
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::setRenderTarget(RenderTarget *target)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::setRenderTarget_internal, this, target));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::clearFrameBuffer(unsigned int buffers, const Color& color, float depth, unsigned short stencil)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::clearFrameBuffer_internal, this, buffers, color, depth, stencil));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::beginFrame()
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::beginFrame_internal, this));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::endFrame()
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::endFrame_internal, this));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::render(const RenderOperation& op)
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		mActiveContext->queueCommand(boost::bind(&RenderSystem::render_internal, this, op));
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::render_internal(const RenderOperation& op)
+	{
+		// sort out clip planes
+		// have to do it here in case of matrix issues
+		if (mClipPlanesDirty)
+		{
+			setClipPlanesImpl(mClipPlanes);
+			mClipPlanesDirty = false;
+		}
 	}
 
 	void RenderSystem::initRenderThread()
@@ -482,6 +806,7 @@ namespace CamelotEngine {
 			// Play commands
 			for(auto iter = renderSystemContextsCopy.begin(); iter != renderSystemContextsCopy.end(); ++iter)
 			{
+				setActiveContext(*iter);
 				(*iter)->playbackCommands();
 			}
 
@@ -561,6 +886,13 @@ namespace CamelotEngine {
 		mActiveContext = context;
 	}
 
+	RenderSystemContextPtr RenderSystem::getActiveContext() const
+	{
+		CM_LOCK_MUTEX(mActiveContextMutex);
+
+		return mActiveContext;
+	}
+
 	void RenderSystem::update()
 	{
 		{
@@ -579,56 +911,6 @@ namespace CamelotEngine {
 	{
 		if(CM_THREAD_CURRENT_ID != getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "Calling the render system from a non-render thread!");
-	}
-
-	/************************************************************************/
-	/* 							INTERNAL CALLBACKS                     		*/
-	/************************************************************************/
-
-	void RenderSystem::startUp_internal()
-	{
-		mVertexProgramBound = false;
-		mGeometryProgramBound = false;
-		mFragmentProgramBound = false;
-	}
-
-	void RenderSystem::bindGpuProgram_internal(GpuProgramRef prg)
-	{
-		switch(prg->_getBindingDelegate()->getType())
-		{
-		case GPT_VERTEX_PROGRAM:
-			// mark clip planes dirty if changed (programmable can change space)
-			if (!mVertexProgramBound && !mClipPlanes.empty())
-				mClipPlanesDirty = true;
-
-			mVertexProgramBound = true;
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			mGeometryProgramBound = true;
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-			mFragmentProgramBound = true;
-			break;
-		}
-	}
-
-	void RenderSystem::unbindGpuProgram_internal(GpuProgramType gptype)
-	{
-		switch(gptype)
-		{
-		case GPT_VERTEX_PROGRAM:
-			// mark clip planes dirty if changed (programmable can change space)
-			if (mVertexProgramBound && !mClipPlanes.empty())
-				mClipPlanesDirty = true;
-			mVertexProgramBound = false;
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			mGeometryProgramBound = false;
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-			mFragmentProgramBound = false;
-			break;
-		}
 	}
 
 	/************************************************************************/

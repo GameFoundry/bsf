@@ -942,7 +942,7 @@ void D3D9HardwarePixelBuffer::updateRenderTexture(bool writeGamma, UINT32 fsaa, 
 
 		mRenderTexture = new D3D9RenderTexture(name, this, writeGamma, fsaa);		
 
-		CamelotEngine::RenderSystemManager::getActive()->attachRenderTarget(*mRenderTexture);
+		CamelotEngine::RenderSystemManager::getActive()->attachRenderTarget_internal(*mRenderTexture);
 	}
 }
 //-----------------------------------------------------------------------------    
@@ -950,7 +950,7 @@ void D3D9HardwarePixelBuffer::destroyRenderTexture()
 {
 	if (mRenderTexture != NULL)
 	{
-		CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget(mRenderTexture->getName());
+		CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget_internal(mRenderTexture->getName());
 		mRenderTexture = NULL;
 	}
 }

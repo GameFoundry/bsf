@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmAsyncOp.h"
+#include "CmCommon.h"
 #include "boost/function.hpp"
 
 namespace CamelotEngine
@@ -121,5 +122,10 @@ namespace CamelotEngine
 		// TODO - This is actually a clumsy way of keeping state. Better and more generic way would be to
 		// search through all commands for a specific state change and find what it is.
 		bool waitForVerticalBlank;
+		CullingMode cullingMode;
+		bool vertexProgramBound;
+        bool geometryProgramBound;
+		bool fragmentProgramBound;
+		bool invertVertexWinding;
 	};
 }

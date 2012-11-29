@@ -178,11 +178,11 @@ namespace CamelotEngine {
 		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
 		if (rs)
 		{
-			Viewport currentvp = rs->getViewport();
+			Viewport currentvp = rs->getViewport_internal();
 
-			rs->setViewport(*this);
-			rs->clearFrameBuffer(buffers, col, depth, stencil);
-			rs->setViewport(currentvp);
+			rs->setViewport_internal(*this);
+			rs->clearFrameBuffer_internal(buffers, col, depth, stencil);
+			rs->setViewport_internal(currentvp);
 		}
 	}
     //---------------------------------------------------------------------

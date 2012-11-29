@@ -84,7 +84,7 @@ namespace CamelotEngine {
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)
 	{
 		// Adjust requested parameters to capabilities
-        const RenderSystemCapabilities *caps = CamelotEngine::RenderSystemManager::getActive()->getCapabilities();
+        const RenderSystemCapabilities *caps = CamelotEngine::RenderSystemManager::getActive()->getCapabilities_internal();
 
 		// Check compressed texture support
 		// if a compressed format not supported, revert to PF_A8R8G8B8

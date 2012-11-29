@@ -497,9 +497,9 @@ namespace CamelotEngine {
 
 		RenderSystem* renderSystem = CamelotEngine::RenderSystemManager::getActive();
 		// API specific
-		renderSystem->_convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
+		renderSystem->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
 		// API specific for Gpu Programs
-		renderSystem->_convertProjectionMatrix(mProjMatrix, mProjMatrixRSDepth, true);
+		renderSystem->convertProjectionMatrix(mProjMatrix, mProjMatrixRSDepth, true);
 
 
 		// Calculate bounding box (local)

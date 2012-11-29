@@ -9,6 +9,11 @@ namespace CamelotEngine
 	RenderSystemContext::RenderSystemContext(CM_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId), mReadyCommands(nullptr), mIsExecuting(false)
 		, waitForVerticalBlank(true)
+		, cullingMode(CULL_CLOCKWISE)
+		, vertexProgramBound(false)
+		, geometryProgramBound(false)
+		, fragmentProgramBound(false)
+		, invertVertexWinding(false)
 	{
 		mCommands = new vector<RenderSystemCommand>::type();
 	}

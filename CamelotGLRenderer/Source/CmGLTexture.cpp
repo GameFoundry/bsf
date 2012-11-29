@@ -125,7 +125,7 @@ namespace CamelotEngine {
 		
 		// If we can do automip generation and the user desires this, do so
 		mMipmapsHardwareGenerated = 
-			CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->hasCapability(RSC_AUTOMIPMAP);
+			CamelotEngine::RenderSystemManager::getActive()->getCapabilities_internal()->hasCapability(RSC_AUTOMIPMAP);
 		// NVIDIA 175.16 drivers break hardware mip generation for non-compressed
 		// textures - disable until fixed
 		// Leave hardware gen on compressed textures since that's the only way we
@@ -134,7 +134,7 @@ namespace CamelotEngine {
 		// problem yet and in fact software generation appears to cause a crash 
 		// in some cases which I've yet to track down
 #if CM_PLATFORM != CM_PLATFORM_APPLE
-		if (CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->getVendor() == GPU_NVIDIA
+		if (CamelotEngine::RenderSystemManager::getActive()->getCapabilities_internal()->getVendor() == GPU_NVIDIA
 			&& !PixelUtil::isCompressed(mFormat))
 		{
 			mMipmapsHardwareGenerated = false;

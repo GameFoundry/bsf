@@ -127,21 +127,18 @@ namespace CamelotEngine {
 
 		UINT16 mActiveTextureUnit;
 
-		/************************************************************************/
-		/* 							INTERNAL CALLBACKS                     		*/
-		/************************************************************************/
-	protected:
-        void startUp_internal();
-
-		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
-
-        void bindGpuProgram_internal(GpuProgramRef prg);
-        void unbindGpuProgram_internal(GpuProgramType gptype);
-		void bindGpuProgramParameters_internal(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
 	protected:
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 		bool activateGLTextureUnit(size_t unit);
+
+		/// @copydoc RenderSystem::createMultiRenderTarget
+		virtual MultiRenderTarget * createMultiRenderTarget_internal(const String & name); 
+		
+        /** See
+          RenderSystem
+         */
+        String getErrorDescription_internal(long errorNumber) const;
+
     public:
         // Default constructor / destructor
         GLRenderSystem();
@@ -158,18 +155,6 @@ namespace CamelotEngine {
           RenderSystem
          */
         void shutdown(void);
-        
-		/// @copydoc RenderSystem::createMultiRenderTarget
-		virtual MultiRenderTarget * createMultiRenderTarget(const String & name); 
-		
-        /** See
-          RenderSystem
-         */
-        void destroyRenderWindow(RenderWindow* pWin);
-        /** See
-          RenderSystem
-         */
-        String getErrorDescription(long errorNumber) const;
 
         /** See
           RenderSystem
@@ -182,32 +167,57 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-		void setPointParameters(float size, bool attenuationEnabled, 
+		void startUp_internal();
+		/** See
+          RenderSystem
+         */
+		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
+			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
+        /** See
+          RenderSystem
+         */
+        void destroyRenderWindow_internal(RenderWindow* pWin);
+		/** See
+          RenderSystem
+         */
+		void bindGpuProgram_internal(GpuProgramRef prg);
+        /** See
+          RenderSystem
+         */
+		void unbindGpuProgram_internal(GpuProgramType gptype);
+		/** See
+          RenderSystem
+         */
+		void bindGpuProgramParameters_internal(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
+        /** See
+          RenderSystem
+         */
+		void setPointParameters_internal(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize);
 		/** See
           RenderSystem
          */
-        void setTexture(size_t unit, bool enabled, const TexturePtr &tex);
+        void setTexture_internal(size_t unit, bool enabled, const TexturePtr &tex);
         /** See
           RenderSystem
          */
-        void setTextureAddressingMode(size_t stage, const SamplerState::UVWAddressingMode& uvw);
+        void setTextureAddressingMode_internal(size_t stage, const SamplerState::UVWAddressingMode& uvw);
         /** See
           RenderSystem
          */
-        void setTextureBorderColor(size_t stage, const Color& colour);
+        void setTextureBorderColor_internal(size_t stage, const Color& colour);
 		/** See
 		  RenderSystem
 		 */
-		void setTextureMipmapBias(size_t unit, float bias);
+		void setTextureMipmapBias_internal(size_t unit, float bias);
         /** See
           RenderSystem
          */
-        void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
+        void setSceneBlending_internal(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
         /** See
           RenderSystem
          */
-		void setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
+		void setSeparateSceneBlending_internal(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
         /** See
           RenderSystem
          */
@@ -219,51 +229,51 @@ namespace CamelotEngine {
 		/** See
           RenderSystem
          */
-        void setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage);
+        void setAlphaRejectSettings_internal(CompareFunction func, unsigned char value, bool alphaToCoverage);
         /** See
           RenderSystem
          */
-        void setViewport(const Viewport& vp);
+        void setViewport_internal(const Viewport& vp);
         /** See
           RenderSystem
          */
-        void beginFrame(void);
+        void beginFrame_internal(void);
         /** See
           RenderSystem
          */
-        void endFrame(void);
+        void endFrame_internal(void);
         /** See
           RenderSystem
          */
-        void setCullingMode(CullingMode mode);
+        void setCullingMode_internal(CullingMode mode);
         /** See
           RenderSystem
          */
-        void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
+        void setDepthBufferParams_internal(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
         /** See
           RenderSystem
          */
-        void setDepthBufferCheckEnabled(bool enabled = true);
+        void setDepthBufferCheckEnabled_internal(bool enabled = true);
         /** See
           RenderSystem
          */
-        void setDepthBufferWriteEnabled(bool enabled = true);
+        void setDepthBufferWriteEnabled_internal(bool enabled = true);
         /** See
           RenderSystem
          */
-        void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
+        void setDepthBufferFunction_internal(CompareFunction func = CMPF_LESS_EQUAL);
         /** See
           RenderSystem
          */
-        void setDepthBias(float constantBias, float slopeScaleBias);
+        void setDepthBias_internal(float constantBias, float slopeScaleBias);
         /** See
           RenderSystem
          */
-        void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
+        void setColorBufferWriteEnabled_internal(bool red, bool green, bool blue, bool alpha);
         /** See
           RenderSystem
          */
-        void _convertProjectionMatrix(const Matrix4& matrix,
+        void convertProjectionMatrix(const Matrix4& matrix,
             Matrix4& dest, bool forGpuProgram = false);
         /** See
           RenderSystem
@@ -276,15 +286,15 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setPolygonMode(PolygonMode level);
+        void setPolygonMode_internal(PolygonMode level);
         /** See
           RenderSystem
          */
-        void setStencilCheckEnabled(bool enabled);
+        void setStencilCheckEnabled_internal(bool enabled);
         /** See
           RenderSystem.
          */
-        void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
+        void setStencilBufferParams_internal(CompareFunction func = CMPF_ALWAYS_PASS, 
             UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
             StencilOperation stencilFailOp = SOP_KEEP, 
             StencilOperation depthFailOp = SOP_KEEP,
@@ -293,23 +303,23 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setTextureFiltering(size_t unit, FilterType ftype, FilterOptions filter);
+        void setTextureFiltering_internal(size_t unit, FilterType ftype, FilterOptions filter);
         /** See
           RenderSystem
          */
-		void setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy);
+		void setTextureAnisotropy_internal(size_t unit, unsigned int maxAnisotropy);
         /** See
           RenderSystem
          */
-		void setVertexDeclaration(VertexDeclarationPtr decl);
+		void setVertexDeclaration_internal(VertexDeclarationPtr decl);
         /** See
           RenderSystem
          */
-		void setVertexBufferBinding(VertexBufferBinding* binding);
+		void setVertexBufferBinding_internal(VertexBufferBinding* binding);
         /** See
           RenderSystem
          */
-        void render(const RenderOperation& op);
+        void render_internal(const RenderOperation& op);
         /** See
           RenderSystem
          */
@@ -318,8 +328,8 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600) ;
-        void clearFrameBuffer(unsigned int buffers, 
+        void setScissorTest_internal(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600) ;
+        void clearFrameBuffer_internal(unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
         float getHorizontalTexelOffset(void);
@@ -341,7 +351,7 @@ namespace CamelotEngine {
         /**
          * Set current render target to target, enabling its GL context if needed
          */
-        void setRenderTarget(RenderTarget *target);
+        void setRenderTarget_internal(RenderTarget *target);
         /** Unregister a render target->context mapping. If the context of target 
             is the current context, change the context to the main context so it
             can be destroyed safely. 
@@ -352,9 +362,6 @@ namespace CamelotEngine {
         void _unregisterContext(GLContext *context);
 		/** Returns the main context */
 		GLContext* _getMainContext() {return mMainContext;} 
-
-		/// @copydoc RenderSystem::getDisplayMonitorCount
-		unsigned int getDisplayMonitorCount() const;
     };
 }
 #endif

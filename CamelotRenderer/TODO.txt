@@ -16,6 +16,13 @@ High-level TODO:
 
 
 Command buffer TODO:
+ - Make sure no internal methods call the external interface
+  - Debug checks to make sure external methods don't get called from render thread, and that internal methods ONLY get called from render thread
+ - Don't make _internal methods protected. Other classes like RenderTarget, buffers, etc. will be executing from render thread and they need direct access to them
+ - My current approach doesn't allow multiple threads to use the RenderSystem (contexts should be handled differently)
+ - Make sure the user knows resources are shared between contexts. All resource updates are executed before rendering a frame, so whichever context updated the resource last,
+   was the version that will be used.
+
  Immediate:
   - Resource updates shouldn't happen once per frame. Resources should be submitted to render thread immediately.
   - Port the rest of the RenderSystem of use RenderContext
