@@ -36,7 +36,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
 	//--------------------------------------------------------------------------
     Texture::Texture()
-        : // init defaults; can be overridden before load()
+        : 
             mHeight(512),
             mWidth(512),
             mDepth(1),
@@ -64,6 +64,11 @@ namespace CamelotEngine {
 		mHwGamma = hwGamma;
 		mFSAA = fsaa;
 		mFSAAHint = fsaaHint;
+	}
+	//-------------------------------------------------------------------------
+	void Texture::initialize_internal()
+	{
+		createInternalResources();
 	}
     //--------------------------------------------------------------------------
     bool Texture::hasAlpha(void) const
@@ -149,6 +154,72 @@ namespace CamelotEngine {
 
 		mTextureData[face] = textureData;
 	}
+
+	void Texture::setRawPixels(const PixelData& data, UINT32 face, UINT32 mip)
+	{
+		// TODO - Queue command
+	}
+
+	void Texture::setRawPixels_internal(const PixelData& data, UINT32 face, UINT32 mip)
+	{
+		if(mip < 0 || mip > mNumMipmaps)
+			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mip) + ". Min is 0, max is " + toString(mNumMipmaps));
+
+		if(face < 0 || mip > getNumFaces())
+			CM_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(getNumFaces()));
+
+		if(mFormat != data.format)
+			CM_EXCEPT(InvalidParametersException, "Provided PixelData has invalid format. Needed: " + toString(mFormat) + ". Got: " + toString(data.format));
+
+		if(mWidth != data.getWidth() || mHeight != data.getHeight() || mDepth != data.getDepth())
+		{
+			CM_EXCEPT(InvalidParametersException, "Provided PixelData size doesn't match the texture size." \
+				" Width: " + toString(mWidth) + "/" + toString(data.getWidth()) + 
+				" Height: " + toString(mHeight) + "/" + toString(data.getHeight()) + 
+				" Depth: " + toString(mDepth) + "/" + toString(data.getDepth()));
+		}
+
+		getBuffer(face, mip)->blitFromMemory(data);
+	}
+
+	PixelDataPtr Texture::getRawPixels(UINT32 face, UINT32 mip)
+	{
+		// TODO - Queue command
+		return nullptr;
+	}
+
+	PixelDataPtr Texture::getRawPixels_internal(UINT32 face, UINT32 mip)
+	{
+		if(mip < 0 || mip > mNumMipmaps)
+			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mip) + ". Min is 0, max is " + toString(mNumMipmaps));
+
+		if(face < 0 || mip > getNumFaces())
+			CM_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(getNumFaces()));
+
+		UINT32 numMips = getNumMipmaps();
+
+		UINT32 totalSize = 0;
+		UINT32 width = getWidth();
+		UINT32 height = getHeight();
+		UINT32 depth = getDepth();
+
+		for(UINT32 j = 0; j <= mip; j++)
+		{
+			totalSize = PixelUtil::getMemorySize(width, height, depth, mFormat);
+
+			if(width != 1) width /= 2;
+			if(height != 1) height /= 2;
+			if(depth != 1) depth /= 2;
+		}
+
+		UINT8* buffer = new UINT8[totalSize]; 
+		PixelDataPtr src(new PixelData(width, height, depth, getFormat(), buffer, true));
+
+		getBuffer(face, mip)->blitToMemory(*src);
+
+		return src;
+	}
+
 	//-----------------------------------------------------------------------------
 	void Texture::initializeFromTextureData()
 	{

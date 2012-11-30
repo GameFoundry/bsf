@@ -17,7 +17,7 @@ namespace CamelotEngine
 		CM_SETGET_MEMBER(mFlags, INT32, TextureData)
 		CM_SETGET_MEMBER(mBPP, UINT8, TextureData)
 		CM_SETGET_MEMBER(mFormat, PixelFormat, TextureData)
-		
+
 		ManagedDataBlock getData(TextureData* obj) 
 		{
 			return ManagedDataBlock(obj->mData, obj->mSize, false);

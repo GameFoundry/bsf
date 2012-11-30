@@ -175,6 +175,21 @@ namespace CamelotEngine {
 		TextureDataPtr getTextureData(UINT32 face);
 
 		/**
+		 * @brief	Sets raw texture pixels for the specified mip level and texture face. Pixel format
+		 * 			must match the format of the texture.
+		 */
+		void setRawPixels(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
+		void setRawPixels_internal(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
+
+		/**
+		 * @brief	Gets raw pixels from the texture. This is a slow operation
+		 * 			as it will read data from the GPU. If the texture is compressed
+		 * 			the returned data will be contain compressed pixels as well.
+		 */
+		PixelDataPtr getRawPixels(UINT32 face = 0, UINT32 mip = 0);
+		PixelDataPtr getRawPixels_internal(UINT32 face = 0, UINT32 mip = 0);
+
+		/**
 		 * @brief	Sets the texture data that will be used for initializing the texture.
 		 * 			You must call loadFromTextureData after setting the data for all faces. 
 		 * 			Texture data array will be cleared after the texture is fully loaded.
@@ -218,6 +233,8 @@ namespace CamelotEngine {
 		void initialize(TextureType textureType, size_t width, size_t height, size_t depth, size_t numMipmaps, 
 			PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint);
 		
+		void initialize_internal();
+
 		/// @copydoc Resource::calculateSize
 		size_t calculateSize(void) const;
 

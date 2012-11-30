@@ -5,6 +5,7 @@
 #include "CmTexture.h"
 #include "CmTextureData.h"
 #include "CmManagedDataBlock.h"
+#include "CmMath.h"
 
 // DEBUG ONLY
 #include "CmTextureManager.h"
@@ -27,24 +28,29 @@ namespace CamelotEngine
 		CM_SETGET_MEMBER(mFormat, PixelFormat, Texture)
 		CM_SETGET_MEMBER(mUsage, INT32, Texture)
 
-		std::shared_ptr<TextureData> getTextureData(Texture* obj, UINT32 face)
+		PixelDataPtr getPixelData(Texture* obj, UINT32 idx)
 		{
-			return obj->getTextureData(face);
+			size_t face = (size_t)Math::Floor(idx / (float)(obj->getNumMipmaps() + 1));
+			size_t mipmap = idx % (obj->getNumMipmaps() + 1);
+
+			return obj->getRawPixels(face, mipmap);
 		}
 
-		void setTextureData(Texture* obj, UINT32 face, TextureDataPtr data)
+		void setPixelData(Texture* obj, UINT32 idx, PixelDataPtr data)
 		{
-			obj->setTextureData(face, data);
+			mPixelData[idx] = data;
 		}
 
-		UINT32 getTextureDataArraySize(Texture* obj)
+		UINT32 getPixelDataArraySize(Texture* obj)
 		{
-			return obj->getNumFaces();
+			return obj->getNumFaces() * obj->getNumMipmaps();
 		}
 
-		void setTextureDataArraySize(Texture* obj, UINT32 size)
+		void setPixelDataArraySize(Texture* obj, UINT32 size)
 		{
-			// Not allowed to change size this way
+			vector<PixelDataPtr>::type* pixelData = boost::any_cast<vector<PixelDataPtr>::type*>(obj->mRTTIData);
+
+			pixelData->resize(size);
 		}
 
 	public:
@@ -63,8 +69,35 @@ namespace CamelotEngine
 			CM_ADD_PLAINFIELD(mFormat, 10, TextureRTTI)
 			CM_ADD_PLAINFIELD(mUsage, 11, TextureRTTI)
 
-			addReflectablePtrArrayField("mTextureData", 18, &TextureRTTI::getTextureData, &TextureRTTI::getTextureDataArraySize, 
-				&TextureRTTI::setTextureData, &TextureRTTI::setTextureDataArraySize);
+			addReflectablePtrArrayField("mPixelData", 12, &TextureRTTI::getPixelData, &TextureRTTI::getPixelDataArraySize, 
+				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize);
+		}
+
+		virtual void onDeserializationStarted(IReflectable* obj)
+		{
+			Texture* texture = static_cast<Texture*>(obj);
+
+			texture->mRTTIData = new vector<PixelDataPtr>::type();
+		}
+
+		virtual void onDeserializationEnded(IReflectable* obj)
+		{
+			Texture* texture = static_cast<Texture*>(obj);
+
+			if(texture->mRTTIData.empty())
+				return;
+
+			vector<PixelDataPtr>::type* pixelData = boost::any_cast<vector<PixelDataPtr>::type*>(texture->mRTTIData);
+			for(size_t i = 0; i < pixelData->size(); i++)
+			{
+				size_t face = (size_t)Math::Floor(i / (float)(texture->getNumMipmaps() + 1));
+				size_t mipmap = i % (texture->getNumMipmaps() + 1);
+
+				texture->setRawPixels(*pixelData->at(i), face, mipmap);
+			}
+
+			delete pixelData;
+			texture->mRTTIData = nullptr;			
 		}
 
 		virtual const String& getRTTIName()
@@ -85,5 +118,8 @@ namespace CamelotEngine
 
 			//CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class!");
 		}
+
+	private:
+		vector<PixelDataPtr>::type mPixelData;
 	};
 }

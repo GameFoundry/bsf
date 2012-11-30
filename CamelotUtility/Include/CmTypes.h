@@ -22,6 +22,7 @@ namespace CamelotEngine
 
 	enum TypeID_Utility
 	{
-		TID_Abstract = 50 // Special type ID used for Abstract classes. Only type ID that may be used by more than one class.
+		TID_Abstract = 50, // Special type ID used for Abstract classes. Only type ID that may be used by more than one class.
+		TID_PixelData = 51
 	};
 }
