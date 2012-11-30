@@ -416,14 +416,6 @@ namespace CamelotEngine
 		if (textureResources != NULL && textureResources->pBaseTex != NULL)
 			return;
 		
-
-		// If mSrcWidth and mSrcHeight are zero, the requested extents have probably been set
-		// through setWidth and setHeight, which set mWidth and mHeight. Take those values.
-		if(mSrcWidth == 0 || mSrcHeight == 0) {
-			mSrcWidth = mWidth;
-			mSrcHeight = mHeight;
-		}
-
 		// load based on tex.type
 		switch (getTextureType())
 		{
@@ -447,7 +439,7 @@ namespace CamelotEngine
 	void D3D9Texture::_createNormTex(IDirect3DDevice9* d3d9Device)
 	{
 		// we must have those defined here
-		assert(mSrcWidth > 0 || mSrcHeight > 0);
+		assert(mWidth > 0 || mHeight > 0);
 
 		// determine wich D3D9 pixel format we'll use
 		HRESULT hr;
@@ -458,8 +450,8 @@ namespace CamelotEngine
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
 		DWORD usage = (mUsage & TU_RENDERTARGET) ? D3DUSAGE_RENDERTARGET : 0;
-		UINT numMips = (mNumRequestedMipmaps == MIP_UNLIMITED) ? 
-				D3DX_DEFAULT : mNumRequestedMipmaps + 1;
+		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? 
+				D3DX_DEFAULT : mNumMipmaps + 1;
 		// Check dynamic textures
 		if (mUsage & TU_DYNAMIC)
 		{
@@ -496,23 +488,8 @@ namespace CamelotEngine
 		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
 
-
 		// check if mip maps are supported on hardware
-		mMipmapsHardwareGenerated = false;
-		if (rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPMAP)
-		{
-			if (mUsage & TU_AUTOMIPMAP && mNumRequestedMipmaps != 0)
-			{
-				// use auto.gen. if available, and if desired
-				mMipmapsHardwareGenerated = _canAutoGenMipmaps(d3d9Device, usage, D3DRTYPE_TEXTURE, d3dPF);
-				if (mMipmapsHardwareGenerated)
-				{
-					usage |= D3DUSAGE_AUTOGENMIPMAP;
-					numMips = 0;
-				}
-			}
-		}
-		else
+		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPMAP))
 		{
 			// no mip map support for this kind of textures :(
 			mNumMipmaps = 0;
@@ -535,8 +512,8 @@ namespace CamelotEngine
 		// create the texture
 		hr = D3DXCreateTexture(	
 				d3d9Device,								// device
-				static_cast<UINT>(mSrcWidth),			// width
-				static_cast<UINT>(mSrcHeight),			// height
+				static_cast<UINT>(mWidth),				// width
+				static_cast<UINT>(mHeight),				// height
 				numMips,								// number of mip map levels
 				usage,									// usage
 				d3dPF,									// pixel format
@@ -585,23 +562,12 @@ namespace CamelotEngine
 
 		_setFinalAttributes(d3d9Device, textureResources, 
 			desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
-		
-		// Set best filter type
-		if(mMipmapsHardwareGenerated)
-		{
-			hr = textureResources->pBaseTex->SetAutoGenFilterType(_getBestFilterMethod(d3d9Device));
-			if(FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Could not set best autogen filter type: "  + String(DXGetErrorDescription(hr)));
-			}
-		}
-
 	}
 	/****************************************************************************************/
 	void D3D9Texture::_createCubeTex(IDirect3DDevice9* d3d9Device)
 	{
 		// we must have those defined here
-		assert(mSrcWidth > 0 || mSrcHeight > 0);
+		assert(mWidth > 0 || mHeight > 0);
 
 		// determine wich D3D9 pixel format we'll use
 		HRESULT hr;
@@ -612,8 +578,8 @@ namespace CamelotEngine
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
 		DWORD usage = (mUsage & TU_RENDERTARGET) ? D3DUSAGE_RENDERTARGET : 0;
-		UINT numMips = (mNumRequestedMipmaps == MIP_UNLIMITED) ? 
-			D3DX_DEFAULT : mNumRequestedMipmaps + 1;
+		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? 
+			D3DX_DEFAULT : mNumMipmaps + 1;
 		// Check dynamic textures
 		if (mUsage & TU_DYNAMIC)
 		{
@@ -651,21 +617,7 @@ namespace CamelotEngine
 		const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
 		
 		// check if mip map cube textures are supported
-		mMipmapsHardwareGenerated = false;
-		if (rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP)
-		{
-			if (mUsage & TU_AUTOMIPMAP && mNumRequestedMipmaps != 0)
-			{
-				// use auto.gen. if available
-				mMipmapsHardwareGenerated = _canAutoGenMipmaps(d3d9Device, usage, D3DRTYPE_CUBETEXTURE, d3dPF);
-				if (mMipmapsHardwareGenerated)
-				{
-					usage |= D3DUSAGE_AUTOGENMIPMAP;
-					numMips = 0;
-				}
-			}
-		}
-		else
+		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP))
 		{
 			// no mip map support for this kind of textures :(
 			mNumMipmaps = 0;
@@ -687,7 +639,7 @@ namespace CamelotEngine
 		// create the texture
 		hr = D3DXCreateCubeTexture(	
 				d3d9Device,									// device
-				static_cast<UINT>(mSrcWidth),		 		// dimension
+				static_cast<UINT>(mWidth),		 			// dimension
 				numMips,							 		// number of mip map levels
 				usage,								 		// usage
 				d3dPF,								 		// pixel format
@@ -735,17 +687,6 @@ namespace CamelotEngine
 
 		_setFinalAttributes(d3d9Device, textureResources, 
 			desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
-
-		// Set best filter type
-		if(mMipmapsHardwareGenerated)
-		{
-			hr = textureResources->pBaseTex->SetAutoGenFilterType(_getBestFilterMethod(d3d9Device));
-			if(FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Could not set best autogen filter type: " + String(DXGetErrorDescription(hr)));
-			}
-		}
-
 	}
 	/****************************************************************************************/
 	void D3D9Texture::_createVolumeTex(IDirect3DDevice9* d3d9Device)
@@ -766,8 +707,8 @@ namespace CamelotEngine
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
 		DWORD usage = (mUsage & TU_RENDERTARGET) ? D3DUSAGE_RENDERTARGET : 0;
-		UINT numMips = (mNumRequestedMipmaps == MIP_UNLIMITED) ? 
-			D3DX_DEFAULT : mNumRequestedMipmaps + 1;
+		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? 
+			D3DX_DEFAULT : mNumMipmaps + 1;
 		// Check dynamic textures
 		if (mUsage & TU_DYNAMIC)
 		{
@@ -794,21 +735,7 @@ namespace CamelotEngine
 
 
 		// check if mip map volume textures are supported
-		mMipmapsHardwareGenerated = false;
-		if (rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPVOLUMEMAP)
-		{
-			if (mUsage & TU_AUTOMIPMAP && mNumRequestedMipmaps != 0)
-			{
-				// use auto.gen. if available
-				mMipmapsHardwareGenerated = _canAutoGenMipmaps(d3d9Device, usage, D3DRTYPE_VOLUMETEXTURE, d3dPF);
-				if (mMipmapsHardwareGenerated)
-				{
-					usage |= D3DUSAGE_AUTOGENMIPMAP;
-					numMips = 0;
-				}
-			}
-		}
-		else
+		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPVOLUMEMAP))
 		{
 			// no mip map support for this kind of textures :(
 			mNumMipmaps = 0;
@@ -864,16 +791,6 @@ namespace CamelotEngine
 		}
 		_setFinalAttributes(d3d9Device, textureResources,
 			desc.Width, desc.Height, desc.Depth, D3D9Mappings::_getPF(desc.Format));
-		
-		// Set best filter type
-		if(mMipmapsHardwareGenerated)
-		{
-			hr = textureResources->pBaseTex->SetAutoGenFilterType(_getBestFilterMethod(d3d9Device));
-			if(FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Could not set best autogen filter type: " + String(DXGetErrorDescription(hr)));
-			}
-		}
 	}
 
 	/****************************************************************************************/
@@ -882,24 +799,22 @@ namespace CamelotEngine
 		unsigned long width, unsigned long height, 
         unsigned long depth, PixelFormat format)
 	{ 
-		// set target texture attributes
-		mHeight = height; 
-		mWidth = width; 
-        mDepth = depth;
-		mFormat = format; 
+		if(width != mWidth || height != mHeight || depth != mDepth)
+		{
+			CM_EXCEPT(InternalErrorException, "Wanted and created textures sizes don't match!" \
+				"Width: " + toString(width) + "/" + toString(mWidth) +
+				"Height: " + toString(height) + "/" + toString(mHeight) +
+				"Depth: " + toString(depth) + "/" + toString(mDepth));
+		}
+
+		if(mFormat != format)
+		{
+			CM_EXCEPT(InternalErrorException, "Wanted and created texture format doesn't match: " + 
+				toString(format) + "/" + toString(mFormat));
+		}
 		
 		// Create list of subsurfaces for getBuffer()
 		_createSurfaceList(d3d9Device, textureResources);
-	}
-	/****************************************************************************************/
-	void D3D9Texture::_setSrcAttributes(unsigned long width, unsigned long height, 
-        unsigned long depth, PixelFormat format)
-	{ 
-		// set source image attributes
-		mSrcWidth = width; 
-		mSrcHeight = height; 
-		mSrcDepth = depth;
-        mSrcFormat = format;
 	}
 	/****************************************************************************************/
 	D3DTEXTUREFILTERTYPE D3D9Texture::_getBestFilterMethod(IDirect3DDevice9* d3d9Device)
@@ -1092,7 +1007,14 @@ namespace CamelotEngine
 		assert(textureResources != NULL);
 		assert(textureResources->pBaseTex);
 		// Make sure number of mips is right
-		mNumMipmaps = textureResources->pBaseTex->GetLevelCount() - 1;
+		size_t numCreatedMips = textureResources->pBaseTex->GetLevelCount() - 1;
+
+		if(numCreatedMips != mNumMipmaps)
+		{
+			CM_EXCEPT(InternalErrorException, "Number of created and wanted mip map levels doesn't match: " + 
+				toString(numCreatedMips) + "/" + toString(mNumMipmaps));
+		}
+
 		// Need to know static / dynamic
 		unsigned int bufusage;
 		if ((mUsage & TU_DYNAMIC) && mDynamicTextures)
@@ -1138,9 +1060,6 @@ namespace CamelotEngine
 
 				D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
 								
-				if (mip == 0 && mNumRequestedMipmaps != 0 && (mUsage & TU_AUTOMIPMAP))
-					currPixelBuffer->_setMipmapping(true, mMipmapsHardwareGenerated);
-
 				currPixelBuffer->bind(d3d9Device, surface, textureResources->pFSAASurface,
 					mHwGammaWriteSupported, mFSAA, "PortNoName", textureResources->pBaseTex);
 
@@ -1161,10 +1080,6 @@ namespace CamelotEngine
 						CM_EXCEPT(RenderingAPIException, "Get cubemap surface failed");
 
 					D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(face, mip);
-					
-					
-					if (mip == 0 && mNumRequestedMipmaps != 0 && (mUsage & TU_AUTOMIPMAP))
-						currPixelBuffer->_setMipmapping(true, mMipmapsHardwareGenerated);
 
 					currPixelBuffer->bind(d3d9Device, surface, textureResources->pFSAASurface,
 						mHwGammaWriteSupported, mFSAA, "NoNamePort", textureResources->pBaseTex);
@@ -1186,9 +1101,6 @@ namespace CamelotEngine
 				D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
 
 				currPixelBuffer->bind(d3d9Device, volume, textureResources->pBaseTex);
-
-				if (mip == 0 && mNumRequestedMipmaps != 0 && (mUsage & TU_AUTOMIPMAP))
-					currPixelBuffer->_setMipmapping(true, mMipmapsHardwareGenerated);
 
 				// decrement reference count, the GetSurfaceLevel call increments this
 				// this is safe because the pixel buffer keeps a reference as well

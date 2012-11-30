@@ -101,7 +101,7 @@ namespace CamelotEngine {
 		@param language Code of the language to use (e.g. "cg")
 		@param gptype The type of program to create
 		*/
-		HighLevelGpuProgramPtr createProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+		HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
 		/** Create a new, unloaded HighLevelGpuProgram. 
 		@par
@@ -109,7 +109,7 @@ namespace CamelotEngine {
 			properties like source, entry point, type, profile manually.
 		@param language Code of the language to use (e.g. "cg")
 		*/
-		HighLevelGpuProgramPtr createProgram(const String& language);
+		HighLevelGpuProgramPtr create(const String& language);
 	};
 	/** @} */
 	/** @} */

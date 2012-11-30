@@ -2,12 +2,6 @@
 
 #include "CmIReflectable.h"
 
-template<class _Ty>
-struct CM_Bool_struct
-{
-	int _Member;
-};
-
 namespace CamelotEngine
 {
 	template <typename T>
@@ -120,6 +114,12 @@ namespace CamelotEngine
 		T& operator*() const { return *get(); }
 
 		std::shared_ptr<T> getInternalPtr() { if(!isResolved()) return nullptr; return std::static_pointer_cast<T>(mData->mPtr); }
+
+		template<class _Ty>
+		struct CM_Bool_struct
+		{
+			int _Member;
+		};
 
 		// Conversion to bool
 		// (Why not just directly convert to bool? Because then we can assign pointer to bool and that's weird)

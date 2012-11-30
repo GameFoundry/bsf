@@ -40,63 +40,35 @@ namespace CamelotEngine {
             mHeight(512),
             mWidth(512),
             mDepth(1),
-			mNumRequestedMipmaps(0),
             mNumMipmaps(0),
-			mMipmapsHardwareGenerated(false),
-            mGamma(1.0f),
 			mHwGamma(false),
 			mFSAA(0),
             mTextureType(TEX_TYPE_2D),            
             mFormat(PF_UNKNOWN),
             mUsage(TU_DEFAULT),
-            mSrcFormat(PF_UNKNOWN),
-            mSrcWidth(0),
-            mSrcHeight(0), 
-            mSrcDepth(0),
-            mDesiredFormat(PF_UNKNOWN),
-            mDesiredIntegerBitDepth(0),
-            mDesiredFloatBitDepth(0),
             mInternalResourcesCreated(false)
     {
         
     }
-    //--------------------------------------------------------------------------
-    void Texture::setFormat(PixelFormat pf)
-    {
-        mFormat = pf;
-        mDesiredFormat = pf;
-        mSrcFormat = pf;
-    }
+	//-------------------------------------------------------------------------
+	void Texture::initialize(TextureType textureType, size_t width, size_t height, size_t depth, size_t numMipmaps, 
+		PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint)
+	{
+		mTextureType = textureType;
+		mWidth = width;
+		mHeight = height;
+		mDepth = depth;
+		mNumMipmaps = numMipmaps;
+		mFormat = format;
+		mUsage = usage;
+		mHwGamma = hwGamma;
+		mFSAA = fsaa;
+		mFSAAHint = fsaaHint;
+	}
     //--------------------------------------------------------------------------
     bool Texture::hasAlpha(void) const
     {
         return PixelUtil::hasAlpha(mFormat);
-    }
-    //--------------------------------------------------------------------------
-    void Texture::setDesiredIntegerBitDepth(UINT16 bits)
-    {
-        mDesiredIntegerBitDepth = bits;
-    }
-    //--------------------------------------------------------------------------
-    UINT16 Texture::getDesiredIntegerBitDepth(void) const
-    {
-        return mDesiredIntegerBitDepth;
-    }
-    //--------------------------------------------------------------------------
-    void Texture::setDesiredFloatBitDepth(UINT16 bits)
-    {
-        mDesiredFloatBitDepth = bits;
-    }
-    //--------------------------------------------------------------------------
-    UINT16 Texture::getDesiredFloatBitDepth(void) const
-    {
-        return mDesiredFloatBitDepth;
-    }
-    //--------------------------------------------------------------------------
-    void Texture::setDesiredBitDepths(UINT16 integerBits, UINT16 floatBits)
-    {
-        mDesiredIntegerBitDepth = integerBits;
-        mDesiredFloatBitDepth = floatBits;
     }
     //--------------------------------------------------------------------------
 	size_t Texture::calculateSize(void) const
@@ -197,32 +169,19 @@ namespace CamelotEngine {
 		}
 
 		// Set desired texture size and properties from images[0]
-		mSrcWidth = mWidth = mTextureData[0]->getWidth();
-		mSrcHeight = mHeight = mTextureData[0]->getHeight();
-		mSrcDepth = mDepth = mTextureData[0]->getDepth();
+		mWidth = mTextureData[0]->getWidth();
+		mHeight = mTextureData[0]->getHeight();
+		mDepth = mTextureData[0]->getDepth();
 
 		// Get source image format and adjust if required
-		mSrcFormat = mTextureData[0]->getFormat();
-
-		if (mDesiredFormat != PF_UNKNOWN)
-		{
-			// If have desired format, use it
-			mFormat = mDesiredFormat;
-		}
-		else
-		{
-			// Get the format according with desired bit depth
-			mFormat = PixelUtil::getFormatForBitDepths(mSrcFormat, mDesiredIntegerBitDepth, mDesiredFloatBitDepth);
-		}
+		PixelFormat srcFormat = mTextureData[0]->getFormat();
 
 		// The custom mipmaps in the image have priority over everything
 		size_t imageMips = mTextureData[0]->getNumMipmaps();
 
 		if(imageMips > 0)
 		{
-			mNumMipmaps = mNumRequestedMipmaps = mTextureData[0]->getNumMipmaps();
-			// Disable flag for auto mip generation
-			mUsage &= ~TU_AUTOMIPMAP;
+			mNumMipmaps = mTextureData[0]->getNumMipmaps();
 		}
 
 		// Create the texture
@@ -249,32 +208,11 @@ namespace CamelotEngine {
 				PixelData src = mTextureData[i]->getPixels(mip);
 
 				// Sets to treated format in case is difference
-				src.format = mSrcFormat;
+				src.format = srcFormat;
 
-				if(mGamma != 1.0f) {
-					// Apply gamma correction
-					// Do not overwrite original image but do gamma correction in temporary buffer
-					MemoryDataStreamPtr buf(new MemoryDataStream(
-						PixelUtil::getMemorySize(
-						src.getWidth(), src.getHeight(), src.getDepth(), src.format)));
-
-					PixelData corrected = PixelData(src.getWidth(), src.getHeight(), src.getDepth(), src.format, buf->getPtr());
-					PixelUtil::bulkPixelConversion(src, corrected);
-
-					PixelUtil::applyGamma(static_cast<UINT8*>(corrected.data), mGamma, corrected.getConsecutiveSize(), 
-						static_cast<UINT8>(PixelUtil::getNumElemBits(src.format)));
-
-					// Destination: entire texture. blitFromMemory does the scaling to
-					// a power of two for us when needed
-					getBuffer(i, mip)->blitFromMemory(corrected);
-				}
-				else 
-				{
-					// Destination: entire texture. blitFromMemory does the scaling to
-					// a power of two for us when needed
-					getBuffer(i, mip)->blitFromMemory(src);
-				}
-
+				// Destination: entire texture. blitFromMemory does the scaling to
+				// a power of two for us when needed
+				getBuffer(i, mip)->blitFromMemory(src);
 			}
 		}
 		// Update size (the final size, not including temp space)
@@ -293,9 +231,8 @@ namespace CamelotEngine {
             CM_EXCEPT(InvalidParametersException, 
                 "Texture types must match");
         }
+
         size_t numMips = std::min(getNumMipmaps(), target->getNumMipmaps());
-        if((mUsage & TU_AUTOMIPMAP) || (target->getUsage()&TU_AUTOMIPMAP))
-            numMips = 0;
         for(unsigned int face=0; face<getNumFaces(); face++)
         {
             for(unsigned int mip=0; mip<=numMips; mip++)
@@ -317,5 +254,22 @@ namespace CamelotEngine {
 	RTTITypeBase* Texture::getRTTI() const
 	{
 		return Texture::getRTTIStatic();
+	}
+
+	/************************************************************************/
+	/* 								STATICS	                      			*/
+	/************************************************************************/
+	TexturePtr Texture::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
+	{
+		return TextureManager::instance().create(texType, 
+			width, height, depth, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+	}
+	
+	TexturePtr Texture::create(TextureType texType, UINT32 width, UINT32 height, 
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
+	{
+		return TextureManager::instance().create(texType, 
+			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 	}
 }

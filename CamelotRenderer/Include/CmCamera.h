@@ -167,14 +167,12 @@ namespace CamelotEngine {
         virtual void updateWorldSpaceCorners(void) const;
 		/// Implementation of updateWorldSpaceCorners (called if out of date)
 		virtual void updateWorldSpaceCornersImpl(void) const;
-        virtual void updateVertexData(void) const;
 		virtual void updateView(void) const;
         virtual bool isFrustumOutOfDate(void) const;
         /// Signal to update frustum information.
         virtual void invalidateFrustum(void) const;
 
         mutable AxisAlignedBox mBoundingBox;
-        mutable VertexData mVertexData;
 
         mutable Vector3 mWorldSpaceCorners[8];
 

@@ -26,6 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmHighLevelGpuProgram.h"
+#include "CmHighLevelGpuProgramManager.h"
 #include "CmException.h"
 
 namespace CamelotEngine
@@ -144,5 +145,11 @@ namespace CamelotEngine
 		params->_setNamedConstants(mConstantDefs);
 		// also set logical / physical maps for programs which use this
 		params->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical);
+	}
+	//---------------------------------------------------------------------
+	HighLevelGpuProgramPtr HighLevelGpuProgram::create(const String& source, const String& entryPoint, 
+		const String& language, GpuProgramType gptype, GpuProgramProfile profile)
+	{
+		return HighLevelGpuProgramManager::instance().create(source, entryPoint, language, gptype, profile);
 	}
 }

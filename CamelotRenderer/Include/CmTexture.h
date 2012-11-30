@@ -52,13 +52,11 @@ namespace CamelotEngine {
 		TU_STATIC_WRITE_ONLY = HardwareBuffer::HBU_STATIC_WRITE_ONLY, 
 		TU_DYNAMIC_WRITE_ONLY = HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY,
 		TU_DYNAMIC_WRITE_ONLY_DISCARDABLE = HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE,
-		/// mipmaps will be automatically generated for this texture
-		TU_AUTOMIPMAP = 0x100,
 		/// this texture will be a render target, i.e. used as a target for render to texture
-		/// setting this flag will ignore all other texture usages except TU_AUTOMIPMAP
+		/// setting this flag will ignore all other texture usages
 		TU_RENDERTARGET = 0x200,
 		/// default to automatic mipmap generation static textures
-		TU_DEFAULT = TU_AUTOMIPMAP | TU_STATIC_WRITE_ONLY
+		TU_DEFAULT = TU_STATIC_WRITE_ONLY
         
     };
 
@@ -81,9 +79,7 @@ namespace CamelotEngine {
 	enum TextureMipmap
 	{
 		/// Generate mipmaps up to 1x1
-		MIP_UNLIMITED = 0x7FFFFFFF,
-		/// Use TextureManager default
-		MIP_DEFAULT = -1
+		MIP_UNLIMITED = 0x7FFFFFFF
 	};
 
     /** Abstract class representing a Texture resource.
@@ -100,10 +96,6 @@ namespace CamelotEngine {
     public:
         Texture();
 
-        /** Sets the type of texture; can only be changed before load() 
-        */
-        virtual void setTextureType(TextureType ttype ) { mTextureType = ttype; }
-
         /** Gets the type of texture 
         */
         virtual TextureType getTextureType(void) const { return mTextureType; }
@@ -112,65 +104,10 @@ namespace CamelotEngine {
         */
         virtual size_t getNumMipmaps(void) const {return mNumMipmaps;}
 
-		/** Sets the number of mipmaps to be used for this texture.
-            @note
-                Must be set before calling any 'load' method.
-        */
-        virtual void setNumMipmaps(size_t num) {mNumRequestedMipmaps = mNumMipmaps = num;}
-
-		/** Are mipmaps hardware generated?
-		@remarks
-			Will only be accurate after texture load, or createInternalResources
-		*/
-		virtual bool getMipmapsHardwareGenerated(void) const { return mMipmapsHardwareGenerated; }
-
-        /** Returns the gamma adjustment factor applied to this texture on loading.
-        */
-        virtual float getGamma(void) const { return mGamma; }
-
-        /** Sets the gamma adjustment factor applied to this texture on loading the
-			data.
-            @note
-                Must be called before any 'load' method. This gamma factor will
-				be premultiplied in and may reduce the precision of your textures.
-				You can use setHardwareGamma if supported to apply gamma on 
-				sampling the texture instead.
-        */
-        virtual void setGamma(float g) { mGamma = g; }
-
-		/** Sets whether this texture will be set up so that on sampling it, 
-			hardware gamma correction is applied.
-		@remarks
-			24-bit textures are often saved in gamma colour space; this preserves
-			precision in the 'darks'. However, if you're performing blending on 
-			the sampled colours, you really want to be doing it in linear space. 
-			One way is to apply a gamma correction value on loading (see setGamma),
-			but this means you lose precision in those dark colours. An alternative
-			is to get the hardware to do the gamma correction when reading the 
-			texture and converting it to a floating point value for the rest of
-			the pipeline. This option allows you to do that; it's only supported
-			in relatively recent hardware (others will ignore it) but can improve
-			the quality of colour reproduction.
-		@note
-			Must be called before any 'load' method since it may affect the
-			construction of the underlying hardware resources.
-			Also note this only useful on textures using 8-bit colour channels.
-		*/
-		virtual void setHardwareGammaEnabled(bool enabled) { mHwGamma = enabled; }
-
 		/** Gets whether this texture will be set up so that on sampling it, 
 		hardware gamma correction is applied.
 		*/
 		virtual bool isHardwareGammaEnabled() const { return mHwGamma; }
-
-		/** Set the level of multisample AA to be used if this texture is a 
-			rendertarget.
-		@note This option will be ignored if TU_RENDERTARGET is not part of the
-			usage options on this texture, or if the hardware does not support it. 
-		@param fsaa The number of samples
-		@param fsaaHint Any hinting text (@see Root::createRenderWindow)
-		*/
-		virtual void setFSAA(UINT32 fsaa, const String& fsaaHint) { mFSAA = fsaa; mFSAAHint = fsaaHint; }
 
 		/** Get the level of multisample AA to be used if this texture is a 
 		rendertarget.
@@ -193,119 +130,15 @@ namespace CamelotEngine {
         */
         virtual size_t getDepth(void) const { return mDepth; }
 
-        /** Returns the height of the original input texture (may differ due to hardware requirements).
-        */
-        virtual size_t getSrcHeight(void) const { return mSrcHeight; }
-
-        /** Returns the width of the original input texture (may differ due to hardware requirements).
-        */
-        virtual size_t getSrcWidth(void) const { return mSrcWidth; }
-
-        /** Returns the original depth of the input texture (only applicable for 3D textures).
-        */
-        virtual size_t getSrcDepth(void) const { return mSrcDepth; }
-
-        /** Set the height of the texture; can only do this before load();
-        */
-        virtual void setHeight(size_t h) { mHeight = mSrcHeight = h; }
-
-        /** Set the width of the texture; can only do this before load();
-        */
-        virtual void setWidth(size_t w) { mWidth = mSrcWidth = w; }
-
-        /** Set the depth of the texture (only applicable for 3D textures);
-            ; can only do this before load();
-        */
-        virtual void setDepth(size_t d)  { mDepth = mSrcDepth = d; }
-
         /** Returns the TextureUsage indentifier for this Texture
         */
-        virtual int getUsage() const
-        {
-            return mUsage;
-        }
-
-        /** Sets the TextureUsage indentifier for this Texture; only useful before load()
-			
-			@param u is a combination of TU_STATIC, TU_DYNAMIC, TU_WRITE_ONLY 
-				TU_AUTOMIPMAP and TU_RENDERTARGET (see TextureUsage enum). You are
-            	strongly advised to use HBU_STATIC_WRITE_ONLY wherever possible, if you need to 
-            	update regularly, consider HBU_DYNAMIC_WRITE_ONLY.
-        */
-        virtual void setUsage(int u) { mUsage = u; }
-
-        /** Creates the internal texture resources for this texture. 
-        @remarks
-            This method creates the internal texture resources (pixel buffers, 
-            texture surfaces etc) required to begin using this texture. You do
-            not need to call this method directly unless you are manually creating
-            a texture, in which case something must call it, after having set the
-            size and format of the texture (e.g. the ManualResourceLoader might
-            be the best one to call it). If you are not defining a manual texture,
-            or if you use one of the self-contained load...() methods, then it will be
-            called for you.
-        */
-        virtual void createInternalResources(void);
-
-        /** Frees internal texture resources for this texture. 
-        */
-        virtual void freeInternalResources(void);
-        
-		/** Copies (and maybe scales to fit) the contents of this texture to
-			another texture. */
-		virtual void copyToTexture( TexturePtr& target );
+        virtual int getUsage() const { return mUsage; }
 
 		/** Returns the pixel format for the texture surface. */
-		virtual PixelFormat getFormat() const
-		{
-			return mFormat;
-		}
-
-        /** Returns the desired pixel format for the texture surface. */
-        virtual PixelFormat getDesiredFormat(void) const
-        {
-            return mDesiredFormat;
-        }
-
-        /** Returns the pixel format of the original input texture (may differ due to
-            hardware requirements and pixel format convertion).
-        */
-        virtual PixelFormat getSrcFormat(void) const
-        {
-            return mSrcFormat;
-        }
-
-        /** Sets the pixel format for the texture surface; can only be set before load(). */
-        virtual void setFormat(PixelFormat pf);
+		virtual PixelFormat getFormat() const { return mFormat; }
 
         /** Returns true if the texture has an alpha layer. */
         virtual bool hasAlpha(void) const;
-
-        /** Sets desired bit depth for integer pixel format textures.
-        @note
-            Available values: 0, 16 and 32, where 0 (the default) means keep original format
-            as it is. This value is number of bits for the pixel.
-        */
-        virtual void setDesiredIntegerBitDepth(UINT16 bits);
-
-        /** gets desired bit depth for integer pixel format textures.
-        */
-        virtual UINT16 getDesiredIntegerBitDepth(void) const;
-
-        /** Sets desired bit depth for float pixel format textures.
-        @note
-            Available values: 0, 16 and 32, where 0 (the default) means keep original format
-            as it is. This value is number of bits for a channel of the pixel.
-        */
-        virtual void setDesiredFloatBitDepth(UINT16 bits);
-
-        /** gets desired bit depth for float pixel format textures.
-        */
-        virtual UINT16 getDesiredFloatBitDepth(void) const;
-
-        /** Sets desired bit depth for integer and float pixel format.
-        */
-        virtual void setDesiredBitDepths(UINT16 integerBits, UINT16 floatBits);
 
         /** Return the number of faces this texture has. This will be 6 for a cubemap
         	texture and 1 for a 1D, 2D or 3D one.
@@ -352,15 +185,18 @@ namespace CamelotEngine {
 		 */
 		void setTextureData(UINT32 face, TextureDataPtr textureData);
 
+		/** Copies (and maybe scales to fit) the contents of this texture to
+			another texture. */
+		virtual void copyToTexture( TexturePtr& target );
+
     protected:
+		friend class TextureManager;
+
         size_t mHeight;
         size_t mWidth;
         size_t mDepth;
 
-        size_t mNumRequestedMipmaps;
 		size_t mNumMipmaps;
-		bool mMipmapsHardwareGenerated;
-        float mGamma;
 		bool mHwGamma;
 		UINT32 mFSAA;
 		String mFSAAHint;
@@ -369,21 +205,39 @@ namespace CamelotEngine {
 		PixelFormat mFormat;
         int mUsage; // Bit field, so this can't be TextureUsage
 
-        PixelFormat mSrcFormat;
-        size_t mSrcWidth, mSrcHeight, mSrcDepth;
-
-        PixelFormat mDesiredFormat;
-        unsigned short mDesiredIntegerBitDepth;
-        unsigned short mDesiredFloatBitDepth;
-
 		bool mInternalResourcesCreated;
 
 		public:
 		vector<TextureDataPtr>::type mTextureData;
 		protected:
+
+		/**
+		 * @brief	Initializes the texture. This must be called right after the texture is constructed. Normally called by TextureManager
+		 * 			upon texture creation.
+		 */
+		void initialize(TextureType textureType, size_t width, size_t height, size_t depth, size_t numMipmaps, 
+			PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint);
+		
 		/// @copydoc Resource::calculateSize
 		size_t calculateSize(void) const;
-		
+
+        /** Creates the internal texture resources for this texture. 
+        @remarks
+            This method creates the internal texture resources (pixel buffers, 
+            texture surfaces etc) required to begin using this texture. You do
+            not need to call this method directly unless you are manually creating
+            a texture, in which case something must call it, after having set the
+            size and format of the texture (e.g. the ManualResourceLoader might
+            be the best one to call it). If you are not defining a manual texture,
+            or if you use one of the self-contained load...() methods, then it will be
+            called for you.
+        */
+        virtual void createInternalResources(void);
+
+        /** Frees internal texture resources for this texture. 
+        */
+        virtual void freeInternalResources(void);
+
 		/** Implementation of creating internal texture resources 
 		*/
 		virtual void createInternalResourcesImpl(void) = 0;
@@ -410,6 +264,18 @@ namespace CamelotEngine {
 		friend class TextureRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
+
+		/************************************************************************/
+		/* 								STATICS		                     		*/
+		/************************************************************************/
+	public:
+		static TexturePtr create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
+			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
+			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+
+		static TexturePtr create(TextureType texType, UINT32 width, UINT32 height, int num_mips,
+			PixelFormat format, int usage = TU_DEFAULT,
+			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
     };
 
 	/** @} */

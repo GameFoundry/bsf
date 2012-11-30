@@ -166,7 +166,7 @@ namespace CamelotEngine {
 
 				// Create a high-level program, give it the same name as us
 				HighLevelGpuProgramPtr vp = 
-					HighLevelGpuProgramManager::instance().createProgram(
+					HighLevelGpuProgramManager::instance().create(
 					hlslSourceFromCg, "main", "hlsl", mType, mProfile);
 
 				vp->init();

@@ -120,6 +120,12 @@ namespace CamelotEngine {
 
 		/// Override GpuProgram::getNamedConstants to ensure built
 		const GpuNamedConstants& getNamedConstants() const { return getConstantDefinitions(); }
+
+		/************************************************************************/
+		/* 								STATICS		                     		*/
+		/************************************************************************/
+		static HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, 
+			const String& language, GpuProgramType gptype, GpuProgramProfile profile);
     };
 
 	/** @} */

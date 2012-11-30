@@ -32,18 +32,13 @@ THE SOFTWARE.
 namespace CamelotEngine {
     //-----------------------------------------------------------------------
     TextureManager::TextureManager(void)
-         : mPreferredIntegerBitDepth(0)
-         , mPreferredFloatBitDepth(0)
-         , mDefaultNumMipmaps(MIP_UNLIMITED)
     {
-
         // Subclasses should register (when this is fully constructed)
     }
     //-----------------------------------------------------------------------
     TextureManager::~TextureManager()
     {
         // subclasses should unregister with resource group manager
-
     }
     //-----------------------------------------------------------------------
     TexturePtr TextureManager::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
@@ -51,48 +46,9 @@ namespace CamelotEngine {
 		UINT32 fsaa, const String& fsaaHint)
     {
         TexturePtr ret = TexturePtr(createImpl());
-        ret->setTextureType(texType);
-        ret->setWidth(width);
-        ret->setHeight(height);
-		ret->setDepth(depth);
-        ret->setNumMipmaps((numMipmaps == MIP_DEFAULT)? mDefaultNumMipmaps :
-			static_cast<size_t>(numMipmaps));
-        ret->setFormat(format);
-        ret->setUsage(usage);
-		ret->setHardwareGammaEnabled(hwGamma);
-		ret->setFSAA(fsaa, fsaaHint);
+		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, fsaa, fsaaHint);
+
 		return ret;
-    }
-    //-----------------------------------------------------------------------
-    void TextureManager::setPreferredIntegerBitDepth(UINT16 bits)
-    {
-        mPreferredIntegerBitDepth = bits;
-    }
-    //-----------------------------------------------------------------------
-    UINT16 TextureManager::getPreferredIntegerBitDepth(void) const
-    {
-        return mPreferredIntegerBitDepth;
-    }
-    //-----------------------------------------------------------------------
-    void TextureManager::setPreferredFloatBitDepth(UINT16 bits)
-    {
-        mPreferredFloatBitDepth = bits;
-    }
-    //-----------------------------------------------------------------------
-    UINT16 TextureManager::getPreferredFloatBitDepth(void) const
-    {
-        return mPreferredFloatBitDepth;
-    }
-    //-----------------------------------------------------------------------
-    void TextureManager::setPreferredBitDepths(UINT16 integerBits, UINT16 floatBits)
-    {
-        mPreferredIntegerBitDepth = integerBits;
-        mPreferredFloatBitDepth = floatBits;
-    }
-    //-----------------------------------------------------------------------
-    void TextureManager::setDefaultNumMipmaps( size_t num )
-    {
-        mDefaultNumMipmaps = num;
     }
     //-----------------------------------------------------------------------
 	bool TextureManager::isFormatSupported(TextureType ttype, PixelFormat format, int usage)
@@ -106,6 +62,5 @@ namespace CamelotEngine {
 
 		// Assume that same or greater number of bits means quality not degraded
 		return PixelUtil::getNumElemBits(supportedFormat) >= PixelUtil::getNumElemBits(format);
-		
 	}
 }

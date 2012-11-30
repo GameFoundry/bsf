@@ -57,5 +57,11 @@ namespace CamelotEngine
 		friend class MeshRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
+
+		/************************************************************************/
+		/* 								STATICS		                     		*/
+		/************************************************************************/
+	public:
+		static MeshPtr create();
 	};
 }

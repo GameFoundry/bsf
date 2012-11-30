@@ -58,7 +58,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//						return color;										\
 	//						}";
 
-	//fragProg =  HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	//fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 	//fragProg->load();
 
 	//String vertShaderCode = "float4x4 matViewProjection;	\
@@ -72,7 +72,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//						oUv = uv;											\
 	//						}";
 
-	//vertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 	//vertProg->load();
 
 
@@ -85,7 +85,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							return color;										\
 							}";
 
-	fragProg =  HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "ps_main", "cg", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "cg", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 	fragProg->init();
 
 	String vertShaderCode = "float4x4 matViewProjection;	\
@@ -99,7 +99,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							oUv = uv;											\
 							}";
 
-	vertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 	vertProg->init();
 
 	HighLevelGpuProgramHandle vertProgRef(vertProg);
@@ -120,7 +120,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//							  gl_FragColor = texColor; \
 	//							  }";
 
-	//fragProg = HighLevelGpuProgramManager::instance().createProgram(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	//fragProg = HighLevelGpuProgram::create(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 	//fragProg->load();
 
 	//// TODO - Ogres GLSL parsing requires some strict parameter naming, can that be avoided?
@@ -132,7 +132,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//							  gl_Position = matViewProjection * vertex; \
 	//							  }";
 
-	//vertProg = HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	//vertProg = HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 	//vertProg->load();
 
 	ShaderPtr testShader = ShaderPtr(new Shader("TestShader"));

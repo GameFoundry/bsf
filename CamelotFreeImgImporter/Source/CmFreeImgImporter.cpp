@@ -135,7 +135,7 @@ namespace CamelotEngine
 		if(imgData == nullptr || imgData->getData() == nullptr)
 			return nullptr;
 
-		TextureHandle newTexture(TextureManager::instance().create(TEX_TYPE_2D, 
+		TextureHandle newTexture(Texture::create(TEX_TYPE_2D, 
 			imgData->getWidth(), imgData->getHeight(), imgData->getNumMipmaps(), imgData->getFormat()));
 
 		newTexture->setTextureData(0, imgData);

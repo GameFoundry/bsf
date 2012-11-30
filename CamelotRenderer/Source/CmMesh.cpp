@@ -300,4 +300,13 @@ namespace CamelotEngine
 	{
 		return Mesh::getRTTIStatic();
 	}
+
+	/************************************************************************/
+	/* 								STATICS		                     		*/
+	/************************************************************************/
+
+	MeshPtr Mesh::create()
+	{
+		return MeshPtr(new Mesh());
+	}
 }

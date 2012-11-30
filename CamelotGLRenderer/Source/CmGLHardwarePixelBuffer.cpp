@@ -621,22 +621,10 @@ void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, c
     }
     else
     {
-        /// Dimensions don't match -- use bi or trilinear filtering depending on the
-        /// source texture.
-        if(src->mUsage & TU_AUTOMIPMAP)
-        {
-            /// Automatic mipmaps, we can safely use trilinear filter which
-            /// brings greatly imporoved quality for minimisation.
-            glTexParameteri(src->mTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri(src->mTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);    
-        }
-        else
-        {
-            /// Manual mipmaps, stay safe with bilinear filtering so that no
-            /// intermipmap leakage occurs.
-            glTexParameteri(src->mTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(src->mTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
+        /// Manual mipmaps, stay safe with bilinear filtering so that no
+        /// intermipmap leakage occurs.
+        glTexParameteri(src->mTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(src->mTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
     /// Clamp to edge (fastest)
     glTexParameteri(src->mTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -737,16 +725,6 @@ void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, c
             }
         }
     }
-    /// Finish up 
-    if(!tempTex)
-    {
-        /// Generate mipmaps
-        if(mUsage & TU_AUTOMIPMAP)
-        {
-            glBindTexture(mTarget, mTextureID);
-            glGenerateMipmapEXT(mTarget);
-        }
-    }
 
     /// Reset source texture to sane state
     glBindTexture(src->mTarget, src->mTextureID);
@@ -830,7 +808,7 @@ void GLTextureBuffer::blitFromMemory(const PixelData &src_orig, const Box &dstBo
         glTexImage2D(target, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
     /// GL texture buffer
-    GLTextureBuffer tex(StringUtil::BLANK, target, id, 0, 0, (Usage)(TU_AUTOMIPMAP|HBU_STATIC_WRITE_ONLY), false, false, 0);
+    GLTextureBuffer tex(StringUtil::BLANK, target, id, 0, 0, (Usage)(HBU_STATIC_WRITE_ONLY), false, false, 0);
     
     /// Upload data to 0,0,0 in temporary texture
 	Box tempTarget(0, 0, 0, src.getWidth(), src.getHeight(), src.getDepth());

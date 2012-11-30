@@ -162,38 +162,6 @@ namespace CamelotEngine {
 				num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 		}
 
-        /** Sets preferred bit depth for integer pixel format textures.
-        @param
-            bits Number of bits. Available values: 0, 16 and 32, where 0 (the default) means keep
-            original format as it is. This value is number of bits for the pixel.
-        */
-        virtual void setPreferredIntegerBitDepth(UINT16 bits);
-
-        /** gets preferred bit depth for integer pixel format textures.
-        */
-        virtual UINT16 getPreferredIntegerBitDepth(void) const;
-
-        /** Sets preferred bit depth for float pixel format textures.
-        @param
-            bits Number of bits. Available values: 0, 16 and 32, where 0 (the default) means keep
-            original format as it is. This value is number of bits for a channel of the pixel.
-        */
-        virtual void setPreferredFloatBitDepth(UINT16 bits);
-
-        /** gets preferred bit depth for float pixel format textures.
-        */
-        virtual UINT16 getPreferredFloatBitDepth(void) const;
-
-        /** Sets preferred bit depth for integer and float pixel format.
-        @param
-            integerBits Number of bits. Available values: 0, 16 and 32, where 0 (the default) means keep
-            original format as it is. This value is number of bits for the pixel.
-        @param
-            floatBits Number of bits. Available values: 0, 16 and 32, where 0 (the default) means keep
-            original format as it is. This value is number of bits for a channel of the pixel.
-        */
-        virtual void setPreferredBitDepths(UINT16 integerBits, UINT16 floatBits);
-
 		/** Returns whether this render system can natively support the precise texture 
 			format requested with the given usage options.
 		@remarks
@@ -264,28 +232,8 @@ namespace CamelotEngine {
         virtual bool isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,
             bool preciseFormatOnly = false) = 0;
 
-        /** Sets the default number of mipmaps to be used for loaded textures, for when textures are
-            loaded automatically (e.g. by Material class) or when 'load' is called with the default
-            parameters by the application.
-			If set to MIP_UNLIMITED mipmaps will be generated until the lowest possible
-				level, 1x1x1.
-            @note
-                The default value is 0.
-        */
-        virtual void setDefaultNumMipmaps(size_t num);
-
-        /** Gets the default number of mipmaps to be used for loaded textures.
-        */
-        virtual size_t getDefaultNumMipmaps()
-        {
-            return mDefaultNumMipmaps;
-        }
-
     protected:
 
-        UINT16 mPreferredIntegerBitDepth;
-        UINT16 mPreferredFloatBitDepth;
-        size_t mDefaultNumMipmaps;
     };
 	/** @} */
 	/** @} */

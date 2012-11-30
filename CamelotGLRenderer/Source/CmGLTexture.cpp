@@ -100,7 +100,6 @@ namespace CamelotEngine {
 		
 		// Check requested number of mipmaps
 		size_t maxMips = GLPixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);
-		mNumMipmaps = mNumRequestedMipmaps;
 		if(mNumMipmaps>maxMips)
 			mNumMipmaps = maxMips;
 		
@@ -122,29 +121,6 @@ namespace CamelotEngine {
 			glTexParameteri(getGLTextureTarget(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(getGLTextureTarget(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
-		
-		// If we can do automip generation and the user desires this, do so
-		mMipmapsHardwareGenerated = 
-			CamelotEngine::RenderSystemManager::getActive()->getCapabilities_internal()->hasCapability(RSC_AUTOMIPMAP);
-		// NVIDIA 175.16 drivers break hardware mip generation for non-compressed
-		// textures - disable until fixed
-		// Leave hardware gen on compressed textures since that's the only way we
-		// can realistically do it since GLU doesn't support DXT
-		// However DON'T do this on Apple, their drivers aren't subject to this
-		// problem yet and in fact software generation appears to cause a crash 
-		// in some cases which I've yet to track down
-#if CM_PLATFORM != CM_PLATFORM_APPLE
-		if (CamelotEngine::RenderSystemManager::getActive()->getCapabilities_internal()->getVendor() == GPU_NVIDIA
-			&& !PixelUtil::isCompressed(mFormat))
-		{
-			mMipmapsHardwareGenerated = false;
-		}
-#endif
-		if((mUsage & TU_AUTOMIPMAP) &&
-		    mNumRequestedMipmaps && mMipmapsHardwareGenerated)
-        {
-            glTexParameteri( getGLTextureTarget(), GL_GENERATE_MIPMAP, GL_TRUE );
-        }
 		
 		// Allocate internal buffer so that glTexSubImageXD can be used
 		// Internal format
@@ -273,19 +249,12 @@ namespace CamelotEngine {
 	{
 		mSurfaceList.clear();
 		
-		// For all faces and mipmaps, store surfaces as HardwarePixelBufferPtr
-		bool wantGeneratedMips = (mUsage & TU_AUTOMIPMAP)!=0;
-		
-		// Do mipmapping in software? (uses GLU) For some cards, this is still needed. Of course,
-		// only when mipmap generation is desired.
-		bool doSoftware = wantGeneratedMips && !mMipmapsHardwareGenerated && getNumMipmaps(); 
-		
 		for(size_t face=0; face<getNumFaces(); face++)
 		{
 			for(size_t mip=0; mip<=getNumMipmaps(); mip++)
 			{
                 GLHardwarePixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget(), mTextureID, face, mip,
-						static_cast<HardwareBuffer::Usage>(mUsage), doSoftware && mip==0, mHwGamma, mFSAA);
+						static_cast<HardwareBuffer::Usage>(mUsage), false, mHwGamma, mFSAA);
 				mSurfaceList.push_back(HardwarePixelBufferPtr(buf));
                 
                 /// Check for error
