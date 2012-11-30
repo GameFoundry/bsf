@@ -306,32 +306,32 @@ namespace CamelotEngine
 		return mDepthBiasPerIteration;
 	}
     //-----------------------------------------------------------------------
-	void Pass::setVertexProgram(GpuProgramRef gpuProgram)
+	void Pass::setVertexProgram(GpuProgramHandle gpuProgram)
 	{
 		mVertexProgram = gpuProgram;
 	}
     //-----------------------------------------------------------------------
-	void Pass::setFragmentProgram(GpuProgramRef gpuProgram)
+	void Pass::setFragmentProgram(GpuProgramHandle gpuProgram)
 	{
 		mFragmentProgram = gpuProgram;
 	}
 	//-----------------------------------------------------------------------
-	void Pass::setGeometryProgram(GpuProgramRef gpuProgram)
+	void Pass::setGeometryProgram(GpuProgramHandle gpuProgram)
 	{
 		mGeometryProgram = gpuProgram;
 	}
 	//-----------------------------------------------------------------------
-	const GpuProgramRef& Pass::getVertexProgram(void) const
+	const GpuProgramHandle& Pass::getVertexProgram(void) const
 	{
 		return mVertexProgram;
 	}
 	//-----------------------------------------------------------------------
-	const GpuProgramRef& Pass::getFragmentProgram(void) const
+	const GpuProgramHandle& Pass::getFragmentProgram(void) const
 	{
 		return mFragmentProgram;
 	}
 	//-----------------------------------------------------------------------
-	const GpuProgramRef& Pass::getGeometryProgram(void) const
+	const GpuProgramHandle& Pass::getGeometryProgram(void) const
 	{
 		return mGeometryProgram;
 	}

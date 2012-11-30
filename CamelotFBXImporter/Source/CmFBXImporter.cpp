@@ -35,7 +35,7 @@ namespace CamelotEngine
 		return true; // FBX files can be plain-text so I don't even check for magic number
 	}
 
-	BaseResourceRef FBXImporter::import(const String& filePath)
+	BaseResourceHandle FBXImporter::import(const String& filePath)
 	{
 		FbxManager* fbxManager = nullptr;
 		FbxScene* fbxScene = nullptr;
@@ -47,7 +47,7 @@ namespace CamelotEngine
 
 		shutDownSdk(fbxManager);
 
-		MeshRef mesh(new Mesh());
+		MeshHandle mesh(new Mesh());
 		mesh->setMeshData(meshData);
 
 		return mesh;

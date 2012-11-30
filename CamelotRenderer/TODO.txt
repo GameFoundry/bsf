@@ -16,25 +16,18 @@ High-level TODO:
 
 
 Command buffer TODO:
- - Make sure no internal methods call the external interface
-  - Debug checks to make sure external methods don't get called from render thread, and that internal methods ONLY get called from render thread
- - Don't make _internal methods protected. Other classes like RenderTarget, buffers, etc. will be executing from render thread and they need direct access to them
  - My current approach doesn't allow multiple threads to use the RenderSystem (contexts should be handled differently)
  - Make sure the user knows resources are shared between contexts. All resource updates are executed before rendering a frame, so whichever context updated the resource last,
    was the version that will be used.
 
  Immediate:
   - Resource updates shouldn't happen once per frame. Resources should be submitted to render thread immediately.
-  - Port the rest of the RenderSystem of use RenderContext
   - Port resource creation to use RenderContext (texture/mesh/shader/etc initialization and updates)
-  - Make sure to add thread checks (surrounded by #if DEBUG) to RenderSystem and Vertex/Index/Pixel buffers, textures, meshes, etc.
+  - Make sure to add thread checks (surrounded by #if DEBUG) to Vertex/Index/Pixel buffers, textures, meshes, etc.
 
  Later:
-  - Add resource creation "culling" to avoid updating some resource multiple times in a single frame
   - Modify resource loading so we don't need a special Response handler on the main thread. We should be able to immediately queue up resource command instead.
-  - Provide Async versions of all read commands
   - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
-  - Add documentation that tells the user that resource updates only get applied at the end of the frame, unless you manually override it.
   - Create render thread in Application, and not in RenderSystem?
 
 HIGH PRIORITY TODO:
@@ -45,7 +38,6 @@ HIGH PRIORITY TODO:
  - HLSL & Cg don't handle include files yet
 
 Mid priority TODO:
- - Rename ResourceRef to ResourceHandle?
  - Add a field that tracks % of resource deserialization in BinarySerializer
 
  - Separate render thread

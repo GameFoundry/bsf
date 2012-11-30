@@ -240,7 +240,7 @@ namespace CamelotEngine
 		void destroyRenderTarget_internal(const String& name);
 		void setRenderTarget_internal(RenderTarget *target);
 
-		void bindGpuProgram_internal(GpuProgramRef prg);
+		void bindGpuProgram_internal(GpuProgramHandle prg);
 		void unbindGpuProgram_internal(GpuProgramType gptype);
 		void bindGpuProgramParameters_internal(GpuProgramType gptype, 
 			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);

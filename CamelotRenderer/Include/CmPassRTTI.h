@@ -78,14 +78,14 @@ namespace CamelotEngine
 		float& getPointMaxSize(Pass* obj) { return obj->mPointMaxSize; }
 		void setPointMaxSize(Pass* obj, float& val) { obj->mPointMaxSize = val; } 
 
-		GpuProgramRef& getVertexProgram(Pass* obj) { return obj->mVertexProgram; }
-		void setVertexProgram(Pass* obj, GpuProgramRef& val) { obj->mVertexProgram = val; } 
+		GpuProgramHandle& getVertexProgram(Pass* obj) { return obj->mVertexProgram; }
+		void setVertexProgram(Pass* obj, GpuProgramHandle& val) { obj->mVertexProgram = val; } 
 
-		GpuProgramRef& getFragmentProgram(Pass* obj) { return obj->mFragmentProgram; }
-		void setFragmentProgram(Pass* obj, GpuProgramRef& val) { obj->mFragmentProgram = val; } 
+		GpuProgramHandle& getFragmentProgram(Pass* obj) { return obj->mFragmentProgram; }
+		void setFragmentProgram(Pass* obj, GpuProgramHandle& val) { obj->mFragmentProgram = val; } 
 
-		GpuProgramRef& getGeometryProgram(Pass* obj) { return obj->mGeometryProgram; }
-		void setGeometryProgram(Pass* obj, GpuProgramRef& val) { obj->mGeometryProgram = val; } 
+		GpuProgramHandle& getGeometryProgram(Pass* obj) { return obj->mGeometryProgram; }
+		void setGeometryProgram(Pass* obj, GpuProgramHandle& val) { obj->mGeometryProgram = val; } 
 	public:
 		PassRTTI()
 		{

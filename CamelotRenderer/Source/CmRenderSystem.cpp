@@ -722,7 +722,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::bindGpuProgram(GpuProgramRef prg)
+	void RenderSystem::bindGpuProgram(GpuProgramHandle prg)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -730,7 +730,7 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::bindGpuProgram_internal, this, prg));
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::bindGpuProgram_internal(GpuProgramRef prg)
+	void RenderSystem::bindGpuProgram_internal(GpuProgramHandle prg)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

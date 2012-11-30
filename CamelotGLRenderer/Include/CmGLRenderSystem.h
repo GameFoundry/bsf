@@ -209,7 +209,7 @@ namespace CamelotEngine {
 		/** See
           RenderSystem
          */
-		void bindGpuProgram_internal(GpuProgramRef prg);
+		void bindGpuProgram_internal(GpuProgramHandle prg);
         /** See
           RenderSystem
          */

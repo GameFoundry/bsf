@@ -35,15 +35,15 @@ namespace CamelotEngine
 
 					PassParametersPtr params = PassParametersPtr(new PassParameters());
 
-					GpuProgramRef vertProgram = curPass->getVertexProgram();
+					GpuProgramHandle vertProgram = curPass->getVertexProgram();
 					if(vertProgram)
 						params->mVertParams = vertProgram->createParameters();
 
-					GpuProgramRef fragProgram = curPass->getFragmentProgram();
+					GpuProgramHandle fragProgram = curPass->getFragmentProgram();
 					if(fragProgram)
 						params->mFragParams = fragProgram->createParameters();
 
-					GpuProgramRef geomProgram = curPass->getGeometryProgram();
+					GpuProgramHandle geomProgram = curPass->getGeometryProgram();
 					if(geomProgram)
 						params->mGeomParams = geomProgram->createParameters();	
 
@@ -66,7 +66,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void Material::setTexture(const String& name, TextureRef& value)
+	void Material::setTexture(const String& name, TextureHandle& value)
 	{
 		throwIfNotInitialized();
 		setParam(name, value);

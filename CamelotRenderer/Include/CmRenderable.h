@@ -8,14 +8,14 @@ namespace CamelotEngine
 	class CM_EXPORT Renderable : public Component
 	{
 	public:
-		void setMesh(MeshRef mesh) { mMesh = mesh; }
-		void setMaterial(MaterialRef material) { mMaterial = material; }
+		void setMesh(MeshHandle mesh) { mMesh = mesh; }
+		void setMaterial(MaterialHandle material) { mMaterial = material; }
 
-		MeshRef getMesh() const { return mMesh; }
-		MaterialRef getMaterial() const { return mMaterial; }
+		MeshHandle getMesh() const { return mMesh; }
+		MaterialHandle getMaterial() const { return mMaterial; }
 	private:
-		MeshRef mMesh;
-		MaterialRef mMaterial;
+		MeshHandle mMesh;
+		MaterialHandle mMaterial;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/

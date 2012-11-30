@@ -77,7 +77,7 @@ namespace CamelotEngine
 		};
 
 		class TexParamKVPRTTI;
-		typedef KeyValuePair<String, TextureRef, TexParamKVPRTTI> TexParamKVP;
+		typedef KeyValuePair<String, TextureHandle, TexParamKVPRTTI> TexParamKVP;
 
 		class TexParamKVPRTTI : public RTTIType<TexParamKVP, IReflectable, TexParamKVPRTTI>
 		{
@@ -85,8 +85,8 @@ namespace CamelotEngine
 			String& getKey(TexParamKVP* obj) { return obj->mKey; }
 			void setKey(TexParamKVP* obj,  String& val) { obj->mKey = val; }
 
-			TextureRef& getValue(TexParamKVP* obj) { return obj->mValue; }
-			void setValue(TexParamKVP* obj,  TextureRef& val) { obj->mValue = val; }
+			TextureHandle& getValue(TexParamKVP* obj) { return obj->mValue; }
+			void setValue(TexParamKVP* obj,  TextureHandle& val) { obj->mValue = val; }
 
 		public:
 			TexParamKVPRTTI()
@@ -155,7 +155,7 @@ namespace CamelotEngine
 		struct MaterialParams : public IReflectable
 		{
 			map<String, FloatParam>::type mFloatParams;
-			map<String, TextureRef>::type mTextureParams;
+			map<String, TextureHandle>::type mTextureParams;
 			map<String, SamplerState>::type mSamplerStateParams;
 
 			vector<float>::type mFloatBuffer;

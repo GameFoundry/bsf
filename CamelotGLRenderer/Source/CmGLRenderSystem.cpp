@@ -254,7 +254,7 @@ namespace CamelotEngine {
 	}
 
 	//---------------------------------------------------------------------
-	void GLRenderSystem::bindGpuProgram_internal(GpuProgramRef prg)
+	void GLRenderSystem::bindGpuProgram_internal(GpuProgramHandle prg)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -353,7 +353,7 @@ namespace CamelotEngine {
 				if(def.constType == GCT_SAMPLER2D || def.constType == GCT_SAMPLERCUBE || def.constType == GCT_SAMPLER1D 
 					|| def.constType == GCT_SAMPLER2DSHADOW || def.constType == GCT_SAMPLER3D || def.constType == GCT_SAMPLER1DSHADOW)
 				{
-					TextureRef curTexture = params->getTexture(def.physicalIndex);
+					TextureHandle curTexture = params->getTexture(def.physicalIndex);
 					setTexture_internal(def.physicalIndex, true, curTexture.getInternalPtr());
 
 					const SamplerState& samplerState = params->getSamplerState(def.physicalIndex);

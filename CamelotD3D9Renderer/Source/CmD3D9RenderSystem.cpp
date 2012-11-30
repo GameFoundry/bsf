@@ -269,7 +269,7 @@ namespace CamelotEngine
 		asyncOp.completeOperation(static_cast<RenderWindow*>(renderWindow));
 	}	
 
-	void D3D9RenderSystem::bindGpuProgram_internal(GpuProgramRef prg)
+	void D3D9RenderSystem::bindGpuProgram_internal(GpuProgramHandle prg)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -356,7 +356,7 @@ namespace CamelotEngine
 					if (i->second.variability & variability)
 					{
 						size_t logicalIndex = i->first;
-						TextureRef texture = params->getTexture(i->second.physicalIndex);
+						TextureHandle texture = params->getTexture(i->second.physicalIndex);
 
 						const SamplerState& samplerState = params->getSamplerState(i->second.physicalIndex);
 

@@ -102,12 +102,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	vertProg =  HighLevelGpuProgramManager::instance().createProgram(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 	vertProg->init();
 
-	HighLevelGpuProgramRef vertProgRef(vertProg);
+	HighLevelGpuProgramHandle vertProgRef(vertProg);
 
 	gResources().create(vertProgRef, "C:\\vertProgCg.vprog", true);
 	vertProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\vertProgCg.vprog"));
 
-	HighLevelGpuProgramRef fragProgRef(fragProg);
+	HighLevelGpuProgramHandle fragProgRef(fragProg);
 
 	gResources().create(fragProgRef, "C:\\fragProgCg.vprog", true);
 	fragProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\fragProgCg.vprog"));
@@ -150,12 +150,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	newPassDX->setVertexProgram(vertProgRef);
 	newPassDX->setFragmentProgram(fragProgRef);
 
-	MaterialRef testMaterial = MaterialPtr(new Material());
+	MaterialHandle testMaterial = MaterialPtr(new Material());
 	testMaterial->setShader(testShader);
 
 	/*TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));*/
-	TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));
-	MeshRef dbgMesh = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
+	TextureHandle testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));
+	MeshHandle dbgMesh = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
 
 	//int tmpFlag = _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_CRT_DF | _CRTDBG_DELAY_FREE_MEM_DF);
 

@@ -392,7 +392,7 @@ namespace CamelotEngine
 		memcpy(dest, &mIntConstants[physicalIndex], sizeof(int) * count);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_readTexture(size_t physicalIndex, TextureRef& dest)
+	void GpuProgramParameters::_readTexture(size_t physicalIndex, TextureHandle& dest)
 	{
 		assert(physicalIndex < mTextures.size());
 		dest = mTextures[physicalIndex]->texture;
@@ -671,11 +671,11 @@ namespace CamelotEngine
 		return *def;
 	}
 	//----------------------------------------------------------------------------
-	TextureRef GpuProgramParameters::getTexture(size_t pos) const 
+	TextureHandle GpuProgramParameters::getTexture(size_t pos) const 
 	{ 
 		if(mTextures[pos] == nullptr)
 		{
-			return TextureRef();
+			return TextureHandle();
 		}
 
 		return mTextures[pos]->texture; 
@@ -728,7 +728,7 @@ namespace CamelotEngine
 		}
 	}
 	//----------------------------------------------------------------------------
-	void GpuProgramParameters::setNamedConstant(const String& name, TextureRef val)
+	void GpuProgramParameters::setNamedConstant(const String& name, TextureHandle val)
 	{
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 

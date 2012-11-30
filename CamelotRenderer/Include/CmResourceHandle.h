@@ -11,11 +11,11 @@ struct CM_Bool_struct
 namespace CamelotEngine
 {
 	template <typename T>
-	class ResourceRef;
+	class ResourceHandle;
 
-	struct CM_EXPORT ResourceRefData : public IReflectable
+	struct CM_EXPORT ResourceHandleData : public IReflectable
 	{
-		ResourceRefData()
+		ResourceHandleData()
 			:mIsResolved(false)
 		{ }
 
@@ -27,12 +27,12 @@ namespace CamelotEngine
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		friend class ResourceRefDataRTTI;
+		friend class ResourceHandleDataRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;		
 	};
 
-	class CM_EXPORT ResourceRefBase : public IReflectable
+	class CM_EXPORT ResourceHandleBase : public IReflectable
 	{
 	public:
 		/**
@@ -41,15 +41,15 @@ namespace CamelotEngine
 		bool isResolved() const { return mData->mIsResolved; }
 
 	protected:
-		ResourceRefBase();
+		ResourceHandleBase();
 
-		std::shared_ptr<ResourceRefData> mData;
+		std::shared_ptr<ResourceHandleData> mData;
 
 		void init(Resource* ptr);
 		void init(std::shared_ptr<Resource> ptr);
 
 		template <typename T1>
-		void init(const ResourceRef<T1>& ptr)
+		void init(const ResourceHandle<T1>& ptr)
 		{
 			mData = ptr.mData;
 		}
@@ -62,50 +62,50 @@ namespace CamelotEngine
 		void resolve(std::shared_ptr<Resource> ptr);
 
 		/**
-		 * @brief	Sets an uuid of the ResourceRef. Should only be called by
+		 * @brief	Sets an uuid of the ResourceHandle. Should only be called by
 		 * 			Resources class.
 		 */
-		void ResourceRefBase::setUUID(const String& uuid);
+		void ResourceHandleBase::setUUID(const String& uuid);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		friend class ResourceRefRTTI;
+		friend class ResourceHandleRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	template <typename T>
-	class ResourceRef : public ResourceRefBase
+	class ResourceHandle : public ResourceHandleBase
 	{
 	public:
-		ResourceRef()
-			:ResourceRefBase()
+		ResourceHandle()
+			:ResourceHandleBase()
 		{	}
 
-		explicit ResourceRef(T* ptr)
-			:ResourceRefBase()
+		explicit ResourceHandle(T* ptr)
+			:ResourceHandleBase()
 		{
 			init(ptr);
 		}
 
-		ResourceRef(std::shared_ptr<T> ptr)
-			:ResourceRefBase()
+		ResourceHandle(std::shared_ptr<T> ptr)
+			:ResourceHandleBase()
 		{
 			init(ptr);
 		}
 
 		template <typename T1>
-		ResourceRef(const ResourceRef<T1>& ptr)
-			:ResourceRefBase()
+		ResourceHandle(const ResourceHandle<T1>& ptr)
+			:ResourceHandleBase()
 		{
 			init(ptr);
 		}
 
-		operator ResourceRef<Resource>() 
+		operator ResourceHandle<Resource>() 
 		{
-			return ResourceRef<Resource>(mData->mPtr); 
+			return ResourceHandle<Resource>(mData->mPtr); 
 		}
 
 		// TODO Low priority - User can currently try to access these even if resource ptr is not resolved
@@ -130,19 +130,19 @@ namespace CamelotEngine
 	};
 
 	template<class _Ty1, class _Ty2>
-		ResourceRef<_Ty1> static_resource_cast(const ResourceRef<_Ty2>& other)
+		ResourceHandle<_Ty1> static_resource_cast(const ResourceHandle<_Ty2>& other)
 	{	
-		return ResourceRef<_Ty1>(other);
+		return ResourceHandle<_Ty1>(other);
 	}
 
 	template<class _Ty1, class _Ty2>
-	bool operator==(const ResourceRef<_Ty1>& _Left, const ResourceRef<_Ty2>& _Right)
+	bool operator==(const ResourceHandle<_Ty1>& _Left, const ResourceHandle<_Ty2>& _Right)
 	{	
 		return (_Left.get() == _Right.get());
 	}
 
 	template<class _Ty1, class _Ty2>
-	bool operator!=(const ResourceRef<_Ty1>& _Left, const ResourceRef<_Ty2>& _Right)
+	bool operator!=(const ResourceHandle<_Ty1>& _Left, const ResourceHandle<_Ty2>& _Right)
 	{	
 		return (!(_Left == _Right));
 	}

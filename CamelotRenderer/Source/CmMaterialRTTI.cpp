@@ -41,7 +41,7 @@ namespace CamelotEngine
 
 				if(def.constType == GCT_SAMPLER2D)
 				{
-					TextureRef texture;
+					TextureHandle texture;
 					allParams[i]->_readTexture(iter->second.physicalIndex, texture);
 					params->mTextureParams[iter->first] = texture;
 

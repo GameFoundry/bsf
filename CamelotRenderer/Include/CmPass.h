@@ -64,11 +64,11 @@ namespace CamelotEngine
         //-------------------------------------------------------------------------
 
 		// Vertex program
-		GpuProgramRef mVertexProgram;
+		GpuProgramHandle mVertexProgram;
 		// Fragment program
-		GpuProgramRef mFragmentProgram;
+		GpuProgramHandle mFragmentProgram;
 		// Geometry program
-		GpuProgramRef mGeometryProgram;
+		GpuProgramHandle mGeometryProgram;
 
 		// point size, applies when not using per-vertex point size
 		float mPointSize;
@@ -410,24 +410,24 @@ namespace CamelotEngine
 
 		/** Sets the details of the vertex program to use.
 		*/
-		void setVertexProgram(GpuProgramRef gpuProgram);
+		void setVertexProgram(GpuProgramHandle gpuProgram);
 
 		/** Gets the vertex program used by this pass, only available after _load(). */
-		const GpuProgramRef& getVertexProgram(void) const;
+		const GpuProgramHandle& getVertexProgram(void) const;
 
 		/** Sets the details of the fragment program to use.
 		*/
-		void setFragmentProgram(GpuProgramRef gpuProgram);
+		void setFragmentProgram(GpuProgramHandle gpuProgram);
 		
 		/** Gets the fragment program used by this pass, only available after _load(). */
-		const GpuProgramRef& getFragmentProgram(void) const;
+		const GpuProgramHandle& getFragmentProgram(void) const;
 
 		/** Sets the details of the geometry program to use.
 		*/
-		void setGeometryProgram(GpuProgramRef gpuProgram);
+		void setGeometryProgram(GpuProgramHandle gpuProgram);
 		
 		/** Gets the geometry program used by this pass, only available after _load(). */
-		const GpuProgramRef& getGeometryProgram(void) const;
+		const GpuProgramHandle& getGeometryProgram(void) const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

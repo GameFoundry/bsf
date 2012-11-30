@@ -143,8 +143,8 @@
     <ClInclude Include="Include\CmRenderTexture.h" />
     <ClInclude Include="Include\CmRenderWindow.h" />
     <ClInclude Include="Include\CmResource.h" />
-    <ClInclude Include="Include\CmResourceRef.h" />
-    <ClInclude Include="Include\CmResourceRefRTTI.h" />
+    <ClInclude Include="Include\CmResourceHandle.h" />
+    <ClInclude Include="Include\CmResourceHandleRTTI.h" />
     <ClInclude Include="Include\CmResources.h" />
     <ClInclude Include="Include\CmResourcesRTTI.h" />
     <ClInclude Include="Include\CmSceneManager.h" />
@@ -203,7 +203,7 @@
     <ClCompile Include="Source\CmRenderTexture.cpp" />
     <ClCompile Include="Source\CmRenderWindow.cpp" />
     <ClCompile Include="Source\CmResource.cpp" />
-    <ClCompile Include="Source\CmResourceRef.cpp" />
+    <ClCompile Include="Source\CmResourceHandle.cpp" />
     <ClCompile Include="Source\CmResources.cpp" />
     <ClCompile Include="Source\CmSceneManager.cpp" />
     <ClCompile Include="Source\CmShader.cpp" />

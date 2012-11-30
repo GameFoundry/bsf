@@ -113,17 +113,17 @@ namespace CamelotEngine
 		mWorkQueue->processResponses();
 	}
 
-	BaseResourceRef Resources::load(const String& filePath)
+	BaseResourceHandle Resources::load(const String& filePath)
 	{
 		return loadInternal(filePath, true);
 	}
 
-	BaseResourceRef Resources::loadAsync(const String& filePath)
+	BaseResourceHandle Resources::loadAsync(const String& filePath)
 	{
 		return loadInternal(filePath, false);
 	}
 
-	BaseResourceRef Resources::loadFromUUID(const String& uuid)
+	BaseResourceHandle Resources::loadFromUUID(const String& uuid)
 	{
 		if(!metaExists_UUID(uuid))
 		{
@@ -136,7 +136,7 @@ namespace CamelotEngine
 		return load(metaEntry->mPath);
 	}
 
-	BaseResourceRef Resources::loadFromUUIDAsync(const String& uuid)
+	BaseResourceHandle Resources::loadFromUUIDAsync(const String& uuid)
 	{
 		if(!metaExists_UUID(uuid))
 		{
@@ -149,7 +149,7 @@ namespace CamelotEngine
 		return loadAsync(metaEntry->mPath);
 	}
 
-	BaseResourceRef Resources::loadInternal(const String& filePath, bool synchronous)
+	BaseResourceHandle Resources::loadInternal(const String& filePath, bool synchronous)
 	{
 		auto iterFind = mLoadedResources.find(filePath);
 		if(iterFind != mLoadedResources.end()) // Resource is already loaded
@@ -181,15 +181,15 @@ namespace CamelotEngine
 		// TODO Low priority - Right now I don't allow loading of resources that don't have meta-data, because I need to know resources UUID
 		// at this point. And I can't do that without having meta-data. Other option is to partially load the resource to read the UUID but due to the
 		// nature of the serializer it could complicate things. (But possible if this approach proves troublesome)
-		// The reason I need the UUID is that when resource is loaded Async, the returned ResourceRef needs to have a valid UUID, in case I assign that
-		// ResourceRef to something and then save that something. If I didn't assign it, the saved ResourceRef would have a blank (i.e. invalid) UUID.
+		// The reason I need the UUID is that when resource is loaded Async, the returned ResourceHandle needs to have a valid UUID, in case I assign that
+		// ResourceHandle to something and then save that something. If I didn't assign it, the saved ResourceHandle would have a blank (i.e. invalid) UUID.
 		if(!metaExists_Path(filePath))
 		{
 			CM_EXCEPT(InternalErrorException, "Cannot load resource that isn't registered in the meta database. Call Resources::create first.");
 		}
 
 		String uuid = getUUIDFromPath(filePath);
-		BaseResourceRef newResource;
+		BaseResourceHandle newResource;
 		newResource.setUUID(uuid); // UUID needs to be set immediately if the resource gets loaded async
 
 		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(new Resources::ResourceLoadRequest());
@@ -222,7 +222,7 @@ namespace CamelotEngine
 		return resource;
 	}
 
-	void Resources::create(BaseResourceRef resource, const String& filePath, bool overwrite)
+	void Resources::create(BaseResourceHandle resource, const String& filePath, bool overwrite)
 	{
 		assert(resource.get() != nullptr);
 
@@ -248,7 +248,7 @@ namespace CamelotEngine
 		save(resource);
 	}
 
-	void Resources::save(BaseResourceRef resource)
+	void Resources::save(BaseResourceHandle resource)
 	{
 		assert(resource.get() != nullptr);
 

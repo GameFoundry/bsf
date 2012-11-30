@@ -24,7 +24,7 @@ namespace CamelotEngine
 		struct CM_EXPORT ResourceLoadRequest
 		{
 			String filePath;
-			BaseResourceRef resource;
+			BaseResourceHandle resource;
 		};
 
 		struct CM_EXPORT ResourceLoadResponse
@@ -34,7 +34,7 @@ namespace CamelotEngine
 
 		struct CM_EXPORT ResourceAsyncOp
 		{
-			BaseResourceRef resource;
+			BaseResourceHandle resource;
 			WorkQueue::RequestID requestID;
 		};
 
@@ -68,17 +68,17 @@ namespace CamelotEngine
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		BaseResourceRef load(const String& filePath);
+		BaseResourceHandle load(const String& filePath);
 
 		/**
 		 * @brief	Loads the resource asynchronously. Initially returned resource should not be used
-		 * 			until BaseResourceRef.isResolved gets set to true. (Set only at the end of each frame)
+		 * 			until BaseResourceHandle.isResolved gets set to true. (Set only at the end of each frame)
 		 *
 		 * @param	filePath	Full pathname of the file.
 		 * 						
 		 * @return	Resource where the data will eventually be loaded, or null if the file cannot be found.
 		 */
-		BaseResourceRef loadAsync(const String& filePath);
+		BaseResourceHandle loadAsync(const String& filePath);
 
 		/**
 		 * @brief	Loads the resource with the given uuid.
@@ -87,24 +87,24 @@ namespace CamelotEngine
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		BaseResourceRef loadFromUUID(const String& uuid);
+		BaseResourceHandle loadFromUUID(const String& uuid);
 
 		/**
 		* @brief	Loads the resource with the given UUID asynchronously. Initially returned resource should not be used
-		* 			until BaseResourceRef.isResolved gets set to true. (Set only at the end of each frame)
+		* 			until BaseResourceHandle.isResolved gets set to true. (Set only at the end of each frame)
 		 *
 		 * @param	uuid	UUID of the resource to load. 
 		 *
 		 * @return	Resource where the data will eventually be loaded, or null if the file cannot be found.
 		 */
-		BaseResourceRef loadFromUUIDAsync(const String& uuid);
+		BaseResourceHandle loadFromUUIDAsync(const String& uuid);
 
 		/**
 		 * @brief	Saves the resource. Resource must be registered using Resources::create beforehand.
 		 *
 		 * @param	resource   	The resource.
 		 */
-		void save(BaseResourceRef resource);
+		void save(BaseResourceHandle resource);
 
 		/**
 		 * @brief	Creates a new resource at the specified location. Throws an exception if resource already exists.
@@ -115,7 +115,7 @@ namespace CamelotEngine
 		 * @param	overwrite	(optional) If true, any existing resource at the specified location
 		 * 						will be overwritten.
 		 */
-		void create(BaseResourceRef resource, const String& filePath, bool overwrite = false);
+		void create(BaseResourceHandle resource, const String& filePath, bool overwrite = false);
 
 	public:
 		struct ResourceMetaData : public IReflectable
@@ -143,10 +143,10 @@ namespace CamelotEngine
 		WorkQueuePtr mWorkQueue; // TODO Low priority - I might want to make this more global so other classes can use it
 		UINT16 mWorkQueueChannel;
 
-		unordered_map<String, BaseResourceRef>::type mLoadedResources; // TODO Low priority - I'm not sure how will filePath as key do performance wise
+		unordered_map<String, BaseResourceHandle>::type mLoadedResources; // TODO Low priority - I'm not sure how will filePath as key do performance wise
 		unordered_map<String, ResourceAsyncOp>::type mInProgressResources; // Resources that are being asynchronously loaded
 
-		BaseResourceRef loadInternal(const String& filePath, bool synchronous); 
+		BaseResourceHandle loadInternal(const String& filePath, bool synchronous); 
 		ResourcePtr loadFromDiskAndDeserialize(const String& filePath);
 
 		void loadMetaData();

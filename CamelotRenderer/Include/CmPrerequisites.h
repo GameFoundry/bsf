@@ -163,9 +163,9 @@ namespace CamelotEngine
 		TID_Component = 1006,
 		TID_Camera = 1007,
 		TID_Renderable = 1008,
-		TID_ResourceRef = 1009,
+		TID_ResourceHandle = 1009,
 		TID_GpuProgram = 1010,
-		TID_ResourceRefData = 1011,
+		TID_ResourceHandleData = 1011,
 		TID_CgProgram = 1012,
 		TID_ResourceMetaData = 1013,
 		TID_Pass = 1014,
@@ -184,16 +184,16 @@ namespace CamelotEngine
 /* 							Resource references                   		*/
 /************************************************************************/
 
-#include "CmResourceRef.h"
+#include "CmResourceHandle.h"
 
 namespace CamelotEngine
 {
-	typedef ResourceRef<Resource> BaseResourceRef;
-	typedef ResourceRef<Texture> TextureRef;
-	typedef ResourceRef<Mesh> MeshRef;
-	typedef ResourceRef<GpuProgram> GpuProgramRef;
-	typedef ResourceRef<HighLevelGpuProgram> HighLevelGpuProgramRef;
-	typedef ResourceRef<Material> MaterialRef;
+	typedef ResourceHandle<Resource> BaseResourceHandle;
+	typedef ResourceHandle<Texture> TextureHandle;
+	typedef ResourceHandle<Mesh> MeshHandle;
+	typedef ResourceHandle<GpuProgram> GpuProgramHandle;
+	typedef ResourceHandle<HighLevelGpuProgram> HighLevelGpuProgramHandle;
+	typedef ResourceHandle<Material> MaterialHandle;
 }
 
 #endif // __OgrePrerequisites_H__

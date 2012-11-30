@@ -339,7 +339,7 @@ namespace CamelotEngine {
 	 */
 	struct GpuTextureEntry
 	{
-		TextureRef texture;
+		TextureHandle texture;
 		SamplerState samplerState;
 	};
 
@@ -585,7 +585,7 @@ namespace CamelotEngine {
 		@param physicalIndex The array position of the texture
 		@param dest Reference of the texture to store
 		*/
-		void _readTexture(size_t physicalIndex, TextureRef& dest);
+		void _readTexture(size_t physicalIndex, TextureHandle& dest);
 		/** Write a 4-element floating-point parameter to the program directly to 
 		the underlying constants buffer.
 		@note You can use these methods if you have already derived the physical
@@ -727,7 +727,7 @@ namespace CamelotEngine {
 		/// Get a pointer to the 'nth' item in the int buffer
 		const int* getIntPointer(size_t pos) const { return &mIntConstants[pos]; }
 		const GpuLogicalBufferStructPtr& getSamplerLogicalBufferStruct() const { return mSamplerLogicalToPhysical; }
-		TextureRef getTexture(size_t pos) const;
+		TextureHandle getTexture(size_t pos) const;
 		const SamplerState& getSamplerState(size_t pos) const;
 		/// Get a reference to the list of textures
 		const TextureList& getTextureList() const { return mTextures; }
@@ -756,7 +756,7 @@ namespace CamelotEngine {
 		@param name The name of the parameter
 		@param val The value to set
 		*/
-		void setNamedConstant(const String& name, TextureRef val);
+		void setNamedConstant(const String& name, TextureHandle val);
 
 		/** Sets a sampler state to the program. Name of the sampler should be the same
 		as the name of the texture parameter it is being set for.
