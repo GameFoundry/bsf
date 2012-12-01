@@ -18,7 +18,7 @@ namespace CamelotEngine
 	public:
 		CM_THREAD_ID_TYPE getThreadId() const { return mMyThreadId; }
 
-	private:
+	protected:
 		struct RenderSystemCommand
 		{
 			RenderSystemCommand(boost::function<void(AsyncOp&)> _callback, UINT32 _callbackId = 0)
@@ -43,9 +43,6 @@ namespace CamelotEngine
 
 		// Actively being filled up
 		vector<RenderSystemCommand>::type* mCommands;
-
-		// Finalized and ready for rendering
-		vector<RenderSystemCommand>::type* mReadyCommands;
 
 		bool mIsShutdown;
 		bool mIsExecuting;
@@ -73,7 +70,7 @@ namespace CamelotEngine
 		 * 			it completes AsyncOp::isResolved will return true and return data will be valid (if
 		 * 			the callback provided any).
 		 */
-		AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, UINT32 _callbackId = 0);
+		virtual AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, UINT32 _callbackId = 0) = 0;
 
 		/**
 		 * @brief	Queue up a new command to execute. Make sure the provided function has all of its
@@ -84,18 +81,18 @@ namespace CamelotEngine
 		 * @param	_callbackId			   	(optional) Identifier for the callback so you can then later find it
 		 * 									if needed.
 		 */
-		void queueCommand(boost::function<void()> commandCallback, UINT32 _callbackId = 0);
+		virtual void queueCommand(boost::function<void()> commandCallback, UINT32 _callbackId = 0) = 0;
 
 		/**
 		 * @brief	Plays all queued commands. Should only be called from the render thread,
 		 * 			and is normally called by the RenderSystem internally.
 		 */
-		void playbackCommands();
+		virtual void playbackCommands() = 0;
 
 		/**
 		 * @brief	Query if this object has any commands ready for rendering.
 		 */
-		bool hasReadyCommands();
+		virtual bool hasReadyCommands() = 0;
 
 		/**
 		 * @brief	Makes all the currently queued commands available to the GPU. They will be executed
@@ -104,7 +101,7 @@ namespace CamelotEngine
 		 * @note	This is expected to be called once per frame. If the previous set of commands hasn't even started rendering
 		 * 			yet, it will be discarded. This is to prevent lag if the simulation executes faster than the render thread.
 		 */
-		void submitToGpu();
+		virtual void submitToGpu() = 0;
 
 		/**
 		 * @brief	Blocks the current thread until all commands in the context are processed.
@@ -112,7 +109,7 @@ namespace CamelotEngine
 		 * @note	Do not call from render thread. Render thread is the thread doing the processing and blocking
 		 * 			it will cause a deadlock since processing will never be completed. 
 		 */
-		void blockUntilExecuted();
+		virtual void blockUntilExecuted() = 0;
 
 		/************************************************************************/
 		/* 								STATES		                     		*/
@@ -130,5 +127,97 @@ namespace CamelotEngine
         bool geometryProgramBound;
 		bool fragmentProgramBound;
 		bool invertVertexWinding;
+	};
+
+	/**
+	 * @brief	Render system context where commands are added and meant to be executed once per frame.
+	 * 			Obsolete commands get discarded as new ones are submitted.
+	 */
+	class RenderSystemFrameContext : public RenderSystemContext
+	{
+	protected:
+		/************************************************************************/
+		/* 					CALLABLE ONLY FROM RENDERSYSTEM                     */
+		/************************************************************************/
+		friend class RenderSystem;
+
+		// Finalized and ready for rendering
+		vector<RenderSystemCommand>::type* mReadyCommands;
+
+		RenderSystemFrameContext(CM_THREAD_ID_TYPE threadId);
+
+		/**
+		 * @copydoc RenderSystemContext::queueReturnCommand()
+		 */
+		AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, UINT32 _callbackId = 0);
+
+		 /**
+		 * @copydoc RenderSystemContext::queueCommand()
+		 */
+		void queueCommand(boost::function<void()> commandCallback, UINT32 _callbackId = 0);
+
+		 /**
+		 * @copydoc RenderSystemContext::playbackCommands()
+		 */
+		void playbackCommands();
+
+		 /**
+		 * @copydoc RenderSystemContext::hasReadyCommands()
+		 */
+		bool hasReadyCommands();
+
+		/**
+		 * @copydoc RenderSystemContext::submitToGpu()
+		 */
+		void submitToGpu();
+
+		/**
+		 * @copydoc RenderSystemContext::blockUntilExecuted()
+		 */
+		void blockUntilExecuted();
+	};
+
+	/**
+	 * @brief	Render system context where commands are added and scheduled for execution immediately.
+	 */
+	class RenderSystemImmediateContext : public RenderSystemContext
+	{
+	protected:
+		/************************************************************************/
+		/* 					CALLABLE ONLY FROM RENDERSYSTEM                     */
+		/************************************************************************/
+		friend class RenderSystem;
+
+		RenderSystemImmediateContext(CM_THREAD_ID_TYPE threadId);
+
+		/**
+		 * @copydoc RenderSystemContext::queueReturnCommand()
+		 */
+		AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, UINT32 _callbackId = 0);
+
+		 /**
+		 * @copydoc RenderSystemContext::queueCommand()
+		 */
+		void queueCommand(boost::function<void()> commandCallback, UINT32 _callbackId = 0);
+
+		 /**
+		 * @copydoc RenderSystemContext::playbackCommands()
+		 */
+		void playbackCommands();
+
+		 /**
+		 * @copydoc RenderSystemContext::hasReadyCommands()
+		 */
+		bool hasReadyCommands();
+
+		/**
+		 * @copydoc RenderSystemContext::submitToGpu()
+		 */
+		void submitToGpu();
+
+		/**
+		 * @copydoc RenderSystemContext::blockUntilExecuted()
+		 */
+		void blockUntilExecuted();
 	};
 }

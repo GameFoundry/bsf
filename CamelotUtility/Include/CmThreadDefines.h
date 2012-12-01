@@ -43,6 +43,7 @@ THE SOFTWARE
 #define CM_MUTEX(name) mutable boost::recursive_mutex name;
 #define CM_STATIC_MUTEX(name) static boost::recursive_mutex name;
 #define CM_STATIC_MUTEX_INSTANCE(name) boost::recursive_mutex name;
+#define CM_STATIC_MUTEX_CLASS_INSTANCE(name, classTypeName) boost::recursive_mutex classTypeName##::name;
 #define CM_LOCK_MUTEX(name) boost::recursive_mutex::scoped_lock cmnameLock(name);
 #define CM_LOCK_MUTEX_NAMED(mutexName, lockName) boost::recursive_mutex::scoped_lock lockName(mutexName);
 // like CM_AUTO_MUTEX but mutex held by pointer
@@ -54,6 +55,8 @@ THE SOFTWARE
 #define CM_SET_AUTO_SHARED_MUTEX_NULL CM_AUTO_MUTEX_NAME = 0;
 #define CM_MUTEX_CONDITIONAL(mutex) if (mutex)
 #define CM_THREAD_SYNCHRONISER(sync) boost::condition sync;
+#define CM_STATIC_THREAD_SYNCHRONISER(sync) static boost::condition sync;
+#define CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(sync, classTypeName) boost::condition classTypeName##::sync;
 #define CM_THREAD_WAIT(sync, mutex, lock) sync.wait(lock);
 #define CM_THREAD_NOTIFY_ONE(sync) sync.notify_one(); 
 #define CM_THREAD_NOTIFY_ALL(sync) sync.notify_all(); 
@@ -86,6 +89,7 @@ THE SOFTWARE
 #define CM_MUTEX(name)
 #define CM_STATIC_MUTEX(name)
 #define CM_STATIC_MUTEX_INSTANCE(name)
+#define CM_STATIC_MUTEX_CLASS_INSTANCE(name, classTypeName)
 #define CM_LOCK_MUTEX(name)
 #define CM_LOCK_MUTEX_NAMED(mutexName, lockName)
 #define CM_AUTO_SHARED_MUTEX
@@ -99,6 +103,8 @@ THE SOFTWARE
 #define CM_LOCK_RW_MUTEX_READ(name)
 #define CM_LOCK_RW_MUTEX_WRITE(name)
 #define CM_THREAD_SYNCHRONISER(sync) 
+#define CM_STATIC_THREAD_SYNCHRONISER(sync)
+#define CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(sync, classTypeName)
 #define CM_THREAD_WAIT(sync, lock) 
 #define CM_THREAD_NOTIFY_ONE(sync) 
 #define CM_THREAD_NOTIFY_ALL(sync) 

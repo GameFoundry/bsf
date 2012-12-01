@@ -1,9 +1,14 @@
 #include "CmResource.h"
 #include "CmResourceRTTI.h"
 #include "CmUUID.h"
+#include "CmRenderSystem.h"
+#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine
 {
+	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mResourceLoadedCondition, Resource)
+	CM_STATIC_MUTEX_CLASS_INSTANCE(mResourceLoadedMutex, Resource)
+
 	Resource::Resource()
 		:mSize(0), mIsInitialized(false)
 	{
@@ -15,6 +20,19 @@ namespace CamelotEngine
 	void Resource::initialize_internal()
 	{
 		mIsInitialized = true;
+
+		CM_THREAD_NOTIFY_ALL(mResourceLoadedCondition);
+	}
+
+	void Resource::waitUntilLoaded()
+	{
+#if CM_DEBUG_MODE
+		if(CM_THREAD_CURRENT_ID == RenderSystemManager::getActive()->getRenderThreadId())
+			CM_EXCEPT(InternalErrorException, "You cannot call this method on the render thread. It will cause a deadlock!");
+#endif
+
+		CM_LOCK_MUTEX_NAMED(mResourceLoadedMutex, lock);
+		CM_THREAD_WAIT(mResourceLoadedCondition, mResourceLoadedMutex, lock);
 	}
 		
 	RTTITypeBase* Resource::getRTTIStatic()

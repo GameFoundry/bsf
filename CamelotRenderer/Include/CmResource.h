@@ -22,6 +22,11 @@ namespace CamelotEngine
 		 */
 		bool isInitialized() const { return mIsInitialized; }
 
+		/**
+		 * @brief	Blocks the current thread until the resource is fully loaded.
+		 */
+		void waitUntilLoaded();
+
 	protected:
 		friend class Resources;
 		//virtual void unload() = 0;
@@ -46,6 +51,9 @@ namespace CamelotEngine
 
 		// Transient
 		bool mIsInitialized;
+
+		CM_STATIC_THREAD_SYNCHRONISER(mResourceLoadedCondition)
+		CM_STATIC_MUTEX(mResourceLoadedMutex)
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

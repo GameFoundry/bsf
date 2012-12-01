@@ -86,16 +86,13 @@ namespace CamelotEngine {
 	void RenderSystem::startUp()
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mResourceContext = createRenderSystemContext();
+		mResourceContext = createResourceRenderSystemContext();
 		mPrimaryContext = createRenderSystemContext();
 		mActiveContext = mPrimaryContext;
 
 		initRenderThread(); // TODO - Move render thread to the outside of the RS
 
-		{
-			CM_LOCK_MUTEX(mResourceContextMutex);
-			mResourceContext->queueCommand(boost::bind(&RenderSystem::startUp_internal, this));
-		}
+		queueResourceCommand(boost::bind(&RenderSystem::startUp_internal, this));
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::startUp_internal()
@@ -156,16 +153,12 @@ namespace CamelotEngine {
 		bool fullScreen, const NameValuePairList *miscParams)
 	{
 		AsyncOp op;
-		{
-			CM_LOCK_MUTEX(mResourceContextMutex)
 
-			if(miscParams != nullptr)
-				op = mResourceContext->queueReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, *miscParams, _1));
-			else
-				op = mResourceContext->queueReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, NameValuePairList(), _1));
-		}
+		if(miscParams != nullptr)
+			op = queueResourceReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, *miscParams, _1), true);
+		else
+			op = queueResourceReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, NameValuePairList(), _1), true);
 
-		submitToGpu(mResourceContext, true);
 		return op.getReturnValue<RenderWindow*>();
 	}
     //---------------------------------------------------------------------------------------------
@@ -962,7 +955,21 @@ namespace CamelotEngine {
 	RenderSystemContextPtr RenderSystem::createRenderSystemContext()
 	{
 		RenderSystemContextPtr newContext = RenderSystemContextPtr(
-			new RenderSystemContext(CM_THREAD_CURRENT_ID)
+			new RenderSystemFrameContext(CM_THREAD_CURRENT_ID)
+			);
+
+		{
+			CM_LOCK_MUTEX(mRSContextMutex);
+			mRenderSystemContexts.push_back(newContext);
+		}
+
+		return newContext;
+	}
+
+	RenderSystemContextPtr RenderSystem::createResourceRenderSystemContext()
+	{
+		RenderSystemContextPtr newContext = RenderSystemContextPtr(
+			new RenderSystemImmediateContext(CM_THREAD_CURRENT_ID)
 			);
 
 		{
@@ -1015,25 +1022,15 @@ namespace CamelotEngine {
 
 	AsyncOp RenderSystem::queueResourceReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete, UINT32 _callbackId)
 	{
-		AsyncOp op;
-		{
-			CM_LOCK_MUTEX(mResourceContextMutex)
-
-			op = mResourceContext->queueReturnCommand(commandCallback);
-		}
-
+		AsyncOp op = mResourceContext->queueReturnCommand(commandCallback);
 		submitToGpu(mResourceContext, blockUntilComplete);
+
 		return op;
 	}
 
 	void RenderSystem::queueResourceCommand(boost::function<void()> commandCallback, bool blockUntilComplete, UINT32 _callbackId)
 	{
-		{
-			CM_LOCK_MUTEX(mResourceContextMutex)
-
-			mResourceContext->queueCommand(commandCallback);
-		}
-
+		mResourceContext->queueCommand(commandCallback);
 		submitToGpu(mResourceContext, blockUntilComplete);
 	}
 

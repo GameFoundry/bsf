@@ -1060,6 +1060,17 @@ namespace CamelotEngine
 		void submitToGpu(RenderSystemContextPtr context, bool blockUntilComplete);
 
 		/**
+		 * @brief	Creates a new render system context that you can use for rendering on 
+		 * 			a non-render thread. You can have as many of these as you wish, the only limitation
+		 * 			is that you do not use a single instance on more than one thread. Each thread
+		 * 			requires its own context.
+		 * 			
+		 *			Resource context is different from normal rendering context, as it will continously queue commands,
+		 *			while normal "frame" context will discard older batches of commands (i.e. older frames).
+		 */
+		RenderSystemContextPtr createResourceRenderSystemContext();
+
+		/**
 		 * @brief	Gets the currently active render system object.
 		 *
 		 * @return	The active context.
