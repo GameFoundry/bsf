@@ -12,7 +12,7 @@ namespace CamelotEngine
 
 	}
 
-	void Shader::initImpl()
+	void Shader::initialize_internal()
 	{	}
 
 	TechniquePtr Shader::addTechnique(const String& renderSystem, const String& renderer)

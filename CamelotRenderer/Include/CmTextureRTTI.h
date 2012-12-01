@@ -37,7 +37,9 @@ namespace CamelotEngine
 
 		void setPixelData(Texture* obj, UINT32 idx, PixelDataPtr data)
 		{
-			mPixelData[idx] = data;
+			vector<PixelDataPtr>::type* pixelData = boost::any_cast<vector<PixelDataPtr>::type*>(obj->mRTTIData);
+
+			(*pixelData)[idx] = data;
 		}
 
 		UINT32 getPixelDataArraySize(Texture* obj)
@@ -86,6 +88,12 @@ namespace CamelotEngine
 			if(texture->mRTTIData.empty())
 				return;
 
+			// A bit clumsy initializing with already set values, but I feel its better than complicating things and storing the values
+			// in mRTTIData.
+			texture->initialize(texture->getTextureType(), texture->getWidth(), texture->getHeight(), texture->getDepth(), 
+				texture->getNumMipmaps(), texture->getFormat(), texture->getUsage(), texture->isHardwareGammaEnabled(), 
+				texture->getFSAA(), texture->getFSAAHint());
+
 			vector<PixelDataPtr>::type* pixelData = boost::any_cast<vector<PixelDataPtr>::type*>(texture->mRTTIData);
 			for(size_t i = 0; i < pixelData->size(); i++)
 			{
@@ -96,7 +104,7 @@ namespace CamelotEngine
 			}
 
 			delete pixelData;
-			texture->mRTTIData = nullptr;			
+			texture->mRTTIData = nullptr;	
 		}
 
 		virtual const String& getRTTIName()
@@ -112,13 +120,7 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			// DEBUG ONLY - Remove this after I implement RTTI types for specific texture types
-			return Texture::create(TEX_TYPE_2D, 128, 128, 1, PF_A8B8G8R8);
-
-			//CM_EXCEPT(InternalErrorException, "Cannot instantiate abstract class!");
+			return TextureManager::instance().createEmpty();
 		}
-
-	private:
-		vector<PixelDataPtr>::type mPixelData;
 	};
 }

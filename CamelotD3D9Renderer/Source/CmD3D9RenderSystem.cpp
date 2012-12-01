@@ -273,7 +273,7 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		GpuProgram* bindingPrg = prg->_getBindingDelegate();
+		GpuProgram* bindingPrg = prg->getBindingDelegate_internal();
 
 		HRESULT hr;
 		switch (bindingPrg->getType())

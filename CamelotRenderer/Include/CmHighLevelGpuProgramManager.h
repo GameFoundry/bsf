@@ -90,11 +90,9 @@ namespace CamelotEngine {
 		bool isLanguageSupported(const String& lang);
 
 
-        /** Create a new, unloaded HighLevelGpuProgram. 
+        /** Create a new HighLevelGpuProgram. 
 		@par
 			This method creates a new program of the type specified as the second and third parameters.
-			You will have to call further methods on the returned program in order to 
-			define the program fully before you can load it.
 		@param name The identifying name of the program
         @param groupName The name of the resource group which this program is
             to be a member of
@@ -103,13 +101,20 @@ namespace CamelotEngine {
 		*/
 		HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
-		/** Create a new, unloaded HighLevelGpuProgram. 
+		/** Create a new HighLevelGpuProgram. 
 		@par
 			This method creates a new program of the specified language. You need to set other 
 			properties like source, entry point, type, profile manually.
 		@param language Code of the language to use (e.g. "cg")
 		*/
 		HighLevelGpuProgramPtr create(const String& language);
+
+		/**
+		 * @brief	Creates a completely empty and uninitialized HighLevelGpuProgram.
+		 * 			Should only be used for VERY specific purposes, like deserialization,
+		 * 			as it requires additional manual initialization that is not required normally.
+		 */
+		HighLevelGpuProgramPtr createEmpty(const String& language);
 	};
 	/** @} */
 	/** @} */

@@ -215,7 +215,9 @@ namespace CamelotEngine
 				createInternalResourcesImpl(d3d9Device);
 				return;
 			}	
-		}		
+		}	
+
+		Resource::initialize_internal();
 	}
 	/****************************************************************************************/
 	void D3D9Texture::freeInternalResources(void)

@@ -1,0 +1,7 @@
+ - Render system threading:
+   - Make a list of thread-safe RenderSystem classes
+    - For example HighLevelGpuProgram is thread safe but GpuProgram itself isn't
+    - Classes that are safe to use outside of the render thread: RenderSystem, Mesh, Texture, HighLevelGpuProgram, Material, Shader, Technique
+	- Classes that are only accessible from the render thread: GpuProgram, HardwarePixelBuffer, HardwareVertexBuffer, HardwareIndexBuffer
+  - Make sure the user knows resources are shared between contexts. All resource updates are executed 
+     before rendering a frame, so whichever context updated the resource last, was the version that will be used.

@@ -40,7 +40,7 @@ namespace CamelotEngine
 
 		RenderOperation getRenderOperation(UINT32 subMeshIdx = 0) const;
 
-		virtual void initImpl();
+		virtual void initialize_internal();
 
 	private:
 		MeshDataPtr mMeshData;

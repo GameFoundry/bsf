@@ -98,7 +98,19 @@ namespace CamelotEngine {
         HighLevelGpuProgram();
         ~HighLevelGpuProgram();
 
-		virtual void initImpl();
+		/**
+		 * @brief	Initializes the gpu program. This must be called right after the program is constructed. 
+		 * 			Called by HighLevelGpuManager upon creation, so usually you don't want to call this manually.
+		 * 			
+		 * @note	Initialization is not done immediately, and is instead just scheduled on the render thread.
+		 */
+		void initialize();
+
+		/**
+		 * @brief	Performs HighLevelGpuProgram initialization. Only callable from the render thread.
+		 */
+		virtual void initialize_internal();
+
 		virtual void unload();
 
         /** Creates a new parameters object compatible with this program definition. 
@@ -109,8 +121,9 @@ namespace CamelotEngine {
             object containing the definition of the parameters this program understands.
         */
         GpuProgramParametersSharedPtr createParameters(void);
+
         /** @copydoc GpuProgram::getBindingDelegate */
-        GpuProgram* _getBindingDelegate(void) { return mAssemblerProgram.get(); }
+        GpuProgram* getBindingDelegate_internal(void) { return mAssemblerProgram.get(); }
 
 		/** Get the full list of GpuConstantDefinition instances.
 		@note

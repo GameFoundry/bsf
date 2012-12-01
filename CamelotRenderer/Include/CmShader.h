@@ -22,7 +22,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Inherited from Resource.
 		 */
-		virtual void initImpl();
+		virtual void initialize_internal();
 
 		TechniquePtr addTechnique(const String& renderSystem, const String& renderer);
 		

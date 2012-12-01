@@ -258,7 +258,7 @@ namespace CamelotEngine {
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		GpuProgram* bindingPrg = prg->_getBindingDelegate();
+		GpuProgram* bindingPrg = prg->getBindingDelegate_internal();
 		GLGpuProgram* glprg = static_cast<GLGpuProgram*>(bindingPrg);
 
 		// Unbind previous gpu program first.

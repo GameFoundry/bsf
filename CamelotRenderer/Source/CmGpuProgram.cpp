@@ -60,13 +60,20 @@ namespace CamelotEngine
         mSource = source;
 		mCompileError = false;
     }
+	//-----------------------------------------------------------------------------
+	void GpuProgram::initialize()
+	{
+		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&GpuProgram::initialize_internal, this));
+	}
     //-----------------------------------------------------------------------------
-    void GpuProgram::initImpl(void)
+    void GpuProgram::initialize_internal(void)
     {
         // Call polymorphic load
 		try 
 		{
 			loadFromSource();
+
+			Resource::initialize_internal();
 		}
 		catch (const Exception&)
 		{
@@ -77,7 +84,6 @@ namespace CamelotEngine
 
 			mCompileError = true;
 		}
-
     }
     //-----------------------------------------------------------------------------
     bool GpuProgram::isSupported(void) const

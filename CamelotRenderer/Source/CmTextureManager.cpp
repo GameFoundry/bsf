@@ -50,6 +50,13 @@ namespace CamelotEngine {
 
 		return ret;
     }
+	//-----------------------------------------------------------------------
+	TexturePtr TextureManager::createEmpty()
+	{
+		TexturePtr ret = TexturePtr(createImpl());
+
+		return ret;
+	}
     //-----------------------------------------------------------------------
 	bool TextureManager::isFormatSupported(TextureType ttype, PixelFormat format, int usage)
 	{

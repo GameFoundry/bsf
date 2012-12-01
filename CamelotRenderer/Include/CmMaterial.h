@@ -21,7 +21,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Overridden from Resource.
 		 */
-		virtual void initImpl() { }
+		virtual void initialize_internal() { }
 
 		/**
 		 * @brief	Sets a shader that will be used by the material. 

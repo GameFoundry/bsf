@@ -86,7 +86,6 @@ int _tmain(int argc, _TCHAR* argv[])
 							}";
 
 	fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "cg", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
-	fragProg->init();
 
 	String vertShaderCode = "float4x4 matViewProjection;	\
 							void vs_main(										\
@@ -100,7 +99,6 @@ int _tmain(int argc, _TCHAR* argv[])
 							}";
 
 	vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
-	vertProg->init();
 
 	HighLevelGpuProgramHandle vertProgRef(vertProg);
 

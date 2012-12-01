@@ -5,21 +5,16 @@
 namespace CamelotEngine
 {
 	Resource::Resource()
-		:mSize(0), mInitialized(false)
+		:mSize(0), mIsInitialized(false)
 	{
 		// We always generate a random UUID, and then overwrite it with the actual one 
 		// during loading if one was previously generated and saved.
 		mUUID = UUIDGenerator::generateRandom();
 	}
 
-	void Resource::init()
+	void Resource::initialize_internal()
 	{
-		if(!mInitialized)
-		{
-			initImpl();
-
-			mInitialized = true;
-		}
+		mIsInitialized = true;
 	}
 		
 	RTTITypeBase* Resource::getRTTIStatic()

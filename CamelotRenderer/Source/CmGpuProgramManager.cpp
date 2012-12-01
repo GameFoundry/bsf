@@ -50,7 +50,7 @@ namespace CamelotEngine {
 		{
 			prg = createProgram( code, gptype, syntaxCode);
 		}
-        prg->init();
+        prg->initialize();
         return prg;
     }
     //---------------------------------------------------------------------------

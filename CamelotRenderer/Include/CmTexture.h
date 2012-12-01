@@ -246,12 +246,17 @@ namespace CamelotEngine {
 		protected:
 
 		/**
-		 * @brief	Initializes the texture. This must be called right after the texture is constructed. Normally called by TextureManager
-		 * 			upon texture creation.
+		 * @brief	Initializes the texture. This must be called right after the texture is constructed. Called by TextureManager
+		 * 			upon texture creation, so usually you don't want to call this manually.
+		 * 			
+		 * @note	Initialization is not done immediately, and is instead just scheduled on the render thread.
 		 */
 		void initialize(TextureType textureType, size_t width, size_t height, size_t depth, size_t numMipmaps, 
 			PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint);
 		
+		/**
+		 * @brief	Performs GpuProgram initialization. Only callable from the render thread.
+		 */
 		virtual void initialize_internal() = 0;
 
 		/// @copydoc Resource::calculateSize

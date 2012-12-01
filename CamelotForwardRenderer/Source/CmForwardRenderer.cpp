@@ -63,12 +63,12 @@ namespace CamelotEngine
 		{
 			MaterialHandle material = (*iter)->getMaterial();
 
-			if(material == nullptr || !material.isResolved())
+			if(material == nullptr || !material.isLoaded())
 				continue;
 
 			MeshHandle mesh = (*iter)->getMesh();
 
-			if(mesh == nullptr || !mesh.isResolved())
+			if(mesh == nullptr || !mesh.isLoaded())
 				continue;
 
 			// TODO - Renderer should ensure shader is compatible with it, and it contains all the needed parameters

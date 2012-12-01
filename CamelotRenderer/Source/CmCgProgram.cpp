@@ -169,7 +169,7 @@ namespace CamelotEngine {
 					HighLevelGpuProgramManager::instance().create(
 					hlslSourceFromCg, "main", "hlsl", mType, mProfile);
 
-				vp->init();
+				vp->initialize();
 
 				mAssemblerProgram = vp;
 			}

@@ -21,6 +21,11 @@ namespace CamelotEngine
 		mData = std::shared_ptr<ResourceHandleData>(new ResourceHandleData());
 	}
 
+	bool ResourceHandleBase::isLoaded() const 
+	{ 
+		return (mData->mIsCreated && mData->mPtr != nullptr && mData->mPtr->isInitialized()); 
+	}
+
 	void ResourceHandleBase::resolve(std::shared_ptr<Resource> ptr) 
 	{ 
 		init(ptr);
@@ -43,7 +48,7 @@ namespace CamelotEngine
 		if(mData->mPtr)
 		{
 			mData->mUUID = mData->mPtr->getUUID();
-			mData->mIsResolved = true; 
+			mData->mIsCreated = true; 
 		}
 	}
 

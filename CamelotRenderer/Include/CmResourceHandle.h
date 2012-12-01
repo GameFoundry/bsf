@@ -10,12 +10,12 @@ namespace CamelotEngine
 	struct CM_EXPORT ResourceHandleData : public IReflectable
 	{
 		ResourceHandleData()
-			:mIsResolved(false)
+			:mIsCreated(false)
 		{ }
 
 		std::shared_ptr<Resource> mPtr;
 		String mUUID;
-		bool mIsResolved;
+		bool mIsCreated;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -32,7 +32,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Checks if the resource is loaded
 		 */
-		bool isResolved() const { return mData->mIsResolved; }
+		bool isLoaded() const;
 
 	protected:
 		ResourceHandleBase();
@@ -50,7 +50,7 @@ namespace CamelotEngine
 	private:
 		friend class Resources;
 		/**
-		 * @brief	Sets the resolved flag to true. Should only be called
+		 * @brief	Sets the created flag to true. Should only be called
 		 * 			by Resources class after loading of the resource is fully done.
 		 */
 		void resolve(std::shared_ptr<Resource> ptr);
@@ -105,7 +105,7 @@ namespace CamelotEngine
 		// TODO Low priority - User can currently try to access these even if resource ptr is not resolved
 		T* get() const 
 		{ 
-			if(!isResolved()) 
+			if(!isLoaded()) 
 				return nullptr; 
 			
 			return static_cast<T*>(mData->mPtr.get()); 
@@ -113,7 +113,7 @@ namespace CamelotEngine
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
-		std::shared_ptr<T> getInternalPtr() { if(!isResolved()) return nullptr; return std::static_pointer_cast<T>(mData->mPtr); }
+		std::shared_ptr<T> getInternalPtr() { if(!isLoaded()) return nullptr; return std::static_pointer_cast<T>(mData->mPtr); }
 
 		template<class _Ty>
 		struct CM_Bool_struct
@@ -125,7 +125,7 @@ namespace CamelotEngine
 		// (Why not just directly convert to bool? Because then we can assign pointer to bool and that's weird)
 		operator int CM_Bool_struct<T>::*() const
 		{
-			return ((isResolved() && (mData->mPtr.get() != 0)) ? &CM_Bool_struct<T>::_Member : 0);
+			return ((isLoaded() && (mData->mPtr.get() != 0)) ? &CM_Bool_struct<T>::_Member : 0);
 		}
 	};
 

@@ -732,7 +732,7 @@ namespace CamelotEngine {
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		switch(prg->_getBindingDelegate()->getType())
+		switch(prg->getBindingDelegate_internal()->getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			// mark clip planes dirty if changed (programmable can change space)
@@ -989,6 +989,9 @@ namespace CamelotEngine {
 
 	void RenderSystem::submitToGpu(RenderSystemContextPtr context, bool blockUntilComplete)
 	{
+		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
+			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
+
 		{
 			CM_LOCK_MUTEX(mRSContextMutex);
 

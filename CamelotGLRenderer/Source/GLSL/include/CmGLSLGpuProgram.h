@@ -90,7 +90,7 @@ namespace CamelotEngine {
 		/// @copydoc Resource::unloadImpl
 		void unloadImpl(void);
 		/// @copydoc Resource::loadImpl
-		void initImpl(void);
+		void initialize_internal(void);
 
 
     };

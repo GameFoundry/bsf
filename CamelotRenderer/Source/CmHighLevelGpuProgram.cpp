@@ -27,6 +27,8 @@ THE SOFTWARE.
 */
 #include "CmHighLevelGpuProgram.h"
 #include "CmHighLevelGpuProgramManager.h"
+#include "CmRenderSystemManager.h"
+#include "CmRenderSystem.h"
 #include "CmException.h"
 
 namespace CamelotEngine
@@ -37,8 +39,13 @@ namespace CamelotEngine
         mHighLevelLoaded(false), mAssemblerProgram(0), mConstantDefsBuilt(false)
     {
     }
+	//---------------------------------------------------------------------------
+	void HighLevelGpuProgram::initialize()
+	{
+		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&HighLevelGpuProgram::initialize_internal, this));
+	}
     //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::initImpl()
+    void HighLevelGpuProgram::initialize_internal()
     {
 		if (isSupported())
 		{
@@ -51,8 +58,10 @@ namespace CamelotEngine
 			// load constructed assembler program (if it exists)
 			if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
 			{
-				mAssemblerProgram->init();
+				mAssemblerProgram->initialize_internal();
 			}
+
+			Resource::initialize_internal();
 		}
     }
     //---------------------------------------------------------------------------

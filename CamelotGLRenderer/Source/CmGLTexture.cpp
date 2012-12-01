@@ -78,8 +78,9 @@ namespace CamelotEngine {
 		if( mUsage & TU_RENDERTARGET )
 		{
 			createRenderTexture();
-			return;
 		}
+
+		Resource::initialize_internal();
 	}
 
     GLenum GLTexture::getGLTextureTarget_internal(void) const

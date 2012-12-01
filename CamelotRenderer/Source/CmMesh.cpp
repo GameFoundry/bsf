@@ -160,7 +160,7 @@ namespace CamelotEngine
 		return ro;
 	}
 
-	void Mesh::initImpl()
+	void Mesh::initialize_internal()
 	{
 		if(mMeshData == nullptr)
 		{

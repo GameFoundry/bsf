@@ -33,6 +33,12 @@ namespace CamelotEngine
 			CM_ADD_PLAINFIELD(mSyntaxCode, 7, GpuProgramRTTI)
 		}
 
+		virtual void onDeserializationEnded(IReflectable* obj)
+		{
+			GpuProgram* gpuProgram = static_cast<GpuProgram*>(obj);
+			gpuProgram->initialize();
+		}
+
 		virtual const String& getRTTIName()
 		{
 			static String name = "GpuProgram";

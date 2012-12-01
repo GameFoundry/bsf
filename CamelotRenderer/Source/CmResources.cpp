@@ -44,7 +44,6 @@ namespace CamelotEngine
 		{
 			ResourceLoadResponsePtr resResponse = boost::any_cast<ResourceLoadResponsePtr>(res->getData());
 			
-			resResponse->rawResource->init();
 			resRequest->resource.resolve(resResponse->rawResource);
 
 			if(!gResources().metaExists_UUID(resResponse->rawResource->getUUID()))
@@ -250,6 +249,9 @@ namespace CamelotEngine
 
 	void Resources::save(BaseResourceHandle resource)
 	{
+		// TODO - Check if the resource is fully loaded or not. If its not loaded either wait for it to be loaded,
+		// or break out
+
 		assert(resource.get() != nullptr);
 
 		if(!metaExists_UUID(resource->getUUID()))

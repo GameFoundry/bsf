@@ -42,9 +42,9 @@ namespace CamelotEngine {
         D3D9GpuProgram();
         ~D3D9GpuProgram();
 
-		virtual void initImpl(void);
+		virtual void initialize_internal(void);
 		/** Loads this program to specified device */
-		virtual void initImpl(IDirect3DDevice9* d3d9Device);
+		virtual void initialize_internal(IDirect3DDevice9* d3d9Device);
 		/** Overridden from GpuProgram */
 		virtual void unload(void);
 

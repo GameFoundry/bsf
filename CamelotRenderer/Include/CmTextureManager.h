@@ -162,6 +162,13 @@ namespace CamelotEngine {
 				num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 		}
 
+		/**
+		 * @brief	Creates a completely empty and uninitialized Texture.
+		 * 			Should only be used for VERY specific purposes, like deserialization,
+		 * 			as it requires additional manual initialization that is not required normally.
+		 */
+		TexturePtr createEmpty();
+
 		/** Returns whether this render system can natively support the precise texture 
 			format requested with the given usage options.
 		@remarks

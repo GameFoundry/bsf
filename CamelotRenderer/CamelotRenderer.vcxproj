@@ -90,6 +90,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Text Include="..\TODODoc.txt" />
     <Text Include="HighLevelTODO.txt" />
     <Text Include="TODO.txt" />
   </ItemGroup>

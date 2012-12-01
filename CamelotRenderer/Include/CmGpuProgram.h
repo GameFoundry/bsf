@@ -118,7 +118,18 @@ namespace CamelotEngine {
 
 		virtual ~GpuProgram() {}
 
-		virtual void initImpl();
+		/**
+		 * @brief	Initializes the gpu program. This must be called right after the program is constructed. 
+		 * 			Called by GpuProgramManager upon creation, so usually you don't want to call this manually. 
+		 * 			
+		 * @note	Initialization is not done immediately, and is instead just scheduled on the render thread.
+		 */
+		void initialize();
+
+		/**
+		 * @brief	Performs GpuProgram initialization. Only callable from the render thread.
+		 */
+		virtual void initialize_internal();
 		virtual void unload() {}
 
 		/** Sets the source assembly for this program from an in-memory string.
@@ -150,7 +161,7 @@ namespace CamelotEngine {
         @remarks
             This method is simply to allow some subclasses of GpuProgram to delegate
             the program which is bound to the pipeline to a delegate, if required. */
-        virtual GpuProgram* _getBindingDelegate(void) { return this; }
+        virtual GpuProgram* getBindingDelegate_internal(void) { return this; }
 
         /** Returns whether this program can be supported on the current renderer and hardware. */
         virtual bool isSupported(void) const;

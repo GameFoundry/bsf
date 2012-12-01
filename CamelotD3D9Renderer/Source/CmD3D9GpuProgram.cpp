@@ -73,7 +73,7 @@ namespace CamelotEngine {
 	}
 
 	//-----------------------------------------------------------------------------
-    void D3D9GpuProgram::initImpl(void)
+    void D3D9GpuProgram::initialize_internal(void)
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -81,12 +81,14 @@ namespace CamelotEngine {
 		{
 			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
 
-			initImpl(d3d9Device);
+			initialize_internal(d3d9Device);
 		}		       
+
+		Resource::initialize_internal();
     }
 
 	//-----------------------------------------------------------------------------
-	void D3D9GpuProgram::initImpl(IDirect3DDevice9* d3d9Device)
+	void D3D9GpuProgram::initialize_internal(IDirect3DDevice9* d3d9Device)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -263,7 +265,7 @@ namespace CamelotEngine {
 		// Shader was not found -> load it.
 		if (it == mMapDeviceToVertexShader.end())		
 		{
-			initImpl(d3d9Device);		
+			initialize_internal(d3d9Device);		
 			it = mMapDeviceToVertexShader.find(d3d9Device);
 		}
 	
@@ -366,7 +368,7 @@ namespace CamelotEngine {
 		// Shader was not found -> load it.
 		if (it == mMapDeviceToPixelShader.end())		
 		{
-			initImpl(d3d9Device);			
+			initialize_internal(d3d9Device);			
 			it = mMapDeviceToPixelShader.find(d3d9Device);
 		}
 

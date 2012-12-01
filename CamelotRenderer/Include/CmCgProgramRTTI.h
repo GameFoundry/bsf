@@ -27,7 +27,7 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return HighLevelGpuProgramManager::instance().create("cg");
+			return HighLevelGpuProgramManager::instance().createEmpty("cg");
 		}
 	};
 }

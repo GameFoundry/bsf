@@ -19,12 +19,11 @@ Command buffer TODO:
  - My current approach doesn't allow multiple threads to use the RenderSystem (contexts should be handled differently)
    - Instead of requiring the user to constantly call setActiveContext, make the call peristent per thread. 
    - Store sequential thread idx in local thread storage, and then we can easily look up a context for a thread and
-     automatically use it, if it's set.
- - Make sure the user knows resources are shared between contexts. All resource updates are executed before rendering a frame, so whichever context updated the resource last,
-   was the version that will be used.
+     automatically use it, if it's set. (Use boost::thread_specific_ptr for local thread storage)
+ - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after
+    that call.
 
  Texture updates:
-   - Make TextureData private to FreeImgImporter (as its not used anywhere else)
    - Make this per texture and apply when texture is applied:
 	 filterMode
 	 anisoLevel
@@ -32,8 +31,31 @@ Command buffer TODO:
 	 mipMapBias
    - Make sure resource deletion is handled on the proper thread
 
+Mesh
+ - Add initialize and initialize_internal
+ - Make sure MeshRTTI calls initialize properly
+ - Make sure FBX importer calls initialize properly
+
+GpuProgram/HighLevelGpuProgram
+ - Do a pass of refactoring
+ - Fix it up for multithreading
+  - In general everything needs to be checked
+  - Specifically HighLevelGpuParam::createParameters
+  - Add thread checks
+
+Make initialize & initialize_internal protected?
+ - Only their factories and RTTI classes need to access it (and they can be friends)
+ - Would need to modify HighLevelGpuProgram::mAssemblerProgram
+
+When saving a resource, make sure resource is properly loaded before saving
+ - Add blockUntilLoaded method to Resource
+  - Probably need a flag to make sure loading even started?
+    (Or not if I make Resource constructors and initialize methods protected)
+  - Make sure this is never called on the render thread
+  - Add doc to Resources::save that says it will block until render thread updates the resource
+  - Remove Response handlers from Resources
+
  Immediate:
-  - Resource updates shouldn't happen once per frame. Resources should be submitted to render thread immediately.
   - Port resource creation to use RenderContext (texture/mesh/shader/etc initialization and updates)
   - Make sure to add thread checks (surrounded by #if DEBUG) to Vertex/Index/Pixel buffers, textures, meshes, etc.
 
@@ -51,19 +73,11 @@ HIGH PRIORITY TODO:
 
 Mid priority TODO:
  - Add a field that tracks % of resource deserialization in BinarySerializer
-
- - Separate render thread
-   - CommandBuffer (technically it should be just a RenderQueue I think)
-   - Main thread updates components, finds visible meshes and creates render device. At end of execution it fills up render queue
-   - Render thread renders everything in the render queue, and also creates resources (although RenderQueue name doesn't make sense if its used for resources too)
-   - Before I start with this I should probably strip down render system to a bare minimum
-
  - GpuProgram default parameters might not be needed. The parameters change with each use of the gpu program anyway
  - Mesh loading:
   - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
   - Imported FBX meshes are too big
   - Search for all remaining "TODO PORT" comments and fix them
-  - How do I serialize derived classes, without rewriting all the base class serialization?
   - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
  - RTTI:
      When defining RTTIType like so: 
@@ -96,11 +110,10 @@ Optional TODO:
 
  -----------------------------------------------------------------------------------------------
 
-After everything is polished:
- - Make sure the renderer can run on a separate thread
-  - Command buffers that allow dx9, dx11 and opengl all use a separate render thread
- - Load texture mips separately so we can unload HQ textures from far away objects (like UE3)
+After everything is polished
  - Get 64bit version working
+ - DX11 render system
+ - Load texture mips separately so we can unload HQ textures from far away objects (like UE3)
  - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)
     - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 
 	  further modifications.
