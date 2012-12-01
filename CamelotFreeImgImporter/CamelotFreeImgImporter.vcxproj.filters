@@ -21,12 +21,18 @@
     <ClInclude Include="Include\CmFreeImgImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmTextureData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmFreeImgPlugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmFreeImgImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTextureData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

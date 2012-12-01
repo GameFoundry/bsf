@@ -17,18 +17,20 @@ High-level TODO:
 
 Command buffer TODO:
  - My current approach doesn't allow multiple threads to use the RenderSystem (contexts should be handled differently)
+   - Instead of requiring the user to constantly call setActiveContext, make the call peristent per thread. 
+   - Store sequential thread idx in local thread storage, and then we can easily look up a context for a thread and
+     automatically use it, if it's set.
  - Make sure the user knows resources are shared between contexts. All resource updates are executed before rendering a frame, so whichever context updated the resource last,
    was the version that will be used.
 
  Texture updates:
-   - Seems that deleting resources (textures for example) gets freeInternalResources called from the destruction. Which will be trouble if the resource is destroyed on an invalid thread.
    - Make TextureData private to FreeImgImporter (as its not used anywhere else)
    - Make this per texture and apply when texture is applied:
 	 filterMode
 	 anisoLevel
 	 wrapMode
 	 mipMapBias
-   - After texture initialize() schedule createInternalResources command
+   - Make sure resource deletion is handled on the proper thread
 
  Immediate:
   - Resource updates shouldn't happen once per frame. Resources should be submitted to render thread immediately.

@@ -28,10 +28,18 @@ THE SOFTWARE.
 #include "CmHardwarePixelBuffer.h"
 #include "CmTexture.h"
 #include "CmTextureRTTI.h"
-#include "CmTextureData.h"
 #include "CmDataStream.h"
 #include "CmException.h"
 #include "CmDebug.h"
+#include "CmRenderSystem.h"
+#include "CmRenderSystemManager.h"
+#include "CmAsyncOp.h"
+
+#if CM_DEBUG_MODE
+#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
+#else
+#define THROW_IF_NOT_RENDER_THREAD 
+#endif
 
 namespace CamelotEngine {
 	//--------------------------------------------------------------------------
@@ -64,11 +72,10 @@ namespace CamelotEngine {
 		mHwGamma = hwGamma;
 		mFSAA = fsaa;
 		mFSAAHint = fsaaHint;
-	}
-	//-------------------------------------------------------------------------
-	void Texture::initialize_internal()
-	{
-		createInternalResources();
+
+		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
+
+		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&Texture::initialize_internal, this));
 	}
     //--------------------------------------------------------------------------
     bool Texture::hasAlpha(void) const
@@ -84,6 +91,11 @@ namespace CamelotEngine {
 	size_t Texture::getNumFaces(void) const
 	{
 		return getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;
+	}
+	//-------------------------------------------------------------------------
+	void Texture::getCustomAttribute_internal(const String& name, void* pData)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
 	}
 	//-----------------------------------------------------------------------------
 	void Texture::createInternalResources(void)
@@ -103,65 +115,21 @@ namespace CamelotEngine {
 			mInternalResourcesCreated = false;
 		}
 	}
-	//-----------------------------------------------------------------------------
-	TextureDataPtr Texture::getTextureData(UINT32 face)
-	{
-		if(face < 0 || face >= getNumFaces())
-		{
-			CM_EXCEPT(InvalidParametersException, "Face index out of range: " + toString(face));
-		}
-
-		UINT32 numMips = getNumMipmaps();
-
-		UINT32 totalSize = 0;
-		UINT32 width = getWidth();
-		UINT32 height = getHeight();
-		UINT32 depth = getDepth();
-
-		for(UINT32 j = 0; j <= numMips; j++)
-		{
-			UINT32 currentMipSize = PixelUtil::getMemorySize(
-					width, height, depth, mFormat);
-
-			totalSize += currentMipSize;
-
-			if(width != 1) width /= 2;
-			if(height != 1) height /= 2;
-			if(depth != 1) depth /= 2;
-		}
-
-		UINT8* buffer = new UINT8[totalSize]; // TextureData frees this
-		TextureDataPtr texData(new TextureData(getWidth(), getHeight(), totalSize, mFormat, buffer, getDepth(), 0, getNumMipmaps()));
-
-		for(UINT32 j = 0; j <= numMips; j++)
-		{
-			PixelData pixels = texData->getPixels(j);
-			getBuffer(face, j)->blitToMemory(pixels);
-		}
-
-		return texData;
-	}
-	//-----------------------------------------------------------------------------
-	void Texture::setTextureData(UINT32 face, TextureDataPtr textureData)
-	{
-		if(face < 0 || face >= getNumFaces())
-		{
-			CM_EXCEPT(InvalidParametersException, "Face index out of range: " + toString(face));
-		}
-
-		if(mTextureData.size() <= face)
-			mTextureData.resize(face + 1);
-
-		mTextureData[face] = textureData;
-	}
 
 	void Texture::setRawPixels(const PixelData& data, UINT32 face, UINT32 mip)
 	{
-		// TODO - Queue command
+		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip), true);
+	}
+
+	void Texture::setRawPixels_async(const PixelData& data, UINT32 face, UINT32 mip)
+	{
+		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip));
 	}
 
 	void Texture::setRawPixels_internal(const PixelData& data, UINT32 face, UINT32 mip)
 	{
+		THROW_IF_NOT_RENDER_THREAD
+
 		if(mip < 0 || mip > mNumMipmaps)
 			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mip) + ". Min is 0, max is " + toString(mNumMipmaps));
 
@@ -179,17 +147,25 @@ namespace CamelotEngine {
 				" Depth: " + toString(mDepth) + "/" + toString(data.getDepth()));
 		}
 
-		getBuffer(face, mip)->blitFromMemory(data);
+		getBuffer_internal(face, mip)->blitFromMemory(data);
 	}
 
 	PixelDataPtr Texture::getRawPixels(UINT32 face, UINT32 mip)
 	{
-		// TODO - Queue command
-		return nullptr;
+		AsyncOp op = RenderSystemManager::getActive()->queueResourceReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1), true);
+
+		return op.getReturnValue<PixelDataPtr>();
 	}
 
-	PixelDataPtr Texture::getRawPixels_internal(UINT32 face, UINT32 mip)
+	AsyncOp Texture::getRawPixels_async(UINT32 face, UINT32 mip)
 	{
+		return RenderSystemManager::getActive()->queueResourceReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1));
+	}
+
+	void Texture::getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if(mip < 0 || mip > mNumMipmaps)
 			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mip) + ". Min is 0, max is " + toString(mNumMipmaps));
 
@@ -215,88 +191,22 @@ namespace CamelotEngine {
 		UINT8* buffer = new UINT8[totalSize]; 
 		PixelDataPtr src(new PixelData(width, height, depth, getFormat(), buffer, true));
 
-		getBuffer(face, mip)->blitToMemory(*src);
+		getBuffer_internal(face, mip)->blitToMemory(*src);
 
-		return src;
-	}
-
-	//-----------------------------------------------------------------------------
-	void Texture::initializeFromTextureData()
-	{
-		if(mTextureData.size() < 1)
-			CM_EXCEPT(InvalidParametersException, "Cannot load empty vector of images");
-
-		if(getTextureType() == TEX_TYPE_CUBE_MAP)
-		{
-			if(mTextureData.size() != 6)
-				CM_EXCEPT(InvalidParametersException, "Cube map textures require six faces.");
-		}
-		else
-		{
-			if(mTextureData.size() > 1)
-			{
-				gDebug().log("Non-cube textures can only have one face. Loading only first face from the provided array.", "D3D9RenderSystem");
-			}
-		}
-
-		// Set desired texture size and properties from images[0]
-		mWidth = mTextureData[0]->getWidth();
-		mHeight = mTextureData[0]->getHeight();
-		mDepth = mTextureData[0]->getDepth();
-
-		// Get source image format and adjust if required
-		PixelFormat srcFormat = mTextureData[0]->getFormat();
-
-		// The custom mipmaps in the image have priority over everything
-		size_t imageMips = mTextureData[0]->getNumMipmaps();
-
-		if(imageMips > 0)
-		{
-			mNumMipmaps = mTextureData[0]->getNumMipmaps();
-		}
-
-		// Create the texture
-		createInternalResources();
-		// Check if we're loading one image with multiple faces
-		// or a vector of images representing the faces
-		size_t faces;
-		if(mTextureData.size() > 1)
-			faces = mTextureData.size();
-		else
-			faces = 1;
-
-		// Check whether number of faces in images exceeds number of faces
-		// in this texture. If so, clamp it.
-		if(faces > getNumFaces())
-			faces = getNumFaces();
-
-		// Main loading loop
-		// imageMips == 0 if the image has no custom mipmaps, otherwise contains the number of custom mips
-		for(size_t mip = 0; mip<=imageMips; ++mip)
-		{
-			for(size_t i = 0; i < faces; ++i)
-			{
-				PixelData src = mTextureData[i]->getPixels(mip);
-
-				// Sets to treated format in case is difference
-				src.format = srcFormat;
-
-				// Destination: entire texture. blitFromMemory does the scaling to
-				// a power of two for us when needed
-				getBuffer(i, mip)->blitFromMemory(src);
-			}
-		}
-		// Update size (the final size, not including temp space)
-		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
+		op.completeOperation(src);
 	}
 	//-----------------------------------------------------------------------------
 	void Texture::unloadImpl(void)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		freeInternalResources();
 	}
     //-----------------------------------------------------------------------------   
-    void Texture::copyToTexture( TexturePtr& target )
+    void Texture::copy_internal( TexturePtr& target )
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
         if(target->getNumFaces() != getNumFaces())
         {
             CM_EXCEPT(InvalidParametersException, 
@@ -308,10 +218,16 @@ namespace CamelotEngine {
         {
             for(unsigned int mip=0; mip<=numMips; mip++)
             {
-                target->getBuffer(face, mip)->blit(getBuffer(face, mip));
+                target->getBuffer_internal(face, mip)->blit(getBuffer_internal(face, mip));
             }
         }
     }
+	//----------------------------------------------------------------------------- 
+	void Texture::throwIfNotRenderThread() const
+	{
+		if(CM_THREAD_CURRENT_ID != RenderSystemManager::getActive()->getRenderThreadId())
+			CM_EXCEPT(InternalErrorException, "Calling an internal texture method from a non-render thread!");
+	}
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
@@ -344,3 +260,5 @@ namespace CamelotEngine {
 			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 	}
 }
+
+#undef THROW_IF_NOT_RENDER_THREAD

@@ -155,8 +155,6 @@ namespace CamelotEngine {
 	RenderWindow* RenderSystem::createRenderWindow(const String &name, unsigned int width, unsigned int height, 
 		bool fullScreen, const NameValuePairList *miscParams)
 	{
-		THROW_IF_INVALID_CONTEXT;
-
 		AsyncOp op;
 		{
 			CM_LOCK_MUTEX(mResourceContextMutex)
@@ -933,7 +931,6 @@ namespace CamelotEngine {
 			// Play commands
 			for(auto iter = renderSystemContextsCopy.begin(); iter != renderSystemContextsCopy.end(); ++iter)
 			{
-				setActiveContext(*iter);
 				(*iter)->playbackCommands();
 			}
 
@@ -1011,6 +1008,30 @@ namespace CamelotEngine {
 		CM_LOCK_MUTEX(mActiveContextMutex);
 
 		mActiveContext = context;
+	}
+
+	AsyncOp RenderSystem::queueResourceReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete, UINT32 _callbackId)
+	{
+		AsyncOp op;
+		{
+			CM_LOCK_MUTEX(mResourceContextMutex)
+
+			op = mResourceContext->queueReturnCommand(commandCallback);
+		}
+
+		submitToGpu(mResourceContext, blockUntilComplete);
+		return op;
+	}
+
+	void RenderSystem::queueResourceCommand(boost::function<void()> commandCallback, bool blockUntilComplete, UINT32 _callbackId)
+	{
+		{
+			CM_LOCK_MUTEX(mResourceContextMutex)
+
+			mResourceContext->queueCommand(commandCallback);
+		}
+
+		submitToGpu(mResourceContext, blockUntilComplete);
 	}
 
 	RenderSystemContextPtr RenderSystem::getActiveContext() const

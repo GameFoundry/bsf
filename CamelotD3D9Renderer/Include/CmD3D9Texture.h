@@ -78,12 +78,8 @@ namespace CamelotEngine {
 		D3DMULTISAMPLE_TYPE mFSAAType;
 		DWORD mFSAAQuality;
 
-		/// internal method, load a cube texture
-		void _loadCubeTex(IDirect3DDevice9* d3d9Device);
-		/// internal method, load a normal texture
-		void _loadNormTex(IDirect3DDevice9* d3d9Device);
-		/// internal method, load a volume texture
-		void _loadVolumeTex(IDirect3DDevice9* d3d9Device);
+		/// overriden from Resource
+		void initialize_internal();	
 
 		/// internal method, create a blank normal 1D/2D texture		
 		void _createNormTex(IDirect3DDevice9* d3d9Device);
@@ -127,9 +123,6 @@ namespace CamelotEngine {
 		/// mipmap level. This method must be called after the D3D texture object was created
 		void _createSurfaceList(IDirect3DDevice9* d3d9Device, TextureResources* textureResources);
 	 
-		/// Loads this texture into the specified device.
-		void initImpl(IDirect3DDevice9* d3d9Device);
-
 		/// gets the texture resources attached to the given device.
 		TextureResources* getTextureResources(IDirect3DDevice9* d3d9Device);
 
@@ -152,20 +145,17 @@ namespace CamelotEngine {
 		~D3D9Texture();
 
 		/// overridden from Texture
-		void copyToTexture( TexturePtr& target );
-
-		/// overriden from Resource
-		void initImpl();	
+		void copy_internal( TexturePtr& target );
 
 		/// @copydoc Texture::getBuffer
-		HardwarePixelBufferPtr getBuffer(size_t face, size_t mipmap);
+		HardwarePixelBufferPtr getBuffer_internal(size_t face, size_t mipmap);
 		
 		/// retrieves a pointer to the actual texture
-		IDirect3DBaseTexture9 *getTexture();		
+		IDirect3DBaseTexture9 *getTexture_internal();		
 		/// retrieves a pointer to the normal 1D/2D texture
-		IDirect3DTexture9 *getNormTexture();
+		IDirect3DTexture9 *getNormTexture_internal();
 		/// retrieves a pointer to the cube texture
-		IDirect3DCubeTexture9 *getCubeTexture();
+		IDirect3DCubeTexture9 *getCubeTexture_internal();
 
 		/** Indicates whether the hardware gamma is actually enabled and supported. 
 		@remarks

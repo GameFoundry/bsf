@@ -36,7 +36,12 @@ THE SOFTWARE.
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
 #include "CmRenderSystemManager.h"
-#include "CmTextureData.h"
+
+#if CM_DEBUG_MODE
+#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
+#else
+#define THROW_IF_NOT_RENDER_THREAD 
+#endif
 
 namespace CamelotEngine 
 {
@@ -55,6 +60,8 @@ namespace CamelotEngine
 	/****************************************************************************************/
 	D3D9Texture::~D3D9Texture()
 	{	
+		THROW_IF_NOT_RENDER_THREAD;
+
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 		
         // have to call this here reather than in Resource destructor
@@ -74,8 +81,10 @@ namespace CamelotEngine
 		mSurfaceList.clear();		
 	}
 	/****************************************************************************************/
-	void D3D9Texture::copyToTexture(TexturePtr& target)
+	void D3D9Texture::copy_internal(TexturePtr& target)
 	{
+		THROW_IF_NOT_RENDER_THREAD
+
         // check if this & target are the same format and type
 		// blitting from or to cube textures is not supported yet
 		if (target->getUsage() != getUsage() ||
@@ -181,8 +190,12 @@ namespace CamelotEngine
 		}		
 	}
 	/****************************************************************************************/
-	void D3D9Texture::initImpl()
-	{
+	void D3D9Texture::initialize_internal()
+	{ 
+		THROW_IF_NOT_RENDER_THREAD
+
+		createInternalResources();
+
 		if (!mInternalResourcesCreated)
 		{
 			// NB: Need to initialise pool to some value other than D3DPOOL_DEFAULT,
@@ -197,37 +210,13 @@ namespace CamelotEngine
 		{
 			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
 
-			initImpl(d3d9Device);
+			if (mUsage & TU_RENDERTARGET)
+			{
+				createInternalResourcesImpl(d3d9Device);
+				return;
+			}	
 		}		
 	}
-
-	/****************************************************************************************/
-	void D3D9Texture::initImpl(IDirect3DDevice9* d3d9Device)
-	{		
-		if (mUsage & TU_RENDERTARGET)
-		{
-			createInternalResourcesImpl(d3d9Device);
-			return;
-		}
-
-		// load based on tex.type
-		switch (getTextureType())
-		{
-		case TEX_TYPE_1D:
-		case TEX_TYPE_2D:
-			_loadNormTex(d3d9Device);
-			break;
-		case TEX_TYPE_3D:
-			_loadVolumeTex(d3d9Device);
-			break;
-		case TEX_TYPE_CUBE_MAP:
-			_loadCubeTex(d3d9Device);
-			break;
-		default:
-			CM_EXCEPT(InternalErrorException, "Unknown texture type");
-		}				
-	}
-
 	/****************************************************************************************/
 	void D3D9Texture::freeInternalResources(void)
 	{
@@ -311,61 +300,6 @@ namespace CamelotEngine
 		SAFE_RELEASE(textureResources->pVolumeTex);
 		SAFE_RELEASE(textureResources->pFSAASurface);
 	}
-
-	/****************************************************************************************/
-	void D3D9Texture::_loadCubeTex(IDirect3DDevice9* d3d9Device)
-	{
-		assert(getTextureType() == TEX_TYPE_CUBE_MAP);
-		assert(mTextureData.size() == 6);
-
-        initializeFromTextureData();
-	}
-	/****************************************************************************************/
-	void D3D9Texture::_loadVolumeTex(IDirect3DDevice9* d3d9Device)
-	{
-		assert(getTextureType() == TEX_TYPE_3D);
-        assert(mTextureData.size()==1);
-
-		TextureDataPtr texData = mTextureData[0];
-
-		if (texData->getHeight() == 0)
-		{
-			CM_EXCEPT(InternalErrorException, "Image height == 0");
-		}
-
-		if (texData->getWidth() == 0)
-		{
-			CM_EXCEPT(InternalErrorException, "Image width == 0");
-		}
-
-		if (texData->getDepth() == 0)
-		{
-			CM_EXCEPT(InternalErrorException, "Image depth == 0");
-		}
-			
-		initializeFromTextureData();
-    }
-	/****************************************************************************************/
-	void D3D9Texture::_loadNormTex(IDirect3DDevice9* d3d9Device)
-	{
-		assert(getTextureType() == TEX_TYPE_1D || getTextureType() == TEX_TYPE_2D);
-		assert(mTextureData.size()==1);
-
-		TextureDataPtr texData = mTextureData[0];
-
-		if (texData->getHeight() == 0)
-		{
-			CM_EXCEPT(InternalErrorException, "Image height == 0");
-		}
-
-		if (texData->getWidth() == 0)
-		{
-			CM_EXCEPT(InternalErrorException, "Image width == 0");
-		}
-
-		initializeFromTextureData();
-	}
-
 	/****************************************************************************************/
 	size_t D3D9Texture::calculateSize(void) const
 	{
@@ -1111,8 +1045,10 @@ namespace CamelotEngine
 	}
 	#undef GETLEVEL
 	/****************************************************************************************/
-	HardwarePixelBufferPtr D3D9Texture::getBuffer(size_t face, size_t mipmap) 
+	HardwarePixelBufferPtr D3D9Texture::getBuffer_internal(size_t face, size_t mipmap) 
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if(face >= getNumFaces())
 			CM_EXCEPT(InvalidParametersException, "A three dimensional cube has six faces");
 		if(mipmap > mNumMipmaps)
@@ -1213,8 +1149,10 @@ namespace CamelotEngine
 	}
 
 	//---------------------------------------------------------------------
-	IDirect3DBaseTexture9* D3D9Texture::getTexture()
+	IDirect3DBaseTexture9* D3D9Texture::getTexture_internal()
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		TextureResources* textureResources;			
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
 			
@@ -1231,8 +1169,10 @@ namespace CamelotEngine
 	}
 
 	//---------------------------------------------------------------------
-	IDirect3DTexture9* D3D9Texture::getNormTexture()
+	IDirect3DTexture9* D3D9Texture::getNormTexture_internal()
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		TextureResources* textureResources;
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
 		
@@ -1249,8 +1189,10 @@ namespace CamelotEngine
 	}
 
 	//---------------------------------------------------------------------
-	IDirect3DCubeTexture9* D3D9Texture::getCubeTexture()
+	IDirect3DCubeTexture9* D3D9Texture::getCubeTexture_internal()
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		TextureResources* textureResources;
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
 		
@@ -1362,3 +1304,5 @@ namespace CamelotEngine
 		}			
 	}	
 }
+
+#undef THROW_IF_NOT_RENDER_THREAD

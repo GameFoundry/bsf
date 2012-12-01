@@ -1090,6 +1090,20 @@ namespace CamelotEngine
 		void setActiveContext(RenderSystemContextPtr context);
 
 		/**
+		 * @brief	Queues a new command that will be added to the resource context.
+		 * 	
+		 * @see		RenderSystemContext::queueReturnCommand
+		 */
+		AsyncOp queueResourceReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false, UINT32 _callbackId = 0);
+
+		/**
+		 * @brief	Queues a new command that will be added to the resource context.
+		 * 	
+		 * @see		RenderSystemContext::queueCommand
+		 */
+		void queueResourceCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false, UINT32 _callbackId = 0);
+
+		/**
 		 * @brief	Callback that is called from the render thread before it starts processing
 		 * 			deferred render commands.
 		 */

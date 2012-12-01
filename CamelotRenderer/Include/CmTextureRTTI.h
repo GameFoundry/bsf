@@ -3,7 +3,6 @@
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
 #include "CmTexture.h"
-#include "CmTextureData.h"
 #include "CmManagedDataBlock.h"
 #include "CmMath.h"
 
@@ -93,7 +92,7 @@ namespace CamelotEngine
 				size_t face = (size_t)Math::Floor(i / (float)(texture->getNumMipmaps() + 1));
 				size_t mipmap = i % (texture->getNumMipmaps() + 1);
 
-				texture->setRawPixels(*pixelData->at(i), face, mipmap);
+				texture->setRawPixels_async(*pixelData->at(i), face, mipmap);
 			}
 
 			delete pixelData;

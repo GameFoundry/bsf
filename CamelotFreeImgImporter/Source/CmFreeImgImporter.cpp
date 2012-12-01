@@ -138,7 +138,12 @@ namespace CamelotEngine
 		TextureHandle newTexture(Texture::create(TEX_TYPE_2D, 
 			imgData->getWidth(), imgData->getHeight(), imgData->getNumMipmaps(), imgData->getFormat()));
 
-		newTexture->setTextureData(0, imgData);
+		for(size_t mip = 0; mip <= imgData->getNumMipmaps(); ++mip)
+		{
+			PixelData src = imgData->getPixels(mip);
+
+			newTexture->setRawPixels(src, 0, mip);
+		}
 
 		fileData->close();
 

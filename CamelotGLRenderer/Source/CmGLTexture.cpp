@@ -49,9 +49,13 @@ THE SOFTWARE.
 #  include <wingdi.h>
 #endif
 
+#if CM_DEBUG_MODE
+#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
+#else
+#define THROW_IF_NOT_RENDER_THREAD 
+#endif
+
 namespace CamelotEngine {
-
-
 
     GLTexture::GLTexture(GLSupport& support) 
         : Texture(),
@@ -62,10 +66,23 @@ namespace CamelotEngine {
 
     GLTexture::~GLTexture()
     {
+		THROW_IF_NOT_RENDER_THREAD;
+
 		freeInternalResources();
     }
 
-    GLenum GLTexture::getGLTextureTarget(void) const
+	void GLTexture::initialize_internal()
+	{
+		createInternalResources();
+
+		if( mUsage & TU_RENDERTARGET )
+		{
+			createRenderTexture();
+			return;
+		}
+	}
+
+    GLenum GLTexture::getGLTextureTarget_internal(void) const
     {
         switch(mTextureType)
         {
@@ -81,6 +98,13 @@ namespace CamelotEngine {
                 return 0;
         };
     }
+
+	GLuint GLTexture::getGLID_internal() const
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		return mTextureID;
+	}
 
 	//* Creation / loading methods ********************************************
 	void GLTexture::createInternalResourcesImpl(void)
@@ -107,19 +131,19 @@ namespace CamelotEngine {
         glGenTextures( 1, &mTextureID );
 		
 		// Set texture type
-		glBindTexture( getGLTextureTarget(), mTextureID );
+		glBindTexture( getGLTextureTarget_internal(), mTextureID );
         
 		// This needs to be set otherwise the texture doesn't get rendered
 		if (GLEW_VERSION_1_2)
-			glTexParameteri( getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, mNumMipmaps );
+			glTexParameteri( getGLTextureTarget_internal(), GL_TEXTURE_MAX_LEVEL, mNumMipmaps );
         
         // Set some misc default parameters so NVidia won't complain, these can of course be changed later
-        glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(getGLTextureTarget_internal(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(getGLTextureTarget_internal(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		if (GLEW_VERSION_1_2)
 		{
-			glTexParameteri(getGLTextureTarget(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(getGLTextureTarget(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(getGLTextureTarget_internal(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(getGLTextureTarget_internal(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 		
 		// Allocate internal buffer so that glTexSubImageXD can be used
@@ -210,9 +234,9 @@ namespace CamelotEngine {
 				if(depth>1)		depth = depth/2;
 			}
 		}
-		_createSurfaceList();
+		createSurfaceList();
 		// Get final internal format
-		mFormat = getBuffer(0,0)->getFormat();
+		mFormat = getBuffer_internal(0,0)->getFormat();
 	}
 	
     void GLTexture::createRenderTexture(void)
@@ -221,20 +245,6 @@ namespace CamelotEngine {
 		// This already does everything neccessary
         createInternalResources();
     }
-
-    void GLTexture::initImpl()
-    {
-        if( mUsage & TU_RENDERTARGET )
-        {
-            createRenderTexture();
-            return;
-        }
-
-		initializeFromTextureData();
-
-		mTextureData.clear();
-    }
-
 	//*************************************************************************
     
     void GLTexture::freeInternalResourcesImpl()
@@ -245,7 +255,7 @@ namespace CamelotEngine {
 
 	
 	//---------------------------------------------------------------------------------------------
-	void GLTexture::_createSurfaceList()
+	void GLTexture::createSurfaceList()
 	{
 		mSurfaceList.clear();
 		
@@ -253,7 +263,7 @@ namespace CamelotEngine {
 		{
 			for(size_t mip=0; mip<=getNumMipmaps(); mip++)
 			{
-                GLHardwarePixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget(), mTextureID, face, mip,
+                GLHardwarePixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget_internal(), mTextureID, face, mip,
 						static_cast<HardwareBuffer::Usage>(mUsage), false, mHwGamma, mFSAA);
 				mSurfaceList.push_back(HardwarePixelBufferPtr(buf));
                 
@@ -271,8 +281,10 @@ namespace CamelotEngine {
 	}
 	
 	//---------------------------------------------------------------------------------------------
-	HardwarePixelBufferPtr GLTexture::getBuffer(size_t face, size_t mipmap)
+	HardwarePixelBufferPtr GLTexture::getBuffer_internal(size_t face, size_t mipmap)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if(face >= getNumFaces())
 			CM_EXCEPT(InvalidParametersException, "Face index out of range");
 		if(mipmap > mNumMipmaps)
@@ -282,11 +294,14 @@ namespace CamelotEngine {
 		return mSurfaceList[idx];
 	}
 	//---------------------------------------------------------------------------------------------
-	void GLTexture::getCustomAttribute(const String& name, void* pData)
+	void GLTexture::getCustomAttribute_internal(const String& name, void* pData)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (name == "GLID")
 			*static_cast<GLuint*>(pData) = mTextureID;
 	}
 	
 }
 
+#undef THROW_IF_NOT_RENDER_THREAD

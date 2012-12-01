@@ -138,9 +138,6 @@
     <ClInclude Include="Include\CmDataStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmTextureData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmIReflectable.h">
       <Filter>Header Files\Reflection</Filter>
     </ClInclude>
@@ -173,9 +170,6 @@
     </ClInclude>
     <ClInclude Include="Include\CmFileSystem.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmTextureDataRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmPoint.h">
       <Filter>Header Files\Math</Filter>
@@ -264,9 +258,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmDataStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmTextureData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmRTTIField.cpp">

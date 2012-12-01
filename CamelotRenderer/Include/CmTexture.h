@@ -157,52 +157,73 @@ namespace CamelotEngine {
 			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
 						Do not use it after the lifetime of the containing texture.
 		*/
-		virtual HardwarePixelBufferPtr getBuffer(size_t face=0, size_t mipmap=0) = 0;
+		virtual HardwarePixelBufferPtr getBuffer_internal(size_t face=0, size_t mipmap=0) = 0;
 		
 		/** Retrieve a platform or API-specific piece of information from this texture.
 		 This method of retrieving information should only be used if you know what you're doing.
 		 @param name The name of the attribute to retrieve
 		 @param pData Pointer to memory matching the type of data you want to retrieve.
 		*/
-		virtual void getCustomAttribute(const String& name, void* pData) {}
-
-		/**
-		 * @brief	Retrieves the texture data from the GPU, loads it into system memory
-		 * 			and returns it in the form of TextureData for the specified.
-		 *
-		 * @return	Texture data for the wanted face.
-		 */
-		TextureDataPtr getTextureData(UINT32 face);
+		virtual void getCustomAttribute_internal(const String& name, void* pData);
 
 		/**
 		 * @brief	Sets raw texture pixels for the specified mip level and texture face. Pixel format
 		 * 			must match the format of the texture.
+		 * 			
+		 * @note	Not-async. This operation will block the current thread until the render thread
+		 *			executes the command.
 		 */
 		void setRawPixels(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
+
+		/**
+		 * @brief	Sets raw texture pixels for the specified mip level and texture face. Pixel format
+		 * 			must match the format of the texture. Returns immediately
+		 * 			but the texture won't be updated until the command
+		 * 			executes on the render thread.
+		 * 			
+		 * @see		Texture::setRawPixels		
+		 */
+		void setRawPixels_async(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
+
+		/**
+		 * @brief	Internal version of Texture::setRawPixels. Only callable
+		 * 			from the render thread.
+		 *
+		 * @see		Texture::setRawPixels
+		 */
 		void setRawPixels_internal(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
 
 		/**
 		 * @brief	Gets raw pixels from the texture. This is a slow operation
 		 * 			as it will read data from the GPU. If the texture is compressed
 		 * 			the returned data will be contain compressed pixels as well.
+		 * 			
+		 * @note	Not-async. This operation will block the current thread until the render thread
+		 *			executes the command.
 		 */
 		PixelDataPtr getRawPixels(UINT32 face = 0, UINT32 mip = 0);
-		PixelDataPtr getRawPixels_internal(UINT32 face = 0, UINT32 mip = 0);
+		
 
 		/**
-		 * @brief	Sets the texture data that will be used for initializing the texture.
-		 * 			You must call loadFromTextureData after setting the data for all faces. 
-		 * 			Texture data array will be cleared after the texture is fully loaded.
+		 * @brief	Async version of Texture::getRawPixels. Returns immediately
+		 * 			but you won't have access to the pixel data until the command
+		 * 			executes on the render thread.
 		 *
-		 * @param	face	  	The face index. Cubemaps have six faces in this order:
-		 * 						+X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
-		 * @param	textureData	Texture data for the face.
+		 * @see		Texture::getRawPixels
 		 */
-		void setTextureData(UINT32 face, TextureDataPtr textureData);
+		AsyncOp getRawPixels_async(UINT32 face = 0, UINT32 mip = 0);
+
+		/**
+		 * @brief	Internal version of Texture::getRawPixels. Only callable
+		 * 			from the render thread.
+		 *
+		 * @see		Texture::getRawPixels
+		 */
+		void getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op);
 
 		/** Copies (and maybe scales to fit) the contents of this texture to
 			another texture. */
-		virtual void copyToTexture( TexturePtr& target );
+		virtual void copy_internal( TexturePtr& target );
 
     protected:
 		friend class TextureManager;
@@ -222,8 +243,6 @@ namespace CamelotEngine {
 
 		bool mInternalResourcesCreated;
 
-		public:
-		vector<TextureDataPtr>::type mTextureData;
 		protected:
 
 		/**
@@ -233,7 +252,7 @@ namespace CamelotEngine {
 		void initialize(TextureType textureType, size_t width, size_t height, size_t depth, size_t numMipmaps, 
 			PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint);
 		
-		void initialize_internal();
+		virtual void initialize_internal() = 0;
 
 		/// @copydoc Resource::calculateSize
 		size_t calculateSize(void) const;
@@ -263,16 +282,10 @@ namespace CamelotEngine {
 		*/
 		virtual void freeInternalResourcesImpl(void) = 0;
 
-		/**
-		 * @brief	Initializes the texture from texture data array that was previously populated using
-		 * 			setTextureData.
-		 *
-		 * @param	textureData	Array with texture data for each face of the texture.
-		 */
-		virtual void initializeFromTextureData();
-
 		/** Default implementation of unload which calls freeInternalResources */
 		void unloadImpl(void);
+
+		void throwIfNotRenderThread() const;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

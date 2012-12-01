@@ -533,7 +533,7 @@ namespace CamelotEngine
 		D3D9TexturePtr dt = std::static_pointer_cast<D3D9Texture>(tex);
 		if (enabled && (dt != nullptr))
 		{
-			IDirect3DBaseTexture9 *pTex = dt->getTexture();
+			IDirect3DBaseTexture9 *pTex = dt->getTexture_internal();
 			if (mTexStageDesc[stage].pTex != pTex)
 			{
 				hr = getActiveD3D9Device()->SetTexture(static_cast<DWORD>(stage), pTex);
@@ -610,7 +610,7 @@ namespace CamelotEngine
 		{
 			D3D9TexturePtr dt = std::static_pointer_cast<D3D9Texture>(tex);
 
-			IDirect3DBaseTexture9 *pTex = dt->getTexture();
+			IDirect3DBaseTexture9 *pTex = dt->getTexture_internal();
 			if (mTexStageDesc[stage].pVertexTex != pTex)
 			{
 				HRESULT hr = getActiveD3D9Device()->SetTexture(D3DVERTEXTEXTURESAMPLER0 + static_cast<DWORD>(stage), pTex);

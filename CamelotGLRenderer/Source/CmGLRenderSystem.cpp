@@ -482,7 +482,7 @@ namespace CamelotEngine {
 			if (tex)
 			{
 				// note used
-				mTextureTypes[stage] = tex->getGLTextureTarget();
+				mTextureTypes[stage] = tex->getGLTextureTarget_internal();
 			}
 			else
 				// assume 2D
@@ -502,7 +502,7 @@ namespace CamelotEngine {
 			}
 
 			if(tex)
-				glBindTexture( mTextureTypes[stage], tex->getGLID() );
+				glBindTexture( mTextureTypes[stage], tex->getGLID_internal() );
 			else
 			{
 				glBindTexture( mTextureTypes[stage], static_cast<GLTextureManager*>(&TextureManager::instance())->getWarningTextureID() );

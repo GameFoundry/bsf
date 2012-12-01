@@ -15,7 +15,7 @@ namespace CamelotEngine
 		virtual ~Resource() {};
 
 		void init();
-		virtual void initImpl() = 0;
+		virtual void initImpl() {}
 
 		const String& getUUID() const { return mUUID; }
 

@@ -13,10 +13,12 @@
   <ItemGroup>
     <ClInclude Include="Include\CmFreeImgImporter.h" />
     <ClInclude Include="Include\CmFreeImgPrerequisites.h" />
+    <ClInclude Include="Include\CmTextureData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmFreeImgImporter.cpp" />
     <ClCompile Include="Source\CmFreeImgPlugin.cpp" />
+    <ClCompile Include="Source\CmTextureData.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{122B7A22-0C62-4B35-B661-EBF3F394EA79}</ProjectGuid>

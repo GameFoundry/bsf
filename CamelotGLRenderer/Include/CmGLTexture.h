@@ -45,25 +45,19 @@ namespace CamelotEngine {
 
         virtual ~GLTexture();      
 
-        void createRenderTexture();
-			
 		/// @copydoc Texture::getBuffer
-		HardwarePixelBufferPtr getBuffer(size_t face, size_t mipmap);
+		HardwarePixelBufferPtr getBuffer_internal(size_t face, size_t mipmap);
 
         // Takes the OGRE texture type (1d/2d/3d/cube) and returns the appropriate GL one
-        GLenum getGLTextureTarget(void) const;
+        GLenum getGLTextureTarget_internal(void) const;
 
-        GLuint getGLID() const
-        {
-            return mTextureID;
-        }
+        GLuint getGLID_internal() const;
 		
-		void getCustomAttribute(const String& name, void* pData);
-
-		/// @copydoc Resource::loadImpl
-		void initImpl();
+		void getCustomAttribute_internal(const String& name, void* pData);
 
     protected:
+		void initialize_internal();
+
 		/// @copydoc Texture::createInternalResourcesImpl
 		void createInternalResourcesImpl(void);
         /// @copydoc Resource::freeInternalResourcesImpl
@@ -74,17 +68,9 @@ namespace CamelotEngine {
 			the number of mipmaps was set (GL_TEXTURE_MAX_LEVEL) and glTexImageXD was called to
 			actually allocate the buffer
 		*/
-		void _createSurfaceList();
+		void createSurfaceList();
 
-        /// Used to hold images between calls to prepare and load.
-        //typedef SharedPtr<vector<Image>::type > LoadedImages;
-
-        /** Vector of images that were pulled from disk by
-            prepareLoad but have yet to be pushed into texture memory
-            by loadImpl.  Images should be deleted by loadImpl and unprepareImpl.
-        */
-        //LoadedImages mLoadedImages;
-
+		void createRenderTexture();
 
     private:
         GLuint mTextureID;

@@ -17,3 +17,9 @@
 #else
 #    define CM_FREEIMG_EXPORT
 #endif
+
+namespace CamelotEngine
+{
+	class TextureData;
+	typedef std::shared_ptr<TextureData> TextureDataPtr;
+}

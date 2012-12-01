@@ -119,7 +119,6 @@
     <ClInclude Include="Include\CmRTTIReflectablePtrField.h" />
     <ClInclude Include="Include\CmRTTIType.h" />
     <ClInclude Include="Include\CmString.h" />
-    <ClInclude Include="Include\CmTextureDataRTTI.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmTime.h" />
     <ClInclude Include="Include\CmTimer.h" />
@@ -142,16 +141,12 @@
     <ClInclude Include="Include\CmVector4.h" />
     <ClInclude Include="Include\CmDynLib.h" />
     <ClInclude Include="Include\CmDataStream.h" />
-    <ClInclude Include="Include\CmTextureData.h" />
     <ClCompile Include="Source\CmBinarySerializer.cpp" />
     <ClCompile Include="Source\CmFileSerializer.cpp" />
     <ClCompile Include="Source\CmFileSystem.cpp" />
     <ClCompile Include="Source\CmIReflectable.cpp" />
     <ClCompile Include="Source\CmRTTIField.cpp" />
     <ClCompile Include="Source\CmRTTIType.cpp" />
-    <ClCompile Include="Source\CmTextureData.cpp">
-      <FileType>CppHeader</FileType>
-    </ClCompile>
     <ClInclude Include="Include\CmWorkQueue.h" />
   </ItemGroup>
   <ItemGroup>
