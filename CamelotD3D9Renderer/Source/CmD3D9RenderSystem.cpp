@@ -1475,7 +1475,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	D3D9ResourceManager* D3D9RenderSystem::getResourceManager()
 	{
-		THROW_IF_NOT_RENDER_THREAD_STATIC;
+		// No need to check if we're on render thread as this is synced up internally
 
 		return msD3D9RenderSystem->mResourceManager;
 	}

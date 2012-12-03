@@ -79,7 +79,7 @@ namespace CamelotEngine {
             populate any implementation-specific extras (like named parameters) where
             they are appropriate.
         */
-        virtual GpuProgramParametersSharedPtr createParameters(void);
+        virtual void createParameters_internal(AsyncOp& op);
 	protected:    
 		bool mColumnMajorMatrices;
 		ID3DXBuffer* mpExternalMicrocode;

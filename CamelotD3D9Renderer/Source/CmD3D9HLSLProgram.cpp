@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
+#include "CmAsyncOp.h"
 #include "CmD3D9HLSLProgramRTTI.h"
 
 namespace CamelotEngine {
@@ -546,15 +547,15 @@ namespace CamelotEngine {
 		return rs->getCapabilities_internal()->isShaderProfileSupported(hlslProfile);
     }
     //-----------------------------------------------------------------------
-    GpuProgramParametersSharedPtr D3D9HLSLProgram::createParameters(void)
+    void D3D9HLSLProgram::createParameters_internal(AsyncOp& op)
     {
         // Call superclass
-        GpuProgramParametersSharedPtr params = HighLevelGpuProgram::createParameters();
+       HighLevelGpuProgram::createParameters_internal(op);
+
+	    GpuProgramParametersSharedPtr params = op.getReturnValue<GpuProgramParametersSharedPtr>();
 
         // Need to transpose matrices if compiled with column-major matrices
         params->setTransposeMatrices(mColumnMajorMatrices);
-
-        return params;
     }
     //-----------------------------------------------------------------------
     void D3D9HLSLProgram::setTarget(const String& target)

@@ -23,9 +23,9 @@ namespace CamelotEngine
 		bool isInitialized() const { return mIsInitialized; }
 
 		/**
-		 * @brief	Blocks the current thread until the resource is fully loaded.
+		 * @brief	Blocks the current thread until the resource is fully initialized.
 		 */
-		void waitUntilLoaded();
+		void waitUntilInitialized();
 
 	protected:
 		friend class Resources;

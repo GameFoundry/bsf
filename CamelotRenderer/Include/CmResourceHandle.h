@@ -34,6 +34,13 @@ namespace CamelotEngine
 		 */
 		bool isLoaded() const;
 
+		/**
+		 * @brief	Blocks the current thread until the resource is fully loaded.
+		 * 			
+		 * @note	Careful not to call this on the thread that does the loading.
+		 */
+		void waitUntilLoaded() const;
+
 	protected:
 		ResourceHandleBase();
 
@@ -49,6 +56,10 @@ namespace CamelotEngine
 		}
 	private:
 		friend class Resources;
+
+		CM_STATIC_THREAD_SYNCHRONISER(mResourceCreatedCondition)
+		CM_STATIC_MUTEX(mResourceCreatedMutex)
+
 		/**
 		 * @brief	Sets the created flag to true. Should only be called
 		 * 			by Resources class after loading of the resource is fully done.
@@ -60,6 +71,9 @@ namespace CamelotEngine
 		 * 			Resources class.
 		 */
 		void ResourceHandleBase::setUUID(const String& uuid);
+
+	protected:
+		inline void throwIfNotLoaded() const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -105,15 +119,19 @@ namespace CamelotEngine
 		// TODO Low priority - User can currently try to access these even if resource ptr is not resolved
 		T* get() const 
 		{ 
-			if(!isLoaded()) 
-				return nullptr; 
-			
+			throwIfNotLoaded();
+
 			return static_cast<T*>(mData->mPtr.get()); 
 		}
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
-		std::shared_ptr<T> getInternalPtr() { if(!isLoaded()) return nullptr; return std::static_pointer_cast<T>(mData->mPtr); }
+		std::shared_ptr<T> getInternalPtr() 
+		{ 
+			throwIfNotLoaded();
+
+			return std::static_pointer_cast<T>(mData->mPtr); 
+		}
 
 		template<class _Ty>
 		struct CM_Bool_struct

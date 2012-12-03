@@ -6,6 +6,9 @@
 
 namespace CamelotEngine
 {
+	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mResourceCreatedCondition, ResourceHandleBase)
+	CM_STATIC_MUTEX_CLASS_INSTANCE(mResourceCreatedMutex, ResourceHandleBase)
+
 	RTTITypeBase* ResourceHandleData::getRTTIStatic()
 	{
 		return ResourceHandleDataRTTI::instance();
@@ -24,6 +27,20 @@ namespace CamelotEngine
 	bool ResourceHandleBase::isLoaded() const 
 	{ 
 		return (mData->mIsCreated && mData->mPtr != nullptr && mData->mPtr->isInitialized()); 
+	}
+
+	void ResourceHandleBase::waitUntilLoaded() const
+	{
+		if(!mData->mIsCreated)
+		{
+			CM_LOCK_MUTEX_NAMED(mResourceCreatedMutex, lock);
+			while(!mData->mIsCreated)
+			{
+				CM_THREAD_WAIT(mResourceCreatedCondition, mResourceCreatedMutex, lock);
+			}
+		}
+
+		mData->mPtr->waitUntilInitialized();
 	}
 
 	void ResourceHandleBase::resolve(std::shared_ptr<Resource> ptr) 
@@ -48,7 +65,24 @@ namespace CamelotEngine
 		if(mData->mPtr)
 		{
 			mData->mUUID = mData->mPtr->getUUID();
-			mData->mIsCreated = true; 
+		
+			if(!mData->mIsCreated)
+			{
+				CM_LOCK_MUTEX(mResourceCreatedMutex);
+				{
+					mData->mIsCreated = true; 
+				}
+				
+				CM_THREAD_NOTIFY_ALL(mResourceCreatedCondition);
+			}
+		}
+	}
+
+	void ResourceHandleBase::throwIfNotLoaded() const
+	{
+		if(!isLoaded()) 
+		{
+			CM_EXCEPT(InternalErrorException, "Trying to access a resource that hasn't been loaded yet.");
 		}
 	}
 

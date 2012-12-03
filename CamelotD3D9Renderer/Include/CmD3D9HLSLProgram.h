@@ -117,7 +117,7 @@ namespace CamelotEngine {
         /// Overridden from GpuProgram
         bool isSupported(void) const;
         /// Overridden from GpuProgram
-        GpuProgramParametersSharedPtr createParameters(void);
+        void createParameters_internal(AsyncOp& op);
         /// Overridden from GpuProgram
         const String& getLanguage(void) const;
 

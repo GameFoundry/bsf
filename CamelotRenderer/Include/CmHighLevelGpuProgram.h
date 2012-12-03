@@ -120,7 +120,7 @@ namespace CamelotEngine {
             HighLevelGpuProgramManager. This method creates a new instance of a parameters
             object containing the definition of the parameters this program understands.
         */
-        GpuProgramParametersSharedPtr createParameters(void);
+        void createParameters_internal(AsyncOp& op);
 
         /** @copydoc GpuProgram::getBindingDelegate */
         GpuProgram* getBindingDelegate_internal(void) { return mAssemblerProgram.get(); }

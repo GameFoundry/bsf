@@ -25,13 +25,16 @@ namespace CamelotEngine
 	class CM_EXPORT Mesh : public Resource
 	{
 	public:
-		Mesh();
 		virtual ~Mesh();
+
+		void initialize();
+		virtual void initialize_internal();
 
 		/**
 		 * @brief	Mesh data that is used for initializing the mesh. Needs to be set before calling load.
 		 */
 		void setMeshData(MeshDataPtr meshData);
+		void setMeshData_internal(MeshDataPtr meshData);
 
 		/**
 		 * @brief	Gets the mesh data from the GPU. This method is slow so be careful when you call it.
@@ -40,15 +43,15 @@ namespace CamelotEngine
 
 		RenderOperation getRenderOperation(UINT32 subMeshIdx = 0) const;
 
-		virtual void initialize_internal();
-
 	private:
-		MeshDataPtr mMeshData;
+		Mesh();
 
 		VertexData* mVertexData;
 		IndexData* mIndexData;
 
 		vector<SubMesh>::type mSubMeshes;
+
+		void throwIfNotRenderThread() const;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -57,6 +60,8 @@ namespace CamelotEngine
 		friend class MeshRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
+
+		static MeshPtr createEmpty();
 
 		/************************************************************************/
 		/* 								STATICS		                     		*/

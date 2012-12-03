@@ -47,7 +47,9 @@ namespace CamelotEngine
 
 		shutDownSdk(fbxManager);
 
-		MeshHandle mesh(new Mesh());
+		MeshHandle mesh = MeshHandle(Mesh::create());
+
+		mesh.waitUntilLoaded();
 		mesh->setMeshData(meshData);
 
 		return mesh;

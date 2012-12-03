@@ -33,7 +33,14 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
+#include "CmAsyncOp.h"
 #include "CmGpuProgramRTTI.h"
+
+#if CM_DEBUG_MODE
+#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
+#else
+#define THROW_IF_NOT_RENDER_THREAD 
+#endif
 
 namespace CamelotEngine
 {
@@ -44,6 +51,11 @@ namespace CamelotEngine
     {
 		createParameterMappingStructures();
     }
+	//----------------------------------------------------------------------------
+	GpuProgram::~GpuProgram()
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+	}
     //-----------------------------------------------------------------------------
     void GpuProgram::setType(GpuProgramType t)
     {
@@ -121,9 +133,18 @@ namespace CamelotEngine
 		if (recreateIfExists || (mConstantDefs == nullptr))
 			mConstantDefs = GpuNamedConstantsPtr(new GpuNamedConstants());
 	}
+	//---------------------------------------------------------------------
+	GpuProgramParametersSharedPtr GpuProgram::createParameters(void)
+	{
+		AsyncOp op = RenderSystemManager::getActive()->queueResourceReturnCommand(boost::bind(&GpuProgram::createParameters_internal, this, _1), true);
+
+		return op.getReturnValue<GpuProgramParametersSharedPtr>();
+	}
     //-----------------------------------------------------------------------------
-    GpuProgramParametersSharedPtr GpuProgram::createParameters(void)
+    void GpuProgram::createParameters_internal(AsyncOp& op)
     {
+		THROW_IF_NOT_RENDER_THREAD
+
         // Default implementation simply returns standard parameters.
         GpuProgramParametersSharedPtr ret = GpuProgramParametersSharedPtr(new GpuProgramParameters());	
 		
@@ -135,7 +156,7 @@ namespace CamelotEngine
 		// link shared logical / physical map for low-level use
 		ret->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical);
 
-        return ret;
+		op.completeOperation(ret);
     }
     //-----------------------------------------------------------------------
     const String& GpuProgram::getLanguage(void) const
@@ -144,6 +165,12 @@ namespace CamelotEngine
 
         return language;
     }
+	//----------------------------------------------------------------------------- 
+	void GpuProgram::throwIfNotRenderThread() const
+	{
+		if(CM_THREAD_CURRENT_ID != RenderSystemManager::getActive()->getRenderThreadId())
+			CM_EXCEPT(InternalErrorException, "Calling an internal texture method from a non-render thread!");
+	}
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
@@ -159,3 +186,4 @@ namespace CamelotEngine
 	}
 }
 
+#undef THROW_IF_NOT_RENDER_THREAD 

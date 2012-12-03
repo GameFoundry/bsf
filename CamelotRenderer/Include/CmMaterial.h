@@ -16,12 +16,12 @@ namespace CamelotEngine
 	class CM_EXPORT Material : public Resource
 	{
 	public:
-		Material() {}
+		Material();
 
 		/**
 		 * @brief	Overridden from Resource.
 		 */
-		virtual void initialize_internal() { }
+		virtual void initialize_internal();
 
 		/**
 		 * @brief	Sets a shader that will be used by the material. 

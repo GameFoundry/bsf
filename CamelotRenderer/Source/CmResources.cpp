@@ -223,7 +223,8 @@ namespace CamelotEngine
 
 	void Resources::create(BaseResourceHandle resource, const String& filePath, bool overwrite)
 	{
-		assert(resource.get() != nullptr);
+		if(!resource.isLoaded())
+			resource.waitUntilLoaded();
 
 		if(metaExists_UUID(resource->getUUID()))
 			CM_EXCEPT(InvalidParametersException, "Specified resource already exists.");
@@ -249,10 +250,8 @@ namespace CamelotEngine
 
 	void Resources::save(BaseResourceHandle resource)
 	{
-		// TODO - Check if the resource is fully loaded or not. If its not loaded either wait for it to be loaded,
-		// or break out
-
-		assert(resource.get() != nullptr);
+		if(!resource.isLoaded())
+			resource.waitUntilLoaded();
 
 		if(!metaExists_UUID(resource->getUUID()))
 			CM_EXCEPT(InvalidParametersException, "Cannot find resource meta-data. Please call Resources::create before trying to save the resource.");

@@ -112,11 +112,13 @@ namespace CamelotEngine {
 		/// Create the internal params named mapping structures
 		void createNamedParameterMappingStructures(bool recreateIfExists = true) const;
 
+		void throwIfNotRenderThread() const;
+
 	public:
 
 		GpuProgram();
 
-		virtual ~GpuProgram() {}
+		virtual ~GpuProgram();
 
 		/**
 		 * @brief	Initializes the gpu program. This must be called right after the program is constructed. 
@@ -182,7 +184,8 @@ namespace CamelotEngine {
             populate any implementation-specific extras (like named parameters) where
             they are appropriate.
         */
-        virtual GpuProgramParametersSharedPtr createParameters(void);
+		GpuProgramParametersSharedPtr createParameters(void);
+        virtual void createParameters_internal(AsyncOp& op);
 
 		/** Returns a string that specifies the language of the gpu programs as specified
         in a material script. ie: asm, cg, hlsl, glsl

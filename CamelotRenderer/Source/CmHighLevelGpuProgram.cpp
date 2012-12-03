@@ -30,6 +30,15 @@ THE SOFTWARE.
 #include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 #include "CmException.h"
+#include "CmRenderSystem.h"
+#include "CmRenderSystemManager.h"
+#include "CmAsyncOp.h"
+
+#if CM_DEBUG_MODE
+#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
+#else
+#define THROW_IF_NOT_RENDER_THREAD 
+#endif
 
 namespace CamelotEngine
 {
@@ -81,8 +90,10 @@ namespace CamelotEngine
         // superclasses will trigger unload
     }
     //---------------------------------------------------------------------------
-    GpuProgramParametersSharedPtr HighLevelGpuProgram::createParameters(void)
+    void HighLevelGpuProgram::createParameters_internal(AsyncOp& op)
     {
+		THROW_IF_NOT_RENDER_THREAD
+
         // Make sure param defs are loaded
         GpuProgramParametersSharedPtr params = GpuProgramParametersSharedPtr(new GpuProgramParameters());
 		// Only populate named parameters if we can support this program
@@ -91,7 +102,7 @@ namespace CamelotEngine
 			populateParameterNames(params);
 		}
 
-        return params;
+		op.completeOperation(params);
     }
     //---------------------------------------------------------------------------
     void HighLevelGpuProgram::loadHighLevel(void)
@@ -162,3 +173,5 @@ namespace CamelotEngine
 		return HighLevelGpuProgramManager::instance().create(source, entryPoint, language, gptype, profile);
 	}
 }
+
+#undef THROW_IF_NOT_RENDER_THREAD 

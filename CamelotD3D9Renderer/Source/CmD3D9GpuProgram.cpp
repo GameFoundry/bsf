@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmD3D9Mappings.h"
 #include "CmD3D9RenderSystem.h"
+#include "CmAsyncOp.h"
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------------
@@ -157,15 +158,15 @@ namespace CamelotEngine {
 		SAFE_RELEASE(errors);
 	}
     //-----------------------------------------------------------------------
-    GpuProgramParametersSharedPtr D3D9GpuProgram::createParameters(void)
+    void D3D9GpuProgram::createParameters_internal(AsyncOp& op)
     {
         // Call superclass
-        GpuProgramParametersSharedPtr params = GpuProgram::createParameters();
+        GpuProgram::createParameters_internal(op);
+
+		GpuProgramParametersSharedPtr params = op.getReturnValue<GpuProgramParametersSharedPtr>();
 
         // Need to transpose matrices if compiled with column-major matrices
         params->setTransposeMatrices(mColumnMajorMatrices);
-
-        return params;
     }	
 	//-----------------------------------------------------------------------------
     D3D9GpuVertexProgram::D3D9GpuVertexProgram() 

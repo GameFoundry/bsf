@@ -11,6 +11,17 @@
 
 namespace CamelotEngine
 {
+	Material::Material()
+	{
+		// Material doesn't do anything render thread specific, so we can just initialize right away
+		initialize_internal();
+	}
+
+	void Material::initialize_internal()
+	{
+		Resource::initialize_internal();
+	}
+
 	void Material::setShader(ShaderPtr shader)
 	{
 		mShader = shader;
@@ -37,15 +48,24 @@ namespace CamelotEngine
 
 					GpuProgramHandle vertProgram = curPass->getVertexProgram();
 					if(vertProgram)
+					{
+						vertProgram.waitUntilLoaded();
 						params->mVertParams = vertProgram->createParameters();
+					}
 
 					GpuProgramHandle fragProgram = curPass->getFragmentProgram();
 					if(fragProgram)
+					{
+						fragProgram.waitUntilLoaded();
 						params->mFragParams = fragProgram->createParameters();
+					}
 
 					GpuProgramHandle geomProgram = curPass->getGeometryProgram();
 					if(geomProgram)
+					{
+						geomProgram.waitUntilLoaded();
 						params->mGeomParams = geomProgram->createParameters();	
+					}
 
 					mParameters.push_back(params);
 				}
