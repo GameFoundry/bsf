@@ -143,7 +143,7 @@ namespace CamelotEngine
 		WorkQueuePtr mWorkQueue; // TODO Low priority - I might want to make this more global so other classes can use it
 		UINT16 mWorkQueueChannel;
 
-		unordered_map<String, BaseResourceHandle>::type mLoadedResources; // TODO Low priority - I'm not sure how will filePath as key do performance wise
+		unordered_map<String, BaseResourceHandle>::type mLoadedResources; // TODO Low priority - I'm not sure how will UUID (a string) do as key do performance wise
 		unordered_map<String, ResourceAsyncOp>::type mInProgressResources; // Resources that are being asynchronously loaded
 
 		BaseResourceHandle loadInternal(const String& filePath, bool synchronous); 
@@ -164,6 +164,14 @@ namespace CamelotEngine
 		const String& getUUIDFromPath(const String& path) const;
 
 		String mMetaDataFolderPath;
+
+	private:
+		friend class SpecificImporter;
+
+		/**
+		 * @brief	Registers the newly loaded resource in the global Resources library.
+		 */
+		void registerLoadedResource(BaseResourceHandle resource);
 	};
 
 	CM_EXPORT Resources& gResources();

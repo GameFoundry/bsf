@@ -208,6 +208,7 @@
     <ClCompile Include="Source\CmResources.cpp" />
     <ClCompile Include="Source\CmSceneManager.cpp" />
     <ClCompile Include="Source\CmShader.cpp" />
+    <ClCompile Include="Source\CmSpecificImporter.cpp" />
     <ClCompile Include="Source\CmTechnique.cpp" />
     <ClCompile Include="Source\CmTexture.cpp" />
     <ClCompile Include="Source\CmTextureManager.cpp" />

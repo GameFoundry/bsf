@@ -149,6 +149,8 @@ namespace CamelotEngine
 
 		fileData->close();
 
+		registerLoadedResource(newTexture);
+
 		return newTexture;
 	}
 

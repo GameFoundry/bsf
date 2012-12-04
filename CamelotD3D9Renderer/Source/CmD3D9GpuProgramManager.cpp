@@ -53,14 +53,4 @@ namespace CamelotEngine {
             return new D3D9GpuFragmentProgram();
         }
     }
-
-	GpuProgramPtr D3D9GpuProgramManager::createProgram(const String& code, GpuProgramType gptype, const String& syntaxCode)
-    {
-		GpuProgramPtr prg = GpuProgramPtr(create(gptype, syntaxCode));
-        // Set all prarmeters (create does not set, just determines factory)
-		prg->setType(gptype);
-		prg->setSyntaxCode(syntaxCode);
-		prg->setSource(code);
-        return prg;
-    }
 }

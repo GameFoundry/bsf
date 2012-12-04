@@ -51,7 +51,9 @@ namespace CamelotEngine {
 		virtual const String& getLanguage(void) const = 0;
         virtual HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramProfile profile) = 0;
 		virtual HighLevelGpuProgram* create() = 0;
-		virtual void destroy(HighLevelGpuProgram* prog) = 0;
+
+		void destroy(HighLevelGpuProgram* prog);
+		virtual void destroy_internal(HighLevelGpuProgram* prog) = 0;
 	};
 	/** This ResourceManager manages high-level vertex and fragment programs. 
 	@remarks

@@ -53,8 +53,7 @@ namespace CamelotEngine {
 			mFSAA(0),
             mTextureType(TEX_TYPE_2D),            
             mFormat(PF_UNKNOWN),
-            mUsage(TU_DEFAULT),
-            mInternalResourcesCreated(false)
+            mUsage(TU_DEFAULT)
     {
         
     }
@@ -100,20 +99,12 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void Texture::createInternalResources(void)
 	{
-		if (!mInternalResourcesCreated)
-		{
-			createInternalResourcesImpl();
-			mInternalResourcesCreated = true;
-		}
+		createInternalResourcesImpl();
 	}
 	//-----------------------------------------------------------------------------
 	void Texture::freeInternalResources(void)
 	{
-		if (mInternalResourcesCreated)
-		{
-			freeInternalResourcesImpl();
-			mInternalResourcesCreated = false;
-		}
+		freeInternalResourcesImpl();
 	}
 
 	void Texture::setRawPixels(const PixelData& data, UINT32 face, UINT32 mip)
@@ -258,6 +249,16 @@ namespace CamelotEngine {
 	{
 		return TextureManager::instance().create(texType, 
 			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+	}
+
+	void Texture::destruct(Texture* ptr)
+	{
+		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&Texture::destruct_internal, ptr));
+	}
+
+	void Texture::destruct_internal(Texture* ptr)
+	{
+		delete ptr;
 	}
 }
 

@@ -29,5 +29,11 @@ namespace CamelotEngine
 		 * @return	null if it fails, otherwise the loaded object.
 		 */
 		virtual BaseResourceHandle import(const String& filePath) = 0;
+
+	protected:
+		/**
+		 * @brief	Registers the newly loaded resource in the global Resources library.
+		 */
+		void registerLoadedResource(BaseResourceHandle resource);
 	};
 }

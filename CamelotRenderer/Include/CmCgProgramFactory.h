@@ -47,7 +47,7 @@ namespace CamelotEngine
 		const String& getLanguage(void) const;
         HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramProfile profile);
 		HighLevelGpuProgram* create();
-		void destroy(HighLevelGpuProgram* prog);
+		void destroy_internal(HighLevelGpuProgram* prog);
 
     };
 }

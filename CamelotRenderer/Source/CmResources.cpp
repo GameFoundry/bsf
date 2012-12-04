@@ -34,7 +34,7 @@ namespace CamelotEngine
 	{
 		ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(res->getRequest()->getData());
 
-		auto iterFind = gResources().mInProgressResources.find(resRequest->filePath);
+		auto iterFind = gResources().mInProgressResources.find(resRequest->resource.getUUID());
 		gResources().mInProgressResources.erase(iterFind);
 
 		if(res->getRequest()->getAborted())
@@ -52,7 +52,7 @@ namespace CamelotEngine
 				gResources().addMetaData(resResponse->rawResource->getUUID(), resRequest->filePath);
 			}
 
-			gResources().mLoadedResources[resRequest->filePath] = resRequest->resource;
+			gResources().mLoadedResources[resResponse->rawResource->getUUID()] = resRequest->resource;
 		}
 		else
 		{
@@ -150,13 +150,25 @@ namespace CamelotEngine
 
 	BaseResourceHandle Resources::loadInternal(const String& filePath, bool synchronous)
 	{
-		auto iterFind = mLoadedResources.find(filePath);
+		// TODO Low priority - Right now I don't allow loading of resources that don't have meta-data, because I need to know resources UUID
+		// at this point. And I can't do that without having meta-data. Other option is to partially load the resource to read the UUID but due to the
+		// nature of the serializer it could complicate things. (But possible if this approach proves troublesome)
+		// The reason I need the UUID is that when resource is loaded Async, the returned ResourceHandle needs to have a valid UUID, in case I assign that
+		// ResourceHandle to something and then save that something. If I didn't assign it, the saved ResourceHandle would have a blank (i.e. invalid) UUID.
+		if(!metaExists_Path(filePath))
+		{
+			CM_EXCEPT(InternalErrorException, "Cannot load resource that isn't registered in the meta database. Call Resources::create first.");
+		}
+
+		String uuid = getUUIDFromPath(filePath);
+
+		auto iterFind = mLoadedResources.find(uuid);
 		if(iterFind != mLoadedResources.end()) // Resource is already loaded
 		{
 			return iterFind->second;
 		}
 
-		auto iterFind2 = mInProgressResources.find(filePath);
+		auto iterFind2 = mInProgressResources.find(uuid);
 		if(iterFind2 != mInProgressResources.end()) // We're already loading this resource
 		{
 			ResourceAsyncOp& asyncOp = iterFind2->second;
@@ -177,17 +189,6 @@ namespace CamelotEngine
 			return nullptr;
 		}
 
-		// TODO Low priority - Right now I don't allow loading of resources that don't have meta-data, because I need to know resources UUID
-		// at this point. And I can't do that without having meta-data. Other option is to partially load the resource to read the UUID but due to the
-		// nature of the serializer it could complicate things. (But possible if this approach proves troublesome)
-		// The reason I need the UUID is that when resource is loaded Async, the returned ResourceHandle needs to have a valid UUID, in case I assign that
-		// ResourceHandle to something and then save that something. If I didn't assign it, the saved ResourceHandle would have a blank (i.e. invalid) UUID.
-		if(!metaExists_Path(filePath))
-		{
-			CM_EXCEPT(InternalErrorException, "Cannot load resource that isn't registered in the meta database. Call Resources::create first.");
-		}
-
-		String uuid = getUUIDFromPath(filePath);
 		BaseResourceHandle newResource;
 		newResource.setUUID(uuid); // UUID needs to be set immediately if the resource gets loaded async
 
@@ -200,7 +201,7 @@ namespace CamelotEngine
 		newAsyncOp.resource = newResource;
 		newAsyncOp.requestID = requestId;
 
-		mInProgressResources[filePath] = newAsyncOp;
+		mInProgressResources[uuid] = newAsyncOp;
 
 		mWorkQueue->addRequest(mWorkQueueChannel, resRequest, 0, synchronous);
 		return newResource;
@@ -260,6 +261,19 @@ namespace CamelotEngine
 
 		FileSerializer fs;
 		fs.encode(resource.get(), filePath);
+	}
+
+	void Resources::registerLoadedResource(BaseResourceHandle resource)
+	{
+		auto iterFind = mLoadedResources.find(resource->getUUID());
+		if(iterFind == mLoadedResources.end())
+		{
+			mLoadedResources.insert(std::make_pair(resource->getUUID(), resource));
+		}
+		else
+		{
+			LOGDBG("Resource with the same UUID (" + resource->getUUID() + ") already exists!");
+		}
 	}
 
 	void Resources::loadMetaData()

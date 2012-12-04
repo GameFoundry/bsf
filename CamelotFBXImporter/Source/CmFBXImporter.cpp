@@ -52,6 +52,8 @@ namespace CamelotEngine
 		mesh.waitUntilLoaded();
 		mesh->setMeshData(meshData);
 
+		registerLoadedResource(mesh);
+
 		return mesh;
 	}
 

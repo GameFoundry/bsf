@@ -61,11 +61,19 @@ namespace CamelotEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
 
-		static MeshPtr createEmpty();
-
 		/************************************************************************/
 		/* 								STATICS		                     		*/
 		/************************************************************************/
+	private:
+		static MeshPtr createEmpty();
+
+		/**
+		 * @brief	Returns empty mesh data. (Technically it is not empty,
+		 * 			as 0 sized buffers will cause problems, so it contains 3 indices
+		 * 			and 1 vertex).
+		 */
+		static MeshDataPtr getNullMeshData();
+		
 	public:
 		static MeshPtr create();
 	};

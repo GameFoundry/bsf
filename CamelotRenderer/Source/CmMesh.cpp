@@ -308,8 +308,7 @@ namespace CamelotEngine
 		// TODO Low priority - Initialize an empty mesh. A better way would be to only initialize the mesh
 		// once we set the proper mesh data (then we don't have to do it twice), but this makes the code less complex.
 		// Consider changing it if there are performance issues.
-		MeshDataPtr meshData = MeshDataPtr(new MeshData());
-		setMeshData_internal(meshData);
+		setMeshData_internal(getNullMeshData());
 
 		Resource::initialize_internal();
 	}
@@ -351,6 +350,38 @@ namespace CamelotEngine
 		MeshPtr mesh = MeshPtr(new Mesh());
 
 		return mesh;
+	}
+
+	MeshDataPtr Mesh::getNullMeshData()
+	{
+		static MeshDataPtr NULL_MESH_DATA = nullptr;
+
+		if(NULL_MESH_DATA == nullptr)
+		{
+			NULL_MESH_DATA = MeshDataPtr(new MeshData());
+
+			NULL_MESH_DATA->indexCount = 3;
+			NULL_MESH_DATA->vertexCount = 1;
+
+			NULL_MESH_DATA->index = new int[3];
+			NULL_MESH_DATA->index[0] = 0;
+			NULL_MESH_DATA->index[1] = 0;
+			NULL_MESH_DATA->index[2] = 0;
+
+			std::shared_ptr<MeshData::VertexData> vertexData = std::shared_ptr<MeshData::VertexData>(new MeshData::VertexData(1));
+			NULL_MESH_DATA->vertexBuffers.insert(std::make_pair(0, vertexData));
+			vertexData->vertex = new Vector3[1];
+			vertexData->vertex[0] = Vector3(0, 0, 0);
+
+			NULL_MESH_DATA->declaration->addElement(0, 0, VET_FLOAT3, VES_POSITION);
+
+			MeshData::SubMeshData subMesh;
+			subMesh.indexOffset = 0;
+			subMesh.indexCount = 3;
+			NULL_MESH_DATA->subMeshes.push_back(subMesh);
+		}
+
+		return NULL_MESH_DATA;
 	}
 }
 

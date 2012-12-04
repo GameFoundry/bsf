@@ -57,7 +57,7 @@ namespace CamelotEngine {
 	GpuProgramPtr GpuProgramManager::createProgram(const String& code, GpuProgramType gptype, 
 		const String& syntaxCode)
     {
-		GpuProgramPtr prg = GpuProgramPtr(create(gptype, syntaxCode));
+		GpuProgramPtr prg = GpuProgramPtr(create(gptype, syntaxCode), &GpuProgram::destruct);
         // Set all prarmeters (create does not set, just determines factory)
 		prg->setType(gptype);
 		prg->setSyntaxCode(syntaxCode);

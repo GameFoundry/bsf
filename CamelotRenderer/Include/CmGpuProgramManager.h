@@ -106,7 +106,7 @@ namespace CamelotEngine {
 		@param gptype The type of program to create.
         @param syntaxCode The name of the syntax to be used for this program e.g. arbvp1, vs_1_1
 		*/
-		virtual GpuProgramPtr createProgram(const String& code, 
+		GpuProgramPtr createProgram(const String& code, 
             GpuProgramType gptype, const String& syntaxCode);
 	};
 

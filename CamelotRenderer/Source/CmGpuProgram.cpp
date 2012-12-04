@@ -184,6 +184,19 @@ namespace CamelotEngine
 	{
 		return GpuProgram::getRTTIStatic();
 	}
+
+	/************************************************************************/
+	/* 								STATICS		                     		*/
+	/************************************************************************/
+	void GpuProgram::destruct(GpuProgram* ptr)
+	{
+		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&GpuProgram::destruct_internal, ptr));
+	}
+
+	void GpuProgram::destruct_internal(GpuProgram* ptr)
+	{
+		delete ptr;
+	}
 }
 
 #undef THROW_IF_NOT_RENDER_THREAD 

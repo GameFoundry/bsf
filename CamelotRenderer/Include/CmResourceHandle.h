@@ -41,6 +41,11 @@ namespace CamelotEngine
 		 */
 		void waitUntilLoaded() const;
 
+		/**
+		 * @brief	Returns the UUID of the resource the handle is referring to.
+		 */
+		const String& getUUID() const { return mData->mUUID; }
+
 	protected:
 		ResourceHandleBase();
 

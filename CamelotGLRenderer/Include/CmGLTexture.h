@@ -40,9 +40,6 @@ namespace CamelotEngine {
     class CM_RSGL_EXPORT GLTexture : public Texture
     {
     public:
-        // Constructor
-        GLTexture(GLSupport& support);
-
         virtual ~GLTexture();      
 
 		/// @copydoc Texture::getBuffer
@@ -56,6 +53,11 @@ namespace CamelotEngine {
 		void getCustomAttribute_internal(const String& name, void* pData);
 
     protected:
+		friend class GLTextureManager;
+
+		// Constructor
+		GLTexture(GLSupport& support);
+
 		void initialize_internal();
 
 		/// @copydoc Texture::createInternalResourcesImpl

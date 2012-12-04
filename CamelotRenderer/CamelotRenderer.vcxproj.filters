@@ -457,5 +457,8 @@
     <ClCompile Include="Source\CmResourceHandle.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmSpecificImporter.cpp">
+      <Filter>Source Files\Importer</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -196,14 +196,6 @@ namespace CamelotEngine
 
 		createInternalResources();
 
-		if (!mInternalResourcesCreated)
-		{
-			// NB: Need to initialise pool to some value other than D3DPOOL_DEFAULT,
-			// otherwise, if the texture loading failed, it might re-create as empty
-			// texture when device lost/restore. The actual pool will determine later.
-			mD3DPool = D3DPOOL_MANAGED;
-		}
-
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
@@ -219,12 +211,6 @@ namespace CamelotEngine
 
 		Resource::initialize_internal();
 	}
-	/****************************************************************************************/
-	void D3D9Texture::freeInternalResources(void)
-	{
-		freeInternalResourcesImpl();
-	}
-
 	/****************************************************************************************/
 	void D3D9Texture::freeInternalResourcesImpl()
 	{
@@ -309,13 +295,6 @@ namespace CamelotEngine
 
 		return instanceSize * mMapDeviceToTextureResources.size();
 	}
-
-	/****************************************************************************************/
-	void D3D9Texture::createInternalResources(void)
-	{
-		createInternalResourcesImpl();
-	}
-
 	/****************************************************************************************/
 	void D3D9Texture::determinePool()
 	{

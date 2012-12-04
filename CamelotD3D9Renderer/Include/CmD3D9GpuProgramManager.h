@@ -37,8 +37,6 @@ namespace CamelotEngine {
     class CM_D3D9_EXPORT D3D9GpuProgramManager : public GpuProgramManager
     {
     public:
-		GpuProgramPtr createProgram(const String& code, GpuProgramType gptype, const String& syntaxCode);
-    public:
         D3D9GpuProgramManager();
 		~D3D9GpuProgramManager();
 
