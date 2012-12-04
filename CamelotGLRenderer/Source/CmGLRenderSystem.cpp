@@ -354,6 +354,10 @@ namespace CamelotEngine {
 					|| def.constType == GCT_SAMPLER2DSHADOW || def.constType == GCT_SAMPLER3D || def.constType == GCT_SAMPLER1DSHADOW)
 				{
 					TextureHandle curTexture = params->getTexture(def.physicalIndex);
+
+					if(!curTexture.isLoaded())
+						continue;
+
 					setTexture_internal(def.physicalIndex, true, curTexture.getInternalPtr());
 
 					const SamplerState& samplerState = params->getSamplerState(def.physicalIndex);
@@ -798,8 +802,8 @@ namespace CamelotEngine {
 		// unbind GPU programs at end of frame
 		// this is mostly to avoid holding bound programs that might get deleted
 		// outside via the resource manager
-		unbindGpuProgram(GPT_VERTEX_PROGRAM);
-		unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
+		unbindGpuProgram_internal(GPT_VERTEX_PROGRAM);
+		unbindGpuProgram_internal(GPT_FRAGMENT_PROGRAM);
 	}
 
 	//-----------------------------------------------------------------------------

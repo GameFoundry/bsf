@@ -40,6 +40,7 @@ namespace CamelotEngine
 		 * @brief	Gets the mesh data from the GPU. This method is slow so be careful when you call it.
 		 */
 		MeshDataPtr getMeshData();
+		void getMeshData_internal(AsyncOp& asyncOp);
 
 		RenderOperation getRenderOperation(UINT32 subMeshIdx = 0) const;
 

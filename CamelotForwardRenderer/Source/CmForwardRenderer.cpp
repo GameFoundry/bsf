@@ -26,13 +26,11 @@ namespace CamelotEngine
 
 	void ForwardRenderer::renderAll() 
 	{
-		return; // TODO - Temporarily I don't want to run this
-
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
 
 		// TODO - No point in setting these each frame?
-		renderSystem->setInvertVertexWinding_internal(false);
-		renderSystem->setDepthBufferParams_internal();
+		renderSystem->setInvertVertexWinding(false);
+		renderSystem->setDepthBufferParams();
 
 		const vector<CameraPtr>::type& allCameras = gSceneManager().getAllCameras();
 		for(auto iter = allCameras.begin(); iter != allCameras.end(); ++iter)
@@ -48,15 +46,15 @@ namespace CamelotEngine
 		vector<RenderablePtr>::type allRenderables = gSceneManager().getVisibleRenderables(camera);
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
-		renderSystem->setViewport_internal(*camera->getViewport());
+		renderSystem->setViewport(*camera->getViewport());
 
 		Matrix4 projMatrixCstm = camera->getProjectionMatrix();
 		Matrix4 viewMatrixCstm = camera->getViewMatrix();
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
-		renderSystem->clearFrameBuffer_internal(FBT_COLOUR | FBT_DEPTH, Color::Blue);
-		renderSystem->beginFrame_internal();
+		renderSystem->clearFrameBuffer(FBT_COLOUR | FBT_DEPTH, Color::Blue);
+		renderSystem->beginFrame();
 
 		// TODO - sort renderables by material/pass/parameters to minimize state changes
 		for(auto iter = allRenderables.begin(); iter != allRenderables.end(); ++iter)
@@ -81,11 +79,11 @@ namespace CamelotEngine
 				setPass(material->getPass(i));
 				setPassParameters(material->getPassParameters(i));
 
-				renderSystem->render_internal(mesh->getRenderOperation());
+				renderSystem->render(mesh->getRenderOperation());
 			}
 		}
 
-		renderSystem->endFrame_internal();
+		renderSystem->endFrame();
 
 		// TODO - Sort renderables
 		// Render them
@@ -138,7 +136,7 @@ namespace CamelotEngine
 		// Set scene blending
 		if ( pass->hasSeparateSceneBlending( ) )
 		{
-			renderSystem->setSeparateSceneBlending_internal(
+			renderSystem->setSeparateSceneBlending(
 				pass->getSourceBlendFactor(), pass->getDestBlendFactor(),
 				pass->getSourceBlendFactorAlpha(), pass->getDestBlendFactorAlpha(),
 				pass->getSceneBlendingOperation(), 
@@ -148,20 +146,20 @@ namespace CamelotEngine
 		{
 			if(pass->hasSeparateSceneBlendingOperations( ) )
 			{
-				renderSystem->setSeparateSceneBlending_internal(
+				renderSystem->setSeparateSceneBlending(
 					pass->getSourceBlendFactor(), pass->getDestBlendFactor(),
 					pass->getSourceBlendFactor(), pass->getDestBlendFactor(),
 					pass->getSceneBlendingOperation(), pass->getSceneBlendingOperationAlpha() );
 			}
 			else
 			{
-				renderSystem->setSceneBlending_internal(
+				renderSystem->setSceneBlending(
 					pass->getSourceBlendFactor(), pass->getDestBlendFactor(), pass->getSceneBlendingOperation() );
 			}
 		}
 
 		// Set point parameters
-		renderSystem->setPointParameters_internal(
+		renderSystem->setPointParameters(
 			pass->getPointSize(),
 			false, 
 			false, 
@@ -178,25 +176,25 @@ namespace CamelotEngine
 
 		// Set up non-texture related material settings
 		// Depth buffer settings
-		renderSystem->setDepthBufferFunction_internal(pass->getDepthFunction());
-		renderSystem->setDepthBufferCheckEnabled_internal(pass->getDepthCheckEnabled());
-		renderSystem->setDepthBufferWriteEnabled_internal(pass->getDepthWriteEnabled());
-		renderSystem->setDepthBias_internal(pass->getDepthBiasConstant(), pass->getDepthBiasSlopeScale());
+		renderSystem->setDepthBufferFunction(pass->getDepthFunction());
+		renderSystem->setDepthBufferCheckEnabled(pass->getDepthCheckEnabled());
+		renderSystem->setDepthBufferWriteEnabled(pass->getDepthWriteEnabled());
+		renderSystem->setDepthBias(pass->getDepthBiasConstant(), pass->getDepthBiasSlopeScale());
 
 		// Alpha-reject settings
-		renderSystem->setAlphaRejectSettings_internal(
+		renderSystem->setAlphaRejectSettings(
 			pass->getAlphaRejectFunction(), pass->getAlphaRejectValue(), pass->isAlphaToCoverageEnabled());
 
 		// Set colour write mode
 		// Right now we only use on/off, not per-channel
 		bool colWrite = pass->getColourWriteEnabled();
-		renderSystem->setColorBufferWriteEnabled_internal(colWrite, colWrite, colWrite, colWrite);
+		renderSystem->setColorBufferWriteEnabled(colWrite, colWrite, colWrite, colWrite);
 
 		// Culling mode
-		renderSystem->setCullingMode_internal(pass->getCullingMode());
+		renderSystem->setCullingMode(pass->getCullingMode());
 
 		// Polygon mode
-		renderSystem->setPolygonMode_internal(pass->getPolygonMode());
+		renderSystem->setPolygonMode(pass->getPolygonMode());
 	}
 
 	void ForwardRenderer::setPassParameters(PassParametersPtr params)

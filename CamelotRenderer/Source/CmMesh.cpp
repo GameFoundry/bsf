@@ -7,6 +7,7 @@
 #include "CmHardwareBufferManager.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
+#include "CmAsyncOp.h"
 
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
@@ -167,6 +168,13 @@ namespace CamelotEngine
 
 	MeshDataPtr Mesh::getMeshData()
 	{
+		AsyncOp op = RenderSystemManager::getActive()->queueResourceReturnCommand(boost::bind(&Mesh::getMeshData_internal, this, _1), true);
+
+		return op.getReturnValue<MeshDataPtr>();
+	}
+
+	void Mesh::getMeshData_internal(AsyncOp& asyncOp)
+	{
 		MeshDataPtr meshData(new MeshData());
 
 		meshData->declaration = mVertexData->vertexDeclaration->clone();
@@ -276,7 +284,7 @@ namespace CamelotEngine
 			}
 		}		
 
-		return meshData;
+		asyncOp.completeOperation(meshData);
 	}
 
 	RenderOperation Mesh::getRenderOperation(UINT32 subMeshIdx) const
