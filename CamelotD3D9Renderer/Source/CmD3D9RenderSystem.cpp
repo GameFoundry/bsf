@@ -229,15 +229,6 @@ namespace CamelotEngine
 
 		String msg;
 
-		// Make sure we don't already have a render target of the 
-		// same name as the one supplied
-		if( mRenderTargets.find( name ) != mRenderTargets.end() )
-		{
-			msg = "A render target of the same name '" + name + "' already "
-				"exists.  You cannot create a new window with this name.";
-			CM_EXCEPT(InternalErrorException, msg);
-		}
-
 		D3D9RenderWindow* renderWindow = new D3D9RenderWindow(mhInstance);
 
 		renderWindow->create(name, width, height, fullScreen, &miscParams);
@@ -476,7 +467,7 @@ namespace CamelotEngine
 		};
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::destroyRenderTarget_internal(const String& name)
+	void D3D9RenderSystem::destroyRenderTarget_internal(RenderTarget* renderTarget)
 	{		
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -486,7 +477,7 @@ namespace CamelotEngine
 		D3D9RenderWindowList::iterator sw;
 		for (sw = mRenderWindows.begin(); sw != mRenderWindows.end(); ++sw)
 		{
-			if ((*sw)->getName() == name)
+			if ((*sw) == renderTarget)
 			{
 				renderWindow = (*sw);					
 				mRenderWindows.erase(sw);
@@ -496,7 +487,7 @@ namespace CamelotEngine
 		
 
 		// Do the real removal
-		RenderSystem::destroyRenderTarget_internal(name);	
+		RenderSystem::destroyRenderTarget_internal(renderTarget);	
 	}
 
 	//---------------------------------------------------------------------

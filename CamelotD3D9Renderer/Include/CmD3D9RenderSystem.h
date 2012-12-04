@@ -237,7 +237,7 @@ namespace CamelotEngine
 		void startUp_internal();
 		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
-		void destroyRenderTarget_internal(const String& name);
+		void destroyRenderTarget_internal(RenderTarget* renderTarget);
 		void setRenderTarget_internal(RenderTarget *target);
 
 		void bindGpuProgram_internal(GpuProgramHandle prg);

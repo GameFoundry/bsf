@@ -111,12 +111,12 @@ namespace CamelotEngine {
 		// Remove all the render targets.
 		// (destroy primary target last since others may depend on it)
 		RenderTarget* primary = 0;
-		for (RenderTargetMap::iterator it = mRenderTargets.begin(); it != mRenderTargets.end(); ++it)
+		for (auto it = mRenderTargets.begin(); it != mRenderTargets.end(); ++it)
 		{
-			if (!primary && it->second->isPrimary())
-				primary = it->second;
+			if (!primary && (*it)->isPrimary())
+				primary = *it;
 			else
-				delete it->second;
+				delete *it;
 		}
 		delete primary;
 		mRenderTargets.clear();
@@ -162,26 +162,26 @@ namespace CamelotEngine {
 		return op.getReturnValue<RenderWindow*>();
 	}
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderWindow_internal(const String& name)
+    void RenderSystem::destroyRenderWindow_internal(RenderWindow* renderWindow)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        destroyRenderTarget_internal(name);
+        destroyRenderTarget_internal(renderWindow);
     }
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderTexture_internal(const String& name)
+    void RenderSystem::destroyRenderTexture_internal(RenderTexture* renderTexture)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        destroyRenderTarget_internal(name);
+        destroyRenderTarget_internal(renderTexture);
     }
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderTarget_internal(const String& name)
+    void RenderSystem::destroyRenderTarget_internal(RenderTarget* renderTarget)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        RenderTarget* rt = detachRenderTarget(name);
-        delete rt;
+        detachRenderTarget_internal(*renderTarget);
+        delete renderTarget;
     }
     //---------------------------------------------------------------------------------------------
     void RenderSystem::attachRenderTarget_internal( RenderTarget &target )
@@ -190,26 +190,39 @@ namespace CamelotEngine {
 
 		assert( target.getPriority() < CM_NUM_RENDERTARGET_GROUPS );
 
-        mRenderTargets.insert( RenderTargetMap::value_type( target.getName(), &target ) );
+        mRenderTargets.push_back(&target);
         mPrioritisedRenderTargets.insert(
             RenderTargetPriorityMap::value_type(target.getPriority(), &target ));
     }
-
-    //---------------------------------------------------------------------------------------------
-    RenderTarget * RenderSystem::getRenderTarget( const String &name )
-    {
+	//---------------------------------------------------------------------------------------------
+	void RenderSystem::detachRenderTarget_internal(RenderTarget& renderTarget)
+	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-        RenderTargetMap::iterator it = mRenderTargets.find( name );
-        RenderTarget *ret = NULL;
+		auto it = std::find(mRenderTargets.begin(), mRenderTargets.end(), &renderTarget);
+		RenderTarget* foundRT = nullptr;
 
-        if( it != mRenderTargets.end() )
-        {
-            ret = it->second;
-        }
+		if( it != mRenderTargets.end() )
+		{
+			foundRT = *it;
 
-        return ret;
-    }
+			/* Remove the render target from the priority groups. */
+			RenderTargetPriorityMap::iterator itarg, itargend;
+			itargend = mPrioritisedRenderTargets.end();
+			for( itarg = mPrioritisedRenderTargets.begin(); itarg != itargend; ++itarg )
+			{
+				if( itarg->second == *it ) {
+					mPrioritisedRenderTargets.erase( itarg );
+					break;
+				}
+			}
+
+			mRenderTargets.erase( it );
+		}
+		/// If detached render target is the active render target, reset active render target
+		if(foundRT == mActiveRenderTarget)
+			mActiveRenderTarget = 0;
+	}
 	//---------------------------------------------------------------------------------------------
 	const RenderSystemCapabilities* RenderSystem::getCapabilities_internal(void) const 
 	{ 
@@ -224,37 +237,6 @@ namespace CamelotEngine {
 
 		return mDriverVersion; 
 	}
-    //---------------------------------------------------------------------------------------------
-    RenderTarget * RenderSystem::detachRenderTarget( const String &name )
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-        RenderTargetMap::iterator it = mRenderTargets.find( name );
-        RenderTarget *ret = NULL;
-
-        if( it != mRenderTargets.end() )
-        {
-            ret = it->second;
-			
-			/* Remove the render target from the priority groups. */
-            RenderTargetPriorityMap::iterator itarg, itargend;
-            itargend = mPrioritisedRenderTargets.end();
-			for( itarg = mPrioritisedRenderTargets.begin(); itarg != itargend; ++itarg )
-            {
-				if( itarg->second == ret ) {
-					mPrioritisedRenderTargets.erase( itarg );
-					break;
-				}
-            }
-
-            mRenderTargets.erase( it );
-        }
-        /// If detached render target is the active render target, reset active render target
-        if(ret == mActiveRenderTarget)
-            mActiveRenderTarget = 0;
-
-        return ret;
-    }
 	//-----------------------------------------------------------------------
 	void RenderSystem::setViewport(const Viewport& vp)
 	{

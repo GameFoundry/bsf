@@ -299,13 +299,13 @@ namespace CamelotEngine
 			// NB allow 4 bytes of window data for D3D9RenderWindow pointer
 			WNDCLASS wc = { 0, WindowEventUtilities::_WndProc, 0, 0, hInst,
 				LoadIcon(0, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
-				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "OgreD3D9Wnd" };
+				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "D3D9Wnd" };
 			RegisterClass(&wc);
 
 			// Create our main window
 			// Pass pointer to self
 			mIsExternal = false;
-			mHWnd = CreateWindowEx(dwStyleEx, "OgreD3D9Wnd", title.c_str(), dwStyle,
+			mHWnd = CreateWindowEx(dwStyleEx, "D3D9Wnd", title.c_str(), dwStyle,
 				mLeft, mTop, winWidth, winHeight, parentHWnd, 0, hInst, this);
 			mStyle = dwStyle;
 

@@ -950,7 +950,7 @@ void D3D9HardwarePixelBuffer::destroyRenderTexture()
 {
 	if (mRenderTexture != NULL)
 	{
-		CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget_internal(mRenderTexture->getName());
+		CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget_internal(mRenderTexture);
 		mRenderTexture = NULL;
 	}
 }

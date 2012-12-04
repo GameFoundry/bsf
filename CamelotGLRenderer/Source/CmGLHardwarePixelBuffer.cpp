@@ -278,7 +278,7 @@ GLTextureBuffer::~GLTextureBuffer()
         // was deleted by the user.
         for (SliceTRT::const_iterator it = mSliceTRT.begin(); it != mSliceTRT.end(); ++it)
         {
-			CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget_internal((*it)->getName());
+			CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget_internal(*it);
         }
 	}
 }

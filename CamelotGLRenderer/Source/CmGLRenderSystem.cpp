@@ -128,11 +128,11 @@ namespace CamelotEngine {
 		shutdown();
 
 		// Destroy render windows
-		RenderTargetMap::iterator i;
-		for (i = mRenderTargets.begin(); i != mRenderTargets.end(); ++i)
+		for (auto i = mRenderTargets.begin(); i != mRenderTargets.end(); ++i)
 		{
-			delete i->second;
+			delete *i;
 		}
+
 		mRenderTargets.clear();
 
         if(mGLSupport)
@@ -209,12 +209,6 @@ namespace CamelotEngine {
 		const NameValuePairList& miscParams, AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
-
-		if (mRenderTargets.find(name) != mRenderTargets.end())
-		{
-			CM_EXCEPT(InvalidParametersException, 
-				"Window with name '" + name + "' already exists");
-		}
 
 		// Create the window
 		RenderWindow* win = mGLSupport->newWindow(name, width, height, 
@@ -381,24 +375,6 @@ namespace CamelotEngine {
 			mActiveFragmentGpuProgramParameters = params;
 			mCurrentFragmentProgram->bindProgramParameters(params, mask);
 			break;
-		}
-	}
-	//-----------------------------------------------------------------------
-	void GLRenderSystem::destroyRenderWindow_internal(RenderWindow* pWin)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		// Find it to remove from list
-		RenderTargetMap::iterator i = mRenderTargets.begin();
-
-		while (i != mRenderTargets.end())
-		{
-			if (i->second == pWin)
-			{
-				mRenderTargets.erase(i);
-				delete pWin;
-				break;
-			}
 		}
 	}
 	//-----------------------------------------------------------------------------

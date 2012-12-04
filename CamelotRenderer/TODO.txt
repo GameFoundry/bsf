@@ -29,18 +29,14 @@ Command buffer TODO:
 	 anisoLevel
 	 wrapMode
 	 mipMapBias
-   - Make sure resource deletion is handled on the proper thread
 
 Mesh
- - Add initialize and initialize_internal
- - Make sure MeshRTTI calls initialize properly
- - Make sure FBX importer calls initialize properly
+ - Make sure to queue up mesh deletion to make sure it gets destroyed on the render thread
 
 GpuProgram/HighLevelGpuProgram
  - Do a pass of refactoring
  - Fix it up for multithreading
   - In general everything needs to be checked
-  - Specifically HighLevelGpuParam::createParameters
   - Add thread checks
 
 Make initialize & initialize_internal protected?
@@ -48,21 +44,9 @@ Make initialize & initialize_internal protected?
  - Would need to modify HighLevelGpuProgram::mAssemblerProgram
 
 When saving a resource, make sure resource is properly loaded before saving
- - Add blockUntilLoaded method to Resource
-  - Probably need a flag to make sure loading even started?
-    (Or not if I make Resource constructors and initialize methods protected)
-  - Make sure this is never called on the render thread
   - Add doc to Resources::save that says it will block until render thread updates the resource
-  - Remove Response handlers from Resources
-
- Immediate:
-  - Port resource creation to use RenderContext (texture/mesh/shader/etc initialization and updates)
-  - Make sure to add thread checks (surrounded by #if DEBUG) to Vertex/Index/Pixel buffers, textures, meshes, etc.
-
- Later:
-  - Modify resource loading so we don't need a special Response handler on the main thread. We should be able to immediately queue up resource command instead.
   - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
-  - Create render thread in Application, and not in RenderSystem?
+  - Remove Response handlers from Resources
 
 HIGH PRIORITY TODO:
  - Issue with deserialization and value types:

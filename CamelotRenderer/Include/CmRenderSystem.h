@@ -57,7 +57,6 @@ namespace CamelotEngine
 	*  @{
 	*/
 
-	typedef map< String, RenderTarget * >::type RenderTargetMap;
 	typedef multimap<UINT8, RenderTarget * >::type RenderTargetPriorityMap;
 
 	class TextureManager;
@@ -354,14 +353,20 @@ namespace CamelotEngine
 
 		/** Attaches the passed render target to the render system.
 		*/
-		virtual void attachRenderTarget_internal( RenderTarget &target );
+		virtual void attachRenderTarget_internal(RenderTarget &target);
+
+		/** Detaches the render target from the render system.
+		@note
+		If the render target cannot be found, NULL is returned.
+		*/
+		virtual void detachRenderTarget_internal(RenderTarget& renderTarget);
 
 		/** Destroys a render window */
-		virtual void destroyRenderWindow_internal(const String& name);
+		virtual void destroyRenderWindow_internal(RenderWindow* renderWindow);
 		/** Destroys a render texture */
-		virtual void destroyRenderTexture_internal(const String& name);
+		virtual void destroyRenderTexture_internal(RenderTexture* renderTexture);
 		/** Destroys a render target of any sort */
-		virtual void destroyRenderTarget_internal(const String& name);
+		virtual void destroyRenderTarget_internal(RenderTarget* renderTarget);
 
 		/** Defines whether or now fullscreen render windows wait for the vertical blank before flipping buffers.
 		@remarks
@@ -911,7 +916,7 @@ namespace CamelotEngine
 		/************************************************************************/
 	protected:
 		/** The render targets. */
-		RenderTargetMap mRenderTargets;
+		vector<RenderTarget*>::type mRenderTargets;
 		/** The render targets, ordered by priority. */
 		RenderTargetPriorityMap mPrioritisedRenderTargets;
 		/** The Active render target. */
@@ -960,17 +965,6 @@ namespace CamelotEngine
 		This fails if mCapabilities->getNumMultiRenderTargets() is smaller than 2.
 		*/
 		virtual MultiRenderTarget * createMultiRenderTarget(const String & name) = 0; 
-
-		/** Returns a pointer to the render target with the passed name, or NULL if that
-		render target cannot be found.
-		*/
-		virtual RenderTarget * getRenderTarget( const String &name );
-		/** Detaches the render target with the passed name from the render system and
-		returns a pointer to it.
-		@note
-		If the render target cannot be found, NULL is returned.
-		*/
-		virtual RenderTarget * detachRenderTarget( const String &name );
 
 		/** Returns a description of an error code.
 		*/

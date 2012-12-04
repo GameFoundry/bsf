@@ -202,10 +202,6 @@ namespace CamelotEngine {
          * Set current render target to target, enabling its GL context if needed
          */
         void setRenderTarget_internal(RenderTarget *target);
-        /** See
-          RenderSystem
-         */
-        void destroyRenderWindow_internal(RenderWindow* pWin);
 		/** See
           RenderSystem
          */
