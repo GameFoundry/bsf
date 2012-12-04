@@ -250,16 +250,6 @@ namespace CamelotEngine {
 		return TextureManager::instance().create(texType, 
 			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 	}
-
-	void Texture::destruct(Texture* ptr)
-	{
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&Texture::destruct_internal, ptr));
-	}
-
-	void Texture::destruct_internal(Texture* ptr)
-	{
-		delete ptr;
-	}
 }
 
 #undef THROW_IF_NOT_RENDER_THREAD

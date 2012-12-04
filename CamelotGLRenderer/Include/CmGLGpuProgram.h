@@ -39,7 +39,6 @@ namespace CamelotEngine {
     class CM_RSGL_EXPORT GLGpuProgram : public GpuProgram
     {
     public:
-        GLGpuProgram();
         virtual ~GLGpuProgram();
 
         /// Execute the binding functions for this program
@@ -68,6 +67,8 @@ namespace CamelotEngine {
 		static GLuint getFixedAttributeIndex(VertexElementSemantic semantic, UINT32 index);
 
     protected:
+		GLGpuProgram();
+
 		/** Overridden from GpuProgram, do nothing */
 		void loadFromSource(void) {}
         /// @copydoc Resource::unloadImpl
@@ -81,7 +82,6 @@ namespace CamelotEngine {
     class CM_RSGL_EXPORT GLArbGpuProgram : public GLGpuProgram
     {
     public:
-        GLArbGpuProgram();
         virtual ~GLArbGpuProgram();
 
         /// @copydoc GpuProgram::setType
@@ -100,6 +100,10 @@ namespace CamelotEngine {
         { return mProgramType; }
 
     protected:
+		friend GpuProgram* createGLArbGpuProgram(GpuProgramType gptype, const String& syntaxCode);
+
+		GLArbGpuProgram();
+
         void loadFromSource(void);
         /// @copydoc Resource::unloadImpl
         void unloadImpl(void);

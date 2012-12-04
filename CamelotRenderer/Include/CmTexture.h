@@ -307,17 +307,6 @@ namespace CamelotEngine {
 		static TexturePtr create(TextureType texType, UINT32 width, UINT32 height, int num_mips,
 			PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
-
-	private:
-		/**
-		 * @brief	Schedules destruction of the provided object. Actual destruction happens on the render thread.
-		 */
-		static void destruct(Texture* ptr);
-
-		/**
-		 * @brief	Destroys the provided object. Should only be called on the render thread.
-		 */
-		static void destruct_internal(Texture* ptr);
     };
 
 	/** @} */

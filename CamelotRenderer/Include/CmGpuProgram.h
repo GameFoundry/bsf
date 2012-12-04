@@ -115,9 +115,6 @@ namespace CamelotEngine {
 		void throwIfNotRenderThread() const;
 
 	public:
-
-		GpuProgram();
-
 		virtual ~GpuProgram();
 
 		/**
@@ -215,6 +212,8 @@ namespace CamelotEngine {
     protected:
 		friend class GpuProgramManager;
 
+		GpuProgram();
+
         /// Virtual method which must be implemented by subclasses, load from mSource
         virtual void loadFromSource(void) = 0;
 
@@ -225,21 +224,6 @@ namespace CamelotEngine {
 		friend class GpuProgramRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
-
-	/************************************************************************/
-	/* 								STATICS		                     		*/
-	/************************************************************************/
-	private:
-		/**
-		 * @brief	Schedules destruction of the provided object. Actual destruction happens on the
-		 * 			render thread.
-		 */
-		static void destruct(GpuProgram* ptr);
-
-		/**
-		 * @brief	Destroys the provided object. Should only be called on the render thread.
-		 */
-		static void destruct_internal(GpuProgram* ptr);
 	};
 
 	/** @} */

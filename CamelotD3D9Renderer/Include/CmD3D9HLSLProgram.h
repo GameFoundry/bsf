@@ -42,28 +42,6 @@ namespace CamelotEngine {
     */
     class CM_D3D9_EXPORT D3D9HLSLProgram : public HighLevelGpuProgram
     {
-    protected:
-        /** Internal load implementation, must be implemented by subclasses.
-        */
-        void loadFromSource(void);
-        /** Internal method for creating an appropriate low-level program from this
-        high-level program, must be implemented by subclasses. */
-        void createLowLevelImpl(void);
-        /// Internal unload implementation, must be implemented by subclasses
-        void unloadHighLevelImpl(void);
-        /// Populate the passed parameters with name->index map, must be overridden
-        void buildConstantDefinitions() const;
-
-        // Recursive utility method for buildParamNameMap
-        void processParamElement(D3DXHANDLE parent, String prefix, unsigned int index) const;
-		void populateDef(D3DXCONSTANT_DESC& d3dDesc, GpuConstantDefinition& def) const;
-
-        String mPreprocessorDefines;
-        bool mColumnMajorMatrices;
-
-        LPD3DXBUFFER mpMicroCode;
-        LPD3DXCONSTANTTABLE mpConstTable;
-
 	public:
 		LPD3DXBUFFER getMicroCode();
 	public:
@@ -87,7 +65,6 @@ namespace CamelotEngine {
 		OptimisationLevel mOptimisationLevel;
 
     public:
-        D3D9HLSLProgram();
         ~D3D9HLSLProgram();
 
         /** Sets the entry point for this program ie the first method called. */
@@ -120,6 +97,32 @@ namespace CamelotEngine {
         void createParameters_internal(AsyncOp& op);
         /// Overridden from GpuProgram
         const String& getLanguage(void) const;
+
+    protected:
+		friend class D3D9HLSLProgramFactory;
+
+		D3D9HLSLProgram();
+
+        /** Internal load implementation, must be implemented by subclasses.
+        */
+        void loadFromSource(void);
+        /** Internal method for creating an appropriate low-level program from this
+        high-level program, must be implemented by subclasses. */
+        void createLowLevelImpl(void);
+        /// Internal unload implementation, must be implemented by subclasses
+        void unloadHighLevelImpl(void);
+        /// Populate the passed parameters with name->index map, must be overridden
+        void buildConstantDefinitions() const;
+
+        // Recursive utility method for buildParamNameMap
+        void processParamElement(D3DXHANDLE parent, String prefix, unsigned int index) const;
+		void populateDef(D3DXCONSTANT_DESC& d3dDesc, GpuConstantDefinition& def) const;
+
+        String mPreprocessorDefines;
+        bool mColumnMajorMatrices;
+
+        LPD3DXBUFFER mpMicroCode;
+        LPD3DXCONSTANTTABLE mpConstTable;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

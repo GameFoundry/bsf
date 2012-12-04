@@ -28,6 +28,8 @@ THE SOFTWARE.
 #include "CmTextureManager.h"
 #include "CmException.h"
 #include "CmPixelUtil.h"
+#include "CmRenderSystemManager.h"
+#include "CmRenderSystem.h"
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------
@@ -40,12 +42,22 @@ namespace CamelotEngine {
     {
         // subclasses should unregister with resource group manager
     }
+	//-----------------------------------------------------------------------
+	void TextureManager::destroy(Texture* texture)
+	{
+		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&TextureManager::destroy_internal, this, texture));
+	}
+	//-----------------------------------------------------------------------
+	void TextureManager::destroy_internal(Texture* texture)
+	{
+		delete texture;
+	}
     //-----------------------------------------------------------------------
     TexturePtr TextureManager::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
         PixelFormat format, int usage, bool hwGamma, 
 		UINT32 fsaa, const String& fsaaHint)
     {
-        TexturePtr ret = TexturePtr(createImpl(), &Texture::destruct);
+        TexturePtr ret = TexturePtr(createImpl(), boost::bind(&TextureManager::destroy, this, _1));
 		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, fsaa, fsaaHint);
 
 		return ret;
@@ -53,7 +65,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	TexturePtr TextureManager::createEmpty()
 	{
-		TexturePtr ret = TexturePtr(createImpl(), &Texture::destruct);
+		TexturePtr ret = TexturePtr(createImpl(), boost::bind(&TextureManager::destroy, this, _1));
 
 		return ret;
 	}

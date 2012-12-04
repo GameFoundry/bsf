@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 #include "CmGLGpuProgramManager.h"
 #include "CmGLGpuProgram.h"
+#include "CmException.h"
 
 using namespace CamelotEngine;
 
@@ -56,9 +57,7 @@ GpuProgram* GLGpuProgramManager::create(GpuProgramType gptype, const String& syn
     ProgramMap::const_iterator iter = mProgramMap.find(syntaxCode);
     if(iter == mProgramMap.end())
     {
-        // No factory, this is an unsupported syntax code, probably for another rendersystem
-        // Create a basic one, it doesn't matter what it is since it won't be used
-        return new GLGpuProgram();
+        CM_EXCEPT(InternalErrorException, "Cannot find propery factory to create GpuProgram of type: " + syntaxCode);
     }
     
     return (iter->second)(gptype, syntaxCode);

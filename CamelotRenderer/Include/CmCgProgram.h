@@ -44,11 +44,39 @@ namespace CamelotEngine {
     */
     class CM_EXPORT CgProgram : public HighLevelGpuProgram
     {
+    public:
+        ~CgProgram();
+
+        /** Sets the entry point for this program ie the first method called. */
+        void setEntryPoint(const String& entryPoint) { mEntryPoint = entryPoint; }
+        /** Gets the entry point defined for this program. */
+        const String& getEntryPoint(void) const { return mEntryPoint; }
+        /** Sets the Cg profiles which can be supported by the program. */
+        void setProfiles(const vector<String>::type& profiles);
+        /** Gets the Cg profiles which can be supported by the program. */
+        const vector<String>::type& getProfiles(void) const { return mProfiles; }
+        /** Sets the compilation arguments for this program ie the first method called. */
+        void setCompileArguments(const String& args) { mCompileArgs = args; }
+        /** Gets the entry point defined for this program. */
+        const String& getCompileArguments(void) const { return mCompileArgs; }
+        /// Overridden from GpuProgram
+        bool isSupported(void) const;
+        /// Overridden from GpuProgram
+        const String& getLanguage(void) const;
+
+		/// scan the file for #include and replace with source from the OGRE resources
+		static String resolveCgIncludes(const String& source, Resource* resourceBeingLoaded, const String& fileName);
+
     protected:
+		friend class CgProgramFactory;
+
         /// The CG context to use, passed in by factory
         CGcontext mCgContext;
         /// Program handle
         CGprogram mCgProgram;
+
+		CgProgram(CGcontext context);
+
         /** Internal load implementation, must be implemented by subclasses.
         */
         void loadFromSource(void);
@@ -79,31 +107,6 @@ namespace CamelotEngine {
         void buildArgs(void);
         /// Releases memory for the horrible Cg char**
         void freeCgArgs(void);
-
-
-    public:
-        CgProgram(CGcontext context);
-        ~CgProgram();
-
-        /** Sets the entry point for this program ie the first method called. */
-        void setEntryPoint(const String& entryPoint) { mEntryPoint = entryPoint; }
-        /** Gets the entry point defined for this program. */
-        const String& getEntryPoint(void) const { return mEntryPoint; }
-        /** Sets the Cg profiles which can be supported by the program. */
-        void setProfiles(const vector<String>::type& profiles);
-        /** Gets the Cg profiles which can be supported by the program. */
-        const vector<String>::type& getProfiles(void) const { return mProfiles; }
-        /** Sets the compilation arguments for this program ie the first method called. */
-        void setCompileArguments(const String& args) { mCompileArgs = args; }
-        /** Gets the entry point defined for this program. */
-        const String& getCompileArguments(void) const { return mCompileArgs; }
-        /// Overridden from GpuProgram
-        bool isSupported(void) const;
-        /// Overridden from GpuProgram
-        const String& getLanguage(void) const;
-
-		/// scan the file for #include and replace with source from the OGRE resources
-		static String resolveCgIncludes(const String& source, Resource* resourceBeingLoaded, const String& fileName);
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

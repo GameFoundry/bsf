@@ -39,7 +39,6 @@ namespace CamelotEngine {
     class CM_D3D9_EXPORT D3D9GpuProgram : public GpuProgram, public D3D9Resource
     {   
     public:
-        D3D9GpuProgram();
         ~D3D9GpuProgram();
 
 		virtual void initialize_internal(void);
@@ -64,6 +63,10 @@ namespace CamelotEngine {
         /** Gets the external microcode buffer, if any. */
         LPD3DXBUFFER getExternalMicrocode(void);
     protected:
+		friend class D3D9GpuProgramManager;
+
+		D3D9GpuProgram();
+
         /** Overridden from GpuProgram */
         void loadFromSource(void);
 		/** Loads this program from source to specified device */
@@ -90,7 +93,6 @@ namespace CamelotEngine {
     class CM_D3D9_EXPORT D3D9GpuVertexProgram : public D3D9GpuProgram
     {  
     public:
-        D3D9GpuVertexProgram();
 		~D3D9GpuVertexProgram();
         
 		void unload(void);
@@ -105,6 +107,10 @@ namespace CamelotEngine {
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
     protected:
+		friend class D3D9GpuProgramManager;
+
+		D3D9GpuVertexProgram();
+
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 
 	protected:
@@ -118,7 +124,6 @@ namespace CamelotEngine {
     class CM_D3D9_EXPORT D3D9GpuFragmentProgram : public D3D9GpuProgram
     {  
     public:
-        D3D9GpuFragmentProgram();
 		~D3D9GpuFragmentProgram();
 
 		void unload(void);
@@ -133,6 +138,10 @@ namespace CamelotEngine {
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
     protected:
+		friend class D3D9GpuProgramManager;
+
+		D3D9GpuFragmentProgram();
+
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 
 	protected:

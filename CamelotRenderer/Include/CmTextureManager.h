@@ -58,8 +58,11 @@ namespace CamelotEngine {
      */
     class CM_EXPORT TextureManager : public Module<TextureManager>
     {
-		protected:
-			virtual Texture* createImpl() = 0;
+	protected:
+		virtual Texture* createImpl() = 0;
+
+		void destroy(Texture* texture);
+		virtual void destroy_internal(Texture* texture);
 
     public:
 

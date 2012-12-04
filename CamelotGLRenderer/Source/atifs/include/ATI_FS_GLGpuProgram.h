@@ -38,7 +38,6 @@ namespace CamelotEngine {
 	class CM_RSGL_EXPORT ATI_FS_GLGpuProgram : public GLGpuProgram
 	{
 	public:
-        ATI_FS_GLGpuProgram();
 		virtual ~ATI_FS_GLGpuProgram();
 
 
@@ -54,6 +53,10 @@ namespace CamelotEngine {
 		{ return mProgramID; }
 
 	protected:
+		friend GpuProgram* createGL_ATI_FS_GpuProgram(GpuProgramType gptype, const String& syntaxCode);
+
+		ATI_FS_GLGpuProgram();
+
 		/// @copydoc Resource::unload
 		void unloadImpl(void);
 		void loadFromSource(void);

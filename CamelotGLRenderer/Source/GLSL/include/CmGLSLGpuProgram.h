@@ -59,9 +59,8 @@ namespace CamelotEngine {
 		static GLuint mGeometryShaderCount;
 
 	public:
-        GLSLGpuProgram(GLSLProgram* parent);
 		~GLSLGpuProgram();
-
+		GLSLGpuProgram(GLSLProgram* parent);
 
 		/// Execute the binding functions for this program
 		void bindProgram(void);
@@ -85,17 +84,15 @@ namespace CamelotEngine {
 		
 
     protected:
+		friend class GLSLProgramFactory;
+
         /// Overridden from GpuProgram
         void loadFromSource(void);
 		/// @copydoc Resource::unloadImpl
 		void unloadImpl(void);
 		/// @copydoc Resource::loadImpl
 		void initialize_internal(void);
-
-
     };
-
-
 }
 
 

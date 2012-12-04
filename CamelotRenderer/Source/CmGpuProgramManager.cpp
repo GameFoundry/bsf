@@ -42,6 +42,17 @@ namespace CamelotEngine {
 	{
 		// subclasses should unregister with resource group manager
 	}
+	//-------------------------------------------------------------------------
+	void GpuProgramManager::destroy(GpuProgram* program)
+	{
+		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&GpuProgramManager::destroy_internal, this, program));
+	}
+	//-------------------------------------------------------------------------
+	void GpuProgramManager::destroy_internal(GpuProgram* program)
+	{
+		if(program != nullptr)
+			delete program;
+	}
     //---------------------------------------------------------------------------
 	GpuProgramPtr GpuProgramManager::load(const String& code, 
         GpuProgramType gptype, const String& syntaxCode)
@@ -57,7 +68,7 @@ namespace CamelotEngine {
 	GpuProgramPtr GpuProgramManager::createProgram(const String& code, GpuProgramType gptype, 
 		const String& syntaxCode)
     {
-		GpuProgramPtr prg = GpuProgramPtr(create(gptype, syntaxCode), &GpuProgram::destruct);
+		GpuProgramPtr prg = GpuProgramPtr(create(gptype, syntaxCode), boost::bind(&GpuProgramManager::destroy, this, _1));
         // Set all prarmeters (create does not set, just determines factory)
 		prg->setType(gptype);
 		prg->setSyntaxCode(syntaxCode);
