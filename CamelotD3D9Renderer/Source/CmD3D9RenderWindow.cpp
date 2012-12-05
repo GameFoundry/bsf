@@ -199,7 +199,7 @@ namespace CamelotEngine
 
 
 				// Get the nearest monitor to this window.
-				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTONEAREST);
+				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTOPRIMARY);
 			}
 
 			// Get the target monitor info		
