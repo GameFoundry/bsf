@@ -148,7 +148,7 @@ namespace CamelotEngine
 		// (Why not just directly convert to bool? Because then we can assign pointer to bool and that's weird)
 		operator int CM_Bool_struct<T>::*() const
 		{
-			return ((isLoaded() && (mData->mPtr.get() != 0)) ? &CM_Bool_struct<T>::_Member : 0);
+			return (((mData->mPtr != nullptr)) ? &CM_Bool_struct<T>::_Member : 0);
 		}
 	};
 
