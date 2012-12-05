@@ -40,6 +40,11 @@ namespace CamelotEngine
 		 * @brief	Callback called from the render thread in order to initialize resources.
 		 */
 		void updateResourcesCallback();
+
+		/**
+		 * @brief	Runs the OS specific message pump.
+		 */
+		void updateMessagePump();
 	};
 
 	CM_EXPORT Application& gApplication();

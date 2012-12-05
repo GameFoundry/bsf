@@ -62,6 +62,7 @@ namespace CamelotEngine
 
 		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
 
+		renderSystem->addPreRenderThreadUpdateCallback(boost::bind(&Application::updateMessagePump, this));
 		renderSystem->addPreRenderThreadUpdateCallback(boost::bind(&Application::updateResourcesCallback, this));
 	}
 
@@ -69,8 +70,6 @@ namespace CamelotEngine
 	{
 		while(true)
 		{
-			WindowEventUtilities::messagePump();
-
 			gSceneManager().update();
 
 			RendererManager::getActive()->renderAll();
@@ -81,6 +80,11 @@ namespace CamelotEngine
 			gTime().update();
 			gInput().update();
 		}
+	}
+
+	void Application::updateMessagePump()
+	{
+		WindowEventUtilities::messagePump();
 	}
 
 	void Application::updateResourcesCallback()

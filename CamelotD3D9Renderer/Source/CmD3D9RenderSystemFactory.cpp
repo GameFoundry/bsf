@@ -7,7 +7,7 @@ namespace CamelotEngine
 	#ifdef CM_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle( NULL );
 	#else
-		HINSTANCE hInst = GetModuleHandle( "CamelotEngine.dll" ); // TODO - Change name if I plan on using external dll
+		HINSTANCE hInst = GetModuleHandle( "CamelotD3D9RenderSystem.dll" );
 	#endif
 
 		return RenderSystemPtr(new D3D9RenderSystem(hInst));

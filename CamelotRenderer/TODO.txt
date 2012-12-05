@@ -16,6 +16,7 @@ High-level TODO:
 
 
 Command buffer TODO:
+ - Make sure window gets created on the main, and not the render thread
  - My current approach doesn't allow multiple threads to use the RenderSystem (contexts should be handled differently)
    - Instead of requiring the user to constantly call setActiveContext, make the call peristent per thread. 
    - Store sequential thread idx in local thread storage, and then we can easily look up a context for a thread and

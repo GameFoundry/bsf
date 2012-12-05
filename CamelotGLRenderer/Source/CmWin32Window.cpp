@@ -74,11 +74,7 @@ namespace CamelotEngine {
 #ifdef CM_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle( NULL );
 #else
-#  if CM_DEBUG_MODE == 1
-		HINSTANCE hInst = GetModuleHandle("RenderSystem_GL_d.dll");
-#  else
-		HINSTANCE hInst = GetModuleHandle("RenderSystem_GL.dll");
-#  endif
+		HINSTANCE hInst = GetModuleHandle("CamelotGLRenderSystem.dll");
 #endif
 
 		mHWnd = 0;
@@ -342,7 +338,7 @@ namespace CamelotEngine {
 			}
 
 			// Pass pointer to self as WM_CREATE parameter
-			mHWnd = CreateWindowEx(dwStyleEx, "OgreGLWindow", title.c_str(),
+			mHWnd = CreateWindowEx(dwStyleEx, "GLWindow", title.c_str(),
 				dwStyle, mLeft, mTop, mWidth, mHeight, parent, 0, hInst, this);
 
 			WindowEventUtilities::_addRenderWindow(this);			
