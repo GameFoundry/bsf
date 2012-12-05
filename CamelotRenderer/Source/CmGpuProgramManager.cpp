@@ -54,25 +54,10 @@ namespace CamelotEngine {
 			delete program;
 	}
     //---------------------------------------------------------------------------
-	GpuProgramPtr GpuProgramManager::load(const String& code, 
-        GpuProgramType gptype, const String& syntaxCode)
+	GpuProgramPtr GpuProgramManager::createProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
     {
-		GpuProgramPtr prg;
-		{
-			prg = createProgram( code, gptype, syntaxCode);
-		}
-        prg->initialize();
-        return prg;
-    }
-    //---------------------------------------------------------------------------
-	GpuProgramPtr GpuProgramManager::createProgram(const String& code, GpuProgramType gptype, 
-		const String& syntaxCode)
-    {
-		GpuProgramPtr prg = GpuProgramPtr(create(gptype, syntaxCode), boost::bind(&GpuProgramManager::destroy, this, _1));
-        // Set all prarmeters (create does not set, just determines factory)
-		prg->setType(gptype);
-		prg->setSyntaxCode(syntaxCode);
-		prg->setSource(code);
+		GpuProgramPtr prg = GpuProgramPtr(create(source, entryPoint, language, gptype, profile), boost::bind(&GpuProgramManager::destroy, this, _1));
+
         return prg;
     }
     //---------------------------------------------------------------------------

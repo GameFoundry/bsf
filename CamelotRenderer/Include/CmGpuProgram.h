@@ -131,29 +131,14 @@ namespace CamelotEngine {
 		virtual void initialize_internal();
 		virtual void unload() {}
 
-		/** Sets the source assembly for this program from an in-memory string.
-        @remarks
-            Setting this will have no effect until you (re)load the program.
-        */
-        virtual void setSource(const String& source);
-
         /** Gets the syntax code for this program e.g. arbvp1, fp20, vs_1_1 etc */
         virtual const String& getSyntaxCode(void) const { return mSyntaxCode; }
 
-		/** Sets the syntax code for this program e.g. arbvp1, fp20, vs_1_1 etc */
-		virtual void setSyntaxCode(const String& syntax);
-
         /** Gets the assembler source for this program. */
         virtual const String& getSource(void) const { return mSource; }
-		/// Set the program type (only valid before load)
-		virtual void setType(GpuProgramType t);
         /// Get the program type
         virtual GpuProgramType getType(void) const { return mType; }
-		/// Sets the gpu program profile (e.g. vs_1_1, etc.). Make sure it matches the program type.
-		virtual void setProfile(GpuProgramProfile profile) { mProfile = profile; }
 		virtual GpuProgramProfile getProfile() const { return mProfile; }
-		/// Sets the name of the entry method for the program
-		virtual void setEntryPoint(const String& entryPoint) { mEntryPoint = entryPoint; }
 		virtual const String& getEntryPoint() const { return mEntryPoint; }
 
         /** Returns the GpuProgram which should be bound to the pipeline.
@@ -197,22 +182,20 @@ namespace CamelotEngine {
 		*/
 		virtual void resetCompileError(void) { mCompileError = false; }
 
-		/// Get a read-only reference to the named constants registered for this program (manually or automatically)
-		virtual const GpuNamedConstants& getNamedConstants() const { return *mConstantDefs.get(); }
-
 		/** Get the full list of named constants.
 		@note
 		Only available if this parameters object has named parameters, which means either
 		a high-level program which loads them, or a low-level program which has them
 		specified manually.
 		*/
-		virtual const GpuNamedConstants& getConstantDefinitions() const { return *mConstantDefs.get(); }
+		virtual const GpuNamedConstants& getConstantDefinitions_internal() const;
 
 
     protected:
 		friend class GpuProgramManager;
 
-		GpuProgram();
+		GpuProgram(const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
         /// Virtual method which must be implemented by subclasses, load from mSource
         virtual void loadFromSource(void) = 0;

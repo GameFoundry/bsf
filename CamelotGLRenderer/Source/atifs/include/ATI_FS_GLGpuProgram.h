@@ -53,9 +53,10 @@ namespace CamelotEngine {
 		{ return mProgramID; }
 
 	protected:
-		friend GpuProgram* createGL_ATI_FS_GpuProgram(GpuProgramType gptype, const String& syntaxCode);
+		friend GpuProgram* createGL_ATI_FS_GpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
-		ATI_FS_GLGpuProgram();
+		ATI_FS_GLGpuProgram(const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
 		/// @copydoc Resource::unload
 		void unloadImpl(void);

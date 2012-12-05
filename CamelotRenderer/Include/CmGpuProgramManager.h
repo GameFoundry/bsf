@@ -51,7 +51,7 @@ namespace CamelotEngine {
 	protected:
 		/** General create method
         */
-        virtual GpuProgram* create(GpuProgramType gptype, const String& syntaxCode) = 0;
+        virtual GpuProgram* create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) = 0;
 
 		void destroy(GpuProgram* program);
 		virtual void destroy_internal(GpuProgram* program);
@@ -59,20 +59,6 @@ namespace CamelotEngine {
 	public:
 		GpuProgramManager();
 		virtual ~GpuProgramManager();
-
-		/** Loads a GPU program from a string of assembly code.
-		@remarks
-			The assembly code must be compatible with this manager - call the 
-			getSupportedSyntax method for details of the supported syntaxes 
-		@param name The identifying name to give this program, which can be used to
-			retrieve this program later with getByName.
-		@param groupName The name of the resource group
-		@param code A string of assembly code which will form the program to run
-		@param gptype The type of program to create.
-        @param syntaxCode The name of the syntax to be used for this program e.g. arbvp1, vs_1_1
-		*/
-		virtual GpuProgramPtr load(const String& code, GpuProgramType gptype,
-            const String& syntaxCode);
 
 		/** Returns the syntaxes that this manager supports. */
 		virtual const SyntaxCodes& getSupportedSyntax(void) const;
@@ -109,8 +95,7 @@ namespace CamelotEngine {
 		@param gptype The type of program to create.
         @param syntaxCode The name of the syntax to be used for this program e.g. arbvp1, vs_1_1
 		*/
-		GpuProgramPtr createProgram(const String& code, 
-            GpuProgramType gptype, const String& syntaxCode);
+		GpuProgramPtr createProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 	};
 
 	/** @} */

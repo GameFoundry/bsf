@@ -43,8 +43,9 @@ THE SOFTWARE.
 namespace CamelotEngine
 {
     //---------------------------------------------------------------------------
-    HighLevelGpuProgram::HighLevelGpuProgram()
-        : GpuProgram(), 
+	HighLevelGpuProgram::HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
+		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
+        : GpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired), 
         mHighLevelLoaded(false), mAssemblerProgram(0), mConstantDefsBuilt(false)
     {
     }
@@ -148,8 +149,10 @@ namespace CamelotEngine
 
     }
 	//---------------------------------------------------------------------
-	const GpuNamedConstants& HighLevelGpuProgram::getConstantDefinitions() const
+	const GpuNamedConstants& HighLevelGpuProgram::getConstantDefinitions_internal() const
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (!mConstantDefsBuilt)
 		{
 			buildConstantDefinitions();
@@ -161,7 +164,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	void HighLevelGpuProgram::populateParameterNames(GpuProgramParametersSharedPtr params)
 	{
-		getConstantDefinitions();
+		getConstantDefinitions_internal();
 		params->_setNamedConstants(mConstantDefs);
 		// also set logical / physical maps for programs which use this
 		params->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical);

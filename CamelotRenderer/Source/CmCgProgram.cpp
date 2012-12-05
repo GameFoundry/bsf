@@ -181,9 +181,9 @@ namespace CamelotEngine {
 				// Create a low-level program, give it the same name as us
 				mAssemblerProgram = 
 					GpuProgramManager::instance().createProgram(
-					shaderAssemblerCode,
+					shaderAssemblerCode, "", mSelectedProfile,
 					mType, 
-					mSelectedProfile);
+					GPP_NONE);
 			}
 			// Shader params need to be forwarded to low level implementation
 			mAssemblerProgram->setAdjacencyInfoRequired(isAdjacencyInfoRequired());
@@ -463,8 +463,9 @@ namespace CamelotEngine {
 		}
 	}
     //-----------------------------------------------------------------------
-    CgProgram::CgProgram(CGcontext context)
-        : HighLevelGpuProgram(), 
+		CgProgram::CgProgram(CGcontext context, const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
+        : HighLevelGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired), 
         mCgContext(context), mCgProgram(0), 
         mSelectedCgProfile(CG_PROFILE_UNKNOWN), mCgArguments(0)
     {
@@ -488,17 +489,6 @@ namespace CamelotEngine {
 			return true;
 
         return false;
-    }
-    //-----------------------------------------------------------------------
-    void CgProgram::setProfiles(const vector<String>::type& profiles)
-    {
-        mProfiles.clear();
-        vector<String>::type::const_iterator i, iend;
-        iend = profiles.end();
-        for (i = profiles.begin(); i != iend; ++i)
-        {
-            mProfiles.push_back(*i);
-        }
     }
 	//-----------------------------------------------------------------------
 	String CgProgram::resolveCgIncludes(const String& inSource, Resource* resourceBeingLoaded, const String& fileName)

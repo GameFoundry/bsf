@@ -34,8 +34,8 @@ THE SOFTWARE.
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------------
-    D3D9GpuProgram::D3D9GpuProgram() 
-        : GpuProgram(), mpExternalMicrocode(NULL), mColumnMajorMatrices(false)
+    D3D9GpuProgram::D3D9GpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) 
+        : GpuProgram(source, entryPoint, language, gptype, profile), mpExternalMicrocode(NULL), mColumnMajorMatrices(false)
     {
     }
 
@@ -169,8 +169,8 @@ namespace CamelotEngine {
         params->setTransposeMatrices(mColumnMajorMatrices);
     }	
 	//-----------------------------------------------------------------------------
-    D3D9GpuVertexProgram::D3D9GpuVertexProgram() 
-        : D3D9GpuProgram()       
+	D3D9GpuVertexProgram::D3D9GpuVertexProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) 
+        : D3D9GpuProgram(source, entryPoint, language, gptype, profile)       
     {
         mType = GPT_VERTEX_PROGRAM;		
     }
@@ -275,8 +275,8 @@ namespace CamelotEngine {
 
 	//-----------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------
-    D3D9GpuFragmentProgram::D3D9GpuFragmentProgram() 
-        : D3D9GpuProgram()       
+    D3D9GpuFragmentProgram::D3D9GpuFragmentProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) 
+		: D3D9GpuProgram(source, entryPoint, language, gptype, profile)       
     {
         mType = GPT_FRAGMENT_PROGRAM;
     }

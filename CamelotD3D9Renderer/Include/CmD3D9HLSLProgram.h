@@ -67,8 +67,6 @@ namespace CamelotEngine {
     public:
         ~D3D9HLSLProgram();
 
-        /** Sets the entry point for this program ie the first method called. */
-        void setEntryPoint(const String& entryPoint) { mEntryPoint = entryPoint; }
         /** Gets the entry point defined for this program. */
         const String& getEntryPoint(void) const { return mEntryPoint; }
         /** Sets the shader target to compile down to, e.g. 'vs_1_1'. */
@@ -101,7 +99,8 @@ namespace CamelotEngine {
     protected:
 		friend class D3D9HLSLProgramFactory;
 
-		D3D9HLSLProgram();
+		D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
         /** Internal load implementation, must be implemented by subclasses.
         */

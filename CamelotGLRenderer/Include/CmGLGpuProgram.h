@@ -67,7 +67,8 @@ namespace CamelotEngine {
 		static GLuint getFixedAttributeIndex(VertexElementSemantic semantic, UINT32 index);
 
     protected:
-		GLGpuProgram();
+		GLGpuProgram(const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
 		/** Overridden from GpuProgram, do nothing */
 		void loadFromSource(void) {}
@@ -84,10 +85,6 @@ namespace CamelotEngine {
     public:
         virtual ~GLArbGpuProgram();
 
-        /// @copydoc GpuProgram::setType
-        void setType(GpuProgramType t);
-
-
         /// Execute the binding functions for this program
         void bindProgram(void);
         /// Execute the unbinding functions for this program
@@ -100,9 +97,10 @@ namespace CamelotEngine {
         { return mProgramType; }
 
     protected:
-		friend GpuProgram* createGLArbGpuProgram(GpuProgramType gptype, const String& syntaxCode);
+		friend GpuProgram* createGLArbGpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
-		GLArbGpuProgram();
+		GLArbGpuProgram(const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
         void loadFromSource(void);
         /// @copydoc Resource::unloadImpl

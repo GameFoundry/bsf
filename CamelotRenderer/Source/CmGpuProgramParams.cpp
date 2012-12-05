@@ -739,11 +739,6 @@ namespace CamelotEngine
 			if(mTextures[def->physicalIndex] == nullptr)
 				mTextures[def->physicalIndex] = GpuTextureEntryPtr(new GpuTextureEntry());
 
-			if(val == nullptr)
-			{
-				int a = 5;
-			}
-
 			mTextures[def->physicalIndex]->texture = val;
 		}
 	}

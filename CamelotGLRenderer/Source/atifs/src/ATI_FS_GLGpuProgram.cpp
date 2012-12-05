@@ -35,8 +35,9 @@ THE SOFTWARE.
 using namespace CamelotEngine;
 
 
-ATI_FS_GLGpuProgram::ATI_FS_GLGpuProgram() :
-    GLGpuProgram()
+ATI_FS_GLGpuProgram::ATI_FS_GLGpuProgram(const String& source, const String& entryPoint, const String& language, 
+										 GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired) 
+										 :GLGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired)
 {
 	mProgramType = GL_FRAGMENT_SHADER_ATI;
     mProgramID = glGenFragmentShadersATI(1);

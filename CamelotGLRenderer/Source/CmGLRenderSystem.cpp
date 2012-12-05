@@ -63,19 +63,17 @@ GLenum glewContextInit (CamelotEngine::GLSupport *glSupport);
 namespace CamelotEngine {
 
 	// Callback function used when registering GLGpuPrograms
-	GpuProgram* createGLArbGpuProgram(GpuProgramType gptype, const String& syntaxCode)
+	GpuProgram* createGLArbGpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
 	{
-		GLArbGpuProgram* ret = new GLArbGpuProgram();
-		ret->setType(gptype);
-		ret->setSyntaxCode(syntaxCode);
+		GLArbGpuProgram* ret = new GLArbGpuProgram(source, entryPoint, language, gptype, profile);
+
 		return ret;
 	}
 
-	GpuProgram* createGL_ATI_FS_GpuProgram(GpuProgramType gptype, const String& syntaxCode)
+	GpuProgram* createGL_ATI_FS_GpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
 	{
-		ATI_FS_GLGpuProgram* ret = new ATI_FS_GLGpuProgram();
-		ret->setType(gptype);
-		ret->setSyntaxCode(syntaxCode);
+		ATI_FS_GLGpuProgram* ret = new ATI_FS_GLGpuProgram(source, entryPoint, language, gptype, profile);
+
 		return ret;
 	}
 

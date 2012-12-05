@@ -280,15 +280,15 @@ namespace CamelotEngine {
 			const GpuConstantDefinitionMap* geomParams = 0;
 			if (mVertexProgram)
 			{
-				vertParams = &(mVertexProgram->getGLSLProgram()->getConstantDefinitions().map);
+				vertParams = &(mVertexProgram->getGLSLProgram()->getConstantDefinitions_internal().map);
 			}
 			if (mGeometryProgram)
 			{
-				geomParams = &(mGeometryProgram->getGLSLProgram()->getConstantDefinitions().map);
+				geomParams = &(mGeometryProgram->getGLSLProgram()->getConstantDefinitions_internal().map);
 			}
 			if (mFragmentProgram)
 			{
-				fragParams = &(mFragmentProgram->getGLSLProgram()->getConstantDefinitions().map);
+				fragParams = &(mFragmentProgram->getGLSLProgram()->getConstantDefinitions_internal().map);
 			}
 
 			GLSLLinkProgramManager::instance().extractUniforms(

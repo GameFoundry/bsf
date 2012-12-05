@@ -57,7 +57,7 @@ namespace CamelotEngine {
 		}
 	public:
 		NullProgram()
-			: HighLevelGpuProgram(){}
+			: HighLevelGpuProgram("", "", "", GPT_VERTEX_PROGRAM, GPP_NONE){}
 		~NullProgram() {}
 		/// Overridden from GpuProgram - never supported
 		bool isSupported(void) const { return false; }
@@ -83,7 +83,7 @@ namespace CamelotEngine {
 		{ 
 			return sNullLang;
 		}
-		HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramProfile profile)
+		HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile)
 		{
 			return new NullProgram();
 		}
@@ -155,14 +155,10 @@ namespace CamelotEngine {
     HighLevelGpuProgramPtr HighLevelGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
     {
 		HighLevelGpuProgramFactory* factory = getFactory(language);
-        HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(source, entryPoint, profile), boost::bind(&HighLevelGpuProgramFactory::destroy, factory, _1));
-
-        HighLevelGpuProgramPtr prg = ret;
-        prg->setType(gptype);
-        prg->setSyntaxCode(language);
+        HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(source, entryPoint, gptype, profile), boost::bind(&HighLevelGpuProgramFactory::destroy, factory, _1));
 		ret->initialize();
 
-        return prg;
+        return ret;
     }
 	//---------------------------------------------------------------------------
 	HighLevelGpuProgramPtr HighLevelGpuProgramManager::create(const String& language)

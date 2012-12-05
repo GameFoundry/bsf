@@ -47,14 +47,8 @@ namespace CamelotEngine {
     public:
         ~CgProgram();
 
-        /** Sets the entry point for this program ie the first method called. */
-        void setEntryPoint(const String& entryPoint) { mEntryPoint = entryPoint; }
         /** Gets the entry point defined for this program. */
         const String& getEntryPoint(void) const { return mEntryPoint; }
-        /** Sets the Cg profiles which can be supported by the program. */
-        void setProfiles(const vector<String>::type& profiles);
-        /** Gets the Cg profiles which can be supported by the program. */
-        const vector<String>::type& getProfiles(void) const { return mProfiles; }
         /** Sets the compilation arguments for this program ie the first method called. */
         void setCompileArguments(const String& args) { mCompileArgs = args; }
         /** Gets the entry point defined for this program. */
@@ -75,7 +69,8 @@ namespace CamelotEngine {
         /// Program handle
         CGprogram mCgProgram;
 
-		CgProgram(CGcontext context);
+		CgProgram(CGcontext context, const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
         /** Internal load implementation, must be implemented by subclasses.
         */
@@ -93,7 +88,6 @@ namespace CamelotEngine {
 		/// Turn a Cg type into a GpuConstantType and number of elements
 		void mapTypeAndElementSize(CGtype cgType, bool isRegisterCombiner, GpuConstantDefinition& def) const;
 
-        vector<String>::type mProfiles;
         String mSelectedProfile;
         CGprofile mSelectedCgProfile;
         String mCompileArgs;

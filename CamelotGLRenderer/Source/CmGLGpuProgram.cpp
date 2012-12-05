@@ -45,8 +45,9 @@ GLenum getGLShaderType(GpuProgramType programType)
 	}
 }
 
-GLGpuProgram::GLGpuProgram() 
-    : GpuProgram()
+GLGpuProgram::GLGpuProgram(const String& source, const String& entryPoint, const String& language, 
+						   GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired) 
+    : GpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired)
 {
     //if (createParamDictionary("GLGpuProgram"))
     //{
@@ -136,10 +137,12 @@ bool GLGpuProgram::isAttributeValid(VertexElementSemantic semantic, CamelotEngin
     return false;
 }
 
-GLArbGpuProgram::GLArbGpuProgram() 
-    : GLGpuProgram()
+GLArbGpuProgram::GLArbGpuProgram(const String& source, const String& entryPoint, const String& language, 
+								 GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired) 
+	: GLGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired)
 {
     glGenProgramsARB(1, &mProgramID);
+	mProgramType = getGLShaderType(gptype);
 }
 
 GLArbGpuProgram::~GLArbGpuProgram()
@@ -147,12 +150,6 @@ GLArbGpuProgram::~GLArbGpuProgram()
     // have to call this here reather than in Resource destructor
     // since calling virtual methods in base destructors causes crash
     unload(); 
-}
-
-void GLArbGpuProgram::setType(GpuProgramType t)
-{
-    GLGpuProgram::setType(t);
-	mProgramType = getGLShaderType(t);
 }
 
 void GLArbGpuProgram::bindProgram(void)

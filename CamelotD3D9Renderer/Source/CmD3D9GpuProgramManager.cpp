@@ -42,15 +42,15 @@ namespace CamelotEngine {
 
     }
     //-----------------------------------------------------------------------------
-    GpuProgram* D3D9GpuProgramManager::create(GpuProgramType gptype, const String& syntaxCode)
+    GpuProgram* D3D9GpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
     {
         if (gptype == GPT_VERTEX_PROGRAM)
         {
-            return new D3D9GpuVertexProgram();
+            return new D3D9GpuVertexProgram(source, entryPoint, language, gptype, profile);
         }
         else
         {
-            return new D3D9GpuFragmentProgram();
+            return new D3D9GpuFragmentProgram(source, entryPoint, language, gptype, profile);
         }
     }
 }

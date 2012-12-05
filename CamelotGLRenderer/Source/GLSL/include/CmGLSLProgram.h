@@ -56,7 +56,6 @@ namespace CamelotEngine {
     class CM_RSGL_EXPORT GLSLProgram : public HighLevelGpuProgram
     {
     public:
-        GLSLProgram();
 		~GLSLProgram();
 
 		const GLhandleARB getGLHandle() const { return mGLHandle; }
@@ -108,6 +107,10 @@ namespace CamelotEngine {
 		{ mMaxOutputVertices = maxOutputVertices; }
 
 	protected:
+		friend class GLSLProgramFactory;
+
+		GLSLProgram(const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
         /** Internal load implementation, must be implemented by subclasses.
         */

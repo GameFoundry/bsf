@@ -241,8 +241,10 @@ namespace CamelotEngine {
 			mAssemblerProgram = 
 				GpuProgramManager::instance().createProgram(
 					"",// dummy source, since we'll be using microcode
+					"",
+					hlslProfile,
 					mType, 
-					hlslProfile);
+					GPP_NONE);
 			static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);
 		}
 
@@ -522,8 +524,9 @@ namespace CamelotEngine {
 	}
 
     //-----------------------------------------------------------------------
-    D3D9HLSLProgram::D3D9HLSLProgram()
-        : HighLevelGpuProgram()
+	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
+		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
+        : HighLevelGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired)
         , mPreprocessorDefines()
         , mColumnMajorMatrices(true)
         , mpMicroCode(NULL), mpConstTable(NULL)

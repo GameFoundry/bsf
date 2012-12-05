@@ -60,7 +60,8 @@ namespace CamelotEngine {
 
 	public:
 		~GLSLGpuProgram();
-		GLSLGpuProgram(GLSLProgram* parent);
+		GLSLGpuProgram(GLSLProgram* parent, const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile);
 
 		/// Execute the binding functions for this program
 		void bindProgram(void);

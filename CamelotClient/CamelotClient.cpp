@@ -27,8 +27,8 @@ using namespace CamelotEngine;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	//gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
-	gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
+	gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
+	//gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
 
 	RenderSystem* renderSystem = RenderSystemManager::getActive();
 	RenderWindow* renderWindow = gApplication().getPrimaryRenderWindow();
@@ -59,7 +59,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	//						}";
 
 	//fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
-	//fragProg->load();
 
 	//String vertShaderCode = "float4x4 matViewProjection;	\
 	//						void vs_main(										\
@@ -73,9 +72,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	//						}";
 
 	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
-	//vertProg->load();
-
-
 
 	/////////////////// CG SHADERS //////////////////////////
 	String fragShaderCode = "sampler2D tex;					\
@@ -100,16 +96,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 
-	HighLevelGpuProgramHandle vertProgRef(vertProg);
-
-	gResources().create(vertProgRef, "C:\\vertProgCg.vprog", true);
-	vertProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\vertProgCg.vprog"));
-
-	HighLevelGpuProgramHandle fragProgRef(fragProg);
-
-	gResources().create(fragProgRef, "C:\\fragProgCg.vprog", true);
-	fragProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\fragProgCg.vprog"));
-
 	///////////////// GLSL SHADERS ////////////////////////////
 	//String fragShaderCode = "uniform sampler2D tex; \
 	//							void main() \
@@ -119,7 +105,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	//							  }";
 
 	//fragProg = HighLevelGpuProgram::create(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
-	//fragProg->load();
 
 	//// TODO - Ogres GLSL parsing requires some strict parameter naming, can that be avoided?
 	//String vertShaderCode = "uniform mat4 matViewProjection; \
@@ -131,7 +116,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	//							  }";
 
 	//vertProg = HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
-	//vertProg->load();
+
+	HighLevelGpuProgramHandle vertProgRef(vertProg);
+
+	gResources().create(vertProgRef, "C:\\vertProgCg.vprog", true);
+	vertProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\vertProgCg.vprog"));
+
+	HighLevelGpuProgramHandle fragProgRef(fragProg);
+
+	gResources().create(fragProgRef, "C:\\fragProgCg.vprog", true);
+	fragProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\fragProgCg.vprog"));
 
 	ShaderPtr testShader = ShaderPtr(new Shader("TestShader"));
 	TechniquePtr newTechniqueGL = testShader->addTechnique("GLRenderSystem", "ForwardRenderer");

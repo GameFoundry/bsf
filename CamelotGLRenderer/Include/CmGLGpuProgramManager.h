@@ -37,7 +37,7 @@ namespace CamelotEngine {
 class CM_RSGL_EXPORT GLGpuProgramManager : public GpuProgramManager
 {
 public:
-    typedef GpuProgram* (*CreateGpuProgramCallback)(GpuProgramType gptype, const String& syntaxCode);
+    typedef GpuProgram* (*CreateGpuProgramCallback)(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
 private:
     typedef map<String, CreateGpuProgramCallback>::type ProgramMap;
@@ -45,7 +45,7 @@ private:
 
 protected:
     /// Specialised create method with specific parameters
-    GpuProgram* create(GpuProgramType gptype, const String& syntaxCode);
+    GpuProgram* create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
 public:
     GLGpuProgramManager();

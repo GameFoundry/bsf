@@ -65,7 +65,7 @@ namespace CamelotEngine {
     protected:
 		friend class D3D9GpuProgramManager;
 
-		D3D9GpuProgram();
+		D3D9GpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
         /** Overridden from GpuProgram */
         void loadFromSource(void);
@@ -109,7 +109,7 @@ namespace CamelotEngine {
     protected:
 		friend class D3D9GpuProgramManager;
 
-		D3D9GpuVertexProgram();
+		D3D9GpuVertexProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 
@@ -140,7 +140,7 @@ namespace CamelotEngine {
     protected:
 		friend class D3D9GpuProgramManager;
 
-		D3D9GpuFragmentProgram();
+		D3D9GpuFragmentProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 

@@ -45,9 +45,10 @@ THE SOFTWARE.
 namespace CamelotEngine
 {
     //-----------------------------------------------------------------------------
-    GpuProgram::GpuProgram() 
-        :mType(GPT_VERTEX_PROGRAM),
-		mCompileError(false), mProfile(GPP_NONE)
+    GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language, 
+		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired) 
+        :mSource(source), mEntryPoint(entryPoint), mSyntaxCode(language), mType(gptype),
+		mProfile(profile), mNeedsAdjacencyInfo(isAdjacencyInfoRequired), mCompileError(false)
     {
 		createParameterMappingStructures();
     }
@@ -56,22 +57,6 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 	}
-    //-----------------------------------------------------------------------------
-    void GpuProgram::setType(GpuProgramType t)
-    {
-        mType = t;
-    }
-    //-----------------------------------------------------------------------------
-    void GpuProgram::setSyntaxCode(const String& syntax)
-    {
-        mSyntaxCode = syntax;
-    }
-    //-----------------------------------------------------------------------------
-    void GpuProgram::setSource(const String& source)
-    {
-        mSource = source;
-		mCompileError = false;
-    }
 	//-----------------------------------------------------------------------------
 	void GpuProgram::initialize()
 	{
@@ -165,6 +150,12 @@ namespace CamelotEngine
 
         return language;
     }
+	const GpuNamedConstants& GpuProgram::getConstantDefinitions_internal() const 
+	{ 
+		THROW_IF_NOT_RENDER_THREAD;
+
+		return *mConstantDefs.get();
+	}
 	//----------------------------------------------------------------------------- 
 	void GpuProgram::throwIfNotRenderThread() const
 	{

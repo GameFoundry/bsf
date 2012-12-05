@@ -49,7 +49,7 @@ namespace CamelotEngine {
         virtual ~HighLevelGpuProgramFactory();
 		/// Get the name of the language this factory creates programs for
 		virtual const String& getLanguage(void) const = 0;
-        virtual HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramProfile profile) = 0;
+        virtual HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile) = 0;
 		virtual HighLevelGpuProgram* create() = 0;
 
 		void destroy(HighLevelGpuProgram* prog);

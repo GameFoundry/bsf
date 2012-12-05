@@ -46,6 +46,17 @@ namespace CamelotEngine {
     {
         unload();
     }
+	//-----------------------------------------------------------------------
+	GLSLProgram::GLSLProgram(const String& source, const String& entryPoint, const String& language, 
+		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
+		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired),
+		mInputOperationType(RenderOperation::OT_TRIANGLE_LIST),
+		mOutputOperationType(RenderOperation::OT_TRIANGLE_LIST), mMaxOutputVertices(3)
+	{
+		// Manually assign language now since we use it immediately
+		mSyntaxCode = "glsl";
+
+	}
     //-----------------------------------------------------------------------
 	void GLSLProgram::loadFromSource(void)
 	{
@@ -181,7 +192,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void GLSLProgram::createLowLevelImpl(void)
 	{
-		mAssemblerProgram = GpuProgramPtr(new GLSLGpuProgram( this ));
+		mAssemblerProgram = GpuProgramPtr(new GLSLGpuProgram( this, mSource, mEntryPoint, mSyntaxCode, mType, mProfile));
 	}
 	//---------------------------------------------------------------------------
 	void GLSLProgram::unloadImpl()
@@ -205,7 +216,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void GLSLProgram::populateParameterNames(GpuProgramParametersSharedPtr params)
 	{
-		getConstantDefinitions();
+		getConstantDefinitions_internal();
 		params->_setNamedConstants(mConstantDefs);
 		// Don't set logical / physical maps here, as we can't access parameters by logical index in GLHL.
 	}
@@ -232,17 +243,6 @@ namespace CamelotEngine {
 
 		}
 	}
-
-	//-----------------------------------------------------------------------
-    GLSLProgram::GLSLProgram()
-        : HighLevelGpuProgram(),
-            mInputOperationType(RenderOperation::OT_TRIANGLE_LIST),
-            mOutputOperationType(RenderOperation::OT_TRIANGLE_LIST), mMaxOutputVertices(3)
-    {
-        // Manually assign language now since we use it immediately
-        mSyntaxCode = "glsl";
-        
-    }
 	//---------------------------------------------------------------------
 	bool GLSLProgram::getPassSurfaceAndLightStates(void) const
 	{

@@ -41,7 +41,7 @@ namespace CamelotEngine {
 		~D3D9GpuProgramManager();
 
 	protected:
-		GpuProgram* create( GpuProgramType gptype, const String& syntaxCode);
+		GpuProgram* create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
     };
 
 }

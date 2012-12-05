@@ -62,40 +62,7 @@ namespace CamelotEngine {
     */
     class CM_EXPORT HighLevelGpuProgram : public GpuProgram
     {
-    protected:
-        /// Whether the high-level program (and it's parameter defs) is loaded
-        bool mHighLevelLoaded;
-        /// The underlying assembler program
-        GpuProgramPtr mAssemblerProgram;
-		/// Have we built the name->index parameter map yet?
-		mutable bool mConstantDefsBuilt;
-
-        /// Internal load high-level portion if not loaded
-        virtual void loadHighLevel(void);
-        /// Internal unload high-level portion if loaded
-        virtual void unloadHighLevel(void);
-        /** Internal load implementation, loads just the high-level portion, enough to 
-            get parameters.
-        */
-        virtual void loadHighLevelImpl(void);
-        /** Internal method for creating an appropriate low-level program from this
-        high-level program, must be implemented by subclasses. */
-        virtual void createLowLevelImpl(void) = 0;
-        /// Internal unload implementation, must be implemented by subclasses
-        virtual void unloadHighLevelImpl(void) = 0;
-        /// Populate the passed parameters with name->index map
-        virtual void populateParameterNames(GpuProgramParametersSharedPtr params);
-		/** Build the constant definition map, must be overridden.
-		@note The implementation must fill in the (inherited) mConstantDefs field at a minimum, 
-			and if the program requires that parameters are bound using logical 
-			parameter indexes then the mFloatLogicalToPhysical and mIntLogicalToPhysical
-			maps must also be populated.
-		*/
-		virtual void buildConstantDefinitions() const = 0;
-
     public:
-        /** Constructor, should be used only by factory classes. */
-        HighLevelGpuProgram();
         ~HighLevelGpuProgram();
 
 		/**
@@ -129,14 +96,47 @@ namespace CamelotEngine {
 		@note
 		Only available if this parameters object has named parameters.
 		*/
-		const GpuNamedConstants& getConstantDefinitions() const;
+		const GpuNamedConstants& getConstantDefinitions_internal() const;
 
-		/// Override GpuProgram::getNamedConstants to ensure built
-		const GpuNamedConstants& getNamedConstants() const { return getConstantDefinitions(); }
+    protected:
+		/** Constructor, should be used only by factory classes. */
+		HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
+
+        /// Whether the high-level program (and it's parameter defs) is loaded
+        bool mHighLevelLoaded;
+        /// The underlying assembler program
+        GpuProgramPtr mAssemblerProgram;
+		/// Have we built the name->index parameter map yet?
+		mutable bool mConstantDefsBuilt;
+
+        /// Internal load high-level portion if not loaded
+        virtual void loadHighLevel(void);
+        /// Internal unload high-level portion if loaded
+        virtual void unloadHighLevel(void);
+        /** Internal load implementation, loads just the high-level portion, enough to 
+            get parameters.
+        */
+        virtual void loadHighLevelImpl(void);
+        /** Internal method for creating an appropriate low-level program from this
+        high-level program, must be implemented by subclasses. */
+        virtual void createLowLevelImpl(void) = 0;
+        /// Internal unload implementation, must be implemented by subclasses
+        virtual void unloadHighLevelImpl(void) = 0;
+        /// Populate the passed parameters with name->index map
+        virtual void populateParameterNames(GpuProgramParametersSharedPtr params);
+		/** Build the constant definition map, must be overridden.
+		@note The implementation must fill in the (inherited) mConstantDefs field at a minimum, 
+			and if the program requires that parameters are bound using logical 
+			parameter indexes then the mFloatLogicalToPhysical and mIntLogicalToPhysical
+			maps must also be populated.
+		*/
+		virtual void buildConstantDefinitions() const = 0;
 
 		/************************************************************************/
 		/* 								STATICS		                     		*/
 		/************************************************************************/
+	public:
 		static HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, 
 			const String& language, GpuProgramType gptype, GpuProgramProfile profile);
     };

@@ -39,8 +39,9 @@ namespace CamelotEngine {
 	GLuint GLSLGpuProgram::mFragmentShaderCount = 0;
 	GLuint GLSLGpuProgram::mGeometryShaderCount = 0;
     //-----------------------------------------------------------------------------
-	GLSLGpuProgram::GLSLGpuProgram(GLSLProgram* parent) : 
-        GLGpuProgram(), mGLSLProgram(parent)
+	GLSLGpuProgram::GLSLGpuProgram(GLSLProgram* parent, const String& source, const String& entryPoint, const String& language, 
+		GpuProgramType gptype, GpuProgramProfile profile) : 
+        GLGpuProgram(source, entryPoint, language, gptype, profile), mGLSLProgram(parent)
     {
         mType = parent->getType();
         mSyntaxCode = "glsl";

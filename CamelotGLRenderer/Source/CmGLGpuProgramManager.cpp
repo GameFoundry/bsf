@@ -52,14 +52,14 @@ bool GLGpuProgramManager::unregisterProgramFactory(const String& syntaxCode)
     return mProgramMap.erase(syntaxCode) != 0;
 }
 
-GpuProgram* GLGpuProgramManager::create(GpuProgramType gptype, const String& syntaxCode)
+GpuProgram* GLGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
 {
-    ProgramMap::const_iterator iter = mProgramMap.find(syntaxCode);
+    ProgramMap::const_iterator iter = mProgramMap.find(language);
     if(iter == mProgramMap.end())
     {
-        CM_EXCEPT(InternalErrorException, "Cannot find propery factory to create GpuProgram of type: " + syntaxCode);
+        CM_EXCEPT(InternalErrorException, "Cannot find propery factory to create GpuProgram of type: " + language);
     }
     
-    return (iter->second)(gptype, syntaxCode);
+    return (iter->second)(source, entryPoint, language, gptype, profile);
 }
 
