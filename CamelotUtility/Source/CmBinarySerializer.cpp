@@ -1018,7 +1018,7 @@ namespace CamelotEngine
 
 	UINT32 BinarySerializer::findOrCreatePersistentId(IReflectable* object)
 	{
-		UINT32 ptrAddress = (UINT32)object;
+		void* ptrAddress = (void*)object;
 
 		auto findIter = mObjectAddrToId.find(ptrAddress);
 		if(findIter != mObjectAddrToId.end())
@@ -1035,7 +1035,7 @@ namespace CamelotEngine
 		if(object == nullptr)
 			return 0;
 
-		UINT32 ptrAddress = (UINT32)object.get();
+		void* ptrAddress = (void*)object.get();
 
 		auto iterFind = mObjectAddrToId.find(ptrAddress);
 		if(iterFind == mObjectAddrToId.end())

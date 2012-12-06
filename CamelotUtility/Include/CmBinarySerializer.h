@@ -85,7 +85,7 @@ namespace CamelotEngine
 			UINT32 typeId;
 		};
 
-		std::unordered_map<UINT32, UINT32> mObjectAddrToId;
+		std::unordered_map<void*, UINT32> mObjectAddrToId;
 		UINT32 mLastUsedObjectId;
 		std::vector<ObjectToEncode> mObjectsToEncode;
 		int mTotalBytesWritten;
