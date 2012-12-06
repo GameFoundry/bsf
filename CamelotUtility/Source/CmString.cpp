@@ -473,8 +473,7 @@ namespace CamelotEngine {
 		return stream.str();
 	}
 	//-----------------------------------------------------------------------
-#endif
-	String toString(long val, 
+	String toString(unsigned long long int val, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		stringstream stream;
@@ -486,7 +485,8 @@ namespace CamelotEngine {
 		return stream.str();
 	}
 	//-----------------------------------------------------------------------
-	String toString(unsigned long long int val, 
+#endif
+	String toString(long val, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		stringstream stream;

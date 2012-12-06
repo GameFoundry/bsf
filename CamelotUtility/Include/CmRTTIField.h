@@ -9,6 +9,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmIReflectable.h"
 #include "CmManagedDataBlock.h"
+#include "CmException.h"
 
 namespace CamelotEngine
 {
@@ -97,7 +98,16 @@ namespace CamelotEngine
 
 		static UINT32 getDynamicSize(String& data)	
 		{ 
-			return data.size() * sizeof(String::value_type) + sizeof(UINT32);
+			UINT64 dataSize = data.size() * sizeof(String::value_type) + sizeof(UINT32);
+
+#if CM_DEBUG_MODE
+			if(dataSize > std::numeric_limits<UINT32>::max())
+			{
+				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
+			}
+#endif
+
+			return (UINT32)dataSize;
 		}	
 	}; 
 

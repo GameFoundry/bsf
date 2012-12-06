@@ -193,7 +193,7 @@ namespace CamelotEngine
     		@param pixelData    Pointer to the actual data
 			@param ownsPixelData  If true then PixelData owns the data buffer and will release it when destroyed.
     	*/
-    	PixelData(size_t width, size_t height, size_t depth, PixelFormat pixelFormat, 
+    	PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat, 
 				void *pixelData = 0, bool ownsPixelData = false):
     		Box(0, 0, 0, width, height, depth),
     		data(pixelData), format(pixelFormat), ownsData(ownsPixelData)
@@ -209,13 +209,13 @@ namespace CamelotEngine
          	pixel of the next. This value must always be equal to getWidth() (consecutive) 
 			for compressed formats.
         */
-        size_t rowPitch;
+        UINT32 rowPitch;
         /** Number of elements between the top left pixel of one (depth) slice and 
          	the top left pixel of the next. This can be a negative value. Must be a multiple of
          	rowPitch. This value must always be equal to getWidth()*getHeight() (consecutive) 
 			for compressed formats.
         */
-        size_t slicePitch;
+        UINT32 slicePitch;
 
 		/**
 		 * @brief	If true then PixelData owns the data buffer and will release it when destroyed.
@@ -234,12 +234,12 @@ namespace CamelotEngine
          	one row and the leftmost pixel of the next row. (IE this is zero if rows
          	are consecutive).
         */
-        size_t getRowSkip() const { return rowPitch - getWidth(); }
+        UINT32 getRowSkip() const { return rowPitch - getWidth(); }
         /** Get the number of elements between one past the right bottom pixel of
          	one slice and the left top pixel of the next slice. (IE this is zero if slices
          	are consecutive).
         */
-        size_t getSliceSkip() const { return slicePitch - (getHeight() * rowPitch); }
+        UINT32 getSliceSkip() const { return slicePitch - (getHeight() * rowPitch); }
 
         /** Return whether this buffer is laid out consecutive in memory (ie the pitches
          	are equal to the dimensions)
@@ -251,7 +251,7 @@ namespace CamelotEngine
         /** Return the size (in bytes) this image would take if it was
         	laid out consecutive in memory
       	*/
-      	size_t getConsecutiveSize() const;
+      	UINT32 getConsecutiveSize() const;
       	/** Return a subvolume of this PixelBox.
       		@param def	Defines the bounds of the subregion to return
       		@returns	A pixel box describing the region and the data in it
@@ -267,14 +267,14 @@ namespace CamelotEngine
          * is only valid for cubemaps and volume textures. This uses the first (largest)
          * mipmap.
          */
-        Color getColourAt(size_t x, size_t y, size_t z);
+        Color getColourAt(UINT32 x, UINT32 y, UINT32 z);
 
         /**
          * Set colour value at a certain location in the PixelBox. The z coordinate
          * is only valid for cubemaps and volume textures. This uses the first (largest)
          * mipmap.
          */
-        void setColourAt(Color const &cv, size_t x, size_t y, size_t z);
+        void setColourAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z);
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

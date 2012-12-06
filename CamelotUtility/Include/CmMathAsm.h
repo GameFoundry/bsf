@@ -180,7 +180,7 @@ float asm_rsq( float r )
 
 #else
 
-	return 1. / sqrt( r );
+	return 1.0f / sqrt( r );
 
 #endif
 }
@@ -210,7 +210,7 @@ float apx_rsq( float r ) {
 
 #else
 
-	return 1. / sqrt( r );
+	return 1.0f / sqrt( r );
 
 #endif
 }

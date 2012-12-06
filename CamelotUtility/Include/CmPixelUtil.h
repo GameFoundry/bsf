@@ -43,7 +43,7 @@ namespace CamelotEngine {
          @remarks
                Passing PF_UNKNOWN will result in returning a size of 0 bytes.
         */
-        static size_t getNumElemBytes( PixelFormat format );
+        static UINT32 getNumElemBytes( PixelFormat format );
 
         /** Returns the size in bits of an element of the given pixel format.
           @returns
@@ -51,7 +51,7 @@ namespace CamelotEngine {
            @remarks
                Passing PF_UNKNOWN will result in returning a size of 0 bits.
         */
-        static size_t getNumElemBits( PixelFormat format );
+        static UINT32 getNumElemBits( PixelFormat format );
 
 		/** Returns the size in memory of a region with the given extents and pixel
 			format with consecutive memory layout.
@@ -70,7 +70,7 @@ namespace CamelotEngine {
 				width*height*depth*PixelUtil::getNumElemBytes(format). In the compressed
 				case, this does serious magic.
 		*/
-		static size_t getMemorySize(size_t width, size_t height, size_t depth, PixelFormat format);
+		static UINT32 getMemorySize(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format);
 		
         /** Returns the property flags for this pixel format
           @returns

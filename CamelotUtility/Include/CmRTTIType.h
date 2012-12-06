@@ -223,7 +223,7 @@ namespace CamelotEngine
 			field->setArraySize(object, size);
 		}	
 
-		UINT32 getNumFields() { return mFields.size(); }
+		UINT32 getNumFields() { return (UINT32)mFields.size(); }
 		RTTIField* getField(UINT32 idx) { return mFields.at(idx); }
 
 		/**

@@ -9,29 +9,29 @@ namespace CamelotEngine
 {
 	class CM_UTILITY_EXPORT PixelDataRTTI : public RTTIType<PixelData, IReflectable, PixelDataRTTI>
 	{
-		size_t& getLeft(PixelData* obj) { return obj->left; }
-		void setLeft(PixelData* obj, size_t& val) { obj->left = val; }
+		UINT32& getLeft(PixelData* obj) { return obj->left; }
+		void setLeft(PixelData* obj, UINT32& val) { obj->left = val; }
 
-		size_t& getTop(PixelData* obj) { return obj->top; }
-		void setTop(PixelData* obj, size_t& val) { obj->top = val; }
+		UINT32& getTop(PixelData* obj) { return obj->top; }
+		void setTop(PixelData* obj, UINT32& val) { obj->top = val; }
 
-		size_t& getRight(PixelData* obj) { return obj->right; }
-		void setRight(PixelData* obj, size_t& val) { obj->right = val; }
+		UINT32& getRight(PixelData* obj) { return obj->right; }
+		void setRight(PixelData* obj, UINT32& val) { obj->right = val; }
 
-		size_t& getBottom(PixelData* obj) { return obj->bottom; }
-		void setBottom(PixelData* obj, size_t& val) { obj->bottom = val; }
+		UINT32& getBottom(PixelData* obj) { return obj->bottom; }
+		void setBottom(PixelData* obj, UINT32& val) { obj->bottom = val; }
 
-		size_t& getFront(PixelData* obj) { return obj->front; }
-		void setFront(PixelData* obj, size_t& val) { obj->front = val; }
+		UINT32& getFront(PixelData* obj) { return obj->front; }
+		void setFront(PixelData* obj, UINT32& val) { obj->front = val; }
 
-		size_t& getBack(PixelData* obj) { return obj->back; }
-		void setBack(PixelData* obj, size_t& val) { obj->back = val; }
+		UINT32& getBack(PixelData* obj) { return obj->back; }
+		void setBack(PixelData* obj, UINT32& val) { obj->back = val; }
 
-		size_t& getRowPitch(PixelData* obj) { return obj->rowPitch; }
-		void setRowPitch(PixelData* obj, size_t& val) { obj->rowPitch = val; }
+		UINT32& getRowPitch(PixelData* obj) { return obj->rowPitch; }
+		void setRowPitch(PixelData* obj, UINT32& val) { obj->rowPitch = val; }
 
-		size_t& getSlicePitch(PixelData* obj) { return obj->slicePitch; }
-		void setSlicePitch(PixelData* obj, size_t& val) { obj->slicePitch = val; }
+		UINT32& getSlicePitch(PixelData* obj) { return obj->slicePitch; }
+		void setSlicePitch(PixelData* obj, UINT32& val) { obj->slicePitch = val; }
 
 		ManagedDataBlock getData(PixelData* obj) 
 		{ 

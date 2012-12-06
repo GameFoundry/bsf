@@ -230,7 +230,7 @@ namespace CamelotEngine {
     CM_UTILITY_EXPORT String toString(int val, unsigned short width = 0, 
         char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
-#if CM_ARCH_TYPE == CM_ARCHITECTURE_64 || CM_PLATFORM == CM_PLATFORM_APPLE
+#if CM_ARCH_TYPE == CM_ARCHITECTURE_64
     /** Converts an unsigned int to a String. */
     CM_UTILITY_EXPORT String toString(unsigned int val, 
         unsigned short width = 0, char fill = ' ', 
@@ -255,16 +255,15 @@ namespace CamelotEngine {
     CM_UTILITY_EXPORT String toString(unsigned long val, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	/** Converts a long long to a String. */
+	CM_UTILITY_EXPORT String toString(unsigned long long int val, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 #endif
     /** Converts a long to a String. */
     CM_UTILITY_EXPORT String toString(long val, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
-
-	/** Converts a long long to a String. */
-	CM_UTILITY_EXPORT String toString(unsigned long long int val, 
-		unsigned short width = 0, char fill = ' ', 
-		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/** Global conversion methods **/
 
