@@ -102,7 +102,7 @@ protected:
 	  UINT32 mNTTRuleID;			// Non-Terminal Token Rule ID that generated Token
 	  UINT32 mID;					// Token ID
 	  int mLine;				// line number in source code where Token was found
-	  int mPos;					// Character position in source where Token was found
+	  size_t mPos;					// Character position in source where Token was found
 
 	};
 
@@ -181,7 +181,7 @@ protected:
 		true if characters form a valid float representation
 		false if a number value could not be extracted
 	*/
-	bool isFloatValue(float & fvalue, int & charsize);
+	bool isFloatValue(float & fvalue, size_t & charsize);
 
 	/** check to see if the text is in the symbol text library
 	@param symbol points to begining of text where a symbol token might exist
@@ -190,7 +190,7 @@ protected:
 		true if a matching token could be found in the token type library
 		false if could not be tokenized
 	*/
-	bool isSymbol(const char* symbol, int & symbolsize);
+	bool isSymbol(const char* symbol, size_t & symbolsize);
 
 
 	/// position to the next possible valid sysmbol
@@ -246,7 +246,7 @@ protected:
 public:
 	// ** these probably should not be public
 	int mCurrentLine;
-	int mCharPos;
+	size_t mCharPos;
 
 
 	/// constructor

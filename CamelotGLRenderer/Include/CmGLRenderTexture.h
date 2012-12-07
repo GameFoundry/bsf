@@ -39,7 +39,7 @@ namespace CamelotEngine {
     {
     public:
         GLHardwarePixelBuffer *buffer;
-        size_t zoffset;
+        UINT32 zoffset;
 		UINT32 numSamples;
 
 		GLSurfaceDesc() :buffer(0), zoffset(0), numSamples(0) {}

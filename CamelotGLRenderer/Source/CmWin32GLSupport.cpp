@@ -631,7 +631,7 @@ namespace CamelotEngine {
 	{
 		return WGLEW_GET_FUN(__WGLEW_ARB_pbuffer) != GL_FALSE;
 	}
-    GLPBuffer *Win32GLSupport::createPBuffer(PixelComponentType format, size_t width, size_t height)
+    GLPBuffer *Win32GLSupport::createPBuffer(PixelComponentType format, UINT32 width, UINT32 height)
 	{
 		return new Win32PBuffer(format, width, height);
 	}

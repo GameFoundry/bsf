@@ -175,7 +175,7 @@ int CPreprocessor::Token::CountNL ()
         return 0;
 
     const char *s = String;
-    int l = Length;
+    size_t l = Length;
     int c = 0;
     while (l > 0)
     {
@@ -760,7 +760,7 @@ CPreprocessor::Token CPreprocessor::GetArgument (Token &oArg, bool iExpand)
             return Token (Token::TK_ERROR);
         }
 
-    UINT32 len = oArg.Length;
+    size_t len = oArg.Length;
     while (true)
     {
         Token t = GetToken (iExpand);
@@ -1047,7 +1047,7 @@ CPreprocessor::Token CPreprocessor::HandleDirective (Token &iToken, int iLine)
 {
     // Analyze preprocessor directive
     const char *directive = iToken.String + 1;
-    int dirlen = iToken.Length - 1;
+    size_t dirlen = iToken.Length - 1;
     while (dirlen && isspace (*directive))
         dirlen--, directive++;
 

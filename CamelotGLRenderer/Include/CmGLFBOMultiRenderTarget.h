@@ -44,8 +44,8 @@ namespace CamelotEngine {
 
 		bool requiresTextureFlipping() const { return true; }
 	private:
-		virtual void bindSurfaceImpl(size_t attachment, RenderTexture *target);
-		virtual void unbindSurfaceImpl(size_t attachment); 
+		virtual void bindSurfaceImpl(UINT32 attachment, RenderTexture *target);
+		virtual void unbindSurfaceImpl(UINT32 attachment); 
 		GLFrameBufferObject fbo;
 	};
 

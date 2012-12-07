@@ -48,7 +48,7 @@ namespace CamelotEngine
     class CM_EXPORT RenderTexture: public RenderTarget
     {
     public:
-        RenderTexture(HardwarePixelBuffer *buffer, size_t zoffset);
+        RenderTexture(HardwarePixelBuffer *buffer, UINT32 zoffset);
         virtual ~RenderTexture();
 
 		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
@@ -56,7 +56,7 @@ namespace CamelotEngine
 
 	protected:
 		HardwarePixelBuffer *mBuffer;
-		size_t mZOffset;
+		UINT32 mZOffset;
     };
 
 	/** This class represents a render target that renders to multiple RenderTextures
@@ -80,9 +80,9 @@ namespace CamelotEngine
 			- Not all bound surfaces have the same internal format 
 		*/
 
-		virtual void bindSurface(size_t attachment, RenderTexture *target)
+		virtual void bindSurface(UINT32 attachment, RenderTexture *target)
 		{
-			for (size_t i = mBoundSurfaces.size(); i <= attachment; ++i)
+			for (UINT32 i = (UINT32)mBoundSurfaces.size(); i <= attachment; ++i)
 			{
 				mBoundSurfaces.push_back(0);
 			}
@@ -96,9 +96,9 @@ namespace CamelotEngine
 		/** Unbind attachment.
 		*/
 
-		virtual void unbindSurface(size_t attachment)
+		virtual void unbindSurface(UINT32 attachment)
 		{
-			if (attachment < mBoundSurfaces.size())
+			if (attachment < (UINT32)mBoundSurfaces.size())
 				mBoundSurfaces[attachment] = 0;
 			unbindSurfaceImpl(attachment);
 		}
@@ -116,7 +116,7 @@ namespace CamelotEngine
 		const BoundSufaceList& getBoundSurfaceList() const { return mBoundSurfaces; }
 
 		/** Get a pointer to a bound surface */
-		RenderTexture* getBoundSurface(size_t index)
+		RenderTexture* getBoundSurface(UINT32 index)
 		{
 			assert (index < mBoundSurfaces.size());
 			return mBoundSurfaces[index];
@@ -127,9 +127,9 @@ namespace CamelotEngine
 		BoundSufaceList mBoundSurfaces;
 
 		/// implementation of bindSurface, must be provided
-		virtual void bindSurfaceImpl(size_t attachment, RenderTexture *target) = 0;
+		virtual void bindSurfaceImpl(UINT32 attachment, RenderTexture *target) = 0;
 		/// implementation of unbindSurface, must be provided
-		virtual void unbindSurfaceImpl(size_t attachment) = 0;
+		virtual void unbindSurfaceImpl(UINT32 attachment) = 0;
 
 
 	};

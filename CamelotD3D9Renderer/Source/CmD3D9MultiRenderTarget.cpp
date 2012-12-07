@@ -40,7 +40,7 @@ namespace CamelotEngine
 		MultiRenderTarget(name)
 	{
 		/// Clear targets
-		for(size_t x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+		for(UINT32 x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
 		{
 			mRenderTargets[x] = 0;
 		}
@@ -49,7 +49,7 @@ namespace CamelotEngine
 	{
 	}
 
-	void D3D9MultiRenderTarget::bindSurfaceImpl(size_t attachment, RenderTexture *target)
+	void D3D9MultiRenderTarget::bindSurfaceImpl(UINT32 attachment, RenderTexture *target)
 	{
 		assert(attachment<CM_MAX_MULTIPLE_RENDER_TARGETS);
 		/// Get buffer and surface to bind to
@@ -82,7 +82,7 @@ namespace CamelotEngine
 		checkAndUpdate();
 	}
 
-	void D3D9MultiRenderTarget::unbindSurfaceImpl(size_t attachment)
+	void D3D9MultiRenderTarget::unbindSurfaceImpl(UINT32 attachment)
 	{
 		assert(attachment<CM_MAX_MULTIPLE_RENDER_TARGETS);
 		mRenderTargets[attachment] = 0;
@@ -121,7 +121,7 @@ namespace CamelotEngine
         {
             IDirect3DSurface9 ** pSurf = (IDirect3DSurface9 **)pData;
 			/// Transfer surfaces
-			for(size_t x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+			for(UINT32 x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
 			{
 				if(mRenderTargets[x] != NULL)								
 					pSurf[x] = mRenderTargets[x]->getSurface(D3D9RenderSystem::getActiveD3D9Device());			

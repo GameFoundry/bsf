@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 namespace CamelotEngine {
 
-	 Win32PBuffer::Win32PBuffer(PixelComponentType format, size_t width, size_t height):
+	 Win32PBuffer::Win32PBuffer(PixelComponentType format, UINT32 width, UINT32 height):
 		GLPBuffer(format, width, height),
         mContext(0)
 	{

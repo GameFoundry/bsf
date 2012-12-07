@@ -66,7 +66,7 @@ namespace CamelotEngine {
         /// Initialise state
         mDepth.buffer=0;
         mStencil.buffer=0;
-        for(size_t x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+        for(UINT32 x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
         {
             mColour[x].buffer=0;
         }
@@ -82,7 +82,7 @@ namespace CamelotEngine {
 			glDeleteFramebuffersEXT(1, &mMultisampleFB);
 
     }
-    void GLFrameBufferObject::bindSurface(size_t attachment, const GLSurfaceDesc &target)
+    void GLFrameBufferObject::bindSurface(UINT32 attachment, const GLSurfaceDesc &target)
     {
         assert(attachment < CM_MAX_MULTIPLE_RENDER_TARGETS);
         mColour[attachment] = target;
@@ -90,7 +90,7 @@ namespace CamelotEngine {
 		if(mColour[0].buffer)
 			initialise();
     }
-    void GLFrameBufferObject::unbindSurface(size_t attachment)
+    void GLFrameBufferObject::unbindSurface(UINT32 attachment)
     {
         assert(attachment < CM_MAX_MULTIPLE_RENDER_TARGETS);
         mColour[attachment].buffer = 0;
@@ -119,8 +119,8 @@ namespace CamelotEngine {
 		// mMultisampleFB is bound during rendering and is the one with a depth/stencil
 
         /// Store basic stats
-        size_t width = mColour[0].buffer->getWidth();
-        size_t height = mColour[0].buffer->getHeight();
+        UINT32 width = mColour[0].buffer->getWidth();
+        UINT32 height = mColour[0].buffer->getHeight();
         GLuint format = mColour[0].buffer->getGLFormat();
         PixelFormat ogreFormat = mColour[0].buffer->getFormat();
         UINT16 maxSupportedMRTs = CamelotEngine::RenderSystemManager::getActive()->getCapabilities_internal()->getNumMultiRenderTargets();
@@ -129,7 +129,7 @@ namespace CamelotEngine {
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mFB);
 
         /// Bind all attachment points to frame buffer
-        for(size_t x=0; x<maxSupportedMRTs; ++x)
+        for(UINT16 x=0; x<maxSupportedMRTs; ++x)
         {
             if(mColour[x].buffer)
             {
@@ -220,7 +220,7 @@ namespace CamelotEngine {
 		/// Do glDrawBuffer calls
 		GLenum bufs[CM_MAX_MULTIPLE_RENDER_TARGETS];
 		GLsizei n=0;
-		for(size_t x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+		for(UINT32 x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
 		{
 			// Fill attached colour buffers
 			if(mColour[x].buffer)
@@ -290,8 +290,8 @@ namespace CamelotEngine {
 		if (mMultisampleFB)
 		{
 			// blit from multisample buffer to final buffer, triggers resolve
-			size_t width = mColour[0].buffer->getWidth();
-			size_t height = mColour[0].buffer->getHeight();
+			UINT32 width = mColour[0].buffer->getWidth();
+			UINT32 height = mColour[0].buffer->getHeight();
 			glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, mMultisampleFB);
 			glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, mFB);
 			glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
@@ -299,12 +299,12 @@ namespace CamelotEngine {
 		}
 	}
 
-    size_t GLFrameBufferObject::getWidth()
+    UINT32 GLFrameBufferObject::getWidth()
     {
         assert(mColour[0].buffer);
         return mColour[0].buffer->getWidth();
     }
-    size_t GLFrameBufferObject::getHeight()
+    UINT32 GLFrameBufferObject::getHeight()
     {
         assert(mColour[0].buffer);
         return mColour[0].buffer->getHeight();

@@ -1136,7 +1136,7 @@ namespace CamelotEngine {
         return des.componentType;
     }
     //-----------------------------------------------------------------------
-    size_t PixelUtil::getComponentCount(PixelFormat fmt)
+    UINT32 PixelUtil::getComponentCount(PixelFormat fmt)
     {
         const PixelFormatDescription &des = getDescriptionFor(fmt);
         return des.componentCount;

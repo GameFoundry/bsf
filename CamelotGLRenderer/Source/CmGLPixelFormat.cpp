@@ -348,9 +348,9 @@ namespace CamelotEngine  {
 	}
 	//----------------------------------------------------------------------------- 
 
-	size_t GLPixelUtil::getMaxMipmaps(size_t width, size_t height, size_t depth, PixelFormat format)
+	UINT32 GLPixelUtil::getMaxMipmaps(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format)
 	{
-		size_t count = 0;
+		UINT32 count = 0;
         if((width > 0) && (height > 0))
         {
             do {
@@ -371,7 +371,7 @@ namespace CamelotEngine  {
 		return count;
 	}
     //-----------------------------------------------------------------------------    
-    size_t GLPixelUtil::optionalPO2(size_t value)
+    UINT32 GLPixelUtil::optionalPO2(UINT32 value)
     {
         const RenderSystemCapabilities *caps = CamelotEngine::RenderSystemManager::getActive()->getCapabilities_internal();
         if(caps->hasCapability(RSC_NON_POWER_OF_2_TEXTURES))

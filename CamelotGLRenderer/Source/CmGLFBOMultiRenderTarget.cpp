@@ -42,7 +42,7 @@ namespace CamelotEngine {
 	}
 
 
-	void GLFBOMultiRenderTarget::bindSurfaceImpl(size_t attachment, RenderTexture *target)
+	void GLFBOMultiRenderTarget::bindSurfaceImpl(UINT32 attachment, RenderTexture *target)
 
 	{
 
@@ -68,7 +68,7 @@ namespace CamelotEngine {
 
 
 
-	void GLFBOMultiRenderTarget::unbindSurfaceImpl(size_t attachment)
+	void GLFBOMultiRenderTarget::unbindSurfaceImpl(UINT32 attachment)
 	{
 		fbo.unbindSurface(attachment);
 

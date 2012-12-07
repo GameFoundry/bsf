@@ -1836,7 +1836,7 @@ void PS_1_4::test()
   char passed[] = "PASSED\n";
   char failed[] = "***** FAILED *****\n";
 
-  int resultID = 0;
+  size_t resultID = 0;
 
   // loop variable used in for loops
   int i;
@@ -1886,7 +1886,7 @@ void PS_1_4::test()
 // **************************************************************
   fprintf(fp, "\nTesting: isFloatValue\n");
   float fvalue = 0;
-  int charsize = 0;
+  size_t charsize = 0;
   char teststrfloat1[] = "1 test";
   mCharPos = 0;
   int testsize = ARRAYSIZE(testfloatresults);

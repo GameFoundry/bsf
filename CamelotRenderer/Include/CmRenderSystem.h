@@ -400,14 +400,14 @@ namespace CamelotEngine
 		only sets those settings which are different from the current settings for this
 		unit, thus minimising render state changes.
 		*/
-		void setTextureUnitSettings(size_t texUnit, const TexturePtr& texture, const SamplerState& samplerState);
-		virtual void setTextureUnitSettings_internal(size_t texUnit, const TexturePtr& texture, const SamplerState& samplerState);
+		void setTextureUnitSettings(UINT16 texUnit, const TexturePtr& texture, const SamplerState& samplerState);
+		virtual void setTextureUnitSettings_internal(UINT16 texUnit, const TexturePtr& texture, const SamplerState& samplerState);
 		/** Turns off a texture unit. */
-		void disableTextureUnit(size_t texUnit);
-		virtual void disableTextureUnit_internal(size_t texUnit);
+		void disableTextureUnit(UINT16 texUnit);
+		virtual void disableTextureUnit_internal(UINT16 texUnit);
 		/** Disables all texture units from the given unit upwards */
-		void disableTextureUnitsFrom(size_t texUnit);
-		virtual void disableTextureUnitsFrom_internal(size_t texUnit);
+		void disableTextureUnitsFrom(UINT16 texUnit);
+		virtual void disableTextureUnitsFrom_internal(UINT16 texUnit);
 
 		/** Sets the size of points and how they are attenuated with distance.
 		@remarks
@@ -437,9 +437,9 @@ namespace CamelotEngine
 		@param enabled Boolean to turn the unit on/off
 		@param texPtr Pointer to the texture to use.
 		*/
-		void setTexture(size_t unit, bool enabled, 
+		void setTexture(UINT16 unit, bool enabled, 
 			const TexturePtr &texPtr);
-		virtual void setTexture_internal(size_t unit, bool enabled, 
+		virtual void setTexture_internal(UINT16 unit, bool enabled, 
 			const TexturePtr &texPtr) = 0;
 
 		/** Binds a texture to a vertex sampler.
@@ -451,8 +451,8 @@ namespace CamelotEngine
 		fragment units; calling this method will throw an exception.
 		@see RenderSystemCapabilites::getVertexTextureUnitsShared
 		*/
-		void setVertexTexture(size_t unit, const TexturePtr& tex);
-		virtual void setVertexTexture_internal(size_t unit, const TexturePtr& tex);
+		void setVertexTexture(UINT16 unit, const TexturePtr& tex);
+		virtual void setVertexTexture_internal(UINT16 unit, const TexturePtr& tex);
 
 		/** Sets the filtering options for a given texture unit.
 		@param unit The texture unit to set the filtering options for
@@ -460,9 +460,9 @@ namespace CamelotEngine
 		@param magFilter The filter used when a texture is magnified
 		@param mipFilter The filter used between mipmap levels, FO_NONE disables mipmapping
 		*/
-		void setTextureFiltering(size_t unit, FilterOptions minFilter,
+		void setTextureFiltering(UINT16 unit, FilterOptions minFilter,
 			FilterOptions magFilter, FilterOptions mipFilter);
-		virtual void setTextureFiltering_internal(size_t unit, FilterOptions minFilter,
+		virtual void setTextureFiltering_internal(UINT16 unit, FilterOptions minFilter,
 			FilterOptions magFilter, FilterOptions mipFilter);
 
 		/** Sets a single filter for a given texture unit.
@@ -470,20 +470,20 @@ namespace CamelotEngine
 		@param ftype The filter type
 		@param filter The filter to be used
 		*/
-		void setTextureFiltering(size_t unit, FilterType ftype, FilterOptions filter);
-		virtual void setTextureFiltering_internal(size_t unit, FilterType ftype, FilterOptions filter) = 0;
+		void setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter);
+		virtual void setTextureFiltering_internal(UINT16 unit, FilterType ftype, FilterOptions filter) = 0;
 
 		/** Sets the maximal anisotropy for the specified texture unit.*/
-		void setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy);
-		virtual void setTextureAnisotropy_internal(size_t unit, unsigned int maxAnisotropy) = 0;
+		void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy);
+		virtual void setTextureAnisotropy_internal(UINT16 unit, unsigned int maxAnisotropy) = 0;
 
 		/** Sets the texture addressing mode for a texture unit.*/
-		void setTextureAddressingMode(size_t unit, const SamplerState::UVWAddressingMode& uvw);
-		virtual void setTextureAddressingMode_internal(size_t unit, const SamplerState::UVWAddressingMode& uvw) = 0;
+		void setTextureAddressingMode(UINT16 unit, const SamplerState::UVWAddressingMode& uvw);
+		virtual void setTextureAddressingMode_internal(UINT16 unit, const SamplerState::UVWAddressingMode& uvw) = 0;
 
 		/** Sets the texture border color for a texture unit.*/
-		void setTextureBorderColor(size_t unit, const Color& color);
-		virtual void setTextureBorderColor_internal(size_t unit, const Color& color) = 0;
+		void setTextureBorderColor(UINT16 unit, const Color& color);
+		virtual void setTextureBorderColor_internal(UINT16 unit, const Color& color) = 0;
 
 		/** Sets the mipmap bias value for a given texture unit.
 		@remarks
@@ -493,8 +493,8 @@ namespace CamelotEngine
 		of levels, so +1 forces the mipmaps to one smaller level.
 		@note Only does something if render system has capability RSC_MIPMAP_LOD_BIAS.
 		*/
-		void setTextureMipmapBias(size_t unit, float bias);
-		virtual void setTextureMipmapBias_internal(size_t unit, float bias) = 0;
+		void setTextureMipmapBias(UINT16 unit, float bias);
+		virtual void setTextureMipmapBias_internal(UINT16 unit, float bias) = 0;
 
 		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
 		The result of the blending operation is:</p>
@@ -827,10 +827,10 @@ namespace CamelotEngine
 		@param left, top, right, bottom The location of the corners of the rectangle, expressed in
 		<i>pixels</i>.
 		*/
-		void setScissorTest(bool enabled, size_t left = 0, size_t top = 0, 
-			size_t right = 800, size_t bottom = 600);
-		virtual void setScissorTest_internal(bool enabled, size_t left = 0, size_t top = 0, 
-			size_t right = 800, size_t bottom = 600) = 0;
+		void setScissorTest(bool enabled, UINT32 left = 0, UINT32 top = 0, 
+			UINT32 right = 800, UINT32 bottom = 600);
+		virtual void setScissorTest_internal(bool enabled, UINT32 left = 0, UINT32 top = 0, 
+			UINT32 right = 800, UINT32 bottom = 600) = 0;
 
 		/** Clears one or more frame buffers on the active render target. 
 		@param buffers Combination of one or more elements of FrameBufferType
@@ -937,7 +937,7 @@ namespace CamelotEngine
 		bool mInvertVertexWinding;
 
 		/// Texture units from this upwards are disabled
-		size_t mDisabledTexUnitsFrom;
+		UINT16 mDisabledTexUnitsFrom;
 
 		bool mVertexProgramBound;
 		bool mGeometryProgramBound;

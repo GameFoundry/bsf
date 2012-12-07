@@ -48,8 +48,8 @@ namespace CamelotEngine {
 		bool requiresTextureFlipping() const { return false; }
 	private:
 		D3D9HardwarePixelBuffer *mRenderTargets[CM_MAX_MULTIPLE_RENDER_TARGETS];
-		virtual void bindSurfaceImpl(size_t attachment, RenderTexture *target);
-		virtual void unbindSurfaceImpl(size_t attachment);
+		virtual void bindSurfaceImpl(UINT32 attachment, RenderTexture *target);
+		virtual void unbindSurfaceImpl(UINT32 attachment);
 
 		/** Check surfaces and update RenderTarget extent */
 		void checkAndUpdate();

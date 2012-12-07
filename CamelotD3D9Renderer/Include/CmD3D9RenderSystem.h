@@ -203,7 +203,7 @@ namespace CamelotEngine
 			multisample type.
 			@returns A directx surface, or 0 if there is no compatible depthstencil possible.
 		*/
-		IDirect3DSurface9* getDepthStencilFor(D3DFORMAT fmt, D3DMULTISAMPLE_TYPE multisample, DWORD multisample_quality, size_t width, size_t height);
+		IDirect3DSurface9* getDepthStencilFor(D3DFORMAT fmt, D3DMULTISAMPLE_TYPE multisample, DWORD multisample_quality, UINT16 width, UINT16 height);
 
 		/** Clear all cached depth stencil surfaces
 		*/
@@ -215,7 +215,7 @@ namespace CamelotEngine
         bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
 
 		/// Take in some requested FSAA settings and output supported D3D settings
-		void determineFSAASettings(IDirect3DDevice9* d3d9Device, size_t fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
+		void determineFSAASettings(IDirect3DDevice9* d3d9Device, UINT16 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
 			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
 	public:
 		// constructor
@@ -248,12 +248,12 @@ namespace CamelotEngine
 		// Low-level overridden members, mainly for internal use
 		void setPointParameters_internal(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize);
-		void setTexture_internal(size_t unit, bool enabled, const TexturePtr &texPtr);
-		void setVertexTexture_internal(size_t unit, const TexturePtr& tex);
-		void disableTextureUnit_internal(size_t texUnit);
-        void setTextureAddressingMode_internal(size_t stage, const SamplerState::UVWAddressingMode& uvw);
-        void setTextureBorderColor_internal(size_t stage, const Color& colour);
-		void setTextureMipmapBias_internal(size_t unit, float bias);
+		void setTexture_internal(UINT16 unit, bool enabled, const TexturePtr &texPtr);
+		void setVertexTexture_internal(UINT16 unit, const TexturePtr& tex);
+		void disableTextureUnit_internal(UINT16 texUnit);
+        void setTextureAddressingMode_internal(UINT16 stage, const SamplerState::UVWAddressingMode& uvw);
+        void setTextureBorderColor_internal(UINT16 stage, const Color& colour);
+		void setTextureMipmapBias_internal(UINT16 unit, float bias);
 		void setSceneBlending_internal( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
 		void setSeparateSceneBlending_internal( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
 		void setAlphaRejectSettings_internal( CompareFunction func, unsigned char value, bool alphaToCoverage );
@@ -269,13 +269,13 @@ namespace CamelotEngine
 		void setDepthBias_internal(float constantBias, float slopeScaleBias);
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
 		void setPolygonMode_internal(PolygonMode level);
-        void setTextureFiltering_internal(size_t unit, FilterType ftype, FilterOptions filter);
-		void setTextureAnisotropy_internal(size_t unit, unsigned int maxAnisotropy);
+        void setTextureFiltering_internal(UINT16 unit, FilterType ftype, FilterOptions filter);
+		void setTextureAnisotropy_internal(UINT16 unit, unsigned int maxAnisotropy);
 		void setVertexDeclaration_internal(VertexDeclarationPtr decl);
 		void setVertexBufferBinding_internal(VertexBufferBinding* binding);
         void render_internal(const RenderOperation& op);
 
-        void setScissorTest_internal(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600);
+        void setScissorTest_internal(bool enabled, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
         void clearFrameBuffer_internal(unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);

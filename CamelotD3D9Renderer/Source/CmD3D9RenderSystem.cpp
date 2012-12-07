@@ -346,7 +346,7 @@ namespace CamelotEngine
 				{
 					if (i->second.variability & variability)
 					{
-						size_t logicalIndex = i->first;
+						UINT32 logicalIndex = i->first;
 						TextureHandle texture = params->getTexture(i->second.physicalIndex);
 
 						if(!texture.isLoaded())
@@ -371,9 +371,9 @@ namespace CamelotEngine
 					{
 						if (i->second.variability & variability)
 						{
-							size_t logicalIndex = i->first;
+							UINT32 logicalIndex = i->first;
 							const float* pFloat = params->getFloatPointer(i->second.physicalIndex);
-							size_t slotCount = i->second.currentSize / 4;
+							UINT32 slotCount = i->second.currentSize / 4;
 							assert (i->second.currentSize % 4 == 0 && "Should not have any "
 								"elements less than 4 wide for D3D9");
 
@@ -396,9 +396,9 @@ namespace CamelotEngine
 					{
 						if (i->second.variability & variability)
 						{
-							size_t logicalIndex = i->first;
+							UINT32 logicalIndex = i->first;
 							const int* pInt = params->getIntPointer(i->second.physicalIndex);
-							size_t slotCount = i->second.currentSize / 4;
+							UINT32 slotCount = i->second.currentSize / 4;
 							assert (i->second.currentSize % 4 == 0 && "Should not have any "
 								"elements less than 4 wide for D3D9");
 
@@ -423,9 +423,9 @@ namespace CamelotEngine
 					{
 						if (i->second.variability & variability)
 						{
-							size_t logicalIndex = i->first;
+							UINT32 logicalIndex = i->first;
 							const float* pFloat = params->getFloatPointer(i->second.physicalIndex);
-							size_t slotCount = i->second.currentSize / 4;
+							UINT32 slotCount = i->second.currentSize / 4;
 							assert (i->second.currentSize % 4 == 0 && "Should not have any "
 								"elements less than 4 wide for D3D9");
 
@@ -447,9 +447,9 @@ namespace CamelotEngine
 					{
 						if (i->second.variability & variability)
 						{
-							size_t logicalIndex = i->first;
+							UINT32 logicalIndex = i->first;
 							const int* pInt = params->getIntPointer(i->second.physicalIndex);
-							size_t slotCount = i->second.currentSize / 4;
+							UINT32 slotCount = i->second.currentSize / 4;
 							assert (i->second.currentSize % 4 == 0 && "Should not have any "
 								"elements less than 4 wide for D3D9");
 
@@ -519,7 +519,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setTexture_internal( size_t stage, bool enabled, const TexturePtr& tex )
+	void D3D9RenderSystem::setTexture_internal( UINT16 stage, bool enabled, const TexturePtr& tex )
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -579,7 +579,7 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setVertexTexture_internal(size_t stage, const TexturePtr& tex)
+	void D3D9RenderSystem::setVertexTexture_internal(UINT16 stage, const TexturePtr& tex)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -622,7 +622,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::disableTextureUnit_internal(size_t texUnit)
+	void D3D9RenderSystem::disableTextureUnit_internal(UINT16 texUnit)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -632,7 +632,7 @@ namespace CamelotEngine
 		setVertexTexture_internal(texUnit, nullPtr);
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setTextureMipmapBias_internal(size_t unit, float bias)
+	void D3D9RenderSystem::setTextureMipmapBias_internal(UINT16 unit, float bias)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -647,7 +647,7 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setTextureAddressingMode_internal( size_t stage, 
+	void D3D9RenderSystem::setTextureAddressingMode_internal( UINT16 stage, 
 		const SamplerState::UVWAddressingMode& uvw )
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -661,7 +661,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set texture addressing mode for W");
 	}
 	//-----------------------------------------------------------------------------
-	void D3D9RenderSystem::setTextureBorderColor_internal(size_t stage,
+	void D3D9RenderSystem::setTextureBorderColor_internal(UINT16 stage,
 		const Color& colour)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -997,7 +997,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation.");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setTextureFiltering_internal(size_t unit, FilterType ftype, 
+	void D3D9RenderSystem::setTextureFiltering_internal(UINT16 unit, FilterType ftype, 
 		FilterOptions filter)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -1011,7 +1011,7 @@ namespace CamelotEngine
 	}
 
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setTextureAnisotropy_internal(size_t unit, unsigned int maxAnisotropy)
+	void D3D9RenderSystem::setTextureAnisotropy_internal(UINT16 unit, unsigned int maxAnisotropy)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1327,8 +1327,8 @@ namespace CamelotEngine
 	}
 	
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setScissorTest_internal(bool enabled, size_t left, size_t top, size_t right,
-		size_t bottom)
+	void D3D9RenderSystem::setScissorTest_internal(bool enabled, UINT32 left, UINT32 top, UINT32 right,
+		UINT32 bottom)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -2516,17 +2516,17 @@ namespace CamelotEngine
 		mActiveViewport = Viewport();
 
 		// Reset the texture stages, they will need to be rebound
-		for (size_t i = 0; i < CM_MAX_TEXTURE_LAYERS; ++i)
+		for (UINT16 i = 0; i < CM_MAX_TEXTURE_LAYERS; ++i)
 			setTexture_internal(i, false, TexturePtr());
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::determineFSAASettings(IDirect3DDevice9* d3d9Device,
-		size_t fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
+		UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
 		bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality)
 	{
 		bool ok = false;
 		bool qualityHint = fsaaHint.find("Quality") != String::npos;
-		size_t origFSAA = fsaa;
+		UINT32 origFSAA = fsaa;
 
 		D3D9DriverList* driverList = getDirect3DDrivers();
 		D3D9Driver* deviceDriver = mActiveD3DDriver;
@@ -2699,7 +2699,7 @@ namespace CamelotEngine
 		return dsfmt;
 	}
 	IDirect3DSurface9* D3D9RenderSystem::getDepthStencilFor(D3DFORMAT fmt, 
-		D3DMULTISAMPLE_TYPE multisample, DWORD multisample_quality, size_t width, size_t height)
+		D3DMULTISAMPLE_TYPE multisample, DWORD multisample_quality, UINT32 width, UINT32 height)
 	{
 		D3DFORMAT dsfmt = getDepthStencilFormatFor(fmt);
 		if(dsfmt == D3DFMT_UNKNOWN)
@@ -2898,7 +2898,7 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	DWORD D3D9RenderSystem::_getCurrentAnisotropy(size_t unit)
+	DWORD D3D9RenderSystem::_getCurrentAnisotropy(UINT32 unit)
 	{
 		DWORD oldVal;
 		getActiveD3D9Device()->GetSamplerState(static_cast<DWORD>(unit), D3DSAMP_MAXANISOTROPY, &oldVal);

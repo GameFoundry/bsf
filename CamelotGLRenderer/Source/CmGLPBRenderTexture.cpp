@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 namespace CamelotEngine {
 //-----------------------------------------------------------------------------  
-    GLPBuffer::GLPBuffer(PixelComponentType format, size_t width, size_t height):
+    GLPBuffer::GLPBuffer(PixelComponentType format, UINT32 width, UINT32 height):
         mFormat(format),
         mWidth(width),
         mHeight(height)
@@ -115,7 +115,7 @@ namespace CamelotEngine {
             static_cast<GLTextureBuffer*>(surface.buffer)->copyFromFramebuffer(surface.zoffset);
     }
     
-    void GLPBRTTManager::requestPBuffer(PixelComponentType ctype, size_t width, size_t height)
+    void GLPBRTTManager::requestPBuffer(PixelComponentType ctype, UINT32 width, UINT32 height)
     {
         //Check size
         if(mPBuffers[ctype].pb)
@@ -146,7 +146,7 @@ namespace CamelotEngine {
         }
     }
     
-    GLContext *GLPBRTTManager::getContextFor(PixelComponentType ctype, size_t width, size_t height)
+    GLContext *GLPBRTTManager::getContextFor(PixelComponentType ctype, UINT32 width, UINT32 height)
     {
         // Faster to return main context if the RTT is smaller than the window size
         // and ctype is PCT_BYTE. This must be checked every time because the window might have been resized

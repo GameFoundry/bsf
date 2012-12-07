@@ -58,6 +58,7 @@ HIGH PRIORITY TODO:
  - HLSL & Cg don't handle include files yet
 
 Mid priority TODO:
+ - Compiler2Pass in GL renderer doesn't seem to be 64bit ready. I hacked it together but it will likely cause problems.
  - Resource handle should store a unique integer ID, which just points to a table of GUIDs. Keeping GUID string everywhere in not efficient.
  - Add a field that tracks % of resource deserialization in BinarySerializer
  - GpuProgram default parameters might not be needed. The parameters change with each use of the gpu program anyway

@@ -57,7 +57,7 @@ namespace CamelotEngine {
         FilterOptions mMipFilter;
 
         /// What texture coord set each texture unit is using
-        size_t mTextureCoordIndex[CM_MAX_TEXTURE_LAYERS];
+        UINT32 mTextureCoordIndex[CM_MAX_TEXTURE_LAYERS];
 
         /// Holds texture type settings for every stage
         GLenum mTextureTypes[CM_MAX_TEXTURE_LAYERS];
@@ -95,7 +95,7 @@ namespace CamelotEngine {
         GLint convertStencilOp(StencilOperation op, bool invert = false) const;
 
 		/// Internal method for anisotropy validation
-		GLfloat _getCurrentAnisotropy(size_t unit);
+		GLfloat _getCurrentAnisotropy(UINT16 unit);
 		
         /// GL support class, used for creating windows etc.
         GLSupport* mGLSupport;
@@ -129,7 +129,7 @@ namespace CamelotEngine {
 
 	protected:
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
-		bool activateGLTextureUnit(size_t unit);
+		bool activateGLTextureUnit(UINT16 unit);
 
 		/// @copydoc RenderSystem::createMultiRenderTarget
 		virtual MultiRenderTarget * createMultiRenderTarget(const String & name); 
@@ -222,19 +222,19 @@ namespace CamelotEngine {
 		/** See
           RenderSystem
          */
-        void setTexture_internal(size_t unit, bool enabled, const TexturePtr &tex);
+        void setTexture_internal(UINT16 unit, bool enabled, const TexturePtr &tex);
         /** See
           RenderSystem
          */
-        void setTextureAddressingMode_internal(size_t stage, const SamplerState::UVWAddressingMode& uvw);
+        void setTextureAddressingMode_internal(UINT16 stage, const SamplerState::UVWAddressingMode& uvw);
         /** See
           RenderSystem
          */
-        void setTextureBorderColor_internal(size_t stage, const Color& colour);
+        void setTextureBorderColor_internal(UINT16 stage, const Color& colour);
 		/** See
 		  RenderSystem
 		 */
-		void setTextureMipmapBias_internal(size_t unit, float bias);
+		void setTextureMipmapBias_internal(UINT16 unit, float bias);
         /** See
           RenderSystem
          */
@@ -320,11 +320,11 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setTextureFiltering_internal(size_t unit, FilterType ftype, FilterOptions filter);
+        void setTextureFiltering_internal(UINT16 unit, FilterType ftype, FilterOptions filter);
         /** See
           RenderSystem
          */
-		void setTextureAnisotropy_internal(size_t unit, unsigned int maxAnisotropy);
+		void setTextureAnisotropy_internal(UINT16 unit, unsigned int maxAnisotropy);
         /** See
           RenderSystem
          */
@@ -341,7 +341,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setScissorTest_internal(bool enabled, size_t left = 0, size_t top = 0, size_t right = 800, size_t bottom = 600) ;
+        void setScissorTest_internal(bool enabled, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) ;
         void clearFrameBuffer_internal(unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);

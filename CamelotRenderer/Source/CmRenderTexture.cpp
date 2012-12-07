@@ -34,7 +34,7 @@ namespace CamelotEngine
 {
 
     //-----------------------------------------------------------------------------
-	RenderTexture::RenderTexture(HardwarePixelBuffer *buffer, size_t zoffset):
+	RenderTexture::RenderTexture(HardwarePixelBuffer *buffer, UINT32 zoffset):
 		mBuffer(buffer), mZOffset(zoffset)
     {
         mPriority = OGRE_REND_TO_TEX_RT_GROUP;

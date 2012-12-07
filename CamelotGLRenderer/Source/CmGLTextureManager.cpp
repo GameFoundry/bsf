@@ -54,13 +54,13 @@ namespace CamelotEngine {
 	void GLTextureManager::createWarningTexture()
 	{
 		// Generate warning texture
-		size_t width = 8;
-		size_t height = 8;
+		UINT32 width = 8;
+		UINT32 height = 8;
 		UINT32 *data = new UINT32[width*height];		// 0xXXRRGGBB
 		// Yellow/black stripes
-		for(size_t y=0; y<height; ++y)
+		for(UINT32 y=0; y<height; ++y)
 		{
-			for(size_t x=0; x<width; ++x)
+			for(UINT32 x=0; x<width; ++x)
 			{
 				data[y*width+x] = (((x+y)%8)<4)?0x000000:0xFFFF00;
 			}

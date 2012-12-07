@@ -253,7 +253,7 @@ namespace CamelotEngine {
         return mActiveViewport;
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::setTextureUnitSettings(size_t texUnit, const TexturePtr& tex, const SamplerState& samplerState)
+    void RenderSystem::setTextureUnitSettings(UINT16 texUnit, const TexturePtr& tex, const SamplerState& samplerState)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -261,7 +261,7 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureUnitSettings_internal, this, texUnit, tex, samplerState));
 	}
 	//-----------------------------------------------------------------------
-    void RenderSystem::setTextureUnitSettings_internal(size_t texUnit, const TexturePtr& tex, const SamplerState& tl)
+    void RenderSystem::setTextureUnitSettings_internal(UINT16 texUnit, const TexturePtr& tex, const SamplerState& tl)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -311,7 +311,7 @@ namespace CamelotEngine {
         setTextureAddressingMode_internal(texUnit, uvw);
     }
 	//-----------------------------------------------------------------------
-	void RenderSystem::setTexture(size_t unit, bool enabled, const TexturePtr &texPtr)
+	void RenderSystem::setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -319,7 +319,7 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTexture_internal, this, unit, enabled, texPtr));
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::setVertexTexture(size_t unit, const TexturePtr& tex)
+	void RenderSystem::setVertexTexture(UINT16 unit, const TexturePtr& tex)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -327,7 +327,7 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setVertexTexture_internal, this, unit, tex));
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::setVertexTexture_internal(size_t unit, const TexturePtr& tex)
+	void RenderSystem::setVertexTexture_internal(UINT16 unit, const TexturePtr& tex)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -337,7 +337,7 @@ namespace CamelotEngine {
 			"the vertex and fragment units.");
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::disableTextureUnit(size_t texUnit)
+	void RenderSystem::disableTextureUnit(UINT16 texUnit)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -345,14 +345,14 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::disableTextureUnit_internal, this, texUnit));
 	}
     //-----------------------------------------------------------------------
-    void RenderSystem::disableTextureUnit_internal(size_t texUnit)
+    void RenderSystem::disableTextureUnit_internal(UINT16 texUnit)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
         setTexture_internal(texUnit, false, sNullTexPtr);
     }
 	//---------------------------------------------------------------------
-	void RenderSystem::disableTextureUnitsFrom(size_t texUnit)
+	void RenderSystem::disableTextureUnitsFrom(UINT16 texUnit)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -360,21 +360,21 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::disableTextureUnitsFrom_internal, this, texUnit));
 	}
     //---------------------------------------------------------------------
-    void RenderSystem::disableTextureUnitsFrom_internal(size_t texUnit)
+    void RenderSystem::disableTextureUnitsFrom_internal(UINT16 texUnit)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        size_t disableTo = CM_MAX_TEXTURE_LAYERS;
+        UINT16 disableTo = CM_MAX_TEXTURE_LAYERS;
         if (disableTo > mDisabledTexUnitsFrom)
             disableTo = mDisabledTexUnitsFrom;
         mDisabledTexUnitsFrom = texUnit;
-        for (size_t i = texUnit; i < disableTo; ++i)
+        for (UINT16 i = texUnit; i < disableTo; ++i)
         {
             disableTextureUnit_internal(i);
         }
     }
 	//-----------------------------------------------------------------------
-	void RenderSystem::setTextureFiltering(size_t unit, FilterOptions minFilter,
+	void RenderSystem::setTextureFiltering(UINT16 unit, FilterOptions minFilter,
 		FilterOptions magFilter, FilterOptions mipFilter)
 	{
 		THROW_IF_INVALID_CONTEXT;
@@ -383,7 +383,7 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureFiltering_internal, this, unit, minFilter, magFilter, mipFilter));
 	}
     //-----------------------------------------------------------------------
-    void RenderSystem::setTextureFiltering_internal(size_t unit, FilterOptions minFilter,
+    void RenderSystem::setTextureFiltering_internal(UINT16 unit, FilterOptions minFilter,
             FilterOptions magFilter, FilterOptions mipFilter)
     {
 		THROW_IF_NOT_RENDER_THREAD;
@@ -393,7 +393,7 @@ namespace CamelotEngine {
         setTextureFiltering_internal(unit, FT_MIP, mipFilter);
     }
 	//-----------------------------------------------------------------------
-	void RenderSystem::setTextureAnisotropy(size_t unit, unsigned int maxAnisotropy)
+	void RenderSystem::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -401,7 +401,7 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureAnisotropy_internal, this, unit, maxAnisotropy));
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::setTextureAddressingMode(size_t unit, const SamplerState::UVWAddressingMode& uvw)
+	void RenderSystem::setTextureAddressingMode(UINT16 unit, const SamplerState::UVWAddressingMode& uvw)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -409,7 +409,7 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureAddressingMode_internal, this, unit, uvw));
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::setTextureBorderColor(size_t unit, const Color& color)
+	void RenderSystem::setTextureBorderColor(UINT16 unit, const Color& color)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -417,7 +417,7 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureBorderColor_internal, this, unit, color));
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::setTextureMipmapBias(size_t unit, float bias)
+	void RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);
@@ -459,7 +459,7 @@ namespace CamelotEngine {
 		mActiveContext->queueCommand(boost::bind(&RenderSystem::setAlphaRejectSettings_internal, this, func, value, alphaToCoverage));
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::setScissorTest(bool enabled, size_t left, size_t top, size_t right, size_t bottom)
+	void RenderSystem::setScissorTest(bool enabled, UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		THROW_IF_INVALID_CONTEXT;
 		CM_LOCK_MUTEX(mActiveContextMutex);

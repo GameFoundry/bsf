@@ -37,7 +37,7 @@ namespace CamelotEngine {
     class CM_RSGL_EXPORT Win32PBuffer : public GLPBuffer
     {
 	public:
-		Win32PBuffer(PixelComponentType format, size_t width, size_t height);
+		Win32PBuffer(PixelComponentType format, UINT32 width, UINT32 height);
 		~Win32PBuffer();
 	    
 		virtual GLContext *getContext() { return mContext; }

@@ -44,10 +44,10 @@ namespace CamelotEngine {
         /** Bind a surface to a certain attachment point.
             attachment: 0..CM_MAX_MULTIPLE_RENDER_TARGETS-1
         */
-        void bindSurface(size_t attachment, const GLSurfaceDesc &target);
+        void bindSurface(UINT32 attachment, const GLSurfaceDesc &target);
         /** Unbind attachment
         */
-        void unbindSurface(size_t attachment);
+        void unbindSurface(UINT32 attachment);
         
         /** Bind FrameBufferObject
         */
@@ -63,12 +63,12 @@ namespace CamelotEngine {
 		GLuint getGLMultisampleFBOID() const { return mMultisampleFB; }
         
         /// Accessors
-        size_t getWidth();
-        size_t getHeight();
+        UINT32 getWidth();
+        UINT32 getHeight();
         PixelFormat getFormat();
         
         GLFBOManager *getManager() { return mManager; }
-		const GLSurfaceDesc &getSurface(size_t attachment) { return mColour[attachment]; }
+		const GLSurfaceDesc &getSurface(UINT32 attachment) { return mColour[attachment]; }
     private:
         GLFBOManager *mManager;
 		GLsizei mNumSamples;

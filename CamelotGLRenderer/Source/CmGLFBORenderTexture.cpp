@@ -79,7 +79,7 @@ static const GLenum stencilFormats[] =
     GL_STENCIL_INDEX8_EXT,
     GL_STENCIL_INDEX16_EXT
 };
-static const size_t stencilBits[] =
+static const UINT32 stencilBits[] =
 {
     0, 1, 4, 8, 16
 };
@@ -93,7 +93,7 @@ static const GLenum depthFormats[] =
     GL_DEPTH_COMPONENT32,
     GL_DEPTH24_STENCIL8_EXT // packed depth / stencil
 };
-static const size_t depthBits[] =
+static const UINT32 depthBits[] =
 {
     0,16,24,32,24
 };
@@ -290,13 +290,13 @@ static const size_t depthBits[] =
 					<< " depth/stencil support: ";
 
                 // For each depth/stencil formats
-                for (size_t depth = 0; depth < DEPTHFORMAT_COUNT; ++depth)
+                for (UINT32 depth = 0; depth < DEPTHFORMAT_COUNT; ++depth)
                 {
                     if (depthFormats[depth] != GL_DEPTH24_STENCIL8_EXT)
                     {
                         // General depth/stencil combination
 
-                        for (size_t stencil = 0; stencil < STENCILFORMAT_COUNT; ++stencil)
+                        for (UINT32 stencil = 0; stencil < STENCILFORMAT_COUNT; ++stencil)
                         {
                             //StringUtil::StrStreamType l;
                             //l << "Trying " << PixelUtil::getFormatName((PixelFormat)x) 
@@ -374,7 +374,7 @@ static const size_t depthBits[] =
         /// Decide what stencil and depth formats to use
         /// [best supported for internal format]
         size_t bestmode=0;
-        int bestscore=-1;
+        UINT32 bestscore=0;
         for(size_t mode=0; mode<props.modes.size(); mode++)
         {
 #if 0
@@ -386,7 +386,7 @@ static const size_t depthBits[] =
                 break;
             }
 #endif
-            int desirability = 0;
+            UINT32 desirability = 0;
             /// Find most desirable mode
             /// desirability == 0            if no depth, no stencil
             /// desirability == 1000...2000  if no depth, stencil
@@ -436,7 +436,7 @@ static const size_t depthBits[] =
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
     }
     
-    GLSurfaceDesc GLFBOManager::requestRenderBuffer(GLenum format, size_t width, size_t height, UINT32 fsaa)
+    GLSurfaceDesc GLFBOManager::requestRenderBuffer(GLenum format, UINT32 width, UINT32 height, UINT32 fsaa)
     {
         GLSurfaceDesc retval;
         retval.buffer = 0; // Return 0 buffer if GL_NONE is requested

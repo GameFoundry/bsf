@@ -86,7 +86,7 @@ namespace CamelotEngine {
         
         /** Request a render buffer. If format is GL_NONE, return a zero buffer.
         */
-        GLSurfaceDesc requestRenderBuffer(GLenum format, size_t width, size_t height, UINT32 fsaa);
+        GLSurfaceDesc requestRenderBuffer(GLenum format, UINT32 width, UINT32 height, UINT32 fsaa);
         /** Request the specify render buffer in case shared somewhere. Ignore
             silently if surface.buffer is 0.
         */
@@ -113,8 +113,8 @@ namespace CamelotEngine {
             */
             struct Mode
             {
-                size_t depth;     // Depth format (0=no depth)
-                size_t stencil;   // Stencil format (0=no stencil)
+                UINT32 depth;     // Depth format (0=no depth)
+                UINT32 stencil;   // Stencil format (0=no stencil)
             };
             
             vector<Mode>::type modes;
@@ -129,12 +129,12 @@ namespace CamelotEngine {
         */
         struct RBFormat
         {
-            RBFormat(GLenum inFormat, size_t inWidth, size_t inHeight, UINT32 fsaa):
+            RBFormat(GLenum inFormat, UINT32 inWidth, UINT32 inHeight, UINT32 fsaa):
                 format(inFormat), width(inWidth), height(inHeight), samples(fsaa)
             {}
             GLenum format;
-            size_t width;
-            size_t height;
+            UINT32 width;
+            UINT32 height;
 			UINT32 samples;
             // Overloaded comparison operator for usage in map
             bool operator < (const RBFormat &other) const

@@ -56,7 +56,7 @@ namespace CamelotEngine
 		bool selectPixelFormat(HDC hdc, int colourDepth, int multisample, bool hwGamma);
 
 		virtual bool supportsPBuffers();
-		virtual GLPBuffer *createPBuffer(PixelComponentType format, size_t width, size_t height);
+		virtual GLPBuffer *createPBuffer(PixelComponentType format, UINT32 width, UINT32 height);
 		virtual unsigned int getDisplayMonitorCount() const;
 	private:
 		// Allowed video modes

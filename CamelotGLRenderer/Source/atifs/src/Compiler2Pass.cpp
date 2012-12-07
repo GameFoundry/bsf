@@ -101,7 +101,7 @@ bool Compiler2Pass::doPass1()
 	mCharPos = 0;
 	// reset position in Constants container
 	mConstants.clear();
-	mEndOfSource = strlen(mSource);
+	mEndOfSource = (int)strlen(mSource);
 
 	// start with a clean slate
 	mTokenInstructions.clear();
@@ -124,10 +124,10 @@ bool Compiler2Pass::processRulePath( UINT32 rulepathIDX)
 
 	// record position of last token in container
 	// to be used as the rollback position if a valid token is not found
-	UINT32 TokenContainerOldSize = mTokenInstructions.size();
-	int OldCharPos = mCharPos;
+	UINT32 TokenContainerOldSize = (UINT32)mTokenInstructions.size();
+	size_t OldCharPos = mCharPos;
 	int OldLinePos = mCurrentLine;
-	UINT32 OldConstantsSize = mConstants.size();
+	UINT32 OldConstantsSize = (UINT32)mConstants.size();
 
 	// keep track of what non-terminal token activated the rule
 	UINT32 ActiveNTTRule = mRootRulePath[rulepathIDX].mTokenID;
@@ -215,7 +215,7 @@ bool Compiler2Pass::processRulePath( UINT32 rulepathIDX)
 
 bool Compiler2Pass::ValidateToken(const UINT32 rulepathIDX, const UINT32 activeRuleID)
 {
-	int tokenlength = 0;
+	size_t tokenlength = 0;
 	// assume the test is going to fail
 	bool Passed = false;
 	UINT32 TokenID = mRootRulePath[rulepathIDX].mTokenID;
@@ -279,7 +279,7 @@ const char* Compiler2Pass::getTypeDefText(const UINT32 sid)
 }
 
 
-bool Compiler2Pass::isFloatValue(float& fvalue, int& charsize)
+bool Compiler2Pass::isFloatValue(float& fvalue, size_t& charsize)
 {
 	// check to see if it is a numeric float value
 	bool valuefound = false;
@@ -301,7 +301,7 @@ bool Compiler2Pass::isFloatValue(float& fvalue, int& charsize)
 }
 
 
-bool Compiler2Pass::isSymbol(const char* symbol, int& symbolsize)
+bool Compiler2Pass::isSymbol(const char* symbol, size_t& symbolsize)
 {
 	// compare text at source+charpos with the symbol : limit testing to symbolsize
 	bool symbolfound = false;

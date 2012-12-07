@@ -145,7 +145,7 @@ namespace CamelotEngine {
         /** Returns the component count for a certain pixel format. Returns 3(no alpha) or 
             4 (has alpha) in case there is no clear component type like with compressed formats.
          */
-        static size_t getComponentCount(PixelFormat fmt);
+        static UINT32 getComponentCount(PixelFormat fmt);
 
         /** Gets the format from given name.
             @param  name            The string of format name

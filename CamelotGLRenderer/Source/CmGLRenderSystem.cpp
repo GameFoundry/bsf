@@ -444,7 +444,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTexture_internal(size_t stage, bool enabled, const TexturePtr &texPtr)
+	void GLRenderSystem::setTexture_internal(UINT16 stage, bool enabled, const TexturePtr &texPtr)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -503,7 +503,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureAddressingMode_internal(size_t stage, const SamplerState::UVWAddressingMode& uvw)
+	void GLRenderSystem::setTextureAddressingMode_internal(UINT16 stage, const SamplerState::UVWAddressingMode& uvw)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -519,7 +519,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureBorderColor_internal(size_t stage, const Color& colour)
+	void GLRenderSystem::setTextureBorderColor_internal(UINT16 stage, const Color& colour)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -531,7 +531,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureMipmapBias_internal(size_t stage, float bias)
+	void GLRenderSystem::setTextureMipmapBias_internal(UINT16 stage, float bias)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1007,7 +1007,7 @@ namespace CamelotEngine {
 		}
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setTextureFiltering_internal(size_t unit, 
+	void GLRenderSystem::setTextureFiltering_internal(UINT16 unit, 
 		FilterType ftype, FilterOptions fo)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -1056,7 +1056,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setTextureAnisotropy_internal(size_t unit, unsigned int maxAnisotropy)
+	void GLRenderSystem::setTextureAnisotropy_internal(UINT16 unit, unsigned int maxAnisotropy)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1338,15 +1338,15 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setScissorTest_internal(bool enabled, size_t left, 
-		size_t top, size_t right, size_t bottom)
+	void GLRenderSystem::setScissorTest_internal(bool enabled, UINT32 left, 
+		UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		// If request texture flipping, use "upper-left", otherwise use "lower-left"
 		bool flipping = mActiveRenderTarget->requiresTextureFlipping();
 		//  GL measures from the bottom, not the top
-		size_t targetHeight = mActiveRenderTarget->getHeight();
+		UINT32 targetHeight = mActiveRenderTarget->getHeight();
 		// Calculate the "lower-left" corner of the viewport
         GLsizei x = 0, y = 0, w = 0, h = 0;
 
@@ -1613,7 +1613,7 @@ namespace CamelotEngine {
 		}
 	}
 	//---------------------------------------------------------------------
-	bool GLRenderSystem::activateGLTextureUnit(size_t unit)
+	bool GLRenderSystem::activateGLTextureUnit(UINT16 unit)
 	{
 		if (mActiveTextureUnit != unit)
 		{
@@ -1644,7 +1644,7 @@ namespace CamelotEngine {
 		mGLSupport->addConfig();
 	}
 	//---------------------------------------------------------------------
-	GLfloat GLRenderSystem::_getCurrentAnisotropy(size_t unit)
+	GLfloat GLRenderSystem::_getCurrentAnisotropy(UINT16 unit)
 	{
 		GLfloat curAniso = 0;
 		glGetTexParameterfv(mTextureTypes[unit], 

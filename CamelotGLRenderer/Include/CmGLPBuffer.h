@@ -38,7 +38,7 @@ namespace CamelotEngine {
     class CM_RSGL_EXPORT GLPBuffer
     {
     public:
-        GLPBuffer(PixelComponentType format, size_t width, size_t height);
+        GLPBuffer(PixelComponentType format, UINT32 width, UINT32 height);
         virtual ~GLPBuffer();
         
         /** Get the GL context that needs to be active to render to this PBuffer.
@@ -46,15 +46,15 @@ namespace CamelotEngine {
         virtual GLContext *getContext() = 0;
         
         PixelComponentType getFormat() { return mFormat; }
-        size_t getWidth() { return mWidth; }
-        size_t getHeight() { return mHeight; }
+        UINT32 getWidth() { return mWidth; }
+        UINT32 getHeight() { return mHeight; }
         
         /** Get PBuffer component format for an OGRE pixel format.
          */
         static PixelComponentType getPixelComponentType(PixelFormat fmt);
     protected:
         PixelComponentType mFormat;
-        size_t mWidth, mHeight;
+        UINT32 mWidth, mHeight;
     };
     
 }
