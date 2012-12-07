@@ -84,9 +84,9 @@ namespace CamelotEngine {
 		/// Whether this class should delete the declaration and binding
 		bool mDeleteDclBinding;
 		/// The base vertex index to start from
-		size_t vertexStart;
+		UINT32 vertexStart;
 		/// The number of vertices used in this operation
-		size_t vertexCount;
+		UINT32 vertexCount;
 		
 		/** Clones this vertex data, potentially including replicating any vertex buffers.
 		@param copyData Whether to create new vertex buffers too or just reference the existing ones
@@ -218,10 +218,10 @@ namespace CamelotEngine {
 		HardwareIndexBufferPtr indexBuffer;
 
 		/// index in the buffer to start from for this operation
-		size_t indexStart;
+		UINT32 indexStart;
 
 		/// The number of indexes to use from the buffer
-		size_t indexCount;
+		UINT32 indexCount;
 
 		/** Clones this index data, potentially including replicating the index buffer.
 		@param copyData Whether to create new buffers too or just reference the existing ones

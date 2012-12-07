@@ -43,7 +43,7 @@ namespace CamelotEngine {
         virtual ~GLTexture();      
 
 		/// @copydoc Texture::getBuffer
-		HardwarePixelBufferPtr getBuffer_internal(size_t face, size_t mipmap);
+		HardwarePixelBufferPtr getBuffer_internal(UINT32 face, UINT32 mipmap);
 
         // Takes the OGRE texture type (1d/2d/3d/cube) and returns the appropriate GL one
         GLenum getGLTextureTarget_internal(void) const;

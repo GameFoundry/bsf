@@ -126,7 +126,7 @@ namespace CamelotEngine {
             be synchronised with the real buffer at an appropriate time.
         */
 		virtual HardwareVertexBufferPtr 
-            createVertexBuffer(size_t vertexSize, size_t numVerts, HardwareBuffer::Usage usage, 
+            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, 
 			bool useShadowBuffer = false) = 0;
 		/** Create a hardware index buffer.
         @remarks Note that because buffers can be shared, they are reference
@@ -145,7 +145,7 @@ namespace CamelotEngine {
             be synchronised with the real buffer at an appropriate time.
         */
 		virtual HardwareIndexBufferPtr 
-            createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
+            createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
 			HardwareBuffer::Usage usage, bool useShadowBuffer = false) = 0;
 
         /** Creates a new vertex declaration. */
@@ -194,14 +194,14 @@ namespace CamelotEngine {
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexBuffer */
 		HardwareVertexBufferPtr 
-            createVertexBuffer(size_t vertexSize, size_t numVerts, HardwareBuffer::Usage usage, 
+            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, 
 			bool useShadowBuffer = false)
 		{
 			return mImpl->createVertexBuffer(vertexSize, numVerts, usage, useShadowBuffer);
 		}
 		/** @copydoc HardwareBufferManagerInterface::createIndexBuffer */
 		HardwareIndexBufferPtr 
-            createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
+            createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
 			HardwareBuffer::Usage usage, bool useShadowBuffer = false)
 		{
 			return mImpl->createIndexBuffer(itype, numIndexes, usage, useShadowBuffer);

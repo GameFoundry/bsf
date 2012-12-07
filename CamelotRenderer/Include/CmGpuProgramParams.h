@@ -100,14 +100,14 @@ namespace CamelotEngine {
 		/// Data type
 		GpuConstantType constType;
 		/// Physical start index in buffer (either float or int buffer)
-		size_t physicalIndex;
+		UINT32 physicalIndex;
 		/// Logical index - used to communicate this constant to the rendersystem
-		size_t logicalIndex;
+		UINT32 logicalIndex;
 		/** Number of raw buffer slots per element 
 		(some programs pack each array element to float4, some do not) */
-		size_t elementSize;
+		UINT32 elementSize;
 		/// Length of array
-		size_t arraySize;
+		UINT32 arraySize;
 		/// How this parameter varies (bitwise combination of GpuProgramVariability)
 		mutable UINT16 variability;
 
@@ -163,7 +163,7 @@ namespace CamelotEngine {
 		/** Get the element size of a given type, including whether to pad the 
 			elements into multiples of 4 (e.g. SM1 and D3D does, GLSL doesn't)
 		*/
-		static size_t getElementSize(GpuConstantType ctype, bool padToMultiplesOf4)
+		static UINT32 getElementSize(GpuConstantType ctype, bool padToMultiplesOf4)
 		{
 			if (padToMultiplesOf4)
 			{
@@ -246,7 +246,7 @@ namespace CamelotEngine {
 
 		GpuConstantDefinition()
 			: constType(GCT_UNKNOWN)
-			, physicalIndex((std::numeric_limits<size_t>::max)())
+			, physicalIndex((std::numeric_limits<UINT32>::max)())
 			, elementSize(0)
 			, arraySize(1)
 			, variability(GPV_GLOBAL) {}
@@ -258,11 +258,11 @@ namespace CamelotEngine {
 	struct CM_EXPORT GpuNamedConstants
 	{
 		/// Total size of the float buffer required
-		size_t floatBufferSize;
+		UINT32 floatBufferSize;
 		/// Total size of the int buffer required
-		size_t intBufferSize;
+		UINT32 intBufferSize;
 		/// Total number of samplers referenced
-		size_t samplerCount;
+		UINT32 samplerCount;
 		/// Map of parameter names to GpuConstantDefinition
 		GpuConstantDefinitionMap map;
 
@@ -310,18 +310,18 @@ namespace CamelotEngine {
 	struct CM_EXPORT GpuLogicalIndexUse
 	{
 		/// Physical buffer index
-		size_t physicalIndex;
+		UINT32 physicalIndex;
 		/// Current physical size allocation
-		size_t currentSize;
+		UINT32 currentSize;
 		/// How the contents of this slot vary
 		mutable UINT16 variability;
 
 		GpuLogicalIndexUse() 
 			: physicalIndex(99999), currentSize(0), variability(GPV_GLOBAL) {}
-		GpuLogicalIndexUse(size_t bufIdx, size_t curSz, UINT16 v) 
+		GpuLogicalIndexUse(UINT32 bufIdx, UINT32 curSz, UINT32 v) 
 			: physicalIndex(bufIdx), currentSize(curSz), variability(v) {}
 	};
-	typedef map<size_t, GpuLogicalIndexUse>::type GpuLogicalIndexUseMap;
+	typedef map<UINT32, GpuLogicalIndexUse>::type GpuLogicalIndexUseMap;
 	/// Container struct to allow params to safely & update shared list of logical buffer assignments
 	struct CM_EXPORT GpuLogicalBufferStruct
 	{
@@ -329,7 +329,7 @@ namespace CamelotEngine {
 			/// Map from logical index to physical buffer location
 			GpuLogicalIndexUseMap map;
 		/// Shortcut to know the buffer size needs
-		size_t bufferSize;
+		UINT32 bufferSize;
 		GpuLogicalBufferStruct() : bufferSize(0) {}
 	};
 	typedef std::shared_ptr<GpuLogicalBufferStruct> GpuLogicalBufferStructPtr;
@@ -440,10 +440,10 @@ namespace CamelotEngine {
 
 		/** Gets the low-level structure for a logical index. 
 		*/
-		GpuLogicalIndexUse* _getFloatConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, UINT16 variability);
+		GpuLogicalIndexUse* _getFloatConstantLogicalIndexUse(UINT32 logicalIndex, UINT32 requestedSize, UINT16 variability);
 		/** Gets the physical buffer index associated with a logical int constant index. 
 		*/
-		GpuLogicalIndexUse* _getIntConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, UINT16 variability);
+		GpuLogicalIndexUse* _getIntConstantLogicalIndexUse(UINT32 logicalIndex, UINT32 requestedSize, UINT16 variability);
 
 	public:
 		GpuProgramParameters();
@@ -476,7 +476,7 @@ namespace CamelotEngine {
 		(each constant is a 4D float)
 		@param vec The value to set
 		*/
-		void setConstant(size_t index, const Vector4& vec);
+		void setConstant(UINT32 index, const Vector4& vec);
 		/** Sets a single floating-point parameter to the program.
 		@note This is actually equivalent to calling 
 		setConstant(index Vector4(val, 0, 0, 0)) since all constants are 4D.
@@ -484,7 +484,7 @@ namespace CamelotEngine {
 		a 4D float)
 		@param val The value to set
 		*/
-		void setConstant(size_t index, float val);
+		void setConstant(UINT32 index, float val);
 		/** Sets a 4-element floating-point parameter to the program via Vector3.
 		@param index The logical constant index at which to place the parameter (each constant is
 		a 4D float).
@@ -492,14 +492,14 @@ namespace CamelotEngine {
 		value will be set to 1 (a homogeneous vector)
 		@param vec The value to set
 		*/
-		void setConstant(size_t index, const Vector3& vec);
+		void setConstant(UINT32 index, const Vector3& vec);
 		/** Sets a Matrix4 parameter to the program.
 		@param index The logical constant index at which to place the parameter (each constant is
 		a 4D float).
 		NB since a Matrix4 is 16 floats long, this parameter will take up 4 indexes.
 		@param m The value to set
 		*/
-		void setConstant(size_t index, const Matrix4& m);
+		void setConstant(UINT32 index, const Matrix4& m);
 		/** Sets a list of Matrix4 parameters to the program.
 		@param index The logical constant index at which to start placing the parameter (each constant is
 		a 4D float).
@@ -507,27 +507,27 @@ namespace CamelotEngine {
 		@param m Pointer to an array of matrices to set
 		@param numEntries Number of Matrix4 entries
 		*/
-		void setConstant(size_t index, const Matrix4* m, size_t numEntries);
+		void setConstant(UINT32 index, const Matrix4* m, UINT32 numEntries);
 		/** Sets a multiple value constant floating-point parameter to the program.
 		@param index The logical constant index at which to start placing parameters (each constant is
 		a 4D float)
 		@param val Pointer to the values to write, must contain 4*count floats
 		@param count The number of groups of 4 floats to write
 		*/
-		void setConstant(size_t index, const float *val, size_t count);
+		void setConstant(UINT32 index, const float *val, UINT32 count);
 		/** Sets a multiple value constant floating-point parameter to the program.
 		@param index The logical constant index at which to start placing parameters (each constant is
 		a 4D float)
 		@param val Pointer to the values to write, must contain 4*count floats
 		@param count The number of groups of 4 floats to write
 		*/
-		void setConstant(size_t index, const double *val, size_t count);
+		void setConstant(UINT32 index, const double *val, UINT32 count);
 		/** Sets a ColourValue parameter to the program.
 		@param index The logical constant index at which to place the parameter (each constant is
 		a 4D float)
 		@param colour The value to set
 		*/
-		void setConstant(size_t index, const Color& colour);
+		void setConstant(UINT32 index, const Color& colour);
 
 		/** Sets a multiple value constant integer parameter to the program.
 		@remarks
@@ -543,7 +543,7 @@ namespace CamelotEngine {
 		@param val Pointer to the values to write, must contain 4*count ints
 		@param count The number of groups of 4 ints to write
 		*/
-		void setConstant(size_t index, const int *val, size_t count);
+		void setConstant(UINT32 index, const int *val, UINT32 count);
 
 		/** Write a series of floating point values into the underlying float 
 		constant buffer at the given physical index.
@@ -551,41 +551,41 @@ namespace CamelotEngine {
 		@param val Pointer to a list of values to write
 		@param count The number of floats to write
 		*/
-		void _writeRawConstants(size_t physicalIndex, const float* val, size_t count);
+		void _writeRawConstants(UINT32 physicalIndex, const float* val, UINT32 count);
 		/** Write a series of floating point values into the underlying float 
 		constant buffer at the given physical index.
 		@param physicalIndex The buffer position to start writing
 		@param val Pointer to a list of values to write
 		@param count The number of floats to write
 		*/
-		void _writeRawConstants(size_t physicalIndex, const double* val, size_t count);
+		void _writeRawConstants(UINT32 physicalIndex, const double* val, UINT32 count);
 		/** Write a series of integer values into the underlying integer
 		constant buffer at the given physical index.
 		@param physicalIndex The buffer position to start writing
 		@param val Pointer to a list of values to write
 		@param count The number of ints to write
 		*/
-		void _writeRawConstants(size_t physicalIndex, const int* val, size_t count);
+		void _writeRawConstants(UINT32 physicalIndex, const int* val, UINT32 count);
 		/** Read a series of floating point values from the underlying float 
 		constant buffer at the given physical index.
 		@param physicalIndex The buffer position to start reading
 		@param count The number of floats to read
 		@param dest Pointer to a buffer to receive the values
 		*/
-		void _readRawConstants(size_t physicalIndex, size_t count, float* dest);
+		void _readRawConstants(UINT32 physicalIndex, UINT32 count, float* dest);
 		/** Read a series of integer values from the underlying integer 
 		constant buffer at the given physical index.
 		@param physicalIndex The buffer position to start reading
 		@param count The number of ints to read
 		@param dest Pointer to a buffer to receive the values
 		*/
-		void _readRawConstants(size_t physicalIndex, size_t count, int* dest);
+		void _readRawConstants(UINT32 physicalIndex, UINT32 count, int* dest);
 		/** Read a texture from the underlying texture 
 		array at the given physical index.
 		@param physicalIndex The array position of the texture
 		@param dest Reference of the texture to store
 		*/
-		void _readTexture(size_t physicalIndex, TextureHandle& dest);
+		void _readTexture(UINT32 physicalIndex, TextureHandle& dest);
 		/** Write a 4-element floating-point parameter to the program directly to 
 		the underlying constants buffer.
 		@note You can use these methods if you have already derived the physical
@@ -596,8 +596,8 @@ namespace CamelotEngine {
 		@param count The number of floats to write; if for example
 		the uniform constant 'slot' is smaller than a Vector4
 		*/
-		void _writeRawConstant(size_t physicalIndex, const Vector4& vec, 
-			size_t count = 4);
+		void _writeRawConstant(UINT32 physicalIndex, const Vector4& vec, 
+			UINT32 count = 4);
 		/** Write a single floating-point parameter to the program.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -605,7 +605,7 @@ namespace CamelotEngine {
 		@param physicalIndex The physical buffer index at which to place the parameter 
 		@param val The value to set
 		*/
-		void _writeRawConstant(size_t physicalIndex, float val);
+		void _writeRawConstant(UINT32 physicalIndex, float val);
 		/** Write a single integer parameter to the program.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -613,7 +613,7 @@ namespace CamelotEngine {
 		@param physicalIndex The physical buffer index at which to place the parameter 
 		@param val The value to set
 		*/
-		void _writeRawConstant(size_t physicalIndex, int val);
+		void _writeRawConstant(UINT32 physicalIndex, int val);
 		/** Write a 3-element floating-point parameter to the program via Vector3.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -621,7 +621,7 @@ namespace CamelotEngine {
 		@param physicalIndex The physical buffer index at which to place the parameter 
 		@param vec The value to set
 		*/
-		void _writeRawConstant(size_t physicalIndex, const Vector3& vec);
+		void _writeRawConstant(UINT32 physicalIndex, const Vector3& vec);
 		/** Write a 2-element floating-point parameter to the program via Vector2.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -629,7 +629,7 @@ namespace CamelotEngine {
 		@param physicalIndex The physical buffer index at which to place the parameter 
 		@param vec The value to set
 		*/
-		void _writeRawConstant(size_t physicalIndex, const Vector2& vec);
+		void _writeRawConstant(UINT32 physicalIndex, const Vector2& vec);
 		/** Write a Matrix4 parameter to the program.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -638,7 +638,7 @@ namespace CamelotEngine {
 		@param m The value to set
 		@param elementCount actual element count used with shader
 		*/
-		void _writeRawConstant(size_t physicalIndex, const Matrix4& m, size_t elementCount);
+		void _writeRawConstant(UINT32 physicalIndex, const Matrix4& m, UINT32 elementCount);
 		/** Write a list of Matrix4 parameters to the program.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -646,7 +646,7 @@ namespace CamelotEngine {
 		@param physicalIndex The physical buffer index at which to place the parameter 
 		@param numEntries Number of Matrix4 entries
 		*/
-		void _writeRawConstant(size_t physicalIndex, const Matrix4* m, size_t numEntries);
+		void _writeRawConstant(UINT32 physicalIndex, const Matrix4* m, UINT32 numEntries);
 		/** Write a Matrix3 parameter to the program.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -655,7 +655,7 @@ namespace CamelotEngine {
 		@param m The value to set
 		@param elementCount actual element count used with shader
 		*/
-		void _writeRawConstant(size_t physicalIndex, const Matrix3& m, size_t elementCount);
+		void _writeRawConstant(UINT32 physicalIndex, const Matrix3& m, UINT32 elementCount);
 		/** Write a ColourValue parameter to the program.
 		@note You can use these methods if you have already derived the physical
 		constant buffer location, for a slight speed improvement over using
@@ -665,8 +665,8 @@ namespace CamelotEngine {
 		@param count The number of floats to write; if for example
 		the uniform constant 'slot' is smaller than a Vector4
 		*/
-		void _writeRawConstant(size_t physicalIndex, const Color& colour, 
-			size_t count = 4);
+		void _writeRawConstant(UINT32 physicalIndex, const Color& colour, 
+			UINT32 count = 4);
 
 
 		/** Gets an iterator over the named GpuConstantDefinition instances as defined
@@ -698,15 +698,15 @@ namespace CamelotEngine {
 		/** Retrieves the logical index relating to a physical index in the float
 		buffer, for programs which support that (low-level programs and 
 		high-level programs which use logical parameter indexes).
-		@returns std::numeric_limits<size_t>::max() if not found
+		@returns std::numeric_limits<UINT32>::max() if not found
 		*/
-		size_t getFloatLogicalIndexForPhysicalIndex(size_t physicalIndex);
+		UINT32 getFloatLogicalIndexForPhysicalIndex(UINT32 physicalIndex);
 		/** Retrieves the logical index relating to a physical index in the int
 		buffer, for programs which support that (low-level programs and 
 		high-level programs which use logical parameter indexes).
-		@returns std::numeric_limits<size_t>::max() if not found
+		@returns std::numeric_limits<UINT32>::max() if not found
 		*/
-		size_t getIntLogicalIndexForPhysicalIndex(size_t physicalIndex);
+		UINT32 getIntLogicalIndexForPhysicalIndex(UINT32 physicalIndex);
 
 		/** Get the current list of mappings from low-level logical param indexes
 		to physical buffer locations in the integer buffer.
@@ -717,21 +717,21 @@ namespace CamelotEngine {
 		/// Get a reference to the list of float constants
 		const FloatConstantList& getFloatConstantList() const { return mFloatConstants; }
 		/// Get a pointer to the 'nth' item in the float buffer
-		float* getFloatPointer(size_t pos) { return &mFloatConstants[pos]; }
+		float* getFloatPointer(UINT32 pos) { return &mFloatConstants[pos]; }
 		/// Get a pointer to the 'nth' item in the float buffer
-		const float* getFloatPointer(size_t pos) const { return &mFloatConstants[pos]; }
+		const float* getFloatPointer(UINT32 pos) const { return &mFloatConstants[pos]; }
 		/// Get a reference to the list of int constants
 		const IntConstantList& getIntConstantList() const { return mIntConstants; }
 		/// Get a pointer to the 'nth' item in the int buffer
-		int* getIntPointer(size_t pos) { return &mIntConstants[pos]; }
+		int* getIntPointer(UINT32 pos) { return &mIntConstants[pos]; }
 		/// Get a pointer to the 'nth' item in the int buffer
-		const int* getIntPointer(size_t pos) const { return &mIntConstants[pos]; }
+		const int* getIntPointer(UINT32 pos) const { return &mIntConstants[pos]; }
 		const GpuLogicalBufferStructPtr& getSamplerLogicalBufferStruct() const { return mSamplerLogicalToPhysical; }
-		TextureHandle getTexture(size_t pos) const;
-		const SamplerState& getSamplerState(size_t pos) const;
+		TextureHandle getTexture(UINT32 pos) const;
+		const SamplerState& getSamplerState(UINT32 pos) const;
 		/// Get a reference to the list of textures
 		const TextureList& getTextureList() const { return mTextures; }
-		UINT32 getNumTextures() const { return mTextures.size(); }
+		UINT32 getNumTextures() const { return (UINT32)mTextures.size(); }
 
 		/** Tells the program whether to ignore missing parameters or not.
 		*/
@@ -857,7 +857,7 @@ namespace CamelotEngine {
 		@param m Pointer to an array of matrices to set
 		@param numEntries Number of Matrix4 entries
 		*/
-		void setNamedConstant(const String& name, const Matrix4* m, size_t numEntries);
+		void setNamedConstant(const String& name, const Matrix4* m, UINT32 numEntries);
 		/** Sets a Matrix3 parameter to the program.
 		@param name The name of the parameter
 		@param m The value to set
@@ -879,8 +879,8 @@ namespace CamelotEngine {
 		@param multiple The number of raw entries in each element to write, 
 		the default is 4 so count = 1 would write 4 floats.
 		*/
-		void setNamedConstant(const String& name, const float *val, size_t count, 
-			size_t multiple = 4);
+		void setNamedConstant(const String& name, const float *val, UINT32 count, 
+			UINT32 multiple = 4);
 		/** Sets a multiple value constant floating-point parameter to the program.
 		@par
 		Some systems only allow constants to be set on certain boundaries, 
@@ -897,8 +897,8 @@ namespace CamelotEngine {
 		@param multiple The number of raw entries in each element to write, 
 		the default is 4 so count = 1 would write 4 floats.
 		*/
-		void setNamedConstant(const String& name, const double *val, size_t count, 
-			size_t multiple = 4);
+		void setNamedConstant(const String& name, const double *val, UINT32 count, 
+			UINT32 multiple = 4);
 		/** Sets a ColourValue parameter to the program.
 		@param name The name of the parameter
 		@param colour The value to set
@@ -921,8 +921,8 @@ namespace CamelotEngine {
 		@param multiple The number of raw entries in each element to write, 
 		the default is 4 so count = 1 would write 4 floats.
 		*/
-		void setNamedConstant(const String& name, const int *val, size_t count, 
-			size_t multiple = 4);
+		void setNamedConstant(const String& name, const int *val, UINT32 count, 
+			UINT32 multiple = 4);
 
 		/**
 		 * @brief	Returns true if a named constant with the specified name exists.
@@ -944,16 +944,16 @@ namespace CamelotEngine {
 		@note Only applicable to low-level programs.
 		@param logicalIndex The logical parameter index
 		@param requestedSize The requested size - pass 0 to ignore missing entries
-		and return std::numeric_limits<size_t>::max() 
+		and return std::numeric_limits<UINT32>::max() 
 		*/
-		size_t _getFloatConstantPhysicalIndex(size_t logicalIndex, size_t requestedSize, UINT16 variability);
+		UINT32 _getFloatConstantPhysicalIndex(UINT32 logicalIndex, UINT32 requestedSize, UINT16 variability);
 		/** Gets the physical buffer index associated with a logical int constant index. 
 		@note Only applicable to low-level programs.
 		@param logicalIndex The logical parameter index
 		@param requestedSize The requested size - pass 0 to ignore missing entries
-		and return std::numeric_limits<size_t>::max() 
+		and return std::numeric_limits<UINT32>::max() 
 		*/
-		size_t _getIntConstantPhysicalIndex(size_t logicalIndex, size_t requestedSize, UINT16 variability);
+		UINT32 _getIntConstantPhysicalIndex(UINT32 logicalIndex, UINT32 requestedSize, UINT16 variability);
 
 		/** Sets whether or not we need to transpose the matrices passed in from the rest of OGRE.
 		@remarks

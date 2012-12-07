@@ -37,7 +37,7 @@ namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
     D3D9HardwareIndexBuffer::D3D9HardwareIndexBuffer(HardwareBufferManagerBase* mgr, HardwareIndexBuffer::IndexType idxType, 
-        size_t numIndexes, HardwareBuffer::Usage usage,
+        UINT32 numIndexes, HardwareBuffer::Usage usage,
         bool useSystemMemory, bool useShadowBuffer)
         : HardwareIndexBuffer(mgr, idxType, numIndexes, usage, useSystemMemory, useShadowBuffer)
     {
@@ -89,8 +89,8 @@ namespace CamelotEngine {
 		SAFE_DELETE_ARRAY(mSystemMemoryBuffer);
     }
 	//---------------------------------------------------------------------
-    void* D3D9HardwareIndexBuffer::lockImpl(size_t offset, 
-        size_t length, LockOptions options)
+    void* D3D9HardwareIndexBuffer::lockImpl(UINT32 offset, 
+        UINT32 length, LockOptions options)
     {		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -106,7 +106,7 @@ namespace CamelotEngine {
 
 				if(bufferResources->mLockLength > 0)
 				{
-					size_t highPoint = std::max( offset + length, 
+					UINT32 highPoint = std::max( offset + length, 
 						bufferResources->mLockOffset + bufferResources->mLockLength );
 					bufferResources->mLockOffset = std::min( bufferResources->mLockOffset, offset );
 					bufferResources->mLockLength = highPoint - bufferResources->mLockOffset;
@@ -151,7 +151,7 @@ namespace CamelotEngine {
 		}			
     }
 	//---------------------------------------------------------------------
-    void D3D9HardwareIndexBuffer::readData(size_t offset, size_t length, 
+    void D3D9HardwareIndexBuffer::readData(UINT32 offset, UINT32 length, 
         void* pDest)
     {
        // There is no functional interface in D3D, just do via manual 
@@ -162,7 +162,7 @@ namespace CamelotEngine {
 
     }
 	//---------------------------------------------------------------------
-    void D3D9HardwareIndexBuffer::writeData(size_t offset, size_t length, 
+    void D3D9HardwareIndexBuffer::writeData(UINT32 offset, UINT32 length, 
             const void* pSource,
 			bool discardWholeBuffer)
     {

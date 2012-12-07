@@ -36,8 +36,8 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
-    D3D9HardwareVertexBuffer::D3D9HardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, 
-        size_t numVertices, HardwareBuffer::Usage usage, 
+    D3D9HardwareVertexBuffer::D3D9HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
+        UINT32 numVertices, HardwareBuffer::Usage usage, 
         bool useSystemMemory, bool useShadowBuffer)
         : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMemory, useShadowBuffer)
     {
@@ -89,8 +89,8 @@ namespace CamelotEngine {
 		SAFE_DELETE_ARRAY(mSystemMemoryBuffer);
     }
 	//---------------------------------------------------------------------
-    void* D3D9HardwareVertexBuffer::lockImpl(size_t offset, 
-        size_t length, LockOptions options)
+    void* D3D9HardwareVertexBuffer::lockImpl(UINT32 offset, 
+        UINT32 length, LockOptions options)
     {		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -106,7 +106,7 @@ namespace CamelotEngine {
 
 				if(bufferResources->mLockLength > 0)
 				{
-					size_t highPoint = std::max( offset + length, 
+					UINT32 highPoint = std::max( offset + length, 
 						bufferResources->mLockOffset + bufferResources->mLockLength );
 					bufferResources->mLockOffset = std::min( bufferResources->mLockOffset, offset );
 					bufferResources->mLockLength = highPoint - bufferResources->mLockOffset;
@@ -151,7 +151,7 @@ namespace CamelotEngine {
 		}			
     }
 	//---------------------------------------------------------------------
-    void D3D9HardwareVertexBuffer::readData(size_t offset, size_t length, 
+    void D3D9HardwareVertexBuffer::readData(UINT32 offset, UINT32 length, 
         void* pDest)
     {
         // There is no functional interface in D3D, just do via manual 
@@ -162,7 +162,7 @@ namespace CamelotEngine {
 
     }
 	//---------------------------------------------------------------------
-	void D3D9HardwareVertexBuffer::writeData(size_t offset, size_t length, 
+	void D3D9HardwareVertexBuffer::writeData(UINT32 offset, UINT32 length, 
 		const void* pSource,
 		bool discardWholeBuffer)
 	{

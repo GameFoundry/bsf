@@ -34,7 +34,7 @@ namespace CamelotEngine
 				(*iter)->update();
 			}
 
-			for(int i = 0; i < currentGO->getNumChildren(); i++)
+			for(UINT32 i = 0; i < currentGO->getNumChildren(); i++)
 				todo.push(currentGO->getChild(i));
 		}
 	}
@@ -57,7 +57,7 @@ namespace CamelotEngine
 			if(curRenderable != nullptr)
 				renderables.push_back(curRenderable);
 
-			for(int i = 0; i < currentGO->getNumChildren(); i++)
+			for(UINT32 i = 0; i < currentGO->getNumChildren(); i++)
 				todo.push(currentGO->getChild(i));
 		}
 

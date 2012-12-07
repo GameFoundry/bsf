@@ -137,11 +137,11 @@ namespace CamelotEngine {
     			
 		    };
 	    protected:
-		    size_t mSizeInBytes;
+		    UINT32 mSizeInBytes;
 		    Usage mUsage;
 		    bool mIsLocked;
-			size_t mLockStart;
-			size_t mLockSize;
+			UINT32 mLockStart;
+			UINT32 mLockSize;
 			bool mSystemMemory;
             bool mUseShadowBuffer;
             HardwareBuffer* mpShadowBuffer;
@@ -149,7 +149,7 @@ namespace CamelotEngine {
             bool mSuppressHardwareUpdate;
     		
             /// Internal implementation of lock()
-		    virtual void* lockImpl(size_t offset, size_t length, LockOptions options) = 0;
+		    virtual void* lockImpl(UINT32 offset, UINT32 length, LockOptions options) = 0;
             /// Internal implementation of unlock()
 		    virtual void unlockImpl(void) = 0;
 
@@ -177,7 +177,7 @@ namespace CamelotEngine {
 		    @param options Locking options
 		    @returns Pointer to the locked memory
 		    */
-		    virtual void* lock(size_t offset, size_t length, LockOptions options)
+		    virtual void* lock(UINT32 offset, UINT32 length, LockOptions options)
             {
                 assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
                 void* ret;
@@ -249,7 +249,7 @@ namespace CamelotEngine {
             @param pDest The area of memory in which to place the data, must be large enough to 
                 accommodate the data!
             */
-            virtual void readData(size_t offset, size_t length, void* pDest) = 0;
+            virtual void readData(UINT32 offset, UINT32 length, void* pDest) = 0;
             /** Writes data to the buffer from an area of system memory; note that you must
                 ensure that your buffer is big enough.
 		    @param offset The byte offset from the start of the buffer to start writing
@@ -258,7 +258,7 @@ namespace CamelotEngine {
 			@param discardWholeBuffer If true, this allows the driver to discard the entire buffer when writing,
 				such that DMA stalls can be avoided; use if you can.
             */
-            virtual void writeData(size_t offset, size_t length, const void* pSource,
+            virtual void writeData(UINT32 offset, UINT32 length, const void* pSource,
 					bool discardWholeBuffer = false) = 0;
 
 			/** Copy data from another buffer into this one.
@@ -271,8 +271,8 @@ namespace CamelotEngine {
 			@param length Length of the data to copy, in bytes.
 			@param discardWholeBuffer If true, will discard the entire contents of this buffer before copying
 			*/
-			virtual void copyData(HardwareBuffer& srcBuffer, size_t srcOffset, 
-				size_t dstOffset, size_t length, bool discardWholeBuffer = false)
+			virtual void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
+				UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false)
 			{
 				const void *srcData = srcBuffer.lock(
 					srcOffset, length, HBL_READ_ONLY);
@@ -287,7 +287,7 @@ namespace CamelotEngine {
 			*/
 			virtual void copyData(HardwareBuffer& srcBuffer)
 			{
-				size_t sz = std::min(getSizeInBytes(), srcBuffer.getSizeInBytes()); 
+				UINT32 sz = std::min(getSizeInBytes(), srcBuffer.getSizeInBytes()); 
 				copyData(srcBuffer, 0, 0, sz, true);
 			}
 			
@@ -317,7 +317,7 @@ namespace CamelotEngine {
             }
 
             /// Returns the size of this buffer in bytes
-            size_t getSizeInBytes(void) const { return mSizeInBytes; }
+            UINT32 getSizeInBytes(void) const { return mSizeInBytes; }
             /// Returns the Usage flags with which this buffer was created
             Usage getUsage(void) const { return mUsage; }
 			/// Returns whether this buffer is held in system memory

@@ -32,8 +32,8 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
-    GLHardwareVertexBuffer::GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, 
-        size_t numVertices, HardwareBuffer::Usage usage, bool useShadowBuffer)
+    GLHardwareVertexBuffer::GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
+        UINT32 numVertices, HardwareBuffer::Usage usage, bool useShadowBuffer)
         : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, false, useShadowBuffer)
     {
         glGenBuffersARB( 1, &mBufferId );
@@ -58,8 +58,8 @@ namespace CamelotEngine {
         glDeleteBuffersARB(1, &mBufferId);
     }
 	//---------------------------------------------------------------------
-    void* GLHardwareVertexBuffer::lockImpl(size_t offset, 
-        size_t length, LockOptions options)
+    void* GLHardwareVertexBuffer::lockImpl(UINT32 offset, 
+        UINT32 length, LockOptions options)
     {
         GLenum access = 0;
 
@@ -163,7 +163,7 @@ namespace CamelotEngine {
         mIsLocked = false;
     }
 	//---------------------------------------------------------------------
-    void GLHardwareVertexBuffer::readData(size_t offset, size_t length, 
+    void GLHardwareVertexBuffer::readData(UINT32 offset, UINT32 length, 
         void* pDest)
     {
         if(mUseShadowBuffer)
@@ -182,7 +182,7 @@ namespace CamelotEngine {
         }
     }
 	//---------------------------------------------------------------------
-    void GLHardwareVertexBuffer::writeData(size_t offset, size_t length, 
+    void GLHardwareVertexBuffer::writeData(UINT32 offset, UINT32 length, 
             const void* pSource, bool discardWholeBuffer)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);

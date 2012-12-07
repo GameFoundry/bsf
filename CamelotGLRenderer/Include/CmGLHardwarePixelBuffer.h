@@ -56,7 +56,7 @@ namespace CamelotEngine {
 		virtual void download(const PixelData &data);
 	public:
         /// Should be called by HardwareBufferManager
-        GLHardwarePixelBuffer(size_t mWidth, size_t mHeight, size_t mDepth,
+        GLHardwarePixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
                 PixelFormat mFormat,
                 HardwareBuffer::Usage usage);
 		
@@ -70,7 +70,7 @@ namespace CamelotEngine {
         
         /** Bind surface to frame buffer. Needs FBO extension.
         */
-        virtual void bindToFramebuffer(GLenum attachment, size_t zoffset);
+        virtual void bindToFramebuffer(GLenum attachment, UINT32 zoffset);
         GLenum getGLFormat() { return mGLInternalFormat; }
 	};
 
@@ -85,9 +85,9 @@ namespace CamelotEngine {
         ~GLTextureBuffer();
         
         /// @copydoc HardwarePixelBuffer::bindToFramebuffer
-        virtual void bindToFramebuffer(GLenum attachment, size_t zoffset);
+        virtual void bindToFramebuffer(GLenum attachment, UINT32 zoffset);
         /// @copydoc HardwarePixelBuffer::getRenderTarget
-        RenderTexture* getRenderTarget(size_t);
+        RenderTexture* getRenderTarget(UINT32);
         /// Upload a box of pixels to this buffer on the card
 		virtual void upload(const PixelData &data, const Box &dest);
 		// Download a box of pixels from the card
@@ -97,12 +97,12 @@ namespace CamelotEngine {
         virtual void blitFromMemory(const PixelData &src_orig, const Box &dstBox);
         
         /// Notify TextureBuffer of destruction of render target
-        void _clearSliceRTT(size_t zoffset)
+        void _clearSliceRTT(UINT32 zoffset)
         {
             mSliceTRT[zoffset] = 0;
         }
         /// Copy from framebuffer
-        void copyFromFramebuffer(size_t zoffset);
+        void copyFromFramebuffer(UINT32 zoffset);
         /// @copydoc HardwarePixelBuffer::blit
         void blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
         // Blitting implementation
@@ -124,11 +124,11 @@ namespace CamelotEngine {
     class CM_RSGL_EXPORT GLRenderBuffer: public GLHardwarePixelBuffer
 	{
     public:
-        GLRenderBuffer(GLenum format, size_t width, size_t height, GLsizei numSamples);
+        GLRenderBuffer(GLenum format, UINT32 width, UINT32 height, GLsizei numSamples);
         ~GLRenderBuffer();
         
         /// @copydoc GLHardwarePixelBuffer::bindToFramebuffer
-        virtual void bindToFramebuffer(GLenum attachment, size_t zoffset);
+        virtual void bindToFramebuffer(GLenum attachment, UINT32 zoffset);
     protected:
         // In case this is a render buffer
         GLuint mRenderbufferID;

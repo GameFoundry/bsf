@@ -49,20 +49,20 @@ namespace CamelotEngine {
 	    protected:
 
 			HardwareBufferManagerBase* mMgr;
-		    size_t mNumVertices;
-            size_t mVertexSize;
+		    UINT32 mNumVertices;
+            UINT32 mVertexSize;
 
 	    public:
 		    /// Should be called by HardwareBufferManager
-		    HardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices,
+		    HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices,
                 HardwareBuffer::Usage usage, bool useSystemMemory, bool useShadowBuffer);
             ~HardwareVertexBuffer();
 			/// Return the manager of this buffer, if any
 			HardwareBufferManagerBase* getManager() const { return mMgr; }
             /// Gets the size in bytes of a single vertex in this buffer
-            size_t getVertexSize(void) const { return mVertexSize; }
+            UINT32 getVertexSize(void) const { return mVertexSize; }
             /// Get the number of vertices in this buffer
-            size_t getNumVertices(void) const { return mNumVertices; }
+            UINT32 getNumVertices(void) const { return mNumVertices; }
 
 
 
@@ -130,7 +130,7 @@ namespace CamelotEngine {
         /// The source vertex buffer, as bound to an index using VertexBufferBinding
         unsigned short mSource;
         /// The offset in the buffer that this element starts at
-        size_t mOffset;
+        UINT32 mOffset;
         /// The type of element
         VertexElementType mType;
         /// The meaning of the element
@@ -141,12 +141,12 @@ namespace CamelotEngine {
 		/// Constructor, should not be called directly, only needed because of list
 		VertexElement() {}
         /// Constructor, should not be called directly, call VertexDeclaration::addElement
-        VertexElement(unsigned short source, size_t offset, VertexElementType theType,
+        VertexElement(unsigned short source, UINT32 offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
         /// Gets the vertex buffer index from where this element draws it's values
         unsigned short getSource(void) const { return mSource; }
         /// Gets the offset into the buffer where this element starts
-        size_t getOffset(void) const { return mOffset; }
+        UINT32 getOffset(void) const { return mOffset; }
         /// Gets the data format of this element
         VertexElementType getType(void) const { return mType; }
         /// Gets the meaning of this element
@@ -154,9 +154,9 @@ namespace CamelotEngine {
         /// Gets the index of this element, only applicable for repeating elements
         unsigned short getIndex(void) const { return mIndex; }
 		/// Gets the size of this element in bytes
-		size_t getSize(void) const;
+		UINT32 getSize(void) const;
 		/// Utility method for helping to calculate offsets
-		static size_t getTypeSize(VertexElementType etype);
+		static UINT32 getTypeSize(VertexElementType etype);
 		/// Utility method which returns the count of values in a given type
 		static unsigned short getTypeCount(VertexElementType etype);
 		/** Simple converter function which will turn a single-value type into a
@@ -309,7 +309,7 @@ namespace CamelotEngine {
         virtual ~VertexDeclaration();
 
         /** Get the number of elements in the declaration. */
-        size_t getElementCount(void) { return mElementList.size(); }
+        UINT32 getElementCount(void) { return (UINT32)mElementList.size(); }
         /** Gets read-only access to the list of vertex elements. */
         const VertexElementList& getElements(void) const;
         /** Get a single element. */
@@ -355,7 +355,7 @@ namespace CamelotEngine {
         @param index Optional index for multi-input elements like texture coordinates
 		@returns A reference to the VertexElement added.
         */
-        virtual const VertexElement& addElement(unsigned short source, size_t offset, VertexElementType theType,
+        virtual const VertexElement& addElement(unsigned short source, UINT32 offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
         /** Inserts a new VertexElement at a given position in this declaration.
         @remarks
@@ -371,7 +371,7 @@ namespace CamelotEngine {
         @returns A reference to the VertexElement added.
         */
         virtual const VertexElement& insertElement(unsigned short atPosition,
-            unsigned short source, size_t offset, VertexElementType theType,
+            unsigned short source, UINT32 offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
 
         /** Remove the element at the given index from this declaration. */
@@ -393,7 +393,7 @@ namespace CamelotEngine {
 	   <b>Please read the information in VertexDeclaration about
 	    the importance of ordering and structure for compatibility with older D3D drivers</b>.
 	 */
-        virtual void modifyElement(unsigned short elem_index, unsigned short source, size_t offset, VertexElementType theType,
+        virtual void modifyElement(unsigned short elem_index, unsigned short source, UINT32 offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
 
 		/** Finds a VertexElement with the given semantic, and index if there is more than
@@ -414,7 +414,7 @@ namespace CamelotEngine {
 		virtual VertexElementList findElementsBySource(unsigned short source);
 
 		/** Gets the vertex size defined by this declaration for a given source. */
-        virtual size_t getVertexSize(unsigned short source);
+        virtual UINT32 getVertexSize(unsigned short source);
 
         /** Clones this declaration. 
 		@param mgr Optional HardwareBufferManager to use for creating the clone
@@ -501,7 +501,7 @@ namespace CamelotEngine {
 		/// Gets whether a buffer is bound to the given source index
 		virtual bool isBufferBound(unsigned short index) const;
 
-        virtual size_t getBufferCount(void) const { return mBindingMap.size(); }
+        virtual UINT32 getBufferCount(void) const { return (UINT32)mBindingMap.size(); }
 
 		/** Gets the highest index which has already been set, plus 1.
 		@remarks

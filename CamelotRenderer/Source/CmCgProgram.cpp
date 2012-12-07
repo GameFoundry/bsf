@@ -216,7 +216,7 @@ namespace CamelotEngine {
         recurseParams(cgGetFirstParameter(mCgProgram, CG_GLOBAL));
 	}
 	//---------------------------------------------------------------------
-	void CgProgram::recurseParams(CGparameter parameter, size_t contextArraySize) const
+	void CgProgram::recurseParams(CGparameter parameter, UINT32 contextArraySize) const
 	{
 		while (parameter != 0)
         {
@@ -245,12 +245,12 @@ namespace CamelotEngine {
 				default:
 					// Normal path (leaf)
 					String paramName = cgGetParameterName(parameter);
-					size_t logicalIndex = cgGetParameterResourceIndex(parameter);
+					UINT32 logicalIndex = (UINT32)cgGetParameterResourceIndex(parameter);
 
 					// Get the parameter resource, to calculate the physical index
 					CGresource res = cgGetParameterResource(parameter);
 					bool isRegisterCombiner = false;
-					size_t regCombinerPhysicalIndex = 0;
+					UINT32 regCombinerPhysicalIndex = 0;
 					switch (res)
 					{
 					case CG_COMBINER_STAGE_CONST0:

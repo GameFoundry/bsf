@@ -14,7 +14,7 @@ namespace CamelotEngine
 		void removePass(UINT32 idx);
 		PassPtr getPass(UINT32 idx) const;
 
-		UINT32 getNumPasses() const { return mPasses.size(); }
+		UINT32 getNumPasses() const { return (UINT32)mPasses.size(); }
 
 		bool isSupported() const;
 

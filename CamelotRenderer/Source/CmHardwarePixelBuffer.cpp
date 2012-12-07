@@ -32,7 +32,7 @@ namespace CamelotEngine
 {
   
     //-----------------------------------------------------------------------------    
-    HardwarePixelBuffer::HardwarePixelBuffer(size_t width, size_t height, size_t depth,
+    HardwarePixelBuffer::HardwarePixelBuffer(UINT32 width, UINT32 height, UINT32 depth,
             PixelFormat format,
             HardwareBuffer::Usage usage, bool useSystemMemory, bool useShadowBuffer):
         HardwareBuffer(usage, useSystemMemory, useShadowBuffer),
@@ -51,7 +51,7 @@ namespace CamelotEngine
     }
     
     //-----------------------------------------------------------------------------    
-    void* HardwarePixelBuffer::lock(size_t offset, size_t length, LockOptions options)
+    void* HardwarePixelBuffer::lock(UINT32 offset, UINT32 length, LockOptions options)
     {
         assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
         assert(offset == 0 && length == mSizeInBytes && "Cannot lock memory region, most lock box or entire buffer");
@@ -95,7 +95,7 @@ namespace CamelotEngine
     
     //-----------------------------------------------------------------------------    
     /// Internal implementation of lock()
-    void* HardwarePixelBuffer::lockImpl(size_t offset, size_t length, LockOptions options)
+    void* HardwarePixelBuffer::lockImpl(UINT32 offset, UINT32 length, LockOptions options)
     {
 		CM_EXCEPT(InternalErrorException, "lockImpl(offset,length) is not valid for PixelBuffers and should never be called");
     }
@@ -149,7 +149,7 @@ namespace CamelotEngine
         );
     }
     //-----------------------------------------------------------------------------    
-	void HardwarePixelBuffer::readData(size_t offset, size_t length, void* pDest)
+	void HardwarePixelBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
 	{
 		// TODO
 		CM_EXCEPT(NotImplementedException,
@@ -157,7 +157,7 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------------    
 
-	void HardwarePixelBuffer::writeData(size_t offset, size_t length, const void* pSource,
+	void HardwarePixelBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource,
 			bool discardWholeBuffer)
 	{
 		// TODO
@@ -166,7 +166,7 @@ namespace CamelotEngine
 	}
     //-----------------------------------------------------------------------------    
     
-    RenderTexture *HardwarePixelBuffer::getRenderTarget(size_t)
+    RenderTexture *HardwarePixelBuffer::getRenderTarget(UINT32)
     {
         CM_EXCEPT(NotImplementedException,
 				"Not yet implemented for this rendersystem.");
@@ -174,7 +174,7 @@ namespace CamelotEngine
 
 	//-----------------------------------------------------------------------------    
 
-	void HardwarePixelBuffer::_clearSliceRTT(size_t zoffset)
+	void HardwarePixelBuffer::_clearSliceRTT(UINT32 zoffset)
 	{
 	}
 

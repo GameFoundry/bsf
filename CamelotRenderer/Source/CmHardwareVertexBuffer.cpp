@@ -38,8 +38,8 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
     //-----------------------------------------------------------------------------
-    HardwareVertexBuffer::HardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize,  
-        size_t numVertices, HardwareBuffer::Usage usage, 
+    HardwareVertexBuffer::HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize,  
+        UINT32 numVertices, HardwareBuffer::Usage usage, 
         bool useSystemMemory, bool useShadowBuffer) 
         : HardwareBuffer(usage, useSystemMemory, useShadowBuffer), 
 		  mMgr(mgr),
@@ -70,19 +70,19 @@ namespace CamelotEngine {
         }
     }
     //-----------------------------------------------------------------------------
-    VertexElement::VertexElement(unsigned short source, size_t offset, 
+    VertexElement::VertexElement(unsigned short source, UINT32 offset, 
         VertexElementType theType, VertexElementSemantic semantic, unsigned short index)
         : mSource(source), mOffset(offset), mType(theType), 
         mSemantic(semantic), mIndex(index)
     {
     }
     //-----------------------------------------------------------------------------
-	size_t VertexElement::getSize(void) const
+	UINT32 VertexElement::getSize(void) const
 	{
 		return getTypeSize(mType);
 	}
 	//-----------------------------------------------------------------------------
-	size_t VertexElement::getTypeSize(VertexElementType etype)
+	UINT32 VertexElement::getTypeSize(VertexElementType etype)
 	{
 		switch(etype)
 		{
@@ -274,7 +274,7 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------------
     const VertexElement& VertexDeclaration::addElement(unsigned short source, 
-        size_t offset, VertexElementType theType,
+        UINT32 offset, VertexElementType theType,
         VertexElementSemantic semantic, unsigned short index)
     {
 		// Refine colour type to a specific type
@@ -289,7 +289,7 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------------
     const VertexElement& VertexDeclaration::insertElement(unsigned short atPosition,
-        unsigned short source, size_t offset, VertexElementType theType,
+        unsigned short source, UINT32 offset, VertexElementType theType,
         VertexElementSemantic semantic, unsigned short index)
     {
         if (atPosition >= mElementList.size())
@@ -348,7 +348,7 @@ namespace CamelotEngine {
 	}
     //-----------------------------------------------------------------------------
     void VertexDeclaration::modifyElement(unsigned short elem_index, 
-        unsigned short source, size_t offset, VertexElementType theType,
+        unsigned short source, UINT32 offset, VertexElementType theType,
         VertexElementSemantic semantic, unsigned short index)
     {
         assert(elem_index < mElementList.size() && "Index out of bounds");
@@ -393,11 +393,11 @@ namespace CamelotEngine {
 	}
 
 	//-----------------------------------------------------------------------------
-	size_t VertexDeclaration::getVertexSize(unsigned short source)
+	UINT32 VertexDeclaration::getVertexSize(unsigned short source)
 	{
 		VertexElementList::const_iterator i, iend;
 		iend = mElementList.end();
-		size_t sz = 0;
+		UINT32 sz = 0;
 
 		for (i = mElementList.begin(); i != iend; ++i)
 		{

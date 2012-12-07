@@ -43,17 +43,17 @@ namespace CamelotEngine {
 	protected:
 		char* mScratchBufferPool;
 		CM_MUTEX(mScratchMutex)
-		size_t mMapBufferThreshold;
+		UINT32 mMapBufferThreshold;
 
     public:
         GLHardwareBufferManagerBase();
         ~GLHardwareBufferManagerBase();
         /// Creates a vertex buffer
-        HardwareVertexBufferPtr createVertexBuffer(size_t vertexSize, 
-            size_t numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer = false);
+        HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, 
+            UINT32 numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer = false);
         /// Create a hardware vertex buffer
         HardwareIndexBufferPtr createIndexBuffer(
-            HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
+            HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
             HardwareBuffer::Usage usage, bool useShadowBuffer = false);
         /// Utility function to get the correct GL usage based on HBU's
         static GLenum getGLUsage(unsigned int usage);
@@ -75,8 +75,8 @@ namespace CamelotEngine {
 
 		/** Threshold after which glMapBuffer is used and not glBufferSubData
 		*/
-		const size_t getGLMapBufferThreshold() const;
-		void setGLMapBufferThreshold( const size_t value );
+		const UINT32 getGLMapBufferThreshold() const;
+		void setGLMapBufferThreshold( const UINT32 value );
     };
 
 	/// GLHardwareBufferManagerBase as a Singleton
@@ -123,11 +123,11 @@ namespace CamelotEngine {
 
 		/** Threshold after which glMapBuffer is used and not glBufferSubData
 		*/
-		const size_t getGLMapBufferThreshold() const
+		const UINT32 getGLMapBufferThreshold() const
 		{
 			return static_cast<GLHardwareBufferManagerBase*>(mImpl)->getGLMapBufferThreshold();
 		}
-		void setGLMapBufferThreshold( const size_t value )
+		void setGLMapBufferThreshold( const UINT32 value )
 		{
 			static_cast<GLHardwareBufferManagerBase*>(mImpl)->setGLMapBufferThreshold(value);
 		}

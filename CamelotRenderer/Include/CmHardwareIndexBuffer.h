@@ -53,12 +53,12 @@ namespace CamelotEngine {
 	    protected:
 			HardwareBufferManagerBase* mMgr;
 		    IndexType mIndexType;
-		    size_t mNumIndexes;
-            size_t mIndexSize;
+		    UINT32 mNumIndexes;
+            UINT32 mIndexSize;
 
 	    public:
 		    /// Should be called by HardwareBufferManager
-		    HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, size_t numIndexes, HardwareBuffer::Usage usage,
+		    HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, HardwareBuffer::Usage usage,
                 bool useSystemMemory, bool useShadowBuffer);
             ~HardwareIndexBuffer();
 			/// Return the manager of this buffer, if any
@@ -66,9 +66,9 @@ namespace CamelotEngine {
     		/// Get the type of indexes used in this buffer
             IndexType getType(void) const { return mIndexType; }
             /// Get the number of indexes in this buffer
-            size_t getNumIndexes(void) const { return mNumIndexes; }
+            UINT32 getNumIndexes(void) const { return mNumIndexes; }
             /// Get the size in bytes of each index
-            size_t getIndexSize(void) const { return mIndexSize; }
+            UINT32 getIndexSize(void) const { return mIndexSize; }
 
 		    // NB subclasses should override lock, unlock, readData, writeData
     };

@@ -77,7 +77,7 @@ Global
 		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Debug|Win32.ActiveCfg = Debug|Win32
 		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Debug|Win32.Build.0 = Debug|Win32
-		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Debug|x64.ActiveCfg = Debug|Win32
+		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Debug|x64.ActiveCfg = Debug|x64
 		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Release|Any CPU.ActiveCfg = Release|Win32
 		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{9B21D41C-516B-43BF-9B10-E99B599C7589}.Release|Mixed Platforms.Build.0 = Release|Win32

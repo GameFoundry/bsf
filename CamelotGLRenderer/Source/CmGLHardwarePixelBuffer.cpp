@@ -36,7 +36,7 @@ THE SOFTWARE.
 
 namespace CamelotEngine {
 //----------------------------------------------------------------------------- 
-GLHardwarePixelBuffer::GLHardwarePixelBuffer(size_t inWidth, size_t inHeight, size_t inDepth,
+GLHardwarePixelBuffer::GLHardwarePixelBuffer(UINT32 inWidth, UINT32 inHeight, UINT32 inDepth,
                 PixelFormat inFormat,
                 HardwareBuffer::Usage usage):
       HardwarePixelBuffer(inWidth, inHeight, inDepth, inFormat, usage, false, false),
@@ -182,7 +182,7 @@ void GLHardwarePixelBuffer::download(const PixelData &data)
     CM_EXCEPT(RenderingAPIException, "Download not possible for this pixelbuffer type");
 }
 //-----------------------------------------------------------------------------  
-void GLHardwarePixelBuffer::bindToFramebuffer(GLenum attachment, size_t zoffset)
+void GLHardwarePixelBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
 {
     CM_EXCEPT(RenderingAPIException, "Framebuffer bind not possible for this pixelbuffer type");
 }
@@ -257,10 +257,10 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
     {
         // Create render target for each slice
         mSliceTRT.reserve(mDepth);
-        for(size_t zoffset=0; zoffset<mDepth; ++zoffset)
+        for(UINT32 zoffset=0; zoffset<mDepth; ++zoffset)
         {
             String name;
-			name = "rtt/" + toString((size_t)this) + "/" + baseName;
+			name = "rtt/" + toString((UINT32)this) + "/" + baseName;
             GLSurfaceDesc surface;
             surface.buffer = this;
             surface.zoffset = zoffset;
@@ -496,7 +496,7 @@ void GLTextureBuffer::download(const PixelData &data)
 	}
 }
 //-----------------------------------------------------------------------------  
-void GLTextureBuffer::bindToFramebuffer(GLenum attachment, size_t zoffset)
+void GLTextureBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
 {
     assert(zoffset < mDepth);
     switch(mTarget)
@@ -517,7 +517,7 @@ void GLTextureBuffer::bindToFramebuffer(GLenum attachment, size_t zoffset)
     }
 }
 //-----------------------------------------------------------------------------
-void GLTextureBuffer::copyFromFramebuffer(size_t zoffset)
+void GLTextureBuffer::copyFromFramebuffer(UINT32 zoffset)
 {
     glBindTexture(mTarget, mTextureID);
     switch(mTarget)
@@ -666,7 +666,7 @@ void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, c
     }
     
     /// Process each destination slice
-    for(size_t slice=dstBox.front; slice<dstBox.back; ++slice)
+    for(UINT32 slice=dstBox.front; slice<dstBox.back; ++slice)
     {
         if(!tempTex)
         {
@@ -825,7 +825,7 @@ void GLTextureBuffer::blitFromMemory(const PixelData &src_orig, const Box &dstBo
 }
 //-----------------------------------------------------------------------------    
 
-RenderTexture *GLTextureBuffer::getRenderTarget(size_t zoffset)
+RenderTexture *GLTextureBuffer::getRenderTarget(UINT32 zoffset)
 {
     assert(mUsage & TU_RENDERTARGET);
     assert(zoffset < mDepth);
@@ -833,7 +833,7 @@ RenderTexture *GLTextureBuffer::getRenderTarget(size_t zoffset)
 }
 //********* GLRenderBuffer
 //----------------------------------------------------------------------------- 
-GLRenderBuffer::GLRenderBuffer(GLenum format, size_t width, size_t height, GLsizei numSamples):
+GLRenderBuffer::GLRenderBuffer(GLenum format, UINT32 width, UINT32 height, GLsizei numSamples):
     GLHardwarePixelBuffer(width, height, 1, GLPixelUtil::getClosestOGREFormat(format),HBU_WRITE_ONLY),
     mRenderbufferID(0)
 {
@@ -862,7 +862,7 @@ GLRenderBuffer::~GLRenderBuffer()
     glDeleteRenderbuffersEXT(1, &mRenderbufferID);
 }
 //-----------------------------------------------------------------------------  
-void GLRenderBuffer::bindToFramebuffer(GLenum attachment, size_t zoffset)
+void GLRenderBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
 {
     assert(zoffset < mDepth);
     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, attachment,

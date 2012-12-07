@@ -42,28 +42,28 @@ namespace CamelotEngine {
 	protected:
 		unsigned char* mpData;
         /// @copydoc HardwareBuffer::lock
-        void* lockImpl(size_t offset, size_t length, LockOptions options);
+        void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
         /// @copydoc HardwareBuffer::unlock
         void unlockImpl(void);
 
     public:
-		GLDefaultHardwareVertexBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage);
-		GLDefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices, 
+		GLDefaultHardwareVertexBuffer(UINT32 vertexSize, UINT32 numVertices, HardwareBuffer::Usage usage);
+		GLDefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
             HardwareBuffer::Usage usage);
         ~GLDefaultHardwareVertexBuffer();
         /// @copydoc HardwareBuffer::readData
-        void readData(size_t offset, size_t length, void* pDest);
+        void readData(UINT32 offset, UINT32 length, void* pDest);
         /// @copydoc HardwareBuffer::writeData
 
-        void writeData(size_t offset, size_t length, const void* pSource,
+        void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				bool discardWholeBuffer = false);
         /** Override HardwareBuffer to turn off all shadowing. */
-        void* lock(size_t offset, size_t length, LockOptions options);
+        void* lock(UINT32 offset, UINT32 length, LockOptions options);
         /** Override HardwareBuffer to turn off all shadowing. */
 		void unlock(void);
 
         //void* getDataPtr(void) const { return (void*)mpData; }
-        void* getDataPtr(size_t offset) const { return (void*)(mpData + offset); }
+        void* getDataPtr(UINT32 offset) const { return (void*)(mpData + offset); }
     };
 
 	/// Specialisation of HardwareIndexBuffer for emulation
@@ -72,23 +72,23 @@ namespace CamelotEngine {
 	protected:
 		unsigned char* mpData;
         /// @copydoc HardwareBuffer::lock
-        void* lockImpl(size_t offset, size_t length, LockOptions options);
+        void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
         /// @copydoc HardwareBuffer::unlock
         void unlockImpl(void);
     public:
-		GLDefaultHardwareIndexBuffer(IndexType idxType, size_t numIndexes, HardwareBuffer::Usage usage);
+		GLDefaultHardwareIndexBuffer(IndexType idxType, UINT32 numIndexes, HardwareBuffer::Usage usage);
         ~GLDefaultHardwareIndexBuffer();
         /// @copydoc HardwareBuffer::readData
-        void readData(size_t offset, size_t length, void* pDest);
+        void readData(UINT32 offset, UINT32 length, void* pDest);
         /// @copydoc HardwareBuffer::writeData
-        void writeData(size_t offset, size_t length, const void* pSource,
+        void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				bool discardWholeBuffer = false);
         /** Override HardwareBuffer to turn off all shadowing. */
-        void* lock(size_t offset, size_t length, LockOptions options);
+        void* lock(UINT32 offset, UINT32 length, LockOptions options);
         /** Override HardwareBuffer to turn off all shadowing. */
         void unlock(void);
 
-        void* getDataPtr(size_t offset) const { return (void*)(mpData + offset); }
+        void* getDataPtr(UINT32 offset) const { return (void*)(mpData + offset); }
     };
 
 	/** Specialisation of HardwareBufferManager to emulate hardware buffers.
@@ -105,11 +105,11 @@ namespace CamelotEngine {
         ~GLDefaultHardwareBufferManagerBase();
         /// Creates a vertex buffer
 		HardwareVertexBufferPtr 
-            createVertexBuffer(size_t vertexSize, size_t numVerts, 
+            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, 
 				HardwareBuffer::Usage usage, bool useShadowBuffer = false);
 		/// Create a hardware vertex buffer
 		HardwareIndexBufferPtr 
-            createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
+            createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
 				HardwareBuffer::Usage usage, bool useShadowBuffer = false);
 
     };

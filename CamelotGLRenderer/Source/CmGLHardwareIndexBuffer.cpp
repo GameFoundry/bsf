@@ -33,7 +33,7 @@ namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
     GLHardwareIndexBuffer::GLHardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType,
-        size_t numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer)
+        UINT32 numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer)
         : HardwareIndexBuffer(mgr, idxType, numIndexes, usage, false, useShadowBuffer)
     {
         glGenBuffersARB( 1, &mBufferId );
@@ -58,8 +58,8 @@ namespace CamelotEngine {
         glDeleteBuffersARB(1, &mBufferId);
     }
 	//---------------------------------------------------------------------
-    void* GLHardwareIndexBuffer::lockImpl(size_t offset, 
-        size_t length, LockOptions options)
+    void* GLHardwareIndexBuffer::lockImpl(UINT32 offset, 
+        UINT32 length, LockOptions options)
     {
         GLenum access = 0;
 
@@ -162,7 +162,7 @@ namespace CamelotEngine {
         mIsLocked = false;
     }
 	//---------------------------------------------------------------------
-    void GLHardwareIndexBuffer::readData(size_t offset, size_t length, 
+    void GLHardwareIndexBuffer::readData(UINT32 offset, UINT32 length, 
         void* pDest)
     {
         if(mUseShadowBuffer)
@@ -179,7 +179,7 @@ namespace CamelotEngine {
         }
     }
 	//---------------------------------------------------------------------
-    void GLHardwareIndexBuffer::writeData(size_t offset, size_t length, 
+    void GLHardwareIndexBuffer::writeData(UINT32 offset, UINT32 length, 
             const void* pSource, bool discardWholeBuffer)
     {
         glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId );

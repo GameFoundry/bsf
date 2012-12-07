@@ -21,7 +21,7 @@ namespace CamelotEngine
 
 		UINT32 getTechniqueArraySize(Shader* obj)
 		{
-			return obj->mTechniques.size();
+			return (UINT32)obj->mTechniques.size();
 		}
 
 		void setTechniqueArraySize(Shader* obj, UINT32 size)

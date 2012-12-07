@@ -128,7 +128,7 @@ namespace CamelotEngine {
 		
 		
 		/// Get rendertarget for z slice
-		RenderTexture *getRenderTarget(size_t zoffset);
+		RenderTexture *getRenderTarget(UINT32 zoffset);
 
 		/// Accessor for surface
 		IDirect3DSurface9 *getSurface(IDirect3DDevice9* d3d9Device);
@@ -137,7 +137,7 @@ namespace CamelotEngine {
 		IDirect3DSurface9 *getFSAASurface(IDirect3DDevice9* d3d9Device);
 
 		/// Notify TextureBuffer of destruction of render target
-        virtual void _clearSliceRTT(size_t zoffset);
+        virtual void _clearSliceRTT(UINT32 zoffset);
 
 		/// Release surfaces held by this pixel buffer.
 		void releaseSurfaces(IDirect3DDevice9* d3d9Device);

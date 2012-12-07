@@ -27,7 +27,7 @@ namespace CamelotEngine
 
 		UINT32 getPassArraySize(Technique* obj)
 		{
-			return obj->mPasses.size();
+			return (UINT32)obj->mPasses.size();
 		}
 
 		void setPassArraySize(Technique* obj, UINT32 size)

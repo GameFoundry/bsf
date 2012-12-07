@@ -73,9 +73,9 @@ namespace CamelotEngine
 					auto iterFind = params->mFloatParams.find(iter->first);
 					if(iterFind == params->mFloatParams.end())
 					{
-						params->mFloatParams[iter->first] = FloatParam(params->mFloatBuffer.size(), def.constType, fieldSize);
+						params->mFloatParams[iter->first] = FloatParam((UINT32)params->mFloatBuffer.size(), def.constType, fieldSize);
 
-						for(size_t j = 0; j < fieldSize; j++)
+						for(UINT32 j = 0; j < fieldSize; j++)
 							params->mFloatBuffer.push_back(tempValue[j]);
 					}
 					else

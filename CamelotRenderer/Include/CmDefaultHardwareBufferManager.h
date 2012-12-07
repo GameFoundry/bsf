@@ -48,21 +48,21 @@ namespace CamelotEngine {
 	protected:
 		unsigned char* mpData;
         /** See HardwareBuffer. */
-        void* lockImpl(size_t offset, size_t length, LockOptions options);
+        void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
         /** See HardwareBuffer. */
 		void unlockImpl(void);
     public:
-		DefaultHardwareVertexBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage);
-		DefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices, 
+		DefaultHardwareVertexBuffer(UINT32 vertexSize, UINT32 numVertices, HardwareBuffer::Usage usage);
+		DefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
             HardwareBuffer::Usage usage);
         ~DefaultHardwareVertexBuffer();
         /** See HardwareBuffer. */
-        void readData(size_t offset, size_t length, void* pDest);
+        void readData(UINT32 offset, UINT32 length, void* pDest);
         /** See HardwareBuffer. */
-        void writeData(size_t offset, size_t length, const void* pSource,
+        void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				bool discardWholeBuffer = false);
         /** Override HardwareBuffer to turn off all shadowing. */
-        void* lock(size_t offset, size_t length, LockOptions options);
+        void* lock(UINT32 offset, UINT32 length, LockOptions options);
         /** Override HardwareBuffer to turn off all shadowing. */
 		void unlock(void);
 
@@ -75,19 +75,19 @@ namespace CamelotEngine {
 	protected:
 		unsigned char* mpData;
         /** See HardwareBuffer. */
-        void* lockImpl(size_t offset, size_t length, LockOptions options);
+        void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
         /** See HardwareBuffer. */
 		void unlockImpl(void);
     public:
-		DefaultHardwareIndexBuffer(IndexType idxType, size_t numIndexes, HardwareBuffer::Usage usage);
+		DefaultHardwareIndexBuffer(IndexType idxType, UINT32 numIndexes, HardwareBuffer::Usage usage);
         ~DefaultHardwareIndexBuffer();
         /** See HardwareBuffer. */
-        void readData(size_t offset, size_t length, void* pDest);
+        void readData(UINT32 offset, UINT32 length, void* pDest);
         /** See HardwareBuffer. */
-        void writeData(size_t offset, size_t length, const void* pSource,
+        void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				bool discardWholeBuffer = false);
         /** Override HardwareBuffer to turn off all shadowing. */
-        void* lock(size_t offset, size_t length, LockOptions options);
+        void* lock(UINT32 offset, UINT32 length, LockOptions options);
         /** Override HardwareBuffer to turn off all shadowing. */
 		void unlock(void);
 
@@ -107,11 +107,11 @@ namespace CamelotEngine {
         ~DefaultHardwareBufferManagerBase();
         /// Creates a vertex buffer
 		HardwareVertexBufferPtr 
-            createVertexBuffer(size_t vertexSize, size_t numVerts, 
+            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, 
 				HardwareBuffer::Usage usage, bool useShadowBuffer = false);
 		/// Create a hardware vertex buffer
 		HardwareIndexBufferPtr 
-            createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
+            createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
 				HardwareBuffer::Usage usage, bool useShadowBuffer = false);
     };
 

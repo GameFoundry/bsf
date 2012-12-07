@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 namespace CamelotEngine {
 
-	DefaultHardwareVertexBuffer::DefaultHardwareVertexBuffer(size_t vertexSize, size_t numVertices, 
+	DefaultHardwareVertexBuffer::DefaultHardwareVertexBuffer(UINT32 vertexSize, UINT32 numVertices, 
 															 HardwareBuffer::Usage usage)
 	: HardwareVertexBuffer(0, vertexSize, numVertices, usage, true, false) // always software, never shadowed
 	{
@@ -38,7 +38,7 @@ namespace CamelotEngine {
         mpData = static_cast<unsigned char*>(_aligned_malloc(mSizeInBytes, CM_SIMD_ALIGNMENT));
 	}
 	//-----------------------------------------------------------------------
-	DefaultHardwareVertexBuffer::DefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices, 
+	DefaultHardwareVertexBuffer::DefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
 		HardwareBuffer::Usage usage)
         : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, true, false) // always software, never shadowed
 	{
@@ -51,7 +51,7 @@ namespace CamelotEngine {
 		_aligned_free(mpData);
 	}
 	//-----------------------------------------------------------------------
-    void* DefaultHardwareVertexBuffer::lockImpl(size_t offset, size_t length, LockOptions options)
+    void* DefaultHardwareVertexBuffer::lockImpl(UINT32 offset, UINT32 length, LockOptions options)
 	{
         // Only for use internally, no 'locking' as such
 		return mpData + offset;
@@ -62,7 +62,7 @@ namespace CamelotEngine {
         // Nothing to do
 	}
 	//-----------------------------------------------------------------------
-    void* DefaultHardwareVertexBuffer::lock(size_t offset, size_t length, LockOptions options)
+    void* DefaultHardwareVertexBuffer::lock(UINT32 offset, UINT32 length, LockOptions options)
 	{
         mIsLocked = true;
 		return mpData + offset;
@@ -74,13 +74,13 @@ namespace CamelotEngine {
         // Nothing to do
 	}
 	//-----------------------------------------------------------------------
-    void DefaultHardwareVertexBuffer::readData(size_t offset, size_t length, void* pDest)
+    void DefaultHardwareVertexBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
 	{
 		assert((offset + length) <= mSizeInBytes);
 		memcpy(pDest, mpData + offset, length);
 	}
 	//-----------------------------------------------------------------------
-    void DefaultHardwareVertexBuffer::writeData(size_t offset, size_t length, const void* pSource,
+    void DefaultHardwareVertexBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource,
 			bool discardWholeBuffer)
 	{
 		assert((offset + length) <= mSizeInBytes);
@@ -91,7 +91,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 
 	DefaultHardwareIndexBuffer::DefaultHardwareIndexBuffer(IndexType idxType, 
-		size_t numIndexes, HardwareBuffer::Usage usage) 
+		UINT32 numIndexes, HardwareBuffer::Usage usage) 
 		: HardwareIndexBuffer(0, idxType, numIndexes, usage, true, false) // always software, never shadowed
 	{
 		mpData = (unsigned char*)malloc(sizeof(unsigned char) * mSizeInBytes);
@@ -102,7 +102,7 @@ namespace CamelotEngine {
 		free(mpData);
 	}
 	//-----------------------------------------------------------------------
-    void* DefaultHardwareIndexBuffer::lockImpl(size_t offset, size_t length, LockOptions options)
+    void* DefaultHardwareIndexBuffer::lockImpl(UINT32 offset, UINT32 length, LockOptions options)
 	{
         // Only for use internally, no 'locking' as such
 		return mpData + offset;
@@ -113,7 +113,7 @@ namespace CamelotEngine {
         // Nothing to do
 	}
 	//-----------------------------------------------------------------------
-    void* DefaultHardwareIndexBuffer::lock(size_t offset, size_t length, LockOptions options)
+    void* DefaultHardwareIndexBuffer::lock(UINT32 offset, UINT32 length, LockOptions options)
 	{
         mIsLocked = true;
 		return mpData + offset;
@@ -125,13 +125,13 @@ namespace CamelotEngine {
         // Nothing to do
 	}
 	//-----------------------------------------------------------------------
-    void DefaultHardwareIndexBuffer::readData(size_t offset, size_t length, void* pDest)
+    void DefaultHardwareIndexBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
 	{
 		assert((offset + length) <= mSizeInBytes);
 		memcpy(pDest, mpData + offset, length);
 	}
 	//-----------------------------------------------------------------------
-    void DefaultHardwareIndexBuffer::writeData(size_t offset, size_t length, const void* pSource,
+    void DefaultHardwareIndexBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource,
 			bool discardWholeBuffer)
 	{
 		assert((offset + length) <= mSizeInBytes);
@@ -151,8 +151,8 @@ namespace CamelotEngine {
 	}
     //-----------------------------------------------------------------------
 	HardwareVertexBufferPtr 
-        DefaultHardwareBufferManagerBase::createVertexBuffer(size_t vertexSize, 
-		size_t numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
+        DefaultHardwareBufferManagerBase::createVertexBuffer(UINT32 vertexSize, 
+		UINT32 numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
 	{
         DefaultHardwareVertexBuffer* vb = new DefaultHardwareVertexBuffer(this, vertexSize, numVerts, usage);
         return HardwareVertexBufferPtr(vb);
@@ -160,7 +160,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	HardwareIndexBufferPtr 
         DefaultHardwareBufferManagerBase::createIndexBuffer(HardwareIndexBuffer::IndexType itype, 
-		size_t numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer)
+		UINT32 numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer)
 	{
         DefaultHardwareIndexBuffer* ib = new DefaultHardwareIndexBuffer(itype, numIndexes, usage);
 		return HardwareIndexBufferPtr(ib);

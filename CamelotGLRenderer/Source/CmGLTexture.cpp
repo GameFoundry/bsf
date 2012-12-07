@@ -124,7 +124,7 @@ namespace CamelotEngine {
 		mFormat = TextureManager::instance().getNativeFormat(mTextureType, mFormat, mUsage);
 		
 		// Check requested number of mipmaps
-		size_t maxMips = GLPixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);
+		UINT32 maxMips = GLPixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);
 		if(mNumMipmaps>maxMips)
 			mNumMipmaps = maxMips;
 		
@@ -150,21 +150,21 @@ namespace CamelotEngine {
 		// Allocate internal buffer so that glTexSubImageXD can be used
 		// Internal format
 		GLenum format = GLPixelUtil::getClosestGLInternalFormat(mFormat, mHwGamma);
-		size_t width = mWidth;
-		size_t height = mHeight;
-		size_t depth = mDepth;
+		UINT32 width = mWidth;
+		UINT32 height = mHeight;
+		UINT32 depth = mDepth;
 
 		if(PixelUtil::isCompressed(mFormat))
 		{
 			// Compressed formats
-			size_t size = PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
+			UINT32 size = PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 			// Provide temporary buffer filled with zeroes as glCompressedTexImageXD does not
 			// accept a 0 pointer like normal glTexImageXD
 			// Run through this process for every mipmap to pregenerate mipmap piramid
 			UINT8 *tmpdata = new UINT8[size];
 			memset(tmpdata, 0, size);
 			
-			for(size_t mip=0; mip<=mNumMipmaps; mip++)
+			for(UINT32 mip=0; mip<=mNumMipmaps; mip++)
 			{
 				size = PixelUtil::getMemorySize(width, height, depth, mFormat);
 				switch(mTextureType)
@@ -201,7 +201,7 @@ namespace CamelotEngine {
 		else
 		{
 			// Run through this process to pregenerate mipmap piramid
-			for(size_t mip=0; mip<=mNumMipmaps; mip++)
+			for(UINT32 mip=0; mip<=mNumMipmaps; mip++)
 			{
 				// Normal formats
 				switch(mTextureType)
@@ -260,9 +260,9 @@ namespace CamelotEngine {
 	{
 		mSurfaceList.clear();
 		
-		for(size_t face=0; face<getNumFaces(); face++)
+		for(UINT32 face=0; face<getNumFaces(); face++)
 		{
-			for(size_t mip=0; mip<=getNumMipmaps(); mip++)
+			for(UINT32 mip=0; mip<=getNumMipmaps(); mip++)
 			{
                 GLHardwarePixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget_internal(), mTextureID, face, mip,
 						static_cast<HardwareBuffer::Usage>(mUsage), false, mHwGamma, mFSAA);
@@ -282,7 +282,7 @@ namespace CamelotEngine {
 	}
 	
 	//---------------------------------------------------------------------------------------------
-	HardwarePixelBufferPtr GLTexture::getBuffer_internal(size_t face, size_t mipmap)
+	HardwarePixelBufferPtr GLTexture::getBuffer_internal(UINT32 face, UINT32 mipmap)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

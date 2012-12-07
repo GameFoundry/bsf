@@ -89,7 +89,7 @@ namespace CamelotEngine
 
 		UINT32 getSubmeshArraySize(MeshData* obj)
 		{
-			return obj->subMeshes.size();
+			return (UINT32)obj->subMeshes.size();
 		}
 
 		void setSubmeshArraySize(MeshData* obj, UINT32 size)
@@ -128,7 +128,7 @@ namespace CamelotEngine
 
 		UINT32 getVertexDataArraySize(MeshData* obj)
 		{
-			return obj->vertexBuffers.size();
+			return (UINT32)obj->vertexBuffers.size();
 		}
 
 		void setVertexDataArraySize(MeshData* obj, UINT32 size)

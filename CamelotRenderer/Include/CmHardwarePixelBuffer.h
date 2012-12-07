@@ -51,9 +51,9 @@ namespace CamelotEngine {
     {
     protected: 
         // Extents
-        size_t mWidth, mHeight, mDepth;
+        UINT32 mWidth, mHeight, mDepth;
         // Pitches (offsets between rows and slices)
-        size_t mRowPitch, mSlicePitch;
+        UINT32 mRowPitch, mSlicePitch;
         // Internal format
         PixelFormat mFormat;
         // Currently locked region (local coords)
@@ -67,7 +67,7 @@ namespace CamelotEngine {
 
         /// Internal implementation of lock(), do not OVERRIDE or CALL this
         /// for HardwarePixelBuffer implementations, but override the previous method
-        virtual void* lockImpl(size_t offset, size_t length, LockOptions options);
+        virtual void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
 
         /// Internal implementation of unlock(), must be overridden in subclasses
         // virtual void unlockImpl(void) = 0;
@@ -75,11 +75,11 @@ namespace CamelotEngine {
 		/** Notify TextureBuffer of destruction of render target.
 			Called by RenderTexture when destroyed.
 		*/
-		virtual void _clearSliceRTT(size_t zoffset);
+		virtual void _clearSliceRTT(UINT32 zoffset);
 		friend class RenderTexture;
     public:
         /// Should be called by HardwareBufferManager
-        HardwarePixelBuffer(size_t mWidth, size_t mHeight, size_t mDepth,
+        HardwarePixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
                 PixelFormat mFormat,
                 HardwareBuffer::Usage usage, bool useSystemMemory, bool useShadowBuffer);
         ~HardwarePixelBuffer();
@@ -97,7 +97,7 @@ namespace CamelotEngine {
 		*/
 		virtual const PixelData& lock(const Box& lockBox, LockOptions options);
 		/// @copydoc HardwareBuffer::lock
-        virtual void* lock(size_t offset, size_t length, LockOptions options);
+        virtual void* lock(UINT32 offset, UINT32 length, LockOptions options);
 
 		/** Get the current locked region. This is the same value as returned
 		    by lock(const Image::Box, LockOptions)
@@ -106,9 +106,9 @@ namespace CamelotEngine {
         const PixelData& getCurrentLock();
 		
 		/// @copydoc HardwareBuffer::readData
-		virtual void readData(size_t offset, size_t length, void* pDest);
+		virtual void readData(UINT32 offset, UINT32 length, void* pDest);
 		/// @copydoc HardwareBuffer::writeData
-		virtual void writeData(size_t offset, size_t length, const void* pSource,
+		virtual void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				bool discardWholeBuffer = false);
         
         /** Copies a box from another PixelBuffer to a region of the 
@@ -177,14 +177,14 @@ namespace CamelotEngine {
             @returns A pointer to the render target. This pointer has the lifespan of this
             PixelBuffer.
         */
-        virtual RenderTexture *getRenderTarget(size_t slice=0);
+        virtual RenderTexture *getRenderTarget(UINT32 slice=0);
         
         /// Gets the width of this buffer
-        size_t getWidth() const { return mWidth; }
+        UINT32 getWidth() const { return mWidth; }
         /// Gets the height of this buffer
-        size_t getHeight() const { return mHeight; }
+        UINT32 getHeight() const { return mHeight; }
         /// Gets the depth of this buffer
-        size_t getDepth() const { return mDepth; }
+        UINT32 getDepth() const { return mDepth; }
         /// Gets the native pixel format of this buffer
         PixelFormat getFormat() const { return mFormat; }
     };

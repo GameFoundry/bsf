@@ -29,12 +29,12 @@ namespace CamelotEngine
 
 		UINT32 getElementArraySize(VertexDeclaration* obj)
 		{
-			return obj->mElementList.size();
+			return (UINT32)obj->mElementList.size();
 		}
 
 		void setElementArraySize(VertexDeclaration* obj, UINT32 size)
 		{
-			for(UINT32 i = obj->mElementList.size(); i < size; i++)
+			for(size_t i = obj->mElementList.size(); i < size; i++)
 				obj->mElementList.push_back(VertexElement());
 		}
 

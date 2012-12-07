@@ -58,7 +58,7 @@ namespace CamelotEngine {
         
     }
 	//-------------------------------------------------------------------------
-	void Texture::initialize(TextureType textureType, size_t width, size_t height, size_t depth, size_t numMipmaps, 
+	void Texture::initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
 		PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint)
 	{
 		mTextureType = textureType;
@@ -82,12 +82,12 @@ namespace CamelotEngine {
         return PixelUtil::hasAlpha(mFormat);
     }
     //--------------------------------------------------------------------------
-	size_t Texture::calculateSize(void) const
+	UINT32 Texture::calculateSize(void) const
 	{
         return getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 	}
 	//--------------------------------------------------------------------------
-	size_t Texture::getNumFaces(void) const
+	UINT32 Texture::getNumFaces(void) const
 	{
 		return getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;
 	}

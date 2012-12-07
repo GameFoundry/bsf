@@ -148,7 +148,7 @@ namespace CamelotEngine
 				dstTextureResource->pCubeTex)
 			{				
 				// blit to 6 cube faces
-				for (size_t face = 0; face < 6; face++)
+				for (UINT32 face = 0; face < 6; face++)
 				{
 					// get our source surface
 					IDirect3DSurface9 *pSrcSurface = 0;
@@ -289,9 +289,9 @@ namespace CamelotEngine
 		SAFE_RELEASE(textureResources->pFSAASurface);
 	}
 	/****************************************************************************************/
-	size_t D3D9Texture::calculateSize(void) const
+	UINT32 D3D9Texture::calculateSize(void) const
 	{
-		size_t instanceSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
+		UINT32 instanceSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
 		return instanceSize * mMapDeviceToTextureResources.size();
 	}
@@ -916,13 +916,13 @@ namespace CamelotEngine
 		IDirect3DSurface9 *surface;
 		IDirect3DVolume9 *volume;
 		D3D9HardwarePixelBuffer *buffer;				
-		size_t mip, face;
+		UINT32 mip, face;
 
 		
 		assert(textureResources != NULL);
 		assert(textureResources->pBaseTex);
 		// Make sure number of mips is right
-		size_t numCreatedMips = textureResources->pBaseTex->GetLevelCount() - 1;
+		UINT32 numCreatedMips = textureResources->pBaseTex->GetLevelCount() - 1;
 
 		if(numCreatedMips != mNumMipmaps)
 		{
@@ -951,9 +951,9 @@ namespace CamelotEngine
 		{			
 			// Create new list of surfaces	
 			mSurfaceList.clear();
-			for(size_t face=0; face<getNumFaces(); ++face)
+			for(UINT32 face=0; face<getNumFaces(); ++face)
 			{
-				for(size_t mip=0; mip<=mNumMipmaps; ++mip)
+				for(UINT32 mip=0; mip<=mNumMipmaps; ++mip)
 				{
 					buffer = new D3D9HardwarePixelBuffer((HardwareBuffer::Usage)bufusage, this);
 					mSurfaceList.push_back(HardwarePixelBufferPtr(buffer));
@@ -1026,7 +1026,7 @@ namespace CamelotEngine
 	}
 	#undef GETLEVEL
 	/****************************************************************************************/
-	HardwarePixelBufferPtr D3D9Texture::getBuffer_internal(size_t face, size_t mipmap) 
+	HardwarePixelBufferPtr D3D9Texture::getBuffer_internal(UINT32 face, UINT32 mipmap) 
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1034,7 +1034,7 @@ namespace CamelotEngine
 			CM_EXCEPT(InvalidParametersException, "A three dimensional cube has six faces");
 		if(mipmap > mNumMipmaps)
 			CM_EXCEPT(InvalidParametersException, "Mipmap index out of range");
-		size_t idx = face*(mNumMipmaps+1) + mipmap;
+		UINT32 idx = face*(mNumMipmaps+1) + mipmap;
 
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
 		TextureResources* textureResources = getTextureResources(d3d9Device);

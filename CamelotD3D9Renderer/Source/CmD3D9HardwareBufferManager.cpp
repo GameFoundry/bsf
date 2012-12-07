@@ -44,7 +44,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     HardwareVertexBufferPtr 
     D3D9HardwareBufferManagerBase::
-    createVertexBuffer(size_t vertexSize, size_t numVerts, HardwareBuffer::Usage usage,
+    createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage,
 		bool useShadowBuffer)
     {
 		assert (numVerts > 0);
@@ -78,7 +78,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	HardwareIndexBufferPtr 
     D3D9HardwareBufferManagerBase::
-    createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
+    createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
         HardwareBuffer::Usage usage, bool useShadowBuffer)
     {
 		assert (numIndexes > 0);

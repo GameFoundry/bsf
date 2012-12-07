@@ -84,7 +84,7 @@ namespace CamelotEngine {
         void buildConstantDefinitions() const;
 
 		/// Recurse down structures getting data on parameters
-		void recurseParams(CGparameter param, size_t contextArraySize = 1) const;
+		void recurseParams(CGparameter param, UINT32 contextArraySize = 1) const;
 		/// Turn a Cg type into a GpuConstantType and number of elements
 		void mapTypeAndElementSize(CGtype cgType, bool isRegisterCombiner, GpuConstantDefinition& def) const;
 

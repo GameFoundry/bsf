@@ -210,7 +210,7 @@ namespace CamelotEngine
 
 			UINT32 getNumFloatParams(MaterialParams* obj)
 			{
-				return obj->mFloatParams.size();
+				return (UINT32)obj->mFloatParams.size();
 			}
 
 			std::shared_ptr<TexParamKVP> getTexParam(MaterialParams* obj, UINT32 idx)
@@ -242,7 +242,7 @@ namespace CamelotEngine
 
 			UINT32 getNumTexParams(MaterialParams* obj)
 			{
-				return obj->mTextureParams.size();
+				return (UINT32)obj->mTextureParams.size();
 			}
 
 			std::shared_ptr<SamplerStateKVP> getSamplerStateParam(MaterialParams* obj, UINT32 idx)
@@ -274,15 +274,15 @@ namespace CamelotEngine
 
 			UINT32 getNumSamplerStateParams(MaterialParams* obj)
 			{
-				return obj->mSamplerStateParams.size();
+				return (UINT32)obj->mSamplerStateParams.size();
 			}
 
 			ManagedDataBlock getFloatBuffer(MaterialParams* obj)
 			{
-				size_t bufferSize = obj->mFloatBuffer.size();
+				UINT32 bufferSize = (UINT32)obj->mFloatBuffer.size();
 				float* buffer = new float[bufferSize];
 
-				for(size_t i = 0; i < bufferSize; i++)
+				for(UINT32 i = 0; i < bufferSize; i++)
 					buffer[i] = obj->mFloatBuffer[i];
 
 				return ManagedDataBlock((UINT8*)buffer, bufferSize, true);

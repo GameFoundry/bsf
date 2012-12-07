@@ -184,7 +184,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Gets the number of all child GameObjects.
 		 */
-		int getNumChildren() const { return mChildren.size(); }
+		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
 
 	private:
 		std::weak_ptr<GameObject> mParent;

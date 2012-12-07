@@ -35,7 +35,7 @@ namespace CamelotEngine {
 
     //-----------------------------------------------------------------------------
     HardwareIndexBuffer::HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, 
-        size_t numIndexes, HardwareBuffer::Usage usage, 
+        UINT32 numIndexes, HardwareBuffer::Usage usage, 
         bool useSystemMemory, bool useShadowBuffer) 
         : HardwareBuffer(usage, useSystemMemory, useShadowBuffer)
 		, mMgr(mgr)

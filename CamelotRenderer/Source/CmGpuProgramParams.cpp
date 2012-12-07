@@ -56,11 +56,11 @@ namespace CamelotEngine
 		// unless the system has been explicitly configured to allow all the parameters to be added
 
 		// paramName[0] version will always exist 
-		size_t maxArrayIndex = 1;
+		UINT32 maxArrayIndex = 1;
 		if (baseDef.arraySize <= 16 || msGenerateAllConstantDefinitionArrayEntries)
 			maxArrayIndex = baseDef.arraySize;
 
-		for (size_t i = 0; i < maxArrayIndex; i++)
+		for (UINT32 i = 0; i < maxArrayIndex; i++)
 		{
 			arrayName = paramName + "[" + toString(i) + "]";
 			map.insert(GpuConstantDefinitionMap::value_type(arrayName, arrayDef));
@@ -175,22 +175,22 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------()
-	void GpuProgramParameters::setConstant(size_t index, const Vector4& vec)
+	void GpuProgramParameters::setConstant(UINT32 index, const Vector4& vec)
 	{
 		setConstant(index, vec.ptr(), 1);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setConstant(size_t index, float val)
+	void GpuProgramParameters::setConstant(UINT32 index, float val)
 	{
 		setConstant(index, Vector4(val, 0.0f, 0.0f, 0.0f));
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setConstant(size_t index, const Vector3& vec)
+	void GpuProgramParameters::setConstant(UINT32 index, const Vector3& vec)
 	{
 		setConstant(index, Vector4(vec.x, vec.y, vec.z, 1.0f));
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setConstant(size_t index, const Matrix4& m)
+	void GpuProgramParameters::setConstant(UINT32 index, const Matrix4& m)
 	{
 		// set as 4x 4-element floats
 		if (mTransposeMatrices)
@@ -205,12 +205,12 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setConstant(size_t index, const Matrix4* pMatrix, 
-		size_t numEntries)
+	void GpuProgramParameters::setConstant(UINT32 index, const Matrix4* pMatrix, 
+		UINT32 numEntries)
 	{
 		if (mTransposeMatrices)
 		{
-			for (size_t i = 0; i < numEntries; ++i)
+			for (UINT32 i = 0; i < numEntries; ++i)
 			{
 				Matrix4 t = pMatrix[i].transpose();
 				GpuProgramParameters::setConstant(index, t[0], 4);
@@ -224,36 +224,36 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setConstant(size_t index, const Color& colour)
+	void GpuProgramParameters::setConstant(UINT32 index, const Color& colour)
 	{
 		setConstant(index, colour.ptr(), 1);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setConstant(size_t index, const float *val, size_t count)
+	void GpuProgramParameters::setConstant(UINT32 index, const float *val, UINT32 count)
 	{
 		// Raw buffer size is 4x count
-		size_t rawCount = count * 4;
+		UINT32 rawCount = count * 4;
 		// get physical index
 		assert((mFloatLogicalToPhysical != nullptr) && "GpuProgram hasn't set up the logical -> physical map!");
 
-		size_t physicalIndex = _getFloatConstantPhysicalIndex(index, rawCount, GPV_GLOBAL);
+		UINT32 physicalIndex = _getFloatConstantPhysicalIndex(index, rawCount, GPV_GLOBAL);
 
 		// Copy 
 		_writeRawConstants(physicalIndex, val, rawCount);
 
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setConstant(size_t index, const double *val, size_t count)
+	void GpuProgramParameters::setConstant(UINT32 index, const double *val, UINT32 count)
 	{
 		// Raw buffer size is 4x count
-		size_t rawCount = count * 4;
+		UINT32 rawCount = count * 4;
 		// get physical index
 		assert((mFloatLogicalToPhysical != nullptr) && "GpuProgram hasn't set up the logical -> physical map!");
 
-		size_t physicalIndex = _getFloatConstantPhysicalIndex(index, rawCount, GPV_GLOBAL);
+		UINT32 physicalIndex = _getFloatConstantPhysicalIndex(index, rawCount, GPV_GLOBAL);
 		assert(physicalIndex + rawCount <= mFloatConstants.size());
 		// Copy manually since cast required
-		for (size_t i = 0; i < rawCount; ++i)
+		for (UINT32 i = 0; i < rawCount; ++i)
 		{
 			mFloatConstants[physicalIndex + i] = 
 				static_cast<float>(val[i]);
@@ -261,47 +261,47 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setConstant(size_t index, const int *val, size_t count)
+	void GpuProgramParameters::setConstant(UINT32 index, const int *val, UINT32 count)
 	{
 		// Raw buffer size is 4x count
-		size_t rawCount = count * 4;
+		UINT32 rawCount = count * 4;
 		// get physical index
 		assert((mIntLogicalToPhysical != nullptr) && "GpuProgram hasn't set up the logical -> physical map!");
 
-		size_t physicalIndex = _getIntConstantPhysicalIndex(index, rawCount, GPV_GLOBAL);
+		UINT32 physicalIndex = _getIntConstantPhysicalIndex(index, rawCount, GPV_GLOBAL);
 		// Copy 
 		_writeRawConstants(physicalIndex, val, rawCount);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, const Vector4& vec,
-		size_t count)
+	void GpuProgramParameters::_writeRawConstant(UINT32 physicalIndex, const Vector4& vec,
+		UINT32 count)
 	{
 		// remember, raw content access uses raw float count rather than float4
 		// write either the number requested (for packed types) or up to 4
-		_writeRawConstants(physicalIndex, vec.ptr(), std::min(count, (size_t)4));
+		_writeRawConstants(physicalIndex, vec.ptr(), std::min(count, (UINT32)4));
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, float val)
+	void GpuProgramParameters::_writeRawConstant(UINT32 physicalIndex, float val)
 	{
 		_writeRawConstants(physicalIndex, &val, 1);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, int val)
+	void GpuProgramParameters::_writeRawConstant(UINT32 physicalIndex, int val)
 	{
 		_writeRawConstants(physicalIndex, &val, 1);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, const Vector3& vec)
+	void GpuProgramParameters::_writeRawConstant(UINT32 physicalIndex, const Vector3& vec)
 	{
 		_writeRawConstants(physicalIndex, vec.ptr(), 3);		
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, const Vector2& vec)
+	void GpuProgramParameters::_writeRawConstant(UINT32 physicalIndex, const Vector2& vec)
 	{
 		_writeRawConstants(physicalIndex, vec.ptr(), 2);		
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, const Matrix4& m,size_t elementCount)
+	void GpuProgramParameters::_writeRawConstant(UINT32 physicalIndex, const Matrix4& m, UINT32 elementCount)
 	{
 
 		// remember, raw content access uses raw float count rather than float4
@@ -317,12 +317,12 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, const Matrix4* pMatrix, size_t numEntries)
+	void GpuProgramParameters::_writeRawConstant(UINT32 physicalIndex, const Matrix4* pMatrix, UINT32 numEntries)
 	{
 		// remember, raw content access uses raw float count rather than float4
 		if (mTransposeMatrices)
 		{
-			for (size_t i = 0; i < numEntries; ++i)
+			for (UINT32 i = 0; i < numEntries; ++i)
 			{
 				Matrix4 t = pMatrix[i].transpose();
 				_writeRawConstants(physicalIndex, t[0], 16);
@@ -337,7 +337,7 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, const Matrix3& m,size_t elementCount)
+	void GpuProgramParameters::_writeRawConstant(UINT32 physicalIndex, const Matrix3& m, UINT32 elementCount)
 	{
 		// remember, raw content access uses raw float count rather than float4
 		if (mTransposeMatrices)
@@ -352,54 +352,54 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstant(size_t physicalIndex, 
-		const Color& colour, size_t count)
+	void GpuProgramParameters::_writeRawConstant(UINT32 physicalIndex, 
+		const Color& colour, UINT32 count)
 	{
 		// write either the number requested (for packed types) or up to 4
-		_writeRawConstants(physicalIndex, colour.ptr(), std::min(count, (size_t)4));
+		_writeRawConstants(physicalIndex, colour.ptr(), std::min(count, (UINT32)4));
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstants(size_t physicalIndex, const double* val, size_t count)
+	void GpuProgramParameters::_writeRawConstants(UINT32 physicalIndex, const double* val, UINT32 count)
 	{
 		assert(physicalIndex + count <= mFloatConstants.size());
-		for (size_t i = 0; i < count; ++i)
+		for (UINT32 i = 0; i < count; ++i)
 		{
 			mFloatConstants[physicalIndex+i] = static_cast<float>(val[i]);
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstants(size_t physicalIndex, const float* val, size_t count)
+	void GpuProgramParameters::_writeRawConstants(UINT32 physicalIndex, const float* val, UINT32 count)
 	{
 		assert(physicalIndex + count <= mFloatConstants.size());
 		memcpy(&mFloatConstants[physicalIndex], val, sizeof(float) * count);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_writeRawConstants(size_t physicalIndex, const int* val, size_t count)
+	void GpuProgramParameters::_writeRawConstants(UINT32 physicalIndex, const int* val, UINT32 count)
 	{
 		assert(physicalIndex + count <= mIntConstants.size());
 		memcpy(&mIntConstants[physicalIndex], val, sizeof(int) * count);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_readRawConstants(size_t physicalIndex, size_t count, float* dest)
+	void GpuProgramParameters::_readRawConstants(UINT32 physicalIndex, UINT32 count, float* dest)
 	{
 		assert(physicalIndex + count <= mFloatConstants.size());
 		memcpy(dest, &mFloatConstants[physicalIndex], sizeof(float) * count);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_readRawConstants(size_t physicalIndex, size_t count, int* dest)
+	void GpuProgramParameters::_readRawConstants(UINT32 physicalIndex, UINT32 count, int* dest)
 	{
 		assert(physicalIndex + count <= mIntConstants.size());
 		memcpy(dest, &mIntConstants[physicalIndex], sizeof(int) * count);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_readTexture(size_t physicalIndex, TextureHandle& dest)
+	void GpuProgramParameters::_readTexture(UINT32 physicalIndex, TextureHandle& dest)
 	{
 		assert(physicalIndex < mTextures.size());
 		dest = mTextures[physicalIndex]->texture;
 	}
 	//---------------------------------------------------------------------
 	GpuLogicalIndexUse* GpuProgramParameters::_getFloatConstantLogicalIndexUse(
-		size_t logicalIndex, size_t requestedSize, UINT16 variability)
+		UINT32 logicalIndex, UINT32 requestedSize, UINT16 variability)
 	{
 		if (mFloatLogicalToPhysical == nullptr)
 			return 0;
@@ -412,24 +412,24 @@ namespace CamelotEngine
 		{
 			if (requestedSize)
 			{
-				size_t physicalIndex = mFloatConstants.size();
+				UINT32 physicalIndex = (UINT32)mFloatConstants.size();
 
 				// Expand at buffer end
 				mFloatConstants.insert(mFloatConstants.end(), requestedSize, 0.0f);
 
 				// Record extended size for future GPU params re-using this information
-				mFloatLogicalToPhysical->bufferSize = mFloatConstants.size();
+				mFloatLogicalToPhysical->bufferSize = (UINT32)mFloatConstants.size();
 
 				// low-level programs will not know about mapping ahead of time, so 
 				// populate it. Other params objects will be able to just use this
 				// accepted mapping since the constant structure will be the same
 
 				// Set up a mapping for all items in the count
-				size_t currPhys = physicalIndex;
-				size_t count = requestedSize / 4;
+				UINT32 currPhys = physicalIndex;
+				UINT32 count = requestedSize / 4;
 				GpuLogicalIndexUseMap::iterator insertedIterator;
 
-				for (size_t logicalNum = 0; logicalNum < count; ++logicalNum)
+				for (UINT32 logicalNum = 0; logicalNum < count; ++logicalNum)
 				{
 					GpuLogicalIndexUseMap::iterator it = 
 						mFloatLogicalToPhysical->map.insert(
@@ -453,7 +453,7 @@ namespace CamelotEngine
 		}
 		else
 		{
-			size_t physicalIndex = logi->second.physicalIndex;
+			UINT32 physicalIndex = logi->second.physicalIndex;
 			indexUse = &(logi->second);
 			// check size
 			if (logi->second.currentSize < requestedSize)
@@ -461,7 +461,7 @@ namespace CamelotEngine
 				// init buffer entry wasn't big enough; could be a mistake on the part
 				// of the original use, or perhaps a variable length we can't predict
 				// until first actual runtime use e.g. world matrix array
-				size_t insertCount = requestedSize - logi->second.currentSize;
+				UINT32 insertCount = requestedSize - logi->second.currentSize;
 				FloatConstantList::iterator insertPos = mFloatConstants.begin();
 				std::advance(insertPos, physicalIndex);
 				mFloatConstants.insert(insertPos, insertCount, 0.0f);
@@ -495,7 +495,7 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------()
-	GpuLogicalIndexUse* GpuProgramParameters::_getIntConstantLogicalIndexUse(size_t logicalIndex, size_t requestedSize, UINT16 variability)
+	GpuLogicalIndexUse* GpuProgramParameters::_getIntConstantLogicalIndexUse(UINT32 logicalIndex, UINT32 requestedSize, UINT16 variability)
 	{
 		if (mIntLogicalToPhysical == nullptr)
 		{
@@ -511,23 +511,23 @@ namespace CamelotEngine
 		{
 			if (requestedSize)
 			{
-				size_t physicalIndex = mIntConstants.size();
+				UINT32 physicalIndex = (UINT32)mIntConstants.size();
 
 				// Expand at buffer end
 				mIntConstants.insert(mIntConstants.end(), requestedSize, 0);
 
 				// Record extended size for future GPU params re-using this information
-				mIntLogicalToPhysical->bufferSize = mIntConstants.size();
+				mIntLogicalToPhysical->bufferSize = (UINT32)mIntConstants.size();
 
 				// low-level programs will not know about mapping ahead of time, so 
 				// populate it. Other params objects will be able to just use this
 				// accepted mapping since the constant structure will be the same
 
 				// Set up a mapping for all items in the count
-				size_t currPhys = physicalIndex;
-				size_t count = requestedSize / 4;
+				UINT32 currPhys = physicalIndex;
+				UINT32 count = requestedSize / 4;
 				GpuLogicalIndexUseMap::iterator insertedIterator;
-				for (size_t logicalNum = 0; logicalNum < count; ++logicalNum)
+				for (UINT32 logicalNum = 0; logicalNum < count; ++logicalNum)
 				{
 					GpuLogicalIndexUseMap::iterator it = 
 						mIntLogicalToPhysical->map.insert(
@@ -550,7 +550,7 @@ namespace CamelotEngine
 		}
 		else
 		{
-			size_t physicalIndex = logi->second.physicalIndex;
+			UINT32 physicalIndex = logi->second.physicalIndex;
 			indexUse = &(logi->second);
 
 			// check size
@@ -559,7 +559,7 @@ namespace CamelotEngine
 				// init buffer entry wasn't big enough; could be a mistake on the part
 				// of the original use, or perhaps a variable length we can't predict
 				// until first actual runtime use e.g. world matrix array
-				size_t insertCount = requestedSize - logi->second.currentSize;
+				UINT32 insertCount = requestedSize - logi->second.currentSize;
 				IntConstantList::iterator insertPos = mIntConstants.begin();
 				std::advance(insertPos, physicalIndex);
 				mIntConstants.insert(insertPos, insertCount, 0);
@@ -593,21 +593,21 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------------
-	size_t GpuProgramParameters::_getFloatConstantPhysicalIndex(
-		size_t logicalIndex, size_t requestedSize, UINT16 variability) 
+	UINT32 GpuProgramParameters::_getFloatConstantPhysicalIndex(
+		UINT32 logicalIndex, UINT32 requestedSize, UINT16 variability) 
 	{
 		GpuLogicalIndexUse* indexUse = _getFloatConstantLogicalIndexUse(logicalIndex, requestedSize, variability);
 		return indexUse ? indexUse->physicalIndex : 0;
 	}
 	//-----------------------------------------------------------------------------
-	size_t GpuProgramParameters::_getIntConstantPhysicalIndex(
-		size_t logicalIndex, size_t requestedSize, UINT16 variability)
+	UINT32 GpuProgramParameters::_getIntConstantPhysicalIndex(
+		UINT32 logicalIndex, UINT32 requestedSize, UINT16 variability)
 	{
 		GpuLogicalIndexUse* indexUse = _getIntConstantLogicalIndexUse(logicalIndex, requestedSize, variability);
 		return indexUse ? indexUse->physicalIndex : 0;
 	}
 	//-----------------------------------------------------------------------------
-	size_t GpuProgramParameters::getFloatLogicalIndexForPhysicalIndex(size_t physicalIndex)
+	UINT32 GpuProgramParameters::getFloatLogicalIndexForPhysicalIndex(UINT32 physicalIndex)
 	{
 		// perhaps build a reverse map of this sometime (shared in GpuProgram)
 		for (GpuLogicalIndexUseMap::iterator i = mFloatLogicalToPhysical->map.begin();
@@ -616,11 +616,11 @@ namespace CamelotEngine
 			if (i->second.physicalIndex == physicalIndex)
 				return i->first;
 		}
-		return std::numeric_limits<size_t>::max();
+		return std::numeric_limits<UINT32>::max();
 
 	}
 	//-----------------------------------------------------------------------------
-	size_t GpuProgramParameters::getIntLogicalIndexForPhysicalIndex(size_t physicalIndex)
+	UINT32 GpuProgramParameters::getIntLogicalIndexForPhysicalIndex(UINT32 physicalIndex)
 	{
 		// perhaps build a reverse map of this sometime (shared in GpuProgram)
 		for (GpuLogicalIndexUseMap::iterator i = mIntLogicalToPhysical->map.begin();
@@ -629,7 +629,7 @@ namespace CamelotEngine
 			if (i->second.physicalIndex == physicalIndex)
 				return i->first;
 		}
-		return std::numeric_limits<size_t>::max();
+		return std::numeric_limits<UINT32>::max();
 
 	}
 	//-----------------------------------------------------------------------------
@@ -671,7 +671,7 @@ namespace CamelotEngine
 		return *def;
 	}
 	//----------------------------------------------------------------------------
-	TextureHandle GpuProgramParameters::getTexture(size_t pos) const 
+	TextureHandle GpuProgramParameters::getTexture(UINT32 pos) const 
 	{ 
 		if(mTextures[pos] == nullptr)
 		{
@@ -681,7 +681,7 @@ namespace CamelotEngine
 		return mTextures[pos]->texture; 
 	}
 	//----------------------------------------------------------------------------
-	const SamplerState& GpuProgramParameters::getSamplerState(size_t pos) const 
+	const SamplerState& GpuProgramParameters::getSamplerState(UINT32 pos) const 
 	{ 
 		if(mTextures[pos] == nullptr)
 		{
@@ -813,7 +813,7 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------------
 	void GpuProgramParameters::setNamedConstant(const String& name, const Matrix4* m, 
-		size_t numEntries)
+		UINT32 numEntries)
 	{
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 
@@ -832,9 +832,9 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------------
 	void GpuProgramParameters::setNamedConstant(const String& name, 
-		const float *val, size_t count, size_t multiple)
+		const float *val, UINT32 count, UINT32 multiple)
 	{
-		size_t rawCount = count * multiple;
+		UINT32 rawCount = count * multiple;
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 
 			_findNamedConstantDefinition(name, !mIgnoreMissingParams);
@@ -843,9 +843,9 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------------
 	void GpuProgramParameters::setNamedConstant(const String& name, 
-		const double *val, size_t count, size_t multiple)
+		const double *val, UINT32 count, UINT32 multiple)
 	{
-		size_t rawCount = count * multiple;
+		UINT32 rawCount = count * multiple;
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 
 			_findNamedConstantDefinition(name, !mIgnoreMissingParams);
@@ -863,9 +863,9 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------------
 	void GpuProgramParameters::setNamedConstant(const String& name, 
-		const int *val, size_t count, size_t multiple)
+		const int *val, UINT32 count, UINT32 multiple)
 	{
-		size_t rawCount = count * multiple;
+		UINT32 rawCount = count * multiple;
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 
 			_findNamedConstantDefinition(name, !mIgnoreMissingParams);

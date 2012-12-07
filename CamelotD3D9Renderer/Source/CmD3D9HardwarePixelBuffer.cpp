@@ -238,7 +238,7 @@ void D3D9HardwarePixelBuffer::unlockDeviceAccess()
 // Util functions to convert a D3D locked box to a pixel box
 void fromD3DLock(PixelData &rval, const D3DLOCKED_RECT &lrect)
 {
-	size_t bpp = PixelUtil::getNumElemBytes(rval.format);
+	UINT32 bpp = PixelUtil::getNumElemBytes(rval.format);
 	if (bpp != 0)
 	{
 		rval.rowPitch = lrect.Pitch / bpp;
@@ -259,7 +259,7 @@ void fromD3DLock(PixelData &rval, const D3DLOCKED_RECT &lrect)
 }
 void fromD3DLock(PixelData &rval, const D3DLOCKED_BOX &lbox)
 {
-	size_t bpp = PixelUtil::getNumElemBytes(rval.format);
+	UINT32 bpp = PixelUtil::getNumElemBytes(rval.format);
 	if (bpp != 0)
 	{
 		rval.rowPitch = lbox.RowPitch / bpp;
@@ -611,7 +611,7 @@ void D3D9HardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &ds
 		PixelUtil::bulkPixelConversion(src, converted);
 	}
 
-	size_t rowWidth;
+	UINT32 rowWidth;
 	if (PixelUtil::isCompressed(converted.format))
 	{
 		// D3D wants the width of one row of cells in bytes
@@ -651,7 +651,7 @@ void D3D9HardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &ds
 		D3DBOX destBox, srcBox;
 		srcBox = toD3DBOX(converted);
 		destBox = toD3DBOX(dstBox);
-		size_t sliceWidth;
+		UINT32 sliceWidth;
 		if (PixelUtil::isCompressed(converted.format))
 		{
 			// D3D wants the width of one slice of cells in bytes
@@ -883,7 +883,7 @@ void D3D9HardwarePixelBuffer::_setMipmapping(bool doMipmapGen,
 	mHWMipmaps = HWMipmaps;	
 }
 //-----------------------------------------------------------------------------   
-void D3D9HardwarePixelBuffer::_clearSliceRTT(size_t zoffset)
+void D3D9HardwarePixelBuffer::_clearSliceRTT(UINT32 zoffset)
 {
 	mRenderTexture = NULL;
 }
@@ -926,7 +926,7 @@ IDirect3DSurface9* D3D9HardwarePixelBuffer::getFSAASurface(IDirect3DDevice9* d3d
 	return bufferResources->fSAASurface;
 }
 //-----------------------------------------------------------------------------    
-RenderTexture *D3D9HardwarePixelBuffer::getRenderTarget(size_t zoffset)
+RenderTexture *D3D9HardwarePixelBuffer::getRenderTarget(UINT32 zoffset)
 {
     assert(mUsage & TU_RENDERTARGET);
 	assert(mRenderTexture != NULL);   

@@ -82,7 +82,7 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------
     HardwareVertexBufferPtr GLHardwareBufferManagerBase::createVertexBuffer(
-        size_t vertexSize, size_t numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
+        UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
     {
 		GLHardwareVertexBuffer* buf = 
 			new GLHardwareVertexBuffer(this, vertexSize, numVerts, usage, useShadowBuffer);
@@ -95,7 +95,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     HardwareIndexBufferPtr 
     GLHardwareBufferManagerBase::createIndexBuffer(
-        HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
+        HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
         HardwareBuffer::Usage usage, bool useShadowBuffer)
     {
 		GLHardwareIndexBuffer* buf = 
@@ -257,12 +257,12 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	const size_t GLHardwareBufferManagerBase::getGLMapBufferThreshold() const
+	const UINT32 GLHardwareBufferManagerBase::getGLMapBufferThreshold() const
 	{
 		return mMapBufferThreshold;
 	}
 	//---------------------------------------------------------------------
-	void GLHardwareBufferManagerBase::setGLMapBufferThreshold( const size_t value )
+	void GLHardwareBufferManagerBase::setGLMapBufferThreshold( const UINT32 value )
 	{
 		mMapBufferThreshold = value;
 	}

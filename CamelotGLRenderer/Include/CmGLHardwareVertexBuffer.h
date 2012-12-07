@@ -40,24 +40,24 @@ namespace CamelotEngine {
         GLuint mBufferId;
 		// Scratch buffer handling
 		bool mLockedToScratch;
-		size_t mScratchOffset;
-		size_t mScratchSize;
+		UINT32 mScratchOffset;
+		UINT32 mScratchSize;
 		void* mScratchPtr;
 		bool mScratchUploadOnUnlock;
 
     protected:
         /** See HardwareBuffer. */
-        void* lockImpl(size_t offset, size_t length, LockOptions options);
+        void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
         /** See HardwareBuffer. */
         void unlockImpl(void);
     public:
-        GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices, 
+        GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
             HardwareBuffer::Usage usage, bool useShadowBuffer); 
         ~GLHardwareVertexBuffer();
         /** See HardwareBuffer. */
-        void readData(size_t offset, size_t length, void* pDest);
+        void readData(UINT32 offset, UINT32 length, void* pDest);
         /** See HardwareBuffer. */
-        void writeData(size_t offset, size_t length, 
+        void writeData(UINT32 offset, UINT32 length, 
             const void* pSource, bool discardWholeBuffer = false);
         /** See HardwareBuffer. */
         void _updateFromShadow(void);

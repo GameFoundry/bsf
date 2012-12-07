@@ -29,8 +29,8 @@ namespace CamelotEngine
 
 		PixelDataPtr getPixelData(Texture* obj, UINT32 idx)
 		{
-			size_t face = (size_t)Math::Floor(idx / (float)(obj->getNumMipmaps() + 1));
-			size_t mipmap = idx % (obj->getNumMipmaps() + 1);
+			UINT32 face = (size_t)Math::Floor(idx / (float)(obj->getNumMipmaps() + 1));
+			UINT32 mipmap = idx % (obj->getNumMipmaps() + 1);
 
 			return obj->getRawPixels(face, mipmap);
 		}
@@ -97,8 +97,8 @@ namespace CamelotEngine
 			vector<PixelDataPtr>::type* pixelData = boost::any_cast<vector<PixelDataPtr>::type*>(texture->mRTTIData);
 			for(size_t i = 0; i < pixelData->size(); i++)
 			{
-				size_t face = (size_t)Math::Floor(i / (float)(texture->getNumMipmaps() + 1));
-				size_t mipmap = i % (texture->getNumMipmaps() + 1);
+				UINT32 face = (size_t)Math::Floor(i / (float)(texture->getNumMipmaps() + 1));
+				UINT32 mipmap = i % (texture->getNumMipmaps() + 1);
 
 				texture->setRawPixels_async(*pixelData->at(i), face, mipmap);
 			}

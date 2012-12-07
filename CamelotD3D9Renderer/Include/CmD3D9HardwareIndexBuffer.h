@@ -39,13 +39,13 @@ namespace CamelotEngine {
     {
   
     public:
-		D3D9HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, size_t numIndexes, 
+		D3D9HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
 			HardwareBuffer::Usage usage, bool useSystemMem, bool useShadowBuffer);
         ~D3D9HardwareIndexBuffer();
         /** See HardwareBuffer. */
-        void readData(size_t offset, size_t length, void* pDest);
+        void readData(UINT32 offset, UINT32 length, void* pDest);
         /** See HardwareBuffer. */
-        void writeData(size_t offset, size_t length, const void* pSource,
+        void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				bool discardWholeBuffer = false);
 
 		// Called immediately after the Direct3D device has been created.
@@ -71,15 +71,15 @@ namespace CamelotEngine {
 		{
 			IDirect3DIndexBuffer9*		mBuffer;
 			bool						mOutOfDate;
-			size_t						mLockOffset;
-			size_t						mLockLength;
+			UINT32						mLockOffset;
+			UINT32						mLockLength;
 			LockOptions					mLockOptions;
 			UINT32						mLastUsedFrame;
 		};
 
 	protected:
 		/** See HardwareBuffer. */
-		void* lockImpl(size_t offset, size_t length, LockOptions options);
+		void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
 		/** See HardwareBuffer. */
 		void unlockImpl(void);
 		// updates buffer resources from system memory buffer.

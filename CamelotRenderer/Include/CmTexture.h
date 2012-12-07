@@ -100,7 +100,7 @@ namespace CamelotEngine {
 
         /** Gets the number of mipmaps to be used for this texture.
         */
-        virtual size_t getNumMipmaps(void) const {return mNumMipmaps;}
+        virtual UINT32 getNumMipmaps(void) const {return mNumMipmaps;}
 
 		/** Gets whether this texture will be set up so that on sampling it, 
 		hardware gamma correction is applied.
@@ -118,15 +118,15 @@ namespace CamelotEngine {
 
 		/** Returns the height of the texture.
         */
-        virtual size_t getHeight(void) const { return mHeight; }
+        virtual UINT32 getHeight(void) const { return mHeight; }
 
         /** Returns the width of the texture.
         */
-        virtual size_t getWidth(void) const { return mWidth; }
+        virtual UINT32 getWidth(void) const { return mWidth; }
 
         /** Returns the depth of the texture (only applicable for 3D textures).
         */
-        virtual size_t getDepth(void) const { return mDepth; }
+        virtual UINT32 getDepth(void) const { return mDepth; }
 
         /** Returns the TextureUsage indentifier for this Texture
         */
@@ -141,7 +141,7 @@ namespace CamelotEngine {
         /** Return the number of faces this texture has. This will be 6 for a cubemap
         	texture and 1 for a 1D, 2D or 3D one.
         */
-        virtual size_t getNumFaces() const;
+        virtual UINT32 getNumFaces() const;
 
 		/** Return hardware pixel buffer for a surface. This buffer can then
 			be used to copy data from and to a particular level of the texture.
@@ -155,7 +155,7 @@ namespace CamelotEngine {
 			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
 						Do not use it after the lifetime of the containing texture.
 		*/
-		virtual HardwarePixelBufferPtr getBuffer_internal(size_t face=0, size_t mipmap=0) = 0;
+		virtual HardwarePixelBufferPtr getBuffer_internal(UINT32 face=0, UINT32 mipmap=0) = 0;
 		
 		/** Retrieve a platform or API-specific piece of information from this texture.
 		 This method of retrieving information should only be used if you know what you're doing.
@@ -226,11 +226,11 @@ namespace CamelotEngine {
     protected:
 		friend class TextureManager;
 
-        size_t mHeight;
-        size_t mWidth;
-        size_t mDepth;
+        UINT32 mHeight;
+        UINT32 mWidth;
+        UINT32 mDepth;
 
-		size_t mNumMipmaps;
+		UINT32 mNumMipmaps;
 		bool mHwGamma;
 		UINT32 mFSAA;
 		String mFSAAHint;
@@ -247,7 +247,7 @@ namespace CamelotEngine {
 		 * 			
 		 * @note	Initialization is not done immediately, and is instead just scheduled on the render thread.
 		 */
-		void initialize(TextureType textureType, size_t width, size_t height, size_t depth, size_t numMipmaps, 
+		void initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
 			PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint);
 		
 		/**
@@ -256,7 +256,7 @@ namespace CamelotEngine {
 		virtual void initialize_internal() = 0;
 
 		/// @copydoc Resource::calculateSize
-		size_t calculateSize(void) const;
+		UINT32 calculateSize(void) const;
 
         /** Creates the internal texture resources for this texture. 
         @remarks

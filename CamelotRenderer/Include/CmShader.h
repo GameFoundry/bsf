@@ -29,7 +29,7 @@ namespace CamelotEngine
 		void removeTechnique(UINT32 idx);
 		void removeTechnique(TechniquePtr technique);
 
-		UINT32 getNumTechniques() const { return mTechniques.size(); }
+		UINT32 getNumTechniques() const { return (UINT32)mTechniques.size(); }
 
 		/**
 		 * @brief	Gets the best supported technique based on current render and other systems.

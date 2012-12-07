@@ -46,7 +46,7 @@ namespace CamelotEngine {
 		void copy_internal( TexturePtr& target );
 
 		/// @copydoc Texture::getBuffer
-		HardwarePixelBufferPtr getBuffer_internal(size_t face, size_t mipmap);
+		HardwarePixelBufferPtr getBuffer_internal(UINT32 face, UINT32 mipmap);
 		
 		/// retrieves a pointer to the actual texture
 		IDirect3DBaseTexture9 *getTexture_internal();		
@@ -136,7 +136,7 @@ namespace CamelotEngine {
 		D3DFORMAT _chooseD3DFormat(IDirect3DDevice9* d3d9Device);
 
 		/// @copydoc Resource::calculateSize
-		size_t calculateSize(void) const;
+		UINT32 calculateSize(void) const;
 		/// @copydoc Texture::createInternalResourcesImpl
 		void createInternalResourcesImpl(void);
 		/// Creates this texture resources on the specified device.

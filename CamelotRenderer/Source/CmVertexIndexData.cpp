@@ -156,7 +156,7 @@ namespace CamelotEngine {
         const VertexElement* posElem = vertexDeclaration->findElementBySemantic(VES_POSITION);
         if (posElem)
         {
-            size_t v;
+            UINT32 v;
             unsigned short posOldSource = posElem->getSource();
 
             HardwareVertexBufferPtr vbuf = vertexBufferBinding->getBuffer(posOldSource);
@@ -176,8 +176,8 @@ namespace CamelotEngine {
                     vbuf->hasShadowBuffer());
             }
             // Allocate new position buffer, will be FLOAT3 and 2x the size
-            size_t oldVertexCount = vbuf->getNumVertices();
-            size_t newVertexCount = oldVertexCount * 2;
+            UINT32 oldVertexCount = vbuf->getNumVertices();
+            UINT32 newVertexCount = oldVertexCount * 2;
             newPosBuffer = vbuf->getManager()->createVertexBuffer(
                 VertexElement::getTypeSize(VET_FLOAT3), newVertexCount, vbuf->getUsage(), 
                 vbuf->hasShadowBuffer());
@@ -192,7 +192,7 @@ namespace CamelotEngine {
             float* pDest2 = pDest + oldVertexCount * 3; 
 
             // Precalculate any dimensions of vertex areas outside the position
-            size_t prePosVertexSize = 0, postPosVertexSize, postPosVertexOffset;
+            UINT32 prePosVertexSize = 0, postPosVertexSize, postPosVertexOffset;
             unsigned char *pBaseDestRem = 0;
             if (wasSharedBuffer)
             {
@@ -328,9 +328,9 @@ namespace CamelotEngine {
 		// Build up a list of both old and new elements in each buffer
 		unsigned short buf = 0;
 		vector<void*>::type oldBufferLocks;
-        vector<size_t>::type oldBufferVertexSizes;
+        vector<UINT32>::type oldBufferVertexSizes;
 		vector<void*>::type newBufferLocks;
-        vector<size_t>::type newBufferVertexSizes;
+        vector<UINT32>::type newBufferVertexSizes;
 		VertexBufferBinding* newBinding = pManager->createVertexBufferBinding();
         const VertexBufferBinding::VertexBufferBindingMap& oldBindingMap = vertexBufferBinding->getBindings();
         VertexBufferBinding::VertexBufferBindingMap::const_iterator itBinding;
@@ -338,7 +338,7 @@ namespace CamelotEngine {
         // Pre-allocate old buffer locks
         if (!oldBindingMap.empty())
         {
-            size_t count = oldBindingMap.rbegin()->first + 1;
+            UINT32 count = oldBindingMap.rbegin()->first + 1;
             oldBufferLocks.resize(count);
             oldBufferVertexSizes.resize(count);
         }
@@ -358,7 +358,7 @@ namespace CamelotEngine {
 		buf = 0;
 		while (!newDeclaration->findElementsBySource(buf).empty())
 		{
-            size_t vertexSize = newDeclaration->getVertexSize(buf);
+            UINT32 vertexSize = newDeclaration->getVertexSize(buf);
 
 			HardwareVertexBufferPtr vbuf = 
 				pManager->createVertexBuffer(
@@ -395,7 +395,7 @@ namespace CamelotEngine {
 		}
 		// Now iterate over the new buffers, pulling data out of the old ones
 		// For each vertex
-		for (size_t v = 0; v < vertexCount; ++v)
+		for (UINT32 v = 0; v < vertexCount; ++v)
 		{
 			// For each (new) element
 			for (ei = newElemList.begin(); ei != eiend; ++ei)
@@ -607,7 +607,7 @@ namespace CamelotEngine {
 			{
 				void* pBase = bindi->second->lock(HardwareBuffer::HBL_NORMAL);
 
-				for (size_t v = 0; v < bindi->second->getNumVertices(); ++v)
+				for (UINT32 v = 0; v < bindi->second->getNumVertices(); ++v)
 				{
 
 					for (elemi = elems.begin(); elemi != elems.end(); ++elemi)
@@ -789,9 +789,9 @@ namespace CamelotEngine {
 		Triangle* triangles;
 		UINT32 *dest;
 
-		size_t nIndexes = indexCount;
-		size_t nTriangles = nIndexes / 3;
-		size_t i, j;
+		UINT32 nIndexes = indexCount;
+		UINT32 nTriangles = nIndexes / 3;
+		UINT32 i, j;
 		UINT16 *source = 0;
 
 		if (indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT)
