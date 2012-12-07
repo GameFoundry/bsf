@@ -54,7 +54,7 @@ namespace CamelotEngine {
 
 		/** Tells the program to load from some externally created microcode instead of a file or source. 
 		*/
-		void setExternalMicrocode(const void* pMicrocode, size_t size);
+		void setExternalMicrocode(const void* pMicrocode, UINT32 size);
         /** Tells the program to load from some externally created microcode instead of a file or source. 
         @remarks
             add ref count to pMicrocode when setting

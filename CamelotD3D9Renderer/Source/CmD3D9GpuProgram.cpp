@@ -46,7 +46,7 @@ namespace CamelotEngine {
 	}
     
 	//-----------------------------------------------------------------------------
-	void D3D9GpuProgram::setExternalMicrocode(const void* pMicrocode, size_t size)
+	void D3D9GpuProgram::setExternalMicrocode(const void* pMicrocode, UINT32 size)
 	{
 		LPD3DXBUFFER pBuffer=0;
 		HRESULT hr=D3DXCreateBuffer(size, &pBuffer);

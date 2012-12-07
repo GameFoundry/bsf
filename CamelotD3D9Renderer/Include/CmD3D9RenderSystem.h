@@ -106,7 +106,7 @@ namespace CamelotEngine
 		}
 
 		/// return anisotropy level
-		DWORD _getCurrentAnisotropy(size_t unit);
+		DWORD _getCurrentAnisotropy(UINT32 unit);
 		/// check if a FSAA is supported
 		bool _checkMultiSampleQuality(D3DMULTISAMPLE_TYPE type, DWORD *outQuality, D3DFORMAT format, UINT adapterNum, D3DDEVTYPE deviceType, BOOL fullScreen);
 		
@@ -203,7 +203,7 @@ namespace CamelotEngine
 			multisample type.
 			@returns A directx surface, or 0 if there is no compatible depthstencil possible.
 		*/
-		IDirect3DSurface9* getDepthStencilFor(D3DFORMAT fmt, D3DMULTISAMPLE_TYPE multisample, DWORD multisample_quality, UINT16 width, UINT16 height);
+		IDirect3DSurface9* getDepthStencilFor(D3DFORMAT fmt, D3DMULTISAMPLE_TYPE multisample, DWORD multisample_quality, UINT32 width, UINT32 height);
 
 		/** Clear all cached depth stencil surfaces
 		*/
@@ -215,7 +215,7 @@ namespace CamelotEngine
         bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
 
 		/// Take in some requested FSAA settings and output supported D3D settings
-		void determineFSAASettings(IDirect3DDevice9* d3d9Device, UINT16 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
+		void determineFSAASettings(IDirect3DDevice9* d3d9Device, UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
 			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
 	public:
 		// constructor

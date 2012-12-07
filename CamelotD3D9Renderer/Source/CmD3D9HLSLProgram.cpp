@@ -325,7 +325,7 @@ namespace CamelotEngine {
             if (desc.Type == D3DXPT_FLOAT || desc.Type == D3DXPT_INT || desc.Type == D3DXPT_BOOL ||
 				desc.Type == D3DXPT_SAMPLER1D || desc.Type == D3DXPT_SAMPLER2D || desc.Type == D3DXPT_SAMPLER3D || desc.Type == D3DXPT_SAMPLERCUBE)
             {
-                size_t paramIndex = desc.RegisterIndex;
+                UINT32 paramIndex = desc.RegisterIndex;
                 String name = prefix + paramName;
                 
 				GpuConstantDefinition def;

@@ -293,7 +293,7 @@ namespace CamelotEngine
 	{
 		UINT32 instanceSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
-		return instanceSize * mMapDeviceToTextureResources.size();
+		return instanceSize * (UINT32)mMapDeviceToTextureResources.size();
 	}
 	/****************************************************************************************/
 	void D3D9Texture::determinePool()

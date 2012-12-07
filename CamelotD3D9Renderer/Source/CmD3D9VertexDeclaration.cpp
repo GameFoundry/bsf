@@ -44,7 +44,7 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------
     const VertexElement& D3D9VertexDeclaration::addElement(unsigned short source, 
-        size_t offset, VertexElementType theType,
+        UINT32 offset, VertexElementType theType,
         VertexElementSemantic semantic, unsigned short index)
     {
         releaseDeclaration();   
@@ -52,7 +52,7 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------------
     const VertexElement& D3D9VertexDeclaration::insertElement(unsigned short atPosition,
-        unsigned short source, size_t offset, VertexElementType theType,
+        unsigned short source, UINT32 offset, VertexElementType theType,
         VertexElementSemantic semantic, unsigned short index)
     {
         releaseDeclaration();   
@@ -78,7 +78,7 @@ namespace CamelotEngine {
 	}
     //-----------------------------------------------------------------------
     void D3D9VertexDeclaration::modifyElement(unsigned short elem_index, 
-        unsigned short source, size_t offset, VertexElementType theType,
+        unsigned short source, UINT32 offset, VertexElementType theType,
         VertexElementSemantic semantic, unsigned short index)
     {
         VertexDeclaration::modifyElement(elem_index, source, offset, theType, semantic, index);

@@ -43,12 +43,12 @@ namespace CamelotEngine {
         ~D3D9VertexDeclaration();
         
         /** See VertexDeclaration */
-        const VertexElement& addElement(unsigned short source, size_t offset, VertexElementType theType,
+        const VertexElement& addElement(unsigned short source, UINT32 offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
 
         /** See VertexDeclaration */
         const VertexElement& insertElement(unsigned short atPosition,
-            unsigned short source, size_t offset, VertexElementType theType,
+            unsigned short source, UINT32 offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
 
         /** See VertexDeclaration */
@@ -62,7 +62,7 @@ namespace CamelotEngine {
 
 
         /** See VertexDeclaration */
-        void modifyElement(unsigned short elem_index, unsigned short source, size_t offset, VertexElementType theType,
+        void modifyElement(unsigned short elem_index, unsigned short source, UINT32 offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
 
 		// Called immediately after the Direct3D device has been created.
