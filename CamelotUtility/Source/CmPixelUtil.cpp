@@ -118,7 +118,7 @@ namespace CamelotEngine {
 				temp = static_cast<unsigned int>(sz_48 >> 32);
 				temp = (temp > 0x8000)? temp - 0x8000 : 0;
 				size_t sz1 = temp >> 16;				 // src z, sample #1
-				size_t sz2 = std::min(sz1+1,(UINT64)src.getDepth()-1);// src z, sample #2
+				size_t sz2 = std::min(sz1+1,(size_t)src.getDepth()-1);// src z, sample #2
 				float szf = (temp & 0xFFFF) / 65536.f; // weight of sample #2
 
 				UINT64 sy_48 = (stepy >> 1) - 1;
@@ -126,7 +126,7 @@ namespace CamelotEngine {
 					temp = static_cast<unsigned int>(sy_48 >> 32);
 					temp = (temp > 0x8000)? temp - 0x8000 : 0;
 					size_t sy1 = temp >> 16;					// src y #1
-					size_t sy2 = std::min(sy1+1,(UINT64)src.getHeight()-1);// src y #2
+					size_t sy2 = std::min(sy1+1,(size_t)src.getHeight()-1);// src y #2
 					float syf = (temp & 0xFFFF) / 65536.f; // weight of #2
 
 					UINT64 sx_48 = (stepx >> 1) - 1;
@@ -134,7 +134,7 @@ namespace CamelotEngine {
 						temp = static_cast<unsigned int>(sx_48 >> 32);
 						temp = (temp > 0x8000)? temp - 0x8000 : 0;
 						size_t sx1 = temp >> 16;					// src x #1
-						size_t sx2 = std::min(sx1+1,(UINT64)src.getWidth()-1);// src x #2
+						size_t sx2 = std::min(sx1+1,(size_t)src.getWidth()-1);// src x #2
 						float sxf = (temp & 0xFFFF) / 65536.f; // weight of #2
 
 						Color x1y1z1, x2y1z1, x1y2z1, x2y2z1;
@@ -203,7 +203,7 @@ namespace CamelotEngine {
 				temp = static_cast<unsigned int>(sz_48 >> 32);
 				temp = (temp > 0x8000)? temp - 0x8000 : 0;
 				size_t sz1 = temp >> 16;				 // src z, sample #1
-				size_t sz2 = std::min(sz1+1,(UINT64)src.getDepth()-1);// src z, sample #2
+				size_t sz2 = std::min(sz1+1,(size_t)src.getDepth()-1);// src z, sample #2
 				float szf = (temp & 0xFFFF) / 65536.f; // weight of sample #2
 
 				UINT64 sy_48 = (stepy >> 1) - 1;
@@ -211,7 +211,7 @@ namespace CamelotEngine {
 					temp = static_cast<unsigned int>(sy_48 >> 32);
 					temp = (temp > 0x8000)? temp - 0x8000 : 0;
 					size_t sy1 = temp >> 16;					// src y #1
-					size_t sy2 = std::min(sy1+1,(UINT64)src.getHeight()-1);// src y #2
+					size_t sy2 = std::min(sy1+1,(size_t)src.getHeight()-1);// src y #2
 					float syf = (temp & 0xFFFF) / 65536.f; // weight of #2
 
 					UINT64 sx_48 = (stepx >> 1) - 1;
@@ -219,7 +219,7 @@ namespace CamelotEngine {
 						temp = static_cast<unsigned int>(sx_48 >> 32);
 						temp = (temp > 0x8000)? temp - 0x8000 : 0;
 						size_t sx1 = temp >> 16;					// src x #1
-						size_t sx2 = std::min(sx1+1,(UINT64)src.getWidth()-1);// src x #2
+						size_t sx2 = std::min(sx1+1,(size_t)src.getWidth()-1);// src x #2
 						float sxf = (temp & 0xFFFF) / 65536.f; // weight of #2
 
 						// process R,G,B,A simultaneously for cache coherence?
@@ -312,7 +312,7 @@ namespace CamelotEngine {
 				temp = (temp > 0x800)? temp - 0x800: 0;
 				unsigned int syf = temp & 0xFFF;
 				size_t sy1 = temp >> 12;
-				size_t sy2 = std::min(sy1+1, (UINT64)src.bottom-src.top-1);
+				size_t sy2 = std::min(sy1+1, (size_t)src.bottom-src.top-1);
 				size_t syoff1 = sy1 * src.rowPitch;
 				size_t syoff2 = sy2 * src.rowPitch;
 
@@ -322,7 +322,7 @@ namespace CamelotEngine {
 					temp = (temp > 0x800)? temp - 0x800 : 0;
 					unsigned int sxf = temp & 0xFFF;
 					size_t sx1 = temp >> 12;
-					size_t sx2 = std::min(sx1+1, (UINT64)src.right-src.left-1);
+					size_t sx2 = std::min(sx1+1, (size_t)src.right-src.left-1);
 
 					unsigned int sxfsyf = sxf*syf;
 					for (unsigned int k = 0; k < channels; k++) {
