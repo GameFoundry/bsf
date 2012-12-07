@@ -46,7 +46,7 @@ namespace CamelotEngine {
     public:
         GLFBORenderTexture(GLFBOManager *manager, const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
 
-        virtual void getCustomAttribute(const String& name, void* pData);
+        virtual void getCustomAttribute_internal(const String& name, void* pData);
 
 		/// Override needed to deal with multisample buffers
 		virtual void swapBuffers(bool waitForVSync = true);

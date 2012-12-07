@@ -46,7 +46,7 @@ namespace CamelotEngine {
         mHeight = mFB.getHeight();
     }
 
-    void GLFBORenderTexture::getCustomAttribute(const String& name, void* pData)
+    void GLFBORenderTexture::getCustomAttribute_internal(const String& name, void* pData)
     {
         if(name=="FBO")
         {
@@ -428,7 +428,7 @@ static const UINT32 depthBits[] =
     {
         /// Check if the render target is in the rendertarget->FBO map
         GLFrameBufferObject *fbo = 0;
-        target->getCustomAttribute("FBO", &fbo);
+        target->getCustomAttribute_internal("FBO", &fbo);
         if(fbo)
             fbo->bind();
         else

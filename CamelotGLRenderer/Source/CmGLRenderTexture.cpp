@@ -77,7 +77,7 @@ namespace CamelotEngine {
         GLRenderTexture(name, target, writeGamma, fsaa)
     {
     }
-    void GLCopyingRenderTexture::getCustomAttribute(const String& name, void* pData)
+    void GLCopyingRenderTexture::getCustomAttribute_internal(const String& name, void* pData)
     {
         if(name=="TARGET")
         {
@@ -115,7 +115,7 @@ namespace CamelotEngine {
         // Copy on unbind
         GLSurfaceDesc surface;
 		surface.buffer = 0;
-        target->getCustomAttribute("TARGET", &surface);
+        target->getCustomAttribute_internal("TARGET", &surface);
         if(surface.buffer)
             static_cast<GLTextureBuffer*>(surface.buffer)->copyFromFramebuffer(surface.zoffset);
     }

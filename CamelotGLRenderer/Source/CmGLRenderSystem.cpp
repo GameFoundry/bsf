@@ -731,7 +731,7 @@ namespace CamelotEngine {
 
 		// Switch context if different from current one
 		GLContext *newContext = 0;
-		target->getCustomAttribute("GLCONTEXT", &newContext);
+		target->getCustomAttribute_internal("GLCONTEXT", &newContext);
 		if(newContext && mCurrentContext != newContext) 
 		{
 			switchContext(newContext);
@@ -1822,7 +1822,7 @@ namespace CamelotEngine {
 	{
 		// Set main and current context
 		mMainContext = 0;
-		primary->getCustomAttribute("GLCONTEXT", &mMainContext);
+		primary->getCustomAttribute_internal("GLCONTEXT", &mMainContext);
 		mCurrentContext = mMainContext;
 
 		// Set primary context as active

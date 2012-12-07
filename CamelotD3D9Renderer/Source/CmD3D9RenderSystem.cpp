@@ -1045,7 +1045,7 @@ namespace CamelotEngine
 		// Retrieve render surfaces (up to CM_MAX_MULTIPLE_RENDER_TARGETS)
 		IDirect3DSurface9* pBack[CM_MAX_MULTIPLE_RENDER_TARGETS];
 		memset(pBack, 0, sizeof(pBack));
-		target->getCustomAttribute( "DDBACKBUFFER", &pBack );
+		target->getCustomAttribute_internal( "DDBACKBUFFER", &pBack );
 		if (!pBack[0])
 			return;
 
@@ -1059,7 +1059,7 @@ namespace CamelotEngine
 		}
 
 		if (!pDepth)
-			target->getCustomAttribute( "D3DZBUFFER", &pDepth );
+			target->getCustomAttribute_internal( "D3DZBUFFER", &pDepth );
 		if (!pDepth)
 		{
 			/// No depth buffer provided, use our own
@@ -2033,7 +2033,7 @@ namespace CamelotEngine
 			D3DFMT_A16B16G16R16F, D3DFMT_R32F, D3DFMT_G32R32F, 
 			D3DFMT_A32B32G32R32F};
 		IDirect3DSurface9* bbSurf;
-		renderWindow->getCustomAttribute("DDBACKBUFFER", &bbSurf);
+		renderWindow->getCustomAttribute_internal("DDBACKBUFFER", &bbSurf);
 		D3DSURFACE_DESC bbSurfDesc;
 		bbSurf->GetDesc(&bbSurfDesc);
 
@@ -2368,7 +2368,7 @@ namespace CamelotEngine
 		bool anySupported = false;
 
 		IDirect3DSurface9* bbSurf;
-		renderWindow->getCustomAttribute("DDBACKBUFFER", &bbSurf);
+		renderWindow->getCustomAttribute_internal("DDBACKBUFFER", &bbSurf);
 		D3DSURFACE_DESC bbSurfDesc;
 		bbSurf->GetDesc(&bbSurfDesc);
 
@@ -2832,7 +2832,7 @@ namespace CamelotEngine
 		// Retrieve render surfaces (up to CM_MAX_MULTIPLE_RENDER_TARGETS)
 		IDirect3DSurface9* pBack[CM_MAX_MULTIPLE_RENDER_TARGETS];
 		memset(pBack, 0, sizeof(pBack));
-		rt->getCustomAttribute( "DDBACKBUFFER", &pBack );
+		rt->getCustomAttribute_internal( "DDBACKBUFFER", &pBack );
 		assert(pBack[0]);
 
 		/// Request a depth stencil that is compatible with the format, multisample type and

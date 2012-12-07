@@ -42,7 +42,7 @@ namespace CamelotEngine {
         GLPBRenderTexture(GLPBRTTManager *manager, const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
         virtual ~GLPBRenderTexture();
         
-        virtual void getCustomAttribute(const String& name, void* pData);
+        virtual void getCustomAttribute_internal(const String& name, void* pData);
     protected:
         GLPBRTTManager *mManager;
         PixelComponentType mPBFormat;

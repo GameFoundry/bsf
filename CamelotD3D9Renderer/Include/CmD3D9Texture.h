@@ -189,7 +189,7 @@ namespace CamelotEngine {
 
 		virtual void update(bool swap);
 
-		virtual void getCustomAttribute( const String& name, void *pData );
+		virtual void getCustomAttribute_internal( const String& name, void *pData );
 
 		bool requiresTextureFlipping() const { return false; }
 

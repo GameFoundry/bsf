@@ -58,6 +58,7 @@ HIGH PRIORITY TODO:
  - HLSL & Cg don't handle include files yet
 
 Mid priority TODO:
+ - Add multithreaded version of RenderTarget::getCustomAttribute_internal
  - Compiler2Pass in GL renderer doesn't seem to be 64bit ready. I hacked it together but it will likely cause problems.
  - Resource handle should store a unique integer ID, which just points to a table of GUIDs. Keeping GUID string everywhere in not efficient.
  - Add a field that tracks % of resource deserialization in BinarySerializer

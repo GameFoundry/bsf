@@ -99,7 +99,7 @@ namespace CamelotEngine {
         GLCopyingRenderTexture(GLCopyingRTTManager *manager, const String &name, const GLSurfaceDesc &target, 
 			bool writeGamma, UINT32 fsaa);
         
-        virtual void getCustomAttribute(const String& name, void* pData);
+        virtual void getCustomAttribute_internal(const String& name, void* pData);
     };
     
     /** Simple, copying manager/factory for RenderTextures. This is only used as the last fallback if

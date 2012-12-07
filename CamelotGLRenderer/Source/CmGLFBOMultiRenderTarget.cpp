@@ -48,7 +48,7 @@ namespace CamelotEngine {
 
 		/// Check if the render target is in the rendertarget->FBO map
         GLFrameBufferObject *fbobj = 0;
-        target->getCustomAttribute("FBO", &fbobj);
+        target->getCustomAttribute_internal("FBO", &fbobj);
 		assert(fbobj);
 		fbo.bindSurface(attachment, fbobj->getSurface(0));
 
@@ -79,7 +79,7 @@ namespace CamelotEngine {
 		mHeight = fbo.getHeight();
 	}
 
-	void GLFBOMultiRenderTarget::getCustomAttribute( const String& name, void *pData )
+	void GLFBOMultiRenderTarget::getCustomAttribute_internal( const String& name, void *pData )
 	{
 		if(name=="FBO")
         {

@@ -40,7 +40,7 @@ namespace CamelotEngine {
 		GLFBOMultiRenderTarget(GLFBOManager *manager, const String &name);
 		~GLFBOMultiRenderTarget();
 
-		virtual void getCustomAttribute( const String& name, void *pData );
+		virtual void getCustomAttribute_internal( const String& name, void *pData );
 
 		bool requiresTextureFlipping() const { return true; }
 	private:

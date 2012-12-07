@@ -749,7 +749,7 @@ namespace CamelotEngine {
 		}
 	}
 
-	void Win32Window::getCustomAttribute( const String& name, void* pData )
+	void Win32Window::getCustomAttribute_internal( const String& name, void* pData )
 	{
 		if( name == "GLCONTEXT" ) {
 			*static_cast<GLContext**>(pData) = mContext;

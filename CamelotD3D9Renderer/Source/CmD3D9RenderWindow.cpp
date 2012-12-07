@@ -689,7 +689,7 @@ namespace CamelotEngine
 			mDevice->present(this);		
 	}
 
-	void D3D9RenderWindow::getCustomAttribute( const String& name, void* pData )
+	void D3D9RenderWindow::getCustomAttribute_internal( const String& name, void* pData )
 	{
 		// Valid attributes and their equvalent native functions:
 		// D3DDEVICE			: getD3DDevice

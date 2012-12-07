@@ -22,7 +22,7 @@ namespace CamelotEngine
 			void runMainLoop();
 			void shutDown();
 
-			UINT32 getAppWindowId();
+			UINT64 getAppWindowId();
 
 			RenderWindow* getPrimaryRenderWindow() const { return mPrimaryRenderWindow; }
 

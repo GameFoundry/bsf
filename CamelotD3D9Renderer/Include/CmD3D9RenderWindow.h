@@ -63,7 +63,7 @@ namespace CamelotEngine
 		D3D9Device*			getDevice			();
 		void				setDevice			(D3D9Device* device);
 
-		void				getCustomAttribute	(const String& name, void* pData);
+		void				getCustomAttribute_internal	(const String& name, void* pData);
 		
 		/** Overridden - see RenderTarget.
 		*/

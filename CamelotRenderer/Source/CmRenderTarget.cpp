@@ -87,7 +87,7 @@ namespace CamelotEngine {
 	{
 	}
 
-	void RenderTarget::getCustomAttribute(const String& name, void* pData)
+	void RenderTarget::getCustomAttribute_internal(const String& name, void* pData)
     {
         CM_EXCEPT(InvalidParametersException, "Attribute not found.");
     }

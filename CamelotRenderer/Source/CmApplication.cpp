@@ -53,6 +53,8 @@ namespace CamelotEngine
 
 		mPrimaryRenderWindow = renderSystem->createRenderWindow("Camelot Renderer", 1280, 720, false);
 
+		UINT32 winId = gApplication().getAppWindowId();
+
 		SceneManager::startUp(new SceneManager());
 		Resources::startUp(new Resources("D:\\CamelotResourceMetas"));
 
@@ -135,15 +137,15 @@ namespace CamelotEngine
 		}
 	}
 
-	UINT32 Application::getAppWindowId()
+	UINT64 Application::getAppWindowId()
 	{
 		if(!mPrimaryRenderWindow)
 		{
 			CM_EXCEPT(InternalErrorException, "Unable to get window handle. No active window is set!");
 		}
 
-		UINT32 windowId;
-		mPrimaryRenderWindow->getCustomAttribute("WINDOW", &windowId);
+		UINT64 windowId = 0;
+		mPrimaryRenderWindow->getCustomAttribute_internal("WINDOW", &windowId);
 
 		return windowId;
 	}

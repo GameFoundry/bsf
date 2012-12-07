@@ -57,7 +57,7 @@ namespace CamelotEngine {
         // Release PBuffer
         mManager->releasePBuffer(mPBFormat);
     }
-    void GLPBRenderTexture::getCustomAttribute(const String& name, void* pData)
+    void GLPBRenderTexture::getCustomAttribute_internal(const String& name, void* pData)
     {
         if(name=="TARGET")
         {
@@ -77,7 +77,7 @@ namespace CamelotEngine {
 		mMainWindow(mainwindow),
 		mMainContext(0)
     {
-		mMainWindow->getCustomAttribute("GLCONTEXT", &mMainContext);
+		mMainWindow->getCustomAttribute_internal("GLCONTEXT", &mMainContext);
     }  
     GLPBRTTManager::~GLPBRTTManager()
     {
@@ -110,7 +110,7 @@ namespace CamelotEngine {
 		// Copy on unbind
         GLSurfaceDesc surface;
 		surface.buffer = 0;
-        target->getCustomAttribute("TARGET", &surface);
+        target->getCustomAttribute_internal("TARGET", &surface);
         if(surface.buffer)
             static_cast<GLTextureBuffer*>(surface.buffer)->copyFromFramebuffer(surface.zoffset);
     }

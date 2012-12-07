@@ -138,7 +138,7 @@ namespace CamelotEngine {
             @param
                 pData Pointer to memory of the right kind of structure to receive the info.
         */
-        virtual void getCustomAttribute(const String& name, void* pData);
+        virtual void getCustomAttribute_internal(const String& name, void* pData);
 
 		/** Sets the priority of this render target in relation to the others. 
         @remarks

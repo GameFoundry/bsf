@@ -54,7 +54,7 @@ namespace CamelotEngine
 		assert(attachment<CM_MAX_MULTIPLE_RENDER_TARGETS);
 		/// Get buffer and surface to bind to
 		D3D9HardwarePixelBuffer *buffer = 0;
-		target->getCustomAttribute("BUFFER", &buffer);
+		target->getCustomAttribute_internal("BUFFER", &buffer);
 		assert(buffer);
 
 		/// Find first non-null target
@@ -115,7 +115,7 @@ namespace CamelotEngine
 		}		
     }
 
-	void D3D9MultiRenderTarget::getCustomAttribute(const String& name, void *pData)
+	void D3D9MultiRenderTarget::getCustomAttribute_internal(const String& name, void *pData)
     {
 		if(name == "DDBACKBUFFER")
         {
