@@ -73,6 +73,7 @@ Mid priority TODO:
      I need to make sure that HighLevelGpuProgram class has valid RTTI type as well. Otherwise the inheritance hierarchy will not be correct. Right now this isn't checked anywhere.
 
 Low priority TODO:
+ - Move all x86 libs to x86 folders. Move all binaries to x86 folders as well
  - Mesh loading:
   - Sub-meshes aren't being transformed by world matrices of their nodes
   - FBX importer can be greatly sped up by implementing a better allocator
