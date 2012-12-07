@@ -151,7 +151,7 @@ Global
 		{7F449698-73DF-4203-9F31-0877DBF01695}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{7F449698-73DF-4203-9F31-0877DBF01695}.Debug|Win32.ActiveCfg = Debug|Win32
 		{7F449698-73DF-4203-9F31-0877DBF01695}.Debug|Win32.Build.0 = Debug|Win32
-		{7F449698-73DF-4203-9F31-0877DBF01695}.Debug|x64.ActiveCfg = Debug|Win32
+		{7F449698-73DF-4203-9F31-0877DBF01695}.Debug|x64.ActiveCfg = Debug|x64
 		{7F449698-73DF-4203-9F31-0877DBF01695}.Release|Any CPU.ActiveCfg = Release|Win32
 		{7F449698-73DF-4203-9F31-0877DBF01695}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{7F449698-73DF-4203-9F31-0877DBF01695}.Release|Mixed Platforms.Build.0 = Release|Win32

@@ -212,7 +212,7 @@ namespace CamelotEngine
 					}
 
 					// Record the offset (how many vertex)
-					const int lMaterialCount = meshData->subMeshes.size();
+					const int lMaterialCount = (const int)meshData->subMeshes.size();
 					int lOffset = 0;
 					for (int lIndex = 0; lIndex < lMaterialCount; ++lIndex)
 					{
@@ -787,7 +787,7 @@ namespace CamelotEngine
 		currentIndexIdx = 0;
 		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
 		{
-			UINT32 subMeshCount = (*iter)->subMeshes.size();
+			UINT32 subMeshCount = (UINT32)(*iter)->subMeshes.size();
 
 			for(UINT32 i = 0; i < subMeshCount; i++)
 			{
