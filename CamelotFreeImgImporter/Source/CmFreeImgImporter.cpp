@@ -140,7 +140,7 @@ namespace CamelotEngine
 
 		newTexture.waitUntilLoaded();
 
-		for(size_t mip = 0; mip <= imgData->getNumMipmaps(); ++mip)
+		for(UINT32 mip = 0; mip <= imgData->getNumMipmaps(); ++mip)
 		{
 			PixelData src = imgData->getPixels(mip);
 
@@ -156,7 +156,12 @@ namespace CamelotEngine
 
 	TextureDataPtr FreeImgImporter::importRawImage(DataStreamPtr fileData)
 	{
-		size_t magicLen = std::min(fileData->size(), (size_t)32);
+		if(fileData->size() > std::numeric_limits<UINT32>::max())
+		{
+			CM_EXCEPT(InternalErrorException, "File size larger than supported!");
+		}
+
+		UINT32 magicLen = std::min((UINT32)fileData->size(), 32u);
 		UINT8 magicBuf[32];
 		fileData->read(magicBuf, magicLen);
 		// return to start
@@ -301,15 +306,15 @@ namespace CamelotEngine
 		unsigned srcPitch = FreeImage_GetPitch(fiBitmap);
 
 		// Final data - invert image and trim pitch at the same time
-		size_t dstPitch = width * PixelUtil::getNumElemBytes(format);
-		size_t size = dstPitch * height;
+		UINT32 dstPitch = width * PixelUtil::getNumElemBytes(format);
+		UINT32 size = dstPitch * height;
 
 		// Bind output buffer
 		UINT8* output = new UINT8[size]; // TextureData frees this when its released
 
 		UINT8* pSrc;
 		UINT8* pDst = output;
-		for (size_t y = 0; y < height; ++y)
+		for (UINT32 y = 0; y < height; ++y)
 		{
 			pSrc = srcData + (height - y - 1) * srcPitch;
 			memcpy(pDst, pSrc, dstPitch);
