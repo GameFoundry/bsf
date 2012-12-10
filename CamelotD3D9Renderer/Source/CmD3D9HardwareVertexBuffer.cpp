@@ -45,7 +45,7 @@ namespace CamelotEngine {
 
 		D3DPOOL eResourcePool;
 		       
-#if OGRE_D3D_MANAGE_BUFFERS
+#if CM_D3D_MANAGE_BUFFERS
 		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : 
 			// If not system mem, use managed pool UNLESS buffer is discardable
 			// if discardable, keeping the software backing is expensive

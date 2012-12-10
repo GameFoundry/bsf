@@ -36,24 +36,22 @@ namespace CamelotEngine
 		:mPrimaryRenderWindow(nullptr)
 	{ }
 
-	void Application::startUp(const String& renderSystemDll, const String& rendererDll)
+	void Application::startUp(const String& renderSystemName, const String& rendererName)
 	{
 		Time::startUp(new Time());
 		Input::startUp(new Input());
 		DynLibManager::startUp(new DynLibManager());
 		HighLevelGpuProgramManager::startUp(new HighLevelGpuProgramManager());
 
-		RenderSystemManager::startUp(renderSystemDll);
+		RenderSystemManager::startUp(renderSystemName);
 
-		loadPlugin(rendererDll);
+		loadPlugin(rendererName);
 		RendererManager::setActive("ForwardRenderer");
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
 		renderSystem->startUp();
 
 		mPrimaryRenderWindow = renderSystem->createRenderWindow("Camelot Renderer", 1280, 720, false);
-
-		UINT32 winId = gApplication().getAppWindowId();
 
 		SceneManager::startUp(new SceneManager());
 		Resources::startUp(new Resources("D:\\CamelotResourceMetas"));

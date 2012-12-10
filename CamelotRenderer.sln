@@ -56,6 +56,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotForwardRenderer", "C
 		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotD3D11RenderSystem", "CamelotD3D11RenderSystem\CamelotD3D11RenderSystem.vcxproj", "{1437BB4E-DDB3-4307-AA41-8C035DA3014B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -190,6 +195,19 @@ Global
 		{08975177-4A13-4EE7-BB21-3BB92FB3F3CC}.Release|Win32.ActiveCfg = Release|Win32
 		{08975177-4A13-4EE7-BB21-3BB92FB3F3CC}.Release|Win32.Build.0 = Release|Win32
 		{08975177-4A13-4EE7-BB21-3BB92FB3F3CC}.Release|x64.ActiveCfg = Release|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Debug|Win32.Build.0 = Debug|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Debug|x64.ActiveCfg = Debug|x64
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Debug|x64.Build.0 = Debug|x64
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Release|Any CPU.ActiveCfg = Release|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Release|Win32.ActiveCfg = Release|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Release|Win32.Build.0 = Release|Win32
+		{1437BB4E-DDB3-4307-AA41-8C035DA3014B}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

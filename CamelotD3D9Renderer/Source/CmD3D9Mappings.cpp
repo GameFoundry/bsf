@@ -378,7 +378,7 @@ namespace CamelotEngine
         DWORD ret = 0;
         if (usage & HardwareBuffer::HBU_DYNAMIC)
         {
-#if OGRE_D3D_MANAGE_BUFFERS
+#if CM_D3D_MANAGE_BUFFERS
             // Only add the dynamic flag for default pool, and
             // we use default pool when buffer is discardable
             if (usage & HardwareBuffer::HBU_DISCARDABLE)
@@ -399,7 +399,7 @@ namespace CamelotEngine
         DWORD ret = 0;
         if (options == HardwareBuffer::HBL_DISCARD)
         {
-#if OGRE_D3D_MANAGE_BUFFERS
+#if CM_D3D_MANAGE_BUFFERS
             // Only add the discard flag for dynamic usgae and default pool
             if ((usage & HardwareBuffer::HBU_DYNAMIC) &&
                 (usage & HardwareBuffer::HBU_DISCARDABLE))
@@ -421,7 +421,7 @@ namespace CamelotEngine
         }
         if (options == HardwareBuffer::HBL_NO_OVERWRITE)
         {
-#if OGRE_D3D_MANAGE_BUFFERS
+#if CM_D3D_MANAGE_BUFFERS
             // Only add the nooverwrite flag for dynamic usgae and default pool
             if ((usage & HardwareBuffer::HBU_DYNAMIC) &&
                 (usage & HardwareBuffer::HBU_DISCARDABLE))

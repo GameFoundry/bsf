@@ -48,7 +48,7 @@ namespace CamelotEngine {
 		bool useShadowBuffer)
     {
 		assert (numVerts > 0);
-#if OGRE_D3D_MANAGE_BUFFERS
+#if CM_D3D_MANAGE_BUFFERS
         // Override shadow buffer setting; managed buffers are automatically
         // backed by system memory
         // Don't override shadow buffer if discardable, since then we use
@@ -82,7 +82,7 @@ namespace CamelotEngine {
         HardwareBuffer::Usage usage, bool useShadowBuffer)
     {
 		assert (numIndexes > 0);
-#if OGRE_D3D_MANAGE_BUFFERS
+#if CM_D3D_MANAGE_BUFFERS
         // Override shadow buffer setting; managed buffers are automatically
         // backed by system memory
         if (useShadowBuffer)

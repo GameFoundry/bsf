@@ -29,28 +29,13 @@ THE SOFTWARE.
 #define __D3D9PREREQUISITES_H__
 
 #include "CmPrerequisites.h"
-#ifdef __MINGW32__
-#  include "WIN32/OgreMinGWSupport.h" // extra defines for MinGW to deal with DX SDK
-#endif
 
-#if CM_THREAD_SUPPORT
-#define OGRE_LOCK_RECURSIVE_MUTEX(name)   name.lock();
-#define OGRE_UNLOCK_RECURSIVE_MUTEX(name) name.unlock();
-#else
-#define OGRE_LOCK_RECURSIVE_MUTEX(name) 
-#define OGRE_UNLOCK_RECURSIVE_MUTEX(name)
-#endif
+#define CM_LOCK_RECURSIVE_MUTEX(name) 
+#define CM_UNLOCK_RECURSIVE_MUTEX(name)
 
-
-#if CM_THREAD_SUPPORT == 1
-#define D3D9_DEVICE_ACCESS_LOCK				OGRE_LOCK_RECURSIVE_MUTEX(msDeviceAccessMutex);
-#define D3D9_DEVICE_ACCESS_UNLOCK			OGRE_UNLOCK_RECURSIVE_MUTEX(msDeviceAccessMutex);
-#define D3D9_DEVICE_ACCESS_CRITICAL_SECTION	CM_LOCK_MUTEX(msDeviceAccessMutex)
-#else
 #define D3D9_DEVICE_ACCESS_LOCK	
 #define D3D9_DEVICE_ACCESS_UNLOCK
 #define D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-#endif
 
 // Define versions for if DirectX is in use (Win32 only)
 #define DIRECT3D_VERSION 0x0900
@@ -102,7 +87,7 @@ namespace CamelotEngine
 // Should we ask D3D to manage vertex/index buffers automatically?
 // Doing so avoids lost devices, but also has a performance impact
 // which is unacceptably bad when using very large buffers
-#define OGRE_D3D_MANAGE_BUFFERS 1 // TODO - Keep this on or off? I'll probably want to turn it off at some point
+#define CM_D3D_MANAGE_BUFFERS 1 // TODO - Keep this on or off? I'll probably want to turn it off at some point
 
     //-------------------------------------------
 	// Windows setttings
@@ -119,6 +104,6 @@ namespace CamelotEngine
 #	endif
 #else
 #	define CM_D3D9_EXPORT
-#endif	// OGRE_WIN32
+#endif	// CM_PLATFORM_WIN32
 }
 #endif

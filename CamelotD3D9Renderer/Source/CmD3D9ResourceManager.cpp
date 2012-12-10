@@ -141,7 +141,7 @@ namespace CamelotEngine
 		mDeviceAccessLockCount++;
 		if (mDeviceAccessLockCount == 1)
 		{					
-			OGRE_LOCK_RECURSIVE_MUTEX(mResourcesMutex);		
+			CM_LOCK_RECURSIVE_MUTEX(mResourcesMutex);		
 			D3D9Resource::lockDeviceAccess();
 			D3D9HardwarePixelBuffer::lockDeviceAccess();
 		}
@@ -156,7 +156,7 @@ namespace CamelotEngine
 		{						
 			D3D9HardwarePixelBuffer::unlockDeviceAccess();
 			D3D9Resource::unlockDeviceAccess();			
-			OGRE_UNLOCK_RECURSIVE_MUTEX(mResourcesMutex);			
+			CM_UNLOCK_RECURSIVE_MUTEX(mResourcesMutex);			
 		}
 	}
 }
