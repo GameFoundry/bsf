@@ -78,8 +78,6 @@ namespace CamelotEngine
 			D3D9Mappings::eD3DTexType texType;
 			/// which texCoordIndex to use
 			size_t coordIndex;
-			/// type of auto tex. calc. used
-			TexCoordCalcMethod autoTexCoordType;
 			/// texture 
 			IDirect3DBaseTexture9 *pTex;
 			/// vertex texture 

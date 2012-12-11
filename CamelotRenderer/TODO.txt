@@ -14,6 +14,18 @@ High-level TODO:
    - Render queue and sorting
  - DX11 render system
 
+ DX11 specific features:
+  - Deferred render contexts and multithreaded rendering
+  - Tesselation (hull/domain) shader
+  - Compute pipeline
+  - Stream out (write vertex buffers)
+  - Instancing
+  - Dynamic shader linkage
+  - Append/Consume buffer
+  - What's missing:
+    - No proper support for texture arrays, or multisampled texture resources
+	- Staging and immutable buffers. See D3D11Mapping, DWORD D3D11Mappings::get(HardwareBuffer::Usage usage)
+
 
 Command buffer TODO:
  - Redo OpenGL shaders as they seem to be using pretty old methods (glCreateShaderObjectARB seems to be deprectated for example)
@@ -22,6 +34,8 @@ Command buffer TODO:
    - Instead of requiring the user to constantly call setActiveContext, make the call peristent per thread. 
    - Store sequential thread idx in local thread storage, and then we can easily look up a context for a thread and
      automatically use it, if it's set. (Use boost::thread_specific_ptr for local thread storage)
+ - Make sure to allow the user to submit the context manually to the gpu. (Right now all contexts are submitted at once, and when I'll have compute
+ shaders running I'm sure I'll want other threads to do different things on the gpu)
  - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after
     that call.
 
@@ -68,12 +82,14 @@ Mid priority TODO:
   - Imported FBX meshes are too big
   - Search for all remaining "TODO PORT" comments and fix them
   - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
+  - My log is not thread safe yet it is being called from multiple threads.
  - RTTI:
      When defining RTTIType like so: 
       RTTIType<D3D9HLSLProgram, HighLevelGpuProgram, D3D9HLSLProgramRTTI>
      I need to make sure that HighLevelGpuProgram class has valid RTTI type as well. Otherwise the inheritance hierarchy will not be correct. Right now this isn't checked anywhere.
 
 Low priority TODO:
+ - Drop support for assembly shaders?
  - Move all x86 libs to x86 folders. Move all binaries to x86 folders as well
  - Mesh loading:
   - Sub-meshes aren't being transformed by world matrices of their nodes
@@ -101,8 +117,9 @@ Optional TODO:
  -----------------------------------------------------------------------------------------------
 
 After everything is polished
- - Get 64bit version working
  - DX11 render system
+   - Make sure to add OpenGL equivalents of DX11 features (tesselation, stream out, compute, etc.)
+ - SLI / multiple device support
  - How do I handle multiple mesh formats? Some files need animation, other don't. Some would mabye like to use QTangent, others the proper tangent frame.
  - Load texture mips separately so we can unload HQ textures from far away objects (like UE3)
  - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)

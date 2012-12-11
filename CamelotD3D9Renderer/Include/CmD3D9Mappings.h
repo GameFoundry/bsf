@@ -63,10 +63,6 @@ namespace CamelotEngine
 			D3D_FUSAGE_MIP
 		};
 
-		/// return a D3D9 equivalent for a Ogre ShadeOptions value
-		static DWORD get(ShadeOptions so);
-		/// return a D3D9 equivalent for a Ogre TexCoordCalsMethod value
-		static DWORD get(TexCoordCalcMethod m, const D3DCAPS9& caps);
 		/// return a D3D9 equivalent for a Ogre TextureAddressingMode value
 		static D3DTEXTUREADDRESS get(SamplerState::TextureAddressingMode tam, const D3DCAPS9& devCaps);
 		/// return a D3D9 equivalent for a Ogre SceneBlendFactor value
@@ -77,8 +73,6 @@ namespace CamelotEngine
 		static DWORD get(CompareFunction cf);
 		/// return a D3D9 equivalent for a Ogre CillingMode value
 		static DWORD get(CullingMode cm, bool flip);
-		/// return a D3D9 equivalent for a Ogre FogMode value
-		static D3DFOGMODE get(FogMode fm);
 		/// return a D3D9 equivalent for a Ogre PolygonMode value
 		static D3DFILLMODE get(PolygonMode level);
 		/// return a D3D9 equivalent for a Ogre StencilOperation value

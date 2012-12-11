@@ -132,27 +132,6 @@ namespace CamelotEngine {
         FO_ANISOTROPIC
     };
 
-    /** Light shading modes. */
-    enum ShadeOptions
-    {
-        SO_FLAT,
-        SO_GOURAUD,
-        SO_PHONG
-    };
-
-    /** Fog modes. */
-    enum FogMode
-    {
-        /// No fog. Duh.
-        FOG_NONE,
-        /// Fog density increases  exponentially from the camera (fog = 1/e^(distance * density))
-        FOG_EXP,
-        /// Fog density increases at the square of FOG_EXP, i.e. even quicker (fog = 1/e^(distance * density)^2)
-        FOG_EXP2,
-        /// Fog density increases linearly between the start and end distances
-        FOG_LINEAR
-    };
-
     /** Hardware culling modes based on vertex winding.
         This setting applies to how the hardware API culls triangles it is sent. */
     enum CullingMode
@@ -176,43 +155,37 @@ namespace CamelotEngine {
         PM_SOLID = 3
     };
 
-    /** An enumeration describing which material properties should track the vertex colours */
-    typedef int TrackVertexColourType;
-    enum TrackVertexColourEnum {
-        TVC_NONE        = 0x0,
-        TVC_AMBIENT     = 0x1,        
-        TVC_DIFFUSE     = 0x2,
-        TVC_SPECULAR    = 0x4,
-        TVC_EMISSIVE    = 0x8
-    };
-
     /** Defines the frame buffer types. */
     enum FrameBufferType {
         FBT_COLOUR  = 0x1,
         FBT_DEPTH   = 0x2,
         FBT_STENCIL = 0x4
     };
+
+	/// Enum describing the various actions which can be taken onthe stencil buffer
+	enum StencilOperation
+	{
+		/// Leave the stencil buffer unchanged
+		SOP_KEEP,
+		/// Set the stencil value to zero
+		SOP_ZERO,
+		/// Set the stencil value to the reference value
+		SOP_REPLACE,
+		/// Increase the stencil value by 1, clamping at the maximum value
+		SOP_INCREMENT,
+		/// Decrease the stencil value by 1, clamping at 0
+		SOP_DECREMENT,
+		/// Increase the stencil value by 1, wrapping back to 0 when incrementing the maximum value
+		SOP_INCREMENT_WRAP,
+		/// Decrease the stencil value by 1, wrapping when decrementing 0
+		SOP_DECREMENT_WRAP,
+		/// Invert the bits of the stencil buffer
+		SOP_INVERT
+	};
     
 	/// Name / value parameter pair (first = name, second = value)
 	typedef map<String, String>::type NameValuePairList;
 
-	/// Render window creation parameters.
-	struct RenderWindowDescription
-	{
-		String				name;
-		unsigned int		width;
-		unsigned int		height;
-		bool				useFullScreen;
-		NameValuePairList	miscParams;
-	};
-
-	/// Render window creation parameters container.
-	typedef vector<RenderWindowDescription>::type RenderWindowDescriptionList;
-
-	/// Render window container.
-	typedef vector<RenderWindow*>::type RenderWindowList;
-
-	
 	/** @} */
 }
 

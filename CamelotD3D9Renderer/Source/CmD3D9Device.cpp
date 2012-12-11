@@ -605,7 +605,6 @@ namespace CamelotEngine
 		
 			// set stage desc. to defaults
 			renderSystem->mTexStageDesc[stage].pTex = 0;
-			renderSystem->mTexStageDesc[stage].autoTexCoordType = TEXCALC_NONE;
 			renderSystem->mTexStageDesc[stage].coordIndex = 0;
 			renderSystem->mTexStageDesc[stage].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
 		}

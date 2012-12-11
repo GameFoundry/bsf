@@ -91,8 +91,11 @@ namespace CamelotEngine {
         /// Binormal (Y axis if normal is Z)
         VES_BITANGENT = 8,
         /// Tangent (X axis if normal is Z)
-        VES_TANGENT = 9
-
+        VES_TANGENT = 9,
+		/// Transformed vertex position
+		VES_POSITIONT = 10,
+		/// Point size
+		VES_PSIZE = 11
 	};
 
     /// Vertex element type, used to identify the base types of the vertex contents

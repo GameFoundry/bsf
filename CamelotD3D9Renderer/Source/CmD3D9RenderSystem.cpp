@@ -151,7 +151,6 @@ namespace CamelotEngine
 		// set stages desc. to defaults
 		for (size_t n = 0; n < CM_MAX_TEXTURE_LAYERS; n++)
 		{
-			mTexStageDesc[n].autoTexCoordType = TEXCALC_NONE;
 			mTexStageDesc[n].coordIndex = 0;
 			mTexStageDesc[n].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
 			mTexStageDesc[n].pTex = 0;
@@ -573,7 +572,6 @@ namespace CamelotEngine
 
 			// set stage desc. to defaults
 			mTexStageDesc[stage].pTex = 0;
-			mTexStageDesc[stage].autoTexCoordType = TEXCALC_NONE;
 			mTexStageDesc[stage].coordIndex = 0;
 			mTexStageDesc[stage].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
 		}

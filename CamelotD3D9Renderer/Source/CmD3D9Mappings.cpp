@@ -28,61 +28,10 @@ THE SOFTWARE.
 #include "CmD3D9Mappings.h"
 #include "CmString.h"
 #include "CmException.h"
+#include "CmDebug.h"
 
 namespace CamelotEngine 
 {
-	//---------------------------------------------------------------------
-	DWORD D3D9Mappings::get(ShadeOptions so)
-	{
-		switch( so )
-		{
-		case SO_FLAT:
-			return D3DSHADE_FLAT;
-		case SO_GOURAUD:
-			return D3DSHADE_GOURAUD;
-		case SO_PHONG:
-			return D3DSHADE_PHONG;
-		}
-		return 0;
-	}
-	//---------------------------------------------------------------------
-	DWORD D3D9Mappings::get(TexCoordCalcMethod m, const D3DCAPS9& caps)
-	{
-		switch( m )
-		{
-		case TEXCALC_NONE:
-			return D3DTSS_TCI_PASSTHRU;
-		case TEXCALC_ENVIRONMENT_MAP_REFLECTION:
-			return D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR;
-		case TEXCALC_ENVIRONMENT_MAP_PLANAR:
-			if (caps.VertexProcessingCaps & D3DVTXPCAPS_TEXGEN_SPHEREMAP)
-			{
-				// Use sphere map if available
-				return D3DTSS_TCI_SPHEREMAP;
-			}
-			else
-			{
-				// If not, fall back on camera space reflection vector which isn't as good
-                return D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR;
-			}
-		case TEXCALC_ENVIRONMENT_MAP_NORMAL:
-			return D3DTSS_TCI_CAMERASPACENORMAL;
-		case TEXCALC_ENVIRONMENT_MAP:
-			if (caps.VertexProcessingCaps & D3DVTXPCAPS_TEXGEN_SPHEREMAP)
-			{
-				// Use sphere map if available
-				return D3DTSS_TCI_SPHEREMAP;
-			}
-			else
-			{
-				// If not, fall back on camera space normal which isn't as good
-				return D3DTSS_TCI_CAMERASPACENORMAL;
-			}
-        case TEXCALC_PROJECTIVE_TEXTURE:
-            return D3DTSS_TCI_CAMERASPACEPOSITION;
-		}
-		return 0;
-	}
 	//---------------------------------------------------------------------
 	D3DTEXTUREADDRESS D3D9Mappings::get(SamplerState::TextureAddressingMode tam, const D3DCAPS9& devCaps)
 	{
@@ -192,20 +141,6 @@ namespace CamelotEngine
 				return D3DCULL_CCW;
 		}
 		return 0;
-	}
-	//---------------------------------------------------------------------
-	D3DFOGMODE D3D9Mappings::get(FogMode fm)
-	{
-		switch( fm )
-		{
-		case FOG_EXP:
-			return D3DFOG_EXP;
-		case FOG_EXP2:
-			return D3DFOG_EXP2;
-		case FOG_LINEAR:
-			return D3DFOG_LINEAR;
-		}
-		return D3DFOG_FORCE_DWORD;
 	}
 	//---------------------------------------------------------------------
 	D3DFILLMODE D3D9Mappings::get(PolygonMode level)
@@ -514,6 +449,8 @@ namespace CamelotEngine
 		case VES_TANGENT:
 			return D3DDECLUSAGE_TANGENT;
 			break;
+		default:
+			CM_EXCEPT(RenderingAPIException, "Invalid semantic for D3D9 render system: " + toString(sem));
 		}
 		// to keep compiler happy
 		return D3DDECLUSAGE_POSITION;
