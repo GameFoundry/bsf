@@ -192,6 +192,7 @@
     <ClInclude Include="Include\CmGpuProgramRTTI.h" />
     <ClInclude Include="Include\CmHardwareBuffer.h" />
     <ClInclude Include="Include\CmHardwareBufferManager.h" />
+    <ClInclude Include="Include\CmHardwareConstantBuffer.h" />
     <ClInclude Include="Include\CmHardwareIndexBuffer.h" />
     <ClInclude Include="Include\CmHardwareOcclusionQuery.h" />
     <ClInclude Include="Include\CmHardwarePixelBuffer.h" />
@@ -262,6 +263,7 @@
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />
     <ClCompile Include="Source\CmHardwareBufferManager.cpp" />
+    <ClCompile Include="Source\CmHardwareConstantBuffer.cpp" />
     <ClCompile Include="Source\CmHardwareIndexBuffer.cpp" />
     <ClCompile Include="Source\CmHardwareOcclusionQuery.cpp" />
     <ClCompile Include="Source\CmHardwarePixelBuffer.cpp" />

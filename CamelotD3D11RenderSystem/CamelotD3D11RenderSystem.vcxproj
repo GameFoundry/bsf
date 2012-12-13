@@ -90,7 +90,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotRenderer.lib;CamelotUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;CamelotRenderer.lib;CamelotUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;..\lib\$(Configuration);..\Dependencies\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -104,7 +104,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotRenderer.lib;CamelotUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;CamelotRenderer.lib;CamelotUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -122,7 +122,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotRenderer.lib;CamelotUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;CamelotRenderer.lib;CamelotUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;..\lib\$(Configuration);..\Dependencies\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -140,20 +140,24 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotRenderer.lib;CamelotUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;CamelotRenderer.lib;CamelotUtility.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\CmD3D11HardwareConstantBuffer.h" />
     <ClInclude Include="Include\CmD3D11Device.h" />
     <ClInclude Include="Include\CmD3D11Driver.h" />
     <ClInclude Include="Include\CmD3D11DriverList.h" />
     <ClInclude Include="Include\CmD3D11GpuProgram.h" />
     <ClInclude Include="Include\CmD3D11GpuProgramManager.h" />
+    <ClInclude Include="Include\CmD3D11HardwareBuffer.h" />
     <ClInclude Include="Include\CmD3D11HLSLProgram.h" />
+    <ClInclude Include="Include\CmD3D11HardwareIndexBuffer.h" />
     <ClInclude Include="Include\CmD3D11Mappings.h" />
     <ClInclude Include="Include\CmD3D11Prerequisites.h" />
+    <ClInclude Include="Include\CmD3D11HardwareVertexBuffer.h" />
     <ClInclude Include="Include\CmD3D11VideoMode.h" />
     <ClInclude Include="Include\CmD3D11VideoModeList.h" />
   </ItemGroup>
@@ -163,8 +167,12 @@
     <ClCompile Include="Source\CmD3D11DriverList.cpp" />
     <ClCompile Include="Source\CmD3D11GpuProgram.cpp" />
     <ClCompile Include="Source\CmD3D11GpuProgramManager.cpp" />
+    <ClCompile Include="Source\CmD3D11HardwareBuffer.cpp" />
+    <ClCompile Include="Source\CmD3D11HardwareConstantBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11HLSLProgram.cpp" />
+    <ClCompile Include="Source\CmD3D11HardwareIndexBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11Mappings.cpp" />
+    <ClCompile Include="Source\CmD3D11HardwareVertexBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11VideoMode.cpp" />
     <ClCompile Include="Source\CmD3D11VideoModeList.cpp" />
   </ItemGroup>

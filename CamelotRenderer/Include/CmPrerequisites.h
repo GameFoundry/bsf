@@ -107,6 +107,8 @@ namespace CamelotEngine {
 	class PassParameters;
 	class RenderSystemContext;
 	class AsyncOp;
+	class HardwareBufferManagerBase;
+	class HardwareConstantBuffer;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

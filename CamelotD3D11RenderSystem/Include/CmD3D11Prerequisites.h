@@ -37,6 +37,7 @@ namespace CamelotEngine
 	class D3D11GpuProgramManager;
 	class D3D11HardwareBufferManager;
 	class D3D11HardwareIndexBuffer;
+	class D3D11HardwareConstantBuffer;
 	class D3D11HLSLProgramFactory;
 	class D3D11HLSLProgram;
 	class D3D11VertexDeclaration;

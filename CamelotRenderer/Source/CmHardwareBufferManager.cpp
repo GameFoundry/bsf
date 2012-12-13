@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 #include "CmHardwareBufferManager.h"
 #include "CmVertexIndexData.h"
+#include "CmHardwareConstantBuffer.h"
 
 
 namespace CamelotEngine {
@@ -53,6 +54,7 @@ namespace CamelotEngine {
         // unnecessary work, and we'll destroy everything here.
 		mVertexBuffers.clear();
 		mIndexBuffers.clear();
+		mConstantBuffers.clear();
 
         // Destroy everything
         destroyAllBindings();
@@ -128,6 +130,17 @@ namespace CamelotEngine {
 		if (i != mIndexBuffers.end())
 		{
 			mIndexBuffers.erase(i);
+		}
+	}
+	//-----------------------------------------------------------------------
+	void HardwareBufferManagerBase::_notifyConstantBufferDestroyed(HardwareConstantBuffer* buf)
+	{
+		CM_LOCK_MUTEX(mConstantBuffersMutex)
+
+		ConstantBufferList::iterator i = mConstantBuffers.find(buf);
+		if (i != mConstantBuffers.end())
+		{
+			mConstantBuffers.erase(i);
 		}
 	}
 }

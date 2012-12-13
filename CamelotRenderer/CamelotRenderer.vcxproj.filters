@@ -311,6 +311,9 @@
     <ClInclude Include="Include\CmResourceHandleRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmHardwareConstantBuffer.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -459,6 +462,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmSpecificImporter.cpp">
       <Filter>Source Files\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHardwareConstantBuffer.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

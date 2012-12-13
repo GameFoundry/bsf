@@ -57,15 +57,17 @@ namespace CamelotEngine {
 	class CM_EXPORT HardwareBufferManagerBase
 	{
     protected:
-        /** WARNING: The following two members should place before all other members.
+        /** WARNING: The following three members should place before all other members.
             Members destruct order is very important here, because destructing other
             members will cause notify back to this class, and then will access to this
             two members.
         */
         typedef set<HardwareVertexBuffer*>::type VertexBufferList;
         typedef set<HardwareIndexBuffer*>::type IndexBufferList;
+		typedef set<HardwareConstantBuffer*>::type ConstantBufferList;
         VertexBufferList mVertexBuffers;
         IndexBufferList mIndexBuffers;
+		ConstantBufferList mConstantBuffers;
 
 		typedef set<VertexBufferBinding*>::type VertexBufferBindingList;
 		VertexBufferBindingList mVertexBufferBindings;
@@ -73,6 +75,7 @@ namespace CamelotEngine {
 		// Mutexes
 		CM_MUTEX(mVertexBuffersMutex)
 		CM_MUTEX(mIndexBuffersMutex)
+		CM_MUTEX(mConstantBuffersMutex)
 		CM_MUTEX(mVertexBufferBindingsMutex)
 
         /// Internal method for destroys all vertex buffer bindings
@@ -151,7 +154,8 @@ namespace CamelotEngine {
 		void _notifyVertexBufferDestroyed(HardwareVertexBuffer* buf);
 		/// Notification that a hardware index buffer has been destroyed
 		void _notifyIndexBufferDestroyed(HardwareIndexBuffer* buf);
-
+		/// Notification that a hardware constant buffer has been destroyed
+		void _notifyConstantBufferDestroyed(HardwareConstantBuffer* buf);
 	};
 
     /** Singleton wrapper for hardware buffer manager. */

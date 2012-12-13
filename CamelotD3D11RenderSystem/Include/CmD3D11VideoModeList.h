@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmD3D11Prerequisites.h"
+#include "CmD3D11VideoMode.h"
 
 namespace CamelotEngine
 {

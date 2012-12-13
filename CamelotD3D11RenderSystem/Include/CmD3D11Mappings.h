@@ -54,7 +54,8 @@ namespace CamelotEngine
 		static VertexElementSemantic get(LPCSTR sem);
 		/// Get dx11 color
 		static void get(const Color& inColour, float * outColour );
-
+		static bool isMappingWrite(D3D11_MAP map);
+		static bool isMappingRead(D3D11_MAP map);
 
 		/// utility method, convert D3D11 pixel format to Ogre pixel format
 		static PixelFormat _getPF(DXGI_FORMAT d3dPF);

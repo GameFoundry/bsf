@@ -76,5 +76,7 @@ namespace CamelotEngine
 		}
 
 		SAFE_RELEASE(errors);
+
+		return microCode;
 	}
 }

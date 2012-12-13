@@ -31,6 +31,6 @@ namespace CamelotEngine
 		D3D11VideoModeList**	mVideoModeList;
 		IDXGIAdapter*			mDXGIAdapter;
 
-		void init()
+		void init();
 	};
 }

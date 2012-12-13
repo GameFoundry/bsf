@@ -80,7 +80,7 @@ namespace CamelotEngine
 		}
 
 		if(doClearErrors)
-			clearError();
+			clearErrors();
 
 		return res;
 	}
@@ -102,7 +102,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D11Device::clearError()
+	void D3D11Device::clearErrors()
 	{
 		if (mD3D11Device != nullptr && mInfoQueue != nullptr)
 		{

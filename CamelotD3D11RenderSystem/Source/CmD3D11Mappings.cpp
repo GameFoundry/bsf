@@ -729,6 +729,23 @@ namespace CamelotEngine
 		return _isDynamic(static_cast<HardwareBuffer::Usage>(mUsage));
 	}
 
+	bool D3D11Mappings::isMappingWrite(D3D11_MAP map)
+	{
+		if(map == D3D11_MAP_READ)
+			return false;
+
+		return true;
+
+	}
+
+	bool D3D11Mappings::isMappingRead(D3D11_MAP map)
+	{
+		if(map == D3D11_MAP_READ || map == D3D11_MAP_READ_WRITE)
+			return true;
+
+		return false;
+	}
+
 	D3D11_USAGE D3D11Mappings::_getUsage(int mUsage)
 	{
 		return _getUsage(static_cast<HardwareBuffer::Usage>(mUsage));

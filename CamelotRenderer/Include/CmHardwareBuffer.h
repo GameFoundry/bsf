@@ -122,12 +122,10 @@ namespace CamelotEngine {
                 /** Normal mode, ie allows read/write and contents are preserved. */
                 HBL_NORMAL,
 			    /** Discards the <em>entire</em> buffer while locking; this allows optimisation to be 
-				performed because synchronisation issues are relaxed. Only allowed on buffers 
-			    created with the HBU_DYNAMIC flag. 
+				performed because synchronisation issues are relaxed. 
 			    */
 			    HBL_DISCARD,
 			    /** Lock the buffer for reading only. Not allowed in buffers which are created with HBU_WRITE_ONLY. 
-				Mandatory on static buffers, i.e. those created without the HBU_DYNAMIC flag. 
 				*/ 
 			    HBL_READ_ONLY,
                 /** As HBL_NORMAL, except the application guarantees not to overwrite any 

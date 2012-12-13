@@ -28,14 +28,14 @@ namespace CamelotEngine
 		D3D11HLSLProgram(const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
-        /** Internal load implementation, must be implemented by subclasses.
-        */
-        void loadFromSource(void);
-        /** Internal method for creating an appropriate low-level program from this
-        high-level program, must be implemented by subclasses. */
-        void createLowLevelImpl(void);
-        /// Internal unload implementation, must be implemented by subclasses
-        void unloadHighLevelImpl(void);
+        ///** Internal load implementation, must be implemented by subclasses.
+        //*/
+        //void loadFromSource(void);
+        ///** Internal method for creating an appropriate low-level program from this
+        //high-level program, must be implemented by subclasses. */
+        //void createLowLevelImpl(void);
+        ///// Internal unload implementation, must be implemented by subclasses
+        //void unloadHighLevelImpl(void);
 
 		ID3DBlob* compileMicrocode();
 

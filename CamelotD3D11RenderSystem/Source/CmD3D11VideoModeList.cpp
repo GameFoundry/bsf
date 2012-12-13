@@ -1,11 +1,10 @@
 #include "CmD3D11VideoModeList.h"
 #include "CmException.h"
-#include "CmD3D11VideoMode.h"
 #include "CmD3D11Driver.h"
 
 namespace CamelotEngine
 {
-	D3D11VideoModeList::D3D11VideoModeList(D3D11Driver* driver, UINT32 adapterOutput = 0)
+	D3D11VideoModeList::D3D11VideoModeList(D3D11Driver* driver, UINT32 adapterOutput)
 	{
 		if(driver == nullptr)
 			CM_EXCEPT(InvalidParametersException, "driver parameter is NULL");

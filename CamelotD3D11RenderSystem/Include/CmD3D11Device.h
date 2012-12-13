@@ -19,7 +19,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Resets error state & error messages.
 		 */
-		void clearError();
+		void clearErrors();
 
 		/**
 		 * @brief	Query if error occurred at any point since class "clearError" call.
