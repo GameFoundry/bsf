@@ -40,7 +40,7 @@ namespace CamelotEngine {
 
     public:
 		D3D9HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
-			UINT32 numVertices, HardwareBuffer::Usage usage, bool useSystemMem, bool useShadowBuffer);
+			UINT32 numVertices, HardwareBuffer::Usage usage, bool useSystemMem);
         ~D3D9HardwareVertexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);

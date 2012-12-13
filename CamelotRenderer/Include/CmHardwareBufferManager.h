@@ -67,7 +67,6 @@ namespace CamelotEngine {
         VertexBufferList mVertexBuffers;
         IndexBufferList mIndexBuffers;
 
-
 		typedef set<VertexBufferBinding*>::type VertexBufferBindingList;
 		VertexBufferBindingList mVertexBufferBindings;
 
@@ -86,13 +85,6 @@ namespace CamelotEngine {
 		virtual VertexBufferBinding* createVertexBufferBindingImpl(void);
 		/// Internal method for destroys a VertexBufferBinding, may be overridden by certain rendering APIs
 		virtual void destroyVertexBufferBindingImpl(VertexBufferBinding* binding);
-
-    protected:
-
-        /// Creates  a new buffer as a copy of the source, does not copy data
-        virtual HardwareVertexBufferPtr makeBufferCopy(
-            const HardwareVertexBufferPtr& source, 
-            HardwareBuffer::Usage usage, bool useShadowBuffer);
 
     public:
         HardwareBufferManagerBase();
@@ -126,8 +118,7 @@ namespace CamelotEngine {
             be synchronised with the real buffer at an appropriate time.
         */
 		virtual HardwareVertexBufferPtr 
-            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, 
-			bool useShadowBuffer = false) = 0;
+            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage) = 0;
 		/** Create a hardware index buffer.
         @remarks Note that because buffers can be shared, they are reference
             counted so you do not need to worry about destroying them this will be done
@@ -146,7 +137,7 @@ namespace CamelotEngine {
         */
 		virtual HardwareIndexBufferPtr 
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
-			HardwareBuffer::Usage usage, bool useShadowBuffer = false) = 0;
+			HardwareBuffer::Usage usage) = 0;
 
         /** Creates a new vertex declaration. */
         virtual VertexDeclarationPtr createVertexDeclaration(void);
@@ -155,26 +146,6 @@ namespace CamelotEngine {
 		virtual VertexBufferBinding* createVertexBufferBinding(void);
 		/** Destroys a VertexBufferBinding. */
 		virtual void destroyVertexBufferBinding(VertexBufferBinding* binding);
-
-        /** Allocates a copy of a given vertex buffer.
-        @remarks
-            This method allocates a temporary copy of an existing vertex buffer.
-            This buffer is subsequently stored and can be made available for 
-            other purposes later without incurring the cost of construction / 
-            destruction.
-        @param sourceBuffer The source buffer to use as a copy
-        @param licenseType The type of license required on this buffer - automatic
-            release causes this class to release licenses every frame so that 
-            they can be reallocated anew.
-        @param licensee Pointer back to the class requesting the copy, which must
-            implement HardwareBufferLicense in order to be notified when the license
-            expires.
-        @param copyData If true, the current data is copied as well as the 
-            structure of the buffer
-        */
-        virtual HardwareVertexBufferPtr allocateVertexBufferCopy(
-            const HardwareVertexBufferPtr& sourceBuffer,
-            bool copyData = false);
 
 		/// Notification that a hardware vertex buffer has been destroyed
 		void _notifyVertexBufferDestroyed(HardwareVertexBuffer* buf);
@@ -193,18 +164,14 @@ namespace CamelotEngine {
 		~HardwareBufferManager();
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexBuffer */
-		HardwareVertexBufferPtr 
-            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, 
-			bool useShadowBuffer = false)
+		HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage)
 		{
-			return mImpl->createVertexBuffer(vertexSize, numVerts, usage, useShadowBuffer);
+			return mImpl->createVertexBuffer(vertexSize, numVerts, usage);
 		}
 		/** @copydoc HardwareBufferManagerInterface::createIndexBuffer */
-		HardwareIndexBufferPtr 
-            createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
-			HardwareBuffer::Usage usage, bool useShadowBuffer = false)
+		HardwareIndexBufferPtr createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, HardwareBuffer::Usage usage)
 		{
-			return mImpl->createIndexBuffer(itype, numIndexes, usage, useShadowBuffer);
+			return mImpl->createIndexBuffer(itype, numIndexes, usage);
 		}
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexDeclaration */
@@ -222,13 +189,6 @@ namespace CamelotEngine {
 		virtual void destroyVertexBufferBinding(VertexBufferBinding* binding)
 		{
 			mImpl->destroyVertexBufferBinding(binding);
-		}
-		/** @copydoc HardwareBufferManagerInterface::allocateVertexBufferCopy */
-        virtual HardwareVertexBufferPtr allocateVertexBufferCopy(
-            const HardwareVertexBufferPtr& sourceBuffer,
-            bool copyData = false)
-		{
-			return mImpl->allocateVertexBufferCopy(sourceBuffer, copyData);
 		}
 		/** @copydoc HardwareBufferManagerInterface::_notifyVertexBufferDestroyed */
 		void _notifyVertexBufferDestroyed(HardwareVertexBuffer* buf)

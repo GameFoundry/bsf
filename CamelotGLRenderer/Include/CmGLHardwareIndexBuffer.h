@@ -51,15 +51,13 @@ namespace CamelotEngine {
         void unlockImpl(void);
     public:
         GLHardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
-            HardwareBuffer::Usage usage, bool useShadowBuffer); 
+            HardwareBuffer::Usage usage); 
         ~GLHardwareIndexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);
         /** See HardwareBuffer. */
         void writeData(UINT32 offset, UINT32 length, 
             const void* pSource, bool discardWholeBuffer = false);
-        /** See HardwareBuffer. */
-        void _updateFromShadow(void);
 
         GLuint getGLBufferId(void) const { return mBufferId; }
     };

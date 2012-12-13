@@ -108,37 +108,6 @@ namespace CamelotEngine {
         mVertexBufferBindings.clear();
     }
 	//-----------------------------------------------------------------------
-    HardwareVertexBufferPtr 
-    HardwareBufferManagerBase::allocateVertexBufferCopy(
-        const HardwareVertexBufferPtr& sourceBuffer, 
-        bool copyData)
-    {
-		// pre-lock the mVertexBuffers mutex, which would usually get locked in
-		//  makeBufferCopy / createVertexBuffer
-		// this prevents a deadlock in _notifyVertexBufferDestroyed
-		// which locks the same mutexes (via other methods) but in reverse order
-		CM_LOCK_MUTEX(mVertexBuffersMutex)
-		{
-			HardwareVertexBufferPtr vbuf;
-
-			// Locate existing buffer copy in temporary vertex buffers
-			// copy buffer, use shadow buffer and make dynamic
-			vbuf = makeBufferCopy(
-				sourceBuffer, 
-				HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE, 
-				true);
-
-			// Copy data?
-			if (copyData)
-			{
-				vbuf->copyData(*(sourceBuffer.get()), 0, 0, sourceBuffer->getSizeInBytes(), true);
-			}
-
-			return vbuf;
-		}
-
-    }
-	//-----------------------------------------------------------------------
 	void HardwareBufferManagerBase::_notifyVertexBufferDestroyed(HardwareVertexBuffer* buf)
 	{
 		CM_LOCK_MUTEX(mVertexBuffersMutex)
@@ -161,15 +130,4 @@ namespace CamelotEngine {
 			mIndexBuffers.erase(i);
 		}
 	}
-    //-----------------------------------------------------------------------
-    HardwareVertexBufferPtr 
-    HardwareBufferManagerBase::makeBufferCopy(
-        const HardwareVertexBufferPtr& source,
-        HardwareBuffer::Usage usage, bool useShadowBuffer)
-    {
-        return this->createVertexBuffer(
-            source->getVertexSize(), 
-            source->getNumVertices(),
-            usage, useShadowBuffer);
-    }
 }

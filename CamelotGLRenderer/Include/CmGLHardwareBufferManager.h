@@ -50,11 +50,11 @@ namespace CamelotEngine {
         ~GLHardwareBufferManagerBase();
         /// Creates a vertex buffer
         HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, 
-            UINT32 numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer = false);
+            UINT32 numVerts, HardwareBuffer::Usage usage);
         /// Create a hardware vertex buffer
         HardwareIndexBufferPtr createIndexBuffer(
             HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
-            HardwareBuffer::Usage usage, bool useShadowBuffer = false);
+            HardwareBuffer::Usage usage);
         /// Utility function to get the correct GL usage based on HBU's
         static GLenum getGLUsage(unsigned int usage);
 

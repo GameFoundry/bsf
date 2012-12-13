@@ -36,8 +36,8 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------------
     HardwareIndexBuffer::HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, 
         UINT32 numIndexes, HardwareBuffer::Usage usage, 
-        bool useSystemMemory, bool useShadowBuffer) 
-        : HardwareBuffer(usage, useSystemMemory, useShadowBuffer)
+        bool useSystemMemory) 
+        : HardwareBuffer(usage, useSystemMemory)
 		, mMgr(mgr)
 		, mIndexType(idxType)
 		, mNumIndexes(numIndexes)
@@ -53,15 +53,6 @@ namespace CamelotEngine {
             break;
         }
         mSizeInBytes = mIndexSize * mNumIndexes;
-
-        // Create a shadow buffer if required
-        if (mUseShadowBuffer)
-        {
-            mpShadowBuffer = new DefaultHardwareIndexBuffer(mIndexType, 
-                mNumIndexes, HardwareBuffer::HBU_DYNAMIC);
-        }
-
-
     }
     //-----------------------------------------------------------------------------
     HardwareIndexBuffer::~HardwareIndexBuffer()
@@ -70,11 +61,6 @@ namespace CamelotEngine {
 		{
 			mMgr->_notifyIndexBufferDestroyed(this);
 		}
-
-        if (mpShadowBuffer)
-        {
-            delete mpShadowBuffer;
-        }
     }
 }
 

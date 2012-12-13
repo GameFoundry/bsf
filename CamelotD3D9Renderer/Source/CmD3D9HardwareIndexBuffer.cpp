@@ -38,8 +38,8 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
     D3D9HardwareIndexBuffer::D3D9HardwareIndexBuffer(HardwareBufferManagerBase* mgr, HardwareIndexBuffer::IndexType idxType, 
         UINT32 numIndexes, HardwareBuffer::Usage usage,
-        bool useSystemMemory, bool useShadowBuffer)
-        : HardwareIndexBuffer(mgr, idxType, numIndexes, usage, useSystemMemory, useShadowBuffer)
+        bool useSystemMemory)
+        : HardwareIndexBuffer(mgr, idxType, numIndexes, usage, useSystemMemory)
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 

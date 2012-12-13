@@ -518,11 +518,6 @@ namespace CamelotEngine {
 		return mpMicroCode;
 	}
 
-	const String D3D9HLSLProgram::getTarget(void) const
-	{
-		return GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
-	}
-
     //-----------------------------------------------------------------------
 	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
@@ -560,12 +555,6 @@ namespace CamelotEngine {
         // Need to transpose matrices if compiled with column-major matrices
         params->setTransposeMatrices(mColumnMajorMatrices);
     }
-    //-----------------------------------------------------------------------
-    void D3D9HLSLProgram::setTarget(const String& target)
-    {
-        //mTarget = target;
-    }
-
     //-----------------------------------------------------------------------
     const String& D3D9HLSLProgram::getLanguage(void) const
     {

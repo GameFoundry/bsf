@@ -34,11 +34,6 @@ THE SOFTWARE.
 namespace CamelotEngine {
     /** Specialisation of HighLevelGpuProgram to provide support for D3D9 
         High-Level Shader Language (HLSL).
-    @remarks
-        Note that the syntax of D3D9 HLSL is identical to nVidia's Cg language, therefore
-        unless you know you will only ever be deploying on Direct3D, or you have some specific
-        reason for not wanting to use the Cg plugin, I suggest you use Cg instead since that
-        can produce programs for OpenGL too.
     */
     class CM_D3D9_EXPORT D3D9HLSLProgram : public HighLevelGpuProgram
     {
@@ -67,12 +62,6 @@ namespace CamelotEngine {
     public:
         ~D3D9HLSLProgram();
 
-        /** Gets the entry point defined for this program. */
-        const String& getEntryPoint(void) const { return mEntryPoint; }
-        /** Sets the shader target to compile down to, e.g. 'vs_1_1'. */
-        void setTarget(const String& target);
-        /** Gets the shader target to compile down to, e.g. 'vs_1_1'. */
-        const String getTarget(void) const;
         /** Sets the preprocessor defines use to compile the program. */
         void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
         /** Sets the preprocessor defines use to compile the program. */

@@ -32,7 +32,7 @@ namespace CamelotEngine {
 
 	DefaultHardwareVertexBuffer::DefaultHardwareVertexBuffer(UINT32 vertexSize, UINT32 numVertices, 
 															 HardwareBuffer::Usage usage)
-	: HardwareVertexBuffer(0, vertexSize, numVertices, usage, true, false) // always software, never shadowed
+	: HardwareVertexBuffer(0, vertexSize, numVertices, usage, true)
 	{
         // Allocate aligned memory for better SIMD processing friendly.
         mpData = static_cast<unsigned char*>(_aligned_malloc(mSizeInBytes, CM_SIMD_ALIGNMENT));
@@ -40,7 +40,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	DefaultHardwareVertexBuffer::DefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
 		HardwareBuffer::Usage usage)
-        : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, true, false) // always software, never shadowed
+        : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, true)
 	{
         // Allocate aligned memory for better SIMD processing friendly.
         mpData = static_cast<unsigned char*>(_aligned_malloc(mSizeInBytes, CM_SIMD_ALIGNMENT));
@@ -92,7 +92,7 @@ namespace CamelotEngine {
 
 	DefaultHardwareIndexBuffer::DefaultHardwareIndexBuffer(IndexType idxType, 
 		UINT32 numIndexes, HardwareBuffer::Usage usage) 
-		: HardwareIndexBuffer(0, idxType, numIndexes, usage, true, false) // always software, never shadowed
+		: HardwareIndexBuffer(0, idxType, numIndexes, usage, true)
 	{
 		mpData = (unsigned char*)malloc(sizeof(unsigned char) * mSizeInBytes);
 	}
@@ -152,7 +152,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	HardwareVertexBufferPtr 
         DefaultHardwareBufferManagerBase::createVertexBuffer(UINT32 vertexSize, 
-		UINT32 numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
+		UINT32 numVerts, HardwareBuffer::Usage usage)
 	{
         DefaultHardwareVertexBuffer* vb = new DefaultHardwareVertexBuffer(this, vertexSize, numVerts, usage);
         return HardwareVertexBufferPtr(vb);
@@ -160,7 +160,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	HardwareIndexBufferPtr 
         DefaultHardwareBufferManagerBase::createIndexBuffer(HardwareIndexBuffer::IndexType itype, 
-		UINT32 numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer)
+		UINT32 numIndexes, HardwareBuffer::Usage usage)
 	{
         DefaultHardwareIndexBuffer* ib = new DefaultHardwareIndexBuffer(itype, numIndexes, usage);
 		return HardwareIndexBufferPtr(ib);

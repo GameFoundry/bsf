@@ -40,7 +40,7 @@ CM_STATIC_MUTEX_INSTANCE(D3D9HardwarePixelBuffer::msDeviceAccessMutex)
 
 D3D9HardwarePixelBuffer::D3D9HardwarePixelBuffer(HardwareBuffer::Usage usage, 
 												 D3D9Texture* ownerTexture):
-	HardwarePixelBuffer(0, 0, 0, PF_UNKNOWN, usage, false, false),
+	HardwarePixelBuffer(0, 0, 0, PF_UNKNOWN, usage, false),
 	mDoMipmapGen(0), mHWMipmaps(0), mOwnerTexture(ownerTexture), 
 	mRenderTexture(NULL)
 {	

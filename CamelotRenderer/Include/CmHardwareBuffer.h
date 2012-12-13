@@ -143,10 +143,6 @@ namespace CamelotEngine {
 			UINT32 mLockStart;
 			UINT32 mLockSize;
 			bool mSystemMemory;
-            bool mUseShadowBuffer;
-            HardwareBuffer* mpShadowBuffer;
-            bool mShadowUpdated;
-            bool mSuppressHardwareUpdate;
     		
             /// Internal implementation of lock()
 		    virtual void* lockImpl(UINT32 offset, UINT32 length, LockOptions options) = 0;
@@ -155,21 +151,9 @@ namespace CamelotEngine {
 
     public:
 		    /// Constructor, to be called by HardwareBufferManager only
-            HardwareBuffer(Usage usage, bool systemMemory, bool useShadowBuffer) 
-				: mUsage(usage), mIsLocked(false), mSystemMemory(systemMemory), 
-                mUseShadowBuffer(useShadowBuffer), mpShadowBuffer(NULL), mShadowUpdated(false), 
-                mSuppressHardwareUpdate(false) 
-            {
-                // If use shadow buffer, upgrade to WRITE_ONLY on hardware side
-                if (useShadowBuffer && usage == HBU_DYNAMIC)
-                {
-                    mUsage = HBU_DYNAMIC_WRITE_ONLY;
-                }
-                else if (useShadowBuffer && usage == HBU_STATIC)
-                {
-                    mUsage = HBU_STATIC_WRITE_ONLY;
-                }
-            }
+            HardwareBuffer(Usage usage, bool systemMemory) 
+				: mUsage(usage), mIsLocked(false), mSystemMemory(systemMemory)
+            {  }
             virtual ~HardwareBuffer() {}
 		    /** Lock the buffer for (potentially) reading / writing.
 		    @param offset The byte offset from the start of the buffer to lock
@@ -180,24 +164,9 @@ namespace CamelotEngine {
 		    virtual void* lock(UINT32 offset, UINT32 length, LockOptions options)
             {
                 assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
-                void* ret;
-				if (mUseShadowBuffer)
-                {
-					if (options != HBL_READ_ONLY)
-					{
-						// we have to assume a read / write lock so we use the shadow buffer
-						// and tag for sync on unlock()
-                        mShadowUpdated = true;
-                    }
+                void* ret = lockImpl(offset, length, options);
+                mIsLocked = true;
 
-                    ret = mpShadowBuffer->lock(offset, length, options);
-                }
-                else
-                {
-					// Lock the real buffer if there is no shadow buffer 
-                    ret = lockImpl(offset, length, options);
-                    mIsLocked = true;
-                }
 				mLockStart = offset;
 				mLockSize = length;
                 return ret;
@@ -227,20 +196,8 @@ namespace CamelotEngine {
             {
                 assert(isLocked() && "Cannot unlock this buffer, it is not locked!");
 
-				// If we used the shadow buffer this time...
-                if (mUseShadowBuffer && mpShadowBuffer->isLocked())
-                {
-                    mpShadowBuffer->unlock();
-                    // Potentially update the 'real' buffer from the shadow buffer
-                    _updateFromShadow();
-                }
-                else
-                {
-					// Otherwise, unlock the real one
-                    unlockImpl();
-                    mIsLocked = false;
-                }
-
+                unlockImpl();
+                mIsLocked = false;
             }
 
             /** Reads data from the buffer and places it in the memory pointed to by pDest.
@@ -291,54 +248,16 @@ namespace CamelotEngine {
 				copyData(srcBuffer, 0, 0, sz, true);
 			}
 			
-			/// Updates the real buffer from the shadow buffer, if required
-            virtual void _updateFromShadow(void)
-            {
-                if (mUseShadowBuffer && mShadowUpdated && !mSuppressHardwareUpdate)
-                {
-                    // Do this manually to avoid locking problems
-                    const void *srcData = mpShadowBuffer->lockImpl(
-    					mLockStart, mLockSize, HBL_READ_ONLY);
-					// Lock with discard if the whole buffer was locked, otherwise normal
-					LockOptions lockOpt;
-					if (mLockStart == 0 && mLockSize == mSizeInBytes)
-						lockOpt = HBL_DISCARD;
-					else
-						lockOpt = HBL_NORMAL;
-					
-                    void *destData = this->lockImpl(
-    					mLockStart, mLockSize, lockOpt);
-					// Copy shadow to real
-                    memcpy(destData, srcData, mLockSize);
-                    this->unlockImpl();
-                    mpShadowBuffer->unlockImpl();
-                    mShadowUpdated = false;
-                }
-            }
-
             /// Returns the size of this buffer in bytes
             UINT32 getSizeInBytes(void) const { return mSizeInBytes; }
             /// Returns the Usage flags with which this buffer was created
             Usage getUsage(void) const { return mUsage; }
 			/// Returns whether this buffer is held in system memory
 			bool isSystemMemory(void) const { return mSystemMemory; }
-			/// Returns whether this buffer has a system memory shadow for quicker reading
-			bool hasShadowBuffer(void) const { return mUseShadowBuffer; }
             /// Returns whether or not this buffer is currently locked.
             bool isLocked(void) const { 
-                return mIsLocked || (mUseShadowBuffer && mpShadowBuffer->isLocked()); 
-            }
-            /// Pass true to suppress hardware upload of shadow buffer changes
-            void suppressHardwareUpdate(bool suppress) {
-                mSuppressHardwareUpdate = suppress;
-                if (!suppress)
-                    _updateFromShadow();
-            }
-
-
-
-
-    		
+                return mIsLocked; 
+            }	
     };
 	/** @} */
 	/** @} */

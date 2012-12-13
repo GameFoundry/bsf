@@ -22,10 +22,45 @@ High-level TODO:
   - Instancing
   - Dynamic shader linkage
   - Append/Consume buffer
+  - 1D/2D/Cube texture arrays
   - What's missing:
     - No proper support for texture arrays, or multisampled texture resources
 	- Staging and immutable buffers. See D3D11Mapping, DWORD D3D11Mappings::get(HardwareBuffer::Usage usage)
+	- Multiple adapters (multi gpu)
 
+--HARDWARE BUFFERS--
+New set of HardwareBuffer usage flags:
+ IMMUTABLE
+  - DX11: IMMUTABLE
+  - DX9/GL: STATIC (D3DUSAGE_WRITEONLY)
+  - ensures and read/write operations fail after initialization
+ DEFAULT,
+   - DX11: DEFAULT
+   - DX9/GL: STATIC (D3DUSAGE_WRITEONLY) & STATIC_DISCARDABLE
+ CPUWRITE
+   - DX11: DYNAMIC
+   - DX9/GL: DYNAMIC (D3DUSAGE_DYNAMIC)
+ CPUREADWRITE
+   - DX11: STAGING
+   - DX9/GL: DYNAMIC (D3DUSAGE_DYNAMIC)
+ DISCARDABLE
+   - Flag used in addition to the others. Ignored with DX11 and OpenGL
+ Revisit hardware buffers (especially system memory & shadow buffers)
+
+DX11 HLSL:
+ - Preprocessor defines & includes
+
+DX11 classes to port (in that order):
+ VideoMode
+Driver
+VideoModeList
+DriverList
+GpuProgramManager
+HardwareBuffer
+HardwareIndexBuffer
+HardwareVertexBuffer
+VertexDeclaration/HLSLProgram
+HLSLProgramFactory
 
 Command buffer TODO:
  - Redo OpenGL shaders as they seem to be using pretty old methods (glCreateShaderObjectARB seems to be deprectated for example)
@@ -109,7 +144,9 @@ Low priority TODO:
    if pointer is saved/loaded as a plain field. I need to add a check that ensures the type is POD. 
    See: http://www.boost.org/doc/libs/1_51_0/boost/mpi/datatype.hpp for a possible implementation of a compile time check.
  - Fix up WorkQueue as it doesn't lock when initializing, to make sure threads are actually started before returning
- 
+ - D3D9HLSLProgram stuff that isn't used (it needs to be initialized before initializing the shader, which currently isn't possible). Maybe adding it to HighLevelGpuProgramFactory?
+     - setPreprocessorDefines, setColumnMajorMatrices, setOptimisationLevel
+
 Optional TODO:
  - Add precompiled headers to all projects
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram

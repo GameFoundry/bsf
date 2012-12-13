@@ -40,21 +40,14 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------------
     HardwareVertexBuffer::HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize,  
         UINT32 numVertices, HardwareBuffer::Usage usage, 
-        bool useSystemMemory, bool useShadowBuffer) 
-        : HardwareBuffer(usage, useSystemMemory, useShadowBuffer), 
+        bool useSystemMemory) 
+        : HardwareBuffer(usage, useSystemMemory), 
 		  mMgr(mgr),
           mNumVertices(numVertices),
           mVertexSize(vertexSize)
     {
         // Calculate the size of the vertices
         mSizeInBytes = mVertexSize * numVertices;
-
-        // Create a shadow buffer if required
-        if (mUseShadowBuffer)
-        {
-            mpShadowBuffer = new DefaultHardwareVertexBuffer(mMgr, mVertexSize, 
-                    mNumVertices, HardwareBuffer::HBU_DYNAMIC);
-        }
 
     }
     //-----------------------------------------------------------------------------
@@ -64,10 +57,6 @@ namespace CamelotEngine {
 		{
 			mMgr->_notifyVertexBufferDestroyed(this);
 		}
-        if (mpShadowBuffer)
-        {
-            delete mpShadowBuffer;
-        }
     }
     //-----------------------------------------------------------------------------
     VertexElement::VertexElement(unsigned short source, UINT32 offset, 

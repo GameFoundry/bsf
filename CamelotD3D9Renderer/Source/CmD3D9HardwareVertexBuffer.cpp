@@ -38,8 +38,8 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
     D3D9HardwareVertexBuffer::D3D9HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
         UINT32 numVertices, HardwareBuffer::Usage usage, 
-        bool useSystemMemory, bool useShadowBuffer)
-        : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMemory, useShadowBuffer)
+        bool useSystemMemory)
+		: HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMemory)
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 

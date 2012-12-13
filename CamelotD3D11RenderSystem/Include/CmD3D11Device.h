@@ -4,7 +4,7 @@
 
 namespace CamelotEngine
 {
-	class D3D11Device
+	class CM_D3D11_EXPORT D3D11Device
 	{
 	public:
 		D3D11Device(ID3D11Device* device);

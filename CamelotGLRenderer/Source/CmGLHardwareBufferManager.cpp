@@ -82,10 +82,10 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------
     HardwareVertexBufferPtr GLHardwareBufferManagerBase::createVertexBuffer(
-        UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
+        UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage)
     {
 		GLHardwareVertexBuffer* buf = 
-			new GLHardwareVertexBuffer(this, vertexSize, numVerts, usage, useShadowBuffer);
+			new GLHardwareVertexBuffer(this, vertexSize, numVerts, usage);
 		{
 			CM_LOCK_MUTEX(mVertexBuffersMutex)
 			mVertexBuffers.insert(buf);
@@ -96,10 +96,10 @@ namespace CamelotEngine {
     HardwareIndexBufferPtr 
     GLHardwareBufferManagerBase::createIndexBuffer(
         HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
-        HardwareBuffer::Usage usage, bool useShadowBuffer)
+        HardwareBuffer::Usage usage)
     {
 		GLHardwareIndexBuffer* buf = 
-			new GLHardwareIndexBuffer(this, itype, numIndexes, usage, useShadowBuffer);
+			new GLHardwareIndexBuffer(this, itype, numIndexes, usage);
 		{
 			CM_LOCK_MUTEX(mIndexBuffersMutex)
 			mIndexBuffers.insert(buf);

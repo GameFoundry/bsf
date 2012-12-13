@@ -33,8 +33,8 @@ namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
     GLHardwareIndexBuffer::GLHardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType,
-        UINT32 numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer)
-        : HardwareIndexBuffer(mgr, idxType, numIndexes, usage, false, useShadowBuffer)
+        UINT32 numIndexes, HardwareBuffer::Usage usage)
+        : HardwareIndexBuffer(mgr, idxType, numIndexes, usage, false)
     {
         glGenBuffersARB( 1, &mBufferId );
 
@@ -165,33 +165,14 @@ namespace CamelotEngine {
     void GLHardwareIndexBuffer::readData(UINT32 offset, UINT32 length, 
         void* pDest)
     {
-        if(mUseShadowBuffer)
-        {
-            // get data from the shadow buffer
-            void* srcData = mpShadowBuffer->lock(offset, length, HBL_READ_ONLY);
-            memcpy(pDest, srcData, length);
-            mpShadowBuffer->unlock();
-        }
-        else
-        {
-            glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId );
-            glGetBufferSubDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, offset, length, pDest);
-        }
+		glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId );
+		glGetBufferSubDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, offset, length, pDest);
     }
 	//---------------------------------------------------------------------
     void GLHardwareIndexBuffer::writeData(UINT32 offset, UINT32 length, 
             const void* pSource, bool discardWholeBuffer)
     {
         glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId );
-
-        // Update the shadow buffer
-        if(mUseShadowBuffer)
-        {
-            void* destData = mpShadowBuffer->lock(offset, length, 
-                discardWholeBuffer ? HBL_DISCARD : HBL_NORMAL);
-            memcpy(destData, pSource, length);
-            mpShadowBuffer->unlock();
-        }
 
         if (offset == 0 && length == mSizeInBytes)
         {
@@ -208,31 +189,6 @@ namespace CamelotEngine {
 
             // Now update the real buffer
             glBufferSubDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, offset, length, pSource);
-        }
-    }
-	//---------------------------------------------------------------------
-    void GLHardwareIndexBuffer::_updateFromShadow(void)
-    {
-        if (mUseShadowBuffer && mShadowUpdated && !mSuppressHardwareUpdate)
-        {
-            const void *srcData = mpShadowBuffer->lock(
-                mLockStart, mLockSize, HBL_READ_ONLY);
-
-            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId);
-
-            // Update whole buffer if possible, otherwise normal
-            if (mLockStart == 0 && mLockSize == mSizeInBytes)
-            {
-                glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mSizeInBytes, srcData,
-                    GLHardwareBufferManager::getGLUsage(mUsage));
-            }
-            else
-            {
-                glBufferSubDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mLockStart, mLockSize, srcData);
-            }
-
-            mpShadowBuffer->unlock();
-            mShadowUpdated = false;
         }
     }
 }

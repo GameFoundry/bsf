@@ -59,7 +59,7 @@ namespace CamelotEngine {
 	    public:
 		    /// Should be called by HardwareBufferManager
 		    HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, HardwareBuffer::Usage usage,
-                bool useSystemMemory, bool useShadowBuffer);
+                bool useSystemMemory);
             ~HardwareIndexBuffer();
 			/// Return the manager of this buffer, if any
 			HardwareBufferManagerBase* getManager() const { return mMgr; }

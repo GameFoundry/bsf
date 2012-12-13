@@ -47,7 +47,6 @@ namespace CamelotEngine {
     class CM_EXPORT HardwareVertexBuffer : public HardwareBuffer
     {
 	    protected:
-
 			HardwareBufferManagerBase* mMgr;
 		    UINT32 mNumVertices;
             UINT32 mVertexSize;
@@ -55,7 +54,7 @@ namespace CamelotEngine {
 	    public:
 		    /// Should be called by HardwareBufferManager
 		    HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices,
-                HardwareBuffer::Usage usage, bool useSystemMemory, bool useShadowBuffer);
+                HardwareBuffer::Usage usage, bool useSystemMemory);
             ~HardwareVertexBuffer();
 			/// Return the manager of this buffer, if any
 			HardwareBufferManagerBase* getManager() const { return mMgr; }
@@ -63,11 +62,6 @@ namespace CamelotEngine {
             UINT32 getVertexSize(void) const { return mVertexSize; }
             /// Get the number of vertices in this buffer
             UINT32 getNumVertices(void) const { return mNumVertices; }
-
-
-
-		    // NB subclasses should override lock, unlock, readData, writeData
-
     };
 
 	typedef std::shared_ptr<HardwareVertexBuffer> HardwareVertexBufferPtr;

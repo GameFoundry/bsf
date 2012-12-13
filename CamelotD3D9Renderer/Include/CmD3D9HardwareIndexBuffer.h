@@ -40,7 +40,7 @@ namespace CamelotEngine {
   
     public:
 		D3D9HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
-			HardwareBuffer::Usage usage, bool useSystemMem, bool useShadowBuffer);
+			HardwareBuffer::Usage usage, bool useSystemMem);
         ~D3D9HardwareIndexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);

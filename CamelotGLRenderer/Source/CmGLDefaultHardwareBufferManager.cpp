@@ -32,14 +32,14 @@ namespace CamelotEngine {
 
 	GLDefaultHardwareVertexBuffer::GLDefaultHardwareVertexBuffer(UINT32 vertexSize, UINT32 numVertices, 
 																 HardwareBuffer::Usage usage)
-	: HardwareVertexBuffer(0, vertexSize, numVertices, usage, true, false) // always software, never shadowed
+	: HardwareVertexBuffer(0, vertexSize, numVertices, usage, true)
 	{
 		mpData = static_cast<unsigned char*>(_aligned_malloc(mSizeInBytes, CM_SIMD_ALIGNMENT));
 	}
 	//-----------------------------------------------------------------------
 	GLDefaultHardwareVertexBuffer::GLDefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
 		HardwareBuffer::Usage usage)
-        : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, true, false) // always software, never shadowed
+		: HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, true)
 	{
         mpData = static_cast<unsigned char*>(_aligned_malloc(mSizeInBytes, CM_SIMD_ALIGNMENT));
 	}
@@ -90,7 +90,7 @@ namespace CamelotEngine {
 
 	GLDefaultHardwareIndexBuffer::GLDefaultHardwareIndexBuffer(IndexType idxType, 
 		UINT32 numIndexes, HardwareBuffer::Usage usage) 
-		: HardwareIndexBuffer(0, idxType, numIndexes, usage, true, false) // always software, never shadowed
+		: HardwareIndexBuffer(0, idxType, numIndexes, usage, true)
 	{
 		mpData = new unsigned char[mSizeInBytes];
 	}
@@ -152,7 +152,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	HardwareVertexBufferPtr 
         GLDefaultHardwareBufferManagerBase::createVertexBuffer(UINT32 vertexSize, 
-		UINT32 numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer)
+		UINT32 numVerts, HardwareBuffer::Usage usage)
 	{
 		return HardwareVertexBufferPtr(
 			new GLDefaultHardwareVertexBuffer(this, vertexSize, numVerts, usage));
@@ -160,7 +160,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	HardwareIndexBufferPtr 
         GLDefaultHardwareBufferManagerBase::createIndexBuffer(HardwareIndexBuffer::IndexType itype, 
-		UINT32 numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer)
+		UINT32 numIndexes, HardwareBuffer::Usage usage)
 	{
 		return HardwareIndexBufferPtr(
 			new GLDefaultHardwareIndexBuffer(itype, numIndexes, usage) );

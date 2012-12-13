@@ -81,7 +81,7 @@ namespace CamelotEngine {
         /// Should be called by HardwareBufferManager
         HardwarePixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
                 PixelFormat mFormat,
-                HardwareBuffer::Usage usage, bool useSystemMemory, bool useShadowBuffer);
+                HardwareBuffer::Usage usage, bool useSystemMemory);
         ~HardwarePixelBuffer();
 
         /** make every lock method from HardwareBuffer available.

@@ -88,8 +88,7 @@ namespace CamelotEngine {
             {
 			    // create new buffer with the same settings
 			    dstBuf = pManager->createVertexBuffer(
-					    srcbuf->getVertexSize(), srcbuf->getNumVertices(), srcbuf->getUsage(),
-					    srcbuf->hasShadowBuffer());
+					    srcbuf->getVertexSize(), srcbuf->getNumVertices(), srcbuf->getUsage());
 
 			    // copy data
 			    dstBuf->copyData(*srcbuf, 0, 0, srcbuf->getSizeInBytes(), true);
@@ -127,196 +126,6 @@ namespace CamelotEngine {
         
         return dest;
 	}
-    //-----------------------------------------------------------------------
-    void VertexData::prepareForShadowVolume(void)
-    {
-        /* NOTE
-        I would dearly, dearly love to just use a 4D position buffer in order to 
-        store the extra 'w' value I need to differentiate between extruded and 
-        non-extruded sections of the buffer, so that vertex programs could use that.
-        Hey, it works fine for GL. However, D3D9 in it's infinite stupidity, does not
-        support 4d position vertices in the fixed-function pipeline. If you use them, 
-        you just see nothing. Since we can't know whether the application is going to use
-        fixed function or vertex programs, we have to stick to 3d position vertices and
-        store the 'w' in a separate 1D texture coordinate buffer, which is only used
-        when rendering the shadow.
-        */
-
-        // Upfront, lets check whether we have vertex program capability
-        bool useVertexPrograms = false;
-
-		RenderSystem* rend = CamelotEngine::RenderSystemManager::getActive();
-        if (rend && rend->getCapabilities_internal()->hasCapability(RSC_VERTEX_PROGRAM))
-        {
-            useVertexPrograms = true;
-        }
-
-
-        // Look for a position element
-        const VertexElement* posElem = vertexDeclaration->findElementBySemantic(VES_POSITION);
-        if (posElem)
-        {
-            UINT32 v;
-            unsigned short posOldSource = posElem->getSource();
-
-            HardwareVertexBufferPtr vbuf = vertexBufferBinding->getBuffer(posOldSource);
-            bool wasSharedBuffer = false;
-            // Are there other elements in the buffer except for the position?
-            if (vbuf->getVertexSize() > posElem->getSize())
-            {
-                // We need to create another buffer to contain the remaining elements
-                // Most drivers don't like gaps in the declaration, and in any case it's waste
-                wasSharedBuffer = true;
-            }
-            HardwareVertexBufferPtr newPosBuffer, newRemainderBuffer;
-            if (wasSharedBuffer)
-            {
-                newRemainderBuffer = vbuf->getManager()->createVertexBuffer(
-                    vbuf->getVertexSize() - posElem->getSize(), vbuf->getNumVertices(), vbuf->getUsage(),
-                    vbuf->hasShadowBuffer());
-            }
-            // Allocate new position buffer, will be FLOAT3 and 2x the size
-            UINT32 oldVertexCount = vbuf->getNumVertices();
-            UINT32 newVertexCount = oldVertexCount * 2;
-            newPosBuffer = vbuf->getManager()->createVertexBuffer(
-                VertexElement::getTypeSize(VET_FLOAT3), newVertexCount, vbuf->getUsage(), 
-                vbuf->hasShadowBuffer());
-
-            // Iterate over the old buffer, copying the appropriate elements and initialising the rest
-            float* pSrc;
-            unsigned char *pBaseSrc = static_cast<unsigned char*>(
-                vbuf->lock(HardwareBuffer::HBL_READ_ONLY));
-            // Point first destination pointer at the start of the new position buffer,
-            // the other one half way along
-            float *pDest = static_cast<float*>(newPosBuffer->lock(HardwareBuffer::HBL_DISCARD));
-            float* pDest2 = pDest + oldVertexCount * 3; 
-
-            // Precalculate any dimensions of vertex areas outside the position
-            UINT32 prePosVertexSize = 0, postPosVertexSize, postPosVertexOffset;
-            unsigned char *pBaseDestRem = 0;
-            if (wasSharedBuffer)
-            {
-                pBaseDestRem = static_cast<unsigned char*>(
-                    newRemainderBuffer->lock(HardwareBuffer::HBL_DISCARD));
-                prePosVertexSize = posElem->getOffset();
-                postPosVertexOffset = prePosVertexSize + posElem->getSize();
-                postPosVertexSize = vbuf->getVertexSize() - postPosVertexOffset;
-                // the 2 separate bits together should be the same size as the remainder buffer vertex
-                assert (newRemainderBuffer->getVertexSize() == prePosVertexSize + postPosVertexSize);
-
-                // Iterate over the vertices
-                for (v = 0; v < oldVertexCount; ++v)
-                {
-                    // Copy position, into both buffers
-                    posElem->baseVertexPointerToElement(pBaseSrc, &pSrc);
-                    *pDest++ = *pDest2++ = *pSrc++;
-                    *pDest++ = *pDest2++ = *pSrc++;
-                    *pDest++ = *pDest2++ = *pSrc++;
-
-                    // now deal with any other elements 
-                    // Basically we just memcpy the vertex excluding the position
-                    if (prePosVertexSize > 0)
-                        memcpy(pBaseDestRem, pBaseSrc, prePosVertexSize);
-                    if (postPosVertexSize > 0)
-                        memcpy(pBaseDestRem + prePosVertexSize, 
-                            pBaseSrc + postPosVertexOffset, postPosVertexSize);
-                    pBaseDestRem += newRemainderBuffer->getVertexSize();
-
-                    pBaseSrc += vbuf->getVertexSize();
-
-                } // next vertex
-            }
-            else
-            {
-                // Unshared buffer, can block copy the whole thing
-                memcpy(pDest, pBaseSrc, vbuf->getSizeInBytes());
-                memcpy(pDest2, pBaseSrc, vbuf->getSizeInBytes());
-            }
-
-            vbuf->unlock();
-            newPosBuffer->unlock();
-            if (wasSharedBuffer)
-                newRemainderBuffer->unlock();
-
-            if (useVertexPrograms)
-            {
-                // Now it's time to set up the w buffer
-                hardwareShadowVolWBuffer = vbuf->getManager()->createVertexBuffer(
-                    sizeof(float), newVertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY, false);
-                // Fill the first half with 1.0, second half with 0.0
-                pDest = static_cast<float*>(
-                    hardwareShadowVolWBuffer->lock(HardwareBuffer::HBL_DISCARD));
-                for (v = 0; v < oldVertexCount; ++v)
-                {
-                    *pDest++ = 1.0f;
-                }
-                for (v = 0; v < oldVertexCount; ++v)
-                {
-                    *pDest++ = 0.0f;
-                }
-                hardwareShadowVolWBuffer->unlock();
-            }
-
-            unsigned short newPosBufferSource; 
-            if (wasSharedBuffer)
-            {
-                // Get the a new buffer binding index
-                newPosBufferSource= vertexBufferBinding->getNextIndex();
-                // Re-bind the old index to the remainder buffer
-                vertexBufferBinding->setBinding(posOldSource, newRemainderBuffer);
-            }
-            else
-            {
-                // We can just re-use the same source idex for the new position buffer
-                newPosBufferSource = posOldSource;
-            }
-            // Bind the new position buffer
-            vertexBufferBinding->setBinding(newPosBufferSource, newPosBuffer);
-
-            // Now, alter the vertex declaration to change the position source
-            // and the offsets of elements using the same buffer
-            VertexDeclaration::VertexElementList::const_iterator elemi = 
-                vertexDeclaration->getElements().begin();
-            VertexDeclaration::VertexElementList::const_iterator elemiend = 
-                vertexDeclaration->getElements().end();
-            unsigned short idx;
-            for(idx = 0; elemi != elemiend; ++elemi, ++idx) 
-            {
-                if (&(*elemi) == posElem)
-                {
-                    // Modify position to point at new position buffer
-                    vertexDeclaration->modifyElement(
-                        idx, 
-                        newPosBufferSource, // new source buffer
-                        0, // no offset now
-                        VET_FLOAT3, 
-                        VES_POSITION);
-                }
-                else if (wasSharedBuffer &&
-                    elemi->getSource() == posOldSource &&
-                    elemi->getOffset() > prePosVertexSize )
-                {
-                    // This element came after position, remove the position's
-                    // size
-                    vertexDeclaration->modifyElement(
-                        idx, 
-                        posOldSource, // same old source
-                        elemi->getOffset() - posElem->getSize(), // less offset now
-                        elemi->getType(), 
-                        elemi->getSemantic(),
-                        elemi->getIndex());
-
-                }
-
-            }
-
-
-            // Note that we don't change vertexCount, because the other buffer(s) are still the same
-            // size after all
-
-
-        }
-    }
 	//-----------------------------------------------------------------------
 	void VertexData::reorganiseBuffers(VertexDeclarationPtr newDeclaration, 
 		const BufferUsageList& bufferUsages, HardwareBufferManagerBase* mgr)
@@ -674,7 +483,7 @@ namespace CamelotEngine {
             if (copyData)
             {
 			    dest->indexBuffer = pManager->createIndexBuffer(indexBuffer->getType(), indexBuffer->getNumIndexes(),
-				    indexBuffer->getUsage(), indexBuffer->hasShadowBuffer());
+				    indexBuffer->getUsage());
 			    dest->indexBuffer->copyData(*indexBuffer, 0, 0, indexBuffer->getSizeInBytes(), true);
             }
             else

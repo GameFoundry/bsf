@@ -10,7 +10,7 @@
 
 namespace CamelotEngine
 {
-	class D3D11Mappings
+	class CM_D3D11_EXPORT D3D11Mappings
 	{
 	public:
 

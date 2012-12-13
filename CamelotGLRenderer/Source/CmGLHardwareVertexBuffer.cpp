@@ -33,8 +33,8 @@ namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
     GLHardwareVertexBuffer::GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
-        UINT32 numVertices, HardwareBuffer::Usage usage, bool useShadowBuffer)
-        : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, false, useShadowBuffer)
+        UINT32 numVertices, HardwareBuffer::Usage usage)
+        : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, false)
     {
         glGenBuffersARB( 1, &mBufferId );
 
@@ -166,35 +166,16 @@ namespace CamelotEngine {
     void GLHardwareVertexBuffer::readData(UINT32 offset, UINT32 length, 
         void* pDest)
     {
-        if(mUseShadowBuffer)
-        {
-            // get data from the shadow buffer
-            void* srcData = mpShadowBuffer->lock(offset, length, HBL_READ_ONLY);
-            memcpy(pDest, srcData, length);
-            mpShadowBuffer->unlock();
-        }
-        else
-        {
-            // get data from the real buffer
-            glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
+        // get data from the real buffer
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
         
-            glGetBufferSubDataARB(GL_ARRAY_BUFFER_ARB, offset, length, pDest);
-        }
+        glGetBufferSubDataARB(GL_ARRAY_BUFFER_ARB, offset, length, pDest);
     }
 	//---------------------------------------------------------------------
     void GLHardwareVertexBuffer::writeData(UINT32 offset, UINT32 length, 
             const void* pSource, bool discardWholeBuffer)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
-
-        // Update the shadow buffer
-        if(mUseShadowBuffer)
-        {
-            void* destData = mpShadowBuffer->lock(offset, length, 
-                discardWholeBuffer ? HBL_DISCARD : HBL_NORMAL);
-            memcpy(destData, pSource, length);
-            mpShadowBuffer->unlock();
-        }
 
         if (offset == 0 && length == mSizeInBytes)
         {
@@ -211,31 +192,6 @@ namespace CamelotEngine {
 
             // Now update the real buffer
             glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, offset, length, pSource); 
-        }
-    }
-	//---------------------------------------------------------------------
-    void GLHardwareVertexBuffer::_updateFromShadow(void)
-    {
-        if (mUseShadowBuffer && mShadowUpdated && !mSuppressHardwareUpdate)
-        {
-            const void *srcData = mpShadowBuffer->lock(
-                mLockStart, mLockSize, HBL_READ_ONLY);
-
-            glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
-
-            // Update whole buffer if possible, otherwise normal
-            if (mLockStart == 0 && mLockSize == mSizeInBytes)
-            {
-                glBufferDataARB(GL_ARRAY_BUFFER_ARB, mSizeInBytes, srcData,
-                    GLHardwareBufferManager::getGLUsage(mUsage));
-            }
-            else
-            {
-                glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, mLockStart, mLockSize, srcData);
-            }
-
-            mpShadowBuffer->unlock();
-            mShadowUpdated = false;
         }
     }
 }

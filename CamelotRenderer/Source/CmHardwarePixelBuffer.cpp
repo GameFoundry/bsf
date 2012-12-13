@@ -34,8 +34,8 @@ namespace CamelotEngine
     //-----------------------------------------------------------------------------    
     HardwarePixelBuffer::HardwarePixelBuffer(UINT32 width, UINT32 height, UINT32 depth,
             PixelFormat format,
-            HardwareBuffer::Usage usage, bool useSystemMemory, bool useShadowBuffer):
-        HardwareBuffer(usage, useSystemMemory, useShadowBuffer),
+            HardwareBuffer::Usage usage, bool useSystemMemory):
+        HardwareBuffer(usage, useSystemMemory),
         mWidth(width), mHeight(height), mDepth(depth),
         mFormat(format)
     {
@@ -64,23 +64,9 @@ namespace CamelotEngine
     //-----------------------------------------------------------------------------    
     const PixelData& HardwarePixelBuffer::lock(const Box& lockBox, LockOptions options)
     {
-        if (mUseShadowBuffer)
-        {
-            if (options != HBL_READ_ONLY)
-            {
-                // we have to assume a read / write lock so we use the shadow buffer
-                // and tag for sync on unlock()
-                mShadowUpdated = true;
-            }
-
-            mCurrentLock = static_cast<HardwarePixelBuffer*>(mpShadowBuffer)->lock(lockBox, options);
-        }
-        else
-        {
-            // Lock the real buffer if there is no shadow buffer 
-            mCurrentLock = lockImpl(lockBox, options);
-            mIsLocked = true;
-        }
+        // Lock the real buffer if there is no shadow buffer 
+        mCurrentLock = lockImpl(lockBox, options);
+        mIsLocked = true;
 
         return mCurrentLock;
     }

@@ -47,10 +47,10 @@ namespace CamelotEngine {
         ~D3D9HardwareBufferManagerBase();
         /// Creates a vertex buffer
 		HardwareVertexBufferPtr 
-            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, bool useShadowBuffer = false);
+            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage);
 		/// Create a hardware vertex buffer
 		HardwareIndexBufferPtr 
-            createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, HardwareBuffer::Usage usage, bool useShadowBuffer = false);
+            createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, HardwareBuffer::Usage usage);
     };
 
 	/// D3D9HardwareBufferManagerBase as a Singleton

@@ -108,11 +108,11 @@ namespace CamelotEngine {
         /// Creates a vertex buffer
 		HardwareVertexBufferPtr 
             createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, 
-				HardwareBuffer::Usage usage, bool useShadowBuffer = false);
+				HardwareBuffer::Usage usage);
 		/// Create a hardware vertex buffer
 		HardwareIndexBufferPtr 
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
-				HardwareBuffer::Usage usage, bool useShadowBuffer = false);
+				HardwareBuffer::Usage usage);
     };
 
 	/// DefaultHardwareBufferManager as a Singleton

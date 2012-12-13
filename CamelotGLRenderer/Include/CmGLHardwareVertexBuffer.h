@@ -52,15 +52,13 @@ namespace CamelotEngine {
         void unlockImpl(void);
     public:
         GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
-            HardwareBuffer::Usage usage, bool useShadowBuffer); 
+            HardwareBuffer::Usage usage); 
         ~GLHardwareVertexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);
         /** See HardwareBuffer. */
         void writeData(UINT32 offset, UINT32 length, 
             const void* pSource, bool discardWholeBuffer = false);
-        /** See HardwareBuffer. */
-        void _updateFromShadow(void);
 
         GLuint getGLBufferId(void) const { return mBufferId; }
     };

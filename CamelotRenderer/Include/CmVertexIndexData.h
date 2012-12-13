@@ -95,27 +95,6 @@ namespace CamelotEngine {
 		*/
 		VertexData* clone(bool copyData = true, HardwareBufferManagerBase* mgr = 0) const;
 
-        /** Modifies the vertex data to be suitable for use for rendering shadow geometry.
-        @remarks
-            Preparing vertex data to generate a shadow volume involves firstly ensuring that the 
-            vertex buffer containing the positions is a standalone vertex buffer,
-            with no other components in it. This method will therefore break apart any existing
-            vertex buffers if position is sharing a vertex buffer. 
-            Secondly, it will double the size of this vertex buffer so that there are 2 copies of 
-            the position data for the mesh. The first half is used for the original, and the second 
-            half is used for the 'extruded' version. The vertex count used to render will remain 
-            the same though, so as not to add any overhead to regular rendering of the object.
-            Both copies of the position are required in one buffer because shadow volumes stretch 
-            from the original mesh to the extruded version. 
-        @par
-            It's important to appreciate that this method can fundamentally change the structure of your
-            vertex buffers, although in reality they will be new buffers. As it happens, if other 
-            objects are using the original buffers then they will be unaffected because the reference
-            counting will keep them intact. However, if you have made any assumptions about the 
-            structure of the vertex data in the buffers of this object, you may have to rethink them.
-        */
-        void prepareForShadowVolume(void);
-
         /** Additional shadow volume vertex buffer storage. 
         @remarks
             This additional buffer is only used where we have prepared this VertexData for

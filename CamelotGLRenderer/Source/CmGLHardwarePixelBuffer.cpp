@@ -39,7 +39,7 @@ namespace CamelotEngine {
 GLHardwarePixelBuffer::GLHardwarePixelBuffer(UINT32 inWidth, UINT32 inHeight, UINT32 inDepth,
                 PixelFormat inFormat,
                 HardwareBuffer::Usage usage):
-      HardwarePixelBuffer(inWidth, inHeight, inDepth, inFormat, usage, false, false),
+      HardwarePixelBuffer(inWidth, inHeight, inDepth, inFormat, usage, false),
       mBuffer(inWidth, inHeight, inDepth, inFormat),
       mGLInternalFormat(GL_NONE)
 {

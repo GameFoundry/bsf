@@ -44,31 +44,12 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     HardwareVertexBufferPtr 
     D3D9HardwareBufferManagerBase::
-    createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage,
-		bool useShadowBuffer)
+    createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage)
     {
 		assert (numVerts > 0);
-#if CM_D3D_MANAGE_BUFFERS
-        // Override shadow buffer setting; managed buffers are automatically
-        // backed by system memory
-        // Don't override shadow buffer if discardable, since then we use
-        // unmanaged buffers for speed (avoids write-through overhead)
-        if (useShadowBuffer && !(usage & HardwareBuffer::HBU_DISCARDABLE))
-        {
-            useShadowBuffer = false;
-            // Also drop any WRITE_ONLY so we can read direct
-            if (usage == HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY)
-            {
-                usage = HardwareBuffer::HBU_DYNAMIC;
-            }
-            else if (usage == HardwareBuffer::HBU_STATIC_WRITE_ONLY)
-            {
-                usage = HardwareBuffer::HBU_STATIC;
-            }
-        }
-#endif
+
 		D3D9HardwareVertexBuffer* vbuf = new D3D9HardwareVertexBuffer(
-			this, vertexSize, numVerts, usage, false, useShadowBuffer);
+			this, vertexSize, numVerts, usage, false);
 		{
 			CM_LOCK_MUTEX(mVertexBuffersMutex)
 			mVertexBuffers.insert(vbuf);
@@ -78,29 +59,11 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	HardwareIndexBufferPtr 
     D3D9HardwareBufferManagerBase::
-    createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
-        HardwareBuffer::Usage usage, bool useShadowBuffer)
+    createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, HardwareBuffer::Usage usage)
     {
 		assert (numIndexes > 0);
-#if CM_D3D_MANAGE_BUFFERS
-        // Override shadow buffer setting; managed buffers are automatically
-        // backed by system memory
-        if (useShadowBuffer)
-        {
-            useShadowBuffer = false;
-            // Also drop any WRITE_ONLY so we can read direct
-            if (usage == HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY)
-            {
-                usage = HardwareBuffer::HBU_DYNAMIC;
-            }
-            else if (usage == HardwareBuffer::HBU_STATIC_WRITE_ONLY)
-            {
-                usage = HardwareBuffer::HBU_STATIC;
-            }
-        }
-#endif
-		D3D9HardwareIndexBuffer* idx = new D3D9HardwareIndexBuffer(
-			this, itype, numIndexes, usage, false, useShadowBuffer);
+
+		D3D9HardwareIndexBuffer* idx = new D3D9HardwareIndexBuffer(this, itype, numIndexes, usage, false);
 		{
 			CM_LOCK_MUTEX(mIndexBuffersMutex)
 			mIndexBuffers.insert(idx);
