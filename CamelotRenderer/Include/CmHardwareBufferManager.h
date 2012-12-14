@@ -72,12 +72,6 @@ namespace CamelotEngine {
 		typedef set<VertexBufferBinding*>::type VertexBufferBindingList;
 		VertexBufferBindingList mVertexBufferBindings;
 
-		// Mutexes
-		CM_MUTEX(mVertexBuffersMutex)
-		CM_MUTEX(mIndexBuffersMutex)
-		CM_MUTEX(mConstantBuffersMutex)
-		CM_MUTEX(mVertexBufferBindingsMutex)
-
         /// Internal method for destroys all vertex buffer bindings
         virtual void destroyAllBindings(void);
 
@@ -112,16 +106,11 @@ namespace CamelotEngine {
         @param usage One or more members of the HardwareBuffer::Usage enumeration; you are
             strongly advised to use HBU_STATIC_WRITE_ONLY wherever possible, if you need to 
             update regularly, consider HBU_DYNAMIC_WRITE_ONLY and useShadowBuffer=true.
-		@param useShadowBuffer If set to true, this buffer will be 'shadowed' by one stored in 
-            system memory rather than GPU or AGP memory. You should set this flag if you intend 
-            to read data back from the vertex buffer, because reading data from a buffer
-			in the GPU or AGP memory is very expensive, and is in fact impossible if you
-            specify HBU_WRITE_ONLY for the main buffer. If you use this option, all 
-            reads and writes will be done to the shadow buffer, and the shadow buffer will
-            be synchronised with the real buffer at an appropriate time.
+		@param streamOut Whether the vertex buffer will be used for steam out operations of the
+			geometry shader.
         */
 		virtual HardwareVertexBufferPtr 
-            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage) = 0;
+            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, bool streamOut = false) = 0;
 		/** Create a hardware index buffer.
         @remarks Note that because buffers can be shared, they are reference
             counted so you do not need to worry about destroying them this will be done
@@ -130,17 +119,17 @@ namespace CamelotEngine {
 			you need to be able to address
 		@param numIndexes The number of indexes in the buffer
         @param usage One or more members of the HardwareBuffer::Usage enumeration.
-		@param useShadowBuffer If set to true, this buffer will be 'shadowed' by one stored in 
-            system memory rather than GPU or AGP memory. You should set this flag if you intend 
-            to read data back from the index buffer, because reading data from a buffer
-			in the GPU or AGP memory is very expensive, and is in fact impossible if you
-            specify HBU_WRITE_ONLY for the main buffer. If you use this option, all 
-            reads and writes will be done to the shadow buffer, and the shadow buffer will
-            be synchronised with the real buffer at an appropriate time.
         */
 		virtual HardwareIndexBufferPtr 
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
 			HardwareBuffer::Usage usage) = 0;
+
+		/** Create a hardware constant buffer.
+		@param sizeBytes Size of the buffer, in bytes.
+        @param usage One or more members of the HardwareBuffer::Usage enumeration.
+        */
+		virtual HardwareConstantBufferPtr 
+            createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage) = 0;
 
         /** Creates a new vertex declaration. */
         virtual VertexDeclarationPtr createVertexDeclaration(void);
@@ -168,14 +157,20 @@ namespace CamelotEngine {
 		~HardwareBufferManager();
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexBuffer */
-		HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage)
+		HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, bool streamOut = false)
 		{
-			return mImpl->createVertexBuffer(vertexSize, numVerts, usage);
+			return mImpl->createVertexBuffer(vertexSize, numVerts, usage, streamOut);
 		}
 		/** @copydoc HardwareBufferManagerInterface::createIndexBuffer */
 		HardwareIndexBufferPtr createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, HardwareBuffer::Usage usage)
 		{
 			return mImpl->createIndexBuffer(itype, numIndexes, usage);
+		}
+
+		/** @copydoc HardwareBufferManagerInterface::createConstantBuffer */
+		HardwareConstantBufferPtr createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage)
+		{
+			return mImpl->createConstantBuffer(sizeBytes, usage);
 		}
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexDeclaration */

@@ -149,6 +149,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<RenderSystemContext> RenderSystemContextPtr;
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;
+	typedef std::shared_ptr<HardwareConstantBuffer> HardwareConstantBufferPtr;
 }
 
 // All type IDs

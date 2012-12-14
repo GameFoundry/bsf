@@ -44,14 +44,13 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     HardwareVertexBufferPtr 
     D3D9HardwareBufferManagerBase::
-    createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage)
+    createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, bool streamOut)
     {
 		assert (numVerts > 0);
 
 		D3D9HardwareVertexBuffer* vbuf = new D3D9HardwareVertexBuffer(
 			this, vertexSize, numVerts, usage, false);
 		{
-			CM_LOCK_MUTEX(mVertexBuffersMutex)
 			mVertexBuffers.insert(vbuf);
 		}
         return HardwareVertexBufferPtr(vbuf);
@@ -65,12 +64,18 @@ namespace CamelotEngine {
 
 		D3D9HardwareIndexBuffer* idx = new D3D9HardwareIndexBuffer(this, itype, numIndexes, usage, false);
 		{
-			CM_LOCK_MUTEX(mIndexBuffersMutex)
 			mIndexBuffers.insert(idx);
 		}
 		return HardwareIndexBufferPtr(idx);
             
     }
+	//-----------------------------------------------------------------------
+	HardwareConstantBufferPtr 
+		D3D9HardwareBufferManagerBase::
+		createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage)
+	{
+		CM_EXCEPT(RenderingAPIException, "Constant buffers not supported on D3D9.");
+	}
     //-----------------------------------------------------------------------
     VertexDeclarationPtr D3D9HardwareBufferManagerBase::createVertexDeclarationImpl(void)
     {

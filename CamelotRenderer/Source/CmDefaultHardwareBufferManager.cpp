@@ -140,6 +140,55 @@ namespace CamelotEngine {
 
 	}
 	//-----------------------------------------------------------------------
+	DefaultHardwareConstantBuffer::DefaultHardwareConstantBuffer(HardwareBufferManagerBase* mgr, UINT32 sizeBytes, HardwareBuffer::Usage usage)
+		: HardwareConstantBuffer(mgr, sizeBytes, usage, true)
+	{
+		// Allocate aligned memory for better SIMD processing friendly.
+		mpData = static_cast<unsigned char*>(_aligned_malloc(mSizeInBytes, CM_SIMD_ALIGNMENT));
+	}
+	//-----------------------------------------------------------------------
+	DefaultHardwareConstantBuffer::~DefaultHardwareConstantBuffer()
+	{
+		_aligned_free(mpData);
+	}
+	//-----------------------------------------------------------------------
+	void* DefaultHardwareConstantBuffer::lockImpl(UINT32 offset, UINT32 length, LockOptions options)
+	{
+		// Only for use internally, no 'locking' as such
+		return mpData + offset;
+	}
+	//-----------------------------------------------------------------------
+	void DefaultHardwareConstantBuffer::unlockImpl(void)
+	{
+		// Nothing to do
+	}
+	//-----------------------------------------------------------------------
+	void* DefaultHardwareConstantBuffer::lock(UINT32 offset, UINT32 length, LockOptions options)
+	{
+		mIsLocked = true;
+		return mpData + offset;
+	}
+	//-----------------------------------------------------------------------
+	void DefaultHardwareConstantBuffer::unlock(void)
+	{
+		mIsLocked = false;
+		// Nothing to do
+	}
+	//-----------------------------------------------------------------------
+	void DefaultHardwareConstantBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
+	{
+		assert((offset + length) <= mSizeInBytes);
+		memcpy(pDest, mpData + offset, length);
+	}
+	//-----------------------------------------------------------------------
+	void DefaultHardwareConstantBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource,
+		bool discardWholeBuffer)
+	{
+		assert((offset + length) <= mSizeInBytes);
+		// ignore discard, memory is not guaranteed to be zeroised
+		memcpy(mpData + offset, pSource, length);
+
+	}
     //-----------------------------------------------------------------------
     DefaultHardwareBufferManagerBase::DefaultHardwareBufferManagerBase()
 	{
@@ -152,7 +201,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	HardwareVertexBufferPtr 
         DefaultHardwareBufferManagerBase::createVertexBuffer(UINT32 vertexSize, 
-		UINT32 numVerts, HardwareBuffer::Usage usage)
+		UINT32 numVerts, HardwareBuffer::Usage usage, bool streamOut)
 	{
         DefaultHardwareVertexBuffer* vb = new DefaultHardwareVertexBuffer(this, vertexSize, numVerts, usage);
         return HardwareVertexBufferPtr(vb);
@@ -164,5 +213,12 @@ namespace CamelotEngine {
 	{
         DefaultHardwareIndexBuffer* ib = new DefaultHardwareIndexBuffer(itype, numIndexes, usage);
 		return HardwareIndexBufferPtr(ib);
+	}
+	//-----------------------------------------------------------------------
+	HardwareConstantBufferPtr 
+		DefaultHardwareBufferManagerBase::createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage)
+	{
+		DefaultHardwareConstantBuffer* ib = new DefaultHardwareConstantBuffer(this, sizeBytes, usage);
+		return HardwareConstantBufferPtr(ib);
 	}
 }

@@ -79,4 +79,29 @@ namespace CamelotEngine
 
 		return microCode;
 	}
+
+	const HLSLMicroCode& D3D11HLSLProgram::getMicroCode() const
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	unsigned int D3D11HLSLProgram::getNumInputs() const
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	unsigned int D3D11HLSLProgram::getNumOutputs() const
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const D3D11_SIGNATURE_PARAMETER_DESC& D3D11HLSLProgram::getInputParamDesc(unsigned int index) const
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const D3D11_SIGNATURE_PARAMETER_DESC& D3D11HLSLProgram::getOutputParamDesc(unsigned int index) const
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
 }

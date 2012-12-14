@@ -3,10 +3,10 @@
 namespace CamelotEngine
 {
 	D3D11HardwareVertexBuffer::D3D11HardwareVertexBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
-		HardwareBuffer::Usage usage, bool useSystemMem)
+		HardwareBuffer::Usage usage, bool useSystemMem, bool streamOut)
 		:HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMem)
 	{
-		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::VERTEX_BUFFER, mSizeInBytes, usage, device, useSystemMem, false);
+		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::VERTEX_BUFFER, mSizeInBytes, usage, device, useSystemMem, streamOut);
 	}
 
 	D3D11HardwareVertexBuffer::~D3D11HardwareVertexBuffer()

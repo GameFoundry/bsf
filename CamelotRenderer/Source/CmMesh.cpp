@@ -57,15 +57,15 @@ namespace CamelotEngine
 
 		mIndexData->indexCount = meshData->indexCount;
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
-			HardwareIndexBuffer::IT_16BIT,
+			HardwareIndexBuffer::IT_32BIT,
 			mIndexData->indexCount, 
 			HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
-		UINT16* idxData = static_cast<UINT16*>(mIndexData->indexBuffer->lock(HardwareBuffer::HBL_NORMAL));
+		UINT32* idxData = static_cast<UINT32*>(mIndexData->indexBuffer->lock(HardwareBuffer::HBL_NORMAL));
 
 		for(UINT32 i = 0; i < mIndexData->indexCount; i++)
 		{
-			idxData[i] = (UINT16)meshData->index[i];
+			idxData[i] = (UINT32)meshData->index[i];
 		}
 
 		mIndexData->indexBuffer->unlock();

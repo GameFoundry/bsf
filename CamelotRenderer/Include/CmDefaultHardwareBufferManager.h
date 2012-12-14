@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "CmHardwareBufferManager.h"
 #include "CmHardwareVertexBuffer.h"
 #include "CmHardwareIndexBuffer.h"
+#include "CmHardwareConstantBuffer.h"
 
 namespace CamelotEngine {
 	/** \addtogroup Core
@@ -93,6 +94,29 @@ namespace CamelotEngine {
 
     };
 
+	/// Specialisation of HardwareConstantBuffer for emulation
+	class CM_EXPORT DefaultHardwareConstantBuffer : public HardwareConstantBuffer
+	{
+	protected:
+		unsigned char* mpData;
+		/** See HardwareBuffer. */
+		void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
+		/** See HardwareBuffer. */
+		void unlockImpl(void);
+	public:
+		DefaultHardwareConstantBuffer(HardwareBufferManagerBase* mgr, UINT32 sizeBytes, HardwareBuffer::Usage usage);
+		~DefaultHardwareConstantBuffer();
+		/** See HardwareBuffer. */
+		void readData(UINT32 offset, UINT32 length, void* pDest);
+		/** See HardwareBuffer. */
+		void writeData(UINT32 offset, UINT32 length, const void* pSource,
+			bool discardWholeBuffer = false);
+		/** Override HardwareBuffer to turn off all shadowing. */
+		void* lock(UINT32 offset, UINT32 length, LockOptions options);
+		/** Override HardwareBuffer to turn off all shadowing. */
+		void unlock(void);
+	};
+
 	/** Specialisation of HardwareBufferManagerBase to emulate hardware buffers.
 	@remarks
 		You might want to instantiate this class if you want to utilise
@@ -105,14 +129,17 @@ namespace CamelotEngine {
     public:
         DefaultHardwareBufferManagerBase();
         ~DefaultHardwareBufferManagerBase();
-        /// Creates a vertex buffer
+        /// Creates a hardware vertex buffer
 		HardwareVertexBufferPtr 
             createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, 
-				HardwareBuffer::Usage usage);
-		/// Create a hardware vertex buffer
+				HardwareBuffer::Usage usage, bool streamOut = false);
+		/// Create a hardware index buffer
 		HardwareIndexBufferPtr 
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
 				HardwareBuffer::Usage usage);
+		/// Create a hardware constant buffer
+		HardwareConstantBufferPtr 
+			createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage);
     };
 
 	/// DefaultHardwareBufferManager as a Singleton

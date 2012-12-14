@@ -27,6 +27,9 @@ High-level TODO:
     - No proper support for texture arrays, or multisampled texture resources
 	- Staging and immutable buffers. See D3D11Mapping, DWORD D3D11Mappings::get(HardwareBuffer::Usage usage)
 	- Multiple adapters (multi gpu)
+  - GL equivalents that are missing:
+    - Vertex buffer stream out (Transform Feedback)
+	- GL constant buffers
 
 --HARDWARE BUFFERS--
 New set of HardwareBuffer usage flags:

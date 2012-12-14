@@ -103,14 +103,25 @@ namespace CamelotEngine {
     public:
         GLDefaultHardwareBufferManagerBase();
         ~GLDefaultHardwareBufferManagerBase();
-        /// Creates a vertex buffer
+
+		/**
+		 * @copydoc HardwareBufferManagerBase::createVertexBuffer
+		 */
 		HardwareVertexBufferPtr 
             createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, 
-				HardwareBuffer::Usage usage);
-		/// Create a hardware vertex buffer
+				HardwareBuffer::Usage usage, bool streamOut = false);
+
+		/**
+		 * @copydoc HardwareBufferManagerBase::createIndexBuffer
+		 */
 		HardwareIndexBufferPtr 
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
 				HardwareBuffer::Usage usage);
+
+		/**
+		 * @copydoc HardwareBufferManagerBase::createConstantBuffer
+		 */
+		HardwareConstantBufferPtr createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage);
 
     };
 

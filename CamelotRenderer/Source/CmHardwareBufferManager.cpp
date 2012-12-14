@@ -72,14 +72,12 @@ namespace CamelotEngine {
 	VertexBufferBinding* HardwareBufferManagerBase::createVertexBufferBinding(void)
 	{
 		VertexBufferBinding* ret = createVertexBufferBindingImpl();
-		CM_LOCK_MUTEX(mVertexBufferBindingsMutex)
 		mVertexBufferBindings.insert(ret);
 		return ret;
 	}
     //-----------------------------------------------------------------------
 	void HardwareBufferManagerBase::destroyVertexBufferBinding(VertexBufferBinding* binding)
 	{
-		CM_LOCK_MUTEX(mVertexBufferBindingsMutex)
 		mVertexBufferBindings.erase(binding);
 		destroyVertexBufferBindingImpl(binding);
 	}
@@ -101,7 +99,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     void HardwareBufferManagerBase::destroyAllBindings(void)
     {
-		CM_LOCK_MUTEX(mVertexBufferBindingsMutex)
         VertexBufferBindingList::iterator bind;
         for (bind = mVertexBufferBindings.begin(); bind != mVertexBufferBindings.end(); ++bind)
         {
@@ -112,8 +109,6 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void HardwareBufferManagerBase::_notifyVertexBufferDestroyed(HardwareVertexBuffer* buf)
 	{
-		CM_LOCK_MUTEX(mVertexBuffersMutex)
-
 		VertexBufferList::iterator i = mVertexBuffers.find(buf);
 		if (i != mVertexBuffers.end())
 		{
@@ -124,8 +119,6 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void HardwareBufferManagerBase::_notifyIndexBufferDestroyed(HardwareIndexBuffer* buf)
 	{
-		CM_LOCK_MUTEX(mIndexBuffersMutex)
-
 		IndexBufferList::iterator i = mIndexBuffers.find(buf);
 		if (i != mIndexBuffers.end())
 		{
@@ -135,8 +128,6 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void HardwareBufferManagerBase::_notifyConstantBufferDestroyed(HardwareConstantBuffer* buf)
 	{
-		CM_LOCK_MUTEX(mConstantBuffersMutex)
-
 		ConstantBufferList::iterator i = mConstantBuffers.find(buf);
 		if (i != mConstantBuffers.end())
 		{

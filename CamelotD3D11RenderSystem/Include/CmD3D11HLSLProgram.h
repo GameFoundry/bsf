@@ -16,11 +16,18 @@ namespace CamelotEngine
 		/** Sets whether matrix packing in column-major order. */ 
 		void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }
 		/** Gets whether matrix packed in column-major order. */
-		bool getColumnMajorMatrices(void) const { return mColumnMajorMatrices; }
+		bool getColumnMajorMatrices() const { return mColumnMajorMatrices; }
 		/** Sets whether backwards compatibility is enabled. */ 
 		void setEnableBackwardsCompatibility(bool enableBackwardsCompatibility) { mEnableBackwardsCompatibility = enableBackwardsCompatibility; }
 		/** Gets whether backwards compatibility is enabled. */
-		bool getEnableBackwardsCompatibility(void) const { return mEnableBackwardsCompatibility; }
+		bool getEnableBackwardsCompatibility() const { return mEnableBackwardsCompatibility; }
+
+		const HLSLMicroCode& getMicroCode() const;
+		unsigned int getNumInputs() const;
+		unsigned int getNumOutputs() const;
+
+		const D3D11_SIGNATURE_PARAMETER_DESC& getInputParamDesc(unsigned int index) const;
+		const D3D11_SIGNATURE_PARAMETER_DESC& getOutputParamDesc(unsigned int index) const;
 
 	protected:
 		friend class D3D11HLSLProgramFactory;

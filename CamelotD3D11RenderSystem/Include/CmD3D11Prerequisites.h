@@ -50,6 +50,8 @@ namespace CamelotEngine
 		TID_D3D9_HLSLProgram = 12000
 	};
 
+	typedef vector<char*>::type HLSLMicroCode;
+
 // Should we ask D3D to manage vertex/index buffers automatically?
 // Doing so avoids lost devices, but also has a performance impact
 // which is unacceptably bad when using very large buffers

@@ -82,12 +82,11 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------
     HardwareVertexBufferPtr GLHardwareBufferManagerBase::createVertexBuffer(
-        UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage)
+        UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, bool streamOut)
     {
 		GLHardwareVertexBuffer* buf = 
 			new GLHardwareVertexBuffer(this, vertexSize, numVerts, usage);
 		{
-			CM_LOCK_MUTEX(mVertexBuffersMutex)
 			mVertexBuffers.insert(buf);
 		}
 		return HardwareVertexBufferPtr(buf);
@@ -101,11 +100,15 @@ namespace CamelotEngine {
 		GLHardwareIndexBuffer* buf = 
 			new GLHardwareIndexBuffer(this, itype, numIndexes, usage);
 		{
-			CM_LOCK_MUTEX(mIndexBuffersMutex)
 			mIndexBuffers.insert(buf);
 		}
 		return HardwareIndexBufferPtr(buf);
     }
+	//---------------------------------------------------------------------
+	HardwareConstantBufferPtr GLHardwareBufferManagerBase::createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage)
+	{
+		CM_EXCEPT(RenderingAPIException, "Support for constant buffers not implemented yet in OpenGL.");
+	}
     //---------------------------------------------------------------------
     GLenum GLHardwareBufferManagerBase::getGLUsage(unsigned int usage)
     {
