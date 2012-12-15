@@ -81,8 +81,6 @@ namespace CamelotEngine {
 
 
 	};
-
-    //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     void D3D9HLSLProgram::loadFromSource(void)
     {
@@ -228,11 +226,6 @@ namespace CamelotEngine {
             CM_EXCEPT(RenderingAPIException, message);
         }
 
-
-    }
-    //-----------------------------------------------------------------------
-    void D3D9HLSLProgram::createLowLevelImpl(void)
-    {
 		if (!mCompileError)
 		{
 			String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
@@ -240,21 +233,21 @@ namespace CamelotEngine {
 			// Create a low-level program, give it the same name as us
 			mAssemblerProgram = 
 				GpuProgramManager::instance().createProgram(
-					"",// dummy source, since we'll be using microcode
-					"",
-					hlslProfile,
-					mType, 
-					GPP_NONE);
+				"",// dummy source, since we'll be using microcode
+				"",
+				hlslProfile,
+				mType, 
+				GPP_NONE);
 			static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);
 		}
-
     }
     //-----------------------------------------------------------------------
-    void D3D9HLSLProgram::unloadHighLevelImpl(void)
+    void D3D9HLSLProgram::unload(void)
     {
         SAFE_RELEASE(mpMicroCode);
         SAFE_RELEASE(mpConstTable);
 
+		HighLevelGpuProgram::unload();
     }
     //-----------------------------------------------------------------------
     void D3D9HLSLProgram::buildConstantDefinitions() const
@@ -531,7 +524,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     D3D9HLSLProgram::~D3D9HLSLProgram()
     {
-        unloadHighLevel();
+        unload();
     }
     //-----------------------------------------------------------------------
     bool D3D9HLSLProgram::isSupported(void) const

@@ -20,7 +20,7 @@ High-level TODO:
   - Compute pipeline
   - Stream out (write vertex buffers)
   - Instancing
-  - Dynamic shader linkage
+  - Dynamic shader linkage (Interfaces and similar)
   - Append/Consume buffer
   - 1D/2D/Cube texture arrays
   - What's missing:
@@ -127,13 +127,8 @@ Mid priority TODO:
      I need to make sure that HighLevelGpuProgram class has valid RTTI type as well. Otherwise the inheritance hierarchy will not be correct. Right now this isn't checked anywhere.
 
 Low priority TODO:
- - Drop support for assembly shaders?
- - Move all x86 libs to x86 folders. Move all binaries to x86 folders as well
  - Mesh loading:
   - Sub-meshes aren't being transformed by world matrices of their nodes
-  - FBX importer can be greatly sped up by implementing a better allocator
- - Serializable callbacks can't be null otherwise compiler complains
- - Depth test is disabled by default (OpenGL renderer at least)
  - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?
   - Make sure resources only get properly unloaded at end of every frame. This is because a lot of RenderSystem stuff holds raw ptrs
 	to resources, and it keeps them throughout the frame (especially with deferred rendering). Plus this can only be done on the render thread anyway.
@@ -153,6 +148,11 @@ Low priority TODO:
 Optional TODO:
  - Add precompiled headers to all projects
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
+ - Move all x86 libs to x86 folders. Move all binaries to x86 folders as well
+ - Drop support for assembly shaders?
+ - Shared shader parameters (Since there will be values that are constant between all Draw call it doesn't make sense to set them every call?)
+ - Serializable callbacks can't be null otherwise compiler complains
+ - FBX importer can be greatly sped up by implementing a better allocator
 
  -----------------------------------------------------------------------------------------------
 

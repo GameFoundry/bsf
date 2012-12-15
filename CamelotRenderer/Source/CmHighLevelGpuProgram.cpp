@@ -46,7 +46,7 @@ namespace CamelotEngine
 	HighLevelGpuProgram::HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
         : GpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired), 
-        mHighLevelLoaded(false), mAssemblerProgram(0), mConstantDefsBuilt(false)
+        mAssemblerProgram(0), mConstantDefsBuilt(false)
     {
     }
 	//---------------------------------------------------------------------------
@@ -60,10 +60,7 @@ namespace CamelotEngine
 		if (isSupported())
 		{
 			// load self 
-			loadHighLevel();
-
-			// create low-level implementation
-			createLowLevelImpl();
+			loadFromSource();
 
 			// load constructed assembler program (if it exists)
 			if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
@@ -82,7 +79,8 @@ namespace CamelotEngine
             mAssemblerProgram = nullptr;
         }
 
-        unloadHighLevel();
+		mConstantDefsBuilt = false;
+		createParameterMappingStructures(true);
 		resetCompileError();
     }
     //---------------------------------------------------------------------------
@@ -104,49 +102,6 @@ namespace CamelotEngine
 		}
 
 		op.completeOperation(params);
-    }
-    //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::loadHighLevel(void)
-    {
-        if (!mHighLevelLoaded)
-        {
-			try 
-			{
-				loadHighLevelImpl();
-				mHighLevelLoaded = true;
-			}
-			catch (const Exception& e)
-			{
-				//// will already have been logged
-				//LogManager::getSingleton().stream()
-				//	<< "High-level program " << mName << " encountered an error "
-				//	<< "during loading and is thus not supported.\n"
-				//	<< e.getFullDescription();
-
-				mCompileError = true;
-				throw;
-			}
-        }
-    }
-    //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::unloadHighLevel(void)
-    {
-        if (mHighLevelLoaded)
-        {
-            unloadHighLevelImpl();
-			// Clear saved constant defs
-			mConstantDefsBuilt = false;
-			createParameterMappingStructures(true);
-
-            mHighLevelLoaded = false;
-        }
-    }
-    //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::loadHighLevelImpl(void)
-    {
-        loadFromSource();
-
-
     }
 	//---------------------------------------------------------------------
 	const GpuNamedConstants& HighLevelGpuProgram::getConstantDefinitions_internal() const

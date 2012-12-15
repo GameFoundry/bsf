@@ -38,11 +38,6 @@ namespace CamelotEngine {
 		/** Internal load implementation, must be implemented by subclasses.
 		*/
 		void loadFromSource(void) {}
-		/** Internal method for creating an appropriate low-level program from this
-		high-level program, must be implemented by subclasses. */
-		void createLowLevelImpl(void) {}
-		/// Internal unload implementation, must be implemented by subclasses
-		void unloadHighLevelImpl(void) {}
 		/// Populate the passed parameters with name->index map, must be overridden
 		void populateParameterNames(GpuProgramParametersSharedPtr params)
 		{

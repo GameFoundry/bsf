@@ -120,11 +120,8 @@ namespace CamelotEngine {
 		shader so this method creates an object sub-classed from GLGpuProgram just to be
 		compatible with	GLRenderSystem.
 		*/
-		void createLowLevelImpl(void);
-        /// Internal unload implementation, must be implemented by subclasses
-        void unloadHighLevelImpl(void);
 		/// Overridden from HighLevelGpuProgram
-		void unloadImpl(void);
+		void unload();
 
         /// Populate the passed parameters with name->index map
         void populateParameterNames(GpuProgramParametersSharedPtr params);

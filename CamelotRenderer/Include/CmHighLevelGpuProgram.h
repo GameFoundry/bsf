@@ -103,26 +103,11 @@ namespace CamelotEngine {
 		HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
-        /// Whether the high-level program (and it's parameter defs) is loaded
-        bool mHighLevelLoaded;
         /// The underlying assembler program
         GpuProgramPtr mAssemblerProgram;
 		/// Have we built the name->index parameter map yet?
 		mutable bool mConstantDefsBuilt;
 
-        /// Internal load high-level portion if not loaded
-        virtual void loadHighLevel(void);
-        /// Internal unload high-level portion if loaded
-        virtual void unloadHighLevel(void);
-        /** Internal load implementation, loads just the high-level portion, enough to 
-            get parameters.
-        */
-        virtual void loadHighLevelImpl(void);
-        /** Internal method for creating an appropriate low-level program from this
-        high-level program, must be implemented by subclasses. */
-        virtual void createLowLevelImpl(void) = 0;
-        /// Internal unload implementation, must be implemented by subclasses
-        virtual void unloadHighLevelImpl(void) = 0;
         /// Populate the passed parameters with name->index map
         virtual void populateParameterNames(GpuProgramParametersSharedPtr params);
 		/** Build the constant definition map, must be overridden.

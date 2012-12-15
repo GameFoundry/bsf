@@ -153,10 +153,6 @@ namespace CamelotEngine {
         checkForCgError("CgProgram::loadFromSource", 
             "Unable to compile Cg program", mCgContext);
 
-    }
-    //-----------------------------------------------------------------------
-    void CgProgram::createLowLevelImpl(void)
-    {
 		// ignore any previous error
 		if (mSelectedCgProfile != CG_PROFILE_UNKNOWN && !mCompileError)
 		{
@@ -190,7 +186,7 @@ namespace CamelotEngine {
 		}
     }
     //-----------------------------------------------------------------------
-    void CgProgram::unloadHighLevelImpl(void)
+    void CgProgram::unload(void)
     {
         // Unload Cg Program
         // Lowlevel program will get unloaded elsewhere
@@ -202,6 +198,8 @@ namespace CamelotEngine {
                 mCgContext);
             mCgProgram = 0;
         }
+
+		HighLevelGpuProgram::unload();
     }
     //-----------------------------------------------------------------------
     void CgProgram::buildConstantDefinitions() const
@@ -476,7 +474,7 @@ namespace CamelotEngine {
     {
         freeCgArgs();
 
-        unloadHighLevel();
+        unload();
     }
     //-----------------------------------------------------------------------
     bool CgProgram::isSupported(void) const

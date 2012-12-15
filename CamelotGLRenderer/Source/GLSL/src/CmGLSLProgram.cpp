@@ -162,6 +162,8 @@ namespace CamelotEngine {
 		}
 
 		compile();
+
+		mAssemblerProgram = GpuProgramPtr(new GLSLGpuProgram(this, mSource, mEntryPoint, mSyntaxCode, mType, mProfile));
 	}
     
     //---------------------------------------------------------------------------
@@ -188,31 +190,21 @@ namespace CamelotEngine {
 		return (mCompiled == 1);
 
 	}
-
-	//-----------------------------------------------------------------------
-	void GLSLProgram::createLowLevelImpl(void)
-	{
-		mAssemblerProgram = GpuProgramPtr(new GLSLGpuProgram( this, mSource, mEntryPoint, mSyntaxCode, mType, mProfile));
-	}
 	//---------------------------------------------------------------------------
-	void GLSLProgram::unloadImpl()
+	void GLSLProgram::unload()
 	{   
 		// We didn't create mAssemblerProgram through a manager, so override this
 		// implementation so that we don't try to remove it from one. Since getCreator()
 		// is used, it might target a different matching handle!
 		mAssemblerProgram = nullptr;
 
-		unloadHighLevel();
-	}
-	//-----------------------------------------------------------------------
-	void GLSLProgram::unloadHighLevelImpl(void)
-	{
 		if (isSupported())
 		{
 			glDeleteObjectARB(mGLHandle);
 		}
-	}
 
+		HighLevelGpuProgram::unload();
+	}
 	//-----------------------------------------------------------------------
 	void GLSLProgram::populateParameterNames(GpuProgramParametersSharedPtr params)
 	{
