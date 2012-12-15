@@ -47,7 +47,7 @@ ATI_FS_GLGpuProgram::~ATI_FS_GLGpuProgram()
 {
     // have to call this here reather than in Resource destructor
     // since calling virtual methods in base destructors causes crash
-    unload(); 
+    unload_internal(); 
 }
 
 void ATI_FS_GLGpuProgram::bindProgram(void)

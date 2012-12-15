@@ -44,7 +44,7 @@ namespace CamelotEngine {
     //---------------------------------------------------------------------------
     GLSLProgram::~GLSLProgram()
     {
-        unload();
+        unload_internal();
     }
 	//-----------------------------------------------------------------------
 	GLSLProgram::GLSLProgram(const String& source, const String& entryPoint, const String& language, 
@@ -191,7 +191,7 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------------
-	void GLSLProgram::unload()
+	void GLSLProgram::unload_internal()
 	{   
 		// We didn't create mAssemblerProgram through a manager, so override this
 		// implementation so that we don't try to remove it from one. Since getCreator()
@@ -203,7 +203,7 @@ namespace CamelotEngine {
 			glDeleteObjectARB(mGLHandle);
 		}
 
-		HighLevelGpuProgram::unload();
+		HighLevelGpuProgram::unload_internal();
 	}
 	//-----------------------------------------------------------------------
 	void GLSLProgram::populateParameterNames(GpuProgramParametersSharedPtr params)

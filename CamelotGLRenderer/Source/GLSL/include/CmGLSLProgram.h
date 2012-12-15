@@ -115,13 +115,11 @@ namespace CamelotEngine {
         /** Internal load implementation, must be implemented by subclasses.
         */
         void loadFromSource(void);
-        /** Internal method for creating a dummy low-level program for this
-        high-level program.	GLSL does not give access to the low level implementation of the
-		shader so this method creates an object sub-classed from GLGpuProgram just to be
-		compatible with	GLRenderSystem.
-		*/
-		/// Overridden from HighLevelGpuProgram
-		void unload();
+
+		/**
+		 * @copydoc GpuProgram::unload_internal()
+		 */
+		void unload_internal();
 
         /// Populate the passed parameters with name->index map
         void populateParameterNames(GpuProgramParametersSharedPtr params);

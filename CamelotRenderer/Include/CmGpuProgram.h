@@ -132,7 +132,11 @@ namespace CamelotEngine {
 		 * @brief	Performs GpuProgram initialization. Only callable from the render thread.
 		 */
 		virtual void initialize_internal();
-		virtual void unload() {}
+
+		/**
+		 * @brief	Unloads the GpuProgram. Only callable from the render thread.
+		 */
+		virtual void unload_internal();
 
         /** Gets the syntax code for this program e.g. arbvp1, fp20, vs_1_1 etc */
         virtual const String& getSyntaxCode(void) const { return mSyntaxCode; }

@@ -31,7 +31,7 @@ namespace CamelotEngine
 	{
 		// have to call this here reather than in Resource destructor
 		// since calling virtual methods in base destructors causes crash
-		unload(); 
+		unload_internal(); 
 	}
 
 	void D3D11GpuVertexProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob *  microcode)
@@ -76,7 +76,7 @@ namespace CamelotEngine
 
 	D3D11GpuFragmentProgram::~D3D11GpuFragmentProgram()
 	{
-		unload(); 
+		unload_internal(); 
 	}
 
 	void D3D11GpuFragmentProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
@@ -120,7 +120,7 @@ namespace CamelotEngine
 
 	D3D11GpuGeometryProgram::~D3D11GpuGeometryProgram()
 	{
-		unload(); 
+		unload_internal(); 
 	}
 
 	void D3D11GpuGeometryProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
@@ -164,7 +164,7 @@ namespace CamelotEngine
 
 	D3D11GpuDomainProgram::~D3D11GpuDomainProgram()
 	{
-		unload(); 
+		unload_internal(); 
 	}
 
 	void D3D11GpuDomainProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
@@ -208,7 +208,7 @@ namespace CamelotEngine
 
 	D3D11GpuHullProgram::~D3D11GpuHullProgram()
 	{
-		unload(); 
+		unload_internal(); 
 	}
 
 	void D3D11GpuHullProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)

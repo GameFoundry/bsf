@@ -78,7 +78,10 @@ namespace CamelotEngine {
 		 */
 		virtual void initialize_internal();
 
-		virtual void unload();
+		/**
+		 * @copydoc GpuProgram::unload_internal()
+		 */
+		virtual void unload_internal();
 
         /** Creates a new parameters object compatible with this program definition. 
         @remarks

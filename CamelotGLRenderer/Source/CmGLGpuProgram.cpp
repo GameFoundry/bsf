@@ -59,7 +59,7 @@ GLGpuProgram::~GLGpuProgram()
 {
     // have to call this here reather than in Resource destructor
     // since calling virtual methods in base destructors causes crash
-    unload(); 
+    unload_internal(); 
 }
 
 GLuint GLGpuProgram::getAttributeIndex(VertexElementSemantic semantic, CamelotEngine::UINT32 index)
@@ -149,7 +149,7 @@ GLArbGpuProgram::~GLArbGpuProgram()
 {
     // have to call this here reather than in Resource destructor
     // since calling virtual methods in base destructors causes crash
-    unload(); 
+    unload_internal(); 
 }
 
 void GLArbGpuProgram::bindProgram(void)

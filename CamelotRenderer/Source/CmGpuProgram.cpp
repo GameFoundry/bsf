@@ -82,6 +82,11 @@ namespace CamelotEngine
 			mCompileError = true;
 		}
     }
+	//-----------------------------------------------------------------------------
+	void GpuProgram::unload_internal()
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+	}
     //-----------------------------------------------------------------------------
     bool GpuProgram::isSupported(void) const
     {

@@ -186,7 +186,7 @@ namespace CamelotEngine {
 		}
     }
     //-----------------------------------------------------------------------
-    void CgProgram::unload(void)
+    void CgProgram::unload_internal(void)
     {
         // Unload Cg Program
         // Lowlevel program will get unloaded elsewhere
@@ -199,7 +199,7 @@ namespace CamelotEngine {
             mCgProgram = 0;
         }
 
-		HighLevelGpuProgram::unload();
+		HighLevelGpuProgram::unload_internal();
     }
     //-----------------------------------------------------------------------
     void CgProgram::buildConstantDefinitions() const
@@ -474,7 +474,7 @@ namespace CamelotEngine {
     {
         freeCgArgs();
 
-        unload();
+        unload_internal();
     }
     //-----------------------------------------------------------------------
     bool CgProgram::isSupported(void) const

@@ -14,7 +14,7 @@ namespace CamelotEngine
 
 	D3D11HLSLProgram::~D3D11HLSLProgram()
 	{
-		unload();
+		unload_internal();
 	}
 
 	const String& D3D11HLSLProgram::getLanguage() const

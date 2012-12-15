@@ -64,7 +64,7 @@ namespace CamelotEngine {
     {
         // have to call this here reather than in Resource destructor
         // since calling virtual methods in base destructors causes crash
-        unload(); 
+        unload_internal(); 
     }
 	//-----------------------------------------------------------------------------
     void GLSLGpuProgram::initialize_internal(void)

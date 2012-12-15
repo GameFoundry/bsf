@@ -72,7 +72,7 @@ namespace CamelotEngine
 		}
     }
     //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::unload()
+    void HighLevelGpuProgram::unload_internal()
     {   
         if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
         {
@@ -82,6 +82,8 @@ namespace CamelotEngine
 		mConstantDefsBuilt = false;
 		createParameterMappingStructures(true);
 		resetCompileError();
+
+		GpuProgram::unload_internal();
     }
     //---------------------------------------------------------------------------
     HighLevelGpuProgram::~HighLevelGpuProgram()

@@ -94,8 +94,10 @@ namespace CamelotEngine {
         /** Internal load implementation, must be implemented by subclasses.
         */
         void loadFromSource(void);
-        /// Internal unload implementation, must be implemented by subclasses
-        void unload(void);
+		/**
+		 * @copydoc GpuProgram::unload_internal()
+		 */
+        void unload_internal(void);
         /// Populate the passed parameters with name->index map, must be overridden
         void buildConstantDefinitions() const;
 

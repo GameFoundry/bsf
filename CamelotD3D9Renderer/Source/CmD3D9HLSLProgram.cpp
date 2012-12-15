@@ -242,12 +242,12 @@ namespace CamelotEngine {
 		}
     }
     //-----------------------------------------------------------------------
-    void D3D9HLSLProgram::unload(void)
+    void D3D9HLSLProgram::unload_internal(void)
     {
         SAFE_RELEASE(mpMicroCode);
         SAFE_RELEASE(mpConstTable);
 
-		HighLevelGpuProgram::unload();
+		HighLevelGpuProgram::unload_internal();
     }
     //-----------------------------------------------------------------------
     void D3D9HLSLProgram::buildConstantDefinitions() const
@@ -524,7 +524,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     D3D9HLSLProgram::~D3D9HLSLProgram()
     {
-        unload();
+        unload_internal();
     }
     //-----------------------------------------------------------------------
     bool D3D9HLSLProgram::isSupported(void) const
