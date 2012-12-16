@@ -44,13 +44,24 @@ namespace CamelotEngine
 	class D3D11Device;
 	class D3D11HardwareBuffer;
 	class D3D11HardwarePixelBuffer;
+	class D3D11GpuVertexProgram;
+	class D3D11GpuFragmentProgram;
+	class D3D11GpuGeometryProgram;
+	class D3D11GpuHullProgram;
+	class D3D11GpuDomainProgram;
 
-	enum TypeID_D3D9
+	enum TypeID_D3D11
 	{
-		TID_D3D9_HLSLProgram = 12000
+		TID_D3D11_HLSLProgram = 12000
 	};
 
 	typedef vector<char*>::type HLSLMicroCode;
+
+	typedef std::shared_ptr<D3D11GpuVertexProgram> D3D11GpuVertexProgramPtr;
+	typedef std::shared_ptr<D3D11GpuFragmentProgram> D3D11GpuFragmentProgramPtr;
+	typedef std::shared_ptr<D3D11GpuGeometryProgram> D3D11GpuGeometryProgramPtr;
+	typedef std::shared_ptr<D3D11GpuHullProgram> D3D11GpuHullProgramPtr;
+	typedef std::shared_ptr<D3D11GpuDomainProgram> D3D11GpuDomainProgramPtr;
 
 // Should we ask D3D to manage vertex/index buffers automatically?
 // Doing so avoids lost devices, but also has a performance impact

@@ -169,22 +169,23 @@ namespace CamelotEngine {
 			{
 				switch(ctype)
 				{
-				case GCT_FLOAT1:
-				case GCT_INT1:
 				case GCT_SAMPLER1D:
 				case GCT_SAMPLER2D:
 				case GCT_SAMPLER3D:
 				case GCT_SAMPLERCUBE:
 				case GCT_SAMPLER1DSHADOW:
 				case GCT_SAMPLER2DSHADOW:
+					return 1; // Samplers aren't like other variables so they won't be padded
+				case GCT_FLOAT1:
+				case GCT_INT1:
 				case GCT_FLOAT2:
 				case GCT_INT2:
 				case GCT_FLOAT3:
 				case GCT_INT3:
 				case GCT_FLOAT4:
 				case GCT_INT4:
-					return 4;
 				case GCT_MATRIX_2X2:
+					return 4;
 				case GCT_MATRIX_2X3:
 				case GCT_MATRIX_2X4:
 					return 8; // 2 float4s

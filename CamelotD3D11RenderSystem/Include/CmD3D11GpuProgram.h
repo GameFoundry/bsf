@@ -8,7 +8,7 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11GpuProgram : public GpuProgram
 	{
 	public:
-		D3D11GpuProgram(GpuProgramType type, GpuProgramProfile profile);
+		D3D11GpuProgram(GpuProgramType type);
 
 	protected:
 		void loadImpl(void);
@@ -30,7 +30,7 @@ namespace CamelotEngine
 	protected:
 		ID3D11VertexShader* mVertexShader;
 	public:
-		D3D11GpuVertexProgram(GpuProgramProfile profile);
+		D3D11GpuVertexProgram();
 		~D3D11GpuVertexProgram();
 
 		ID3D11VertexShader* getVertexShader(void) const;
@@ -44,7 +44,7 @@ namespace CamelotEngine
 	protected:
 		ID3D11PixelShader* mPixelShader;
 	public:
-		D3D11GpuFragmentProgram(GpuProgramProfile profile);
+		D3D11GpuFragmentProgram();
 		~D3D11GpuFragmentProgram();
 
 		ID3D11PixelShader* getPixelShader(void) const;
@@ -58,7 +58,7 @@ namespace CamelotEngine
 	protected:
 		ID3D11DomainShader* mDomainShader;
 	public:
-		D3D11GpuDomainProgram(GpuProgramProfile profile);
+		D3D11GpuDomainProgram();
 		~D3D11GpuDomainProgram();
 
 		ID3D11DomainShader* getDomainShader(void) const;
@@ -72,7 +72,7 @@ namespace CamelotEngine
 	protected:
 		ID3D11HullShader* mHullShader;
 	public:
-		D3D11GpuHullProgram(GpuProgramProfile profile);
+		D3D11GpuHullProgram();
 		~D3D11GpuHullProgram();
 
 		ID3D11HullShader* getHullShader() const;
@@ -86,7 +86,7 @@ namespace CamelotEngine
 	protected:
 		ID3D11GeometryShader* mGeometryShader;
 	public:
-		D3D11GpuGeometryProgram(GpuProgramProfile profile);
+		D3D11GpuGeometryProgram();
 		~D3D11GpuGeometryProgram();
 
 		ID3D11GeometryShader* getGeometryShader(void) const;

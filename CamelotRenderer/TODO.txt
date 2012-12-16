@@ -1,72 +1,47 @@
 
-High-level TODO:
+-----------------------LONGTERM TODO----------------------------------------------------------------
  - Debug tools 
    - Camera controls + world grid
  - Renderable (contains mesh/material)
  - RenderManager (iterated through Renderables and displays them on screen)
    - And its plugin implementation ForwardRenderingManager
- - Material/Pass
- - Resource loading thread safety and background loading
-   - Make sure all resources have default resource that will be used before actual resource is loaded
  - Integrate with Camelot Editor
  - SceneManager plugin
    - Frustum culling and octree (or some other) acceleration structure
    - Render queue and sorting
- - DX11 render system
 
- DX11 specific features:
-  - Deferred render contexts and multithreaded rendering
-  - Tesselation (hull/domain) shader
-  - Compute pipeline
-  - Stream out (write vertex buffers)
-  - Instancing
-  - Dynamic shader linkage (Interfaces and similar)
-  - Append/Consume buffer
-  - 1D/2D/Cube texture arrays
-  - What's missing:
-    - No proper support for texture arrays, or multisampled texture resources
-	- Staging and immutable buffers. See D3D11Mapping, DWORD D3D11Mappings::get(HardwareBuffer::Usage usage)
-	- Multiple adapters (multi gpu)
-  - GL equivalents that are missing:
+-----------------------IMMEDIATE TODO---------------------------------------------------------------
+
+RenderSystem needed modifications
+ - HLSL specifies Texture & Sampler separately
+   - Will probably need a rendersystem specific sampler object implementation
+   - Right now HLSL11 CANNOT SPECIFY TEXTURE PARAMETERS! (Pass needs to be extended)
+ - Generic buffers (Normal/Structured/Raw/Append/Consume/Indirect)
+ - Ability to bind buffers and texture with different type of view (SHADER_RESOURCE & UNORDERED_ACCESS primarily, major others too)
+ - Pass needs to be modified
+  - Texture & Sampler needs to be specified separately
+  - SamplerState object needs to be created, to be used by all render systems. It needs to have a render specific implementation
+  - Needs to support bool/double/texture1D/textue3D/textureCUBE/texture arrays/MS textures/all types of buffers/structs
+ - Deferred render contexts and multithreaded rendering
+ - TextureBuffer support? (Use for bones when skinning for exaple, as constant buffers are too slow)
+ - RW buffers?
+ - Tesselation (hull/domain) shader
+ - Compute pipeline
+ - Stream out (write vertex buffers)
+ - Instancing
+ - Dynamic shader linkage (Interfaces and similar)
+ - Append/Consume buffer
+ - 1D/2D/Cube texture arrays
+ - Multisampled texture resources
+ - Multiple adapters (multi gpu)
+ - Process OpenGL and make sure to equivalents of DX11 features
+  - Exact features that are missing (not an exhaustive list):
     - Vertex buffer stream out (Transform Feedback)
 	- GL constant buffers
-
---HARDWARE BUFFERS--
-New set of HardwareBuffer usage flags:
- IMMUTABLE
-  - DX11: IMMUTABLE
-  - DX9/GL: STATIC (D3DUSAGE_WRITEONLY)
-  - ensures and read/write operations fail after initialization
- DEFAULT,
-   - DX11: DEFAULT
-   - DX9/GL: STATIC (D3DUSAGE_WRITEONLY) & STATIC_DISCARDABLE
- CPUWRITE
-   - DX11: DYNAMIC
-   - DX9/GL: DYNAMIC (D3DUSAGE_DYNAMIC)
- CPUREADWRITE
-   - DX11: STAGING
-   - DX9/GL: DYNAMIC (D3DUSAGE_DYNAMIC)
- DISCARDABLE
-   - Flag used in addition to the others. Ignored with DX11 and OpenGL
- Revisit hardware buffers (especially system memory & shadow buffers)
-
-DX11 HLSL:
- - Preprocessor defines & includes
-
-DX11 classes to port (in that order):
- VideoMode
-Driver
-VideoModeList
-DriverList
-GpuProgramManager
-HardwareBuffer
-HardwareIndexBuffer
-HardwareVertexBuffer
-VertexDeclaration/HLSLProgram
-HLSLProgramFactory
+	- HLSL11 shader equivalents (domain/hull/compute shaders), and advanced shader parameters
+ - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
 
 Command buffer TODO:
- - Redo OpenGL shaders as they seem to be using pretty old methods (glCreateShaderObjectARB seems to be deprectated for example)
  - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
  - My current approach doesn't allow multiple threads to use the RenderSystem (contexts should be handled differently)
    - Instead of requiring the user to constantly call setActiveContext, make the call peristent per thread. 
@@ -76,13 +51,6 @@ Command buffer TODO:
  shaders running I'm sure I'll want other threads to do different things on the gpu)
  - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after
     that call.
-
- Texture updates:
-   - Make this per texture and apply when texture is applied:
-	 filterMode
-	 anisoLevel
-	 wrapMode
-	 mipMapBias
 
 Mesh
  - Make sure to queue up mesh deletion to make sure it gets destroyed on the render thread
@@ -102,12 +70,13 @@ When saving a resource, make sure resource is properly loaded before saving
   - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
   - Remove Response handlers from Resources
 
+-----------------------BACKLOG TODO---------------------------------------------------------------
+
 HIGH PRIORITY TODO:
  - Issue with deserialization and value types:
   - Value types are only set at the end of deserialization, because I want to be sure all of their fields are initialized. However there is nothing stopping a custom RTTI method from accessing a (yet uninitialized) value in a ptr field. (See CmMaterialRTTI, setTexParam). I need to initialize fields in a better order.
    - Solution?: Set (empty) ptr values immediately, and only load them later
  - GetRenderOperation doesn't consider sub-meshes
- - HLSL & Cg don't handle include files yet
 
 Mid priority TODO:
  - Add multithreaded version of RenderTarget::getCustomAttribute_internal
@@ -157,9 +126,6 @@ Optional TODO:
  -----------------------------------------------------------------------------------------------
 
 After everything is polished
- - DX11 render system
-   - Make sure to add OpenGL equivalents of DX11 features (tesselation, stream out, compute, etc.)
- - SLI / multiple device support
  - How do I handle multiple mesh formats? Some files need animation, other don't. Some would mabye like to use QTangent, others the proper tangent frame.
  - Load texture mips separately so we can unload HQ textures from far away objects (like UE3)
  - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)

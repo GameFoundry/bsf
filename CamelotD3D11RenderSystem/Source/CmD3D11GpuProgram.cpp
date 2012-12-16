@@ -5,8 +5,8 @@
 
 namespace CamelotEngine
 {
-	D3D11GpuProgram::D3D11GpuProgram(GpuProgramType type, GpuProgramProfile profile) 
-		: GpuProgram("", "", "", type, profile)
+	D3D11GpuProgram::D3D11GpuProgram(GpuProgramType type) 
+		: GpuProgram("", "", "", type, GPP_NONE)
 	{
 
 	}
@@ -22,8 +22,8 @@ namespace CamelotEngine
 		CM_EXCEPT(RenderingAPIException, "DirectX 11 doesn't support assembly shaders.");
 	}
 
-	D3D11GpuVertexProgram::D3D11GpuVertexProgram(GpuProgramProfile profile) 
-		: D3D11GpuProgram(GPT_VERTEX_PROGRAM, profile)
+	D3D11GpuVertexProgram::D3D11GpuVertexProgram() 
+		: D3D11GpuProgram(GPT_VERTEX_PROGRAM)
 		, mVertexShader(nullptr)
 	{ }
 
@@ -42,7 +42,7 @@ namespace CamelotEngine
 			HRESULT hr = device.getD3D11Device()->CreateVertexShader( 
 				static_cast<DWORD*>(microcode->GetBufferPointer()), 
 				microcode->GetBufferSize(),
-				NULL,
+				device.getClassLinkage(),
 				&mVertexShader);
 
 			if (FAILED(hr) || device.hasError())
@@ -69,8 +69,8 @@ namespace CamelotEngine
 		return mVertexShader;
 	}
 
-	D3D11GpuFragmentProgram::D3D11GpuFragmentProgram(GpuProgramProfile profile) 
-		: D3D11GpuProgram(GPT_FRAGMENT_PROGRAM, profile)
+	D3D11GpuFragmentProgram::D3D11GpuFragmentProgram() 
+		: D3D11GpuProgram(GPT_FRAGMENT_PROGRAM)
 		, mPixelShader(nullptr)
 	{ }
 
@@ -87,7 +87,7 @@ namespace CamelotEngine
 			HRESULT hr = device.getD3D11Device()->CreatePixelShader(
 				static_cast<DWORD*>(microcode->GetBufferPointer()), 
 				microcode->GetBufferSize(),
-				NULL,
+				device.getClassLinkage(),
 				&mPixelShader);
 
 			if (FAILED(hr) || device.hasError())
@@ -113,8 +113,8 @@ namespace CamelotEngine
 		return mPixelShader;
 	}
 
-	D3D11GpuGeometryProgram::D3D11GpuGeometryProgram(GpuProgramProfile profile) 
-		: D3D11GpuProgram(GPT_GEOMETRY_PROGRAM, profile)
+	D3D11GpuGeometryProgram::D3D11GpuGeometryProgram() 
+		: D3D11GpuProgram(GPT_GEOMETRY_PROGRAM)
 		, mGeometryShader(nullptr)
 	{ }
 
@@ -131,7 +131,7 @@ namespace CamelotEngine
 			HRESULT hr = device.getD3D11Device()->CreateGeometryShader(
 				static_cast<DWORD*>(microcode->GetBufferPointer()), 
 				microcode->GetBufferSize(),
-				NULL,
+				device.getClassLinkage(),
 				&mGeometryShader);
 
 			if (FAILED(hr) || device.hasError())
@@ -157,8 +157,8 @@ namespace CamelotEngine
 		return mGeometryShader;
 	}
 
-	D3D11GpuDomainProgram::D3D11GpuDomainProgram(GpuProgramProfile profile) 
-		: D3D11GpuProgram(GPT_DOMAIN_PROGRAM, profile)
+	D3D11GpuDomainProgram::D3D11GpuDomainProgram() 
+		: D3D11GpuProgram(GPT_DOMAIN_PROGRAM)
 		, mDomainShader(nullptr)
 	{ }
 
@@ -175,7 +175,7 @@ namespace CamelotEngine
 			HRESULT hr = device.getD3D11Device()->CreateDomainShader(
 				static_cast<DWORD*>(microcode->GetBufferPointer()), 
 				microcode->GetBufferSize(),
-				NULL,
+				device.getClassLinkage(),
 				&mDomainShader);
 
 			if (FAILED(hr) || device.hasError())
@@ -201,8 +201,8 @@ namespace CamelotEngine
 		return mDomainShader;
 	}
 
-	D3D11GpuHullProgram::D3D11GpuHullProgram(GpuProgramProfile profile) 
-		: D3D11GpuProgram(GPT_HULL_PROGRAM, profile)
+	D3D11GpuHullProgram::D3D11GpuHullProgram() 
+		: D3D11GpuProgram(GPT_HULL_PROGRAM)
 		, mHullShader(nullptr)
 	{ }
 
@@ -219,7 +219,7 @@ namespace CamelotEngine
 			HRESULT hr = device.getD3D11Device()->CreateHullShader(
 				static_cast<DWORD*>(microcode->GetBufferPointer()), 
 				microcode->GetBufferSize(),
-				NULL,
+				device.getClassLinkage(),
 				&mHullShader);
 
 			if (FAILED(hr) || device.hasError())

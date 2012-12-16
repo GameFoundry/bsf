@@ -22,12 +22,12 @@ namespace CamelotEngine
 		/** Gets whether backwards compatibility is enabled. */
 		bool getEnableBackwardsCompatibility() const { return mEnableBackwardsCompatibility; }
 
-		const HLSLMicroCode& getMicroCode() const;
-		unsigned int getNumInputs() const;
-		unsigned int getNumOutputs() const;
+		const HLSLMicroCode& getMicroCode() const { return mMicrocode; }
+		UINT32 getNumInputs() const { return (UINT32)mInputParameters.size(); }
+		UINT32 getNumOutputs() const { return (UINT32)mOutputParameters.size(); }
 
-		const D3D11_SIGNATURE_PARAMETER_DESC& getInputParamDesc(unsigned int index) const;
-		const D3D11_SIGNATURE_PARAMETER_DESC& getOutputParamDesc(unsigned int index) const;
+		const D3D11_SIGNATURE_PARAMETER_DESC& getInputParamDesc(unsigned int index) const { return mInputParameters.at(index); }
+		const D3D11_SIGNATURE_PARAMETER_DESC& getOutputParamDesc(unsigned int index) const { return mOutputParameters.at(index); }
 
 	protected:
 		friend class D3D11HLSLProgramFactory;
@@ -35,19 +35,63 @@ namespace CamelotEngine
 		D3D11HLSLProgram(const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
-        ///** Internal load implementation, must be implemented by subclasses.
-        //*/
-        //void loadFromSource(void);
-        ///** Internal method for creating an appropriate low-level program from this
-        //high-level program, must be implemented by subclasses. */
-        //void createLowLevelImpl(void);
-        ///// Internal unload implementation, must be implemented by subclasses
-        //void unloadHighLevelImpl(void);
+        /**
+         * @copydoc GpuProgram::loadFromSource()
+         */
+        void loadFromSource();
 
-		ID3DBlob* compileMicrocode();
+        /**
+         * @copydoc GpuProgram::unload_internal()
+         */
+        void unload_internal();
 
+		/**
+         * @copydoc HighLevelGpuProgram::buildConstantDefinitions()
+         */
+		void buildConstantDefinitions() const;
 	private:
 		bool mColumnMajorMatrices;
 		bool mEnableBackwardsCompatibility;
+
+		HLSLMicroCode mMicrocode;
+
+		struct D3D11_VariableDesc
+		{
+			String name;
+			D3D11_SHADER_TYPE_DESC desc;
+		};
+
+		struct D3D11_ShaderBufferDesc
+		{
+			D3D11_SHADER_BUFFER_DESC desc;
+			vector<D3D11_SHADER_VARIABLE_DESC>::type variables;
+			vector<D3D11_SHADER_TYPE_DESC>::type variableTypes;
+		};
+
+		vector<D3D11_ShaderBufferDesc>::type mShaderBuffers;
+		vector<D3D11_SIGNATURE_PARAMETER_DESC>::type mInputParameters;
+		vector<D3D11_SIGNATURE_PARAMETER_DESC>::type mOutputParameters;
+
+		vector<HardwareConstantBufferPtr>::type mConstantBuffers;
+
+		/**
+		 * @brief	Compiles the shader from source and generates the microcode.
+		 */
+		ID3DBlob* compileMicrocode();
+
+		/**
+		 * @brief	Reflects the microcode and extracts input/output parameters, and constant
+		 * 			buffer structures used by the program.
+		 */
+		void populateParametersAndConstants(ID3DBlob* microcode);
+
+		void populateConstantBufferParameters(ID3D11ShaderReflectionConstantBuffer* bufferReflection);
+
+		void populateParameterDefinition(const D3D11_SHADER_VARIABLE_DESC& paramDesc, const D3D11_SHADER_TYPE_DESC& d3dDesc, GpuConstantDefinition& def) const;
+
+		/**
+		 * @brief	Creates constant buffers based on available parameter and constant data.
+		 */
+		void createConstantBuffers();
 	};
 }
