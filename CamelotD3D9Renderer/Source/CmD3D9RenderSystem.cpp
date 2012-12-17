@@ -102,7 +102,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	D3D9RenderSystem::~D3D9RenderSystem()
 	{		
-		shutdown();
+		shutdown_internal();
 
 		// Deleting the HLSL program factory
 		if (mHLSLProgramFactory)
@@ -206,9 +206,9 @@ namespace CamelotEngine
 		RenderSystem::startUp_internal();
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::shutdown()
+	void D3D9RenderSystem::shutdown_internal()
 	{
-		RenderSystem::shutdown();
+		RenderSystem::shutdown_internal();
 
 		SAFE_DELETE( mDeviceManager );
 

@@ -40,6 +40,7 @@ THE SOFTWARE.
 #include "CmHardwarePixelBuffer.h"
 #include "CmHardwareOcclusionQuery.h"
 #include "CmRenderSystemContext.h"
+#include "CmCommandQueue.h"
 #include "boost/bind.hpp"
 
 #if CM_DEBUG_MODE
@@ -71,13 +72,14 @@ namespace CamelotEngine {
 		, mCurrentCapabilities(nullptr)
 		, mRenderThreadFunc(nullptr)
 		, mRenderThreadShutdown(false)
+		, mCommandQueue(nullptr)
     {
     }
 
     //-----------------------------------------------------------------------
     RenderSystem::~RenderSystem()
     {
-        shutdown();
+        shutdown_internal();
 
 		delete mCurrentCapabilities;
 		mCurrentCapabilities = 0;
@@ -90,7 +92,7 @@ namespace CamelotEngine {
 		mPrimaryContext = createRenderSystemContext();
 		mActiveContext = mPrimaryContext;
 
-		initRenderThread(); // TODO - Move render thread to the outside of the RS
+		initRenderThread();
 
 		queueResourceCommand(boost::bind(&RenderSystem::startUp_internal, this));
 	}
@@ -102,9 +104,18 @@ namespace CamelotEngine {
 		mVertexProgramBound = false;
 		mGeometryProgramBound = false;
 		mFragmentProgramBound = false;
+
+		mCommandQueue = new CommandQueue(CM_THREAD_CURRENT_ID);
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::shutdown(void)
+	{
+		queueResourceCommand(boost::bind(&RenderSystem::shutdown_internal, this), true);
+		// TODO - What if something gets queued between these two calls?
+		shutdownRenderThread();
+	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::shutdown_internal(void)
 	{
 		// TODO - I should probably sync this up to make sure no other threads are doing anything while shutdown is in progress
 
@@ -123,7 +134,11 @@ namespace CamelotEngine {
 
 		mPrioritisedRenderTargets.clear();
 
-		shutdownRenderThread();
+		if(mCommandQueue != nullptr)
+		{
+			delete mCommandQueue;
+			mCommandQueue = nullptr;
+		}
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::swapAllRenderTargetBuffers(bool waitForVSync)
@@ -893,7 +908,7 @@ namespace CamelotEngine {
 				}
 
 				if(!anyCommandsReady)
-					CM_THREAD_WAIT(mRSContextReadyCondition, mRSContextMutex, lock)
+					CM_THREAD_WAIT(mCommandReadyCondition, mRSContextMutex, lock)
 			}
 
 			{
@@ -924,7 +939,7 @@ namespace CamelotEngine {
 		mRenderThreadShutdown = true;
 
 		// Wake all threads. They will quit after they see the shutdown flag
-		CM_THREAD_NOTIFY_ALL(mRSContextReadyCondition)
+		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition)
 
 		mRenderThread->join();
 		CM_THREAD_DESTROY(mRenderThread);
@@ -987,7 +1002,7 @@ namespace CamelotEngine {
 			context->submitToGpu();
 		}
 
-		CM_THREAD_NOTIFY_ALL(mRSContextReadyCondition);
+		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
 
 		if(blockUntilComplete)
 			context->blockUntilExecuted();
@@ -1015,6 +1030,36 @@ namespace CamelotEngine {
 		mResourceContext->queueCommand(commandCallback);
 		submitToGpu(mResourceContext, blockUntilComplete);
 	}
+	
+	AsyncOp RenderSystem::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete, UINT32 _callbackId)
+	{
+		mCommandQueue->queueReturn(commandCallback, _callbackId);
+
+#ifdef CM_DEBUG_MODE
+		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
+			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
+#endif
+
+		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
+
+		if(blockUntilComplete)
+			mCommandQueue->blockUntilExecuted();
+	}
+
+	void RenderSystem::queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete, UINT32 _callbackId)
+	{
+		mCommandQueue->queue(commandCallback, _callbackId);
+
+#ifdef CM_DEBUG_MODE
+		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
+			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
+#endif
+
+		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
+
+		if(blockUntilComplete)
+			mCommandQueue->blockUntilExecuted();
+	}
 
 	RenderSystemContextPtr RenderSystem::getActiveContext() const
 	{
@@ -1034,7 +1079,7 @@ namespace CamelotEngine {
 			}
 		}
 
-		CM_THREAD_NOTIFY_ALL(mRSContextReadyCondition)
+		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition)
 	}
 
 	void RenderSystem::throwIfNotRenderThread() const

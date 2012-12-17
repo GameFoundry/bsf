@@ -176,6 +176,8 @@ namespace CamelotEngine
 		friend class D3D9Device;
 		friend class D3D9TextureManager;
 
+		void startUp_internal();
+
 		void setClipPlanesImpl(const PlaneList& clipPlanes);	
 
 		/// @copydoc RenderSystem::createMultiRenderTarget
@@ -222,7 +224,7 @@ namespace CamelotEngine
 		~D3D9RenderSystem();
 
 		const String& getName() const;
-		void shutdown();
+		void shutdown_internal();
 
 		void setStencilCheckEnabled_internal(bool enabled);
         void setStencilBufferParams_internal(CompareFunction func = CMPF_ALWAYS_PASS, 
@@ -232,7 +234,6 @@ namespace CamelotEngine
             StencilOperation passOp = SOP_KEEP, 
             bool twoSidedOperation = false);
 
-		void startUp_internal();
 		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
 		void destroyRenderTarget_internal(RenderTarget* renderTarget);

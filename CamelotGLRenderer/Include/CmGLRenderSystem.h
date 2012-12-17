@@ -128,6 +128,11 @@ namespace CamelotEngine {
 		UINT16 mActiveTextureUnit;
 
 	protected:
+		/** See
+          RenderSystem
+         */
+		void startUp_internal();
+
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 		bool activateGLTextureUnit(UINT16 unit);
 
@@ -188,11 +193,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-		void startUp_internal();
-        /** See
-          RenderSystem
-         */
-        void shutdown(void);
+        void shutdown_internal(void);
 		/** See
           RenderSystem
          */

@@ -109,6 +109,7 @@ namespace CamelotEngine {
 	class AsyncOp;
 	class HardwareBufferManagerBase;
 	class HardwareConstantBuffer;
+	class CommandQueue;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

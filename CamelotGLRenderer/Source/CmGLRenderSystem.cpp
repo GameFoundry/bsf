@@ -123,7 +123,7 @@ namespace CamelotEngine {
 
 	GLRenderSystem::~GLRenderSystem()
 	{
-		shutdown();
+		shutdown_internal();
 
 		// Destroy render windows
 		for (auto i = mRenderTargets.begin(); i != mRenderTargets.end(); ++i)
@@ -152,9 +152,9 @@ namespace CamelotEngine {
 		RenderSystem::startUp_internal();
 	}
 
-	void GLRenderSystem::shutdown(void)
+	void GLRenderSystem::shutdown_internal(void)
 	{
-		RenderSystem::shutdown();
+		RenderSystem::shutdown_internal();
 
 		// Deleting the GLSL program factory
 		if (mGLSLProgramFactory)

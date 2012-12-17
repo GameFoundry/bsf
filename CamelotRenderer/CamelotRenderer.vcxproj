@@ -182,10 +182,12 @@
     <ClInclude Include="Include\CmCgProgram.h" />
     <ClInclude Include="Include\CmCgProgramFactory.h" />
     <ClInclude Include="Include\CmCgProgramRTTI.h" />
+    <ClInclude Include="Include\CmCommandQueue.h" />
     <ClInclude Include="Include\CmCommon.h" />
     <ClInclude Include="Include\CmComponentRTTI.h" />
     <ClInclude Include="Include\CmConfigOptionMap.h" />
     <ClInclude Include="Include\CmDefaultHardwareBufferManager.h" />
+    <ClInclude Include="Include\CmDeferredRenderContext.h" />
     <ClInclude Include="Include\CmGpuProgram.h" />
     <ClInclude Include="Include\CmGpuProgramManager.h" />
     <ClInclude Include="Include\CmGpuProgramParams.h" />
@@ -258,7 +260,9 @@
     <ClCompile Include="Source\CmCamera.cpp" />
     <ClCompile Include="Source\CmCgProgram.cpp" />
     <ClCompile Include="Source\CmCgProgramFactory.cpp" />
+    <ClCompile Include="Source\CmCommandQueue.cpp" />
     <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp" />
+    <ClCompile Include="Source\CmDeferredRenderContext.cpp" />
     <ClCompile Include="Source\CmGpuProgram.cpp" />
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />

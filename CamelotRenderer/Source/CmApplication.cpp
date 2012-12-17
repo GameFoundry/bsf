@@ -97,7 +97,7 @@ namespace CamelotEngine
 		SceneManager::shutDown();
 
 		if(RenderSystemManager::getActive() != nullptr)
-			RenderSystemManager::getActive()->shutdown();
+			RenderSystemManager::getActive()->shutdown_internal();
 
 		HighLevelGpuProgramManager::shutDown();
 		DynLibManager::shutDown();

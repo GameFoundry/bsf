@@ -107,14 +107,14 @@ namespace CamelotEngine
 		 * 			By default an automatically created primary render context is used.
 		 */
 		void startUp();
-		virtual void startUp_internal();
 
 		// TODO - Classes below (shutdown to getErrorDescription) are not yet thread safe
 
 
 		/** Shutdown the renderer and cleanup resources.
 		*/
-		virtual void shutdown(void);
+		void shutdown(void);
+		virtual void shutdown_internal(void);
 
 		/** Creates a new rendering window.
 		@remarks
@@ -628,22 +628,6 @@ namespace CamelotEngine
 		*/
 		void setStencilCheckEnabled(bool enabled);
 		virtual void setStencilCheckEnabled_internal(bool enabled) = 0;
-		/** Determines if this system supports hardware accelerated stencil buffer. 
-		@remarks
-		Note that the lack of this function doesn't mean you can't do stencilling, but
-		the stencilling operations will be provided in software, which will NOT be
-		fast.
-		@par
-		Generally hardware stencils are only supported in 32-bit colour modes, because
-		the stencil buffer shares the memory of the z-buffer, and in most cards the 
-		z-buffer has to be the same depth as the colour buffer. This means that in 32-bit
-		mode, 24 bits of the z-buffer are depth and 8 bits are stencil. In 16-bit mode there
-		is no room for a stencil (although some cards support a 15:1 depth:stencil option,
-		this isn't useful for very much) so 8 bits of stencil are provided in software.
-		This can mean that if you use stencilling, your applications may be faster in 
-		32-but colour than in 16-bit, which may seem odd to some people.
-		*/
-		/*virtual bool hasHardwareStencil(void) = 0;*/
 
 		/** This method allows you to set all the stencil buffer parameters in one call.
 		@remarks
@@ -916,6 +900,8 @@ namespace CamelotEngine
 		/// Used to store the capabilities of the graphics card
 		RenderSystemCapabilities* mCurrentCapabilities;
 
+		virtual void startUp_internal();
+
 		/// Internal method used to set the underlying clip planes when needed
 		virtual void setClipPlanesImpl(const PlaneList& clipPlanes) = 0;
 
@@ -958,7 +944,7 @@ namespace CamelotEngine
 		CM_THREAD_ID_TYPE mRenderThreadId;
 		CM_THREAD_SYNCHRONISER(mRSContextInitCondition)
 		CM_MUTEX(mRSContextInitMutex)
-		CM_THREAD_SYNCHRONISER(mRSContextReadyCondition)
+		CM_THREAD_SYNCHRONISER(mCommandReadyCondition)
 		CM_MUTEX(mRSContextMutex)
 		CM_MUTEX(mRSRenderCallbackMutex)
 		CM_MUTEX(mResourceContextMutex)
@@ -967,6 +953,8 @@ namespace CamelotEngine
 #if CM_THREAD_SUPPORT
 		CM_THREAD_TYPE* mRenderThread;
 #endif
+
+		CommandQueue* mCommandQueue;
 
 		// Context on which all resource commands are queued
 		mutable RenderSystemContextPtr mResourceContext;
@@ -1072,6 +1060,27 @@ namespace CamelotEngine
 		 * @see		RenderSystemContext::queueCommand
 		 */
 		void queueResourceCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false, UINT32 _callbackId = 0);
+
+		/**
+		 * @brief	Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,
+		 * 			however be aware that it involves possibly slow synchronization primitives, so limit your usage.
+		 * 			
+		 * @param	blockUntilComplete If true the thread will be blocked until the command executes. Be aware that there be many commands queued before it
+		 * 							   and they all need to be executed in order before the current command is reached, which might take a long time.
+		 * 	
+		 * @see		CommandQueue::queueReturn
+		 */
+		AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false, UINT32 _callbackId = 0);
+
+		/**
+		* @brief	Queues a new command that will be added to the global command queue.You are allowed to call this from any thread,
+		 * 			however be aware that it involves possibly slow synchronization primitives, so limit your usage.
+		 * 	
+		 * @param	blockUntilComplete If true the thread will be blocked until the command executes. Be aware that there be many commands queued before it
+		 * 							   and they all need to be executed in order before the current command is reached, which might take a long time.
+		 * @see		CommandQueue::queue
+		 */
+		void queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false, UINT32 _callbackId = 0);
 
 		/**
 		 * @brief	Callback that is called from the render thread before it starts processing
