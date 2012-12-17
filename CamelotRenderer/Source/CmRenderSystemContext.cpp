@@ -164,7 +164,7 @@ namespace CamelotEngine
 	}
 
 	/************************************************************************/
-	/* 							IMMEDIATE CONTEXT						*/
+	/* 							IMMEDIATE CONTEXT							*/
 	/************************************************************************/
 
 	RenderSystemImmediateContext::RenderSystemImmediateContext(CM_THREAD_ID_TYPE threadId)

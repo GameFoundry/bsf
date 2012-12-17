@@ -5,6 +5,7 @@
 #include "CmD3D11GpuProgram.h"
 #include "CmHardwareBufferManager.h"
 #include "CmHardwareConstantBuffer.h"
+#include "CmD3D11RenderSystem.h"
 #include "CmException.h"
 #include "CmDebug.h"
 
@@ -38,24 +39,34 @@ namespace CamelotEngine
 		switch(mType)
 		{
 		case GPT_VERTEX_PROGRAM:
-			D3D11GpuVertexProgramPtr vertProgram = std::static_pointer_cast<D3D11GpuVertexProgram>(mAssemblerProgram);
-			vertProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+			{
+				D3D11GpuVertexProgramPtr vertProgram = std::static_pointer_cast<D3D11GpuVertexProgram>(mAssemblerProgram);
+				vertProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+			}
 			break;
 		case GPT_FRAGMENT_PROGRAM:
-			D3D11GpuFragmentProgramPtr fragProgram = std::static_pointer_cast<D3D11GpuFragmentProgram>(mAssemblerProgram);
-			fragProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+			{
+				D3D11GpuFragmentProgramPtr fragProgram = std::static_pointer_cast<D3D11GpuFragmentProgram>(mAssemblerProgram);
+				fragProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+			}
 			break;
 		case GPT_GEOMETRY_PROGRAM:
-			D3D11GpuGeometryProgramPtr geomProgram = std::static_pointer_cast<D3D11GpuGeometryProgram>(mAssemblerProgram);
-			geomProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+			{
+				D3D11GpuGeometryProgramPtr geomProgram = std::static_pointer_cast<D3D11GpuGeometryProgram>(mAssemblerProgram);
+				geomProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+			}
 			break;
 		case GPT_HULL_PROGRAM:
-			D3D11GpuHullProgramPtr hullProgram = std::static_pointer_cast<D3D11GpuHullProgram>(mAssemblerProgram);
-			hullProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+			{
+				D3D11GpuHullProgramPtr hullProgram = std::static_pointer_cast<D3D11GpuHullProgram>(mAssemblerProgram);
+				hullProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+			}
 			break;
 		case GPT_DOMAIN_PROGRAM:
-			D3D11GpuDomainProgramPtr domainProgram = std::static_pointer_cast<D3D11GpuDomainProgram>(mAssemblerProgram);
-			domainProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+			{
+				D3D11GpuDomainProgramPtr domainProgram = std::static_pointer_cast<D3D11GpuDomainProgram>(mAssemblerProgram);
+				domainProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+			}
 			break;
 		}
 
@@ -156,7 +167,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Unable to disassemble shader.");
 
 		ID3D11ShaderReflection* shaderReflection;
-		HRESULT hr = D3DReflect((void*)microcode->GetBufferPointer(), microcode->GetBufferSize(),
+		hr = D3DReflect((void*)microcode->GetBufferPointer(), microcode->GetBufferSize(),
 			IID_ID3D11ShaderReflection, (void**)&shaderReflection);
 
 		if (FAILED(hr))
@@ -192,7 +203,7 @@ namespace CamelotEngine
 	{
 		createParameterMappingStructures(true);
 
-		for(auto shaderBufferIter = mShaderBuffers.begin(); shaderBufferIter != mShaderBuffers.end; ++shaderBufferIter)
+		for(auto shaderBufferIter = mShaderBuffers.begin(); shaderBufferIter != mShaderBuffers.end(); ++shaderBufferIter)
 		{
 			for(size_t i = 0; i < shaderBufferIter->variables.size(); i++)
 			{
@@ -442,7 +453,7 @@ namespace CamelotEngine
 	{
 		mConstantBuffers.clear();
 
-		for(auto shaderBufferIter = mShaderBuffers.begin(); shaderBufferIter != mShaderBuffers.end; ++shaderBufferIter)
+		for(auto shaderBufferIter = mShaderBuffers.begin(); shaderBufferIter != mShaderBuffers.end(); ++shaderBufferIter)
 		{
 			HardwareConstantBufferPtr constantBuffer = HardwareBufferManager::instance().createConstantBuffer(shaderBufferIter->desc.Size, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
 			mConstantBuffers.push_back(constantBuffer);

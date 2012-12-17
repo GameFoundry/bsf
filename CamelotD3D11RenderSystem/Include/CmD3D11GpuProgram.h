@@ -34,9 +34,9 @@ namespace CamelotEngine
 		~D3D11GpuVertexProgram();
 
 		ID3D11VertexShader* getVertexShader(void) const;
+		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
 		void unloadImpl(void);
-		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	};
 
 	class CM_D3D11_EXPORT D3D11GpuFragmentProgram : public D3D11GpuProgram
@@ -48,9 +48,9 @@ namespace CamelotEngine
 		~D3D11GpuFragmentProgram();
 
 		ID3D11PixelShader* getPixelShader(void) const;
+		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
 		void unloadImpl(void);
-		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	};
 
 	class D3D11GpuDomainProgram : public D3D11GpuProgram
@@ -62,9 +62,9 @@ namespace CamelotEngine
 		~D3D11GpuDomainProgram();
 
 		ID3D11DomainShader* getDomainShader(void) const;
+		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
 		void unloadImpl(void);
-		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	};
 
 	class D3D11GpuHullProgram : public D3D11GpuProgram
@@ -76,9 +76,9 @@ namespace CamelotEngine
 		~D3D11GpuHullProgram();
 
 		ID3D11HullShader* getHullShader() const;
+		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
 		void unloadImpl(void);
-		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	};
 
 	class D3D11GpuGeometryProgram : public D3D11GpuProgram
@@ -90,8 +90,8 @@ namespace CamelotEngine
 		~D3D11GpuGeometryProgram();
 
 		ID3D11GeometryShader* getGeometryShader(void) const;
+		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
 		void unloadImpl(void);
-		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	};
 }

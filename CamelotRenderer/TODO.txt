@@ -12,6 +12,28 @@
 
 -----------------------IMMEDIATE TODO---------------------------------------------------------------
 
+
+
+
+
+/////
+First port (and test!) existing render systems so it is capable of dealing with DX11 stuff(samplerState, depthStencilState, rasterizerState objects primarily. Also split pass into Texture/sampler) 
+Also create immediate & deferred render context we can call render system methods on directly (immediate just calls render system using inline methods)
+ - How to async call non-rendersystem methods? Like GpuProgram?? They either have to have contexts of their own (clumsy) or keep the like it is (separate method pairs, which is not the same interface
+   as the render system)
+Doublecheck the validity of resource and non-resource contexts
+ - Calling a non-async resource method will block until the render thread is completely finished with its current task! (Is there a way to avoid that though?)
+ - I need to define proper order of resource and render calls. What if a resource tries to get changed in the middle of a render call? It should only queue itself after
+   all previous command buffers are done executing.
+    - Whenever user does DeferredContext::submitCommands, all resource commands before that should get processed and only then should that command buffer be executed
+ - Mutexes are slow as shit. Find a way to avoid them? (Primarily for resources, but check if we extensively used them elsewhere too)
+/////
+
+
+
+
+
+
 RenderSystem needed modifications
  - HLSL specifies Texture & Sampler separately
    - Will probably need a rendersystem specific sampler object implementation
@@ -40,6 +62,31 @@ RenderSystem needed modifications
 	- GL constant buffers
 	- HLSL11 shader equivalents (domain/hull/compute shaders), and advanced shader parameters
  - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
+
+ RenderSystem modifications, yet another list:
+   - SamplerState - separate object. Multiple objects per pass
+   - RasterizerState - separate object containing all the DX9 and GL variables that were so far solo (fill mode, cull mode, etc). One per pass
+   - DepthStencilState - also separate object, one per pass
+
+   - Edit RenderSystem so it only accepts those objects (in bulk), and not individual commands? (Since DX11 can't accept individual commands)
+
+   - DepthStencilView & RenderTargetView are automatically created for any RenderTarget (no special mechanism for setting them needed)
+
+   - Extend pass with "struct" (void*) parameters to that they can be assigned to constant buffers, and also expand it so it accepts separate textures & samplers. 
+   - Extend pass so it accepts "GenericBuffers"
+
+   - Add support for "GenericBuffers" (normal/structured/raw/append/consume/indirect)
+   - Add support for texture buffer
+
+   - Ability to set vertex buffer as a stream output buffer (also added to Pass)
+
+   - Set viewport & scissor rect to rasterizer (should probably be part of RenderTarget. If so, modify DX9 and GL so they act the same)
+
+   - Ability to create & assign unordered access views to OM and CS stages. (Extend pass and HardwareBufferManager)
+
+   - Extend render system with DrawInstanced (Also with DrawIndirect?)
+
+   - (Separate Pass parameters so that they are accepted per GpuProgramType, instead of using a global name?)
 
 Command buffer TODO:
  - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
@@ -126,6 +173,7 @@ Optional TODO:
  -----------------------------------------------------------------------------------------------
 
 After everything is polished
+ - Each view (i.e. camera) of the scene should be put into its own thread
  - How do I handle multiple mesh formats? Some files need animation, other don't. Some would mabye like to use QTangent, others the proper tangent frame.
  - Load texture mips separately so we can unload HQ textures from far away objects (like UE3)
  - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)

@@ -34,7 +34,7 @@ namespace CamelotEngine
 		unload_internal(); 
 	}
 
-	void D3D11GpuVertexProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob *  microcode)
+	void D3D11GpuVertexProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob*  microcode)
 	{
 		if (isSupported())
 		{
