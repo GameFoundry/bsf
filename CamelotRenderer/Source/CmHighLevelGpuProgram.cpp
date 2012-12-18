@@ -52,7 +52,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------------
 	void HighLevelGpuProgram::initialize()
 	{
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&HighLevelGpuProgram::initialize_internal, this));
+		RenderSystemManager::getActive()->queueCommand(boost::bind(&HighLevelGpuProgram::initialize_internal, this));
 	}
     //---------------------------------------------------------------------------
     void HighLevelGpuProgram::initialize_internal()

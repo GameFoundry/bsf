@@ -177,6 +177,7 @@ namespace CamelotEngine
 		friend class D3D9TextureManager;
 
 		void startUp_internal();
+		void shutdown_internal();
 
 		void setClipPlanesImpl(const PlaneList& clipPlanes);	
 
@@ -224,7 +225,6 @@ namespace CamelotEngine
 		~D3D9RenderSystem();
 
 		const String& getName() const;
-		void shutdown_internal();
 
 		void setStencilCheckEnabled_internal(bool enabled);
         void setStencilBufferParams_internal(CompareFunction func = CMPF_ALWAYS_PASS, 

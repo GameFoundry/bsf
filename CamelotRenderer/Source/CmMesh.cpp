@@ -36,7 +36,7 @@ namespace CamelotEngine
 
 	void Mesh::setMeshData(MeshDataPtr meshData)
 	{
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&Mesh::setMeshData_internal, this, meshData));
+		RenderSystemManager::getActive()->queueCommand(boost::bind(&Mesh::setMeshData_internal, this, meshData));
 	}
 
 	void Mesh::setMeshData_internal(MeshDataPtr meshData)
@@ -168,7 +168,7 @@ namespace CamelotEngine
 
 	MeshDataPtr Mesh::getMeshData()
 	{
-		AsyncOp op = RenderSystemManager::getActive()->queueResourceReturnCommand(boost::bind(&Mesh::getMeshData_internal, this, _1), true);
+		AsyncOp op = RenderSystemManager::getActive()->queueReturnCommand(boost::bind(&Mesh::getMeshData_internal, this, _1), true);
 
 		return op.getReturnValue<MeshDataPtr>();
 	}
@@ -306,7 +306,7 @@ namespace CamelotEngine
 	}
 	void Mesh::initialize()
 	{
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&Mesh::initialize_internal, this));
+		RenderSystemManager::getActive()->queueCommand(boost::bind(&Mesh::initialize_internal, this));
 	}
 
 	void Mesh::initialize_internal()

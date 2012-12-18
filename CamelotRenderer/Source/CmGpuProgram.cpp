@@ -60,7 +60,7 @@ namespace CamelotEngine
 	//-----------------------------------------------------------------------------
 	void GpuProgram::initialize()
 	{
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&GpuProgram::initialize_internal, this));
+		RenderSystemManager::getActive()->queueCommand(boost::bind(&GpuProgram::initialize_internal, this));
 	}
     //-----------------------------------------------------------------------------
     void GpuProgram::initialize_internal(void)
@@ -126,7 +126,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	GpuProgramParametersSharedPtr GpuProgram::createParameters(void)
 	{
-		AsyncOp op = RenderSystemManager::getActive()->queueResourceReturnCommand(boost::bind(&GpuProgram::createParameters_internal, this, _1), true);
+		AsyncOp op = RenderSystemManager::getActive()->queueReturnCommand(boost::bind(&GpuProgram::createParameters_internal, this, _1), true);
 
 		return op.getReturnValue<GpuProgramParametersSharedPtr>();
 	}

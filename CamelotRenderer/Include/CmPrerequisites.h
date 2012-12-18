@@ -110,6 +110,7 @@ namespace CamelotEngine {
 	class HardwareBufferManagerBase;
 	class HardwareConstantBuffer;
 	class CommandQueue;
+	class DeferredRenderContext;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -151,6 +152,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;
 	typedef std::shared_ptr<HardwareConstantBuffer> HardwareConstantBufferPtr;
+	typedef std::shared_ptr<DeferredRenderContext> DeferredRenderContextPtr;
 }
 
 // All type IDs

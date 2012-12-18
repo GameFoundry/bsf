@@ -29,7 +29,7 @@ namespace CamelotEngine
 				if(newRenderSystem != nullptr)
 				{
 					if(mActiveRenderSystem != nullptr)
-						mActiveRenderSystem->shutdown_internal();
+						mActiveRenderSystem->shutdown();
 
 					mActiveRenderSystem = newRenderSystem;
 				}				

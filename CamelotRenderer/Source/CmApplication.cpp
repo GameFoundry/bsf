@@ -22,6 +22,7 @@
 #include "CmInput.h"
 #include "CmRendererManager.h"
 #include "CmRenderer.h"
+#include "CmDeferredRenderContext.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -52,6 +53,7 @@ namespace CamelotEngine
 		renderSystem->startUp();
 
 		mPrimaryRenderWindow = renderSystem->createRenderWindow("Camelot Renderer", 1280, 720, false);
+		mPrimaryRenderContext = renderSystem->createDeferredContext();
 
 		SceneManager::startUp(new SceneManager());
 		Resources::startUp(new Resources("D:\\CamelotResourceMetas"));
@@ -73,6 +75,7 @@ namespace CamelotEngine
 			gSceneManager().update();
 
 			RendererManager::getActive()->renderAll();
+			mPrimaryRenderContext->submitToGpu();
 
 			RenderSystem* renderSystem = RenderSystemManager::getActive();
 			renderSystem->update();
@@ -97,7 +100,7 @@ namespace CamelotEngine
 		SceneManager::shutDown();
 
 		if(RenderSystemManager::getActive() != nullptr)
-			RenderSystemManager::getActive()->shutdown_internal();
+			RenderSystemManager::getActive()->shutdown();
 
 		HighLevelGpuProgramManager::shutDown();
 		DynLibManager::shutDown();

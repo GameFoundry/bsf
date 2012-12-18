@@ -6,8 +6,8 @@
 
 namespace CamelotEngine
 {
-	CommandQueue::CommandQueue(CM_THREAD_ID_TYPE threadId)
-		:mMyThreadId(threadId), mIsExecuting(false)
+	CommandQueue::CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
+		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads)
 	{
 		mCommands = new vector<Command>::type();
 	}
@@ -16,7 +16,7 @@ namespace CamelotEngine
 	{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0
-		if(CM_THREAD_CURRENT_ID != mMyThreadId)
+		if(!mAllowAllThreads && CM_THREAD_CURRENT_ID != mMyThreadId)
 		{
 			CM_EXCEPT(InternalErrorException, "Command queue accessed outside of its creation thread.");
 		}
@@ -27,35 +27,35 @@ namespace CamelotEngine
 			delete mCommands;
 	}
 
-	AsyncOp CommandQueue::queueReturn(boost::function<void(AsyncOp&)> commandCallback, UINT32 _callbackId)
+	AsyncOp CommandQueue::queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
 	{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0
-		if(CM_THREAD_CURRENT_ID != mMyThreadId)
+		if(!mAllowAllThreads && CM_THREAD_CURRENT_ID != mMyThreadId)
 		{
 			CM_EXCEPT(InternalErrorException, "Command queue accessed outside of its creation thread.");
 		}
 #endif
 #endif
 
-		Command newCommand(commandCallback, _callbackId);
+		Command newCommand(commandCallback, _notifyWhenComplete, _callbackId);
 		mCommands->push_back(newCommand);
 
 		return newCommand.asyncOp;
 	}
 
-	void CommandQueue::queue(boost::function<void()> commandCallback, UINT32 _callbackId)
+	void CommandQueue::queue(boost::function<void()> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
 	{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0
-		if(CM_THREAD_CURRENT_ID != mMyThreadId)
+		if(!mAllowAllThreads && CM_THREAD_CURRENT_ID != mMyThreadId)
 		{
 			CM_EXCEPT(InternalErrorException, "Command queue accessed outside of its creation thread.");
 		}
 #endif
 #endif
 
-		Command newCommand(commandCallback, _callbackId);
+		Command newCommand(commandCallback, _notifyWhenComplete, _callbackId);
 		mCommands->push_back(newCommand);
 	}
 
@@ -72,7 +72,7 @@ namespace CamelotEngine
 		return oldCommands;
 	}
 
-	void CommandQueue::playback(vector<CommandQueue::Command>::type* commands)
+	void CommandQueue::playback(vector<CommandQueue::Command>::type* commands, boost::function<void(UINT32)> notifyCallback)
 	{
 #if CM_DEBUG_MODE
 		RenderSystem* rs = RenderSystemManager::getActive();
@@ -81,22 +81,8 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, "This method should only be called from the render thread.");
 #endif
 
-		{
-			CM_LOCK_MUTEX(mCommandBufferMutex)
-
-			mIsExecuting = true;
-		}
-
 		if(commands == nullptr)
-		{
-			{
-				CM_LOCK_MUTEX(mCommandBufferMutex);
-				mIsExecuting = false;
-			}
-
-			CM_THREAD_NOTIFY_ALL(mContextPlaybackDoneCondition);
 			return;
-		}
 
 		for(auto iter = commands->begin(); iter != commands->end(); ++iter)
 		{
@@ -117,33 +103,28 @@ namespace CamelotEngine
 			{
 				command.callback();
 			}
+
+			if(command.notifyWhenComplete && !notifyCallback.empty())
+			{
+				notifyCallback(command.callbackId);
+			}
 		}
 
 		delete commands;
-
-		{
-			CM_LOCK_MUTEX(mCommandBufferMutex);
-			mIsExecuting = false;
-		}
-
-		CM_THREAD_NOTIFY_ALL(mContextPlaybackDoneCondition)
 	}
 
-	void CommandQueue::blockUntilExecuted()
+	void CommandQueue::playback(vector<Command>::type* commands)
 	{
-#if CM_DEBUG_MODE
-		RenderSystem* rs = RenderSystemManager::getActive();
+		playback(commands, boost::function<void(UINT32)>());
+	}
 
-		if(rs->getRenderThreadId() == CM_THREAD_CURRENT_ID)
-			CM_EXCEPT(InternalErrorException, "This method should never be called from the render thread as it will cause a deadlock.");
-#endif
+	bool CommandQueue::isEmpty()
+	{
+		CM_LOCK_MUTEX(mCommandBufferMutex);
 
-		{
-			CM_LOCK_MUTEX_NAMED(mCommandBufferMutex, lock);
-			while (mIsExecuting)
-			{
-				CM_THREAD_WAIT(mContextPlaybackDoneCondition, mCommandBufferMutex, lock)
-			}
-		}
+		if(mCommands != nullptr && mCommands->size() > 0)
+			return false;
+
+		return true;
 	}
 }

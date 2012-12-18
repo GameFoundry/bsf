@@ -114,7 +114,6 @@ namespace CamelotEngine
 		/** Shutdown the renderer and cleanup resources.
 		*/
 		void shutdown(void);
-		virtual void shutdown_internal(void);
 
 		/** Creates a new rendering window.
 		@remarks
@@ -901,6 +900,7 @@ namespace CamelotEngine
 		RenderSystemCapabilities* mCurrentCapabilities;
 
 		virtual void startUp_internal();
+		virtual void shutdown_internal();
 
 		/// Internal method used to set the underlying clip planes when needed
 		virtual void setClipPlanesImpl(const PlaneList& clipPlanes) = 0;
@@ -942,13 +942,17 @@ namespace CamelotEngine
 		bool mRenderThreadShutdown;
 
 		CM_THREAD_ID_TYPE mRenderThreadId;
-		CM_THREAD_SYNCHRONISER(mRSContextInitCondition)
+		CM_THREAD_SYNCHRONISER(mRenderThreadStartCondition)
 		CM_MUTEX(mRSContextInitMutex)
 		CM_THREAD_SYNCHRONISER(mCommandReadyCondition)
-		CM_MUTEX(mRSContextMutex)
+		CM_MUTEX(mCommandQueueMutex)
+		CM_THREAD_SYNCHRONISER(mCommandQueueCompleteCondition)
+		CM_MUTEX(mCommandCompleteMutex)
 		CM_MUTEX(mRSRenderCallbackMutex)
-		CM_MUTEX(mResourceContextMutex)
 		CM_MUTEX(mActiveContextMutex)
+
+		CM_MUTEX(mCommandNotifyMutex)
+		CM_THREAD_SYNCHRONISER(mCommandCompleteCondition)
 
 #if CM_THREAD_SUPPORT
 		CM_THREAD_TYPE* mRenderThread;
@@ -956,8 +960,9 @@ namespace CamelotEngine
 
 		CommandQueue* mCommandQueue;
 
-		// Context on which all resource commands are queued
-		mutable RenderSystemContextPtr mResourceContext;
+		UINT32 mMaxCommandNotifyId; // ID that will be assigned to the next command with a notifier callback
+		vector<UINT32>::type mCommandsCompleted; // Completed commands that have notifier callbacks set up
+
 		// Primary context created when the render system is first started up
 		RenderSystemContextPtr mPrimaryContext;
 		// Currently active context. All new commands will be executed on this context.
@@ -1007,22 +1012,25 @@ namespace CamelotEngine
 		void submitToGpu(RenderSystemContextPtr context, bool blockUntilComplete);
 
 		/**
-		 * @brief	Creates a new render system context that you can use for rendering on 
-		 * 			a non-render thread. You can have as many of these as you wish, the only limitation
-		 * 			is that you do not use a single instance on more than one thread. Each thread
-		 * 			requires its own context.
-		 * 			
-		 *			Resource context is different from normal rendering context, as it will continously queue commands,
-		 *			while normal "frame" context will discard older batches of commands (i.e. older frames).
-		 */
-		RenderSystemContextPtr createResourceRenderSystemContext();
-
-		/**
 		 * @brief	Gets the currently active render system object.
 		 *
 		 * @return	The active context.
 		 */
 		RenderSystemContextPtr getActiveContext() const;
+
+		/**
+		 * @brief	Blocks the calling thread until the command with the specified ID completes.
+		 * 			Make sure that the specified ID actually exists, otherwise this will block forever.
+		 */
+		void blockUntilCommandCompleted(UINT32 commandId);
+
+		/**
+		 * @brief	Callback called by the command list when a specific command finishes executing.
+		 * 			This is only called on commands that have a special notify on complete flag set.
+		 *
+		 * @param	commandId	Identifier for the command.
+		 */
+		void commandCompletedNotify(UINT32 commandId);
 
 	public:
 		/**
@@ -1041,25 +1049,19 @@ namespace CamelotEngine
 		RenderSystemContextPtr createRenderSystemContext();
 
 		/**
+		 * @brief	Creates a new render system context that you can use for rendering on 
+		 * 			a non-render thread. You can have as many of these as you wish, the only limitation
+		 * 			is that you do not use a single instance on more than one thread. Each thread
+		 * 			requires its own context. The context will be bound to the thread you call this method on.
+		 */
+		DeferredRenderContextPtr createDeferredContext();
+
+		/**
 		 * @brief	Sets an active context on which all subsequent RenderSystem calls will be executed on.
 		 * 			
 		 * @note	context must not be null.
 		 */
 		void setActiveContext(RenderSystemContextPtr context);
-
-		/**
-		 * @brief	Queues a new command that will be added to the resource context.
-		 * 	
-		 * @see		RenderSystemContext::queueReturnCommand
-		 */
-		AsyncOp queueResourceReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false, UINT32 _callbackId = 0);
-
-		/**
-		 * @brief	Queues a new command that will be added to the resource context.
-		 * 	
-		 * @see		RenderSystemContext::queueCommand
-		 */
-		void queueResourceCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false, UINT32 _callbackId = 0);
 
 		/**
 		 * @brief	Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,
@@ -1070,7 +1072,7 @@ namespace CamelotEngine
 		 * 	
 		 * @see		CommandQueue::queueReturn
 		 */
-		AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false, UINT32 _callbackId = 0);
+		AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false);
 
 		/**
 		* @brief	Queues a new command that will be added to the global command queue.You are allowed to call this from any thread,
@@ -1080,7 +1082,7 @@ namespace CamelotEngine
 		 * 							   and they all need to be executed in order before the current command is reached, which might take a long time.
 		 * @see		CommandQueue::queue
 		 */
-		void queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false, UINT32 _callbackId = 0);
+		void queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false);
 
 		/**
 		 * @brief	Callback that is called from the render thread before it starts processing

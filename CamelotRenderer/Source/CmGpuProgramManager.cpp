@@ -45,7 +45,7 @@ namespace CamelotEngine {
 	//-------------------------------------------------------------------------
 	void GpuProgramManager::destroy(GpuProgram* program)
 	{
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&GpuProgramManager::destroy_internal, this, program));
+		RenderSystemManager::getActive()->queueCommand(boost::bind(&GpuProgramManager::destroy_internal, this, program));
 	}
 	//-------------------------------------------------------------------------
 	void GpuProgramManager::destroy_internal(GpuProgram* program)

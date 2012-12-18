@@ -16,12 +16,12 @@ namespace CamelotEngine
 	public:
 		struct Command
 		{
-			Command(boost::function<void(AsyncOp&)> _callback, UINT32 _callbackId = 0)
-				:callbackWithReturnValue(_callback), returnsValue(true), callbackId(_callbackId)
+			Command(boost::function<void(AsyncOp&)> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+				:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
 			{ }
 
-			Command(boost::function<void()> _callback, UINT32 _callbackId = 0)
-				:callback(_callback), returnsValue(false), callbackId(_callbackId)
+			Command(boost::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+				:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
 			{ }
 
 			boost::function<void()> callback;
@@ -29,9 +29,21 @@ namespace CamelotEngine
 			AsyncOp asyncOp;
 			bool returnsValue;
 			UINT32 callbackId;
+			bool notifyWhenComplete;
 		};
 
-		CommandQueue(CM_THREAD_ID_TYPE threadId);
+		/**
+		 * @brief	Constructor.
+		 *
+		 * @param	threadId	   	Identifier for the thread the command queue will be used on.
+		 * @param	allowAllThreads	Only matters for debug purposes. If false, then the queue
+		 * 							will throw an exception if accessed outside of the creation thread
+		 * 							(If in debug mode).
+		 * 							
+		 *							When you want to allow multiple threads to access it, set this to true,
+		 *							and also make sure you sync access to the queue properly.
+		 */
+		CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads = false);
 		~CommandQueue();
 
 		CM_THREAD_ID_TYPE getThreadId() const { return mMyThreadId; }
@@ -46,6 +58,8 @@ namespace CamelotEngine
 		 * 			processing. (If it doesn't it will still be called automatically, but the return
 		 * 			value will default to nullptr)
 		 *
+		 * @param	_notifyWhenComplete	(optional) Call the notify method (provided in the call to CommandQueue::playback)
+		 * 								when the command is complete.
 		 * @param	_callbackId			   	(optional) Identifier for the callback so you can then later find it
 		 * 									if needed.
 		 *
@@ -53,18 +67,20 @@ namespace CamelotEngine
 		 * 			it completes AsyncOp::isResolved will return true and return data will be valid (if
 		 * 			the callback provided any).
 		 */
-		AsyncOp queueReturn(boost::function<void(AsyncOp&)> commandCallback, UINT32 _callbackId = 0);
+		AsyncOp queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0);
 
 		/**
 		 * @brief	Queue up a new command to execute. Make sure the provided function has all of its
-		 * 			parameters properly bound. Provided command is not expected to return a value.
-		 * 			If you wish to return a value from the callback use the other overload of queueCommand 
-		 * 			which accepts AsyncOp parameter.
+		 * 			parameters properly bound. Provided command is not expected to return a value. If you
+		 * 			wish to return a value from the callback use the other overload of queueCommand which
+		 * 			accepts AsyncOp parameter.
 		 *
-		 * @param	_callbackId			   	(optional) Identifier for the callback so you can then later find it
-		 * 									if needed.
+		 * @param	_notifyWhenComplete	(optional) Call the notify method (provided in the call to CommandQueue::playback)
+		 * 								when the command is complete.
+		 * @param	_callbackId		   	(optional) Identifier for the callback so you can then later find
+		 * 								it if needed.
 		 */
-		void queue(boost::function<void()> commandCallback, UINT32 _callbackId = 0);
+		void queue(boost::function<void()> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0);
 
 		/**
 		 * @brief	Returns a copy of all queued commands and makes room for new ones. Must be called from the thread
@@ -73,27 +89,32 @@ namespace CamelotEngine
 		vector<Command>::type* flush();
 
 		/**
+		 * @brief	Plays all provided commands. Should only be called from the render thread. To get the
+		 * 			commands call flushCommands().
+		 *
+		 * @param	notifyCallback  	Callback that will be called if a command that has "notifyOnComplete" flag set.
+		 * 								The callback will receive "callbackId" of the command.
+		 */
+		void playback(vector<Command>::type* commands, boost::function<void(UINT32)> notifyCallback);
+
+		/**
 		 * @brief	Plays all provided commands. Should only be called from the render thread. To get
 		 * 			the commands call flushCommands().
 		 */
 		void playback(vector<Command>::type* commands);
 
 		/**
-		 * @brief	Blocks the current thread until all commands in the context are processed.
-		 * 			
-		 * @note	Do not call from render thread. Render thread is the thread doing the processing and blocking
-		 * 			it will cause a deadlock since processing will never be completed. 
+		 * @brief	Returns true if no commands are queued.
 		 */
-		void blockUntilExecuted();
+		bool isEmpty();
 
 	private:
 		vector<Command>::type* mCommands;
 
 		bool mIsShutdown;
-		bool mIsExecuting;
+		bool mAllowAllThreads;
 
 		CM_THREAD_ID_TYPE mMyThreadId;
 		CM_MUTEX(mCommandBufferMutex);
-		CM_THREAD_SYNCHRONISER(mContextPlaybackDoneCondition);
 	};
 }

@@ -1,8 +1,7 @@
 #include "CmForwardRenderer.h"
 #include "CmCamera.h"
 #include "CmSceneManager.h"
-#include "CmRenderSystemManager.h"
-#include "CmRenderSystem.h"
+#include "CmDeferredRenderContext.h"
 #include "CmRenderable.h"
 #include "CmMaterial.h"
 #include "CmMesh.h"
@@ -26,11 +25,11 @@ namespace CamelotEngine
 
 	void ForwardRenderer::renderAll() 
 	{
-		RenderSystem* renderSystem = RenderSystemManager::getActive();
+		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
 
 		// TODO - No point in setting these each frame?
-		renderSystem->setInvertVertexWinding(false);
-		renderSystem->setDepthBufferParams();
+		renderContext->setInvertVertexWinding(false);
+		renderContext->setDepthBufferParams();
 
 		const vector<CameraPtr>::type& allCameras = gSceneManager().getAllCameras();
 		for(auto iter = allCameras.begin(); iter != allCameras.end(); ++iter)
@@ -38,23 +37,23 @@ namespace CamelotEngine
 			render(*iter);
 		}
 
-		renderSystem->swapAllRenderTargetBuffers(false);
+		renderContext->swapAllRenderTargetBuffers(false);
 	}
 
 	void ForwardRenderer::render(const CameraPtr camera) 
 	{
 		vector<RenderablePtr>::type allRenderables = gSceneManager().getVisibleRenderables(camera);
 
-		RenderSystem* renderSystem = RenderSystemManager::getActive();
-		renderSystem->setViewport(*camera->getViewport());
+		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
+		renderContext->setViewport(*camera->getViewport());
 
 		Matrix4 projMatrixCstm = camera->getProjectionMatrix();
 		Matrix4 viewMatrixCstm = camera->getViewMatrix();
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
-		renderSystem->clearFrameBuffer(FBT_COLOUR | FBT_DEPTH, Color::Blue);
-		renderSystem->beginFrame();
+		renderContext->clearFrameBuffer(FBT_COLOUR | FBT_DEPTH, Color::Blue);
+		renderContext->beginFrame();
 
 		// TODO - sort renderables by material/pass/parameters to minimize state changes
 		for(auto iter = allRenderables.begin(); iter != allRenderables.end(); ++iter)
@@ -79,11 +78,11 @@ namespace CamelotEngine
 				setPass(material->getPass(i));
 				setPassParameters(material->getPassParameters(i));
 
-				renderSystem->render(mesh->getRenderOperation());
+				renderContext->render(mesh->getRenderOperation());
 			}
 		}
 
-		renderSystem->endFrame();
+		renderContext->endFrame();
 
 		// TODO - Sort renderables
 		// Render them
@@ -96,39 +95,39 @@ namespace CamelotEngine
 
 		mActivePass = pass;
 
-		RenderSystem* renderSystem = RenderSystemManager::getActive();
+		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
 
 		GpuProgramHandle vertProgram = pass->getVertexProgram();
 		if(vertProgram)
 		{
-			renderSystem->bindGpuProgram(vertProgram);
+			renderContext->bindGpuProgram(vertProgram);
 		}
 		else
 		{
 			//if(renderSystem->isGpuProgramBound(GPT_VERTEX_PROGRAM))
-				renderSystem->unbindGpuProgram(GPT_VERTEX_PROGRAM);
+				renderContext->unbindGpuProgram(GPT_VERTEX_PROGRAM);
 		}
 
 		GpuProgramHandle fragProgram = pass->getFragmentProgram();
 		if(fragProgram)
 		{
-			renderSystem->bindGpuProgram(fragProgram);
+			renderContext->bindGpuProgram(fragProgram);
 		}
 		else
 		{
 			//if(renderSystem->isGpuProgramBound(GPT_FRAGMENT_PROGRAM))
-				renderSystem->unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
+				renderContext->unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
 		}
 
 		GpuProgramHandle geomProgram = pass->getGeometryProgram();
 		if(geomProgram)
 		{
-			renderSystem->bindGpuProgram(geomProgram);
+			renderContext->bindGpuProgram(geomProgram);
 		}	
 		else
 		{
 			//if(renderSystem->isGpuProgramBound(GPT_GEOMETRY_PROGRAM))
-				renderSystem->unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
+				renderContext->unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
 		}
 
 		// The rest of the settings are the same no matter whether we use programs or not
@@ -136,7 +135,7 @@ namespace CamelotEngine
 		// Set scene blending
 		if ( pass->hasSeparateSceneBlending( ) )
 		{
-			renderSystem->setSeparateSceneBlending(
+			renderContext->setSeparateSceneBlending(
 				pass->getSourceBlendFactor(), pass->getDestBlendFactor(),
 				pass->getSourceBlendFactorAlpha(), pass->getDestBlendFactorAlpha(),
 				pass->getSceneBlendingOperation(), 
@@ -146,20 +145,20 @@ namespace CamelotEngine
 		{
 			if(pass->hasSeparateSceneBlendingOperations( ) )
 			{
-				renderSystem->setSeparateSceneBlending(
+				renderContext->setSeparateSceneBlending(
 					pass->getSourceBlendFactor(), pass->getDestBlendFactor(),
 					pass->getSourceBlendFactor(), pass->getDestBlendFactor(),
 					pass->getSceneBlendingOperation(), pass->getSceneBlendingOperationAlpha() );
 			}
 			else
 			{
-				renderSystem->setSceneBlending(
+				renderContext->setSceneBlending(
 					pass->getSourceBlendFactor(), pass->getDestBlendFactor(), pass->getSceneBlendingOperation() );
 			}
 		}
 
 		// Set point parameters
-		renderSystem->setPointParameters(
+		renderContext->setPointParameters(
 			pass->getPointSize(),
 			false, 
 			false, 
@@ -176,45 +175,45 @@ namespace CamelotEngine
 
 		// Set up non-texture related material settings
 		// Depth buffer settings
-		renderSystem->setDepthBufferFunction(pass->getDepthFunction());
-		renderSystem->setDepthBufferCheckEnabled(pass->getDepthCheckEnabled());
-		renderSystem->setDepthBufferWriteEnabled(pass->getDepthWriteEnabled());
-		renderSystem->setDepthBias(pass->getDepthBiasConstant(), pass->getDepthBiasSlopeScale());
+		renderContext->setDepthBufferFunction(pass->getDepthFunction());
+		renderContext->setDepthBufferCheckEnabled(pass->getDepthCheckEnabled());
+		renderContext->setDepthBufferWriteEnabled(pass->getDepthWriteEnabled());
+		renderContext->setDepthBias(pass->getDepthBiasConstant(), pass->getDepthBiasSlopeScale());
 
 		// Alpha-reject settings
-		renderSystem->setAlphaRejectSettings(
+		renderContext->setAlphaRejectSettings(
 			pass->getAlphaRejectFunction(), pass->getAlphaRejectValue(), pass->isAlphaToCoverageEnabled());
 
 		// Set colour write mode
 		// Right now we only use on/off, not per-channel
 		bool colWrite = pass->getColourWriteEnabled();
-		renderSystem->setColorBufferWriteEnabled(colWrite, colWrite, colWrite, colWrite);
+		renderContext->setColorBufferWriteEnabled(colWrite, colWrite, colWrite, colWrite);
 
 		// Culling mode
-		renderSystem->setCullingMode(pass->getCullingMode());
+		renderContext->setCullingMode(pass->getCullingMode());
 
 		// Polygon mode
-		renderSystem->setPolygonMode(pass->getPolygonMode());
+		renderContext->setPolygonMode(pass->getPolygonMode());
 	}
 
 	void ForwardRenderer::setPassParameters(PassParametersPtr params)
 	{
 		// TODO - When applying passes, don't re-apply states that are already the same as from previous pass.
-		RenderSystem* renderSystem = RenderSystemManager::getActive();
+		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
 
 		if(mActivePass == nullptr)
 			CM_EXCEPT(InternalErrorException, "Trying to set pass parameters, but no pass is set.");
 
 		GpuProgramHandle vertProgram = mActivePass->getVertexProgram();
 		if(vertProgram)
-			renderSystem->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, params->mVertParams, GPV_ALL);
+			renderContext->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, params->mVertParams, GPV_ALL);
 
 		GpuProgramHandle fragProgram = mActivePass->getFragmentProgram();
 		if(fragProgram)
-			renderSystem->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, params->mFragParams, GPV_ALL);
+			renderContext->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, params->mFragParams, GPV_ALL);
 
 		GpuProgramHandle geomProgram = mActivePass->getGeometryProgram();
 		if(geomProgram)
-			renderSystem->bindGpuProgramParameters(GPT_GEOMETRY_PROGRAM, params->mGeomParams, GPV_ALL);
+			renderContext->bindGpuProgramParameters(GPT_GEOMETRY_PROGRAM, params->mGeomParams, GPV_ALL);
 	}
 }

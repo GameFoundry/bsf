@@ -41,6 +41,7 @@ THE SOFTWARE.
 #include "CmHardwareOcclusionQuery.h"
 #include "CmRenderSystemContext.h"
 #include "CmCommandQueue.h"
+#include "CmDeferredRenderContext.h"
 #include "boost/bind.hpp"
 
 #if CM_DEBUG_MODE
@@ -58,8 +59,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     RenderSystem::RenderSystem()
         : mActiveRenderTarget(0)
-        // This means CULL clockwise vertices, i.e. front of poly is counter-clockwise
-        // This makes it the same as OpenGL and other right-handed systems
         , mCullingMode(CULL_CLOCKWISE)
 		, mVsync(false)
 		, mVSyncInterval(1)
@@ -73,6 +72,7 @@ namespace CamelotEngine {
 		, mRenderThreadFunc(nullptr)
 		, mRenderThreadShutdown(false)
 		, mCommandQueue(nullptr)
+		, mMaxCommandNotifyId(0)
     {
     }
 
@@ -88,13 +88,13 @@ namespace CamelotEngine {
 	void RenderSystem::startUp()
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mResourceContext = createResourceRenderSystemContext();
 		mPrimaryContext = createRenderSystemContext();
 		mActiveContext = mPrimaryContext;
+		mCommandQueue = new CommandQueue(CM_THREAD_CURRENT_ID);
 
 		initRenderThread();
 
-		queueResourceCommand(boost::bind(&RenderSystem::startUp_internal, this));
+		queueCommand(boost::bind(&RenderSystem::startUp_internal, this));
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::startUp_internal()
@@ -104,13 +104,11 @@ namespace CamelotEngine {
 		mVertexProgramBound = false;
 		mGeometryProgramBound = false;
 		mFragmentProgramBound = false;
-
-		mCommandQueue = new CommandQueue(CM_THREAD_CURRENT_ID);
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::shutdown(void)
 	{
-		queueResourceCommand(boost::bind(&RenderSystem::shutdown_internal, this), true);
+		queueCommand(boost::bind(&RenderSystem::shutdown_internal, this), true);
 		// TODO - What if something gets queued between these two calls?
 		shutdownRenderThread();
 	}
@@ -170,9 +168,9 @@ namespace CamelotEngine {
 		AsyncOp op;
 
 		if(miscParams != nullptr)
-			op = queueResourceReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, *miscParams, _1), true);
+			op = queueReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, *miscParams, _1), true);
 		else
-			op = queueResourceReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, NameValuePairList(), _1), true);
+			op = queueReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, NameValuePairList(), _1), true);
 
 		return op.getReturnValue<RenderWindow*>();
 	}
@@ -864,7 +862,7 @@ namespace CamelotEngine {
 		mRenderThread = t;
 
 		CM_LOCK_MUTEX_NAMED(mRSContextInitMutex, lock)
-		CM_THREAD_WAIT(mRSContextInitCondition, mRSContextInitMutex, lock)
+		CM_THREAD_WAIT(mRenderThreadStartCondition, mRSContextInitMutex, lock)
 
 #else
 		CM_EXCEPT(InternalErrorException, "Attempting to start a render thread but Camelot isn't compiled with thread support.");
@@ -875,40 +873,22 @@ namespace CamelotEngine {
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
 
-		CM_THREAD_NOTIFY_ALL(mRSContextInitCondition)
+		CM_THREAD_NOTIFY_ALL(mRenderThreadStartCondition)
 
 		while(true)
 		{
 			if(mRenderThreadShutdown)
 				return;
 
-			vector<RenderSystemContextPtr>::type renderSystemContextsCopy;
-			{
-				CM_LOCK_MUTEX(mRSContextMutex);
-
-				for(auto iter = mRenderSystemContexts.begin(); iter != mRenderSystemContexts.end(); ++iter)
-				{
-					renderSystemContextsCopy.push_back(*iter);
-				}
-			}
-
-
 			// Wait until we get some ready commands
+			vector<CommandQueue::Command>::type* commands = nullptr;
 			{
-				CM_LOCK_MUTEX_NAMED(mRSContextMutex, lock)
+				CM_LOCK_MUTEX_NAMED(mCommandQueueMutex, lock)
 
-				bool anyCommandsReady = false;
-				for(auto iter = renderSystemContextsCopy.begin(); iter != renderSystemContextsCopy.end(); ++iter)
-				{
-					if((*iter)->hasReadyCommands())
-					{
-						anyCommandsReady = true;
-						break;
-					}
-				}
+				while(mCommandQueue->isEmpty())
+					CM_THREAD_WAIT(mCommandReadyCondition, mCommandQueueMutex, lock)
 
-				if(!anyCommandsReady)
-					CM_THREAD_WAIT(mCommandReadyCondition, mRSContextMutex, lock)
+				commands = mCommandQueue->flush();
 			}
 
 			{
@@ -919,10 +899,7 @@ namespace CamelotEngine {
 			}
 
 			// Play commands
-			for(auto iter = renderSystemContextsCopy.begin(); iter != renderSystemContextsCopy.end(); ++iter)
-			{
-				(*iter)->playbackCommands();
-			}
+			mCommandQueue->playback(commands, boost::bind(&RenderSystem::commandCompletedNotify, this, _1)); 
 
 			{
 				CM_LOCK_MUTEX(mRSRenderCallbackMutex)
@@ -930,6 +907,8 @@ namespace CamelotEngine {
 				if(!PostRenderThreadUpdateCallback.empty())
 					PostRenderThreadUpdateCallback();
 			}
+
+			CM_THREAD_NOTIFY_ALL(mCommandQueueCompleteCondition);
 		}
 
 	}
@@ -956,25 +935,16 @@ namespace CamelotEngine {
 			);
 
 		{
-			CM_LOCK_MUTEX(mRSContextMutex);
+			CM_LOCK_MUTEX(mCommandQueueMutex);
 			mRenderSystemContexts.push_back(newContext);
 		}
 
 		return newContext;
 	}
 
-	RenderSystemContextPtr RenderSystem::createResourceRenderSystemContext()
+	DeferredRenderContextPtr RenderSystem::createDeferredContext()
 	{
-		RenderSystemContextPtr newContext = RenderSystemContextPtr(
-			new RenderSystemImmediateContext(CM_THREAD_CURRENT_ID)
-			);
-
-		{
-			CM_LOCK_MUTEX(mRSContextMutex);
-			mRenderSystemContexts.push_back(newContext);
-		}
-
-		return newContext;
+		return DeferredRenderContextPtr(new DeferredRenderContext(this, CM_THREAD_CURRENT_ID));
 	}
 
 	void RenderSystem::addPreRenderThreadUpdateCallback(boost::function<void()> callback)
@@ -997,7 +967,7 @@ namespace CamelotEngine {
 			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
 
 		{
-			CM_LOCK_MUTEX(mRSContextMutex);
+			CM_LOCK_MUTEX(mCommandQueueMutex);
 
 			context->submitToGpu();
 		}
@@ -1016,49 +986,95 @@ namespace CamelotEngine {
 
 		mActiveContext = context;
 	}
-
-	AsyncOp RenderSystem::queueResourceReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete, UINT32 _callbackId)
+	
+	AsyncOp RenderSystem::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)
 	{
-		AsyncOp op = mResourceContext->queueReturnCommand(commandCallback);
-		submitToGpu(mResourceContext, blockUntilComplete);
+#ifdef CM_DEBUG_MODE
+		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
+			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
+#endif
+
+		AsyncOp op;
+		UINT32 commandId = -1;
+		{
+			CM_LOCK_MUTEX(mCommandQueueMutex);
+
+			if(blockUntilComplete)
+			{
+				commandId = mMaxCommandNotifyId++;
+				op = mCommandQueue->queueReturn(commandCallback, true, commandId);
+			}
+			else
+				op = mCommandQueue->queueReturn(commandCallback);
+		}
+
+		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
+
+		if(blockUntilComplete)
+			blockUntilCommandCompleted(commandId);
 
 		return op;
 	}
 
-	void RenderSystem::queueResourceCommand(boost::function<void()> commandCallback, bool blockUntilComplete, UINT32 _callbackId)
+	void RenderSystem::queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete)
 	{
-		mResourceContext->queueCommand(commandCallback);
-		submitToGpu(mResourceContext, blockUntilComplete);
-	}
-	
-	AsyncOp RenderSystem::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete, UINT32 _callbackId)
-	{
-		mCommandQueue->queueReturn(commandCallback, _callbackId);
-
 #ifdef CM_DEBUG_MODE
 		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
 #endif
 
+		UINT32 commandId = -1;
+		{
+			CM_LOCK_MUTEX(mCommandQueueMutex);
+
+			if(blockUntilComplete)
+			{
+				commandId = mMaxCommandNotifyId++;
+				mCommandQueue->queue(commandCallback, true, commandId);
+			}
+			else
+				mCommandQueue->queue(commandCallback);
+		}
+
 		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
 
 		if(blockUntilComplete)
-			mCommandQueue->blockUntilExecuted();
+			blockUntilCommandCompleted(commandId);
 	}
 
-	void RenderSystem::queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete, UINT32 _callbackId)
+	void RenderSystem::blockUntilCommandCompleted(UINT32 commandId)
 	{
-		mCommandQueue->queue(commandCallback, _callbackId);
+		CM_LOCK_MUTEX_NAMED(mCommandNotifyMutex, lock);
 
-#ifdef CM_DEBUG_MODE
-		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
-			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
-#endif
+		while(true)
+		{
+			// Check if our command id is in the completed list
+			auto iter = mCommandsCompleted.begin();
+			for(; iter != mCommandsCompleted.end(); ++iter)
+			{
+				if(*iter == commandId)
+					break;
+			}
 
-		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
+			if(iter != mCommandsCompleted.end())
+			{
+				mCommandsCompleted.erase(iter);
+				break;
+			}
 
-		if(blockUntilComplete)
-			mCommandQueue->blockUntilExecuted();
+			CM_THREAD_WAIT(mCommandQueueCompleteCondition, mCommandNotifyMutex, lock);
+		}
+	}
+
+	void RenderSystem::commandCompletedNotify(UINT32 commandId)
+	{
+		{
+			CM_LOCK_MUTEX(mCommandNotifyMutex);
+
+			mCommandsCompleted.push_back(commandId);
+		}
+
+		CM_THREAD_NOTIFY_ALL(mCommandCompleteCondition);
 	}
 
 	RenderSystemContextPtr RenderSystem::getActiveContext() const
@@ -1070,16 +1086,16 @@ namespace CamelotEngine {
 
 	void RenderSystem::update()
 	{
-		{
-			CM_LOCK_MUTEX(mRSContextMutex);
+		//{
+		//	CM_LOCK_MUTEX(mRSContextMutex);
 
-			for(auto iter = mRenderSystemContexts.begin(); iter != mRenderSystemContexts.end(); ++iter)
-			{
-				(*iter)->submitToGpu();
-			}
-		}
+		//	for(auto iter = mRenderSystemContexts.begin(); iter != mRenderSystemContexts.end(); ++iter)
+		//	{
+		//		(*iter)->submitToGpu();
+		//	}
+		//}
 
-		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition)
+		//CM_THREAD_NOTIFY_ALL(mCommandReadyCondition)
 	}
 
 	void RenderSystem::throwIfNotRenderThread() const

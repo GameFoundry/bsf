@@ -18,15 +18,18 @@
 
 /////
 First port (and test!) existing render systems so it is capable of dealing with DX11 stuff(samplerState, depthStencilState, rasterizerState objects primarily. Also split pass into Texture/sampler) 
-Also create immediate & deferred render context we can call render system methods on directly (immediate just calls render system using inline methods)
- - How to async call non-rendersystem methods? Like GpuProgram?? They either have to have contexts of their own (clumsy) or keep the like it is (separate method pairs, which is not the same interface
-   as the render system)
-Doublecheck the validity of resource and non-resource contexts
- - Calling a non-async resource method will block until the render thread is completely finished with its current task! (Is there a way to avoid that though?)
- - I need to define proper order of resource and render calls. What if a resource tries to get changed in the middle of a render call? It should only queue itself after
-   all previous command buffers are done executing.
-    - Whenever user does DeferredContext::submitCommands, all resource commands before that should get processed and only then should that command buffer be executed
- - Mutexes are slow as shit. Find a way to avoid them? (Primarily for resources, but check if we extensively used them elsewhere too)
+Render thread pre-post operations should just be queued into the global queue, instead of having actual hooks for those methods
+
+Add @copydoc documentation to DeferredRenderContext
+Delete CmRenderSystemContext
+Rename RenderSystem _internal methods
+Port RenderSystem so it uses the new mCommandQueue and remove obsolete methods
+
+
+
+
+Make CommandQueue not use mutexes and use atomics instead??
+Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
 /////
 
 

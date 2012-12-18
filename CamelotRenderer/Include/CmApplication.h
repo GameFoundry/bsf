@@ -26,6 +26,9 @@ namespace CamelotEngine
 
 			RenderWindow* getPrimaryRenderWindow() const { return mPrimaryRenderWindow; }
 
+			// TODO: This is just for debug purposes. Normally I'd want to have one render context per scene view, not one global one
+			DeferredRenderContextPtr getPrimaryRenderContext() const { return mPrimaryRenderContext; }
+
 			/**
 			 * @brief	Loads a plugin.
 			 *
@@ -35,6 +38,7 @@ namespace CamelotEngine
 
 	private:
 		RenderWindow* mPrimaryRenderWindow;
+		DeferredRenderContextPtr mPrimaryRenderContext;
 
 		/**
 		 * @brief	Callback called from the render thread in order to initialize resources.

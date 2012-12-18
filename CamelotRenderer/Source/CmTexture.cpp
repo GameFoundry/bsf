@@ -74,7 +74,7 @@ namespace CamelotEngine {
 
 		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&Texture::initialize_internal, this));
+		RenderSystemManager::getActive()->queueCommand(boost::bind(&Texture::initialize_internal, this));
 	}
     //--------------------------------------------------------------------------
     bool Texture::hasAlpha(void) const
@@ -109,12 +109,12 @@ namespace CamelotEngine {
 
 	void Texture::setRawPixels(const PixelData& data, UINT32 face, UINT32 mip)
 	{
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip), true);
+		RenderSystemManager::getActive()->queueCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip), true);
 	}
 
 	void Texture::setRawPixels_async(const PixelData& data, UINT32 face, UINT32 mip)
 	{
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip));
+		RenderSystemManager::getActive()->queueCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip));
 	}
 
 	void Texture::setRawPixels_internal(const PixelData& data, UINT32 face, UINT32 mip)
@@ -143,14 +143,14 @@ namespace CamelotEngine {
 
 	PixelDataPtr Texture::getRawPixels(UINT32 face, UINT32 mip)
 	{
-		AsyncOp op = RenderSystemManager::getActive()->queueResourceReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1), true);
+		AsyncOp op = RenderSystemManager::getActive()->queueReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1), true);
 
 		return op.getReturnValue<PixelDataPtr>();
 	}
 
 	AsyncOp Texture::getRawPixels_async(UINT32 face, UINT32 mip)
 	{
-		return RenderSystemManager::getActive()->queueResourceReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1));
+		return RenderSystemManager::getActive()->queueReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1));
 	}
 
 	void Texture::getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op)

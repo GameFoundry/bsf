@@ -132,6 +132,10 @@ namespace CamelotEngine {
           RenderSystem
          */
 		void startUp_internal();
+		/** See
+          RenderSystem
+         */
+        void shutdown_internal(void);
 
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 		bool activateGLTextureUnit(UINT16 unit);
@@ -190,10 +194,6 @@ namespace CamelotEngine {
         // -----------------------------
         // Low-level overridden members
         // -----------------------------
-        /** See
-          RenderSystem
-         */
-        void shutdown_internal(void);
 		/** See
           RenderSystem
          */

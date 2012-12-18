@@ -45,7 +45,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void TextureManager::destroy(Texture* texture)
 	{
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&TextureManager::destroy_internal, this, texture));
+		RenderSystemManager::getActive()->queueCommand(boost::bind(&TextureManager::destroy_internal, this, texture));
 	}
 	//-----------------------------------------------------------------------
 	void TextureManager::destroy_internal(Texture* texture)

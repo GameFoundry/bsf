@@ -136,7 +136,7 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------------
 	void HighLevelGpuProgramFactory::destroy(HighLevelGpuProgram* prog)
 	{
-		RenderSystemManager::getActive()->queueResourceCommand(boost::bind(&HighLevelGpuProgramFactory::destroy_internal, this, prog));
+		RenderSystemManager::getActive()->queueCommand(boost::bind(&HighLevelGpuProgramFactory::destroy_internal, this, prog));
 	}
 	//---------------------------------------------------------------------
 	bool HighLevelGpuProgramManager::isLanguageSupported(const String& lang)
