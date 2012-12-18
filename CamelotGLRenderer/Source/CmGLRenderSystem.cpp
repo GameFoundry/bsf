@@ -212,7 +212,7 @@ namespace CamelotEngine {
 		RenderWindow* win = mGLSupport->newWindow(name, width, height, 
 			fullScreen, &miscParams);
 
-		attachRenderTarget_internal( *win );
+		attachRenderTarget( *win );
 
 		if (!mGLInitialised) 
 		{                
@@ -246,7 +246,7 @@ namespace CamelotEngine {
 	}
 
 	//---------------------------------------------------------------------
-	void GLRenderSystem::bindGpuProgram_internal(GpuProgramHandle prg)
+	void GLRenderSystem::bindGpuProgram(GpuProgramHandle prg)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -302,10 +302,10 @@ namespace CamelotEngine {
 		// Bind the program
 		glprg->bindProgram();
 
-		RenderSystem::bindGpuProgram_internal(prg);
+		RenderSystem::bindGpuProgram(prg);
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::unbindGpuProgram_internal(GpuProgramType gptype)
+	void GLRenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -327,10 +327,10 @@ namespace CamelotEngine {
 			mCurrentFragmentProgram->unbindProgram();
 			mCurrentFragmentProgram = 0;
 		}
-		RenderSystem::unbindGpuProgram_internal(gptype);
+		RenderSystem::unbindGpuProgram(gptype);
 	}
 
-	void GLRenderSystem::bindGpuProgramParameters_internal(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask)
+	void GLRenderSystem::bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -350,11 +350,11 @@ namespace CamelotEngine {
 					if(!curTexture.isLoaded())
 						continue;
 
-					setTexture_internal(def.physicalIndex, true, curTexture.getInternalPtr());
+					setTexture(def.physicalIndex, true, curTexture.getInternalPtr());
 
 					const SamplerState& samplerState = params->getSamplerState(def.physicalIndex);
 
-					setTextureUnitSettings_internal(def.physicalIndex, curTexture.getInternalPtr(), samplerState);
+					setTextureUnitSettings(def.physicalIndex, curTexture.getInternalPtr(), samplerState);
 				}
 			}
 		}
@@ -376,7 +376,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setPointParameters_internal(float size, 
+	void GLRenderSystem::setPointParameters(float size, 
 		bool attenuationEnabled, float constant, float linear, float quadratic,
 		float minSize, float maxSize)
 	{
@@ -444,7 +444,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTexture_internal(UINT16 stage, bool enabled, const TexturePtr &texPtr)
+	void GLRenderSystem::setTexture(UINT16 stage, bool enabled, const TexturePtr &texPtr)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -503,7 +503,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureAddressingMode_internal(UINT16 stage, const SamplerState::UVWAddressingMode& uvw)
+	void GLRenderSystem::setTextureAddressingMode(UINT16 stage, const SamplerState::UVWAddressingMode& uvw)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -519,7 +519,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureBorderColor_internal(UINT16 stage, const Color& colour)
+	void GLRenderSystem::setTextureBorderColor(UINT16 stage, const Color& colour)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -531,7 +531,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureMipmapBias_internal(UINT16 stage, float bias)
+	void GLRenderSystem::setTextureMipmapBias(UINT16 stage, float bias)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -545,7 +545,7 @@ namespace CamelotEngine {
 		}
 
 	}
-	void GLRenderSystem::setSceneBlending_internal(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
+	void GLRenderSystem::setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -591,7 +591,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setSeparateSceneBlending_internal(
+	void GLRenderSystem::setSeparateSceneBlending(
 		SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, 
 		SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha,
 		SceneBlendOperation op, SceneBlendOperation alphaOp )
@@ -662,7 +662,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setAlphaRejectSettings_internal(CompareFunction func, unsigned char value, bool alphaToCoverage)
+	void GLRenderSystem::setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -680,7 +680,7 @@ namespace CamelotEngine {
 			glAlphaFunc(convertCompareFunction(func), value / 255.0f);
 		}
 
-		if (a2c != lasta2c && getCapabilities_internal()->hasCapability(RSC_ALPHA_TO_COVERAGE))
+		if (a2c != lasta2c && getCapabilities()->hasCapability(RSC_ALPHA_TO_COVERAGE))
 		{
 			if (a2c)
 				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
@@ -692,13 +692,13 @@ namespace CamelotEngine {
 
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setViewport_internal(const Viewport& vp)
+	void GLRenderSystem::setViewport(const Viewport& vp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		RenderTarget* target;
 		target = vp.getTarget();
-		setRenderTarget_internal(target);
+		setRenderTarget(target);
 		mActiveViewport = vp;
 
 		GLsizei x, y, w, h;
@@ -719,7 +719,7 @@ namespace CamelotEngine {
 		glScissor(x, y, w, h);
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setRenderTarget_internal(RenderTarget *target)
+	void GLRenderSystem::setRenderTarget(RenderTarget *target)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -758,7 +758,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::beginFrame_internal(void)
+	void GLRenderSystem::beginFrame(void)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -767,7 +767,7 @@ namespace CamelotEngine {
 	}
 
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::endFrame_internal(void)
+	void GLRenderSystem::endFrame(void)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -776,12 +776,12 @@ namespace CamelotEngine {
 		// unbind GPU programs at end of frame
 		// this is mostly to avoid holding bound programs that might get deleted
 		// outside via the resource manager
-		unbindGpuProgram_internal(GPT_VERTEX_PROGRAM);
-		unbindGpuProgram_internal(GPT_FRAGMENT_PROGRAM);
+		unbindGpuProgram(GPT_VERTEX_PROGRAM);
+		unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
 	}
 
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setCullingMode_internal(CullingMode mode)
+	void GLRenderSystem::setCullingMode(CullingMode mode)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -830,16 +830,16 @@ namespace CamelotEngine {
 		glCullFace( cullMode );
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setDepthBufferParams_internal(bool depthTest, bool depthWrite, CompareFunction depthFunction)
+	void GLRenderSystem::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		setDepthBufferCheckEnabled_internal(depthTest);
-		setDepthBufferWriteEnabled_internal(depthWrite);
-		setDepthBufferFunction_internal(depthFunction);
+		setDepthBufferCheckEnabled(depthTest);
+		setDepthBufferWriteEnabled(depthWrite);
+		setDepthBufferFunction(depthFunction);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setDepthBufferCheckEnabled_internal(bool enabled)
+	void GLRenderSystem::setDepthBufferCheckEnabled(bool enabled)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -854,7 +854,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setDepthBufferWriteEnabled_internal(bool enabled)
+	void GLRenderSystem::setDepthBufferWriteEnabled(bool enabled)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -864,12 +864,12 @@ namespace CamelotEngine {
 		mDepthWrite = enabled;
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setDepthBufferFunction_internal(CompareFunction func)
+	void GLRenderSystem::setDepthBufferFunction(CompareFunction func)
 	{
 		glDepthFunc(convertCompareFunction(func));
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setDepthBias_internal(float constantBias, float slopeScaleBias)
+	void GLRenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -888,7 +888,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setColorBufferWriteEnabled_internal(bool red, bool green, bool blue, bool alpha)
+	void GLRenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -900,7 +900,7 @@ namespace CamelotEngine {
 		mColourWrite[3] = alpha;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setPolygonMode_internal(PolygonMode level)
+	void GLRenderSystem::setPolygonMode(PolygonMode level)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -921,7 +921,7 @@ namespace CamelotEngine {
 		glPolygonMode(GL_FRONT_AND_BACK, glmode);
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setStencilCheckEnabled_internal(bool enabled)
+	void GLRenderSystem::setStencilCheckEnabled(bool enabled)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -935,7 +935,7 @@ namespace CamelotEngine {
 		}
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setStencilBufferParams_internal(CompareFunction func, 
+	void GLRenderSystem::setStencilBufferParams(CompareFunction func, 
 		UINT32 refValue, UINT32 mask, StencilOperation stencilFailOp, 
 		StencilOperation depthFailOp, StencilOperation passOp, 
 		bool twoSidedOperation)
@@ -1007,7 +1007,7 @@ namespace CamelotEngine {
 		}
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setTextureFiltering_internal(UINT16 unit, 
+	void GLRenderSystem::setTextureFiltering(UINT16 unit, 
 		FilterType ftype, FilterOptions fo)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -1056,7 +1056,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setTextureAnisotropy_internal(UINT16 unit, unsigned int maxAnisotropy)
+	void GLRenderSystem::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1077,25 +1077,25 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setVertexDeclaration_internal(VertexDeclarationPtr decl)
+	void GLRenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setVertexBufferBinding_internal(VertexBufferBinding* binding)
+	void GLRenderSystem::setVertexBufferBinding(VertexBufferBinding* binding)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::render_internal(const RenderOperation& op)
+	void GLRenderSystem::render(const RenderOperation& op)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		// Call super class
-		RenderSystem::render_internal(op);
+		RenderSystem::render(op);
 
 		void* pBufferData = 0;
-		bool multitexturing = (getCapabilities_internal()->getNumTextureUnits() > 1);
+		bool multitexturing = (getCapabilities()->getNumTextureUnits() > 1);
 
 
         const VertexDeclaration::VertexElementList& decl = 
@@ -1338,7 +1338,7 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setScissorTest_internal(bool enabled, UINT32 left, 
+	void GLRenderSystem::setScissorTest(bool enabled, UINT32 left, 
 		UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -1378,7 +1378,7 @@ namespace CamelotEngine {
 		}
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::clearFrameBuffer_internal(unsigned int buffers, 
+	void GLRenderSystem::clearFrameBuffer(unsigned int buffers, 
 		const Color& colour, float depth, unsigned short stencil)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -1564,7 +1564,7 @@ namespace CamelotEngine {
 		mCurrentLights = 0;
 
 		// Disable textures
-		disableTextureUnitsFrom_internal(0);
+		disableTextureUnitsFrom(0);
 
 		// It's ready for switching
 		if (mCurrentContext)
@@ -1617,7 +1617,7 @@ namespace CamelotEngine {
 	{
 		if (mActiveTextureUnit != unit)
 		{
-			if (GLEW_VERSION_1_2 && unit < getCapabilities_internal()->getNumTextureUnits())
+			if (GLEW_VERSION_1_2 && unit < getCapabilities()->getNumTextureUnits())
 			{
 				glActiveTextureARB(GL_TEXTURE0 + unit);
 				mActiveTextureUnit = unit;
@@ -1814,7 +1814,7 @@ namespace CamelotEngine {
 	MultiRenderTarget * GLRenderSystem::createMultiRenderTarget(const String & name)
 	{
 		MultiRenderTarget *retval = GLRTTManager::instancePtr()->createMultiRenderTarget(name);
-		attachRenderTarget_internal( *retval );
+		attachRenderTarget( *retval );
 		return retval;
 	}
 	//-----------------------------------------------------------------------

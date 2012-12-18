@@ -17,16 +17,8 @@
 
 
 /////
+Move createRenderWindow outside of RenderSystem
 First port (and test!) existing render systems so it is capable of dealing with DX11 stuff(samplerState, depthStencilState, rasterizerState objects primarily. Also split pass into Texture/sampler) 
-Render thread pre-post operations should just be queued into the global queue, instead of having actual hooks for those methods
-
-Add @copydoc documentation to DeferredRenderContext
-Delete CmRenderSystemContext
-Rename RenderSystem _internal methods
-Port RenderSystem so it uses the new mCommandQueue and remove obsolete methods
-
-
-
 
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)

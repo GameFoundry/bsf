@@ -94,7 +94,7 @@ namespace CamelotEngine
             return false;
 
 		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
-		return rs->getCapabilities_internal()->isShaderProfileSupported(mSyntaxCode);
+		return rs->getCapabilities()->isShaderProfileSupported(mSyntaxCode);
     }
 	//-----------------------------------------------------------------------------
 	bool GpuProgram::isRequiredCapabilitiesSupported(void) const

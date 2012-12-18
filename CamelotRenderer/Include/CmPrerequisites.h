@@ -105,7 +105,6 @@ namespace CamelotEngine {
 	class RenderCommandBuffer;
 	class WorkQueue;
 	class PassParameters;
-	class RenderSystemContext;
 	class AsyncOp;
 	class HardwareBufferManagerBase;
 	class HardwareConstantBuffer;
@@ -148,7 +147,6 @@ namespace CamelotEngine
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
 	typedef std::shared_ptr<WorkQueue> WorkQueuePtr;
 	typedef std::shared_ptr<PassParameters> PassParametersPtr;
-	typedef std::shared_ptr<RenderSystemContext> RenderSystemContextPtr;
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;
 	typedef std::shared_ptr<HardwareConstantBuffer> HardwareConstantBufferPtr;

@@ -373,7 +373,7 @@ namespace CamelotEngine  {
     //-----------------------------------------------------------------------------    
     UINT32 GLPixelUtil::optionalPO2(UINT32 value)
     {
-        const RenderSystemCapabilities *caps = CamelotEngine::RenderSystemManager::getActive()->getCapabilities_internal();
+        const RenderSystemCapabilities *caps = CamelotEngine::RenderSystemManager::getActive()->getCapabilities();
         if(caps->hasCapability(RSC_NON_POWER_OF_2_TEXTURES))
             return value;
         else

@@ -70,7 +70,7 @@ namespace CamelotEngine
 				CM_EXCEPT(InvalidParametersException, "MultiRenderTarget surfaces are not of same size");
 			}
 
-			if (!CamelotEngine::RenderSystemManager::getActive()->getCapabilities_internal()->hasCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS)
+			if (!CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->hasCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS)
 				&& (PixelUtil::getNumElemBits(mRenderTargets[y]->getFormat()) != 
 				PixelUtil::getNumElemBits(buffer->getFormat())))
 			{

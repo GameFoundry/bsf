@@ -94,7 +94,7 @@ namespace CamelotEngine
 	{
 		RenderSystem* rs = RenderSystemManager::getActive();
 
-		return rs->getCapabilities_internal()->isShaderProfileSupported(getSyntaxCode()) && HighLevelGpuProgram::isSupported();
+		return rs->getCapabilities()->isShaderProfileSupported(getSyntaxCode()) && HighLevelGpuProgram::isSupported();
 	}
 
 	ID3DBlob* D3D11HLSLProgram::compileMicrocode()

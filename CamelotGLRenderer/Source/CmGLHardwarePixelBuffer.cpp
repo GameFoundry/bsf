@@ -266,7 +266,7 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
             surface.zoffset = zoffset;
             RenderTexture *trt = GLRTTManager::instance().createRenderTexture(name, surface, writeGamma, fsaa);
             mSliceTRT.push_back(trt);
-            CamelotEngine::RenderSystemManager::getActive()->attachRenderTarget_internal(*mSliceTRT[zoffset]);
+            CamelotEngine::RenderSystemManager::getActive()->attachRenderTarget(*mSliceTRT[zoffset]);
         }
 	}
 }
@@ -278,7 +278,7 @@ GLTextureBuffer::~GLTextureBuffer()
         // was deleted by the user.
         for (SliceTRT::const_iterator it = mSliceTRT.begin(); it != mSliceTRT.end(); ++it)
         {
-			CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget_internal(*it);
+			CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget(*it);
         }
 	}
 }
@@ -577,7 +577,7 @@ void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, c
 
 	// Important to disable all other texture units
 	RenderSystem* rsys = CamelotEngine::RenderSystemManager::getActive();
-	rsys->disableTextureUnitsFrom_internal(0);
+	rsys->disableTextureUnitsFrom(0);
 	if (GLEW_VERSION_1_2)
 	{
 		glActiveTextureARB(GL_TEXTURE0);

@@ -39,16 +39,13 @@ THE SOFTWARE.
 #include "CmRenderWindow.h"
 #include "CmHardwarePixelBuffer.h"
 #include "CmHardwareOcclusionQuery.h"
-#include "CmRenderSystemContext.h"
 #include "CmCommandQueue.h"
 #include "CmDeferredRenderContext.h"
 #include "boost/bind.hpp"
 
 #if CM_DEBUG_MODE
-#define THROW_IF_INVALID_CONTEXT throwIfInvalidContextThread();
 #define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
 #else
-#define THROW_IF_INVALID_CONTEXT 
 #define THROW_IF_NOT_RENDER_THREAD 
 #endif
 
@@ -136,16 +133,8 @@ namespace CamelotEngine {
 			mCommandQueue = nullptr;
 		}
 	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::swapAllRenderTargetBuffers(bool waitForVSync)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::swapAllRenderTargetBuffers_internal, this, waitForVSync));
-	}
     //-----------------------------------------------------------------------
-    void RenderSystem::swapAllRenderTargetBuffers_internal(bool waitForVSync)
+    void RenderSystem::swapAllRenderTargetBuffers(bool waitForVSync)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -173,29 +162,29 @@ namespace CamelotEngine {
 		return op.getReturnValue<RenderWindow*>();
 	}
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderWindow_internal(RenderWindow* renderWindow)
+    void RenderSystem::destroyRenderWindow(RenderWindow* renderWindow)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        destroyRenderTarget_internal(renderWindow);
+        destroyRenderTarget(renderWindow);
     }
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderTexture_internal(RenderTexture* renderTexture)
+    void RenderSystem::destroyRenderTexture(RenderTexture* renderTexture)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        destroyRenderTarget_internal(renderTexture);
+        destroyRenderTarget(renderTexture);
     }
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderTarget_internal(RenderTarget* renderTarget)
+    void RenderSystem::destroyRenderTarget(RenderTarget* renderTarget)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        detachRenderTarget_internal(*renderTarget);
+        detachRenderTarget(*renderTarget);
         delete renderTarget;
     }
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::attachRenderTarget_internal( RenderTarget &target )
+    void RenderSystem::attachRenderTarget( RenderTarget &target )
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -206,7 +195,7 @@ namespace CamelotEngine {
             RenderTargetPriorityMap::value_type(target.getPriority(), &target ));
     }
 	//---------------------------------------------------------------------------------------------
-	void RenderSystem::detachRenderTarget_internal(RenderTarget& renderTarget)
+	void RenderSystem::detachRenderTarget(RenderTarget& renderTarget)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -235,44 +224,28 @@ namespace CamelotEngine {
 			mActiveRenderTarget = 0;
 	}
 	//---------------------------------------------------------------------------------------------
-	const RenderSystemCapabilities* RenderSystem::getCapabilities_internal(void) const 
+	const RenderSystemCapabilities* RenderSystem::getCapabilities(void) const 
 	{ 
 		THROW_IF_NOT_RENDER_THREAD;
 
 		return mCurrentCapabilities; 
 	}
 	//---------------------------------------------------------------------------------------------
-	const DriverVersion& RenderSystem::getDriverVersion_internal(void) const 
+	const DriverVersion& RenderSystem::getDriverVersion(void) const 
 	{ 
 		THROW_IF_NOT_RENDER_THREAD;
 
 		return mDriverVersion; 
 	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setViewport(const Viewport& vp)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setViewport_internal, this, vp));
-	}
     //-----------------------------------------------------------------------
-    Viewport RenderSystem::getViewport_internal(void)
+    Viewport RenderSystem::getViewport(void)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
         return mActiveViewport;
     }
-    //-----------------------------------------------------------------------
-    void RenderSystem::setTextureUnitSettings(UINT16 texUnit, const TexturePtr& tex, const SamplerState& samplerState)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureUnitSettings_internal, this, texUnit, tex, samplerState));
-	}
 	//-----------------------------------------------------------------------
-    void RenderSystem::setTextureUnitSettings_internal(UINT16 texUnit, const TexturePtr& tex, const SamplerState& tl)
+    void RenderSystem::setTextureUnitSettings(UINT16 texUnit, const TexturePtr& tex, const SamplerState& tl)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -286,59 +259,43 @@ namespace CamelotEngine {
 			if (tl.getBindingType() == SamplerState::BT_VERTEX)
 			{
 				// Bind vertex texture
-				setVertexTexture_internal(texUnit, tex);
+				setVertexTexture(texUnit, tex);
 				// bind nothing to fragment unit (hardware isn't shared but fragment
 				// unit can't be using the same index
-				setTexture_internal(texUnit, true, sNullTexPtr);
+				setTexture(texUnit, true, sNullTexPtr);
 			}
 			else
 			{
 				// vice versa
-				setVertexTexture_internal(texUnit, sNullTexPtr);
-				setTexture_internal(texUnit, true, tex);
+				setVertexTexture(texUnit, sNullTexPtr);
+				setTexture(texUnit, true, tex);
 			}
 		}
 		else
 		{
 			// Shared vertex / fragment textures or no vertex texture support
 			// Bind texture (may be blank)
-			setTexture_internal(texUnit, true, tex);
+			setTexture(texUnit, true, tex);
 		}
 
         // Set texture layer filtering
-        setTextureFiltering_internal(texUnit, 
+        setTextureFiltering(texUnit, 
             tl.getTextureFiltering(FT_MIN), 
             tl.getTextureFiltering(FT_MAG), 
             tl.getTextureFiltering(FT_MIP));
 
         // Set texture layer filtering
-        setTextureAnisotropy_internal(texUnit, tl.getTextureAnisotropy());
+        setTextureAnisotropy(texUnit, tl.getTextureAnisotropy());
 
 		// Set mipmap biasing
-		setTextureMipmapBias_internal(texUnit, tl.getTextureMipmapBias());
+		setTextureMipmapBias(texUnit, tl.getTextureMipmapBias());
 
         // Texture addressing mode
         const SamplerState::UVWAddressingMode& uvw = tl.getTextureAddressingMode();
-        setTextureAddressingMode_internal(texUnit, uvw);
+        setTextureAddressingMode(texUnit, uvw);
     }
 	//-----------------------------------------------------------------------
-	void RenderSystem::setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTexture_internal, this, unit, enabled, texPtr));
-	}
-	//-----------------------------------------------------------------------
 	void RenderSystem::setVertexTexture(UINT16 unit, const TexturePtr& tex)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setVertexTexture_internal, this, unit, tex));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setVertexTexture_internal(UINT16 unit, const TexturePtr& tex)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -347,31 +304,15 @@ namespace CamelotEngine {
 			"you should use the regular texture samplers which are shared between "
 			"the vertex and fragment units.");
 	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::disableTextureUnit(UINT16 texUnit)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::disableTextureUnit_internal, this, texUnit));
-	}
     //-----------------------------------------------------------------------
-    void RenderSystem::disableTextureUnit_internal(UINT16 texUnit)
+    void RenderSystem::disableTextureUnit(UINT16 texUnit)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        setTexture_internal(texUnit, false, sNullTexPtr);
+        setTexture(texUnit, false, sNullTexPtr);
     }
-	//---------------------------------------------------------------------
-	void RenderSystem::disableTextureUnitsFrom(UINT16 texUnit)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::disableTextureUnitsFrom_internal, this, texUnit));
-	}
     //---------------------------------------------------------------------
-    void RenderSystem::disableTextureUnitsFrom_internal(UINT16 texUnit)
+    void RenderSystem::disableTextureUnitsFrom(UINT16 texUnit)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -381,112 +322,21 @@ namespace CamelotEngine {
         mDisabledTexUnitsFrom = texUnit;
         for (UINT16 i = texUnit; i < disableTo; ++i)
         {
-            disableTextureUnit_internal(i);
+            disableTextureUnit(i);
         }
     }
-	//-----------------------------------------------------------------------
-	void RenderSystem::setTextureFiltering(UINT16 unit, FilterOptions minFilter,
-		FilterOptions magFilter, FilterOptions mipFilter)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureFiltering_internal, this, unit, minFilter, magFilter, mipFilter));
-	}
     //-----------------------------------------------------------------------
-    void RenderSystem::setTextureFiltering_internal(UINT16 unit, FilterOptions minFilter,
+    void RenderSystem::setTextureFiltering(UINT16 unit, FilterOptions minFilter,
             FilterOptions magFilter, FilterOptions mipFilter)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        setTextureFiltering_internal(unit, FT_MIN, minFilter);
-        setTextureFiltering_internal(unit, FT_MAG, magFilter);
-        setTextureFiltering_internal(unit, FT_MIP, mipFilter);
+        setTextureFiltering(unit, FT_MIN, minFilter);
+        setTextureFiltering(unit, FT_MAG, magFilter);
+        setTextureFiltering(unit, FT_MIP, mipFilter);
     }
 	//-----------------------------------------------------------------------
-	void RenderSystem::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureAnisotropy_internal, this, unit, maxAnisotropy));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setTextureAddressingMode(UINT16 unit, const SamplerState::UVWAddressingMode& uvw)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureAddressingMode_internal, this, unit, uvw));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setTextureBorderColor(UINT16 unit, const Color& color)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureBorderColor_internal, this, unit, color));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setTextureMipmapBias_internal, this, unit, bias));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setPointParameters(float size, bool attenuationEnabled, 
-		float constant, float linear, float quadratic, float minSize, float maxSize)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setPointParameters_internal, this, size, attenuationEnabled, constant, linear, quadratic, minSize, maxSize));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setSceneBlending_internal, this, sourceFactor, destFactor, op));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
-		SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setSeparateSceneBlending_internal, this, sourceFactor, destFactor, sourceFactorAlpha, destFactorAlpha, op, alphaOp));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setAlphaRejectSettings_internal, this, func, value, alphaToCoverage));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setScissorTest(bool enabled, UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setScissorTest_internal, this, enabled, left, top, right, bottom));
-	}
-	//-----------------------------------------------------------------------
 	bool RenderSystem::getWaitForVerticalBlank(void) const
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		return mActiveContext->waitForVerticalBlank;
-	}
-	//-----------------------------------------------------------------------
-	bool RenderSystem::getWaitForVerticalBlank_internal(void) const
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -495,30 +345,12 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::setWaitForVerticalBlank(bool enabled)
 	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->waitForVerticalBlank = enabled;
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setWaitForVerticalBlank_internal, this, enabled));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setWaitForVerticalBlank_internal(bool enabled)
-	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		mVsync = enabled;
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::setInvertVertexWinding(bool invert)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->invertVertexWinding = invert;
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setInvertVertexWinding_internal, this, invert));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setInvertVertexWinding_internal(bool invert)
+	void RenderSystem::setInvertVertexWinding_(bool invert)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -527,125 +359,18 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	bool RenderSystem::getInvertVertexWinding(void) const
 	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		return mActiveContext->invertVertexWinding;
-	}
-	//-----------------------------------------------------------------------
-	bool RenderSystem::getInvertVertexWinding_internal(void) const
-	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		return mInvertVertexWinding;
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferParams_internal, this, depthTest, depthWrite, depthFunction));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setDepthBufferCheckEnabled(bool enabled)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferCheckEnabled_internal, this, enabled));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setDepthBufferWriteEnabled(bool enabled)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferWriteEnabled_internal, this, enabled));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setDepthBufferFunction(CompareFunction func)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBufferFunction_internal, this, func));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setColorBufferWriteEnabled_internal, this, red, green, blue, alpha));
-	}
-	//---------------------------------------------------------------------
-	void RenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setDepthBias_internal, this, constantBias, slopeScaleBias));
-	}
-	//---------------------------------------------------------------------
-	void RenderSystem::setPolygonMode(PolygonMode level)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setPolygonMode_internal, this, level));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setStencilCheckEnabled(bool enabled)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setStencilCheckEnabled_internal, this, enabled));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setStencilBufferParams(CompareFunction func, UINT32 refValue, UINT32 mask, StencilOperation stencilFailOp, 
-		StencilOperation depthFailOp, StencilOperation passOp, bool twoSidedOperation)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setStencilBufferParams_internal, this, func, refValue, mask, stencilFailOp, depthFailOp, passOp, twoSidedOperation));
-	}
-	//-----------------------------------------------------------------------
 	CullingMode RenderSystem::getCullingMode(void) const
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		return mActiveContext->cullingMode;
-	}
-	//-----------------------------------------------------------------------
-	CullingMode RenderSystem::getCullingMode_internal(void) const
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 		return mCullingMode;
 	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setCullingMode(CullingMode mode)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->cullingMode = mode;
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setCullingMode_internal, this, mode));
-	}
 	//---------------------------------------------------------------------
-	void RenderSystem::addClipPlane(const Plane &p)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::addClipPlane_internal, this, p));
-	}
-	//---------------------------------------------------------------------
-	void RenderSystem::addClipPlane_internal (const Plane &p)
+	void RenderSystem::addClipPlane (const Plane &p)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -653,30 +378,14 @@ namespace CamelotEngine {
 		mClipPlanesDirty = true;
 	}
 	//---------------------------------------------------------------------
-	void RenderSystem::addClipPlane(float A, float B, float C, float D)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::addClipPlane_internal, this, A, B, C, D));
-	}
-	//---------------------------------------------------------------------
-	void RenderSystem::addClipPlane_internal (float A, float B, float C, float D)
+	void RenderSystem::addClipPlane (float A, float B, float C, float D)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		addClipPlane_internal(Plane(A, B, C, D));
+		addClipPlane(Plane(A, B, C, D));
 	}
 	//---------------------------------------------------------------------
 	void RenderSystem::setClipPlanes(const PlaneList& clipPlanes)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setClipPlanes_internal, this, clipPlanes));
-	}
-	//---------------------------------------------------------------------
-	void RenderSystem::setClipPlanes_internal(const PlaneList& clipPlanes)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -689,14 +398,6 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void RenderSystem::resetClipPlanes()
 	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::resetClipPlanes_internal, this));
-	}
-	//---------------------------------------------------------------------
-	void RenderSystem::resetClipPlanes_internal()
-	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		if (!mClipPlanes.empty())
@@ -707,14 +408,6 @@ namespace CamelotEngine {
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::bindGpuProgram(GpuProgramHandle prg)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::bindGpuProgram_internal, this, prg));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::bindGpuProgram_internal(GpuProgramHandle prg)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -738,14 +431,6 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-	    mActiveContext->queueCommand(boost::bind(&RenderSystem::unbindGpuProgram_internal, this, gptype));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::unbindGpuProgram_internal(GpuProgramType gptype)
-	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		switch(gptype)
@@ -765,76 +450,24 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, 
-		GpuProgramParametersSharedPtr params, UINT16 variabilityMask)
-	{
-		THROW_IF_INVALID_CONTEXT;
-
-		GpuProgramParametersSharedPtr paramCopy = GpuProgramParametersSharedPtr(new GpuProgramParameters(*params));
-
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::bindGpuProgramParameters_internal, this, gptype, paramCopy, variabilityMask));
-	}
-	//-----------------------------------------------------------------------
-	bool RenderSystem::isGpuProgramBound_internal(GpuProgramType gptype)
+	bool RenderSystem::isGpuProgramBound(GpuProgramType gptype)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 	    switch(gptype)
 	    {
         case GPT_VERTEX_PROGRAM:
-            return mActiveContext->vertexProgramBound;
+            return mVertexProgramBound;
         case GPT_GEOMETRY_PROGRAM:
-            return mActiveContext->geometryProgramBound;
+            return mGeometryProgramBound;
         case GPT_FRAGMENT_PROGRAM:
-            return mActiveContext->fragmentProgramBound;
+            return mFragmentProgramBound;
 	    }
         // Make compiler happy
         return false;
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::setRenderTarget(RenderTarget *target)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::setRenderTarget_internal, this, target));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::clearFrameBuffer(unsigned int buffers, const Color& color, float depth, unsigned short stencil)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::clearFrameBuffer_internal, this, buffers, color, depth, stencil));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::beginFrame()
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::beginFrame_internal, this));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::endFrame()
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::endFrame_internal, this));
-	}
-	//-----------------------------------------------------------------------
 	void RenderSystem::render(const RenderOperation& op)
-	{
-		THROW_IF_INVALID_CONTEXT;
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext->queueCommand(boost::bind(&RenderSystem::render_internal, this, op));
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::render_internal(const RenderOperation& op)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1010,12 +643,6 @@ namespace CamelotEngine {
 			CM_EXCEPT(InternalErrorException, "Calling the render system from a non-render thread!");
 	}
 
-	void RenderSystem::throwIfInvalidContextThread() const
-	{
-		if(CM_THREAD_CURRENT_ID != mActiveContext->getThreadId())
-			CM_EXCEPT(InternalErrorException, "Active context is called from a thread it was not initialized on!");
-	}
-
 	/************************************************************************/
 	/* 								THREAD WORKER                      		*/
 	/************************************************************************/
@@ -1032,5 +659,4 @@ namespace CamelotEngine {
 	}
 }
 
-#undef THROW_IF_INVALID_CONTEXT
 #undef THROW_IF_NOT_RENDER_THREAD

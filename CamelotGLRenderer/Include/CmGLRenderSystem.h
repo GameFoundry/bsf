@@ -202,48 +202,48 @@ namespace CamelotEngine {
         /**
          * Set current render target to target, enabling its GL context if needed
          */
-        void setRenderTarget_internal(RenderTarget *target);
+        void setRenderTarget(RenderTarget *target);
 		/** See
           RenderSystem
          */
-		void bindGpuProgram_internal(GpuProgramHandle prg);
+		void bindGpuProgram(GpuProgramHandle prg);
         /** See
           RenderSystem
          */
-		void unbindGpuProgram_internal(GpuProgramType gptype);
+		void unbindGpuProgram(GpuProgramType gptype);
 		/** See
           RenderSystem
          */
-		void bindGpuProgramParameters_internal(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
+		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
         /** See
           RenderSystem
          */
-		void setPointParameters_internal(float size, bool attenuationEnabled, 
+		void setPointParameters(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize);
 		/** See
           RenderSystem
          */
-        void setTexture_internal(UINT16 unit, bool enabled, const TexturePtr &tex);
+        void setTexture(UINT16 unit, bool enabled, const TexturePtr &tex);
         /** See
           RenderSystem
          */
-        void setTextureAddressingMode_internal(UINT16 stage, const SamplerState::UVWAddressingMode& uvw);
+        void setTextureAddressingMode(UINT16 stage, const SamplerState::UVWAddressingMode& uvw);
         /** See
           RenderSystem
          */
-        void setTextureBorderColor_internal(UINT16 stage, const Color& colour);
+        void setTextureBorderColor(UINT16 stage, const Color& colour);
 		/** See
 		  RenderSystem
 		 */
-		void setTextureMipmapBias_internal(UINT16 unit, float bias);
+		void setTextureMipmapBias(UINT16 unit, float bias);
         /** See
           RenderSystem
          */
-        void setSceneBlending_internal(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
+        void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
         /** See
           RenderSystem
          */
-		void setSeparateSceneBlending_internal(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
+		void setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
         /** See
           RenderSystem
          */
@@ -255,47 +255,47 @@ namespace CamelotEngine {
 		/** See
           RenderSystem
          */
-        void setAlphaRejectSettings_internal(CompareFunction func, unsigned char value, bool alphaToCoverage);
+        void setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage);
         /** See
           RenderSystem
          */
-        void setViewport_internal(const Viewport& vp);
+        void setViewport(const Viewport& vp);
         /** See
           RenderSystem
          */
-        void beginFrame_internal(void);
+        void beginFrame(void);
         /** See
           RenderSystem
          */
-        void endFrame_internal(void);
+        void endFrame(void);
         /** See
           RenderSystem
          */
-        void setCullingMode_internal(CullingMode mode);
+        void setCullingMode(CullingMode mode);
         /** See
           RenderSystem
          */
-        void setDepthBufferParams_internal(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
+        void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
         /** See
           RenderSystem
          */
-        void setDepthBufferCheckEnabled_internal(bool enabled = true);
+        void setDepthBufferCheckEnabled(bool enabled = true);
         /** See
           RenderSystem
          */
-        void setDepthBufferWriteEnabled_internal(bool enabled = true);
+        void setDepthBufferWriteEnabled(bool enabled = true);
         /** See
           RenderSystem
          */
-        void setDepthBufferFunction_internal(CompareFunction func = CMPF_LESS_EQUAL);
+        void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
         /** See
           RenderSystem
          */
-        void setDepthBias_internal(float constantBias, float slopeScaleBias);
+        void setDepthBias(float constantBias, float slopeScaleBias);
         /** See
           RenderSystem
          */
-        void setColorBufferWriteEnabled_internal(bool red, bool green, bool blue, bool alpha);
+        void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
         /** See
           RenderSystem
          */
@@ -304,15 +304,15 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setPolygonMode_internal(PolygonMode level);
+        void setPolygonMode(PolygonMode level);
         /** See
           RenderSystem
          */
-        void setStencilCheckEnabled_internal(bool enabled);
+        void setStencilCheckEnabled(bool enabled);
         /** See
           RenderSystem.
          */
-        void setStencilBufferParams_internal(CompareFunction func = CMPF_ALWAYS_PASS, 
+        void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
             UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
             StencilOperation stencilFailOp = SOP_KEEP, 
             StencilOperation depthFailOp = SOP_KEEP,
@@ -321,29 +321,29 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setTextureFiltering_internal(UINT16 unit, FilterType ftype, FilterOptions filter);
+        void setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter);
         /** See
           RenderSystem
          */
-		void setTextureAnisotropy_internal(UINT16 unit, unsigned int maxAnisotropy);
+		void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy);
         /** See
           RenderSystem
          */
-		void setVertexDeclaration_internal(VertexDeclarationPtr decl);
+		void setVertexDeclaration(VertexDeclarationPtr decl);
         /** See
           RenderSystem
          */
-		void setVertexBufferBinding_internal(VertexBufferBinding* binding);
+		void setVertexBufferBinding(VertexBufferBinding* binding);
         /** See
           RenderSystem
          */
-        void render_internal(const RenderOperation& op);
+        void render(const RenderOperation& op);
 
         /** See
           RenderSystem
          */
-        void setScissorTest_internal(bool enabled, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) ;
-        void clearFrameBuffer_internal(unsigned int buffers, 
+        void setScissorTest(bool enabled, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) ;
+        void clearFrameBuffer(unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
 

@@ -123,7 +123,7 @@ namespace CamelotEngine {
         UINT32 height = mColour[0].buffer->getHeight();
         GLuint format = mColour[0].buffer->getGLFormat();
         PixelFormat ogreFormat = mColour[0].buffer->getFormat();
-        UINT16 maxSupportedMRTs = CamelotEngine::RenderSystemManager::getActive()->getCapabilities_internal()->getNumMultiRenderTargets();
+        UINT16 maxSupportedMRTs = CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->getNumMultiRenderTargets();
 
 		// Bind simple buffer to add colour attachments
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mFB);

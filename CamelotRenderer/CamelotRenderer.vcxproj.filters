@@ -302,9 +302,6 @@
     <ClInclude Include="Include\CmRenderOperation.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmRenderSystemContext.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmResourceHandle.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
@@ -458,9 +455,6 @@
       <Filter>Source Files\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmSamplerState.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmRenderSystemContext.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmResourceHandle.cpp">
