@@ -941,16 +941,13 @@ namespace CamelotEngine
 		RenderWorkerFunc* mRenderThreadFunc;
 		bool mRenderThreadShutdown;
 
-		CM_THREAD_ID_TYPE mRenderThreadId;
-		CM_THREAD_SYNCHRONISER(mRenderThreadStartCondition)
-		CM_MUTEX(mRSContextInitMutex)
-		CM_THREAD_SYNCHRONISER(mCommandReadyCondition)
-		CM_MUTEX(mCommandQueueMutex)
-		CM_THREAD_SYNCHRONISER(mCommandQueueCompleteCondition)
-		CM_MUTEX(mCommandCompleteMutex)
-		CM_MUTEX(mRSRenderCallbackMutex)
 		CM_MUTEX(mActiveContextMutex)
 
+		CM_THREAD_ID_TYPE mRenderThreadId;
+		CM_THREAD_SYNCHRONISER(mRenderThreadStartCondition)
+		CM_MUTEX(mRenderThreadStartMutex)
+		CM_MUTEX(mCommandQueueMutex)
+		CM_THREAD_SYNCHRONISER(mCommandReadyCondition)
 		CM_MUTEX(mCommandNotifyMutex)
 		CM_THREAD_SYNCHRONISER(mCommandCompleteCondition)
 
@@ -963,17 +960,8 @@ namespace CamelotEngine
 		UINT32 mMaxCommandNotifyId; // ID that will be assigned to the next command with a notifier callback
 		vector<UINT32>::type mCommandsCompleted; // Completed commands that have notifier callbacks set up
 
-		// Primary context created when the render system is first started up
-		RenderSystemContextPtr mPrimaryContext;
 		// Currently active context. All new commands will be executed on this context.
 		mutable RenderSystemContextPtr mActiveContext;
-
-		// Context that is currently being executed
-		RenderSystemContextPtr mExecutingContext;
-
-		vector<RenderSystemContextPtr>::type mRenderSystemContexts;
-		boost::signal<void()> PreRenderThreadUpdateCallback;
-		boost::signal<void()> PostRenderThreadUpdateCallback;
 
 		/**
 		 * @brief	Initializes a separate render thread. Should only be called once.
@@ -1002,23 +990,6 @@ namespace CamelotEngine
 		void throwIfInvalidContextThread() const;
 
 		/**
-		 * @brief	Submits the specified context to the GPU. Normally this happens automatically
-		 * 			at the end of each frame for all contexts, but in some cases you might want to do it
-		 * 			manually via this method.
-		 *
-		 * @param	context			  	The context to submit.
-		 * @param	blockUntilComplete	If true, the calling thread will block until all commands are submitted.
-		 */
-		void submitToGpu(RenderSystemContextPtr context, bool blockUntilComplete);
-
-		/**
-		 * @brief	Gets the currently active render system object.
-		 *
-		 * @return	The active context.
-		 */
-		RenderSystemContextPtr getActiveContext() const;
-
-		/**
 		 * @brief	Blocks the calling thread until the command with the specified ID completes.
 		 * 			Make sure that the specified ID actually exists, otherwise this will block forever.
 		 */
@@ -1044,24 +1015,9 @@ namespace CamelotEngine
 		 * @brief	Creates a new render system context that you can use for rendering on 
 		 * 			a non-render thread. You can have as many of these as you wish, the only limitation
 		 * 			is that you do not use a single instance on more than one thread. Each thread
-		 * 			requires its own context.
-		 */
-		RenderSystemContextPtr createRenderSystemContext();
-
-		/**
-		 * @brief	Creates a new render system context that you can use for rendering on 
-		 * 			a non-render thread. You can have as many of these as you wish, the only limitation
-		 * 			is that you do not use a single instance on more than one thread. Each thread
 		 * 			requires its own context. The context will be bound to the thread you call this method on.
 		 */
 		DeferredRenderContextPtr createDeferredContext();
-
-		/**
-		 * @brief	Sets an active context on which all subsequent RenderSystem calls will be executed on.
-		 * 			
-		 * @note	context must not be null.
-		 */
-		void setActiveContext(RenderSystemContextPtr context);
 
 		/**
 		 * @brief	Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,
@@ -1083,23 +1039,6 @@ namespace CamelotEngine
 		 * @see		CommandQueue::queue
 		 */
 		void queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false);
-
-		/**
-		 * @brief	Callback that is called from the render thread before it starts processing
-		 * 			deferred render commands.
-		 */
-		void addPreRenderThreadUpdateCallback(boost::function<void()> callback);
-
-		/**
-		 * @brief	Callback that is called from the render thread after it ends processing
-		 * 			deferred render commands.
-		 */
-		void addPostRenderThreadUpdateCallback(boost::function<void()> callback);
-
-		/**
-		 * @brief	Called every frame
-		 */
-		void update();
 	};
 	/** @} */
 	/** @} */

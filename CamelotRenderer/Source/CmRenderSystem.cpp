@@ -88,8 +88,6 @@ namespace CamelotEngine {
 	void RenderSystem::startUp()
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mPrimaryContext = createRenderSystemContext();
-		mActiveContext = mPrimaryContext;
 		mCommandQueue = new CommandQueue(CM_THREAD_CURRENT_ID);
 
 		initRenderThread();
@@ -861,8 +859,8 @@ namespace CamelotEngine {
 		CM_THREAD_CREATE(t, *mRenderThreadFunc);
 		mRenderThread = t;
 
-		CM_LOCK_MUTEX_NAMED(mRSContextInitMutex, lock)
-		CM_THREAD_WAIT(mRenderThreadStartCondition, mRSContextInitMutex, lock)
+		CM_LOCK_MUTEX_NAMED(mRenderThreadStartMutex, lock)
+		CM_THREAD_WAIT(mRenderThreadStartCondition, mRenderThreadStartMutex, lock)
 
 #else
 		CM_EXCEPT(InternalErrorException, "Attempting to start a render thread but Camelot isn't compiled with thread support.");
@@ -891,24 +889,8 @@ namespace CamelotEngine {
 				commands = mCommandQueue->flush();
 			}
 
-			{
-				CM_LOCK_MUTEX(mRSRenderCallbackMutex)
-
-				if(!PreRenderThreadUpdateCallback.empty())
-					PreRenderThreadUpdateCallback();
-			}
-
 			// Play commands
 			mCommandQueue->playback(commands, boost::bind(&RenderSystem::commandCompletedNotify, this, _1)); 
-
-			{
-				CM_LOCK_MUTEX(mRSRenderCallbackMutex)
-
-				if(!PostRenderThreadUpdateCallback.empty())
-					PostRenderThreadUpdateCallback();
-			}
-
-			CM_THREAD_NOTIFY_ALL(mCommandQueueCompleteCondition);
 		}
 
 	}
@@ -925,66 +907,11 @@ namespace CamelotEngine {
 
 		mRenderThread = nullptr;
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mRenderSystemContexts.clear();
-	}
-
-	RenderSystemContextPtr RenderSystem::createRenderSystemContext()
-	{
-		RenderSystemContextPtr newContext = RenderSystemContextPtr(
-			new RenderSystemFrameContext(CM_THREAD_CURRENT_ID)
-			);
-
-		{
-			CM_LOCK_MUTEX(mCommandQueueMutex);
-			mRenderSystemContexts.push_back(newContext);
-		}
-
-		return newContext;
 	}
 
 	DeferredRenderContextPtr RenderSystem::createDeferredContext()
 	{
 		return DeferredRenderContextPtr(new DeferredRenderContext(this, CM_THREAD_CURRENT_ID));
-	}
-
-	void RenderSystem::addPreRenderThreadUpdateCallback(boost::function<void()> callback)
-	{
-		CM_LOCK_MUTEX(mRSRenderCallbackMutex)
-
-		PreRenderThreadUpdateCallback.connect(callback);
-	}
-
-	void RenderSystem::addPostRenderThreadUpdateCallback(boost::function<void()> callback)
-	{
-		CM_LOCK_MUTEX(mRSRenderCallbackMutex)
-
-		PostRenderThreadUpdateCallback.connect(callback);
-	}
-
-	void RenderSystem::submitToGpu(RenderSystemContextPtr context, bool blockUntilComplete)
-	{
-		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
-			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
-
-		{
-			CM_LOCK_MUTEX(mCommandQueueMutex);
-
-			context->submitToGpu();
-		}
-
-		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
-
-		if(blockUntilComplete)
-			context->blockUntilExecuted();
-	}
-
-	void RenderSystem::setActiveContext(RenderSystemContextPtr context)
-	{
-		assert(context != nullptr);
-
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		mActiveContext = context;
 	}
 	
 	AsyncOp RenderSystem::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)
@@ -1062,7 +989,7 @@ namespace CamelotEngine {
 				break;
 			}
 
-			CM_THREAD_WAIT(mCommandQueueCompleteCondition, mCommandNotifyMutex, lock);
+			CM_THREAD_WAIT(mCommandCompleteCondition, mCommandNotifyMutex, lock);
 		}
 	}
 
@@ -1075,27 +1002,6 @@ namespace CamelotEngine {
 		}
 
 		CM_THREAD_NOTIFY_ALL(mCommandCompleteCondition);
-	}
-
-	RenderSystemContextPtr RenderSystem::getActiveContext() const
-	{
-		CM_LOCK_MUTEX(mActiveContextMutex);
-
-		return mActiveContext;
-	}
-
-	void RenderSystem::update()
-	{
-		//{
-		//	CM_LOCK_MUTEX(mRSContextMutex);
-
-		//	for(auto iter = mRenderSystemContexts.begin(); iter != mRenderSystemContexts.end(); ++iter)
-		//	{
-		//		(*iter)->submitToGpu();
-		//	}
-		//}
-
-		//CM_THREAD_NOTIFY_ALL(mCommandReadyCondition)
 	}
 
 	void RenderSystem::throwIfNotRenderThread() const

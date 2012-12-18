@@ -63,9 +63,6 @@ namespace CamelotEngine
 		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow
 
 		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
-
-		renderSystem->addPreRenderThreadUpdateCallback(boost::bind(&Application::updateMessagePump, this));
-		renderSystem->addPreRenderThreadUpdateCallback(boost::bind(&Application::updateResourcesCallback, this));
 	}
 
 	void Application::runMainLoop()
@@ -74,11 +71,12 @@ namespace CamelotEngine
 		{
 			gSceneManager().update();
 
+			RenderSystem* renderSystem = RenderSystemManager::getActive();
+			renderSystem->queueCommand(boost::bind(&Application::updateMessagePump, this));
+			renderSystem->queueCommand(boost::bind(&Application::updateResourcesCallback, this));
+
 			RendererManager::getActive()->renderAll();
 			mPrimaryRenderContext->submitToGpu();
-
-			RenderSystem* renderSystem = RenderSystemManager::getActive();
-			renderSystem->update();
 
 			gTime().update();
 			gInput().update();
