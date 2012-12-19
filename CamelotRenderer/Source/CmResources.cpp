@@ -224,6 +224,9 @@ namespace CamelotEngine
 
 	void Resources::create(BaseResourceHandle resource, const String& filePath, bool overwrite)
 	{
+		if(resource == nullptr)
+			CM_EXCEPT(InvalidParametersException, "Trying to save an uninitialized resource.");
+
 		if(!resource.isLoaded())
 			resource.waitUntilLoaded();
 

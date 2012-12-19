@@ -96,6 +96,23 @@ namespace CamelotEngine {
         CMPF_GREATER
     };
 
+    /** Texture addressing modes - default is TAM_WRAP.
+    @note
+        These settings are relevant in both the fixed-function and the
+        programmable pipeline.
+    */
+    enum TextureAddressingMode
+    {
+        /// Texture wraps at values over 1.0
+        TAM_WRAP,
+        /// Texture mirrors (flips) at joins over 1.0
+        TAM_MIRROR,
+        /// Texture clamps at 1.0
+        TAM_CLAMP,
+        /// Texture coordinates outside the range [0.0, 1.0] are set to the border colour
+        TAM_BORDER
+    };
+
     /** High-level filtering options providing shortcuts to settings the
         minification, magnification and mip filters. */
     enum TextureFilterOptions
@@ -123,13 +140,16 @@ namespace CamelotEngine {
     enum FilterOptions
     {
         /// No filtering, used for FILT_MIP to turn off mipmapping
-        FO_NONE,
+        FO_NONE = 0,
         /// Use the closest pixel
-        FO_POINT,
+        FO_POINT = 1,
         /// Average of a 2x2 pixel area, denotes bilinear for MIN and MAG, trilinear for MIP
-        FO_LINEAR,
+        FO_LINEAR = 2,
         /// Similar to FO_LINEAR, but compensates for the angle of the texture plane
-        FO_ANISOTROPIC
+        FO_ANISOTROPIC = 3,
+		/// Specifies that the sampled values will be compared against existing sampled data. 
+		/// Should be OR-ed with other filtering options.
+		FO_USE_COMPARISON = 4
     };
 
     /** Hardware culling modes based on vertex winding.
@@ -181,6 +201,16 @@ namespace CamelotEngine {
 		SOP_DECREMENT_WRAP,
 		/// Invert the bits of the stencil buffer
 		SOP_INVERT
+	};
+
+	/** Texture addressing mode for each texture coordinate. */
+	struct UVWAddressingMode
+	{
+		UVWAddressingMode()
+			:u(TAM_WRAP), v(TAM_WRAP), w(TAM_WRAP)
+		{ }
+
+		TextureAddressingMode u, v, w;
 	};
     
 	/// Name / value parameter pair (first = name, second = value)

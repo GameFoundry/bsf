@@ -4,17 +4,17 @@
 
 namespace CamelotEngine
 {
-	D3D11_TEXTURE_ADDRESS_MODE D3D11Mappings::get(SamplerState::TextureAddressingMode tam)
+	D3D11_TEXTURE_ADDRESS_MODE D3D11Mappings::get(TextureAddressingMode tam)
 	{
 		switch( tam )
 		{
-		case SamplerState::TAM_WRAP:
+		case TAM_WRAP:
 			return D3D11_TEXTURE_ADDRESS_WRAP;
-		case SamplerState::TAM_MIRROR:
+		case TAM_MIRROR:
 			return D3D11_TEXTURE_ADDRESS_MIRROR;
-		case SamplerState::TAM_CLAMP:
+		case TAM_CLAMP:
 			return D3D11_TEXTURE_ADDRESS_CLAMP;
-		case SamplerState::TAM_BORDER:
+		case TAM_BORDER:
 			return D3D11_TEXTURE_ADDRESS_BORDER;
 		}
 		return D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;

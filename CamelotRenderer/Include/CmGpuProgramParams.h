@@ -264,10 +264,13 @@ namespace CamelotEngine {
 		UINT32 intBufferSize;
 		/// Total number of samplers referenced
 		UINT32 samplerCount;
+		/// Total number of textures references
+		UINT32 textureCount;
 		/// Map of parameter names to GpuConstantDefinition
 		GpuConstantDefinitionMap map;
 
-		GpuNamedConstants() : floatBufferSize(0), intBufferSize(0), samplerCount(0) {}
+		GpuNamedConstants() : floatBufferSize(0), intBufferSize(0), 
+			samplerCount(0), textureCount(0) {}
 
 		/** Generate additional constant entries for arrays based on a base definition.
 		@remarks
@@ -326,25 +329,13 @@ namespace CamelotEngine {
 	/// Container struct to allow params to safely & update shared list of logical buffer assignments
 	struct CM_EXPORT GpuLogicalBufferStruct
 	{
-		CM_MUTEX(mutex)
-			/// Map from logical index to physical buffer location
-			GpuLogicalIndexUseMap map;
+		/// Map from logical index to physical buffer location
+		GpuLogicalIndexUseMap map;
 		/// Shortcut to know the buffer size needs
 		UINT32 bufferSize;
 		GpuLogicalBufferStruct() : bufferSize(0) {}
 	};
 	typedef std::shared_ptr<GpuLogicalBufferStruct> GpuLogicalBufferStructPtr;
-
-	/**
-	 * @brief	Contains a reference to a texture together with it's sampler properties
-	 */
-	struct GpuTextureEntry
-	{
-		TextureHandle texture;
-		SamplerState samplerState;
-	};
-
-	typedef std::shared_ptr<GpuTextureEntry> GpuTextureEntryPtr;
 
 	/** Definition of container that holds the current float constants.
 	@note Not necessarily in direct index order to constant indexes, logical
@@ -356,11 +347,6 @@ namespace CamelotEngine {
 	to physical index map is derived from GpuProgram
 	*/
 	typedef vector<int>::type IntConstantList;
-	/** Definition of container that holds the current float constants.
-	@note Not necessarily in direct index order to constant indexes, logical
-	to physical index map is derived from GpuProgram
-	*/
-	typedef vector<GpuTextureEntryPtr>::type TextureList;
 
 	/** Collects together the program parameters used for a GpuProgram.
 	@remarks
@@ -420,13 +406,18 @@ namespace CamelotEngine {
 		/// Packed list of integer constants (physical indexing)
 		IntConstantList mIntConstants;
 		/// List of all texture parameters
-		TextureList mTextures;
+		vector<TextureHandle>::type mTextures;
+		// List of all sampler states
+		vector<SamplerStatePtr>::type mSamplerStates;
 		/** Logical index to physical index map - for low-level programs
 		or high-level programs which pass params this way. */
 		GpuLogicalBufferStructPtr mFloatLogicalToPhysical;
 		/** Logical index to physical index map - for low-level programs
 		or high-level programs which pass params this way. */
 		GpuLogicalBufferStructPtr mIntLogicalToPhysical;
+		/** Logical index to physical index map - for low-level programs
+		or high-level programs which pass params this way. */
+		GpuLogicalBufferStructPtr mTextureLogicalToPhysical;
 		/** Logical index to physical index map - for low-level programs
 		or high-level programs which pass params this way. */
 		GpuLogicalBufferStructPtr mSamplerLogicalToPhysical;
@@ -460,7 +451,10 @@ namespace CamelotEngine {
 
 		/** Internal method for providing a link to a logical index->physical index map for parameters. */
 		void _setLogicalIndexes(const GpuLogicalBufferStructPtr& floatIndexMap, 
-			const GpuLogicalBufferStructPtr&  intIndexMap, const GpuLogicalBufferStructPtr& samplerIndexMap);
+			const GpuLogicalBufferStructPtr& intIndexMap, 
+			const GpuLogicalBufferStructPtr& samplerIndexMap,
+			const GpuLogicalBufferStructPtr& textureIndexMap
+			);
 
 
 		/// Does this parameter set include named parameters?
@@ -727,12 +721,15 @@ namespace CamelotEngine {
 		int* getIntPointer(UINT32 pos) { return &mIntConstants[pos]; }
 		/// Get a pointer to the 'nth' item in the int buffer
 		const int* getIntPointer(UINT32 pos) const { return &mIntConstants[pos]; }
-		const GpuLogicalBufferStructPtr& getSamplerLogicalBufferStruct() const { return mSamplerLogicalToPhysical; }
+		const GpuLogicalBufferStructPtr& getTextureLogicalBufferStruct() const { return mTextureLogicalToPhysical; }
 		TextureHandle getTexture(UINT32 pos) const;
-		const SamplerState& getSamplerState(UINT32 pos) const;
+		const GpuLogicalBufferStructPtr& getSamplerLogicalBufferStruct() const { return mSamplerLogicalToPhysical; }
+		SamplerStatePtr getSamplerState(UINT32 pos) const;
 		/// Get a reference to the list of textures
-		const TextureList& getTextureList() const { return mTextures; }
+		const vector<TextureHandle>::type& getTextureList() const { return mTextures; }
 		UINT32 getNumTextures() const { return (UINT32)mTextures.size(); }
+		const vector<SamplerStatePtr>::type& getSamplerStateList() const { return mSamplerStates; }
+		UINT32 getNumSamplerStates() const { return (UINT32)mSamplerStates.size(); }
 
 		/** Tells the program whether to ignore missing parameters or not.
 		*/
@@ -779,7 +776,7 @@ namespace CamelotEngine {
 		@param name The name of the parameter
 		@param val The value to set
 		*/
-		void setNamedConstant(const String& name, const SamplerState& val);
+		void setNamedConstant(const String& name, SamplerStatePtr val);
 
 		/** Sets a single value constant floating-point parameter to the program.
 		@remarks

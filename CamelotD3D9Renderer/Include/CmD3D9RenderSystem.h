@@ -248,9 +248,8 @@ namespace CamelotEngine
 		void setPointParameters(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize);
 		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr);
-		void setVertexTexture(UINT16 unit, const TexturePtr& tex);
 		void disableTextureUnit(UINT16 texUnit);
-        void setTextureAddressingMode(UINT16 stage, const SamplerState::UVWAddressingMode& uvw);
+        void setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw);
         void setTextureBorderColor(UINT16 stage, const Color& colour);
 		void setTextureMipmapBias(UINT16 unit, float bias);
 		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );

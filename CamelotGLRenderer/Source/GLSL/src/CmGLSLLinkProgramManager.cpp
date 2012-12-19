@@ -482,6 +482,7 @@ namespace CamelotEngine {
 						{
 							def.physicalIndex = defs.samplerCount;
 							defs.samplerCount++;
+							defs.textureCount++;
 						}
 						else
 						{

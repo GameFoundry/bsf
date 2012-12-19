@@ -342,8 +342,7 @@ namespace CamelotEngine {
 
 			if(def.variability & mask)
 			{
-				if(def.constType == GCT_SAMPLER2D || def.constType == GCT_SAMPLERCUBE || def.constType == GCT_SAMPLER1D 
-					|| def.constType == GCT_SAMPLER2DSHADOW || def.constType == GCT_SAMPLER3D || def.constType == GCT_SAMPLER1DSHADOW)
+				if(def.isSampler())
 				{
 					TextureHandle curTexture = params->getTexture(def.physicalIndex);
 
@@ -352,9 +351,11 @@ namespace CamelotEngine {
 
 					setTexture(def.physicalIndex, true, curTexture.getInternalPtr());
 
-					const SamplerState& samplerState = params->getSamplerState(def.physicalIndex);
-
-					setTextureUnitSettings(def.physicalIndex, curTexture.getInternalPtr(), samplerState);
+					SamplerStatePtr samplerState = params->getSamplerState(def.physicalIndex);
+					if(samplerState == nullptr)
+						setSamplerState(def.physicalIndex, SamplerState::DEFAULT);
+					else
+						setSamplerState(def.physicalIndex, *samplerState);
 				}
 			}
 		}
@@ -503,7 +504,7 @@ namespace CamelotEngine {
 		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureAddressingMode(UINT16 stage, const SamplerState::UVWAddressingMode& uvw)
+	void GLRenderSystem::setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1781,18 +1782,18 @@ namespace CamelotEngine {
 	}
 	//-----------------------------------------------------------------------------
 	GLint GLRenderSystem::getTextureAddressingMode(
-		SamplerState::TextureAddressingMode tam) const
+		TextureAddressingMode tam) const
 	{
 		switch(tam)
 		{
 		default:
-		case SamplerState::TAM_WRAP:
+		case TAM_WRAP:
 			return GL_REPEAT;
-		case SamplerState::TAM_MIRROR:
+		case TAM_MIRROR:
 			return GL_MIRRORED_REPEAT;
-		case SamplerState::TAM_CLAMP:
+		case TAM_CLAMP:
 			return GL_CLAMP_TO_EDGE;
-		case SamplerState::TAM_BORDER:
+		case TAM_BORDER:
 			return GL_CLAMP_TO_BORDER;
 		}
 

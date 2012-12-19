@@ -245,38 +245,12 @@ namespace CamelotEngine {
         return mActiveViewport;
     }
 	//-----------------------------------------------------------------------
-    void RenderSystem::setTextureUnitSettings(UINT16 texUnit, const TexturePtr& tex, const SamplerState& tl)
+    void RenderSystem::setSamplerState(UINT16 texUnit, const SamplerState& tl)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
         // This method is only ever called to set a texture unit to valid details
         // The method _disableTextureUnit is called to turn a unit off
-
-		// Vertex texture binding?
-		if (mCurrentCapabilities->hasCapability(RSC_VERTEX_TEXTURE_FETCH) &&
-			!mCurrentCapabilities->getVertexTextureUnitsShared())
-		{
-			if (tl.getBindingType() == SamplerState::BT_VERTEX)
-			{
-				// Bind vertex texture
-				setVertexTexture(texUnit, tex);
-				// bind nothing to fragment unit (hardware isn't shared but fragment
-				// unit can't be using the same index
-				setTexture(texUnit, true, sNullTexPtr);
-			}
-			else
-			{
-				// vice versa
-				setVertexTexture(texUnit, sNullTexPtr);
-				setTexture(texUnit, true, tex);
-			}
-		}
-		else
-		{
-			// Shared vertex / fragment textures or no vertex texture support
-			// Bind texture (may be blank)
-			setTexture(texUnit, true, tex);
-		}
 
         // Set texture layer filtering
         setTextureFiltering(texUnit, 
@@ -291,19 +265,9 @@ namespace CamelotEngine {
 		setTextureMipmapBias(texUnit, tl.getTextureMipmapBias());
 
         // Texture addressing mode
-        const SamplerState::UVWAddressingMode& uvw = tl.getTextureAddressingMode();
+        const UVWAddressingMode& uvw = tl.getTextureAddressingMode();
         setTextureAddressingMode(texUnit, uvw);
     }
-	//-----------------------------------------------------------------------
-	void RenderSystem::setVertexTexture(UINT16 unit, const TexturePtr& tex)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		CM_EXCEPT(NotImplementedException, 
-			"This rendersystem does not support separate vertex texture samplers, "
-			"you should use the regular texture samplers which are shared between "
-			"the vertex and fragment units.");
-	}
     //-----------------------------------------------------------------------
     void RenderSystem::disableTextureUnit(UINT16 texUnit)
     {

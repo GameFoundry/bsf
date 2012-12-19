@@ -30,19 +30,14 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setViewport, mRenderSystem, vp));
 	}
 
-	void DeferredRenderContext::setTextureUnitSettings(UINT16 texUnit, const TexturePtr& tex, const SamplerState& samplerState)
+	void DeferredRenderContext::setSamplerState(UINT16 texUnit, const SamplerState& samplerState)
 	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setTextureUnitSettings, mRenderSystem, texUnit, tex, samplerState));
+		mCommandQueue->queue(boost::bind(&RenderSystem::setSamplerState, mRenderSystem, texUnit, samplerState));
 	}
 
 	void DeferredRenderContext::setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setTexture, mRenderSystem, unit, enabled, texPtr));
-	}
-
-	void DeferredRenderContext::setVertexTexture(UINT16 unit, const TexturePtr& tex)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setVertexTexture, mRenderSystem, unit, tex));
 	}
 
 	void DeferredRenderContext::disableTextureUnit(UINT16 texUnit)
@@ -66,7 +61,7 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setTextureAnisotropy, mRenderSystem, unit, maxAnisotropy));
 	}
 
-	void DeferredRenderContext::setTextureAddressingMode(UINT16 unit, const SamplerState::UVWAddressingMode& uvw)
+	void DeferredRenderContext::setTextureAddressingMode(UINT16 unit, const UVWAddressingMode& uvw)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setTextureAddressingMode, mRenderSystem, unit, uvw));
 	}

@@ -124,7 +124,7 @@ namespace CamelotEngine
 		getConstantDefinitions_internal();
 		params->_setNamedConstants(mConstantDefs);
 		// also set logical / physical maps for programs which use this
-		params->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical);
+		params->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical, mTextureLogicalToPhysical);
 	}
 	//---------------------------------------------------------------------
 	HighLevelGpuProgramPtr HighLevelGpuProgram::create(const String& source, const String& entryPoint, 

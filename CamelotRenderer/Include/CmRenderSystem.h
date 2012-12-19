@@ -357,12 +357,10 @@ namespace CamelotEngine
 		// They can be called by library user if required
 		// ------------------------------------------------------------------------
 
-		/** Utility function for setting all the properties of a texture unit at once.
-		This method is also worth using over the individual texture unit settings because it
-		only sets those settings which are different from the current settings for this
-		unit, thus minimising render state changes.
-		*/
-		virtual void setTextureUnitSettings(UINT16 texUnit, const TexturePtr& texture, const SamplerState& samplerState);
+		/**
+		 * @brief	Sets a sampler state for the specified texture unit.
+		 */
+		virtual void setSamplerState(UINT16 texUnit, const SamplerState& samplerState);
 		/** Turns off a texture unit. */
 		virtual void disableTextureUnit(UINT16 texUnit);
 		/** Disables all texture units from the given unit upwards */
@@ -397,17 +395,6 @@ namespace CamelotEngine
 		virtual void setTexture(UINT16 unit, bool enabled, 
 			const TexturePtr &texPtr) = 0;
 
-		/** Binds a texture to a vertex sampler.
-		@remarks
-		Not all rendersystems support separate vertex samplers. For those that
-		do, you can set a texture for them, separate to the regular texture
-		samplers, using this method. For those that don't, you should use the
-		regular texture samplers which are shared between the vertex and
-		fragment units; calling this method will throw an exception.
-		@see RenderSystemCapabilites::getVertexTextureUnitsShared
-		*/
-		virtual void setVertexTexture(UINT16 unit, const TexturePtr& tex);
-
 		/** Sets the filtering options for a given texture unit.
 		@param unit The texture unit to set the filtering options for
 		@param minFilter The filter used when a texture is reduced in size
@@ -428,7 +415,7 @@ namespace CamelotEngine
 		virtual void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy) = 0;
 
 		/** Sets the texture addressing mode for a texture unit.*/
-		virtual void setTextureAddressingMode(UINT16 unit, const SamplerState::UVWAddressingMode& uvw) = 0;
+		virtual void setTextureAddressingMode(UINT16 unit, const UVWAddressingMode& uvw) = 0;
 
 		/** Sets the texture border color for a texture unit.*/
 		virtual void setTextureBorderColor(UINT16 unit, const Color& color) = 0;

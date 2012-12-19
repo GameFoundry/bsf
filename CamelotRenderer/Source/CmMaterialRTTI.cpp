@@ -45,7 +45,7 @@ namespace CamelotEngine
 					allParams[i]->_readTexture(iter->second.physicalIndex, texture);
 					params->mTextureParams[iter->first] = texture;
 
-					SamplerState samplerState = allParams[i]->getSamplerState(iter->second.physicalIndex);
+					SamplerStatePtr samplerState = allParams[i]->getSamplerState(iter->second.physicalIndex);
 					params->mSamplerStateParams[iter->first] = samplerState;
 				}
 				else

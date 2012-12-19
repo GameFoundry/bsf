@@ -27,7 +27,7 @@ namespace CamelotEngine
 
 
 		/** @copydoc RenderSystem::setTextureUnitSettings() */
-		void setTextureUnitSettings(UINT16 texUnit, const TexturePtr& texture, const SamplerState& samplerState);
+		void setSamplerState(UINT16 texUnit, const SamplerState& samplerState);
 		/** @copydoc RenderSystem::disableTextureUnit() */
 		void disableTextureUnit(UINT16 texUnit);
 		/** @copydoc RenderSystem::disableTextureUnitsFrom() */
@@ -38,8 +38,6 @@ namespace CamelotEngine
 
 		/** @copydoc RenderSystem::setTexture() */
 		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr);
-		/** @copydoc RenderSystem::setVertexTexture() */
-		void setVertexTexture(UINT16 unit, const TexturePtr& tex);
 
 		/** @copydoc RenderSystem::setTextureFiltering() */
 		void setTextureFiltering(UINT16 unit, FilterOptions minFilter, FilterOptions magFilter, FilterOptions mipFilter);
@@ -48,7 +46,7 @@ namespace CamelotEngine
 		/** @copydoc RenderSystem::setTextureAnisotropy() */
 		void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy);
 		/** @copydoc RenderSystem::setTextureAddressingMode() */
-		void setTextureAddressingMode(UINT16 unit, const SamplerState::UVWAddressingMode& uvw);
+		void setTextureAddressingMode(UINT16 unit, const UVWAddressingMode& uvw);
 		/** @copydoc RenderSystem::setTextureBorderColor() */
 		void setTextureBorderColor(UINT16 unit, const Color& color);
 		/** @copydoc RenderSystem::setTextureMipmapBias() */

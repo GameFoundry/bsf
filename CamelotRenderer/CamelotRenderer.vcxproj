@@ -188,6 +188,7 @@
     <ClInclude Include="Include\CmConfigOptionMap.h" />
     <ClInclude Include="Include\CmDefaultHardwareBufferManager.h" />
     <ClInclude Include="Include\CmDeferredRenderContext.h" />
+    <ClInclude Include="Include\CmDepthStencilState.h" />
     <ClInclude Include="Include\CmGpuProgram.h" />
     <ClInclude Include="Include\CmGpuProgramManager.h" />
     <ClInclude Include="Include\CmGpuProgramParams.h" />
@@ -219,6 +220,7 @@
     <ClInclude Include="Include\CmRendererFactory.h" />
     <ClInclude Include="Include\CmRendererManager.h" />
     <ClInclude Include="Include\CmRenderOperation.h" />
+    <ClInclude Include="Include\CmRenderStateManager.h" />
     <ClInclude Include="Include\CmRenderSystem.h" />
     <ClInclude Include="Include\CmRenderSystemCapabilities.h" />
     <ClInclude Include="Include\CmRenderSystemFactory.h" />
@@ -231,6 +233,7 @@
     <ClInclude Include="Include\CmResourceHandleRTTI.h" />
     <ClInclude Include="Include\CmResources.h" />
     <ClInclude Include="Include\CmResourcesRTTI.h" />
+    <ClInclude Include="Include\CmSamplerStateRTTI.h" />
     <ClInclude Include="Include\CmSceneManager.h" />
     <ClInclude Include="Include\CmShaderRTTI.h" />
     <ClInclude Include="Include\CmSpecificImporter.h" />
@@ -262,6 +265,7 @@
     <ClCompile Include="Source\CmCommandQueue.cpp" />
     <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmDeferredRenderContext.cpp" />
+    <ClCompile Include="Source\CmDepthStencilState.cpp" />
     <ClCompile Include="Source\CmGpuProgram.cpp" />
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />
@@ -291,6 +295,7 @@
     <ClCompile Include="Source\CmResource.cpp" />
     <ClCompile Include="Source\CmResourceHandle.cpp" />
     <ClCompile Include="Source\CmResources.cpp" />
+    <ClCompile Include="Source\CmRenderStateManager.cpp" />
     <ClCompile Include="Source\CmSceneManager.cpp" />
     <ClCompile Include="Source\CmShader.cpp" />
     <ClCompile Include="Source\CmSpecificImporter.cpp" />

@@ -329,19 +329,23 @@ namespace CamelotEngine {
 				if(def.isSampler())
 				{
 					def.physicalIndex = mSamplerLogicalToPhysical->bufferSize;
-					CM_LOCK_MUTEX(mSamplerLogicalToPhysical->mutex)
 						mSamplerLogicalToPhysical->map.insert(
 						GpuLogicalIndexUseMap::value_type(paramIndex, 
 						GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
 					mSamplerLogicalToPhysical->bufferSize += def.arraySize;
 					mConstantDefs->samplerCount = mSamplerLogicalToPhysical->bufferSize;
+
+						mTextureLogicalToPhysical->map.insert(
+						GpuLogicalIndexUseMap::value_type(paramIndex, 
+						GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
+					mTextureLogicalToPhysical->bufferSize += def.arraySize;
+					mConstantDefs->textureCount = mTextureLogicalToPhysical->bufferSize;
 				}
 				else
 				{
 					if (def.isFloat())
 					{
 						def.physicalIndex = mFloatLogicalToPhysical->bufferSize;
-						CM_LOCK_MUTEX(mFloatLogicalToPhysical->mutex)
 							mFloatLogicalToPhysical->map.insert(
 							GpuLogicalIndexUseMap::value_type(paramIndex, 
 							GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
@@ -351,7 +355,6 @@ namespace CamelotEngine {
 					else
 					{
 						def.physicalIndex = mIntLogicalToPhysical->bufferSize;
-						CM_LOCK_MUTEX(mIntLogicalToPhysical->mutex)
 							mIntLogicalToPhysical->map.insert(
 							GpuLogicalIndexUseMap::value_type(paramIndex, 
 							GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));

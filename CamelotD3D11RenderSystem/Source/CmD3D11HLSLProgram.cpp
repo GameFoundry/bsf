@@ -232,20 +232,21 @@ namespace CamelotEngine
 					if(def.isSampler())
 					{
 						def.physicalIndex = variableDesc.StartSampler;
-						CM_LOCK_MUTEX(mSamplerLogicalToPhysical->mutex)
-							mSamplerLogicalToPhysical->map.insert(
+						mSamplerLogicalToPhysical->map.insert(
 							GpuLogicalIndexUseMap::value_type(paramIndex, 
 							GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
 						mSamplerLogicalToPhysical->bufferSize = std::max(mSamplerLogicalToPhysical->bufferSize, def.physicalIndex + def.arraySize);
 						mConstantDefs->samplerCount = mSamplerLogicalToPhysical->bufferSize;
+
+						// TODO - Add textures!
+						CM_EXCEPT(NotImplementedException, "Add support for texture parameters!");
 					}
 					else
 					{
 						if (def.isFloat())
 						{
 							def.physicalIndex = variableDesc.StartOffset;
-							CM_LOCK_MUTEX(mFloatLogicalToPhysical->mutex)
-								mFloatLogicalToPhysical->map.insert(
+							mFloatLogicalToPhysical->map.insert(
 								GpuLogicalIndexUseMap::value_type(paramIndex, 
 								GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
 							mFloatLogicalToPhysical->bufferSize = std::max(mFloatLogicalToPhysical->bufferSize, def.physicalIndex + def.arraySize);
@@ -254,8 +255,7 @@ namespace CamelotEngine
 						else
 						{
 							def.physicalIndex = variableDesc.StartOffset;
-							CM_LOCK_MUTEX(mIntLogicalToPhysical->mutex)
-								mIntLogicalToPhysical->map.insert(
+							mIntLogicalToPhysical->map.insert(
 								GpuLogicalIndexUseMap::value_type(paramIndex, 
 								GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
 							mIntLogicalToPhysical->bufferSize = std::max(mIntLogicalToPhysical->bufferSize, def.physicalIndex + def.arraySize);

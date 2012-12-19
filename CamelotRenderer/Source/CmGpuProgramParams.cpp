@@ -105,10 +105,12 @@ namespace CamelotEngine
 		// RealConstantEntry, IntConstantEntry
 		mFloatConstants = oth.mFloatConstants;
 		mIntConstants  = oth.mIntConstants;
+		mSamplerStates = oth.mSamplerStates;
 		mTextures = oth.mTextures;
 		mFloatLogicalToPhysical = oth.mFloatLogicalToPhysical;
 		mIntLogicalToPhysical = oth.mIntLogicalToPhysical;
 		mSamplerLogicalToPhysical = oth.mSamplerLogicalToPhysical;
+		mTextureLogicalToPhysical = oth.mTextureLogicalToPhysical;
 		mNamedConstants = oth.mNamedConstants;
 
 		mCombinedVariability = oth.mCombinedVariability;
@@ -136,21 +138,28 @@ namespace CamelotEngine
 			mIntConstants.insert(mIntConstants.end(), 
 				namedConstants->intBufferSize - mIntConstants.size(), 0);
 		}
-		if (namedConstants->samplerCount > mTextures.size())
+		if (namedConstants->textureCount > mTextures.size())
 		{
 			mTextures.insert(mTextures.end(), 
-				namedConstants->samplerCount - mTextures.size(), nullptr);
+				namedConstants->textureCount - mTextures.size(), TextureHandle());
+		}
+		if (namedConstants->samplerCount > mSamplerStates.size())
+		{
+			mSamplerStates.insert(mSamplerStates.end(), 
+				namedConstants->samplerCount - mSamplerStates.size(), nullptr);
 		}
 	}
 	//---------------------------------------------------------------------
 	void GpuProgramParameters::_setLogicalIndexes(
 		const GpuLogicalBufferStructPtr& floatIndexMap, 
 		const GpuLogicalBufferStructPtr& intIndexMap,
-		const GpuLogicalBufferStructPtr& samplerIndexMap)
+		const GpuLogicalBufferStructPtr& samplerIndexMap,
+		const GpuLogicalBufferStructPtr& textureIndexMap)
 	{
 		mFloatLogicalToPhysical = floatIndexMap;
 		mIntLogicalToPhysical = intIndexMap;
 		mSamplerLogicalToPhysical = samplerIndexMap;
+		mTextureLogicalToPhysical = textureIndexMap;
 
 		// resize the internal buffers
 		// Note that these will only contain something after the first parameter
@@ -162,16 +171,23 @@ namespace CamelotEngine
 			mFloatConstants.insert(mFloatConstants.end(), 
 				floatIndexMap->bufferSize - mFloatConstants.size(), 0.0f);
 		}
+
 		if ((intIndexMap != nullptr) &&  intIndexMap->bufferSize > mIntConstants.size())
 		{
 			mIntConstants.insert(mIntConstants.end(), 
 				intIndexMap->bufferSize - mIntConstants.size(), 0);
 		}
 
-		if ((samplerIndexMap != nullptr) &&  samplerIndexMap->bufferSize > mTextures.size())
+		if ((samplerIndexMap != nullptr) &&  samplerIndexMap->bufferSize > mSamplerStates.size())
+		{
+			mSamplerStates.insert(mSamplerStates.end(), 
+				samplerIndexMap->bufferSize - mSamplerStates.size(), nullptr);
+		}
+
+		if ((textureIndexMap != nullptr) &&  textureIndexMap->bufferSize > mTextures.size())
 		{
 			mTextures.insert(mTextures.end(), 
-				samplerIndexMap->bufferSize - mTextures.size(), nullptr);
+				textureIndexMap->bufferSize - mTextures.size(), TextureHandle());
 		}
 	}
 	//---------------------------------------------------------------------()
@@ -395,7 +411,7 @@ namespace CamelotEngine
 	void GpuProgramParameters::_readTexture(UINT32 physicalIndex, TextureHandle& dest)
 	{
 		assert(physicalIndex < mTextures.size());
-		dest = mTextures[physicalIndex]->texture;
+		dest = mTextures[physicalIndex];
 	}
 	//---------------------------------------------------------------------
 	GpuLogicalIndexUse* GpuProgramParameters::_getFloatConstantLogicalIndexUse(
@@ -405,9 +421,8 @@ namespace CamelotEngine
 			return 0;
 
 		GpuLogicalIndexUse* indexUse = 0;
-		CM_LOCK_MUTEX(mFloatLogicalToPhysical->mutex)
 
-			GpuLogicalIndexUseMap::iterator logi = mFloatLogicalToPhysical->map.find(logicalIndex);
+		GpuLogicalIndexUseMap::iterator logi = mFloatLogicalToPhysical->map.find(logicalIndex);
 		if (logi == mFloatLogicalToPhysical->map.end())
 		{
 			if (requestedSize)
@@ -504,9 +519,8 @@ namespace CamelotEngine
 		}
 
 		GpuLogicalIndexUse* indexUse = 0;
-		CM_LOCK_MUTEX(mIntLogicalToPhysical->mutex)
 
-			GpuLogicalIndexUseMap::iterator logi = mIntLogicalToPhysical->map.find(logicalIndex);
+		GpuLogicalIndexUseMap::iterator logi = mIntLogicalToPhysical->map.find(logicalIndex);
 		if (logi == mIntLogicalToPhysical->map.end())
 		{
 			if (requestedSize)
@@ -673,22 +687,17 @@ namespace CamelotEngine
 	//----------------------------------------------------------------------------
 	TextureHandle GpuProgramParameters::getTexture(UINT32 pos) const 
 	{ 
-		if(mTextures[pos] == nullptr)
+		if(!mTextures[pos].isLoaded())
 		{
 			return TextureHandle();
 		}
 
-		return mTextures[pos]->texture; 
+		return mTextures[pos]; 
 	}
 	//----------------------------------------------------------------------------
-	const SamplerState& GpuProgramParameters::getSamplerState(UINT32 pos) const 
+	SamplerStatePtr GpuProgramParameters::getSamplerState(UINT32 pos) const 
 	{ 
-		if(mTextures[pos] == nullptr)
-		{
-			return SamplerState::EMPTY;
-		}
-
-		return mTextures[pos]->samplerState; 
+		return mSamplerStates[pos]; 
 	}
 	//-----------------------------------------------------------------------------
 	bool GpuProgramParameters::hasNamedConstant(const String& name) const
@@ -735,27 +744,17 @@ namespace CamelotEngine
 			_findNamedConstantDefinition(name, !mIgnoreMissingParams);
 
 		if (def)
-		{
-			if(mTextures[def->physicalIndex] == nullptr)
-				mTextures[def->physicalIndex] = GpuTextureEntryPtr(new GpuTextureEntry());
-
-			mTextures[def->physicalIndex]->texture = val;
-		}
+			mTextures[def->physicalIndex] = val;
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::setNamedConstant(const String& name, const SamplerState& val)
+	void GpuProgramParameters::setNamedConstant(const String& name, SamplerStatePtr val)
 	{
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 
 			_findNamedConstantDefinition(name, !mIgnoreMissingParams);
 
 		if (def)
-		{
-			if(mTextures[def->physicalIndex] == nullptr)
-				mTextures[def->physicalIndex] = GpuTextureEntryPtr(new GpuTextureEntry());
-
-			mTextures[def->physicalIndex]->samplerState = val;
-		}
+			mSamplerStates[def->physicalIndex] = val;
 	}
 	//-----------------------------------------------------------------------------
 	void GpuProgramParameters::setNamedConstant(const String& name, float val)
@@ -879,6 +878,7 @@ namespace CamelotEngine
 		mFloatConstants = source.getFloatConstantList();
 		mIntConstants = source.getIntConstantList();
 		mTextures = source.getTextureList();
+		mSamplerStates = source.getSamplerStateList();
 		mCombinedVariability = source.mCombinedVariability;
 	}
 }

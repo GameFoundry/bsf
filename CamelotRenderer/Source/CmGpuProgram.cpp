@@ -116,6 +116,8 @@ namespace CamelotEngine
 			mIntLogicalToPhysical = GpuLogicalBufferStructPtr(new GpuLogicalBufferStruct());
 		if (recreateIfExists || (mSamplerLogicalToPhysical == nullptr))
 			mSamplerLogicalToPhysical = GpuLogicalBufferStructPtr(new GpuLogicalBufferStruct());
+		if(recreateIfExists || (mTextureLogicalToPhysical == nullptr))
+			mTextureLogicalToPhysical = GpuLogicalBufferStructPtr(new GpuLogicalBufferStruct());
 	}
 	//---------------------------------------------------------------------
 	void GpuProgram::createNamedParameterMappingStructures(bool recreateIfExists) const
@@ -144,7 +146,7 @@ namespace CamelotEngine
 			ret->_setNamedConstants(mConstantDefs);
 		}
 		// link shared logical / physical map for low-level use
-		ret->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical);
+		ret->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical, mTextureLogicalToPhysical);
 
 		op.completeOperation(ret);
     }

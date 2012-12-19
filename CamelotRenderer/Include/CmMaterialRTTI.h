@@ -19,13 +19,6 @@ namespace CamelotEngine
 	class CM_EXPORT MaterialRTTI : public RTTIType<Material, Resource, MaterialRTTI>
 	{
 	private:
-		enum MaterialParamType
-		{
-			MPT_FLOAT,
-			MPT_INT,
-			MPT_TEX
-		};
-
 		struct FloatParam
 		{
 			FloatParam() {}
@@ -114,7 +107,7 @@ namespace CamelotEngine
 		};
 
 		class SamplerStateParamKVPRTTI;
-		typedef KeyValuePair<String, SamplerState, SamplerStateParamKVPRTTI> SamplerStateKVP;
+		typedef KeyValuePair<String, SamplerStatePtr, SamplerStateParamKVPRTTI> SamplerStateKVP;
 
 		class SamplerStateParamKVPRTTI : public RTTIType<SamplerStateKVP, IReflectable, SamplerStateParamKVPRTTI>
 		{
@@ -122,14 +115,14 @@ namespace CamelotEngine
 			String& getKey(SamplerStateKVP* obj) { return obj->mKey; }
 			void setKey(SamplerStateKVP* obj,  String& val) { obj->mKey = val; }
 
-			SamplerState& getValue(SamplerStateKVP* obj) { return obj->mValue; }
-			void setValue(SamplerStateKVP* obj,  SamplerState& val) { obj->mValue = val; }
+			SamplerStatePtr getValue(SamplerStateKVP* obj) { return obj->mValue; }
+			void setValue(SamplerStateKVP* obj,  SamplerStatePtr val) { obj->mValue = val; }
 
 		public:
 			SamplerStateParamKVPRTTI()
 			{
 				addPlainField("mKey", 0, &SamplerStateParamKVPRTTI::getKey, &SamplerStateParamKVPRTTI::setKey);
-				addPlainField("mValue", 1, &SamplerStateParamKVPRTTI::getValue, &SamplerStateParamKVPRTTI::setValue);
+				addReflectablePtrField("mValue", 1, &SamplerStateParamKVPRTTI::getValue, &SamplerStateParamKVPRTTI::setValue);
 			}
 
 		public:
@@ -156,7 +149,7 @@ namespace CamelotEngine
 		{
 			map<String, FloatParam>::type mFloatParams;
 			map<String, TextureHandle>::type mTextureParams;
-			map<String, SamplerState>::type mSamplerStateParams;
+			map<String, SamplerStatePtr>::type mSamplerStateParams;
 
 			vector<float>::type mFloatBuffer;
 
