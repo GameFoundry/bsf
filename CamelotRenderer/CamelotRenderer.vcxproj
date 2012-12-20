@@ -214,6 +214,7 @@
     <ClInclude Include="Include\CmPass.h" />
     <ClInclude Include="Include\CmPassRTTI.h" />
     <ClInclude Include="Include\CmPrerequisites.h" />
+    <ClInclude Include="Include\CmRasterizerState.h" />
     <ClInclude Include="Include\CmRenderable.h" />
     <ClInclude Include="Include\CmRenderableRTTI.h" />
     <ClInclude Include="Include\CmRenderer.h" />
@@ -249,6 +250,7 @@
     <ClInclude Include="Include\CmGameObject.h" />
     <ClInclude Include="Include\CmComponent.h" />
     <ClInclude Include="Include\CmShader.h" />
+    <ClInclude Include="Include\CmBlendState.h" />
     <ClInclude Include="Include\stdafx.h" />
     <ClInclude Include="Include\targetver.h" />
     <ClInclude Include="Include\CmVertexDeclarationRTTI.h" />
@@ -259,6 +261,7 @@
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
+    <ClCompile Include="Source\CmBlendState.cpp" />
     <ClCompile Include="Source\CmCamera.cpp" />
     <ClCompile Include="Source\CmCgProgram.cpp" />
     <ClCompile Include="Source\CmCgProgramFactory.cpp" />
@@ -284,6 +287,7 @@
     <ClCompile Include="Source\CmMesh.cpp" />
     <ClCompile Include="Source\CmMeshData.cpp" />
     <ClCompile Include="Source\CmPass.cpp" />
+    <ClCompile Include="Source\CmRasterizerState.cpp" />
     <ClCompile Include="Source\CmRenderable.cpp" />
     <ClCompile Include="Source\CmRendererManager.cpp" />
     <ClCompile Include="Source\CmRenderSystem.cpp" />

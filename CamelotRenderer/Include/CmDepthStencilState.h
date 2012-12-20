@@ -5,7 +5,7 @@
 
 namespace CamelotEngine
 {
-	struct DEPTH_STENCIL_DESC
+	struct CM_EXPORT DEPTH_STENCIL_DESC
 	{
 		DEPTH_STENCIL_DESC()
 			: depthReadEnable(true)
@@ -46,6 +46,8 @@ namespace CamelotEngine
 	class CM_EXPORT DepthStencilState
 	{
 	public:
+		virtual ~DepthStencilState() {}
+
 		bool getDepthReadEnable() const { return mData.depthReadEnable; }
 		bool getDepthWriteEnable() const { return mData.depthWriteEnable; }
 		CompareFunction getDepthComparisonFunc() const { return mData.depthComparisonFunc; }

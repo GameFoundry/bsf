@@ -11,7 +11,7 @@
 
 namespace CamelotEngine 
 {
-	struct SAMPLER_STATE_DESC
+	struct CM_EXPORT SAMPLER_STATE_DESC
 	{
 		SAMPLER_STATE_DESC()
 			: minFilter(FO_LINEAR)
@@ -52,6 +52,8 @@ namespace CamelotEngine
 	class CM_EXPORT SamplerState : public IReflectable
     {
     public:
+		virtual ~SamplerState() {}
+
 		static SamplerState DEFAULT;
 
         /** Gets the texture addressing mode for a given coordinate, 

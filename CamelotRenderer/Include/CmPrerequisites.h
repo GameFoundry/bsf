@@ -112,6 +112,8 @@ namespace CamelotEngine {
 	class DeferredRenderContext;
 	class DepthStencilState;
 	class RenderStateManager;
+	class RasterizerState;
+	class BlendState;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -129,6 +131,9 @@ namespace CamelotEngine {
 	// Desc structs
 	struct SAMPLER_STATE_DESC;
 	struct DEPTH_STENCIL_DESC;
+	struct RASTERIZER_STATE_DESC;
+	struct BLEND_STATE_DESC;
+	struct RENDER_TARGET_BLEND_STATE_DESC;
 }
 
 /* Shared pointer typedefs*/
@@ -158,6 +163,8 @@ namespace CamelotEngine
 	typedef std::shared_ptr<DeferredRenderContext> DeferredRenderContextPtr;
 	typedef std::shared_ptr<SamplerState> SamplerStatePtr;
 	typedef std::shared_ptr<DepthStencilState> DepthStencilStatePtr;
+	typedef std::shared_ptr<RasterizerState> RasterizerStatePtr;
+	typedef std::shared_ptr<BlendState> BlendStatePtr;
 }
 
 // All type IDs

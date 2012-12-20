@@ -326,6 +326,12 @@
     <ClInclude Include="Include\CmSamplerStateRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmRasterizerState.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmBlendState.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -485,6 +491,12 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmRenderStateManager.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRasterizerState.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmBlendState.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>

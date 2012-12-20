@@ -1,0 +1,60 @@
+#pragma once
+
+#include "CmPrerequisites.h"
+#include "CmCommon.h"
+
+namespace CamelotEngine
+{
+	struct CM_EXPORT RASTERIZER_STATE_DESC
+	{
+		RASTERIZER_STATE_DESC()
+			: polygonMode(PM_SOLID)
+			, cullMode(CULL_CLOCKWISE)
+			, depthBias(0)
+			, depthBiasClamp(0.0f)
+			, slopeScaledDepthBias(0.0f)
+			, depthClipEnable(true)
+			, scissorEnable(false)
+			, multisampleEnable(false)
+			, antialiasedLineEnable(false)
+		{ }
+
+		PolygonMode polygonMode;
+		CullingMode cullMode;
+
+		int depthBias;
+		float depthBiasClamp;
+		float slopeScaledDepthBias;
+
+		bool depthClipEnable;
+		bool scissorEnable;
+		bool multisampleEnable;
+		bool antialiasedLineEnable;
+	};
+
+	class CM_EXPORT RasterizerState
+	{
+	public:
+		virtual ~RasterizerState() {}
+
+		PolygonMode getPolygonMode() const { return mData.polygonMode; }
+		CullingMode getCullMode() const { return mData.cullMode; }
+
+		int getDepthBias() const { return mData.depthBias; }
+		float getDepthBiasClamp() const { return mData.depthBiasClamp; }
+		float getSlopeScaledDepthBias() const { return mData.slopeScaledDepthBias; }
+
+		bool getDepthClipEnable() const { return mData.depthClipEnable; }
+		bool getScissorEnable() const { return mData.scissorEnable; }
+		bool getMultisampleEnable() const { return mData.multisampleEnable; }
+		bool getAntialiasedLineEnable() const { return mData.antialiasedLineEnable; }
+
+		static RasterizerStatePtr create(const RASTERIZER_STATE_DESC& desc);
+
+	private:
+		friend class RenderStateManager;
+
+		virtual void initialize(const RASTERIZER_STATE_DESC& desc);
+		RASTERIZER_STATE_DESC mData;
+	};
+}
