@@ -50,32 +50,6 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::disableTextureUnitsFrom, mRenderSystem, texUnit));
 	}
 
-	void DeferredRenderContext::setTextureFiltering(UINT16 unit, FilterOptions minFilter,
-		FilterOptions magFilter, FilterOptions mipFilter)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setTextureFiltering, mRenderSystem, unit, minFilter, magFilter, mipFilter));
-	}
-
-	void DeferredRenderContext::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setTextureAnisotropy, mRenderSystem, unit, maxAnisotropy));
-	}
-
-	void DeferredRenderContext::setTextureAddressingMode(UINT16 unit, const UVWAddressingMode& uvw)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setTextureAddressingMode, mRenderSystem, unit, uvw));
-	}
-
-	void DeferredRenderContext::setTextureBorderColor(UINT16 unit, const Color& color)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setTextureBorderColor, mRenderSystem, unit, color));
-	}
-
-	void DeferredRenderContext::setTextureMipmapBias(UINT16 unit, float bias)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setTextureMipmapBias, mRenderSystem, unit, bias));
-	}
-
 	void DeferredRenderContext::setPointParameters(float size, bool attenuationEnabled, 
 		float constant, float linear, float quadratic, float minSize, float maxSize)
 	{

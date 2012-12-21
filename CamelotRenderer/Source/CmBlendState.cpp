@@ -46,7 +46,7 @@ namespace CamelotEngine
 	SceneBlendFactor BlendState::getAlphaDstBlend(UINT32 renderTargetIdx) const
 	{
 		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
-
+		
 		return mData.renderTargetDesc[renderTargetIdx].dstBlendAlpha;
 	}
 

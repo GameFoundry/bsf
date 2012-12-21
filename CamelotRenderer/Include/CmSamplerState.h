@@ -92,7 +92,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Gets a border color for the specified side. Index must be >= 0 and < 4.
 		 */
-		const Color& getBorderColor(UINT32 idx);
+		const Color& getBorderColor(UINT32 idx) const;
 
 		static SamplerStatePtr create(const SAMPLER_STATE_DESC& desc);
 

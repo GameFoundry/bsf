@@ -25,9 +25,6 @@ namespace CamelotEngine
 		/** @copydoc RenderSystem::getWaitForVerticalBlank() */
 		bool getWaitForVerticalBlank(void) const;
 
-
-		/** @copydoc RenderSystem::setTextureUnitSettings() */
-		void setSamplerState(UINT16 texUnit, const SamplerState& samplerState);
 		/** @copydoc RenderSystem::disableTextureUnit() */
 		void disableTextureUnit(UINT16 texUnit);
 		/** @copydoc RenderSystem::disableTextureUnitsFrom() */
@@ -39,18 +36,8 @@ namespace CamelotEngine
 		/** @copydoc RenderSystem::setTexture() */
 		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr);
 
-		/** @copydoc RenderSystem::setTextureFiltering() */
-		void setTextureFiltering(UINT16 unit, FilterOptions minFilter, FilterOptions magFilter, FilterOptions mipFilter);
-		/** @copydoc RenderSystem::setTextureFiltering() */
-		void setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter);
-		/** @copydoc RenderSystem::setTextureAnisotropy() */
-		void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy);
-		/** @copydoc RenderSystem::setTextureAddressingMode() */
-		void setTextureAddressingMode(UINT16 unit, const UVWAddressingMode& uvw);
-		/** @copydoc RenderSystem::setTextureBorderColor() */
-		void setTextureBorderColor(UINT16 unit, const Color& color);
-		/** @copydoc RenderSystem::setTextureMipmapBias() */
-		void setTextureMipmapBias(UINT16 unit, float bias);
+		/** @copydoc RenderSystem::setTextureUnitSettings() */
+		void setSamplerState(UINT16 texUnit, const SamplerState& samplerState);
 
 		/** @copydoc RenderSystem::setSceneBlending() */
 		void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op = SBO_ADD);

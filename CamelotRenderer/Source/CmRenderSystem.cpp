@@ -244,30 +244,6 @@ namespace CamelotEngine {
 
         return mActiveViewport;
     }
-	//-----------------------------------------------------------------------
-    void RenderSystem::setSamplerState(UINT16 texUnit, const SamplerState& tl)
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-        // This method is only ever called to set a texture unit to valid details
-        // The method _disableTextureUnit is called to turn a unit off
-
-        // Set texture layer filtering
-        setTextureFiltering(texUnit, 
-            tl.getTextureFiltering(FT_MIN), 
-            tl.getTextureFiltering(FT_MAG), 
-            tl.getTextureFiltering(FT_MIP));
-
-        // Set texture layer filtering
-        setTextureAnisotropy(texUnit, tl.getTextureAnisotropy());
-
-		// Set mipmap biasing
-		setTextureMipmapBias(texUnit, tl.getTextureMipmapBias());
-
-        // Texture addressing mode
-        const UVWAddressingMode& uvw = tl.getTextureAddressingMode();
-        setTextureAddressingMode(texUnit, uvw);
-    }
     //-----------------------------------------------------------------------
     void RenderSystem::disableTextureUnit(UINT16 texUnit)
     {
@@ -288,16 +264,6 @@ namespace CamelotEngine {
         {
             disableTextureUnit(i);
         }
-    }
-    //-----------------------------------------------------------------------
-    void RenderSystem::setTextureFiltering(UINT16 unit, FilterOptions minFilter,
-            FilterOptions magFilter, FilterOptions mipFilter)
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-        setTextureFiltering(unit, FT_MIN, minFilter);
-        setTextureFiltering(unit, FT_MAG, magFilter);
-        setTextureFiltering(unit, FT_MIP, mipFilter);
     }
 	//-----------------------------------------------------------------------
 	bool RenderSystem::getWaitForVerticalBlank(void) const

@@ -157,6 +157,32 @@ namespace CamelotEngine {
          */
         void enableClipPlane (UINT16 index, bool enable);
 
+		/** Sets the texture addressing mode for a texture unit.*/
+        void setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw);
+
+		/** Sets the texture border color for a texture unit.*/
+        void setTextureBorderColor(UINT16 stage, const Color& color);
+
+		/** Sets the mipmap bias value for a given texture unit.
+		@remarks
+		This allows you to adjust the mipmap calculation up or down for a
+		given texture unit. Negative values force a larger mipmap to be used, 
+		positive values force a smaller mipmap to be used. Units are in numbers
+		of levels, so +1 forces the mipmaps to one smaller level.
+		@note Only does something if render system has capability RSC_MIPMAP_LOD_BIAS.
+		*/
+		void setTextureMipmapBias(UINT16 unit, float bias);
+
+		/** Sets a single filter for a given texture unit.
+		@param unit The texture unit to set the filtering options for
+		@param ftype The filter type
+		@param filter The filter to be used
+		*/
+        void setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter);
+
+		/** Sets the maximal anisotropy for the specified texture unit.*/
+		void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy);
+
 		// ----------------------------------
         // GLRenderSystem specific members
         // ----------------------------------
@@ -224,21 +250,12 @@ namespace CamelotEngine {
           RenderSystem
          */
         void setTexture(UINT16 unit, bool enabled, const TexturePtr &tex);
-        /** See
-          RenderSystem
-         */
-        void setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw);
-        /** See
-          RenderSystem
-         */
-        void setTextureBorderColor(UINT16 stage, const Color& colour);
-		/** See
-		  RenderSystem
+        
+		/**
+		 * @copydoc RenderSystem::setSamplerState()
 		 */
-		void setTextureMipmapBias(UINT16 unit, float bias);
-        /** See
-          RenderSystem
-         */
+		void setSamplerState(UINT16 unit, const SamplerState& state);
+
         void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
         /** See
           RenderSystem
@@ -318,14 +335,6 @@ namespace CamelotEngine {
             StencilOperation depthFailOp = SOP_KEEP,
             StencilOperation passOp = SOP_KEEP, 
             bool twoSidedOperation = false);
-        /** See
-          RenderSystem
-         */
-        void setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter);
-        /** See
-          RenderSystem
-         */
-		void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy);
         /** See
           RenderSystem
          */

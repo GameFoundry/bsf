@@ -360,7 +360,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Sets a sampler state for the specified texture unit.
 		 */
-		virtual void setSamplerState(UINT16 texUnit, const SamplerState& samplerState);
+		virtual void setSamplerState(UINT16 texUnit, const SamplerState& samplerState) = 0;
 		/** Turns off a texture unit. */
 		virtual void disableTextureUnit(UINT16 texUnit);
 		/** Disables all texture units from the given unit upwards */
@@ -394,41 +394,6 @@ namespace CamelotEngine
 		*/
 		virtual void setTexture(UINT16 unit, bool enabled, 
 			const TexturePtr &texPtr) = 0;
-
-		/** Sets the filtering options for a given texture unit.
-		@param unit The texture unit to set the filtering options for
-		@param minFilter The filter used when a texture is reduced in size
-		@param magFilter The filter used when a texture is magnified
-		@param mipFilter The filter used between mipmap levels, FO_NONE disables mipmapping
-		*/
-		virtual void setTextureFiltering(UINT16 unit, FilterOptions minFilter,
-			FilterOptions magFilter, FilterOptions mipFilter);
-
-		/** Sets a single filter for a given texture unit.
-		@param unit The texture unit to set the filtering options for
-		@param ftype The filter type
-		@param filter The filter to be used
-		*/
-		virtual void setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter) = 0;
-
-		/** Sets the maximal anisotropy for the specified texture unit.*/
-		virtual void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy) = 0;
-
-		/** Sets the texture addressing mode for a texture unit.*/
-		virtual void setTextureAddressingMode(UINT16 unit, const UVWAddressingMode& uvw) = 0;
-
-		/** Sets the texture border color for a texture unit.*/
-		virtual void setTextureBorderColor(UINT16 unit, const Color& color) = 0;
-
-		/** Sets the mipmap bias value for a given texture unit.
-		@remarks
-		This allows you to adjust the mipmap calculation up or down for a
-		given texture unit. Negative values force a larger mipmap to be used, 
-		positive values force a smaller mipmap to be used. Units are in numbers
-		of levels, so +1 forces the mipmaps to one smaller level.
-		@note Only does something if render system has capability RSC_MIPMAP_LOD_BIAS.
-		*/
-		virtual void setTextureMipmapBias(UINT16 unit, float bias) = 0;
 
 		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
 		The result of the blending operation is:</p>

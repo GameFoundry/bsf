@@ -581,6 +581,29 @@ namespace CamelotEngine
 
 		RenderSystem::disableTextureUnit(texUnit);
 	}
+	//-----------------------------------------------------------------------
+	void D3D9RenderSystem::setSamplerState(UINT16 unit, const SamplerState& state)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		// Set texture layer filtering
+		setTextureFiltering(unit, FT_MIN, state.getTextureFiltering(FT_MIN));
+		setTextureFiltering(unit, FT_MAG, state.getTextureFiltering(FT_MAG));
+		setTextureFiltering(unit, FT_MIP, state.getTextureFiltering(FT_MIP));
+
+		// Set texture layer filtering
+		setTextureAnisotropy(unit, state.getTextureAnisotropy());
+
+		// Set mipmap biasing
+		setTextureMipmapBias(unit, state.getTextureMipmapBias());
+
+		// Texture addressing mode
+		const UVWAddressingMode& uvw = state.getTextureAddressingMode();
+		setTextureAddressingMode(unit, uvw);
+
+		// Set border color
+		setTextureBorderColor(unit, state.getBorderColor(0));
+	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
 	{

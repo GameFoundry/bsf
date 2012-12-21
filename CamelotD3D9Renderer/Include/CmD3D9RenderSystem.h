@@ -218,6 +218,32 @@ namespace CamelotEngine
 		/// Take in some requested FSAA settings and output supported D3D settings
 		void determineFSAASettings(IDirect3DDevice9* d3d9Device, UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
 			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
+	
+		/** Sets the texture addressing mode for a texture unit.*/	
+		void setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw);
+
+		/** Sets a single filter for a given texture unit.
+		@param unit The texture unit to set the filtering options for
+		@param ftype The filter type
+		@param filter The filter to be used
+		*/
+		void setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter);
+
+		/** Sets the maximal anisotropy for the specified texture unit.*/
+		void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy);
+
+		/** Sets the texture border colour for a texture unit.*/
+		void setTextureBorderColor(UINT16 stage, const Color& color);
+
+		/** Sets the mipmap bias value for a given texture unit.
+		@remarks
+		This allows you to adjust the mipmap calculation up or down for a
+		given texture unit. Negative values force a larger mipmap to be used, 
+		positive values force a smaller mipmap to be used. Units are in numbers
+		of levels, so +1 forces the mipmaps to one smaller level.
+		@note Only does something if render system has capability RSC_MIPMAP_LOD_BIAS.
+		*/
+		void setTextureMipmapBias(UINT16 unit, float bias);
 	public:
 		// constructor
 		D3D9RenderSystem( HINSTANCE hInstance );
@@ -248,10 +274,13 @@ namespace CamelotEngine
 		void setPointParameters(float size, bool attenuationEnabled, 
 			float constant, float linear, float quadratic, float minSize, float maxSize);
 		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr);
+
+		/**
+		 * @copydoc RenderSystem::setSamplerState()
+		 */
+		void setSamplerState(UINT16 unit, const SamplerState& state);
+
 		void disableTextureUnit(UINT16 texUnit);
-        void setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw);
-        void setTextureBorderColor(UINT16 stage, const Color& colour);
-		void setTextureMipmapBias(UINT16 unit, float bias);
 		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
 		void setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
 		void setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage );
@@ -267,8 +296,6 @@ namespace CamelotEngine
 		void setDepthBias(float constantBias, float slopeScaleBias);
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
 		void setPolygonMode(PolygonMode level);
-        void setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter);
-		void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy);
 		void setVertexDeclaration(VertexDeclarationPtr decl);
 		void setVertexBufferBinding(VertexBufferBinding* binding);
         void render(const RenderOperation& op);
