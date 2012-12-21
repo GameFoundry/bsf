@@ -32,6 +32,7 @@ namespace CamelotEngine
 		bool antialiasedLineEnable;
 	};
 
+	// TODO Low priority - Write doc explaining various states
 	class CM_EXPORT RasterizerState
 	{
 	public:

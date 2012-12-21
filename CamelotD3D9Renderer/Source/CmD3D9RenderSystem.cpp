@@ -49,6 +49,7 @@ THE SOFTWARE.
 #include "CmD3D9ResourceManager.h"
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmAsyncOp.h"
+#include "CmBlendState.h"
 
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
@@ -347,7 +348,7 @@ namespace CamelotEngine
 
 					SamplerStatePtr samplerState = params->getSamplerState(i->second.physicalIndex);
 					if(samplerState == nullptr)
-						setSamplerState(logicalIndex, SamplerState::DEFAULT);
+						setSamplerState(logicalIndex, SamplerState::getDefault());
 					else
 						setSamplerState(logicalIndex, *samplerState);
 				}
@@ -486,35 +487,6 @@ namespace CamelotEngine
 		// Do the real removal
 		RenderSystem::destroyRenderTarget(renderTarget);	
 	}
-
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setPointParameters(float size, 
-		bool attenuationEnabled, float constant, float linear, float quadratic,
-		float minSize, float maxSize)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if(attenuationEnabled)
-		{
-			// scaling required
-			__SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
-			__SetFloatRenderState(D3DRS_POINTSCALE_A, constant);
-			__SetFloatRenderState(D3DRS_POINTSCALE_B, linear);
-			__SetFloatRenderState(D3DRS_POINTSCALE_C, quadratic);
-		}
-		else
-		{
-			// no scaling required
-			__SetRenderState(D3DRS_POINTSCALEENABLE, FALSE);
-		}
-		__SetFloatRenderState(D3DRS_POINTSIZE, size);
-		__SetFloatRenderState(D3DRS_POINTSIZE_MIN, minSize);
-		if (maxSize == 0.0f)
-			maxSize = mCurrentCapabilities->getMaxPointSize();
-		__SetFloatRenderState(D3DRS_POINTSIZE_MAX, maxSize);
-
-
-	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTexture( UINT16 stage, bool enabled, const TexturePtr& tex )
 	{
@@ -604,6 +576,30 @@ namespace CamelotEngine
 		// Set border color
 		setTextureBorderColor(unit, state.getBorderColor(0));
 	}
+	//-----------------------------------------------------------------------
+	void D3D9RenderSystem::setBlendState(const BlendState& blendState)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		// Alpha to coverage
+		setAlphaToCoverage(blendState.getAlphaToCoverageEnabled());
+
+		// Blend states
+		// DirectX 9 doesn't allow us to specify blend state per render target, so we just use the first one.
+		if(blendState.getBlendEnabled(0))
+		{
+			setSceneBlending(blendState.getSrcBlend(0), blendState.getDstBlend(0), blendState.getAlphaSrcBlend(0), blendState.getAlphaDstBlend(0)
+				, blendState.getBlendOperation(0), blendState.getAlphaBlendOperation(0));
+		}
+		else
+		{
+			setSceneBlending(SBF_ONE, SBF_ZERO, SBO_ADD);
+		}
+
+		// Color write mask
+		UINT8 writeMask = blendState.getRenderTargetWriteMask(0);
+		setColorBufferWriteEnabled(writeMask & 0x1, writeMask & 0x2, writeMask & 0x4, writeMask & 0x8);
+	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
 	{
@@ -672,7 +668,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set scene blending operation option");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
+	void D3D9RenderSystem::setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
 		SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp )
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -706,20 +702,16 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set alpha scene blending operation option");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage )
+	void D3D9RenderSystem::setAlphaTest(CompareFunction func, unsigned char value)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		HRESULT hr;
-		bool a2c = false;
-		static bool lasta2c = false;
 
 		if (func != CMPF_ALWAYS_PASS)
 		{
 			if( FAILED( hr = __SetRenderState( D3DRS_ALPHATESTENABLE,  TRUE ) ) )
 				CM_EXCEPT(RenderingAPIException, "Failed to enable alpha testing");
-
-			a2c = alphaToCoverage;
 		}
 		else
 		{
@@ -731,6 +723,14 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set alpha reject function");
 		if( FAILED( hr = __SetRenderState( D3DRS_ALPHAREF, value ) ) )
 			CM_EXCEPT(RenderingAPIException, "Failed to set render state D3DRS_ALPHAREF");
+	}
+	//---------------------------------------------------------------------
+	void D3D9RenderSystem::setAlphaToCoverage(bool enable)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		HRESULT hr;
+		static bool lasta2c = false;
 
 		// Alpha to coverage
 		if (getCapabilities()->hasCapability(RSC_ALPHA_TO_COVERAGE))
@@ -738,7 +738,7 @@ namespace CamelotEngine
 			// Vendor-specific hacks on renderstate, gotta love 'em
 			if (getCapabilities()->getVendor() == GPU_NVIDIA)
 			{
-				if (a2c)
+				if (enable)
 				{
 					if( FAILED( hr = __SetRenderState( D3DRS_ADAPTIVETESS_Y,  (D3DFORMAT)MAKEFOURCC('A', 'T', 'O', 'C') ) ) )
 						CM_EXCEPT(RenderingAPIException, "Failed to set alpha to coverage option");
@@ -752,7 +752,7 @@ namespace CamelotEngine
 			}
 			else if ((getCapabilities()->getVendor() == GPU_ATI))
 			{
-				if (a2c)
+				if (enable)
 				{
 					if( FAILED( hr = __SetRenderState( D3DRS_POINTSIZE,  MAKEFOURCC('A','2','M','1') ) ) )
 						CM_EXCEPT(RenderingAPIException, "Failed to set alpha to coverage option");
@@ -764,10 +764,9 @@ namespace CamelotEngine
 						CM_EXCEPT(RenderingAPIException, "Failed to set alpha to coverage option");
 				}
 			}
-			// no hacks available for any other vendors?
-			lasta2c = a2c;
-		}
 
+			lasta2c = enable;
+		}
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setCullingMode( CullingMode mode )

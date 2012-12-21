@@ -70,6 +70,9 @@ namespace CamelotEngine
 	class D3D9DriverList;
 	class D3D9VideoMode;
 	class D3D9VideoModeList;
+	class D3D9Device;
+	class D3D9DeviceManager;
+	class D3D9ResourceManager;
 	class D3D9GpuProgram;
 	class D3D9GpuProgramManager;
     class D3D9HardwareBufferManager;

@@ -6,6 +6,7 @@
 #include "CmMaterial.h"
 #include "CmMesh.h"
 #include "CmPass.h"
+#include "CmBlendState.h"
 #include "CmApplication.h"
 
 namespace CamelotEngine
@@ -131,42 +132,16 @@ namespace CamelotEngine
 		}
 
 		// The rest of the settings are the same no matter whether we use programs or not
-
-		// Set scene blending
-		if ( pass->hasSeparateSceneBlending( ) )
+		BlendStatePtr blendState = pass->getBlendState();
+		if(blendState != nullptr)
 		{
-			renderContext->setSeparateSceneBlending(
-				pass->getSourceBlendFactor(), pass->getDestBlendFactor(),
-				pass->getSourceBlendFactorAlpha(), pass->getDestBlendFactorAlpha(),
-				pass->getSceneBlendingOperation(), 
-				pass->hasSeparateSceneBlendingOperations() ? pass->getSceneBlendingOperation() : pass->getSceneBlendingOperationAlpha() );
+			renderContext->setBlendState(*blendState);
 		}
 		else
 		{
-			if(pass->hasSeparateSceneBlendingOperations( ) )
-			{
-				renderContext->setSeparateSceneBlending(
-					pass->getSourceBlendFactor(), pass->getDestBlendFactor(),
-					pass->getSourceBlendFactor(), pass->getDestBlendFactor(),
-					pass->getSceneBlendingOperation(), pass->getSceneBlendingOperationAlpha() );
-			}
-			else
-			{
-				renderContext->setSceneBlending(
-					pass->getSourceBlendFactor(), pass->getDestBlendFactor(), pass->getSceneBlendingOperation() );
-			}
+			renderContext->setBlendState(BlendState::getDefault());
 		}
-
-		// Set point parameters
-		renderContext->setPointParameters(
-			pass->getPointSize(),
-			false, 
-			false, 
-			false, 
-			false, 
-			pass->getPointMinSize(), 
-			pass->getPointMaxSize());
-
+		
 		// TODO - Try to limit amount of state changes, if previous state is already the same (especially with textures)
 
 		// TODO: Disable remaining texture units
@@ -179,15 +154,6 @@ namespace CamelotEngine
 		renderContext->setDepthBufferCheckEnabled(pass->getDepthCheckEnabled());
 		renderContext->setDepthBufferWriteEnabled(pass->getDepthWriteEnabled());
 		renderContext->setDepthBias(pass->getDepthBiasConstant(), pass->getDepthBiasSlopeScale());
-
-		// Alpha-reject settings
-		renderContext->setAlphaRejectSettings(
-			pass->getAlphaRejectFunction(), pass->getAlphaRejectValue(), pass->isAlphaToCoverageEnabled());
-
-		// Set colour write mode
-		// Right now we only use on/off, not per-channel
-		bool colWrite = pass->getColourWriteEnabled();
-		renderContext->setColorBufferWriteEnabled(colWrite, colWrite, colWrite, colWrite);
 
 		// Culling mode
 		renderContext->setCullingMode(pass->getCullingMode());

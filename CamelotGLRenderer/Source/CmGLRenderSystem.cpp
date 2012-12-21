@@ -43,6 +43,7 @@ THE SOFTWARE.s
 #include "CmGLHardwareOcclusionQuery.h"
 #include "CmGLContext.h"
 #include "CmAsyncOp.h"
+#include "CmBlendState.h"
 
 #include "CmGLFBORenderTexture.h"
 #include "CmGLPBRenderTexture.h"
@@ -353,7 +354,7 @@ namespace CamelotEngine {
 
 					SamplerStatePtr samplerState = params->getSamplerState(def.physicalIndex);
 					if(samplerState == nullptr)
-						setSamplerState(def.physicalIndex, SamplerState::DEFAULT);
+						setSamplerState(def.physicalIndex, SamplerState::getDefault());
 					else
 						setSamplerState(def.physicalIndex, *samplerState);
 				}
@@ -374,74 +375,6 @@ namespace CamelotEngine {
 			mActiveFragmentGpuProgramParameters = params;
 			mCurrentFragmentProgram->bindProgramParameters(params, mask);
 			break;
-		}
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setPointParameters(float size, 
-		bool attenuationEnabled, float constant, float linear, float quadratic,
-		float minSize, float maxSize)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		float val[4] = {1, 0, 0, 1};
-		
-		if(attenuationEnabled) 
-		{
-			// Point size is still calculated in pixels even when attenuation is
-			// enabled, which is pretty awkward, since you typically want a viewport
-			// independent size if you're looking for attenuation.
-			// So, scale the point size up by viewport size (this is equivalent to
-			// what D3D does as standard)
-			size = size * mActiveViewport.getActualHeight();
-			minSize = minSize * mActiveViewport.getActualHeight();
-			if (maxSize == 0.0f)
-				maxSize = mCurrentCapabilities->getMaxPointSize(); // pixels
-			else
-				maxSize = maxSize * mActiveViewport.getActualHeight();
-			
-			// XXX: why do I need this for results to be consistent with D3D?
-			// Equations are supposedly the same once you factor in vp height
-			float correction = 0.005f;
-			// scaling required
-			val[0] = constant;
-			val[1] = linear * correction;
-			val[2] = quadratic * correction;
-			val[3] = 1;
-			
-			if (mCurrentCapabilities->hasCapability(RSC_VERTEX_PROGRAM))
-				glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-			
-			
-		} 
-		else 
-		{
-			if (maxSize == 0.0f)
-				maxSize = mCurrentCapabilities->getMaxPointSize();
-			if (mCurrentCapabilities->hasCapability(RSC_VERTEX_PROGRAM))
-				glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
-		}
-		
-		// no scaling required
-		// GL has no disabled flag for this so just set to constant
-		glPointSize(size);
-		
-		if (mCurrentCapabilities->hasCapability(RSC_POINT_EXTENDED_PARAMETERS))
-		{
-			glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, val);
-			glPointParameterf(GL_POINT_SIZE_MIN, minSize);
-			glPointParameterf(GL_POINT_SIZE_MAX, maxSize);
-		} 
-		else if (mCurrentCapabilities->hasCapability(RSC_POINT_EXTENDED_PARAMETERS_ARB))
-		{
-			glPointParameterfvARB(GL_POINT_DISTANCE_ATTENUATION, val);
-			glPointParameterfARB(GL_POINT_SIZE_MIN, minSize);
-			glPointParameterfARB(GL_POINT_SIZE_MAX, maxSize);
-		} 
-		else if (mCurrentCapabilities->hasCapability(RSC_POINT_EXTENDED_PARAMETERS_EXT))
-		{
-			glPointParameterfvEXT(GL_POINT_DISTANCE_ATTENUATION, val);
-			glPointParameterfEXT(GL_POINT_SIZE_MIN, minSize);
-			glPointParameterfEXT(GL_POINT_SIZE_MAX, maxSize);
 		}
 	}
 	//-----------------------------------------------------------------------------
@@ -525,6 +458,30 @@ namespace CamelotEngine {
 
 		// Set border color
 		setTextureBorderColor(unit, state.getBorderColor(0));
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setBlendState(const BlendState& blendState)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		// Alpha to coverage
+		setAlphaToCoverage(blendState.getAlphaToCoverageEnabled());
+
+		// Blend states
+		// DirectX 9 doesn't allow us to specify blend state per render target, so we just use the first one.
+		if(blendState.getBlendEnabled(0))
+		{
+			setSceneBlending(blendState.getSrcBlend(0), blendState.getDstBlend(0), blendState.getAlphaSrcBlend(0), blendState.getAlphaDstBlend(0)
+				, blendState.getBlendOperation(0), blendState.getAlphaBlendOperation(0));
+		}
+		else
+		{
+			setSceneBlending(SBF_ONE, SBF_ZERO, SBO_ADD);
+		}
+
+		// Color write mask
+		UINT8 writeMask = blendState.getRenderTargetWriteMask(0);
+		setColorBufferWriteEnabled(writeMask & 0x1, writeMask & 0x2, writeMask & 0x4, writeMask & 0x8);
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw)
@@ -615,7 +572,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setSeparateSceneBlending(
+	void GLRenderSystem::setSceneBlending(
 		SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, 
 		SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha,
 		SceneBlendOperation op, SceneBlendOperation alphaOp )
@@ -686,12 +643,9 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage)
+	void GLRenderSystem::setAlphaTest(CompareFunction func, unsigned char value)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
-
-		bool a2c = false;
-		static bool lasta2c = false;
 
 		if(func == CMPF_ALWAYS_PASS)
 		{
@@ -700,20 +654,25 @@ namespace CamelotEngine {
 		else
 		{
 			glEnable(GL_ALPHA_TEST);
-			a2c = alphaToCoverage;
 			glAlphaFunc(convertCompareFunction(func), value / 255.0f);
 		}
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setAlphaToCoverage(bool enable)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
 
-		if (a2c != lasta2c && getCapabilities()->hasCapability(RSC_ALPHA_TO_COVERAGE))
+		static bool lasta2c = false;
+
+		if (enable != lasta2c && getCapabilities()->hasCapability(RSC_ALPHA_TO_COVERAGE))
 		{
-			if (a2c)
+			if (enable)
 				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 			else
 				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
-			lasta2c = a2c;
+			lasta2c = enable;
 		}
-
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setViewport(const Viewport& vp)
@@ -1775,9 +1734,9 @@ namespace CamelotEngine {
 		return (errString != 0) ? String((const char*) errString) : StringUtil::BLANK;
 	}
 	//-----------------------------------------------------------------------------
-	GLint GLRenderSystem::getBlendMode(SceneBlendFactor ogreBlend) const
+	GLint GLRenderSystem::getBlendMode(SceneBlendFactor blendMode) const
 	{
-		switch(ogreBlend)
+		switch(blendMode)
 		{
 		case SBF_ONE:
 			return GL_ONE;

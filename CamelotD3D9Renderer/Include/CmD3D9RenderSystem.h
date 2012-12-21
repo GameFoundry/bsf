@@ -38,17 +38,87 @@ THE SOFTWARE.
 
 namespace CamelotEngine 
 {
-	class D3D9DriverList;
-	class D3D9Driver;
-	class D3D9Device;
-	class D3D9DeviceManager;
-	class D3D9ResourceManager;
-
 	/**
 	Implementation of DirectX9 as a rendering system.
 	*/
 	class CM_D3D9_EXPORT D3D9RenderSystem : public RenderSystem
 	{
+	public:
+		// constructor
+		D3D9RenderSystem( HINSTANCE hInstance );
+		// destructor
+		~D3D9RenderSystem();
+
+		const String& getName() const;
+
+		void setStencilCheckEnabled(bool enabled);
+        void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
+            UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
+            StencilOperation stencilFailOp = SOP_KEEP, 
+            StencilOperation depthFailOp = SOP_KEEP,
+            StencilOperation passOp = SOP_KEEP, 
+            bool twoSidedOperation = false);
+
+		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
+			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
+		void destroyRenderTarget(RenderTarget* renderTarget);
+		void setRenderTarget(RenderTarget *target);
+
+		void bindGpuProgram(GpuProgramHandle prg);
+		void unbindGpuProgram(GpuProgramType gptype);
+		void bindGpuProgramParameters(GpuProgramType gptype, 
+			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
+
+		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr);
+
+		/**
+		 * @copydoc RenderSystem::setSamplerState()
+		 */
+		void setSamplerState(UINT16 unit, const SamplerState& state);
+
+		/**
+		 * @copydoc RenderSystem::setBlendState()
+		 */
+		void setBlendState(const BlendState& blendState);
+
+		void disableTextureUnit(UINT16 texUnit);
+		void setViewport(const Viewport& vp);		
+		void beginFrame();
+		void endFrame();		
+		void setCullingMode( CullingMode mode );
+		void setDepthBufferParams( bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL );
+		void setDepthBufferCheckEnabled( bool enabled = true );
+		void setDepthBufferWriteEnabled(bool enabled = true);
+		void setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
+		void setDepthBias(float constantBias, float slopeScaleBias);
+		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
+		void setPolygonMode(PolygonMode level);
+		void setVertexDeclaration(VertexDeclarationPtr decl);
+		void setVertexBufferBinding(VertexBufferBinding* binding);
+        void render(const RenderOperation& op);
+
+        void setScissorTest(bool enabled, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
+        void clearFrameBuffer(unsigned int buffers, 
+            const Color& colour = Color::Black, 
+            float depth = 1.0f, unsigned short stencil = 0);
+
+        float getHorizontalTexelOffset();
+        float getVerticalTexelOffset();
+        float getMinimumDepthInputValue();
+        float getMaximumDepthInputValue();
+		VertexElementType getColorVertexElementType() const;
+
+		/************************************************************************/
+		/* 				Internal use by DX9 RenderSystem only                   */
+		/************************************************************************/
+
+		static D3D9ResourceManager* getResourceManager();
+		static D3D9DeviceManager* getDeviceManager();
+		static IDirect3D9* getDirect3D9();
+		static UINT	getResourceCreationDeviceCount();
+		static IDirect3DDevice9* getResourceCreationDevice(UINT index);
+		static IDirect3DDevice9* getActiveD3D9Device();
+
 	private:
 		/// Direct3D
 		IDirect3D9*	 mpD3D;		
@@ -95,12 +165,7 @@ namespace CamelotEngine
 
 		HRESULT __SetFloatRenderState(D3DRENDERSTATETYPE state, float value)
 		{
-#if OGRE_DOUBLE_PRECISION == 1
-			float temp = static_cast<float>(value);
-			return __SetRenderState(state, *((LPDWORD)(&temp)));
-#else
 			return __SetRenderState(state, *((LPDWORD)(&value)));
-#endif
 		}
 
 		/// return anisotropy level
@@ -175,6 +240,7 @@ namespace CamelotEngine
 		friend class D3D9RenderWindow;
 		friend class D3D9Device;
 		friend class D3D9TextureManager;
+		friend class D3D9DeviceManager;		
 
 		void startUp_internal();
 		void shutdown_internal();
@@ -219,6 +285,10 @@ namespace CamelotEngine
 		void determineFSAASettings(IDirect3DDevice9* d3d9Device, UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
 			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
 	
+		/************************************************************************/
+		/* 							Sampler states                     			*/
+		/************************************************************************/
+
 		/** Sets the texture addressing mode for a texture unit.*/	
 		void setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw);
 
@@ -244,81 +314,59 @@ namespace CamelotEngine
 		@note Only does something if render system has capability RSC_MIPMAP_LOD_BIAS.
 		*/
 		void setTextureMipmapBias(UINT16 unit, float bias);
-	public:
-		// constructor
-		D3D9RenderSystem( HINSTANCE hInstance );
-		// destructor
-		~D3D9RenderSystem();
 
-		const String& getName() const;
+		/************************************************************************/
+		/* 								Blend states                      		*/
+		/************************************************************************/
 
-		void setStencilCheckEnabled(bool enabled);
-        void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
-            UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
-            StencilOperation stencilFailOp = SOP_KEEP, 
-            StencilOperation depthFailOp = SOP_KEEP,
-            StencilOperation passOp = SOP_KEEP, 
-            bool twoSidedOperation = false);
+		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
+		The result of the blending operation is:</p>
+		<p align="center">final = (texture * sourceFactor) + (pixel * destFactor)</p>
+		Each of the factors is specified as one of a number of options, as specified in the SceneBlendFactor
+		enumerated type.
+		By changing the operation you can change addition between the source and destination pixels to a different operator.
+		@param sourceFactor The source factor in the above calculation, i.e. multiplied by the texture colour components.
+		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
+		@param op The blend operation mode for combining pixels
+		*/
+		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
 
-		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
-		void destroyRenderTarget(RenderTarget* renderTarget);
-		void setRenderTarget(RenderTarget *target);
+		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
+		The result of the blending operation is:</p>
+		<p align="center">final = (texture * sourceFactor) + (pixel * destFactor)</p>
+		Each of the factors is specified as one of a number of options, as specified in the SceneBlendFactor
+		enumerated type.
+		@param sourceFactor The source factor in the above calculation, i.e. multiplied by the texture colour components.
+		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
+		@param sourceFactorAlpha The source factor in the above calculation for the alpha channel, i.e. multiplied by the texture alpha components.
+		@param destFactorAlpha The destination factor in the above calculation for the alpha channel, i.e. multiplied by the pixel alpha components.
+		@param op The blend operation mode for combining pixels
+		@param alphaOp The blend operation mode for combining pixel alpha values
+		*/
+		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
+			SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
 
-		void bindGpuProgram(GpuProgramHandle prg);
-		void unbindGpuProgram(GpuProgramType gptype);
-		void bindGpuProgramParameters(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
-
-		// Low-level overridden members, mainly for internal use
-		void setPointParameters(float size, bool attenuationEnabled, 
-			float constant, float linear, float quadratic, float minSize, float maxSize);
-		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr);
+		/** Sets the global alpha rejection approach for future renders.
+		By default images are rendered regardless of texture alpha. This method lets you change that.
+		@param func The comparison function which must pass for a pixel to be written.
+		@param val The value to compare each pixels alpha value to (0-255)
+		*/
+		void setAlphaTest(CompareFunction func, unsigned char value);
 
 		/**
-		 * @copydoc RenderSystem::setSamplerState()
+		 * @brief	Enable alpha coverage if supported.
 		 */
-		void setSamplerState(UINT16 unit, const SamplerState& state);
+		void setAlphaToCoverage(bool enabled);
 
-		void disableTextureUnit(UINT16 texUnit);
-		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
-		void setSeparateSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
-		void setAlphaRejectSettings( CompareFunction func, unsigned char value, bool alphaToCoverage );
-		void setViewport(const Viewport& vp);		
-		void beginFrame();
-		void endFrame();		
-		void setCullingMode( CullingMode mode );
-		void setDepthBufferParams( bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL );
-		void setDepthBufferCheckEnabled( bool enabled = true );
+		/** Sets whether or not colour buffer writing is enabled, and for which channels. 
+		@remarks
+		For some advanced effects, you may wish to turn off the writing of certain colour
+		channels, or even all of the colour channels so that only the depth buffer is updated
+		in a rendering pass. However, the chances are that you really want to use this option
+		through the Material class.
+		@param red, green, blue, alpha Whether writing is enabled for each of the 4 colour channels. */
 		void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
-		void setDepthBufferWriteEnabled(bool enabled = true);
-		void setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
-		void setDepthBias(float constantBias, float slopeScaleBias);
-		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
-		void setPolygonMode(PolygonMode level);
-		void setVertexDeclaration(VertexDeclarationPtr decl);
-		void setVertexBufferBinding(VertexBufferBinding* binding);
-        void render(const RenderOperation& op);
 
-        void setScissorTest(bool enabled, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
-        void clearFrameBuffer(unsigned int buffers, 
-            const Color& colour = Color::Black, 
-            float depth = 1.0f, unsigned short stencil = 0);
-
-        float getHorizontalTexelOffset();
-        float getVerticalTexelOffset();
-        float getMinimumDepthInputValue();
-        float getMaximumDepthInputValue();
-		VertexElementType getColorVertexElementType() const;
-
-		static D3D9ResourceManager* getResourceManager();
-		static D3D9DeviceManager* getDeviceManager();
-		static IDirect3D9* getDirect3D9();
-		static UINT	getResourceCreationDeviceCount();
-		static IDirect3DDevice9* getResourceCreationDevice(UINT index);
-		static IDirect3DDevice9* getActiveD3D9Device();
-
-	protected:	
 		/// Notify when a device has been lost.
 		void notifyOnDeviceLost(D3D9Device* device);
 
@@ -327,10 +375,6 @@ namespace CamelotEngine
 		
 		typedef map<RenderTarget*, ZBufferRef>::type TargetDepthStencilMap;
 		TargetDepthStencilMap mCheckedOutTextures;
-
-	private:
-		friend class D3D9Device;
-		friend class D3D9DeviceManager;		
 	};
 }
 #endif

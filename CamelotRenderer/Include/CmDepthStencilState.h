@@ -43,6 +43,7 @@ namespace CamelotEngine
 		CompareFunction backStencilComparisonFunc;
 	};
 
+	// TODO Low priority - Write doc explaining various states
 	class CM_EXPORT DepthStencilState
 	{
 	public:

@@ -43,6 +43,148 @@ namespace CamelotEngine {
      */
     class CM_RSGL_EXPORT GLRenderSystem : public RenderSystem
     {
+    public:
+        // Default constructor / destructor
+        GLRenderSystem();
+        ~GLRenderSystem();
+
+        // ----------------------------------
+        // Overridden RenderSystem functions
+        // ----------------------------------
+        /** See
+          RenderSystem
+         */
+        const String& getName(void) const;
+
+        // -----------------------------
+        // Low-level overridden members
+        // -----------------------------
+		/** See
+          RenderSystem
+         */
+		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
+			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
+        /**
+         * Set current render target to target, enabling its GL context if needed
+         */
+        void setRenderTarget(RenderTarget *target);
+		/** See
+          RenderSystem
+         */
+		void bindGpuProgram(GpuProgramHandle prg);
+        /** See
+          RenderSystem
+         */
+		void unbindGpuProgram(GpuProgramType gptype);
+		/** See
+          RenderSystem
+         */
+		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
+		/** See
+          RenderSystem
+         */
+        void setTexture(UINT16 unit, bool enabled, const TexturePtr &tex);
+        
+		/**
+		 * @copydoc RenderSystem::setSamplerState()
+		 */
+		void setSamplerState(UINT16 unit, const SamplerState& state);
+
+		/**
+		 * @copydoc RenderSystem::setBlendState()
+		 */
+		void setBlendState(const BlendState& blendState);
+
+        /** See
+          RenderSystem
+         */
+        void setViewport(const Viewport& vp);
+        /** See
+          RenderSystem
+         */
+        void beginFrame(void);
+        /** See
+          RenderSystem
+         */
+        void endFrame(void);
+        /** See
+          RenderSystem
+         */
+        void setCullingMode(CullingMode mode);
+        /** See
+          RenderSystem
+         */
+        void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
+        /** See
+          RenderSystem
+         */
+        void setDepthBufferCheckEnabled(bool enabled = true);
+        /** See
+          RenderSystem
+         */
+        void setDepthBufferWriteEnabled(bool enabled = true);
+        /** See
+          RenderSystem
+         */
+        void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
+        /** See
+          RenderSystem
+         */
+        void setDepthBias(float constantBias, float slopeScaleBias);
+        /** See
+          RenderSystem
+         */
+        void convertProjectionMatrix(const Matrix4& matrix,
+            Matrix4& dest, bool forGpuProgram = false);
+        /** See
+          RenderSystem
+         */
+        void setPolygonMode(PolygonMode level);
+        /** See
+          RenderSystem
+         */
+        void setStencilCheckEnabled(bool enabled);
+        /** See
+          RenderSystem.
+         */
+        void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
+            UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
+            StencilOperation stencilFailOp = SOP_KEEP, 
+            StencilOperation depthFailOp = SOP_KEEP,
+            StencilOperation passOp = SOP_KEEP, 
+            bool twoSidedOperation = false);
+        /** See
+          RenderSystem
+         */
+		void setVertexDeclaration(VertexDeclarationPtr decl);
+        /** See
+          RenderSystem
+         */
+		void setVertexBufferBinding(VertexBufferBinding* binding);
+        /** See
+          RenderSystem
+         */
+        void render(const RenderOperation& op);
+
+        /** See
+          RenderSystem
+         */
+        void setScissorTest(bool enabled, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) ;
+        void clearFrameBuffer(unsigned int buffers, 
+            const Color& colour = Color::Black, 
+            float depth = 1.0f, unsigned short stencil = 0);
+
+		/** See
+          RenderSystem
+         */
+        VertexElementType getColorVertexElementType(void) const;
+        float getHorizontalTexelOffset(void);
+        float getVerticalTexelOffset(void);
+        float getMinimumDepthInputValue(void);
+        float getMaximumDepthInputValue(void);
+
+        void _unregisterContext(GLContext *context);
+
     private:
         /// Rendering loop control
         bool mStopRendering;
@@ -157,6 +299,10 @@ namespace CamelotEngine {
          */
         void enableClipPlane (UINT16 index, bool enable);
 
+		/************************************************************************/
+		/* 								Sampler states                     		*/
+		/************************************************************************/
+
 		/** Sets the texture addressing mode for a texture unit.*/
         void setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw);
 
@@ -183,6 +329,58 @@ namespace CamelotEngine {
 		/** Sets the maximal anisotropy for the specified texture unit.*/
 		void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy);
 
+		/************************************************************************/
+		/* 								Blend states                      		*/
+		/************************************************************************/
+
+		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
+		The result of the blending operation is:</p>
+		<p align="center">final = (texture * sourceFactor) + (pixel * destFactor)</p>
+		Each of the factors is specified as one of a number of options, as specified in the SceneBlendFactor
+		enumerated type.
+		By changing the operation you can change addition between the source and destination pixels to a different operator.
+		@param sourceFactor The source factor in the above calculation, i.e. multiplied by the texture colour components.
+		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
+		@param op The blend operation mode for combining pixels
+		*/
+		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
+
+		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
+		The result of the blending operation is:</p>
+		<p align="center">final = (texture * sourceFactor) + (pixel * destFactor)</p>
+		Each of the factors is specified as one of a number of options, as specified in the SceneBlendFactor
+		enumerated type.
+		@param sourceFactor The source factor in the above calculation, i.e. multiplied by the texture colour components.
+		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
+		@param sourceFactorAlpha The source factor in the above calculation for the alpha channel, i.e. multiplied by the texture alpha components.
+		@param destFactorAlpha The destination factor in the above calculation for the alpha channel, i.e. multiplied by the pixel alpha components.
+		@param op The blend operation mode for combining pixels
+		@param alphaOp The blend operation mode for combining pixel alpha values
+		*/
+		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
+			SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
+
+		/** Sets the global alpha rejection approach for future renders.
+		By default images are rendered regardless of texture alpha. This method lets you change that.
+		@param func The comparison function which must pass for a pixel to be written.
+		@param val The value to compare each pixels alpha value to (0-255)
+		*/
+		void setAlphaTest(CompareFunction func, unsigned char value);
+
+		/**
+		 * @brief	Enable alpha coverage if supported.
+		 */
+		void setAlphaToCoverage(bool enabled);
+
+		/** Sets whether or not colour buffer writing is enabled, and for which channels. 
+		@remarks
+		For some advanced effects, you may wish to turn off the writing of certain colour
+		channels, or even all of the colour channels so that only the depth buffer is updated
+		in a rendering pass. However, the chances are that you really want to use this option
+		through the Material class.
+		@param red, green, blue, alpha Whether writing is enabled for each of the 4 colour channels. */
+		void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
+
 		// ----------------------------------
         // GLRenderSystem specific members
         // ----------------------------------
@@ -203,169 +401,6 @@ namespace CamelotEngine {
 
 		/** Returns the main context */
 		GLContext* _getMainContext() {return mMainContext;} 
-
-    public:
-        // Default constructor / destructor
-        GLRenderSystem();
-        ~GLRenderSystem();
-
-        // ----------------------------------
-        // Overridden RenderSystem functions
-        // ----------------------------------
-        /** See
-          RenderSystem
-         */
-        const String& getName(void) const;
-
-        // -----------------------------
-        // Low-level overridden members
-        // -----------------------------
-		/** See
-          RenderSystem
-         */
-		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
-        /**
-         * Set current render target to target, enabling its GL context if needed
-         */
-        void setRenderTarget(RenderTarget *target);
-		/** See
-          RenderSystem
-         */
-		void bindGpuProgram(GpuProgramHandle prg);
-        /** See
-          RenderSystem
-         */
-		void unbindGpuProgram(GpuProgramType gptype);
-		/** See
-          RenderSystem
-         */
-		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
-        /** See
-          RenderSystem
-         */
-		void setPointParameters(float size, bool attenuationEnabled, 
-			float constant, float linear, float quadratic, float minSize, float maxSize);
-		/** See
-          RenderSystem
-         */
-        void setTexture(UINT16 unit, bool enabled, const TexturePtr &tex);
-        
-		/**
-		 * @copydoc RenderSystem::setSamplerState()
-		 */
-		void setSamplerState(UINT16 unit, const SamplerState& state);
-
-        void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
-        /** See
-          RenderSystem
-         */
-		void setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
-        /** See
-          RenderSystem
-         */
-		void _setSceneBlendingOperation(SceneBlendOperation op);
-		/** See
-          RenderSystem
-         */
-		void _setSeparateSceneBlendingOperation(SceneBlendOperation op, SceneBlendOperation alphaOp);
-		/** See
-          RenderSystem
-         */
-        void setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage);
-        /** See
-          RenderSystem
-         */
-        void setViewport(const Viewport& vp);
-        /** See
-          RenderSystem
-         */
-        void beginFrame(void);
-        /** See
-          RenderSystem
-         */
-        void endFrame(void);
-        /** See
-          RenderSystem
-         */
-        void setCullingMode(CullingMode mode);
-        /** See
-          RenderSystem
-         */
-        void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
-        /** See
-          RenderSystem
-         */
-        void setDepthBufferCheckEnabled(bool enabled = true);
-        /** See
-          RenderSystem
-         */
-        void setDepthBufferWriteEnabled(bool enabled = true);
-        /** See
-          RenderSystem
-         */
-        void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
-        /** See
-          RenderSystem
-         */
-        void setDepthBias(float constantBias, float slopeScaleBias);
-        /** See
-          RenderSystem
-         */
-        void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
-        /** See
-          RenderSystem
-         */
-        void convertProjectionMatrix(const Matrix4& matrix,
-            Matrix4& dest, bool forGpuProgram = false);
-        /** See
-          RenderSystem
-         */
-        void setPolygonMode(PolygonMode level);
-        /** See
-          RenderSystem
-         */
-        void setStencilCheckEnabled(bool enabled);
-        /** See
-          RenderSystem.
-         */
-        void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
-            UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
-            StencilOperation stencilFailOp = SOP_KEEP, 
-            StencilOperation depthFailOp = SOP_KEEP,
-            StencilOperation passOp = SOP_KEEP, 
-            bool twoSidedOperation = false);
-        /** See
-          RenderSystem
-         */
-		void setVertexDeclaration(VertexDeclarationPtr decl);
-        /** See
-          RenderSystem
-         */
-		void setVertexBufferBinding(VertexBufferBinding* binding);
-        /** See
-          RenderSystem
-         */
-        void render(const RenderOperation& op);
-
-        /** See
-          RenderSystem
-         */
-        void setScissorTest(bool enabled, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) ;
-        void clearFrameBuffer(unsigned int buffers, 
-            const Color& colour = Color::Black, 
-            float depth = 1.0f, unsigned short stencil = 0);
-
-		/** See
-          RenderSystem
-         */
-        VertexElementType getColorVertexElementType(void) const;
-        float getHorizontalTexelOffset(void);
-        float getVerticalTexelOffset(void);
-        float getMinimumDepthInputValue(void);
-        float getMaximumDepthInputValue(void);
-
-        void _unregisterContext(GLContext *context);
     };
 }
 #endif

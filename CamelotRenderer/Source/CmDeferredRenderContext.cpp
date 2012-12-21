@@ -2,6 +2,7 @@
 #include "CmCommandQueue.h"
 #include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
+#include "CmBlendState.h"
 
 namespace CamelotEngine
 {
@@ -35,6 +36,11 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setSamplerState, mRenderSystem, texUnit, samplerState));
 	}
 
+	void DeferredRenderContext::setBlendState(const BlendState& blendState)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::setBlendState, mRenderSystem, blendState));
+	}
+
 	void DeferredRenderContext::setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setTexture, mRenderSystem, unit, enabled, texPtr));
@@ -48,28 +54,6 @@ namespace CamelotEngine
 	void DeferredRenderContext::disableTextureUnitsFrom(UINT16 texUnit)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::disableTextureUnitsFrom, mRenderSystem, texUnit));
-	}
-
-	void DeferredRenderContext::setPointParameters(float size, bool attenuationEnabled, 
-		float constant, float linear, float quadratic, float minSize, float maxSize)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setPointParameters, mRenderSystem, size, attenuationEnabled, constant, linear, quadratic, minSize, maxSize));
-	}
-
-	void DeferredRenderContext::setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setSceneBlending, mRenderSystem, sourceFactor, destFactor, op));
-	}
-
-	void DeferredRenderContext::setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
-		SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setSeparateSceneBlending, mRenderSystem, sourceFactor, destFactor, sourceFactorAlpha, destFactorAlpha, op, alphaOp));
-	}
-
-	void DeferredRenderContext::setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setAlphaRejectSettings, mRenderSystem, func, value, alphaToCoverage));
 	}
 
 	void DeferredRenderContext::setScissorTest(bool enabled, UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -91,7 +75,7 @@ namespace CamelotEngine
 	void DeferredRenderContext::setInvertVertexWinding(bool invert)
 	{
 		mInvertVertexWinding = invert;
-		mCommandQueue->queue(boost::bind(&RenderSystem::setInvertVertexWinding_, mRenderSystem, invert));
+		mCommandQueue->queue(boost::bind(&RenderSystem::setInvertVertexWinding, mRenderSystem, invert));
 	}
 
 	bool DeferredRenderContext::getInvertVertexWinding(void) const
@@ -117,11 +101,6 @@ namespace CamelotEngine
 	void DeferredRenderContext::setDepthBufferFunction(CompareFunction func)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthBufferFunction, mRenderSystem, func));
-	}
-
-	void DeferredRenderContext::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setColorBufferWriteEnabled, mRenderSystem, red, green, blue, alpha));
 	}
 
 	void DeferredRenderContext::setDepthBias(float constantBias, float slopeScaleBias)

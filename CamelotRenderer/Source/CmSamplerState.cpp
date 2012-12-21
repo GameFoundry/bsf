@@ -5,11 +5,23 @@
 
 namespace CamelotEngine 
 {
-	SamplerState SamplerState::DEFAULT;
-
 	void SamplerState::initialize(const SAMPLER_STATE_DESC& desc)
 	{
 		mData = desc;
+	}
+
+	const SamplerState& SamplerState::getDefault()
+	{
+		static SamplerState samplerState;
+		static bool initialized = false;
+
+		if(!initialized)
+		{
+			samplerState.initialize(SAMPLER_STATE_DESC());
+			initialized = true;
+		}
+
+		return samplerState;
 	}
 
 	FilterOptions SamplerState::getTextureFiltering(FilterType ft) const

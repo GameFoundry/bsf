@@ -1,5 +1,6 @@
 #include "CmBlendState.h"
 #include "CmRenderStateManager.h"
+#include "CmBlendStateRTTI.h"
 
 namespace CamelotEngine
 {
@@ -8,7 +9,21 @@ namespace CamelotEngine
 		mData = desc;
 	}
 
-	bool BlendState::getBlendEnable(UINT32 renderTargetIdx) const
+	const BlendState& BlendState::getDefault()
+	{
+		static BlendState blendState;
+		static bool initialized = false;
+
+		if(!initialized)
+		{
+			blendState.initialize(BLEND_STATE_DESC());
+			initialized = true;
+		}
+
+		return blendState;
+	}
+
+	bool BlendState::getBlendEnabled(UINT32 renderTargetIdx) const
 	{
 		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
 
@@ -67,5 +82,19 @@ namespace CamelotEngine
 	BlendStatePtr BlendState::create(const BLEND_STATE_DESC& desc)
 	{
 		return RenderStateManager::instance().createBlendState(desc);
+	}
+
+	/************************************************************************/
+	/* 								RTTI		                     		*/
+	/************************************************************************/
+
+	RTTITypeBase* BlendState::getRTTIStatic()
+	{
+		return BlendStateRTTI::instance();
+	}
+
+	RTTITypeBase* BlendState::getRTTI() const
+	{
+		return BlendState::getRTTIStatic();
 	}
 }

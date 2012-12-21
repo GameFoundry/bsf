@@ -39,6 +39,7 @@ namespace CamelotEngine
 		CompareFunction comparisonFunc;
 	};
 
+	// TODO Low priority - Write doc explaining various states
 	/**
 	* @brief	Class representing the state of a single sampler unit during a Pass of a Technique, of a Material.
 	*	
@@ -53,8 +54,6 @@ namespace CamelotEngine
     {
     public:
 		virtual ~SamplerState() {}
-
-		static SamplerState DEFAULT;
 
         /** Gets the texture addressing mode for a given coordinate, 
 		 	i.e. what happens at uv values above 1.0.
@@ -95,6 +94,11 @@ namespace CamelotEngine
 		const Color& getBorderColor(UINT32 idx) const;
 
 		static SamplerStatePtr create(const SAMPLER_STATE_DESC& desc);
+
+		/**
+		 * @brief	Returns the default sampler state;
+		 */
+		static const SamplerState& getDefault();
 
 	private:
 		friend class RenderStateManager;

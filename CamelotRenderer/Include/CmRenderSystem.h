@@ -366,19 +366,10 @@ namespace CamelotEngine
 		/** Disables all texture units from the given unit upwards */
 		virtual void disableTextureUnitsFrom(UINT16 texUnit);
 
-		/** Sets the size of points and how they are attenuated with distance.
-		@remarks
-		When performing point rendering or point sprite rendering,
-		point size can be attenuated with distance. The equation for
-		doing this is attenuation = 1 / (constant + linear * dist + quadratic * d^2) .
-		@par
-		For example, to disable distance attenuation (constant screensize) 
-		you would set constant to 1, and linear and quadratic to 0. A
-		standard perspective attenuation would be 0, 1, 0 respectively.
-		*/
-		virtual void setPointParameters(float size, bool attenuationEnabled, 
-			float constant, float linear, float quadratic, float minSize, float maxSize) = 0;
-
+		/**
+		 * @brief	Sets a blend state used for all active render targets.
+		 */
+		virtual void setBlendState(const BlendState& blendState) = 0;
 
 		/**
 		Sets the texture to bind to a given texture unit.
@@ -394,41 +385,6 @@ namespace CamelotEngine
 		*/
 		virtual void setTexture(UINT16 unit, bool enabled, 
 			const TexturePtr &texPtr) = 0;
-
-		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
-		The result of the blending operation is:</p>
-		<p align="center">final = (texture * sourceFactor) + (pixel * destFactor)</p>
-		Each of the factors is specified as one of a number of options, as specified in the SceneBlendFactor
-		enumerated type.
-		By changing the operation you can change addition between the source and destination pixels to a different operator.
-		@param sourceFactor The source factor in the above calculation, i.e. multiplied by the texture colour components.
-		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
-		@param op The blend operation mode for combining pixels
-		*/
-		virtual void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op = SBO_ADD) = 0;
-
-		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
-		The result of the blending operation is:</p>
-		<p align="center">final = (texture * sourceFactor) + (pixel * destFactor)</p>
-		Each of the factors is specified as one of a number of options, as specified in the SceneBlendFactor
-		enumerated type.
-		@param sourceFactor The source factor in the above calculation, i.e. multiplied by the texture colour components.
-		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
-		@param sourceFactorAlpha The source factor in the above calculation for the alpha channel, i.e. multiplied by the texture alpha components.
-		@param destFactorAlpha The destination factor in the above calculation for the alpha channel, i.e. multiplied by the pixel alpha components.
-		@param op The blend operation mode for combining pixels
-		@param alphaOp The blend operation mode for combining pixel alpha values
-		*/
-		virtual void setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
-			SceneBlendFactor destFactorAlpha, SceneBlendOperation op = SBO_ADD, SceneBlendOperation alphaOp = SBO_ADD) = 0;
-
-		/** Sets the global alpha rejection approach for future renders.
-		By default images are rendered regardless of texture alpha. This method lets you change that.
-		@param func The comparison function which must pass for a pixel to be written.
-		@param val The value to compare each pixels alpha value to (0-255)
-		@param alphaToCoverage Whether to enable alpha to coverage, if supported
-		*/
-		virtual void setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage) = 0;
 
 		/**
 		* Signifies the beginning of a frame, i.e. the start of rendering on a single viewport. Will occur
@@ -501,15 +457,6 @@ namespace CamelotEngine
 		for the new pixel to be written.
 		*/
 		virtual void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL) = 0;
-
-		/** Sets whether or not colour buffer writing is enabled, and for which channels. 
-		@remarks
-		For some advanced effects, you may wish to turn off the writing of certain colour
-		channels, or even all of the colour channels so that only the depth buffer is updated
-		in a rendering pass. However, the chances are that you really want to use this option
-		through the Material class.
-		@param red, green, blue, alpha Whether writing is enabled for each of the 4 colour channels. */
-		virtual void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha) = 0;
 
 		/** Sets the depth bias, NB you should use the Material version of this. 
 		@remarks
@@ -656,7 +603,7 @@ namespace CamelotEngine
 
 		/** Sets whether or not vertex windings set should be inverted; this can be important
 		for rendering reflections. */
-		virtual void setInvertVertexWinding_(bool invert);
+		virtual void setInvertVertexWinding(bool invert);
 
 		/** Indicates whether or not the vertex windings set will be inverted for the current render (e.g. reflections)
 		@see RenderSystem::setInvertVertexWinding

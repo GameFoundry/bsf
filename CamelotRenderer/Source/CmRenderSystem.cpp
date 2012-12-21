@@ -280,7 +280,7 @@ namespace CamelotEngine {
 		mVsync = enabled;
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::setInvertVertexWinding_(bool invert)
+	void RenderSystem::setInvertVertexWinding(bool invert)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

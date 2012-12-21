@@ -177,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmApplication.h" />
+    <ClInclude Include="Include\CmBlendStateRTTI.h" />
     <ClInclude Include="Include\CmCamera.h" />
     <ClInclude Include="Include\CmCameraRTTI.h" />
     <ClInclude Include="Include\CmCgProgram.h" />

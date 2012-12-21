@@ -36,16 +36,11 @@ namespace CamelotEngine
 		/** @copydoc RenderSystem::setTexture() */
 		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr);
 
-		/** @copydoc RenderSystem::setTextureUnitSettings() */
+		/** @copydoc RenderSystem::setSamplerState() */
 		void setSamplerState(UINT16 texUnit, const SamplerState& samplerState);
 
-		/** @copydoc RenderSystem::setSceneBlending() */
-		void setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op = SBO_ADD);
-		/** @copydoc RenderSystem::setSeparateSceneBlending() */
-		void setSeparateSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
-			SceneBlendFactor destFactorAlpha, SceneBlendOperation op = SBO_ADD, SceneBlendOperation alphaOp = SBO_ADD);
-		/** @copydoc RenderSystem::setAlphaRejectSettings() */
-		void setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverage);
+		/** @copydoc RenderSystem::setBlendState() */
+		void setBlendState(const BlendState& blendState);
 
 		/** @copydoc RenderSystem::setViewport() */
 		void setViewport(const Viewport& vp);
@@ -73,9 +68,6 @@ namespace CamelotEngine
 		void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
 		/** @copydoc RenderSystem::setDepthBias() */
 		void setDepthBias(float constantBias, float slopeScaleBias = 0.0f);
-
-		/** @copydoc RenderSystem::setColorBufferWriteEnabled() */
-		void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
 
 		/** @copydoc RenderSystem::setStencilCheckEnabled() */
 		void setStencilCheckEnabled(bool enabled);
