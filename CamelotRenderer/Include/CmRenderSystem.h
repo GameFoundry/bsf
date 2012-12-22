@@ -351,14 +351,9 @@ namespace CamelotEngine
 		*/
 		bool getWaitForVerticalBlank(void) const;
 
-		// ------------------------------------------------------------------------
-		//                     Internal Rendering Access
-		// All methods below here are normally only called by other Camelot classes
-		// They can be called by library user if required
-		// ------------------------------------------------------------------------
-
 		/**
 		 * @brief	Sets a sampler state for the specified texture unit.
+		 * @see		SamplerState
 		 */
 		virtual void setSamplerState(UINT16 texUnit, const SamplerState& samplerState) = 0;
 		/** Turns off a texture unit. */
@@ -368,8 +363,15 @@ namespace CamelotEngine
 
 		/**
 		 * @brief	Sets a blend state used for all active render targets.
+		 * @see		BlendState
 		 */
 		virtual void setBlendState(const BlendState& blendState) = 0;
+
+		/**
+		 * @brief	Sets a state that controls various rasterizer options. 
+		 * @see		RasterizerState
+		 */
+		virtual void setRasterizerState(const RasterizerState& rasterizerState) = 0;
 
 		/**
 		Sets the texture to bind to a given texture unit.
@@ -383,8 +385,7 @@ namespace CamelotEngine
 		@param enabled Boolean to turn the unit on/off
 		@param texPtr Pointer to the texture to use.
 		*/
-		virtual void setTexture(UINT16 unit, bool enabled, 
-			const TexturePtr &texPtr) = 0;
+		virtual void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr) = 0;
 
 		/**
 		* Signifies the beginning of a frame, i.e. the start of rendering on a single viewport. Will occur
@@ -406,21 +407,6 @@ namespace CamelotEngine
 		virtual void setViewport(const Viewport& vp) = 0;
 		/** Get the current active viewport for rendering. */
 		virtual Viewport getViewport(void);
-
-		/** Sets the culling mode for the render system based on the 'vertex winding'.
-		A typical way for the rendering engine to cull triangles is based on the
-		'vertex winding' of triangles. Vertex winding refers to the direction in
-		which the vertices are passed or indexed to in the rendering operation as viewed
-		from the camera, and will wither be clockwise or anticlockwise (that's 'counterclockwise' for
-		you Americans out there ;) The default is CULL_CLOCKWISE i.e. that only triangles whose vertices
-		are passed/indexed in anticlockwise order are rendered - this is a common approach and is used in 3D studio models
-		for example. You can alter this culling mode if you wish but it is not advised unless you know what you are doing.
-		You may wish to use the CULL_NONE option for mesh data that you cull yourself where the vertex
-		winding is uncertain.
-		*/
-		virtual void setCullingMode(CullingMode mode) = 0;
-
-		virtual CullingMode getCullingMode(void) const;
 
 		/** Sets the mode of operation for depth buffer tests from this point onwards.
 		Sometimes you may wish to alter the behaviour of the depth buffer to achieve
@@ -457,33 +443,6 @@ namespace CamelotEngine
 		for the new pixel to be written.
 		*/
 		virtual void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL) = 0;
-
-		/** Sets the depth bias, NB you should use the Material version of this. 
-		@remarks
-		When polygons are coplanar, you can get problems with 'depth fighting' where
-		the pixels from the two polys compete for the same screen pixel. This is particularly
-		a problem for decals (polys attached to another surface to represent details such as
-		bulletholes etc.).
-		@par
-		A way to combat this problem is to use a depth bias to adjust the depth buffer value
-		used for the decal such that it is slightly higher than the true value, ensuring that
-		the decal appears on top.
-		@note
-		The final bias value is a combination of a constant bias and a bias proportional
-		to the maximum depth slope of the polygon being rendered. The final bias
-		is constantBias + slopeScaleBias * maxslope. Slope scale biasing is
-		generally preferable but is not available on older hardware.
-		@param constantBias The constant bias value, expressed as a value in 
-		homogeneous depth coordinates.
-		@param slopeScaleBias The bias value which is factored by the maximum slope
-		of the polygon, see the description above. This is not supported by all
-		cards.
-
-		*/
-		virtual void setDepthBias(float constantBias, float slopeScaleBias = 0.0f) = 0;
-
-		/** Sets how to rasterise triangles, as points, wireframe or solid polys. */
-		virtual void setPolygonMode(PolygonMode level) = 0;
 
 		/** Turns stencil buffer checking on or off. 
 		@remarks
@@ -601,15 +560,6 @@ namespace CamelotEngine
 		if _updateAllRenderTargets was called with a 'false' parameter. */
 		virtual void swapAllRenderTargetBuffers(bool waitForVsync = true);
 
-		/** Sets whether or not vertex windings set should be inverted; this can be important
-		for rendering reflections. */
-		virtual void setInvertVertexWinding(bool invert);
-
-		/** Indicates whether or not the vertex windings set will be inverted for the current render (e.g. reflections)
-		@see RenderSystem::setInvertVertexWinding
-		*/
-		virtual bool getInvertVertexWinding(void) const;
-
 		/** Sets the 'scissor region' ie the region of the target in which rendering can take place.
 		@remarks
 		This method allows you to 'mask off' rendering in all but a given rectangular area
@@ -617,12 +567,10 @@ namespace CamelotEngine
 		@note
 		Not all systems support this method. Check the RenderSystemCapabilities for the
 		RSC_SCISSOR_TEST capability to see if it is supported.
-		@param enabled True to enable the scissor test, false to disable it.
 		@param left, top, right, bottom The location of the corners of the rectangle, expressed in
 		<i>pixels</i>.
 		*/
-		virtual void setScissorTest(bool enabled, UINT32 left = 0, UINT32 top = 0, 
-			UINT32 right = 800, UINT32 bottom = 600) = 0;
+		virtual void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) = 0;
 
 		/** Clears one or more frame buffers on the active render target. 
 		@param buffers Combination of one or more elements of FrameBufferType

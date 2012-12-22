@@ -279,26 +279,6 @@ namespace CamelotEngine {
 
 		mVsync = enabled;
 	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setInvertVertexWinding(bool invert)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		mInvertVertexWinding = invert;
-	}
-	//-----------------------------------------------------------------------
-	bool RenderSystem::getInvertVertexWinding(void) const
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		return mInvertVertexWinding;
-	}
-	//-----------------------------------------------------------------------
-	CullingMode RenderSystem::getCullingMode(void) const
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-		return mCullingMode;
-	}
 	//---------------------------------------------------------------------
 	void RenderSystem::addClipPlane (const Plane &p)
 	{

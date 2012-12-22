@@ -44,6 +44,7 @@ THE SOFTWARE.s
 #include "CmGLContext.h"
 #include "CmAsyncOp.h"
 #include "CmBlendState.h"
+#include "CmRasterizerState.h"
 
 #include "CmGLFBORenderTexture.h"
 #include "CmGLPBRenderTexture.h"
@@ -86,7 +87,8 @@ namespace CamelotEngine {
 		: mDepthWrite(true), mStencilMask(0xFFFFFFFF),
 		mGLSLProgramFactory(0),
 		mCgProgramFactory(0),
-		mActiveTextureUnit(0)
+		mActiveTextureUnit(0),
+		mScissorTop(0), mScissorBottom(720), mScissorLeft(0), mScissorRight(1280)
 	{
 		size_t i;
 
@@ -482,6 +484,19 @@ namespace CamelotEngine {
 		// Color write mask
 		UINT8 writeMask = blendState.getRenderTargetWriteMask(0);
 		setColorBufferWriteEnabled(writeMask & 0x1, writeMask & 0x2, writeMask & 0x4, writeMask & 0x8);
+	}
+	//----------------------------------------------------------------------
+	void GLRenderSystem::setRasterizerState(const RasterizerState& rasterizerState)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		setDepthBias(rasterizerState.getDepthBias(), rasterizerState.getSlopeScaledDepthBias());
+
+		setCullingMode(rasterizerState.getCullMode());
+
+		setPolygonMode(rasterizerState.getPolygonMode());
+
+		setScissorTestEnable(rasterizerState.getScissorEnable());
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw)
@@ -1321,8 +1336,17 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setScissorTest(bool enabled, UINT32 left, 
-		UINT32 top, UINT32 right, UINT32 bottom)
+	void GLRenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		mScissorTop = top;
+		mScissorBottom = bottom;
+		mScissorLeft = left;
+		mScissorRight = right;
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setScissorTestEnable(bool enable)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1331,19 +1355,19 @@ namespace CamelotEngine {
 		//  GL measures from the bottom, not the top
 		UINT32 targetHeight = mActiveRenderTarget->getHeight();
 		// Calculate the "lower-left" corner of the viewport
-        GLsizei x = 0, y = 0, w = 0, h = 0;
+		GLsizei x = 0, y = 0, w = 0, h = 0;
 
-		if (enabled)
+		if (enable)
 		{
 			glEnable(GL_SCISSOR_TEST);
-			// NB GL uses width / height rather than right / bottom
-			x = left;
+			// GL uses width / height rather than right / bottom
+			x = mScissorLeft;
 			if (flipping)
-				y = top;
+				y = mScissorTop;
 			else
-				y = targetHeight - bottom;
-			w = right - left;
-			h = bottom - top;
+				y = targetHeight - mScissorBottom;
+			w = mScissorRight - mScissorLeft;
+			h = mScissorBottom - mScissorTop;
 			glScissor(x, y, w, h);
 		}
 		else

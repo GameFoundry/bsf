@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
 #include "CmPass.h"
+#include "CmRasterizerState.h"
 
 namespace CamelotEngine
 {
@@ -11,6 +12,9 @@ namespace CamelotEngine
 	private:
 		BlendStatePtr getBlendState(Pass* obj) { return obj->mBlendState; }
 		void setBlendState(Pass* obj, BlendStatePtr val) { obj->mBlendState = val; } 
+
+		RasterizerStatePtr getRasterizerState(Pass* obj) { return obj->mRasterizerState; }
+		void setRasterizerState(Pass* obj, RasterizerStatePtr val) { obj->mRasterizerState = val; } 
 
 		bool& getDepthCheck(Pass* obj) { return obj->mDepthCheck; }
 		void setDepthCheck(Pass* obj, bool& val) { obj->mDepthCheck = val; } 
@@ -48,20 +52,21 @@ namespace CamelotEngine
 		PassRTTI()
 		{
 			addReflectablePtrField("mBlendState", 0, &PassRTTI::getBlendState, &PassRTTI::setBlendState);
+			addReflectablePtrField("mRasterizerState", 1, &PassRTTI::getRasterizerState, &PassRTTI::setRasterizerState);
 
-			addPlainField("mDepthCheck", 1, &PassRTTI::getDepthCheck, &PassRTTI::setDepthCheck);
-			addPlainField("mDepthWrite", 2, &PassRTTI::getDepthWrite, &PassRTTI::setDepthWrite);
-			addPlainField("mDepthFunc", 3, &PassRTTI::getCompareFunction, &PassRTTI::setCompareFunction);
-			addPlainField("mDepthBiasConstant", 4, &PassRTTI::getDepthBiasConstant, &PassRTTI::setDepthBiasConstant);
-			addPlainField("mDepthBiasSlopeScale", 5, &PassRTTI::getDepthBiasSlopeScale, &PassRTTI::setDepthBiasSlopeScale);
-			addPlainField("mDepthBiasPerIteration", 6, &PassRTTI::getDepthBiasPerIteration, &PassRTTI::setDepthBiasPerIteration);
+			addPlainField("mDepthCheck", 2, &PassRTTI::getDepthCheck, &PassRTTI::setDepthCheck);
+			addPlainField("mDepthWrite", 3, &PassRTTI::getDepthWrite, &PassRTTI::setDepthWrite);
+			addPlainField("mDepthFunc", 4, &PassRTTI::getCompareFunction, &PassRTTI::setCompareFunction);
+			addPlainField("mDepthBiasConstant", 5, &PassRTTI::getDepthBiasConstant, &PassRTTI::setDepthBiasConstant);
+			addPlainField("mDepthBiasSlopeScale", 6, &PassRTTI::getDepthBiasSlopeScale, &PassRTTI::setDepthBiasSlopeScale);
+			addPlainField("mDepthBiasPerIteration", 7, &PassRTTI::getDepthBiasPerIteration, &PassRTTI::setDepthBiasPerIteration);
 
-			addPlainField("mCullMode", 7, &PassRTTI::getCullMode, &PassRTTI::setCullMode);
-			addPlainField("mPolygonMode", 8, &PassRTTI::getPolygonMode, &PassRTTI::setPolygonMode);
+			addPlainField("mCullMode", 8, &PassRTTI::getCullMode, &PassRTTI::setCullMode);
+			addPlainField("mPolygonMode", 9, &PassRTTI::getPolygonMode, &PassRTTI::setPolygonMode);
 
-			addReflectableField("mVertexProgram", 9, &PassRTTI::getVertexProgram, &PassRTTI::setVertexProgram);
-			addReflectableField("mFragmentProgram", 10, &PassRTTI::getFragmentProgram, &PassRTTI::setFragmentProgram);
-			addReflectableField("mGeometryProgram", 11, &PassRTTI::getGeometryProgram, &PassRTTI::setGeometryProgram);
+			addReflectableField("mVertexProgram", 10, &PassRTTI::getVertexProgram, &PassRTTI::setVertexProgram);
+			addReflectableField("mFragmentProgram", 11, &PassRTTI::getFragmentProgram, &PassRTTI::setFragmentProgram);
+			addReflectableField("mGeometryProgram", 12, &PassRTTI::getGeometryProgram, &PassRTTI::setGeometryProgram);
 		}
 
 		virtual const String& getRTTIName()

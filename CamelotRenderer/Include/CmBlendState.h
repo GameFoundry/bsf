@@ -63,7 +63,7 @@ namespace CamelotEngine
 		static BlendStatePtr create(const BLEND_STATE_DESC& desc);
 
 		/**
-		 * @brief	Returns the default sampler state;
+		 * @brief	Returns the default blend state;
 		 */
 		static const BlendState& getDefault();
 

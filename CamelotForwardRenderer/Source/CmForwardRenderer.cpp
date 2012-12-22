@@ -7,6 +7,7 @@
 #include "CmMesh.h"
 #include "CmPass.h"
 #include "CmBlendState.h"
+#include "CmRasterizerState.h"
 #include "CmApplication.h"
 
 namespace CamelotEngine
@@ -29,7 +30,6 @@ namespace CamelotEngine
 		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
 
 		// TODO - No point in setting these each frame?
-		renderContext->setInvertVertexWinding(false);
 		renderContext->setDepthBufferParams();
 
 		const vector<CameraPtr>::type& allCameras = gSceneManager().getAllCameras();
@@ -134,13 +134,9 @@ namespace CamelotEngine
 		// The rest of the settings are the same no matter whether we use programs or not
 		BlendStatePtr blendState = pass->getBlendState();
 		if(blendState != nullptr)
-		{
 			renderContext->setBlendState(*blendState);
-		}
 		else
-		{
 			renderContext->setBlendState(BlendState::getDefault());
-		}
 		
 		// TODO - Try to limit amount of state changes, if previous state is already the same (especially with textures)
 
@@ -153,13 +149,13 @@ namespace CamelotEngine
 		renderContext->setDepthBufferFunction(pass->getDepthFunction());
 		renderContext->setDepthBufferCheckEnabled(pass->getDepthCheckEnabled());
 		renderContext->setDepthBufferWriteEnabled(pass->getDepthWriteEnabled());
-		renderContext->setDepthBias(pass->getDepthBiasConstant(), pass->getDepthBiasSlopeScale());
 
-		// Culling mode
-		renderContext->setCullingMode(pass->getCullingMode());
 
-		// Polygon mode
-		renderContext->setPolygonMode(pass->getPolygonMode());
+		RasterizerStatePtr rasterizerState = pass->getRasterizerState();
+		if(rasterizerState != nullptr)
+			renderContext->setRasterizerState(*rasterizerState);
+		else
+			renderContext->setRasterizerState(RasterizerState::getDefault());
 	}
 
 	void ForwardRenderer::setPassParameters(PassParametersPtr params)

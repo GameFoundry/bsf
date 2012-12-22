@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmCommon.h"
+#include "CmIReflectable.h"
 
 namespace CamelotEngine
 {
@@ -33,7 +34,7 @@ namespace CamelotEngine
 	};
 
 	// TODO Low priority - Write doc explaining various states
-	class CM_EXPORT RasterizerState
+	class CM_EXPORT RasterizerState : public IReflectable
 	{
 	public:
 		virtual ~RasterizerState() {}
@@ -52,10 +53,24 @@ namespace CamelotEngine
 
 		static RasterizerStatePtr create(const RASTERIZER_STATE_DESC& desc);
 
+		/**
+		 * @brief	Returns the default rasterizer state;
+		 */
+		static const RasterizerState& getDefault();
+
 	private:
 		friend class RenderStateManager;
 
 		virtual void initialize(const RASTERIZER_STATE_DESC& desc);
 		RASTERIZER_STATE_DESC mData;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+	public:
+		friend class RasterizerStateRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
 	};
 }

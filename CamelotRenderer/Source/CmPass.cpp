@@ -83,6 +83,16 @@ namespace CamelotEngine
 	{
 		return mBlendState;
 	}
+	//----------------------------------------------------------------------
+	void Pass::setRasterizerState(RasterizerStatePtr rasterizerState)
+	{
+		mRasterizerState = rasterizerState;
+	}
+	//----------------------------------------------------------------------
+	RasterizerStatePtr Pass::getRasterizerState() const
+	{
+		return mRasterizerState;
+	}
     //-----------------------------------------------------------------------
     void Pass::setDepthCheckEnabled(bool enabled)
     {
@@ -113,52 +123,6 @@ namespace CamelotEngine
     {
 	    return mDepthFunc;
     }
-    //-----------------------------------------------------------------------
-    void Pass::setCullingMode( CullingMode mode)
-    {
-	    mCullMode = mode;
-    }
-    //-----------------------------------------------------------------------
-    CullingMode Pass::getCullingMode(void) const
-    {
-	    return mCullMode;
-    }
-	//-----------------------------------------------------------------------
-	void Pass::setPolygonMode(PolygonMode mode)
-	{
-		mPolygonMode = mode;
-	}
-	//-----------------------------------------------------------------------
-	PolygonMode Pass::getPolygonMode(void) const
-	{
-		return mPolygonMode;
-	}
-    //-----------------------------------------------------------------------
-    void Pass::setDepthBias(float constantBias, float slopeScaleBias)
-    {
-       mDepthBiasConstant = constantBias;
-	   mDepthBiasSlopeScale = slopeScaleBias;
-    }
-    //-----------------------------------------------------------------------
-    float Pass::getDepthBiasConstant(void) const
-    {
-        return mDepthBiasConstant;
-    }
-	//-----------------------------------------------------------------------
-	float Pass::getDepthBiasSlopeScale(void) const
-	{
-		return mDepthBiasSlopeScale;
-	}
-	//---------------------------------------------------------------------
-	void Pass::setIterationDepthBias(float biasPerIteration)
-	{
-		mDepthBiasPerIteration = biasPerIteration;
-	}
-	//---------------------------------------------------------------------
-	float Pass::getIterationDepthBias() const
-	{
-		return mDepthBiasPerIteration;
-	}
     //-----------------------------------------------------------------------
 	void Pass::setVertexProgram(GpuProgramHandle gpuProgram)
 	{

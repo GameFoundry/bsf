@@ -194,7 +194,8 @@ namespace CamelotEngine
 		TID_MaterialTexParamKVP = 1020,
 		TID_SamplerState = 1021,
 		TID_SamplerStateParamKVP = 1022,
-		TID_BlendState = 1023
+		TID_BlendState = 1023,
+		TID_RasterizerState = 1024
 	};
 }
 

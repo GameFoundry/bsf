@@ -216,6 +216,7 @@
     <ClInclude Include="Include\CmPassRTTI.h" />
     <ClInclude Include="Include\CmPrerequisites.h" />
     <ClInclude Include="Include\CmRasterizerState.h" />
+    <ClInclude Include="Include\CmRasterizerStateRTTI.h" />
     <ClInclude Include="Include\CmRenderable.h" />
     <ClInclude Include="Include\CmRenderableRTTI.h" />
     <ClInclude Include="Include\CmRenderer.h" />

@@ -17,7 +17,16 @@
 
 
 /////
+
+RasterizerState TODO: 
+ Add setRasterizerState to RenderSystems
+ Add setRasterizerState to Pass and it's RTTI
+ Make RasterizerState IReflectable
+ Add support for multisampleEnable & antialiasedLineEnable to DX9 if possible?
+ Add depth slope & depth clamp
+
 Move createRenderWindow outside of RenderSystem
+RenderSystem::setRenderTarget needs to accept multiple targets
 First port (and test!) existing render systems so it is capable of dealing with DX11 stuff(samplerState, depthStencilState, rasterizerState objects primarily. Also split pass into Texture/sampler) 
 
 Make CommandQueue not use mutexes and use atomics instead??

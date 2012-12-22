@@ -42,21 +42,11 @@ namespace CamelotEngine
 		/** @copydoc RenderSystem::setBlendState() */
 		void setBlendState(const BlendState& blendState);
 
+		/** @copydoc RenderSystem::setRasterizerState() */
+		void setRasterizerState(const RasterizerState& rasterizerState);
+
 		/** @copydoc RenderSystem::setViewport() */
 		void setViewport(const Viewport& vp);
-
-		/** @copydoc RenderSystem::setCullingMode() */
-		void setCullingMode(CullingMode mode);
-		/** @copydoc RenderSystem::getCullingMode() */
-		CullingMode getCullingMode(void) const;
-
-		/** @copydoc RenderSystem::setPolygonMode() */
-		void setPolygonMode(PolygonMode level);
-
-		/** @copydoc RenderSystem::setInvertVertexWinding() */
-		void setInvertVertexWinding(bool invert);
-		/** @copydoc RenderSystem::getInvertVertexWinding() */
-		bool getInvertVertexWinding(void) const;
 
 		/** @copydoc RenderSystem::setDepthBufferParams() */
 		void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
@@ -66,8 +56,6 @@ namespace CamelotEngine
 		void setDepthBufferWriteEnabled(bool enabled = true);
 		/** @copydoc RenderSystem::setDepthBufferFunction() */
 		void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
-		/** @copydoc RenderSystem::setDepthBias() */
-		void setDepthBias(float constantBias, float slopeScaleBias = 0.0f);
 
 		/** @copydoc RenderSystem::setStencilCheckEnabled() */
 		void setStencilCheckEnabled(bool enabled);
@@ -86,7 +74,7 @@ namespace CamelotEngine
 		void resetClipPlanes();
 
 		/** @copydoc RenderSystem::setScissorTest() */
-		void setScissorTest(bool enabled, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
+		void setScissorTest(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
 		/** @copydoc RenderSystem::setRenderTarget() */
 		void setRenderTarget(RenderTarget *target);
@@ -122,7 +110,5 @@ namespace CamelotEngine
 		RenderSystem* mRenderSystem;
 
 		bool mWaitForVerticalBlank;
-		bool mInvertVertexWinding;
-		CullingMode mCullingMode;
 	};
 }

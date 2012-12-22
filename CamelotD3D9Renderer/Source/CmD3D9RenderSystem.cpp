@@ -50,6 +50,7 @@ THE SOFTWARE.
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmAsyncOp.h"
 #include "CmBlendState.h"
+#include "CmRasterizerState.h"
 
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
@@ -98,7 +99,12 @@ namespace CamelotEngine
 		mHLSLProgramFactory = NULL;		
 		mCgProgramFactory = NULL;
 		mDeviceManager = NULL;	
-		mResourceManager = nullptr;		
+		mResourceManager = nullptr;	
+
+		mScissorRect.left = 0;
+		mScissorRect.right = 1280;
+		mScissorRect.top = 0;
+		mScissorRect.bottom = 720;
 	}
 	//---------------------------------------------------------------------
 	D3D9RenderSystem::~D3D9RenderSystem()
@@ -599,6 +605,19 @@ namespace CamelotEngine
 		// Color write mask
 		UINT8 writeMask = blendState.getRenderTargetWriteMask(0);
 		setColorBufferWriteEnabled(writeMask & 0x1, writeMask & 0x2, writeMask & 0x4, writeMask & 0x8);
+	}
+	//----------------------------------------------------------------------
+	void D3D9RenderSystem::setRasterizerState(const RasterizerState& rasterizerState)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		setDepthBias(rasterizerState.getDepthBias(), rasterizerState.getSlopeScaledDepthBias());
+
+		setCullingMode(rasterizerState.getCullMode());
+
+		setPolygonMode(rasterizerState.getPolygonMode());
+
+		setScissorTestEnable(rasterizerState.getScissorEnable());
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
@@ -1297,26 +1316,30 @@ namespace CamelotEngine
 		}
 
 	}
-	
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setScissorTest(bool enabled, UINT32 left, UINT32 top, UINT32 right,
-		UINT32 bottom)
+	void D3D9RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		mScissorRect.left = static_cast<LONG>(left);
+		mScissorRect.top = static_cast<LONG>(top);
+		mScissorRect.bottom = static_cast<LONG>(bottom);
+		mScissorRect.right = static_cast<LONG>(right);
+	}
+	//--------------------------------------------------------------------
+	void D3D9RenderSystem::setScissorTestEnable(bool enable)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		HRESULT hr;
-		if (enabled)
+		if (enable)
 		{
 			if (FAILED(hr = __SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE)))
 			{
 				CM_EXCEPT(RenderingAPIException, "Unable to enable scissor rendering state; " + getErrorDescription(hr));
 			}
-			RECT rect;
-			rect.left = static_cast<LONG>(left);
-			rect.top = static_cast<LONG>(top);
-			rect.bottom = static_cast<LONG>(bottom);
-			rect.right = static_cast<LONG>(right);
-			if (FAILED(hr = getActiveD3D9Device()->SetScissorRect(&rect)))
+
+			if (FAILED(hr = getActiveD3D9Device()->SetScissorRect(&mScissorRect)))
 			{
 				CM_EXCEPT(RenderingAPIException, "Unable to set scissor rectangle; " + getErrorDescription(hr));
 			}

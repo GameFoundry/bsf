@@ -95,6 +95,11 @@ namespace CamelotEngine {
 		 */
 		void setBlendState(const BlendState& blendState);
 
+		/**
+		 * @copydoc RenderSystem::setRasterizerState()
+		 */
+		void setRasterizerState(const RasterizerState& rasterizerState);
+
         /** See
           RenderSystem
          */
@@ -107,10 +112,6 @@ namespace CamelotEngine {
           RenderSystem
          */
         void endFrame(void);
-        /** See
-          RenderSystem
-         */
-        void setCullingMode(CullingMode mode);
         /** See
           RenderSystem
          */
@@ -130,16 +131,8 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setDepthBias(float constantBias, float slopeScaleBias);
-        /** See
-          RenderSystem
-         */
         void convertProjectionMatrix(const Matrix4& matrix,
             Matrix4& dest, bool forGpuProgram = false);
-        /** See
-          RenderSystem
-         */
-        void setPolygonMode(PolygonMode level);
         /** See
           RenderSystem
          */
@@ -169,7 +162,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-        void setScissorTest(bool enabled, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) ;
+        void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) ;
         void clearFrameBuffer(unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
@@ -188,6 +181,9 @@ namespace CamelotEngine {
     private:
         /// Rendering loop control
         bool mStopRendering;
+
+		// Scissor test
+		UINT32 mScissorTop, mScissorBottom, mScissorLeft, mScissorRight;
 
         /// View matrix to set world against
         Matrix4 mViewMatrix;
@@ -380,6 +376,56 @@ namespace CamelotEngine {
 		through the Material class.
 		@param red, green, blue, alpha Whether writing is enabled for each of the 4 colour channels. */
 		void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
+
+		/************************************************************************/
+		/* 								Rasterizer states                  		*/
+		/************************************************************************/
+
+		/** Sets the culling mode for the render system based on the 'vertex winding'.
+		A typical way for the rendering engine to cull triangles is based on the
+		'vertex winding' of triangles. Vertex winding refers to the direction in
+		which the vertices are passed or indexed to in the rendering operation as viewed
+		from the camera, and will wither be clockwise or anticlockwise (that's 'counterclockwise' for
+		you Americans out there ;) The default is CULL_CLOCKWISE i.e. that only triangles whose vertices
+		are passed/indexed in anticlockwise order are rendered - this is a common approach and is used in 3D studio models
+		for example. You can alter this culling mode if you wish but it is not advised unless you know what you are doing.
+		You may wish to use the CULL_NONE option for mesh data that you cull yourself where the vertex
+		winding is uncertain.
+		*/
+		void setCullingMode(CullingMode mode);
+
+		/** Sets how to rasterise triangles, as points, wireframe or solid polys. */
+		void setPolygonMode(PolygonMode level);
+
+		/** Sets the depth bias, NB you should use the Material version of this. 
+		@remarks
+		When polygons are coplanar, you can get problems with 'depth fighting' where
+		the pixels from the two polys compete for the same screen pixel. This is particularly
+		a problem for decals (polys attached to another surface to represent details such as
+		bulletholes etc.).
+		@par
+		A way to combat this problem is to use a depth bias to adjust the depth buffer value
+		used for the decal such that it is slightly higher than the true value, ensuring that
+		the decal appears on top.
+		@note
+		The final bias value is a combination of a constant bias and a bias proportional
+		to the maximum depth slope of the polygon being rendered. The final bias
+		is constantBias + slopeScaleBias * maxslope. Slope scale biasing is
+		generally preferable but is not available on older hardware.
+		@param constantBias The constant bias value, expressed as a value in 
+		homogeneous depth coordinates.
+		@param slopeScaleBias The bias value which is factored by the maximum slope
+		of the polygon, see the description above. This is not supported by all
+		cards.
+
+		*/
+		void setDepthBias(float constantBias, float slopeScaleBias);
+
+		/**
+		* @brief	Scissor test allows you to 'mask off' rendering in all but a given rectangular area
+		* 			identified by the rectangle set by setScissorRect().
+		*/
+		void setScissorTestEnable(bool enable);
 
 		// ----------------------------------
         // GLRenderSystem specific members

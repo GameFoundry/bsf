@@ -3,14 +3,13 @@
 #include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 #include "CmBlendState.h"
+#include "CmRasterizerState.h"
 
 namespace CamelotEngine
 {
 	DeferredRenderContext::DeferredRenderContext(RenderSystem* rs, CM_THREAD_ID_TYPE threadId)
 		:mCommandQueue(new CommandQueue(threadId))
 		, mWaitForVerticalBlank(true)
-		, mInvertVertexWinding(false)
-		, mCullingMode(CULL_CLOCKWISE)
 		, mRenderSystem(rs)
 	{
 		assert(mRenderSystem != nullptr);
@@ -41,7 +40,12 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setBlendState, mRenderSystem, blendState));
 	}
 
-	void DeferredRenderContext::setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr)
+	void DeferredRenderContext::setRasterizerState(const RasterizerState& rasterizerState)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::setRasterizerState, mRenderSystem, rasterizerState));
+	}
+
+	void DeferredRenderContext::setTexture(UINT16 unit, bool enabled, const TexturePtr& texPtr)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setTexture, mRenderSystem, unit, enabled, texPtr));
 	}
@@ -56,9 +60,9 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::disableTextureUnitsFrom, mRenderSystem, texUnit));
 	}
 
-	void DeferredRenderContext::setScissorTest(bool enabled, UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
+	void DeferredRenderContext::setScissorTest(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setScissorTest, mRenderSystem, enabled, left, top, right, bottom));
+		mCommandQueue->queue(boost::bind(&RenderSystem::setScissorRect, mRenderSystem, left, top, right, bottom));
 	}
 
 	bool DeferredRenderContext::getWaitForVerticalBlank(void) const
@@ -70,17 +74,6 @@ namespace CamelotEngine
 	{
 		mWaitForVerticalBlank = enabled;
 		mCommandQueue->queue(boost::bind(&RenderSystem::setWaitForVerticalBlank, mRenderSystem, enabled));
-	}
-
-	void DeferredRenderContext::setInvertVertexWinding(bool invert)
-	{
-		mInvertVertexWinding = invert;
-		mCommandQueue->queue(boost::bind(&RenderSystem::setInvertVertexWinding, mRenderSystem, invert));
-	}
-
-	bool DeferredRenderContext::getInvertVertexWinding(void) const
-	{
-		return mInvertVertexWinding;
 	}
 
 	void DeferredRenderContext::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
@@ -103,16 +96,6 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthBufferFunction, mRenderSystem, func));
 	}
 
-	void DeferredRenderContext::setDepthBias(float constantBias, float slopeScaleBias)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthBias, mRenderSystem, constantBias, slopeScaleBias));
-	}
-
-	void DeferredRenderContext::setPolygonMode(PolygonMode level)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setPolygonMode, mRenderSystem, level));
-	}
-
 	void DeferredRenderContext::setStencilCheckEnabled(bool enabled)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setStencilCheckEnabled, mRenderSystem, enabled));
@@ -122,17 +105,6 @@ namespace CamelotEngine
 		StencilOperation depthFailOp, StencilOperation passOp, bool twoSidedOperation)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setStencilBufferParams, mRenderSystem, func, refValue, mask, stencilFailOp, depthFailOp, passOp, twoSidedOperation));
-	}
-
-	void DeferredRenderContext::setCullingMode(CullingMode mode)
-	{
-		mCullingMode = mode;
-		mCommandQueue->queue(boost::bind(&RenderSystem::setCullingMode, mRenderSystem, mode));
-	}
-
-	CullingMode DeferredRenderContext::getCullingMode(void) const
-	{
-		return mCullingMode;
 	}
 
 	void DeferredRenderContext::addClipPlane(const Plane &p)
