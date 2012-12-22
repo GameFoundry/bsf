@@ -130,7 +130,7 @@ namespace CamelotEngine {
 	class MeshRTTI;
 	// Desc structs
 	struct SAMPLER_STATE_DESC;
-	struct DEPTH_STENCIL_DESC;
+	struct DEPTH_STENCIL_STATE_DESC;
 	struct RASTERIZER_STATE_DESC;
 	struct BLEND_STATE_DESC;
 	struct RENDER_TARGET_BLEND_STATE_DESC;
@@ -195,7 +195,8 @@ namespace CamelotEngine
 		TID_SamplerState = 1021,
 		TID_SamplerStateParamKVP = 1022,
 		TID_BlendState = 1023,
-		TID_RasterizerState = 1024
+		TID_RasterizerState = 1024,
+		TID_DepthStencilState = 1025
 	};
 }
 

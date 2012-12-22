@@ -17,17 +17,17 @@
 
 
 /////
+Check out how to deal with clip planes so that both DX9, DX11 and GL support them
+waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
-RasterizerState TODO: 
- Add setRasterizerState to RenderSystems
- Add setRasterizerState to Pass and it's RTTI
- Make RasterizerState IReflectable
- Add support for multisampleEnable & antialiasedLineEnable to DX9 if possible?
- Add depth slope & depth clamp
+Rasterizer state:
+ D3DRS_MULTISAMPLEANTIALIAS
+ - but first check if available using D3DPRASTERCAPS_MULTISAMPLE_TOGGLE
+ - see if opengl has something similar
+ - see if either dx9 or opengl have something similar to DX11 antialias line
 
 Move createRenderWindow outside of RenderSystem
 RenderSystem::setRenderTarget needs to accept multiple targets
-First port (and test!) existing render systems so it is capable of dealing with DX11 stuff(samplerState, depthStencilState, rasterizerState objects primarily. Also split pass into Texture/sampler) 
 
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)

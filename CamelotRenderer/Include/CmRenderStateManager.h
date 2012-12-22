@@ -16,7 +16,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Creates and initializes a new DepthStencilState.
 		 */
-		virtual DepthStencilStatePtr createDepthStencilState(const DEPTH_STENCIL_DESC& desc) const;
+		virtual DepthStencilStatePtr createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
 
 		/**
 		 * @brief	Creates and initializes a new RasterizerState.

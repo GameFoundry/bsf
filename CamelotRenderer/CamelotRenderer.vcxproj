@@ -189,6 +189,7 @@
     <ClInclude Include="Include\CmConfigOptionMap.h" />
     <ClInclude Include="Include\CmDefaultHardwareBufferManager.h" />
     <ClInclude Include="Include\CmDeferredRenderContext.h" />
+    <ClInclude Include="Include\CmDepthStencilStateRTTI.h" />
     <ClInclude Include="Include\CmDepthStencilState.h" />
     <ClInclude Include="Include\CmGpuProgram.h" />
     <ClInclude Include="Include\CmGpuProgramManager.h" />

@@ -51,6 +51,7 @@ THE SOFTWARE.
 #include "CmAsyncOp.h"
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
+#include "CmDepthStencilState.h"
 
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
@@ -604,20 +605,51 @@ namespace CamelotEngine
 
 		// Color write mask
 		UINT8 writeMask = blendState.getRenderTargetWriteMask(0);
-		setColorBufferWriteEnabled(writeMask & 0x1, writeMask & 0x2, writeMask & 0x4, writeMask & 0x8);
+		setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
 	}
 	//----------------------------------------------------------------------
 	void D3D9RenderSystem::setRasterizerState(const RasterizerState& rasterizerState)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		setDepthBias(rasterizerState.getDepthBias(), rasterizerState.getSlopeScaledDepthBias());
+		setDepthBias((float)rasterizerState.getDepthBias(), rasterizerState.getSlopeScaledDepthBias());
 
 		setCullingMode(rasterizerState.getCullMode());
 
 		setPolygonMode(rasterizerState.getPolygonMode());
 
 		setScissorTestEnable(rasterizerState.getScissorEnable());
+	}
+	//----------------------------------------------------------------------
+	void D3D9RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		// Set stencil buffer options
+		setStencilCheckEnabled(depthStencilState.getStencilEnable());
+
+		setStencilBufferOperations(depthStencilState.getStencilFrontFailOp(), depthStencilState.getStencilFrontZFailOp(), depthStencilState.getStencilFrontPassOp(), true);
+		setStencilBufferFunc(depthStencilState.getStencilFrontCompFunc(), true);
+
+		setStencilBufferOperations(depthStencilState.getStencilBackFailOp(), depthStencilState.getStencilBackZFailOp(), depthStencilState.getStencilBackPassOp(), false);
+		setStencilBufferFunc(depthStencilState.getStencilBackCompFunc(), false);
+
+		setStencilBufferReadMask(depthStencilState.getStencilReadMask());
+		setStencilBufferWriteMask(depthStencilState.getStencilWriteMask());
+
+		// Set depth buffer options
+		setDepthBufferCheckEnabled(depthStencilState.getDepthReadEnable());
+		setDepthBufferWriteEnabled(depthStencilState.getDepthWriteEnable());
+		setDepthBufferFunction(depthStencilState.getDepthComparisonFunc());		
+	}
+	//----------------------------------------------------------------------
+	void D3D9RenderSystem::setStencilRefValue(UINT32 refValue)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		HRESULT hr = __SetRenderState(D3DRS_STENCILREF, refValue);
+		if (FAILED(hr))
+			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer reference value.");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
@@ -631,7 +663,6 @@ namespace CamelotEngine
 				*(DWORD*)&bias);
 			if(FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Unable to set texture mipmap bias");
-
 		}
 	}
 	//---------------------------------------------------------------------
@@ -908,84 +939,93 @@ namespace CamelotEngine
 		HRESULT hr = __SetRenderState(D3DRS_STENCILENABLE, enabled);
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error enabling / disabling stencilling.");
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setStencilBufferParams(CompareFunction func, 
-		UINT32 refValue, UINT32 mask, StencilOperation stencilFailOp, 
-		StencilOperation depthFailOp, StencilOperation passOp, 
-		bool twoSidedOperation)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
 
-		HRESULT hr;
-		bool flip;
-
-		// 2-sided operation
-		if (twoSidedOperation)
+		if (mCurrentCapabilities->hasCapability(RSC_TWO_SIDED_STENCIL))
 		{
-			if (!mCurrentCapabilities->hasCapability(RSC_TWO_SIDED_STENCIL))
-				CM_EXCEPT(InvalidParametersException, "2-sided stencils are not supported");
 			hr = __SetRenderState(D3DRS_TWOSIDEDSTENCILMODE, TRUE);
+
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Error setting 2-sided stencil mode.");
-			// NB: We should always treat CCW as front face for consistent with default
-			// culling mode. Therefore, we must take care with two-sided stencil settings.
-			flip = (mInvertVertexWinding && mActiveRenderTarget->requiresTextureFlipping()) ||
-				(!mInvertVertexWinding && !mActiveRenderTarget->requiresTextureFlipping());
-
-			// Set alternative versions of ops
-			// fail op
-			hr = __SetRenderState(D3DRS_CCW_STENCILFAIL, D3D9Mappings::get(stencilFailOp, !flip));
-			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Error setting stencil fail operation (2-sided).");
-
-			// depth fail op
-			hr = __SetRenderState(D3DRS_CCW_STENCILZFAIL, D3D9Mappings::get(depthFailOp, !flip));
-			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Error setting stencil depth fail operation (2-sided).");
-
-			// pass op
-			hr = __SetRenderState(D3DRS_CCW_STENCILPASS, D3D9Mappings::get(passOp, !flip));
-			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation (2-sided).");
 		}
 		else
 		{
 			hr = __SetRenderState(D3DRS_TWOSIDEDSTENCILMODE, FALSE);
+
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Error setting 1-sided stencil mode.");
-			flip = false;
 		}
+	}
+	//---------------------------------------------------------------------
+	void D3D9RenderSystem::setStencilBufferOperations(StencilOperation stencilFailOp, StencilOperation depthFailOp, StencilOperation passOp, bool ccw)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
 
-		// func
-		hr = __SetRenderState(D3DRS_STENCILFUNC, D3D9Mappings::get(func));
+		HRESULT hr;
+
+		// 2-sided operation
+		if (ccw)
+		{
+			// fail op
+			hr = __SetRenderState(D3DRS_CCW_STENCILFAIL, D3D9Mappings::get(stencilFailOp, mInvertVertexWinding));
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Error setting stencil fail operation (ccw).");
+
+			// depth fail op
+			hr = __SetRenderState(D3DRS_CCW_STENCILZFAIL, D3D9Mappings::get(depthFailOp, mInvertVertexWinding));
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Error setting stencil depth fail operation (ccw).");
+
+			// pass op
+			hr = __SetRenderState(D3DRS_CCW_STENCILPASS, D3D9Mappings::get(passOp, mInvertVertexWinding));
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation (ccw).");
+		}
+		else
+		{
+			// fail op
+			hr = __SetRenderState(D3DRS_STENCILFAIL, D3D9Mappings::get(stencilFailOp, !mInvertVertexWinding));
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Error setting stencil fail operation (cw).");
+
+			// depth fail op
+			hr = __SetRenderState(D3DRS_STENCILZFAIL, D3D9Mappings::get(depthFailOp, !mInvertVertexWinding));
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Error setting stencil depth fail operation (cw).");
+
+			// pass op
+			hr = __SetRenderState(D3DRS_STENCILPASS, D3D9Mappings::get(passOp, !mInvertVertexWinding));
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation (cw).");
+		}
+	}
+	//---------------------------------------------------------------------
+	void D3D9RenderSystem::setStencilBufferFunc(CompareFunction func, bool ccw)
+	{
+		HRESULT hr;
+		
+		if(ccw)
+			hr = __SetRenderState(D3DRS_CCW_STENCILFUNC, D3D9Mappings::get(func));
+		else
+			hr = __SetRenderState(D3DRS_STENCILFUNC, D3D9Mappings::get(func));
+
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer test function.");
+	}
+	//---------------------------------------------------------------------
+	void D3D9RenderSystem::setStencilBufferReadMask(UINT32 mask)
+	{
+		HRESULT hr = __SetRenderState(D3DRS_STENCILMASK, mask);
 
-		// reference value
-		hr = __SetRenderState(D3DRS_STENCILREF, refValue);
-		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer reference value.");
-
-		// mask
-		hr = __SetRenderState(D3DRS_STENCILMASK, mask);
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer mask.");
+	}
+	//--------------------------------------------------------------------
+	void D3D9RenderSystem::setStencilBufferWriteMask(UINT32 mask)
+	{
+		HRESULT hr = __SetRenderState(D3DRS_STENCILWRITEMASK, mask);
 
-		// fail op
-		hr = __SetRenderState(D3DRS_STENCILFAIL, D3D9Mappings::get(stencilFailOp, flip));
 		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Error setting stencil fail operation.");
-
-		// depth fail op
-		hr = __SetRenderState(D3DRS_STENCILZFAIL, D3D9Mappings::get(depthFailOp, flip));
-		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Error setting stencil depth fail operation.");
-
-		// pass op
-		hr = __SetRenderState(D3DRS_STENCILPASS, D3D9Mappings::get(passOp, flip));
-		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation.");
+			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer write mask.");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTextureFiltering(UINT16 unit, FilterType ftype, 

@@ -2,12 +2,13 @@
 
 #include "CmPrerequisites.h"
 #include "CmCommon.h"
+#include "CmIReflectable.h"
 
 namespace CamelotEngine
 {
-	struct CM_EXPORT DEPTH_STENCIL_DESC
+	struct CM_EXPORT DEPTH_STENCIL_STATE_DESC
 	{
-		DEPTH_STENCIL_DESC()
+		DEPTH_STENCIL_STATE_DESC()
 			: depthReadEnable(true)
 			, depthWriteEnable(true)
 			, depthComparisonFunc(CMPF_LESS)
@@ -44,7 +45,7 @@ namespace CamelotEngine
 	};
 
 	// TODO Low priority - Write doc explaining various states
-	class CM_EXPORT DepthStencilState
+	class CM_EXPORT DepthStencilState : public IReflectable
 	{
 	public:
 		virtual ~DepthStencilState() {}
@@ -67,17 +68,26 @@ namespace CamelotEngine
 		StencilOperation getStencilBackPassOp() const { return mData.backStencilPassOp; }
 		CompareFunction getStencilBackCompFunc() const { return mData.backStencilComparisonFunc; }
 
-		void setStencilRefValue(UINT32 refValue) { mStencilRefValue = refValue; }
-		UINT32 getStencilRefValue() const { return mStencilRefValue; }
+		static DepthStencilStatePtr create(const DEPTH_STENCIL_STATE_DESC& desc);
 
-		static DepthStencilStatePtr create(const DEPTH_STENCIL_DESC& desc);
+		/**
+		 * @brief	Returns the default depth stencil state;
+		 */
+		static const DepthStencilState& getDefault();
 	private:
 		friend class RenderStateManager;
-		DepthStencilState();
 
-		virtual void initialize(const DEPTH_STENCIL_DESC& desc);
+		virtual void initialize(const DEPTH_STENCIL_STATE_DESC& desc);
 
-		DEPTH_STENCIL_DESC mData;
-		UINT32 mStencilRefValue;
+		DEPTH_STENCIL_STATE_DESC mData;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+	public:
+		friend class DepthStencilStateRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
 	};
 }

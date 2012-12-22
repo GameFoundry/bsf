@@ -45,6 +45,7 @@ THE SOFTWARE.s
 #include "CmAsyncOp.h"
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
+#include "CmDepthStencilState.h"
 
 #include "CmGLFBORenderTexture.h"
 #include "CmGLPBRenderTexture.h"
@@ -84,11 +85,16 @@ namespace CamelotEngine {
 	/************************************************************************/
 
 	GLRenderSystem::GLRenderSystem()
-		: mDepthWrite(true), mStencilMask(0xFFFFFFFF),
+		: mDepthWrite(true),
 		mGLSLProgramFactory(0),
 		mCgProgramFactory(0),
 		mActiveTextureUnit(0),
-		mScissorTop(0), mScissorBottom(720), mScissorLeft(0), mScissorRight(1280)
+		mScissorTop(0), mScissorBottom(720), mScissorLeft(0), mScissorRight(1280),
+		mStencilReadMask(0xFFFFFFFF),
+		mStencilWriteMask(0xFFFFFFFF),
+		mStencilCompareFront(CMPF_ALWAYS_PASS),
+		mStencilCompareBack(CMPF_ALWAYS_PASS),
+		mStencilRefValue(0)
 	{
 		size_t i;
 
@@ -483,14 +489,14 @@ namespace CamelotEngine {
 
 		// Color write mask
 		UINT8 writeMask = blendState.getRenderTargetWriteMask(0);
-		setColorBufferWriteEnabled(writeMask & 0x1, writeMask & 0x2, writeMask & 0x4, writeMask & 0x8);
+		setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
 	}
 	//----------------------------------------------------------------------
 	void GLRenderSystem::setRasterizerState(const RasterizerState& rasterizerState)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		setDepthBias(rasterizerState.getDepthBias(), rasterizerState.getSlopeScaledDepthBias());
+		setDepthBias((float)rasterizerState.getDepthBias(), rasterizerState.getSlopeScaledDepthBias());
 
 		setCullingMode(rasterizerState.getCullMode());
 
@@ -498,196 +504,36 @@ namespace CamelotEngine {
 
 		setScissorTestEnable(rasterizerState.getScissorEnable());
 	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw)
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		if (!activateGLTextureUnit(stage))
-			return;
+		// Set stencil buffer options
+		setStencilCheckEnabled(depthStencilState.getStencilEnable());
 
-		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_S, 
-			getTextureAddressingMode(uvw.u));
-		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_T, 
-			getTextureAddressingMode(uvw.v));
-		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_R, 
-			getTextureAddressingMode(uvw.w));
-		activateGLTextureUnit(0);
+		setStencilBufferOperations(depthStencilState.getStencilFrontFailOp(), depthStencilState.getStencilFrontZFailOp(), depthStencilState.getStencilFrontPassOp(), true);
+		setStencilBufferFunc(depthStencilState.getStencilFrontCompFunc(), depthStencilState.getStencilReadMask(), true);
+
+		setStencilBufferOperations(depthStencilState.getStencilBackFailOp(), depthStencilState.getStencilBackZFailOp(), depthStencilState.getStencilBackPassOp(), false);
+		setStencilBufferFunc(depthStencilState.getStencilBackCompFunc(), depthStencilState.getStencilReadMask(), false);
+
+		setStencilBufferWriteMask(depthStencilState.getStencilWriteMask());
+
+		// Set depth buffer options
+		setDepthBufferCheckEnabled(depthStencilState.getDepthReadEnable());
+		setDepthBufferWriteEnabled(depthStencilState.getDepthWriteEnable());
+		setDepthBufferFunction(depthStencilState.getDepthComparisonFunc());	
 	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureBorderColor(UINT16 stage, const Color& colour)
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setStencilRefValue(UINT32 refValue)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		GLfloat border[4] = { colour.r, colour.g, colour.b, colour.a };
-		if (activateGLTextureUnit(stage))
-		{
-			glTexParameterfv( mTextureTypes[stage], GL_TEXTURE_BORDER_COLOR, border);
-				activateGLTextureUnit(0);
-		}
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTextureMipmapBias(UINT16 stage, float bias)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
+		mStencilRefValue = refValue;
 
-		if (mCurrentCapabilities->hasCapability(RSC_MIPMAP_LOD_BIAS))
-		{
-			if (activateGLTextureUnit(stage))
-			{
-				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
-					activateGLTextureUnit(0);
-			}
-		}
-
-	}
-	void GLRenderSystem::setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		GLint sourceBlend = getBlendMode(sourceFactor);
-		GLint destBlend = getBlendMode(destFactor);
-		if(sourceFactor == SBF_ONE && destFactor == SBF_ZERO)
-		{
-			glDisable(GL_BLEND);
-		}
-		else
-		{
-			glEnable(GL_BLEND);
-			glBlendFunc(sourceBlend, destBlend);
-		}
-
-		GLint func = GL_FUNC_ADD;
-		switch(op)
-		{
-		case SBO_ADD:
-			func = GL_FUNC_ADD;
-			break;
-		case SBO_SUBTRACT:
-			func = GL_FUNC_SUBTRACT;
-			break;
-		case SBO_REVERSE_SUBTRACT:
-			func = GL_FUNC_REVERSE_SUBTRACT;
-			break;
-		case SBO_MIN:
-			func = GL_MIN;
-			break;
-		case SBO_MAX:
-			func = GL_MAX;
-			break;
-		}
-
-		if(GLEW_VERSION_1_4 || GLEW_ARB_imaging)
-        {
-			glBlendEquation(func);
-		}
-		else if(GLEW_EXT_blend_minmax && (func == GL_MIN || func == GL_MAX))
-        {
-			glBlendEquationEXT(func);
-		}
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setSceneBlending(
-		SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, 
-		SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha,
-		SceneBlendOperation op, SceneBlendOperation alphaOp )
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		GLint sourceBlend = getBlendMode(sourceFactor);
-		GLint destBlend = getBlendMode(destFactor);
-		GLint sourceBlendAlpha = getBlendMode(sourceFactorAlpha);
-		GLint destBlendAlpha = getBlendMode(destFactorAlpha);
-
-		if(sourceFactor == SBF_ONE && destFactor == SBF_ZERO && 
-			sourceFactorAlpha == SBF_ONE && destFactorAlpha == SBF_ZERO)
-		{
-			glDisable(GL_BLEND);
-		}
-		else
-		{
-			glEnable(GL_BLEND);
-			glBlendFuncSeparate(sourceBlend, destBlend, sourceBlendAlpha, destBlendAlpha);
-		}
-
-		GLint func = GL_FUNC_ADD, alphaFunc = GL_FUNC_ADD;
-
-		switch(op)
-		{
-		case SBO_ADD:
-			func = GL_FUNC_ADD;
-			break;
-		case SBO_SUBTRACT:
-			func = GL_FUNC_SUBTRACT;
-			break;
-		case SBO_REVERSE_SUBTRACT:
-			func = GL_FUNC_REVERSE_SUBTRACT;
-			break;
-		case SBO_MIN:
-			func = GL_MIN;
-			break;
-		case SBO_MAX:
-			func = GL_MAX;
-			break;
-		}
-
-		switch(alphaOp)
-		{
-		case SBO_ADD:
-			alphaFunc = GL_FUNC_ADD;
-			break;
-		case SBO_SUBTRACT:
-			alphaFunc = GL_FUNC_SUBTRACT;
-			break;
-		case SBO_REVERSE_SUBTRACT:
-			alphaFunc = GL_FUNC_REVERSE_SUBTRACT;
-			break;
-		case SBO_MIN:
-			alphaFunc = GL_MIN;
-			break;
-		case SBO_MAX:
-			alphaFunc = GL_MAX;
-			break;
-		}
-
-		if(GLEW_VERSION_2_0) {
-			glBlendEquationSeparate(func, alphaFunc);
-		}
-		else if(GLEW_EXT_blend_equation_separate) {
-			glBlendEquationSeparateEXT(func, alphaFunc);
-		}
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setAlphaTest(CompareFunction func, unsigned char value)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if(func == CMPF_ALWAYS_PASS)
-		{
-			glDisable(GL_ALPHA_TEST);
-		}
-		else
-		{
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(convertCompareFunction(func), value / 255.0f);
-		}
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setAlphaToCoverage(bool enable)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		static bool lasta2c = false;
-
-		if (enable != lasta2c && getCapabilities()->hasCapability(RSC_ALPHA_TO_COVERAGE))
-		{
-			if (enable)
-				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-			else
-				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-
-			lasta2c = enable;
-		}
+		glStencilFuncSeparate(GL_FRONT, convertCompareFunction(mStencilCompareFront), mStencilRefValue, mStencilReadMask);
+		glStencilFuncSeparate(GL_BACK, convertCompareFunction(mStencilCompareBack), mStencilRefValue, mStencilReadMask);
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setViewport(const Viewport& vp)
@@ -698,7 +544,7 @@ namespace CamelotEngine {
 		target = vp.getTarget();
 		setRenderTarget(target);
 		mActiveViewport = vp;
-
+		
 		GLsizei x, y, w, h;
 
 		// Calculate the "lower-left" corner of the viewport
@@ -776,303 +622,6 @@ namespace CamelotEngine {
 		// outside via the resource manager
 		unbindGpuProgram(GPT_VERTEX_PROGRAM);
 		unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
-	}
-
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setCullingMode(CullingMode mode)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		mCullingMode = mode;
-		// NB: Because two-sided stencil API dependence of the front face, we must
-		// use the same 'winding' for the front face everywhere. As the OGRE default
-		// culling mode is clockwise, we also treat anticlockwise winding as front
-		// face for consistently. On the assumption that, we can't change the front
-		// face by glFrontFace anywhere.
-
-		GLenum cullMode;
-
-		switch( mode )
-		{
-		case CULL_NONE:
-			glDisable( GL_CULL_FACE );
-			return;
-		default:
-		case CULL_CLOCKWISE:
-			if (mActiveRenderTarget && 
-				((mActiveRenderTarget->requiresTextureFlipping() && !mInvertVertexWinding) ||
-				(!mActiveRenderTarget->requiresTextureFlipping() && mInvertVertexWinding)))
-			{
-				cullMode = GL_FRONT;
-			}
-			else
-			{
-				cullMode = GL_BACK;
-			}
-			break;
-		case CULL_ANTICLOCKWISE:
-			if (mActiveRenderTarget && 
-				((mActiveRenderTarget->requiresTextureFlipping() && !mInvertVertexWinding) ||
-				(!mActiveRenderTarget->requiresTextureFlipping() && mInvertVertexWinding)))
-			{
-				cullMode = GL_BACK;
-			}
-			else
-			{
-				cullMode = GL_FRONT;
-			}
-			break;
-		}
-
-		glEnable( GL_CULL_FACE );
-		glCullFace( cullMode );
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		setDepthBufferCheckEnabled(depthTest);
-		setDepthBufferWriteEnabled(depthWrite);
-		setDepthBufferFunction(depthFunction);
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setDepthBufferCheckEnabled(bool enabled)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if (enabled)
-		{
-			glClearDepth(1.0f);
-			glEnable(GL_DEPTH_TEST);
-		}
-		else
-		{
-			glDisable(GL_DEPTH_TEST);
-		}
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setDepthBufferWriteEnabled(bool enabled)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		GLboolean flag = enabled ? GL_TRUE : GL_FALSE;
-		glDepthMask( flag );  
-		// Store for reference in _beginFrame
-		mDepthWrite = enabled;
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setDepthBufferFunction(CompareFunction func)
-	{
-		glDepthFunc(convertCompareFunction(func));
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if (constantBias != 0 || slopeScaleBias != 0)
-		{
-			glEnable(GL_POLYGON_OFFSET_FILL);
-			glEnable(GL_POLYGON_OFFSET_POINT);
-			glEnable(GL_POLYGON_OFFSET_LINE);
-			glPolygonOffset(-slopeScaleBias, -constantBias);
-		}
-		else
-		{
-			glDisable(GL_POLYGON_OFFSET_FILL);
-			glDisable(GL_POLYGON_OFFSET_POINT);
-			glDisable(GL_POLYGON_OFFSET_LINE);
-		}
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		glColorMask(red, green, blue, alpha);
-		// record this
-		mColourWrite[0] = red;
-		mColourWrite[1] = blue;
-		mColourWrite[2] = green;
-		mColourWrite[3] = alpha;
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::setPolygonMode(PolygonMode level)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		GLenum glmode;
-		switch(level)
-		{
-		case PM_POINTS:
-			glmode = GL_POINT;
-			break;
-		case PM_WIREFRAME:
-			glmode = GL_LINE;
-			break;
-		default:
-		case PM_SOLID:
-			glmode = GL_FILL;
-			break;
-		}
-		glPolygonMode(GL_FRONT_AND_BACK, glmode);
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::setStencilCheckEnabled(bool enabled)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if (enabled)
-		{
-			glEnable(GL_STENCIL_TEST);
-		}
-		else
-		{
-			glDisable(GL_STENCIL_TEST);
-		}
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::setStencilBufferParams(CompareFunction func, 
-		UINT32 refValue, UINT32 mask, StencilOperation stencilFailOp, 
-		StencilOperation depthFailOp, StencilOperation passOp, 
-		bool twoSidedOperation)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		bool flip;
-		mStencilMask = mask;
-
-		if (twoSidedOperation)
-		{
-			if (!mCurrentCapabilities->hasCapability(RSC_TWO_SIDED_STENCIL))
-				CM_EXCEPT(InvalidParametersException, "2-sided stencils are not supported");
-
-			// NB: We should always treat CCW as front face for consistent with default
-			// culling mode. Therefore, we must take care with two-sided stencil settings.
-			flip = (mInvertVertexWinding && !mActiveRenderTarget->requiresTextureFlipping()) ||
-				(!mInvertVertexWinding && mActiveRenderTarget->requiresTextureFlipping());
-			if(GLEW_VERSION_2_0) // New GL2 commands
-			{
-				// Back
-				glStencilMaskSeparate(GL_BACK, mask);
-				glStencilFuncSeparate(GL_BACK, convertCompareFunction(func), refValue, mask);
-				glStencilOpSeparate(GL_BACK, 
-					convertStencilOp(stencilFailOp, !flip), 
-					convertStencilOp(depthFailOp, !flip), 
-					convertStencilOp(passOp, !flip));
-				// Front
-				glStencilMaskSeparate(GL_FRONT, mask);
-				glStencilFuncSeparate(GL_FRONT, convertCompareFunction(func), refValue, mask);
-				glStencilOpSeparate(GL_FRONT, 
-					convertStencilOp(stencilFailOp, flip),
-					convertStencilOp(depthFailOp, flip), 
-					convertStencilOp(passOp, flip));
-			}
-			else // EXT_stencil_two_side
-			{
-				glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
-				// Back
-				glActiveStencilFaceEXT(GL_BACK);
-				glStencilMask(mask);
-				glStencilFunc(convertCompareFunction(func), refValue, mask);
-				glStencilOp(
-					convertStencilOp(stencilFailOp, !flip), 
-					convertStencilOp(depthFailOp, !flip), 
-					convertStencilOp(passOp, !flip));
-				// Front
-				glActiveStencilFaceEXT(GL_FRONT);
-				glStencilMask(mask);
-				glStencilFunc(convertCompareFunction(func), refValue, mask);
-				glStencilOp(
-					convertStencilOp(stencilFailOp, flip),
-					convertStencilOp(depthFailOp, flip), 
-					convertStencilOp(passOp, flip));
-			}
-		}
-		else
-		{
-            if(!GLEW_VERSION_2_0)
-                glDisable(GL_STENCIL_TEST_TWO_SIDE_EXT);
-
-			flip = false;
-			glStencilMask(mask);
-			glStencilFunc(convertCompareFunction(func), refValue, mask);
-			glStencilOp(
-				convertStencilOp(stencilFailOp, flip),
-				convertStencilOp(depthFailOp, flip), 
-				convertStencilOp(passOp, flip));
-		}
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::setTextureFiltering(UINT16 unit, 
-		FilterType ftype, FilterOptions fo)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if (!activateGLTextureUnit(unit))
-			return;
-		switch(ftype)
-		{
-		case FT_MIN:
-			mMinFilter = fo;
-			// Combine with existing mip filter
-			glTexParameteri(
-				mTextureTypes[unit],
-				GL_TEXTURE_MIN_FILTER, 
-				getCombinedMinMipFilter());
-			break;
-		case FT_MAG:
-			switch (fo)
-			{
-			case FO_ANISOTROPIC: // GL treats linear and aniso the same
-			case FO_LINEAR:
-				glTexParameteri(
-					mTextureTypes[unit],
-					GL_TEXTURE_MAG_FILTER, 
-					GL_LINEAR);
-				break;
-			case FO_POINT:
-			case FO_NONE:
-				glTexParameteri(
-					mTextureTypes[unit],
-					GL_TEXTURE_MAG_FILTER, 
-					GL_NEAREST);
-				break;
-			}
-			break;
-		case FT_MIP:
-			mMipFilter = fo;
-			// Combine with existing min filter
-			glTexParameteri(
-				mTextureTypes[unit],
-				GL_TEXTURE_MIN_FILTER, 
-				getCombinedMinMipFilter());
-			break;
-		}
-
-		activateGLTextureUnit(0);
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if (!mCurrentCapabilities->hasCapability(RSC_ANISOTROPY))
-			return;
-
-		if (!activateGLTextureUnit(unit))
-			return;
-
-		GLfloat largest_supported_anisotropy = 0;
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
-		if (maxAnisotropy > largest_supported_anisotropy)
-			maxAnisotropy = largest_supported_anisotropy ? 
-			static_cast<UINT32>(largest_supported_anisotropy) : 1;
-		if (_getCurrentAnisotropy(unit) != maxAnisotropy)
-			glTexParameterf(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
-
-		activateGLTextureUnit(0);
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
@@ -1346,45 +895,6 @@ namespace CamelotEngine {
 		mScissorRight = right;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setScissorTestEnable(bool enable)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		// If request texture flipping, use "upper-left", otherwise use "lower-left"
-		bool flipping = mActiveRenderTarget->requiresTextureFlipping();
-		//  GL measures from the bottom, not the top
-		UINT32 targetHeight = mActiveRenderTarget->getHeight();
-		// Calculate the "lower-left" corner of the viewport
-		GLsizei x = 0, y = 0, w = 0, h = 0;
-
-		if (enable)
-		{
-			glEnable(GL_SCISSOR_TEST);
-			// GL uses width / height rather than right / bottom
-			x = mScissorLeft;
-			if (flipping)
-				y = mScissorTop;
-			else
-				y = targetHeight - mScissorBottom;
-			w = mScissorRight - mScissorLeft;
-			h = mScissorBottom - mScissorTop;
-			glScissor(x, y, w, h);
-		}
-		else
-		{
-			glDisable(GL_SCISSOR_TEST);
-			// GL requires you to reset the scissor when disabling
-			w = mActiveViewport.getActualWidth();
-			h = mActiveViewport.getActualHeight();
-			x = mActiveViewport.getActualLeft();
-			if (flipping)
-				y = mActiveViewport.getActualTop();
-			else
-				y = targetHeight - mActiveViewport.getActualTop() - h;
-			glScissor(x, y, w, h);
-		}
-	}
-	//---------------------------------------------------------------------
 	void GLRenderSystem::clearFrameBuffer(unsigned int buffers, 
 		const Color& colour, float depth, unsigned short stencil)
 	{
@@ -1469,13 +979,474 @@ namespace CamelotEngine {
 		}
 		if (buffers & FBT_STENCIL)
 		{
-			glStencilMask(mStencilMask);
+			glStencilMask(mStencilWriteMask);
 		}
 	}
+
+
+
+
+
+
+
+
+
+
 
 	/************************************************************************/
 	/* 								PRIVATE		                     		*/
 	/************************************************************************/
+
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw)
+	{
+		if (!activateGLTextureUnit(stage))
+			return;
+
+		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_S, 
+			getTextureAddressingMode(uvw.u));
+		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_T, 
+			getTextureAddressingMode(uvw.v));
+		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_R, 
+			getTextureAddressingMode(uvw.w));
+		activateGLTextureUnit(0);
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setTextureBorderColor(UINT16 stage, const Color& colour)
+	{
+		GLfloat border[4] = { colour.r, colour.g, colour.b, colour.a };
+		if (activateGLTextureUnit(stage))
+		{
+			glTexParameterfv( mTextureTypes[stage], GL_TEXTURE_BORDER_COLOR, border);
+			activateGLTextureUnit(0);
+		}
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setTextureMipmapBias(UINT16 stage, float bias)
+	{
+		if (mCurrentCapabilities->hasCapability(RSC_MIPMAP_LOD_BIAS))
+		{
+			if (activateGLTextureUnit(stage))
+			{
+				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
+				activateGLTextureUnit(0);
+			}
+		}
+
+	}
+	void GLRenderSystem::setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
+	{
+		GLint sourceBlend = getBlendMode(sourceFactor);
+		GLint destBlend = getBlendMode(destFactor);
+		if(sourceFactor == SBF_ONE && destFactor == SBF_ZERO)
+		{
+			glDisable(GL_BLEND);
+		}
+		else
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(sourceBlend, destBlend);
+		}
+
+		GLint func = GL_FUNC_ADD;
+		switch(op)
+		{
+		case SBO_ADD:
+			func = GL_FUNC_ADD;
+			break;
+		case SBO_SUBTRACT:
+			func = GL_FUNC_SUBTRACT;
+			break;
+		case SBO_REVERSE_SUBTRACT:
+			func = GL_FUNC_REVERSE_SUBTRACT;
+			break;
+		case SBO_MIN:
+			func = GL_MIN;
+			break;
+		case SBO_MAX:
+			func = GL_MAX;
+			break;
+		}
+
+		if(GLEW_VERSION_1_4 || GLEW_ARB_imaging)
+		{
+			glBlendEquation(func);
+		}
+		else if(GLEW_EXT_blend_minmax && (func == GL_MIN || func == GL_MAX))
+		{
+			glBlendEquationEXT(func);
+		}
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setSceneBlending(
+		SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, 
+		SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha,
+		SceneBlendOperation op, SceneBlendOperation alphaOp )
+	{
+		GLint sourceBlend = getBlendMode(sourceFactor);
+		GLint destBlend = getBlendMode(destFactor);
+		GLint sourceBlendAlpha = getBlendMode(sourceFactorAlpha);
+		GLint destBlendAlpha = getBlendMode(destFactorAlpha);
+
+		if(sourceFactor == SBF_ONE && destFactor == SBF_ZERO && 
+			sourceFactorAlpha == SBF_ONE && destFactorAlpha == SBF_ZERO)
+		{
+			glDisable(GL_BLEND);
+		}
+		else
+		{
+			glEnable(GL_BLEND);
+			glBlendFuncSeparate(sourceBlend, destBlend, sourceBlendAlpha, destBlendAlpha);
+		}
+
+		GLint func = GL_FUNC_ADD, alphaFunc = GL_FUNC_ADD;
+
+		switch(op)
+		{
+		case SBO_ADD:
+			func = GL_FUNC_ADD;
+			break;
+		case SBO_SUBTRACT:
+			func = GL_FUNC_SUBTRACT;
+			break;
+		case SBO_REVERSE_SUBTRACT:
+			func = GL_FUNC_REVERSE_SUBTRACT;
+			break;
+		case SBO_MIN:
+			func = GL_MIN;
+			break;
+		case SBO_MAX:
+			func = GL_MAX;
+			break;
+		}
+
+		switch(alphaOp)
+		{
+		case SBO_ADD:
+			alphaFunc = GL_FUNC_ADD;
+			break;
+		case SBO_SUBTRACT:
+			alphaFunc = GL_FUNC_SUBTRACT;
+			break;
+		case SBO_REVERSE_SUBTRACT:
+			alphaFunc = GL_FUNC_REVERSE_SUBTRACT;
+			break;
+		case SBO_MIN:
+			alphaFunc = GL_MIN;
+			break;
+		case SBO_MAX:
+			alphaFunc = GL_MAX;
+			break;
+		}
+
+		if(GLEW_VERSION_2_0) {
+			glBlendEquationSeparate(func, alphaFunc);
+		}
+		else if(GLEW_EXT_blend_equation_separate) {
+			glBlendEquationSeparateEXT(func, alphaFunc);
+		}
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setAlphaTest(CompareFunction func, unsigned char value)
+	{
+		if(func == CMPF_ALWAYS_PASS)
+		{
+			glDisable(GL_ALPHA_TEST);
+		}
+		else
+		{
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(convertCompareFunction(func), value / 255.0f);
+		}
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setAlphaToCoverage(bool enable)
+	{
+		static bool lasta2c = false;
+
+		if (enable != lasta2c && getCapabilities()->hasCapability(RSC_ALPHA_TO_COVERAGE))
+		{
+			if (enable)
+				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+			else
+				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
+			lasta2c = enable;
+		}
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setScissorTestEnable(bool enable)
+	{
+		// If request texture flipping, use "upper-left", otherwise use "lower-left"
+		bool flipping = mActiveRenderTarget->requiresTextureFlipping();
+		//  GL measures from the bottom, not the top
+		UINT32 targetHeight = mActiveRenderTarget->getHeight();
+		// Calculate the "lower-left" corner of the viewport
+		GLsizei x = 0, y = 0, w = 0, h = 0;
+
+		if (enable)
+		{
+			glEnable(GL_SCISSOR_TEST);
+			// GL uses width / height rather than right / bottom
+			x = mScissorLeft;
+			if (flipping)
+				y = mScissorTop;
+			else
+				y = targetHeight - mScissorBottom;
+			w = mScissorRight - mScissorLeft;
+			h = mScissorBottom - mScissorTop;
+			glScissor(x, y, w, h);
+		}
+		else
+		{
+			glDisable(GL_SCISSOR_TEST);
+			// GL requires you to reset the scissor when disabling
+			w = mActiveViewport.getActualWidth();
+			h = mActiveViewport.getActualHeight();
+			x = mActiveViewport.getActualLeft();
+			if (flipping)
+				y = mActiveViewport.getActualTop();
+			else
+				y = targetHeight - mActiveViewport.getActualTop() - h;
+			glScissor(x, y, w, h);
+		}
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setCullingMode(CullingMode mode)
+	{
+		mCullingMode = mode;
+		GLenum cullMode;
+
+		switch( mode )
+		{
+		case CULL_NONE:
+			glDisable( GL_CULL_FACE );
+			return;
+		default:
+		case CULL_CLOCKWISE:
+			if (mActiveRenderTarget && 
+				((mActiveRenderTarget->requiresTextureFlipping() && !mInvertVertexWinding) ||
+				(!mActiveRenderTarget->requiresTextureFlipping() && mInvertVertexWinding)))
+			{
+				cullMode = GL_FRONT;
+			}
+			else
+			{
+				cullMode = GL_BACK;
+			}
+			break;
+		case CULL_ANTICLOCKWISE:
+			if (mActiveRenderTarget && 
+				((mActiveRenderTarget->requiresTextureFlipping() && !mInvertVertexWinding) ||
+				(!mActiveRenderTarget->requiresTextureFlipping() && mInvertVertexWinding)))
+			{
+				cullMode = GL_BACK;
+			}
+			else
+			{
+				cullMode = GL_FRONT;
+			}
+			break;
+		}
+
+		glEnable( GL_CULL_FACE );
+		glCullFace( cullMode );
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
+	{
+		setDepthBufferCheckEnabled(depthTest);
+		setDepthBufferWriteEnabled(depthWrite);
+		setDepthBufferFunction(depthFunction);
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setDepthBufferCheckEnabled(bool enabled)
+	{
+		if (enabled)
+		{
+			glClearDepth(1.0f);
+			glEnable(GL_DEPTH_TEST);
+		}
+		else
+		{
+			glDisable(GL_DEPTH_TEST);
+		}
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setDepthBufferWriteEnabled(bool enabled)
+	{
+		GLboolean flag = enabled ? GL_TRUE : GL_FALSE;
+		glDepthMask( flag );  
+		// Store for reference in _beginFrame
+		mDepthWrite = enabled;
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setDepthBufferFunction(CompareFunction func)
+	{
+		glDepthFunc(convertCompareFunction(func));
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
+	{
+		if (constantBias != 0 || slopeScaleBias != 0)
+		{
+			glEnable(GL_POLYGON_OFFSET_FILL);
+			glEnable(GL_POLYGON_OFFSET_POINT);
+			glEnable(GL_POLYGON_OFFSET_LINE);
+			glPolygonOffset(-slopeScaleBias, -constantBias);
+		}
+		else
+		{
+			glDisable(GL_POLYGON_OFFSET_FILL);
+			glDisable(GL_POLYGON_OFFSET_POINT);
+			glDisable(GL_POLYGON_OFFSET_LINE);
+		}
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
+	{
+		glColorMask(red, green, blue, alpha);
+		// record this
+		mColourWrite[0] = red;
+		mColourWrite[1] = blue;
+		mColourWrite[2] = green;
+		mColourWrite[3] = alpha;
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setPolygonMode(PolygonMode level)
+	{
+		GLenum glmode;
+		switch(level)
+		{
+		case PM_POINTS:
+			glmode = GL_POINT;
+			break;
+		case PM_WIREFRAME:
+			glmode = GL_LINE;
+			break;
+		default:
+		case PM_SOLID:
+			glmode = GL_FILL;
+			break;
+		}
+		glPolygonMode(GL_FRONT_AND_BACK, glmode);
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setStencilCheckEnabled(bool enabled)
+	{
+		if (enabled)
+			glEnable(GL_STENCIL_TEST);
+		else
+			glDisable(GL_STENCIL_TEST);
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setStencilBufferOperations(StencilOperation stencilFailOp,
+		StencilOperation depthFailOp, StencilOperation passOp, bool front)
+	{
+		if (front)
+		{
+			glStencilOpSeparate(GL_FRONT, 
+				convertStencilOp(stencilFailOp, mInvertVertexWinding),
+				convertStencilOp(depthFailOp, mInvertVertexWinding), 
+				convertStencilOp(passOp, mInvertVertexWinding));
+		}
+		else
+		{
+			glStencilOpSeparate(GL_BACK, 
+				convertStencilOp(stencilFailOp, !mInvertVertexWinding), 
+				convertStencilOp(depthFailOp, !mInvertVertexWinding), 
+				convertStencilOp(passOp, !mInvertVertexWinding));
+		}
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setStencilBufferFunc(CompareFunction func, UINT32 mask, bool front)
+	{
+		mStencilReadMask = mask;
+
+		if(front)
+		{
+			mStencilCompareFront = func;
+			glStencilFuncSeparate(GL_FRONT, convertCompareFunction(mStencilCompareFront), mStencilRefValue, mStencilReadMask);
+		}
+		else
+		{
+			mStencilCompareBack = func;
+			glStencilFuncSeparate(GL_BACK, convertCompareFunction(mStencilCompareBack), mStencilRefValue, mStencilReadMask);
+		}
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setStencilBufferWriteMask(UINT32 mask)
+	{
+		mStencilWriteMask = mask;
+		glStencilMask(mask);
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setTextureFiltering(UINT16 unit, 
+		FilterType ftype, FilterOptions fo)
+	{
+		if (!activateGLTextureUnit(unit))
+			return;
+		switch(ftype)
+		{
+		case FT_MIN:
+			mMinFilter = fo;
+			// Combine with existing mip filter
+			glTexParameteri(
+				mTextureTypes[unit],
+				GL_TEXTURE_MIN_FILTER, 
+				getCombinedMinMipFilter());
+			break;
+		case FT_MAG:
+			switch (fo)
+			{
+			case FO_ANISOTROPIC: // GL treats linear and aniso the same
+			case FO_LINEAR:
+				glTexParameteri(
+					mTextureTypes[unit],
+					GL_TEXTURE_MAG_FILTER, 
+					GL_LINEAR);
+				break;
+			case FO_POINT:
+			case FO_NONE:
+				glTexParameteri(
+					mTextureTypes[unit],
+					GL_TEXTURE_MAG_FILTER, 
+					GL_NEAREST);
+				break;
+			}
+			break;
+		case FT_MIP:
+			mMipFilter = fo;
+			// Combine with existing min filter
+			glTexParameteri(
+				mTextureTypes[unit],
+				GL_TEXTURE_MIN_FILTER, 
+				getCombinedMinMipFilter());
+			break;
+		}
+
+		activateGLTextureUnit(0);
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
+	{
+		if (!mCurrentCapabilities->hasCapability(RSC_ANISOTROPY))
+			return;
+
+		if (!activateGLTextureUnit(unit))
+			return;
+
+		GLfloat largest_supported_anisotropy = 0;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
+		if (maxAnisotropy > largest_supported_anisotropy)
+			maxAnisotropy = largest_supported_anisotropy ? 
+			static_cast<UINT32>(largest_supported_anisotropy) : 1;
+		if (_getCurrentAnisotropy(unit) != maxAnisotropy)
+			glTexParameterf(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
+
+		activateGLTextureUnit(0);
+	}
+	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
 	{
 		// A note on GL user clipping:
@@ -1599,7 +1570,7 @@ namespace CamelotEngine {
 		// difference with the really state stored in GL context.
 		glDepthMask(mDepthWrite);
 		glColorMask(mColourWrite[0], mColourWrite[1], mColourWrite[2], mColourWrite[3]);
-		glStencilMask(mStencilMask);
+		glStencilMask(mStencilWriteMask);
 
 	}
 	//---------------------------------------------------------------------

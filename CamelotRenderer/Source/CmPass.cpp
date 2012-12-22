@@ -1,24 +1,15 @@
 #include "CmPass.h"
+#include "CmRasterizerState.h"
+#include "CmBlendState.h"
+#include "CmDepthStencilState.h"
 #include "CmPassRTTI.h"
 #include "CmException.h"
-#include "CmBlendState.h"
 
 namespace CamelotEngine
 {
     //-----------------------------------------------------------------------------
 	Pass::Pass()
-		: mDepthCheck(true)
-		, mDepthWrite(true)
-		, mDepthFunc(CMPF_LESS_EQUAL)
-		, mDepthBiasConstant(0.0f)
-		, mDepthBiasSlopeScale(0.0f)
-		, mDepthBiasPerIteration(0.0f)
-		, mCullMode(CULL_CLOCKWISE)
-		, mPolygonMode(PM_SOLID)
-    {
-
-   }
-
+    { }
     //-----------------------------------------------------------------------------
 	Pass::Pass(const Pass& oth)
     {
@@ -34,15 +25,8 @@ namespace CamelotEngine
     {
 	    // Default blending (overwrite)
 	    mBlendState = oth.mBlendState;
-
-	    mDepthCheck = oth.mDepthCheck;
-	    mDepthWrite = oth.mDepthWrite;
-	    mDepthFunc = oth.mDepthFunc;
-        mDepthBiasConstant = oth.mDepthBiasConstant;
-		mDepthBiasSlopeScale = oth.mDepthBiasSlopeScale;
-		mDepthBiasPerIteration = oth.mDepthBiasPerIteration;
-	    mCullMode = oth.mCullMode;
-		mPolygonMode = oth.mPolygonMode;
+		mRasterizerState = oth.mRasterizerState;
+		mDepthStencilState = oth.mDepthStencilState;
 
 		mVertexProgram = oth.mVertexProgram;
 		mFragmentProgram = oth.mFragmentProgram;
@@ -93,36 +77,16 @@ namespace CamelotEngine
 	{
 		return mRasterizerState;
 	}
-    //-----------------------------------------------------------------------
-    void Pass::setDepthCheckEnabled(bool enabled)
-    {
-	    mDepthCheck = enabled;
-    }
-    //-----------------------------------------------------------------------
-    bool Pass::getDepthCheckEnabled(void) const
-    {
-	    return mDepthCheck;
-    }
-    //-----------------------------------------------------------------------
-    void Pass::setDepthWriteEnabled(bool enabled)
-    {
-	    mDepthWrite = enabled;
-    }
-    //-----------------------------------------------------------------------
-    bool Pass::getDepthWriteEnabled(void) const
-    {
-	    return mDepthWrite;
-    }
-    //-----------------------------------------------------------------------
-    void Pass::setDepthFunction( CompareFunction func)
-    {
-	    mDepthFunc = func;
-    }
-    //-----------------------------------------------------------------------
-    CompareFunction Pass::getDepthFunction(void) const
-    {
-	    return mDepthFunc;
-    }
+	//-----------------------------------------------------------------------
+	void Pass::setDepthStencilState(DepthStencilStatePtr depthStencilState)
+	{
+		mDepthStencilState = depthStencilState;
+	}
+	//-----------------------------------------------------------------------
+	DepthStencilStatePtr Pass::getDepthStencilState() const
+	{
+		return mDepthStencilState;
+	}
     //-----------------------------------------------------------------------
 	void Pass::setVertexProgram(GpuProgramHandle gpuProgram)
 	{

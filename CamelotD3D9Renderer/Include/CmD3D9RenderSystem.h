@@ -51,14 +51,6 @@ namespace CamelotEngine
 
 		const String& getName() const;
 
-		void setStencilCheckEnabled(bool enabled);
-        void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
-            UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
-            StencilOperation stencilFailOp = SOP_KEEP, 
-            StencilOperation depthFailOp = SOP_KEEP,
-            StencilOperation passOp = SOP_KEEP, 
-            bool twoSidedOperation = false);
-
 		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
 		void destroyRenderTarget(RenderTarget* renderTarget);
@@ -86,15 +78,21 @@ namespace CamelotEngine
 		 */
 		void setRasterizerState(const RasterizerState& rasterizerState);
 
+		/**
+		 * @copydoc RenderSystem::setDepthStencilState()
+		 */
+		void setDepthStencilState(const DepthStencilState& depthStencilState);
+
+		/**
+		 * @copydoc RenderSystem::setStencilRefValue()
+		 */
+		void setStencilRefValue(UINT32 refValue);
+
 		void disableTextureUnit(UINT16 texUnit);
 		void setViewport(const Viewport& vp);		
 		void beginFrame();
 		void endFrame();		
 
-		void setDepthBufferParams( bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL );
-		void setDepthBufferCheckEnabled( bool enabled = true );
-		void setDepthBufferWriteEnabled(bool enabled = true);
-		void setDepthBufferFunction( CompareFunction func = CMPF_LESS_EQUAL );
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
 		void setVertexDeclaration(VertexDeclarationPtr decl);
 		void setVertexBufferBinding(VertexBufferBinding* binding);
@@ -421,6 +419,86 @@ namespace CamelotEngine
 		* 			identified by the rectangle set by setScissorRect().
 		*/
 		void setScissorTestEnable(bool enable);
+
+		/************************************************************************/
+		/* 						Depth stencil state                      		*/
+		/************************************************************************/
+		
+		/** Sets the mode of operation for depth buffer tests from this point onwards.
+		Sometimes you may wish to alter the behaviour of the depth buffer to achieve
+		special effects. Because it's unlikely that you'll set these options for an entire frame,
+		but rather use them to tweak settings between rendering objects, this is an internal
+		method (indicated by the '_' prefix) which will be used by a SceneManager implementation
+		rather than directly from the client application.
+		If this method is never called the settings are automatically the same as the default parameters.
+		@param depthTest If true, the depth buffer is tested for each pixel and the frame buffer is only updated
+		if the depth function test succeeds. If false, no test is performed and pixels are always written.
+		@param depthWrite If true, the depth buffer is updated with the depth of the new pixel if the depth test succeeds.
+		If false, the depth buffer is left unchanged even if a new pixel is written.
+		@param depthFunction Sets the function required for the depth test.
+		*/
+		void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
+
+		/** Sets whether or not the depth buffer check is performed before a pixel write.
+		@param enabled If true, the depth buffer is tested for each pixel and the frame buffer is only updated
+		if the depth function test succeeds. If false, no test is performed and pixels are always written.
+		*/
+		void setDepthBufferCheckEnabled(bool enabled = true);
+
+		/** Sets whether or not the depth buffer is updated after a pixel write.
+		@param enabled If true, the depth buffer is updated with the depth of the new pixel if the depth test succeeds.
+		If false, the depth buffer is left unchanged even if a new pixel is written.
+		*/
+		void setDepthBufferWriteEnabled(bool enabled = true);
+
+		/** Sets the comparison function for the depth buffer check.
+		Advanced use only - allows you to choose the function applied to compare the depth values of
+		new and existing pixels in the depth buffer. Only an issue if the deoth buffer check is enabled
+		(see _setDepthBufferCheckEnabled)
+		@param  func The comparison between the new depth and the existing depth which must return true
+		for the new pixel to be written.
+		*/
+		void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
+
+		/** Turns stencil buffer checking on or off.
+		@remarks
+		Stencilling (masking off areas of the rendering target based on the stencil
+		buffer) can be turned on or off using this method. By default, stencilling is
+		disabled.
+		*/
+		void setStencilCheckEnabled(bool enabled);
+
+		/** This method allows you to set stencil buffer operations in one call.
+		@param stencilFailOp The action to perform when the stencil check fails
+		@param depthFailOp The action to perform when the stencil check passes, but the
+		depth buffer check still fails
+		@param passOp The action to take when both the stencil and depth check pass.
+		@param ccw If set to true, the stencil operations will be applied to counterclockwise
+		faces. Otherwise they will be applied to clockwise faces.
+		*/
+		void setStencilBufferOperations(StencilOperation stencilFailOp = SOP_KEEP,
+			StencilOperation depthFailOp = SOP_KEEP, StencilOperation passOp = SOP_KEEP,
+			bool ccw = true);
+
+		/**
+		* @brief	Sets a stencil buffer comparison function. The result of this will cause one of 3 actions depending on whether the test fails,
+		*		succeeds but with the depth buffer check still failing, or succeeds with the
+		*		depth buffer check passing too.
+		* @param ccw If set to true, the stencil operations will be applied to counterclockwise
+		*		faces. Otherwise they will be applied to clockwise faces.
+		 */
+		void setStencilBufferFunc(CompareFunction func = CMPF_ALWAYS_PASS, bool ccw = true);
+
+		/**
+		* @brief	The bitmask applied to both the stencil value and the reference value
+		*		before comparison
+		 */
+		void setStencilBufferReadMask(UINT32 mask = 0xFFFFFFFF);
+
+		/**
+		* @brief	The bitmask applied to the stencil value before writing it to the stencil buffer.
+		 */
+		void setStencilBufferWriteMask(UINT32 mask = 0xFFFFFFFF);
 
 		/// Notify when a device has been lost.
 		void notifyOnDeviceLost(D3D9Device* device);

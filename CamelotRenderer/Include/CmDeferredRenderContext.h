@@ -45,24 +45,14 @@ namespace CamelotEngine
 		/** @copydoc RenderSystem::setRasterizerState() */
 		void setRasterizerState(const RasterizerState& rasterizerState);
 
+		/** @copydoc RenderSystem::setRasterizerState() */
+		void setDepthStencilState(const DepthStencilState& depthStencilState);
+
+		/** @copydoc RenderSystem::setStencilRefValue() */
+		void setStencilRefValue(UINT32 refValue);
+
 		/** @copydoc RenderSystem::setViewport() */
 		void setViewport(const Viewport& vp);
-
-		/** @copydoc RenderSystem::setDepthBufferParams() */
-		void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
-		/** @copydoc RenderSystem::setDepthBufferCheckEnabled() */
-		void setDepthBufferCheckEnabled(bool enabled = true);
-		/** @copydoc RenderSystem::setDepthBufferWriteEnabled() */
-		void setDepthBufferWriteEnabled(bool enabled = true);
-		/** @copydoc RenderSystem::setDepthBufferFunction() */
-		void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
-
-		/** @copydoc RenderSystem::setStencilCheckEnabled() */
-		void setStencilCheckEnabled(bool enabled);
-		/** @copydoc RenderSystem::setStencilBufferParams() */
-		void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
-			StencilOperation stencilFailOp = SOP_KEEP, StencilOperation depthFailOp = SOP_KEEP, StencilOperation passOp = SOP_KEEP, 
-			bool twoSidedOperation = false);
 
 		/** @copydoc RenderSystem::setClipPlanes() */
 		void setClipPlanes(const PlaneList& clipPlanes);

@@ -14,7 +14,7 @@ namespace CamelotEngine
 		return samplerState;
 	}
 
-	DepthStencilStatePtr RenderStateManager::createDepthStencilState(const DEPTH_STENCIL_DESC& desc) const
+	DepthStencilStatePtr RenderStateManager::createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const
 	{
 		DepthStencilStatePtr depthStencilState = DepthStencilStatePtr(new DepthStencilState());
 		depthStencilState->initialize(desc);

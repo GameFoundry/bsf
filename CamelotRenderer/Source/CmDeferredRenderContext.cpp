@@ -4,6 +4,7 @@
 #include "CmRenderSystem.h"
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
+#include "CmDepthStencilState.h"
 
 namespace CamelotEngine
 {
@@ -45,6 +46,16 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setRasterizerState, mRenderSystem, rasterizerState));
 	}
 
+	void DeferredRenderContext::setDepthStencilState(const DepthStencilState& depthStencilState)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthStencilState, mRenderSystem, depthStencilState));
+	}
+
+	void DeferredRenderContext::setStencilRefValue(UINT32 refValue)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::setStencilRefValue, mRenderSystem, refValue));
+	}
+
 	void DeferredRenderContext::setTexture(UINT16 unit, bool enabled, const TexturePtr& texPtr)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setTexture, mRenderSystem, unit, enabled, texPtr));
@@ -74,37 +85,6 @@ namespace CamelotEngine
 	{
 		mWaitForVerticalBlank = enabled;
 		mCommandQueue->queue(boost::bind(&RenderSystem::setWaitForVerticalBlank, mRenderSystem, enabled));
-	}
-
-	void DeferredRenderContext::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthBufferParams, mRenderSystem, depthTest, depthWrite, depthFunction));
-	}
-
-	void DeferredRenderContext::setDepthBufferCheckEnabled(bool enabled)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthBufferCheckEnabled, mRenderSystem, enabled));
-	}
-
-	void DeferredRenderContext::setDepthBufferWriteEnabled(bool enabled)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthBufferWriteEnabled, mRenderSystem, enabled));
-	}
-
-	void DeferredRenderContext::setDepthBufferFunction(CompareFunction func)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthBufferFunction, mRenderSystem, func));
-	}
-
-	void DeferredRenderContext::setStencilCheckEnabled(bool enabled)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setStencilCheckEnabled, mRenderSystem, enabled));
-	}
-
-	void DeferredRenderContext::setStencilBufferParams(CompareFunction func, UINT32 refValue, UINT32 mask, StencilOperation stencilFailOp, 
-		StencilOperation depthFailOp, StencilOperation passOp, bool twoSidedOperation)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setStencilBufferParams, mRenderSystem, func, refValue, mask, stencilFailOp, depthFailOp, passOp, twoSidedOperation));
 	}
 
 	void DeferredRenderContext::addClipPlane(const Plane &p)

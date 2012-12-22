@@ -374,6 +374,29 @@ namespace CamelotEngine
 		virtual void setRasterizerState(const RasterizerState& rasterizerState) = 0;
 
 		/**
+		 * @brief	Sets a state that controls depth & stencil buffer options.
+		 * @see		DepthStencilState
+		 */
+		virtual void setDepthStencilState(const DepthStencilState& depthStencilState) = 0;
+
+		/**
+		 * @brief	Sets a reference values used for stencil buffer comparisons. 
+		 * 			Actual comparison function and stencil operations are set by setting the StencilState.
+		 * 			
+		 * @remarks
+		 *		 The stencil buffer is used to mask out pixels in the render target, allowing
+		 *		 you to do effects like mirrors, cut-outs, stencil shadows and more. Each of
+		 *		 your batches of rendering is likely to ignore the stencil buffer,
+		 *		 update it with new values, or apply it to mask the output of the render.
+		 *		 The stencil test is:<PRE>
+		 *		 (Reference Value & Mask) CompareFunction (Stencil Buffer Value & Mask)</PRE>
+		 *		 The result of this will cause one of 3 actions depending on whether the test fails,
+		 *		 succeeds but with the depth buffer check still failing, or succeeds with the
+		 *		 depth buffer check passing too.
+		 */
+		virtual void setStencilRefValue(UINT32 refValue) = 0;
+
+		/**
 		Sets the texture to bind to a given texture unit.
 
 		User processes would not normally call this direct unless rendering
@@ -407,92 +430,6 @@ namespace CamelotEngine
 		virtual void setViewport(const Viewport& vp) = 0;
 		/** Get the current active viewport for rendering. */
 		virtual Viewport getViewport(void);
-
-		/** Sets the mode of operation for depth buffer tests from this point onwards.
-		Sometimes you may wish to alter the behaviour of the depth buffer to achieve
-		special effects. Because it's unlikely that you'll set these options for an entire frame,
-		but rather use them to tweak settings between rendering objects, this is an internal
-		method (indicated by the '_' prefix) which will be used by a SceneManager implementation
-		rather than directly from the client application.
-		If this method is never called the settings are automatically the same as the default parameters.
-		@param depthTest If true, the depth buffer is tested for each pixel and the frame buffer is only updated
-		if the depth function test succeeds. If false, no test is performed and pixels are always written.
-		@param depthWrite If true, the depth buffer is updated with the depth of the new pixel if the depth test succeeds.
-		If false, the depth buffer is left unchanged even if a new pixel is written.
-		@param depthFunction Sets the function required for the depth test.
-		*/
-		virtual void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL) = 0;
-
-		/** Sets whether or not the depth buffer check is performed before a pixel write.
-		@param enabled If true, the depth buffer is tested for each pixel and the frame buffer is only updated
-		if the depth function test succeeds. If false, no test is performed and pixels are always written.
-		*/
-		virtual void setDepthBufferCheckEnabled(bool enabled = true) = 0;
-
-		/** Sets whether or not the depth buffer is updated after a pixel write.
-		@param enabled If true, the depth buffer is updated with the depth of the new pixel if the depth test succeeds.
-		If false, the depth buffer is left unchanged even if a new pixel is written.
-		*/
-		virtual void setDepthBufferWriteEnabled(bool enabled = true) = 0;
-
-		/** Sets the comparison function for the depth buffer check.
-		Advanced use only - allows you to choose the function applied to compare the depth values of
-		new and existing pixels in the depth buffer. Only an issue if the deoth buffer check is enabled
-		(see _setDepthBufferCheckEnabled)
-		@param  func The comparison between the new depth and the existing depth which must return true
-		for the new pixel to be written.
-		*/
-		virtual void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL) = 0;
-
-		/** Turns stencil buffer checking on or off. 
-		@remarks
-		Stencilling (masking off areas of the rendering target based on the stencil 
-		buffer) can be turned on or off using this method. By default, stencilling is
-		disabled.
-		*/
-		virtual void setStencilCheckEnabled(bool enabled) = 0;
-
-		/** This method allows you to set all the stencil buffer parameters in one call.
-		@remarks
-		The stencil buffer is used to mask out pixels in the render target, allowing
-		you to do effects like mirrors, cut-outs, stencil shadows and more. Each of
-		your batches of rendering is likely to ignore the stencil buffer, 
-		update it with new values, or apply it to mask the output of the render.
-		The stencil test is:<PRE>
-		(Reference Value & Mask) CompareFunction (Stencil Buffer Value & Mask)</PRE>
-		The result of this will cause one of 3 actions depending on whether the test fails,
-		succeeds but with the depth buffer check still failing, or succeeds with the
-		depth buffer check passing too.
-		@par
-		Unlike other render states, stencilling is left for the application to turn
-		on and off when it requires. This is because you are likely to want to change
-		parameters between batches of arbitrary objects and control the ordering yourself.
-		In order to batch things this way, you'll want to use OGRE's separate render queue
-		groups (see RenderQueue) and register a RenderQueueListener to get notifications
-		between batches.
-		@par
-		There are individual state change methods for each of the parameters set using 
-		this method. 
-		Note that the default values in this method represent the defaults at system 
-		start up too.
-		@param func The comparison function applied.
-		@param refValue The reference value used in the comparison
-		@param mask The bitmask applied to both the stencil value and the reference value 
-		before comparison
-		@param stencilFailOp The action to perform when the stencil check fails
-		@param depthFailOp The action to perform when the stencil check passes, but the
-		depth buffer check still fails
-		@param passOp The action to take when both the stencil and depth check pass.
-		@param twoSidedOperation If set to true, then if you render both back and front faces 
-		(you'll have to turn off culling) then these parameters will apply for front faces, 
-		and the inverse of them will happen for back faces (keep remains the same).
-		*/
-		virtual void setStencilBufferParams(CompareFunction func = CMPF_ALWAYS_PASS, 
-			UINT32 refValue = 0, UINT32 mask = 0xFFFFFFFF, 
-			StencilOperation stencilFailOp = SOP_KEEP, 
-			StencilOperation depthFailOp = SOP_KEEP,
-			StencilOperation passOp = SOP_KEEP, 
-			bool twoSidedOperation = false) = 0;
 
 		/** Sets the current vertex declaration, ie the source of vertex data. */
 		virtual void setVertexDeclaration(VertexDeclarationPtr decl) = 0;
@@ -647,6 +584,7 @@ namespace CamelotEngine
 		@see Renderable::getUseIdentityView, Renderable::getUseIdentityProjection
 		*/
 		virtual float getMaximumDepthInputValue(void) = 0;
+
 		/************************************************************************/
 		/* 						INTERNAL DATA & METHODS                      	*/
 		/************************************************************************/

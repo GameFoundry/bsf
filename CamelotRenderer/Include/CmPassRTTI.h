@@ -3,7 +3,6 @@
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
 #include "CmPass.h"
-#include "CmRasterizerState.h"
 
 namespace CamelotEngine
 {
@@ -16,29 +15,8 @@ namespace CamelotEngine
 		RasterizerStatePtr getRasterizerState(Pass* obj) { return obj->mRasterizerState; }
 		void setRasterizerState(Pass* obj, RasterizerStatePtr val) { obj->mRasterizerState = val; } 
 
-		bool& getDepthCheck(Pass* obj) { return obj->mDepthCheck; }
-		void setDepthCheck(Pass* obj, bool& val) { obj->mDepthCheck = val; } 
-
-		bool& getDepthWrite(Pass* obj) { return obj->mDepthWrite; }
-		void setDepthWrite(Pass* obj, bool& val) { obj->mDepthWrite = val; } 
-
-		CompareFunction& getCompareFunction(Pass* obj) { return obj->mDepthFunc; }
-		void setCompareFunction(Pass* obj, CompareFunction& val) { obj->mDepthFunc = val; } 
-
-		float& getDepthBiasConstant(Pass* obj) { return obj->mDepthBiasConstant; }
-		void setDepthBiasConstant(Pass* obj, float& val) { obj->mDepthBiasConstant = val; } 
-
-		float& getDepthBiasSlopeScale(Pass* obj) { return obj->mDepthBiasSlopeScale; }
-		void setDepthBiasSlopeScale(Pass* obj, float& val) { obj->mDepthBiasSlopeScale = val; } 
-
-		float& getDepthBiasPerIteration(Pass* obj) { return obj->mDepthBiasPerIteration; }
-		void setDepthBiasPerIteration(Pass* obj, float& val) { obj->mDepthBiasPerIteration = val; } 
-
-		CullingMode& getCullMode(Pass* obj) { return obj->mCullMode; }
-		void setCullMode(Pass* obj, CullingMode& val) { obj->mCullMode = val; } 
-
-		PolygonMode& getPolygonMode(Pass* obj) { return obj->mPolygonMode; }
-		void setPolygonMode(Pass* obj, PolygonMode& val) { obj->mPolygonMode = val; } 
+		DepthStencilStatePtr getDepthStencilState(Pass* obj) { return obj->mDepthStencilState; }
+		void setDepthStencilState(Pass* obj, DepthStencilStatePtr val) { obj->mDepthStencilState = val; } 
 
 		GpuProgramHandle& getVertexProgram(Pass* obj) { return obj->mVertexProgram; }
 		void setVertexProgram(Pass* obj, GpuProgramHandle& val) { obj->mVertexProgram = val; } 
@@ -53,20 +31,11 @@ namespace CamelotEngine
 		{
 			addReflectablePtrField("mBlendState", 0, &PassRTTI::getBlendState, &PassRTTI::setBlendState);
 			addReflectablePtrField("mRasterizerState", 1, &PassRTTI::getRasterizerState, &PassRTTI::setRasterizerState);
+			addReflectablePtrField("mDepthStencilState", 2, &PassRTTI::getDepthStencilState, &PassRTTI::setDepthStencilState);
 
-			addPlainField("mDepthCheck", 2, &PassRTTI::getDepthCheck, &PassRTTI::setDepthCheck);
-			addPlainField("mDepthWrite", 3, &PassRTTI::getDepthWrite, &PassRTTI::setDepthWrite);
-			addPlainField("mDepthFunc", 4, &PassRTTI::getCompareFunction, &PassRTTI::setCompareFunction);
-			addPlainField("mDepthBiasConstant", 5, &PassRTTI::getDepthBiasConstant, &PassRTTI::setDepthBiasConstant);
-			addPlainField("mDepthBiasSlopeScale", 6, &PassRTTI::getDepthBiasSlopeScale, &PassRTTI::setDepthBiasSlopeScale);
-			addPlainField("mDepthBiasPerIteration", 7, &PassRTTI::getDepthBiasPerIteration, &PassRTTI::setDepthBiasPerIteration);
-
-			addPlainField("mCullMode", 8, &PassRTTI::getCullMode, &PassRTTI::setCullMode);
-			addPlainField("mPolygonMode", 9, &PassRTTI::getPolygonMode, &PassRTTI::setPolygonMode);
-
-			addReflectableField("mVertexProgram", 10, &PassRTTI::getVertexProgram, &PassRTTI::setVertexProgram);
-			addReflectableField("mFragmentProgram", 11, &PassRTTI::getFragmentProgram, &PassRTTI::setFragmentProgram);
-			addReflectableField("mGeometryProgram", 12, &PassRTTI::getGeometryProgram, &PassRTTI::setGeometryProgram);
+			addReflectableField("mVertexProgram", 3, &PassRTTI::getVertexProgram, &PassRTTI::setVertexProgram);
+			addReflectableField("mFragmentProgram", 4, &PassRTTI::getFragmentProgram, &PassRTTI::setFragmentProgram);
+			addReflectableField("mGeometryProgram", 5, &PassRTTI::getGeometryProgram, &PassRTTI::setGeometryProgram);
 		}
 
 		virtual const String& getRTTIName()

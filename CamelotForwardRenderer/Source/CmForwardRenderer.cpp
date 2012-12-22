@@ -8,6 +8,7 @@
 #include "CmPass.h"
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
+#include "CmDepthStencilState.h"
 #include "CmApplication.h"
 
 namespace CamelotEngine
@@ -28,9 +29,6 @@ namespace CamelotEngine
 	void ForwardRenderer::renderAll() 
 	{
 		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
-
-		// TODO - No point in setting these each frame?
-		renderContext->setDepthBufferParams();
 
 		const vector<CameraPtr>::type& allCameras = gSceneManager().getAllCameras();
 		for(auto iter = allCameras.begin(); iter != allCameras.end(); ++iter)
@@ -145,11 +143,12 @@ namespace CamelotEngine
 
 
 		// Set up non-texture related material settings
-		// Depth buffer settings
-		renderContext->setDepthBufferFunction(pass->getDepthFunction());
-		renderContext->setDepthBufferCheckEnabled(pass->getDepthCheckEnabled());
-		renderContext->setDepthBufferWriteEnabled(pass->getDepthWriteEnabled());
-
+		// Stencil & depth buffer settings
+		DepthStencilStatePtr depthStancilState = pass->getDepthStencilState();
+		if(depthStancilState != nullptr)
+			renderContext->setDepthStencilState(*depthStancilState);
+		else
+			renderContext->setDepthStencilState(DepthStencilState::getDefault());
 
 		RasterizerStatePtr rasterizerState = pass->getRasterizerState();
 		if(rasterizerState != nullptr)
