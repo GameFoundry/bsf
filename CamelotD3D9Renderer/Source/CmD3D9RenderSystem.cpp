@@ -616,6 +616,10 @@ namespace CamelotEngine
 		setPolygonMode(rasterizerState.getPolygonMode());
 
 		setScissorTestEnable(rasterizerState.getScissorEnable());
+
+		setMultisampleAntialiasEnable(rasterizerState.getMultisampleEnable());
+
+		setAntialiasedLineEnable(rasterizerState.getAntialiasedLineEnable());
 	}
 	//----------------------------------------------------------------------
 	void D3D9RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState)
@@ -1386,6 +1390,44 @@ namespace CamelotEngine
 			if (FAILED(hr = __SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE)))
 			{
 				CM_EXCEPT(RenderingAPIException, "Unable to disable scissor rendering state; " + getErrorDescription(hr));
+			}
+		}
+	}
+	//--------------------------------------------------------------------
+	void D3D9RenderSystem::setMultisampleAntialiasEnable(bool enable)
+	{
+		HRESULT hr;
+		if(enable)
+		{
+			if (FAILED(hr = __SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE)))
+			{
+				CM_EXCEPT(RenderingAPIException, "Unable to enable multisample antialiasing. Error description: " + getErrorDescription(hr));
+			}
+		}
+		else
+		{
+			if (FAILED(hr = __SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE)))
+			{
+				CM_EXCEPT(RenderingAPIException, "Unable to disable multisample antialiasing. Error description: " + getErrorDescription(hr));
+			}
+		}
+	}
+	//---------------------------------------------------------------------
+	void D3D9RenderSystem::setAntialiasedLineEnable(bool enable)
+	{
+		HRESULT hr;
+		if(enable)
+		{
+			if (FAILED(hr = __SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, TRUE)))
+			{
+				CM_EXCEPT(RenderingAPIException, "Unable to enable line antialiasing. Error description: " + getErrorDescription(hr));
+			}
+		}
+		else
+		{
+			if (FAILED(hr = __SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, FALSE)))
+			{
+				CM_EXCEPT(RenderingAPIException, "Unable to disable line antialiasing. Error description: " + getErrorDescription(hr));
 			}
 		}
 	}

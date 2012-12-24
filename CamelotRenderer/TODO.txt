@@ -28,12 +28,6 @@ Make RenderSystem a module? (Initialize it using startUp, and get rid of directl
 
 Keeping a list of all render targets in RenderSystem shouldn't be needed (and calling attach/detach renderTarget). Renderer should determine in what order are render targets presented.
 
-Rasterizer state:
- D3DRS_MULTISAMPLEANTIALIAS
- - but first check if available using D3DPRASTERCAPS_MULTISAMPLE_TOGGLE
- - see if opengl has something similar
- - see if either dx9 or opengl have something similar to DX11 antialias line
-
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
 /////

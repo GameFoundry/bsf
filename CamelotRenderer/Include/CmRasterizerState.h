@@ -16,7 +16,7 @@ namespace CamelotEngine
 			, slopeScaledDepthBias(0.0f)
 			, depthClipEnable(true)
 			, scissorEnable(false)
-			, multisampleEnable(false)
+			, multisampleEnable(true)
 			, antialiasedLineEnable(false)
 		{ }
 

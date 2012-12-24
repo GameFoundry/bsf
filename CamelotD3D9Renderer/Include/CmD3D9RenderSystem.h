@@ -426,6 +426,20 @@ namespace CamelotEngine
 		*/
 		void setScissorTestEnable(bool enable);
 
+		/**
+		 * @brief	Only applies when rendering to a multisample render target.
+		 * 			If disabled all of the samples will be taken from the center of the pixel,
+		 * 			effectively making the image aliased. Default value is true where samples are
+		 * 			picked randomly within the pixel.
+		 */
+		void setMultisampleAntialiasEnable(bool enable);
+
+		/**
+		 * @brief	Only applies when rendering to a non-multisample render target.
+		 * 			If enabled, lines will be antialiased. Default state is disabled.
+		 */
+		void setAntialiasedLineEnable(bool enable);
+
 		/************************************************************************/
 		/* 						Depth stencil state                      		*/
 		/************************************************************************/
