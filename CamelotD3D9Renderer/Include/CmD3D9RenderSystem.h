@@ -51,8 +51,6 @@ namespace CamelotEngine
 
 		const String& getName() const;
 
-		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
 		void destroyRenderTarget(RenderTarget* renderTarget);
 		void setRenderTarget(RenderTarget* target);
 
@@ -244,6 +242,7 @@ namespace CamelotEngine
 		friend class D3D9Device;
 		friend class D3D9TextureManager;
 		friend class D3D9DeviceManager;		
+		friend class D3D9RenderWindowManager;
 
 		void startUp_internal();
 		void shutdown_internal();
@@ -258,6 +257,8 @@ namespace CamelotEngine
 		void initConfigOptions();
 		void setClipPlane (UINT16 index, float A, float B, float C, float D);
 		void enableClipPlane (UINT16 index, bool enable);
+
+		HINSTANCE getInstanceHandle() const { return mhInstance; }
 
 		/**
 			Get the matching Z-Buffer identifier for a certain render target
@@ -287,6 +288,11 @@ namespace CamelotEngine
 		/// Take in some requested FSAA settings and output supported D3D settings
 		void determineFSAASettings(IDirect3DDevice9* d3d9Device, UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
 			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
+
+		/**
+		 * @brief	Called internally by RenderWindowManager whenever a new window is created.
+		 */
+		void registerRenderWindow(D3D9RenderWindowPtr renderWindow);
 	
 		/************************************************************************/
 		/* 							Sampler states                     			*/

@@ -167,6 +167,7 @@
     <ClInclude Include="Include\CmD3D9RenderSystem.h" />
     <ClInclude Include="Include\CmD3D9RenderSystemFactory.h" />
     <ClInclude Include="Include\CmD3D9RenderWindow.h" />
+    <ClInclude Include="Include\CmD3D9RenderWindowManager.h" />
     <ClInclude Include="Include\CmD3D9Resource.h" />
     <ClInclude Include="Include\CmD3D9ResourceManager.h" />
     <ClInclude Include="Include\CmD3D9Texture.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="Source\CmD3D9RenderSystem.cpp" />
     <ClCompile Include="Source\CmD3D9RenderSystemFactory.cpp" />
     <ClCompile Include="Source\CmD3D9RenderWindow.cpp" />
+    <ClCompile Include="Source\CmD3D9RenderWindowManager.cpp" />
     <ClCompile Include="Source\CmD3D9Resource.cpp" />
     <ClCompile Include="Source\CmD3D9ResourceManager.cpp" />
     <ClCompile Include="Source\CmD3D9Texture.cpp" />

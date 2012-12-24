@@ -82,6 +82,8 @@ namespace CamelotEngine
     class D3D9VertexDeclaration;
 	class D3D9Resource;
 
+	typedef std::shared_ptr<D3D9RenderWindow> D3D9RenderWindowPtr;
+
 	enum TypeID_D3D9
 	{
 		TID_D3D9_HLSLProgram = 10000

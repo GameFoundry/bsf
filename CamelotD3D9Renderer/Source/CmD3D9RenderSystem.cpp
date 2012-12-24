@@ -47,6 +47,7 @@ THE SOFTWARE.
 #include "CmD3D9MultiRenderTarget.h"
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
+#include "CmD3D9RenderWindowManager.h"
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmAsyncOp.h"
 #include "CmBlendState.h"
@@ -210,6 +211,9 @@ namespace CamelotEngine
 		// Create & register Cg factory		
 		mCgProgramFactory = new CgProgramFactory();
 
+		// Create render window manager
+		RenderWindowManager::startUp(new D3D9RenderWindowManager(this));
+
 		// call superclass method
 		RenderSystem::startUp_internal();
 	}
@@ -228,23 +232,17 @@ namespace CamelotEngine
 		GpuProgramManager::shutDown();		
 	}
 	//--------------------------------------------------------------------
-	void D3D9RenderSystem::createRenderWindow_internal(const String &name, 
-		unsigned int width, unsigned int height, bool fullScreen,
-		const NameValuePairList& miscParams, AsyncOp& asyncOp)
+	void D3D9RenderSystem::registerRenderWindow(D3D9RenderWindowPtr renderWindow)
 	{		
 		THROW_IF_NOT_RENDER_THREAD;
 
 		String msg;
 
-		D3D9RenderWindow* renderWindow = new D3D9RenderWindow(mhInstance);
-
-		renderWindow->initialize(name, width, height, fullScreen, &miscParams);
-
 		mResourceManager->lockDeviceAccess();
 
 		try
 		{
-			mDeviceManager->linkRenderWindow(renderWindow);
+			mDeviceManager->linkRenderWindow(renderWindow.get());
 		}
 		catch (const CamelotEngine::RenderingAPIException&)
 		{
@@ -258,13 +256,12 @@ namespace CamelotEngine
 
 		mResourceManager->unlockDeviceAccess();
 
-		mRenderWindows.push_back(renderWindow);		
+		// TODO - Storing raw pointer here might not be a good idea?
+		mRenderWindows.push_back(renderWindow.get());		
 
-		updateRenderSystemCapabilities(renderWindow);
+		updateRenderSystemCapabilities(renderWindow.get());
 
-		attachRenderTarget( *renderWindow );
-
-		asyncOp.completeOperation(static_cast<RenderWindow*>(renderWindow));
+		attachRenderTarget(*renderWindow);
 	}	
 
 	void D3D9RenderSystem::bindGpuProgram(GpuProgramHandle prg)

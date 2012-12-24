@@ -24,13 +24,15 @@ Move createRenderTexture to TextureManager? (also createMultiRenderTexture)
  - Right now its created with a special texture usage flag, which I don't like
 Drop OpenGL support for low level shaders? (See if cg can translate to GLSL)
 
+Make RenderSystem a module? (Initialize it using startUp, and get rid of directly accessing RenderSystemManager whenever I need the active RenderSystem)
+
+Keeping a list of all render targets in RenderSystem shouldn't be needed (and calling attach/detach renderTarget). Renderer should determine in what order are render targets presented.
+
 Rasterizer state:
  D3DRS_MULTISAMPLEANTIALIAS
  - but first check if available using D3DPRASTERCAPS_MULTISAMPLE_TOGGLE
  - see if opengl has something similar
  - see if either dx9 or opengl have something similar to DX11 antialias line
-
-Move createRenderWindow outside of RenderSystem
 
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
@@ -42,16 +44,11 @@ Make sure that the simulation can't run faster then the render thread! (Block th
 
 
 RenderSystem needed modifications
- - HLSL specifies Texture & Sampler separately
-   - Will probably need a rendersystem specific sampler object implementation
-   - Right now HLSL11 CANNOT SPECIFY TEXTURE PARAMETERS! (Pass needs to be extended)
+ - Right now HLSL11 CANNOT SPECIFY TEXTURE PARAMETERS! (Pass needs to be extended)
  - Generic buffers (Normal/Structured/Raw/Append/Consume/Indirect)
  - Ability to bind buffers and texture with different type of view (SHADER_RESOURCE & UNORDERED_ACCESS primarily, major others too)
  - Pass needs to be modified
-  - Texture & Sampler needs to be specified separately
-  - SamplerState object needs to be created, to be used by all render systems. It needs to have a render specific implementation
   - Needs to support bool/double/texture1D/textue3D/textureCUBE/texture arrays/MS textures/all types of buffers/structs
- - Deferred render contexts and multithreaded rendering
  - TextureBuffer support? (Use for bones when skinning for exaple, as constant buffers are too slow)
  - RW buffers?
  - Tesselation (hull/domain) shader
@@ -71,15 +68,9 @@ RenderSystem needed modifications
  - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
 
  RenderSystem modifications, yet another list:
-   - SamplerState - separate object. Multiple objects per pass
-   - RasterizerState - separate object containing all the DX9 and GL variables that were so far solo (fill mode, cull mode, etc). One per pass
-   - DepthStencilState - also separate object, one per pass
-
-   - Edit RenderSystem so it only accepts those objects (in bulk), and not individual commands? (Since DX11 can't accept individual commands)
-
    - DepthStencilView & RenderTargetView are automatically created for any RenderTarget (no special mechanism for setting them needed)
 
-   - Extend pass with "struct" (void*) parameters to that they can be assigned to constant buffers, and also expand it so it accepts separate textures & samplers. 
+   - Extend pass with "struct" (void*) parameters to that they can be assigned to constant buffers
    - Extend pass so it accepts "GenericBuffers"
 
    - Add support for "GenericBuffers" (normal/structured/raw/append/consume/indirect)
