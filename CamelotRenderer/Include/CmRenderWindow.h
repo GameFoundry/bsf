@@ -90,7 +90,7 @@ namespace CamelotEngine
                 miscParam A variable number of pointers to platform-specific arguments. The
                 actual requirements must be defined by the implementing subclasses.
         */
-		virtual void create(const String& name, unsigned int width, unsigned int height,
+		virtual void initialize(const String& name, unsigned int width, unsigned int height,
 	            bool fullScreen, const NameValuePairList *miscParams) = 0;
 
 		/** Alter fullscreen mode options. 
@@ -168,6 +168,8 @@ namespace CamelotEngine
           * \note 'true' is the default behavior.
           */
         void setDeactivateOnFocusChange(bool deactivate);
+
+		static RenderWindowPtr create(const String& name, unsigned int width, unsigned int height, bool fullScreen, const NameValuePairList *miscParams = nullptr);
 
     protected:
         bool mIsFullScreen;

@@ -541,7 +541,7 @@ namespace CamelotEngine {
         */
         virtual ~Camera();
 
-		void init(RenderTarget* target = nullptr,
+		void init(RenderTargetPtr target = nullptr,
 			float left = 0.0f, float top = 0.0f,
 			float width = 1.0f, float height = 1.0f,
 			int ZOrder = 0);

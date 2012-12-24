@@ -52,7 +52,7 @@ namespace CamelotEngine {
 		updateDimensions();
 	}
     //---------------------------------------------------------------------
-    Viewport::Viewport(RenderTarget* target, float left, float top, float width, float height, int ZOrder)
+    Viewport::Viewport(RenderTargetPtr target, float left, float top, float width, float height, int ZOrder)
          :mTarget(target)
         , mRelLeft(left)
         , mRelTop(top)
@@ -92,7 +92,7 @@ namespace CamelotEngine {
 		return mZOrder;
 	}
 	//---------------------------------------------------------------------
-    RenderTarget* Viewport::getTarget(void) const
+    RenderTargetPtr Viewport::getTarget(void) const
     {
         return mTarget;
     }

@@ -60,9 +60,6 @@ public:
 
 	virtual ConfigOptionMap& getConfigOptions(void);
 
-	virtual RenderWindow* createWindow(bool autoCreateWindow, GLRenderSystem* renderSystem, const String& windowTitle) = 0;
-
-	/// @copydoc RenderSystem::_createRenderWindow
 	virtual RenderWindow* newWindow(const String &name, unsigned int width, unsigned int height, 
 		bool fullScreen, const NameValuePairList *miscParams = 0) = 0;
 

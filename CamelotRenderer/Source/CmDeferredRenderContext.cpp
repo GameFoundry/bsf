@@ -124,7 +124,7 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuProgramParameters, mRenderSystem, gptype, paramCopy, variabilityMask));
 	}
 
-	void DeferredRenderContext::setRenderTarget(RenderTarget *target)
+	void DeferredRenderContext::setRenderTarget(RenderTarget* target)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setRenderTarget, mRenderSystem, target));
 	}

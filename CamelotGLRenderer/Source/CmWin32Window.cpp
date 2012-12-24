@@ -64,7 +64,7 @@ namespace CamelotEngine {
 		destroy();
 	}
 
-	void Win32Window::create(const String& name, unsigned int width, unsigned int height,
+	void Win32Window::initialize(const String& name, unsigned int width, unsigned int height,
 							bool fullScreen, const NameValuePairList *miscParams)
 	{
 		// destroy current window, if any

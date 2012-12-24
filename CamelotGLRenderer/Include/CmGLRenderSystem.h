@@ -44,45 +44,37 @@ namespace CamelotEngine {
     class CM_RSGL_EXPORT GLRenderSystem : public RenderSystem
     {
     public:
-        // Default constructor / destructor
         GLRenderSystem();
         ~GLRenderSystem();
 
-        // ----------------------------------
-        // Overridden RenderSystem functions
-        // ----------------------------------
-        /** See
-          RenderSystem
-         */
+		/**
+		 * @copydoc RenderSystem::getName()
+		 */
         const String& getName(void) const;
 
-        // -----------------------------
-        // Low-level overridden members
-        // -----------------------------
-		/** See
-          RenderSystem
-         */
-		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
-        /**
-         * Set current render target to target, enabling its GL context if needed
-         */
+		/**
+		 * @copydoc RenderSystem::setRenderTarget()
+		 */
         void setRenderTarget(RenderTarget *target);
-		/** See
-          RenderSystem
-         */
+
+		/**
+		 * @copydoc RenderSystem::bindGpuProgram()
+		 */
 		void bindGpuProgram(GpuProgramHandle prg);
-        /** See
-          RenderSystem
-         */
+
+		/**
+		 * @copydoc RenderSystem::unbindGpuProgram()
+		 */
 		void unbindGpuProgram(GpuProgramType gptype);
-		/** See
-          RenderSystem
-         */
+
+		/**
+		 * @copydoc RenderSystem::bindGpuProgramParameters()
+		 */
 		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
-		/** See
-          RenderSystem
-         */
+
+		/**
+		 * @copydoc RenderSystem::setTexture()
+		 */
         void setTexture(UINT16 unit, bool enabled, const TexturePtr &tex);
         
 		/**
@@ -110,54 +102,80 @@ namespace CamelotEngine {
 		 */
 		void setStencilRefValue(UINT32 refValue);
 
-        /** See
-          RenderSystem
-         */
+		/**
+		 * @copydoc RenderSystem::setViewport()
+		 */
         void setViewport(const Viewport& vp);
-        /** See
-          RenderSystem
-         */
+
+		/**
+		 * @copydoc RenderSystem::beginFrame()
+		 */
         void beginFrame(void);
-        /** See
-          RenderSystem
-         */
+
+		/**
+		 * @copydoc RenderSystem::endFrame()
+		 */
         void endFrame(void);
-        /** See
-          RenderSystem
-         */
+
+        /**
+		 * @copydoc RenderSystem::convertProjectionMatrix()
+		 */
         void convertProjectionMatrix(const Matrix4& matrix,
             Matrix4& dest, bool forGpuProgram = false);
-        /** See
-          RenderSystem
-         */
+        /**
+		 * @copydoc RenderSystem::setVertexDeclaration()
+		 */
 		void setVertexDeclaration(VertexDeclarationPtr decl);
-        /** See
-          RenderSystem
-         */
+        /**
+		 * @copydoc RenderSystem::setVertexBufferBinding()
+		 */
 		void setVertexBufferBinding(VertexBufferBinding* binding);
-        /** See
-          RenderSystem
-         */
+        /**
+		 * @copydoc RenderSystem::render()
+		 */
         void render(const RenderOperation& op);
 
-        /** See
-          RenderSystem
-         */
+        /**
+		 * @copydoc RenderSystem::setScissorRect()
+		 */
         void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) ;
+
+		/**
+		 * @copydoc RenderSystem::clearFrameBuffer()
+		 */
         void clearFrameBuffer(unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
 
-		/** See
-          RenderSystem
-         */
+        /**
+		 * @copydoc RenderSystem::getColorVertexElementType()
+		 */
         VertexElementType getColorVertexElementType(void) const;
+
+		/**
+		 * @copydoc RenderSystem::getHorizontalTexelOffset()
+		 */
         float getHorizontalTexelOffset(void);
+
+		/**
+		 * @copydoc RenderSystem::getVerticalTexelOffset()
+		 */
         float getVerticalTexelOffset(void);
+
+		/**
+		 * @copydoc RenderSystem::getMinimumDepthInputValue()
+		 */
         float getMinimumDepthInputValue(void);
+
+		 /**
+		 * @copydoc RenderSystem::getMaximumDepthInputValue()
+		 */
         float getMaximumDepthInputValue(void);
 
-        void _unregisterContext(GLContext *context);
+        void unregisterContext(GLContext *context);
+		void registerContext(GLContext* context);
+
+		GLSupport* getGLSupport() const { return mGLSupport; }
 
     private:
         /// Rendering loop control
@@ -198,7 +216,7 @@ namespace CamelotEngine {
  
         GLint getBlendMode(SceneBlendFactor ogreBlend) const;
 		GLint getTextureAddressingMode(TextureAddressingMode tam) const;
-		void initialiseContext(RenderWindow* primary);
+		void initialiseContext(GLContext* primary);
 
 		/** See
           RenderSystem
@@ -207,7 +225,7 @@ namespace CamelotEngine {
         /** See
           RenderSystem
          */
-		void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary);
+		void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps);
 
         /// Store last depth write state
         bool mDepthWrite;

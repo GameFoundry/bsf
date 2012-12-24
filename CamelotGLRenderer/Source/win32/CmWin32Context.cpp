@@ -48,7 +48,7 @@ namespace CamelotEngine {
 		// NB have to do this is subclass to ensure any methods called back
 		// are on this subclass and not half-destructed superclass
 		GLRenderSystem *rs = static_cast<GLRenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
-		rs->_unregisterContext(this);
+		rs->unregisterContext(this);
     }
         
     void Win32Context::setCurrent()

@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmRenderWindow.h"
-
+#include "CmRenderWindowManager.h"
 #include "CmViewport.h"
 
 namespace CamelotEngine {
@@ -67,4 +67,9 @@ namespace CamelotEngine {
     {
         mAutoDeactivatedOnFocusChange = deactivate;
     }
+
+	RenderWindowPtr RenderWindow::create(const String& name, unsigned int width, unsigned int height, bool fullScreen, const NameValuePairList *miscParams)
+	{
+		return RenderWindowManager::instance().create(name, width, height, fullScreen, miscParams);
+	}
 }

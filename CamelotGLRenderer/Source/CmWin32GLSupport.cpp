@@ -218,83 +218,6 @@ namespace CamelotEngine {
 		return StringUtil::BLANK;
 	}
 
-	RenderWindow* Win32GLSupport::createWindow(bool autoCreateWindow, GLRenderSystem* renderSystem, const String& windowTitle)
-	{
-		if (autoCreateWindow)
-        {
-            ConfigOptionMap::iterator opt = mOptions.find("Full Screen");
-            if (opt == mOptions.end())
-                CM_EXCEPT(InvalidParametersException, "Can't find full screen options!");
-            bool fullscreen = (opt->second.currentValue == "Yes");
-
-            opt = mOptions.find("Video Mode");
-            if (opt == mOptions.end())
-                CM_EXCEPT(InvalidParametersException, "Can't find video mode options!");
-            String val = opt->second.currentValue;
-            String::size_type pos = val.find('x');
-            if (pos == String::npos)
-                CM_EXCEPT(InvalidParametersException, "Invalid Video Mode provided");
-
-			unsigned int w = parseUnsignedInt(val.substr(0, pos));
-            unsigned int h = parseUnsignedInt(val.substr(pos + 1));
-
-			// Parse optional parameters
-			NameValuePairList winOptions;
-			opt = mOptions.find("Colour Depth");
-			if (opt == mOptions.end())
-				CM_EXCEPT(InvalidParametersException, "Can't find Colour Depth options!");
-			unsigned int colourDepth =
-				parseUnsignedInt(opt->second.currentValue);
-			winOptions["colourDepth"] = toString(colourDepth);
-
-			opt = mOptions.find("VSync");
-			if (opt == mOptions.end())
-				CM_EXCEPT(InvalidParametersException, "Can't find VSync options!");
-			bool vsync = (opt->second.currentValue == "Yes");
-			winOptions["vsync"] = toString(vsync);
-			renderSystem->setWaitForVerticalBlank(vsync);
-
-			opt = mOptions.find("VSync Interval");
-			if (opt == mOptions.end())
-				CM_EXCEPT(InvalidParametersException, "Can't find VSync Interval options!");
-			winOptions["vsyncInterval"] = opt->second.currentValue;
-
-
-			opt = mOptions.find("Display Frequency");
-			if (opt != mOptions.end())
-			{
-				unsigned int displayFrequency =
-					parseUnsignedInt(opt->second.currentValue);
-				winOptions["displayFrequency"] = toString(displayFrequency);
-			}
-
-			opt = mOptions.find("FSAA");
-			if (opt == mOptions.end())
-				CM_EXCEPT(InvalidParametersException, "Can't find FSAA options!");
-			std::vector<CamelotEngine::String> aavalues = StringUtil::split(opt->second.currentValue, " ", 1);
-			unsigned int multisample = parseUnsignedInt(aavalues[0]);
-			String multisample_hint;
-			if (aavalues.size() > 1)
-				multisample_hint = aavalues[1];
-
-			winOptions["FSAA"] = toString(multisample);
-			winOptions["FSAAHint"] = multisample_hint;
-
-			opt = mOptions.find("sRGB Gamma Conversion");
-			if (opt == mOptions.end())
-				CM_EXCEPT(InvalidParametersException, "Can't find sRGB options!");
-			bool hwGamma = (opt->second.currentValue == "Yes");
-			winOptions["gamma"] = toString(hwGamma);
-
-            return renderSystem->createRenderWindow(windowTitle, w, h, fullscreen, &winOptions);
-        }
-        else
-        {
-            // XXX What is the else?
-			return NULL;
-        }
-	}
-
 	BOOL CALLBACK Win32GLSupport::sCreateMonitorsInfoEnumProc(
 		HMONITOR hMonitor,  // handle to display monitor
 		HDC hdcMonitor,     // handle to monitor DC
@@ -373,7 +296,7 @@ namespace CamelotEngine {
 			newParams["monitorHandle"] = toString((size_t)hMonitor);																
 		}
 
-		window->create(name, width, height, fullScreen, miscParams);
+		window->initialize(name, width, height, fullScreen, miscParams);
 
 		if(!mInitialWindow)
 			mInitialWindow = window;

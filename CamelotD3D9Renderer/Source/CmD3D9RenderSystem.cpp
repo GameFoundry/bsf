@@ -238,7 +238,7 @@ namespace CamelotEngine
 
 		D3D9RenderWindow* renderWindow = new D3D9RenderWindow(mhInstance);
 
-		renderWindow->create(name, width, height, fullScreen, &miscParams);
+		renderWindow->initialize(name, width, height, fullScreen, &miscParams);
 
 		mResourceManager->lockDeviceAccess();
 
@@ -1053,7 +1053,7 @@ namespace CamelotEngine
 			__SetSamplerState( static_cast<DWORD>(unit), D3DSAMP_MAXANISOTROPY, maxAnisotropy );
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setRenderTarget(RenderTarget *target)
+	void D3D9RenderSystem::setRenderTarget(RenderTarget* target)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1066,7 +1066,7 @@ namespace CamelotEngine
 		// implementation ensures nothing happens if the same device is set twice
 		if (std::find(mRenderWindows.begin(), mRenderWindows.end(), target) != mRenderWindows.end())
 		{
-			D3D9RenderWindow *window = static_cast<D3D9RenderWindow*>(target);
+			D3D9RenderWindow* window = static_cast<D3D9RenderWindow*>(target);
 			mDeviceManager->setActiveRenderTargetDevice(window->getDevice());
 			// also make sure we validate the device; if this never went 
 			// through update() it won't be set
@@ -1131,8 +1131,8 @@ namespace CamelotEngine
 		HRESULT hr;
 
 		// Set render target
-		RenderTarget* target = vp.getTarget();
-		setRenderTarget(target);
+		RenderTargetPtr target = vp.getTarget();
+		setRenderTarget(target.get());
 
 		setCullingMode( mCullingMode );
 
@@ -2134,7 +2134,7 @@ namespace CamelotEngine
 			mCurrentCapabilities->addShaderProfile("hlsl");
 			mCurrentCapabilities->addShaderProfile("cg");
 
-			initialiseFromRenderSystemCapabilities(mCurrentCapabilities, renderWindow);
+			initialiseFromRenderSystemCapabilities(mCurrentCapabilities);
 		}
 
 		return rsc;
@@ -2427,7 +2427,7 @@ namespace CamelotEngine
 
 	}
 	//-----------------------------------------------------------------------
-	void D3D9RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary)
+	void D3D9RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
 	{
 		if (caps->getRenderSystemName() != getName())
 		{

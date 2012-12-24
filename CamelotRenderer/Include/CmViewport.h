@@ -79,7 +79,7 @@ namespace CamelotEngine {
                 the front.
         */
         Viewport(
-            RenderTarget* target,
+            RenderTargetPtr target,
             float left = 0.0f, float top = 0.0f,
             float width = 1.0f, float height = 1.0f,
             int ZOrder = 0);
@@ -106,7 +106,7 @@ namespace CamelotEngine {
 
         /** Retrieves a pointer to the render target for this viewport.
         */
-        RenderTarget* getTarget(void) const;
+        RenderTargetPtr getTarget(void) const;
 
         /** Gets the Z-Order of this viewport. */
 		int getZOrder(void) const;
@@ -197,7 +197,7 @@ namespace CamelotEngine {
             int &left, int &top, int &width, int &height ) const;
 
     protected:
-        RenderTarget* mTarget;
+        RenderTargetPtr mTarget;
         // Relative dimensions, irrespective of target dimensions (0..1)
         float mRelLeft, mRelTop, mRelWidth, mRelHeight;
         // Actual dimensions, based on target dimensions

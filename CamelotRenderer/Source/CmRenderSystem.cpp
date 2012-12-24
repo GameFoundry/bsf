@@ -89,7 +89,7 @@ namespace CamelotEngine {
 
 		initRenderThread();
 
-		queueCommand(boost::bind(&RenderSystem::startUp_internal, this));
+		queueCommand(boost::bind(&RenderSystem::startUp_internal, this), true);
 	}
 	//-----------------------------------------------------------------------
 	void RenderSystem::startUp_internal()
@@ -148,19 +148,6 @@ namespace CamelotEngine {
 				itarg->second->swapBuffers(waitForVSync);
 		}
     }
-	//---------------------------------------------------------------------------------------------
-	RenderWindow* RenderSystem::createRenderWindow(const String &name, unsigned int width, unsigned int height, 
-		bool fullScreen, const NameValuePairList *miscParams)
-	{
-		AsyncOp op;
-
-		if(miscParams != nullptr)
-			op = queueReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, *miscParams, _1), true);
-		else
-			op = queueReturnCommand(boost::bind(&RenderSystem::createRenderWindow_internal, this, name, width, height, fullScreen, NameValuePairList(), _1), true);
-
-		return op.getReturnValue<RenderWindow*>();
-	}
     //---------------------------------------------------------------------------------------------
     void RenderSystem::destroyRenderWindow(RenderWindow* renderWindow)
     {

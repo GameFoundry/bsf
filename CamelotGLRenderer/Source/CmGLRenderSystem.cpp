@@ -47,6 +47,7 @@ THE SOFTWARE.s
 #include "CmRasterizerState.h"
 #include "CmDepthStencilState.h"
 #include "CmGLRenderTexture.h"
+#include "CmGLRenderWindowManager.h"
 
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
@@ -97,7 +98,7 @@ namespace CamelotEngine {
 		size_t i;
 
 		// Get our GLSupport
-		mGLSupport = getGLSupport();
+		mGLSupport = CamelotEngine::getGLSupport();
 
 		mWorldMatrix = Matrix4::IDENTITY;
 		mViewMatrix = Matrix4::IDENTITY;
@@ -155,6 +156,7 @@ namespace CamelotEngine {
 		THROW_IF_NOT_RENDER_THREAD;
 
 		mGLSupport->start();
+		RenderWindowManager::startUp(new GLRenderWindowManager(this));
 
 		RenderSystem::startUp_internal();
 	}
@@ -207,49 +209,6 @@ namespace CamelotEngine {
 		//  some params will access an invalid pointer, so it is best to reset
 		//  the whole state.
 		mGLInitialised = 0;
-	}
-
-	void GLRenderSystem::createRenderWindow_internal(const String &name, 
-		unsigned int width, unsigned int height, bool fullScreen,
-		const NameValuePairList& miscParams, AsyncOp& asyncOp)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		// Create the window
-		RenderWindow* win = mGLSupport->newWindow(name, width, height, 
-			fullScreen, &miscParams);
-
-		attachRenderTarget( *win );
-
-		if (!mGLInitialised) 
-		{                
-			// set up glew and GLSupport
-			initialiseContext(win);
-
-			std::vector<CamelotEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
-
-			if (!tokens.empty())
-			{
-				mDriverVersion.major = parseInt(tokens[0]);
-				if (tokens.size() > 1)
-					mDriverVersion.minor = parseInt(tokens[1]);
-				if (tokens.size() > 2)
-					mDriverVersion.release = parseInt(tokens[2]); 
-			}
-			mDriverVersion.build = 0;
-			// Initialise GL after the first window has been created
-			// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
-			mCurrentCapabilities = createRenderSystemCapabilities();
-
-			initialiseFromRenderSystemCapabilities(mCurrentCapabilities, win);
-
-			// Initialise the main context
-			oneTimeContextInitialization();
-			if(mCurrentContext)
-				mCurrentContext->setInitialized();
-		}
-
-		asyncOp.completeOperation(win);
 	}
 
 	//---------------------------------------------------------------------
@@ -538,9 +497,9 @@ namespace CamelotEngine {
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		RenderTarget* target;
+		RenderTargetPtr target;
 		target = vp.getTarget();
-		setRenderTarget(target);
+		setRenderTarget(target.get());
 		mActiveViewport = vp;
 		
 		GLsizei x, y, w, h;
@@ -1572,7 +1531,38 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::_unregisterContext(GLContext *context)
+	void GLRenderSystem::registerContext(GLContext* context)
+	{
+		if (!mGLInitialised) 
+		{                
+			// set up glew and GLSupport
+			initialiseContext(context);
+
+			std::vector<CamelotEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+
+			if (!tokens.empty())
+			{
+				mDriverVersion.major = parseInt(tokens[0]);
+				if (tokens.size() > 1)
+					mDriverVersion.minor = parseInt(tokens[1]);
+				if (tokens.size() > 2)
+					mDriverVersion.release = parseInt(tokens[2]); 
+			}
+			mDriverVersion.build = 0;
+			// Initialise GL after the first window has been created
+			// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
+			mCurrentCapabilities = createRenderSystemCapabilities();
+
+			initialiseFromRenderSystemCapabilities(mCurrentCapabilities);
+
+			// Initialise the main context
+			oneTimeContextInitialization();
+			if(mCurrentContext)
+				mCurrentContext->setInitialized();
+		}
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::unregisterContext(GLContext *context)
 	{
 		if(mCurrentContext == context) {
 			// Change the context to something else so that a valid context
@@ -1794,11 +1784,10 @@ namespace CamelotEngine {
 		return retval;
 	}
 	//-----------------------------------------------------------------------
-	void GLRenderSystem::initialiseContext(RenderWindow* primary)
+	void GLRenderSystem::initialiseContext(GLContext* primary)
 	{
 		// Set main and current context
-		mMainContext = 0;
-		primary->getCustomAttribute_internal("GLCONTEXT", &mMainContext);
+		mMainContext = primary;
 		mCurrentContext = mMainContext;
 
 		// Set primary context as active
@@ -1813,7 +1802,7 @@ namespace CamelotEngine {
 		glewContextInit(mGLSupport);
 #endif
 	}
-	void GLRenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary)
+	void GLRenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
 	{
 		if(caps->getRenderSystemName() != getName())
 		{

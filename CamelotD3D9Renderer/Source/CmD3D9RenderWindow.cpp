@@ -57,7 +57,7 @@ namespace CamelotEngine
 		destroy();
 	}
 
-	void D3D9RenderWindow::create(const String& name, unsigned int width, unsigned int height,
+	void D3D9RenderWindow::initialize(const String& name, unsigned int width, unsigned int height,
 		bool fullScreen, const NameValuePairList *miscParams)
 	{
 		HINSTANCE hInst = mInstance;

@@ -9,7 +9,7 @@ namespace CamelotEngine
 		POINT screenPos;
 		GetCursorPos(&screenPos);
 
-		RenderWindow* primaryWindow = gApplication().getPrimaryRenderWindow();
+		RenderWindowPtr primaryWindow = gApplication().getPrimaryRenderWindow();
 		HWND hwnd;
 		primaryWindow->getCustomAttribute_internal("WINDOW", &hwnd);
 
@@ -26,7 +26,7 @@ namespace CamelotEngine
 		screenPos.x = pos.x;
 		screenPos.y = pos.y;
 
-		RenderWindow* primaryWindow = gApplication().getPrimaryRenderWindow();
+		RenderWindowPtr primaryWindow = gApplication().getPrimaryRenderWindow();
 		HWND hwnd;
 		primaryWindow->getCustomAttribute_internal("WINDOW", &hwnd);
 
@@ -41,7 +41,7 @@ namespace CamelotEngine
 
 		ShowCursor( FALSE );
 
-		RenderWindow* primaryWindow = gApplication().getPrimaryRenderWindow();
+		RenderWindowPtr primaryWindow = gApplication().getPrimaryRenderWindow();
 		HWND hwnd;
 		primaryWindow->getCustomAttribute_internal("WINDOW", &hwnd);
 

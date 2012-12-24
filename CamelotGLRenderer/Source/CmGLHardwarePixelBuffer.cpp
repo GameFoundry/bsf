@@ -232,17 +232,6 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
 	mSlicePitch = mHeight*mWidth;
 	mSizeInBytes = PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 	
-	// Log a message
-	/*
-	std::stringstream str;
-	str << "GLHardwarePixelBuffer constructed for texture " << mTextureID 
-		<< " face " << mFace << " level " << mLevel << ": "
-		<< "width=" << mWidth << " height="<< mHeight << " depth=" << mDepth
-		<< "format=" << PixelUtil::getFormatName(mFormat) << "(internal 0x"
-		<< std::hex << value << ")";
-	LogManager::getSingleton().logMessage( 
-                LML_NORMAL, str.str());
-	*/
 	// Set up pixel box
 	mBuffer = PixelData(mWidth, mHeight, mDepth, mFormat);
 	

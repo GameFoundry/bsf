@@ -24,7 +24,7 @@ namespace CamelotEngine
 
 			UINT64 getAppWindowId();
 
-			RenderWindow* getPrimaryRenderWindow() const { return mPrimaryRenderWindow; }
+			RenderWindowPtr getPrimaryRenderWindow() const { return mPrimaryRenderWindow; }
 
 			// TODO: This is just for debug purposes. Normally I'd want to have one render context per scene view, not one global one
 			DeferredRenderContextPtr getPrimaryRenderContext() const { return mPrimaryRenderContext; }
@@ -37,7 +37,7 @@ namespace CamelotEngine
 			void loadPlugin(const String& pluginName);
 
 	private:
-		RenderWindow* mPrimaryRenderWindow;
+		RenderWindowPtr mPrimaryRenderWindow;
 		DeferredRenderContextPtr mPrimaryRenderContext;
 
 		/**

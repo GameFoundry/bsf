@@ -164,6 +164,7 @@
     <ClInclude Include="Include\CmGLRenderSystem.h" />
     <ClInclude Include="Include\CmGLRenderSystemFactory.h" />
     <ClInclude Include="Include\CmGLRenderTexture.h" />
+    <ClInclude Include="Include\CmGLRenderWindowManager.h" />
     <ClInclude Include="Include\CmGLSLProgramRTTI.h" />
     <ClInclude Include="Include\CmGLSupport.h" />
     <ClInclude Include="Include\CmGLTexture.h" />
@@ -205,6 +206,7 @@
     <ClCompile Include="Source\CmGLRenderSystem.cpp" />
     <ClCompile Include="Source\CmGLRenderSystemFactory.cpp" />
     <ClCompile Include="Source\CmGLRenderTexture.cpp" />
+    <ClCompile Include="Source\CmGLRenderWindowManager.cpp" />
     <ClCompile Include="Source\CmGLSupport.cpp" />
     <ClCompile Include="Source\CmGLTexture.cpp" />
     <ClCompile Include="Source\CmGLTextureManager.cpp" />

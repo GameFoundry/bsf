@@ -91,11 +91,8 @@ namespace CamelotEngine
 			bindSurfaceImpl(attachment, target);
 		}
 
-
-
 		/** Unbind attachment.
 		*/
-
 		virtual void unbindSurface(UINT32 attachment)
 		{
 			if (attachment < (UINT32)mBoundSurfaces.size())
@@ -122,7 +119,6 @@ namespace CamelotEngine
 			return mBoundSurfaces[index];
 		}
 
-
 	protected:
 		BoundSufaceList mBoundSurfaces;
 
@@ -130,8 +126,6 @@ namespace CamelotEngine
 		virtual void bindSurfaceImpl(UINT32 attachment, RenderTexture *target) = 0;
 		/// implementation of unbindSurface, must be provided
 		virtual void unbindSurfaceImpl(UINT32 attachment) = 0;
-
-
 	};
 	/** @} */
 	/** @} */

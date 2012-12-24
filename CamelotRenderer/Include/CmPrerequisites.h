@@ -165,9 +165,11 @@ namespace CamelotEngine
 	typedef std::shared_ptr<DepthStencilState> DepthStencilStatePtr;
 	typedef std::shared_ptr<RasterizerState> RasterizerStatePtr;
 	typedef std::shared_ptr<BlendState> BlendStatePtr;
+	typedef std::shared_ptr<RenderWindow> RenderWindowPtr;
+	typedef std::shared_ptr<RenderTarget> RenderTargetPtr;
 }
 
-// All type IDs
+// All type IDs used for RTTI
 namespace CamelotEngine
 {
 	enum TypeID_Core
@@ -216,6 +218,6 @@ namespace CamelotEngine
 	typedef ResourceHandle<Material> MaterialHandle;
 }
 
-#endif // __OgrePrerequisites_H__
+#endif
 
 

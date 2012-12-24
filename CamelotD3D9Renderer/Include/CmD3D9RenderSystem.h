@@ -54,7 +54,7 @@ namespace CamelotEngine
 		void createRenderWindow_internal(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList& miscParams, AsyncOp& asyncOp);
 		void destroyRenderTarget(RenderTarget* renderTarget);
-		void setRenderTarget(RenderTarget *target);
+		void setRenderTarget(RenderTarget* target);
 
 		void bindGpuProgram(GpuProgramHandle prg);
 		void unbindGpuProgram(GpuProgramType gptype);
@@ -189,7 +189,7 @@ namespace CamelotEngine
 		RenderSystemCapabilities* updateRenderSystemCapabilities(D3D9RenderWindow* renderWindow);
 
 		/** See RenderSystem definition */
-		virtual void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps, RenderTarget* primary);
+		virtual void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps);
 
 
         void convertVertexShaderCaps(RenderSystemCapabilities* rsc) const;

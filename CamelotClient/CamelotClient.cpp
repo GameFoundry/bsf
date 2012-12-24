@@ -31,7 +31,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
 
 	RenderSystem* renderSystem = RenderSystemManager::getActive();
-	RenderWindow* renderWindow = gApplication().getPrimaryRenderWindow();
+	RenderWindowPtr renderWindow = gApplication().getPrimaryRenderWindow();
 
 	GameObjectPtr cameraGO = GameObject::create("MainCamera");
 	CameraPtr camera = cameraGO->addComponent<Camera>();

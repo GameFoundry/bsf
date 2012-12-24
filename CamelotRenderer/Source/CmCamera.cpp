@@ -92,7 +92,7 @@ namespace CamelotEngine {
 		if(mViewport != nullptr)
 			delete mViewport;
     }
-	void Camera::init(RenderTarget* target, float left, float top, float width, float height, int ZOrder)
+	void Camera::init(RenderTargetPtr target, float left, float top, float width, float height, int ZOrder)
 	{
 		mViewport = new Viewport(target, left, top, width, height, ZOrder);
 	}

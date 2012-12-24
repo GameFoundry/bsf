@@ -20,6 +20,10 @@
 Check out how to deal with clip planes so that both DX9, DX11 and GL support them
 waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
+Move createRenderTexture to TextureManager? (also createMultiRenderTexture)
+ - Right now its created with a special texture usage flag, which I don't like
+Drop OpenGL support for low level shaders? (See if cg can translate to GLSL)
+
 Rasterizer state:
  D3DRS_MULTISAMPLEANTIALIAS
  - but first check if available using D3DPRASTERCAPS_MULTISAMPLE_TOGGLE
@@ -27,7 +31,6 @@ Rasterizer state:
  - see if either dx9 or opengl have something similar to DX11 antialias line
 
 Move createRenderWindow outside of RenderSystem
-RenderSystem::setRenderTarget needs to accept multiple targets
 
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)

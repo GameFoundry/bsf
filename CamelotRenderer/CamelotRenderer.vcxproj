@@ -232,6 +232,7 @@
     <ClInclude Include="Include\CmRenderTarget.h" />
     <ClInclude Include="Include\CmRenderTexture.h" />
     <ClInclude Include="Include\CmRenderWindow.h" />
+    <ClInclude Include="Include\CmRenderWindowManager.h" />
     <ClInclude Include="Include\CmResource.h" />
     <ClInclude Include="Include\CmResourceHandle.h" />
     <ClInclude Include="Include\CmResourceHandleRTTI.h" />
@@ -299,6 +300,7 @@
     <ClCompile Include="Source\CmRenderTarget.cpp" />
     <ClCompile Include="Source\CmRenderTexture.cpp" />
     <ClCompile Include="Source\CmRenderWindow.cpp" />
+    <ClCompile Include="Source\CmRenderWindowManager.cpp" />
     <ClCompile Include="Source\CmResource.cpp" />
     <ClCompile Include="Source\CmResourceHandle.cpp" />
     <ClCompile Include="Source\CmResources.cpp" />
