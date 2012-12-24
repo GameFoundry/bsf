@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include "CmViewport.h"
 #include "CmException.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
 
@@ -122,7 +121,7 @@ namespace CamelotEngine {
 		if (swap)
 		{
 			// Swap buffers
-    	    swapBuffers(CamelotEngine::RenderSystemManager::getActive()->getWaitForVerticalBlank());
+    	    swapBuffers(CamelotEngine::RenderSystem::instancePtr()->getWaitForVerticalBlank());
 		}
     }
 	

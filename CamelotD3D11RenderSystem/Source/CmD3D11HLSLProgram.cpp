@@ -1,5 +1,4 @@
 #include "CmD3D11HLSLProgram.h"
-#include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 #include "CmGpuProgramManager.h"
 #include "CmD3D11GpuProgram.h"
@@ -92,7 +91,7 @@ namespace CamelotEngine
 
 	bool D3D11HLSLProgram::isSupported() const
 	{
-		RenderSystem* rs = RenderSystemManager::getActive();
+		RenderSystem* rs = RenderSystem::instancePtr();
 
 		return rs->getCapabilities()->isShaderProfileSupported(getSyntaxCode()) && HighLevelGpuProgram::isSupported();
 	}

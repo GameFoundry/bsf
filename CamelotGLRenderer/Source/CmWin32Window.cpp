@@ -36,7 +36,6 @@ THE SOFTWARE.
 #include "CmWin32Context.h"
 #include "CmWindowEventUtilities.h"
 #include "CmGLPixelFormat.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
 

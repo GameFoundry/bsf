@@ -49,7 +49,7 @@ namespace CamelotEngine
 		loadPlugin(rendererName);
 		RendererManager::setActive("ForwardRenderer");
 
-		RenderSystem* renderSystem = RenderSystemManager::getActive();
+		RenderSystem* renderSystem = RenderSystem::instancePtr();
 
 		mPrimaryRenderWindow = RenderWindow::create("Camelot Renderer", 1280, 720, false);
 		mPrimaryRenderContext = renderSystem->createDeferredContext();
@@ -70,7 +70,7 @@ namespace CamelotEngine
 		{
 			gSceneManager().update();
 
-			RenderSystem* renderSystem = RenderSystemManager::getActive();
+			RenderSystem* renderSystem = RenderSystem::instancePtr();
 			renderSystem->queueCommand(boost::bind(&Application::updateMessagePump, this));
 			renderSystem->queueCommand(boost::bind(&Application::updateResourcesCallback, this));
 

@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include "CmWin32Context.h"
 #include "CmException.h"
 #include "CmGLRenderSystem.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
 
@@ -47,7 +46,7 @@ namespace CamelotEngine {
     {
 		// NB have to do this is subclass to ensure any methods called back
 		// are on this subclass and not half-destructed superclass
-		GLRenderSystem *rs = static_cast<GLRenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+		GLRenderSystem *rs = static_cast<GLRenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
 		rs->unregisterContext(this);
     }
         

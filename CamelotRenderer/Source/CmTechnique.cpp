@@ -1,6 +1,5 @@
 #include "CmTechnique.h"
 #include "CmException.h"
-#include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 #include "CmRendererManager.h"
 #include "CmPass.h"
@@ -49,7 +48,7 @@ namespace CamelotEngine
 
 	bool Technique::isSupported() const
 	{
-		if(RenderSystemManager::getActive()->getName() == mRenderSystem &&
+		if(RenderSystem::instancePtr()->getName() == mRenderSystem &&
 			RendererManager::getActive()->getName() == mRenderer)
 		{
 			return true;

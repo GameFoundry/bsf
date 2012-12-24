@@ -3,7 +3,6 @@
 #include "CmShader.h"
 #include "CmTechnique.h"
 #include "CmPass.h"
-#include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 #include "CmGpuProgramParams.h"
 #include "CmGpuProgram.h"

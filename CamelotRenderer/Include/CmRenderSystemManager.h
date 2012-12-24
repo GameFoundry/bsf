@@ -11,7 +11,6 @@ namespace CamelotEngine
 	{
 	public:
 		static void startUp(const String& name);
-		static RenderSystem* getActive();
 
 		static void registerRenderSystemFactory(RenderSystemFactoryPtr factory);
 	private:

@@ -34,7 +34,6 @@ THE SOFTWARE.
 #include "CmAxisAlignedBox.h"
 #include "CmException.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
 

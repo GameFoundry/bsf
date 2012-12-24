@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmBitwise.h"
 #include "CmGLRenderTexture.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
 //----------------------------------------------------------------------------- 
@@ -255,7 +254,7 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
             surface.zoffset = zoffset;
             RenderTexture *trt = GLRTTManager::instance().createRenderTexture(name, surface, writeGamma, fsaa);
             mSliceTRT.push_back(trt);
-            CamelotEngine::RenderSystemManager::getActive()->attachRenderTarget(*mSliceTRT[zoffset]);
+            CamelotEngine::RenderSystem::instancePtr()->attachRenderTarget(*mSliceTRT[zoffset]);
         }
 	}
 }
@@ -267,7 +266,7 @@ GLTextureBuffer::~GLTextureBuffer()
         // was deleted by the user.
         for (SliceTRT::const_iterator it = mSliceTRT.begin(); it != mSliceTRT.end(); ++it)
         {
-			CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget(*it);
+			CamelotEngine::RenderSystem::instancePtr()->destroyRenderTarget(*it);
         }
 	}
 }
@@ -565,7 +564,7 @@ void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, c
         GL_TEXTURE_BIT | GL_VIEWPORT_BIT);
 
 	// Important to disable all other texture units
-	RenderSystem* rsys = CamelotEngine::RenderSystemManager::getActive();
+	RenderSystem* rsys = CamelotEngine::RenderSystem::instancePtr();
 	rsys->disableTextureUnitsFrom(0);
 	if (GLEW_VERSION_1_2)
 	{

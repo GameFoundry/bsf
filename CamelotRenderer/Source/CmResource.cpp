@@ -2,7 +2,6 @@
 #include "CmResourceRTTI.h"
 #include "CmUUID.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine
 {
@@ -30,7 +29,7 @@ namespace CamelotEngine
 	void Resource::waitUntilInitialized()
 	{
 #if CM_DEBUG_MODE
-		if(CM_THREAD_CURRENT_ID == RenderSystemManager::getActive()->getRenderThreadId())
+		if(CM_THREAD_CURRENT_ID == RenderSystem::instancePtr()->getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "You cannot call this method on the render thread. It will cause a deadlock!");
 #endif
 

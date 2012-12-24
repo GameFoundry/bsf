@@ -1,6 +1,5 @@
 #include "CmDeferredRenderContext.h"
 #include "CmCommandQueue.h"
-#include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
@@ -153,7 +152,7 @@ namespace CamelotEngine
 	{
 		vector<CommandQueue::Command>::type* commands = mCommandQueue->flush();
 
-		RenderSystem* rs = RenderSystemManager::getActive();
+		RenderSystem* rs = RenderSystem::instancePtr();
 		rs->queueCommand(boost::bind(&CommandQueue::playback, mCommandQueue, commands));
 	}
 }

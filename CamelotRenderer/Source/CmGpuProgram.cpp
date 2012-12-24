@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include "CmRenderSystemCapabilities.h"
 #include "CmException.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 #include "CmAsyncOp.h"
 #include "CmGpuProgramRTTI.h"
 
@@ -60,7 +59,7 @@ namespace CamelotEngine
 	//-----------------------------------------------------------------------------
 	void GpuProgram::initialize()
 	{
-		RenderSystemManager::getActive()->queueCommand(boost::bind(&GpuProgram::initialize_internal, this));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&GpuProgram::initialize_internal, this));
 	}
     //-----------------------------------------------------------------------------
     void GpuProgram::initialize_internal(void)
@@ -93,7 +92,7 @@ namespace CamelotEngine
         if (mCompileError || !isRequiredCapabilitiesSupported())
             return false;
 
-		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
+		RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
 		return rs->getCapabilities()->isShaderProfileSupported(mSyntaxCode);
     }
 	//-----------------------------------------------------------------------------
@@ -128,7 +127,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	GpuProgramParametersSharedPtr GpuProgram::createParameters(void)
 	{
-		AsyncOp op = RenderSystemManager::getActive()->queueReturnCommand(boost::bind(&GpuProgram::createParameters_internal, this, _1), true);
+		AsyncOp op = RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&GpuProgram::createParameters_internal, this, _1), true);
 
 		return op.getReturnValue<GpuProgramParametersSharedPtr>();
 	}
@@ -166,7 +165,7 @@ namespace CamelotEngine
 	//----------------------------------------------------------------------------- 
 	void GpuProgram::throwIfNotRenderThread() const
 	{
-		if(CM_THREAD_CURRENT_ID != RenderSystemManager::getActive()->getRenderThreadId())
+		if(CM_THREAD_CURRENT_ID != RenderSystem::instancePtr()->getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "Calling an internal texture method from a non-render thread!");
 	}
 

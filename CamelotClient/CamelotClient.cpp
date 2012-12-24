@@ -9,7 +9,6 @@
 #include "CmGameObject.h"
 #include "CmCamera.h"
 #include "CmHighLevelGpuProgramManager.h"
-#include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 #include "CmRenderWindow.h"
 #include "CmResources.h"
@@ -30,7 +29,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
 	//gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
 
-	RenderSystem* renderSystem = RenderSystemManager::getActive();
+	RenderSystem* renderSystem = RenderSystem::instancePtr();
 	RenderWindowPtr renderWindow = gApplication().getPrimaryRenderWindow();
 
 	GameObjectPtr cameraGO = GameObject::create("MainCamera");

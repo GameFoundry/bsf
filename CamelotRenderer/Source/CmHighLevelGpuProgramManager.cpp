@@ -26,7 +26,6 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmHighLevelGpuProgramManager.h"
-#include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 
 namespace CamelotEngine {
@@ -136,7 +135,7 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------------
 	void HighLevelGpuProgramFactory::destroy(HighLevelGpuProgram* prog)
 	{
-		RenderSystemManager::getActive()->queueCommand(boost::bind(&HighLevelGpuProgramFactory::destroy_internal, this, prog));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&HighLevelGpuProgramFactory::destroy_internal, this, prog));
 	}
 	//---------------------------------------------------------------------
 	bool HighLevelGpuProgramManager::isLanguageSupported(const String& lang)

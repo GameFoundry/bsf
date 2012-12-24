@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include "CmD3D9RenderSystem.h"
 #include "CmD3D9Device.h"
 #include "CmD3D9DeviceManager.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine 
 {
@@ -70,7 +69,7 @@ namespace CamelotEngine
 				CM_EXCEPT(InvalidParametersException, "MultiRenderTarget surfaces are not of same size");
 			}
 
-			if (!CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->hasCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS)
+			if (!CamelotEngine::RenderSystem::instancePtr()->getCapabilities()->hasCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS)
 				&& (PixelUtil::getNumElemBits(mRenderTargets[y]->getFormat()) != 
 				PixelUtil::getNumElemBits(buffer->getFormat())))
 			{

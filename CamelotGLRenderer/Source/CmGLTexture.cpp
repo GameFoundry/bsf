@@ -36,7 +36,6 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmBitwise.h"
 #include "CmTextureManager.h"
-#include "CmRenderSystemManager.h"
 
 #include "CmGLRenderTexture.h"
 

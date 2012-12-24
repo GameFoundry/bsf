@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include "CmHardwareBufferManager.h"
 #include "CmDefaultHardwareBufferManager.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 #include "CmVertexDeclarationRTTI.h"
 
 namespace CamelotEngine {
@@ -175,9 +174,9 @@ namespace CamelotEngine {
 	VertexElementType VertexElement::getBestColourVertexElementType(void)
 	{
 		// Use the current render system to determine if possible
-		if (CamelotEngine::RenderSystemManager::getActive())
+		if (CamelotEngine::RenderSystem::instancePtr())
 		{
-			return CamelotEngine::RenderSystemManager::getActive()->getColorVertexElementType();
+			return CamelotEngine::RenderSystem::instancePtr()->getColorVertexElementType();
 		}
 		else
 		{

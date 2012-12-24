@@ -31,7 +31,6 @@ THE SOFTWARE.
 #include "CmRenderTarget.h"
 #include "CmMath.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
 
@@ -175,7 +174,7 @@ namespace CamelotEngine {
 	void Viewport::clear(unsigned int buffers, const Color& col,  
 						 float depth, unsigned short stencil)
 	{
-		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
+		RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
 		if (rs)
 		{
 			Viewport currentvp = rs->getViewport();

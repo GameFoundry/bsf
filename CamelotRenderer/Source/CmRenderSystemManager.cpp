@@ -41,9 +41,4 @@ namespace CamelotEngine
 		static std::vector<RenderSystemFactoryPtr> availableFactories;
 		return availableFactories;
 	}
-
-	RenderSystem* RenderSystemManager::getActive()
-	{
-		return RenderSystem::instancePtr();
-	}
 }

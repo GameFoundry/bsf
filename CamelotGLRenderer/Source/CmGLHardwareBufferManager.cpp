@@ -31,7 +31,6 @@ THE SOFTWARE.
 #include "CmHardwareBuffer.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------
@@ -66,7 +65,7 @@ namespace CamelotEngine {
 		// Win32 machines with ATI GPU are having issues glMapBuffer, looks like buffer corruption
 		// disable for now until we figure out where the problem lies			
 #	if CM_PLATFORM == CM_PLATFORM_WIN32
-		if (CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->getVendor() == GPU_ATI) 
+		if (CamelotEngine::RenderSystem::instancePtr()->getCapabilities()->getVendor() == GPU_ATI) 
 		{
 			mMapBufferThreshold = 0xffffffffUL  /* maximum unsigned long value */;
 		}

@@ -36,7 +36,6 @@ THE SOFTWARE.
 #include "CmHardwareBufferManager.h"
 #include "CmHardwareVertexBuffer.h"
 #include "CmHardwareIndexBuffer.h"
-#include "CmRenderSystemManager.h"
 #include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmGameObject.h"
@@ -495,7 +494,7 @@ namespace CamelotEngine {
 			} // ortho            
 		} // !mCustomProjMatrix
 
-		RenderSystem* renderSystem = CamelotEngine::RenderSystemManager::getActive();
+		RenderSystem* renderSystem = CamelotEngine::RenderSystem::instancePtr();
 		// API specific
 		renderSystem->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
 		// API specific for Gpu Programs

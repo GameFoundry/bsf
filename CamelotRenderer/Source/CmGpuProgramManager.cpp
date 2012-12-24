@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include "CmGpuProgramManager.h"
 //#include "CmHighLevelGpuProgramManager.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 
 
 namespace CamelotEngine {
@@ -45,7 +44,7 @@ namespace CamelotEngine {
 	//-------------------------------------------------------------------------
 	void GpuProgramManager::destroy(GpuProgram* program)
 	{
-		RenderSystemManager::getActive()->queueCommand(boost::bind(&GpuProgramManager::destroy_internal, this, program));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&GpuProgramManager::destroy_internal, this, program));
 	}
 	//-------------------------------------------------------------------------
 	void GpuProgramManager::destroy_internal(GpuProgram* program)
@@ -64,7 +63,7 @@ namespace CamelotEngine {
 		const GpuProgramManager::SyntaxCodes& GpuProgramManager::getSupportedSyntax(void) const
         {
 			// Use the current render system
-			RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
+			RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
 
 			// Get the supported syntaxed from RenderSystemCapabilities 
 			return rs->getCapabilities()->getSupportedShaderProfiles();
@@ -74,7 +73,7 @@ namespace CamelotEngine {
     bool GpuProgramManager::isSyntaxSupported(const String& syntaxCode) const
         {
 			// Use the current render system
-			RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
+			RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
 
 			// Get the supported syntaxed from RenderSystemCapabilities 
 			return rs->getCapabilities()->isShaderProfileSupported(syntaxCode);
@@ -84,7 +83,7 @@ namespace CamelotEngine {
 	String GpuProgramManager::gpuProgProfileToRSSpecificProfile(GpuProgramProfile gpuProgProfile) const
 	{
 		// Use the current render system
-		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
+		RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
 
 		return  rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(gpuProgProfile);
 	}

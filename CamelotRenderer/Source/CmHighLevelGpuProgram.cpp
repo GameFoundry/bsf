@@ -27,11 +27,9 @@ THE SOFTWARE.
 */
 #include "CmHighLevelGpuProgram.h"
 #include "CmHighLevelGpuProgramManager.h"
-#include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 #include "CmException.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 #include "CmAsyncOp.h"
 
 #if CM_DEBUG_MODE
@@ -52,7 +50,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------------
 	void HighLevelGpuProgram::initialize()
 	{
-		RenderSystemManager::getActive()->queueCommand(boost::bind(&HighLevelGpuProgram::initialize_internal, this));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&HighLevelGpuProgram::initialize_internal, this));
 	}
     //---------------------------------------------------------------------------
     void HighLevelGpuProgram::initialize_internal()

@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include "CmTextureManager.h"
 #include "CmException.h"
 #include "CmPixelUtil.h"
-#include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 
 namespace CamelotEngine {
@@ -45,7 +44,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void TextureManager::destroy(Texture* texture)
 	{
-		RenderSystemManager::getActive()->queueCommand(boost::bind(&TextureManager::destroy_internal, this, texture));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&TextureManager::destroy_internal, this, texture));
 	}
 	//-----------------------------------------------------------------------
 	void TextureManager::destroy_internal(Texture* texture)

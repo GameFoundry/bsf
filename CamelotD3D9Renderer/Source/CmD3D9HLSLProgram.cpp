@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include "CmD3D9GpuProgram.h"
 #include "CmException.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 #include "CmAsyncOp.h"
 #include "CmD3D9HLSLProgramRTTI.h"
 
@@ -537,7 +536,7 @@ namespace CamelotEngine {
 
 		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 
-		RenderSystem* rs = CamelotEngine::RenderSystemManager::getActive();
+		RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
 		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile);
     }
     //-----------------------------------------------------------------------

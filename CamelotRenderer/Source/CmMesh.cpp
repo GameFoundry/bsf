@@ -6,7 +6,6 @@
 #include "CmDebug.h"
 #include "CmHardwareBufferManager.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 #include "CmAsyncOp.h"
 
 #if CM_DEBUG_MODE
@@ -36,7 +35,7 @@ namespace CamelotEngine
 
 	void Mesh::setMeshData(MeshDataPtr meshData)
 	{
-		RenderSystemManager::getActive()->queueCommand(boost::bind(&Mesh::setMeshData_internal, this, meshData));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&Mesh::setMeshData_internal, this, meshData));
 	}
 
 	void Mesh::setMeshData_internal(MeshDataPtr meshData)
@@ -168,7 +167,7 @@ namespace CamelotEngine
 
 	MeshDataPtr Mesh::getMeshData()
 	{
-		AsyncOp op = RenderSystemManager::getActive()->queueReturnCommand(boost::bind(&Mesh::getMeshData_internal, this, _1), true);
+		AsyncOp op = RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&Mesh::getMeshData_internal, this, _1), true);
 
 		return op.getReturnValue<MeshDataPtr>();
 	}
@@ -306,7 +305,7 @@ namespace CamelotEngine
 	}
 	void Mesh::initialize()
 	{
-		RenderSystemManager::getActive()->queueCommand(boost::bind(&Mesh::initialize_internal, this));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&Mesh::initialize_internal, this));
 	}
 
 	void Mesh::initialize_internal()
@@ -323,7 +322,7 @@ namespace CamelotEngine
 
 	void Mesh::throwIfNotRenderThread() const
 	{
-		if(CM_THREAD_CURRENT_ID != RenderSystemManager::getActive()->getRenderThreadId())
+		if(CM_THREAD_CURRENT_ID != RenderSystem::instancePtr()->getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "Calling an internal texture method from a non-render thread!");
 	}
 

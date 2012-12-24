@@ -33,7 +33,6 @@ THE SOFTWARE.
 #include "CmD3D9RenderWindow.h"
 #include "CmHardwareBufferManager.h"
 #include "CmException.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine
 {
@@ -202,7 +201,7 @@ namespace CamelotEngine
 	{
 		if (mpDevice != NULL)
 		{
-			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
 
 			//// Clean up depth stencil surfaces
 			//renderSystem->_cleanupDepthStencils(mpDevice);	
@@ -241,7 +240,7 @@ namespace CamelotEngine
 		// Case we just moved from valid state to lost state.
 		mDeviceLost = true;	
 
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
 
 		renderSystem->notifyOnDeviceLost(this);
 	}	
@@ -366,7 +365,7 @@ namespace CamelotEngine
 		// Lock access to rendering device.
 		D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
 					
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
 
 		// Inform all resources that device lost.
 		D3D9RenderSystem::getResourceManager()->notifyOnDeviceLost(mpDevice);
@@ -576,7 +575,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	void D3D9Device::clearDeviceStreams()
 	{
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
 
 		// Set all texture units to nothing to release texture surfaces
 		for (DWORD stage = 0; stage < mD3D9DeviceCaps.MaxSimultaneousTextures; ++stage)

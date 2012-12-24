@@ -31,7 +31,6 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmBitwise.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
 
@@ -942,7 +941,7 @@ void D3D9HardwarePixelBuffer::updateRenderTexture(bool writeGamma, UINT32 fsaa, 
 
 		mRenderTexture = new D3D9RenderTexture(name, this, writeGamma, fsaa);		
 
-		CamelotEngine::RenderSystemManager::getActive()->attachRenderTarget(*mRenderTexture);
+		CamelotEngine::RenderSystem::instancePtr()->attachRenderTarget(*mRenderTexture);
 	}
 }
 //-----------------------------------------------------------------------------    
@@ -950,7 +949,7 @@ void D3D9HardwarePixelBuffer::destroyRenderTexture()
 {
 	if (mRenderTexture != NULL)
 	{
-		CamelotEngine::RenderSystemManager::getActive()->destroyRenderTarget(mRenderTexture);
+		CamelotEngine::RenderSystem::instancePtr()->destroyRenderTarget(mRenderTexture);
 		mRenderTexture = NULL;
 	}
 }

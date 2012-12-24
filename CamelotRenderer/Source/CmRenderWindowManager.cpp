@@ -1,5 +1,4 @@
 #include "CmRenderWindowManager.h"
-#include "CmRenderSystemManager.h"
 #include "CmRenderSystem.h"
 #include "CmAsyncOp.h"
 
@@ -8,7 +7,7 @@ namespace CamelotEngine
 	RenderWindowPtr RenderWindowManager::create(const String& name, UINT32 width, UINT32 height, 
 		bool fullScreen, const map<String, String>::type* miscParams)
 	{
-		RenderSystem* renderSystem = RenderSystemManager::getActive();
+		RenderSystem* renderSystem = RenderSystem::instancePtr();
 
 		AsyncOp op;
 

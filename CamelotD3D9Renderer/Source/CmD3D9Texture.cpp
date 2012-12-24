@@ -35,7 +35,6 @@ THE SOFTWARE.
 #include "CmD3D9Device.h"
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
-#include "CmRenderSystemManager.h"
 
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
@@ -390,7 +389,7 @@ namespace CamelotEngine
 		// Check FSAA level
 		if (mUsage & TU_RENDERTARGET)
 		{
-			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
 			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
 				&mFSAAType, &mFSAAQuality);
 		}
@@ -518,7 +517,7 @@ namespace CamelotEngine
 		// Check FSAA level
 		if (mUsage & TU_RENDERTARGET)
 		{
-			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystemManager::getActive());
+			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
 			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
 				&mFSAAType, &mFSAAQuality);
 		}

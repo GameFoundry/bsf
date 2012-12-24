@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmDebug.h"
 #include "CmRenderSystem.h"
-#include "CmRenderSystemManager.h"
 #include "CmAsyncOp.h"
 
 #if CM_DEBUG_MODE
@@ -74,7 +73,7 @@ namespace CamelotEngine {
 
 		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
-		RenderSystemManager::getActive()->queueCommand(boost::bind(&Texture::initialize_internal, this));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::initialize_internal, this));
 	}
     //--------------------------------------------------------------------------
     bool Texture::hasAlpha(void) const
@@ -109,12 +108,12 @@ namespace CamelotEngine {
 
 	void Texture::setRawPixels(const PixelData& data, UINT32 face, UINT32 mip)
 	{
-		RenderSystemManager::getActive()->queueCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip), true);
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip), true);
 	}
 
 	void Texture::setRawPixels_async(const PixelData& data, UINT32 face, UINT32 mip)
 	{
-		RenderSystemManager::getActive()->queueCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip));
 	}
 
 	void Texture::setRawPixels_internal(const PixelData& data, UINT32 face, UINT32 mip)
@@ -143,14 +142,14 @@ namespace CamelotEngine {
 
 	PixelDataPtr Texture::getRawPixels(UINT32 face, UINT32 mip)
 	{
-		AsyncOp op = RenderSystemManager::getActive()->queueReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1), true);
+		AsyncOp op = RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1), true);
 
 		return op.getReturnValue<PixelDataPtr>();
 	}
 
 	AsyncOp Texture::getRawPixels_async(UINT32 face, UINT32 mip)
 	{
-		return RenderSystemManager::getActive()->queueReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1));
+		return RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1));
 	}
 
 	void Texture::getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op)
@@ -216,7 +215,7 @@ namespace CamelotEngine {
 	//----------------------------------------------------------------------------- 
 	void Texture::throwIfNotRenderThread() const
 	{
-		if(CM_THREAD_CURRENT_ID != RenderSystemManager::getActive()->getRenderThreadId())
+		if(CM_THREAD_CURRENT_ID != RenderSystem::instancePtr()->getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "Calling an internal texture method from a non-render thread!");
 	}
 

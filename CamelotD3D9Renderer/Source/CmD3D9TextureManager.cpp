@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmD3D9Mappings.h"
 #include "CmD3D9RenderSystem.h"
-#include "CmRenderSystemManager.h"
 
 namespace CamelotEngine 
 {
@@ -95,7 +94,7 @@ namespace CamelotEngine
             format = getNativeFormat(ttype, format, usage);
 
         D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(
-            CamelotEngine::RenderSystemManager::getActive());
+            CamelotEngine::RenderSystem::instancePtr());
 
         return rs->checkTextureFilteringSupported(ttype, format, usage);
     }
