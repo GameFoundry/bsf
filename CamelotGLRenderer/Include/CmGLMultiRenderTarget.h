@@ -26,30 +26,29 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __Win32RT_H__
-#define __Win32RT_H__
+#ifndef __GLMULTIRENDERTARGET_H__
+#define __GLMULTIRENDERTARGET_H__
 
-#include "CmWin32Prerequisites.h"
-#include "CmWin32Context.h"
-#include "CmGLPBuffer.h"
+#include "CmGLFrameBufferObject.h"
 
 namespace CamelotEngine {
-    class CM_RSGL_EXPORT Win32PBuffer : public GLPBuffer
-    {
+	/** MultiRenderTarget for GL. Requires the FBO extension.
+	*/
+	class CM_RSGL_EXPORT GLMultiRenderTarget : public MultiRenderTarget
+	{
 	public:
-		Win32PBuffer(PixelComponentType format, UINT32 width, UINT32 height);
-		~Win32PBuffer();
-	    
-		virtual GLContext *getContext() { return mContext; }
-    protected:
-        void createPBuffer();
-		void destroyPBuffer();
+		GLMultiRenderTarget(GLRTTManager *manager, const String &name);
+		~GLMultiRenderTarget();
 
-		HDC		mHDC;
-		HGLRC	mGlrc;
-		HPBUFFERARB mPBuffer;
-        Win32Context *mContext;
-    };
+		virtual void getCustomAttribute_internal( const String& name, void *pData );
+
+		bool requiresTextureFlipping() const { return true; }
+	private:
+		virtual void bindSurfaceImpl(UINT32 attachment, RenderTexture *target);
+		virtual void unbindSurfaceImpl(UINT32 attachment); 
+		GLFrameBufferObject fbo;
+	};
+
 }
 
-#endif
+#endif // __GLTEXTURE_H__

@@ -150,8 +150,7 @@
     <ClInclude Include="Include\CmGLATIFSInit.h" />
     <ClInclude Include="Include\CmGLContext.h" />
     <ClInclude Include="Include\CmGLDefaultHardwareBufferManager.h" />
-    <ClInclude Include="Include\CmGLFBOMultiRenderTarget.h" />
-    <ClInclude Include="Include\CmGLFBORenderTexture.h" />
+    <ClInclude Include="Include\CmGLMultiRenderTarget.h" />
     <ClInclude Include="Include\CmGLFrameBufferObject.h" />
     <ClInclude Include="Include\CmGLGpuProgram.h" />
     <ClInclude Include="Include\CmGLGpuProgramManager.h" />
@@ -160,8 +159,6 @@
     <ClInclude Include="Include\CmGLHardwareOcclusionQuery.h" />
     <ClInclude Include="Include\CmGLHardwarePixelBuffer.h" />
     <ClInclude Include="Include\CmGLHardwareVertexBuffer.h" />
-    <ClInclude Include="Include\CmGLPBRenderTexture.h" />
-    <ClInclude Include="Include\CmGLPBuffer.h" />
     <ClInclude Include="Include\CmGLPixelFormat.h" />
     <ClInclude Include="Include\CmGLPrerequisites.h" />
     <ClInclude Include="Include\CmGLRenderSystem.h" />
@@ -174,7 +171,6 @@
     <ClInclude Include="Include\CmWin32Context.h" />
     <ClInclude Include="Include\CmWin32GLSupport.h" />
     <ClInclude Include="Include\CmWin32Prerequisites.h" />
-    <ClInclude Include="Include\CmWin32RenderTexture.h" />
     <ClInclude Include="Include\CmWin32Window.h" />
     <ClInclude Include="Source\atifs\include\ATI_FS_GLGpuProgram.h" />
     <ClInclude Include="Source\atifs\include\Compiler2Pass.h" />
@@ -196,8 +192,7 @@
     <ClCompile Include="Source\CmGLATIFSInit.cpp" />
     <ClCompile Include="Source\CmGLContext.cpp" />
     <ClCompile Include="Source\CmGLDefaultHardwareBufferManager.cpp" />
-    <ClCompile Include="Source\CmGLFBOMultiRenderTarget.cpp" />
-    <ClCompile Include="Source\CmGLFBORenderTexture.cpp" />
+    <ClCompile Include="Source\CmGLMultiRenderTarget.cpp" />
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp" />
     <ClCompile Include="Source\CmGLGpuProgram.cpp" />
     <ClCompile Include="Source\CmGLGpuProgramManager.cpp" />
@@ -206,7 +201,6 @@
     <ClCompile Include="Source\CmGLHardwareOcclusionQuery.cpp" />
     <ClCompile Include="Source\CmGLHardwarePixelBuffer.cpp" />
     <ClCompile Include="Source\CmGLHardwareVertexBuffer.cpp" />
-    <ClCompile Include="Source\CmGLPBRenderTexture.cpp" />
     <ClCompile Include="Source\CmGLPixelFormat.cpp" />
     <ClCompile Include="Source\CmGLRenderSystem.cpp" />
     <ClCompile Include="Source\CmGLRenderSystemFactory.cpp" />
@@ -215,7 +209,6 @@
     <ClCompile Include="Source\CmGLTexture.cpp" />
     <ClCompile Include="Source\CmGLTextureManager.cpp" />
     <ClCompile Include="Source\CmWin32GLSupport.cpp" />
-    <ClCompile Include="Source\CmWin32RenderTexture.cpp" />
     <ClCompile Include="Source\CmWin32Window.cpp" />
     <ClCompile Include="Source\glew.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp" />

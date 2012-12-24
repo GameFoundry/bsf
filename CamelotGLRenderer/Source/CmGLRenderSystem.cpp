@@ -46,9 +46,7 @@ THE SOFTWARE.s
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
 #include "CmDepthStencilState.h"
-
-#include "CmGLFBORenderTexture.h"
-#include "CmGLPBRenderTexture.h"
+#include "CmGLRenderTexture.h"
 
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
@@ -1983,11 +1981,8 @@ namespace CamelotEngine {
 			}
 		}
 
-		// RTT Mode: 0 use whatever available, 1 use PBuffers, 2 force use copying
-		int rttMode = 0;
-
 		// Check for framebuffer object extension
-		if(caps->hasCapability(RSC_FBO) && rttMode < 1)
+		if(caps->hasCapability(RSC_FBO))
 		{
 			// Before GL version 2.0, we need to get one of the extensions
 			if(caps->hasCapability(RSC_FBO_ARB))
@@ -1998,37 +1993,12 @@ namespace CamelotEngine {
 			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
 			{
 				// Create FBO manager
-				// TODO LOG PORT - Log this somewhere?
-				//LogManager::getSingleton().logMessage("GL: Using GL_EXT_framebuffer_object for rendering to textures (best)");
-				GLRTTManager::startUp(new GLFBOManager(false));
+				GLRTTManager::startUp(new GLRTTManager(false));
 			}
-
 		}
 		else
 		{
-			// Check GLSupport for PBuffer support
-			if(caps->hasCapability(RSC_PBUFFER) && rttMode < 2)
-			{
-				if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
-				{
-					// Use PBuffers
-					GLRTTManager::startUp(new GLPBRTTManager(mGLSupport, primary));
-
-					// TODO LOG PORT - Log this somewhere?
-					//LogManager::getSingleton().logMessage("GL: Using PBuffers for rendering to textures");
-				}
-			}
-			else
-			{
-				// No pbuffer support either -- fallback to simplest copying from framebuffer
-				GLRTTManager::startUp(new GLCopyingRTTManager());
-				// TODO LOG PORT - Log this somewhere?
-				//LogManager::getSingleton().logMessage("GL: Using framebuffer copy for rendering to textures (worst)");
-				//LogManager::getSingleton().logMessage("GL: Warning: RenderTexture size is restricted to size of framebuffer. If you are on Linux, consider using GLX instead of SDL.");
-			}
-
-			// Downgrade number of simultaneous targets
-			caps->setNumMultiRenderTargets(1);
+			CM_EXCEPT(RenderingAPIException, "GPU doesn't support frame buffer objects. OpenGL versions lower than 3.0 are not supported.");
 		}
 
 		/// Create the texture manager        

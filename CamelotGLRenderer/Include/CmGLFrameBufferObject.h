@@ -28,17 +28,29 @@ THE SOFTWARE.
 #ifndef __OgreGLFBO_H__
 #define __OgreGLFBO_H__
 
-#include "CmGLRenderTexture.h"
 #include "CmGLContext.h"
+#include "CmPixelData.h"
 
-namespace CamelotEngine {
-    
+namespace CamelotEngine 
+{
+	/** GL surface descriptor. Points to a 2D surface that can be rendered to. 
+    */
+    struct CM_RSGL_EXPORT GLSurfaceDesc
+    {
+    public:
+        GLHardwarePixelBuffer *buffer;
+        UINT32 zoffset;
+		UINT32 numSamples;
+
+		GLSurfaceDesc() :buffer(0), zoffset(0), numSamples(0) {}
+    };
+
     /** Frame Buffer Object abstraction.
     */
     class CM_RSGL_EXPORT GLFrameBufferObject
     {
     public:
-        GLFrameBufferObject(GLFBOManager *manager, UINT32 fsaa);
+        GLFrameBufferObject(GLRTTManager *manager, UINT32 fsaa);
         ~GLFrameBufferObject();
         //void bindSurface(size_t attachment, RenderTarget *target);
         /** Bind a surface to a certain attachment point.
@@ -67,10 +79,9 @@ namespace CamelotEngine {
         UINT32 getHeight();
         PixelFormat getFormat();
         
-        GLFBOManager *getManager() { return mManager; }
 		const GLSurfaceDesc &getSurface(UINT32 attachment) { return mColour[attachment]; }
     private:
-        GLFBOManager *mManager;
+        GLRTTManager *mManager;
 		GLsizei mNumSamples;
         GLuint mFB;
 		GLuint mMultisampleFB;
@@ -90,7 +101,6 @@ namespace CamelotEngine {
         */
         void initialise();
     };
-
 }
 
 #endif

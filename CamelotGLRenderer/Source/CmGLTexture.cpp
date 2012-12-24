@@ -38,7 +38,7 @@ THE SOFTWARE.
 #include "CmTextureManager.h"
 #include "CmRenderSystemManager.h"
 
-#include "CmGLFBORenderTexture.h"
+#include "CmGLRenderTexture.h"
 
 #if CM_PLATFORM == CM_PLATFORM_WIN32
 #  define WIN32_LEAN_AND_MEAN

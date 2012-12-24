@@ -29,13 +29,13 @@ THE SOFTWARE.
 #include "CmGLFrameBufferObject.h"
 #include "CmGLPixelFormat.h"
 #include "CmGLHardwarePixelBuffer.h"
-#include "CmGLFBORenderTexture.h"
 #include "CmRenderSystemManager.h"
+#include "CmGLRenderTexture.h"
 
 namespace CamelotEngine {
 
 //-----------------------------------------------------------------------------
-    GLFrameBufferObject::GLFrameBufferObject(GLFBOManager *manager, UINT32 fsaa):
+    GLFrameBufferObject::GLFrameBufferObject(GLRTTManager *manager, UINT32 fsaa):
         mManager(manager), mNumSamples(fsaa)
     {
         /// Generate framebuffer object
@@ -121,8 +121,8 @@ namespace CamelotEngine {
         /// Store basic stats
         UINT32 width = mColour[0].buffer->getWidth();
         UINT32 height = mColour[0].buffer->getHeight();
-        GLuint format = mColour[0].buffer->getGLFormat();
-        PixelFormat ogreFormat = mColour[0].buffer->getFormat();
+        GLuint glformat = mColour[0].buffer->getGLFormat();
+        PixelFormat format = mColour[0].buffer->getFormat();
         UINT16 maxSupportedMRTs = CamelotEngine::RenderSystemManager::getActive()->getCapabilities()->getNumMultiRenderTargets();
 
 		// Bind simple buffer to add colour attachments
@@ -143,7 +143,7 @@ namespace CamelotEngine {
                     ss << ".";
                     CM_EXCEPT(InvalidParametersException, ss.str());
                 }
-                if(mColour[x].buffer->getGLFormat() != format)
+                if(mColour[x].buffer->getGLFormat() != glformat)
                 {
                     StringStream ss;
                     ss << "Attachment " << x << " has incompatible format.";
@@ -168,7 +168,7 @@ namespace CamelotEngine {
 			// Create AA render buffer (colour)
 			// note, this can be shared too because we blit it to the final FBO
 			// right after the render is finished
-			mMultisampleColourBuffer = mManager->requestRenderBuffer(format, width, height, mNumSamples);
+			mMultisampleColourBuffer = mManager->requestRenderBuffer(glformat, width, height, mNumSamples);
 
 			// Attach it, because we won't be attaching below and non-multisample has
 			// actually been attached to other FBO
@@ -181,7 +181,7 @@ namespace CamelotEngine {
 
         /// Find suitable depth and stencil format that is compatible with colour format
         GLenum depthFormat, stencilFormat;
-        mManager->getBestDepthStencil(ogreFormat, &depthFormat, &stencilFormat);
+        mManager->getBestDepthStencil(format, &depthFormat, &stencilFormat);
         
         /// Request surfaces
         mDepth = mManager->requestRenderBuffer(depthFormat, width, height, mNumSamples);
@@ -314,5 +314,4 @@ namespace CamelotEngine {
         assert(mColour[0].buffer);
         return mColour[0].buffer->getFormat();
     }
-//-----------------------------------------------------------------------------
 }

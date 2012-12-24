@@ -33,7 +33,6 @@ THE SOFTWARE.
 
 #include "CmRenderWindow.h"
 #include "CmConfigOptionMap.h"
-#include "CmGLPBuffer.h"
 
 namespace CamelotEngine
 {
@@ -68,7 +67,6 @@ public:
 		bool fullScreen, const NameValuePairList *miscParams = 0) = 0;
 
     virtual bool supportsPBuffers();
-    virtual GLPBuffer *createPBuffer(PixelComponentType format, size_t width, size_t height);
 
     /**
     * Start anything special

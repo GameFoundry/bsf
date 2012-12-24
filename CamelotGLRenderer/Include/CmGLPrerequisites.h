@@ -39,7 +39,6 @@ namespace CamelotEngine {
     class GLGpuProgram;
     class GLContext;
     class GLRTTManager;
-    class GLFBOManager;
     class GLHardwarePixelBuffer;
     class GLRenderBuffer;
 
@@ -72,9 +71,6 @@ namespace CamelotEngine {
 #elif CM_PLATFORM == CM_PLATFORM_APPLE
 #   include <GL/glew.h>
 #   include <OpenGL/glu.h>
-#elif CM_PLATFORM == OGRE_PLATFORM_IPHONE
-#   include <OpenGLES/ES1/gl.h>
-#   include <OpenGLES/ES1/glext.h>
 #endif
 
 #if CM_THREAD_SUPPORT == 1

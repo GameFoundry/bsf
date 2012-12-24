@@ -6,7 +6,6 @@
 #include "CmGLTexture.h"
 #include "CmWin32Window.h"
 #include <GL/wglext.h>
-#include "CmWin32RenderTexture.h"
 
 using namespace CamelotEngine;
 
@@ -630,10 +629,6 @@ namespace CamelotEngine {
 	bool Win32GLSupport::supportsPBuffers()
 	{
 		return WGLEW_GET_FUN(__WGLEW_ARB_pbuffer) != GL_FALSE;
-	}
-    GLPBuffer *Win32GLSupport::createPBuffer(PixelComponentType format, UINT32 width, UINT32 height)
-	{
-		return new Win32PBuffer(format, width, height);
 	}
 
 	unsigned int Win32GLSupport::getDisplayMonitorCount() const

@@ -29,103 +29,171 @@ THE SOFTWARE.
 #ifndef __GLRENDERTEXTURE_H__
 #define __GLRENDERTEXTURE_H__
 
+#include "CmGLPrerequisites.h"
 #include "CmGLTexture.h"
+#include "CmGLFrameBufferObject.h"
 #include "CmModule.h"
 
-namespace CamelotEngine {
-    /** GL surface descriptor. Points to a 2D surface that can be rendered to. 
-    */
-    struct GLSurfaceDesc
-    {
-    public:
-        GLHardwarePixelBuffer *buffer;
-        UINT32 zoffset;
-		UINT32 numSamples;
+/// Extra GL constants
+#define GL_DEPTH24_STENCIL8_EXT                           0x88F0
 
-		GLSurfaceDesc() :buffer(0), zoffset(0), numSamples(0) {}
-    };
-    
+namespace CamelotEngine 
+{  
     /** Base class for GL Render Textures
     */
     class CM_RSGL_EXPORT GLRenderTexture: public RenderTexture
     {
     public:
-        GLRenderTexture(const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
+        GLRenderTexture(GLRTTManager* manager, const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
         virtual ~GLRenderTexture();
         
         bool requiresTextureFlipping() const { return true; }
+
+		virtual void getCustomAttribute_internal(const String& name, void* pData);
+
+		virtual void swapBuffers(bool waitForVSync = true);
+	protected:
+		GLFrameBufferObject mFB;
     };
     
     /** Manager/factory for RenderTextures.
     */
-    class CM_RSGL_EXPORT GLRTTManager: public Module<GLRTTManager>
+    class CM_RSGL_EXPORT GLRTTManager : public Module<GLRTTManager>
     {
     public:
-        virtual ~GLRTTManager();
+        GLRTTManager(bool atimode);
+		~GLRTTManager();
+        
+        /** Bind a certain render target if it is a FBO. If it is not a FBO, bind the
+            main frame buffer.
+        */
+        void bind(RenderTarget *target);
+        
+        /** Unbind a certain render target. No-op for FBOs.
+        */
+        void unbind(RenderTarget *target) {};
+        
+        /** Get best depth and stencil supported for given internalFormat
+        */
+        void getBestDepthStencil(GLenum internalFormat, GLenum *depthFormat, GLenum *stencilFormat);
         
         /** Create a texture rendertarget object
         */
-        virtual RenderTexture *createRenderTexture(const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa) = 0;
-        
-         /** Check if a certain format is usable as rendertexture format
-        */
-        virtual bool checkFormat(PixelFormat format) = 0;
-        
-        /** Bind a certain render target.
-        */
-        virtual void bind(RenderTarget *target) = 0;
-        
-        /** Unbind a certain render target. This is called before binding another RenderTarget, and
-            before the context is switched. It can be used to do a copy, or just be a noop if direct
-            binding is used.
-        */
-        virtual void unbind(RenderTarget *target) = 0;
+        virtual GLRenderTexture *createRenderTexture(const String &name, 
+			const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
 
 		/** Create a multi render target 
 		*/
 		virtual MultiRenderTarget* createMultiRenderTarget(const String & name);
         
-        /** Get the closest supported alternative format. If format is supported, returns format.
+        /** Request a render buffer. If format is GL_NONE, return a zero buffer.
+        */
+        GLSurfaceDesc requestRenderBuffer(GLenum format, UINT32 width, UINT32 height, UINT32 fsaa);
+        /** Request the specify render buffer in case shared somewhere. Ignore
+            silently if surface.buffer is 0.
+        */
+        void requestRenderBuffer(const GLSurfaceDesc &surface);
+        /** Release a render buffer. Ignore silently if surface.buffer is 0.
+        */
+        void releaseRenderBuffer(const GLSurfaceDesc &surface);
+        
+        /** Check if a certain format is usable as FBO rendertarget format
+        */
+        bool checkFormat(PixelFormat format) { return mProps[format].valid; }
+        
+        /** Get a FBO without depth/stencil for temporary use, like blitting between textures.
+        */
+        GLuint getTemporaryFBO() { return mTempFBO; }
+
+		/** Get the closest supported alternative format. If format is supported, returns format.
         */
         virtual PixelFormat getSupportedAlternative(PixelFormat format);
-    };
-    
-    /** RenderTexture for simple copying from frame buffer
-    */
-    class GLCopyingRTTManager;
-    class CM_RSGL_EXPORT GLCopyingRenderTexture: public GLRenderTexture
-    {
-    public:
-        GLCopyingRenderTexture(GLCopyingRTTManager *manager, const String &name, const GLSurfaceDesc &target, 
-			bool writeGamma, UINT32 fsaa);
-        
-        virtual void getCustomAttribute_internal(const String& name, void* pData);
-    };
-    
-    /** Simple, copying manager/factory for RenderTextures. This is only used as the last fallback if
-        both PBuffers and FBOs aren't supported.
-    */
-    class CM_RSGL_EXPORT GLCopyingRTTManager: public GLRTTManager
-    {
-    public:
-        GLCopyingRTTManager();
-        virtual ~GLCopyingRTTManager();
-        
-        /** @copydoc GLRTTManager::createRenderTexture
+    private:
+        /** Frame Buffer Object properties for a certain texture format.
         */
-        virtual RenderTexture *createRenderTexture(const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
-        
-        /** @copydoc GLRTTManager::checkFormat
+        struct FormatProperties
+        {
+            bool valid; // This format can be used as RTT (FBO)
+            
+            /** Allowed modes/properties for this pixel format
+            */
+            struct Mode
+            {
+                UINT32 depth;     // Depth format (0=no depth)
+                UINT32 stencil;   // Stencil format (0=no stencil)
+            };
+            
+            vector<Mode>::type modes;
+        };
+        /** Properties for all internal formats defined by the engine
         */
-        virtual bool checkFormat(PixelFormat format);
+        FormatProperties mProps[PF_COUNT];
         
-        /** @copydoc GLRTTManager::bind
+        /** Stencil and depth renderbuffers of the same format are re-used between surfaces of the 
+            same size and format. This can save a lot of memory when a large amount of rendertargets
+            are used.
         */
-        virtual void bind(RenderTarget *target);
+        struct RBFormat
+        {
+            RBFormat(GLenum inFormat, UINT32 inWidth, UINT32 inHeight, UINT32 fsaa):
+                format(inFormat), width(inWidth), height(inHeight), samples(fsaa)
+            {}
+            GLenum format;
+            UINT32 width;
+            UINT32 height;
+			UINT32 samples;
+            // Overloaded comparison operator for usage in map
+            bool operator < (const RBFormat &other) const
+            {
+                if(format < other.format)
+                {
+                    return true;
+                }
+                else if(format == other.format)
+                {
+                    if(width < other.width)
+                    {
+                        return true;
+                    }
+                    else if(width == other.width)
+                    {
+                        if(height < other.height)
+                            return true;
+						else if (height == other.height)
+						{
+							if (samples < other.samples)
+								return true;
+						}
+                    }
+                }
+                return false;
+            }
+        };
+        struct RBRef
+        {
+            RBRef(){}
+            RBRef(GLRenderBuffer *inBuffer):
+                buffer(inBuffer), refcount(1)
+            { }
+            GLRenderBuffer *buffer;
+            size_t refcount;
+        };
+        typedef map<RBFormat, RBRef>::type RenderBufferMap;
+        RenderBufferMap mRenderBufferMap;
+        // map(format, sizex, sizey) -> [GLSurface*,refcount]
         
-        /** @copydoc GLRTTManager::unbind
-        */
-        virtual void unbind(RenderTarget *target);
+        /** Temporary FBO identifier
+         */
+        GLuint mTempFBO;
+        
+		/// Buggy ATI driver?
+		bool mATIMode;
+        
+        /** Detect allowed FBO formats */
+        void detectFBOFormats();
+        GLuint _tryFormat(GLenum depthFormat, GLenum stencilFormat);
+        bool _tryPackedFormat(GLenum packedFormat);
+       
     };
 }
 

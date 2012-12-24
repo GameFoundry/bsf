@@ -26,62 +26,46 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "CmGLFBOMultiRenderTarget.h"
+#include "CmRenderTexture.h"
+#include "CmGLMultiRenderTarget.h"
 #include "CmGLPixelFormat.h"
 #include "CmGLHardwarePixelBuffer.h"
 
 namespace CamelotEngine {
 
-	GLFBOMultiRenderTarget::GLFBOMultiRenderTarget(GLFBOManager *manager, const String &name):
+	GLMultiRenderTarget::GLMultiRenderTarget(GLRTTManager *manager, const String &name):
 		MultiRenderTarget(name),
 		fbo(manager, 0 /* TODO: multisampling on MRTs? */)
 	{
 	}
-	GLFBOMultiRenderTarget::~GLFBOMultiRenderTarget()
+
+	GLMultiRenderTarget::~GLMultiRenderTarget()
 	{
 	}
 
-
-	void GLFBOMultiRenderTarget::bindSurfaceImpl(UINT32 attachment, RenderTexture *target)
-
+	void GLMultiRenderTarget::bindSurfaceImpl(UINT32 attachment, RenderTexture *target)
 	{
-
 		/// Check if the render target is in the rendertarget->FBO map
         GLFrameBufferObject *fbobj = 0;
         target->getCustomAttribute_internal("FBO", &fbobj);
 		assert(fbobj);
 		fbo.bindSurface(attachment, fbobj->getSurface(0));
 
-
-
-		// Initialise?
-
-		
-
-		// Set width and height
-
 		mWidth = fbo.getWidth();
-
 		mHeight = fbo.getHeight();
-
 	}
 
-
-
-	void GLFBOMultiRenderTarget::unbindSurfaceImpl(UINT32 attachment)
+	void GLMultiRenderTarget::unbindSurfaceImpl(UINT32 attachment)
 	{
 		fbo.unbindSurface(attachment);
 
-		// Set width and height
-
 		mWidth = fbo.getWidth();
-
 		mHeight = fbo.getHeight();
 	}
 
-	void GLFBOMultiRenderTarget::getCustomAttribute_internal( const String& name, void *pData )
+	void GLMultiRenderTarget::getCustomAttribute_internal(const String& name, void *pData)
 	{
-		if(name=="FBO")
+		if(name == "FBO")
         {
             *static_cast<GLFrameBufferObject **>(pData) = &fbo;
         }

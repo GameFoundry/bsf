@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLPixelFormat.h"
 #include "CmException.h"
 #include "CmBitwise.h"
-#include "CmGLFBORenderTexture.h"
+#include "CmGLRenderTexture.h"
 #include "CmRenderSystemManager.h"
 
 namespace CamelotEngine {
@@ -568,7 +568,7 @@ void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, c
     //src->mTextureID << ":" << srcBox.left << "," << srcBox.top << "," << srcBox.right << "," << srcBox.bottom << " " << 
     //mTextureID << ":" << dstBox.left << "," << dstBox.top << "," << dstBox.right << "," << dstBox.bottom << std::endl;
     /// Store reference to FBO manager
-    GLFBOManager *fboMan = static_cast<GLFBOManager *>(GLRTTManager::instancePtr());
+    GLRTTManager *fboMan = static_cast<GLRTTManager *>(GLRTTManager::instancePtr());
     
     /// Save and clear GL state for rendering
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT | 
