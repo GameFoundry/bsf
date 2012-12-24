@@ -6,8 +6,6 @@
 
 namespace CamelotEngine
 {
-	RenderSystemPtr RenderSystemManager::mActiveRenderSystem;
-
 	void RenderSystemManager::startUp(const String& pluginFilename)
 	{
 		DynLib* loadedLibrary = gDynLibManager().load(pluginFilename);
@@ -25,21 +23,9 @@ namespace CamelotEngine
 		{
 			if((*iter)->name() == name)
 			{
-				RenderSystemPtr newRenderSystem = (*iter)->create();
-				if(newRenderSystem != nullptr)
-				{
-					if(mActiveRenderSystem != nullptr)
-						mActiveRenderSystem->shutdown();
-
-					mActiveRenderSystem = newRenderSystem;
-				}				
+				(*iter)->create();		
+				RenderSystem::instance().initialize();
 			}
-		}
-
-		if(mActiveRenderSystem == nullptr)
-		{
-			CM_EXCEPT(InternalErrorException, 
-				"Cannot initialize render system. Renderer with the name '" + name + "' cannot be found.")
 		}
 	}
 
@@ -54,5 +40,10 @@ namespace CamelotEngine
 	{
 		static std::vector<RenderSystemFactoryPtr> availableFactories;
 		return availableFactories;
+	}
+
+	RenderSystem* RenderSystemManager::getActive()
+	{
+		return RenderSystem::instancePtr();
 	}
 }

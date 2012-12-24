@@ -17,7 +17,6 @@
 
 
 /////
-Check out how to deal with clip planes so that both DX9, DX11 and GL support them
 waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
 Move createRenderTexture to TextureManager? (also createMultiRenderTexture)

@@ -131,7 +131,7 @@ namespace CamelotEngine {
 
 	GLRenderSystem::~GLRenderSystem()
 	{
-		shutdown_internal();
+		destroy_internal();
 
 		// Destroy render windows
 		for (auto i = mRenderTargets.begin(); i != mRenderTargets.end(); ++i)
@@ -151,19 +151,19 @@ namespace CamelotEngine {
 		return strName;
 	}
 
-	void GLRenderSystem::startUp_internal()
+	void GLRenderSystem::initialize_internal()
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		mGLSupport->start();
 		RenderWindowManager::startUp(new GLRenderWindowManager(this));
 
-		RenderSystem::startUp_internal();
+		RenderSystem::initialize_internal();
 	}
 
-	void GLRenderSystem::shutdown_internal(void)
+	void GLRenderSystem::destroy_internal(void)
 	{
-		RenderSystem::shutdown_internal();
+		RenderSystem::destroy_internal();
 
 		// Deleting the GLSL program factory
 		if (mGLSLProgramFactory)

@@ -111,7 +111,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	D3D9RenderSystem::~D3D9RenderSystem()
 	{		
-		shutdown_internal();
+		destroy_internal();
 
 		// Deleting the HLSL program factory
 		if (mHLSLProgramFactory)
@@ -139,7 +139,7 @@ namespace CamelotEngine
 		static String strName( "D3D9RenderSystem");
 		return strName;
 	}
-	void D3D9RenderSystem::startUp_internal()
+	void D3D9RenderSystem::initialize_internal()
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -215,12 +215,12 @@ namespace CamelotEngine
 		RenderWindowManager::startUp(new D3D9RenderWindowManager(this));
 
 		// call superclass method
-		RenderSystem::startUp_internal();
+		RenderSystem::initialize_internal();
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::shutdown_internal()
+	void D3D9RenderSystem::destroy_internal()
 	{
-		RenderSystem::shutdown_internal();
+		RenderSystem::destroy_internal();
 
 		SAFE_DELETE( mDeviceManager );
 

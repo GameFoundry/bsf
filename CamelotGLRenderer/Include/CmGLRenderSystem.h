@@ -272,11 +272,11 @@ namespace CamelotEngine {
 		/** See
           RenderSystem
          */
-		void startUp_internal();
+		void initialize_internal();
 		/** See
           RenderSystem
          */
-        void shutdown_internal(void);
+        void destroy_internal(void);
 
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 		bool activateGLTextureUnit(UINT16 unit);

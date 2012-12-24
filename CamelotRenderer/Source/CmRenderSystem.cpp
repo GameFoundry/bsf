@@ -76,23 +76,25 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     RenderSystem::~RenderSystem()
     {
-        shutdown_internal();
+		queueCommand(boost::bind(&RenderSystem::destroy_internal, this), true);
+		// TODO - What if something gets queued between these two calls?
+		shutdownRenderThread();
 
 		delete mCurrentCapabilities;
 		mCurrentCapabilities = 0;
     }
 	//-----------------------------------------------------------------------
-	void RenderSystem::startUp()
+	void RenderSystem::initialize()
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
 		mCommandQueue = new CommandQueue(CM_THREAD_CURRENT_ID);
 
 		initRenderThread();
 
-		queueCommand(boost::bind(&RenderSystem::startUp_internal, this), true);
+		queueCommand(boost::bind(&RenderSystem::initialize_internal, this), true);
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::startUp_internal()
+	void RenderSystem::initialize_internal()
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -101,14 +103,7 @@ namespace CamelotEngine {
 		mFragmentProgramBound = false;
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::shutdown(void)
-	{
-		queueCommand(boost::bind(&RenderSystem::shutdown_internal, this), true);
-		// TODO - What if something gets queued between these two calls?
-		shutdownRenderThread();
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::shutdown_internal(void)
+	void RenderSystem::destroy_internal(void)
 	{
 		// TODO - I should probably sync this up to make sure no other threads are doing anything while shutdown is in progress
 

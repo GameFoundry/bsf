@@ -12,7 +12,7 @@ namespace CamelotEngine
 	class D3D9RenderSystemFactory : public RenderSystemFactory
 	{
 		public:
-			virtual RenderSystemPtr create();
+			virtual void create();
 			virtual const std::string& name() const { return SystemName; }
 
 		private:

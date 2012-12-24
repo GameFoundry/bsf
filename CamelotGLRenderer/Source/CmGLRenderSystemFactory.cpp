@@ -1,10 +1,11 @@
 #include "CmGLRenderSystemFactory.h"
+#include "CmGLRenderSystem.h"
 
 namespace CamelotEngine
 {
-	RenderSystemPtr GLRenderSystemFactory::create()
+	void GLRenderSystemFactory::create()
 	{
-		return RenderSystemPtr(new GLRenderSystem());
+		RenderSystem::startUp(new GLRenderSystem());
 	}
 
 	GLRenderSystemFactory::InitOnStart GLRenderSystemFactory::initOnStart;

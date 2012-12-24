@@ -12,7 +12,7 @@ namespace CamelotEngine
 	class GLRenderSystemFactory : public RenderSystemFactory
 	{
 	public:
-		virtual RenderSystemPtr create();
+		virtual void create();
 		virtual const std::string& name() const { return SystemName; }
 
 	private:

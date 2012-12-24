@@ -50,7 +50,6 @@ namespace CamelotEngine
 		RendererManager::setActive("ForwardRenderer");
 
 		RenderSystem* renderSystem = RenderSystemManager::getActive();
-		renderSystem->startUp();
 
 		mPrimaryRenderWindow = RenderWindow::create("Camelot Renderer", 1280, 720, false);
 		mPrimaryRenderContext = renderSystem->createDeferredContext();
@@ -96,9 +95,7 @@ namespace CamelotEngine
 	void Application::shutDown()
 	{
 		SceneManager::shutDown();
-
-		if(RenderSystemManager::getActive() != nullptr)
-			RenderSystemManager::getActive()->shutdown();
+		RenderSystem::shutDown();
 
 		HighLevelGpuProgramManager::shutDown();
 		DynLibManager::shutDown();

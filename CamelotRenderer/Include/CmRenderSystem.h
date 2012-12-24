@@ -44,6 +44,7 @@ THE SOFTWARE.
 #include "CmRenderTexture.h"
 #include "CmGpuProgram.h"
 #include "CmPlane.h"
+#include "CmModule.h"
 
 #include "boost/function.hpp"
 #include "boost/signal.hpp"
@@ -69,22 +70,12 @@ namespace CamelotEngine
 	methods have implementations, most of this class is
 	abstract, requiring a subclass based on a specific API
 	to be constructed to provide the full functionality.
-	Note there are 2 levels to the interface - one which
-	will be used often by the caller of the Ogre library,
-	and one which is at a lower level and will be used by the
-	other classes provided by Ogre. These lower level
-	methods are prefixed with '_' to differentiate them.
-	The advanced user of the library may use these lower
-	level methods to access the 3D API at a more fundamental
-	level (dealing direct with render states and rendering
-	primitives), but still benefiting from Ogre's abstraction
-	of exactly which 3D API is in use.
 	@author
 	Steven Streeting
 	@version
 	1.0
 	*/
-	class CM_EXPORT RenderSystem
+	class CM_EXPORT RenderSystem : public Module<RenderSystem>
 	{
 	public:
 		/** Default Constructor.
@@ -98,19 +89,6 @@ namespace CamelotEngine
 		/** Returns the name of the rendering system.
 		*/
 		virtual const String& getName(void) const = 0;
-
-		 /* @brief	Start up the RenderSystem. Call before doing any operations on the render system.  
-		 *			Make sure all subsequent calls to the RenderSystem are done from the same thread it was started on.  
-		 *
-		 * @remark	If you want to access the render system from other threads, call RenderSystem::createRenderContext,
-		 * 			set the active context using RenderSystem::setActiveRenderContext and call the render system normally.
-		 * 			By default an automatically created primary render context is used.
-		 */
-		void startUp();
-
-		/** Shutdown the renderer and cleanup resources.
-		*/
-		void shutdown(void);
 
 		/** Attaches the passed render target to the render system.
 		*/
@@ -386,6 +364,8 @@ namespace CamelotEngine
 		/* 						INTERNAL DATA & METHODS                      	*/
 		/************************************************************************/
 	protected:
+		friend class RenderSystemManager;
+
 		/** The render targets. */
 		vector<RenderTarget*>::type mRenderTargets;
 		/** The render targets, ordered by priority. */
@@ -422,8 +402,12 @@ namespace CamelotEngine
 		/// Used to store the capabilities of the graphics card
 		RenderSystemCapabilities* mCurrentCapabilities;
 
-		virtual void startUp_internal();
-		virtual void shutdown_internal();
+		/**
+		 * @brief	Call right after creation to properly initialize the RenderSystem;
+		 */
+		void initialize();
+		virtual void initialize_internal();
+		virtual void destroy_internal();
 
 		/// Internal method used to set the underlying clip planes when needed
 		virtual void setClipPlanesImpl(const PlaneList& clipPlanes) = 0;

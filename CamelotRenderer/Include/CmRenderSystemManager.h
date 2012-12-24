@@ -11,13 +11,11 @@ namespace CamelotEngine
 	{
 	public:
 		static void startUp(const String& name);
-		static RenderSystem* getActive() { return mActiveRenderSystem.get(); }
+		static RenderSystem* getActive();
 
 		static void registerRenderSystemFactory(RenderSystemFactoryPtr factory);
 	private:
 		static std::vector<RenderSystemFactoryPtr>& getAvailableFactories();
-
-		static RenderSystemPtr mActiveRenderSystem;
 	};
 }
 
