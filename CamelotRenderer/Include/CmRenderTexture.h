@@ -54,6 +54,11 @@ namespace CamelotEngine
 		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
 		PixelFormat suggestPixelFormat() const;
 
+		/**
+		 * @brief	Sets the depth stencil buffer attached to this render target.
+		 */
+		//virtual void setDepthStencilBuffer(DepthStencilBufferPtr depthStencil) = 0;
+
 	protected:
 		HardwarePixelBuffer *mBuffer;
 		UINT32 mZOffset;

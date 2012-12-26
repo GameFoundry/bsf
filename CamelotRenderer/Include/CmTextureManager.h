@@ -172,6 +172,13 @@ namespace CamelotEngine {
 		 */
 		TexturePtr createEmpty();
 
+		/**
+		 * @brief	Creates a new depth/stencil buffer.
+		 */
+		virtual DepthStencilBufferPtr createDepthStencilBuffer(UINT32 bitDepth, UINT32 width, 
+			UINT32 height, UINT32 fsaa, const String& fsaaHint) = 0;
+
+
 		/** Returns whether this render system can natively support the precise texture 
 			format requested with the given usage options.
 		@remarks

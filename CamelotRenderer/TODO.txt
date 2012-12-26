@@ -23,8 +23,6 @@ Move createRenderTexture to TextureManager? (also createMultiRenderTexture)
  - Right now its created with a special texture usage flag, which I don't like
 Drop OpenGL support for low level shaders? (See if cg can translate to GLSL)
 
-Make RenderSystem a module? (Initialize it using startUp, and get rid of directly accessing RenderSystemManager whenever I need the active RenderSystem)
-
 Keeping a list of all render targets in RenderSystem shouldn't be needed (and calling attach/detach renderTarget). Renderer should determine in what order are render targets presented.
 
 Make CommandQueue not use mutexes and use atomics instead??
@@ -53,6 +51,11 @@ RenderSystem needed modifications
  - 1D/2D/Cube texture arrays
  - Multisampled texture resources
  - Multiple adapters (multi gpu)
+ - DX11 allows detachable and reusable depthStencil buffers but right now DX9 and OpenGL just ignore them
+   - Also RenderWindow can't have detachable depth stencil buffers for multiple reasons:
+     - Resizing a window requires a resize of the depth/stencil buffer, so what to do if the buffer is external?
+	 - OpenGL doesn't allow access to primary window buffer anyway
+	 - Is there any situation where I actually need to set primary depth buffer?
  - Process OpenGL and make sure to equivalents of DX11 features
   - Exact features that are missing (not an exhaustive list):
     - Vertex buffer stream out (Transform Feedback)

@@ -32,7 +32,9 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
     RenderWindow::RenderWindow()
-        : RenderTarget(), mIsPrimary(false)
+        : RenderTarget()
+		, mIsPrimary(false)
+		, mIsFullScreen(false)
     {
         mAutoDeactivatedOnFocusChange = true;
     }

@@ -51,6 +51,12 @@ namespace CamelotEngine {
         bool isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,
             bool preciseFormatOnly = false);
 
+		/**
+		 * @copydoc TextureManager::createDepthStencilBuffer()
+		 */
+		DepthStencilBufferPtr createDepthStencilBuffer(UINT32 bitDepth, UINT32 width, 
+			UINT32 height, UINT32 fsaa, const String& fsaaHint);
+
     protected:
         /// @copydoc ResourceManager::createImpl
         Texture* createImpl();

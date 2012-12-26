@@ -189,6 +189,7 @@
     <ClInclude Include="Include\CmConfigOptionMap.h" />
     <ClInclude Include="Include\CmDefaultHardwareBufferManager.h" />
     <ClInclude Include="Include\CmDeferredRenderContext.h" />
+    <ClInclude Include="Include\CmDepthStencilBuffer.h" />
     <ClInclude Include="Include\CmDepthStencilStateRTTI.h" />
     <ClInclude Include="Include\CmDepthStencilState.h" />
     <ClInclude Include="Include\CmGpuProgram.h" />
@@ -272,6 +273,7 @@
     <ClCompile Include="Source\CmCommandQueue.cpp" />
     <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmDeferredRenderContext.cpp" />
+    <ClCompile Include="Source\CmDepthStencilBuffer.cpp" />
     <ClCompile Include="Source\CmDepthStencilState.cpp" />
     <ClCompile Include="Source\CmGpuProgram.cpp" />
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />

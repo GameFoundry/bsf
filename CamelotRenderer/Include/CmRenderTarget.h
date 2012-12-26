@@ -198,6 +198,11 @@ namespace CamelotEngine {
 		*/
 		virtual const String& getFSAAHint() const { return mFSAAHint; }
 
+		/**
+		 * @brief	Gets the depth stencil buffer attached to this render target.
+		 */
+		virtual DepthStencilBufferPtr getDepthStencilBuffer() const { return mDepthStencilBuffer; }
+
         /** RenderSystem specific interface for a RenderTarget;
             this should be subclassed by RenderSystems.
         */
@@ -251,6 +256,8 @@ namespace CamelotEngine {
         String mName;
 		/// The priority of the render target.
 		UINT8 mPriority;
+
+		DepthStencilBufferPtr mDepthStencilBuffer;
 
         unsigned int mWidth;
         unsigned int mHeight;
