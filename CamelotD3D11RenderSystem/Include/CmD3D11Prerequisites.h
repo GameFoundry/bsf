@@ -49,6 +49,10 @@ namespace CamelotEngine
 	class D3D11GpuGeometryProgram;
 	class D3D11GpuHullProgram;
 	class D3D11GpuDomainProgram;
+	class D3D11BlendState;
+	class D3D11RasterizerState;
+	class D3D11SamplerState;
+	class D3D11DepthStencilState;
 
 	enum TypeID_D3D11
 	{
@@ -62,6 +66,10 @@ namespace CamelotEngine
 	typedef std::shared_ptr<D3D11GpuGeometryProgram> D3D11GpuGeometryProgramPtr;
 	typedef std::shared_ptr<D3D11GpuHullProgram> D3D11GpuHullProgramPtr;
 	typedef std::shared_ptr<D3D11GpuDomainProgram> D3D11GpuDomainProgramPtr;
+	typedef std::shared_ptr<D3D11BlendState> D3D11BlendStatePtr;
+	typedef std::shared_ptr<D3D11RasterizerState> D3D11RasterizerStatePtr;
+	typedef std::shared_ptr<D3D11SamplerState> D3D11SamplerStatePtr;
+	typedef std::shared_ptr<D3D11DepthStencilState> D3D11DepthStencilStatePtr;
 
 // Should we ask D3D to manage vertex/index buffers automatically?
 // Doing so avoids lost devices, but also has a performance impact

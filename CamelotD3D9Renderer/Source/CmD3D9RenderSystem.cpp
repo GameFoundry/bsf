@@ -578,7 +578,7 @@ namespace CamelotEngine
 		setTextureAddressingMode(unit, uvw);
 
 		// Set border color
-		setTextureBorderColor(unit, state.getBorderColor(0));
+		setTextureBorderColor(unit, state.getBorderColor());
 	}
 	//-----------------------------------------------------------------------
 	void D3D9RenderSystem::setBlendState(const BlendState& blendState)

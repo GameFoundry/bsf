@@ -22,9 +22,8 @@ namespace CamelotEngine
 			, comparisonFunc(CMPF_ALWAYS_FAIL)
 			, mipMin(-FLT_MAX)
 			, mipMax(FLT_MAX)
+			, borderColor(Color::White)
 		{
-			for(int i = 0; i < 4; i++)
-				borderColor[i] = Color::White;
 		}
 
 		UVWAddressingMode addressMode;
@@ -35,7 +34,7 @@ namespace CamelotEngine
 		float mipmapBias;
 		float mipMin;
 		float mipMax;
-		Color borderColor[4];
+		Color borderColor;
 		CompareFunction comparisonFunc;
 	};
 
@@ -89,9 +88,9 @@ namespace CamelotEngine
 		float getMaximumMip() const { return mData.mipMax; }
 
 		/**
-		 * @brief	Gets a border color for the specified side. Index must be >= 0 and < 4.
+		 * @brief	Gets the border color
 		 */
-		const Color& getBorderColor(UINT32 idx) const;
+		const Color& getBorderColor() const;
 
 		static SamplerStatePtr create(const SAMPLER_STATE_DESC& desc);
 

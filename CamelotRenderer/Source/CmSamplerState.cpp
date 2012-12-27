@@ -39,11 +39,9 @@ namespace CamelotEngine
 		return mData.minFilter;
 	}
 
-	const Color& SamplerState::getBorderColor(UINT32 idx) const
+	const Color& SamplerState::getBorderColor() const
 	{
-		assert(idx >= 0 && idx < 4);
-
-		return mData.borderColor[idx];
+		return mData.borderColor;
 	}
 
 	SamplerStatePtr SamplerState::create(const SAMPLER_STATE_DESC& desc)

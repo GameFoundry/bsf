@@ -1,4 +1,5 @@
 #include "CmD3D11HLSLProgram.h"
+#include "CmD3D11HLSLProgramRTTI.h"
 #include "CmRenderSystem.h"
 #include "CmGpuProgramManager.h"
 #include "CmD3D11GpuProgram.h"
@@ -457,5 +458,18 @@ namespace CamelotEngine
 			HardwareConstantBufferPtr constantBuffer = HardwareBufferManager::instance().createConstantBuffer(shaderBufferIter->desc.Size, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
 			mConstantBuffers.push_back(constantBuffer);
 		}
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D11HLSLProgram::getRTTIStatic()
+	{
+		return D3D11HLSLProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D11HLSLProgram::getRTTI() const
+	{
+		return D3D11HLSLProgram::getRTTIStatic();
 	}
 }

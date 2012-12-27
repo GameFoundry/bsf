@@ -93,5 +93,13 @@ namespace CamelotEngine
 		 * @brief	Creates constant buffers based on available parameter and constant data.
 		 */
 		void createConstantBuffers();
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class D3D11HLSLProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }
