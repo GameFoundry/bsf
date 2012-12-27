@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\CmD3D11DepthStencilBuffer.h" />
     <ClInclude Include="Include\CmD3D11HardwareBufferManager.h" />
     <ClInclude Include="Include\CmD3D11HardwareConstantBuffer.h" />
     <ClInclude Include="Include\CmD3D11Device.h" />
@@ -163,11 +164,13 @@
     <ClInclude Include="Include\CmD3D11RenderTexture.h" />
     <ClInclude Include="Include\CmD3D11RenderWindow.h" />
     <ClInclude Include="Include\CmD3D11Texture.h" />
+    <ClInclude Include="Include\CmD3D11TextureManager.h" />
     <ClInclude Include="Include\CmD3D11VertexDeclaration.h" />
     <ClInclude Include="Include\CmD3D11VideoMode.h" />
     <ClInclude Include="Include\CmD3D11VideoModeList.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\CmD3D11DepthStencilBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11Device.cpp" />
     <ClCompile Include="Source\CmD3D11Driver.cpp" />
     <ClCompile Include="Source\CmD3D11DriverList.cpp" />
@@ -184,6 +187,7 @@
     <ClCompile Include="Source\CmD3D11RenderTexture.cpp" />
     <ClCompile Include="Source\CmD3D11RenderWindow.cpp" />
     <ClCompile Include="Source\CmD3D11Texture.cpp" />
+    <ClCompile Include="Source\CmD3D11TextureManager.cpp" />
     <ClCompile Include="Source\CmD3D11VertexDeclaration.cpp" />
     <ClCompile Include="Source\CmD3D11VideoMode.cpp" />
     <ClCompile Include="Source\CmD3D11VideoModeList.cpp" />

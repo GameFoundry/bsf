@@ -117,4 +117,9 @@ namespace CamelotEngine
 		} // while !ok
 		*/
 	}
+
+	bool D3D11RenderSystem::checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage)
+	{
+		return true;
+	}
 }

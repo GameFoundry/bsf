@@ -615,56 +615,6 @@ namespace CamelotEngine
 		}
 
 		mDepthStencilBuffer = TextureManager::instance().createDepthStencilBuffer(32, BBDesc.Width, BBDesc.Height, mFSAA, mFSAAHint);
-
-		//if(mDepthBufferPoolId != DepthStencilBuffer::POOL_NO_DEPTH)
-		//{
-		//	// Create depth stencil texture
-		//	ID3D11Texture2D* pDepthStencil = NULL;
-		//	D3D11_TEXTURE2D_DESC descDepth;
-
-		//	descDepth.Width = BBDesc.Width;
-		//	descDepth.Height = BBDesc.Height;
-		//	descDepth.MipLevels = 1;
-		//	descDepth.ArraySize = 1;
-		//	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		//	descDepth.SampleDesc.Count = mFSAAType.Count;
-		//	descDepth.SampleDesc.Quality = mFSAAType.Quality;
-		//	descDepth.Usage = D3D11_USAGE_DEFAULT;
-		//	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-		//	descDepth.CPUAccessFlags = 0;
-		//	descDepth.MiscFlags = 0;
-
-		//	hr = mDevice.getD3D11Device()->CreateTexture2D(&descDepth, NULL, &pDepthStencil);
-		//	if( FAILED(hr) || mDevice.hasError())
-		//	{
-		//		String errorDescription = mDevice.getErrorDescription(hr);
-		//		CM_EXCEPT(RenderingAPIException, "Unable to create depth texture\nError Description:" + errorDescription);
-		//	}
-
-		//	// Create the depth stencil view
-		//	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-		//	ZeroMemory( &descDSV, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC) );
-
-		//	descDSV.Format =  descDepth.Format;
-		//	descDSV.ViewDimension = mFSAA ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
-		//	descDSV.Texture2D.MipSlice = 0;
-		//	hr = mDevice.getD3D11Device()->CreateDepthStencilView(pDepthStencil, &descDSV, &mDepthStencilView);
-
-		//	SAFE_RELEASE(pDepthStencil);
-
-		//	if( FAILED(hr) )
-		//	{
-		//		String errorDescription = mDevice.getErrorDescription();
-		//		CM_EXCEPT(RenderingAPIException, 
-		//			"Unable to create depth stencil view\nError Description:" + errorDescription);
-		//	}
-
-		//	D3D11RenderSystem* rsys = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-		//	DepthStencilBuffer *depthBuf = rsys->_addManualDepthBuffer(mDepthStencilView, mWidth, mHeight, mFSAAType.Count, mFSAAType.Quality);
-
-		//	//Don't forget we want this window to use _this_ depth buffer
-		//	this->attachDepthBuffer(depthBuf);
-		//} 
 	}
 
 	void D3D11RenderWindow::_destroySizeDependedD3DResources()

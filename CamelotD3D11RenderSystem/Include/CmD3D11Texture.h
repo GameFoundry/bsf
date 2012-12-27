@@ -12,6 +12,8 @@ namespace CamelotEngine
 
 		ID3D11Resource* getDX11Resource() const { return mTex; }
 	protected:
+		friend class D3D11TextureManager;
+
 		D3D11Texture();
 
 		ID3D11Texture1D* m1DTex;

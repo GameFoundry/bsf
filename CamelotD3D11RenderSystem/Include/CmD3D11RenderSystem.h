@@ -12,6 +12,7 @@ namespace CamelotEngine
 		static D3D11Device& getPrimaryDevice();
 
 		void determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings);
+		bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
 	protected:
 
 	private:
