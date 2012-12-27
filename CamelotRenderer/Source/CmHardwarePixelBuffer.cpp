@@ -102,12 +102,12 @@ namespace CamelotEngine
 		}
 		const PixelData &srclock = src->lock(srcBox, HBL_READ_ONLY);
 
-		LockOptions method = HBL_NORMAL;
+		LockOptions method = HBL_READ_WRITE;
 		if(dstBox.left == 0 && dstBox.top == 0 && dstBox.front == 0 &&
 		   dstBox.right == mWidth && dstBox.bottom == mHeight &&
 		   dstBox.back == mDepth)
 			// Entire buffer -- we can discard the previous contents
-			method = HBL_DISCARD;
+			method = HBL_WRITE_ONLY_DISCARD;
 			
 		const PixelData &dstlock = lock(dstBox, method);
 		if(dstlock.getWidth() != srclock.getWidth() ||

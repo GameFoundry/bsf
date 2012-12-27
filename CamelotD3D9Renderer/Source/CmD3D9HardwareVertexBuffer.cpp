@@ -119,7 +119,7 @@ namespace CamelotEngine {
 						bufferResources->mLockLength = length;
 				}
 				
-				if (bufferResources->mLockOptions != HBL_DISCARD)
+				if (bufferResources->mLockOptions != HBL_WRITE_ONLY_DISCARD)
 					bufferResources->mLockOptions = options;					
 
 				++it;
@@ -245,7 +245,7 @@ namespace CamelotEngine {
 		bufferResources->mOutOfDate = true;
 		bufferResources->mLockOffset = 0;
 		bufferResources->mLockLength = getSizeInBytes();
-		bufferResources->mLockOptions = HBL_NORMAL;
+		bufferResources->mLockOptions = HBL_READ_WRITE;
 
 		// TODO PORT - Don't know what the next frame number is. Add a method for that
 		//bufferResources->mLastUsedFrame = Root::getSingleton().getNextFrameNumber();
@@ -336,7 +336,7 @@ namespace CamelotEngine {
 		bufferResources->mOutOfDate = false;
 		bufferResources->mLockOffset = mSizeInBytes;
 		bufferResources->mLockLength = 0;
-		bufferResources->mLockOptions = HBL_NORMAL;
+		bufferResources->mLockOptions = HBL_READ_WRITE;
 
 		return true;		
 	}

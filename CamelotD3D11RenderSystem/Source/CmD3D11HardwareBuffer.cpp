@@ -72,7 +72,7 @@ namespace CamelotEngine
 
 			switch(options)
 			{
-			case HBL_DISCARD:
+			case HBL_WRITE_ONLY_DISCARD:
 				if (mUsage & HardwareBuffer::HBU_DYNAMIC)
 				{
 					// Map cannot be called with MAP_WRITE access, 
@@ -92,7 +92,7 @@ namespace CamelotEngine
 					LOGWRN("DISCARD lock is only available on dynamic buffers. Falling back to normal write.");
 				}
 				break;
-			case HBL_NO_OVERWRITE:
+			case HBL_WRITE_ONLY_NO_OVERWRITE:
 				if(mBufferType == INDEX_BUFFER || mBufferType == VERTEX_BUFFER)
 					mapType = D3D11_MAP_WRITE_NO_OVERWRITE;
 				else
@@ -102,7 +102,7 @@ namespace CamelotEngine
 					LOGWRN("NO_OVERWRITE lock is not available on this (" + toString(mBufferType) + ") buffer type. Falling back to normal write.");
 				}
 				break;
-			case HBL_NORMAL:
+			case HBL_READ_WRITE:
 				if ((mDesc.CPUAccessFlags & D3D11_CPU_ACCESS_READ) != 0 &&
 					(mDesc.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) != 0)
 				{
@@ -154,7 +154,7 @@ namespace CamelotEngine
 			}
 
 			// schedule a copy to the staging
-			if (options != HBL_DISCARD)
+			if (options != HBL_WRITE_ONLY_DISCARD)
 				mpTempStagingBuffer->copyData(*this, 0, 0, mSizeInBytes, true);
 
 			// register whether we'll need to upload on unlock

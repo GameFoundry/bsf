@@ -431,6 +431,19 @@ namespace CamelotEngine
 		outColour[3] = inColour.a;	
 	}
 
+	D3D11_BOX D3D11Mappings::toDx11Box(const Box &inBox)
+	{
+		D3D11_BOX res;
+		res.left	= static_cast<UINT>(inBox.left);
+		res.top		= static_cast<UINT>(inBox.top);
+		res.front	= static_cast<UINT>(inBox.front);
+		res.right	= static_cast<UINT>(inBox.right);
+		res.bottom	= static_cast<UINT>(inBox.bottom);
+		res.back	= static_cast<UINT>(inBox.back);
+
+		return res;
+	}
+
 	PixelFormat D3D11Mappings::_getPF(DXGI_FORMAT d3dPF)
 	{
 		switch(d3dPF)
@@ -786,7 +799,7 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	size_t D3D11Mappings::_getSizeInBytes(PixelFormat pf, size_t xcount, size_t ycount)
+	UINT32 D3D11Mappings::_getSizeInBytes(PixelFormat pf, UINT32 xcount, UINT32 ycount)
 	{
 		if(xcount == 0 || ycount == 0)
 			return 0;
@@ -797,12 +810,12 @@ namespace CamelotEngine
 			if (pf == PF_DXT1)
 			{
 				// 64 bits (8 bytes) per 4x4 block
-				return std::max<size_t>(1, xcount / 4) * std::max<size_t>(1, ycount / 4) * 8;
+				return std::max<UINT32>(1, xcount / 4) * std::max<UINT32>(1, ycount / 4) * 8;
 			}
 			else
 			{
 				// 128 bits (16 bytes) per 4x4 block
-				return std::max<size_t>(1, xcount / 4) * std::max<size_t>(1, ycount / 4) * 16;
+				return std::max<UINT32>(1, xcount / 4) * std::max<UINT32>(1, ycount / 4) * 16;
 			}
 		}
 		else
@@ -889,5 +902,31 @@ namespace CamelotEngine
 			flags |= D3D11_RESOURCE_MISC_TEXTURECUBE;
 
 		return flags;
+	}
+
+	D3D11_MAP D3D11Mappings::_getLockOptions(LockOptions lockOptions)
+	{
+		switch(lockOptions)
+		{
+		case HBL_WRITE_ONLY_NO_OVERWRITE:
+			return D3D11_MAP_WRITE_NO_OVERWRITE;
+			break;
+		case HBL_READ_WRITE:
+			return D3D11_MAP_READ_WRITE;
+			break;
+		case HBL_WRITE_ONLY_DISCARD:
+			return D3D11_MAP_WRITE_DISCARD;
+			break;
+		case HBL_READ_ONLY:
+			return D3D11_MAP_READ;
+			break;
+		case HBL_WRITE_ONLY:
+			return D3D11_MAP_WRITE;
+			break;
+		default: 
+			break;
+		};
+
+		CM_EXCEPT(RenderingAPIException, "Invalid lock option. No DX11 equivalent of: " + toString(lockOptions));
 	}
 }

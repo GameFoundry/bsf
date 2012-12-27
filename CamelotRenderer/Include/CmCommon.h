@@ -203,6 +203,27 @@ namespace CamelotEngine {
 		SOP_INVERT
 	};
 
+	/// Locking options
+	enum LockOptions
+	{
+        /** Normal mode, ie allows read/write and contents are preserved. */
+        HBL_READ_WRITE,
+		/** Discards the <em>entire</em> buffer while locking; this allows optimisation to be 
+		performed because synchronisation issues are relaxed. 
+		*/
+		HBL_WRITE_ONLY_DISCARD,
+		/** Lock the buffer for reading only. Not allowed in buffers which are created with HBU_WRITE_ONLY. 
+		*/ 
+		HBL_READ_ONLY,
+        /** As HBL_NORMAL, except the application guarantees not to overwrite any 
+        region of the buffer which has already been used in this frame, can allow
+        some optimisation on some APIs. */
+        HBL_WRITE_ONLY_NO_OVERWRITE,
+		/** Lock for writing only */
+		HBL_WRITE_ONLY
+    			
+	};
+
 	/** Texture addressing mode for each texture coordinate. */
 	struct UVWAddressingMode
 	{

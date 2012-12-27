@@ -86,7 +86,7 @@ namespace CamelotEngine {
 				mScratchPtr = retPtr;
 				mScratchUploadOnUnlock = (options != HBL_READ_ONLY);
 
-				if (options != HBL_DISCARD)
+				if (options != HBL_WRITE_ONLY_DISCARD)
 				{
 					// have to read back the data before returning the pointer
 					readData(offset, length, retPtr);
@@ -98,7 +98,7 @@ namespace CamelotEngine {
 		{
 			glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId );
 			// Use glMapBuffer
-			if(options == HBL_DISCARD)
+			if(options == HBL_WRITE_ONLY_DISCARD)
 			{
 				// Discard the buffer
 				glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 

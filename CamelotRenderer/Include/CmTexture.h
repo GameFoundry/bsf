@@ -46,18 +46,10 @@ namespace CamelotEngine {
     enum TextureUsage
     {
 		/// @copydoc HardwareBuffer::Usage
-		TU_STATIC = HardwareBuffer::HBU_STATIC,
-		TU_DYNAMIC = HardwareBuffer::HBU_DYNAMIC,
-		TU_WRITE_ONLY = HardwareBuffer::HBU_WRITE_ONLY,
-		TU_STATIC_WRITE_ONLY = HardwareBuffer::HBU_STATIC_WRITE_ONLY, 
-		TU_DYNAMIC_WRITE_ONLY = HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY,
-		TU_DYNAMIC_WRITE_ONLY_DISCARDABLE = HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE,
-		/// this texture will be a render target, i.e. used as a target for render to texture
-		/// setting this flag will ignore all other texture usages
-		TU_RENDERTARGET = 0x200,
-		/// default to automatic mipmap generation static textures
-		TU_DEFAULT = TU_STATIC_WRITE_ONLY
-        
+		TU_STATIC = HardwareBuffer::HBU_STATIC, // Optimal setting if texture is read by the GPU often, and very rarely written by CPU
+		TU_DYNAMIC = HardwareBuffer::HBU_DYNAMIC, // Optimal if the texture is updated by CPU often (e.g. every frame)
+		TU_RENDERTARGET = 0x200, // Used for rendering by the GPU
+		TU_DEFAULT = TU_STATIC
     };
 
     /** Enum identifying the texture type
@@ -191,7 +183,7 @@ namespace CamelotEngine {
 		 *
 		 * @see		Texture::setRawPixels
 		 */
-		void setRawPixels_internal(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
+		virtual void setRawPixels_internal(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
 
 		/**
 		 * @brief	Gets raw pixels from the texture. This is a slow operation
@@ -219,11 +211,11 @@ namespace CamelotEngine {
 		 *
 		 * @see		Texture::getRawPixels
 		 */
-		void getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op);
+		virtual void getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op);
 
 		/** Copies (and maybe scales to fit) the contents of this texture to
 			another texture. */
-		virtual void copy_internal( TexturePtr& target );
+		virtual void copy_internal(TexturePtr& target);
 
     protected:
 		friend class TextureManager;
@@ -310,9 +302,7 @@ namespace CamelotEngine {
 			PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
     };
-
 	/** @} */
-
 }
 
 #endif

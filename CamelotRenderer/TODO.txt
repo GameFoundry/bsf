@@ -17,13 +17,24 @@
 
 
 /////
+HardwarePixelBuffer should hold a pointer to DX11Texture, and CmDX11Texture should hold a pointer to HardwarePixelBuffer
+
 waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
 Move createRenderTexture to TextureManager? (also createMultiRenderTexture)
- - Right now its created with a special texture usage flag, which I don't like
+ - Right now its created with a special texture usage flag, which I don't like (Textures have slices and other weird stuff)
 Drop OpenGL support for low level shaders? (See if cg can translate to GLSL)
 
 Keeping a list of all render targets in RenderSystem shouldn't be needed (and calling attach/detach renderTarget). Renderer should determine in what order are render targets presented.
+
+Constant buffers are created in a weird way. Maybe they should only be created internally by GpuProgramParameters?
+ - Multiple GpuProgramParameters get returned from GpuProgram after createParameters() is called, in a map, each with its own name
+
+
+setDepthBuffer method on RenderTexture
+All render targets need to create DepthStencilBuffer internally, so that getDepthStencilBuffer can return something. Right now only D3D11 render window does this
+Add D3D11DepthStencilBuffer
+ - Remove commented out buffer creation code from D3D11RenderWindow
 
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
@@ -169,6 +180,7 @@ Optional TODO:
 After everything is polished
  - Each view (i.e. camera) of the scene should be put into its own thread
  - How do I handle multiple mesh formats? Some files need animation, other don't. Some would mabye like to use QTangent, others the proper tangent frame.
+  - Asset postprocessor? Imports a regular mesh using normal importers and then postprocesses it into a specialized format?
  - Load texture mips separately so we can unload HQ textures from far away objects (like UE3)
  - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)
     - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 

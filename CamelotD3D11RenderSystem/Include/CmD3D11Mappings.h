@@ -56,6 +56,7 @@ namespace CamelotEngine
 		static void get(const Color& inColour, float * outColour );
 		static bool isMappingWrite(D3D11_MAP map);
 		static bool isMappingRead(D3D11_MAP map);
+		static D3D11_BOX toDx11Box(const Box &inBox);
 
 		/// utility method, convert D3D11 pixel format to Ogre pixel format
 		static PixelFormat _getPF(DXGI_FORMAT d3dPF);
@@ -75,9 +76,11 @@ namespace CamelotEngine
 
 		static TextureType _getTexType(D3D11_SRV_DIMENSION type);
 
-		static size_t _getSizeInBytes(PixelFormat pf, size_t xcount = 1, size_t ycount = 1);
+		static UINT32 _getSizeInBytes(PixelFormat pf, UINT32 xcount = 1, UINT32 ycount = 1);
 
 		static UINT _getTextureBindFlags(DXGI_FORMAT format, bool isdynamic);
 		static UINT _getTextureMiscFlags(UINT bindflags, TextureType textype, bool isdynamic);
+
+		static D3D11_MAP _getLockOptions(LockOptions lockOptions);
 	};
 }

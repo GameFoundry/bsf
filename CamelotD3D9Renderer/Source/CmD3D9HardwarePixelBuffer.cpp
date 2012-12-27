@@ -336,7 +336,7 @@ PixelData D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions opti
 	DWORD flags = 0;
 	switch(options)
 	{
-	case HBL_DISCARD:
+	case HBL_WRITE_ONLY_DISCARD:
 		// D3D only likes D3DLOCK_DISCARD if you created the texture with D3DUSAGE_DYNAMIC
 		// debug runtime flags this up, could cause problems on some drivers
 		if (mUsage & HBU_DYNAMIC)

@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 // Precompiler options
 #include "CmPrerequisites.h"
+#include "CmCommon.h"
 
 namespace CamelotEngine {
 
@@ -115,24 +116,6 @@ namespace CamelotEngine {
                 HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE = 14
 
 
-		    };
-		    /// Locking options
-		    enum LockOptions
-		    {
-                /** Normal mode, ie allows read/write and contents are preserved. */
-                HBL_NORMAL,
-			    /** Discards the <em>entire</em> buffer while locking; this allows optimisation to be 
-				performed because synchronisation issues are relaxed. 
-			    */
-			    HBL_DISCARD,
-			    /** Lock the buffer for reading only. Not allowed in buffers which are created with HBU_WRITE_ONLY. 
-				*/ 
-			    HBL_READ_ONLY,
-                /** As HBL_NORMAL, except the application guarantees not to overwrite any 
-                region of the buffer which has already been used in this frame, can allow
-                some optimisation on some APIs. */
-                HBL_NO_OVERWRITE
-    			
 		    };
 	    protected:
 		    UINT32 mSizeInBytes;

@@ -123,7 +123,7 @@ namespace CamelotEngine {
 		if(mip < 0 || mip > mNumMipmaps)
 			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mip) + ". Min is 0, max is " + toString(mNumMipmaps));
 
-		if(face < 0 || mip > getNumFaces())
+		if(face < 0 || face > getNumFaces())
 			CM_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(getNumFaces()));
 
 		if(mFormat != data.format)

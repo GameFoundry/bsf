@@ -36,8 +36,59 @@ namespace CamelotEngine {
 	class D3D9Texture;
 	class D3D9RenderTexture;
 
-	class CM_D3D9_EXPORT D3D9HardwarePixelBuffer: public HardwarePixelBuffer
+	class CM_D3D9_EXPORT D3D9HardwarePixelBuffer : public HardwarePixelBuffer
 	{
+	public:
+		D3D9HardwarePixelBuffer(HardwareBuffer::Usage usage, 
+			D3D9Texture* ownerTexture);
+		~D3D9HardwarePixelBuffer();
+
+		/// Call this to associate a D3D surface or volume with this pixel buffer
+		void bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *mSurface, IDirect3DSurface9* fsaaSurface,
+			bool writeGamma, UINT32 fsaa, const String& srcName, IDirect3DBaseTexture9 *mipTex);
+		void bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *mVolume, IDirect3DBaseTexture9 *mipTex);
+
+		/// @copydoc HardwarePixelBuffer::blit
+		void blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
+
+		/// @copydoc HardwarePixelBuffer::blitFromMemory
+		void blitFromMemory(const PixelData &src, const Box &dstBox);
+
+		/// @copydoc HardwarePixelBuffer::blitToMemory
+		void blitToMemory(const Box &srcBox, const PixelData &dst);
+
+		/// Internal function to update mipmaps on update of level 0
+		void _genMipmaps(IDirect3DBaseTexture9* mipTex);
+
+		/// Function to set mipmap generation
+		void _setMipmapping(bool doMipmapGen, bool HWMipmaps);
+
+
+		/// Get rendertarget for z slice
+		RenderTexture *getRenderTarget(UINT32 zoffset);
+
+		/// Accessor for surface
+		IDirect3DSurface9 *getSurface(IDirect3DDevice9* d3d9Device);
+
+		/// Accessor for AA surface
+		IDirect3DSurface9 *getFSAASurface(IDirect3DDevice9* d3d9Device);
+
+		/// Notify TextureBuffer of destruction of render target
+		virtual void _clearSliceRTT(UINT32 zoffset);
+
+		/// Release surfaces held by this pixel buffer.
+		void releaseSurfaces(IDirect3DDevice9* d3d9Device);
+
+		/// Destroy resources associated with the given device.
+		void destroyBufferResources(IDirect3DDevice9* d3d9Device);
+
+		// Called when device state is changing. Access to any device should be locked.
+		// Relevant for multi thread application.
+		static void lockDeviceAccess();
+
+		// Called when device state change completed. Access to any device is allowed.
+		// Relevant for multi thread application.
+		static void unlockDeviceAccess();
 	protected:		
 		struct BufferResources
 		{			
@@ -100,58 +151,6 @@ namespace CamelotEngine {
 		void blitFromMemory(const PixelData &src, const Box &dstBox, BufferResources* dstBufferResources);
 
 		void blitToMemory(const Box &srcBox, const PixelData &dst, BufferResources* srcBufferResources, IDirect3DDevice9* d3d9Device);
-			
-	public:
-		D3D9HardwarePixelBuffer(HardwareBuffer::Usage usage, 
-			D3D9Texture* ownerTexture);
-		~D3D9HardwarePixelBuffer();
-
-		/// Call this to associate a D3D surface or volume with this pixel buffer
-		void bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *mSurface, IDirect3DSurface9* fsaaSurface,
-				  bool writeGamma, UINT32 fsaa, const String& srcName, IDirect3DBaseTexture9 *mipTex);
-		void bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *mVolume, IDirect3DBaseTexture9 *mipTex);
-		
-		/// @copydoc HardwarePixelBuffer::blit
-        void blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
-		
-		/// @copydoc HardwarePixelBuffer::blitFromMemory
-		void blitFromMemory(const PixelData &src, const Box &dstBox);
-	
-		/// @copydoc HardwarePixelBuffer::blitToMemory
-		void blitToMemory(const Box &srcBox, const PixelData &dst);
-		
-		/// Internal function to update mipmaps on update of level 0
-		void _genMipmaps(IDirect3DBaseTexture9* mipTex);
-		
-		/// Function to set mipmap generation
-		void _setMipmapping(bool doMipmapGen, bool HWMipmaps);
-		
-		
-		/// Get rendertarget for z slice
-		RenderTexture *getRenderTarget(UINT32 zoffset);
-
-		/// Accessor for surface
-		IDirect3DSurface9 *getSurface(IDirect3DDevice9* d3d9Device);
-		
-		/// Accessor for AA surface
-		IDirect3DSurface9 *getFSAASurface(IDirect3DDevice9* d3d9Device);
-
-		/// Notify TextureBuffer of destruction of render target
-        virtual void _clearSliceRTT(UINT32 zoffset);
-
-		/// Release surfaces held by this pixel buffer.
-		void releaseSurfaces(IDirect3DDevice9* d3d9Device);
-
-		/// Destroy resources associated with the given device.
-		void destroyBufferResources(IDirect3DDevice9* d3d9Device);
-
-		// Called when device state is changing. Access to any device should be locked.
-		// Relevant for multi thread application.
-		static void lockDeviceAccess();
-
-		// Called when device state change completed. Access to any device is allowed.
-		// Relevant for multi thread application.
-		static void unlockDeviceAccess();
 	};
 };
 #endif

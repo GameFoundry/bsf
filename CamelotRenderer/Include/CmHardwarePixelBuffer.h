@@ -60,7 +60,6 @@ namespace CamelotEngine {
         PixelData mCurrentLock;
 		// The current locked box of this surface (entire surface coords)
 		Box mLockedBox;
-
         
         /// Internal implementation of lock(), must be overridden in subclasses
         virtual PixelData lockImpl(const Box lockBox,  LockOptions options) = 0;

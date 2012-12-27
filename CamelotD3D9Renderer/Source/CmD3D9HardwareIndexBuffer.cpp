@@ -119,7 +119,7 @@ namespace CamelotEngine {
 						bufferResources->mLockLength = length;
 				}
 			
-				if (bufferResources->mLockOptions != HBL_DISCARD)
+				if (bufferResources->mLockOptions != HBL_WRITE_ONLY_DISCARD)
 					bufferResources->mLockOptions = options;
 
 				++it;
@@ -246,7 +246,7 @@ namespace CamelotEngine {
 		bufferResources->mOutOfDate = true;
 		bufferResources->mLockOffset = 0;
 		bufferResources->mLockLength = getSizeInBytes();
-		bufferResources->mLockOptions = HBL_NORMAL;
+		bufferResources->mLockOptions = HBL_READ_WRITE;
 		// TODO PORT - I don't know current frame number. Once I add a method for counting frames call it here
 		//bufferResources->mLastUsedFrame = Root::getSingleton().getNextFrameNumber();
 		bufferResources->mLastUsedFrame = 0;
@@ -337,7 +337,7 @@ namespace CamelotEngine {
 		bufferResources->mOutOfDate = false;
 		bufferResources->mLockOffset = mSizeInBytes;
 		bufferResources->mLockLength = 0;
-		bufferResources->mLockOptions = HBL_NORMAL;
+		bufferResources->mLockOptions = HBL_READ_WRITE;
 
 		return true;			
 	}

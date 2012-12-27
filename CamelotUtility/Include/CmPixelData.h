@@ -241,6 +241,8 @@ namespace CamelotEngine
         */
         UINT32 getSliceSkip() const { return slicePitch - (getHeight() * rowPitch); }
 
+		PixelFormat getFormat() const { return format; }
+
         /** Return whether this buffer is laid out consecutive in memory (ie the pitches
          	are equal to the dimensions)
         */        
