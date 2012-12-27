@@ -42,12 +42,6 @@ namespace CamelotEngine {
 		/// destructor
 		~D3D9Texture();
 
-		/// overridden from Texture
-		void copy_internal( TexturePtr& target );
-
-		/// @copydoc Texture::getBuffer
-		HardwarePixelBufferPtr getBuffer_internal(UINT32 face, UINT32 mipmap);
-		
 		/// retrieves a pointer to the actual texture
 		IDirect3DBaseTexture9 *getTexture_internal();		
 		/// retrieves a pointer to the normal 1D/2D texture
@@ -113,6 +107,8 @@ namespace CamelotEngine {
 		// Dynamic textures?
 		bool                            mDynamicTextures;
 		
+		HardwarePixelBufferPtr			mLockedBuffer;
+
 		/// Is hardware gamma supported (read)?
 		bool mHwGammaReadSupported;
 		/// Is hardware gamma supported (write)?
@@ -124,6 +120,12 @@ namespace CamelotEngine {
 
 		/// overriden from Resource
 		void initialize_internal();	
+
+		/// overridden from Texture
+		void copyImpl(TexturePtr& target);
+
+		PixelData lockImpl(LockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+		void unlockImpl();
 
 		/// internal method, create a blank normal 1D/2D texture		
 		void _createNormTex(IDirect3DDevice9* d3d9Device);
@@ -159,6 +161,20 @@ namespace CamelotEngine {
 		String _getCubeFaceName(unsigned char face) const
 		{ assert(face < 6); return mCubeFaceNames[face]; }
 		
+		/** Return hardware pixel buffer for a surface. This buffer can then
+			be used to copy data from and to a particular level of the texture.
+			@param face 	Face number, in case of a cubemap texture. Must be 0
+							for other types of textures.
+                            For cubemaps, this is one of 
+                            +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
+			@param mipmap	Mipmap level. This goes from 0 for the first, largest
+							mipmap level to getNumMipmaps()-1 for the smallest.
+			@returns	A shared pointer to a hardware pixel buffer
+			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
+						Do not use it after the lifetime of the containing texture.
+		*/
+		HardwarePixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
+
 		/// internal method, create D3D9HardwarePixelBuffers for every face and
 		/// mipmap level. This method must be called after the D3D texture object was created
 		void _createSurfaceList(IDirect3DDevice9* d3d9Device, TextureResources* textureResources);

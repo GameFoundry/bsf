@@ -34,106 +34,8 @@ namespace CamelotEngine
 		freeInternalResources();			
 	}
 
-	void D3D11Texture::setRawPixels_internal(const PixelData& data, UINT32 face, UINT32 mip)
+	void D3D11Texture::copyImpl(TexturePtr& target)
 	{
-		THROW_IF_NOT_RENDER_THREAD
-
-		if(mip < 0 || mip > mNumMipmaps)
-			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mip) + ". Min is 0, max is " + toString(mNumMipmaps));
-
-		if(face < 0 || face > getNumFaces())
-			CM_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(getNumFaces()));
-
-		if(mFormat != data.format)
-			CM_EXCEPT(InvalidParametersException, "Provided PixelData has invalid format. Needed: " + toString(mFormat) + ". Got: " + toString(data.format));
-
-		if(mWidth != data.getWidth() || mHeight != data.getHeight() || mDepth != data.getDepth())
-		{
-			CM_EXCEPT(InvalidParametersException, "Provided PixelData size doesn't match the texture size." \
-				" Width: " + toString(mWidth) + "/" + toString(data.getWidth()) + 
-				" Height: " + toString(mHeight) + "/" + toString(data.getHeight()) + 
-				" Depth: " + toString(mDepth) + "/" + toString(data.getDepth()));
-		}
-
-		PixelData myData = lock(HBL_WRITE_ONLY_DISCARD, mip, face);
-		memcpy(myData.data, data.data, data.getConsecutiveSize());
-		unlock();
-	}
-
-	void D3D11Texture::getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if(mip < 0 || mip > mNumMipmaps)
-			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mip) + ". Min is 0, max is " + toString(mNumMipmaps));
-
-		if(face < 0 || mip > getNumFaces())
-			CM_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(getNumFaces()));
-
-		UINT32 numMips = getNumMipmaps();
-
-		UINT32 totalSize = 0;
-		UINT32 width = getWidth();
-		UINT32 height = getHeight();
-		UINT32 depth = getDepth();
-
-		for(UINT32 j = 0; j <= mip; j++)
-		{
-			totalSize = PixelUtil::getMemorySize(width, height, depth, mFormat);
-
-			if(width != 1) width /= 2;
-			if(height != 1) height /= 2;
-			if(depth != 1) depth /= 2;
-		}
-
-		UINT8* buffer = new UINT8[totalSize]; 
-		PixelDataPtr dst(new PixelData(width, height, depth, getFormat(), buffer, true));
-
-		PixelData myData = lock(HBL_READ_ONLY, mip, face);
-
-#if CM_DEBUG_MODE
-		if(dst->getConsecutiveSize() != myData.getConsecutiveSize())
-		{
-			unlock();
-			CM_EXCEPT(InternalErrorException, "Buffer sizes don't match");
-		}
-#endif
-
-		memcpy(dst->data, myData.data, dst->getConsecutiveSize());
-		unlock();
-
-		op.completeOperation(dst);
-	}
-
-	void D3D11Texture::copy_internal(TexturePtr& target)
-	{
-		if (target->getUsage() != this->getUsage() ||
-			target->getTextureType() != this->getTextureType())
-		{
-			CM_EXCEPT(InvalidParametersException, "Source and destination textures must be of same type and must have the same usage and type.");
-		}
-
-		if(getWidth() != target->getWidth() || getHeight() != target->getHeight() || getDepth() != target->getDepth())
-		{
-			CM_EXCEPT(InvalidParametersException, "Texture sizes don't match." \
-				" Width: " + toString(getWidth()) + "/" + toString(target->getWidth()) + 
-				" Height: " + toString(getHeight()) + "/" + toString(target->getHeight()) + 
-				" Depth: " + toString(getDepth()) + "/" + toString(target->getDepth()));
-		}
-
-		if(getNumFaces() != target->getNumFaces())
-		{
-			CM_EXCEPT(InvalidParametersException, "Number of texture faces doesn't match." \
-				" Num faces: " + toString(getNumFaces()) + "/" + toString(target->getNumFaces()));
-		}
-
-		if(getNumMipmaps() != target->getNumMipmaps())
-		{
-			CM_EXCEPT(InvalidParametersException, "Number of mipmaps doesn't match." \
-				" Num mipmaps: " + toString(getNumMipmaps()) + "/" + toString(target->getNumMipmaps()));
-		}
-
-		// get the target
 		D3D11Texture* other = static_cast<D3D11Texture*>(target.get());
 
 		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
@@ -146,7 +48,7 @@ namespace CamelotEngine
 		}
 	}
 
-	PixelData D3D11Texture::lock(LockOptions options, UINT32 mipLevel, UINT32 face)
+	PixelData D3D11Texture::lockImpl(LockOptions options, UINT32 mipLevel, UINT32 face)
 	{
 		UINT32 mipWidth = mipLevel >> mWidth;
 		UINT32 mipHeight = mipLevel >> mHeight;
@@ -194,12 +96,17 @@ namespace CamelotEngine
 		return lockedArea;
 	}
 
-	void D3D11Texture::unlock()
+	void D3D11Texture::unlockImpl()
 	{
 		if(mLockedForReading)
 			_unmapstagingbuffer();
 		else
-			_unmap(mTex);
+		{
+			if(mUsage == TU_DYNAMIC)
+				_unmap(mTex);
+			else
+				_unmapstaticbuffer();
+		}
 	}
 
 	void D3D11Texture::initialize_internal()

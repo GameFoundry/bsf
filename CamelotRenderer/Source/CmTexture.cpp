@@ -118,26 +118,9 @@ namespace CamelotEngine {
 
 	void Texture::setRawPixels_internal(const PixelData& data, UINT32 face, UINT32 mip)
 	{
-		THROW_IF_NOT_RENDER_THREAD
-
-		if(mip < 0 || mip > mNumMipmaps)
-			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mip) + ". Min is 0, max is " + toString(mNumMipmaps));
-
-		if(face < 0 || face > getNumFaces())
-			CM_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(getNumFaces()));
-
-		if(mFormat != data.format)
-			CM_EXCEPT(InvalidParametersException, "Provided PixelData has invalid format. Needed: " + toString(mFormat) + ". Got: " + toString(data.format));
-
-		if(mWidth != data.getWidth() || mHeight != data.getHeight() || mDepth != data.getDepth())
-		{
-			CM_EXCEPT(InvalidParametersException, "Provided PixelData size doesn't match the texture size." \
-				" Width: " + toString(mWidth) + "/" + toString(data.getWidth()) + 
-				" Height: " + toString(mHeight) + "/" + toString(data.getHeight()) + 
-				" Depth: " + toString(mDepth) + "/" + toString(data.getDepth()));
-		}
-
-		getBuffer_internal(face, mip)->blitFromMemory(data);
+		PixelData myData = lock(HBL_WRITE_ONLY_DISCARD, mip, face);
+		memcpy(myData.data, data.data, data.getConsecutiveSize());
+		unlock();
 	}
 
 	PixelDataPtr Texture::getRawPixels(UINT32 face, UINT32 mip)
@@ -154,14 +137,6 @@ namespace CamelotEngine {
 
 	void Texture::getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if(mip < 0 || mip > mNumMipmaps)
-			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mip) + ". Min is 0, max is " + toString(mNumMipmaps));
-
-		if(face < 0 || mip > getNumFaces())
-			CM_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(getNumFaces()));
-
 		UINT32 numMips = getNumMipmaps();
 
 		UINT32 totalSize = 0;
@@ -179,11 +154,71 @@ namespace CamelotEngine {
 		}
 
 		UINT8* buffer = new UINT8[totalSize]; 
-		PixelDataPtr src(new PixelData(width, height, depth, getFormat(), buffer, true));
+		PixelDataPtr dst(new PixelData(width, height, depth, getFormat(), buffer, true));
 
-		getBuffer_internal(face, mip)->blitToMemory(*src);
+		PixelData myData = lock(HBL_READ_ONLY, mip, face);
 
-		op.completeOperation(src);
+#if CM_DEBUG_MODE
+		if(dst->getConsecutiveSize() != myData.getConsecutiveSize())
+		{
+			unlock();
+			CM_EXCEPT(InternalErrorException, "Buffer sizes don't match");
+		}
+#endif
+
+		memcpy(dst->data, myData.data, dst->getConsecutiveSize());
+		unlock();
+
+		op.completeOperation(dst);
+	}
+	//----------------------------------------------------------------------------
+	PixelData Texture::lock(LockOptions options, UINT32 mipLevel, UINT32 face)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		if(mipLevel < 0 || mipLevel > mNumMipmaps)
+			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mipLevel) + ". Min is 0, max is " + toString(getNumMipmaps()));
+
+		if(face < 0 || face >= getNumFaces())
+			CM_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(getNumFaces()));
+
+		return lockImpl(options, mipLevel, face);
+	}
+	//-----------------------------------------------------------------------------
+	void Texture::unlock()
+	{
+		unlockImpl();
+	}
+	//-----------------------------------------------------------------------------
+	void Texture::copy(TexturePtr& target)
+	{
+		if (target->getUsage() != this->getUsage() ||
+			target->getTextureType() != this->getTextureType())
+		{
+			CM_EXCEPT(InvalidParametersException, "Source and destination textures must be of same type and must have the same usage and type.");
+		}
+
+		if(getWidth() != target->getWidth() || getHeight() != target->getHeight() || getDepth() != target->getDepth())
+		{
+			CM_EXCEPT(InvalidParametersException, "Texture sizes don't match." \
+				" Width: " + toString(getWidth()) + "/" + toString(target->getWidth()) + 
+				" Height: " + toString(getHeight()) + "/" + toString(target->getHeight()) + 
+				" Depth: " + toString(getDepth()) + "/" + toString(target->getDepth()));
+		}
+
+		if(getNumFaces() != target->getNumFaces())
+		{
+			CM_EXCEPT(InvalidParametersException, "Number of texture faces doesn't match." \
+				" Num faces: " + toString(getNumFaces()) + "/" + toString(target->getNumFaces()));
+		}
+
+		if(getNumMipmaps() != target->getNumMipmaps())
+		{
+			CM_EXCEPT(InvalidParametersException, "Number of mipmaps doesn't match." \
+				" Num mipmaps: " + toString(getNumMipmaps()) + "/" + toString(target->getNumMipmaps()));
+		}
+
+		copyImpl(target);
 	}
 	//-----------------------------------------------------------------------------
 	void Texture::unloadImpl(void)
@@ -192,26 +227,6 @@ namespace CamelotEngine {
 
 		freeInternalResources();
 	}
-    //-----------------------------------------------------------------------------   
-    void Texture::copy_internal( TexturePtr& target )
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-        if(target->getNumFaces() != getNumFaces())
-        {
-            CM_EXCEPT(InvalidParametersException, 
-                "Texture types must match");
-        }
-
-        size_t numMips = std::min(getNumMipmaps(), target->getNumMipmaps());
-        for(unsigned int face=0; face<getNumFaces(); face++)
-        {
-            for(unsigned int mip=0; mip<=numMips; mip++)
-            {
-                target->getBuffer_internal(face, mip)->blit(getBuffer_internal(face, mip));
-            }
-        }
-    }
 	//----------------------------------------------------------------------------- 
 	void Texture::throwIfNotRenderThread() const
 	{

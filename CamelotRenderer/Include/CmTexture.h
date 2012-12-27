@@ -137,20 +137,6 @@ namespace CamelotEngine {
         */
         virtual UINT32 getNumFaces() const;
 
-		/** Return hardware pixel buffer for a surface. This buffer can then
-			be used to copy data from and to a particular level of the texture.
-			@param face 	Face number, in case of a cubemap texture. Must be 0
-							for other types of textures.
-                            For cubemaps, this is one of 
-                            +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
-			@param mipmap	Mipmap level. This goes from 0 for the first, largest
-							mipmap level to getNumMipmaps()-1 for the smallest.
-			@returns	A shared pointer to a hardware pixel buffer
-			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
-						Do not use it after the lifetime of the containing texture.
-		*/
-		virtual HardwarePixelBufferPtr getBuffer_internal(UINT32 face=0, UINT32 mipmap=0) = 0;
-		
 		/** Retrieve a platform or API-specific piece of information from this texture.
 		 This method of retrieving information should only be used if you know what you're doing.
 		 @param name The name of the attribute to retrieve
@@ -213,9 +199,12 @@ namespace CamelotEngine {
 		 */
 		virtual void getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op);
 
-		/** Copies (and maybe scales to fit) the contents of this texture to
+		PixelData lock(LockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+		void unlock();
+
+		/** Copies the contents of this texture to
 			another texture. */
-		virtual void copy_internal(TexturePtr& target);
+		void copy(TexturePtr& target);
 
     protected:
 		friend class TextureManager;
@@ -248,6 +237,11 @@ namespace CamelotEngine {
 		 * @brief	Performs GpuProgram initialization. Only callable from the render thread.
 		 */
 		virtual void initialize_internal() = 0;
+
+		virtual PixelData lockImpl(LockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
+		virtual void unlockImpl() = 0;
+
+		virtual void copyImpl(TexturePtr& target) = 0;
 
 		/// @copydoc Resource::calculateSize
 		UINT32 calculateSize(void) const;

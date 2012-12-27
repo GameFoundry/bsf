@@ -107,6 +107,46 @@ namespace CamelotEngine {
 	}
 
 	//* Creation / loading methods ********************************************
+	PixelData GLTexture::lockImpl(LockOptions options, UINT32 mipLevel, UINT32 face)
+	{
+		if(mLockedBuffer != nullptr)
+			CM_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
+
+		UINT32 mipWidth = mipLevel >> mWidth;
+		UINT32 mipHeight = mipLevel >> mHeight;
+		UINT32 mipDepth = mipLevel >> mDepth;
+
+		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
+
+		mLockedBuffer = getBuffer(face, mipLevel);
+		lockedArea.data = mLockedBuffer->lock(options);
+
+		return lockedArea;
+	}
+	/****************************************************************************************/
+	void GLTexture::unlockImpl()
+	{
+		if(mLockedBuffer == nullptr)
+			CM_EXCEPT(InternalErrorException, "Trying to unlock a buffer that's not locked.");
+
+		mLockedBuffer->unlock();
+		mLockedBuffer = nullptr;
+	}
+	/****************************************************************************************/ 
+	void GLTexture::copyImpl(TexturePtr& target)
+	{
+		size_t numMips = std::min(getNumMipmaps(), target->getNumMipmaps());
+
+		GLTexture* glTexture = static_cast<GLTexture*>(target.get());
+		for(unsigned int face=0; face<getNumFaces(); face++)
+		{
+			for(unsigned int mip=0; mip<=numMips; mip++)
+			{
+				glTexture->getBuffer(face, mip)->blit(getBuffer(face, mip));
+			}
+		}
+	}
+	/****************************************************************************************/
 	void GLTexture::createInternalResourcesImpl(void)
     {
 		if (!GLEW_VERSION_1_2 && mTextureType == TEX_TYPE_3D)
@@ -236,7 +276,7 @@ namespace CamelotEngine {
 		}
 		createSurfaceList();
 		// Get final internal format
-		mFormat = getBuffer_internal(0,0)->getFormat();
+		mFormat = getBuffer(0,0)->getFormat();
 	}
 	
     void GLTexture::createRenderTexture(void)
@@ -281,7 +321,7 @@ namespace CamelotEngine {
 	}
 	
 	//---------------------------------------------------------------------------------------------
-	HardwarePixelBufferPtr GLTexture::getBuffer_internal(UINT32 face, UINT32 mipmap)
+	HardwarePixelBufferPtr GLTexture::getBuffer(UINT32 face, UINT32 mipmap)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

@@ -10,24 +10,6 @@ namespace CamelotEngine
 	public:
 		~D3D11Texture();
 
-		/**
-		 * @copydoc Texture::setRawPixels_internal
-		 */
-		void setRawPixels_internal(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
-
-		/**
-		 * @copydoc Texture::getRawPixels_internal
-		 */
-		void getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op);
-
-		/**
-		 * @copydoc Texture::copy_internal
-		 */
-		void copy_internal(TexturePtr& target);
-
-		PixelData lock(LockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
-		void unlock();
-
 		ID3D11Resource* getDX11Resource() const { return mTex; }
 	protected:
 		D3D11Texture();
@@ -44,6 +26,21 @@ namespace CamelotEngine
 		PixelData* mStaticBuffer;
 		UINT32 mLockedSubresourceIdx;
 		bool mLockedForReading;
+
+		/**
+		 * @copydoc Texture::lockImpl
+		 */
+		PixelData lockImpl(LockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+
+		/**
+		 * @copydoc Texture::unlockImpl
+		 */
+		void unlockImpl();
+
+		/**
+		 * @copydoc Texture::copy_internal
+		 */
+		void copyImpl(TexturePtr& target);
 
 		/// internal method, create a blank normal 1D Dtexture
 		void _create1DTex();

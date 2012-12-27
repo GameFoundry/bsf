@@ -80,7 +80,33 @@ namespace CamelotEngine
 		mSurfaceList.clear();		
 	}
 	/****************************************************************************************/
-	void D3D9Texture::copy_internal(TexturePtr& target)
+	PixelData D3D9Texture::lockImpl(LockOptions options, UINT32 mipLevel, UINT32 face)
+	{
+		if(mLockedBuffer != nullptr)
+			CM_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
+
+		UINT32 mipWidth = mipLevel >> mWidth;
+		UINT32 mipHeight = mipLevel >> mHeight;
+		UINT32 mipDepth = mipLevel >> mDepth;
+
+		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
+
+		mLockedBuffer = getBuffer(face, mipLevel);
+		lockedArea.data = mLockedBuffer->lock(options);
+
+		return lockedArea;
+	}
+	/****************************************************************************************/
+	void D3D9Texture::unlockImpl()
+	{
+		if(mLockedBuffer == nullptr)
+			CM_EXCEPT(InternalErrorException, "Trying to unlock a buffer that's not locked.");
+
+		mLockedBuffer->unlock();
+		mLockedBuffer = nullptr;
+	}
+	/****************************************************************************************/
+	void D3D9Texture::copyImpl(TexturePtr& target)
 	{
 		THROW_IF_NOT_RENDER_THREAD
 
@@ -1025,7 +1051,7 @@ namespace CamelotEngine
 	}
 	#undef GETLEVEL
 	/****************************************************************************************/
-	HardwarePixelBufferPtr D3D9Texture::getBuffer_internal(UINT32 face, UINT32 mipmap) 
+	HardwarePixelBufferPtr D3D9Texture::getBuffer(UINT32 face, UINT32 mipmap) 
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

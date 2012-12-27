@@ -42,9 +42,6 @@ namespace CamelotEngine {
     public:
         virtual ~GLTexture();      
 
-		/// @copydoc Texture::getBuffer
-		HardwarePixelBufferPtr getBuffer_internal(UINT32 face, UINT32 mipmap);
-
         // Takes the OGRE texture type (1d/2d/3d/cube) and returns the appropriate GL one
         GLenum getGLTextureTarget_internal(void) const;
 
@@ -60,6 +57,11 @@ namespace CamelotEngine {
 
 		void initialize_internal();
 
+		PixelData lockImpl(LockOptions options, UINT32 mipLevel, UINT32 face);
+		void unlockImpl();
+
+		void copyImpl(TexturePtr& target);
+
 		/// @copydoc Texture::createInternalResourcesImpl
 		void createInternalResourcesImpl(void);
         /// @copydoc Resource::freeInternalResourcesImpl
@@ -74,9 +76,24 @@ namespace CamelotEngine {
 
 		void createRenderTexture();
 
+		/** Return hardware pixel buffer for a surface. This buffer can then
+			be used to copy data from and to a particular level of the texture.
+			@param face 	Face number, in case of a cubemap texture. Must be 0
+							for other types of textures.
+                            For cubemaps, this is one of 
+                            +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
+			@param mipmap	Mipmap level. This goes from 0 for the first, largest
+							mipmap level to getNumMipmaps()-1 for the smallest.
+			@returns	A shared pointer to a hardware pixel buffer
+			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
+						Do not use it after the lifetime of the containing texture.
+		*/
+		HardwarePixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
+
     private:
         GLuint mTextureID;
         GLSupport& mGLSupport;
+		HardwarePixelBufferPtr mLockedBuffer;
 		
 		/// Vector of pointers to subsurfaces
 		typedef vector<HardwarePixelBufferPtr>::type SurfaceList;
