@@ -156,7 +156,7 @@ namespace CamelotEngine {
     {
        // There is no functional interface in D3D, just do via manual 
         // lock, copy & unlock
-        void* pSrc = this->lock(offset, length, HardwareBuffer::HBL_READ_ONLY);
+        void* pSrc = this->lock(offset, length, HBL_READ_ONLY);
         memcpy(pDest, pSrc, length);
         this->unlock();
 
@@ -169,7 +169,7 @@ namespace CamelotEngine {
         // There is no functional interface in D3D, just do via manual 
         // lock, copy & unlock
         void* pDst = this->lock(offset, length, 
-            discardWholeBuffer ? HardwareBuffer::HBL_DISCARD : HardwareBuffer::HBL_NORMAL);
+            discardWholeBuffer ? HBL_WRITE_ONLY_DISCARD : HBL_READ_WRITE);
         memcpy(pDst, pSource, length);
         this->unlock();    
 	}

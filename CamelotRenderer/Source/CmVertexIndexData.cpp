@@ -159,7 +159,7 @@ namespace CamelotEngine {
                 itBinding->second->getVertexSize();
             oldBufferLocks[itBinding->first] =
                 itBinding->second->lock(
-                    HardwareBuffer::HBL_READ_ONLY);
+                    HBL_READ_ONLY);
         }
 		
 		// Create new buffers and lock all for writing
@@ -177,7 +177,7 @@ namespace CamelotEngine {
 
             newBufferVertexSizes.push_back(vertexSize);
 			newBufferLocks.push_back(
-				vbuf->lock(HardwareBuffer::HBL_DISCARD));
+				vbuf->lock(HBL_WRITE_ONLY_DISCARD));
 			buf++;
 		}
 
@@ -413,7 +413,7 @@ namespace CamelotEngine {
 
 			if (conversionNeeded)
 			{
-				void* pBase = bindi->second->lock(HardwareBuffer::HBL_NORMAL);
+				void* pBase = bindi->second->lock(HBL_READ_WRITE);
 
 				for (UINT32 v = 0; v < bindi->second->getNumVertices(); ++v)
 				{
@@ -587,12 +587,11 @@ namespace CamelotEngine {
 		}
 	};
     //-----------------------------------------------------------------------
-    //-----------------------------------------------------------------------
 	void IndexData::optimiseVertexCacheTriList(void)
 	{
 		if (indexBuffer->isLocked()) return;
 
-		void *buffer = indexBuffer->lock(HardwareBuffer::HBL_NORMAL);
+		void *buffer = indexBuffer->lock(HBL_READ_WRITE);
 
 		Triangle* triangles;
 		UINT32 *dest;
@@ -699,7 +698,7 @@ namespace CamelotEngine {
     {
 		if (indexBuffer->isLocked()) return;
 
-		UINT16 *shortbuffer = (UINT16 *)indexBuffer->lock(HardwareBuffer::HBL_READ_ONLY);
+		UINT16 *shortbuffer = (UINT16 *)indexBuffer->lock(HBL_READ_ONLY);
 
 		if (indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT)
 			for (unsigned int i = 0; i < indexBuffer->getNumIndexes(); ++i)

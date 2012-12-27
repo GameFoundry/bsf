@@ -329,10 +329,10 @@ namespace CamelotEngine
         return ret;
     }
 	//---------------------------------------------------------------------
-    DWORD D3D9Mappings::get(HardwareBuffer::LockOptions options, HardwareBuffer::Usage usage)
+    DWORD D3D9Mappings::get(LockOptions options, HardwareBuffer::Usage usage)
     {
         DWORD ret = 0;
-        if (options == HardwareBuffer::HBL_DISCARD)
+        if (options == HBL_WRITE_ONLY_DISCARD)
         {
 #if CM_D3D_MANAGE_BUFFERS
             // Only add the discard flag for dynamic usgae and default pool
@@ -345,7 +345,7 @@ namespace CamelotEngine
                 ret |= D3DLOCK_DISCARD;
 #endif
         }
-        if (options == HardwareBuffer::HBL_READ_ONLY)
+        if (options == HBL_READ_ONLY)
         {
 			// D3D debug runtime doesn't like you locking managed buffers readonly
 			// when they were created with write-only (even though you CAN read
@@ -354,7 +354,7 @@ namespace CamelotEngine
 				ret |= D3DLOCK_READONLY;
 
         }
-        if (options == HardwareBuffer::HBL_NO_OVERWRITE)
+        if (options == HBL_WRITE_ONLY_NO_OVERWRITE)
         {
 #if CM_D3D_MANAGE_BUFFERS
             // Only add the nooverwrite flag for dynamic usgae and default pool

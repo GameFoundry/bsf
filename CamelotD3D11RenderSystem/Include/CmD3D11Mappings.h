@@ -45,7 +45,7 @@ namespace CamelotEngine
 		/// return the combination of D3DUSAGE values for Ogre buffer usage
 		static DWORD get(HardwareBuffer::Usage usage);
 		/// Get lock options
-		static D3D11_MAP get(HardwareBuffer::LockOptions options, HardwareBuffer::Usage usage);
+		static D3D11_MAP get(LockOptions options, HardwareBuffer::Usage usage);
 		static UINT getByteWidth(HardwareIndexBuffer::IndexType itype);
 		/// Get vertex data type
 		static DXGI_FORMAT get(VertexElementType vType);

@@ -27,6 +27,13 @@ namespace CamelotEngine
 		ZeroMemory(&mSRVDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 	}
 
+	D3D11Texture::~D3D11Texture()
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		freeInternalResources();			
+	}
+
 	void D3D11Texture::setRawPixels_internal(const PixelData& data, UINT32 face, UINT32 mip)
 	{
 		THROW_IF_NOT_RENDER_THREAD
@@ -269,7 +276,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
 
-		HRESULT hr = m1DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)mTex);
+		hr = m1DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)mTex);
 
 		if(FAILED(hr) || device.hasError())
 		{
@@ -279,8 +286,6 @@ namespace CamelotEngine
 		}
 
 		// Create texture view
-		D3D11_TEXTURE1D_DESC desc;
-
 		m1DTex->GetDesc(&desc);
 		mNumMipmaps = desc.MipLevels - 1;
 
@@ -292,7 +297,7 @@ namespace CamelotEngine
 
 		if (FAILED(hr) || device.hasError())
 		{
-			String errorDescription = device.getErrorDescription(hr);
+			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
 		}
 	}
@@ -343,7 +348,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
 
-		HRESULT hr = m2DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)mTex);
+		hr = m2DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)mTex);
 
 		if(FAILED(hr) || device.hasError())
 		{
@@ -353,8 +358,6 @@ namespace CamelotEngine
 		}
 
 		// Create texture view
-		D3D11_TEXTURE2D_DESC desc;
-
 		m2DTex->GetDesc(&desc);
 		mNumMipmaps = desc.MipLevels - 1;
 
@@ -380,7 +383,7 @@ namespace CamelotEngine
 
 		if (FAILED(hr) || device.hasError())
 		{
-			String errorDescription = device.getErrorDescription(hr);
+			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
 		}
 	}
@@ -420,7 +423,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
 
-		HRESULT hr = m3DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)mTex);
+		hr = m3DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)mTex);
 
 		if(FAILED(hr) || device.hasError())
 		{
@@ -430,8 +433,6 @@ namespace CamelotEngine
 		}
 
 		// Create texture view
-		D3D11_TEXTURE3D_DESC desc;
-
 		m3DTex->GetDesc(&desc);
 		mNumMipmaps = desc.MipLevels - 1;
 
@@ -445,7 +446,7 @@ namespace CamelotEngine
 
 		if (FAILED(hr) || device.hasError())
 		{
-			String errorDescription = device.getErrorDescription(hr);
+			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
 		}
 	}
@@ -516,8 +517,8 @@ namespace CamelotEngine
 
 	void D3D11Texture::_unmapstaticbuffer()
 	{
-		size_t rowWidth = D3D11Mappings::_getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
-		size_t sliceWidth = D3D11Mappings::_getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
+		UINT32 rowWidth = D3D11Mappings::_getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
+		UINT32 sliceWidth = D3D11Mappings::_getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
 
 		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
 		device.getImmediateContext()->UpdateSubresource(mTex, mLockedSubresourceIdx, nullptr, mStaticBuffer->data, rowWidth, sliceWidth);

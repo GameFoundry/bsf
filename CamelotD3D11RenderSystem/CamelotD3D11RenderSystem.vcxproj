@@ -154,7 +154,6 @@
     <ClInclude Include="Include\CmD3D11GpuProgram.h" />
     <ClInclude Include="Include\CmD3D11GpuProgramManager.h" />
     <ClInclude Include="Include\CmD3D11HardwareBuffer.h" />
-    <ClInclude Include="Include\CmD3D11HardwarePixelBuffer.h" />
     <ClInclude Include="Include\CmD3D11HLSLProgram.h" />
     <ClInclude Include="Include\CmD3D11HardwareIndexBuffer.h" />
     <ClInclude Include="Include\CmD3D11Mappings.h" />
@@ -177,7 +176,6 @@
     <ClCompile Include="Source\CmD3D11HardwareBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11HardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmD3D11HardwareConstantBuffer.cpp" />
-    <ClCompile Include="Source\CmD3D11HardwarePixelBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11HLSLProgram.cpp" />
     <ClCompile Include="Source\CmD3D11HardwareIndexBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11Mappings.cpp" />

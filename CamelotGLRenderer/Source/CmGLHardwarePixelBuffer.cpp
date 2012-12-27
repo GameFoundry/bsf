@@ -74,7 +74,7 @@ void GLHardwarePixelBuffer::freeBuffer()
 PixelData GLHardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions options)
 {
 	allocateBuffer();
-	if(options != HardwareBuffer::HBL_DISCARD) 
+	if(options != HBL_WRITE_ONLY_DISCARD) 
 	{
 		// Download the old contents of the texture
 		download(mBuffer);
@@ -86,7 +86,7 @@ PixelData GLHardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions option
 //-----------------------------------------------------------------------------  
 void GLHardwarePixelBuffer::unlockImpl(void)
 {
-	if (mCurrentLockOptions != HardwareBuffer::HBL_READ_ONLY)
+	if (mCurrentLockOptions != HBL_READ_ONLY)
 	{
 		// From buffer to card, only upload if was locked for writing
 		upload(mCurrentLock, mLockedBox);
