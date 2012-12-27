@@ -189,7 +189,6 @@ namespace CamelotEngine
 		/** See RenderSystem definition */
 		virtual void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps);
 
-
         void convertVertexShaderCaps(RenderSystemCapabilities* rsc) const;
         void convertPixelShaderCaps(RenderSystemCapabilities* rsc) const;
 		bool checkVertexTextureFormats(D3D9RenderWindow* renderWindow) const;
@@ -248,9 +247,6 @@ namespace CamelotEngine
 		void destroy_internal();
 
 		void setClipPlanesImpl(const PlaneList& clipPlanes);	
-
-		/// @copydoc RenderSystem::createMultiRenderTarget
-		virtual MultiRenderTarget * createMultiRenderTarget(const String & name);
 
 		String getErrorDescription( long errorNumber ) const;
 

@@ -2559,23 +2559,11 @@ namespace CamelotEngine
 		__SetRenderState(D3DRS_CLIPPLANEENABLE, enable?
 			(prev | (1 << index)) : (prev & ~(1 << index)));
 	}
-	//-----------------------------------------------------------------------
-	MultiRenderTarget * D3D9RenderSystem::createMultiRenderTarget(const String & name)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		MultiRenderTarget *retval;
-		retval = new D3D9MultiRenderTarget(name);
-		attachRenderTarget(*retval);
-
-		return retval;
-	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::notifyOnDeviceLost(D3D9Device* device)
 	{	
 
 	}
-
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::notifyOnDeviceReset(D3D9Device* device)
 	{		

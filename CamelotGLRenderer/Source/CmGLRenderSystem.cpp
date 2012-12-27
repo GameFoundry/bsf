@@ -1777,13 +1777,6 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	MultiRenderTarget * GLRenderSystem::createMultiRenderTarget(const String & name)
-	{
-		MultiRenderTarget *retval = GLRTTManager::instancePtr()->createMultiRenderTarget(name);
-		attachRenderTarget( *retval );
-		return retval;
-	}
-	//-----------------------------------------------------------------------
 	void GLRenderSystem::initialiseContext(GLContext* primary)
 	{
 		// Set main and current context

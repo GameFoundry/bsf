@@ -44,7 +44,7 @@ namespace CamelotEngine
 
 	}
 
-    D3D9Texture* D3D9TextureManager::createImpl()
+    Texture* D3D9TextureManager::createImpl()
     {
 		return new D3D9Texture();
     }

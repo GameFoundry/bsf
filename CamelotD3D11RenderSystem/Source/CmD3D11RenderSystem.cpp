@@ -122,4 +122,134 @@ namespace CamelotEngine
 	{
 		return true;
 	}
+
+	const String& D3D11RenderSystem::getName() const
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setSamplerState(UINT16 texUnit, const SamplerState& samplerState)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setBlendState(const BlendState& blendState)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setRasterizerState(const RasterizerState& rasterizerState)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setStencilRefValue(UINT32 refValue)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::beginFrame()
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::endFrame()
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setViewport(const Viewport& vp)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setVertexBufferBinding(VertexBufferBinding* binding)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 variabilityMask)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setScissorRect(UINT32 left /*= 0*/, UINT32 top /*= 0*/, UINT32 right /*= 800*/, UINT32 bottom /*= 600 */)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::clearFrameBuffer(unsigned int buffers, const Color& color /*= Color::Black*/, float depth /*= 1.0f*/, unsigned short stencil /*= 0 */)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setRenderTarget(RenderTarget* target)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	CamelotEngine::VertexElementType D3D11RenderSystem::getColorVertexElementType() const
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram /*= false */)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	float D3D11RenderSystem::getHorizontalTexelOffset()
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	float D3D11RenderSystem::getVerticalTexelOffset()
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	float D3D11RenderSystem::getMinimumDepthInputValue()
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	float D3D11RenderSystem::getMaximumDepthInputValue()
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	RenderSystemCapabilities* D3D11RenderSystem::createRenderSystemCapabilities() const
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	CamelotEngine::String D3D11RenderSystem::getErrorDescription(long errorNumber) const
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
 }

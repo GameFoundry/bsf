@@ -32,7 +32,5 @@ namespace CamelotEngine
 		UINT32						mHeight;
 		UINT32						mFsaa;
 		String						mFsaaHint;
-
-		void detachFromAllRenderTargets();
 	};
 }

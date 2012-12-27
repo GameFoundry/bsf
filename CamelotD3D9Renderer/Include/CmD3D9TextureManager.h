@@ -54,7 +54,7 @@ namespace CamelotEngine
 			UINT32 height, UINT32 fsaa, const String& fsaaHint);
 
 	protected:		
-		D3D9Texture* createImpl();
+		Texture* createImpl();
 	};
 }
 #endif

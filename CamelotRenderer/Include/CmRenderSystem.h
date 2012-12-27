@@ -418,12 +418,6 @@ namespace CamelotEngine
 		/** Initialize the render system from the capabilities*/
 		virtual void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps) = 0;
 
-		/**	Create a MultiRenderTarget, which is a render target that renders to multiple RenderTextures
-		at once. Surfaces can be bound and unbound at will.
-		This fails if mCapabilities->getNumMultiRenderTargets() is smaller than 2.
-		*/
-		virtual MultiRenderTarget * createMultiRenderTarget(const String & name) = 0; 
-
 		/** Returns a description of an error code.
 		*/
 		virtual String getErrorDescription(long errorNumber) const = 0;

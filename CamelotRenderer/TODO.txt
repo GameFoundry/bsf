@@ -17,7 +17,7 @@
 
 
 /////
-HardwarePixelBuffer should hold a pointer to DX11Texture, and CmDX11Texture should hold a pointer to HardwarePixelBuffer
+DX11 Render Textures are not implemented. I need to rethink render textures (and multi render textures) completely (Get rid of TU_RENDERTARGET enum)
 
 waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
@@ -38,6 +38,7 @@ Add D3D11DepthStencilBuffer
 
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
+Figure out how to handle accessing texture from a non-render thread?
 /////
 
 
@@ -174,6 +175,7 @@ Optional TODO:
  - Shared shader parameters (Since there will be values that are constant between all Draw call it doesn't make sense to set them every call?)
  - Serializable callbacks can't be null otherwise compiler complains
  - FBX importer can be greatly sped up by implementing a better allocator
+ - Extend texture copy so it accepts different subregions & subresources (currently only entire resource can be copied)
 
  -----------------------------------------------------------------------------------------------
 
@@ -186,6 +188,7 @@ After everything is polished
     - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 
 	  further modifications.
  - Port boost threads to std threads (CmThreadDefines.h)
+ - Remove HardwarePixelBuffer (DX11 doesn't use it, and DX9 and OpenGL textures can be rewritten so they have its methods internally)
  
  - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
  - Go to GEA book and read about resource managers before implementing them

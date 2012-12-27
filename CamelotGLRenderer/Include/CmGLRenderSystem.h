@@ -281,9 +281,6 @@ namespace CamelotEngine {
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 		bool activateGLTextureUnit(UINT16 unit);
 
-		/// @copydoc RenderSystem::createMultiRenderTarget
-		virtual MultiRenderTarget * createMultiRenderTarget(const String & name); 
-		
         /** See
           RenderSystem
          */
