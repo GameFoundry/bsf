@@ -71,10 +71,6 @@ namespace CamelotEngine {
 
 		/** Create a manual texture with specified width, height and depth (not loaded from a file).
             @param
-                name The name to give the resulting texture
-            @param
-                group The name of the resource group to assign the texture to
-            @param
                 texType The type of texture to load/create, defaults to normal 2D textures
             @param
                 width, height, depth The dimensions of the texture
@@ -88,38 +84,20 @@ namespace CamelotEngine {
                 the right to create a different format if the one you select is
                 not available in this context.
 			@param 
-				usage The kind of usage this texture is intended for. It 
-				is a combination of TU_STATIC, TU_DYNAMIC, TU_WRITE_ONLY, 
-				TU_AUTOMIPMAP and TU_RENDERTARGET (see TextureUsage enum). You are
-            	strongly advised to use HBU_STATIC_WRITE_ONLY wherever possible, if you need to 
-            	update regularly, consider HBU_DYNAMIC_WRITE_ONLY.
-            @param
-                loader If you intend the contents of the manual texture to be 
-                regularly updated, to the extent that you don't need to recover 
-                the contents if the texture content is lost somehow, you can leave
-                this parameter as 0. However, if you intend to populate the
-                texture only once, then you should implement ManualResourceLoader
-                and pass a pointer to it in this parameter; this means that if the
-                manual texture ever needs to be reloaded, the ManualResourceLoader
-                will be called to do it.
+				usage The kind of usage this texture is intended for. You are
+				strongly advised to use TU_STATIC wherever possible, if you need to 
+				update regularly, consider TU_DYNAMIC.
 			@param hwGammaCorrection Pass 'true' to enable hardware gamma correction
 				(sRGB) on this texture. The hardware will convert from gamma space
 				to linear space when reading from this texture. Only applicable for 
 				8-bits per channel textures, will be ignored for other types. Has the advantage
 				over pre-applied gamma that the texture precision is maintained.
-			@param fsaa The level of multisampling to use if this is a render target. Ignored
-				if usage does not include TU_RENDERTARGET or if the device does
-				not support it.
         */
         TexturePtr create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+			int num_mips, PixelFormat format, int usage = TU_STATIC,
+			bool hwGammaCorrection = false);
 			
         /** Create a manual texture with a depth of 1 (not loaded from a file).
-            @param
-                name The name to give the resulting texture
-            @param
-                group The name of the resource group to assign the texture to
             @param
                 texType The type of texture to load/create, defaults to normal 2D textures
             @param
@@ -134,35 +112,21 @@ namespace CamelotEngine {
                 the right to create a different format if the one you select is
                 not available in this context.
 			@param 
-				usage The kind of usage this texture is intended for. It 
-				is a combination of TU_STATIC, TU_DYNAMIC, TU_WRITE_ONLY, 
-				TU_AUTOMIPMAP and TU_RENDERTARGET (see TextureUsage enum). You are
-            	strongly advised to use HBU_STATIC_WRITE_ONLY wherever possible, if you need to 
-            	update regularly, consider HBU_DYNAMIC_WRITE_ONLY.
-            @param
-                loader If you intend the contents of the manual texture to be 
-                regularly updated, to the extent that you don't need to recover 
-                the contents if the texture content is lost somehow, you can leave
-                this parameter as 0. However, if you intend to populate the
-                texture only once, then you should implement ManualResourceLoader
-                and pass a pointer to it in this parameter; this means that if the
-                manual texture ever needs to be reloaded, the ManualResourceLoader
-                will be called to do it.
-			 @param hwGammaCorrection Pass 'true' to enable hardware gamma correction
+				usage The kind of usage this texture is intended for. You are
+            	strongly advised to use TU_STATIC wherever possible, if you need to 
+            	update regularly, consider TU_DYNAMIC.
+			@param hwGammaCorrection Pass 'true' to enable hardware gamma correction
 				 (sRGB) on this texture. The hardware will convert from gamma space
 				 to linear space when reading from this texture. Only applicable for 
 				 8-bits per channel textures, will be ignored for other types. Has the advantage
 				 over pre-applied gamma that the texture precision is maintained.
-			@param fsaa The level of multisampling to use if this is a render target. Ignored
-				if usage does not include TU_RENDERTARGET or if the device does
-				not support it.
         */
         TexturePtr create(TextureType texType, UINT32 width, UINT32 height, int num_mips,
-            PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK)
+            PixelFormat format, int usage = TU_STATIC,
+			bool hwGammaCorrection = false)
 		{
 			return create(texType, width, height, 1, 
-				num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+				num_mips, format, usage, hwGammaCorrection);
 		}
 
 		/**
@@ -175,9 +139,8 @@ namespace CamelotEngine {
 		/**
 		 * @brief	Creates a new depth/stencil buffer.
 		 */
-		virtual DepthStencilBufferPtr createDepthStencilBuffer(UINT32 bitDepth, UINT32 width, 
-			UINT32 height, UINT32 fsaa, const String& fsaaHint) = 0;
-
+		virtual DepthStencilBufferPtr createDepthStencilBuffer(UINT32 bitDepth, UINT32 width, UINT32 height, 
+			UINT32 fsaa, const String& fsaaHint) = 0;
 
 		/** Returns whether this render system can natively support the precise texture 
 			format requested with the given usage options.
@@ -246,8 +209,7 @@ namespace CamelotEngine {
             check if in fallback mode.
 		@returns true if the texture filtering is supported.
         */
-        virtual bool isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,
-            bool preciseFormatOnly = false) = 0;
+        virtual bool isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage, bool preciseFormatOnly = false) = 0;
 
     protected:
 

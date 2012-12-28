@@ -45,7 +45,6 @@ namespace CamelotEngine
     }
     RenderTexture::~RenderTexture()
     {
-		mBuffer->_clearSliceRTT(0);
     }
 
 	void RenderTexture::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)

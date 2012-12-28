@@ -86,8 +86,6 @@ namespace CamelotEngine {
         
         /// @copydoc HardwarePixelBuffer::bindToFramebuffer
         virtual void bindToFramebuffer(GLenum attachment, UINT32 zoffset);
-        /// @copydoc HardwarePixelBuffer::getRenderTarget
-        RenderTexture* getRenderTarget(UINT32);
         /// Upload a box of pixels to this buffer on the card
 		virtual void upload(const PixelData &data, const Box &dest);
 		// Download a box of pixels from the card
@@ -96,11 +94,6 @@ namespace CamelotEngine {
         /// Hardware implementation of blitFromMemory
         virtual void blitFromMemory(const PixelData &src_orig, const Box &dstBox);
         
-        /// Notify TextureBuffer of destruction of render target
-        void _clearSliceRTT(UINT32 zoffset)
-        {
-            mSliceTRT[zoffset] = 0;
-        }
         /// Copy from framebuffer
         void copyFromFramebuffer(UINT32 zoffset);
         /// @copydoc HardwarePixelBuffer::blit
@@ -115,9 +108,6 @@ namespace CamelotEngine {
 		GLint mFace;
 		GLint mLevel;
 		bool mSoftwareMipmap;		// Use GLU for mip mapping
-        
-        typedef vector<RenderTexture*>::type SliceTRT;
-        SliceTRT mSliceTRT;
     };
      /** Renderbuffer surface.  Needs FBO extension.
      */

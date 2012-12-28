@@ -68,13 +68,6 @@ namespace CamelotEngine {
         /// for HardwarePixelBuffer implementations, but override the previous method
         virtual void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
 
-        /// Internal implementation of unlock(), must be overridden in subclasses
-        // virtual void unlockImpl(void) = 0;
-
-		/** Notify TextureBuffer of destruction of render target.
-			Called by RenderTexture when destroyed.
-		*/
-		virtual void _clearSliceRTT(UINT32 zoffset);
 		friend class RenderTexture;
     public:
         /// Should be called by HardwareBufferManager
@@ -168,15 +161,6 @@ namespace CamelotEngine {
 		{
 			blitToMemory(Box(0,0,0,mWidth,mHeight,mDepth), dst);
 		}
-        
-        /** Get a render target for this PixelBuffer, or a slice of it. The texture this
-            was acquired from must have TU_RENDERTARGET set, otherwise it is possible to
-            render to it and this method will throw an ERR_RENDERSYSTEM exception.
-            @param slice    Which slice
-            @returns A pointer to the render target. This pointer has the lifespan of this
-            PixelBuffer.
-        */
-        virtual RenderTexture *getRenderTarget(UINT32 slice=0);
         
         /// Gets the width of this buffer
         UINT32 getWidth() const { return mWidth; }

@@ -63,18 +63,11 @@ namespace CamelotEngine {
 		/// Function to set mipmap generation
 		void _setMipmapping(bool doMipmapGen, bool HWMipmaps);
 
-
-		/// Get rendertarget for z slice
-		RenderTexture *getRenderTarget(UINT32 zoffset);
-
 		/// Accessor for surface
 		IDirect3DSurface9 *getSurface(IDirect3DDevice9* d3d9Device);
 
 		/// Accessor for AA surface
 		IDirect3DSurface9 *getFSAASurface(IDirect3DDevice9* d3d9Device);
-
-		/// Notify TextureBuffer of destruction of render target
-		virtual void _clearSliceRTT(UINT32 zoffset);
 
 		/// Release surfaces held by this pixel buffer.
 		void releaseSurfaces(IDirect3DDevice9* d3d9Device);
@@ -115,9 +108,6 @@ namespace CamelotEngine {
 		/// Mipmapping
 		bool mDoMipmapGen;
 		bool mHWMipmaps;
-		
-		/// Render target
-		D3D9RenderTexture* mRenderTexture;
 
 		// The owner texture if exists.
 		D3D9Texture* mOwnerTexture;
@@ -138,11 +128,6 @@ namespace CamelotEngine {
 
 		BufferResources* getBufferResources(IDirect3DDevice9* d3d9Device);
 		BufferResources* createBufferResources();
-	
-		/// updates render texture.
-		void updateRenderTexture(bool writeGamma, UINT32 fsaa, const String& srcName);
-		/// destroy render texture.
-		void destroyRenderTexture();
 
 		void blit(IDirect3DDevice9* d3d9Device, const HardwarePixelBufferPtr &src,
 				const Box &srcBox, const Box &dstBox, 

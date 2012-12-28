@@ -49,16 +49,15 @@ namespace CamelotEngine {
             mDepth(1),
             mNumMipmaps(0),
 			mHwGamma(false),
-			mFSAA(0),
             mTextureType(TEX_TYPE_2D),            
             mFormat(PF_UNKNOWN),
-            mUsage(TU_DEFAULT)
+            mUsage(TU_STATIC)
     {
         
     }
 	//-------------------------------------------------------------------------
 	void Texture::initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
-		PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint)
+		PixelFormat format, int usage, bool hwGamma)
 	{
 		mTextureType = textureType;
 		mWidth = width;
@@ -68,8 +67,6 @@ namespace CamelotEngine {
 		mFormat = format;
 		mUsage = usage;
 		mHwGamma = hwGamma;
-		mFSAA = fsaa;
-		mFSAAHint = fsaaHint;
 
 		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
@@ -252,17 +249,17 @@ namespace CamelotEngine {
 	/* 								STATICS	                      			*/
 	/************************************************************************/
 	TexturePtr Texture::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection)
 	{
 		return TextureManager::instance().create(texType, 
-			width, height, depth, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+			width, height, depth, num_mips, format, usage, hwGammaCorrection);
 	}
 	
 	TexturePtr Texture::create(TextureType texType, UINT32 width, UINT32 height, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection)
 	{
 		return TextureManager::instance().create(texType, 
-			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+			width, height, num_mips, format, usage, hwGammaCorrection);
 	}
 }
 

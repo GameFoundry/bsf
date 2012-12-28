@@ -150,18 +150,4 @@ namespace CamelotEngine
 		CM_EXCEPT(NotImplementedException,
 				"Writing a byte range is not implemented. Use blitFromMemory.");
 	}
-    //-----------------------------------------------------------------------------    
-    
-    RenderTexture *HardwarePixelBuffer::getRenderTarget(UINT32)
-    {
-        CM_EXCEPT(NotImplementedException,
-				"Not yet implemented for this rendersystem.");
-    }
-
-	//-----------------------------------------------------------------------------    
-
-	void HardwarePixelBuffer::_clearSliceRTT(UINT32 zoffset)
-	{
-	}
-
 }

@@ -2502,8 +2502,6 @@ namespace CamelotEngine
 
 			// Calculate usage
 			DWORD d3dusage = D3DUSAGE_QUERY_FILTER;
-			if (usage & TU_RENDERTARGET) 
-				d3dusage |= D3DUSAGE_RENDERTARGET;
 			if (usage & TU_DYNAMIC)
 				d3dusage |= D3DUSAGE_DYNAMIC;
 

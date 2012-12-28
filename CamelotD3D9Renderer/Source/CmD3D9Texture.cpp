@@ -49,10 +49,7 @@ namespace CamelotEngine
         :Texture(),              
         mD3DPool(D3DPOOL_MANAGED),
 		mDynamicTextures(false),
-		mHwGammaReadSupported(false),
-		mHwGammaWriteSupported(false),	
-		mFSAAType(D3DMULTISAMPLE_NONE),
-		mFSAAQuality(0)
+		mHwGammaReadSupported(false)
 	{
        
 	}
@@ -221,19 +218,6 @@ namespace CamelotEngine
 
 		createInternalResources();
 
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
-		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
-		{
-			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
-
-			if (mUsage & TU_RENDERTARGET)
-			{
-				createInternalResourcesImpl(d3d9Device);
-				return;
-			}	
-		}	
-
 		Resource::initialize_internal();
 	}
 	/****************************************************************************************/
@@ -274,7 +258,6 @@ namespace CamelotEngine
 		textureResources->pCubeTex		= NULL;
 		textureResources->pVolumeTex	= NULL;
 		textureResources->pBaseTex		= NULL;
-		textureResources->pFSAASurface	= NULL;
 
 		mMapDeviceToTextureResources[d3d9Device] = textureResources;
 
@@ -311,7 +294,6 @@ namespace CamelotEngine
 		SAFE_RELEASE(textureResources->pNormTex);
 		SAFE_RELEASE(textureResources->pCubeTex);
 		SAFE_RELEASE(textureResources->pVolumeTex);
-		SAFE_RELEASE(textureResources->pFSAASurface);
 	}
 	/****************************************************************************************/
 	UINT32 D3D9Texture::calculateSize(void) const
@@ -389,7 +371,7 @@ namespace CamelotEngine
 		hr = D3DXCheckTextureRequirements(d3d9Device, NULL, NULL, NULL, 0, &d3dPF, mD3DPool);
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
-		DWORD usage = (mUsage & TU_RENDERTARGET) ? D3DUSAGE_RENDERTARGET : 0;
+		DWORD usage = 0;
 		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? 
 				D3DX_DEFAULT : mNumMipmaps + 1;
 		// Check dynamic textures
@@ -409,20 +391,6 @@ namespace CamelotEngine
 		if (mHwGamma)
 		{
 			mHwGammaReadSupported = _canUseHardwareGammaCorrection(d3d9Device, usage, D3DRTYPE_TEXTURE, d3dPF, false);
-			if (mUsage & TU_RENDERTARGET)
-				mHwGammaWriteSupported = _canUseHardwareGammaCorrection(d3d9Device, usage, D3DRTYPE_TEXTURE, d3dPF, true);
-		}
-		// Check FSAA level
-		if (mUsage & TU_RENDERTARGET)
-		{
-			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
-			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
-				&mFSAAType, &mFSAAQuality);
-		}
-		else
-		{
-			mFSAAType = D3DMULTISAMPLE_NONE;
-			mFSAAQuality = 0;
 		}
 
 		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
@@ -484,22 +452,6 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 		}
 
-		if (mFSAAType)
-		{
-			// create AA surface
-			HRESULT hr = d3d9Device->CreateRenderTarget(desc.Width, desc.Height, d3dPF, 
-				mFSAAType, 
-				mFSAAQuality,
-				FALSE, // not lockable
-				&textureResources->pFSAASurface, NULL);
-
-			if (FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
-			}
-
-		}
-
 		_setFinalAttributes(d3d9Device, textureResources, 
 			desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
 	}
@@ -517,7 +469,7 @@ namespace CamelotEngine
 		hr = D3DXCheckCubeTextureRequirements(d3d9Device, NULL, NULL, 0, &d3dPF, mD3DPool);
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
-		DWORD usage = (mUsage & TU_RENDERTARGET) ? D3DUSAGE_RENDERTARGET : 0;
+		DWORD usage = 0;
 		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? 
 			D3DX_DEFAULT : mNumMipmaps + 1;
 		// Check dynamic textures
@@ -537,20 +489,6 @@ namespace CamelotEngine
 		if (mHwGamma)
 		{
 			mHwGammaReadSupported = _canUseHardwareGammaCorrection(d3d9Device, usage, D3DRTYPE_CUBETEXTURE, d3dPF, false);
-			if (mUsage & TU_RENDERTARGET)
-				mHwGammaWriteSupported = _canUseHardwareGammaCorrection(d3d9Device, usage, D3DRTYPE_CUBETEXTURE, d3dPF, true);
-		}
-		// Check FSAA level
-		if (mUsage & TU_RENDERTARGET)
-		{
-			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
-			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
-				&mFSAAType, &mFSAAQuality);
-		}
-		else
-		{
-			mFSAAType = D3DMULTISAMPLE_NONE;
-			mFSAAQuality = 0;
 		}
 
 		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
@@ -610,21 +548,6 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 		}
 
-		if (mFSAAType)
-		{
-			// create AA surface
-			HRESULT hr = d3d9Device->CreateRenderTarget(desc.Width, desc.Height, d3dPF, 
-				mFSAAType, 
-				mFSAAQuality,
-				FALSE, // not lockable
-				&textureResources->pFSAASurface, NULL);
-
-			if (FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
-			}
-		}
-
 		_setFinalAttributes(d3d9Device, textureResources, 
 			desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
 	}
@@ -634,11 +557,6 @@ namespace CamelotEngine
 		// we must have those defined here
 		assert(mWidth > 0 && mHeight > 0 && mDepth>0);
 
-		if (mUsage & TU_RENDERTARGET)
-		{
-			CM_EXCEPT(RenderingAPIException, "D3D9 Volume texture can not be created as render target !!");
-		}
-
 		// determine which D3D9 pixel format we'll use
 		HRESULT hr;
 		D3DFORMAT d3dPF = _chooseD3DFormat(d3d9Device);
@@ -646,7 +564,7 @@ namespace CamelotEngine
 		hr = D3DXCheckVolumeTextureRequirements(d3d9Device, NULL, NULL, NULL, NULL, 0, &d3dPF, mD3DPool);
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
-		DWORD usage = (mUsage & TU_RENDERTARGET) ? D3DUSAGE_RENDERTARGET : 0;
+		DWORD usage = 0;
 		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? 
 			D3DX_DEFAULT : mNumMipmaps + 1;
 		// Check dynamic textures
@@ -664,15 +582,10 @@ namespace CamelotEngine
 		}
 		// Check sRGB support
 		if (mHwGamma)
-		{
 			mHwGammaReadSupported = _canUseHardwareGammaCorrection(d3d9Device, usage, D3DRTYPE_VOLUMETEXTURE, d3dPF, false);
-			if (mUsage & TU_RENDERTARGET)
-				mHwGammaWriteSupported = _canUseHardwareGammaCorrection(d3d9Device, usage, D3DRTYPE_VOLUMETEXTURE, d3dPF, true);
-		}
 
 		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
-
 
 		// check if mip map volume textures are supported
 		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPVOLUMEMAP))
@@ -965,10 +878,6 @@ namespace CamelotEngine
 		{
 			bufusage = HardwareBuffer::HBU_STATIC;
 		}
-		if (mUsage & TU_RENDERTARGET)
-		{
-			bufusage |= TU_RENDERTARGET;
-		}
 		
 		UINT32 surfaceCount  = static_cast<UINT32>((getNumFaces() * (mNumMipmaps + 1)));
 		bool updateOldList = mSurfaceList.size() == surfaceCount;
@@ -986,8 +895,6 @@ namespace CamelotEngine
 			}
 		}
 
-		
-
 		switch(getTextureType()) {
 		case TEX_TYPE_2D:
 		case TEX_TYPE_1D:
@@ -1000,8 +907,7 @@ namespace CamelotEngine
 
 				D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
 								
-				currPixelBuffer->bind(d3d9Device, surface, textureResources->pFSAASurface,
-					mHwGammaWriteSupported, mFSAA, "PortNoName", textureResources->pBaseTex);
+				currPixelBuffer->bind(d3d9Device, surface, nullptr, false, 0, "PortNoName", textureResources->pBaseTex);
 
 				// decrement reference count, the GetSurfaceLevel call increments this
 				// this is safe because the pixel buffer keeps a reference as well
@@ -1021,8 +927,7 @@ namespace CamelotEngine
 
 					D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(face, mip);
 
-					currPixelBuffer->bind(d3d9Device, surface, textureResources->pFSAASurface,
-						mHwGammaWriteSupported, mFSAA, "NoNamePort", textureResources->pBaseTex);
+					currPixelBuffer->bind(d3d9Device, surface, nullptr, false, 0, "NoNamePort", textureResources->pBaseTex);
 
 					// decrement reference count, the GetSurfaceLevel call increments this
 					// this is safe because the pixel buffer keeps a reference as well
@@ -1077,10 +982,10 @@ namespace CamelotEngine
 	bool D3D9Texture::useDefaultPool()
 	{
 		// Determine D3D pool to use
-		// Use managed unless we're a render target or user has asked for 
+		// Use managed unless user has asked for 
 		// a dynamic texture, and device supports D3DUSAGE_DYNAMIC (because default pool
 		// resources without the dynamic flag are not lockable)
-		return (mUsage & TU_RENDERTARGET) || ((mUsage & TU_DYNAMIC) && mDynamicTextures);
+		return ((mUsage & TU_DYNAMIC) && mDynamicTextures);
 	}
 	
 	//---------------------------------------------------------------------

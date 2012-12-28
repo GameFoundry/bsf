@@ -104,19 +104,9 @@ namespace CamelotEngine {
 		{
 			return PF_A8R8G8B8;
 		}
-        
-        // Check if this is a valid rendertarget format
-		if( usage & TU_RENDERTARGET )
-        {
-            /// Get closest supported alternative
-            /// If mFormat is supported it's returned
-            return GLRTTManager::instance().getSupportedAlternative(format);
-        }
 
 		// Supported
 		return format;
-
-		
 	}
 	//-----------------------------------------------------------------------------
     bool GLTextureManager::isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,

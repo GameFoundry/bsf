@@ -191,7 +191,7 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
 								 bool writeGamma, UINT32 fsaa):
 	GLHardwarePixelBuffer(0, 0, 0, PF_UNKNOWN, usage),
 	mTarget(target), mFaceTarget(0), mTextureID(id), mFace(face), mLevel(level),
-    mSoftwareMipmap(crappyCard), mSliceTRT(0)
+    mSoftwareMipmap(crappyCard)
 {
 	// devise mWidth, mHeight and mDepth and mFormat
 	GLint value = 0;
@@ -237,38 +237,10 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
     if(mWidth==0 || mHeight==0 || mDepth==0)
         /// We are invalid, do not allocate a buffer
         return;
-	// Allocate buffer
-	//if(mUsage & HBU_STATIC)
-	//	allocateBuffer();
-    // Is this a render target?
-    if(mUsage & TU_RENDERTARGET)
-    {
-        // Create render target for each slice
-        mSliceTRT.reserve(mDepth);
-        for(UINT32 zoffset=0; zoffset<mDepth; ++zoffset)
-        {
-            String name;
-			name = "rtt/" + toString((UINT32)this) + "/" + baseName;
-            GLSurfaceDesc surface;
-            surface.buffer = this;
-            surface.zoffset = zoffset;
-            RenderTexture *trt = GLRTTManager::instance().createRenderTexture(name, surface, writeGamma, fsaa);
-            mSliceTRT.push_back(trt);
-            CamelotEngine::RenderSystem::instancePtr()->attachRenderTarget(*mSliceTRT[zoffset]);
-        }
-	}
 }
 GLTextureBuffer::~GLTextureBuffer()
 {
-    if(mUsage & TU_RENDERTARGET)
-    {
-        // Delete all render targets that are not yet deleted via _clearSliceRTT because the rendertarget
-        // was deleted by the user.
-        for (SliceTRT::const_iterator it = mSliceTRT.begin(); it != mSliceTRT.end(); ++it)
-        {
-			CamelotEngine::RenderSystem::instancePtr()->destroyRenderTarget(*it);
-        }
-	}
+
 }
 //-----------------------------------------------------------------------------
 void GLTextureBuffer::upload(const PixelData &data, const Box &dest)
@@ -530,10 +502,7 @@ void GLTextureBuffer::blit(const HardwarePixelBufferPtr &src, const Box &srcBox,
     /// Destination texture must be 1D, 2D, 3D, or Cube
     /// Source texture must be 1D, 2D or 3D
 	
-	// This does not sem to work for RTTs after the first update
-	// I have no idea why! For the moment, disable 
-    if(GLEW_EXT_framebuffer_object && (src->getUsage() & TU_RENDERTARGET) == 0 &&
-        (srct->mTarget==GL_TEXTURE_1D||srct->mTarget==GL_TEXTURE_2D||srct->mTarget==GL_TEXTURE_3D))
+    if(GLEW_EXT_framebuffer_object && (srct->mTarget==GL_TEXTURE_1D||srct->mTarget==GL_TEXTURE_2D||srct->mTarget==GL_TEXTURE_3D))
     {
         blitFromTexture(srct, srcBox, dstBox);
     }
@@ -810,14 +779,6 @@ void GLTextureBuffer::blitFromMemory(const PixelData &src_orig, const Box &dstBo
 
 	if(data != NULL)
 		delete[] data;
-}
-//-----------------------------------------------------------------------------    
-
-RenderTexture *GLTextureBuffer::getRenderTarget(UINT32 zoffset)
-{
-    assert(mUsage & TU_RENDERTARGET);
-    assert(zoffset < mDepth);
-    return mSliceTRT[zoffset];
 }
 //********* GLRenderBuffer
 //----------------------------------------------------------------------------- 
