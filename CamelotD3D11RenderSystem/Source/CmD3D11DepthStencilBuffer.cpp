@@ -30,7 +30,7 @@ namespace CamelotEngine
 		HRESULT hr = device.getD3D11Device()->CreateTexture2D(&descDepth, NULL, &mDepthStencil);
 		if( FAILED(hr) || device.hasError())
 		{
-			String errorDescription = device.getErrorDescription(hr);
+			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "Unable to create depth texture\nError Description:" + errorDescription);
 		}
 

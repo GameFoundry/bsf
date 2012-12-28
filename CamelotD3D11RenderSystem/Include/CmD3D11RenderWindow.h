@@ -70,6 +70,7 @@ namespace CamelotEngine
 		ID3D11Texture2D*			mBackBuffer;
 		ID3D11RenderTargetView*		mRenderTargetView;
 		ID3D11DepthStencilView*		mDepthStencilView;
+		DepthStencilBufferPtr		mDepthStencilBuffer;
 
 		IDXGISwapChain*				mSwapChain;
 		DXGI_SWAP_CHAIN_DESC		mSwapChainDesc;

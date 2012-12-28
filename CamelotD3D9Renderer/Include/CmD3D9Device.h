@@ -71,8 +71,6 @@ namespace CamelotEngine {
 		IDirect3DSurface9*		getDepthBuffer			(D3D9RenderWindow* renderWindow);
 		IDirect3DSurface9*		getBackBuffer			(D3D9RenderWindow* renderWindow);
 
-		UINT32					getRenderWindowCount	() const;
-		D3D9RenderWindow*		getRenderWindow			(UINT32 index);
 		UINT32					getLastPresentFrame		() const { return mLastPresentFrame; }
 
 		void					setAdapterOrdinalIndex  (D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex);
@@ -133,7 +131,6 @@ namespace CamelotEngine {
 		void					releaseD3D9Device				();
 		void					releaseRenderWindowResources	(RenderWindowResources* renderWindowResources);
 		void					acquireRenderWindowResources	(RenderWindowToResorucesIterator it);		
-		void					setupDeviceStates				();
 		void					notifyDeviceLost				();
 
 		void					validateFocusWindow				();

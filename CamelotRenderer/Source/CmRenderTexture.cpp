@@ -37,7 +37,7 @@ namespace CamelotEngine
 	RenderTexture::RenderTexture(HardwarePixelBuffer *buffer, UINT32 zoffset):
 		mBuffer(buffer), mZOffset(zoffset)
     {
-        mPriority = OGRE_REND_TO_TEX_RT_GROUP;
+        mPriority = CM_REND_TO_TEX_RT_GROUP;
 		mWidth = static_cast<unsigned int>(mBuffer->getWidth());
 		mHeight = static_cast<unsigned int>(mBuffer->getHeight());
         mColourDepth = static_cast<unsigned int>(
@@ -67,7 +67,7 @@ namespace CamelotEngine
 	//-----------------------------------------------------------------------------
 	MultiRenderTarget::MultiRenderTarget(const String &name)
     {
-        mPriority = OGRE_REND_TO_TEX_RT_GROUP;
+        mPriority = CM_REND_TO_TEX_RT_GROUP;
 		mName = name;
 		/// Width and height is unknown with no targets attached
 		mWidth = mHeight = 0;

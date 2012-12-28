@@ -260,36 +260,6 @@ namespace CamelotEngine
 	
 		return it->second->backBuffer;		
 	}
-
-	//---------------------------------------------------------------------
-	UINT32 D3D9Device::getRenderWindowCount() const
-	{
-		return static_cast<UINT32>(mMapRenderWindowToResoruces.size());
-	}
-
-	//---------------------------------------------------------------------
-	D3D9RenderWindow* D3D9Device::getRenderWindow(UINT32 index)
-	{
-		if (index >= mMapRenderWindowToResoruces.size())
-		{
-			CM_EXCEPT(RenderingAPIException, 
-				"Index of render window is out of bounds!");
-		}
-		
-		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
-
-		while (it != mMapRenderWindowToResoruces.end())
-		{
-			if (index == 0)			
-				break;			
-			
-			--index;
-			++it;
-		}
-		
-		return it->first;
-	}
-
 	//---------------------------------------------------------------------
 	void D3D9Device::setAdapterOrdinalIndex(D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex)
 	{
@@ -408,9 +378,6 @@ namespace CamelotEngine
 		}
 
 		mDeviceLost = false;
-
-		// Initialize device states.
-		setupDeviceStates();
 
 		// Update resources of each window.
 		it = mMapRenderWindowToResoruces.begin();
@@ -701,9 +668,6 @@ namespace CamelotEngine
 		}
 
 		mD3D9DeviceCapsValid = true;
-			
-		// Initialize device states.
-		setupDeviceStates();
 
 		// Lock access to rendering device.
 		D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
@@ -1061,18 +1025,6 @@ namespace CamelotEngine
 
 		renderWindowResources->acquired = true; 
 	}
-
-	//---------------------------------------------------------------------
-	void D3D9Device::setupDeviceStates()
-	{
-		HRESULT hr = mpDevice->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
-		
-		if (FAILED(hr)) 
-		{
-			CM_EXCEPT(RenderingAPIException, "Unable to apply render state: D3DRS_SPECULARENABLE <- TRUE");
-		}		
-	}
-
 	//---------------------------------------------------------------------
 	bool D3D9Device::isSwapChainWindow(D3D9RenderWindow* renderWindow)
 	{

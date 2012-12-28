@@ -19,7 +19,6 @@ namespace CamelotEngine
 		, mSwitchingFullscreen(false)
 		, mDisplayFrequency(0)
 		, mRenderTargetView(nullptr)
-		, mDepthStencilView(nullptr)
 		, mBackBuffer(nullptr)
 		, mSwapChain(nullptr)
 		, mHWnd(0)
@@ -593,7 +592,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Unable to Get Back Buffer for swap chain");
 
 		// create all other size depended resources
-		assert(mBackBuffer && !mRenderTargetView && !mDepthStencilView);
+		assert(mBackBuffer && !mRenderTargetView);
 
 		// get the backbuffer desc
 		D3D11_TEXTURE2D_DESC BBDesc;
@@ -623,8 +622,6 @@ namespace CamelotEngine
 		SAFE_RELEASE(mRenderTargetView);
 
 		mDepthStencilBuffer = nullptr;
-
-		SAFE_RELEASE(mDepthStencilView);
 	}
 
 	void D3D11RenderWindow::_resizeSwapChainBuffers(unsigned width, unsigned height)

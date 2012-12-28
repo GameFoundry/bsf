@@ -37,8 +37,8 @@ THE SOFTWARE.
 /* Define the number of priority groups for the render system's render targets. */
 #ifndef CM_NUM_RENDERTARGET_GROUPS
 	#define CM_NUM_RENDERTARGET_GROUPS 10
-	#define OGRE_DEFAULT_RT_GROUP 4
-	#define OGRE_REND_TO_TEX_RT_GROUP 2
+	#define CM_DEFAULT_RT_GROUP 4
+	#define CM_REND_TO_TEX_RT_GROUP 2
 #endif
 
 namespace CamelotEngine {
@@ -198,26 +198,6 @@ namespace CamelotEngine {
 		*/
 		virtual const String& getFSAAHint() const { return mFSAAHint; }
 
-		/**
-		 * @brief	Gets the depth stencil buffer attached to this render target.
-		 */
-		virtual DepthStencilBufferPtr getDepthStencilBuffer() const { return mDepthStencilBuffer; }
-
-        /** RenderSystem specific interface for a RenderTarget;
-            this should be subclassed by RenderSystems.
-        */
-        class Impl
-        {
-        protected:
-            ~Impl() { }
-        };
-        /** Get rendersystem specific interface for this RenderTarget.
-            This is used by the RenderSystem to (un)bind this target, 
-            and to get specific information like surfaces
-            and framebuffer objects.
-        */
-        virtual Impl *_getImpl();
-
 		/** Method for manual management of rendering : fires 'preRenderTargetUpdate'
 			and initialises statistics etc.
 		@remarks 
@@ -256,8 +236,6 @@ namespace CamelotEngine {
         String mName;
 		/// The priority of the render target.
 		UINT8 mPriority;
-
-		DepthStencilBufferPtr mDepthStencilBuffer;
 
         unsigned int mWidth;
         unsigned int mHeight;

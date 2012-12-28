@@ -34,7 +34,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
     RenderTarget::RenderTarget()
-		:mPriority(OGRE_DEFAULT_RT_GROUP),
+		:mPriority(CM_DEFAULT_RT_GROUP),
 		mActive(true),
 		mAutoUpdate(true),
 		mHwGamma(false), 
@@ -105,11 +105,6 @@ namespace CamelotEngine {
     {
         // RenderWindow will override and return true for the primary window
         return false;
-    }
-    //-----------------------------------------------------------------------
-    RenderTarget::Impl *RenderTarget::_getImpl()
-    {
-        return 0;
     }
     //-----------------------------------------------------------------------
     void RenderTarget::update(bool swap)

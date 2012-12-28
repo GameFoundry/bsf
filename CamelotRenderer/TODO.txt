@@ -18,6 +18,7 @@
 
 /////
 DX11 Render Textures are not implemented. I need to rethink render textures (and multi render textures) completely (Get rid of TU_RENDERTARGET enum)
+ - Ability to create MultiRenderTarget (currently there is no method that does it)
 
 waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
@@ -30,11 +31,8 @@ Keeping a list of all render targets in RenderSystem shouldn't be needed (and ca
 Constant buffers are created in a weird way. Maybe they should only be created internally by GpuProgramParameters?
  - Multiple GpuProgramParameters get returned from GpuProgram after createParameters() is called, in a map, each with its own name
 
-
 setDepthBuffer method on RenderTexture
 All render targets need to create DepthStencilBuffer internally, so that getDepthStencilBuffer can return something. Right now only D3D11 render window does this
-Add D3D11DepthStencilBuffer
- - Remove commented out buffer creation code from D3D11RenderWindow
 
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
@@ -189,6 +187,8 @@ After everything is polished
 	  further modifications.
  - Port boost threads to std threads (CmThreadDefines.h)
  - Remove HardwarePixelBuffer (DX11 doesn't use it, and DX9 and OpenGL textures can be rewritten so they have its methods internally)
+ - Multihead device
+ - 3D rendering (use low level hardware methods for it)
  
  - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
  - Go to GEA book and read about resource managers before implementing them
