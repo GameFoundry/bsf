@@ -108,7 +108,7 @@ namespace CamelotEngine {
 		/// Mipmapping
 		bool mDoMipmapGen;
 		bool mHWMipmaps;
-
+		
 		// The owner texture if exists.
 		D3D9Texture* mOwnerTexture;
 		

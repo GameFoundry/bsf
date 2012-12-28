@@ -86,7 +86,9 @@ namespace CamelotEngine {
 			/// Volume texture
 			IDirect3DVolumeTexture9* pVolumeTex;
 			/// actual texture pointer
-			IDirect3DBaseTexture9* pBaseTex;		
+			IDirect3DBaseTexture9* pBaseTex;
+			/// Optional FSAA surface
+			IDirect3DSurface9* pFSAASurface;			
 		};
 		
 		typedef map<IDirect3DDevice9*, TextureResources*>::type	DeviceToTextureResourcesMap;
@@ -109,6 +111,10 @@ namespace CamelotEngine {
 
 		/// Is hardware gamma supported (read)?
 		bool mHwGammaReadSupported;
+		/// Is hardware gamma supported (write)?
+		bool mHwGammaWriteSupported;
+		D3DMULTISAMPLE_TYPE mFSAAType;
+		DWORD mFSAAQuality;
 
 		D3D9Texture();
 
@@ -205,7 +211,9 @@ namespace CamelotEngine {
 
 		/// Override needed to deal with FSAA
 		void swapBuffers(bool waitForVSync = true);
+
 	};
+
 }
 
 #endif

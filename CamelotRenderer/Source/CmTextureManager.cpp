@@ -53,10 +53,11 @@ namespace CamelotEngine {
 	}
     //-----------------------------------------------------------------------
     TexturePtr TextureManager::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
-        PixelFormat format, int usage, bool hwGamma)
+        PixelFormat format, int usage, bool hwGamma, 
+		UINT32 fsaa, const String& fsaaHint)
     {
         TexturePtr ret = TexturePtr(createImpl(), boost::bind(&TextureManager::destroy, this, _1));
-		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma);
+		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, fsaa, fsaaHint);
 
 		return ret;
     }

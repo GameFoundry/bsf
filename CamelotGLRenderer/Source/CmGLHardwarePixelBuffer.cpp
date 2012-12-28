@@ -239,9 +239,7 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
         return;
 }
 GLTextureBuffer::~GLTextureBuffer()
-{
-
-}
+{ }
 //-----------------------------------------------------------------------------
 void GLTextureBuffer::upload(const PixelData &data, const Box &dest)
 {
@@ -502,7 +500,10 @@ void GLTextureBuffer::blit(const HardwarePixelBufferPtr &src, const Box &srcBox,
     /// Destination texture must be 1D, 2D, 3D, or Cube
     /// Source texture must be 1D, 2D or 3D
 	
-    if(GLEW_EXT_framebuffer_object && (srct->mTarget==GL_TEXTURE_1D||srct->mTarget==GL_TEXTURE_2D||srct->mTarget==GL_TEXTURE_3D))
+	// This does not sem to work for RTTs after the first update
+	// I have no idea why! For the moment, disable 
+    if(GLEW_EXT_framebuffer_object && (src->getUsage() & TU_RENDERTARGET) == 0 &&
+        (srct->mTarget==GL_TEXTURE_1D||srct->mTarget==GL_TEXTURE_2D||srct->mTarget==GL_TEXTURE_3D))
     {
         blitFromTexture(srct, srcBox, dstBox);
     }

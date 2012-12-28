@@ -21,6 +21,8 @@ namespace CamelotEngine
 		CM_SETGET_MEMBER(mDepth, UINT32, Texture)
 		CM_SETGET_MEMBER(mNumMipmaps, UINT32, Texture)
 		CM_SETGET_MEMBER(mHwGamma, bool, Texture)
+		CM_SETGET_MEMBER(mFSAA, UINT32, Texture)
+		CM_SETGET_MEMBER(mFSAAHint, String, Texture)
 		CM_SETGET_MEMBER(mTextureType, TextureType, Texture)
 		CM_SETGET_MEMBER(mFormat, PixelFormat, Texture)
 		CM_SETGET_MEMBER(mUsage, INT32, Texture)
@@ -62,9 +64,11 @@ namespace CamelotEngine
 			CM_ADD_PLAINFIELD(mDepth, 4, TextureRTTI)
 			CM_ADD_PLAINFIELD(mNumMipmaps, 5, TextureRTTI)
 			CM_ADD_PLAINFIELD(mHwGamma, 6, TextureRTTI)
-			CM_ADD_PLAINFIELD(mTextureType, 7, TextureRTTI)
-			CM_ADD_PLAINFIELD(mFormat, 8, TextureRTTI)
-			CM_ADD_PLAINFIELD(mUsage, 9, TextureRTTI)
+			CM_ADD_PLAINFIELD(mFSAA, 7, TextureRTTI)
+			CM_ADD_PLAINFIELD(mFSAAHint, 8, TextureRTTI)
+			CM_ADD_PLAINFIELD(mTextureType, 9, TextureRTTI)
+			CM_ADD_PLAINFIELD(mFormat, 10, TextureRTTI)
+			CM_ADD_PLAINFIELD(mUsage, 11, TextureRTTI)
 
 			addReflectablePtrArrayField("mPixelData", 12, &TextureRTTI::getPixelData, &TextureRTTI::getPixelDataArraySize, 
 				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize);
@@ -87,7 +91,8 @@ namespace CamelotEngine
 			// A bit clumsy initializing with already set values, but I feel its better than complicating things and storing the values
 			// in mRTTIData.
 			texture->initialize(texture->getTextureType(), texture->getWidth(), texture->getHeight(), texture->getDepth(), 
-				texture->getNumMipmaps(), texture->getFormat(), texture->getUsage(), texture->isHardwareGammaEnabled());
+				texture->getNumMipmaps(), texture->getFormat(), texture->getUsage(), texture->isHardwareGammaEnabled(), 
+				texture->getFSAA(), texture->getFSAAHint());
 
 			vector<PixelDataPtr>::type* pixelData = boost::any_cast<vector<PixelDataPtr>::type*>(texture->mRTTIData);
 			for(size_t i = 0; i < pixelData->size(); i++)

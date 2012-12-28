@@ -63,6 +63,11 @@ namespace CamelotEngine
 		// Calculate usage
 		DWORD d3dusage = 0;
 		D3DPOOL pool = D3DPOOL_MANAGED;
+		if (usage & TU_RENDERTARGET) 
+		{
+			d3dusage |= D3DUSAGE_RENDERTARGET;
+			pool = D3DPOOL_DEFAULT;
+		}
 		if (usage & TU_DYNAMIC)
 		{
 			d3dusage |= D3DUSAGE_DYNAMIC;

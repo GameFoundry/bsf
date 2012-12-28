@@ -47,7 +47,9 @@ namespace CamelotEngine {
     {
 		/// @copydoc HardwareBuffer::Usage
 		TU_STATIC = HardwareBuffer::HBU_STATIC, // Optimal setting if texture is read by the GPU often, and very rarely written by CPU
-		TU_DYNAMIC = HardwareBuffer::HBU_DYNAMIC // Optimal if the texture is updated by CPU often (e.g. every frame)
+		TU_DYNAMIC = HardwareBuffer::HBU_DYNAMIC, // Optimal if the texture is updated by CPU often (e.g. every frame)
+		TU_RENDERTARGET = 0x200, // Used for rendering by the GPU
+		TU_DEFAULT = TU_STATIC
     };
 
     /** Enum identifying the texture type
@@ -98,6 +100,15 @@ namespace CamelotEngine {
 		hardware gamma correction is applied.
 		*/
 		virtual bool isHardwareGammaEnabled() const { return mHwGamma; }
+
+		/** Get the level of multisample AA to be used if this texture is a 
+		rendertarget.
+		*/
+		virtual UINT32 getFSAA() const { return mFSAA; }
+
+		/** Get the multisample AA hint if this texture is a rendertarget.
+		*/
+		virtual const String& getFSAAHint() const { return mFSAAHint; }
 
 		/** Returns the height of the texture.
         */
@@ -204,6 +215,8 @@ namespace CamelotEngine {
 
 		UINT32 mNumMipmaps;
 		bool mHwGamma;
+		UINT32 mFSAA;
+		String mFSAAHint;
 
         TextureType mTextureType;
 		PixelFormat mFormat;
@@ -218,7 +231,7 @@ namespace CamelotEngine {
 		 * @note	Initialization is not done immediately, and is instead just scheduled on the render thread.
 		 */
 		void initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
-			PixelFormat format, int usage, bool hwGamma);
+			PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint);
 		
 		/**
 		 * @brief	Performs GpuProgram initialization. Only callable from the render thread.
@@ -276,10 +289,12 @@ namespace CamelotEngine {
 		/************************************************************************/
 	public:
 		static TexturePtr create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-			int num_mips, PixelFormat format, int usage = TU_STATIC, bool hwGammaCorrection = false);
+			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
+			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
 
 		static TexturePtr create(TextureType texType, UINT32 width, UINT32 height, int num_mips,
-			PixelFormat format, int usage = TU_STATIC, bool hwGammaCorrection = false);
+			PixelFormat format, int usage = TU_DEFAULT,
+			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
     };
 	/** @} */
 }

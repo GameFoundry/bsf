@@ -94,7 +94,9 @@ namespace CamelotEngine
 		mSlicePitch = mHeight*mWidth;
 		mSizeInBytes = PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);	
 	
-		if (isNewBuffer)
+		// TODO PORT - My Texture doesn't inherit from Resource and doesn't have that method. Not sure why it needs to call it,
+		// but since we're not there's potential for trouble here.
+		if (isNewBuffer /*&& mOwnerTexture->isManuallyLoaded()*/)
 		{
 			DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
 
@@ -320,7 +322,10 @@ namespace CamelotEngine
 	PixelData D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions options)
 	{	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-	
+
+		// Check for misuse
+		if(mUsage & TU_RENDERTARGET)
+			CM_EXCEPT(RenderingAPIException, "DirectX does not allow locking of or directly writing to RenderTargets. Use blitFromMemory if you need the contents.");		
 		// Set locking flags according to options
 		DWORD flags = 0;
 		switch(options)

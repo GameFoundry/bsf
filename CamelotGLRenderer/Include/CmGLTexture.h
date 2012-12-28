@@ -74,6 +74,8 @@ namespace CamelotEngine {
 		*/
 		void createSurfaceList();
 
+		void createRenderTexture();
+
 		/** Return hardware pixel buffer for a surface. This buffer can then
 			be used to copy data from and to a particular level of the texture.
 			@param face 	Face number, in case of a cubemap texture. Must be 0

@@ -45,6 +45,7 @@ namespace CamelotEngine
     }
     RenderTexture::~RenderTexture()
     {
+
     }
 
 	void RenderTexture::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)

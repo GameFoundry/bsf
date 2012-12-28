@@ -74,6 +74,11 @@ namespace CamelotEngine {
 	{
 		createInternalResources();
 
+		if( mUsage & TU_RENDERTARGET )
+		{
+			createRenderTexture();
+		}
+
 		Resource::initialize_internal();
 	}
 
@@ -273,12 +278,22 @@ namespace CamelotEngine {
 		// Get final internal format
 		mFormat = getBuffer(0,0)->getFormat();
 	}
+	
+    void GLTexture::createRenderTexture(void)
+    {
+        // Create the GL texture
+		// This already does everything neccessary
+        createInternalResources();
+    }
 	//*************************************************************************
+    
     void GLTexture::freeInternalResourcesImpl()
     {
 		mSurfaceList.clear();
         glDeleteTextures( 1, &mTextureID );
     }
+
+	
 	//---------------------------------------------------------------------------------------------
 	void GLTexture::createSurfaceList()
 	{
@@ -289,7 +304,7 @@ namespace CamelotEngine {
 			for(UINT32 mip=0; mip<=getNumMipmaps(); mip++)
 			{
                 GLHardwarePixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget_internal(), mTextureID, face, mip,
-						static_cast<HardwareBuffer::Usage>(mUsage), false, mHwGamma, 0);
+						static_cast<HardwareBuffer::Usage>(mUsage), false, mHwGamma, mFSAA);
 				mSurfaceList.push_back(HardwarePixelBufferPtr(buf));
                 
                 /// Check for error
@@ -304,6 +319,7 @@ namespace CamelotEngine {
 			}
 		}
 	}
+	
 	//---------------------------------------------------------------------------------------------
 	HardwarePixelBufferPtr GLTexture::getBuffer(UINT32 face, UINT32 mipmap)
 	{
