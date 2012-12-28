@@ -33,7 +33,7 @@ THE SOFTWARE.
 namespace CamelotEngine 
 {
 	GLRenderTexture::GLRenderTexture(GLRTTManager* manager, const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa):
-		RenderTexture(target.buffer, target.zoffset), mFB(manager, fsaa)
+		mFB(manager, fsaa)
 	{
 		mName = name;
 		mHwGamma = writeGamma;

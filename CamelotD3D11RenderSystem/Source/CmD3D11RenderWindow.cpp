@@ -128,7 +128,7 @@ namespace CamelotEngine
 
 		mName = name;
 		mIsFullScreen = fullScreen;
-		mColourDepth = colourDepth;
+		mColorDepth = colourDepth;
 		mWidth = mHeight = mLeft = mTop = 0;
 
 		mActive = true;

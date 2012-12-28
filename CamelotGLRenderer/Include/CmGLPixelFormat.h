@@ -70,7 +70,7 @@ namespace CamelotEngine {
 			without losing precision.
 			@remarks It is valid for this function to always return PF_A8R8G8B8.
 		*/
-		static PixelFormat getClosestOGREFormat(GLenum fmt);
+		static PixelFormat getClosestEngineFormat(GLenum fmt);
 	
 		/** Returns the maximum number of Mipmaps that can be generated until we reach
 			the mininum format possible. This does not count the base level.

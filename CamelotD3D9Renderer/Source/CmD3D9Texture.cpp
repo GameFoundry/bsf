@@ -1218,7 +1218,7 @@ namespace CamelotEngine
 	D3D9RenderTexture::D3D9RenderTexture(const String &name, 
 		D3D9HardwarePixelBuffer *buffer, 
 		bool writeGamma, 
-		UINT32 fsaa) : RenderTexture(buffer, 0)
+		UINT32 fsaa) : mBuffer(buffer)
 	{
 		mName = name;
 		mHwGamma = writeGamma;

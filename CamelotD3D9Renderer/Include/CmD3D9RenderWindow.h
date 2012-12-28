@@ -119,6 +119,7 @@ namespace CamelotEngine
 		unsigned int				mVSyncInterval;		
 		bool						mUseNVPerfHUD;			// Use NV Perf HUD.
 		DWORD						mStyle;					// Window style currently used for this window.
+		bool						mIsDepthBuffered;
 		// Desired width / height after resizing
 		unsigned int mDesiredWidth;
 		unsigned int mDesiredHeight;

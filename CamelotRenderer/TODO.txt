@@ -17,13 +17,7 @@
 
 
 /////
-DX11 Render Textures are not implemented. I need to rethink render textures (and multi render textures) completely (Get rid of TU_RENDERTARGET enum)
- - Ability to create MultiRenderTarget (currently there is no method that does it)
-
 waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
-
-Move createRenderTexture to TextureManager? (also createMultiRenderTexture)
- - Right now its created with a special texture usage flag, which I don't like (Textures have slices and other weird stuff)
 Drop OpenGL support for low level shaders? (See if cg can translate to GLSL)
 
 Keeping a list of all render targets in RenderSystem shouldn't be needed (and calling attach/detach renderTarget). Renderer should determine in what order are render targets presented.
@@ -31,34 +25,30 @@ Keeping a list of all render targets in RenderSystem shouldn't be needed (and ca
 Constant buffers are created in a weird way. Maybe they should only be created internally by GpuProgramParameters?
  - Multiple GpuProgramParameters get returned from GpuProgram after createParameters() is called, in a map, each with its own name
 
-setDepthBuffer method on RenderTexture
-All render targets need to create DepthStencilBuffer internally, so that getDepthStencilBuffer can return something. Right now only D3D11 render window does this
-
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
 Figure out how to handle accessing texture from a non-render thread?
 /////
 
-
-
-
-
-
 RenderSystem needed modifications
  - Right now HLSL11 CANNOT SPECIFY TEXTURE PARAMETERS! (Pass needs to be extended)
  - Generic buffers (Normal/Structured/Raw/Append/Consume/Indirect)
+ - Unordered access view for OM and CS stages
  - Ability to bind buffers and texture with different type of view (SHADER_RESOURCE & UNORDERED_ACCESS primarily, major others too)
  - Pass needs to be modified
   - Needs to support bool/double/texture1D/textue3D/textureCUBE/texture arrays/MS textures/all types of buffers/structs
+  - Needs to support (*void) data type for setting structs in constant buffers
  - TextureBuffer support? (Use for bones when skinning for exaple, as constant buffers are too slow)
  - RW buffers?
  - Tesselation (hull/domain) shader
  - Compute pipeline
  - Stream out (write vertex buffers)
- - Instancing
+ - Instancing (DrawInstanced, also check DrawIndirect)
  - Dynamic shader linkage (Interfaces and similar)
  - Append/Consume buffer
  - 1D/2D/Cube texture arrays
+ - Rendertargets that aren't just 2D
+ - Readable DepthStencil (needs to be assignable to a shader)
  - Multisampled texture resources
  - Multiple adapters (multi gpu)
  - DX11 allows detachable and reusable depthStencil buffers but right now DX9 and OpenGL just ignore them
@@ -72,25 +62,6 @@ RenderSystem needed modifications
 	- GL constant buffers
 	- HLSL11 shader equivalents (domain/hull/compute shaders), and advanced shader parameters
  - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
-
- RenderSystem modifications, yet another list:
-   - DepthStencilView & RenderTargetView are automatically created for any RenderTarget (no special mechanism for setting them needed)
-
-   - Extend pass with "struct" (void*) parameters to that they can be assigned to constant buffers
-   - Extend pass so it accepts "GenericBuffers"
-
-   - Add support for "GenericBuffers" (normal/structured/raw/append/consume/indirect)
-   - Add support for texture buffer
-
-   - Ability to set vertex buffer as a stream output buffer (also added to Pass)
-
-   - Set viewport & scissor rect to rasterizer (should probably be part of RenderTarget. If so, modify DX9 and GL so they act the same)
-
-   - Ability to create & assign unordered access views to OM and CS stages. (Extend pass and HardwareBufferManager)
-
-   - Extend render system with DrawInstanced (Also with DrawIndirect?)
-
-   - (Separate Pass parameters so that they are accepted per GpuProgramType, instead of using a global name?)
 
 Command buffer TODO:
  - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
@@ -164,6 +135,8 @@ Low priority TODO:
  - Fix up WorkQueue as it doesn't lock when initializing, to make sure threads are actually started before returning
  - D3D9HLSLProgram stuff that isn't used (it needs to be initialized before initializing the shader, which currently isn't possible). Maybe adding it to HighLevelGpuProgramFactory?
      - setPreprocessorDefines, setColumnMajorMatrices, setOptimisationLevel
+ - OpenGL seems to generate a mip pyramid regardless of the setting (in createInternalResourcesImpl)
+ - DepthStencilBuffer & Texture should possibly share the same interface instead of being two separate classes? I'll need to assign DepthStencil to shaders sometimes. Not possible in DX9 but possible in DX11.
 
 Optional TODO:
  - Add precompiled headers to all projects

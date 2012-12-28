@@ -74,11 +74,6 @@ namespace CamelotEngine {
 	{
 		createInternalResources();
 
-		if( mUsage & TU_RENDERTARGET )
-		{
-			createRenderTexture();
-		}
-
 		Resource::initialize_internal();
 	}
 
@@ -278,22 +273,12 @@ namespace CamelotEngine {
 		// Get final internal format
 		mFormat = getBuffer(0,0)->getFormat();
 	}
-	
-    void GLTexture::createRenderTexture(void)
-    {
-        // Create the GL texture
-		// This already does everything neccessary
-        createInternalResources();
-    }
-	//*************************************************************************
-    
+	//--------------------------------------------------------------------------------------------
     void GLTexture::freeInternalResourcesImpl()
     {
 		mSurfaceList.clear();
         glDeleteTextures( 1, &mTextureID );
     }
-
-	
 	//---------------------------------------------------------------------------------------------
 	void GLTexture::createSurfaceList()
 	{

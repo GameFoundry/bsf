@@ -24,7 +24,7 @@ namespace CamelotEngine
 		, mLockedForReading(false)
 		, mStaticBuffer(nullptr)
 	{
-		ZeroMemory(&mSRVDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+
 	}
 
 	D3D11Texture::~D3D11Texture()
@@ -152,24 +152,35 @@ namespace CamelotEngine
 	void D3D11Texture::_create1DTex()
 	{
 		// We must have those defined here
-		assert(mWidth > 0 || mHeight > 0);
+		assert(mWidth > 0);
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat));
 
-		// Determine total number of mipmaps including main one (d3d11 convention)
-		UINT32 numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
-
 		D3D11_TEXTURE1D_DESC desc;
 		desc.Width			= static_cast<UINT32>(mWidth);
-		desc.MipLevels		= numMips;
 		desc.ArraySize		= 1;
 		desc.Format			= d3dPF;
-		desc.Usage			= D3D11Mappings::_getUsage(mUsage);
-		desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage);
 		desc.MiscFlags		= 0;
+
+		if((mUsage & TU_RENDERTARGET) != 0)
+		{
+			desc.Usage			= D3D11_USAGE_DEFAULT;
+			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+			desc.CPUAccessFlags = (mUsage & TU_RENDERTARGET) != 0 ? 0 : D3D11Mappings::_getAccessFlags(mUsage);
+			desc.MipLevels		= 1;
+		}
+		else
+		{
+			desc.Usage			= D3D11Mappings::_getUsage(mUsage);
+			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
+			desc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage);
+
+			// Determine total number of mipmaps including main one (d3d11 convention)
+			UINT32 numMips		= (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
+			desc.MipLevels		= numMips;
+		}
 
 		// Create the texture
 		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
@@ -192,13 +203,13 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}
 
-		// Create texture view
 		m1DTex->GetDesc(&desc);
 		mNumMipmaps = desc.MipLevels - 1;
 
-		ZeroMemory( &mSRVDesc, sizeof(mSRVDesc) );
+		// Create texture view
+		ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
 		mSRVDesc.Format = desc.Format;
-		mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+		mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D; 
 		mSRVDesc.Texture1D.MipLevels = desc.MipLevels;
 		hr = device.getD3D11Device()->CreateShaderResourceView(m1DTex, &mSRVDesc, &mShaderResourceView);
 
@@ -218,29 +229,50 @@ namespace CamelotEngine
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat));
 
-		// Determine total number of mipmaps including main one (d3d11 convention)
-		UINT32 numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
-
-		DXGI_SAMPLE_DESC sampleDesc;
-		sampleDesc.Count = 1;
-		sampleDesc.Quality = 0;
-
 		D3D11_TEXTURE2D_DESC desc;
 		desc.Width			= static_cast<UINT32>(mWidth);
 		desc.Height			= static_cast<UINT32>(mHeight);
-		desc.MipLevels		= numMips;
 		desc.ArraySize		= 1;
 		desc.Format			= d3dPF;
-		desc.SampleDesc		= sampleDesc;
-		desc.Usage			= D3D11Mappings::_getUsage(mUsage);
-		desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage);
 		desc.MiscFlags		= 0;
 
-        if (this->getTextureType() == TEX_TYPE_CUBE_MAP)
+		if((mUsage & TU_RENDERTARGET) != 0)
+		{
+			desc.Usage			= D3D11_USAGE_DEFAULT;
+			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+			desc.CPUAccessFlags = (mUsage & TU_RENDERTARGET) != 0 ? 0 : D3D11Mappings::_getAccessFlags(mUsage);
+			desc.MipLevels		= 1;
+
+			DXGI_SAMPLE_DESC sampleDesc;
+			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+			rs->determineFSAASettings(mFSAA, mFSAAHint, d3dPF, &sampleDesc);
+			desc.SampleDesc		= sampleDesc;
+
+			if(getTextureType() == TEX_TYPE_CUBE_MAP)
+			{
+				CM_EXCEPT(NotImplementedException, "Cube map not yet supported as a render target."); // TODO: Will be once I add proper texture array support
+			}
+		}
+		else
+		{
+			desc.Usage			= D3D11Mappings::_getUsage(mUsage);
+			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
+			desc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage);
+
+			// Determine total number of mipmaps including main one (d3d11 convention)
+			UINT32 numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
+			desc.MipLevels		= numMips;
+
+			DXGI_SAMPLE_DESC sampleDesc;
+			sampleDesc.Count	= 1;
+			sampleDesc.Quality	= 0;
+			desc.SampleDesc		= sampleDesc;
+		}
+
+        if (getTextureType() == TEX_TYPE_CUBE_MAP)
         {
-                desc.MiscFlags          |= D3D11_RESOURCE_MISC_TEXTURECUBE;
-                desc.ArraySize          = 6;
+            desc.MiscFlags      |= D3D11_RESOURCE_MISC_TEXTURECUBE;
+            desc.ArraySize       = 6;
         }
 
 		// Create the texture
@@ -264,26 +296,44 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}
 
-		// Create texture view
 		m2DTex->GetDesc(&desc);
 		mNumMipmaps = desc.MipLevels - 1;
 
+		// Create shader texture view
 		ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
 		mSRVDesc.Format = desc.Format;
 
-		switch(getTextureType())
+		if((mUsage & TU_RENDERTARGET) != 0)
 		{
-		case TEX_TYPE_CUBE_MAP:
-			mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-			mSRVDesc.TextureCube.MipLevels = desc.MipLevels;
-			mSRVDesc.TextureCube.MostDetailedMip = 0;
-			break;
+			if(mFSAA > 0)
+			{
+				mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+				mSRVDesc.Texture2D.MostDetailedMip = 0;
+				mSRVDesc.Texture2D.MipLevels = desc.MipLevels;
+			}
+			else
+			{
+				mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+				mSRVDesc.Texture2D.MostDetailedMip = 0;
+				mSRVDesc.Texture2D.MipLevels = desc.MipLevels;
+			}
+		}
+		else
+		{
+			switch(getTextureType())
+			{
+			case TEX_TYPE_CUBE_MAP:
+				mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+				mSRVDesc.TextureCube.MipLevels = desc.MipLevels;
+				mSRVDesc.TextureCube.MostDetailedMip = 0;
+				break;
 
-		case TEX_TYPE_2D:
-			mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-			mSRVDesc.Texture2D.MostDetailedMip = 0;
-			mSRVDesc.Texture2D.MipLevels = desc.MipLevels;
-			break;
+			case TEX_TYPE_2D:
+				mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+				mSRVDesc.Texture2D.MostDetailedMip = 0;
+				mSRVDesc.Texture2D.MipLevels = desc.MipLevels;
+				break;
+			}
 		}
 
 		hr = device.getD3D11Device()->CreateShaderResourceView(m2DTex, &mSRVDesc, &mShaderResourceView);
@@ -304,19 +354,30 @@ namespace CamelotEngine
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat));
 
-		// Determine total number of mipmaps including main one (d3d11 convention)
-		UINT numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > std::max(std::max(mWidth, mHeight), mDepth)) ? 0 : mNumMipmaps + 1;
-
 		D3D11_TEXTURE3D_DESC desc;
 		desc.Width			= static_cast<UINT32>(mWidth);
 		desc.Height			= static_cast<UINT32>(mHeight);
 		desc.Depth			= static_cast<UINT32>(mDepth);
-		desc.MipLevels		= numMips;
 		desc.Format			= d3dPF;
-		desc.Usage			= D3D11Mappings::_getUsage(mUsage);
-		desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage);
 		desc.MiscFlags		= 0;
+
+		if((mUsage & TU_RENDERTARGET) != 0)
+		{
+			desc.Usage			= D3D11_USAGE_DEFAULT;
+			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+			desc.CPUAccessFlags = (mUsage & TU_RENDERTARGET) != 0 ? 0 : D3D11Mappings::_getAccessFlags(mUsage);
+			desc.MipLevels		= 1;
+		}
+		else
+		{
+			desc.Usage			= D3D11Mappings::_getUsage(mUsage);
+			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
+			desc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage);
+
+			// Determine total number of mipmaps including main one (d3d11 convention)
+			UINT numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > std::max(std::max(mWidth, mHeight), mDepth)) ? 0 : mNumMipmaps + 1;
+			desc.MipLevels		= numMips;
+		}
 
 		// Create the texture
 		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();

@@ -48,20 +48,13 @@ namespace CamelotEngine
     class CM_EXPORT RenderTexture: public RenderTarget
     {
     public:
-        RenderTexture(HardwarePixelBuffer *buffer, UINT32 zoffset);
+        RenderTexture();
         virtual ~RenderTexture();
 
 		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
 		PixelFormat suggestPixelFormat() const;
 
-		/**
-		 * @brief	Sets the depth stencil buffer attached to this render target.
-		 */
-		//virtual void setDepthStencilBuffer(DepthStencilBufferPtr depthStencil) = 0;
-
 	protected:
-		HardwarePixelBuffer *mBuffer;
-		UINT32 mZOffset;
     };
 
 	/** This class represents a render target that renders to multiple RenderTextures

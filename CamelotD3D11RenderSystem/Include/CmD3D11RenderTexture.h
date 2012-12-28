@@ -1,23 +1,38 @@
 #pragma once
 
 #include "CmD3D11Prerequisites.h"
+#include "CmTexture.h"
 #include "CmRenderTexture.h"
 
 namespace CamelotEngine
 {
 	class D3D11RenderTexture : public RenderTexture
 	{
-		D3D11Device& mDevice;
-		ID3D11RenderTargetView* mRenderTargetView;
-		ID3D11DepthStencilView* mDepthStencilView;
 	public:
-		D3D11RenderTexture(const String &name, D3D11HardwarePixelBuffer *buffer, D3D11Device& device);
+		D3D11RenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
+			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
+			bool createDepth = true, UINT32 depthBits = 32);
+		D3D11RenderTexture(TexturePtr texture, DepthStencilBufferPtr depthStencilbuffer);
 		virtual ~D3D11RenderTexture();
 
-		void rebind(D3D11HardwarePixelBuffer *buffer);
+		void setBuffers(TexturePtr texture, DepthStencilBufferPtr depthStencilbuffer);
 
-		virtual void getCustomAttribute(const String& name, void *pData);
+		TexturePtr getTexture() const { return mTexture; }
+		DepthStencilBufferPtr getDepthStencilBuffer() const { return mDepthStencilBuffer; }
 
 		bool requiresTextureFlipping() const { return false; }
+
+	protected:
+		TextureType mType;
+		PixelFormat mFormat;
+		UINT32 mDepthBits;
+
+		TexturePtr mTexture;
+		DepthStencilBufferPtr mDepthStencilBuffer;
+		ID3D11RenderTargetView* mRenderTargetView;
+
+		void createTextureBuffer();
+		void createDepthStencilBuffer();
+		void createResourceView();
 	};
 }

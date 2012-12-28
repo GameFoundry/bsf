@@ -36,7 +36,6 @@ namespace CamelotEngine {
     RenderTarget::RenderTarget()
 		:mPriority(CM_DEFAULT_RT_GROUP),
 		mActive(true),
-		mAutoUpdate(true),
 		mHwGamma(false), 
 		mFSAA(0)
     {
@@ -56,7 +55,7 @@ namespace CamelotEngine {
     {
         width = mWidth;
         height = mHeight;
-        colourDepth = mColourDepth;
+        colourDepth = mColorDepth;
     }
 
     unsigned int RenderTarget::getWidth(void) const
@@ -69,7 +68,7 @@ namespace CamelotEngine {
     }
     unsigned int RenderTarget::getColourDepth(void) const
     {
-        return mColourDepth;
+        return mColorDepth;
     }
 
     void RenderTarget::updateImpl(void)

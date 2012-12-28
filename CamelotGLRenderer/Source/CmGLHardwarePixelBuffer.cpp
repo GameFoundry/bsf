@@ -224,7 +224,7 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
 	// Get format
 	glGetTexLevelParameteriv(mFaceTarget, level, GL_TEXTURE_INTERNAL_FORMAT, &value);
 	mGLInternalFormat = value;
-	mFormat = GLPixelUtil::getClosestOGREFormat(value);
+	mFormat = GLPixelUtil::getClosestEngineFormat(value);
 	
 	// Default
 	mRowPitch = mWidth;
@@ -784,7 +784,7 @@ void GLTextureBuffer::blitFromMemory(const PixelData &src_orig, const Box &dstBo
 //********* GLRenderBuffer
 //----------------------------------------------------------------------------- 
 GLRenderBuffer::GLRenderBuffer(GLenum format, UINT32 width, UINT32 height, GLsizei numSamples):
-    GLHardwarePixelBuffer(width, height, 1, GLPixelUtil::getClosestOGREFormat(format),HBU_WRITE_ONLY),
+    GLHardwarePixelBuffer(width, height, 1, GLPixelUtil::getClosestEngineFormat(format),HBU_WRITE_ONLY),
     mRenderbufferID(0)
 {
     mGLInternalFormat = format;

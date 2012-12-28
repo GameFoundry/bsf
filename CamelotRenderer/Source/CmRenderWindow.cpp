@@ -45,7 +45,7 @@ namespace CamelotEngine {
     {
         width = mWidth;
         height = mHeight;
-        colourDepth = mColourDepth;
+        colourDepth = mColorDepth;
         left = mLeft;
         top = mTop;
     }

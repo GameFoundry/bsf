@@ -11,6 +11,7 @@ namespace CamelotEngine
 		~D3D11Texture();
 
 		ID3D11Resource* getDX11Resource() const { return mTex; }
+		const D3D11_SHADER_RESOURCE_VIEW_DESC& getSRVDesc() const { return mSRVDesc; }
 	protected:
 		friend class D3D11TextureManager;
 

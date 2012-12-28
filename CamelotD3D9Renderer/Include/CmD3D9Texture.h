@@ -212,6 +212,9 @@ namespace CamelotEngine {
 		/// Override needed to deal with FSAA
 		void swapBuffers(bool waitForVSync = true);
 
+	protected:
+		D3D9HardwarePixelBuffer* mBuffer;
+
 	};
 
 }

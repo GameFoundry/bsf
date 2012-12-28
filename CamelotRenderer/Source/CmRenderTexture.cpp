@@ -34,14 +34,8 @@ namespace CamelotEngine
 {
 
     //-----------------------------------------------------------------------------
-	RenderTexture::RenderTexture(HardwarePixelBuffer *buffer, UINT32 zoffset):
-		mBuffer(buffer), mZOffset(zoffset)
+	RenderTexture::RenderTexture()
     {
-        mPriority = CM_REND_TO_TEX_RT_GROUP;
-		mWidth = static_cast<unsigned int>(mBuffer->getWidth());
-		mHeight = static_cast<unsigned int>(mBuffer->getHeight());
-        mColourDepth = static_cast<unsigned int>(
-			CamelotEngine::PixelUtil::getNumElemBits(mBuffer->getFormat()));
     }
     RenderTexture::~RenderTexture()
     {
@@ -50,19 +44,12 @@ namespace CamelotEngine
 
 	void RenderTexture::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
     {
-		if (buffer == FB_AUTO) buffer = FB_FRONT;
-		if (buffer != FB_FRONT)
-		{
-			CM_EXCEPT(InvalidParametersException,
-						"Invalid buffer.");
-		}
-
-		mBuffer->blitToMemory(dst);
+		CM_EXCEPT(NotImplementedException, "Not implemented");
 	}
 	//---------------------------------------------------------------------
 	PixelFormat RenderTexture::suggestPixelFormat() const
 	{
-		return mBuffer->getFormat();
+		CM_EXCEPT(NotImplementedException, "Not implemented");
 	}
 	//-----------------------------------------------------------------------------
 	MultiRenderTarget::MultiRenderTarget(const String &name)

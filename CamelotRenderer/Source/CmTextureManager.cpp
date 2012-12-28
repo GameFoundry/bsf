@@ -52,7 +52,7 @@ namespace CamelotEngine {
 		delete texture;
 	}
     //-----------------------------------------------------------------------
-    TexturePtr TextureManager::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
+    TexturePtr TextureManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
         PixelFormat format, int usage, bool hwGamma, 
 		UINT32 fsaa, const String& fsaaHint)
     {

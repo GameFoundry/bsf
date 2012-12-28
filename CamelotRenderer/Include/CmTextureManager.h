@@ -111,7 +111,7 @@ namespace CamelotEngine {
 				if usage does not include TU_RENDERTARGET or if the device does
 				not support it.
         */
-        TexturePtr create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
+        TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
 			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
 			
@@ -157,11 +157,11 @@ namespace CamelotEngine {
 				if usage does not include TU_RENDERTARGET or if the device does
 				not support it.
         */
-        TexturePtr create(TextureType texType, UINT32 width, UINT32 height, int num_mips,
+        TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, int num_mips,
             PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK)
 		{
-			return create(texType, width, height, 1, 
+			return createTexture(texType, width, height, 1, 
 				num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 		}
 

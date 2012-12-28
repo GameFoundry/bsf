@@ -43,7 +43,6 @@ namespace CamelotEngine
 	class D3D11VertexDeclaration;
 	class D3D11Device;
 	class D3D11HardwareBuffer;
-	class D3D11HardwarePixelBuffer;
 	class D3D11GpuVertexProgram;
 	class D3D11GpuFragmentProgram;
 	class D3D11GpuGeometryProgram;

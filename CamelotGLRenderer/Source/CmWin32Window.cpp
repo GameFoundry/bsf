@@ -81,8 +81,7 @@ namespace CamelotEngine {
 		mIsFullScreen = fullScreen;
 		mClosed = false;		
 		mDisplayFrequency = 0;
-		mIsDepthBuffered = true;
-		mColourDepth = mIsFullScreen? 32 : GetDeviceCaps(GetDC(0), BITSPIXEL);
+		mColorDepth = mIsFullScreen? 32 : GetDeviceCaps(GetDC(0), BITSPIXEL);
 		int left = -1; // Defaults to screen center
 		int top = -1; // Defaults to screen center
 		HWND parent = 0;
@@ -109,9 +108,6 @@ namespace CamelotEngine {
 
 			if ((opt = miscParams->find("top")) != end)
 				top = parseInt(opt->second);
-
-			if ((opt = miscParams->find("depthBuffer")) != end)
-				mIsDepthBuffered = parseBool(opt->second);
 
 			if ((opt = miscParams->find("vsync")) != end)
 				vsync = parseBool(opt->second);
@@ -162,12 +158,12 @@ namespace CamelotEngine {
 				mDisplayFrequency = parseUnsignedInt(opt->second);
 			if ((opt = miscParams->find("colourDepth")) != end)
 			{
-				mColourDepth = parseUnsignedInt(opt->second);
+				mColorDepth = parseUnsignedInt(opt->second);
 				if (!mIsFullScreen)
 				{
 					// make sure we don't exceed desktop colour depth
-					if ((int)mColourDepth > GetDeviceCaps(GetDC(0), BITSPIXEL))
-						mColourDepth = GetDeviceCaps(GetDC(0), BITSPIXEL);
+					if ((int)mColorDepth > GetDeviceCaps(GetDC(0), BITSPIXEL))
+						mColorDepth = GetDeviceCaps(GetDC(0), BITSPIXEL);
 				}
 			}
 
@@ -313,7 +309,7 @@ namespace CamelotEngine {
 
 				memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
 				displayDeviceMode.dmSize = sizeof(DEVMODE);
-				displayDeviceMode.dmBitsPerPel = mColourDepth;
+				displayDeviceMode.dmBitsPerPel = mColorDepth;
 				displayDeviceMode.dmPelsWidth = mWidth;
 				displayDeviceMode.dmPelsHeight = mHeight;
 				displayDeviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
@@ -362,14 +358,14 @@ namespace CamelotEngine {
 		{
 			int testFsaa = mFSAA;
 			bool testHwGamma = hwGamma;
-			bool formatOk = mGLSupport.selectPixelFormat(mHDC, mColourDepth, testFsaa, testHwGamma);
+			bool formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
 			if (!formatOk)
 			{
 				if (mFSAA > 0)
 				{
 					// try without FSAA
 					testFsaa = 0;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, mColourDepth, testFsaa, testHwGamma);
+					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
 				}
 
 				if (!formatOk && hwGamma)
@@ -377,7 +373,7 @@ namespace CamelotEngine {
 					// try without sRGB
 					testHwGamma = false;
 					testFsaa = mFSAA;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, mColourDepth, testFsaa, testHwGamma);
+					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
 				}
 
 				if (!formatOk && hwGamma && (mFSAA > 0))
@@ -385,7 +381,7 @@ namespace CamelotEngine {
 					// try without both
 					testHwGamma = false;
 					testFsaa = 0;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, mColourDepth, testFsaa, testHwGamma);
+					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
 				}
 
 				if (!formatOk)
@@ -483,7 +479,7 @@ namespace CamelotEngine {
 
 				memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
 				displayDeviceMode.dmSize = sizeof(DEVMODE);
-				displayDeviceMode.dmBitsPerPel = mColourDepth;
+				displayDeviceMode.dmBitsPerPel = mColorDepth;
 				displayDeviceMode.dmPelsWidth = width;
 				displayDeviceMode.dmPelsHeight = height;
 				displayDeviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
@@ -795,7 +791,7 @@ namespace CamelotEngine {
 
 				memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
 				displayDeviceMode.dmSize = sizeof(DEVMODE);
-				displayDeviceMode.dmBitsPerPel = mColourDepth;
+				displayDeviceMode.dmBitsPerPel = mColorDepth;
 				displayDeviceMode.dmPelsWidth = mWidth;
 				displayDeviceMode.dmPelsHeight = mHeight;
 				displayDeviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;

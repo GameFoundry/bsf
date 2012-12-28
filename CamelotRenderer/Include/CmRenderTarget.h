@@ -239,11 +239,9 @@ namespace CamelotEngine {
 
         unsigned int mWidth;
         unsigned int mHeight;
-        unsigned int mColourDepth;
-        bool mIsDepthBuffered;
+        unsigned int mColorDepth;
 
         bool mActive;
-        bool mAutoUpdate;
 		// Hardware sRGB gamma conversion done on write?
 		bool mHwGamma;
 		// FSAA performed?

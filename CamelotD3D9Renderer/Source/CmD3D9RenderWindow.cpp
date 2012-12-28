@@ -37,7 +37,7 @@ THE SOFTWARE.
 namespace CamelotEngine
 {
 	D3D9RenderWindow::D3D9RenderWindow(HINSTANCE instance)
-        : mInstance(instance)        
+        : mInstance(instance), mIsDepthBuffered(true)  
 	{
 		mDevice = NULL;
 		mIsFullScreen = false;		
@@ -329,7 +329,7 @@ namespace CamelotEngine
 		mName = name;
 		mIsDepthBuffered = depthBuffer;
 		mIsFullScreen = fullScreen;
-		mColourDepth = colourDepth;
+		mColorDepth = colourDepth;
 									
 		mActive = true;
 		mClosed = false;
@@ -560,10 +560,10 @@ namespace CamelotEngine
 		}
 
 		presentParams->BackBufferFormat		= D3DFMT_R5G6B5;
-		if( mColourDepth > 16 )
+		if( mColorDepth > 16 )
 			presentParams->BackBufferFormat = D3DFMT_X8R8G8B8;
 
-		if (mColourDepth > 16 )
+		if (mColorDepth > 16 )
 		{
 			// Try to create a 32-bit depth, 8-bit stencil
 			if( FAILED( pD3D->CheckDeviceFormat(mDevice->getAdapterNumber(),

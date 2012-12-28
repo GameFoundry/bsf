@@ -277,7 +277,7 @@ namespace CamelotEngine  {
     }
 	
 	//----------------------------------------------------------------------------- 	
-	PixelFormat GLPixelUtil::getClosestOGREFormat(GLenum fmt)
+	PixelFormat GLPixelUtil::getClosestEngineFormat(GLenum fmt)
 	{
 		switch(fmt) 
 		{
