@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __RenderTexture_H__
 
 #include "CmPrerequisites.h"
-
+#include "CmTexture.h"
 #include "CmRenderTarget.h"
 
 namespace CamelotEngine
@@ -47,14 +47,42 @@ namespace CamelotEngine
     */
     class CM_EXPORT RenderTexture: public RenderTarget
     {
-    public:
-        RenderTexture();
-        virtual ~RenderTexture();
+	public:
+		virtual ~RenderTexture() {}
 
-		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
-		PixelFormat suggestPixelFormat() const;
+		void setBuffers(TexturePtr texture, DepthStencilBufferPtr depthStencilbuffer, 
+			UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
+
+		TexturePtr getTexture() const { return mTexture; }
+		DepthStencilBufferPtr getDepthStencilBuffer() const { return mDepthStencilBuffer; }
+
+		bool requiresTextureFlipping() const { return false; }
 
 	protected:
+		TextureType mType;
+		PixelFormat mFormat;
+		UINT32 mDepthBits;
+		UINT32 mFace;
+		UINT32 mNumFaces;
+		UINT32 mMipLevel;
+
+		TexturePtr mTexture;
+		DepthStencilBufferPtr mDepthStencilBuffer;
+
+		RenderTexture();
+
+		void initialize(TextureType textureType, UINT32 width, UINT32 height, 
+			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
+			bool createDepth = true, UINT32 depthBits = 32);
+
+		void initialize(TexturePtr texture, DepthStencilBufferPtr depthStencilbuffer, 
+			UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
+
+		void createTextureBuffer();
+		void createDepthStencilBuffer();
+
+		void createInternalResources();
+		virtual void createInternalResourcesImpl() = 0;
     };
 
 	/** This class represents a render target that renders to multiple RenderTextures

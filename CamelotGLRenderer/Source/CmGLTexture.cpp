@@ -77,14 +77,17 @@ namespace CamelotEngine {
 		Resource::initialize_internal();
 	}
 
-    GLenum GLTexture::getGLTextureTarget_internal(void) const
+    GLenum GLTexture::getGLTextureTarget(void) const
     {
         switch(mTextureType)
         {
             case TEX_TYPE_1D:
                 return GL_TEXTURE_1D;
             case TEX_TYPE_2D:
-                return GL_TEXTURE_2D;
+				if(mFSAA > 0)
+					return GL_TEXTURE_2D_MULTISAMPLE;
+				else
+					return GL_TEXTURE_2D;
             case TEX_TYPE_3D:
                 return GL_TEXTURE_3D;
             case TEX_TYPE_CUBE_MAP:
@@ -94,7 +97,7 @@ namespace CamelotEngine {
         };
     }
 
-	GLuint GLTexture::getGLID_internal() const
+	GLuint GLTexture::getGLID() const
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -152,7 +155,6 @@ namespace CamelotEngine {
         mWidth = GLPixelUtil::optionalPO2(mWidth);      
         mHeight = GLPixelUtil::optionalPO2(mHeight);
         mDepth = GLPixelUtil::optionalPO2(mDepth);
-		
 
 		// Adjust format if required
 		mFormat = TextureManager::instance().getNativeFormat(mTextureType, mFormat, mUsage);
@@ -162,23 +164,31 @@ namespace CamelotEngine {
 		if(mNumMipmaps>maxMips)
 			mNumMipmaps = maxMips;
 		
+		if((mUsage & TU_RENDERTARGET) != 0)
+		{
+			mNumMipmaps = 1;
+
+			if(mTextureType != TEX_TYPE_2D)
+				CM_EXCEPT(NotImplementedException, "Only 2D render targets are supported at the moment");
+		}
+
 		// Generate texture name
         glGenTextures( 1, &mTextureID );
 		
 		// Set texture type
-		glBindTexture( getGLTextureTarget_internal(), mTextureID );
+		glBindTexture( getGLTextureTarget(), mTextureID );
         
 		// This needs to be set otherwise the texture doesn't get rendered
 		if (GLEW_VERSION_1_2)
-			glTexParameteri( getGLTextureTarget_internal(), GL_TEXTURE_MAX_LEVEL, mNumMipmaps );
+			glTexParameteri( getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, mNumMipmaps );
         
         // Set some misc default parameters so NVidia won't complain, these can of course be changed later
-        glTexParameteri(getGLTextureTarget_internal(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(getGLTextureTarget_internal(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		if (GLEW_VERSION_1_2)
 		{
-			glTexParameteri(getGLTextureTarget_internal(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(getGLTextureTarget_internal(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(getGLTextureTarget(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(getGLTextureTarget(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 		
 		// Allocate internal buffer so that glTexSubImageXD can be used
@@ -188,49 +198,19 @@ namespace CamelotEngine {
 		UINT32 height = mHeight;
 		UINT32 depth = mDepth;
 
+		GLenum glFormat = GL_RGBA;
 		if(PixelUtil::isCompressed(mFormat))
 		{
-			// Compressed formats
-			UINT32 size = PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
-			// Provide temporary buffer filled with zeroes as glCompressedTexImageXD does not
-			// accept a 0 pointer like normal glTexImageXD
-			// Run through this process for every mipmap to pregenerate mipmap piramid
-			UINT8 *tmpdata = new UINT8[size];
-			memset(tmpdata, 0, size);
-			
-			for(UINT32 mip=0; mip<=mNumMipmaps; mip++)
-			{
-				size = PixelUtil::getMemorySize(width, height, depth, mFormat);
-				switch(mTextureType)
-				{
-					case TEX_TYPE_1D:
-						glCompressedTexImage1DARB(GL_TEXTURE_1D, mip, format, 
-							width, 0, 
-							size, tmpdata);
-						break;
-					case TEX_TYPE_2D:
-						glCompressedTexImage2DARB(GL_TEXTURE_2D, mip, format,
-							width, height, 0, 
-							size, tmpdata);
-						break;
-					case TEX_TYPE_3D:
-						glCompressedTexImage3DARB(GL_TEXTURE_3D, mip, format,
-							width, height, depth, 0, 
-							size, tmpdata);
-						break;
-					case TEX_TYPE_CUBE_MAP:
-						for(int face=0; face<6; face++) {
-							glCompressedTexImage2DARB(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mip, format,
-								width, height, 0, 
-								size, tmpdata);
-						}
-						break;
-				};
-				if(width>1)		width = width/2;
-				if(height>1)	height = height/2;
-				if(depth>1)		depth = depth/2;
-			}
-			delete [] tmpdata;
+			if((mUsage & TU_RENDERTARGET) != 0)
+				CM_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a render target.");
+
+			glFormat = GLPixelUtil::getBaseFormatFromCompressedInternalFormat(mFormat);
+		}
+
+		if((mUsage & TU_RENDERTARGET) != 0 && mTextureType == TEX_TYPE_2D && mFSAA > 0)
+		{
+			glTexImage2DMultisample(GL_TEXTURE_2D, mFSAA, format,
+				width, height, GL_FALSE);
 		}
 		else
 		{
@@ -240,35 +220,35 @@ namespace CamelotEngine {
 				// Normal formats
 				switch(mTextureType)
 				{
-					case TEX_TYPE_1D:
-						glTexImage1D(GL_TEXTURE_1D, mip, format,
-							width, 0, 
-							GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	
-						break;
-					case TEX_TYPE_2D:
-						glTexImage2D(GL_TEXTURE_2D, mip, format,
-							width, height, 0, 
-							GL_RGBA, GL_UNSIGNED_BYTE, 0);
-						break;
-					case TEX_TYPE_3D:
-						glTexImage3D(GL_TEXTURE_3D, mip, format,
-							width, height, depth, 0, 
-							GL_RGBA, GL_UNSIGNED_BYTE, 0);
-						break;
-					case TEX_TYPE_CUBE_MAP:
-						for(int face=0; face<6; face++) {
-							glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mip, format,
-								width, height, 0, 
-								GL_RGBA, GL_UNSIGNED_BYTE, 0);
-						}
-						break;
+				case TEX_TYPE_1D:
+					glTexImage1D(GL_TEXTURE_1D, mip, format,
+						width, 0, 
+						GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+					break;
+				case TEX_TYPE_2D:
+					glTexImage2D(GL_TEXTURE_2D, mip, format,
+						width, height, 0, 
+						GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+					break;
+				case TEX_TYPE_3D:
+					glTexImage3D(GL_TEXTURE_3D, mip, format,
+						width, height, depth, 0, 
+						GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+					break;
+				case TEX_TYPE_CUBE_MAP:
+					for(int face=0; face<6; face++) {
+						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mip, format,
+							width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+					}
+					break;
 				};
 				if(width>1)		width = width/2;
 				if(height>1)	height = height/2;
 				if(depth>1)		depth = depth/2;
 			}
 		}
+
 		createSurfaceList();
 		// Get final internal format
 		mFormat = getBuffer(0,0)->getFormat();
@@ -288,7 +268,7 @@ namespace CamelotEngine {
 		{
 			for(UINT32 mip=0; mip<=getNumMipmaps(); mip++)
 			{
-                GLHardwarePixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget_internal(), mTextureID, face, mip,
+                GLHardwarePixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget(), mTextureID, face, mip,
 						static_cast<HardwareBuffer::Usage>(mUsage), false, mHwGamma, mFSAA);
 				mSurfaceList.push_back(HardwarePixelBufferPtr(buf));
                 

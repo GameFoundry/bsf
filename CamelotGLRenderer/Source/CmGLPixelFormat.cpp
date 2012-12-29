@@ -180,6 +180,31 @@ namespace CamelotEngine  {
                 return 0;
         }
     }
+
+	GLenum GLPixelUtil::getBaseFormatFromCompressedInternalFormat(GLenum internalFormat)
+	{
+		 switch(internalFormat) 
+		 {
+		 case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT:
+		 case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+		 case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT:
+		 case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+		 case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT:
+		 case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+			 return GL_RGBA;
+		 case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+		 case GL_COMPRESSED_SRGB_S3TC_DXT1_EXT:
+			 return GL_RGB;
+		 case GL_COMPRESSED_RED_RGTC1:
+		 case GL_COMPRESSED_SIGNED_RED_RGTC1:
+			 return GL_RED;
+		 case GL_COMPRESSED_RG_RGTC2:
+		 case GL_COMPRESSED_SIGNED_RG_RGTC2:
+			 return GL_RG;
+		 }
+
+		 return GL_RGBA;
+	}
     
     GLenum GLPixelUtil::getGLInternalFormat(PixelFormat mFormat, bool hwGamma)
     {

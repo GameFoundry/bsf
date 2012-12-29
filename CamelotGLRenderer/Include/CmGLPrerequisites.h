@@ -42,6 +42,9 @@ namespace CamelotEngine {
     class GLHardwarePixelBuffer;
     class GLRenderBuffer;
 
+	typedef std::shared_ptr<GLHardwarePixelBuffer> GLHardwarePixelBufferPtr;
+	typedef std::shared_ptr<GLRenderBuffer> GLRenderBufferPtr;
+
 	enum TypeID_D3D9
 	{
 		TID_GL_GLSLProgram = 11000

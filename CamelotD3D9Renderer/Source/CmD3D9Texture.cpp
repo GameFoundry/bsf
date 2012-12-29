@@ -1281,34 +1281,6 @@ namespace CamelotEngine
 			return;
 		}
 	}    
-	//---------------------------------------------------------------------
-	void D3D9RenderTexture::swapBuffers(bool waitForVSync /* = true */)
-	{
-		// Only needed if we have to blit from AA surface
-		if (mFSAA > 0)
-		{
-			D3D9DeviceManager* deviceManager = D3D9RenderSystem::getDeviceManager();     					
-			D3D9HardwarePixelBuffer* buf = static_cast<D3D9HardwarePixelBuffer*>(mBuffer);
-
-			for (UINT i=0; i < deviceManager->getDeviceCount(); ++i)
-			{
-				D3D9Device* device = deviceManager->getDevice(i);
-				 				
-				if (device->isDeviceLost() == false)
-				{
-					IDirect3DDevice9* d3d9Device = device->getD3D9Device();
-
-					HRESULT hr = d3d9Device->StretchRect(buf->getFSAASurface(d3d9Device), 0, 
-						buf->getSurface(d3d9Device), 0, D3DTEXF_NONE);
-
-					if (FAILED(hr))
-					{
-						CM_EXCEPT(InternalErrorException, "Unable to copy AA buffer to final buffer: " + String(DXGetErrorDescription(hr)));
-					}
-				}								
-			}																		
-		}			
-	}	
 }
 
 #undef THROW_IF_NOT_RENDER_THREAD

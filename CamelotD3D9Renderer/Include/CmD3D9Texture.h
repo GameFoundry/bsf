@@ -208,10 +208,6 @@ namespace CamelotEngine {
 		virtual void getCustomAttribute_internal( const String& name, void *pData );
 
 		bool requiresTextureFlipping() const { return false; }
-
-		/// Override needed to deal with FSAA
-		void swapBuffers(bool waitForVSync = true);
-
 	protected:
 		D3D9HardwarePixelBuffer* mBuffer;
 

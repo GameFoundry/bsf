@@ -359,7 +359,7 @@ namespace CamelotEngine {
 			if (tex)
 			{
 				// note used
-				mTextureTypes[stage] = tex->getGLTextureTarget_internal();
+				mTextureTypes[stage] = tex->getGLTextureTarget();
 			}
 			else
 				// assume 2D
@@ -379,7 +379,7 @@ namespace CamelotEngine {
 			}
 
 			if(tex)
-				glBindTexture( mTextureTypes[stage], tex->getGLID_internal() );
+				glBindTexture( mTextureTypes[stage], tex->getGLID() );
 			else
 			{
 				glBindTexture( mTextureTypes[stage], static_cast<GLTextureManager*>(&TextureManager::instance())->getWarningTextureID() );
@@ -524,10 +524,6 @@ namespace CamelotEngine {
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		// Unbind frame buffer object
-		if(mActiveRenderTarget)
-			GLRTTManager::instancePtr()->unbind(mActiveRenderTarget);
-
 		mActiveRenderTarget = target;
 
 		// Switch context if different from current one
@@ -538,8 +534,13 @@ namespace CamelotEngine {
 			switchContext(newContext);
 		}
 
-		// Bind frame buffer object
-		GLRTTManager::instancePtr()->bind(target);
+		GLFrameBufferObject *fbo = 0;
+		target->getCustomAttribute_internal("FBO", &fbo);
+		if(fbo)
+			fbo->bind();
+		else
+			// Old style context (window/pbuffer) or copying render texture
+			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
 		if (GLEW_EXT_framebuffer_sRGB)
 		{
@@ -1975,7 +1976,7 @@ namespace CamelotEngine {
 			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
 			{
 				// Create FBO manager
-				GLRTTManager::startUp(new GLRTTManager(false));
+				GLRTTManager::startUp(new GLRTTManager());
 			}
 		}
 		else

@@ -9,6 +9,11 @@ namespace CamelotEngine
 	{
 	public:
 		GLDepthStencilBuffer(UINT32 bitDepth, UINT32 width, UINT32 height, UINT32 fsaa, const String &fsaaHint);
-		// TODO - Add GL specific implementation
+		~GLDepthStencilBuffer();
+
+		GLRenderBufferPtr getGLRenderBuffer() const { return mDepthStencilRenderBuffer; }
+
+	protected:
+		GLRenderBufferPtr mDepthStencilRenderBuffer;
 	};
 }

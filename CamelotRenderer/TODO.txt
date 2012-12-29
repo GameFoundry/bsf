@@ -17,6 +17,12 @@
 
 
 /////
+
+Make separate DepthStencilBuffer object for OpenGL and assign it in GLRenderTexture & GLFrameBufferObject. Right now a new one is created or taken from a pool
+Add support for MultiRenderTexture
+Enhance TextureManager so it creates RenderTextures and MultiRenderTextures
+Create DX9 and OpenGL RenderTextures
+
 waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 Drop OpenGL support for low level shaders? (See if cg can translate to GLSL)
 
@@ -137,6 +143,7 @@ Low priority TODO:
      - setPreprocessorDefines, setColumnMajorMatrices, setOptimisationLevel
  - OpenGL seems to generate a mip pyramid regardless of the setting (in createInternalResourcesImpl)
  - DepthStencilBuffer & Texture should possibly share the same interface instead of being two separate classes? I'll need to assign DepthStencil to shaders sometimes. Not possible in DX9 but possible in DX11.
+ - CPU reading or writing to a render texture in OpenGL is not supported. (CmGLHardwarePixelBuffer::upload/download). 
 
 Optional TODO:
  - Add precompiled headers to all projects
@@ -147,6 +154,7 @@ Optional TODO:
  - Serializable callbacks can't be null otherwise compiler complains
  - FBX importer can be greatly sped up by implementing a better allocator
  - Extend texture copy so it accepts different subregions & subresources (currently only entire resource can be copied)
+ - Need a way to convert MSAA render texture into a normal render texture
 
  -----------------------------------------------------------------------------------------------
 

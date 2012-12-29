@@ -43,59 +43,26 @@ namespace CamelotEngine
     */
     class CM_RSGL_EXPORT GLRenderTexture: public RenderTexture
     {
-    public:
-        GLRenderTexture(GLRTTManager* manager, const String &name, const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
-        virtual ~GLRenderTexture();
-        
-        bool requiresTextureFlipping() const { return true; }
+	public:
+		GLRenderTexture();
+		virtual ~GLRenderTexture();
 
+		bool requiresTextureFlipping() const { return false; }
 		virtual void getCustomAttribute_internal(const String& name, void* pData);
 
-		virtual void swapBuffers(bool waitForVSync = true);
 	protected:
-		GLFrameBufferObject mFB;
+		GLFrameBufferObject* mFB;
+
+		void createInternalResourcesImpl();
     };
-    
+
     /** Manager/factory for RenderTextures.
     */
     class CM_RSGL_EXPORT GLRTTManager : public Module<GLRTTManager>
     {
     public:
-        GLRTTManager(bool atimode);
+        GLRTTManager();
 		~GLRTTManager();
-        
-        /** Bind a certain render target if it is a FBO. If it is not a FBO, bind the
-            main frame buffer.
-        */
-        void bind(RenderTarget *target);
-        
-        /** Unbind a certain render target. No-op for FBOs.
-        */
-        void unbind(RenderTarget *target) {};
-        
-        /** Get best depth and stencil supported for given internalFormat
-        */
-        void getBestDepthStencil(GLenum internalFormat, GLenum *depthFormat, GLenum *stencilFormat);
-        
-        /** Create a texture rendertarget object
-        */
-        virtual GLRenderTexture *createRenderTexture(const String &name, 
-			const GLSurfaceDesc &target, bool writeGamma, UINT32 fsaa);
-
-		/** Create a multi render target 
-		*/
-		virtual MultiRenderTarget* createMultiRenderTarget(const String & name);
-        
-        /** Request a render buffer. If format is GL_NONE, return a zero buffer.
-        */
-        GLSurfaceDesc requestRenderBuffer(GLenum format, UINT32 width, UINT32 height, UINT32 fsaa);
-        /** Request the specify render buffer in case shared somewhere. Ignore
-            silently if surface.buffer is 0.
-        */
-        void requestRenderBuffer(const GLSurfaceDesc &surface);
-        /** Release a render buffer. Ignore silently if surface.buffer is 0.
-        */
-        void releaseRenderBuffer(const GLSurfaceDesc &surface);
         
         /** Check if a certain format is usable as FBO rendertarget format
         */
@@ -128,72 +95,15 @@ namespace CamelotEngine
         /** Properties for all internal formats defined by the engine
         */
         FormatProperties mProps[PF_COUNT];
-        
-        /** Stencil and depth renderbuffers of the same format are re-used between surfaces of the 
-            same size and format. This can save a lot of memory when a large amount of rendertargets
-            are used.
-        */
-        struct RBFormat
-        {
-            RBFormat(GLenum inFormat, UINT32 inWidth, UINT32 inHeight, UINT32 fsaa):
-                format(inFormat), width(inWidth), height(inHeight), samples(fsaa)
-            {}
-            GLenum format;
-            UINT32 width;
-            UINT32 height;
-			UINT32 samples;
-            // Overloaded comparison operator for usage in map
-            bool operator < (const RBFormat &other) const
-            {
-                if(format < other.format)
-                {
-                    return true;
-                }
-                else if(format == other.format)
-                {
-                    if(width < other.width)
-                    {
-                        return true;
-                    }
-                    else if(width == other.width)
-                    {
-                        if(height < other.height)
-                            return true;
-						else if (height == other.height)
-						{
-							if (samples < other.samples)
-								return true;
-						}
-                    }
-                }
-                return false;
-            }
-        };
-        struct RBRef
-        {
-            RBRef(){}
-            RBRef(GLRenderBuffer *inBuffer):
-                buffer(inBuffer), refcount(1)
-            { }
-            GLRenderBuffer *buffer;
-            size_t refcount;
-        };
-        typedef map<RBFormat, RBRef>::type RenderBufferMap;
-        RenderBufferMap mRenderBufferMap;
-        // map(format, sizex, sizey) -> [GLSurface*,refcount]
-        
+
         /** Temporary FBO identifier
          */
         GLuint mTempFBO;
-        
-		/// Buggy ATI driver?
-		bool mATIMode;
         
         /** Detect allowed FBO formats */
         void detectFBOFormats();
         GLuint _tryFormat(GLenum depthFormat, GLenum stencilFormat);
         bool _tryPackedFormat(GLenum packedFormat);
-       
     };
 }
 

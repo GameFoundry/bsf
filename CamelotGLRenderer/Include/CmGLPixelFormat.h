@@ -71,6 +71,13 @@ namespace CamelotEngine {
 			@remarks It is valid for this function to always return PF_A8R8G8B8.
 		*/
 		static PixelFormat getClosestEngineFormat(GLenum fmt);
+
+		/**
+		 * @brief	Gets OpenGL format based on a compressed OpenGL internal format.
+		 * 			e.g. GL_COMPRESSED_RGBA_S3TC_DXT1_EXT will return GL_RGBA
+		 *
+		 */
+		static GLenum getBaseFormatFromCompressedInternalFormat(GLenum internalFormat);
 	
 		/** Returns the maximum number of Mipmaps that can be generated until we reach
 			the mininum format possible. This does not count the base level.

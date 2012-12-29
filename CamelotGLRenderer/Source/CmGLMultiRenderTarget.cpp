@@ -35,7 +35,7 @@ namespace CamelotEngine {
 
 	GLMultiRenderTarget::GLMultiRenderTarget(GLRTTManager *manager, const String &name):
 		MultiRenderTarget(name),
-		fbo(manager, 0 /* TODO: multisampling on MRTs? */)
+		fbo(0 /* TODO: multisampling on MRTs? */)
 	{
 	}
 

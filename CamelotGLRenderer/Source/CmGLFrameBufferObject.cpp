@@ -31,11 +31,10 @@ THE SOFTWARE.
 #include "CmGLHardwarePixelBuffer.h"
 #include "CmGLRenderTexture.h"
 
-namespace CamelotEngine {
-
-//-----------------------------------------------------------------------------
-    GLFrameBufferObject::GLFrameBufferObject(GLRTTManager *manager, UINT32 fsaa):
-        mManager(manager), mNumSamples(fsaa)
+namespace CamelotEngine 
+{
+    GLFrameBufferObject::GLFrameBufferObject(UINT32 fsaa)
+		:mNumSamples(fsaa)
     {
         /// Generate framebuffer object
         glGenFramebuffersEXT(1, &mFB);
@@ -53,102 +52,90 @@ namespace CamelotEngine {
 		{
 			mNumSamples = 0;
 		}
-		// will we need a second FBO to do multisampling?
-		if (mNumSamples)
-		{
-			glGenFramebuffersEXT(1, &mMultisampleFB);
-		}
-		else
-		{
-			mMultisampleFB = 0;
-		}
+
         /// Initialise state
-        mDepth.buffer=0;
-        mStencil.buffer=0;
-        for(UINT32 x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
-        {
-            mColour[x].buffer=0;
-        }
+        for(UINT32 x = 0; x < CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+            mColor[x].buffer = nullptr;
     }
+
     GLFrameBufferObject::~GLFrameBufferObject()
     {
-        mManager->releaseRenderBuffer(mDepth);
-        mManager->releaseRenderBuffer(mStencil);
-		mManager->releaseRenderBuffer(mMultisampleColourBuffer);
         /// Delete framebuffer object
         glDeleteFramebuffersEXT(1, &mFB);        
-		if (mMultisampleFB)
-			glDeleteFramebuffersEXT(1, &mMultisampleFB);
-
     }
+
     void GLFrameBufferObject::bindSurface(UINT32 attachment, const GLSurfaceDesc &target)
     {
         assert(attachment < CM_MAX_MULTIPLE_RENDER_TARGETS);
-        mColour[attachment] = target;
+        mColor[attachment] = target;
+
 		// Re-initialise
-		if(mColour[0].buffer)
+		if(mColor[0].buffer)
 			initialise();
     }
+
     void GLFrameBufferObject::unbindSurface(UINT32 attachment)
     {
         assert(attachment < CM_MAX_MULTIPLE_RENDER_TARGETS);
-        mColour[attachment].buffer = 0;
+        mColor[attachment].buffer = nullptr;
+
 		// Re-initialise if buffer 0 still bound
-		if(mColour[0].buffer)
+		if(mColor[0].buffer)
 		{
 			initialise();
 		}
     }
+
+	void GLFrameBufferObject::bindDepthStencil(GLHardwarePixelBufferPtr depthStencilBuffer)
+	{
+		mDepthStencilBuffer = depthStencilBuffer;
+	}
+
+	void GLFrameBufferObject::unbindDepthStencil()
+	{
+		mDepthStencilBuffer = nullptr;
+	}
+
     void GLFrameBufferObject::initialise()
     {
-		// Release depth and stencil, if they were bound
-        mManager->releaseRenderBuffer(mDepth);
-        mManager->releaseRenderBuffer(mStencil);
-		mManager->releaseRenderBuffer(mMultisampleColourBuffer);
         /// First buffer must be bound
-        if(!mColour[0].buffer)
-        {
-			CM_EXCEPT(InvalidParametersException, 
-            "Attachment 0 must have surface attached");
-        }
-
-		// If we're doing multisampling, then we need another FBO which contains a
-		// renderbuffer which is set up to multisample, and we'll blit it to the final 
-		// FBO afterwards to perform the multisample resolve. In that case, the 
-		// mMultisampleFB is bound during rendering and is the one with a depth/stencil
+        if(!mColor[0].buffer)
+			CM_EXCEPT(InvalidParametersException, "Attachment 0 must have surface attached");
 
         /// Store basic stats
-        UINT32 width = mColour[0].buffer->getWidth();
-        UINT32 height = mColour[0].buffer->getHeight();
-        GLuint glformat = mColour[0].buffer->getGLFormat();
-        PixelFormat format = mColour[0].buffer->getFormat();
+        UINT32 width = mColor[0].buffer->getWidth();
+        UINT32 height = mColor[0].buffer->getHeight();
+        GLuint glformat = mColor[0].buffer->getGLFormat();
+        PixelFormat format = mColor[0].buffer->getFormat();
         UINT16 maxSupportedMRTs = CamelotEngine::RenderSystem::instancePtr()->getCapabilities()->getNumMultiRenderTargets();
 
 		// Bind simple buffer to add colour attachments
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mFB);
 
         /// Bind all attachment points to frame buffer
-        for(UINT16 x=0; x<maxSupportedMRTs; ++x)
+        for(UINT16 x = 0; x < maxSupportedMRTs; ++x)
         {
-            if(mColour[x].buffer)
+            if(mColor[x].buffer)
             {
-                if(mColour[x].buffer->getWidth() != width || mColour[x].buffer->getHeight() != height)
+                if(mColor[x].buffer->getWidth() != width || mColor[x].buffer->getHeight() != height)
                 {
                     StringStream ss;
                     ss << "Attachment " << x << " has incompatible size ";
-                    ss << mColour[x].buffer->getWidth() << "x" << mColour[x].buffer->getHeight();
+                    ss << mColor[x].buffer->getWidth() << "x" << mColor[x].buffer->getHeight();
                     ss << ". It must be of the same as the size of surface 0, ";
                     ss << width << "x" << height;
                     ss << ".";
                     CM_EXCEPT(InvalidParametersException, ss.str());
                 }
-                if(mColour[x].buffer->getGLFormat() != glformat)
+
+                if(mColor[x].buffer->getGLFormat() != glformat)
                 {
                     StringStream ss;
                     ss << "Attachment " << x << " has incompatible format.";
                     CM_EXCEPT(InvalidParametersException, ss.str());
                 }
-	            mColour[x].buffer->bindToFramebuffer(GL_COLOR_ATTACHMENT0_EXT+x, mColour[x].zoffset);
+
+	            mColor[x].buffer->bindToFramebuffer(GL_COLOR_ATTACHMENT0_EXT+x, mColor[x].zoffset);
             }
             else
             {
@@ -158,63 +145,7 @@ namespace CamelotEngine {
             }
         }
 
-		// Now deal with depth / stencil
-		if (mMultisampleFB)
-		{
-			// Bind multisample buffer
-			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mMultisampleFB);
-
-			// Create AA render buffer (colour)
-			// note, this can be shared too because we blit it to the final FBO
-			// right after the render is finished
-			mMultisampleColourBuffer = mManager->requestRenderBuffer(glformat, width, height, mNumSamples);
-
-			// Attach it, because we won't be attaching below and non-multisample has
-			// actually been attached to other FBO
-			mMultisampleColourBuffer.buffer->bindToFramebuffer(GL_COLOR_ATTACHMENT0_EXT, 
-				mMultisampleColourBuffer.zoffset);
-
-			// depth & stencil will be dealt with below
-
-		}
-
-        /// Find suitable depth and stencil format that is compatible with colour format
-        GLenum depthFormat, stencilFormat;
-        mManager->getBestDepthStencil(format, &depthFormat, &stencilFormat);
-        
-        /// Request surfaces
-        mDepth = mManager->requestRenderBuffer(depthFormat, width, height, mNumSamples);
-		if (depthFormat == GL_DEPTH24_STENCIL8_EXT)
-		{
-			// bind same buffer to depth and stencil attachments
-            mManager->requestRenderBuffer(mDepth);
-			mStencil = mDepth;
-		}
-		else
-		{
-			// separate stencil
-			mStencil = mManager->requestRenderBuffer(stencilFormat, width, height, mNumSamples);
-		}
-        
-        /// Attach/detach surfaces
-        if(mDepth.buffer)
-        {
-            mDepth.buffer->bindToFramebuffer(GL_DEPTH_ATTACHMENT_EXT, mDepth.zoffset);
-        }
-        else
-        {
-            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-                GL_RENDERBUFFER_EXT, 0);
-        }
-        if(mStencil.buffer)
-        {
-            mStencil.buffer->bindToFramebuffer(GL_STENCIL_ATTACHMENT_EXT, mStencil.zoffset);
-        }
-        else
-        {
-            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
-                GL_RENDERBUFFER_EXT, 0);
-        }
+		mDepthStencilBuffer->bindToFramebuffer(GL_DEPTH_STENCIL_ATTACHMENT, 0);
 
 		/// Do glDrawBuffer calls
 		GLenum bufs[CM_MAX_MULTIPLE_RENDER_TARGETS];
@@ -222,7 +153,7 @@ namespace CamelotEngine {
 		for(UINT32 x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
 		{
 			// Fill attached colour buffers
-			if(mColour[x].buffer)
+			if(mColor[x].buffer)
 			{
 				bufs[x] = GL_COLOR_ATTACHMENT0_EXT + x;
 				// Keep highest used buffer + 1
@@ -233,6 +164,7 @@ namespace CamelotEngine {
 				bufs[x] = GL_NONE;
 			}
 		}
+
 		if(glDrawBuffers)
 		{
 			/// Drawbuffer extension supported, use it
@@ -243,17 +175,10 @@ namespace CamelotEngine {
 			/// In this case, the capabilities will not show more than 1 simultaneaous render target.
 			glDrawBuffer(bufs[0]);
 		}
-		if (mMultisampleFB)
-		{
-			// we need a read buffer because we'll be blitting to mFB
-			glReadBuffer(bufs[0]);
-		}
-		else
-		{
-			/// No read buffer, by default, if we want to read anyway we must not forget to set this.
-			glReadBuffer(GL_NONE);
-		}
-        
+
+		/// No read buffer, by default, if we want to read anyway we must not forget to set this.
+		glReadBuffer(GL_NONE);
+
         /// Check status
         GLuint status;
         status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
@@ -273,44 +198,29 @@ namespace CamelotEngine {
             CM_EXCEPT(InvalidParametersException, 
             "Framebuffer incomplete or other FBO status error");
         }
-        
     }
+
     void GLFrameBufferObject::bind()
     {
         /// Bind it to FBO
-		if (mMultisampleFB)
-			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mMultisampleFB);
-		else
-			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mFB);
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mFB);
     }
-
-	void GLFrameBufferObject::swapBuffers()
-	{
-		if (mMultisampleFB)
-		{
-			// blit from multisample buffer to final buffer, triggers resolve
-			UINT32 width = mColour[0].buffer->getWidth();
-			UINT32 height = mColour[0].buffer->getHeight();
-			glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, mMultisampleFB);
-			glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, mFB);
-			glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-		}
-	}
 
     UINT32 GLFrameBufferObject::getWidth()
     {
-        assert(mColour[0].buffer);
-        return mColour[0].buffer->getWidth();
+        assert(mColor[0].buffer);
+        return mColor[0].buffer->getWidth();
     }
+
     UINT32 GLFrameBufferObject::getHeight()
     {
-        assert(mColour[0].buffer);
-        return mColour[0].buffer->getHeight();
+        assert(mColor[0].buffer);
+        return mColor[0].buffer->getHeight();
     }
+
     PixelFormat GLFrameBufferObject::getFormat()
     {
-        assert(mColour[0].buffer);
-        return mColour[0].buffer->getFormat();
+        assert(mColor[0].buffer);
+        return mColor[0].buffer->getFormat();
     }
 }

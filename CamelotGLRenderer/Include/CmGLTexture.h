@@ -43,11 +43,25 @@ namespace CamelotEngine {
         virtual ~GLTexture();      
 
         // Takes the OGRE texture type (1d/2d/3d/cube) and returns the appropriate GL one
-        GLenum getGLTextureTarget_internal(void) const;
+        GLenum getGLTextureTarget(void) const;
 
-        GLuint getGLID_internal() const;
+        GLuint getGLID() const;
 		
 		void getCustomAttribute_internal(const String& name, void* pData);
+
+		/** Return hardware pixel buffer for a surface. This buffer can then
+			be used to copy data from and to a particular level of the texture.
+			@param face 	Face number, in case of a cubemap texture. Must be 0
+							for other types of textures.
+                            For cubemaps, this is one of 
+                            +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
+			@param mipmap	Mipmap level. This goes from 0 for the first, largest
+							mipmap level to getNumMipmaps()-1 for the smallest.
+			@returns	A shared pointer to a hardware pixel buffer
+			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
+						Do not use it after the lifetime of the containing texture.
+		*/
+		HardwarePixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
 
     protected:
 		friend class GLTextureManager;
@@ -73,20 +87,6 @@ namespace CamelotEngine {
 			actually allocate the buffer
 		*/
 		void createSurfaceList();
-
-		/** Return hardware pixel buffer for a surface. This buffer can then
-			be used to copy data from and to a particular level of the texture.
-			@param face 	Face number, in case of a cubemap texture. Must be 0
-							for other types of textures.
-                            For cubemaps, this is one of 
-                            +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
-			@param mipmap	Mipmap level. This goes from 0 for the first, largest
-							mipmap level to getNumMipmaps()-1 for the smallest.
-			@returns	A shared pointer to a hardware pixel buffer
-			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
-						Do not use it after the lifetime of the containing texture.
-		*/
-		HardwarePixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
 
     private:
         GLuint mTextureID;

@@ -28,7 +28,9 @@ THE SOFTWARE.
 #ifndef __OgreGLFBO_H__
 #define __OgreGLFBO_H__
 
+#include "CmGLPrerequisites.h"
 #include "CmGLContext.h"
+#include "CmGLHardwarePixelBuffer.h"
 #include "CmPixelData.h"
 
 namespace CamelotEngine 
@@ -38,7 +40,7 @@ namespace CamelotEngine
     struct CM_RSGL_EXPORT GLSurfaceDesc
     {
     public:
-        GLHardwarePixelBuffer *buffer;
+        GLHardwarePixelBufferPtr buffer;
         UINT32 zoffset;
 		UINT32 numSamples;
 
@@ -50,47 +52,48 @@ namespace CamelotEngine
     class CM_RSGL_EXPORT GLFrameBufferObject
     {
     public:
-        GLFrameBufferObject(GLRTTManager *manager, UINT32 fsaa);
+        GLFrameBufferObject(UINT32 fsaa);
         ~GLFrameBufferObject();
-        //void bindSurface(size_t attachment, RenderTarget *target);
+
         /** Bind a surface to a certain attachment point.
             attachment: 0..CM_MAX_MULTIPLE_RENDER_TARGETS-1
         */
         void bindSurface(UINT32 attachment, const GLSurfaceDesc &target);
+
         /** Unbind attachment
         */
         void unbindSurface(UINT32 attachment);
+
+		/**
+		 * @brief	Bind depth stencil buffer.
+		 */
+		void bindDepthStencil(GLHardwarePixelBufferPtr depthStencilBuffer);
+
+		/**
+		 * @brief	Unbinds depth stencil buffer.
+		 */
+		void unbindDepthStencil();
         
         /** Bind FrameBufferObject
         */
         void bind();
 
-		/** Swap buffers - only useful when using multisample buffers.
-		*/
-		void swapBuffers();
-		
 		/// Get the GL id for the FBO
 		GLuint getGLFBOID() const { return mFB; }
-		/// Get the GL id for the multisample FBO
-		GLuint getGLMultisampleFBOID() const { return mMultisampleFB; }
-        
+
         /// Accessors
         UINT32 getWidth();
         UINT32 getHeight();
         PixelFormat getFormat();
         
-		const GLSurfaceDesc &getSurface(UINT32 attachment) { return mColour[attachment]; }
+		const GLSurfaceDesc &getSurface(UINT32 attachment) { return mColor[attachment]; }
     private:
-        GLRTTManager *mManager;
 		GLsizei mNumSamples;
         GLuint mFB;
-		GLuint mMultisampleFB;
-		GLSurfaceDesc mMultisampleColourBuffer;
-        GLSurfaceDesc mDepth;
-        GLSurfaceDesc mStencil;
-        // Arbitrary number of texture surfaces
-        GLSurfaceDesc mColour[CM_MAX_MULTIPLE_RENDER_TARGETS];
 
+        GLHardwarePixelBufferPtr mDepthStencilBuffer;
+        // Arbitrary number of texture surfaces
+        GLSurfaceDesc mColor[CM_MAX_MULTIPLE_RENDER_TARGETS];
 
 		/** Initialise object (find suitable depth and stencil format).
             Must be called every time the bindings change.
