@@ -61,6 +61,20 @@ namespace CamelotEngine {
 		/// Will this texture need to be in the default pool?
 		bool useDefaultPool();
 
+		/** Return hardware pixel buffer for a surface. This buffer can then
+			be used to copy data from and to a particular level of the texture.
+			@param face 	Face number, in case of a cubemap texture. Must be 0
+							for other types of textures.
+                            For cubemaps, this is one of 
+                            +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
+			@param mipmap	Mipmap level. This goes from 0 for the first, largest
+							mipmap level to getNumMipmaps()-1 for the smallest.
+			@returns	A shared pointer to a hardware pixel buffer
+			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
+						Do not use it after the lifetime of the containing texture.
+		*/
+		HardwarePixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
+
 		// Called immediately after the Direct3D device has been created.
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
 
@@ -160,20 +174,6 @@ namespace CamelotEngine {
 		/// internal method, the cube map face name for the spec. face index
 		String _getCubeFaceName(unsigned char face) const
 		{ assert(face < 6); return mCubeFaceNames[face]; }
-		
-		/** Return hardware pixel buffer for a surface. This buffer can then
-			be used to copy data from and to a particular level of the texture.
-			@param face 	Face number, in case of a cubemap texture. Must be 0
-							for other types of textures.
-                            For cubemaps, this is one of 
-                            +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
-			@param mipmap	Mipmap level. This goes from 0 for the first, largest
-							mipmap level to getNumMipmaps()-1 for the smallest.
-			@returns	A shared pointer to a hardware pixel buffer
-			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
-						Do not use it after the lifetime of the containing texture.
-		*/
-		HardwarePixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
 
 		/// internal method, create D3D9HardwarePixelBuffers for every face and
 		/// mipmap level. This method must be called after the D3D texture object was created
@@ -193,26 +193,6 @@ namespace CamelotEngine {
 
 		void determinePool();
     };
-
-	typedef std::shared_ptr<D3D9Texture> D3D9TexturePtr;
-
-    /// RenderTexture implementation for D3D9
-    class CM_D3D9_EXPORT D3D9RenderTexture : public RenderTexture
-    {
-    public:
-		D3D9RenderTexture(const String &name, D3D9HardwarePixelBuffer *buffer, bool writeGamma, UINT32 fsaa);
-        ~D3D9RenderTexture() {}
-
-		virtual void update(bool swap);
-
-		virtual void getCustomAttribute_internal( const String& name, void *pData );
-
-		bool requiresTextureFlipping() const { return false; }
-	protected:
-		D3D9HardwarePixelBuffer* mBuffer;
-
-	};
-
 }
 
 #endif

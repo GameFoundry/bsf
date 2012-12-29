@@ -118,6 +118,10 @@ namespace CamelotEngine
 		static IDirect3DDevice9* getResourceCreationDevice(UINT index);
 		static IDirect3DDevice9* getActiveD3D9Device();
 
+		/// Take in some requested FSAA settings and output supported D3D settings
+		void determineFSAASettings(IDirect3DDevice9* d3d9Device, UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
+			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
+
 	private:
 		/// Direct3D
 		IDirect3D9*	 mpD3D;		
@@ -181,7 +185,6 @@ namespace CamelotEngine
 
 		size_t mLastVertexSourceCount;
 
-
         /// Internal method for populating the capabilities structure
 		virtual RenderSystemCapabilities* createRenderSystemCapabilities() const;
 		RenderSystemCapabilities* updateRenderSystemCapabilities(D3D9RenderWindow* renderWindow);
@@ -192,46 +195,10 @@ namespace CamelotEngine
         void convertVertexShaderCaps(RenderSystemCapabilities* rsc) const;
         void convertPixelShaderCaps(RenderSystemCapabilities* rsc) const;
 		bool checkVertexTextureFormats(D3D9RenderWindow* renderWindow) const;
-		
-        HashMap<IDirect3DDevice9*, unsigned short> mCurrentLights;
-        /// Saved last view matrix
-        Matrix4 mViewMatrix;
-
-		D3DXMATRIX mDxViewMat, mDxProjMat, mDxWorldMat;
 	
 		typedef vector<D3D9RenderWindow*>::type D3D9RenderWindowList;
 		// List of additional windows after the first (swap chains)
 		D3D9RenderWindowList mRenderWindows;
-		
-		/** Mapping of texture format -> DepthStencil. Used as cache by _getDepthStencilFormatFor
-		*/
-		typedef HashMap<unsigned int, D3DFORMAT> DepthStencilHash;
-		DepthStencilHash mDepthStencilHash;
-
-		/** Mapping of depthstencil format -> depthstencil buffer
-			Keep one depthstencil buffer around for every format that is used, it must be large
-			enough to hold the largest rendering target.
-			This is used as cache by _getDepthStencilFor.
-		*/
-		struct ZBufferIdentifier
-		{
-			IDirect3DDevice9* device;
-			D3DFORMAT format;
-			D3DMULTISAMPLE_TYPE multisampleType;
-		};
-		struct ZBufferRef
-		{
-			IDirect3DSurface9 *surface;
-			size_t width, height;
-		};
-		struct ZBufferIdentifierComparator
-		{
-			bool operator()(const ZBufferIdentifier& z0, const ZBufferIdentifier& z1) const;
-		};
-		
-		typedef deque<ZBufferRef>::type ZBufferRefQueue;
-		typedef map<ZBufferIdentifier, ZBufferRefQueue, ZBufferIdentifierComparator>::type ZBufferHash;
-		ZBufferHash mZBufferHash;		
 
 	protected:
 		// I know that's a lot of friends, but I'd rather have friend classes than exposing the needed methods
@@ -256,34 +223,10 @@ namespace CamelotEngine
 
 		HINSTANCE getInstanceHandle() const { return mhInstance; }
 
-		/**
-			Get the matching Z-Buffer identifier for a certain render target
-		*/
-		ZBufferIdentifier getZBufferIdentifier(RenderTarget* rt);
-
-		/** Check which depthStencil formats can be used with a certain pixel format,
-			and return the best suited.
-		*/
-		D3DFORMAT getDepthStencilFormatFor(D3DFORMAT fmt);
-
-		/** Get a depth stencil surface that is compatible with an internal pixel format and
-			multisample type.
-			@returns A directx surface, or 0 if there is no compatible depthstencil possible.
-		*/
-		IDirect3DSurface9* getDepthStencilFor(D3DFORMAT fmt, D3DMULTISAMPLE_TYPE multisample, DWORD multisample_quality, UINT32 width, UINT32 height);
-
-		/** Clear all cached depth stencil surfaces
-		*/
-		void cleanupDepthStencils(IDirect3DDevice9* d3d9Device);
-
         /** Check whether or not filtering is supported for the precise texture format requested
         with the given usage options.
         */
         bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
-
-		/// Take in some requested FSAA settings and output supported D3D settings
-		void determineFSAASettings(IDirect3DDevice9* d3d9Device, UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
-			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
 
 		/**
 		 * @brief	Called internally by RenderWindowManager whenever a new window is created.
@@ -521,9 +464,6 @@ namespace CamelotEngine
 
 		/// Notify when a device has been reset.
 		void notifyOnDeviceReset(D3D9Device* device);
-		
-		typedef map<RenderTarget*, ZBufferRef>::type TargetDepthStencilMap;
-		TargetDepthStencilMap mCheckedOutTextures;
 	};
 }
 #endif

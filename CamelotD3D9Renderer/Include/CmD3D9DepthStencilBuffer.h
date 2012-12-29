@@ -9,7 +9,10 @@ namespace CamelotEngine
 	{
 	public:
 		D3D9DepthStencilBuffer(UINT32 bitDepth, UINT32 width, UINT32 height, UINT32 fsaa, const String &fsaaHint);
+		~D3D9DepthStencilBuffer();
 
-		// TODO - Add D3D9 specific implementation
+		IDirect3DSurface9* getSurface() const { return mSurface; }
+	protected:
+		IDirect3DSurface9* mSurface;
 	};
 }

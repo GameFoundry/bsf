@@ -168,8 +168,6 @@ namespace CamelotEngine
 
 		mLastVertexSourceCount = 0;
 
-		mCurrentLights.clear();	
-
 		RenderWindow* autoWindow = NULL;
 
 		// Init using current settings
@@ -1083,25 +1081,9 @@ namespace CamelotEngine
 
 		IDirect3DSurface9* pDepth = NULL;
 
-		//Check if we saved a depth buffer for this target
-		TargetDepthStencilMap::iterator savedTexture = mCheckedOutTextures.find(target);
-		if (savedTexture != mCheckedOutTextures.end())
-		{
-			pDepth = savedTexture->second.surface;
-		}
-
 		if (!pDepth)
 			target->getCustomAttribute_internal( "D3DZBUFFER", &pDepth );
-		if (!pDepth)
-		{
-			/// No depth buffer provided, use our own
-			/// Request a depth stencil that is compatible with the format, multisample type and
-			/// dimensions of the render target.
-			D3DSURFACE_DESC srfDesc;
-			if(FAILED(pBack[0]->GetDesc(&srfDesc)))
-				return; // ?
-			pDepth = getDepthStencilFor(srfDesc.Format, srfDesc.MultiSampleType, srfDesc.MultiSampleQuality, srfDesc.Width, srfDesc.Height);
-		}
+		
 		// Bind render targets
 		UINT32 count = mCurrentCapabilities->getNumMultiRenderTargets();
 		for(UINT32 x=0; x<count; ++x)
@@ -2713,137 +2695,6 @@ namespace CamelotEngine
 		return mCurrentCapabilities;
 	}
 	//---------------------------------------------------------------------
-	D3DFORMAT D3D9RenderSystem::getDepthStencilFormatFor(D3DFORMAT fmt)
-	{
-		/// Check if result is cached
-		DepthStencilHash::iterator i = mDepthStencilHash.find((unsigned int)fmt);
-		if(i != mDepthStencilHash.end())
-			return i->second;
-		/// If not, probe with CheckDepthStencilMatch
-		D3DFORMAT dsfmt = D3DFMT_UNKNOWN;
-
-		/// Get description of primary render target
-		D3D9Device* activeDevice = mDeviceManager->getActiveDevice();
-		IDirect3DSurface9* mSurface = activeDevice->getPrimaryWindow()->getRenderSurface();
-		D3DSURFACE_DESC srfDesc;
-
-		if(!FAILED(mSurface->GetDesc(&srfDesc)))
-		{
-			/// Probe all depth stencil formats
-			/// Break on first one that matches
-			for(size_t x=0; x<NDSFORMATS; ++x)
-			{
-				// Verify that the depth format exists
-				if (mpD3D->CheckDeviceFormat(
-					activeDevice->getAdapterNumber(),
-					activeDevice->getDeviceType(),
-					srfDesc.Format,
-					D3DUSAGE_DEPTHSTENCIL,
-					D3DRTYPE_SURFACE,
-					ddDepthStencilFormats[x]) != D3D_OK)
-				{
-					continue;
-				}
-				// Verify that the depth format is compatible
-				if(mpD3D->CheckDepthStencilMatch(
-					activeDevice->getAdapterNumber(),
-					activeDevice->getDeviceType(), 
-					srfDesc.Format,
-					fmt, ddDepthStencilFormats[x]) == D3D_OK)
-				{
-					dsfmt = ddDepthStencilFormats[x];
-					break;
-				}
-			}
-		}
-		/// Cache result
-		mDepthStencilHash[(unsigned int)fmt] = dsfmt;
-		return dsfmt;
-	}
-	IDirect3DSurface9* D3D9RenderSystem::getDepthStencilFor(D3DFORMAT fmt, 
-		D3DMULTISAMPLE_TYPE multisample, DWORD multisample_quality, UINT32 width, UINT32 height)
-	{
-		D3DFORMAT dsfmt = getDepthStencilFormatFor(fmt);
-		if(dsfmt == D3DFMT_UNKNOWN)
-			return 0;
-		IDirect3DSurface9 *surface = 0;
-
-		/// Check if result is cached
-		ZBufferIdentifier zBufferIdentifer;
-
-
-		zBufferIdentifer.format = dsfmt;
-		zBufferIdentifer.multisampleType = multisample;
-		zBufferIdentifer.device = getActiveD3D9Device();
-
-		ZBufferRefQueue& zBuffers = mZBufferHash[zBufferIdentifer];
-
-		if(!zBuffers.empty())
-		{
-			const ZBufferRef& zBuffer = zBuffers.front();
-			/// Check if size is larger or equal
-			if(zBuffer.width >= width && zBuffer.height >= height)
-			{
-				surface = zBuffer.surface;
-			} 
-			else
-			{
-				/// If not, destroy current buffer
-				zBuffer.surface->Release();
-				zBuffers.pop_front();
-			}
-		}
-		if(!surface)
-		{
-			/// If not, create the depthstencil surface
-			HRESULT hr = getActiveD3D9Device()->CreateDepthStencilSurface( 
-				static_cast<UINT>(width), 
-				static_cast<UINT>(height), 
-				dsfmt, 
-				multisample, 
-				multisample_quality, 
-				TRUE,  // discard true or false?
-				&surface, 
-				NULL);
-			if(FAILED(hr))
-			{
-				String msg = DXGetErrorDescription(hr);
-				CM_EXCEPT(InvalidParametersException, "Error CreateDepthStencilSurface : " + msg);
-			}
-			/// And cache it
-			ZBufferRef zb;
-			zb.surface = surface;
-			zb.width = width;
-			zb.height = height;
-			zBuffers.push_front(zb);
-		}
-		return surface;
-	}
-
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::cleanupDepthStencils(IDirect3DDevice9* d3d9Device)
-	{
-		for(ZBufferHash::iterator i = mZBufferHash.begin(); i != mZBufferHash.end();)
-		{
-			/// Release buffer
-			if (i->first.device == d3d9Device)
-			{
-				while (!i->second.empty())
-				{
-					IDirect3DSurface9* surface = i->second.front().surface;
-					surface->Release();
-					i->second.pop_front();
-				}
-				ZBufferHash::iterator deadi = i++;
-				mZBufferHash.erase(deadi);
-			}			
-			else
-			{
-				++i;
-			}
-		}		
-	}
-	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
 	{
 		size_t i;
@@ -2862,16 +2713,7 @@ namespace CamelotEngine
 			dx9ClipPlane.c = plane.normal.z;
 			dx9ClipPlane.d = plane.d;
 
-			if (mVertexProgramBound)
-			{
-				// programmable clips in clip space (ugh)
-				// must transform worldspace planes by view/proj
-				D3DXMATRIX xform;
-				D3DXMatrixMultiply(&xform, &mDxViewMat, &mDxProjMat);
-				D3DXMatrixInverse(&xform, NULL, &xform);
-				D3DXMatrixTranspose(&xform, &xform);
-				D3DXPlaneTransform(&dx9ClipPlane, &dx9ClipPlane, &xform);
-			}
+			// TODO Low priority - Transform planes to clip space?
 
 			hr = getActiveD3D9Device()->SetClipPlane(static_cast<DWORD>(i), dx9ClipPlane);
 			if (FAILED(hr))
@@ -2887,30 +2729,6 @@ namespace CamelotEngine
 		{
 			CM_EXCEPT(RenderingAPIException, "Unable to set render state for clip planes");
 		}
-	}
-	//---------------------------------------------------------------------
-	D3D9RenderSystem::ZBufferIdentifier D3D9RenderSystem::getZBufferIdentifier(RenderTarget* rt)
-	{
-		// Retrieve render surfaces (up to CM_MAX_MULTIPLE_RENDER_TARGETS)
-		IDirect3DSurface9* pBack[CM_MAX_MULTIPLE_RENDER_TARGETS];
-		memset(pBack, 0, sizeof(pBack));
-		rt->getCustomAttribute_internal( "DDBACKBUFFER", &pBack );
-		assert(pBack[0]);
-
-		/// Request a depth stencil that is compatible with the format, multisample type and
-		/// dimensions of the render target.
-		D3DSURFACE_DESC srfDesc;
-		HRESULT hr = pBack[0]->GetDesc(&srfDesc);
-		assert(!(FAILED(hr)));
-		D3DFORMAT dsfmt = getDepthStencilFormatFor(srfDesc.Format);
-		assert(dsfmt != D3DFMT_UNKNOWN);
-
-		/// Build identifier and return
-		ZBufferIdentifier zBufferIdentifier;
-		zBufferIdentifier.format = dsfmt;
-		zBufferIdentifier.multisampleType = srfDesc.MultiSampleType;
-		zBufferIdentifier.device = getActiveD3D9Device();
-		return zBufferIdentifier;
 	}
 	//---------------------------------------------------------------------
 	HRESULT D3D9RenderSystem::__SetRenderState(D3DRENDERSTATETYPE state, DWORD value)
@@ -2966,29 +2784,6 @@ namespace CamelotEngine
 		getActiveD3D9Device()->GetSamplerState(static_cast<DWORD>(unit), D3DSAMP_MAXANISOTROPY, &oldVal);
 		return oldVal;
 	}
-
-	//---------------------------------------------------------------------
-	bool D3D9RenderSystem::ZBufferIdentifierComparator::operator()( const ZBufferIdentifier& z0, const ZBufferIdentifier& z1 ) const
-	{
-		if (z0.device < z1.device)
-			return true;
-
-		if (z0.device == z1.device)
-		{
-			if (z0.format < z1.format)
-				return true;
-
-			if (z0.format == z1.format)
-			{
-				if (z0.multisampleType < z1.multisampleType)
-					return true;
-			}
-		}
-
-		return false;
-	}
-
-
 }
 
 #undef THROW_IF_NOT_RENDER_THREAD

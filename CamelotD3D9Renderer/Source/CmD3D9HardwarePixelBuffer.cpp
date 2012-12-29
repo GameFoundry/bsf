@@ -60,7 +60,6 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------------  
 	void D3D9HardwarePixelBuffer::bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *surface, 
-									   IDirect3DSurface9* fsaaSurface,
 									   bool writeGamma, UINT32 fsaa, const String& srcName,
 									   IDirect3DBaseTexture9 *mipTex)
 	{
@@ -79,7 +78,6 @@ namespace CamelotEngine
 		bufferResources->mipTex = mipTex;
 		bufferResources->surface = surface;
 		bufferResources->surface->AddRef();
-		bufferResources->fSAASurface = fsaaSurface;
 
 		D3DSURFACE_DESC desc;
 		if(surface->GetDesc(&desc) != D3D_OK)
@@ -898,18 +896,5 @@ namespace CamelotEngine
 		}
 
 		return bufferResources->surface;
-	}
-	//-----------------------------------------------------------------------------   
-	IDirect3DSurface9* D3D9HardwarePixelBuffer::getFSAASurface(IDirect3DDevice9* d3d9Device)
-	{
-		BufferResources* bufferResources = getBufferResources(d3d9Device);
-
-		if (bufferResources	== NULL)
-		{
-			mOwnerTexture->createTextureResources(d3d9Device);
-			bufferResources = getBufferResources(d3d9Device);
-		}
-	
-		return bufferResources->fSAASurface;
 	}
 };

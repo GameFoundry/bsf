@@ -343,9 +343,6 @@ namespace CamelotEngine
 		// Notify all listener before device is rested
 		renderSystem->notifyOnDeviceLost(this);
 
-		// Cleanup depth stencils surfaces.
-		renderSystem->cleanupDepthStencils(mpDevice);
-
 		updatePresentationParameters();
 
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();

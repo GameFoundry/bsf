@@ -44,7 +44,7 @@ namespace CamelotEngine {
 		~D3D9HardwarePixelBuffer();
 
 		/// Call this to associate a D3D surface or volume with this pixel buffer
-		void bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *mSurface, IDirect3DSurface9* fsaaSurface,
+		void bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *mSurface,
 			bool writeGamma, UINT32 fsaa, const String& srcName, IDirect3DBaseTexture9 *mipTex);
 		void bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *mVolume, IDirect3DBaseTexture9 *mipTex);
 
@@ -66,9 +66,6 @@ namespace CamelotEngine {
 		/// Accessor for surface
 		IDirect3DSurface9 *getSurface(IDirect3DDevice9* d3d9Device);
 
-		/// Accessor for AA surface
-		IDirect3DSurface9 *getFSAASurface(IDirect3DDevice9* d3d9Device);
-
 		/// Release surfaces held by this pixel buffer.
 		void releaseSurfaces(IDirect3DDevice9* d3d9Device);
 
@@ -87,8 +84,6 @@ namespace CamelotEngine {
 		{			
 			/// Surface abstracted by this buffer
 			IDirect3DSurface9* surface;
-			/// AA Surface abstracted by this buffer
-			IDirect3DSurface9* fSAASurface;
 			/// Volume abstracted by this buffer
 			IDirect3DVolume9* volume;
 			/// Temporary surface in main memory if direct locking of mSurface is not possible

@@ -83,6 +83,7 @@ namespace CamelotEngine
 	class D3D9Resource;
 
 	typedef std::shared_ptr<D3D9RenderWindow> D3D9RenderWindowPtr;
+	typedef std::shared_ptr<D3D9Texture> D3D9TexturePtr;
 
 	enum TypeID_D3D9
 	{

@@ -412,6 +412,7 @@ namespace CamelotEngine
 			if (mUsage & TU_RENDERTARGET)
 				mHwGammaWriteSupported = _canUseHardwareGammaCorrection(d3d9Device, usage, D3DRTYPE_TEXTURE, d3dPF, true);
 		}
+
 		// Check FSAA level
 		if (mUsage & TU_RENDERTARGET)
 		{
@@ -448,46 +449,51 @@ namespace CamelotEngine
 		else
 			textureResources = allocateTextureResources(d3d9Device);
 
+		if ((mUsage & TU_RENDERTARGET) == 0)
+		{
+			// create the texture
+			hr = D3DXCreateTexture(	
+					d3d9Device,								// device
+					static_cast<UINT>(mWidth),				// width
+					static_cast<UINT>(mHeight),				// height
+					numMips,								// number of mip map levels
+					usage,									// usage
+					d3dPF,									// pixel format
+					mD3DPool,
+					&textureResources->pNormTex);			// data pointer
 
-		// create the texture
-		hr = D3DXCreateTexture(	
-				d3d9Device,								// device
-				static_cast<UINT>(mWidth),				// width
-				static_cast<UINT>(mHeight),				// height
-				numMips,								// number of mip map levels
-				usage,									// usage
-				d3dPF,									// pixel format
-				mD3DPool,
-				&textureResources->pNormTex);			// data pointer
-		// check result and except if failed
-		if (FAILED(hr))
-		{
-			freeInternalResources();
-			CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
-		}
-		
-		// set the base texture we'll use in the render system
-		hr = textureResources->pNormTex->QueryInterface(IID_IDirect3DBaseTexture9, (void **)&textureResources->pBaseTex);
-		if (FAILED(hr))
-		{
-			freeInternalResources();
-			CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
-		}
-		
-		// set final tex. attributes from tex. description
-		// they may differ from the source image !!!
-		D3DSURFACE_DESC desc;
-		hr = textureResources->pNormTex->GetLevelDesc(0, &desc);
-		if (FAILED(hr))
-		{
-			freeInternalResources();
-			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
-		}
+			// check result and except if failed
+			if (FAILED(hr))
+			{
+				freeInternalResources();
+				CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
+			}
 
-		if (mFSAAType)
+			// set the base texture we'll use in the render system
+			hr = textureResources->pNormTex->QueryInterface(IID_IDirect3DBaseTexture9, (void **)&textureResources->pBaseTex);
+			if (FAILED(hr))
+			{
+				freeInternalResources();
+				CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
+			}
+
+			// set final tex. attributes from tex. description
+			// they may differ from the source image !!!
+			D3DSURFACE_DESC desc;
+			hr = textureResources->pNormTex->GetLevelDesc(0, &desc);
+			if (FAILED(hr))
+			{
+				freeInternalResources();
+				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
+			}
+
+			_setFinalAttributes(d3d9Device, textureResources, 
+				desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
+		}
+		else
 		{
 			// create AA surface
-			HRESULT hr = d3d9Device->CreateRenderTarget(desc.Width, desc.Height, d3dPF, 
+			HRESULT hr = d3d9Device->CreateRenderTarget(mWidth, mHeight, d3dPF, 
 				mFSAAType, 
 				mFSAAQuality,
 				FALSE, // not lockable
@@ -498,16 +504,28 @@ namespace CamelotEngine
 				CM_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
 			}
 
-		}
+			D3DSURFACE_DESC desc;
+			hr = textureResources->pFSAASurface->GetDesc(&desc);
+			if (FAILED(hr))
+			{
+				freeInternalResources();
+				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
+			}
 
-		_setFinalAttributes(d3d9Device, textureResources, 
-			desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
+			_setFinalAttributes(d3d9Device, textureResources, 
+				desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
+		}
 	}
 	/****************************************************************************************/
 	void D3D9Texture::_createCubeTex(IDirect3DDevice9* d3d9Device)
 	{
 		// we must have those defined here
 		assert(mWidth > 0 || mHeight > 0);
+
+		if (mUsage & TU_RENDERTARGET)
+		{
+			CM_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as render target !!");
+		}
 
 		// determine wich D3D9 pixel format we'll use
 		HRESULT hr;
@@ -540,18 +558,9 @@ namespace CamelotEngine
 			if (mUsage & TU_RENDERTARGET)
 				mHwGammaWriteSupported = _canUseHardwareGammaCorrection(d3d9Device, usage, D3DRTYPE_CUBETEXTURE, d3dPF, true);
 		}
-		// Check FSAA level
-		if (mUsage & TU_RENDERTARGET)
-		{
-			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
-			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
-				&mFSAAType, &mFSAAQuality);
-		}
-		else
-		{
-			mFSAAType = D3DMULTISAMPLE_NONE;
-			mFSAAQuality = 0;
-		}
+
+		mFSAAType = D3DMULTISAMPLE_NONE;
+		mFSAAQuality = 0;
 
 		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
@@ -574,7 +583,6 @@ namespace CamelotEngine
 			freeTextureResources(d3d9Device, textureResources);
 		else
 			textureResources = allocateTextureResources(d3d9Device);
-
 
 		// create the texture
 		hr = D3DXCreateCubeTexture(	
@@ -610,23 +618,8 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 		}
 
-		if (mFSAAType)
-		{
-			// create AA surface
-			HRESULT hr = d3d9Device->CreateRenderTarget(desc.Width, desc.Height, d3dPF, 
-				mFSAAType, 
-				mFSAAQuality,
-				FALSE, // not lockable
-				&textureResources->pFSAASurface, NULL);
-
-			if (FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
-			}
-		}
-
 		_setFinalAttributes(d3d9Device, textureResources, 
-			desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
+			desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));		
 	}
 	/****************************************************************************************/
 	void D3D9Texture::_createVolumeTex(IDirect3DDevice9* d3d9Device)
@@ -692,7 +685,6 @@ namespace CamelotEngine
 			freeTextureResources(d3d9Device, textureResources);
 		else
 			textureResources = allocateTextureResources(d3d9Device);
-
 
 		// create the texture
 		hr = D3DXCreateVolumeTexture(	
@@ -986,68 +978,81 @@ namespace CamelotEngine
 			}
 		}
 
-		
+		if((mUsage & TU_RENDERTARGET) != 0)
+		{
+			assert(textureResources->pFSAASurface);
+			assert(getTextureType() == TEX_TYPE_2D);
 
-		switch(getTextureType()) {
-		case TEX_TYPE_2D:
-		case TEX_TYPE_1D:
-			assert(textureResources->pNormTex);
-			// For all mipmaps, store surfaces as HardwarePixelBufferPtr
-			for(mip=0; mip<=mNumMipmaps; ++mip)
+			D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, 0);
+
+			currPixelBuffer->bind(d3d9Device, textureResources->pFSAASurface,
+				mHwGammaWriteSupported, mFSAA, "PortNoName", textureResources->pBaseTex);
+		}
+		else
+		{
+			switch(getTextureType()) 
 			{
-				if(textureResources->pNormTex->GetSurfaceLevel(static_cast<UINT>(mip), &surface) != D3D_OK)
-					CM_EXCEPT(RenderingAPIException, "Get surface level failed");
-
-				D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
-								
-				currPixelBuffer->bind(d3d9Device, surface, textureResources->pFSAASurface,
-					mHwGammaWriteSupported, mFSAA, "PortNoName", textureResources->pBaseTex);
-
-				// decrement reference count, the GetSurfaceLevel call increments this
-				// this is safe because the pixel buffer keeps a reference as well
-				surface->Release();			
-			}
-			
-			break;
-		case TEX_TYPE_CUBE_MAP:
-			assert(textureResources->pCubeTex);
-			// For all faces and mipmaps, store surfaces as HardwarePixelBufferPtr
-			for(face=0; face<6; ++face)
-			{
+			case TEX_TYPE_2D:
+			case TEX_TYPE_1D:
+				assert(textureResources->pNormTex);
+				// For all mipmaps, store surfaces as HardwarePixelBufferPtr
 				for(mip=0; mip<=mNumMipmaps; ++mip)
 				{
-					if(textureResources->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)face, static_cast<UINT>(mip), &surface) != D3D_OK)
-						CM_EXCEPT(RenderingAPIException, "Get cubemap surface failed");
+					if(textureResources->pNormTex->GetSurfaceLevel(static_cast<UINT>(mip), &surface) != D3D_OK)
+						CM_EXCEPT(RenderingAPIException, "Get surface level failed");
 
-					D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(face, mip);
+					D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
 
-					currPixelBuffer->bind(d3d9Device, surface, textureResources->pFSAASurface,
-						mHwGammaWriteSupported, mFSAA, "NoNamePort", textureResources->pBaseTex);
+					currPixelBuffer->bind(d3d9Device, surface,
+						mHwGammaWriteSupported, mFSAA, "PortNoName", textureResources->pBaseTex);
 
 					// decrement reference count, the GetSurfaceLevel call increments this
 					// this is safe because the pixel buffer keeps a reference as well
-					surface->Release();				
-				}				
-			}
-			break;
-		case TEX_TYPE_3D:
-			assert(textureResources->pVolumeTex);
-			// For all mipmaps, store surfaces as HardwarePixelBufferPtr
-			for(mip=0; mip<=mNumMipmaps; ++mip)
-			{
-				if(textureResources->pVolumeTex->GetVolumeLevel(static_cast<UINT>(mip), &volume) != D3D_OK)
-					CM_EXCEPT(RenderingAPIException, "Get volume level failed");	
-						
-				D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
+					surface->Release();			
+				}
 
-				currPixelBuffer->bind(d3d9Device, volume, textureResources->pBaseTex);
+				break;
+			case TEX_TYPE_CUBE_MAP:
+				assert(textureResources->pCubeTex);
+				// For all faces and mipmaps, store surfaces as HardwarePixelBufferPtr
+				for(face=0; face<6; ++face)
+				{
+					for(mip=0; mip<=mNumMipmaps; ++mip)
+					{
+						if(textureResources->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)face, static_cast<UINT>(mip), &surface) != D3D_OK)
+							CM_EXCEPT(RenderingAPIException, "Get cubemap surface failed");
 
-				// decrement reference count, the GetSurfaceLevel call increments this
-				// this is safe because the pixel buffer keeps a reference as well
-				volume->Release();
-			}
-			break;
-		};					
+						D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(face, mip);
+
+						currPixelBuffer->bind(d3d9Device, surface,
+							mHwGammaWriteSupported, mFSAA, "NoNamePort", textureResources->pBaseTex);
+
+						// decrement reference count, the GetSurfaceLevel call increments this
+						// this is safe because the pixel buffer keeps a reference as well
+						surface->Release();				
+					}				
+				}
+				break;
+			case TEX_TYPE_3D:
+				assert(textureResources->pVolumeTex);
+				// For all mipmaps, store surfaces as HardwarePixelBufferPtr
+				for(mip=0; mip<=mNumMipmaps; ++mip)
+				{
+					if(textureResources->pVolumeTex->GetVolumeLevel(static_cast<UINT>(mip), &volume) != D3D_OK)
+						CM_EXCEPT(RenderingAPIException, "Get volume level failed");	
+
+					D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
+
+					currPixelBuffer->bind(d3d9Device, volume, textureResources->pBaseTex);
+
+					// decrement reference count, the GetSurfaceLevel call increments this
+					// this is safe because the pixel buffer keeps a reference as well
+					volume->Release();
+				}
+				break;
+			};		
+		}
+					
 	}
 	#undef GETLEVEL
 	/****************************************************************************************/
@@ -1213,74 +1218,6 @@ namespace CamelotEngine
 
 		return textureResources->pCubeTex;
 	}	
-
-	/****************************************************************************************/
-	D3D9RenderTexture::D3D9RenderTexture(const String &name, 
-		D3D9HardwarePixelBuffer *buffer, 
-		bool writeGamma, 
-		UINT32 fsaa) : mBuffer(buffer)
-	{
-		mName = name;
-		mHwGamma = writeGamma;
-		mFSAA = fsaa;		
-	}
-	//---------------------------------------------------------------------
-    void D3D9RenderTexture::update(bool swap)
-    {
-		D3D9DeviceManager* deviceManager = D3D9RenderSystem::getDeviceManager();       	
-		D3D9Device* currRenderWindowDevice = deviceManager->getActiveRenderTargetDevice();
-
-		if (currRenderWindowDevice != NULL)
-		{
-			if (currRenderWindowDevice->isDeviceLost() == false)
-				RenderTexture::update(swap);
-		}
-		else
-		{
-			for (UINT i=0; i < deviceManager->getDeviceCount(); ++i)
-			{
-				D3D9Device* device = deviceManager->getDevice(i);
-
-				if (device->isDeviceLost() == false)
-				{
-					deviceManager->setActiveRenderTargetDevice(device);
-					RenderTexture::update(swap);
-					deviceManager->setActiveRenderTargetDevice(NULL);
-				}								
-			}
-		}
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderTexture::getCustomAttribute_internal( const String& name, void *pData )
-	{
-		if(name == "DDBACKBUFFER")
-		{
-			if (mFSAA > 0)
-			{
-				// rendering to AA surface
-				IDirect3DSurface9 ** pSurf = (IDirect3DSurface9 **)pData;
-				*pSurf = static_cast<D3D9HardwarePixelBuffer*>(mBuffer)->getFSAASurface(D3D9RenderSystem::getActiveD3D9Device());
-				return;
-			}
-			else
-			{
-				IDirect3DSurface9 ** pSurf = (IDirect3DSurface9 **)pData;
-				*pSurf = static_cast<D3D9HardwarePixelBuffer*>(mBuffer)->getSurface(D3D9RenderSystem::getActiveD3D9Device());
-				return;
-			}
-		}
-		else if(name == "HWND")
-		{
-			HWND *pHwnd = (HWND*)pData;
-			*pHwnd = NULL;
-			return;
-		}
-		else if(name == "BUFFER")
-		{
-			*static_cast<HardwarePixelBuffer**>(pData) = mBuffer;
-			return;
-		}
-	}    
 }
 
 #undef THROW_IF_NOT_RENDER_THREAD
