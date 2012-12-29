@@ -43,6 +43,15 @@ THE SOFTWARE.
 
 namespace CamelotEngine {
 
+	struct SurfaceDesc
+	{
+		TexturePtr texture;
+		UINT32 face;
+		UINT32 numFaces;
+		UINT32 mipLevel;
+		PixelFormat format;
+	};
+
 	/** \addtogroup Core
 	*  @{
 	*/

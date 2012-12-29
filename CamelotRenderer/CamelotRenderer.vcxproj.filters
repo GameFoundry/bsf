@@ -347,6 +347,9 @@
     <ClInclude Include="Include\CmDepthStencilBuffer.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmMultiRenderTexture.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -520,8 +523,8 @@
     <ClCompile Include="Source\CmDepthStencilBuffer.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Include\CmMultiRenderTexture.cpp">
-      <Filter>Header Files\RenderSystem</Filter>
+    <ClCompile Include="Source\CmMultiRenderTexture.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

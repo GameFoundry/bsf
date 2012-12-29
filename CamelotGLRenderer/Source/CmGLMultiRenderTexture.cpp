@@ -1,0 +1,73 @@
+#include "CmGLMultiRenderTexture.h"
+#include "CmGLDepthStencilBuffer.h"
+#include "CmGLTexture.h"
+
+namespace CamelotEngine
+{
+	GLMultiRenderTexture::GLMultiRenderTexture()
+		:MultiRenderTexture(), mFB(nullptr)
+	{
+
+	}
+
+	GLMultiRenderTexture::~GLMultiRenderTexture()
+	{
+		if(mFB != nullptr)
+			delete mFB;
+	}
+
+	void GLMultiRenderTexture::setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
+	{
+		if(texture != nullptr)
+		{
+			GLSurfaceDesc surfaceDesc;
+			surfaceDesc.numSamples = mFSAA;
+			surfaceDesc.zoffset = 0;
+
+			GLTexture* glTexture = static_cast<GLTexture*>(texture.get());
+			surfaceDesc.buffer = std::static_pointer_cast<GLHardwarePixelBuffer>(glTexture->getBuffer(face, mipLevel));
+
+			mFB->bindSurface(surfaceIdx, surfaceDesc);
+		}
+		else
+		{
+			mFB->unbindSurface(surfaceIdx);
+		}
+	}
+
+	void GLMultiRenderTexture::setDepthStencilImpl(DepthStencilBufferPtr depthStencilBuffer)
+	{
+		if(depthStencilBuffer != nullptr)
+		{
+			GLDepthStencilBuffer* glDepthStencilBuffer = static_cast<GLDepthStencilBuffer*>(mDepthStencilBuffer.get());
+
+			mFB->bindDepthStencil(glDepthStencilBuffer->getGLRenderBuffer());
+		}
+		else
+		{
+			mFB->unbindDepthStencil();
+		}
+	}
+
+	void GLMultiRenderTexture::getCustomAttribute(const String& name, void* pData)
+	{
+		if(name=="FBO")
+		{
+			*static_cast<GLFrameBufferObject **>(pData) = mFB;
+		}
+		else if (name == "GL_FBOID" || name == "GL_MULTISAMPLEFBOID")
+		{
+			*static_cast<GLuint*>(pData) = mFB->getGLFBOID();
+		}
+	}
+
+	void GLMultiRenderTexture::initialize()
+	{
+		if(mFB != nullptr)
+			delete mFB;
+
+		mFB = new GLFrameBufferObject(mFSAA);
+
+		MultiRenderTexture::initialize();
+	}
+}

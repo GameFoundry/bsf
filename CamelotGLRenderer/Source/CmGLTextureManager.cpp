@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmGLRenderTexture.h"
 #include "CmGLDepthStencilBuffer.h"
+#include "CmGLMultiRenderTexture.h"
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------------
@@ -59,6 +60,14 @@ namespace CamelotEngine {
 		UINT32 height, UINT32 fsaa, const String& fsaaHint)
 	{
 		return DepthStencilBufferPtr(new GLDepthStencilBuffer(format, width, height, fsaa, fsaaHint));
+	}
+	//----------------------------------------------------------------------------
+	MultiRenderTexturePtr GLTextureManager::createMultiRenderTexture()
+	{
+		GLMultiRenderTexture* newMRT = new GLMultiRenderTexture();
+		newMRT->initialize();
+
+		return MultiRenderTexturePtr(newMRT);
 	}
 	//-----------------------------------------------------------------------------
 	void GLTextureManager::createWarningTexture()

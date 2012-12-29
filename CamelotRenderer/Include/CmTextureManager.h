@@ -28,7 +28,6 @@ THE SOFTWARE.
 #ifndef _TextureManager_H__
 #define _TextureManager_H__
 
-
 #include "CmPrerequisites.h"
 
 #include "CmTexture.h"
@@ -192,6 +191,12 @@ namespace CamelotEngine {
 		 * 			it manually before using it.
 		 */
 		virtual RenderTexturePtr createEmptyRenderTexture();
+
+		/**
+		 * @brief	Creates a new multi render texture. You may use this type of texture
+		 * 			to render to multiple output textures at once.
+		 */
+		virtual MultiRenderTexturePtr createMultiRenderTexture() = 0;
 
 		/** Returns whether this render system can natively support the precise texture 
 			format requested with the given usage options.

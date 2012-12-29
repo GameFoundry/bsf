@@ -9,13 +9,16 @@ namespace CamelotEngine
 	class CM_D3D9_EXPORT D3D9RenderTexture : public RenderTexture
 	{
 	public:
-		D3D9RenderTexture();
 		virtual ~D3D9RenderTexture();
 
 		bool requiresTextureFlipping() const { return false; }
 		virtual void getCustomAttribute(const String& name, void* pData);
 
 	protected:
+		friend class D3D9TextureManager;
+
+		D3D9RenderTexture();
+
 		IDirect3DSurface9* mColorSurface;
 		IDirect3DSurface9* mDepthStencilSurface;
 

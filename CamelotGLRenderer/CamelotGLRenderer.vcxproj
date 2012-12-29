@@ -159,6 +159,7 @@
     <ClInclude Include="Include\CmGLHardwareOcclusionQuery.h" />
     <ClInclude Include="Include\CmGLHardwarePixelBuffer.h" />
     <ClInclude Include="Include\CmGLHardwareVertexBuffer.h" />
+    <ClInclude Include="Include\CmGLMultiRenderTexture.h" />
     <ClInclude Include="Include\CmGLPixelFormat.h" />
     <ClInclude Include="Include\CmGLPrerequisites.h" />
     <ClInclude Include="Include\CmGLRenderSystem.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="Source\CmGLHardwareOcclusionQuery.cpp" />
     <ClCompile Include="Source\CmGLHardwarePixelBuffer.cpp" />
     <ClCompile Include="Source\CmGLHardwareVertexBuffer.cpp" />
+    <ClCompile Include="Source\CmGLMultiRenderTexture.cpp" />
     <ClCompile Include="Source\CmGLPixelFormat.cpp" />
     <ClCompile Include="Source\CmGLRenderSystem.cpp" />
     <ClCompile Include="Source\CmGLRenderSystemFactory.cpp" />

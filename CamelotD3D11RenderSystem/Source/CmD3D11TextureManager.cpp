@@ -4,6 +4,7 @@
 #include "CmD3D11Mappings.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11DepthStencilBuffer.h"
+#include "CmD3D11MultiRenderTexture.h"
 
 namespace CamelotEngine
 {
@@ -28,6 +29,14 @@ namespace CamelotEngine
 		UINT32 height, UINT32 fsaa, const String& fsaaHint)
 	{
 		return DepthStencilBufferPtr(new D3D11DepthStencilBuffer(format, width, height, fsaa, fsaaHint));
+	}
+
+	MultiRenderTexturePtr D3D11TextureManager::createMultiRenderTexture()
+	{
+		D3D11MultiRenderTexture* newMRT = new D3D11MultiRenderTexture();
+		newMRT->initialize();
+
+		return MultiRenderTexturePtr(newMRT);
 	}
 
 	PixelFormat D3D11TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)

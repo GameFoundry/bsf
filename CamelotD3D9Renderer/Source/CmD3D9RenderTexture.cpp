@@ -41,8 +41,8 @@ namespace CamelotEngine
 
 	void D3D9RenderTexture::createInternalResourcesImpl()
 	{
-		D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(mTexture.get());
-		D3D9HardwarePixelBuffer* pixelBuffer = static_cast<D3D9HardwarePixelBuffer*>(d3d9texture->getBuffer(mFace, mMipLevel).get());
+		D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(mSurface.texture.get());
+		D3D9HardwarePixelBuffer* pixelBuffer = static_cast<D3D9HardwarePixelBuffer*>(d3d9texture->getBuffer(mSurface.face, mSurface.mipLevel).get());
 		mColorSurface = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
 
 		D3D9DepthStencilBuffer* d3d9DepthStencil = static_cast<D3D9DepthStencilBuffer*>(mDepthStencilBuffer.get());

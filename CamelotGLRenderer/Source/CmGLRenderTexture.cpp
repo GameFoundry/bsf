@@ -54,8 +54,8 @@ namespace CamelotEngine
 		surfaceDesc.numSamples = mFSAA;
 		surfaceDesc.zoffset = 0;
 
-		GLTexture* glTexture = static_cast<GLTexture*>(mTexture.get());
-		surfaceDesc.buffer = std::static_pointer_cast<GLHardwarePixelBuffer>(glTexture->getBuffer(mFace, mMipLevel));
+		GLTexture* glTexture = static_cast<GLTexture*>(mSurface.texture.get());
+		surfaceDesc.buffer = std::static_pointer_cast<GLHardwarePixelBuffer>(glTexture->getBuffer(mSurface.face, mSurface.mipLevel));
 
 		mFB->bindSurface(0, surfaceDesc);
 

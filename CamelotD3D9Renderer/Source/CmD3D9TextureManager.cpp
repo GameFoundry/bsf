@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "CmD3D9Mappings.h"
 #include "CmD3D9RenderSystem.h"
 #include "CmD3D9DepthStencilBuffer.h"
+#include "CmD3D9MultiRenderTexture.h"
 
 namespace CamelotEngine 
 {
@@ -59,6 +60,14 @@ namespace CamelotEngine
 		UINT32 height, UINT32 fsaa, const String& fsaaHint)
 	{
 		return DepthStencilBufferPtr(new D3D9DepthStencilBuffer(format, width, height, fsaa, fsaaHint));
+	}
+
+	MultiRenderTexturePtr D3D9TextureManager::createMultiRenderTexture()
+	{
+		D3D9MultiRenderTexture* newMRT = new D3D9MultiRenderTexture();
+		newMRT->initialize();
+
+		return MultiRenderTexturePtr(newMRT);
 	}
 
 	PixelFormat D3D9TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)

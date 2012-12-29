@@ -87,7 +87,7 @@ namespace CamelotEngine {
     class RenderSystemCapabilities;
     class RenderTarget;
     class RenderTexture;
-	class MultiRenderTarget;
+	class MultiRenderTexture;
     class RenderWindow;
 	class DepthStencilBuffer;
     class RenderOperation;
@@ -170,6 +170,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<RenderTarget> RenderTargetPtr;
 	typedef std::shared_ptr<RenderTexture> RenderTexturePtr;
 	typedef std::shared_ptr<DepthStencilBuffer> DepthStencilBufferPtr;
+	typedef std::shared_ptr<MultiRenderTexture> MultiRenderTexturePtr;
 }
 
 // All type IDs used for RTTI

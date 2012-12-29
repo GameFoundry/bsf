@@ -12,6 +12,7 @@ namespace CamelotEngine
 		~D3D11DepthStencilBuffer();
 
 		bool isCompatible(RenderTarget* renderTarget) const;
+		ID3D11DepthStencilView* getDepthStencilView() const { return mDepthStencilView; }
 
 	protected:
 		ID3D11Texture2D* mDepthStencil;

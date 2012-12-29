@@ -44,13 +44,15 @@ namespace CamelotEngine
     class CM_RSGL_EXPORT GLRenderTexture: public RenderTexture
     {
 	public:
-		GLRenderTexture();
 		virtual ~GLRenderTexture();
 
 		bool requiresTextureFlipping() const { return true; }
 		virtual void getCustomAttribute(const String& name, void* pData);
 
 	protected:
+		friend class GLTextureManager;
+
+		GLRenderTexture();
 		GLFrameBufferObject* mFB;
 
 		void createInternalResourcesImpl();

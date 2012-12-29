@@ -54,20 +54,13 @@ namespace CamelotEngine
 		void setColorSurface(TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
 		void setDepthStencil(DepthStencilBufferPtr depthStencilbuffer);
 
-		TexturePtr getTexture() const { return mTexture; }
+		SurfaceDesc getSurfaceDesc() const { return mSurface; }
 		DepthStencilBufferPtr getDepthStencilBuffer() const { return mDepthStencilBuffer; }
 
 		bool requiresTextureFlipping() const { return false; }
 
 	protected:
-		TextureType mType;
-		PixelFormat mFormat;
-		DepthStencilFormat mDepthStencilFormat;
-		UINT32 mFace;
-		UINT32 mNumFaces;
-		UINT32 mMipLevel;
-
-		TexturePtr mTexture;
+		SurfaceDesc mSurface;
 		DepthStencilBufferPtr mDepthStencilBuffer;
 
 		RenderTexture();

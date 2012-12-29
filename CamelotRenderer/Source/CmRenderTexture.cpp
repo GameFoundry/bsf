@@ -42,19 +42,21 @@ namespace CamelotEngine
 
 	void RenderTexture::createInternalResources()
 	{
-		if(mTexture->getTextureType() != TEX_TYPE_2D)
+		assert(mSurface.texture != nullptr);
+
+		if(mSurface.texture->getTextureType() != TEX_TYPE_2D)
 			CM_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
 
-		if((mFace + mNumFaces) >= mTexture->getNumFaces())
+		if((mSurface.face + mSurface.numFaces) >= mSurface.texture->getNumFaces())
 		{
 			CM_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " + 
-				toString(mFace + mNumFaces) + ". Max num faces: " + toString(mTexture->getNumFaces()));
+				toString(mSurface.face + mSurface.numFaces) + ". Max num faces: " + toString(mSurface.texture->getNumFaces()));
 		}
 
-		if(mMipLevel >= mTexture->getNumMipmaps())
+		if(mSurface.mipLevel >= mSurface.texture->getNumMipmaps())
 		{
 			CM_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " + 
-				toString(mMipLevel) + ". Max num mipmaps: " + toString(mTexture->getNumMipmaps()));
+				toString(mSurface.mipLevel) + ". Max num mipmaps: " + toString(mSurface.texture->getNumMipmaps()));
 		}
 
 		createInternalResourcesImpl();
@@ -62,9 +64,9 @@ namespace CamelotEngine
 
 	void RenderTexture::setColorSurface(TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
 	{
-		mTexture = texture;
+		mSurface.texture = texture;
 
-		if(mTexture == nullptr)
+		if(mSurface.texture == nullptr)
 			return;
 
 		mPriority = CM_REND_TO_TEX_RT_GROUP;
@@ -75,16 +77,16 @@ namespace CamelotEngine
 		mHwGamma = texture->isHardwareGammaEnabled();
 		mFSAA = texture->getFSAA();
 		mFSAAHint = texture->getFSAAHint();
-		mType = texture->getTextureType();
-		mFormat = texture->getFormat();
-		
-		mFace = face;
-		mNumFaces = face;
-		mMipLevel = mipLevel;
 
+		mSurface.format = texture->getFormat();
+		
+		mSurface.face = face;
+		mSurface.numFaces = numFaces;
+		mSurface.mipLevel = mipLevel;
+		
 		throwIfBuffersDontMatch();
 
-		if(mDepthStencilBuffer != nullptr && mTexture != nullptr)
+		if(mDepthStencilBuffer != nullptr && mSurface.texture != nullptr)
 			createInternalResourcesImpl();
 	}
 
@@ -95,28 +97,26 @@ namespace CamelotEngine
 		if(mDepthStencilBuffer == nullptr)
 			return;
 
-		mDepthStencilFormat = depthStencilBuffer->getFormat();
-
 		throwIfBuffersDontMatch();
 
-		if(mDepthStencilBuffer != nullptr && mTexture != nullptr)
+		if(mDepthStencilBuffer != nullptr && mSurface.texture != nullptr)
 			createInternalResourcesImpl();
 	}
 
 	void RenderTexture::throwIfBuffersDontMatch() const
 	{
-		if(mTexture == nullptr || mDepthStencilBuffer == nullptr)
+		if(mSurface.texture == nullptr || mDepthStencilBuffer == nullptr)
 			return;
 
-		if(mTexture->getWidth() != mDepthStencilBuffer->getWidth() ||
-			mTexture->getHeight() != mDepthStencilBuffer->getWidth() ||
-			mTexture->getFSAA() != mDepthStencilBuffer->getFsaa() ||
-			mTexture->getFSAAHint() != mDepthStencilBuffer->getFsaaHint())
+		if(mSurface.texture->getWidth() != mDepthStencilBuffer->getWidth() ||
+			mSurface.texture->getHeight() != mDepthStencilBuffer->getHeight() ||
+			mSurface.texture->getFSAA() != mDepthStencilBuffer->getFsaa() ||
+			mSurface.texture->getFSAAHint() != mDepthStencilBuffer->getFsaaHint())
 		{
-			String errorInfo = "\nWidth: " + toString(mTexture->getWidth()) + "/" + toString(mDepthStencilBuffer->getWidth());
-			errorInfo += "\nHeight: " + toString(mTexture->getHeight()) + "/" + toString(mDepthStencilBuffer->getHeight());
-			errorInfo += "\nFSAA: " + toString(mTexture->getFSAA()) + "/" + toString(mDepthStencilBuffer->getFsaa());
-			errorInfo += "\nFSAAHint: " + mTexture->getFSAAHint() + "/" + mDepthStencilBuffer->getFsaaHint();
+			String errorInfo = "\nWidth: " + toString(mSurface.texture->getWidth()) + "/" + toString(mDepthStencilBuffer->getWidth());
+			errorInfo += "\nHeight: " + toString(mSurface.texture->getHeight()) + "/" + toString(mDepthStencilBuffer->getHeight());
+			errorInfo += "\nFSAA: " + toString(mSurface.texture->getFSAA()) + "/" + toString(mDepthStencilBuffer->getFsaa());
+			errorInfo += "\nFSAAHint: " + mSurface.texture->getFSAAHint() + "/" + mDepthStencilBuffer->getFsaaHint();
 
 			CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 		}
