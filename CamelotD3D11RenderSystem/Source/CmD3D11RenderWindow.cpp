@@ -613,7 +613,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Unable to create rendertagert view\nError Description:" + errorDescription);
 		}
 
-		mDepthStencilBuffer = TextureManager::instance().createDepthStencilBuffer(32, BBDesc.Width, BBDesc.Height, mFSAA, mFSAAHint);
+		mDepthStencilBuffer = TextureManager::instance().createDepthStencilBuffer(DFMT_D24S8, BBDesc.Width, BBDesc.Height, mFSAA, mFSAAHint);
 	}
 
 	void D3D11RenderWindow::_destroySizeDependedD3DResources()

@@ -38,20 +38,20 @@ namespace CamelotEngine {
 	class CM_RSGL_EXPORT GLPixelUtil
 	{
 	public:
-		/** Takes the OGRE pixel format and returns the appropriate GL one
+		/** Takes the engine pixel format and returns the appropriate GL one
 			@returns a GLenum describing the format, or 0 if there is no exactly matching 
 			one (and conversion is needed)
 		*/
 		static GLenum getGLOriginFormat(PixelFormat mFormat);
 	
-		/** Takes the OGRE pixel format and returns type that must be provided
+		/** Takes the engine pixel format and returns type that must be provided
 			to GL as data type for reading it into the GPU
 			@returns a GLenum describing the data type, or 0 if there is no exactly matching 
 			one (and conversion is needed)
 		*/
 		static GLenum getGLOriginDataType(PixelFormat mFormat);
         
-        /**	Takes the OGRE pixel format and returns the type that must be provided
+        /**	Takes the engine pixel format and returns the type that must be provided
 			to GL as internal format. GL_NONE if no match exists.
 		@param mFormat The pixel format
 		@param hwGamma Whether a hardware gamma-corrected version is requested
@@ -65,12 +65,17 @@ namespace CamelotEngine {
 		*/
 		static GLenum getClosestGLInternalFormat(PixelFormat mFormat, bool hwGamma = false);
 		
-		/**	Function to get the closest matching OGRE format to an internal GL format. To be
+		/**	Function to get the closest matching engine format to an internal GL format. To be
 			precise, the format will be chosen that is most efficient to transfer to the card 
 			without losing precision.
 			@remarks It is valid for this function to always return PF_A8R8G8B8.
 		*/
 		static PixelFormat getClosestEngineFormat(GLenum fmt);
+
+		/**
+		 * @brief	Returns closest OpenGL depth/stencil format.
+		 */
+		static GLenum getDepthStencilFormat(DepthStencilFormat fmt);
 
 		/**
 		 * @brief	Gets OpenGL format based on a compressed OpenGL internal format.

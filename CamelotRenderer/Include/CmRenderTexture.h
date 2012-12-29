@@ -61,7 +61,7 @@ namespace CamelotEngine
 	protected:
 		TextureType mType;
 		PixelFormat mFormat;
-		UINT32 mDepthBits;
+		DepthStencilFormat mDepthStencilFormat;
 		UINT32 mFace;
 		UINT32 mNumFaces;
 		UINT32 mMipLevel;
@@ -73,7 +73,7 @@ namespace CamelotEngine
 
 		void initialize(TextureType textureType, UINT32 width, UINT32 height, 
 			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
-			bool createDepth = true, UINT32 depthBits = 32);
+			bool createDepth = true, DepthStencilFormat depthStencilFormat = DFMT_D24S8);
 
 		void initialize(TexturePtr texture, DepthStencilBufferPtr depthStencilbuffer, 
 			UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);

@@ -93,6 +93,8 @@ namespace CamelotEngine
 		static D3DDECLTYPE get(VertexElementType vType);
 		/// Get vertex semantic
 		static D3DDECLUSAGE get(VertexElementSemantic sem);
+		/// return a D3D11 equivalent for an engine DepthStencilFormat
+		static D3DFORMAT get(DepthStencilFormat format);
         // Convert matrix to D3D style
         static 	D3DXMATRIX makeD3DXMatrix( const Matrix4& mat );
         // Convert matrix from D3D style

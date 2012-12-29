@@ -50,10 +50,10 @@ namespace CamelotEngine {
         return new GLTexture(mGLSupport);
     }
 	//----------------------------------------------------------------------------
-	DepthStencilBufferPtr GLTextureManager::createDepthStencilBuffer(UINT32 bitDepth, UINT32 width, 
+	DepthStencilBufferPtr GLTextureManager::createDepthStencilBuffer(DepthStencilFormat format, UINT32 width, 
 		UINT32 height, UINT32 fsaa, const String& fsaaHint)
 	{
-		return DepthStencilBufferPtr(new GLDepthStencilBuffer(bitDepth, width, height, fsaa, fsaaHint));
+		return DepthStencilBufferPtr(new GLDepthStencilBuffer(format, width, height, fsaa, fsaaHint));
 	}
 	//-----------------------------------------------------------------------------
 	void GLTextureManager::createWarningTexture()

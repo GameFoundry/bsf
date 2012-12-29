@@ -456,6 +456,23 @@ namespace CamelotEngine
 		return D3DDECLUSAGE_POSITION;
 	}
 	//---------------------------------------------------------------------
+	D3DFORMAT D3D9Mappings::get(DepthStencilFormat format)
+	{
+		switch(format)
+		{
+		case DFMT_D24S8:
+			return D3DFMT_D24S8;
+		case DFMT_D32:
+			return D3DFMT_D32F_LOCKABLE;
+		case DFMT_D16:
+			return D3DFMT_D16;
+		}
+
+		LOGWRN("Requesting unsupported DepthStencilFormat. Using D24S8 format instead.");
+
+		return D3DFMT_D24S8;
+	}
+	//---------------------------------------------------------------------
 	D3DXMATRIX D3D9Mappings::makeD3DXMatrix( const Matrix4& mat )
 	{
 		// Transpose matrix

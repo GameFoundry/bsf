@@ -1,12 +1,13 @@
 #include "CmD3D11DepthStencilBuffer.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
+#include "CmD3D11Mappings.h"
 #include "CmException.h"
 
 namespace CamelotEngine
 {
-	D3D11DepthStencilBuffer::D3D11DepthStencilBuffer(UINT32 bitDepth, UINT32 width, UINT32 height, UINT32 fsaa, const String &fsaaHint)
-		: DepthStencilBuffer(bitDepth, width, height, fsaa, fsaaHint)
+	D3D11DepthStencilBuffer::D3D11DepthStencilBuffer(DepthStencilFormat format, UINT32 width, UINT32 height, UINT32 fsaa, const String &fsaaHint)
+		: DepthStencilBuffer(format, width, height, fsaa, fsaaHint)
 		, mDepthStencil(nullptr)
 		, mDepthStencilView(nullptr)
 	{
@@ -17,14 +18,14 @@ namespace CamelotEngine
 		descDepth.Height = height;
 		descDepth.MipLevels = 1;
 		descDepth.ArraySize = 1;
-		descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		descDepth.Format = D3D11Mappings::get(format);
 		descDepth.Usage = D3D11_USAGE_DEFAULT;
 		descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 		descDepth.CPUAccessFlags = 0;
 		descDepth.MiscFlags = 0;
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-		rs->determineFSAASettings(fsaa, fsaaHint, DXGI_FORMAT_D24_UNORM_S8_UINT, &descDepth.SampleDesc);
+		rs->determineFSAASettings(fsaa, fsaaHint, descDepth.Format, &descDepth.SampleDesc);
 
 		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
 		HRESULT hr = device.getD3D11Device()->CreateTexture2D(&descDepth, NULL, &mDepthStencil);

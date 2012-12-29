@@ -8,7 +8,7 @@ namespace CamelotEngine
 	class CM_RSGL_EXPORT GLDepthStencilBuffer : public DepthStencilBuffer
 	{
 	public:
-		GLDepthStencilBuffer(UINT32 bitDepth, UINT32 width, UINT32 height, UINT32 fsaa, const String &fsaaHint);
+		GLDepthStencilBuffer(DepthStencilFormat format, UINT32 width, UINT32 height, UINT32 fsaa, const String &fsaaHint);
 		~GLDepthStencilBuffer();
 
 		GLRenderBufferPtr getGLRenderBuffer() const { return mDepthStencilRenderBuffer; }

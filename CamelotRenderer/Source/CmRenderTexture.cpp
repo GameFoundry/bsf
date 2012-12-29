@@ -42,7 +42,7 @@ namespace CamelotEngine
 
 	void RenderTexture::initialize(TextureType textureType, UINT32 width, UINT32 height, 
 		PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint,
-		bool createDepth, UINT32 depthBits)
+		bool createDepth, DepthStencilFormat depthStencilFormat)
 	{
 		mPriority = CM_REND_TO_TEX_RT_GROUP;
 		mWidth = width;
@@ -54,7 +54,7 @@ namespace CamelotEngine
 		mHwGamma = hwGamma;
 		mFSAA = fsaa;
 		mFSAAHint = fsaaHint;
-		mDepthBits = depthBits;
+		mDepthStencilFormat = depthStencilFormat;
 		mFace = 0;
 		mMipLevel = 0;
 
@@ -98,7 +98,7 @@ namespace CamelotEngine
 
 	void RenderTexture::createDepthStencilBuffer()
 	{
-		mDepthStencilBuffer = TextureManager::instance().createDepthStencilBuffer(mDepthBits, mWidth, mHeight, mFSAA, mFSAAHint);
+		mDepthStencilBuffer = TextureManager::instance().createDepthStencilBuffer(mDepthStencilFormat, mWidth, mHeight, mFSAA, mFSAAHint);
 	}
 
 	void RenderTexture::setBuffers(TexturePtr texture, DepthStencilBufferPtr depthStencilBuffer, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
@@ -130,7 +130,7 @@ namespace CamelotEngine
 		mFSAAHint = texture->getFSAAHint();
 		mType = texture->getTextureType();
 		mFormat = texture->getFormat();
-		mDepthBits = depthStencilBuffer->getBitDepth();
+		mDepthStencilFormat = depthStencilBuffer->getFormat();
 		mFace = face;
 		mNumFaces = face;
 		mMipLevel = mipLevel;

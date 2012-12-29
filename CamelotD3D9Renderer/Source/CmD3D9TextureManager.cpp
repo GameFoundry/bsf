@@ -49,10 +49,10 @@ namespace CamelotEngine
 		return new D3D9Texture();
     }
 
-	DepthStencilBufferPtr D3D9TextureManager::createDepthStencilBuffer(UINT32 bitDepth, UINT32 width, 
+	DepthStencilBufferPtr D3D9TextureManager::createDepthStencilBuffer(DepthStencilFormat format, UINT32 width, 
 		UINT32 height, UINT32 fsaa, const String& fsaaHint)
 	{
-		return DepthStencilBufferPtr(new D3D9DepthStencilBuffer(bitDepth, width, height, fsaa, fsaaHint));
+		return DepthStencilBufferPtr(new D3D9DepthStencilBuffer(format, width, height, fsaa, fsaaHint));
 	}
 
 	PixelFormat D3D9TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)

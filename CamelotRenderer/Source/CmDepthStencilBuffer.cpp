@@ -3,8 +3,8 @@
 
 namespace CamelotEngine
 {
-	DepthStencilBuffer::DepthStencilBuffer(UINT32 bitDepth, UINT32 width, UINT32 height, UINT32 fsaa, const String &fsaaHint)
-		: mBitDepth(bitDepth)
+	DepthStencilBuffer::DepthStencilBuffer(DepthStencilFormat format, UINT32 width, UINT32 height, UINT32 fsaa, const String &fsaaHint)
+		: mFormat(format)
 		, mWidth(width)
 		, mHeight(height)
 		, mFsaa(fsaa)

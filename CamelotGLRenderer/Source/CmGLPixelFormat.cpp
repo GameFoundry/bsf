@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "CmGLPixelFormat.h"
 #include "CmRenderSystem.h"
 #include "CmBitwise.h"
+#include "CmDebug.h"
 
 namespace CamelotEngine  {
 	//-----------------------------------------------------------------------------
@@ -371,7 +372,25 @@ namespace CamelotEngine  {
 		};
 	}
 	//----------------------------------------------------------------------------- 
+	GLenum GLPixelUtil::getDepthStencilFormat(DepthStencilFormat fmt)
+	{
+		switch(fmt)
+		{
+		case DFMT_D32_S8X24:
+			return GL_DEPTH32F_STENCIL8;
+		case DFMT_D24S8:
+			return GL_DEPTH24_STENCIL8;
+		case DFMT_D32:
+			return GL_DEPTH_COMPONENT32F;
+		case DFMT_D16:
+			return GL_DEPTH_COMPONENT16;
+		}
 
+		LOGWRN("Requesting unsupported DepthStencilFormat. Using D24S8 format instead.");
+
+		return GL_DEPTH24_STENCIL8;
+	}
+	//----------------------------------------------------------------------------- 
 	UINT32 GLPixelUtil::getMaxMipmaps(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format)
 	{
 		UINT32 count = 0;
