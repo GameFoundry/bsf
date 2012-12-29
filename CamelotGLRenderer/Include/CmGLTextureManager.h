@@ -58,8 +58,15 @@ namespace CamelotEngine {
 			UINT32 height, UINT32 fsaa, const String& fsaaHint);
 
     protected:
-        /// @copydoc ResourceManager::createImpl
-        Texture* createImpl();
+        /**
+         * @copydoc ResourceManager::createTextureImpl
+         */
+        Texture* createTextureImpl();
+
+		/**
+         * @copydoc ResourceManager::createRenderTextureImpl
+         */
+		RenderTexture* createRenderTextureImpl();
 
 		/// Internal method to create a warning texture (bound when a texture unit is blank)
 		void createWarningTexture();

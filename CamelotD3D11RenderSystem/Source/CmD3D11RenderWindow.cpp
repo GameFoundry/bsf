@@ -454,7 +454,7 @@ namespace CamelotEngine
 			return;
 		}
 
-		RenderWindow::getCustomAttribute_internal(name, pData);
+		RenderWindow::getCustomAttribute(name, pData);
 	}
 
 	void D3D11RenderWindow::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)

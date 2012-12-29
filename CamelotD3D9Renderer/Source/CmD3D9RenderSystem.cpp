@@ -44,7 +44,6 @@ THE SOFTWARE.
 #include "CmD3D9GpuProgramManager.h"
 #include "CmD3D9HLSLProgramFactory.h"
 #include "CmD3D9HardwareOcclusionQuery.h"
-#include "CmD3D9MultiRenderTarget.h"
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
 #include "CmD3D9RenderWindowManager.h"
@@ -1075,14 +1074,14 @@ namespace CamelotEngine
 		// Retrieve render surfaces (up to CM_MAX_MULTIPLE_RENDER_TARGETS)
 		IDirect3DSurface9* pBack[CM_MAX_MULTIPLE_RENDER_TARGETS];
 		memset(pBack, 0, sizeof(pBack));
-		target->getCustomAttribute_internal( "DDBACKBUFFER", &pBack );
+		target->getCustomAttribute( "DDBACKBUFFER", &pBack );
 		if (!pBack[0])
 			return;
 
 		IDirect3DSurface9* pDepth = NULL;
 
 		if (!pDepth)
-			target->getCustomAttribute_internal( "D3DZBUFFER", &pDepth );
+			target->getCustomAttribute( "D3DZBUFFER", &pDepth );
 		
 		// Bind render targets
 		UINT32 count = mCurrentCapabilities->getNumMultiRenderTargets();
@@ -2089,7 +2088,7 @@ namespace CamelotEngine
 			D3DFMT_A16B16G16R16F, D3DFMT_R32F, D3DFMT_G32R32F, 
 			D3DFMT_A32B32G32R32F};
 		IDirect3DSurface9* bbSurf;
-		renderWindow->getCustomAttribute_internal("DDBACKBUFFER", &bbSurf);
+		renderWindow->getCustomAttribute("DDBACKBUFFER", &bbSurf);
 		D3DSURFACE_DESC bbSurfDesc;
 		bbSurf->GetDesc(&bbSurfDesc);
 
@@ -2424,7 +2423,7 @@ namespace CamelotEngine
 		bool anySupported = false;
 
 		IDirect3DSurface9* bbSurf;
-		renderWindow->getCustomAttribute_internal("DDBACKBUFFER", &bbSurf);
+		renderWindow->getCustomAttribute("DDBACKBUFFER", &bbSurf);
 		D3DSURFACE_DESC bbSurfDesc;
 		bbSurf->GetDesc(&bbSurfDesc);
 

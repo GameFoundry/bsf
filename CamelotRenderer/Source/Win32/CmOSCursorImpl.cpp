@@ -11,7 +11,7 @@ namespace CamelotEngine
 
 		RenderWindowPtr primaryWindow = gApplication().getPrimaryRenderWindow();
 		HWND hwnd;
-		primaryWindow->getCustomAttribute_internal("WINDOW", &hwnd);
+		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
 		ScreenToClient(hwnd, &screenPos);
 
@@ -28,7 +28,7 @@ namespace CamelotEngine
 
 		RenderWindowPtr primaryWindow = gApplication().getPrimaryRenderWindow();
 		HWND hwnd;
-		primaryWindow->getCustomAttribute_internal("WINDOW", &hwnd);
+		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
 		ClientToScreen(hwnd, &screenPos);
 
@@ -43,7 +43,7 @@ namespace CamelotEngine
 
 		RenderWindowPtr primaryWindow = gApplication().getPrimaryRenderWindow();
 		HWND hwnd;
-		primaryWindow->getCustomAttribute_internal("WINDOW", &hwnd);
+		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
 		// Clip cursor to the window
 		if( GetWindowRect(hwnd, &clipWindowRect))

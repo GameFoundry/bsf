@@ -59,7 +59,8 @@ namespace CamelotEngine {
     class CM_EXPORT TextureManager : public Module<TextureManager>
     {
 	protected:
-		virtual Texture* createImpl() = 0;
+		virtual Texture* createTextureImpl() = 0;
+		virtual RenderTexture* createRenderTextureImpl() = 0;
 
 		void destroy(Texture* texture);
 		virtual void destroy_internal(Texture* texture);
@@ -178,6 +179,19 @@ namespace CamelotEngine {
 		virtual DepthStencilBufferPtr createDepthStencilBuffer(DepthStencilFormat format, UINT32 width, 
 			UINT32 height, UINT32 fsaa, const String& fsaaHint) = 0;
 
+		/**
+		 * @brief	Creates a new RenderTexture and automatically generates a color surface
+		 * 			and (optionally) a depth/stencil surface
+		 */
+		virtual RenderTexturePtr createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
+			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
+			bool createDepth = true, DepthStencilFormat depthStencilFormat = DFMT_D24S8);
+
+		/**
+		 * @brief	Creates an empty RenderTexture. You need to assign color and depth/stencil buffers to
+		 * 			it manually before using it.
+		 */
+		virtual RenderTexturePtr createEmptyRenderTexture();
 
 		/** Returns whether this render system can natively support the precise texture 
 			format requested with the given usage options.

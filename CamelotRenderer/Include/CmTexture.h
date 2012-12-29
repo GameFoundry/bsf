@@ -142,7 +142,7 @@ namespace CamelotEngine {
 		 @param name The name of the attribute to retrieve
 		 @param pData Pointer to memory matching the type of data you want to retrieve.
 		*/
-		virtual void getCustomAttribute_internal(const String& name, void* pData);
+		virtual void getCustomAttribute(const String& name, void* pData);
 
 		/**
 		 * @brief	Sets raw texture pixels for the specified mip level and texture face. Pixel format

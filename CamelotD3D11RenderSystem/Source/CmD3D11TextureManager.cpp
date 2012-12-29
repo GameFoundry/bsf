@@ -1,5 +1,6 @@
 #include "CmD3D11TextureManager.h"
 #include "CmD3D11Texture.h"
+#include "CmD3D11RenderTexture.h"
 #include "CmD3D11Mappings.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11DepthStencilBuffer.h"
@@ -13,9 +14,14 @@ namespace CamelotEngine
 	D3D11TextureManager::~D3D11TextureManager()
 	{ }
 
-	Texture* D3D11TextureManager::createImpl()
+	Texture* D3D11TextureManager::createTextureImpl()
 	{
 		return new D3D11Texture(); 
+	}
+
+	RenderTexture* D3D11TextureManager::createRenderTextureImpl()
+	{
+		return new D3D11RenderTexture();
 	}
 
 	DepthStencilBufferPtr D3D11TextureManager::createDepthStencilBuffer(DepthStencilFormat format, UINT32 width, 

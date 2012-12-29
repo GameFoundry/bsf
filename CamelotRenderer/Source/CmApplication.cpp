@@ -141,7 +141,7 @@ namespace CamelotEngine
 		}
 
 		UINT64 windowId = 0;
-		mPrimaryRenderWindow->getCustomAttribute_internal("WINDOW", &windowId);
+		mPrimaryRenderWindow->getCustomAttribute("WINDOW", &windowId);
 
 		return windowId;
 	}

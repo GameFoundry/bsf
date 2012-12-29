@@ -17,7 +17,7 @@ namespace CamelotEngine
 
 	}
 
-	void D3D9RenderTexture::getCustomAttribute_internal(const String& name, void* pData)
+	void D3D9RenderTexture::getCustomAttribute(const String& name, void* pData)
 	{
 		if(name == "DDBACKBUFFER")
 		{

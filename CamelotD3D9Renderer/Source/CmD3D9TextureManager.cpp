@@ -27,6 +27,7 @@ THE SOFTWARE.
 */
 #include "CmD3D9TextureManager.h"
 #include "CmD3D9Texture.h"
+#include "CmD3D9RenderTexture.h"
 #include "CmException.h"
 #include "CmD3D9Mappings.h"
 #include "CmD3D9RenderSystem.h"
@@ -44,10 +45,15 @@ namespace CamelotEngine
 
 	}
 
-    Texture* D3D9TextureManager::createImpl()
+    Texture* D3D9TextureManager::createTextureImpl()
     {
 		return new D3D9Texture();
     }
+
+	RenderTexture* D3D9TextureManager::createRenderTextureImpl()
+	{
+		return new D3D9RenderTexture();
+	}
 
 	DepthStencilBufferPtr D3D9TextureManager::createDepthStencilBuffer(DepthStencilFormat format, UINT32 width, 
 		UINT32 height, UINT32 fsaa, const String& fsaaHint)

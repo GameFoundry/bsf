@@ -520,5 +520,8 @@
     <ClCompile Include="Source\CmDepthStencilBuffer.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
+    <ClCompile Include="Include\CmMultiRenderTexture.cpp">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

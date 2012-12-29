@@ -40,37 +40,6 @@ namespace CamelotEngine
 
 	}
 
-	void RenderTexture::initialize(TextureType textureType, UINT32 width, UINT32 height, 
-		PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint,
-		bool createDepth, DepthStencilFormat depthStencilFormat)
-	{
-		mPriority = CM_REND_TO_TEX_RT_GROUP;
-		mWidth = width;
-		mHeight = height;
-		mType = textureType;
-		mFormat = format;
-		mColorDepth = CamelotEngine::PixelUtil::getNumElemBits(format);
-		mActive = true;
-		mHwGamma = hwGamma;
-		mFSAA = fsaa;
-		mFSAAHint = fsaaHint;
-		mDepthStencilFormat = depthStencilFormat;
-		mFace = 0;
-		mMipLevel = 0;
-
-		createTextureBuffer();
-
-		if(createDepth)
-			createDepthStencilBuffer();
-
-		createInternalResourcesImpl();
-	}
-
-	void RenderTexture::initialize(TexturePtr texture, DepthStencilBufferPtr depthStencilbuffer, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
-	{
-		setBuffers(texture, depthStencilbuffer, face, numFaces, mipLevel);
-	}
-
 	void RenderTexture::createInternalResources()
 	{
 		if(mTexture->getTextureType() != TEX_TYPE_2D)
@@ -91,36 +60,14 @@ namespace CamelotEngine
 		createInternalResourcesImpl();
 	}
 
-	void RenderTexture::createTextureBuffer()
+	void RenderTexture::setColorSurface(TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
 	{
-		mTexture = TextureManager::instance().createTexture(mType, mWidth, mHeight, 0, mFormat, TU_RENDERTARGET, mHwGamma, mFSAA, mFSAAHint);
-	}
+		mTexture = texture;
 
-	void RenderTexture::createDepthStencilBuffer()
-	{
-		mDepthStencilBuffer = TextureManager::instance().createDepthStencilBuffer(mDepthStencilFormat, mWidth, mHeight, mFSAA, mFSAAHint);
-	}
-
-	void RenderTexture::setBuffers(TexturePtr texture, DepthStencilBufferPtr depthStencilBuffer, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
-	{
-		assert(texture != nullptr);
-		assert(depthStencilBuffer != nullptr);
+		if(mTexture == nullptr)
+			return;
 
 		mPriority = CM_REND_TO_TEX_RT_GROUP;
-
-		if(texture->getWidth() != depthStencilBuffer->getWidth() ||
-			texture->getHeight() != depthStencilBuffer->getWidth() ||
-			texture->getFSAA() != depthStencilBuffer->getFsaa() ||
-			texture->getFSAAHint() != depthStencilBuffer->getFsaaHint())
-		{
-			String errorInfo = "\nWidth: " + toString(texture->getWidth()) + "/" + toString(depthStencilBuffer->getWidth());
-			errorInfo += "\nHeight: " + toString(texture->getHeight()) + "/" + toString(depthStencilBuffer->getHeight());
-			errorInfo += "\nFSAA: " + toString(texture->getFSAA()) + "/" + toString(depthStencilBuffer->getFsaa());
-			errorInfo += "\nFSAAHint: " + texture->getFSAAHint() + "/" + depthStencilBuffer->getFsaaHint();
-
-			CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
-		}
-
 		mWidth = texture->getWidth();
 		mHeight = texture->getWidth();
 		mColorDepth = CamelotEngine::PixelUtil::getNumElemBits(texture->getFormat());
@@ -130,28 +77,53 @@ namespace CamelotEngine
 		mFSAAHint = texture->getFSAAHint();
 		mType = texture->getTextureType();
 		mFormat = texture->getFormat();
-		mDepthStencilFormat = depthStencilBuffer->getFormat();
+		
 		mFace = face;
 		mNumFaces = face;
 		mMipLevel = mipLevel;
 
-		mTexture = texture;
+		throwIfBuffersDontMatch();
+
+		if(mDepthStencilBuffer != nullptr && mTexture != nullptr)
+			createInternalResourcesImpl();
+	}
+
+	void RenderTexture::setDepthStencil(DepthStencilBufferPtr depthStencilBuffer)
+	{
 		mDepthStencilBuffer = depthStencilBuffer;
 
-		createInternalResourcesImpl();
+		if(mDepthStencilBuffer == nullptr)
+			return;
+
+		mDepthStencilFormat = depthStencilBuffer->getFormat();
+
+		throwIfBuffersDontMatch();
+
+		if(mDepthStencilBuffer != nullptr && mTexture != nullptr)
+			createInternalResourcesImpl();
 	}
-	//-----------------------------------------------------------------------------
-	MultiRenderTarget::MultiRenderTarget(const String &name)
-    {
-        mPriority = CM_REND_TO_TEX_RT_GROUP;
-		mName = name;
-		/// Width and height is unknown with no targets attached
-		mWidth = mHeight = 0;
-    }
-	//-----------------------------------------------------------------------------
-	void MultiRenderTarget::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
+
+	void RenderTexture::throwIfBuffersDontMatch() const
 	{
-		CM_EXCEPT(InvalidParametersException, 
-					"Cannot get MultiRenderTargets pixels");
+		if(mTexture == nullptr || mDepthStencilBuffer == nullptr)
+			return;
+
+		if(mTexture->getWidth() != mDepthStencilBuffer->getWidth() ||
+			mTexture->getHeight() != mDepthStencilBuffer->getWidth() ||
+			mTexture->getFSAA() != mDepthStencilBuffer->getFsaa() ||
+			mTexture->getFSAAHint() != mDepthStencilBuffer->getFsaaHint())
+		{
+			String errorInfo = "\nWidth: " + toString(mTexture->getWidth()) + "/" + toString(mDepthStencilBuffer->getWidth());
+			errorInfo += "\nHeight: " + toString(mTexture->getHeight()) + "/" + toString(mDepthStencilBuffer->getHeight());
+			errorInfo += "\nFSAA: " + toString(mTexture->getFSAA()) + "/" + toString(mDepthStencilBuffer->getFsaa());
+			errorInfo += "\nFSAAHint: " + mTexture->getFSAAHint() + "/" + mDepthStencilBuffer->getFsaaHint();
+
+			CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
+		}
+	}
+
+	void RenderTexture::copyContentsToMemory( const PixelData &dst, FrameBuffer buffer /*= FB_AUTO */ )
+	{
+		throw std::exception("The method or operation is not implemented.");
 	}
 }

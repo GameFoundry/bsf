@@ -18,10 +18,8 @@
 
 /////
 
-Make separate DepthStencilBuffer object for OpenGL and assign it in GLRenderTexture & GLFrameBufferObject. Right now a new one is created or taken from a pool
 Add support for MultiRenderTexture
 Enhance TextureManager so it creates RenderTextures and MultiRenderTextures
-Create DX9 and OpenGL RenderTextures
 
 waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 Drop OpenGL support for low level shaders? (See if cg can translate to GLSL)

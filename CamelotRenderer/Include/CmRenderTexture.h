@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 #include "CmTexture.h"
+#include "CmDepthStencilBuffer.h"
 #include "CmRenderTarget.h"
 
 namespace CamelotEngine
@@ -45,13 +46,13 @@ namespace CamelotEngine
         RenderTargets rendering to different mipmaps, faces (for cubemaps) or slices (for 3D textures)
         of the same Texture.
     */
-    class CM_EXPORT RenderTexture: public RenderTarget
+    class CM_EXPORT RenderTexture : public RenderTarget
     {
 	public:
 		virtual ~RenderTexture() {}
 
-		void setBuffers(TexturePtr texture, DepthStencilBufferPtr depthStencilbuffer, 
-			UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
+		void setColorSurface(TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
+		void setDepthStencil(DepthStencilBufferPtr depthStencilbuffer);
 
 		TexturePtr getTexture() const { return mTexture; }
 		DepthStencilBufferPtr getDepthStencilBuffer() const { return mDepthStencilBuffer; }
@@ -71,87 +72,13 @@ namespace CamelotEngine
 
 		RenderTexture();
 
-		void initialize(TextureType textureType, UINT32 width, UINT32 height, 
-			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
-			bool createDepth = true, DepthStencilFormat depthStencilFormat = DFMT_D24S8);
-
-		void initialize(TexturePtr texture, DepthStencilBufferPtr depthStencilbuffer, 
-			UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
-
-		void createTextureBuffer();
-		void createDepthStencilBuffer();
-
 		void createInternalResources();
 		virtual void createInternalResourcesImpl() = 0;
-    };
 
-	/** This class represents a render target that renders to multiple RenderTextures
-		at once. Surfaces can be bound and unbound at will, as long as the following constraints
-		are met:
-		- All bound surfaces have the same size
-		- All bound surfaces have the same bit depth
-		- Target 0 is bound
-	*/
-	class CM_EXPORT MultiRenderTarget: public RenderTarget
-	{
-	public:
-		MultiRenderTarget(const String &name);
+	private:
+		void throwIfBuffersDontMatch() const;
 
-		/** Bind a surface to a certain attachment point.
-            @param attachment	0 .. mCapabilities->getNumMultiRenderTargets()-1
-			@param target		RenderTexture to bind.
-
-			It does not bind the surface and fails with an exception (ERR_INVALIDPARAMS) if:
-			- Not all bound surfaces have the same size
-			- Not all bound surfaces have the same internal format 
-		*/
-
-		virtual void bindSurface(UINT32 attachment, RenderTexture *target)
-		{
-			for (UINT32 i = (UINT32)mBoundSurfaces.size(); i <= attachment; ++i)
-			{
-				mBoundSurfaces.push_back(0);
-			}
-			mBoundSurfaces[attachment] = target;
-
-			bindSurfaceImpl(attachment, target);
-		}
-
-		/** Unbind attachment.
-		*/
-		virtual void unbindSurface(UINT32 attachment)
-		{
-			if (attachment < (UINT32)mBoundSurfaces.size())
-				mBoundSurfaces[attachment] = 0;
-			unbindSurfaceImpl(attachment);
-		}
-
-		/** Error throwing implementation, it's not possible to write a MultiRenderTarget
-			to disk. 
-		*/
-		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
-
-		/// Irrelevant implementation since cannot copy
-		PixelFormat suggestPixelFormat() const { return PF_UNKNOWN; }
-
-		typedef vector<RenderTexture*>::type BoundSufaceList;
-		/// Get a list of the surfaces which have been bound
-		const BoundSufaceList& getBoundSurfaceList() const { return mBoundSurfaces; }
-
-		/** Get a pointer to a bound surface */
-		RenderTexture* getBoundSurface(UINT32 index)
-		{
-			assert (index < mBoundSurfaces.size());
-			return mBoundSurfaces[index];
-		}
-
-	protected:
-		BoundSufaceList mBoundSurfaces;
-
-		/// implementation of bindSurface, must be provided
-		virtual void bindSurfaceImpl(UINT32 attachment, RenderTexture *target) = 0;
-		/// implementation of unbindSurface, must be provided
-		virtual void unbindSurfaceImpl(UINT32 attachment) = 0;
+		virtual void copyContentsToMemory( const PixelData &dst, FrameBuffer buffer = FB_AUTO );
 	};
 	/** @} */
 	/** @} */

@@ -45,10 +45,15 @@ namespace CamelotEngine {
 		glDeleteTextures(1, &mWarningTextureID);
     }
     //-----------------------------------------------------------------------------
-    Texture* GLTextureManager::createImpl()
+    Texture* GLTextureManager::createTextureImpl()
     {
         return new GLTexture(mGLSupport);
     }
+	//-----------------------------------------------------------------------------
+	RenderTexture* GLTextureManager::createRenderTextureImpl()
+	{
+		return new GLRenderTexture();
+	}
 	//----------------------------------------------------------------------------
 	DepthStencilBufferPtr GLTextureManager::createDepthStencilBuffer(DepthStencilFormat format, UINT32 width, 
 		UINT32 height, UINT32 fsaa, const String& fsaaHint)

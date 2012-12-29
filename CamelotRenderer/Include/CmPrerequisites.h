@@ -168,6 +168,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<BlendState> BlendStatePtr;
 	typedef std::shared_ptr<RenderWindow> RenderWindowPtr;
 	typedef std::shared_ptr<RenderTarget> RenderTargetPtr;
+	typedef std::shared_ptr<RenderTexture> RenderTexturePtr;
 	typedef std::shared_ptr<DepthStencilBuffer> DepthStencilBufferPtr;
 }
 

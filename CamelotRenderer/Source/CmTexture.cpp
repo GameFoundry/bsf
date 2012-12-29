@@ -91,7 +91,7 @@ namespace CamelotEngine {
 		return getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;
 	}
 	//-------------------------------------------------------------------------
-	void Texture::getCustomAttribute_internal(const String& name, void* pData)
+	void Texture::getCustomAttribute(const String& name, void* pData)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 	}

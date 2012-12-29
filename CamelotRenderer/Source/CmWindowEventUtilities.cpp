@@ -262,7 +262,7 @@ void GLXProc( RenderWindow *win, const XEvent &event )
 	case ClientMessage:
 	{
 		::Atom atom;
-		win->getCustomAttribute_internal("ATOM", &atom);
+		win->getCustomAttribute("ATOM", &atom);
 		if(event.xclient.format == 32 && event.xclient.data.l[0] == (long)atom)
 		{	//Window closed by window manager
 			//Send message first, to allow app chance to unregister things that need done before

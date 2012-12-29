@@ -56,7 +56,7 @@ namespace CamelotEngine {
         PixelFormat format, int usage, bool hwGamma, 
 		UINT32 fsaa, const String& fsaaHint)
     {
-        TexturePtr ret = TexturePtr(createImpl(), boost::bind(&TextureManager::destroy, this, _1));
+        TexturePtr ret = TexturePtr(createTextureImpl(), boost::bind(&TextureManager::destroy, this, _1));
 		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, fsaa, fsaaHint);
 
 		return ret;
@@ -64,9 +64,33 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	TexturePtr TextureManager::createEmpty()
 	{
-		TexturePtr ret = TexturePtr(createImpl(), boost::bind(&TextureManager::destroy, this, _1));
+		TexturePtr ret = TexturePtr(createTextureImpl(), boost::bind(&TextureManager::destroy, this, _1));
 
 		return ret;
+	}
+	//-----------------------------------------------------------------------
+	RenderTexturePtr TextureManager::createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
+			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
+			bool createDepth, DepthStencilFormat depthStencilFormat)
+	{
+		TexturePtr texture = createTexture(textureType, width, height, 0, format, TU_RENDERTARGET, hwGamma, fsaa, fsaaHint);
+
+		DepthStencilBufferPtr depthStencilBuffer = nullptr;
+		if(createDepth)
+			depthStencilBuffer = TextureManager::instance().createDepthStencilBuffer(depthStencilFormat, width, height, fsaa, fsaaHint);
+
+		RenderTexturePtr newRT = RenderTexturePtr(createRenderTextureImpl());
+		newRT->setColorSurface(texture, 0, 1, 0);
+		newRT->setDepthStencil(depthStencilBuffer);
+
+		return newRT;
+	}
+	//-----------------------------------------------------------------------
+	RenderTexturePtr TextureManager::createEmptyRenderTexture()
+	{
+		RenderTexturePtr newRT = RenderTexturePtr(createRenderTextureImpl());
+
+		return newRT;
 	}
     //-----------------------------------------------------------------------
 	bool TextureManager::isFormatSupported(TextureType ttype, PixelFormat format, int usage)

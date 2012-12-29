@@ -13,7 +13,7 @@ namespace CamelotEngine
 		virtual ~D3D9RenderTexture();
 
 		bool requiresTextureFlipping() const { return false; }
-		virtual void getCustomAttribute_internal(const String& name, void* pData);
+		virtual void getCustomAttribute(const String& name, void* pData);
 
 	protected:
 		IDirect3DSurface9* mColorSurface;
