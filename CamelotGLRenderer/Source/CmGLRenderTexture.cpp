@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include "CmGLPixelFormat.h"
 #include "CmGLDepthStencilBuffer.h"
 #include "CmGLHardwarePixelBuffer.h"
-#include "CmGLMultiRenderTarget.h"
 
 namespace CamelotEngine 
 {
@@ -65,7 +64,7 @@ namespace CamelotEngine
 		mFB->bindDepthStencil(glDepthStencilBuffer->getGLRenderBuffer());
 	}
 
-	void GLRenderTexture::getCustomAttribute_internal(const String& name, void* pData)
+	void GLRenderTexture::getCustomAttribute(const String& name, void* pData)
 	{
 		if(name=="FBO")
 		{

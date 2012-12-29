@@ -61,7 +61,7 @@ namespace CamelotEngine {
 		// Method for dealing with resize / move & 3d library
 		virtual void windowMovedOrResized(void);
 
-		void getCustomAttribute_internal( const String& name, void* pData );
+		void getCustomAttribute( const String& name, void* pData );
 
         /** Used to set the active state of the render target.
         */

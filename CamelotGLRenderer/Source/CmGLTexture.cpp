@@ -299,7 +299,7 @@ namespace CamelotEngine {
 		return mSurfaceList[idx];
 	}
 	//---------------------------------------------------------------------------------------------
-	void GLTexture::getCustomAttribute_internal(const String& name, void* pData)
+	void GLTexture::getCustomAttribute(const String& name, void* pData)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

@@ -528,14 +528,14 @@ namespace CamelotEngine {
 
 		// Switch context if different from current one
 		GLContext *newContext = 0;
-		target->getCustomAttribute_internal("GLCONTEXT", &newContext);
+		target->getCustomAttribute("GLCONTEXT", &newContext);
 		if(newContext && mCurrentContext != newContext) 
 		{
 			switchContext(newContext);
 		}
 
 		GLFrameBufferObject *fbo = 0;
-		target->getCustomAttribute_internal("FBO", &fbo);
+		target->getCustomAttribute("FBO", &fbo);
 		if(fbo)
 			fbo->bind();
 		else

@@ -47,7 +47,7 @@ namespace CamelotEngine {
 
         GLuint getGLID() const;
 		
-		void getCustomAttribute_internal(const String& name, void* pData);
+		void getCustomAttribute(const String& name, void* pData);
 
 		/** Return hardware pixel buffer for a surface. This buffer can then
 			be used to copy data from and to a particular level of the texture.

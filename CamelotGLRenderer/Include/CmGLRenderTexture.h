@@ -48,7 +48,7 @@ namespace CamelotEngine
 		virtual ~GLRenderTexture();
 
 		bool requiresTextureFlipping() const { return true; }
-		virtual void getCustomAttribute_internal(const String& name, void* pData);
+		virtual void getCustomAttribute(const String& name, void* pData);
 
 	protected:
 		GLFrameBufferObject* mFB;

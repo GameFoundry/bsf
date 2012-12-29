@@ -21,7 +21,7 @@ namespace CamelotEngine
 
 		mRenderSystem->attachRenderTarget(*win);
 		GLContext* context;
-		win->getCustomAttribute_internal("GLCONTEXT", &context);
+		win->getCustomAttribute("GLCONTEXT", &context);
 		mRenderSystem->registerContext(context);
 
 		RenderWindowPtr winPtr(win);

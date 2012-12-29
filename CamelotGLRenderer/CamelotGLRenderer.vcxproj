@@ -151,7 +151,6 @@
     <ClInclude Include="Include\CmGLContext.h" />
     <ClInclude Include="Include\CmGLDefaultHardwareBufferManager.h" />
     <ClInclude Include="Include\CmGLDepthStencilBuffer.h" />
-    <ClInclude Include="Include\CmGLMultiRenderTarget.h" />
     <ClInclude Include="Include\CmGLFrameBufferObject.h" />
     <ClInclude Include="Include\CmGLGpuProgram.h" />
     <ClInclude Include="Include\CmGLGpuProgramManager.h" />
@@ -195,7 +194,6 @@
     <ClCompile Include="Source\CmGLContext.cpp" />
     <ClCompile Include="Source\CmGLDefaultHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmGLDepthStencilBuffer.cpp" />
-    <ClCompile Include="Source\CmGLMultiRenderTarget.cpp" />
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp" />
     <ClCompile Include="Source\CmGLGpuProgram.cpp" />
     <ClCompile Include="Source\CmGLGpuProgramManager.cpp" />
