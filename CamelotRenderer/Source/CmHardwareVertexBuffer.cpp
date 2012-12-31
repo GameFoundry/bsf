@@ -74,9 +74,9 @@ namespace CamelotEngine {
 	{
 		switch(etype)
 		{
-		case VET_COLOUR:
-		case VET_COLOUR_ABGR:
-		case VET_COLOUR_ARGB:
+		case VET_COLOR:
+		case VET_COLOR_ABGR:
+		case VET_COLOR_ARGB:
 			return sizeof(RGBA);
 		case VET_FLOAT1:
 			return sizeof(float);
@@ -104,9 +104,9 @@ namespace CamelotEngine {
 	{
 		switch (etype)
 		{
-		case VET_COLOUR:
-		case VET_COLOUR_ABGR:
-		case VET_COLOUR_ARGB:
+		case VET_COLOR:
+		case VET_COLOR_ABGR:
+		case VET_COLOR_ARGB:
 			return 1;
 		case VET_FLOAT1:
 			return 1;
@@ -183,9 +183,9 @@ namespace CamelotEngine {
 			// We can't know the specific type right now, so pick a type
 			// based on platform
 #if CM_PLATFORM == CM_PLATFORM_WIN32
-			return VET_COLOUR_ARGB; // prefer D3D format on windows
+			return VET_COLOR_ARGB; // prefer D3D format on windows
 #else
-			return VET_COLOUR_ABGR; // prefer GL format on everything else
+			return VET_COLOR_ABGR; // prefer GL format on everything else
 #endif
 
 		}
@@ -210,12 +210,12 @@ namespace CamelotEngine {
 #if CM_PLATFORM == CM_PLATFORM_WIN32
         default:
 #endif
-		case VET_COLOUR_ARGB:
+		case VET_COLOR_ARGB:
 			return src.getAsARGB();
 #if CM_PLATFORM != CM_PLATFORM_WIN32
         default:
 #endif
-		case VET_COLOUR_ABGR: 
+		case VET_COLOR_ABGR: 
 			return src.getAsABGR();
 		};
 
@@ -230,12 +230,12 @@ namespace CamelotEngine {
 			case VET_FLOAT3:
 			case VET_FLOAT4:
 				return VET_FLOAT1;
-			case VET_COLOUR:
-				return VET_COLOUR;
-			case VET_COLOUR_ABGR:
-				return VET_COLOUR_ABGR;
-			case VET_COLOUR_ARGB:
-				return VET_COLOUR_ARGB;
+			case VET_COLOR:
+				return VET_COLOR;
+			case VET_COLOR_ABGR:
+				return VET_COLOR_ABGR;
+			case VET_COLOR_ARGB:
+				return VET_COLOR_ARGB;
 			case VET_SHORT1:
 			case VET_SHORT2:
 			case VET_SHORT3:
@@ -266,7 +266,7 @@ namespace CamelotEngine {
         VertexElementSemantic semantic, unsigned short index)
     {
 		// Refine colour type to a specific type
-		if (theType == VET_COLOUR)
+		if (theType == VET_COLOR)
 		{
 			theType = VertexElement::getBestColourVertexElementType();
 		}

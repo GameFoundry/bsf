@@ -13,7 +13,8 @@ using namespace CamelotEngine;
 GLenum wglewContextInit (CamelotEngine::GLSupport *glSupport);
 #endif
 
-namespace CamelotEngine {
+namespace CamelotEngine 
+{
 	Win32GLSupport::Win32GLSupport()
         : mInitialWindow(0)
         , mHasPixelFormatARB(false)
@@ -30,192 +31,6 @@ namespace CamelotEngine {
 		std::sort(c.begin(), c.end());
 		typename C::iterator p = std::unique(c.begin(), c.end());
 		c.erase(p, c.end());
-	}
-
-	void Win32GLSupport::addConfig()
-	{
-		//TODO: EnumDisplayDevices http://msdn.microsoft.com/library/en-us/gdi/devcons_2303.asp
-		/*vector<string> DisplayDevices;
-		DISPLAY_DEVICE DisplayDevice;
-		DisplayDevice.cb = sizeof(DISPLAY_DEVICE);
-		DWORD i=0;
-		while (EnumDisplayDevices(NULL, i++, &DisplayDevice, 0) {
-			DisplayDevices.push_back(DisplayDevice.DeviceName);
-		}*/
-		  
-		ConfigOption optFullScreen;
-		ConfigOption optVideoMode;
-		ConfigOption optColourDepth;
-		ConfigOption optDisplayFrequency;
-		ConfigOption optVSync;
-		ConfigOption optVSyncInterval;
-		ConfigOption optFSAA;
-		ConfigOption optRTTMode;
-		ConfigOption optSRGB;
-
-		// FS setting possiblities
-		optFullScreen.name = "Full Screen";
-		optFullScreen.possibleValues.push_back("Yes");
-		optFullScreen.possibleValues.push_back("No");
-		optFullScreen.currentValue = "Yes";
-		optFullScreen.immutable = false;
-
-		// Video mode possiblities
-		DEVMODE DevMode;
-		DevMode.dmSize = sizeof(DEVMODE);
-		optVideoMode.name = "Video Mode";
-		optVideoMode.immutable = false;
-		for (DWORD i = 0; EnumDisplaySettings(NULL, i, &DevMode); ++i)
-		{
-			if (DevMode.dmBitsPerPel < 16 || DevMode.dmPelsHeight < 480)
-				continue;
-			mDevModes.push_back(DevMode);
-			StringUtil::StrStreamType str;
-			str << DevMode.dmPelsWidth << " x " << DevMode.dmPelsHeight;
-			optVideoMode.possibleValues.push_back(str.str());
-		}
-		remove_duplicates(optVideoMode.possibleValues);
-		optVideoMode.currentValue = optVideoMode.possibleValues.front();
-
-		optColourDepth.name = "Colour Depth";
-		optColourDepth.immutable = false;
-		optColourDepth.currentValue.clear();
-
-		optDisplayFrequency.name = "Display Frequency";
-		optDisplayFrequency.immutable = false;
-        optDisplayFrequency.currentValue.clear();
-
-		optVSync.name = "VSync";
-		optVSync.immutable = false;
-		optVSync.possibleValues.push_back("No");
-		optVSync.possibleValues.push_back("Yes");
-		optVSync.currentValue = "No";
-
-		optVSyncInterval.name = "VSync Interval";
-		optVSyncInterval.immutable = false;
-		optVSyncInterval.possibleValues.push_back( "1" );
-		optVSyncInterval.possibleValues.push_back( "2" );
-		optVSyncInterval.possibleValues.push_back( "3" );
-		optVSyncInterval.possibleValues.push_back( "4" );
-		optVSyncInterval.currentValue = "1";
-
-		optFSAA.name = "FSAA";
-		optFSAA.immutable = false;
-		optFSAA.possibleValues.push_back("0");
-		for (vector<int>::type::iterator it = mFSAALevels.begin(); it != mFSAALevels.end(); ++it)
-		{
-			String val = toString(*it);
-			optFSAA.possibleValues.push_back(val);
-			/* not implementing CSAA in GL for now
-			if (*it >= 8)
-				optFSAA.possibleValues.push_back(val + " [Quality]");
-			*/
-
-		}
-		optFSAA.currentValue = "0";
-
-		optRTTMode.name = "RTT Preferred Mode";
-		optRTTMode.possibleValues.push_back("FBO");
-		optRTTMode.possibleValues.push_back("PBuffer");
-		optRTTMode.possibleValues.push_back("Copy");
-		optRTTMode.currentValue = "FBO";
-		optRTTMode.immutable = false;
-
-
-		// SRGB on auto window
-		optSRGB.name = "sRGB Gamma Conversion";
-		optSRGB.possibleValues.push_back("Yes");
-		optSRGB.possibleValues.push_back("No");
-		optSRGB.currentValue = "No";
-		optSRGB.immutable = false;
-
-
-		mOptions[optFullScreen.name] = optFullScreen;
-		mOptions[optVideoMode.name] = optVideoMode;
-		mOptions[optColourDepth.name] = optColourDepth;
-		mOptions[optDisplayFrequency.name] = optDisplayFrequency;
-		mOptions[optVSync.name] = optVSync;
-		mOptions[optVSyncInterval.name] = optVSyncInterval;
-		mOptions[optFSAA.name] = optFSAA;
-		mOptions[optRTTMode.name] = optRTTMode;
-		mOptions[optSRGB.name] = optSRGB;
-
-		refreshConfig();
-	}
-
-	void Win32GLSupport::refreshConfig()
-	{
-		ConfigOptionMap::iterator optVideoMode = mOptions.find("Video Mode");
-		ConfigOptionMap::iterator moptColourDepth = mOptions.find("Colour Depth");
-		ConfigOptionMap::iterator moptDisplayFrequency = mOptions.find("Display Frequency");
-		if(optVideoMode == mOptions.end() || moptColourDepth == mOptions.end() || moptDisplayFrequency == mOptions.end())
-			CM_EXCEPT(InvalidParametersException, "Can't find mOptions!");
-		ConfigOption* optColourDepth = &moptColourDepth->second;
-		ConfigOption* optDisplayFrequency = &moptDisplayFrequency->second;
-
-		const String& val = optVideoMode->second.currentValue;
-		String::size_type pos = val.find('x');
-		if (pos == String::npos)
-			CM_EXCEPT(InvalidParametersException, "Invalid Video Mode provided");
-		DWORD width = parseUnsignedInt(val.substr(0, pos));
-		DWORD height = parseUnsignedInt(val.substr(pos+1, String::npos));
-
-		for(vector<DEVMODE>::type::const_iterator i = mDevModes.begin(); i != mDevModes.end(); ++i)
-		{
-			if (i->dmPelsWidth != width || i->dmPelsHeight != height)
-				continue;
-			optColourDepth->possibleValues.push_back(toString((unsigned int)i->dmBitsPerPel));
-			optDisplayFrequency->possibleValues.push_back(toString((unsigned int)i->dmDisplayFrequency));
-		}
-		remove_duplicates(optColourDepth->possibleValues);
-		remove_duplicates(optDisplayFrequency->possibleValues);
-		optColourDepth->currentValue = optColourDepth->possibleValues.back();
-		bool freqValid = std::find(optDisplayFrequency->possibleValues.begin(),
-			optDisplayFrequency->possibleValues.end(),
-			optDisplayFrequency->currentValue) != optDisplayFrequency->possibleValues.end();
-
-		if ( (optDisplayFrequency->currentValue != "N/A") && !freqValid )			
-			optDisplayFrequency->currentValue = optDisplayFrequency->possibleValues.front();
-	}
-
-	void Win32GLSupport::setConfigOption(const String &name, const String &value)
-	{
-		ConfigOptionMap::iterator it = mOptions.find(name);
-
-		// Update
-		if(it != mOptions.end())
-			it->second.currentValue = value;
-		else
-		{
-            StringUtil::StrStreamType str;
-            str << "Option named '" << name << "' does not exist.";
-			CM_EXCEPT(InvalidParametersException, str.str());
-		}
-
-		if( name == "Video Mode" )
-			refreshConfig();
-
-		if( name == "Full Screen" )
-		{
-			it = mOptions.find( "Display Frequency" );
-			if( value == "No" )
-			{
-				it->second.currentValue = "N/A";
-				it->second.immutable = true;
-			}
-			else
-			{
-				if (it->second.currentValue.empty() || it->second.currentValue == "N/A")
-					it->second.currentValue = it->second.possibleValues.front();
-				it->second.immutable = false;
-			}
-		}
-	}
-
-	String Win32GLSupport::validateConfig()
-	{
-		// TODO, DX9
-		return StringUtil::BLANK;
 	}
 
 	BOOL CALLBACK Win32GLSupport::sCreateMonitorsInfoEnumProc(
@@ -240,7 +55,6 @@ namespace CamelotEngine {
 
 		return TRUE;
 	}
-
 
 	RenderWindow* Win32GLSupport::newWindow(const String &name, unsigned int width, 
 		unsigned int height, bool fullScreen, const NameValuePairList *miscParams)

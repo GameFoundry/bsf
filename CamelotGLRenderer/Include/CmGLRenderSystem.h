@@ -58,19 +58,18 @@ namespace CamelotEngine {
         void setRenderTarget(RenderTarget *target);
 
 		/**
-		 * @copydoc RenderSystem::bindGpuProgram()
+		 * @copydoc RenderSystem::setVertexDeclaration()
 		 */
-		void bindGpuProgram(GpuProgramHandle prg);
+		void setVertexDeclaration(VertexDeclarationPtr decl);
+        /**
+		 * @copydoc RenderSystem::setVertexBufferBinding()
+		 */
+		void setVertexBufferBinding(VertexBufferBinding* binding);
 
-		/**
-		 * @copydoc RenderSystem::unbindGpuProgram()
+        /**
+		 * @copydoc RenderSystem::setScissorRect()
 		 */
-		void unbindGpuProgram(GpuProgramType gptype);
-
-		/**
-		 * @copydoc RenderSystem::bindGpuProgramParameters()
-		 */
-		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
+        void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) ;
 
 		/**
 		 * @copydoc RenderSystem::setTexture()
@@ -108,6 +107,21 @@ namespace CamelotEngine {
         void setViewport(const Viewport& vp);
 
 		/**
+		 * @copydoc RenderSystem::bindGpuProgram()
+		 */
+		void bindGpuProgram(GpuProgramHandle prg);
+
+		/**
+		 * @copydoc RenderSystem::unbindGpuProgram()
+		 */
+		void unbindGpuProgram(GpuProgramType gptype);
+
+		/**
+		 * @copydoc RenderSystem::bindGpuProgramParameters()
+		 */
+		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
+
+		/**
 		 * @copydoc RenderSystem::beginFrame()
 		 */
         void beginFrame(void);
@@ -117,28 +131,10 @@ namespace CamelotEngine {
 		 */
         void endFrame(void);
 
-        /**
-		 * @copydoc RenderSystem::convertProjectionMatrix()
-		 */
-        void convertProjectionMatrix(const Matrix4& matrix,
-            Matrix4& dest, bool forGpuProgram = false);
-        /**
-		 * @copydoc RenderSystem::setVertexDeclaration()
-		 */
-		void setVertexDeclaration(VertexDeclarationPtr decl);
-        /**
-		 * @copydoc RenderSystem::setVertexBufferBinding()
-		 */
-		void setVertexBufferBinding(VertexBufferBinding* binding);
-        /**
+		/**
 		 * @copydoc RenderSystem::render()
 		 */
         void render(const RenderOperation& op);
-
-        /**
-		 * @copydoc RenderSystem::setScissorRect()
-		 */
-        void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) ;
 
 		/**
 		 * @copydoc RenderSystem::clearFrameBuffer()
@@ -172,6 +168,16 @@ namespace CamelotEngine {
 		 */
         float getMaximumDepthInputValue(void);
 
+		/**
+		 * @copydoc RenderSystem::convertProjectionMatrix()
+		 */
+        void convertProjectionMatrix(const Matrix4& matrix,
+            Matrix4& dest, bool forGpuProgram = false);
+
+		/************************************************************************/
+		/* 				Internal use by OpenGL RenderSystem only                */
+		/************************************************************************/
+
         void unregisterContext(GLContext *context);
 		void registerContext(GLContext* context);
 
@@ -192,8 +198,6 @@ namespace CamelotEngine {
 
         /// View matrix to set world against
         Matrix4 mViewMatrix;
-        Matrix4 mWorldMatrix;
-        Matrix4 mTextureMatrix;
 
         /// Last min & mip filtering options, so we can combine them
         FilterOptions mMinFilter;
@@ -208,7 +212,6 @@ namespace CamelotEngine {
 		/// Number of fixed-function texture units
 		unsigned short mFixedFunctionTextureUnits;
 
-        void initConfigOptions(void);
         void initInputDevices(void);
         void processInputDevices(void);
 
@@ -241,16 +244,11 @@ namespace CamelotEngine {
         /// GL support class, used for creating windows etc.
         GLSupport* mGLSupport;
 
-        bool mUseAutoTextureMatrix;
-        GLfloat mAutoTextureMatrix[16];
-
         /// Check if the GL system has already been initialised
         bool mGLInitialised;
 
 		GLSLProgramFactory* mGLSLProgramFactory;
 		CgProgramFactory* mCgProgramFactory;
-
-        unsigned short mCurrentLights;
 
         GLuint getCombinedMinMipFilter(void) const;
 

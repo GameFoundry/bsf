@@ -12,25 +12,11 @@ namespace CamelotEngine
 	{
 	public:
         Win32GLSupport();
-		/**
-		* Add any special config values to the system.
-		* Must have a "Full Screen" value that is a bool and a "Video Mode" value
-		* that is a string in the form of wxhxb
-		*/
-		void addConfig();
-
-		void setConfigOption(const String &name, const String &value);
-
-		/**
-		* Make sure all the extra options are valid
-		*/
-		String validateConfig();
 
 		/// @copydoc RenderSystem::_createRenderWindow
 		virtual RenderWindow* newWindow(const String &name, unsigned int width, unsigned int height, 
 			bool fullScreen, const NameValuePairList *miscParams = 0);
 
-		
 		/**
 		* Start anything special
 		*/
@@ -75,7 +61,6 @@ namespace CamelotEngine
 
 		DisplayMonitorInfoList mMonitorInfoList;
 
-		void refreshConfig();
 		void initialiseWGL();
 		static LRESULT CALLBACK dummyWndProc(HWND hwnd, UINT umsg, WPARAM wp, LPARAM lp);
 		static BOOL CALLBACK sCreateMonitorsInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, 

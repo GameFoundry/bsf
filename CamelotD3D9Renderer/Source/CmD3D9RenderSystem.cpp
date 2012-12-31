@@ -149,13 +149,6 @@ namespace CamelotEngine
 		if( NULL == (mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) )
 			CM_EXCEPT(InternalErrorException, "Failed to create Direct3D9 object");
 
-		// set config options defaults
-		initConfigOptions();
-
-		// fsaa options
-		mFSAAHint = "";
-		mFSAASamples = 0;
-
 		// set stages desc. to defaults
 		for (size_t n = 0; n < CM_MAX_TEXTURE_LAYERS; n++)
 		{
@@ -170,16 +163,7 @@ namespace CamelotEngine
 		RenderWindow* autoWindow = NULL;
 
 		// Init using current settings
-		mActiveD3DDriver = NULL;
-		ConfigOptionMap::iterator opt = mOptions.find( "Rendering Device" );
-		for( UINT32 j=0; j < getDirect3DDrivers()->count(); j++ )
-		{
-			if( getDirect3DDrivers()->item(j)->DriverDescription() == opt->second.currentValue )
-			{
-				mActiveD3DDriver = getDirect3DDrivers()->item(j);
-				break;
-			}
-		}
+		mActiveD3DDriver = getDirect3DDrivers()->item(0); // TODO - We always use the first driver
 
 		if( !mActiveD3DDriver )
 			CM_EXCEPT(InvalidParametersException, "Problems finding requested Direct3D driver!" );
@@ -226,7 +210,8 @@ namespace CamelotEngine
 
 		TextureManager::shutDown();
 		HardwareBufferManager::shutDown();
-		GpuProgramManager::shutDown();		
+		GpuProgramManager::shutDown();	
+		RenderWindowManager::shutDown();
 	}
 	//--------------------------------------------------------------------
 	void D3D9RenderSystem::registerRenderWindow(D3D9RenderWindowPtr renderWindow)
@@ -1569,7 +1554,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	VertexElementType D3D9RenderSystem::getColorVertexElementType() const
 	{
-		return VET_COLOUR_ARGB;
+		return VET_COLOR_ARGB;
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::convertProjectionMatrix(const Matrix4& matrix,
@@ -1621,217 +1606,6 @@ namespace CamelotEngine
 			return true;
 		else
 			return false;
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::initConfigOptions()
-	{
-		D3D9DriverList* driverList;
-		D3D9Driver* driver;
-
-		ConfigOption optDevice;
-		ConfigOption optVideoMode;
-		ConfigOption optFullScreen;
-		ConfigOption optVSync;
-		ConfigOption optVSyncInterval;
-		ConfigOption optAA;
-		ConfigOption optFPUMode;
-		ConfigOption optNVPerfHUD;
-		ConfigOption optSRGB;
-		ConfigOption optResourceCeationPolicy;
-
-		driverList = this->getDirect3DDrivers();
-
-		optDevice.name = "Rendering Device";
-		optDevice.currentValue.clear();
-		optDevice.possibleValues.clear();
-		optDevice.immutable = false;
-
-		optVideoMode.name = "Video Mode";
-		optVideoMode.currentValue = "800 x 600 @ 32-bit colour";
-		optVideoMode.immutable = false;
-
-		optFullScreen.name = "Full Screen";
-		optFullScreen.possibleValues.push_back( "Yes" );
-		optFullScreen.possibleValues.push_back( "No" );
-		optFullScreen.currentValue = "Yes";
-		optFullScreen.immutable = false;
-
-		optResourceCeationPolicy.name = "Resource Creation Policy";		
-		optResourceCeationPolicy.possibleValues.push_back( "Create on all devices" );
-		optResourceCeationPolicy.possibleValues.push_back( "Create on active device" );
-
-		if (mResourceManager->getCreationPolicy() == RCP_CREATE_ON_ACTIVE_DEVICE)
-			optResourceCeationPolicy.currentValue = "Create on active device";			
-		else if (mResourceManager->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
-			optResourceCeationPolicy.currentValue = "Create on all devices";
-		else
-			optResourceCeationPolicy.currentValue = "N/A";
-		optResourceCeationPolicy.immutable = false;
-
-		for( unsigned j=0; j < driverList->count(); j++ )
-		{
-			driver = driverList->item(j);
-			optDevice.possibleValues.push_back( driver->DriverDescription() );
-			// Make first one default
-			if( j==0 )
-				optDevice.currentValue = driver->DriverDescription();
-		}
-
-		optVSync.name = "VSync";
-		optVSync.immutable = false;
-		optVSync.possibleValues.push_back( "Yes" );
-		optVSync.possibleValues.push_back( "No" );
-		optVSync.currentValue = "No";
-
-		optVSyncInterval.name = "VSync Interval";
-		optVSyncInterval.immutable = false;
-		optVSyncInterval.possibleValues.push_back( "1" );
-		optVSyncInterval.possibleValues.push_back( "2" );
-		optVSyncInterval.possibleValues.push_back( "3" );
-		optVSyncInterval.possibleValues.push_back( "4" );
-		optVSyncInterval.currentValue = "1";
-
-		optAA.name = "FSAA";
-		optAA.immutable = false;
-		optAA.possibleValues.push_back( "None" );
-		optAA.currentValue = "None";
-
-		optFPUMode.name = "Floating-point mode";
-#if OGRE_DOUBLE_PRECISION
-		optFPUMode.currentValue = "Consistent";
-#else
-		optFPUMode.currentValue = "Fastest";
-#endif
-		optFPUMode.possibleValues.clear();
-		optFPUMode.possibleValues.push_back("Fastest");
-		optFPUMode.possibleValues.push_back("Consistent");
-		optFPUMode.immutable = false;
-
-		optNVPerfHUD.currentValue = "No";
-		optNVPerfHUD.immutable = false;
-		optNVPerfHUD.name = "Allow NVPerfHUD";
-		optNVPerfHUD.possibleValues.push_back( "Yes" );
-		optNVPerfHUD.possibleValues.push_back( "No" );
-
-
-		// SRGB on auto window
-		optSRGB.name = "sRGB Gamma Conversion";
-		optSRGB.possibleValues.push_back("Yes");
-		optSRGB.possibleValues.push_back("No");
-		optSRGB.currentValue = "No";
-		optSRGB.immutable = false;
-
-		mOptions[optDevice.name] = optDevice;
-		mOptions[optVideoMode.name] = optVideoMode;
-		mOptions[optFullScreen.name] = optFullScreen;
-		mOptions[optVSync.name] = optVSync;
-		mOptions[optVSyncInterval.name] = optVSyncInterval;
-		mOptions[optAA.name] = optAA;
-		mOptions[optFPUMode.name] = optFPUMode;
-		mOptions[optNVPerfHUD.name] = optNVPerfHUD;
-		mOptions[optSRGB.name] = optSRGB;
-		mOptions[optResourceCeationPolicy.name] = optResourceCeationPolicy;
-
-		refreshD3DSettings();
-
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::refreshD3DSettings()
-	{
-		ConfigOption* optVideoMode;
-		D3D9Driver* driver = 0;
-		D3D9VideoMode* videoMode;
-
-		ConfigOptionMap::iterator opt = mOptions.find( "Rendering Device" );
-		if( opt != mOptions.end() )
-		{
-			for( unsigned j=0; j < getDirect3DDrivers()->count(); j++ )
-			{
-				D3D9Driver* curDriver = getDirect3DDrivers()->item(j);
-				if( curDriver->DriverDescription() == opt->second.currentValue )
-				{
-					driver = curDriver;
-					break;
-				}
-			}
-
-			if (driver)
-			{
-				opt = mOptions.find( "Video Mode" );
-				optVideoMode = &opt->second;
-				optVideoMode->possibleValues.clear();
-				// get vide modes for this device
-				for( unsigned k=0; k < driver->getVideoModeList()->count(); k++ )
-				{
-					videoMode = driver->getVideoModeList()->item( k );
-					optVideoMode->possibleValues.push_back( videoMode->getDescription() );
-				}
-
-				// Reset video mode to default if previous doesn't avail in new possible values
-				std::vector<CamelotEngine::String>::const_iterator itValue =
-					std::find(optVideoMode->possibleValues.begin(),
-					optVideoMode->possibleValues.end(),
-					optVideoMode->currentValue);
-				if (itValue == optVideoMode->possibleValues.end())
-				{
-					optVideoMode->currentValue = "800 x 600 @ 32-bit colour";
-				}
-
-				// Also refresh FSAA options
-				refreshFSAAOptions();
-			}
-		}
-
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::refreshFSAAOptions()
-	{
-		ConfigOptionMap::iterator it = mOptions.find( "FSAA" );
-		ConfigOption* optFSAA = &it->second;
-		optFSAA->possibleValues.clear();
-		optFSAA->possibleValues.push_back("0");
-
-		it = mOptions.find("Rendering Device");
-		D3D9Driver *driver = getDirect3DDrivers()->item(it->second.currentValue);
-		if (driver)
-		{
-			it = mOptions.find("Video Mode");
-			D3D9VideoMode *videoMode = driver->getVideoModeList()->item(it->second.currentValue);
-			if (videoMode)
-			{
-				DWORD numLevels = 0;
-				bool bOK;
-
-				for (unsigned int n = 2; n < 25; n++)
-				{
-					bOK = this->_checkMultiSampleQuality(
-						(D3DMULTISAMPLE_TYPE)n, 
-						&numLevels, 
-						videoMode->getFormat(), 
-						driver->getAdapterNumber(),
-						D3DDEVTYPE_HAL,
-						TRUE);
-					if (bOK)
-					{
-						optFSAA->possibleValues.push_back(toString(n));
-						if (n >= 8)
-							optFSAA->possibleValues.push_back(toString(n) + " [Quality]");
-					}
-				}
-
-			}
-		}
-
-		// Reset FSAA to none if previous doesn't avail in new possible values
-		std::vector<CamelotEngine::String>::const_iterator itValue =
-			std::find(optFSAA->possibleValues.begin(),
-			optFSAA->possibleValues.end(),
-			optFSAA->currentValue);
-		if (itValue == optFSAA->possibleValues.end())
-		{
-			optFSAA->currentValue = "0";
-		}
-
 	}
 	//---------------------------------------------------------------------
 	RenderSystemCapabilities* D3D9RenderSystem::updateRenderSystemCapabilities(D3D9RenderWindow* renderWindow)

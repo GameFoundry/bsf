@@ -31,21 +31,8 @@ THE SOFTWARE.
 #include "CmGLSupport.h"
 #include "CmGLTexture.h"
 
-namespace CamelotEngine {
-
-	void GLSupport::setConfigOption(const String &name, const String &value)
-	{
-		ConfigOptionMap::iterator it = mOptions.find(name);
-
-        if (it != mOptions.end())
-            it->second.currentValue = value;
-	}
-
-	ConfigOptionMap& GLSupport::getConfigOptions(void)
-	{
-		return mOptions;
-	}
-
+namespace CamelotEngine
+{
     void GLSupport::initialiseExtensions(void)
     {
         // Set version string

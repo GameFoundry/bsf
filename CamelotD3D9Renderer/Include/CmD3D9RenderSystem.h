@@ -125,10 +125,6 @@ namespace CamelotEngine
 	private:
 		/// Direct3D
 		IDirect3D9*	 mpD3D;		
-		// Stored options
-		ConfigOptionMap mOptions;
-		size_t mFSAASamples;
-		String mFSAAHint;
 
 		/// instance
 		HINSTANCE mhInstance;
@@ -160,8 +156,6 @@ namespace CamelotEngine
 		} mTexStageDesc[CM_MAX_TEXTURE_LAYERS];
 
 		D3D9DriverList* getDirect3DDrivers();
-		void refreshD3DSettings();
-        void refreshFSAAOptions();
 				
 		// state management methods, very primitive !!!
 		HRESULT __SetRenderState(D3DRENDERSTATETYPE state, DWORD value);
@@ -217,7 +211,6 @@ namespace CamelotEngine
 
 		String getErrorDescription( long errorNumber ) const;
 
-		void initConfigOptions();
 		void setClipPlane (UINT16 index, float A, float B, float C, float D);
 		void enableClipPlane (UINT16 index, bool enable);
 

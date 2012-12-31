@@ -380,12 +380,12 @@ namespace CamelotEngine {
 	void VertexData::convertPackedColour(
 		VertexElementType srcType, VertexElementType destType)
 	{
-		if (destType != VET_COLOUR_ABGR && destType != VET_COLOUR_ARGB)
+		if (destType != VET_COLOR_ABGR && destType != VET_COLOR_ARGB)
 		{
 			CM_EXCEPT(InvalidParametersException,
 				"Invalid destType parameter");
 		}
-		if (srcType != VET_COLOUR_ABGR && srcType != VET_COLOUR_ARGB)
+		if (srcType != VET_COLOR_ABGR && srcType != VET_COLOR_ARGB)
 		{
 			CM_EXCEPT(InvalidParametersException,
 				"Invalid srcType parameter");
@@ -403,8 +403,8 @@ namespace CamelotEngine {
 			for (elemi = elems.begin(); elemi != elems.end(); ++elemi)
 			{
 				VertexElement& elem = *elemi;
-				if (elem.getType() == VET_COLOUR || 
-					((elem.getType() == VET_COLOUR_ABGR || elem.getType() == VET_COLOUR_ARGB) 
+				if (elem.getType() == VET_COLOR || 
+					((elem.getType() == VET_COLOR_ABGR || elem.getType() == VET_COLOR_ARGB) 
 					&& elem.getType() != destType))
 				{
 					conversionNeeded = true;
@@ -421,10 +421,10 @@ namespace CamelotEngine {
 					for (elemi = elems.begin(); elemi != elems.end(); ++elemi)
 					{
 						VertexElement& elem = *elemi;
-						VertexElementType currType = (elem.getType() == VET_COLOUR) ?
+						VertexElementType currType = (elem.getType() == VET_COLOR) ?
 							srcType : elem.getType();
-						if (elem.getType() == VET_COLOUR || 
-							((elem.getType() == VET_COLOUR_ABGR || elem.getType() == VET_COLOUR_ARGB) 
+						if (elem.getType() == VET_COLOR || 
+							((elem.getType() == VET_COLOR_ABGR || elem.getType() == VET_COLOR_ARGB) 
 							&& elem.getType() != destType))
 						{
 							UINT32* pRGBA;
@@ -445,8 +445,8 @@ namespace CamelotEngine {
 				for (ai = allelems.begin(); ai != allelems.end(); ++ai, ++elemIndex)
 				{
 					const VertexElement& elem = *ai;
-					if (elem.getType() == VET_COLOUR || 
-						((elem.getType() == VET_COLOUR_ABGR || elem.getType() == VET_COLOUR_ARGB) 
+					if (elem.getType() == VET_COLOR || 
+						((elem.getType() == VET_COLOR_ABGR || elem.getType() == VET_COLOR_ARGB) 
 						&& elem.getType() != destType))
 					{
 						vertexDeclaration->modifyElement(elemIndex, 

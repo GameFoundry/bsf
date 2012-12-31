@@ -17,9 +17,21 @@
 
 
 /////
+Write a shader preprocessor?
+ - Handles #include files, exposing parameters, and defining HLSL/GLSL blocks
+ - Either that or provide UI support for those things?
+ - I think UI actually sounds better...
+ - Just writing out some thoughts, delete this in a few days
 
-Add support for MultiRenderTexture
-Enhance TextureManager so it creates RenderTextures and MultiRenderTextures
+Creating a primary window and initializing the render system should probably be one step
+ - OpenGL requires it anyway in order to get context (Make sure to update GLRenderWindowManager if I change how this works)
+ - I can't imagine much use for a render system without a window. (Windowless client is a possibility, but in that case entire render system would not be needed)
+ - And if just rendering to texture (or similar) is needed, a hidden window may be used
+
+Don't forget to check out Unity DX11 documentation on how to implement DX11 features (http://docs.unity3d.com/Documentation/Manual/DirectX11.html)
+
+Unity has a common class for both RenderTexture and DepthStencilBuffer
+ - Maybe rename DepthStencilBuffer to DepthStencilTexture?
 
 waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 Drop OpenGL support for low level shaders? (See if cg can translate to GLSL)
@@ -34,10 +46,12 @@ Make sure that the simulation can't run faster then the render thread! (Block th
 Figure out how to handle accessing texture from a non-render thread?
 /////
 
+
+
 RenderSystem needed modifications
  - Right now HLSL11 CANNOT SPECIFY TEXTURE PARAMETERS! (Pass needs to be extended)
  - Generic buffers (Normal/Structured/Raw/Append/Consume/Indirect)
- - Unordered access view for OM and CS stages
+ - Unordered access view for OM and CS stages (this should probably just be a flag .enableRandomWrite on Texture & Buffer classes)
  - Ability to bind buffers and texture with different type of view (SHADER_RESOURCE & UNORDERED_ACCESS primarily, major others too)
  - Pass needs to be modified
   - Needs to support bool/double/texture1D/textue3D/textureCUBE/texture arrays/MS textures/all types of buffers/structs
@@ -51,7 +65,7 @@ RenderSystem needed modifications
  - Dynamic shader linkage (Interfaces and similar)
  - Append/Consume buffer
  - 1D/2D/Cube texture arrays
- - Rendertargets that aren't just 2D
+ - Rendertargets that aren't just 2D (Volumetric (3D) render targets in particular)
  - Readable DepthStencil (needs to be assignable to a shader)
  - Multisampled texture resources
  - Multiple adapters (multi gpu)

@@ -594,8 +594,8 @@ namespace CamelotEngine
 
 		if(vertexData->color)
 		{
-			meshData->declaration->addElement(0, offset, VET_COLOUR, VES_DIFFUSE, 0);
-			offset += VertexElement::getTypeSize(VET_COLOUR);
+			meshData->declaration->addElement(0, offset, VET_COLOR, VES_DIFFUSE, 0);
+			offset += VertexElement::getTypeSize(VET_COLOR);
 		}
 
 		if(vertexData->normal)

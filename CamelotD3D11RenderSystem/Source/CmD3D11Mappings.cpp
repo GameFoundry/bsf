@@ -338,9 +338,9 @@ namespace CamelotEngine
 	{
 		switch (vType)
 		{
-		case VET_COLOUR:
-		case VET_COLOUR_ABGR:
-		case VET_COLOUR_ARGB:
+		case VET_COLOR:
+		case VET_COLOR_ABGR:
+		case VET_COLOR_ARGB:
 			return DXGI_FORMAT_R8G8B8A8_UNORM;
 			break;
 		case VET_FLOAT1:

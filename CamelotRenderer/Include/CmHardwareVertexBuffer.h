@@ -99,17 +99,17 @@ namespace CamelotEngine {
         VET_FLOAT2 = 1,
         VET_FLOAT3 = 2,
         VET_FLOAT4 = 3,
-        /// alias to more specific colour type - use the current rendersystem's colour packing
-		VET_COLOUR = 4,
+        /// alias to more specific color type - use the current rendersystem's color packing
+		VET_COLOR = 4,
 		VET_SHORT1 = 5,
 		VET_SHORT2 = 6,
 		VET_SHORT3 = 7,
 		VET_SHORT4 = 8,
         VET_UBYTE4 = 9,
-        /// D3D style compact colour
-        VET_COLOUR_ARGB = 10,
-        /// GL style compact colour
-        VET_COLOUR_ABGR = 11
+        /// D3D style compact color
+        VET_COLOR_ARGB = 10,
+        /// GL style compact color
+        VET_COLOR_ABGR = 11
     };
 
     /** This class declares the usage of a single vertex buffer as a component

@@ -100,10 +100,7 @@ namespace CamelotEngine {
 		// Get our GLSupport
 		mGLSupport = CamelotEngine::getGLSupport();
 
-		mWorldMatrix = Matrix4::IDENTITY;
 		mViewMatrix = Matrix4::IDENTITY;
-
-		initConfigOptions();
 
 		mColourWrite[0] = mColourWrite[1] = mColourWrite[2] = mColourWrite[3] = true;
 
@@ -120,7 +117,6 @@ namespace CamelotEngine {
 
 		mGLInitialised = false;
 
-		mCurrentLights = 0;
 		mMinFilter = FO_LINEAR;
 		mMipFilter = FO_POINT;
 		mCurrentVertexProgram = 0;
@@ -204,6 +200,7 @@ namespace CamelotEngine {
 		mStopRendering = true;
 
 		TextureManager::shutDown();
+		RenderWindowManager::shutDown();
 
 		// There will be a new initial window and so forth, thus any call to test
 		//  some params will access an invalid pointer, so it is best to reset
@@ -648,9 +645,9 @@ namespace CamelotEngine {
 				GLboolean normalised = GL_FALSE;
 				switch(elem->getType())
 				{
-				case VET_COLOUR:
-				case VET_COLOUR_ABGR:
-				case VET_COLOUR_ARGB:
+				case VET_COLOR:
+				case VET_COLOR_ABGR:
+				case VET_COLOR_ARGB:
 					// Because GL takes these as a sequence of single unsigned bytes, count needs to be 4
 					// VertexElement::getTypeCount treats them as 1 (RGBA)
 					// Also need to normalise the fixed-point data
@@ -1496,9 +1493,6 @@ namespace CamelotEngine {
 		if (mCurrentFragmentProgram)
 			mCurrentFragmentProgram->unbindProgram();
 
-		// Disable lights
-		mCurrentLights = 0;
-
 		// Disable textures
 		disableTextureUnitsFrom(0);
 
@@ -1604,11 +1598,6 @@ namespace CamelotEngine {
 		{
 			return true;
 		}
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::initConfigOptions(void)
-	{
-		mGLSupport->addConfig();
 	}
 	//---------------------------------------------------------------------
 	GLfloat GLRenderSystem::_getCurrentAnisotropy(UINT16 unit)
@@ -2478,7 +2467,7 @@ namespace CamelotEngine {
 	}
 	VertexElementType GLRenderSystem::getColorVertexElementType(void) const
 	{
-		return VET_COLOUR_ABGR;
+		return VET_COLOR_ABGR;
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::convertProjectionMatrix(const Matrix4& matrix,

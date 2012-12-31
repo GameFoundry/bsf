@@ -43,23 +43,6 @@ public:
     GLSupport() { }
     virtual ~GLSupport() { }
 
-    /**
-    * Add any special config values to the system.
-    * Must have a "Full Screen" value that is a bool and a "Video Mode" value
-    * that is a string in the form of wxh
-    */
-    virtual void addConfig() = 0;
-
-	virtual void setConfigOption(const String &name, const String &value);
-
-    /**
-    * Make sure all the extra options are valid
-    * @return string with error message
-    */
-    virtual String validateConfig() = 0;
-
-	virtual ConfigOptionMap& getConfigOptions(void);
-
 	virtual RenderWindow* newWindow(const String &name, unsigned int width, unsigned int height, 
 		bool fullScreen, const NameValuePairList *miscParams = 0) = 0;
 
@@ -116,8 +99,6 @@ public:
 	}
 
 protected:
-	// Stored options
-    ConfigOptionMap mOptions;
 
 	// This contains the complete list of supported extensions
     set<String>::type extensionList;
