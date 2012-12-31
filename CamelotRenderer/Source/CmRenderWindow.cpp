@@ -70,8 +70,8 @@ namespace CamelotEngine {
         mAutoDeactivatedOnFocusChange = deactivate;
     }
 
-	RenderWindowPtr RenderWindow::create(const String& name, unsigned int width, unsigned int height, bool fullScreen, const NameValuePairList *miscParams)
+	RenderWindowPtr RenderWindow::create(const RENDER_WINDOW_DESC& desc)
 	{
-		return RenderWindowManager::instance().create(name, width, height, fullScreen, miscParams);
+		return RenderWindowManager::instance().create(desc);
 	}
 }

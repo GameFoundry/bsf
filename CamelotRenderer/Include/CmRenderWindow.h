@@ -32,6 +32,40 @@ THE SOFTWARE
 
 namespace CamelotEngine
 {
+	struct CM_EXPORT RENDER_WINDOW_DESC
+	{
+		RENDER_WINDOW_DESC()
+			:width(0), height(0), fullscreen(false)
+			, vsync(false), vsyncInterval(1), hidden(false)
+			, displayFrequency(60), colorDepth(32), depthBuffer(true)
+			, FSAA(0), FSAAHint(""), gamma(false), left(-1), top(-1)
+			, title(""), border(""), outerDimensions(false), enableDoubleClick(false)
+			, monitorIndex(-1)
+		{ }
+
+		UINT32 width;
+		UINT32 height;
+		bool fullscreen;
+		bool vsync;
+		UINT32 vsyncInterval;
+		bool hidden;
+		UINT32 displayFrequency;
+		UINT32 colorDepth;
+		bool depthBuffer;
+		UINT32 FSAA;
+		String FSAAHint;
+		bool gamma;
+		INT32 left; // -1 == screen center
+		INT32 top; // -1 == screen center
+		String title;
+		String border;
+		bool outerDimensions;
+		bool enableDoubleClick;
+		UINT32 monitorIndex; // -1 == select based on coordinates
+
+		NameValuePairList platformSpecific;
+	};
+
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -67,31 +101,9 @@ namespace CamelotEngine
         */
         RenderWindow();
 
-        /** Creates & displays the new window.
-            @param
-                width The width of the window in pixels.
-            @param
-                height The height of the window in pixels.
-            @param
-                colourDepth The colour depth in bits. Ignored if
-                fullScreen is false since the desktop depth is used.
-            @param
-                fullScreen If true, the window fills the screen,
-                with no title bar or border.
-            @param
-                left The x-position of the window. Ignored if
-                fullScreen = true.
-            @param
-                top The y-position of the window. Ignored if
-                fullScreen = true.
-            @param
-                depthBuffer Specify true to include a depth-buffer.
-            @param
-                miscParam A variable number of pointers to platform-specific arguments. The
-                actual requirements must be defined by the implementing subclasses.
+        /** Creates & displays a new window.
         */
-		virtual void initialize(const String& name, unsigned int width, unsigned int height,
-	            bool fullScreen, const NameValuePairList *miscParams) = 0;
+		virtual void initialize(const RENDER_WINDOW_DESC& desc) = 0;
 
 		/** Alter fullscreen mode options. 
 		@note Nothing will happen unless the settings here are different from the
@@ -169,7 +181,7 @@ namespace CamelotEngine
           */
         void setDeactivateOnFocusChange(bool deactivate);
 
-		static RenderWindowPtr create(const String& name, unsigned int width, unsigned int height, bool fullScreen, const NameValuePairList *miscParams = nullptr);
+		static RenderWindowPtr create(const RENDER_WINDOW_DESC& desc);
 
     protected:
         bool mIsFullScreen;

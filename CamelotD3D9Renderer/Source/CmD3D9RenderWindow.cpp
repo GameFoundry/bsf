@@ -56,111 +56,32 @@ namespace CamelotEngine
 		destroy();
 	}
 
-	void D3D9RenderWindow::initialize(const String& name, unsigned int width, unsigned int height,
-		bool fullScreen, const NameValuePairList *miscParams)
+	void D3D9RenderWindow::initialize(const RENDER_WINDOW_DESC& desc)
 	{
 		HINSTANCE hInst = mInstance;
 	
-		HWND parentHWnd = 0;
-		HWND externalHandle = 0;
 		mFSAAType = D3DMULTISAMPLE_NONE;
 		mFSAAQuality = 0;
-		mFSAA = 0;
-		mVSync = false;
-		mVSyncInterval = 1;
-		String title = name;
-		unsigned int colourDepth = 32;
-		int left = INT_MAX; // Defaults to screen center
-		int top = INT_MAX;  // Defaults to screen center
-		bool depthBuffer = true;
-		String border = "";
-		bool outerSize = false;
+		mFSAA = desc.FSAA;
+		mVSync = desc.vsync;
+		mVSyncInterval = desc.vsyncInterval;
 		mUseNVPerfHUD = false;
-		size_t fsaaSamples = 0;
-		String fsaaHint;
-		int monitorIndex = -1;	//Default by detecting the adapter from left / top position
 
-		if(miscParams)
-		{
-			// Get variable-length params
-			NameValuePairList::const_iterator opt;
-			// left (x)
-			opt = miscParams->find("left");
-			if(opt != miscParams->end())
-				left = parseInt(opt->second);
-			// top (y)
-			opt = miscParams->find("top");
-			if(opt != miscParams->end())
-				top = parseInt(opt->second);
-			// Window title
-			opt = miscParams->find("title");
-			if(opt != miscParams->end())
-				title = opt->second;
-			// parentWindowHandle		-> parentHWnd
-			opt = miscParams->find("parentWindowHandle");
-			if(opt != miscParams->end())
-				parentHWnd = (HWND)parseUnsignedInt(opt->second);
-			// externalWindowHandle		-> externalHandle
-			opt = miscParams->find("externalWindowHandle");
-			if(opt != miscParams->end())
-				externalHandle = (HWND)parseUnsignedInt(opt->second);
-			// vsync	[parseBool]
-			opt = miscParams->find("vsync");
-			if(opt != miscParams->end())
-				mVSync = parseBool(opt->second);
-			// vsyncInterval	[parseUnsignedInt]
-			opt = miscParams->find("vsyncInterval");
-			if(opt != miscParams->end())
-				mVSyncInterval = parseUnsignedInt(opt->second);
-			// displayFrequency
-			opt = miscParams->find("displayFrequency");
-			if(opt != miscParams->end())
-				mDisplayFrequency = parseUnsignedInt(opt->second);
-			// colourDepth
-			opt = miscParams->find("colourDepth");
-			if(opt != miscParams->end())
-				colourDepth = parseUnsignedInt(opt->second);
-			// depthBuffer [parseBool]
-			opt = miscParams->find("depthBuffer");
-			if(opt != miscParams->end())
-				depthBuffer = parseBool(opt->second);
-			// FSAA settings
-			opt = miscParams->find("FSAA");
-			if(opt != miscParams->end())
-			{
-				mFSAA = parseUnsignedInt(opt->second);
-			}
-			opt = miscParams->find("FSAAHint");
-			if(opt != miscParams->end())
-			{
-				mFSAAHint = opt->second;
-			}
+		HWND parentHWnd = 0;
+		HWND externalHandle = 0;
 
-			// window border style
-			opt = miscParams->find("border");
-			if(opt != miscParams->end())
-				border = opt->second;
-			// set outer dimensions?
-			opt = miscParams->find("outerDimensions");
-			if(opt != miscParams->end())
-				outerSize = parseBool(opt->second);
-			// NV perf HUD?
-			opt = miscParams->find("useNVPerfHUD");
-			if(opt != miscParams->end())
-				mUseNVPerfHUD = parseBool(opt->second);
-			// sRGB?
-			opt = miscParams->find("gamma");
-			if(opt != miscParams->end())
-				mHwGamma = parseBool(opt->second);
-			// monitor index
-			opt = miscParams->find("monitorIndex");
-			if(opt != miscParams->end())
-				monitorIndex = parseInt(opt->second);
-
-		}
+		NameValuePairList::const_iterator opt;
+		// parentWindowHandle		-> parentHWnd
+		opt = desc.platformSpecific.find("parentWindowHandle");
+		if(opt != desc.platformSpecific.end())
+			parentHWnd = (HWND)parseUnsignedInt(opt->second);
+		// externalWindowHandle		-> externalHandle
+		opt = desc.platformSpecific.find("externalWindowHandle");
+		if(opt != desc.platformSpecific.end())
+			externalHandle = (HWND)parseUnsignedInt(opt->second);
 
 		// Destroy current window if any
-		if( mHWnd )
+		if(mHWnd)
 			destroy();
 
 		if (!externalHandle)
@@ -171,15 +92,14 @@ namespace CamelotEngine
 			MONITORINFO monitorInfo;
 			RECT		rc;
 
-
 			// If we specified which adapter we want to use - find it's monitor.
-			if (monitorIndex != -1)
+			if (desc.monitorIndex != -1)
 			{
 				IDirect3D9* direct3D9 = D3D9RenderSystem::getDirect3D9();
 
 				for (UINT32 i=0; i < direct3D9->GetAdapterCount(); ++i)
 				{
-					if (i == monitorIndex)
+					if (i == desc.monitorIndex)
 					{
 						hMonitor = direct3D9->GetAdapterMonitor(i);
 						break;
@@ -193,9 +113,8 @@ namespace CamelotEngine
 				POINT windowAnchorPoint;
 
 				// Fill in anchor point.
-				windowAnchorPoint.x = left;
-				windowAnchorPoint.y = top;
-
+				windowAnchorPoint.x = desc.left;
+				windowAnchorPoint.y = desc.top;
 
 				// Get the nearest monitor to this window.
 				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTOPRIMARY);
@@ -208,12 +127,14 @@ namespace CamelotEngine
 
 
 			unsigned int winWidth, winHeight;
-			winWidth = width;
-			winHeight = height;
+			winWidth = desc.width;
+			winHeight = desc.height;
 
+			UINT32 left = desc.left;
+			UINT32 top = desc.top;
 
 			// No specified top left -> Center the window in the middle of the monitor
-			if (left == INT_MAX || top == INT_MAX)
+			if (left == -1 || top == -1)
 			{				
 				int screenw = monitorInfo.rcWork.right  - monitorInfo.rcWork.left;
 				int screenh = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
@@ -222,28 +143,28 @@ namespace CamelotEngine
 				int outerw = (int(winWidth) < screenw)? int(winWidth) : screenw;
 				int outerh = (int(winHeight) < screenh)? int(winHeight) : screenh;
 
-				if (left == INT_MAX)
+				if (left == -1)
 					left = monitorInfo.rcWork.left + (screenw - outerw) / 2;
-				else if (monitorIndex != -1)
+				else if (desc.monitorIndex != -1)
 					left += monitorInfo.rcWork.left;
 
-				if (top == INT_MAX)
+				if (top == -1)
 					top = monitorInfo.rcWork.top + (screenh - outerh) / 2;
-				else if (monitorIndex != -1)
+				else if (desc.monitorIndex != -1)
 					top += monitorInfo.rcWork.top;
 			}
-			else if (monitorIndex != -1)
+			else if (desc.monitorIndex != -1)
 			{
 				left += monitorInfo.rcWork.left;
 				top += monitorInfo.rcWork.top;
 			}
 
-			mWidth = mDesiredWidth = width;
-			mHeight = mDesiredHeight = height;
+			mWidth = mDesiredWidth = desc.width;
+			mHeight = mDesiredHeight = desc.height;
 			mTop = top;
 			mLeft = left;
 
-			if (fullScreen)
+			if (desc.fullscreen)
 			{
 				dwStyleEx |= WS_EX_TOPMOST;
 				dwStyle |= WS_POPUP;
@@ -258,18 +179,18 @@ namespace CamelotEngine
 				}
 				else
 				{
-					if (border == "none")
+					if (desc.border == "none")
 						dwStyle |= WS_POPUP;
-					else if (border == "fixed")
+					else if (desc.border == "fixed")
 						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 						WS_SYSMENU | WS_MINIMIZEBOX;
 					else
 						dwStyle |= WS_OVERLAPPEDWINDOW;
 				}
 
-				adjustWindow(width, height, dwStyle, &winWidth, &winHeight);
+				adjustWindow(desc.width, desc.height, dwStyle, &winWidth, &winHeight);
 
-				if (!outerSize)
+				if (!desc.outerDimensions)
 				{
 					// Calculate window dimensions required
 					// to get the requested client area
@@ -304,7 +225,7 @@ namespace CamelotEngine
 			// Create our main window
 			// Pass pointer to self
 			mIsExternal = false;
-			mHWnd = CreateWindowEx(dwStyleEx, "D3D9Wnd", title.c_str(), dwStyle,
+			mHWnd = CreateWindowEx(dwStyleEx, "D3D9Wnd", desc.title.c_str(), dwStyle,
 				mLeft, mTop, winWidth, winHeight, parentHWnd, 0, hInst, this);
 			mStyle = dwStyle;
 
@@ -326,10 +247,10 @@ namespace CamelotEngine
 		mWidth = rc.right;
 		mHeight = rc.bottom;
 
-		mName = name;
-		mIsDepthBuffered = depthBuffer;
-		mIsFullScreen = fullScreen;
-		mColorDepth = colourDepth;
+		mName = desc.title;
+		mIsDepthBuffered = desc.depthBuffer;
+		mIsFullScreen = desc.fullscreen;
+		mColorDepth = desc.colorDepth;
 									
 		mActive = true;
 		mClosed = false;

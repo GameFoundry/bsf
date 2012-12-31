@@ -12,8 +12,8 @@ namespace CamelotEngine
 
 		UINT32 count() const;
 
-		const D3D11Driver& item(UINT32 idx) const;
-		const D3D11Driver& item(const String &name) const;
+		D3D11Driver* item(UINT32 idx) const;
+		D3D11Driver* item(const String &name) const;
 
 	private:
 		vector<D3D11Driver*>::type mDriverList;

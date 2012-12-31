@@ -14,8 +14,7 @@ namespace CamelotEngine
         Win32GLSupport();
 
 		/// @copydoc RenderSystem::_createRenderWindow
-		virtual RenderWindow* newWindow(const String &name, unsigned int width, unsigned int height, 
-			bool fullScreen, const NameValuePairList *miscParams = 0);
+		virtual RenderWindow* newWindow(const RENDER_WINDOW_DESC& desc);
 
 		/**
 		* Start anything special

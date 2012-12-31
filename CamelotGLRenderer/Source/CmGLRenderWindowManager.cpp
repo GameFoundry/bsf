@@ -11,13 +11,12 @@ namespace CamelotEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	void GLRenderWindowManager::createImpl(const String& name, UINT32 width, UINT32 height, 
-		bool fullScreen, const map<String, String>::type& miscParams, AsyncOp& asyncOp)
+	void GLRenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc, AsyncOp& asyncOp)
 	{
 		GLSupport* glSupport = mRenderSystem->getGLSupport();
 
 		// Create the window
-		RenderWindow* win = glSupport->newWindow(name, width, height, fullScreen, &miscParams);
+		RenderWindow* win = glSupport->newWindow(desc);
 
 		mRenderSystem->attachRenderTarget(*win);
 		GLContext* context;

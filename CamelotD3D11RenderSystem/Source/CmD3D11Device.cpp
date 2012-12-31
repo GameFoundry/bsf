@@ -39,6 +39,7 @@ namespace CamelotEngine
 
 	D3D11Device::~D3D11Device()
 	{
+		shutdown();
 	}
 
 	void D3D11Device::shutdown()

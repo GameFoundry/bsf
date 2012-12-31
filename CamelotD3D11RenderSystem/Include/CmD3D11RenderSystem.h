@@ -8,10 +8,7 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11RenderSystem : public RenderSystem
 	{
 	public:
-		static D3D11Device& getPrimaryDevice();
-
-		void determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings);
-		bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
+		~D3D11RenderSystem();
 
 		const String& getName() const;
 
@@ -53,8 +50,37 @@ namespace CamelotEngine
 		float getVerticalTexelOffset();
 		float getMinimumDepthInputValue();
 		float getMaximumDepthInputValue();
+
+		/************************************************************************/
+		/* 				Internal use by DX11 RenderSystem only                  */
+		/************************************************************************/
+
+		void determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings);
+		bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
+
+		static D3D11Device& getPrimaryDevice();
+
 	protected:
+		friend class D3D11RenderSystemFactory;
+		D3D11RenderSystem();
+
+		/**
+		 * @copydoc	RenderSystem::initialize_internal().
+		 */
+		void initialize_internal();
+
+		/**
+		 * @copydoc	RenderSystem::destroy_internal().
+		 */
+        void destroy_internal();
 
 	private:
+		IDXGIFactory*		mDXGIFactory;
+		D3D11Device*		mDevice;
+
+		D3D11DriverList*	mDriverList;
+		D3D11Driver*		mActiveD3DDriver;
+
+		D3D_FEATURE_LEVEL	mFeatureLevel;
 	};
 }

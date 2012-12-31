@@ -1,16 +1,200 @@
 #include "CmD3D11RenderSystem.h"
+#include "CmD3D11DriverList.h"
+#include "CmD3D11Driver.h"
+#include "CmD3D11Device.h"
 #include "CmRenderSystem.h"
 #include "CmDebug.h"
 #include "CmException.h"
 
 namespace CamelotEngine
 {
+	D3D11RenderSystem::D3D11RenderSystem()
+		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr)
+		, mActiveD3DDriver(nullptr), mFeatureLevel(D3D_FEATURE_LEVEL_9_1)
+	{
+
+	}
+
+	D3D11RenderSystem::~D3D11RenderSystem()
+	{
+		destroy_internal();
+	}
+
+	const String& D3D11RenderSystem::getName() const
+	{
+		static String strName("D3D11RenderSystem");
+		return strName;
+	}
+
+	void D3D11RenderSystem::initialize_internal()
+	{
+		HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&mDXGIFactory);
+		if(FAILED(hr))
+			CM_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 DXGIFactory");
+
+		mDriverList = new D3D11DriverList(mDXGIFactory);
+		mActiveD3DDriver = mDriverList->item(0); // TODO: Always get first driver, for now
+
+		IDXGIAdapter* selectedAdapter = mActiveD3DDriver->getDeviceAdapter();
+
+		D3D_FEATURE_LEVEL requestedLevels[] = {
+			D3D_FEATURE_LEVEL_11_0,
+			D3D_FEATURE_LEVEL_10_1,
+			D3D_FEATURE_LEVEL_10_0,
+			D3D_FEATURE_LEVEL_9_3,
+			D3D_FEATURE_LEVEL_9_2,
+			D3D_FEATURE_LEVEL_9_1
+		};
+
+		UINT32 numRequestedLevel = sizeof(requestedLevels) / sizeof(requestedLevels[0]);
+
+		ID3D11Device* device;
+		hr = D3D11CreateDevice(selectedAdapter, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, 
+			requestedLevels, numRequestedLevel, D3D11_SDK_VERSION, &device, &mFeatureLevel, 0);
+
+		if(FAILED(hr))         
+			CM_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 object. D3D11CreateDeviceN returned this error code: " + toString(hr));
+
+		mDevice = new D3D11Device(device);
+
+		LARGE_INTEGER driverVersion;
+		if(SUCCEEDED(selectedAdapter->CheckInterfaceSupport(IID_ID3D10Device /* intentionally D3D10, not D3D11 */, &driverVersion)))
+		{
+			mDriverVersion.major = HIWORD(driverVersion.HighPart);
+			mDriverVersion.minor = LOWORD(driverVersion.HighPart);
+			mDriverVersion.release = HIWORD(driverVersion.LowPart);
+			mDriverVersion.build = LOWORD(driverVersion.LowPart);
+		}
+
+		RenderSystem::initialize_internal();
+	}
+
+    void D3D11RenderSystem::destroy_internal()
+	{
+		SAFE_RELEASE(mDXGIFactory);
+		SAFE_DELETE(mDevice);
+		SAFE_DELETE(mDriverList);
+		mActiveD3DDriver = nullptr;
+
+		RenderSystem::destroy_internal();
+	}
+
+	void D3D11RenderSystem::setSamplerState(UINT16 texUnit, const SamplerState& samplerState)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setBlendState(const BlendState& blendState)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setRasterizerState(const RasterizerState& rasterizerState)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setStencilRefValue(UINT32 refValue)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::disableTextureUnit(UINT16 texUnit)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::beginFrame()
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::endFrame()
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setViewport(const Viewport& vp)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setVertexBufferBinding(VertexBufferBinding* binding)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::bindGpuProgram(GpuProgramHandle prg)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::unbindGpuProgram(GpuProgramType gptype)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 variabilityMask)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setScissorRect(UINT32 left /*= 0*/, UINT32 top /*= 0*/, UINT32 right /*= 800*/, UINT32 bottom /*= 600 */)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::clearFrameBuffer(unsigned int buffers, const Color& color /*= Color::Black*/, float depth /*= 1.0f*/, unsigned short stencil /*= 0 */)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setRenderTarget(RenderTarget* target)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
+	{
+		LOGWRN("This call will be ignored. DX11 uses shaders for setting clip planes.");
+	}
+
+	RenderSystemCapabilities* D3D11RenderSystem::createRenderSystemCapabilities() const
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
 	D3D11Device& D3D11RenderSystem::getPrimaryDevice() 
 	{ 
 		CM_EXCEPT(NotImplementedException, "Not implemented"); 
 	}
 
-	void D3D11RenderSystem::determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings)
+	CamelotEngine::String D3D11RenderSystem::getErrorDescription(long errorNumber) const
+	{
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+		void D3D11RenderSystem::determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings)
 	{
 		CM_EXCEPT(NotImplementedException, "Not implemented");
 
@@ -122,122 +306,6 @@ namespace CamelotEngine
 	bool D3D11RenderSystem::checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage)
 	{
 		return true;
-	}
-
-	const String& D3D11RenderSystem::getName() const
-	{
-		static String strName("D3D11RenderSystem");
-		return strName;
-	}
-
-	void D3D11RenderSystem::setSamplerState(UINT16 texUnit, const SamplerState& samplerState)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setBlendState(const BlendState& blendState)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setRasterizerState(const RasterizerState& rasterizerState)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setStencilRefValue(UINT32 refValue)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::disableTextureUnit(UINT16 texUnit)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::beginFrame()
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::endFrame()
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setViewport(const Viewport& vp)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setVertexBufferBinding(VertexBufferBinding* binding)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::bindGpuProgram(GpuProgramHandle prg)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::unbindGpuProgram(GpuProgramType gptype)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 variabilityMask)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setScissorRect(UINT32 left /*= 0*/, UINT32 top /*= 0*/, UINT32 right /*= 800*/, UINT32 bottom /*= 600 */)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::clearFrameBuffer(unsigned int buffers, const Color& color /*= Color::Black*/, float depth /*= 1.0f*/, unsigned short stencil /*= 0 */)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setRenderTarget(RenderTarget* target)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
-	{
-		LOGWRN("This call will be ignored. DX11 uses shaders for setting clip planes.");
-	}
-
-	RenderSystemCapabilities* D3D11RenderSystem::createRenderSystemCapabilities() const
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	void D3D11RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
-	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-	CamelotEngine::String D3D11RenderSystem::getErrorDescription(long errorNumber) const
-	{
-		throw std::exception("The method or operation is not implemented.");
 	}
 
 	CamelotEngine::VertexElementType D3D11RenderSystem::getColorVertexElementType() const

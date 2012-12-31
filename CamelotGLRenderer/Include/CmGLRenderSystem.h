@@ -267,13 +267,14 @@ namespace CamelotEngine {
 		UINT16 mActiveTextureUnit;
 
 	protected:
-		/** See
-          RenderSystem
-         */
+		/**
+		 * @copydoc	RenderSystem::initialize_internal().
+		 */
 		void initialize_internal();
-		/** See
-          RenderSystem
-         */
+
+		/**
+		 * @copydoc	RenderSystem::destroy_internal().
+		 */
         void destroy_internal(void);
 
 		void setClipPlanesImpl(const PlaneList& clipPlanes);

@@ -47,8 +47,7 @@ namespace CamelotEngine
 		~D3D9RenderWindow					();
 		
 		
-		void				initialize				(const String& name, unsigned int width, unsigned int height,
-												 bool fullScreen, const NameValuePairList *miscParams);
+		void				initialize			(const RENDER_WINDOW_DESC& desc);
 		void				setFullscreen		(bool fullScreen, unsigned int width, unsigned int height);
 		void				destroy				(void);
 		bool				isActive			() const;

@@ -4,17 +4,10 @@
 
 namespace CamelotEngine
 {
-	RenderWindowPtr RenderWindowManager::create(const String& name, UINT32 width, UINT32 height, 
-		bool fullScreen, const map<String, String>::type* miscParams)
+	RenderWindowPtr RenderWindowManager::create(const RENDER_WINDOW_DESC& desc)
 	{
 		RenderSystem* renderSystem = RenderSystem::instancePtr();
-
-		AsyncOp op;
-
-		if(miscParams != nullptr)
-			op = renderSystem->queueReturnCommand(boost::bind(&RenderWindowManager::createImpl, this, name, width, height, fullScreen, *miscParams, _1), true);
-		else
-			op = renderSystem->queueReturnCommand(boost::bind(&RenderWindowManager::createImpl, this, name, width, height, fullScreen, NameValuePairList(), _1), true);
+		AsyncOp op = renderSystem->queueReturnCommand(boost::bind(&RenderWindowManager::createImpl, this, desc, _1), true);
 
 		return op.getReturnValue<RenderWindowPtr>();
 	}

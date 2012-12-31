@@ -11,13 +11,12 @@ namespace CamelotEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	void D3D9RenderWindowManager::createImpl(const String& name, UINT32 width, UINT32 height, 
-		bool fullScreen, const map<String, String>::type& miscParams, AsyncOp& asyncOp)
+	void D3D9RenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc, AsyncOp& asyncOp)
 	{
 		// Create the window
 		D3D9RenderWindow* renderWindow = new D3D9RenderWindow(mRenderSystem->getInstanceHandle());
 
-		renderWindow->initialize(name, width, height, fullScreen, &miscParams);
+		renderWindow->initialize(desc);
 
 		D3D9RenderWindowPtr winPtr(renderWindow);
 		mRenderSystem->registerRenderWindow(winPtr);

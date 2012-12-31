@@ -31,8 +31,7 @@ namespace CamelotEngine
 		destroy();
 	}
 
-	void D3D11RenderWindow::initialize(const String& name, unsigned int width, unsigned int height,
-		bool fullScreen, const NameValuePairList *miscParams)
+	void D3D11RenderWindow::initialize(const RENDER_WINDOW_DESC& desc)
 	{
 		mFSAAType.Count = 1;
 		mFSAAType.Quality = 0;
@@ -42,93 +41,22 @@ namespace CamelotEngine
 		mVSyncInterval = 1;
 		HWND parentHWnd = 0;
 		HWND externalHandle = 0;
-		String title = name;
-		int left = -1; // Defaults to screen center
-		int top = -1; // Defaults to screen center
-		String border = "";
-		bool outerSize = false;
-		bool enableDoubleClick = false;
 
-		unsigned int colourDepth = 32;
-		bool depthBuffer = true;
+		// Get variable-length params
+		NameValuePairList::const_iterator opt;
 
-		if(miscParams)
-		{
-			// Get variable-length params
-			NameValuePairList::const_iterator opt;
-			// vsync	[parseBool]
-			opt = miscParams->find("vsync");
-			if(opt != miscParams->end())
-				mVSync = parseBool(opt->second);
-			// vsyncInterval	[parseUnsignedInt]
-			opt = miscParams->find("vsyncInterval");
-			if(opt != miscParams->end())
-				mVSyncInterval = parseUnsignedInt(opt->second);
-			// hidden	[parseBool]
-			opt = miscParams->find("hidden");
-			if(opt != miscParams->end())
-				mHidden = parseBool(opt->second);
-			// displayFrequency
-			opt = miscParams->find("displayFrequency");
-			if(opt != miscParams->end())
-				mDisplayFrequency = parseUnsignedInt(opt->second);
-			// colourDepth
-			opt = miscParams->find("colourDepth");
-			if(opt != miscParams->end())
-				colourDepth = parseUnsignedInt(opt->second);
-			// depthBuffer [parseBool]
-			opt = miscParams->find("depthBuffer");
-			if(opt != miscParams->end())
-				depthBuffer = parseBool(opt->second);
-			// FSAA type
-			opt = miscParams->find("FSAA");
-			if(opt != miscParams->end())
-				mFSAA = parseUnsignedInt(opt->second);
-			// FSAA quality
-			opt = miscParams->find("FSAAHint");
-			if(opt != miscParams->end())
-				mFSAAHint = opt->second;
-			// sRGB?
-			opt = miscParams->find("gamma");
-			if(opt != miscParams->end())
-				mHwGamma = parseBool(opt->second);
-			// left (x)
-			opt = miscParams->find("left");
-			if(opt != miscParams->end())
-				left = parseInt(opt->second);
-			// top (y)
-			opt = miscParams->find("top");
-			if(opt != miscParams->end())
-				top = parseInt(opt->second);
-			// Window title
-			opt = miscParams->find("title");
-			if(opt != miscParams->end())
-				title = opt->second;
-			// parentWindowHandle		-> parentHWnd
-			opt = miscParams->find("parentWindowHandle");
-			if(opt != miscParams->end())
-				parentHWnd = (HWND)parseUnsignedInt(opt->second);
-			// externalWindowHandle		-> externalHandle
-			opt = miscParams->find("externalWindowHandle");
-			if(opt != miscParams->end())
-				externalHandle = (HWND)parseUnsignedInt(opt->second);
-			// window border style
-			opt = miscParams->find("border");
-			if(opt != miscParams->end())
-				border = opt->second;
-			// set outer dimensions?
-			opt = miscParams->find("outerDimensions");
-			if(opt != miscParams->end())
-				outerSize = parseBool(opt->second);
-			// enable double click messages
-			opt = miscParams->find("enableDoubleClick");
-			if(opt != miscParams->end())
-				enableDoubleClick = parseBool(opt->second);
-		}
+		// parentWindowHandle		-> parentHWnd
+		opt = desc.platformSpecific.find("parentWindowHandle");
+		if(opt != desc.platformSpecific.end())
+			parentHWnd = (HWND)parseUnsignedInt(opt->second);
+		// externalWindowHandle		-> externalHandle
+		opt = desc.platformSpecific.find("externalWindowHandle");
+		if(opt != desc.platformSpecific.end())
+			externalHandle = (HWND)parseUnsignedInt(opt->second);
 
-		mName = name;
-		mIsFullScreen = fullScreen;
-		mColorDepth = colourDepth;
+		mName = desc.title;
+		mIsFullScreen = desc.fullscreen;
+		mColorDepth = desc.colorDepth;
 		mWidth = mHeight = mLeft = mTop = 0;
 
 		mActive = true;
@@ -143,12 +71,12 @@ namespace CamelotEngine
 			DWORD dwStyle = (mHidden ? 0 : WS_VISIBLE) | WS_CLIPCHILDREN;
 			RECT rc;
 
-			mWidth = width;
-			mHeight = height;
-			mTop = top;
-			mLeft = left;
+			mWidth = desc.width;
+			mHeight = desc.height;
+			mTop = desc.top;
+			mLeft = desc.left;
 
-			if (!fullScreen)
+			if (!desc.fullscreen)
 			{
 				if (parentHWnd)
 				{
@@ -156,16 +84,16 @@ namespace CamelotEngine
 				}
 				else
 				{
-					if (border == "none")
+					if (desc.border == "none")
 						dwStyle |= WS_POPUP;
-					else if (border == "fixed")
+					else if (desc.border == "fixed")
 						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 						WS_SYSMENU | WS_MINIMIZEBOX;
 					else
 						dwStyle |= WS_OVERLAPPEDWINDOW;
 				}
 
-				if (!outerSize)
+				if (!desc.outerDimensions)
 				{
 					// Calculate window dimensions required
 					// to get the requested client area
@@ -194,7 +122,7 @@ namespace CamelotEngine
 			}
 
 			UINT classStyle = 0;
-			if (enableDoubleClick)
+			if (desc.enableDoubleClick)
 				classStyle |= CS_DBLCLKS;
 
 			HINSTANCE hInst = NULL;
@@ -205,13 +133,12 @@ namespace CamelotEngine
 				LoadIcon(0, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "D3D11Wnd" };	
 
-
 			RegisterClass(&wc);
 
 			// Create our main window
 			// Pass pointer to self
 			mIsExternal = false;
-			mHWnd = CreateWindow("D3D11Wnd", title.c_str(), dwStyle,
+			mHWnd = CreateWindow("D3D11Wnd", desc.title.c_str(), dwStyle,
 				mLeft, mTop, mWidth, mHeight, parentHWnd, 0, hInst, this);
 
 			WindowEventUtilities::_addRenderWindow(this);

@@ -14,8 +14,7 @@ namespace CamelotEngine
 		/**
 		 * @copydoc RenderWindowManager::create()
 		 */
-		void createImpl(const String& name, UINT32 width, UINT32 height, 
-			bool fullScreen, const map<String, String>::type& miscParams, AsyncOp& asyncOp);
+		void createImpl(const RENDER_WINDOW_DESC& desc, AsyncOp& asyncOp);
 
 	private:
 		D3D9RenderSystem* mRenderSystem;

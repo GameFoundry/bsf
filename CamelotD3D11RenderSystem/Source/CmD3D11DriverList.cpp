@@ -45,17 +45,17 @@ namespace CamelotEngine
 		return (UINT32)mDriverList.size();
 	}
 
-	const D3D11Driver& D3D11DriverList::item(UINT32 idx) const
+	D3D11Driver* D3D11DriverList::item(UINT32 idx) const
 	{
-		return *mDriverList.at(idx);
+		return mDriverList.at(idx);
 	}
 
-	const D3D11Driver& D3D11DriverList::item(const String &name) const
+	D3D11Driver* D3D11DriverList::item(const String &name) const
 	{
 		for (auto it = mDriverList.begin(); it != mDriverList.end(); ++it)
 		{
 			if ((*it)->getDriverDescription() == name)
-				return *(*it);
+				return (*it);
 		}
 
 		CM_EXCEPT(InvalidParametersException, "Cannot find video mode with the specified name.");

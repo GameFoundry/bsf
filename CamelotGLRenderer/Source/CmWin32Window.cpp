@@ -63,8 +63,7 @@ namespace CamelotEngine {
 		destroy();
 	}
 
-	void Win32Window::initialize(const String& name, unsigned int width, unsigned int height,
-							bool fullScreen, const NameValuePairList *miscParams)
+	void Win32Window::initialize(const RENDER_WINDOW_DESC& desc)
 	{
 		// destroy current window, if any
 		if (mHWnd)
@@ -77,108 +76,52 @@ namespace CamelotEngine {
 #endif
 
 		mHWnd = 0;
-		mName = name;
-		mIsFullScreen = fullScreen;
+		mName = desc.title;
+		mIsFullScreen = desc.fullscreen;
 		mClosed = false;		
-		mDisplayFrequency = 0;
-		mColorDepth = mIsFullScreen? 32 : GetDeviceCaps(GetDC(0), BITSPIXEL);
-		int left = -1; // Defaults to screen center
-		int top = -1; // Defaults to screen center
+		mDisplayFrequency = desc.displayFrequency;
+		mColorDepth = desc.colorDepth;
 		HWND parent = 0;
-		String title = name;
-		bool vsync = false;
-		unsigned int vsyncInterval = 1;
-		String border;
-		bool outerSize = false;
-		bool hwGamma = false;
-		int monitorIndex = -1;
 		HMONITOR hMonitor = NULL;
 
-		if(miscParams)
+		// Get variable-length params
+		NameValuePairList::const_iterator opt;
+		NameValuePairList::const_iterator end = desc.platformSpecific.end();
+
+		if ((opt = desc.platformSpecific.find("externalWindowHandle")) != end)
 		{
-			// Get variable-length params
-			NameValuePairList::const_iterator opt;
-			NameValuePairList::const_iterator end = miscParams->end();
-
-			if ((opt = miscParams->find("title")) != end)
-				title = opt->second;
-
-			if ((opt = miscParams->find("left")) != end)
-				left = parseInt(opt->second);
-
-			if ((opt = miscParams->find("top")) != end)
-				top = parseInt(opt->second);
-
-			if ((opt = miscParams->find("vsync")) != end)
-				vsync = parseBool(opt->second);
-
-			if ((opt = miscParams->find("vsyncInterval")) != end)
-				vsyncInterval = parseUnsignedInt(opt->second);
-
-			if ((opt = miscParams->find("FSAA")) != end)
-				mFSAA = parseUnsignedInt(opt->second);
-
-			if ((opt = miscParams->find("FSAAHint")) != end)
-				mFSAAHint = opt->second;
-
-			if ((opt = miscParams->find("gamma")) != end)
-				hwGamma = parseBool(opt->second);
-
-			if ((opt = miscParams->find("externalWindowHandle")) != end)
+			mHWnd = (HWND)parseUnsignedInt(opt->second);
+			if (mHWnd)
 			{
-				mHWnd = (HWND)parseUnsignedInt(opt->second);
-				if (mHWnd)
-				{
-					mIsExternal = true;
-					mIsFullScreen = false;
-				}
-
-				if ((opt = miscParams->find("externalGLControl")) != end) {
-				  mIsExternalGLControl = parseBool(opt->second);
-				}
-			}
-			if ((opt = miscParams->find("externalGLContext")) != end)
-			{
-				mGlrc = (HGLRC)parseUnsignedLong(opt->second);
-				if( mGlrc )
-					mIsExternalGLContext = true;
+				mIsExternal = true;
+				mIsFullScreen = false;
 			}
 
-			// window border style
-			opt = miscParams->find("border");
-			if(opt != miscParams->end())
-				border = opt->second;
-			// set outer dimensions?
-			opt = miscParams->find("outerDimensions");
-			if(opt != miscParams->end())
-				outerSize = parseBool(opt->second);
-
-			// only available with fullscreen
-			if ((opt = miscParams->find("displayFrequency")) != end)
-				mDisplayFrequency = parseUnsignedInt(opt->second);
-			if ((opt = miscParams->find("colourDepth")) != end)
-			{
-				mColorDepth = parseUnsignedInt(opt->second);
-				if (!mIsFullScreen)
-				{
-					// make sure we don't exceed desktop colour depth
-					if ((int)mColorDepth > GetDeviceCaps(GetDC(0), BITSPIXEL))
-						mColorDepth = GetDeviceCaps(GetDC(0), BITSPIXEL);
-				}
+			if ((opt = desc.platformSpecific.find("externalGLControl")) != end) {
+				mIsExternalGLControl = parseBool(opt->second);
 			}
+		}
 
-			// incompatible with fullscreen
-			if ((opt = miscParams->find("parentWindowHandle")) != end)
-				parent = (HWND)parseUnsignedInt(opt->second);
+		if ((opt = desc.platformSpecific.find("externalGLContext")) != end)
+		{
+			mGlrc = (HGLRC)parseUnsignedLong(opt->second);
+			if( mGlrc )
+				mIsExternalGLContext = true;
+		}
 
+		// incompatible with fullscreen
+		if ((opt = desc.platformSpecific.find("parentWindowHandle")) != end)
+			parent = (HWND)parseUnsignedInt(opt->second);
 
-			// monitor index
-			if ((opt = miscParams->find("monitorIndex")) != end)
-				monitorIndex = parseInt(opt->second);
-			
-			// monitor handle
-			if ((opt = miscParams->find("monitorHandle")) != end)
-				hMonitor = (HMONITOR)parseInt(opt->second);			
+		// monitor handle
+		if ((opt = desc.platformSpecific.find("monitorHandle")) != end)
+			hMonitor = (HMONITOR)parseInt(opt->second);			
+
+		if (!mIsFullScreen)
+		{
+			// make sure we don't exceed desktop colour depth
+			if ((int)mColorDepth > GetDeviceCaps(GetDC(0), BITSPIXEL))
+				mColorDepth = GetDeviceCaps(GetDC(0), BITSPIXEL);
 		}
 
 		if (!mIsExternal)
@@ -194,8 +137,8 @@ namespace CamelotEngine {
 				POINT windowAnchorPoint;
 
 				// Fill in anchor point.
-				windowAnchorPoint.x = left;
-				windowAnchorPoint.y = top;
+				windowAnchorPoint.x = desc.left;
+				windowAnchorPoint.y = desc.top;
 
 
 				// Get the nearest monitor to this window.
@@ -212,6 +155,9 @@ namespace CamelotEngine {
 	
 			strcpy_s(mDeviceName, devNameLen + 1, monitorInfoEx.szDevice);
 
+			UINT32 left = desc.left;
+			UINT32 top = desc.top;
+
 			// No specified top left -> Center the window in the middle of the monitor
 			if (left == -1 || top == -1)
 			{				
@@ -219,7 +165,7 @@ namespace CamelotEngine {
 				int screenh = monitorInfoEx.rcWork.bottom - monitorInfoEx.rcWork.top;
 
 				unsigned int winWidth, winHeight;
-				adjustWindow(width, height, &winWidth, &winHeight);
+				adjustWindow(desc.width, desc.height, &winWidth, &winHeight);
 
 				// clamp window dimensions to screen size
 				int outerw = (int(winWidth) < screenw)? int(winWidth) : screenw;
@@ -227,22 +173,22 @@ namespace CamelotEngine {
 
 				if (left == -1)
 					left = monitorInfoEx.rcWork.left + (screenw - outerw) / 2;
-				else if (monitorIndex != -1)
+				else if (desc.monitorIndex != -1)
 					left += monitorInfoEx.rcWork.left;
 
 				if (top == -1)
 					top = monitorInfoEx.rcWork.top + (screenh - outerh) / 2;
-				else if (monitorIndex != -1)
+				else if (desc.monitorIndex != -1)
 					top += monitorInfoEx.rcWork.top;
 			}
-			else if (monitorIndex != -1)
+			else if (desc.monitorIndex != -1)
 			{
 				left += monitorInfoEx.rcWork.left;
 				top += monitorInfoEx.rcWork.top;
 			}
 
-			mWidth = width;
-			mHeight = height;
+			mWidth = desc.width;
+			mHeight = desc.height;
 			mTop = top;
 			mLeft = left;
 
@@ -261,9 +207,9 @@ namespace CamelotEngine {
 				}
 				else
 				{
-					if (border == "none")
+					if (desc.border == "none")
 						dwStyle |= WS_POPUP;
-					else if (border == "fixed")
+					else if (desc.border == "fixed")
 						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 						WS_SYSMENU | WS_MINIMIZEBOX;
 					else
@@ -273,7 +219,7 @@ namespace CamelotEngine {
 				int screenw = GetSystemMetrics(SM_CXSCREEN);
 				int screenh = GetSystemMetrics(SM_CYSCREEN);
 
-				if (!outerSize)
+				if (!desc.outerDimensions)
 				{
 					// Calculate window dimensions required
 					// to get the requested client area
@@ -333,9 +279,9 @@ namespace CamelotEngine {
 			}
 
 			// Pass pointer to self as WM_CREATE parameter
-			mHWnd = CreateWindowEx(dwStyleEx, "GLWindow", title.c_str(),
+			mHWnd = CreateWindowEx(dwStyleEx, "GLWindow", desc.title.c_str(),
 				dwStyle, mLeft, mTop, mWidth, mHeight, parent, 0, hInst, this);
-
+		
 			WindowEventUtilities::_addRenderWindow(this);			
 		}
 
@@ -357,7 +303,7 @@ namespace CamelotEngine {
 		if (!mIsExternalGLControl)
 		{
 			int testFsaa = mFSAA;
-			bool testHwGamma = hwGamma;
+			bool testHwGamma = desc.gamma;
 			bool formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
 			if (!formatOk)
 			{
@@ -368,7 +314,7 @@ namespace CamelotEngine {
 					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
 				}
 
-				if (!formatOk && hwGamma)
+				if (!formatOk && desc.gamma)
 				{
 					// try without sRGB
 					testHwGamma = false;
@@ -376,7 +322,7 @@ namespace CamelotEngine {
 					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
 				}
 
-				if (!formatOk && hwGamma && (mFSAA > 0))
+				if (!formatOk && desc.gamma && (mFSAA > 0))
 				{
 					// try without both
 					testHwGamma = false;
@@ -414,7 +360,7 @@ namespace CamelotEngine {
 			PFNWGLSWAPINTERVALEXTPROC _wglSwapIntervalEXT = 
 				(PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
 			if (_wglSwapIntervalEXT)
-				_wglSwapIntervalEXT(vsync? vsyncInterval : 0);
+				_wglSwapIntervalEXT(desc.vsync ? desc.vsyncInterval : 0);
 		}
 
         if (old_context && old_context != mGlrc)
@@ -540,8 +486,6 @@ namespace CamelotEngine {
 					SWP_NOACTIVATE);
 				mWidth = width;
 				mHeight = height;
-
-
 			}
 			else
 			{
@@ -576,9 +520,7 @@ namespace CamelotEngine {
 				mHeight = height;
 
 				windowMovedOrResized();
-
 			}
-
 		}
 	}
 

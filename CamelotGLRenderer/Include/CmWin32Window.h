@@ -39,8 +39,7 @@ namespace CamelotEngine {
         Win32Window(Win32GLSupport &glsupport);
         ~Win32Window();
 
-       void initialize(const String& name, unsigned int width, unsigned int height,
-	            bool fullScreen, const NameValuePairList *miscParams);
+       void initialize(const RENDER_WINDOW_DESC& desc);
 	   void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
         void destroy(void);
 		bool isActive(void) const;

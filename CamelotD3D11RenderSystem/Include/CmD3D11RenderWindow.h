@@ -11,8 +11,7 @@ namespace CamelotEngine
 		D3D11RenderWindow(D3D11Device& device, IDXGIFactory* DXGIFactory);
 		~D3D11RenderWindow();
 
-		void initialize(const String& name, unsigned width, unsigned height, bool fullScreen, 
-			const NameValuePairList* miscParams);
+		void initialize(const RENDER_WINDOW_DESC& desc);
 		void destroy(void);
 
 		void reposition(int left, int top);
