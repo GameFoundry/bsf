@@ -38,7 +38,8 @@ namespace CamelotEngine
 	{
 		D3D11Texture* other = static_cast<D3D11Texture*>(target.get());
 
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->CopyResource(other->getDX11Resource(), mTex);
 
 		if (device.hasError())
@@ -183,7 +184,8 @@ namespace CamelotEngine
 		}
 
 		// Create the texture
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		hr = device.getD3D11Device()->CreateTexture1D(&desc, nullptr, &m1DTex);
 
 		// Check result and except if failed
@@ -276,7 +278,8 @@ namespace CamelotEngine
         }
 
 		// Create the texture
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		hr = device.getD3D11Device()->CreateTexture2D(&desc, nullptr, &m2DTex);
 
 		// Check result and except if failed
@@ -380,7 +383,8 @@ namespace CamelotEngine
 		}
 
 		// Create the texture
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		hr = device.getD3D11Device()->CreateTexture3D(&desc, nullptr, &m3DTex);
 
 		// Check result and except if failed
@@ -430,7 +434,8 @@ namespace CamelotEngine
 		if(getTextureType() == TEX_TYPE_3D)
 			face = 0;
 
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 
 		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
 		device.getImmediateContext()->Map(res, mLockedSubresourceIdx, flags, 0, &pMappedResource);
@@ -446,7 +451,8 @@ namespace CamelotEngine
 
 	void D3D11Texture::_unmap(ID3D11Resource* res)
 	{
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->Unmap(res, mLockedSubresourceIdx);
 
 		if (device.hasError())
@@ -461,7 +467,8 @@ namespace CamelotEngine
 		if(!mStagingBuffer)
 			_createStagingBuffer();
 
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->CopyResource(mStagingBuffer, mTex);
 
 		return _map(mStagingBuffer, flags, face, mipLevel);
@@ -488,7 +495,8 @@ namespace CamelotEngine
 		UINT32 rowWidth = D3D11Mappings::_getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
 		UINT32 sliceWidth = D3D11Mappings::_getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
 
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->UpdateSubresource(mTex, mLockedSubresourceIdx, nullptr, mStaticBuffer->data, rowWidth, sliceWidth);
 
 		if (device.hasError())
@@ -502,7 +510,8 @@ namespace CamelotEngine
 
 	void D3D11Texture::_createStagingBuffer()
 	{
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		switch (getTextureType())
 		{
 		case TEX_TYPE_1D:

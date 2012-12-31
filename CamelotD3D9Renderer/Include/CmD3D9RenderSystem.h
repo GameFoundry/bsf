@@ -137,8 +137,6 @@ namespace CamelotEngine
 		D3D9Driver* mActiveD3DDriver;
 		/// NVPerfHUD allowed?
 		bool mUseNVPerfHUD;
-		/// Per-stage constant support? (not in main caps since D3D specific & minor)
-		bool mPerStageConstantSupport;
 		/// Fast singleton access.
 		static D3D9RenderSystem* msD3D9RenderSystem;
 

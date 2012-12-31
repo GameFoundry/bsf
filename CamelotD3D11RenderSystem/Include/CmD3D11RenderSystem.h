@@ -30,8 +30,8 @@ namespace CamelotEngine
 		void setViewport(const Viewport& vp);
 		void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
-		virtual void setVertexDeclaration(VertexDeclarationPtr decl);
-		virtual void setVertexBufferBinding(VertexBufferBinding* binding);
+		void setVertexDeclaration(VertexDeclarationPtr decl);
+		void setVertexBufferBinding(VertexBufferBinding* binding);
 
 		void bindGpuProgram(GpuProgramHandle prg);
 		void unbindGpuProgram(GpuProgramType gptype);
@@ -58,8 +58,9 @@ namespace CamelotEngine
 		void determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings);
 		bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
 
-		static D3D11Device& getPrimaryDevice();
-
+		IDXGIFactory* getDXGIFactory() const { return mDXGIFactory; }
+		D3D11Device& getPrimaryDevice() const { return *mDevice; }
+		
 	protected:
 		friend class D3D11RenderSystemFactory;
 		D3D11RenderSystem();
@@ -82,5 +83,7 @@ namespace CamelotEngine
 		D3D11Driver*		mActiveD3DDriver;
 
 		D3D_FEATURE_LEVEL	mFeatureLevel;
+
+		D3D11HLSLProgramFactory* mHLSLFactory;
 	};
 }

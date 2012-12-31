@@ -80,7 +80,8 @@ namespace CamelotEngine
 		}
 
 		ID3D11RenderTargetView* rtv;
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		HRESULT hr = device.getD3D11Device()->CreateRenderTargetView(d3d11Texture->getDX11Resource(), &RTVDesc, &rtv);
 
 		if (FAILED(hr) || device.hasError())

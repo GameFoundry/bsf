@@ -35,37 +35,38 @@ namespace CamelotEngine
 		createConstantBuffers();
 
 		mAssemblerProgram = GpuProgramManager::instance().createProgram("", "", "", mType, GPP_NONE); // We load it from microcode, so none of this matters
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 
 		switch(mType)
 		{
 		case GPT_VERTEX_PROGRAM:
 			{
 				D3D11GpuVertexProgramPtr vertProgram = std::static_pointer_cast<D3D11GpuVertexProgram>(mAssemblerProgram);
-				vertProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+				vertProgram->loadFromMicrocode(rs->getPrimaryDevice(), microcode);
 			}
 			break;
 		case GPT_FRAGMENT_PROGRAM:
 			{
 				D3D11GpuFragmentProgramPtr fragProgram = std::static_pointer_cast<D3D11GpuFragmentProgram>(mAssemblerProgram);
-				fragProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+				fragProgram->loadFromMicrocode(rs->getPrimaryDevice(), microcode);
 			}
 			break;
 		case GPT_GEOMETRY_PROGRAM:
 			{
 				D3D11GpuGeometryProgramPtr geomProgram = std::static_pointer_cast<D3D11GpuGeometryProgram>(mAssemblerProgram);
-				geomProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+				geomProgram->loadFromMicrocode(rs->getPrimaryDevice(), microcode);
 			}
 			break;
 		case GPT_HULL_PROGRAM:
 			{
 				D3D11GpuHullProgramPtr hullProgram = std::static_pointer_cast<D3D11GpuHullProgram>(mAssemblerProgram);
-				hullProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+				hullProgram->loadFromMicrocode(rs->getPrimaryDevice(), microcode);
 			}
 			break;
 		case GPT_DOMAIN_PROGRAM:
 			{
 				D3D11GpuDomainProgramPtr domainProgram = std::static_pointer_cast<D3D11GpuDomainProgram>(mAssemblerProgram);
-				domainProgram->loadFromMicrocode(D3D11RenderSystem::getPrimaryDevice(), microcode);
+				domainProgram->loadFromMicrocode(rs->getPrimaryDevice(), microcode);
 			}
 			break;
 		}

@@ -25,7 +25,7 @@ namespace CamelotEngine
 {
 	// Predefine classes
 	class D3D11RenderSystem;
-	class D3D11RenderWindowBase;
+	class D3D11RenderWindow;
 	class D3D11Texture;
 	class D3D11TextureManager;
 	class D3D11DepthBuffer;
@@ -69,6 +69,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<D3D11RasterizerState> D3D11RasterizerStatePtr;
 	typedef std::shared_ptr<D3D11SamplerState> D3D11SamplerStatePtr;
 	typedef std::shared_ptr<D3D11DepthStencilState> D3D11DepthStencilStatePtr;
+	typedef std::shared_ptr<D3D11RenderWindow> D3D11RenderWindowPtr;
 
 // Should we ask D3D to manage vertex/index buffers automatically?
 // Doing so avoids lost devices, but also has a performance impact

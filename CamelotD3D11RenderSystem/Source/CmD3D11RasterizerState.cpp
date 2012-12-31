@@ -29,7 +29,8 @@ namespace CamelotEngine
 		rasterizerStateDesc.ScissorEnable = desc.scissorEnable;
 		rasterizerStateDesc.SlopeScaledDepthBias = desc.slopeScaledDepthBias;
 
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		device.getD3D11Device()->CreateRasterizerState(&rasterizerStateDesc, &mRasterizerState);
 	}
 }

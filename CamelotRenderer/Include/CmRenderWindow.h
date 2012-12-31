@@ -100,6 +100,7 @@ namespace CamelotEngine
         /** Default constructor.
         */
         RenderWindow();
+		virtual ~RenderWindow() {}
 
         /** Creates & displays a new window.
         */

@@ -171,6 +171,7 @@
     <ClInclude Include="Include\CmD3D11RenderSystemFactory.h" />
     <ClInclude Include="Include\CmD3D11RenderTexture.h" />
     <ClInclude Include="Include\CmD3D11RenderWindow.h" />
+    <ClInclude Include="Include\CmD3D11RenderWindowManager.h" />
     <ClInclude Include="Include\CmD3D11SamplerState.h" />
     <ClInclude Include="Include\CmD3D11Texture.h" />
     <ClInclude Include="Include\CmD3D11TextureManager.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="Source\CmD3D11RenderSystemFactory.cpp" />
     <ClCompile Include="Source\CmD3D11RenderTexture.cpp" />
     <ClCompile Include="Source\CmD3D11RenderWindow.cpp" />
+    <ClCompile Include="Source\CmD3D11RenderWindowManager.cpp" />
     <ClCompile Include="Source\CmD3D11SamplerState.cpp" />
     <ClCompile Include="Source\CmD3D11Texture.cpp" />
     <ClCompile Include="Source\CmD3D11TextureManager.cpp" />

@@ -27,7 +27,7 @@ namespace CamelotEngine
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		rs->determineFSAASettings(fsaa, fsaaHint, descDepth.Format, &descDepth.SampleDesc);
 
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11Device& device = rs->getPrimaryDevice();
 		HRESULT hr = device.getD3D11Device()->CreateTexture2D(&descDepth, NULL, &mDepthStencil);
 		if( FAILED(hr) || device.hasError())
 		{

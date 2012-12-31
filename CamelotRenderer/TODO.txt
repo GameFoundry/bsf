@@ -17,11 +17,22 @@
 
 
 /////
-Write a shader preprocessor?
- - Handles #include files, exposing parameters, and defining HLSL/GLSL blocks
- - Either that or provide UI support for those things?
- - I think UI actually sounds better...
- - Just writing out some thoughts, delete this in a few days
+RenderSystem::setTexture(STAGE, UINT32 slot, Texture)
+RenderSystem::setBuffer(STAGE, UINT32 slot, Buffer)
+RenderSystem::setSampler(STAGE, UINT32 slot, Sampler)
+
+RenderSystem::clearFrameBuffer
+ - Change so it accepts a RenderTarget as a parameter
+
+RenderSystem::setScissorRect(RECT[] array)
+ - Change it so it accepts an array
+
+RenderSystem::setViewport(RECT[] array)
+ - Change it so it accepts an array
+
+Modify how are Material/Pass parameters & GpuProgramParameters handled
+
+monitorIndex is ignored in DX11
 
 Creating a primary window and initializing the render system should probably be one step
  - OpenGL requires it anyway in order to get context (Make sure to update GLRenderWindowManager if I change how this works)

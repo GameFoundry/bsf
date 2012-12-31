@@ -87,7 +87,8 @@ namespace CamelotEngine
 			samplerState.Filter = (D3D11_FILTER)(0x80 | samplerState.Filter);
 		}
 
-		D3D11Device& device = D3D11RenderSystem::getPrimaryDevice();
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
 		device.getD3D11Device()->CreateSamplerState(&samplerState, &mSamplerState);
 	}
 }

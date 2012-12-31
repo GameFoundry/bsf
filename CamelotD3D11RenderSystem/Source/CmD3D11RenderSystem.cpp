@@ -2,6 +2,11 @@
 #include "CmD3D11DriverList.h"
 #include "CmD3D11Driver.h"
 #include "CmD3D11Device.h"
+#include "CmD3D11TextureManager.h"
+#include "CmD3D11HardwareBufferManager.h"
+#include "CmD3D11GpuProgramManager.h"
+#include "CmD3D11RenderWindowManager.h"
+#include "CmD3D11HLSLProgramFactory.h"
 #include "CmRenderSystem.h"
 #include "CmDebug.h"
 #include "CmException.h"
@@ -11,6 +16,7 @@ namespace CamelotEngine
 	D3D11RenderSystem::D3D11RenderSystem()
 		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr)
 		, mActiveD3DDriver(nullptr), mFeatureLevel(D3D_FEATURE_LEVEL_9_1)
+		, mHLSLFactory(nullptr)
 	{
 
 	}
@@ -66,11 +72,33 @@ namespace CamelotEngine
 			mDriverVersion.build = LOWORD(driverVersion.LowPart);
 		}
 
+		// Create the texture manager for use by others		
+		TextureManager::startUp(new D3D11TextureManager());
+
+		// Also create hardware buffer manager		
+		HardwareBufferManager::startUp(new D3D11HardwareBufferManager(*mDevice));
+
+		// Create the GPU program manager		
+		GpuProgramManager::startUp(new D3D11GpuProgramManager(*mDevice));
+
+		// Create render window manager
+		RenderWindowManager::startUp(new D3D11RenderWindowManager(this));
+
+		// Create & register HLSL factory		
+		mHLSLFactory = new D3D11HLSLProgramFactory();
+
 		RenderSystem::initialize_internal();
 	}
 
     void D3D11RenderSystem::destroy_internal()
 	{
+		SAFE_DELETE(mHLSLFactory);
+
+		RenderWindowManager::shutDown();
+		GpuProgramManager::shutDown();
+		HardwareBufferManager::shutDown();
+		TextureManager::shutDown();
+
 		SAFE_RELEASE(mDXGIFactory);
 		SAFE_DELETE(mDevice);
 		SAFE_DELETE(mDriverList);
@@ -116,12 +144,12 @@ namespace CamelotEngine
 
 	void D3D11RenderSystem::beginFrame()
 	{
-		throw std::exception("The method or operation is not implemented.");
+		// Not used
 	}
 
 	void D3D11RenderSystem::endFrame()
 	{
-		throw std::exception("The method or operation is not implemented.");
+		// Not used
 	}
 
 	void D3D11RenderSystem::setViewport(const Viewport& vp)
@@ -161,11 +189,22 @@ namespace CamelotEngine
 
 	void D3D11RenderSystem::clearFrameBuffer(unsigned int buffers, const Color& color /*= Color::Black*/, float depth /*= 1.0f*/, unsigned short stencil /*= 0 */)
 	{
+		//mDevice->getImmediateContext()->c
+
 		throw std::exception("The method or operation is not implemented.");
 	}
 
 	void D3D11RenderSystem::setRenderTarget(RenderTarget* target)
 	{
+		//if(target != nullptr)
+		//{
+		//	mRenderViews
+		//}
+		//else
+		//{
+
+		//}
+
 		throw std::exception("The method or operation is not implemented.");
 	}
 
@@ -184,21 +223,13 @@ namespace CamelotEngine
 		throw std::exception("The method or operation is not implemented.");
 	}
 
-	D3D11Device& D3D11RenderSystem::getPrimaryDevice() 
-	{ 
-		CM_EXCEPT(NotImplementedException, "Not implemented"); 
+	String D3D11RenderSystem::getErrorDescription(long errorNumber) const
+	{
+		return mDevice->getErrorDescription();
 	}
 
-	CamelotEngine::String D3D11RenderSystem::getErrorDescription(long errorNumber) const
+	void D3D11RenderSystem::determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings)
 	{
-		throw std::exception("The method or operation is not implemented.");
-	}
-
-		void D3D11RenderSystem::determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings)
-	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
-
-		/*
 		bool ok = false;
 		bool qualityHint = fsaaHint.find("Quality") != String::npos;
 		size_t origFSAA = fsaa;
@@ -256,10 +287,7 @@ namespace CamelotEngine
 
 			HRESULT hr;
 			UINT outQuality;
-			hr = mDevice->CheckMultisampleQualityLevels( 
-				format, 
-				outFSAASettings->Count, 
-				&outQuality);
+			hr = mDevice->getD3D11Device()->CheckMultisampleQualityLevels(format, outFSAASettings->Count, &outQuality);
 
 			if (SUCCEEDED(hr) && (!tryCSAA || outQuality > outFSAASettings->Quality))
 			{
@@ -300,7 +328,6 @@ namespace CamelotEngine
 			}
 
 		} // while !ok
-		*/
 	}
 
 	bool D3D11RenderSystem::checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage)
@@ -308,7 +335,7 @@ namespace CamelotEngine
 		return true;
 	}
 
-	CamelotEngine::VertexElementType D3D11RenderSystem::getColorVertexElementType() const
+	VertexElementType D3D11RenderSystem::getColorVertexElementType() const
 	{
 		return VET_COLOR_ABGR;
 	}

@@ -8,7 +8,6 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11RenderWindow : public RenderWindow
 	{
 	public:
-		D3D11RenderWindow(D3D11Device& device, IDXGIFactory* DXGIFactory);
 		~D3D11RenderWindow();
 
 		void initialize(const RENDER_WINDOW_DESC& desc);
@@ -36,6 +35,9 @@ namespace CamelotEngine
 		bool requiresTextureFlipping() const					{ return false; }
 
 	protected:
+		friend class D3D11RenderWindowManager;
+		D3D11RenderWindow(D3D11Device& device, IDXGIFactory* DXGIFactory);
+
 		void _createSizeDependedD3DResources();
 		void _destroySizeDependedD3DResources();
 
