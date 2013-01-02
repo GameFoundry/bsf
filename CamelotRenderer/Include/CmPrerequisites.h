@@ -116,8 +116,10 @@ namespace CamelotEngine {
 	class RasterizerState;
 	class BlendState;
 	class GpuParamBlock;
+	class GpuParams;
 	struct GpuParamDesc;
 	struct GpuParamMemberDesc;
+	struct GpuParamBlockDesc;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -175,6 +177,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<DepthStencilBuffer> DepthStencilBufferPtr;
 	typedef std::shared_ptr<MultiRenderTexture> MultiRenderTexturePtr;
 	typedef std::shared_ptr<GpuParamBlock> GpuParamBlockPtr;
+	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
 }
 
 // All type IDs used for RTTI

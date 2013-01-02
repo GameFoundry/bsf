@@ -64,6 +64,7 @@ namespace CamelotEngine
 	{
 		String name;
 		UINT32 slot;
+		UINT32 blockSize;
 	};
 
 	struct GpuParamDesc

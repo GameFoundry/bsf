@@ -62,10 +62,8 @@ namespace CamelotEngine {
             HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
             HardwareBuffer::Usage usage);
 
-		/**
-		 * @copydoc HardwareBufferManagerBase::createConstantBuffer
-		 */
-		HardwareConstantBufferPtr createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage);
+		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
+		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);
 
         /// Utility function to get the correct GL usage based on HBU's
         static GLenum getGLUsage(unsigned int usage);

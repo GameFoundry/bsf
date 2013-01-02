@@ -26,8 +26,8 @@ using namespace CamelotEngine;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
-	//gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
+	//gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
+	gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
 
 	RenderSystem* renderSystem = RenderSystem::instancePtr();
 	RenderWindowPtr renderWindow = gApplication().getPrimaryRenderWindow();

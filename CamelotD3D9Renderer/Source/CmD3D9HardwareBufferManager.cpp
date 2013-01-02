@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "CmD3D9HardwareVertexBuffer.h"
 #include "CmD3D9HardwareIndexBuffer.h"
 #include "CmD3D9VertexDeclaration.h"
+#include "CmGpuParamBlock.h"
 #include "CmException.h"
 
 namespace CamelotEngine {
@@ -70,11 +71,9 @@ namespace CamelotEngine {
             
     }
 	//-----------------------------------------------------------------------
-	HardwareConstantBufferPtr 
-		D3D9HardwareBufferManagerBase::
-		createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage)
+	GpuParamBlockPtr D3D9HardwareBufferManagerBase::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
 	{
-		CM_EXCEPT(RenderingAPIException, "Constant buffers not supported on D3D9.");
+		return GpuParamBlockPtr(new GpuParamBlock(paramDesc));
 	}
     //-----------------------------------------------------------------------
     VertexDeclarationPtr D3D9HardwareBufferManagerBase::createVertexDeclarationImpl(void)

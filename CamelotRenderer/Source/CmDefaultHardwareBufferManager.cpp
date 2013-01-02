@@ -215,10 +215,8 @@ namespace CamelotEngine {
 		return HardwareIndexBufferPtr(ib);
 	}
 	//-----------------------------------------------------------------------
-	HardwareConstantBufferPtr 
-		DefaultHardwareBufferManagerBase::createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage)
+	GpuParamBlockPtr DefaultHardwareBufferManagerBase::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
 	{
-		DefaultHardwareConstantBuffer* ib = new DefaultHardwareConstantBuffer(this, sizeBytes, usage);
-		return HardwareConstantBufferPtr(ib);
+		return GpuParamBlockPtr(new GpuParamBlock(paramDesc));
 	}
 }

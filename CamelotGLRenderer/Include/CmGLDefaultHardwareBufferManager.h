@@ -118,11 +118,8 @@ namespace CamelotEngine {
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
 				HardwareBuffer::Usage usage);
 
-		/**
-		 * @copydoc HardwareBufferManagerBase::createConstantBuffer
-		 */
-		HardwareConstantBufferPtr createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage);
-
+		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
+		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);
     };
 
 	/// GLDefaultHardwareBufferManagerBase as a Singleton

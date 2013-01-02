@@ -21,6 +21,9 @@ namespace CamelotEngine
 		 */
 		HardwareIndexBufferPtr createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, HardwareBuffer::Usage usage);
 
+		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
+		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);
+
 	protected:     
 		/// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
 		VertexDeclarationPtr createVertexDeclarationImpl(void);

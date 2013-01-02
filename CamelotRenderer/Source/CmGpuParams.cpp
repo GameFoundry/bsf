@@ -19,6 +19,11 @@ namespace CamelotEngine
 
 		mParamBlocks.resize(maxParamBlockSlot + 1);
 
+		for(auto iter = mParamDesc.paramBlocks.begin(); iter != mParamDesc.paramBlocks.end(); ++iter)
+		{
+			mParamBlocks[iter->second.slot] = GpuParamBlock::create(iter->second);
+		}
+
 		UINT32 maxTextureSlot = 0;
 		for(auto iter = mParamDesc.textures.begin(); iter != mParamDesc.textures.end(); ++iter)
 		{
@@ -36,23 +41,17 @@ namespace CamelotEngine
 		}
 
 		mSamplerStates.resize(maxSamplerSlot + 1);
-
-		// TODO - Create ParamBlocks
 	}
 
-	GpuParamBlockPtr GpuParams::getParamBlock(UINT32 index) const
+	GpuParamBlockPtr GpuParams::getParamBlock(UINT32 slot) const
 	{
-		UINT32 idx = 0;
-		
-		for(auto iter = mParamBlocks.begin(); iter != mParamBlocks.end(); ++iter)
+		if(slot < 0 || slot >= (UINT32)mParamBlocks.size())
 		{
-			if(idx == index)
-				return *iter;
-
-			idx++;
+			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
+				toString(mParamBlocks.size() - 1) + ". Requested: " + toString(slot));
 		}
 
-		return nullptr;
+		return mParamBlocks[slot];
 	}
 
 	GpuParamBlockPtr GpuParams::getParamBlock(const String& name) const
@@ -68,15 +67,15 @@ namespace CamelotEngine
 		return mParamBlocks[iterFind->second.slot];
 	}
 
-	void GpuParams::setParamBlock(UINT32 index, GpuParamBlockPtr paramBlock)
+	void GpuParams::setParamBlock(UINT32 slot, GpuParamBlockPtr paramBlock)
 	{
-		if(index < 0 || index >= (UINT32)mParamBlocks.size())
+		if(slot < 0 || slot >= (UINT32)mParamBlocks.size())
 		{
 			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
-				toString(mParamBlocks.size() - 1) + ". Requested: " + toString(index));
+				toString(mParamBlocks.size() - 1) + ". Requested: " + toString(slot));
 		}
 
-		mParamBlocks[index] = paramBlock;
+		mParamBlocks[slot] = paramBlock;
 	}
 
 	void GpuParams::setParamBlock(const String& name, GpuParamBlockPtr paramBlock)
@@ -229,6 +228,17 @@ namespace CamelotEngine
 		mTextures[paramIter->second.slot] = val;
 	}
 
+	TextureHandle GpuParams::getTexture(UINT32 slot)
+	{
+		if(slot < 0 || slot >= (UINT32)mTextures.size())
+		{
+			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
+				toString(mTextures.size() - 1) + ". Requested: " + toString(slot));
+		}
+
+		return mTextures[slot];
+	}
+
 	void GpuParams::setSamplerState(const String& name, SamplerStatePtr val)
 	{
 		auto paramIter = mParamDesc.samplers.find(name);
@@ -239,6 +249,17 @@ namespace CamelotEngine
 		}
 
 		mSamplerStates[paramIter->second.slot] = val;
+	}
+
+	SamplerStatePtr GpuParams::getSamplerState(UINT32 slot)
+	{
+		if(slot < 0 || slot >= (UINT32)mSamplerStates.size())
+		{
+			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
+				toString(mSamplerStates.size() - 1) + ". Requested: " + toString(slot));
+		}
+
+		return mSamplerStates[slot];
 	}
 
 	GpuParamMemberDesc* GpuParams::getParamDesc(const String& name) const

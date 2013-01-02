@@ -104,9 +104,9 @@ namespace CamelotEngine {
 		return HardwareIndexBufferPtr(buf);
     }
 	//---------------------------------------------------------------------
-	HardwareConstantBufferPtr GLHardwareBufferManagerBase::createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage)
+	GpuParamBlockPtr GLHardwareBufferManagerBase::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
 	{
-		CM_EXCEPT(RenderingAPIException, "Support for constant buffers not implemented yet in OpenGL.");
+		return GpuParamBlockPtr(new GpuParamBlock(paramDesc));
 	}
     //---------------------------------------------------------------------
     GLenum GLHardwareBufferManagerBase::getGLUsage(unsigned int usage)

@@ -59,6 +59,8 @@ namespace CamelotEngine
 		void bindGpuProgramParameters(GpuProgramType gptype, 
 			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
 
+		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
+
 		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr);
 
 		/**

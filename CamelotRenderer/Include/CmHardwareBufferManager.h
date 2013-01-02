@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "CmModule.h"
 #include "CmHardwareVertexBuffer.h"
 #include "CmHardwareIndexBuffer.h"
+#include "CmGpuParamBlock.h"
 
 namespace CamelotEngine {
 	/** \addtogroup Core
@@ -123,6 +124,14 @@ namespace CamelotEngine {
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
 			HardwareBuffer::Usage usage) = 0;
 
+		/**
+		 * @brief	Creates an GPU parameter block that you can use for setting parameters
+		 * 			for GPU programs.
+		 *
+		 * @return	The new GPU parameter block.
+		 */
+		virtual GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc) = 0;
+
         /** Creates a new vertex declaration. */
         virtual VertexDeclarationPtr createVertexDeclaration(void);
 
@@ -155,6 +164,12 @@ namespace CamelotEngine {
 		HardwareIndexBufferPtr createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, HardwareBuffer::Usage usage)
 		{
 			return mImpl->createIndexBuffer(itype, numIndexes, usage);
+		}
+
+		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
+		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
+		{
+			return mImpl->createGpuParamBlock(paramDesc);
 		}
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexDeclaration */

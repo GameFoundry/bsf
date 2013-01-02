@@ -26,6 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmGLDefaultHardwareBufferManager.h"
+#include "CmGpuParamBlock.h"
 #include "CmException.h"
 
 namespace CamelotEngine {
@@ -166,8 +167,8 @@ namespace CamelotEngine {
 			new GLDefaultHardwareIndexBuffer(itype, numIndexes, usage) );
 	}
 	//---------------------------------------------------------------------
-	HardwareConstantBufferPtr GLDefaultHardwareBufferManagerBase::createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage)
+	GpuParamBlockPtr GLDefaultHardwareBufferManagerBase::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
 	{
-		CM_EXCEPT(RenderingAPIException, "Support for constant buffers not implemented yet in OpenGL.");
+		return GpuParamBlockPtr(new GpuParamBlock(paramDesc));
 	}
 }

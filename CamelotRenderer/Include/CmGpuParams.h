@@ -4,16 +4,18 @@
 
 namespace CamelotEngine
 {
-	class GpuParams
+	class CM_EXPORT GpuParams
 	{
 	public:
 		GpuParams(GpuParamDesc& paramDesc);
 
-		GpuParamBlockPtr getParamBlock(UINT32 index) const;
+		GpuParamBlockPtr getParamBlock(UINT32 slot) const;
 		GpuParamBlockPtr getParamBlock(const String& name) const;
 
-		void setParamBlock(UINT32 index, GpuParamBlockPtr paramBlock);
+		void setParamBlock(UINT32 slot, GpuParamBlockPtr paramBlock);
 		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
+
+		const GpuParamDesc& getParamDesc() const { return mParamDesc; }
 
 		bool hasParam(const String& name) const;
 		bool hasTexture(const String& name) const;
@@ -41,7 +43,10 @@ namespace CamelotEngine
 		void setParam(const String& name, const void* value, UINT32 sizeBytes, UINT32 arrayIndex = 0);
 
 		void setTexture(const String& name, TextureHandle val);
+		TextureHandle getTexture(UINT32 slot);
+
 		void setSamplerState(const String& name, SamplerStatePtr val);
+		SamplerStatePtr getSamplerState(UINT32 slot);
 
 		void setTransposeMatrices(bool transpose) { mTransposeMatrices = transpose; }
 

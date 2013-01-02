@@ -85,7 +85,7 @@ namespace CamelotEngine {
 	{
 	public:
 		D3D9HLSLParamParser(LPD3DXCONSTANTTABLE constTable)
-			:mpConstTable(constTable), mCurrentBufferSize(0)
+			:mpConstTable(constTable)
 		{ }
 
 		GpuParamDesc buildParameterDescriptions();
@@ -95,7 +95,6 @@ namespace CamelotEngine {
 	private:
 		LPD3DXCONSTANTTABLE mpConstTable;
 		GpuParamDesc mParamDesc;
-		UINT32 mCurrentBufferSize;
 	};
 
 	GpuParamDesc D3D9HLSLParamParser::buildParameterDescriptions()
@@ -116,6 +115,7 @@ namespace CamelotEngine {
 		GpuParamBlockDesc& blockDesc = mParamDesc.paramBlocks[name];
 		blockDesc.name = name;
 		blockDesc.slot = 0;
+		blockDesc.blockSize = 0;
 
 		// Iterate over the constants
 		for (UINT32 i = 0; i < desc.Constants; ++i)
@@ -168,7 +168,7 @@ namespace CamelotEngine {
 			{
 				GpuParamMemberDesc memberDesc;
 				memberDesc.gpuMemOffset = desc.RegisterIndex;
-				memberDesc.cpuMemOffset = mCurrentBufferSize;
+				memberDesc.cpuMemOffset = blockDesc.blockSize;
 				memberDesc.paramBlockSlot = blockDesc.slot;
 				memberDesc.arraySize = 1;
 
@@ -178,7 +178,7 @@ namespace CamelotEngine {
 				populateParamMemberDesc(memberDesc, desc);
 				mParamDesc.params.insert(std::make_pair(name, memberDesc));
 
-				mCurrentBufferSize += memberDesc.elementSize * memberDesc.arraySize;
+				blockDesc.blockSize += memberDesc.elementSize * memberDesc.arraySize;
 			}
 
 			if(desc.Type == D3DXPT_SAMPLER1D || desc.Type == D3DXPT_SAMPLER2D || desc.Type == D3DXPT_SAMPLER3D || desc.Type == D3DXPT_SAMPLERCUBE)

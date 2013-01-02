@@ -3,6 +3,7 @@
 #include "CmD3D11HardwareIndexBuffer.h"
 #include "CmD3D11HardwareConstantBuffer.h"
 #include "CmD3D11VertexDeclaration.h"
+#include "CmGpuParamDesc.h"
 
 namespace CamelotEngine
 {
@@ -41,6 +42,11 @@ namespace CamelotEngine
 		}
 
 		return HardwareIndexBufferPtr(idx);
+	}
+
+	GpuParamBlockPtr D3D11HardwareBufferManagerBase::createGpuParamBlock(const GpuParamBlockDesc& blockDesc)
+	{
+		return GpuParamBlockPtr(new GpuParamBlock(blockDesc));
 	}
 
 	VertexDeclarationPtr D3D11HardwareBufferManagerBase::createVertexDeclarationImpl(void)
