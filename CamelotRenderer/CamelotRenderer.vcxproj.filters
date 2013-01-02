@@ -350,6 +350,15 @@
     <ClInclude Include="Include\CmMultiRenderTexture.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGpuParamDesc.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGpuParams.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGpuParamBlock.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -524,6 +533,12 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmMultiRenderTexture.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuParams.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuParamBlock.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>

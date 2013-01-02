@@ -192,6 +192,9 @@
     <ClInclude Include="Include\CmDepthStencilBuffer.h" />
     <ClInclude Include="Include\CmDepthStencilStateRTTI.h" />
     <ClInclude Include="Include\CmDepthStencilState.h" />
+    <ClInclude Include="Include\CmGpuParamBlock.h" />
+    <ClInclude Include="Include\CmGpuParamDesc.h" />
+    <ClInclude Include="Include\CmGpuParams.h" />
     <ClInclude Include="Include\CmGpuProgram.h" />
     <ClInclude Include="Include\CmGpuProgramManager.h" />
     <ClInclude Include="Include\CmGpuProgramParams.h" />
@@ -276,6 +279,8 @@
     <ClCompile Include="Source\CmDeferredRenderContext.cpp" />
     <ClCompile Include="Source\CmDepthStencilBuffer.cpp" />
     <ClCompile Include="Source\CmDepthStencilState.cpp" />
+    <ClCompile Include="Source\CmGpuParamBlock.cpp" />
+    <ClCompile Include="Source\CmGpuParams.cpp" />
     <ClCompile Include="Source\CmGpuProgram.cpp" />
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />

@@ -20,11 +20,6 @@ namespace CamelotEngine
 		 * @brief	Creates a hardware index buffer.
 		 */
 		HardwareIndexBufferPtr createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, HardwareBuffer::Usage usage);
-		
-		/**
-		 * @brief	Creates a hardware index buffer.
-		 */
-		HardwareConstantBufferPtr createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage);
 
 	protected:     
 		/// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs

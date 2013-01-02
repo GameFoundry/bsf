@@ -951,7 +951,7 @@ namespace CamelotEngine
 		orientation.ToRotationMatrix(rot);
 
 		// Make the translation relative to new axes
-		Matrix3 rotT = rot.Transpose();
+		Matrix3 rotT = rot.transpose();
 		Vector3 trans = -rotT * position;
 
 		// Make final matrix

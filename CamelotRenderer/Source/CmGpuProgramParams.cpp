@@ -358,7 +358,7 @@ namespace CamelotEngine
 		// remember, raw content access uses raw float count rather than float4
 		if (mTransposeMatrices)
 		{
-			Matrix3 t = m.Transpose();
+			Matrix3 t = m.transpose();
 			_writeRawConstants(physicalIndex, t[0], elementCount>9?9:elementCount);
 		}
 		else

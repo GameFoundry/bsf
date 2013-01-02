@@ -80,7 +80,6 @@ namespace CamelotEngine
 		mShaderBuffers.clear();
 		mInputParameters.clear();
 		mOutputParameters.clear();
-		mConstantBuffers.clear();
 		mMicrocode.clear();
 	}
 
@@ -452,13 +451,7 @@ namespace CamelotEngine
 
 	void D3D11HLSLProgram::createConstantBuffers()
 	{
-		mConstantBuffers.clear();
-
-		for(auto shaderBufferIter = mShaderBuffers.begin(); shaderBufferIter != mShaderBuffers.end(); ++shaderBufferIter)
-		{
-			HardwareConstantBufferPtr constantBuffer = HardwareBufferManager::instance().createConstantBuffer(shaderBufferIter->desc.Size, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
-			mConstantBuffers.push_back(constantBuffer);
-		}
+		// TODO - Do I still need this?
 	}
 
 	/************************************************************************/

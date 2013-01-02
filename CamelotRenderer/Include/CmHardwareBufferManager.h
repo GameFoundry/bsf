@@ -67,7 +67,6 @@ namespace CamelotEngine {
 		typedef set<HardwareConstantBuffer*>::type ConstantBufferList;
         VertexBufferList mVertexBuffers;
         IndexBufferList mIndexBuffers;
-		ConstantBufferList mConstantBuffers;
 
 		typedef set<VertexBufferBinding*>::type VertexBufferBindingList;
 		VertexBufferBindingList mVertexBufferBindings;
@@ -124,13 +123,6 @@ namespace CamelotEngine {
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
 			HardwareBuffer::Usage usage) = 0;
 
-		/** Create a hardware constant buffer.
-		@param sizeBytes Size of the buffer, in bytes.
-        @param usage One or more members of the HardwareBuffer::Usage enumeration.
-        */
-		virtual HardwareConstantBufferPtr 
-            createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage) = 0;
-
         /** Creates a new vertex declaration. */
         virtual VertexDeclarationPtr createVertexDeclaration(void);
 
@@ -143,8 +135,6 @@ namespace CamelotEngine {
 		void _notifyVertexBufferDestroyed(HardwareVertexBuffer* buf);
 		/// Notification that a hardware index buffer has been destroyed
 		void _notifyIndexBufferDestroyed(HardwareIndexBuffer* buf);
-		/// Notification that a hardware constant buffer has been destroyed
-		void _notifyConstantBufferDestroyed(HardwareConstantBuffer* buf);
 	};
 
     /** Singleton wrapper for hardware buffer manager. */
@@ -165,12 +155,6 @@ namespace CamelotEngine {
 		HardwareIndexBufferPtr createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, HardwareBuffer::Usage usage)
 		{
 			return mImpl->createIndexBuffer(itype, numIndexes, usage);
-		}
-
-		/** @copydoc HardwareBufferManagerInterface::createConstantBuffer */
-		HardwareConstantBufferPtr createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage)
-		{
-			return mImpl->createConstantBuffer(sizeBytes, usage);
 		}
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexDeclaration */

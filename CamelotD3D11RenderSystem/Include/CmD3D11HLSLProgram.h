@@ -72,8 +72,6 @@ namespace CamelotEngine
 		vector<D3D11_SIGNATURE_PARAMETER_DESC>::type mInputParameters;
 		vector<D3D11_SIGNATURE_PARAMETER_DESC>::type mOutputParameters;
 
-		vector<HardwareConstantBufferPtr>::type mConstantBuffers;
-
 		/**
 		 * @brief	Compiles the shader from source and generates the microcode.
 		 */

@@ -17,6 +17,38 @@
 
 
 /////
+-----------GpuProgramParameters/Pass/Material REFACTOR------------------------------
+
+Material remains a simple structure you use for easily setting all and every type of parameters for every stage.
+ - Each instantiation of Material creates its own unique constant buffers
+  - Attempt to detect duplicates on initialization
+ - Set/GetConstantBuffer allows you to switch out and share constant buffers
+
+GpuParamDesc
+ - Contains a list of all constant buffers with their parameters (param name, type, size, slot, etc.)
+ - Also a list of all textures/buffers/samplers
+ - Each created GpuProgram contains one of these
+
+HardwareBufferManager::createConstantBuffer(GpuParamDesc)
+ - Creates a constant buffer according to the specifications
+
+Pass
+ - Constant buffers are stored on a pass
+ - Supports previously mentioned Set/GetConstantBuffer
+   - When setting check GpuParamDesc of the shader to see if it matches
+ - Also holds a list of Textures/SamplerStates/Buffers
+   - Doesn't make sense to store it in ConstantBuffer since it would just be one per buffer
+
+Possibly keep GpuProgramParams class so it unifies access to ConstantBuffer and Textures/SamplerStates/Buffers?
+
+RenderSystem::bindGpuProgramParameters (maybe rename to something nicer?)
+ - It retrieves Constant buffer from Pass, converts it to a platform specific version and sets the needed parameters
+
+
+Port OpenGL so it uses Uniform buffers
+
+---------------------------------------------------
+
 RenderSystem::setTexture(STAGE, UINT32 slot, Texture)
 RenderSystem::setBuffer(STAGE, UINT32 slot, Buffer)
 RenderSystem::setSampler(STAGE, UINT32 slot, Sampler)

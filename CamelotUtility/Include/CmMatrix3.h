@@ -156,7 +156,7 @@ namespace CamelotEngine
         CM_UTILITY_EXPORT friend Matrix3 operator* (float fScalar, const Matrix3& rkMatrix);
 
         // utilities
-        Matrix3 Transpose () const;
+        Matrix3 transpose () const;
         bool Inverse (Matrix3& rkInverse, float fTolerance = 1e-06) const;
         Matrix3 Inverse (float fTolerance = 1e-06) const;
         float Determinant () const;

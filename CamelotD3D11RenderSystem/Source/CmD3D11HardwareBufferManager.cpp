@@ -43,19 +43,6 @@ namespace CamelotEngine
 		return HardwareIndexBufferPtr(idx);
 	}
 
-	HardwareConstantBufferPtr 
-		D3D11HardwareBufferManagerBase::createConstantBuffer(UINT32 sizeBytes, HardwareBuffer::Usage usage)
-	{
-		assert (sizeBytes > 0);
-		D3D11HardwareConstantBuffer* cnstBuf = new D3D11HardwareConstantBuffer(mDevice, this, sizeBytes, usage, false);
-
-		{
-			mConstantBuffers.insert(cnstBuf);
-		}
-
-		return HardwareConstantBufferPtr(cnstBuf);
-	}	
-
 	VertexDeclarationPtr D3D11HardwareBufferManagerBase::createVertexDeclarationImpl(void)
 	{
 		return VertexDeclarationPtr(new D3D11VertexDeclaration());

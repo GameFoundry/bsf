@@ -182,7 +182,7 @@ namespace CamelotEngine
         return kProd;
     }
     //-----------------------------------------------------------------------
-    Matrix3 Matrix3::Transpose () const
+    Matrix3 Matrix3::transpose () const
     {
         Matrix3 kTranspose;
         for (size_t iRow = 0; iRow < 3; iRow++)

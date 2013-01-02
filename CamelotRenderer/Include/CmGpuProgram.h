@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "CmGpuProgramParams.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmResource.h"
+#include "CmGpuParamDesc.h"
 
 namespace CamelotEngine {
 
@@ -105,6 +106,11 @@ namespace CamelotEngine {
 		change, this definition will alter, but previous params may reference the old def.
 		*/
 		mutable GpuNamedConstantsPtr mConstantDefs;
+
+		/**
+		 * @brief	Contains information about all parameters in a shader.
+		 */
+		GpuParamDesc mParametersDesc;
 
         /** Internal method returns whether required capabilities for this program is supported.
         */

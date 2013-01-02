@@ -12,9 +12,6 @@ namespace CamelotEngine
 
 	HardwareConstantBuffer::~HardwareConstantBuffer()
 	{
-		if (mMgr)
-		{
-			mMgr->_notifyConstantBufferDestroyed(this);
-		}
+
 	}
 }
