@@ -2,15 +2,16 @@
 
 #include "CmPrerequisites.h"
 #include "CmResource.h"
+#include "CmGpuParams.h"
 
 namespace CamelotEngine
 {
 	class CM_EXPORT PassParameters
 	{
 	public:
-		GpuProgramParametersPtr mVertParams;
-		GpuProgramParametersPtr mFragParams;
-		GpuProgramParametersPtr mGeomParams;
+		GpuParamsPtr mVertParams;
+		GpuParamsPtr mFragParams;
+		GpuParamsPtr mGeomParams;
 	};
 
 	class CM_EXPORT Material : public Resource
@@ -36,6 +37,7 @@ namespace CamelotEngine
 		ShaderPtr getShader() const { return mShader; }
 
 		void setTexture(const String& name, TextureHandle& value);
+		void setSamplerState(const String& name, SamplerStatePtr samplerState);
 		void setFloat(const String& name, float value);
 		void setColor(const String& name, const Color& value);
 		void setVec2(const String& name, const Vector2& value);
@@ -66,20 +68,20 @@ namespace CamelotEngine
 
 				if(params->mVertParams)
 				{
-					if(params->mVertParams->hasNamedConstant(name))
-						params->mVertParams->setNamedConstant(name, value);
+					if(params->mVertParams->hasParam(name))
+						params->mVertParams->setParam(name, value);
 				}
 
 				if(params->mFragParams)
 				{
-					if(params->mFragParams->hasNamedConstant(name))
-						params->mFragParams->setNamedConstant(name, value);
+					if(params->mFragParams->hasParam(name))
+						params->mFragParams->setParam(name, value);
 				}
 
 				if(params->mGeomParams)
 				{
-					if(params->mGeomParams->hasNamedConstant(name))
-						params->mGeomParams->setNamedConstant(name, value);
+					if(params->mGeomParams->hasParam(name))
+						params->mGeomParams->setParam(name, value);
 				}
 			}
 		}

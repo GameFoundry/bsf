@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmAsyncOp.h"
+#include "CmGpuParams.h"
 #include "CmGpuProgramRTTI.h"
 
 #if CM_DEBUG_MODE
@@ -125,30 +126,10 @@ namespace CamelotEngine
 			mConstantDefs = GpuNamedConstantsPtr(new GpuNamedConstants());
 	}
 	//---------------------------------------------------------------------
-	GpuProgramParametersSharedPtr GpuProgram::createParameters(void)
+	GpuParamsPtr GpuProgram::createParameters(void)
 	{
-		AsyncOp op = RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&GpuProgram::createParameters_internal, this, _1), true);
-
-		return op.getReturnValue<GpuProgramParametersSharedPtr>();
+		return GpuParamsPtr(new GpuParams(mParametersDesc));
 	}
-    //-----------------------------------------------------------------------------
-    void GpuProgram::createParameters_internal(AsyncOp& op)
-    {
-		THROW_IF_NOT_RENDER_THREAD
-
-        // Default implementation simply returns standard parameters.
-        GpuProgramParametersSharedPtr ret = GpuProgramParametersSharedPtr(new GpuProgramParameters());	
-		
-		// set up named parameters, if any
-		if ((mConstantDefs != nullptr) && !mConstantDefs->map.empty())
-		{
-			ret->_setNamedConstants(mConstantDefs);
-		}
-		// link shared logical / physical map for low-level use
-		ret->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical, mTextureLogicalToPhysical);
-
-		op.completeOperation(ret);
-    }
     //-----------------------------------------------------------------------
     const String& GpuProgram::getLanguage(void) const
     {

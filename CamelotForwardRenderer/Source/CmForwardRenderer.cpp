@@ -167,14 +167,14 @@ namespace CamelotEngine
 
 		GpuProgramHandle vertProgram = mActivePass->getVertexProgram();
 		if(vertProgram)
-			renderContext->bindGpuProgramParameters(GPT_VERTEX_PROGRAM, params->mVertParams, GPV_ALL);
+			renderContext->bindGpuParams(GPT_VERTEX_PROGRAM, params->mVertParams);
 
 		GpuProgramHandle fragProgram = mActivePass->getFragmentProgram();
 		if(fragProgram)
-			renderContext->bindGpuProgramParameters(GPT_FRAGMENT_PROGRAM, params->mFragParams, GPV_ALL);
+			renderContext->bindGpuParams(GPT_FRAGMENT_PROGRAM, params->mFragParams);
 
 		GpuProgramHandle geomProgram = mActivePass->getGeometryProgram();
 		if(geomProgram)
-			renderContext->bindGpuProgramParameters(GPT_GEOMETRY_PROGRAM, params->mGeomParams, GPV_ALL);
+			renderContext->bindGpuParams(GPT_GEOMETRY_PROGRAM, params->mGeomParams);
 	}
 }

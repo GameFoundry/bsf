@@ -9,6 +9,7 @@
 #include "CmMatrix4.h"
 #include "CmMaterial.h"
 #include "CmGpuProgramParams.h"
+#include "CmGpuParams.h"
 #include "CmShader.h"
 #include "CmDebug.h"
 #include "CmException.h"

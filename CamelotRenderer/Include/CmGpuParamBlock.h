@@ -16,6 +16,8 @@ namespace CamelotEngine
 		const UINT8* getDataPtr(UINT32 offset) const;
 
 		virtual void updateIfDirty();
+
+		virtual GpuParamBlockPtr clone() const;
 		
 		static GpuParamBlockPtr create(const GpuParamBlockDesc& desc);
 	private:

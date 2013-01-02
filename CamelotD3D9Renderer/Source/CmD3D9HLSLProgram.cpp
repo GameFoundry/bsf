@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmAsyncOp.h"
+#include "CmGpuParams.h"
 #include "CmD3D9HLSLProgramRTTI.h"
 
 namespace CamelotEngine {
@@ -337,6 +338,7 @@ namespace CamelotEngine {
 				} // columns
 				break;
 			}
+			break;
 		case D3DXPT_BOOL:
 			memberDesc.type = GMT_BOOL;
 			memberDesc.elementSize = 1;
@@ -505,6 +507,9 @@ namespace CamelotEngine {
 				GPP_NONE);
 			static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);
 		}
+
+		D3D9HLSLParamParser paramParser(mpConstTable);
+		mParametersDesc = paramParser.buildParameterDescriptions();
     }
     //-----------------------------------------------------------------------
     void D3D9HLSLProgram::unload_internal(void)
@@ -805,17 +810,14 @@ namespace CamelotEngine {
 		RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
 		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile);
     }
-    //-----------------------------------------------------------------------
-    void D3D9HLSLProgram::createParameters_internal(AsyncOp& op)
-    {
-        // Call superclass
-       HighLevelGpuProgram::createParameters_internal(op);
+	//-----------------------------------------------------------------------
+	GpuParamsPtr D3D9HLSLProgram::createParameters()
+	{
+		GpuParamsPtr params(new GpuParams(mParametersDesc));
+		params->setTransposeMatrices(mColumnMajorMatrices);
 
-	    GpuProgramParametersSharedPtr params = op.getReturnValue<GpuProgramParametersSharedPtr>();
-
-        // Need to transpose matrices if compiled with column-major matrices
-        params->setTransposeMatrices(mColumnMajorMatrices);
-    }
+		return params;
+	}
     //-----------------------------------------------------------------------
     const String& D3D9HLSLProgram::getLanguage(void) const
     {

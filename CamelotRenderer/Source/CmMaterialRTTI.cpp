@@ -1,4 +1,5 @@
 #include "CmMaterialRTTI.h"
+#include "CmGpuParamDesc.h"
 
 namespace CamelotEngine
 {
@@ -17,7 +18,7 @@ namespace CamelotEngine
 		Material* material = static_cast<Material*>(obj);
 		std::shared_ptr<MaterialParams> params = std::shared_ptr<MaterialParams>(new MaterialParams());
 
-		vector<GpuProgramParametersPtr>::type allParams;
+		vector<GpuParamsPtr>::type allParams;
 		for(size_t i = 0; i < material->mParameters.size(); i++)
 		{
 			if(material->mParameters[i]->mFragParams != nullptr)
@@ -32,7 +33,24 @@ namespace CamelotEngine
 
 		for(size_t i = 0; i < allParams.size(); i++)
 		{
-			const GpuNamedConstants& namedConstants = allParams[i]->getConstantDefinitions();
+			const GpuParamDesc& paramDesc = allParams[i]->getParamDesc();
+
+			for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
+			{
+				params->mTextureParams[iter->first] = allParams[i]->getTexture(iter->second.slot);
+			}
+
+			for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
+			{
+				params->mSamplerStateParams[iter->first] = allParams[i]->getSamplerState(iter->second.slot);
+			}
+
+			for(auto iter = paramDesc.params.begin(); iter != paramDesc.params.end(); ++iter)
+			{
+				// TODO - Need to save float/int/bool parameters!
+			}
+
+			/*const GpuNamedConstants& namedConstants = allParams[i]->getConstantDefinitions();
 
 			float tempValue[16];
 			for(auto iter = namedConstants.map.begin(); iter != namedConstants.map.end(); ++iter)
@@ -42,7 +60,7 @@ namespace CamelotEngine
 				if(def.constType == GCT_SAMPLER2D)
 				{
 					TextureHandle texture;
-					allParams[i]->_readTexture(iter->second.physicalIndex, texture);
+					allParams[i]->getTexture(iter->second.physicalIndex, texture);
 					params->mTextureParams[iter->first] = texture;
 
 					SamplerStatePtr samplerState = allParams[i]->getSamplerState(iter->second.physicalIndex);
@@ -81,7 +99,7 @@ namespace CamelotEngine
 					else
 						gDebug().logWarning("While saving material found multiple parameters with the same name. Only saving the first.");
 				}
-			}
+			}*/
 		}
 
 		material->mRTTIData = params;
@@ -109,7 +127,7 @@ namespace CamelotEngine
 
 		std::shared_ptr<MaterialParams> params = boost::any_cast<std::shared_ptr<MaterialParams>>(material->mRTTIData);
 
-		vector<GpuProgramParametersPtr>::type allParams;
+		vector<GpuParamsPtr>::type allParams;
 		for(size_t i = 0; i < material->mParameters.size(); i++)
 		{
 			if(material->mParameters[i]->mFragParams != nullptr)
@@ -124,7 +142,31 @@ namespace CamelotEngine
 
 		for(size_t i = 0; i < allParams.size(); i++)
 		{
-			const GpuNamedConstants& namedConstants = allParams[i]->getConstantDefinitions();
+			const GpuParamDesc& paramDesc = allParams[i]->getParamDesc();
+
+			for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
+			{
+				auto iterFind = params->mTextureParams.find(iter->first);
+
+				if(iterFind != params->mTextureParams.end())
+					allParams[i]->setTexture(iter->first, iterFind->second);
+			}
+
+			for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
+			{
+				auto iterFind = params->mSamplerStateParams.find(iter->first);
+
+				if(iterFind != params->mSamplerStateParams.end())
+					allParams[i]->setSamplerState(iter->first, iterFind->second);
+			}
+
+			for(auto iter = paramDesc.params.begin(); iter != paramDesc.params.end(); ++iter)
+			{
+				// TODO - Need to load float/int/bool parameters!
+			}
+
+
+			/*const GpuNamedConstants& namedConstants = allParams[i]->getConstantDefinitions();
 
 			float tempValue[16];
 			for(auto iter = namedConstants.map.begin(); iter != namedConstants.map.end(); ++iter)
@@ -164,7 +206,7 @@ namespace CamelotEngine
 						allParams[i]->_writeRawConstants(def.physicalIndex, tempValue, fieldSize);
 					}
 				}
-			}
+			}*/
 		}
 
 		material->mRTTIData = nullptr; // This will delete temporary data as it's stored in a unique ptr

@@ -246,6 +246,12 @@ namespace CamelotEngine
 		virtual void bindGpuProgramParameters(GpuProgramType gptype, 
 			GpuProgramParametersSharedPtr params, UINT16 variabilityMask) = 0;
 
+		/** Bind Gpu program parameters.
+		@param gptype The type of program to bind the parameters to
+		@param params The parameters to bind
+		*/
+		virtual void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params) = 0;
+
 		/** Unbinds GpuPrograms of a given GpuProgramType.
 		@remarks
 		This returns the pipeline to fixed-function processing for this type.

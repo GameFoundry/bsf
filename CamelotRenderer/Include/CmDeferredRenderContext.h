@@ -75,6 +75,8 @@ namespace CamelotEngine
 		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
 		/** @copydoc RenderSystem::unbindGpuProgram() */
 		void unbindGpuProgram(GpuProgramType gptype);
+		/** @copydoc RenderSystem::bindGpuParams() */
+		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
 
 		/** @copydoc RenderSystem::beginFrame() */
 		void beginFrame(void);

@@ -88,7 +88,57 @@ namespace CamelotEngine
 	void Material::setTexture(const String& name, TextureHandle& value)
 	{
 		throwIfNotInitialized();
-		setParam(name, value);
+
+		for(auto iter = mParameters.begin(); iter != mParameters.end(); ++iter)
+		{
+			PassParametersPtr params = *iter;
+
+			if(params->mVertParams)
+			{
+				if(params->mVertParams->hasTexture(name))
+					params->mVertParams->setTexture(name, value);
+			}
+
+			if(params->mFragParams)
+			{
+				if(params->mFragParams->hasTexture(name))
+					params->mFragParams->setTexture(name, value);
+			}
+
+			if(params->mGeomParams)
+			{
+				if(params->mGeomParams->hasTexture(name))
+					params->mGeomParams->setTexture(name, value);
+			}
+		}
+	}
+
+	void Material::setSamplerState(const String& name, SamplerStatePtr samplerState)
+	{
+		throwIfNotInitialized();
+
+		for(auto iter = mParameters.begin(); iter != mParameters.end(); ++iter)
+		{
+			PassParametersPtr params = *iter;
+
+			if(params->mVertParams)
+			{
+				if(params->mVertParams->hasSamplerState(name))
+					params->mVertParams->setSamplerState(name, samplerState);
+			}
+
+			if(params->mFragParams)
+			{
+				if(params->mFragParams->hasSamplerState(name))
+					params->mFragParams->setSamplerState(name, samplerState);
+			}
+
+			if(params->mGeomParams)
+			{
+				if(params->mGeomParams->hasSamplerState(name))
+					params->mGeomParams->setSamplerState(name, samplerState);
+			}
+		}
 	}
 
 	void Material::setFloat(const String& name, float value)

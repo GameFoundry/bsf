@@ -262,6 +262,25 @@ namespace CamelotEngine
 		return mSamplerStates[slot];
 	}
 
+	GpuParamsPtr GpuParams::clone() const
+	{
+		GpuParamsPtr clonedParams(new GpuParams(*this));
+		
+		for(size_t i = 0; i < mParamBlocks.size(); i++)
+		{
+			if(mParamBlocks[i] != nullptr)
+				clonedParams->mParamBlocks[i] = mParamBlocks[i]->clone();
+		}
+
+		return clonedParams;
+	}
+
+	void GpuParams::updateIfDirty()
+	{
+		for(size_t i = 0; i < mParamBlocks.size(); i++)
+			mParamBlocks[i]->updateIfDirty();
+	}
+
 	GpuParamMemberDesc* GpuParams::getParamDesc(const String& name) const
 	{
 		auto paramIter = mParamDesc.params.find(name);

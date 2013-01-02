@@ -83,15 +83,6 @@ namespace CamelotEngine {
 		 */
 		virtual void unload_internal();
 
-        /** Creates a new parameters object compatible with this program definition. 
-        @remarks
-            Unlike low-level assembly programs, parameters objects are specific to the
-            program and therefore must be created from it rather than by the 
-            HighLevelGpuProgramManager. This method creates a new instance of a parameters
-            object containing the definition of the parameters this program understands.
-        */
-        void createParameters_internal(AsyncOp& op);
-
         /** @copydoc GpuProgram::getBindingDelegate */
         GpuProgram* getBindingDelegate_internal(void) { return mAssemblerProgram.get(); }
 

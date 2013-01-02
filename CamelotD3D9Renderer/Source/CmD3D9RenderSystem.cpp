@@ -458,6 +458,8 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		params->updateIfDirty();
+
 		const GpuParamDesc& paramDesc = params->getParamDesc();
 
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)

@@ -184,8 +184,7 @@ namespace CamelotEngine {
             populate any implementation-specific extras (like named parameters) where
             they are appropriate.
         */
-		GpuProgramParametersSharedPtr createParameters(void);
-        virtual void createParameters_internal(AsyncOp& op);
+		virtual GpuParamsPtr createParameters();
 
 		/** Returns a string that specifies the language of the gpu programs as specified
         in a material script. ie: asm, cg, hlsl, glsl

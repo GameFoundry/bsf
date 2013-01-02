@@ -88,21 +88,6 @@ namespace CamelotEngine
     {
         // superclasses will trigger unload
     }
-    //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::createParameters_internal(AsyncOp& op)
-    {
-		THROW_IF_NOT_RENDER_THREAD
-
-        // Make sure param defs are loaded
-        GpuProgramParametersSharedPtr params = GpuProgramParametersSharedPtr(new GpuProgramParameters());
-		// Only populate named parameters if we can support this program
-		if (this->isSupported())
-		{
-			populateParameterNames(params);
-		}
-
-		op.completeOperation(params);
-    }
 	//---------------------------------------------------------------------
 	const GpuNamedConstants& HighLevelGpuProgram::getConstantDefinitions_internal() const
 	{

@@ -50,6 +50,9 @@ namespace CamelotEngine
 
 		void setTransposeMatrices(bool transpose) { mTransposeMatrices = transpose; }
 
+		GpuParamsPtr clone() const;
+		void updateIfDirty();
+
 	private:
 		GpuParamDesc& mParamDesc;
 		bool mTransposeMatrices;

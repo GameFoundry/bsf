@@ -4,6 +4,7 @@
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
 #include "CmDepthStencilState.h"
+#include "CmGpuParams.h"
 
 namespace CamelotEngine
 {
@@ -121,6 +122,12 @@ namespace CamelotEngine
 	{
 		GpuProgramParametersSharedPtr paramCopy = GpuProgramParametersSharedPtr(new GpuProgramParameters(*params));
 		mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuProgramParameters, mRenderSystem, gptype, paramCopy, variabilityMask));
+	}
+
+	void DeferredRenderContext::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
+	{
+		GpuParamsPtr paramCopy = params->clone();
+		mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuParams, mRenderSystem, gptype, paramCopy));
 	}
 
 	void DeferredRenderContext::setRenderTarget(RenderTarget* target)
