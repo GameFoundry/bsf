@@ -50,7 +50,7 @@ namespace CamelotEngine {
 		virtual void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask) {}
 
         /// Get the assigned GL program id
-        const GLuint getProgramID(void) const
+        const UINT32 getProgramID(void) const
         { return mProgramID; }
 
 		/** Get the attribute index for a given semantic. 
@@ -75,41 +75,9 @@ namespace CamelotEngine {
         /// @copydoc Resource::unloadImpl
         void unloadImpl(void) {}
 
-        GLuint mProgramID;
+        UINT32 mProgramID;
         GLenum mProgramType;
     };
-
-    /** Specialisation of the GL low-level program for ARB programs. */
-    class CM_RSGL_EXPORT GLArbGpuProgram : public GLGpuProgram
-    {
-    public:
-        virtual ~GLArbGpuProgram();
-
-        /// Execute the binding functions for this program
-        void bindProgram(void);
-        /// Execute the unbinding functions for this program
-        void unbindProgram(void);
-        /// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-
-        /// Get the GL type for the program
-        const GLuint getProgramType(void) const
-        { return mProgramType; }
-
-    protected:
-		friend GpuProgram* createGLArbGpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
-
-		GLArbGpuProgram(const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
-
-        void loadFromSource(void);
-        /// @copydoc Resource::unloadImpl
-        void unloadImpl(void);
-
-    };
-
-
-
 }; // namespace CamelotEngine
 
 #endif // __GLGpuProgram_H__

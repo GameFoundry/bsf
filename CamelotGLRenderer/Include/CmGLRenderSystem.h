@@ -120,6 +120,11 @@ namespace CamelotEngine {
 		 * @copydoc RenderSystem::bindGpuProgramParameters()
 		 */
 		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
+		
+		/**
+		 * @copydoc RenderSystem::bindGpuParams()
+		 */
+		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
 
 		/**
 		 * @copydoc RenderSystem::beginFrame()

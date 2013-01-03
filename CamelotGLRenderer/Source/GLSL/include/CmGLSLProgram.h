@@ -59,16 +59,6 @@ namespace CamelotEngine {
 		~GLSLProgram();
 
 		const GLhandleARB getGLHandle() const { return mGLHandle; }
-		void attachToProgramObject( const GLhandleARB programObject );
-		void detachFromProgramObject( const GLhandleARB programObject );
-		String getAttachedShaderNames() const { return mAttachedShaderNames; }
-
-		/// Overridden
-		bool getPassTransformStates(void) const;
-		bool getPassSurfaceAndLightStates(void) const;
-
-        /** Attach another GLSL Shader to this one. */
-        void attachChildShader(const String& name);
 
 		/** Sets the preprocessor defines use to compile the program. */
 		void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
@@ -139,14 +129,8 @@ namespace CamelotEngine {
 		RenderOperation::OperationType mOutputOperationType;
 		/// The maximum amount of vertices that this (geometry) program can output
 		int mMaxOutputVertices;
-		/// attached Shader names
-		String mAttachedShaderNames;
 		/// Preprocessor options
 		String mPreprocessorDefines;
-		/// container of attached programs
-		typedef vector< GLSLProgram* >::type GLSLProgramContainer;
-		typedef GLSLProgramContainer::iterator GLSLProgramContainerIterator;
-		GLSLProgramContainer mAttachedGLSLPrograms;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

@@ -35,9 +35,11 @@ THE SOFTWARE.
 
 namespace CamelotEngine {
 
-	GLuint GLSLGpuProgram::mVertexShaderCount = 0;
-	GLuint GLSLGpuProgram::mFragmentShaderCount = 0;
-	GLuint GLSLGpuProgram::mGeometryShaderCount = 0;
+	UINT32 GLSLGpuProgram::mVertexShaderCount = 0;
+	UINT32 GLSLGpuProgram::mFragmentShaderCount = 0;
+	UINT32 GLSLGpuProgram::mGeometryShaderCount = 0;
+	UINT32 GLSLGpuProgram::mDomainShaderCount = 0;
+	UINT32 GLSLGpuProgram::mHullShaderCount = 0;
     //-----------------------------------------------------------------------------
 	GLSLGpuProgram::GLSLGpuProgram(GLSLProgram* parent, const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile) : 
@@ -46,17 +48,25 @@ namespace CamelotEngine {
         mType = parent->getType();
         mSyntaxCode = "glsl";
 
-		if (parent->getType() == GPT_VERTEX_PROGRAM)
+		switch(parent->getType())
 		{
+		case GPT_VERTEX_PROGRAM:
 			mProgramID = ++mVertexShaderCount;
-		}
-		else if (parent->getType() == GPT_FRAGMENT_PROGRAM)
-		{
+			break;
+		case GPT_FRAGMENT_PROGRAM:
 			mProgramID = ++mFragmentShaderCount;
-		}
-		else
-		{
+			break;
+		case GPT_GEOMETRY_PROGRAM:
 			mProgramID = ++mGeometryShaderCount;
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			mProgramID = ++mDomainShaderCount;
+			break;
+		case GPT_HULL_PROGRAM:
+			mProgramID = ++mHullShaderCount;
+			break;
+		default:
+			CM_EXCEPT(InternalErrorException, "Invalid gpu program type: " + toString(parent->getType()));
 		}
     }
     //-----------------------------------------------------------------------
@@ -92,14 +102,21 @@ namespace CamelotEngine {
 		switch (mType)
 		{
 		case GPT_VERTEX_PROGRAM:
-			GLSLLinkProgramManager::instance().setActiveVertexShader( this );
+			GLSLLinkProgramManager::instance().setActiveVertexShader(this);
 			break;
 		case GPT_FRAGMENT_PROGRAM:
-			GLSLLinkProgramManager::instance().setActiveFragmentShader( this );
+			GLSLLinkProgramManager::instance().setActiveFragmentShader(this);
 			break;
 		case GPT_GEOMETRY_PROGRAM:
-			GLSLLinkProgramManager::instance().setActiveGeometryShader( this );
+			GLSLLinkProgramManager::instance().setActiveGeometryShader(this);
 			break;
+		case GPT_DOMAIN_PROGRAM:
+			GLSLLinkProgramManager::instance().setActiveDomainShader(this);
+			break;
+		case GPT_HULL_PROGRAM:
+			GLSLLinkProgramManager::instance().setActiveHullShader(this);
+		default:
+			CM_EXCEPT(InternalErrorException, "Invalid gpu program type: " + toString(mType));
 		}
 	}
 
@@ -107,19 +124,26 @@ namespace CamelotEngine {
 	void GLSLGpuProgram::unbindProgram(void)
 	{
 		// tell the Link Program Manager what shader is to become inactive
-		if (mType == GPT_VERTEX_PROGRAM)
+		switch(mType)
 		{
-			GLSLLinkProgramManager::instance().setActiveVertexShader( NULL );
+		case GPT_VERTEX_PROGRAM:
+			GLSLLinkProgramManager::instance().setActiveVertexShader(nullptr);
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			GLSLLinkProgramManager::instance().setActiveFragmentShader(nullptr);
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			GLSLLinkProgramManager::instance().setActiveGeometryShader(nullptr);
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			GLSLLinkProgramManager::instance().setActiveDomainShader(nullptr);
+			break;
+		case GPT_HULL_PROGRAM:
+			GLSLLinkProgramManager::instance().setActiveHullShader(nullptr);
+			break;
+		default:
+			CM_EXCEPT(InternalErrorException, "Invalid gpu program type: " + toString(mType));
 		}
-		else if (mType == GPT_GEOMETRY_PROGRAM)
-		{
-			GLSLLinkProgramManager::instance().setActiveGeometryShader( NULL );
-		}
-		else // its a fragment shader
-		{
-			GLSLLinkProgramManager::instance().setActiveFragmentShader( NULL );
-		}
-
 	}
 
 	//-----------------------------------------------------------------------------
@@ -164,8 +188,5 @@ namespace CamelotEngine {
 			return GLGpuProgram::isAttributeValid(semantic, index);
 		}
 	}
-
-
-
 }
 

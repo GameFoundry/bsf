@@ -105,43 +105,64 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	GLSLLinkProgram::GLSLLinkProgram(GLSLGpuProgram* vertexProgram, GLSLGpuProgram* geometryProgram, GLSLGpuProgram* fragmentProgram)
+	GLSLLinkProgram::GLSLLinkProgram(GLSLGpuProgram* vertexProgram, GLSLGpuProgram* geometryProgram, GLSLGpuProgram* fragmentProgram,
+		GLSLGpuProgram* hullProgram, GLSLGpuProgram* domainProgram)
         : mVertexProgram(vertexProgram)
 		, mGeometryProgram(geometryProgram)
 		, mFragmentProgram(fragmentProgram)
+		, mHullProgram(hullProgram)
+		, mDomainProgram(domainProgram)
 		, mUniformRefsBuilt(false)
         , mLinked(false)
 
 	{
-			//checkForGLSLError( "GLSLLinkProgram::GLSLLinkProgram", "Error prior to Creating GLSL Program Object", 0);
-		    glGetError(); //Clean up the error. Otherwise will flood log.
-		    mGLHandle = glCreateProgramObjectARB();
-			checkForGLSLError( "GLSLLinkProgram::GLSLLinkProgram", "Error Creating GLSL Program Object", 0 );
+		checkForGLSLError("GLSLLinkProgram::GLSLLinkProgram", "Error prior to Creating GLSL Program Object", 0, GLSLOT_PROGRAM);
+		glGetError(); //Clean up the error. Otherwise will flood log.
+		mGLHandle = glCreateProgram();
+		checkForGLSLError("GLSLLinkProgram::GLSLLinkProgram", "Error Creating GLSL Program Object", 0, GLSLOT_PROGRAM);
 
+		// tell shaders to attach themselves to the LinkProgram
+		// let the shaders do the attaching since they may have several children to attach
+		if (mVertexProgram)
+		{
+			glAttachShader(mGLHandle, mVertexProgram->getGLSLProgram()->getGLHandle());
+			checkForGLSLError("GLSLProgram::attachToProgramObject",
+				"Error attaching shader object to GLSL Program Object", mGLHandle, GLSLOT_PROGRAM);
+		}
 
-			// tell shaders to attach themselves to the LinkProgram
-			// let the shaders do the attaching since they may have several children to attach
-			if (mVertexProgram)
-			{
-				mVertexProgram->getGLSLProgram()->attachToProgramObject(mGLHandle);
-			}
-			if (mGeometryProgram)
-			{
-				mGeometryProgram->getGLSLProgram()->attachToProgramObject(mGLHandle);
-				//Don't set adjacency flag. We handle it internally and expose "false"
-			}
-			if (mFragmentProgram)
-			{
-				mFragmentProgram->getGLSLProgram()->attachToProgramObject(mGLHandle);
-			}
+		if (mGeometryProgram)
+		{
+			glAttachShader(mGLHandle, mGeometryProgram->getGLSLProgram()->getGLHandle());
+			checkForGLSLError("GLSLProgram::attachToProgramObject",
+				"Error attaching shader object to GLSL Program Object", mGLHandle, GLSLOT_PROGRAM);
+		}
 
+		if (mFragmentProgram)
+		{
+			glAttachShader(mGLHandle, mFragmentProgram->getGLSLProgram()->getGLHandle());
+			checkForGLSLError("GLSLProgram::attachToProgramObject",
+				"Error attaching shader object to GLSL Program Object", mGLHandle, GLSLOT_PROGRAM);
+		}
+
+		if (mDomainProgram)
+		{
+			glAttachShader(mGLHandle, mDomainProgram->getGLSLProgram()->getGLHandle());
+			checkForGLSLError("GLSLProgram::attachToProgramObject",
+				"Error attaching shader object to GLSL Program Object", mGLHandle, GLSLOT_PROGRAM);
+		}
+
+		if (mHullProgram)
+		{
+			glAttachShader(mGLHandle, mHullProgram->getGLSLProgram()->getGLHandle());
+			checkForGLSLError("GLSLProgram::attachToProgramObject",
+				"Error attaching shader object to GLSL Program Object", mGLHandle, GLSLOT_PROGRAM);
+		}
 	}
 
 	//-----------------------------------------------------------------------
 	GLSLLinkProgram::~GLSLLinkProgram(void)
 	{
-		glDeleteObjectARB(mGLHandle);
-
+		glDeleteProgram(mGLHandle);
 	}
 
 	//-----------------------------------------------------------------------
@@ -218,32 +239,30 @@ namespace CamelotEngine {
 			glGetObjectParameterivARB( mGLHandle, GL_OBJECT_LINK_STATUS_ARB, &mLinked );
 
 			if(!mLinked)
-				logObjectInfo( String("GLSL link FAILED : "), mGLHandle );
+				logProgramInfo( String("GLSL link FAILED : "), mGLHandle );
 
 			// force logging and raise exception if not linked
 			checkForGLSLError( "GLSLLinkProgram::Activate",
-				"Error linking GLSL Program Object : ", mGLHandle, !mLinked, !mLinked );
+				"Error linking GLSL Program Object : ", mGLHandle, GLSLOT_PROGRAM, !mLinked, !mLinked );
+
 			if(mLinked)
 			{
-				logObjectInfo( String("GLSL link result : "), mGLHandle );
-				buildGLUniformReferences();
+				logProgramInfo( String("GLSL link result : "), mGLHandle );
 				extractAttributes();
 			}
-
 		}
 
 		if (mLinked)
 		{
 			checkForGLSLError( "GLSLLinkProgram::Activate",
-				"Error prior to using GLSL Program Object : ", mGLHandle, false, false);
+				"Error prior to using GLSL Program Object : ", mGLHandle, GLSLOT_PROGRAM, false, false);
 
 		    glUseProgramObjectARB( mGLHandle );
 
 			checkForGLSLError( "GLSLLinkProgram::Activate",
-				"Error using GLSL Program Object : ", mGLHandle, false, false);
+				"Error using GLSL Program Object : ", mGLHandle, GLSLOT_PROGRAM, false, false);
 		}
 	}
-
 	//-----------------------------------------------------------------------
 	void GLSLLinkProgram::extractAttributes(void)
 	{
@@ -270,34 +289,6 @@ namespace CamelotEngine {
 	{
 		return mValidAttributes.find(getAttributeIndex(semantic, index)) != mValidAttributes.end();
 	}
-	//-----------------------------------------------------------------------
-	void GLSLLinkProgram::buildGLUniformReferences(void)
-	{
-		if (!mUniformRefsBuilt)
-		{
-			const GpuConstantDefinitionMap* vertParams = 0;
-			const GpuConstantDefinitionMap* fragParams = 0;
-			const GpuConstantDefinitionMap* geomParams = 0;
-			if (mVertexProgram)
-			{
-				vertParams = &(mVertexProgram->getGLSLProgram()->getConstantDefinitions_internal().map);
-			}
-			if (mGeometryProgram)
-			{
-				geomParams = &(mGeometryProgram->getGLSLProgram()->getConstantDefinitions_internal().map);
-			}
-			if (mFragmentProgram)
-			{
-				fragParams = &(mFragmentProgram->getGLSLProgram()->getConstantDefinitions_internal().map);
-			}
-
-			GLSLLinkProgramManager::instance().extractUniforms(
-				mGLHandle, vertParams, geomParams, fragParams, mGLUniformReferences);
-
-			mUniformRefsBuilt = true;
-		}
-	}
-
 	//-----------------------------------------------------------------------
 	void GLSLLinkProgram::updateUniforms(GpuProgramParametersSharedPtr params, 
 		UINT16 mask, GpuProgramType fromProgType)
@@ -423,7 +414,7 @@ namespace CamelotEngine {
 
 					} // end switch
 	#if CM_DEBUG_MODE
-					checkForGLSLError( "GLSLLinkProgram::updateUniforms", "Error updating uniform", 0 );
+					checkForGLSLError( "GLSLLinkProgram::updateUniforms", "Error updating uniform", 0, GLSLOT_PROGRAM);
 	#endif
 				} // variability & mask
 			} // fromProgType == currentUniform->mSourceProgType

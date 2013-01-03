@@ -38,6 +38,11 @@ THE SOFTWARE.
 //
 namespace CamelotEngine
 {
+	enum GLSLObjectType
+	{
+		GLSLOT_SHADER,
+		GLSLOT_PROGRAM
+	};
 
 	// forward declarations
 	class GLSLProgram;
@@ -52,13 +57,20 @@ namespace CamelotEngine
 	@param forceInfoLog if true then message from GL info log is obtained
 	@param forceException if true then exception is generated if a GL error found
 	*/
-    void checkForGLSLError(const String& ogreMethod, const String& errorTextPrefix, const GLhandleARB obj, const bool forceInfoLog = false, const bool forceException = false);
+    void checkForGLSLError(const String& ogreMethod, const String& errorTextPrefix, const GLuint obj, GLSLObjectType objectType, 
+		const bool forceInfoLog = false, const bool forceException = false);
 
-	/** if there is a message in GL info log then post it in the Ogre Log
+	/** if there is a message in GL info log then post it in the engine Log
 	@param msg the info log message string is appended to this string
-	@param obj the GL object that is used to retrieve the info log
+	@param obj the GL shader object that is used to retrieve the info log
 	*/
-	String logObjectInfo(const String& msg, const GLhandleARB obj);
+	String logShaderInfo(const String& msg, const GLuint obj);
+
+	/** if there is a message in GL info log then post it in the engine Log
+	@param msg the info log message string is appended to this string
+	@param obj the GL program object that is used to retrieve the info log
+	*/
+	String logProgramInfo(const String& msg, const GLuint obj);
 
 
 } // namespace CamelotEngine

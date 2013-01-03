@@ -36,7 +36,6 @@ THE SOFTWARE.s
 #include "CmGLDefaultHardwareBufferManager.h"
 #include "CmGLUtil.h"
 #include "CmGLGpuProgram.h"
-#include "ATI_FS_GLGpuProgram.h"
 #include "CmGLGpuProgramManager.h"
 #include "CmException.h"
 #include "CmGLSLExtSupport.h"
@@ -62,23 +61,8 @@ THE SOFTWARE.s
 GLenum glewContextInit (CamelotEngine::GLSupport *glSupport);
 #endif
 
-namespace CamelotEngine {
-
-	// Callback function used when registering GLGpuPrograms
-	GpuProgram* createGLArbGpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
-	{
-		GLArbGpuProgram* ret = new GLArbGpuProgram(source, entryPoint, language, gptype, profile);
-
-		return ret;
-	}
-
-	GpuProgram* createGL_ATI_FS_GpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
-	{
-		ATI_FS_GLGpuProgram* ret = new ATI_FS_GLGpuProgram(source, entryPoint, language, gptype, profile);
-
-		return ret;
-	}
-
+namespace CamelotEngine 
+{
 	/************************************************************************/
 	/* 								PUBLIC INTERFACE                   		*/
 	/************************************************************************/
@@ -338,6 +322,11 @@ namespace CamelotEngine {
 			mCurrentFragmentProgram->bindProgramParameters(params, mask);
 			break;
 		}
+	}
+	//-----------------------------------------------------------------------------
+	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
+	{
+		// TODO - Not implemented
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTexture(UINT16 stage, bool enabled, const TexturePtr &texPtr)
@@ -1836,91 +1825,6 @@ namespace CamelotEngine {
 
 		// GPU Program Manager setup
 		GpuProgramManager::startUp(new GLGpuProgramManager());
-		GLGpuProgramManager* gpuProgramManager = static_cast<GLGpuProgramManager*>(GpuProgramManager::instancePtr());
-
-		if(caps->hasCapability(RSC_VERTEX_PROGRAM))
-		{
-			if(caps->isShaderProfileSupported("arbvp1"))
-			{
-				gpuProgramManager->registerProgramFactory("arbvp1", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("vp30"))
-			{
-				gpuProgramManager->registerProgramFactory("vp30", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("vp40"))
-			{
-				gpuProgramManager->registerProgramFactory("vp40", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("gp4vp"))
-			{
-				gpuProgramManager->registerProgramFactory("gp4vp", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("gpu_vp"))
-			{
-				gpuProgramManager->registerProgramFactory("gpu_vp", createGLArbGpuProgram);
-			}
-		}
-
-		if(caps->hasCapability(RSC_GEOMETRY_PROGRAM))
-		{
-			//TODO : Should these be createGLArbGpuProgram or createGLGpuNVparseProgram?
-			if(caps->isShaderProfileSupported("nvgp4"))
-			{
-				gpuProgramManager->registerProgramFactory("nvgp4", createGLArbGpuProgram);
-			}
-			if(caps->isShaderProfileSupported("gp4gp"))
-			{
-				gpuProgramManager->registerProgramFactory("gp4gp", createGLArbGpuProgram);
-			}
-			if(caps->isShaderProfileSupported("gpu_gp"))
-			{
-				gpuProgramManager->registerProgramFactory("gpu_gp", createGLArbGpuProgram);
-			}
-		}
-
-		if(caps->hasCapability(RSC_FRAGMENT_PROGRAM))
-		{
-			if(caps->isShaderProfileSupported("ps_1_4"))
-			{
-				gpuProgramManager->registerProgramFactory("ps_1_4", createGL_ATI_FS_GpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("ps_1_3"))
-			{
-				gpuProgramManager->registerProgramFactory("ps_1_3", createGL_ATI_FS_GpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("ps_1_2"))
-			{
-				gpuProgramManager->registerProgramFactory("ps_1_2", createGL_ATI_FS_GpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("ps_1_1"))
-			{
-				gpuProgramManager->registerProgramFactory("ps_1_1", createGL_ATI_FS_GpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("arbfp1"))
-			{
-				gpuProgramManager->registerProgramFactory("arbfp1", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("fp40"))
-			{
-				gpuProgramManager->registerProgramFactory("fp40", createGLArbGpuProgram);
-			}
-
-			if(caps->isShaderProfileSupported("fp30"))
-			{
-				gpuProgramManager->registerProgramFactory("fp30", createGLArbGpuProgram);
-			}
-
-		}
 
 		if(caps->isShaderProfileSupported("glsl"))
 		{

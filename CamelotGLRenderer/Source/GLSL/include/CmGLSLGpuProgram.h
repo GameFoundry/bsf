@@ -52,12 +52,15 @@ namespace CamelotEngine {
 		GLSLProgram* mGLSLProgram;
 
 		/// keep track of the number of vertex shaders created
-		static GLuint mVertexShaderCount;
+		static UINT32 mVertexShaderCount;
 		/// keep track of the number of fragment shaders created
-		static GLuint mFragmentShaderCount;
+		static UINT32 mFragmentShaderCount;
 		/// keep track of the number of geometry shaders created
-		static GLuint mGeometryShaderCount;
-
+		static UINT32 mGeometryShaderCount;
+		/// keep track of the number of hull shaders created
+		static UINT32 mHullShaderCount;
+		/// keep track of the number of domain shaders created
+		static UINT32 mDomainShaderCount;
 	public:
 		~GLSLGpuProgram();
 		GLSLGpuProgram(GLSLProgram* parent, const String& source, const String& entryPoint, const String& language, 
@@ -69,10 +72,6 @@ namespace CamelotEngine {
 		void unbindProgram(void);
 		/// Execute the param binding functions for this program
 		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-
-		/// Get the assigned GL program id
-		const GLuint getProgramID(void) const
-		{ return mProgramID; }
 
 		/// get the GLSLProgram for the shader object
 		GLSLProgram* getGLSLProgram(void) const { return mGLSLProgram; }

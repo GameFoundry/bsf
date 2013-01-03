@@ -28,12 +28,12 @@ THE SOFTWARE.
 
 #include "CmGLSLExtSupport.h"
 #include "CmGLSupport.h"
+#include "CmDebug.h"
 
 namespace CamelotEngine
 {
-
-    //-----------------------------------------------------------------------------
-    void checkForGLSLError(const String& ogreMethod, const String& errorTextPrefix, const GLhandleARB obj, const bool forceInfoLog, const bool forceException)
+    void checkForGLSLError(const String& ogreMethod, const String& errorTextPrefix, const GLuint obj, 
+		GLSLObjectType objectType, const bool forceInfoLog, const bool forceException)
     {
 		GLenum glErr;
 		bool errorsFound = false;
@@ -57,17 +57,23 @@ namespace CamelotEngine
 		if (errorsFound || forceInfoLog)
 		{
 			// if shader or program object then get the log message and send to the log manager
-			msg += logObjectInfo( msg, obj );
+			if(objectType == GLSLOT_SHADER)
+				msg += logShaderInfo(msg, obj);
+			else if(objectType == GLSLOT_PROGRAM)
+				msg += logProgramInfo(msg, obj);
 
             if (forceException) 
 			{
 				CM_EXCEPT(InternalErrorException, msg);
 			}
+			else
+			{
+				LOGWRN(msg);
+			}
 		}
     }
 
-    //-----------------------------------------------------------------------------
-	String logObjectInfo(const String& msg, const GLhandleARB obj)
+	String logShaderInfo(const String& msg, const GLuint obj)
 	{
 		String logMessage = msg;
 
@@ -75,26 +81,48 @@ namespace CamelotEngine
 		{
 			GLint infologLength = 0;
 
-			glGetObjectParameterivARB(obj, GL_OBJECT_INFO_LOG_LENGTH_ARB, &infologLength);
+			glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
 
 			if (infologLength > 0)
 			{
 				GLint charsWritten  = 0;
 
-				GLcharARB * infoLog = new GLcharARB[infologLength];
+				GLchar* infoLog = new GLchar[infologLength];
 
-				glGetInfoLogARB(obj, infologLength, &charsWritten, infoLog);
+				glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
 				logMessage += String(infoLog);
-				// TODO LOG PORT - Log this somewhere
-				//LogManager::getSingleton().logMessage(logMessage);
 
 				delete [] infoLog;
 			}
 		}
 
 		return logMessage;
-
 	}
 
+	String logProgramInfo(const String& msg, const GLuint obj)
+	{
+		String logMessage = msg;
+
+		if (obj > 0)
+		{
+			GLint infologLength = 0;
+
+			glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
+
+			if (infologLength > 0)
+			{
+				GLint charsWritten  = 0;
+
+				GLchar* infoLog = new GLchar[infologLength];
+
+				glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
+				logMessage += String(infoLog);
+
+				delete [] infoLog;
+			}
+		}
+
+		return logMessage;
+	}
 
 } // namespace CamelotEngine

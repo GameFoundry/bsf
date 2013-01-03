@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ATIFS">
-      <UniqueIdentifier>{2c02e8a0-bcb2-415a-8740-10cb94cfbb80}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GLSL">
       <UniqueIdentifier>{23f5e949-4542-49d4-86f9-d24656b5de08}</UniqueIdentifier>
     </Filter>
@@ -27,9 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmGLATIFSInit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmGLContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -96,15 +90,6 @@
     <ClInclude Include="Include\CmWin32Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\atifs\include\ATI_FS_GLGpuProgram.h">
-      <Filter>ATIFS</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\atifs\include\Compiler2Pass.h">
-      <Filter>ATIFS</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\atifs\include\ps_1_4.h">
-      <Filter>ATIFS</Filter>
-    </ClInclude>
     <ClInclude Include="Source\GLSL\include\CmGLSLExtSupport.h">
       <Filter>GLSL</Filter>
     </ClInclude>
@@ -143,15 +128,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\atifs\src\ATI_FS_GLGpuProgram.cpp">
-      <Filter>ATIFS</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\atifs\src\Compiler2Pass.cpp">
-      <Filter>ATIFS</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\atifs\src\ps_1_4.cpp">
-      <Filter>ATIFS</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp">
       <Filter>GLSL</Filter>
     </ClCompile>
@@ -175,9 +151,6 @@
     </ClCompile>
     <ClCompile Include="Source\win32\CmWin32Context.cpp">
       <Filter>Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGLATIFSInit.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLContext.cpp">
       <Filter>Source Files</Filter>

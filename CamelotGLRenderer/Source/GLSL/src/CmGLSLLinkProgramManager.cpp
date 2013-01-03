@@ -29,41 +29,40 @@ THE SOFTWARE.
 #include "CmGLSLLinkProgramManager.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
+#include "CmGpuParamDesc.h"
 
-namespace CamelotEngine {
+namespace CamelotEngine 
+{
+	template <class T>
+	inline void hash_combine(std::size_t& seed, const T& v)
+	{
+		std::hash<T> hasher;
+		seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+	}
+
+	::std::size_t GLSLLinkProgramManager::LinkProgramKeyHashFunction::operator()(const GLSLLinkProgramManager::LinkProgramKey &key) const
+	{
+		std::size_t seed = 0;
+		hash_combine(seed, key.vertexProgKey);
+		hash_combine(seed, key.fragmentProgKey);
+		hash_combine(seed, key.geometryProgKey);
+		hash_combine(seed, key.hullProgKey);
+		hash_combine(seed, key.domainProgKey);
+
+		return seed;
+	}
+
+	bool GLSLLinkProgramManager::LinkProgramKeyEqual::operator()(const GLSLLinkProgramManager::LinkProgramKey &a, const GLSLLinkProgramManager::LinkProgramKey &b) const
+	{
+		return a.vertexProgKey == b.vertexProgKey && a.fragmentProgKey == b.fragmentProgKey && a.geometryProgKey == b.geometryProgKey &&
+			a.hullProgKey == b.hullProgKey && a.domainProgKey == b.domainProgKey;
+	}
 
 	//-----------------------------------------------------------------------
-	GLSLLinkProgramManager::GLSLLinkProgramManager(void) : mActiveVertexGpuProgram(NULL),
-		mActiveGeometryGpuProgram(NULL), mActiveFragmentGpuProgram(NULL), mActiveLinkProgram(NULL)
+	GLSLLinkProgramManager::GLSLLinkProgramManager(void) : mActiveVertexGpuProgram(nullptr),
+		mActiveGeometryGpuProgram(nullptr), mActiveFragmentGpuProgram(nullptr), mActiveHullGpuProgram(nullptr),
+		mActiveDomainGpuProgram(nullptr), mActiveLinkProgram(nullptr)
 	{
-		// Fill in the relationship between type names and enums
-		mTypeEnumMap.insert(StringToEnumMap::value_type("float", GL_FLOAT));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("vec2", GL_FLOAT_VEC2));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("vec3", GL_FLOAT_VEC3));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("vec4", GL_FLOAT_VEC4));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("sampler1D", GL_SAMPLER_1D));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("sampler2D", GL_SAMPLER_2D));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("sampler3D", GL_SAMPLER_3D));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("samplerCube", GL_SAMPLER_CUBE));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("sampler1DShadow", GL_SAMPLER_1D_SHADOW));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("sampler2DShadow", GL_SAMPLER_2D_SHADOW));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("int", GL_INT));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("ivec2", GL_INT_VEC2));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("ivec3", GL_INT_VEC3));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("ivec4", GL_INT_VEC4));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat2", GL_FLOAT_MAT2));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat3", GL_FLOAT_MAT3));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat4", GL_FLOAT_MAT4));
-		// GL 2.1
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat2x2", GL_FLOAT_MAT2));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat3x3", GL_FLOAT_MAT3));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat4x4", GL_FLOAT_MAT4));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat2x3", GL_FLOAT_MAT2x3));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat3x2", GL_FLOAT_MAT3x2));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat3x4", GL_FLOAT_MAT3x4));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat4x3", GL_FLOAT_MAT4x3));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat2x4", GL_FLOAT_MAT2x4));
-		mTypeEnumMap.insert(StringToEnumMap::value_type("mat4x2", GL_FLOAT_MAT4x2));
 
 	}
 
@@ -76,7 +75,6 @@ namespace CamelotEngine {
 		{
 			delete currentProgram->second;
 		}
-
 	}
 
 	//-----------------------------------------------------------------------
@@ -86,46 +84,32 @@ namespace CamelotEngine {
 		if (mActiveLinkProgram)
 			return mActiveLinkProgram;
 
-		// no active link program so find one or make a new one
-		// is there an active key?
-		UINT64 activeKey = 0;
+		LinkProgramKey key;
+		key.vertexProgKey = mActiveVertexGpuProgram != nullptr ? mActiveVertexGpuProgram->getProgramID() : 0;
+		key.fragmentProgKey = mActiveFragmentGpuProgram != nullptr ? mActiveFragmentGpuProgram->getProgramID() : 0;
+		key.geometryProgKey = mActiveGeometryGpuProgram != nullptr ? mActiveGeometryGpuProgram->getProgramID() : 0;
+		key.hullProgKey = mActiveHullGpuProgram != nullptr ? mActiveHullGpuProgram->getProgramID() : 0;
+		key.domainProgKey = mActiveDomainGpuProgram != nullptr ? mActiveDomainGpuProgram->getProgramID() : 0;
 
-		if (mActiveVertexGpuProgram)
+		// find the key in the hash map
+		LinkProgramIterator programFound = mLinkPrograms.find(key);
+		// program object not found for key so need to create it
+		if (programFound == mLinkPrograms.end())
 		{
-			activeKey = static_cast<UINT64>(mActiveVertexGpuProgram->getProgramID()) << 32;
+			mActiveLinkProgram = new GLSLLinkProgram(mActiveVertexGpuProgram, mActiveGeometryGpuProgram, mActiveFragmentGpuProgram, mActiveHullGpuProgram, mActiveDomainGpuProgram);
+			mLinkPrograms[key] = mActiveLinkProgram;
 		}
-		if (mActiveGeometryGpuProgram)
+		else
 		{
-			activeKey += static_cast<UINT64>(mActiveGeometryGpuProgram->getProgramID()) << 16;
-		}
-		if (mActiveFragmentGpuProgram)
-		{
-			activeKey += static_cast<UINT64>(mActiveFragmentGpuProgram->getProgramID());
+			// found a link program in map container so make it active
+			mActiveLinkProgram = programFound->second;
 		}
 
-		// only return a link program object if a vertex, geometry or fragment program exist
-		if (activeKey > 0)
-		{
-			// find the key in the hash map
-			LinkProgramIterator programFound = mLinkPrograms.find(activeKey);
-			// program object not found for key so need to create it
-			if (programFound == mLinkPrograms.end())
-			{
-				mActiveLinkProgram = new GLSLLinkProgram(mActiveVertexGpuProgram, mActiveGeometryGpuProgram,mActiveFragmentGpuProgram);
-				mLinkPrograms[activeKey] = mActiveLinkProgram;
-			}
-			else
-			{
-				// found a link program in map container so make it active
-				mActiveLinkProgram = programFound->second;
-			}
-
-		}
 		// make the program object active
-		if (mActiveLinkProgram) mActiveLinkProgram->activate();
+		if (mActiveLinkProgram) 
+			mActiveLinkProgram->activate();
 
 		return mActiveLinkProgram;
-
 	}
 
 	//-----------------------------------------------------------------------
@@ -135,7 +119,7 @@ namespace CamelotEngine {
 		{
 			mActiveFragmentGpuProgram = fragmentGpuProgram;
 			// ActiveLinkProgram is no longer valid
-			mActiveLinkProgram = NULL;
+			mActiveLinkProgram = nullptr;
 			// change back to fixed pipeline
 			glUseProgramObjectARB(0);
 		}
@@ -148,7 +132,7 @@ namespace CamelotEngine {
 		{
 			mActiveVertexGpuProgram = vertexGpuProgram;
 			// ActiveLinkProgram is no longer valid
-			mActiveLinkProgram = NULL;
+			mActiveLinkProgram = nullptr;
 			// change back to fixed pipeline
 			glUseProgramObjectARB(0);
 		}
@@ -160,361 +144,278 @@ namespace CamelotEngine {
 		{
 			mActiveGeometryGpuProgram = geometryGpuProgram;
 			// ActiveLinkProgram is no longer valid
-			mActiveLinkProgram = NULL;
+			mActiveLinkProgram = nullptr;
+			// change back to fixed pipeline
+			glUseProgramObjectARB(0);
+		}
+	}
+	//-----------------------------------------------------------------------
+	void GLSLLinkProgramManager::setActiveHullShader(GLSLGpuProgram* hullGpuProgram)
+	{
+		if (hullGpuProgram != mActiveHullGpuProgram)
+		{
+			mActiveHullGpuProgram = hullGpuProgram;
+			// ActiveLinkProgram is no longer valid
+			mActiveLinkProgram = nullptr;
+			// change back to fixed pipeline
+			glUseProgramObjectARB(0);
+		}
+	}
+	//-----------------------------------------------------------------------
+	void GLSLLinkProgramManager::setActiveDomainShader(GLSLGpuProgram* domainGpuProgram)
+	{
+		if (domainGpuProgram != mActiveDomainGpuProgram)
+		{
+			mActiveDomainGpuProgram = domainGpuProgram;
+			// ActiveLinkProgram is no longer valid
+			mActiveLinkProgram = nullptr;
 			// change back to fixed pipeline
 			glUseProgramObjectARB(0);
 		}
 	}
 	//---------------------------------------------------------------------
-	void GLSLLinkProgramManager::completeDefInfo(GLenum gltype, 
-		GpuConstantDefinition& defToUpdate)
+	void GLSLLinkProgramManager::extractGpuParams(GLSLLinkProgram* linkProgram, GpuParamDesc& returnParamDesc)
 	{
-		// decode uniform size and type
-		// Note GLSL never packs rows into float4's(from an API perspective anyway)
-		// therefore all values are tight in the buffer
-		switch (gltype)
-		{
-		case GL_FLOAT:
-			defToUpdate.constType = GCT_FLOAT1;
-			break;
-		case GL_FLOAT_VEC2:
-			defToUpdate.constType = GCT_FLOAT2;
-			break;
+		assert(linkProgram != nullptr);
 
-		case GL_FLOAT_VEC3:
-			defToUpdate.constType = GCT_FLOAT3;
-			break;
-
-		case GL_FLOAT_VEC4:
-			defToUpdate.constType = GCT_FLOAT4;
-			break;
-		case GL_SAMPLER_1D:
-			// need to record samplers for GLSL
-			defToUpdate.constType = GCT_SAMPLER1D;
-			break;
-		case GL_SAMPLER_2D:
-		case GL_SAMPLER_2D_RECT_ARB:
-			defToUpdate.constType = GCT_SAMPLER2D;
-			break;
-		case GL_SAMPLER_3D:
-			defToUpdate.constType = GCT_SAMPLER3D;
-			break;
-		case GL_SAMPLER_CUBE:
-			defToUpdate.constType = GCT_SAMPLERCUBE;
-			break;
-		case GL_SAMPLER_1D_SHADOW:
-			defToUpdate.constType = GCT_SAMPLER1DSHADOW;
-			break;
-		case GL_SAMPLER_2D_SHADOW:
-		case GL_SAMPLER_2D_RECT_SHADOW_ARB:
-			defToUpdate.constType = GCT_SAMPLER2DSHADOW;
-			break;
-		case GL_INT:
-			defToUpdate.constType = GCT_INT1;
-			break;
-		case GL_INT_VEC2:
-			defToUpdate.constType = GCT_INT2;
-			break;
-		case GL_INT_VEC3:
-			defToUpdate.constType = GCT_INT3;
-			break;
-		case GL_INT_VEC4:
-			defToUpdate.constType = GCT_INT4;
-			break;
-		case GL_FLOAT_MAT2:
-			defToUpdate.constType = GCT_MATRIX_2X2;
-			break;
-		case GL_FLOAT_MAT3:
-			defToUpdate.constType = GCT_MATRIX_3X3;
-			break;
-		case GL_FLOAT_MAT4:
-			defToUpdate.constType = GCT_MATRIX_4X4;
-			break;
-		case GL_FLOAT_MAT2x3:
-			defToUpdate.constType = GCT_MATRIX_2X3;
-			break;
-		case GL_FLOAT_MAT3x2:
-			defToUpdate.constType = GCT_MATRIX_3X2;
-			break;
-		case GL_FLOAT_MAT2x4:
-			defToUpdate.constType = GCT_MATRIX_2X4;
-			break;
-		case GL_FLOAT_MAT4x2:
-			defToUpdate.constType = GCT_MATRIX_4X2;
-			break;
-		case GL_FLOAT_MAT3x4:
-			defToUpdate.constType = GCT_MATRIX_3X4;
-			break;
-		case GL_FLOAT_MAT4x3:
-			defToUpdate.constType = GCT_MATRIX_4X3;
-			break;
-		default:
-			defToUpdate.constType = GCT_UNKNOWN;
-			break;
-
-		}
-
-		// GL doesn't pad
-		defToUpdate.elementSize = GpuConstantDefinition::getElementSize(defToUpdate.constType, false);
-
-
-	}
-	//---------------------------------------------------------------------
-	bool GLSLLinkProgramManager::completeParamSource(
-		const String& paramName,
-		const GpuConstantDefinitionMap* vertexConstantDefs, 
-		const GpuConstantDefinitionMap* geometryConstantDefs,
-		const GpuConstantDefinitionMap* fragmentConstantDefs,
-		GLUniformReference& refToUpdate)
-	{
-		if (vertexConstantDefs)
-		{
-			GpuConstantDefinitionMap::const_iterator parami = 
-				vertexConstantDefs->find(paramName);
-			if (parami != vertexConstantDefs->end())
-			{
-				refToUpdate.mSourceProgType = GPT_VERTEX_PROGRAM;
-				refToUpdate.mConstantDef = &(parami->second);
-				return true;
-			}
-
-		}
-		if (geometryConstantDefs)
-		{
-			GpuConstantDefinitionMap::const_iterator parami = 
-				geometryConstantDefs->find(paramName);
-			if (parami != geometryConstantDefs->end())
-			{
-				refToUpdate.mSourceProgType = GPT_GEOMETRY_PROGRAM;
-				refToUpdate.mConstantDef = &(parami->second);
-				return true;
-			}
-
-		}
-		if (fragmentConstantDefs)
-		{
-			GpuConstantDefinitionMap::const_iterator parami = 
-				fragmentConstantDefs->find(paramName);
-			if (parami != fragmentConstantDefs->end())
-			{
-				refToUpdate.mSourceProgType = GPT_FRAGMENT_PROGRAM;
-				refToUpdate.mConstantDef = &(parami->second);
-				return true;
-			}
-		}
-		return false;
-
-
-	}
-	//---------------------------------------------------------------------
-	void GLSLLinkProgramManager::extractUniforms(GLhandleARB programObject, 
-		const GpuConstantDefinitionMap* vertexConstantDefs, 
-		const GpuConstantDefinitionMap* geometryConstantDefs,
-		const GpuConstantDefinitionMap* fragmentConstantDefs,
-		GLUniformReferenceList& list)
-	{
 		// scan through the active uniforms and add them to the reference list
 		GLint uniformCount = 0;
+		GLuint glProgram = linkProgram->getGLHandle();
 
-		#define BUFFERSIZE 200
-		char   uniformName[BUFFERSIZE] = "";
-		//GLint location;
-		GLUniformReference newGLUniformReference;
+		GLint maxBufferSize = 0;
+		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxBufferSize);
+
+		GLint maxBlockNameBufferSize = 0;
+		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &maxBlockNameBufferSize);
+
+		if(maxBlockNameBufferSize > maxBufferSize)
+			maxBufferSize = maxBlockNameBufferSize;
+
+		GLchar* uniformName = new GLchar[maxBufferSize];
+
+		GpuParamBlockDesc globalBlockDesc;
+		globalBlockDesc.slot = 0;
+		globalBlockDesc.name = "CM_INTERNAL_Globals";
+		globalBlockDesc.blockSize = 0;
+
+		returnParamDesc.paramBlocks[globalBlockDesc.name] = globalBlockDesc;
+
+		GLint uniformBlockCount = 0;
+		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount);
+
+		map<UINT32, String>::type blockSlotToName;
+		for (GLuint index = 0; index < (GLuint)uniformBlockCount; index++)
+		{
+			GLsizei unusedSize = 0;
+			glGetActiveUniformBlockName(glProgram, index, maxBufferSize, &unusedSize, uniformName);
+
+			GpuParamBlockDesc newBlockDesc;
+			newBlockDesc.slot = index + 1;
+			newBlockDesc.name = uniformName;
+			newBlockDesc.blockSize = 0;
+
+			returnParamDesc.paramBlocks[newBlockDesc.name] = newBlockDesc;
+			blockSlotToName.insert(std::make_pair(newBlockDesc.slot, newBlockDesc.name));
+		}
 
 		// get the number of active uniforms
-		glGetObjectParameterivARB(programObject, GL_OBJECT_ACTIVE_UNIFORMS_ARB,
-			&uniformCount);
+		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORMS, &uniformCount);
 
 		// Loop over each of the active uniforms, and add them to the reference container
 		// only do this for user defined uniforms, ignore built in gl state uniforms
-		for (int index = 0; index < uniformCount; index++)
+		for (GLuint index = 0; index < (GLuint)uniformCount; index++)
 		{
-			GLint arraySize = 0;
-			GLenum glType;
-			glGetActiveUniformARB(programObject, index, BUFFERSIZE, NULL, 
-				&arraySize, &glType, uniformName);
-			// don't add built in uniforms
-			newGLUniformReference.mLocation = glGetUniformLocationARB(programObject, uniformName);
-			if (newGLUniformReference.mLocation >= 0)
+			GLsizei arraySize = 0;
+			glGetActiveUniformName(glProgram, index, maxBufferSize, &arraySize, uniformName);
+
+			String paramName = String(uniformName);
+
+			// If the uniform name has a "[" in it then its an array element uniform.
+			String::size_type arrayStart = paramName.find("[");
+			if (arrayStart != String::npos)
 			{
-				// user defined uniform found, add it to the reference list
-				String paramName = String( uniformName );
+				// if not the first array element then skip it and continue to the next uniform
+				if (paramName.compare(arrayStart, paramName.size() - 1, "[0]") != 0)
+					CM_EXCEPT(NotImplementedException, "No support for array parameters yet.");
 
-				// currant ATI drivers (Catalyst 7.2 and earlier) and older NVidia drivers will include all array elements as uniforms but we only want the root array name and location
-				// Also note that ATI Catalyst 6.8 to 7.2 there is a bug with glUniform that does not allow you to update a uniform array past the first uniform array element
-				// ie you can't start updating an array starting at element 1, must always be element 0.
-
-				// if the uniform name has a "[" in it then its an array element uniform.
-				String::size_type arrayStart = paramName.find("[");
-				if (arrayStart != String::npos)
-				{
-					// if not the first array element then skip it and continue to the next uniform
-					if (paramName.compare(arrayStart, paramName.size() - 1, "[0]") != 0) continue;
-					paramName = paramName.substr(0, arrayStart);
-				}
-
-				// find out which params object this comes from
-				bool foundSource = completeParamSource(paramName,
-						vertexConstantDefs,	geometryConstantDefs, fragmentConstantDefs, newGLUniformReference);
-
-				// only add this parameter if we found the source
-				if (foundSource)
-				{
-					assert(size_t (arraySize) == newGLUniformReference.mConstantDef->arraySize
-							&& "GL doesn't agree with our array size!");
-					list.push_back(newGLUniformReference);
-				}
-
-				// Don't bother adding individual array params, they will be
-				// picked up in the 'parent' parameter can copied all at once
-				// anyway, individual indexes are only needed for lookup from
-				// user params
-			} // end if
-		} // end for
-
-	}
-	//---------------------------------------------------------------------
-	void GLSLLinkProgramManager::extractConstantDefs(const String& src,
-		GpuNamedConstants& defs, const String& filename)
-	{
-		// Parse the output string and collect all uniforms
-		// NOTE this relies on the source already having been preprocessed
-		// which is done in GLSLProgram::loadFromSource
-		String line;
-		String::size_type currPos = src.find("uniform");
-		while (currPos != String::npos)
-		{
-			GpuConstantDefinition def;
-			String paramName;
-
-			// Now check for using the word 'uniform' in a larger string & ignore
-			bool inLargerString = false;
-			if (currPos != 0)
-			{
-				char prev = src.at(currPos - 1);
-				if (prev != ' ' && prev != '\t' && prev != '\r' && prev != '\n'
-					&& prev != ';')
-					inLargerString = true;
-			}
-			if (!inLargerString && currPos + 7 < src.size())
-			{
-				char next = src.at(currPos + 7);
-				if (next != ' ' && next != '\t' && next != '\r' && next != '\n')
-					inLargerString = true;
+				paramName = paramName.substr(0, arrayStart);
 			}
 
-			// skip 'uniform'
-			currPos += 7;
+			GLint uniformType;
+			glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_TYPE, &uniformType);
 
-			if (!inLargerString)
+			bool isSampler = false;
+			switch(uniformType)
 			{
-				// find terminating semicolon
-				String::size_type endPos = src.find(";", currPos);
-				if (endPos == String::npos)
+			case GL_SAMPLER_1D:
+			case GL_SAMPLER_2D:
+			case GL_SAMPLER_3D:
+			case GL_SAMPLER_CUBE:
+				isSampler = true;
+			}
+
+			if(isSampler)
+			{
+				GpuParamSpecialDesc samplerParam;
+				samplerParam.name = paramName;
+				samplerParam.slot = glGetUniformLocation(glProgram, uniformName);
+
+				GpuParamSpecialDesc textureParam;
+				textureParam.name = paramName;
+				textureParam.slot = samplerParam.slot;
+
+				switch(uniformType)
 				{
-					// problem, missing semicolon, abort
+				case GL_SAMPLER_1D:
+					samplerParam.type = GST_SAMPLER1D;
+					textureParam.type = GST_TEXTURE1D;
+					break;
+				case GL_SAMPLER_2D:
+					samplerParam.type = GST_SAMPLER2D;
+					textureParam.type = GST_TEXTURE2D;
+					break;
+				case GL_SAMPLER_3D:
+					samplerParam.type = GST_SAMPLER3D;
+					textureParam.type = GST_TEXTURE3D;
+					break;
+				case GL_SAMPLER_CUBE:
+					samplerParam.type = GST_SAMPLERCUBE;
+					textureParam.type = GST_TEXTURECUBE;
 					break;
 				}
-				line = src.substr(currPos, endPos - currPos);
 
-				// Remove spaces before opening square braces, otherwise
-				// the following split() can split the line at inappropiate
-				// places (e.g. "vec3 something [3]" won't work).
-				for (String::size_type sqp = line.find (" ["); sqp != String::npos;
-					 sqp = line.find (" ["))
-					line.erase (sqp, 1);
-				// Split into tokens
-				std::vector<CamelotEngine::String> parts = StringUtil::split(line, ", \t\r\n");
+				returnParamDesc.samplers.insert(std::make_pair(paramName, samplerParam));
+				returnParamDesc.textures.insert(std::make_pair(paramName, textureParam));
+			}
+			else
+			{
+				GpuParamMemberDesc gpuParam;
+				gpuParam.name = paramName;
+				
+				GLint blockIndex;
+				glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_BLOCK_INDEX, &blockIndex);
 
-				for (std::vector<CamelotEngine::String>::iterator i = parts.begin(); i != parts.end(); ++i)
+				determineParamInfo(gpuParam, paramName, glProgram, index);
+
+				if(blockIndex != -1)
 				{
-					// Is this a type?
-					StringToEnumMap::iterator typei = mTypeEnumMap.find(*i);
-					if (typei != mTypeEnumMap.end())
-					{
-						completeDefInfo(typei->second, def);
-					}
-					else
-					{
-						// if this is not a type, and not empty, it should be a name
-						StringUtil::trim(*i);
-						if (i->empty()) continue;
+					GLint blockOffset;
+					glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_OFFSET, &blockOffset);
+					gpuParam.gpuMemOffset = blockOffset;
 
-						String::size_type arrayStart = i->find("[", 0);
-						if (arrayStart != String::npos)
-						{
-							// potential name (if butted up to array)
-							String name = i->substr(0, arrayStart);
-							StringUtil::trim(name);
-							if (!name.empty())
-								paramName = name;
+					GLint arrayStride;
+					glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_ARRAY_STRIDE, &arrayStride);
+					gpuParam.elementSize = arrayStride;
 
-							String::size_type arrayEnd = i->find("]", arrayStart);
-							String arrayDimTerm = i->substr(arrayStart + 1, arrayEnd - arrayStart - 1);
-							StringUtil::trim(arrayDimTerm);
-							// the array term might be a simple number or it might be
-							// an expression (e.g. 24*3) or refer to a constant expression
-							// we'd have to evaluate the expression which could get nasty
-							// TODO
-							def.arraySize = parseInt(arrayDimTerm);
+					gpuParam.paramBlockSlot = blockIndex + 1; // 0 is reserved for globals
 
-						}
-						else
-						{
-							paramName = *i;
-							def.arraySize = 1;
-						}
+					String& blockName = blockSlotToName[gpuParam.paramBlockSlot];
+					GpuParamBlockDesc& curBlockDesc = returnParamDesc.paramBlocks[blockName];
 
-						// Name should be after the type, so complete def and add
-						// We do this now so that comma-separated params will do
-						// this part once for each name mentioned 
-						if (def.constType == GCT_UNKNOWN)
-						{
-							// TODO LOG PORT - Log this somewhere?
-							//LogManager::getSingleton().logMessage(
-							//	"Problem parsing the following GLSL Uniform: '"
-							//	+ line + "' in file " + filename);
-							// next uniform
-							break;
-						}
+					gpuParam.cpuMemOffset = curBlockDesc.blockSize;
+					curBlockDesc.blockSize += gpuParam.elementSize * gpuParam.arraySize;
+				}
+				else
+				{
+					gpuParam.gpuMemOffset = glGetUniformLocationARB(glProgram, uniformName);
+					gpuParam.paramBlockSlot = 0;
+					gpuParam.cpuMemOffset = globalBlockDesc.blockSize;
 
-						if(def.isSampler())
-						{
-							def.physicalIndex = defs.samplerCount;
-							defs.samplerCount++;
-							defs.textureCount++;
-						}
-						else
-						{
-							// Complete def and add
-							// increment physical buffer location
-							def.logicalIndex = 0; // not valid in GLSL
-							if (def.isFloat())
-							{
-								def.physicalIndex = defs.floatBufferSize;
-								defs.floatBufferSize += def.arraySize * def.elementSize;
-							}
-							else
-							{
-								def.physicalIndex = defs.intBufferSize;
-								defs.intBufferSize += def.arraySize * def.elementSize;
-							}
-						}
-						defs.map.insert(GpuConstantDefinitionMap::value_type(paramName, def));
-
-						// Generate array accessors
-						defs.generateConstantDefinitionArrayEntries(paramName, def);
-					}
-
+					globalBlockDesc.blockSize += gpuParam.elementSize * gpuParam.arraySize;
 				}
 
-			} // not commented or a larger symbol
-
-			// Find next one
-			currPos = src.find("uniform", currPos);
-
+				returnParamDesc.params.insert(std::make_pair(gpuParam.name, gpuParam));
+			}
 		}
-		
-	}
 
+		delete[] uniformName;
+	}
+	//---------------------------------------------------------------------
+	void GLSLLinkProgramManager::determineParamInfo(GpuParamMemberDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex)
+	{
+		GLint arraySize;
+		glGetActiveUniformsiv(programHandle, 1, &uniformIndex, GL_UNIFORM_SIZE, &arraySize);
+		desc.arraySize = arraySize;
+
+		GLint uniformType;
+		glGetActiveUniformsiv(programHandle, 1, &uniformIndex, GL_UNIFORM_TYPE, &uniformType);
+
+		switch (uniformType)
+		{
+		case GL_BOOL:
+			desc.type = GMT_BOOL;
+			desc.elementSize = 1;
+			break;
+		case GL_FLOAT:
+			desc.type = GMT_FLOAT1;
+			desc.elementSize = 1;
+			break;
+		case GL_FLOAT_VEC2:
+			desc.type = GMT_FLOAT2;
+			desc.elementSize = 2;
+			break;
+		case GL_FLOAT_VEC3:
+			desc.type = GMT_FLOAT3;
+			desc.elementSize = 3;
+			break;
+		case GL_FLOAT_VEC4:
+			desc.type = GMT_FLOAT4;
+			desc.elementSize = 4;
+			break;
+		case GL_INT:
+			desc.type = GMT_INT1;
+			desc.elementSize = 1;
+			break;
+		case GL_INT_VEC2:
+			desc.type = GMT_INT2;
+			desc.elementSize = 2;
+			break;
+		case GL_INT_VEC3:
+			desc.type = GMT_INT3;
+			desc.elementSize = 3;
+			break;
+		case GL_INT_VEC4:
+			desc.type = GMT_INT4;
+			desc.elementSize = 4;
+			break;
+		case GL_FLOAT_MAT2:
+			desc.type = GMT_MATRIX_2X2;
+			desc.elementSize = 4;
+			break;
+		case GL_FLOAT_MAT3:
+			desc.type = GMT_MATRIX_3X3;
+			desc.elementSize = 9;
+			break;
+		case GL_FLOAT_MAT4:
+			desc.type = GMT_MATRIX_4X4;
+			desc.elementSize = 16;
+			break;
+		case GL_FLOAT_MAT2x3:
+			desc.type = GMT_MATRIX_2X3;
+			desc.elementSize = 6;
+			break;
+		case GL_FLOAT_MAT3x2:
+			desc.type = GMT_MATRIX_3X2;
+			desc.elementSize = 6;
+			break;
+		case GL_FLOAT_MAT2x4:
+			desc.type = GMT_MATRIX_2X4;
+			desc.elementSize = 8;
+			break;
+		case GL_FLOAT_MAT4x2:
+			desc.type = GMT_MATRIX_4X2;
+			desc.elementSize = 8;
+			break;
+		case GL_FLOAT_MAT3x4:
+			desc.type = GMT_MATRIX_3X4;
+			desc.elementSize = 12;
+			break;
+		case GL_FLOAT_MAT4x3:
+			desc.type = GMT_MATRIX_4X3;
+			desc.elementSize = 12;
+			break;
+		default:
+			CM_EXCEPT(InternalErrorException, "Invalid shader parameter type: " + toString(uniformType) + " for parameter " + paramName);
+		}
+	}
 }

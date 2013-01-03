@@ -41,6 +41,16 @@ THE SOFTWARE.
 #include "CmGLSLProgramRTTI.h"
 
 namespace CamelotEngine {
+
+	class GLSLParamParser
+	{
+	public:
+		GLSLParamParser()
+		{
+
+		}
+	};
+
     //---------------------------------------------------------------------------
     GLSLProgram::~GLSLProgram()
     {
@@ -63,25 +73,32 @@ namespace CamelotEngine {
 		// only create a shader object if glsl is supported
 		if (isSupported())
 		{
-			checkForGLSLError( "GLSLProgram::loadFromSource", "GL Errors before creating shader object", 0 );
+			checkForGLSLError( "GLSLProgram::loadFromSource", "GL Errors before creating shader object", 0, GLSLOT_SHADER);
 			// create shader object
 
 			GLenum shaderType = 0x0000;
 			switch (mType)
 			{
 			case GPT_VERTEX_PROGRAM:
-				shaderType = GL_VERTEX_SHADER_ARB;
+				shaderType = GL_VERTEX_SHADER;
 				break;
 			case GPT_FRAGMENT_PROGRAM:
-				shaderType = GL_FRAGMENT_SHADER_ARB;
+				shaderType = GL_FRAGMENT_SHADER;
 				break;
 			case GPT_GEOMETRY_PROGRAM:
-				shaderType = GL_GEOMETRY_SHADER_EXT;
+				shaderType = GL_GEOMETRY_SHADER;
+				break;
+			case GPT_HULL_PROGRAM:
+				shaderType = GL_TESS_CONTROL_SHADER;
+				break;
+			case GPT_DOMAIN_PROGRAM:
+				shaderType = GL_TESS_EVALUATION_SHADER;
 				break;
 			}
-			mGLHandle = glCreateShaderObjectARB(shaderType);
 
-			checkForGLSLError( "GLSLProgram::loadFromSource", "Error creating GLSL shader object", 0 );
+			mGLHandle = glCreateShader(shaderType);
+
+			checkForGLSLError( "GLSLProgram::loadFromSource", "Error creating GLSL shader object", 0, GLSLOT_SHADER);
 		}
 
 		// Preprocess the GLSL shader in order to get a clean source
@@ -156,9 +173,9 @@ namespace CamelotEngine {
 		if (!mSource.empty())
 		{
 			const char *source = mSource.c_str();
-			glShaderSourceARB(mGLHandle, 1, &source, NULL);
+			glShaderSource(mGLHandle, 1, &source, nullptr);
 			// check for load errors
-			checkForGLSLError( "GLSLProgram::loadFromSource", "Cannot load GLSL high-level shader source : ", 0 );
+			checkForGLSLError( "GLSLProgram::loadFromSource", "Cannot load GLSL high-level shader source : ", 0, GLSLOT_SHADER);
 		}
 
 		compile();
@@ -170,25 +187,24 @@ namespace CamelotEngine {
 	bool GLSLProgram::compile(const bool checkErrors)
 	{
         if (checkErrors)
-        {
-            logObjectInfo("GLSL compiling: ", mGLHandle);
-        }
+            logShaderInfo("GLSL compiling: ", mGLHandle);
 
-		glCompileShaderARB(mGLHandle);
+		glCompileShader(mGLHandle);
+
 		// check for compile errors
-		glGetObjectParameterivARB(mGLHandle, GL_OBJECT_COMPILE_STATUS_ARB, &mCompiled);
+		glGetShaderiv(mGLHandle, GL_COMPILE_STATUS, &mCompiled);
+
 		// force exception if not compiled
 		if (checkErrors)
 		{
-			checkForGLSLError( "GLSLProgram::compile", "Cannot compile GLSL high-level shader : ", mGLHandle, !mCompiled, !mCompiled );
+			checkForGLSLError("GLSLProgram::compile", "Cannot compile GLSL high-level shader : ", mGLHandle, GLSLOT_SHADER, !mCompiled, !mCompiled);
 			
 			if (mCompiled)
 			{
-				logObjectInfo("GLSL compiled : ", mGLHandle);
+				logShaderInfo("GLSL compiled : ", mGLHandle);
 			}
 		}
 		return (mCompiled == 1);
-
 	}
 	//---------------------------------------------------------------------------
 	void GLSLProgram::unload_internal()
@@ -199,128 +215,10 @@ namespace CamelotEngine {
 		mAssemblerProgram = nullptr;
 
 		if (isSupported())
-		{
-			glDeleteObjectARB(mGLHandle);
-		}
+			glDeleteShader(mGLHandle);
 
 		HighLevelGpuProgram::unload_internal();
 	}
-	//-----------------------------------------------------------------------
-	void GLSLProgram::populateParameterNames(GpuProgramParametersSharedPtr params)
-	{
-		getConstantDefinitions_internal();
-		params->_setNamedConstants(mConstantDefs);
-		// Don't set logical / physical maps here, as we can't access parameters by logical index in GLHL.
-	}
-	//-----------------------------------------------------------------------
-	void GLSLProgram::buildConstantDefinitions() const
-	{
-		// We need an accurate list of all the uniforms in the shader, but we
-		// can't get at them until we link all the shaders into a program object.
-
-
-		// Therefore instead, parse the source code manually and extract the uniforms
-		createParameterMappingStructures(true);
-		GLSLLinkProgramManager::instance().extractConstantDefs(
-			mSource, *mConstantDefs.get(), "");
-
-		// Also parse any attached sources
-		for (GLSLProgramContainer::const_iterator i = mAttachedGLSLPrograms.begin();
-			i != mAttachedGLSLPrograms.end(); ++i)
-		{
-			GLSLProgram* childShader = *i;
-
-			GLSLLinkProgramManager::instance().extractConstantDefs(
-				childShader->getSource(), *mConstantDefs.get(), "");
-
-		}
-	}
-	//---------------------------------------------------------------------
-	bool GLSLProgram::getPassSurfaceAndLightStates(void) const
-	{
-		// scenemanager should pass on light & material state to the rendersystem
-		return true;
-	}
-	//---------------------------------------------------------------------
-	bool GLSLProgram::getPassTransformStates(void) const
-	{
-		// scenemanager should pass on transform state to the rendersystem
-		return true;
-	}
-
-	//-----------------------------------------------------------------------
-    void GLSLProgram::attachChildShader(const String& name)
-	{
-		// is the name valid and already loaded?
-		// check with the high level program manager to see if it was loaded
-		// TODO PORT - I'm not sure what is this for but I don't support it
-		//HighLevelGpuProgramPtr hlProgram = HighLevelGpuProgramManager::getSingleton().getByName(name);
-		//if (!hlProgram.isNull())
-		//{
-		//	if (hlProgram->getSyntaxCode() == "glsl")
-		//	{
-		//		// make sure attached program source gets loaded and compiled
-		//		// don't need a low level implementation for attached shader objects
-		//		// loadHighLevelImpl will only load the source and compile once
-		//		// so don't worry about calling it several times
-		//		GLSLProgram* childShader = static_cast<GLSLProgram*>(hlProgram.getPointer());
-		//		// load the source and attach the child shader only if supported
-		//		if (isSupported())
-		//		{
-		//			childShader->loadHighLevelImpl();
-		//			// add to the container
-		//			mAttachedGLSLPrograms.push_back( childShader );
-		//			mAttachedShaderNames += name + " ";
-		//		}
-		//	}
-		//}
-	}
-
-	//-----------------------------------------------------------------------
-	void GLSLProgram::attachToProgramObject( const GLhandleARB programObject )
-	{
-		// attach child objects
-		GLSLProgramContainerIterator childprogramcurrent = mAttachedGLSLPrograms.begin();
-		GLSLProgramContainerIterator childprogramend = mAttachedGLSLPrograms.end();
-
- 		while (childprogramcurrent != childprogramend)
-		{
-
-			GLSLProgram* childShader = *childprogramcurrent;
-			// bug in ATI GLSL linker : modules without main function must be recompiled each time 
-			// they are linked to a different program object
-			// don't check for compile errors since there won't be any
-			// *** minor inconvenience until ATI fixes there driver
-			childShader->compile(false);
-
-			childShader->attachToProgramObject( programObject );
-
-			++childprogramcurrent;
-		}
-		glAttachObjectARB( programObject, mGLHandle );
-		checkForGLSLError( "GLSLProgram::attachToProgramObject",
-			"Error attaching shader object to GLSL Program Object", programObject );
-
-	}
-	//-----------------------------------------------------------------------
-	void GLSLProgram::detachFromProgramObject( const GLhandleARB programObject )
-	{
-		glDetachObjectARB(programObject, mGLHandle);
-		checkForGLSLError( "GLSLProgram::detachFromProgramObject",
-			"Error detaching shader object from GLSL Program Object", programObject );
-		// attach child objects
-		GLSLProgramContainerIterator childprogramcurrent = mAttachedGLSLPrograms.begin();
-		GLSLProgramContainerIterator childprogramend = mAttachedGLSLPrograms.end();
-
-		while (childprogramcurrent != childprogramend)
-		{
-			GLSLProgram* childShader = *childprogramcurrent;
-			childShader->detachFromProgramObject( programObject );
-			++childprogramcurrent;
-		}
-
-	}
-
     //-----------------------------------------------------------------------
     const String& GLSLProgram::getLanguage(void) const
     {
@@ -340,61 +238,5 @@ namespace CamelotEngine {
 	RTTITypeBase* GLSLProgram::getRTTI() const
 	{
 		return GLSLProgram::getRTTIStatic();
-	}
-
-	//-----------------------------------------------------------------------
-	RenderOperation::OperationType parseOperationType(const String& val)
-	{
-		if (val == "point_list")
-		{
-			return RenderOperation::OT_POINT_LIST;
-		}
-		else if (val == "line_list")
-		{
-			return RenderOperation::OT_LINE_LIST;
-		}
-		else if (val == "line_strip")
-		{
-			return RenderOperation::OT_LINE_STRIP;
-		}
-		else if (val == "triangle_strip")
-		{
-			return RenderOperation::OT_TRIANGLE_STRIP;
-		}
-		else if (val == "triangle_fan")
-		{
-			return RenderOperation::OT_TRIANGLE_FAN;
-		}
-		else 
-		{
-			//Triangle list is the default fallback. Keep it this way?
-			return RenderOperation::OT_TRIANGLE_LIST;
-		}
-	}
-	//-----------------------------------------------------------------------
-	String operationTypeToString(RenderOperation::OperationType val)
-	{
-		switch (val)
-		{
-		case RenderOperation::OT_POINT_LIST:
-			return "point_list";
-			break;
-		case RenderOperation::OT_LINE_LIST:
-			return "line_list";
-			break;
-		case RenderOperation::OT_LINE_STRIP:
-			return "line_strip";
-			break;
-		case RenderOperation::OT_TRIANGLE_STRIP:
-			return "triangle_strip";
-			break;
-		case RenderOperation::OT_TRIANGLE_FAN:
-			return "triangle_fan";
-			break;
-		case RenderOperation::OT_TRIANGLE_LIST:
-		default:
-			return "triangle_list";
-			break;
-		}
 	}
 }

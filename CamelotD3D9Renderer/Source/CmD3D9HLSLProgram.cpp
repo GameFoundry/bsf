@@ -111,7 +111,7 @@ namespace CamelotEngine {
 			CM_EXCEPT(InternalErrorException, "Cannot retrieve constant descriptions from HLSL program.");
 		
 		// DX9 has no concept of parameter blocks so we just put all members in one global block
-		String name = "Globals";
+		String name = "CM_INTERNAL_Globals";
 		mParamDesc.paramBlocks.insert(std::make_pair(name, GpuParamBlockDesc()));
 		GpuParamBlockDesc& blockDesc = mParamDesc.paramBlocks[name];
 		blockDesc.name = name;
@@ -181,8 +181,7 @@ namespace CamelotEngine {
 
 				blockDesc.blockSize += memberDesc.elementSize * memberDesc.arraySize;
 			}
-
-			if(desc.Type == D3DXPT_SAMPLER1D || desc.Type == D3DXPT_SAMPLER2D || desc.Type == D3DXPT_SAMPLER3D || desc.Type == D3DXPT_SAMPLERCUBE)
+			else if(desc.Type == D3DXPT_SAMPLER1D || desc.Type == D3DXPT_SAMPLER2D || desc.Type == D3DXPT_SAMPLER3D || desc.Type == D3DXPT_SAMPLERCUBE)
 			{
 				GpuParamSpecialDesc samplerDesc;
 				samplerDesc.name = paramName;
@@ -210,10 +209,16 @@ namespace CamelotEngine {
 					samplerDesc.type = GST_SAMPLERCUBE;
 					textureDesc.type = GST_TEXTURECUBE;
 					break;
+				default:
+					CM_EXCEPT(InternalErrorException, "Invalid sampler type: " + toString(desc.Type) + " for parameter " + paramName);
 				}
 
 				mParamDesc.samplers.insert(std::make_pair(paramName, samplerDesc));
 				mParamDesc.textures.insert(std::make_pair(paramName, textureDesc));
+			}
+			else
+			{
+				CM_EXCEPT(InternalErrorException, "Invalid shader parameter type: " + toString(desc.Type) + " for parameter " + paramName);
 			}
 		}
 	}

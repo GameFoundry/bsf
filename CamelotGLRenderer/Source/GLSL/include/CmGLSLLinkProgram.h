@@ -63,6 +63,10 @@ namespace CamelotEngine {
 		GLSLGpuProgram* mGeometryProgram;
 		/// Linked fragment program
 		GLSLGpuProgram* mFragmentProgram;
+		/// Linked domain program
+		GLSLGpuProgram* mDomainProgram;
+		/// Linked hull program
+		GLSLGpuProgram* mHullProgram;
 
 		/// flag to indicate that uniform references have already been built
 		bool		mUniformRefsBuilt;
@@ -71,8 +75,6 @@ namespace CamelotEngine {
 		/// flag indicating that the program object has been successfully linked
 		GLint		mLinked;
 
-		/// build uniform references from active named uniforms
-		void buildGLUniformReferences(void);
 		/// extract attributes
 		void extractAttributes(void);
 
@@ -93,13 +95,15 @@ namespace CamelotEngine {
 
 	public:
 		/// constructor should only be used by GLSLLinkProgramManager
-		GLSLLinkProgram(GLSLGpuProgram* vertexProgram, GLSLGpuProgram* geometryProgram, GLSLGpuProgram* fragmentProgram);
+		GLSLLinkProgram(GLSLGpuProgram* vertexProgram, GLSLGpuProgram* geometryProgram, GLSLGpuProgram* fragmentProgram,
+			GLSLGpuProgram* hullProgram, GLSLGpuProgram* domainProgram);
 		~GLSLLinkProgram(void);
 
 		/** Makes a program object active by making sure it is linked and then putting it in use.
 
 		*/
 		void activate(void);
+
 		/** updates program object uniforms using data from GpuProgramParamters.
 		normally called by GLSLGpuProgram::bindParameters() just before rendering occurs.
 		*/

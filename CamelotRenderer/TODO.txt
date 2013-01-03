@@ -19,42 +19,25 @@
 /////
 -----------GpuProgramParameters/Pass/Material REFACTOR------------------------------
 
+Finish up GL port:
+ - GL shader and param binding happens in the shader itself, while it should happen on the RenderSystem (to be consistent with DX9 and DX11)
+ - Remove those DefaultHardwareBuffermanagers as I don't think they serve a purpose anymore (OpenGL seems to only use them if API doesn't support hardware buffers, which won't happen on modern hardware)
+ - Re-do GL attribute bindings (currently it parses program source manually)
+ - Params aren't being initialized anywhere
+ - Uniforms or uniform blocks aren't assigned anywhere
+ - Implement GLRenderSystem::bindGpuParams
+
 Re-enable DX11 and GL project dependencies in CamelotClient
 Saving/loading of material params isn't completed (in MAterialRTTI)
-In D3D9HLSLProgram make:
- mpConstTable local to localFromSource
- Remove old parameter creation methods
-Port OpenGL and DX11 paramters system
+Delete old bindGpuProgramParameters and old unused classes/files
+Port DX11 to new shader param system
+Ability to switch out GpuParamBlocks (i.e. share them between programs)
+Ability to create Pass without automatically creating param blocks
+Automatically creating a pass should be smart about not creating duplicate param blocks
 
 Handling of array parameters? This needs testing
+ - I'm currently ignoring array elements in GL due to the name their names are handled
 
-Material remains a simple structure you use for easily setting all and every type of parameters for every stage.
- - Each instantiation of Material creates its own unique constant buffers
-  - Attempt to detect duplicates on initialization
- - Set/GetConstantBuffer allows you to switch out and share constant buffers
-
-GpuParamDesc
- - Contains a list of all constant buffers with their parameters (param name, type, size, slot, etc.)
- - Also a list of all textures/buffers/samplers
- - Each created GpuProgram contains one of these
-
-HardwareBufferManager::createConstantBuffer(GpuParamDesc)
- - Creates a constant buffer according to the specifications
-
-Pass
- - Constant buffers are stored on a pass
- - Supports previously mentioned Set/GetConstantBuffer
-   - When setting check GpuParamDesc of the shader to see if it matches
- - Also holds a list of Textures/SamplerStates/Buffers
-   - Doesn't make sense to store it in ConstantBuffer since it would just be one per buffer
-
-Possibly keep GpuProgramParams class so it unifies access to ConstantBuffer and Textures/SamplerStates/Buffers?
-
-RenderSystem::bindGpuProgramParameters (maybe rename to something nicer?)
- - It retrieves Constant buffer from Pass, converts it to a platform specific version and sets the needed parameters
-
-
-Port OpenGL so it uses Uniform buffers
 
 ---------------------------------------------------
 
@@ -71,8 +54,6 @@ RenderSystem::setScissorRect(RECT[] array)
 RenderSystem::setViewport(RECT[] array)
  - Change it so it accepts an array
 
-Modify how are Material/Pass parameters & GpuProgramParameters handled
-
 monitorIndex is ignored in DX11
 
 Creating a primary window and initializing the render system should probably be one step
@@ -86,12 +67,8 @@ Unity has a common class for both RenderTexture and DepthStencilBuffer
  - Maybe rename DepthStencilBuffer to DepthStencilTexture?
 
 waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
-Drop OpenGL support for low level shaders? (See if cg can translate to GLSL)
 
 Keeping a list of all render targets in RenderSystem shouldn't be needed (and calling attach/detach renderTarget). Renderer should determine in what order are render targets presented.
-
-Constant buffers are created in a weird way. Maybe they should only be created internally by GpuProgramParameters?
- - Multiple GpuProgramParameters get returned from GpuProgram after createParameters() is called, in a map, each with its own name
 
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
@@ -135,23 +112,11 @@ RenderSystem needed modifications
 
 Command buffer TODO:
  - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
- - My current approach doesn't allow multiple threads to use the RenderSystem (contexts should be handled differently)
-   - Instead of requiring the user to constantly call setActiveContext, make the call peristent per thread. 
-   - Store sequential thread idx in local thread storage, and then we can easily look up a context for a thread and
-     automatically use it, if it's set. (Use boost::thread_specific_ptr for local thread storage)
- - Make sure to allow the user to submit the context manually to the gpu. (Right now all contexts are submitted at once, and when I'll have compute
- shaders running I'm sure I'll want other threads to do different things on the gpu)
  - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after
     that call.
 
 Mesh
  - Make sure to queue up mesh deletion to make sure it gets destroyed on the render thread
-
-GpuProgram/HighLevelGpuProgram
- - Do a pass of refactoring
- - Fix it up for multithreading
-  - In general everything needs to be checked
-  - Add thread checks
 
 Make initialize & initialize_internal protected?
  - Only their factories and RTTI classes need to access it (and they can be friends)
@@ -171,7 +136,6 @@ HIGH PRIORITY TODO:
  - GetRenderOperation doesn't consider sub-meshes
 
 Mid priority TODO:
- - Add multithreaded version of RenderTarget::getCustomAttribute_internal
  - Compiler2Pass in GL renderer doesn't seem to be 64bit ready. I hacked it together but it will likely cause problems.
  - Resource handle should store a unique integer ID, which just points to a table of GUIDs. Keeping GUID string everywhere in not efficient.
  - Add a field that tracks % of resource deserialization in BinarySerializer
@@ -203,9 +167,6 @@ Low priority TODO:
    if pointer is saved/loaded as a plain field. I need to add a check that ensures the type is POD. 
    See: http://www.boost.org/doc/libs/1_51_0/boost/mpi/datatype.hpp for a possible implementation of a compile time check.
  - Fix up WorkQueue as it doesn't lock when initializing, to make sure threads are actually started before returning
- - D3D9HLSLProgram stuff that isn't used (it needs to be initialized before initializing the shader, which currently isn't possible). Maybe adding it to HighLevelGpuProgramFactory?
-     - setPreprocessorDefines, setColumnMajorMatrices, setOptimisationLevel
- - OpenGL seems to generate a mip pyramid regardless of the setting (in createInternalResourcesImpl)
  - DepthStencilBuffer & Texture should possibly share the same interface instead of being two separate classes? I'll need to assign DepthStencil to shaders sometimes. Not possible in DX9 but possible in DX11.
  - CPU reading or writing to a render texture in OpenGL is not supported. (CmGLHardwarePixelBuffer::upload/download). 
 
@@ -213,8 +174,6 @@ Optional TODO:
  - Add precompiled headers to all projects
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
  - Move all x86 libs to x86 folders. Move all binaries to x86 folders as well
- - Drop support for assembly shaders?
- - Shared shader parameters (Since there will be values that are constant between all Draw call it doesn't make sense to set them every call?)
  - Serializable callbacks can't be null otherwise compiler complains
  - FBX importer can be greatly sped up by implementing a better allocator
  - Extend texture copy so it accepts different subregions & subresources (currently only entire resource can be copied)

@@ -147,7 +147,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmGLATIFSInit.h" />
     <ClInclude Include="Include\CmGLContext.h" />
     <ClInclude Include="Include\CmGLDefaultHardwareBufferManager.h" />
     <ClInclude Include="Include\CmGLDepthStencilBuffer.h" />
@@ -174,9 +173,6 @@
     <ClInclude Include="Include\CmWin32GLSupport.h" />
     <ClInclude Include="Include\CmWin32Prerequisites.h" />
     <ClInclude Include="Include\CmWin32Window.h" />
-    <ClInclude Include="Source\atifs\include\ATI_FS_GLGpuProgram.h" />
-    <ClInclude Include="Source\atifs\include\Compiler2Pass.h" />
-    <ClInclude Include="Source\atifs\include\ps_1_4.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLExtSupport.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLGpuProgram.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLLinkProgram.h" />
@@ -188,10 +184,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CmGLPlugin.cpp" />
-    <ClCompile Include="Source\atifs\src\ATI_FS_GLGpuProgram.cpp" />
-    <ClCompile Include="Source\atifs\src\Compiler2Pass.cpp" />
-    <ClCompile Include="Source\atifs\src\ps_1_4.cpp" />
-    <ClCompile Include="Source\CmGLATIFSInit.cpp" />
     <ClCompile Include="Source\CmGLContext.cpp" />
     <ClCompile Include="Source\CmGLDefaultHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmGLDepthStencilBuffer.cpp" />

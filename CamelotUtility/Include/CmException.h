@@ -130,7 +130,6 @@ namespace CamelotEngine
 			: Exception("RuntimeAssertionException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	// TODO - Temporarily disabled until I include boost
 #ifndef CM_EXCEPT
 #define CM_EXCEPT(type, desc)	\
 	{                           \
