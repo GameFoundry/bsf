@@ -12,6 +12,20 @@ namespace CamelotEngine
 		GpuParamsPtr mVertParams;
 		GpuParamsPtr mFragParams;
 		GpuParamsPtr mGeomParams;
+		GpuParamsPtr mHullParams;
+		GpuParamsPtr mDomainParams;
+		GpuParamsPtr mComputeParams;
+
+		// Helper method
+		GpuParamsPtr& getParamByIdx(UINT32 idx)
+		{
+			GpuParamsPtr* paramArray[] = {&mVertParams, &mFragParams, &mGeomParams, &mHullParams, &mDomainParams, &mComputeParams};
+
+			return *paramArray[idx];
+		}
+
+		// Helper method
+		UINT32 getNumParams() const { return 6; }
 	};
 
 	class CM_EXPORT Material : public Resource
@@ -66,22 +80,14 @@ namespace CamelotEngine
 			{
 				PassParametersPtr params = *iter;
 
-				if(params->mVertParams)
+				for(UINT32 i = 0; i < params->getNumParams(); i++)
 				{
-					if(params->mVertParams->hasParam(name))
-						params->mVertParams->setParam(name, value);
-				}
-
-				if(params->mFragParams)
-				{
-					if(params->mFragParams->hasParam(name))
-						params->mFragParams->setParam(name, value);
-				}
-
-				if(params->mGeomParams)
-				{
-					if(params->mGeomParams->hasParam(name))
-						params->mGeomParams->setParam(name, value);
+					GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+					if(paramPtr)
+					{
+						if(paramPtr->hasParam(name))
+							paramPtr->setParam(name, value);
+					}
 				}
 			}
 		}

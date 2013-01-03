@@ -74,7 +74,6 @@ namespace CamelotEngine {
 		/** Loads this program from microcode, must be overridden by subclasses. */
         virtual void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode) = 0;
 
-
         /** Creates a new parameters object compatible with this program definition. 
         @remarks
             It is recommended that you use this method of creating parameters objects

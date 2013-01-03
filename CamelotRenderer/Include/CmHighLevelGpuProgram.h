@@ -86,12 +86,6 @@ namespace CamelotEngine {
         /** @copydoc GpuProgram::getBindingDelegate */
         GpuProgram* getBindingDelegate_internal(void) { return mAssemblerProgram.get(); }
 
-		/** Get the full list of GpuConstantDefinition instances.
-		@note
-		Only available if this parameters object has named parameters.
-		*/
-		const GpuNamedConstants& getConstantDefinitions_internal() const;
-
     protected:
 		/** Constructor, should be used only by factory classes. */
 		HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
@@ -99,18 +93,6 @@ namespace CamelotEngine {
 
         /// The underlying assembler program
         GpuProgramPtr mAssemblerProgram;
-		/// Have we built the name->index parameter map yet?
-		mutable bool mConstantDefsBuilt;
-
-        /// Populate the passed parameters with name->index map
-        virtual void populateParameterNames(GpuProgramParametersSharedPtr params);
-		/** Build the constant definition map, must be overridden.
-		@note The implementation must fill in the (inherited) mConstantDefs field at a minimum, 
-			and if the program requires that parameters are bound using logical 
-			parameter indexes then the mFloatLogicalToPhysical and mIntLogicalToPhysical
-			maps must also be populated.
-		*/
-		virtual void buildConstantDefinitions() const = 0;
 
 		/************************************************************************/
 		/* 								STATICS		                     		*/

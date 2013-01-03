@@ -464,6 +464,7 @@ namespace CamelotEngine {
 
 		// include handler
 		HLSLIncludeHandler includeHandler(this);
+		LPD3DXCONSTANTTABLE constTable;
 
 		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 
@@ -478,7 +479,7 @@ namespace CamelotEngine {
             compileFlags,
             &mpMicroCode,
             &errors,
-            &mpConstTable);
+            &constTable);
 
         if (FAILED(hr))
         {
@@ -508,289 +509,30 @@ namespace CamelotEngine {
 			static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);
 		}
 
-		D3D9HLSLParamParser paramParser(mpConstTable);
+		D3D9HLSLParamParser paramParser(constTable);
 		mParametersDesc = paramParser.buildParameterDescriptions();
+
+		SAFE_RELEASE(constTable);
     }
     //-----------------------------------------------------------------------
     void D3D9HLSLProgram::unload_internal(void)
     {
         SAFE_RELEASE(mpMicroCode);
-        SAFE_RELEASE(mpConstTable);
-
+        
 		HighLevelGpuProgram::unload_internal();
     }
 	//-----------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------
-    void D3D9HLSLProgram::buildConstantDefinitions() const
-    {
-        // Derive parameter names from const table
-        assert(mpConstTable && "Program not loaded!");
-        // Get contents of the constant table
-        D3DXCONSTANTTABLE_DESC desc;
-        HRESULT hr = mpConstTable->GetDesc(&desc);
-
-		createParameterMappingStructures(true);
-
-        if (FAILED(hr))
-        {
-			CM_EXCEPT(InternalErrorException, "Cannot retrieve constant descriptions from HLSL program.");
-        }
-        // Iterate over the constants
-        for (unsigned int i = 0; i < desc.Constants; ++i)
-        {
-            // Recursively descend through the structure levels
-            processParamElement(NULL, "", i);
-        }
-    }
-    //-----------------------------------------------------------------------
-    void D3D9HLSLProgram::processParamElement(D3DXHANDLE parent, String prefix, 
-        unsigned int index) const
-    {
-        D3DXHANDLE hConstant = mpConstTable->GetConstant(parent, index);
-		
-        // Since D3D HLSL doesn't deal with naming of array and struct parameters
-        // automatically, we have to do it by hand
-
-        D3DXCONSTANT_DESC desc;
-        unsigned int numParams = 1;
-        HRESULT hr = mpConstTable->GetConstantDesc(hConstant, &desc, &numParams);
-        if (FAILED(hr))
-        {
-            CM_EXCEPT(InternalErrorException, "Cannot retrieve constant description from HLSL program.");
-        }
-
-        String paramName = desc.Name;
-        // trim the odd '$' which appears at the start of the names in HLSL
-        if (paramName.at(0) == '$')
-            paramName.erase(paramName.begin());
-
-		// Also trim the '[0]' suffix if it exists, we will add our own indexing later
-		if (StringUtil::endsWith(paramName, "[0]", false))
-		{
-			paramName.erase(paramName.size() - 3);
-		}
-
-
-        if (desc.Class == D3DXPC_STRUCT)
-        {
-            // work out a new prefix for nested members, if it's an array, we need an index
-            prefix = prefix + paramName + ".";
-            // Cascade into struct
-            for (unsigned int i = 0; i < desc.StructMembers; ++i)
-            {
-                processParamElement(hConstant, prefix, i);
-            }
-        }
-        else
-        {
-            // Process params
-            if (desc.Type == D3DXPT_FLOAT || desc.Type == D3DXPT_INT || desc.Type == D3DXPT_BOOL ||
-				desc.Type == D3DXPT_SAMPLER1D || desc.Type == D3DXPT_SAMPLER2D || desc.Type == D3DXPT_SAMPLER3D || desc.Type == D3DXPT_SAMPLERCUBE)
-            {
-                UINT32 paramIndex = desc.RegisterIndex;
-                String name = prefix + paramName;
-                
-				GpuConstantDefinition def;
-				def.logicalIndex = paramIndex;
-				// populate type, array size & element size
-				populateDef(desc, def);
-
-				if(def.isSampler())
-				{
-					def.physicalIndex = mSamplerLogicalToPhysical->bufferSize;
-						mSamplerLogicalToPhysical->map.insert(
-						GpuLogicalIndexUseMap::value_type(paramIndex, 
-						GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
-					mSamplerLogicalToPhysical->bufferSize += def.arraySize;
-					mConstantDefs->samplerCount = mSamplerLogicalToPhysical->bufferSize;
-
-						mTextureLogicalToPhysical->map.insert(
-						GpuLogicalIndexUseMap::value_type(paramIndex, 
-						GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
-					mTextureLogicalToPhysical->bufferSize += def.arraySize;
-					mConstantDefs->textureCount = mTextureLogicalToPhysical->bufferSize;
-				}
-				else
-				{
-					if (def.isFloat())
-					{
-						def.physicalIndex = mFloatLogicalToPhysical->bufferSize;
-							mFloatLogicalToPhysical->map.insert(
-							GpuLogicalIndexUseMap::value_type(paramIndex, 
-							GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
-						mFloatLogicalToPhysical->bufferSize += def.arraySize * def.elementSize;
-						mConstantDefs->floatBufferSize = mFloatLogicalToPhysical->bufferSize;
-					}
-					else
-					{
-						def.physicalIndex = mIntLogicalToPhysical->bufferSize;
-							mIntLogicalToPhysical->map.insert(
-							GpuLogicalIndexUseMap::value_type(paramIndex, 
-							GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
-						mIntLogicalToPhysical->bufferSize += def.arraySize * def.elementSize;
-						mConstantDefs->intBufferSize = mIntLogicalToPhysical->bufferSize;
-					}
-				}
-
-                mConstantDefs->map.insert(GpuConstantDefinitionMap::value_type(name, def));
-
-				// Now deal with arrays
-				mConstantDefs->generateConstantDefinitionArrayEntries(name, def);
-            }
-        }
-            
-    }
-	//-----------------------------------------------------------------------
-	void D3D9HLSLProgram::populateDef(D3DXCONSTANT_DESC& d3dDesc, GpuConstantDefinition& def) const
-	{
-		def.arraySize = d3dDesc.Elements;
-		switch(d3dDesc.Type)
-		{
-		case D3DXPT_SAMPLER1D:
-			def.constType = GCT_SAMPLER1D;
-			break;
-		case D3DXPT_SAMPLER2D:
-			def.constType = GCT_SAMPLER2D;
-			break;
-		case D3DXPT_SAMPLER3D:
-			def.constType = GCT_SAMPLER3D;
-			break;
-		case D3DXPT_SAMPLERCUBE:
-			def.constType = GCT_SAMPLERCUBE;
-			break;
-		case D3DXPT_INT:
-			switch(d3dDesc.Columns)
-			{
-			case 1:
-				def.constType = GCT_INT1;
-				break;
-			case 2:
-				def.constType = GCT_INT2;
-				break;
-			case 3:
-				def.constType = GCT_INT3;
-				break;
-			case 4:
-				def.constType = GCT_INT4;
-				break;
-			} // columns
-			break;
-		case D3DXPT_FLOAT:
-			switch(d3dDesc.Class)
-			{
-			case D3DXPC_MATRIX_COLUMNS:
-			case D3DXPC_MATRIX_ROWS:
-				{
-					int firstDim, secondDim;
-					firstDim = d3dDesc.RegisterCount / d3dDesc.Elements;
-					if (d3dDesc.Class == D3DXPC_MATRIX_ROWS)
-					{
-						secondDim = d3dDesc.Columns;
-					}
-					else
-					{
-						secondDim = d3dDesc.Rows;
-					}
-					switch(firstDim)
-					{
-					case 2:
-						switch(secondDim)
-						{
-						case 2:
-							def.constType = GCT_MATRIX_2X2;
-							def.elementSize = 8; // HLSL always packs
-							break;
-						case 3:
-							def.constType = GCT_MATRIX_2X3;
-							def.elementSize = 8; // HLSL always packs
-							break;
-						case 4:
-							def.constType = GCT_MATRIX_2X4;
-							def.elementSize = 8; 
-							break;
-						} // columns
-						break;
-					case 3:
-						switch(secondDim)
-						{
-						case 2:
-							def.constType = GCT_MATRIX_3X2;
-							def.elementSize = 12; // HLSL always packs
-							break;
-						case 3:
-							def.constType = GCT_MATRIX_3X3;
-							def.elementSize = 12; // HLSL always packs
-							break;
-						case 4:
-							def.constType = GCT_MATRIX_3X4;
-							def.elementSize = 12; 
-							break;
-						} // columns
-						break;
-					case 4:
-						switch(secondDim)
-						{
-						case 2:
-							def.constType = GCT_MATRIX_4X2;
-							def.elementSize = 16; // HLSL always packs
-							break;
-						case 3:
-							def.constType = GCT_MATRIX_4X3;
-							def.elementSize = 16; // HLSL always packs
-							break;
-						case 4:
-							def.constType = GCT_MATRIX_4X4;
-							def.elementSize = 16; 
-							break;
-						} // secondDim
-						break;
-
-					} // firstDim
-				}
-				break;
-			case D3DXPC_SCALAR:
-			case D3DXPC_VECTOR:
-				switch(d3dDesc.Columns)
-				{
-				case 1:
-					def.constType = GCT_FLOAT1;
-					break;
-				case 2:
-					def.constType = GCT_FLOAT2;
-					break;
-				case 3:
-					def.constType = GCT_FLOAT3;
-					break;
-				case 4:
-					def.constType = GCT_FLOAT4;
-					break;
-				} // columns
-				break;
-			}
-		default:
-			// not mapping samplers, don't need to take the space 
-			break;
-		};
-
-		// D3D9 pads to 4 elements
-		def.elementSize = GpuConstantDefinition::getElementSize(def.constType, true);
-
-
-	}
-
 	LPD3DXBUFFER D3D9HLSLProgram::getMicroCode()
 	{
 		return mpMicroCode;
 	}
-
     //-----------------------------------------------------------------------
 	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
         : HighLevelGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired)
         , mPreprocessorDefines()
         , mColumnMajorMatrices(true)
-        , mpMicroCode(NULL), mpConstTable(NULL)
+        , mpMicroCode(NULL)
 		, mOptimisationLevel(OPT_DEFAULT)
 	{
     }

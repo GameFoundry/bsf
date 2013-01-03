@@ -50,7 +50,7 @@ namespace CamelotEngine
         :mSource(source), mEntryPoint(entryPoint), mSyntaxCode(language), mType(gptype),
 		mProfile(profile), mNeedsAdjacencyInfo(isAdjacencyInfoRequired), mCompileError(false)
     {
-		createParameterMappingStructures();
+
     }
 	//----------------------------------------------------------------------------
 	GpuProgram::~GpuProgram()
@@ -102,30 +102,6 @@ namespace CamelotEngine
 		return true;
 	}
 	//---------------------------------------------------------------------
-	void GpuProgram::createParameterMappingStructures(bool recreateIfExists) const
-	{
-		createLogicalParameterMappingStructures(recreateIfExists);
-		createNamedParameterMappingStructures(recreateIfExists);
-	}
-	//---------------------------------------------------------------------
-	void GpuProgram::createLogicalParameterMappingStructures(bool recreateIfExists) const
-	{
-		if (recreateIfExists || (mFloatLogicalToPhysical == nullptr))
-			mFloatLogicalToPhysical = GpuLogicalBufferStructPtr(new GpuLogicalBufferStruct());
-		if (recreateIfExists || (mIntLogicalToPhysical == nullptr))
-			mIntLogicalToPhysical = GpuLogicalBufferStructPtr(new GpuLogicalBufferStruct());
-		if (recreateIfExists || (mSamplerLogicalToPhysical == nullptr))
-			mSamplerLogicalToPhysical = GpuLogicalBufferStructPtr(new GpuLogicalBufferStruct());
-		if(recreateIfExists || (mTextureLogicalToPhysical == nullptr))
-			mTextureLogicalToPhysical = GpuLogicalBufferStructPtr(new GpuLogicalBufferStruct());
-	}
-	//---------------------------------------------------------------------
-	void GpuProgram::createNamedParameterMappingStructures(bool recreateIfExists) const
-	{
-		if (recreateIfExists || (mConstantDefs == nullptr))
-			mConstantDefs = GpuNamedConstantsPtr(new GpuNamedConstants());
-	}
-	//---------------------------------------------------------------------
 	GpuParamsPtr GpuProgram::createParameters(void)
 	{
 		return GpuParamsPtr(new GpuParams(mParametersDesc));
@@ -137,12 +113,6 @@ namespace CamelotEngine
 
         return language;
     }
-	const GpuNamedConstants& GpuProgram::getConstantDefinitions_internal() const 
-	{ 
-		THROW_IF_NOT_RENDER_THREAD;
-
-		return *mConstantDefs.get();
-	}
 	//----------------------------------------------------------------------------- 
 	void GpuProgram::throwIfNotRenderThread() const
 	{

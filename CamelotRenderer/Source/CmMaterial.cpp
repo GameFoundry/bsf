@@ -42,7 +42,6 @@ namespace CamelotEngine
 				for(UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
 				{
 					PassPtr curPass = mBestTechnique->getPass(i);
-
 					PassParametersPtr params = PassParametersPtr(new PassParameters());
 
 					GpuProgramHandle vertProgram = curPass->getVertexProgram();
@@ -64,6 +63,27 @@ namespace CamelotEngine
 					{
 						geomProgram.waitUntilLoaded();
 						params->mGeomParams = geomProgram->createParameters();	
+					}
+
+					GpuProgramHandle hullProgram = curPass->getHullProgram();
+					if(hullProgram)
+					{
+						hullProgram.waitUntilLoaded();
+						params->mHullParams = hullProgram->createParameters();
+					}
+
+					GpuProgramHandle domainProgram = curPass->getDomainProgram();
+					if(domainProgram)
+					{
+						domainProgram.waitUntilLoaded();
+						params->mDomainParams = domainProgram->createParameters();
+					}
+
+					GpuProgramHandle computeProgram = curPass->getComputeProgram();
+					if(computeProgram)
+					{
+						computeProgram.waitUntilLoaded();
+						params->mComputeParams = computeProgram->createParameters();	
 					}
 
 					mParameters.push_back(params);
@@ -93,22 +113,14 @@ namespace CamelotEngine
 		{
 			PassParametersPtr params = *iter;
 
-			if(params->mVertParams)
+			for(UINT32 i = 0; i < params->getNumParams(); i++)
 			{
-				if(params->mVertParams->hasTexture(name))
-					params->mVertParams->setTexture(name, value);
-			}
-
-			if(params->mFragParams)
-			{
-				if(params->mFragParams->hasTexture(name))
-					params->mFragParams->setTexture(name, value);
-			}
-
-			if(params->mGeomParams)
-			{
-				if(params->mGeomParams->hasTexture(name))
-					params->mGeomParams->setTexture(name, value);
+				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+				if(paramPtr)
+				{
+					if(paramPtr->hasTexture(name))
+						paramPtr->setTexture(name, value);
+				}
 			}
 		}
 	}
@@ -121,22 +133,14 @@ namespace CamelotEngine
 		{
 			PassParametersPtr params = *iter;
 
-			if(params->mVertParams)
+			for(UINT32 i = 0; i < params->getNumParams(); i++)
 			{
-				if(params->mVertParams->hasSamplerState(name))
-					params->mVertParams->setSamplerState(name, samplerState);
-			}
-
-			if(params->mFragParams)
-			{
-				if(params->mFragParams->hasSamplerState(name))
-					params->mFragParams->setSamplerState(name, samplerState);
-			}
-
-			if(params->mGeomParams)
-			{
-				if(params->mGeomParams->hasSamplerState(name))
-					params->mGeomParams->setSamplerState(name, samplerState);
+				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+				if(paramPtr)
+				{
+					if(paramPtr->hasSamplerState(name))
+						paramPtr->setSamplerState(name, samplerState);
+				}
 			}
 		}
 	}

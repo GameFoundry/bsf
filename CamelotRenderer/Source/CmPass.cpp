@@ -87,36 +87,6 @@ namespace CamelotEngine
 	{
 		return mDepthStencilState;
 	}
-    //-----------------------------------------------------------------------
-	void Pass::setVertexProgram(GpuProgramHandle gpuProgram)
-	{
-		mVertexProgram = gpuProgram;
-	}
-    //-----------------------------------------------------------------------
-	void Pass::setFragmentProgram(GpuProgramHandle gpuProgram)
-	{
-		mFragmentProgram = gpuProgram;
-	}
-	//-----------------------------------------------------------------------
-	void Pass::setGeometryProgram(GpuProgramHandle gpuProgram)
-	{
-		mGeometryProgram = gpuProgram;
-	}
-	//-----------------------------------------------------------------------
-	const GpuProgramHandle& Pass::getVertexProgram(void) const
-	{
-		return mVertexProgram;
-	}
-	//-----------------------------------------------------------------------
-	const GpuProgramHandle& Pass::getFragmentProgram(void) const
-	{
-		return mFragmentProgram;
-	}
-	//-----------------------------------------------------------------------
-	const GpuProgramHandle& Pass::getGeometryProgram(void) const
-	{
-		return mGeometryProgram;
-	}
 	//----------------------------------------------------------------------
 	RTTITypeBase* Pass::getRTTIStatic()
 	{

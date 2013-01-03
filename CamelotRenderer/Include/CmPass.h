@@ -21,12 +21,12 @@ namespace CamelotEngine
 		RasterizerStatePtr mRasterizerState;
 		DepthStencilStatePtr mDepthStencilState;
 
-		// Vertex program
 		GpuProgramHandle mVertexProgram;
-		// Fragment program
 		GpuProgramHandle mFragmentProgram;
-		// Geometry program
 		GpuProgramHandle mGeometryProgram;
+		GpuProgramHandle mHullProgram;
+		GpuProgramHandle mDomainProgram;
+		GpuProgramHandle mComputeProgram;
     public:
         /// Default constructor
 		Pass();
@@ -36,12 +36,12 @@ namespace CamelotEngine
         Pass& operator=(const Pass& oth);
         virtual ~Pass();
 
-        /// Returns true if this pass uses a programmable vertex pipeline
-        bool hasVertexProgram(void) const { return mVertexProgram != nullptr; }
-        /// Returns true if this pass uses a programmable fragment pipeline
-        bool hasFragmentProgram(void) const { return mFragmentProgram != nullptr; }
-        /// Returns true if this pass uses a programmable geometry pipeline
-        bool hasGeometryProgram(void) const { return mGeometryProgram != nullptr; }
+        bool hasVertexProgram() const { return mVertexProgram != nullptr; }
+        bool hasFragmentProgram() const { return mFragmentProgram != nullptr; }
+        bool hasGeometryProgram() const { return mGeometryProgram != nullptr; }
+		bool hasHullProgram() const { return mHullProgram != nullptr; }
+		bool hasDomainProgram() const { return mDomainProgram != nullptr; }
+		bool hasComputeProgram() const { return mComputeProgram != nullptr; }
 
 		/** Returns true if this pass has some element of transparency. */
 		bool isTransparent(void) const;
@@ -60,24 +60,45 @@ namespace CamelotEngine
 
 		/** Sets the details of the vertex program to use.
 		*/
-		void setVertexProgram(GpuProgramHandle gpuProgram);
+		void setVertexProgram(GpuProgramHandle gpuProgram) { mVertexProgram = gpuProgram; }
 
-		/** Gets the vertex program used by this pass, only available after _load(). */
-		const GpuProgramHandle& getVertexProgram(void) const;
+		/** Gets the vertex program used by this pass. */
+		const GpuProgramHandle& getVertexProgram(void) const { return mVertexProgram; }
 
 		/** Sets the details of the fragment program to use.
 		*/
-		void setFragmentProgram(GpuProgramHandle gpuProgram);
+		void setFragmentProgram(GpuProgramHandle gpuProgram) { mFragmentProgram = gpuProgram; }
 		
-		/** Gets the fragment program used by this pass, only available after _load(). */
-		const GpuProgramHandle& getFragmentProgram(void) const;
+		/** Gets the fragment program used by this pass. */
+		const GpuProgramHandle& getFragmentProgram(void) const { return mFragmentProgram; }
 
 		/** Sets the details of the geometry program to use.
 		*/
-		void setGeometryProgram(GpuProgramHandle gpuProgram);
+		void setGeometryProgram(GpuProgramHandle gpuProgram) { mGeometryProgram = gpuProgram; }
 		
-		/** Gets the geometry program used by this pass, only available after _load(). */
-		const GpuProgramHandle& getGeometryProgram(void) const;
+		/** Gets the geometry program used by this pass. */
+		const GpuProgramHandle& getGeometryProgram(void) const { return mGeometryProgram; }
+
+		/** Sets the details of the hull program to use.
+		*/
+		void setHullProgram(GpuProgramHandle gpuProgram) { mHullProgram = gpuProgram; }
+		
+		/** Gets the hull program used by this pass. */
+		const GpuProgramHandle& getHullProgram(void) const { return mHullProgram; }
+
+		/** Sets the details of the domain program to use.
+		*/
+		void setDomainProgram(GpuProgramHandle gpuProgram) { mDomainProgram = gpuProgram;}
+		
+		/** Gets the domain program used by this pass. */
+		const GpuProgramHandle& getDomainProgram(void) const { return mDomainProgram; }
+
+		/** Sets the details of the compute program to use.
+		*/
+		void setComputeProgram(GpuProgramHandle gpuProgram) { mComputeProgram = gpuProgram; }
+		
+		/** Gets the compute program used by this pass. */
+		const GpuProgramHandle& getComputeProgram(void) const { return mComputeProgram; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

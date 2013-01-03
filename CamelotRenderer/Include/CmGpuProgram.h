@@ -81,31 +81,6 @@ namespace CamelotEngine {
         String mSyntaxCode;
 		/// Did we encounter a compilation error?
 		bool mCompileError;
-		/** Record of logical to physical buffer maps. Mandatory for low-level
-			programs or high-level programs which set their params the same way. 
-			This is a shared pointer because if the program is recompiled and the parameters
-			change, this definition will alter, but previous params may reference the old def. */
-		mutable GpuLogicalBufferStructPtr mFloatLogicalToPhysical;
-		/** Record of logical to physical buffer maps. Mandatory for low-level
-			programs or high-level programs which set their params the same way. 
-			This is a shared pointer because if the program is recompiled and the parameters
-			change, this definition will alter, but previous params may reference the old def.*/
-		mutable GpuLogicalBufferStructPtr mIntLogicalToPhysical;
-		/** Record of logical to physical buffer maps. Mandatory for low-level
-			programs or high-level programs which set their params the same way. 
-			This is a shared pointer because if the program is recompiled and the parameters
-			change, this definition will alter, but previous params may reference the old def.*/
-		mutable GpuLogicalBufferStructPtr mSamplerLogicalToPhysical;
-		/** Record of logical to physical buffer maps. Mandatory for low-level
-			programs or high-level programs which set their params the same way. 
-			This is a shared pointer because if the program is recompiled and the parameters
-			change, this definition will alter, but previous params may reference the old def.*/
-		mutable GpuLogicalBufferStructPtr mTextureLogicalToPhysical;
-		/** Parameter name -> ConstantDefinition map, shared instance used by all parameter objects.
-		This is a shared pointer because if the program is recompiled and the parameters
-		change, this definition will alter, but previous params may reference the old def.
-		*/
-		mutable GpuNamedConstantsPtr mConstantDefs;
 
 		/**
 		 * @brief	Contains information about all parameters in a shader.
@@ -118,13 +93,6 @@ namespace CamelotEngine {
 
 		/// @copydoc Resource::calculateSize
 		size_t calculateSize(void) const { return 0; } // TODO 
-
-		/// Create the internal params logical & named mapping structures
-		void createParameterMappingStructures(bool recreateIfExists = true) const;
-		/// Create the internal params logical mapping structures
-		void createLogicalParameterMappingStructures(bool recreateIfExists = true) const;
-		/// Create the internal params named mapping structures
-		void createNamedParameterMappingStructures(bool recreateIfExists = true) const;
 
 		void throwIfNotRenderThread() const;
 
@@ -198,15 +166,6 @@ namespace CamelotEngine {
 		/** Reset a compile error if it occurred, allowing the load to be retried
 		*/
 		virtual void resetCompileError(void) { mCompileError = false; }
-
-		/** Get the full list of named constants.
-		@note
-		Only available if this parameters object has named parameters, which means either
-		a high-level program which loads them, or a low-level program which has them
-		specified manually.
-		*/
-		virtual const GpuNamedConstants& getConstantDefinitions_internal() const;
-
 
     protected:
 		friend class GpuProgramManager;

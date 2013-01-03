@@ -44,7 +44,7 @@ namespace CamelotEngine
 	HighLevelGpuProgram::HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
         : GpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired), 
-        mAssemblerProgram(0), mConstantDefsBuilt(false)
+        mAssemblerProgram(0)
     {
     }
 	//---------------------------------------------------------------------------
@@ -77,8 +77,6 @@ namespace CamelotEngine
             mAssemblerProgram = nullptr;
         }
 
-		mConstantDefsBuilt = false;
-		createParameterMappingStructures(true);
 		resetCompileError();
 
 		GpuProgram::unload_internal();
@@ -88,27 +86,6 @@ namespace CamelotEngine
     {
         // superclasses will trigger unload
     }
-	//---------------------------------------------------------------------
-	const GpuNamedConstants& HighLevelGpuProgram::getConstantDefinitions_internal() const
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if (!mConstantDefsBuilt)
-		{
-			buildConstantDefinitions();
-			mConstantDefsBuilt = true;
-		}
-		return *mConstantDefs.get();
-
-	}
-	//---------------------------------------------------------------------
-	void HighLevelGpuProgram::populateParameterNames(GpuProgramParametersSharedPtr params)
-	{
-		getConstantDefinitions_internal();
-		params->_setNamedConstants(mConstantDefs);
-		// also set logical / physical maps for programs which use this
-		params->_setLogicalIndexes(mFloatLogicalToPhysical, mIntLogicalToPhysical, mSamplerLogicalToPhysical, mTextureLogicalToPhysical);
-	}
 	//---------------------------------------------------------------------
 	HighLevelGpuProgramPtr HighLevelGpuProgram::create(const String& source, const String& entryPoint, 
 		const String& language, GpuProgramType gptype, GpuProgramProfile profile)

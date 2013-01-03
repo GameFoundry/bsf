@@ -98,18 +98,11 @@ namespace CamelotEngine {
 		 * @copydoc GpuProgram::unload_internal()
 		 */
         void unload_internal(void);
-        /// Populate the passed parameters with name->index map, must be overridden
-        void buildConstantDefinitions() const;
-
-        // Recursive utility method for buildParamNameMap
-        void processParamElement(D3DXHANDLE parent, String prefix, unsigned int index) const;
-		void populateDef(D3DXCONSTANT_DESC& d3dDesc, GpuConstantDefinition& def) const;
 
         String mPreprocessorDefines;
         bool mColumnMajorMatrices;
 
         LPD3DXBUFFER mpMicroCode;
-        LPD3DXCONSTANTTABLE mpConstTable;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

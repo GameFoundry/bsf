@@ -19,6 +19,15 @@
 /////
 -----------GpuProgramParameters/Pass/Material REFACTOR------------------------------
 
+Re-enable DX11 and GL project dependencies in CamelotClient
+Saving/loading of material params isn't completed (in MAterialRTTI)
+In D3D9HLSLProgram make:
+ mpConstTable local to localFromSource
+ Remove old parameter creation methods
+Port OpenGL and DX11 paramters system
+
+Handling of array parameters? This needs testing
+
 Material remains a simple structure you use for easily setting all and every type of parameters for every stage.
  - Each instantiation of Material creates its own unique constant buffers
   - Attempt to detect duplicates on initialization

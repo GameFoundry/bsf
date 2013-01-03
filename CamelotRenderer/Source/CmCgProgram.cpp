@@ -205,7 +205,7 @@ namespace CamelotEngine {
     void CgProgram::buildConstantDefinitions() const
     {
         // Derive parameter names from Cg
-		createParameterMappingStructures(true);
+		//createParameterMappingStructures(true);
 
 		if (!mCgProgram)
 			return;
@@ -216,149 +216,149 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	void CgProgram::recurseParams(CGparameter parameter, UINT32 contextArraySize) const
 	{
-		while (parameter != 0)
-        {
-            // Look for parameters
-            // Don't bother enumerating unused parameters, especially since they will
-            // be optimised out and therefore not in the indexed versions
-            CGtype paramType = cgGetParameterType(parameter);
+		//while (parameter != 0)
+  //      {
+  //          // Look for parameters
+  //          // Don't bother enumerating unused parameters, especially since they will
+  //          // be optimised out and therefore not in the indexed versions
+  //          CGtype paramType = cgGetParameterType(parameter);
 
-            if (cgGetParameterVariability(parameter) == CG_UNIFORM &&
-                paramType != CG_SAMPLERRECT &&
-                cgGetParameterDirection(parameter) != CG_OUT && 
-                cgIsParameterReferenced(parameter))
-            {
-				int arraySize;
+  //          if (cgGetParameterVariability(parameter) == CG_UNIFORM &&
+  //              paramType != CG_SAMPLERRECT &&
+  //              cgGetParameterDirection(parameter) != CG_OUT && 
+  //              cgIsParameterReferenced(parameter))
+  //          {
+		//		int arraySize;
 
-				switch(paramType)
-				{
-				case CG_STRUCT:
-					recurseParams(cgGetFirstStructParameter(parameter));
-					break;
-				case CG_ARRAY:
-					// Support only 1-dimensional arrays
-					arraySize = cgGetArraySize(parameter, 0);
-					recurseParams(cgGetArrayParameter(parameter, 0), (size_t)arraySize);
-					break;
-				default:
-					// Normal path (leaf)
-					String paramName = cgGetParameterName(parameter);
-					UINT32 logicalIndex = (UINT32)cgGetParameterResourceIndex(parameter);
+		//		switch(paramType)
+		//		{
+		//		case CG_STRUCT:
+		//			recurseParams(cgGetFirstStructParameter(parameter));
+		//			break;
+		//		case CG_ARRAY:
+		//			// Support only 1-dimensional arrays
+		//			arraySize = cgGetArraySize(parameter, 0);
+		//			recurseParams(cgGetArrayParameter(parameter, 0), (size_t)arraySize);
+		//			break;
+		//		default:
+		//			// Normal path (leaf)
+		//			String paramName = cgGetParameterName(parameter);
+		//			UINT32 logicalIndex = (UINT32)cgGetParameterResourceIndex(parameter);
 
-					// Get the parameter resource, to calculate the physical index
-					CGresource res = cgGetParameterResource(parameter);
-					bool isRegisterCombiner = false;
-					UINT32 regCombinerPhysicalIndex = 0;
-					switch (res)
-					{
-					case CG_COMBINER_STAGE_CONST0:
-						// register combiner, const 0
-						// the index relates to the texture stage; store this as (stage * 2) + 0
-						regCombinerPhysicalIndex = logicalIndex * 2;
-						isRegisterCombiner = true;
-						break;
-					case CG_COMBINER_STAGE_CONST1:
-						// register combiner, const 1
-						// the index relates to the texture stage; store this as (stage * 2) + 1
-						regCombinerPhysicalIndex = (logicalIndex * 2) + 1;
-						isRegisterCombiner = true;
-						break;
-					default:
-						// normal constant
-						break;
-					}
+		//			// Get the parameter resource, to calculate the physical index
+		//			CGresource res = cgGetParameterResource(parameter);
+		//			bool isRegisterCombiner = false;
+		//			UINT32 regCombinerPhysicalIndex = 0;
+		//			switch (res)
+		//			{
+		//			case CG_COMBINER_STAGE_CONST0:
+		//				// register combiner, const 0
+		//				// the index relates to the texture stage; store this as (stage * 2) + 0
+		//				regCombinerPhysicalIndex = logicalIndex * 2;
+		//				isRegisterCombiner = true;
+		//				break;
+		//			case CG_COMBINER_STAGE_CONST1:
+		//				// register combiner, const 1
+		//				// the index relates to the texture stage; store this as (stage * 2) + 1
+		//				regCombinerPhysicalIndex = (logicalIndex * 2) + 1;
+		//				isRegisterCombiner = true;
+		//				break;
+		//			default:
+		//				// normal constant
+		//				break;
+		//			}
 
-					// Trim the '[0]' suffix if it exists, we will add our own indexing later
-					if (StringUtil::endsWith(paramName, "[0]", false))
-					{
-						paramName.erase(paramName.size() - 3);
-					}
+		//			// Trim the '[0]' suffix if it exists, we will add our own indexing later
+		//			if (StringUtil::endsWith(paramName, "[0]", false))
+		//			{
+		//				paramName.erase(paramName.size() - 3);
+		//			}
 
 
-					GpuConstantDefinition def;
-					def.arraySize = contextArraySize;
-					mapTypeAndElementSize(paramType, isRegisterCombiner, def);
+		//			GpuConstantDefinition def;
+		//			def.arraySize = contextArraySize;
+		//			mapTypeAndElementSize(paramType, isRegisterCombiner, def);
 
-					if (def.constType == GCT_UNKNOWN)
-					{
-						gDebug().log("Problem parsing the following Cg Uniform: '" + paramName + "'", "RenderSystem");
-						// next uniform
-						parameter = cgGetNextParameter(parameter);
-						continue;
-					}
-					if (isRegisterCombiner)
-					{
-						def.physicalIndex = regCombinerPhysicalIndex;
-					}
-					else
-					{
-						// base position on existing buffer contents
-						if(def.isSampler())
-						{
-							def.physicalIndex = mSamplerLogicalToPhysical->bufferSize;
-						}
-						else
-						{
-							if (def.isFloat())
-							{
-								def.physicalIndex = mFloatLogicalToPhysical->bufferSize;
-							}
-							else
-							{
-								def.physicalIndex = mIntLogicalToPhysical->bufferSize;
-							}
-						}
-					}
+		//			if (def.constType == GCT_UNKNOWN)
+		//			{
+		//				gDebug().log("Problem parsing the following Cg Uniform: '" + paramName + "'", "RenderSystem");
+		//				// next uniform
+		//				parameter = cgGetNextParameter(parameter);
+		//				continue;
+		//			}
+		//			if (isRegisterCombiner)
+		//			{
+		//				def.physicalIndex = regCombinerPhysicalIndex;
+		//			}
+		//			else
+		//			{
+		//				// base position on existing buffer contents
+		//				if(def.isSampler())
+		//				{
+		//					def.physicalIndex = mSamplerLogicalToPhysical->bufferSize;
+		//				}
+		//				else
+		//				{
+		//					if (def.isFloat())
+		//					{
+		//						def.physicalIndex = mFloatLogicalToPhysical->bufferSize;
+		//					}
+		//					else
+		//					{
+		//						def.physicalIndex = mIntLogicalToPhysical->bufferSize;
+		//					}
+		//				}
+		//			}
 
-					def.logicalIndex = logicalIndex;
-					mConstantDefs->map.insert(GpuConstantDefinitionMap::value_type(paramName, def));
+		//			def.logicalIndex = logicalIndex;
+		//			mConstantDefs->map.insert(GpuConstantDefinitionMap::value_type(paramName, def));
 
-					// Record logical / physical mapping
-					if(def.isSampler())
-					{
-						mSamplerLogicalToPhysical->map.insert(
-							GpuLogicalIndexUseMap::value_type(logicalIndex, 
-							GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
-						mSamplerLogicalToPhysical->bufferSize += def.arraySize;
-						mConstantDefs->samplerCount = mSamplerLogicalToPhysical->bufferSize;
+		//			// Record logical / physical mapping
+		//			if(def.isSampler())
+		//			{
+		//				mSamplerLogicalToPhysical->map.insert(
+		//					GpuLogicalIndexUseMap::value_type(logicalIndex, 
+		//					GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
+		//				mSamplerLogicalToPhysical->bufferSize += def.arraySize;
+		//				mConstantDefs->samplerCount = mSamplerLogicalToPhysical->bufferSize;
 
-						mTextureLogicalToPhysical->map.insert(
-							GpuLogicalIndexUseMap::value_type(logicalIndex, 
-							GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
-						mTextureLogicalToPhysical->bufferSize += def.arraySize;
-						mConstantDefs->textureCount = mTextureLogicalToPhysical->bufferSize;
-					}
-					else
-					{
-						if (def.isFloat())
-						{
-							mFloatLogicalToPhysical->map.insert(
-								GpuLogicalIndexUseMap::value_type(logicalIndex, 
-								GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
-							mFloatLogicalToPhysical->bufferSize += def.arraySize * def.elementSize;
-							mConstantDefs->floatBufferSize = mFloatLogicalToPhysical->bufferSize;
-						}
-						else
-						{
-							mIntLogicalToPhysical->map.insert(
-								GpuLogicalIndexUseMap::value_type(logicalIndex, 
-								GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
-							mIntLogicalToPhysical->bufferSize += def.arraySize * def.elementSize;
-							mConstantDefs->intBufferSize = mIntLogicalToPhysical->bufferSize;
-						}
-					}
+		//				mTextureLogicalToPhysical->map.insert(
+		//					GpuLogicalIndexUseMap::value_type(logicalIndex, 
+		//					GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
+		//				mTextureLogicalToPhysical->bufferSize += def.arraySize;
+		//				mConstantDefs->textureCount = mTextureLogicalToPhysical->bufferSize;
+		//			}
+		//			else
+		//			{
+		//				if (def.isFloat())
+		//				{
+		//					mFloatLogicalToPhysical->map.insert(
+		//						GpuLogicalIndexUseMap::value_type(logicalIndex, 
+		//						GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
+		//					mFloatLogicalToPhysical->bufferSize += def.arraySize * def.elementSize;
+		//					mConstantDefs->floatBufferSize = mFloatLogicalToPhysical->bufferSize;
+		//				}
+		//				else
+		//				{
+		//					mIntLogicalToPhysical->map.insert(
+		//						GpuLogicalIndexUseMap::value_type(logicalIndex, 
+		//						GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
+		//					mIntLogicalToPhysical->bufferSize += def.arraySize * def.elementSize;
+		//					mConstantDefs->intBufferSize = mIntLogicalToPhysical->bufferSize;
+		//				}
+		//			}
 
-					// Deal with array indexing
-					mConstantDefs->generateConstantDefinitionArrayEntries(paramName, def);
+		//			// Deal with array indexing
+		//			mConstantDefs->generateConstantDefinitionArrayEntries(paramName, def);
 
-					break;
-		
-				}
-					
-            }
-            // Get next
-            parameter = cgGetNextParameter(parameter);
-        }
+		//			break;
+		//
+		//		}
+		//			
+  //          }
+  //          // Get next
+  //          parameter = cgGetNextParameter(parameter);
+  //      }
 
         
     }
