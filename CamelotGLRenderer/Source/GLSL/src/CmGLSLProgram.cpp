@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "CmGpuProgramManager.h"
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmException.h"
+#include "CmVertexIndexData.h"
 
 #include "CmGLSLProgram.h"
 #include "CmGLSLGpuProgram.h"
@@ -45,6 +46,7 @@ namespace CamelotEngine
 	{
 	public:
 		void buildUniformDescriptions(GLuint glProgram, GpuParamDesc& returnParamDesc);
+		void buildVertexDeclaration(GLuint glProgram, VertexDeclaration& declaration);
 
 	private:
 		void determineParamInfo(GpuParamMemberDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex);

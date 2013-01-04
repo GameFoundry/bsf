@@ -187,7 +187,6 @@
     <ClInclude Include="Include\CmCommon.h" />
     <ClInclude Include="Include\CmComponentRTTI.h" />
     <ClInclude Include="Include\CmConfigOptionMap.h" />
-    <ClInclude Include="Include\CmDefaultHardwareBufferManager.h" />
     <ClInclude Include="Include\CmDeferredRenderContext.h" />
     <ClInclude Include="Include\CmDepthStencilBuffer.h" />
     <ClInclude Include="Include\CmDepthStencilStateRTTI.h" />
@@ -201,7 +200,6 @@
     <ClInclude Include="Include\CmGpuProgramRTTI.h" />
     <ClInclude Include="Include\CmHardwareBuffer.h" />
     <ClInclude Include="Include\CmHardwareBufferManager.h" />
-    <ClInclude Include="Include\CmHardwareConstantBuffer.h" />
     <ClInclude Include="Include\CmHardwareIndexBuffer.h" />
     <ClInclude Include="Include\CmHardwareOcclusionQuery.h" />
     <ClInclude Include="Include\CmHardwarePixelBuffer.h" />
@@ -252,6 +250,7 @@
     <ClInclude Include="Include\CmTextureManager.h" />
     <ClInclude Include="Include\CmTextureRTTI.h" />
     <ClInclude Include="Include\CmSamplerState.h" />
+    <ClInclude Include="Include\CmVertexDeclaration.h" />
     <ClInclude Include="Include\CmVertexIndexData.h" />
     <ClInclude Include="Include\CmViewport.h" />
     <ClInclude Include="Include\CmWindowEventUtilities.h" />
@@ -275,7 +274,6 @@
     <ClCompile Include="Source\CmCgProgram.cpp" />
     <ClCompile Include="Source\CmCgProgramFactory.cpp" />
     <ClCompile Include="Source\CmCommandQueue.cpp" />
-    <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmDeferredRenderContext.cpp" />
     <ClCompile Include="Source\CmDepthStencilBuffer.cpp" />
     <ClCompile Include="Source\CmDepthStencilState.cpp" />
@@ -285,7 +283,6 @@
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />
     <ClCompile Include="Source\CmHardwareBufferManager.cpp" />
-    <ClCompile Include="Source\CmHardwareConstantBuffer.cpp" />
     <ClCompile Include="Source\CmHardwareIndexBuffer.cpp" />
     <ClCompile Include="Source\CmHardwareOcclusionQuery.cpp" />
     <ClCompile Include="Source\CmHardwarePixelBuffer.cpp" />
@@ -321,6 +318,7 @@
     <ClCompile Include="Source\CmTexture.cpp" />
     <ClCompile Include="Source\CmTextureManager.cpp" />
     <ClCompile Include="Source\CmSamplerState.cpp" />
+    <ClCompile Include="Source\CmVertexDeclaration.cpp" />
     <ClCompile Include="Source\CmVertexIndexData.cpp" />
     <ClCompile Include="Source\CmViewport.cpp" />
     <ClCompile Include="Source\CmWindowEventUtilities.cpp" />

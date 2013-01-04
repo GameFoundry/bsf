@@ -185,9 +185,5 @@ namespace CamelotEngine {
 		}	
 		mMapDeviceToDeclaration.clear();
 	}
-
-	//-----------------------------------------------------------------------
-
-
 }
 

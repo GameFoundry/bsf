@@ -27,9 +27,6 @@
     <ClInclude Include="Include\CmGLContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGLDefaultHardwareBufferManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmGLFrameBufferObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -117,6 +114,9 @@
     <ClInclude Include="Include\CmGLMultiRenderTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGLGpuParamBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp">
@@ -138,9 +138,6 @@
       <Filter>Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLContext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGLDefaultHardwareBufferManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp">
@@ -204,6 +201,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLMultiRenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLGpuParamBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

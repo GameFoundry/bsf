@@ -1,12 +1,13 @@
 #pragma once
 
 #include "CmD3D11Prerequisites.h"
-#include "CmHardwareConstantBuffer.h"
 #include "CmD3D11HardwareBuffer.h"
+
+// TODO - This isn't really used. Should be ported to D3D11GpuParamBlock
 
 namespace CamelotEngine
 {
-	class CM_D3D11_EXPORT D3D11HardwareConstantBuffer : public HardwareConstantBuffer
+	class CM_D3D11_EXPORT D3D11HardwareConstantBuffer
 	{
 	public:
 		D3D11HardwareConstantBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, UINT32 sizeBytes, 

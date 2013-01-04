@@ -28,8 +28,6 @@ THE SOFTWARE.
 
 #include "CmHardwareIndexBuffer.h"
 #include "CmHardwareBufferManager.h"
-#include "CmDefaultHardwareBufferManager.h"
-
 
 namespace CamelotEngine {
 

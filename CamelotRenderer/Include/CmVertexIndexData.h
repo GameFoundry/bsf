@@ -29,6 +29,7 @@ THE SOFTWARE.
 #define __VertexIndexData_H__
 
 #include "CmPrerequisites.h"
+#include "CmVertexDeclaration.h"
 #include "CmHardwareVertexBuffer.h"
 #include "CmHardwareIndexBuffer.h"
 

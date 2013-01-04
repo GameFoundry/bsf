@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __D3D9VERTEXDECLARATION_H__
 
 #include "CmD3D9Prerequisites.h"
-#include "CmHardwareVertexBuffer.h"
+#include "CmVertexDeclaration.h"
 #include "CmD3D9Resource.h"
 
 namespace CamelotEngine { 

@@ -4,9 +4,9 @@ namespace CamelotEngine
 {
 	D3D11HardwareConstantBuffer::D3D11HardwareConstantBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, UINT32 sizeBytes, 
 		HardwareBuffer::Usage usage, bool useSystemMem)
-		:HardwareConstantBuffer(mgr, sizeBytes, usage, useSystemMem)
+		//:HardwareConstantBuffer(mgr, sizeBytes, usage, useSystemMem)
 	{
-		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::CONSTANT_BUFFER, mSizeInBytes, usage, device, useSystemMem, false);
+		//mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::CONSTANT_BUFFER, mSizeInBytes, usage, device, useSystemMem, false);
 	}
 
 	D3D11HardwareConstantBuffer::~D3D11HardwareConstantBuffer()

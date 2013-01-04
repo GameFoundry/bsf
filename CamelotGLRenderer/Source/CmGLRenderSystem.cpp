@@ -33,7 +33,6 @@ THE SOFTWARE.s
 #include "CmGLTextureManager.h"
 #include "CmGLHardwareVertexBuffer.h"
 #include "CmGLHardwareIndexBuffer.h"
-#include "CmGLDefaultHardwareBufferManager.h"
 #include "CmGLUtil.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
@@ -636,16 +635,10 @@ namespace CamelotEngine
 
 			HardwareVertexBufferPtr vertexBuffer = 
 				op.vertexData->vertexBufferBinding->getBuffer(elem->getSource());
-			if(mCurrentCapabilities->hasCapability(RSC_VBO))
-			{
-				glBindBufferARB(GL_ARRAY_BUFFER_ARB, 
-					static_cast<const GLHardwareVertexBuffer*>(vertexBuffer.get())->getGLBufferId());
-				pBufferData = VBO_BUFFER_OFFSET(elem->getOffset());
-			}
-			else
-			{
-				pBufferData = static_cast<const GLDefaultHardwareVertexBuffer*>(vertexBuffer.get())->getDataPtr(elem->getOffset());
-			}
+
+			glBindBufferARB(GL_ARRAY_BUFFER_ARB, static_cast<const GLHardwareVertexBuffer*>(vertexBuffer.get())->getGLBufferId());
+			pBufferData = VBO_BUFFER_OFFSET(elem->getOffset());
+
 			if (op.vertexData->vertexStart)
 			{
 				pBufferData = static_cast<char*>(pBufferData) + op.vertexData->vertexStart * vertexBuffer->getVertexSize();
@@ -734,21 +727,12 @@ namespace CamelotEngine
 
 		if (op.useIndexes)
 		{
-			if(mCurrentCapabilities->hasCapability(RSC_VBO))
-			{
-				glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 
-					static_cast<GLHardwareIndexBuffer*>(
-					op.indexData->indexBuffer.get())->getGLBufferId());
+			glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 
+				static_cast<GLHardwareIndexBuffer*>(
+				op.indexData->indexBuffer.get())->getGLBufferId());
 
-				pBufferData = VBO_BUFFER_OFFSET(
-					op.indexData->indexStart * op.indexData->indexBuffer->getIndexSize());
-			}
-			else
-			{
-				pBufferData = static_cast<GLDefaultHardwareIndexBuffer*>(
-					op.indexData->indexBuffer.get())->getDataPtr(
-					op.indexData->indexStart * op.indexData->indexBuffer->getIndexSize());
-			}
+			pBufferData = VBO_BUFFER_OFFSET(
+				op.indexData->indexStart * op.indexData->indexBuffer->getIndexSize());
 
 			GLenum indexType = (op.indexData->indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
@@ -1728,14 +1712,7 @@ namespace CamelotEngine
 			glUnmapBufferARB = glUnmapBuffer;
 		}
 
-		if(caps->hasCapability(RSC_VBO))
-		{
-			HardwareBufferManager::startUp(new GLHardwareBufferManager);
-		}
-		else
-		{
-			HardwareBufferManager::startUp(new GLDefaultHardwareBufferManager);
-		}
+		HardwareBufferManager::startUp(new GLHardwareBufferManager);
 
 		// GPU Program Manager setup
 		GpuProgramManager::startUp(new GLGpuProgramManager());

@@ -4,6 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmMeshData.h"
 #include "CmManagedDataBlock.h"
+#include "CmVertexDeclaration.h"
 
 namespace CamelotEngine
 {

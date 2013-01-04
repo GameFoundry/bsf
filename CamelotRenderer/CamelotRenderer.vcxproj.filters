@@ -173,9 +173,6 @@
     <ClInclude Include="Include\CmGpuProgram.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmDefaultHardwareBufferManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmImporter.h">
       <Filter>Header Files\Importer</Filter>
     </ClInclude>
@@ -308,9 +305,6 @@
     <ClInclude Include="Include\CmResourceHandleRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmHardwareConstantBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmCommandQueue.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -359,6 +353,9 @@
     <ClInclude Include="Include\CmGpuParamBlock.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmVertexDeclaration.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -378,9 +375,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmWindowEventUtilities.cpp">
       <Filter>Source Files\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmDefaultHardwareBufferManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGpuProgram.cpp">
       <Filter>Source Files\RenderSystem</Filter>
@@ -505,9 +499,6 @@
     <ClCompile Include="Source\CmSpecificImporter.cpp">
       <Filter>Source Files\Importer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmHardwareConstantBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmCommandQueue.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
@@ -539,6 +530,9 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGpuParamBlock.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmVertexDeclaration.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>

@@ -28,6 +28,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmVertexDeclaration.h"
 #include "CmVertexIndexData.h"
 
 namespace CamelotEngine {

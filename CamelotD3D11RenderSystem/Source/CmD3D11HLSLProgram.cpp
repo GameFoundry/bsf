@@ -4,7 +4,6 @@
 #include "CmGpuProgramManager.h"
 #include "CmD3D11GpuProgram.h"
 #include "CmHardwareBufferManager.h"
-#include "CmHardwareConstantBuffer.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmException.h"
 #include "CmDebug.h"

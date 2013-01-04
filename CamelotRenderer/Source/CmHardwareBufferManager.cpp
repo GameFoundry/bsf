@@ -28,8 +28,7 @@ THE SOFTWARE.
 
 #include "CmHardwareBufferManager.h"
 #include "CmVertexIndexData.h"
-#include "CmHardwareConstantBuffer.h"
-
+#include "CmVertexDeclaration.h"
 
 namespace CamelotEngine {
 	//---------------------------------------------------------------------
