@@ -20,21 +20,14 @@
 -----------GpuProgramParameters/Pass/Material REFACTOR------------------------------
 
 Finish up GL port:
- - IMPORTANT: Use GL_ARB_separate_shader_objects to set shaders without program objects. And more importantly to set uniforms per stage.
-   - Use CreateShaderProgramv to compile & link shader program
- - GL shader and param binding happens in the shader itself, while it should happen on the RenderSystem (to be consistent with DX9 and DX11)
  - Remove those DefaultHardwareBuffermanagers as I don't think they serve a purpose anymore (OpenGL seems to only use them if API doesn't support hardware buffers, which won't happen on modern hardware)
  - Re-do GL attribute bindings (currently it parses program source manually)
  - Params aren't being initialized anywhere
  - Uniforms or uniform blocks aren't assigned anywhere
- - Implement GLRenderSystem::bindGpuParams
 
- http://www.opengl.org/wiki/Uniform_(GLSL)
-http://www.opengl.org/wiki/Program_Introspection
+Get through capabilities and remove bool/int/float constant counters and instead add uniform, uniform block, input/output component counters
 
-Re-enable DX11 and GL project dependencies in CamelotClient
 Saving/loading of material params isn't completed (in MAterialRTTI)
-Delete old bindGpuProgramParameters and old unused classes/files
 Port DX11 to new shader param system
 Ability to switch out GpuParamBlocks (i.e. share them between programs)
 Ability to create Pass without automatically creating param blocks
@@ -46,13 +39,6 @@ Handling of array parameters? This needs testing
 
 
 ---------------------------------------------------
-
-RenderSystem::setTexture(STAGE, UINT32 slot, Texture)
-RenderSystem::setBuffer(STAGE, UINT32 slot, Buffer)
-RenderSystem::setSampler(STAGE, UINT32 slot, Sampler)
- - Maybe do all these without "slot" parameter? Instead accept an array of elements
-   per stage, and when they're about to be used set them up into proper slots as needed?
-   (based on currently set shader)
 
 RenderSystem::clearFrameBuffer
  - Change so it accepts a RenderTarget as a parameter

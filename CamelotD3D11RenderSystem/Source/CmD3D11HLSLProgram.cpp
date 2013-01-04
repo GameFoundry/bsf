@@ -193,261 +193,261 @@ namespace CamelotEngine
 			ID3D11ShaderReflectionConstantBuffer* shaderReflectionConstantBuffer;
 			shaderReflectionConstantBuffer = shaderReflection->GetConstantBufferByIndex(i);
 
-			populateConstantBufferParameters(shaderReflectionConstantBuffer);
+			//populateConstantBufferParameters(shaderReflectionConstantBuffer);
 		}
 
 		shaderReflection->Release();
 	}
 
-	void D3D11HLSLProgram::buildConstantDefinitions() const
-	{
-		createParameterMappingStructures(true);
+	//void D3D11HLSLProgram::buildConstantDefinitions() const
+	//{
+	//	createParameterMappingStructures(true);
 
-		for(auto shaderBufferIter = mShaderBuffers.begin(); shaderBufferIter != mShaderBuffers.end(); ++shaderBufferIter)
-		{
-			for(size_t i = 0; i < shaderBufferIter->variables.size(); i++)
-			{
-				const D3D11_SHADER_VARIABLE_DESC& variableDesc = shaderBufferIter->variables[i];
-				const D3D11_SHADER_TYPE_DESC& variableType = shaderBufferIter->variableTypes[i];
+	//	for(auto shaderBufferIter = mShaderBuffers.begin(); shaderBufferIter != mShaderBuffers.end(); ++shaderBufferIter)
+	//	{
+	//		for(size_t i = 0; i < shaderBufferIter->variables.size(); i++)
+	//		{
+	//			const D3D11_SHADER_VARIABLE_DESC& variableDesc = shaderBufferIter->variables[i];
+	//			const D3D11_SHADER_TYPE_DESC& variableType = shaderBufferIter->variableTypes[i];
 
-				String name = variableDesc.Name;
-				if (name.at(0) == '$')
-					name.erase(name.begin());
+	//			String name = variableDesc.Name;
+	//			if (name.at(0) == '$')
+	//				name.erase(name.begin());
 
-				// Also trim the '[0]' suffix if it exists, we will add our own indexing later
-				if (StringUtil::endsWith(name, "[0]", false))
-					name.erase(name.size() - 3);
+	//			// Also trim the '[0]' suffix if it exists, we will add our own indexing later
+	//			if (StringUtil::endsWith(name, "[0]", false))
+	//				name.erase(name.size() - 3);
 
-				UINT32 paramIndex = (UINT32)i;
+	//			UINT32 paramIndex = (UINT32)i;
 
-				// TODO - Need to add support for more types. ESPECIALLY TEXTURES & STRUCTS!
-				if(variableType.Type == D3D_SVT_FLOAT || variableType.Type == D3D_SVT_INT || variableType.Type == D3D_SVT_BOOL || variableType.Type == D3D_SVT_SAMPLER1D || 
-					variableType.Type == D3D_SVT_SAMPLER2D || variableType.Type == D3D_SVT_SAMPLER3D || variableType.Type == D3D_SVT_SAMPLERCUBE)
-				{
-					GpuConstantDefinition def;
-					def.logicalIndex = paramIndex;
-					// populate type, array size & element size
-					populateParameterDefinition(variableDesc, variableType, def);
+	//			// TODO - Need to add support for more types. ESPECIALLY TEXTURES & STRUCTS!
+	//			if(variableType.Type == D3D_SVT_FLOAT || variableType.Type == D3D_SVT_INT || variableType.Type == D3D_SVT_BOOL || variableType.Type == D3D_SVT_SAMPLER1D || 
+	//				variableType.Type == D3D_SVT_SAMPLER2D || variableType.Type == D3D_SVT_SAMPLER3D || variableType.Type == D3D_SVT_SAMPLERCUBE)
+	//			{
+	//				GpuConstantDefinition def;
+	//				def.logicalIndex = paramIndex;
+	//				// populate type, array size & element size
+	//				populateParameterDefinition(variableDesc, variableType, def);
 
-					if(def.isSampler())
-					{
-						def.physicalIndex = variableDesc.StartSampler;
-						mSamplerLogicalToPhysical->map.insert(
-							GpuLogicalIndexUseMap::value_type(paramIndex, 
-							GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
-						mSamplerLogicalToPhysical->bufferSize = std::max(mSamplerLogicalToPhysical->bufferSize, def.physicalIndex + def.arraySize);
-						mConstantDefs->samplerCount = mSamplerLogicalToPhysical->bufferSize;
+	//				if(def.isSampler())
+	//				{
+	//					def.physicalIndex = variableDesc.StartSampler;
+	//					mSamplerLogicalToPhysical->map.insert(
+	//						GpuLogicalIndexUseMap::value_type(paramIndex, 
+	//						GpuLogicalIndexUse(def.physicalIndex, def.arraySize, GPV_GLOBAL)));
+	//					mSamplerLogicalToPhysical->bufferSize = std::max(mSamplerLogicalToPhysical->bufferSize, def.physicalIndex + def.arraySize);
+	//					mConstantDefs->samplerCount = mSamplerLogicalToPhysical->bufferSize;
 
-						// TODO - Add textures!
-						CM_EXCEPT(NotImplementedException, "Add support for texture parameters!");
-					}
-					else
-					{
-						if (def.isFloat())
-						{
-							def.physicalIndex = variableDesc.StartOffset;
-							mFloatLogicalToPhysical->map.insert(
-								GpuLogicalIndexUseMap::value_type(paramIndex, 
-								GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
-							mFloatLogicalToPhysical->bufferSize = std::max(mFloatLogicalToPhysical->bufferSize, def.physicalIndex + def.arraySize);
-							mConstantDefs->floatBufferSize = mFloatLogicalToPhysical->bufferSize;
-						}
-						else
-						{
-							def.physicalIndex = variableDesc.StartOffset;
-							mIntLogicalToPhysical->map.insert(
-								GpuLogicalIndexUseMap::value_type(paramIndex, 
-								GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
-							mIntLogicalToPhysical->bufferSize = std::max(mIntLogicalToPhysical->bufferSize, def.physicalIndex + def.arraySize);
-							mConstantDefs->intBufferSize = mIntLogicalToPhysical->bufferSize;
-						}
-					}
+	//					// TODO - Add textures!
+	//					CM_EXCEPT(NotImplementedException, "Add support for texture parameters!");
+	//				}
+	//				else
+	//				{
+	//					if (def.isFloat())
+	//					{
+	//						def.physicalIndex = variableDesc.StartOffset;
+	//						mFloatLogicalToPhysical->map.insert(
+	//							GpuLogicalIndexUseMap::value_type(paramIndex, 
+	//							GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
+	//						mFloatLogicalToPhysical->bufferSize = std::max(mFloatLogicalToPhysical->bufferSize, def.physicalIndex + def.arraySize);
+	//						mConstantDefs->floatBufferSize = mFloatLogicalToPhysical->bufferSize;
+	//					}
+	//					else
+	//					{
+	//						def.physicalIndex = variableDesc.StartOffset;
+	//						mIntLogicalToPhysical->map.insert(
+	//							GpuLogicalIndexUseMap::value_type(paramIndex, 
+	//							GpuLogicalIndexUse(def.physicalIndex, def.arraySize * def.elementSize, GPV_GLOBAL)));
+	//						mIntLogicalToPhysical->bufferSize = std::max(mIntLogicalToPhysical->bufferSize, def.physicalIndex + def.arraySize);
+	//						mConstantDefs->intBufferSize = mIntLogicalToPhysical->bufferSize;
+	//					}
+	//				}
 
-					mConstantDefs->map.insert(GpuConstantDefinitionMap::value_type(name, def));
+	//				mConstantDefs->map.insert(GpuConstantDefinitionMap::value_type(name, def));
 
-					// Now deal with arrays
-					mConstantDefs->generateConstantDefinitionArrayEntries(name, def);
-				}
-			}
-		}
-	}
+	//				// Now deal with arrays
+	//				mConstantDefs->generateConstantDefinitionArrayEntries(name, def);
+	//			}
+	//		}
+	//	}
+	//}
 
-	void D3D11HLSLProgram::populateConstantBufferParameters(ID3D11ShaderReflectionConstantBuffer* bufferReflection)
-	{
-		D3D11_SHADER_BUFFER_DESC constantBufferDesc;
-		HRESULT hr = bufferReflection->GetDesc(&constantBufferDesc);
-		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Failed to retrieve HLSL constant buffer description.");
+	//void D3D11HLSLProgram::populateConstantBufferParameters(ID3D11ShaderReflectionConstantBuffer* bufferReflection)
+	//{
+	//	D3D11_SHADER_BUFFER_DESC constantBufferDesc;
+	//	HRESULT hr = bufferReflection->GetDesc(&constantBufferDesc);
+	//	if (FAILED(hr))
+	//		CM_EXCEPT(RenderingAPIException, "Failed to retrieve HLSL constant buffer description.");
 
-		if(constantBufferDesc.Type != D3D_CBUFFER_TYPE::D3D_CT_CBUFFER && constantBufferDesc.Type != D3D_CBUFFER_TYPE::D3D_CT_TBUFFER)
-		{
-			LOGDBG("D3D11 HLSL parsing: Unsupported constant buffer type, skipping. Type: " + toString(constantBufferDesc.Type));
-			return;
-		}
+	//	if(constantBufferDesc.Type != D3D_CBUFFER_TYPE::D3D_CT_CBUFFER && constantBufferDesc.Type != D3D_CBUFFER_TYPE::D3D_CT_TBUFFER)
+	//	{
+	//		LOGDBG("D3D11 HLSL parsing: Unsupported constant buffer type, skipping. Type: " + toString(constantBufferDesc.Type));
+	//		return;
+	//	}
 
-		mShaderBuffers.push_back(D3D11_ShaderBufferDesc());
-		D3D11_ShaderBufferDesc& newShaderBufferDesc = *mShaderBuffers.end();
+	//	mShaderBuffers.push_back(D3D11_ShaderBufferDesc());
+	//	D3D11_ShaderBufferDesc& newShaderBufferDesc = *mShaderBuffers.end();
 
-		for(UINT32 j = 0; j < constantBufferDesc.Variables; j++)
-		{
-			ID3D11ShaderReflectionVariable* varRef;
-			varRef = bufferReflection->GetVariableByIndex(j);
-			D3D11_SHADER_VARIABLE_DESC varDesc;
-			HRESULT hr = varRef->GetDesc(&varDesc);
+	//	for(UINT32 j = 0; j < constantBufferDesc.Variables; j++)
+	//	{
+	//		ID3D11ShaderReflectionVariable* varRef;
+	//		varRef = bufferReflection->GetVariableByIndex(j);
+	//		D3D11_SHADER_VARIABLE_DESC varDesc;
+	//		HRESULT hr = varRef->GetDesc(&varDesc);
 
-			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Failed to retrieve HLSL constant buffer variable description.");
+	//		if (FAILED(hr))
+	//			CM_EXCEPT(RenderingAPIException, "Failed to retrieve HLSL constant buffer variable description.");
 
-			ID3D11ShaderReflectionType* varRefType;
-			varRefType = varRef->GetType();
-			D3D11_SHADER_TYPE_DESC varTypeDesc;
-			varRefType->GetDesc(&varTypeDesc);
+	//		ID3D11ShaderReflectionType* varRefType;
+	//		varRefType = varRef->GetType();
+	//		D3D11_SHADER_TYPE_DESC varTypeDesc;
+	//		varRefType->GetDesc(&varTypeDesc);
 
-			switch(varTypeDesc.Type)
-			{
-			case D3D_SVT_FLOAT:
-			case D3D_SVT_INT:
-			case D3D_SVT_SAMPLER1D:
-			case D3D_SVT_SAMPLER2D: 
-			case D3D_SVT_SAMPLER3D:
-			case D3D_SVT_SAMPLERCUBE: // TODO - Need to add support for other types!
-				newShaderBufferDesc.variables.push_back(varDesc);
-				newShaderBufferDesc.variableTypes.push_back(varTypeDesc);
-			default:
-				CM_EXCEPT(RenderingAPIException, "Unsupported shader variable type!");
-			}
-		}
-	}
+	//		switch(varTypeDesc.Type)
+	//		{
+	//		case D3D_SVT_FLOAT:
+	//		case D3D_SVT_INT:
+	//		case D3D_SVT_SAMPLER1D:
+	//		case D3D_SVT_SAMPLER2D: 
+	//		case D3D_SVT_SAMPLER3D:
+	//		case D3D_SVT_SAMPLERCUBE: // TODO - Need to add support for other types!
+	//			newShaderBufferDesc.variables.push_back(varDesc);
+	//			newShaderBufferDesc.variableTypes.push_back(varTypeDesc);
+	//		default:
+	//			CM_EXCEPT(RenderingAPIException, "Unsupported shader variable type!");
+	//		}
+	//	}
+	//}
 
-	void D3D11HLSLProgram::populateParameterDefinition(const D3D11_SHADER_VARIABLE_DESC& paramDesc, const D3D11_SHADER_TYPE_DESC& paramType, GpuConstantDefinition& def) const
-	{
-		def.arraySize = paramType.Elements + 1;
-		switch(paramType.Type)
-		{
-		case D3D_SVT_SAMPLER1D:
-			def.constType = GCT_SAMPLER1D;
-			def.elementSize = paramDesc.SamplerSize / def.arraySize;
-			break;
-		case D3D_SVT_SAMPLER2D:
-			CM_EXCEPT(NotImplementedException, "Break here because I want to check what is the elementSize of the sampler. It has to be 1.");
+	//void D3D11HLSLProgram::populateParameterDefinition(const D3D11_SHADER_VARIABLE_DESC& paramDesc, const D3D11_SHADER_TYPE_DESC& paramType, GpuConstantDefinition& def) const
+	//{
+	//	def.arraySize = paramType.Elements + 1;
+	//	switch(paramType.Type)
+	//	{
+	//	case D3D_SVT_SAMPLER1D:
+	//		def.constType = GCT_SAMPLER1D;
+	//		def.elementSize = paramDesc.SamplerSize / def.arraySize;
+	//		break;
+	//	case D3D_SVT_SAMPLER2D:
+	//		CM_EXCEPT(NotImplementedException, "Break here because I want to check what is the elementSize of the sampler. It has to be 1.");
 
-			def.constType = GCT_SAMPLER2D;
-			def.elementSize = paramDesc.SamplerSize / def.arraySize;
-			break;
-		case D3D_SVT_SAMPLER3D:
-			def.constType = GCT_SAMPLER3D;
-			def.elementSize = paramDesc.SamplerSize / def.arraySize;
-			break;
-		case D3D_SVT_SAMPLERCUBE:
-			def.constType = GCT_SAMPLERCUBE;
-			def.elementSize = paramDesc.SamplerSize / def.arraySize;
-			break;
-		case D3D_SVT_INT:
-			switch(paramType.Columns)
-			{
-			case 1:
-				def.constType = GCT_INT1;
-				def.elementSize = paramDesc.Size / def.arraySize;
-				break;
-			case 2:
-				def.constType = GCT_INT2;
-				def.elementSize = paramDesc.Size / def.arraySize;
-				break;
-			case 3:
-				def.constType = GCT_INT3;
-				def.elementSize = paramDesc.Size / def.arraySize;
-				break;
-			case 4:
-				def.constType = GCT_INT4;
-				def.elementSize = paramDesc.Size / def.arraySize;
-				break;
-			} // columns
-			break;
-		case D3D_SVT_FLOAT:
+	//		def.constType = GCT_SAMPLER2D;
+	//		def.elementSize = paramDesc.SamplerSize / def.arraySize;
+	//		break;
+	//	case D3D_SVT_SAMPLER3D:
+	//		def.constType = GCT_SAMPLER3D;
+	//		def.elementSize = paramDesc.SamplerSize / def.arraySize;
+	//		break;
+	//	case D3D_SVT_SAMPLERCUBE:
+	//		def.constType = GCT_SAMPLERCUBE;
+	//		def.elementSize = paramDesc.SamplerSize / def.arraySize;
+	//		break;
+	//	case D3D_SVT_INT:
+	//		switch(paramType.Columns)
+	//		{
+	//		case 1:
+	//			def.constType = GCT_INT1;
+	//			def.elementSize = paramDesc.Size / def.arraySize;
+	//			break;
+	//		case 2:
+	//			def.constType = GCT_INT2;
+	//			def.elementSize = paramDesc.Size / def.arraySize;
+	//			break;
+	//		case 3:
+	//			def.constType = GCT_INT3;
+	//			def.elementSize = paramDesc.Size / def.arraySize;
+	//			break;
+	//		case 4:
+	//			def.constType = GCT_INT4;
+	//			def.elementSize = paramDesc.Size / def.arraySize;
+	//			break;
+	//		} // columns
+	//		break;
+	//	case D3D_SVT_FLOAT:
 
-			CM_EXCEPT(NotImplementedException, "Break here because I want to check if paramDesc.Size is size per element or total size of the array.");
+	//		CM_EXCEPT(NotImplementedException, "Break here because I want to check if paramDesc.Size is size per element or total size of the array.");
 
-			switch(paramType.Rows)
-			{
-			case 1:
-				switch(paramType.Columns)
-				{
-				case 1:
-					def.constType = GCT_FLOAT1;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				case 2:
-					def.constType = GCT_FLOAT2;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				case 3:
-					def.constType = GCT_FLOAT3;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				case 4:
-					def.constType = GCT_FLOAT4;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				} // columns
-				break;
-			case 2:
-				switch(paramType.Columns)
-				{
-				case 2:
-					def.constType = GCT_MATRIX_2X2;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				case 3:
-					def.constType = GCT_MATRIX_2X3;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				case 4:
-					def.constType = GCT_MATRIX_2X4;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				} // columns
-				break;
-			case 3:
-				switch(paramType.Columns)
-				{
-				case 2:
-					def.constType = GCT_MATRIX_3X2;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				case 3:
-					def.constType = GCT_MATRIX_3X3;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				case 4:
-					def.constType = GCT_MATRIX_3X4;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				} // columns
-				break;
-			case 4:
-				switch(paramType.Columns)
-				{
-				case 2:
-					def.constType = GCT_MATRIX_4X2;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				case 3:
-					def.constType = GCT_MATRIX_4X3;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				case 4:
-					def.constType = GCT_MATRIX_4X4;
-					def.elementSize = paramDesc.Size / def.arraySize;
-					break;
-				} // columns
-				break;
+	//		switch(paramType.Rows)
+	//		{
+	//		case 1:
+	//			switch(paramType.Columns)
+	//			{
+	//			case 1:
+	//				def.constType = GCT_FLOAT1;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			case 2:
+	//				def.constType = GCT_FLOAT2;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			case 3:
+	//				def.constType = GCT_FLOAT3;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			case 4:
+	//				def.constType = GCT_FLOAT4;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			} // columns
+	//			break;
+	//		case 2:
+	//			switch(paramType.Columns)
+	//			{
+	//			case 2:
+	//				def.constType = GCT_MATRIX_2X2;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			case 3:
+	//				def.constType = GCT_MATRIX_2X3;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			case 4:
+	//				def.constType = GCT_MATRIX_2X4;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			} // columns
+	//			break;
+	//		case 3:
+	//			switch(paramType.Columns)
+	//			{
+	//			case 2:
+	//				def.constType = GCT_MATRIX_3X2;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			case 3:
+	//				def.constType = GCT_MATRIX_3X3;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			case 4:
+	//				def.constType = GCT_MATRIX_3X4;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			} // columns
+	//			break;
+	//		case 4:
+	//			switch(paramType.Columns)
+	//			{
+	//			case 2:
+	//				def.constType = GCT_MATRIX_4X2;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			case 3:
+	//				def.constType = GCT_MATRIX_4X3;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			case 4:
+	//				def.constType = GCT_MATRIX_4X4;
+	//				def.elementSize = paramDesc.Size / def.arraySize;
+	//				break;
+	//			} // columns
+	//			break;
 
-			} // rows
-			break;
-		default:
-			break;
-		};
-	}
+	//		} // rows
+	//		break;
+	//	default:
+	//		break;
+	//	};
+	//}
 
 	void D3D11HLSLProgram::createConstantBuffers()
 	{

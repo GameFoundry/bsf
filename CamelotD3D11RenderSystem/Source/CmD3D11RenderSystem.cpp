@@ -177,7 +177,7 @@ namespace CamelotEngine
 		throw std::exception("The method or operation is not implemented.");
 	}
 
-	void D3D11RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 variabilityMask)
+	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
 	{
 		throw std::exception("The method or operation is not implemented.");
 	}

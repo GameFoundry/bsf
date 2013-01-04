@@ -35,7 +35,11 @@ namespace CamelotEngine
 
 		void bindGpuProgram(GpuProgramHandle prg);
 		void unbindGpuProgram(GpuProgramType gptype);
-		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
+
+		/**
+		 * @copydoc RenderSystem::bindGpuParams()
+		 */
+		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
 		
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 

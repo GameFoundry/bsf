@@ -83,9 +83,9 @@ namespace CamelotEngine
 		 */
 		void populateParametersAndConstants(ID3DBlob* microcode);
 
-		void populateConstantBufferParameters(ID3D11ShaderReflectionConstantBuffer* bufferReflection);
+		//void populateConstantBufferParameters(ID3D11ShaderReflectionConstantBuffer* bufferReflection);
 
-		void populateParameterDefinition(const D3D11_SHADER_VARIABLE_DESC& paramDesc, const D3D11_SHADER_TYPE_DESC& d3dDesc, GpuConstantDefinition& def) const;
+		//void populateParameterDefinition(const D3D11_SHADER_VARIABLE_DESC& paramDesc, const D3D11_SHADER_TYPE_DESC& d3dDesc, GpuConstantDefinition& def) const;
 
 		/**
 		 * @brief	Creates constant buffers based on available parameter and constant data.
