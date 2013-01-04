@@ -74,12 +74,12 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc RenderSystem::setTexture()
 		 */
-        void setTexture(UINT16 unit, bool enabled, const TexturePtr &tex);
+        void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &tex);
         
 		/**
 		 * @copydoc RenderSystem::setSamplerState()
 		 */
-		void setSamplerState(UINT16 unit, const SamplerState& state);
+		void setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerState& state);
 
 		/**
 		 * @copydoc RenderSystem::setBlendState()
@@ -208,11 +208,8 @@ namespace CamelotEngine {
         FilterOptions mMinFilter;
         FilterOptions mMipFilter;
 
-        /// What texture coord set each texture unit is using
-        UINT32 mTextureCoordIndex[CM_MAX_TEXTURE_LAYERS];
-
         /// Holds texture type settings for every stage
-        GLenum mTextureTypes[CM_MAX_TEXTURE_LAYERS];
+        GLenum* mTextureTypes;
 
 		/// Number of fixed-function texture units
 		unsigned short mFixedFunctionTextureUnits;
@@ -257,9 +254,15 @@ namespace CamelotEngine {
 
         GLuint getCombinedMinMipFilter(void) const;
 
-        GLGpuProgram* mCurrentVertexProgram;
-        GLGpuProgram* mCurrentFragmentProgram;
-		GLGpuProgram* mCurrentGeometryProgram;
+        GLSLGpuProgram* mCurrentVertexProgram;
+        GLSLGpuProgram* mCurrentFragmentProgram;
+		GLSLGpuProgram* mCurrentGeometryProgram;
+		GLSLGpuProgram* mCurrentHullProgram;
+		GLSLGpuProgram* mCurrentDomainProgram;
+
+		UINT32 mFragmentTexOffset;
+		UINT32 mVertexTexOffset;
+		UINT32 mGeometryTexOffset;
 
 		/* The main GL context - main thread only */
         GLContext *mMainContext;
@@ -507,9 +510,6 @@ namespace CamelotEngine {
 		 */
 		void setStencilBufferWriteMask(UINT32 mask = 0xFFFFFFFF);
 
-		// ----------------------------------
-        // GLRenderSystem specific members
-        // ----------------------------------
         /** One time initialization for the RenderState of a context. Things that
             only need to be set once, like the LightingModel can be defined here.
          */
@@ -517,13 +517,16 @@ namespace CamelotEngine {
         /** Switch GL context, dealing with involved internal cached states too
         */
         void switchContext(GLContext *context);
-        /** Unregister a render target->context mapping. If the context of target 
-            is the current context, change the context to the main context so it
-            can be destroyed safely. 
-            
-            @note This is automatically called by the destructor of 
-            GLContext.
-         */
+
+		/**
+		 * @brief	OpenGL shares all texture slots, but the engine prefers to keep textures
+		 * 			separate per-stage. This will convert texture unit that is set per stage
+		 * 			into a global texture unit usable by OpenGL.
+		 */
+		UINT32 getGLTextureUnit(GpuProgramType gptype, UINT32 unit);
+
+		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgram* program);
+		GLSLGpuProgram* getActiveProgram(GpuProgramType gptype) const;
 
 		/** Returns the main context */
 		GLContext* _getMainContext() {return mMainContext;} 

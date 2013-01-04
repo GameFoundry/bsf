@@ -55,6 +55,7 @@ THE SOFTWARE.
 #include "CmGpuParams.h"
 #include "CmGpuParamDesc.h"
 #include "CmGpuParamBlock.h"
+#include "CmDebug.h"
 
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
@@ -337,9 +338,9 @@ namespace CamelotEngine
 
 					SamplerStatePtr samplerState = params->getSamplerState(i->second.physicalIndex);
 					if(samplerState == nullptr)
-						setSamplerState(logicalIndex, SamplerState::getDefault());
+						setSamplerState(gptype, logicalIndex, SamplerState::getDefault());
 					else
-						setSamplerState(logicalIndex, *samplerState);
+						setSamplerState(gptype, logicalIndex, *samplerState);
 				}
 			}
 
@@ -353,7 +354,7 @@ namespace CamelotEngine
 					if(!texture.isLoaded())
 						continue;
 
-					setTexture(logicalIndex, true, texture.getInternalPtr());
+					setTexture(gptype, logicalIndex, true, texture.getInternalPtr());
 				}
 			}
 		}
@@ -467,9 +468,9 @@ namespace CamelotEngine
 			SamplerStatePtr samplerState = params->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
-				setSamplerState(iter->second.slot, SamplerState::getDefault());
+				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
 			else
-				setSamplerState(iter->second.slot, *samplerState);
+				setSamplerState(gptype, iter->second.slot, *samplerState);
 		}
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
@@ -477,9 +478,9 @@ namespace CamelotEngine
 			TextureHandle texture = params->getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
-				setTexture(iter->second.slot, false, nullptr);
+				setTexture(gptype, iter->second.slot, false, nullptr);
 			else
-				setTexture(iter->second.slot, true, texture.getInternalPtr());
+				setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
 		}
 
 		HRESULT hr;
@@ -616,18 +617,29 @@ namespace CamelotEngine
 		RenderSystem::destroyRenderTarget(renderTarget);	
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setTexture( UINT16 stage, bool enabled, const TexturePtr& tex )
+	void D3D9RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& tex)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		if(gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_VERTEX_PROGRAM)
+		{
+			LOGWRN("D3D9 cannot assign textures to this gpu program type: " + toString(gptype));
+			return;
+		}
+
+		if(gptype == GPT_VERTEX_PROGRAM)
+		{
+			unit = D3DVERTEXTEXTURESAMPLER0 + unit; // Vertex stage uses special samplers
+		}
 
 		HRESULT hr;
 		D3D9TexturePtr dt = std::static_pointer_cast<D3D9Texture>(tex);
 		if (enabled && (dt != nullptr))
 		{
 			IDirect3DBaseTexture9 *pTex = dt->getTexture_internal();
-			if (mTexStageDesc[stage].pTex != pTex)
+			if (mTexStageDesc[unit].pTex != pTex)
 			{
-				hr = getActiveD3D9Device()->SetTexture(static_cast<DWORD>(stage), pTex);
+				hr = getActiveD3D9Device()->SetTexture(static_cast<DWORD>(unit), pTex);
 				if( hr != S_OK )
 				{
 					String str = "Unable to set texture in D3D9";
@@ -635,56 +647,60 @@ namespace CamelotEngine
 				}
 
 				// set stage desc.
-				mTexStageDesc[stage].pTex = pTex;
-				mTexStageDesc[stage].texType = D3D9Mappings::get(dt->getTextureType());
+				mTexStageDesc[unit].pTex = pTex;
+				mTexStageDesc[unit].texType = D3D9Mappings::get(dt->getTextureType());
 
 				// Set gamma now too
 				if (dt->isHardwareGammaReadToBeUsed())
 				{
-					__SetSamplerState(static_cast<DWORD>(stage), D3DSAMP_SRGBTEXTURE, TRUE);
+					__SetSamplerState(static_cast<DWORD>(unit), D3DSAMP_SRGBTEXTURE, TRUE);
 				}
 				else
 				{
-					__SetSamplerState(static_cast<DWORD>(stage), D3DSAMP_SRGBTEXTURE, FALSE);
+					__SetSamplerState(static_cast<DWORD>(unit), D3DSAMP_SRGBTEXTURE, FALSE);
 				}
 			}
 		}
 		else
 		{
-			if (mTexStageDesc[stage].pTex != 0)
+			if (mTexStageDesc[unit].pTex != 0)
 			{
-				hr = getActiveD3D9Device()->SetTexture(static_cast<DWORD>(stage), 0);
+				hr = getActiveD3D9Device()->SetTexture(static_cast<DWORD>(unit), 0);
 				if( hr != S_OK )
 				{
-					String str = "Unable to disable texture '" + toString(stage) + "' in D3D9";
+					String str = "Unable to disable texture '" + toString(unit) + "' in D3D9";
 					CM_EXCEPT(RenderingAPIException, str);
 				}
 			}
 
-			hr = __SetTextureStageState(static_cast<DWORD>(stage), D3DTSS_COLOROP, D3DTOP_DISABLE);
+			hr = __SetTextureStageState(static_cast<DWORD>(unit), D3DTSS_COLOROP, D3DTOP_DISABLE);
 			if( hr != S_OK )
 			{
-				String str = "Unable to disable texture '" + toString(stage) + "' in D3D9";
+				String str = "Unable to disable texture '" + toString(unit) + "' in D3D9";
 				CM_EXCEPT(RenderingAPIException, str);
 			}
 
 			// set stage desc. to defaults
-			mTexStageDesc[stage].pTex = 0;
-			mTexStageDesc[stage].coordIndex = 0;
-			mTexStageDesc[stage].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
+			mTexStageDesc[unit].pTex = 0;
+			mTexStageDesc[unit].coordIndex = 0;
+			mTexStageDesc[unit].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
 		}
 	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::disableTextureUnit(UINT16 texUnit)
+	//-----------------------------------------------------------------------
+	void D3D9RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerState& state)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		RenderSystem::disableTextureUnit(texUnit);
-	}
-	//-----------------------------------------------------------------------
-	void D3D9RenderSystem::setSamplerState(UINT16 unit, const SamplerState& state)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
+		if(gptype != GPT_FRAGMENT_PROGRAM || gptype != GPT_VERTEX_PROGRAM)
+		{
+			LOGWRN("D3D9 doesn't support this gpu program type: " + toString(gptype));
+			return;
+		}
+
+		if(gptype == GPT_VERTEX_PROGRAM)
+		{
+			unit = D3DVERTEXTEXTURESAMPLER0 + unit; // Vertex stage uses special samplers
+		}
 
 		// Set texture layer filtering
 		setTextureFiltering(unit, FT_MIN, state.getTextureFiltering(FT_MIN));
@@ -1766,7 +1782,6 @@ namespace CamelotEngine
 
 
 		// Init caps to maximum.		
-		rsc->setNumTextureUnits(1024);
 		rsc->setCapability(RSC_ANISOTROPY);
 		rsc->setCapability(RSC_AUTOMIPMAP);
 		rsc->setCapability(RSC_DOT3);
@@ -1829,10 +1844,7 @@ namespace CamelotEngine
 			D3D9Driver* pCurDriver       = mDriverList->item(i);			
 			const D3DCAPS9& rkCurCaps    = pCurDriver->getD3D9DeviceCaps();
 
-			if (rkCurCaps.MaxSimultaneousTextures < rsc->getNumTextureUnits())
-			{
-				rsc->setNumTextureUnits(static_cast<UINT16>(rkCurCaps.MaxSimultaneousTextures));
-			}
+			rsc->setNumTextureUnits(GPT_FRAGMENT_PROGRAM, 16); // We don't support anything lower than SM3, and 16 is the sampler count determined by the specification
 
 			// Check for Anisotropy.
 			if (rkCurCaps.MaxAnisotropy <= 1)
@@ -2020,24 +2032,18 @@ namespace CamelotEngine
 
 		}
 
-
-		// TODO: make convertVertex/Fragment fill in rsc
-		// TODO: update the below line to use rsc
 		// Vertex textures
 		if (rsc->isShaderProfileSupported("vs_3_0"))
 		{
-			// Run through all the texture formats looking for any which support
-			// vertex texture fetching. Must have at least one!
-			// All ATI Radeon up to X1n00 say they support vs_3_0, 
-			// but they support no texture formats for vertex texture fetch (cheaters!)
-			if (checkVertexTextureFormats(renderWindow))
-			{
-				rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
-				// always 4 vertex texture units in vs_3_0, and never shared
-				rsc->setNumVertexTextureUnits(4);
-				rsc->setVertexTextureUnitsShared(false);
-			}
+			rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
+			rsc->setNumTextureUnits(GPT_VERTEX_PROGRAM, 4);
+			rsc->setNumCombinedTextureUnits(rsc->getNumTextureUnits(GPT_FRAGMENT_PROGRAM) +
+				rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM));
 		}		
+		else
+		{
+			rsc->setNumCombinedTextureUnits(rsc->getNumTextureUnits(GPT_FRAGMENT_PROGRAM));
+		}
 
 		// Check alpha to coverage support
 		// this varies per vendor! But at least SM3 is required
@@ -2473,10 +2479,6 @@ namespace CamelotEngine
 
 		// Invalidate active view port.
 		mActiveViewport = Viewport();
-
-		// Reset the texture stages, they will need to be rebound
-		for (UINT16 i = 0; i < CM_MAX_TEXTURE_LAYERS; ++i)
-			setTexture(i, false, TexturePtr());
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::determineFSAASettings(IDirect3DDevice9* d3d9Device,

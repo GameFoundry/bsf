@@ -40,16 +40,259 @@ THE SOFTWARE.
 
 #include "CmGLSLProgramRTTI.h"
 
-namespace CamelotEngine {
-
+namespace CamelotEngine 
+{
 	class GLSLParamParser
 	{
 	public:
-		GLSLParamParser()
-		{
+		void buildUniformDescriptions(GLuint glProgram, GpuParamDesc& returnParamDesc);
 
-		}
+	private:
+		void determineParamInfo(GpuParamMemberDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex);
 	};
+
+	void GLSLParamParser::buildUniformDescriptions(GLuint glProgram, GpuParamDesc& returnParamDesc)
+	{
+		// scan through the active uniforms and add them to the reference list
+		GLint maxBufferSize = 0;
+		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxBufferSize);
+
+		GLint maxBlockNameBufferSize = 0;
+		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &maxBlockNameBufferSize);
+
+		if(maxBlockNameBufferSize > maxBufferSize)
+			maxBufferSize = maxBlockNameBufferSize;
+
+		GLchar* uniformName = new GLchar[maxBufferSize];
+
+		GpuParamBlockDesc globalBlockDesc;
+		globalBlockDesc.slot = 0;
+		globalBlockDesc.name = "CM_INTERNAL_Globals";
+		globalBlockDesc.blockSize = 0;
+
+		UINT32 textureSlot = 0;
+
+		returnParamDesc.paramBlocks[globalBlockDesc.name] = globalBlockDesc;
+
+		GLint uniformBlockCount = 0;
+		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount);
+
+		map<UINT32, String>::type blockSlotToName;
+		for (GLuint index = 0; index < (GLuint)uniformBlockCount; index++)
+		{
+			GLsizei unusedSize = 0;
+			glGetActiveUniformBlockName(glProgram, index, maxBufferSize, &unusedSize, uniformName);
+
+			GpuParamBlockDesc newBlockDesc;
+			newBlockDesc.slot = index + 1;
+			newBlockDesc.name = uniformName;
+			newBlockDesc.blockSize = 0;
+
+			returnParamDesc.paramBlocks[newBlockDesc.name] = newBlockDesc;
+			blockSlotToName.insert(std::make_pair(newBlockDesc.slot, newBlockDesc.name));
+		}
+
+		// get the number of active uniforms
+		GLint uniformCount = 0;
+		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORMS, &uniformCount);
+
+		// Loop over each of the active uniforms, and add them to the reference container
+		// only do this for user defined uniforms, ignore built in gl state uniforms
+		for (GLuint index = 0; index < (GLuint)uniformCount; index++)
+		{
+			GLsizei arraySize = 0;
+			glGetActiveUniformName(glProgram, index, maxBufferSize, &arraySize, uniformName);
+
+			String paramName = String(uniformName);
+
+			// If the uniform name has a "[" in it then its an array element uniform.
+			String::size_type arrayStart = paramName.find("[");
+			if (arrayStart != String::npos)
+			{
+				// if not the first array element then skip it and continue to the next uniform
+				if (paramName.compare(arrayStart, paramName.size() - 1, "[0]") != 0)
+					CM_EXCEPT(NotImplementedException, "No support for array parameters yet.");
+
+				paramName = paramName.substr(0, arrayStart);
+			}
+
+			GLint uniformType;
+			glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_TYPE, &uniformType);
+
+			bool isSampler = false;
+			switch(uniformType)
+			{
+			case GL_SAMPLER_1D:
+			case GL_SAMPLER_2D:
+			case GL_SAMPLER_3D:
+			case GL_SAMPLER_CUBE:
+				isSampler = true;
+			}
+
+			if(isSampler)
+			{
+				GpuParamSpecialDesc samplerParam;
+				samplerParam.name = paramName;
+				samplerParam.slot = glGetUniformLocation(glProgram, uniformName);
+
+				GpuParamSpecialDesc textureParam;
+				textureParam.name = paramName;
+				textureParam.slot = samplerParam.slot;
+
+				switch(uniformType)
+				{
+				case GL_SAMPLER_1D:
+					samplerParam.type = GST_SAMPLER1D;
+					textureParam.type = GST_TEXTURE1D;
+					break;
+				case GL_SAMPLER_2D:
+					samplerParam.type = GST_SAMPLER2D;
+					textureParam.type = GST_TEXTURE2D;
+					break;
+				case GL_SAMPLER_3D:
+					samplerParam.type = GST_SAMPLER3D;
+					textureParam.type = GST_TEXTURE3D;
+					break;
+				case GL_SAMPLER_CUBE:
+					samplerParam.type = GST_SAMPLERCUBE;
+					textureParam.type = GST_TEXTURECUBE;
+					break;
+				}
+
+				returnParamDesc.samplers.insert(std::make_pair(paramName, samplerParam));
+				returnParamDesc.textures.insert(std::make_pair(paramName, textureParam));
+			}
+			else
+			{
+				GpuParamMemberDesc gpuParam;
+				gpuParam.name = paramName;
+
+				GLint blockIndex;
+				glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_BLOCK_INDEX, &blockIndex);
+
+				determineParamInfo(gpuParam, paramName, glProgram, index);
+
+				if(blockIndex != -1)
+				{
+					GLint blockOffset;
+					glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_OFFSET, &blockOffset);
+					gpuParam.gpuMemOffset = blockOffset;
+
+					GLint arrayStride;
+					glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_ARRAY_STRIDE, &arrayStride);
+					gpuParam.elementSize = arrayStride;
+
+					gpuParam.paramBlockSlot = blockIndex + 1; // 0 is reserved for globals
+
+					String& blockName = blockSlotToName[gpuParam.paramBlockSlot];
+					GpuParamBlockDesc& curBlockDesc = returnParamDesc.paramBlocks[blockName];
+
+					gpuParam.cpuMemOffset = curBlockDesc.blockSize;
+					curBlockDesc.blockSize += gpuParam.elementSize * gpuParam.arraySize;
+				}
+				else
+				{
+					gpuParam.gpuMemOffset = glGetUniformLocationARB(glProgram, uniformName);
+					gpuParam.paramBlockSlot = 0;
+					gpuParam.cpuMemOffset = globalBlockDesc.blockSize;
+
+					globalBlockDesc.blockSize += gpuParam.elementSize * gpuParam.arraySize;
+				}
+
+				returnParamDesc.params.insert(std::make_pair(gpuParam.name, gpuParam));
+			}
+		}
+
+		delete[] uniformName;
+	}
+
+	void GLSLParamParser::determineParamInfo(GpuParamMemberDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex)
+	{
+		GLint arraySize;
+		glGetActiveUniformsiv(programHandle, 1, &uniformIndex, GL_UNIFORM_SIZE, &arraySize);
+		desc.arraySize = arraySize;
+
+		GLint uniformType;
+		glGetActiveUniformsiv(programHandle, 1, &uniformIndex, GL_UNIFORM_TYPE, &uniformType);
+
+		switch (uniformType)
+		{
+		case GL_BOOL:
+			desc.type = GMT_BOOL;
+			desc.elementSize = 1;
+			break;
+		case GL_FLOAT:
+			desc.type = GMT_FLOAT1;
+			desc.elementSize = 1;
+			break;
+		case GL_FLOAT_VEC2:
+			desc.type = GMT_FLOAT2;
+			desc.elementSize = 2;
+			break;
+		case GL_FLOAT_VEC3:
+			desc.type = GMT_FLOAT3;
+			desc.elementSize = 3;
+			break;
+		case GL_FLOAT_VEC4:
+			desc.type = GMT_FLOAT4;
+			desc.elementSize = 4;
+			break;
+		case GL_INT:
+			desc.type = GMT_INT1;
+			desc.elementSize = 1;
+			break;
+		case GL_INT_VEC2:
+			desc.type = GMT_INT2;
+			desc.elementSize = 2;
+			break;
+		case GL_INT_VEC3:
+			desc.type = GMT_INT3;
+			desc.elementSize = 3;
+			break;
+		case GL_INT_VEC4:
+			desc.type = GMT_INT4;
+			desc.elementSize = 4;
+			break;
+		case GL_FLOAT_MAT2:
+			desc.type = GMT_MATRIX_2X2;
+			desc.elementSize = 4;
+			break;
+		case GL_FLOAT_MAT3:
+			desc.type = GMT_MATRIX_3X3;
+			desc.elementSize = 9;
+			break;
+		case GL_FLOAT_MAT4:
+			desc.type = GMT_MATRIX_4X4;
+			desc.elementSize = 16;
+			break;
+		case GL_FLOAT_MAT2x3:
+			desc.type = GMT_MATRIX_2X3;
+			desc.elementSize = 6;
+			break;
+		case GL_FLOAT_MAT3x2:
+			desc.type = GMT_MATRIX_3X2;
+			desc.elementSize = 6;
+			break;
+		case GL_FLOAT_MAT2x4:
+			desc.type = GMT_MATRIX_2X4;
+			desc.elementSize = 8;
+			break;
+		case GL_FLOAT_MAT4x2:
+			desc.type = GMT_MATRIX_4X2;
+			desc.elementSize = 8;
+			break;
+		case GL_FLOAT_MAT3x4:
+			desc.type = GMT_MATRIX_3X4;
+			desc.elementSize = 12;
+			break;
+		case GL_FLOAT_MAT4x3:
+			desc.type = GMT_MATRIX_4X3;
+			desc.elementSize = 12;
+			break;
+		default:
+			CM_EXCEPT(InternalErrorException, "Invalid shader parameter type: " + toString(uniformType) + " for parameter " + paramName);
+		}
+	}
 
     //---------------------------------------------------------------------------
     GLSLProgram::~GLSLProgram()
@@ -71,12 +314,11 @@ namespace CamelotEngine {
 	void GLSLProgram::loadFromSource(void)
 	{
 		// only create a shader object if glsl is supported
+		GLenum shaderType = 0x0000;
 		if (isSupported())
 		{
 			checkForGLSLError( "GLSLProgram::loadFromSource", "GL Errors before creating shader object", 0, GLSLOT_SHADER);
-			// create shader object
 
-			GLenum shaderType = 0x0000;
 			switch (mType)
 			{
 			case GPT_VERTEX_PROGRAM:
@@ -95,10 +337,6 @@ namespace CamelotEngine {
 				shaderType = GL_TESS_EVALUATION_SHADER;
 				break;
 			}
-
-			mGLHandle = glCreateShader(shaderType);
-
-			checkForGLSLError( "GLSLProgram::loadFromSource", "Error creating GLSL shader object", 0, GLSLOT_SHADER);
 		}
 
 		// Preprocess the GLSL shader in order to get a clean source
@@ -161,8 +399,7 @@ namespace CamelotEngine {
 		if (!out || !out_size)
 		{
 			// Failed to preprocess, break out
-			CM_EXCEPT(RenderingAPIException,
-						 "Failed to preprocess shader ");
+			CM_EXCEPT(RenderingAPIException, "Failed to preprocess shader ");
 		}
 
 		mSource = String (out, out_size);
@@ -173,38 +410,15 @@ namespace CamelotEngine {
 		if (!mSource.empty())
 		{
 			const char *source = mSource.c_str();
-			glShaderSource(mGLHandle, 1, &source, nullptr);
+			mGLHandle = glCreateShaderProgramv(shaderType, 1, &source);
 			// check for load errors
-			checkForGLSLError( "GLSLProgram::loadFromSource", "Cannot load GLSL high-level shader source : ", 0, GLSLOT_SHADER);
+			checkForGLSLError( "GLSLProgram::loadFromSource", "Cannot load GLSL high-level shader source : ", 0, GLSLOT_PROGRAM);
 		}
-
-		compile();
 
 		mAssemblerProgram = GpuProgramPtr(new GLSLGpuProgram(this, mSource, mEntryPoint, mSyntaxCode, mType, mProfile));
-	}
-    
-    //---------------------------------------------------------------------------
-	bool GLSLProgram::compile(const bool checkErrors)
-	{
-        if (checkErrors)
-            logShaderInfo("GLSL compiling: ", mGLHandle);
 
-		glCompileShader(mGLHandle);
-
-		// check for compile errors
-		glGetShaderiv(mGLHandle, GL_COMPILE_STATUS, &mCompiled);
-
-		// force exception if not compiled
-		if (checkErrors)
-		{
-			checkForGLSLError("GLSLProgram::compile", "Cannot compile GLSL high-level shader : ", mGLHandle, GLSLOT_SHADER, !mCompiled, !mCompiled);
-			
-			if (mCompiled)
-			{
-				logShaderInfo("GLSL compiled : ", mGLHandle);
-			}
-		}
-		return (mCompiled == 1);
+		GLSLParamParser paramParser;
+		paramParser.buildUniformDescriptions(mGLHandle, mParametersDesc);
 	}
 	//---------------------------------------------------------------------------
 	void GLSLProgram::unload_internal()

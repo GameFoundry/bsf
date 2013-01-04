@@ -107,7 +107,7 @@ namespace CamelotEngine
 		RenderSystem::destroy_internal();
 	}
 
-	void D3D11RenderSystem::setSamplerState(UINT16 texUnit, const SamplerState& samplerState)
+	void D3D11RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState)
 	{
 		throw std::exception("The method or operation is not implemented.");
 	}
@@ -132,12 +132,12 @@ namespace CamelotEngine
 		throw std::exception("The method or operation is not implemented.");
 	}
 
-	void D3D11RenderSystem::setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr)
+	void D3D11RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
 	{
 		throw std::exception("The method or operation is not implemented.");
 	}
 
-	void D3D11RenderSystem::disableTextureUnit(UINT16 texUnit)
+	void D3D11RenderSystem::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
 	{
 		throw std::exception("The method or operation is not implemented.");
 	}

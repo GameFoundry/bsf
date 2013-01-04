@@ -111,13 +111,6 @@ namespace CamelotEngine {
 		 */
 		void unload_internal();
 
-        /// Populate the passed parameters with name->index map
-        void populateParameterNames(GpuProgramParametersSharedPtr params);
-        /// Populate the passed parameters with name->index map, must be overridden
-        void buildConstantDefinitions() const;
-		/// compile source into shader object
-		bool compile( const bool checkErrors = true);
-
 	private:
 		/// GL handle for shader object
 		GLhandleARB mGLHandle;

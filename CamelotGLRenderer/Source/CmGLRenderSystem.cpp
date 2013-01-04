@@ -36,6 +36,8 @@ THE SOFTWARE.s
 #include "CmGLDefaultHardwareBufferManager.h"
 #include "CmGLUtil.h"
 #include "CmGLGpuProgram.h"
+#include "CmGLSLGpuProgram.h"
+#include "CmGLSLProgram.h"
 #include "CmGLGpuProgramManager.h"
 #include "CmException.h"
 #include "CmGLSLExtSupport.h"
@@ -47,6 +49,8 @@ THE SOFTWARE.s
 #include "CmDepthStencilState.h"
 #include "CmGLRenderTexture.h"
 #include "CmGLRenderWindowManager.h"
+#include "CmGpuParams.h"
+#include "CmDebug.h"
 
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
@@ -77,7 +81,11 @@ namespace CamelotEngine
 		mStencilWriteMask(0xFFFFFFFF),
 		mStencilCompareFront(CMPF_ALWAYS_PASS),
 		mStencilCompareBack(CMPF_ALWAYS_PASS),
-		mStencilRefValue(0)
+		mStencilRefValue(0),
+		mFragmentTexOffset(0),
+		mVertexTexOffset(0),
+		mGeometryTexOffset(0),
+		mTextureTypes(nullptr)
 	{
 		size_t i;
 
@@ -88,13 +96,6 @@ namespace CamelotEngine
 
 		mColourWrite[0] = mColourWrite[1] = mColourWrite[2] = mColourWrite[3] = true;
 
-		for (i = 0; i < CM_MAX_TEXTURE_LAYERS; i++)
-		{
-			// Dummy value
-			mTextureCoordIndex[i] = 99;
-			mTextureTypes[i] = 0;
-		}
-
 		mActiveRenderTarget = 0;
 		mCurrentContext = 0;
 		mMainContext = 0;
@@ -103,10 +104,11 @@ namespace CamelotEngine
 
 		mMinFilter = FO_LINEAR;
 		mMipFilter = FO_POINT;
-		mCurrentVertexProgram = 0;
-		mCurrentGeometryProgram = 0;
-		mCurrentFragmentProgram = 0;
-
+		mCurrentVertexProgram = nullptr;
+		mCurrentGeometryProgram = nullptr;
+		mCurrentFragmentProgram = nullptr;
+		mCurrentHullProgram = nullptr;
+		mCurrentDomainProgram = nullptr;
 	}
 
 	GLRenderSystem::~GLRenderSystem()
@@ -198,7 +200,7 @@ namespace CamelotEngine
 		THROW_IF_NOT_RENDER_THREAD;
 
 		GpuProgram* bindingPrg = prg->getBindingDelegate_internal();
-		GLGpuProgram* glprg = static_cast<GLGpuProgram*>(bindingPrg);
+		GLSLGpuProgram* glprg = static_cast<GLSLGpuProgram*>(bindingPrg);
 
 		// Unbind previous gpu program first.
 		//
@@ -217,13 +219,13 @@ namespace CamelotEngine
 		//     itself, if type is changing (during load/unload, etc), and it's inuse,
 		//     unbind and notify render system to correct for its state.
 		//
+
 		switch (glprg->getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			if (mCurrentVertexProgram != glprg)
 			{
-				if (mCurrentVertexProgram)
-					mCurrentVertexProgram->unbindProgram();
+				unbindGpuProgram(glprg->getType());
 				mCurrentVertexProgram = glprg;
 			}
 			break;
@@ -231,17 +233,29 @@ namespace CamelotEngine
 		case GPT_FRAGMENT_PROGRAM:
 			if (mCurrentFragmentProgram != glprg)
 			{
-				if (mCurrentFragmentProgram)
-					mCurrentFragmentProgram->unbindProgram();
+				unbindGpuProgram(glprg->getType());
 				mCurrentFragmentProgram = glprg;
 			}
 			break;
 		case GPT_GEOMETRY_PROGRAM:
 			if (mCurrentGeometryProgram != glprg)
 			{
-				if (mCurrentGeometryProgram)
-					mCurrentGeometryProgram->unbindProgram();
+				unbindGpuProgram(glprg->getType());
 				mCurrentGeometryProgram = glprg;
+			}
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			if (mCurrentDomainProgram != glprg)
+			{
+				unbindGpuProgram(glprg->getType());
+				mCurrentDomainProgram = glprg;
+			}
+			break;
+		case GPT_HULL_PROGRAM:
+			if (mCurrentHullProgram != glprg)
+			{
+				unbindGpuProgram(glprg->getType());
+				mCurrentHullProgram = glprg;
 			}
 			break;
 		}
@@ -274,6 +288,17 @@ namespace CamelotEngine
 			mCurrentFragmentProgram->unbindProgram();
 			mCurrentFragmentProgram = 0;
 		}
+		else if (gptype == GPT_DOMAIN_PROGRAM && mCurrentDomainProgram)
+		{
+			mCurrentDomainProgram->unbindProgram();
+			mCurrentDomainProgram = 0;
+		}
+		else if (gptype == GPT_HULL_PROGRAM && mCurrentHullProgram)
+		{
+			mCurrentHullProgram->unbindProgram();
+			mCurrentHullProgram = 0;
+		}
+
 		RenderSystem::unbindGpuProgram(gptype);
 	}
 
@@ -296,13 +321,13 @@ namespace CamelotEngine
 					if(!curTexture.isLoaded())
 						continue;
 
-					setTexture(def.physicalIndex, true, curTexture.getInternalPtr());
+					setTexture(gptype, def.physicalIndex, true, curTexture.getInternalPtr());
 
 					SamplerStatePtr samplerState = params->getSamplerState(def.physicalIndex);
 					if(samplerState == nullptr)
-						setSamplerState(def.physicalIndex, SamplerState::getDefault());
+						setSamplerState(gptype, def.physicalIndex, SamplerState::getDefault());
 					else
-						setSamplerState(def.physicalIndex, *samplerState);
+						setSamplerState(gptype, def.physicalIndex, *samplerState);
 				}
 			}
 		}
@@ -326,61 +351,148 @@ namespace CamelotEngine
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
 	{
-		// TODO - Not implemented
+		THROW_IF_NOT_RENDER_THREAD;
+
+		params->updateIfDirty();
+
+		const GpuParamDesc& paramDesc = params->getParamDesc();
+		GLSLGpuProgram* activeProgram = getActiveProgram(gptype);
+		GLuint glProgram = activeProgram->getGLSLProgram()->getGLHandle();
+
+		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
+		{
+			TextureHandle texture = params->getTexture(iter->second.slot);
+
+			if(!texture.isLoaded())
+				setTexture(gptype, iter->second.slot, false, nullptr);
+			else
+				setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
+		}
+
+		UINT32 texUnit = 0;
+		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
+		{
+			SamplerStatePtr samplerState = params->getSamplerState(iter->second.slot);
+
+			if(samplerState == nullptr)
+				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
+			else
+				setSamplerState(gptype, iter->second.slot, *samplerState);
+
+			glProgramUniform1i(glProgram, iter->second.slot, getGLTextureUnit(gptype, texUnit));
+
+			texUnit++;
+		}
+
+		for(auto iter = paramDesc.params.begin(); iter != paramDesc.params.end(); ++iter)
+		{
+			const GpuParamMemberDesc& paramDesc = iter->second;
+
+			GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
+			
+			if(paramDesc.paramBlockSlot == 0) // 0 means uniforms are not in a block
+			{
+				const UINT8* ptrData = paramBlock->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
+
+				switch(paramDesc.type)
+				{
+				case GCT_FLOAT1:
+					glProgramUniform1fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
+					break;
+				case GCT_FLOAT2:
+					glProgramUniform2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
+					break;
+				case GCT_FLOAT3:
+					glProgramUniform3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
+					break;
+				case GCT_FLOAT4:
+					glProgramUniform4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
+					break;
+				case GCT_MATRIX_2X2:
+					glProgramUniformMatrix2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+						GL_TRUE, (GLfloat*)ptrData);
+					break;
+				case GCT_MATRIX_2X3:
+					glProgramUniformMatrix2x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+						GL_TRUE, (GLfloat*)ptrData);
+					break;
+				case GCT_MATRIX_2X4:
+					glProgramUniformMatrix2x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+						GL_TRUE, (GLfloat*)ptrData);
+					break;
+				case GCT_MATRIX_3X2:
+					glProgramUniformMatrix3x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+						GL_TRUE, (GLfloat*)ptrData);
+					break;
+				case GCT_MATRIX_3X3:
+					glProgramUniformMatrix3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+						GL_TRUE, (GLfloat*)ptrData);
+					break;
+				case GCT_MATRIX_3X4:
+					glProgramUniformMatrix3x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+						GL_TRUE, (GLfloat*)ptrData);
+					break;
+				case GCT_MATRIX_4X2:
+					glProgramUniformMatrix4x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+						GL_TRUE, (GLfloat*)ptrData);
+					break;
+				case GCT_MATRIX_4X3:
+					glProgramUniformMatrix4x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+						GL_TRUE, (GLfloat*)ptrData);
+					break;
+				case GCT_MATRIX_4X4:
+					glProgramUniformMatrix4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+						GL_TRUE, (GLfloat*)ptrData);
+					break;
+				case GCT_INT1:
+					glProgramUniform1iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
+					break;
+				case GCT_INT2:
+					glProgramUniform2iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
+					break;
+				case GCT_INT3:
+					glProgramUniform3iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
+					break;
+				case GCT_INT4:
+					glProgramUniform4iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
+					break;
+				case GMT_BOOL:
+					glProgramUniform1uiv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLuint*)ptrData);
+					break;
+				case GCT_UNKNOWN:
+					break;
+				}
+			}
+			else
+			{
+				CM_EXCEPT(NotImplementedException, "Support for uniform blocks not implemented yet");
+			}
+		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setTexture(UINT16 stage, bool enabled, const TexturePtr &texPtr)
+	void GLRenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		unit = getGLTextureUnit(gptype, unit);
+
 		GLTexturePtr tex = std::static_pointer_cast<GLTexture>(texPtr);
 
-		GLenum lastTextureType = mTextureTypes[stage];
+		GLenum lastTextureType = mTextureTypes[unit];
 
-		if (!activateGLTextureUnit(stage))
+		if (!activateGLTextureUnit(unit))
 			return;
 
-		if (enabled)
+		if (enabled && tex)
 		{
-			if (tex)
-			{
-				// note used
-				mTextureTypes[stage] = tex->getGLTextureTarget();
-			}
-			else
-				// assume 2D
-				mTextureTypes[stage] = GL_TEXTURE_2D;
-
-			if(lastTextureType != mTextureTypes[stage] && lastTextureType != 0)
-			{
-				if (stage < mFixedFunctionTextureUnits)
-				{
-					glDisable( lastTextureType );
-				}
-			}
-
-			if (stage < mFixedFunctionTextureUnits)
-			{
-				glEnable( mTextureTypes[stage] );
-			}
-
-			if(tex)
-				glBindTexture( mTextureTypes[stage], tex->getGLID() );
-			else
-			{
-				glBindTexture( mTextureTypes[stage], static_cast<GLTextureManager*>(&TextureManager::instance())->getWarningTextureID() );
-			}
+			mTextureTypes[unit] = tex->getGLTextureTarget();
+			glBindTexture(mTextureTypes[unit], tex->getGLID());
 		}
 		else
 		{
-			if (stage < mFixedFunctionTextureUnits)
-			{
-				if (lastTextureType != 0)
-				{
-					glDisable( mTextureTypes[stage] );
-				}
-				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			}
+			// TODO - This doesn't actually disable all textures set on this image unit, only the 2D ones
+			//      - If a non-2D sampler is used, the texture will still be displayed
+
 			// bind zero texture
 			glBindTexture(GL_TEXTURE_2D, 0); 
 		}
@@ -388,9 +500,11 @@ namespace CamelotEngine
 		activateGLTextureUnit(0);
 	}
 	//-----------------------------------------------------------------------
-	void GLRenderSystem::setSamplerState(UINT16 unit, const SamplerState& state)
+	void GLRenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerState& state)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		unit = getGLTextureUnit(gptype, unit);
 
 		// Set texture layer filtering
 		setTextureFiltering(unit, FT_MIN, state.getTextureFiltering(FT_MIN));
@@ -586,8 +700,6 @@ namespace CamelotEngine
 		RenderSystem::render(op);
 
 		void* pBufferData = 0;
-		bool multitexturing = (getCapabilities()->getNumTextureUnits() > 1);
-
 
         const VertexDeclaration::VertexElementList& decl = 
             op.vertexData->vertexDeclaration->getElements();
@@ -658,86 +770,7 @@ namespace CamelotEngine
  
  				attribsBound.push_back(attrib);
  			}
- 			else
- 			{
- 				// fixed-function & builtin attribute support
- 				switch(sem)
-  				{
- 				case VES_POSITION:
- 					glVertexPointer(VertexElement::getTypeCount(
- 						elem->getType()), 
-  						GLHardwareBufferManager::getGLType(elem->getType()), 
-  						static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
-  						pBufferData);
- 					glEnableClientState( GL_VERTEX_ARRAY );
- 					break;
- 				case VES_NORMAL:
- 					glNormalPointer(
- 						GLHardwareBufferManager::getGLType(elem->getType()), 
-  						static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
-  						pBufferData);
- 					glEnableClientState( GL_NORMAL_ARRAY );
- 					break;
- 				case VES_DIFFUSE:
- 					glColorPointer(4, 
-  						GLHardwareBufferManager::getGLType(elem->getType()), 
-  						static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
-  						pBufferData);
- 					glEnableClientState( GL_COLOR_ARRAY );
- 					break;
- 				case VES_SPECULAR:
- 					if (GLEW_EXT_secondary_color)
- 					{
- 						glSecondaryColorPointerEXT(4, 
- 							GLHardwareBufferManager::getGLType(elem->getType()), 
- 							static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
- 							pBufferData);
- 						glEnableClientState( GL_SECONDARY_COLOR_ARRAY );
- 					}
- 					break;
- 				case VES_TEXTURE_COORDINATES:
-  
- 					if (mCurrentVertexProgram)
- 					{
- 						// Programmable pipeline - direct UV assignment
- 						glClientActiveTextureARB(GL_TEXTURE0 + elem->getIndex());
- 						glTexCoordPointer(
- 							VertexElement::getTypeCount(elem->getType()), 
- 							GLHardwareBufferManager::getGLType(elem->getType()),
- 							static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
- 							pBufferData);
- 						glEnableClientState( GL_TEXTURE_COORD_ARRAY );
- 					}
- 					else
- 					{
- 						// fixed function matching to units based on tex_coord_set
- 						for (i = 0; i < mDisabledTexUnitsFrom; i++)
- 						{
- 							// Only set this texture unit's texcoord pointer if it
- 							// is supposed to be using this element's index
- 							if (mTextureCoordIndex[i] == elem->getIndex() && i < mFixedFunctionTextureUnits)
- 							{
-								if (multitexturing)
- 								glClientActiveTextureARB(GL_TEXTURE0 + i);
- 								glTexCoordPointer(
- 									VertexElement::getTypeCount(elem->getType()), 
- 									GLHardwareBufferManager::getGLType(elem->getType()),
- 									static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
- 									pBufferData);
- 								glEnableClientState( GL_TEXTURE_COORD_ARRAY );
- 							}
- 						}
- 					}
- 					break;
- 				default:
- 					break;
- 				};
- 			} // isCustomAttrib
-  
         }
-
-		if (multitexturing)
-		glClientActiveTextureARB(GL_TEXTURE0);
 
 		// Find the correct type to render
 		GLint primType;
@@ -793,40 +826,13 @@ namespace CamelotEngine
 			glDrawArrays(primType, 0, op.vertexData->vertexCount);
 		}
 
-        glDisableClientState( GL_VERTEX_ARRAY );
-		// only valid up to GL_MAX_TEXTURE_UNITS, which is recorded in mFixedFunctionTextureUnits
-		if (multitexturing)
-        {
-			for (int i = 0; i < mFixedFunctionTextureUnits; i++)
-			{
-            glClientActiveTextureARB(GL_TEXTURE0 + i);
-				glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-			}
-			glClientActiveTextureARB(GL_TEXTURE0);
-		}
-		else
-		{
-            glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-        }
-        glDisableClientState( GL_NORMAL_ARRAY );
-        glDisableClientState( GL_COLOR_ARRAY );
-		if (GLEW_EXT_secondary_color)
-		{
-			glDisableClientState( GL_SECONDARY_COLOR_ARRAY );
-		}
  		// unbind any custom attributes
 		for (vector<GLuint>::type::iterator ai = attribsBound.begin(); ai != attribsBound.end(); ++ai)
  		{
  			glDisableVertexAttribArrayARB(*ai); 
- 
   		}
 		
 		glColor4f(1,1,1,1);
-		if (GLEW_EXT_secondary_color)
-		{
-			glSecondaryColor3fEXT(0.0f, 0.0f, 0.0f);
-		}
-
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -1475,15 +1481,11 @@ namespace CamelotEngine
 		// Unbind GPU programs and rebind to new context later, because
 		// scene manager treat render system as ONE 'context' ONLY, and it
 		// cached the GPU programs using state.
-		if (mCurrentVertexProgram)
-			mCurrentVertexProgram->unbindProgram();
-		if (mCurrentGeometryProgram)
-			mCurrentGeometryProgram->unbindProgram();
-		if (mCurrentFragmentProgram)
-			mCurrentFragmentProgram->unbindProgram();
-
-		// Disable textures
-		disableTextureUnitsFrom(0);
+		unbindGpuProgram(GPT_VERTEX_PROGRAM);
+		unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
+		unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
+		unbindGpuProgram(GPT_HULL_PROGRAM);
+		unbindGpuProgram(GPT_DOMAIN_PROGRAM);
 
 		// It's ready for switching
 		if (mCurrentContext)
@@ -1567,9 +1569,9 @@ namespace CamelotEngine
 	{
 		if (mActiveTextureUnit != unit)
 		{
-			if (GLEW_VERSION_1_2 && unit < getCapabilities()->getNumTextureUnits())
+			if (unit < getCapabilities()->getNumCombinedTextureUnits())
 			{
-				glActiveTextureARB(GL_TEXTURE0 + unit);
+				glActiveTexture(GL_TEXTURE0 + unit);
 				mActiveTextureUnit = unit;
 				return true;
 			}
@@ -1580,6 +1582,8 @@ namespace CamelotEngine
 			}
 			else
 			{
+				LOGWRN("Provided texture unit index is higher than OpenGL supports. Provided: " + toString(unit) + 
+					". Supported range: 0 .. " + toString(getCapabilities()->getNumCombinedTextureUnits() - 1));
 				return false;
 			}
 		}
@@ -1877,11 +1881,25 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "GPU doesn't support frame buffer objects. OpenGL versions lower than 3.0 are not supported.");
 		}
 
+		mFragmentTexOffset = 0;
+		mVertexTexOffset = caps->getNumTextureUnits(GPT_FRAGMENT_PROGRAM);
+		mGeometryTexOffset = mVertexTexOffset + caps->getNumTextureUnits(GPT_VERTEX_PROGRAM);
+
+		UINT16 numCombinedTexUnits = caps->getNumCombinedTextureUnits();
+
+		if((mFragmentTexOffset + mVertexTexOffset + mGeometryTexOffset) > numCombinedTexUnits)
+			CM_EXCEPT(InternalErrorException, "Number of combined texture units less than the number of individual units!?");
+
+		mTextureTypes = new GLenum[numCombinedTexUnits];
+		for(UINT16 i = 0; i < numCombinedTexUnits; i++)
+			mTextureTypes[i] = 0;
+
 		/// Create the texture manager        
 		TextureManager::startUp(new GLTextureManager(*mGLSupport)); 
 
 		mGLInitialised = true;
 	}
+
 	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
 	{
 		RenderSystemCapabilities* rsc = new RenderSystemCapabilities();
@@ -1945,30 +1963,6 @@ namespace CamelotEngine
 			rsc->setCapability(RSC_BLENDING);
 		}
 
-		// Check for Multitexturing support and set number of texture units
-		if(GLEW_VERSION_1_3 || 
-			GLEW_ARB_multitexture)
-		{
-			GLint units;
-			glGetIntegerv( GL_MAX_TEXTURE_UNITS, &units );
-
-			if (GLEW_ARB_fragment_program)
-			{
-				// Also check GL_MAX_TEXTURE_IMAGE_UNITS_ARB since NV at least
-				// only increased this on the FX/6x00 series
-				GLint arbUnits;
-				glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &arbUnits );
-				if (arbUnits > units)
-					units = arbUnits;
-			}
-			rsc->setNumTextureUnits(units);
-		}
-		else
-		{
-			// If no multitexture support then set one texture unit
-			rsc->setNumTextureUnits(1);
-		}
-
 		// Check for Anisotropy support
 		if(GLEW_EXT_texture_filter_anisotropic)
 		{
@@ -2021,7 +2015,6 @@ namespace CamelotEngine
 			rsc->setStencilBufferBitDepth(stencil);
 		}
 
-
 		if(GLEW_VERSION_1_5 || GLEW_ARB_vertex_buffer_object)
 		{
 			if (!GLEW_ARB_vertex_buffer_object)
@@ -2031,112 +2024,8 @@ namespace CamelotEngine
 			rsc->setCapability(RSC_VBO);
 		}
 
-		if(GLEW_ARB_vertex_program)
-		{
-			rsc->setCapability(RSC_VERTEX_PROGRAM);
-
-			// Vertex Program Properties
-			rsc->setVertexProgramConstantBoolCount(0);
-			rsc->setVertexProgramConstantIntCount(0);
-
-			GLint floatConstantCount;
-			glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB, &floatConstantCount);
-			rsc->setVertexProgramConstantFloatCount(floatConstantCount);
-
-			rsc->addShaderProfile("arbvp1");
-			rsc->addGpuProgramProfile(GPP_VS_1_1, "arbvp1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-			rsc->addGpuProgramProfile(GPP_VS_2_0, "arbvp1");
-			rsc->addGpuProgramProfile(GPP_VS_2_a, "arbvp1");
-			rsc->addGpuProgramProfile(GPP_VS_2_x, "arbvp1");
-
-			if (GLEW_NV_vertex_program2_option)
-			{
-				rsc->addShaderProfile("vp30");
-				rsc->addGpuProgramProfile(GPP_VS_3_0, "vp30"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-				rsc->addGpuProgramProfile(GPP_VS_4_0, "vp30");
-			}
-
-			if (GLEW_NV_vertex_program3)
-			{
-				rsc->addShaderProfile("vp40");
-				rsc->addGpuProgramProfile(GPP_VS_3_0, "vp40"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-				rsc->addGpuProgramProfile(GPP_VS_4_0, "vp40");
-			}
-
-			if (GLEW_NV_vertex_program4)
-			{
-				rsc->addShaderProfile("gp4vp");
-				rsc->addShaderProfile("gpu_vp");
-			}
-		}
-
-		if (GLEW_NV_register_combiners2 &&
-			GLEW_NV_texture_shader)
-		{
-			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
-		}
-
-		// NFZ - check for ATI fragment shader support
-		if (GLEW_ATI_fragment_shader)
-		{
-			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
-			// no boolean params allowed
-			rsc->setFragmentProgramConstantBoolCount(0);
-			// no integer params allowed
-			rsc->setFragmentProgramConstantIntCount(0);
-
-			// only 8 Vector4 constant floats supported
-			rsc->setFragmentProgramConstantFloatCount(8);
-
-			rsc->addShaderProfile("ps_1_4");
-			rsc->addShaderProfile("ps_1_3");
-			rsc->addShaderProfile("ps_1_2");
-			rsc->addShaderProfile("ps_1_1");
-
-			rsc->addGpuProgramProfile(GPP_PS_1_1, "ps_1_1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-			rsc->addGpuProgramProfile(GPP_PS_1_2, "ps_1_2");
-			rsc->addGpuProgramProfile(GPP_PS_1_3, "ps_1_3");
-			rsc->addGpuProgramProfile(GPP_PS_1_4, "ps_1_4");
-		}
-
-		if (GLEW_ARB_fragment_program)
-		{
-			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
-
-			// Fragment Program Properties
-			rsc->setFragmentProgramConstantBoolCount(0);
-			rsc->setFragmentProgramConstantIntCount(0);
-
-			GLint floatConstantCount;
-			glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB, &floatConstantCount);
-			rsc->setFragmentProgramConstantFloatCount(floatConstantCount);
-
-			rsc->addShaderProfile("arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_1_1, "arbfp1"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-			rsc->addGpuProgramProfile(GPP_PS_1_2, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_1_3, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_1_4, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_2_0, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_2_a, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_2_b, "arbfp1");
-			rsc->addGpuProgramProfile(GPP_PS_2_x, "arbfp1");
-
-			if (GLEW_NV_fragment_program_option)
-			{
-				rsc->addShaderProfile("fp30");
-				rsc->addGpuProgramProfile(GPP_PS_3_0, "fp30"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-				rsc->addGpuProgramProfile(GPP_PS_3_x, "fp30");
-				rsc->addGpuProgramProfile(GPP_PS_4_0, "fp30");
-			}
-
-			if (GLEW_NV_fragment_program2)
-			{
-				rsc->addShaderProfile("fp40");
-				rsc->addGpuProgramProfile(GPP_PS_3_0, "fp40"); // TODO - I don't know if any of these GpuProgramProfile mappings are correct!
-				rsc->addGpuProgramProfile(GPP_PS_3_x, "fp40");
-				rsc->addGpuProgramProfile(GPP_PS_4_0, "fp40");
-			}        
-		}
+		rsc->setCapability(RSC_VERTEX_PROGRAM);
+		rsc->setCapability(RSC_FRAGMENT_PROGRAM);
 
 		rsc->addShaderProfile("cg");
 
@@ -2253,7 +2142,7 @@ namespace CamelotEngine
 			rsc->setCapability(RSC_TEXTURE_FLOAT);
 		}
 
-		// 3D textures should be supported by GL 1.2, which is our minimum version
+		// 3D textures should always be supported
 		rsc->setCapability(RSC_TEXTURE_3D);
 
 		// Check for framebuffer object extension
@@ -2293,38 +2182,51 @@ namespace CamelotEngine
 		}
 
 		// Point size
-		if (GLEW_VERSION_1_4)
+		float ps;
+		glGetFloatv(GL_POINT_SIZE_MAX, &ps);
+		rsc->setMaxPointSize(ps);
+
+		// Max number of fragment shader textures
+		GLint units;
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &units);
+		rsc->setNumTextureUnits(GPT_FRAGMENT_PROGRAM, static_cast<UINT16>(units));
+
+		// Max number of vertex shader textures
+		GLint vUnits;
+		glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &vUnits);
+		rsc->setNumTextureUnits(GPT_VERTEX_PROGRAM, static_cast<UINT16>(vUnits));
+		if (vUnits > 0)
 		{
-			float ps;
-			glGetFloatv(GL_POINT_SIZE_MAX, &ps);
-			rsc->setMaxPointSize(ps);
-		}
-		else
-		{
-			GLint vSize[2];
-			glGetIntegerv(GL_POINT_SIZE_RANGE,vSize);
-			rsc->setMaxPointSize((float)vSize[1]);
+			rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
 		}
 
-		// Vertex texture fetching
-		if (mGLSupport->checkExtension("GL_ARB_vertex_shader"))
+		if (mGLSupport->checkExtension("ARB_geometry_shader4"))
 		{
-			GLint vUnits;
-			glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, &vUnits);
-			rsc->setNumVertexTextureUnits(static_cast<UINT16>(vUnits));
-			if (vUnits > 0)
-			{
-				rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
-			}
-			// GL always shares vertex and fragment texture units (for now?)
-			rsc->setVertexTextureUnitsShared(true);
+			GLint geomUnits;
+			glGetIntegerv(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS, &geomUnits);
+			rsc->setNumTextureUnits(GPT_GEOMETRY_PROGRAM, static_cast<UINT16>(geomUnits));
 		}
 
-		// Mipmap LOD biasing?
-		if (GLEW_VERSION_1_4 || GLEW_EXT_texture_lod_bias)
+		if (mGLSupport->checkExtension("ARB_tessellation_shader"))
 		{
-			rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
+			rsc->setCapability(RSC_TESSELLATION_PROGRAM);
 		}
+
+		if (mGLSupport->checkExtension("ARB_compute_shader")) // Enable once I include GL 4.3
+		{
+			//rsc->setCapability(RSC_COMPUTE_PROGRAM);
+
+			//GLint computeUnits;
+			//glGetIntegerv(GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS, &computeUnits);
+			//rsc->setNumTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(computeUnits));
+		}
+
+		GLint combinedTexUnits;
+		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &combinedTexUnits);
+		rsc->setNumCombinedTextureUnits(static_cast<UINT16>(combinedTexUnits));
+
+		// Mipmap LOD biasing
+		rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
 
 		// Alpha to coverage?
 		if (mGLSupport->checkExtension("GL_ARB_multisample"))
@@ -2342,7 +2244,78 @@ namespace CamelotEngine
 
 		return rsc;
 	}
+	//---------------------------------------------------------------------
+	UINT32 GLRenderSystem::getGLTextureUnit(GpuProgramType gptype, UINT32 unit)
+	{
+		if(gptype != GPT_VERTEX_PROGRAM && gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_GEOMETRY_PROGRAM)
+		{
+			LOGWRN("OpenGL cannot assign textures to this gpu program type: " + toString(gptype));
+			return;
+		}
 
+		UINT32 numSupportedUnits = mCurrentCapabilities->getNumTextureUnits(gptype);
+		if(unit < 0 || unit >= numSupportedUnits)
+		{
+			LOGWRN("Invalid texture unit index for the provided stage. Unit index: " + toString(unit) + ". Stage: " + 
+				toString(gptype) + ". Supported range is 0 .. " + toString(numSupportedUnits - 1));
+		}
+
+		switch(gptype)
+		{
+		case GPT_FRAGMENT_PROGRAM:
+			return mFragmentTexOffset + unit;
+		case GPT_VERTEX_PROGRAM:
+			return mVertexTexOffset + unit;
+		case GPT_GEOMETRY_PROGRAM:
+			return mGeometryTexOffset + unit;
+		default:
+			CM_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
+		}
+	}
+
+	void GLRenderSystem::setActiveProgram(GpuProgramType gptype, GLSLGpuProgram* program)
+	{
+		switch (gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+				mCurrentVertexProgram = program;
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+				mCurrentFragmentProgram = program;
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+				mCurrentGeometryProgram = program;
+			break;
+		case GPT_DOMAIN_PROGRAM:
+				mCurrentDomainProgram = program;
+			break;
+		case GPT_HULL_PROGRAM:
+				mCurrentHullProgram = program;
+			break;
+		}
+	}
+
+	GLSLGpuProgram* GLRenderSystem::getActiveProgram(GpuProgramType gptype) const
+	{
+		switch (gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			return mCurrentVertexProgram;
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			return mCurrentFragmentProgram;
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			return mCurrentGeometryProgram;
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			return mCurrentDomainProgram;
+			break;
+		case GPT_HULL_PROGRAM:
+			return mCurrentHullProgram;
+			break;
+		}
+	}
 	/************************************************************************/
 	/* 								UTILITY		                     		*/
 	/************************************************************************/

@@ -130,11 +130,9 @@ namespace CamelotEngine
 		 * @brief	Sets a sampler state for the specified texture unit.
 		 * @see		SamplerState
 		 */
-		virtual void setSamplerState(UINT16 texUnit, const SamplerState& samplerState) = 0;
+		virtual void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState) = 0;
 		/** Turns off a texture unit. */
-		virtual void disableTextureUnit(UINT16 texUnit);
-		/** Disables all texture units from the given unit upwards */
-		virtual void disableTextureUnitsFrom(UINT16 texUnit);
+		virtual void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 
 		/**
 		 * @brief	Sets a blend state used for all active render targets.
@@ -183,7 +181,7 @@ namespace CamelotEngine
 		@param enabled Boolean to turn the unit on/off
 		@param texPtr Pointer to the texture to use.
 		*/
-		virtual void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr) = 0;
+		virtual void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr) = 0;
 
 		/**
 		* Signifies the beginning of a frame, i.e. the start of rendering on a single viewport. Will occur
@@ -431,7 +429,7 @@ namespace CamelotEngine
 		DriverVersion mDriverVersion;
 
 		/************************************************************************/
-		/* 								THREADING	                     		*/
+		/* 							RENDER THREAD	                     		*/
 		/************************************************************************/
 
 		class RenderWorkerFunc CM_THREAD_WORKER_INHERIT

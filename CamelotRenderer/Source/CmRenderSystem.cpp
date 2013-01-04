@@ -227,25 +227,11 @@ namespace CamelotEngine {
         return mActiveViewport;
     }
     //-----------------------------------------------------------------------
-    void RenderSystem::disableTextureUnit(UINT16 texUnit)
+    void RenderSystem::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        setTexture(texUnit, false, sNullTexPtr);
-    }
-    //---------------------------------------------------------------------
-    void RenderSystem::disableTextureUnitsFrom(UINT16 texUnit)
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-        UINT16 disableTo = CM_MAX_TEXTURE_LAYERS;
-        if (disableTo > mDisabledTexUnitsFrom)
-            disableTo = mDisabledTexUnitsFrom;
-        mDisabledTexUnitsFrom = texUnit;
-        for (UINT16 i = texUnit; i < disableTo; ++i)
-        {
-            disableTextureUnit(i);
-        }
+        setTexture(gptype, texUnit, false, sNullTexPtr);
     }
 	//-----------------------------------------------------------------------
 	bool RenderSystem::getWaitForVerticalBlank(void) const

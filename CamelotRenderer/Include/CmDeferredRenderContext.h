@@ -26,18 +26,16 @@ namespace CamelotEngine
 		bool getWaitForVerticalBlank(void) const;
 
 		/** @copydoc RenderSystem::disableTextureUnit() */
-		void disableTextureUnit(UINT16 texUnit);
-		/** @copydoc RenderSystem::disableTextureUnitsFrom() */
-		void disableTextureUnitsFrom(UINT16 texUnit);
+		void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 
 		/** @copydoc RenderSystem::setPointParameters() */
 		void setPointParameters(float size, bool attenuationEnabled, float constant, float linear, float quadratic, float minSize, float maxSize);
 
 		/** @copydoc RenderSystem::setTexture() */
-		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr);
+		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
 
 		/** @copydoc RenderSystem::setSamplerState() */
-		void setSamplerState(UINT16 texUnit, const SamplerState& samplerState);
+		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState);
 
 		/** @copydoc RenderSystem::setBlendState() */
 		void setBlendState(const BlendState& blendState);

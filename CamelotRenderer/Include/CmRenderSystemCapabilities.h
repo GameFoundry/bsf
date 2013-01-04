@@ -31,6 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmString.h"
+#include "CmGpuProgram.h"
 
 // Because there are more than 32 possible Capabilities, more than 1 int is needed to store them all.
 // In fact, an array of integers is used to store capabilities. However all the capabilities are defined in the single
@@ -41,9 +42,9 @@ THE SOFTWARE.
 // Identifies how many bits are reserved for categories
 // NOTE: Although 4 bits (currently) are enough
 #define CAPS_CATEGORY_SIZE 4
-#define OGRE_CAPS_BITSHIFT (32 - CAPS_CATEGORY_SIZE)
-#define CAPS_CATEGORY_MASK (((1 << CAPS_CATEGORY_SIZE) - 1) << OGRE_CAPS_BITSHIFT)
-#define OGRE_CAPS_VALUE(cat, val) ((cat << OGRE_CAPS_BITSHIFT) | (1 << val))
+#define CM_CAPS_BITSHIFT (32 - CAPS_CATEGORY_SIZE)
+#define CAPS_CATEGORY_MASK (((1 << CAPS_CATEGORY_SIZE) - 1) << CM_CAPS_BITSHIFT)
+#define CM_CAPS_VALUE(cat, val) ((cat << CM_CAPS_BITSHIFT) | (1 << val))
 
 namespace CamelotEngine 
 {
@@ -61,8 +62,9 @@ namespace CamelotEngine
 		CAPS_CATEGORY_COMMON_2 = 1,
 		CAPS_CATEGORY_D3D9 = 2,
 		CAPS_CATEGORY_GL = 3,
+		CAPS_CATEGORY_COMMON_3 = 4,
 		/// Placeholder for max value
-		CAPS_CATEGORY_COUNT = 4
+		CAPS_CATEGORY_COUNT = 5
 	};
 
 	/// Enum describing the different hardware capabilities we want to check for
@@ -72,96 +74,100 @@ namespace CamelotEngine
 	enum Capabilities
 	{
 		/// Supports generating mipmaps in hardware
-		RSC_AUTOMIPMAP              = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 0),
-		RSC_BLENDING                = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 1),
+		RSC_AUTOMIPMAP              = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 0),
+		RSC_BLENDING                = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 1),
 		/// Supports anisotropic texture filtering
-		RSC_ANISOTROPY              = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 2),
+		RSC_ANISOTROPY              = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 2),
 		/// Supports fixed-function DOT3 texture blend
-		RSC_DOT3                    = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 3),
+		RSC_DOT3                    = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 3),
 		/// Supports cube mapping
-		RSC_CUBEMAPPING             = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 4),
+		RSC_CUBEMAPPING             = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 4),
 		/// Supports hardware stencil buffer
-		RSC_HWSTENCIL               = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 5),
+		RSC_HWSTENCIL               = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 5),
 		/// Supports hardware vertex and index buffers
-		RSC_VBO                     = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 7),
+		RSC_VBO                     = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 7),
 		/// Supports vertex programs (vertex shaders)
-		RSC_VERTEX_PROGRAM          = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 9),
+		RSC_VERTEX_PROGRAM          = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 9),
 		/// Supports fragment programs (pixel shaders)
-		RSC_FRAGMENT_PROGRAM        = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 10),
+		RSC_FRAGMENT_PROGRAM        = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 10),
 		/// Supports performing a scissor test to exclude areas of the screen
-		RSC_SCISSOR_TEST            = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 11),
+		RSC_SCISSOR_TEST            = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 11),
 		/// Supports separate stencil updates for both front and back faces
-		RSC_TWO_SIDED_STENCIL       = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 12),
+		RSC_TWO_SIDED_STENCIL       = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 12),
 		/// Supports wrapping the stencil value at the range extremeties
-		RSC_STENCIL_WRAP            = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 13),
+		RSC_STENCIL_WRAP            = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 13),
 		/// Supports hardware occlusion queries
-		RSC_HWOCCLUSION             = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 14),
+		RSC_HWOCCLUSION             = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 14),
 		/// Supports user clipping planes
-		RSC_USER_CLIP_PLANES        = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 15),
+		RSC_USER_CLIP_PLANES        = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 15),
 		/// Supports the VET_UBYTE4 vertex element type
-		RSC_VERTEX_FORMAT_UBYTE4    = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 16),
+		RSC_VERTEX_FORMAT_UBYTE4    = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 16),
 		/// Supports infinite far plane projection
-		RSC_INFINITE_FAR_PLANE      = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 17),
+		RSC_INFINITE_FAR_PLANE      = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 17),
 		/// Supports hardware render-to-texture (bigger than framebuffer)
-		RSC_HWRENDER_TO_TEXTURE     = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 18),
+		RSC_HWRENDER_TO_TEXTURE     = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 18),
 		/// Supports float textures and render targets
-		RSC_TEXTURE_FLOAT           = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 19),
+		RSC_TEXTURE_FLOAT           = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 19),
 		/// Supports non-power of two textures
-		RSC_NON_POWER_OF_2_TEXTURES = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 20),
+		RSC_NON_POWER_OF_2_TEXTURES = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 20),
 		/// Supports 3d (volume) textures
-		RSC_TEXTURE_3D              = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 21),
+		RSC_TEXTURE_3D              = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 21),
 		/// Supports basic point sprite rendering
-		RSC_POINT_SPRITES           = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 22),
+		RSC_POINT_SPRITES           = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 22),
 		/// Supports extra point parameters (minsize, maxsize, attenuation)
-		RSC_POINT_EXTENDED_PARAMETERS = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 23),
+		RSC_POINT_EXTENDED_PARAMETERS = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 23),
 		/// Supports vertex texture fetch
-		RSC_VERTEX_TEXTURE_FETCH = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 24),
+		RSC_VERTEX_TEXTURE_FETCH = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 24),
 		/// Supports mipmap LOD biasing
-		RSC_MIPMAP_LOD_BIAS = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 25),
+		RSC_MIPMAP_LOD_BIAS = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 25),
 		/// Supports hardware geometry programs
-		RSC_GEOMETRY_PROGRAM = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 26),
+		RSC_GEOMETRY_PROGRAM = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 26),
 		/// Supports rendering to vertex buffers
-		RSC_HWRENDER_TO_VERTEX_BUFFER = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 27),
+		RSC_HWRENDER_TO_VERTEX_BUFFER = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 27),
 
 		/// Supports compressed textures
-		RSC_TEXTURE_COMPRESSION = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 0),
+		RSC_TEXTURE_COMPRESSION = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 0),
 		/// Supports compressed textures in the DXT/ST3C formats
-		RSC_TEXTURE_COMPRESSION_DXT = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 1),
+		RSC_TEXTURE_COMPRESSION_DXT = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 1),
 		/// Supports compressed textures in the VTC format
-		RSC_TEXTURE_COMPRESSION_VTC = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 2),
+		RSC_TEXTURE_COMPRESSION_VTC = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 2),
 		/// Supports compressed textures in the PVRTC format
-		RSC_TEXTURE_COMPRESSION_PVRTC = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 3),
+		RSC_TEXTURE_COMPRESSION_PVRTC = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 3),
 		/// Supports fixed-function pipeline
-		RSC_FIXED_FUNCTION = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 4),
+		RSC_FIXED_FUNCTION = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 4),
 		/// Supports MRTs with different bit depths
-		RSC_MRT_DIFFERENT_BIT_DEPTHS = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 5),
+		RSC_MRT_DIFFERENT_BIT_DEPTHS = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 5),
 		/// Supports Alpha to Coverage (A2C)
-		RSC_ALPHA_TO_COVERAGE = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 6),
+		RSC_ALPHA_TO_COVERAGE = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 6),
 		/// Supports Blending operations other than +
-		RSC_ADVANCED_BLEND_OPERATIONS = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 7),
+		RSC_ADVANCED_BLEND_OPERATIONS = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 7),
 
 		// ***** DirectX specific caps *****
 		/// Is DirectX feature "per stage constants" supported
-		RSC_PERSTAGECONSTANT = OGRE_CAPS_VALUE(CAPS_CATEGORY_D3D9, 0),
+		RSC_PERSTAGECONSTANT = CM_CAPS_VALUE(CAPS_CATEGORY_D3D9, 0),
 
 		// ***** GL Specific Caps *****
 		/// Supports openGL GLEW version 1.5
-		RSC_GL1_5_NOVBO    = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 1),
+		RSC_GL1_5_NOVBO    = CM_CAPS_VALUE(CAPS_CATEGORY_GL, 1),
 		/// Support for Frame Buffer Objects (FBOs)
-		RSC_FBO              = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 2),
+		RSC_FBO              = CM_CAPS_VALUE(CAPS_CATEGORY_GL, 2),
 		/// Support for Frame Buffer Objects ARB implementation (regular FBO is higher precedence)
-		RSC_FBO_ARB          = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 3),
+		RSC_FBO_ARB          = CM_CAPS_VALUE(CAPS_CATEGORY_GL, 3),
 		/// Support for Frame Buffer Objects ATI implementation (ARB FBO is higher precedence)
-		RSC_FBO_ATI          = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 4),
+		RSC_FBO_ATI          = CM_CAPS_VALUE(CAPS_CATEGORY_GL, 4),
 		/// Support for PBuffer
-		RSC_PBUFFER          = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 5),
+		RSC_PBUFFER          = CM_CAPS_VALUE(CAPS_CATEGORY_GL, 5),
 		/// Support for GL 1.5 but without HW occlusion workaround
-		RSC_GL1_5_NOHWOCCLUSION = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 6),
+		RSC_GL1_5_NOHWOCCLUSION = CM_CAPS_VALUE(CAPS_CATEGORY_GL, 6),
 		/// Support for point parameters ARB implementation
-		RSC_POINT_EXTENDED_PARAMETERS_ARB = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 7),
+		RSC_POINT_EXTENDED_PARAMETERS_ARB = CM_CAPS_VALUE(CAPS_CATEGORY_GL, 7),
 		/// Support for point parameters EXT implementation
-		RSC_POINT_EXTENDED_PARAMETERS_EXT = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 8)
+		RSC_POINT_EXTENDED_PARAMETERS_EXT = CM_CAPS_VALUE(CAPS_CATEGORY_GL, 8),
 
+		/// Supports hardware tessellation programs
+		RSC_TESSELLATION_PROGRAM = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_3, 0),
+		/// Supports hardware compute programs
+		RSC_COMPUTE_PROGRAM = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_3, 1),
 
 	};
 
@@ -236,12 +242,19 @@ namespace CamelotEngine
 		GPP_PS_3_0,
 		GPP_PS_3_x,
 		GPP_PS_4_0,
+		GPP_PS_5_0,
 		GPP_VS_1_1,
 		GPP_VS_2_0,
 		GPP_VS_2_x,
 		GPP_VS_2_a,
 		GPP_VS_3_0,
-		GPP_VS_4_0
+		GPP_VS_4_0,
+		GPP_VS_5_0,
+		GPP_GS_4_0,
+		GPP_GS_5_0,
+		GPP_HS_5_0,
+		GPP_DS_5_0,
+		GPP_CS_5_0
 	};
 
 	/** singleton class for storing the capabilities of the graphics card. 
@@ -268,8 +281,10 @@ namespace CamelotEngine
 
 		/// The number of world matrices available
 		UINT16 mNumWorldMatrices;
-		/// The number of texture units available
-		UINT16 mNumTextureUnits;
+		/// The number of texture units available per stage
+		map<GpuProgramType, UINT16>::type mNumTextureUnitsPerStage;
+		/// Total number of texture units available
+		UINT16 mNumCombinedTextureUnits;
 		/// The stencil buffer bit depth
 		UINT16 mStencilBufferBitDepth;
 		/// The number of matrices available for hardware blending
@@ -307,13 +322,8 @@ namespace CamelotEngine
 		float mMaxPointSize;
 		/// Are non-POW2 textures feature-limited?
 		bool mNonPOW2TexturesLimited;
-		/// The number of vertex texture units supported
-		UINT16 mNumVertexTextureUnits;
-		/// Are vertex texture units shared with fragment processor?
-		bool mVertexTextureUnitsShared;
 		/// The number of vertices a geometry program can emit in a single run
 		int mGeometryProgramNumOutputVertices;
-
 
 		/// The list of supported shader profiles
 		ShaderProfiles mSupportedShaderProfiles;
@@ -390,9 +400,14 @@ namespace CamelotEngine
 			mNumWorldMatrices = num;
 		}
 
-		void setNumTextureUnits(UINT16 num)
+		void setNumTextureUnits(GpuProgramType type, UINT16 num)
 		{
-			mNumTextureUnits = num;
+			mNumTextureUnitsPerStage[type] = num;
+		}
+
+		void setNumCombinedTextureUnits(UINT16 num) const
+		{
+			mNumCombinedTextureUnits = num;
 		}
 
 		void setStencilBufferBitDepth(UINT16 num)
@@ -417,20 +432,19 @@ namespace CamelotEngine
 		}
 
 		/** Returns the number of texture units the current output hardware
-		supports.
-
-		For use in rendering, this determines how many texture units the
-		are available for multitexturing (i.e. rendering multiple 
-		textures in a single pass). Where a Material has multiple 
-		texture layers, it will try to use multitexturing where 
-		available, and where it is not available, will perform multipass
-		rendering to achieve the same effect. This property only applies
-		to the fixed-function pipeline, the number available to the 
-		programmable pipeline depends on the shader model in use.
+		supports, for the specified stage.
 		*/
-		UINT16 getNumTextureUnits(void) const
+		UINT16 getNumTextureUnits(GpuProgramType stage) const
 		{
-			return mNumTextureUnits;
+			return mNumTextureUnitsPerStage[type];
+		}
+
+		/** Returns the number of texture units the current output hardware
+		supports, total for all stages combined.
+		*/
+		UINT16 getNumCombinedTextureUnits() const
+		{
+			return mNumCombinedTextureUnits;
 		}
 
 		/** Determines the bit depth of the hardware accelerated stencil 
@@ -461,7 +475,7 @@ namespace CamelotEngine
 		*/
 		bool isCapabilityRenderSystemSpecific(const Capabilities c)
 		{
-			int cat = c >> OGRE_CAPS_BITSHIFT;
+			int cat = c >> CM_CAPS_BITSHIFT;
 			if(cat == CAPS_CATEGORY_GL || cat == CAPS_CATEGORY_D3D9)
 				return true;
 			return false;
@@ -471,7 +485,7 @@ namespace CamelotEngine
 		*/
 		void setCapability(const Capabilities c) 
 		{ 
-			int index = (CAPS_CATEGORY_MASK & c) >> OGRE_CAPS_BITSHIFT;
+			int index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
 			// zero out the index from the stored capability
 			mCapabilities[index] |= (c & ~CAPS_CATEGORY_MASK);
 		}
@@ -480,7 +494,7 @@ namespace CamelotEngine
 		*/
 		void unsetCapability(const Capabilities c) 
 		{ 
-			int index = (CAPS_CATEGORY_MASK & c) >> OGRE_CAPS_BITSHIFT;
+			int index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
 			// zero out the index from the stored capability
 			mCapabilities[index] &= (~c | CAPS_CATEGORY_MASK);
 		}
@@ -489,7 +503,7 @@ namespace CamelotEngine
 		*/
 		bool hasCapability(const Capabilities c) const
 		{
-			int index = (CAPS_CATEGORY_MASK & c) >> OGRE_CAPS_BITSHIFT;
+			int index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
 			// test against
 			if(mCapabilities[index] & (c & ~CAPS_CATEGORY_MASK))
 			{
@@ -683,28 +697,6 @@ namespace CamelotEngine
 		{
 			return mNonPOW2TexturesLimited;
 		}
-
-		/// Set the number of vertex texture units supported
-		void setNumVertexTextureUnits(UINT16 n)
-		{
-			mNumVertexTextureUnits = n;
-		}
-		/// Get the number of vertex texture units supported
-		UINT16 getNumVertexTextureUnits(void) const
-		{
-			return mNumVertexTextureUnits;
-		}
-		/// Set whether the vertex texture units are shared with the fragment processor
-		void setVertexTextureUnitsShared(bool shared)
-		{
-			mVertexTextureUnitsShared = shared;
-		}
-		/// Get whether the vertex texture units are shared with the fragment processor
-		bool getVertexTextureUnitsShared(void) const
-		{
-			return mVertexTextureUnitsShared;
-		}
-
 		/// Set the number of vertices a single geometry program run can emit
 		void setGeometryProgramNumOutputVertices(int numOutputVertices)
 		{

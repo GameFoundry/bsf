@@ -31,9 +31,9 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setViewport, mRenderSystem, vp));
 	}
 
-	void DeferredRenderContext::setSamplerState(UINT16 texUnit, const SamplerState& samplerState)
+	void DeferredRenderContext::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState)
 	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setSamplerState, mRenderSystem, texUnit, samplerState));
+		mCommandQueue->queue(boost::bind(&RenderSystem::setSamplerState, mRenderSystem, gptype, texUnit, samplerState));
 	}
 
 	void DeferredRenderContext::setBlendState(const BlendState& blendState)
@@ -56,19 +56,14 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setStencilRefValue, mRenderSystem, refValue));
 	}
 
-	void DeferredRenderContext::setTexture(UINT16 unit, bool enabled, const TexturePtr& texPtr)
+	void DeferredRenderContext::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr)
 	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setTexture, mRenderSystem, unit, enabled, texPtr));
+		mCommandQueue->queue(boost::bind(&RenderSystem::setTexture, mRenderSystem, gptype, unit, enabled, texPtr));
 	}
 
-	void DeferredRenderContext::disableTextureUnit(UINT16 texUnit)
+	void DeferredRenderContext::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
 	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::disableTextureUnit, mRenderSystem, texUnit));
-	}
-
-	void DeferredRenderContext::disableTextureUnitsFrom(UINT16 texUnit)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::disableTextureUnitsFrom, mRenderSystem, texUnit));
+		mCommandQueue->queue(boost::bind(&RenderSystem::disableTextureUnit, mRenderSystem, gptype, texUnit));
 	}
 
 	void DeferredRenderContext::setScissorTest(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)

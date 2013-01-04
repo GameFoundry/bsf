@@ -11,14 +11,14 @@ namespace CamelotEngine
 		~D3D11RenderSystem();
 
 		const String& getName() const;
-
-		void setSamplerState(UINT16 texUnit, const SamplerState& samplerState);
+		
 		void setBlendState(const BlendState& blendState);
 		void setRasterizerState(const RasterizerState& rasterizerState);
 		void setDepthStencilState(const DepthStencilState& depthStencilState);
 
-		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr );
-		void disableTextureUnit(UINT16 texUnit);
+		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState);
+		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
+		void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 
 		void setStencilRefValue(UINT32 refValue);
 

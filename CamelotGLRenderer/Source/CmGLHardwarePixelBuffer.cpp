@@ -501,8 +501,6 @@ namespace CamelotEngine
 			GL_TEXTURE_BIT | GL_VIEWPORT_BIT);
 
 		// Important to disable all other texture units
-		RenderSystem* rsys = CamelotEngine::RenderSystem::instancePtr();
-		rsys->disableTextureUnitsFrom(0);
 		if (GLEW_VERSION_1_2)
 		{
 			glActiveTextureARB(GL_TEXTURE0);

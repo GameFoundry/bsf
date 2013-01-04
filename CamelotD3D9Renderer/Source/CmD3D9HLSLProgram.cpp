@@ -90,6 +90,8 @@ namespace CamelotEngine {
 		{ }
 
 		GpuParamDesc buildParameterDescriptions();
+
+	private:
 		void processParameter(GpuParamBlockDesc& blockDesc, D3DXHANDLE parent, String prefix, UINT32 index);
 		void populateParamMemberDesc(GpuParamMemberDesc& memberDesc, D3DXCONSTANT_DESC& d3dDesc);
 

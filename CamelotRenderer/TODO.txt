@@ -20,12 +20,17 @@
 -----------GpuProgramParameters/Pass/Material REFACTOR------------------------------
 
 Finish up GL port:
+ - IMPORTANT: Use GL_ARB_separate_shader_objects to set shaders without program objects. And more importantly to set uniforms per stage.
+   - Use CreateShaderProgramv to compile & link shader program
  - GL shader and param binding happens in the shader itself, while it should happen on the RenderSystem (to be consistent with DX9 and DX11)
  - Remove those DefaultHardwareBuffermanagers as I don't think they serve a purpose anymore (OpenGL seems to only use them if API doesn't support hardware buffers, which won't happen on modern hardware)
  - Re-do GL attribute bindings (currently it parses program source manually)
  - Params aren't being initialized anywhere
  - Uniforms or uniform blocks aren't assigned anywhere
  - Implement GLRenderSystem::bindGpuParams
+
+ http://www.opengl.org/wiki/Uniform_(GLSL)
+http://www.opengl.org/wiki/Program_Introspection
 
 Re-enable DX11 and GL project dependencies in CamelotClient
 Saving/loading of material params isn't completed (in MAterialRTTI)
@@ -34,6 +39,7 @@ Port DX11 to new shader param system
 Ability to switch out GpuParamBlocks (i.e. share them between programs)
 Ability to create Pass without automatically creating param blocks
 Automatically creating a pass should be smart about not creating duplicate param blocks
+Port CG so it doesn't attempt to use low level GL shaders (which I have removed)
 
 Handling of array parameters? This needs testing
  - I'm currently ignoring array elements in GL due to the name their names are handled
@@ -44,6 +50,9 @@ Handling of array parameters? This needs testing
 RenderSystem::setTexture(STAGE, UINT32 slot, Texture)
 RenderSystem::setBuffer(STAGE, UINT32 slot, Buffer)
 RenderSystem::setSampler(STAGE, UINT32 slot, Sampler)
+ - Maybe do all these without "slot" parameter? Instead accept an array of elements
+   per stage, and when they're about to be used set them up into proper slots as needed?
+   (based on currently set shader)
 
 RenderSystem::clearFrameBuffer
  - Change so it accepts a RenderTarget as a parameter
@@ -136,10 +145,8 @@ HIGH PRIORITY TODO:
  - GetRenderOperation doesn't consider sub-meshes
 
 Mid priority TODO:
- - Compiler2Pass in GL renderer doesn't seem to be 64bit ready. I hacked it together but it will likely cause problems.
  - Resource handle should store a unique integer ID, which just points to a table of GUIDs. Keeping GUID string everywhere in not efficient.
  - Add a field that tracks % of resource deserialization in BinarySerializer
- - GpuProgram default parameters might not be needed. The parameters change with each use of the gpu program anyway
  - Mesh loading:
   - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
   - Imported FBX meshes are too big

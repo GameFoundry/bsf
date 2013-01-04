@@ -56,17 +56,16 @@ namespace CamelotEngine
 
 		void bindGpuProgram(GpuProgramHandle prg);
 		void unbindGpuProgram(GpuProgramType gptype);
-		void bindGpuProgramParameters(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
+		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
 
 		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
 
-		void setTexture(UINT16 unit, bool enabled, const TexturePtr &texPtr);
+		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
 
 		/**
 		 * @copydoc RenderSystem::setSamplerState()
 		 */
-		void setSamplerState(UINT16 unit, const SamplerState& state);
+		void setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerState& state);
 
 		/**
 		 * @copydoc RenderSystem::setBlendState()
@@ -88,7 +87,6 @@ namespace CamelotEngine
 		 */
 		void setStencilRefValue(UINT32 refValue);
 
-		void disableTextureUnit(UINT16 texUnit);
 		void setViewport(const Viewport& vp);		
 		void beginFrame();
 		void endFrame();		

@@ -35,7 +35,7 @@ namespace CamelotEngine {
 	RenderSystemCapabilities::RenderSystemCapabilities()
 		: mVendor(GPU_UNKNOWN)
 		, mNumWorldMatrices(0)
-		, mNumTextureUnits(0)
+		, mNumCombinedTextureUnits(0)
 		, mStencilBufferBitDepth(0)
 		, mNumVertexBlendMatrices(0)
 		, mNumMultiRenderTargets(1)
@@ -52,7 +52,12 @@ namespace CamelotEngine {
 		mCategoryRelevant[CAPS_CATEGORY_D3D9] = false;
 		mCategoryRelevant[CAPS_CATEGORY_GL] = false;
 
-
+		mNumTextureUnitsPerStage[GPT_VERTEX_PROGRAM] = 0;
+		mNumTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM] = 0;
+		mNumTextureUnitsPerStage[GPT_GEOMETRY_PROGRAM] = 0;
+		mNumTextureUnitsPerStage[GPT_HULL_PROGRAM] = 0;
+		mNumTextureUnitsPerStage[GPT_DOMAIN_PROGRAM] = 0;
+		mNumTextureUnitsPerStage[GPT_COMPUTE_PROGRAM] = 0;
 	}
 	//-----------------------------------------------------------------------
 	RenderSystemCapabilities::~RenderSystemCapabilities()
