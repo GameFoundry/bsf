@@ -133,7 +133,7 @@ namespace CamelotEngine {
 				{
 					d3delems[idx].UsageIndex = 1;
 				}
-				else if (i->getSemantic() == VES_DIFFUSE)
+				else if (i->getSemantic() == VES_COLOR)
 				{
 					d3delems[idx].UsageIndex = 0;
 				}

@@ -428,7 +428,7 @@ namespace CamelotEngine
 		case VES_BLEND_WEIGHTS:
 			return D3DDECLUSAGE_BLENDWEIGHT;
 			break;
-		case VES_DIFFUSE:
+		case VES_COLOR:
 			return D3DDECLUSAGE_COLOR; // NB index will differentiate
 			break;
 		case VES_SPECULAR:
@@ -440,7 +440,7 @@ namespace CamelotEngine
 		case VES_POSITION:
 			return D3DDECLUSAGE_POSITION;
 			break;
-		case VES_TEXTURE_COORDINATES:
+		case VES_TEXCOORD:
 			return D3DDECLUSAGE_TEXCOORD;
 			break;
 		case VES_BITANGENT:

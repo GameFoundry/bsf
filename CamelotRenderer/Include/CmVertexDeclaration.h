@@ -16,11 +16,11 @@ namespace CamelotEngine
 		/// Normal, 3 reals per vertex
 		VES_NORMAL = 4,
 		/// Diffuse colours
-		VES_DIFFUSE = 5,
+		VES_COLOR = 5,
 		/// Specular colours
 		VES_SPECULAR = 6,
 		/// Texture coordinates
-		VES_TEXTURE_COORDINATES = 7,
+		VES_TEXCOORD = 7,
         /// Binormal (Y axis if normal is Z)
         VES_BITANGENT = 8,
         /// Tangent (X axis if normal is Z)

@@ -378,13 +378,13 @@ namespace CamelotEngine
 		if( strcmp(sem, "BLENDWEIGHT") == 0 )
 			return VES_BLEND_WEIGHTS;
 		if( strcmp(sem, "COLOR") == 0 )
-			return VES_DIFFUSE;
+			return VES_COLOR;
 		if( strcmp(sem, "NORMAL") == 0 )
 			return VES_NORMAL;
 		if( strcmp(sem, "POSITION") == 0 )
 			return VES_POSITION;
 		if( strcmp(sem, "TEXCOORD") == 0 )
-			return VES_TEXTURE_COORDINATES;
+			return VES_TEXCOORD;
 		if( strcmp(sem, "BINORMAL") == 0 )
 			return VES_BITANGENT;
 		if( strcmp(sem, "TANGENT") == 0 )
@@ -410,7 +410,7 @@ namespace CamelotEngine
 		case VES_BLEND_WEIGHTS:
 			return "BLENDWEIGHT";
 			break;
-		case VES_DIFFUSE:
+		case VES_COLOR:
 			return "COLOR"; // NB index will differentiate
 			break;
 		case VES_SPECULAR:
@@ -422,7 +422,7 @@ namespace CamelotEngine
 		case VES_POSITION:
 			return "POSITION";
 			break;
-		case VES_TEXTURE_COORDINATES:
+		case VES_TEXCOORD:
 			return "TEXCOORD";
 			break;
 		case VES_BITANGENT:

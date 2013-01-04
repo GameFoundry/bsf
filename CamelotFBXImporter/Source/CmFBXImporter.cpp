@@ -594,7 +594,7 @@ namespace CamelotEngine
 
 		if(vertexData->color)
 		{
-			meshData->declaration->addElement(0, offset, VET_COLOR, VES_DIFFUSE, 0);
+			meshData->declaration->addElement(0, offset, VET_COLOR, VES_COLOR, 0);
 			offset += VertexElement::getTypeSize(VET_COLOR);
 		}
 
@@ -619,13 +619,13 @@ namespace CamelotEngine
 
 		if(vertexData->uv0)
 		{
-			meshData->declaration->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
+			meshData->declaration->addElement(0, offset, VET_FLOAT2, VES_TEXCOORD, 0);
 			offset += VertexElement::getTypeSize(VET_FLOAT2);
 		}
 
 		if(vertexData->uv1)
 		{
-			meshData->declaration->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 1);
+			meshData->declaration->addElement(0, offset, VET_FLOAT2, VES_TEXCOORD, 1);
 			offset += VertexElement::getTypeSize(VET_FLOAT2);
 		}
 	}

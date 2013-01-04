@@ -110,7 +110,7 @@ namespace CamelotEngine
 						source = (UINT8*)vertexData->vertex;
 
 					break;
-				case VES_DIFFUSE:
+				case VES_COLOR:
 					if(vertexData->color)
 						source = (UINT8*)vertexData->color;
 
@@ -130,7 +130,7 @@ namespace CamelotEngine
 						source = (UINT8*)vertexData->bitangent;	
 
 					break;
-				case VES_TEXTURE_COORDINATES:
+				case VES_TEXCOORD:
 					if(element->getIndex() == 0)
 					{
 						if(vertexData->uv0)
@@ -233,7 +233,7 @@ namespace CamelotEngine
 						dest = (UINT8*)vertexData->vertex;
 
 						break;
-					case VES_DIFFUSE:
+					case VES_COLOR:
 						vertexData->color = new Color[meshData->vertexCount];
 						dest = (UINT8*)vertexData->color;
 
@@ -253,7 +253,7 @@ namespace CamelotEngine
 						dest = (UINT8*)vertexData->bitangent;	
 
 						break;
-					case VES_TEXTURE_COORDINATES:
+					case VES_TEXCOORD:
 						if(element->getIndex() == 0)
 						{
 							vertexData->uv0 = new Vector2[meshData->vertexCount];

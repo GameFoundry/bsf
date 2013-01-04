@@ -20,10 +20,50 @@
 -----------GpuProgramParameters/Pass/Material REFACTOR------------------------------
 
 Finish up GL port:
- - Remove those DefaultHardwareBuffermanagers as I don't think they serve a purpose anymore (OpenGL seems to only use them if API doesn't support hardware buffers, which won't happen on modern hardware)
- - Re-do GL attribute bindings (currently it parses program source manually)
  - Params aren't being initialized anywhere
- - Uniforms or uniform blocks aren't assigned anywhere
+
+Set up pipeline
+Assign vertex attributes
+ - When rendering, compare mesh vertec decl and shader decl and use only overlapping attribs
+Assign uniform buffers
+
+LinkProgramKey key;
+key.vertexProgKey = mActiveVertexGpuProgram != nullptr ? mActiveVertexGpuProgram->getProgramID() : 0;
+key.fragmentProgKey = mActiveFragmentGpuProgram != nullptr ? mActiveFragmentGpuProgram->getProgramID() : 0;
+key.geometryProgKey = mActiveGeometryGpuProgram != nullptr ? mActiveGeometryGpuProgram->getProgramID() : 0;
+key.hullProgKey = mActiveHullGpuProgram != nullptr ? mActiveHullGpuProgram->getProgramID() : 0;
+key.domainProgKey = mActiveDomainGpuProgram != nullptr ? mActiveDomainGpuProgram->getProgramID() : 0;
+
+template <class T>
+inline void hash_combine(std::size_t& seed, const T& v)
+{
+	std::hash<T> hasher;
+	seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+}
+
+::std::size_t GLSLLinkProgramManager::LinkProgramKeyHashFunction::operator()(const GLSLLinkProgramManager::LinkProgramKey &key) const
+{
+	std::size_t seed = 0;
+	hash_combine(seed, key.vertexProgKey);
+	hash_combine(seed, key.fragmentProgKey);
+	hash_combine(seed, key.geometryProgKey);
+	hash_combine(seed, key.hullProgKey);
+	hash_combine(seed, key.domainProgKey);
+
+	return seed;
+}
+
+bool GLSLLinkProgramManager::LinkProgramKeyEqual::operator()(const GLSLLinkProgramManager::LinkProgramKey &a, const GLSLLinkProgramManager::LinkProgramKey &b) const
+{
+	return a.vertexProgKey == b.vertexProgKey && a.fragmentProgKey == b.fragmentProgKey && a.geometryProgKey == b.geometryProgKey &&
+		a.hullProgKey == b.hullProgKey && a.domainProgKey == b.domainProgKey;
+}
+
+typedef std::unordered_map<LinkProgramKey, GLSLLinkProgram*, LinkProgramKeyHashFunction, LinkProgramKeyEqual> LinkProgramMap;
+
+
+
+
 
 Get through capabilities and remove bool/int/float constant counters and instead add uniform, uniform block, input/output component counters
 

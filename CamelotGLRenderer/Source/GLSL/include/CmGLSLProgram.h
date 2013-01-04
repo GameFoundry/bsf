@@ -58,7 +58,7 @@ namespace CamelotEngine {
     public:
 		~GLSLProgram();
 
-		const GLhandleARB getGLHandle() const { return mGLHandle; }
+		const GLuint getGLHandle() const { return mGLHandle; }
 
 		/** Sets the preprocessor defines use to compile the program. */
 		void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
@@ -113,7 +113,7 @@ namespace CamelotEngine {
 
 	private:
 		/// GL handle for shader object
-		GLhandleARB mGLHandle;
+		GLuint mGLHandle;
 		/// flag indicating if shader object successfully compiled
 		GLint mCompiled;
 		/// The input operation type for this (geometry) program
@@ -124,6 +124,7 @@ namespace CamelotEngine {
 		int mMaxOutputVertices;
 		/// Preprocessor options
 		String mPreprocessorDefines;
+		VertexDeclaration mVertexDeclaration;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
