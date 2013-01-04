@@ -41,8 +41,6 @@ namespace CamelotEngine
     protected:
 		static String sLanguageName;
     public:
-        GLSLProgramFactory(void);
-        ~GLSLProgramFactory(void);
 		/// Get the name of the language this factory creates programs for
 		const String& getLanguage(void) const;
 		/// create an instance of GLSLProgram

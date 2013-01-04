@@ -73,13 +73,6 @@ namespace CamelotEngine {
 		*  Returns an empty string if it can't convert it.
 		*/
 		virtual String gpuProgProfileToRSSpecificProfile(GpuProgramProfile gpuProgProfile) const;
-
-		/** Creates a new GpuProgramParameters instance which can be used to bind
-            parameters to your programs.
-        @remarks
-            Program parameters can be shared between multiple programs if you wish.
-        */
-        virtual GpuProgramParametersSharedPtr createParameters(void);
         
 		/** Create a GPU program from a string of assembly code.
         @remarks    

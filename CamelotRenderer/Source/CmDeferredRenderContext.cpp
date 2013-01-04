@@ -112,13 +112,6 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::unbindGpuProgram, mRenderSystem, gptype));
 	}
 
-	void DeferredRenderContext::bindGpuProgramParameters(GpuProgramType gptype, 
-		GpuProgramParametersSharedPtr params, UINT16 variabilityMask)
-	{
-		GpuProgramParametersSharedPtr paramCopy = GpuProgramParametersSharedPtr(new GpuProgramParameters(*params));
-		mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuProgramParameters, mRenderSystem, gptype, paramCopy, variabilityMask));
-	}
-
 	void DeferredRenderContext::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
 	{
 		GpuParamsPtr paramCopy = params->clone();

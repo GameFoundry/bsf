@@ -117,11 +117,6 @@ namespace CamelotEngine {
 		void unbindGpuProgram(GpuProgramType gptype);
 
 		/**
-		 * @copydoc RenderSystem::bindGpuProgramParameters()
-		 */
-		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask);
-		
-		/**
 		 * @copydoc RenderSystem::bindGpuParams()
 		 */
 		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
@@ -210,9 +205,6 @@ namespace CamelotEngine {
 
         /// Holds texture type settings for every stage
         GLenum* mTextureTypes;
-
-		/// Number of fixed-function texture units
-		unsigned short mFixedFunctionTextureUnits;
 
         void initInputDevices(void);
         void processInputDevices(void);

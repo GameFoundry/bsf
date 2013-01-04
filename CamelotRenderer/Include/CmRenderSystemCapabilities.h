@@ -228,35 +228,6 @@ namespace CamelotEngine
 		GPU_VENDOR_COUNT = 11
 	};
 
-	enum GpuProgramProfile
-	{
-		GPP_NONE,
-		GPP_PS_1_1,
-		GPP_PS_1_2,
-		GPP_PS_1_3,
-		GPP_PS_1_4,
-		GPP_PS_2_0,
-		GPP_PS_2_x,
-		GPP_PS_2_a,
-		GPP_PS_2_b,
-		GPP_PS_3_0,
-		GPP_PS_3_x,
-		GPP_PS_4_0,
-		GPP_PS_5_0,
-		GPP_VS_1_1,
-		GPP_VS_2_0,
-		GPP_VS_2_x,
-		GPP_VS_2_a,
-		GPP_VS_3_0,
-		GPP_VS_4_0,
-		GPP_VS_5_0,
-		GPP_GS_4_0,
-		GPP_GS_5_0,
-		GPP_HS_5_0,
-		GPP_DS_5_0,
-		GPP_CS_5_0
-	};
-
 	/** singleton class for storing the capabilities of the graphics card. 
 	@remarks
 	This class stores the capabilities of the graphics card.  This
@@ -405,7 +376,7 @@ namespace CamelotEngine
 			mNumTextureUnitsPerStage[type] = num;
 		}
 
-		void setNumCombinedTextureUnits(UINT16 num) const
+		void setNumCombinedTextureUnits(UINT16 num)
 		{
 			mNumCombinedTextureUnits = num;
 		}
@@ -434,9 +405,13 @@ namespace CamelotEngine
 		/** Returns the number of texture units the current output hardware
 		supports, for the specified stage.
 		*/
-		UINT16 getNumTextureUnits(GpuProgramType stage) const
+		UINT16 getNumTextureUnits(GpuProgramType type) const
 		{
-			return mNumTextureUnitsPerStage[type];
+			auto iterFind = mNumTextureUnitsPerStage.find(type);
+			if(iterFind != mNumTextureUnitsPerStage.end())
+				return iterFind->second;
+			else
+				return 0;
 		}
 
 		/** Returns the number of texture units the current output hardware

@@ -60,15 +60,14 @@ namespace CamelotEngine {
         return prg;
     }
     //---------------------------------------------------------------------------
-		const GpuProgramManager::SyntaxCodes& GpuProgramManager::getSupportedSyntax(void) const
-        {
-			// Use the current render system
-			RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
+	const GpuProgramManager::SyntaxCodes& GpuProgramManager::getSupportedSyntax(void) const
+    {
+		// Use the current render system
+		RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
 
-			// Get the supported syntaxed from RenderSystemCapabilities 
-			return rs->getCapabilities()->getSupportedShaderProfiles();
-        }
-
+		// Get the supported syntaxed from RenderSystemCapabilities 
+		return rs->getCapabilities()->getSupportedShaderProfiles();
+    }
     //---------------------------------------------------------------------------
     bool GpuProgramManager::isSyntaxSupported(const String& syntaxCode) const
         {
@@ -87,10 +86,4 @@ namespace CamelotEngine {
 
 		return  rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(gpuProgProfile);
 	}
-	//-----------------------------------------------------------------------------
-	GpuProgramParametersSharedPtr GpuProgramManager::createParameters(void)
-	{
-		return GpuProgramParametersSharedPtr(new GpuProgramParameters());
-	}
-	//---------------------------------------------------------------------
 }

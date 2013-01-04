@@ -27,22 +27,11 @@ THE SOFTWARE.
 */
 
 #include "CmGLSLProgramFactory.h"
-#include "CmGLSLLinkProgramManager.h"
 #include "CmGLSLProgram.h"
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------
     String GLSLProgramFactory::sLanguageName = "glsl";
-    //-----------------------------------------------------------------------
-	GLSLProgramFactory::GLSLProgramFactory(void)
-    {
-		GLSLLinkProgramManager::startUp(new GLSLLinkProgramManager());
-    }
-    //-----------------------------------------------------------------------
-    GLSLProgramFactory::~GLSLProgramFactory(void)
-    {
-		GLSLLinkProgramManager::shutDown();
-    }
     //-----------------------------------------------------------------------
     const String& GLSLProgramFactory::getLanguage(void) const
     {

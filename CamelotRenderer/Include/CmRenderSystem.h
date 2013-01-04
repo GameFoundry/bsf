@@ -239,14 +239,6 @@ namespace CamelotEngine
 		/** Bind Gpu program parameters.
 		@param gptype The type of program to bind the parameters to
 		@param params The parameters to bind
-		@param variabilityMask A mask of GpuParamVariability identifying which params need binding
-		*/
-		virtual void bindGpuProgramParameters(GpuProgramType gptype, 
-			GpuProgramParametersSharedPtr params, UINT16 variabilityMask) = 0;
-
-		/** Bind Gpu program parameters.
-		@param gptype The type of program to bind the parameters to
-		@param params The parameters to bind
 		*/
 		virtual void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params) = 0;
 
@@ -376,10 +368,6 @@ namespace CamelotEngine
 		RenderTargetPriorityMap mPrioritisedRenderTargets;
 		/** The Active render target. */
 		RenderTarget* mActiveRenderTarget;
-		/** The Active GPU programs and gpu program parameters*/
-		GpuProgramParametersSharedPtr mActiveVertexGpuProgramParameters;
-		GpuProgramParametersSharedPtr mActiveGeometryGpuProgramParameters;
-		GpuProgramParametersSharedPtr mActiveFragmentGpuProgramParameters;
 
 		// Active viewport (dest for future rendering operations)
 		Viewport mActiveViewport;

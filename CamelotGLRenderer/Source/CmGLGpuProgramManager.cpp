@@ -27,7 +27,6 @@ THE SOFTWARE.
 */
 
 #include "CmGLGpuProgramManager.h"
-#include "CmGLGpuProgram.h"
 #include "CmException.h"
 
 using namespace CamelotEngine;
@@ -36,7 +35,6 @@ GLGpuProgramManager::GLGpuProgramManager()
 {
     // Superclass sets up members 
 }
-
 
 GLGpuProgramManager::~GLGpuProgramManager()
 {

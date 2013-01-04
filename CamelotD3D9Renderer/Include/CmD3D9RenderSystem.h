@@ -52,14 +52,30 @@ namespace CamelotEngine
 		const String& getName() const;
 
 		void destroyRenderTarget(RenderTarget* renderTarget);
+
+		/**
+		 * @copydoc RenderSystem::setRenderTarget()
+		 */
 		void setRenderTarget(RenderTarget* target);
 
+		/**
+		 * @copydoc RenderSystem::bindGpuProgram()
+		 */
 		void bindGpuProgram(GpuProgramHandle prg);
-		void unbindGpuProgram(GpuProgramType gptype);
-		void bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 variabilityMask);
 
+		/**
+		 * @copydoc RenderSystem::unbindGpuProgram()
+		 */
+		void unbindGpuProgram(GpuProgramType gptype);
+
+		/**
+		 * @copydoc RenderSystem::bindGpuParams()
+		 */
 		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
 
+		/**
+		 * @copydoc RenderSystem::setSamplerState()
+		 */
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
 
 		/**
@@ -151,7 +167,9 @@ namespace CamelotEngine
 			IDirect3DBaseTexture9 *pTex;
 			/// vertex texture 
 			IDirect3DBaseTexture9 *pVertexTex;
-		} mTexStageDesc[CM_MAX_TEXTURE_LAYERS];
+		};
+
+		sD3DTextureStageDesc* mTexStageDesc;
 
 		D3D9DriverList* getDirect3DDrivers();
 				

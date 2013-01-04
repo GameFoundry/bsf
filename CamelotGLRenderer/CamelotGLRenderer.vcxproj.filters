@@ -33,9 +33,6 @@
     <ClInclude Include="Include\CmGLFrameBufferObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGLGpuProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmGLGpuProgramManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -96,12 +93,6 @@
     <ClInclude Include="Source\GLSL\include\CmGLSLGpuProgram.h">
       <Filter>GLSL</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GLSL\include\CmGLSLLinkProgram.h">
-      <Filter>GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GLSL\include\CmGLSLLinkProgramManager.h">
-      <Filter>GLSL</Filter>
-    </ClInclude>
     <ClInclude Include="Source\GLSL\include\CmGLSLPreprocessor.h">
       <Filter>GLSL</Filter>
     </ClInclude>
@@ -134,12 +125,6 @@
     <ClCompile Include="Source\GLSL\src\CmGLSLGpuProgram.cpp">
       <Filter>GLSL</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GLSL\src\CmGLSLLinkProgram.cpp">
-      <Filter>GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GLSL\src\CmGLSLLinkProgramManager.cpp">
-      <Filter>GLSL</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GLSL\src\CmGLSLPreprocessor.cpp">
       <Filter>GLSL</Filter>
     </ClCompile>
@@ -159,9 +144,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGLGpuProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLGpuProgramManager.cpp">

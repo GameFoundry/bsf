@@ -35,7 +35,6 @@ THE SOFTWARE.s
 #include "CmGLHardwareIndexBuffer.h"
 #include "CmGLDefaultHardwareBufferManager.h"
 #include "CmGLUtil.h"
-#include "CmGLGpuProgram.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
 #include "CmGLGpuProgramManager.h"
@@ -87,8 +86,6 @@ namespace CamelotEngine
 		mGeometryTexOffset(0),
 		mTextureTypes(nullptr)
 	{
-		size_t i;
-
 		// Get our GLSupport
 		mGLSupport = CamelotEngine::getGLSupport();
 
@@ -260,9 +257,6 @@ namespace CamelotEngine
 			break;
 		}
 
-		// Bind the program
-		glprg->bindProgram();
-
 		RenderSystem::bindGpuProgram(prg);
 	}
 	//---------------------------------------------------------------------
@@ -270,83 +264,9 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		if (gptype == GPT_VERTEX_PROGRAM && mCurrentVertexProgram)
-		{
-			mActiveVertexGpuProgramParameters = nullptr;
-			mCurrentVertexProgram->unbindProgram();
-			mCurrentVertexProgram = 0;
-		}
-		else if (gptype == GPT_GEOMETRY_PROGRAM && mCurrentGeometryProgram)
-		{
-			mActiveGeometryGpuProgramParameters = nullptr;
-			mCurrentGeometryProgram->unbindProgram();
-			mCurrentGeometryProgram = 0;
-		}
-		else if (gptype == GPT_FRAGMENT_PROGRAM && mCurrentFragmentProgram)
-		{
-			mActiveFragmentGpuProgramParameters = nullptr;
-			mCurrentFragmentProgram->unbindProgram();
-			mCurrentFragmentProgram = 0;
-		}
-		else if (gptype == GPT_DOMAIN_PROGRAM && mCurrentDomainProgram)
-		{
-			mCurrentDomainProgram->unbindProgram();
-			mCurrentDomainProgram = 0;
-		}
-		else if (gptype == GPT_HULL_PROGRAM && mCurrentHullProgram)
-		{
-			mCurrentHullProgram->unbindProgram();
-			mCurrentHullProgram = 0;
-		}
+		setActiveProgram(gptype, nullptr);
 
 		RenderSystem::unbindGpuProgram(gptype);
-	}
-
-	void GLRenderSystem::bindGpuProgramParameters(GpuProgramType gptype, GpuProgramParametersSharedPtr params, UINT16 mask)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		// Set textures
-		const GpuNamedConstants& consts = params->getConstantDefinitions();
-		for(auto iter = consts.map.begin(); iter != consts.map.end(); ++iter)
-		{
-			const GpuConstantDefinition& def = iter->second;
-
-			if(def.variability & mask)
-			{
-				if(def.isSampler())
-				{
-					TextureHandle curTexture = params->getTexture(def.physicalIndex);
-
-					if(!curTexture.isLoaded())
-						continue;
-
-					setTexture(gptype, def.physicalIndex, true, curTexture.getInternalPtr());
-
-					SamplerStatePtr samplerState = params->getSamplerState(def.physicalIndex);
-					if(samplerState == nullptr)
-						setSamplerState(gptype, def.physicalIndex, SamplerState::getDefault());
-					else
-						setSamplerState(gptype, def.physicalIndex, *samplerState);
-				}
-			}
-		}
-
-		switch (gptype)
-		{
-		case GPT_VERTEX_PROGRAM:
-			mActiveVertexGpuProgramParameters = params;
-			mCurrentVertexProgram->bindProgramParameters(params, mask);
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			mActiveGeometryGpuProgramParameters = params;
-			mCurrentGeometryProgram->bindProgramParameters(params, mask);
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-			mActiveFragmentGpuProgramParameters = params;
-			mCurrentFragmentProgram->bindProgramParameters(params, mask);
-			break;
-		}
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
@@ -696,13 +616,15 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		// TODO - Generate pipeline and bind program
+
+
 		// Call super class
 		RenderSystem::render(op);
 
 		void* pBufferData = 0;
 
-        const VertexDeclaration::VertexElementList& decl = 
-            op.vertexData->vertexDeclaration->getElements();
+        const VertexDeclaration::VertexElementList& decl = op.vertexData->vertexDeclaration->getElements();
         VertexDeclaration::VertexElementList::const_iterator elem, elemEnd;
         elemEnd = decl.end();
 		vector<GLuint>::type attribsBound;
@@ -731,45 +653,56 @@ namespace CamelotEngine
 
 			unsigned int i = 0;
 			VertexElementSemantic sem = elem->getSemantic();
- 
- 			bool isCustomAttrib = false;
- 			if (mCurrentVertexProgram)
- 				isCustomAttrib = mCurrentVertexProgram->isAttributeValid(sem, elem->getIndex());
- 
- 			// Custom attribute support
- 			// tangents, binormals, blendweights etc always via this route
- 			// builtins may be done this way too
- 			if (isCustomAttrib)
- 			{
- 				GLint attrib = mCurrentVertexProgram->getAttributeIndex(sem, elem->getIndex());
-				unsigned short typeCount = VertexElement::getTypeCount(elem->getType());
-				GLboolean normalised = GL_FALSE;
-				switch(elem->getType())
-				{
-				case VET_COLOR:
-				case VET_COLOR_ABGR:
-				case VET_COLOR_ARGB:
-					// Because GL takes these as a sequence of single unsigned bytes, count needs to be 4
-					// VertexElement::getTypeCount treats them as 1 (RGBA)
-					// Also need to normalise the fixed-point data
-					typeCount = 4;
-					normalised = GL_TRUE;
-					break;
-				default:
-					break;
-				};
 
- 				glVertexAttribPointerARB(
- 					attrib,
- 					typeCount, 
-  					GLHardwareBufferManager::getGLType(elem->getType()), 
- 					normalised, 
-  					static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
-  					pBufferData);
- 				glEnableVertexAttribArrayARB(attrib);
+
+
+
+
+			// TODO - Vertex elem not set
+			
+
+
+
+
+
+ 			//bool isCustomAttrib = false;
+ 			//if (mCurrentVertexProgram)
+ 			//	isCustomAttrib = mCurrentVertexProgram->isAttributeValid(sem, elem->getIndex());
  
- 				attribsBound.push_back(attrib);
- 			}
+ 			//// Custom attribute support
+ 			//// tangents, binormals, blendweights etc always via this route
+ 			//// builtins may be done this way too
+ 			//if (isCustomAttrib)
+ 			//{
+ 			//	GLint attrib = mCurrentVertexProgram->getAttributeIndex(sem, elem->getIndex());
+				//unsigned short typeCount = VertexElement::getTypeCount(elem->getType());
+				//GLboolean normalised = GL_FALSE;
+				//switch(elem->getType())
+				//{
+				//case VET_COLOR:
+				//case VET_COLOR_ABGR:
+				//case VET_COLOR_ARGB:
+				//	// Because GL takes these as a sequence of single unsigned bytes, count needs to be 4
+				//	// VertexElement::getTypeCount treats them as 1 (RGBA)
+				//	// Also need to normalise the fixed-point data
+				//	typeCount = 4;
+				//	normalised = GL_TRUE;
+				//	break;
+				//default:
+				//	break;
+				//};
+
+ 			//	glVertexAttribPointerARB(
+ 			//		attrib,
+ 			//		typeCount, 
+  		//			GLHardwareBufferManager::getGLType(elem->getType()), 
+ 			//		normalised, 
+  		//			static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
+  		//			pBufferData);
+ 			//	glEnableVertexAttribArrayARB(attrib);
+ 
+ 			//	attribsBound.push_back(attrib);
+ 			//}
         }
 
 		// Find the correct type to render
@@ -1500,14 +1433,6 @@ namespace CamelotEngine
 			mCurrentContext->setInitialized();
 		}
 
-		// Rebind GPU programs to new context
-		if (mCurrentVertexProgram)
-			mCurrentVertexProgram->bindProgram();
-		if (mCurrentGeometryProgram)
-			mCurrentGeometryProgram->bindProgram();
-		if (mCurrentFragmentProgram)
-			mCurrentFragmentProgram->bindProgram();
-
 		// Must reset depth/colour write mask to according with user desired, otherwise,
 		// clearFrameBuffer would be wrong because the value we are recorded may be
 		// difference with the really state stored in GL context.
@@ -1784,21 +1709,6 @@ namespace CamelotEngine
 		{
 			CM_EXCEPT(InvalidParametersException, 
 				"Trying to initialize GLRenderSystem from RenderSystemCapabilities that do not support OpenGL");
-		}
-
-		// set texture the number of texture units
-		mFixedFunctionTextureUnits = caps->getNumTextureUnits();
-
-		//In GL there can be less fixed function texture units than general
-		//texture units. Get the minimum of the two.
-		if (caps->hasCapability(RSC_FRAGMENT_PROGRAM))
-		{
-			GLint maxTexCoords = 0;
-			glGetIntegerv(GL_MAX_TEXTURE_COORDS_ARB, &maxTexCoords);
-			if (mFixedFunctionTextureUnits > maxTexCoords)
-			{
-				mFixedFunctionTextureUnits = maxTexCoords;
-			}
 		}
 
 		if(caps->hasCapability(RSC_GL1_5_NOVBO))
@@ -2249,14 +2159,13 @@ namespace CamelotEngine
 	{
 		if(gptype != GPT_VERTEX_PROGRAM && gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_GEOMETRY_PROGRAM)
 		{
-			LOGWRN("OpenGL cannot assign textures to this gpu program type: " + toString(gptype));
-			return;
+			CM_EXCEPT(InvalidParametersException, "OpenGL cannot assign textures to this gpu program type: " + toString(gptype));
 		}
 
 		UINT32 numSupportedUnits = mCurrentCapabilities->getNumTextureUnits(gptype);
 		if(unit < 0 || unit >= numSupportedUnits)
 		{
-			LOGWRN("Invalid texture unit index for the provided stage. Unit index: " + toString(unit) + ". Stage: " + 
+			CM_EXCEPT(InvalidParametersException, "Invalid texture unit index for the provided stage. Unit index: " + toString(unit) + ". Stage: " + 
 				toString(gptype) + ". Supported range is 0 .. " + toString(numSupportedUnits - 1));
 		}
 
@@ -2314,6 +2223,8 @@ namespace CamelotEngine
 		case GPT_HULL_PROGRAM:
 			return mCurrentHullProgram;
 			break;
+		default:
+			CM_EXCEPT(InvalidParametersException, "Insupported gpu program type: " + toString(gptype));
 		}
 	}
 	/************************************************************************/

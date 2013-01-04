@@ -65,9 +65,9 @@ namespace CamelotEngine
 			{
 				mAssemblerProgram->initialize_internal();
 			}
-
-			Resource::initialize_internal();
 		}
+
+		Resource::initialize_internal();
     }
     //---------------------------------------------------------------------------
     void HighLevelGpuProgram::unload_internal()

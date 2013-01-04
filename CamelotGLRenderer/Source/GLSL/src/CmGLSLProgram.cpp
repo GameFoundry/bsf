@@ -35,7 +35,6 @@ THE SOFTWARE.
 #include "CmGLSLProgram.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLExtSupport.h"
-#include "CmGLSLLinkProgramManager.h"
 #include "CmGLSLPreprocessor.h"
 
 #include "CmGLSLProgramRTTI.h"

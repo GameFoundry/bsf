@@ -151,7 +151,6 @@
     <ClInclude Include="Include\CmGLDefaultHardwareBufferManager.h" />
     <ClInclude Include="Include\CmGLDepthStencilBuffer.h" />
     <ClInclude Include="Include\CmGLFrameBufferObject.h" />
-    <ClInclude Include="Include\CmGLGpuProgram.h" />
     <ClInclude Include="Include\CmGLGpuProgramManager.h" />
     <ClInclude Include="Include\CmGLHardwareBufferManager.h" />
     <ClInclude Include="Include\CmGLHardwareIndexBuffer.h" />
@@ -175,8 +174,6 @@
     <ClInclude Include="Include\CmWin32Window.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLExtSupport.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLGpuProgram.h" />
-    <ClInclude Include="Source\GLSL\include\CmGLSLLinkProgram.h" />
-    <ClInclude Include="Source\GLSL\include\CmGLSLLinkProgramManager.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLPreprocessor.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLProgram.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLProgramFactory.h" />
@@ -188,7 +185,6 @@
     <ClCompile Include="Source\CmGLDefaultHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmGLDepthStencilBuffer.cpp" />
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp" />
-    <ClCompile Include="Source\CmGLGpuProgram.cpp" />
     <ClCompile Include="Source\CmGLGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGLHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmGLHardwareIndexBuffer.cpp" />
@@ -209,8 +205,6 @@
     <ClCompile Include="Source\glew.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLGpuProgram.cpp" />
-    <ClCompile Include="Source\GLSL\src\CmGLSLLinkProgram.cpp" />
-    <ClCompile Include="Source\GLSL\src\CmGLSLLinkProgramManager.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLPreprocessor.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLProgram.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLProgramFactory.cpp" />

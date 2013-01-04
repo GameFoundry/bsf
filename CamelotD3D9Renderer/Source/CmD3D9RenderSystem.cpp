@@ -89,6 +89,7 @@ namespace CamelotEngine
 
 	//---------------------------------------------------------------------
 	D3D9RenderSystem::D3D9RenderSystem( HINSTANCE hInstance )
+		:mTexStageDesc(nullptr)
 	{
 		// update singleton access pointer.
 		msD3D9RenderSystem = this;
@@ -153,15 +154,6 @@ namespace CamelotEngine
 		if( NULL == (mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) )
 			CM_EXCEPT(InternalErrorException, "Failed to create Direct3D9 object");
 
-		// set stages desc. to defaults
-		for (size_t n = 0; n < CM_MAX_TEXTURE_LAYERS; n++)
-		{
-			mTexStageDesc[n].coordIndex = 0;
-			mTexStageDesc[n].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
-			mTexStageDesc[n].pTex = 0;
-			mTexStageDesc[n].pVertexTex = 0;
-		}
-
 		mLastVertexSourceCount = 0;
 
 		RenderWindow* autoWindow = NULL;
@@ -205,6 +197,12 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::destroy_internal()
 	{
+		if(mTexStageDesc != nullptr)
+		{
+			delete[] mTexStageDesc;
+			mTexStageDesc = nullptr;
+		}
+
 		RenderSystem::destroy_internal();
 
 		SAFE_DELETE( mDeviceManager );
@@ -296,7 +294,6 @@ namespace CamelotEngine
 		switch(gptype)
 		{
 		case GPT_VERTEX_PROGRAM:
-			mActiveVertexGpuProgramParameters = nullptr;
 			hr = getActiveD3D9Device()->SetVertexShader(NULL);
 			if (FAILED(hr))
 			{
@@ -304,7 +301,6 @@ namespace CamelotEngine
 			}
 			break;
 		case GPT_FRAGMENT_PROGRAM:
-			mActiveFragmentGpuProgramParameters = nullptr;
 			hr = getActiveD3D9Device()->SetPixelShader(NULL);
 			if (FAILED(hr))
 			{
@@ -314,145 +310,6 @@ namespace CamelotEngine
 		};
 
 		RenderSystem::unbindGpuProgram(gptype);
-	}
-
-	void D3D9RenderSystem::bindGpuProgramParameters(GpuProgramType gptype, 
-		GpuProgramParametersSharedPtr params, UINT16 variability)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		HRESULT hr;
-		GpuLogicalBufferStructPtr floatLogical = params->getFloatLogicalBufferStruct();
-		GpuLogicalBufferStructPtr intLogical = params->getIntLogicalBufferStruct();
-
-		GpuLogicalBufferStructPtr samplerLogical = params->getSamplerLogicalBufferStruct();
-		GpuLogicalBufferStructPtr textureLogical = params->getTextureLogicalBufferStruct();
-
-		// Set texture & sampler
-		{
-			for (GpuLogicalIndexUseMap::const_iterator i = samplerLogical->map.begin(); i != samplerLogical->map.end(); ++i)
-			{
-				if (i->second.variability & variability)
-				{
-					UINT32 logicalIndex = i->first;
-
-					SamplerStatePtr samplerState = params->getSamplerState(i->second.physicalIndex);
-					if(samplerState == nullptr)
-						setSamplerState(gptype, logicalIndex, SamplerState::getDefault());
-					else
-						setSamplerState(gptype, logicalIndex, *samplerState);
-				}
-			}
-
-			for (GpuLogicalIndexUseMap::const_iterator i = textureLogical->map.begin(); i != textureLogical->map.end(); ++i)
-			{
-				if (i->second.variability & variability)
-				{
-					UINT32 logicalIndex = i->first;
-					TextureHandle texture = params->getTexture(i->second.physicalIndex);
-
-					if(!texture.isLoaded())
-						continue;
-
-					setTexture(gptype, logicalIndex, true, texture.getInternalPtr());
-				}
-			}
-		}
-
-		switch(gptype)
-		{
-		case GPT_VERTEX_PROGRAM:
-			mActiveVertexGpuProgramParameters = params;
-			{
-				for (GpuLogicalIndexUseMap::const_iterator i = floatLogical->map.begin();
-					i != floatLogical->map.end(); ++i)
-				{
-					if (i->second.variability & variability)
-					{
-						UINT32 logicalIndex = i->first;
-						const float* pFloat = params->getFloatPointer(i->second.physicalIndex);
-						UINT32 slotCount = i->second.currentSize / 4;
-						assert (i->second.currentSize % 4 == 0 && "Should not have any "
-							"elements less than 4 wide for D3D9");
-
-						if (FAILED(hr = getActiveD3D9Device()->SetVertexShaderConstantF( // TODO Low priority. Binding parameters 1 by 1 is slow. It would be better to keep them in a sequential
-							(UINT)logicalIndex, pFloat, (UINT)slotCount)))               // buffer and then only call this method once
-						{
-							CM_EXCEPT(RenderingAPIException, "Unable to upload vertex shader float parameters");
-						}
-					}
-
-				}
-			}
-			// bind ints
-			{
-				for (GpuLogicalIndexUseMap::const_iterator i = intLogical->map.begin();
-					i != intLogical->map.end(); ++i)
-				{
-					if (i->second.variability & variability)
-					{
-						UINT32 logicalIndex = i->first;
-						const int* pInt = params->getIntPointer(i->second.physicalIndex);
-						UINT32 slotCount = i->second.currentSize / 4;
-						assert (i->second.currentSize % 4 == 0 && "Should not have any "
-							"elements less than 4 wide for D3D9");
-
-						if (FAILED(hr = getActiveD3D9Device()->SetVertexShaderConstantI(
-							static_cast<UINT>(logicalIndex), pInt, static_cast<UINT>(slotCount))))
-						{
-							CM_EXCEPT(RenderingAPIException, "Unable to upload vertex shader int parameters");
-						}
-					}
-				}
-			}
-
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-			mActiveFragmentGpuProgramParameters = params;
-			{
-				for (GpuLogicalIndexUseMap::const_iterator i = floatLogical->map.begin();
-					i != floatLogical->map.end(); ++i)
-				{
-					if (i->second.variability & variability)
-					{
-						UINT32 logicalIndex = i->first;
-						const float* pFloat = params->getFloatPointer(i->second.physicalIndex);
-						UINT32 slotCount = i->second.currentSize / 4;
-						assert (i->second.currentSize % 4 == 0 && "Should not have any "
-							"elements less than 4 wide for D3D9");
-
-						if (FAILED(hr = getActiveD3D9Device()->SetPixelShaderConstantF(
-							static_cast<UINT>(logicalIndex), pFloat, static_cast<UINT>(slotCount))))
-						{
-							CM_EXCEPT(RenderingAPIException, "Unable to upload pixel shader float parameters");
-						}
-					}
-				}
-			}
-			// bind ints
-			{
-				for (GpuLogicalIndexUseMap::const_iterator i = intLogical->map.begin();
-					i != intLogical->map.end(); ++i)
-				{
-					if (i->second.variability & variability)
-					{
-						UINT32 logicalIndex = i->first;
-						const int* pInt = params->getIntPointer(i->second.physicalIndex);
-						UINT32 slotCount = i->second.currentSize / 4;
-						assert (i->second.currentSize % 4 == 0 && "Should not have any "
-							"elements less than 4 wide for D3D9");
-
-						if (FAILED(hr = getActiveD3D9Device()->SetPixelShaderConstantI(
-							static_cast<UINT>(logicalIndex), pInt, static_cast<UINT>(slotCount))))
-						{
-							CM_EXCEPT(RenderingAPIException, "Unable to upload pixel shader int parameters");
-						}
-					}
-
-				}
-			}
-			break;
-		};
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
@@ -612,7 +469,6 @@ namespace CamelotEngine
 			}
 		}
 		
-
 		// Do the real removal
 		RenderSystem::destroyRenderTarget(renderTarget);	
 	}
@@ -2382,6 +2238,18 @@ namespace CamelotEngine
 
 		if (caps->isShaderProfileSupported("cg"))
 			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
+
+		UINT32 maxNumCombinedTextures = caps->getNumCombinedTextureUnits();
+		mTexStageDesc = new sD3DTextureStageDesc[maxNumCombinedTextures];
+
+		// set stages desc. to defaults
+		for (UINT32 n = 0; n < maxNumCombinedTextures; n++)
+		{
+			mTexStageDesc[n].coordIndex = 0;
+			mTexStageDesc[n].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
+			mTexStageDesc[n].pTex = 0;
+			mTexStageDesc[n].pVertexTex = 0;
+		}
 	}
 
 	//-----------------------------------------------------------------------

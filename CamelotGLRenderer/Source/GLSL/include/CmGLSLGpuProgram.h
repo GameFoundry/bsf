@@ -31,8 +31,7 @@ THE SOFTWARE.
 
 // Precompiler options
 #include "CmGLSLExtSupport.h"
-#include "CmGLGpuProgram.h"
-
+#include "CmGpuProgram.h"
 
 namespace CamelotEngine {
 
@@ -45,7 +44,7 @@ namespace CamelotEngine {
 		interface between the GLSLLinkProgramManager , GLRenderSystem, and the active GLSLProgram
 		instances.
 	*/
-    class CM_RSGL_EXPORT GLSLGpuProgram : public GLGpuProgram
+    class CM_RSGL_EXPORT GLSLGpuProgram : public GpuProgram
     {
     private:
 		/// GL Handle for the shader object
@@ -61,35 +60,25 @@ namespace CamelotEngine {
 		static UINT32 mHullShaderCount;
 		/// keep track of the number of domain shaders created
 		static UINT32 mDomainShaderCount;
+
+		UINT32 mProgramID;
+		GLenum mProgramType;
 	public:
 		~GLSLGpuProgram();
 		GLSLGpuProgram(GLSLProgram* parent, const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile);
 
-		/// Execute the binding functions for this program
-		void bindProgram(void);
-		/// Execute the unbinding functions for this program
-		void unbindProgram(void);
-		/// Execute the param binding functions for this program
-		void bindProgramParameters(GpuProgramParametersSharedPtr params, UINT16 mask);
-
 		/// get the GLSLProgram for the shader object
 		GLSLProgram* getGLSLProgram(void) const { return mGLSLProgram; }
-
-		/// @copydoc GLGpuProgram::getAttributeIndex
-		GLuint getAttributeIndex(VertexElementSemantic semantic, UINT32 index);
 		
-		/// @copydoc GLGpuProgram::isAttributeValid
-		bool isAttributeValid(VertexElementSemantic semantic, UINT32 index);
-		
+		/// Get the assigned GL program id
+		const UINT32 getProgramID(void) const { return mProgramID; }
 
     protected:
 		friend class GLSLProgramFactory;
 
         /// Overridden from GpuProgram
         void loadFromSource(void);
-		/// @copydoc Resource::unloadImpl
-		void unloadImpl(void);
 		/// @copydoc Resource::loadImpl
 		void initialize_internal(void);
     };
