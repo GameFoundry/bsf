@@ -96,20 +96,21 @@ int _tmain(int argc, _TCHAR* argv[])
 	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 
 	///////////////// GLSL SHADERS ////////////////////////////
-	String fragShaderCode = " #version 330 \n \
+	String fragShaderCode = " #version 400 \n \
+							  uniform mainFragBlock { vec4 solidcolor; }; \
 							  uniform sampler2D tex; \
 							  in vec2 texcoord0; \
 							  out vec4 fragColor; \
 							  void main() \
 							  {\
 								  vec4 texColor = texture2D(tex, texcoord0.st);\
-								  fragColor = texColor; \
+								  fragColor = solidcolor; \
 							  }";
 
 	fragProg = HighLevelGpuProgram::create(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 
 	// TODO - Make sure to document the strict input parameter naming. (Exact supported names are in GLSLParamParser)
-	String vertShaderCode = "#version 330 \n \
+	String vertShaderCode = "#version 400 \n \
 							 uniform mat4 matViewProjection; \
 							 in vec4 cm_position; \
 							 in vec2 cm_texcoord0; \

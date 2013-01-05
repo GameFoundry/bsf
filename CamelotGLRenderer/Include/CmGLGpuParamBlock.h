@@ -7,6 +7,12 @@ namespace CamelotEngine
 {
 	class CM_RSGL_EXPORT GLGpuParamBlock : public GpuParamBlock
 	{
+	private:
+		struct GLGpuParamBlockSharedData
+		{
+			GLuint mGLHandle;
+		};
+
 	public:
 		GLGpuParamBlock(const GpuParamBlockDesc& desc);
 		~GLGpuParamBlock();
@@ -14,10 +20,9 @@ namespace CamelotEngine
 		virtual void updateIfDirty();
 		virtual GpuParamBlockPtr clone() const;
 
-		GLuint getGLHandle() const { return mGLHandle; }
+		GLuint getGLHandle() const { return mGLSharedData->mGLHandle; }
 
 	private:
-		GLuint mGLHandle;
-		bool mBufferInitialized;
+		GLGpuParamBlockSharedData* mGLSharedData;
 	};
 }

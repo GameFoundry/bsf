@@ -19,18 +19,9 @@
 /////
 -----------GpuProgramParameters/Pass/Material REFACTOR------------------------------
 
-Finish up GL port:
- - Params aren't being initialized anywhere
+Destroying and constructing GpuParamBlock happens on main thread, which is wrong (especially destroying it)
 
-Set up pipeline
-Assign vertex attributes
- - When rendering, compare mesh vertec decl and shader decl and use only overlapping attribs
-Assign uniform buffers
-
-
-
-Get through capabilities and remove bool/int/float constant counters and instead add uniform, uniform block, input/output component counters
-
+Uniform buffers for GL are all set up but don't actually work :/
 Saving/loading of material params isn't completed (in MAterialRTTI)
 Port DX11 to new shader param system
 Ability to switch out GpuParamBlocks (i.e. share them between programs)

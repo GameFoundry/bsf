@@ -265,7 +265,13 @@ namespace CamelotEngine
 
 					GLint arrayStride;
 					glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_ARRAY_STRIDE, &arrayStride);
-					gpuParam.elementSize = arrayStride;
+
+					if(arrayStride != 0)
+					{
+						assert (arrayStride % 4 == 0);
+
+						gpuParam.elementSize = arrayStride / 4;
+					}
 
 					gpuParam.paramBlockSlot = blockIndex + 1; // 0 is reserved for globals
 
@@ -297,6 +303,9 @@ namespace CamelotEngine
 
 			GLint blockSize = 0;
 			glGetActiveUniformBlockiv(glProgram, iter->second.slot - 1, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+
+			assert (blockSize % 4 == 0);
+			blockSize = blockSize / 4;
 
 			if(iter->second.blockSize != blockSize)
 				CM_EXCEPT(InternalErrorException, "OpenGL specified and manual uniform block buffer sizes don't match!");

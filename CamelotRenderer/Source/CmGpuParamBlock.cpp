@@ -6,15 +6,22 @@
 namespace CamelotEngine
 {
 	GpuParamBlock::GpuParamBlock(const GpuParamBlockDesc& desc)
-		:mSize(desc.blockSize * sizeof(UINT32)), mDirty(true)
+		:mSize(desc.blockSize * sizeof(UINT32)), mOwnsSharedData(true)
 	{
 		mData = new UINT8[desc.blockSize];
 		memset(mData, 0, desc.blockSize);
+
+		sharedData = new GpuParamBlockSharedData();
+		sharedData->mDirty = true;
+		sharedData->mInitialized = false;
 	}
 
 	GpuParamBlock::~GpuParamBlock()
 	{
 		delete [] mData;
+
+		if(mOwnsSharedData)
+			delete sharedData;
 	}
 
 	void GpuParamBlock::write(UINT32 offset, const void* data, UINT32 size)
@@ -30,7 +37,7 @@ namespace CamelotEngine
 
 		memcpy(mData + offset, data, size);
 
-		mDirty = true;
+		sharedData->mDirty = true;
 	}
 
 	void GpuParamBlock::zeroOut(UINT32 offset, UINT32 size)
@@ -46,7 +53,7 @@ namespace CamelotEngine
 
 		memset(mData + offset, 0, size);
 
-		mDirty = true;
+		sharedData->mDirty = true;
 	}
 
 	const UINT8* GpuParamBlock::getDataPtr(UINT32 offset) const
@@ -65,7 +72,7 @@ namespace CamelotEngine
 
 	void GpuParamBlock::updateIfDirty()
 	{
-		mDirty = false;
+		sharedData->mDirty = false;
 
 		// Do nothing
 	}
@@ -74,6 +81,8 @@ namespace CamelotEngine
 	{
 		GpuParamBlockPtr clonedParamBlock(new GpuParamBlock(*this));
 		clonedParamBlock->mData = new UINT8[mSize];
+		clonedParamBlock->mSize = mSize;
+		clonedParamBlock->mOwnsSharedData = false;
 		memcpy(clonedParamBlock->mData, mData, mSize);
 
 		return clonedParamBlock;

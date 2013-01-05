@@ -259,6 +259,13 @@ namespace CamelotEngine {
 		UINT32 mVertexTexOffset;
 		UINT32 mGeometryTexOffset;
 
+		UINT32 mFragmentUBOffset;
+		UINT32 mVertexUBOffset;
+		UINT32 mGeometryUBOffset;
+		UINT32 mHullUBOffset;
+		UINT32 mDomainUBOffset;
+		UINT32 mComputeUBOffset;
+
 		/* The main GL context - main thread only */
         GLContext *mMainContext;
         /* The current GL context  - main thread only */
@@ -519,6 +526,13 @@ namespace CamelotEngine {
 		 * 			into a global texture unit usable by OpenGL.
 		 */
 		UINT32 getGLTextureUnit(GpuProgramType gptype, UINT32 unit);
+
+		/**
+		 * @brief	OpenGL shares all buffer bindings, but the engine prefers to keep buffers
+		 * 			separate per-stage. This will convert block buffer binding that is set per stage
+		 * 			into a global block buffer binding usable by OpenGL.
+		 */
+		UINT32 getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding);
 
 		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgram* program);
 		GLSLGpuProgram* getActiveProgram(GpuProgramType gptype) const;

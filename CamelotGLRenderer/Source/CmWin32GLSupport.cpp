@@ -117,11 +117,11 @@ namespace CamelotEngine
 #endif
 
 		// Check for W32 specific extensions probe function
-		PFNWGLGETEXTENSIONSSTRINGARBPROC _wglGetExtensionsStringARB = 
-			(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-		if(!_wglGetExtensionsStringARB)
+		PFNWGLGETEXTENSIONSSTRINGARBPROC _wglGetExtensionsString = 
+			(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsString");
+		if(!_wglGetExtensionsString)
 			return;
-		const char *wgl_extensions = _wglGetExtensionsStringARB(mInitialWindow->getHDC());
+		const char *wgl_extensions = _wglGetExtensionsString(mInitialWindow->getHDC());
 
 		// Parse them, and add them to the main list
 		StringStream ext;

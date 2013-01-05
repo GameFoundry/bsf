@@ -49,6 +49,7 @@ THE SOFTWARE.s
 #include "CmGLRenderWindowManager.h"
 #include "CmGLSLProgramPipelineManager.h"
 #include "CmGpuParams.h"
+#include "CmGLGpuParamBlock.h"
 #include "CmDebug.h"
 
 #if CM_DEBUG_MODE
@@ -86,7 +87,13 @@ namespace CamelotEngine
 		mFragmentTexOffset(0),
 		mVertexTexOffset(0),
 		mGeometryTexOffset(0),
-		mTextureTypes(nullptr)
+		mTextureTypes(nullptr),
+		mFragmentUBOffset(0),
+		mVertexUBOffset(0),
+		mGeometryUBOffset(0),
+		mHullUBOffset(0),
+		mDomainUBOffset(0),
+		mComputeUBOffset(0)
 	{
 		// Get our GLSupport
 		mGLSupport = CamelotEngine::getGLSupport();
@@ -311,90 +318,103 @@ namespace CamelotEngine
 			texUnit++;
 		}
 
+		UINT32 blockBinding = 0;
+		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
+		{
+			if(iter->second.slot == 0)
+				continue;
+
+			GpuParamBlockPtr paramBlock = params->getParamBlock(iter->second.slot);
+			if(paramBlock == nullptr)
+				continue;
+
+			GLGpuParamBlockPtr glParamBlock = std::static_pointer_cast<GLGpuParamBlock>(paramBlock);
+
+			UINT32 globalBlockBinding = getGLUniformBlockBinding(gptype, blockBinding);
+			glUniformBlockBinding(glProgram, iter->second.slot - 1, globalBlockBinding);
+			glBindBufferRange(GL_UNIFORM_BUFFER, globalBlockBinding, glParamBlock->getGLHandle(), 0, glParamBlock->getSize());
+
+			blockBinding++;
+		}
+
 		for(auto iter = paramDesc.params.begin(); iter != paramDesc.params.end(); ++iter)
 		{
 			const GpuParamMemberDesc& paramDesc = iter->second;
 
 			GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
 			
-			if(paramDesc.paramBlockSlot == 0) // 0 means uniforms are not in a block
+			if(paramDesc.paramBlockSlot != 0) // 0 means uniforms are not in a block
+				continue;
+
+			const UINT8* ptrData = paramBlock->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
+
+			switch(paramDesc.type)
 			{
-				const UINT8* ptrData = paramBlock->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
-
-				switch(paramDesc.type)
-				{
-				case GCT_FLOAT1:
-					glProgramUniform1fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
-					break;
-				case GCT_FLOAT2:
-					glProgramUniform2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
-					break;
-				case GCT_FLOAT3:
-					glProgramUniform3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
-					break;
-				case GCT_FLOAT4:
-					glProgramUniform4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
-					break;
-				case GCT_MATRIX_2X2:
-					glProgramUniformMatrix2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-						GL_TRUE, (GLfloat*)ptrData);
-					break;
-				case GCT_MATRIX_2X3:
-					glProgramUniformMatrix2x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-						GL_TRUE, (GLfloat*)ptrData);
-					break;
-				case GCT_MATRIX_2X4:
-					glProgramUniformMatrix2x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-						GL_TRUE, (GLfloat*)ptrData);
-					break;
-				case GCT_MATRIX_3X2:
-					glProgramUniformMatrix3x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-						GL_TRUE, (GLfloat*)ptrData);
-					break;
-				case GCT_MATRIX_3X3:
-					glProgramUniformMatrix3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-						GL_TRUE, (GLfloat*)ptrData);
-					break;
-				case GCT_MATRIX_3X4:
-					glProgramUniformMatrix3x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-						GL_TRUE, (GLfloat*)ptrData);
-					break;
-				case GCT_MATRIX_4X2:
-					glProgramUniformMatrix4x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-						GL_TRUE, (GLfloat*)ptrData);
-					break;
-				case GCT_MATRIX_4X3:
-					glProgramUniformMatrix4x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-						GL_TRUE, (GLfloat*)ptrData);
-					break;
-				case GCT_MATRIX_4X4:
-					glProgramUniformMatrix4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-						GL_TRUE, (GLfloat*)ptrData);
-					break;
-				case GCT_INT1:
-					glProgramUniform1iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
-					break;
-				case GCT_INT2:
-					glProgramUniform2iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
-					break;
-				case GCT_INT3:
-					glProgramUniform3iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
-					break;
-				case GCT_INT4:
-					glProgramUniform4iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
-					break;
-				case GMT_BOOL:
-					glProgramUniform1uiv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLuint*)ptrData);
-					break;
-				case GCT_UNKNOWN:
-					break;
-				}
-			}
-			else
-			{
-
-
-				CM_EXCEPT(NotImplementedException, "Support for uniform blocks not implemented yet");
+			case GCT_FLOAT1:
+				glProgramUniform1fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
+				break;
+			case GCT_FLOAT2:
+				glProgramUniform2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
+				break;
+			case GCT_FLOAT3:
+				glProgramUniform3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
+				break;
+			case GCT_FLOAT4:
+				glProgramUniform4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
+				break;
+			case GCT_MATRIX_2X2:
+				glProgramUniformMatrix2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+					GL_TRUE, (GLfloat*)ptrData);
+				break;
+			case GCT_MATRIX_2X3:
+				glProgramUniformMatrix2x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+					GL_TRUE, (GLfloat*)ptrData);
+				break;
+			case GCT_MATRIX_2X4:
+				glProgramUniformMatrix2x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+					GL_TRUE, (GLfloat*)ptrData);
+				break;
+			case GCT_MATRIX_3X2:
+				glProgramUniformMatrix3x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+					GL_TRUE, (GLfloat*)ptrData);
+				break;
+			case GCT_MATRIX_3X3:
+				glProgramUniformMatrix3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+					GL_TRUE, (GLfloat*)ptrData);
+				break;
+			case GCT_MATRIX_3X4:
+				glProgramUniformMatrix3x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+					GL_TRUE, (GLfloat*)ptrData);
+				break;
+			case GCT_MATRIX_4X2:
+				glProgramUniformMatrix4x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+					GL_TRUE, (GLfloat*)ptrData);
+				break;
+			case GCT_MATRIX_4X3:
+				glProgramUniformMatrix4x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+					GL_TRUE, (GLfloat*)ptrData);
+				break;
+			case GCT_MATRIX_4X4:
+				glProgramUniformMatrix4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
+					GL_TRUE, (GLfloat*)ptrData);
+				break;
+			case GCT_INT1:
+				glProgramUniform1iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
+				break;
+			case GCT_INT2:
+				glProgramUniform2iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
+				break;
+			case GCT_INT3:
+				glProgramUniform3iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
+				break;
+			case GCT_INT4:
+				glProgramUniform4iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
+				break;
+			case GMT_BOOL:
+				glProgramUniform1uiv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLuint*)ptrData);
+				break;
+			case GCT_UNKNOWN:
+				break;
 			}
 		}
 	}
@@ -1788,12 +1808,37 @@ namespace CamelotEngine
 
 		UINT16 numCombinedTexUnits = caps->getNumCombinedTextureUnits();
 
-		if((mFragmentTexOffset + mVertexTexOffset + mGeometryTexOffset) > numCombinedTexUnits)
+		UINT32 totalNumTexUnits = caps->getNumTextureUnits(GPT_VERTEX_PROGRAM);
+		totalNumTexUnits += caps->getNumTextureUnits(GPT_FRAGMENT_PROGRAM);
+		totalNumTexUnits += caps->getNumTextureUnits(GPT_GEOMETRY_PROGRAM);
+		totalNumTexUnits += caps->getNumTextureUnits(GPT_HULL_PROGRAM);
+		totalNumTexUnits += caps->getNumTextureUnits(GPT_DOMAIN_PROGRAM);
+		totalNumTexUnits += caps->getNumTextureUnits(GPT_COMPUTE_PROGRAM);
+
+		if(totalNumTexUnits > numCombinedTexUnits)
 			CM_EXCEPT(InternalErrorException, "Number of combined texture units less than the number of individual units!?");
 
 		mTextureTypes = new GLenum[numCombinedTexUnits];
 		for(UINT16 i = 0; i < numCombinedTexUnits; i++)
 			mTextureTypes[i] = 0;
+
+		mVertexUBOffset = 0;
+		UINT32 totalNumUniformBlocks = caps->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM);
+		mFragmentUBOffset = totalNumUniformBlocks;
+		totalNumUniformBlocks += caps->getNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM);
+		mGeometryUBOffset = totalNumUniformBlocks;
+		totalNumUniformBlocks += caps->getNumUniformBlockBuffers(GPT_GEOMETRY_PROGRAM);
+		mHullUBOffset = totalNumUniformBlocks;
+		totalNumUniformBlocks += caps->getNumUniformBlockBuffers(GPT_HULL_PROGRAM);
+		mDomainUBOffset = totalNumUniformBlocks;
+		totalNumUniformBlocks += caps->getNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM);
+		mComputeUBOffset = totalNumUniformBlocks;
+		totalNumUniformBlocks += caps->getNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM);
+
+		UINT16 numCombinedUniformBlocks = caps->getNumCombinedUniformBlockBuffers();
+
+		if(totalNumUniformBlocks > numCombinedUniformBlocks)
+			CM_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
 		/// Create the texture manager        
 		TextureManager::startUp(new GLTextureManager(*mGLSupport)); 
@@ -2101,30 +2146,53 @@ namespace CamelotEngine
 			rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
 		}
 
-		if (mGLSupport->checkExtension("ARB_geometry_shader4"))
+		GLint numUniformBlocks;
+		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &numUniformBlocks);
+		rsc->setNumUniformBlockBuffers(GPT_VERTEX_PROGRAM, numUniformBlocks);
+
+		glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &numUniformBlocks);
+		rsc->setNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM, numUniformBlocks);
+
+		if (mGLSupport->checkExtension("GL_ARB_geometry_shader4"))
 		{
 			GLint geomUnits;
 			glGetIntegerv(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS, &geomUnits);
 			rsc->setNumTextureUnits(GPT_GEOMETRY_PROGRAM, static_cast<UINT16>(geomUnits));
+
+			glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, &numUniformBlocks);
+			rsc->setNumUniformBlockBuffers(GPT_GEOMETRY_PROGRAM, numUniformBlocks);
 		}
 
-		if (mGLSupport->checkExtension("ARB_tessellation_shader"))
+		if (mGLSupport->checkExtension("GL_ARB_tessellation_shader"))
 		{
 			rsc->setCapability(RSC_TESSELLATION_PROGRAM);
+
+			glGetIntegerv(GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS, &numUniformBlocks);
+			rsc->setNumUniformBlockBuffers(GPT_HULL_PROGRAM, numUniformBlocks);
+
+			glGetIntegerv(GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS, &numUniformBlocks);
+			rsc->setNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM, numUniformBlocks);
 		}
 
-		if (mGLSupport->checkExtension("ARB_compute_shader")) // Enable once I include GL 4.3
+		if (mGLSupport->checkExtension("GL_ARB_compute_shader")) // Enable once I include GL 4.3
 		{
 			//rsc->setCapability(RSC_COMPUTE_PROGRAM);
 
 			//GLint computeUnits;
 			//glGetIntegerv(GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS, &computeUnits);
 			//rsc->setNumTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(computeUnits));
+			
+			//glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_BLOCKS, &numUniformBlocks);
+			//rsc->setNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM, numUniformBlocks);
 		}
 
 		GLint combinedTexUnits;
 		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &combinedTexUnits);
 		rsc->setNumCombinedTextureUnits(static_cast<UINT16>(combinedTexUnits));
+
+		GLint combinedUniformBlockUnits;
+		glGetIntegerv(GL_MAX_COMBINED_UNIFORM_BLOCKS, &combinedUniformBlockUnits);
+		rsc->setNumCombinedUniformBlockBuffers(static_cast<UINT16>(combinedUniformBlockUnits));
 
 		// Mipmap LOD biasing
 		rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
@@ -2168,6 +2236,34 @@ namespace CamelotEngine
 			return mVertexTexOffset + unit;
 		case GPT_GEOMETRY_PROGRAM:
 			return mGeometryTexOffset + unit;
+		default:
+			CM_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
+		}
+	}
+	//---------------------------------------------------------------------
+	UINT32 GLRenderSystem::getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding)
+	{
+		UINT32 maxNumBindings = mCurrentCapabilities->getNumUniformBlockBuffers(gptype);
+		if(binding < 0 || binding >= maxNumBindings)
+		{
+			CM_EXCEPT(InvalidParametersException, "Invalid buffer binding for the provided stage. Buffer binding: " + toString(binding) + ". Stage: " + 
+				toString(gptype) + ". Supported range is 0 .. " + toString(maxNumBindings - 1));
+		}
+
+		switch(gptype)
+		{
+		case GPT_FRAGMENT_PROGRAM:
+			return mFragmentUBOffset + binding;
+		case GPT_VERTEX_PROGRAM:
+			return mVertexUBOffset + binding;
+		case GPT_GEOMETRY_PROGRAM:
+			return mGeometryUBOffset + binding;
+		case GPT_HULL_PROGRAM:
+			return mHullUBOffset + binding;
+		case GPT_DOMAIN_PROGRAM:
+			return mDomainUBOffset + binding;
+		case GPT_COMPUTE_PROGRAM:
+			return mComputeUBOffset + binding;
 		default:
 			CM_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
 		}

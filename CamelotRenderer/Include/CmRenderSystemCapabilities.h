@@ -256,6 +256,10 @@ namespace CamelotEngine
 		map<GpuProgramType, UINT16>::type mNumTextureUnitsPerStage;
 		/// Total number of texture units available
 		UINT16 mNumCombinedTextureUnits;
+		/// The number of uniform blocks available per stage
+		map<GpuProgramType, UINT16>::type mNumUniformBlocksPerStage;
+		/// Total number of uniform blocks available
+		UINT16 mNumCombinedUniformBlocks;
 		/// The stencil buffer bit depth
 		UINT16 mStencilBufferBitDepth;
 		/// The number of matrices available for hardware blending
@@ -381,6 +385,16 @@ namespace CamelotEngine
 			mNumCombinedTextureUnits = num;
 		}
 
+		void setNumUniformBlockBuffers(GpuProgramType type, UINT16 num)
+		{
+			mNumUniformBlocksPerStage[type] = num;
+		}
+
+		void setNumCombinedUniformBlockBuffers(UINT16 num)
+		{
+			mNumCombinedUniformBlocks = num;
+		}
+
 		void setStencilBufferBitDepth(UINT16 num)
 		{
 			mStencilBufferBitDepth = num;
@@ -420,6 +434,26 @@ namespace CamelotEngine
 		UINT16 getNumCombinedTextureUnits() const
 		{
 			return mNumCombinedTextureUnits;
+		}
+
+		/** Returns the number of uniform buffer blocks the current output hardware
+		supports, for the specified stage.
+		*/
+		UINT16 getNumUniformBlockBuffers(GpuProgramType type) const
+		{
+			auto iterFind = mNumUniformBlocksPerStage.find(type);
+			if(iterFind != mNumUniformBlocksPerStage.end())
+				return iterFind->second;
+			else
+				return 0;
+		}
+
+		/** Returns the number of combined uniform buffers the current output hardware
+		supports, total for all stages combined.
+		*/
+		UINT16 getNumCombinedUniformBlockBuffers() const
+		{
+			return mNumCombinedUniformBlocks;
 		}
 
 		/** Determines the bit depth of the hardware accelerated stencil 
