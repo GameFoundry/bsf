@@ -33,7 +33,7 @@ namespace CamelotEngine
 	}
 
 #define LOGDBG(x) CamelotEngine::gDebug().logDebug((x));
-#define LOGMSG(x) CamelotEngine::gDebug().logInfo((x));
+#define LOGINFO(x) CamelotEngine::gDebug().logInfo((x));
 #define LOGWRN(x) CamelotEngine::gDebug().logWarning((x));
 #define LOGERR(x) CamelotEngine::gDebug().logError((x));
 

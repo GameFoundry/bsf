@@ -120,6 +120,9 @@
     <ClInclude Include="Source\GLSL\include\CmGLSLParamParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLProgramPipelineManager.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp">
@@ -208,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmGLGpuParamBlock.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLProgramPipelineManager.cpp">
+      <Filter>GLSL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

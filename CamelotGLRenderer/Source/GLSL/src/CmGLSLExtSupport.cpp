@@ -57,10 +57,11 @@ namespace CamelotEngine
 		if (errorsFound || forceInfoLog)
 		{
 			// if shader or program object then get the log message and send to the log manager
+			bool infoLogMessageExists = false;
 			if(objectType == GLSLOT_SHADER)
-				msg += logShaderInfo(msg, obj);
+				infoLogMessageExists = logShaderInfo(msg, obj);
 			else if(objectType == GLSLOT_PROGRAM)
-				msg += logProgramInfo(msg, obj);
+				infoLogMessageExists = logProgramInfo(msg, obj);
 
             if (forceException) 
 			{
@@ -68,12 +69,19 @@ namespace CamelotEngine
 			}
 			else
 			{
-				LOGWRN(msg);
+				if(errorsFound)
+				{
+					LOGWRN(msg);
+				}
+				else if(infoLogMessageExists)
+				{
+					LOGINFO(msg);
+				}
 			}
 		}
     }
 
-	String logShaderInfo(const String& msg, const GLuint obj)
+	bool logShaderInfo(String& msg, const GLuint obj)
 	{
 		String logMessage = msg;
 
@@ -93,16 +101,17 @@ namespace CamelotEngine
 				logMessage += String(infoLog);
 
 				delete [] infoLog;
+
+				if(charsWritten > 0)
+					return true;
 			}
 		}
 
-		return logMessage;
+		return false;
 	}
 
-	String logProgramInfo(const String& msg, const GLuint obj)
+	bool logProgramInfo(String& msg, const GLuint obj)
 	{
-		String logMessage = msg;
-
 		if (obj > 0)
 		{
 			GLint infologLength = 0;
@@ -116,13 +125,16 @@ namespace CamelotEngine
 				GLchar* infoLog = new GLchar[infologLength];
 
 				glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
-				logMessage += String(infoLog);
+				msg += String(infoLog);
 
 				delete [] infoLog;
+
+				if(charsWritten > 0)
+					return true;
 			}
 		}
 
-		return logMessage;
+		return false;
 	}
 
 } // namespace CamelotEngine

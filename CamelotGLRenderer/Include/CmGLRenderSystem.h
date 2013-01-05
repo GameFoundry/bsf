@@ -243,6 +243,7 @@ namespace CamelotEngine {
 
 		GLSLProgramFactory* mGLSLProgramFactory;
 		CgProgramFactory* mCgProgramFactory;
+		GLSLProgramPipelineManager* mProgramPipelineManager;
 
         GLuint getCombinedMinMipFilter(void) const;
 
@@ -251,6 +252,8 @@ namespace CamelotEngine {
 		GLSLGpuProgram* mCurrentGeometryProgram;
 		GLSLGpuProgram* mCurrentHullProgram;
 		GLSLGpuProgram* mCurrentDomainProgram;
+
+		const GLSLProgramPipeline* mActivePipeline;
 
 		UINT32 mFragmentTexOffset;
 		UINT32 mVertexTexOffset;

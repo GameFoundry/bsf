@@ -36,12 +36,14 @@ namespace CamelotEngine {
     class GLRenderSystem;
     class GLTexture;
     class GLTextureManager;
-    class GLGpuProgram;
+    class GLSLGpuProgram;
     class GLContext;
     class GLRTTManager;
     class GLHardwarePixelBuffer;
     class GLRenderBuffer;
 	class GLGpuParamBlock;
+	struct GLSLProgramPipeline;
+	class GLSLProgramPipelineManager;
 
 	typedef std::shared_ptr<GLHardwarePixelBuffer> GLHardwarePixelBufferPtr;
 	typedef std::shared_ptr<GLRenderBuffer> GLRenderBufferPtr;

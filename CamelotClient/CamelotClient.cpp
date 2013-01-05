@@ -96,23 +96,29 @@ int _tmain(int argc, _TCHAR* argv[])
 	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 
 	///////////////// GLSL SHADERS ////////////////////////////
-	String fragShaderCode = "uniform sampler2D tex; \
-								void main() \
-								  {\
-								  vec4 texColor = texture2D(tex,gl_TexCoord[0].st);\
-								  gl_FragColor = texColor; \
-								  }";
+	String fragShaderCode = " #version 330 \n \
+							  uniform sampler2D tex; \
+							  in vec2 texcoord0; \
+							  out vec4 fragColor; \
+							  void main() \
+							  {\
+								  vec4 texColor = texture2D(tex, texcoord0.st);\
+								  fragColor = texColor; \
+							  }";
 
 	fragProg = HighLevelGpuProgram::create(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 
-	// TODO - Ogres GLSL parsing requires some strict parameter naming, can that be avoided?
-	String vertShaderCode = "uniform mat4 matViewProjection; \
-								  attribute vec4 vertex; \
-							void main() \
-								  { \
-								  gl_TexCoord[0] = gl_MultiTexCoord0; \
-								  gl_Position = matViewProjection * vertex; \
-								  }";
+	// TODO - Make sure to document the strict input parameter naming. (Exact supported names are in GLSLParamParser)
+	String vertShaderCode = "#version 330 \n \
+							 uniform mat4 matViewProjection; \
+							 in vec4 cm_position; \
+							 in vec2 cm_texcoord0; \
+							 out vec2 texcoord0; \
+							 void main() \
+							 { \
+								texcoord0 = cm_texcoord0; \
+								gl_Position = matViewProjection * cm_position; \
+							 }";
 
 	vertProg = HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 

@@ -64,13 +64,13 @@ namespace CamelotEngine
 	@param msg the info log message string is appended to this string
 	@param obj the GL shader object that is used to retrieve the info log
 	*/
-	String logShaderInfo(const String& msg, const GLuint obj);
+	bool logShaderInfo(String& msg, const GLuint obj);
 
 	/** if there is a message in GL info log then post it in the engine Log
 	@param msg the info log message string is appended to this string
 	@param obj the GL program object that is used to retrieve the info log
 	*/
-	String logProgramInfo(const String& msg, const GLuint obj);
+	bool logProgramInfo(String& msg, const GLuint obj);
 
 
 } // namespace CamelotEngine

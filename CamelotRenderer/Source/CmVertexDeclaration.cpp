@@ -54,7 +54,7 @@ namespace CamelotEngine
 		case VET_COLOR:
 		case VET_COLOR_ABGR:
 		case VET_COLOR_ARGB:
-			return 1;
+			return 4;
 		case VET_FLOAT1:
 			return 1;
 		case VET_FLOAT2:

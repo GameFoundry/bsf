@@ -162,7 +162,7 @@ namespace CamelotEngine
 			const char *source = mSource.c_str();
 			mGLHandle = glCreateShaderProgramv(shaderType, 1, &source);
 			// check for load errors
-			checkForGLSLError( "GLSLProgram::loadFromSource", "Cannot load GLSL high-level shader source : ", 0, GLSLOT_PROGRAM);
+			checkForGLSLError( "GLSLProgram::loadFromSource", "Cannot load GLSL high-level shader source : ", mGLHandle, GLSLOT_PROGRAM, true);
 		}
 
 		mAssemblerProgram = GpuProgramPtr(new GLSLGpuProgram(this, mSource, mEntryPoint, mSyntaxCode, mType, mProfile));

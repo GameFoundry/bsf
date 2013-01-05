@@ -178,6 +178,7 @@
     <ClInclude Include="Source\GLSL\include\CmGLSLPreprocessor.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLProgram.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLProgramFactory.h" />
+    <ClInclude Include="Source\GLSL\include\CmGLSLProgramPipelineManager.h" />
     <ClInclude Include="Source\win32\CmGLUtil.h" />
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +210,7 @@
     <ClCompile Include="Source\GLSL\src\CmGLSLPreprocessor.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLProgram.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLProgramFactory.cpp" />
+    <ClCompile Include="Source\GLSL\src\CmGLSLProgramPipelineManager.cpp" />
     <ClCompile Include="Source\win32\CmWin32Context.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

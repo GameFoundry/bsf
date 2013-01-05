@@ -29,7 +29,7 @@ namespace CamelotEngine
 			if(name.substr(0, mName.length()) == mName)
 			{
 				String indexStr = name.substr(mName.length(), name.length());
-				return parseUnsignedInt(indexStr, -1);
+				return parseUnsignedInt(indexStr, 0);
 			}
 		}
 
@@ -64,7 +64,6 @@ namespace CamelotEngine
 		glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxNameSize);
 
 		GLchar* attributeName = new GLchar[maxNameSize];
-		UINT32 offset = 0;
 
 		for(GLint i = 0; i < numAttributes; i++)
 		{
@@ -78,8 +77,7 @@ namespace CamelotEngine
 			{
 				VertexElementType type = glTypeToAttributeType(attribType);
 
-				declaration.addElement(index, offset, type, semantic, index);
-				offset += attribSize;
+				declaration.addElement(0, i, type, semantic, index);
 			}
 			else
 			{
@@ -111,14 +109,14 @@ namespace CamelotEngine
 	{
 		static GLSLAttribute attributes[] = 
 		{
-			GLSLAttribute("position", VES_POSITION),
-			GLSLAttribute("normal", VES_NORMAL),
-			GLSLAttribute("tangent", VES_TANGENT),
-			GLSLAttribute("bitangent", VES_BITANGENT),
-			GLSLAttribute("texcoord", VES_TEXCOORD),
-			GLSLAttribute("color", VES_COLOR),
-			GLSLAttribute("blendweights", VES_BLEND_WEIGHTS),
-			GLSLAttribute("blendindices", VES_BLEND_INDICES)
+			GLSLAttribute("cm_position", VES_POSITION),
+			GLSLAttribute("cm_normal", VES_NORMAL),
+			GLSLAttribute("cm_tangent", VES_TANGENT),
+			GLSLAttribute("cm_bitangent", VES_BITANGENT),
+			GLSLAttribute("cm_texcoord", VES_TEXCOORD),
+			GLSLAttribute("cm_color", VES_COLOR),
+			GLSLAttribute("cm_blendweights", VES_BLEND_WEIGHTS),
+			GLSLAttribute("cm_blendindices", VES_BLEND_INDICES)
 		};
 
 		static const UINT32 numAttribs = sizeof(attributes) / sizeof(attributes[0]);
@@ -151,14 +149,15 @@ namespace CamelotEngine
 
 		GLchar* uniformName = new GLchar[maxBufferSize];
 
-		GpuParamBlockDesc globalBlockDesc;
-		globalBlockDesc.slot = 0;
-		globalBlockDesc.name = "CM_INTERNAL_Globals";
-		globalBlockDesc.blockSize = 0;
+		GpuParamBlockDesc newGlobalBlockDesc;
+		newGlobalBlockDesc.slot = 0;
+		newGlobalBlockDesc.name = "CM_INTERNAL_Globals";
+		newGlobalBlockDesc.blockSize = 0;
 
 		UINT32 textureSlot = 0;
 
-		returnParamDesc.paramBlocks[globalBlockDesc.name] = globalBlockDesc;
+		returnParamDesc.paramBlocks[newGlobalBlockDesc.name] = newGlobalBlockDesc;
+		GpuParamBlockDesc& globalBlockDesc = returnParamDesc.paramBlocks[newGlobalBlockDesc.name];
 
 		GLint uniformBlockCount = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount);
@@ -288,6 +287,21 @@ namespace CamelotEngine
 				returnParamDesc.params.insert(std::make_pair(gpuParam.name, gpuParam));
 			}
 		}
+
+#if CM_DEBUG_MODE
+		// Check if manually calculated and OpenGL buffer sizes match
+		for(auto iter = returnParamDesc.paramBlocks.begin(); iter != returnParamDesc.paramBlocks.end(); ++iter)
+		{
+			if(iter->second.slot == 0)
+				continue;
+
+			GLint blockSize = 0;
+			glGetActiveUniformBlockiv(glProgram, iter->second.slot - 1, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+
+			if(iter->second.blockSize != blockSize)
+				CM_EXCEPT(InternalErrorException, "OpenGL specified and manual uniform block buffer sizes don't match!");
+		}
+#endif
 
 		delete[] uniformName;
 	}

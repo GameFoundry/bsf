@@ -47,6 +47,7 @@ THE SOFTWARE.s
 #include "CmDepthStencilState.h"
 #include "CmGLRenderTexture.h"
 #include "CmGLRenderWindowManager.h"
+#include "CmGLSLProgramPipelineManager.h"
 #include "CmGpuParams.h"
 #include "CmDebug.h"
 
@@ -71,8 +72,10 @@ namespace CamelotEngine
 
 	GLRenderSystem::GLRenderSystem()
 		: mDepthWrite(true),
-		mGLSLProgramFactory(0),
-		mCgProgramFactory(0),
+		mGLSLProgramFactory(nullptr),
+		mCgProgramFactory(nullptr),
+		mProgramPipelineManager(nullptr),
+		mActivePipeline(nullptr),
 		mActiveTextureUnit(0),
 		mScissorTop(0), mScissorBottom(720), mScissorLeft(0), mScissorRight(1280),
 		mStencilReadMask(0xFFFFFFFF),
@@ -105,11 +108,16 @@ namespace CamelotEngine
 		mCurrentFragmentProgram = nullptr;
 		mCurrentHullProgram = nullptr;
 		mCurrentDomainProgram = nullptr;
+
+		mProgramPipelineManager = new GLSLProgramPipelineManager();
 	}
 
 	GLRenderSystem::~GLRenderSystem()
 	{
 		destroy_internal();
+
+		if(mProgramPipelineManager != nullptr)
+			delete mProgramPipelineManager;
 
 		// Destroy render windows
 		for (auto i = mRenderTargets.begin(); i != mRenderTargets.end(); ++i)
@@ -384,6 +392,8 @@ namespace CamelotEngine
 			}
 			else
 			{
+
+
 				CM_EXCEPT(NotImplementedException, "Support for uniform blocks not implemented yet");
 			}
 		}
@@ -615,11 +625,23 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		// TODO - Generate pipeline and bind program
+		const GLSLProgramPipeline* pipeline = mProgramPipelineManager->getPipeline(mCurrentVertexProgram, 
+			mCurrentFragmentProgram, mCurrentGeometryProgram, mCurrentHullProgram, mCurrentDomainProgram);
 
+		if(mActivePipeline != pipeline)
+		{
+			glBindProgramPipeline(pipeline->glHandle);
+			mActivePipeline = pipeline;
+		}
 
 		// Call super class
 		RenderSystem::render(op);
+
+		if(mCurrentVertexProgram == nullptr)
+		{
+			LOGWRN("Cannot render without a set vertex shader.");
+			return;
+		}
 
 		void* pBufferData = 0;
 
@@ -628,15 +650,33 @@ namespace CamelotEngine
         elemEnd = decl.end();
 		vector<GLuint>::type attribsBound;
 
+		const VertexDeclaration::VertexElementList& inputAttributes = mCurrentVertexProgram->getGLSLProgram()->getInputAttributes().getElements();
+
 		for (elem = decl.begin(); elem != elemEnd; ++elem)
 		{
 			if (!op.vertexData->vertexBufferBinding->isBufferBound(elem->getSource()))
 				continue; // skip unbound elements
 
-			HardwareVertexBufferPtr vertexBuffer = 
-				op.vertexData->vertexBufferBinding->getBuffer(elem->getSource());
+			bool foundSemantic = false; 
+			GLint attribLocation = 0;
+			for(auto iter = inputAttributes.begin(); iter != inputAttributes.end(); ++iter)
+			{
+				if(iter->getSemantic() == elem->getSemantic() && iter->getIndex() == elem->getIndex())
+				{
+					foundSemantic = true;
+					attribLocation = iter->getOffset();
+					break;
+				}
+			}
 
-			glBindBufferARB(GL_ARRAY_BUFFER_ARB, static_cast<const GLHardwareVertexBuffer*>(vertexBuffer.get())->getGLBufferId());
+			if(!foundSemantic) // Shader needs to have a matching input attribute, otherwise we skip it
+				continue;
+
+			// TODO - We might also want to check the size of input and buffer, and make sure they match? Or does OpenGL handle that internally?
+
+			HardwareVertexBufferPtr vertexBuffer = op.vertexData->vertexBufferBinding->getBuffer(elem->getSource());
+
+			glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLHardwareVertexBuffer*>(vertexBuffer.get())->getGLBufferId());
 			pBufferData = VBO_BUFFER_OFFSET(elem->getOffset());
 
 			if (op.vertexData->vertexStart)
@@ -647,55 +687,30 @@ namespace CamelotEngine
 			unsigned int i = 0;
 			VertexElementSemantic sem = elem->getSemantic();
 
+			unsigned short typeCount = VertexElement::getTypeCount(elem->getType());
+			GLboolean normalised = GL_FALSE;
+			switch(elem->getType())
+			{
+			case VET_COLOR:
+			case VET_COLOR_ABGR:
+			case VET_COLOR_ARGB:
+				normalised = GL_TRUE;
+				break;
+			default:
+				break;
+			};
 
+			glVertexAttribPointerARB(
+				attribLocation,
+				typeCount, 
+				GLHardwareBufferManager::getGLType(elem->getType()), 
+				normalised, 
+				static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
+				pBufferData);
 
+			glEnableVertexAttribArray(attribLocation);
 
-
-			// TODO - Vertex elem not set
-			
-
-
-
-
-
- 			//bool isCustomAttrib = false;
- 			//if (mCurrentVertexProgram)
- 			//	isCustomAttrib = mCurrentVertexProgram->isAttributeValid(sem, elem->getIndex());
- 
- 			//// Custom attribute support
- 			//// tangents, binormals, blendweights etc always via this route
- 			//// builtins may be done this way too
- 			//if (isCustomAttrib)
- 			//{
- 			//	GLint attrib = mCurrentVertexProgram->getAttributeIndex(sem, elem->getIndex());
-				//unsigned short typeCount = VertexElement::getTypeCount(elem->getType());
-				//GLboolean normalised = GL_FALSE;
-				//switch(elem->getType())
-				//{
-				//case VET_COLOR:
-				//case VET_COLOR_ABGR:
-				//case VET_COLOR_ARGB:
-				//	// Because GL takes these as a sequence of single unsigned bytes, count needs to be 4
-				//	// VertexElement::getTypeCount treats them as 1 (RGBA)
-				//	// Also need to normalise the fixed-point data
-				//	typeCount = 4;
-				//	normalised = GL_TRUE;
-				//	break;
-				//default:
-				//	break;
-				//};
-
- 			//	glVertexAttribPointerARB(
- 			//		attrib,
- 			//		typeCount, 
-  		//			GLHardwareBufferManager::getGLType(elem->getType()), 
- 			//		normalised, 
-  		//			static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
-  		//			pBufferData);
- 			//	glEnableVertexAttribArrayARB(attrib);
- 
- 			//	attribsBound.push_back(attrib);
- 			//}
+			attribsBound.push_back(attribLocation);
         }
 
 		// Find the correct type to render
@@ -727,12 +742,11 @@ namespace CamelotEngine
 
 		if (op.useIndexes)
 		{
-			glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 
 				static_cast<GLHardwareIndexBuffer*>(
 				op.indexData->indexBuffer.get())->getGLBufferId());
 
-			pBufferData = VBO_BUFFER_OFFSET(
-				op.indexData->indexStart * op.indexData->indexBuffer->getIndexSize());
+			pBufferData = VBO_BUFFER_OFFSET(op.indexData->indexStart * op.indexData->indexBuffer->getIndexSize());
 
 			GLenum indexType = (op.indexData->indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
@@ -746,7 +760,7 @@ namespace CamelotEngine
  		// unbind any custom attributes
 		for (vector<GLuint>::type::iterator ai = attribsBound.begin(); ai != attribsBound.end(); ++ai)
  		{
- 			glDisableVertexAttribArrayARB(*ai); 
+ 			glDisableVertexAttribArray(*ai); 
   		}
 		
 		glColor4f(1,1,1,1);
