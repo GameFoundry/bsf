@@ -9,7 +9,7 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11GenericBuffer : public GenericBuffer
     {
     public:
-		D3D11GenericBuffer(GenericBufferType type, GpuBufferUsage usage);
+		D3D11GenericBuffer(UINT32 elementCount, UINT32 elementSize, GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
         ~D3D11GenericBuffer();
 
 		/**
@@ -38,5 +38,11 @@ namespace CamelotEngine
 		*/
 		void copyData(GenericBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
+
+	private:
+		ID3D11Buffer* mBuffer;
+
+		ID3D11ShaderResourceView* createSRV(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements);
+		ID3D11UnorderedAccessView* createUAV(UINT32 firstElement, UINT32 numElements);
     };
 }

@@ -16,11 +16,10 @@ namespace CamelotEngine
 	class CM_EXPORT GenericBuffer
     {
     public:
-        GenericBuffer(GenericBufferType type, GpuBufferUsage usage)
-			:mType(type), mUsage(usage)
+        GenericBuffer(UINT32 elementCount, UINT32 elementSize, GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false)
+			:mElementCount(elementCount), mElementSize(elementSize), mType(type), mUsage(usage), mRandomGpuWrite(randomGpuWrite), mUseCounter(useCounter)
         {  }
         virtual ~GenericBuffer() {}
-
 
 		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options) = 0;
 		virtual void unlock() = 0;
@@ -31,8 +30,12 @@ namespace CamelotEngine
 		virtual void copyData(GenericBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false) = 0;
 
-	private:
+	protected:
 		GenericBufferType mType;
 		GpuBufferUsage mUsage;
+		bool mRandomGpuWrite;
+		bool mUseCounter;
+		UINT32 mElementCount;
+		UINT32 mElementSize;
     };
 }

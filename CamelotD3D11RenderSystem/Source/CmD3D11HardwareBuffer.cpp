@@ -15,6 +15,9 @@ namespace CamelotEngine
 		mBufferType(btype),
 		mDevice(device)
 	{
+		if(streamOut && btype != VERTEX_BUFFER)
+			CM_EXCEPT(InvalidParametersException, "Stream out flag is only supported on vertex buffers");
+
 		mSizeInBytes = sizeBytes;
 		mDesc.ByteWidth = static_cast<UINT>(sizeBytes);
 		
@@ -23,7 +26,6 @@ namespace CamelotEngine
 		if (useSystemMemory)
 		{
 			mDesc.Usage = D3D11_USAGE_STAGING;
-			//A D3D11_USAGE_STAGING Resource cannot be bound to any parts of the graphics pipeline, so therefore cannot have any BindFlags bits set.
 			mDesc.BindFlags = 0;
 			mDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ ;// A D3D11_USAGE_STAGING Resource must have at least one CPUAccessFlag bit set.
 
@@ -38,7 +40,7 @@ namespace CamelotEngine
 		}
 
 		// Check of stream out flag
-		if (streamOut && btype != CONSTANT_BUFFER)
+		if (streamOut)
 		{
 			mDesc.BindFlags |= D3D11_BIND_STREAM_OUTPUT;
 		}
