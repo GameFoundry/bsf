@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __Viewport_H__
 
 #include "CmPrerequisites.h"
-#include "CmCommon.h"
+#include "CmCommonEnums.h"
 #include "CmColor.h"
 
 namespace CamelotEngine {

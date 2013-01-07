@@ -38,12 +38,12 @@ namespace CamelotEngine
 	//----------------------------------------------------------------------------- 
 	GLHardwarePixelBuffer::GLHardwarePixelBuffer(UINT32 inWidth, UINT32 inHeight, UINT32 inDepth,
 					PixelFormat inFormat,
-					HardwareBuffer::Usage usage):
+					GpuBufferUsage usage):
 		  HardwarePixelBuffer(inWidth, inHeight, inDepth, inFormat, usage, false),
 		  mBuffer(inWidth, inHeight, inDepth, inFormat),
 		  mGLInternalFormat(GL_NONE)
 	{
-		mCurrentLockOptions = (LockOptions)0;
+		mCurrentLockOptions = (GpuLockOptions)0;
 	}
 
 	//-----------------------------------------------------------------------------  
@@ -65,17 +65,17 @@ namespace CamelotEngine
 	void GLHardwarePixelBuffer::freeBuffer()
 	{
 		// Free buffer if we're STATIC to save memory
-		if(mUsage & HBU_STATIC)
+		if(mUsage & GBU_STATIC)
 		{
 			delete [] (UINT8*)mBuffer.data;
 			mBuffer.data = 0;
 		}
 	}
 	//-----------------------------------------------------------------------------  
-	PixelData GLHardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions options)
+	PixelData GLHardwarePixelBuffer::lockImpl(const Box lockBox,  GpuLockOptions options)
 	{
 		allocateBuffer();
-		if(options != HBL_WRITE_ONLY_DISCARD) 
+		if(options != GBL_WRITE_ONLY_DISCARD) 
 		{
 			// Download the old contents of the texture
 			download(mBuffer);
@@ -87,7 +87,7 @@ namespace CamelotEngine
 	//-----------------------------------------------------------------------------  
 	void GLHardwarePixelBuffer::unlockImpl(void)
 	{
-		if (mCurrentLockOptions != HBL_READ_ONLY)
+		if (mCurrentLockOptions != GBL_READ_ONLY)
 		{
 			// From buffer to card, only upload if was locked for writing
 			upload(mCurrentLock, mLockedBox);
@@ -188,7 +188,7 @@ namespace CamelotEngine
 	}
 	//********* GLTextureBuffer
 	GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint id, 
-									 GLint face, GLint level, Usage usage, bool crappyCard, 
+									 GLint face, GLint level, GpuBufferUsage usage, bool crappyCard, 
 									 bool writeGamma, UINT32 fsaa):
 		GLHardwarePixelBuffer(0, 0, 0, PF_UNKNOWN, usage),
 		mTarget(target), mFaceTarget(0), mTextureID(id), mFace(face), mLevel(level),
@@ -731,7 +731,7 @@ namespace CamelotEngine
 			glTexImage2D(target, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 		/// GL texture buffer
-		GLTextureBuffer tex(StringUtil::BLANK, target, id, 0, 0, (Usage)(HBU_STATIC_WRITE_ONLY), false, false, 0);
+		GLTextureBuffer tex(StringUtil::BLANK, target, id, 0, 0, (GpuBufferUsage)(GBU_STATIC), false, false, 0);
     
 		/// Upload data to 0,0,0 in temporary texture
 		Box tempTarget(0, 0, 0, src.getWidth(), src.getHeight(), src.getDepth());
@@ -749,7 +749,7 @@ namespace CamelotEngine
 	//********* GLRenderBuffer
 	//----------------------------------------------------------------------------- 
 	GLRenderBuffer::GLRenderBuffer(GLenum format, UINT32 width, UINT32 height, GLsizei numSamples):
-		GLHardwarePixelBuffer(width, height, 1, GLPixelUtil::getClosestEngineFormat(format),HBU_WRITE_ONLY),
+		GLHardwarePixelBuffer(width, height, 1, GLPixelUtil::getClosestEngineFormat(format), GBU_DYNAMIC),
 		mRenderbufferID(0)
 	{
 		mGLInternalFormat = format;

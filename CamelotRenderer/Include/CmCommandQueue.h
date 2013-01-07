@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmAsyncOp.h"
-#include "CmCommon.h"
+#include "CmCommonEnums.h"
 #include "boost/function.hpp"
 
 namespace CamelotEngine

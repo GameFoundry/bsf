@@ -149,6 +149,7 @@
     <ClInclude Include="Include\CmD3D11BlendState.h" />
     <ClInclude Include="Include\CmD3D11DepthStencilBuffer.h" />
     <ClInclude Include="Include\CmD3D11DepthStencilState.h" />
+    <ClInclude Include="Include\CmD3D11GenericBuffer.h" />
     <ClInclude Include="Include\CmD3D11HardwareBufferManager.h" />
     <ClInclude Include="Include\CmD3D11HardwareConstantBuffer.h" />
     <ClInclude Include="Include\CmD3D11Device.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="Source\CmD3D11Device.cpp" />
     <ClCompile Include="Source\CmD3D11Driver.cpp" />
     <ClCompile Include="Source\CmD3D11DriverList.cpp" />
+    <ClCompile Include="Source\CmD3D11GenericBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11GpuProgram.cpp" />
     <ClCompile Include="Source\CmD3D11GpuProgramManager.cpp" />
     <ClCompile Include="Source\CmD3D11HardwareBuffer.cpp" />

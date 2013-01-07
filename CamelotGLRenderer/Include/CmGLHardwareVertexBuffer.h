@@ -47,12 +47,11 @@ namespace CamelotEngine {
 
     protected:
         /** See HardwareBuffer. */
-        void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
+        void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
         /** See HardwareBuffer. */
         void unlockImpl(void);
     public:
-        GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
-            HardwareBuffer::Usage usage); 
+        GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
         ~GLHardwareVertexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);

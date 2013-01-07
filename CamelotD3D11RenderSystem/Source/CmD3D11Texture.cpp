@@ -49,7 +49,7 @@ namespace CamelotEngine
 		}
 	}
 
-	PixelData D3D11Texture::lockImpl(LockOptions options, UINT32 mipLevel, UINT32 face)
+	PixelData D3D11Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
 		UINT32 mipWidth = mipLevel >> mWidth;
 		UINT32 mipHeight = mipLevel >> mHeight;
@@ -60,19 +60,19 @@ namespace CamelotEngine
 		D3D11_MAP flags = D3D11Mappings::_getLockOptions(options);
 		switch(options)
 		{
-		case HBL_WRITE_ONLY_NO_OVERWRITE:
+		case GBL_WRITE_ONLY_NO_OVERWRITE:
 			flags = D3D11_MAP_WRITE_NO_OVERWRITE;
 			break;
-		case HBL_READ_WRITE:
+		case GBL_READ_WRITE:
 			flags = D3D11_MAP_READ_WRITE;
 			break;
-		case HBL_WRITE_ONLY_DISCARD:
+		case GBL_WRITE_ONLY_DISCARD:
 			flags = D3D11_MAP_WRITE_DISCARD;
 			break;
-		case HBL_READ_ONLY:
+		case GBL_READ_ONLY:
 			flags = D3D11_MAP_READ;
 			break;
-		case HBL_WRITE_ONLY:
+		case GBL_WRITE_ONLY:
 			flags = D3D11_MAP_WRITE;
 			break;
 		default: 

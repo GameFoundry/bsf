@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "CmString.h"
 
 #include "CmSamplerState.h"
-#include "CmCommon.h"
+#include "CmCommonEnums.h"
 
 #include "CmRenderOperation.h"
 #include "CmRenderSystemCapabilities.h"

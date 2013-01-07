@@ -68,37 +68,39 @@ Figure out how to handle accessing texture from a non-render thread?
 
 
 RenderSystem needed modifications
- - Right now HLSL11 CANNOT SPECIFY TEXTURE PARAMETERS! (Pass needs to be extended)
- - Generic buffers (Normal/Structured/Raw/Append/Consume/Indirect)
- - Unordered access view for OM and CS stages (this should probably just be a flag .enableRandomWrite on Texture & Buffer classes)
- - Ability to bind buffers and texture with different type of view (SHADER_RESOURCE & UNORDERED_ACCESS primarily, major others too)
- - Pass needs to be modified
-  - Needs to support bool/double/texture1D/textue3D/textureCUBE/texture arrays/MS textures/all types of buffers/structs
-  - Needs to support (*void) data type for setting structs in constant buffers
- - TextureBuffer support? (Use for bones when skinning for exaple, as constant buffers are too slow)
- - RW buffers?
- - Tesselation (hull/domain) shader
- - Compute pipeline
- - Stream out (write vertex buffers)
- - Instancing (DrawInstanced, also check DrawIndirect)
- - Dynamic shader linkage (Interfaces and similar)
- - Append/Consume buffer
- - 1D/2D/Cube texture arrays
- - Rendertargets that aren't just 2D (Volumetric (3D) render targets in particular)
- - Readable DepthStencil (needs to be assignable to a shader)
- - Multisampled texture resources
- - Multiple adapters (multi gpu)
- - DX11 allows detachable and reusable depthStencil buffers but right now DX9 and OpenGL just ignore them
-   - Also RenderWindow can't have detachable depth stencil buffers for multiple reasons:
-     - Resizing a window requires a resize of the depth/stencil buffer, so what to do if the buffer is external?
-	 - OpenGL doesn't allow access to primary window buffer anyway
-	 - Is there any situation where I actually need to set primary depth buffer?
+ - High priority
+  - Generic buffers (Normal/Structured/Raw/Append/Consume/Indirect)
+  - Unordered access view for OM and CS stages (this should probably just be a flag .enableRandomWrite on Texture & Buffer classes)
+  - Pass needs to be modified
+   - Needs to support bool/double/texture1D/textue3D/textureCUBE/texture arrays/MS textures/all types of buffers/structs
+   - Needs to support (*void) data type for setting structs in constant buffers
+  - Right now HLSL11 CANNOT SPECIFY TEXTURE PARAMETERS! (Pass needs to be extended)
+  - Tesselation (hull/domain) shader
+  - Stream out (write vertex buffers)
+  - Append/Consume buffer
+  - Instancing (DrawInstanced, also check DrawIndirect)
+  - 1D/2D/Cube texture arrays
+  - Rendertargets that aren't just 2D (Volumetric (3D) render targets in particular)
+  - DX11 allows detachable and reusable depthStencil buffers but right now DX9 and OpenGL just ignore them
+	- Also RenderWindow can't have detachable depth stencil buffers for multiple reasons:
+		- Resizing a window requires a resize of the depth/stencil buffer, so what to do if the buffer is external?
+		- OpenGL doesn't allow access to primary window buffer anyway
+		- Is there any situation where I actually need to set primary depth buffer?
  - Process OpenGL and make sure to equivalents of DX11 features
   - Exact features that are missing (not an exhaustive list):
     - Vertex buffer stream out (Transform Feedback)
-	- GL constant buffers
+	- Instancing
 	- HLSL11 shader equivalents (domain/hull/compute shaders), and advanced shader parameters
  - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
+ - Low priority
+  - Compute pipeline
+  - Dynamic shader linkage (Interfaces and similar)
+  - Multisampled texture resources
+  - Multiple adapters (multi gpu)
+  - Texture buffers 
+    - Essentially a glorified 1D texture, but they don't have 1D texture size limitations
+
+
 
 Command buffer TODO:
  - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.

@@ -46,8 +46,8 @@ namespace CamelotEngine {
     enum TextureUsage
     {
 		/// @copydoc HardwareBuffer::Usage
-		TU_STATIC = HardwareBuffer::HBU_STATIC, // Optimal setting if texture is read by the GPU often, and very rarely written by CPU
-		TU_DYNAMIC = HardwareBuffer::HBU_DYNAMIC, // Optimal if the texture is updated by CPU often (e.g. every frame)
+		TU_STATIC = GBU_STATIC, // Optimal setting if texture is read by the GPU often, and very rarely written by CPU
+		TU_DYNAMIC = GBU_DYNAMIC, // Optimal if the texture is updated by CPU often (e.g. every frame)
 		TU_RENDERTARGET = 0x200, // Used for rendering by the GPU
 		TU_DEFAULT = TU_STATIC
     };
@@ -199,7 +199,7 @@ namespace CamelotEngine {
 		 */
 		virtual void getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op);
 
-		PixelData lock(LockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+		PixelData lock(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
 		void unlock();
 
 		/** Copies the contents of this texture to
@@ -238,7 +238,7 @@ namespace CamelotEngine {
 		 */
 		virtual void initialize_internal() = 0;
 
-		virtual PixelData lockImpl(LockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
+		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
 		virtual void unlockImpl() = 0;
 
 		virtual void copyImpl(TexturePtr& target) = 0;

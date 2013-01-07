@@ -80,7 +80,7 @@ namespace CamelotEngine
 		mSurfaceList.clear();		
 	}
 	/****************************************************************************************/
-	PixelData D3D9Texture::lockImpl(LockOptions options, UINT32 mipLevel, UINT32 face)
+	PixelData D3D9Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
 		if(mLockedBuffer != nullptr)
 			CM_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
@@ -951,11 +951,11 @@ namespace CamelotEngine
 		unsigned int bufusage;
 		if ((mUsage & TU_DYNAMIC) && mDynamicTextures)
 		{
-			bufusage = HardwareBuffer::HBU_DYNAMIC;
+			bufusage = GBU_DYNAMIC;
 		}
 		else
 		{
-			bufusage = HardwareBuffer::HBU_STATIC;
+			bufusage = GBU_STATIC;
 		}
 		if (mUsage & TU_RENDERTARGET)
 		{
@@ -972,7 +972,7 @@ namespace CamelotEngine
 			{
 				for(UINT32 mip=0; mip<=mNumMipmaps; ++mip)
 				{
-					buffer = new D3D9HardwarePixelBuffer((HardwareBuffer::Usage)bufusage, this);
+					buffer = new D3D9HardwarePixelBuffer((GpuBufferUsage)bufusage, this);
 					mSurfaceList.push_back(HardwarePixelBufferPtr(buffer));
 				}
 			}

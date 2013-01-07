@@ -40,7 +40,7 @@ namespace CamelotEngine {
   
     public:
 		D3D9HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
-			HardwareBuffer::Usage usage, bool useSystemMem);
+			GpuBufferUsage usage, bool useSystemMem);
         ~D3D9HardwareIndexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);
@@ -73,13 +73,13 @@ namespace CamelotEngine {
 			bool						mOutOfDate;
 			UINT32						mLockOffset;
 			UINT32						mLockLength;
-			LockOptions					mLockOptions;
+			GpuLockOptions					mLockOptions;
 			UINT32						mLastUsedFrame;
 		};
 
 	protected:
 		/** See HardwareBuffer. */
-		void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 		/** See HardwareBuffer. */
 		void unlockImpl(void);
 		// updates buffer resources from system memory buffer.

@@ -110,7 +110,7 @@ namespace CamelotEngine {
 			geometry shader.
         */
 		virtual HardwareVertexBufferPtr 
-            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, bool streamOut = false) = 0;
+            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
 		/** Create a hardware index buffer.
         @remarks Note that because buffers can be shared, they are reference
             counted so you do not need to worry about destroying them this will be done
@@ -122,7 +122,7 @@ namespace CamelotEngine {
         */
 		virtual HardwareIndexBufferPtr 
             createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
-			HardwareBuffer::Usage usage) = 0;
+			GpuBufferUsage usage) = 0;
 
 		/**
 		 * @brief	Creates an GPU parameter block that you can use for setting parameters
@@ -156,12 +156,12 @@ namespace CamelotEngine {
 		~HardwareBufferManager();
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexBuffer */
-		HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, bool streamOut = false)
+		HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false)
 		{
 			return mImpl->createVertexBuffer(vertexSize, numVerts, usage, streamOut);
 		}
 		/** @copydoc HardwareBufferManagerInterface::createIndexBuffer */
-		HardwareIndexBufferPtr createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, HardwareBuffer::Usage usage)
+		HardwareIndexBufferPtr createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 		{
 			return mImpl->createIndexBuffer(itype, numIndexes, usage);
 		}

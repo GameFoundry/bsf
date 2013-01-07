@@ -25,12 +25,12 @@ namespace CamelotEngine
 		D3D11_BUFFER_DESC mDesc;
 
 		/** See HardwareBuffer. */
-		void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 		/** See HardwareBuffer. */
 		void unlockImpl(void);
 
 	public:
-		D3D11HardwareBuffer(BufferType btype, UINT32 sizeBytes, HardwareBuffer::Usage usage, 
+		D3D11HardwareBuffer(BufferType btype, UINT32 sizeBytes, GpuBufferUsage usage, 
 			D3D11Device& device, bool useSystemMem, bool streamOut);
 		~D3D11HardwareBuffer();
 

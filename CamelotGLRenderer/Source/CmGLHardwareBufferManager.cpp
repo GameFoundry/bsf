@@ -82,7 +82,7 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------
     HardwareVertexBufferPtr GLHardwareBufferManagerBase::createVertexBuffer(
-        UINT32 vertexSize, UINT32 numVerts, HardwareBuffer::Usage usage, bool streamOut)
+        UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
 		GLHardwareVertexBuffer* buf = 
 			new GLHardwareVertexBuffer(this, vertexSize, numVerts, usage);
@@ -95,7 +95,7 @@ namespace CamelotEngine {
     HardwareIndexBufferPtr 
     GLHardwareBufferManagerBase::createIndexBuffer(
         HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
-        HardwareBuffer::Usage usage)
+        GpuBufferUsage usage)
     {
 		GLHardwareIndexBuffer* buf = 
 			new GLHardwareIndexBuffer(this, itype, numIndexes, usage);
@@ -114,14 +114,10 @@ namespace CamelotEngine {
     {
         switch(usage)
         {
-        case HardwareBuffer::HBU_STATIC:
-        case HardwareBuffer::HBU_STATIC_WRITE_ONLY:
+        case GBU_STATIC:
             return GL_STATIC_DRAW_ARB;
-        case HardwareBuffer::HBU_DYNAMIC:
-        case HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY:
+        case GBU_DYNAMIC:
             return GL_DYNAMIC_DRAW_ARB;
-        case HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE:
-            return GL_STREAM_DRAW_ARB;
         default:
             return GL_DYNAMIC_DRAW_ARB;
         };

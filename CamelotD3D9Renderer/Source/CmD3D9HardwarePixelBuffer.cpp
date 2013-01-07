@@ -37,7 +37,7 @@ namespace CamelotEngine
 	CM_STATIC_MUTEX_INSTANCE(D3D9HardwarePixelBuffer::msDeviceAccessMutex)
 	//-----------------------------------------------------------------------------  
 
-	D3D9HardwarePixelBuffer::D3D9HardwarePixelBuffer(HardwareBuffer::Usage usage, 
+	D3D9HardwarePixelBuffer::D3D9HardwarePixelBuffer(GpuBufferUsage usage, 
 													 D3D9Texture* ownerTexture):
 		HardwarePixelBuffer(0, 0, 0, PF_UNKNOWN, usage, false),
 		mDoMipmapGen(0), mHWMipmaps(0), mOwnerTexture(ownerTexture)
@@ -317,7 +317,7 @@ namespace CamelotEngine
 		return pbox;
 	}
 	//-----------------------------------------------------------------------------  
-	PixelData D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  LockOptions options)
+	PixelData D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  GpuLockOptions options)
 	{	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -328,13 +328,13 @@ namespace CamelotEngine
 		DWORD flags = 0;
 		switch(options)
 		{
-		case HBL_WRITE_ONLY_DISCARD:
+		case GBL_WRITE_ONLY_DISCARD:
 			// D3D only likes D3DLOCK_DISCARD if you created the texture with D3DUSAGE_DYNAMIC
 			// debug runtime flags this up, could cause problems on some drivers
-			if (mUsage & HBU_DYNAMIC)
+			if (mUsage & GBU_DYNAMIC)
 				flags |= D3DLOCK_DISCARD;
 			break;
-		case HBL_READ_ONLY:
+		case GBL_READ_ONLY:
 			flags |= D3DLOCK_READONLY;
 			break;
 		default: 

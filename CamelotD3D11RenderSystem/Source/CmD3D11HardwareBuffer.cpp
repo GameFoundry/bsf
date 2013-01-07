@@ -6,7 +6,7 @@
 
 namespace CamelotEngine
 {
-	D3D11HardwareBuffer::D3D11HardwareBuffer(BufferType btype, UINT32 sizeBytes, HardwareBuffer::Usage usage, 
+	D3D11HardwareBuffer::D3D11HardwareBuffer(BufferType btype, UINT32 sizeBytes, GpuBufferUsage usage, 
 		D3D11Device& device, bool useSystemMemory, bool streamOut)
 		: HardwareBuffer(usage, useSystemMemory),
 		mD3DBuffer(0),
@@ -60,20 +60,20 @@ namespace CamelotEngine
 	}
 
 	void* D3D11HardwareBuffer::lockImpl(UINT32 offset, 
-		UINT32 length, LockOptions options)
+		UINT32 length, GpuLockOptions options)
 	{
 		if (length > mSizeInBytes)
 			CM_EXCEPT(RenderingAPIException, "Provided length " + toString(length) + " larger than the buffer " + toString(mSizeInBytes) + ".");		
 
 		// Use direct (and faster) Map/Unmap if dynamic write, or a staging read/write
-		if((mDesc.Usage == D3D11_USAGE_DYNAMIC && options != HBL_READ_ONLY) || mDesc.Usage == D3D11_USAGE_STAGING)
+		if((mDesc.Usage == D3D11_USAGE_DYNAMIC && options != GBL_READ_ONLY) || mDesc.Usage == D3D11_USAGE_STAGING)
 		{
 			D3D11_MAP mapType;
 
 			switch(options)
 			{
-			case HBL_WRITE_ONLY_DISCARD:
-				if (mUsage & HardwareBuffer::HBU_DYNAMIC)
+			case GBL_WRITE_ONLY_DISCARD:
+				if (mUsage & GBU_DYNAMIC)
 				{
 					// Map cannot be called with MAP_WRITE access, 
 					// because the Resource was created as D3D11_USAGE_DYNAMIC. 
@@ -92,7 +92,7 @@ namespace CamelotEngine
 					LOGWRN("DISCARD lock is only available on dynamic buffers. Falling back to normal write.");
 				}
 				break;
-			case HBL_WRITE_ONLY_NO_OVERWRITE:
+			case GBL_WRITE_ONLY_NO_OVERWRITE:
 				if(mBufferType == INDEX_BUFFER || mBufferType == VERTEX_BUFFER)
 					mapType = D3D11_MAP_WRITE_NO_OVERWRITE;
 				else
@@ -102,7 +102,7 @@ namespace CamelotEngine
 					LOGWRN("NO_OVERWRITE lock is not available on this (" + toString(mBufferType) + ") buffer type. Falling back to normal write.");
 				}
 				break;
-			case HBL_READ_WRITE:
+			case GBL_READ_WRITE:
 				if ((mDesc.CPUAccessFlags & D3D11_CPU_ACCESS_READ) != 0 &&
 					(mDesc.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) != 0)
 				{
@@ -117,7 +117,7 @@ namespace CamelotEngine
 					mapType = D3D11_MAP_READ;
 				}
 				break;
-			case HBL_READ_ONLY:
+			case GBL_READ_ONLY:
 				mapType = D3D11_MAP_READ;
 				break;
 			}
@@ -154,11 +154,11 @@ namespace CamelotEngine
 			}
 
 			// schedule a copy to the staging
-			if (options != HBL_WRITE_ONLY_DISCARD)
+			if (options != GBL_WRITE_ONLY_DISCARD)
 				mpTempStagingBuffer->copyData(*this, 0, 0, mSizeInBytes, true);
 
 			// register whether we'll need to upload on unlock
-			mStagingUploadNeeded = (options != HBL_READ_ONLY);
+			mStagingUploadNeeded = (options != GBL_READ_ONLY);
 
 			return mpTempStagingBuffer->lock(offset, length, options);
 		}
@@ -229,7 +229,7 @@ namespace CamelotEngine
 	{
 		// There is no functional interface in D3D, just do via manual 
 		// lock, copy & unlock
-		void* pSrc = this->lock(offset, length, HBL_READ_ONLY);
+		void* pSrc = this->lock(offset, length, GBL_READ_ONLY);
 		memcpy(pDest, pSrc, length);
 		this->unlock();
 	}
@@ -240,7 +240,7 @@ namespace CamelotEngine
 		if(mDesc.Usage == D3D11_USAGE_DYNAMIC || mDesc.Usage == D3D11_USAGE_STAGING)
 		{
 			void* pDst = this->lock(offset, length, 
-				discardWholeBuffer ? HBL_WRITE_ONLY_DISCARD : HBL_READ_WRITE);
+				discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_READ_WRITE);
 			memcpy(pDst, pSource, length);
 			this->unlock();
 		}

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmD3D11Prerequisites.h"
-#include "CmCommon.h"
+#include "CmCommonEnums.h"
 #include "CmTexture.h"
 #include "CmPixelData.h"
 #include "CmHardwareIndexBuffer.h"
@@ -45,9 +45,9 @@ namespace CamelotEngine
 		static DWORD get(FilterType ft);
 		static D3D11_FILTER get(const FilterOptions minification, const FilterOptions magnification, const FilterOptions mips, const bool comparison = false);
 		/// return the combination of D3DUSAGE values for engine buffer usage
-		static DWORD get(HardwareBuffer::Usage usage);
+		static DWORD get(GpuBufferUsage usage);
 		/// Get lock options
-		static D3D11_MAP get(LockOptions options, HardwareBuffer::Usage usage);
+		static D3D11_MAP get(GpuLockOptions options, GpuBufferUsage usage);
 		static UINT getByteWidth(HardwareIndexBuffer::IndexType itype);
 		/// Get vertex data type
 		static DXGI_FORMAT get(VertexElementType vType);
@@ -65,11 +65,11 @@ namespace CamelotEngine
 		/// utility method, convert engine pixel format to D3D11 pixel format
 		static DXGI_FORMAT _getPF(PixelFormat ogrePF);
 		//
-		static D3D11_USAGE _getUsage(HardwareBuffer::Usage mUsage);
+		static D3D11_USAGE _getUsage(GpuBufferUsage mUsage);
 		static D3D11_USAGE _getUsage(int mUsage);
-		static UINT _getAccessFlags(HardwareBuffer::Usage mUsage);
+		static UINT _getAccessFlags(GpuBufferUsage mUsage);
 		static UINT _getAccessFlags(int mUsage);
-		static bool _isDynamic(HardwareBuffer::Usage mUsage);
+		static bool _isDynamic(GpuBufferUsage mUsage);
 
 		static bool _isDynamic(int mUsage);
 
@@ -83,6 +83,6 @@ namespace CamelotEngine
 		static UINT _getTextureBindFlags(DXGI_FORMAT format, bool isdynamic);
 		static UINT _getTextureMiscFlags(UINT bindflags, TextureType textype, bool isdynamic);
 
-		static D3D11_MAP _getLockOptions(LockOptions lockOptions);
+		static D3D11_MAP _getLockOptions(GpuLockOptions lockOptions);
 	};
 }

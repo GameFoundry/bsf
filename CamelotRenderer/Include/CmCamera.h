@@ -41,7 +41,7 @@ THE SOFTWARE.
 #include "CmVertexIndexData.h"
 #include "CmPlane.h"
 #include "CmQuaternion.h"
-#include "CmCommon.h"
+#include "CmCommonEnums.h"
 #include "CmRay.h"
 #include "CmComponent.h"
 

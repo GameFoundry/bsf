@@ -33,7 +33,7 @@ namespace CamelotEngine
 		/**
 		 * @copydoc Texture::lockImpl
 		 */
-		PixelData lockImpl(LockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
 
 		/**
 		 * @copydoc Texture::unlockImpl

@@ -71,7 +71,7 @@ namespace CamelotEngine {
 
 		void initialize_internal();
 
-		PixelData lockImpl(LockOptions options, UINT32 mipLevel, UINT32 face);
+		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face);
 		void unlockImpl();
 
 		void copyImpl(TexturePtr& target);

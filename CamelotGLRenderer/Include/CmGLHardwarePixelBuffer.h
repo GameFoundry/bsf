@@ -36,7 +36,7 @@ namespace CamelotEngine {
 	{
 	protected:  
 		/// Lock a box
-		PixelData lockImpl(const Box lockBox,  LockOptions options);
+		PixelData lockImpl(const Box lockBox,  GpuLockOptions options);
 
 		/// Unlock a box
 		void unlockImpl(void);
@@ -45,7 +45,7 @@ namespace CamelotEngine {
 		// depending on buffer usage
 		PixelData mBuffer;
         GLenum mGLInternalFormat; // GL internal format
-		LockOptions mCurrentLockOptions;
+		GpuLockOptions mCurrentLockOptions;
 		
 		// Buffer allocation/freeage
 		void allocateBuffer();
@@ -58,7 +58,7 @@ namespace CamelotEngine {
         /// Should be called by HardwareBufferManager
         GLHardwarePixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
                 PixelFormat mFormat,
-                HardwareBuffer::Usage usage);
+                GpuBufferUsage usage);
 		
 		/// @copydoc HardwarePixelBuffer::blitFromMemory
 		void blitFromMemory(const PixelData &src, const Box &dstBox);
@@ -81,7 +81,7 @@ namespace CamelotEngine {
     public:
         /** Texture constructor */
 		GLTextureBuffer(const String &baseName, GLenum target, GLuint id, GLint face, 
-			GLint level, Usage usage, bool softwareMipmap, bool writeGamma, UINT32 fsaa);
+			GLint level, GpuBufferUsage usage, bool softwareMipmap, bool writeGamma, UINT32 fsaa);
         ~GLTextureBuffer();
         
         /// @copydoc HardwarePixelBuffer::bindToFramebuffer

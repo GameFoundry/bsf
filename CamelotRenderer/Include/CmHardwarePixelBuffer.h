@@ -62,18 +62,17 @@ namespace CamelotEngine {
 		Box mLockedBox;
         
         /// Internal implementation of lock(), must be overridden in subclasses
-        virtual PixelData lockImpl(const Box lockBox,  LockOptions options) = 0;
+        virtual PixelData lockImpl(const Box lockBox,  GpuLockOptions options) = 0;
 
         /// Internal implementation of lock(), do not OVERRIDE or CALL this
         /// for HardwarePixelBuffer implementations, but override the previous method
-        virtual void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
+        virtual void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		friend class RenderTexture;
     public:
         /// Should be called by HardwareBufferManager
         HardwarePixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
-                PixelFormat mFormat,
-                HardwareBuffer::Usage usage, bool useSystemMemory);
+                PixelFormat mFormat, GpuBufferUsage usage, bool useSystemMemory);
         ~HardwarePixelBuffer();
 
         /** make every lock method from HardwareBuffer available.
@@ -87,9 +86,9 @@ namespace CamelotEngine {
 		    @returns PixelBox containing the locked region, the pitches and
 		    	the pixel format
 		*/
-		virtual const PixelData& lock(const Box& lockBox, LockOptions options);
+		virtual const PixelData& lock(const Box& lockBox, GpuLockOptions options);
 		/// @copydoc HardwareBuffer::lock
-        virtual void* lock(UINT32 offset, UINT32 length, LockOptions options);
+        virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/** Get the current locked region. This is the same value as returned
 		    by lock(const Image::Box, LockOptions)

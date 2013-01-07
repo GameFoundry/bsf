@@ -105,7 +105,7 @@ namespace CamelotEngine {
 	}
 
 	//* Creation / loading methods ********************************************
-	PixelData GLTexture::lockImpl(LockOptions options, UINT32 mipLevel, UINT32 face)
+	PixelData GLTexture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
 		if(mLockedBuffer != nullptr)
 			CM_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
@@ -269,7 +269,7 @@ namespace CamelotEngine {
 			for(UINT32 mip=0; mip<=getNumMipmaps(); mip++)
 			{
                 GLHardwarePixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget(), mTextureID, face, mip,
-						static_cast<HardwareBuffer::Usage>(mUsage), false, mHwGamma, mFSAA);
+						static_cast<GpuBufferUsage>(mUsage), false, mHwGamma, mFSAA);
 				mSurfaceList.push_back(HardwarePixelBufferPtr(buf));
                 
                 /// Check for error

@@ -33,7 +33,7 @@ namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
     GLHardwareVertexBuffer::GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
-        UINT32 numVertices, HardwareBuffer::Usage usage)
+        UINT32 numVertices, GpuBufferUsage usage)
         : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, false)
     {
         glGenBuffersARB( 1, &mBufferId );
@@ -59,7 +59,7 @@ namespace CamelotEngine {
     }
 	//---------------------------------------------------------------------
     void* GLHardwareVertexBuffer::lockImpl(UINT32 offset, 
-        UINT32 length, LockOptions options)
+        UINT32 length, GpuLockOptions options)
     {
         GLenum access = 0;
 
@@ -86,9 +86,9 @@ namespace CamelotEngine {
 				mScratchOffset = offset;
 				mScratchSize = length;
 				mScratchPtr = retPtr;
-				mScratchUploadOnUnlock = (options != HBL_READ_ONLY);
+				mScratchUploadOnUnlock = (options != GBL_READ_ONLY);
 
-				if (options != HBL_WRITE_ONLY_DISCARD)
+				if (options != GBL_WRITE_ONLY_DISCARD)
 				{
 					// have to read back the data before returning the pointer
 					readData(offset, length, retPtr);
@@ -101,16 +101,16 @@ namespace CamelotEngine {
 			// Use glMapBuffer
 			glBindBufferARB( GL_ARRAY_BUFFER_ARB, mBufferId );
 			// Use glMapBuffer
-			if(options == HBL_WRITE_ONLY_DISCARD)
+			if(options == GBL_WRITE_ONLY_DISCARD)
 			{
 				// Discard the buffer
 				glBufferDataARB(GL_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 
 					GLHardwareBufferManager::getGLUsage(mUsage));
 
 			}
-			if (mUsage & HBU_WRITE_ONLY)
+			if ((options == GBL_WRITE_ONLY) || (options == GBL_WRITE_ONLY_NO_OVERWRITE))
 				access = GL_WRITE_ONLY_ARB;
-			else if (options == HBL_READ_ONLY)
+			else if (options == GBL_READ_ONLY)
 				access = GL_READ_ONLY_ARB;
 			else
 				access = GL_READ_WRITE_ARB;

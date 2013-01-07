@@ -42,7 +42,7 @@ namespace CamelotEngine {
 	*/
 
 	/// Define a list of usage flags
-	typedef vector<HardwareBuffer::Usage>::type BufferUsageList;
+	typedef vector<GpuBufferUsage>::type BufferUsageList;
 
 
 	/** Summary class collecting together vertex source information. */

@@ -159,7 +159,7 @@ namespace CamelotEngine {
                 itBinding->second->getVertexSize();
             oldBufferLocks[itBinding->first] =
                 itBinding->second->lock(
-                    HBL_READ_ONLY);
+                    GBL_READ_ONLY);
         }
 		
 		// Create new buffers and lock all for writing
@@ -177,7 +177,7 @@ namespace CamelotEngine {
 
             newBufferVertexSizes.push_back(vertexSize);
 			newBufferLocks.push_back(
-				vbuf->lock(HBL_WRITE_ONLY_DISCARD));
+				vbuf->lock(GBL_WRITE_ONLY_DISCARD));
 			buf++;
 		}
 
@@ -263,8 +263,7 @@ namespace CamelotEngine {
             VertexDeclaration::VertexElementList destElems = newDeclaration->findElementsBySource(b);
             // Initialise with most restrictive version 
             // (not really a usable option, but these flags will be removed)
-            HardwareBuffer::Usage final = static_cast<HardwareBuffer::Usage>(
-                HardwareBuffer::HBU_STATIC_WRITE_ONLY | HardwareBuffer::HBU_DISCARDABLE);
+            GpuBufferUsage final = static_cast<GpuBufferUsage>(GBU_STATIC);
             VertexDeclaration::VertexElementList::iterator v;
             for (v = destElems.begin(); v != destElems.end(); ++v)
             {
@@ -277,28 +276,15 @@ namespace CamelotEngine {
                 HardwareVertexBufferPtr srcbuf = 
                     vertexBufferBinding->getBuffer(srcelem->getSource());
                 // improve flexibility only
-                if (srcbuf->getUsage() & HardwareBuffer::HBU_DYNAMIC)
+                if (srcbuf->getUsage() & GBU_DYNAMIC)
                 {
                     // remove static
-                    final = static_cast<HardwareBuffer::Usage>(
-                        final & ~HardwareBuffer::HBU_STATIC);
+                    final = static_cast<GpuBufferUsage>(
+                        final & ~GBU_STATIC);
                     // add dynamic
-                    final = static_cast<HardwareBuffer::Usage>(
-                        final | HardwareBuffer::HBU_DYNAMIC);
+                    final = static_cast<GpuBufferUsage>(
+                        final | GBU_DYNAMIC);
                 }
-                if (!(srcbuf->getUsage() & HardwareBuffer::HBU_WRITE_ONLY))
-                {
-                    // remove write only
-                    final = static_cast<HardwareBuffer::Usage>(
-                        final & ~HardwareBuffer::HBU_WRITE_ONLY);
-                }
-                if (!(srcbuf->getUsage() & HardwareBuffer::HBU_DISCARDABLE))
-                {
-                    // remove discardable
-                    final = static_cast<HardwareBuffer::Usage>(
-                        final & ~HardwareBuffer::HBU_DISCARDABLE);
-                }
-                
             }
             usages.push_back(final);
         }
@@ -413,7 +399,7 @@ namespace CamelotEngine {
 
 			if (conversionNeeded)
 			{
-				void* pBase = bindi->second->lock(HBL_READ_WRITE);
+				void* pBase = bindi->second->lock(GBL_READ_WRITE);
 
 				for (UINT32 v = 0; v < bindi->second->getNumVertices(); ++v)
 				{
@@ -591,7 +577,7 @@ namespace CamelotEngine {
 	{
 		if (indexBuffer->isLocked()) return;
 
-		void *buffer = indexBuffer->lock(HBL_READ_WRITE);
+		void *buffer = indexBuffer->lock(GBL_READ_WRITE);
 
 		Triangle* triangles;
 		UINT32 *dest;
@@ -698,7 +684,7 @@ namespace CamelotEngine {
     {
 		if (indexBuffer->isLocked()) return;
 
-		UINT16 *shortbuffer = (UINT16 *)indexBuffer->lock(HBL_READ_ONLY);
+		UINT16 *shortbuffer = (UINT16 *)indexBuffer->lock(GBL_READ_ONLY);
 
 		if (indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT)
 			for (unsigned int i = 0; i < indexBuffer->getNumIndexes(); ++i)

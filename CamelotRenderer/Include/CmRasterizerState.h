@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmCommon.h"
+#include "CmCommonEnums.h"
 #include "CmIReflectable.h"
 
 namespace CamelotEngine

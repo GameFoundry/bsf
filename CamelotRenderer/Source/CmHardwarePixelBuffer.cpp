@@ -34,7 +34,7 @@ namespace CamelotEngine
     //-----------------------------------------------------------------------------    
     HardwarePixelBuffer::HardwarePixelBuffer(UINT32 width, UINT32 height, UINT32 depth,
             PixelFormat format,
-            HardwareBuffer::Usage usage, bool useSystemMemory):
+            GpuBufferUsage usage, bool useSystemMemory):
         HardwareBuffer(usage, useSystemMemory),
         mWidth(width), mHeight(height), mDepth(depth),
         mFormat(format)
@@ -51,7 +51,7 @@ namespace CamelotEngine
     }
     
     //-----------------------------------------------------------------------------    
-    void* HardwarePixelBuffer::lock(UINT32 offset, UINT32 length, LockOptions options)
+    void* HardwarePixelBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
         assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
         assert(offset == 0 && length == mSizeInBytes && "Cannot lock memory region, most lock box or entire buffer");
@@ -62,7 +62,7 @@ namespace CamelotEngine
     }
     
     //-----------------------------------------------------------------------------    
-    const PixelData& HardwarePixelBuffer::lock(const Box& lockBox, LockOptions options)
+    const PixelData& HardwarePixelBuffer::lock(const Box& lockBox, GpuLockOptions options)
     {
         // Lock the real buffer if there is no shadow buffer 
         mCurrentLock = lockImpl(lockBox, options);
@@ -81,7 +81,7 @@ namespace CamelotEngine
     
     //-----------------------------------------------------------------------------    
     /// Internal implementation of lock()
-    void* HardwarePixelBuffer::lockImpl(UINT32 offset, UINT32 length, LockOptions options)
+    void* HardwarePixelBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
 		CM_EXCEPT(InternalErrorException, "lockImpl(offset,length) is not valid for PixelBuffers and should never be called");
     }
@@ -100,14 +100,14 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException,
                 "Source must not be the same object") ;
 		}
-		const PixelData &srclock = src->lock(srcBox, HBL_READ_ONLY);
+		const PixelData &srclock = src->lock(srcBox, GBL_READ_ONLY);
 
-		LockOptions method = HBL_READ_WRITE;
+		GpuLockOptions method = GBL_READ_WRITE;
 		if(dstBox.left == 0 && dstBox.top == 0 && dstBox.front == 0 &&
 		   dstBox.right == mWidth && dstBox.bottom == mHeight &&
 		   dstBox.back == mDepth)
 			// Entire buffer -- we can discard the previous contents
-			method = HBL_WRITE_ONLY_DISCARD;
+			method = GBL_WRITE_ONLY_DISCARD;
 			
 		const PixelData &dstlock = lock(dstBox, method);
 		if(dstlock.getWidth() != srclock.getWidth() ||

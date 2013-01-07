@@ -37,7 +37,7 @@ namespace CamelotEngine {
 
     //-----------------------------------------------------------------------------
     HardwareVertexBuffer::HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize,  
-        UINT32 numVertices, HardwareBuffer::Usage usage, 
+        UINT32 numVertices, GpuBufferUsage usage, 
         bool useSystemMemory) 
         : HardwareBuffer(usage, useSystemMemory), 
 		  mMgr(mgr),

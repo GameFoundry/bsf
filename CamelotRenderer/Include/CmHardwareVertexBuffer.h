@@ -54,7 +54,7 @@ namespace CamelotEngine {
 	    public:
 		    /// Should be called by HardwareBufferManager
 		    HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices,
-                HardwareBuffer::Usage usage, bool useSystemMemory);
+                GpuBufferUsage usage, bool useSystemMemory);
             ~HardwareVertexBuffer();
 			/// Return the manager of this buffer, if any
 			HardwareBufferManagerBase* getManager() const { return mMgr; }

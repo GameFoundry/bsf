@@ -39,7 +39,7 @@ namespace CamelotEngine {
 	class CM_D3D9_EXPORT D3D9HardwarePixelBuffer : public HardwarePixelBuffer
 	{
 	public:
-		D3D9HardwarePixelBuffer(HardwareBuffer::Usage usage, 
+		D3D9HardwarePixelBuffer(GpuBufferUsage usage, 
 			D3D9Texture* ownerTexture);
 		~D3D9HardwarePixelBuffer();
 
@@ -114,7 +114,7 @@ namespace CamelotEngine {
 		CM_STATIC_MUTEX(msDeviceAccessMutex)		
 	protected:
 		/// Lock a box
-		PixelData lockImpl(const Box lockBox,  LockOptions options);
+		PixelData lockImpl(const Box lockBox,  GpuLockOptions options);
 		PixelData lockBuffer(BufferResources* bufferResources, const Box &lockBox, DWORD flags);
 
 		/// Unlock a box

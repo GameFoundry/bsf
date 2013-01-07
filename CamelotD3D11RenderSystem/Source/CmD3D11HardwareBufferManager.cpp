@@ -17,7 +17,7 @@ namespace CamelotEngine
 	}
 
 	HardwareVertexBufferPtr D3D11HardwareBufferManagerBase::createVertexBuffer(UINT32 vertexSize, 
-		UINT32 numVerts, HardwareBuffer::Usage usage, bool streamOut)
+		UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
 		assert (numVerts > 0);
 		D3D11HardwareVertexBuffer* vbuf = new D3D11HardwareVertexBuffer(mDevice,
@@ -30,7 +30,7 @@ namespace CamelotEngine
 	}
 
 	HardwareIndexBufferPtr D3D11HardwareBufferManagerBase::createIndexBuffer(HardwareIndexBuffer::IndexType itype, 
-		UINT32 numIndexes, HardwareBuffer::Usage usage)
+		UINT32 numIndexes, GpuBufferUsage usage)
 	{
 		assert (numIndexes > 0);
 

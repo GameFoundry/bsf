@@ -11,7 +11,7 @@ namespace CamelotEngine
 	{
 	public:
 		D3D11HardwareConstantBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, UINT32 sizeBytes, 
-			HardwareBuffer::Usage usage, bool useSystemMem);
+			GpuBufferUsage usage, bool useSystemMem);
 		~D3D11HardwareConstantBuffer();
 
 		/**
@@ -39,7 +39,7 @@ namespace CamelotEngine
 		/**
 		* @copydoc HardwareBuffer::lockImpl
 		 */
-		void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/**
 		 * @copydoc HardwareBuffer::unlockImpl

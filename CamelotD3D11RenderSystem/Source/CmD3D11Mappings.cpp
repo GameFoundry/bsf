@@ -259,64 +259,36 @@ namespace CamelotEngine
 		return res;
 	}
 
-	DWORD D3D11Mappings::get(HardwareBuffer::Usage usage)
+	DWORD D3D11Mappings::get(GpuBufferUsage usage)
 	{
-		DWORD ret = 0;
-		if (usage & HardwareBuffer::HBU_DYNAMIC)
+		DWORD ret = D3D11_USAGE_DEFAULT;
+
+		if (usage & GBU_DYNAMIC)
 		{
-#if CM_D3D_MANAGE_BUFFERS
-			// Only add the dynamic flag for default pool, and
-			// we use default pool when buffer is discardable
-			if (usage & HardwareBuffer::HBU_DISCARDABLE)
-				ret |= D3D11_USAGE_DYNAMIC;
-#else
-			ret |= D3D11_USAGE_DYNAMIC;
-#endif
+			ret = D3D11_USAGE_DYNAMIC;
 		}
-		if (usage & HardwareBuffer::HBU_WRITE_ONLY)
-		{
-			ret |= D3D11_USAGE_DYNAMIC;
-		}
+
 		return ret;
 	}
 
-	D3D11_MAP D3D11Mappings::get(LockOptions options, HardwareBuffer::Usage usage)
+	D3D11_MAP D3D11Mappings::get(GpuLockOptions options, GpuBufferUsage usage)
 	{
 		D3D11_MAP ret = D3D11_MAP_READ_WRITE;
-		if (options == HBL_WRITE_ONLY_DISCARD)
+		if (options == GBL_WRITE_ONLY_DISCARD)
 		{
-#if CM_D3D_MANAGE_BUFFERS
-			// Only add the discard flag for dynamic usgae and default pool
-			if ((usage & HardwareBuffer::HBU_DYNAMIC) &&
-				(usage & HardwareBuffer::HBU_DISCARDABLE))
+			// D3D doesn't like discard on non-dynamic buffers
+			if (usage & GBU_DYNAMIC)
 				ret = D3D11_MAP_WRITE_DISCARD;
-#else
-			// D3D doesn't like discard or no_overwrite on non-dynamic buffers
-			if (usage & HardwareBuffer::HBU_DYNAMIC)
-				ret = D3D11_MAP_WRITE_DISCARD;
-#endif
+			else
+				ret = D3D11_MAP_WRITE;
 		}
-		if (options == HBL_READ_ONLY)
+		else if (options == GBL_READ_ONLY)
 		{
-			// D3D debug runtime doesn't like you locking managed buffers readonly
-			// when they were created with write-only (even though you CAN read
-			// from the software backed version)
-			if (!(usage & HardwareBuffer::HBU_WRITE_ONLY))
-				ret = D3D11_MAP_READ;
-
+			ret = D3D11_MAP_READ;
 		}
-		if (options == HBL_WRITE_ONLY_NO_OVERWRITE)
+		else if (options == GBL_WRITE_ONLY_NO_OVERWRITE)
 		{
-#if CM_D3D_MANAGE_BUFFERS
-			// Only add the nooverwrite flag for dynamic usgae and default pool
-			if ((usage & HardwareBuffer::HBU_DYNAMIC) &&
-				(usage & HardwareBuffer::HBU_DISCARDABLE))
-				ret = D3D11_MAP_WRITE_NO_OVERWRITE;
-#else
-			// D3D doesn't like discard or no_overwrite on non-dynamic buffers
-			if (usage & HardwareBuffer::HBU_DYNAMIC)
-				ret = D3D11_MAP_WRITE_NO_OVERWRITE;
-#endif 
+			ret = D3D11_MAP_WRITE_NO_OVERWRITE; // Only allowed for vertex/index buffers
 		}
 
 		return ret;
@@ -731,7 +703,7 @@ namespace CamelotEngine
 		}
 	}
 
-	D3D11_USAGE D3D11Mappings::_getUsage(HardwareBuffer::Usage mUsage)
+	D3D11_USAGE D3D11Mappings::_getUsage(GpuBufferUsage mUsage)
 	{
 		if (_isDynamic(mUsage))
 		{
@@ -743,13 +715,11 @@ namespace CamelotEngine
 		}
 	}
 
-	bool D3D11Mappings::_isDynamic(HardwareBuffer::Usage mUsage)
+	bool D3D11Mappings::_isDynamic(GpuBufferUsage mUsage)
 	{
 		switch ( mUsage)
 		{
-		case HardwareBuffer::HBU_DYNAMIC:
-		case HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY:
-		case HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE:
+		case GBU_DYNAMIC:
 			return true;
 		}
 
@@ -758,7 +728,7 @@ namespace CamelotEngine
 
 	bool D3D11Mappings::_isDynamic(int mUsage)
 	{
-		return _isDynamic(static_cast<HardwareBuffer::Usage>(mUsage));
+		return _isDynamic(static_cast<GpuBufferUsage>(mUsage));
 	}
 
 	bool D3D11Mappings::isMappingWrite(D3D11_MAP map)
@@ -780,15 +750,15 @@ namespace CamelotEngine
 
 	D3D11_USAGE D3D11Mappings::_getUsage(int mUsage)
 	{
-		return _getUsage(static_cast<HardwareBuffer::Usage>(mUsage));
+		return _getUsage(static_cast<GpuBufferUsage>(mUsage));
 	}
 
 	UINT D3D11Mappings::_getAccessFlags(int mUsage)
 	{
-		return _getAccessFlags(static_cast<HardwareBuffer::Usage>(mUsage));
+		return _getAccessFlags(static_cast<GpuBufferUsage>(mUsage));
 	}
 
-	UINT D3D11Mappings::_getAccessFlags(HardwareBuffer::Usage mUsage)
+	UINT D3D11Mappings::_getAccessFlags(GpuBufferUsage mUsage)
 	{
 		if(_isDynamic(mUsage))
 			return D3D11_CPU_ACCESS_WRITE;
@@ -923,23 +893,23 @@ namespace CamelotEngine
 		return flags;
 	}
 
-	D3D11_MAP D3D11Mappings::_getLockOptions(LockOptions lockOptions)
+	D3D11_MAP D3D11Mappings::_getLockOptions(GpuLockOptions lockOptions)
 	{
 		switch(lockOptions)
 		{
-		case HBL_WRITE_ONLY_NO_OVERWRITE:
+		case GBL_WRITE_ONLY_NO_OVERWRITE:
 			return D3D11_MAP_WRITE_NO_OVERWRITE;
 			break;
-		case HBL_READ_WRITE:
+		case GBL_READ_WRITE:
 			return D3D11_MAP_READ_WRITE;
 			break;
-		case HBL_WRITE_ONLY_DISCARD:
+		case GBL_WRITE_ONLY_DISCARD:
 			return D3D11_MAP_WRITE_DISCARD;
 			break;
-		case HBL_READ_ONLY:
+		case GBL_READ_ONLY:
 			return D3D11_MAP_READ;
 			break;
-		case HBL_WRITE_ONLY:
+		case GBL_WRITE_ONLY:
 			return D3D11_MAP_WRITE;
 			break;
 		default: 

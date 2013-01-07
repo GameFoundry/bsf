@@ -3,7 +3,7 @@
 namespace CamelotEngine
 {
 	D3D11HardwareVertexBuffer::D3D11HardwareVertexBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
-		HardwareBuffer::Usage usage, bool useSystemMem, bool streamOut)
+		GpuBufferUsage usage, bool useSystemMem, bool streamOut)
 		:HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMem)
 	{
 		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::VERTEX_BUFFER, mSizeInBytes, usage, device, useSystemMem, streamOut);
@@ -14,7 +14,7 @@ namespace CamelotEngine
 		delete mBuffer;
 	}
 
-	void* D3D11HardwareVertexBuffer::lockImpl(UINT32 offset, UINT32 length, LockOptions options)
+	void* D3D11HardwareVertexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
 	{
 		return mBuffer->lock(offset, length, options);
 	}

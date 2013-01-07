@@ -138,7 +138,7 @@ namespace CamelotEngine {
 		/// overridden from Texture
 		void copyImpl(TexturePtr& target);
 
-		PixelData lockImpl(LockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
 		void unlockImpl();
 
 		/// internal method, create a blank normal 1D/2D texture		

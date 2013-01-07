@@ -37,7 +37,7 @@ namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
     D3D9HardwareVertexBuffer::D3D9HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
-        UINT32 numVertices, HardwareBuffer::Usage usage, 
+        UINT32 numVertices, GpuBufferUsage usage, 
         bool useSystemMemory)
 		: HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMemory)
     {
@@ -46,10 +46,7 @@ namespace CamelotEngine {
 		D3DPOOL eResourcePool;
 		       
 #if CM_D3D_MANAGE_BUFFERS
-		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : 
-			// If not system mem, use managed pool UNLESS buffer is discardable
-			// if discardable, keeping the software backing is expensive
-			(usage & HardwareBuffer::HBU_DISCARDABLE)? D3DPOOL_DEFAULT : D3DPOOL_MANAGED;
+		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : D3DPOOL_MANAGED;
 #else
 		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;
 #endif       		
@@ -90,11 +87,11 @@ namespace CamelotEngine {
     }
 	//---------------------------------------------------------------------
     void* D3D9HardwareVertexBuffer::lockImpl(UINT32 offset, 
-        UINT32 length, LockOptions options)
+        UINT32 length, GpuLockOptions options)
     {		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		if (options != HBL_READ_ONLY)
+		if (options != GBL_READ_ONLY)
 		{
 			DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
 
@@ -119,7 +116,7 @@ namespace CamelotEngine {
 						bufferResources->mLockLength = length;
 				}
 				
-				if (bufferResources->mLockOptions != HBL_WRITE_ONLY_DISCARD)
+				if (bufferResources->mLockOptions != GBL_WRITE_ONLY_DISCARD)
 					bufferResources->mLockOptions = options;					
 
 				++it;
@@ -156,7 +153,7 @@ namespace CamelotEngine {
     {
         // There is no functional interface in D3D, just do via manual 
         // lock, copy & unlock
-        void* pSrc = this->lock(offset, length, HBL_READ_ONLY);
+        void* pSrc = this->lock(offset, length, GBL_READ_ONLY);
         memcpy(pDest, pSrc, length);
         this->unlock();
 
@@ -169,7 +166,7 @@ namespace CamelotEngine {
 		// There is no functional interface in D3D, just do via manual 
 		// lock, copy & unlock
 		void* pDst = this->lock(offset, length, 
-			discardWholeBuffer ? HBL_WRITE_ONLY_DISCARD : HBL_READ_WRITE);
+			discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_READ_WRITE);
 		memcpy(pDst, pSource, length);
 		this->unlock();
 	}
@@ -245,7 +242,7 @@ namespace CamelotEngine {
 		bufferResources->mOutOfDate = true;
 		bufferResources->mLockOffset = 0;
 		bufferResources->mLockLength = getSizeInBytes();
-		bufferResources->mLockOptions = HBL_READ_WRITE;
+		bufferResources->mLockOptions = GBL_READ_WRITE;
 
 		// TODO PORT - Don't know what the next frame number is. Add a method for that
 		//bufferResources->mLastUsedFrame = Root::getSingleton().getNextFrameNumber();
@@ -336,7 +333,7 @@ namespace CamelotEngine {
 		bufferResources->mOutOfDate = false;
 		bufferResources->mLockOffset = mSizeInBytes;
 		bufferResources->mLockLength = 0;
-		bufferResources->mLockOptions = HBL_READ_WRITE;
+		bufferResources->mLockOptions = GBL_READ_WRITE;
 
 		return true;		
 	}

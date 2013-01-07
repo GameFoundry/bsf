@@ -118,7 +118,7 @@ namespace CamelotEngine {
 
 	void Texture::setRawPixels_internal(const PixelData& data, UINT32 face, UINT32 mip)
 	{
-		PixelData myData = lock(HBL_WRITE_ONLY_DISCARD, mip, face);
+		PixelData myData = lock(GBL_WRITE_ONLY_DISCARD, mip, face);
 		memcpy(myData.data, data.data, data.getConsecutiveSize());
 		unlock();
 	}
@@ -156,7 +156,7 @@ namespace CamelotEngine {
 		UINT8* buffer = new UINT8[totalSize]; 
 		PixelDataPtr dst(new PixelData(width, height, depth, getFormat(), buffer, true));
 
-		PixelData myData = lock(HBL_READ_ONLY, mip, face);
+		PixelData myData = lock(GBL_READ_ONLY, mip, face);
 
 #if CM_DEBUG_MODE
 		if(dst->getConsecutiveSize() != myData.getConsecutiveSize())
@@ -172,7 +172,7 @@ namespace CamelotEngine {
 		op.completeOperation(dst);
 	}
 	//----------------------------------------------------------------------------
-	PixelData Texture::lock(LockOptions options, UINT32 mipLevel, UINT32 face)
+	PixelData Texture::lock(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

@@ -30,10 +30,10 @@ THE SOFTWARE.
 
 // Precompiler options
 #include "CmPrerequisites.h"
-#include "CmCommon.h"
+#include "CmCommonEnums.h"
 
-namespace CamelotEngine {
-
+namespace CamelotEngine 
+{
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -73,66 +73,22 @@ namespace CamelotEngine {
     */
 	class CM_EXPORT HardwareBuffer
     {
-
-	    public:
-		    /// Enums describing buffer usage; not mutually exclusive
-		    enum Usage 
-		    {
-                /** Static buffer which the application rarely modifies once created. Modifying 
-                the contents of this buffer will involve a performance hit.
-                */
-                HBU_STATIC = 1,
-			    /** Indicates the application would like to modify this buffer with the CPU
-			    fairly often. 
-			    Buffers created with this flag will typically end up in AGP memory rather 
-			    than video memory.
-			    */
-			    HBU_DYNAMIC = 2,
-			    /** Indicates the application will never read the contents of the buffer back, 
-			    it will only ever write data. Locking a buffer with this flag will ALWAYS 
-			    return a pointer to new, blank memory rather than the memory associated 
-			    with the contents of the buffer; this avoids DMA stalls because you can 
-			    write to a new memory area while the previous one is being used. 
-			    */
-			    HBU_WRITE_ONLY = 4,
-                /** Indicates that the application will be refilling the contents
-                of the buffer regularly (not just updating, but generating the
-                contents from scratch), and therefore does not mind if the contents 
-                of the buffer are lost somehow and need to be recreated. This
-                allows and additional level of optimisation on the buffer.
-                This option only really makes sense when combined with 
-                HBU_DYNAMIC_WRITE_ONLY.
-                */
-                HBU_DISCARDABLE = 8,
-				/// Combination of HBU_STATIC and HBU_WRITE_ONLY
-				HBU_STATIC_WRITE_ONLY = 5, 
-				/** Combination of HBU_DYNAMIC and HBU_WRITE_ONLY. If you use 
-                this, strongly consider using HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE
-                instead if you update the entire contents of the buffer very 
-                regularly. 
-                */
-				HBU_DYNAMIC_WRITE_ONLY = 6,
-                /// Combination of HBU_DYNAMIC, HBU_WRITE_ONLY and HBU_DISCARDABLE
-                HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE = 14
-
-
-		    };
 	    protected:
 		    UINT32 mSizeInBytes;
-		    Usage mUsage;
+		    GpuBufferUsage mUsage;
 		    bool mIsLocked;
 			UINT32 mLockStart;
 			UINT32 mLockSize;
 			bool mSystemMemory;
     		
             /// Internal implementation of lock()
-		    virtual void* lockImpl(UINT32 offset, UINT32 length, LockOptions options) = 0;
+		    virtual void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options) = 0;
             /// Internal implementation of unlock()
 		    virtual void unlockImpl(void) = 0;
 
     public:
 		    /// Constructor, to be called by HardwareBufferManager only
-            HardwareBuffer(Usage usage, bool systemMemory) 
+            HardwareBuffer(GpuBufferUsage usage, bool systemMemory) 
 				: mUsage(usage), mIsLocked(false), mSystemMemory(systemMemory)
             {  }
             virtual ~HardwareBuffer() {}
@@ -142,7 +98,7 @@ namespace CamelotEngine {
 		    @param options Locking options
 		    @returns Pointer to the locked memory
 		    */
-		    virtual void* lock(UINT32 offset, UINT32 length, LockOptions options)
+		    virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options)
             {
                 assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
                 void* ret = lockImpl(offset, length, options);
@@ -157,7 +113,7 @@ namespace CamelotEngine {
 		    @param options Locking options
 		    @returns Pointer to the locked memory
             */
-            void* lock(LockOptions options)
+            void* lock(GpuLockOptions options)
             {
                 return this->lock(0, mSizeInBytes, options);
             }
@@ -213,7 +169,7 @@ namespace CamelotEngine {
 				UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false)
 			{
 				const void *srcData = srcBuffer.lock(
-					srcOffset, length, HBL_READ_ONLY);
+					srcOffset, length, GBL_READ_ONLY);
 				this->writeData(dstOffset, length, srcData, discardWholeBuffer);
 				srcBuffer.unlock();
 			}
@@ -232,7 +188,7 @@ namespace CamelotEngine {
             /// Returns the size of this buffer in bytes
             UINT32 getSizeInBytes(void) const { return mSizeInBytes; }
             /// Returns the Usage flags with which this buffer was created
-            Usage getUsage(void) const { return mUsage; }
+            GpuBufferUsage getUsage(void) const { return mUsage; }
 			/// Returns whether this buffer is held in system memory
 			bool isSystemMemory(void) const { return mSystemMemory; }
             /// Returns whether or not this buffer is currently locked.

@@ -10,7 +10,7 @@ namespace CamelotEngine
 	{
 	public:
 		D3D11HardwareIndexBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
-			HardwareBuffer::Usage usage, bool useSystemMem);
+			GpuBufferUsage usage, bool useSystemMem);
 		~D3D11HardwareIndexBuffer();
 
 		/**
@@ -38,7 +38,7 @@ namespace CamelotEngine
 		/**
 		* @copydoc HardwareBuffer::lockImpl
 		 */
-		void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/**
 		 * @copydoc HardwareBuffer::unlockImpl

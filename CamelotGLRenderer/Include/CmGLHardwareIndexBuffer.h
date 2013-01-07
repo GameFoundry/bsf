@@ -46,12 +46,12 @@ namespace CamelotEngine {
 		bool mScratchUploadOnUnlock;
     protected:
         /** See HardwareBuffer. */
-        void* lockImpl(UINT32 offset, UINT32 length, LockOptions options);
+        void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
         /** See HardwareBuffer. */
         void unlockImpl(void);
     public:
         GLHardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
-            HardwareBuffer::Usage usage); 
+            GpuBufferUsage usage); 
         ~GLHardwareIndexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);

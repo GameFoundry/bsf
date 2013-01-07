@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
-#include "CmCommon.h"
+#include "CmCommonEnums.h"
 
 namespace CamelotEngine
 {

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __D3D9MAPPINGS_H__
 
 #include "CmD3D9Prerequisites.h"
-#include "CmCommon.h"
+#include "CmCommonEnums.h"
 #include "CmRenderSystem.h"
 #include "CmHardwareBuffer.h"
 #include "CmHardwareIndexBuffer.h"
@@ -84,9 +84,9 @@ namespace CamelotEngine
 		/// return the D3DtexType equivalent of a Ogre tex. type
 		static eD3DTexType get(TextureType ogreTexType);
         /// return the combination of D3DUSAGE values for Ogre buffer usage
-        static DWORD get(HardwareBuffer::Usage usage);
+        static DWORD get(GpuBufferUsage usage);
         /// Get lock options
-        static DWORD get(LockOptions options, HardwareBuffer::Usage usage);
+        static DWORD get(GpuLockOptions options, GpuBufferUsage usage);
         /// Get index type
         static D3DFORMAT get(HardwareIndexBuffer::IndexType itype);
 		/// Get vertex data type

@@ -204,24 +204,36 @@ namespace CamelotEngine {
 	};
 
 	/// Locking options
-	enum LockOptions
+	enum GpuLockOptions
 	{
         /** Normal mode, ie allows read/write and contents are preserved. */
-        HBL_READ_WRITE,
+        GBL_READ_WRITE,
 		/** Discards the <em>entire</em> buffer while locking; this allows optimisation to be 
 		performed because synchronisation issues are relaxed. 
 		*/
-		HBL_WRITE_ONLY_DISCARD,
+		GBL_WRITE_ONLY_DISCARD,
 		/** Lock the buffer for reading only. Not allowed in buffers which are created with HBU_WRITE_ONLY. 
 		*/ 
-		HBL_READ_ONLY,
+		GBL_READ_ONLY,
         /** As HBL_NORMAL, except the application guarantees not to overwrite any 
         region of the buffer which has already been used in this frame, can allow
         some optimisation on some APIs. */
-        HBL_WRITE_ONLY_NO_OVERWRITE,
+        GBL_WRITE_ONLY_NO_OVERWRITE,
 		/** Lock for writing only */
-		HBL_WRITE_ONLY
-    			
+		GBL_WRITE_ONLY	
+	};
+
+	/// Enums describing buffer usage; not mutually exclusive
+	enum GpuBufferUsage 
+	{
+        /** Static buffer which the application rarely modifies once created. Modifying 
+        the contents of this buffer will involve a performance hit.
+        */
+        GBU_STATIC = 1,
+		/** Indicates the application would like to modify this buffer with the CPU
+		fairly often. 
+		*/
+		GBU_DYNAMIC = 2,
 	};
 
 	/** Texture addressing mode for each texture coordinate. */

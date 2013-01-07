@@ -58,9 +58,9 @@ namespace CamelotEngine
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
 			HardwareIndexBuffer::IT_32BIT,
 			mIndexData->indexCount, 
-			HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+			GBU_STATIC);
 
-		UINT32* idxData = static_cast<UINT32*>(mIndexData->indexBuffer->lock(HBL_READ_WRITE));
+		UINT32* idxData = static_cast<UINT32*>(mIndexData->indexBuffer->lock(GBL_READ_WRITE));
 
 		for(UINT32 i = 0; i < mIndexData->indexCount; i++)
 		{
@@ -84,12 +84,12 @@ namespace CamelotEngine
 			HardwareVertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
 				mVertexData->vertexDeclaration->getVertexSize(streamIdx),
 				mVertexData->vertexCount,
-				HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+				GBU_STATIC);
 
 			mVertexData->vertexBufferBinding->setBinding(streamIdx, vertexBuffer);
 
 			UINT32 vertexSize = vertexBuffer->getVertexSize();
-			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(HBL_READ_WRITE));
+			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_WRITE));
 
 			UINT32 numElements = mVertexData->vertexDeclaration->getElementCount();
 
@@ -192,7 +192,7 @@ namespace CamelotEngine
 			meshData->indexCount = mIndexData->indexCount - mIndexData->indexStart;
 			meshData->index = new int[meshData->indexCount];
 
-			UINT16* idxData = static_cast<UINT16*>(mIndexData->indexBuffer->lock(HBL_READ_ONLY));
+			UINT16* idxData = static_cast<UINT16*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
 
 			for(UINT32 i = 0; i < mIndexData->indexCount; i++)
 				meshData->index[i] = (UINT32)idxData[i];
@@ -212,7 +212,7 @@ namespace CamelotEngine
 
 				HardwareVertexBufferPtr vertexBuffer = mVertexData->vertexBufferBinding->getBuffer(i);
 				UINT32 vertexSize = vertexBuffer->getVertexSize();
-				UINT8* vertDataIter = static_cast<UINT8*>(vertexBuffer->lock(HBL_READ_ONLY));
+				UINT8* vertDataIter = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
 
 				std::shared_ptr<MeshData::VertexData> vertexData(new MeshData::VertexData(meshData->vertexCount, i));
 				meshData->vertexBuffers[i] = vertexData;

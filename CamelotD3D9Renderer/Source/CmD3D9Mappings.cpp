@@ -308,62 +308,49 @@ namespace CamelotEngine
 		return D3D9Mappings::D3D_TEX_TYPE_NONE;
 	}
 	//---------------------------------------------------------------------
-    DWORD D3D9Mappings::get(HardwareBuffer::Usage usage)
+    DWORD D3D9Mappings::get(GpuBufferUsage usage)
     {
         DWORD ret = 0;
-        if (usage & HardwareBuffer::HBU_DYNAMIC)
+        if (usage & GBU_DYNAMIC)
         {
 #if CM_D3D_MANAGE_BUFFERS
-            // Only add the dynamic flag for default pool, and
-            // we use default pool when buffer is discardable
-            if (usage & HardwareBuffer::HBU_DISCARDABLE)
-                ret |= D3DUSAGE_DYNAMIC;
+            // Not allowed to used dynamic on managed pool
 #else
             ret |= D3DUSAGE_DYNAMIC;
 #endif
         }
-        if (usage & HardwareBuffer::HBU_WRITE_ONLY)
-        {
-            ret |= D3DUSAGE_WRITEONLY;
-        }
+
         return ret;
     }
 	//---------------------------------------------------------------------
-    DWORD D3D9Mappings::get(LockOptions options, HardwareBuffer::Usage usage)
+    DWORD D3D9Mappings::get(GpuLockOptions options, GpuBufferUsage usage)
     {
         DWORD ret = 0;
-        if (options == HBL_WRITE_ONLY_DISCARD)
+        if (options == GBL_WRITE_ONLY_DISCARD)
         {
 #if CM_D3D_MANAGE_BUFFERS
-            // Only add the discard flag for dynamic usgae and default pool
-            if ((usage & HardwareBuffer::HBU_DYNAMIC) &&
-                (usage & HardwareBuffer::HBU_DISCARDABLE))
-                ret |= D3DLOCK_DISCARD;
+			// Cannot use discard with a non-dynamic buffer, and we know buffer is not dynamic
+			// since we are using managed buffers (which don't support dynamic buffers)
 #else
             // D3D doesn't like discard or no_overwrite on non-dynamic buffers
-            if (usage & HardwareBuffer::HBU_DYNAMIC)
+            if (usage & GBU_DYNAMIC)
                 ret |= D3DLOCK_DISCARD;
 #endif
         }
-        if (options == HBL_READ_ONLY)
+        
+		if (options == GBL_READ_ONLY)
         {
-			// D3D debug runtime doesn't like you locking managed buffers readonly
-			// when they were created with write-only (even though you CAN read
-			// from the software backed version)
-			if (!(usage & HardwareBuffer::HBU_WRITE_ONLY))
-				ret |= D3DLOCK_READONLY;
-
+			ret |= D3DLOCK_READONLY;
         }
-        if (options == HBL_WRITE_ONLY_NO_OVERWRITE)
+
+        if (options == GBL_WRITE_ONLY_NO_OVERWRITE)
         {
 #if CM_D3D_MANAGE_BUFFERS
-            // Only add the nooverwrite flag for dynamic usgae and default pool
-            if ((usage & HardwareBuffer::HBU_DYNAMIC) &&
-                (usage & HardwareBuffer::HBU_DISCARDABLE))
-                ret |= D3DLOCK_NOOVERWRITE;
+			// Cannot use no overwrite with a non-dynamic buffer, and we know buffer is not dynamic
+			// since we are using managed buffers (which don't support dynamic buffers)
 #else
             // D3D doesn't like discard or no_overwrite on non-dynamic buffers
-            if (usage & HardwareBuffer::HBU_DYNAMIC)
+            if (usage & GBU_DYNAMIC)
                 ret |= D3DLOCK_NOOVERWRITE;
 #endif 
         }
