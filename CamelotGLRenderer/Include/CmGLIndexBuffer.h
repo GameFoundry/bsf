@@ -50,7 +50,7 @@ namespace CamelotEngine {
         /** See HardwareBuffer. */
         void unlockImpl(void);
     public:
-        GLIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
+        GLIndexBuffer(HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
             GpuBufferUsage usage); 
         ~GLIndexBuffer();
         /** See HardwareBuffer. */

@@ -47,8 +47,8 @@ namespace CamelotEngine {
 	#define SCRATCH_POOL_SIZE 1 * 1024 * 1024
 	#define SCRATCH_ALIGNMENT 32
 	//---------------------------------------------------------------------
-    GLHardwareBufferManagerBase::GLHardwareBufferManagerBase() 
-		: mScratchBufferPool(NULL), mMapBufferThreshold(OGRE_GL_DEFAULT_MAP_BUFFER_THRESHOLD)
+    GLHardwareBufferManager::GLHardwareBufferManager() 
+		: mScratchBufferPool(NULL), mMapBufferThreshold(CM_GL_DEFAULT_MAP_BUFFER_THRESHOLD)
     {
 		// Init scratch pool
 		// TODO make it a configurable size?
@@ -75,14 +75,14 @@ namespace CamelotEngine {
 
     }
     //-----------------------------------------------------------------------
-    GLHardwareBufferManagerBase::~GLHardwareBufferManagerBase()
+    GLHardwareBufferManager::~GLHardwareBufferManager()
     {
         destroyAllBindings();
 
 		_aligned_free(mScratchBufferPool);
     }
     //-----------------------------------------------------------------------
-    HardwareVertexBufferPtr GLHardwareBufferManagerBase::createVertexBuffer(
+    HardwareVertexBufferPtr GLHardwareBufferManager::createVertexBuffer(
         UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
 		GLVertexBuffer* buf = 
@@ -94,7 +94,7 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------
     HardwareIndexBufferPtr 
-    GLHardwareBufferManagerBase::createIndexBuffer(
+    GLHardwareBufferManager::createIndexBuffer(
         IndexBuffer::IndexType itype, UINT32 numIndexes, 
         GpuBufferUsage usage)
     {
@@ -106,18 +106,18 @@ namespace CamelotEngine {
 		return HardwareIndexBufferPtr(buf);
     }
 	//---------------------------------------------------------------------
-	GpuParamBlockPtr GLHardwareBufferManagerBase::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
+	GpuParamBlockPtr GLHardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
 	{
 		return GpuParamBlockPtr(new GLGpuParamBlock(paramDesc));
 	}
 	//---------------------------------------------------------------------
-	GenericBufferPtr GLHardwareBufferManagerBase::createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
+	GenericBufferPtr GLHardwareBufferManager::createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
 		GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
 		return GenericBufferPtr(new GLGenericBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 	}
     //---------------------------------------------------------------------
-    GLenum GLHardwareBufferManagerBase::getGLUsage(unsigned int usage)
+    GLenum GLHardwareBufferManager::getGLUsage(unsigned int usage)
     {
         switch(usage)
         {
@@ -130,7 +130,7 @@ namespace CamelotEngine {
         };
     }
     //---------------------------------------------------------------------
-    GLenum GLHardwareBufferManagerBase::getGLType(unsigned int type)
+    GLenum GLHardwareBufferManager::getGLType(unsigned int type)
     {
         switch(type)
         {
@@ -155,7 +155,7 @@ namespace CamelotEngine {
     }
 	//---------------------------------------------------------------------
 	//---------------------------------------------------------------------
-	void* GLHardwareBufferManagerBase::allocateScratch(UINT32 size)
+	void* GLHardwareBufferManager::allocateScratch(UINT32 size)
 	{
 		// simple forward link search based on alloc sizes
 		// not that fast but the list should never get that long since not many
@@ -208,7 +208,7 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	void GLHardwareBufferManagerBase::deallocateScratch(void* ptr)
+	void GLHardwareBufferManager::deallocateScratch(void* ptr)
 	{
 		CM_LOCK_MUTEX(mScratchMutex)
 
@@ -263,12 +263,12 @@ namespace CamelotEngine {
 
 	}
 	//---------------------------------------------------------------------
-	const UINT32 GLHardwareBufferManagerBase::getGLMapBufferThreshold() const
+	const UINT32 GLHardwareBufferManager::getGLMapBufferThreshold() const
 	{
 		return mMapBufferThreshold;
 	}
 	//---------------------------------------------------------------------
-	void GLHardwareBufferManagerBase::setGLMapBufferThreshold( const UINT32 value )
+	void GLHardwareBufferManager::setGLMapBufferThreshold( const UINT32 value )
 	{
 		mMapBufferThreshold = value;
 	}

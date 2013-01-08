@@ -31,23 +31,12 @@ THE SOFTWARE.
 #include "CmVertexDeclaration.h"
 
 namespace CamelotEngine {
-	//---------------------------------------------------------------------
-	HardwareBufferManager::HardwareBufferManager(HardwareBufferManagerBase* imp)
-		: HardwareBufferManagerBase(), mImpl(imp)
-	{
-
-	}
-	//---------------------------------------------------------------------
-	HardwareBufferManager::~HardwareBufferManager()
-	{
-		// mImpl must be deleted by the creator
-	}
     //-----------------------------------------------------------------------
-    HardwareBufferManagerBase::HardwareBufferManagerBase()
+    HardwareBufferManager::HardwareBufferManager()
     {
     }
     //-----------------------------------------------------------------------
-    HardwareBufferManagerBase::~HardwareBufferManagerBase()
+    HardwareBufferManager::~HardwareBufferManager()
     {
         // Clear vertex/index buffer list first, avoid destroyed notify do
         // unnecessary work, and we'll destroy everything here.
@@ -61,41 +50,41 @@ namespace CamelotEngine {
         // No need to destroy temp buffers - they will be destroyed automatically.
     }
     //-----------------------------------------------------------------------
-    VertexDeclarationPtr HardwareBufferManagerBase::createVertexDeclaration(void)
+    VertexDeclarationPtr HardwareBufferManager::createVertexDeclaration(void)
     {
         VertexDeclarationPtr decl = createVertexDeclarationImpl();
         return decl;
     }
     //-----------------------------------------------------------------------
-	VertexBufferBinding* HardwareBufferManagerBase::createVertexBufferBinding(void)
+	VertexBufferBinding* HardwareBufferManager::createVertexBufferBinding(void)
 	{
 		VertexBufferBinding* ret = createVertexBufferBindingImpl();
 		mVertexBufferBindings.insert(ret);
 		return ret;
 	}
     //-----------------------------------------------------------------------
-	void HardwareBufferManagerBase::destroyVertexBufferBinding(VertexBufferBinding* binding)
+	void HardwareBufferManager::destroyVertexBufferBinding(VertexBufferBinding* binding)
 	{
 		mVertexBufferBindings.erase(binding);
 		destroyVertexBufferBindingImpl(binding);
 	}
     //-----------------------------------------------------------------------
-    VertexDeclarationPtr HardwareBufferManagerBase::createVertexDeclarationImpl(void)
+    VertexDeclarationPtr HardwareBufferManager::createVertexDeclarationImpl(void)
     {
         return VertexDeclarationPtr(new VertexDeclaration());
     }
     //-----------------------------------------------------------------------
-	VertexBufferBinding* HardwareBufferManagerBase::createVertexBufferBindingImpl(void)
+	VertexBufferBinding* HardwareBufferManager::createVertexBufferBindingImpl(void)
 	{
 		return new VertexBufferBinding();
 	}
     //-----------------------------------------------------------------------
-	void HardwareBufferManagerBase::destroyVertexBufferBindingImpl(VertexBufferBinding* binding)
+	void HardwareBufferManager::destroyVertexBufferBindingImpl(VertexBufferBinding* binding)
 	{
 		delete binding;
 	}
     //-----------------------------------------------------------------------
-    void HardwareBufferManagerBase::destroyAllBindings(void)
+    void HardwareBufferManager::destroyAllBindings(void)
     {
         VertexBufferBindingList::iterator bind;
         for (bind = mVertexBufferBindings.begin(); bind != mVertexBufferBindings.end(); ++bind)
@@ -105,7 +94,7 @@ namespace CamelotEngine {
         mVertexBufferBindings.clear();
     }
 	//-----------------------------------------------------------------------
-	void HardwareBufferManagerBase::_notifyVertexBufferDestroyed(VertexBuffer* buf)
+	void HardwareBufferManager::_notifyVertexBufferDestroyed(VertexBuffer* buf)
 	{
 		VertexBufferList::iterator i = mVertexBuffers.find(buf);
 		if (i != mVertexBuffers.end())
@@ -115,7 +104,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	void HardwareBufferManagerBase::_notifyIndexBufferDestroyed(IndexBuffer* buf)
+	void HardwareBufferManager::_notifyIndexBufferDestroyed(IndexBuffer* buf)
 	{
 		IndexBufferList::iterator i = mIndexBuffers.find(buf);
 		if (i != mIndexBuffers.end())

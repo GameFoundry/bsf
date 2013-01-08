@@ -51,7 +51,7 @@ namespace CamelotEngine {
         /** See HardwareBuffer. */
         void unlockImpl(void);
     public:
-        GLVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
+        GLVertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
         ~GLVertexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);

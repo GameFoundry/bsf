@@ -32,7 +32,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
-    GLIndexBuffer::GLIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType,
+    GLIndexBuffer::GLIndexBuffer(HardwareBufferManager* mgr, IndexType idxType,
         UINT32 numIndexes, GpuBufferUsage usage)
         : IndexBuffer(mgr, idxType, numIndexes, usage, false)
     {

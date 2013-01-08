@@ -2,7 +2,7 @@
 
 namespace CamelotEngine
 {
-	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
+	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
 		GpuBufferUsage usage, bool useSystemMem)
 		:IndexBuffer(mgr, idxType, numIndexes, usage, useSystemMem)
 	{

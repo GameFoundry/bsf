@@ -32,9 +32,8 @@ THE SOFTWARE.
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
 
-namespace CamelotEngine {
-	class HardwareBufferManagerBase;
-
+namespace CamelotEngine 
+{
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -51,18 +50,18 @@ namespace CamelotEngine {
 		    };
 
 	    protected:
-			HardwareBufferManagerBase* mMgr;
+			HardwareBufferManager* mMgr;
 		    IndexType mIndexType;
 		    UINT32 mNumIndexes;
             UINT32 mIndexSize;
 
 	    public:
 		    /// Should be called by HardwareBufferManager
-		    IndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage,
+		    IndexBuffer(HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage,
                 bool useSystemMemory);
             ~IndexBuffer();
 			/// Return the manager of this buffer, if any
-			HardwareBufferManagerBase* getManager() const { return mMgr; }
+			HardwareBufferManager* getManager() const { return mMgr; }
     		/// Get the type of indexes used in this buffer
             IndexType getType(void) const { return mIndexType; }
             /// Get the number of indexes in this buffer

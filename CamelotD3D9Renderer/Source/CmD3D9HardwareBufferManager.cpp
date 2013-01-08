@@ -35,18 +35,16 @@ THE SOFTWARE.
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------
-    D3D9HardwareBufferManagerBase::D3D9HardwareBufferManagerBase()       
+    D3D9HardwareBufferManager::D3D9HardwareBufferManager()       
     {
     }
     //-----------------------------------------------------------------------
-    D3D9HardwareBufferManagerBase::~D3D9HardwareBufferManagerBase()
+    D3D9HardwareBufferManager::~D3D9HardwareBufferManager()
     {
         destroyAllBindings();
     }
     //-----------------------------------------------------------------------
-    HardwareVertexBufferPtr 
-    D3D9HardwareBufferManagerBase::
-    createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+    HardwareVertexBufferPtr D3D9HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
 		assert (numVerts > 0);
 
@@ -58,9 +56,7 @@ namespace CamelotEngine {
         return HardwareVertexBufferPtr(vbuf);
     }
     //-----------------------------------------------------------------------
-	HardwareIndexBufferPtr 
-    D3D9HardwareBufferManagerBase::
-    createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	HardwareIndexBufferPtr D3D9HardwareBufferManager::createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
     {
 		assert (numIndexes > 0);
 
@@ -72,23 +68,23 @@ namespace CamelotEngine {
             
     }
 	//-----------------------------------------------------------------------
-	GpuParamBlockPtr D3D9HardwareBufferManagerBase::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
+	GpuParamBlockPtr D3D9HardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
 	{
 		return GpuParamBlockPtr(new GpuParamBlock(paramDesc));
 	}
 	//-----------------------------------------------------------------------
-	GenericBufferPtr D3D9HardwareBufferManagerBase::createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
+	GenericBufferPtr D3D9HardwareBufferManager::createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
 		GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
 		return GenericBufferPtr(new D3D9GenericBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 	}
     //-----------------------------------------------------------------------
-    VertexDeclarationPtr D3D9HardwareBufferManagerBase::createVertexDeclarationImpl(void)
+    VertexDeclarationPtr D3D9HardwareBufferManager::createVertexDeclarationImpl(void)
     {
         return VertexDeclarationPtr(new D3D9VertexDeclaration());
     }
     //-----------------------------------------------------------------------
-    void D3D9HardwareBufferManagerBase::destroyVertexDeclarationImpl(VertexDeclaration* decl)
+    void D3D9HardwareBufferManager::destroyVertexDeclarationImpl(VertexDeclaration* decl)
     {
         delete decl;
     }

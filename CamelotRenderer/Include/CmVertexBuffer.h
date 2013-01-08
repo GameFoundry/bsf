@@ -34,9 +34,8 @@ THE SOFTWARE.
 #include "CmIReflectable.h"
 #include "CmColor.h"
 
-namespace CamelotEngine {
-	class HardwareBufferManagerBase;
-
+namespace CamelotEngine 
+{
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -47,17 +46,17 @@ namespace CamelotEngine {
     class CM_EXPORT VertexBuffer : public HardwareBuffer
     {
 	    protected:
-			HardwareBufferManagerBase* mMgr;
+			HardwareBufferManager* mMgr;
 		    UINT32 mNumVertices;
             UINT32 mVertexSize;
 
 	    public:
 		    /// Should be called by HardwareBufferManager
-		    VertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices,
+		    VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices,
                 GpuBufferUsage usage, bool useSystemMemory);
             ~VertexBuffer();
 			/// Return the manager of this buffer, if any
-			HardwareBufferManagerBase* getManager() const { return mMgr; }
+			HardwareBufferManager* getManager() const { return mMgr; }
             /// Gets the size in bytes of a single vertex in this buffer
             UINT32 getVertexSize(void) const { return mVertexSize; }
             /// Get the number of vertices in this buffer

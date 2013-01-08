@@ -10,7 +10,7 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11HardwareConstantBuffer
 	{
 	public:
-		D3D11HardwareConstantBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, UINT32 sizeBytes, 
+		D3D11HardwareConstantBuffer(D3D11Device& device, HardwareBufferManager* mgr, UINT32 sizeBytes, 
 			GpuBufferUsage usage, bool useSystemMem);
 		~D3D11HardwareConstantBuffer();
 

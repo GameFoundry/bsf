@@ -341,9 +341,9 @@ namespace CamelotEngine
 		return sz;
 	}
 	//-----------------------------------------------------------------------------
-	VertexDeclarationPtr VertexDeclaration::clone(HardwareBufferManagerBase* mgr)
+	VertexDeclarationPtr VertexDeclaration::clone(HardwareBufferManager* mgr)
 	{
-		HardwareBufferManagerBase* pManager = mgr ? mgr : HardwareBufferManager::instancePtr(); 
+		HardwareBufferManager* pManager = mgr ? mgr : HardwareBufferManager::instancePtr(); 
 		VertexDeclarationPtr ret = pManager->createVertexDeclaration();
 
 		VertexElementList::const_iterator i, iend;

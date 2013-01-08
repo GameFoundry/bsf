@@ -45,17 +45,8 @@ namespace CamelotEngine {
 	*/
 
 	/** Base definition of a hardware buffer manager.
-	@remarks
-		This class is deliberately not a Singleton, so that multiple types can 
-		exist at once. The Singleton is wrapped via the Decorator pattern
-		in HardwareBufferManager, below. Each concrete implementation should
-		provide a subclass of HardwareBufferManagerBase, which does the actual
-		work, and also a very simple subclass of HardwareBufferManager which 
-		simply constructs the instance of the HardwareBufferManagerBase subclass 
-		and passes it to the HardwareBufferManager superclass as a delegate. 
-		This subclass must also delete the implementation instance it creates.
 	*/
-	class CM_EXPORT HardwareBufferManagerBase
+	class CM_EXPORT HardwareBufferManager : public Module<HardwareBufferManager>
 	{
     protected:
         /** WARNING: The following three members should place before all other members.
@@ -84,8 +75,8 @@ namespace CamelotEngine {
 		virtual void destroyVertexBufferBindingImpl(VertexBufferBinding* binding);
 
     public:
-        HardwareBufferManagerBase();
-        virtual ~HardwareBufferManagerBase();
+        HardwareBufferManager();
+        virtual ~HardwareBufferManager();
 		/** Create a hardware vertex buffer.
         @remarks
             This method creates a new vertex buffer; this will act as a source of geometry
@@ -160,67 +151,6 @@ namespace CamelotEngine {
 		/// Notification that a hardware index buffer has been destroyed
 		void _notifyIndexBufferDestroyed(IndexBuffer* buf);
 	};
-
-    /** Singleton wrapper for hardware buffer manager. */
-    class CM_EXPORT HardwareBufferManager : public HardwareBufferManagerBase, public Module<HardwareBufferManager>
-    {
-    protected:
-		HardwareBufferManagerBase* mImpl;
-	public:
-		HardwareBufferManager(HardwareBufferManagerBase* imp);
-		~HardwareBufferManager();
-
-		/** @copydoc HardwareBufferManagerInterface::createVertexBuffer */
-		HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false)
-		{
-			return mImpl->createVertexBuffer(vertexSize, numVerts, usage, streamOut);
-		}
-		/** @copydoc HardwareBufferManagerInterface::createIndexBuffer */
-		HardwareIndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
-		{
-			return mImpl->createIndexBuffer(itype, numIndexes, usage);
-		}
-
-		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
-		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
-		{
-			return mImpl->createGpuParamBlock(paramDesc);
-		}
-
-		/** @copydoc HardwareBufferManagerInterface::createGenericBuffer */
-		GenericBufferPtr createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
-			GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false)
-		{
-			return mImpl->createGenericBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
-		}
-
-		/** @copydoc HardwareBufferManagerInterface::createVertexDeclaration */
-		virtual VertexDeclarationPtr createVertexDeclaration(void)
-		{
-			return mImpl->createVertexDeclaration();
-		}
-
-		/** @copydoc HardwareBufferManagerInterface::createVertexBufferBinding */
-		virtual VertexBufferBinding* createVertexBufferBinding(void)
-		{
-			return mImpl->createVertexBufferBinding();
-		}
-		/** @copydoc HardwareBufferManagerInterface::destroyVertexBufferBinding */
-		virtual void destroyVertexBufferBinding(VertexBufferBinding* binding)
-		{
-			mImpl->destroyVertexBufferBinding(binding);
-		}
-		/** @copydoc HardwareBufferManagerInterface::_notifyVertexBufferDestroyed */
-		void _notifyVertexBufferDestroyed(VertexBuffer* buf)
-		{
-			mImpl->_notifyVertexBufferDestroyed(buf);
-		}
-		/** @copydoc HardwareBufferManagerInterface::_notifyIndexBufferDestroyed */
-		void _notifyIndexBufferDestroyed(IndexBuffer* buf)
-		{
-			mImpl->_notifyIndexBufferDestroyed(buf);
-		}            
-    };
 
 	/** @} */
 	/** @} */

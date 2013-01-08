@@ -32,7 +32,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
-    GLVertexBuffer::GLVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
+    GLVertexBuffer::GLVertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, 
         UINT32 numVertices, GpuBufferUsage usage)
         : VertexBuffer(mgr, vertexSize, numVertices, usage, false)
     {

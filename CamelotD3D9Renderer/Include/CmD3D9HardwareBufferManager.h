@@ -34,7 +34,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
     /** Implementation of HardwareBufferManager for D3D9. */
-    class CM_D3D9_EXPORT D3D9HardwareBufferManagerBase : public HardwareBufferManagerBase
+    class CM_D3D9_EXPORT D3D9HardwareBufferManager : public HardwareBufferManager
     {
     protected:     
         /// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
@@ -43,48 +43,30 @@ namespace CamelotEngine {
         void destroyVertexDeclarationImpl(VertexDeclaration* decl);
 
     public:
-        D3D9HardwareBufferManagerBase();
-        ~D3D9HardwareBufferManagerBase();
+        D3D9HardwareBufferManager();
+        ~D3D9HardwareBufferManager();
 
 		/**
-		 * @copydoc HardwareBufferManagerBase::createVertexBuffer
+		 * @copydoc HardwareBufferManager::createVertexBuffer
 		 */
-		HardwareVertexBufferPtr 
-            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+		HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/**
-		 * @copydoc HardwareBufferManagerBase::createIndexBuffer
+		 * @copydoc HardwareBufferManager::createIndexBuffer
 		 */
-		HardwareIndexBufferPtr 
-            createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		HardwareIndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
-		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
+		/** @copydoc HardwareBufferManager::createGpuParamBlock */
 		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);
 
 		/**
-		 * @copydoc HardwareBufferManagerInterface::createGpuParamBlock
+		 * @copydoc HardwareBufferManager::createGenericBuffer
 		 *
 		 * DirectX 9 does not support generic buffers so this method will return a dummy instance.
 		 */
 		GenericBufferPtr createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
 			GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
     };
-
-	/// D3D9HardwareBufferManagerBase as a Singleton
-	class CM_D3D9_EXPORT D3D9HardwareBufferManager : public HardwareBufferManager
-	{
-	public:
-		D3D9HardwareBufferManager()
-			: HardwareBufferManager(new D3D9HardwareBufferManagerBase()) 
-		{
-
-		}
-		~D3D9HardwareBufferManager()
-		{
-			delete mImpl;
-		}
-	};
-
 }
 
 

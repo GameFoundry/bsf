@@ -9,7 +9,7 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11VertexBuffer : public VertexBuffer
 	{
 	public:
-		D3D11VertexBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
+		D3D11VertexBuffer(D3D11Device& device, HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, 
 			GpuBufferUsage usage, bool useSystemMem, bool streamOut);
 		~D3D11VertexBuffer();
 

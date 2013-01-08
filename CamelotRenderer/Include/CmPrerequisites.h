@@ -106,7 +106,7 @@ namespace CamelotEngine {
 	class WorkQueue;
 	class PassParameters;
 	class AsyncOp;
-	class HardwareBufferManagerBase;
+	class HardwareBufferManager;
 	class HardwareConstantBuffer;
 	class CommandQueue;
 	class DeferredRenderContext;

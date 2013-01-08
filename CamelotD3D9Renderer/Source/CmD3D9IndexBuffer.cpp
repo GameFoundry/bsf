@@ -36,7 +36,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
-    D3D9IndexBuffer::D3D9IndexBuffer(HardwareBufferManagerBase* mgr, IndexBuffer::IndexType idxType, 
+    D3D9IndexBuffer::D3D9IndexBuffer(HardwareBufferManager* mgr, IndexBuffer::IndexType idxType, 
         UINT32 numIndexes, GpuBufferUsage usage,
         bool useSystemMemory)
         : IndexBuffer(mgr, idxType, numIndexes, usage, useSystemMemory)

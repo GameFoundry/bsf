@@ -9,7 +9,7 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11IndexBuffer : public IndexBuffer
 	{
 	public:
-		D3D11IndexBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
+		D3D11IndexBuffer(D3D11Device& device, HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
 			GpuBufferUsage usage, bool useSystemMem);
 		~D3D11IndexBuffer();
 

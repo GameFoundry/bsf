@@ -34,11 +34,11 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
 // Default threshold at which glMapBuffer becomes more efficient than glBufferSubData (32k?)
-#	define OGRE_GL_DEFAULT_MAP_BUFFER_THRESHOLD (1024 * 32)
+#	define CM_GL_DEFAULT_MAP_BUFFER_THRESHOLD (1024 * 32)
 
 
     /** Implementation of HardwareBufferManager for OpenGL. */
-    class CM_RSGL_EXPORT GLHardwareBufferManagerBase : public HardwareBufferManagerBase
+    class CM_RSGL_EXPORT GLHardwareBufferManager : public HardwareBufferManager
     {
 	protected:
 		char* mScratchBufferPool;
@@ -46,27 +46,27 @@ namespace CamelotEngine {
 		UINT32 mMapBufferThreshold;
 
     public:
-        GLHardwareBufferManagerBase();
-        ~GLHardwareBufferManagerBase();
+        GLHardwareBufferManager();
+        ~GLHardwareBufferManager();
 
 		/**
-		 * @copydoc HardwareBufferManagerBase::createVertexBuffer
+		 * @copydoc HardwareBufferManager::createVertexBuffer
 		 */
         HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, 
             UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/**
-		 * @copydoc HardwareBufferManagerBase::createIndexBuffer
+		 * @copydoc HardwareBufferManager::createIndexBuffer
 		 */
         HardwareIndexBufferPtr createIndexBuffer(
             IndexBuffer::IndexType itype, UINT32 numIndexes, 
             GpuBufferUsage usage);
 
-		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
+		/** @copydoc HardwareBufferManager::createGpuParamBlock */
 		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);
 
 		/**
-		 * @copydoc HardwareBufferManagerInterface::createGpuParamBlock
+		 * @copydoc HardwareBufferManager::createGenericBuffer
 		 *
 		 * OpenGL does not support generic buffers so this method will return a dummy instance.
 		 */
@@ -96,62 +96,6 @@ namespace CamelotEngine {
 		const UINT32 getGLMapBufferThreshold() const;
 		void setGLMapBufferThreshold( const UINT32 value );
     };
-
-	/// GLHardwareBufferManagerBase as a Singleton
-	class CM_RSGL_EXPORT GLHardwareBufferManager : public HardwareBufferManager
-	{
-	public:
-		GLHardwareBufferManager()
-			: HardwareBufferManager(new GLHardwareBufferManagerBase()) 
-		{
-
-		}
-		~GLHardwareBufferManager()
-		{
-			delete mImpl;
-		}
-
-
-
-		/// Utility function to get the correct GL usage based on HBU's
-		static GLenum getGLUsage(unsigned int usage) 
-		{ return GLHardwareBufferManagerBase::getGLUsage(usage); }
-
-		/// Utility function to get the correct GL type based on VET's
-		static GLenum getGLType(unsigned int type)
-		{ return GLHardwareBufferManagerBase::getGLType(type); }
-
-		/** Allocator method to allow us to use a pool of memory as a scratch
-		area for hardware buffers. This is because glMapBuffer is incredibly
-		inefficient, seemingly no matter what options we give it. So for the
-		period of lock/unlock, we will instead allocate a section of a local
-		memory pool, and use glBufferSubDataARB / glGetBufferSubDataARB
-		instead.
-		*/
-		void* allocateScratch(UINT32 size)
-		{
-			return static_cast<GLHardwareBufferManagerBase*>(mImpl)->allocateScratch(size);
-		}
-
-		/// @see allocateScratch
-		void deallocateScratch(void* ptr)
-		{
-			static_cast<GLHardwareBufferManagerBase*>(mImpl)->deallocateScratch(ptr);
-		}
-
-		/** Threshold after which glMapBuffer is used and not glBufferSubData
-		*/
-		const UINT32 getGLMapBufferThreshold() const
-		{
-			return static_cast<GLHardwareBufferManagerBase*>(mImpl)->getGLMapBufferThreshold();
-		}
-		void setGLMapBufferThreshold( const UINT32 value )
-		{
-			static_cast<GLHardwareBufferManagerBase*>(mImpl)->setGLMapBufferThreshold(value);
-		}
-
-	};
-
 }
 
 #endif // __GLHARWAREBUFFERMANAGER_H__

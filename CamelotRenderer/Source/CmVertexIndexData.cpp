@@ -38,7 +38,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
-	VertexData::VertexData(HardwareBufferManagerBase* mgr)
+	VertexData::VertexData(HardwareBufferManager* mgr)
 	{
 		mMgr = mgr ? mgr : HardwareBufferManager::instancePtr();
 		vertexBufferBinding = mMgr->createVertexBufferBinding();
@@ -68,9 +68,9 @@ namespace CamelotEngine {
 		}
 	}
     //-----------------------------------------------------------------------
-	VertexData* VertexData::clone(bool copyData, HardwareBufferManagerBase* mgr) const
+	VertexData* VertexData::clone(bool copyData, HardwareBufferManager* mgr) const
 	{
-		HardwareBufferManagerBase* pManager = mgr ? mgr : mMgr;
+		HardwareBufferManager* pManager = mgr ? mgr : mMgr;
 
 		VertexData* dest = new VertexData(mgr);
 
@@ -127,9 +127,9 @@ namespace CamelotEngine {
 	}
 	//-----------------------------------------------------------------------
 	void VertexData::reorganiseBuffers(VertexDeclarationPtr newDeclaration, 
-		const BufferUsageList& bufferUsages, HardwareBufferManagerBase* mgr)
+		const BufferUsageList& bufferUsages, HardwareBufferManager* mgr)
 	{
-		HardwareBufferManagerBase* pManager = mgr ? mgr : mMgr;
+		HardwareBufferManager* pManager = mgr ? mgr : mMgr;
         // Firstly, close up any gaps in the buffer sources which might have arisen
         newDeclaration->closeGapsInSource();
 
@@ -253,7 +253,7 @@ namespace CamelotEngine {
 
 	}
     //-----------------------------------------------------------------------
-    void VertexData::reorganiseBuffers(VertexDeclarationPtr newDeclaration, HardwareBufferManagerBase* mgr)
+    void VertexData::reorganiseBuffers(VertexDeclarationPtr newDeclaration, HardwareBufferManager* mgr)
     {
         // Derive the buffer usages from looking at where the source has come
         // from
@@ -459,9 +459,9 @@ namespace CamelotEngine {
 	{
 	}
     //-----------------------------------------------------------------------
-	IndexData* IndexData::clone(bool copyData, HardwareBufferManagerBase* mgr) const
+	IndexData* IndexData::clone(bool copyData, HardwareBufferManager* mgr) const
 	{
-		HardwareBufferManagerBase* pManager = mgr ? mgr : HardwareBufferManager::instancePtr();
+		HardwareBufferManager* pManager = mgr ? mgr : HardwareBufferManager::instancePtr();
 		IndexData* dest = new IndexData();
 		if (indexBuffer.get())
 		{

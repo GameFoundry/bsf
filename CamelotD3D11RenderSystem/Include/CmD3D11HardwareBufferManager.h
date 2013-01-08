@@ -5,11 +5,11 @@
 
 namespace CamelotEngine
 {
-	class CM_D3D11_EXPORT D3D11HardwareBufferManagerBase : public HardwareBufferManagerBase
+	class CM_D3D11_EXPORT D3D11HardwareBufferManager : public HardwareBufferManager
 	{
 	public:
-		D3D11HardwareBufferManagerBase(D3D11Device& device);
-		~D3D11HardwareBufferManagerBase();
+		D3D11HardwareBufferManager(D3D11Device& device);
+		~D3D11HardwareBufferManager();
 
 		/**
 		 * @brief	Creates a hardware vertex buffer.
@@ -41,18 +41,5 @@ namespace CamelotEngine
 		void destroyVertexDeclarationImpl(VertexDeclaration* decl);
 
 		D3D11Device& mDevice;
-	};
-
-	class CM_D3D11_EXPORT D3D11HardwareBufferManager : public HardwareBufferManager
-	{
-	public:
-		D3D11HardwareBufferManager(D3D11Device& device)
-			: HardwareBufferManager(new D3D11HardwareBufferManagerBase(device)) 
-		{ }
-
-		~D3D11HardwareBufferManager()
-		{
-			delete mImpl;
-		}
 	};
 }

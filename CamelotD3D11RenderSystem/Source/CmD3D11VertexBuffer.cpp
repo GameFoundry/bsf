@@ -2,7 +2,7 @@
 
 namespace CamelotEngine
 {
-	D3D11VertexBuffer::D3D11VertexBuffer(D3D11Device& device, HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, 
+	D3D11VertexBuffer::D3D11VertexBuffer(D3D11Device& device, HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, 
 		GpuBufferUsage usage, bool useSystemMem, bool streamOut)
 		:VertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMem)
 	{
