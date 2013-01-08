@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------
 This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org
+For the latest info, see http://www.ogre3d.org/
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
 
@@ -25,20 +25,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
+#ifndef __GLHARDWAREVERTEXBUFFER_H__
+#define __GLHARDWAREVERTEXBUFFER_H__
 
-#include "CmHardwareOcclusionQuery.h"
+#include "CmGLPrerequisites.h"
+#include "CmVertexBuffer.h"
 
 namespace CamelotEngine {
 
+    /// Specialisation of HardwareVertexBuffer for OpenGL
+    class CM_RSGL_EXPORT GLVertexBuffer : public VertexBuffer 
+    {
+    private:
+        GLuint mBufferId;
+		// Scratch buffer handling
+		bool mLockedToScratch;
+		UINT32 mScratchOffset;
+		UINT32 mScratchSize;
+		void* mScratchPtr;
+		bool mScratchUploadOnUnlock;
 
-    HardwareOcclusionQuery::HardwareOcclusionQuery() : 
-        mPixelCount(0),
-        mIsQueryResultStillOutstanding(false)
-    {
-    }
-    HardwareOcclusionQuery::~HardwareOcclusionQuery()
-    {
-    }
+    protected:
+        /** See HardwareBuffer. */
+        void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+        /** See HardwareBuffer. */
+        void unlockImpl(void);
+    public:
+        GLVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
+        ~GLVertexBuffer();
+        /** See HardwareBuffer. */
+        void readData(UINT32 offset, UINT32 length, void* pDest);
+        /** See HardwareBuffer. */
+        void writeData(UINT32 offset, UINT32 length, 
+            const void* pSource, bool discardWholeBuffer = false);
+
+        GLuint getGLBufferId(void) const { return mBufferId; }
+    };
 
 }
-
+#endif // __GLHARDWAREVERTEXBUFFER_H__

@@ -48,7 +48,7 @@ initialised and used in glRenderSystem and copy what is done there.
 #define __GLHARDWAREOCCLUSIONQUERY_H__
 
 #include "CmGLPrerequisites.h"
-#include "CmHardwareOcclusionQuery.h"
+#include "CmOcclusionQuery.h"
 
 
 namespace CamelotEngine { 
@@ -69,7 +69,7 @@ namespace CamelotEngine {
   * Updated on 13/9/2005 by Tuan Kuranes email: tuan.kuranes@free.fr
   */
 
-class CM_RSGL_EXPORT GLHardwareOcclusionQuery : public HardwareOcclusionQuery
+class CM_RSGL_EXPORT GLOcclusionQuery : public OcclusionQuery
 {
 //----------------------------------------------------------------------
 // Public methods
@@ -79,11 +79,11 @@ public:
 	  * Default object constructor
 	  * 
 	  */
-	GLHardwareOcclusionQuery();
+	GLOcclusionQuery();
 	/**
 	  * Object destructor
 	  */
-	~GLHardwareOcclusionQuery();
+	~GLOcclusionQuery();
 
 	//------------------------------------------------------------------
 	// Occlusion query functions (see base class documentation for this)

@@ -37,13 +37,13 @@ THE SOFTWARE.
 #include "CmMath.h"
 #include "CmCamera.h"
 #include "CmD3D9HardwareBufferManager.h"
-#include "CmD3D9HardwareIndexBuffer.h"
-#include "CmD3D9HardwareVertexBuffer.h"
+#include "CmD3D9IndexBuffer.h"
+#include "CmD3D9VertexBuffer.h"
 #include "CmD3D9VertexDeclaration.h"
 #include "CmD3D9GpuProgram.h"
 #include "CmD3D9GpuProgramManager.h"
 #include "CmD3D9HLSLProgramFactory.h"
-#include "CmD3D9HardwareOcclusionQuery.h"
+#include "CmD3D9OcclusionQuery.h"
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
 #include "CmD3D9RenderWindowManager.h"
@@ -1210,8 +1210,8 @@ namespace CamelotEngine
 				}
 			}
 
-			D3D9HardwareVertexBuffer* d3d9buf = 
-				static_cast<D3D9HardwareVertexBuffer*>(i->second.get());
+			D3D9VertexBuffer* d3d9buf = 
+				static_cast<D3D9VertexBuffer*>(i->second.get());
 			hr = getActiveD3D9Device()->SetStreamSource(
 				static_cast<UINT>(source),
 				d3d9buf->getD3D9VertexBuffer(),
@@ -1302,8 +1302,8 @@ namespace CamelotEngine
 		HRESULT hr;
 		if( op.useIndexes )
 		{
-			D3D9HardwareIndexBuffer* d3dIdxBuf = 
-				static_cast<D3D9HardwareIndexBuffer*>(op.indexData->indexBuffer.get());
+			D3D9IndexBuffer* d3dIdxBuf = 
+				static_cast<D3D9IndexBuffer*>(op.indexData->indexBuffer.get());
 			hr = getActiveD3D9Device()->SetIndices( d3dIdxBuf->getD3DIndexBuffer() );
 			if (FAILED(hr))
 			{

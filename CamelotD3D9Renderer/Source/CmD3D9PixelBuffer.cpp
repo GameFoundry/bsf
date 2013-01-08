@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "CmD3D9HardwarePixelBuffer.h"
+#include "CmD3D9PixelBuffer.h"
 #include "CmD3D9Texture.h"
 #include "CmD3D9Mappings.h"
 #include "CmException.h"
@@ -34,16 +34,16 @@ THE SOFTWARE.
 
 namespace CamelotEngine 
 {
-	CM_STATIC_MUTEX_INSTANCE(D3D9HardwarePixelBuffer::msDeviceAccessMutex)
+	CM_STATIC_MUTEX_INSTANCE(D3D9PixelBuffer::msDeviceAccessMutex)
 	//-----------------------------------------------------------------------------  
 
-	D3D9HardwarePixelBuffer::D3D9HardwarePixelBuffer(GpuBufferUsage usage, 
+	D3D9PixelBuffer::D3D9PixelBuffer(GpuBufferUsage usage, 
 													 D3D9Texture* ownerTexture):
-		HardwarePixelBuffer(0, 0, 0, PF_UNKNOWN, usage, false),
+		PixelBuffer(0, 0, 0, PF_UNKNOWN, usage, false),
 		mDoMipmapGen(0), mHWMipmaps(0), mOwnerTexture(ownerTexture)
 	{	
 	}
-	D3D9HardwarePixelBuffer::~D3D9HardwarePixelBuffer()
+	D3D9PixelBuffer::~D3D9PixelBuffer()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -59,7 +59,7 @@ namespace CamelotEngine
 		}
 	}
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *surface, 
+	void D3D9PixelBuffer::bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *surface, 
 									   bool writeGamma, UINT32 fsaa, const String& srcName,
 									   IDirect3DBaseTexture9 *mipTex)
 	{
@@ -119,7 +119,7 @@ namespace CamelotEngine
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void D3D9HardwarePixelBuffer::bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *volume, IDirect3DBaseTexture9 *mipTex)
+	void D3D9PixelBuffer::bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *volume, IDirect3DBaseTexture9 *mipTex)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -177,7 +177,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	D3D9HardwarePixelBuffer::BufferResources* D3D9HardwarePixelBuffer::getBufferResources(IDirect3DDevice9* d3d9Device)
+	D3D9PixelBuffer::BufferResources* D3D9PixelBuffer::getBufferResources(IDirect3DDevice9* d3d9Device)
 	{
 		DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.find(d3d9Device);
 
@@ -188,7 +188,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	D3D9HardwarePixelBuffer::BufferResources* D3D9HardwarePixelBuffer::createBufferResources()
+	D3D9PixelBuffer::BufferResources* D3D9PixelBuffer::createBufferResources()
 	{
 		BufferResources* newResources = new BufferResources;
 
@@ -198,7 +198,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::destroyBufferResources(IDirect3DDevice9* d3d9Device)
+	void D3D9PixelBuffer::destroyBufferResources(IDirect3DDevice9* d3d9Device)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -214,13 +214,13 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::lockDeviceAccess()
+	void D3D9PixelBuffer::lockDeviceAccess()
 	{
 		D3D9_DEVICE_ACCESS_LOCK;			
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::unlockDeviceAccess()
+	void D3D9PixelBuffer::unlockDeviceAccess()
 	{
 		D3D9_DEVICE_ACCESS_UNLOCK;								
 	}
@@ -317,7 +317,7 @@ namespace CamelotEngine
 		return pbox;
 	}
 	//-----------------------------------------------------------------------------  
-	PixelData D3D9HardwarePixelBuffer::lockImpl(const Box lockBox,  GpuLockOptions options)
+	PixelData D3D9PixelBuffer::lockImpl(const Box lockBox,  GpuLockOptions options)
 	{	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -356,7 +356,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	CamelotEngine::PixelData D3D9HardwarePixelBuffer::lockBuffer(BufferResources* bufferResources, 
+	CamelotEngine::PixelData D3D9PixelBuffer::lockBuffer(BufferResources* bufferResources, 
 													   const Box &lockBox, 
 													   DWORD flags)
 	{
@@ -403,7 +403,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::unlockImpl(void)
+	void D3D9PixelBuffer::unlockImpl(void)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -434,7 +434,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::unlockBuffer(BufferResources* bufferResources)
+	void D3D9PixelBuffer::unlockBuffer(BufferResources* bufferResources)
 	{
 		if(bufferResources->surface) 
 		{
@@ -449,13 +449,13 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::blit(const HardwarePixelBufferPtr &rsrc, 
+	void D3D9PixelBuffer::blit(const PixelBufferPtr &rsrc, 
 									   const Box &srcBox, 
 									   const Box &dstBox)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		D3D9HardwarePixelBuffer *src = static_cast<D3D9HardwarePixelBuffer*>(rsrc.get());
+		D3D9PixelBuffer *src = static_cast<D3D9PixelBuffer*>(rsrc.get());
 		DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
 
 		// Update all the buffer copies.
@@ -475,8 +475,8 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::blit(IDirect3DDevice9* d3d9Device, 
-									   const HardwarePixelBufferPtr &rsrc, 
+	void D3D9PixelBuffer::blit(IDirect3DDevice9* d3d9Device, 
+									   const PixelBufferPtr &rsrc, 
 									   const Box &srcBox, 
 									   const Box &dstBox,
 									   BufferResources* srcBufferResources, 
@@ -567,12 +567,12 @@ namespace CamelotEngine
 		else
 		{
 			// Software fallback   
-			HardwarePixelBuffer::blit(rsrc, srcBox, dstBox);
+			PixelBuffer::blit(rsrc, srcBox, dstBox);
 		}
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox)
+	void D3D9PixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox)
 	{	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -588,7 +588,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox, BufferResources* dstBufferResources)
+	void D3D9PixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox, BufferResources* dstBufferResources)
 	{
 		// for scoped deletion of conversion buffer
 		void* data = NULL;
@@ -680,7 +680,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst)
+	void D3D9PixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -691,7 +691,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst, 
+	void D3D9PixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst, 
 											   BufferResources* srcBufferResources,
 											   IDirect3DDevice9* d3d9Device)
 	{
@@ -846,7 +846,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::_genMipmaps(IDirect3DBaseTexture9* mipTex)
+	void D3D9PixelBuffer::_genMipmaps(IDirect3DBaseTexture9* mipTex)
 	{
 		assert(mipTex);
 
@@ -867,14 +867,14 @@ namespace CamelotEngine
 
 	}
 	//----------------------------------------------------------------------------- 
-	void D3D9HardwarePixelBuffer::_setMipmapping(bool doMipmapGen, 
+	void D3D9PixelBuffer::_setMipmapping(bool doMipmapGen, 
 												 bool HWMipmaps)
 	{	
 		mDoMipmapGen = doMipmapGen;
 		mHWMipmaps = HWMipmaps;	
 	}
 	//-----------------------------------------------------------------------------  
-	void D3D9HardwarePixelBuffer::releaseSurfaces(IDirect3DDevice9* d3d9Device)
+	void D3D9PixelBuffer::releaseSurfaces(IDirect3DDevice9* d3d9Device)
 	{
 		BufferResources* bufferResources = getBufferResources(d3d9Device);
 
@@ -885,7 +885,7 @@ namespace CamelotEngine
 		}
 	}
 	//-----------------------------------------------------------------------------   
-	IDirect3DSurface9* D3D9HardwarePixelBuffer::getSurface(IDirect3DDevice9* d3d9Device)
+	IDirect3DSurface9* D3D9PixelBuffer::getSurface(IDirect3DDevice9* d3d9Device)
 	{
 		BufferResources* bufferResources = getBufferResources(d3d9Device);
 

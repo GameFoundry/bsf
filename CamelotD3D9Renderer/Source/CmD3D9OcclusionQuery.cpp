@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "CmD3D9HardwareOcclusionQuery.h"
+#include "CmD3D9OcclusionQuery.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmException.h"
 #include "CmD3D9RenderSystem.h"
@@ -45,7 +45,7 @@ namespace CamelotEngine {
 	/**
 	* Default object constructor
 	*/
-    D3D9HardwareOcclusionQuery::D3D9HardwareOcclusionQuery()
+    D3D9OcclusionQuery::D3D9OcclusionQuery()
 	{ 
 		
 	}
@@ -53,7 +53,7 @@ namespace CamelotEngine {
 	/**
 	* Object destructor
 	*/
-	D3D9HardwareOcclusionQuery::~D3D9HardwareOcclusionQuery() 
+	D3D9OcclusionQuery::~D3D9OcclusionQuery() 
 	{ 
 		DeviceToQueryIterator it = mMapDeviceToQuery.begin();
 
@@ -68,7 +68,7 @@ namespace CamelotEngine {
 	//------------------------------------------------------------------
 	// Occlusion query functions (see base class documentation for this)
 	//--
-	void D3D9HardwareOcclusionQuery::beginOcclusionQuery() 
+	void D3D9OcclusionQuery::beginOcclusionQuery() 
 	{	
 		IDirect3DDevice9* pCurDevice  = D3D9RenderSystem::getActiveD3D9Device();				
 		DeviceToQueryIterator it      = mMapDeviceToQuery.find(pCurDevice);
@@ -90,7 +90,7 @@ namespace CamelotEngine {
 		}		
 	}
 
-	void D3D9HardwareOcclusionQuery::endOcclusionQuery() 
+	void D3D9OcclusionQuery::endOcclusionQuery() 
 	{ 
 		IDirect3DDevice9* pCurDevice  = D3D9RenderSystem::getActiveD3D9Device();				
 		DeviceToQueryIterator it      = mMapDeviceToQuery.find(pCurDevice);
@@ -107,7 +107,7 @@ namespace CamelotEngine {
 	}	
 
 	//------------------------------------------------------------------
-	bool D3D9HardwareOcclusionQuery::pullOcclusionQuery( unsigned int* NumOfFragments ) 
+	bool D3D9OcclusionQuery::pullOcclusionQuery( unsigned int* NumOfFragments ) 
 	{
 		IDirect3DDevice9* pCurDevice = D3D9RenderSystem::getActiveD3D9Device();
 		DeviceToQueryIterator it     = mMapDeviceToQuery.find(pCurDevice);
@@ -155,13 +155,13 @@ namespace CamelotEngine {
 	}
 
 	//------------------------------------------------------------------
-	unsigned int D3D9HardwareOcclusionQuery::getLastQuerysPixelcount()
+	unsigned int D3D9OcclusionQuery::getLastQuerysPixelcount()
 	{
 		return mPixelCount;
 	}
 
     //------------------------------------------------------------------
-    bool D3D9HardwareOcclusionQuery::isStillOutstanding(void)
+    bool D3D9OcclusionQuery::isStillOutstanding(void)
     {       
         // in case you already asked for this query
         if (!mIsQueryResultStillOutstanding)
@@ -195,31 +195,31 @@ namespace CamelotEngine {
 	}
 
 	//------------------------------------------------------------------
-	void D3D9HardwareOcclusionQuery::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
+	void D3D9OcclusionQuery::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{
 		
 	}
 
 	//------------------------------------------------------------------
-	void D3D9HardwareOcclusionQuery::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
+	void D3D9OcclusionQuery::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{		
 		releaseQuery(d3d9Device);
 	}
 
 	//------------------------------------------------------------------
-	void D3D9HardwareOcclusionQuery::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
+	void D3D9OcclusionQuery::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
 	{		
 		releaseQuery(d3d9Device);		
 	}
 
 	//------------------------------------------------------------------
-	void D3D9HardwareOcclusionQuery::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
+	void D3D9OcclusionQuery::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
 	{		
 		
 	}
 
 	//------------------------------------------------------------------
-	void D3D9HardwareOcclusionQuery::createQuery(IDirect3DDevice9* d3d9Device)
+	void D3D9OcclusionQuery::createQuery(IDirect3DDevice9* d3d9Device)
 	{
 		HRESULT hr;
 
@@ -239,7 +239,7 @@ namespace CamelotEngine {
 	}
 
 	//------------------------------------------------------------------
-	void D3D9HardwareOcclusionQuery::releaseQuery(IDirect3DDevice9* d3d9Device)
+	void D3D9OcclusionQuery::releaseQuery(IDirect3DDevice9* d3d9Device)
 	{
 		DeviceToQueryIterator it     = mMapDeviceToQuery.find(d3d9Device);
 

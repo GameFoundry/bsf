@@ -105,7 +105,7 @@ namespace CamelotEngine {
         mVertexBufferBindings.clear();
     }
 	//-----------------------------------------------------------------------
-	void HardwareBufferManagerBase::_notifyVertexBufferDestroyed(HardwareVertexBuffer* buf)
+	void HardwareBufferManagerBase::_notifyVertexBufferDestroyed(VertexBuffer* buf)
 	{
 		VertexBufferList::iterator i = mVertexBuffers.find(buf);
 		if (i != mVertexBuffers.end())
@@ -115,7 +115,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	void HardwareBufferManagerBase::_notifyIndexBufferDestroyed(HardwareIndexBuffer* buf)
+	void HardwareBufferManagerBase::_notifyIndexBufferDestroyed(IndexBuffer* buf)
 	{
 		IndexBufferList::iterator i = mIndexBuffers.find(buf);
 		if (i != mIndexBuffers.end())

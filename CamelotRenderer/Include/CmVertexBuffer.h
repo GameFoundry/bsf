@@ -44,7 +44,7 @@ namespace CamelotEngine {
 	*  @{
 	*/
 	/** Specialisation of HardwareBuffer for a vertex buffer. */
-    class CM_EXPORT HardwareVertexBuffer : public HardwareBuffer
+    class CM_EXPORT VertexBuffer : public HardwareBuffer
     {
 	    protected:
 			HardwareBufferManagerBase* mMgr;
@@ -53,9 +53,9 @@ namespace CamelotEngine {
 
 	    public:
 		    /// Should be called by HardwareBufferManager
-		    HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices,
+		    VertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices,
                 GpuBufferUsage usage, bool useSystemMemory);
-            ~HardwareVertexBuffer();
+            ~VertexBuffer();
 			/// Return the manager of this buffer, if any
 			HardwareBufferManagerBase* getManager() const { return mMgr; }
             /// Gets the size in bytes of a single vertex in this buffer
@@ -64,7 +64,7 @@ namespace CamelotEngine {
             UINT32 getNumVertices(void) const { return mNumVertices; }
     };
 
-	typedef std::shared_ptr<HardwareVertexBuffer> HardwareVertexBufferPtr;
+	typedef std::shared_ptr<VertexBuffer> HardwareVertexBufferPtr;
 
 	/** Records the state of all the vertex buffer bindings required to provide a vertex declaration
 		with the input data it needs for the vertex elements.

@@ -143,18 +143,6 @@
     <ClInclude Include="Include\CmHighLevelGpuProgram.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmHardwareVertexBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmHardwarePixelBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmHardwareOcclusionQuery.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmHardwareIndexBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmHardwareBuffer.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -362,6 +350,18 @@
     <ClInclude Include="Include\CmGenericBufferView.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmIndexBuffer.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmOcclusionQuery.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmPixelBuffer.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmVertexBuffer.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -392,18 +392,6 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmHardwareBufferManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmHardwareIndexBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmHardwareOcclusionQuery.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmHardwarePixelBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmHardwareVertexBuffer.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmHighLevelGpuProgram.cpp">
@@ -545,6 +533,18 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGenericBufferView.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmIndexBuffer.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmOcclusionQuery.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmPixelBuffer.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmVertexBuffer.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>

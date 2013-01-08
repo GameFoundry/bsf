@@ -25,40 +25,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
+#ifndef __GLHARDWAREINDEXBUFFER_H__
+#define __GLHARDWAREINDEXBUFFER_H__
 
-#include "CmHardwareIndexBuffer.h"
-#include "CmHardwareBufferManager.h"
+#include "CmGLPrerequisites.h"
+#include "CmIndexBuffer.h"
 
-namespace CamelotEngine {
+namespace CamelotEngine { 
 
-    //-----------------------------------------------------------------------------
-    HardwareIndexBuffer::HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, 
-        UINT32 numIndexes, GpuBufferUsage usage, 
-        bool useSystemMemory) 
-        : HardwareBuffer(usage, useSystemMemory)
-		, mMgr(mgr)
-		, mIndexType(idxType)
-		, mNumIndexes(numIndexes)
+
+    class CM_RSGL_EXPORT GLIndexBuffer : public IndexBuffer
     {
-        // Calculate the size of the indexes
-        switch (mIndexType)
-        {
-        case IT_16BIT:
-            mIndexSize = sizeof(unsigned short);
-            break;
-        case IT_32BIT:
-            mIndexSize = sizeof(unsigned int);
-            break;
-        }
-        mSizeInBytes = mIndexSize * mNumIndexes;
-    }
-    //-----------------------------------------------------------------------------
-    HardwareIndexBuffer::~HardwareIndexBuffer()
-    {
-		if (mMgr)
-		{
-			mMgr->_notifyIndexBufferDestroyed(this);
-		}
-    }
+    private:
+        GLuint mBufferId;
+		// Scratch buffer handling
+		bool mLockedToScratch;
+		UINT32 mScratchOffset;
+		UINT32 mScratchSize;
+		void* mScratchPtr;
+		bool mScratchUploadOnUnlock;
+    protected:
+        /** See HardwareBuffer. */
+        void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+        /** See HardwareBuffer. */
+        void unlockImpl(void);
+    public:
+        GLIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
+            GpuBufferUsage usage); 
+        ~GLIndexBuffer();
+        /** See HardwareBuffer. */
+        void readData(UINT32 offset, UINT32 length, void* pDest);
+        /** See HardwareBuffer. */
+        void writeData(UINT32 offset, UINT32 length, 
+            const void* pSource, bool discardWholeBuffer = false);
+
+        GLuint getGLBufferId(void) const { return mBufferId; }
+    };
+
 }
+
+#endif // __GLHARDWAREINDEXBUFFER_H__
 

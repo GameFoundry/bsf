@@ -56,7 +56,7 @@ namespace CamelotEngine
 
 		mIndexData->indexCount = meshData->indexCount;
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
-			HardwareIndexBuffer::IT_32BIT,
+			IndexBuffer::IT_32BIT,
 			mIndexData->indexCount, 
 			GBU_STATIC);
 

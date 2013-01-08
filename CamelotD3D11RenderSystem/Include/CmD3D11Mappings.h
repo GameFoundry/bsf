@@ -4,7 +4,7 @@
 #include "CmCommonEnums.h"
 #include "CmTexture.h"
 #include "CmPixelData.h"
-#include "CmHardwareIndexBuffer.h"
+#include "CmIndexBuffer.h"
 #include "CmVertexIndexData.h"
 #include "CmSamplerState.h"
 
@@ -48,7 +48,7 @@ namespace CamelotEngine
 		static DWORD get(GpuBufferUsage usage);
 		/// Get lock options
 		static D3D11_MAP get(GpuLockOptions options, GpuBufferUsage usage);
-		static UINT getByteWidth(HardwareIndexBuffer::IndexType itype);
+		static UINT getByteWidth(IndexBuffer::IndexType itype);
 		/// Get vertex data type
 		static DXGI_FORMAT get(VertexElementType vType);
 		/// Get vertex semantic

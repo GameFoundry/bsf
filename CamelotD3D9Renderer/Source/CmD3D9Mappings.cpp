@@ -358,9 +358,9 @@ namespace CamelotEngine
         return ret;
     }
 	//---------------------------------------------------------------------
-    D3DFORMAT D3D9Mappings::get(HardwareIndexBuffer::IndexType itype)
+    D3DFORMAT D3D9Mappings::get(IndexBuffer::IndexType itype)
     {
-        if (itype == HardwareIndexBuffer::IT_32BIT)
+        if (itype == IndexBuffer::IT_32BIT)
         {
             return D3DFMT_INDEX32;
         }

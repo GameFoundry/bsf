@@ -48,7 +48,7 @@ namespace CamelotEngine {
   * @author Lee Sandberg
   * Updated on 13/8/2005 by Tuan Kuranes email: tuan.kuranes@free.fr
   */
-	class CM_EXPORT HardwareOcclusionQuery
+	class CM_EXPORT OcclusionQuery
 {
 //----------------------------------------------------------------------
 // Public methods
@@ -62,12 +62,12 @@ public:
 	  * Default object constructor
 	  * 
 	  */
-	HardwareOcclusionQuery();
+	OcclusionQuery();
 
 	/**
 	  * Object destructor
 	  */
-	virtual ~HardwareOcclusionQuery();
+	virtual ~OcclusionQuery();
 
 	/**
 	  * Starts the hardware occlusion query

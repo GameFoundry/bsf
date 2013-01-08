@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmGLPrerequisites.h"
 #include "CmGLContext.h"
-#include "CmGLHardwarePixelBuffer.h"
+#include "CmGLPixelBuffer.h"
 #include "CmPixelData.h"
 
 namespace CamelotEngine 

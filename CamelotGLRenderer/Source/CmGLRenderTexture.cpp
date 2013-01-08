@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "CmGLRenderTexture.h"
 #include "CmGLPixelFormat.h"
 #include "CmGLDepthStencilBuffer.h"
-#include "CmGLHardwarePixelBuffer.h"
+#include "CmGLPixelBuffer.h"
 
 namespace CamelotEngine 
 {
@@ -55,7 +55,7 @@ namespace CamelotEngine
 		surfaceDesc.zoffset = 0;
 
 		GLTexture* glTexture = static_cast<GLTexture*>(mSurface.texture.get());
-		surfaceDesc.buffer = std::static_pointer_cast<GLHardwarePixelBuffer>(glTexture->getBuffer(mSurface.face, mSurface.mipLevel));
+		surfaceDesc.buffer = std::static_pointer_cast<GLPixelBuffer>(glTexture->getBuffer(mSurface.face, mSurface.mipLevel));
 
 		mFB->bindSurface(0, surfaceDesc);
 

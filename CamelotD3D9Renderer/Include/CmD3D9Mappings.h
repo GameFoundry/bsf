@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmCommonEnums.h"
 #include "CmRenderSystem.h"
 #include "CmHardwareBuffer.h"
-#include "CmHardwareIndexBuffer.h"
+#include "CmIndexBuffer.h"
 
 namespace CamelotEngine 
 {
@@ -88,7 +88,7 @@ namespace CamelotEngine
         /// Get lock options
         static DWORD get(GpuLockOptions options, GpuBufferUsage usage);
         /// Get index type
-        static D3DFORMAT get(HardwareIndexBuffer::IndexType itype);
+        static D3DFORMAT get(IndexBuffer::IndexType itype);
 		/// Get vertex data type
 		static D3DDECLTYPE get(VertexElementType vType);
 		/// Get vertex semantic

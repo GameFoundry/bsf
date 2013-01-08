@@ -29,10 +29,10 @@ THE SOFTWARE.
 #define __GLPIXELBUFFER_H__
 
 #include "CmGLPrerequisites.h"
-#include "CmHardwarePixelBuffer.h"
+#include "CmPixelBuffer.h"
 
 namespace CamelotEngine {
-	class CM_RSGL_EXPORT GLHardwarePixelBuffer: public HardwarePixelBuffer
+	class CM_RSGL_EXPORT GLPixelBuffer: public PixelBuffer
 	{
 	protected:  
 		/// Lock a box
@@ -56,7 +56,7 @@ namespace CamelotEngine {
 		virtual void download(const PixelData &data);
 	public:
         /// Should be called by HardwareBufferManager
-        GLHardwarePixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
+        GLPixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
                 PixelFormat mFormat,
                 GpuBufferUsage usage);
 		
@@ -66,7 +66,7 @@ namespace CamelotEngine {
 		/// @copydoc HardwarePixelBuffer::blitToMemory
 		void blitToMemory(const Box &srcBox, const PixelData &dst);
 		
-		~GLHardwarePixelBuffer();
+		~GLPixelBuffer();
         
         /** Bind surface to frame buffer. Needs FBO extension.
         */
@@ -76,7 +76,7 @@ namespace CamelotEngine {
 
     /** Texture surface.
     */
-    class CM_RSGL_EXPORT GLTextureBuffer: public GLHardwarePixelBuffer
+    class CM_RSGL_EXPORT GLTextureBuffer: public GLPixelBuffer
 	{
     public:
         /** Texture constructor */
@@ -97,7 +97,7 @@ namespace CamelotEngine {
         /// Copy from framebuffer
         void copyFromFramebuffer(UINT32 zoffset);
         /// @copydoc HardwarePixelBuffer::blit
-        void blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
+        void blit(const PixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
         // Blitting implementation
         void blitFromTexture(GLTextureBuffer *src, const Box &srcBox, const Box &dstBox);
     protected:
@@ -111,7 +111,7 @@ namespace CamelotEngine {
     };
      /** Renderbuffer surface.  Needs FBO extension.
      */
-    class CM_RSGL_EXPORT GLRenderBuffer: public GLHardwarePixelBuffer
+    class CM_RSGL_EXPORT GLRenderBuffer: public GLPixelBuffer
 	{
     public:
         GLRenderBuffer(GLenum format, UINT32 width, UINT32 height, GLsizei numSamples);

@@ -21,7 +21,7 @@ namespace CamelotEngine
 		if(texture != nullptr)
 		{
 			D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(texture.get());
-			D3D9HardwarePixelBuffer* pixelBuffer = static_cast<D3D9HardwarePixelBuffer*>(d3d9texture->getBuffer(face, mipLevel).get());
+			D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(d3d9texture->getBuffer(face, mipLevel).get());
 			mColorSurfaces[surfaceIdx] = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
 		}
 		else

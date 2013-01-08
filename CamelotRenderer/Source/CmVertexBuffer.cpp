@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "CmHardwareVertexBuffer.h"
+#include "CmVertexBuffer.h"
 #include "CmColor.h"
 #include "CmException.h"
 #include "CmHardwareBufferManager.h"
@@ -36,7 +36,7 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
     //-----------------------------------------------------------------------------
-    HardwareVertexBuffer::HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize,  
+    VertexBuffer::VertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize,  
         UINT32 numVertices, GpuBufferUsage usage, 
         bool useSystemMemory) 
         : HardwareBuffer(usage, useSystemMemory), 
@@ -49,7 +49,7 @@ namespace CamelotEngine {
 
     }
     //-----------------------------------------------------------------------------
-    HardwareVertexBuffer::~HardwareVertexBuffer()
+    VertexBuffer::~VertexBuffer()
     {
 		if (mMgr)
 		{

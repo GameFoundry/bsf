@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "CmRenderTexture.h"
 #include "CmException.h"
-#include "CmHardwarePixelBuffer.h"
+#include "CmPixelBuffer.h"
 #include "CmTexture.h"
 #include "CmTextureManager.h"
 #include "CmDepthStencilBuffer.h"

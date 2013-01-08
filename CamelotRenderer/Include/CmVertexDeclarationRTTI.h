@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
-#include "CmHardwareVertexBuffer.h"
+#include "CmVertexBuffer.h"
 
 namespace CamelotEngine
 {

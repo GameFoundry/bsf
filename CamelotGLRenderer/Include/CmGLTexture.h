@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmRenderTexture.h"
 #include "CmTexture.h"
 #include "CmGLSupport.h"
-#include "CmHardwarePixelBuffer.h"
+#include "CmPixelBuffer.h"
 
 namespace CamelotEngine {
 
@@ -61,7 +61,7 @@ namespace CamelotEngine {
 			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
 						Do not use it after the lifetime of the containing texture.
 		*/
-		HardwarePixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
+		PixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
 
     protected:
 		friend class GLTextureManager;
@@ -91,10 +91,10 @@ namespace CamelotEngine {
     private:
         GLuint mTextureID;
         GLSupport& mGLSupport;
-		HardwarePixelBufferPtr mLockedBuffer;
+		PixelBufferPtr mLockedBuffer;
 		
 		/// Vector of pointers to subsurfaces
-		typedef vector<HardwarePixelBufferPtr>::type SurfaceList;
+		typedef vector<PixelBufferPtr>::type SurfaceList;
 		SurfaceList	mSurfaceList;
     };
 

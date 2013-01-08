@@ -294,9 +294,9 @@ namespace CamelotEngine
 		return ret;
 	}
 
-	UINT D3D11Mappings::getByteWidth(HardwareIndexBuffer::IndexType itype)
+	UINT D3D11Mappings::getByteWidth(IndexBuffer::IndexType itype)
 	{
-		if (itype == HardwareIndexBuffer::IT_32BIT)
+		if (itype == IndexBuffer::IT_32BIT)
 		{
 			return sizeof(UINT32);
 		}

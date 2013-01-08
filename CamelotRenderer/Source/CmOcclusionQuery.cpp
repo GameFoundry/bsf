@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------
 This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
+For the latest info, see http://www.ogre3d.org
 
 Copyright (c) 2000-2011 Torus Knot Software Ltd
 
@@ -25,44 +25,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __GLHARDWAREINDEXBUFFER_H__
-#define __GLHARDWAREINDEXBUFFER_H__
 
-#include "CmGLPrerequisites.h"
-#include "CmHardwareIndexBuffer.h"
+#include "CmOcclusionQuery.h"
 
-namespace CamelotEngine { 
+namespace CamelotEngine {
 
 
-    class CM_RSGL_EXPORT GLHardwareIndexBuffer : public HardwareIndexBuffer
+    OcclusionQuery::OcclusionQuery() : 
+        mPixelCount(0),
+        mIsQueryResultStillOutstanding(false)
     {
-    private:
-        GLuint mBufferId;
-		// Scratch buffer handling
-		bool mLockedToScratch;
-		UINT32 mScratchOffset;
-		UINT32 mScratchSize;
-		void* mScratchPtr;
-		bool mScratchUploadOnUnlock;
-    protected:
-        /** See HardwareBuffer. */
-        void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
-        /** See HardwareBuffer. */
-        void unlockImpl(void);
-    public:
-        GLHardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
-            GpuBufferUsage usage); 
-        ~GLHardwareIndexBuffer();
-        /** See HardwareBuffer. */
-        void readData(UINT32 offset, UINT32 length, void* pDest);
-        /** See HardwareBuffer. */
-        void writeData(UINT32 offset, UINT32 length, 
-            const void* pSource, bool discardWholeBuffer = false);
-
-        GLuint getGLBufferId(void) const { return mBufferId; }
-    };
+    }
+    OcclusionQuery::~OcclusionQuery()
+    {
+    }
 
 }
-
-#endif // __GLHARDWAREINDEXBUFFER_H__
 

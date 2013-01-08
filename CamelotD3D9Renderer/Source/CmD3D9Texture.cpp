@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmD3D9Texture.h"
-#include "CmD3D9HardwarePixelBuffer.h"
+#include "CmD3D9PixelBuffer.h"
 #include "CmException.h"
 #include "CmBitwise.h"
 #include "CmD3D9Mappings.h"
@@ -301,7 +301,7 @@ namespace CamelotEngine
 		// Release surfaces from each mip level.
 		for(unsigned int i = 0; i < mSurfaceList.size(); ++i)
 		{
-			D3D9HardwarePixelBuffer* pixelBuffer = static_cast<D3D9HardwarePixelBuffer*>(mSurfaceList[i].get());
+			D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[i].get());
 
 			pixelBuffer->releaseSurfaces(d3d9Device);			
 		}
@@ -927,12 +927,12 @@ namespace CamelotEngine
 	/****************************************************************************************/
 	// Macro to hide ugly cast
 	#define GETLEVEL(face,mip) \
-	 	static_cast<D3D9HardwarePixelBuffer*>(mSurfaceList[face*(mNumMipmaps+1)+mip].get())
+	 	static_cast<D3D9PixelBuffer*>(mSurfaceList[face*(mNumMipmaps+1)+mip].get())
 	void D3D9Texture::_createSurfaceList(IDirect3DDevice9* d3d9Device, TextureResources* textureResources)
 	{
 		IDirect3DSurface9 *surface;
 		IDirect3DVolume9 *volume;
-		D3D9HardwarePixelBuffer *buffer;				
+		D3D9PixelBuffer *buffer;				
 		UINT32 mip, face;
 
 		
@@ -972,8 +972,8 @@ namespace CamelotEngine
 			{
 				for(UINT32 mip=0; mip<=mNumMipmaps; ++mip)
 				{
-					buffer = new D3D9HardwarePixelBuffer((GpuBufferUsage)bufusage, this);
-					mSurfaceList.push_back(HardwarePixelBufferPtr(buffer));
+					buffer = new D3D9PixelBuffer((GpuBufferUsage)bufusage, this);
+					mSurfaceList.push_back(PixelBufferPtr(buffer));
 				}
 			}
 		}
@@ -983,7 +983,7 @@ namespace CamelotEngine
 			assert(textureResources->pFSAASurface);
 			assert(getTextureType() == TEX_TYPE_2D);
 
-			D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, 0);
+			D3D9PixelBuffer* currPixelBuffer = GETLEVEL(0, 0);
 
 			currPixelBuffer->bind(d3d9Device, textureResources->pFSAASurface,
 				mHwGammaWriteSupported, mFSAA, "PortNoName", textureResources->pBaseTex);
@@ -1001,7 +1001,7 @@ namespace CamelotEngine
 					if(textureResources->pNormTex->GetSurfaceLevel(static_cast<UINT>(mip), &surface) != D3D_OK)
 						CM_EXCEPT(RenderingAPIException, "Get surface level failed");
 
-					D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
+					D3D9PixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
 
 					currPixelBuffer->bind(d3d9Device, surface,
 						mHwGammaWriteSupported, mFSAA, "PortNoName", textureResources->pBaseTex);
@@ -1022,7 +1022,7 @@ namespace CamelotEngine
 						if(textureResources->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)face, static_cast<UINT>(mip), &surface) != D3D_OK)
 							CM_EXCEPT(RenderingAPIException, "Get cubemap surface failed");
 
-						D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(face, mip);
+						D3D9PixelBuffer* currPixelBuffer = GETLEVEL(face, mip);
 
 						currPixelBuffer->bind(d3d9Device, surface,
 							mHwGammaWriteSupported, mFSAA, "NoNamePort", textureResources->pBaseTex);
@@ -1041,7 +1041,7 @@ namespace CamelotEngine
 					if(textureResources->pVolumeTex->GetVolumeLevel(static_cast<UINT>(mip), &volume) != D3D_OK)
 						CM_EXCEPT(RenderingAPIException, "Get volume level failed");	
 
-					D3D9HardwarePixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
+					D3D9PixelBuffer* currPixelBuffer = GETLEVEL(0, mip);
 
 					currPixelBuffer->bind(d3d9Device, volume, textureResources->pBaseTex);
 
@@ -1056,7 +1056,7 @@ namespace CamelotEngine
 	}
 	#undef GETLEVEL
 	/****************************************************************************************/
-	HardwarePixelBufferPtr D3D9Texture::getBuffer(UINT32 face, UINT32 mipmap) 
+	PixelBufferPtr D3D9Texture::getBuffer(UINT32 face, UINT32 mipmap) 
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1111,7 +1111,7 @@ namespace CamelotEngine
 			// Destroy surfaces from each mip level.
 			for(unsigned int i = 0; i < mSurfaceList.size(); ++i)
 			{
-				D3D9HardwarePixelBuffer* pixelBuffer = static_cast<D3D9HardwarePixelBuffer*>(mSurfaceList[i].get());
+				D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[i].get());
 
 				pixelBuffer->destroyBufferResources(d3d9Device);			
 			}

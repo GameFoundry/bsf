@@ -29,19 +29,19 @@ THE SOFTWARE.
 #define __D3D9PIXELBUFFER_H__
 
 #include "CmD3D9Prerequisites.h"
-#include "CmHardwarePixelBuffer.h"
+#include "CmPixelBuffer.h"
 
 namespace CamelotEngine {
 
 	class D3D9Texture;
 	class D3D9RenderTexture;
 
-	class CM_D3D9_EXPORT D3D9HardwarePixelBuffer : public HardwarePixelBuffer
+	class CM_D3D9_EXPORT D3D9PixelBuffer : public PixelBuffer
 	{
 	public:
-		D3D9HardwarePixelBuffer(GpuBufferUsage usage, 
+		D3D9PixelBuffer(GpuBufferUsage usage, 
 			D3D9Texture* ownerTexture);
-		~D3D9HardwarePixelBuffer();
+		~D3D9PixelBuffer();
 
 		/// Call this to associate a D3D surface or volume with this pixel buffer
 		void bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *mSurface,
@@ -49,7 +49,7 @@ namespace CamelotEngine {
 		void bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *mVolume, IDirect3DBaseTexture9 *mipTex);
 
 		/// @copydoc HardwarePixelBuffer::blit
-		void blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
+		void blit(const PixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
 
 		/// @copydoc HardwarePixelBuffer::blitFromMemory
 		void blitFromMemory(const PixelData &src, const Box &dstBox);
@@ -124,7 +124,7 @@ namespace CamelotEngine {
 		BufferResources* getBufferResources(IDirect3DDevice9* d3d9Device);
 		BufferResources* createBufferResources();
 
-		void blit(IDirect3DDevice9* d3d9Device, const HardwarePixelBufferPtr &src,
+		void blit(IDirect3DDevice9* d3d9Device, const PixelBufferPtr &src,
 				const Box &srcBox, const Box &dstBox, 
 				BufferResources* srcBufferResources, 
 				BufferResources* dstBufferResources);

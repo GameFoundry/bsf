@@ -30,8 +30,8 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 #include "CmVertexDeclaration.h"
-#include "CmHardwareVertexBuffer.h"
-#include "CmHardwareIndexBuffer.h"
+#include "CmVertexBuffer.h"
+#include "CmIndexBuffer.h"
 
 namespace CamelotEngine {
 	/** \addtogroup Core

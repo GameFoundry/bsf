@@ -26,8 +26,8 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmGLHardwareBufferManager.h"
-#include "CmGLHardwareVertexBuffer.h"
-#include "CmGLHardwareIndexBuffer.h"
+#include "CmGLVertexBuffer.h"
+#include "CmGLIndexBuffer.h"
 #include "CmGLGenericBuffer.h"
 #include "CmHardwareBuffer.h"
 #include "CmGLGpuParamBlock.h"
@@ -85,8 +85,8 @@ namespace CamelotEngine {
     HardwareVertexBufferPtr GLHardwareBufferManagerBase::createVertexBuffer(
         UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
-		GLHardwareVertexBuffer* buf = 
-			new GLHardwareVertexBuffer(this, vertexSize, numVerts, usage);
+		GLVertexBuffer* buf = 
+			new GLVertexBuffer(this, vertexSize, numVerts, usage);
 		{
 			mVertexBuffers.insert(buf);
 		}
@@ -95,11 +95,11 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     HardwareIndexBufferPtr 
     GLHardwareBufferManagerBase::createIndexBuffer(
-        HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
+        IndexBuffer::IndexType itype, UINT32 numIndexes, 
         GpuBufferUsage usage)
     {
-		GLHardwareIndexBuffer* buf = 
-			new GLHardwareIndexBuffer(this, itype, numIndexes, usage);
+		GLIndexBuffer* buf = 
+			new GLIndexBuffer(this, itype, numIndexes, usage);
 		{
 			mIndexBuffers.insert(buf);
 		}

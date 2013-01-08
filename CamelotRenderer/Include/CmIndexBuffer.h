@@ -42,7 +42,7 @@ namespace CamelotEngine {
 	*  @{
 	*/
 	/** Specialisation of HardwareBuffer for vertex index buffers, still abstract. */
-    class CM_EXPORT HardwareIndexBuffer : public HardwareBuffer
+    class CM_EXPORT IndexBuffer : public HardwareBuffer
     {
 	    public:
 		    enum IndexType {
@@ -58,9 +58,9 @@ namespace CamelotEngine {
 
 	    public:
 		    /// Should be called by HardwareBufferManager
-		    HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage,
+		    IndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage,
                 bool useSystemMemory);
-            ~HardwareIndexBuffer();
+            ~IndexBuffer();
 			/// Return the manager of this buffer, if any
 			HardwareBufferManagerBase* getManager() const { return mMgr; }
     		/// Get the type of indexes used in this buffer
@@ -73,7 +73,7 @@ namespace CamelotEngine {
 		    // NB subclasses should override lock, unlock, readData, writeData
     };
 
-	typedef std::shared_ptr<HardwareIndexBuffer> HardwareIndexBufferPtr;
+	typedef std::shared_ptr<IndexBuffer> HardwareIndexBufferPtr;
 	/** @} */
 }
 #endif

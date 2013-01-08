@@ -25,51 +25,51 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "CmGLHardwareIndexBuffer.h"
 #include "CmGLHardwareBufferManager.h"
+#include "CmGLVertexBuffer.h"
 #include "CmException.h"
 
 namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
-    GLHardwareIndexBuffer::GLHardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType,
-        UINT32 numIndexes, GpuBufferUsage usage)
-        : HardwareIndexBuffer(mgr, idxType, numIndexes, usage, false)
+    GLVertexBuffer::GLVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
+        UINT32 numVertices, GpuBufferUsage usage)
+        : VertexBuffer(mgr, vertexSize, numVertices, usage, false)
     {
         glGenBuffersARB( 1, &mBufferId );
 
         if (!mBufferId)
         {
-			CM_EXCEPT(InternalErrorException, 
-                "Cannot create GL index buffer");
+            CM_EXCEPT(InternalErrorException, 
+                "Cannot create GL vertex buffer");
         }
 
-        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
 
-        // Initialise buffer and set usage
-        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 
+        // Initialise mapped buffer and set usage
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 
             GLHardwareBufferManager::getGLUsage(usage));
 
-        //std::cerr << "creating index buffer " << mBufferId << std::endl;
+        //std::cerr << "creating vertex buffer = " << mBufferId << std::endl;
     }
 	//---------------------------------------------------------------------
-    GLHardwareIndexBuffer::~GLHardwareIndexBuffer()
+    GLVertexBuffer::~GLVertexBuffer()
     {
         glDeleteBuffersARB(1, &mBufferId);
     }
 	//---------------------------------------------------------------------
-    void* GLHardwareIndexBuffer::lockImpl(UINT32 offset, 
+    void* GLVertexBuffer::lockImpl(UINT32 offset, 
         UINT32 length, GpuLockOptions options)
     {
         GLenum access = 0;
 
         if(mIsLocked)
         {
-            CM_EXCEPT(InternalErrorException, 
+			CM_EXCEPT(InternalErrorException,
                 "Invalid attempt to lock an index buffer that has already been locked");
         }
 
-        
+
 		void* retPtr = 0;
 
 		GLHardwareBufferManager* glBufManager = static_cast<GLHardwareBufferManager*>(HardwareBufferManager::instancePtr());
@@ -77,7 +77,9 @@ namespace CamelotEngine {
 		// Try to use scratch buffers for smaller buffers
 		if( length < glBufManager->getGLMapBufferThreshold() )
 		{
+			// if this fails, we fall back on mapping
 			retPtr = glBufManager->allocateScratch((UINT32)length);
+
 			if (retPtr)
 			{
 				mLockedToScratch = true;
@@ -93,30 +95,31 @@ namespace CamelotEngine {
 				}
 			}
 		}
-
+		
 		if (!retPtr)
 		{
-			glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId );
+			// Use glMapBuffer
+			glBindBufferARB( GL_ARRAY_BUFFER_ARB, mBufferId );
 			// Use glMapBuffer
 			if(options == GBL_WRITE_ONLY_DISCARD)
 			{
 				// Discard the buffer
-				glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 
+				glBufferDataARB(GL_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 
 					GLHardwareBufferManager::getGLUsage(mUsage));
+
 			}
-			if (options == GBL_WRITE_ONLY || options == GBL_WRITE_ONLY_NO_OVERWRITE)
+			if ((options == GBL_WRITE_ONLY) || (options == GBL_WRITE_ONLY_NO_OVERWRITE))
 				access = GL_WRITE_ONLY_ARB;
 			else if (options == GBL_READ_ONLY)
 				access = GL_READ_ONLY_ARB;
 			else
 				access = GL_READ_WRITE_ARB;
 
-			void* pBuffer = glMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, access );
+			void* pBuffer = glMapBufferARB( GL_ARRAY_BUFFER_ARB, access);
 
 			if(pBuffer == 0)
 			{
-				CM_EXCEPT(InternalErrorException, 
-					"Index Buffer: Out of memory");
+				CM_EXCEPT(InternalErrorException, "Vertex Buffer: Out of memory");
 			}
 
 			// return offsetted
@@ -124,13 +127,12 @@ namespace CamelotEngine {
 				static_cast<unsigned char*>(pBuffer) + offset);
 
 			mLockedToScratch = false;
-
 		}
 		mIsLocked = true;
 		return retPtr;
     }
 	//---------------------------------------------------------------------
-	void GLHardwareIndexBuffer::unlockImpl(void)
+	void GLVertexBuffer::unlockImpl(void)
     {
 		if (mLockedToScratch)
 		{
@@ -150,45 +152,46 @@ namespace CamelotEngine {
 		else
 		{
 
-			glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId );
+			glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
 
-			if(!glUnmapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB ))
+			if(!glUnmapBufferARB( GL_ARRAY_BUFFER_ARB ))
 			{
-				CM_EXCEPT(InternalErrorException, 
-					"Buffer data corrupted, please reload");
+				CM_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload");
 			}
 		}
 
         mIsLocked = false;
     }
 	//---------------------------------------------------------------------
-    void GLHardwareIndexBuffer::readData(UINT32 offset, UINT32 length, 
+    void GLVertexBuffer::readData(UINT32 offset, UINT32 length, 
         void* pDest)
     {
-		glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId );
-		glGetBufferSubDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, offset, length, pDest);
+        // get data from the real buffer
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
+        
+        glGetBufferSubDataARB(GL_ARRAY_BUFFER_ARB, offset, length, pDest);
     }
 	//---------------------------------------------------------------------
-    void GLHardwareIndexBuffer::writeData(UINT32 offset, UINT32 length, 
+    void GLVertexBuffer::writeData(UINT32 offset, UINT32 length, 
             const void* pSource, bool discardWholeBuffer)
     {
-        glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId );
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
 
         if (offset == 0 && length == mSizeInBytes)
         {
-            glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mSizeInBytes, pSource,
+            glBufferDataARB(GL_ARRAY_BUFFER_ARB, mSizeInBytes, pSource, 
                 GLHardwareBufferManager::getGLUsage(mUsage));
         }
         else
         {
             if(discardWholeBuffer)
             {
-                glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mSizeInBytes, NULL,
+                glBufferDataARB(GL_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 
                     GLHardwareBufferManager::getGLUsage(mUsage));
             }
 
             // Now update the real buffer
-            glBufferSubDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, offset, length, pSource);
+            glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, offset, length, pSource); 
         }
     }
 }

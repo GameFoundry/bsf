@@ -30,7 +30,7 @@ THE SOFTWARE.
 #define _D3D9HARWAREOCCLUSIONQUERY_H__
 
 #include "CmD3D9Prerequisites.h"
-#include "CmHardwareOcclusionQuery.h"
+#include "CmOcclusionQuery.h"
 #include "CmD3D9Resource.h"
 
 
@@ -51,7 +51,7 @@ namespace CamelotEngine {
 	* Updated on 12/7/2004 by Chris McGuirk
 	* Updated on 4/8/2005 by Tuan Kuranes email: tuan.kuranes@free.fr
 	*/
-	class CM_D3D9_EXPORT D3D9HardwareOcclusionQuery : public HardwareOcclusionQuery, public D3D9Resource
+	class CM_D3D9_EXPORT D3D9OcclusionQuery : public OcclusionQuery, public D3D9Resource
 	{
 		//----------------------------------------------------------------------
 		// Public methods
@@ -62,12 +62,12 @@ namespace CamelotEngine {
 		* Default object constructor
 		* 
 		*/
-		D3D9HardwareOcclusionQuery();
+		D3D9OcclusionQuery();
 
 		/**
 		* Object destructor
 		*/
-		~D3D9HardwareOcclusionQuery();
+		~D3D9OcclusionQuery();
 
 		//------------------------------------------------------------------
 		// Occlusion query functions (see base class documentation for this)

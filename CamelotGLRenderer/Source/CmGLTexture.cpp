@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmGLTexture.h"
 #include "CmGLSupport.h"
 #include "CmGLPixelFormat.h"
-#include "CmGLHardwarePixelBuffer.h"
+#include "CmGLPixelBuffer.h"
 
 //#include "CmTextureManager.h"
 #include "CmCamera.h"
@@ -268,9 +268,9 @@ namespace CamelotEngine {
 		{
 			for(UINT32 mip=0; mip<=getNumMipmaps(); mip++)
 			{
-                GLHardwarePixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget(), mTextureID, face, mip,
+                GLPixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget(), mTextureID, face, mip,
 						static_cast<GpuBufferUsage>(mUsage), false, mHwGamma, mFSAA);
-				mSurfaceList.push_back(HardwarePixelBufferPtr(buf));
+				mSurfaceList.push_back(PixelBufferPtr(buf));
                 
                 /// Check for error
                 if(buf->getWidth()==0 || buf->getHeight()==0 || buf->getDepth()==0)
@@ -286,7 +286,7 @@ namespace CamelotEngine {
 	}
 	
 	//---------------------------------------------------------------------------------------------
-	HardwarePixelBufferPtr GLTexture::getBuffer(UINT32 face, UINT32 mipmap)
+	PixelBufferPtr GLTexture::getBuffer(UINT32 face, UINT32 mipmap)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

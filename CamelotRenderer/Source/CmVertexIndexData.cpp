@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 #include "CmVertexIndexData.h"
 #include "CmHardwareBufferManager.h"
-#include "CmHardwareVertexBuffer.h"
-#include "CmHardwareIndexBuffer.h"
+#include "CmVertexBuffer.h"
+#include "CmIndexBuffer.h"
 #include "CmVector3.h"
 #include "CmAxisAlignedBox.h"
 #include "CmException.h"
@@ -587,7 +587,7 @@ namespace CamelotEngine {
 		UINT32 i, j;
 		UINT16 *source = 0;
 
-		if (indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT)
+		if (indexBuffer->getType() == IndexBuffer::IT_16BIT)
 		{
 			triangles = (Triangle*) malloc(sizeof(Triangle) * nTriangles);
 			source = (UINT16 *)buffer;
@@ -632,7 +632,7 @@ namespace CamelotEngine {
 			}
 		}
 
-		if (indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT)
+		if (indexBuffer->getType() == IndexBuffer::IT_16BIT)
 		{
 			// reorder the indexbuffer
 			j = 0;
@@ -686,7 +686,7 @@ namespace CamelotEngine {
 
 		UINT16 *shortbuffer = (UINT16 *)indexBuffer->lock(GBL_READ_ONLY);
 
-		if (indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT)
+		if (indexBuffer->getType() == IndexBuffer::IT_16BIT)
 			for (unsigned int i = 0; i < indexBuffer->getNumIndexes(); ++i)
 				inCache(shortbuffer[i]);
 		else

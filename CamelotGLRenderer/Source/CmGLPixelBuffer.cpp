@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "CmGLHardwarePixelBuffer.h"
+#include "CmGLPixelBuffer.h"
 #include "CmGLTexture.h"
 #include "CmGLSupport.h"
 #include "CmGLPixelFormat.h"
@@ -36,10 +36,10 @@ THE SOFTWARE.
 namespace CamelotEngine 
 {
 	//----------------------------------------------------------------------------- 
-	GLHardwarePixelBuffer::GLHardwarePixelBuffer(UINT32 inWidth, UINT32 inHeight, UINT32 inDepth,
+	GLPixelBuffer::GLPixelBuffer(UINT32 inWidth, UINT32 inHeight, UINT32 inDepth,
 					PixelFormat inFormat,
 					GpuBufferUsage usage):
-		  HardwarePixelBuffer(inWidth, inHeight, inDepth, inFormat, usage, false),
+		  PixelBuffer(inWidth, inHeight, inDepth, inFormat, usage, false),
 		  mBuffer(inWidth, inHeight, inDepth, inFormat),
 		  mGLInternalFormat(GL_NONE)
 	{
@@ -47,13 +47,13 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	GLHardwarePixelBuffer::~GLHardwarePixelBuffer()
+	GLPixelBuffer::~GLPixelBuffer()
 	{
 		// Force free buffer
 		delete [] (UINT8*)mBuffer.data;
 	}
 	//-----------------------------------------------------------------------------  
-	void GLHardwarePixelBuffer::allocateBuffer()
+	void GLPixelBuffer::allocateBuffer()
 	{
 		if(mBuffer.data)
 			// Already allocated
@@ -62,7 +62,7 @@ namespace CamelotEngine
 		// TODO: use PBO if we're HBU_DYNAMIC
 	}
 	//-----------------------------------------------------------------------------  
-	void GLHardwarePixelBuffer::freeBuffer()
+	void GLPixelBuffer::freeBuffer()
 	{
 		// Free buffer if we're STATIC to save memory
 		if(mUsage & GBU_STATIC)
@@ -72,7 +72,7 @@ namespace CamelotEngine
 		}
 	}
 	//-----------------------------------------------------------------------------  
-	PixelData GLHardwarePixelBuffer::lockImpl(const Box lockBox,  GpuLockOptions options)
+	PixelData GLPixelBuffer::lockImpl(const Box lockBox,  GpuLockOptions options)
 	{
 		allocateBuffer();
 		if(options != GBL_WRITE_ONLY_DISCARD) 
@@ -85,7 +85,7 @@ namespace CamelotEngine
 		return mBuffer.getSubVolume(lockBox);
 	}
 	//-----------------------------------------------------------------------------  
-	void GLHardwarePixelBuffer::unlockImpl(void)
+	void GLPixelBuffer::unlockImpl(void)
 	{
 		if (mCurrentLockOptions != GBL_READ_ONLY)
 		{
@@ -97,7 +97,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	void GLHardwarePixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox)
+	void GLPixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox)
 	{
 		if(!mBuffer.contains(dstBox))
 			CM_EXCEPT(InvalidParametersException, "destination box out of range");
@@ -133,7 +133,7 @@ namespace CamelotEngine
 		freeBuffer();
 	}
 	//-----------------------------------------------------------------------------  
-	void GLHardwarePixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst)
+	void GLPixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst)
 	{
 		if(!mBuffer.contains(srcBox))
 			CM_EXCEPT(InvalidParametersException, "source box out of range");
@@ -171,18 +171,18 @@ namespace CamelotEngine
 		}
 	}
 	//-----------------------------------------------------------------------------
-	void GLHardwarePixelBuffer::upload(const PixelData &data, const Box &dest)
+	void GLPixelBuffer::upload(const PixelData &data, const Box &dest)
 	{
 		CM_EXCEPT(RenderingAPIException, 
 			"Upload not possible for this pixelbuffer type");
 	}
 	//-----------------------------------------------------------------------------  
-	void GLHardwarePixelBuffer::download(const PixelData &data)
+	void GLPixelBuffer::download(const PixelData &data)
 	{
 		CM_EXCEPT(RenderingAPIException, "Download not possible for this pixelbuffer type");
 	}
 	//-----------------------------------------------------------------------------  
-	void GLHardwarePixelBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
+	void GLPixelBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
 	{
 		CM_EXCEPT(RenderingAPIException, "Framebuffer bind not possible for this pixelbuffer type");
 	}
@@ -190,7 +190,7 @@ namespace CamelotEngine
 	GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint id, 
 									 GLint face, GLint level, GpuBufferUsage usage, bool crappyCard, 
 									 bool writeGamma, UINT32 fsaa):
-		GLHardwarePixelBuffer(0, 0, 0, PF_UNKNOWN, usage),
+		GLPixelBuffer(0, 0, 0, PF_UNKNOWN, usage),
 		mTarget(target), mFaceTarget(0), mTextureID(id), mFace(face), mLevel(level),
 		mSoftwareMipmap(crappyCard)
 	{
@@ -460,7 +460,7 @@ namespace CamelotEngine
 		}
 	}
 	//-----------------------------------------------------------------------------  
-	void GLTextureBuffer::blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox)
+	void GLTextureBuffer::blit(const PixelBufferPtr &src, const Box &srcBox, const Box &dstBox)
 	{
 		GLTextureBuffer *srct = static_cast<GLTextureBuffer *>(src.get());
 		/// Check for FBO support first
@@ -476,7 +476,7 @@ namespace CamelotEngine
 		}
 		else
 		{
-			GLHardwarePixelBuffer::blit(src, srcBox, dstBox);
+			GLPixelBuffer::blit(src, srcBox, dstBox);
 		}
 	}
 
@@ -683,7 +683,7 @@ namespace CamelotEngine
 			src_orig.getHeight() == dstBox.getHeight() &&
 			src_orig.getDepth() == dstBox.getDepth()))
 		{
-			GLHardwarePixelBuffer::blitFromMemory(src_orig, dstBox);
+			GLPixelBuffer::blitFromMemory(src_orig, dstBox);
 			return;
 		}
 		if(!mBuffer.contains(dstBox))
@@ -749,7 +749,7 @@ namespace CamelotEngine
 	//********* GLRenderBuffer
 	//----------------------------------------------------------------------------- 
 	GLRenderBuffer::GLRenderBuffer(GLenum format, UINT32 width, UINT32 height, GLsizei numSamples):
-		GLHardwarePixelBuffer(width, height, 1, GLPixelUtil::getClosestEngineFormat(format), GBU_DYNAMIC),
+		GLPixelBuffer(width, height, 1, GLPixelUtil::getClosestEngineFormat(format), GBU_DYNAMIC),
 		mRenderbufferID(0)
 	{
 		mGLInternalFormat = format;

@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "CmGLHardwareOcclusionQuery.h"
+#include "CmGLOcclusionQuery.h"
 #include "CmException.h"
 
 namespace CamelotEngine {
@@ -46,7 +46,7 @@ namespace CamelotEngine {
   * Default object constructor
   * 
   */
-GLHardwareOcclusionQuery::GLHardwareOcclusionQuery() 
+GLOcclusionQuery::GLOcclusionQuery() 
 { 
 	// Check for hardware occlusion support
     if(GLEW_VERSION_1_5 || GLEW_ARB_occlusion_query)
@@ -68,7 +68,7 @@ GLHardwareOcclusionQuery::GLHardwareOcclusionQuery()
 /**
   * Object destructor
   */
-GLHardwareOcclusionQuery::~GLHardwareOcclusionQuery() 
+GLOcclusionQuery::~GLOcclusionQuery() 
 { 
     if(GLEW_VERSION_1_5 || GLEW_ARB_occlusion_query)
 	{
@@ -80,7 +80,7 @@ GLHardwareOcclusionQuery::~GLHardwareOcclusionQuery()
 	}
 }
 //------------------------------------------------------------------
-void GLHardwareOcclusionQuery::beginOcclusionQuery() 
+void GLOcclusionQuery::beginOcclusionQuery() 
 { 
     if(GLEW_VERSION_1_5 || GLEW_ARB_occlusion_query)
 	{
@@ -92,7 +92,7 @@ void GLHardwareOcclusionQuery::beginOcclusionQuery()
 	}
 }
 //------------------------------------------------------------------
-void GLHardwareOcclusionQuery::endOcclusionQuery() 
+void GLOcclusionQuery::endOcclusionQuery() 
 { 
     if(GLEW_VERSION_1_5 || GLEW_ARB_occlusion_query)
 	{
@@ -105,7 +105,7 @@ void GLHardwareOcclusionQuery::endOcclusionQuery()
 	
 }
 //------------------------------------------------------------------
-bool GLHardwareOcclusionQuery::pullOcclusionQuery( unsigned int* NumOfFragments ) 
+bool GLOcclusionQuery::pullOcclusionQuery( unsigned int* NumOfFragments ) 
 {
     if(GLEW_VERSION_1_5 || GLEW_ARB_occlusion_query)
 	{
@@ -123,7 +123,7 @@ bool GLHardwareOcclusionQuery::pullOcclusionQuery( unsigned int* NumOfFragments 
 	return false;
 }
 //------------------------------------------------------------------
-bool GLHardwareOcclusionQuery::isStillOutstanding(void)
+bool GLOcclusionQuery::isStillOutstanding(void)
 {    
       GLuint available;
 

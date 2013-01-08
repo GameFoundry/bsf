@@ -59,7 +59,7 @@ namespace CamelotEngine {
 		 * @copydoc HardwareBufferManagerBase::createIndexBuffer
 		 */
         HardwareIndexBufferPtr createIndexBuffer(
-            HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
+            IndexBuffer::IndexType itype, UINT32 numIndexes, 
             GpuBufferUsage usage);
 
 		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */

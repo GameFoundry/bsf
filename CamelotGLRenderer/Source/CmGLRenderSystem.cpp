@@ -31,15 +31,15 @@ THE SOFTWARE.s
 #include "CmRenderSystem.h"
 #include "CmCamera.h"
 #include "CmGLTextureManager.h"
-#include "CmGLHardwareVertexBuffer.h"
-#include "CmGLHardwareIndexBuffer.h"
+#include "CmGLVertexBuffer.h"
+#include "CmGLIndexBuffer.h"
 #include "CmGLUtil.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
 #include "CmGLGpuProgramManager.h"
 #include "CmException.h"
 #include "CmGLSLExtSupport.h"
-#include "CmGLHardwareOcclusionQuery.h"
+#include "CmGLOcclusionQuery.h"
 #include "CmGLContext.h"
 #include "CmAsyncOp.h"
 #include "CmBlendState.h"
@@ -696,7 +696,7 @@ namespace CamelotEngine
 
 			HardwareVertexBufferPtr vertexBuffer = op.vertexData->vertexBufferBinding->getBuffer(elem->getSource());
 
-			glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLHardwareVertexBuffer*>(vertexBuffer.get())->getGLBufferId());
+			glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffer.get())->getGLBufferId());
 			pBufferData = VBO_BUFFER_OFFSET(elem->getOffset());
 
 			if (op.vertexData->vertexStart)
@@ -763,12 +763,12 @@ namespace CamelotEngine
 		if (op.useIndexes)
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 
-				static_cast<GLHardwareIndexBuffer*>(
+				static_cast<GLIndexBuffer*>(
 				op.indexData->indexBuffer.get())->getGLBufferId());
 
 			pBufferData = VBO_BUFFER_OFFSET(op.indexData->indexStart * op.indexData->indexBuffer->getIndexSize());
 
-			GLenum indexType = (op.indexData->indexBuffer->getType() == HardwareIndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+			GLenum indexType = (op.indexData->indexBuffer->getType() == IndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
 			glDrawElements(primType, op.indexData->indexCount, indexType, pBufferData);
 		}

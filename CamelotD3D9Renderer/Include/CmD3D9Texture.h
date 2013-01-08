@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmTexture.h"
 #include "CmRenderTexture.h"
 #include "CmException.h"
-#include "CmD3D9HardwarePixelBuffer.h"
+#include "CmD3D9PixelBuffer.h"
 #include "CmD3D9Resource.h"
 
 namespace CamelotEngine {
@@ -73,7 +73,7 @@ namespace CamelotEngine {
 			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
 						Do not use it after the lifetime of the containing texture.
 		*/
-		HardwarePixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
+		PixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
 
 		// Called immediately after the Direct3D device has been created.
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
@@ -89,7 +89,7 @@ namespace CamelotEngine {
 
 	protected:	
 		friend class D3D9TextureManager;
-		friend class D3D9HardwarePixelBuffer;
+		friend class D3D9PixelBuffer;
 
 		struct TextureResources
 		{
@@ -112,7 +112,7 @@ namespace CamelotEngine {
 		DeviceToTextureResourcesMap	mMapDeviceToTextureResources;
 
 		/// Vector of pointers to subsurfaces
-		typedef vector<HardwarePixelBufferPtr>::type SurfaceList;
+		typedef vector<PixelBufferPtr>::type SurfaceList;
 		SurfaceList	mSurfaceList;
 		/// cube texture individual face names
 		String							mCubeFaceNames[6];	
@@ -121,7 +121,7 @@ namespace CamelotEngine {
 		// Dynamic textures?
 		bool                            mDynamicTextures;
 		
-		HardwarePixelBufferPtr			mLockedBuffer;
+		PixelBufferPtr			mLockedBuffer;
 
 		/// Is hardware gamma supported (read)?
 		bool mHwGammaReadSupported;

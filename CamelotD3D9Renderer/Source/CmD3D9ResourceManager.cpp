@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "CmD3D9Resource.h"
 #include "CmD3D9ResourceManager.h"
-#include "CmD3D9HardwarePixelBuffer.h"
+#include "CmD3D9PixelBuffer.h"
 
 namespace CamelotEngine
 {
@@ -143,7 +143,7 @@ namespace CamelotEngine
 		{					
 			CM_LOCK_RECURSIVE_MUTEX(mResourcesMutex);		
 			D3D9Resource::lockDeviceAccess();
-			D3D9HardwarePixelBuffer::lockDeviceAccess();
+			D3D9PixelBuffer::lockDeviceAccess();
 		}
 	}
 
@@ -154,7 +154,7 @@ namespace CamelotEngine
 		mDeviceAccessLockCount--;				
 		if (mDeviceAccessLockCount == 0)
 		{						
-			D3D9HardwarePixelBuffer::unlockDeviceAccess();
+			D3D9PixelBuffer::unlockDeviceAccess();
 			D3D9Resource::unlockDeviceAccess();			
 			CM_UNLOCK_RECURSIVE_MUTEX(mResourcesMutex);			
 		}

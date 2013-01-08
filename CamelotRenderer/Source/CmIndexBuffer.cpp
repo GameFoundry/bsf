@@ -25,42 +25,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __GLHARDWAREVERTEXBUFFER_H__
-#define __GLHARDWAREVERTEXBUFFER_H__
 
-#include "CmGLPrerequisites.h"
-#include "CmHardwareVertexBuffer.h"
+#include "CmIndexBuffer.h"
+#include "CmHardwareBufferManager.h"
 
 namespace CamelotEngine {
 
-    /// Specialisation of HardwareVertexBuffer for OpenGL
-    class CM_RSGL_EXPORT GLHardwareVertexBuffer : public HardwareVertexBuffer 
+    //-----------------------------------------------------------------------------
+    IndexBuffer::IndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, 
+        UINT32 numIndexes, GpuBufferUsage usage, 
+        bool useSystemMemory) 
+        : HardwareBuffer(usage, useSystemMemory)
+		, mMgr(mgr)
+		, mIndexType(idxType)
+		, mNumIndexes(numIndexes)
     {
-    private:
-        GLuint mBufferId;
-		// Scratch buffer handling
-		bool mLockedToScratch;
-		UINT32 mScratchOffset;
-		UINT32 mScratchSize;
-		void* mScratchPtr;
-		bool mScratchUploadOnUnlock;
-
-    protected:
-        /** See HardwareBuffer. */
-        void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
-        /** See HardwareBuffer. */
-        void unlockImpl(void);
-    public:
-        GLHardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
-        ~GLHardwareVertexBuffer();
-        /** See HardwareBuffer. */
-        void readData(UINT32 offset, UINT32 length, void* pDest);
-        /** See HardwareBuffer. */
-        void writeData(UINT32 offset, UINT32 length, 
-            const void* pSource, bool discardWholeBuffer = false);
-
-        GLuint getGLBufferId(void) const { return mBufferId; }
-    };
-
+        // Calculate the size of the indexes
+        switch (mIndexType)
+        {
+        case IT_16BIT:
+            mIndexSize = sizeof(unsigned short);
+            break;
+        case IT_32BIT:
+            mIndexSize = sizeof(unsigned int);
+            break;
+        }
+        mSizeInBytes = mIndexSize * mNumIndexes;
+    }
+    //-----------------------------------------------------------------------------
+    IndexBuffer::~IndexBuffer()
+    {
+		if (mMgr)
+		{
+			mMgr->_notifyIndexBufferDestroyed(this);
+		}
+    }
 }
-#endif // __GLHARDWAREVERTEXBUFFER_H__
+

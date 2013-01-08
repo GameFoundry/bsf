@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "CmGLFrameBufferObject.h"
 #include "CmGLPixelFormat.h"
-#include "CmGLHardwarePixelBuffer.h"
+#include "CmGLPixelBuffer.h"
 #include "CmGLRenderTexture.h"
 
 namespace CamelotEngine 

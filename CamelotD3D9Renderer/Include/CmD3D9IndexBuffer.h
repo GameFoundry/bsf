@@ -25,29 +25,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __D3D9HARDWAREVERTEXBUFFER_H__
-#define __D3D9HARDWAREVERTEXBUFFER_H__
+#ifndef __D3D9HARDWAREINDEXBUFFER_H__
+#define __D3D9HARDWAREINDEXBUFFER_H__
 
 #include "CmD3D9Prerequisites.h"
-#include "CmHardwareVertexBuffer.h"
+#include "CmIndexBuffer.h"
 #include "CmD3D9Resource.h"
 
-namespace CamelotEngine {
+namespace CamelotEngine { 
 
-    /// Specialisation of HardwareVertexBuffer for D3D9
-    class CM_D3D9_EXPORT D3D9HardwareVertexBuffer : public HardwareVertexBuffer, public D3D9Resource
-    {   
 
+    class CM_D3D9_EXPORT D3D9IndexBuffer : public IndexBuffer, public D3D9Resource
+    {
+  
     public:
-		D3D9HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
-			UINT32 numVertices, GpuBufferUsage usage, bool useSystemMem);
-        ~D3D9HardwareVertexBuffer();
+		D3D9IndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, UINT32 numIndexes, 
+			GpuBufferUsage usage, bool useSystemMem);
+        ~D3D9IndexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);
         /** See HardwareBuffer. */
         void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				bool discardWholeBuffer = false);
-	
+
 		// Called immediately after the Direct3D device has been created.
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
 
@@ -60,16 +60,16 @@ namespace CamelotEngine {
 		// Called immediately after the Direct3D device has been reset
 		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
 
-		// Create the actual vertex buffer.
+		// Create the actual index buffer.
 		void createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL ePool);
-		
-        /// Get D3D9-specific vertex buffer
-        IDirect3DVertexBuffer9* getD3D9VertexBuffer(void);
+	
+		/// Get the D3D-specific index buffer
+        IDirect3DIndexBuffer9* getD3DIndexBuffer(void);		
 
-	protected:	
+	protected:
 		struct BufferResources
 		{
-			IDirect3DVertexBuffer9*		mBuffer;
+			IDirect3DIndexBuffer9*		mBuffer;
 			bool						mOutOfDate;
 			UINT32						mLockOffset;
 			UINT32						mLockLength;
@@ -77,23 +77,25 @@ namespace CamelotEngine {
 			UINT32						mLastUsedFrame;
 		};
 
-	protected:		
-		/** See HardwareBuffer. */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);		
-		/** See HardwareBuffer. */
-		void unlockImpl(void);			
-		// updates buffer resources from system memory buffer.
-		bool updateBufferResources(const char* systemMemoryBuffer, BufferResources* bufferResources);		
-
 	protected:
+		/** See HardwareBuffer. */
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		/** See HardwareBuffer. */
+		void unlockImpl(void);
+		// updates buffer resources from system memory buffer.
+		bool updateBufferResources(const char* systemMemoryBuffer, BufferResources* bufferResources);
+
+	protected:		
 		typedef map<IDirect3DDevice9*, BufferResources*>::type	DeviceToBufferResourcesMap;
 		typedef DeviceToBufferResourcesMap::iterator			DeviceToBufferResourcesIterator;
 
-		DeviceToBufferResourcesMap	mMapDeviceToBufferResources;	// Map between device to buffer resources.
-		D3DVERTEXBUFFER_DESC		mBufferDesc;					// Buffer description.		
+		DeviceToBufferResourcesMap	mMapDeviceToBufferResources;	// Map between device to buffer resources.	
+		D3DINDEXBUFFER_DESC			mBufferDesc;					// Buffer description.		
 		char*						mSystemMemoryBuffer;			// Consistent system memory buffer for multiple devices support.
     };
-
 }
+
+
+
 #endif
 

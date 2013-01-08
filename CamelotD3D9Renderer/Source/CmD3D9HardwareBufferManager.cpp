@@ -26,8 +26,8 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmD3D9HardwareBufferManager.h"
-#include "CmD3D9HardwareVertexBuffer.h"
-#include "CmD3D9HardwareIndexBuffer.h"
+#include "CmD3D9VertexBuffer.h"
+#include "CmD3D9IndexBuffer.h"
 #include "CmD3D9VertexDeclaration.h"
 #include "CmD3D9GenericBuffer.h"
 #include "CmGpuParamBlock.h"
@@ -50,7 +50,7 @@ namespace CamelotEngine {
     {
 		assert (numVerts > 0);
 
-		D3D9HardwareVertexBuffer* vbuf = new D3D9HardwareVertexBuffer(
+		D3D9VertexBuffer* vbuf = new D3D9VertexBuffer(
 			this, vertexSize, numVerts, usage, false);
 		{
 			mVertexBuffers.insert(vbuf);
@@ -60,11 +60,11 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
 	HardwareIndexBufferPtr 
     D3D9HardwareBufferManagerBase::
-    createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+    createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
     {
 		assert (numIndexes > 0);
 
-		D3D9HardwareIndexBuffer* idx = new D3D9HardwareIndexBuffer(this, itype, numIndexes, usage, false);
+		D3D9IndexBuffer* idx = new D3D9IndexBuffer(this, itype, numIndexes, usage, false);
 		{
 			mIndexBuffers.insert(idx);
 		}

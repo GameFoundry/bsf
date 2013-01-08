@@ -23,9 +23,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 */
-#include "CmD3D9HardwareVertexBuffer.h"
+#include "CmD3D9IndexBuffer.h"
 #include "CmD3D9Mappings.h"
 #include "CmException.h"
 #include "CmD3D9HardwareBufferManager.h"
@@ -36,27 +36,27 @@ THE SOFTWARE.
 namespace CamelotEngine {
 
 	//---------------------------------------------------------------------
-    D3D9HardwareVertexBuffer::D3D9HardwareVertexBuffer(HardwareBufferManagerBase* mgr, UINT32 vertexSize, 
-        UINT32 numVertices, GpuBufferUsage usage, 
+    D3D9IndexBuffer::D3D9IndexBuffer(HardwareBufferManagerBase* mgr, IndexBuffer::IndexType idxType, 
+        UINT32 numIndexes, GpuBufferUsage usage,
         bool useSystemMemory)
-		: HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMemory)
+        : IndexBuffer(mgr, idxType, numIndexes, usage, useSystemMemory)
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		D3DPOOL eResourcePool;
-		       
+
 #if CM_D3D_MANAGE_BUFFERS
-		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : D3DPOOL_MANAGED;
+		eResourcePool = useSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_MANAGED;
 #else
 		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;
-#endif       		
+#endif
 
 		// Set the desired memory pool.
 		mBufferDesc.Pool = eResourcePool;
-
+				
 		// Allocate the system memory buffer.
 		mSystemMemoryBuffer = new char [getSizeInBytes()];
-		memset(mSystemMemoryBuffer, 0, getSizeInBytes());	
+		memset(mSystemMemoryBuffer, 0, getSizeInBytes());
 
 		// Case we have to create this buffer resource on loading.
 		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
@@ -70,8 +70,8 @@ namespace CamelotEngine {
 		}				
     }
 	//---------------------------------------------------------------------
-    D3D9HardwareVertexBuffer::~D3D9HardwareVertexBuffer()
-    {	
+    D3D9IndexBuffer::~D3D9IndexBuffer()
+    {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
@@ -86,7 +86,7 @@ namespace CamelotEngine {
 		SAFE_DELETE_ARRAY(mSystemMemoryBuffer);
     }
 	//---------------------------------------------------------------------
-    void* D3D9HardwareVertexBuffer::lockImpl(UINT32 offset, 
+    void* D3D9IndexBuffer::lockImpl(UINT32 offset, 
         UINT32 length, GpuLockOptions options)
     {		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -115,9 +115,9 @@ namespace CamelotEngine {
 					if (length > bufferResources->mLockLength)
 						bufferResources->mLockLength = length;
 				}
-				
+			
 				if (bufferResources->mLockOptions != GBL_WRITE_ONLY_DISCARD)
-					bufferResources->mLockOptions = options;					
+					bufferResources->mLockOptions = options;
 
 				++it;
 			}
@@ -126,12 +126,12 @@ namespace CamelotEngine {
 		return mSystemMemoryBuffer + offset;		
     }
 	//---------------------------------------------------------------------
-	void D3D9HardwareVertexBuffer::unlockImpl(void)
-    {
+	void D3D9IndexBuffer::unlockImpl(void)
+    {	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
-		// TODO PORT - Don't know what the next frame number is. Add a method for that
+		// TODO PORT - nextFrameNumber will always be 0 for now. This has potential for errors, so make sure to add a frame counting method before port is done
 		//UINT32 nextFrameNumber = Root::getSingleton().getNextFrameNumber();
 		UINT32 nextFrameNumber = 0;
 
@@ -140,7 +140,7 @@ namespace CamelotEngine {
 			BufferResources* bufferResources = it->second;
 
 			if (bufferResources->mOutOfDate && 
-				bufferResources->mBuffer != NULL&&
+				bufferResources->mBuffer != NULL &&
 				nextFrameNumber - bufferResources->mLastUsedFrame <= 1)
 				updateBufferResources(mSystemMemoryBuffer, bufferResources);
 
@@ -148,10 +148,10 @@ namespace CamelotEngine {
 		}			
     }
 	//---------------------------------------------------------------------
-    void D3D9HardwareVertexBuffer::readData(UINT32 offset, UINT32 length, 
+    void D3D9IndexBuffer::readData(UINT32 offset, UINT32 length, 
         void* pDest)
     {
-        // There is no functional interface in D3D, just do via manual 
+       // There is no functional interface in D3D, just do via manual 
         // lock, copy & unlock
         void* pSrc = this->lock(offset, length, GBL_READ_ONLY);
         memcpy(pDest, pSrc, length);
@@ -159,42 +159,43 @@ namespace CamelotEngine {
 
     }
 	//---------------------------------------------------------------------
-	void D3D9HardwareVertexBuffer::writeData(UINT32 offset, UINT32 length, 
-		const void* pSource,
-		bool discardWholeBuffer)
-	{
-		// There is no functional interface in D3D, just do via manual 
-		// lock, copy & unlock
-		void* pDst = this->lock(offset, length, 
-			discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_READ_WRITE);
-		memcpy(pDst, pSource, length);
-		this->unlock();
+    void D3D9IndexBuffer::writeData(UINT32 offset, UINT32 length, 
+            const void* pSource,
+			bool discardWholeBuffer)
+    {
+        // There is no functional interface in D3D, just do via manual 
+        // lock, copy & unlock
+        void* pDst = this->lock(offset, length, 
+            discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_READ_WRITE);
+        memcpy(pDst, pSource, length);
+        this->unlock();    
 	}
 	//---------------------------------------------------------------------
-	void D3D9HardwareVertexBuffer::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
+	void D3D9IndexBuffer::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{			
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
-			createBuffer(d3d9Device, mBufferDesc.Pool);
+			createBuffer(d3d9Device, mBufferDesc.Pool);	
+
 	}
 	//---------------------------------------------------------------------
-	void D3D9HardwareVertexBuffer::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
-	{	
+	void D3D9IndexBuffer::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
+	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.find(d3d9Device);
 
 		if (it != mMapDeviceToBufferResources.end())	
-		{								
+		{									
 			SAFE_RELEASE(it->second->mBuffer);
 			SAFE_DELETE(it->second);
 			mMapDeviceToBufferResources.erase(it);
-		}	
+		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9HardwareVertexBuffer::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
-	{	
+	void D3D9IndexBuffer::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
+	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		if (mBufferDesc.Pool == D3DPOOL_DEFAULT)
@@ -202,21 +203,21 @@ namespace CamelotEngine {
 			DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.find(d3d9Device);
 
 			if (it != mMapDeviceToBufferResources.end())
-			{				
+			{			
 				SAFE_RELEASE(it->second->mBuffer);	
 			}					
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9HardwareVertexBuffer::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
+	void D3D9IndexBuffer::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
-			createBuffer(d3d9Device, mBufferDesc.Pool);
+			createBuffer(d3d9Device, mBufferDesc.Pool);		
 	}
 	//---------------------------------------------------------------------
-	void D3D9HardwareVertexBuffer::createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL ePool)
+	void D3D9IndexBuffer::createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL ePool)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -243,70 +244,70 @@ namespace CamelotEngine {
 		bufferResources->mLockOffset = 0;
 		bufferResources->mLockLength = getSizeInBytes();
 		bufferResources->mLockOptions = GBL_READ_WRITE;
-
-		// TODO PORT - Don't know what the next frame number is. Add a method for that
+		// TODO PORT - I don't know current frame number. Once I add a method for counting frames call it here
 		//bufferResources->mLastUsedFrame = Root::getSingleton().getNextFrameNumber();
 		bufferResources->mLastUsedFrame = 0;
-		
-		// Create the vertex buffer
-		hr = d3d9Device->CreateVertexBuffer(
-			static_cast<UINT>(mSizeInBytes), 
-			D3D9Mappings::get(mUsage), 
-			0, // No FVF here, thank you.
+
+		// Create the Index buffer				
+		hr = d3d9Device->CreateIndexBuffer(
+			static_cast<UINT>(mSizeInBytes),
+			D3D9Mappings::get(mUsage),
+			D3D9Mappings::get(mIndexType),
 			ePool,
 			&bufferResources->mBuffer,
-			NULL);
+			NULL
+			);
 
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			CM_EXCEPT(RenderingAPIException, "Cannot restore D3D9 vertex buffer: " + msg);
+			CM_EXCEPT(RenderingAPIException, "Cannot create D3D9 Index buffer: " + msg);
 		}
 
 		hr = bufferResources->mBuffer->GetDesc(&mBufferDesc);
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			CM_EXCEPT(RenderingAPIException, "Cannot get D3D9 Vertex buffer desc: " + msg);
+			CM_EXCEPT(RenderingAPIException, "Cannot get D3D9 Index buffer desc: " + msg);
 		}		
 	}
+
 	//---------------------------------------------------------------------
-	IDirect3DVertexBuffer9* D3D9HardwareVertexBuffer::getD3D9VertexBuffer(void)
-	{
+	IDirect3DIndexBuffer9* D3D9IndexBuffer::getD3DIndexBuffer(void)
+	{		
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
 		DeviceToBufferResourcesIterator it;
 
-		// Find the vertex buffer of this device.
+		// Find the index buffer of this device.
 		it = mMapDeviceToBufferResources.find(d3d9Device);
 
-		// Case vertex buffer was not found for the current device -> create it.		
+		// Case index buffer was not found for the current device -> create it.		
 		if (it == mMapDeviceToBufferResources.end() || it->second->mBuffer == NULL)		
 		{						
 			createBuffer(d3d9Device, mBufferDesc.Pool);
-			it = mMapDeviceToBufferResources.find(d3d9Device);			
+			it = mMapDeviceToBufferResources.find(d3d9Device);						
 		}
 
 		if (it->second->mOutOfDate)
 			updateBufferResources(mSystemMemoryBuffer, it->second);
-		
-		// TODO PORT - Don't know what the next frame number is. Add a method for that
+
+		// TODO PORT - I don't know current frame number. Once I add a method for counting frames call it here
 		//it->second->mLastUsedFrame = Root::getSingleton().getNextFrameNumber();
 		it->second->mLastUsedFrame = 0;
 
 		return it->second->mBuffer;
-	}	
+	}
 	//---------------------------------------------------------------------
-	bool D3D9HardwareVertexBuffer::updateBufferResources(const char* systemMemoryBuffer,
+	bool D3D9IndexBuffer::updateBufferResources(const char* systemMemoryBuffer,
 		BufferResources* bufferResources)
-	{		
+	{
 		assert(bufferResources != NULL);
 		assert(bufferResources->mBuffer != NULL);
 		assert(bufferResources->mOutOfDate);
-				
+			
 		void* dstBytes;
 		HRESULT hr;
-		
-
+	
 		// Lock the buffer.
 		hr = bufferResources->mBuffer->Lock(
 			static_cast<UINT>(bufferResources->mLockOffset), 
@@ -335,6 +336,6 @@ namespace CamelotEngine {
 		bufferResources->mLockLength = 0;
 		bufferResources->mLockOptions = GBL_READ_WRITE;
 
-		return true;		
+		return true;			
 	}
 }

@@ -47,7 +47,7 @@ namespace CamelotEngine {
     	or in main memory depending on its usage. One mipmap level of a
     	texture is an example of a HardwarePixelBuffer.
     */
-    class CM_EXPORT HardwarePixelBuffer : public HardwareBuffer
+    class CM_EXPORT PixelBuffer : public HardwareBuffer
     {
     protected: 
         // Extents
@@ -71,9 +71,9 @@ namespace CamelotEngine {
 		friend class RenderTexture;
     public:
         /// Should be called by HardwareBufferManager
-        HardwarePixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
+        PixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
                 PixelFormat mFormat, GpuBufferUsage usage, bool useSystemMemory);
-        ~HardwarePixelBuffer();
+        ~PixelBuffer();
 
         /** make every lock method from HardwareBuffer available.
         See http://www.research.att.com/~bs/bs_faq2.html#overloadderived
@@ -112,14 +112,14 @@ namespace CamelotEngine {
             but it is faster to pass the source image in the right dimensions.
 			@note Only call this function when both  buffers are unlocked. 
          */        
-        virtual void blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
+        virtual void blit(const PixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
 
 		/** Convenience function that blits the entire source pixel buffer to this buffer. 
 			If source and destination dimensions don't match, scaling is done.
 			@param src		PixelBox containing the source pixels and format in memory
 			@note Only call this function when the buffer is unlocked. 
 		*/
-		void blit(const HardwarePixelBufferPtr &src); 
+		void blit(const PixelBufferPtr &src); 
 		
 		/** Copies a region from normal memory to a region of this pixelbuffer. The source
 			image can be in any pixel format supported by OGRE, and in any size. 

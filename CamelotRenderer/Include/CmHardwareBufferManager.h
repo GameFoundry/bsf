@@ -32,8 +32,8 @@ THE SOFTWARE.
 #include "CmPrerequisites.h"
 
 #include "CmModule.h"
-#include "CmHardwareVertexBuffer.h"
-#include "CmHardwareIndexBuffer.h"
+#include "CmVertexBuffer.h"
+#include "CmIndexBuffer.h"
 #include "CmGpuParamBlock.h"
 
 namespace CamelotEngine {
@@ -63,8 +63,8 @@ namespace CamelotEngine {
             members will cause notify back to this class, and then will access to this
             two members.
         */
-        typedef set<HardwareVertexBuffer*>::type VertexBufferList;
-        typedef set<HardwareIndexBuffer*>::type IndexBufferList;
+        typedef set<VertexBuffer*>::type VertexBufferList;
+        typedef set<IndexBuffer*>::type IndexBufferList;
 		typedef set<HardwareConstantBuffer*>::type ConstantBufferList;
         VertexBufferList mVertexBuffers;
         IndexBufferList mIndexBuffers;
@@ -121,7 +121,7 @@ namespace CamelotEngine {
         @param usage One or more members of the HardwareBuffer::Usage enumeration.
         */
 		virtual HardwareIndexBufferPtr 
-            createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, 
+            createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, 
 			GpuBufferUsage usage) = 0;
 
 		/**
@@ -156,9 +156,9 @@ namespace CamelotEngine {
 		virtual void destroyVertexBufferBinding(VertexBufferBinding* binding);
 
 		/// Notification that a hardware vertex buffer has been destroyed
-		void _notifyVertexBufferDestroyed(HardwareVertexBuffer* buf);
+		void _notifyVertexBufferDestroyed(VertexBuffer* buf);
 		/// Notification that a hardware index buffer has been destroyed
-		void _notifyIndexBufferDestroyed(HardwareIndexBuffer* buf);
+		void _notifyIndexBufferDestroyed(IndexBuffer* buf);
 	};
 
     /** Singleton wrapper for hardware buffer manager. */
@@ -176,7 +176,7 @@ namespace CamelotEngine {
 			return mImpl->createVertexBuffer(vertexSize, numVerts, usage, streamOut);
 		}
 		/** @copydoc HardwareBufferManagerInterface::createIndexBuffer */
-		HardwareIndexBufferPtr createIndexBuffer(HardwareIndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+		HardwareIndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 		{
 			return mImpl->createIndexBuffer(itype, numIndexes, usage);
 		}
@@ -211,12 +211,12 @@ namespace CamelotEngine {
 			mImpl->destroyVertexBufferBinding(binding);
 		}
 		/** @copydoc HardwareBufferManagerInterface::_notifyVertexBufferDestroyed */
-		void _notifyVertexBufferDestroyed(HardwareVertexBuffer* buf)
+		void _notifyVertexBufferDestroyed(VertexBuffer* buf)
 		{
 			mImpl->_notifyVertexBufferDestroyed(buf);
 		}
 		/** @copydoc HardwareBufferManagerInterface::_notifyIndexBufferDestroyed */
-		void _notifyIndexBufferDestroyed(HardwareIndexBuffer* buf)
+		void _notifyIndexBufferDestroyed(IndexBuffer* buf)
 		{
 			mImpl->_notifyIndexBufferDestroyed(buf);
 		}            

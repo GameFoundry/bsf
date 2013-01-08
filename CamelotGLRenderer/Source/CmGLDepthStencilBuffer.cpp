@@ -1,5 +1,5 @@
 #include "CmGLDepthStencilBuffer.h"
-#include "CmGLHardwarePixelBuffer.h"
+#include "CmGLPixelBuffer.h"
 #include "CmGLPixelFormat.h"
 
 namespace CamelotEngine

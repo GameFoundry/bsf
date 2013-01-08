@@ -1,6 +1,6 @@
 #include "CmD3D11HardwareBufferManager.h"
-#include "CmD3D11HardwareVertexBuffer.h"
-#include "CmD3D11HardwareIndexBuffer.h"
+#include "CmD3D11VertexBuffer.h"
+#include "CmD3D11IndexBuffer.h"
 #include "CmD3D11HardwareConstantBuffer.h"
 #include "CmD3D11VertexDeclaration.h"
 #include "CmD3D11GenericBuffer.h"
@@ -21,7 +21,7 @@ namespace CamelotEngine
 		UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
 		assert (numVerts > 0);
-		D3D11HardwareVertexBuffer* vbuf = new D3D11HardwareVertexBuffer(mDevice,
+		D3D11VertexBuffer* vbuf = new D3D11VertexBuffer(mDevice,
 			this, vertexSize, numVerts, usage, false, streamOut);
 		{
 			mVertexBuffers.insert(vbuf);
@@ -30,12 +30,12 @@ namespace CamelotEngine
 		return HardwareVertexBufferPtr(vbuf);
 	}
 
-	HardwareIndexBufferPtr D3D11HardwareBufferManagerBase::createIndexBuffer(HardwareIndexBuffer::IndexType itype, 
+	HardwareIndexBufferPtr D3D11HardwareBufferManagerBase::createIndexBuffer(IndexBuffer::IndexType itype, 
 		UINT32 numIndexes, GpuBufferUsage usage)
 	{
 		assert (numIndexes > 0);
 
-		D3D11HardwareIndexBuffer* idx = new D3D11HardwareIndexBuffer(mDevice,
+		D3D11IndexBuffer* idx = new D3D11IndexBuffer(mDevice,
 			this, itype, numIndexes, usage, false);
 		{
 

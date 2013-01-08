@@ -1,6 +1,6 @@
 #include "CmD3D9RenderTexture.h"
 #include "CmD3D9Texture.h"
-#include "CmD3D9HardwarePixelBuffer.h"
+#include "CmD3D9PixelBuffer.h"
 #include "CmD3D9RenderSystem.h"
 #include "CmD3D9DepthStencilBuffer.h"
 
@@ -42,7 +42,7 @@ namespace CamelotEngine
 	void D3D9RenderTexture::createInternalResourcesImpl()
 	{
 		D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(mSurface.texture.get());
-		D3D9HardwarePixelBuffer* pixelBuffer = static_cast<D3D9HardwarePixelBuffer*>(d3d9texture->getBuffer(mSurface.face, mSurface.mipLevel).get());
+		D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(d3d9texture->getBuffer(mSurface.face, mSurface.mipLevel).get());
 		mColorSurface = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
 
 		D3D9DepthStencilBuffer* d3d9DepthStencil = static_cast<D3D9DepthStencilBuffer*>(mDepthStencilBuffer.get());

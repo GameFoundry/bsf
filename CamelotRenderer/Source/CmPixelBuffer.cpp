@@ -25,14 +25,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "CmHardwarePixelBuffer.h"
+#include "CmPixelBuffer.h"
 #include "CmException.h"
 
 namespace CamelotEngine 
 {
   
     //-----------------------------------------------------------------------------    
-    HardwarePixelBuffer::HardwarePixelBuffer(UINT32 width, UINT32 height, UINT32 depth,
+    PixelBuffer::PixelBuffer(UINT32 width, UINT32 height, UINT32 depth,
             PixelFormat format,
             GpuBufferUsage usage, bool useSystemMemory):
         HardwareBuffer(usage, useSystemMemory),
@@ -46,12 +46,12 @@ namespace CamelotEngine
     }
     
     //-----------------------------------------------------------------------------    
-    HardwarePixelBuffer::~HardwarePixelBuffer()
+    PixelBuffer::~PixelBuffer()
     {
     }
     
     //-----------------------------------------------------------------------------    
-    void* HardwarePixelBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
+    void* PixelBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
         assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
         assert(offset == 0 && length == mSizeInBytes && "Cannot lock memory region, most lock box or entire buffer");
@@ -62,7 +62,7 @@ namespace CamelotEngine
     }
     
     //-----------------------------------------------------------------------------    
-    const PixelData& HardwarePixelBuffer::lock(const Box& lockBox, GpuLockOptions options)
+    const PixelData& PixelBuffer::lock(const Box& lockBox, GpuLockOptions options)
     {
         // Lock the real buffer if there is no shadow buffer 
         mCurrentLock = lockImpl(lockBox, options);
@@ -72,7 +72,7 @@ namespace CamelotEngine
     }
     
     //-----------------------------------------------------------------------------    
-    const PixelData& HardwarePixelBuffer::getCurrentLock() 
+    const PixelData& PixelBuffer::getCurrentLock() 
 	{ 
         assert(isLocked() && "Cannot get current lock: buffer not locked");
         
@@ -81,14 +81,14 @@ namespace CamelotEngine
     
     //-----------------------------------------------------------------------------    
     /// Internal implementation of lock()
-    void* HardwarePixelBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
+    void* PixelBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
 		CM_EXCEPT(InternalErrorException, "lockImpl(offset,length) is not valid for PixelBuffers and should never be called");
     }
 
     //-----------------------------------------------------------------------------    
 
-    void HardwarePixelBuffer::blit(const HardwarePixelBufferPtr &src, const Box &srcBox, const Box &dstBox)
+    void PixelBuffer::blit(const PixelBufferPtr &src, const Box &srcBox, const Box &dstBox)
 	{
 		if(isLocked() || src->isLocked())
 		{
@@ -127,7 +127,7 @@ namespace CamelotEngine
 		src->unlock();
 	}
     //-----------------------------------------------------------------------------       
-    void HardwarePixelBuffer::blit(const HardwarePixelBufferPtr &src)
+    void PixelBuffer::blit(const PixelBufferPtr &src)
     {
         blit(src, 
             Box(0,0,0,src->getWidth(),src->getHeight(),src->getDepth()), 
@@ -135,7 +135,7 @@ namespace CamelotEngine
         );
     }
     //-----------------------------------------------------------------------------    
-	void HardwarePixelBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
+	void PixelBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
 	{
 		// TODO
 		CM_EXCEPT(NotImplementedException,
@@ -143,7 +143,7 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------------    
 
-	void HardwarePixelBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource,
+	void PixelBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource,
 			bool discardWholeBuffer)
 	{
 		// TODO
