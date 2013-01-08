@@ -283,7 +283,7 @@ namespace CamelotEngine
 				}
 				else
 				{
-					gpuParam.gpuMemOffset = glGetUniformLocationARB(glProgram, uniformName);
+					gpuParam.gpuMemOffset = glGetUniformLocation(glProgram, uniformName);
 					gpuParam.paramBlockSlot = 0;
 					gpuParam.cpuMemOffset = globalBlockDesc.blockSize;
 

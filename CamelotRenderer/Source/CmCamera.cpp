@@ -63,9 +63,6 @@ namespace CamelotEngine {
 		mCustomViewMatrix(false),
 		mCustomProjMatrix(false),
 		mFrustumExtentsManuallySet(false),
-		mSceneDetail(PM_SOLID),
-		mWindowSet(false),
-		mAutoAspectRatio(false),
 		mViewport(nullptr)
     {
 		updateView();
@@ -663,20 +660,17 @@ namespace CamelotEngine {
 		}
 
 	}
-
 	//-----------------------------------------------------------------------
 	float Camera::getAspectRatio(void) const
 	{
 		return mAspect;
 	}
-
 	//-----------------------------------------------------------------------
 	void Camera::setAspectRatio(float r)
 	{
 		mAspect = r;
 		invalidateFrustum();
 	}
-
 	//-----------------------------------------------------------------------
 	const AxisAlignedBox& Camera::getBoundingBox(void) const
 	{
@@ -944,138 +938,12 @@ namespace CamelotEngine {
 		outtop = mTop;
 		outbottom = mBottom;
 	}
-    //-----------------------------------------------------------------------
-    void Camera::setPolygonMode(PolygonMode sd)
-    {
-        mSceneDetail = sd;
-    }
-
-    //-----------------------------------------------------------------------
-    PolygonMode Camera::getPolygonMode(void) const
-    {
-        return mSceneDetail;
-    }
     // -------------------------------------------------------------------
     void Camera::invalidateFrustum(void) const
     {
-        mRecalcWindow = true;
-		mRecalcFrustum = true;
 		mRecalcFrustumPlanes = true;
 		mRecalcWorldSpaceCorners = true;
 		mRecalcVertexData = true;
-    }
-    //-----------------------------------------------------------------------
-    void Camera::_renderScene(Viewport *vp, bool includeOverlays)
-    {
-		// TODO PORT - I'm not going to be rendering the scene like this (yet), but I think I will do it eventually
-        //mSceneMgr->_renderScene(this, vp, includeOverlays);
-	}
-    //-----------------------------------------------------------------------
-	Ray Camera::getCameraToViewportRay(float screenX, float screenY) const
-	{
-		Ray ret;
-		getCameraToViewportRay(screenX, screenY, &ret);
-		return ret;
-	}
-	//---------------------------------------------------------------------
-    void Camera::getCameraToViewportRay(float screenX, float screenY, Ray* outRay) const
-    {
-		Matrix4 inverseVP = (getProjectionMatrix() * getViewMatrix()).inverse();
-
-		float nx = (2.0f * screenX) - 1.0f;
-		float ny = 1.0f - (2.0f * screenY);
-		Vector3 nearPoint(nx, ny, -1.f);
-		// Use midPoint rather than far point to avoid issues with infinite projection
-		Vector3 midPoint (nx, ny,  0.0f);
-
-		// Get ray origin and ray target on near plane in world space
-		Vector3 rayOrigin, rayTarget;
-		
-		rayOrigin = inverseVP * nearPoint;
-		rayTarget = inverseVP * midPoint;
-
-		Vector3 rayDirection = rayTarget - rayOrigin;
-		rayDirection.normalise();
-
-		outRay->setOrigin(rayOrigin);
-		outRay->setDirection(rayDirection);
-    } 
-    // -------------------------------------------------------------------
-    void Camera::setWindow (float Left, float Top, float Right, float Bottom)
-    {
-        mWLeft = Left;
-        mWTop = Top;
-        mWRight = Right;
-        mWBottom = Bottom;
-
-        mWindowSet = true;
-        mRecalcWindow = true;
-    }
-    // -------------------------------------------------------------------
-    void Camera::resetWindow ()
-    {
-        mWindowSet = false;
-    }
-    // -------------------------------------------------------------------
-    void Camera::setWindowImpl() const
-    {
-        if (!mWindowSet || !mRecalcWindow)
-            return;
-
-        // Calculate general projection parameters
-        float vpLeft, vpRight, vpBottom, vpTop;
-        calcProjectionParameters(vpLeft, vpRight, vpBottom, vpTop);
-
-        float vpWidth = vpRight - vpLeft;
-        float vpHeight = vpTop - vpBottom;
-
-        float wvpLeft   = vpLeft + mWLeft * vpWidth;
-        float wvpRight  = vpLeft + mWRight * vpWidth;
-        float wvpTop    = vpTop - mWTop * vpHeight;
-        float wvpBottom = vpTop - mWBottom * vpHeight;
-
-        Vector3 vp_ul (wvpLeft, wvpTop, -mNearDist);
-        Vector3 vp_ur (wvpRight, wvpTop, -mNearDist);
-        Vector3 vp_bl (wvpLeft, wvpBottom, -mNearDist);
-        Vector3 vp_br (wvpRight, wvpBottom, -mNearDist);
-
-        Matrix4 inv = mViewMatrix.inverseAffine();
-
-        Vector3 vw_ul = inv.transformAffine(vp_ul);
-        Vector3 vw_ur = inv.transformAffine(vp_ur);
-        Vector3 vw_bl = inv.transformAffine(vp_bl);
-        Vector3 vw_br = inv.transformAffine(vp_br);
-
-		mWindowClipPlanes.clear();
-        if (mProjType == PT_PERSPECTIVE)
-        {
-            Vector3 position = gameObject()->getWorldPosition();
-            mWindowClipPlanes.push_back(Plane(position, vw_bl, vw_ul));
-            mWindowClipPlanes.push_back(Plane(position, vw_ul, vw_ur));
-            mWindowClipPlanes.push_back(Plane(position, vw_ur, vw_br));
-            mWindowClipPlanes.push_back(Plane(position, vw_br, vw_bl));
-        }
-        else
-        {
-            Vector3 x_axis(inv[0][0], inv[0][1], inv[0][2]);
-            Vector3 y_axis(inv[1][0], inv[1][1], inv[1][2]);
-            x_axis.normalise();
-            y_axis.normalise();
-            mWindowClipPlanes.push_back(Plane( x_axis, vw_bl));
-            mWindowClipPlanes.push_back(Plane(-x_axis, vw_ur));
-            mWindowClipPlanes.push_back(Plane( y_axis, vw_bl));
-            mWindowClipPlanes.push_back(Plane(-y_axis, vw_ur));
-        }
-
-        mRecalcWindow = false;
-
-    }
-    // -------------------------------------------------------------------
-    const vector<Plane>::type& Camera::getWindowPlanes(void) const
-    {
-        updateView();
-        setWindowImpl();
-        return mWindowClipPlanes;
     }
     // -------------------------------------------------------------------
     float Camera::getBoundingRadius(void) const
@@ -1085,154 +953,6 @@ namespace CamelotEngine {
         return mNearDist * 1.5f;
 
     }
-    //-----------------------------------------------------------------------
-    bool Camera::getAutoAspectRatio(void) const
-    {
-        return mAutoAspectRatio;
-    }
-    //-----------------------------------------------------------------------
-    void Camera::setAutoAspectRatio(bool autoratio)
-    {
-        mAutoAspectRatio = autoratio;
-    }
-	//-----------------------------------------------------------------------
-	//_______________________________________________________
-	//|														|
-	//|	getRayForwardIntersect								|
-	//|	-----------------------------						|
-	//|	get the intersections of frustum rays with a plane	|
-	//| of interest.  The plane is assumed to have constant	|
-	//| z.  If this is not the case, rays					|
-	//| should be rotated beforehand to work in a			|
-	//| coordinate system in which this is true.			|
-	//|_____________________________________________________|
-	//
-	vector<Vector4>::type Camera::getRayForwardIntersect(const Vector3& anchor, const Vector3 *dir, float planeOffset) const
-	{
-		vector<Vector4>::type res;
-
-		if(!dir)
-			return res;
-
-		int infpt[4] = {0, 0, 0, 0}; // 0=finite, 1=infinite, 2=straddles infinity
-		Vector3 vec[4];
-
-		// find how much the anchor point must be displaced in the plane's
-		// constant variable
-		float delta = planeOffset - anchor.z;
-
-		// now set the intersection point and note whether it is a 
-		// point at infinity or straddles infinity
-		unsigned int i;
-		for (i=0; i<4; i++)
-		{
-			float test = dir[i].z * delta;
-			if (test == 0.0) {
-				vec[i] = dir[i];
-				infpt[i] = 1;
-			}
-			else {
-				float lambda = delta / dir[i].z;
-				vec[i] = anchor + (lambda * dir[i]);
-				if(test < 0.0)
-					infpt[i] = 2;
-			}
-		}
-
-		for (i=0; i<4; i++)
-		{
-			// store the finite intersection points
-			if (infpt[i] == 0)
-				res.push_back(Vector4(vec[i].x, vec[i].y, vec[i].z, 1.0));
-			else
-			{
-				// handle the infinite points of intersection;
-				// cases split up into the possible frustum planes 
-				// pieces which may contain a finite intersection point
-				int nextind = (i+1) % 4;
-				int prevind = (i+3) % 4;
-				if ((infpt[prevind] == 0) || (infpt[nextind] == 0))
-				{
-					if (infpt[i] == 1)
-						res.push_back(Vector4(vec[i].x, vec[i].y, vec[i].z, 0.0));
-					else
-					{
-						// handle the intersection points that straddle infinity (back-project)
-						if(infpt[prevind] == 0) 
-						{
-							Vector3 temp = vec[prevind] - vec[i];
-							res.push_back(Vector4(temp.x, temp.y, temp.z, 0.0));
-						}
-						if(infpt[nextind] == 0)
-						{
-							Vector3 temp = vec[nextind] - vec[i];
-							res.push_back(Vector4(temp.x, temp.y, temp.z, 0.0));
-						}
-					}
-				} // end if we need to add an intersection point to the list
-			} // end if infinite point needs to be considered
-		} // end loop over frustun corners
-
-		// we end up with either 0, 3, 4, or 5 intersection points
-
-		return res;
-	}
-
-	//_______________________________________________________
-	//|														|
-	//|	forwardIntersect									|
-	//|	-----------------------------						|
-	//|	Forward intersect the camera's frustum rays with	|
-	//| a specified plane of interest.						|
-	//| Note that if the frustum rays shoot out and would	|
-	//| back project onto the plane, this means the forward	|
-	//| intersection of the frustum would occur at the		|
-	//| line at infinity.									|
-	//|_____________________________________________________|
-	//
-	void Camera::forwardIntersect(const Plane& worldPlane, vector<Vector4>::type* intersect3d) const
-	{
-		if(!intersect3d)
-			return;
-
-		Vector3 trCorner = getWorldSpaceCorners()[0];
-		Vector3 tlCorner = getWorldSpaceCorners()[1];
-		Vector3 blCorner = getWorldSpaceCorners()[2];
-		Vector3 brCorner = getWorldSpaceCorners()[3];
-
-		// need some sort of rotation that will bring the plane normal to the z axis
-		Plane pval = worldPlane;
-		if(pval.normal.z < 0.0)
-		{
-			pval.normal *= -1.0;
-			pval.d *= -1.0;
-		}
-		Quaternion invPlaneRot = pval.normal.getRotationTo(Vector3::UNIT_Z);
-
-		// get rotated light
-		Vector3 lPos = invPlaneRot * gameObject()->getWorldPosition();
-		Vector3 vec[4];
-		vec[0] = invPlaneRot * trCorner - lPos;
-		vec[1] = invPlaneRot * tlCorner - lPos; 
-		vec[2] = invPlaneRot * blCorner - lPos; 
-		vec[3] = invPlaneRot * brCorner - lPos; 
-
-		// compute intersection points on plane
-		vector<Vector4>::type iPnt = getRayForwardIntersect(lPos, vec, -pval.d);
-
-
-		// return wanted data
-		if(intersect3d) 
-		{
-			Quaternion planeRot = invPlaneRot.Inverse();
-			(*intersect3d).clear();
-			for(unsigned int i=0; i<iPnt.size(); i++)
-			{
-				Vector3 intersection = planeRot * Vector3(iPnt[i].x, iPnt[i].y, iPnt[i].z);
-				(*intersect3d).push_back(Vector4(intersection.x, intersection.y, intersection.z, iPnt[i].w));
-			}
-		}
-	}
 
 	RTTITypeBase* Camera::getRTTIStatic()
 	{

@@ -504,37 +504,7 @@ namespace CamelotEngine {
         /// Small constant used to reduce far plane projection to avoid inaccuracies
         static const float INFINITE_FAR_PLANE_ADJUST;
     protected:
-        /// Rendering type
-        PolygonMode mSceneDetail;
-
-        /** Viewing window. 
-        @remarks
-        Generalize camera class for the case, when viewing frustum doesn't cover all viewport.
-        */
-        float mWLeft, mWTop, mWRight, mWBottom;
-        /// Is viewing window used.
-        bool mWindowSet;
-        /// Windowed viewport clip planes 
-        mutable vector<Plane>::type mWindowClipPlanes;
-        // Was viewing window changed.
-        mutable bool mRecalcWindow;
-        /** Whether aspect ratio will automatically be recalculated 
-            when a viewport changes its size
-        */
-        bool mAutoAspectRatio;
-		/// Whether or not the rendering distance of objects should take effect for this camera
-		bool mUseRenderingDistance;
-
 		Viewport* mViewport;
-
-        /** Do actual window setting, using parameters set in SetWindow call
-        @remarks
-            The method will called on demand.
-        */
-        void setWindowImpl(void) const;
-
-		/** Helper function for forwardIntersect that intersects rays with canonical plane */
-		vector<Vector4>::type getRayForwardIntersect(const Vector3& anchor, const Vector3 *dir, float planeOffset) const;
 
     public:
         /** Standard destructor.
@@ -547,73 +517,6 @@ namespace CamelotEngine {
 			int ZOrder = 0);
 
 		Viewport* getViewport() { return mViewport; }
-
-        /** Sets the level of rendering detail required from this camera.
-            @remarks
-                Each camera is set to render at full detail by default, that is
-                with full texturing, lighting etc. This method lets you change
-                that behaviour, allowing you to make the camera just render a
-                wireframe view, for example.
-        */
-        void setPolygonMode(PolygonMode sd);
-
-        /** Retrieves the level of detail that the camera will render.
-        */
-        PolygonMode getPolygonMode(void) const;
-
-        /** Tells the Camera to contact the SceneManager to render from it's viewpoint.
-        @param vp The viewport to render to
-        @param includeOverlays Whether or not any overlay objects should be included
-        */
-        void _renderScene(Viewport *vp, bool includeOverlays);
-
-        /** Gets a world space ray as cast from the camera through a viewport position.
-        @param screenx, screeny The x and y position at which the ray should intersect the viewport, 
-            in normalised screen coordinates [0,1]
-        */
-        Ray getCameraToViewportRay(float screenx, float screeny) const;
-        /** Gets a world space ray as cast from the camera through a viewport position.
-        @param screenx, screeny The x and y position at which the ray should intersect the viewport, 
-            in normalised screen coordinates [0,1]
-		@param outRay Ray instance to populate with result
-        */
-        void getCameraToViewportRay(float screenx, float screeny, Ray* outRay) const;
-
-        /** Sets the viewing window inside of viewport.
-        @remarks
-        This method can be used to set a subset of the viewport as the rendering
-        target. 
-        @param Left Relative to Viewport - 0 corresponds to left edge, 1 - to right edge (default - 0).
-        @param Top Relative to Viewport - 0 corresponds to top edge, 1 - to bottom edge (default - 0).
-        @param Right Relative to Viewport - 0 corresponds to left edge, 1 - to right edge (default - 1).
-        @param Bottom Relative to Viewport - 0 corresponds to top edge, 1 - to bottom edge (default - 1).
-        */
-        virtual void setWindow (float Left, float Top, float Right, float Bottom);
-        /// Cancel view window.
-        virtual void resetWindow (void);
-        /// Returns if a viewport window is being used
-        virtual bool isWindowSet(void) const { return mWindowSet; }
-        /// Gets the window clip planes, only applicable if isWindowSet == true
-        const vector<Plane>::type& getWindowPlanes(void) const;
-
-        /** If set to true a viewport that owns this frustum will be able to 
-            recalculate the aspect ratio whenever the frustum is resized.
-        @remarks
-            You should set this to true only if the frustum / camera is used by 
-            one viewport at the same time. Otherwise the aspect ratio for other 
-            viewports may be wrong.
-        */    
-        void setAutoAspectRatio(bool autoratio);
-
-        /** Retrieves if AutoAspectRatio is currently set or not
-        */
-        bool getAutoAspectRatio(void) const;
-
-		/** Forward projects frustum rays to find forward intersection with plane.
-		 @remarks
-		    Forward projection may lead to intersections at infinity.
-		*/
-		void forwardIntersect(const Plane& worldPlane, vector<Vector4>::type* intersect3d) const;
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

@@ -96,6 +96,12 @@ Keeping a list of all render targets in RenderSystem shouldn't be needed (and ca
 Make CommandQueue not use mutexes and use atomics instead??
 Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
 Figure out how to handle accessing texture from a non-render thread?
+
+Issue of setting individual parameters on a material
+ - Material can contain multiple techniques
+ - How do I ensure parameters are valid for all techniques?
+ - Require user to create a Material parameter specification?
+ - Also need a way to avoid displaying internal parameters used by the active renderer
 /////
 
 
@@ -107,6 +113,7 @@ RenderSystem needed modifications
 	- Setting UAV for both buffers and textures (Need to add a special flag for texture creation)
   - Generic buffers (Normal/Structured/Raw/Append/Consume/Indirect)
   - Texture buffers 
+   - Just add a special texture type? OpenGL doesn't support getting offset from within a texture buffer anyway
   - Stream out (write vertex buffers) (DX11 and GL)
   - Static/Dynamic usage for GpuParamBlocks
   - GpuParams need to support bools, buffers & structs (void*)
@@ -115,6 +122,7 @@ RenderSystem needed modifications
    - Also make DepthStencilBuffer share common features with RenderTexture
   
  - Low priority
+  - OpenGL provides image load/store which seems to be GL UAV equivalent (http://www.opengl.org/wiki/Image_Load_Store)
   - Single and dual channel textures (especially render textures, which are very important for effects like SSAO)
   - Compute pipeline
   - Instancing (DrawInstanced) (DX11 and GL)
