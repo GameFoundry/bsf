@@ -24,6 +24,16 @@ namespace CamelotEngine
 		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
 		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);
 
+		/**
+		 * @copydoc HardwareBufferManagerInterface::createGpuParamBlock
+		 *
+		 * Some limitations are imposed on the combinations of parameters:
+		 *  - APPENDCONSUME buffer type can only be used with randomGpuWrite enabled  
+		 *  - Counter can only be used with STRUCTURED buffer type
+		 */
+		GenericBufferPtr createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
+			GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+
 	protected:     
 		/// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
 		VertexDeclarationPtr createVertexDeclarationImpl(void);

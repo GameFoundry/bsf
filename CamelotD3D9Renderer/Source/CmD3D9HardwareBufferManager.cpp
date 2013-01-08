@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "CmD3D9HardwareVertexBuffer.h"
 #include "CmD3D9HardwareIndexBuffer.h"
 #include "CmD3D9VertexDeclaration.h"
+#include "CmD3D9GenericBuffer.h"
 #include "CmGpuParamBlock.h"
 #include "CmException.h"
 
@@ -74,6 +75,12 @@ namespace CamelotEngine {
 	GpuParamBlockPtr D3D9HardwareBufferManagerBase::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
 	{
 		return GpuParamBlockPtr(new GpuParamBlock(paramDesc));
+	}
+	//-----------------------------------------------------------------------
+	GenericBufferPtr D3D9HardwareBufferManagerBase::createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
+		GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
+	{
+		return GenericBufferPtr(new D3D9GenericBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 	}
     //-----------------------------------------------------------------------
     VertexDeclarationPtr D3D9HardwareBufferManagerBase::createVertexDeclarationImpl(void)

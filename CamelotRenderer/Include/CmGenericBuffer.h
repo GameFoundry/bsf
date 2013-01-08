@@ -6,14 +6,6 @@
 
 namespace CamelotEngine 
 {
-	enum GenericBufferType
-	{
-		GBT_STRUCTURED,
-		GBT_RAW,
-		GBT_INDIRECTARGUMENT,
-		GBT_APPENDCONSUME
-	};
-
 	class CM_EXPORT GenericBuffer
     {
     public:

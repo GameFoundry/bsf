@@ -60,6 +60,14 @@ namespace CamelotEngine {
 
 		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
 		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);
+
+		/**
+		 * @copydoc HardwareBufferManagerInterface::createGpuParamBlock
+		 *
+		 * DirectX 9 does not support generic buffers so this method will return a dummy instance.
+		 */
+		GenericBufferPtr createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
+			GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
     };
 
 	/// D3D9HardwareBufferManagerBase as a Singleton

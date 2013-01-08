@@ -132,6 +132,21 @@ namespace CamelotEngine {
 		 */
 		virtual GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc) = 0;
 
+		/**
+		 * @brief	Creates a generic buffer that can be passed as a parameter to a shader.
+		 *
+		 * @param	elementCount  	Number of elements in the buffer. 
+		 * @param	elementSize   	Size of each individual element in the buffer, in bytes.
+		 * @param	type		  	Type of the buffer.
+		 * @param	usage		  	Determines how will the buffer be used.
+		 * @param	randomGpuWrite	(optional) Allows the GPU to write to the resource.
+		 * @param	useCounter	  	(optional) Binds a counter that can be used from a shader to the buffer.
+		 *
+		 * Be aware that some of these settings cannot be used together, and you will receive an assert if in debug mode.
+		 */
+		virtual GenericBufferPtr createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
+			GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false) = 0;
+
         /** Creates a new vertex declaration. */
         virtual VertexDeclarationPtr createVertexDeclaration(void);
 
@@ -170,6 +185,13 @@ namespace CamelotEngine {
 		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
 		{
 			return mImpl->createGpuParamBlock(paramDesc);
+		}
+
+		/** @copydoc HardwareBufferManagerInterface::createGenericBuffer */
+		GenericBufferPtr createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
+			GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false)
+		{
+			return mImpl->createGenericBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
 		}
 
 		/** @copydoc HardwareBufferManagerInterface::createVertexDeclaration */

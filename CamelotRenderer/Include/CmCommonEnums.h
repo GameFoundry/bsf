@@ -236,6 +236,17 @@ namespace CamelotEngine {
 		GBU_DYNAMIC = 2,
 	};
 
+	/**
+	 * @brief	Types of generic GPU buffers that may be attached to GPU programs.
+	 */
+	enum GenericBufferType
+	{
+		GBT_STRUCTURED,
+		GBT_RAW,
+		GBT_INDIRECTARGUMENT,
+		GBT_APPENDCONSUME
+	};
+
 	/** Texture addressing mode for each texture coordinate. */
 	struct UVWAddressingMode
 	{
