@@ -24,7 +24,7 @@ namespace CamelotEngine
 
 		void beginFrame();
 		void endFrame();
-		void clearFrameBuffer(unsigned int buffers, const Color& color = Color::Black, float depth = 1.0f, unsigned short stencil = 0);
+		void clear(RenderTargetPtr target, unsigned int buffers, const Color& color = Color::Black, float depth = 1.0f, unsigned short stencil = 0);
 
 		void setRenderTarget(RenderTarget* target);
 		void setViewport(const Viewport& vp);

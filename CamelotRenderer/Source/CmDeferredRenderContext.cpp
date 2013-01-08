@@ -123,9 +123,9 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setRenderTarget, mRenderSystem, target));
 	}
 
-	void DeferredRenderContext::clearFrameBuffer(unsigned int buffers, const Color& color, float depth, unsigned short stencil)
+	void DeferredRenderContext::clear(RenderTargetPtr target, unsigned int buffers, const Color& color, float depth, unsigned short stencil)
 	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::clearFrameBuffer, mRenderSystem, buffers, color, depth, stencil));
+		mCommandQueue->queue(boost::bind(&RenderSystem::clear, mRenderSystem, target, buffers, color, depth, stencil));
 	}
 
 	void DeferredRenderContext::beginFrame()

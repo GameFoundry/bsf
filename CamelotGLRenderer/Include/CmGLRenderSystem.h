@@ -137,9 +137,9 @@ namespace CamelotEngine {
         void render(const RenderOperation& op);
 
 		/**
-		 * @copydoc RenderSystem::clearFrameBuffer()
+		 * @copydoc RenderSystem::clear()
 		 */
-        void clearFrameBuffer(unsigned int buffers, 
+        void clear(RenderTargetPtr target, unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
 

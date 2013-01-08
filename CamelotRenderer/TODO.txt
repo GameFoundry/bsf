@@ -68,15 +68,6 @@ Handling of array parameters? This needs testing
 
 ---------------------------------------------------
 
-RenderSystem::clearFrameBuffer
- - Change so it accepts a RenderTarget as a parameter
-
-RenderSystem::setScissorRect(RECT[] array)
- - Change it so it accepts an array
-
-RenderSystem::setViewport(RECT[] array)
- - Change it so it accepts an array
-
 monitorIndex is ignored in DX11
 
 Creating a primary window and initializing the render system should probably be one step
@@ -123,6 +114,7 @@ RenderSystem needed modifications
   
  - Low priority
   - OpenGL provides image load/store which seems to be GL UAV equivalent (http://www.opengl.org/wiki/Image_Load_Store)
+  - Resolving MSAA textures (i.e. copying them to non-MSAA so they can be displayed on-screen). DX has ResolveSubresource, and OpenGL might have something similar.
   - Single and dual channel textures (especially render textures, which are very important for effects like SSAO)
   - Compute pipeline
   - Instancing (DrawInstanced) (DX11 and GL)

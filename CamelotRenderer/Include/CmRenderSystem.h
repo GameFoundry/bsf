@@ -280,14 +280,16 @@ namespace CamelotEngine
 		*/
 		virtual void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) = 0;
 
-		/** Clears one or more frame buffers on the active render target. 
+		/** Clears the provided render target to the specified values
+		@param renderTarget Render target to clear. Entire surface will be cleared
+				regardless of viewport or scissor rect.
 		@param buffers Combination of one or more elements of FrameBufferType
 		denoting which buffers are to be cleared
 		@param colour The colour to clear the colour buffer with, if enabled
 		@param depth The value to initialise the depth buffer with, if enabled
 		@param stencil The value to initialise the stencil buffer with, if enabled.
 		*/
-		virtual void clearFrameBuffer(unsigned int buffers, 
+		virtual void clear(RenderTargetPtr renderTarget, unsigned int buffers, 
 			const Color& color = Color::Black, 
 			float depth = 1.0f, unsigned short stencil = 0) = 0;
 

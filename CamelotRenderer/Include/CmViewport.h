@@ -88,22 +88,6 @@ namespace CamelotEngine {
         */
         virtual ~Viewport();
 
-		/** Instructs the viewport to clear itself, without performing an update.
-		 @remarks
-			You would not normally call this method when updating the viewport, 
-			since the viewport usually clears itself when updating anyway (@see 
-		    Viewport::setClearEveryFrame). However, if you wish you have the
-			option of manually clearing the frame buffer (or elements of it)
-		    using this method.
-		 @param buffers Bitmask identifying which buffer elements to clear
-		 @param colour The colour value to clear to, if FBT_COLOUR is included
-		 @param depth The depth value to clear to, if FBT_DEPTH is included
-		 @param stencil The stencil value to clear to, if FBT_STENCIL is included
-		*/
-		void clear(unsigned int buffers = FBT_COLOUR | FBT_DEPTH,
-				   const Color& colour = Color::Black, 
-				   float depth = 1.0f, unsigned short stencil = 0);
-
         /** Retrieves a pointer to the render target for this viewport.
         */
         RenderTargetPtr getTarget(void) const;
@@ -164,33 +148,6 @@ namespace CamelotEngine {
         */
         void setDimensions(float left, float top, float width, float height);
 
-        /** Sets the initial background colour of the viewport (before
-            rendering).
-        */
-        void setBackgroundColour(const Color& colour);
-
-        /** Gets the background colour.
-        */
-        const Color& getBackgroundColour(void) const;
-
-        /** Determines whether to clear the viewport before rendering.
-		@remarks
-			You can use this method to set which buffers are cleared
-			(if any) before rendering every frame.
-        @param clear Whether or not to clear any buffers
-		@param buffers One or more values from FrameBufferType denoting
-			which buffers to clear, if clear is set to true. Note you should
-			not clear the stencil buffer here unless you know what you're doing.
-         */
-        void setClearEveryFrame(bool clear, unsigned int buffers = FBT_COLOUR | FBT_DEPTH);
-
-        /** Determines if the viewport is cleared before every frame.
-        */
-        bool getClearEveryFrame(void) const;
-
-		/** Gets which buffers are to be cleared each frame. */
-        unsigned int getClearBuffers(void) const;
-
 		/** Access to actual dimensions (based on target size).
         */
         void getActualDimensions(
@@ -204,10 +161,6 @@ namespace CamelotEngine {
         int mActLeft, mActTop, mActWidth, mActHeight;
         /// ZOrder
         int mZOrder;
-        /// Background options
-        Color mBackColour;
-        bool mClearEveryFrame;
-		unsigned int mClearBuffers;
 
 		/** Notifies the viewport of a possible change in dimensions.
             @remarks

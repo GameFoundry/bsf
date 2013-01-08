@@ -10,6 +10,7 @@
 #include "CmRasterizerState.h"
 #include "CmDepthStencilState.h"
 #include "CmApplication.h"
+#include "CmViewport.h"
 
 namespace CamelotEngine
 {
@@ -51,7 +52,7 @@ namespace CamelotEngine
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
-		renderContext->clearFrameBuffer(FBT_COLOUR | FBT_DEPTH, Color::Blue);
+		renderContext->clear(camera->getViewport()->getTarget(), FBT_COLOUR | FBT_DEPTH, Color::Blue);
 		renderContext->beginFrame();
 
 		// TODO - sort renderables by material/pass/parameters to minimize state changes

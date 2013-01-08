@@ -1412,10 +1412,17 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::clearFrameBuffer(unsigned int buffers, 
+	void D3D9RenderSystem::clear(RenderTargetPtr target, unsigned int buffers, 
 		const Color& colour, float depth, unsigned short stencil)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		RenderTarget* previousRenderTarget = mActiveRenderTarget;
+		if(target.get() != mActiveRenderTarget)
+		{
+			previousRenderTarget = mActiveRenderTarget;
+			setRenderTarget(target.get());
+		}
 
 		DWORD flags = 0;
 		if (buffers & FBT_COLOUR)
@@ -1426,11 +1433,13 @@ namespace CamelotEngine
 		{
 			flags |= D3DCLEAR_ZBUFFER;
 		}
+
 		// Only try to clear the stencil buffer if supported
 		if (buffers & FBT_STENCIL && mCurrentCapabilities->hasCapability(RSC_HWSTENCIL))
 		{
 			flags |= D3DCLEAR_STENCIL;
 		}
+
 		HRESULT hr;
 		if( FAILED( hr = getActiveD3D9Device()->Clear( 
 			0, 
@@ -1442,6 +1451,11 @@ namespace CamelotEngine
 		{
 			String msg = DXGetErrorDescription(hr);
 			CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
+		}
+
+		if(target.get() != previousRenderTarget)
+		{
+			setRenderTarget(previousRenderTarget);
 		}
 	}
 	//---------------------------------------------------------------------

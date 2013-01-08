@@ -84,8 +84,8 @@ namespace CamelotEngine
 
 		/** @copydoc RenderSystem::swapAllRenderTargetBuffers() */
 		void swapAllRenderTargetBuffers(bool waitForVsync = true);
-		/** @copydoc RenderSystem::clearFrameBuffer() */
-		void clearFrameBuffer(unsigned int buffers, const Color& color = Color::Black, float depth = 1.0f, unsigned short stencil = 0);
+		/** @copydoc RenderSystem::clear() */
+		void clear(RenderTargetPtr target, unsigned int buffers, const Color& color = Color::Black, float depth = 1.0f, unsigned short stencil = 0);
 
 		/**
 		 * @brief	Makes all the currently queued commands available to the GPU. They will be executed

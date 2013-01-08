@@ -187,7 +187,7 @@ namespace CamelotEngine
 		throw std::exception("The method or operation is not implemented.");
 	}
 
-	void D3D11RenderSystem::clearFrameBuffer(unsigned int buffers, const Color& color /*= Color::Black*/, float depth /*= 1.0f*/, unsigned short stencil /*= 0 */)
+	void D3D11RenderSystem::clear(RenderTargetPtr target, unsigned int buffers, const Color& color /*= Color::Black*/, float depth /*= 1.0f*/, unsigned short stencil /*= 0 */)
 	{
 		//mDevice->getImmediateContext()->c
 

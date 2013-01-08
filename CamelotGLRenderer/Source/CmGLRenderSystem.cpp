@@ -796,10 +796,17 @@ namespace CamelotEngine
 		mScissorRight = right;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::clearFrameBuffer(unsigned int buffers, 
+	void GLRenderSystem::clear(RenderTargetPtr target, unsigned int buffers, 
 		const Color& colour, float depth, unsigned short stencil)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		RenderTarget* previousRenderTarget = mActiveRenderTarget;
+		if(target.get() != mActiveRenderTarget)
+		{
+			previousRenderTarget = mActiveRenderTarget;
+			setRenderTarget(target.get());
+		}
 
 		bool colourMask = !mColourWrite[0] || !mColourWrite[1] 
 		|| !mColourWrite[2] || !mColourWrite[3]; 
@@ -834,39 +841,20 @@ namespace CamelotEngine
 			glClearStencil(stencil);
 		}
 
-		// Should be enable scissor test due the clear region is
-		// relied on scissor box bounds.
+		// Disable scissor test as we want to clear the entire render surface
 		GLboolean scissorTestEnabled = glIsEnabled(GL_SCISSOR_TEST);
-		if (!scissorTestEnabled)
+		if (scissorTestEnabled)
 		{
-			glEnable(GL_SCISSOR_TEST);
-		}
-
-		// Sets the scissor box as same as viewport
-        GLint viewport[4] = { 0, 0, 0, 0 };
-        GLint scissor[4] = { 0, 0, 0, 0 };
-		glGetIntegerv(GL_VIEWPORT, viewport);
-		glGetIntegerv(GL_SCISSOR_BOX, scissor);
-		bool scissorBoxDifference =
-			viewport[0] != scissor[0] || viewport[1] != scissor[1] ||
-			viewport[2] != scissor[2] || viewport[3] != scissor[3];
-		if (scissorBoxDifference)
-		{
-			glScissor(viewport[0], viewport[1], viewport[2], viewport[3]);
+			glDisable(GL_SCISSOR_TEST);
 		}
 
 		// Clear buffers
 		glClear(flags);
 
-		// Restore scissor box
-		if (scissorBoxDifference)
-		{
-			glScissor(scissor[0], scissor[1], scissor[2], scissor[3]);
-		}
 		// Restore scissor test
-		if (!scissorTestEnabled)
+		if (scissorTestEnabled)
 		{
-			glDisable(GL_SCISSOR_TEST);
+			glEnable(GL_SCISSOR_TEST);
 		}
 
 		// Reset buffer write state
@@ -881,6 +869,11 @@ namespace CamelotEngine
 		if (buffers & FBT_STENCIL)
 		{
 			glStencilMask(mStencilWriteMask);
+		}
+
+		if(target.get() != previousRenderTarget)
+		{
+			setRenderTarget(previousRenderTarget);
 		}
 	}
 

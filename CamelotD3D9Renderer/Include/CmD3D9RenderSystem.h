@@ -113,7 +113,7 @@ namespace CamelotEngine
         void render(const RenderOperation& op);
 
         void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
-        void clearFrameBuffer(unsigned int buffers, 
+        void clear(RenderTargetPtr target, unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
 

@@ -43,9 +43,6 @@ namespace CamelotEngine {
 		, mRelHeight(0)
 		// Actual dimensions will update later
 		, mZOrder(0)
-		, mBackColour(Color::Black)
-		, mClearEveryFrame(true)
-		, mClearBuffers(FBT_COLOUR | FBT_DEPTH)
 	{
 		// Calculate actual dimensions
 		updateDimensions();
@@ -59,9 +56,6 @@ namespace CamelotEngine {
         , mRelHeight(height)
         // Actual dimensions will update later
         , mZOrder(ZOrder)
-        , mBackColour(Color::Black)
-        , mClearEveryFrame(true)
-		, mClearBuffers(FBT_COLOUR | FBT_DEPTH)
     {
         // Calculate actual dimensions
         updateDimensions();
@@ -144,46 +138,6 @@ namespace CamelotEngine {
         mRelHeight = height;
         updateDimensions();
     }
-    //---------------------------------------------------------------------
-    void Viewport::setBackgroundColour(const Color& colour)
-    {
-        mBackColour = colour;
-    }
-    //---------------------------------------------------------------------
-    const Color& Viewport::getBackgroundColour(void) const
-    {
-        return mBackColour;
-    }
-    //---------------------------------------------------------------------
-    void Viewport::setClearEveryFrame(bool inClear, unsigned int inBuffers)
-    {
-        mClearEveryFrame = inClear;
-		mClearBuffers = inBuffers;
-    }
-    //---------------------------------------------------------------------
-    bool Viewport::getClearEveryFrame(void) const
-    {
-        return mClearEveryFrame;
-    }
-    //---------------------------------------------------------------------
-    unsigned int Viewport::getClearBuffers(void) const
-    {
-        return mClearBuffers;
-    }
-    //---------------------------------------------------------------------
-	void Viewport::clear(unsigned int buffers, const Color& col,  
-						 float depth, unsigned short stencil)
-	{
-		RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
-		if (rs)
-		{
-			Viewport currentvp = rs->getViewport();
-
-			rs->setViewport(*this);
-			rs->clearFrameBuffer(buffers, col, depth, stencil);
-			rs->setViewport(currentvp);
-		}
-	}
     //---------------------------------------------------------------------
     void Viewport::getActualDimensions(int &left, int&top, int &width, int &height) const
     {
