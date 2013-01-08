@@ -6,7 +6,7 @@ namespace CamelotEngine
 		GpuBufferUsage usage, bool useSystemMem)
 		:HardwareIndexBuffer(mgr, idxType, numIndexes, usage, useSystemMem)
 	{
-		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::INDEX_BUFFER, mSizeInBytes, usage, device, useSystemMem, false);
+		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_INDEX, usage, 1, mSizeInBytes, device, useSystemMem);
 	}
 
 	D3D11HardwareIndexBuffer::~D3D11HardwareIndexBuffer()

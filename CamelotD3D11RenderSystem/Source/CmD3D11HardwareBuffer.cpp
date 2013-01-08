@@ -6,47 +6,79 @@
 
 namespace CamelotEngine
 {
-	D3D11HardwareBuffer::D3D11HardwareBuffer(BufferType btype, UINT32 sizeBytes, GpuBufferUsage usage, 
-		D3D11Device& device, bool useSystemMemory, bool streamOut)
-		: HardwareBuffer(usage, useSystemMemory),
+	D3D11HardwareBuffer::D3D11HardwareBuffer(BufferType btype, GpuBufferUsage usage, UINT32 elementCount, UINT32 elementSize, 
+		D3D11Device& device, bool useSystemMem, bool streamOut, bool randomGpuWrite, bool useCounter)
+		: HardwareBuffer(usage, useSystemMem),
 		mD3DBuffer(0),
 		mpTempStagingBuffer(0),
 		mUseTempStagingBuffer(false),
 		mBufferType(btype),
-		mDevice(device)
+		mDevice(device),
+		mElementCount(elementCount),
+		mElementSize(elementSize),
+		mRandomGpuWrite(randomGpuWrite),
+		mUseCounter(useCounter)
 	{
-		if(streamOut && btype != VERTEX_BUFFER)
-			CM_EXCEPT(InvalidParametersException, "Stream out flag is only supported on vertex buffers");
+		assert((!streamOut || btype == BT_VERTEX) && "Stream out flag is only supported on vertex buffers");
+		assert(!randomGpuWrite || (btype & BT_GROUP_GENERIC) != 0 && "randomGpuWrite flag can only be enabled with append/consume, indirect argument, structured or raw buffers");
+		assert(btype != BT_APPENDCONSUME || randomGpuWrite && "Append/Consume buffer must be created with randomGpuWrite enabled.");
+		assert(!useCounter || btype == BT_STRUCTURED && "Counter can only be used with a structured buffer.");
+		assert(!useCounter || randomGpuWrite && "Counter can only be used with buffers that have randomGpuWrite enabled.");
+		assert(!randomGpuWrite || !useSystemMem && "randomGpuWrite and useSystemMem cannot be used together.");
+		assert(!(useSystemMem && streamOut) && "useSystemMem and streamOut cannot be used together.");
 
-		mSizeInBytes = sizeBytes;
-		mDesc.ByteWidth = static_cast<UINT>(sizeBytes);
-		
+		mSizeInBytes = elementCount * elementSize;
+		mDesc.ByteWidth = mSizeInBytes;
 		mDesc.MiscFlags = 0;
+		mDesc.StructureByteStride = 0;
 
-		if (useSystemMemory)
+		if (useSystemMem)
 		{
 			mDesc.Usage = D3D11_USAGE_STAGING;
 			mDesc.BindFlags = 0;
-			mDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ ;// A D3D11_USAGE_STAGING Resource must have at least one CPUAccessFlag bit set.
-
+			mDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ ;
+		}
+		else if(randomGpuWrite)
+		{
+			mDesc.Usage = D3D11_USAGE_DEFAULT;
+			mDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+			mDesc.CPUAccessFlags = 0;
 		}
 		else
 		{
 			mDesc.Usage = D3D11Mappings::_getUsage(mUsage);
-			mDesc.BindFlags = btype == VERTEX_BUFFER ? D3D11_BIND_VERTEX_BUFFER : 
-				btype == INDEX_BUFFER  ? D3D11_BIND_INDEX_BUFFER  :
-				D3D11_BIND_CONSTANT_BUFFER;
 			mDesc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage); 
+
+			switch(btype)
+			{
+			case BT_VERTEX:
+				mDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+				if (streamOut)
+					mDesc.BindFlags |= D3D11_BIND_STREAM_OUTPUT;
+				break;
+			case BT_INDEX:
+				mDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+				break;
+			case BT_CONSTANT:
+				mDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+				break;
+			case BT_STRUCTURED:
+			case BT_APPENDCONSUME:
+				mDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+				mDesc.StructureByteStride = elementSize;
+				mDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+				break;
+			case BT_RAW:
+				mDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+				mDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
+				break;
+			case BT_INDIRECTARGUMENT:
+				mDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+				mDesc.MiscFlags = D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS;
+				break;
+			}
 		}
 
-		// Check of stream out flag
-		if (streamOut)
-		{
-			mDesc.BindFlags |= D3D11_BIND_STREAM_OUTPUT;
-		}
-
-		// TODO: we can explicitly initialise the buffer contents here if we like
-		// not doing this since OGRE doesn't support this model yet
 		HRESULT hr = device.getD3D11Device()->CreateBuffer( &mDesc, nullptr, &mD3DBuffer );
 		if (FAILED(hr) || mDevice.hasError())
 		{
@@ -95,7 +127,7 @@ namespace CamelotEngine
 				}
 				break;
 			case GBL_WRITE_ONLY_NO_OVERWRITE:
-				if(mBufferType == INDEX_BUFFER || mBufferType == VERTEX_BUFFER)
+				if(mBufferType == BT_INDEX || mBufferType == BT_VERTEX)
 					mapType = D3D11_MAP_WRITE_NO_OVERWRITE;
 				else
 				{
@@ -151,8 +183,7 @@ namespace CamelotEngine
 			if (!mpTempStagingBuffer)
 			{
 				// create another buffer instance but use system memory
-				mpTempStagingBuffer = new D3D11HardwareBuffer(mBufferType, 
-					mSizeInBytes, mUsage, mDevice, true, false);
+				mpTempStagingBuffer = new D3D11HardwareBuffer(mBufferType, mUsage, 1, mSizeInBytes, mDevice, true);
 			}
 
 			// schedule a copy to the staging

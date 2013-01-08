@@ -39,10 +39,10 @@ namespace CamelotEngine
 		void copyData(GenericBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 
-	private:
-		ID3D11Buffer* mBuffer;
+	protected:
+		D3D11HardwareBuffer* mBuffer;
 
-		ID3D11ShaderResourceView* createSRV(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements);
-		ID3D11UnorderedAccessView* createUAV(UINT32 firstElement, UINT32 numElements);
+		virtual GenericBufferView* createView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
+		virtual void destroyView(GenericBufferView* view);
     };
 }

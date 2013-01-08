@@ -209,6 +209,7 @@
     <ClInclude Include="Include\CmRay.h" />
     <ClInclude Include="Include\CmSphere.h" />
     <ClInclude Include="Include\CmStdHeaders.h" />
+    <ClInclude Include="Include\CmUtil.h" />
     <ClInclude Include="Include\CmUUID.h" />
     <ClInclude Include="Include\CmVector2.h" />
     <ClInclude Include="Include\CmVector3.h" />

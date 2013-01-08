@@ -192,6 +192,7 @@
     <ClInclude Include="Include\CmDepthStencilStateRTTI.h" />
     <ClInclude Include="Include\CmDepthStencilState.h" />
     <ClInclude Include="Include\CmGenericBuffer.h" />
+    <ClInclude Include="Include\CmGenericBufferView.h" />
     <ClInclude Include="Include\CmGpuParamBlock.h" />
     <ClInclude Include="Include\CmGpuParamDesc.h" />
     <ClInclude Include="Include\CmGpuParams.h" />
@@ -279,6 +280,7 @@
     <ClCompile Include="Source\CmDepthStencilBuffer.cpp" />
     <ClCompile Include="Source\CmDepthStencilState.cpp" />
     <ClCompile Include="Source\CmGenericBuffer.cpp" />
+    <ClCompile Include="Source\CmGenericBufferView.cpp" />
     <ClCompile Include="Source\CmGpuParamBlock.cpp" />
     <ClCompile Include="Source\CmGpuParams.cpp" />
     <ClCompile Include="Source\CmGpuProgram.cpp" />

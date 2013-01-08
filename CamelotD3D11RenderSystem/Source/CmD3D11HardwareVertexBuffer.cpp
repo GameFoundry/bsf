@@ -6,7 +6,7 @@ namespace CamelotEngine
 		GpuBufferUsage usage, bool useSystemMem, bool streamOut)
 		:HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMem)
 	{
-		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::VERTEX_BUFFER, mSizeInBytes, usage, device, useSystemMem, streamOut);
+		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_VERTEX, usage, 1, mSizeInBytes, device, useSystemMem, streamOut);
 	}
 
 	D3D11HardwareVertexBuffer::~D3D11HardwareVertexBuffer()

@@ -12,7 +12,41 @@
 
 -----------------------IMMEDIATE TODO---------------------------------------------------------------
 
+Plan until end of February:
+Week A:
+ Generic buffers DX11 and dummy implementations (that log warnings) for DX9 and OpenGL
+ Texture buffers in DX11 and OpenGL
+ A way to bind buffers to a Pass, while specifying buffer range
 
+Week B:
+ Stream out (mainly OpenGL)
+ Static/Dynamic usage for GpuParamBlocks
+ GpuParams support for bools, buffers, structs
+
+Week C:
+ Refactor render system methods to comply with DX11
+ Implement working DX11 render system Part 1
+
+Week D:
+ Implement working DX11 render system Part 2
+
+Week E:
+ Refactor so that primary window is created with rendersystem initialization
+ Make RenderTexture and DepthStenciLTexture use common interface
+
+Week F:
+ Ability to switch out GpuParamBlocks
+ Smart way of initializing GpuParamBlocks (without duplicates)
+ Port CG so it no longer uses low level shaders
+ Fix MaterialRTTI saving (Save params per gpuprogram is simplest and cleanest)
+ Make sure that gpu programs assigned to Pass don't share parameters of different types
+
+Week G:
+ Refactor how we handle RenderTargets (no attach/detach, and no waitForVSync propery in RenderSystem)
+ Fix how and when is GpuParamBlock created/destroyed. Needs to happen on the render thread
+
+>>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
+ 
 
 
 
@@ -21,7 +55,6 @@
 
 Destroying and constructing GpuParamBlock happens on main thread, which is wrong (especially destroying it)
 
-Uniform buffers for GL are all set up but don't actually work :/
 Saving/loading of material params isn't completed (in MAterialRTTI)
 Port DX11 to new shader param system
 Ability to switch out GpuParamBlocks (i.e. share them between programs)
@@ -69,36 +102,32 @@ Figure out how to handle accessing texture from a non-render thread?
 
 RenderSystem needed modifications
  - High priority
+  - Figure out how to handle different resource views and setting them on Passes
+    - Specifying buffer & texture ranges
+	- Setting UAV for both buffers and textures (Need to add a special flag for texture creation)
   - Generic buffers (Normal/Structured/Raw/Append/Consume/Indirect)
-  - Unordered access view for OM and CS stages (this should probably just be a flag .enableRandomWrite on Texture & Buffer classes)
-  - Pass needs to be modified
-   - Needs to support bool/double/texture1D/textue3D/textureCUBE/texture arrays/MS textures/all types of buffers/structs
-   - Needs to support (*void) data type for setting structs in constant buffers
-  - Right now HLSL11 CANNOT SPECIFY TEXTURE PARAMETERS! (Pass needs to be extended)
+  - Texture buffers 
+  - Stream out (write vertex buffers) (DX11 and GL)
+  - Static/Dynamic usage for GpuParamBlocks
+  - GpuParams need to support bools, buffers & structs (void*)
   - Tesselation (hull/domain) shader
-  - Stream out (write vertex buffers)
-  - Append/Consume buffer
-  - Instancing (DrawInstanced, also check DrawIndirect)
-  - 1D/2D/Cube texture arrays
-  - Rendertargets that aren't just 2D (Volumetric (3D) render targets in particular)
-  - DX11 allows detachable and reusable depthStencil buffers but right now DX9 and OpenGL just ignore them
-	- Also RenderWindow can't have detachable depth stencil buffers for multiple reasons:
-		- Resizing a window requires a resize of the depth/stencil buffer, so what to do if the buffer is external?
-		- OpenGL doesn't allow access to primary window buffer anyway
-		- Is there any situation where I actually need to set primary depth buffer?
- - Process OpenGL and make sure to equivalents of DX11 features
-  - Exact features that are missing (not an exhaustive list):
-    - Vertex buffer stream out (Transform Feedback)
-	- Instancing
-	- HLSL11 shader equivalents (domain/hull/compute shaders), and advanced shader parameters
- - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
+  - Detachable and readable depthstencil buffer (Window buffers not required as they behave a bit differently in OpenGL)
+   - Also make DepthStencilBuffer share common features with RenderTexture
+  
  - Low priority
+  - Single and dual channel textures (especially render textures, which are very important for effects like SSAO)
   - Compute pipeline
+  - Instancing (DrawInstanced) (DX11 and GL)
+  - OpenGL append/consume buffers
+  - Indirect drawing via indirect argument buffers
+  - Texture arrays
+  - Rendertargets that aren't just 2D (Volumetric (3D) render targets in particular)
+  - Shader support for doubles
   - Dynamic shader linkage (Interfaces and similar)
   - Multisampled texture resources
   - Multiple adapters (multi gpu)
-  - Texture buffers 
-    - Essentially a glorified 1D texture, but they don't have 1D texture size limitations
+  - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
+
 
 
 
@@ -106,6 +135,7 @@ Command buffer TODO:
  - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
  - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after
     that call.
+ - In general I need to rethink how to handle modifying resources with multithreading
 
 Mesh
  - Make sure to queue up mesh deletion to make sure it gets destroyed on the render thread
@@ -142,6 +172,7 @@ Mid priority TODO:
      I need to make sure that HighLevelGpuProgram class has valid RTTI type as well. Otherwise the inheritance hierarchy will not be correct. Right now this isn't checked anywhere.
 
 Low priority TODO:
+ - Can I assign a RenderTexture to a Pass?
  - Mesh loading:
   - Sub-meshes aren't being transformed by world matrices of their nodes
  - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?

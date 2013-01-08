@@ -10,28 +10,18 @@ namespace CamelotEngine
 	public:
 		enum BufferType
 		{
-			VERTEX_BUFFER,
-			INDEX_BUFFER,
-			CONSTANT_BUFFER
+			BT_VERTEX = 0x1,
+			BT_INDEX = 0x2,
+			BT_CONSTANT = 0x4,
+			BT_GROUP_GENERIC = 0x8,
+			BT_STRUCTURED = BT_GROUP_GENERIC | 0x10,
+			BT_RAW = BT_GROUP_GENERIC | 0x20,
+			BT_INDIRECTARGUMENT = BT_GROUP_GENERIC | 0x40,
+			BT_APPENDCONSUME = BT_GROUP_GENERIC | 0x80
 		};
 
-	protected:
-		ID3D11Buffer* mD3DBuffer;
-		bool mUseTempStagingBuffer;
-		D3D11HardwareBuffer* mpTempStagingBuffer;
-		bool mStagingUploadNeeded;
-		BufferType mBufferType;
-		D3D11Device& mDevice;
-		D3D11_BUFFER_DESC mDesc;
-
-		/** See HardwareBuffer. */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
-		/** See HardwareBuffer. */
-		void unlockImpl(void);
-
-	public:
-		D3D11HardwareBuffer(BufferType btype, UINT32 sizeBytes, GpuBufferUsage usage, 
-			D3D11Device& device, bool useSystemMem, bool streamOut);
+		D3D11HardwareBuffer(BufferType btype, GpuBufferUsage usage, UINT32 elementCount, UINT32 elementSize, 
+			D3D11Device& device, bool useSystemMem = false, bool streamOut = false, bool randomGpuWrite = false, bool useCounter = false);
 		~D3D11HardwareBuffer();
 
 		/** See HardwareBuffer. */
@@ -45,5 +35,26 @@ namespace CamelotEngine
 
 		/// Get the D3D-specific buffer
 		ID3D11Buffer* getD3DBuffer(void) { return mD3DBuffer; }
+
+	protected:
+		BufferType mBufferType;
+		bool mRandomGpuWrite;
+		bool mUseCounter;
+		UINT32 mElementCount;
+		UINT32 mElementSize;
+
+		ID3D11Buffer* mD3DBuffer;
+
+		bool mUseTempStagingBuffer;
+		D3D11HardwareBuffer* mpTempStagingBuffer;
+		bool mStagingUploadNeeded;
+		
+		D3D11Device& mDevice;
+		D3D11_BUFFER_DESC mDesc;
+
+		/** See HardwareBuffer. */
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		/** See HardwareBuffer. */
+		void unlockImpl(void);
 	};
 }
