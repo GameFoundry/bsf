@@ -46,14 +46,9 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setRasterizerState, mRenderSystem, rasterizerState));
 	}
 
-	void DeferredRenderContext::setDepthStencilState(const DepthStencilState& depthStencilState)
+	void DeferredRenderContext::setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue)
 	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthStencilState, mRenderSystem, depthStencilState));
-	}
-
-	void DeferredRenderContext::setStencilRefValue(UINT32 refValue)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::setStencilRefValue, mRenderSystem, refValue));
+		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthStencilState, mRenderSystem, depthStencilState, stencilRefValue));
 	}
 
 	void DeferredRenderContext::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr)

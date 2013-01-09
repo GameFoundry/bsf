@@ -10,6 +10,9 @@ namespace CamelotEngine
 	public:
 		~D3D11RenderSystem();
 
+		/**
+		 * @copydoc RenderSystem::getName()
+		 */
 		const String& getName() const;
 		
 		/**
@@ -19,13 +22,11 @@ namespace CamelotEngine
 
 		void setBlendState(const BlendState& blendState);
 		void setRasterizerState(const RasterizerState& rasterizerState);
-		void setDepthStencilState(const DepthStencilState& depthStencilState);
+		void setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue);
 
 		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState);
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
 		void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
-
-		void setStencilRefValue(UINT32 refValue);
 
 		void beginFrame();
 		void endFrame();
@@ -94,5 +95,10 @@ namespace CamelotEngine
 		D3D_FEATURE_LEVEL	mFeatureLevel;
 
 		D3D11HLSLProgramFactory* mHLSLFactory;
+
+		// State variables
+		UINT32				mStencilRef;
+		D3D11_VIEWPORT		mViewport;
+		D3D11_RECT			mScissorRect;
 	};
 }

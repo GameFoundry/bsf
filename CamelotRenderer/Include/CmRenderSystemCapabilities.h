@@ -124,6 +124,10 @@ namespace CamelotEngine
 		RSC_GEOMETRY_PROGRAM = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 26),
 		/// Supports rendering to vertex buffers
 		RSC_HWRENDER_TO_VERTEX_BUFFER = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 27),
+		/// Support for async occlusion queries
+		RSC_HWOCCLUSION_ASYNCHRONOUS = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 28),
+		/// Supports dynamic shader linking
+		RSC_SHADER_SUBROUTINE  = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 29),
 
 		/// Supports compressed textures
 		RSC_TEXTURE_COMPRESSION = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 0),

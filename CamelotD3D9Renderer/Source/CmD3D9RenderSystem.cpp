@@ -625,7 +625,7 @@ namespace CamelotEngine
 		setAntialiasedLineEnable(rasterizerState.getAntialiasedLineEnable());
 	}
 	//----------------------------------------------------------------------
-	void D3D9RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState)
+	void D3D9RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -645,15 +645,9 @@ namespace CamelotEngine
 		setDepthBufferCheckEnabled(depthStencilState.getDepthReadEnable());
 		setDepthBufferWriteEnabled(depthStencilState.getDepthWriteEnable());
 		setDepthBufferFunction(depthStencilState.getDepthComparisonFunc());		
-	}
-	//----------------------------------------------------------------------
-	void D3D9RenderSystem::setStencilRefValue(UINT32 refValue)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
 
-		HRESULT hr = __SetRenderState(D3DRS_STENCILREF, refValue);
-		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer reference value.");
+		// Set stencil ref value
+		setStencilRefValue(stencilRefValue);
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
@@ -1030,6 +1024,15 @@ namespace CamelotEngine
 
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer write mask.");
+	}
+	//----------------------------------------------------------------------
+	void D3D9RenderSystem::setStencilRefValue(UINT32 refValue)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		HRESULT hr = __SetRenderState(D3DRS_STENCILREF, refValue);
+		if (FAILED(hr))
+			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer reference value.");
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTextureFiltering(UINT16 unit, FilterType ftype, 

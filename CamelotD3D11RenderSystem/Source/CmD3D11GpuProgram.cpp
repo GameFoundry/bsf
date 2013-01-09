@@ -244,4 +244,48 @@ namespace CamelotEngine
 	{
 		return mHullShader;
 	}
+
+	D3D11GpuComputeProgram::D3D11GpuComputeProgram() 
+		: D3D11GpuProgram(GPT_COMPUTE_PROGRAM)
+		, mComputeShader(nullptr)
+	{ }
+
+	D3D11GpuComputeProgram::~D3D11GpuComputeProgram()
+	{
+		unload_internal(); 
+	}
+
+	void D3D11GpuComputeProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	{
+		if (isSupported())
+		{
+			// Create the shader
+			HRESULT hr = device.getD3D11Device()->CreateComputeShader(
+				static_cast<DWORD*>(microcode->GetBufferPointer()), 
+				microcode->GetBufferSize(),
+				device.getClassLinkage(),
+				&mComputeShader);
+
+			if (FAILED(hr) || device.hasError())
+			{
+				String errorDescription = device.getErrorDescription();
+				CM_EXCEPT(RenderingAPIException, 
+					"Cannot create D3D11 compute shader from microcode.\nError Description:" + errorDescription);
+			}
+		}
+		else
+		{
+			LOGWRN("Unsupported D3D11 compute shader was not loaded.");
+		}
+	}
+
+	void D3D11GpuComputeProgram::unloadImpl(void)
+	{
+		SAFE_RELEASE(mComputeShader);
+	}
+
+	ID3D11ComputeShader* D3D11GpuComputeProgram::getComputeShader(void) const
+	{
+		return mComputeShader;
+	}
 }

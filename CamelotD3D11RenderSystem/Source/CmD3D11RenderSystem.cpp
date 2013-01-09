@@ -3,13 +3,25 @@
 #include "CmD3D11Driver.h"
 #include "CmD3D11Device.h"
 #include "CmD3D11TextureManager.h"
+#include "CmD3D11Texture.h"
 #include "CmD3D11HardwareBufferManager.h"
 #include "CmD3D11GpuProgramManager.h"
 #include "CmD3D11RenderWindowManager.h"
 #include "CmD3D11HLSLProgramFactory.h"
+#include "CmD3D11BlendState.h"
+#include "CmD3D11RasterizerState.h"
+#include "CmD3D11DepthStencilState.h"
+#include "CmD3D11SamplerState.h"
+#include "CmD3D11GpuProgram.h"
 #include "CmRenderSystem.h"
 #include "CmDebug.h"
 #include "CmException.h"
+
+#if CM_DEBUG_MODE
+#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
+#else
+#define THROW_IF_NOT_RENDER_THREAD 
+#endif
 
 namespace CamelotEngine
 {
@@ -17,6 +29,7 @@ namespace CamelotEngine
 		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr)
 		, mActiveD3DDriver(nullptr), mFeatureLevel(D3D_FEATURE_LEVEL_9_1)
 		, mHLSLFactory(nullptr)
+		, mStencilRef(0)
 	{
 
 	}
@@ -40,6 +53,8 @@ namespace CamelotEngine
 
 	void D3D11RenderSystem::initialize_internal()
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&mDXGIFactory);
 		if(FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 DXGIFactory");
@@ -98,6 +113,8 @@ namespace CamelotEngine
 
     void D3D11RenderSystem::destroy_internal()
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		SAFE_DELETE(mHLSLFactory);
 
 		RenderWindowManager::shutDown();
@@ -115,37 +132,111 @@ namespace CamelotEngine
 
 	void D3D11RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState)
 	{
-		throw std::exception("The method or operation is not implemented.");
+		THROW_IF_NOT_RENDER_THREAD;
+
+		// TODO - I'm setting up views one by one, it might be more efficient to hold them in an array
+		//  and then set them all up at once before rendering? Needs testing
+
+		ID3D11SamplerState* samplerArray[1];
+		D3D11SamplerState* d3d11SamplerState = static_cast<D3D11SamplerState*>(const_cast<SamplerState*>(&samplerState));
+		samplerArray[0] = d3d11SamplerState->getInternal();
+
+		switch(gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			mDevice->getImmediateContext()->VSSetSamplers(texUnit, 1, samplerArray);
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			mDevice->getImmediateContext()->PSSetSamplers(texUnit, 1, samplerArray);
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			mDevice->getImmediateContext()->GSSetSamplers(texUnit, 1, samplerArray);
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			mDevice->getImmediateContext()->DSSetSamplers(texUnit, 1, samplerArray);
+			break;
+		case GPT_HULL_PROGRAM:
+			mDevice->getImmediateContext()->HSSetSamplers(texUnit, 1, samplerArray);
+			break;
+		case GPT_COMPUTE_PROGRAM:
+			mDevice->getImmediateContext()->CSSetSamplers(texUnit, 1, samplerArray);
+			break;
+		default:
+			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
+		}
 	}
 
 	void D3D11RenderSystem::setBlendState(const BlendState& blendState)
 	{
-		throw std::exception("The method or operation is not implemented.");
+		THROW_IF_NOT_RENDER_THREAD;
+
+		D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(&blendState));
+		mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
 	}
 
 	void D3D11RenderSystem::setRasterizerState(const RasterizerState& rasterizerState)
 	{
-		throw std::exception("The method or operation is not implemented.");
+		THROW_IF_NOT_RENDER_THREAD;
+
+		D3D11RasterizerState* d3d11RasterizerState = static_cast<D3D11RasterizerState*>(const_cast<RasterizerState*>(&rasterizerState));
+		mDevice->getImmediateContext()->RSSetState(d3d11RasterizerState->getInternal());
 	}
 
-	void D3D11RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState)
+	void D3D11RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue)
 	{
-		throw std::exception("The method or operation is not implemented.");
-	}
+		THROW_IF_NOT_RENDER_THREAD;
 
-	void D3D11RenderSystem::setStencilRefValue(UINT32 refValue)
-	{
-		throw std::exception("The method or operation is not implemented.");
+		D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(&depthStencilState));
+		mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencilRefValue);
 	}
 
 	void D3D11RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
 	{
-		throw std::exception("The method or operation is not implemented.");
+		THROW_IF_NOT_RENDER_THREAD;
+
+		// TODO - Set up UAVs?
+		// TODO - I'm setting up views one by one, it might be more efficient to hold them in an array
+		//  and then set them all up at once before rendering? Needs testing
+
+		ID3D11ShaderResourceView* viewArray[1];
+		if(texPtr != nullptr && enabled)
+		{
+			D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(texPtr.get());
+			viewArray[0] = d3d11Texture->getSRV();
+		}
+		else
+			viewArray[0] = nullptr;
+
+		switch(gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			mDevice->getImmediateContext()->VSSetShaderResources(unit, 1, viewArray);
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			mDevice->getImmediateContext()->PSSetShaderResources(unit, 1, viewArray);
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			mDevice->getImmediateContext()->GSSetShaderResources(unit, 1, viewArray);
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			mDevice->getImmediateContext()->DSSetShaderResources(unit, 1, viewArray);
+			break;
+		case GPT_HULL_PROGRAM:
+			mDevice->getImmediateContext()->HSSetShaderResources(unit, 1, viewArray);
+			break;
+		case GPT_COMPUTE_PROGRAM:
+			mDevice->getImmediateContext()->CSSetShaderResources(unit, 1, viewArray);
+			break;
+		default:
+			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
+		}
 	}
 
 	void D3D11RenderSystem::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
 	{
-		throw std::exception("The method or operation is not implemented.");
+		THROW_IF_NOT_RENDER_THREAD;
+
+		setTexture(gptype, texUnit, false, nullptr);
 	}
 
 	void D3D11RenderSystem::beginFrame()
@@ -160,48 +251,186 @@ namespace CamelotEngine
 
 	void D3D11RenderSystem::setViewport(const Viewport& vp)
 	{
-		throw std::exception("The method or operation is not implemented.");
+		THROW_IF_NOT_RENDER_THREAD;
+
+		// set viewport dimensions
+		mViewport.TopLeftX = (FLOAT)vp.getActualLeft();
+		mViewport.TopLeftY = (FLOAT)vp.getActualTop();
+		mViewport.Width = (FLOAT)vp.getActualWidth();
+		mViewport.Height = (FLOAT)vp.getActualHeight();
+
+		if (vp.getTarget()->requiresTextureFlipping())
+		{
+			// Convert "top-left" to "bottom-left"
+			mViewport.TopLeftY = vp.getTarget()->getHeight() - mViewport.Height - mViewport.TopLeftY;
+		}
+
+		// Z-values from 0.0 to 1.0 (TODO: standardise with OpenGL)
+		mViewport.MinDepth = 0.0f;
+		mViewport.MaxDepth = 1.0f;
+
+		mDevice->getImmediateContext()->RSSetViewports(1, &mViewport);
 	}
 
 	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		throw std::exception("The method or operation is not implemented.");
 	}
 
 	void D3D11RenderSystem::setVertexBufferBinding(VertexBufferBinding* binding)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		throw std::exception("The method or operation is not implemented.");
 	}
 
 	void D3D11RenderSystem::bindGpuProgram(GpuProgramHandle prg)
 	{
-		throw std::exception("The method or operation is not implemented.");
+		THROW_IF_NOT_RENDER_THREAD;
+
+		switch(prg->getType())
+		{
+		case GPT_VERTEX_PROGRAM:
+			{
+				D3D11GpuVertexProgram* d3d11GpuProgram = static_cast<D3D11GpuVertexProgram*>(prg->getBindingDelegate());
+				mDevice->getImmediateContext()->VSSetShader(d3d11GpuProgram->getVertexShader(), nullptr, 0);
+				break;
+			}
+		case GPT_FRAGMENT_PROGRAM:
+			{
+				D3D11GpuFragmentProgram* d3d11GpuProgram = static_cast<D3D11GpuFragmentProgram*>(prg->getBindingDelegate());
+				mDevice->getImmediateContext()->PSSetShader(d3d11GpuProgram->getPixelShader(), nullptr, 0);
+				break;
+			}
+		case GPT_GEOMETRY_PROGRAM:
+			{
+				D3D11GpuGeometryProgram* d3d11GpuProgram = static_cast<D3D11GpuGeometryProgram*>(prg->getBindingDelegate());
+				mDevice->getImmediateContext()->GSSetShader(d3d11GpuProgram->getGeometryShader(), nullptr, 0);
+				break;
+			}
+		case GPT_DOMAIN_PROGRAM:
+			{
+				D3D11GpuDomainProgram* d3d11GpuProgram = static_cast<D3D11GpuDomainProgram*>(prg->getBindingDelegate());
+				mDevice->getImmediateContext()->DSSetShader(d3d11GpuProgram->getDomainShader(), nullptr, 0);
+				break;
+			}
+		case GPT_HULL_PROGRAM:
+			{
+				D3D11GpuHullProgram* d3d11GpuProgram = static_cast<D3D11GpuHullProgram*>(prg->getBindingDelegate());
+				mDevice->getImmediateContext()->HSSetShader(d3d11GpuProgram->getHullShader(), nullptr, 0);
+				break;
+			}
+		case GPT_COMPUTE_PROGRAM:
+			{
+				D3D11GpuComputeProgram* d3d11GpuProgram = static_cast<D3D11GpuComputeProgram*>(prg->getBindingDelegate());
+				mDevice->getImmediateContext()->CSSetShader(d3d11GpuProgram->getComputeShader(), nullptr, 0);
+				break;
+			}
+		default:
+			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(prg->getType()));
+		}
 	}
 
 	void D3D11RenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
-		throw std::exception("The method or operation is not implemented.");
+		THROW_IF_NOT_RENDER_THREAD;
+
+		switch(gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			mDevice->getImmediateContext()->VSSetShader(nullptr, nullptr, 0);
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+				mDevice->getImmediateContext()->PSSetShader(nullptr, nullptr, 0);
+				break;
+		case GPT_GEOMETRY_PROGRAM:
+				mDevice->getImmediateContext()->GSSetShader(nullptr, nullptr, 0);
+				break;
+		case GPT_DOMAIN_PROGRAM:
+				mDevice->getImmediateContext()->DSSetShader(nullptr, nullptr, 0);
+				break;
+		case GPT_HULL_PROGRAM:
+				mDevice->getImmediateContext()->HSSetShader(nullptr, nullptr, 0);
+				break;
+		case GPT_COMPUTE_PROGRAM:
+				mDevice->getImmediateContext()->CSSetShader(nullptr, nullptr, 0);
+				break;
+		default:
+			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
+		}
 	}
 
 	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		throw std::exception("The method or operation is not implemented.");
 	}
 
-	void D3D11RenderSystem::setScissorRect(UINT32 left /*= 0*/, UINT32 top /*= 0*/, UINT32 right /*= 800*/, UINT32 bottom /*= 600 */)
+	void D3D11RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
-		throw std::exception("The method or operation is not implemented.");
+		THROW_IF_NOT_RENDER_THREAD;
+
+		mScissorRect.left = static_cast<LONG>(left);
+		mScissorRect.top = static_cast<LONG>(top);
+		mScissorRect.bottom = static_cast<LONG>(bottom);
+		mScissorRect.right = static_cast<LONG>(right);
+
+		mDevice->getImmediateContext()->RSSetScissorRects(1, &mScissorRect);
 	}
 
 	void D3D11RenderSystem::clear(RenderTargetPtr target, unsigned int buffers, const Color& color /*= Color::Black*/, float depth /*= 1.0f*/, unsigned short stencil /*= 0 */)
 	{
-		//mDevice->getImmediateContext()->c
+		THROW_IF_NOT_RENDER_THREAD;
 
-		throw std::exception("The method or operation is not implemented.");
+		//RenderTarget* previousRenderTarget = mActiveRenderTarget;
+		//if(target.get() != mActiveRenderTarget)
+		//{
+		//	previousRenderTarget = mActiveRenderTarget;
+		//	setRenderTarget(target.get());
+		//}
+
+		//DWORD flags = 0;
+		//if (buffers & FBT_COLOUR)
+		//{
+		//	flags |= D3DCLEAR_TARGET;
+		//}
+		//if (buffers & FBT_DEPTH)
+		//{
+		//	flags |= D3DCLEAR_ZBUFFER;
+		//}
+
+		//// Only try to clear the stencil buffer if supported
+		//if (buffers & FBT_STENCIL && mCurrentCapabilities->hasCapability(RSC_HWSTENCIL))
+		//{
+		//	flags |= D3DCLEAR_STENCIL;
+		//}
+
+		//HRESULT hr;
+		//if( FAILED( hr = getActiveD3D9Device()->Clear( 
+		//	0, 
+		//	NULL, 
+		//	flags,
+		//	colour.getAsARGB(), 
+		//	depth, 
+		//	stencil ) ) )
+		//{
+		//	String msg = DXGetErrorDescription(hr);
+		//	CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
+		//}
+
+		//if(target.get() != previousRenderTarget)
+		//{
+		//	setRenderTarget(previousRenderTarget);
+		//}
 	}
 
 	void D3D11RenderSystem::setRenderTarget(RenderTarget* target)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		//if(target != nullptr)
 		//{
 		//	mRenderViews
@@ -221,6 +450,8 @@ namespace CamelotEngine
 
 	RenderSystemCapabilities* D3D11RenderSystem::createRenderSystemCapabilities() const
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		throw std::exception("The method or operation is not implemented.");
 	}
 
@@ -228,47 +459,170 @@ namespace CamelotEngine
 	{
 		mCurrentCapabilities = new RenderSystemCapabilities();
 
-		mCurrentCapabilities->addShaderProfile("ps_4_0");
-		mCurrentCapabilities->addShaderProfile("vs_4_0");
-		mCurrentCapabilities->addShaderProfile("gs_4_0");
+		mCurrentCapabilities->setDriverVersion(mDriverVersion);
+		mCurrentCapabilities->setDeviceName(mActiveD3DDriver->getDriverDescription());
+		mCurrentCapabilities->setRenderSystemName(getName());
 
-		mCurrentCapabilities->addShaderProfile("ps_4_1");
-		mCurrentCapabilities->addShaderProfile("vs_4_1");
-		mCurrentCapabilities->addShaderProfile("gs_4_1");
+		mCurrentCapabilities->setCapability(RSC_HWSTENCIL);
+		mCurrentCapabilities->setStencilBufferBitDepth(8);
 
-		mCurrentCapabilities->addShaderProfile("ps_5_0");
-		mCurrentCapabilities->addShaderProfile("vs_5_0");
-		mCurrentCapabilities->addShaderProfile("gs_5_0");
-		mCurrentCapabilities->addShaderProfile("cs_5_0");
-		mCurrentCapabilities->addShaderProfile("hs_5_0");
-		mCurrentCapabilities->addShaderProfile("ds_5_0");
+		mCurrentCapabilities->setCapability(RSC_ANISOTROPY);
+		mCurrentCapabilities->setCapability(RSC_AUTOMIPMAP);
+		mCurrentCapabilities->setCapability(RSC_BLENDING);
+		mCurrentCapabilities->setCapability(RSC_DOT3);
 
-		// TODO - IF FEATURE LEVEL 10
+		// Cube map
+		mCurrentCapabilities->setCapability(RSC_CUBEMAPPING);
+
+		// We always support compression, D3DX will decompress if device does not support
+		mCurrentCapabilities->setCapability(RSC_TEXTURE_COMPRESSION);
+		mCurrentCapabilities->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
+		mCurrentCapabilities->setCapability(RSC_VBO);
+		mCurrentCapabilities->setCapability(RSC_SCISSOR_TEST);
+		mCurrentCapabilities->setCapability(RSC_TWO_SIDED_STENCIL);
+		mCurrentCapabilities->setCapability(RSC_STENCIL_WRAP);
+		mCurrentCapabilities->setCapability(RSC_HWOCCLUSION);
+		mCurrentCapabilities->setCapability(RSC_HWOCCLUSION_ASYNCHRONOUS);
+
+		// TODO - Add shader specific caps
+		//  Num of texture samples
+		//  Num of uniform buffers
+		
+
+
+		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_0)
 		{
+			mCurrentCapabilities->addShaderProfile("ps_4_0");
+			mCurrentCapabilities->addShaderProfile("vs_4_0");
+			mCurrentCapabilities->addShaderProfile("gs_4_0");
+
 			mCurrentCapabilities->addGpuProgramProfile(GPP_PS_4_0, "ps_4_0");
 			mCurrentCapabilities->addGpuProgramProfile(GPP_VS_4_0, "vs_4_0");
 			mCurrentCapabilities->addGpuProgramProfile(GPP_GS_4_0, "gs_4_0");
+			 
+			mCurrentCapabilities->setNumTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			mCurrentCapabilities->setNumTextureUnits(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			mCurrentCapabilities->setNumTextureUnits(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+
+			mCurrentCapabilities->setNumCombinedTextureUnits(mCurrentCapabilities->getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
+				+ mCurrentCapabilities->getNumTextureUnits(GPT_VERTEX_PROGRAM) + mCurrentCapabilities->getNumTextureUnits(GPT_VERTEX_PROGRAM));
+
+			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+
+			mCurrentCapabilities->setNumCombinedUniformBlockBuffers(mCurrentCapabilities->getNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM)
+				+ mCurrentCapabilities->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM) + mCurrentCapabilities->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM));
 		}
 		
-		// TODO - IF FEATURE LEVEL 10.1
+		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_1)
 		{
+			mCurrentCapabilities->addShaderProfile("ps_4_1");
+			mCurrentCapabilities->addShaderProfile("vs_4_1");
+			mCurrentCapabilities->addShaderProfile("gs_4_1");
+
 			mCurrentCapabilities->addGpuProgramProfile(GPP_PS_4_1, "ps_4_1");
 			mCurrentCapabilities->addGpuProgramProfile(GPP_VS_4_1, "vs_4_1");
 			mCurrentCapabilities->addGpuProgramProfile(GPP_GS_4_1, "gs_4_1");
 		}
 
-		// TODO - IF FEATURE LEVEL 11
+		if(mFeatureLevel >= D3D_FEATURE_LEVEL_11_0)
 		{
+			mCurrentCapabilities->addShaderProfile("ps_5_0");
+			mCurrentCapabilities->addShaderProfile("vs_5_0");
+			mCurrentCapabilities->addShaderProfile("gs_5_0");
+			mCurrentCapabilities->addShaderProfile("cs_5_0");
+			mCurrentCapabilities->addShaderProfile("hs_5_0");
+			mCurrentCapabilities->addShaderProfile("ds_5_0");
+
 			mCurrentCapabilities->addGpuProgramProfile(GPP_PS_5_0, "ps_5_0");
 			mCurrentCapabilities->addGpuProgramProfile(GPP_VS_5_0, "vs_5_0");
 			mCurrentCapabilities->addGpuProgramProfile(GPP_GS_5_0, "gs_5_0");
 			mCurrentCapabilities->addGpuProgramProfile(GPP_CS_5_0, "cs_5_0");
 			mCurrentCapabilities->addGpuProgramProfile(GPP_HS_5_0, "hs_5_0");
 			mCurrentCapabilities->addGpuProgramProfile(GPP_DS_5_0, "ds_5_0");
+
+			mCurrentCapabilities->setNumTextureUnits(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			mCurrentCapabilities->setNumTextureUnits(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			mCurrentCapabilities->setNumTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+
+			mCurrentCapabilities->setNumCombinedTextureUnits(mCurrentCapabilities->getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
+				+ mCurrentCapabilities->getNumTextureUnits(GPT_VERTEX_PROGRAM) + mCurrentCapabilities->getNumTextureUnits(GPT_VERTEX_PROGRAM)
+				+ mCurrentCapabilities->getNumTextureUnits(GPT_HULL_PROGRAM) + mCurrentCapabilities->getNumTextureUnits(GPT_DOMAIN_PROGRAM)
+				+ mCurrentCapabilities->getNumTextureUnits(GPT_COMPUTE_PROGRAM));
+
+			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+
+			mCurrentCapabilities->setNumCombinedUniformBlockBuffers(mCurrentCapabilities->getNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM)
+				+ mCurrentCapabilities->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM) + mCurrentCapabilities->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM)
+				+ mCurrentCapabilities->getNumUniformBlockBuffers(GPT_HULL_PROGRAM) + mCurrentCapabilities->getNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM)
+				+ mCurrentCapabilities->getNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM));
+
+			mCurrentCapabilities->setCapability(RSC_SHADER_SUBROUTINE);
 		}
 
-		// TODO - All other caps need to be initialized
+		mCurrentCapabilities->setCapability(RSC_USER_CLIP_PLANES);
+		mCurrentCapabilities->setCapability(RSC_VERTEX_FORMAT_UBYTE4);
 
+		// Adapter details
+		const DXGI_ADAPTER_DESC& adapterID = mActiveD3DDriver->getAdapterIdentifier();
+
+		// determine vendor
+		// Full list of vendors here: http://www.pcidatabase.com/vendors.php?sort=id
+		switch(adapterID.VendorId)
+		{
+		case 0x10DE:
+			mCurrentCapabilities->setVendor(GPU_NVIDIA);
+			break;
+		case 0x1002:
+			mCurrentCapabilities->setVendor(GPU_ATI);
+			break;
+		case 0x163C:
+		case 0x8086:
+			mCurrentCapabilities->setVendor(GPU_INTEL);
+			break;
+		case 0x5333:
+			mCurrentCapabilities->setVendor(GPU_S3);
+			break;
+		case 0x3D3D:
+			mCurrentCapabilities->setVendor(GPU_3DLABS);
+			break;
+		case 0x102B:
+			mCurrentCapabilities->setVendor(GPU_MATROX);
+			break;
+		default:
+			mCurrentCapabilities->setVendor(GPU_UNKNOWN);
+			break;
+		};
+
+		mCurrentCapabilities->setCapability(RSC_INFINITE_FAR_PLANE);
+
+		mCurrentCapabilities->setCapability(RSC_TEXTURE_3D);
+		mCurrentCapabilities->setCapability(RSC_NON_POWER_OF_2_TEXTURES);
+		mCurrentCapabilities->setCapability(RSC_HWRENDER_TO_TEXTURE);
+		mCurrentCapabilities->setCapability(RSC_TEXTURE_FLOAT);
+
+		mCurrentCapabilities->setNumMultiRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT);
+		mCurrentCapabilities->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);
+
+		mCurrentCapabilities->setCapability(RSC_POINT_SPRITES);
+		mCurrentCapabilities->setCapability(RSC_POINT_EXTENDED_PARAMETERS);
+		mCurrentCapabilities->setMaxPointSize(256);
+
+		mCurrentCapabilities->setCapability(RSC_VERTEX_TEXTURE_FETCH);
+
+		mCurrentCapabilities->setCapability(RSC_MIPMAP_LOD_BIAS);
+
+		mCurrentCapabilities->setCapability(RSC_PERSTAGECONSTANT);
+
+
+
+
+
+		// TODO - See what else needs to be initialized
+		
 		throw std::exception("The method or operation is not implemented.");
 	}
 
@@ -429,3 +783,5 @@ namespace CamelotEngine
 		return -1.0f;
 	}
 }
+
+#undef THROW_IF_NOT_RENDER_THREAD

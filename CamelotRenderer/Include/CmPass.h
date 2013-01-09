@@ -20,6 +20,7 @@ namespace CamelotEngine
 		BlendStatePtr mBlendState;
 		RasterizerStatePtr mRasterizerState;
 		DepthStencilStatePtr mDepthStencilState;
+		UINT32 mStencilRefValue;
 
 		GpuProgramHandle mVertexProgram;
 		GpuProgramHandle mFragmentProgram;
@@ -57,6 +58,9 @@ namespace CamelotEngine
 
 		void setDepthStencilState(DepthStencilStatePtr depthStencilState);
 		DepthStencilStatePtr getDepthStencilState() const;
+
+		void setStencilRefValue(UINT32 refValue);
+		UINT32 getStencilRefValue() const;
 
 		/** Sets the details of the vertex program to use.
 		*/

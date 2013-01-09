@@ -104,12 +104,7 @@ namespace CamelotEngine
 		/**
 		 * @copydoc RenderSystem::setDepthStencilState()
 		 */
-		void setDepthStencilState(const DepthStencilState& depthStencilState);
-
-		/**
-		 * @copydoc RenderSystem::setStencilRefValue()
-		 */
-		void setStencilRefValue(UINT32 refValue);
+		void setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue);
 
 		void setViewport(const Viewport& vp);		
 		void beginFrame();
@@ -475,6 +470,12 @@ namespace CamelotEngine
 		* @brief	The bitmask applied to the stencil value before writing it to the stencil buffer.
 		 */
 		void setStencilBufferWriteMask(UINT32 mask = 0xFFFFFFFF);
+
+		/**
+		 * @brief	Sets a reference values used for stencil buffer comparisons. 
+		 * 			Actual comparison function and stencil operations are set by setting the DepthStencilState.
+		 */
+		void setStencilRefValue(UINT32 refValue);
 
 		/// Notify when a device has been lost.
 		void notifyOnDeviceLost(D3D9Device* device);

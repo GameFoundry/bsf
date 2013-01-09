@@ -72,14 +72,10 @@ namespace CamelotEngine
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
 
 		if (it == mMapRenderWindowToResoruces.end())
-		{
-			CM_EXCEPT(RenderingAPIException, 
-				"Render window was not attached to this device !!");
-		}
+			CM_EXCEPT(RenderingAPIException, "Render window was not attached to this device !!");
 
 		return it;
 	}
-
 
 	//---------------------------------------------------------------------
 	void D3D9Device::attachRenderWindow(D3D9RenderWindow* renderWindow)

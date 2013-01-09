@@ -44,10 +44,7 @@ namespace CamelotEngine
 		void setRasterizerState(const RasterizerState& rasterizerState);
 
 		/** @copydoc RenderSystem::setRasterizerState() */
-		void setDepthStencilState(const DepthStencilState& depthStencilState);
-
-		/** @copydoc RenderSystem::setStencilRefValue() */
-		void setStencilRefValue(UINT32 refValue);
+		void setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue);
 
 		/** @copydoc RenderSystem::setViewport() */
 		void setViewport(const Viewport& vp);

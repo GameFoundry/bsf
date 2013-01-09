@@ -518,7 +518,7 @@ namespace CamelotEngine
 		setScissorTestEnable(rasterizerState.getScissorEnable());
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState)
+	void GLRenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -537,16 +537,9 @@ namespace CamelotEngine
 		setDepthBufferCheckEnabled(depthStencilState.getDepthReadEnable());
 		setDepthBufferWriteEnabled(depthStencilState.getDepthWriteEnable());
 		setDepthBufferFunction(depthStencilState.getDepthComparisonFunc());	
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::setStencilRefValue(UINT32 refValue)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
 
-		mStencilRefValue = refValue;
-
-		glStencilFuncSeparate(GL_FRONT, convertCompareFunction(mStencilCompareFront), mStencilRefValue, mStencilReadMask);
-		glStencilFuncSeparate(GL_BACK, convertCompareFunction(mStencilCompareBack), mStencilRefValue, mStencilReadMask);
+		// Set stencil ref value
+		setStencilRefValue(stencilRefValue);
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setViewport(const Viewport& vp)
@@ -1280,6 +1273,16 @@ namespace CamelotEngine
 	{
 		mStencilWriteMask = mask;
 		glStencilMask(mask);
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setStencilRefValue(UINT32 refValue)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		mStencilRefValue = refValue;
+
+		glStencilFuncSeparate(GL_FRONT, convertCompareFunction(mStencilCompareFront), mStencilRefValue, mStencilReadMask);
+		glStencilFuncSeparate(GL_BACK, convertCompareFunction(mStencilCompareBack), mStencilRefValue, mStencilReadMask);
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setTextureFiltering(UINT16 unit, 

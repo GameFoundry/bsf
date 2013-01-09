@@ -9,6 +9,7 @@ namespace CamelotEngine
 {
     //-----------------------------------------------------------------------------
 	Pass::Pass()
+		:mStencilRefValue(0)
     { }
     //-----------------------------------------------------------------------------
 	Pass::Pass(const Pass& oth)
@@ -27,6 +28,7 @@ namespace CamelotEngine
 	    mBlendState = oth.mBlendState;
 		mRasterizerState = oth.mRasterizerState;
 		mDepthStencilState = oth.mDepthStencilState;
+		mStencilRefValue = oth.mStencilRefValue;
 
 		mVertexProgram = oth.mVertexProgram;
 		mFragmentProgram = oth.mFragmentProgram;
@@ -86,6 +88,16 @@ namespace CamelotEngine
 	DepthStencilStatePtr Pass::getDepthStencilState() const
 	{
 		return mDepthStencilState;
+	}
+	//----------------------------------------------------------------------
+	void Pass::setStencilRefValue(UINT32 refValue)
+	{
+		mStencilRefValue = refValue;
+	}
+	//----------------------------------------------------------------------
+	UINT32 Pass::getStencilRefValue() const
+	{
+		return mStencilRefValue;
 	}
 	//----------------------------------------------------------------------
 	RTTITypeBase* Pass::getRTTIStatic()

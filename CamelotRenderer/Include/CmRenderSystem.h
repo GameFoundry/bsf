@@ -155,24 +155,7 @@ namespace CamelotEngine
 		 * @brief	Sets a state that controls depth & stencil buffer options.
 		 * @see		DepthStencilState
 		 */
-		virtual void setDepthStencilState(const DepthStencilState& depthStencilState) = 0;
-
-		/**
-		 * @brief	Sets a reference values used for stencil buffer comparisons. 
-		 * 			Actual comparison function and stencil operations are set by setting the StencilState.
-		 * 			
-		 * @remarks
-		 *		 The stencil buffer is used to mask out pixels in the render target, allowing
-		 *		 you to do effects like mirrors, cut-outs, stencil shadows and more. Each of
-		 *		 your batches of rendering is likely to ignore the stencil buffer,
-		 *		 update it with new values, or apply it to mask the output of the render.
-		 *		 The stencil test is:<PRE>
-		 *		 (Reference Value & Mask) CompareFunction (Stencil Buffer Value & Mask)</PRE>
-		 *		 The result of this will cause one of 3 actions depending on whether the test fails,
-		 *		 succeeds but with the depth buffer check still failing, or succeeds with the
-		 *		 depth buffer check passing too.
-		 */
-		virtual void setStencilRefValue(UINT32 refValue) = 0;
+		virtual void setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue) = 0;
 
 		/**
 		Sets the texture to bind to a given texture unit.

@@ -22,8 +22,6 @@
  Static/Dynamic usage for GpuParamBlocks
  Ability to switch out GpuParamBlocks
  Smart way of initializing GpuParamBlocks (without duplicates)
- Port CG so it no longer uses low level shaders
-  - Cg support for param blocks
  Fix MaterialRTTI saving (Save params per gpuprogram is simplest and cleanest)
  Make sure that gpu programs assigned to Pass don't share parameters of different types
  Make RenderTexture and DepthStenciLTexture use common interface
@@ -63,6 +61,8 @@ RenderSystem needed modifications
   - Dynamic shader linkage (Interfaces and similar)
   - Multisampled texture resources
   - Multiple adapters (multi gpu)
+  - Sample mask when setting blend state (DX11, check if equivalent exists in GL)
+  - RGBA blend factor when setting blend state(DX11, check if equivalent exists in GL)
   - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
 
 Command buffer TODO:

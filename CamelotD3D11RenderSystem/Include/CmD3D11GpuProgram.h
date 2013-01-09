@@ -94,4 +94,18 @@ namespace CamelotEngine
 	protected:
 		void unloadImpl(void);
 	};
+
+	class D3D11GpuComputeProgram : public D3D11GpuProgram
+	{
+	protected:
+		ID3D11ComputeShader* mComputeShader;
+	public:
+		D3D11GpuComputeProgram();
+		~D3D11GpuComputeProgram();
+
+		ID3D11ComputeShader* getComputeShader(void) const;
+		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
+	protected:
+		void unloadImpl(void);
+	};
 }

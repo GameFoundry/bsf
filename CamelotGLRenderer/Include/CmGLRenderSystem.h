@@ -99,12 +99,7 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc RenderSystem::setDepthStencilState()
 		 */
-		void setDepthStencilState(const DepthStencilState& depthStencilState);
-
-		/**
-		 * @copydoc RenderSystem::setStencilRefValue()
-		 */
-		void setStencilRefValue(UINT32 refValue);
+		void setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue);
 
 		/**
 		 * @copydoc RenderSystem::setViewport()
@@ -516,6 +511,12 @@ namespace CamelotEngine {
 		* @brief	The bitmask applied to the stencil value before writing it to the stencil buffer.
 		 */
 		void setStencilBufferWriteMask(UINT32 mask = 0xFFFFFFFF);
+
+		/**
+		 * @brief	Sets a reference values used for stencil buffer comparisons. 
+		 * 			Actual comparison function and stencil operations are set by setting the DepthStencilState.
+		 */
+		void setStencilRefValue(UINT32 refValue);
 
         /** One time initialization for the RenderState of a context. Things that
             only need to be set once, like the LightingModel can be defined here.

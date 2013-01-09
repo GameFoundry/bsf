@@ -147,9 +147,9 @@ namespace CamelotEngine
 		// Stencil & depth buffer settings
 		DepthStencilStatePtr depthStancilState = pass->getDepthStencilState();
 		if(depthStancilState != nullptr)
-			renderContext->setDepthStencilState(*depthStancilState);
+			renderContext->setDepthStencilState(*depthStancilState, pass->getStencilRefValue());
 		else
-			renderContext->setDepthStencilState(DepthStencilState::getDefault());
+			renderContext->setDepthStencilState(DepthStencilState::getDefault(), pass->getStencilRefValue());
 
 		RasterizerStatePtr rasterizerState = pass->getRasterizerState();
 		if(rasterizerState != nullptr)
