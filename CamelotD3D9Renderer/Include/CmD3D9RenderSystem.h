@@ -49,7 +49,15 @@ namespace CamelotEngine
 		// destructor
 		~D3D9RenderSystem();
 
+		/**
+		 * @copydoc RenderSystem::getName()
+		 */
 		const String& getName() const;
+
+		/**
+		 * @copydoc RenderSystem::getShadingLanguageName()
+		 */
+		const String& getShadingLanguageName() const;
 
 		void destroyRenderTarget(RenderTarget* renderTarget);
 

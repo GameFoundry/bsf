@@ -84,13 +84,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//String vertShaderCode = "float4x4 matViewProjection;	\
 	//						void vs_main(										\
-	//						float4 inPos : POSITION,							\
-	//						float2 uv : TEXCOORD0,								\
+	//						float4 cm_position : POSITION,							\
+	//						float2 cm_texcoord0 : TEXCOORD0,								\
 	//						out float4 oPosition : POSITION,					\
 	//						out float2 oUv : TEXCOORD0)							\
 	//						{														\
-	//						oPosition = mul(matViewProjection, inPos);			\
-	//						oUv = uv;											\
+	//						oPosition = mul(matViewProjection, cm_position);			\
+	//						oUv = cm_texcoord0;											\
 	//						}";
 
 	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);

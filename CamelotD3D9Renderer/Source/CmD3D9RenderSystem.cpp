@@ -137,12 +137,19 @@ namespace CamelotEngine
 
 		msD3D9RenderSystem = NULL;
 	}
-	//---------------------------------------------------------------------
+
 	const String& D3D9RenderSystem::getName() const
 	{
 		static String strName( "D3D9RenderSystem");
 		return strName;
 	}
+
+	const String& D3D9RenderSystem::getShadingLanguageName() const
+	{
+		static String strName("hlsl");
+		return strName;
+	}
+
 	void D3D9RenderSystem::initialize_internal()
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -252,7 +259,7 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		GpuProgram* bindingPrg = prg->getBindingDelegate_internal();
+		GpuProgram* bindingPrg = prg->getBindingDelegate();
 
 		HRESULT hr;
 		switch (bindingPrg->getType())

@@ -53,6 +53,11 @@ namespace CamelotEngine {
         const String& getName(void) const;
 
 		/**
+		 * @copydoc RenderSystem::getShadingLanguageName()
+		 */
+		const String& getShadingLanguageName() const;
+
+		/**
 		 * @copydoc RenderSystem::setRenderTarget()
 		 */
         void setRenderTarget(RenderTarget *target);

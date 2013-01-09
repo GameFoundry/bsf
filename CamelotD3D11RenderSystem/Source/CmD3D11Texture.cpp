@@ -529,7 +529,6 @@ namespace CamelotEngine
 			break;
 		case TEX_TYPE_2D:
 		case TEX_TYPE_CUBE_MAP:
-		case TEX_TYPE_2D_ARRAY:
 			{
 				D3D11_TEXTURE2D_DESC desc;
 				m2DTex->GetDesc(&desc);

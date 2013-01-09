@@ -32,6 +32,12 @@ namespace CamelotEngine
 		return strName;
 	}
 
+	const String& D3D11RenderSystem::getShadingLanguageName() const
+	{
+		static String strName("hlsl");
+		return strName;
+	}
+
 	void D3D11RenderSystem::initialize_internal()
 	{
 		HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&mDXGIFactory);
@@ -220,6 +226,49 @@ namespace CamelotEngine
 
 	void D3D11RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
 	{
+		mCurrentCapabilities = new RenderSystemCapabilities();
+
+		mCurrentCapabilities->addShaderProfile("ps_4_0");
+		mCurrentCapabilities->addShaderProfile("vs_4_0");
+		mCurrentCapabilities->addShaderProfile("gs_4_0");
+
+		mCurrentCapabilities->addShaderProfile("ps_4_1");
+		mCurrentCapabilities->addShaderProfile("vs_4_1");
+		mCurrentCapabilities->addShaderProfile("gs_4_1");
+
+		mCurrentCapabilities->addShaderProfile("ps_5_0");
+		mCurrentCapabilities->addShaderProfile("vs_5_0");
+		mCurrentCapabilities->addShaderProfile("gs_5_0");
+		mCurrentCapabilities->addShaderProfile("cs_5_0");
+		mCurrentCapabilities->addShaderProfile("hs_5_0");
+		mCurrentCapabilities->addShaderProfile("ds_5_0");
+
+		// TODO - IF FEATURE LEVEL 10
+		{
+			mCurrentCapabilities->addGpuProgramProfile(GPP_PS_4_0, "ps_4_0");
+			mCurrentCapabilities->addGpuProgramProfile(GPP_VS_4_0, "vs_4_0");
+			mCurrentCapabilities->addGpuProgramProfile(GPP_GS_4_0, "gs_4_0");
+		}
+		
+		// TODO - IF FEATURE LEVEL 10.1
+		{
+			mCurrentCapabilities->addGpuProgramProfile(GPP_PS_4_1, "ps_4_1");
+			mCurrentCapabilities->addGpuProgramProfile(GPP_VS_4_1, "vs_4_1");
+			mCurrentCapabilities->addGpuProgramProfile(GPP_GS_4_1, "gs_4_1");
+		}
+
+		// TODO - IF FEATURE LEVEL 11
+		{
+			mCurrentCapabilities->addGpuProgramProfile(GPP_PS_5_0, "ps_5_0");
+			mCurrentCapabilities->addGpuProgramProfile(GPP_VS_5_0, "vs_5_0");
+			mCurrentCapabilities->addGpuProgramProfile(GPP_GS_5_0, "gs_5_0");
+			mCurrentCapabilities->addGpuProgramProfile(GPP_CS_5_0, "cs_5_0");
+			mCurrentCapabilities->addGpuProgramProfile(GPP_HS_5_0, "hs_5_0");
+			mCurrentCapabilities->addGpuProgramProfile(GPP_DS_5_0, "ds_5_0");
+		}
+
+		// TODO - All other caps need to be initialized
+
 		throw std::exception("The method or operation is not implemented.");
 	}
 

@@ -289,7 +289,7 @@ namespace CamelotEngine {
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		switch(prg->getBindingDelegate_internal()->getType())
+		switch(prg->getBindingDelegate()->getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			// mark clip planes dirty if changed (programmable can change space)

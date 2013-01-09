@@ -144,6 +144,13 @@ namespace CamelotEngine
 		return strName;
 	}
 
+
+	const String& GLRenderSystem::getShadingLanguageName() const
+	{
+		static String strName("glsl");
+		return strName;
+	}
+
 	void GLRenderSystem::initialize_internal()
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -210,7 +217,7 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		GpuProgram* bindingPrg = prg->getBindingDelegate_internal();
+		GpuProgram* bindingPrg = prg->getBindingDelegate();
 		GLSLGpuProgram* glprg = static_cast<GLSLGpuProgram*>(bindingPrg);
 
 		// Unbind previous gpu program first.
@@ -1983,11 +1990,6 @@ namespace CamelotEngine
 			GLEW_EXT_geometry_shader4)
 		{
 			rsc->setCapability(RSC_GEOMETRY_PROGRAM);
-			rsc->addShaderProfile("nvgp4");
-
-			//Also add the CG profiles
-			rsc->addShaderProfile("gpu_gp");
-			rsc->addShaderProfile("gp4gp");
 
 			rsc->setGeometryProgramConstantBoolCount(0);
 			rsc->setGeometryProgramConstantIntCount(0);
@@ -2016,11 +2018,7 @@ namespace CamelotEngine
 			// Check for dxt compression
 			if(GLEW_EXT_texture_compression_s3tc)
 			{
-#if defined(__APPLE__) && defined(__PPC__)
-				// Apple on ATI & PPC has errors in DXT
-				if (mGLSupport->getGLVendor().find("ATI") == std::string::npos)
-#endif
-					rsc->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
+				rsc->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
 			}
 			// Check for vtc compression
 			if(GLEW_NV_texture_compression_vtc)
@@ -2189,6 +2187,42 @@ namespace CamelotEngine
 
 		// Mipmap LOD biasing
 		rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
+
+		// These are Cg supported profiles, not really used in OpenGL itself in any way
+		rsc->addShaderProfile("glslf");
+		rsc->addShaderProfile("glslv");
+		rsc->addShaderProfile("glslg");
+
+		rsc->addGpuProgramProfile(GPP_PS_1_1, "glslf");
+		rsc->addGpuProgramProfile(GPP_PS_1_2, "glslf");
+		rsc->addGpuProgramProfile(GPP_PS_1_3, "glslf");
+		rsc->addGpuProgramProfile(GPP_PS_1_4, "glslf");
+		rsc->addGpuProgramProfile(GPP_PS_2_0, "glslf");
+		rsc->addGpuProgramProfile(GPP_PS_2_x, "glslf");
+		rsc->addGpuProgramProfile(GPP_PS_2_a, "glslf");
+		rsc->addGpuProgramProfile(GPP_PS_2_b, "glslf");
+		rsc->addGpuProgramProfile(GPP_PS_3_0, "glslf");
+		rsc->addGpuProgramProfile(GPP_PS_3_x, "glslf");
+
+		rsc->addGpuProgramProfile(GPP_VS_1_1, "glslv");
+		rsc->addGpuProgramProfile(GPP_VS_2_0, "glslv");
+		rsc->addGpuProgramProfile(GPP_VS_2_x, "glslv");
+		rsc->addGpuProgramProfile(GPP_VS_2_a, "glslv");
+		rsc->addGpuProgramProfile(GPP_VS_3_0, "glslv");
+
+		rsc->addGpuProgramProfile(GPP_PS_4_0, "glslf");
+		rsc->addGpuProgramProfile(GPP_VS_4_0, "glslv");
+		rsc->addGpuProgramProfile(GPP_GS_4_0, "glslg");
+
+		rsc->addGpuProgramProfile(GPP_PS_4_0, "glslf");
+		rsc->addGpuProgramProfile(GPP_VS_4_0, "glslv");
+		rsc->addGpuProgramProfile(GPP_GS_4_0, "glslg");
+
+		rsc->addGpuProgramProfile(GPP_PS_4_1, "glslf");
+		rsc->addGpuProgramProfile(GPP_VS_4_1, "glslv");
+		rsc->addGpuProgramProfile(GPP_GS_4_1, "glslg");
+
+		// No SM5 support for Cg as right now it only supports NV extensions, which isn't very useful
 
 		// Alpha to coverage?
 		if (mGLSupport->checkExtension("GL_ARB_multisample"))

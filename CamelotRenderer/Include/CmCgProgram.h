@@ -35,12 +35,9 @@ THE SOFTWARE.
 namespace CamelotEngine {
     /** Specialisation of HighLevelGpuProgram to provide support for nVidia's CG language.
     @remarks
-        Cg can be used to compile common, high-level, C-like code down to assembler
-        language for both GL and Direct3D, for multiple graphics cards. You must
-        supply a list of profiles which your program must support using
-        setProfiles() before the program is loaded in order for this to work. The
-        program will then negotiate with the renderer to compile the appropriate program
-        for the API and graphics card capabilities.
+        In its current state Cg only acts as a translator and internally creates either a HLSL
+		or a GLSL object. Cg doesn't support SM5 for GLSL (only Nvidia cards are supported,
+		which makes it very much useless for majority of projects).
     */
     class CM_EXPORT CgProgram : public HighLevelGpuProgram
     {
@@ -49,17 +46,20 @@ namespace CamelotEngine {
 
         /** Gets the entry point defined for this program. */
         const String& getEntryPoint(void) const { return mEntryPoint; }
-        /** Sets the compilation arguments for this program ie the first method called. */
-        void setCompileArguments(const String& args) { mCompileArgs = args; }
-        /** Gets the entry point defined for this program. */
-        const String& getCompileArguments(void) const { return mCompileArgs; }
         /// Overridden from GpuProgram
         bool isSupported(void) const;
         /// Overridden from GpuProgram
         const String& getLanguage(void) const;
 
-		/// scan the file for #include and replace with source from the OGRE resources
-		static String resolveCgIncludes(const String& source, Resource* resourceBeingLoaded, const String& fileName);
+		/**
+		 * @copydoc HighLevelGpuProgram::getBindingDelegate().
+		 */
+		GpuProgram* getBindingDelegate();
+
+		/**
+		 * @copydoc HighLevelGpuProgram::createParameters().
+		 */
+		GpuParamsPtr createParameters();
 
     protected:
 		friend class CgProgramFactory;
@@ -68,6 +68,8 @@ namespace CamelotEngine {
         CGcontext mCgContext;
         /// Program handle
         CGprogram mCgProgram;
+		String mSelectedProfile;
+		CGprofile mSelectedCgProfile;
 
 		CgProgram(CGcontext context, const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
@@ -79,27 +81,15 @@ namespace CamelotEngine {
 		 * @copydoc GpuProgram::unload_internal()
 		 */
         void unload_internal(void);
-        /// Populate the passed parameters with name->index map, must be overridden
-        void buildConstantDefinitions() const;
 
-		/// Recurse down structures getting data on parameters
-		void recurseParams(CGparameter param, UINT32 contextArraySize = 1) const;
-		/// Turn a Cg type into a GpuConstantType and number of elements
-		void mapTypeAndElementSize(CGtype cgType, bool isRegisterCombiner, GpuConstantDefinition& def) const;
-
-        String mSelectedProfile;
-        CGprofile mSelectedCgProfile;
-        String mCompileArgs;
-        // Unfortunately Cg uses char** for arguments - bleh
-        // This is a null-terminated list of char* (each null terminated)
-        char** mCgArguments;
+		/**
+		 * @brief	Cg acts only like a wrapper to a rendersystem specific program.
+		 * 			This returns the actual program we are wrapping.
+		 */
+		HighLevelGpuProgramPtr getWrappedProgram() const;
 
         /// Internal method which works out which profile to use for this program
         void selectProfile(void);
-        /// Internal method which merges manual and automatic compile arguments
-        void buildArgs(void);
-        /// Releases memory for the horrible Cg char**
-        void freeCgArgs(void);
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

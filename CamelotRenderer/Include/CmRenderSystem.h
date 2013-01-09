@@ -90,6 +90,11 @@ namespace CamelotEngine
 		*/
 		virtual const String& getName(void) const = 0;
 
+		/**
+		 * @brief	Gets the name of the primary shading language.
+		 */
+		virtual const String& getShadingLanguageName() const = 0;
+
 		/** Attaches the passed render target to the render system.
 		*/
 		virtual void attachRenderTarget(RenderTarget &target);

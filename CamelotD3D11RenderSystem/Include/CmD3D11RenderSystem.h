@@ -12,6 +12,11 @@ namespace CamelotEngine
 
 		const String& getName() const;
 		
+		/**
+		 * @copydoc RenderSystem::getShadingLanguageName()
+		 */
+		const String& getShadingLanguageName() const;
+
 		void setBlendState(const BlendState& blendState);
 		void setRasterizerState(const RasterizerState& rasterizerState);
 		void setDepthStencilState(const DepthStencilState& depthStencilState);

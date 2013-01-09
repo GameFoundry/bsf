@@ -66,12 +66,18 @@ namespace CamelotEngine {
         ~HighLevelGpuProgram();
 
 		/**
-		 * @brief	Initializes the gpu program. This must be called right after the program is constructed. 
-		 * 			Called by HighLevelGpuManager upon creation, so usually you don't want to call this manually.
-		 * 			
-		 * @note	Initialization is not done immediately, and is instead just scheduled on the render thread.
+		 * @brief	Initializes the gpu program. This must be called right after the program is
+		 * 			constructed. Called by HighLevelGpuManager upon creation, so usually you don't want
+		 * 			to call this manually.
+		 *		 
+		 * @param	internalCall	(optional) Set to true if initializing from within the RenderSystem.
+		 * 							Most users don't have to be concerned about this.
+		 * 							
+		 * @note	Initialization is not done immediately, and is instead just scheduled on the
+		 * 			render thread. Unless internalCall is specified, in which case it is initialized
+		 * 			right away.
 		 */
-		void initialize();
+		void initialize(bool internalCall = false);
 
 		/**
 		 * @brief	Performs HighLevelGpuProgram initialization. Only callable from the render thread.
@@ -84,7 +90,7 @@ namespace CamelotEngine {
 		virtual void unload_internal();
 
         /** @copydoc GpuProgram::getBindingDelegate */
-        GpuProgram* getBindingDelegate_internal(void) { return mAssemblerProgram.get(); }
+        virtual GpuProgram* getBindingDelegate(void) { return mAssemblerProgram.get(); }
 
     protected:
 		/** Constructor, should be used only by factory classes. */

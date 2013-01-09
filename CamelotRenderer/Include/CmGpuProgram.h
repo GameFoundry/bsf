@@ -68,6 +68,7 @@ namespace CamelotEngine {
 		GPP_PS_3_0,
 		GPP_PS_3_x,
 		GPP_PS_4_0,
+		GPP_PS_4_1,
 		GPP_PS_5_0,
 		GPP_VS_1_1,
 		GPP_VS_2_0,
@@ -75,8 +76,10 @@ namespace CamelotEngine {
 		GPP_VS_2_a,
 		GPP_VS_3_0,
 		GPP_VS_4_0,
+		GPP_VS_4_1,
 		GPP_VS_5_0,
 		GPP_GS_4_0,
+		GPP_GS_4_1,
 		GPP_GS_5_0,
 		GPP_HS_5_0,
 		GPP_DS_5_0,
@@ -159,7 +162,7 @@ namespace CamelotEngine {
         @remarks
             This method is simply to allow some subclasses of GpuProgram to delegate
             the program which is bound to the pipeline to a delegate, if required. */
-        virtual GpuProgram* getBindingDelegate_internal(void) { return this; }
+        virtual GpuProgram* getBindingDelegate(void) { return this; }
 
         /** Returns whether this program can be supported on the current renderer and hardware. */
         virtual bool isSupported(void) const;

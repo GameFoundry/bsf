@@ -12,107 +12,44 @@
 
 -----------------------IMMEDIATE TODO---------------------------------------------------------------
 
-Plan until end of February:
-Week A:
- Generic buffers DX11 and dummy implementations (that log warnings) for DX9 and OpenGL
- Texture buffers in DX11 and OpenGL
+
+>>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
+ Working generic buffers
  A way to bind buffers to a Pass, while specifying buffer range
-
-Week B:
- Stream out (mainly OpenGL)
- Static/Dynamic usage for GpuParamBlocks
+ Fully implement DX11
+ Better creation of PrimaryWindow
  GpuParams support for bools, buffers, structs
-
-Week C:
- Refactor render system methods to comply with DX11
- Implement working DX11 render system Part 1
-
-Week D:
- Implement working DX11 render system Part 2
-
-Week E:
- Refactor so that primary window is created with rendersystem initialization
- Make RenderTexture and DepthStenciLTexture use common interface
-
-Week F:
+ Static/Dynamic usage for GpuParamBlocks
  Ability to switch out GpuParamBlocks
  Smart way of initializing GpuParamBlocks (without duplicates)
  Port CG so it no longer uses low level shaders
+  - Cg support for param blocks
  Fix MaterialRTTI saving (Save params per gpuprogram is simplest and cleanest)
  Make sure that gpu programs assigned to Pass don't share parameters of different types
-
-Week G:
- Refactor how we handle RenderTargets (no attach/detach, and no waitForVSync propery in RenderSystem)
+ Make RenderTexture and DepthStenciLTexture use common interface
  Fix how and when is GpuParamBlock created/destroyed. Needs to happen on the render thread
+ Refactor how we handle RenderTargets (no attach/detach, and no waitForVSync propery in RenderSystem)
+ waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  
 
-
-
-/////
------------GpuProgramParameters/Pass/Material REFACTOR------------------------------
-
-Destroying and constructing GpuParamBlock happens on main thread, which is wrong (especially destroying it)
-
-Saving/loading of material params isn't completed (in MAterialRTTI)
-Port DX11 to new shader param system
-Ability to switch out GpuParamBlocks (i.e. share them between programs)
-Ability to create Pass without automatically creating param blocks
-Automatically creating a pass should be smart about not creating duplicate param blocks
-Port CG so it doesn't attempt to use low level GL shaders (which I have removed)
-
-Handling of array parameters? This needs testing
- - I'm currently ignoring array elements in GL due to the name their names are handled
-
-
 ---------------------------------------------------
-
-monitorIndex is ignored in DX11
-
-Creating a primary window and initializing the render system should probably be one step
- - OpenGL requires it anyway in order to get context (Make sure to update GLRenderWindowManager if I change how this works)
- - I can't imagine much use for a render system without a window. (Windowless client is a possibility, but in that case entire render system would not be needed)
- - And if just rendering to texture (or similar) is needed, a hidden window may be used
-
-Don't forget to check out Unity DX11 documentation on how to implement DX11 features (http://docs.unity3d.com/Documentation/Manual/DirectX11.html)
-
-Unity has a common class for both RenderTexture and DepthStencilBuffer
- - Maybe rename DepthStencilBuffer to DepthStencilTexture?
-
-waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
-
-Keeping a list of all render targets in RenderSystem shouldn't be needed (and calling attach/detach renderTarget). Renderer should determine in what order are render targets presented.
-
-Make CommandQueue not use mutexes and use atomics instead??
-Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
-Figure out how to handle accessing texture from a non-render thread?
 
 Issue of setting individual parameters on a material
  - Material can contain multiple techniques
  - How do I ensure parameters are valid for all techniques?
  - Require user to create a Material parameter specification?
  - Also need a way to avoid displaying internal parameters used by the active renderer
-/////
-
-
 
 RenderSystem needed modifications
- - High priority
-  - Figure out how to handle different resource views and setting them on Passes
-    - Specifying buffer & texture ranges
-	- Setting UAV for both buffers and textures (Need to add a special flag for texture creation)
-  - Generic buffers (Normal/Structured/Raw/Append/Consume/Indirect)
+  - Texture resource views (Specifying just a subresource of a texture as a shader parameter)
+  - UAV for textures
+  - Stream out (write vertex buffers) (DX11 and GL)
   - Texture buffers 
    - Just add a special texture type? OpenGL doesn't support getting offset from within a texture buffer anyway
-  - Stream out (write vertex buffers) (DX11 and GL)
-  - Static/Dynamic usage for GpuParamBlocks
-  - GpuParams need to support bools, buffers & structs (void*)
   - Tesselation (hull/domain) shader
   - Detachable and readable depthstencil buffer (Window buffers not required as they behave a bit differently in OpenGL)
-   - Also make DepthStencilBuffer share common features with RenderTexture
-  
- - Low priority
   - OpenGL provides image load/store which seems to be GL UAV equivalent (http://www.opengl.org/wiki/Image_Load_Store)
   - Resolving MSAA textures (i.e. copying them to non-MSAA so they can be displayed on-screen). DX has ResolveSubresource, and OpenGL might have something similar.
   - Single and dual channel textures (especially render textures, which are very important for effects like SSAO)
@@ -128,26 +65,14 @@ RenderSystem needed modifications
   - Multiple adapters (multi gpu)
   - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
 
-
-
-
 Command buffer TODO:
+ - Make CommandQueue not use mutexes and use atomics instead??
+ - Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
+ - Figure out how to handle accessing texture from a non-render thread?
  - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
  - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after
     that call.
  - In general I need to rethink how to handle modifying resources with multithreading
-
-Mesh
- - Make sure to queue up mesh deletion to make sure it gets destroyed on the render thread
-
-Make initialize & initialize_internal protected?
- - Only their factories and RTTI classes need to access it (and they can be friends)
- - Would need to modify HighLevelGpuProgram::mAssemblerProgram
-
-When saving a resource, make sure resource is properly loaded before saving
-  - Add doc to Resources::save that says it will block until render thread updates the resource
-  - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
-  - Remove Response handlers from Resources
 
 -----------------------BACKLOG TODO---------------------------------------------------------------
 
@@ -158,6 +83,8 @@ HIGH PRIORITY TODO:
  - GetRenderOperation doesn't consider sub-meshes
 
 Mid priority TODO:
+ - monitorIndex is ignored in DX11
+ - Make sure to queue up mesh deletion to make sure it gets destroyed on the render thread
  - Resource handle should store a unique integer ID, which just points to a table of GUIDs. Keeping GUID string everywhere in not efficient.
  - Add a field that tracks % of resource deserialization in BinarySerializer
  - Mesh loading:
@@ -166,6 +93,8 @@ Mid priority TODO:
   - Search for all remaining "TODO PORT" comments and fix them
   - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
   - My log is not thread safe yet it is being called from multiple threads.
+  - Handling of shader array parameters? This needs testing
+   - I'm currently ignoring array elements in GL due to the name their names are handled
  - RTTI:
      When defining RTTIType like so: 
       RTTIType<D3D9HLSLProgram, HighLevelGpuProgram, D3D9HLSLProgramRTTI>
@@ -190,6 +119,11 @@ Low priority TODO:
  - Fix up WorkQueue as it doesn't lock when initializing, to make sure threads are actually started before returning
  - DepthStencilBuffer & Texture should possibly share the same interface instead of being two separate classes? I'll need to assign DepthStencil to shaders sometimes. Not possible in DX9 but possible in DX11.
  - CPU reading or writing to a render texture in OpenGL is not supported. (CmGLHardwarePixelBuffer::upload/download). 
+ - When saving a resource, make sure resource is properly loaded before saving
+   - Add doc to Resources::save that says it will block until render thread updates the resource
+   - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
+   - Remove Response handlers from Resources
+- Cg doesn't work. Either remove it or get it to work
 
 Optional TODO:
  - Add precompiled headers to all projects
@@ -215,6 +149,7 @@ After everything is polished
  - Multihead device
  - 3D rendering (use low level hardware methods for it)
  
+ - Don't forget to check out Unity DX11 documentation on how to implement DX11 features (http://docs.unity3d.com/Documentation/Manual/DirectX11.html)
  - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
  - Go to GEA book and read about resource managers before implementing them
    - Actually I should re-read most of the chapers in the book, or all of it
