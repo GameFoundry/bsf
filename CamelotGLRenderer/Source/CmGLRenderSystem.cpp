@@ -371,39 +371,39 @@ namespace CamelotEngine
 				break;
 			case GCT_MATRIX_2X2:
 				glProgramUniformMatrix2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-					GL_TRUE, (GLfloat*)ptrData);
+					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GCT_MATRIX_2X3:
 				glProgramUniformMatrix2x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-					GL_TRUE, (GLfloat*)ptrData);
+					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GCT_MATRIX_2X4:
 				glProgramUniformMatrix2x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-					GL_TRUE, (GLfloat*)ptrData);
+					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GCT_MATRIX_3X2:
 				glProgramUniformMatrix3x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-					GL_TRUE, (GLfloat*)ptrData);
+					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GCT_MATRIX_3X3:
 				glProgramUniformMatrix3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-					GL_TRUE, (GLfloat*)ptrData);
+					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GCT_MATRIX_3X4:
 				glProgramUniformMatrix3x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-					GL_TRUE, (GLfloat*)ptrData);
+					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GCT_MATRIX_4X2:
 				glProgramUniformMatrix4x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-					GL_TRUE, (GLfloat*)ptrData);
+					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GCT_MATRIX_4X3:
 				glProgramUniformMatrix4x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-					GL_TRUE, (GLfloat*)ptrData);
+					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GCT_MATRIX_4X4:
 				glProgramUniformMatrix4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
-					GL_TRUE, (GLfloat*)ptrData);
+					GL_FALSE, (GLfloat*)ptrData);
 				break;
 			case GCT_INT1:
 				glProgramUniform1iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);

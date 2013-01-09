@@ -554,7 +554,7 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		if(gptype != GPT_FRAGMENT_PROGRAM || gptype != GPT_VERTEX_PROGRAM)
+		if(gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_VERTEX_PROGRAM)
 		{
 			LOGWRN("D3D9 doesn't support this gpu program type: " + toString(gptype));
 			return;

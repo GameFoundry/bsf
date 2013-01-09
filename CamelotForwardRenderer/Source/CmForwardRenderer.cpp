@@ -72,7 +72,6 @@ namespace CamelotEngine
 			// (probably at an earlier stage). e.g. I want the user to be warned if the shader doesn't contain matViewProjection param
 			// (or should we just ignore such missing parameters?)
 			material->setMat4("matViewProjection", viewProjMatrix);
-			material->setColor("solidcolor", Color::Red);
 
 			for(UINT32 i = 0; i < material->getNumPasses(); i++)
 			{
