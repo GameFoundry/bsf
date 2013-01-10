@@ -443,6 +443,11 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		// Don't forget to clear all render targets if its a multi render target
+		
+
+
+
 		//target->g
 
 		//RenderTarget* previousRenderTarget = mActiveRenderTarget;

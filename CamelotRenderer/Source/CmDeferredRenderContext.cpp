@@ -175,4 +175,11 @@ namespace CamelotEngine
 		RenderSystem* rs = RenderSystem::instancePtr();
 		rs->queueCommand(boost::bind(&CommandQueue::playback, mCommandQueue, commands));
 	}
+
+	void DeferredRenderContext::cancelAll()
+	{
+		vector<CommandQueue::Command>::type* commands = mCommandQueue->flush();
+
+		// TODO - This cancels the commands but doesn't revert the state variables
+	}
 }

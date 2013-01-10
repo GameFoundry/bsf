@@ -40,6 +40,9 @@ namespace CamelotEngine
 		RenderWindowPtr mPrimaryRenderWindow;
 		DeferredRenderContextPtr mPrimaryRenderContext;
 
+		bool mIsFrameRenderingFinished;
+		CM_MUTEX(mFrameRenderingFinishedMutex);
+
 		/**
 		 * @brief	Callback called from the render thread in order to initialize resources.
 		 */
@@ -49,6 +52,11 @@ namespace CamelotEngine
 		 * @brief	Runs the OS specific message pump.
 		 */
 		void updateMessagePump();
+
+		/**
+		 * @brief	Called when the frame finishes rendering.
+		 */
+		void frameRenderingFinishedCallback();
 	};
 
 	CM_EXPORT Application& gApplication();

@@ -34,7 +34,7 @@
 namespace CamelotEngine
 {
 	Application::Application()
-		:mPrimaryRenderWindow(nullptr)
+		:mPrimaryRenderWindow(nullptr), mIsFrameRenderingFinished(true)
 	{ }
 
 	void Application::startUp(const String& renderSystemName, const String& rendererName)
@@ -77,11 +77,31 @@ namespace CamelotEngine
 			gSceneManager().update();
 
 			RenderSystem* renderSystem = RenderSystem::instancePtr();
-			renderSystem->queueCommand(boost::bind(&Application::updateMessagePump, this));
-			renderSystem->queueCommand(boost::bind(&Application::updateResourcesCallback, this));
-
 			RendererManager::getActive()->renderAll();
-			mPrimaryRenderContext->submitToGpu();
+
+			// Only queue new commands if render thread has finished rendering
+			// TODO - There might be a more optimal way to sync simulation and render threads so we maximize
+			// the amount of rendered frames
+			bool readyForNextFrame = false;
+			{
+				CM_LOCK_MUTEX(mFrameRenderingFinishedMutex);
+				readyForNextFrame = mIsFrameRenderingFinished;
+			}
+
+			if(readyForNextFrame)
+			{
+				{
+					CM_LOCK_MUTEX(mFrameRenderingFinishedMutex);
+					mIsFrameRenderingFinished = false;
+				}
+				
+				renderSystem->queueCommand(boost::bind(&Application::updateMessagePump, this));
+				renderSystem->queueCommand(boost::bind(&Application::updateResourcesCallback, this));
+				mPrimaryRenderContext->submitToGpu();
+				renderSystem->queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
+			}
+			else
+				mPrimaryRenderContext->cancelAll();
 
 			gTime().update();
 			gInput().update();
@@ -96,6 +116,13 @@ namespace CamelotEngine
 	void Application::updateResourcesCallback()
 	{
 		gResources().update();
+	}
+
+	void Application::frameRenderingFinishedCallback()
+	{
+		CM_LOCK_MUTEX(mFrameRenderingFinishedMutex);
+
+		mIsFrameRenderingFinished = true;
 	}
 
 	void Application::shutDown()

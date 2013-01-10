@@ -33,8 +33,6 @@
  Think about how to manage resources. For example check VertexBuffer is VertexData class. How and when is that freed?
  - Big problem is also that RenderSystem in a lot of cases holds raw pointers, so what happens when resource get destroyed and RS tries to use it?
 
-Extreme lag when starting the game with OpenGL!?
-
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  
 
@@ -73,7 +71,6 @@ RenderSystem needed modifications
 
 Command buffer TODO:
  - Make CommandQueue not use mutexes and use atomics instead??
- - Make sure that the simulation can't run faster then the render thread! (Block the main thread until previous render finishes)
  - Figure out how to handle accessing texture from a non-render thread?
  - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
  - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after
@@ -130,6 +127,7 @@ Low priority TODO:
    - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
    - Remove Response handlers from Resources
 - Cg doesn't work. Either remove it or get it to work
+- System is not yet ready for multiple rendering contexts
 
 Optional TODO:
  - Add precompiled headers to all projects

@@ -108,6 +108,11 @@ namespace CamelotEngine
 		 */
 		void submitToGpu();
 
+		/**
+		 * @brief	Cancels all commands in the queue.
+		 */
+		void cancelAll();
+
 	private:
 		CommandQueue* mCommandQueue;
 		RenderSystem* mRenderSystem;
