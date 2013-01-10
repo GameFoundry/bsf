@@ -30,6 +30,11 @@
  Refactor how we handle RenderTargets (no attach/detach, and no waitForVSync propery in RenderSystem)
  waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
+ Think about how to manage resources. For example check VertexBuffer is VertexData class. How and when is that freed?
+ - Big problem is also that RenderSystem in a lot of cases holds raw pointers, so what happens when resource get destroyed and RS tries to use it?
+
+Extreme lag when starting the game with OpenGL!?
+
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  
 
@@ -134,6 +139,7 @@ Optional TODO:
  - FBX importer can be greatly sped up by implementing a better allocator
  - Extend texture copy so it accepts different subregions & subresources (currently only entire resource can be copied)
  - Need a way to convert MSAA render texture into a normal render texture
+ - Vertex buffer start offset is not supported when calling Draw methods
 
  -----------------------------------------------------------------------------------------------
 

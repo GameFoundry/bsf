@@ -784,6 +784,28 @@ namespace CamelotEngine
 			return static_cast<TextureType>(0);
 		}
 	}
+
+	D3D11_PRIMITIVE_TOPOLOGY D3D11Mappings::getPrimitiveType(DrawOperationType type)
+	{
+		switch(type)
+		{
+		case DOT_POINT_LIST:
+			return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+		case DOT_LINE_LIST:
+			return D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+		case DOT_LINE_STRIP:
+			return D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
+		case DOT_TRIANGLE_LIST:
+			return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		case DOT_TRIANGLE_STRIP:
+			return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+		case DOT_TRIANGLE_FAN:
+			CM_EXCEPT(InvalidParametersException, "D3D11 doesn't support triangle fan primitive type.");
+		}
+
+		return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	}
+
 	//---------------------------------------------------------------------
 	UINT32 D3D11Mappings::_getSizeInBytes(PixelFormat pf, UINT32 xcount, UINT32 ycount)
 	{

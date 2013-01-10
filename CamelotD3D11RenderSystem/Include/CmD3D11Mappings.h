@@ -7,6 +7,7 @@
 #include "CmIndexBuffer.h"
 #include "CmVertexIndexData.h"
 #include "CmSamplerState.h"
+#include "CmRenderOperation.h"
 
 namespace CamelotEngine
 {
@@ -54,6 +55,7 @@ namespace CamelotEngine
 		/// Get vertex semantic
 		static LPCSTR get(VertexElementSemantic sem);
 		static VertexElementSemantic get(LPCSTR sem);
+		static D3D11_PRIMITIVE_TOPOLOGY getPrimitiveType(DrawOperationType type);
 		/// Get dx11 color
 		static void get(const Color& inColour, float * outColour );
 		static bool isMappingWrite(D3D11_MAP map);

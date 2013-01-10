@@ -13,6 +13,10 @@
 #include "CmD3D11DepthStencilState.h"
 #include "CmD3D11SamplerState.h"
 #include "CmD3D11GpuProgram.h"
+#include "CmD3D11VertexDeclaration.h"
+#include "CmD3D11Mappings.h"
+#include "CmD3D11VertexBuffer.h"
+#include "CmD3D11IndexBuffer.h"
 #include "CmRenderSystem.h"
 #include "CmDebug.h"
 #include "CmException.h"
@@ -276,19 +280,45 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		throw std::exception("The method or operation is not implemented.");
+		UINT32 maxBoundVertexBuffers = mCurrentCapabilities->getMaxBoundVertexBuffers();
+		if(index < 0 || index >= maxBoundVertexBuffers)
+			CM_EXCEPT(InvalidParametersException, "Invalid vertex index: " + toString(index) + ". Valid range is 0 .. " + toString(maxBoundVertexBuffers - 1));
+
+		ID3D11Buffer* buffers[1];
+		D3D11VertexBuffer* vertexBuffer = static_cast<D3D11VertexBuffer*>(buffer.get());
+		buffers[0] = vertexBuffer->getD3DVertexBuffer();
+
+		UINT32 strides[1] = { buffer->getVertexSize() };
+		UINT32 offsets[1] = { 0 };
+
+		mDevice->getImmediateContext()->IASetVertexBuffers(index, 1, buffers, strides, offsets);
 	}
 
 	void D3D11RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		throw std::exception("The method or operation is not implemented.");
+		D3D11IndexBuffer* indexBuffer = static_cast<D3D11IndexBuffer*>(buffer.get());
+
+		DXGI_FORMAT indexFormat = DXGI_FORMAT_R16_UINT;
+		if(indexBuffer->getType() == IndexBuffer::IT_16BIT)
+			indexFormat = DXGI_FORMAT_R16_UINT;
+		else if(indexBuffer->getType() == IndexBuffer::IT_32BIT)
+			indexFormat = DXGI_FORMAT_R32_UINT;
+		else
+			CM_EXCEPT(InternalErrorException, "Unsupported index format: " + toString(indexBuffer->getType()));
+
+		mDevice->getImmediateContext()->IASetIndexBuffer(indexBuffer->getD3DIndexBuffer(), indexFormat, 0);
 	}
 
 	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		//D3D11VertexDeclaration* vertexDeclaration = static_cast<D3D11VertexDeclaration*>(vertexDeclaration.get());
+		//mDevice->getImmediateContext()->IASetInputLayout(vertexDeclaration->get);
+
+		// TODO - Delay setting the input layout until Draw methods are called, when you will retrieve the input layout from the active vertex shader
 
 		throw std::exception("The method or operation is not implemented.");
 	}
@@ -297,7 +327,7 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		throw std::exception("The method or operation is not implemented.");
+		mDevice->getImmediateContext()->IASetPrimitiveTopology(D3D11Mappings::getPrimitiveType(op));
 	}
 
 	void D3D11RenderSystem::bindGpuProgram(GpuProgramHandle prg)
@@ -387,14 +417,14 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		throw std::exception("The method or operation is not implemented.");
+		mDevice->getImmediateContext()->Draw(vertexCount, 0);
 	}
 
 	void D3D11RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		throw std::exception("The method or operation is not implemented.");
+		mDevice->getImmediateContext()->DrawIndexed(indexCount, startIndex, 0);
 	}
 
 	void D3D11RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -412,6 +442,8 @@ namespace CamelotEngine
 	void D3D11RenderSystem::clear(RenderTargetPtr target, unsigned int buffers, const Color& color /*= Color::Black*/, float depth /*= 1.0f*/, unsigned short stencil /*= 0 */)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		//target->g
 
 		//RenderTarget* previousRenderTarget = mActiveRenderTarget;
 		//if(target.get() != mActiveRenderTarget)
