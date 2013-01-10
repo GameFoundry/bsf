@@ -53,8 +53,8 @@ namespace CamelotEngine
 	GLSLProgram::GLSLProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
 		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired),
-		mInputOperationType(RenderOperation::OT_TRIANGLE_LIST),
-		mOutputOperationType(RenderOperation::OT_TRIANGLE_LIST), mMaxOutputVertices(3)
+		mInputOperationType(DOT_TRIANGLE_LIST),
+		mOutputOperationType(DOT_TRIANGLE_LIST), mMaxOutputVertices(3)
 	{
 		// Manually assign language now since we use it immediately
 		mSyntaxCode = "glsl";

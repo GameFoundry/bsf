@@ -356,6 +356,22 @@ namespace CamelotEngine {
 			setClipPlanesImpl(mClipPlanes);
 			mClipPlanesDirty = false;
 		}
+
+		setVertexDeclaration(op.vertexData->vertexDeclaration);
+		auto vertexBuffers = op.vertexData->getBuffers();
+
+		for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
+			setVertexBuffer(iter->first, iter->second);
+
+		setDrawOperation(op.operationType);
+
+		if (op.useIndexes)
+		{
+			setIndexBuffer(op.indexData->indexBuffer);
+			drawIndexed(op.indexData->indexStart, op.indexData->indexCount, op.vertexData->vertexCount);
+		}
+		else
+			draw(op.vertexData->vertexCount);
 	}
 
 	/************************************************************************/

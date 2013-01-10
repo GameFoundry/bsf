@@ -49,12 +49,12 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc HardwareBufferManager::createVertexBuffer
 		 */
-		HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+		VertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/**
 		 * @copydoc HardwareBufferManager::createIndexBuffer
 		 */
-		HardwareIndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		IndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlock */
 		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);

@@ -94,7 +94,6 @@ namespace CamelotEngine {
     class SamplerState;
     class TextureManager;
     class Viewport;
-    class VertexBufferBinding;
     class VertexData;
     class VertexDeclaration;
 	class Input;
@@ -107,7 +106,6 @@ namespace CamelotEngine {
 	class PassParameters;
 	class AsyncOp;
 	class HardwareBufferManager;
-	class HardwareConstantBuffer;
 	class CommandQueue;
 	class DeferredRenderContext;
 	class DepthStencilState;
@@ -147,6 +145,8 @@ namespace CamelotEngine
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
 	typedef std::shared_ptr<HighLevelGpuProgram> HighLevelGpuProgramPtr;
 	typedef std::shared_ptr<PixelBuffer> PixelBufferPtr;
+	typedef std::shared_ptr<VertexBuffer> VertexBufferPtr;
+	typedef std::shared_ptr<IndexBuffer> IndexBufferPtr;
 	typedef std::shared_ptr<GenericBuffer> GenericBufferPtr;
 	typedef std::shared_ptr<VertexDeclaration> VertexDeclarationPtr;
 	typedef std::shared_ptr<Mesh> MeshPtr;
@@ -164,7 +164,6 @@ namespace CamelotEngine
 	typedef std::shared_ptr<PassParameters> PassParametersPtr;
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;
-	typedef std::shared_ptr<HardwareConstantBuffer> HardwareConstantBufferPtr;
 	typedef std::shared_ptr<DeferredRenderContext> DeferredRenderContextPtr;
 	typedef std::shared_ptr<SamplerState> SamplerStatePtr;
 	typedef std::shared_ptr<DepthStencilState> DepthStencilStatePtr;

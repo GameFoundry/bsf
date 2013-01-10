@@ -192,24 +192,51 @@ namespace CamelotEngine
 		/** Get the current active viewport for rendering. */
 		virtual Viewport getViewport(void);
 
-		/** Sets the current vertex declaration, ie the source of vertex data. */
-		virtual void setVertexDeclaration(VertexDeclarationPtr decl) = 0;
-		/** Sets the current vertex buffer binding state. */
-		virtual void setVertexBufferBinding(VertexBufferBinding* binding) = 0;
+		/** Sets the current vertex buffer for the specified source index.   
+		/** @note Set buffer to nullptr to clear the buffer at the specified index.*/
+		virtual void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer) = 0;
 
 		/**
-		Render something to the active viewport.
+		 * @brief	Sets an index buffer to use when drawing. Indices in an index buffer
+		 * 			reference vertices in the vertex buffer, which increases cache coherency
+		 * 			and reduces the size of vertex buffers by eliminating duplicate data.
+		 */
+		virtual void setIndexBuffer(const IndexBufferPtr& buffer) = 0;
 
-		Low-level rendering interface to perform rendering
-		operations. Unlikely to be used directly by client
-		applications, since the SceneManager and various support
-		classes will be responsible for calling this method.
-		Can only be called between _beginScene and _endScene
+		/**
+		 * @brief	Sets the vertex declaration to use when drawing. Vertex declaration
+		 * 			is used to decode contents of a single vertex in a vertex buffer.
+		 */
+		virtual void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration) = 0;
 
-		@param op A rendering operation instance, which contains
-		details of the operation to be performed.
-		*/
+		/**
+		 * @brief	Sets the draw operation that determines how to interpret the elements
+		 * 			of the index or vertex buffers.
+		 */
+		virtual void setDrawOperation(DrawOperationType op) = 0;
+
+		/**
+		 * @brief	A helper method that provides a simple way of rendering a single object. 
+		 * 			It will automatically set up vertex declaration, draw operation, 
+		 * 			vertex and index buffers and draw them.
+		 */
 		virtual void render(const RenderOperation& op);
+
+		/**
+		 * @brief	Draw an object based on currently set
+		 * 			shaders, vertex declaration index buffers.
+		 * 			
+		 *			Draws directly from the vertex buffer without using
+		 *			indices.
+		 */
+		virtual void draw(UINT32 vertexCount) = 0;
+
+		/**
+		 * @brief	Draw an object based on currently set
+		 * 			shaders, vertex declaration and vertex 
+		 * 			and index buffers.
+		 */
+		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount) = 0;
 
 		/** Gets the capabilities of the render system. */
 		const RenderSystemCapabilities* getCapabilities(void) const;

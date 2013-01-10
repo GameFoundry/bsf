@@ -49,6 +49,18 @@ namespace CamelotEngine
 		/** @copydoc RenderSystem::setViewport() */
 		void setViewport(const Viewport& vp);
 
+		/** @copydoc RenderSystem::setVertexBuffer() */
+		void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer);
+
+		/** @copydoc RenderSystem::setIndexBuffer() */
+		void setIndexBuffer(const IndexBufferPtr& buffer);
+
+		/** @copydoc RenderSystem::setVertexDeclaration() */
+		void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration);
+
+		/** @copydoc RenderSystem::setDrawOperation() */
+		void setDrawOperation(DrawOperationType op);
+
 		/** @copydoc RenderSystem::setClipPlanes() */
 		void setClipPlanes(const PlaneList& clipPlanes);
 		/** @copydoc RenderSystem::addClipPlane(const Plane&) */
@@ -78,6 +90,12 @@ namespace CamelotEngine
 
 		/** @copydoc RenderSystem::render() */
 		void render(const RenderOperation& op);
+
+		/** @copydoc RenderSystem::draw() */
+		void draw(UINT32 vertexCount);
+
+		/** @copydoc RenderSystem::drawIndexed() */
+		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount);
 
 		/** @copydoc RenderSystem::swapAllRenderTargetBuffers() */
 		void swapAllRenderTargetBuffers(bool waitForVsync = true);

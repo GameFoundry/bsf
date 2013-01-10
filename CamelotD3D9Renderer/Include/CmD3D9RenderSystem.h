@@ -82,6 +82,26 @@ namespace CamelotEngine
 		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
 
 		/**
+		 * @copydoc RenderSystem::setVertexBuffer()
+		 */
+		void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer);
+
+		/**
+		 * @copydoc RenderSystem::setIndexBuffer()
+		 */
+		void setIndexBuffer(const IndexBufferPtr& buffer);
+
+		/**
+		 * @copydoc RenderSystem::setVertexDeclaration()
+		 */
+		void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration);
+
+		/**
+		 * @copydoc RenderSystem::setDrawOperation()
+		 */
+		void setDrawOperation(DrawOperationType op);
+
+		/**
 		 * @copydoc RenderSystem::setSamplerState()
 		 */
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
@@ -106,19 +126,37 @@ namespace CamelotEngine
 		 */
 		void setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue);
 
-		void setViewport(const Viewport& vp);		
+		/**
+		 * @copydoc RenderSystem::setViewport()
+		 */
+		void setViewport(const Viewport& vp);	
+
+		/**
+		 * @copydoc RenderSystem::beginFrame()
+		 */
 		void beginFrame();
+
+		/**
+		 * @copydoc RenderSystem::endFrame()
+		 */
 		void endFrame();		
 
-		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
-		void setVertexDeclaration(VertexDeclarationPtr decl);
-		void setVertexBufferBinding(VertexBufferBinding* binding);
-        void render(const RenderOperation& op);
+		/**
+		 * @copydoc RenderSystem::draw()
+		 */
+		void draw(UINT32 vertexCount);
+
+		/**
+		 * @copydoc RenderSystem::drawIndexed()
+		 */
+		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount);
 
         void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
         void clear(RenderTargetPtr target, unsigned int buffers, 
             const Color& colour = Color::Black, 
             float depth = 1.0f, unsigned short stencil = 0);
+
+		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
 
         float getHorizontalTexelOffset();
         float getVerticalTexelOffset();
@@ -159,6 +197,8 @@ namespace CamelotEngine
 		/// Fast singleton access.
 		static D3D9RenderSystem* msD3D9RenderSystem;
 
+		DrawOperationType mCurrentDrawOperation;
+
 		/// structure holding texture unit settings for every stage
 		struct sD3DTextureStageDesc
 		{
@@ -196,8 +236,6 @@ namespace CamelotEngine
 		D3D9ResourceManager* mResourceManager;
 		D3D9DeviceManager* mDeviceManager;
 
-		size_t mLastVertexSourceCount;
-
         /// Internal method for populating the capabilities structure
 		virtual RenderSystemCapabilities* createRenderSystemCapabilities() const;
 		RenderSystemCapabilities* updateRenderSystemCapabilities(D3D9RenderWindow* renderWindow);
@@ -234,6 +272,18 @@ namespace CamelotEngine
 		void enableClipPlane (UINT16 index, bool enable);
 
 		HINSTANCE getInstanceHandle() const { return mhInstance; }
+
+		/**
+		 * @brief	Returns the D3D9 specific mode used for drawing, depending on the
+		 * 			currently set draw operation;
+		 */
+		D3DPRIMITIVETYPE getD3D9PrimitiveType() const;
+
+		/**
+		 * @brief	Converts the number of points to number of primitives 
+		 * 			based on the specified draw operation.
+		 */
+		UINT32 pointCountToPrimCount(DrawOperationType type, UINT32 elementCount) const;
 
         /** Check whether or not filtering is supported for the precise texture format requested
         with the given usage options.

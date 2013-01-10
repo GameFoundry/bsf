@@ -31,6 +31,26 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setViewport, mRenderSystem, vp));
 	}
 
+	void DeferredRenderContext::setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::setVertexBuffer, mRenderSystem, index, buffer));
+	}
+
+	void DeferredRenderContext::setIndexBuffer(const IndexBufferPtr& buffer)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::setIndexBuffer, mRenderSystem, buffer));
+	}
+
+	void DeferredRenderContext::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::setVertexDeclaration, mRenderSystem, vertexDeclaration));
+	}
+
+	void DeferredRenderContext::setDrawOperation(DrawOperationType op)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::setDrawOperation, mRenderSystem, op));
+	}
+
 	void DeferredRenderContext::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setSamplerState, mRenderSystem, gptype, texUnit, samplerState));
@@ -136,6 +156,16 @@ namespace CamelotEngine
 	void DeferredRenderContext::render(const RenderOperation& op)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::render, mRenderSystem, op));
+	}
+
+	void DeferredRenderContext::draw(UINT32 vertexCount)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::draw, mRenderSystem, vertexCount));
+	}
+
+	void DeferredRenderContext::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::drawIndexed, mRenderSystem, startIndex, indexCount, vertexCount));
 	}
 
 	void DeferredRenderContext::submitToGpu()

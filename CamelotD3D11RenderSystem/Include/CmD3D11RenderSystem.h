@@ -36,15 +36,22 @@ namespace CamelotEngine
 		void setViewport(const Viewport& vp);
 		void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
-		void setVertexDeclaration(VertexDeclarationPtr decl);
-		void setVertexBufferBinding(VertexBufferBinding* binding);
+		void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer);
+		void setIndexBuffer(const IndexBufferPtr& buffer);
+		void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration);
+		void setDrawOperation(DrawOperationType op);
 
+		/** @copydoc RenderSystem::draw() */
+		void draw(UINT32 vertexCount);
+
+		/** @copydoc RenderSystem::drawIndexed() */
+		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount);
+
+		/** @copydoc RenderSystem::bindGpuProgram() */
 		void bindGpuProgram(GpuProgramHandle prg);
+		/** @copydoc RenderSystem::unbindGpuProgram() */
 		void unbindGpuProgram(GpuProgramType gptype);
-
-		/**
-		 * @copydoc RenderSystem::bindGpuParams()
-		 */
+		/** @copydoc RenderSystem::bindGpuParams() */
 		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
 		
 		void setClipPlanesImpl(const PlaneList& clipPlanes);

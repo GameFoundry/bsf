@@ -89,7 +89,8 @@ namespace CamelotEngine
 
 	//---------------------------------------------------------------------
 	D3D9RenderSystem::D3D9RenderSystem( HINSTANCE hInstance )
-		:mTexStageDesc(nullptr)
+		: mTexStageDesc(nullptr)
+		, mCurrentDrawOperation(DOT_TRIANGLE_LIST)
 	{
 		// update singleton access pointer.
 		msD3D9RenderSystem = this;
@@ -160,8 +161,6 @@ namespace CamelotEngine
 		// Create our Direct3D object
 		if( NULL == (mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) )
 			CM_EXCEPT(InternalErrorException, "Failed to create Direct3D9 object");
-
-		mLastVertexSourceCount = 0;
 
 		RenderWindow* autoWindow = NULL;
 
@@ -1161,8 +1160,6 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error beginning frame :" + msg);
 		}
 
-		mLastVertexSourceCount = 0;
-
 		// Clear left overs of previous viewport.
 		// I.E: Viewport A can use 3 different textures and light states
 		// When trying to render viewport B these settings should be cleared, otherwise 
@@ -1197,155 +1194,85 @@ namespace CamelotEngine
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setVertexBufferBinding(VertexBufferBinding* binding)
+	void D3D9RenderSystem::setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		UINT32 maxBoundVertexBuffers = mCurrentCapabilities->getMaxBoundVertexBuffers();
+		if(index < 0 || index >= maxBoundVertexBuffers)
+			CM_EXCEPT(InvalidParametersException, "Invalid vertex index: " + toString(index) + ". Valid range is 0 .. " + toString(maxBoundVertexBuffers - 1));
+
 		HRESULT hr;
-
-		// TODO: attempt to detect duplicates
-		const VertexBufferBinding::VertexBufferBindingMap& binds = binding->getBindings();
-		VertexBufferBinding::VertexBufferBindingMap::const_iterator i, iend;
-		size_t source = 0;
-		iend = binds.end();
-		for (i = binds.begin(); i != iend; ++i, ++source)
+		if(buffer != nullptr)
 		{
-			// Unbind gap sources
-			for ( ; source < i->first; ++source)
-			{
-				hr = getActiveD3D9Device()->SetStreamSource(static_cast<UINT>(source), NULL, 0, 0);
-				if (FAILED(hr))
-				{
-					CM_EXCEPT(RenderingAPIException, "Unable to reset unused D3D9 stream source");
-				}
-			}
+			D3D9VertexBuffer* d3d9buf = static_cast<D3D9VertexBuffer*>(buffer.get());
 
-			D3D9VertexBuffer* d3d9buf = 
-				static_cast<D3D9VertexBuffer*>(i->second.get());
 			hr = getActiveD3D9Device()->SetStreamSource(
-				static_cast<UINT>(source),
+				static_cast<UINT>(index),
 				d3d9buf->getD3D9VertexBuffer(),
-				0, // no stream offset, this is handled in _render instead
+				0,
 				static_cast<UINT>(d3d9buf->getVertexSize()) // stride
-				);
-			if (FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Unable to set D3D9 stream source for buffer binding");
-			}
-
-
-		}
-
-		// Unbind any unused sources
-		for (size_t unused = source; unused < mLastVertexSourceCount; ++unused)
-		{
-
-			hr = getActiveD3D9Device()->SetStreamSource(static_cast<UINT>(unused), NULL, 0, 0);
-			if (FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Unable to reset unused D3D9 stream source");
-			}
-
-		}
-		mLastVertexSourceCount = source;
-
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::render(const RenderOperation& op)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		// Exit immediately if there is nothing to render
-		// This caused a problem on FireGL 8800
-		if (op.vertexData->vertexCount == 0)
-			return;
-
-		// Call super class
-		RenderSystem::render(op);
-
-		// To think about: possibly remove setVertexDeclaration and 
-		// setVertexBufferBinding from RenderSystem since the sequence is
-		// a bit too D3D9-specific?
-		setVertexDeclaration(op.vertexData->vertexDeclaration);
-		setVertexBufferBinding(op.vertexData->vertexBufferBinding);
-
-		// Determine rendering operation
-		D3DPRIMITIVETYPE primType = D3DPT_TRIANGLELIST;
-		DWORD primCount = 0;
-		switch( op.operationType )
-		{
-		case RenderOperation::OT_POINT_LIST:
-			primType = D3DPT_POINTLIST;
-			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount);
-			break;
-
-		case RenderOperation::OT_LINE_LIST:
-			primType = D3DPT_LINELIST;
-			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount) / 2;
-			break;
-
-		case RenderOperation::OT_LINE_STRIP:
-			primType = D3DPT_LINESTRIP;
-			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount) - 1;
-			break;
-
-		case RenderOperation::OT_TRIANGLE_LIST:
-			primType = D3DPT_TRIANGLELIST;
-			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount) / 3;
-			break;
-
-		case RenderOperation::OT_TRIANGLE_STRIP:
-			primType = D3DPT_TRIANGLESTRIP;
-			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount) - 2;
-			break;
-
-		case RenderOperation::OT_TRIANGLE_FAN:
-			primType = D3DPT_TRIANGLEFAN;
-			primCount = static_cast<DWORD>(op.useIndexes ? op.indexData->indexCount : op.vertexData->vertexCount) - 2;
-			break;
-		}
-
-		if (!primCount)
-			return;
-
-		// Issue the op
-		HRESULT hr;
-		if( op.useIndexes )
-		{
-			D3D9IndexBuffer* d3dIdxBuf = 
-				static_cast<D3D9IndexBuffer*>(op.indexData->indexBuffer.get());
-			hr = getActiveD3D9Device()->SetIndices( d3dIdxBuf->getD3DIndexBuffer() );
-			if (FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Failed to set index buffer");
-			}
-
-			// do indexed draw operation
-			hr = getActiveD3D9Device()->DrawIndexedPrimitive(
-				primType, 
-				static_cast<INT>(op.vertexData->vertexStart), 
-				0, // Min vertex index - assume we can go right down to 0 
-				static_cast<UINT>(op.vertexData->vertexCount), 
-				static_cast<UINT>(op.indexData->indexStart), 
-				static_cast<UINT>(primCount)
 				);
 		}
 		else
 		{
-			// Unindexed, a little simpler!
-			hr = getActiveD3D9Device()->DrawPrimitive(
-				primType, 
-				static_cast<UINT>(op.vertexData->vertexStart), 
-				static_cast<UINT>(primCount)
-				); 
-		} 
+			hr = getActiveD3D9Device()->SetStreamSource(static_cast<UINT>(index), nullptr, 0, 0);
+		}
+
+		if (FAILED(hr))
+			CM_EXCEPT(RenderingAPIException, "Unable to set D3D9 stream source for buffer binding");
+	}
+	//---------------------------------------------------------------------
+	void D3D9RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		D3D9IndexBuffer* d3dIdxBuf = static_cast<D3D9IndexBuffer*>(buffer.get());
+
+		HRESULT hr = getActiveD3D9Device()->SetIndices( d3dIdxBuf->getD3DIndexBuffer() );
+		if (FAILED(hr))
+			CM_EXCEPT(RenderingAPIException, "Failed to set index buffer");
+	}
+	//---------------------------------------------------------------------
+	void D3D9RenderSystem::setDrawOperation(DrawOperationType op)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		mCurrentDrawOperation = op;
+	}
+	//---------------------------------------------------------------------
+	void D3D9RenderSystem::draw(UINT32 vertexCount)
+	{
+		UINT32 primCount = pointCountToPrimCount(mCurrentDrawOperation, vertexCount);
+
+		HRESULT hr = getActiveD3D9Device()->DrawPrimitive(getD3D9PrimitiveType(), 0, static_cast<UINT>(primCount)); 
 
 		if( FAILED( hr ) )
 		{
 			String msg = DXGetErrorDescription(hr);
 			CM_EXCEPT(RenderingAPIException, "Failed to DrawPrimitive : " + msg);
 		}
+	}
+	//---------------------------------------------------------------------
+	void D3D9RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
+	{
+		UINT32 primCount = pointCountToPrimCount(mCurrentDrawOperation, indexCount);
 
+		// do indexed draw operation
+		HRESULT hr = getActiveD3D9Device()->DrawIndexedPrimitive(
+			getD3D9PrimitiveType(), 
+			0, 
+			0, 
+			static_cast<UINT>(vertexCount), 
+			static_cast<UINT>(startIndex), 
+			static_cast<UINT>(primCount)
+			);
+
+		if( FAILED( hr ) )
+		{
+			String msg = DXGetErrorDescription(hr);
+			CM_EXCEPT(RenderingAPIException, "Failed to DrawIndexedPrimitive : " + msg);
+		}
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -1629,6 +1556,60 @@ namespace CamelotEngine
 		return mDriverList;
 	}
 	//---------------------------------------------------------------------
+	D3DPRIMITIVETYPE D3D9RenderSystem::getD3D9PrimitiveType() const
+	{
+		switch(mCurrentDrawOperation)
+		{
+		case DOT_POINT_LIST:
+			return D3DPT_POINTLIST;
+		case DOT_LINE_LIST:
+			return D3DPT_LINELIST;
+		case DOT_LINE_STRIP:
+			return D3DPT_LINESTRIP;
+		case DOT_TRIANGLE_LIST:
+			return D3DPT_TRIANGLELIST;
+		case DOT_TRIANGLE_STRIP:
+			return D3DPT_TRIANGLESTRIP;
+		case DOT_TRIANGLE_FAN:
+			return D3DPT_TRIANGLEFAN;
+		}
+
+		return D3DPT_TRIANGLELIST;
+	}
+	//---------------------------------------------------------------------
+	UINT32 D3D9RenderSystem::pointCountToPrimCount(DrawOperationType type, UINT32 elementCount) const
+	{
+		DWORD primCount = 0;
+		switch(type)
+		{
+		case DOT_POINT_LIST:
+			primCount = elementCount;
+			break;
+
+		case DOT_LINE_LIST:
+			primCount = elementCount / 2;
+			break;
+
+		case DOT_LINE_STRIP:
+			primCount = elementCount - 1;
+			break;
+
+		case DOT_TRIANGLE_LIST:
+			primCount = elementCount / 3;
+			break;
+
+		case DOT_TRIANGLE_STRIP:
+			primCount = elementCount - 2;
+			break;
+
+		case DOT_TRIANGLE_FAN:
+			primCount = elementCount - 2;
+			break;
+		}
+
+		return primCount;
+	}
+	//---------------------------------------------------------------------
 	bool D3D9RenderSystem::_checkMultiSampleQuality(D3DMULTISAMPLE_TYPE type, DWORD *outQuality, D3DFORMAT format, UINT adapterNum, D3DDEVTYPE deviceType, BOOL fullScreen)
 	{
 		HRESULT hr;
@@ -1725,6 +1706,8 @@ namespace CamelotEngine
 			const D3DCAPS9& rkCurCaps    = pCurDriver->getD3D9DeviceCaps();
 
 			rsc->setNumTextureUnits(GPT_FRAGMENT_PROGRAM, 16); // We don't support anything lower than SM3, and 16 is the sampler count determined by the specification
+
+			rsc->setMaxBoundVertexBuffers(static_cast<UINT32>(rkCurCaps.MaxStreams));
 
 			// Check for Anisotropy.
 			if (rkCurCaps.MaxAnisotropy <= 1)
@@ -2365,7 +2348,6 @@ namespace CamelotEngine
 		// Reset state attributes.	
 		mVertexProgramBound = false;
 		mFragmentProgramBound = false;
-		mLastVertexSourceCount = 0;
 
 		// Restore previous active device.
 

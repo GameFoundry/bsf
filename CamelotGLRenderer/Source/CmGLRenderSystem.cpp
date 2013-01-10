@@ -93,7 +93,9 @@ namespace CamelotEngine
 		mGeometryUBOffset(0),
 		mHullUBOffset(0),
 		mDomainUBOffset(0),
-		mComputeUBOffset(0)
+		mComputeUBOffset(0),
+		mDrawCallInProgress(false),
+		mCurrentDrawOperation(DOT_TRIANGLE_LIST)
 	{
 		// Get our GLSupport
 		mGLSupport = CamelotEngine::getGLSupport();
@@ -199,6 +201,10 @@ namespace CamelotEngine
 			delete pCurContext;
 		}
 		mBackgroundContextList.clear();
+
+		mBoundVertexBuffers.clear();
+		mBoundVertexDeclaration = nullptr;
+		mBoundIndexBuffer = nullptr;
 
 		mGLSupport->stop();
 		mStopRendering = true;
@@ -631,159 +637,67 @@ namespace CamelotEngine
 		unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
+	void GLRenderSystem::setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		mBoundVertexBuffers[index] = buffer;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setVertexBufferBinding(VertexBufferBinding* binding)
+	void GLRenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		mBoundVertexDeclaration = vertexDeclaration;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::render(const RenderOperation& op)
+	void GLRenderSystem::setDrawOperation(DrawOperationType op)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		const GLSLProgramPipeline* pipeline = mProgramPipelineManager->getPipeline(mCurrentVertexProgram, 
-			mCurrentFragmentProgram, mCurrentGeometryProgram, mCurrentHullProgram, mCurrentDomainProgram);
+		mCurrentDrawOperation = op;
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
 
-		if(mActivePipeline != pipeline)
+		mBoundIndexBuffer = buffer;
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::draw(UINT32 vertexCount)
+	{
+		// Find the correct type to render
+		GLint primType = getGLDrawMode();
+		beginDraw();
+
+		glDrawArrays(primType, 0, vertexCount);
+
+		endDraw();
+	}
+	//---------------------------------------------------------------------
+	void GLRenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
+	{
+		if(mBoundIndexBuffer == nullptr)
 		{
-			glBindProgramPipeline(pipeline->glHandle);
-			mActivePipeline = pipeline;
-		}
-
-		// Call super class
-		RenderSystem::render(op);
-
-		if(mCurrentVertexProgram == nullptr)
-		{
-			LOGWRN("Cannot render without a set vertex shader.");
+			LOGWRN("Cannot draw indexed because index buffer is not set.");
 			return;
 		}
 
-		void* pBufferData = 0;
-
-        const VertexDeclaration::VertexElementList& decl = op.vertexData->vertexDeclaration->getElements();
-        VertexDeclaration::VertexElementList::const_iterator elem, elemEnd;
-        elemEnd = decl.end();
-		vector<GLuint>::type attribsBound;
-
-		const VertexDeclaration::VertexElementList& inputAttributes = mCurrentVertexProgram->getGLSLProgram()->getInputAttributes().getElements();
-
-		for (elem = decl.begin(); elem != elemEnd; ++elem)
-		{
-			if (!op.vertexData->vertexBufferBinding->isBufferBound(elem->getSource()))
-				continue; // skip unbound elements
-
-			bool foundSemantic = false; 
-			GLint attribLocation = 0;
-			for(auto iter = inputAttributes.begin(); iter != inputAttributes.end(); ++iter)
-			{
-				if(iter->getSemantic() == elem->getSemantic() && iter->getIndex() == elem->getIndex())
-				{
-					foundSemantic = true;
-					attribLocation = iter->getOffset();
-					break;
-				}
-			}
-
-			if(!foundSemantic) // Shader needs to have a matching input attribute, otherwise we skip it
-				continue;
-
-			// TODO - We might also want to check the size of input and buffer, and make sure they match? Or does OpenGL handle that internally?
-
-			HardwareVertexBufferPtr vertexBuffer = op.vertexData->vertexBufferBinding->getBuffer(elem->getSource());
-
-			glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffer.get())->getGLBufferId());
-			pBufferData = VBO_BUFFER_OFFSET(elem->getOffset());
-
-			if (op.vertexData->vertexStart)
-			{
-				pBufferData = static_cast<char*>(pBufferData) + op.vertexData->vertexStart * vertexBuffer->getVertexSize();
-			}
-
-			unsigned int i = 0;
-			VertexElementSemantic sem = elem->getSemantic();
-
-			unsigned short typeCount = VertexElement::getTypeCount(elem->getType());
-			GLboolean normalised = GL_FALSE;
-			switch(elem->getType())
-			{
-			case VET_COLOR:
-			case VET_COLOR_ABGR:
-			case VET_COLOR_ARGB:
-				normalised = GL_TRUE;
-				break;
-			default:
-				break;
-			};
-
-			glVertexAttribPointerARB(
-				attribLocation,
-				typeCount, 
-				GLHardwareBufferManager::getGLType(elem->getType()), 
-				normalised, 
-				static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
-				pBufferData);
-
-			glEnableVertexAttribArray(attribLocation);
-
-			attribsBound.push_back(attribLocation);
-        }
-
 		// Find the correct type to render
-		GLint primType;
-		//Use adjacency if there is a geometry program and it requested adjacency info
-		bool useAdjacency = (mGeometryProgramBound && mCurrentGeometryProgram->isAdjacencyInfoRequired());
-		switch (op.operationType)
-		{
-		case RenderOperation::OT_POINT_LIST:
-			primType = GL_POINTS;
-			break;
-		case RenderOperation::OT_LINE_LIST:
-			primType = useAdjacency ? GL_LINES_ADJACENCY_EXT : GL_LINES;
-			break;
-		case RenderOperation::OT_LINE_STRIP:
-			primType = useAdjacency ? GL_LINE_STRIP_ADJACENCY_EXT : GL_LINE_STRIP;
-			break;
-		default:
-		case RenderOperation::OT_TRIANGLE_LIST:
-			primType = useAdjacency ? GL_TRIANGLES_ADJACENCY_EXT : GL_TRIANGLES;
-			break;
-		case RenderOperation::OT_TRIANGLE_STRIP:
-			primType = useAdjacency ? GL_TRIANGLE_STRIP_ADJACENCY_EXT : GL_TRIANGLE_STRIP;
-			break;
-		case RenderOperation::OT_TRIANGLE_FAN:
-			primType = GL_TRIANGLE_FAN;
-			break;
-		}
+		GLint primType = getGLDrawMode();
+		beginDraw();
 
-		if (op.useIndexes)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 
-				static_cast<GLIndexBuffer*>(
-				op.indexData->indexBuffer.get())->getGLBufferId());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 
+			static_cast<GLIndexBuffer*>(mBoundIndexBuffer.get())->getGLBufferId());
 
-			pBufferData = VBO_BUFFER_OFFSET(op.indexData->indexStart * op.indexData->indexBuffer->getIndexSize());
+		void* pBufferData = VBO_BUFFER_OFFSET(startIndex * mBoundIndexBuffer->getIndexSize());
 
-			GLenum indexType = (op.indexData->indexBuffer->getType() == IndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+		GLenum indexType = (mBoundIndexBuffer->getType() == IndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
-			glDrawElements(primType, op.indexData->indexCount, indexType, pBufferData);
-		}
-		else
-		{
-			glDrawArrays(primType, 0, op.vertexData->vertexCount);
-		}
+		glDrawElements(primType, indexCount, indexType, 0);
 
- 		// unbind any custom attributes
-		for (vector<GLuint>::type::iterator ai = attribsBound.begin(); ai != attribsBound.end(); ++ai)
- 		{
- 			glDisableVertexAttribArray(*ai); 
-  		}
-		
-		glColor4f(1,1,1,1);
+		endDraw();
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -1704,6 +1618,148 @@ namespace CamelotEngine
 				x++;
 			}
 		}
+	}
+	//-----------------------------------------------------------------------
+	void GLRenderSystem::beginDraw()
+	{
+		if(mDrawCallInProgress)
+			CM_EXCEPT(InternalErrorException, "Calling beginDraw without finishing previous draw call. Please call endDraw().");
+
+		mDrawCallInProgress = true;
+
+		if(mCurrentVertexProgram == nullptr)
+		{
+			LOGWRN("Cannot render without a set vertex shader.");
+			return;
+		}
+
+		if(mBoundVertexDeclaration == nullptr)
+		{
+			LOGWRN("Cannot render without a set vertex declaration.");
+			return;
+		}
+
+		const GLSLProgramPipeline* pipeline = mProgramPipelineManager->getPipeline(mCurrentVertexProgram, 
+			mCurrentFragmentProgram, mCurrentGeometryProgram, mCurrentHullProgram, mCurrentDomainProgram);
+
+		if(mActivePipeline != pipeline)
+		{
+			glBindProgramPipeline(pipeline->glHandle);
+			mActivePipeline = pipeline;
+		}
+
+		void* pBufferData = 0;
+
+		const VertexDeclaration::VertexElementList& decl = mBoundVertexDeclaration->getElements();
+		VertexDeclaration::VertexElementList::const_iterator elem, elemEnd;
+		elemEnd = decl.end();
+
+		const VertexDeclaration::VertexElementList& inputAttributes = mCurrentVertexProgram->getGLSLProgram()->getInputAttributes().getElements();
+
+		for (elem = decl.begin(); elem != elemEnd; ++elem)
+		{
+			auto iterFind = mBoundVertexBuffers.find(elem->getSource());
+
+			if(iterFind == mBoundVertexBuffers.end() || iterFind->second == nullptr)
+				continue; // skip unbound elements
+
+			VertexBufferPtr vertexBuffer = iterFind->second;
+
+			bool foundSemantic = false; 
+			GLint attribLocation = 0;
+			for(auto iter = inputAttributes.begin(); iter != inputAttributes.end(); ++iter)
+			{
+				if(iter->getSemantic() == elem->getSemantic() && iter->getIndex() == elem->getIndex())
+				{
+					foundSemantic = true;
+					attribLocation = iter->getOffset();
+					break;
+				}
+			}
+
+			if(!foundSemantic) // Shader needs to have a matching input attribute, otherwise we skip it
+				continue;
+
+			// TODO - We might also want to check the size of input and buffer, and make sure they match? Or does OpenGL handle that internally?
+
+			glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffer.get())->getGLBufferId());
+			pBufferData = VBO_BUFFER_OFFSET(elem->getOffset());
+
+			unsigned int i = 0;
+			VertexElementSemantic sem = elem->getSemantic();
+
+			unsigned short typeCount = VertexElement::getTypeCount(elem->getType());
+			GLboolean normalised = GL_FALSE;
+			switch(elem->getType())
+			{
+			case VET_COLOR:
+			case VET_COLOR_ABGR:
+			case VET_COLOR_ARGB:
+				normalised = GL_TRUE;
+				break;
+			default:
+				break;
+			};
+
+			glVertexAttribPointerARB(
+				attribLocation,
+				typeCount, 
+				GLHardwareBufferManager::getGLType(elem->getType()), 
+				normalised, 
+				static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
+				pBufferData);
+
+			glEnableVertexAttribArray(attribLocation);
+
+			mBoundAttributes.push_back(attribLocation);
+		}
+	}
+	//-----------------------------------------------------------------------
+	void GLRenderSystem::endDraw()
+	{
+		if(!mDrawCallInProgress)
+			return;
+
+		mDrawCallInProgress = false;
+
+		// unbind any custom attributes
+		for (auto ai = mBoundAttributes.begin(); ai != mBoundAttributes.end(); ++ai)
+		{
+			glDisableVertexAttribArray(*ai); 
+		}
+
+		glColor4f(1,1,1,1);
+	}
+	//-----------------------------------------------------------------------
+	GLint GLRenderSystem::getGLDrawMode() const
+	{
+		GLint primType;
+		//Use adjacency if there is a geometry program and it requested adjacency info
+		bool useAdjacency = (mGeometryProgramBound && mCurrentGeometryProgram->isAdjacencyInfoRequired());
+		switch (mCurrentDrawOperation)
+		{
+		case DOT_POINT_LIST:
+			primType = GL_POINTS;
+			break;
+		case DOT_LINE_LIST:
+			primType = useAdjacency ? GL_LINES_ADJACENCY_EXT : GL_LINES;
+			break;
+		case DOT_LINE_STRIP:
+			primType = useAdjacency ? GL_LINE_STRIP_ADJACENCY_EXT : GL_LINE_STRIP;
+			break;
+		default:
+		case DOT_TRIANGLE_LIST:
+			primType = useAdjacency ? GL_TRIANGLES_ADJACENCY_EXT : GL_TRIANGLES;
+			break;
+		case DOT_TRIANGLE_STRIP:
+			primType = useAdjacency ? GL_TRIANGLE_STRIP_ADJACENCY_EXT : GL_TRIANGLE_STRIP;
+			break;
+		case DOT_TRIANGLE_FAN:
+			primType = GL_TRIANGLE_FAN;
+			break;
+		}
+
+		return primType;
 	}
 	//-----------------------------------------------------------------------
 	void GLRenderSystem::initialiseContext(GLContext* primary)

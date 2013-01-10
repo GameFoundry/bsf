@@ -40,6 +40,7 @@ namespace CamelotEngine {
 		, mStencilBufferBitDepth(0)
 		, mNumVertexBlendMatrices(0)
 		, mNumMultiRenderTargets(1)
+		, mMaxBoundVertexBuffers(1)
 		, mNonPOW2TexturesLimited(false)
 	{
 

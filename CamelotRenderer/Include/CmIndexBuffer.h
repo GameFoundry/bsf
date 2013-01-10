@@ -71,8 +71,6 @@ namespace CamelotEngine
 
 		    // NB subclasses should override lock, unlock, readData, writeData
     };
-
-	typedef std::shared_ptr<IndexBuffer> HardwareIndexBufferPtr;
 	/** @} */
 }
 #endif

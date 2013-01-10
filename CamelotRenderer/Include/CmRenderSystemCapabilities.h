@@ -266,6 +266,8 @@ namespace CamelotEngine
 		UINT16 mNumCombinedUniformBlocks;
 		/// The stencil buffer bit depth
 		UINT16 mStencilBufferBitDepth;
+		/// Maximum number of vertex buffers we can bind at once
+		UINT32 mMaxBoundVertexBuffers;
 		/// The number of matrices available for hardware blending
 		UINT16 mNumVertexBlendMatrices;
 		/// Stores the capabilities flags.
@@ -409,6 +411,11 @@ namespace CamelotEngine
 			mNumVertexBlendMatrices = num;
 		}
 
+		void setMaxBoundVertexBuffers(UINT32 num)
+		{
+			mMaxBoundVertexBuffers = num;
+		}
+
 		/// The number of simultaneous render targets supported
 		void setNumMultiRenderTargets(UINT16 num)
 		{
@@ -476,6 +483,11 @@ namespace CamelotEngine
 		UINT16 getNumVertexBlendMatrices(void) const
 		{
 			return mNumVertexBlendMatrices;
+		}
+		/** Returns the maximum number of vertex buffers we can bind at once. */
+		UINT32 getMaxBoundVertexBuffers() const
+		{
+			return mMaxBoundVertexBuffers;
 		}
 
 		/// The number of simultaneous render targets supported

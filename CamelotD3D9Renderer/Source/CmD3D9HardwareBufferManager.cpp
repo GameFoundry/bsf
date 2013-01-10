@@ -41,10 +41,9 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     D3D9HardwareBufferManager::~D3D9HardwareBufferManager()
     {
-        destroyAllBindings();
     }
     //-----------------------------------------------------------------------
-    HardwareVertexBufferPtr D3D9HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+    VertexBufferPtr D3D9HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
 		assert (numVerts > 0);
 
@@ -53,10 +52,10 @@ namespace CamelotEngine {
 		{
 			mVertexBuffers.insert(vbuf);
 		}
-        return HardwareVertexBufferPtr(vbuf);
+        return VertexBufferPtr(vbuf);
     }
     //-----------------------------------------------------------------------
-	HardwareIndexBufferPtr D3D9HardwareBufferManager::createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	IndexBufferPtr D3D9HardwareBufferManager::createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
     {
 		assert (numIndexes > 0);
 
@@ -64,7 +63,7 @@ namespace CamelotEngine {
 		{
 			mIndexBuffers.insert(idx);
 		}
-		return HardwareIndexBufferPtr(idx);
+		return IndexBufferPtr(idx);
             
     }
 	//-----------------------------------------------------------------------

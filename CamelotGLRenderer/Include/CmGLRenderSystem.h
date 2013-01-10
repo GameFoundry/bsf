@@ -62,14 +62,25 @@ namespace CamelotEngine {
 		 */
         void setRenderTarget(RenderTarget *target);
 
+        /**
+		 * @copydoc RenderSystem::setVertexBuffer()
+		 */
+		void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer);
+
+		/**
+		 * @copydoc RenderSystem::setIndexBuffer()
+		 */
+		void setIndexBuffer(const IndexBufferPtr& buffer);
+
 		/**
 		 * @copydoc RenderSystem::setVertexDeclaration()
 		 */
-		void setVertexDeclaration(VertexDeclarationPtr decl);
-        /**
-		 * @copydoc RenderSystem::setVertexBufferBinding()
+		void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration);
+
+		/**
+		 * @copydoc RenderSystem::setDrawOperation()
 		 */
-		void setVertexBufferBinding(VertexBufferBinding* binding);
+		void setDrawOperation(DrawOperationType op);
 
         /**
 		 * @copydoc RenderSystem::setScissorRect()
@@ -132,9 +143,14 @@ namespace CamelotEngine {
         void endFrame(void);
 
 		/**
-		 * @copydoc RenderSystem::render()
+		 * @copydoc RenderSystem::draw()
 		 */
-        void render(const RenderOperation& op);
+		void draw(UINT32 vertexCount);
+
+		/**
+		 * @copydoc RenderSystem::drawIndexed()
+		 */
+		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount);
 
 		/**
 		 * @copydoc RenderSystem::clear()
@@ -266,6 +282,11 @@ namespace CamelotEngine {
 		UINT32 mDomainUBOffset;
 		UINT32 mComputeUBOffset;
 
+		unordered_map<UINT32, VertexBufferPtr>::type mBoundVertexBuffers;
+		VertexDeclarationPtr mBoundVertexDeclaration;
+		IndexBufferPtr mBoundIndexBuffer;
+		DrawOperationType mCurrentDrawOperation;
+
 		/* The main GL context - main thread only */
         GLContext *mMainContext;
         /* The current GL context  - main thread only */
@@ -273,6 +294,9 @@ namespace CamelotEngine {
 		typedef list<GLContext*>::type GLContextList;
 		/// List of background thread contexts
 		GLContextList mBackgroundContextList;
+
+		vector<GLuint>::type mBoundAttributes; // Only full between begin/endDraw calls
+		bool mDrawCallInProgress;
 
 		UINT16 mActiveTextureUnit;
 
@@ -539,6 +563,22 @@ namespace CamelotEngine {
 		 * 			into a global block buffer binding usable by OpenGL.
 		 */
 		UINT32 getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding);
+
+		/**
+		 * @brief	Returns the OpenGL specific mode used for drawing, depending on the
+		 * 			currently set draw operation;
+		 */
+		GLint getGLDrawMode() const;
+
+		/**
+		 * @brief	Call before doing a draw operation, this method sets everything up.
+		 */
+		void beginDraw();
+
+		/**
+		 * @brief	Needs to accompany every beginDraw after you are done with a single draw operation.
+		 */
+		void endDraw();
 
 		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgram* program);
 		GLSLGpuProgram* getActiveProgram(GpuProgramType gptype) const;

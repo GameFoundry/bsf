@@ -56,23 +56,11 @@ namespace CamelotEngine {
         */
         typedef set<VertexBuffer*>::type VertexBufferList;
         typedef set<IndexBuffer*>::type IndexBufferList;
-		typedef set<HardwareConstantBuffer*>::type ConstantBufferList;
         VertexBufferList mVertexBuffers;
         IndexBufferList mIndexBuffers;
 
-		typedef set<VertexBufferBinding*>::type VertexBufferBindingList;
-		VertexBufferBindingList mVertexBufferBindings;
-
-        /// Internal method for destroys all vertex buffer bindings
-        virtual void destroyAllBindings(void);
-
         /// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
         virtual VertexDeclarationPtr createVertexDeclarationImpl(void);
-
-		/// Internal method for creates a new VertexBufferBinding, may be overridden by certain rendering APIs
-		virtual VertexBufferBinding* createVertexBufferBindingImpl(void);
-		/// Internal method for destroys a VertexBufferBinding, may be overridden by certain rendering APIs
-		virtual void destroyVertexBufferBindingImpl(VertexBufferBinding* binding);
 
     public:
         HardwareBufferManager();
@@ -100,7 +88,7 @@ namespace CamelotEngine {
 		@param streamOut Whether the vertex buffer will be used for steam out operations of the
 			geometry shader.
         */
-		virtual HardwareVertexBufferPtr 
+		virtual VertexBufferPtr 
             createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
 		/** Create a hardware index buffer.
         @remarks Note that because buffers can be shared, they are reference
@@ -111,9 +99,8 @@ namespace CamelotEngine {
 		@param numIndexes The number of indexes in the buffer
         @param usage One or more members of the HardwareBuffer::Usage enumeration.
         */
-		virtual HardwareIndexBufferPtr 
-            createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, 
-			GpuBufferUsage usage) = 0;
+		virtual IndexBufferPtr 
+            createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
 
 		/**
 		 * @brief	Creates an GPU parameter block that you can use for setting parameters
@@ -140,11 +127,6 @@ namespace CamelotEngine {
 
         /** Creates a new vertex declaration. */
         virtual VertexDeclarationPtr createVertexDeclaration(void);
-
-		/** Creates a new VertexBufferBinding. */
-		virtual VertexBufferBinding* createVertexBufferBinding(void);
-		/** Destroys a VertexBufferBinding. */
-		virtual void destroyVertexBufferBinding(VertexBufferBinding* binding);
 
 		/// Notification that a hardware vertex buffer has been destroyed
 		void _notifyVertexBufferDestroyed(VertexBuffer* buf);

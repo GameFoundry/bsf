@@ -48,13 +48,6 @@ namespace CamelotEngine {
 	/** Summary class collecting together vertex source information. */
 	class CM_EXPORT VertexData
 	{
-    private:
-        /// Protected copy constructor, to prevent misuse
-        VertexData(const VertexData& rhs); /* do nothing, should not use */
-        /// Protected operator=, to prevent misuse
-        VertexData& operator=(const VertexData& rhs); /* do not use */
-
-		HardwareBufferManager* mMgr;
     public:
 		/** Constructor.
 		@note 
@@ -65,113 +58,36 @@ namespace CamelotEngine {
         VertexData(HardwareBufferManager* mgr = 0);
 		/** Constructor.
 		@note 
-		This constructor receives the VertexDeclaration and VertexBufferBinding
-		from the caller, and as such does not arrange for their deletion afterwards, 
-		the caller remains responsible for that.
+		This constructor receives the VertexDeclaration from the caller.
 		@param dcl The VertexDeclaration to use
-		@param bind The VertexBufferBinding to use
 		*/
-		VertexData(VertexDeclarationPtr dcl, VertexBufferBinding* bind);
+		VertexData(VertexDeclarationPtr dcl);
         ~VertexData();
 
 		/** Declaration of the vertex to be used in this operation. 
 		@remarks Note that this is created for you on construction.
 		*/
 		VertexDeclarationPtr vertexDeclaration;
-		/** The vertex buffer bindings to be used. 
-		@remarks Note that this is created for you on construction.
-		*/
-		VertexBufferBinding* vertexBufferBinding;
-		/// Whether this class should delete the declaration and binding
-		bool mDeleteDclBinding;
-		/// The base vertex index to start from
-		UINT32 vertexStart;
+
 		/// The number of vertices used in this operation
 		UINT32 vertexCount;
-		
+
+		void setBuffer(UINT32 index, VertexBufferPtr buffer);
+		/// Gets the buffer bound to the given source index
+		VertexBufferPtr getBuffer(UINT32 index) const;
+		const unordered_map<UINT32, VertexBufferPtr>::type& getBuffers() const { return mVertexBuffers; }
+		/// Gets whether a buffer is bound to the given source index
+		bool isBufferBound(UINT32 index) const;
+
+		UINT32 getBufferCount(void) const { return (UINT32)mVertexBuffers.size(); }
+		UINT32 getMaxBufferIndex(void) const { return (UINT32)mVertexBuffers.size(); }
+
 		/** Clones this vertex data, potentially including replicating any vertex buffers.
 		@param copyData Whether to create new vertex buffers too or just reference the existing ones
 		@param mgr If supplied, the buffer manager through which copies should be made
 		@remarks The caller is expected to delete the returned pointer when ready
 		*/
 		VertexData* clone(bool copyData = true, HardwareBufferManager* mgr = 0) const;
-
-        /** Additional shadow volume vertex buffer storage. 
-        @remarks
-            This additional buffer is only used where we have prepared this VertexData for
-            use in shadow volume construction, and where the current render system supports
-            vertex programs. This buffer contains the 'w' vertex position component which will
-            be used by that program to differentiate between extruded and non-extruded vertices.
-            This 'w' component cannot be included in the original position buffer because
-            DirectX does not allow 4-component positions in the fixed-function pipeline, and the original
-            position buffer must still be usable for fixed-function rendering.
-        @par    
-            Note that we don't store any vertex declaration or vertex buffer binding here because this
-            can be reused in the shadow algorithm.
-        */
-        HardwareVertexBufferPtr hardwareShadowVolWBuffer;
-
-
-		/** Reorganises the data in the vertex buffers according to the 
-			new vertex declaration passed in. Note that new vertex buffers
-			are created and written to, so if the buffers being referenced 
-			by this vertex data object are also used by others, then the 
-			original buffers will not be damaged by this operation.
-			Once this operation has completed, the new declaration 
-			passed in will overwrite the current one.
-		@param newDeclaration The vertex declaration which will be used
-			for the reorganised buffer state. Note that the new declaration
-			must not include any elements which do not already exist in the 
-			current declaration; you can drop elements by 
-			excluding them from the declaration if you wish, however.
-		@param bufferUsages Vector of usage flags which indicate the usage options
-			for each new vertex buffer created. The indexes of the entries must correspond
-			to the buffer binding values referenced in the declaration.
-		@param mgr Optional pointer to the manager to use to create new declarations
-			and buffers etc. If not supplied, the HardwareBufferManager singleton will be used
-		*/
-		void reorganiseBuffers(VertexDeclarationPtr newDeclaration, const BufferUsageList& bufferUsage, 
-			HardwareBufferManager* mgr = 0);
-
-		/** Reorganises the data in the vertex buffers according to the 
-			new vertex declaration passed in. Note that new vertex buffers
-			are created and written to, so if the buffers being referenced 
-			by this vertex data object are also used by others, then the 
-			original buffers will not be damaged by this operation.
-			Once this operation has completed, the new declaration 
-			passed in will overwrite the current one.
-            This version of the method derives the buffer usages from the existing
-            buffers, by using the 'most flexible' usage from the equivalent sources.
-		@param newDeclaration The vertex declaration which will be used
-			for the reorganised buffer state. Note that the new delcaration
-			must not include any elements which do not already exist in the 
-			current declaration; you can drop elements by 
-			excluding them from the declaration if you wish, however.
-		@param mgr Optional pointer to the manager to use to create new declarations
-			and buffers etc. If not supplied, the HardwareBufferManager singleton will be used
-		*/
-		void reorganiseBuffers(VertexDeclarationPtr newDeclaration, HardwareBufferManager* mgr = 0);
-
-        /** Remove any gaps in the vertex buffer bindings.
-        @remarks
-            This is useful if you've removed elements and buffers from this vertex
-            data and want to remove any gaps in the vertex buffer bindings. This
-            method is mainly useful when reorganising vertex data manually.
-        @note
-            This will cause binding index of the elements in the vertex declaration
-            to be altered to new binding index.
-        */
-        void closeGapsInBindings(void);
-
-        /** Remove all vertex buffers that never used by the vertex declaration.
-        @remarks
-            This is useful if you've removed elements from the vertex declaration
-            and want to unreference buffers that never used any more. This method
-            is mainly useful when reorganising vertex data manually.
-        @note
-            This also remove any gaps in the vertex buffer bindings.
-        */
-        void removeUnusedBuffers(void);
 
 		/** Convert all packed colour values (VET_COLOUR_*) in buffers used to
 			another type.
@@ -181,21 +97,29 @@ namespace CamelotEngine {
 			VET_COLOUR_ARGB.
 		*/
 		void convertPackedColour(VertexElementType srcType, VertexElementType destType);
+
+    private:
+        /// Protected copy constructor, to prevent misuse
+        VertexData(const VertexData& rhs); /* do nothing, should not use */
+        /// Protected operator=, to prevent misuse
+        VertexData& operator=(const VertexData& rhs); /* do not use */
+
+		HardwareBufferManager* mMgr;
+
+		/** The vertex buffer bindings to be used. 
+		@remarks Note that this is created for you on construction.
+		*/
+		unordered_map<UINT32, VertexBufferPtr>::type mVertexBuffers;
 	};
 
 	/** Summary class collecting together index data source information. */
 	class CM_EXPORT IndexData
 	{
-    protected:
-        /// Protected copy constructor, to prevent misuse
-        IndexData(const IndexData& rhs); /* do nothing, should not use */
-        /// Protected operator=, to prevent misuse
-        IndexData& operator=(const IndexData& rhs); /* do not use */
     public:
         IndexData();
         ~IndexData();
 		/// pointer to the HardwareIndexBuffer to use, must be specified if useIndexes = true
-		HardwareIndexBufferPtr indexBuffer;
+		IndexBufferPtr indexBuffer;
 
 		/// index in the buffer to start from for this operation
 		UINT32 indexStart;
@@ -219,7 +143,12 @@ namespace CamelotEngine {
 			in any case.
 		*/
 		void optimiseVertexCacheTriList(void);
-	
+
+	protected:
+		/// Protected copy constructor, to prevent misuse
+		IndexData(const IndexData& rhs); /* do nothing, should not use */
+		/// Protected operator=, to prevent misuse
+		IndexData& operator=(const IndexData& rhs); /* do not use */
 	};
 
 	/** Vertex cache profiler.
@@ -245,7 +174,7 @@ namespace CamelotEngine {
 				free(cache);
 			}
 
-			void profile(const HardwareIndexBufferPtr& indexBuffer);
+			void profile(const IndexBufferPtr& indexBuffer);
 			void reset() { hit = 0; miss = 0; tail = 0; buffersize = 0; }
 			void flush() { tail = 0; buffersize = 0; }
 

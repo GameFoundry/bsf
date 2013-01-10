@@ -77,12 +77,10 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     GLHardwareBufferManager::~GLHardwareBufferManager()
     {
-        destroyAllBindings();
-
 		_aligned_free(mScratchBufferPool);
     }
     //-----------------------------------------------------------------------
-    HardwareVertexBufferPtr GLHardwareBufferManager::createVertexBuffer(
+    VertexBufferPtr GLHardwareBufferManager::createVertexBuffer(
         UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
 		GLVertexBuffer* buf = 
@@ -90,10 +88,10 @@ namespace CamelotEngine {
 		{
 			mVertexBuffers.insert(buf);
 		}
-		return HardwareVertexBufferPtr(buf);
+		return VertexBufferPtr(buf);
     }
     //-----------------------------------------------------------------------
-    HardwareIndexBufferPtr 
+    IndexBufferPtr 
     GLHardwareBufferManager::createIndexBuffer(
         IndexBuffer::IndexType itype, UINT32 numIndexes, 
         GpuBufferUsage usage)
@@ -103,7 +101,7 @@ namespace CamelotEngine {
 		{
 			mIndexBuffers.insert(buf);
 		}
-		return HardwareIndexBufferPtr(buf);
+		return IndexBufferPtr(buf);
     }
 	//---------------------------------------------------------------------
 	GpuParamBlockPtr GLHardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)

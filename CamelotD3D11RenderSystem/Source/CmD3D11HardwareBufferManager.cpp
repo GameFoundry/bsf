@@ -14,10 +14,10 @@ namespace CamelotEngine
 
 	D3D11HardwareBufferManager::~D3D11HardwareBufferManager()
 	{
-		destroyAllBindings();
+
 	}
 
-	HardwareVertexBufferPtr D3D11HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, 
+	VertexBufferPtr D3D11HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, 
 		UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
 		assert (numVerts > 0);
@@ -27,10 +27,10 @@ namespace CamelotEngine
 			mVertexBuffers.insert(vbuf);
 		}
 
-		return HardwareVertexBufferPtr(vbuf);
+		return VertexBufferPtr(vbuf);
 	}
 
-	HardwareIndexBufferPtr D3D11HardwareBufferManager::createIndexBuffer(IndexBuffer::IndexType itype, 
+	IndexBufferPtr D3D11HardwareBufferManager::createIndexBuffer(IndexBuffer::IndexType itype, 
 		UINT32 numIndexes, GpuBufferUsage usage)
 	{
 		assert (numIndexes > 0);
@@ -42,7 +42,7 @@ namespace CamelotEngine
 				mIndexBuffers.insert(idx);
 		}
 
-		return HardwareIndexBufferPtr(idx);
+		return IndexBufferPtr(idx);
 	}
 
 	GpuParamBlockPtr D3D11HardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& blockDesc)

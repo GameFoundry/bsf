@@ -42,12 +42,6 @@ namespace CamelotEngine {
         // unnecessary work, and we'll destroy everything here.
 		mVertexBuffers.clear();
 		mIndexBuffers.clear();
-
-        // Destroy everything
-        destroyAllBindings();
-        // No need to destroy main buffers - they will be destroyed by removal of bindings
-
-        // No need to destroy temp buffers - they will be destroyed automatically.
     }
     //-----------------------------------------------------------------------
     VertexDeclarationPtr HardwareBufferManager::createVertexDeclaration(void)
@@ -56,42 +50,9 @@ namespace CamelotEngine {
         return decl;
     }
     //-----------------------------------------------------------------------
-	VertexBufferBinding* HardwareBufferManager::createVertexBufferBinding(void)
-	{
-		VertexBufferBinding* ret = createVertexBufferBindingImpl();
-		mVertexBufferBindings.insert(ret);
-		return ret;
-	}
-    //-----------------------------------------------------------------------
-	void HardwareBufferManager::destroyVertexBufferBinding(VertexBufferBinding* binding)
-	{
-		mVertexBufferBindings.erase(binding);
-		destroyVertexBufferBindingImpl(binding);
-	}
-    //-----------------------------------------------------------------------
     VertexDeclarationPtr HardwareBufferManager::createVertexDeclarationImpl(void)
     {
         return VertexDeclarationPtr(new VertexDeclaration());
-    }
-    //-----------------------------------------------------------------------
-	VertexBufferBinding* HardwareBufferManager::createVertexBufferBindingImpl(void)
-	{
-		return new VertexBufferBinding();
-	}
-    //-----------------------------------------------------------------------
-	void HardwareBufferManager::destroyVertexBufferBindingImpl(VertexBufferBinding* binding)
-	{
-		delete binding;
-	}
-    //-----------------------------------------------------------------------
-    void HardwareBufferManager::destroyAllBindings(void)
-    {
-        VertexBufferBindingList::iterator bind;
-        for (bind = mVertexBufferBindings.begin(); bind != mVertexBufferBindings.end(); ++bind)
-        {
-            destroyVertexBufferBindingImpl(*bind);
-        }
-        mVertexBufferBindings.clear();
     }
 	//-----------------------------------------------------------------------
 	void HardwareBufferManager::_notifyVertexBufferDestroyed(VertexBuffer* buf)

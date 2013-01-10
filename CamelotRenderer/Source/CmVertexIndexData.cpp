@@ -35,39 +35,57 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotEngine {
-
-    //-----------------------------------------------------------------------
+namespace CamelotEngine 
+{
 	VertexData::VertexData(HardwareBufferManager* mgr)
 	{
 		mMgr = mgr ? mgr : HardwareBufferManager::instancePtr();
-		vertexBufferBinding = mMgr->createVertexBufferBinding();
 		vertexDeclaration = mMgr->createVertexDeclaration();
-		mDeleteDclBinding = true;
 		vertexCount = 0;
-		vertexStart = 0;
 
 	}
-	//---------------------------------------------------------------------
-	VertexData::VertexData(VertexDeclarationPtr dcl, VertexBufferBinding* bind)
+
+	VertexData::VertexData(VertexDeclarationPtr dcl)
 	{
 		// this is a fallback rather than actively used
 		mMgr = HardwareBufferManager::instancePtr();
 		vertexDeclaration = dcl;
-		vertexBufferBinding = bind;
-		mDeleteDclBinding = false;
 		vertexCount = 0;
-		vertexStart = 0;
 	}
-    //-----------------------------------------------------------------------
+
 	VertexData::~VertexData()
 	{
-		if (mDeleteDclBinding)
-		{
-			mMgr->destroyVertexBufferBinding(vertexBufferBinding);
-		}
+
 	}
-    //-----------------------------------------------------------------------
+
+	void VertexData::setBuffer(UINT32 index, VertexBufferPtr buffer)
+	{
+		mVertexBuffers[index] = buffer;
+	}
+
+	VertexBufferPtr VertexData::getBuffer(UINT32 index) const
+	{
+		auto iterFind = mVertexBuffers.find(index);
+		if(iterFind != mVertexBuffers.end())
+		{
+			return iterFind->second;
+		}
+
+		return nullptr;
+	}
+
+	bool VertexData::isBufferBound(UINT32 index) const
+	{
+		auto iterFind = mVertexBuffers.find(index);
+		if(iterFind != mVertexBuffers.end())
+		{
+			if(iterFind->second != nullptr)
+				return true;
+		}
+
+		return false;
+	}
+
 	VertexData* VertexData::clone(bool copyData, HardwareBufferManager* mgr) const
 	{
 		HardwareBufferManager* pManager = mgr ? mgr : mMgr;
@@ -75,14 +93,10 @@ namespace CamelotEngine {
 		VertexData* dest = new VertexData(mgr);
 
 		// Copy vertex buffers in turn
-		const VertexBufferBinding::VertexBufferBindingMap& bindings = 
-			this->vertexBufferBinding->getBindings();
-		VertexBufferBinding::VertexBufferBindingMap::const_iterator vbi, vbend;
-		vbend = bindings.end();
-		for (vbi = bindings.begin(); vbi != vbend; ++vbi)
+		for (auto iter = mVertexBuffers.begin(); iter != mVertexBuffers.end(); ++iter)
 		{
-			HardwareVertexBufferPtr srcbuf = vbi->second;
-            HardwareVertexBufferPtr dstBuf;
+			VertexBufferPtr srcbuf = iter->second;
+            VertexBufferPtr dstBuf;
             if (copyData)
             {
 			    // create new buffer with the same settings
@@ -99,11 +113,10 @@ namespace CamelotEngine {
             }
 
 			// Copy binding
-			dest->vertexBufferBinding->setBinding(vbi->first, dstBuf);
+			dest->setBuffer(iter->first, dstBuf);
         }
 
         // Basic vertex info
-        dest->vertexStart = this->vertexStart;
 		dest->vertexCount = this->vertexCount;
         // Copy elements
         const VertexDeclaration::VertexElementList elems = 
@@ -120,249 +133,9 @@ namespace CamelotEngine {
                 ei->getIndex() );
         }
 
-		// Copy reference to hardware shadow buffer, no matter whether copy data or not
-        dest->hardwareShadowVolWBuffer = hardwareShadowVolWBuffer;
-        
         return dest;
 	}
-	//-----------------------------------------------------------------------
-	void VertexData::reorganiseBuffers(VertexDeclarationPtr newDeclaration, 
-		const BufferUsageList& bufferUsages, HardwareBufferManager* mgr)
-	{
-		HardwareBufferManager* pManager = mgr ? mgr : mMgr;
-        // Firstly, close up any gaps in the buffer sources which might have arisen
-        newDeclaration->closeGapsInSource();
 
-		// Build up a list of both old and new elements in each buffer
-		unsigned short buf = 0;
-		vector<void*>::type oldBufferLocks;
-        vector<UINT32>::type oldBufferVertexSizes;
-		vector<void*>::type newBufferLocks;
-        vector<UINT32>::type newBufferVertexSizes;
-		VertexBufferBinding* newBinding = pManager->createVertexBufferBinding();
-        const VertexBufferBinding::VertexBufferBindingMap& oldBindingMap = vertexBufferBinding->getBindings();
-        VertexBufferBinding::VertexBufferBindingMap::const_iterator itBinding;
-
-        // Pre-allocate old buffer locks
-        if (!oldBindingMap.empty())
-        {
-            UINT32 count = oldBindingMap.rbegin()->first + 1;
-            oldBufferLocks.resize(count);
-            oldBufferVertexSizes.resize(count);
-        }
-		// Lock all the old buffers for reading
-        for (itBinding = oldBindingMap.begin(); itBinding != oldBindingMap.end(); ++itBinding)
-        {
-            assert(itBinding->second->getNumVertices() >= vertexCount);
-
-            oldBufferVertexSizes[itBinding->first] =
-                itBinding->second->getVertexSize();
-            oldBufferLocks[itBinding->first] =
-                itBinding->second->lock(
-                    GBL_READ_ONLY);
-        }
-		
-		// Create new buffers and lock all for writing
-		buf = 0;
-		while (!newDeclaration->findElementsBySource(buf).empty())
-		{
-            UINT32 vertexSize = newDeclaration->getVertexSize(buf);
-
-			HardwareVertexBufferPtr vbuf = 
-				pManager->createVertexBuffer(
-					vertexSize,
-					vertexCount, 
-					bufferUsages[buf]);
-			newBinding->setBinding(buf, vbuf);
-
-            newBufferVertexSizes.push_back(vertexSize);
-			newBufferLocks.push_back(
-				vbuf->lock(GBL_WRITE_ONLY_DISCARD));
-			buf++;
-		}
-
-		// Map from new to old elements
-        typedef map<const VertexElement*, const VertexElement*>::type NewToOldElementMap;
-		NewToOldElementMap newToOldElementMap;
-		const VertexDeclaration::VertexElementList& newElemList = newDeclaration->getElements();
-		VertexDeclaration::VertexElementList::const_iterator ei, eiend;
-		eiend = newElemList.end();
-		for (ei = newElemList.begin(); ei != eiend; ++ei)
-		{
-			// Find corresponding old element
-			const VertexElement* oldElem = 
-				vertexDeclaration->findElementBySemantic(
-					(*ei).getSemantic(), (*ei).getIndex());
-			if (!oldElem)
-			{
-				// Error, cannot create new elements with this method
-				CM_EXCEPT(ItemIdentityException, 
-					"Element not found in old vertex declaration");
-			}
-			newToOldElementMap[&(*ei)] = oldElem;
-		}
-		// Now iterate over the new buffers, pulling data out of the old ones
-		// For each vertex
-		for (UINT32 v = 0; v < vertexCount; ++v)
-		{
-			// For each (new) element
-			for (ei = newElemList.begin(); ei != eiend; ++ei)
-			{
-				const VertexElement* newElem = &(*ei);
-                NewToOldElementMap::iterator noi = newToOldElementMap.find(newElem);
-				const VertexElement* oldElem = noi->second;
-				unsigned short oldBufferNo = oldElem->getSource();
-				unsigned short newBufferNo = newElem->getSource();
-				void* pSrcBase = static_cast<void*>(
-					static_cast<unsigned char*>(oldBufferLocks[oldBufferNo])
-					+ v * oldBufferVertexSizes[oldBufferNo]);
-				void* pDstBase = static_cast<void*>(
-					static_cast<unsigned char*>(newBufferLocks[newBufferNo])
-					+ v * newBufferVertexSizes[newBufferNo]);
-				void *pSrc, *pDst;
-				oldElem->baseVertexPointerToElement(pSrcBase, &pSrc);
-				newElem->baseVertexPointerToElement(pDstBase, &pDst);
-				
-				memcpy(pDst, pSrc, newElem->getSize());
-				
-			}
-		}
-
-		// Unlock all buffers
-        for (itBinding = oldBindingMap.begin(); itBinding != oldBindingMap.end(); ++itBinding)
-        {
-            itBinding->second->unlock();
-        }
-        for (buf = 0; buf < newBinding->getBufferCount(); ++buf)
-        {
-            newBinding->getBuffer(buf)->unlock();
-        }
-
-		// Delete old binding & declaration
-		if (mDeleteDclBinding)
-		{
-			pManager->destroyVertexBufferBinding(vertexBufferBinding);
-		}
-
-		// Assign new binding and declaration
-		vertexDeclaration = newDeclaration;
-		vertexBufferBinding = newBinding;		
-		// after this is complete, new manager should be used
-		mMgr = pManager;
-		mDeleteDclBinding = true; // because we created these through a manager
-
-	}
-    //-----------------------------------------------------------------------
-    void VertexData::reorganiseBuffers(VertexDeclarationPtr newDeclaration, HardwareBufferManager* mgr)
-    {
-        // Derive the buffer usages from looking at where the source has come
-        // from
-        BufferUsageList usages;
-        for (unsigned short b = 0; b <= newDeclaration->getMaxSource(); ++b)
-        {
-            VertexDeclaration::VertexElementList destElems = newDeclaration->findElementsBySource(b);
-            // Initialise with most restrictive version 
-            // (not really a usable option, but these flags will be removed)
-            GpuBufferUsage final = static_cast<GpuBufferUsage>(GBU_STATIC);
-            VertexDeclaration::VertexElementList::iterator v;
-            for (v = destElems.begin(); v != destElems.end(); ++v)
-            {
-                VertexElement& destelem = *v;
-                // get source
-                const VertexElement* srcelem =
-                    vertexDeclaration->findElementBySemantic(
-                        destelem.getSemantic(), destelem.getIndex());
-                // get buffer
-                HardwareVertexBufferPtr srcbuf = 
-                    vertexBufferBinding->getBuffer(srcelem->getSource());
-                // improve flexibility only
-                if (srcbuf->getUsage() & GBU_DYNAMIC)
-                {
-                    // remove static
-                    final = static_cast<GpuBufferUsage>(
-                        final & ~GBU_STATIC);
-                    // add dynamic
-                    final = static_cast<GpuBufferUsage>(
-                        final | GBU_DYNAMIC);
-                }
-            }
-            usages.push_back(final);
-        }
-        // Call specific method
-        reorganiseBuffers(newDeclaration, usages, mgr);
-
-    }
-    //-----------------------------------------------------------------------
-    void VertexData::closeGapsInBindings(void)
-    {
-        if (!vertexBufferBinding->hasGaps())
-            return;
-
-        // Check for error first
-        const VertexDeclaration::VertexElementList& allelems = 
-            vertexDeclaration->getElements();
-        VertexDeclaration::VertexElementList::const_iterator ai;
-        for (ai = allelems.begin(); ai != allelems.end(); ++ai)
-        {
-            const VertexElement& elem = *ai;
-            if (!vertexBufferBinding->isBufferBound(elem.getSource()))
-            {
-                CM_EXCEPT(ItemIdentityException,
-                    "No buffer is bound to that element source.");
-            }
-        }
-
-        // Close gaps in the vertex buffer bindings
-        VertexBufferBinding::BindingIndexMap bindingIndexMap;
-        vertexBufferBinding->closeGaps(bindingIndexMap);
-
-        // Modify vertex elements to reference to new buffer index
-        unsigned short elemIndex = 0;
-        for (ai = allelems.begin(); ai != allelems.end(); ++ai, ++elemIndex)
-        {
-            const VertexElement& elem = *ai;
-            VertexBufferBinding::BindingIndexMap::const_iterator it =
-                bindingIndexMap.find(elem.getSource());
-            assert(it != bindingIndexMap.end());
-            UINT16 targetSource = it->second;
-            if (elem.getSource() != targetSource)
-            {
-                vertexDeclaration->modifyElement(elemIndex, 
-                    targetSource, elem.getOffset(), elem.getType(), 
-                    elem.getSemantic(), elem.getIndex());
-            }
-        }
-    }
-    //-----------------------------------------------------------------------
-    void VertexData::removeUnusedBuffers(void)
-    {
-        set<UINT16>::type usedBuffers;
-
-        // Collect used buffers
-        const VertexDeclaration::VertexElementList& allelems = 
-            vertexDeclaration->getElements();
-        VertexDeclaration::VertexElementList::const_iterator ai;
-        for (ai = allelems.begin(); ai != allelems.end(); ++ai)
-        {
-            const VertexElement& elem = *ai;
-            usedBuffers.insert(elem.getSource());
-        }
-
-        // Unset unused buffer bindings
-        UINT16 count = vertexBufferBinding->getLastBoundIndex();
-        for (UINT16 index = 0; index < count; ++index)
-        {
-            if (usedBuffers.find(index) == usedBuffers.end() &&
-                vertexBufferBinding->isBufferBound(index))
-            {
-                vertexBufferBinding->unsetBinding(index);
-            }
-        }
-
-        // Close gaps
-        closeGapsInBindings();
-    }
-	//-----------------------------------------------------------------------
 	void VertexData::convertPackedColour(
 		VertexElementType srcType, VertexElementType destType)
 	{
@@ -377,13 +150,10 @@ namespace CamelotEngine {
 				"Invalid srcType parameter");
 		}
 
-		const VertexBufferBinding::VertexBufferBindingMap& bindMap = 
-			vertexBufferBinding->getBindings();
-		VertexBufferBinding::VertexBufferBindingMap::const_iterator bindi;
-		for (bindi = bindMap.begin(); bindi != bindMap.end(); ++bindi)
+		for (auto iter = mVertexBuffers.begin(); iter != mVertexBuffers.end(); ++iter)
 		{
 			VertexDeclaration::VertexElementList elems = 
-				vertexDeclaration->findElementsBySource(bindi->first);
+				vertexDeclaration->findElementsBySource(iter->first);
 			bool conversionNeeded = false;
 			VertexDeclaration::VertexElementList::iterator elemi;
 			for (elemi = elems.begin(); elemi != elems.end(); ++elemi)
@@ -399,9 +169,9 @@ namespace CamelotEngine {
 
 			if (conversionNeeded)
 			{
-				void* pBase = bindi->second->lock(GBL_READ_WRITE);
+				void* pBase = iter->second->lock(GBL_READ_WRITE);
 
-				for (UINT32 v = 0; v < bindi->second->getNumVertices(); ++v)
+				for (UINT32 v = 0; v < iter->second->getNumVertices(); ++v)
 				{
 
 					for (elemi = elems.begin(); elemi != elems.end(); ++elemi)
@@ -419,9 +189,9 @@ namespace CamelotEngine {
 						}
 					}
 					pBase = static_cast<void*>(
-						static_cast<char*>(pBase) + bindi->second->getVertexSize());
+						static_cast<char*>(pBase) + iter->second->getVertexSize());
 				}
-				bindi->second->unlock();
+				iter->second->unlock();
 
 				// Modify the elements to reflect the changed type
 				const VertexDeclaration::VertexElementList& allelems = 
@@ -440,25 +210,20 @@ namespace CamelotEngine {
 							elem.getSemantic(), elem.getIndex());
 					}
 				}
-
 			}
-
-
 		} // each buffer
 	}
-    //-----------------------------------------------------------------------
-	//-----------------------------------------------------------------------
+
 	IndexData::IndexData()
 	{
 		indexCount = 0;
 		indexStart = 0;
-		
 	}
-    //-----------------------------------------------------------------------
+
 	IndexData::~IndexData()
 	{
 	}
-    //-----------------------------------------------------------------------
+
 	IndexData* IndexData::clone(bool copyData, HardwareBufferManager* mgr) const
 	{
 		HardwareBufferManager* pManager = mgr ? mgr : HardwareBufferManager::instancePtr();
@@ -480,8 +245,7 @@ namespace CamelotEngine {
 		dest->indexStart = indexStart;
 		return dest;
 	}
-    //-----------------------------------------------------------------------
-    //-----------------------------------------------------------------------
+
 	// Local Utility class for vertex cache optimizer
 	class Triangle
     {
@@ -572,7 +336,7 @@ namespace CamelotEngine {
 			c = t;
 		}
 	};
-    //-----------------------------------------------------------------------
+
 	void IndexData::optimiseVertexCacheTriList(void)
 	{
 		if (indexBuffer->isLocked()) return;
@@ -678,9 +442,8 @@ namespace CamelotEngine {
 					
 		indexBuffer->unlock();
 	}
-	//-----------------------------------------------------------------------
-	//-----------------------------------------------------------------------
-	void VertexCacheProfiler::profile(const HardwareIndexBufferPtr& indexBuffer)
+
+	void VertexCacheProfiler::profile(const IndexBufferPtr& indexBuffer)
     {
 		if (indexBuffer->isLocked()) return;
 
@@ -699,7 +462,6 @@ namespace CamelotEngine {
 		indexBuffer->unlock();
 	}
 
-	//-----------------------------------------------------------------------
 	bool VertexCacheProfiler::inCache(unsigned int index)
 	{
 		for (unsigned int i = 0; i < buffersize; ++i)
@@ -719,6 +481,4 @@ namespace CamelotEngine {
 
 		return false;
 	}
-	
-
 }

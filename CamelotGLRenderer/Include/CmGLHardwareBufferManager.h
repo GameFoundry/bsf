@@ -52,13 +52,13 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc HardwareBufferManager::createVertexBuffer
 		 */
-        HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, 
+        VertexBufferPtr createVertexBuffer(UINT32 vertexSize, 
             UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/**
 		 * @copydoc HardwareBufferManager::createIndexBuffer
 		 */
-        HardwareIndexBufferPtr createIndexBuffer(
+        IndexBufferPtr createIndexBuffer(
             IndexBuffer::IndexType itype, UINT32 numIndexes, 
             GpuBufferUsage usage);
 

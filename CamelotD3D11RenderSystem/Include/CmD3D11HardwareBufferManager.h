@@ -14,12 +14,12 @@ namespace CamelotEngine
 		/**
 		 * @brief	Creates a hardware vertex buffer.
 		 */
-		HardwareVertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+		VertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 		
 		/**
 		 * @brief	Creates a hardware index buffer.
 		 */
-		HardwareIndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		IndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
 		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);

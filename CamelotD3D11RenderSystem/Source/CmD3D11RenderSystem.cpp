@@ -272,14 +272,28 @@ namespace CamelotEngine
 		mDevice->getImmediateContext()->RSSetViewports(1, &mViewport);
 	}
 
-	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
+	void D3D11RenderSystem::setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		throw std::exception("The method or operation is not implemented.");
 	}
 
-	void D3D11RenderSystem::setVertexBufferBinding(VertexBufferBinding* binding)
+	void D3D11RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::setDrawOperation(DrawOperationType op)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -363,6 +377,20 @@ namespace CamelotEngine
 	}
 
 	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::draw(UINT32 vertexCount)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		throw std::exception("The method or operation is not implemented.");
+	}
+
+	void D3D11RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -484,11 +512,10 @@ namespace CamelotEngine
 		mCurrentCapabilities->setCapability(RSC_HWOCCLUSION);
 		mCurrentCapabilities->setCapability(RSC_HWOCCLUSION_ASYNCHRONOUS);
 
-		// TODO - Add shader specific caps
-		//  Num of texture samples
-		//  Num of uniform buffers
-		
-
+		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_1)
+			mCurrentCapabilities->setMaxBoundVertexBuffers(32);
+		else
+			mCurrentCapabilities->setMaxBoundVertexBuffers(16);
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_0)
 		{

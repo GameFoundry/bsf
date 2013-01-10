@@ -72,7 +72,6 @@ namespace CamelotEngine
 		// Vertices
 		mVertexData = new VertexData();
 
-		mVertexData->vertexStart = 0;
 		mVertexData->vertexCount = meshData->vertexCount;
 
 		mVertexData->vertexDeclaration = meshData->declaration->clone();
@@ -81,12 +80,12 @@ namespace CamelotEngine
 		{
 			int streamIdx = iter->first; 
 
-			HardwareVertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
+			VertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
 				mVertexData->vertexDeclaration->getVertexSize(streamIdx),
 				mVertexData->vertexCount,
 				GBU_STATIC);
 
-			mVertexData->vertexBufferBinding->setBinding(streamIdx, vertexBuffer);
+			mVertexData->setBuffer(streamIdx, vertexBuffer);
 
 			UINT32 vertexSize = vertexBuffer->getVertexSize();
 			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_WRITE));
@@ -202,20 +201,18 @@ namespace CamelotEngine
 
 		if(mVertexData)
 		{
-			meshData->vertexCount = mVertexData->vertexCount - mVertexData->vertexStart;
+			meshData->vertexCount = mVertexData->vertexCount;
 			
-			UINT16 maxBufferIdx = mVertexData->vertexBufferBinding->getLastBoundIndex();
-			for(UINT16 i = 0; i < maxBufferIdx; i++)
-			{
-				if(!mVertexData->vertexBufferBinding->isBufferBound(i))
-					continue;
+			auto vertexBuffers = mVertexData->getBuffers();
 
-				HardwareVertexBufferPtr vertexBuffer = mVertexData->vertexBufferBinding->getBuffer(i);
+			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
+			{
+				VertexBufferPtr vertexBuffer = iter->second;
 				UINT32 vertexSize = vertexBuffer->getVertexSize();
 				UINT8* vertDataIter = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
 
-				std::shared_ptr<MeshData::VertexData> vertexData(new MeshData::VertexData(meshData->vertexCount, i));
-				meshData->vertexBuffers[i] = vertexData;
+				std::shared_ptr<MeshData::VertexData> vertexData(new MeshData::VertexData(meshData->vertexCount, iter->first));
+				meshData->vertexBuffers[iter->first] = vertexData;
 
 				UINT32 numElements = mVertexData->vertexDeclaration->getElementCount();
 				for(UINT32 j = 0; j < numElements; j++)
@@ -299,7 +296,7 @@ namespace CamelotEngine
 		ro.indexData = mIndexData;
 		ro.vertexData = mVertexData;
 		ro.useIndexes = true;
-		ro.operationType = RenderOperation::OT_TRIANGLE_LIST;
+		ro.operationType = DOT_TRIANGLE_LIST;
 
 		return ro;
 	}

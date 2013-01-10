@@ -18,6 +18,7 @@
  A way to bind buffers to a Pass, while specifying buffer range
  Fully implement DX11
  Better creation of PrimaryWindow
+  - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
  GpuParams support for bools, buffers, structs
  Static/Dynamic usage for GpuParamBlocks
  Ability to switch out GpuParamBlocks

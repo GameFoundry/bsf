@@ -33,9 +33,8 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmVertexDeclarationRTTI.h"
 
-namespace CamelotEngine {
-
-    //-----------------------------------------------------------------------------
+namespace CamelotEngine 
+{
     VertexBuffer::VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize,  
         UINT32 numVertices, GpuBufferUsage usage, 
         bool useSystemMemory) 
@@ -44,103 +43,14 @@ namespace CamelotEngine {
           mNumVertices(numVertices),
           mVertexSize(vertexSize)
     {
-        // Calculate the size of the vertices
         mSizeInBytes = mVertexSize * numVertices;
-
     }
-    //-----------------------------------------------------------------------------
+
     VertexBuffer::~VertexBuffer()
     {
 		if (mMgr)
 		{
 			mMgr->_notifyVertexBufferDestroyed(this);
 		}
-    }
-    //-----------------------------------------------------------------------------
-	VertexBufferBinding::VertexBufferBinding() : mHighIndex(0)
-	{
-	}
-    //-----------------------------------------------------------------------------
-	VertexBufferBinding::~VertexBufferBinding()
-	{
-        unsetAllBindings();
-	}
-    //-----------------------------------------------------------------------------
-	void VertexBufferBinding::setBinding(unsigned short index, const HardwareVertexBufferPtr& buffer)
-	{
-        // NB will replace any existing buffer ptr at this index, and will thus cause
-        // reference count to decrement on that buffer (possibly destroying it)
-		mBindingMap[index] = buffer;
-		mHighIndex = std::max(mHighIndex, (unsigned short)(index+1));
-	}
-    //-----------------------------------------------------------------------------
-	void VertexBufferBinding::unsetBinding(unsigned short index)
-	{
-		VertexBufferBindingMap::iterator i = mBindingMap.find(index);
-		if (i == mBindingMap.end())
-		{
-			CM_EXCEPT(ItemIdentityException,
-				"Cannot find buffer binding for index " + toString(index));
-		}
-		mBindingMap.erase(i);
-	}
-    //-----------------------------------------------------------------------------
-    void VertexBufferBinding::unsetAllBindings(void)
-    {
-        mBindingMap.clear();
-        mHighIndex = 0;
-    }
-    //-----------------------------------------------------------------------------
-	const VertexBufferBinding::VertexBufferBindingMap& 
-	VertexBufferBinding::getBindings(void) const
-	{
-		return mBindingMap;
-	}
-    //-----------------------------------------------------------------------------
-	const HardwareVertexBufferPtr& VertexBufferBinding::getBuffer(unsigned short index) const
-	{
-		VertexBufferBindingMap::const_iterator i = mBindingMap.find(index);
-		if (i == mBindingMap.end())
-		{
-			CM_EXCEPT(ItemIdentityException, "No buffer is bound to that index.");
-		}
-		return i->second;
-	}
-	//-----------------------------------------------------------------------------
-	bool VertexBufferBinding::isBufferBound(unsigned short index) const
-	{
-		return mBindingMap.find(index) != mBindingMap.end();
-	}
-    //-----------------------------------------------------------------------------
-    unsigned short VertexBufferBinding::getLastBoundIndex(void) const
-    {
-        return mBindingMap.empty() ? 0 : mBindingMap.rbegin()->first + 1;
-    }
-    //-----------------------------------------------------------------------------
-    bool VertexBufferBinding::hasGaps(void) const
-    {
-        if (mBindingMap.empty())
-            return false;
-        if (mBindingMap.rbegin()->first + 1 == (int) mBindingMap.size())
-            return false;
-        return true;
-    }
-    //-----------------------------------------------------------------------------
-    void VertexBufferBinding::closeGaps(BindingIndexMap& bindingIndexMap)
-    {
-        bindingIndexMap.clear();
-
-        VertexBufferBindingMap newBindingMap;
-
-        VertexBufferBindingMap::const_iterator it;
-        UINT16 targetIndex = 0;
-        for (it = mBindingMap.begin(); it != mBindingMap.end(); ++it, ++targetIndex)
-        {
-            bindingIndexMap[it->first] = targetIndex;
-            newBindingMap[targetIndex] = it->second;
-        }
-
-        mBindingMap.swap(newBindingMap);
-        mHighIndex = targetIndex;
     }
 }
