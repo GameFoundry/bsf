@@ -5,8 +5,8 @@
 
 namespace CamelotEngine
 {
-	D3D11GpuProgram::D3D11GpuProgram(GpuProgramType type) 
-		: GpuProgram("", "", "", type, GPP_NONE)
+	D3D11GpuProgram::D3D11GpuProgram(GpuProgramType type, const String& profile) 
+		: GpuProgram("", "", profile, type, GPP_NONE)
 	{
 
 	}
@@ -22,8 +22,8 @@ namespace CamelotEngine
 		CM_EXCEPT(RenderingAPIException, "DirectX 11 doesn't support assembly shaders.");
 	}
 
-	D3D11GpuVertexProgram::D3D11GpuVertexProgram() 
-		: D3D11GpuProgram(GPT_VERTEX_PROGRAM)
+	D3D11GpuVertexProgram::D3D11GpuVertexProgram(const String& profile) 
+		: D3D11GpuProgram(GPT_VERTEX_PROGRAM, profile)
 		, mVertexShader(nullptr)
 	{ }
 
@@ -69,8 +69,8 @@ namespace CamelotEngine
 		return mVertexShader;
 	}
 
-	D3D11GpuFragmentProgram::D3D11GpuFragmentProgram() 
-		: D3D11GpuProgram(GPT_FRAGMENT_PROGRAM)
+	D3D11GpuFragmentProgram::D3D11GpuFragmentProgram(const String& profile) 
+		: D3D11GpuProgram(GPT_FRAGMENT_PROGRAM, profile)
 		, mPixelShader(nullptr)
 	{ }
 
@@ -113,8 +113,8 @@ namespace CamelotEngine
 		return mPixelShader;
 	}
 
-	D3D11GpuGeometryProgram::D3D11GpuGeometryProgram() 
-		: D3D11GpuProgram(GPT_GEOMETRY_PROGRAM)
+	D3D11GpuGeometryProgram::D3D11GpuGeometryProgram(const String& profile) 
+		: D3D11GpuProgram(GPT_GEOMETRY_PROGRAM, profile)
 		, mGeometryShader(nullptr)
 	{ }
 
@@ -157,8 +157,8 @@ namespace CamelotEngine
 		return mGeometryShader;
 	}
 
-	D3D11GpuDomainProgram::D3D11GpuDomainProgram() 
-		: D3D11GpuProgram(GPT_DOMAIN_PROGRAM)
+	D3D11GpuDomainProgram::D3D11GpuDomainProgram(const String& profile) 
+		: D3D11GpuProgram(GPT_DOMAIN_PROGRAM, profile)
 		, mDomainShader(nullptr)
 	{ }
 
@@ -201,8 +201,8 @@ namespace CamelotEngine
 		return mDomainShader;
 	}
 
-	D3D11GpuHullProgram::D3D11GpuHullProgram() 
-		: D3D11GpuProgram(GPT_HULL_PROGRAM)
+	D3D11GpuHullProgram::D3D11GpuHullProgram(const String& profile) 
+		: D3D11GpuProgram(GPT_HULL_PROGRAM, profile)
 		, mHullShader(nullptr)
 	{ }
 
@@ -245,8 +245,8 @@ namespace CamelotEngine
 		return mHullShader;
 	}
 
-	D3D11GpuComputeProgram::D3D11GpuComputeProgram() 
-		: D3D11GpuProgram(GPT_COMPUTE_PROGRAM)
+	D3D11GpuComputeProgram::D3D11GpuComputeProgram(const String& profile) 
+		: D3D11GpuProgram(GPT_COMPUTE_PROGRAM, profile)
 		, mComputeShader(nullptr)
 	{ }
 

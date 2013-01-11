@@ -95,22 +95,22 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc RenderSystem::setSamplerState()
 		 */
-		void setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerState& state);
+		void setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state);
 
 		/**
 		 * @copydoc RenderSystem::setBlendState()
 		 */
-		void setBlendState(const BlendState& blendState);
+		void setBlendState(const BlendStatePtr& blendState);
 
 		/**
 		 * @copydoc RenderSystem::setRasterizerState()
 		 */
-		void setRasterizerState(const RasterizerState& rasterizerState);
+		void setRasterizerState(const RasterizerStatePtr& rasterizerState);
 
 		/**
 		 * @copydoc RenderSystem::setDepthStencilState()
 		 */
-		void setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue);
+		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue);
 
 		/**
 		 * @copydoc RenderSystem::setViewport()

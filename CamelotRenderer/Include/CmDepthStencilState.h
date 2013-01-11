@@ -73,7 +73,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Returns the default depth stencil state;
 		 */
-		static const DepthStencilState& getDefault();
+		static const DepthStencilStatePtr& getDefault();
 	private:
 		friend class RenderStateManager;
 

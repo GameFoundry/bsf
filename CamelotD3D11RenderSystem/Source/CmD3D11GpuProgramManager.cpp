@@ -16,15 +16,15 @@ namespace CamelotEngine
 		switch(gptype)
 		{
 		case GPT_VERTEX_PROGRAM:
-			return new D3D11GpuVertexProgram();
+			return new D3D11GpuVertexProgram(language);
 		case GPT_FRAGMENT_PROGRAM:
-			return new D3D11GpuFragmentProgram();
+			return new D3D11GpuFragmentProgram(language);
 		case GPT_HULL_PROGRAM:
-			return new D3D11GpuHullProgram();
+			return new D3D11GpuHullProgram(language);
 		case GPT_DOMAIN_PROGRAM:
-			return new D3D11GpuDomainProgram();
+			return new D3D11GpuDomainProgram(language);
 		case GPT_GEOMETRY_PROGRAM:
-			return new D3D11GpuGeometryProgram();
+			return new D3D11GpuGeometryProgram(language);
 		}
 		
 		return nullptr;

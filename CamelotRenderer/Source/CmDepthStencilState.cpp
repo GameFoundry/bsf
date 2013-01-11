@@ -10,16 +10,9 @@ namespace CamelotEngine
 		mData = desc;
 	}
 
-	const DepthStencilState& DepthStencilState::getDefault()
+	const DepthStencilStatePtr& DepthStencilState::getDefault()
 	{
-		static DepthStencilState depthStencilState;
-		static bool initialized = false;
-
-		if(!initialized)
-		{
-			depthStencilState.initialize(DEPTH_STENCIL_STATE_DESC());
-			initialized = true;
-		}
+		static DepthStencilStatePtr depthStencilState = RenderStateManager::instance().createDepthStencilState(DEPTH_STENCIL_STATE_DESC());
 
 		return depthStencilState;
 	}

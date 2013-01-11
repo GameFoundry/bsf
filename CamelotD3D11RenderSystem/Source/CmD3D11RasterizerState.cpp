@@ -31,6 +31,12 @@ namespace CamelotEngine
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
-		device.getD3D11Device()->CreateRasterizerState(&rasterizerStateDesc, &mRasterizerState);
+		HRESULT hr = device.getD3D11Device()->CreateRasterizerState(&rasterizerStateDesc, &mRasterizerState);
+
+		if(FAILED(hr) || device.hasError())
+		{
+			String errorDescription = device.getErrorDescription();
+			CM_EXCEPT(RenderingAPIException, "Cannot create rasterizer state.\nError Description:" + errorDescription);
+		}
 	}
 }

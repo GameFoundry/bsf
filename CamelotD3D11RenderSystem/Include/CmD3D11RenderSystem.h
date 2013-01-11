@@ -20,11 +20,11 @@ namespace CamelotEngine
 		 */
 		const String& getShadingLanguageName() const;
 
-		void setBlendState(const BlendState& blendState);
-		void setRasterizerState(const RasterizerState& rasterizerState);
-		void setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue);
+		void setBlendState(const BlendStatePtr& blendState);
+		void setRasterizerState(const RasterizerStatePtr& rasterizerState);
+		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue);
 
-		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState);
+		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState);
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
 		void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 

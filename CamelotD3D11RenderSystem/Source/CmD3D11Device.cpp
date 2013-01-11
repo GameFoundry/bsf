@@ -20,10 +20,13 @@ namespace CamelotEngine
 		{
 			device->GetImmediateContext(&mImmediateContext);
 
+#if CM_DEBUG_MODE
+			// This interface is not available unless we created the device with debug layer
 			HRESULT hr = mD3D11Device->QueryInterface(__uuidof(ID3D11InfoQueue), (LPVOID*)&mInfoQueue);
 
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Unable to query D3D11InfoQueue");
+#endif
 
 			// If feature level is 11, create class linkage
 			SAFE_RELEASE(mClassLinkage);

@@ -97,7 +97,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Returns the default sampler state;
 		 */
-		static const SamplerState& getDefault();
+		static const SamplerStatePtr& getDefault();
 
 	private:
 		friend class RenderStateManager;

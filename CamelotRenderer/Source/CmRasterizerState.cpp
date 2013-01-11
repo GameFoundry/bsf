@@ -9,16 +9,9 @@ namespace CamelotEngine
 		mData = desc;
 	}
 
-	const RasterizerState& RasterizerState::getDefault()
+	const RasterizerStatePtr& RasterizerState::getDefault()
 	{
-		static RasterizerState rasterizerState;
-		static bool initialized = false;
-
-		if(!initialized)
-		{
-			rasterizerState.initialize(RASTERIZER_STATE_DESC());
-			initialized = true;
-		}
+		static RasterizerStatePtr rasterizerState = RenderStateManager::instance().createRasterizerState(RASTERIZER_STATE_DESC());
 
 		return rasterizerState;
 	}

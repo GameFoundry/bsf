@@ -199,6 +199,7 @@
     <ClCompile Include="Source\CmD3D11IndexBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11HLSLProgramFactory.cpp" />
     <ClCompile Include="Source\CmD3D11Mappings.cpp" />
+    <ClCompile Include="Source\CmD3D11Plugin.cpp" />
     <ClCompile Include="Source\CmD3D11VertexBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11MultiRenderTexture.cpp" />
     <ClCompile Include="Source\CmD3D11RasterizerState.cpp" />

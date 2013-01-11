@@ -17,7 +17,7 @@
 #include "CmD3D11Mappings.h"
 #include "CmD3D11VertexBuffer.h"
 #include "CmD3D11IndexBuffer.h"
-#include "CmRenderSystem.h"
+#include "CmD3D11RenderStateManager.h"
 #include "CmDebug.h"
 #include "CmException.h"
 
@@ -79,9 +79,15 @@ namespace CamelotEngine
 
 		UINT32 numRequestedLevel = sizeof(requestedLevels) / sizeof(requestedLevels[0]);
 
+		UINT32 deviceFlags = 0;
+
+#if CM_DEBUG_MODE
+		deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
 		ID3D11Device* device;
-		hr = D3D11CreateDevice(selectedAdapter, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, 
-			requestedLevels, numRequestedLevel, D3D11_SDK_VERSION, &device, &mFeatureLevel, 0);
+		hr = D3D11CreateDevice(selectedAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, deviceFlags, 
+			requestedLevels, numRequestedLevel, D3D11_SDK_VERSION, &device, &mFeatureLevel, nullptr);
 
 		if(FAILED(hr))         
 			CM_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 object. D3D11CreateDeviceN returned this error code: " + toString(hr));
@@ -112,6 +118,14 @@ namespace CamelotEngine
 		// Create & register HLSL factory		
 		mHLSLFactory = new D3D11HLSLProgramFactory();
 
+		// Create render state manager
+		RenderStateManager::startUp(new D3D11RenderStateManager());
+
+		mCurrentCapabilities = createRenderSystemCapabilities();
+
+		mCurrentCapabilities->addShaderProfile("hlsl");
+		HighLevelGpuProgramManager::instance().addFactory(mHLSLFactory);
+
 		RenderSystem::initialize_internal();
 	}
 
@@ -121,6 +135,7 @@ namespace CamelotEngine
 
 		SAFE_DELETE(mHLSLFactory);
 
+		RenderStateManager::shutDown();
 		RenderWindowManager::shutDown();
 		GpuProgramManager::shutDown();
 		HardwareBufferManager::shutDown();
@@ -134,7 +149,7 @@ namespace CamelotEngine
 		RenderSystem::destroy_internal();
 	}
 
-	void D3D11RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState)
+	void D3D11RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -142,7 +157,7 @@ namespace CamelotEngine
 		//  and then set them all up at once before rendering? Needs testing
 
 		ID3D11SamplerState* samplerArray[1];
-		D3D11SamplerState* d3d11SamplerState = static_cast<D3D11SamplerState*>(const_cast<SamplerState*>(&samplerState));
+		D3D11SamplerState* d3d11SamplerState = static_cast<D3D11SamplerState*>(const_cast<SamplerState*>(samplerState.get()));
 		samplerArray[0] = d3d11SamplerState->getInternal();
 
 		switch(gptype)
@@ -170,27 +185,27 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D11RenderSystem::setBlendState(const BlendState& blendState)
+	void D3D11RenderSystem::setBlendState(const BlendStatePtr& blendState)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(&blendState));
+		D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(blendState.get()));
 		mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
 	}
 
-	void D3D11RenderSystem::setRasterizerState(const RasterizerState& rasterizerState)
+	void D3D11RenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		D3D11RasterizerState* d3d11RasterizerState = static_cast<D3D11RasterizerState*>(const_cast<RasterizerState*>(&rasterizerState));
+		D3D11RasterizerState* d3d11RasterizerState = static_cast<D3D11RasterizerState*>(const_cast<RasterizerState*>(rasterizerState.get()));
 		mDevice->getImmediateContext()->RSSetState(d3d11RasterizerState->getInternal());
 	}
 
-	void D3D11RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue)
+	void D3D11RenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(&depthStencilState));
+		D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(depthStencilState.get()));
 		mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencilRefValue);
 	}
 
@@ -517,118 +532,113 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		throw std::exception("The method or operation is not implemented.");
-	}
+		RenderSystemCapabilities* rsc = new RenderSystemCapabilities();
 
-	void D3D11RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
-	{
-		mCurrentCapabilities = new RenderSystemCapabilities();
+		rsc->setDriverVersion(mDriverVersion);
+		rsc->setDeviceName(mActiveD3DDriver->getDriverDescription());
+		rsc->setRenderSystemName(getName());
 
-		mCurrentCapabilities->setDriverVersion(mDriverVersion);
-		mCurrentCapabilities->setDeviceName(mActiveD3DDriver->getDriverDescription());
-		mCurrentCapabilities->setRenderSystemName(getName());
+		rsc->setCapability(RSC_HWSTENCIL);
+		rsc->setStencilBufferBitDepth(8);
 
-		mCurrentCapabilities->setCapability(RSC_HWSTENCIL);
-		mCurrentCapabilities->setStencilBufferBitDepth(8);
-
-		mCurrentCapabilities->setCapability(RSC_ANISOTROPY);
-		mCurrentCapabilities->setCapability(RSC_AUTOMIPMAP);
-		mCurrentCapabilities->setCapability(RSC_BLENDING);
-		mCurrentCapabilities->setCapability(RSC_DOT3);
+		rsc->setCapability(RSC_ANISOTROPY);
+		rsc->setCapability(RSC_AUTOMIPMAP);
+		rsc->setCapability(RSC_BLENDING);
+		rsc->setCapability(RSC_DOT3);
 
 		// Cube map
-		mCurrentCapabilities->setCapability(RSC_CUBEMAPPING);
+		rsc->setCapability(RSC_CUBEMAPPING);
 
 		// We always support compression, D3DX will decompress if device does not support
-		mCurrentCapabilities->setCapability(RSC_TEXTURE_COMPRESSION);
-		mCurrentCapabilities->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
-		mCurrentCapabilities->setCapability(RSC_VBO);
-		mCurrentCapabilities->setCapability(RSC_SCISSOR_TEST);
-		mCurrentCapabilities->setCapability(RSC_TWO_SIDED_STENCIL);
-		mCurrentCapabilities->setCapability(RSC_STENCIL_WRAP);
-		mCurrentCapabilities->setCapability(RSC_HWOCCLUSION);
-		mCurrentCapabilities->setCapability(RSC_HWOCCLUSION_ASYNCHRONOUS);
+		rsc->setCapability(RSC_TEXTURE_COMPRESSION);
+		rsc->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
+		rsc->setCapability(RSC_VBO);
+		rsc->setCapability(RSC_SCISSOR_TEST);
+		rsc->setCapability(RSC_TWO_SIDED_STENCIL);
+		rsc->setCapability(RSC_STENCIL_WRAP);
+		rsc->setCapability(RSC_HWOCCLUSION);
+		rsc->setCapability(RSC_HWOCCLUSION_ASYNCHRONOUS);
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_1)
-			mCurrentCapabilities->setMaxBoundVertexBuffers(32);
+			rsc->setMaxBoundVertexBuffers(32);
 		else
-			mCurrentCapabilities->setMaxBoundVertexBuffers(16);
+			rsc->setMaxBoundVertexBuffers(16);
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_0)
 		{
-			mCurrentCapabilities->addShaderProfile("ps_4_0");
-			mCurrentCapabilities->addShaderProfile("vs_4_0");
-			mCurrentCapabilities->addShaderProfile("gs_4_0");
+			rsc->addShaderProfile("ps_4_0");
+			rsc->addShaderProfile("vs_4_0");
+			rsc->addShaderProfile("gs_4_0");
 
-			mCurrentCapabilities->addGpuProgramProfile(GPP_PS_4_0, "ps_4_0");
-			mCurrentCapabilities->addGpuProgramProfile(GPP_VS_4_0, "vs_4_0");
-			mCurrentCapabilities->addGpuProgramProfile(GPP_GS_4_0, "gs_4_0");
-			 
-			mCurrentCapabilities->setNumTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
-			mCurrentCapabilities->setNumTextureUnits(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
-			mCurrentCapabilities->setNumTextureUnits(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			rsc->addGpuProgramProfile(GPP_PS_4_0, "ps_4_0");
+			rsc->addGpuProgramProfile(GPP_VS_4_0, "vs_4_0");
+			rsc->addGpuProgramProfile(GPP_GS_4_0, "gs_4_0");
 
-			mCurrentCapabilities->setNumCombinedTextureUnits(mCurrentCapabilities->getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
-				+ mCurrentCapabilities->getNumTextureUnits(GPT_VERTEX_PROGRAM) + mCurrentCapabilities->getNumTextureUnits(GPT_VERTEX_PROGRAM));
+			rsc->setNumTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			rsc->setNumTextureUnits(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			rsc->setNumTextureUnits(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
 
-			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumCombinedTextureUnits(rsc->getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
+				+ rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM) + rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM));
 
-			mCurrentCapabilities->setNumCombinedUniformBlockBuffers(mCurrentCapabilities->getNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM)
-				+ mCurrentCapabilities->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM) + mCurrentCapabilities->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM));
+			rsc->setNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumUniformBlockBuffers(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumUniformBlockBuffers(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+
+			rsc->setNumCombinedUniformBlockBuffers(rsc->getNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM)
+				+ rsc->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM) + rsc->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM));
 		}
-		
+
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_1)
 		{
-			mCurrentCapabilities->addShaderProfile("ps_4_1");
-			mCurrentCapabilities->addShaderProfile("vs_4_1");
-			mCurrentCapabilities->addShaderProfile("gs_4_1");
+			rsc->addShaderProfile("ps_4_1");
+			rsc->addShaderProfile("vs_4_1");
+			rsc->addShaderProfile("gs_4_1");
 
-			mCurrentCapabilities->addGpuProgramProfile(GPP_PS_4_1, "ps_4_1");
-			mCurrentCapabilities->addGpuProgramProfile(GPP_VS_4_1, "vs_4_1");
-			mCurrentCapabilities->addGpuProgramProfile(GPP_GS_4_1, "gs_4_1");
+			rsc->addGpuProgramProfile(GPP_PS_4_1, "ps_4_1");
+			rsc->addGpuProgramProfile(GPP_VS_4_1, "vs_4_1");
+			rsc->addGpuProgramProfile(GPP_GS_4_1, "gs_4_1");
 		}
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_11_0)
 		{
-			mCurrentCapabilities->addShaderProfile("ps_5_0");
-			mCurrentCapabilities->addShaderProfile("vs_5_0");
-			mCurrentCapabilities->addShaderProfile("gs_5_0");
-			mCurrentCapabilities->addShaderProfile("cs_5_0");
-			mCurrentCapabilities->addShaderProfile("hs_5_0");
-			mCurrentCapabilities->addShaderProfile("ds_5_0");
+			rsc->addShaderProfile("ps_5_0");
+			rsc->addShaderProfile("vs_5_0");
+			rsc->addShaderProfile("gs_5_0");
+			rsc->addShaderProfile("cs_5_0");
+			rsc->addShaderProfile("hs_5_0");
+			rsc->addShaderProfile("ds_5_0");
 
-			mCurrentCapabilities->addGpuProgramProfile(GPP_PS_5_0, "ps_5_0");
-			mCurrentCapabilities->addGpuProgramProfile(GPP_VS_5_0, "vs_5_0");
-			mCurrentCapabilities->addGpuProgramProfile(GPP_GS_5_0, "gs_5_0");
-			mCurrentCapabilities->addGpuProgramProfile(GPP_CS_5_0, "cs_5_0");
-			mCurrentCapabilities->addGpuProgramProfile(GPP_HS_5_0, "hs_5_0");
-			mCurrentCapabilities->addGpuProgramProfile(GPP_DS_5_0, "ds_5_0");
+			rsc->addGpuProgramProfile(GPP_PS_5_0, "ps_5_0");
+			rsc->addGpuProgramProfile(GPP_VS_5_0, "vs_5_0");
+			rsc->addGpuProgramProfile(GPP_GS_5_0, "gs_5_0");
+			rsc->addGpuProgramProfile(GPP_CS_5_0, "cs_5_0");
+			rsc->addGpuProgramProfile(GPP_HS_5_0, "hs_5_0");
+			rsc->addGpuProgramProfile(GPP_DS_5_0, "ds_5_0");
 
-			mCurrentCapabilities->setNumTextureUnits(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
-			mCurrentCapabilities->setNumTextureUnits(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
-			mCurrentCapabilities->setNumTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			rsc->setNumTextureUnits(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			rsc->setNumTextureUnits(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			rsc->setNumTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
 
-			mCurrentCapabilities->setNumCombinedTextureUnits(mCurrentCapabilities->getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
-				+ mCurrentCapabilities->getNumTextureUnits(GPT_VERTEX_PROGRAM) + mCurrentCapabilities->getNumTextureUnits(GPT_VERTEX_PROGRAM)
-				+ mCurrentCapabilities->getNumTextureUnits(GPT_HULL_PROGRAM) + mCurrentCapabilities->getNumTextureUnits(GPT_DOMAIN_PROGRAM)
-				+ mCurrentCapabilities->getNumTextureUnits(GPT_COMPUTE_PROGRAM));
+			rsc->setNumCombinedTextureUnits(rsc->getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
+				+ rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM) + rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM)
+				+ rsc->getNumTextureUnits(GPT_HULL_PROGRAM) + rsc->getNumTextureUnits(GPT_DOMAIN_PROGRAM)
+				+ rsc->getNumTextureUnits(GPT_COMPUTE_PROGRAM));
 
-			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			mCurrentCapabilities->setNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumUniformBlockBuffers(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
 
-			mCurrentCapabilities->setNumCombinedUniformBlockBuffers(mCurrentCapabilities->getNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM)
-				+ mCurrentCapabilities->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM) + mCurrentCapabilities->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM)
-				+ mCurrentCapabilities->getNumUniformBlockBuffers(GPT_HULL_PROGRAM) + mCurrentCapabilities->getNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM)
-				+ mCurrentCapabilities->getNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM));
+			rsc->setNumCombinedUniformBlockBuffers(rsc->getNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM)
+				+ rsc->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM) + rsc->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM)
+				+ rsc->getNumUniformBlockBuffers(GPT_HULL_PROGRAM) + rsc->getNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM)
+				+ rsc->getNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM));
 
-			mCurrentCapabilities->setCapability(RSC_SHADER_SUBROUTINE);
+			rsc->setCapability(RSC_SHADER_SUBROUTINE);
 		}
 
-		mCurrentCapabilities->setCapability(RSC_USER_CLIP_PLANES);
-		mCurrentCapabilities->setCapability(RSC_VERTEX_FORMAT_UBYTE4);
+		rsc->setCapability(RSC_USER_CLIP_PLANES);
+		rsc->setCapability(RSC_VERTEX_FORMAT_UBYTE4);
 
 		// Adapter details
 		const DXGI_ADAPTER_DESC& adapterID = mActiveD3DDriver->getAdapterIdentifier();
@@ -638,56 +648,55 @@ namespace CamelotEngine
 		switch(adapterID.VendorId)
 		{
 		case 0x10DE:
-			mCurrentCapabilities->setVendor(GPU_NVIDIA);
+			rsc->setVendor(GPU_NVIDIA);
 			break;
 		case 0x1002:
-			mCurrentCapabilities->setVendor(GPU_ATI);
+			rsc->setVendor(GPU_ATI);
 			break;
 		case 0x163C:
 		case 0x8086:
-			mCurrentCapabilities->setVendor(GPU_INTEL);
+			rsc->setVendor(GPU_INTEL);
 			break;
 		case 0x5333:
-			mCurrentCapabilities->setVendor(GPU_S3);
+			rsc->setVendor(GPU_S3);
 			break;
 		case 0x3D3D:
-			mCurrentCapabilities->setVendor(GPU_3DLABS);
+			rsc->setVendor(GPU_3DLABS);
 			break;
 		case 0x102B:
-			mCurrentCapabilities->setVendor(GPU_MATROX);
+			rsc->setVendor(GPU_MATROX);
 			break;
 		default:
-			mCurrentCapabilities->setVendor(GPU_UNKNOWN);
+			rsc->setVendor(GPU_UNKNOWN);
 			break;
 		};
 
-		mCurrentCapabilities->setCapability(RSC_INFINITE_FAR_PLANE);
+		rsc->setCapability(RSC_INFINITE_FAR_PLANE);
 
-		mCurrentCapabilities->setCapability(RSC_TEXTURE_3D);
-		mCurrentCapabilities->setCapability(RSC_NON_POWER_OF_2_TEXTURES);
-		mCurrentCapabilities->setCapability(RSC_HWRENDER_TO_TEXTURE);
-		mCurrentCapabilities->setCapability(RSC_TEXTURE_FLOAT);
+		rsc->setCapability(RSC_TEXTURE_3D);
+		rsc->setCapability(RSC_NON_POWER_OF_2_TEXTURES);
+		rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
+		rsc->setCapability(RSC_TEXTURE_FLOAT);
 
-		mCurrentCapabilities->setNumMultiRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT);
-		mCurrentCapabilities->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);
+		rsc->setNumMultiRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT);
+		rsc->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);
 
-		mCurrentCapabilities->setCapability(RSC_POINT_SPRITES);
-		mCurrentCapabilities->setCapability(RSC_POINT_EXTENDED_PARAMETERS);
-		mCurrentCapabilities->setMaxPointSize(256);
+		rsc->setCapability(RSC_POINT_SPRITES);
+		rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS);
+		rsc->setMaxPointSize(256);
 
-		mCurrentCapabilities->setCapability(RSC_VERTEX_TEXTURE_FETCH);
+		rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
 
-		mCurrentCapabilities->setCapability(RSC_MIPMAP_LOD_BIAS);
+		rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
 
-		mCurrentCapabilities->setCapability(RSC_PERSTAGECONSTANT);
+		rsc->setCapability(RSC_PERSTAGECONSTANT);
 
+		return rsc;
+	}
 
-
-
-
-		// TODO - See what else needs to be initialized
-		
-		throw std::exception("The method or operation is not implemented.");
+	void D3D11RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
+	{
+		// Do nothing
 	}
 
 	String D3D11RenderSystem::getErrorDescription(long errorNumber) const

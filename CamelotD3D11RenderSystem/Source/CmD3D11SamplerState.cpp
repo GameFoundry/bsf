@@ -89,6 +89,12 @@ namespace CamelotEngine
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
-		device.getD3D11Device()->CreateSamplerState(&samplerState, &mSamplerState);
+		HRESULT hr = device.getD3D11Device()->CreateSamplerState(&samplerState, &mSamplerState);
+
+		if(FAILED(hr) || device.hasError())
+		{
+			String errorDescription = device.getErrorDescription();
+			CM_EXCEPT(RenderingAPIException, "Cannot create sampler state.\nError Description:" + errorDescription);
+		}
 	}
 }

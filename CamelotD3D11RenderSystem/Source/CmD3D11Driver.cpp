@@ -52,7 +52,7 @@ namespace CamelotEngine
 			outputIdx++;
 		}
 
-		mNumOutputs = outputIdx + 1;
+		mNumOutputs = outputIdx;
 
 		mVideoModeList = new D3D11VideoModeList*[mNumOutputs];
 		for(UINT32 i = 0; i < mNumOutputs; i++)

@@ -65,7 +65,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Returns the default blend state;
 		 */
-		static const BlendState& getDefault();
+		static const BlendStatePtr& getDefault();
 
 	private:
 		friend class RenderStateManager;

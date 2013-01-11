@@ -48,6 +48,7 @@ THE SOFTWARE.
 #include "CmD3D9ResourceManager.h"
 #include "CmD3D9RenderWindowManager.h"
 #include "CmHighLevelGpuProgramManager.h"
+#include "CmRenderStateManager.h"
 #include "CmAsyncOp.h"
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
@@ -197,6 +198,9 @@ namespace CamelotEngine
 		// Create render window manager
 		RenderWindowManager::startUp(new D3D9RenderWindowManager(this));
 
+		// Create render state manager
+		RenderStateManager::startUp(new RenderStateManager());
+
 		// call superclass method
 		RenderSystem::initialize_internal();
 	}
@@ -220,6 +224,7 @@ namespace CamelotEngine
 		HardwareBufferManager::shutDown();
 		GpuProgramManager::shutDown();	
 		RenderWindowManager::shutDown();
+		RenderStateManager::shutDown();
 	}
 	//--------------------------------------------------------------------
 	void D3D9RenderSystem::registerRenderWindow(D3D9RenderWindowPtr renderWindow)
@@ -333,7 +338,7 @@ namespace CamelotEngine
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
 			else
-				setSamplerState(gptype, iter->second.slot, *samplerState);
+				setSamplerState(gptype, iter->second.slot, samplerState);
 		}
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
@@ -549,7 +554,7 @@ namespace CamelotEngine
 		}
 	}
 	//-----------------------------------------------------------------------
-	void D3D9RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerState& state)
+	void D3D9RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -565,37 +570,37 @@ namespace CamelotEngine
 		}
 
 		// Set texture layer filtering
-		setTextureFiltering(unit, FT_MIN, state.getTextureFiltering(FT_MIN));
-		setTextureFiltering(unit, FT_MAG, state.getTextureFiltering(FT_MAG));
-		setTextureFiltering(unit, FT_MIP, state.getTextureFiltering(FT_MIP));
+		setTextureFiltering(unit, FT_MIN, state->getTextureFiltering(FT_MIN));
+		setTextureFiltering(unit, FT_MAG, state->getTextureFiltering(FT_MAG));
+		setTextureFiltering(unit, FT_MIP, state->getTextureFiltering(FT_MIP));
 
 		// Set texture layer filtering
-		setTextureAnisotropy(unit, state.getTextureAnisotropy());
+		setTextureAnisotropy(unit, state->getTextureAnisotropy());
 
 		// Set mipmap biasing
-		setTextureMipmapBias(unit, state.getTextureMipmapBias());
+		setTextureMipmapBias(unit, state->getTextureMipmapBias());
 
 		// Texture addressing mode
-		const UVWAddressingMode& uvw = state.getTextureAddressingMode();
+		const UVWAddressingMode& uvw = state->getTextureAddressingMode();
 		setTextureAddressingMode(unit, uvw);
 
 		// Set border color
-		setTextureBorderColor(unit, state.getBorderColor());
+		setTextureBorderColor(unit, state->getBorderColor());
 	}
 	//-----------------------------------------------------------------------
-	void D3D9RenderSystem::setBlendState(const BlendState& blendState)
+	void D3D9RenderSystem::setBlendState(const BlendStatePtr& blendState)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		// Alpha to coverage
-		setAlphaToCoverage(blendState.getAlphaToCoverageEnabled());
+		setAlphaToCoverage(blendState->getAlphaToCoverageEnabled());
 
 		// Blend states
 		// DirectX 9 doesn't allow us to specify blend state per render target, so we just use the first one.
-		if(blendState.getBlendEnabled(0))
+		if(blendState->getBlendEnabled(0))
 		{
-			setSceneBlending(blendState.getSrcBlend(0), blendState.getDstBlend(0), blendState.getAlphaSrcBlend(0), blendState.getAlphaDstBlend(0)
-				, blendState.getBlendOperation(0), blendState.getAlphaBlendOperation(0));
+			setSceneBlending(blendState->getSrcBlend(0), blendState->getDstBlend(0), blendState->getAlphaSrcBlend(0), blendState->getAlphaDstBlend(0)
+				, blendState->getBlendOperation(0), blendState->getAlphaBlendOperation(0));
 		}
 		else
 		{
@@ -603,47 +608,47 @@ namespace CamelotEngine
 		}
 
 		// Color write mask
-		UINT8 writeMask = blendState.getRenderTargetWriteMask(0);
+		UINT8 writeMask = blendState->getRenderTargetWriteMask(0);
 		setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
 	}
 	//----------------------------------------------------------------------
-	void D3D9RenderSystem::setRasterizerState(const RasterizerState& rasterizerState)
+	void D3D9RenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		setDepthBias((float)rasterizerState.getDepthBias(), rasterizerState.getSlopeScaledDepthBias());
+		setDepthBias((float)rasterizerState->getDepthBias(), rasterizerState->getSlopeScaledDepthBias());
 
-		setCullingMode(rasterizerState.getCullMode());
+		setCullingMode(rasterizerState->getCullMode());
 
-		setPolygonMode(rasterizerState.getPolygonMode());
+		setPolygonMode(rasterizerState->getPolygonMode());
 
-		setScissorTestEnable(rasterizerState.getScissorEnable());
+		setScissorTestEnable(rasterizerState->getScissorEnable());
 
-		setMultisampleAntialiasEnable(rasterizerState.getMultisampleEnable());
+		setMultisampleAntialiasEnable(rasterizerState->getMultisampleEnable());
 
-		setAntialiasedLineEnable(rasterizerState.getAntialiasedLineEnable());
+		setAntialiasedLineEnable(rasterizerState->getAntialiasedLineEnable());
 	}
 	//----------------------------------------------------------------------
-	void D3D9RenderSystem::setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue)
+	void D3D9RenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		// Set stencil buffer options
-		setStencilCheckEnabled(depthStencilState.getStencilEnable());
+		setStencilCheckEnabled(depthStencilState->getStencilEnable());
 
-		setStencilBufferOperations(depthStencilState.getStencilFrontFailOp(), depthStencilState.getStencilFrontZFailOp(), depthStencilState.getStencilFrontPassOp(), true);
-		setStencilBufferFunc(depthStencilState.getStencilFrontCompFunc(), true);
+		setStencilBufferOperations(depthStencilState->getStencilFrontFailOp(), depthStencilState->getStencilFrontZFailOp(), depthStencilState->getStencilFrontPassOp(), true);
+		setStencilBufferFunc(depthStencilState->getStencilFrontCompFunc(), true);
 
-		setStencilBufferOperations(depthStencilState.getStencilBackFailOp(), depthStencilState.getStencilBackZFailOp(), depthStencilState.getStencilBackPassOp(), false);
-		setStencilBufferFunc(depthStencilState.getStencilBackCompFunc(), false);
+		setStencilBufferOperations(depthStencilState->getStencilBackFailOp(), depthStencilState->getStencilBackZFailOp(), depthStencilState->getStencilBackPassOp(), false);
+		setStencilBufferFunc(depthStencilState->getStencilBackCompFunc(), false);
 
-		setStencilBufferReadMask(depthStencilState.getStencilReadMask());
-		setStencilBufferWriteMask(depthStencilState.getStencilWriteMask());
+		setStencilBufferReadMask(depthStencilState->getStencilReadMask());
+		setStencilBufferWriteMask(depthStencilState->getStencilWriteMask());
 
 		// Set depth buffer options
-		setDepthBufferCheckEnabled(depthStencilState.getDepthReadEnable());
-		setDepthBufferWriteEnabled(depthStencilState.getDepthWriteEnable());
-		setDepthBufferFunction(depthStencilState.getDepthComparisonFunc());		
+		setDepthBufferCheckEnabled(depthStencilState->getDepthReadEnable());
+		setDepthBufferWriteEnabled(depthStencilState->getDepthWriteEnable());
+		setDepthBufferFunction(depthStencilState->getDepthComparisonFunc());		
 
 		// Set stencil ref value
 		setStencilRefValue(stencilRefValue);

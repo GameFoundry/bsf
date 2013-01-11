@@ -10,16 +10,9 @@ namespace CamelotEngine
 		mData = desc;
 	}
 
-	const SamplerState& SamplerState::getDefault()
+	const SamplerStatePtr& SamplerState::getDefault()
 	{
-		static SamplerState samplerState;
-		static bool initialized = false;
-
-		if(!initialized)
-		{
-			samplerState.initialize(SAMPLER_STATE_DESC());
-			initialized = true;
-		}
+		static SamplerStatePtr samplerState = RenderStateManager::instance().createSamplerState(SAMPLER_STATE_DESC());
 
 		return samplerState;
 	}

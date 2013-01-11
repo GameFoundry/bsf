@@ -75,7 +75,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Compiles the shader from source and generates the microcode.
 		 */
-		ID3DBlob* compileMicrocode();
+		ID3DBlob* compileMicrocode(const String& profile);
 
 		/**
 		 * @brief	Reflects the microcode and extracts input/output parameters, and constant

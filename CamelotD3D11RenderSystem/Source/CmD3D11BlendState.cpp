@@ -29,13 +29,19 @@ namespace CamelotEngine
 			blendStateDesc.RenderTarget[i].BlendOpAlpha = D3D11Mappings::get(desc.renderTargetDesc[i].blendOpAlpha);
 			blendStateDesc.RenderTarget[i].DestBlend = D3D11Mappings::get(desc.renderTargetDesc[i].dstBlend);
 			blendStateDesc.RenderTarget[i].DestBlendAlpha = D3D11Mappings::get(desc.renderTargetDesc[i].dstBlendAlpha);
-			blendStateDesc.RenderTarget[i].RenderTargetWriteMask = desc.renderTargetDesc[i].renderTargetWriteMask;
+			blendStateDesc.RenderTarget[i].RenderTargetWriteMask = 0xf & desc.renderTargetDesc[i].renderTargetWriteMask; // Mask out all but last 4 bits
 			blendStateDesc.RenderTarget[i].SrcBlend = D3D11Mappings::get(desc.renderTargetDesc[i].srcBlend);
 			blendStateDesc.RenderTarget[i].SrcBlendAlpha = D3D11Mappings::get(desc.renderTargetDesc[i].srcBlendAlpha);
 		}
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
-		device.getD3D11Device()->CreateBlendState(&blendStateDesc, &mBlendState);
+		HRESULT hr = device.getD3D11Device()->CreateBlendState(&blendStateDesc, &mBlendState);
+
+		if(FAILED(hr) || device.hasError())
+		{
+			String errorDescription = device.getErrorDescription();
+			CM_EXCEPT(RenderingAPIException, "Cannot create blend state.\nError Description:" + errorDescription);
+		}
 	}
 }

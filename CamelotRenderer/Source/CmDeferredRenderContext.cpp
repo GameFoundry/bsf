@@ -51,22 +51,22 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::setDrawOperation, mRenderSystem, op));
 	}
 
-	void DeferredRenderContext::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState)
+	void DeferredRenderContext::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setSamplerState, mRenderSystem, gptype, texUnit, samplerState));
 	}
 
-	void DeferredRenderContext::setBlendState(const BlendState& blendState)
+	void DeferredRenderContext::setBlendState(const BlendStatePtr& blendState)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setBlendState, mRenderSystem, blendState));
 	}
 
-	void DeferredRenderContext::setRasterizerState(const RasterizerState& rasterizerState)
+	void DeferredRenderContext::setRasterizerState(const RasterizerStatePtr& rasterizerState)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setRasterizerState, mRenderSystem, rasterizerState));
 	}
 
-	void DeferredRenderContext::setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue)
+	void DeferredRenderContext::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setDepthStencilState, mRenderSystem, depthStencilState, stencilRefValue));
 	}

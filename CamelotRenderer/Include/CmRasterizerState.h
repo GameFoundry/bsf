@@ -56,7 +56,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Returns the default rasterizer state;
 		 */
-		static const RasterizerState& getDefault();
+		static const RasterizerStatePtr& getDefault();
 
 	private:
 		friend class RenderStateManager;

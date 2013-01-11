@@ -466,7 +466,6 @@ namespace CamelotEngine {
 			break;
 		}
 
-
         LPD3DXBUFFER errors = 0;
 
 		// include handler

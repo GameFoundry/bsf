@@ -51,9 +51,9 @@ namespace CamelotEngine
 
 	PixelData D3D11Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
-		UINT32 mipWidth = mipLevel >> mWidth;
-		UINT32 mipHeight = mipLevel >> mHeight;
-		UINT32 mipDepth = mipLevel >> mDepth;
+		UINT32 mipWidth = mWidth >> mipLevel;
+		UINT32 mipHeight = mHeight >> mipLevel;
+		UINT32 mipDepth = mDepth >> mipLevel;
 
 		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
 
@@ -196,7 +196,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
 
-		hr = m1DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)mTex);
+		hr = m1DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)&mTex);
 
 		if(FAILED(hr) || device.hasError())
 		{
@@ -290,7 +290,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
 
-		hr = m2DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)mTex);
+		hr = m2DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)&mTex);
 
 		if(FAILED(hr) || device.hasError())
 		{
@@ -395,7 +395,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
 
-		hr = m3DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)mTex);
+		hr = m3DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)&mTex);
 
 		if(FAILED(hr) || device.hasError())
 		{

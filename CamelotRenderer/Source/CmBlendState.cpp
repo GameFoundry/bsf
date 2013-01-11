@@ -9,16 +9,9 @@ namespace CamelotEngine
 		mData = desc;
 	}
 
-	const BlendState& BlendState::getDefault()
+	const BlendStatePtr& BlendState::getDefault()
 	{
-		static BlendState blendState;
-		static bool initialized = false;
-
-		if(!initialized)
-		{
-			blendState.initialize(BLEND_STATE_DESC());
-			initialized = true;
-		}
+		static BlendStatePtr blendState = RenderStateManager::instance().createBlendState(BLEND_STATE_DESC());
 
 		return blendState;
 	}

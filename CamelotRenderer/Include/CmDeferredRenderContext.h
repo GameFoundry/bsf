@@ -35,16 +35,16 @@ namespace CamelotEngine
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
 
 		/** @copydoc RenderSystem::setSamplerState() */
-		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState);
+		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState);
 
 		/** @copydoc RenderSystem::setBlendState() */
-		void setBlendState(const BlendState& blendState);
+		void setBlendState(const BlendStatePtr& blendState);
 
 		/** @copydoc RenderSystem::setRasterizerState() */
-		void setRasterizerState(const RasterizerState& rasterizerState);
+		void setRasterizerState(const RasterizerStatePtr& rasterizerState);
 
 		/** @copydoc RenderSystem::setRasterizerState() */
-		void setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue);
+		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue);
 
 		/** @copydoc RenderSystem::setViewport() */
 		void setViewport(const Viewport& vp);

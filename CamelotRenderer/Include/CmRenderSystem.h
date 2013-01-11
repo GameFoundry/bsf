@@ -135,7 +135,7 @@ namespace CamelotEngine
 		 * @brief	Sets a sampler state for the specified texture unit.
 		 * @see		SamplerState
 		 */
-		virtual void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerState& samplerState) = 0;
+		virtual void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState) = 0;
 		/** Turns off a texture unit. */
 		virtual void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 
@@ -143,19 +143,19 @@ namespace CamelotEngine
 		 * @brief	Sets a blend state used for all active render targets.
 		 * @see		BlendState
 		 */
-		virtual void setBlendState(const BlendState& blendState) = 0;
+		virtual void setBlendState(const BlendStatePtr& blendState) = 0;
 
 		/**
 		 * @brief	Sets a state that controls various rasterizer options. 
 		 * @see		RasterizerState
 		 */
-		virtual void setRasterizerState(const RasterizerState& rasterizerState) = 0;
+		virtual void setRasterizerState(const RasterizerStatePtr& rasterizerState) = 0;
 
 		/**
 		 * @brief	Sets a state that controls depth & stencil buffer options.
 		 * @see		DepthStencilState
 		 */
-		virtual void setDepthStencilState(const DepthStencilState& depthStencilState, UINT32 stencilRefValue) = 0;
+		virtual void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue) = 0;
 
 		/**
 		Sets the texture to bind to a given texture unit.
