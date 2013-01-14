@@ -8,8 +8,8 @@ namespace CamelotEngine
 	GpuParamBlock::GpuParamBlock(const GpuParamBlockDesc& desc)
 		:mSize(desc.blockSize * sizeof(UINT32)), mOwnsSharedData(true)
 	{
-		mData = new UINT8[desc.blockSize];
-		memset(mData, 0, desc.blockSize);
+		mData = new UINT8[mSize];
+		memset(mData, 0, mSize);
 
 		sharedData = new GpuParamBlockSharedData();
 		sharedData->mDirty = true;

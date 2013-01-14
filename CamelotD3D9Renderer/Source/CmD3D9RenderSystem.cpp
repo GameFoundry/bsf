@@ -1084,12 +1084,16 @@ namespace CamelotEngine
 			window->_validateDevice();
 		}
 
-		// Retrieve render surfaces (up to CM_MAX_MULTIPLE_RENDER_TARGETS)
-		IDirect3DSurface9* pBack[CM_MAX_MULTIPLE_RENDER_TARGETS];
+		// Retrieve render surfaces
+		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
+		IDirect3DSurface9** pBack = new IDirect3DSurface9*[maxRenderTargets];
 		memset(pBack, 0, sizeof(pBack));
 		target->getCustomAttribute( "DDBACKBUFFER", &pBack );
 		if (!pBack[0])
+		{
+			delete[] pBack;
 			return;
+		}
 
 		IDirect3DSurface9* pDepth = NULL;
 
@@ -1097,8 +1101,7 @@ namespace CamelotEngine
 			target->getCustomAttribute( "D3DZBUFFER", &pDepth );
 		
 		// Bind render targets
-		UINT32 count = mCurrentCapabilities->getNumMultiRenderTargets();
-		for(UINT32 x=0; x<count; ++x)
+		for(UINT32 x = 0; x < maxRenderTargets; ++x)
 		{
 			hr = getActiveD3D9Device()->SetRenderTarget(x, pBack[x]);
 			if (FAILED(hr))
@@ -1107,6 +1110,9 @@ namespace CamelotEngine
 				CM_EXCEPT(RenderingAPIException, "Failed to setRenderTarget : " + msg);
 			}
 		}
+
+		delete[] pBack;
+
 		hr = getActiveD3D9Device()->SetDepthStencilSurface(pDepth);
 		if (FAILED(hr))
 		{

@@ -45,30 +45,12 @@ namespace CamelotEngine
          */
         void unload_internal();
 
-		/**
-         * @copydoc HighLevelGpuProgram::buildConstantDefinitions()
-         */
-		void buildConstantDefinitions() const;
 	private:
 		bool mColumnMajorMatrices;
 		bool mEnableBackwardsCompatibility;
 
 		HLSLMicroCode mMicrocode;
 
-		struct D3D11_VariableDesc
-		{
-			String name;
-			D3D11_SHADER_TYPE_DESC desc;
-		};
-
-		struct D3D11_ShaderBufferDesc
-		{
-			D3D11_SHADER_BUFFER_DESC desc;
-			vector<D3D11_SHADER_VARIABLE_DESC>::type variables;
-			vector<D3D11_SHADER_TYPE_DESC>::type variableTypes;
-		};
-
-		vector<D3D11_ShaderBufferDesc>::type mShaderBuffers;
 		vector<D3D11_SIGNATURE_PARAMETER_DESC>::type mInputParameters;
 		vector<D3D11_SIGNATURE_PARAMETER_DESC>::type mOutputParameters;
 
@@ -82,15 +64,6 @@ namespace CamelotEngine
 		 * 			buffer structures used by the program.
 		 */
 		void populateParametersAndConstants(ID3DBlob* microcode);
-
-		//void populateConstantBufferParameters(ID3D11ShaderReflectionConstantBuffer* bufferReflection);
-
-		//void populateParameterDefinition(const D3D11_SHADER_VARIABLE_DESC& paramDesc, const D3D11_SHADER_TYPE_DESC& d3dDesc, GpuConstantDefinition& def) const;
-
-		/**
-		 * @brief	Creates constant buffers based on available parameter and constant data.
-		 */
-		void createConstantBuffers();
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

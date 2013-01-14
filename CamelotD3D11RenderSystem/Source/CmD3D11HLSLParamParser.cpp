@@ -1,0 +1,349 @@
+#include "CmD3D11HLSLParamParser.h"
+#include "CmGpuParamDesc.h"
+#include "CmException.h"
+#include "CmDebug.h"
+
+namespace CamelotEngine
+{
+	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuParamDesc& desc, 
+		vector<D3D11_SIGNATURE_PARAMETER_DESC>::type& inputParams, vector<D3D11_SIGNATURE_PARAMETER_DESC>::type& outputParams)
+	{
+		inputParams.clear();
+		outputParams.clear();
+
+		const char* commentString = nullptr;
+		ID3DBlob* pIDisassembly = nullptr;
+		char* pDisassembly = nullptr;
+
+		HRESULT hr = D3DDisassemble((UINT*)microcode->GetBufferPointer(), 
+			microcode->GetBufferSize(), D3D_DISASM_ENABLE_COLOR_CODE, commentString, &pIDisassembly);
+
+		const char* assemblyCode =  static_cast<const char*>(pIDisassembly->GetBufferPointer());
+
+		if (FAILED(hr))
+			CM_EXCEPT(RenderingAPIException, "Unable to disassemble shader.");
+
+		ID3D11ShaderReflection* shaderReflection;
+		hr = D3DReflect((void*)microcode->GetBufferPointer(), microcode->GetBufferSize(),
+			IID_ID3D11ShaderReflection, (void**)&shaderReflection);
+
+		if (FAILED(hr))
+			CM_EXCEPT(RenderingAPIException, "Cannot reflect D3D11 high-level shader.");
+
+		D3D11_SHADER_DESC shaderDesc;
+		hr = shaderReflection->GetDesc(&shaderDesc);
+
+		if (FAILED(hr))
+			CM_EXCEPT(RenderingAPIException, "Cannot reflect D3D11 high-level shader.");
+
+		inputParams.resize(shaderDesc.InputParameters);
+		for (UINT32 i = 0; i < shaderDesc.InputParameters; i++)
+		{
+			hr = shaderReflection->GetInputParameterDesc(i, &(inputParams[i]));
+
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Cannot get input param desc with index: " + toString(i));
+		}
+
+		outputParams.resize(shaderDesc.OutputParameters);
+		for (UINT32 i = 0; i < shaderDesc.OutputParameters; i++)
+		{
+			hr = shaderReflection->GetOutputParameterDesc(i, &(outputParams[i]));
+
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Cannot get output param desc with index: " + toString(i));
+		}
+
+		for(UINT32 i = 0; i < shaderDesc.BoundResources; i++)
+		{
+			D3D11_SHADER_INPUT_BIND_DESC bindingDesc;
+			hr = shaderReflection->GetResourceBindingDesc(i, &bindingDesc);
+
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Cannot get resource binding desc with index: " + toString(i));
+
+			parseResource(bindingDesc, desc);
+		}
+
+		for(UINT32 i = 0; i < shaderDesc.ConstantBuffers; i++)
+		{
+			ID3D11ShaderReflectionConstantBuffer* shaderReflectionConstantBuffer;
+			shaderReflectionConstantBuffer = shaderReflection->GetConstantBufferByIndex(i);
+			
+			parseBuffer(shaderReflectionConstantBuffer, desc);
+		}
+
+		// TODO - Parse:
+		//  - Tex arrays,  RW tex arrays and MS textures
+		//	- UINT8, UINT and double values
+
+		shaderReflection->Release();
+	}
+
+	void D3D11HLSLParamParser::parseResource(D3D11_SHADER_INPUT_BIND_DESC& resourceDesc, GpuParamDesc& desc)
+	{
+		for(UINT32 i = 0; i < resourceDesc.BindCount; i++)
+		{
+			if(resourceDesc.Type == D3D_SIT_CBUFFER || resourceDesc.Type == D3D_SIT_TBUFFER)
+			{
+				GpuParamBlockDesc blockDesc;
+				blockDesc.name = resourceDesc.Name;
+				blockDesc.slot = resourceDesc.BindPoint + i;
+				blockDesc.blockSize = 0; // Calculated manually as we add parameters
+
+				desc.paramBlocks.insert(std::make_pair(blockDesc.name, blockDesc));
+			}
+			else
+			{
+				GpuParamSpecialDesc memberDesc;
+				memberDesc.name = resourceDesc.Name;
+				memberDesc.slot = resourceDesc.BindPoint + i;
+				memberDesc.type = GST_UNKNOWN;
+
+				switch(resourceDesc.Type)
+				{
+				case D3D_SIT_SAMPLER:
+					memberDesc.type = GST_SAMPLER2D; // Actual dimension of the sampler doesn't matter
+					desc.samplers.insert(std::make_pair(memberDesc.name, memberDesc));
+					break;
+				case D3D_SIT_TEXTURE:
+					switch(resourceDesc.Dimension)
+					{
+					case D3D_SRV_DIMENSION_TEXTURE1D:
+						memberDesc.type = GST_TEXTURE1D;
+						break;
+					case D3D_SRV_DIMENSION_TEXTURE2D:
+						memberDesc.type = GST_TEXTURE2D;
+						break;
+					case D3D_SRV_DIMENSION_TEXTURE3D:
+						memberDesc.type = GST_TEXTURE3D;
+						break;
+					case D3D_SRV_DIMENSION_TEXTURECUBE:
+						memberDesc.type = GST_TEXTURECUBE;
+						break;
+					default:
+						LOGWRN("Skipping texture because it has unsupported dimension: " + toString(resourceDesc.Dimension));
+					}
+
+					if(memberDesc.type != GST_UNKNOWN)
+						desc.textures.insert(std::make_pair(memberDesc.name, memberDesc));
+
+					break;
+				case D3D_SIT_STRUCTURED:
+					memberDesc.type = GST_STRUCTURED_BUFFER;
+					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
+					break;
+				case D3D_SIT_BYTEADDRESS:
+					memberDesc.type = GST_BYTE_BUFFER;
+					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
+					break;
+				case D3D11_SIT_UAV_RWTYPED:
+					memberDesc.type = GST_RWTYPED_BUFFER;
+					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
+					break;
+				case D3D11_SIT_UAV_RWSTRUCTURED:
+					memberDesc.type = GST_RWSTRUCTURED_BUFFER;
+					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
+					break;
+				case D3D11_SIT_UAV_RWBYTEADDRESS:
+					memberDesc.type = GST_RWBYTE_BUFFER;
+					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
+					break;
+				case D3D_SIT_UAV_APPEND_STRUCTURED:
+					memberDesc.type = GST_RWAPPEND_BUFFER;
+					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
+					break;
+				case D3D_SIT_UAV_CONSUME_STRUCTURED:
+					memberDesc.type = GST_RWCONSUME_BUFFER;
+					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
+					break;
+				case D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
+					memberDesc.type = GST_RWSTRUCTURED_BUFFER_WITH_COUNTER;
+					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
+					break;
+				default:
+					LOGWRN("Skipping resource because it has unsupported type: " + toString(resourceDesc.Type));
+				}
+			}
+		}
+	}
+
+	void D3D11HLSLParamParser::parseBuffer(ID3D11ShaderReflectionConstantBuffer* bufferReflection, GpuParamDesc& desc)
+	{
+		D3D11_SHADER_BUFFER_DESC constantBufferDesc;
+		HRESULT hr = bufferReflection->GetDesc(&constantBufferDesc);
+		if (FAILED(hr))
+			CM_EXCEPT(RenderingAPIException, "Failed to retrieve HLSL constant buffer description.");
+
+		if(constantBufferDesc.Type != D3D_CT_CBUFFER && constantBufferDesc.Type != D3D_CT_TBUFFER)
+		{
+			LOGWRN("D3D11 HLSL parsing: Unsupported constant buffer type, skipping. Type: " + toString(constantBufferDesc.Type));
+			return;
+		}
+
+		GpuParamBlockDesc& blockDesc = desc.paramBlocks[constantBufferDesc.Name];
+
+		for(UINT32 j = 0; j < constantBufferDesc.Variables; j++)
+		{
+			ID3D11ShaderReflectionVariable* varRef;
+			varRef = bufferReflection->GetVariableByIndex(j);
+			D3D11_SHADER_VARIABLE_DESC varDesc;
+			HRESULT hr = varRef->GetDesc(&varDesc);
+
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Failed to retrieve HLSL constant buffer variable description.");
+
+			ID3D11ShaderReflectionType* varRefType;
+			varRefType = varRef->GetType();
+			D3D11_SHADER_TYPE_DESC varTypeDesc;
+			varRefType->GetDesc(&varTypeDesc);
+
+			parseVariable(varTypeDesc, varDesc, desc, blockDesc);
+		}
+
+#if CM_DEBUG_MODE
+		if(constantBufferDesc.Size != (blockDesc.blockSize * 4))
+		{
+			CM_EXCEPT(InternalErrorException, "Calculated param block size and size returned by DirectX don't match. Calculated size is: " + toString(constantBufferDesc.Size) +
+				" and DirectX size is: " + toString(blockDesc.blockSize * 4));
+		}
+#endif
+	}
+
+	void D3D11HLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC& varTypeDesc, D3D11_SHADER_VARIABLE_DESC& varDesc, GpuParamDesc& desc, GpuParamBlockDesc& paramBlock)
+	{
+		GpuParamMemberDesc memberDesc;
+		memberDesc.name = varDesc.Name;
+		memberDesc.paramBlockSlot = paramBlock.slot;
+		memberDesc.arraySize = varTypeDesc.Elements == 0 ? 1 : varTypeDesc.Elements;
+		memberDesc.elementSize = varDesc.Size / 4; // Stored in multiples of 4
+		memberDesc.gpuMemOffset = varDesc.StartOffset;
+		memberDesc.cpuMemOffset = paramBlock.blockSize;
+
+		paramBlock.blockSize += memberDesc.arraySize * memberDesc.elementSize;
+	
+		switch(varTypeDesc.Class)
+		{
+		case D3D_SVC_SCALAR:
+			{
+				switch(varTypeDesc.Type)
+				{
+				case D3D_SVT_BOOL:
+					memberDesc.type = GMT_BOOL;
+					break;
+				case D3D_SVT_INT:
+					memberDesc.type = GMT_INT1;
+					break;
+				case D3D_SVT_FLOAT:
+					memberDesc.type = GMT_FLOAT1;
+					break;
+				default:
+					LOGWRN("Skipping variable because it has unsupported type: " + toString(varTypeDesc.Type));
+				}
+			}
+			break;
+		case D3D_SVC_VECTOR:
+			{
+				switch(varTypeDesc.Type)
+				{
+				case D3D_SVT_INT:
+					{
+						switch(varTypeDesc.Columns)
+						{
+						case 1:
+							memberDesc.type = GMT_INT1;
+							break;
+						case 2:
+							memberDesc.type = GMT_INT2;
+							break;
+						case 3:
+							memberDesc.type = GMT_INT3;
+							break;
+						case 4:
+							memberDesc.type = GMT_INT4;
+							break;
+						}
+					}
+					
+					break;
+				case D3D_SVT_FLOAT:
+					{
+						switch(varTypeDesc.Columns)
+						{
+						case 1:
+							memberDesc.type = GMT_FLOAT1;
+							break;
+						case 2:
+							memberDesc.type = GMT_FLOAT2;
+							break;
+						case 3:
+							memberDesc.type = GMT_FLOAT3;
+							break;
+						case 4:
+							memberDesc.type = GMT_FLOAT4;
+							break;
+						}
+					}
+
+					break;
+				}
+			}
+			break;
+		case D3D_SVC_MATRIX_COLUMNS:
+		case D3D_SVC_MATRIX_ROWS:
+			switch(varTypeDesc.Rows)
+			{
+			case 2:
+				switch(varTypeDesc.Columns)
+				{
+				case 2:
+					memberDesc.type = GMT_MATRIX_2X2;
+					break;
+				case 3:
+					memberDesc.type = GMT_MATRIX_2X3;
+					break;
+				case 4:
+					memberDesc.type = GMT_MATRIX_2X4;
+					break;
+				}
+				break;
+			case 3:
+				switch(varTypeDesc.Columns)
+				{
+				case 2:
+					memberDesc.type = GMT_MATRIX_3X2;
+					break;
+				case 3:
+					memberDesc.type = GMT_MATRIX_3X3;
+					break;
+				case 4:
+					memberDesc.type = GMT_MATRIX_3X4;
+					break;
+				}
+				break;
+			case 4:
+				switch(varTypeDesc.Columns)
+				{
+				case 2:
+					memberDesc.type = GMT_MATRIX_4X2;
+					break;
+				case 3:
+					memberDesc.type = GMT_MATRIX_4X3;
+					break;
+				case 4:
+					memberDesc.type = GMT_MATRIX_4X4;
+					break;
+				}
+				break;
+			}
+			break;
+		case D3D_SVC_STRUCT:
+			memberDesc.type = GMT_STRUCT;
+			break;
+		default:
+			LOGWRN("Skipping variable because it has unsupported class: " + toString(varTypeDesc.Class));
+		}
+
+		desc.params.insert(std::make_pair(memberDesc.name, memberDesc));
+	}
+}

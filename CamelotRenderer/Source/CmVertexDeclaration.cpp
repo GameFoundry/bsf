@@ -2,6 +2,7 @@
 #include "CmVertexDeclarationRTTI.h"
 #include "CmHardwareBufferManager.h"
 #include "CmRenderSystem.h"
+#include "CmUtil.h"
 
 namespace CamelotEngine
 {
@@ -195,7 +196,20 @@ namespace CamelotEngine
 		return VET_FLOAT1;
 	}
 	//-----------------------------------------------------------------------------
+	size_t VertexElement::calculateHash() const
+	{
+		size_t hash = 0;
+		hash_combine(hash, mSource);
+		hash_combine(hash, mOffset);
+		hash_combine(hash, mType);
+		hash_combine(hash, mSemantic);
+		hash_combine(hash, mIndex);
+
+		return hash;
+	}
+	//-----------------------------------------------------------------------------
 	VertexDeclaration::VertexDeclaration()
+		:mHash(0)
 	{
 	}
 	//-----------------------------------------------------------------------------
@@ -220,6 +234,9 @@ namespace CamelotEngine
 		mElementList.push_back(
 			VertexElement(source, offset, theType, semantic, index)
 			);
+
+		recalculateHash();
+
 		return mElementList.back();
 	}
 	//-----------------------------------------------------------------------------
@@ -238,6 +255,9 @@ namespace CamelotEngine
 
 		i = mElementList.insert(i, 
 			VertexElement(source, offset, theType, semantic, index));
+
+		recalculateHash();
+
 		return *i;
 
 	}
@@ -261,6 +281,8 @@ namespace CamelotEngine
 		for (unsigned short n = 0; n < elem_index; ++n)
 			++i;
 		mElementList.erase(i);
+
+		recalculateHash();
 	}
 	//-----------------------------------------------------------------------------
 	void VertexDeclaration::removeElement(VertexElementSemantic semantic, unsigned short index)
@@ -275,11 +297,15 @@ namespace CamelotEngine
 				break;
 			}
 		}
+
+		recalculateHash();
 	}
 	//-----------------------------------------------------------------------------
 	void VertexDeclaration::removeAllElements(void)
 	{
 		mElementList.clear();
+
+		recalculateHash();
 	}
 	//-----------------------------------------------------------------------------
 	void VertexDeclaration::modifyElement(unsigned short elem_index, 
@@ -290,6 +316,8 @@ namespace CamelotEngine
 		VertexElementList::iterator i = mElementList.begin();
 		std::advance(i, elem_index);
 		(*i) = VertexElement(source, offset, theType, semantic, index);
+
+		recalculateHash();
 	}
 	//-----------------------------------------------------------------------------
 	const VertexElement* VertexDeclaration::findElementBySemantic(
@@ -352,6 +380,8 @@ namespace CamelotEngine
 		{
 			ret->addElement(i->getSource(), i->getOffset(), i->getType(), i->getSemantic(), i->getIndex());
 		}
+
+		ret->mHash = mHash;
 		return ret;
 	}
 	//-----------------------------------------------------------------------------
@@ -414,7 +444,6 @@ namespace CamelotEngine
 			}
 
 		}
-
 	}
 	//-----------------------------------------------------------------------------
 	unsigned short VertexDeclaration::getMaxSource(void) const
@@ -431,6 +460,15 @@ namespace CamelotEngine
 
 		}
 		return ret;
+	}
+	//----------------------------------------------------------------------------
+	void VertexDeclaration::recalculateHash()
+	{
+		mHash = 0;
+		for(auto iter = mElementList.begin(); iter != mElementList.end(); ++iter)
+		{
+			hash_combine(mHash, iter->calculateHash());
+		}
 	}
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

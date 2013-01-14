@@ -15,7 +15,6 @@ namespace CamelotEngine
 		void getCustomAttribute(const String& name, void* pData);
 
 		static ID3D11RenderTargetView* createRenderTargetView(const SurfaceDesc& surfaceDesc);
-
 	protected:
 		friend class D3D11TextureManager;
 

@@ -14,6 +14,8 @@
 
 
 >>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
+Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones
+delete d3d11 vertex declaration
  Working generic buffers
  A way to bind buffers to a Pass, while specifying buffer range
  Fully implement DX11
@@ -23,6 +25,13 @@
  GpuParams support for bools, buffers, structs
  Static/Dynamic usage for GpuParamBlocks
  Ability to switch out GpuParamBlocks
+  - Ability to mark param blocks as "Shared". Those would not get created with every pass instance and would require user to actually create and assign them
+   - I can't think of any way I can do this without a preprocessor
+   - (In editor it might work via GUI, but what if someone doesn't want to use the editor and only uses the engine core?)
+   - Use a simple .shader file in which you specify individual GPU programs, include files, material parameters (whether they're visible
+     to user or just rendering system), input parameters (useful for GLSL which doesn't have semantics as I can provide my own semantics)
+	  - File format would be simple, and parser would just parse line by line, with possible option blocks
+   - Issue of include files remains. How do I reference them? By path most definitely but I'd have to reference the source asset path...And in the current design source asset can move.
  Smart way of initializing GpuParamBlocks (without duplicates)
  Fix MaterialRTTI saving (Save params per gpuprogram is simplest and cleanest)
  Make sure that gpu programs assigned to Pass don't share parameters of different types
@@ -39,7 +48,7 @@
 
 ---------------------------------------------------
 
-Resource destruction:
+<<<<Resource destruction:>>>
  Each resource has isDestroyed flag. It is set to true when the user calls destroy(). Destroy will unload all heavyweight underlying data but won't destroy the actual pointer. 
  If a destructor is called without having first called destroy() an error is logged that the resource wasn't freed properly.
  Destroy requests will always get queued up at the end of the frame, so that if render system is still using those resources, it has access to them
@@ -52,7 +61,7 @@ Resource destruction:
     - Actually destroys the resource and sets isDestroyed flag to true
     - Reference to the empty texture continues to exist but render system need to check if its destroyed before it tries to use it
 
-Binding input layout:
+<<<<Binding input layout:>>>
  Upon call to draw()
  Create or retrieve existing layout based on current set vertex shader and vertex buffer
   (combine their input declarations into a new one, matching their semantics)
@@ -63,13 +72,41 @@ Binding input layout:
   - If not, then throw an error if a value is missing
     - And adjust DX9 and GL implementations accordingly
 
-Issue of setting individual parameters on a material
+<<<<Handle multithreaded object management>>>:
+ - Make everything that is possible immutable. Once created it cant be changed.
+  - Example are shaders, state objects and similar
+ - Things like Textures, Vertex, Index buffers, GpuParams may be changed
+  - Make Vertex/Index buffers and similar only accesible from render thread. Higher level classes like meshes can have deferred methods
+  - TODO - How to handle the remaining actually deferred methods? Like Textures?
+
+DirectX11 supports concurrent drawing and resource creation so all my resource updates should be direct calls to DX methods (I'll need a deferred context?)
+ - DX9 doesn't so creating/updating resources should wait for render thread?
+  - Although these are sync points which kill the whole concept of separate render thread
+  - Updating via copy then? (DX11 driver does it internally if resource is used anyway)
+ - OpenGL? No idea, need to study GL contexts
+ - Although it seems DX11 also copies data when mapping/unmapping or updating on a non-immediate context. So maybe copy is the solution?
+
+So final solution:
+ - Copy all data that will be updated on a deferred context
+  - Make deferred context have a scratch buffer it can use for storing temporary copied data
+ - Immediate context will execute all commands right away
+  - This applies when rendering thread calls resource create/update internally
+  - Or when other thread blocks and waits for rendering thread
+ - Create a simple distinction so user knows when is something executed deferred and when immediate?
+  - Move resource update/create methods to DeferredContext?
+    - Not ALL methods need to be moved, only those that are resource heavy
+    - Smaller methods may remain and always stay async, but keep internal state?
+ - Resource creation on DX11 should be direct though, without a queue (especially if we manage to populate a resource in the same step)
+ - (Make sure to update GpuParamBlock implementations as they do their copying internally)
+
+
+<<<<Issue of setting individual parameters on a material>>>
  - Material can contain multiple techniques
  - How do I ensure parameters are valid for all techniques?
  - Require user to create a Material parameter specification?
  - Also need a way to avoid displaying internal parameters used by the active renderer
 
-RenderSystem needed modifications
+<<<<RenderSystem needed modifications>>>>
   - Texture resource views (Specifying just a subresource of a texture as a shader parameter)
   - UAV for textures
   - Stream out (write vertex buffers) (DX11 and GL)
@@ -90,6 +127,7 @@ RenderSystem needed modifications
   - Dynamic shader linkage (Interfaces and similar)
   - Multisampled texture resources
   - Multiple adapters (multi gpu)
+  - Passing initial data when creating a resource (DX11, but possibly GL too)
   - Sample mask when setting blend state (DX11, check if equivalent exists in GL)
   - RGBA blend factor when setting blend state(DX11, check if equivalent exists in GL)
   - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes

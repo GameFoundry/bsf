@@ -18,6 +18,8 @@
 #include "CmD3D11VertexBuffer.h"
 #include "CmD3D11IndexBuffer.h"
 #include "CmD3D11RenderStateManager.h"
+#include "CmD3D11GpuParamBlock.h"
+#include "CmGpuParams.h"
 #include "CmDebug.h"
 #include "CmException.h"
 
@@ -330,12 +332,7 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		//D3D11VertexDeclaration* vertexDeclaration = static_cast<D3D11VertexDeclaration*>(vertexDeclaration.get());
-		//mDevice->getImmediateContext()->IASetInputLayout(vertexDeclaration->get);
-
-		// TODO - Delay setting the input layout until Draw methods are called, when you will retrieve the input layout from the active vertex shader
-
-		throw std::exception("The method or operation is not implemented.");
+		mActiveVertexDeclaration = vertexDeclaration;
 	}
 
 	void D3D11RenderSystem::setDrawOperation(DrawOperationType op)
@@ -425,7 +422,66 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		throw std::exception("The method or operation is not implemented.");
+		const GpuParamDesc& paramDesc = params->getParamDesc();
+
+		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
+		{
+			SamplerStatePtr samplerState = params->getSamplerState(iter->second.slot);
+
+			if(samplerState == nullptr)
+				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
+			else
+				setSamplerState(gptype, iter->second.slot, samplerState);
+		}
+
+		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
+		{
+			TextureHandle texture = params->getTexture(iter->second.slot);
+
+			if(!texture.isLoaded())
+				setTexture(gptype, iter->second.slot, false, nullptr);
+			else
+				setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
+		}
+
+		// TODO - I assign constant buffers one by one but it might be more efficient to do them all at once?
+
+		ID3D11Buffer* bufferArray[1];
+
+		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
+		{
+			GpuParamBlockPtr currentBlock = params->getParamBlock(iter->second.slot);
+
+			if(currentBlock != nullptr)
+			{
+				D3D11GpuParamBlock* d3d11paramBlock = static_cast<D3D11GpuParamBlock*>(currentBlock.get());
+				bufferArray[0] = d3d11paramBlock->getD3D11Buffer();
+			}
+			else
+				bufferArray[0] = nullptr;
+
+			switch(gptype)
+			{
+			case GPT_VERTEX_PROGRAM:
+				mDevice->getImmediateContext()->VSSetConstantBuffers(iter->second.slot, 1, bufferArray);
+				break;
+			case GPT_FRAGMENT_PROGRAM:
+				mDevice->getImmediateContext()->PSSetConstantBuffers(iter->second.slot, 1, bufferArray);
+				break;
+			case GPT_GEOMETRY_PROGRAM:
+				mDevice->getImmediateContext()->GSSetConstantBuffers(iter->second.slot, 1, bufferArray);
+				break;
+			case GPT_HULL_PROGRAM:
+				mDevice->getImmediateContext()->HSSetConstantBuffers(iter->second.slot, 1, bufferArray);
+				break;
+			case GPT_DOMAIN_PROGRAM:
+				mDevice->getImmediateContext()->DSSetConstantBuffers(iter->second.slot, 1, bufferArray);
+				break;
+			case GPT_COMPUTE_PROGRAM:
+				mDevice->getImmediateContext()->CSSetConstantBuffers(iter->second.slot, 1, bufferArray);
+				break;
+			};
+		}
 	}
 
 	void D3D11RenderSystem::draw(UINT32 vertexCount)
@@ -454,73 +510,87 @@ namespace CamelotEngine
 		mDevice->getImmediateContext()->RSSetScissorRects(1, &mScissorRect);
 	}
 
-	void D3D11RenderSystem::clear(RenderTargetPtr target, unsigned int buffers, const Color& color /*= Color::Black*/, float depth /*= 1.0f*/, unsigned short stencil /*= 0 */)
+	void D3D11RenderSystem::clear(RenderTargetPtr target, unsigned int buffers, const Color& color, float depth, unsigned short stencil)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		// Don't forget to clear all render targets if its a multi render target
-		
+		// Clear render surfaces
+		if (buffers & FBT_COLOUR)
+		{
+			UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 
+			ID3D11RenderTargetView** views = new ID3D11RenderTargetView*[maxRenderTargets];
+			memset(views, 0, sizeof(views));
 
+			target->getCustomAttribute("RTV", &views);
+			if (!views[0])
+			{
+				delete[] views;
+				return;
+			}
 
-		//target->g
+			float clearColor[4];
+			clearColor[0] = color.r;
+			clearColor[1] = color.g;
+			clearColor[2] = color.b;
+			clearColor[3] = color.a;
 
-		//RenderTarget* previousRenderTarget = mActiveRenderTarget;
-		//if(target.get() != mActiveRenderTarget)
-		//{
-		//	previousRenderTarget = mActiveRenderTarget;
-		//	setRenderTarget(target.get());
-		//}
+			for(UINT32 i = 0; i < maxRenderTargets; i++)
+			{
+				if(views[i] != nullptr)
+					mDevice->getImmediateContext()->ClearRenderTargetView(views[i], clearColor);
+			}
 
-		//DWORD flags = 0;
-		//if (buffers & FBT_COLOUR)
-		//{
-		//	flags |= D3DCLEAR_TARGET;
-		//}
-		//if (buffers & FBT_DEPTH)
-		//{
-		//	flags |= D3DCLEAR_ZBUFFER;
-		//}
+			delete[] views;
+		}
 
-		//// Only try to clear the stencil buffer if supported
-		//if (buffers & FBT_STENCIL && mCurrentCapabilities->hasCapability(RSC_HWSTENCIL))
-		//{
-		//	flags |= D3DCLEAR_STENCIL;
-		//}
+		// Clear depth stencil
+		if((buffers & FBT_DEPTH) != 0 || (buffers & FBT_STENCIL) != 0)
+		{
+			ID3D11DepthStencilView* depthStencilView = nullptr;
+			target->getCustomAttribute("DSV", &depthStencilView);
 
-		//HRESULT hr;
-		//if( FAILED( hr = getActiveD3D9Device()->Clear( 
-		//	0, 
-		//	NULL, 
-		//	flags,
-		//	colour.getAsARGB(), 
-		//	depth, 
-		//	stencil ) ) )
-		//{
-		//	String msg = DXGetErrorDescription(hr);
-		//	CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
-		//}
+			D3D11_CLEAR_FLAG clearFlag;
 
-		//if(target.get() != previousRenderTarget)
-		//{
-		//	setRenderTarget(previousRenderTarget);
-		//}
+			if((buffers & FBT_DEPTH) != 0 && (buffers & FBT_STENCIL) != 0)
+				clearFlag = (D3D11_CLEAR_FLAG)(D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL);
+			else if((buffers & FBT_STENCIL) != 0)
+				clearFlag = D3D11_CLEAR_STENCIL;
+			else
+				clearFlag = D3D11_CLEAR_DEPTH;
+
+			if(depthStencilView != nullptr)
+				mDevice->getImmediateContext()->ClearDepthStencilView(depthStencilView, clearFlag, depth, (UINT8)stencil);
+		}
 	}
 
 	void D3D11RenderSystem::setRenderTarget(RenderTarget* target)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		//if(target != nullptr)
-		//{
-		//	mRenderViews
-		//}
-		//else
-		//{
+		mActiveRenderTarget = target;
 
-		//}
+		// Retrieve render surfaces
+		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
+		ID3D11RenderTargetView** views = new ID3D11RenderTargetView*[maxRenderTargets];
+		memset(views, 0, sizeof(views));
+		target->getCustomAttribute("RTV", &views);
+		if (!views[0])
+		{
+			delete[] views;
+			return;
+		}
 
-		throw std::exception("The method or operation is not implemented.");
+		// Retrieve depth stencil
+		ID3D11DepthStencilView* depthStencilView = nullptr;
+		target->getCustomAttribute("DSV", &depthStencilView);
+
+		// Bind render targets
+		mDevice->getImmediateContext()->OMSetRenderTargets(maxRenderTargets, views, depthStencilView);
+		if (mDevice->hasError())
+			CM_EXCEPT(RenderingAPIException, "Failed to setRenderTarget : " + mDevice->getErrorDescription());
+
+		delete[] views;
 	}
 
 	void D3D11RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
@@ -854,6 +924,22 @@ namespace CamelotEngine
 	float D3D11RenderSystem::getMaximumDepthInputValue()
 	{
 		return -1.0f;
+	}
+
+	/************************************************************************/
+	/* 								PRIVATE		                     		*/
+	/************************************************************************/
+
+	void D3D11RenderSystem::applyInputLayout()
+	{
+		if(mActiveVertexDeclaration == nullptr)
+		{
+			LOGWRN("Cannot apply input layout without a vertex declaration. Set vertex declaration before calling this method.");
+			return;
+		}
+
+		D3D11VertexDeclaration* vertexDeclaration = static_cast<D3D11VertexDeclaration*>(mActiveVertexDeclaration.get());
+		//mDevice->getImmediateContext()->IASetInputLayout(vertexDeclaration->get);
 	}
 }
 

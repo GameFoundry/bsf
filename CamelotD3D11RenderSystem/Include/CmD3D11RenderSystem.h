@@ -107,5 +107,15 @@ namespace CamelotEngine
 		UINT32				mStencilRef;
 		D3D11_VIEWPORT		mViewport;
 		D3D11_RECT			mScissorRect;
+
+		VertexDeclarationPtr mActiveVertexDeclaration;
+
+		/**
+		 * @brief	Creates or retrieves a proper input layout depending on the currently set vertex shader
+		 * 			and vertex buffer. 
+		 * 			
+		 *			Applies the input layout to the pipeline.
+		 */
+		void applyInputLayout();
 	};
 }

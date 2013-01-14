@@ -1,7 +1,6 @@
 #include "CmD3D11HardwareBufferManager.h"
 #include "CmD3D11VertexBuffer.h"
 #include "CmD3D11IndexBuffer.h"
-#include "CmD3D11HardwareConstantBuffer.h"
 #include "CmD3D11VertexDeclaration.h"
 #include "CmD3D11GenericBuffer.h"
 #include "CmGpuParamDesc.h"

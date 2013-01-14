@@ -136,6 +136,9 @@ namespace CamelotEngine
 					LOGWRN("NO_OVERWRITE lock is not available on this (" + toString(mBufferType) + ") buffer type. Falling back to normal write.");
 				}
 				break;
+			case GBL_WRITE_ONLY:
+				mapType = D3D11_MAP_WRITE;
+				break;
 			case GBL_READ_WRITE:
 				if ((mDesc.CPUAccessFlags & D3D11_CPU_ACCESS_READ) != 0 &&
 					(mDesc.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) != 0)
@@ -273,7 +276,7 @@ namespace CamelotEngine
 		if(mDesc.Usage == D3D11_USAGE_DYNAMIC || mDesc.Usage == D3D11_USAGE_STAGING)
 		{
 			void* pDst = this->lock(offset, length, 
-				discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_READ_WRITE);
+				discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY);
 			memcpy(pDst, pSource, length);
 			this->unlock();
 		}
