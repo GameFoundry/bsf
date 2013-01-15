@@ -188,7 +188,6 @@
     <ClInclude Include="Include\CmComponentRTTI.h" />
     <ClInclude Include="Include\CmConfigOptionMap.h" />
     <ClInclude Include="Include\CmDeferredRenderContext.h" />
-    <ClInclude Include="Include\CmDepthStencilBuffer.h" />
     <ClInclude Include="Include\CmDepthStencilStateRTTI.h" />
     <ClInclude Include="Include\CmDepthStencilState.h" />
     <ClInclude Include="Include\CmGenericBuffer.h" />
@@ -277,7 +276,6 @@
     <ClCompile Include="Source\CmCgProgramFactory.cpp" />
     <ClCompile Include="Source\CmCommandQueue.cpp" />
     <ClCompile Include="Source\CmDeferredRenderContext.cpp" />
-    <ClCompile Include="Source\CmDepthStencilBuffer.cpp" />
     <ClCompile Include="Source\CmDepthStencilState.cpp" />
     <ClCompile Include="Source\CmGenericBuffer.cpp" />
     <ClCompile Include="Source\CmGenericBufferView.cpp" />

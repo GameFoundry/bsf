@@ -1087,8 +1087,8 @@ namespace CamelotEngine
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 		IDirect3DSurface9** pBack = new IDirect3DSurface9*[maxRenderTargets];
-		memset(pBack, 0, sizeof(pBack));
-		target->getCustomAttribute( "DDBACKBUFFER", &pBack );
+		memset(pBack, 0, sizeof(IDirect3DSurface9*) * maxRenderTargets);
+		target->getCustomAttribute( "DDBACKBUFFER", pBack );
 		if (!pBack[0])
 		{
 			delete[] pBack;
@@ -2293,6 +2293,8 @@ namespace CamelotEngine
 			DWORD d3dusage = D3DUSAGE_QUERY_FILTER;
 			if (usage & TU_RENDERTARGET) 
 				d3dusage |= D3DUSAGE_RENDERTARGET;
+			if (usage & TU_DEPTHSTENCIL) 
+				d3dusage |= D3DUSAGE_DEPTHSTENCIL;
 			if (usage & TU_DYNAMIC)
 				d3dusage |= D3DUSAGE_DYNAMIC;
 

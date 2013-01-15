@@ -71,17 +71,17 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	RenderTexturePtr TextureManager::createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
 			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
-			bool createDepth, DepthStencilFormat depthStencilFormat)
+			bool createDepth, PixelFormat depthStencilFormat)
 	{
 		TexturePtr texture = createTexture(textureType, width, height, 0, format, TU_RENDERTARGET, hwGamma, fsaa, fsaaHint);
 
-		DepthStencilBufferPtr depthStencilBuffer = nullptr;
+		TexturePtr depthStencil = nullptr;
 		if(createDepth)
-			depthStencilBuffer = TextureManager::instance().createDepthStencilBuffer(depthStencilFormat, width, height, fsaa, fsaaHint);
+			depthStencil = createTexture(TEX_TYPE_2D, width, height, 0, depthStencilFormat, TU_DEPTHSTENCIL, false, fsaa, fsaaHint);
 
 		RenderTexturePtr newRT = RenderTexturePtr(createRenderTextureImpl());
 		newRT->setColorSurface(texture, 0, 1, 0);
-		newRT->setDepthStencil(depthStencilBuffer);
+		newRT->setDepthStencilSurface(depthStencil);
 
 		return newRT;
 	}

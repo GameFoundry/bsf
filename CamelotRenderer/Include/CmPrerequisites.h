@@ -112,7 +112,6 @@ namespace CamelotEngine {
     class RenderTexture;
 	class MultiRenderTexture;
     class RenderWindow;
-	class DepthStencilBuffer;
     class RenderOperation;
     class StringInterface;
     class SamplerState;
@@ -196,7 +195,6 @@ namespace CamelotEngine
 	typedef std::shared_ptr<RenderWindow> RenderWindowPtr;
 	typedef std::shared_ptr<RenderTarget> RenderTargetPtr;
 	typedef std::shared_ptr<RenderTexture> RenderTexturePtr;
-	typedef std::shared_ptr<DepthStencilBuffer> DepthStencilBufferPtr;
 	typedef std::shared_ptr<MultiRenderTexture> MultiRenderTexturePtr;
 	typedef std::shared_ptr<GpuParamBlock> GpuParamBlockPtr;
 	typedef std::shared_ptr<GpuParams> GpuParamsPtr;

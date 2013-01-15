@@ -57,27 +57,7 @@ namespace CamelotEngine
 
 		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
 
-		D3D11_MAP flags = D3D11Mappings::_getLockOptions(options);
-		switch(options)
-		{
-		case GBL_WRITE_ONLY_NO_OVERWRITE:
-			flags = D3D11_MAP_WRITE_NO_OVERWRITE;
-			break;
-		case GBL_READ_WRITE:
-			flags = D3D11_MAP_READ_WRITE;
-			break;
-		case GBL_WRITE_ONLY_DISCARD:
-			flags = D3D11_MAP_WRITE_DISCARD;
-			break;
-		case GBL_READ_ONLY:
-			flags = D3D11_MAP_READ;
-			break;
-		case GBL_WRITE_ONLY:
-			flags = D3D11_MAP_WRITE;
-			break;
-		default: 
-			break;
-		};
+		D3D11_MAP flags = D3D11Mappings::getLockOptions(options);
 
 		if(flags == D3D11_MAP_READ || flags == D3D11_MAP_READ_WRITE)
 		{

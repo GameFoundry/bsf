@@ -173,18 +173,12 @@ namespace CamelotEngine {
 		TexturePtr createEmpty();
 
 		/**
-		 * @brief	Creates a new depth/stencil buffer.
-		 */
-		virtual DepthStencilBufferPtr createDepthStencilBuffer(DepthStencilFormat format, UINT32 width, 
-			UINT32 height, UINT32 fsaa, const String& fsaaHint) = 0;
-
-		/**
 		 * @brief	Creates a new RenderTexture and automatically generates a color surface
 		 * 			and (optionally) a depth/stencil surface
 		 */
 		virtual RenderTexturePtr createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
 			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
-			bool createDepth = true, DepthStencilFormat depthStencilFormat = DFMT_D24S8);
+			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
 		/**
 		 * @brief	Creates an empty RenderTexture. You need to assign color and depth/stencil buffers to

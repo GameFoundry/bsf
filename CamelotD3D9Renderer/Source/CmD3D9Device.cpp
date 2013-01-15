@@ -444,6 +444,17 @@ namespace CamelotEngine
 	}
 
 	//---------------------------------------------------------------------
+	D3DFORMAT D3D9Device::getDepthStencilFormat() const
+	{		
+		if (mPresentationParams == NULL || mPresentationParamsCount == 0)
+		{
+			CM_EXCEPT(RenderingAPIException, "Presentation parameters are invalid!");
+		}
+
+		return mPresentationParams[0].AutoDepthStencilFormat;
+	}
+
+	//---------------------------------------------------------------------
 	IDirect3DDevice9* D3D9Device::getD3D9Device()
 	{
 		return mpDevice;

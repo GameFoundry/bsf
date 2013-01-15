@@ -14,14 +14,10 @@
 
 
 >>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
-Creating input layout doesn't seem to require shader/buffer decl combining
- - Remove the extra code, and possibly keep a check to mase sure buffer provides all attributes requested by the shader
-
 Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones
 delete d3d11 vertex declaration
  Working generic buffers
  A way to bind buffers to a Pass, while specifying buffer range
- Fully implement DX11
  Better creation of PrimaryWindow
   - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
   - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
@@ -63,17 +59,6 @@ delete d3d11 vertex declaration
     - Removes the texture from Resources and any other place that holds a known reference
     - Actually destroys the resource and sets isDestroyed flag to true
     - Reference to the empty texture continues to exist but render system need to check if its destroyed before it tries to use it
-
-<<<<Binding input layout:>>>
- Upon call to draw()
- Create or retrieve existing layout based on current set vertex shader and vertex buffer
-  (combine their input declarations into a new one, matching their semantics)
-  Use hash from input declarations to quickly find the combined one
- Vertex buffer is almost certainly allowed to have more values than the input layout specifies
- What about less values? If shader requests a field that isn't available?
-  - Test if DX11 supplies default values for the missing field
-  - If not, then throw an error if a value is missing
-    - And adjust DX9 and GL implementations accordingly
 
 <<<<Handle multithreaded object management>>>:
  - Make everything that is possible immutable. Once created it cant be changed.

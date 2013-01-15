@@ -85,6 +85,9 @@ namespace CamelotEngine
 		if(mLockedBuffer != nullptr)
 			CM_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
 
+		if(getUsage() == TU_DEPTHSTENCIL)
+			CM_EXCEPT(InternalErrorException, "Cannot lock a depth stencil texture.");
+
 		UINT32 mipWidth = mipLevel >> mWidth;
 		UINT32 mipHeight = mipLevel >> mHeight;
 		UINT32 mipDepth = mipLevel >> mDepth;
@@ -221,19 +224,6 @@ namespace CamelotEngine
 
 		createInternalResources();
 
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
-		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
-		{
-			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
-
-			if (mUsage & TU_RENDERTARGET)
-			{
-				createInternalResourcesImpl(d3d9Device);
-				return;
-			}	
-		}	
-
 		Resource::initialize_internal();
 	}
 	/****************************************************************************************/
@@ -275,6 +265,7 @@ namespace CamelotEngine
 		textureResources->pVolumeTex	= NULL;
 		textureResources->pBaseTex		= NULL;
 		textureResources->pFSAASurface	= NULL;
+		textureResources->pDepthStencilSurface = NULL;
 
 		mMapDeviceToTextureResources[d3d9Device] = textureResources;
 
@@ -312,6 +303,7 @@ namespace CamelotEngine
 		SAFE_RELEASE(textureResources->pCubeTex);
 		SAFE_RELEASE(textureResources->pVolumeTex);
 		SAFE_RELEASE(textureResources->pFSAASurface);
+		SAFE_RELEASE(textureResources->pDepthStencilSurface);
 	}
 	/****************************************************************************************/
 	UINT32 D3D9Texture::calculateSize(void) const
@@ -389,7 +381,12 @@ namespace CamelotEngine
 		hr = D3DXCheckTextureRequirements(d3d9Device, NULL, NULL, NULL, 0, &d3dPF, mD3DPool);
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
-		DWORD usage = (mUsage & TU_RENDERTARGET) ? D3DUSAGE_RENDERTARGET : 0;
+		DWORD usage = 0;
+		if((mUsage & TU_RENDERTARGET) != 0)
+			usage = D3DUSAGE_RENDERTARGET;
+		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+			usage = D3DUSAGE_DEPTHSTENCIL;
+
 		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? 
 				D3DX_DEFAULT : mNumMipmaps + 1;
 		// Check dynamic textures
@@ -449,18 +446,65 @@ namespace CamelotEngine
 		else
 			textureResources = allocateTextureResources(d3d9Device);
 
-		if ((mUsage & TU_RENDERTARGET) == 0)
+		if ((mUsage & TU_RENDERTARGET) != 0)
+		{
+			// create AA surface
+			HRESULT hr = d3d9Device->CreateRenderTarget(mWidth, mHeight, d3dPF, 
+				mFSAAType, 
+				mFSAAQuality,
+				TRUE, // TODO - Possible performance issues? Need to check
+				&textureResources->pFSAASurface, NULL);
+
+			if (FAILED(hr))
+			{
+				CM_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
+			}
+
+			D3DSURFACE_DESC desc;
+			hr = textureResources->pFSAASurface->GetDesc(&desc);
+			if (FAILED(hr))
+			{
+				freeInternalResources();
+				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
+			}
+
+			_setFinalAttributes(d3d9Device, textureResources, 
+				desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
+		}
+		else if ((mUsage & TU_DEPTHSTENCIL) != 0)
+		{
+			// create depth stencil surface
+			HRESULT hr = d3d9Device->CreateDepthStencilSurface(mWidth, mHeight, d3dPF, 
+				mFSAAType, 
+				mFSAAQuality,
+				TRUE, // TODO - Possible performance issues? Need to check
+				&textureResources->pDepthStencilSurface, NULL);
+
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Unable to create depth stencil render target: " + String(DXGetErrorDescription(hr)));
+
+			D3DSURFACE_DESC desc;
+			hr = textureResources->pDepthStencilSurface->GetDesc(&desc);
+			if (FAILED(hr))
+			{
+				freeInternalResources();
+				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
+			}
+
+			_setFinalAttributes(d3d9Device, textureResources, desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
+		}
+		else
 		{
 			// create the texture
 			hr = D3DXCreateTexture(	
-					d3d9Device,								// device
-					static_cast<UINT>(mWidth),				// width
-					static_cast<UINT>(mHeight),				// height
-					numMips,								// number of mip map levels
-					usage,									// usage
-					d3dPF,									// pixel format
-					mD3DPool,
-					&textureResources->pNormTex);			// data pointer
+				d3d9Device,								// device
+				static_cast<UINT>(mWidth),				// width
+				static_cast<UINT>(mHeight),				// height
+				numMips,								// number of mip map levels
+				usage,									// usage
+				d3dPF,									// pixel format
+				mD3DPool,
+				&textureResources->pNormTex);			// data pointer
 
 			// check result and except if failed
 			if (FAILED(hr))
@@ -490,31 +534,6 @@ namespace CamelotEngine
 			_setFinalAttributes(d3d9Device, textureResources, 
 				desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
 		}
-		else
-		{
-			// create AA surface
-			HRESULT hr = d3d9Device->CreateRenderTarget(mWidth, mHeight, d3dPF, 
-				mFSAAType, 
-				mFSAAQuality,
-				FALSE, // not lockable
-				&textureResources->pFSAASurface, NULL);
-
-			if (FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
-			}
-
-			D3DSURFACE_DESC desc;
-			hr = textureResources->pFSAASurface->GetDesc(&desc);
-			if (FAILED(hr))
-			{
-				freeInternalResources();
-				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
-			}
-
-			_setFinalAttributes(d3d9Device, textureResources, 
-				desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
-		}
 	}
 	/****************************************************************************************/
 	void D3D9Texture::_createCubeTex(IDirect3DDevice9* d3d9Device)
@@ -523,9 +542,10 @@ namespace CamelotEngine
 		assert(mWidth > 0 || mHeight > 0);
 
 		if (mUsage & TU_RENDERTARGET)
-		{
 			CM_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as render target !!");
-		}
+
+		if (mUsage & TU_DEPTHSTENCIL)
+			CM_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as a depth stencil target !!");
 
 		// determine wich D3D9 pixel format we'll use
 		HRESULT hr;
@@ -628,9 +648,10 @@ namespace CamelotEngine
 		assert(mWidth > 0 && mHeight > 0 && mDepth>0);
 
 		if (mUsage & TU_RENDERTARGET)
-		{
 			CM_EXCEPT(RenderingAPIException, "D3D9 Volume texture can not be created as render target !!");
-		}
+
+		if (mUsage & TU_DEPTHSTENCIL)
+			CM_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as a depth stencil target !!");
 
 		// determine which D3D9 pixel format we'll use
 		HRESULT hr;
@@ -918,7 +939,10 @@ namespace CamelotEngine
 		{	
 			D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 			
-			return device->getBackBufferFormat();		
+			if((mUsage & TU_DEPTHSTENCIL) != 0)
+				return device->getDepthStencilFormat();
+			else
+				return device->getBackBufferFormat();		
 		}
 
 		// Choose closest supported D3D format as a D3D format
@@ -961,6 +985,10 @@ namespace CamelotEngine
 		{
 			bufusage |= TU_RENDERTARGET;
 		}
+		else if(mUsage & TU_DEPTHSTENCIL)
+		{
+			bufusage |= TU_RENDERTARGET;
+		}
 		
 		UINT32 surfaceCount  = static_cast<UINT32>((getNumFaces() * (mNumMipmaps + 1)));
 		bool updateOldList = mSurfaceList.size() == surfaceCount;
@@ -986,6 +1014,16 @@ namespace CamelotEngine
 			D3D9PixelBuffer* currPixelBuffer = GETLEVEL(0, 0);
 
 			currPixelBuffer->bind(d3d9Device, textureResources->pFSAASurface,
+				mHwGammaWriteSupported, mFSAA, "PortNoName", textureResources->pBaseTex);
+		}
+		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+		{
+			assert(textureResources->pFSAASurface);
+			assert(getTextureType() == TEX_TYPE_2D);
+
+			D3D9PixelBuffer* currPixelBuffer = GETLEVEL(0, 0);
+
+			currPixelBuffer->bind(d3d9Device, textureResources->pDepthStencilSurface,
 				mHwGammaWriteSupported, mFSAA, "PortNoName", textureResources->pBaseTex);
 		}
 		else

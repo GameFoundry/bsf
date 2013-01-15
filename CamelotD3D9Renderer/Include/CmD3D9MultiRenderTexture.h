@@ -20,9 +20,9 @@ namespace CamelotEngine
 		void initialize();
 
 		void setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
-		void setDepthStencilImpl(DepthStencilBufferPtr depthStencilbuffer);
+		void setDepthStencilImpl(TexturePtr depthStencilSurface);
 
-		vector<IDirect3DSurface9*>::type mColorSurfaces;
-		IDirect3DSurface9* mDepthStencilSurface;
+		vector<IDirect3DSurface9*>::type mDX9ColorSurfaces;
+		IDirect3DSurface9* mDX9DepthStencilSurface;
 	};
 }

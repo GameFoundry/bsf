@@ -323,9 +323,6 @@
     <ClInclude Include="Include\CmRenderWindowManager.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmDepthStencilBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmMultiRenderTexture.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -512,9 +509,6 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmRenderWindowManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmDepthStencilBuffer.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmMultiRenderTexture.cpp">

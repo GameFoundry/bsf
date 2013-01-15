@@ -321,9 +321,6 @@ namespace CamelotEngine
 	{	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		// Check for misuse
-		if(mUsage & TU_RENDERTARGET)
-			CM_EXCEPT(RenderingAPIException, "DirectX does not allow locking of or directly writing to RenderTargets. Use blitFromMemory if you need the contents.");		
 		// Set locking flags according to options
 		DWORD flags = 0;
 		switch(options)

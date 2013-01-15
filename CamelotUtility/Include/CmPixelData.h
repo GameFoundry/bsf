@@ -117,8 +117,16 @@ namespace CamelotEngine
         PF_PVRTC_RGB4 = 40,
         /// PVRTC (PowerVR) RGBA 4 bpp
         PF_PVRTC_RGBA4 = 41,
+		// Depth stencil, 32bit depth, 8bit stencil + 24 unused
+		PF_D32_S8X24 = 42,
+		// Depth stencil, 24bit depth + 8bit stencil
+		PF_D24S8 = 43,
+		// Depth, 32bits
+		PF_D32 = 44,
+		// Depth, 16bits
+		PF_D16 = 45,
 		// Number of pixel formats currently defined
-        PF_COUNT = 42
+        PF_COUNT = 46
     };
 	typedef vector<PixelFormat>::type PixelFormatList;
 
@@ -152,17 +160,6 @@ namespace CamelotEngine
         PCT_FLOAT32 = 3, /// 32 bit float per component
         PCT_COUNT = 4    /// Number of pixel types
     };
-
-	/**
-	 * @brief	Available formats for depth/stencil buffer
-	 */
-	enum DepthStencilFormat
-	{
-		DFMT_D32_S8X24,
-		DFMT_D24S8,
-		DFMT_D32,
-		DFMT_D16
-	};
     
 	/** A primitive describing a volume (3D), image (2D) or line (1D) of pixels in memory.
      	In case of a rectangle, depth must be 1. 

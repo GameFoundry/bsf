@@ -83,9 +83,6 @@ namespace CamelotEngine
 
 		static UINT32 _getSizeInBytes(PixelFormat pf, UINT32 xcount = 1, UINT32 ycount = 1);
 
-		static UINT _getTextureBindFlags(DXGI_FORMAT format, bool isdynamic);
-		static UINT _getTextureMiscFlags(UINT bindflags, TextureType textype, bool isdynamic);
-
-		static D3D11_MAP _getLockOptions(GpuLockOptions lockOptions);
+		static D3D11_MAP getLockOptions(GpuLockOptions lockOptions);
 	};
 }

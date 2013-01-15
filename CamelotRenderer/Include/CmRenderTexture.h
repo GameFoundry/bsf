@@ -30,7 +30,6 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 #include "CmTexture.h"
-#include "CmDepthStencilBuffer.h"
 #include "CmRenderTarget.h"
 
 namespace CamelotEngine
@@ -52,16 +51,16 @@ namespace CamelotEngine
 		virtual ~RenderTexture() {}
 
 		void setColorSurface(TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
-		void setDepthStencil(DepthStencilBufferPtr depthStencilbuffer);
+		void setDepthStencilSurface(TexturePtr depthStencil);
 
 		SurfaceDesc getSurfaceDesc() const { return mSurface; }
-		DepthStencilBufferPtr getDepthStencilBuffer() const { return mDepthStencilBuffer; }
+		TexturePtr getDepthStencilSurface() const { return mDepthStencilSurface; }
 
 		bool requiresTextureFlipping() const { return false; }
 
 	protected:
 		SurfaceDesc mSurface;
-		DepthStencilBufferPtr mDepthStencilBuffer;
+		TexturePtr mDepthStencilSurface;
 
 		RenderTexture();
 

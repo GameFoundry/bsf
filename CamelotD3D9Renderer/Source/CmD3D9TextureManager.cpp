@@ -31,7 +31,6 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmD3D9Mappings.h"
 #include "CmD3D9RenderSystem.h"
-#include "CmD3D9DepthStencilBuffer.h"
 #include "CmD3D9MultiRenderTexture.h"
 
 namespace CamelotEngine 
@@ -56,12 +55,6 @@ namespace CamelotEngine
 		return new D3D9RenderTexture();
 	}
 
-	DepthStencilBufferPtr D3D9TextureManager::createDepthStencilBuffer(DepthStencilFormat format, UINT32 width, 
-		UINT32 height, UINT32 fsaa, const String& fsaaHint)
-	{
-		return DepthStencilBufferPtr(new D3D9DepthStencilBuffer(format, width, height, fsaa, fsaaHint));
-	}
-
 	MultiRenderTexturePtr D3D9TextureManager::createMultiRenderTexture()
 	{
 		D3D9MultiRenderTexture* newMRT = new D3D9MultiRenderTexture();
@@ -81,6 +74,11 @@ namespace CamelotEngine
 		if (usage & TU_RENDERTARGET) 
 		{
 			d3dusage |= D3DUSAGE_RENDERTARGET;
+			pool = D3DPOOL_DEFAULT; 
+		}
+		if(usage & TU_DEPTHSTENCIL)
+		{
+			d3dusage |= D3DUSAGE_DEPTHSTENCIL;
 			pool = D3DPOOL_DEFAULT;
 		}
 		if (usage & TU_DYNAMIC)

@@ -443,23 +443,6 @@ namespace CamelotEngine
 		return D3DDECLUSAGE_POSITION;
 	}
 	//---------------------------------------------------------------------
-	D3DFORMAT D3D9Mappings::get(DepthStencilFormat format)
-	{
-		switch(format)
-		{
-		case DFMT_D24S8:
-			return D3DFMT_D24S8;
-		case DFMT_D32:
-			return D3DFMT_D32F_LOCKABLE;
-		case DFMT_D16:
-			return D3DFMT_D16;
-		}
-
-		LOGWRN("Requesting unsupported DepthStencilFormat. Using D24S8 format instead.");
-
-		return D3DFMT_D24S8;
-	}
-	//---------------------------------------------------------------------
 	D3DXMATRIX D3D9Mappings::makeD3DXMatrix( const Matrix4& mat )
 	{
 		// Transpose matrix
@@ -543,6 +526,12 @@ namespace CamelotEngine
 			return PF_DXT4;
 		case D3DFMT_DXT5:
 			return PF_DXT5;
+		case D3DFMT_D24S8:
+			return PF_D24S8;
+		case D3DFMT_D32F_LOCKABLE:
+			return PF_D32;
+		case D3DFMT_D16:
+			return PF_D16;
 		default:
 			return PF_UNKNOWN;
 		}
@@ -610,19 +599,26 @@ namespace CamelotEngine
 			return D3DFMT_DXT4;
 		case PF_DXT5:
 			return D3DFMT_DXT5;
+		case PF_D24S8:
+			return D3DFMT_D24S8;
+		case PF_D32:
+			return D3DFMT_D32F_LOCKABLE;
+		case PF_D16:
+			return D3DFMT_D16;
 		case PF_UNKNOWN:
 		default:
 			return D3DFMT_UNKNOWN;
 		}
 	}
 	/****************************************************************************************/
-	PixelFormat D3D9Mappings::_getClosestSupportedPF(PixelFormat ogrePF)
+	PixelFormat D3D9Mappings::_getClosestSupportedPF(PixelFormat enginePF)
 	{
-		if (_getPF(ogrePF) != D3DFMT_UNKNOWN)
+		if (_getPF(enginePF) != D3DFMT_UNKNOWN)
 		{
-			return ogrePF;
+			return enginePF;
 		}
-		switch(ogrePF)
+
+		switch(enginePF)
 		{
 		case PF_B5G6R5:
 			return PF_R5G6B5;
@@ -636,6 +632,8 @@ namespace CamelotEngine
 			return PF_FLOAT16_RGBA;
 		case PF_FLOAT32_RGB:
 			return PF_FLOAT32_RGBA;
+		case PF_D32_S8X24:
+			return PF_D24S8;
 		case PF_UNKNOWN:
 		default:
 			return PF_A8R8G8B8;

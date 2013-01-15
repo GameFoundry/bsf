@@ -2,12 +2,11 @@
 #include "CmD3D9Texture.h"
 #include "CmD3D9PixelBuffer.h"
 #include "CmD3D9RenderSystem.h"
-#include "CmD3D9DepthStencilBuffer.h"
 
 namespace CamelotEngine
 {
 	D3D9RenderTexture::D3D9RenderTexture()
-		:mColorSurface(nullptr), mDepthStencilSurface(nullptr)
+		:mDX9ColorSurface(nullptr), mDX9DepthStencilSurface(nullptr)
 	{
 
 	}
@@ -22,13 +21,13 @@ namespace CamelotEngine
 		if(name == "DDBACKBUFFER")
 		{
 			IDirect3DSurface9 ** pSurf = (IDirect3DSurface9 **)pData;
-			*pSurf = mColorSurface;
+			*pSurf = mDX9ColorSurface;
 			return;
 		}
 		else if(name == "D3DZBUFFER")
 		{
 			IDirect3DSurface9 ** pSurf = (IDirect3DSurface9 **)pData;
-			*pSurf = mDepthStencilSurface;
+			*pSurf = mDX9DepthStencilSurface;
 			return;
 		}
 		else if(name == "HWND")
@@ -43,9 +42,10 @@ namespace CamelotEngine
 	{
 		D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(mSurface.texture.get());
 		D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(d3d9texture->getBuffer(mSurface.face, mSurface.mipLevel).get());
-		mColorSurface = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
+		mDX9ColorSurface = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
 
-		D3D9DepthStencilBuffer* d3d9DepthStencil = static_cast<D3D9DepthStencilBuffer*>(mDepthStencilBuffer.get());
-		mDepthStencilSurface = d3d9DepthStencil->getSurface();
+		D3D9Texture* d3d9DepthStencil = static_cast<D3D9Texture*>(mDepthStencilSurface.get());
+		D3D9PixelBuffer* depthStencilBuffer = static_cast<D3D9PixelBuffer*>(d3d9DepthStencil->getBuffer(0, 0).get());
+		mDX9DepthStencilSurface = depthStencilBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
 	}
 }

@@ -59,7 +59,7 @@ namespace CamelotEngine
 
 		mFB->bindSurface(0, surfaceDesc);
 
-		GLDepthStencilBuffer* glDepthStencilBuffer = static_cast<GLDepthStencilBuffer*>(mDepthStencilBuffer.get());
+		GLDepthStencilBuffer* glDepthStencilBuffer = static_cast<GLDepthStencilBuffer*>(mDepthStencilSurface.get());
 
 		mFB->bindDepthStencil(glDepthStencilBuffer->getGLRenderBuffer());
 	}

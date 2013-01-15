@@ -1,6 +1,5 @@
 #include "CmMultiRenderTexture.h"
 #include "CmTexture.h"
-#include "CmDepthStencilBuffer.h"
 #include "CmException.h"
 
 namespace CamelotEngine
@@ -14,6 +13,9 @@ namespace CamelotEngine
 	{
 		if(surfaceIdx < 0 || surfaceIdx >= CM_MAX_MULTIPLE_RENDER_TARGETS)
 			CM_EXCEPT(InvalidParametersException, "Invalid surface index. 0 <= " + toString(surfaceIdx) + " < CM_MAX_MULTIPLE_RENDER_TARGETS");
+
+		if(texture != nullptr && texture->getUsage() != TU_RENDERTARGET)
+			CM_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
 		mSurfaces[surfaceIdx].texture = texture;
 
@@ -43,13 +45,16 @@ namespace CamelotEngine
 		setColorSurfaceImpl(surfaceIdx, texture, face, numFaces, mipLevel);
 	}
 
-	void MultiRenderTexture::setDepthStencil(DepthStencilBufferPtr depthStencilBuffer)
+	void MultiRenderTexture::setDepthStencilSurface(TexturePtr depthStencilSurface)
 	{
-		mDepthStencilBuffer = depthStencilBuffer;
+		if(depthStencilSurface != nullptr && depthStencilSurface->getUsage() != TU_DEPTHSTENCIL)
+			CM_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
+
+		mDepthStencilSurface = depthStencilSurface;
 
 		throwIfBuffersDontMatch();
 
-		setDepthStencilImpl(depthStencilBuffer);
+		setDepthStencilImpl(depthStencilSurface);
 	}
 
 	void MultiRenderTexture::throwIfBuffersDontMatch() const
@@ -98,18 +103,18 @@ namespace CamelotEngine
 				toString(firstSurfaceDesc->mipLevel) + ". Max num mipmaps: " + toString(firstSurfaceDesc->texture->getNumMipmaps()));
 		}
 
-		if(mDepthStencilBuffer == nullptr)
+		if(mDepthStencilSurface == nullptr)
 			return;
 
-		if(mDepthStencilBuffer->getWidth() != firstSurfaceDesc->texture->getWidth() ||
-			mDepthStencilBuffer->getHeight() != firstSurfaceDesc->texture->getHeight() ||
-			mDepthStencilBuffer->getFsaa() != firstSurfaceDesc->texture->getFSAA() ||
-			mDepthStencilBuffer->getFsaaHint() != firstSurfaceDesc->texture->getFSAAHint())
+		if(mDepthStencilSurface->getWidth() != firstSurfaceDesc->texture->getWidth() ||
+			mDepthStencilSurface->getHeight() != firstSurfaceDesc->texture->getHeight() ||
+			mDepthStencilSurface->getFSAA() != firstSurfaceDesc->texture->getFSAA() ||
+			mDepthStencilSurface->getFSAAHint() != firstSurfaceDesc->texture->getFSAAHint())
 		{
-			String errorInfo = "\nWidth: " + toString(mDepthStencilBuffer->getWidth()) + "/" + toString(firstSurfaceDesc->texture->getWidth());
-			errorInfo += "\nHeight: " + toString(mDepthStencilBuffer->getHeight()) + "/" + toString(firstSurfaceDesc->texture->getHeight());
-			errorInfo += "\nFSAA: " + toString(mDepthStencilBuffer->getFsaa()) + "/" + toString(firstSurfaceDesc->texture->getFSAA());
-			errorInfo += "\nFSAAHint: " + mDepthStencilBuffer->getFsaaHint() + "/" + firstSurfaceDesc->texture->getFSAAHint();
+			String errorInfo = "\nWidth: " + toString(mDepthStencilSurface->getWidth()) + "/" + toString(firstSurfaceDesc->texture->getWidth());
+			errorInfo += "\nHeight: " + toString(mDepthStencilSurface->getHeight()) + "/" + toString(firstSurfaceDesc->texture->getHeight());
+			errorInfo += "\nFSAA: " + toString(mDepthStencilSurface->getFSAA()) + "/" + toString(firstSurfaceDesc->texture->getFSAA());
+			errorInfo += "\nFSAAHint: " + mDepthStencilSurface->getFSAAHint() + "/" + firstSurfaceDesc->texture->getFSAAHint();
 
 			CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 		}

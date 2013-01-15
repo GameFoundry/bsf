@@ -44,7 +44,7 @@ namespace CamelotEngine
 		else if(name == "DSV")
 		{
 			ID3D11DepthStencilView** pDSV = (ID3D11DepthStencilView **)pData;
-			D3D11DepthStencilBuffer* d3d11depthStencilBuffer = static_cast<D3D11DepthStencilBuffer*>(mDepthStencilBuffer.get());
+			D3D11DepthStencilBuffer* d3d11depthStencilBuffer = static_cast<D3D11DepthStencilBuffer*>(mDepthStencilSurface.get());
 
 			*pDSV = d3d11depthStencilBuffer->getDepthStencilView();
 			return;

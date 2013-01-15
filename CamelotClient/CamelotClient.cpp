@@ -27,8 +27,8 @@ using namespace CamelotEngine;
 int _tmain(int argc, _TCHAR* argv[])
 {
 	//gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
-	//gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
-	gApplication().startUp("CamelotD3D11RenderSystem", "CamelotForwardRenderer");
+	gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
+	//gApplication().startUp("CamelotD3D11RenderSystem", "CamelotForwardRenderer");
 
 	RenderSystem* renderSystem = RenderSystem::instancePtr();
 	RenderWindowPtr renderWindow = gApplication().getPrimaryRenderWindow();
@@ -51,51 +51,51 @@ int _tmain(int argc, _TCHAR* argv[])
 	HighLevelGpuProgramPtr vertProg;
 
 	/////////////////// HLSL 9 SHADERS //////////////////////////
-	//String fragShaderCode = "sampler2D tex;			\
-	//						float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
-	//						{														\
-	//						float4 color = tex2D(tex, uv);				\
-	//						return color;										\
-	//						}";
-
-	//fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
-
-	//String vertShaderCode = "float4x4 matViewProjection;	\
-	//						void vs_main(										\
-	//						float4 inPos : POSITION,							\
-	//						float2 uv : TEXCOORD0,								\
-	//						out float4 oPosition : POSITION,					\
-	//						out float2 oUv : TEXCOORD0)							\
-	//						{														\
-	//						oPosition = mul(matViewProjection, inPos);			\
-	//						oUv = uv;											\
-	//						}";
-
-	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
-
-	/////////////////// HLSL 11 SHADERS //////////////////////////
-	String fragShaderCode = "SamplerState samp : register(s0);			\
-							Texture2D tex : register(t0); \
-							float4 ps_main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target		\
+	String fragShaderCode = "sampler2D tex;			\
+							float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
 							{														\
-							float4 color = tex.Sample(samp, uv);				\
+							float4 color = tex2D(tex, uv);				\
 							return color;										\
 							}";
 
-	fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+	fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 
 	String vertShaderCode = "float4x4 matViewProjection;	\
 							void vs_main(										\
-							in float4 inPos : POSITION,							\
-							in float2 uv : TEXCOORD0,								\
-							out float4 oPosition : SV_Position,					\
+							float4 inPos : POSITION,							\
+							float2 uv : TEXCOORD0,								\
+							out float4 oPosition : POSITION,					\
 							out float2 oUv : TEXCOORD0)							\
 							{														\
 							oPosition = mul(matViewProjection, inPos);			\
 							oUv = uv;											\
 							}";
 
-	vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+	vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+
+	/////////////////// HLSL 11 SHADERS //////////////////////////
+	//String fragShaderCode = "SamplerState samp : register(s0);			\
+	//						Texture2D tex : register(t0); \
+	//						float4 ps_main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target		\
+	//						{														\
+	//						float4 color = tex.Sample(samp, uv);				\
+	//						return color;										\
+	//						}";
+
+	//fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+
+	//String vertShaderCode = "float4x4 matViewProjection;	\
+	//						void vs_main(										\
+	//						in float4 inPos : POSITION,							\
+	//						in float2 uv : TEXCOORD0,								\
+	//						out float4 oPosition : SV_Position,					\
+	//						out float2 oUv : TEXCOORD0)							\
+	//						{														\
+	//						oPosition = mul(matViewProjection, inPos);			\
+	//						oUv = uv;											\
+	//						}";
+
+	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
 
 	/////////////////// CG SHADERS //////////////////////////
 	//String fragShaderCode = "sampler2D tex;					\

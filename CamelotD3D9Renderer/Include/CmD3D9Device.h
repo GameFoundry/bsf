@@ -62,6 +62,7 @@ namespace CamelotEngine {
 		
 		const D3DCAPS9&			getD3D9DeviceCaps		() const;
 		D3DFORMAT				getBackBufferFormat		() const;
+		D3DFORMAT				getDepthStencilFormat	() const;
 
 		bool					validate				(D3D9RenderWindow* renderWindow);
 		void					invalidate				(D3D9RenderWindow* renderWindow);

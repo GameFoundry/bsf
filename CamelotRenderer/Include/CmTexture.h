@@ -49,6 +49,7 @@ namespace CamelotEngine {
 		TU_STATIC = GBU_STATIC, // Optimal setting if texture is read by the GPU often, and very rarely written by CPU
 		TU_DYNAMIC = GBU_DYNAMIC, // Optimal if the texture is updated by CPU often (e.g. every frame)
 		TU_RENDERTARGET = 0x200, // Used for rendering by the GPU
+		TU_DEPTHSTENCIL = 0x400,
 		TU_DEFAULT = TU_STATIC
     };
 

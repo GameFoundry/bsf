@@ -102,7 +102,9 @@ namespace CamelotEngine {
 			/// actual texture pointer
 			IDirect3DBaseTexture9* pBaseTex;
 			/// Optional FSAA surface
-			IDirect3DSurface9* pFSAASurface;			
+			IDirect3DSurface9* pFSAASurface;	
+			/// Optional depth stencil surface
+			IDirect3DSurface9* pDepthStencilSurface;	
 		};
 		
 		typedef map<IDirect3DDevice9*, TextureResources*>::type	DeviceToTextureResourcesMap;
@@ -170,10 +172,6 @@ namespace CamelotEngine {
 		bool _canAutoGenMipmaps(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat);
 		/// internal method, return true if the device/texture combination can use hardware gamma
 		bool _canUseHardwareGammaCorrection(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat, bool forwriting);
-		
-		/// internal method, the cube map face name for the spec. face index
-		String _getCubeFaceName(unsigned char face) const
-		{ assert(face < 6); return mCubeFaceNames[face]; }
 
 		/// internal method, create D3D9HardwarePixelBuffers for every face and
 		/// mipmap level. This method must be called after the D3D texture object was created

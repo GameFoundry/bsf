@@ -933,7 +933,58 @@ namespace CamelotEngine {
         /* Masks and shifts */
         0, 0, 0, 0, 0, 0, 0, 0
         },
-        
+	//-----------------------------------------------------------------------
+		{"PF_D32_S8X24",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_DEPTH | PFF_FLOAT,
+		/* Component type and count */
+		PCT_FLOAT32, 1,
+		/* rbits, gbits, bbits, abits */
+		0, 0, 0, 0,
+		/* Masks and shifts */
+		0, 0, 0, 0, 0, 0, 0, 0
+		}, 
+	//-----------------------------------------------------------------------
+		{"PF_D24_S8",
+		/* Bytes per element */
+		8,
+		/* Flags */
+		PFF_DEPTH | PFF_FLOAT,
+		/* Component type and count */
+		PCT_FLOAT32, 2,
+		/* rbits, gbits, bbits, abits */
+		0, 0, 0, 0,
+		/* Masks and shifts */
+		0, 0, 0, 0, 0, 0, 0, 0
+		}, 
+	//-----------------------------------------------------------------------
+		{"PF_D32",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_DEPTH | PFF_FLOAT,
+		/* Component type and count */
+		PCT_FLOAT32, 1,
+		/* rbits, gbits, bbits, abits */
+		0, 0, 0, 0,
+		/* Masks and shifts */
+		0, 0, 0, 0, 0, 0, 0, 0
+		}, 
+	//-----------------------------------------------------------------------
+		{"PF_D16",
+		/* Bytes per element */
+		2,
+		/* Flags */
+		PFF_DEPTH | PFF_FLOAT,
+		/* Component type and count */
+		PCT_FLOAT16, 1,
+		/* rbits, gbits, bbits, abits */
+		0, 0, 0, 0,
+		/* Masks and shifts */
+		0, 0, 0, 0, 0, 0, 0, 0
+		}, 
     };
     //-----------------------------------------------------------------------
 	UINT32 PixelData::getConsecutiveSize() const
