@@ -14,6 +14,9 @@
 
 
 >>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
+Creating input layout doesn't seem to require shader/buffer decl combining
+ - Remove the extra code, and possibly keep a check to mase sure buffer provides all attributes requested by the shader
+
 Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones
 delete d3d11 vertex declaration
  Working generic buffers

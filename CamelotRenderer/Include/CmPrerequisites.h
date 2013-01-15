@@ -29,6 +29,7 @@ THE SOFTWARE
 #include "CmPrerequisitesUtil.h"
 
 #define CM_MAX_MULTIPLE_RENDER_TARGETS 8
+#define CM_FORCE_SINGLETHREADED_RENDERING 0
 
 //----------------------------------------------------------------------------
 // Windows Settings
@@ -59,6 +60,29 @@ THE SOFTWARE
 #   endif
 
 #endif // CM_PLATFORM == CM_PLATFORM_WIN32
+
+// Linux/Apple Settings
+#if CM_PLATFORM == CM_PLATFORM_LINUX || CM_PLATFORM == CM_PLATFORM_APPLE
+
+// Enable GCC symbol visibility
+#   if defined( CM_GCC_VISIBILITY )
+#       define CM_EXPORT  __attribute__ ((visibility("default")))
+#       define CM_HIDDEN __attribute__ ((visibility("hidden")))
+#   else
+#       define CM_EXPORT
+#       define CM_HIDDEN
+#   endif
+
+// A quick define to overcome different names for the same function
+#   define stricmp strcasecmp
+
+#   ifdef DEBUG
+#       define CM_DEBUG_MODE 1
+#   else
+#       define CM_DEBUG_MODE 0
+#   endif
+
+#endif
 
 namespace CamelotEngine {
 

@@ -380,6 +380,7 @@ namespace CamelotEngine {
 
 	void RenderSystem::initRenderThread()
 	{
+#if !CM_FORCE_SINGLETHREADED_RENDERING
 		mRenderThreadFunc = new RenderWorkerFunc(this);
 
 #if CM_THREAD_SUPPORT
@@ -392,10 +393,12 @@ namespace CamelotEngine {
 #else
 		CM_EXCEPT(InternalErrorException, "Attempting to start a render thread but Camelot isn't compiled with thread support.");
 #endif
+#endif
 	}
 
 	void RenderSystem::runRenderThread()
 	{
+#if !CM_FORCE_SINGLETHREADED_RENDERING
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
 
 		CM_THREAD_NOTIFY_ALL(mRenderThreadStartCondition)
@@ -419,11 +422,12 @@ namespace CamelotEngine {
 			// Play commands
 			mCommandQueue->playback(commands, boost::bind(&RenderSystem::commandCompletedNotify, this, _1)); 
 		}
-
+#endif
 	}
 
 	void RenderSystem::shutdownRenderThread()
 	{
+#if !CM_FORCE_SINGLETHREADED_RENDERING
 		mRenderThreadShutdown = true;
 
 		// Wake all threads. They will quit after they see the shutdown flag
@@ -434,6 +438,7 @@ namespace CamelotEngine {
 
 		mRenderThread = nullptr;
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
+#endif
 	}
 
 	DeferredRenderContextPtr RenderSystem::createDeferredContext()
@@ -443,7 +448,7 @@ namespace CamelotEngine {
 	
 	AsyncOp RenderSystem::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)
 	{
-#ifdef CM_DEBUG_MODE
+#if CM_DEBUG_MODE && !CM_FORCE_SINGLETHREADED_RENDERING
 		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
 #endif
@@ -472,7 +477,7 @@ namespace CamelotEngine {
 
 	void RenderSystem::queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete)
 	{
-#ifdef CM_DEBUG_MODE
+#if CM_DEBUG_MODE && !CM_FORCE_SINGLETHREADED_RENDERING
 		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
 #endif
@@ -498,6 +503,7 @@ namespace CamelotEngine {
 
 	void RenderSystem::blockUntilCommandCompleted(UINT32 commandId)
 	{
+#if !CM_FORCE_SINGLETHREADED_RENDERING
 		CM_LOCK_MUTEX_NAMED(mCommandNotifyMutex, lock);
 
 		while(true)
@@ -518,6 +524,7 @@ namespace CamelotEngine {
 
 			CM_THREAD_WAIT(mCommandCompleteCondition, mCommandNotifyMutex, lock);
 		}
+#endif
 	}
 
 	void RenderSystem::commandCompletedNotify(UINT32 commandId)
@@ -533,8 +540,10 @@ namespace CamelotEngine {
 
 	void RenderSystem::throwIfNotRenderThread() const
 	{
+#if !CM_FORCE_SINGLETHREADED_RENDERING
 		if(CM_THREAD_CURRENT_ID != getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "Calling the render system from a non-render thread!");
+#endif
 	}
 
 	/************************************************************************/

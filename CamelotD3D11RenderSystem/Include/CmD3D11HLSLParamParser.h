@@ -7,8 +7,7 @@ namespace CamelotEngine
 	class D3D11HLSLParamParser
 	{
 	public:
-		void parse(ID3DBlob* microcode, GpuParamDesc& desc, 
-			vector<D3D11_SIGNATURE_PARAMETER_DESC>::type& inputParams, vector<D3D11_SIGNATURE_PARAMETER_DESC>::type& outputParams);
+		void parse(ID3DBlob* microcode, GpuParamDesc& desc, VertexDeclarationPtr& inputParams);
 
 	private:
 		void parseBuffer(ID3D11ShaderReflectionConstantBuffer* bufferReflection, GpuParamDesc& desc);

@@ -6,6 +6,8 @@
 #include "CmHardwareBufferManager.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11HLSLParamParser.h"
+#include "CmD3D11Mappings.h"
+#include "CmGpuParams.h"
 #include "CmException.h"
 #include "CmDebug.h"
 
@@ -77,8 +79,6 @@ namespace CamelotEngine
     void D3D11HLSLProgram::unload_internal()
 	{
 		mAssemblerProgram = nullptr;
-		mInputParameters.clear();
-		mOutputParameters.clear();
 		mMicrocode.clear();
 	}
 
@@ -150,7 +150,19 @@ namespace CamelotEngine
 		assert(microcode != nullptr);
 
 		D3D11HLSLParamParser parser;
-		parser.parse(microcode, mParametersDesc, mInputParameters, mOutputParameters);
+
+		if(mType == GPT_VERTEX_PROGRAM)
+			mInputDeclaration = HardwareBufferManager::instance().createVertexDeclaration();
+
+		parser.parse(microcode, mParametersDesc, mInputDeclaration);
+	}
+
+	GpuParamsPtr D3D11HLSLProgram::createParameters()
+	{
+		GpuParamsPtr params(new GpuParams(mParametersDesc));
+		params->setTransposeMatrices(mColumnMajorMatrices);
+
+		return params;
 	}
 
 	/************************************************************************/

@@ -2,7 +2,7 @@
 #include "CmWindowEventUtilities.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
-#include "CmDepthStencilBuffer.h"
+#include "CmD3D11DepthStencilBuffer.h"
 #include "CmTextureManager.h"
 #include "CmException.h"
 
@@ -334,10 +334,6 @@ namespace CamelotEngine
 
 	void D3D11RenderWindow::getCustomAttribute( const String& name, void* pData )
 	{
-		// Valid attributes and their equvalent native functions:
-		// D3DDEVICE			: getD3DDevice
-		// WINDOW				: getWindowHandle
-
 		if(name == "WINDOW")
 		{
 			HWND *pWnd = (HWND*)pData;
@@ -345,39 +341,15 @@ namespace CamelotEngine
 			return;
 		}
 
-		if(name == "D3DDEVICE")
-		{
-			ID3D11Device **device = (ID3D11Device **)pData;
-			*device = mDevice.getD3D11Device();
-			return;
-		}
-		else if(name == "isTexture")
-		{
-			bool *b = reinterpret_cast< bool * >( pData );
-			*b = false;
-			return;
-		}
-		else if(name == "ID3D11RenderTargetView")
+		if(name == "RTV")
 		{
 			*static_cast<ID3D11RenderTargetView**>(pData) = mRenderTargetView;
 			return;
 		}
-		else if(name == "ID3D11Texture2D")
+		else if(name == "DSV")
 		{
-			ID3D11Texture2D **pBackBuffer = (ID3D11Texture2D**)pData;
-			*pBackBuffer = mBackBuffer;
-			return;
-		}
-		else if(name == "numberOfViews")
-		{
-			unsigned int* n = reinterpret_cast<unsigned int*>(pData);
-			*n = 1;
-			return;
-		}
-		else if(name == "DDBACKBUFFER")
-		{
-			ID3D11Texture2D **ppBackBuffer = (ID3D11Texture2D**) pData;
-			ppBackBuffer[0] = NULL;
+			D3D11DepthStencilBuffer* d3d11depthStencilBuffer = static_cast<D3D11DepthStencilBuffer*>(mDepthStencilBuffer.get());
+			*static_cast<ID3D11DepthStencilView**>(pData) = d3d11depthStencilBuffer->getDepthStencilView();
 			return;
 		}
 

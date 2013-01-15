@@ -10,37 +10,37 @@ namespace CamelotEngine
 	GpuParams::GpuParams(GpuParamDesc& paramDesc)
 		:mParamDesc(paramDesc), mTransposeMatrices(false)
 	{
-		UINT32 maxParamBlockSlot = 0;
+		UINT32 numParamBlockSlots = 0;
 		for(auto iter = mParamDesc.paramBlocks.begin(); iter != mParamDesc.paramBlocks.end(); ++iter)
 		{
-			if(iter->second.slot > maxParamBlockSlot)
-				maxParamBlockSlot = iter->second.slot;
+			if((iter->second.slot + 1) > numParamBlockSlots)
+				numParamBlockSlots = iter->second.slot + 1;
 		}
 
-		mParamBlocks.resize(maxParamBlockSlot + 1);
+		mParamBlocks.resize(numParamBlockSlots);
 
 		for(auto iter = mParamDesc.paramBlocks.begin(); iter != mParamDesc.paramBlocks.end(); ++iter)
 		{
 			mParamBlocks[iter->second.slot] = GpuParamBlock::create(iter->second);
 		}
 
-		UINT32 maxTextureSlot = 0;
+		UINT32 numTextureSlots = 0;
 		for(auto iter = mParamDesc.textures.begin(); iter != mParamDesc.textures.end(); ++iter)
 		{
-			if(iter->second.slot > maxTextureSlot)
-				maxTextureSlot = iter->second.slot;
+			if((iter->second.slot + 1) > numTextureSlots)
+				numTextureSlots = iter->second.slot + 1;
 		}
 
-		mTextures.resize(maxTextureSlot + 1);
+		mTextures.resize(numTextureSlots);
 
-		UINT32 maxSamplerSlot = 0;
+		UINT32 numSamplerSlots = 0;
 		for(auto iter = mParamDesc.samplers.begin(); iter != mParamDesc.samplers.end(); ++iter)
 		{
-			if(iter->second.slot > maxSamplerSlot)
-				maxSamplerSlot = iter->second.slot;
+			if((iter->second.slot + 1) > numSamplerSlots)
+				numSamplerSlots = iter->second.slot + 1;
 		}
 
-		mSamplerStates.resize(maxSamplerSlot + 1);
+		mSamplerStates.resize(numSamplerSlots);
 	}
 
 	GpuParamBlockPtr GpuParams::getParamBlock(UINT32 slot) const

@@ -20,6 +20,8 @@ namespace CamelotEngine
 		D3D11RenderWindow* renderWindow = new D3D11RenderWindow(d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
 		renderWindow->initialize(desc);
 
+		d3d11rs->attachRenderTarget(*renderWindow);
+
 		D3D11RenderWindowPtr winPtr(renderWindow);
 		asyncOp.completeOperation(std::static_pointer_cast<RenderWindow>(winPtr));
 	}

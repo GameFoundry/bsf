@@ -113,7 +113,7 @@ namespace CamelotEngine
 		D3D11_INPUT_ELEMENT_DESC* declElements = new D3D11_INPUT_ELEMENT_DESC[numElements];
 		ZeroMemory(declElements, sizeof(D3D11_INPUT_ELEMENT_DESC) * numElements);
 
-		unsigned int idx;
+		unsigned int idx = 0;
 		for(auto iter = newDecl->getElements().begin(); iter != newDecl->getElements().end(); ++iter)
 		{
 			declElements[idx].SemanticName			= D3D11Mappings::get(iter->getSemantic());
@@ -200,34 +200,33 @@ namespace CamelotEngine
 	{
 		VertexDeclarationPtr newDecl = HardwareBufferManager::instance().createVertexDeclaration();
 
-		for(auto shaderIter = vertexShaderDecl->getElements().begin(); shaderIter != vertexShaderDecl->getElements().end(); ++shaderIter)
+		//for(auto shaderIter = vertexShaderDecl->getElements().begin(); shaderIter != vertexShaderDecl->getElements().end(); ++shaderIter)
+		//{
+		//	const VertexElement* foundElement = nullptr;
+		//	for(auto bufferIter = vertexBufferDecl->getElements().begin(); bufferIter != vertexBufferDecl->getElements().end(); ++bufferIter)
+		//	{
+		//		if(shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getIndex() == bufferIter->getIndex())
+		//		{
+		//			foundElement = &(*bufferIter);
+		//			break;
+		//		}
+		//	}
+
+		//	if(foundElement == nullptr)
+		//	{
+		//		// TODO - It's possible I can just skip this attribute and driver won't complain?
+		//		LOGWRN("Provided vertex buffer doesn't have a required input attribute: " + toString(shaderIter->getSemantic()) + toString(shaderIter->getIndex()));
+		//		return nullptr;
+		//	}
+
+		//	newDecl->addElement(foundElement->getSource(), foundElement->getOffset(), foundElement->getType(), foundElement->getSemantic(), foundElement->getIndex());
+		//}
+
+		const VertexElement* foundElement = nullptr;
+		for(auto bufferIter = vertexBufferDecl->getElements().begin(); bufferIter != vertexBufferDecl->getElements().end(); ++bufferIter)
 		{
-			const VertexElement* foundElement = nullptr;
-			for(auto bufferIter = vertexBufferDecl->getElements().begin(); bufferIter != vertexBufferDecl->getElements().end(); ++bufferIter)
-			{
-				if(shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getIndex() == bufferIter->getSemantic())
-				{
-					foundElement = &(*bufferIter);
-					break;
-				}
-			}
 
-			if(foundElement == nullptr)
-			{
-				// TODO - It's possible I can just skip this attribute and driver won't complain?
-				LOGWRN("Provided vertex buffer doesn't have a required input attribute: " + toString(shaderIter->getSemantic()) + toString(shaderIter->getIndex()));
-				return nullptr;
-			}
-
-			if(foundElement->getType() != shaderIter->getType())
-			{
-				// TODO - It's possible I can just cast to the smaller size and driver won't complain?
-				LOGWRN("Shader input and vertex buffer types don't match for element with semantic: " + toString(shaderIter->getSemantic()) + toString(shaderIter->getIndex()) + ". " \
-					"Buffer type is " + toString(foundElement->getType()) + " and shader type is " + toString(shaderIter->getType()));
-				return nullptr;
-			}
-
-			newDecl->addElement(foundElement->getSource(), foundElement->getOffset(), foundElement->getType(), foundElement->getSemantic(), foundElement->getIndex());
+			newDecl->addElement(bufferIter->getSource(), bufferIter->getOffset(), bufferIter->getType(), bufferIter->getSemantic(), bufferIter->getIndex());
 		}
 
 		return newDecl;

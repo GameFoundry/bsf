@@ -70,7 +70,6 @@ namespace CamelotEngine
 		// Window size depended resources - must be released before swapchain resize and recreated later
 		ID3D11Texture2D*			mBackBuffer;
 		ID3D11RenderTargetView*		mRenderTargetView;
-		ID3D11DepthStencilView*		mDepthStencilView;
 		DepthStencilBufferPtr		mDepthStencilBuffer;
 
 		IDXGISwapChain*				mSwapChain;

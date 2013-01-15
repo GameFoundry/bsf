@@ -40,6 +40,11 @@ namespace CamelotEngine
 		Command newCommand(commandCallback, _notifyWhenComplete, _callbackId);
 		mCommands->push_back(newCommand);
 
+#if CM_FORCE_SINGLETHREADED_RENDERING
+		vector<CommandQueue::Command>::type* commands = flush();
+		playback(commands);
+#endif
+
 		return newCommand.asyncOp;
 	}
 
@@ -56,6 +61,11 @@ namespace CamelotEngine
 
 		Command newCommand(commandCallback, _notifyWhenComplete, _callbackId);
 		mCommands->push_back(newCommand);
+
+#if CM_FORCE_SINGLETHREADED_RENDERING
+		vector<CommandQueue::Command>::type* commands = flush();
+		playback(commands);
+#endif
 	}
 
 	vector<CommandQueue::Command>::type* CommandQueue::flush()

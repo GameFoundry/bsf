@@ -76,7 +76,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	/////////////////// HLSL 11 SHADERS //////////////////////////
 	String fragShaderCode = "SamplerState samp : register(s0);			\
 							Texture2D tex : register(t0); \
-							float4 ps_main(float2 uv : TEXCOORD0) : SV_Target		\
+							float4 ps_main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target		\
 							{														\
 							float4 color = tex.Sample(samp, uv);				\
 							return color;										\

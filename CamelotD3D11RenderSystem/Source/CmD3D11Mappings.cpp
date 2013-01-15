@@ -336,9 +336,15 @@ namespace CamelotEngine
 		case VET_UBYTE4:
 			return DXGI_FORMAT_R8G8B8A8_UINT;
 			break;
+		case VET_UINT4:
+			return DXGI_FORMAT_R32G32B32A32_UINT;
+			break;
+		case VET_SINT4:
+			return DXGI_FORMAT_R32G32B32A32_SINT;
+			break;
 		}
 		// to keep compiler happy
-		return DXGI_FORMAT_R32G32B32_FLOAT;
+		return DXGI_FORMAT_R32G32B32A32_FLOAT;
 	}
 
 	VertexElementSemantic D3D11Mappings::get(LPCSTR sem)
@@ -412,6 +418,21 @@ namespace CamelotEngine
 		}
 		// to keep compiler happy
 		return "";
+	}
+
+	VertexElementType D3D11Mappings::getInputType(D3D_REGISTER_COMPONENT_TYPE type)
+	{
+		switch(type)
+		{
+		case D3D_REGISTER_COMPONENT_FLOAT32:
+			return VET_FLOAT4;
+		case D3D_REGISTER_COMPONENT_SINT32:
+			return VET_SINT4;
+		case D3D_REGISTER_COMPONENT_UINT32:
+			return VET_UINT4;
+		default:
+			return VET_FLOAT4;
+		}
 	}
 
 	void D3D11Mappings::get(const Color& inColour, float * outColour )

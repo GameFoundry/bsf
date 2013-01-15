@@ -13,12 +13,13 @@
 #include "CmD3D11DepthStencilState.h"
 #include "CmD3D11SamplerState.h"
 #include "CmD3D11GpuProgram.h"
-#include "CmD3D11VertexDeclaration.h"
 #include "CmD3D11Mappings.h"
 #include "CmD3D11VertexBuffer.h"
 #include "CmD3D11IndexBuffer.h"
 #include "CmD3D11RenderStateManager.h"
 #include "CmD3D11GpuParamBlock.h"
+#include "CmD3D11InputLayoutManager.h"
+#include "CmD3D11HLSLProgram.h"
 #include "CmGpuParams.h"
 #include "CmDebug.h"
 #include "CmException.h"
@@ -34,10 +35,10 @@ namespace CamelotEngine
 	D3D11RenderSystem::D3D11RenderSystem()
 		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr)
 		, mActiveD3DDriver(nullptr), mFeatureLevel(D3D_FEATURE_LEVEL_9_1)
-		, mHLSLFactory(nullptr)
-		, mStencilRef(0)
+		, mHLSLFactory(nullptr), mIAManager(nullptr)
+		, mStencilRef(0), mActiveVertexShader(nullptr)
 	{
-
+		mClipPlanesDirty = false; // DX11 handles clip planes through shaders
 	}
 
 	D3D11RenderSystem::~D3D11RenderSystem()
@@ -128,6 +129,8 @@ namespace CamelotEngine
 		mCurrentCapabilities->addShaderProfile("hlsl");
 		HighLevelGpuProgramManager::instance().addFactory(mHLSLFactory);
 
+		mIAManager = new D3D11InputLayoutManager();
+
 		RenderSystem::initialize_internal();
 	}
 
@@ -135,6 +138,7 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		SAFE_DELETE(mIAManager);
 		SAFE_DELETE(mHLSLFactory);
 
 		RenderStateManager::shutDown();
@@ -274,6 +278,12 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		mActiveViewport = vp;
+
+		// Set render target
+		RenderTargetPtr target = vp.getTarget();
+		setRenderTarget(target.get());
+
 		// set viewport dimensions
 		mViewport.TopLeftX = (FLOAT)vp.getActualLeft();
 		mViewport.TopLeftY = (FLOAT)vp.getActualTop();
@@ -352,6 +362,7 @@ namespace CamelotEngine
 			{
 				D3D11GpuVertexProgram* d3d11GpuProgram = static_cast<D3D11GpuVertexProgram*>(prg->getBindingDelegate());
 				mDevice->getImmediateContext()->VSSetShader(d3d11GpuProgram->getVertexShader(), nullptr, 0);
+				mActiveVertexShader = static_cast<D3D11HLSLProgram*>(prg.get());
 				break;
 			}
 		case GPT_FRAGMENT_PROGRAM:
@@ -397,22 +408,23 @@ namespace CamelotEngine
 		{
 		case GPT_VERTEX_PROGRAM:
 			mDevice->getImmediateContext()->VSSetShader(nullptr, nullptr, 0);
+			mActiveVertexShader = nullptr;
 			break;
 		case GPT_FRAGMENT_PROGRAM:
-				mDevice->getImmediateContext()->PSSetShader(nullptr, nullptr, 0);
-				break;
+			mDevice->getImmediateContext()->PSSetShader(nullptr, nullptr, 0);
+			break;
 		case GPT_GEOMETRY_PROGRAM:
-				mDevice->getImmediateContext()->GSSetShader(nullptr, nullptr, 0);
-				break;
+			mDevice->getImmediateContext()->GSSetShader(nullptr, nullptr, 0);
+			break;
 		case GPT_DOMAIN_PROGRAM:
-				mDevice->getImmediateContext()->DSSetShader(nullptr, nullptr, 0);
-				break;
+			mDevice->getImmediateContext()->DSSetShader(nullptr, nullptr, 0);
+			break;
 		case GPT_HULL_PROGRAM:
-				mDevice->getImmediateContext()->HSSetShader(nullptr, nullptr, 0);
-				break;
+			mDevice->getImmediateContext()->HSSetShader(nullptr, nullptr, 0);
+			break;
 		case GPT_COMPUTE_PROGRAM:
-				mDevice->getImmediateContext()->CSSetShader(nullptr, nullptr, 0);
-				break;
+			mDevice->getImmediateContext()->CSSetShader(nullptr, nullptr, 0);
+			break;
 		default:
 			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
@@ -421,6 +433,8 @@ namespace CamelotEngine
 	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		params->updateIfDirty();
 
 		const GpuParamDesc& paramDesc = params->getParamDesc();
 
@@ -488,12 +502,16 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		applyInputLayout();
+
 		mDevice->getImmediateContext()->Draw(vertexCount, 0);
 	}
 
 	void D3D11RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		applyInputLayout();
 
 		mDevice->getImmediateContext()->DrawIndexed(indexCount, startIndex, 0);
 	}
@@ -520,9 +538,9 @@ namespace CamelotEngine
 			UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 
 			ID3D11RenderTargetView** views = new ID3D11RenderTargetView*[maxRenderTargets];
-			memset(views, 0, sizeof(views));
+			memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 
-			target->getCustomAttribute("RTV", &views);
+			target->getCustomAttribute("RTV", views);
 			if (!views[0])
 			{
 				delete[] views;
@@ -573,8 +591,8 @@ namespace CamelotEngine
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 		ID3D11RenderTargetView** views = new ID3D11RenderTargetView*[maxRenderTargets];
-		memset(views, 0, sizeof(views));
-		target->getCustomAttribute("RTV", &views);
+		memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
+		target->getCustomAttribute("RTV", views);
 		if (!views[0])
 		{
 			delete[] views;
@@ -938,8 +956,9 @@ namespace CamelotEngine
 			return;
 		}
 
-		D3D11VertexDeclaration* vertexDeclaration = static_cast<D3D11VertexDeclaration*>(mActiveVertexDeclaration.get());
-		//mDevice->getImmediateContext()->IASetInputLayout(vertexDeclaration->get);
+		ID3D11InputLayout* ia = mIAManager->retrieveInputLayout(mActiveVertexShader->getInputDeclaration(), mActiveVertexDeclaration, *mActiveVertexShader);
+
+		mDevice->getImmediateContext()->IASetInputLayout(ia);
 	}
 }
 

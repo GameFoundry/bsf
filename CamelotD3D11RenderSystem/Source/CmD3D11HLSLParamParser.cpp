@@ -1,16 +1,13 @@
 #include "CmD3D11HLSLParamParser.h"
+#include "CmD3D11Mappings.h"
 #include "CmGpuParamDesc.h"
 #include "CmException.h"
 #include "CmDebug.h"
 
 namespace CamelotEngine
 {
-	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuParamDesc& desc, 
-		vector<D3D11_SIGNATURE_PARAMETER_DESC>::type& inputParams, vector<D3D11_SIGNATURE_PARAMETER_DESC>::type& outputParams)
+	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuParamDesc& desc, VertexDeclarationPtr& inputParams)
 	{
-		inputParams.clear();
-		outputParams.clear();
-
 		const char* commentString = nullptr;
 		ID3DBlob* pIDisassembly = nullptr;
 		char* pDisassembly = nullptr;
@@ -36,22 +33,19 @@ namespace CamelotEngine
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Cannot reflect D3D11 high-level shader.");
 
-		inputParams.resize(shaderDesc.InputParameters);
-		for (UINT32 i = 0; i < shaderDesc.InputParameters; i++)
+		if(inputParams != nullptr)
 		{
-			hr = shaderReflection->GetInputParameterDesc(i, &(inputParams[i]));
+			D3D11_SIGNATURE_PARAMETER_DESC inputParamDesc;
+			for (UINT32 i = 0; i < shaderDesc.InputParameters; i++)
+			{
+				hr = shaderReflection->GetInputParameterDesc(i, &inputParamDesc);
 
-			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Cannot get input param desc with index: " + toString(i));
-		}
+				if (FAILED(hr))
+					CM_EXCEPT(RenderingAPIException, "Cannot get input param desc with index: " + toString(i));
 
-		outputParams.resize(shaderDesc.OutputParameters);
-		for (UINT32 i = 0; i < shaderDesc.OutputParameters; i++)
-		{
-			hr = shaderReflection->GetOutputParameterDesc(i, &(outputParams[i]));
-
-			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Cannot get output param desc with index: " + toString(i));
+				inputParams->addElement(inputParamDesc.Stream, inputParamDesc.Register, 
+					D3D11Mappings::getInputType(inputParamDesc.ComponentType), D3D11Mappings::get(inputParamDesc.SemanticName), inputParamDesc.SemanticIndex);
+			}
 		}
 
 		for(UINT32 i = 0; i < shaderDesc.BoundResources; i++)

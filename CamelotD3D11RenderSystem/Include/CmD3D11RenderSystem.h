@@ -102,6 +102,7 @@ namespace CamelotEngine
 		D3D_FEATURE_LEVEL	mFeatureLevel;
 
 		D3D11HLSLProgramFactory* mHLSLFactory;
+		D3D11InputLayoutManager* mIAManager;
 
 		// State variables
 		UINT32				mStencilRef;
@@ -109,6 +110,7 @@ namespace CamelotEngine
 		D3D11_RECT			mScissorRect;
 
 		VertexDeclarationPtr mActiveVertexDeclaration;
+		D3D11HLSLProgram*	 mActiveVertexShader;
 
 		/**
 		 * @brief	Creates or retrieves a proper input layout depending on the currently set vertex shader

@@ -54,9 +54,6 @@
     <ClInclude Include="Include\CmD3D11HardwareBufferManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11VertexDeclaration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmD3D11RenderSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -159,9 +156,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmD3D11HardwareBufferManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmD3D11VertexDeclaration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmD3D11RenderSystem.cpp">

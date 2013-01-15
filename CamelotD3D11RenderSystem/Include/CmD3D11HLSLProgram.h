@@ -13,6 +13,8 @@ namespace CamelotEngine
 		const String& getLanguage() const;
 		bool isSupported() const;
 
+		GpuParamsPtr createParameters();
+
 		/** Sets whether matrix packing in column-major order. */ 
 		void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }
 		/** Gets whether matrix packed in column-major order. */
@@ -23,11 +25,8 @@ namespace CamelotEngine
 		bool getEnableBackwardsCompatibility() const { return mEnableBackwardsCompatibility; }
 
 		const HLSLMicroCode& getMicroCode() const { return mMicrocode; }
-		UINT32 getNumInputs() const { return (UINT32)mInputParameters.size(); }
-		UINT32 getNumOutputs() const { return (UINT32)mOutputParameters.size(); }
 
-		const D3D11_SIGNATURE_PARAMETER_DESC& getInputParamDesc(unsigned int index) const { return mInputParameters.at(index); }
-		const D3D11_SIGNATURE_PARAMETER_DESC& getOutputParamDesc(unsigned int index) const { return mOutputParameters.at(index); }
+		VertexDeclarationPtr getInputDeclaration() const { return mInputDeclaration; }
 
 	protected:
 		friend class D3D11HLSLProgramFactory;
@@ -50,9 +49,7 @@ namespace CamelotEngine
 		bool mEnableBackwardsCompatibility;
 
 		HLSLMicroCode mMicrocode;
-
-		vector<D3D11_SIGNATURE_PARAMETER_DESC>::type mInputParameters;
-		vector<D3D11_SIGNATURE_PARAMETER_DESC>::type mOutputParameters;
+		VertexDeclarationPtr mInputDeclaration;
 
 		/**
 		 * @brief	Compiles the shader from source and generates the microcode.

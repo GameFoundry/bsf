@@ -178,7 +178,6 @@
     <ClInclude Include="Include\CmD3D11SamplerState.h" />
     <ClInclude Include="Include\CmD3D11Texture.h" />
     <ClInclude Include="Include\CmD3D11TextureManager.h" />
-    <ClInclude Include="Include\CmD3D11VertexDeclaration.h" />
     <ClInclude Include="Include\CmD3D11VideoMode.h" />
     <ClInclude Include="Include\CmD3D11VideoModeList.h" />
     <ClInclude Include="Include\CmD3D11InputLayoutManager.h" />
@@ -216,7 +215,6 @@
     <ClCompile Include="Source\CmD3D11SamplerState.cpp" />
     <ClCompile Include="Source\CmD3D11Texture.cpp" />
     <ClCompile Include="Source\CmD3D11TextureManager.cpp" />
-    <ClCompile Include="Source\CmD3D11VertexDeclaration.cpp" />
     <ClCompile Include="Source\CmD3D11VideoMode.cpp" />
     <ClCompile Include="Source\CmD3D11VideoModeList.cpp" />
   </ItemGroup>

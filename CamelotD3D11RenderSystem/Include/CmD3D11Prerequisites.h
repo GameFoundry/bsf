@@ -52,6 +52,7 @@ namespace CamelotEngine
 	class D3D11RasterizerState;
 	class D3D11SamplerState;
 	class D3D11DepthStencilState;
+	class D3D11InputLayoutManager;
 
 	enum TypeID_D3D11
 	{

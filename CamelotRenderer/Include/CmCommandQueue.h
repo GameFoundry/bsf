@@ -42,6 +42,7 @@ namespace CamelotEngine
 		 * 							
 		 *							When you want to allow multiple threads to access it, set this to true,
 		 *							and also make sure you sync access to the queue properly.
+		 *							
 		 */
 		CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads = false);
 		~CommandQueue();

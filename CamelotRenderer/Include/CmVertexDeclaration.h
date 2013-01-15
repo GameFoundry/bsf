@@ -48,7 +48,9 @@ namespace CamelotEngine
         /// D3D style compact color
         VET_COLOR_ARGB = 10,
         /// GL style compact color
-        VET_COLOR_ABGR = 11
+        VET_COLOR_ABGR = 11,
+		VET_UINT4 = 12,
+		VET_SINT4 = 13
     };
 
     /** This class declares the usage of a single vertex buffer as a component
