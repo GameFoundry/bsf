@@ -1,5 +1,4 @@
 #include "CmD3D11RenderTexture.h"
-#include "CmD3D11DepthStencilBuffer.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
 #include "CmD3D11Texture.h"
@@ -18,6 +17,7 @@ namespace CamelotEngine
 	D3D11RenderTexture::~D3D11RenderTexture()
 	{
 		SAFE_RELEASE(mRenderTargetView);
+		SAFE_RELEASE(mDepthStencilView);
 	}
 
 	ID3D11RenderTargetView* D3D11RenderTexture::createRenderTargetView(const SurfaceDesc& surfaceDesc)
@@ -27,10 +27,8 @@ namespace CamelotEngine
 
 		D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(surfaceDesc.texture.get());
 
-		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = d3d11Texture->getSRVDesc();
-		RTVDesc.Format = SRVDesc.Format;
-
-		switch(SRVDesc.ViewDimension)
+		RTVDesc.Format = d3d11Texture->getDXGIFormat();
+		switch(d3d11Texture->getDimension())
 		{
 		case D3D11_SRV_DIMENSION_BUFFER:
 			RTVDesc.ViewDimension = D3D11_RTV_DIMENSION_BUFFER;
@@ -93,11 +91,70 @@ namespace CamelotEngine
 		return rtv;
 	}
 
+	ID3D11DepthStencilView* D3D11RenderTexture::createDepthStencilView(const TexturePtr& depthStencilSurface)
+	{
+		// Create the depth stencil view
+		D3D11_DEPTH_STENCIL_VIEW_DESC DSVDesc;
+		ZeroMemory(&DSVDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+
+		D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(depthStencilSurface.get());
+
+		DSVDesc.Format = d3d11Texture->getDXGIFormat();
+		switch(d3d11Texture->getDimension())
+		{
+		case D3D11_SRV_DIMENSION_TEXTURE1D:
+			DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1D;
+			DSVDesc.Texture1D.MipSlice = 0;
+			break;
+		case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:
+			DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1DARRAY;
+			DSVDesc.Texture1DArray.FirstArraySlice = 0;
+			DSVDesc.Texture1DArray.ArraySize = 1;
+			DSVDesc.Texture1DArray.MipSlice = 0;
+			break;
+		case D3D11_SRV_DIMENSION_TEXTURE2D:
+			DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+			DSVDesc.Texture2D.MipSlice = 0;
+			break;
+		case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:
+			DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+			DSVDesc.Texture2DArray.FirstArraySlice = 0;
+			DSVDesc.Texture2DArray.ArraySize = 1;
+			DSVDesc.Texture2DArray.MipSlice = 0;
+			break;
+		case D3D11_SRV_DIMENSION_TEXTURE2DMS:
+			DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+			break;
+		case D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY:
+			DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMSARRAY;
+			DSVDesc.Texture2DMSArray.FirstArraySlice = 0;
+			DSVDesc.Texture2DMSArray.ArraySize = 1;
+			break;
+		default:
+			assert(false);
+		}
+
+		ID3D11DepthStencilView* dsv;
+		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+		D3D11Device& device = rs->getPrimaryDevice();
+		HRESULT hr = device.getD3D11Device()->CreateDepthStencilView(d3d11Texture->getDX11Resource(), &DSVDesc, &dsv);
+
+		if(FAILED(hr))
+		{
+			String errorDescription = device.getErrorDescription();
+			CM_EXCEPT(RenderingAPIException, "Unable to create depth stencil view\nError Description:" + errorDescription);
+		}
+
+		return dsv;
+	}
+
 	void D3D11RenderTexture::createInternalResourcesImpl()
 	{
 		SAFE_RELEASE(mRenderTargetView);
+		SAFE_RELEASE(mDepthStencilView);
 
 		mRenderTargetView = createRenderTargetView(mSurface);
+		mDepthStencilView = createDepthStencilView(mDepthStencilSurface);
 	}
 
 	void D3D11RenderTexture::getCustomAttribute(const String& name, void* pData)
@@ -112,9 +169,7 @@ namespace CamelotEngine
 		else if(name == "DSV")
 		{
 			ID3D11DepthStencilView** pDSV = (ID3D11DepthStencilView **)pData;
-			D3D11DepthStencilBuffer* d3d11depthStencilBuffer = static_cast<D3D11DepthStencilBuffer*>(mDepthStencilSurface.get());
-
-			*pDSV = d3d11depthStencilBuffer->getDepthStencilView();
+			*pDSV = mDepthStencilView;
 			return;
 		}
 	}

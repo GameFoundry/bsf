@@ -149,25 +149,6 @@ namespace CamelotEngine
 		return D3D11_STENCIL_OP_KEEP;
 	}
 
-	DXGI_FORMAT D3D11Mappings::get(DepthStencilFormat format)
-	{
-		switch(format)
-		{
-		case DFMT_D32_S8X24:
-			return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
-		case DFMT_D24S8:
-			return DXGI_FORMAT_D24_UNORM_S8_UINT;
-		case DFMT_D32:
-			return DXGI_FORMAT_D32_FLOAT;
-		case DFMT_D16:
-			return DXGI_FORMAT_D16_UNORM;
-		}
-
-		LOGWRN("Requesting unsupported DepthStencilFormat. Using D24S8 format instead.");
-
-		return DXGI_FORMAT_D24_UNORM_S8_UINT;
-	}
-
 	DWORD D3D11Mappings::get(FilterType ft)
 	{
 		switch (ft)
@@ -644,9 +625,9 @@ namespace CamelotEngine
 		}
 	}
 
-	DXGI_FORMAT D3D11Mappings::_getPF(PixelFormat ogrePF)
+	DXGI_FORMAT D3D11Mappings::_getPF(PixelFormat enginePF)
 	{
-		switch(ogrePF)
+		switch(enginePF)
 		{
 		case PF_L8:
 			return DXGI_FORMAT_R8_UNORM;
@@ -700,19 +681,27 @@ namespace CamelotEngine
 			return DXGI_FORMAT_BC4_UNORM;
 		case PF_DXT5:
 			return DXGI_FORMAT_BC5_UNORM;
+		case PF_D32_S8X24:
+			return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+		case PF_D24S8:
+			return DXGI_FORMAT_D24_UNORM_S8_UINT;
+		case PF_D32:
+			return DXGI_FORMAT_D32_FLOAT;
+		case PF_D16:
+			return DXGI_FORMAT_D16_UNORM;
 		case PF_UNKNOWN:
 		default:
 			return DXGI_FORMAT_UNKNOWN;
 		}
 	}
 
-	PixelFormat D3D11Mappings::_getClosestSupportedPF(PixelFormat ogrePF)
+	PixelFormat D3D11Mappings::_getClosestSupportedPF(PixelFormat enginePF)
 	{
-		if (_getPF(ogrePF) != DXGI_FORMAT_UNKNOWN)
+		if (_getPF(enginePF) != DXGI_FORMAT_UNKNOWN)
 		{
-			return ogrePF;
+			return enginePF;
 		}
-		switch(ogrePF)
+		switch(enginePF)
 		{
 		case PF_FLOAT16_RGB:
 			return PF_FLOAT16_RGBA;

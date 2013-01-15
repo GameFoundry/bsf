@@ -52,12 +52,6 @@ namespace CamelotEngine {
             bool preciseFormatOnly = false);
 
 		/**
-		 * @copydoc TextureManager::createDepthStencilBuffer()
-		 */
-		DepthStencilBufferPtr createDepthStencilBuffer(DepthStencilFormat format, UINT32 width, 
-			UINT32 height, UINT32 fsaa, const String& fsaaHint);
-
-		/**
 		 * @copydoc TextureManager::createMultiRenderTexture()
 		 */
 		MultiRenderTexturePtr createMultiRenderTexture();

@@ -110,10 +110,12 @@ namespace CamelotEngine {
 			@param fsaa The level of multisampling to use if this is a render target. Ignored
 				if usage does not include TU_RENDERTARGET or if the device does
 				not support it.
+			@param	internalCall	(optional) Set to true if calling this method from within the RenderSystem.
+										Most users don't have to be concerned about this.
         */
         TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+			int num_mips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
+			UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK, bool internalCall = false);
 			
         /** Create a manual texture with a depth of 1 (not loaded from a file).
             @param
@@ -156,13 +158,15 @@ namespace CamelotEngine {
 			@param fsaa The level of multisampling to use if this is a render target. Ignored
 				if usage does not include TU_RENDERTARGET or if the device does
 				not support it.
+			@param	internalCall	(optional) Set to true if calling this method from within the RenderSystem.
+				Most users don't have to be concerned about this.
         */
         TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, int num_mips,
-            PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK)
+            PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 fsaa = 0, 
+			const String& fsaaHint = StringUtil::BLANK, bool internalCall = false)
 		{
 			return createTexture(texType, width, height, 1, 
-				num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+				num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint, internalCall);
 		}
 
 		/**

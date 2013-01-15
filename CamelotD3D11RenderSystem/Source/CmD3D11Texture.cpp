@@ -149,7 +149,14 @@ namespace CamelotEngine
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
 			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = (mUsage & TU_RENDERTARGET) != 0 ? 0 : D3D11Mappings::_getAccessFlags(mUsage);
+			desc.CPUAccessFlags = 0;
+			desc.MipLevels		= 1;
+		}
+		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+		{
+			desc.Usage			= D3D11_USAGE_DEFAULT;
+			desc.BindFlags		= D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+			desc.CPUAccessFlags = 0;
 			desc.MipLevels		= 1;
 		}
 		else
@@ -187,18 +194,22 @@ namespace CamelotEngine
 
 		m1DTex->GetDesc(&desc);
 		mNumMipmaps = desc.MipLevels - 1;
+		mDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
 
 		// Create texture view
-		ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
-		mSRVDesc.Format = desc.Format;
-		mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D; 
-		mSRVDesc.Texture1D.MipLevels = desc.MipLevels;
-		hr = device.getD3D11Device()->CreateShaderResourceView(m1DTex, &mSRVDesc, &mShaderResourceView);
-
-		if (FAILED(hr) || device.hasError())
+		if((mUsage & TU_DEPTHSTENCIL) == 0)
 		{
-			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
+			ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
+			mSRVDesc.Format = desc.Format;
+			mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D; 
+			mSRVDesc.Texture1D.MipLevels = desc.MipLevels;
+			hr = device.getD3D11Device()->CreateShaderResourceView(m1DTex, &mSRVDesc, &mShaderResourceView);
+
+			if (FAILED(hr) || device.hasError())
+			{
+				String errorDescription = device.getErrorDescription();
+				CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
+			}
 		}
 	}
 
@@ -222,7 +233,7 @@ namespace CamelotEngine
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
 			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = (mUsage & TU_RENDERTARGET) != 0 ? 0 : D3D11Mappings::_getAccessFlags(mUsage);
+			desc.CPUAccessFlags = 0;
 			desc.MipLevels		= 1;
 
 			DXGI_SAMPLE_DESC sampleDesc;
@@ -233,6 +244,23 @@ namespace CamelotEngine
 			if(getTextureType() == TEX_TYPE_CUBE_MAP)
 			{
 				CM_EXCEPT(NotImplementedException, "Cube map not yet supported as a render target."); // TODO: Will be once I add proper texture array support
+			}
+		}
+		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+		{
+			desc.Usage			= D3D11_USAGE_DEFAULT;
+			desc.BindFlags		= D3D11_BIND_DEPTH_STENCIL;
+			desc.CPUAccessFlags = 0;
+			desc.MipLevels		= 1;
+
+			DXGI_SAMPLE_DESC sampleDesc;
+			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+			rs->determineFSAASettings(mFSAA, mFSAAHint, d3dPF, &sampleDesc);
+			desc.SampleDesc		= sampleDesc;
+
+			if(getTextureType() == TEX_TYPE_CUBE_MAP)
+			{
+				CM_EXCEPT(NotImplementedException, "Cube map not yet supported as a depth stencil target."); // TODO: Will be once I add proper texture array support
 			}
 		}
 		else
@@ -282,49 +310,62 @@ namespace CamelotEngine
 		m2DTex->GetDesc(&desc);
 		mNumMipmaps = desc.MipLevels - 1;
 
-		// Create shader texture view
-		ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
-		mSRVDesc.Format = desc.Format;
+		mDXGIFormat = desc.Format;
 
-		if((mUsage & TU_RENDERTARGET) != 0)
+		// Create shader texture view
+		if((mUsage & TU_DEPTHSTENCIL) == 0)
 		{
-			if(mFSAA > 0)
+			ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
+			mSRVDesc.Format = desc.Format;
+
+			if((mUsage & TU_RENDERTARGET) != 0)
 			{
-				mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
-				mSRVDesc.Texture2D.MostDetailedMip = 0;
-				mSRVDesc.Texture2D.MipLevels = desc.MipLevels;
+				if(mFSAA > 0)
+				{
+					mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+					mSRVDesc.Texture2D.MostDetailedMip = 0;
+					mSRVDesc.Texture2D.MipLevels = desc.MipLevels;
+				}
+				else
+				{
+					mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+					mSRVDesc.Texture2D.MostDetailedMip = 0;
+					mSRVDesc.Texture2D.MipLevels = desc.MipLevels;
+				}
 			}
 			else
 			{
-				mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-				mSRVDesc.Texture2D.MostDetailedMip = 0;
-				mSRVDesc.Texture2D.MipLevels = desc.MipLevels;
+				switch(getTextureType())
+				{
+				case TEX_TYPE_CUBE_MAP:
+					mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+					mSRVDesc.TextureCube.MipLevels = desc.MipLevels;
+					mSRVDesc.TextureCube.MostDetailedMip = 0;
+					break;
+
+				case TEX_TYPE_2D:
+					mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+					mSRVDesc.Texture2D.MostDetailedMip = 0;
+					mSRVDesc.Texture2D.MipLevels = desc.MipLevels;
+					break;
+				}
+			}
+
+			mDimension = mSRVDesc.ViewDimension;
+			hr = device.getD3D11Device()->CreateShaderResourceView(m2DTex, &mSRVDesc, &mShaderResourceView);
+
+			if (FAILED(hr) || device.hasError())
+			{
+				String errorDescription = device.getErrorDescription();
+				CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
 			}
 		}
 		else
 		{
-			switch(getTextureType())
-			{
-			case TEX_TYPE_CUBE_MAP:
-				mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-				mSRVDesc.TextureCube.MipLevels = desc.MipLevels;
-				mSRVDesc.TextureCube.MostDetailedMip = 0;
-				break;
-
-			case TEX_TYPE_2D:
-				mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-				mSRVDesc.Texture2D.MostDetailedMip = 0;
-				mSRVDesc.Texture2D.MipLevels = desc.MipLevels;
-				break;
-			}
-		}
-
-		hr = device.getD3D11Device()->CreateShaderResourceView(m2DTex, &mSRVDesc, &mShaderResourceView);
-
-		if (FAILED(hr) || device.hasError())
-		{
-			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
+			if(mFSAA > 0)
+				mDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+			else
+				mDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		}
 	}
 
@@ -348,7 +389,14 @@ namespace CamelotEngine
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
 			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = (mUsage & TU_RENDERTARGET) != 0 ? 0 : D3D11Mappings::_getAccessFlags(mUsage);
+			desc.CPUAccessFlags = 0;
+			desc.MipLevels		= 1;
+		}
+		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+		{
+			desc.Usage			= D3D11_USAGE_DEFAULT;
+			desc.BindFlags		= D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+			desc.CPUAccessFlags = 0;
 			desc.MipLevels		= 1;
 		}
 		else
@@ -387,19 +435,23 @@ namespace CamelotEngine
 		// Create texture view
 		m3DTex->GetDesc(&desc);
 		mNumMipmaps = desc.MipLevels - 1;
+		mDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
 
-		ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
-		mSRVDesc.Format = desc.Format;
-		mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
-		mSRVDesc.Texture3D.MostDetailedMip = 0;
-		mSRVDesc.Texture3D.MipLevels = desc.MipLevels;
-
-		hr = device.getD3D11Device()->CreateShaderResourceView(m2DTex, &mSRVDesc, &mShaderResourceView);
-
-		if (FAILED(hr) || device.hasError())
+		if((mUsage & TU_DEPTHSTENCIL) == 0)
 		{
-			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
+			ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
+			mSRVDesc.Format = desc.Format;
+			mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
+			mSRVDesc.Texture3D.MostDetailedMip = 0;
+			mSRVDesc.Texture3D.MipLevels = desc.MipLevels;
+
+			hr = device.getD3D11Device()->CreateShaderResourceView(m2DTex, &mSRVDesc, &mShaderResourceView);
+
+			if (FAILED(hr) || device.hasError())
+			{
+				String errorDescription = device.getErrorDescription();
+				CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
+			}
 		}
 	}
 

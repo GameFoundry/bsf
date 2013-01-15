@@ -40,8 +40,6 @@ namespace CamelotEngine
 		static D3D11_FILL_MODE get(PolygonMode level);
 		/// return a D3D11 equivalent for an engine StencilOperation value
 		static D3D11_STENCIL_OP get(StencilOperation op, bool invert = false);
-		/// return a D3D11 equivalent for an engine DepthStencilFormat
-		static DXGI_FORMAT get(DepthStencilFormat format);
 		/// return a D3D11 state type for engine FilterType value
 		static DWORD get(FilterType ft);
 		static D3D11_FILTER get(const FilterOptions minification, const FilterOptions magnification, const FilterOptions mips, const bool comparison = false);

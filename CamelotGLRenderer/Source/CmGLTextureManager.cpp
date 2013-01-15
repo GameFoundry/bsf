@@ -56,12 +56,6 @@ namespace CamelotEngine {
 		return new GLRenderTexture();
 	}
 	//----------------------------------------------------------------------------
-	DepthStencilBufferPtr GLTextureManager::createDepthStencilBuffer(DepthStencilFormat format, UINT32 width, 
-		UINT32 height, UINT32 fsaa, const String& fsaaHint)
-	{
-		return DepthStencilBufferPtr(new GLDepthStencilBuffer(format, width, height, fsaa, fsaaHint));
-	}
-	//----------------------------------------------------------------------------
 	MultiRenderTexturePtr GLTextureManager::createMultiRenderTexture()
 	{
 		GLMultiRenderTexture* newMRT = new GLMultiRenderTexture();

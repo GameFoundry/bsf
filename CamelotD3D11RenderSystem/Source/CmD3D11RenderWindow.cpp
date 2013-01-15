@@ -2,7 +2,7 @@
 #include "CmWindowEventUtilities.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
-#include "CmD3D11DepthStencilBuffer.h"
+#include "CmD3D11RenderTexture.h"
 #include "CmTextureManager.h"
 #include "CmException.h"
 
@@ -348,8 +348,7 @@ namespace CamelotEngine
 		}
 		else if(name == "DSV")
 		{
-			D3D11DepthStencilBuffer* d3d11depthStencilBuffer = static_cast<D3D11DepthStencilBuffer*>(mDepthStencilBuffer.get());
-			*static_cast<ID3D11DepthStencilView**>(pData) = d3d11depthStencilBuffer->getDepthStencilView();
+			*static_cast<ID3D11DepthStencilView**>(pData) = mDepthStencilView;
 			return;
 		}
 
@@ -512,7 +511,10 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Unable to create rendertagert view\nError Description:" + errorDescription);
 		}
 
-		mDepthStencilBuffer = TextureManager::instance().createDepthStencilBuffer(DFMT_D24S8, BBDesc.Width, BBDesc.Height, mFSAA, mFSAAHint);
+		mDepthStencilBuffer = TextureManager::instance().createTexture(TEX_TYPE_2D, 
+			BBDesc.Width, BBDesc.Height, 0, PF_D24S8, TU_DEPTHSTENCIL, false, mFSAA, mFSAAHint, true);
+
+		mDepthStencilView = D3D11RenderTexture::createDepthStencilView(mDepthStencilBuffer);
 	}
 
 	void D3D11RenderWindow::_destroySizeDependedD3DResources()

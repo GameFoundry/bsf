@@ -90,6 +90,7 @@ namespace CamelotEngine {
         */
 		virtual VertexBufferPtr 
             createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
+
 		/** Create a hardware index buffer.
         @remarks Note that because buffers can be shared, they are reference
             counted so you do not need to worry about destroying them this will be done

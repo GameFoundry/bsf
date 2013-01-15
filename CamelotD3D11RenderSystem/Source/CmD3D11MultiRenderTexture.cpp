@@ -1,12 +1,11 @@
 #include "CmD3D11MultiRenderTexture.h"
-#include "CmD3D11DepthStencilBuffer.h"
 #include "CmD3D11Texture.h"
 #include "CmD3D11RenderTexture.h"
 
 namespace CamelotEngine
 {
 	D3D11MultiRenderTexture::D3D11MultiRenderTexture()
-		:MultiRenderTexture()
+		:MultiRenderTexture(), mDepthStencilView(nullptr)
 	{
 
 	}
@@ -18,6 +17,9 @@ namespace CamelotEngine
 
 	void D3D11MultiRenderTexture::setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
 	{
+		if(mRenderTargetViews.size() <= surfaceIdx)
+			mRenderTargetViews.resize(surfaceIdx + 1, nullptr);
+
 		SAFE_RELEASE(mRenderTargetViews[surfaceIdx]);
 
 		if(texture != nullptr)
@@ -26,9 +28,14 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D11MultiRenderTexture::setDepthStencilImpl(DepthStencilBufferPtr depthStencilBuffer)
+	void D3D11MultiRenderTexture::setDepthStencilImpl(TexturePtr depthStencilSurface)
 	{
+		SAFE_RELEASE(mDepthStencilView);
 
+		if(mDepthStencilView != nullptr)
+		{
+			mDepthStencilView = D3D11RenderTexture::createDepthStencilView(mDepthStencilSurface);
+		}
 	}
 
 	void D3D11MultiRenderTexture::getCustomAttribute(const String& name, void* pData)
@@ -44,9 +51,8 @@ namespace CamelotEngine
 		else if(name == "DSV")
 		{
 			ID3D11DepthStencilView** pDSV = (ID3D11DepthStencilView **)pData;
-			D3D11DepthStencilBuffer* d3d11depthStencilBuffer = static_cast<D3D11DepthStencilBuffer*>(mDepthStencilSurface.get());
 
-			*pDSV = d3d11depthStencilBuffer->getDepthStencilView();
+			*pDSV = mDepthStencilView;
 			return;
 		}
 	}

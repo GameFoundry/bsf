@@ -58,7 +58,7 @@ namespace CamelotEngine {
     }
 	//-------------------------------------------------------------------------
 	void Texture::initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
-		PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint)
+		PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint, bool internalCall)
 	{
 		mTextureType = textureType;
 		mWidth = width;
@@ -73,7 +73,10 @@ namespace CamelotEngine {
 
 		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::initialize_internal, this));
+		if(internalCall)
+			initialize_internal();
+		else
+			RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::initialize_internal, this));
 	}
     //--------------------------------------------------------------------------
     bool Texture::hasAlpha(void) const

@@ -12,7 +12,8 @@ namespace CamelotEngine
 
 		ID3D11Resource* getDX11Resource() const { return mTex; }
 		ID3D11ShaderResourceView* getSRV() const { return mShaderResourceView; }
-		const D3D11_SHADER_RESOURCE_VIEW_DESC& getSRVDesc() const { return mSRVDesc; }
+		D3D11_SRV_DIMENSION getDimension() const { return mDimension; }
+		DXGI_FORMAT getDXGIFormat() const { return mDXGIFormat; }
 	protected:
 		friend class D3D11TextureManager;
 
@@ -25,6 +26,8 @@ namespace CamelotEngine
 
 		ID3D11ShaderResourceView* mShaderResourceView;
 		D3D11_SHADER_RESOURCE_VIEW_DESC mSRVDesc;
+		D3D11_SRV_DIMENSION mDimension;
+		DXGI_FORMAT mDXGIFormat;
 
 		ID3D11Resource* mStagingBuffer;
 		PixelData* mStaticBuffer;
