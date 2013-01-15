@@ -10,23 +10,20 @@
 namespace CamelotEngine
 {
 	size_t D3D11InputLayoutManager::HashFunc::operator()
-		(const D3D11InputLayoutManager::VertexDeclarationPair &key) const
+		(const D3D11InputLayoutManager::VertexDeclarationKey &key) const
 	{
 		size_t hash = 0;
 		hash_combine(hash, key.bufferDeclHash);
-		hash_combine(hash, key.shaderDeclHash);
+		hash_combine(hash, key.vertexProgramId);
 
 		return hash;
 	}
 
 	bool D3D11InputLayoutManager::EqualFunc::operator()
-		(const D3D11InputLayoutManager::VertexDeclarationPair &a, const D3D11InputLayoutManager::VertexDeclarationPair &b) const
+		(const D3D11InputLayoutManager::VertexDeclarationKey &a, const D3D11InputLayoutManager::VertexDeclarationKey &b) const
 		
 	{
 		if(a.bufferDeclElements->size() != b.bufferDeclElements->size())
-			return false;
-
-		if(a.shaderDeclElements->size() != b.shaderDeclElements->size())
 			return false;
 
 		{
@@ -40,16 +37,8 @@ namespace CamelotEngine
 			}
 		}
 
-		{
-			auto iter1 = a.shaderDeclElements->begin();
-			auto iter2 = b.shaderDeclElements->begin();
-
-			for(; iter1 != a.shaderDeclElements->end(); ++iter1, ++iter2)
-			{
-				if((*iter1) != (*iter2))
-					return false;
-			}
-		}
+		if(a.vertexProgramId != b.vertexProgramId)
+			return false;
 
 		return true;
 	}
@@ -67,7 +56,6 @@ namespace CamelotEngine
 			auto firstElem = mInputLayoutMap.begin();
 
 			delete firstElem->first.bufferDeclElements;
-			delete firstElem->first.shaderDeclElements;
 			SAFE_RELEASE(firstElem->second->inputLayout);
 			delete firstElem->second;
 
@@ -77,11 +65,10 @@ namespace CamelotEngine
 
 	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11HLSLProgram& vertexProgram)
 	{
-		VertexDeclarationPair pair;
-		pair.shaderDeclHash = vertexShaderDecl->getHash();
+		VertexDeclarationKey pair;
 		pair.bufferDeclHash = vertexBufferDecl->getHash();
-		pair.shaderDeclElements = &vertexShaderDecl->getElements();
 		pair.bufferDeclElements = &vertexBufferDecl->getElements();
+		pair.vertexProgramId = vertexProgram.getProgramId();
 
 		auto iterFind = mInputLayoutMap.find(pair);
 		if(iterFind == mInputLayoutMap.end())
@@ -89,7 +76,7 @@ namespace CamelotEngine
 			if(mInputLayoutMap.size() >= DECLARATION_BUFFER_SIZE)
 				removeLeastUsed(); // Prune so the buffer doesn't just infinitely grow
 
-			addNewInputLayout(vertexShaderDecl, vertexBufferDecl, vertexProgram.getMicroCode());
+			addNewInputLayout(vertexShaderDecl, vertexBufferDecl, vertexProgram);
 
 			iterFind = mInputLayoutMap.find(pair);
 
@@ -101,20 +88,17 @@ namespace CamelotEngine
 		return iterFind->second->inputLayout;
 	}
 
-	void D3D11InputLayoutManager::addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, const HLSLMicroCode& microCode)
+	void D3D11InputLayoutManager::addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11HLSLProgram& vertexProgram)
 	{
-		// Combine declarations and create input layout
-		VertexDeclarationPtr newDecl = createCombinedDesc(vertexShaderDecl, vertexBufferDecl);
+		if(!areCompatible(vertexShaderDecl, vertexBufferDecl))
+			return; // Error was already reported, so just quit here
 
-		if(newDecl == nullptr) // Error was already handled, so just quit here
-			return;
-
-		UINT32 numElements = newDecl->getElementCount();
+		UINT32 numElements = vertexBufferDecl->getElementCount();
 		D3D11_INPUT_ELEMENT_DESC* declElements = new D3D11_INPUT_ELEMENT_DESC[numElements];
 		ZeroMemory(declElements, sizeof(D3D11_INPUT_ELEMENT_DESC) * numElements);
 
 		unsigned int idx = 0;
-		for(auto iter = newDecl->getElements().begin(); iter != newDecl->getElements().end(); ++iter)
+		for(auto iter = vertexBufferDecl->getElements().begin(); iter != vertexBufferDecl->getElements().end(); ++iter)
 		{
 			declElements[idx].SemanticName			= D3D11Mappings::get(iter->getSemantic());
 			declElements[idx].SemanticIndex			= iter->getIndex();
@@ -130,31 +114,28 @@ namespace CamelotEngine
 		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = d3d11rs->getPrimaryDevice();
 
+		const HLSLMicroCode& microcode = vertexProgram.getMicroCode();
+
 		InputLayoutEntry* newEntry = new InputLayoutEntry();
 		newEntry->lastUsedIdx = ++mLastUsedCounter;
 		newEntry->inputLayout = nullptr; 
 		HRESULT hr = device.getD3D11Device()->CreateInputLayout( 
 			declElements, 
 			numElements, 
-			&microCode[0], 
-			microCode.size(),
+			&microcode[0], 
+			microcode.size(),
 			&newEntry->inputLayout);
 
 		if (FAILED(hr)|| device.hasError())
 			CM_EXCEPT(RenderingAPIException, "Unable to set D3D11 vertex declaration" + device.getErrorDescription());
 
 		// Create key and add to the layout map
-		VertexDeclarationPair pair;
-		pair.shaderDeclHash = vertexShaderDecl->getHash();
+		VertexDeclarationKey pair;
 		pair.bufferDeclHash = vertexBufferDecl->getHash();
 
-		list<VertexElement>::type* shaderDeclElements = new list<VertexElement>::type(); 
 		list<VertexElement>::type* bufferDeclElements = new list<VertexElement>::type(); 
-		pair.shaderDeclElements = shaderDeclElements; 
 		pair.bufferDeclElements = bufferDeclElements;
-
-		for(auto iter = vertexShaderDecl->getElements().begin(); iter != vertexShaderDecl->getElements().end(); ++iter)
-			shaderDeclElements->push_back(*iter);
+		pair.vertexProgramId = vertexProgram.getProgramId();
 
 		for(auto iter = vertexBufferDecl->getElements().begin(); iter != vertexBufferDecl->getElements().end(); ++iter)
 			bufferDeclElements->push_back(*iter);
@@ -172,7 +153,7 @@ namespace CamelotEngine
 			mWarningShown = true;
 		}
 
-		map<UINT32, VertexDeclarationPair>::type leastFrequentlyUsedMap;
+		map<UINT32, VertexDeclarationKey>::type leastFrequentlyUsedMap;
 
 		for(auto iter = mInputLayoutMap.begin(); iter != mInputLayoutMap.end(); ++iter)
 			leastFrequentlyUsedMap[iter->second->lastUsedIdx] = iter->first;
@@ -184,7 +165,6 @@ namespace CamelotEngine
 			auto inputLayoutIter = mInputLayoutMap.find(iter->second);
 
 			delete inputLayoutIter->first.bufferDeclElements;
-			delete inputLayoutIter->first.shaderDeclElements;
 			SAFE_RELEASE(inputLayoutIter->second->inputLayout);
 			delete inputLayoutIter->second;
 
@@ -196,39 +176,27 @@ namespace CamelotEngine
 		}
 	}
 
-	VertexDeclarationPtr D3D11InputLayoutManager::createCombinedDesc(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl)
+	bool D3D11InputLayoutManager::areCompatible(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl)
 	{
-		VertexDeclarationPtr newDecl = HardwareBufferManager::instance().createVertexDeclaration();
-
-		//for(auto shaderIter = vertexShaderDecl->getElements().begin(); shaderIter != vertexShaderDecl->getElements().end(); ++shaderIter)
-		//{
-		//	const VertexElement* foundElement = nullptr;
-		//	for(auto bufferIter = vertexBufferDecl->getElements().begin(); bufferIter != vertexBufferDecl->getElements().end(); ++bufferIter)
-		//	{
-		//		if(shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getIndex() == bufferIter->getIndex())
-		//		{
-		//			foundElement = &(*bufferIter);
-		//			break;
-		//		}
-		//	}
-
-		//	if(foundElement == nullptr)
-		//	{
-		//		// TODO - It's possible I can just skip this attribute and driver won't complain?
-		//		LOGWRN("Provided vertex buffer doesn't have a required input attribute: " + toString(shaderIter->getSemantic()) + toString(shaderIter->getIndex()));
-		//		return nullptr;
-		//	}
-
-		//	newDecl->addElement(foundElement->getSource(), foundElement->getOffset(), foundElement->getType(), foundElement->getSemantic(), foundElement->getIndex());
-		//}
-
-		const VertexElement* foundElement = nullptr;
-		for(auto bufferIter = vertexBufferDecl->getElements().begin(); bufferIter != vertexBufferDecl->getElements().end(); ++bufferIter)
+		for(auto shaderIter = vertexShaderDecl->getElements().begin(); shaderIter != vertexShaderDecl->getElements().end(); ++shaderIter)
 		{
+			const VertexElement* foundElement = nullptr;
+			for(auto bufferIter = vertexBufferDecl->getElements().begin(); bufferIter != vertexBufferDecl->getElements().end(); ++bufferIter)
+			{
+				if(shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getIndex() == bufferIter->getIndex())
+				{
+					foundElement = &(*bufferIter);
+					break;
+				}
+			}
 
-			newDecl->addElement(bufferIter->getSource(), bufferIter->getOffset(), bufferIter->getType(), bufferIter->getSemantic(), bufferIter->getIndex());
+			if(foundElement == nullptr)
+			{
+				LOGWRN("Provided vertex buffer doesn't have a required input attribute: " + toString(shaderIter->getSemantic()) + toString(shaderIter->getIndex()));
+				return false;
+			}
 		}
 
-		return newDecl;
+		return true;
 	}
 }

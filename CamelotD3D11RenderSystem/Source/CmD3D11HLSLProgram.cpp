@@ -13,10 +13,12 @@
 
 namespace CamelotEngine
 {
+	UINT32 D3D11HLSLProgram::globalProgramId = 0;
+
 	D3D11HLSLProgram::D3D11HLSLProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
 		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired),
-		mColumnMajorMatrices(true), mEnableBackwardsCompatibility(false)
+		mColumnMajorMatrices(true), mEnableBackwardsCompatibility(false), mProgramId(0)
 	{
 	}
 
@@ -72,6 +74,8 @@ namespace CamelotEngine
 			}
 			break;
 		}
+
+		mProgramId = globalProgramId++;
 
 		SAFE_RELEASE(microcode);
 	}

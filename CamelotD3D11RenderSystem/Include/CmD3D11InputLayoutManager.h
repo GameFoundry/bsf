@@ -8,25 +8,24 @@ namespace CamelotEngine
 	class D3D11InputLayoutManager
 	{
 	public:
-		struct VertexDeclarationPair
+		struct VertexDeclarationKey
 		{
-			size_t shaderDeclHash;
 			size_t bufferDeclHash;
+			UINT32 vertexProgramId;
 
-			const list<VertexElement>::type* shaderDeclElements;
 			const list<VertexElement>::type* bufferDeclElements;
 		};
 
 		class HashFunc 
 		{
 		public:
-			::std::size_t operator()(const VertexDeclarationPair &key) const;
+			::std::size_t operator()(const VertexDeclarationKey &key) const;
 		};
 
 		class EqualFunc
 		{
 		public:
-			bool operator()(const VertexDeclarationPair &a, const VertexDeclarationPair &b) const;
+			bool operator()(const VertexDeclarationKey &a, const VertexDeclarationKey &b) const;
 		};
 
 		struct InputLayoutEntry
@@ -54,14 +53,14 @@ namespace CamelotEngine
 		static const int DECLARATION_BUFFER_SIZE = 1024;
 		static const int NUM_ELEMENTS_TO_PRUNE = 64;
 
-		std::unordered_map<VertexDeclarationPair, InputLayoutEntry*, HashFunc, EqualFunc> mInputLayoutMap;
+		std::unordered_map<VertexDeclarationKey, InputLayoutEntry*, HashFunc, EqualFunc> mInputLayoutMap;
 
 		bool mWarningShown;
 		UINT32 mLastUsedCounter;
 
-		void addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, const HLSLMicroCode& microCode);
+		void addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11HLSLProgram& vertexProgram);
 		void removeLeastUsed();
 
-		VertexDeclarationPtr createCombinedDesc(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl);
+		bool areCompatible(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl);
 	};
 }

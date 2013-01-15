@@ -7,6 +7,8 @@ namespace CamelotEngine
 {
 	class D3D11HLSLProgram : public HighLevelGpuProgram
 	{
+		static UINT32 globalProgramId;
+
 	public:
 		~D3D11HLSLProgram();
 
@@ -27,6 +29,7 @@ namespace CamelotEngine
 		const HLSLMicroCode& getMicroCode() const { return mMicrocode; }
 
 		VertexDeclarationPtr getInputDeclaration() const { return mInputDeclaration; }
+		UINT32 getProgramId() const { return mProgramId; }
 
 	protected:
 		friend class D3D11HLSLProgramFactory;
@@ -47,6 +50,7 @@ namespace CamelotEngine
 	private:
 		bool mColumnMajorMatrices;
 		bool mEnableBackwardsCompatibility;
+		UINT32 mProgramId;
 
 		HLSLMicroCode mMicrocode;
 		VertexDeclarationPtr mInputDeclaration;
