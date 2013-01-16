@@ -378,6 +378,9 @@ namespace CamelotEngine
 		if((mUsage & TU_RENDERTARGET) != 0)
 			CM_EXCEPT(NotImplementedException, "Reading from render texture to CPU not supported."); // TODO: This needs to be implemented
 
+		if((mUsage & TU_DEPTHSTENCIL) != 0)
+			CM_EXCEPT(NotImplementedException, "Reading from depth stencil texture to CPU not supported."); // TODO: This needs to be implemented
+
 		if(data.getWidth() != getWidth() ||
 			data.getHeight() != getHeight() ||
 			data.getDepth() != getDepth())

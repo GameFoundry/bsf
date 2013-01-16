@@ -40,7 +40,7 @@ namespace CamelotEngine
     struct CM_RSGL_EXPORT GLSurfaceDesc
     {
     public:
-        GLHardwarePixelBufferPtr buffer;
+        GLPixelBufferPtr buffer;
         UINT32 zoffset;
 		UINT32 numSamples;
 
@@ -67,7 +67,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Bind depth stencil buffer.
 		 */
-		void bindDepthStencil(GLHardwarePixelBufferPtr depthStencilBuffer);
+		void bindDepthStencil(GLPixelBufferPtr depthStencilBuffer);
 
 		/**
 		 * @brief	Unbinds depth stencil buffer.
@@ -91,7 +91,7 @@ namespace CamelotEngine
 		GLsizei mNumSamples;
         GLuint mFB;
 
-        GLHardwarePixelBufferPtr mDepthStencilBuffer;
+        GLPixelBufferPtr mDepthStencilBuffer;
         // Arbitrary number of texture surfaces
         GLSurfaceDesc mColor[CM_MAX_MULTIPLE_RENDER_TARGETS];
 

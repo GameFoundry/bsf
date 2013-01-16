@@ -148,7 +148,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmGLContext.h" />
-    <ClInclude Include="Include\CmGLDepthStencilBuffer.h" />
     <ClInclude Include="Include\CmGLFrameBufferObject.h" />
     <ClInclude Include="Include\CmGLGenericBuffer.h" />
     <ClInclude Include="Include\CmGLGpuParamBlock.h" />
@@ -185,7 +184,6 @@
   <ItemGroup>
     <ClCompile Include="CmGLPlugin.cpp" />
     <ClCompile Include="Source\CmGLContext.cpp" />
-    <ClCompile Include="Source\CmGLDepthStencilBuffer.cpp" />
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp" />
     <ClCompile Include="Source\CmGLGenericBuffer.cpp" />
     <ClCompile Include="Source\CmGLGpuParamBlock.cpp" />

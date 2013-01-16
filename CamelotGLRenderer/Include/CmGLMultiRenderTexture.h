@@ -20,7 +20,7 @@ namespace CamelotEngine
 		void initialize();
 
 		void setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
-		void setDepthStencilImpl(DepthStencilBufferPtr depthStencilbuffer);
+		void setDepthStencilImpl(TexturePtr depthStencilSurface);
 	private:
 		GLFrameBufferObject* mFB;
 	};

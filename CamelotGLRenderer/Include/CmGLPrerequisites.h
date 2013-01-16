@@ -40,13 +40,11 @@ namespace CamelotEngine {
     class GLContext;
     class GLRTTManager;
     class GLPixelBuffer;
-    class GLRenderBuffer;
 	class GLGpuParamBlock;
 	struct GLSLProgramPipeline;
 	class GLSLProgramPipelineManager;
 
-	typedef std::shared_ptr<GLPixelBuffer> GLHardwarePixelBufferPtr;
-	typedef std::shared_ptr<GLRenderBuffer> GLRenderBufferPtr;
+	typedef std::shared_ptr<GLPixelBuffer> GLPixelBufferPtr;
 	typedef std::shared_ptr<GLGpuParamBlock> GLGpuParamBlockPtr;
 
 	enum TypeID_D3D9

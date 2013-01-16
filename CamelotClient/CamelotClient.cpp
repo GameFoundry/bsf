@@ -26,9 +26,9 @@ using namespace CamelotEngine;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	//gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
+	gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
 	//gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
-	gApplication().startUp("CamelotD3D11RenderSystem", "CamelotForwardRenderer");
+	//gApplication().startUp("CamelotD3D11RenderSystem", "CamelotForwardRenderer");
 
 	RenderSystem* renderSystem = RenderSystem::instancePtr();
 	RenderWindowPtr renderWindow = gApplication().getPrimaryRenderWindow();
@@ -74,28 +74,28 @@ int _tmain(int argc, _TCHAR* argv[])
 	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 
 	/////////////////// HLSL 11 SHADERS //////////////////////////
-	String fragShaderCode = "SamplerState samp : register(s0);			\
-							Texture2D tex : register(t0); \
-							float4 ps_main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target		\
-							{														\
-							float4 color = tex.Sample(samp, uv);				\
-							return color;										\
-							}";
+	//String fragShaderCode = "SamplerState samp : register(s0);			\
+	//						Texture2D tex : register(t0); \
+	//						float4 ps_main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target		\
+	//						{														\
+	//						float4 color = tex.Sample(samp, uv);				\
+	//						return color;										\
+	//						}";
 
-	fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+	//fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
-	String vertShaderCode = "float4x4 matViewProjection;	\
-							void vs_main(										\
-							in float4 inPos : POSITION,							\
-							in float2 uv : TEXCOORD0,								\
-							out float4 oPosition : SV_Position,					\
-							out float2 oUv : TEXCOORD0)							\
-							{														\
-							oPosition = mul(matViewProjection, inPos);			\
-							oUv = uv;											\
-							}";
+	//String vertShaderCode = "float4x4 matViewProjection;	\
+	//						void vs_main(										\
+	//						in float4 inPos : POSITION,							\
+	//						in float2 uv : TEXCOORD0,								\
+	//						out float4 oPosition : SV_Position,					\
+	//						out float2 oUv : TEXCOORD0)							\
+	//						{														\
+	//						oPosition = mul(matViewProjection, inPos);			\
+	//						oUv = uv;											\
+	//						}";
 
-	vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
 
 	/////////////////// CG SHADERS //////////////////////////
 	//String fragShaderCode = "sampler2D tex;					\
@@ -121,31 +121,31 @@ int _tmain(int argc, _TCHAR* argv[])
 	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 
 	///////////////// GLSL SHADERS ////////////////////////////
-	//String fragShaderCode = " #version 400 \n \
-	//						  uniform sampler2D tex; \
-	//						  in vec2 texcoord0; \
-	//						  out vec4 fragColor; \
-	//						  void main() \
-	//						  {\
-	//							  vec4 texColor = texture2D(tex, texcoord0.st);\
-	//							  fragColor = texColor; \
-	//						  }";
+	String fragShaderCode = " #version 400 \n \
+							  uniform sampler2D tex; \
+							  in vec2 texcoord0; \
+							  out vec4 fragColor; \
+							  void main() \
+							  {\
+								  vec4 texColor = texture2D(tex, texcoord0.st);\
+								  fragColor = texColor; \
+							  }";
 
-	//fragProg = HighLevelGpuProgram::create(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	fragProg = HighLevelGpuProgram::create(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 
-	//// TODO - Make sure to document the strict input parameter naming. (Exact supported names are in GLSLParamParser)
-	//String vertShaderCode = "#version 400 \n \
-	//						 uniform mainFragBlock { mat4 matViewProjection; }; \
-	//						 in vec4 cm_position; \
-	//						 in vec2 cm_texcoord0; \
-	//						 out vec2 texcoord0; \
-	//						 void main() \
-	//						 { \
-	//							texcoord0 = cm_texcoord0; \
-	//							gl_Position = cm_position * matViewProjection; \
-	//						 }";
+	// TODO - Make sure to document the strict input parameter naming. (Exact supported names are in GLSLParamParser)
+	String vertShaderCode = "#version 400 \n \
+							 uniform mainFragBlock { mat4 matViewProjection; }; \
+							 in vec4 cm_position; \
+							 in vec2 cm_texcoord0; \
+							 out vec2 texcoord0; \
+							 void main() \
+							 { \
+								texcoord0 = cm_texcoord0; \
+								gl_Position = cm_position * matViewProjection; \
+							 }";
 
-	//vertProg = HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	vertProg = HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 
 	HighLevelGpuProgramHandle vertProgRef(vertProg);
 

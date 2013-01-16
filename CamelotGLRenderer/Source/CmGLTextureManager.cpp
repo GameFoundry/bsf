@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include "CmGLTextureManager.h"
 #include "CmRenderSystem.h"
 #include "CmGLRenderTexture.h"
-#include "CmGLDepthStencilBuffer.h"
 #include "CmGLMultiRenderTexture.h"
 
 namespace CamelotEngine {

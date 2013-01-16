@@ -27,7 +27,6 @@ THE SOFTWARE.
 */
 #include "CmGLRenderTexture.h"
 #include "CmGLPixelFormat.h"
-#include "CmGLDepthStencilBuffer.h"
 #include "CmGLPixelBuffer.h"
 
 namespace CamelotEngine 
@@ -59,9 +58,10 @@ namespace CamelotEngine
 
 		mFB->bindSurface(0, surfaceDesc);
 
-		GLDepthStencilBuffer* glDepthStencilBuffer = static_cast<GLDepthStencilBuffer*>(mDepthStencilSurface.get());
+		GLTexture* glDepthStencilTexture = static_cast<GLTexture*>(mDepthStencilSurface.get());
+		GLPixelBufferPtr depthStencilBuffer = std::static_pointer_cast<GLPixelBuffer>(glDepthStencilTexture->getBuffer(0, 0));
 
-		mFB->bindDepthStencil(glDepthStencilBuffer->getGLRenderBuffer());
+		mFB->bindDepthStencil(depthStencilBuffer);
 	}
 
 	void GLRenderTexture::getCustomAttribute(const String& name, void* pData)

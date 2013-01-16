@@ -65,17 +65,18 @@ namespace CamelotEngine {
 		*/
 		static GLenum getClosestGLInternalFormat(PixelFormat mFormat, bool hwGamma = false);
 		
+		/**
+		 * @brief	Returns a valid type that should be used for creating a buffer for the specified
+		 * 			depth/stencil format.
+		 */
+		static GLenum getDepthStencilTypeFromFormat(PixelFormat mFormat);
+
 		/**	Function to get the closest matching engine format to an internal GL format. To be
 			precise, the format will be chosen that is most efficient to transfer to the card 
 			without losing precision.
 			@remarks It is valid for this function to always return PF_A8R8G8B8.
 		*/
 		static PixelFormat getClosestEngineFormat(GLenum fmt);
-
-		/**
-		 * @brief	Returns closest OpenGL depth/stencil format.
-		 */
-		static GLenum getDepthStencilFormat(DepthStencilFormat fmt);
 
 		/**
 		 * @brief	Gets OpenGL format based on a compressed OpenGL internal format.

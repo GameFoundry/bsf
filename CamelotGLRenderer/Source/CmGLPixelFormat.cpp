@@ -283,6 +283,14 @@ namespace CamelotEngine  {
 					return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
 				else
 	                return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			case PF_D16:
+				return GL_DEPTH_COMPONENT16;
+			case PF_D32:
+				return GL_DEPTH_COMPONENT32F;
+			case PF_D24S8:
+				return GL_DEPTH24_STENCIL8;
+			case PF_D32_S8X24:
+				return GL_DEPTH32F_STENCIL8;
             default:
                 return GL_NONE;
         }
@@ -301,6 +309,23 @@ namespace CamelotEngine  {
         else
             return format;
     }
+
+	GLenum GLPixelUtil::getDepthStencilTypeFromFormat(PixelFormat mFormat)
+	{
+		switch(mFormat)
+		{
+		case PF_D32_S8X24:
+			return GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
+		case PF_D24S8:
+			return GL_UNSIGNED_INT_24_8;
+		case PF_D32:
+			return GL_FLOAT;
+		case PF_D16:
+			return GL_UNSIGNED_SHORT;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Invalid depth stencil format");
+	}
 	
 	//----------------------------------------------------------------------------- 	
 	PixelFormat GLPixelUtil::getClosestEngineFormat(GLenum fmt)
@@ -370,25 +395,6 @@ namespace CamelotEngine  {
 		default:
 			return PF_A8R8G8B8;
 		};
-	}
-	//----------------------------------------------------------------------------- 
-	GLenum GLPixelUtil::getDepthStencilFormat(DepthStencilFormat fmt)
-	{
-		switch(fmt)
-		{
-		case DFMT_D32_S8X24:
-			return GL_DEPTH32F_STENCIL8;
-		case DFMT_D24S8:
-			return GL_DEPTH24_STENCIL8;
-		case DFMT_D32:
-			return GL_DEPTH_COMPONENT32F;
-		case DFMT_D16:
-			return GL_DEPTH_COMPONENT16;
-		}
-
-		LOGWRN("Requesting unsupported DepthStencilFormat. Using D24S8 format instead.");
-
-		return GL_DEPTH24_STENCIL8;
 	}
 	//----------------------------------------------------------------------------- 
 	UINT32 GLPixelUtil::getMaxMipmaps(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format)

@@ -1,5 +1,4 @@
 #include "CmGLMultiRenderTexture.h"
-#include "CmGLDepthStencilBuffer.h"
 #include "CmGLTexture.h"
 
 namespace CamelotEngine
@@ -35,13 +34,14 @@ namespace CamelotEngine
 		}
 	}
 
-	void GLMultiRenderTexture::setDepthStencilImpl(DepthStencilBufferPtr depthStencilBuffer)
+	void GLMultiRenderTexture::setDepthStencilImpl(TexturePtr depthStencilSurface)
 	{
-		if(depthStencilBuffer != nullptr)
+		if(depthStencilSurface != nullptr)
 		{
-			GLDepthStencilBuffer* glDepthStencilBuffer = static_cast<GLDepthStencilBuffer*>(mDepthStencilSurface.get());
+			GLTexture* glDepthStencilSurface = static_cast<GLTexture*>(mDepthStencilSurface.get());
+			GLPixelBufferPtr depthStencilBuffer = std::static_pointer_cast<GLPixelBuffer>(glDepthStencilSurface->getBuffer(0, 0));
 
-			mFB->bindDepthStencil(glDepthStencilBuffer->getGLRenderBuffer());
+			mFB->bindDepthStencil(depthStencilBuffer);
 		}
 		else
 		{

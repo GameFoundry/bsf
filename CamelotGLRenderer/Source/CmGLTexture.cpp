@@ -147,10 +147,6 @@ namespace CamelotEngine {
 	/****************************************************************************************/
 	void GLTexture::createInternalResourcesImpl(void)
     {
-		if (!GLEW_VERSION_1_2 && mTextureType == TEX_TYPE_3D)
-			CM_EXCEPT(NotImplementedException, 
-				"3D Textures not supported before OpenGL 1.2");
-
 		// Convert to nearest power-of-two size if required
         mWidth = GLPixelUtil::optionalPO2(mWidth);      
         mHeight = GLPixelUtil::optionalPO2(mHeight);
@@ -172,6 +168,17 @@ namespace CamelotEngine {
 				CM_EXCEPT(NotImplementedException, "Only 2D render targets are supported at the moment");
 		}
 
+		if((mUsage & TU_DEPTHSTENCIL) != 0)
+		{
+			mNumMipmaps = 1;
+
+			if(mTextureType != TEX_TYPE_2D)
+				CM_EXCEPT(NotImplementedException, "Only 2D depth stencil targets are supported at the moment");
+
+			if(!PixelUtil::isDepth(mFormat))
+				CM_EXCEPT(NotImplementedException, "Supplied format is not a depth stencil format. Format: " + toString(mFormat));
+		}
+
 		// Generate texture name
         glGenTextures( 1, &mTextureID );
 		
@@ -179,8 +186,7 @@ namespace CamelotEngine {
 		glBindTexture( getGLTextureTarget(), mTextureID );
         
 		// This needs to be set otherwise the texture doesn't get rendered
-		if (GLEW_VERSION_1_2)
-			glTexParameteri( getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, mNumMipmaps );
+		glTexParameteri( getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, mNumMipmaps );
         
         // Set some misc default parameters so NVidia won't complain, these can of course be changed later
         glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -198,19 +204,35 @@ namespace CamelotEngine {
 		UINT32 height = mHeight;
 		UINT32 depth = mDepth;
 
-		GLenum glFormat = GL_RGBA;
 		if(PixelUtil::isCompressed(mFormat))
 		{
 			if((mUsage & TU_RENDERTARGET) != 0)
 				CM_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a render target.");
 
-			glFormat = GLPixelUtil::getBaseFormatFromCompressedInternalFormat(mFormat);
+			if((mUsage & TU_DEPTHSTENCIL) != 0)
+				CM_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a depth stencil target.");
 		}
 
 		if((mUsage & TU_RENDERTARGET) != 0 && mTextureType == TEX_TYPE_2D && mFSAA > 0)
 		{
 			glTexImage2DMultisample(GL_TEXTURE_2D, mFSAA, format,
 				width, height, GL_FALSE);
+		}
+		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+		{
+			if(mFSAA > 0)
+			{
+				glTexImage2DMultisample(GL_TEXTURE_2D, mFSAA, format,
+					width, height, GL_FALSE);
+			}
+			else
+			{
+				GLenum depthStencilFormat = GLPixelUtil::getDepthStencilTypeFromFormat(mFormat);
+
+				glTexImage2D(GL_TEXTURE_2D, 0, format,
+					width, height, 0, 
+					GL_DEPTH_STENCIL, depthStencilFormat, nullptr);
+			}
 		}
 		else
 		{

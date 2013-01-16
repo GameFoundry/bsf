@@ -86,7 +86,7 @@ namespace CamelotEngine
 		}
     }
 
-	void GLFrameBufferObject::bindDepthStencil(GLHardwarePixelBufferPtr depthStencilBuffer)
+	void GLFrameBufferObject::bindDepthStencil(GLPixelBufferPtr depthStencilBuffer)
 	{
 		mDepthStencilBuffer = depthStencilBuffer;
 	}
