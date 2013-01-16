@@ -1,7 +1,7 @@
 #include "CmD3D11HardwareBufferManager.h"
 #include "CmD3D11VertexBuffer.h"
 #include "CmD3D11IndexBuffer.h"
-#include "CmD3D11GenericBuffer.h"
+#include "CmD3D11GpuBuffer.h"
 #include "CmD3D11GpuParamBlock.h"
 #include "CmGpuParamDesc.h"
 
@@ -50,9 +50,9 @@ namespace CamelotEngine
 	}
 
 	GenericBufferPtr D3D11HardwareBufferManager::createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
-		GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
+		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		return GenericBufferPtr(new D3D11GenericBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
+		return GenericBufferPtr(new D3D11GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 	}
 
 	VertexDeclarationPtr D3D11HardwareBufferManager::createVertexDeclarationImpl(void)

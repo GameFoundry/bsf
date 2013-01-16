@@ -338,14 +338,8 @@
     <ClInclude Include="Include\CmVertexDeclaration.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGenericBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmCommonEnums.h">
       <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGenericBufferView.h">
-      <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmIndexBuffer.h">
       <Filter>Header Files\RenderSystem</Filter>
@@ -357,6 +351,12 @@
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmVertexBuffer.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGpuBuffer.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGpuBufferView.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
   </ItemGroup>
@@ -523,12 +523,6 @@
     <ClCompile Include="Source\CmVertexDeclaration.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmGenericBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGenericBufferView.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmIndexBuffer.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
@@ -539,6 +533,12 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmVertexBuffer.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuBufferView.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuBuffer.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>

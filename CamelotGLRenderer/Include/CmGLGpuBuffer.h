@@ -1,15 +1,15 @@
 #pragma once
 
 #include "CmGLPrerequisites.h"
-#include "CmGenericBuffer.h"
+#include "CmGpuBuffer.h"
 
 namespace CamelotEngine
 {
-	class CM_RSGL_EXPORT GLGenericBuffer : public GenericBuffer
+	class CM_RSGL_EXPORT GLGpuBuffer : public GpuBuffer
 	{
 	public:
-		GLGenericBuffer(UINT32 elementCount, UINT32 elementSize, GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
-        ~GLGenericBuffer();
+		GLGpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+        ~GLGpuBuffer();
 
 		/**
 		 * @copydoc GenericBuffer::lockImpl
@@ -35,11 +35,11 @@ namespace CamelotEngine
 		/**
 		* @copydoc GenericBuffer::copyData
 		*/
-		void copyData(GenericBuffer& srcBuffer, UINT32 srcOffset, 
+		void copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 
 	protected:
-		virtual GenericBufferView* createView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
-		virtual void destroyView(GenericBufferView* view);
+		virtual GpuBufferView* createView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
+		virtual void destroyView(GpuBufferView* view);
 	};
 }

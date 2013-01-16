@@ -1,20 +1,20 @@
-#include "CmGenericBuffer.h"
+#include "CmGpuBuffer.h"
 #include "CmException.h"
 
 namespace CamelotEngine
 {
-	GenericBuffer::GenericBuffer(UINT32 elementCount, UINT32 elementSize, GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
+	GpuBuffer::GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 		:mElementCount(elementCount), mElementSize(elementSize), mType(type), mUsage(usage), mRandomGpuWrite(randomGpuWrite), mUseCounter(useCounter)
 	{  
 	}
 
-	GenericBuffer::~GenericBuffer() 
+	GpuBuffer::~GpuBuffer() 
 	{
 		// Make sure that derived classes call clearBufferViews
 		// I can't call it here since it needs a virtual method call
 	}
 
-	void GenericBuffer::clearBufferViews()
+	void GpuBuffer::clearBufferViews()
 	{
 		for(auto iter = mBufferViews.begin(); iter != mBufferViews.end(); ++iter)
 		{
@@ -25,15 +25,15 @@ namespace CamelotEngine
 		mBufferViews.clear();
 	}
 
-	GenericBufferView* GenericBuffer::requestView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite)
+	GpuBufferView* GpuBuffer::requestView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite)
 	{
-		GenericBufferView::Key key(firstElement, elementWidth, numElements, randomGpuWrite);
+		GpuBufferView::Key key(firstElement, elementWidth, numElements, randomGpuWrite);
 
 		auto iterFind = mBufferViews.find(key);
 		if(iterFind == mBufferViews.end())
 		{
-			GenericBufferView* newView = createView(firstElement, elementWidth, numElements, randomGpuWrite);
-			mBufferViews[key] = new GenericBufferReference(newView);
+			GpuBufferView* newView = createView(firstElement, elementWidth, numElements, randomGpuWrite);
+			mBufferViews[key] = new GpuBufferReference(newView);
 
 			iterFind = mBufferViews.find(key);
 		}
@@ -42,9 +42,9 @@ namespace CamelotEngine
 		return iterFind->second->view;
 	}
 
-	void GenericBuffer::releaseView(GenericBufferView* view)
+	void GpuBuffer::releaseView(GpuBufferView* view)
 	{
-		GenericBufferView::Key key(*view);
+		GpuBufferView::Key key(*view);
 
 		auto iterFind = mBufferViews.find(key);
 		if(iterFind == mBufferViews.end())
@@ -56,7 +56,7 @@ namespace CamelotEngine
 
 		if(iterFind->second->refCount == 0)
 		{
-			GenericBufferReference* toRemove = iterFind->second;
+			GpuBufferReference* toRemove = iterFind->second;
 
 			mBufferViews.erase(iterFind);
 

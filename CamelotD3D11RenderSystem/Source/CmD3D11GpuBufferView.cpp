@@ -1,13 +1,13 @@
-#include "CmD3D11GenericBufferView.h"
+#include "CmD3D11GpuBufferView.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
 #include "CmException.h"
 
 namespace CamelotEngine
 {
-	D3D11GenericBufferView::D3D11GenericBufferView(ID3D11Buffer* buffer, GenericBufferType type, 
+	D3D11GpuBufferView::D3D11GpuBufferView(ID3D11Buffer* buffer, GpuBufferType type, 
 		UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite, bool useCounter)
-		:GenericBufferView(firstElement, elementWidth, numElements, randomGpuWrite), mSRV(nullptr), mUAV(nullptr)
+		:GpuBufferView(firstElement, elementWidth, numElements, randomGpuWrite), mSRV(nullptr), mUAV(nullptr)
 	{
 		if(randomGpuWrite)
 			mSRV = createSRV(buffer, type, firstElement, elementWidth, numElements);
@@ -15,14 +15,14 @@ namespace CamelotEngine
 			mUAV = createUAV(buffer, type, firstElement, numElements, useCounter);
 	}
 
-	D3D11GenericBufferView::~D3D11GenericBufferView()
+	D3D11GpuBufferView::~D3D11GpuBufferView()
 	{
 		SAFE_RELEASE(mSRV);
 		SAFE_RELEASE(mUAV);
 	}
 
-	ID3D11ShaderResourceView* D3D11GenericBufferView::createSRV(ID3D11Buffer* buffer, 
-		GenericBufferType type, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements)
+	ID3D11ShaderResourceView* D3D11GpuBufferView::createSRV(ID3D11Buffer* buffer, 
+		GpuBufferType type, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements)
 	{
 		if(type == GBT_APPENDCONSUME)
 			CM_EXCEPT(InvalidParametersException, "Cannot create ShaderResourceView for an append/consume buffer.");
@@ -67,8 +67,8 @@ namespace CamelotEngine
 		return srv;
 	}
 
-	ID3D11UnorderedAccessView* D3D11GenericBufferView::createUAV(ID3D11Buffer* buffer, 
-		GenericBufferType type, UINT32 firstElement, UINT32 numElements, bool useCounter)
+	ID3D11UnorderedAccessView* D3D11GpuBufferView::createUAV(ID3D11Buffer* buffer, 
+		GpuBufferType type, UINT32 firstElement, UINT32 numElements, bool useCounter)
 	{
 		D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));

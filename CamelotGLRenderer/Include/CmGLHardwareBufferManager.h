@@ -71,7 +71,7 @@ namespace CamelotEngine {
 		 * OpenGL does not support generic buffers so this method will return a dummy instance.
 		 */
 		GenericBufferPtr createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
-			GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
         /// Utility function to get the correct GL usage based on HBU's
         static GLenum getGLUsage(unsigned int usage);

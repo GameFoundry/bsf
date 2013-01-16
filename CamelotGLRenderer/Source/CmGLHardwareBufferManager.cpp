@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "CmGLHardwareBufferManager.h"
 #include "CmGLVertexBuffer.h"
 #include "CmGLIndexBuffer.h"
-#include "CmGLGenericBuffer.h"
+#include "CmGLGpuBuffer.h"
 #include "CmHardwareBuffer.h"
 #include "CmGLGpuParamBlock.h"
 #include "CmRenderSystem.h"
@@ -110,9 +110,9 @@ namespace CamelotEngine {
 	}
 	//---------------------------------------------------------------------
 	GenericBufferPtr GLHardwareBufferManager::createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
-		GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
+		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		return GenericBufferPtr(new GLGenericBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
+		return GenericBufferPtr(new GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 	}
     //---------------------------------------------------------------------
     GLenum GLHardwareBufferManager::getGLUsage(unsigned int usage)

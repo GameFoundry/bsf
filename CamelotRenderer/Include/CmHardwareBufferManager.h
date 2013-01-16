@@ -124,7 +124,7 @@ namespace CamelotEngine {
 		 * Be aware that some of these settings cannot be used together, and you will receive an assert if in debug mode.
 		 */
 		virtual GenericBufferPtr createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
-			GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false) = 0;
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false) = 0;
 
         /** Creates a new vertex declaration. */
         virtual VertexDeclarationPtr createVertexDeclaration(void);

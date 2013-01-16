@@ -4,7 +4,7 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT GenericBufferView
+	class CM_EXPORT GpuBufferView
 	{
 	public:
 		struct Key
@@ -12,7 +12,7 @@ namespace CamelotEngine
 			Key()
 			{ }
 
-			Key(const GenericBufferView& view)
+			Key(const GpuBufferView& view)
 				: mFirstElement(view.mFirstElement), mElementWidth(view.mElementWidth)
 				, mNumElements(view.mNumElements), mRandomGpuWrite(view.mRandomGpuWrite)
 			{ }
@@ -40,8 +40,8 @@ namespace CamelotEngine
 			bool operator()(const Key &a, const Key &b) const;
 		};
 
-		GenericBufferView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
-		virtual ~GenericBufferView();
+		GpuBufferView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
+		virtual ~GpuBufferView();
 
 	private:
 		UINT32 mFirstElement;

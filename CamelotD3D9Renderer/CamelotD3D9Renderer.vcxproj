@@ -151,7 +151,7 @@
     <ClInclude Include="Include\CmD3D9DeviceManager.h" />
     <ClInclude Include="Include\CmD3D9Driver.h" />
     <ClInclude Include="Include\CmD3D9DriverList.h" />
-    <ClInclude Include="Include\CmD3D9GenericBuffer.h" />
+    <ClInclude Include="Include\CmD3D9GpuBuffer.h" />
     <ClInclude Include="Include\CmD3D9GpuProgram.h" />
     <ClInclude Include="Include\CmD3D9GpuProgramManager.h" />
     <ClInclude Include="Include\CmD3D9HardwareBufferManager.h" />
@@ -184,7 +184,7 @@
     <ClCompile Include="Source\CmD3D9DeviceManager.cpp" />
     <ClCompile Include="Source\CmD3D9Driver.cpp" />
     <ClCompile Include="Source\CmD3D9DriverList.cpp" />
-    <ClCompile Include="Source\CmD3D9GenericBuffer.cpp" />
+    <ClCompile Include="Source\CmD3D9GpuBuffer.cpp" />
     <ClCompile Include="Source\CmD3D9GpuProgram.cpp" />
     <ClCompile Include="Source\CmD3D9GpuProgramManager.cpp" />
     <ClCompile Include="Source\CmD3D9HardwareBufferManager.cpp" />

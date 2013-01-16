@@ -239,7 +239,7 @@ namespace CamelotEngine {
 	/**
 	 * @brief	Types of generic GPU buffers that may be attached to GPU programs.
 	 */
-	enum GenericBufferType
+	enum GpuBufferType
 	{
 		GBT_STRUCTURED,
 		GBT_RAW,

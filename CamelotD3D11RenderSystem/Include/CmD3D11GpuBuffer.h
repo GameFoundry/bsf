@@ -1,16 +1,16 @@
 #pragma once
 
 #include "CmD3D11Prerequisites.h"
-#include "CmGenericBuffer.h"
+#include "CmGpuBuffer.h"
 #include "CmCommonEnums.h"
 
 namespace CamelotEngine 
 {
-	class CM_D3D11_EXPORT D3D11GenericBuffer : public GenericBuffer
+	class CM_D3D11_EXPORT D3D11GpuBuffer : public GpuBuffer
     {
     public:
-		D3D11GenericBuffer(UINT32 elementCount, UINT32 elementSize, GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
-        ~D3D11GenericBuffer();
+		D3D11GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+        ~D3D11GpuBuffer();
 
 		/**
 		 * @copydoc GenericBuffer::lockImpl
@@ -36,13 +36,13 @@ namespace CamelotEngine
 		/**
 		* @copydoc GenericBuffer::copyData
 		*/
-		void copyData(GenericBuffer& srcBuffer, UINT32 srcOffset, 
+		void copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 
 	protected:
 		D3D11HardwareBuffer* mBuffer;
 
-		virtual GenericBufferView* createView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
-		virtual void destroyView(GenericBufferView* view);
+		virtual GpuBufferView* createView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
+		virtual void destroyView(GpuBufferView* view);
     };
 }

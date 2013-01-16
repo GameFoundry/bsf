@@ -32,7 +32,7 @@ namespace CamelotEngine
 		 *  - Counter can only be used with STRUCTURED buffer type
 		 */
 		GenericBufferPtr createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
-			GenericBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
 	protected:     
 		/// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
