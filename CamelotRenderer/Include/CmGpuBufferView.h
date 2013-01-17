@@ -1,52 +1,40 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmCommonEnums.h"
 
 namespace CamelotEngine
 {
+	struct CM_EXPORT GPU_BUFFER_DESC
+	{
+		UINT32 firstElement;
+		UINT32 elementWidth;
+		UINT32 numElements;
+		bool useCounter;
+		GpuViewUsage usage;
+	};
+
 	class CM_EXPORT GpuBufferView
 	{
 	public:
-		struct Key
-		{
-			Key()
-			{ }
-
-			Key(const GpuBufferView& view)
-				: mFirstElement(view.mFirstElement), mElementWidth(view.mElementWidth)
-				, mNumElements(view.mNumElements), mRandomGpuWrite(view.mRandomGpuWrite)
-			{ }
-
-			Key(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite)
-				: mFirstElement(firstElement), mElementWidth(elementWidth)
-				, mNumElements(numElements), mRandomGpuWrite(randomGpuWrite)
-			{ }
-
-			UINT32 mFirstElement;
-			UINT32 mElementWidth;
-			UINT32 mNumElements;
-			bool mRandomGpuWrite;
-		};
-
 		class HashFunction
 		{
 		public:
-			size_t operator()(const Key &key) const;
+			size_t operator()(const GPU_BUFFER_DESC& key) const;
 		};
 
 		class EqualFunction
 		{
 		public:
-			bool operator()(const Key &a, const Key &b) const;
+			bool operator()(const GPU_BUFFER_DESC& a, const GPU_BUFFER_DESC& b) const;
 		};
 
-		GpuBufferView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
+		GpuBufferView(GPU_BUFFER_DESC& desc);
 		virtual ~GpuBufferView();
 
+		const GPU_BUFFER_DESC& getDesc() const { return mDesc; }
+
 	private:
-		UINT32 mFirstElement;
-		UINT32 mElementWidth;
-		UINT32 mNumElements;
-		bool mRandomGpuWrite;
+		GPU_BUFFER_DESC mDesc;
 	};
 }

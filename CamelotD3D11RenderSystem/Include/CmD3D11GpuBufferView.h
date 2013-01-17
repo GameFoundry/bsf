@@ -9,7 +9,7 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11GpuBufferView : public GpuBufferView
 	{
 	public:
-		D3D11GpuBufferView(ID3D11Buffer* buffer, GpuBufferType type, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite, bool useCounter = false);
+		D3D11GpuBufferView(ID3D11Buffer* buffer, GpuBufferType type, GPU_BUFFER_DESC& desc);
 		virtual ~D3D11GpuBufferView();
 
 	private:

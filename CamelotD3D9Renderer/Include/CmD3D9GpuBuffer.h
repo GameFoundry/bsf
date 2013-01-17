@@ -39,7 +39,7 @@ namespace CamelotEngine
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 
 	protected:
-		virtual GpuBufferView* createView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
+		virtual GpuBufferView* createView(GPU_BUFFER_DESC& desc);
 		virtual void destroyView(GpuBufferView* view);
 	};
 }

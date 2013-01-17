@@ -68,13 +68,14 @@ namespace CamelotEngine
 		mBuffer->copyData(*d3d11SrcBuffer->mBuffer, srcOffset, dstOffset, length, discardWholeBuffer);
 	}
 
-	GpuBufferView* D3D11GpuBuffer::createView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite)
+	GpuBufferView* D3D11GpuBuffer::createView(GPU_BUFFER_DESC& desc)
 	{
-		return new D3D11GpuBufferView(mBuffer->getD3DBuffer(), mType, firstElement, elementWidth, numElements, randomGpuWrite, mUseCounter);
+		return new D3D11GpuBufferView(mBuffer->getD3DBuffer(), mType, desc);
 	}
 
 	void D3D11GpuBuffer::destroyView(GpuBufferView* view)
 	{
-		delete view;
+		if(view != nullptr)
+			delete view;
 	}
 }

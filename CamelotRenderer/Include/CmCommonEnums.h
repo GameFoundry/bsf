@@ -233,7 +233,7 @@ namespace CamelotEngine {
 		/** Indicates the application would like to modify this buffer with the CPU
 		fairly often. 
 		*/
-		GBU_DYNAMIC = 2,
+		GBU_DYNAMIC = 2
 	};
 
 	/**
@@ -245,6 +245,17 @@ namespace CamelotEngine {
 		GBT_RAW,
 		GBT_INDIRECTARGUMENT,
 		GBT_APPENDCONSUME
+	};
+
+	/**
+	 * @brief	Combine these to generate a different type of gpu views
+	 */
+	enum GpuViewUsage
+	{
+		GVU_DEFAULT,
+		GVU_RENDERTARGET,
+		GVU_DEPTHSTENCIL,
+		GVU_RANDOMWRITE
 	};
 
 	/** Texture addressing mode for each texture coordinate. */

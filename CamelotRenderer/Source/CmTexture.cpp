@@ -107,6 +107,7 @@ namespace CamelotEngine {
 	void Texture::freeInternalResources(void)
 	{
 		freeInternalResourcesImpl();
+		clearBufferViews();
 	}
 
 	void Texture::setRawPixels(const PixelData& data, UINT32 face, UINT32 mip)
@@ -235,6 +236,77 @@ namespace CamelotEngine {
 	{
 		if(CM_THREAD_CURRENT_ID != RenderSystem::instancePtr()->getRenderThreadId())
 			CM_EXCEPT(InternalErrorException, "Calling an internal texture method from a non-render thread!");
+	}
+
+	/************************************************************************/
+	/* 								TEXTURE VIEW                      		*/
+	/************************************************************************/
+
+	TextureView* Texture::createView(TEXTURE_VIEW_DESC& _desc)
+	{
+		return new TextureView(this, _desc);
+	}
+
+	void Texture::destroyView(TextureView* view)
+	{
+		if(view != nullptr)
+			delete view;
+	}
+
+	void Texture::clearBufferViews()
+	{
+		for(auto iter = mTextureViews.begin(); iter != mTextureViews.end(); ++iter)
+		{
+			destroyView(iter->second->view);
+			delete iter->second;
+		}
+
+		mTextureViews.clear();
+	}
+
+	TextureView* Texture::requestView(UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage)
+	{
+		TEXTURE_VIEW_DESC key;
+		key.mostDetailMip = mostDetailMip;
+		key.numMips = numMips;
+		key.firstArraySlice = firstArraySlice;
+		key.numArraySlices = numArraySlices;
+		key.usage = usage;
+
+		auto iterFind = mTextureViews.find(key);
+		if(iterFind == mTextureViews.end())
+		{
+			TextureView* newView = createView(key);
+			mTextureViews[key] = new TextureViewReference(newView);
+
+			iterFind = mTextureViews.find(key);
+		}
+
+		iterFind->second->refCount++;
+		return iterFind->second->view;
+	}
+
+	void Texture::releaseView(TextureView* view)
+	{
+		TextureView key(*view);
+
+		auto iterFind = mTextureViews.find(view->getDesc());
+		if(iterFind == mTextureViews.end())
+		{
+			CM_EXCEPT(InternalErrorException, "Trying to release a texture view that doesn't exist!");
+		}
+
+		iterFind->second->refCount--;
+
+		if(iterFind->second->refCount == 0)
+		{
+			TextureViewReference* toRemove = iterFind->second;
+
+			mTextureViews.erase(iterFind);
+
+			destroyView(toRemove->view);
+			delete toRemove;
+		}
 	}
 
 	/************************************************************************/

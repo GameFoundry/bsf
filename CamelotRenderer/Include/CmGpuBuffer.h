@@ -21,7 +21,7 @@ namespace CamelotEngine
 		virtual void copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false) = 0;
 
-		GpuBufferView* requestView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
+		GpuBufferView* requestView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool useCounter, GpuViewUsage usage);
 		void releaseView(GpuBufferView* view);
 
 	protected:
@@ -32,7 +32,7 @@ namespace CamelotEngine
 		UINT32 mElementCount;
 		UINT32 mElementSize;
 
-		virtual GpuBufferView* createView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite) = 0;
+		virtual GpuBufferView* createView(GPU_BUFFER_DESC& desc) = 0;
 		virtual void destroyView(GpuBufferView* view) = 0;
 		void clearBufferViews();
 
@@ -46,6 +46,6 @@ namespace CamelotEngine
 			UINT32 refCount;
 		};
 
-		std::unordered_map<GpuBufferView::Key, GpuBufferReference*, GpuBufferView::HashFunction, GpuBufferView::EqualFunction> mBufferViews;
+		std::unordered_map<GPU_BUFFER_DESC, GpuBufferReference*, GpuBufferView::HashFunction, GpuBufferView::EqualFunction> mBufferViews;
     };
 }

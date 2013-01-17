@@ -36,7 +36,7 @@ namespace CamelotEngine
 	{
 	}
 
-	GpuBufferView* GLGpuBuffer::createView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite)
+	GpuBufferView* GLGpuBuffer::createView(GPU_BUFFER_DESC& desc)
 	{
 		return nullptr;
 	}

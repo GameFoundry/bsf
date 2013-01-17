@@ -1,18 +1,22 @@
 #include "CmD3D11GpuBufferView.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
+#include "CmUtil.h"
 #include "CmException.h"
 
 namespace CamelotEngine
 {
-	D3D11GpuBufferView::D3D11GpuBufferView(ID3D11Buffer* buffer, GpuBufferType type, 
-		UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite, bool useCounter)
-		:GpuBufferView(firstElement, elementWidth, numElements, randomGpuWrite), mSRV(nullptr), mUAV(nullptr)
+	D3D11GpuBufferView::D3D11GpuBufferView(ID3D11Buffer* buffer, GpuBufferType type, GPU_BUFFER_DESC& desc)
+		:GpuBufferView(desc), mSRV(nullptr), mUAV(nullptr)
 	{
-		if(randomGpuWrite)
-			mSRV = createSRV(buffer, type, firstElement, elementWidth, numElements);
+		if((desc.usage & GVU_RANDOMWRITE) != 0)
+			mUAV = createUAV(buffer, type, desc.firstElement, desc.numElements, desc.useCounter);
+		else if((desc.usage & GVU_RENDERTARGET) != 0)
+		{
+			CM_EXCEPT(NotImplementedException, "Cannot create a render target view for buffers yet.");
+		}
 		else
-			mUAV = createUAV(buffer, type, firstElement, numElements, useCounter);
+			mSRV = createSRV(buffer, type, desc.firstElement, desc.elementWidth, desc.numElements);
 	}
 
 	D3D11GpuBufferView::~D3D11GpuBufferView()

@@ -42,7 +42,7 @@ namespace CamelotEngine
 	protected:
 		D3D11HardwareBuffer* mBuffer;
 
-		virtual GpuBufferView* createView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite);
+		virtual GpuBufferView* createView(GPU_BUFFER_DESC& desc);
 		virtual void destroyView(GpuBufferView* view);
     };
 }

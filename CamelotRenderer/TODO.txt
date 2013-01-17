@@ -14,10 +14,10 @@
 
 
 >>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
-Port depth stencil buffer for OpenGL
 Make sure that I am able to blit contents from render textures on all render systems
 Get rid of SurfaceDesc in CmRenderTarget. I should probably add a resource view similar as I did with buffers.
  - Also in render and multirender textures whenever get depth stencil surface I always use 0 mip and 0 face, however it should use a surface desc same as color surface
+ - Take care of handling texture UAVs too
 Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones
  Working generic buffers
  A way to bind buffers to a Pass, while specifying buffer range

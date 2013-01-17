@@ -49,7 +49,7 @@ namespace CamelotEngine
 		return GpuParamBlockPtr(new D3D11GpuParamBlock(blockDesc));
 	}
 
-	GenericBufferPtr D3D11HardwareBufferManager::createGenericBuffer(UINT32 elementCount, UINT32 elementSize, 
+	GenericBufferPtr D3D11HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
 		return GenericBufferPtr(new D3D11GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));

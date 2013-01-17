@@ -2,6 +2,7 @@
 #include "CmD3D11Mappings.h"
 #include "CmD3D11Device.h"
 #include "CmD3D11RenderSystem.h"
+#include "CmD3D11TextureView.h"
 #include "CmException.h"
 #include "CmAsyncOp.h"
 
@@ -587,6 +588,17 @@ namespace CamelotEngine
 			}
 			break;
 		}
+	}
+
+	TextureView* D3D11Texture::createView(TEXTURE_VIEW_DESC& _desc)
+	{
+		return new D3D11TextureView(this, _desc);
+	}
+
+	void D3D11Texture::destroyView(TextureView* view)
+	{
+		if(view != nullptr)
+			delete view;
 	}
 }
 

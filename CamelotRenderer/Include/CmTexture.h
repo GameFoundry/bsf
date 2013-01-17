@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "CmResource.h"
 #include "CmHardwareBuffer.h"
 #include "CmPixelUtil.h"
+#include "CmTextureView.h"
 
 namespace CamelotEngine {
 
@@ -204,6 +205,31 @@ namespace CamelotEngine {
 		/** Copies the contents of this texture to
 			another texture. */
 		void copy(TexturePtr& target);
+
+		/************************************************************************/
+		/* 								TEXTURE VIEW                      		*/
+		/************************************************************************/
+
+		TextureView* requestView(UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
+		void releaseView(TextureView* view);
+
+	protected:
+
+		virtual TextureView* createView(TEXTURE_VIEW_DESC& _desc);
+		virtual void destroyView(TextureView* view);
+		void clearBufferViews();
+
+		struct TextureViewReference
+		{
+			TextureViewReference(TextureView* _view)
+				:view(_view), refCount(0)
+			{ }
+
+			TextureView* view;
+			UINT32 refCount;
+		};
+
+		std::unordered_map<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction> mTextureViews;
 
     protected:
 		friend class TextureManager;

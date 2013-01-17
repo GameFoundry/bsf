@@ -14,6 +14,7 @@ namespace CamelotEngine
 		ID3D11ShaderResourceView* getSRV() const { return mShaderResourceView; }
 		D3D11_SRV_DIMENSION getDimension() const { return mDimension; }
 		DXGI_FORMAT getDXGIFormat() const { return mDXGIFormat; }
+
 	protected:
 		friend class D3D11TextureManager;
 
@@ -81,5 +82,8 @@ namespace CamelotEngine
 		 * @copydoc Texture::freeInternalResourcesImpl
 		 */
 		void freeInternalResourcesImpl();
+
+		TextureView* createView(TEXTURE_VIEW_DESC& _desc);
+		void destroyView(TextureView* view);
 	};
 }

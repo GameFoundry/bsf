@@ -3,26 +3,27 @@
 
 namespace CamelotEngine
 {
-	size_t GpuBufferView::HashFunction::operator()(const Key &key) const
+	size_t GpuBufferView::HashFunction::operator()(const GPU_BUFFER_DESC& key) const
 	{
 		size_t seed = 0;
-		hash_combine(seed, key.mElementWidth);
-		hash_combine(seed, key.mFirstElement);
-		hash_combine(seed, key.mNumElements);
-		hash_combine(seed, key.mRandomGpuWrite);
+		hash_combine(seed, key.elementWidth);
+		hash_combine(seed, key.firstElement);
+		hash_combine(seed, key.numElements);
+		hash_combine(seed, key.useCounter);
+		hash_combine(seed, key.usage);
 
 		return seed;
 	}
 
 	bool GpuBufferView::EqualFunction::operator()
-		(const Key &a, const Key &b) const
+		(const GPU_BUFFER_DESC& a, const GPU_BUFFER_DESC& b) const
 	{
-		return a.mElementWidth == b.mElementWidth && a.mFirstElement == b.mFirstElement 
-			&& a.mNumElements == b.mNumElements && a.mRandomGpuWrite == b.mRandomGpuWrite;
+		return a.elementWidth == b.elementWidth && a.firstElement == b.firstElement 
+			&& a.numElements == b.numElements && a.useCounter == b.useCounter && a.usage == b.usage;
 	}
 
-	GpuBufferView::GpuBufferView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool randomGpuWrite)
-		:mFirstElement(firstElement), mElementWidth(elementWidth), mNumElements(numElements), mRandomGpuWrite(randomGpuWrite)
+	GpuBufferView::GpuBufferView(GPU_BUFFER_DESC& desc)
+		:mDesc(desc)
 	{
 
 	}
