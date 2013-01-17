@@ -53,6 +53,7 @@ namespace CamelotEngine
 	class D3D11SamplerState;
 	class D3D11DepthStencilState;
 	class D3D11InputLayoutManager;
+	class D3D11GpuBuffer;
 
 	enum TypeID_D3D11
 	{

@@ -64,7 +64,7 @@ namespace CamelotEngine {
 		 *
 		 * DirectX 9 does not support generic buffers so this method will return a dummy instance.
 		 */
-		GenericBufferPtr createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
+		GpuBufferPtr createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
     };
 }

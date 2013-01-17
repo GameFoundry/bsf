@@ -83,7 +83,7 @@ namespace CamelotEngine
 		 */
 		void freeInternalResourcesImpl();
 
-		TextureView* createView(TEXTURE_VIEW_DESC& _desc);
+		TextureView* createView();
 		void destroyView(TextureView* view);
 	};
 }

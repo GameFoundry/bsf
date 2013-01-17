@@ -1,4 +1,5 @@
 #include "CmTextureView.h"
+#include "CmTexture.h"
 #include "CmUtil.h"
 
 namespace CamelotEngine
@@ -22,14 +23,14 @@ namespace CamelotEngine
 			&& a.firstArraySlice == b.firstArraySlice && a.numArraySlices == b.numArraySlices && a.usage == b.usage;
 	}
 
-	TextureView::TextureView(Texture* texture, TEXTURE_VIEW_DESC& _desc)
-		: mDesc(_desc)
+	TextureView::TextureView()
 	{
 
 	}
 
-	TextureView::~TextureView()
+	void TextureView::initialize(TexturePtr texture, TEXTURE_VIEW_DESC& _desc)
 	{
-
+		mOwnerTexture = texture;
+		mDesc = _desc;
 	}
 }

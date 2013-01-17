@@ -29,12 +29,22 @@ namespace CamelotEngine
 			bool operator()(const GPU_BUFFER_DESC& a, const GPU_BUFFER_DESC& b) const;
 		};
 
-		GpuBufferView(GPU_BUFFER_DESC& desc);
+		GpuBufferView();
 		virtual ~GpuBufferView();
 
-		const GPU_BUFFER_DESC& getDesc() const { return mDesc; }
+		virtual void initialize(GpuBufferPtr buffer, GPU_BUFFER_DESC& desc);
 
-	private:
+		const GPU_BUFFER_DESC& getDesc() const { return mDesc; }
+		GpuBufferPtr getBuffer() const { return mBuffer; }
+
+		UINT32 getFirstElement() const { return mDesc.firstElement; }
+		UINT32 getElementWidth() const { return mDesc.elementWidth; }
+		UINT32 getNumElements() const { return mDesc.numElements; }
+		bool getUseCounter() const { return mDesc.useCounter; }
+		GpuViewUsage getUsage() const { return mDesc.usage; }
+
+	protected:
 		GPU_BUFFER_DESC mDesc;
+		GpuBufferPtr mBuffer;
 	};
 }

@@ -29,12 +29,20 @@ namespace CamelotEngine
 			bool operator()(const TEXTURE_VIEW_DESC &a, const TEXTURE_VIEW_DESC &b) const;
 		};
 
-		TextureView(Texture* texture, TEXTURE_VIEW_DESC& _desc);
-		virtual ~TextureView();
+		TextureView();
+		virtual void initialize(TexturePtr texture, TEXTURE_VIEW_DESC& _desc);
+
+		UINT32 getMostDetailedMip() const { return mDesc.mostDetailMip; }
+		UINT32 getNumMips() const { return mDesc.numMips; }
+		UINT32 getFirstArraySlice() const { return mDesc.firstArraySlice; }
+		UINT32 getNumArraySlices() const { return mDesc.numArraySlices; }
+		GpuViewUsage getUsage() const { return mDesc.usage; }
 
 		const TEXTURE_VIEW_DESC& getDesc() const { return mDesc; }
+		TexturePtr getTexture() const { return mOwnerTexture; }
 
 	protected:
 		TEXTURE_VIEW_DESC mDesc;
+		TexturePtr mOwnerTexture;
 	};
 }

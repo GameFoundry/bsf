@@ -109,10 +109,10 @@ namespace CamelotEngine {
 		return GpuParamBlockPtr(new GLGpuParamBlock(paramDesc));
 	}
 	//---------------------------------------------------------------------
-	GenericBufferPtr GLHardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
+	GpuBufferPtr GLHardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		return GenericBufferPtr(new GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
+		return GpuBufferPtr(new GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 	}
     //---------------------------------------------------------------------
     GLenum GLHardwareBufferManager::getGLUsage(unsigned int usage)

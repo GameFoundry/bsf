@@ -22,8 +22,7 @@ namespace CamelotEngine
 			&& a.numElements == b.numElements && a.useCounter == b.useCounter && a.usage == b.usage;
 	}
 
-	GpuBufferView::GpuBufferView(GPU_BUFFER_DESC& desc)
-		:mDesc(desc)
+	GpuBufferView::GpuBufferView()
 	{
 
 	}
@@ -31,5 +30,11 @@ namespace CamelotEngine
 	GpuBufferView::~GpuBufferView()
 	{
 
+	}
+
+	void GpuBufferView::initialize(GpuBufferPtr buffer, GPU_BUFFER_DESC& desc)
+	{
+		mBuffer = buffer;
+		mDesc = desc;
 	}
 }

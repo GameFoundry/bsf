@@ -10,23 +10,20 @@ namespace CamelotEngine
 	public:
 		virtual ~MultiRenderTexture() {}
 
-		void setColorSurface(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
-		void setDepthStencilSurface(TexturePtr depthStencilbuffer);
-
-		SurfaceDesc getSurfaceDesc(UINT32 surfaceIdx) const { return mSurfaces.at(surfaceIdx); }
-		TexturePtr getDepthStencilSurface() const { return mDepthStencilSurface; }
+		void setColorSurface(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0);
+		void setDepthStencilSurface(TexturePtr depthStencil, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0);
 
 		bool requiresTextureFlipping() const { return false; }
 
 	protected:
-		vector<SurfaceDesc>::type mSurfaces;
-		TexturePtr mDepthStencilSurface;
+		vector<TextureView*>::type mColorSurfaces;
+		TextureView* mDepthStencilSurface;
 
 		MultiRenderTexture();
 		virtual void initialize() {}
 
-		virtual void setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0) = 0;
-		virtual void setDepthStencilImpl(TexturePtr depthStencilstencil) = 0;
+		virtual void setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0) = 0;
+		virtual void setDepthStencilImpl(TexturePtr depthStencilstencil, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0) = 0;
 	private:
 		void throwIfBuffersDontMatch() const;
 

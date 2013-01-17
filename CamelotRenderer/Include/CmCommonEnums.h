@@ -248,14 +248,14 @@ namespace CamelotEngine {
 	};
 
 	/**
-	 * @brief	Combine these to generate a different type of gpu views
+	 * @brief	Different types of gpu views
 	 */
 	enum GpuViewUsage
 	{
-		GVU_DEFAULT,
-		GVU_RENDERTARGET,
-		GVU_DEPTHSTENCIL,
-		GVU_RANDOMWRITE
+		GVU_DEFAULT = 0x01,
+		GVU_RENDERTARGET = 0x02,
+		GVU_DEPTHSTENCIL = 0x04,
+		GVU_RANDOMWRITE = 0x08
 	};
 
 	/** Texture addressing mode for each texture coordinate. */

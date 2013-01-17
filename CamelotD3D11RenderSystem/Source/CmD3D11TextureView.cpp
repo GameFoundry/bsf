@@ -7,11 +7,17 @@
 
 namespace CamelotEngine
 {
-	D3D11TextureView::D3D11TextureView(Texture* texture, TEXTURE_VIEW_DESC& _desc)
-		:TextureView(texture, _desc),
-		mSRV(nullptr), mUAV(nullptr), mDSV(nullptr), mRTV(nullptr)
+	D3D11TextureView::D3D11TextureView()
+		:TextureView(), mSRV(nullptr), mUAV(nullptr), mDSV(nullptr), mRTV(nullptr)
 	{
-		D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(texture);
+
+	}
+
+	void D3D11TextureView::initialize(TexturePtr texture, TEXTURE_VIEW_DESC& _desc)
+	{
+		TextureView::initialize(texture, _desc);
+
+		D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(texture.get());
 
 		if((mDesc.usage & GVU_RANDOMWRITE) != 0)
 			mUAV = createUAV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);

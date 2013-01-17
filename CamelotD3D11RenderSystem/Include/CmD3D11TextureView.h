@@ -8,8 +8,15 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11TextureView : public TextureView
 	{
 	public:
-		D3D11TextureView(Texture* texture, TEXTURE_VIEW_DESC& _desc);
+		D3D11TextureView();
 		virtual ~D3D11TextureView();
+
+		void initialize(TexturePtr texture, TEXTURE_VIEW_DESC& _desc);
+
+		ID3D11ShaderResourceView*	getSRV() const { return mSRV; }
+		ID3D11RenderTargetView*		getRTV() const { return mRTV; }
+		ID3D11UnorderedAccessView*	getUAV() const { return mUAV; }
+		ID3D11DepthStencilView*		getDSV() const { return mDSV; }
 
 	private:
 		ID3D11ShaderResourceView*	mSRV;

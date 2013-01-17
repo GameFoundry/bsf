@@ -48,19 +48,16 @@ namespace CamelotEngine
     class CM_EXPORT RenderTexture : public RenderTarget
     {
 	public:
-		virtual ~RenderTexture() {}
+		virtual ~RenderTexture();
 
-		void setColorSurface(TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
-		void setDepthStencilSurface(TexturePtr depthStencil);
-
-		SurfaceDesc getSurfaceDesc() const { return mSurface; }
-		TexturePtr getDepthStencilSurface() const { return mDepthStencilSurface; }
+		void setColorSurface(TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0);
+		void setDepthStencilSurface(TexturePtr depthStencil, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
 
 		bool requiresTextureFlipping() const { return false; }
 
 	protected:
-		SurfaceDesc mSurface;
-		TexturePtr mDepthStencilSurface;
+		TextureView* mColorSurface;
+		TextureView* mDepthStencilSurface;
 
 		RenderTexture();
 

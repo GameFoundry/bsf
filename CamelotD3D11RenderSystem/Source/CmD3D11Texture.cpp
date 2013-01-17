@@ -15,7 +15,8 @@
 namespace CamelotEngine
 {
 	D3D11Texture::D3D11Texture()
-		: m1DTex(nullptr)
+		: Texture()
+		, m1DTex(nullptr)
 		, m2DTex(nullptr)
 		, m3DTex(nullptr)
 		, mTex(nullptr)
@@ -590,9 +591,9 @@ namespace CamelotEngine
 		}
 	}
 
-	TextureView* D3D11Texture::createView(TEXTURE_VIEW_DESC& _desc)
+	TextureView* D3D11Texture::createView()
 	{
-		return new D3D11TextureView(this, _desc);
+		return new D3D11TextureView();
 	}
 
 	void D3D11Texture::destroyView(TextureView* view)

@@ -16,12 +16,8 @@ namespace CamelotEngine
 		friend class D3D11TextureManager;
 
 		D3D11MultiRenderTexture();
-		void initialize();
 
-		void setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
-		void setDepthStencilImpl(TexturePtr depthStencilSurface);
-
-		vector<ID3D11RenderTargetView*>::type mRenderTargetViews;
-		ID3D11DepthStencilView* mDepthStencilView;
+		void setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0);
+		void setDepthStencilImpl(TexturePtr depthStencilSurface, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0);
 	};
 }

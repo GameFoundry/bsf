@@ -39,10 +39,12 @@ namespace CamelotEngine
 		void copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 
+		ID3D11Buffer* getDX11Buffer() const;
+
 	protected:
 		D3D11HardwareBuffer* mBuffer;
 
-		virtual GpuBufferView* createView(GPU_BUFFER_DESC& desc);
+		virtual GpuBufferView* createView();
 		virtual void destroyView(GpuBufferView* view);
     };
 }

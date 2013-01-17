@@ -29,12 +29,12 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D9MultiRenderTexture::setDepthStencilImpl(TexturePtr depthStencilSurface)
+	void D3D9MultiRenderTexture::setDepthStencilImpl(TexturePtr depthStencilSurface, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
 	{
 		if(depthStencilSurface != nullptr)
 		{
-			D3D9Texture* d3d9DepthStencil = static_cast<D3D9Texture*>(mDepthStencilSurface.get());
-			D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(d3d9DepthStencil->getBuffer(0, 0).get());
+			D3D9Texture* d3d9DepthStencil = static_cast<D3D9Texture*>(depthStencilSurface.get());
+			D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(d3d9DepthStencil->getBuffer(face, mipLevel).get());
 			mDX9DepthStencilSurface = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
 		}
 		else

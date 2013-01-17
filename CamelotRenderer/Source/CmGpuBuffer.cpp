@@ -25,7 +25,7 @@ namespace CamelotEngine
 		mBufferViews.clear();
 	}
 
-	GpuBufferView* GpuBuffer::requestView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool useCounter, GpuViewUsage usage)
+	GpuBufferView* GpuBuffer::requestView(GpuBufferPtr buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool useCounter, GpuViewUsage usage)
 	{
 		GPU_BUFFER_DESC key;
 		key.firstElement = firstElement;
@@ -34,13 +34,14 @@ namespace CamelotEngine
 		key.numElements = numElements;
 		key.usage = usage;
 
-		auto iterFind = mBufferViews.find(key);
-		if(iterFind == mBufferViews.end())
+		auto iterFind = buffer->mBufferViews.find(key);
+		if(iterFind == buffer->mBufferViews.end())
 		{
-			GpuBufferView* newView = createView(key);
-			mBufferViews[key] = new GpuBufferReference(newView);
+			GpuBufferView* newView = buffer->createView();
+			newView->initialize(buffer, key);
+			buffer->mBufferViews[key] = new GpuBufferReference(newView);
 
-			iterFind = mBufferViews.find(key);
+			iterFind = buffer->mBufferViews.find(key);
 		}
 
 		iterFind->second->refCount++;
@@ -49,8 +50,10 @@ namespace CamelotEngine
 
 	void GpuBuffer::releaseView(GpuBufferView* view)
 	{
-		auto iterFind = mBufferViews.find(view->getDesc());
-		if(iterFind == mBufferViews.end())
+		GpuBufferPtr buffer = view->getBuffer();
+
+		auto iterFind = buffer->mBufferViews.find(view->getDesc());
+		if(iterFind == buffer->mBufferViews.end())
 		{
 			CM_EXCEPT(InternalErrorException, "Trying to release a buffer view that doesn't exist!");
 		}
@@ -61,9 +64,9 @@ namespace CamelotEngine
 		{
 			GpuBufferReference* toRemove = iterFind->second;
 
-			mBufferViews.erase(iterFind);
+			buffer->mBufferViews.erase(iterFind);
 
-			destroyView(toRemove->view);
+			buffer->destroyView(toRemove->view);
 			delete toRemove;
 		}
 	}

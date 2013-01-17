@@ -41,17 +41,8 @@ THE SOFTWARE.
 	#define CM_REND_TO_TEX_RT_GROUP 2
 #endif
 
-namespace CamelotEngine {
-
-	struct SurfaceDesc
-	{
-		TexturePtr texture;
-		UINT32 face;
-		UINT32 numFaces;
-		UINT32 mipLevel;
-		PixelFormat format;
-	};
-
+namespace CamelotEngine 
+{
 	/** \addtogroup Core
 	*  @{
 	*/

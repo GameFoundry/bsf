@@ -21,8 +21,15 @@ namespace CamelotEngine
 		virtual void copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false) = 0;
 
-		GpuBufferView* requestView(UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool useCounter, GpuViewUsage usage);
-		void releaseView(GpuBufferView* view);
+		static GpuBufferView* requestView(GpuBufferPtr buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements, bool useCounter, GpuViewUsage usage);
+		static void releaseView(GpuBufferView* view);
+
+		GpuBufferType getType() const { return mType; }
+		GpuBufferUsage getUsage() const { return mUsage; }
+		bool getRandomGpuWrite() const { return mRandomGpuWrite; }
+		bool getUseCounter() const { return mUseCounter; }
+		UINT32 getElementCount() const { return mElementCount; }
+		UINT32 getElementSize() const { return mElementSize; }
 
 	protected:
 		GpuBufferType mType;
@@ -32,7 +39,7 @@ namespace CamelotEngine
 		UINT32 mElementCount;
 		UINT32 mElementSize;
 
-		virtual GpuBufferView* createView(GPU_BUFFER_DESC& desc) = 0;
+		virtual GpuBufferView* createView() = 0;
 		virtual void destroyView(GpuBufferView* view) = 0;
 		void clearBufferViews();
 

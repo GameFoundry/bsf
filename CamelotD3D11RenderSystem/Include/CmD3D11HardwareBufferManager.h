@@ -31,7 +31,7 @@ namespace CamelotEngine
 		 *  - APPENDCONSUME buffer type can only be used with randomGpuWrite enabled  
 		 *  - Counter can only be used with STRUCTURED buffer type
 		 */
-		GenericBufferPtr createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
+		GpuBufferPtr createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
 	protected:     

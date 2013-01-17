@@ -34,12 +34,12 @@ namespace CamelotEngine
 		}
 	}
 
-	void GLMultiRenderTexture::setDepthStencilImpl(TexturePtr depthStencilSurface)
+	void GLMultiRenderTexture::setDepthStencilImpl(TexturePtr depthStencilSurface, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
 	{
 		if(depthStencilSurface != nullptr)
 		{
-			GLTexture* glDepthStencilSurface = static_cast<GLTexture*>(mDepthStencilSurface.get());
-			GLPixelBufferPtr depthStencilBuffer = std::static_pointer_cast<GLPixelBuffer>(glDepthStencilSurface->getBuffer(0, 0));
+			GLTexture* glDepthStencilSurface = static_cast<GLTexture*>(depthStencilSurface.get());
+			GLPixelBufferPtr depthStencilBuffer = std::static_pointer_cast<GLPixelBuffer>(glDepthStencilSurface->getBuffer(face, mipLevel));
 
 			mFB->bindDepthStencil(depthStencilBuffer);
 		}

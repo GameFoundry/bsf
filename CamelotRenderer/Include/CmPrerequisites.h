@@ -140,6 +140,7 @@ namespace CamelotEngine {
 	struct GpuParamDesc;
 	struct GpuParamMemberDesc;
 	struct GpuParamBlockDesc;
+	class TextureView;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -170,7 +171,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<PixelBuffer> PixelBufferPtr;
 	typedef std::shared_ptr<VertexBuffer> VertexBufferPtr;
 	typedef std::shared_ptr<IndexBuffer> IndexBufferPtr;
-	typedef std::shared_ptr<GpuBuffer> GenericBufferPtr;
+	typedef std::shared_ptr<GpuBuffer> GpuBufferPtr;
 	typedef std::shared_ptr<VertexDeclaration> VertexDeclarationPtr;
 	typedef std::shared_ptr<Mesh> MeshPtr;
 	typedef std::shared_ptr<Texture> TexturePtr;
@@ -198,6 +199,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<MultiRenderTexture> MultiRenderTexturePtr;
 	typedef std::shared_ptr<GpuParamBlock> GpuParamBlockPtr;
 	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
+	typedef std::shared_ptr<TextureView> TextureViewPtr;
 }
 
 // All type IDs used for RTTI

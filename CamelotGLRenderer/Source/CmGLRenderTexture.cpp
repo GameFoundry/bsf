@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "CmGLRenderTexture.h"
 #include "CmGLPixelFormat.h"
 #include "CmGLPixelBuffer.h"
+#include "CmTextureView.h"
 
 namespace CamelotEngine 
 {
@@ -53,13 +54,15 @@ namespace CamelotEngine
 		surfaceDesc.numSamples = mFSAA;
 		surfaceDesc.zoffset = 0;
 
-		GLTexture* glTexture = static_cast<GLTexture*>(mSurface.texture.get());
-		surfaceDesc.buffer = std::static_pointer_cast<GLPixelBuffer>(glTexture->getBuffer(mSurface.face, mSurface.mipLevel));
+		GLTexture* glTexture = static_cast<GLTexture*>(mColorSurface->getTexture().get());
+		surfaceDesc.buffer = std::static_pointer_cast<GLPixelBuffer>(
+			glTexture->getBuffer(mColorSurface->getFirstArraySlice(), mColorSurface->getMostDetailedMip()));
 
 		mFB->bindSurface(0, surfaceDesc);
 
-		GLTexture* glDepthStencilTexture = static_cast<GLTexture*>(mDepthStencilSurface.get());
-		GLPixelBufferPtr depthStencilBuffer = std::static_pointer_cast<GLPixelBuffer>(glDepthStencilTexture->getBuffer(0, 0));
+		GLTexture* glDepthStencilTexture = static_cast<GLTexture*>(mDepthStencilSurface->getTexture().get());
+		GLPixelBufferPtr depthStencilBuffer = std::static_pointer_cast<GLPixelBuffer>(
+			glDepthStencilTexture->getBuffer(mDepthStencilSurface->getFirstArraySlice(), mDepthStencilSurface->getMostDetailedMip()));
 
 		mFB->bindDepthStencil(depthStencilBuffer);
 	}

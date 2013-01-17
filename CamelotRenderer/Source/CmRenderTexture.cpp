@@ -35,27 +35,39 @@ THE SOFTWARE.
 namespace CamelotEngine
 {
 	RenderTexture::RenderTexture()
+		:mColorSurface(nullptr), mDepthStencilSurface(nullptr)
 	{
 
 	}
 
+	RenderTexture::~RenderTexture()
+	{
+		if(mColorSurface != nullptr)
+			Texture::releaseView(mColorSurface);
+
+		if(mDepthStencilSurface != nullptr)
+			Texture::releaseView(mDepthStencilSurface);
+	}
+
 	void RenderTexture::createInternalResources()
 	{
-		assert(mSurface.texture != nullptr);
+		assert(mColorSurface != nullptr);
+		assert(mColorSurface->getTexture() != nullptr);
 
-		if(mSurface.texture->getTextureType() != TEX_TYPE_2D)
+		if(mColorSurface->getTexture()->getTextureType() != TEX_TYPE_2D)
 			CM_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
 
-		if((mSurface.face + mSurface.numFaces) >= mSurface.texture->getNumFaces())
+		if((mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) >= mColorSurface->getTexture()->getNumFaces())
 		{
 			CM_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " + 
-				toString(mSurface.face + mSurface.numFaces) + ". Max num faces: " + toString(mSurface.texture->getNumFaces()));
+				toString(mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) + 
+				". Max num faces: " + toString(mColorSurface->getTexture()->getNumFaces()));
 		}
 
-		if(mSurface.mipLevel >= mSurface.texture->getNumMipmaps())
+		if(mColorSurface->getMostDetailedMip() >= mColorSurface->getTexture()->getNumMipmaps())
 		{
 			CM_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " + 
-				toString(mSurface.mipLevel) + ". Max num mipmaps: " + toString(mSurface.texture->getNumMipmaps()));
+				toString(mColorSurface->getMostDetailedMip()) + ". Max num mipmaps: " + toString(mColorSurface->getTexture()->getNumMipmaps()));
 		}
 
 		createInternalResourcesImpl();
@@ -66,10 +78,16 @@ namespace CamelotEngine
 		if(texture != nullptr && texture->getUsage() != TU_RENDERTARGET)
 			CM_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
-		mSurface.texture = texture;
+		if(mColorSurface != nullptr)
+		{
+			mColorSurface->getTexture()->releaseView(mColorSurface);
+			mColorSurface = nullptr;
+		}
 
-		if(mSurface.texture == nullptr)
+		if(texture == nullptr)
 			return;
+
+		mColorSurface = Texture::requestView(texture, mipLevel, 1, face, numFaces, GVU_RENDERTARGET);
 
 		mPriority = CM_REND_TO_TEX_RT_GROUP;
 		mWidth = texture->getWidth();
@@ -79,49 +97,49 @@ namespace CamelotEngine
 		mHwGamma = texture->isHardwareGammaEnabled();
 		mFSAA = texture->getFSAA();
 		mFSAAHint = texture->getFSAAHint();
-
-		mSurface.format = texture->getFormat();
-		
-		mSurface.face = face;
-		mSurface.numFaces = numFaces;
-		mSurface.mipLevel = mipLevel;
 		
 		throwIfBuffersDontMatch();
 
-		if(mDepthStencilSurface != nullptr && mSurface.texture != nullptr)
+		if(mDepthStencilSurface != nullptr && mColorSurface != nullptr)
 			createInternalResourcesImpl();
 	}
 
-	void RenderTexture::setDepthStencilSurface(TexturePtr depthStencilSurface)
+	void RenderTexture::setDepthStencilSurface(TexturePtr depthStencilSurface, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
 	{
 		if(depthStencilSurface != nullptr && depthStencilSurface->getUsage() != TU_DEPTHSTENCIL)
 			CM_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
-		mDepthStencilSurface = depthStencilSurface;
+		if(mDepthStencilSurface != nullptr)
+		{
+			mDepthStencilSurface->getTexture()->releaseView(mDepthStencilSurface);
+			mDepthStencilSurface = nullptr;
+		}
 
-		if(mDepthStencilSurface == nullptr)
+		if(depthStencilSurface == nullptr)
 			return;
+
+		mDepthStencilSurface = Texture::requestView(depthStencilSurface, mipLevel, 1, face, numFaces, GVU_DEPTHSTENCIL);
 
 		throwIfBuffersDontMatch();
 
-		if(mDepthStencilSurface != nullptr && mSurface.texture != nullptr)
+		if(mDepthStencilSurface != nullptr && mColorSurface != nullptr)
 			createInternalResourcesImpl();
 	}
 
 	void RenderTexture::throwIfBuffersDontMatch() const
 	{
-		if(mSurface.texture == nullptr || mDepthStencilSurface == nullptr)
+		if(mColorSurface == nullptr || mDepthStencilSurface == nullptr)
 			return;
 
-		if(mSurface.texture->getWidth() != mDepthStencilSurface->getWidth() ||
-			mSurface.texture->getHeight() != mDepthStencilSurface->getHeight() ||
-			mSurface.texture->getFSAA() != mDepthStencilSurface->getFSAA() ||
-			mSurface.texture->getFSAAHint() != mDepthStencilSurface->getFSAAHint())
+		if(mColorSurface->getTexture()->getWidth() != mDepthStencilSurface->getTexture()->getWidth() ||
+			mColorSurface->getTexture()->getHeight() != mDepthStencilSurface->getTexture()->getHeight() ||
+			mColorSurface->getTexture()->getFSAA() != mDepthStencilSurface->getTexture()->getFSAA() ||
+			mColorSurface->getTexture()->getFSAAHint() != mDepthStencilSurface->getTexture()->getFSAAHint())
 		{
-			String errorInfo = "\nWidth: " + toString(mSurface.texture->getWidth()) + "/" + toString(mDepthStencilSurface->getWidth());
-			errorInfo += "\nHeight: " + toString(mSurface.texture->getHeight()) + "/" + toString(mDepthStencilSurface->getHeight());
-			errorInfo += "\nFSAA: " + toString(mSurface.texture->getFSAA()) + "/" + toString(mDepthStencilSurface->getFSAA());
-			errorInfo += "\nFSAAHint: " + mSurface.texture->getFSAAHint() + "/" + mDepthStencilSurface->getFSAAHint();
+			String errorInfo = "\nWidth: " + toString(mColorSurface->getTexture()->getWidth()) + "/" + toString(mDepthStencilSurface->getTexture()->getWidth());
+			errorInfo += "\nHeight: " + toString(mColorSurface->getTexture()->getHeight()) + "/" + toString(mDepthStencilSurface->getTexture()->getHeight());
+			errorInfo += "\nFSAA: " + toString(mColorSurface->getTexture()->getFSAA()) + "/" + toString(mDepthStencilSurface->getTexture()->getFSAA());
+			errorInfo += "\nFSAAHint: " + mColorSurface->getTexture()->getFSAAHint() + "/" + mDepthStencilSurface->getTexture()->getFSAAHint();
 
 			CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 		}

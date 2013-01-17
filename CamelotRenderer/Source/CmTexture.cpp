@@ -242,9 +242,9 @@ namespace CamelotEngine {
 	/* 								TEXTURE VIEW                      		*/
 	/************************************************************************/
 
-	TextureView* Texture::createView(TEXTURE_VIEW_DESC& _desc)
+	TextureView* Texture::createView()
 	{
-		return new TextureView(this, _desc);
+		return new TextureView();
 	}
 
 	void Texture::destroyView(TextureView* view)
@@ -264,8 +264,10 @@ namespace CamelotEngine {
 		mTextureViews.clear();
 	}
 
-	TextureView* Texture::requestView(UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage)
+	TextureView* Texture::requestView(TexturePtr texture, UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage)
 	{
+		assert(texture != nullptr);
+
 		TEXTURE_VIEW_DESC key;
 		key.mostDetailMip = mostDetailMip;
 		key.numMips = numMips;
@@ -273,13 +275,14 @@ namespace CamelotEngine {
 		key.numArraySlices = numArraySlices;
 		key.usage = usage;
 
-		auto iterFind = mTextureViews.find(key);
-		if(iterFind == mTextureViews.end())
+		auto iterFind = texture->mTextureViews.find(key);
+		if(iterFind == texture->mTextureViews.end())
 		{
-			TextureView* newView = createView(key);
-			mTextureViews[key] = new TextureViewReference(newView);
+			TextureView* newView = texture->createView();
+			newView->initialize(texture, key);
+			texture->mTextureViews[key] = new TextureViewReference(newView);
 
-			iterFind = mTextureViews.find(key);
+			iterFind = texture->mTextureViews.find(key);
 		}
 
 		iterFind->second->refCount++;
@@ -288,10 +291,12 @@ namespace CamelotEngine {
 
 	void Texture::releaseView(TextureView* view)
 	{
-		TextureView key(*view);
+		assert(view != nullptr);
 
-		auto iterFind = mTextureViews.find(view->getDesc());
-		if(iterFind == mTextureViews.end())
+		TexturePtr texture = view->getTexture();
+
+		auto iterFind = texture->mTextureViews.find(view->getDesc());
+		if(iterFind == texture->mTextureViews.end())
 		{
 			CM_EXCEPT(InternalErrorException, "Trying to release a texture view that doesn't exist!");
 		}
@@ -302,9 +307,8 @@ namespace CamelotEngine {
 		{
 			TextureViewReference* toRemove = iterFind->second;
 
-			mTextureViews.erase(iterFind);
+			texture->mTextureViews.erase(iterFind);
 
-			destroyView(toRemove->view);
 			delete toRemove;
 		}
 	}

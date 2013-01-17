@@ -81,7 +81,7 @@ namespace CamelotEngine {
 
 		RenderTexturePtr newRT = RenderTexturePtr(createRenderTextureImpl());
 		newRT->setColorSurface(texture, 0, 1, 0);
-		newRT->setDepthStencilSurface(depthStencil);
+		newRT->setDepthStencilSurface(depthStencil, 0, 1, 0);
 
 		return newRT;
 	}

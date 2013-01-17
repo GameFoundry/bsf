@@ -3,6 +3,7 @@
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
 #include "CmD3D11RenderTexture.h"
+#include "CmD3D11TextureView.h"
 #include "CmTextureManager.h"
 #include "CmException.h"
 
@@ -22,6 +23,7 @@ namespace CamelotEngine
 		, mBackBuffer(nullptr)
 		, mSwapChain(nullptr)
 		, mHWnd(0)
+		, mDepthStencilView(nullptr)
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 	}
@@ -178,6 +180,12 @@ namespace CamelotEngine
 		{
 			WindowEventUtilities::_removeRenderWindow(this);
 			DestroyWindow(mHWnd);
+		}
+
+		if(mDepthStencilView != nullptr)
+		{
+			Texture::releaseView(mDepthStencilView);
+			mDepthStencilView = nullptr;
 		}
 
 		mHWnd = nullptr;
@@ -348,7 +356,8 @@ namespace CamelotEngine
 		}
 		else if(name == "DSV")
 		{
-			*static_cast<ID3D11DepthStencilView**>(pData) = mDepthStencilView;
+			D3D11TextureView* d3d11TextureView = static_cast<D3D11TextureView*>(mDepthStencilView);
+			*static_cast<ID3D11DepthStencilView**>(pData) = d3d11TextureView->getDSV();
 			return;
 		}
 
@@ -514,7 +523,13 @@ namespace CamelotEngine
 		mDepthStencilBuffer = TextureManager::instance().createTexture(TEX_TYPE_2D, 
 			BBDesc.Width, BBDesc.Height, 0, PF_D24S8, TU_DEPTHSTENCIL, false, mFSAA, mFSAAHint, true);
 
-		mDepthStencilView = D3D11RenderTexture::createDepthStencilView(mDepthStencilBuffer);
+		if(mDepthStencilView != nullptr)
+		{
+			Texture::releaseView(mDepthStencilView);
+			mDepthStencilView = nullptr;
+		}
+
+		mDepthStencilView = Texture::requestView(mDepthStencilBuffer, 0, 1, 0, 1, GVU_DEPTHSTENCIL);
 	}
 
 	void D3D11RenderWindow::_destroySizeDependedD3DResources()
