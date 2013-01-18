@@ -137,13 +137,6 @@ namespace CamelotEngine {
         */
         virtual UINT32 getNumFaces() const;
 
-		/** Retrieve a platform or API-specific piece of information from this texture.
-		 This method of retrieving information should only be used if you know what you're doing.
-		 @param name The name of the attribute to retrieve
-		 @param pData Pointer to memory matching the type of data you want to retrieve.
-		*/
-		virtual void getCustomAttribute(const String& name, void* pData);
-
 		/**
 		 * @brief	Sets raw texture pixels for the specified mip level and texture face. Pixel format
 		 * 			must match the format of the texture.
@@ -258,15 +251,10 @@ namespace CamelotEngine {
 		 * 							
 		 * @note	Initialization is not done immediately, and is instead just scheduled on the
 		 * 			render thread. Unless internalCall is specified, in which case it is initialized
-		 * 			right away.
+		 * 			right away. But you should only do this when calling from the render thread.
 		 */
 		void initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
 			PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint, bool internalCall = false);
-		
-		/**
-		 * @brief	Performs GpuProgram initialization. Only callable from the render thread.
-		 */
-		virtual void initialize_internal() = 0;
 
 		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
 		virtual void unlockImpl() = 0;
@@ -275,34 +263,6 @@ namespace CamelotEngine {
 
 		/// @copydoc Resource::calculateSize
 		UINT32 calculateSize(void) const;
-
-        /** Creates the internal texture resources for this texture. 
-        @remarks
-            This method creates the internal texture resources (pixel buffers, 
-            texture surfaces etc) required to begin using this texture. You do
-            not need to call this method directly unless you are manually creating
-            a texture, in which case something must call it, after having set the
-            size and format of the texture (e.g. the ManualResourceLoader might
-            be the best one to call it). If you are not defining a manual texture,
-            or if you use one of the self-contained load...() methods, then it will be
-            called for you.
-        */
-        virtual void createInternalResources(void);
-
-        /** Frees internal texture resources for this texture. 
-        */
-        virtual void freeInternalResources(void);
-
-		/** Implementation of creating internal texture resources 
-		*/
-		virtual void createInternalResourcesImpl(void) = 0;
-
-		/** Implementation of freeing internal texture resources 
-		*/
-		virtual void freeInternalResourcesImpl(void) = 0;
-
-		/** Default implementation of unload which calls freeInternalResources */
-		void unloadImpl(void);
 
 		void throwIfNotRenderThread() const;
 

@@ -24,7 +24,7 @@ namespace CamelotEngine
 
 	D3D11HLSLProgram::~D3D11HLSLProgram()
 	{
-		unload_internal();
+
 	}
 
     void D3D11HLSLProgram::loadFromSource()
@@ -80,10 +80,12 @@ namespace CamelotEngine
 		SAFE_RELEASE(microcode);
 	}
 
-    void D3D11HLSLProgram::unload_internal()
+    void D3D11HLSLProgram::destroy_internal()
 	{
 		mAssemblerProgram = nullptr;
 		mMicrocode.clear();
+
+		HighLevelGpuProgram::destroy_internal();
 	}
 
 	const String& D3D11HLSLProgram::getLanguage() const

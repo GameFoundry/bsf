@@ -70,9 +70,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     GLSLGpuProgram::~GLSLGpuProgram()
     {
-        // have to call this here reather than in Resource destructor
-        // since calling virtual methods in base destructors causes crash
-        unload_internal(); 
     }
 	//-----------------------------------------------------------------------------
     void GLSLGpuProgram::initialize_internal(void)
@@ -84,6 +81,12 @@ namespace CamelotEngine {
     void GLSLGpuProgram::loadFromSource(void)
     {
 		// nothing to load
+	}
+	//-----------------------------------------------------------------------------
+	void GLSLGpuProgram::destroy_internal()
+	{
+		// Nothing to destroy
+		GpuProgram::destroy();
 	}
 }
 

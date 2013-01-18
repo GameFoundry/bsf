@@ -93,22 +93,6 @@ namespace CamelotEngine {
 	{
 		return getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;
 	}
-	//-------------------------------------------------------------------------
-	void Texture::getCustomAttribute(const String& name, void* pData)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-	}
-	//-----------------------------------------------------------------------------
-	void Texture::createInternalResources(void)
-	{
-		createInternalResourcesImpl();
-	}
-	//-----------------------------------------------------------------------------
-	void Texture::freeInternalResources(void)
-	{
-		freeInternalResourcesImpl();
-		clearBufferViews();
-	}
 
 	void Texture::setRawPixels(const PixelData& data, UINT32 face, UINT32 mip)
 	{
@@ -223,13 +207,6 @@ namespace CamelotEngine {
 		}
 
 		copyImpl(target);
-	}
-	//-----------------------------------------------------------------------------
-	void Texture::unloadImpl(void)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		freeInternalResources();
 	}
 	//----------------------------------------------------------------------------- 
 	void Texture::throwIfNotRenderThread() const

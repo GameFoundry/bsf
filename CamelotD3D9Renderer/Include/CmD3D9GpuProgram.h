@@ -44,8 +44,6 @@ namespace CamelotEngine {
 		virtual void initialize_internal(void);
 		/** Loads this program to specified device */
 		virtual void initialize_internal(IDirect3DDevice9* d3d9Device);
-		/** Overridden from GpuProgram */
-		virtual void unload(void);
 
         /** Sets whether matrix packing in column-major order. */ 
         void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }
@@ -66,6 +64,11 @@ namespace CamelotEngine {
 		friend class D3D9GpuProgramManager;
 
 		D3D9GpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+
+		/**
+		 * @copydoc GpuProgram::destroy_internal.
+		 */
+		void destroy_internal();
 
         /** Overridden from GpuProgram */
         void loadFromSource(void);
@@ -94,8 +97,6 @@ namespace CamelotEngine {
     public:
 		~D3D9GpuVertexProgram();
         
-		void unload(void);
-
 		/// Gets the vertex shader
         IDirect3DVertexShader9* getVertexShader(void);
 
@@ -109,6 +110,11 @@ namespace CamelotEngine {
 		friend class D3D9GpuProgramManager;
 
 		D3D9GpuVertexProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+
+		/**
+		 * @copydoc D3D9GpuProgram::destroy_internal.
+		 */
+		void destroy_internal();
 
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 
@@ -125,8 +131,6 @@ namespace CamelotEngine {
     public:
 		~D3D9GpuFragmentProgram();
 
-		void unload(void);
-
         /// Gets the pixel shader
         IDirect3DPixelShader9* getPixelShader(void);
 
@@ -140,6 +144,11 @@ namespace CamelotEngine {
 		friend class D3D9GpuProgramManager;
 
 		D3D9GpuFragmentProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+
+		/**
+		 * @copydoc D3D9GpuProgram::destroy_internal.
+		 */
+		void destroy_internal();
 
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 

@@ -2,17 +2,20 @@
 
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
+#include "CmIDestroyable.h"
 
 namespace CamelotEngine
 {
 	/**
 	 * @brief	Base class for all resources used in the engine.
 	 */
-	class CM_EXPORT Resource : public IReflectable
+	class CM_EXPORT Resource : public IReflectable, public IDestroyable
 	{
 	public:
 		Resource();
 		virtual ~Resource() {};
+
+
 
 		const String& getUUID() const { return mUUID; }
 
@@ -27,12 +30,17 @@ namespace CamelotEngine
 		 */
 		void waitUntilInitialized();
 
+		/**
+		 * @copydoc	IDestroyable::destroy()
+		 * 			
+		 * 	@note	Destruction is not done immediately, and is instead just scheduled on the
+		 * 			render thread. Unless internalCall is specified, in which case it is destroyed
+		 * 			right away. But you should only do this when calling from the render thread.
+		 */
+		void destroy(bool internalCall = false);
+
 	protected:
 		friend class Resources;
-		//virtual void unload() = 0;
-
-		//virtual void calculateSize() = 0;
-		//virtual void reload();
 		
 		/**
 		 * @brief	Finishes up resource initialization. Usually called right after the resource is created.
@@ -40,6 +48,11 @@ namespace CamelotEngine
 		 * 			they call this implementation from it.
 		 */
 		virtual void initialize_internal();
+
+		/**
+		 * @brief	Destroys all texture resources, but doesn't actually delete the object.
+		 */
+		virtual void destroy_internal() {} // TODO - This is temporarily non-abstract
 
 		/**
 		 * @brief	Marks the resource as initialized.

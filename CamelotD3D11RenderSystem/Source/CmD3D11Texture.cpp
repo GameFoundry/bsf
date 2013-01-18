@@ -31,9 +31,7 @@ namespace CamelotEngine
 
 	D3D11Texture::~D3D11Texture()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		freeInternalResources();			
+			
 	}
 
 	void D3D11Texture::copyImpl(TexturePtr& target)
@@ -96,33 +94,28 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD
 
-		createInternalResources();
+			// load based on tex.type
+			switch (getTextureType())
+		{
+			case TEX_TYPE_1D:
+				_create1DTex();
+				break;
+			case TEX_TYPE_2D:
+			case TEX_TYPE_CUBE_MAP:
+				_create2DTex();
+				break;
+			case TEX_TYPE_3D:
+				_create3DTex();
+				break;
+			default:
+				destroy_internal();
+				CM_EXCEPT(RenderingAPIException, "Unknown texture type");
+		}
 
 		Resource::initialize_internal();
 	}
 
-	void D3D11Texture::createInternalResourcesImpl()
-	{
-		// load based on tex.type
-		switch (getTextureType())
-		{
-		case TEX_TYPE_1D:
-			_create1DTex();
-			break;
-		case TEX_TYPE_2D:
-		case TEX_TYPE_CUBE_MAP:
-			_create2DTex();
-			break;
-		case TEX_TYPE_3D:
-			_create3DTex();
-			break;
-		default:
-			freeInternalResources();
-			CM_EXCEPT(RenderingAPIException, "Unknown texture type");
-		}
-	}
-
-	void D3D11Texture::freeInternalResourcesImpl()
+	void D3D11Texture::destroy_internal()
 	{
 		SAFE_RELEASE(mTex);
 		SAFE_RELEASE(mShaderResourceView);
@@ -130,6 +123,10 @@ namespace CamelotEngine
 		SAFE_RELEASE(m2DTex);
 		SAFE_RELEASE(m3DTex);
 		SAFE_RELEASE(mStagingBuffer);
+
+		clearBufferViews();
+
+		IDestroyable::destroy();
 	}
 
 	void D3D11Texture::_create1DTex()
@@ -180,7 +177,7 @@ namespace CamelotEngine
 		// Check result and except if failed
 		if (FAILED(hr) || device.hasError())
 		{
-			freeInternalResources();
+			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
@@ -189,7 +186,7 @@ namespace CamelotEngine
 
 		if(FAILED(hr) || device.hasError())
 		{
-			freeInternalResources();
+			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}
@@ -295,7 +292,7 @@ namespace CamelotEngine
 		// Check result and except if failed
 		if (FAILED(hr) || device.hasError())
 		{
-			freeInternalResources();
+			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
@@ -304,7 +301,7 @@ namespace CamelotEngine
 
 		if(FAILED(hr) || device.hasError())
 		{
-			freeInternalResources();
+			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}
@@ -420,7 +417,7 @@ namespace CamelotEngine
 		// Check result and except if failed
 		if (FAILED(hr) || device.hasError())
 		{
-			freeInternalResources();
+			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
@@ -429,7 +426,7 @@ namespace CamelotEngine
 
 		if(FAILED(hr) || device.hasError())
 		{
-			freeInternalResources();
+			destroy_internal();
 			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}

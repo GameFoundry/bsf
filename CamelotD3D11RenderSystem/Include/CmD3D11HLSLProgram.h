@@ -43,9 +43,9 @@ namespace CamelotEngine
         void loadFromSource();
 
         /**
-         * @copydoc GpuProgram::unload_internal()
+         * @copydoc HighLevelGpuProgram::destroy_internal()
          */
-        void unload_internal();
+        void destroy_internal();
 
 	private:
 		bool mColumnMajorMatrices;

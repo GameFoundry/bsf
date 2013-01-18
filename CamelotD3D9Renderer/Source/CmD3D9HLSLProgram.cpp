@@ -500,20 +500,17 @@ namespace CamelotEngine {
             CM_EXCEPT(RenderingAPIException, message);
         }
 
-		if (!mCompileError)
-		{
-			String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
+		hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 
-			// Create a low-level program, give it the same name as us
-			mAssemblerProgram = 
-				GpuProgramManager::instance().createProgram(
-				"",// dummy source, since we'll be using microcode
-				"",
-				hlslProfile,
-				mType, 
-				GPP_NONE);
-			static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);
-		}
+		// Create a low-level program, give it the same name as us
+		mAssemblerProgram = 
+			GpuProgramManager::instance().createProgram(
+			"",// dummy source, since we'll be using microcode
+			"",
+			hlslProfile,
+			mType, 
+			GPP_NONE);
+		static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);
 
 		D3D9HLSLParamParser paramParser(constTable);
 		mParametersDesc = paramParser.buildParameterDescriptions();
@@ -521,11 +518,11 @@ namespace CamelotEngine {
 		SAFE_RELEASE(constTable);
     }
     //-----------------------------------------------------------------------
-    void D3D9HLSLProgram::unload_internal(void)
+    void D3D9HLSLProgram::destroy_internal()
     {
         SAFE_RELEASE(mpMicroCode);
         
-		HighLevelGpuProgram::unload_internal();
+		HighLevelGpuProgram::destroy_internal();
     }
 	//-----------------------------------------------------------------------
 	LPD3DXBUFFER D3D9HLSLProgram::getMicroCode()
@@ -545,12 +542,12 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     D3D9HLSLProgram::~D3D9HLSLProgram()
     {
-        unload_internal();
+
     }
     //-----------------------------------------------------------------------
     bool D3D9HLSLProgram::isSupported(void) const
     {
-        if (mCompileError || !isRequiredCapabilitiesSupported())
+        if (!isRequiredCapabilitiesSupported())
             return false;
 
 		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);

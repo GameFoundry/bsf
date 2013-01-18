@@ -74,14 +74,9 @@ namespace CamelotEngine
 		void initialize_internal();
 
 		/**
-		 * @copydoc Texture::createInternalResourcesImpl
+		 * @brief	Resource::destroy_internal
 		 */
-		void createInternalResourcesImpl();
-		
-		/**
-		 * @copydoc Texture::freeInternalResourcesImpl
-		 */
-		void freeInternalResourcesImpl();
+		void destroy_internal();
 
 		TextureView* createView();
 		void destroyView(TextureView* view);

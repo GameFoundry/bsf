@@ -19,7 +19,7 @@ namespace CamelotEngine
 
 	void D3D11GpuProgram::loadFromSource(void)
 	{
-		CM_EXCEPT(RenderingAPIException, "DirectX 11 doesn't support assembly shaders.");
+
 	}
 
 	D3D11GpuVertexProgram::D3D11GpuVertexProgram(const String& profile) 
@@ -28,11 +28,7 @@ namespace CamelotEngine
 	{ }
 
 	D3D11GpuVertexProgram::~D3D11GpuVertexProgram()
-	{
-		// have to call this here reather than in Resource destructor
-		// since calling virtual methods in base destructors causes crash
-		unload_internal(); 
-	}
+	{ }
 
 	void D3D11GpuVertexProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob*  microcode)
 	{
@@ -59,9 +55,11 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D11GpuVertexProgram::unloadImpl(void)
+	void D3D11GpuVertexProgram::destroy_internal()
 	{
 		SAFE_RELEASE(mVertexShader);
+
+		D3D11GpuProgram::destroy_internal();
 	}
 
 	ID3D11VertexShader * D3D11GpuVertexProgram::getVertexShader( void ) const
@@ -75,9 +73,7 @@ namespace CamelotEngine
 	{ }
 
 	D3D11GpuFragmentProgram::~D3D11GpuFragmentProgram()
-	{
-		unload_internal(); 
-	}
+	{ }
 
 	void D3D11GpuFragmentProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
@@ -103,9 +99,11 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D11GpuFragmentProgram::unloadImpl(void)
+	void D3D11GpuFragmentProgram::destroy_internal()
 	{
 		SAFE_RELEASE(mPixelShader);
+
+		D3D11GpuProgram::destroy_internal();
 	}
 
 	ID3D11PixelShader * D3D11GpuFragmentProgram::getPixelShader( void ) const
@@ -119,9 +117,7 @@ namespace CamelotEngine
 	{ }
 
 	D3D11GpuGeometryProgram::~D3D11GpuGeometryProgram()
-	{
-		unload_internal(); 
-	}
+	{ }
 
 	void D3D11GpuGeometryProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
@@ -147,9 +143,11 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D11GpuGeometryProgram::unloadImpl(void)
+	void D3D11GpuGeometryProgram::destroy_internal()
 	{
 		SAFE_RELEASE(mGeometryShader);
+
+		D3D11GpuProgram::destroy_internal();
 	}
 
 	ID3D11GeometryShader * D3D11GpuGeometryProgram::getGeometryShader(void) const
@@ -163,9 +161,7 @@ namespace CamelotEngine
 	{ }
 
 	D3D11GpuDomainProgram::~D3D11GpuDomainProgram()
-	{
-		unload_internal(); 
-	}
+	{ }
 
 	void D3D11GpuDomainProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
@@ -191,9 +187,11 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D11GpuDomainProgram::unloadImpl(void)
+	void D3D11GpuDomainProgram::destroy_internal()
 	{
 		SAFE_RELEASE(mDomainShader);
+
+		D3D11GpuProgram::destroy_internal();
 	}
 
 	ID3D11DomainShader * D3D11GpuDomainProgram::getDomainShader(void) const
@@ -207,9 +205,7 @@ namespace CamelotEngine
 	{ }
 
 	D3D11GpuHullProgram::~D3D11GpuHullProgram()
-	{
-		unload_internal(); 
-	}
+	{ }
 
 	void D3D11GpuHullProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
@@ -235,9 +231,11 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D11GpuHullProgram::unloadImpl(void)
+	void D3D11GpuHullProgram::destroy_internal()
 	{
 		SAFE_RELEASE(mHullShader);
+
+		D3D11GpuProgram::destroy_internal();
 	}
 
 	ID3D11HullShader* D3D11GpuHullProgram::getHullShader(void) const
@@ -251,9 +249,7 @@ namespace CamelotEngine
 	{ }
 
 	D3D11GpuComputeProgram::~D3D11GpuComputeProgram()
-	{
-		unload_internal(); 
-	}
+	{ }
 
 	void D3D11GpuComputeProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
@@ -279,9 +275,11 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D11GpuComputeProgram::unloadImpl(void)
+	void D3D11GpuComputeProgram::destroy_internal()
 	{
 		SAFE_RELEASE(mComputeShader);
+
+		D3D11GpuProgram::destroy_internal();
 	}
 
 	ID3D11ComputeShader* D3D11GpuComputeProgram::getComputeShader(void) const

@@ -59,25 +59,6 @@ namespace CamelotEngine
 	/****************************************************************************************/
 	D3D9Texture::~D3D9Texture()
 	{	
-		THROW_IF_NOT_RENDER_THREAD;
-
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-		
-        // have to call this here reather than in Resource destructor
-        // since calling virtual methods in base destructors causes crash
-		freeInternalResources();			
-
-		// Free memory allocated per device.
-		DeviceToTextureResourcesIterator it = mMapDeviceToTextureResources.begin();
-		while (it != mMapDeviceToTextureResources.end())
-		{
-			TextureResources* textureResource = it->second;
-			
-			SAFE_DELETE(textureResource);
-			++it;
-		}		
-		mMapDeviceToTextureResources.clear();
-		mSurfaceList.clear();		
 	}
 	/****************************************************************************************/
 	PixelData D3D9Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
@@ -220,28 +201,47 @@ namespace CamelotEngine
 	/****************************************************************************************/
 	void D3D9Texture::initialize_internal()
 	{ 
-		THROW_IF_NOT_RENDER_THREAD
+		THROW_IF_NOT_RENDER_THREAD;
 
-		createInternalResources();
+		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+		{
+			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
+
+			createInternalResources(d3d9Device);
+		}
 
 		Resource::initialize_internal();
 	}
 	/****************************************************************************************/
-	void D3D9Texture::freeInternalResourcesImpl()
-	{
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
+	void D3D9Texture::destroy_internal()
+	{ 
+		THROW_IF_NOT_RENDER_THREAD;
 
 		DeviceToTextureResourcesIterator it = mMapDeviceToTextureResources.begin();
-
 		while (it != mMapDeviceToTextureResources.end())
 		{
 			TextureResources* textureResource = it->second;
 
 			freeTextureResources(it->first, textureResource);			
 			++it;
-		}						
-	}
+		}
 
+		it = mMapDeviceToTextureResources.begin();
+		while (it != mMapDeviceToTextureResources.end())
+		{
+			TextureResources* textureResource = it->second;
+
+			SAFE_DELETE(textureResource);
+			++it;
+		}		
+
+		mMapDeviceToTextureResources.clear();
+		mSurfaceList.clear();	
+		
+		clearBufferViews();
+
+		IDestroyable::destroy();
+	}
 	/****************************************************************************************/
 	D3D9Texture::TextureResources* D3D9Texture::getTextureResources(IDirect3DDevice9* d3d9Device)
 	{		
@@ -326,20 +326,7 @@ namespace CamelotEngine
 
 	}
 	/****************************************************************************************/
-    void D3D9Texture::createInternalResourcesImpl(void)
-	{
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
-		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
-		{
-			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
-
-			createInternalResourcesImpl(d3d9Device);
-		}
-	}
-
-	/****************************************************************************************/
-	void D3D9Texture::createInternalResourcesImpl(IDirect3DDevice9* d3d9Device)
+	void D3D9Texture::createInternalResources(IDirect3DDevice9* d3d9Device)
 	{		
 		TextureResources* textureResources;			
 
@@ -362,7 +349,7 @@ namespace CamelotEngine
 			_createVolumeTex(d3d9Device);
 			break;
 		default:
-			freeInternalResources();
+			destroy_internal();
 			CM_EXCEPT(InternalErrorException, "Unknown texture type");
 		}
 	}
@@ -464,7 +451,7 @@ namespace CamelotEngine
 			hr = textureResources->pFSAASurface->GetDesc(&desc);
 			if (FAILED(hr))
 			{
-				freeInternalResources();
+				destroy_internal();
 				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 			}
 
@@ -487,7 +474,7 @@ namespace CamelotEngine
 			hr = textureResources->pDepthStencilSurface->GetDesc(&desc);
 			if (FAILED(hr))
 			{
-				freeInternalResources();
+				destroy_internal();
 				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 			}
 
@@ -509,7 +496,7 @@ namespace CamelotEngine
 			// check result and except if failed
 			if (FAILED(hr))
 			{
-				freeInternalResources();
+				destroy_internal();
 				CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
 			}
 
@@ -517,7 +504,7 @@ namespace CamelotEngine
 			hr = textureResources->pNormTex->QueryInterface(IID_IDirect3DBaseTexture9, (void **)&textureResources->pBaseTex);
 			if (FAILED(hr))
 			{
-				freeInternalResources();
+				destroy_internal();
 				CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
 			}
 
@@ -527,7 +514,7 @@ namespace CamelotEngine
 			hr = textureResources->pNormTex->GetLevelDesc(0, &desc);
 			if (FAILED(hr))
 			{
-				freeInternalResources();
+				destroy_internal();
 				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 			}
 
@@ -616,7 +603,7 @@ namespace CamelotEngine
 		// check result and except if failed
 		if (FAILED(hr))
 		{
-			freeInternalResources();
+			destroy_internal();
 			CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
 		}
 
@@ -624,7 +611,7 @@ namespace CamelotEngine
 		hr = textureResources->pCubeTex->QueryInterface(IID_IDirect3DBaseTexture9, (void **)&textureResources->pBaseTex);
 		if (FAILED(hr))
 		{
-			freeInternalResources();
+			destroy_internal();
 			CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
 		}
 		
@@ -634,7 +621,7 @@ namespace CamelotEngine
 		hr = textureResources->pCubeTex->GetLevelDesc(0, &desc);
 		if (FAILED(hr))
 		{
-			freeInternalResources();
+			destroy_internal();
 			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 		}
 
@@ -721,7 +708,7 @@ namespace CamelotEngine
 		// check result and except if failed
 		if (FAILED(hr))
 		{
-			freeInternalResources();
+			destroy_internal();
 			CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
 		}
 
@@ -729,7 +716,7 @@ namespace CamelotEngine
 		hr = textureResources->pVolumeTex->QueryInterface(IID_IDirect3DBaseTexture9, (void **)&textureResources->pBaseTex);
 		if (FAILED(hr))
 		{
-			freeInternalResources();
+			destroy_internal();
 			CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
 		}
 		
@@ -739,7 +726,7 @@ namespace CamelotEngine
 		hr = textureResources->pVolumeTex->GetLevelDesc(0, &desc);
 		if (FAILED(hr))
 		{
-			freeInternalResources();
+			destroy_internal();
 			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 		}
 		_setFinalAttributes(d3d9Device, textureResources,

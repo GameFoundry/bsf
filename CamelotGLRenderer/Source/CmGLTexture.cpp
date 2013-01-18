@@ -65,101 +65,23 @@ namespace CamelotEngine {
 
     GLTexture::~GLTexture()
     {
-		THROW_IF_NOT_RENDER_THREAD;
-
-		freeInternalResources();
     }
 
 	void GLTexture::initialize_internal()
 	{
-		createInternalResources();
-
-		Resource::initialize_internal();
-	}
-
-    GLenum GLTexture::getGLTextureTarget(void) const
-    {
-        switch(mTextureType)
-        {
-            case TEX_TYPE_1D:
-                return GL_TEXTURE_1D;
-            case TEX_TYPE_2D:
-				if(mFSAA > 0)
-					return GL_TEXTURE_2D_MULTISAMPLE;
-				else
-					return GL_TEXTURE_2D;
-            case TEX_TYPE_3D:
-                return GL_TEXTURE_3D;
-            case TEX_TYPE_CUBE_MAP:
-                return GL_TEXTURE_CUBE_MAP;
-            default:
-                return 0;
-        };
-    }
-
-	GLuint GLTexture::getGLID() const
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		return mTextureID;
-	}
-
-	//* Creation / loading methods ********************************************
-	PixelData GLTexture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
-	{
-		if(mLockedBuffer != nullptr)
-			CM_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
-
-		UINT32 mipWidth = mipLevel >> mWidth;
-		UINT32 mipHeight = mipLevel >> mHeight;
-		UINT32 mipDepth = mipLevel >> mDepth;
-
-		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
-
-		mLockedBuffer = getBuffer(face, mipLevel);
-		lockedArea.data = mLockedBuffer->lock(options);
-
-		return lockedArea;
-	}
-	/****************************************************************************************/
-	void GLTexture::unlockImpl()
-	{
-		if(mLockedBuffer == nullptr)
-			CM_EXCEPT(InternalErrorException, "Trying to unlock a buffer that's not locked.");
-
-		mLockedBuffer->unlock();
-		mLockedBuffer = nullptr;
-	}
-	/****************************************************************************************/ 
-	void GLTexture::copyImpl(TexturePtr& target)
-	{
-		size_t numMips = std::min(getNumMipmaps(), target->getNumMipmaps());
-
-		GLTexture* glTexture = static_cast<GLTexture*>(target.get());
-		for(unsigned int face=0; face<getNumFaces(); face++)
-		{
-			for(unsigned int mip=0; mip<=numMips; mip++)
-			{
-				glTexture->getBuffer(face, mip)->blit(getBuffer(face, mip));
-			}
-		}
-	}
-	/****************************************************************************************/
-	void GLTexture::createInternalResourcesImpl(void)
-    {
 		// Convert to nearest power-of-two size if required
-        mWidth = GLPixelUtil::optionalPO2(mWidth);      
-        mHeight = GLPixelUtil::optionalPO2(mHeight);
-        mDepth = GLPixelUtil::optionalPO2(mDepth);
+		mWidth = GLPixelUtil::optionalPO2(mWidth);      
+		mHeight = GLPixelUtil::optionalPO2(mHeight);
+		mDepth = GLPixelUtil::optionalPO2(mDepth);
 
 		// Adjust format if required
 		mFormat = TextureManager::instance().getNativeFormat(mTextureType, mFormat, mUsage);
-		
+
 		// Check requested number of mipmaps
 		UINT32 maxMips = GLPixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);
 		if(mNumMipmaps>maxMips)
 			mNumMipmaps = maxMips;
-		
+
 		if((mUsage & TU_RENDERTARGET) != 0)
 		{
 			mNumMipmaps = 1;
@@ -180,23 +102,23 @@ namespace CamelotEngine {
 		}
 
 		// Generate texture name
-        glGenTextures( 1, &mTextureID );
-		
+		glGenTextures( 1, &mTextureID );
+
 		// Set texture type
 		glBindTexture( getGLTextureTarget(), mTextureID );
-        
+
 		// This needs to be set otherwise the texture doesn't get rendered
 		glTexParameteri( getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, mNumMipmaps );
-        
-        // Set some misc default parameters so NVidia won't complain, these can of course be changed later
-        glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		// Set some misc default parameters so NVidia won't complain, these can of course be changed later
+		glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		if (GLEW_VERSION_1_2)
 		{
 			glTexParameteri(getGLTextureTarget(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(getGLTextureTarget(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
-		
+
 		// Allocate internal buffer so that glTexSubImageXD can be used
 		// Internal format
 		GLenum format = GLPixelUtil::getClosestGLInternalFormat(mFormat, mHwGamma);
@@ -274,13 +196,87 @@ namespace CamelotEngine {
 		createSurfaceList();
 		// Get final internal format
 		mFormat = getBuffer(0,0)->getFormat();
+
+		Resource::initialize_internal();
 	}
-	//--------------------------------------------------------------------------------------------
-    void GLTexture::freeInternalResourcesImpl()
-    {
+
+	void GLTexture::destroy_internal()
+	{
 		mSurfaceList.clear();
-        glDeleteTextures( 1, &mTextureID );
+		glDeleteTextures( 1, &mTextureID );
+
+		clearBufferViews();
+
+		IDestroyable::destroy();
+	}
+
+    GLenum GLTexture::getGLTextureTarget(void) const
+    {
+        switch(mTextureType)
+        {
+            case TEX_TYPE_1D:
+                return GL_TEXTURE_1D;
+            case TEX_TYPE_2D:
+				if(mFSAA > 0)
+					return GL_TEXTURE_2D_MULTISAMPLE;
+				else
+					return GL_TEXTURE_2D;
+            case TEX_TYPE_3D:
+                return GL_TEXTURE_3D;
+            case TEX_TYPE_CUBE_MAP:
+                return GL_TEXTURE_CUBE_MAP;
+            default:
+                return 0;
+        };
     }
+
+	GLuint GLTexture::getGLID() const
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		return mTextureID;
+	}
+
+	//* Creation / loading methods ********************************************
+	PixelData GLTexture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
+	{
+		if(mLockedBuffer != nullptr)
+			CM_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
+
+		UINT32 mipWidth = mipLevel >> mWidth;
+		UINT32 mipHeight = mipLevel >> mHeight;
+		UINT32 mipDepth = mipLevel >> mDepth;
+
+		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
+
+		mLockedBuffer = getBuffer(face, mipLevel);
+		lockedArea.data = mLockedBuffer->lock(options);
+
+		return lockedArea;
+	}
+	/****************************************************************************************/
+	void GLTexture::unlockImpl()
+	{
+		if(mLockedBuffer == nullptr)
+			CM_EXCEPT(InternalErrorException, "Trying to unlock a buffer that's not locked.");
+
+		mLockedBuffer->unlock();
+		mLockedBuffer = nullptr;
+	}
+	/****************************************************************************************/ 
+	void GLTexture::copyImpl(TexturePtr& target)
+	{
+		size_t numMips = std::min(getNumMipmaps(), target->getNumMipmaps());
+
+		GLTexture* glTexture = static_cast<GLTexture*>(target.get());
+		for(unsigned int face=0; face<getNumFaces(); face++)
+		{
+			for(unsigned int mip=0; mip<=numMips; mip++)
+			{
+				glTexture->getBuffer(face, mip)->blit(getBuffer(face, mip));
+			}
+		}
+	}
 	//---------------------------------------------------------------------------------------------
 	void GLTexture::createSurfaceList()
 	{
@@ -320,15 +316,6 @@ namespace CamelotEngine {
 		assert(idx < mSurfaceList.size());
 		return mSurfaceList[idx];
 	}
-	//---------------------------------------------------------------------------------------------
-	void GLTexture::getCustomAttribute(const String& name, void* pData)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if (name == "GLID")
-			*static_cast<GLuint*>(pData) = mTextureID;
-	}
-	
 }
 
 #undef THROW_IF_NOT_RENDER_THREAD

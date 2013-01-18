@@ -36,7 +36,10 @@ namespace CamelotEngine
 		ID3D11VertexShader* getVertexShader(void) const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
-		void unloadImpl(void);
+		/**
+		 * @copydoc GpuProgram::destroy_internal().
+		 */
+		void destroy_internal();
 	};
 
 	class CM_D3D11_EXPORT D3D11GpuFragmentProgram : public D3D11GpuProgram
@@ -50,7 +53,10 @@ namespace CamelotEngine
 		ID3D11PixelShader* getPixelShader(void) const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
-		void unloadImpl(void);
+		/**
+		 * @copydoc GpuProgram::destroy_internal().
+		 */
+		void destroy_internal();
 	};
 
 	class D3D11GpuDomainProgram : public D3D11GpuProgram
@@ -64,7 +70,10 @@ namespace CamelotEngine
 		ID3D11DomainShader* getDomainShader(void) const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
-		void unloadImpl(void);
+		/**
+		 * @copydoc GpuProgram::destroy_internal().
+		 */
+		void destroy_internal();
 	};
 
 	class D3D11GpuHullProgram : public D3D11GpuProgram
@@ -78,7 +87,10 @@ namespace CamelotEngine
 		ID3D11HullShader* getHullShader() const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
-		void unloadImpl(void);
+		/**
+		 * @copydoc GpuProgram::destroy_internal().
+		 */
+		void destroy_internal();
 	};
 
 	class D3D11GpuGeometryProgram : public D3D11GpuProgram
@@ -92,7 +104,10 @@ namespace CamelotEngine
 		ID3D11GeometryShader* getGeometryShader(void) const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
-		void unloadImpl(void);
+		/**
+		 * @copydoc GpuProgram::destroy_internal().
+		 */
+		void destroy_internal();
 	};
 
 	class D3D11GpuComputeProgram : public D3D11GpuProgram
@@ -106,6 +121,9 @@ namespace CamelotEngine
 		ID3D11ComputeShader* getComputeShader(void) const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
-		void unloadImpl(void);
+		/**
+		 * @copydoc GpuProgram::destroy_internal().
+		 */
+		void destroy_internal();
 	};
 }

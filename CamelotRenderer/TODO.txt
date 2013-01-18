@@ -20,6 +20,17 @@ Pass
  - Fix MaterialRTTI saving (Save params per gpuprogram is simplest and cleanest) (Maybe wait until I have the Parser sorted out?)
  - Fix how and when is GpuParamBlock created/destroyed. Needs to happen on the render thread
 
+Resource destruction:
+Resources keep a permanent reference to each resource so they are never freed
+ - Keep just a weak ptr?
+
+OR
+
+Keep a strong ptr, when Resource::destroy() internally calls Resources to remove the reference?
+And Resources.DestroyUnusedAssets destroys all with just 1 reference?
+
+Resource::destroy_internal is not abstract temporarily so I can test
+
 Shader parser (possible leave for later? But it might require Resource changes)
  - Static/Dynamic usage for GpuParamBlocks
  - Ability to mark param blocks as "Shared". Those would not get created with every pass instance and would require user to actually create and assign them

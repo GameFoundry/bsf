@@ -97,56 +97,13 @@ namespace CamelotEngine {
 	*/
 	class CM_EXPORT GpuProgram : public Resource
 	{
-	protected:
-		/// The type of the program
-		GpuProgramType mType;
-		/// Does this (geometry) program require adjacency information?
-		bool mNeedsAdjacencyInfo;
-		/// Name of the shader entry method
-		String mEntryPoint;
-		/// Shader profiler that we are targeting (e.g. vs_1_1, etc.). Make sure profile matches the type.
-		GpuProgramProfile mProfile;
-        /// The assembler source of the program (may be blank until file loaded)
-        String mSource;
-        /// Syntax code e.g. arbvp1, vs_2_0 etc
-        String mSyntaxCode;
-		/// Did we encounter a compilation error?
-		bool mCompileError;
-
-		/**
-		 * @brief	Contains information about all parameters in a shader.
-		 */
-		GpuParamDesc mParametersDesc;
-
-        /** Internal method returns whether required capabilities for this program is supported.
-        */
-        bool isRequiredCapabilitiesSupported(void) const;
-
-		/// @copydoc Resource::calculateSize
-		size_t calculateSize(void) const { return 0; } // TODO 
-
-		void throwIfNotRenderThread() const;
-
 	public:
 		virtual ~GpuProgram();
-
-		/**
-		 * @brief	Initializes the gpu program. This must be called right after the program is constructed. 
-		 * 			Called by GpuProgramManager upon creation, so usually you don't want to call this manually. 
-		 * 			
-		 * @note	Initialization is not done immediately, and is instead just scheduled on the render thread.
-		 */
-		void initialize();
 
 		/**
 		 * @brief	Performs GpuProgram initialization. Only callable from the render thread.
 		 */
 		virtual void initialize_internal();
-
-		/**
-		 * @brief	Unloads the GpuProgram. Only callable from the render thread.
-		 */
-		virtual void unload_internal();
 
         /** Gets the syntax code for this program e.g. arbvp1, fp20, vs_1_1 etc */
         virtual const String& getSyntaxCode(void) const { return mSyntaxCode; }
@@ -190,13 +147,46 @@ namespace CamelotEngine {
         */
         virtual const String& getLanguage(void) const;
 
-		/** Did this program encounter a compile error when loading?
-		*/
-		virtual bool hasCompileError(void) const { return mCompileError; }
+	protected:
+		/// The type of the program
+		GpuProgramType mType;
+		/// Does this (geometry) program require adjacency information?
+		bool mNeedsAdjacencyInfo;
+		/// Name of the shader entry method
+		String mEntryPoint;
+		/// Shader profiler that we are targeting (e.g. vs_1_1, etc.). Make sure profile matches the type.
+		GpuProgramProfile mProfile;
+        /// The assembler source of the program (may be blank until file loaded)
+        String mSource;
+        /// Syntax code e.g. arbvp1, vs_2_0 etc
+        String mSyntaxCode;
 
-		/** Reset a compile error if it occurred, allowing the load to be retried
-		*/
-		virtual void resetCompileError(void) { mCompileError = false; }
+		/**
+		 * @brief	Contains information about all parameters in a shader.
+		 */
+		GpuParamDesc mParametersDesc;
+
+		/**
+		 * @brief	Initializes the gpu program. This must be called right after the program is constructed. 
+		 * 			Called by GpuProgramManager upon creation, so usually you don't want to call this manually. 
+		 * 			
+		 * @note	Initialization is not done immediately, and is instead just scheduled on the render thread.
+		 */
+		void initialize();
+
+		/**
+		 * @copydoc Resource::destroy_internal.
+		 */
+		virtual void destroy_internal();
+
+        /** Internal method returns whether required capabilities for this program is supported.
+        */
+        bool isRequiredCapabilitiesSupported(void) const;
+
+		/// @copydoc Resource::calculateSize
+		size_t calculateSize(void) const { return 0; } // TODO 
+
+		void throwIfNotRenderThread() const;
 
     protected:
 		friend class GpuProgramManager;

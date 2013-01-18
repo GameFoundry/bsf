@@ -44,11 +44,6 @@ THE SOFTWARE.
 
 namespace CamelotEngine 
 {
-    //---------------------------------------------------------------------------
-    GLSLProgram::~GLSLProgram()
-    {
-        unload_internal();
-    }
 	//-----------------------------------------------------------------------
 	GLSLProgram::GLSLProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
@@ -58,6 +53,11 @@ namespace CamelotEngine
 	{
 		// Manually assign language now since we use it immediately
 		mSyntaxCode = "glsl";
+
+	}
+	//---------------------------------------------------------------------------
+	GLSLProgram::~GLSLProgram()
+	{
 
 	}
     //-----------------------------------------------------------------------
@@ -172,7 +172,7 @@ namespace CamelotEngine
 		paramParser.buildVertexDeclaration(mGLHandle, mVertexDeclaration);
 	}
 	//---------------------------------------------------------------------------
-	void GLSLProgram::unload_internal()
+	void GLSLProgram::destroy_internal()
 	{   
 		// We didn't create mAssemblerProgram through a manager, so override this
 		// implementation so that we don't try to remove it from one. Since getCreator()
@@ -182,7 +182,7 @@ namespace CamelotEngine
 		if (isSupported())
 			glDeleteShader(mGLHandle);
 
-		HighLevelGpuProgram::unload_internal();
+		HighLevelGpuProgram::destroy_internal();
 	}
     //-----------------------------------------------------------------------
     const String& GLSLProgram::getLanguage(void) const

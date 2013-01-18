@@ -47,8 +47,6 @@ namespace CamelotEngine {
 
         GLuint getGLID() const;
 		
-		void getCustomAttribute(const String& name, void* pData);
-
 		/** Return hardware pixel buffer for a surface. This buffer can then
 			be used to copy data from and to a particular level of the texture.
 			@param face 	Face number, in case of a cubemap texture. Must be 0
@@ -70,16 +68,12 @@ namespace CamelotEngine {
 		GLTexture(GLSupport& support);
 
 		void initialize_internal();
+		void destroy_internal();
 
 		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face);
 		void unlockImpl();
 
 		void copyImpl(TexturePtr& target);
-
-		/// @copydoc Texture::createInternalResourcesImpl
-		void createInternalResourcesImpl(void);
-        /// @copydoc Resource::freeInternalResourcesImpl
-        void freeInternalResourcesImpl(void);
 
 		/** internal method, create GLHardwarePixelBuffers for every face and
 			 mipmap level. This method must be called after the GL texture object was created,

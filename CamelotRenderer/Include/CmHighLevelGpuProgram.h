@@ -84,11 +84,6 @@ namespace CamelotEngine {
 		 */
 		virtual void initialize_internal();
 
-		/**
-		 * @copydoc GpuProgram::unload_internal()
-		 */
-		virtual void unload_internal();
-
         /** @copydoc GpuProgram::getBindingDelegate */
         virtual GpuProgram* getBindingDelegate(void) { return mAssemblerProgram.get(); }
 
@@ -96,6 +91,11 @@ namespace CamelotEngine {
 		/** Constructor, should be used only by factory classes. */
 		HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
+
+		/**
+		 * @copydoc GpuProgram::unload_internal()
+		 */
+		virtual void destroy_internal();
 
         /// The underlying assembler program
         GpuProgramPtr mAssemblerProgram;

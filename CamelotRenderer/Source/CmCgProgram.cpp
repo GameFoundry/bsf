@@ -95,7 +95,7 @@ namespace CamelotEngine {
             "Unable to compile Cg program", mCgContext);
 
 		// ignore any previous error
-		if (mSelectedCgProfile != CG_PROFILE_UNKNOWN && !mCompileError)
+		if (mSelectedCgProfile != CG_PROFILE_UNKNOWN)
 		{
 			String sourceFromCg = cgGetProgramString(mCgProgram, CG_COMPILED_PROGRAM);
 
@@ -115,7 +115,7 @@ namespace CamelotEngine {
 
     void CgProgram::unload_internal(void)
     {
-		HighLevelGpuProgram::unload_internal();
+		HighLevelGpuProgram::destroy_internal();
     }
 
 	GpuParamsPtr CgProgram::createParameters()
@@ -154,7 +154,7 @@ namespace CamelotEngine {
 
     bool CgProgram::isSupported(void) const
     {
-        if (mCompileError || !isRequiredCapabilitiesSupported())
+        if (!isRequiredCapabilitiesSupported())
             return false;
 
 		String selectedProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);

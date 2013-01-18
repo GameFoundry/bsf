@@ -137,6 +137,8 @@ namespace CamelotEngine {
 		/// overriden from Resource
 		void initialize_internal();	
 
+		void destroy_internal();
+
 		/// overridden from Texture
 		void copyImpl(TexturePtr& target);
 
@@ -155,12 +157,8 @@ namespace CamelotEngine {
 
 		/// @copydoc Resource::calculateSize
 		UINT32 calculateSize(void) const;
-		/// @copydoc Texture::createInternalResourcesImpl
-		void createInternalResourcesImpl(void);
 		/// Creates this texture resources on the specified device.
-		void createInternalResourcesImpl(IDirect3DDevice9* d3d9Device);
-		/// free internal resources
-		void freeInternalResourcesImpl(void);
+		void createInternalResources(IDirect3DDevice9* d3d9Device);
 		/// internal method, set Texture class final texture protected attributes
 		void _setFinalAttributes(IDirect3DDevice9* d3d9Device, TextureResources* textureResources, 
 			unsigned long width, unsigned long height, unsigned long depth, PixelFormat format);

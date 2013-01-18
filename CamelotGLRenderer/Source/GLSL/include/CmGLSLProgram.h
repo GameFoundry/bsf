@@ -109,9 +109,9 @@ namespace CamelotEngine {
         void loadFromSource(void);
 
 		/**
-		 * @copydoc GpuProgram::unload_internal()
+		 * @copydoc GpuProgram::destroy_internal()
 		 */
-		void unload_internal();
+		void destroy_internal();
 
 	private:
 		/// GL handle for shader object

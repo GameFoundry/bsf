@@ -79,8 +79,16 @@ namespace CamelotEngine {
 
         /// Overridden from GpuProgram
         void loadFromSource(void);
-		/// @copydoc Resource::loadImpl
-		void initialize_internal(void);
+
+		/**
+		 * @copydoc GpuProgram::initialize_internal
+		 */
+		void initialize_internal();
+
+		/**
+		 * @copydoc GpuProgram::destroy_internal
+		 */
+		void destroy_internal();
     };
 }
 

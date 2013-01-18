@@ -104,10 +104,12 @@ namespace CamelotEngine {
 			loadFromSource(d3d9Device);
 		}
 	}
-	//-----------------------------------------------------------------------------
-	void D3D9GpuProgram::unload(void)
+	//----------------------------------------------------------------------------
+	void D3D9GpuProgram::destroy_internal()
 	{
 		SAFE_RELEASE(mpExternalMicrocode);
+
+		GpuProgram::destroy_internal();
 	}
 	//-----------------------------------------------------------------------------
     void D3D9GpuProgram::loadFromSource(void)
@@ -213,7 +215,7 @@ namespace CamelotEngine {
 		}
     }
 	//-----------------------------------------------------------------------------
-    void D3D9GpuVertexProgram::unload(void)
+    void D3D9GpuVertexProgram::destroy_internal(void)
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -224,8 +226,9 @@ namespace CamelotEngine {
 			SAFE_RELEASE(it->second);
 			++it;
 		}
-		mMapDeviceToVertexShader.clear();		
-		D3D9GpuProgram::unload();
+		mMapDeviceToVertexShader.clear();	
+
+		D3D9GpuProgram::destroy_internal();
     }
 
 	//-----------------------------------------------------------------------------
@@ -317,7 +320,7 @@ namespace CamelotEngine {
 		}
     }
 	//-----------------------------------------------------------------------------
-    void D3D9GpuFragmentProgram::unload(void)
+    void D3D9GpuFragmentProgram::destroy_internal()
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -329,7 +332,8 @@ namespace CamelotEngine {
 			++it;
 		}
 		mMapDeviceToPixelShader.clear();	
-		D3D9GpuProgram::unload();
+
+		D3D9GpuProgram::destroy_internal();
     }
 	//-----------------------------------------------------------------------------
 	void D3D9GpuFragmentProgram::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)

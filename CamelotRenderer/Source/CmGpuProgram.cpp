@@ -48,14 +48,13 @@ namespace CamelotEngine
     GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired) 
         :mSource(source), mEntryPoint(entryPoint), mSyntaxCode(language), mType(gptype),
-		mProfile(profile), mNeedsAdjacencyInfo(isAdjacencyInfoRequired), mCompileError(false)
+		mProfile(profile), mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
     {
 
     }
 	//----------------------------------------------------------------------------
 	GpuProgram::~GpuProgram()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
 	}
 	//-----------------------------------------------------------------------------
 	void GpuProgram::initialize()
@@ -65,32 +64,20 @@ namespace CamelotEngine
     //-----------------------------------------------------------------------------
     void GpuProgram::initialize_internal(void)
     {
-        // Call polymorphic load
-		try 
-		{
-			loadFromSource();
+		loadFromSource();
 
-			Resource::initialize_internal();
-		}
-		catch (const Exception&)
-		{
-			// will already have been logged
-			//LogManager::getSingleton().stream()
-			//	<< "Gpu program " << mName << " encountered an error "
-			//	<< "during loading and is thus not supported.";
-
-			mCompileError = true;
-		}
+		Resource::initialize_internal();
     }
-	//-----------------------------------------------------------------------------
-	void GpuProgram::unload_internal()
+	//---------------------------------------------------------------------------
+	void GpuProgram::destroy_internal()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		// Nothing to destroy
+		IDestroyable::destroy();
 	}
     //-----------------------------------------------------------------------------
     bool GpuProgram::isSupported(void) const
     {
-        if (mCompileError || !isRequiredCapabilitiesSupported())
+        if (!isRequiredCapabilitiesSupported())
             return false;
 
 		RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();

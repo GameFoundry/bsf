@@ -94,10 +94,11 @@ namespace CamelotEngine {
         /** Internal load implementation, must be implemented by subclasses.
         */
         void loadFromSource(void);
+
 		/**
-		 * @copydoc GpuProgram::unload_internal()
+		 * @copydoc HighLevelGpuProgram::destroy_internal.
 		 */
-        void unload_internal(void);
+        void destroy_internal();
 
         String mPreprocessorDefines;
         bool mColumnMajorMatrices;

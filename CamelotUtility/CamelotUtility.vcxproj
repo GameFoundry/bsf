@@ -157,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\CamelotRenderer\Source\CmManagedDataBlock.cpp" />
+    <ClCompile Include="Source\CmIDestroyable.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmPixelData.cpp" />
     <ClCompile Include="Source\CmUUID.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmFileSerializer.h" />
     <ClInclude Include="Include\CmFileSystem.h" />
+    <ClInclude Include="Include\CmIDestroyable.h" />
     <ClInclude Include="Include\CmInt2.h" />
     <ClInclude Include="Include\CmIReflectable.h" />
     <ClInclude Include="Include\CmKeyValuePair.h" />

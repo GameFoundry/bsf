@@ -48,6 +48,11 @@ namespace CamelotEngine
     {
     }
 	//---------------------------------------------------------------------------
+	HighLevelGpuProgram::~HighLevelGpuProgram()
+	{
+
+	}
+	//---------------------------------------------------------------------------
 	void HighLevelGpuProgram::initialize(bool internalCall)
 	{
 		if(internalCall)
@@ -73,21 +78,14 @@ namespace CamelotEngine
 		Resource::initialize_internal();
     }
     //---------------------------------------------------------------------------
-    void HighLevelGpuProgram::unload_internal()
+    void HighLevelGpuProgram::destroy_internal()
     {   
         if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
         {
             mAssemblerProgram = nullptr;
         }
 
-		resetCompileError();
-
-		GpuProgram::unload_internal();
-    }
-    //---------------------------------------------------------------------------
-    HighLevelGpuProgram::~HighLevelGpuProgram()
-    {
-        // superclasses will trigger unload
+		GpuProgram::destroy_internal();
     }
 	//---------------------------------------------------------------------
 	HighLevelGpuProgramPtr HighLevelGpuProgram::create(const String& source, const String& entryPoint, 
