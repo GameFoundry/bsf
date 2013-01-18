@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmAsyncOp.h"
 #include "CmGpuParams.h"
+#include "CmD3D9HLSLParamParser.h"
 #include "CmD3D9HLSLProgramRTTI.h"
 
 namespace CamelotEngine {
@@ -81,442 +82,188 @@ namespace CamelotEngine {
 
 
 	};
-
-	class D3D9HLSLParamParser
+	//-----------------------------------------------------------------------
+	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
+		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
+		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired)
+		, mPreprocessorDefines()
+		, mColumnMajorMatrices(true)
+		, mpMicroCode(NULL)
+		, mOptimisationLevel(OPT_DEFAULT)
 	{
-	public:
-		D3D9HLSLParamParser(LPD3DXCONSTANTTABLE constTable)
-			:mpConstTable(constTable)
-		{ }
-
-		GpuParamDesc buildParameterDescriptions();
-
-	private:
-		void processParameter(GpuParamBlockDesc& blockDesc, D3DXHANDLE parent, String prefix, UINT32 index);
-		void populateParamMemberDesc(GpuParamMemberDesc& memberDesc, D3DXCONSTANT_DESC& d3dDesc);
-
-	private:
-		LPD3DXCONSTANTTABLE mpConstTable;
-		GpuParamDesc mParamDesc;
-	};
-
-	GpuParamDesc D3D9HLSLParamParser::buildParameterDescriptions()
-	{
-		// Derive parameter names from const table
-		assert(mpConstTable && "Program not loaded!");
-
-		// Get contents of the constant table
-		D3DXCONSTANTTABLE_DESC desc;
-		HRESULT hr = mpConstTable->GetDesc(&desc);
-
-		if (FAILED(hr))
-			CM_EXCEPT(InternalErrorException, "Cannot retrieve constant descriptions from HLSL program.");
-		
-		// DX9 has no concept of parameter blocks so we just put all members in one global block
-		String name = "CM_INTERNAL_Globals";
-		mParamDesc.paramBlocks.insert(std::make_pair(name, GpuParamBlockDesc()));
-		GpuParamBlockDesc& blockDesc = mParamDesc.paramBlocks[name];
-		blockDesc.name = name;
-		blockDesc.slot = 0;
-		blockDesc.blockSize = 0;
-
-		// Iterate over the constants
-		for (UINT32 i = 0; i < desc.Constants; ++i)
-		{
-			// Recursively descend through the structure levels
-			processParameter(blockDesc, NULL, "", i);
-		}
-
-		return mParamDesc;
 	}
-
-	void D3D9HLSLParamParser::processParameter(GpuParamBlockDesc& blockDesc, D3DXHANDLE parent, String prefix, UINT32 index)
+	//-----------------------------------------------------------------------
+	D3D9HLSLProgram::~D3D9HLSLProgram()
 	{
-		D3DXHANDLE hConstant = mpConstTable->GetConstant(parent, index);
 
-		// Since D3D HLSL doesn't deal with naming of array and struct parameters
-		// automatically, we have to do it by hand
-
-		D3DXCONSTANT_DESC desc;
-		UINT32 numParams = 1;
-		HRESULT hr = mpConstTable->GetConstantDesc(hConstant, &desc, &numParams);
-		if (FAILED(hr))
-		{
-			CM_EXCEPT(InternalErrorException, "Cannot retrieve constant description from HLSL program.");
-		}
-
-		String paramName = desc.Name;
-		// trim the odd '$' which appears at the start of the names in HLSL
-		if (paramName.at(0) == '$')
-			paramName.erase(paramName.begin());
-
-		// Also trim the '[0]' suffix if it exists, we will add our own indexing later
-		if (StringUtil::endsWith(paramName, "[0]", false))
-			paramName.erase(paramName.size() - 3);
-
-		if (desc.Class == D3DXPC_STRUCT)
-		{
-			// work out a new prefix for nested members, if it's an array, we need an index
-			prefix = prefix + paramName + ".";
-			// Cascade into struct
-			for (UINT32 i = 0; i < desc.StructMembers; ++i)
-			{
-				processParameter(blockDesc, hConstant, prefix, i);
-			}
-		}
-		else
-		{
-			// Process params
-			if (desc.Type == D3DXPT_FLOAT || desc.Type == D3DXPT_INT || desc.Type == D3DXPT_BOOL)
-			{
-				GpuParamMemberDesc memberDesc;
-				memberDesc.gpuMemOffset = desc.RegisterIndex;
-				memberDesc.cpuMemOffset = blockDesc.blockSize;
-				memberDesc.paramBlockSlot = blockDesc.slot;
-				memberDesc.arraySize = 1;
-
-				String name = prefix + paramName;
-				memberDesc.name = name;
-
-				populateParamMemberDesc(memberDesc, desc);
-				mParamDesc.params.insert(std::make_pair(name, memberDesc));
-
-				blockDesc.blockSize += memberDesc.elementSize * memberDesc.arraySize;
-			}
-			else if(desc.Type == D3DXPT_SAMPLER1D || desc.Type == D3DXPT_SAMPLER2D || desc.Type == D3DXPT_SAMPLER3D || desc.Type == D3DXPT_SAMPLERCUBE)
-			{
-				GpuParamSpecialDesc samplerDesc;
-				samplerDesc.name = paramName;
-				samplerDesc.slot = desc.RegisterIndex;
-
-				GpuParamSpecialDesc textureDesc;
-				textureDesc.name = paramName;
-				textureDesc.slot = desc.RegisterIndex;
-
-				switch(desc.Type)
-				{
-				case D3DXPT_SAMPLER1D:
-					samplerDesc.type = GST_SAMPLER1D;
-					textureDesc.type = GST_TEXTURE1D;
-					break;
-				case D3DXPT_SAMPLER2D:
-					samplerDesc.type = GST_SAMPLER2D;
-					textureDesc.type = GST_TEXTURE2D;
-					break;
-				case D3DXPT_SAMPLER3D:
-					samplerDesc.type = GST_SAMPLER3D;
-					textureDesc.type = GST_TEXTURE3D;
-					break;
-				case D3DXPT_SAMPLERCUBE:
-					samplerDesc.type = GST_SAMPLERCUBE;
-					textureDesc.type = GST_TEXTURECUBE;
-					break;
-				default:
-					CM_EXCEPT(InternalErrorException, "Invalid sampler type: " + toString(desc.Type) + " for parameter " + paramName);
-				}
-
-				mParamDesc.samplers.insert(std::make_pair(paramName, samplerDesc));
-				mParamDesc.textures.insert(std::make_pair(paramName, textureDesc));
-			}
-			else
-			{
-				CM_EXCEPT(InternalErrorException, "Invalid shader parameter type: " + toString(desc.Type) + " for parameter " + paramName);
-			}
-		}
 	}
-
-	void D3D9HLSLParamParser::populateParamMemberDesc(GpuParamMemberDesc& memberDesc, D3DXCONSTANT_DESC& d3dDesc)
+	//-----------------------------------------------------------------------
+	void D3D9HLSLProgram::initialize_internal()
 	{
-		memberDesc.arraySize = d3dDesc.Elements;
-		switch(d3dDesc.Type)
+		if (isSupported())
 		{
-		case D3DXPT_INT:
-			switch(d3dDesc.Columns)
+			// Populate preprocessor defines
+			String stringBuffer;
+
+			vector<D3DXMACRO>::type defines;
+			const D3DXMACRO* pDefines = 0;
+			if (!mPreprocessorDefines.empty())
 			{
-			case 1:
-				memberDesc.type = GMT_INT1;
-				memberDesc.elementSize = 4;
-				break;
-			case 2:
-				memberDesc.type = GMT_INT2;
-				memberDesc.elementSize = 4;
-				break;
-			case 3:
-				memberDesc.type = GMT_INT3;
-				memberDesc.elementSize = 4;
-				break;
-			case 4:
-				memberDesc.type = GMT_INT4;
-				memberDesc.elementSize = 4;
-				break;
-			} // columns
-			break;
-		case D3DXPT_FLOAT:
-			switch(d3dDesc.Class)
-			{
-			case D3DXPC_MATRIX_COLUMNS:
-			case D3DXPC_MATRIX_ROWS:
+				stringBuffer = mPreprocessorDefines;
+
+				// Split preprocessor defines and build up macro array
+				D3DXMACRO macro;
+				String::size_type pos = 0;
+				while (pos != String::npos)
 				{
-					int firstDim, secondDim;
-					firstDim = d3dDesc.RegisterCount / d3dDesc.Elements;
+					macro.Name = &stringBuffer[pos];
+					macro.Definition = 0;
 
-					if (d3dDesc.Class == D3DXPC_MATRIX_ROWS)
-						secondDim = d3dDesc.Columns;
-					else
-						secondDim = d3dDesc.Rows;
+					String::size_type start_pos=pos;
 
-					switch(firstDim)
+					// Find delims
+					pos = stringBuffer.find_first_of(";,=", pos);
+
+					if(start_pos==pos)
 					{
-					case 2:
-						switch(secondDim)
+						if(pos==stringBuffer.length())
 						{
-						case 2:
-							memberDesc.type = GMT_MATRIX_2X2;
-							memberDesc.elementSize = 8; // HLSL always packs
 							break;
-						case 3:
-							memberDesc.type = GMT_MATRIX_2X3;
-							memberDesc.elementSize = 8; // HLSL always packs
-							break;
-						case 4:
-							memberDesc.type = GMT_MATRIX_2X4;
-							memberDesc.elementSize = 8; 
-							break;
-						} // columns
-						break;
-					case 3:
-						switch(secondDim)
+						}
+						pos++;
+						continue;
+					}
+
+					if (pos != String::npos)
+					{
+						// Check definition part
+						if (stringBuffer[pos] == '=')
 						{
-						case 2:
-							memberDesc.type = GMT_MATRIX_3X2;
-							memberDesc.elementSize = 12; // HLSL always packs
-							break;
-						case 3:
-							memberDesc.type = GMT_MATRIX_3X3;
-							memberDesc.elementSize = 12; // HLSL always packs
-							break;
-						case 4:
-							memberDesc.type = GMT_MATRIX_3X4;
-							memberDesc.elementSize = 12; 
-							break;
-						} // columns
-						break;
-					case 4:
-						switch(secondDim)
+							// Setup null character for macro name
+							stringBuffer[pos++] = '\0';
+							macro.Definition = &stringBuffer[pos];
+							pos = stringBuffer.find_first_of(";,", pos);
+						}
+						else
 						{
-						case 2:
-							memberDesc.type = GMT_MATRIX_4X2;
-							memberDesc.elementSize = 16; // HLSL always packs
-							break;
-						case 3:
-							memberDesc.type = GMT_MATRIX_4X3;
-							memberDesc.elementSize = 16; // HLSL always packs
-							break;
-						case 4:
-							memberDesc.type = GMT_MATRIX_4X4;
-							memberDesc.elementSize = 16; 
-							break;
-						} // secondDim
-						break;
+							// No definition part, define as "1"
+							macro.Definition = "1";
+						}
 
-					} // firstDim
-				}
-				break;
-			case D3DXPC_SCALAR:
-			case D3DXPC_VECTOR:
-				switch(d3dDesc.Columns)
-				{
-				case 1:
-					memberDesc.type = GMT_FLOAT1;
-					memberDesc.elementSize = 4;
-					break;
-				case 2:
-					memberDesc.type = GMT_FLOAT2;
-					memberDesc.elementSize = 4;
-					break;
-				case 3:
-					memberDesc.type = GMT_FLOAT3;
-					memberDesc.elementSize = 4;
-					break;
-				case 4:
-					memberDesc.type = GMT_FLOAT4;
-					memberDesc.elementSize = 4;
-					break;
-				} // columns
-				break;
-			}
-			break;
-		case D3DXPT_BOOL:
-			memberDesc.type = GMT_BOOL;
-			memberDesc.elementSize = 1;
-			break;
-		default:
-			break;
-		};
-	}
-
-    //-----------------------------------------------------------------------
-    void D3D9HLSLProgram::loadFromSource(void)
-    {
-        // Populate preprocessor defines
-        String stringBuffer;
-
-        vector<D3DXMACRO>::type defines;
-        const D3DXMACRO* pDefines = 0;
-        if (!mPreprocessorDefines.empty())
-        {
-            stringBuffer = mPreprocessorDefines;
-
-            // Split preprocessor defines and build up macro array
-            D3DXMACRO macro;
-            String::size_type pos = 0;
-            while (pos != String::npos)
-            {
-                macro.Name = &stringBuffer[pos];
-                macro.Definition = 0;
-
-				String::size_type start_pos=pos;
-
-                // Find delims
-                pos = stringBuffer.find_first_of(";,=", pos);
-
-				if(start_pos==pos)
-				{
-					if(pos==stringBuffer.length())
+						if (pos != String::npos)
+						{
+							// Setup null character for macro name or definition
+							stringBuffer[pos++] = '\0';
+						}
+					}
+					else
+					{
+						macro.Definition = "1";
+					}
+					if(strlen(macro.Name)>0)
+					{
+						defines.push_back(macro);
+					}
+					else
 					{
 						break;
 					}
-					pos++;
-					continue;
 				}
 
-                if (pos != String::npos)
-                {
-                    // Check definition part
-                    if (stringBuffer[pos] == '=')
-                    {
-                        // Setup null character for macro name
-                        stringBuffer[pos++] = '\0';
-                        macro.Definition = &stringBuffer[pos];
-                        pos = stringBuffer.find_first_of(";,", pos);
-                    }
-                    else
-                    {
-                        // No definition part, define as "1"
-                        macro.Definition = "1";
-                    }
+				// Add NULL terminator
+				macro.Name = 0;
+				macro.Definition = 0;
+				defines.push_back(macro);
 
-                    if (pos != String::npos)
-                    {
-                        // Setup null character for macro name or definition
-                        stringBuffer[pos++] = '\0';
-                    }
-                }
-				else
-				{
-					macro.Definition = "1";
-				}
-				if(strlen(macro.Name)>0)
-				{
-					defines.push_back(macro);
-				}
-				else
-				{
-					break;
-				}
-            }
-
-            // Add NULL terminator
-            macro.Name = 0;
-            macro.Definition = 0;
-            defines.push_back(macro);
-
-            pDefines = &defines[0];
-        }
-
-        // Populate compile flags
-        DWORD compileFlags = 0;
-        if (mColumnMajorMatrices)
-            compileFlags |= D3DXSHADER_PACKMATRIX_COLUMNMAJOR;
-        else
-            compileFlags |= D3DXSHADER_PACKMATRIX_ROWMAJOR;
-
-#if CM_DEBUG_MODE
-		compileFlags |= D3DXSHADER_DEBUG;
-#endif
-		switch (mOptimisationLevel)
-		{
-		case OPT_DEFAULT:
-			compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL1;
-			break;
-		case OPT_NONE:
-			compileFlags |= D3DXSHADER_SKIPOPTIMIZATION;
-			break;
-		case OPT_0:
-			compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL0;
-			break;
-		case OPT_1:
-			compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL1;
-			break;
-		case OPT_2:
-			compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL2;
-			break;
-		case OPT_3:
-			compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL3;
-			break;
-		}
-
-        LPD3DXBUFFER errors = 0;
-
-		// include handler
-		HLSLIncludeHandler includeHandler(this);
-		LPD3DXCONSTANTTABLE constTable;
-
-		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
-
-        // Compile & assemble into microcode
-        HRESULT hr = D3DXCompileShader(
-            mSource.c_str(),
-            static_cast<UINT>(mSource.length()),
-            pDefines,
-            &includeHandler, 
-            mEntryPoint.c_str(),
-            hlslProfile.c_str(),
-            compileFlags,
-            &mpMicroCode,
-            &errors,
-            &constTable);
-
-        if (FAILED(hr))
-        {
-            String message = "Cannot assemble D3D9 high-level shader ";
-			
-			if( errors )
-			{
-				message += String(" Errors:\n") + static_cast<const char*>(errors->GetBufferPointer());
-				errors->Release();
+				pDefines = &defines[0];
 			}
 
-            CM_EXCEPT(RenderingAPIException, message);
-        }
+			// Populate compile flags
+			DWORD compileFlags = 0;
+			if (mColumnMajorMatrices)
+				compileFlags |= D3DXSHADER_PACKMATRIX_COLUMNMAJOR;
+			else
+				compileFlags |= D3DXSHADER_PACKMATRIX_ROWMAJOR;
 
-		hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
+	#if CM_DEBUG_MODE
+			compileFlags |= D3DXSHADER_DEBUG;
+	#endif
+			switch (mOptimisationLevel)
+			{
+			case OPT_DEFAULT:
+				compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL1;
+				break;
+			case OPT_NONE:
+				compileFlags |= D3DXSHADER_SKIPOPTIMIZATION;
+				break;
+			case OPT_0:
+				compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL0;
+				break;
+			case OPT_1:
+				compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL1;
+				break;
+			case OPT_2:
+				compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL2;
+				break;
+			case OPT_3:
+				compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL3;
+				break;
+			}
 
-		// Create a low-level program, give it the same name as us
-		mAssemblerProgram = 
-			GpuProgramManager::instance().createProgram(
-			"",// dummy source, since we'll be using microcode
-			"",
-			hlslProfile,
-			mType, 
-			GPP_NONE);
-		static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);
+			LPD3DXBUFFER errors = 0;
 
-		D3D9HLSLParamParser paramParser(constTable);
-		mParametersDesc = paramParser.buildParameterDescriptions();
+			// include handler
+			HLSLIncludeHandler includeHandler(this);
+			LPD3DXCONSTANTTABLE constTable;
 
-		SAFE_RELEASE(constTable);
-    }
+			String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
+
+			// Compile & assemble into microcode
+			HRESULT hr = D3DXCompileShader(
+				mSource.c_str(),
+				static_cast<UINT>(mSource.length()),
+				pDefines,
+				&includeHandler, 
+				mEntryPoint.c_str(),
+				hlslProfile.c_str(),
+				compileFlags,
+				&mpMicroCode,
+				&errors,
+				&constTable);
+
+			if (FAILED(hr))
+			{
+				String message = "Cannot assemble D3D9 high-level shader ";
+
+				if( errors )
+				{
+					message += String(" Errors:\n") + static_cast<const char*>(errors->GetBufferPointer());
+					errors->Release();
+				}
+
+				CM_EXCEPT(RenderingAPIException, message);
+			}
+
+			hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
+
+			// Create a low-level program, give it the same name as us
+			mAssemblerProgram = 
+				GpuProgramManager::instance().createProgram(
+				"",// dummy source, since we'll be using microcode
+				"",
+				hlslProfile,
+				mType, 
+				GPP_NONE);
+			static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);
+
+			D3D9HLSLParamParser paramParser(constTable);
+			mParametersDesc = paramParser.buildParameterDescriptions();
+
+			SAFE_RELEASE(constTable);
+		}
+
+		HighLevelGpuProgram::initialize_internal();
+	}
     //-----------------------------------------------------------------------
     void D3D9HLSLProgram::destroy_internal()
     {
@@ -529,21 +276,6 @@ namespace CamelotEngine {
 	{
 		return mpMicroCode;
 	}
-    //-----------------------------------------------------------------------
-	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
-        : HighLevelGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired)
-        , mPreprocessorDefines()
-        , mColumnMajorMatrices(true)
-        , mpMicroCode(NULL)
-		, mOptimisationLevel(OPT_DEFAULT)
-	{
-    }
-    //-----------------------------------------------------------------------
-    D3D9HLSLProgram::~D3D9HLSLProgram()
-    {
-
-    }
     //-----------------------------------------------------------------------
     bool D3D9HLSLProgram::isSupported(void) const
     {

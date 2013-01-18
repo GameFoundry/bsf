@@ -61,7 +61,7 @@ namespace CamelotEngine
 
 	}
     //-----------------------------------------------------------------------
-	void GLSLProgram::loadFromSource(void)
+	void GLSLProgram::initialize_internal()
 	{
 		// only create a shader object if glsl is supported
 		GLenum shaderType = 0x0000;
@@ -170,6 +170,8 @@ namespace CamelotEngine
 		GLSLParamParser paramParser;
 		paramParser.buildUniformDescriptions(mGLHandle, mParametersDesc);
 		paramParser.buildVertexDeclaration(mGLHandle, mVertexDeclaration);
+
+		HighLevelGpuProgram::initialize_internal();
 	}
 	//---------------------------------------------------------------------------
 	void GLSLProgram::destroy_internal()

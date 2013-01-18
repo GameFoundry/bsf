@@ -77,9 +77,6 @@ namespace CamelotEngine {
     protected:
 		friend class GLSLProgramFactory;
 
-        /// Overridden from GpuProgram
-        void loadFromSource(void);
-
 		/**
 		 * @copydoc GpuProgram::initialize_internal
 		 */

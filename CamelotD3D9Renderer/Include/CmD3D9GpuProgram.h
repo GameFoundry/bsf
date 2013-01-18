@@ -41,9 +41,10 @@ namespace CamelotEngine {
     public:
         ~D3D9GpuProgram();
 
-		virtual void initialize_internal(void);
-		/** Loads this program to specified device */
-		virtual void initialize_internal(IDirect3DDevice9* d3d9Device);
+		/**
+		 * @copydoc GpuProgram::initialize_internal().
+		 */
+		virtual void initialize_internal();
 
         /** Sets whether matrix packing in column-major order. */ 
         void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }
@@ -65,15 +66,13 @@ namespace CamelotEngine {
 
 		D3D9GpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
+		void createInternalResources(IDirect3DDevice9* d3d9Device);
+
 		/**
-		 * @copydoc GpuProgram::destroy_internal.
+		 * @copydoc GpuProgram::destroy_internal().
 		 */
 		void destroy_internal();
-
-        /** Overridden from GpuProgram */
-        void loadFromSource(void);
-		/** Loads this program from source to specified device */
-		void loadFromSource(IDirect3DDevice9* d3d9Device);        
+      
 		/** Loads this program from microcode, must be overridden by subclasses. */
         virtual void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode) = 0;
 

@@ -11,14 +11,6 @@ namespace CamelotEngine
 		D3D11GpuProgram(GpuProgramType type, const String& profile);
 
 	protected:
-		void loadImpl(void);
-
-		/**
-		 * @brief	Loads shader from source. Not used as DX11 doesn't support
-		 * 			assembly shaders.
-		 */
-		void loadFromSource(void);
-
 		/**
 		 * @brief	Loads shader from microcode.
 		 */

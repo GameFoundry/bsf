@@ -52,22 +52,11 @@ namespace CamelotEngine
 	{
 
 	}
-	//---------------------------------------------------------------------------
-	void HighLevelGpuProgram::initialize(bool internalCall)
-	{
-		if(internalCall)
-			initialize_internal();
-		else
-			RenderSystem::instancePtr()->queueCommand(boost::bind(&HighLevelGpuProgram::initialize_internal, this));
-	}
     //---------------------------------------------------------------------------
     void HighLevelGpuProgram::initialize_internal()
     {
 		if (isSupported())
 		{
-			// load self 
-			loadFromSource();
-
 			// load constructed assembler program (if it exists)
 			if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
 			{

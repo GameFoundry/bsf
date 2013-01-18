@@ -56,16 +56,18 @@ namespace CamelotEngine
 	GpuProgram::~GpuProgram()
 	{
 	}
-	//-----------------------------------------------------------------------------
-	void GpuProgram::initialize()
+	//---------------------------------------------------------------------------
+	void GpuProgram::initialize(bool internalCall)
 	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&GpuProgram::initialize_internal, this));
+		if(internalCall)
+			initialize_internal();
+		else
+			RenderSystem::instancePtr()->queueCommand(boost::bind(&GpuProgram::initialize_internal, this));
 	}
-    //-----------------------------------------------------------------------------
+	//---------------------------------------------------------------------------
     void GpuProgram::initialize_internal(void)
     {
-		loadFromSource();
-
+		// Nothing to initialize
 		Resource::initialize_internal();
     }
 	//---------------------------------------------------------------------------

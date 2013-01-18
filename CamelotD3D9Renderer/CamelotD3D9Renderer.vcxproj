@@ -155,6 +155,7 @@
     <ClInclude Include="Include\CmD3D9GpuProgram.h" />
     <ClInclude Include="Include\CmD3D9GpuProgramManager.h" />
     <ClInclude Include="Include\CmD3D9HardwareBufferManager.h" />
+    <ClInclude Include="Include\CmD3D9HLSLParamParser.h" />
     <ClInclude Include="Include\CmD3D9IndexBuffer.h" />
     <ClInclude Include="Include\CmD3D9OcclusionQuery.h" />
     <ClInclude Include="Include\CmD3D9PixelBuffer.h" />

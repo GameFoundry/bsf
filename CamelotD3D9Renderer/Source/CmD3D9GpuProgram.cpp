@@ -50,7 +50,7 @@ namespace CamelotEngine {
 	void D3D9GpuProgram::setExternalMicrocode(const void* pMicrocode, UINT32 size)
 	{
 		LPD3DXBUFFER pBuffer=0;
-		HRESULT hr=D3DXCreateBuffer(size, &pBuffer);
+		HRESULT hr = D3DXCreateBuffer(size, &pBuffer);
 		if(pBuffer)
 		{
 			memcpy(pBuffer->GetBufferPointer(), pMicrocode, size);
@@ -73,35 +73,56 @@ namespace CamelotEngine {
 	{
 		return mpExternalMicrocode;
 	}
-
 	//-----------------------------------------------------------------------------
-    void D3D9GpuProgram::initialize_internal(void)
+    void D3D9GpuProgram::initialize_internal()
     {
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
 		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
 		{
 			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
 
-			initialize_internal(d3d9Device);
+			createInternalResources(d3d9Device);
 		}		       
 
-		Resource::initialize_internal();
+		GpuProgram::initialize_internal();
     }
-
 	//-----------------------------------------------------------------------------
-	void D3D9GpuProgram::initialize_internal(IDirect3DDevice9* d3d9Device)
+	void D3D9GpuProgram::createInternalResources(IDirect3DDevice9* d3d9Device)
 	{
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
 		if (mpExternalMicrocode)
 		{
 			loadFromMicrocode(d3d9Device, mpExternalMicrocode);
 		}
 		else
 		{
-			// Call polymorphic load
-			loadFromSource(d3d9Device);
+			// Populate compile flags
+			DWORD compileFlags = 0;
+
+			// Create the shader
+			// Assemble source into microcode
+			LPD3DXBUFFER microcode;
+			LPD3DXBUFFER errors;
+			HRESULT hr = D3DXAssembleShader(
+				mSource.c_str(),
+				static_cast<UINT>(mSource.length()),
+				NULL,               // no #define support
+				NULL,               // no #include support
+				compileFlags,       // standard compile options
+				&microcode,
+				&errors);
+
+			if (FAILED(hr))
+			{
+				String message = "Cannot assemble D3D9 shader. Errors:\n";
+				message += static_cast<const char*>(errors->GetBufferPointer());
+
+				errors->Release();
+				CM_EXCEPT(RenderingAPIException, message);
+			}
+
+			loadFromMicrocode(d3d9Device, microcode);		
+
+			SAFE_RELEASE(microcode);
+			SAFE_RELEASE(errors);
 		}
 	}
 	//----------------------------------------------------------------------------
@@ -110,55 +131,6 @@ namespace CamelotEngine {
 		SAFE_RELEASE(mpExternalMicrocode);
 
 		GpuProgram::destroy_internal();
-	}
-	//-----------------------------------------------------------------------------
-    void D3D9GpuProgram::loadFromSource(void)
-    {
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
-		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
-		{
-			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
-
-			loadFromSource(d3d9Device);
-		}
-    }
-
-	//-----------------------------------------------------------------------------
-	void D3D9GpuProgram::loadFromSource(IDirect3DDevice9* d3d9Device)
-	{
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
-
-		// Populate compile flags
-        DWORD compileFlags = 0;
-
-		// Create the shader
-		// Assemble source into microcode
-		LPD3DXBUFFER microcode;
-		LPD3DXBUFFER errors;
-		HRESULT hr = D3DXAssembleShader(
-			mSource.c_str(),
-			static_cast<UINT>(mSource.length()),
-			NULL,               // no #define support
-			NULL,               // no #include support
-			compileFlags,       // standard compile options
-			&microcode,
-			&errors);
-
-		if (FAILED(hr))
-		{
-			String message = "Cannot assemble D3D9 shader. Errors:\n";
-			message += static_cast<const char*>(errors->GetBufferPointer());
-
-			errors->Release();
-			CM_EXCEPT(RenderingAPIException, message);
-		}
-	
-		loadFromMicrocode(d3d9Device, microcode);		
-
-		SAFE_RELEASE(microcode);
-		SAFE_RELEASE(errors);
 	}
     //-----------------------------------------------------------------------
 	GpuParamsPtr D3D9GpuProgram::createParameters()
@@ -207,18 +179,12 @@ namespace CamelotEngine {
 		{
 			CM_EXCEPT(RenderingAPIException, "Specified D3D9 vertex shader is not supported!");
 
-			// TODO LOG PORT - Log this error somewhere
-			//LogManager::getSingleton().logMessage(
-			//	"Unsupported D3D9 vertex shader '" + mName + "' was not loaded.");
-
 			mMapDeviceToVertexShader[d3d9Device] = NULL;
 		}
     }
 	//-----------------------------------------------------------------------------
     void D3D9GpuVertexProgram::destroy_internal(void)
     {
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
         DeviceToVertexShaderIterator it = mMapDeviceToVertexShader.begin();
 
 		while (it != mMapDeviceToVertexShader.end())
@@ -240,8 +206,6 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void D3D9GpuVertexProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
 		DeviceToVertexShaderIterator it;
 
 		// Find the shader of this device.
@@ -267,14 +231,12 @@ namespace CamelotEngine {
 		// Shader was not found -> load it.
 		if (it == mMapDeviceToVertexShader.end())		
 		{
-			initialize_internal(d3d9Device);		
+			createInternalResources(d3d9Device);		
 			it = mMapDeviceToVertexShader.find(d3d9Device);
 		}
 	
 		return it->second;
 	}
-
-	//-----------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------
     D3D9GpuFragmentProgram::D3D9GpuFragmentProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) 
 		: D3D9GpuProgram(source, entryPoint, language, gptype, profile)       
@@ -312,9 +274,7 @@ namespace CamelotEngine {
 		}
 		else
 		{
-			// TODO LOG PORT - Log this somewhere
-			//LogManager::getSingleton().logMessage(
-			//	"Unsupported D3D9 pixel shader was not loaded.");
+			CM_EXCEPT(RenderingAPIException, "Specified D3D9 pixel shader is not supported!");
 
 			mMapDeviceToPixelShader[d3d9Device] = NULL;
 		}
@@ -322,8 +282,6 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
     void D3D9GpuFragmentProgram::destroy_internal()
     {
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
 		DeviceToPixelShaderIterator it = mMapDeviceToPixelShader.begin();
 
 		while (it != mMapDeviceToPixelShader.end())
@@ -344,8 +302,6 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	void D3D9GpuFragmentProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
 		DeviceToPixelShaderIterator it;
 
 		// Find the shader of this device.
@@ -371,7 +327,7 @@ namespace CamelotEngine {
 		// Shader was not found -> load it.
 		if (it == mMapDeviceToPixelShader.end())		
 		{
-			initialize_internal(d3d9Device);			
+			createInternalResources(d3d9Device);			
 			it = mMapDeviceToPixelShader.find(d3d9Device);
 		}
 

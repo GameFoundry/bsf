@@ -27,7 +27,7 @@ namespace CamelotEngine
 
 	}
 
-    void D3D11HLSLProgram::loadFromSource()
+    void D3D11HLSLProgram::initialize_internal()
 	{
 		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 
@@ -78,6 +78,8 @@ namespace CamelotEngine
 		mProgramId = globalProgramId++;
 
 		SAFE_RELEASE(microcode);
+
+		HighLevelGpuProgram::initialize_internal();
 	}
 
     void D3D11HLSLProgram::destroy_internal()

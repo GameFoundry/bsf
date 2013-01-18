@@ -11,17 +11,6 @@ namespace CamelotEngine
 
 	}
 
-	void D3D11GpuProgram::loadImpl(void)
-	{
-		// Call polymorphic load
-		loadFromSource();
-	}
-
-	void D3D11GpuProgram::loadFromSource(void)
-	{
-
-	}
-
 	D3D11GpuVertexProgram::D3D11GpuVertexProgram(const String& profile) 
 		: D3D11GpuProgram(GPT_VERTEX_PROGRAM, profile)
 		, mVertexShader(nullptr)

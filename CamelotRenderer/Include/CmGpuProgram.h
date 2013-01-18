@@ -167,12 +167,18 @@ namespace CamelotEngine {
 		GpuParamDesc mParametersDesc;
 
 		/**
-		 * @brief	Initializes the gpu program. This must be called right after the program is constructed. 
-		 * 			Called by GpuProgramManager upon creation, so usually you don't want to call this manually. 
-		 * 			
-		 * @note	Initialization is not done immediately, and is instead just scheduled on the render thread.
+		 * @brief	Initializes the gpu program. This must be called right after the program is
+		 * 			constructed. Called by GpuManager upon creation, so usually you don't want
+		 * 			to call this manually.
+		 *		 
+		 * @param	internalCall	(optional) Set to true if initializing from within the RenderSystem.
+		 * 							Most users don't have to be concerned about this.
+		 * 							
+		 * @note	Initialization is not done immediately, and is instead just scheduled on the
+		 * 			render thread. Unless internalCall is specified, in which case it is initialized
+		 * 			right away.
 		 */
-		void initialize();
+		void initialize(bool internalCall = false);
 
 		/**
 		 * @copydoc Resource::destroy_internal.
@@ -193,9 +199,6 @@ namespace CamelotEngine {
 
 		GpuProgram(const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
-
-        /// Virtual method which must be implemented by subclasses, load from mSource
-        virtual void loadFromSource(void) = 0;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

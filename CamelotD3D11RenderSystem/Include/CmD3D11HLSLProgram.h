@@ -38,9 +38,9 @@ namespace CamelotEngine
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
         /**
-         * @copydoc GpuProgram::loadFromSource()
+         * @copydoc HighLevelGpuProgram::initialize_internal()
          */
-        void loadFromSource();
+        void initialize_internal();
 
         /**
          * @copydoc HighLevelGpuProgram::destroy_internal()

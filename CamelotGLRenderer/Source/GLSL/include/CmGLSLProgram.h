@@ -104,12 +104,13 @@ namespace CamelotEngine {
 		GLSLProgram(const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
-        /** Internal load implementation, must be implemented by subclasses.
-        */
-        void loadFromSource(void);
+		/**
+		 * @copydoc HighLevelGpuProgram::initialize_internal()
+		 */
+        void initialize_internal();
 
 		/**
-		 * @copydoc GpuProgram::destroy_internal()
+		 * @copydoc HighLevelGpuProgram::destroy_internal()
 		 */
 		void destroy_internal();
 

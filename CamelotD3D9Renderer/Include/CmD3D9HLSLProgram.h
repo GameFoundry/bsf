@@ -85,19 +85,16 @@ namespace CamelotEngine {
         /// Overridden from GpuProgram
         const String& getLanguage(void) const;
 
+		/** @copydoc HighLevelGpuProgram::initialize_internal(). */
+		void initialize_internal();
+
     protected:
 		friend class D3D9HLSLProgramFactory;
 
 		D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
-        /** Internal load implementation, must be implemented by subclasses.
-        */
-        void loadFromSource(void);
-
-		/**
-		 * @copydoc HighLevelGpuProgram::destroy_internal.
-		 */
+		/** @copydoc HighLevelGpuProgram::destroy_internal(). */
         void destroy_internal();
 
         String mPreprocessorDefines;
