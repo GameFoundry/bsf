@@ -3,7 +3,8 @@
 #include "CmPrerequisites.h"
 #include "CmResource.h"
 #include "CmMeshData.h"
-#include "CmVertexIndexData.h"
+#include "CmVertexData.h"
+#include "CmIndexData.h"
 #include "CmRenderOperation.h"
 
 namespace CamelotEngine

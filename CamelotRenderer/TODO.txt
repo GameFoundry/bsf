@@ -14,36 +14,35 @@
 
 
 >>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
-Make sure that I am able to blit contents from render textures on all render systems
-Get rid of SurfaceDesc in CmRenderTarget. I should probably add a resource view similar as I did with buffers.
- - Also in render and multirender textures whenever get depth stencil surface I always use 0 mip and 0 face, however it should use a surface desc same as color surface
- - Take care of handling texture UAVs too
-Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones
- Working generic buffers
- A way to bind buffers to a Pass, while specifying buffer range
- Better creation of PrimaryWindow
-  - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
-  - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
- GpuParams support for bools, buffers, structs
- Static/Dynamic usage for GpuParamBlocks
- Ability to switch out GpuParamBlocks
-  - Ability to mark param blocks as "Shared". Those would not get created with every pass instance and would require user to actually create and assign them
+Pass
+ - A way to bind buffers to a Pass, while specifying buffer range
+ - GpuParams support for bools, buffers, structs
+ - Fix MaterialRTTI saving (Save params per gpuprogram is simplest and cleanest) (Maybe wait until I have the Parser sorted out?)
+ - Fix how and when is GpuParamBlock created/destroyed. Needs to happen on the render thread
+
+Shader parser (possible leave for later? But it might require Resource changes)
+ - Static/Dynamic usage for GpuParamBlocks
+ - Ability to mark param blocks as "Shared". Those would not get created with every pass instance and would require user to actually create and assign them
    - I can't think of any way I can do this without a preprocessor
    - (In editor it might work via GUI, but what if someone doesn't want to use the editor and only uses the engine core?)
    - Use a simple .shader file in which you specify individual GPU programs, include files, material parameters (whether they're visible
      to user or just rendering system), input parameters (useful for GLSL which doesn't have semantics as I can provide my own semantics)
 	  - File format would be simple, and parser would just parse line by line, with possible option blocks
    - Issue of include files remains. How do I reference them? By path most definitely but I'd have to reference the source asset path...And in the current design source asset can move.
- Smart way of initializing GpuParamBlocks (without duplicates)
- Fix MaterialRTTI saving (Save params per gpuprogram is simplest and cleanest)
- Make sure that gpu programs assigned to Pass don't share parameters of different types
- Make RenderTexture and DepthStenciLTexture use common interface
- Fix how and when is GpuParamBlock created/destroyed. Needs to happen on the render thread
+   - Smart way of initializing GpuParamBlocks (without duplicates) (This probably won't be a separate task, as user will specify params manually if I go the parser route)
+   - Make sure that gpu programs assigned to Pass don't share parameters of different types (A task I can ignore if I go the parser route)
+ 
  Refactor how we handle RenderTargets (no attach/detach, and no waitForVSync propery in RenderSystem)
  waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
- Think about how to manage resources. For example check VertexBuffer is VertexData class. How and when is that freed?
- - Big problem is also that RenderSystem in a lot of cases holds raw pointers, so what happens when resource get destroyed and RS tries to use it?
+Go through RenderSystem classes and make sure we don't hold any raw pointer references.
+
+Can be delayed:
+ Make sure that I am able to blit contents from render textures on all render systems
+ Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones
+ Better creation of PrimaryWindow
+  - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
+  - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
 
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  

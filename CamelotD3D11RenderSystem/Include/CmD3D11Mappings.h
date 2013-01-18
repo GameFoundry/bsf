@@ -5,7 +5,8 @@
 #include "CmTexture.h"
 #include "CmPixelData.h"
 #include "CmIndexBuffer.h"
-#include "CmVertexIndexData.h"
+#include "CmVertexData.h"
+#include "CmIndexData.h"
 #include "CmSamplerState.h"
 #include "CmRenderOperation.h"
 

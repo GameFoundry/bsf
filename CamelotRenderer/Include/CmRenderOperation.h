@@ -29,7 +29,8 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 #include "CmVertexDeclaration.h"
-#include "CmVertexIndexData.h"
+#include "CmVertexData.h"
+#include "CmIndexData.h"
 
 namespace CamelotEngine 
 {

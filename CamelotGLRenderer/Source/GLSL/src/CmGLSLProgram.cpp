@@ -31,9 +31,9 @@ THE SOFTWARE.
 #include "CmGpuProgramManager.h"
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmException.h"
-#include "CmVertexIndexData.h"
+#include "CmVertexData.h"
+#include "CmIndexData.h"
 #include "CmDebug.h"
-
 #include "CmGLSLProgram.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLExtSupport.h"
