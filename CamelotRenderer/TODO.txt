@@ -31,18 +31,53 @@ And Resources.DestroyUnusedAssets destroys all with just 1 reference?
 
 Resource::destroy_internal is not abstract temporarily so I can test
 
-Shader parser (possible leave for later? But it might require Resource changes)
- - Static/Dynamic usage for GpuParamBlocks
- - Ability to mark param blocks as "Shared". Those would not get created with every pass instance and would require user to actually create and assign them
-   - I can't think of any way I can do this without a preprocessor
-   - (In editor it might work via GUI, but what if someone doesn't want to use the editor and only uses the engine core?)
-   - Use a simple .shader file in which you specify individual GPU programs, include files, material parameters (whether they're visible
-     to user or just rendering system), input parameters (useful for GLSL which doesn't have semantics as I can provide my own semantics)
-	  - File format would be simple, and parser would just parse line by line, with possible option blocks
-   - Issue of include files remains. How do I reference them? By path most definitely but I'd have to reference the source asset path...And in the current design source asset can move.
-   - Smart way of initializing GpuParamBlocks (without duplicates) (This probably won't be a separate task, as user will specify params manually if I go the parser route)
-   - Make sure that gpu programs assigned to Pass don't share parameters of different types (A task I can ignore if I go the parser route)
- 
+Stuff that needs destroy():
+ - GpuProgram (DONE)
+ - HighLevelGpuProgram (DONE)
+ - Texture (DONE)
+ - Mesh
+ - VertexBuffer
+ - IndexBuffer
+ - GpuBuffer
+ - VertexDeclaration
+ - RenderWindow
+ - Blend/DepthStencil/Rasterizer/SamplerState
+ - GpuParamBlock
+---
+ Maybe
+  - Material
+  - Pass
+  - Shader
+  - Technique
+
+
+Add support for include file resource
+Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it
+ - Also a way to list all referenced includes, and a way to remove them
+
+Make Raster/DepthStencil/Blend/Sampler states resources
+Make Shader a resource
+
+Make GpuParamBlock a resource
+ - Static/Dynamic usage for GpuParamBlock
+ - rename current GpuParamBlock into GpuParamBlockBuffer
+ - add new class GpuParamBlock that has addParameter(name, gpuProgramVariable, type, visible)
+ - it stores data on per-parameter basis
+ - it is a Resource and is serializable
+ - in Material when an actual technique is chosen, GpuParamBlockBuffer is bound to GpuParamBlock
+
+Shader::addParamBlock(name, GPU_PARAM_BLOCK_DESC, bool shared)
+ - If its shared it won't be instantiated manually when material chooses an actual technique
+ - When this method is called we check if any parameter rules are broken:
+   - Ignore missing variables from a param block (weaker techniques might not need them all)
+   - Throw an error if the specified variables come from two different param blocks
+   - Global block should be special to accomodate DX9 shaders
+Shader::addParameter(name, gpuVariableName, type, visible) - Only for objects like textures/buffers/samplers
+
+Material::setParameter - does what it did so far
+Material::setSharedGpuParamBlock(name, GpuParamBlock) - makes he specified block share the data
+
+
  Refactor how we handle RenderTargets (no attach/detach, and no waitForVSync propery in RenderSystem)
  waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
@@ -54,24 +89,11 @@ Can be delayed:
  Better creation of PrimaryWindow
   - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
   - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
-
+ ImportOptions
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  
 
 ---------------------------------------------------
-
-<<<<Resource destruction:>>>
- Each resource has isDestroyed flag. It is set to true when the user calls destroy(). Destroy will unload all heavyweight underlying data but won't destroy the actual pointer. 
- If a destructor is called without having first called destroy() an error is logged that the resource wasn't freed properly.
- Destroy requests will always get queued up at the end of the frame, so that if render system is still using those resources, it has access to them
-   - But then when and how do I actually delete the resource?
-   - Also queued up? OR I don't destroy it?
-   - All internal resources are handled via SharedPtrs so the lightweight reference only gets removed after all actual references are gone.
- For example unloading a texture:
-  - Call texture.destroy()
-    - Removes the texture from Resources and any other place that holds a known reference
-    - Actually destroys the resource and sets isDestroyed flag to true
-    - Reference to the empty texture continues to exist but render system need to check if its destroyed before it tries to use it
 
 <<<<Handle multithreaded object management>>>:
  - Make everything that is possible immutable. Once created it cant be changed.

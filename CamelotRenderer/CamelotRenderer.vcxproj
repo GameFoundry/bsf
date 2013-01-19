@@ -204,6 +204,7 @@
     <ClInclude Include="Include\CmIndexBuffer.h" />
     <ClInclude Include="Include\CmOcclusionQuery.h" />
     <ClInclude Include="Include\CmPixelBuffer.h" />
+    <ClInclude Include="Include\CmRasterizerStateImporter.h" />
     <ClInclude Include="Include\CmTextureView.h" />
     <ClInclude Include="Include\CmVertexBuffer.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgram.h" />
@@ -291,6 +292,7 @@
     <ClCompile Include="Source\CmIndexData.cpp" />
     <ClCompile Include="Source\CmOcclusionQuery.cpp" />
     <ClCompile Include="Source\CmPixelBuffer.cpp" />
+    <ClCompile Include="Source\CmRasterizerStateImporter.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
     <ClCompile Include="Source\CmVertexBuffer.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgram.cpp" />

@@ -1047,7 +1047,7 @@ namespace CamelotEngine
 				cullMode = GL_BACK;
 			}
 			break;
-		case CULL_ANTICLOCKWISE:
+		case CULL_COUNTERCLOCKWISE:
 			if (mActiveRenderTarget && 
 				((mActiveRenderTarget->requiresTextureFlipping() && !mInvertVertexWinding) ||
 				(!mActiveRenderTarget->requiresTextureFlipping() && mInvertVertexWinding)))
@@ -1130,9 +1130,6 @@ namespace CamelotEngine
 		GLenum glmode;
 		switch(level)
 		{
-		case PM_POINTS:
-			glmode = GL_POINT;
-			break;
 		case PM_WIREFRAME:
 			glmode = GL_LINE;
 			break;

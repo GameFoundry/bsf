@@ -1,31 +1,16 @@
 #pragma once
 
-#include "CmFreeImgPrerequisites.h"
+#include "CmPrerequisites.h"
 #include "CmSpecificImporter.h"
 #include "CmImporter.h"
 
 namespace CamelotEngine
 {
-	class FreeImgImporter : public SpecificImporter
+	class RasterizerStateImporter : public SpecificImporter
 	{
-		struct RawImageData;
-
 	public:
-		FreeImgImporter();
-		virtual ~FreeImgImporter();
-
-		/**
-		 * @brief	Should only be called by the plugin when its being loaded.
-		 */
-		static void startUp()
-		{
-			static FreeImgImporter* importer = nullptr;
-			if(importer == nullptr)
-			{
-				importer = new FreeImgImporter();
-				Importer::instance().registerAssetImporter(importer);
-			}
-		}
+		RasterizerStateImporter();
+		virtual ~RasterizerStateImporter();
 
 		/** Inherited from SpecificImporter */
 		virtual bool isExtensionSupported(const String& ext) const;
@@ -40,6 +25,5 @@ namespace CamelotEngine
 		std::unordered_map<String, int> mExtensionToFID;
 
 		String magicNumToExtension(const UINT8* magic, UINT32 maxBytes) const;
-		TextureDataPtr importRawImage(DataStreamPtr fileData);
 	};
 }

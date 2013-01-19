@@ -134,7 +134,7 @@ namespace CamelotEngine
 				return D3DCULL_CCW;
 			else
 				return D3DCULL_CW;
-		case CULL_ANTICLOCKWISE:
+		case CULL_COUNTERCLOCKWISE:
 			if( flip )
 				return D3DCULL_CW;
 			else
@@ -147,8 +147,6 @@ namespace CamelotEngine
 	{
 		switch(level)
 		{
-		case PM_POINTS:
-			return D3DFILL_POINT;
 		case PM_WIREFRAME:
 			return D3DFILL_WIREFRAME;
 		case PM_SOLID:

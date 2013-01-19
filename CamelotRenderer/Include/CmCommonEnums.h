@@ -161,18 +161,16 @@ namespace CamelotEngine {
         /// Hardware culls triangles whose vertices are listed clockwise in the view (default).
         CULL_CLOCKWISE = 2,
         /// Hardware culls triangles whose vertices are listed anticlockwise in the view.
-        CULL_ANTICLOCKWISE = 3
+        CULL_COUNTERCLOCKWISE = 3
     };
 
     /** The polygon mode to use when rasterising. */
     enum PolygonMode
     {
-		/// Only points are rendered.
-        PM_POINTS = 1,
 		/// Wireframe models are rendered.
-        PM_WIREFRAME = 2,
+        PM_WIREFRAME = 1,
 		/// Solid polygons are rendered.
-        PM_SOLID = 3
+        PM_SOLID = 2
     };
 
     /** Defines the frame buffer types. */

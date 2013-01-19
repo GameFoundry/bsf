@@ -318,7 +318,7 @@ namespace CamelotEngine {
     @returns
         0.0 if the value could not be parsed, otherwise the float version of the String.
     */
-    CM_UTILITY_EXPORT float parseReal(const String& val, float defaultValue = 0);
+    CM_UTILITY_EXPORT float parseFloat(const String& val, float defaultValue = 0);
     /** Converts a String to a whole number. 
     @returns
         0.0 if the value could not be parsed, otherwise the numeric version of the String.

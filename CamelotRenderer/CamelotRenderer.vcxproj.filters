@@ -365,6 +365,9 @@
     <ClInclude Include="Include\CmVertexData.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmRasterizerStateImporter.h">
+      <Filter>Header Files\Importer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -552,6 +555,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmVertexData.cpp">
       <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRasterizerStateImporter.cpp">
+      <Filter>Source Files\Importer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

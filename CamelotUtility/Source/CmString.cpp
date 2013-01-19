@@ -610,7 +610,7 @@ namespace CamelotEngine {
 		return stream.str();
 	}
 	//-----------------------------------------------------------------------
-	float parseReal(const String& val, float defaultValue)
+	float parseFloat(const String& val, float defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		StringStream str(val);

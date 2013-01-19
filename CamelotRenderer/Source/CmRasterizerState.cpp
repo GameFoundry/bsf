@@ -1,5 +1,6 @@
 #include "CmRasterizerState.h"
 #include "CmRenderStateManager.h"
+#include "CmRenderSystem.h"
 #include "CmRasterizerStateRTTI.h"
 
 namespace CamelotEngine
@@ -7,6 +8,8 @@ namespace CamelotEngine
 	void RasterizerState::initialize(const RASTERIZER_STATE_DESC& desc)
 	{
 		mData = desc;
+
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&RasterizerState::initialize_internal, this));
 	}
 
 	const RasterizerStatePtr& RasterizerState::getDefault()

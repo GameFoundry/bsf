@@ -15,8 +15,6 @@ namespace CamelotEngine
 		Resource();
 		virtual ~Resource() {};
 
-
-
 		const String& getUUID() const { return mUUID; }
 
 		/**

@@ -249,6 +249,9 @@ namespace CamelotEngine
 	typedef ResourceHandle<GpuProgram> GpuProgramHandle;
 	typedef ResourceHandle<HighLevelGpuProgram> HighLevelGpuProgramHandle;
 	typedef ResourceHandle<Material> MaterialHandle;
+	typedef ResourceHandle<RasterizerState> RasterizerStateHandle;
+	typedef ResourceHandle<DepthStencilState> DepthStencilStateHandle;
+	typedef ResourceHandle<BlendState> BlendStateHandle;
 }
 
 #endif

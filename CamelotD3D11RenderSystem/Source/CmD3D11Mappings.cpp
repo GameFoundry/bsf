@@ -101,7 +101,7 @@ namespace CamelotEngine
 				return D3D11_CULL_FRONT;
 			else
 				return D3D11_CULL_BACK;
-		case CULL_ANTICLOCKWISE:
+		case CULL_COUNTERCLOCKWISE:
 			if( flip )
 				return D3D11_CULL_BACK;
 			else
@@ -114,9 +114,6 @@ namespace CamelotEngine
 	{
 		switch(level)
 		{
-		case PM_POINTS:
-			LOGWRN("Point rendering not supported in DX11. You must utilize custom geometry shader for that feature");
-			return D3D11_FILL_SOLID; 
 		case PM_WIREFRAME:
 			return D3D11_FILL_WIREFRAME;
 		case PM_SOLID:

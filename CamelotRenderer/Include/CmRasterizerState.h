@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
-#include "CmIReflectable.h"
+#include "CmResource.h"
 
 namespace CamelotEngine
 {
@@ -34,7 +34,7 @@ namespace CamelotEngine
 	};
 
 	// TODO Low priority - Write doc explaining various states
-	class CM_EXPORT RasterizerState : public IReflectable
+	class CM_EXPORT RasterizerState : public Resource
 	{
 	public:
 		virtual ~RasterizerState() {}
