@@ -361,7 +361,7 @@ namespace CamelotEngine
 				{
 					const GpuParamMemberDesc& paramDesc = iter->second;
 
-					GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
+					GpuParamBlockBufferPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
 					const UINT8* ptrData = paramBlock->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
 
 					switch(paramDesc.type)
@@ -413,7 +413,7 @@ namespace CamelotEngine
 				{
 					const GpuParamMemberDesc& paramDesc = iter->second;
 
-					GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
+					GpuParamBlockBufferPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
 					const UINT8* ptrData = paramBlock->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
 
 					switch(paramDesc.type)

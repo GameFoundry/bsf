@@ -21,7 +21,7 @@ namespace CamelotEngine
 
 		for(auto iter = mParamDesc.paramBlocks.begin(); iter != mParamDesc.paramBlocks.end(); ++iter)
 		{
-			mParamBlocks[iter->second.slot] = GpuParamBlock::create(iter->second);
+			mParamBlocks[iter->second.slot] = GpuParamBlockBuffer::create(iter->second);
 		}
 
 		UINT32 numTextureSlots = 0;
@@ -43,7 +43,7 @@ namespace CamelotEngine
 		mSamplerStates.resize(numSamplerSlots);
 	}
 
-	GpuParamBlockPtr GpuParams::getParamBlock(UINT32 slot) const
+	GpuParamBlockBufferPtr GpuParams::getParamBlock(UINT32 slot) const
 	{
 		if(slot < 0 || slot >= (UINT32)mParamBlocks.size())
 		{
@@ -54,7 +54,7 @@ namespace CamelotEngine
 		return mParamBlocks[slot];
 	}
 
-	GpuParamBlockPtr GpuParams::getParamBlock(const String& name) const
+	GpuParamBlockBufferPtr GpuParams::getParamBlock(const String& name) const
 	{
 		auto iterFind = mParamDesc.paramBlocks.find(name);
 
@@ -67,7 +67,7 @@ namespace CamelotEngine
 		return mParamBlocks[iterFind->second.slot];
 	}
 
-	void GpuParams::setParamBlock(UINT32 slot, GpuParamBlockPtr paramBlock)
+	void GpuParams::setParamBlock(UINT32 slot, GpuParamBlockBufferPtr paramBlock)
 	{
 		if(slot < 0 || slot >= (UINT32)mParamBlocks.size())
 		{
@@ -78,7 +78,7 @@ namespace CamelotEngine
 		mParamBlocks[slot] = paramBlock;
 	}
 
-	void GpuParams::setParamBlock(const String& name, GpuParamBlockPtr paramBlock)
+	void GpuParams::setParamBlock(const String& name, GpuParamBlockBufferPtr paramBlock)
 	{
 		auto iterFind = mParamDesc.paramBlocks.find(name);
 
@@ -198,7 +198,7 @@ namespace CamelotEngine
 				toString(elementSizeBytes) + ". Supplied size: " + toString(sizeBytes));
 		}
 
-		GpuParamBlockPtr paramBlock = mParamBlocks[desc->paramBlockSlot];
+		GpuParamBlockBufferPtr paramBlock = mParamBlocks[desc->paramBlockSlot];
 
 		if(paramBlock == nullptr)
 		{

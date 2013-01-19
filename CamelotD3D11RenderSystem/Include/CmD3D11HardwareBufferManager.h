@@ -21,11 +21,11 @@ namespace CamelotEngine
 		 */
 		IndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
-		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlock */
-		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);
+		/** @copydoc HardwareBufferManagerInterface::createGpuParamBlockBuffer */
+		GpuParamBlockBufferPtr createGpuParamBlockBuffer(const GpuParamBlockDesc& paramDesc);
 
 		/**
-		 * @copydoc HardwareBufferManagerInterface::createGpuParamBlock
+		 * @copydoc HardwareBufferManagerInterface::createGpuBuffer
 		 *
 		 * Some limitations are imposed on the combinations of parameters:
 		 *  - APPENDCONSUME buffer type can only be used with randomGpuWrite enabled  

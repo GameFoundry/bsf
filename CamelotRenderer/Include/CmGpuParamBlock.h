@@ -4,7 +4,7 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT GpuParamBlock
+	class CM_EXPORT GpuParamBlockBuffer
 	{
 	private:
 		struct GpuParamBlockSharedData
@@ -14,8 +14,8 @@ namespace CamelotEngine
 		};
 
 	public:
-		GpuParamBlock(const GpuParamBlockDesc& desc);
-		virtual ~GpuParamBlock();
+		GpuParamBlockBuffer(const GpuParamBlockDesc& desc);
+		virtual ~GpuParamBlockBuffer();
 
 		void write(UINT32 offset, const void* data, UINT32 size);
 		void zeroOut(UINT32 offset, UINT32 size);
@@ -25,9 +25,9 @@ namespace CamelotEngine
 
 		virtual void updateIfDirty();
 
-		virtual GpuParamBlockPtr clone() const;
+		virtual GpuParamBlockBufferPtr clone() const;
 		
-		static GpuParamBlockPtr create(const GpuParamBlockDesc& desc);
+		static GpuParamBlockBufferPtr create(const GpuParamBlockDesc& desc);
 	protected:
 		GpuParamBlockSharedData* sharedData;
 		bool mOwnsSharedData;

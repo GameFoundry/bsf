@@ -104,9 +104,9 @@ namespace CamelotEngine {
 		return IndexBufferPtr(buf);
     }
 	//---------------------------------------------------------------------
-	GpuParamBlockPtr GLHardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc)
+	GpuParamBlockBufferPtr GLHardwareBufferManager::createGpuParamBlockBuffer(const GpuParamBlockDesc& paramDesc)
 	{
-		return GpuParamBlockPtr(new GLGpuParamBlock(paramDesc));
+		return GpuParamBlockBufferPtr(new GLGpuParamBlock(paramDesc));
 	}
 	//---------------------------------------------------------------------
 	GpuBufferPtr GLHardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 

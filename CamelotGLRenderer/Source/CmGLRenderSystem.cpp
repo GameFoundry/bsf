@@ -341,7 +341,7 @@ namespace CamelotEngine
 			if(iter->second.slot == 0)
 				continue;
 
-			GpuParamBlockPtr paramBlock = params->getParamBlock(iter->second.slot);
+			GpuParamBlockBufferPtr paramBlock = params->getParamBlock(iter->second.slot);
 			if(paramBlock == nullptr)
 				continue;
 
@@ -358,7 +358,7 @@ namespace CamelotEngine
 		{
 			const GpuParamMemberDesc& paramDesc = iter->second;
 
-			GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
+			GpuParamBlockBufferPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
 			
 			if(paramDesc.paramBlockSlot != 0) // 0 means uniforms are not in a block
 				continue;

@@ -62,8 +62,8 @@ namespace CamelotEngine {
             IndexBuffer::IndexType itype, UINT32 numIndexes, 
             GpuBufferUsage usage);
 
-		/** @copydoc HardwareBufferManager::createGpuParamBlock */
-		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc);
+		/** @copydoc HardwareBufferManager::createGpuParamBlockBuffer */
+		GpuParamBlockBufferPtr createGpuParamBlockBuffer(const GpuParamBlockDesc& paramDesc);
 
 		/**
 		 * @copydoc HardwareBufferManager::createGenericBuffer

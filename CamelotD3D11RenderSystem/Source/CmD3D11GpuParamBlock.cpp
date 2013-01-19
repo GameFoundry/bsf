@@ -6,7 +6,7 @@
 namespace CamelotEngine
 {
 	D3D11GpuParamBlock::D3D11GpuParamBlock(const GpuParamBlockDesc& desc)
-		:GpuParamBlock(desc), mD3D11SharedData(nullptr)
+		:GpuParamBlockBuffer(desc), mD3D11SharedData(nullptr)
 	{
 		mD3D11SharedData = new D3D11GpuParamBlockSharedData();
 	}
@@ -37,10 +37,10 @@ namespace CamelotEngine
 			mD3D11SharedData->mBuffer->writeData(0, mSize, mData, true);
 		}
 
-		GpuParamBlock::updateIfDirty();
+		GpuParamBlockBuffer::updateIfDirty();
 	}
 
-	GpuParamBlockPtr D3D11GpuParamBlock::clone() const
+	GpuParamBlockBufferPtr D3D11GpuParamBlock::clone() const
 	{
 		std::shared_ptr<D3D11GpuParamBlock> clonedParamBlock(new D3D11GpuParamBlock(*this));
 		clonedParamBlock->mData = new UINT8[mSize];

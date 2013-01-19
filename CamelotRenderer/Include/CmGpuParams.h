@@ -9,11 +9,11 @@ namespace CamelotEngine
 	public:
 		GpuParams(GpuParamDesc& paramDesc);
 
-		GpuParamBlockPtr getParamBlock(UINT32 slot) const;
-		GpuParamBlockPtr getParamBlock(const String& name) const;
+		GpuParamBlockBufferPtr getParamBlock(UINT32 slot) const;
+		GpuParamBlockBufferPtr getParamBlock(const String& name) const;
 
-		void setParamBlock(UINT32 slot, GpuParamBlockPtr paramBlock);
-		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
+		void setParamBlock(UINT32 slot, GpuParamBlockBufferPtr paramBlock);
+		void setParamBlock(const String& name, GpuParamBlockBufferPtr paramBlock);
 
 		const GpuParamDesc& getParamDesc() const { return mParamDesc; }
 
@@ -59,7 +59,7 @@ namespace CamelotEngine
 
 		GpuParamMemberDesc* getParamDesc(const String& name) const;
 
-		vector<GpuParamBlockPtr>::type mParamBlocks;
+		vector<GpuParamBlockBufferPtr>::type mParamBlocks;
 		vector<TextureHandle>::type mTextures;
 		vector<SamplerStatePtr>::type mSamplerStates;
 	};
