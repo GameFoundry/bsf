@@ -17,7 +17,7 @@ namespace CamelotEngine
 
 		D3D11BlendState();
 
-		void initialize(const BLEND_STATE_DESC& desc);
+		void initialize_internal();
 
 		ID3D11BlendState* mBlendState;
 	};

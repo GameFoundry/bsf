@@ -246,15 +246,12 @@ namespace CamelotEngine {
 		 * @brief	Initializes the texture. This must be called right after the texture is constructed. Called by TextureManager
 		 * 			upon texture creation, so usually you don't want to call this manually.
 		 * 			
-		 * @param	internalCall	(optional) Set to true if initializing from within the RenderSystem.
-		 * 							Most users don't have to be concerned about this.
-		 * 							
 		 * @note	Initialization is not done immediately, and is instead just scheduled on the
-		 * 			render thread. Unless internalCall is specified, in which case it is initialized
-		 * 			right away. But you should only do this when calling from the render thread.
+		 * 			render thread. Unless called from render thread, in which case it is initialized
+		 * 			right away.
 		 */
 		void initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
-			PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint, bool internalCall = false);
+			PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint);
 
 		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
 		virtual void unlockImpl() = 0;

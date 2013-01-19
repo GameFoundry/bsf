@@ -147,20 +147,20 @@ namespace CamelotEngine {
 	}
     //---------------------------------------------------------------------------
     HighLevelGpuProgramPtr HighLevelGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, bool internalCall)
+		GpuProgramType gptype, GpuProgramProfile profile)
     {
 		HighLevelGpuProgramFactory* factory = getFactory(language);
         HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(source, entryPoint, gptype, profile), boost::bind(&HighLevelGpuProgramFactory::destroy, factory, _1));
-		ret->initialize(internalCall);
+		ret->initialize();
 
         return ret;
     }
 	//---------------------------------------------------------------------------
-	HighLevelGpuProgramPtr HighLevelGpuProgramManager::create(const String& language, bool internalCall)
+	HighLevelGpuProgramPtr HighLevelGpuProgramManager::create(const String& language)
 	{
 		HighLevelGpuProgramFactory* factory = getFactory(language);
 		HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(), boost::bind(&HighLevelGpuProgramFactory::destroy, factory, _1));
-		ret->initialize(internalCall);
+		ret->initialize();
 
 		return ret;
 	}

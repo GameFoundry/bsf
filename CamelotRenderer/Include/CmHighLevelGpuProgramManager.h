@@ -100,20 +100,16 @@ namespace CamelotEngine {
             to be a member of
 		@param language Code of the language to use (e.g. "cg")
 		@param gptype The type of program to create
-		* @param	internalCall	(optional) Set to true if calling this method from within the RenderSystem.
-		* 							Most users don't have to be concerned about this.
 		*/
-		HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile, bool internalCall = false);
+		HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
 		/** Create a new HighLevelGpuProgram. 
 		@par
 			This method creates a new program of the specified language. You need to set other 
 			properties like source, entry point, type, profile manually.
 		@param language Code of the language to use (e.g. "cg")
-		* @param	internalCall	(optional) Set to true if calling this method from within the RenderSystem.
-		* 							Most users don't have to be concerned about this.
 		*/
-		HighLevelGpuProgramPtr create(const String& language, bool internalCall = false);
+		HighLevelGpuProgramPtr create(const String& language);
 
 		/**
 		 * @brief	Creates a completely empty and uninitialized HighLevelGpuProgram.

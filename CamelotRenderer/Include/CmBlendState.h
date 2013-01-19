@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmIReflectable.h"
+#include "CmResource.h"
 #include "CmCommonEnums.h"
 
 namespace CamelotEngine
@@ -43,7 +43,7 @@ namespace CamelotEngine
 	};
 
 	// TODO Low priority - Write doc explaining various states
-	class CM_EXPORT BlendState : public IReflectable
+	class CM_EXPORT BlendState : public Resource
 	{
 	public:
 		virtual ~BlendState() {}
@@ -67,7 +67,7 @@ namespace CamelotEngine
 		 */
 		static const BlendStatePtr& getDefault();
 
-	private:
+	protected:
 		friend class RenderStateManager;
 
 		virtual void initialize(const BLEND_STATE_DESC& desc);

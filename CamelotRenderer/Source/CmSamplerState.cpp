@@ -1,6 +1,7 @@
 #include "CmSamplerState.h"
 #include "CmSamplerStateRTTI.h"
 #include "CmRenderStateManager.h"
+#include "CmRenderSystem.h"
 #include "CmException.h"
 
 namespace CamelotEngine 
@@ -8,6 +9,8 @@ namespace CamelotEngine
 	void SamplerState::initialize(const SAMPLER_STATE_DESC& desc)
 	{
 		mData = desc;
+
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&SamplerState::initialize_internal, this));
 	}
 
 	const SamplerStatePtr& SamplerState::getDefault()

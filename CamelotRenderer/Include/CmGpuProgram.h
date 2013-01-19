@@ -171,14 +171,11 @@ namespace CamelotEngine {
 		 * 			constructed. Called by GpuManager upon creation, so usually you don't want
 		 * 			to call this manually.
 		 *		 
-		 * @param	internalCall	(optional) Set to true if initializing from within the RenderSystem.
-		 * 							Most users don't have to be concerned about this.
-		 * 							
 		 * @note	Initialization is not done immediately, and is instead just scheduled on the
-		 * 			render thread. Unless internalCall is specified, in which case it is initialized
+		 * 			render thread. Unless called from render thread, in which case it is initialized
 		 * 			right away.
 		 */
-		void initialize(bool internalCall = false);
+		void initialize();
 
 		/**
 		 * @copydoc Resource::destroy_internal.

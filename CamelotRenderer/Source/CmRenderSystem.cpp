@@ -448,12 +448,14 @@ namespace CamelotEngine {
 	
 	AsyncOp RenderSystem::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)
 	{
-#if CM_DEBUG_MODE && !CM_FORCE_SINGLETHREADED_RENDERING
-		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
-			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
-#endif
-
 		AsyncOp op;
+
+		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
+		{
+			commandCallback(op); // Execute immediately
+			return op;
+		}
+
 		UINT32 commandId = -1;
 		{
 			CM_LOCK_MUTEX(mCommandQueueMutex);
@@ -477,10 +479,11 @@ namespace CamelotEngine {
 
 	void RenderSystem::queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete)
 	{
-#if CM_DEBUG_MODE && !CM_FORCE_SINGLETHREADED_RENDERING
 		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
-			CM_EXCEPT(InternalErrorException, "You are not allowed to call this method on the render thread!");
-#endif
+		{
+			commandCallback(); // Execute immediately
+			return;
+		}
 
 		UINT32 commandId = -1;
 		{

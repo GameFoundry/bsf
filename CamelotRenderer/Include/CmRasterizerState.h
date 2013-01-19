@@ -58,7 +58,7 @@ namespace CamelotEngine
 		 */
 		static const RasterizerStatePtr& getDefault();
 
-	private:
+	protected:
 		friend class RenderStateManager;
 
 		virtual void initialize(const RASTERIZER_STATE_DESC& desc);

@@ -14,20 +14,20 @@ namespace CamelotEngine
 		SAFE_RELEASE(mRasterizerState);
 	}
 
-	void D3D11RasterizerState::initialize(const RASTERIZER_STATE_DESC& desc)
+	void D3D11RasterizerState::initialize_internal()
 	{
 		D3D11_RASTERIZER_DESC rasterizerStateDesc;
 		ZeroMemory(&rasterizerStateDesc, sizeof(D3D11_RASTERIZER_DESC));
 
-		rasterizerStateDesc.AntialiasedLineEnable = desc.antialiasedLineEnable;
-		rasterizerStateDesc.CullMode = D3D11Mappings::get(desc.cullMode);
-		rasterizerStateDesc.DepthBias = desc.depthBias;
-		rasterizerStateDesc.DepthBiasClamp = desc.depthBiasClamp;
-		rasterizerStateDesc.DepthClipEnable = desc.depthClipEnable;
-		rasterizerStateDesc.FillMode = D3D11Mappings::get(desc.polygonMode);
-		rasterizerStateDesc.MultisampleEnable = desc.multisampleEnable;
-		rasterizerStateDesc.ScissorEnable = desc.scissorEnable;
-		rasterizerStateDesc.SlopeScaledDepthBias = desc.slopeScaledDepthBias;
+		rasterizerStateDesc.AntialiasedLineEnable = mData.antialiasedLineEnable;
+		rasterizerStateDesc.CullMode = D3D11Mappings::get(mData.cullMode);
+		rasterizerStateDesc.DepthBias = mData.depthBias;
+		rasterizerStateDesc.DepthBiasClamp = mData.depthBiasClamp;
+		rasterizerStateDesc.DepthClipEnable = mData.depthClipEnable;
+		rasterizerStateDesc.FillMode = D3D11Mappings::get(mData.polygonMode);
+		rasterizerStateDesc.MultisampleEnable = mData.multisampleEnable;
+		rasterizerStateDesc.ScissorEnable = mData.scissorEnable;
+		rasterizerStateDesc.SlopeScaledDepthBias = mData.slopeScaledDepthBias;
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
@@ -38,5 +38,7 @@ namespace CamelotEngine
 			String errorDescription = device.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "Cannot create rasterizer state.\nError Description:" + errorDescription);
 		}
+
+		RasterizerState::initialize_internal();
 	}
 }

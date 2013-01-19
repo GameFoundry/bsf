@@ -1,5 +1,6 @@
 #include "CmBlendState.h"
 #include "CmRenderStateManager.h"
+#include "CmRenderSystem.h"
 #include "CmBlendStateRTTI.h"
 
 namespace CamelotEngine
@@ -7,6 +8,8 @@ namespace CamelotEngine
 	void BlendState::initialize(const BLEND_STATE_DESC& desc)
 	{
 		mData = desc;
+
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&BlendState::initialize_internal, this));
 	}
 
 	const BlendStatePtr& BlendState::getDefault()

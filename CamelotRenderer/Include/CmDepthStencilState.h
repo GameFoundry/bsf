@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
-#include "CmIReflectable.h"
+#include "CmResource.h"
 
 namespace CamelotEngine
 {
@@ -45,7 +45,7 @@ namespace CamelotEngine
 	};
 
 	// TODO Low priority - Write doc explaining various states
-	class CM_EXPORT DepthStencilState : public IReflectable
+	class CM_EXPORT DepthStencilState : public Resource
 	{
 	public:
 		virtual ~DepthStencilState() {}
@@ -74,7 +74,7 @@ namespace CamelotEngine
 		 * @brief	Returns the default depth stencil state;
 		 */
 		static const DepthStencilStatePtr& getDefault();
-	private:
+	protected:
 		friend class RenderStateManager;
 
 		virtual void initialize(const DEPTH_STENCIL_STATE_DESC& desc);

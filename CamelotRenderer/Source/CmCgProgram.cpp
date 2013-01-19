@@ -102,7 +102,7 @@ namespace CamelotEngine {
 			// Create a low-level program, give it the same name as us
 			mAssemblerProgram = 
 				HighLevelGpuProgramManager::instance().create(
-				sourceFromCg, mEntryPoint, RenderSystem::instance().getShadingLanguageName(), mType, mProfile, true);
+				sourceFromCg, mEntryPoint, RenderSystem::instance().getShadingLanguageName(), mType, mProfile);
 
 			// Shader params need to be forwarded to low level implementation
 			mAssemblerProgram->setAdjacencyInfoRequired(isAdjacencyInfoRequired());

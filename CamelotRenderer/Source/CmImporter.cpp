@@ -5,14 +5,13 @@
 #include "CmSpecificImporter.h"
 #include "CmDebug.h"
 #include "CmDataStream.h"
-#include "CmRasterizerStateImporter.h"
 #include "CmException.h"
 
 namespace CamelotEngine
 {
 	Importer::Importer()
 	{
-		registerAssetImporter(new RasterizerStateImporter());
+
 	}
 
 	Importer::~Importer()

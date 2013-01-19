@@ -17,7 +17,7 @@ namespace CamelotEngine
 
 		D3D11DepthStencilState();
 
-		void initialize(const DEPTH_STENCIL_STATE_DESC& desc);
+		void initialize_internal();
 
 		ID3D11DepthStencilState* mDepthStencilState;
 	};

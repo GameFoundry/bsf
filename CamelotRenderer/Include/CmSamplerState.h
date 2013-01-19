@@ -7,7 +7,7 @@
 #include "CmPixelUtil.h"
 #include "CmTexture.h"
 #include "CmColor.h"
-#include "CmIReflectable.h"
+#include "CmResource.h"
 
 namespace CamelotEngine 
 {
@@ -49,7 +49,7 @@ namespace CamelotEngine
 	*			be recreated internally (depending on used render system). It is better to have multiple SamplerState objects with different
 	*			configurations and re-use them.
 	*/
-	class CM_EXPORT SamplerState : public IReflectable
+	class CM_EXPORT SamplerState : public Resource
     {
     public:
 		virtual ~SamplerState() {}
@@ -99,7 +99,7 @@ namespace CamelotEngine
 		 */
 		static const SamplerStatePtr& getDefault();
 
-	private:
+	protected:
 		friend class RenderStateManager;
 
 		virtual void initialize(const SAMPLER_STATE_DESC& desc);

@@ -26,12 +26,9 @@ namespace CamelotEngine
 		CM_THREAD_NOTIFY_ALL(mResourceLoadedCondition);
 	}
 
-	void Resource::destroy(bool internalCall)
+	void Resource::destroy()
 	{
-		if(internalCall)
-			destroy_internal();
-		else
-			RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::destroy_internal, this));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::destroy_internal, this));
 	}
 
 	void Resource::waitUntilInitialized()

@@ -16,7 +16,7 @@ namespace CamelotEngine
 
 		D3D11SamplerState();
 
-		void initialize(const SAMPLER_STATE_DESC& desc);
+		void initialize_internal();
 
 		ID3D11SamplerState* mSamplerState;
 	};

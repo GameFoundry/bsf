@@ -521,7 +521,7 @@ namespace CamelotEngine
 		}
 
 		mDepthStencilBuffer = TextureManager::instance().createTexture(TEX_TYPE_2D, 
-			BBDesc.Width, BBDesc.Height, 0, PF_D24S8, TU_DEPTHSTENCIL, false, mFSAA, mFSAAHint, true);
+			BBDesc.Width, BBDesc.Height, 0, PF_D24S8, TU_DEPTHSTENCIL, false, mFSAA, mFSAAHint);
 
 		if(mDepthStencilView != nullptr)
 		{

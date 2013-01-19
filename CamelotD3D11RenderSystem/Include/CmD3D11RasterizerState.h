@@ -16,7 +16,7 @@ namespace CamelotEngine
 
 		D3D11RasterizerState();
 
-		void initialize(const RASTERIZER_STATE_DESC& desc);
+		void initialize_internal();
 
 		ID3D11RasterizerState* mRasterizerState;
 	};

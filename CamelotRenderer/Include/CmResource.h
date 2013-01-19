@@ -32,10 +32,9 @@ namespace CamelotEngine
 		 * @copydoc	IDestroyable::destroy()
 		 * 			
 		 * 	@note	Destruction is not done immediately, and is instead just scheduled on the
-		 * 			render thread. Unless internalCall is specified, in which case it is destroyed
-		 * 			right away. But you should only do this when calling from the render thread.
+		 * 			render thread. Unless called from render thread in which case it is executed right away.
 		 */
-		void destroy(bool internalCall = false);
+		void destroy();
 
 	protected:
 		friend class Resources;
