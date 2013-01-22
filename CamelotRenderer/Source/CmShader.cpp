@@ -98,6 +98,7 @@ namespace CamelotEngine
 	void Shader::setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage)
 	{
 		SHADER_PARAM_BLOCK_DESC desc;
+		desc.name = name;
 		desc.shared = shared;
 		desc.usage = usage;
 

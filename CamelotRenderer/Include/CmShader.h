@@ -25,6 +25,7 @@ namespace CamelotEngine
 
 	struct CM_EXPORT SHADER_PARAM_BLOCK_DESC
 	{
+		String name;
 		bool shared;
 		GpuParamBlockUsage usage;
 	};

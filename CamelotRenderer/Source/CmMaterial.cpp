@@ -96,6 +96,7 @@ namespace CamelotEngine
 				}
 			}
 
+			// Fill out various helper structures
 			set<String>::type validParameters = determineValidParameters(allParamDescs);
 			set<String>::type validShareableParamBlocks = determineValidShareableParamBlocks(allParamDescs);
 			map<String, String>::type paramToParamBlockMap = determineParameterToBlockMapping(allParamDescs);
