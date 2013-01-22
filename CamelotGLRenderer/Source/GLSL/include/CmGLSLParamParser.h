@@ -43,7 +43,7 @@ namespace CamelotEngine
 		void buildVertexDeclaration(GLuint glProgram, VertexDeclaration& declaration);
 
 	private:
-		void determineParamInfo(GpuParamMemberDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex);
+		void determineParamInfo(GpuParamDataDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex);
 
 		/**
 		* @brief	GLSL has no concept of semantics, so we require all shaders to use specific names for attributes
@@ -153,6 +153,7 @@ namespace CamelotEngine
 		newGlobalBlockDesc.slot = 0;
 		newGlobalBlockDesc.name = "CM_INTERNAL_Globals";
 		newGlobalBlockDesc.blockSize = 0;
+		newGlobalBlockDesc.isShareable = false;
 
 		UINT32 textureSlot = 0;
 
@@ -172,6 +173,7 @@ namespace CamelotEngine
 			newBlockDesc.slot = index + 1;
 			newBlockDesc.name = uniformName;
 			newBlockDesc.blockSize = 0;
+			newBlockDesc.isShareable = true;
 
 			returnParamDesc.paramBlocks[newBlockDesc.name] = newBlockDesc;
 			blockSlotToName.insert(std::make_pair(newBlockDesc.slot, newBlockDesc.name));
@@ -216,31 +218,31 @@ namespace CamelotEngine
 
 			if(isSampler)
 			{
-				GpuParamSpecialDesc samplerParam;
+				GpuParamObjectDesc samplerParam;
 				samplerParam.name = paramName;
 				samplerParam.slot = glGetUniformLocation(glProgram, uniformName);
 
-				GpuParamSpecialDesc textureParam;
+				GpuParamObjectDesc textureParam;
 				textureParam.name = paramName;
 				textureParam.slot = samplerParam.slot;
 
 				switch(uniformType)
 				{
 				case GL_SAMPLER_1D:
-					samplerParam.type = GST_SAMPLER1D;
-					textureParam.type = GST_TEXTURE1D;
+					samplerParam.type = GPOT_SAMPLER1D;
+					textureParam.type = GPOT_TEXTURE1D;
 					break;
 				case GL_SAMPLER_2D:
-					samplerParam.type = GST_SAMPLER2D;
-					textureParam.type = GST_TEXTURE2D;
+					samplerParam.type = GPOT_SAMPLER2D;
+					textureParam.type = GPOT_TEXTURE2D;
 					break;
 				case GL_SAMPLER_3D:
-					samplerParam.type = GST_SAMPLER3D;
-					textureParam.type = GST_TEXTURE3D;
+					samplerParam.type = GPOT_SAMPLER3D;
+					textureParam.type = GPOT_TEXTURE3D;
 					break;
 				case GL_SAMPLER_CUBE:
-					samplerParam.type = GST_SAMPLERCUBE;
-					textureParam.type = GST_TEXTURECUBE;
+					samplerParam.type = GPOT_SAMPLERCUBE;
+					textureParam.type = GPOT_TEXTURECUBE;
 					break;
 				}
 
@@ -249,7 +251,7 @@ namespace CamelotEngine
 			}
 			else
 			{
-				GpuParamMemberDesc gpuParam;
+				GpuParamDataDesc gpuParam;
 				gpuParam.name = paramName;
 
 				GLint blockIndex;
@@ -315,7 +317,7 @@ namespace CamelotEngine
 		delete[] uniformName;
 	}
 
-	void GLSLParamParser::determineParamInfo(GpuParamMemberDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex)
+	void GLSLParamParser::determineParamInfo(GpuParamDataDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex)
 	{
 		GLint arraySize;
 		glGetActiveUniformsiv(programHandle, 1, &uniformIndex, GL_UNIFORM_SIZE, &arraySize);
@@ -327,75 +329,75 @@ namespace CamelotEngine
 		switch (uniformType)
 		{
 		case GL_BOOL:
-			desc.type = GMT_BOOL;
+			desc.type = GPDT_BOOL;
 			desc.elementSize = 1;
 			break;
 		case GL_FLOAT:
-			desc.type = GMT_FLOAT1;
+			desc.type = GPDT_FLOAT1;
 			desc.elementSize = 1;
 			break;
 		case GL_FLOAT_VEC2:
-			desc.type = GMT_FLOAT2;
+			desc.type = GPDT_FLOAT2;
 			desc.elementSize = 2;
 			break;
 		case GL_FLOAT_VEC3:
-			desc.type = GMT_FLOAT3;
+			desc.type = GPDT_FLOAT3;
 			desc.elementSize = 3;
 			break;
 		case GL_FLOAT_VEC4:
-			desc.type = GMT_FLOAT4;
+			desc.type = GPDT_FLOAT4;
 			desc.elementSize = 4;
 			break;
 		case GL_INT:
-			desc.type = GMT_INT1;
+			desc.type = GPDT_INT1;
 			desc.elementSize = 1;
 			break;
 		case GL_INT_VEC2:
-			desc.type = GMT_INT2;
+			desc.type = GPDT_INT2;
 			desc.elementSize = 2;
 			break;
 		case GL_INT_VEC3:
-			desc.type = GMT_INT3;
+			desc.type = GPDT_INT3;
 			desc.elementSize = 3;
 			break;
 		case GL_INT_VEC4:
-			desc.type = GMT_INT4;
+			desc.type = GPDT_INT4;
 			desc.elementSize = 4;
 			break;
 		case GL_FLOAT_MAT2:
-			desc.type = GMT_MATRIX_2X2;
+			desc.type = GPDT_MATRIX_2X2;
 			desc.elementSize = 4;
 			break;
 		case GL_FLOAT_MAT3:
-			desc.type = GMT_MATRIX_3X3;
+			desc.type = GPDT_MATRIX_3X3;
 			desc.elementSize = 9;
 			break;
 		case GL_FLOAT_MAT4:
-			desc.type = GMT_MATRIX_4X4;
+			desc.type = GPDT_MATRIX_4X4;
 			desc.elementSize = 16;
 			break;
 		case GL_FLOAT_MAT2x3:
-			desc.type = GMT_MATRIX_2X3;
+			desc.type = GPDT_MATRIX_2X3;
 			desc.elementSize = 6;
 			break;
 		case GL_FLOAT_MAT3x2:
-			desc.type = GMT_MATRIX_3X2;
+			desc.type = GPDT_MATRIX_3X2;
 			desc.elementSize = 6;
 			break;
 		case GL_FLOAT_MAT2x4:
-			desc.type = GMT_MATRIX_2X4;
+			desc.type = GPDT_MATRIX_2X4;
 			desc.elementSize = 8;
 			break;
 		case GL_FLOAT_MAT4x2:
-			desc.type = GMT_MATRIX_4X2;
+			desc.type = GPDT_MATRIX_4X2;
 			desc.elementSize = 8;
 			break;
 		case GL_FLOAT_MAT3x4:
-			desc.type = GMT_MATRIX_3X4;
+			desc.type = GPDT_MATRIX_3X4;
 			desc.elementSize = 12;
 			break;
 		case GL_FLOAT_MAT4x3:
-			desc.type = GMT_MATRIX_4X3;
+			desc.type = GPDT_MATRIX_4X3;
 			desc.elementSize = 12;
 			break;
 		default:

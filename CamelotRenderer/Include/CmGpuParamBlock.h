@@ -1,10 +1,11 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmCommonEnums.h"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT GpuParamBlockBuffer
+	class CM_EXPORT GpuParamBlock
 	{
 	private:
 		struct GpuParamBlockSharedData
@@ -14,8 +15,8 @@ namespace CamelotEngine
 		};
 
 	public:
-		GpuParamBlockBuffer(const GpuParamBlockDesc& desc);
-		virtual ~GpuParamBlockBuffer();
+		GpuParamBlock(const GpuParamBlockDesc& desc, GpuParamBlockUsage usage);
+		virtual ~GpuParamBlock();
 
 		void write(UINT32 offset, const void* data, UINT32 size);
 		void zeroOut(UINT32 offset, UINT32 size);
@@ -25,9 +26,9 @@ namespace CamelotEngine
 
 		virtual void updateIfDirty();
 
-		virtual GpuParamBlockBufferPtr clone() const;
+		virtual GpuParamBlockPtr clone() const;
 		
-		static GpuParamBlockBufferPtr create(const GpuParamBlockDesc& desc);
+		static GpuParamBlockPtr create(const GpuParamBlockDesc& desc);
 	protected:
 		GpuParamBlockSharedData* sharedData;
 		bool mOwnsSharedData;

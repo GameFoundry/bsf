@@ -5,7 +5,7 @@
 
 namespace CamelotEngine
 {
-	class CM_D3D11_EXPORT D3D11GpuParamBlock : public GpuParamBlockBuffer
+	class CM_D3D11_EXPORT D3D11GpuParamBlock : public GpuParamBlock
 	{
 	private:
 		struct D3D11GpuParamBlockSharedData
@@ -14,11 +14,11 @@ namespace CamelotEngine
 		};
 
 	public:
-		D3D11GpuParamBlock(const GpuParamBlockDesc& desc);
+		D3D11GpuParamBlock(const GpuParamBlockDesc& desc, GpuParamBlockUsage usage);
 		~D3D11GpuParamBlock();
 
 		virtual void updateIfDirty();
-		virtual GpuParamBlockBufferPtr clone() const;
+		virtual GpuParamBlockPtr clone() const;
 
 		ID3D11Buffer* getD3D11Buffer() const;
 

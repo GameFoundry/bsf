@@ -142,6 +142,8 @@ namespace CamelotEngine {
         */
 		virtual GpuParamsPtr createParameters();
 
+		const GpuParamDesc& getParamDesc() const { return mParametersDesc; }
+
 		/** Returns a string that specifies the language of the gpu programs as specified
         in a material script. ie: asm, cg, hlsl, glsl
         */

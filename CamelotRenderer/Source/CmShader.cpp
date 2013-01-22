@@ -64,6 +64,46 @@ namespace CamelotEngine
 		// TODO - Low priority. Instead of throwing an exception use an extremely simple technique that will be supported almost everywhere as a fallback.
 	}
 
+	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize, bool hidden)
+	{
+		SHADER_DATA_PARAM_DESC desc;
+		desc.name = name;
+		desc.gpuVariableName = gpuVariableName;
+		desc.type = type;
+		desc.arraySize = arraySize;
+		desc.hidden = hidden;
+
+		mDataParams[name] = desc;
+		mObjectParams.erase(name);
+	}
+
+	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, bool hidden)
+	{
+		SHADER_OBJECT_PARAM_DESC desc;
+		desc.name = name;
+		desc.gpuVariableName = gpuVariableName;
+		desc.type = type;
+		desc.hidden = hidden;
+
+		mObjectParams[name] = desc;
+		mDataParams.erase(name);
+	}
+
+	void Shader::removeParameter(const String& name)
+	{
+		mDataParams.erase(name);
+		mObjectParams.erase(name);
+	}
+
+	void Shader::setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage)
+	{
+		SHADER_PARAM_BLOCK_DESC desc;
+		desc.shared = shared;
+		desc.usage = usage;
+
+		mParamBlocks[name] = desc;
+	}
+
 	RTTITypeBase* Shader::getRTTIStatic()
 	{
 		return ShaderRTTI::instance();

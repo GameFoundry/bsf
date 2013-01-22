@@ -5,8 +5,11 @@
 #include "CmPass.h"
 #include "CmRenderSystem.h"
 #include "CmGpuProgramParams.h"
+#include "CmHardwareBufferManager.h"
 #include "CmGpuProgram.h"
+#include "CmGpuParamDesc.h"
 #include "CmMaterialRTTI.h"
+#include "CmDebug.h"
 
 namespace CamelotEngine
 {
@@ -31,65 +34,451 @@ namespace CamelotEngine
 	void Material::initBestTechnique()
 	{
 		mBestTechnique = nullptr;
-		mParameters.clear();
+		mParametersPerPass.clear();
 
 		if(mShader)
 		{
 			mBestTechnique = mShader->getBestTechnique();
 
-			if(mBestTechnique)
+			if(mBestTechnique == nullptr)
+				return;
+
+			mValidShareableParamBlocks.clear();
+			mValidParams.clear();
+
+			vector<const GpuParamDesc*>::type allParamDescs;
+
+			// Make sure all gpu programs are fully loaded
+			for(UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
 			{
-				for(UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
+				PassPtr curPass = mBestTechnique->getPass(i);
+
+				GpuProgramHandle vertProgram = curPass->getVertexProgram();
+				if(vertProgram)
 				{
-					PassPtr curPass = mBestTechnique->getPass(i);
-					PassParametersPtr params = PassParametersPtr(new PassParameters());
+					vertProgram.waitUntilLoaded();
+					allParamDescs.push_back(&vertProgram->getParamDesc());
+				}
 
-					GpuProgramHandle vertProgram = curPass->getVertexProgram();
-					if(vertProgram)
+				GpuProgramHandle fragProgram = curPass->getFragmentProgram();
+				if(fragProgram)
+				{
+					fragProgram.waitUntilLoaded();
+					allParamDescs.push_back(&fragProgram->getParamDesc());
+				}
+
+				GpuProgramHandle geomProgram = curPass->getGeometryProgram();
+				if(geomProgram)
+				{
+					geomProgram.waitUntilLoaded();
+					allParamDescs.push_back(&geomProgram->getParamDesc());
+				}
+
+				GpuProgramHandle hullProgram = curPass->getHullProgram();
+				if(hullProgram)
+				{
+					hullProgram.waitUntilLoaded();
+					allParamDescs.push_back(&hullProgram->getParamDesc());
+				}
+
+				GpuProgramHandle domainProgram = curPass->getDomainProgram();
+				if(domainProgram)
+				{
+					domainProgram.waitUntilLoaded();
+					allParamDescs.push_back(&domainProgram->getParamDesc());
+				}
+
+				GpuProgramHandle computeProgram = curPass->getComputeProgram();
+				if(computeProgram)
+				{
+					computeProgram.waitUntilLoaded();
+					allParamDescs.push_back(&computeProgram->getParamDesc());
+				}
+			}
+
+			set<String>::type validParameters = determineValidParameters(allParamDescs);
+			set<String>::type validShareableParamBlocks = determineValidShareableParamBlocks(allParamDescs);
+			map<String, String>::type paramToParamBlockMap = determineParameterToBlockMapping(allParamDescs);
+			map<String, GpuParamBlockPtr>::type paramBlocks;
+
+			// Create param blocks
+			const map<String, SHADER_PARAM_BLOCK_DESC>::type& shaderDesc = mShader->getParamBlocks();
+			for(auto iter = validShareableParamBlocks.begin(); iter != validShareableParamBlocks.end(); ++iter)
+			{
+				bool isShared = false;
+				GpuParamBlockUsage usage = GPBU_STATIC;
+
+				auto iterFind = shaderDesc.find(*iter);
+				if(iterFind != shaderDesc.end())
+				{
+					isShared = iterFind->second.shared;
+					usage = iterFind->second.usage;
+				}
+
+				GpuParamBlockDesc blockDesc;
+				for(auto iter2 = allParamDescs.begin(); iter2 != allParamDescs.end(); ++iter2)
+				{
+					auto findParamBlockDesc = (*iter2)->paramBlocks.find(*iter);
+
+					if(findParamBlockDesc != (*iter2)->paramBlocks.end())
 					{
-						vertProgram.waitUntilLoaded();
-						params->mVertParams = vertProgram->createParameters();
+						blockDesc = findParamBlockDesc->second;
+						break;
 					}
+				}
 
-					GpuProgramHandle fragProgram = curPass->getFragmentProgram();
-					if(fragProgram)
+				GpuParamBlockPtr newParamBlockBuffer;
+				if(!isShared)
+					newParamBlockBuffer = HardwareBufferManager::instance().createGpuParamBlock(blockDesc, usage);
+
+				paramBlocks[*iter] = newParamBlockBuffer;
+				mValidShareableParamBlocks.insert(*iter);
+			}
+
+			// Create data param mappings
+			const map<String, SHADER_DATA_PARAM_DESC>::type& dataParamDesc = mShader->getDataParams();
+			for(auto iter = dataParamDesc.begin(); iter != dataParamDesc.end(); ++iter)
+			{
+				auto findIter = validParameters.find(iter->first);
+
+				// Not valid so we skip it
+				if(findIter == validParameters.end())
+					continue;
+
+				auto findBlockIter = paramToParamBlockMap.find(iter->first);
+
+				if(findBlockIter == paramToParamBlockMap.end())
+					CM_EXCEPT(InternalErrorException, "Parameter doesn't exist in param to param block map but exists in valid param map.");
+
+				String& paramBlockName = findBlockIter->second;
+				mValidParams.insert(iter->first);
+			}
+
+			// Create object param mappings
+			const map<String, SHADER_OBJECT_PARAM_DESC>::type& objectParamDesc = mShader->getObjectParams();
+			for(auto iter = objectParamDesc.begin(); iter != objectParamDesc.end(); ++iter)
+			{
+				auto findIter = validParameters.find(iter->first);
+
+				// Not valid so we skip it
+				if(findIter == validParameters.end())
+					continue;
+
+				mValidParams.insert(iter->first);
+			}
+
+			for(UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
+			{
+				PassPtr curPass = mBestTechnique->getPass(i);
+				PassParametersPtr params = PassParametersPtr(new PassParameters());
+
+				GpuProgramHandle vertProgram = curPass->getVertexProgram();
+				if(vertProgram)
+					params->mVertParams = vertProgram->createParameters();
+
+				GpuProgramHandle fragProgram = curPass->getFragmentProgram();
+				if(fragProgram)
+					params->mFragParams = fragProgram->createParameters();
+
+				GpuProgramHandle geomProgram = curPass->getGeometryProgram();
+				if(geomProgram)
+					params->mGeomParams = geomProgram->createParameters();	
+
+				GpuProgramHandle hullProgram = curPass->getHullProgram();
+				if(hullProgram)
+					params->mHullParams = hullProgram->createParameters();
+
+				GpuProgramHandle domainProgram = curPass->getDomainProgram();
+				if(domainProgram)
+					params->mDomainParams = domainProgram->createParameters();
+
+				GpuProgramHandle computeProgram = curPass->getComputeProgram();
+				if(computeProgram)
+					params->mComputeParams = computeProgram->createParameters();	
+
+				mParametersPerPass.push_back(params);
+			}
+
+			// Assign param block buffers
+			for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+			{
+				PassParametersPtr params = *iter;
+
+				for(UINT32 i = 0; i < params->getNumParams(); i++)
+				{
+					GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+					if(paramPtr)
 					{
-						fragProgram.waitUntilLoaded();
-						params->mFragParams = fragProgram->createParameters();
-					}
+						// Assign shareable buffers
+						for(auto iterBlock = mValidShareableParamBlocks.begin(); iterBlock != mValidShareableParamBlocks.end(); ++iterBlock)
+						{
+							const String& paramBlockName = *iterBlock;
+							if(paramPtr->hasParamBlock(paramBlockName))
+							{
+								GpuParamBlockPtr blockBuffer = paramBlocks[paramBlockName];
 
-					GpuProgramHandle geomProgram = curPass->getGeometryProgram();
-					if(geomProgram)
-					{
-						geomProgram.waitUntilLoaded();
-						params->mGeomParams = geomProgram->createParameters();	
-					}
+								paramPtr->setParamBlock(paramBlockName, blockBuffer);
+							}
+						}
 
-					GpuProgramHandle hullProgram = curPass->getHullProgram();
-					if(hullProgram)
-					{
-						hullProgram.waitUntilLoaded();
-						params->mHullParams = hullProgram->createParameters();
+						// Create non-shareable ones
+						const GpuParamDesc& desc = paramPtr->getParamDesc();
+						for(auto iterBlockDesc = desc.paramBlocks.begin(); iterBlockDesc != desc.paramBlocks.end(); ++iterBlockDesc)
+						{
+							if(!iterBlockDesc->second.isShareable)
+							{
+								GpuParamBlockPtr newParamBlockBuffer = HardwareBufferManager::instance().createGpuParamBlock(iterBlockDesc->second);
+								paramPtr->setParamBlock(iterBlockDesc->first, newParamBlockBuffer);
+							}
+						}
 					}
-
-					GpuProgramHandle domainProgram = curPass->getDomainProgram();
-					if(domainProgram)
-					{
-						domainProgram.waitUntilLoaded();
-						params->mDomainParams = domainProgram->createParameters();
-					}
-
-					GpuProgramHandle computeProgram = curPass->getComputeProgram();
-					if(computeProgram)
-					{
-						computeProgram.waitUntilLoaded();
-						params->mComputeParams = computeProgram->createParameters();	
-					}
-
-					mParameters.push_back(params);
 				}
 			}
 		}
+	}
+
+	set<String>::type Material::determineValidParameters(const vector<const GpuParamDesc*>::type& paramDescs) const
+	{
+		map<String, const GpuParamDataDesc*>::type foundDataParams;
+		map<String, const GpuParamObjectDesc*>::type foundObjectParams;
+
+		set<String>::type validParameters;
+
+		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
+		{
+			const GpuParamDesc& curDesc = **iter;
+
+			// Check regular data params
+			for(auto iter2 = curDesc.params.begin(); iter2 != curDesc.params.end(); ++iter2)
+			{
+				bool isParameterValid = true;
+				const GpuParamDataDesc& curParam = iter2->second;
+
+				auto objectFindIter = foundObjectParams.find(iter2->first);
+				if(objectFindIter != foundObjectParams.end())
+					isParameterValid = false; // Data param but we found another as object param with the same name
+
+				if(isParameterValid)
+				{
+					auto dataFindIter = foundDataParams.find(iter2->first);
+					if(dataFindIter == foundDataParams.end())
+						validParameters.insert(iter2->first);
+					else
+					{
+						const GpuParamDataDesc* otherParam = dataFindIter->second;
+						if(!areParamsEqual(curParam, *otherParam, true))
+							isParameterValid = false;
+					}
+				}
+
+				if(!isParameterValid)
+					validParameters.erase(iter2->first);
+			}
+
+			// Check sampler params
+			for(auto iter2 = curDesc.samplers.begin(); iter2 != curDesc.samplers.end(); ++iter2)
+			{
+				bool isParameterValid = true;
+				const GpuParamObjectDesc& curParam = iter2->second;
+
+				auto dataFindIter = foundDataParams.find(iter2->first);
+				if(dataFindIter != foundDataParams.end())
+					isParameterValid = false; // Object param but we found another as data param with the same name
+
+				if(isParameterValid)
+				{
+					auto objectFindIter = foundObjectParams.find(iter2->first);
+					if(objectFindIter == foundObjectParams.end())
+						validParameters.insert(iter2->first);
+					else
+					{
+						const GpuParamObjectDesc* otherParam = objectFindIter->second;
+						if(!areParamsEqual(curParam, *otherParam))
+							isParameterValid = false;
+					}
+				}
+
+				if(!isParameterValid)
+					validParameters.erase(iter2->first);
+			}
+
+			// Check texture params
+			for(auto iter2 = curDesc.textures.begin(); iter2 != curDesc.textures.end(); ++iter2)
+			{
+				bool isParameterValid = true;
+				const GpuParamObjectDesc& curParam = iter2->second;
+
+				auto dataFindIter = foundDataParams.find(iter2->first);
+				if(dataFindIter != foundDataParams.end())
+					isParameterValid = false; // Object param but we found another as data param with the same name
+
+				if(isParameterValid)
+				{
+					auto objectFindIter = foundObjectParams.find(iter2->first);
+					if(objectFindIter == foundObjectParams.end())
+						validParameters.insert(iter2->first);
+					else
+					{
+						const GpuParamObjectDesc* otherParam = objectFindIter->second;
+						if(!areParamsEqual(curParam, *otherParam))
+							isParameterValid = false;
+					}
+				}
+
+				if(!isParameterValid)
+					validParameters.erase(iter2->first);
+			}
+
+			// Check buffer params
+			for(auto iter2 = curDesc.buffers.begin(); iter2 != curDesc.buffers.end(); ++iter2)
+			{
+				bool isParameterValid = true;
+				const GpuParamObjectDesc& curParam = iter2->second;
+
+				auto dataFindIter = foundDataParams.find(iter2->first);
+				if(dataFindIter != foundDataParams.end())
+					isParameterValid = false; // Object param but we found another as data param with the same name
+
+				if(isParameterValid)
+				{
+					auto objectFindIter = foundObjectParams.find(iter2->first);
+					if(objectFindIter == foundObjectParams.end())
+						validParameters.insert(iter2->first);
+					else
+					{
+						const GpuParamObjectDesc* otherParam = objectFindIter->second;
+						if(!areParamsEqual(curParam, *otherParam))
+							isParameterValid = false;
+					}
+				}
+
+				if(!isParameterValid)
+				{
+					auto validParamIter = validParameters.find(iter2->first);
+
+					if(validParamIter != validParameters.end()) // Do this check so we only report this error once
+					{
+						LOGWRN("Found two parameters with the same name but different contents: " + iter2->first);
+						validParameters.erase(validParamIter);
+					}
+				}
+			}
+		}
+
+		return validParameters;
+	}
+
+	set<String>::type Material::determineValidShareableParamBlocks(const vector<const GpuParamDesc*>::type& paramDescs) const
+	{
+		// Make sure param blocks with the same name actually are the same
+		map<String, std::pair<String, const GpuParamDesc*>>::type uniqueParamBlocks;
+		set<String>::type validParamBlocks;
+
+		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
+		{
+			const GpuParamDesc& curDesc = **iter;
+			for(auto blockIter = curDesc.paramBlocks.begin(); blockIter != curDesc.paramBlocks.end(); ++blockIter)
+			{
+				bool isBlockValid = true;
+				const GpuParamBlockDesc& curBlock = blockIter->second;
+
+				if(!curBlock.isShareable) // Non-shareable buffers are handled differently, they're allowed same names
+					continue;
+
+				auto iterFind = uniqueParamBlocks.find(blockIter->first);
+				if(iterFind == uniqueParamBlocks.end())
+				{
+					uniqueParamBlocks[blockIter->first] = std::make_pair(blockIter->first, *iter);
+					validParamBlocks.insert(blockIter->first);
+					continue;
+				}
+
+				String otherBlockName = iterFind->second.first;
+				const GpuParamDesc* otherDesc = iterFind->second.second;
+
+				for(auto myParamIter = curDesc.params.begin(); myParamIter != curDesc.params.end(); ++myParamIter)
+				{
+					const GpuParamDataDesc& myParam = myParamIter->second;
+
+					if(myParam.paramBlockSlot != curBlock.slot)
+						continue; // Param is in another block, so we will check it when its time for that block
+
+					auto otherParamFind = otherDesc->params.find(myParamIter->first);
+
+					// Cannot find other param, blocks aren't equal
+					if(otherParamFind == otherDesc->params.end())
+					{
+						isBlockValid = false;
+						break;
+					}
+
+					const GpuParamDataDesc& otherParam = otherParamFind->second;
+
+					if(!areParamsEqual(myParam, otherParam) || curBlock.name != otherBlockName)
+					{
+						isBlockValid = false;
+						break;
+					}
+				}
+
+				if(!isBlockValid)
+				{
+					auto blockValidIter = validParamBlocks.find(blockIter->first);
+
+					if(blockValidIter != validParamBlocks.end()) // Do this check so we only report this error once
+					{
+						LOGWRN("Found two param blocks with the same name but different contents: " + blockIter->first);
+						validParamBlocks.erase(blockValidIter);
+					}
+				}
+			}
+		}
+
+		return validParamBlocks;
+	}
+
+	map<String, String>::type Material::determineParameterToBlockMapping(const vector<const GpuParamDesc*>::type& paramDescs)
+	{
+		map<String, String>::type paramToParamBlock;
+
+		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
+		{
+			const GpuParamDesc& curDesc = **iter;
+			for(auto iter2 = curDesc.params.begin(); iter2 != curDesc.params.end(); ++iter2)
+			{
+				const GpuParamDataDesc& curParam = iter2->second;
+				
+				auto iterFind = paramToParamBlock.find(curParam.name);
+				if(iterFind != paramToParamBlock.end())
+					continue;
+
+				for(auto iterBlock = curDesc.paramBlocks.begin(); iterBlock != curDesc.paramBlocks.end(); ++iterBlock)
+				{
+					if(iterBlock->second.slot == curParam.paramBlockSlot)
+					{
+						paramToParamBlock[curParam.name] = iterBlock->second.name;
+						break;
+					}
+				}
+			}
+		}
+
+		return paramToParamBlock;
+	}
+
+	bool Material::areParamsEqual(const GpuParamDataDesc& paramA, const GpuParamDataDesc& paramB, bool ignoreBufferOffsets) const
+	{
+		bool equal = paramA.arraySize == paramB.arraySize && paramA.elementSize == paramB.elementSize && paramA.type == paramB.type;
+
+		if(!ignoreBufferOffsets)
+			equal &= paramA.cpuMemOffset == paramB.cpuMemOffset && paramA.gpuMemOffset == paramB.gpuMemOffset;
+
+		return equal;
+	}
+
+	bool Material::areParamsEqual(const GpuParamObjectDesc& paramA, const GpuParamObjectDesc& paramB) const
+	{
+		return paramA.type == paramB.type;
 	}
 
 	void Material::throwIfNotInitialized() const
@@ -109,7 +498,14 @@ namespace CamelotEngine
 	{
 		throwIfNotInitialized();
 
-		for(auto iter = mParameters.begin(); iter != mParameters.end(); ++iter)
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
+		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
 			PassParametersPtr params = *iter;
 
@@ -129,7 +525,14 @@ namespace CamelotEngine
 	{
 		throwIfNotInitialized();
 
-		for(auto iter = mParameters.begin(); iter != mParameters.end(); ++iter)
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
+		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
 			PassParametersPtr params = *iter;
 
@@ -148,43 +551,125 @@ namespace CamelotEngine
 	void Material::setFloat(const String& name, float value)
 	{
 		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
 		setParam(name, value);
 	}
 
 	void Material::setColor(const String& name, const Color& value)
 	{
 		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
 		setParam(name, value);
 	}
 
 	void Material::setVec2(const String& name, const Vector2& value)
 	{
 		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
 		setParam(name, value);
 	}
 
 	void Material::setVec3(const String& name, const Vector3& value)
 	{
 		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
 		setParam(name, value);
 	}
 
 	void Material::setVec4(const String& name, const Vector4& value)
 	{
 		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
 		setParam(name, value);
 	}
 
 	void Material::setMat3(const String& name, const Matrix3& value)
 	{
 		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
 		setParam(name, value);
 	}
 
 	void Material::setMat4(const String& name, const Matrix4& value)
 	{
 		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
 		setParam(name, value);
+	}
+
+
+	void Material::setParamBlock(const String& name, GpuParamBlockPtr paramBlock)
+	{
+		auto iterFind = mValidShareableParamBlocks.find(name);
+		if(iterFind == mValidShareableParamBlocks.end())
+		{
+			LOGWRN("Material doesn't have a parameter block named " + name);
+			return;
+		}
+
+		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			PassParametersPtr params = *iter;
+
+			for(UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+				if(paramPtr)
+				{
+					if(paramPtr->hasParamBlock(name))
+						paramPtr->setParam(name, paramBlock);
+				}
+			}
+		}
 	}
 
 	UINT32 Material::getNumPasses() const
@@ -204,10 +689,10 @@ namespace CamelotEngine
 
 	PassParametersPtr Material::getPassParameters(UINT32 passIdx) const
 	{
-		if(passIdx < 0 || passIdx >= mParameters.size())
+		if(passIdx < 0 || passIdx >= mParametersPerPass.size())
 			CM_EXCEPT(InvalidParametersException, "Invalid pass index.");
 
-		return mParameters[passIdx];
+		return mParametersPerPass[passIdx];
 	}
 
 	RTTITypeBase* Material::getRTTIStatic()

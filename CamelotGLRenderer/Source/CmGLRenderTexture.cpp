@@ -82,39 +82,24 @@ namespace CamelotEngine
 /// Size of probe texture
 #define PROBE_SIZE 16
 
-/// Stencil and depth formats to be tried
-static const GLenum stencilFormats[] =
-{
-    GL_NONE,                    // No stencil
-    GL_STENCIL_INDEX1_EXT,
-    GL_STENCIL_INDEX4_EXT,
-    GL_STENCIL_INDEX8_EXT,
-    GL_STENCIL_INDEX16_EXT
-};
-static const UINT32 stencilBits[] =
-{
-    0, 1, 4, 8, 16
-};
-#define STENCILFORMAT_COUNT (sizeof(stencilFormats)/sizeof(GLenum))
-
 static const GLenum depthFormats[] =
 {
     GL_NONE,
     GL_DEPTH_COMPONENT16,
-    GL_DEPTH_COMPONENT24,    // Prefer 24 bit depth
     GL_DEPTH_COMPONENT32,
-    GL_DEPTH24_STENCIL8_EXT // packed depth / stencil
+    GL_DEPTH24_STENCIL8, // packed depth / stencil
+	GL_DEPTH32F_STENCIL8
 };
 static const UINT32 depthBits[] =
 {
-    0,16,24,32,24
+    0,16,32,24,32
 };
 #define DEPTHFORMAT_COUNT (sizeof(depthFormats)/sizeof(GLenum))
 
 	GLRTTManager::GLRTTManager()
     {
 		detectFBOFormats();
-
+		
         glGenFramebuffersEXT(1, &mTempFBO);
     }
 
@@ -251,7 +236,7 @@ static const UINT32 depthBits[] =
             // Create and attach framebuffer
             glGenFramebuffersEXT(1, &fb);
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb);
-            if (fmt!=GL_NONE)
+            if (fmt!=GL_NONE && !PixelUtil::isDepth((PixelFormat)x))
             {
 				// Create and attach texture
 				glGenTextures(1, &tid);
@@ -288,19 +273,15 @@ static const UINT32 depthBits[] =
                 // For each depth/stencil formats
                 for (UINT32 depth = 0; depth < DEPTHFORMAT_COUNT; ++depth)
                 {
-                    if (depthFormats[depth] != GL_DEPTH24_STENCIL8_EXT)
+                    if (depthFormats[depth] != GL_DEPTH24_STENCIL8_EXT && depthFormats[depth] != GL_DEPTH32F_STENCIL8)
                     {
-                        // General depth/stencil combination
-                        for (UINT32 stencil = 0; stencil < STENCILFORMAT_COUNT; ++stencil)
+                        if (_tryFormat(depthFormats[depth], GL_NONE))
                         {
-                            if (_tryFormat(depthFormats[depth], stencilFormats[stencil]))
-                            {
-                                /// Add mode to allowed modes
-                                FormatProperties::Mode mode;
-                                mode.depth = depth;
-                                mode.stencil = stencil;
-                                mProps[x].modes.push_back(mode);
-                            }
+                            /// Add mode to allowed modes
+                            FormatProperties::Mode mode;
+                            mode.depth = depth;
+                            mode.stencil = 0;
+                            mProps[x].modes.push_back(mode);
                         }
                     }
                     else

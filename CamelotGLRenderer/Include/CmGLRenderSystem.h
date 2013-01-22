@@ -551,6 +551,11 @@ namespace CamelotEngine {
         void switchContext(GLContext *context);
 
 		/**
+		 * @brief	Checks if there are any OpenGL errors and prints them to the log.
+		 */
+		bool checkForErrors() const;
+
+		/**
 		 * @brief	OpenGL shares all texture slots, but the engine prefers to keep textures
 		 * 			separate per-stage. This will convert texture unit that is set per stage
 		 * 			into a global texture unit usable by OpenGL.

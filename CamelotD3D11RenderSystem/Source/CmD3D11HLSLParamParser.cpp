@@ -85,74 +85,79 @@ namespace CamelotEngine
 				blockDesc.slot = resourceDesc.BindPoint + i;
 				blockDesc.blockSize = 0; // Calculated manually as we add parameters
 
+				if(resourceDesc.Name == "$Global" || resourceDesc.Name == "$Param") // Special buffers, as defined by DX11 docs
+					blockDesc.isShareable = false;
+				else
+					blockDesc.isShareable = true;
+
 				desc.paramBlocks.insert(std::make_pair(blockDesc.name, blockDesc));
 			}
 			else
 			{
-				GpuParamSpecialDesc memberDesc;
+				GpuParamObjectDesc memberDesc;
 				memberDesc.name = resourceDesc.Name;
 				memberDesc.slot = resourceDesc.BindPoint + i;
-				memberDesc.type = GST_UNKNOWN;
+				memberDesc.type = GPOT_UNKNOWN;
 
 				switch(resourceDesc.Type)
 				{
 				case D3D_SIT_SAMPLER:
-					memberDesc.type = GST_SAMPLER2D; // Actual dimension of the sampler doesn't matter
+					memberDesc.type = GPOT_SAMPLER2D; // Actual dimension of the sampler doesn't matter
 					desc.samplers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				case D3D_SIT_TEXTURE:
 					switch(resourceDesc.Dimension)
 					{
 					case D3D_SRV_DIMENSION_TEXTURE1D:
-						memberDesc.type = GST_TEXTURE1D;
+						memberDesc.type = GPOT_TEXTURE1D;
 						break;
 					case D3D_SRV_DIMENSION_TEXTURE2D:
-						memberDesc.type = GST_TEXTURE2D;
+						memberDesc.type = GPOT_TEXTURE2D;
 						break;
 					case D3D_SRV_DIMENSION_TEXTURE3D:
-						memberDesc.type = GST_TEXTURE3D;
+						memberDesc.type = GPOT_TEXTURE3D;
 						break;
 					case D3D_SRV_DIMENSION_TEXTURECUBE:
-						memberDesc.type = GST_TEXTURECUBE;
+						memberDesc.type = GPOT_TEXTURECUBE;
 						break;
 					default:
 						LOGWRN("Skipping texture because it has unsupported dimension: " + toString(resourceDesc.Dimension));
 					}
 
-					if(memberDesc.type != GST_UNKNOWN)
+					if(memberDesc.type != GPOT_UNKNOWN)
 						desc.textures.insert(std::make_pair(memberDesc.name, memberDesc));
 
 					break;
 				case D3D_SIT_STRUCTURED:
-					memberDesc.type = GST_STRUCTURED_BUFFER;
+					memberDesc.type = GPOT_STRUCTURED_BUFFER;
 					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				case D3D_SIT_BYTEADDRESS:
-					memberDesc.type = GST_BYTE_BUFFER;
+					memberDesc.type = GPOT_BYTE_BUFFER;
 					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				case D3D11_SIT_UAV_RWTYPED:
-					memberDesc.type = GST_RWTYPED_BUFFER;
+					memberDesc.type = GPOT_RWTYPED_BUFFER;
 					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				case D3D11_SIT_UAV_RWSTRUCTURED:
-					memberDesc.type = GST_RWSTRUCTURED_BUFFER;
+					memberDesc.type = GPOT_RWSTRUCTURED_BUFFER;
 					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				case D3D11_SIT_UAV_RWBYTEADDRESS:
-					memberDesc.type = GST_RWBYTE_BUFFER;
+					memberDesc.type = GPOT_RWBYTE_BUFFER;
 					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				case D3D_SIT_UAV_APPEND_STRUCTURED:
-					memberDesc.type = GST_RWAPPEND_BUFFER;
+					memberDesc.type = GPOT_RWAPPEND_BUFFER;
 					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				case D3D_SIT_UAV_CONSUME_STRUCTURED:
-					memberDesc.type = GST_RWCONSUME_BUFFER;
+					memberDesc.type = GPOT_RWCONSUME_BUFFER;
 					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				case D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
-					memberDesc.type = GST_RWSTRUCTURED_BUFFER_WITH_COUNTER;
+					memberDesc.type = GPOT_RWSTRUCTURED_BUFFER_WITH_COUNTER;
 					desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				default:
@@ -206,7 +211,7 @@ namespace CamelotEngine
 
 	void D3D11HLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC& varTypeDesc, D3D11_SHADER_VARIABLE_DESC& varDesc, GpuParamDesc& desc, GpuParamBlockDesc& paramBlock)
 	{
-		GpuParamMemberDesc memberDesc;
+		GpuParamDataDesc memberDesc;
 		memberDesc.name = varDesc.Name;
 		memberDesc.paramBlockSlot = paramBlock.slot;
 		memberDesc.arraySize = varTypeDesc.Elements == 0 ? 1 : varTypeDesc.Elements;
@@ -223,13 +228,13 @@ namespace CamelotEngine
 				switch(varTypeDesc.Type)
 				{
 				case D3D_SVT_BOOL:
-					memberDesc.type = GMT_BOOL;
+					memberDesc.type = GPDT_BOOL;
 					break;
 				case D3D_SVT_INT:
-					memberDesc.type = GMT_INT1;
+					memberDesc.type = GPDT_INT1;
 					break;
 				case D3D_SVT_FLOAT:
-					memberDesc.type = GMT_FLOAT1;
+					memberDesc.type = GPDT_FLOAT1;
 					break;
 				default:
 					LOGWRN("Skipping variable because it has unsupported type: " + toString(varTypeDesc.Type));
@@ -245,16 +250,16 @@ namespace CamelotEngine
 						switch(varTypeDesc.Columns)
 						{
 						case 1:
-							memberDesc.type = GMT_INT1;
+							memberDesc.type = GPDT_INT1;
 							break;
 						case 2:
-							memberDesc.type = GMT_INT2;
+							memberDesc.type = GPDT_INT2;
 							break;
 						case 3:
-							memberDesc.type = GMT_INT3;
+							memberDesc.type = GPDT_INT3;
 							break;
 						case 4:
-							memberDesc.type = GMT_INT4;
+							memberDesc.type = GPDT_INT4;
 							break;
 						}
 					}
@@ -265,16 +270,16 @@ namespace CamelotEngine
 						switch(varTypeDesc.Columns)
 						{
 						case 1:
-							memberDesc.type = GMT_FLOAT1;
+							memberDesc.type = GPDT_FLOAT1;
 							break;
 						case 2:
-							memberDesc.type = GMT_FLOAT2;
+							memberDesc.type = GPDT_FLOAT2;
 							break;
 						case 3:
-							memberDesc.type = GMT_FLOAT3;
+							memberDesc.type = GPDT_FLOAT3;
 							break;
 						case 4:
-							memberDesc.type = GMT_FLOAT4;
+							memberDesc.type = GPDT_FLOAT4;
 							break;
 						}
 					}
@@ -291,13 +296,13 @@ namespace CamelotEngine
 				switch(varTypeDesc.Columns)
 				{
 				case 2:
-					memberDesc.type = GMT_MATRIX_2X2;
+					memberDesc.type = GPDT_MATRIX_2X2;
 					break;
 				case 3:
-					memberDesc.type = GMT_MATRIX_2X3;
+					memberDesc.type = GPDT_MATRIX_2X3;
 					break;
 				case 4:
-					memberDesc.type = GMT_MATRIX_2X4;
+					memberDesc.type = GPDT_MATRIX_2X4;
 					break;
 				}
 				break;
@@ -305,13 +310,13 @@ namespace CamelotEngine
 				switch(varTypeDesc.Columns)
 				{
 				case 2:
-					memberDesc.type = GMT_MATRIX_3X2;
+					memberDesc.type = GPDT_MATRIX_3X2;
 					break;
 				case 3:
-					memberDesc.type = GMT_MATRIX_3X3;
+					memberDesc.type = GPDT_MATRIX_3X3;
 					break;
 				case 4:
-					memberDesc.type = GMT_MATRIX_3X4;
+					memberDesc.type = GPDT_MATRIX_3X4;
 					break;
 				}
 				break;
@@ -319,20 +324,20 @@ namespace CamelotEngine
 				switch(varTypeDesc.Columns)
 				{
 				case 2:
-					memberDesc.type = GMT_MATRIX_4X2;
+					memberDesc.type = GPDT_MATRIX_4X2;
 					break;
 				case 3:
-					memberDesc.type = GMT_MATRIX_4X3;
+					memberDesc.type = GPDT_MATRIX_4X3;
 					break;
 				case 4:
-					memberDesc.type = GMT_MATRIX_4X4;
+					memberDesc.type = GPDT_MATRIX_4X4;
 					break;
 				}
 				break;
 			}
 			break;
 		case D3D_SVC_STRUCT:
-			memberDesc.type = GMT_STRUCT;
+			memberDesc.type = GPDT_STRUCT;
 			break;
 		default:
 			LOGWRN("Skipping variable because it has unsupported class: " + toString(varTypeDesc.Class));

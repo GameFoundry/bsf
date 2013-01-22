@@ -67,9 +67,9 @@ namespace CamelotEngine {
             
     }
 	//-----------------------------------------------------------------------
-	GpuParamBlockBufferPtr D3D9HardwareBufferManager::createGpuParamBlockBuffer(const GpuParamBlockDesc& paramDesc)
+	GpuParamBlockPtr D3D9HardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
 	{
-		return GpuParamBlockBufferPtr(new GpuParamBlockBuffer(paramDesc));
+		return GpuParamBlockPtr(new GpuParamBlock(paramDesc, usage));
 	}
 	//-----------------------------------------------------------------------
 	GpuBufferPtr D3D9HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 

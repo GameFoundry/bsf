@@ -109,7 +109,7 @@ namespace CamelotEngine {
 		 *
 		 * @return	The new GPU parameter block.
 		 */
-		virtual GpuParamBlockBufferPtr createGpuParamBlockBuffer(const GpuParamBlockDesc& paramDesc) = 0;
+		virtual GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC) = 0;
 
 		/**
 		 * @brief	Creates a generic buffer that can be passed as a parameter to a shader.

@@ -329,9 +329,6 @@
     <ClInclude Include="Include\CmGpuParams.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGpuParamBlock.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmVertexDeclaration.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -363,6 +360,9 @@
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmVertexData.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGpuParamBlock.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
   </ItemGroup>
@@ -520,9 +520,6 @@
     <ClCompile Include="Source\CmGpuParams.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmGpuParamBlock.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmVertexDeclaration.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
@@ -551,6 +548,9 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmVertexData.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuParamBlock.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>

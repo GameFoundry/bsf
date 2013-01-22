@@ -135,10 +135,11 @@ namespace CamelotEngine {
 	class RenderStateManager;
 	class RasterizerState;
 	class BlendState;
-	class GpuParamBlockBuffer;
+	class GpuParamBlock;
 	class GpuParams;
 	struct GpuParamDesc;
-	struct GpuParamMemberDesc;
+	struct GpuParamDataDesc;
+	struct GpuParamObjectDesc;
 	struct GpuParamBlockDesc;
 	class TextureView;
 	// Asset import
@@ -197,7 +198,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<RenderTarget> RenderTargetPtr;
 	typedef std::shared_ptr<RenderTexture> RenderTexturePtr;
 	typedef std::shared_ptr<MultiRenderTexture> MultiRenderTexturePtr;
-	typedef std::shared_ptr<GpuParamBlockBuffer> GpuParamBlockBufferPtr;
+	typedef std::shared_ptr<GpuParamBlock> GpuParamBlockPtr;
 	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
 	typedef std::shared_ptr<TextureView> TextureViewPtr;
 }

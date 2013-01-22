@@ -9,17 +9,18 @@ namespace CamelotEngine
 	public:
 		GpuParams(GpuParamDesc& paramDesc);
 
-		GpuParamBlockBufferPtr getParamBlock(UINT32 slot) const;
-		GpuParamBlockBufferPtr getParamBlock(const String& name) const;
+		GpuParamBlockPtr getParamBlock(UINT32 slot) const;
+		GpuParamBlockPtr getParamBlock(const String& name) const;
 
-		void setParamBlock(UINT32 slot, GpuParamBlockBufferPtr paramBlock);
-		void setParamBlock(const String& name, GpuParamBlockBufferPtr paramBlock);
+		void setParamBlock(UINT32 slot, GpuParamBlockPtr paramBlock);
+		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
 
 		const GpuParamDesc& getParamDesc() const { return mParamDesc; }
 
 		bool hasParam(const String& name) const;
 		bool hasTexture(const String& name) const;
 		bool hasSamplerState(const String& name) const;
+		bool hasParamBlock(const String& name) const;
 
 		void setParam(const String& name, float value, UINT32 arrayIndex = 0);
 		void setParam(const String& name, int value, UINT32 arrayIndex = 0);
@@ -57,9 +58,9 @@ namespace CamelotEngine
 		GpuParamDesc& mParamDesc;
 		bool mTransposeMatrices;
 
-		GpuParamMemberDesc* getParamDesc(const String& name) const;
+		GpuParamDataDesc* getParamDesc(const String& name) const;
 
-		vector<GpuParamBlockBufferPtr>::type mParamBlocks;
+		vector<GpuParamBlockPtr>::type mParamBlocks;
 		vector<TextureHandle>::type mTextures;
 		vector<SamplerStatePtr>::type mSamplerStates;
 	};

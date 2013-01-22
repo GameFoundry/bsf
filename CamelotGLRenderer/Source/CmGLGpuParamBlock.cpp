@@ -2,8 +2,8 @@
 
 namespace CamelotEngine
 {
-	GLGpuParamBlock::GLGpuParamBlock(const GpuParamBlockDesc& desc)
-		:GpuParamBlockBuffer(desc), mGLSharedData(nullptr)
+	GLGpuParamBlock::GLGpuParamBlock(const GpuParamBlockDesc& desc, GpuParamBlockUsage usage)
+		:GpuParamBlock(desc, usage), mGLSharedData(nullptr)
 	{
 		mGLSharedData = new GLGpuParamBlockSharedData();
 	}
@@ -36,10 +36,10 @@ namespace CamelotEngine
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
-		GpuParamBlockBuffer::updateIfDirty();
+		GpuParamBlock::updateIfDirty();
 	}
 
-	GpuParamBlockBufferPtr GLGpuParamBlock::clone() const
+	GpuParamBlockPtr GLGpuParamBlock::clone() const
 	{
 		std::shared_ptr<GLGpuParamBlock> clonedParamBlock(new GLGpuParamBlock(*this));
 		clonedParamBlock->mData = new UINT8[mSize];

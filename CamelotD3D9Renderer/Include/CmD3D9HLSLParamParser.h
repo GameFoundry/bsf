@@ -15,7 +15,7 @@ namespace CamelotEngine
 
 	private:
 		void processParameter(GpuParamBlockDesc& blockDesc, D3DXHANDLE parent, String prefix, UINT32 index);
-		void populateParamMemberDesc(GpuParamMemberDesc& memberDesc, D3DXCONSTANT_DESC& d3dDesc);
+		void populateParamMemberDesc(GpuParamDataDesc& memberDesc, D3DXCONSTANT_DESC& d3dDesc);
 
 	private:
 		LPD3DXCONSTANTTABLE mpConstTable;
@@ -41,6 +41,7 @@ namespace CamelotEngine
 		blockDesc.name = name;
 		blockDesc.slot = 0;
 		blockDesc.blockSize = 0;
+		blockDesc.isShareable = false;
 
 		// Iterate over the constants
 		for (UINT32 i = 0; i < desc.Constants; ++i)
@@ -91,7 +92,7 @@ namespace CamelotEngine
 			// Process params
 			if (desc.Type == D3DXPT_FLOAT || desc.Type == D3DXPT_INT || desc.Type == D3DXPT_BOOL)
 			{
-				GpuParamMemberDesc memberDesc;
+				GpuParamDataDesc memberDesc;
 				memberDesc.gpuMemOffset = desc.RegisterIndex;
 				memberDesc.cpuMemOffset = blockDesc.blockSize;
 				memberDesc.paramBlockSlot = blockDesc.slot;
@@ -107,31 +108,31 @@ namespace CamelotEngine
 			}
 			else if(desc.Type == D3DXPT_SAMPLER1D || desc.Type == D3DXPT_SAMPLER2D || desc.Type == D3DXPT_SAMPLER3D || desc.Type == D3DXPT_SAMPLERCUBE)
 			{
-				GpuParamSpecialDesc samplerDesc;
+				GpuParamObjectDesc samplerDesc;
 				samplerDesc.name = paramName;
 				samplerDesc.slot = desc.RegisterIndex;
 
-				GpuParamSpecialDesc textureDesc;
+				GpuParamObjectDesc textureDesc;
 				textureDesc.name = paramName;
 				textureDesc.slot = desc.RegisterIndex;
 
 				switch(desc.Type)
 				{
 				case D3DXPT_SAMPLER1D:
-					samplerDesc.type = GST_SAMPLER1D;
-					textureDesc.type = GST_TEXTURE1D;
+					samplerDesc.type = GPOT_SAMPLER1D;
+					textureDesc.type = GPOT_TEXTURE1D;
 					break;
 				case D3DXPT_SAMPLER2D:
-					samplerDesc.type = GST_SAMPLER2D;
-					textureDesc.type = GST_TEXTURE2D;
+					samplerDesc.type = GPOT_SAMPLER2D;
+					textureDesc.type = GPOT_TEXTURE2D;
 					break;
 				case D3DXPT_SAMPLER3D:
-					samplerDesc.type = GST_SAMPLER3D;
-					textureDesc.type = GST_TEXTURE3D;
+					samplerDesc.type = GPOT_SAMPLER3D;
+					textureDesc.type = GPOT_TEXTURE3D;
 					break;
 				case D3DXPT_SAMPLERCUBE:
-					samplerDesc.type = GST_SAMPLERCUBE;
-					textureDesc.type = GST_TEXTURECUBE;
+					samplerDesc.type = GPOT_SAMPLERCUBE;
+					textureDesc.type = GPOT_TEXTURECUBE;
 					break;
 				default:
 					CM_EXCEPT(InternalErrorException, "Invalid sampler type: " + toString(desc.Type) + " for parameter " + paramName);
@@ -147,7 +148,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D9HLSLParamParser::populateParamMemberDesc(GpuParamMemberDesc& memberDesc, D3DXCONSTANT_DESC& d3dDesc)
+	void D3D9HLSLParamParser::populateParamMemberDesc(GpuParamDataDesc& memberDesc, D3DXCONSTANT_DESC& d3dDesc)
 	{
 		memberDesc.arraySize = d3dDesc.Elements;
 		switch(d3dDesc.Type)
@@ -156,19 +157,19 @@ namespace CamelotEngine
 			switch(d3dDesc.Columns)
 			{
 			case 1:
-				memberDesc.type = GMT_INT1;
+				memberDesc.type = GPDT_INT1;
 				memberDesc.elementSize = 4;
 				break;
 			case 2:
-				memberDesc.type = GMT_INT2;
+				memberDesc.type = GPDT_INT2;
 				memberDesc.elementSize = 4;
 				break;
 			case 3:
-				memberDesc.type = GMT_INT3;
+				memberDesc.type = GPDT_INT3;
 				memberDesc.elementSize = 4;
 				break;
 			case 4:
-				memberDesc.type = GMT_INT4;
+				memberDesc.type = GPDT_INT4;
 				memberDesc.elementSize = 4;
 				break;
 			} // columns
@@ -193,15 +194,15 @@ namespace CamelotEngine
 						switch(secondDim)
 						{
 						case 2:
-							memberDesc.type = GMT_MATRIX_2X2;
+							memberDesc.type = GPDT_MATRIX_2X2;
 							memberDesc.elementSize = 8; // HLSL always packs
 							break;
 						case 3:
-							memberDesc.type = GMT_MATRIX_2X3;
+							memberDesc.type = GPDT_MATRIX_2X3;
 							memberDesc.elementSize = 8; // HLSL always packs
 							break;
 						case 4:
-							memberDesc.type = GMT_MATRIX_2X4;
+							memberDesc.type = GPDT_MATRIX_2X4;
 							memberDesc.elementSize = 8; 
 							break;
 						} // columns
@@ -210,15 +211,15 @@ namespace CamelotEngine
 						switch(secondDim)
 						{
 						case 2:
-							memberDesc.type = GMT_MATRIX_3X2;
+							memberDesc.type = GPDT_MATRIX_3X2;
 							memberDesc.elementSize = 12; // HLSL always packs
 							break;
 						case 3:
-							memberDesc.type = GMT_MATRIX_3X3;
+							memberDesc.type = GPDT_MATRIX_3X3;
 							memberDesc.elementSize = 12; // HLSL always packs
 							break;
 						case 4:
-							memberDesc.type = GMT_MATRIX_3X4;
+							memberDesc.type = GPDT_MATRIX_3X4;
 							memberDesc.elementSize = 12; 
 							break;
 						} // columns
@@ -227,15 +228,15 @@ namespace CamelotEngine
 						switch(secondDim)
 						{
 						case 2:
-							memberDesc.type = GMT_MATRIX_4X2;
+							memberDesc.type = GPDT_MATRIX_4X2;
 							memberDesc.elementSize = 16; // HLSL always packs
 							break;
 						case 3:
-							memberDesc.type = GMT_MATRIX_4X3;
+							memberDesc.type = GPDT_MATRIX_4X3;
 							memberDesc.elementSize = 16; // HLSL always packs
 							break;
 						case 4:
-							memberDesc.type = GMT_MATRIX_4X4;
+							memberDesc.type = GPDT_MATRIX_4X4;
 							memberDesc.elementSize = 16; 
 							break;
 						} // secondDim
@@ -249,19 +250,19 @@ namespace CamelotEngine
 				switch(d3dDesc.Columns)
 				{
 				case 1:
-					memberDesc.type = GMT_FLOAT1;
+					memberDesc.type = GPDT_FLOAT1;
 					memberDesc.elementSize = 4;
 					break;
 				case 2:
-					memberDesc.type = GMT_FLOAT2;
+					memberDesc.type = GPDT_FLOAT2;
 					memberDesc.elementSize = 4;
 					break;
 				case 3:
-					memberDesc.type = GMT_FLOAT3;
+					memberDesc.type = GPDT_FLOAT3;
 					memberDesc.elementSize = 4;
 					break;
 				case 4:
-					memberDesc.type = GMT_FLOAT4;
+					memberDesc.type = GPDT_FLOAT4;
 					memberDesc.elementSize = 4;
 					break;
 				} // columns
@@ -269,7 +270,7 @@ namespace CamelotEngine
 			}
 			break;
 		case D3DXPT_BOOL:
-			memberDesc.type = GMT_BOOL;
+			memberDesc.type = GPDT_BOOL;
 			memberDesc.elementSize = 1;
 			break;
 		default:

@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmResource.h"
-#include "CmGpuParams.h"
+#include "CmCommonEnums.h"
 
 namespace CamelotEngine
 {
@@ -60,6 +60,8 @@ namespace CamelotEngine
 		void setMat3(const String& name, const Matrix3& value);
 		void setMat4(const String& name, const Matrix4& value);
 
+		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
+
 		UINT32 getNumPasses() const;
 
 		PassPtr getPass(UINT32 passIdx) const;
@@ -69,14 +71,18 @@ namespace CamelotEngine
 	private:
 		ShaderPtr mShader;
 		TechniquePtr mBestTechnique;
-		vector<PassParametersPtr>::type mParameters;
+
+		set<String>::type mValidShareableParamBlocks;
+		set<String>::type mValidParams;
+
+		vector<PassParametersPtr>::type mParametersPerPass;
 
 		void throwIfNotInitialized() const;
 
 		template <typename T>
 		void setParam(const String& name, T& value)
 		{
-			for(auto iter = mParameters.begin(); iter != mParameters.end(); ++iter)
+			for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 			{
 				PassParametersPtr params = *iter;
 
@@ -93,6 +99,13 @@ namespace CamelotEngine
 		}
 
 		void initBestTechnique();
+
+		set<String>::type determineValidParameters(const vector<const GpuParamDesc*>::type& paramDescs) const;
+		set<String>::type determineValidShareableParamBlocks(const vector<const GpuParamDesc*>::type& paramDescs) const;
+		map<String, String>::type determineParameterToBlockMapping(const vector<const GpuParamDesc*>::type& paramDescs);
+
+		bool areParamsEqual(const GpuParamDataDesc& paramA, const GpuParamDataDesc& paramB, bool ignoreBufferOffsets = false) const;
+		bool areParamsEqual(const GpuParamObjectDesc& paramA, const GpuParamObjectDesc& paramB) const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

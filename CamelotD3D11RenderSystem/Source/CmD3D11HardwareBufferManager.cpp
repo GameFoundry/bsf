@@ -44,9 +44,9 @@ namespace CamelotEngine
 		return IndexBufferPtr(idx);
 	}
 
-	GpuParamBlockBufferPtr D3D11HardwareBufferManager::createGpuParamBlockBuffer(const GpuParamBlockDesc& blockDesc)
+	GpuParamBlockPtr D3D11HardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& blockDesc, GpuParamBlockUsage usage)
 	{
-		return GpuParamBlockBufferPtr(new D3D11GpuParamBlock(blockDesc));
+		return GpuParamBlockPtr(new D3D11GpuParamBlock(blockDesc, usage));
 	}
 
 	GpuBufferPtr D3D11HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 

@@ -2,10 +2,11 @@
 
 #include "CmGLPrerequisites.h"
 #include "CmGpuParamBlock.h"
+#include "CmCommonEnums.h"
 
 namespace CamelotEngine
 {
-	class CM_RSGL_EXPORT GLGpuParamBlock : public GpuParamBlockBuffer
+	class CM_RSGL_EXPORT GLGpuParamBlock : public GpuParamBlock
 	{
 	private:
 		struct GLGpuParamBlockSharedData
@@ -14,11 +15,11 @@ namespace CamelotEngine
 		};
 
 	public:
-		GLGpuParamBlock(const GpuParamBlockDesc& desc);
+		GLGpuParamBlock(const GpuParamBlockDesc& desc, GpuParamBlockUsage usage);
 		~GLGpuParamBlock();
 
 		virtual void updateIfDirty();
-		virtual GpuParamBlockBufferPtr clone() const;
+		virtual GpuParamBlockPtr clone() const;
 
 		GLuint getGLHandle() const { return mGLSharedData->mGLHandle; }
 

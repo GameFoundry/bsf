@@ -5,7 +5,7 @@
 
 namespace CamelotEngine
 {
-	GpuParamBlockBuffer::GpuParamBlockBuffer(const GpuParamBlockDesc& desc)
+	GpuParamBlock::GpuParamBlock(const GpuParamBlockDesc& desc, GpuParamBlockUsage usage)
 		:mSize(desc.blockSize * sizeof(UINT32)), mOwnsSharedData(true)
 	{
 		mData = new UINT8[mSize];
@@ -16,7 +16,7 @@ namespace CamelotEngine
 		sharedData->mInitialized = false;
 	}
 
-	GpuParamBlockBuffer::~GpuParamBlockBuffer()
+	GpuParamBlock::~GpuParamBlock()
 	{
 		delete [] mData;
 
@@ -24,7 +24,7 @@ namespace CamelotEngine
 			delete sharedData;
 	}
 
-	void GpuParamBlockBuffer::write(UINT32 offset, const void* data, UINT32 size)
+	void GpuParamBlock::write(UINT32 offset, const void* data, UINT32 size)
 	{
 #if CM_DEBUG_MODE
 		if(offset < 0 || (offset + size) > mSize)
@@ -40,7 +40,7 @@ namespace CamelotEngine
 		sharedData->mDirty = true;
 	}
 
-	void GpuParamBlockBuffer::zeroOut(UINT32 offset, UINT32 size)
+	void GpuParamBlock::zeroOut(UINT32 offset, UINT32 size)
 	{
 #if CM_DEBUG_MODE
 		if(offset < 0 || (offset + size) > mSize)
@@ -56,7 +56,7 @@ namespace CamelotEngine
 		sharedData->mDirty = true;
 	}
 
-	const UINT8* GpuParamBlockBuffer::getDataPtr(UINT32 offset) const
+	const UINT8* GpuParamBlock::getDataPtr(UINT32 offset) const
 	{
 #if CM_DEBUG_MODE
 		if(offset < 0 || offset >= mSize)
@@ -70,16 +70,16 @@ namespace CamelotEngine
 		return &mData[offset];
 	}
 
-	void GpuParamBlockBuffer::updateIfDirty()
+	void GpuParamBlock::updateIfDirty()
 	{
 		sharedData->mDirty = false;
 
 		// Do nothing
 	}
 
-	GpuParamBlockBufferPtr GpuParamBlockBuffer::clone() const
+	GpuParamBlockPtr GpuParamBlock::clone() const
 	{
-		GpuParamBlockBufferPtr clonedParamBlock(new GpuParamBlockBuffer(*this));
+		GpuParamBlockPtr clonedParamBlock(new GpuParamBlock(*this));
 		clonedParamBlock->mData = new UINT8[mSize];
 		clonedParamBlock->mSize = mSize;
 		clonedParamBlock->mOwnsSharedData = false;
@@ -88,8 +88,8 @@ namespace CamelotEngine
 		return clonedParamBlock;
 	}
 
-	GpuParamBlockBufferPtr GpuParamBlockBuffer::create(const GpuParamBlockDesc& desc)
+	GpuParamBlockPtr GpuParamBlock::create(const GpuParamBlockDesc& desc)
 	{
-		return HardwareBufferManager::instance().createGpuParamBlockBuffer(desc);
+		return HardwareBufferManager::instance().createGpuParamBlock(desc);
 	}
 }

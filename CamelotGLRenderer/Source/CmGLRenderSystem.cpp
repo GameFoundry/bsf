@@ -341,7 +341,7 @@ namespace CamelotEngine
 			if(iter->second.slot == 0)
 				continue;
 
-			GpuParamBlockBufferPtr paramBlock = params->getParamBlock(iter->second.slot);
+			GpuParamBlockPtr paramBlock = params->getParamBlock(iter->second.slot);
 			if(paramBlock == nullptr)
 				continue;
 
@@ -356,9 +356,9 @@ namespace CamelotEngine
 
 		for(auto iter = paramDesc.params.begin(); iter != paramDesc.params.end(); ++iter)
 		{
-			const GpuParamMemberDesc& paramDesc = iter->second;
+			const GpuParamDataDesc& paramDesc = iter->second;
 
-			GpuParamBlockBufferPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
+			GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
 			
 			if(paramDesc.paramBlockSlot != 0) // 0 means uniforms are not in a block
 				continue;
@@ -427,7 +427,7 @@ namespace CamelotEngine
 			case GCT_INT4:
 				glProgramUniform4iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
 				break;
-			case GMT_BOOL:
+			case GPDT_BOOL:
 				glProgramUniform1uiv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLuint*)ptrData);
 				break;
 			case GCT_UNKNOWN:
@@ -1385,6 +1385,8 @@ namespace CamelotEngine
 			// set up glew and GLSupport
 			initialiseContext(context);
 
+			checkForErrors();
+
 			std::vector<CamelotEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
 
 			if (!tokens.empty())
@@ -1399,13 +1401,20 @@ namespace CamelotEngine
 			// Initialise GL after the first window has been created
 			// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
 			mCurrentCapabilities = createRenderSystemCapabilities();
+			checkForErrors();
 
 			initialiseFromRenderSystemCapabilities(mCurrentCapabilities);
+			checkForErrors();
 
 			// Initialise the main context
 			oneTimeContextInitialization();
+			checkForErrors();
+
 			if(mCurrentContext)
+			{
 				mCurrentContext->setInitialized();
+				checkForErrors();
+			}
 		}
 	}
 	//---------------------------------------------------------------------
@@ -1732,6 +1741,28 @@ namespace CamelotEngine
 		glColor4f(1,1,1,1);
 	}
 	//-----------------------------------------------------------------------
+	bool GLRenderSystem::checkForErrors() const
+	{
+		GLenum glErr = glGetError();
+		bool errorsFound = false;
+		String msg;
+		while (glErr != GL_NO_ERROR)
+		{
+			const char* glerrStr = (const char*)gluErrorString(glErr);
+			if (glerrStr)
+			{
+				msg += String(glerrStr);
+			}
+			glErr = glGetError();
+			errorsFound = true;
+		}
+
+		if(errorsFound)
+			LOGWRN("OpenGL error: " + msg);
+
+		return errorsFound;
+	}
+	//-----------------------------------------------------------------------
 	GLint GLRenderSystem::getGLDrawMode() const
 	{
 		GLint primType;
@@ -1807,15 +1838,18 @@ namespace CamelotEngine
 		}
 
 		HardwareBufferManager::startUp(new GLHardwareBufferManager);
+		checkForErrors();
 
 		// GPU Program Manager setup
 		GpuProgramManager::startUp(new GLGpuProgramManager());
+		checkForErrors();
 
 		if(caps->isShaderProfileSupported("glsl"))
 		{
 			// NFZ - check for GLSL vertex and fragment shader support successful
 			mGLSLProgramFactory = new GLSLProgramFactory();
 			HighLevelGpuProgramManager::instance().addFactory(mGLSLProgramFactory);
+			checkForErrors();
 		}
 
 		if(caps->isShaderProfileSupported("cg"))
@@ -1823,6 +1857,7 @@ namespace CamelotEngine
 			// NFZ - check for GLSL vertex and fragment shader support successful
 			mCgProgramFactory = new CgProgramFactory();
 			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
+			checkForErrors();
 		}
 
 		if(caps->hasCapability(RSC_HWOCCLUSION))
@@ -1855,6 +1890,7 @@ namespace CamelotEngine
 			{
 				// Create FBO manager
 				GLRTTManager::startUp(new GLRTTManager());
+				checkForErrors();
 			}
 		}
 		else
@@ -1902,6 +1938,7 @@ namespace CamelotEngine
 
 		/// Create the texture manager        
 		TextureManager::startUp(new GLTextureManager(*mGLSupport)); 
+		checkForErrors();
 
 		mGLInitialised = true;
 	}

@@ -359,26 +359,26 @@ namespace CamelotEngine
 			{
 				for(auto iter = paramDesc.params.begin(); iter != paramDesc.params.end(); ++iter)
 				{
-					const GpuParamMemberDesc& paramDesc = iter->second;
+					const GpuParamDataDesc& paramDesc = iter->second;
 
-					GpuParamBlockBufferPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
+					GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
 					const UINT8* ptrData = paramBlock->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
 
 					switch(paramDesc.type)
 					{
-					case GMT_FLOAT1:
-					case GMT_FLOAT2:
-					case GMT_FLOAT3:
-					case GMT_FLOAT4:
-					case GMT_MATRIX_2X2:
-					case GMT_MATRIX_2X3:
-					case GMT_MATRIX_2X4:
-					case GMT_MATRIX_3X2:
-					case GMT_MATRIX_3X3:
-					case GMT_MATRIX_3X4:
-					case GMT_MATRIX_4X2:
-					case GMT_MATRIX_4X3:
-					case GMT_MATRIX_4X4:
+					case GPDT_FLOAT1:
+					case GPDT_FLOAT2:
+					case GPDT_FLOAT3:
+					case GPDT_FLOAT4:
+					case GPDT_MATRIX_2X2:
+					case GPDT_MATRIX_2X3:
+					case GPDT_MATRIX_2X4:
+					case GPDT_MATRIX_3X2:
+					case GPDT_MATRIX_3X3:
+					case GPDT_MATRIX_3X4:
+					case GPDT_MATRIX_4X2:
+					case GPDT_MATRIX_4X3:
+					case GPDT_MATRIX_4X4:
 						{
 							UINT32 slotCount = (paramDesc.elementSize / 4) * paramDesc.arraySize;
 							assert (paramDesc.elementSize % 4 == 0 && "Should not have any elements less than 4 wide for D3D9");
@@ -387,10 +387,10 @@ namespace CamelotEngine
 								CM_EXCEPT(RenderingAPIException, "Unable to upload vertex shader float parameters.");
 							break;
 						}
-					case GMT_INT1:
-					case GMT_INT2:
-					case GMT_INT3:
-					case GMT_INT4:
+					case GPDT_INT1:
+					case GPDT_INT2:
+					case GPDT_INT3:
+					case GPDT_INT4:
 						{
 							UINT32 slotCount = (paramDesc.elementSize / 4) * paramDesc.arraySize;
 							assert (paramDesc.elementSize % 4 == 0 && "Should not have any elements less than 4 wide for D3D9");
@@ -399,7 +399,7 @@ namespace CamelotEngine
 								CM_EXCEPT(RenderingAPIException, "Unable to upload vertex shader int parameters.");
 							break;
 						}
-					case GMT_BOOL:
+					case GPDT_BOOL:
 						if (FAILED(hr = getActiveD3D9Device()->SetVertexShaderConstantB(paramDesc.gpuMemOffset, (const BOOL*)ptrData, paramDesc.arraySize))) 
 							CM_EXCEPT(RenderingAPIException, "Unable to upload vertex shader bool parameters.");
 						break;
@@ -411,26 +411,26 @@ namespace CamelotEngine
 			{
 				for(auto iter = paramDesc.params.begin(); iter != paramDesc.params.end(); ++iter)
 				{
-					const GpuParamMemberDesc& paramDesc = iter->second;
+					const GpuParamDataDesc& paramDesc = iter->second;
 
-					GpuParamBlockBufferPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
+					GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
 					const UINT8* ptrData = paramBlock->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
 
 					switch(paramDesc.type)
 					{
-					case GMT_FLOAT1:
-					case GMT_FLOAT2:
-					case GMT_FLOAT3:
-					case GMT_FLOAT4:
-					case GMT_MATRIX_2X2:
-					case GMT_MATRIX_2X3:
-					case GMT_MATRIX_2X4:
-					case GMT_MATRIX_3X2:
-					case GMT_MATRIX_3X3:
-					case GMT_MATRIX_3X4:
-					case GMT_MATRIX_4X2:
-					case GMT_MATRIX_4X3:
-					case GMT_MATRIX_4X4:
+					case GPDT_FLOAT1:
+					case GPDT_FLOAT2:
+					case GPDT_FLOAT3:
+					case GPDT_FLOAT4:
+					case GPDT_MATRIX_2X2:
+					case GPDT_MATRIX_2X3:
+					case GPDT_MATRIX_2X4:
+					case GPDT_MATRIX_3X2:
+					case GPDT_MATRIX_3X3:
+					case GPDT_MATRIX_3X4:
+					case GPDT_MATRIX_4X2:
+					case GPDT_MATRIX_4X3:
+					case GPDT_MATRIX_4X4:
 						{
 							UINT32 slotCount = (paramDesc.elementSize / 4) * paramDesc.arraySize;
 							assert (paramDesc.elementSize % 4 == 0 && "Should not have any elements less than 4 wide for D3D9");
@@ -439,10 +439,10 @@ namespace CamelotEngine
 								CM_EXCEPT(RenderingAPIException, "Unable to upload pixel shader float parameters.");
 							break;
 						}
-					case GMT_INT1:
-					case GMT_INT2:
-					case GMT_INT3:
-					case GMT_INT4:
+					case GPDT_INT1:
+					case GPDT_INT2:
+					case GPDT_INT3:
+					case GPDT_INT4:
 						{
 							UINT32 slotCount = (paramDesc.elementSize / 4) * paramDesc.arraySize;
 							assert (paramDesc.elementSize % 4 == 0 && "Should not have any elements less than 4 wide for D3D9");
@@ -451,7 +451,7 @@ namespace CamelotEngine
 								CM_EXCEPT(RenderingAPIException, "Unable to upload pixel shader int parameters.");
 							break;
 						}
-					case GMT_BOOL:
+					case GPDT_BOOL:
 						if (FAILED(hr = getActiveD3D9Device()->SetPixelShaderConstantB(paramDesc.gpuMemOffset, (const BOOL*)ptrData, paramDesc.arraySize))) 
 							CM_EXCEPT(RenderingAPIException, "Unable to upload pixel shader bool parameters.");
 						break;

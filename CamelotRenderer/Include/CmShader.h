@@ -2,9 +2,33 @@
 
 #include "CmPrerequisites.h"
 #include "CmResource.h"
+#include "CmCommonEnums.h"
 
 namespace CamelotEngine
 {
+	struct CM_EXPORT SHADER_DATA_PARAM_DESC
+	{
+		String name;
+		String gpuVariableName;
+		GpuParamDataType type;
+		UINT32 arraySize;
+		bool hidden;
+	};
+
+	struct CM_EXPORT SHADER_OBJECT_PARAM_DESC
+	{
+		String name;
+		String gpuVariableName;
+		GpuParamObjectType type;
+		bool hidden;
+	};
+
+	struct CM_EXPORT SHADER_PARAM_BLOCK_DESC
+	{
+		bool shared;
+		GpuParamBlockUsage usage;
+	};
+
 	/**
 	 * @brief	Shader represents a collection of techniques. They are used in Materials,
 	 * 			which can be considered as instances of a Shader. Multiple materials
@@ -37,9 +61,22 @@ namespace CamelotEngine
 		 */
 		TechniquePtr getBestTechnique() const;
 
+		void addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize = 1, bool hidden = false);
+		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, bool hidden = false);
+		void removeParameter(const String& name);
+		void setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage);
+
+		const map<String, SHADER_DATA_PARAM_DESC>::type& getDataParams() const { return mDataParams; }
+		const map<String, SHADER_OBJECT_PARAM_DESC>::type& getObjectParams() const { return mObjectParams; }
+		const map<String, SHADER_PARAM_BLOCK_DESC>::type& getParamBlocks() const { return mParamBlocks; }
+
 	private:
 		String mName;
 		vector<TechniquePtr>::type mTechniques;
+
+		map<String, SHADER_DATA_PARAM_DESC>::type mDataParams;
+		map<String, SHADER_OBJECT_PARAM_DESC>::type mObjectParams;
+		map<String, SHADER_PARAM_BLOCK_DESC>::type mParamBlocks;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

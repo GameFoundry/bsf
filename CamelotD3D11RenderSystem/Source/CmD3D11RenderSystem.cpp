@@ -464,7 +464,7 @@ namespace CamelotEngine
 
 		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
 		{
-			GpuParamBlockBufferPtr currentBlock = params->getParamBlock(iter->second.slot);
+			GpuParamBlockPtr currentBlock = params->getParamBlock(iter->second.slot);
 
 			if(currentBlock != nullptr)
 			{

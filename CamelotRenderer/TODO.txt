@@ -50,6 +50,10 @@ Stuff that needs destroy():
   - Shader
   - Technique
 
+GpuParamBlock usage is provided in the constructor but isn't used anywhere
+DX9 will have the same name for sampler and texture. This will cause an error in Material param checking.
+DX9 might have problems with checking if buffers are equal. Probably need to ignore "Global" param block
+
 
 Add support for include file resource
 Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it
@@ -57,26 +61,6 @@ Make sure we can add an include file to a HighLevelGpuProgram, and make sure it 
 
 Make Raster/DepthStencil/Blend/Sampler states resources
 Make Shader a resource
-
-Make GpuParamBlock a resource
- - Static/Dynamic usage for GpuParamBlock
- - rename current GpuParamBlock into GpuParamBlockBuffer
- - add new class GpuParamBlock that has addParameter(name, gpuProgramVariable, type, visible)
- - it stores data on per-parameter basis
- - it is a Resource and is serializable
- - in Material when an actual technique is chosen, GpuParamBlockBuffer is bound to GpuParamBlock
-
-Shader::addParamBlock(name, GPU_PARAM_BLOCK_DESC, bool shared)
- - If its shared it won't be instantiated manually when material chooses an actual technique
- - When this method is called we check if any parameter rules are broken:
-   - Ignore missing variables from a param block (weaker techniques might not need them all)
-   - Throw an error if the specified variables come from two different param blocks
-   - Global block should be special to accomodate DX9 shaders
-Shader::addParameter(name, gpuVariableName, type, visible) - Only for objects like textures/buffers/samplers
-
-Material::setParameter - does what it did so far
-Material::setSharedGpuParamBlock(name, GpuParamBlock) - makes he specified block share the data
-
 
  Refactor how we handle RenderTargets (no attach/detach, and no waitForVSync propery in RenderSystem)
  waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
