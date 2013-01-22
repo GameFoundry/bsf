@@ -1,4 +1,5 @@
 #include "CmGLGpuParamBlock.h"
+#include "CmException.h"
 
 namespace CamelotEngine
 {
@@ -23,7 +24,13 @@ namespace CamelotEngine
 		{
 			glGenBuffers(1, &mGLSharedData->mGLHandle);
 			glBindBuffer(GL_UNIFORM_BUFFER, mGLSharedData->mGLHandle);
-			glBufferData(GL_UNIFORM_BUFFER, mSize, (GLvoid*)mData, GL_DYNAMIC_DRAW);
+			if(mUsage == GPBU_STATIC)
+				glBufferData(GL_UNIFORM_BUFFER, mSize, (GLvoid*)mData, GL_STATIC_DRAW);
+			else if(mUsage == GPBU_DYNAMIC)
+				glBufferData(GL_UNIFORM_BUFFER, mSize, (GLvoid*)mData, GL_DYNAMIC_DRAW);
+			else
+				CM_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
+
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 			sharedData->mInitialized = true;

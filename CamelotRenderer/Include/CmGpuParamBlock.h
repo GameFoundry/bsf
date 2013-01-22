@@ -31,6 +31,7 @@ namespace CamelotEngine
 		static GpuParamBlockPtr create(const GpuParamBlockDesc& desc);
 	protected:
 		GpuParamBlockSharedData* sharedData;
+		GpuParamBlockUsage mUsage;
 		bool mOwnsSharedData;
 		UINT8* mData;
 		UINT32 mSize;

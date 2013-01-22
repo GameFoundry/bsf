@@ -6,7 +6,7 @@
 namespace CamelotEngine
 {
 	GpuParamBlock::GpuParamBlock(const GpuParamBlockDesc& desc, GpuParamBlockUsage usage)
-		:mSize(desc.blockSize * sizeof(UINT32)), mOwnsSharedData(true)
+		:mSize(desc.blockSize * sizeof(UINT32)), mOwnsSharedData(true), mUsage(usage)
 	{
 		mData = new UINT8[mSize];
 		memset(mData, 0, mSize);

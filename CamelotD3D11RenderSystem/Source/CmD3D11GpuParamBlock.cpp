@@ -27,7 +27,12 @@ namespace CamelotEngine
 			D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 			D3D11Device& device = d3d11rs->getPrimaryDevice();
 
-			mD3D11SharedData->mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_CONSTANT, GBU_STATIC, 1, mSize, device);
+			if(mUsage == GPBU_STATIC)
+				mD3D11SharedData->mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_CONSTANT, GBU_STATIC, 1, mSize, device);
+			else if(mUsage == GPBU_DYNAMIC)
+				mD3D11SharedData->mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_CONSTANT, GBU_DYNAMIC, 1, mSize, device);
+			else
+				CM_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
 
 			sharedData->mInitialized = true;
 		}

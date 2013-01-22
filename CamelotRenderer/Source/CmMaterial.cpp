@@ -243,7 +243,7 @@ namespace CamelotEngine
 		map<String, const GpuParamDataDesc*>::type foundDataParams;
 		map<String, const GpuParamObjectDesc*>::type foundObjectParams;
 
-		set<String>::type validParameters;
+		map<String, bool>::type validParameters;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{
@@ -263,7 +263,10 @@ namespace CamelotEngine
 				{
 					auto dataFindIter = foundDataParams.find(iter2->first);
 					if(dataFindIter == foundDataParams.end())
-						validParameters.insert(iter2->first);
+					{
+						validParameters[iter2->first] = true;
+						foundDataParams[iter2->first] = &curParam;
+					}
 					else
 					{
 						const GpuParamDataDesc* otherParam = dataFindIter->second;
@@ -273,7 +276,12 @@ namespace CamelotEngine
 				}
 
 				if(!isParameterValid)
-					validParameters.erase(iter2->first);
+				{
+					if(validParameters[iter2->first]) // Do this check so we only report this error once
+						LOGWRN("Found two parameters with the same name but different contents: " + iter2->first);
+
+					validParameters[iter2->first] = false;
+				}
 			}
 
 			// Check sampler params
@@ -290,7 +298,10 @@ namespace CamelotEngine
 				{
 					auto objectFindIter = foundObjectParams.find(iter2->first);
 					if(objectFindIter == foundObjectParams.end())
-						validParameters.insert(iter2->first);
+					{
+						validParameters[iter2->first] = true;
+						foundObjectParams[iter2->first] = &curParam;
+					}
 					else
 					{
 						const GpuParamObjectDesc* otherParam = objectFindIter->second;
@@ -300,7 +311,12 @@ namespace CamelotEngine
 				}
 
 				if(!isParameterValid)
-					validParameters.erase(iter2->first);
+				{
+					if(validParameters[iter2->first]) // Do this check so we only report this error once
+						LOGWRN("Found two parameters with the same name but different contents: " + iter2->first);
+
+					validParameters[iter2->first] = false;
+				}
 			}
 
 			// Check texture params
@@ -317,7 +333,10 @@ namespace CamelotEngine
 				{
 					auto objectFindIter = foundObjectParams.find(iter2->first);
 					if(objectFindIter == foundObjectParams.end())
-						validParameters.insert(iter2->first);
+					{
+						validParameters[iter2->first] = true;
+						foundObjectParams[iter2->first] = &curParam;
+					}
 					else
 					{
 						const GpuParamObjectDesc* otherParam = objectFindIter->second;
@@ -327,7 +346,12 @@ namespace CamelotEngine
 				}
 
 				if(!isParameterValid)
-					validParameters.erase(iter2->first);
+				{
+					if(validParameters[iter2->first]) // Do this check so we only report this error once
+						LOGWRN("Found two parameters with the same name but different contents: " + iter2->first);
+
+					validParameters[iter2->first] = false;
+				}
 			}
 
 			// Check buffer params
@@ -344,7 +368,10 @@ namespace CamelotEngine
 				{
 					auto objectFindIter = foundObjectParams.find(iter2->first);
 					if(objectFindIter == foundObjectParams.end())
-						validParameters.insert(iter2->first);
+					{
+						validParameters[iter2->first] = true;
+						foundObjectParams[iter2->first] = &curParam;
+					}
 					else
 					{
 						const GpuParamObjectDesc* otherParam = objectFindIter->second;
@@ -355,25 +382,29 @@ namespace CamelotEngine
 
 				if(!isParameterValid)
 				{
-					auto validParamIter = validParameters.find(iter2->first);
-
-					if(validParamIter != validParameters.end()) // Do this check so we only report this error once
-					{
+					if(validParameters[iter2->first]) // Do this check so we only report this error once
 						LOGWRN("Found two parameters with the same name but different contents: " + iter2->first);
-						validParameters.erase(validParamIter);
-					}
+
+					validParameters[iter2->first] = false;
 				}
 			}
 		}
 
-		return validParameters;
+		set<String>::type validParamsReturn;
+		for(auto iter = validParameters.begin(); iter != validParameters.end(); ++iter)
+		{
+			if(iter->second)
+				validParamsReturn.insert(iter->first);
+		}
+
+		return validParamsReturn;
 	}
 
 	set<String>::type Material::determineValidShareableParamBlocks(const vector<const GpuParamDesc*>::type& paramDescs) const
 	{
 		// Make sure param blocks with the same name actually are the same
 		map<String, std::pair<String, const GpuParamDesc*>>::type uniqueParamBlocks;
-		set<String>::type validParamBlocks;
+		map<String, bool>::type validParamBlocks;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{
@@ -390,7 +421,7 @@ namespace CamelotEngine
 				if(iterFind == uniqueParamBlocks.end())
 				{
 					uniqueParamBlocks[blockIter->first] = std::make_pair(blockIter->first, *iter);
-					validParamBlocks.insert(blockIter->first);
+					validParamBlocks[blockIter->first] = true;
 					continue;
 				}
 
@@ -424,18 +455,23 @@ namespace CamelotEngine
 
 				if(!isBlockValid)
 				{
-					auto blockValidIter = validParamBlocks.find(blockIter->first);
-
-					if(blockValidIter != validParamBlocks.end()) // Do this check so we only report this error once
+					if(validParamBlocks[blockIter->first])
 					{
 						LOGWRN("Found two param blocks with the same name but different contents: " + blockIter->first);
-						validParamBlocks.erase(blockValidIter);
+						validParamBlocks[blockIter->first] = false;
 					}
 				}
 			}
 		}
 
-		return validParamBlocks;
+		set<String>::type validParamBlocksReturn;
+		for(auto iter = validParamBlocks.begin(); iter != validParamBlocks.end(); ++iter)
+		{
+			if(iter->second)
+				validParamBlocksReturn.insert(iter->first);
+		}
+
+		return validParamBlocksReturn;
 	}
 
 	map<String, String>::type Material::determineParameterToBlockMapping(const vector<const GpuParamDesc*>::type& paramDescs)

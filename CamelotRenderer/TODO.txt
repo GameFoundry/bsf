@@ -50,10 +50,7 @@ Stuff that needs destroy():
   - Shader
   - Technique
 
-GpuParamBlock usage is provided in the constructor but isn't used anywhere
 DX9 will have the same name for sampler and texture. This will cause an error in Material param checking.
-DX9 might have problems with checking if buffers are equal. Probably need to ignore "Global" param block
-
 
 Add support for include file resource
 Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it
