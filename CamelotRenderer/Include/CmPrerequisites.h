@@ -232,7 +232,15 @@ namespace CamelotEngine
 		TID_SamplerStateParamKVP = 1022,
 		TID_BlendState = 1023,
 		TID_RasterizerState = 1024,
-		TID_DepthStencilState = 1025
+		TID_DepthStencilState = 1025,
+		TID_MaterialParamFloat = 1026,
+		TID_MaterialParamVec2 = 1027,
+		TID_MaterialParamVec3 = 1028,
+		TID_MaterialParamVec4 = 1029,
+		TID_MaterialParamMat3 = 1030,
+		TID_MaterialParamMat4 = 1031,
+		TID_MaterialParamTexture = 1032,
+		TID_MaterialParamSamplerState = 1033
 	};
 }
 
@@ -250,6 +258,7 @@ namespace CamelotEngine
 	typedef ResourceHandle<GpuProgram> GpuProgramHandle;
 	typedef ResourceHandle<HighLevelGpuProgram> HighLevelGpuProgramHandle;
 	typedef ResourceHandle<Material> MaterialHandle;
+	typedef ResourceHandle<SamplerState> SamplerStateHandle;
 	typedef ResourceHandle<RasterizerState> RasterizerStateHandle;
 	typedef ResourceHandle<DepthStencilState> DepthStencilStateHandle;
 	typedef ResourceHandle<BlendState> BlendStateHandle;

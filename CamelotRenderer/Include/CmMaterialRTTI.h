@@ -17,352 +17,435 @@
 
 namespace CamelotEngine
 {
+	/************************************************************************/
+	/* 					HELPER STRUCTS TO HELP SERIALIZING                  */
+	/************************************************************************/
+
+	class CM_EXPORT MaterialFloatParam : public IReflectable
+	{
+	public:
+		String name;
+		float value;
+		UINT32 arrayIdx;
+
+		friend class MaterialFloatParamRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
+	};
+
+	class CM_EXPORT MaterialVec2Param : public IReflectable
+	{
+	public:
+		String name;
+		Vector2 value;
+		UINT32 arrayIdx;
+
+		friend class MaterialVec2ParamRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
+	};
+
+	class CM_EXPORT MaterialVec3Param : public IReflectable
+	{
+	public:
+		String name;
+		Vector3 value;
+		UINT32 arrayIdx;
+
+		friend class MaterialVec3ParamRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
+	};
+
+	class CM_EXPORT MaterialVec4Param : public IReflectable
+	{
+	public:
+		String name;
+		Vector4 value;
+		UINT32 arrayIdx;
+
+		friend class MaterialVec4ParamRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
+	};
+
+	class CM_EXPORT MaterialMat3Param : public IReflectable
+	{
+	public:
+		String name;
+		Matrix3 value;
+		UINT32 arrayIdx;
+
+		friend class MaterialMat3ParamRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
+	};
+
+	class CM_EXPORT MaterialMat4Param : public IReflectable
+	{
+	public:
+		String name;
+		Matrix4 value;
+		UINT32 arrayIdx;
+
+		friend class MaterialMat4ParamRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
+	};
+
+	class CM_EXPORT MaterialTextureParam : public IReflectable
+	{
+	public:
+		String name;
+		TextureHandle value;
+
+		friend class MaterialTextureParamRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
+	};
+
+	class CM_EXPORT MaterialSamplerStateParam : public IReflectable
+	{
+	public:
+		String name;
+		SamplerStateHandle value;
+
+		friend class MaterialSamplerStateParamRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
+	};
+
+	class CM_EXPORT MaterialParams : public IReflectable
+	{
+	public:
+		vector<MaterialFloatParam>::type floatParams;
+		vector<MaterialVec2Param>::type vec2Params;
+		vector<MaterialVec3Param>::type vec3Params;
+		vector<MaterialVec4Param>::type vec4Params;
+		vector<MaterialMat3Param>::type mat3Params;
+		vector<MaterialMat4Param>::type mat4Params;
+		vector<MaterialTextureParam>::type textureParams;
+		vector<MaterialSamplerStateParam>::type samplerStateParams;
+
+		friend class MaterialParamsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
+	};
+
+	/************************************************************************/
+	/* 				RTTI FOR HELPER STRUCTS TO HELP SERIALIZING             */
+	/************************************************************************/
+
+	class CM_EXPORT MaterialFloatParamRTTI : public RTTIType<MaterialFloatParam, IReflectable, MaterialFloatParamRTTI>
+	{
+	public:
+		String& getName(MaterialFloatParam* obj) { return obj->name; }
+		void setName(MaterialFloatParam* obj, String& name) { obj->name = name; }
+
+		float& getValue(MaterialFloatParam* obj) { return obj->value; }
+		void setValue(MaterialFloatParam* obj, float& value) { obj->value = value; }
+
+		UINT32& getArrayIdx(MaterialFloatParam* obj) { return obj->arrayIdx; }
+		void setArrayIdx(MaterialFloatParam* obj, UINT32& value) { obj->arrayIdx = value; }
+
+		MaterialFloatParamRTTI()
+		{
+			addPlainField("name", 0, &MaterialFloatParamRTTI::getName, &MaterialFloatParamRTTI::setName);
+			addPlainField("value", 1, &MaterialFloatParamRTTI::getValue, &MaterialFloatParamRTTI::setValue);
+			addPlainField("arrayIdx", 2, &MaterialFloatParamRTTI::getArrayIdx, &MaterialFloatParamRTTI::setArrayIdx);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialFloatParam";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParamFloat; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialFloatParam()); }
+	};
+
+	class CM_EXPORT MaterialVec2ParamRTTI : public RTTIType<MaterialVec2Param, IReflectable, MaterialVec2ParamRTTI>
+	{
+	public:
+		String& getName(MaterialVec2Param* obj) { return obj->name; }
+		void setName(MaterialVec2Param* obj, String& name) { obj->name = name; }
+
+		Vector2& getValue(MaterialVec2Param* obj) { return obj->value; }
+		void setValue(MaterialVec2Param* obj, Vector2& value) { obj->value = value; }
+
+		UINT32& getArrayIdx(MaterialVec2Param* obj) { return obj->arrayIdx; }
+		void setArrayIdx(MaterialVec2Param* obj, UINT32& value) { obj->arrayIdx = value; }
+
+		MaterialVec2ParamRTTI()
+		{
+			addPlainField("name", 0, &MaterialVec2ParamRTTI::getName, &MaterialVec2ParamRTTI::setName);
+			addPlainField("value", 1, &MaterialVec2ParamRTTI::getValue, &MaterialVec2ParamRTTI::setValue);
+			addPlainField("arrayIdx", 2, &MaterialVec2ParamRTTI::getArrayIdx, &MaterialVec2ParamRTTI::setArrayIdx);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialVec2Param";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParamVec2; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialVec2Param()); }
+	};
+
+	class CM_EXPORT MaterialVec3ParamRTTI : public RTTIType<MaterialVec3Param, IReflectable, MaterialVec3ParamRTTI>
+	{
+	public:
+		String& getName(MaterialVec3Param* obj) { return obj->name; }
+		void setName(MaterialVec3Param* obj, String& name) { obj->name = name; }
+
+		Vector3& getValue(MaterialVec3Param* obj) { return obj->value; }
+		void setValue(MaterialVec3Param* obj, Vector3& value) { obj->value = value; }
+
+		UINT32& getArrayIdx(MaterialVec3Param* obj) { return obj->arrayIdx; }
+		void setArrayIdx(MaterialVec3Param* obj, UINT32& value) { obj->arrayIdx = value; }
+
+		MaterialVec3ParamRTTI()
+		{
+			addPlainField("name", 0, &MaterialVec3ParamRTTI::getName, &MaterialVec3ParamRTTI::setName);
+			addPlainField("value", 1, &MaterialVec3ParamRTTI::getValue, &MaterialVec3ParamRTTI::setValue);
+			addPlainField("arrayIdx", 2, &MaterialVec3ParamRTTI::getArrayIdx, &MaterialVec3ParamRTTI::setArrayIdx);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialVec3Param";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParamVec3; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialVec3Param()); }
+	};
+
+	class CM_EXPORT MaterialVec4ParamRTTI : public RTTIType<MaterialVec4Param, IReflectable, MaterialVec4ParamRTTI>
+	{
+	public:
+		String& getName(MaterialVec4Param* obj) { return obj->name; }
+		void setName(MaterialVec4Param* obj, String& name) { obj->name = name; }
+
+		Vector4& getValue(MaterialVec4Param* obj) { return obj->value; }
+		void setValue(MaterialVec4Param* obj, Vector4& value) { obj->value = value; }
+
+		UINT32& getArrayIdx(MaterialVec4Param* obj) { return obj->arrayIdx; }
+		void setArrayIdx(MaterialVec4Param* obj, UINT32& value) { obj->arrayIdx = value; }
+
+		MaterialVec4ParamRTTI()
+		{
+			addPlainField("name", 0, &MaterialVec4ParamRTTI::getName, &MaterialVec4ParamRTTI::setName);
+			addPlainField("value", 1, &MaterialVec4ParamRTTI::getValue, &MaterialVec4ParamRTTI::setValue);
+			addPlainField("arrayIdx", 2, &MaterialVec4ParamRTTI::getArrayIdx, &MaterialVec4ParamRTTI::setArrayIdx);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialVec4Param";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParamVec4; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialVec4Param()); }
+	};
+
+	class CM_EXPORT MaterialMat3ParamRTTI : public RTTIType<MaterialMat3Param, IReflectable, MaterialMat3ParamRTTI>
+	{
+	public:
+		String& getName(MaterialMat3Param* obj) { return obj->name; }
+		void setName(MaterialMat3Param* obj, String& name) { obj->name = name; }
+
+		Matrix3& getValue(MaterialMat3Param* obj) { return obj->value; }
+		void setValue(MaterialMat3Param* obj, Matrix3& value) { obj->value = value; }
+
+		UINT32& getArrayIdx(MaterialMat3Param* obj) { return obj->arrayIdx; }
+		void setArrayIdx(MaterialMat3Param* obj, UINT32& value) { obj->arrayIdx = value; }
+
+		MaterialMat3ParamRTTI()
+		{
+			addPlainField("name", 0, &MaterialMat3ParamRTTI::getName, &MaterialMat3ParamRTTI::setName);
+			addPlainField("value", 1, &MaterialMat3ParamRTTI::getValue, &MaterialMat3ParamRTTI::setValue);
+			addPlainField("arrayIdx", 2, &MaterialMat3ParamRTTI::getArrayIdx, &MaterialMat3ParamRTTI::setArrayIdx);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialMat3Param";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParamMat3; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialMat3Param()); }
+	};
+
+	class CM_EXPORT MaterialMat4ParamRTTI : public RTTIType<MaterialMat4Param, IReflectable, MaterialMat4ParamRTTI>
+	{
+	public:
+		String& getName(MaterialMat4Param* obj) { return obj->name; }
+		void setName(MaterialMat4Param* obj, String& name) { obj->name = name; }
+
+		Matrix4& getValue(MaterialMat4Param* obj) { return obj->value; }
+		void setValue(MaterialMat4Param* obj, Matrix4& value) { obj->value = value; }
+
+		UINT32& getArrayIdx(MaterialMat4Param* obj) { return obj->arrayIdx; }
+		void setArrayIdx(MaterialMat4Param* obj, UINT32& value) { obj->arrayIdx = value; }
+
+		MaterialMat4ParamRTTI()
+		{
+			addPlainField("name", 0, &MaterialMat4ParamRTTI::getName, &MaterialMat4ParamRTTI::setName);
+			addPlainField("value", 1, &MaterialMat4ParamRTTI::getValue, &MaterialMat4ParamRTTI::setValue);
+			addPlainField("arrayIdx", 2, &MaterialMat4ParamRTTI::getArrayIdx, &MaterialMat4ParamRTTI::setArrayIdx);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialMat4Param";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParamMat4; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialMat4Param()); }
+	};
+
+	class CM_EXPORT MaterialTextureParamRTTI : public RTTIType<MaterialTextureParam, IReflectable, MaterialTextureParamRTTI>
+	{
+	public:
+		String& getName(MaterialTextureParam* obj) { return obj->name; }
+		void setName(MaterialTextureParam* obj, String& name) { obj->name = name; }
+
+		TextureHandle& getValue(MaterialTextureParam* obj) { return obj->value; }
+		void setValue(MaterialTextureParam* obj, TextureHandle& value) { obj->value = value; }
+
+		MaterialTextureParamRTTI()
+		{
+			addPlainField("name", 0, &MaterialTextureParamRTTI::getName, &MaterialTextureParamRTTI::setName);
+			addReflectableField("value", 1, &MaterialTextureParamRTTI::getValue, &MaterialTextureParamRTTI::setValue);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialTextureParam";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParamTexture; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialTextureParam()); }
+	};
+
+	class CM_EXPORT MaterialSamplerStateParamRTTI : public RTTIType<MaterialSamplerStateParam, IReflectable, MaterialSamplerStateParamRTTI>
+	{
+	public:
+		String& getName(MaterialSamplerStateParam* obj) { return obj->name; }
+		void setName(MaterialSamplerStateParam* obj, String& name) { obj->name = name; }
+
+		SamplerStateHandle& getValue(MaterialSamplerStateParam* obj) { return obj->value; }
+		void setValue(MaterialSamplerStateParam* obj, SamplerStateHandle& value) { obj->value = value; }
+
+		MaterialSamplerStateParamRTTI()
+		{
+			addPlainField("name", 0, &MaterialSamplerStateParamRTTI::getName, &MaterialSamplerStateParamRTTI::setName);
+			addReflectableField("value", 1, &MaterialSamplerStateParamRTTI::getValue, &MaterialSamplerStateParamRTTI::setValue);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialSamplerStateParam";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParamSamplerState; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialSamplerStateParam()); }
+	};
+
+	class CM_EXPORT MaterialParamsRTTI : public RTTIType<MaterialParams, IReflectable, MaterialParamsRTTI>
+	{
+	public:
+		MaterialFloatParam& getFloatParam(MaterialParams* obj, UINT32 idx) { return obj->floatParams[idx]; }
+		void setFloatParam(MaterialParams* obj, UINT32 idx, MaterialFloatParam& param) { obj->floatParams[idx] = param; }
+		UINT32 getFloatArraySize(MaterialParams* obj) { return (UINT32)obj->floatParams.size(); }
+		void setFloatArraySize(MaterialParams* obj, UINT32 size) { obj->floatParams.resize(size); }
+
+		MaterialVec2Param& getVec2Param(MaterialParams* obj, UINT32 idx) { return obj->vec2Params[idx]; }
+		void setVec2Param(MaterialParams* obj, UINT32 idx, MaterialVec2Param& param) { obj->vec2Params[idx] = param; }
+		UINT32 getVec2ArraySize(MaterialParams* obj) { return (UINT32)obj->vec2Params.size(); }
+		void setVec2ArraySize(MaterialParams* obj, UINT32 size) { obj->vec2Params.resize(size); }
+
+		MaterialVec3Param& getVec3Param(MaterialParams* obj, UINT32 idx) { return obj->vec3Params[idx]; }
+		void setVec3Param(MaterialParams* obj, UINT32 idx, MaterialVec3Param& param) { obj->vec3Params[idx] = param; }
+		UINT32 getVec3ArraySize(MaterialParams* obj) { return (UINT32)obj->vec3Params.size(); }
+		void setVec3ArraySize(MaterialParams* obj, UINT32 size) { obj->vec3Params.resize(size); }
+
+		MaterialVec4Param& getVec4Param(MaterialParams* obj, UINT32 idx) { return obj->vec4Params[idx]; }
+		void setVec4Param(MaterialParams* obj, UINT32 idx, MaterialVec4Param& param) { obj->vec4Params[idx] = param; }
+		UINT32 getVec4ArraySize(MaterialParams* obj) { return (UINT32)obj->vec4Params.size(); }
+		void setVec4ArraySize(MaterialParams* obj, UINT32 size) { obj->vec4Params.resize(size); }
+
+		MaterialMat3Param& getMat3Param(MaterialParams* obj, UINT32 idx) { return obj->mat3Params[idx]; }
+		void setMat3Param(MaterialParams* obj, UINT32 idx, MaterialMat3Param& param) { obj->mat3Params[idx] = param; }
+		UINT32 getMat3ArraySize(MaterialParams* obj) { return (UINT32)obj->mat3Params.size(); }
+		void setMat3ArraySize(MaterialParams* obj, UINT32 size) { obj->mat3Params.resize(size); }
+
+		MaterialMat4Param& getMat4Param(MaterialParams* obj, UINT32 idx) { return obj->mat4Params[idx]; }
+		void setMat4Param(MaterialParams* obj, UINT32 idx, MaterialMat4Param& param) { obj->mat4Params[idx] = param; }
+		UINT32 getMat4ArraySize(MaterialParams* obj) { return (UINT32)obj->mat4Params.size(); }
+		void setMat4ArraySize(MaterialParams* obj, UINT32 size) { obj->mat4Params.resize(size); }
+
+		MaterialTextureParam& getTextureParam(MaterialParams* obj, UINT32 idx) { return obj->textureParams[idx]; }
+		void setTextureParam(MaterialParams* obj, UINT32 idx, MaterialTextureParam& param) { obj->textureParams[idx] = param; }
+		UINT32 getTextureArraySize(MaterialParams* obj) { return (UINT32)obj->textureParams.size(); }
+		void setTextureArraySize(MaterialParams* obj, UINT32 size) { obj->textureParams.resize(size); }
+
+		MaterialSamplerStateParam& getSamplerStateParam(MaterialParams* obj, UINT32 idx) { return obj->samplerStateParams[idx]; }
+		void setSamplerStateParam(MaterialParams* obj, UINT32 idx, MaterialSamplerStateParam& param) { obj->samplerStateParams[idx] = param; }
+		UINT32 getSamplerStateArraySize(MaterialParams* obj) { return (UINT32)obj->samplerStateParams.size(); }
+		void setSamplerStateArraySize(MaterialParams* obj, UINT32 size) { obj->samplerStateParams.resize(size); }
+
+		MaterialParamsRTTI()
+		{
+			addReflectableArrayField("floatParams", 0, &MaterialParamsRTTI::getFloatParam, 
+				&MaterialParamsRTTI::getFloatArraySize, &MaterialParamsRTTI::setFloatParam, &MaterialParamsRTTI::setFloatArraySize);
+
+			addReflectableArrayField("vec2Params", 1, &MaterialParamsRTTI::getVec2Param, 
+				&MaterialParamsRTTI::getVec2ArraySize, &MaterialParamsRTTI::setVec2Param, &MaterialParamsRTTI::setVec2ArraySize);
+
+			addReflectableArrayField("vec3Params", 2, &MaterialParamsRTTI::getVec3Param, 
+				&MaterialParamsRTTI::getVec3ArraySize, &MaterialParamsRTTI::setVec3Param, &MaterialParamsRTTI::setVec3ArraySize);
+
+			addReflectableArrayField("vec4Params", 3, &MaterialParamsRTTI::getVec4Param, 
+				&MaterialParamsRTTI::getVec4ArraySize, &MaterialParamsRTTI::setVec4Param, &MaterialParamsRTTI::setVec4ArraySize);
+
+			addReflectableArrayField("mat3Params", 4, &MaterialParamsRTTI::getMat3Param, 
+				&MaterialParamsRTTI::getMat3ArraySize, &MaterialParamsRTTI::setMat3Param, &MaterialParamsRTTI::setMat3ArraySize);
+
+			addReflectableArrayField("mat4Params", 5, &MaterialParamsRTTI::getMat4Param, 
+				&MaterialParamsRTTI::getMat4ArraySize, &MaterialParamsRTTI::setMat4Param, &MaterialParamsRTTI::setMat4ArraySize);
+
+			addReflectableArrayField("textureParams", 6, &MaterialParamsRTTI::getTextureParam, 
+				&MaterialParamsRTTI::getTextureArraySize, &MaterialParamsRTTI::setTextureParam, &MaterialParamsRTTI::setTextureArraySize);
+
+			addReflectableArrayField("samplerStateParams", 7, &MaterialParamsRTTI::getSamplerStateParam, 
+				&MaterialParamsRTTI::getSamplerStateArraySize, &MaterialParamsRTTI::setSamplerStateParam, &MaterialParamsRTTI::setSamplerStateArraySize);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialParams";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParams; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialParams()); }
+	};
+
+	// TODO - Add MaterialParamsRTTI
+	// - Add a way to fill and read from MaterialParams
+
 	class CM_EXPORT MaterialRTTI : public RTTIType<Material, Resource, MaterialRTTI>
 	{
 	private:
-		struct FloatParam
-		{
-			FloatParam() {}
-
-			FloatParam(UINT32 bufferIdx, GpuConstantType type, UINT32 count)
-				:mBufferIdx(bufferIdx), mType(type), mCount(count)
-			{ }
-
-			UINT32 mBufferIdx;
-			UINT32 mCount;
-			GpuConstantType mType;
-		};
-
-		class FloatParamKVPRTTI;
-		typedef KeyValuePair<String, FloatParam, FloatParamKVPRTTI> FloatParamKVP;
-
-		class FloatParamKVPRTTI : public RTTIType<FloatParamKVP, IReflectable, FloatParamKVPRTTI>
-		{
-		private:
-			String& getKey(FloatParamKVP* obj) { return obj->mKey; }
-			void setKey(FloatParamKVP* obj,  String& val) { obj->mKey = val; }
-
-			FloatParam& getValue(FloatParamKVP* obj) { return obj->mValue; }
-			void setValue(FloatParamKVP* obj,  FloatParam& val) { obj->mValue = val; }
-
-		public:
-			FloatParamKVPRTTI()
-			{
-				addPlainField("mKey", 0, &FloatParamKVPRTTI::getKey, &FloatParamKVPRTTI::setKey);
-				addPlainField("mValue", 1, &FloatParamKVPRTTI::getValue, &FloatParamKVPRTTI::setValue);
-			}
-
-		public:
-			virtual const String& getRTTIName()
-			{
-				static String name = "FloatParamKVP";
-				return name;
-			}
-
-			virtual UINT32 getRTTIId()
-			{
-				return TID_FloatParamKVP;
-			}
-
-			virtual std::shared_ptr<IReflectable> newRTTIObject()
-			{
-				return std::shared_ptr<FloatParamKVP>(new FloatParamKVP());
-			}
-		};
-
-		class TexParamKVPRTTI;
-		typedef KeyValuePair<String, TextureHandle, TexParamKVPRTTI> TexParamKVP;
-
-		class TexParamKVPRTTI : public RTTIType<TexParamKVP, IReflectable, TexParamKVPRTTI>
-		{
-		private:
-			String& getKey(TexParamKVP* obj) { return obj->mKey; }
-			void setKey(TexParamKVP* obj,  String& val) { obj->mKey = val; }
-
-			TextureHandle& getValue(TexParamKVP* obj) { return obj->mValue; }
-			void setValue(TexParamKVP* obj,  TextureHandle& val) { obj->mValue = val; }
-
-		public:
-			TexParamKVPRTTI()
-			{
-				addPlainField("mKey", 0, &TexParamKVPRTTI::getKey, &TexParamKVPRTTI::setKey);
-				addReflectableField("mValue", 1, &TexParamKVPRTTI::getValue, &TexParamKVPRTTI::setValue);
-			}
-
-		public:
-			virtual const String& getRTTIName()
-			{
-				static String name = "TexParamKVP";
-				return name;
-			}
-
-			virtual UINT32 getRTTIId()
-			{
-				return TID_MaterialTexParamKVP;
-			}
-
-			virtual std::shared_ptr<IReflectable> newRTTIObject()
-			{
-				return std::shared_ptr<TexParamKVP>(new TexParamKVP());
-			}
-		};
-
-		class SamplerStateParamKVPRTTI;
-		typedef KeyValuePair<String, SamplerStatePtr, SamplerStateParamKVPRTTI> SamplerStateKVP;
-
-		class SamplerStateParamKVPRTTI : public RTTIType<SamplerStateKVP, IReflectable, SamplerStateParamKVPRTTI>
-		{
-		private:
-			String& getKey(SamplerStateKVP* obj) { return obj->mKey; }
-			void setKey(SamplerStateKVP* obj,  String& val) { obj->mKey = val; }
-
-			SamplerStatePtr getValue(SamplerStateKVP* obj) { return obj->mValue; }
-			void setValue(SamplerStateKVP* obj,  SamplerStatePtr val) { obj->mValue = val; }
-
-		public:
-			SamplerStateParamKVPRTTI()
-			{
-				addPlainField("mKey", 0, &SamplerStateParamKVPRTTI::getKey, &SamplerStateParamKVPRTTI::setKey);
-				addReflectablePtrField("mValue", 1, &SamplerStateParamKVPRTTI::getValue, &SamplerStateParamKVPRTTI::setValue);
-			}
-
-		public:
-			virtual const String& getRTTIName()
-			{
-				static String name = "SamplerStateKVP";
-				return name;
-			}
-
-			virtual UINT32 getRTTIId()
-			{
-				return TID_SamplerStateParamKVP;
-			}
-
-			virtual std::shared_ptr<IReflectable> newRTTIObject()
-			{
-				return std::shared_ptr<SamplerStateKVP>(new SamplerStateKVP());
-			}
-		};
-
-		class MaterialParamsRTTI;
-
-		struct MaterialParams : public IReflectable
-		{
-			map<String, FloatParam>::type mFloatParams;
-			map<String, TextureHandle>::type mTextureParams;
-			map<String, SamplerStatePtr>::type mSamplerStateParams;
-
-			vector<float>::type mFloatBuffer;
-
-			/************************************************************************/
-			/* 								RTTI		                     		*/
-			/************************************************************************/
-
-		public:
-			friend class MaterialRTTI::MaterialParamsRTTI;
-
-			static RTTITypeBase* getRTTIStatic();
-			RTTITypeBase* getRTTI() const;
-		};
-
-		class MaterialParamsRTTI : public RTTIType<MaterialParams, IReflectable, MaterialParamsRTTI>
-		{
-		private:
-			struct TempParams
-			{
-				vector<std::shared_ptr<FloatParamKVP>>::type mFloatParams;
-				vector<std::shared_ptr<TexParamKVP>>::type mTexParams;
-				vector<std::shared_ptr<SamplerStateKVP>>::type mSamplerStateParams;
-			};
-
-			std::shared_ptr<FloatParamKVP> getFloatParam(MaterialParams* obj, UINT32 idx)
-			{
-				UINT32 curIdx = 0;
-				for(auto iter = obj->mFloatParams.begin(); iter != obj->mFloatParams.end(); ++iter)
-				{
-					if(curIdx == idx)
-					{
-						return std::shared_ptr<FloatParamKVP>(new FloatParamKVP(iter->first, iter->second));
-					}
-
-					curIdx++;
-				}
-
-				CM_EXCEPT(InternalErrorException, "Invalid index.");
-			}
-
-			void setFloatParam(MaterialParams* obj, UINT32 idx, std::shared_ptr<FloatParamKVP> value)
-			{
-				TempParams* tempParams = boost::any_cast<TempParams*>(obj->mRTTIData);
-				tempParams->mFloatParams.push_back(value);
-			}
-
-			void setNumFloatParams(MaterialParams* obj, UINT32 size)
-			{
-				// Do nothing. Map is expanded automatically as entries are added
-			}
-
-			UINT32 getNumFloatParams(MaterialParams* obj)
-			{
-				return (UINT32)obj->mFloatParams.size();
-			}
-
-			std::shared_ptr<TexParamKVP> getTexParam(MaterialParams* obj, UINT32 idx)
-			{
-				UINT32 curIdx = 0;
-				for(auto iter = obj->mTextureParams.begin(); iter != obj->mTextureParams.end(); ++iter)
-				{
-					if(curIdx == idx)
-					{
-						return std::shared_ptr<TexParamKVP>(new TexParamKVP(iter->first, iter->second));
-					}
-
-					curIdx++;
-				}
-
-				CM_EXCEPT(InternalErrorException, "Invalid index.");
-			}
-
-			void setTexParam(MaterialParams* obj, UINT32 idx, std::shared_ptr<TexParamKVP> value)
-			{
-				TempParams* tempParams = boost::any_cast<TempParams*>(obj->mRTTIData);
-				tempParams->mTexParams.push_back(value);
-			}
-
-			void setNumTexParams(MaterialParams* obj, UINT32 size)
-			{
-				// Do nothing. Map is expanded automatically as entries are added
-			}
-
-			UINT32 getNumTexParams(MaterialParams* obj)
-			{
-				return (UINT32)obj->mTextureParams.size();
-			}
-
-			std::shared_ptr<SamplerStateKVP> getSamplerStateParam(MaterialParams* obj, UINT32 idx)
-			{
-				UINT32 curIdx = 0;
-				for(auto iter = obj->mSamplerStateParams.begin(); iter != obj->mSamplerStateParams.end(); ++iter)
-				{
-					if(curIdx == idx)
-					{
-						return std::shared_ptr<SamplerStateKVP>(new SamplerStateKVP(iter->first, iter->second));
-					}
-
-					curIdx++;
-				}
-
-				CM_EXCEPT(InternalErrorException, "Invalid index.");
-			}
-
-			void setSamplerStateParam(MaterialParams* obj, UINT32 idx, std::shared_ptr<SamplerStateKVP> value)
-			{
-				TempParams* tempParams = boost::any_cast<TempParams*>(obj->mRTTIData);
-				tempParams->mSamplerStateParams.push_back(value);
-			}
-
-			void setNumSamplerStateParams(MaterialParams* obj, UINT32 size)
-			{
-				// Do nothing. Map is expanded automatically as entries are added
-			}
-
-			UINT32 getNumSamplerStateParams(MaterialParams* obj)
-			{
-				return (UINT32)obj->mSamplerStateParams.size();
-			}
-
-			ManagedDataBlock getFloatBuffer(MaterialParams* obj)
-			{
-				UINT32 bufferSize = (UINT32)obj->mFloatBuffer.size();
-				float* buffer = new float[bufferSize];
-
-				for(UINT32 i = 0; i < bufferSize; i++)
-					buffer[i] = obj->mFloatBuffer[i];
-
-				return ManagedDataBlock((UINT8*)buffer, bufferSize, true);
-			}
-
-			void setFloatBuffer(MaterialParams* obj, ManagedDataBlock data)
-			{
-				obj->mFloatBuffer.clear();
-
-				float* buffer = (float*)data.getData();
-				for(UINT32 i = 0; i < data.getSize(); i++)
-					obj->mFloatBuffer.push_back(buffer[i]);
-
-				data.destroy();
-			}
-
-		public:
-			MaterialParamsRTTI()
-			{
-				addReflectablePtrArrayField("mFloatParams", 0, &MaterialParamsRTTI::getFloatParam, &MaterialParamsRTTI::getNumFloatParams, 
-					&MaterialParamsRTTI::setFloatParam, &MaterialParamsRTTI::setNumFloatParams);
-				addReflectablePtrArrayField("mTexParams", 1, &MaterialParamsRTTI::getTexParam, &MaterialParamsRTTI::getNumTexParams, 
-					&MaterialParamsRTTI::setTexParam, &MaterialParamsRTTI::setNumTexParams);
-				addReflectablePtrArrayField("mSamplerStateParams", 2, &MaterialParamsRTTI::getSamplerStateParam, &MaterialParamsRTTI::getNumSamplerStateParams, 
-					&MaterialParamsRTTI::setSamplerStateParam, &MaterialParamsRTTI::setNumSamplerStateParams);
-				addDataBlockField("mFloatBuffer", 3, &MaterialParamsRTTI::getFloatBuffer, &MaterialParamsRTTI::setFloatBuffer);
-			}
-
-			virtual void onDeserializationStarted(IReflectable* obj)
-			{
-				MaterialParams* materialParams = static_cast<MaterialParams*>(obj);
-				materialParams->mRTTIData = new TempParams();
-			}
-
-			virtual void onDeserializationEnded(IReflectable* obj)
-			{
-				// TODO Low priority:
-				// Due to the way serialization is done I cannot guarantee "value"s key/value fields
-				// have been set, so I need to delay accessing them until the end of serialization.
-				// I'd really like to avoid this as its not intuitive to think in this way.
-
-				MaterialParams* materialParams = static_cast<MaterialParams*>(obj);
-
-				if(materialParams->mRTTIData.empty())
-					return;
-
-				TempParams* tempParams = boost::any_cast<TempParams*>(materialParams->mRTTIData);
-
-				for(auto iter = tempParams->mFloatParams.begin(); iter != tempParams->mFloatParams.end(); ++iter)
-				{
-					std::shared_ptr<FloatParamKVP> floatParam = *iter;
-					materialParams->mFloatParams[floatParam->mKey] = floatParam->mValue;
-				}
-
-				for(auto iter = tempParams->mTexParams.begin(); iter != tempParams->mTexParams.end(); ++iter)
-				{
-					std::shared_ptr<TexParamKVP> texParam = *iter;
-					materialParams->mTextureParams[texParam->mKey] = texParam->mValue;
-				}
-
-				for(auto iter = tempParams->mSamplerStateParams.begin(); iter != tempParams->mSamplerStateParams.end(); ++iter)
-				{
-					std::shared_ptr<SamplerStateKVP> samplerStateParam = *iter;
-					materialParams->mSamplerStateParams[samplerStateParam->mKey] = samplerStateParam->mValue;
-				}
-
-				materialParams->mRTTIData = nullptr;
-			}
-
-			virtual const String& getRTTIName()
-			{
-				static String name = "MaterialParams";
-				return name;
-			}
-
-			virtual UINT32 getRTTIId()
-			{
-				return TID_MaterialParams;
-			}
-
-			virtual std::shared_ptr<IReflectable> newRTTIObject()
-			{
-				return std::shared_ptr<MaterialParams>(new MaterialParams());
-			}
-		};
-
 		ShaderPtr getShader(Material* obj)
 		{
 			return obj->mShader;

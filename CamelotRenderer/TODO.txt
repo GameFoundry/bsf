@@ -50,6 +50,8 @@ Stuff that needs destroy():
   - Shader
   - Technique
 
+  Material RTTI should also serialize shared buffers (they need to be made into a resource)
+
 DX9 will have the same name for sampler and texture. This will cause an error in Material param checking.
 
 Add support for include file resource

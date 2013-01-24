@@ -89,6 +89,55 @@ namespace CamelotEngine
 		mDataParams.erase(name);
 	}
 
+	GpuParamType Shader::getParamType(const String& name) const
+	{
+		auto findIterData = mDataParams.find(name);
+		if(findIterData != mDataParams.end())
+			return GPT_DATA;
+
+		auto findIterObject = mObjectParams.find(name);
+		if(findIterObject != mObjectParams.end())
+			return GPT_OBJECT;
+
+		CM_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+	}
+
+	const SHADER_DATA_PARAM_DESC& Shader::getDataParamDesc(const String& name) const
+	{
+		auto findIterData = mDataParams.find(name);
+		if(findIterData != mDataParams.end())
+			return findIterData->second;
+
+		CM_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+	}
+
+	const SHADER_OBJECT_PARAM_DESC& Shader::getObjectParamDesc(const String& name) const
+	{
+		auto findIterObject = mObjectParams.find(name);
+		if(findIterObject != mObjectParams.end())
+			return findIterObject->second;
+
+		CM_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+	}
+
+	bool Shader::hasDataParam(const String& name) const
+	{
+		auto findIterData = mDataParams.find(name);
+		if(findIterData != mDataParams.end())
+			return true;
+
+		return false;
+	}
+
+	bool Shader::hasObjectParam(const String& name) const
+	{
+		auto findIterObject = mObjectParams.find(name);
+		if(findIterObject != mObjectParams.end())
+			return true;
+
+		return false;
+	}
+
 	void Shader::removeParameter(const String& name)
 	{
 		mDataParams.erase(name);
@@ -103,6 +152,55 @@ namespace CamelotEngine
 		desc.usage = usage;
 
 		mParamBlocks[name] = desc;
+	}
+
+	bool Shader::isSampler(GpuParamObjectType type)
+	{
+		switch(type)
+		{
+			case GPOT_SAMPLER1D:
+			case GPOT_SAMPLER2D:
+			case GPOT_SAMPLER3D:
+			case GPOT_SAMPLERCUBE:
+				return true;
+		}
+
+		return false;
+	}
+
+	bool Shader::isTexture(GpuParamObjectType type)
+	{
+		switch(type)
+		{
+		case GPOT_TEXTURE1D:
+		case GPOT_TEXTURE2D:
+		case GPOT_TEXTURE3D:
+		case GPOT_TEXTURECUBE:
+		case GPOT_RWTEXTURE1D:
+		case GPOT_RWTEXTURE2D:
+		case GPOT_RWTEXTURE3D:
+			return true;
+		}
+
+		return false;
+	}
+
+	bool Shader::isBuffer(GpuParamObjectType type)
+	{
+		switch(type)
+		{
+		case GPOT_BYTE_BUFFER:
+		case GPOT_STRUCTURED_BUFFER:
+		case GPOT_RWBYTE_BUFFER:
+		case GPOT_RWAPPEND_BUFFER:
+		case GPOT_RWCONSUME_BUFFER:
+		case GPOT_RWSTRUCTURED_BUFFER:
+		case GPOT_RWSTRUCTURED_BUFFER_WITH_COUNTER:
+		case GPOT_RWTYPED_BUFFER:
+			return true;
+		}
+
+		return false;
 	}
 
 	RTTITypeBase* Shader::getRTTIStatic()

@@ -51,14 +51,14 @@ namespace CamelotEngine
 		ShaderPtr getShader() const { return mShader; }
 
 		void setTexture(const String& name, TextureHandle& value);
-		void setSamplerState(const String& name, SamplerStatePtr samplerState);
-		void setFloat(const String& name, float value);
-		void setColor(const String& name, const Color& value);
-		void setVec2(const String& name, const Vector2& value);
-		void setVec3(const String& name, const Vector3& value);
-		void setVec4(const String& name, const Vector4& value);
-		void setMat3(const String& name, const Matrix3& value);
-		void setMat4(const String& name, const Matrix4& value);
+		void setSamplerState(const String& name, SamplerStateHandle& samplerState);
+		void setFloat(const String& name, float value, UINT32 arrayIdx = 0);
+		void setColor(const String& name, const Color& value, UINT32 arrayIdx = 0);
+		void setVec2(const String& name, const Vector2& value, UINT32 arrayIdx = 0);
+		void setVec3(const String& name, const Vector3& value, UINT32 arrayIdx = 0);
+		void setVec4(const String& name, const Vector4& value, UINT32 arrayIdx = 0);
+		void setMat3(const String& name, const Matrix3& value, UINT32 arrayIdx = 0);
+		void setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx = 0);
 
 		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
 
@@ -77,10 +77,21 @@ namespace CamelotEngine
 
 		vector<PassParametersPtr>::type mParametersPerPass;
 
+		// These maps aren't necessary as we can read these values from the GpuParams directly
+		// but they make many things (especially serializing and getting values) so much easier
+		map<String, vector<float>::type>::type mFloatValues;
+		map<String, vector<Vector2>::type>::type mVec2Values;
+		map<String, vector<Vector3>::type>::type mVec3Values;
+		map<String, vector<Vector4>::type>::type mVec4Values;
+		map<String, vector<Matrix3>::type>::type mMat3Values;
+		map<String, vector<Matrix4>::type>::type mMat4Values;
+		map<String, TextureHandle>::type mTextureValues;
+		map<String, SamplerStateHandle>::type mSamplerValues;
+
 		void throwIfNotInitialized() const;
 
 		template <typename T>
-		void setParam(const String& name, T& value)
+		void setParam(const String& name, T& value, UINT32 arrayIdx)
 		{
 			for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 			{
@@ -92,11 +103,22 @@ namespace CamelotEngine
 					if(paramPtr)
 					{
 						if(paramPtr->hasParam(name))
-							paramPtr->setParam(name, value);
+							paramPtr->setParam(name, value, arrayIdx);
 					}
 				}
 			}
 		}
+
+		const set<String>::type& getValidParamNames() const { return mValidParams; }
+
+		TextureHandle getTexture(const String& name) const;
+		SamplerStateHandle getSamplerState(const String& name) const;
+		float getFloat(const String& name, UINT32 arrayIdx = 0) const;
+		Vector2 getVec2(const String& name, UINT32 arrayIdx = 0) const;
+		Vector3 getVec3(const String& name, UINT32 arrayIdx = 0) const;
+		Vector4 getVec4(const String& name, UINT32 arrayIdx = 0) const;
+		Matrix3 getMat3(const String& name, UINT32 arrayIdx = 0) const;
+		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const;
 
 		void initBestTechnique();
 

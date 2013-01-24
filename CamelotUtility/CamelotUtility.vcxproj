@@ -87,6 +87,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>./Include;../Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CM_UTILITY_EXPORTS</PreprocessorDefinitions>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -105,6 +106,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>./Include;../Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CM_UTILITY_EXPORTS</PreprocessorDefinitions>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -125,6 +127,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>CM_UTILITY_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>./Include;../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -144,6 +147,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>CM_UTILITY_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>./Include;../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

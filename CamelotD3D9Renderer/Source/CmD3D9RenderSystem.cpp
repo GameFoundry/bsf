@@ -333,12 +333,12 @@ namespace CamelotEngine
 
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			SamplerStatePtr samplerState = params->getSamplerState(iter->second.slot);
+			SamplerStateHandle& samplerState = params->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
 			else
-				setSamplerState(gptype, iter->second.slot, samplerState);
+				setSamplerState(gptype, iter->second.slot, samplerState.getInternalPtr());
 		}
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)

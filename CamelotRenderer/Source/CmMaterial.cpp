@@ -35,6 +35,14 @@ namespace CamelotEngine
 	{
 		mBestTechnique = nullptr;
 		mParametersPerPass.clear();
+		mFloatValues.clear();
+		mVec2Values.clear();
+		mVec3Values.clear();
+		mVec4Values.clear();
+		mMat3Values.clear();
+		mMat4Values.clear();
+		mTextureValues.clear();
+		mSamplerValues.clear();
 
 		if(mShader)
 		{
@@ -153,6 +161,30 @@ namespace CamelotEngine
 
 				String& paramBlockName = findBlockIter->second;
 				mValidParams.insert(iter->first);
+
+				switch(iter->second.type)
+				{
+				case GPDT_FLOAT1:
+					mFloatValues[iter->first].resize(iter->second.arraySize);
+					break;
+				case GPDT_FLOAT2:
+					mVec2Values[iter->first].resize(iter->second.arraySize);
+					break;
+				case GPDT_FLOAT3:
+					mVec3Values[iter->first].resize(iter->second.arraySize);
+					break;
+				case GPDT_FLOAT4:
+					mVec4Values[iter->first].resize(iter->second.arraySize);
+					break;
+				case GPDT_MATRIX_3X3:
+					mMat3Values[iter->first].resize(iter->second.arraySize);
+					break;
+				case GPDT_MATRIX_4X4:
+					mMat4Values[iter->first].resize(iter->second.arraySize);
+					break;
+				default:
+					CM_EXCEPT(InternalErrorException, "Unsupported data type.");
+				}
 			}
 
 			// Create object param mappings
@@ -166,6 +198,23 @@ namespace CamelotEngine
 					continue;
 
 				mValidParams.insert(iter->first);
+
+				if(Shader::isSampler(iter->second.type))
+				{
+					mSamplerValues[iter->first] = SamplerStateHandle();
+				}
+				else if(Shader::isTexture(iter->second.type))
+				{
+					mTextureValues[iter->first] = TextureHandle();
+				}
+				else if(Shader::isBuffer(iter->second.type))
+				{
+					// TODO
+
+					CM_EXCEPT(NotImplementedException, "Buffers not implemented.");
+				}
+				else
+					CM_EXCEPT(InternalErrorException, "Invalid object param type.");
 			}
 
 			for(UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
@@ -556,9 +605,11 @@ namespace CamelotEngine
 				}
 			}
 		}
+
+		mTextureValues[name] = value;
 	}
 
-	void Material::setSamplerState(const String& name, SamplerStatePtr samplerState)
+	void Material::setSamplerState(const String& name, SamplerStateHandle& samplerState)
 	{
 		throwIfNotInitialized();
 
@@ -583,9 +634,11 @@ namespace CamelotEngine
 				}
 			}
 		}
+
+		mSamplerValues[name] = samplerState;
 	}
 
-	void Material::setFloat(const String& name, float value)
+	void Material::setFloat(const String& name, float value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
@@ -596,10 +649,13 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value);
+		setParam(name, value, arrayIdx);
+
+		auto savedValue = mFloatValues[name];
+		savedValue[arrayIdx] = value;
 	}
 
-	void Material::setColor(const String& name, const Color& value)
+	void Material::setColor(const String& name, const Color& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
@@ -610,10 +666,13 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value);
+		setParam(name, value, arrayIdx);
+
+		auto savedValue = mVec4Values[name];
+		savedValue[arrayIdx] = Vector4(value.r, value.g, value.b, value.a);
 	}
 
-	void Material::setVec2(const String& name, const Vector2& value)
+	void Material::setVec2(const String& name, const Vector2& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
@@ -624,10 +683,13 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value);
+		setParam(name, value, arrayIdx);
+
+		auto savedValue = mVec2Values[name];
+		savedValue[arrayIdx] = value;
 	}
 
-	void Material::setVec3(const String& name, const Vector3& value)
+	void Material::setVec3(const String& name, const Vector3& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
@@ -638,10 +700,13 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value);
+		setParam(name, value, arrayIdx);
+
+		auto savedValue = mVec3Values[name];
+		savedValue[arrayIdx] = value;
 	}
 
-	void Material::setVec4(const String& name, const Vector4& value)
+	void Material::setVec4(const String& name, const Vector4& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
@@ -652,10 +717,13 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value);
+		setParam(name, value, arrayIdx);
+
+		auto savedValue = mVec4Values[name];
+		savedValue[arrayIdx] = value;
 	}
 
-	void Material::setMat3(const String& name, const Matrix3& value)
+	void Material::setMat3(const String& name, const Matrix3& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
@@ -666,10 +734,13 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value);
+		setParam(name, value, arrayIdx);
+
+		auto savedValue = mMat3Values[name];
+		savedValue[arrayIdx] = value;
 	}
 
-	void Material::setMat4(const String& name, const Matrix4& value)
+	void Material::setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
@@ -680,9 +751,11 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value);
-	}
+		setParam(name, value, arrayIdx);
 
+		auto savedValue = mMat4Values[name];
+		savedValue[arrayIdx] = value;
+	}
 
 	void Material::setParamBlock(const String& name, GpuParamBlockPtr paramBlock)
 	{
@@ -730,6 +803,86 @@ namespace CamelotEngine
 			CM_EXCEPT(InvalidParametersException, "Invalid pass index.");
 
 		return mParametersPerPass[passIdx];
+	}
+
+	TextureHandle Material::getTexture(const String& name) const
+	{
+		auto iterFind = mTextureValues.find(name);
+
+		if(iterFind == mTextureValues.end())
+			CM_EXCEPT(InternalErrorException, "No texture parameter with the name: " + name);
+
+		return iterFind->second;
+	}
+
+	SamplerStateHandle Material::getSamplerState(const String& name) const
+	{
+		auto iterFind = mSamplerValues.find(name);
+
+		if(iterFind == mSamplerValues.end())
+			CM_EXCEPT(InternalErrorException, "No sampler state parameter with the name: " + name);
+
+		return iterFind->second;
+	}
+
+	float Material::getFloat(const String& name, UINT32 arrayIdx) const
+	{
+		auto iterFind = mFloatValues.find(name);
+
+		if(iterFind == mFloatValues.end())
+			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
+
+		return iterFind->second.at(arrayIdx);
+	}
+
+	Vector2 Material::getVec2(const String& name, UINT32 arrayIdx) const
+	{
+		auto iterFind = mVec2Values.find(name);
+
+		if(iterFind == mVec2Values.end())
+			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
+
+		return iterFind->second.at(arrayIdx);
+	}
+
+	Vector3 Material::getVec3(const String& name, UINT32 arrayIdx) const
+	{
+		auto iterFind = mVec3Values.find(name);
+
+		if(iterFind == mVec3Values.end())
+			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
+
+		return iterFind->second.at(arrayIdx);
+	}
+
+	Vector4 Material::getVec4(const String& name, UINT32 arrayIdx) const
+	{
+		auto iterFind = mVec4Values.find(name);
+
+		if(iterFind == mVec4Values.end())
+			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
+
+		return iterFind->second.at(arrayIdx);
+	}
+
+	Matrix3 Material::getMat3(const String& name, UINT32 arrayIdx) const
+	{
+		auto iterFind = mMat3Values.find(name);
+
+		if(iterFind == mMat3Values.end())
+			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
+
+		return iterFind->second.at(arrayIdx);
+	}
+
+	Matrix4 Material::getMat4(const String& name, UINT32 arrayIdx) const
+	{
+		auto iterFind = mMat4Values.find(name);
+
+		if(iterFind == mMat4Values.end())
+			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
+
+		return iterFind->second.at(arrayIdx);
 	}
 
 	RTTITypeBase* Material::getRTTIStatic()

@@ -262,6 +262,12 @@ namespace CamelotEngine {
 		GPBU_DYNAMIC
 	};
 
+	enum GpuParamType
+	{
+		GPT_DATA,
+		GPT_OBJECT
+	};
+
 	enum GpuParamDataType
 	{
 		GPDT_FLOAT1 = 1,

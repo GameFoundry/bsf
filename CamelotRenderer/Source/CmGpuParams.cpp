@@ -220,7 +220,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void GpuParams::setTexture(const String& name, TextureHandle val)
+	void GpuParams::setTexture(const String& name, TextureHandle& val)
 	{
 		auto paramIter = mParamDesc.textures.find(name);
 		if(paramIter == mParamDesc.textures.end())
@@ -243,7 +243,7 @@ namespace CamelotEngine
 		return mTextures[slot];
 	}
 
-	void GpuParams::setSamplerState(const String& name, SamplerStatePtr val)
+	void GpuParams::setSamplerState(const String& name, SamplerStateHandle& val)
 	{
 		auto paramIter = mParamDesc.samplers.find(name);
 		if(paramIter == mParamDesc.samplers.end())
@@ -255,7 +255,7 @@ namespace CamelotEngine
 		mSamplerStates[paramIter->second.slot] = val;
 	}
 
-	SamplerStatePtr GpuParams::getSamplerState(UINT32 slot)
+	SamplerStateHandle GpuParams::getSamplerState(UINT32 slot)
 	{
 		if(slot < 0 || slot >= (UINT32)mSamplerStates.size())
 		{

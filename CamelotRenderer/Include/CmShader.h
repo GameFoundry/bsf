@@ -67,10 +67,20 @@ namespace CamelotEngine
 		void removeParameter(const String& name);
 		void setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage);
 
+		GpuParamType getParamType(const String& name) const;
+		const SHADER_DATA_PARAM_DESC& getDataParamDesc(const String& name) const;
+		const SHADER_OBJECT_PARAM_DESC& getObjectParamDesc(const String& name) const;
+
+		bool hasDataParam(const String& name) const;
+		bool hasObjectParam(const String& name) const;
+
 		const map<String, SHADER_DATA_PARAM_DESC>::type& getDataParams() const { return mDataParams; }
 		const map<String, SHADER_OBJECT_PARAM_DESC>::type& getObjectParams() const { return mObjectParams; }
 		const map<String, SHADER_PARAM_BLOCK_DESC>::type& getParamBlocks() const { return mParamBlocks; }
 
+		static bool isSampler(GpuParamObjectType type);
+		static bool isTexture(GpuParamObjectType type);
+		static bool isBuffer(GpuParamObjectType type);
 	private:
 		String mName;
 		vector<TechniquePtr>::type mTechniques;
