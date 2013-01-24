@@ -17,9 +17,9 @@ namespace CamelotEngine
 	class CM_EXPORT Pass : public IReflectable
     {
     protected:
-		BlendStatePtr mBlendState;
-		RasterizerStatePtr mRasterizerState;
-		DepthStencilStatePtr mDepthStencilState;
+		BlendStateHandle mBlendState;
+		RasterizerStateHandle mRasterizerState;
+		DepthStencilStateHandle mDepthStencilState;
 		UINT32 mStencilRefValue;
 
 		GpuProgramHandle mVertexProgram;
@@ -50,14 +50,14 @@ namespace CamelotEngine
 		/**
 		 * @brief	Sets a blend state used for all active render targets.
 		 */
-		void setBlendState(BlendStatePtr blendState);
-		BlendStatePtr getBlendState() const;
+		void setBlendState(BlendStateHandle& blendState);
+		BlendStateHandle getBlendState() const;
 
-		void setRasterizerState(RasterizerStatePtr rasterizerState);
-		RasterizerStatePtr getRasterizerState() const;
+		void setRasterizerState(RasterizerStateHandle& rasterizerState);
+		RasterizerStateHandle getRasterizerState() const;
 
-		void setDepthStencilState(DepthStencilStatePtr depthStencilState);
-		DepthStencilStatePtr getDepthStencilState() const;
+		void setDepthStencilState(DepthStencilStateHandle& depthStencilState);
+		DepthStencilStateHandle getDepthStencilState() const;
 
 		void setStencilRefValue(UINT32 refValue);
 		UINT32 getStencilRefValue() const;

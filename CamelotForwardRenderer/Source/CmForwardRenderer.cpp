@@ -131,9 +131,9 @@ namespace CamelotEngine
 		}
 
 		// The rest of the settings are the same no matter whether we use programs or not
-		BlendStatePtr blendState = pass->getBlendState();
+		BlendStateHandle blendState = pass->getBlendState();
 		if(blendState != nullptr)
-			renderContext->setBlendState(blendState);
+			renderContext->setBlendState(blendState.getInternalPtr());
 		else
 			renderContext->setBlendState(BlendState::getDefault());
 		
@@ -145,15 +145,15 @@ namespace CamelotEngine
 
 		// Set up non-texture related material settings
 		// Stencil & depth buffer settings
-		DepthStencilStatePtr depthStancilState = pass->getDepthStencilState();
+		DepthStencilStateHandle depthStancilState = pass->getDepthStencilState();
 		if(depthStancilState != nullptr)
-			renderContext->setDepthStencilState(depthStancilState, pass->getStencilRefValue());
+			renderContext->setDepthStencilState(depthStancilState.getInternalPtr(), pass->getStencilRefValue());
 		else
 			renderContext->setDepthStencilState(DepthStencilState::getDefault(), pass->getStencilRefValue());
 
-		RasterizerStatePtr rasterizerState = pass->getRasterizerState();
+		RasterizerStateHandle rasterizerState = pass->getRasterizerState();
 		if(rasterizerState != nullptr)
-			renderContext->setRasterizerState(rasterizerState);
+			renderContext->setRasterizerState(rasterizerState.getInternalPtr());
 		else
 			renderContext->setRasterizerState(RasterizerState::getDefault());
 	}

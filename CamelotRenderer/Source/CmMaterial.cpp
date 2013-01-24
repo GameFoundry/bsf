@@ -105,7 +105,9 @@ namespace CamelotEngine
 			}
 
 			// Fill out various helper structures
-			set<String>::type validParameters = determineValidParameters(allParamDescs);
+			map<String, const GpuParamDataDesc*>::type validDataParameters = determineValidDataParameters(allParamDescs);
+			set<String>::type validObjectParameters = determineValidObjectParameters(allParamDescs);
+
 			set<String>::type validShareableParamBlocks = determineValidShareableParamBlocks(allParamDescs);
 			map<String, String>::type paramToParamBlockMap = determineParameterToBlockMapping(allParamDescs);
 			map<String, GpuParamBlockPtr>::type paramBlocks;
@@ -148,19 +150,33 @@ namespace CamelotEngine
 			const map<String, SHADER_DATA_PARAM_DESC>::type& dataParamDesc = mShader->getDataParams();
 			for(auto iter = dataParamDesc.begin(); iter != dataParamDesc.end(); ++iter)
 			{
-				auto findIter = validParameters.find(iter->first);
+				auto findIter = validDataParameters.find(iter->second.gpuVariableName);
 
 				// Not valid so we skip it
-				if(findIter == validParameters.end())
+				if(findIter == validDataParameters.end())
 					continue;
 
-				auto findBlockIter = paramToParamBlockMap.find(iter->first);
+				if(findIter->second->type != iter->second.type)
+				{
+					LOGWRN("Ignoring shader parameter " + iter->first  +". Type doesn't match the one defined in the gpu program. "
+						+ "Shader defined type: " + toString(iter->second.type) + " - Gpu program defined type: " + toString(findIter->second->type));
+					continue;
+				}
+
+				if(findIter->second->arraySize != iter->second.arraySize)
+				{
+					LOGWRN("Ignoring shader parameter " + iter->first  +". Array size doesn't match the one defined in the gpu program."
+						+ "Shader defined array size: " + toString(iter->second.arraySize) + " - Gpu program defined array size: " + toString(findIter->second->arraySize));
+					continue;
+				}
+
+				auto findBlockIter = paramToParamBlockMap.find(iter->second.gpuVariableName);
 
 				if(findBlockIter == paramToParamBlockMap.end())
 					CM_EXCEPT(InternalErrorException, "Parameter doesn't exist in param to param block map but exists in valid param map.");
 
 				String& paramBlockName = findBlockIter->second;
-				mValidParams.insert(iter->first);
+				mValidParams[iter->first] = iter->second.gpuVariableName;
 
 				switch(iter->second.type)
 				{
@@ -191,13 +207,13 @@ namespace CamelotEngine
 			const map<String, SHADER_OBJECT_PARAM_DESC>::type& objectParamDesc = mShader->getObjectParams();
 			for(auto iter = objectParamDesc.begin(); iter != objectParamDesc.end(); ++iter)
 			{
-				auto findIter = validParameters.find(iter->first);
+				auto findIter = validObjectParameters.find(iter->second.gpuVariableName);
 
 				// Not valid so we skip it
-				if(findIter == validParameters.end())
+				if(findIter == validObjectParameters.end())
 					continue;
 
-				mValidParams.insert(iter->first);
+				mValidParams[iter->first] = iter->second.gpuVariableName;
 
 				if(Shader::isSampler(iter->second.type))
 				{
@@ -287,12 +303,10 @@ namespace CamelotEngine
 		}
 	}
 
-	set<String>::type Material::determineValidParameters(const vector<const GpuParamDesc*>::type& paramDescs) const
+	map<String, const GpuParamDataDesc*>::type Material::determineValidDataParameters(const vector<const GpuParamDesc*>::type& paramDescs) const
 	{
 		map<String, const GpuParamDataDesc*>::type foundDataParams;
-		map<String, const GpuParamObjectDesc*>::type foundObjectParams;
-
-		map<String, bool>::type validParameters;
+		map<String, bool>::type validParams;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{
@@ -304,149 +318,64 @@ namespace CamelotEngine
 				bool isParameterValid = true;
 				const GpuParamDataDesc& curParam = iter2->second;
 
-				auto objectFindIter = foundObjectParams.find(iter2->first);
-				if(objectFindIter != foundObjectParams.end())
-					isParameterValid = false; // Data param but we found another as object param with the same name
-
-				if(isParameterValid)
+				auto dataFindIter = validParams.find(iter2->first);
+				if(dataFindIter == validParams.end())
 				{
-					auto dataFindIter = foundDataParams.find(iter2->first);
-					if(dataFindIter == foundDataParams.end())
-					{
-						validParameters[iter2->first] = true;
-						foundDataParams[iter2->first] = &curParam;
-					}
-					else
-					{
-						const GpuParamDataDesc* otherParam = dataFindIter->second;
-						if(!areParamsEqual(curParam, *otherParam, true))
-							isParameterValid = false;
-					}
+					validParams[iter2->first] = true;
+					foundDataParams[iter2->first] = &curParam;
 				}
-
-				if(!isParameterValid)
+				else
 				{
-					if(validParameters[iter2->first]) // Do this check so we only report this error once
-						LOGWRN("Found two parameters with the same name but different contents: " + iter2->first);
+					if(validParams[iter2->first])
+					{
+						auto dataFindIter2 = foundDataParams.find(iter2->first);
 
-					validParameters[iter2->first] = false;
+						const GpuParamDataDesc* otherParam = dataFindIter2->second;
+						if(!areParamsEqual(curParam, *otherParam, true))
+						{
+							validParams[iter2->first] = false;
+							foundDataParams.erase(dataFindIter2);
+						}
+					}
 				}
 			}
+		}
+
+		return foundDataParams;
+	}
+
+	
+	set<String>::type Material::determineValidObjectParameters(const vector<const GpuParamDesc*>::type& paramDescs) const
+	{
+		set<String>::type validParams;
+
+		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
+		{
+			const GpuParamDesc& curDesc = **iter;
 
 			// Check sampler params
 			for(auto iter2 = curDesc.samplers.begin(); iter2 != curDesc.samplers.end(); ++iter2)
 			{
-				bool isParameterValid = true;
-				const GpuParamObjectDesc& curParam = iter2->second;
-
-				auto dataFindIter = foundDataParams.find(iter2->first);
-				if(dataFindIter != foundDataParams.end())
-					isParameterValid = false; // Object param but we found another as data param with the same name
-
-				if(isParameterValid)
-				{
-					auto objectFindIter = foundObjectParams.find(iter2->first);
-					if(objectFindIter == foundObjectParams.end())
-					{
-						validParameters[iter2->first] = true;
-						foundObjectParams[iter2->first] = &curParam;
-					}
-					else
-					{
-						const GpuParamObjectDesc* otherParam = objectFindIter->second;
-						if(!areParamsEqual(curParam, *otherParam))
-							isParameterValid = false;
-					}
-				}
-
-				if(!isParameterValid)
-				{
-					if(validParameters[iter2->first]) // Do this check so we only report this error once
-						LOGWRN("Found two parameters with the same name but different contents: " + iter2->first);
-
-					validParameters[iter2->first] = false;
-				}
+				if(validParams.find(iter2->first) == validParams.end())
+					validParams.insert(iter2->first);
 			}
 
 			// Check texture params
 			for(auto iter2 = curDesc.textures.begin(); iter2 != curDesc.textures.end(); ++iter2)
 			{
-				bool isParameterValid = true;
-				const GpuParamObjectDesc& curParam = iter2->second;
-
-				auto dataFindIter = foundDataParams.find(iter2->first);
-				if(dataFindIter != foundDataParams.end())
-					isParameterValid = false; // Object param but we found another as data param with the same name
-
-				if(isParameterValid)
-				{
-					auto objectFindIter = foundObjectParams.find(iter2->first);
-					if(objectFindIter == foundObjectParams.end())
-					{
-						validParameters[iter2->first] = true;
-						foundObjectParams[iter2->first] = &curParam;
-					}
-					else
-					{
-						const GpuParamObjectDesc* otherParam = objectFindIter->second;
-						if(!areParamsEqual(curParam, *otherParam))
-							isParameterValid = false;
-					}
-				}
-
-				if(!isParameterValid)
-				{
-					if(validParameters[iter2->first]) // Do this check so we only report this error once
-						LOGWRN("Found two parameters with the same name but different contents: " + iter2->first);
-
-					validParameters[iter2->first] = false;
-				}
+				if(validParams.find(iter2->first) == validParams.end())
+					validParams.insert(iter2->first);
 			}
 
 			// Check buffer params
 			for(auto iter2 = curDesc.buffers.begin(); iter2 != curDesc.buffers.end(); ++iter2)
 			{
-				bool isParameterValid = true;
-				const GpuParamObjectDesc& curParam = iter2->second;
-
-				auto dataFindIter = foundDataParams.find(iter2->first);
-				if(dataFindIter != foundDataParams.end())
-					isParameterValid = false; // Object param but we found another as data param with the same name
-
-				if(isParameterValid)
-				{
-					auto objectFindIter = foundObjectParams.find(iter2->first);
-					if(objectFindIter == foundObjectParams.end())
-					{
-						validParameters[iter2->first] = true;
-						foundObjectParams[iter2->first] = &curParam;
-					}
-					else
-					{
-						const GpuParamObjectDesc* otherParam = objectFindIter->second;
-						if(!areParamsEqual(curParam, *otherParam))
-							isParameterValid = false;
-					}
-				}
-
-				if(!isParameterValid)
-				{
-					if(validParameters[iter2->first]) // Do this check so we only report this error once
-						LOGWRN("Found two parameters with the same name but different contents: " + iter2->first);
-
-					validParameters[iter2->first] = false;
-				}
+				if(validParams.find(iter2->first) == validParams.end())
+					validParams.insert(iter2->first);
 			}
 		}
 
-		set<String>::type validParamsReturn;
-		for(auto iter = validParameters.begin(); iter != validParameters.end(); ++iter)
-		{
-			if(iter->second)
-				validParamsReturn.insert(iter->first);
-		}
-
-		return validParamsReturn;
+		return validParams;
 	}
 
 	set<String>::type Material::determineValidShareableParamBlocks(const vector<const GpuParamDesc*>::type& paramDescs) const
@@ -562,11 +491,6 @@ namespace CamelotEngine
 		return equal;
 	}
 
-	bool Material::areParamsEqual(const GpuParamObjectDesc& paramA, const GpuParamObjectDesc& paramB) const
-	{
-		return paramA.type == paramB.type;
-	}
-
 	void Material::throwIfNotInitialized() const
 	{
 		if(mShader == nullptr)
@@ -591,6 +515,7 @@ namespace CamelotEngine
 			return;
 		}
 
+		String& gpuVarName = iterFind->second;
 		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
 			PassParametersPtr params = *iter;
@@ -600,8 +525,8 @@ namespace CamelotEngine
 				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
 				if(paramPtr)
 				{
-					if(paramPtr->hasTexture(name))
-						paramPtr->setTexture(name, value);
+					if(paramPtr->hasTexture(gpuVarName))
+						paramPtr->setTexture(gpuVarName, value);
 				}
 			}
 		}
@@ -620,6 +545,7 @@ namespace CamelotEngine
 			return;
 		}
 
+		String& gpuVarName = iterFind->second;
 		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
 			PassParametersPtr params = *iter;
@@ -629,8 +555,8 @@ namespace CamelotEngine
 				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
 				if(paramPtr)
 				{
-					if(paramPtr->hasSamplerState(name))
-						paramPtr->setSamplerState(name, samplerState);
+					if(paramPtr->hasSamplerState(gpuVarName))
+						paramPtr->setSamplerState(gpuVarName, samplerState);
 				}
 			}
 		}
@@ -649,9 +575,10 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value, arrayIdx);
+		String& gpuVarName = iterFind->second;
+		setParam(gpuVarName, value, arrayIdx);
 
-		auto savedValue = mFloatValues[name];
+		auto& savedValue = mFloatValues[name];
 		savedValue[arrayIdx] = value;
 	}
 
@@ -666,9 +593,10 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value, arrayIdx);
+		String& gpuVarName = iterFind->second;
+		setParam(gpuVarName, value, arrayIdx);
 
-		auto savedValue = mVec4Values[name];
+		auto& savedValue = mVec4Values[name];
 		savedValue[arrayIdx] = Vector4(value.r, value.g, value.b, value.a);
 	}
 
@@ -683,9 +611,10 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value, arrayIdx);
+		String& gpuVarName = iterFind->second;
+		setParam(gpuVarName, value, arrayIdx);
 
-		auto savedValue = mVec2Values[name];
+		auto& savedValue = mVec2Values[name];
 		savedValue[arrayIdx] = value;
 	}
 
@@ -700,9 +629,10 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value, arrayIdx);
+		String& gpuVarName = iterFind->second;
+		setParam(gpuVarName, value, arrayIdx);
 
-		auto savedValue = mVec3Values[name];
+		auto& savedValue = mVec3Values[name];
 		savedValue[arrayIdx] = value;
 	}
 
@@ -717,9 +647,10 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value, arrayIdx);
+		String& gpuVarName = iterFind->second;
+		setParam(gpuVarName, value, arrayIdx);
 
-		auto savedValue = mVec4Values[name];
+		auto& savedValue = mVec4Values[name];
 		savedValue[arrayIdx] = value;
 	}
 
@@ -734,9 +665,10 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value, arrayIdx);
+		String& gpuVarName = iterFind->second;
+		setParam(gpuVarName, value, arrayIdx);
 
-		auto savedValue = mMat3Values[name];
+		auto& savedValue = mMat3Values[name];
 		savedValue[arrayIdx] = value;
 	}
 
@@ -751,9 +683,10 @@ namespace CamelotEngine
 			return;
 		}
 
-		setParam(name, value, arrayIdx);
+		String& gpuVarName = iterFind->second;
+		setParam(gpuVarName, value, arrayIdx);
 
-		auto savedValue = mMat4Values[name];
+		auto& savedValue = mMat4Values[name];
 		savedValue[arrayIdx] = value;
 	}
 

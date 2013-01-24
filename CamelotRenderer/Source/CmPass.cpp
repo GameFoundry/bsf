@@ -33,6 +33,9 @@ namespace CamelotEngine
 		mVertexProgram = oth.mVertexProgram;
 		mFragmentProgram = oth.mFragmentProgram;
 		mGeometryProgram = oth.mGeometryProgram;
+		mHullProgram = oth.mHullProgram;
+		mDomainProgram = oth.mDomainProgram;
+		mComputeProgram = oth.mComputeProgram;
 
 		return *this;
     }
@@ -60,32 +63,32 @@ namespace CamelotEngine
 		return transparent;
     }
 	//----------------------------------------------------------------------
-	void Pass::setBlendState(BlendStatePtr blendState)
+	void Pass::setBlendState(BlendStateHandle& blendState)
 	{
 		mBlendState = blendState;
 	}
 	//----------------------------------------------------------------------
-	BlendStatePtr Pass::getBlendState() const
+	BlendStateHandle Pass::getBlendState() const
 	{
 		return mBlendState;
 	}
 	//----------------------------------------------------------------------
-	void Pass::setRasterizerState(RasterizerStatePtr rasterizerState)
+	void Pass::setRasterizerState(RasterizerStateHandle& rasterizerState)
 	{
 		mRasterizerState = rasterizerState;
 	}
 	//----------------------------------------------------------------------
-	RasterizerStatePtr Pass::getRasterizerState() const
+	RasterizerStateHandle Pass::getRasterizerState() const
 	{
 		return mRasterizerState;
 	}
 	//-----------------------------------------------------------------------
-	void Pass::setDepthStencilState(DepthStencilStatePtr depthStencilState)
+	void Pass::setDepthStencilState(DepthStencilStateHandle& depthStencilState)
 	{
 		mDepthStencilState = depthStencilState;
 	}
 	//-----------------------------------------------------------------------
-	DepthStencilStatePtr Pass::getDepthStencilState() const
+	DepthStencilStateHandle Pass::getDepthStencilState() const
 	{
 		return mDepthStencilState;
 	}

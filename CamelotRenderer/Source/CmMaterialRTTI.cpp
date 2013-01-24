@@ -38,15 +38,15 @@ namespace CamelotEngine
 		ShaderPtr shader = material->getShader();
 		if(shader != nullptr)
 		{
-			const set<String>::type& validParamNames = material->getValidParamNames();
+			const map<String, String>::type& validParamNames = material->getValidParamNames();
 
 			for(auto iter = validParamNames.begin(); iter != validParamNames.end(); ++iter)
 			{
-				GpuParamType type = shader->getParamType(*iter);
+				GpuParamType type = shader->getParamType(iter->first);
 
 				if(type == GPT_DATA)
 				{
-					const SHADER_DATA_PARAM_DESC& paramDesc = shader->getDataParamDesc(*iter);
+					const SHADER_DATA_PARAM_DESC& paramDesc = shader->getDataParamDesc(iter->first);
 
 					switch(paramDesc.type)
 					{
@@ -55,8 +55,8 @@ namespace CamelotEngine
 							for(UINT32 i = 0; i < paramDesc.arraySize; i++)
 							{
 								MaterialFloatParam param;
-								param.name = *iter;
-								param.value = material->getFloat(*iter, i);
+								param.name = iter->first;
+								param.value = material->getFloat(iter->first, i);
 								param.arrayIdx = i;
 
 								params->floatParams.push_back(param);
@@ -68,8 +68,8 @@ namespace CamelotEngine
 							for(UINT32 i = 0; i < paramDesc.arraySize; i++)
 							{
 								MaterialVec2Param param;
-								param.name = *iter;
-								param.value = material->getVec2(*iter, i);
+								param.name = iter->first;
+								param.value = material->getVec2(iter->first, i);
 								param.arrayIdx = i;
 
 								params->vec2Params.push_back(param);
@@ -81,8 +81,8 @@ namespace CamelotEngine
 							for(UINT32 i = 0; i < paramDesc.arraySize; i++)
 							{
 								MaterialVec3Param param;
-								param.name = *iter;
-								param.value = material->getVec3(*iter, i);
+								param.name = iter->first;
+								param.value = material->getVec3(iter->first, i);
 								param.arrayIdx = i;
 
 								params->vec3Params.push_back(param);
@@ -94,8 +94,8 @@ namespace CamelotEngine
 							for(UINT32 i = 0; i < paramDesc.arraySize; i++)
 							{
 								MaterialVec4Param param;
-								param.name = *iter;
-								param.value = material->getVec4(*iter, i);
+								param.name = iter->first;
+								param.value = material->getVec4(iter->first, i);
 								param.arrayIdx = i;
 
 								params->vec4Params.push_back(param);
@@ -107,8 +107,8 @@ namespace CamelotEngine
 							for(UINT32 i = 0; i < paramDesc.arraySize; i++)
 							{
 								MaterialMat3Param param;
-								param.name = *iter;
-								param.value = material->getMat3(*iter, i);
+								param.name = iter->first;
+								param.value = material->getMat3(iter->first, i);
 								param.arrayIdx = i;
 
 								params->mat3Params.push_back(param);
@@ -120,8 +120,8 @@ namespace CamelotEngine
 							for(UINT32 i = 0; i < paramDesc.arraySize; i++)
 							{
 								MaterialMat4Param param;
-								param.name = *iter;
-								param.value = material->getMat4(*iter, i);
+								param.name = iter->first;
+								param.value = material->getMat4(iter->first, i);
 								param.arrayIdx = i;
 
 								params->mat4Params.push_back(param);
@@ -134,19 +134,19 @@ namespace CamelotEngine
 				}
 				else if(type == GPT_OBJECT)
 				{
-					const SHADER_OBJECT_PARAM_DESC& paramDesc = shader->getObjectParamDesc(*iter);
+					const SHADER_OBJECT_PARAM_DESC& paramDesc = shader->getObjectParamDesc(iter->first);
 
 					if(Shader::isSampler(paramDesc.type))
 					{
 						MaterialSamplerStateParam param;
-						param.name = *iter;
-						param.value = material->getSamplerState(*iter);
+						param.name = iter->first;
+						param.value = material->getSamplerState(iter->first);
 					}
 					else if(Shader::isTexture(paramDesc.type))
 					{
 						MaterialTextureParam param;
-						param.name = *iter;
-						param.value = material->getTexture(*iter);
+						param.name = iter->first;
+						param.value = material->getTexture(iter->first);
 					}
 					else if(Shader::isBuffer(paramDesc.type))
 					{

@@ -16,6 +16,53 @@ namespace CamelotEngine
 	class RTTITypeBase;
 	struct RTTIField;
 
+	/**
+	* @brief	Helper method when serializing known data types that have valid
+	* 			SerializableSimpleType specializations.
+	* 			
+	*			Returns the size of the element. If elements serializable type is 
+	*			specialized with hasDynamicSize == true, the dynamic size is calculated, 
+	*			otherwise sizeof() is used.
+	 */
+	template<class ElemType>
+	UINT32 rttiGetElemSize(ElemType& data)
+	{
+		if(SerializableSimpleType<ElemType>::hasDynamicSize == 1)
+			return SerializableSimpleType<ElemType>::getDynamicSize(data);
+		else
+			return sizeof(ElemType);
+	}
+
+	/**
+	 * @brief	Helper method when serializing known data types that have valid
+	 * 			SerializableSimpleType specializations.
+	 * 			
+	 *			Writes the specified data into memory, advances the memory pointer by the
+	 *			bytes written and returns pointer to new memory.
+	 */
+	template<class ElemType>
+	char* rttiWriteElem(ElemType& data, char* memory)
+	{
+		SerializableSimpleType<ElemType>::toMemory(data, memory);
+
+		return memory + rttiGetElemSize(data);
+	}
+
+	/**
+	 * @brief	Helper method when serializing known data types that have valid
+	 * 			SerializableSimpleType specializations.
+	 * 			
+	 *			Reads the specified data into memory, advances the memory pointer by the
+	 *			bytes read and returns pointer to new memory.
+	 */
+	template<class ElemType>
+	char* rttiReadElem(ElemType& data, char* memory)
+	{
+		SerializableSimpleType<ElemType>::fromMemory(data, memory);
+
+		return memory + rttiGetElemSize(data);
+	}
+
 	template<class T>
 	struct SerializableSimpleType 
 	{ 
@@ -78,6 +125,7 @@ namespace CamelotEngine
 
 			memcpy(memory, &size, sizeof(UINT32));
 			memory += sizeof(UINT32);
+			size -= sizeof(UINT32);
 			memcpy(memory, data.data(), size); 
 		}
 

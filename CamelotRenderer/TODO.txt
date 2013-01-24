@@ -50,6 +50,10 @@ Stuff that needs destroy():
   - Shader
   - Technique
 
+Calling destroy() and then immediately releasing last reference to an object will delete the object before it is destroyed. (Since destroy()) gets queued.
+
+Upon calling destroy() I should keep a temporary reference to the object until it actually is destroyed.
+
   Material RTTI should also serialize shared buffers (they need to be made into a resource)
 
 DX9 will have the same name for sampler and texture. This will cause an error in Material param checking.
@@ -58,8 +62,7 @@ Add support for include file resource
 Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it
  - Also a way to list all referenced includes, and a way to remove them
 
-Make Raster/DepthStencil/Blend/Sampler states resources
-Make Shader a resource
+Loading material should also load attached shader and textures/sampler states
 
  Refactor how we handle RenderTargets (no attach/detach, and no waitForVSync propery in RenderSystem)
  waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)

@@ -9,7 +9,7 @@ namespace CamelotEngine
 {
 	template<> struct SerializableSimpleType<BLEND_STATE_DESC>
 	{	
-		enum { id = 21 }; enum { hasDynamicSize = 1 };
+		enum { id = TID_BLEND_STATE_DESC }; enum { hasDynamicSize = 1 };
 
 		static void toMemory(BLEND_STATE_DESC& data, char* memory)
 		{ 
@@ -17,6 +17,7 @@ namespace CamelotEngine
 
 			memcpy(memory, &size, sizeof(UINT32));
 			memory += sizeof(UINT32);
+			size -= sizeof(UINT32);
 			memcpy(memory, &data, size); 
 		}
 

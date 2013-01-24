@@ -240,7 +240,11 @@ namespace CamelotEngine
 		TID_MaterialParamMat3 = 1030,
 		TID_MaterialParamMat4 = 1031,
 		TID_MaterialParamTexture = 1032,
-		TID_MaterialParamSamplerState = 1033
+		TID_MaterialParamSamplerState = 1033,
+		TID_BLEND_STATE_DESC = 1034,
+		TID_SHADER_DATA_PARAM_DESC = 1035,
+		TID_SHADER_OBJECT_PARAM_DESC = 1036,
+		TID_SHADER_PARAM_BLOCK_DESC = 1047
 	};
 }
 

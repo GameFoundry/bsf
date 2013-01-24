@@ -73,7 +73,7 @@ namespace CamelotEngine
 		TechniquePtr mBestTechnique;
 
 		set<String>::type mValidShareableParamBlocks;
-		set<String>::type mValidParams;
+		map<String, String>::type mValidParams; // Also maps Shader param name -> gpu variable name
 
 		vector<PassParametersPtr>::type mParametersPerPass;
 
@@ -109,7 +109,7 @@ namespace CamelotEngine
 			}
 		}
 
-		const set<String>::type& getValidParamNames() const { return mValidParams; }
+		const map<String, String>::type& getValidParamNames() const { return mValidParams; }
 
 		TextureHandle getTexture(const String& name) const;
 		SamplerStateHandle getSamplerState(const String& name) const;
@@ -122,12 +122,12 @@ namespace CamelotEngine
 
 		void initBestTechnique();
 
-		set<String>::type determineValidParameters(const vector<const GpuParamDesc*>::type& paramDescs) const;
+		map<String, const GpuParamDataDesc*>::type determineValidDataParameters(const vector<const GpuParamDesc*>::type& paramDescs) const;
+		set<String>::type determineValidObjectParameters(const vector<const GpuParamDesc*>::type& paramDescs) const;
 		set<String>::type determineValidShareableParamBlocks(const vector<const GpuParamDesc*>::type& paramDescs) const;
 		map<String, String>::type determineParameterToBlockMapping(const vector<const GpuParamDesc*>::type& paramDescs);
 
 		bool areParamsEqual(const GpuParamDataDesc& paramA, const GpuParamDataDesc& paramB, bool ignoreBufferOffsets = false) const;
-		bool areParamsEqual(const GpuParamObjectDesc& paramA, const GpuParamObjectDesc& paramB) const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

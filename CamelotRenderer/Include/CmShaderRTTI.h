@@ -6,6 +6,144 @@
 
 namespace CamelotEngine
 {
+	template<> struct SerializableSimpleType<SHADER_DATA_PARAM_DESC>
+	{	
+		enum { id = TID_SHADER_DATA_PARAM_DESC }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(SHADER_DATA_PARAM_DESC& data, char* memory)
+		{ 
+			UINT32 size = getDynamicSize(data);
+
+			UINT32 curSize = sizeof(UINT32);
+			memcpy(memory, &size, curSize);
+			memory += curSize;
+
+			memory = rttiWriteElem(data.arraySize, memory);
+			memory = rttiWriteElem(data.hidden, memory);
+			memory = rttiWriteElem(data.type, memory);
+			memory = rttiWriteElem(data.name, memory);
+			memory = rttiWriteElem(data.gpuVariableName, memory);
+		}
+
+		static void fromMemory(SHADER_DATA_PARAM_DESC& data, char* memory)
+		{ 
+			UINT32 size;
+			memcpy(&size, memory, sizeof(UINT32)); 
+			memory += sizeof(UINT32);
+
+			memory = rttiReadElem(data.arraySize, memory);
+			memory = rttiReadElem(data.hidden, memory);
+			memory = rttiReadElem(data.type, memory);
+			memory = rttiReadElem(data.name, memory);
+			memory = rttiReadElem(data.gpuVariableName, memory);
+		}
+
+		static UINT32 getDynamicSize(SHADER_DATA_PARAM_DESC& data)	
+		{ 
+			UINT64 dataSize = rttiGetElemSize(data.arraySize) + rttiGetElemSize(data.hidden) + rttiGetElemSize(data.type) + 
+				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + sizeof(UINT32);
+
+#if CM_DEBUG_MODE
+			if(dataSize > std::numeric_limits<UINT32>::max())
+			{
+				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
+			}
+#endif
+
+			return (UINT32)dataSize;
+		}	
+	}; 
+
+	template<> struct SerializableSimpleType<SHADER_OBJECT_PARAM_DESC>
+	{	
+		enum { id = TID_SHADER_OBJECT_PARAM_DESC }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(SHADER_OBJECT_PARAM_DESC& data, char* memory)
+		{ 
+			UINT32 size = getDynamicSize(data);
+
+			UINT32 curSize = sizeof(UINT32);
+			memcpy(memory, &size, curSize);
+			memory += curSize;
+
+			memory = rttiWriteElem(data.hidden, memory);
+			memory = rttiWriteElem(data.type, memory);
+			memory = rttiWriteElem(data.name, memory);
+			memory = rttiWriteElem(data.gpuVariableName, memory);
+		}
+
+		static void fromMemory(SHADER_OBJECT_PARAM_DESC& data, char* memory)
+		{ 
+			UINT32 size;
+			memcpy(&size, memory, sizeof(UINT32)); 
+			memory += sizeof(UINT32);
+
+			memory = rttiReadElem(data.hidden, memory);
+			memory = rttiReadElem(data.type, memory);
+			memory = rttiReadElem(data.name, memory);
+			memory = rttiReadElem(data.gpuVariableName, memory);
+		}
+
+		static UINT32 getDynamicSize(SHADER_OBJECT_PARAM_DESC& data)	
+		{ 
+			UINT64 dataSize = rttiGetElemSize(data.hidden) + rttiGetElemSize(data.type) + 
+				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + sizeof(UINT32);
+
+#if CM_DEBUG_MODE
+			if(dataSize > std::numeric_limits<UINT32>::max())
+			{
+				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
+			}
+#endif
+
+			return (UINT32)dataSize;
+		}	
+	}; 
+
+	template<> struct SerializableSimpleType<SHADER_PARAM_BLOCK_DESC>
+	{	
+		enum { id = TID_SHADER_PARAM_BLOCK_DESC }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(SHADER_PARAM_BLOCK_DESC& data, char* memory)
+		{ 
+			UINT32 size = getDynamicSize(data);
+
+			UINT32 curSize = sizeof(UINT32);
+			memcpy(memory, &size, curSize);
+			memory += curSize;
+
+			memory = rttiWriteElem(data.shared, memory);
+			memory = rttiWriteElem(data.usage, memory);
+			memory = rttiWriteElem(data.name, memory);
+		}
+
+		static void fromMemory(SHADER_PARAM_BLOCK_DESC& data, char* memory)
+		{ 
+			UINT32 size;
+			memcpy(&size, memory, sizeof(UINT32)); 
+			memory += sizeof(UINT32);
+
+			memory = rttiReadElem(data.shared, memory);
+			memory = rttiReadElem(data.usage, memory);
+			memory = rttiReadElem(data.name, memory);
+		}
+
+		static UINT32 getDynamicSize(SHADER_PARAM_BLOCK_DESC& data)	
+		{ 
+			UINT64 dataSize = rttiGetElemSize(data.shared) + rttiGetElemSize(data.usage) + 
+				rttiGetElemSize(data.name) + sizeof(UINT32);
+
+#if CM_DEBUG_MODE
+			if(dataSize > std::numeric_limits<UINT32>::max())
+			{
+				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
+			}
+#endif
+
+			return (UINT32)dataSize;
+		}	
+	}; 
+
 	class CM_EXPORT ShaderRTTI : public RTTIType<Shader, Resource, ShaderRTTI>
 	{
 	private:
