@@ -31,7 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "CmIReflectable.h"
+#include "CmIDestroyable.h"
 #include "CmColor.h"
 
 namespace CamelotEngine 
@@ -43,24 +43,28 @@ namespace CamelotEngine
 	*  @{
 	*/
 	/** Specialisation of HardwareBuffer for a vertex buffer. */
-    class CM_EXPORT VertexBuffer : public HardwareBuffer
+    class CM_EXPORT VertexBuffer : public HardwareBuffer, public IDestroyable
     {
-	    protected:
-			HardwareBufferManager* mMgr;
-		    UINT32 mNumVertices;
-            UINT32 mVertexSize;
+	public:
+		/// Should be called by HardwareBufferManager
+		VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices,
+            GpuBufferUsage usage, bool useSystemMemory);
+        ~VertexBuffer();
 
-	    public:
-		    /// Should be called by HardwareBufferManager
-		    VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices,
-                GpuBufferUsage usage, bool useSystemMemory);
-            ~VertexBuffer();
-			/// Return the manager of this buffer, if any
-			HardwareBufferManager* getManager() const { return mMgr; }
-            /// Gets the size in bytes of a single vertex in this buffer
-            UINT32 getVertexSize(void) const { return mVertexSize; }
-            /// Get the number of vertices in this buffer
-            UINT32 getNumVertices(void) const { return mNumVertices; }
+		void destroy();
+
+		/// Return the manager of this buffer, if any
+		HardwareBufferManager* getManager() const { return mMgr; }
+        /// Gets the size in bytes of a single vertex in this buffer
+        UINT32 getVertexSize(void) const { return mVertexSize; }
+        /// Get the number of vertices in this buffer
+        UINT32 getNumVertices(void) const { return mNumVertices; }
+	protected:
+		HardwareBufferManager* mMgr;
+		UINT32 mNumVertices;
+		UINT32 mVertexSize;
+
+		virtual void destroy_internal();
     };
 }
 #endif

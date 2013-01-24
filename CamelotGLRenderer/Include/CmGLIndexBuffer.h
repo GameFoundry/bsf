@@ -36,19 +36,6 @@ namespace CamelotEngine {
 
     class CM_RSGL_EXPORT GLIndexBuffer : public IndexBuffer
     {
-    private:
-        GLuint mBufferId;
-		// Scratch buffer handling
-		bool mLockedToScratch;
-		UINT32 mScratchOffset;
-		UINT32 mScratchSize;
-		void* mScratchPtr;
-		bool mScratchUploadOnUnlock;
-    protected:
-        /** See HardwareBuffer. */
-        void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
-        /** See HardwareBuffer. */
-        void unlockImpl(void);
     public:
         GLIndexBuffer(HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
             GpuBufferUsage usage); 
@@ -60,6 +47,23 @@ namespace CamelotEngine {
             const void* pSource, bool discardWholeBuffer = false);
 
         GLuint getGLBufferId(void) const { return mBufferId; }
+
+	protected:
+		/** See HardwareBuffer. */
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		/** See HardwareBuffer. */
+		void unlockImpl(void);
+
+		void destroy_internal();
+
+	private:
+		GLuint mBufferId;
+		// Scratch buffer handling
+		bool mLockedToScratch;
+		UINT32 mScratchOffset;
+		UINT32 mScratchSize;
+		void* mScratchPtr;
+		bool mScratchUploadOnUnlock;
     };
 
 }

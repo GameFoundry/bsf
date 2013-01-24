@@ -185,8 +185,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
 
-	//gResources().create(testMaterial, "C:\\testMaterial.mat", true);
-	//testMaterial = static_resource_cast<MaterialHandle>(gResources().load("C:\\testMaterial.mat"));
+	gResources().create(testMaterial, "C:\\testMaterial.mat", true);
+	testMaterial = static_resource_cast<MaterialHandle>(gResources().load("C:\\testMaterial.mat"));
 
 	/*TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));*/
 	TextureHandle testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));

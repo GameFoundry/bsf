@@ -71,20 +71,7 @@ namespace CamelotEngine {
     }
 	//---------------------------------------------------------------------
     D3D9IndexBuffer::~D3D9IndexBuffer()
-    {
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
-		DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
-
-		while (it != mMapDeviceToBufferResources.end())
-		{
-			SAFE_RELEASE(it->second->mBuffer);
-			SAFE_DELETE(it->second);
-			++it;
-		}	
-		mMapDeviceToBufferResources.clear();   
-		SAFE_DELETE_ARRAY(mSystemMemoryBuffer);
-    }
+    { }
 	//---------------------------------------------------------------------
     void* D3D9IndexBuffer::lockImpl(UINT32 offset, 
         UINT32 length, GpuLockOptions options)
@@ -337,5 +324,23 @@ namespace CamelotEngine {
 		bufferResources->mLockOptions = GBL_READ_WRITE;
 
 		return true;			
+	}
+	//---------------------------------------------------------------------
+	void D3D9IndexBuffer::destroy_internal()
+	{
+		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
+
+			DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
+
+		while (it != mMapDeviceToBufferResources.end())
+		{
+			SAFE_RELEASE(it->second->mBuffer);
+			SAFE_DELETE(it->second);
+			++it;
+		}	
+		mMapDeviceToBufferResources.clear();   
+		SAFE_DELETE_ARRAY(mSystemMemoryBuffer);
+
+		IndexBuffer::destroy_internal();
 	}
 }

@@ -37,6 +37,7 @@ THE SOFTWARE.
 namespace CamelotEngine 
 {
 	VertexData::VertexData(HardwareBufferManager* mgr)
+		:mOwnsDeclaration(false)
 	{
 		mMgr = mgr ? mgr : HardwareBufferManager::instancePtr();
 		vertexDeclaration = mMgr->createVertexDeclaration();
@@ -45,6 +46,7 @@ namespace CamelotEngine
 	}
 
 	VertexData::VertexData(VertexDeclarationPtr dcl)
+		:mOwnsDeclaration(true)
 	{
 		// this is a fallback rather than actively used
 		mMgr = HardwareBufferManager::instancePtr();
@@ -54,7 +56,8 @@ namespace CamelotEngine
 
 	VertexData::~VertexData()
 	{
-
+		if(mOwnsDeclaration && (vertexDeclaration != nullptr))
+			vertexDeclaration->destroy();
 	}
 
 	void VertexData::setBuffer(UINT32 index, VertexBufferPtr buffer)

@@ -36,20 +36,6 @@ namespace CamelotEngine {
     /// Specialisation of HardwareVertexBuffer for OpenGL
     class CM_RSGL_EXPORT GLVertexBuffer : public VertexBuffer 
     {
-    private:
-        GLuint mBufferId;
-		// Scratch buffer handling
-		bool mLockedToScratch;
-		UINT32 mScratchOffset;
-		UINT32 mScratchSize;
-		void* mScratchPtr;
-		bool mScratchUploadOnUnlock;
-
-    protected:
-        /** See HardwareBuffer. */
-        void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
-        /** See HardwareBuffer. */
-        void unlockImpl(void);
     public:
         GLVertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
         ~GLVertexBuffer();
@@ -60,6 +46,23 @@ namespace CamelotEngine {
             const void* pSource, bool discardWholeBuffer = false);
 
         GLuint getGLBufferId(void) const { return mBufferId; }
+
+	protected:
+		/** See HardwareBuffer. */
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		/** See HardwareBuffer. */
+		void unlockImpl(void);
+
+		void destroy_internal();
+
+	private:
+		GLuint mBufferId;
+		// Scratch buffer handling
+		bool mLockedToScratch;
+		UINT32 mScratchOffset;
+		UINT32 mScratchSize;
+		void* mScratchPtr;
+		bool mScratchUploadOnUnlock;
     };
 
 }

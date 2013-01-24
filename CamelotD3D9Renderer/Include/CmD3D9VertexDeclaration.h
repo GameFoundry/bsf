@@ -75,8 +75,8 @@ namespace CamelotEngine {
         IDirect3DVertexDeclaration9* getD3DVertexDeclaration(void);
 
 	protected:
-		void	releaseDeclaration();
-
+		void releaseDeclaration();
+		void destroy_internal();
 
 	protected:        
 		typedef map<IDirect3DDevice9*, IDirect3DVertexDeclaration9*>::type	DeviceToDeclarationMap;

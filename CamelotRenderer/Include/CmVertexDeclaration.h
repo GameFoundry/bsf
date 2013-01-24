@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmColor.h"
+#include "CmIDestroyable.h"
 
 namespace CamelotEngine
 {
@@ -241,7 +242,7 @@ namespace CamelotEngine
 	Like the other classes in this functional area, these declarations should be created and
 	destroyed using the HardwareBufferManager.
     */
-	class CM_EXPORT VertexDeclaration : public IReflectable
+	class CM_EXPORT VertexDeclaration : public IReflectable, public IDestroyable
     {
     public:
 		/// Defines the list of vertex elements that makes up this declaration
@@ -256,6 +257,8 @@ namespace CamelotEngine
 		 * @brief	Generates a hash value based on all elements in the declaration.
 		 */
 		void recalculateHash();
+
+		virtual void destroy_internal();
     public:
         /// Standard constructor, not you should use HardwareBufferManager::createVertexDeclaration
         VertexDeclaration();
@@ -379,6 +382,8 @@ namespace CamelotEngine
 			(if null, use the current default).
 		*/
         virtual VertexDeclarationPtr clone(HardwareBufferManager* mgr = 0);
+
+		void destroy();
 
         inline bool operator== (const VertexDeclaration& rhs) const
         {

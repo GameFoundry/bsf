@@ -35,11 +35,11 @@ Stuff that needs destroy():
  - GpuProgram (DONE)
  - HighLevelGpuProgram (DONE)
  - Texture (DONE)
- - Mesh
- - VertexBuffer
- - IndexBuffer
+ - Mesh - (DONE)
+ - VertexBuffer (DONE)
+ - IndexBuffer (DONE)
  - GpuBuffer
- - VertexDeclaration
+ - VertexDeclaration (DONE)
  - RenderWindow
  - Blend/DepthStencil/Rasterizer/SamplerState
  - GpuParamBlock
@@ -54,9 +54,8 @@ Calling destroy() and then immediately releasing last reference to an object wil
 
 Upon calling destroy() I should keep a temporary reference to the object until it actually is destroyed.
 
-  Material RTTI should also serialize shared buffers (they need to be made into a resource)
-
-DX9 will have the same name for sampler and texture. This will cause an error in Material param checking.
+Material RTTI should also serialize shared buffers (they need to be made into a resource)
+ - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
 
 Add support for include file resource
 Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it

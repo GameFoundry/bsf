@@ -54,9 +54,7 @@ namespace CamelotEngine {
     }
 	//---------------------------------------------------------------------
     GLIndexBuffer::~GLIndexBuffer()
-    {
-        glDeleteBuffersARB(1, &mBufferId);
-    }
+    {    }
 	//---------------------------------------------------------------------
     void* GLIndexBuffer::lockImpl(UINT32 offset, 
         UINT32 length, GpuLockOptions options)
@@ -191,4 +189,11 @@ namespace CamelotEngine {
             glBufferSubDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, offset, length, pSource);
         }
     }
+	//---------------------------------------------------------------------
+	void GLIndexBuffer::destroy_internal()
+	{
+		 glDeleteBuffersARB(1, &mBufferId);
+
+		IndexBuffer::destroy_internal();
+	}
 }

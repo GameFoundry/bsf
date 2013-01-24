@@ -45,6 +45,8 @@ namespace CamelotEngine
 		 */
 		void unlockImpl(void);
 
+		void destroy_internal();
+
 		D3D11HardwareBuffer* mBuffer;
 	};
 }

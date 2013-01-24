@@ -48,9 +48,19 @@ namespace CamelotEngine
 
     VertexBuffer::~VertexBuffer()
     {
-		if (mMgr)
-		{
-			mMgr->_notifyVertexBufferDestroyed(this);
-		}
+
     }
+
+	void VertexBuffer::destroy()
+	{
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&VertexBuffer::destroy_internal, this));
+	}
+
+	void VertexBuffer::destroy_internal()
+	{
+		if (mMgr)
+			mMgr->_notifyVertexBufferDestroyed(this);
+
+		IDestroyable::destroy();
+	}
 }

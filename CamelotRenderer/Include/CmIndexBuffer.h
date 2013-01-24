@@ -31,6 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
+#include "CmIDestroyable.h"
 
 namespace CamelotEngine 
 {
@@ -41,7 +42,7 @@ namespace CamelotEngine
 	*  @{
 	*/
 	/** Specialisation of HardwareBuffer for vertex index buffers, still abstract. */
-    class CM_EXPORT IndexBuffer : public HardwareBuffer
+    class CM_EXPORT IndexBuffer : public HardwareBuffer, public IDestroyable
     {
 	    public:
 		    enum IndexType {
@@ -54,6 +55,8 @@ namespace CamelotEngine
 		    IndexType mIndexType;
 		    UINT32 mNumIndexes;
             UINT32 mIndexSize;
+
+			virtual void destroy_internal();
 
 	    public:
 		    /// Should be called by HardwareBufferManager
@@ -68,6 +71,8 @@ namespace CamelotEngine
             UINT32 getNumIndexes(void) const { return mNumIndexes; }
             /// Get the size in bytes of each index
             UINT32 getIndexSize(void) const { return mIndexSize; }
+
+			void destroy();
 
 		    // NB subclasses should override lock, unlock, readData, writeData
     };

@@ -76,8 +76,7 @@ namespace CamelotEngine {
 			GpuLockOptions					mLockOptions;
 			UINT32						mLastUsedFrame;
 		};
-
-	protected:		
+	
 		/** See HardwareBuffer. */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);		
 		/** See HardwareBuffer. */
@@ -85,7 +84,8 @@ namespace CamelotEngine {
 		// updates buffer resources from system memory buffer.
 		bool updateBufferResources(const char* systemMemoryBuffer, BufferResources* bufferResources);		
 
-	protected:
+		void destroy_internal();
+
 		typedef map<IDirect3DDevice9*, BufferResources*>::type	DeviceToBufferResourcesMap;
 		typedef DeviceToBufferResourcesMap::iterator			DeviceToBufferResourcesIterator;
 

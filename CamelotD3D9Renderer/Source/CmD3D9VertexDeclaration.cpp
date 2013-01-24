@@ -39,9 +39,7 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------
     D3D9VertexDeclaration::~D3D9VertexDeclaration()
-    {
-       releaseDeclaration();
-    }
+    {    }
     //-----------------------------------------------------------------------
     const VertexElement& D3D9VertexDeclaration::addElement(unsigned short source, 
         UINT32 offset, VertexElementType theType,
@@ -184,6 +182,13 @@ namespace CamelotEngine {
 			++it;
 		}	
 		mMapDeviceToDeclaration.clear();
+	}
+	//-----------------------------------------------------------------------
+	void D3D9VertexDeclaration::destroy_internal()
+	{
+		releaseDeclaration();
+
+		VertexDeclaration::destroy_internal();
 	}
 }
 

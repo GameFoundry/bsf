@@ -11,7 +11,7 @@ namespace CamelotEngine
 
 	D3D11VertexBuffer::~D3D11VertexBuffer()
 	{
-		delete mBuffer;
+		
 	}
 
 	void* D3D11VertexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
@@ -38,5 +38,13 @@ namespace CamelotEngine
 		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer)
 	{
 		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer);
+	}
+
+	void D3D11VertexBuffer::destroy_internal()
+	{
+		if(mBuffer != nullptr)
+			delete mBuffer;
+
+		VertexBuffer::destroy_internal();
 	}
 }

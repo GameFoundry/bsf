@@ -23,15 +23,7 @@ namespace CamelotEngine
 	}
 
 	Mesh::~Mesh()
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		if(mVertexData)
-			delete mVertexData;
-
-		if(mIndexData)
-			delete mIndexData;
-	}
+	{ }
 
 	void Mesh::setMeshData(MeshDataPtr meshData)
 	{
@@ -315,6 +307,19 @@ namespace CamelotEngine
 		setMeshData_internal(getNullMeshData());
 
 		Resource::initialize_internal();
+	}
+
+	void Mesh::destroy_internal()
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		if(mVertexData)
+			delete mVertexData;
+
+		if(mIndexData)
+			delete mIndexData;
+
+		IDestroyable::destroy();
 	}
 
 	void Mesh::throwIfNotRenderThread() const

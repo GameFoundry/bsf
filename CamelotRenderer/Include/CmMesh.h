@@ -29,7 +29,6 @@ namespace CamelotEngine
 		virtual ~Mesh();
 
 		void initialize();
-		virtual void initialize_internal();
 
 		/**
 		 * @brief	Mesh data that is used for initializing the mesh. Needs to be set before calling load.
@@ -45,7 +44,7 @@ namespace CamelotEngine
 
 		RenderOperation getRenderOperation(UINT32 subMeshIdx = 0) const;
 
-	private:
+	protected:
 		Mesh();
 
 		VertexData* mVertexData;
@@ -53,7 +52,11 @@ namespace CamelotEngine
 
 		vector<SubMesh>::type mSubMeshes;
 
+		virtual void initialize_internal();
 		void throwIfNotRenderThread() const;
+
+		/** @copydoc Resource::destroy_internal(). */
+		virtual void destroy_internal();
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

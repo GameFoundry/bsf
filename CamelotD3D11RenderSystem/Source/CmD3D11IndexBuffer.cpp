@@ -11,7 +11,7 @@ namespace CamelotEngine
 
 	D3D11IndexBuffer::~D3D11IndexBuffer()
 	{
-		delete mBuffer;
+		
 	}
 
 	void* D3D11IndexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
@@ -38,5 +38,13 @@ namespace CamelotEngine
 		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer)
 	{
 		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer);
+	}
+
+	void D3D11IndexBuffer::destroy_internal()
+	{
+		if(mBuffer != nullptr)
+			delete mBuffer;
+
+		IndexBuffer::destroy_internal();
 	}
 }

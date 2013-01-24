@@ -100,6 +100,7 @@ namespace CamelotEngine {
         VertexData& operator=(const VertexData& rhs); /* do not use */
 
 		HardwareBufferManager* mMgr;
+		bool mOwnsDeclaration;
 
 		/** The vertex buffer bindings to be used. 
 		@remarks Note that this is created for you on construction.

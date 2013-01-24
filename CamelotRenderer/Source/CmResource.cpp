@@ -28,7 +28,7 @@ namespace CamelotEngine
 
 	void Resource::destroy()
 	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::destroy_internal, this));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&Resource::destroy_internal, this));
 	}
 
 	void Resource::waitUntilInitialized()

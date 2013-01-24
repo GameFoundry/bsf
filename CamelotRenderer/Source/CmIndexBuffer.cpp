@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 #include "CmIndexBuffer.h"
 #include "CmHardwareBufferManager.h"
+#include "CmRenderSystem.h"
 
 namespace CamelotEngine {
 
@@ -55,10 +56,20 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------------
     IndexBuffer::~IndexBuffer()
     {
-		if (mMgr)
-		{
-			mMgr->_notifyIndexBufferDestroyed(this);
-		}
+
     }
+	//----------------------------------------------------------------------------
+	void IndexBuffer::destroy()
+	{
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&IndexBuffer::destroy_internal, this));
+	}
+	//----------------------------------------------------------------------------
+	void IndexBuffer::destroy_internal()
+	{
+		if (mMgr)
+			mMgr->_notifyIndexBufferDestroyed(this);
+
+		IDestroyable::destroy();
+	}
 }
 

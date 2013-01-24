@@ -55,7 +55,6 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
     GLVertexBuffer::~GLVertexBuffer()
     {
-        glDeleteBuffersARB(1, &mBufferId);
     }
 	//---------------------------------------------------------------------
     void* GLVertexBuffer::lockImpl(UINT32 offset, 
@@ -194,4 +193,11 @@ namespace CamelotEngine {
             glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, offset, length, pSource); 
         }
     }
+	//---------------------------------------------------------------------
+	void GLVertexBuffer::destroy_internal()
+	{
+		glDeleteBuffersARB(1, &mBufferId);
+
+		VertexBuffer::destroy_internal();
+	}
 }
