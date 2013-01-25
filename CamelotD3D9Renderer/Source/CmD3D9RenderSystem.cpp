@@ -116,28 +116,9 @@ namespace CamelotEngine
 	}
 	//---------------------------------------------------------------------
 	D3D9RenderSystem::~D3D9RenderSystem()
-	{		
-		destroy_internal();
-
-		// Deleting the HLSL program factory
-		if (mHLSLProgramFactory)
-		{
-			HighLevelGpuProgramManager::instance().removeFactory(mHLSLProgramFactory);
-			delete mHLSLProgramFactory;
-			mHLSLProgramFactory = 0;
-		}
-
-		if(mCgProgramFactory)
-		{
-			HighLevelGpuProgramManager::instance().removeFactory(mCgProgramFactory);
-			delete mCgProgramFactory;
-			mCgProgramFactory = 0;
-		}
-
-		SAFE_RELEASE( mpD3D );
-		SAFE_DELETE ( mResourceManager );
-
-		msD3D9RenderSystem = NULL;
+	{
+		// This needs to be called from the child class, since destroy_internal is virtual
+		queueCommand(boost::bind(&D3D9RenderSystem::destroy_internal, this), true);
 	}
 
 	const String& D3D9RenderSystem::getName() const
@@ -225,6 +206,26 @@ namespace CamelotEngine
 		GpuProgramManager::shutDown();	
 		RenderWindowManager::shutDown();
 		RenderStateManager::shutDown();
+
+		// Deleting the HLSL program factory
+		if (mHLSLProgramFactory)
+		{
+			HighLevelGpuProgramManager::instance().removeFactory(mHLSLProgramFactory);
+			delete mHLSLProgramFactory;
+			mHLSLProgramFactory = 0;
+		}
+
+		if(mCgProgramFactory)
+		{
+			HighLevelGpuProgramManager::instance().removeFactory(mCgProgramFactory);
+			delete mCgProgramFactory;
+			mCgProgramFactory = 0;
+		}
+
+		SAFE_RELEASE( mpD3D );
+		SAFE_DELETE ( mResourceManager );
+
+		msD3D9RenderSystem = NULL;
 	}
 	//--------------------------------------------------------------------
 	void D3D9RenderSystem::registerRenderWindow(D3D9RenderWindowPtr renderWindow)
@@ -1171,10 +1172,6 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error beginning frame :" + msg);
 		}
 
-		// Clear left overs of previous viewport.
-		// I.E: Viewport A can use 3 different textures and light states
-		// When trying to render viewport B these settings should be cleared, otherwise 
-		// graphical artifacts might occur.
  		mDeviceManager->getActiveDevice()->clearDeviceStreams();
 	}
 	//---------------------------------------------------------------------

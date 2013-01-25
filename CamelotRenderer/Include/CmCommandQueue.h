@@ -112,7 +112,6 @@ namespace CamelotEngine
 	private:
 		vector<Command>::type* mCommands;
 
-		bool mIsShutdown;
 		bool mAllowAllThreads;
 
 		CM_THREAD_ID_TYPE mMyThreadId;

@@ -46,7 +46,6 @@ namespace CamelotEngine
 		/// create an instance of GLSLProgram
         HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile);
 		HighLevelGpuProgram* create();
-		void destroy_internal(HighLevelGpuProgram* prog);
     };
 }
 

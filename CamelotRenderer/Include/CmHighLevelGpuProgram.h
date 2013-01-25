@@ -63,7 +63,7 @@ namespace CamelotEngine {
     class CM_EXPORT HighLevelGpuProgram : public GpuProgram
     {
     public:
-        ~HighLevelGpuProgram();
+        virtual ~HighLevelGpuProgram();
 
 		/** @copydoc GpuProgram::initialize_internal(). */
 		virtual void initialize_internal();

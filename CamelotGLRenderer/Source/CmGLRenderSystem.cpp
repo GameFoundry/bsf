@@ -124,21 +124,8 @@ namespace CamelotEngine
 
 	GLRenderSystem::~GLRenderSystem()
 	{
-		destroy_internal();
-
-		if(mProgramPipelineManager != nullptr)
-			delete mProgramPipelineManager;
-
-		// Destroy render windows
-		for (auto i = mRenderTargets.begin(); i != mRenderTargets.end(); ++i)
-		{
-			delete *i;
-		}
-
-		mRenderTargets.clear();
-
-        if(mGLSupport)
-            delete mGLSupport;
+		// This needs to be called from the child class, since destroy_internal is virtual
+		queueCommand(boost::bind(&GLRenderSystem::destroy_internal, this), true);
 	}
 
 	const String& GLRenderSystem::getName(void) const
@@ -166,7 +153,7 @@ namespace CamelotEngine
 		RenderSystem::initialize_internal();
 	}
 
-	void GLRenderSystem::destroy_internal(void)
+	void GLRenderSystem::destroy_internal()
 	{
 		RenderSystem::destroy_internal();
 
@@ -220,6 +207,20 @@ namespace CamelotEngine
 		//  some params will access an invalid pointer, so it is best to reset
 		//  the whole state.
 		mGLInitialised = 0;
+
+		if(mProgramPipelineManager != nullptr)
+			delete mProgramPipelineManager;
+
+		// Destroy render windows
+		for (auto i = mRenderTargets.begin(); i != mRenderTargets.end(); ++i)
+		{
+			delete *i;
+		}
+
+		mRenderTargets.clear();
+
+		if(mGLSupport)
+			delete mGLSupport;
 	}
 
 	//---------------------------------------------------------------------

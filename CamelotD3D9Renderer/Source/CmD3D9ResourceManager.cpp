@@ -60,53 +60,53 @@ namespace CamelotEngine
 	 //-----------------------------------------------------------------------
 	void D3D9ResourceManager::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{				
-		CM_LOCK_MUTEX(mResourcesMutex)
+/*		CM_LOCK_MUTEX(mResourcesMutex)
 
 		ResourceContainerIterator it = mResources.begin();
 		while (it != mResources.end())
 		{
 			(*it)->notifyOnDeviceCreate(d3d9Device);
 			++it;
-		}				
+		}		*/		
 	}
 
 	 //-----------------------------------------------------------------------
 	void D3D9ResourceManager::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
-		CM_LOCK_MUTEX(mResourcesMutex)
+		//CM_LOCK_MUTEX(mResourcesMutex)
 
-		ResourceContainerIterator it = mResources.begin();
-		while (it != mResources.end())
-		{
-			(*it)->notifyOnDeviceDestroy(d3d9Device);
-			++it;
-		}	
+		//ResourceContainerIterator it = mResources.begin();
+		//while (it != mResources.end())
+		//{
+		//	(*it)->notifyOnDeviceDestroy(d3d9Device);
+		//	++it;
+		//}	
 	}
 
 	 //-----------------------------------------------------------------------
 	void D3D9ResourceManager::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
 	{
-		CM_LOCK_MUTEX(mResourcesMutex)
+		//CM_LOCK_MUTEX(mResourcesMutex)
 
-		ResourceContainerIterator it = mResources.begin();
-		while (it != mResources.end())
-		{
-			(*it)->notifyOnDeviceLost(d3d9Device);
-			++it;
-		}	
+		//ResourceContainerIterator it = mResources.begin();
+		//while (it != mResources.end())
+		//{
+		//	(*it)->notifyOnDeviceLost(d3d9Device);
+		//	++it;
+		//}	
 	}
 
 	 //-----------------------------------------------------------------------
 	void D3D9ResourceManager::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
 	{		
-		CM_LOCK_MUTEX(mResourcesMutex)
+/*		CM_LOCK_MUTEX(mResourcesMutex)
 
 		ResourceContainerIterator it = mResources.begin();
 		while (it != mResources.end())
 		{
 			(*it)->notifyOnDeviceReset(d3d9Device);
 			++it;			
-		}		
+		}	*/	
 	}
 
 	//-----------------------------------------------------------------------

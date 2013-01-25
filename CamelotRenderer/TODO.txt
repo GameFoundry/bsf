@@ -50,9 +50,25 @@ Stuff that needs destroy():
   - Shader
   - Technique
 
-Calling destroy() and then immediately releasing last reference to an object will delete the object before it is destroyed. (Since destroy()) gets queued.
+I am currently completely ignoring D3D9ResourceManager. It is not notified when a resource is destroyed (actually destructed), 
+so it's mResources array contains many invalid pointers. Normally resource was removed from that list whenever it was 
+destructed but with my current approach, that might be AFTER the render system is shut down, which doesn't work. I need to 
+figure out a better way of releasing all resources when the application shuts down so that this doesn't happen.
 
-Upon calling destroy() I should keep a temporary reference to the object until it actually is destroyed.
+Plan today & saturday:
+ Add destroy() for remaining classes
+ Handle the issue with destroy() and immediately releasing object reference before destroy gets executed()
+
+ - Support loading of compound objects:
+   - Loading Material also loads attached Shader and Textures/Samplers
+  - Make Resources::destroy() private
+  - Have Resources::unload which calls destroy() internally
+  - Have Resources::unloadUnused() which unloads all with reference count of 1
+
+
+
+Calling destroy() and then immediately releasing last reference to an object will delete the object before it is destroyed. (Since destroy()) gets queued.
+ - Upon calling destroy() I should keep a temporary reference to the object until it actually is destroyed.
 
 Material RTTI should also serialize shared buffers (they need to be made into a resource)
  - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
@@ -147,6 +163,11 @@ Command buffer TODO:
  - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after
     that call.
  - In general I need to rethink how to handle modifying resources with multithreading
+
+Editor IMPORTANT:
+ - When displaying inspector data for a component, take into consideration that it will need to be able
+    to display that data for user created C# classes as well. AND I will most certainly have C# versions of all my
+	components. Therefore is there any purpose of having C++ only inspector parsing code?
 
 -----------------------BACKLOG TODO---------------------------------------------------------------
 

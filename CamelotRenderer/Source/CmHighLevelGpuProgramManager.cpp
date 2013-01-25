@@ -132,11 +132,6 @@ namespace CamelotEngine {
 		}
 		return i->second;
 	}
-	//---------------------------------------------------------------------------
-	void HighLevelGpuProgramFactory::destroy(HighLevelGpuProgram* prog)
-	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&HighLevelGpuProgramFactory::destroy_internal, this, prog));
-	}
 	//---------------------------------------------------------------------
 	bool HighLevelGpuProgramManager::isLanguageSupported(const String& lang)
 	{
@@ -150,7 +145,7 @@ namespace CamelotEngine {
 		GpuProgramType gptype, GpuProgramProfile profile)
     {
 		HighLevelGpuProgramFactory* factory = getFactory(language);
-        HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(source, entryPoint, gptype, profile), boost::bind(&HighLevelGpuProgramFactory::destroy, factory, _1));
+        HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(source, entryPoint, gptype, profile));
 		ret->initialize();
 
         return ret;
@@ -159,7 +154,7 @@ namespace CamelotEngine {
 	HighLevelGpuProgramPtr HighLevelGpuProgramManager::create(const String& language)
 	{
 		HighLevelGpuProgramFactory* factory = getFactory(language);
-		HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(), boost::bind(&HighLevelGpuProgramFactory::destroy, factory, _1));
+		HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create());
 		ret->initialize();
 
 		return ret;
@@ -168,7 +163,7 @@ namespace CamelotEngine {
 	HighLevelGpuProgramPtr HighLevelGpuProgramManager::createEmpty(const String& language)
 	{
 		HighLevelGpuProgramFactory* factory = getFactory(language);
-		HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(), boost::bind(&HighLevelGpuProgramFactory::destroy, factory, _1));
+		HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create());
 
 		return ret;
 	}

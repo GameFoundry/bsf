@@ -27,6 +27,7 @@ THE SOFTWARE.
 */
 #include "CmWindowEventUtilities.h"
 #include "CmRenderWindow.h"
+#include "CmApplication.h"
 #include "CmException.h"
 #if CM_PLATFORM == CM_PLATFORM_LINUX
 #include <X11/Xlib.h>
@@ -241,7 +242,9 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 
 		for(index = _msListeners.lower_bound(win); index != end; ++index)
 			(index->second)->windowClosed(win);
-		win->destroy();
+
+		gApplication().stopMainLoop();
+
 		return 0;
 	}
 	}

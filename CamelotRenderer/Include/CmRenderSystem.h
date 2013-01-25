@@ -449,7 +449,7 @@ namespace CamelotEngine
 		};
 
 		RenderWorkerFunc* mRenderThreadFunc;
-		bool mRenderThreadShutdown;
+		volatile bool mRenderThreadShutdown;
 
 		CM_THREAD_ID_TYPE mRenderThreadId;
 		CM_THREAD_SYNCHRONISER(mRenderThreadStartCondition)

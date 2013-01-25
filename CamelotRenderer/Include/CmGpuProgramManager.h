@@ -53,9 +53,6 @@ namespace CamelotEngine {
         */
         virtual GpuProgram* create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) = 0;
 
-		void destroy(GpuProgram* program);
-		virtual void destroy_internal(GpuProgram* program);
-
 	public:
 		GpuProgramManager();
 		virtual ~GpuProgramManager();

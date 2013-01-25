@@ -18,8 +18,29 @@ namespace CamelotEngine
 		public:
 			Application();
 
+			/**
+			 * @brief	Starts the application using the specified options. 
+			 * 			This is how you start the engine.
+			 */
 			void startUp(const String& renderSystemDll, const String& rendererDll);
+
+			/**
+			 * @brief	Executes the main loop. This will cause actually rendering to be performed
+			 * 			and simulation to be run. Usually called immediately after startUp().
+			 * 			
+			 *			This will run infinitely until stopMainLoop is called (usually from another thread or internally).
+			 */
 			void runMainLoop();
+
+			/**
+			 * @brief	Stops a (infinite) main loop from running. The loop will complete its current cycle before stopping.
+			 * 			You may call this from other threads.
+			 */
+			void stopMainLoop();
+
+			/**
+			 * @brief	Frees up all resources allocated during startUp, and while the application was running.
+			 */
 			void shutDown();
 
 			UINT64 getAppWindowId();
@@ -42,6 +63,8 @@ namespace CamelotEngine
 
 		bool mIsFrameRenderingFinished;
 		CM_MUTEX(mFrameRenderingFinishedMutex);
+
+		volatile bool mRunMainLoop;
 
 		/**
 		 * @brief	Callback called from the render thread in order to initialize resources.

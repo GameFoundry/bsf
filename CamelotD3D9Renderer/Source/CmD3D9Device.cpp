@@ -706,8 +706,6 @@ namespace CamelotEngine
 
 			mpDeviceManager->setActiveDevice(pCurActiveDevice);
 			
-			clearDeviceStreams();		
-
 			// Release device.
 			SAFE_RELEASE(mpDevice);	
 			

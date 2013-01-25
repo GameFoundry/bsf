@@ -60,10 +60,4 @@ namespace CamelotEngine {
 
 		return prog;
 	}
-    //-----------------------------------------------------------------------
-	void D3D9HLSLProgramFactory::destroy_internal(HighLevelGpuProgram* prog)
-    {
-        delete prog;
-    }
-    //-----------------------------------------------------------------------
 }

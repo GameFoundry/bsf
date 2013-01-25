@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "CmD3D9Mappings.h"
 #include "CmException.h"
 #include "CmD3D9RenderSystem.h"
+#include "CmD3D9ResourceManager.h"
 
 namespace CamelotEngine {
 
@@ -187,6 +188,8 @@ namespace CamelotEngine {
 	void D3D9VertexDeclaration::destroy_internal()
 	{
 		releaseDeclaration();
+
+		D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
 
 		VertexDeclaration::destroy_internal();
 	}

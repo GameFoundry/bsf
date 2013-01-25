@@ -34,7 +34,7 @@
 namespace CamelotEngine
 {
 	Application::Application()
-		:mPrimaryRenderWindow(nullptr), mIsFrameRenderingFinished(true)
+		:mPrimaryRenderWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false)
 	{ }
 
 	void Application::startUp(const String& renderSystemName, const String& rendererName)
@@ -72,7 +72,9 @@ namespace CamelotEngine
 
 	void Application::runMainLoop()
 	{
-		while(true)
+		mRunMainLoop = true;
+
+		while(mRunMainLoop)
 		{
 			gSceneManager().update();
 
@@ -108,6 +110,12 @@ namespace CamelotEngine
 		}
 	}
 
+	void Application::stopMainLoop()
+	{
+		mRunMainLoop = false; // No sync primitives needed, in that rare case of 
+		// a race condition we might run the loop one extra iteration which is acceptable
+	}
+
 	void Application::updateMessagePump()
 	{
 		WindowEventUtilities::messagePump();
@@ -131,7 +139,7 @@ namespace CamelotEngine
 		RenderSystem::shutDown();
 
 		HighLevelGpuProgramManager::shutDown();
-		DynLibManager::shutDown();
+		//DynLibManager::shutDown();
 		Resources::shutDown();
 		Input::shutDown();
 		Time::shutDown();

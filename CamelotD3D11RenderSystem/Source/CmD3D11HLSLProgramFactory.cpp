@@ -31,9 +31,4 @@ namespace CamelotEngine
 
 		return prog;
 	}
-
-	void D3D11HLSLProgramFactory::destroy_internal(HighLevelGpuProgram* prog)
-    {
-        delete prog;
-    }
 }

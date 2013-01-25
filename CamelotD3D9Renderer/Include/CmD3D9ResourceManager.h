@@ -76,6 +76,12 @@ namespace CamelotEngine {
 		// Relevant for multi thread application.
 		void unlockDeviceAccess		();
 		
+		// Called when new resource created.
+		void _notifyResourceCreated		(D3D9Resource* pResource);
+
+		// Called when resource is about to be destroyed.
+		void _notifyResourceDestroyed	(D3D9Resource* pResource);
+
 		D3D9ResourceManager			();
 		~D3D9ResourceManager		();		
 
@@ -90,16 +96,6 @@ namespace CamelotEngine {
 	protected:
 		typedef vector<D3D9Resource*>::type		ResourceContainer;
 		typedef ResourceContainer::iterator		ResourceContainerIterator;
-
-	// Protected methods.
-	protected:
-		
-		// Called when new resource created.
-		void _notifyResourceCreated		(D3D9Resource* pResource);
-
-		// Called when resource is about to be destroyed.
-		void _notifyResourceDestroyed	(D3D9Resource* pResource);
-				
 
 	// Attributes.
 	protected:		

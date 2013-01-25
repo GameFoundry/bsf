@@ -76,9 +76,16 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     RenderSystem::~RenderSystem()
     {
-		queueCommand(boost::bind(&RenderSystem::destroy_internal, this), true);
-		// TODO - What if something gets queued between these two calls?
+		// Base classes need to call virtual destroy_internal method (queue it on render thread)
+
+		// TODO - What if something gets queued between the queued call to destroy_internal and this!?
 		shutdownRenderThread();
+
+		if(mCommandQueue != nullptr)
+		{
+			delete mCommandQueue;
+			mCommandQueue = nullptr;
+		}
 
 		delete mCurrentCapabilities;
 		mCurrentCapabilities = 0;
@@ -103,10 +110,8 @@ namespace CamelotEngine {
 		mFragmentProgramBound = false;
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::destroy_internal(void)
+	void RenderSystem::destroy_internal()
 	{
-		// TODO - I should probably sync this up to make sure no other threads are doing anything while shutdown is in progress
-
 		// Remove all the render targets.
 		// (destroy primary target last since others may depend on it)
 		RenderTarget* primary = 0;
@@ -121,12 +126,6 @@ namespace CamelotEngine {
 		mRenderTargets.clear();
 
 		mPrioritisedRenderTargets.clear();
-
-		if(mCommandQueue != nullptr)
-		{
-			delete mCommandQueue;
-			mCommandQueue = nullptr;
-		}
 	}
     //-----------------------------------------------------------------------
     void RenderSystem::swapAllRenderTargetBuffers(bool waitForVSync)
@@ -405,16 +404,18 @@ namespace CamelotEngine {
 
 		while(true)
 		{
-			if(mRenderThreadShutdown)
-				return;
-
 			// Wait until we get some ready commands
 			vector<CommandQueue::Command>::type* commands = nullptr;
 			{
 				CM_LOCK_MUTEX_NAMED(mCommandQueueMutex, lock)
 
 				while(mCommandQueue->isEmpty())
-					CM_THREAD_WAIT(mCommandReadyCondition, mCommandQueueMutex, lock)
+				{
+					if(mRenderThreadShutdown)
+						return;
+
+					CM_THREAD_WAIT(mCommandReadyCondition, mCommandQueueMutex, lock);
+				}
 
 				commands = mCommandQueue->flush();
 			}
@@ -428,10 +429,14 @@ namespace CamelotEngine {
 	void RenderSystem::shutdownRenderThread()
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
-		mRenderThreadShutdown = true;
+
+		{
+			CM_LOCK_MUTEX(mCommandQueueMutex);
+			mRenderThreadShutdown = true;
+		}
 
 		// Wake all threads. They will quit after they see the shutdown flag
-		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition)
+		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
 
 		mRenderThread->join();
 		CM_THREAD_DESTROY(mRenderThread);

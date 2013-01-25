@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmD3D9Mappings.h"
 #include "CmD3D9RenderSystem.h"
+#include "CmD3D9ResourceManager.h"
 #include "CmGpuParams.h"
 #include "CmAsyncOp.h"
 
@@ -290,6 +291,8 @@ namespace CamelotEngine {
 			++it;
 		}
 		mMapDeviceToPixelShader.clear();	
+
+		D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
 
 		D3D9GpuProgram::destroy_internal();
     }

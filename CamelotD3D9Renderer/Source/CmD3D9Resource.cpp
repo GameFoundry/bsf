@@ -40,7 +40,7 @@ namespace CamelotEngine
 
 	D3D9Resource::~D3D9Resource()
 	{		
-		D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
+		
 	}
 	
 	void D3D9Resource::lockDeviceAccess()
