@@ -30,7 +30,32 @@ namespace CamelotEngine
 
 	D3D11RenderWindow::~D3D11RenderWindow()
 	{
-		destroy();
+	}
+
+	void D3D11RenderWindow::destroy_internal()
+	{
+		_destroySizeDependedD3DResources();
+
+		mActive = false;
+		mClosed = true;
+
+		SAFE_RELEASE(mSwapChain);
+
+		if (mHWnd && !mIsExternal)
+		{
+			WindowEventUtilities::_removeRenderWindow(this);
+			DestroyWindow(mHWnd);
+		}
+
+		if(mDepthStencilView != nullptr)
+		{
+			Texture::releaseView(mDepthStencilView);
+			mDepthStencilView = nullptr;
+		}
+
+		mHWnd = nullptr;
+
+		RenderWindow::destroy_internal();
 	}
 
 	void D3D11RenderWindow::initialize(const RENDER_WINDOW_DESC& desc)
@@ -165,30 +190,6 @@ namespace CamelotEngine
 		_createSizeDependedD3DResources();
 		mDXGIFactory->MakeWindowAssociation(mHWnd, NULL);
 		setHidden(mHidden);
-	}
-
-	void D3D11RenderWindow::destroy()
-	{
-		_destroySizeDependedD3DResources();
-
-		mActive = false;
-		mClosed = true;
-
-		SAFE_RELEASE(mSwapChain);
-
-		if (mHWnd && !mIsExternal)
-		{
-			WindowEventUtilities::_removeRenderWindow(this);
-			DestroyWindow(mHWnd);
-		}
-
-		if(mDepthStencilView != nullptr)
-		{
-			Texture::releaseView(mDepthStencilView);
-			mDepthStencilView = nullptr;
-		}
-
-		mHWnd = nullptr;
 	}
 
 	void D3D11RenderWindow::swapBuffers(bool waitForVSync)

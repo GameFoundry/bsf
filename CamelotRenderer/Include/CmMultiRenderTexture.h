@@ -8,7 +8,7 @@ namespace CamelotEngine
 	class CM_EXPORT MultiRenderTexture : public RenderTarget
 	{
 	public:
-		virtual ~MultiRenderTexture() {}
+		virtual ~MultiRenderTexture();
 
 		void setColorSurface(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0);
 		void setDepthStencilSurface(TexturePtr depthStencil, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0);
@@ -24,6 +24,12 @@ namespace CamelotEngine
 
 		virtual void setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0) = 0;
 		virtual void setDepthStencilImpl(TexturePtr depthStencilstencil, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0) = 0;
+
+		/**
+		 * @copydoc RenderTarget::destroy_internal()
+		 */
+		virtual void destroy_internal();
+
 	private:
 		void throwIfBuffersDontMatch() const;
 

@@ -100,7 +100,7 @@ namespace CamelotEngine
         /** Default constructor.
         */
         RenderWindow();
-		virtual ~RenderWindow() {}
+		virtual ~RenderWindow();
 
         /** Creates & displays a new window.
         */
@@ -115,10 +115,6 @@ namespace CamelotEngine
 		*/
 		virtual void setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
                 { (void)fullScreen; (void)width; (void)height; }
-        
-        /** Destroys the window.
-        */
-        virtual void destroy(void) = 0;
 
         /** Alter the size of the window.
         */
@@ -194,6 +190,11 @@ namespace CamelotEngine
         /** Indicates that this is the primary window. 
         */
         void _setPrimary() { mIsPrimary = true; }
+
+		/**
+		 * @copydoc RenderTarget::destroy_internal()
+		 */
+		virtual void destroy_internal();
     };
 	/** @} */
 	/** @} */

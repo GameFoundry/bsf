@@ -42,11 +42,18 @@ namespace CamelotEngine
 
 	RenderTexture::~RenderTexture()
 	{
+
+	}
+
+	void RenderTexture::destroy_internal()
+	{
 		if(mColorSurface != nullptr)
 			Texture::releaseView(mColorSurface);
 
 		if(mDepthStencilSurface != nullptr)
 			Texture::releaseView(mDepthStencilSurface);
+
+		RenderTarget::destroy_internal();
 	}
 
 	void RenderTexture::createInternalResources()

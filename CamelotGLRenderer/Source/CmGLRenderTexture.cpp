@@ -39,8 +39,15 @@ namespace CamelotEngine
 
 	GLRenderTexture::~GLRenderTexture()
 	{
+
+	}
+
+	void GLRenderTexture::destroy_internal()
+	{
 		if(mFB != nullptr)
 			delete mFB;
+
+		RenderTexture::destroy_internal();
 	}
 
 	void GLRenderTexture::createInternalResourcesImpl()

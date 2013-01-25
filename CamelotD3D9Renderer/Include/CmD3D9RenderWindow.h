@@ -49,7 +49,6 @@ namespace CamelotEngine
 		
 		void				initialize			(const RENDER_WINDOW_DESC& desc);
 		void				setFullscreen		(bool fullScreen, unsigned int width, unsigned int height);
-		void				destroy				(void);
 		bool				isActive			() const;
 		bool				isVisible			() const;
 		bool 				isClosed			() const { return mClosed; }
@@ -123,8 +122,9 @@ namespace CamelotEngine
 		unsigned int mDesiredWidth;
 		unsigned int mDesiredHeight;
 
-
 		void updateWindowRect();
+
+		void destroy_internal();
 	};
 }
 #endif

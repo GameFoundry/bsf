@@ -41,7 +41,6 @@ namespace CamelotEngine {
 
        void initialize(const RENDER_WINDOW_DESC& desc);
 	   void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
-        void destroy(void);
 		bool isActive(void) const;
         bool isVisible() const;
         bool isClosed(void) const;
@@ -82,6 +81,8 @@ namespace CamelotEngine {
 		bool	mClosed;
         int     mDisplayFrequency;      // fullscreen only, to restore display
         Win32Context *mContext;
+
+		void destroy_internal();
     };
 }
 

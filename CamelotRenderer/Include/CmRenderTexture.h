@@ -64,6 +64,11 @@ namespace CamelotEngine
 		void createInternalResources();
 		virtual void createInternalResourcesImpl() = 0;
 
+		/**
+		 * @copydoc RenderTarget::destroy_internal()
+		 */
+		virtual void destroy_internal();
+
 	private:
 		void throwIfBuffersDontMatch() const;
 

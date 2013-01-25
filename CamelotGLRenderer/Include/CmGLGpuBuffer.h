@@ -41,5 +41,7 @@ namespace CamelotEngine
 	protected:
 		virtual GpuBufferView* createView();
 		virtual void destroyView(GpuBufferView* view);
+
+		void destroy_internal();
 	};
 }

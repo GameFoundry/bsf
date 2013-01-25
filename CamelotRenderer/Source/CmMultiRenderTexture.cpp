@@ -9,6 +9,16 @@ namespace CamelotEngine
 		mColorSurfaces.resize(CM_MAX_MULTIPLE_RENDER_TARGETS);
 	}
 
+	MultiRenderTexture::~MultiRenderTexture()
+	{
+
+	}
+
+	void MultiRenderTexture::destroy_internal()
+	{
+		RenderTarget::destroy_internal();
+	}
+
 	void MultiRenderTexture::setColorSurface(UINT32 surfaceIdx, TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
 	{
 		if(surfaceIdx < 0 || surfaceIdx >= CM_MAX_MULTIPLE_RENDER_TARGETS)

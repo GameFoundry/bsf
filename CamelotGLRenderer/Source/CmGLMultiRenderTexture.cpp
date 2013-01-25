@@ -11,8 +11,15 @@ namespace CamelotEngine
 
 	GLMultiRenderTexture::~GLMultiRenderTexture()
 	{
+
+	}
+
+	void GLMultiRenderTexture::destroy_internal()
+	{
 		if(mFB != nullptr)
 			delete mFB;
+
+		MultiRenderTexture::destroy_internal();
 	}
 
 	void GLMultiRenderTexture::setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)

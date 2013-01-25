@@ -1,5 +1,6 @@
 #include "CmGpuBuffer.h"
 #include "CmException.h"
+#include "CmRenderSystem.h"
 
 namespace CamelotEngine
 {
@@ -12,6 +13,18 @@ namespace CamelotEngine
 	{
 		// Make sure that derived classes call clearBufferViews
 		// I can't call it here since it needs a virtual method call
+	}
+
+	void GpuBuffer::destroy()
+	{
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&GpuBuffer::destroy_internal, this));
+	}
+
+	void GpuBuffer::destroy_internal()
+	{
+		clearBufferViews();
+
+		IDestroyable::destroy();
 	}
 
 	void GpuBuffer::clearBufferViews()

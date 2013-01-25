@@ -29,8 +29,8 @@ THE SOFTWARE.
 #include "CmRenderWindowManager.h"
 #include "CmViewport.h"
 
-namespace CamelotEngine {
-
+namespace CamelotEngine 
+{
     RenderWindow::RenderWindow()
         : RenderTarget()
 		, mIsPrimary(false)
@@ -38,6 +38,16 @@ namespace CamelotEngine {
     {
         mAutoDeactivatedOnFocusChange = true;
     }
+
+	RenderWindow::~RenderWindow() 
+	{
+
+	}
+
+	void RenderWindow::destroy_internal()
+	{
+		RenderTarget::destroy_internal();
+	}
 
     //-----------------------------------------------------------------------
     void RenderWindow::getMetrics(unsigned int& width, unsigned int& height, unsigned int& colourDepth,

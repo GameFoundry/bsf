@@ -38,11 +38,12 @@ Stuff that needs destroy():
  - Mesh - (DONE)
  - VertexBuffer (DONE)
  - IndexBuffer (DONE)
- - GpuBuffer
+ - GpuBuffer (DONE)
  - VertexDeclaration (DONE)
- - RenderWindow
+ - RenderWindow (DONE)
+ - RenderTexture (DONE)
+ - MultiRenderTexture (DONE)
  - Blend/DepthStencil/Rasterizer/SamplerState
- - GpuParamBlock
 ---
  Maybe
   - Material
@@ -54,6 +55,9 @@ I am currently completely ignoring D3D9ResourceManager. It is not notified when 
 so it's mResources array contains many invalid pointers. Normally resource was removed from that list whenever it was 
 destructed but with my current approach, that might be AFTER the render system is shut down, which doesn't work. I need to 
 figure out a better way of releasing all resources when the application shuts down so that this doesn't happen.
+ - Also DynManager never gets shut down because I'd have to free all objects that use dynamic lib classes before shutting it down
+ - MAYBE, rename IDestroyable to GpuResource and just have every GPU resource derive from that.
+   - interface provides destroy(), and also keeps track of all created resources?
 
 Plan today & saturday:
  Add destroy() for remaining classes

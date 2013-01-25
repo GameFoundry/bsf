@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "CmString.h"
 #include "CmPixelUtil.h"
 #include "CmViewport.h"
+#include "CmIDestroyable.h"
 
 /* Define the number of priority groups for the render system's render targets. */
 #ifndef CM_NUM_RENDERTARGET_GROUPS
@@ -60,7 +61,7 @@ namespace CamelotEngine
         @version
             1.0
      */
-    class CM_EXPORT RenderTarget
+    class CM_EXPORT RenderTarget : public IDestroyable
     {
     public:
 		enum FrameBuffer
@@ -231,6 +232,14 @@ namespace CamelotEngine
 		*/
 		virtual void _endUpdate();
 
+		/**
+		 * @copydoc	IDestroyable::destroy()
+		 * 			
+		 * 	@note	Destruction is not done immediately, and is instead just scheduled on the
+		 * 			render thread. Unless called from render thread in which case it is executed right away.
+		 */
+		void destroy();
+
     protected:
         /// The name of this target.
         String mName;
@@ -248,8 +257,10 @@ namespace CamelotEngine
 		UINT32 mFSAA;
 		String mFSAAHint;
 			
-		/// Internal implementation of update()
-		virtual void updateImpl();
+		/**
+		 * @brief	Destroys all texture resources, but doesn't actually delete the object.
+		 */
+		virtual void destroy_internal();
     };
 	/** @} */
 	/** @} */

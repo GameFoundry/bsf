@@ -45,6 +45,16 @@ namespace CamelotEngine {
     {
     }
 
+	void RenderTarget::destroy()
+	{
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&RenderTarget::destroy_internal, this));
+	}
+
+	void RenderTarget::destroy_internal()
+	{
+		IDestroyable::destroy();
+	}
+
     const String& RenderTarget::getName(void) const
     {
         return mName;
@@ -71,11 +81,6 @@ namespace CamelotEngine {
         return mColorDepth;
     }
 
-    void RenderTarget::updateImpl(void)
-    {
-		_beginUpdate();
-		_endUpdate();
-    }
 
 	void RenderTarget::_beginUpdate()
 	{
@@ -108,10 +113,6 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     void RenderTarget::update(bool swap)
     {
-        // call implementation
-        updateImpl();
-
-
 		if (swap)
 		{
 			// Swap buffers

@@ -34,11 +34,7 @@ namespace CamelotEngine
 	}
 
 	D3D11GpuBuffer::~D3D11GpuBuffer()
-	{
-		delete mBuffer;
-
-		clearBufferViews();
-	}
+	{ }
 
 	void* D3D11GpuBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
 	{
@@ -82,5 +78,12 @@ namespace CamelotEngine
 	{
 		if(view != nullptr)
 			delete view;
+	}
+
+	void D3D11GpuBuffer::destroy_internal()
+	{
+		delete mBuffer;
+
+		GpuBuffer::destroy_internal();
 	}
 }

@@ -60,7 +60,48 @@ namespace CamelotEngine {
 
 	Win32Window::~Win32Window()
 	{
-		destroy();
+
+	}
+
+	void Win32Window::destroy_internal()
+	{
+		if (!mHWnd)
+			return;
+
+		// Unregister and destroy OGRE GLContext
+		delete mContext;
+
+		if (!mIsExternalGLContext && mGlrc)
+		{
+			wglDeleteContext(mGlrc);
+			mGlrc = 0;
+		}
+		if (!mIsExternal)
+		{
+			WindowEventUtilities::_removeRenderWindow(this);
+
+			if (mIsFullScreen)
+				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
+			DestroyWindow(mHWnd);
+		}
+		else
+		{
+			// just release the DC
+			ReleaseDC(mHWnd, mHDC);
+		}
+
+		mActive = false;
+		mClosed = true;
+		mHDC = 0; // no release thanks to CS_OWNDC wndclass style
+		mHWnd = 0;
+
+		if (mDeviceName != NULL)
+		{
+			delete[] mDeviceName;
+			mDeviceName = NULL;
+		}
+
+		RenderWindow::destroy_internal();
 	}
 
 	void Win32Window::initialize(const RENDER_WINDOW_DESC& desc)
@@ -523,47 +564,6 @@ namespace CamelotEngine {
 			}
 		}
 	}
-
-	void Win32Window::destroy(void)
-	{
-		if (!mHWnd)
-			return;
-
-		// Unregister and destroy OGRE GLContext
-		delete mContext;
-
-		if (!mIsExternalGLContext && mGlrc)
-		{
-			wglDeleteContext(mGlrc);
-			mGlrc = 0;
-		}
-		if (!mIsExternal)
-		{
-			WindowEventUtilities::_removeRenderWindow(this);
-
-			if (mIsFullScreen)
-				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
-			DestroyWindow(mHWnd);
-		}
-		else
-		{
-			// just release the DC
-			ReleaseDC(mHWnd, mHDC);
-		}
-
-		mActive = false;
-		mClosed = true;
-		mHDC = 0; // no release thanks to CS_OWNDC wndclass style
-		mHWnd = 0;
-
-		if (mDeviceName != NULL)
-		{
-			delete[] mDeviceName;
-			mDeviceName = NULL;
-		}
-		
-	}
-
 
 	bool Win32Window::isActive(void) const
 	{

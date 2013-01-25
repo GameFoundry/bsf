@@ -139,7 +139,8 @@ namespace CamelotEngine
 		RenderSystem::shutDown();
 
 		HighLevelGpuProgramManager::shutDown();
-		//DynLibManager::shutDown();
+		//DynLibManager::shutDown(); // TODO - I never shut this down, because then I'd have to ensure I classes loaded from dynamic libraries
+		// are destroyed before shutting it down, which is too hard to ensure at the moment
 		Resources::shutDown();
 		Input::shutDown();
 		Time::shutDown();

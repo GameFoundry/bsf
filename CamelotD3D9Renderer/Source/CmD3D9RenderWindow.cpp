@@ -52,8 +52,27 @@ namespace CamelotEngine
 	}
 
 	D3D9RenderWindow::~D3D9RenderWindow()
+	{ }
+
+	void D3D9RenderWindow::destroy_internal()
 	{
-		destroy();
+		if (mDevice != NULL)
+		{
+			mDevice->detachRenderWindow(this);
+			mDevice = NULL;
+		}
+
+		if (mHWnd && !mIsExternal)
+		{
+			WindowEventUtilities::_removeRenderWindow(this);
+			DestroyWindow(mHWnd);
+		}
+
+		mHWnd = 0;
+		mActive = false;
+		mClosed = true;
+
+		RenderWindow::destroy_internal();
 	}
 
 	void D3D9RenderWindow::initialize(const RENDER_WINDOW_DESC& desc)
@@ -541,25 +560,6 @@ namespace CamelotEngine
 			*/
 
 		}
-	}
-	
-	void D3D9RenderWindow::destroy()
-	{
-		if (mDevice != NULL)
-		{
-			mDevice->detachRenderWindow(this);
-			mDevice = NULL;
-		}
-		
-		if (mHWnd && !mIsExternal)
-		{
-			WindowEventUtilities::_removeRenderWindow(this);
-			DestroyWindow(mHWnd);
-		}
-
-		mHWnd = 0;
-		mActive = false;
-		mClosed = true;
 	}
 
 	bool D3D9RenderWindow::isActive() const

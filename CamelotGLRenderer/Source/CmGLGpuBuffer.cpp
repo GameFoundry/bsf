@@ -11,7 +11,6 @@ namespace CamelotEngine
 
 	GLGpuBuffer::~GLGpuBuffer()
 	{
-		clearBufferViews();
 	}
 
 	void* GLGpuBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
@@ -43,5 +42,10 @@ namespace CamelotEngine
 
 	void GLGpuBuffer::destroyView(GpuBufferView* view)
 	{
+	}
+
+	void GLGpuBuffer::destroy_internal()
+	{
+		GpuBuffer::destroy_internal();
 	}
 }

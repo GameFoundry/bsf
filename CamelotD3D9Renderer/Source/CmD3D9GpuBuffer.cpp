@@ -10,9 +10,7 @@ namespace CamelotEngine
 	}
 
 	D3D9GpuBuffer::~D3D9GpuBuffer()
-	{
-		clearBufferViews();
-	}
+	{ }
 
 	void* D3D9GpuBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
 	{
@@ -43,5 +41,10 @@ namespace CamelotEngine
 
 	void D3D9GpuBuffer::destroyView(GpuBufferView* view)
 	{
+	}
+
+	void D3D9GpuBuffer::destroy_internal()
+	{
+		GpuBuffer::destroy_internal();
 	}
 }

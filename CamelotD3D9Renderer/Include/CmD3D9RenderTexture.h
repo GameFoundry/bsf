@@ -23,5 +23,6 @@ namespace CamelotEngine
 		IDirect3DSurface9* mDX9DepthStencilSurface;
 
 		void createInternalResourcesImpl();
+		void destroy_internal();
 	};
 }
