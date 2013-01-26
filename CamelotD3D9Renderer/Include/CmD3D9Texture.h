@@ -134,9 +134,14 @@ namespace CamelotEngine {
 
 		D3D9Texture();
 
-		/// overriden from Resource
+		/**
+		 * @copydoc Resource::initialize_internal()
+		 */
 		void initialize_internal();	
-
+		
+		/**
+		 * @copydoc Resource::destroy_internal()
+		 */
 		void destroy_internal();
 
 		/// overridden from Texture

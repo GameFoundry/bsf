@@ -99,10 +99,6 @@ namespace CamelotEngine
 		if(opt != desc.platformSpecific.end())
 			externalHandle = (HWND)parseUnsignedInt(opt->second);
 
-		// Destroy current window if any
-		if(mHWnd)
-			destroy();
-
 		if (!externalHandle)
 		{
 			DWORD		dwStyle = WS_VISIBLE | WS_CLIPCHILDREN;

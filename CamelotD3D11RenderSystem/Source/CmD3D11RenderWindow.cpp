@@ -89,10 +89,6 @@ namespace CamelotEngine
 		mActive = true;
 		mClosed = false;
 
-		// Destroy current window if any
-		if(mHWnd)
-			destroy();
-
 		if (!externalHandle)
 		{
 			DWORD dwStyle = (mHidden ? 0 : WS_VISIBLE) | WS_CLIPCHILDREN;

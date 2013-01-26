@@ -319,7 +319,7 @@ namespace CamelotEngine
 		if(mIndexData)
 			delete mIndexData;
 
-		IDestroyable::destroy();
+		CoreGpuObject::destroy_internal();
 	}
 
 	void Mesh::throwIfNotRenderThread() const

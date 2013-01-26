@@ -280,7 +280,7 @@ void GLXProc( RenderWindow *win, const XEvent &event )
 
             for(index = start ; index != end; ++index)
                 (index->second)->windowClosed(win);
-			win->destroy();
+
 		}
 		break;
 	}
@@ -291,7 +291,7 @@ void GLXProc( RenderWindow *win, const XEvent &event )
 			// Window closed without window manager warning.
             for(index = start ; index != end; ++index)
                 (index->second)->windowClosed(win);
-			win->destroy();
+
 		}
 		break;
 	}
@@ -434,7 +434,7 @@ OSStatus WindowEventUtilities::_CarbonWindowHandler(EventHandlerCallRef nextHand
 			break;
 		}
         case kEventWindowClosed:
-            curWindow->destroy();
+
             for( ; start != end; ++start )
 				(start->second)->windowClosed(curWindow);
             break;

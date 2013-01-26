@@ -26,9 +26,9 @@ namespace CamelotEngine
 		CM_THREAD_NOTIFY_ALL(mResourceLoadedCondition);
 	}
 
-	void Resource::destroy()
+	void Resource::destroy_internal()
 	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&Resource::destroy_internal, this));
+		CoreGpuObject::destroy_internal();
 	}
 
 	void Resource::waitUntilInitialized()

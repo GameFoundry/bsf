@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmColor.h"
-#include "CmIDestroyable.h"
+#include "CmCoreGpuObject.h"
 
 namespace CamelotEngine
 {
@@ -242,24 +242,14 @@ namespace CamelotEngine
 	Like the other classes in this functional area, these declarations should be created and
 	destroyed using the HardwareBufferManager.
     */
-	class CM_EXPORT VertexDeclaration : public IReflectable, public IDestroyable
+	class CM_EXPORT VertexDeclaration : public IReflectable, public CoreGpuObject
     {
     public:
 		/// Defines the list of vertex elements that makes up this declaration
         typedef list<VertexElement>::type VertexElementList;
         /// Sort routine for vertex elements
         static bool vertexElementLess(const VertexElement& e1, const VertexElement& e2);
-    protected:
-        VertexElementList mElementList;
-		size_t mHash;
 
-		/**
-		 * @brief	Generates a hash value based on all elements in the declaration.
-		 */
-		void recalculateHash();
-
-		virtual void destroy_internal();
-    public:
         /// Standard constructor, not you should use HardwareBufferManager::createVertexDeclaration
         VertexDeclaration();
         virtual ~VertexDeclaration();
@@ -383,8 +373,6 @@ namespace CamelotEngine
 		*/
         virtual VertexDeclarationPtr clone(HardwareBufferManager* mgr = 0);
 
-		void destroy();
-
         inline bool operator== (const VertexDeclaration& rhs) const
         {
             if (mElementList.size() != rhs.mElementList.size())
@@ -406,6 +394,20 @@ namespace CamelotEngine
         {
             return !(*this == rhs);
         }
+
+    protected:
+        VertexElementList mElementList;
+		size_t mHash;
+
+		/**
+		 * @brief	Generates a hash value based on all elements in the declaration.
+		 */
+		void recalculateHash();
+
+		/**
+		 * @copydoc CoreGpuObject::destroy_internal()
+		 */
+		virtual void destroy_internal();
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

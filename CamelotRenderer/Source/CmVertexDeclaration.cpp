@@ -462,14 +462,9 @@ namespace CamelotEngine
 		return ret;
 	}
 
-	void VertexDeclaration::destroy()
-	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&VertexDeclaration::destroy_internal, this));
-	}
-
 	void VertexDeclaration::destroy_internal()
 	{
-		IDestroyable::destroy();
+		CoreGpuObject::destroy_internal();
 	}
 
 	//----------------------------------------------------------------------------

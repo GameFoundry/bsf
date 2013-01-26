@@ -15,16 +15,11 @@ namespace CamelotEngine
 		// I can't call it here since it needs a virtual method call
 	}
 
-	void GpuBuffer::destroy()
-	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&GpuBuffer::destroy_internal, this));
-	}
-
 	void GpuBuffer::destroy_internal()
 	{
 		clearBufferViews();
 
-		IDestroyable::destroy();
+		CoreGpuObject::destroy_internal();
 	}
 
 	void GpuBuffer::clearBufferViews()

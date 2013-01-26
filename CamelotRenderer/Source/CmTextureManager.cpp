@@ -41,22 +41,12 @@ namespace CamelotEngine {
     {
         // subclasses should unregister with resource group manager
     }
-	//-----------------------------------------------------------------------
-	void TextureManager::destroy(Texture* texture)
-	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&TextureManager::destroy_internal, this, texture));
-	}
-	//-----------------------------------------------------------------------
-	void TextureManager::destroy_internal(Texture* texture)
-	{
-		delete texture;
-	}
     //-----------------------------------------------------------------------
     TexturePtr TextureManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
         PixelFormat format, int usage, bool hwGamma, 
 		UINT32 fsaa, const String& fsaaHint)
     {
-        TexturePtr ret = TexturePtr(createTextureImpl(), boost::bind(&TextureManager::destroy, this, _1));
+        TexturePtr ret = TexturePtr(createTextureImpl());
 		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, fsaa, fsaaHint);
 
 		return ret;
@@ -64,7 +54,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	TexturePtr TextureManager::createEmpty()
 	{
-		TexturePtr ret = TexturePtr(createTextureImpl(), boost::bind(&TextureManager::destroy, this, _1));
+		TexturePtr ret = TexturePtr(createTextureImpl());
 
 		return ret;
 	}

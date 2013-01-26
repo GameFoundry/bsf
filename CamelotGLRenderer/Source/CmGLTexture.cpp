@@ -207,7 +207,7 @@ namespace CamelotEngine {
 
 		clearBufferViews();
 
-		IDestroyable::destroy();
+		CoreGpuObject::destroy_internal();
 	}
 
     GLenum GLTexture::getGLTextureTarget(void) const

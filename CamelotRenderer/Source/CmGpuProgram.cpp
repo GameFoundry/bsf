@@ -70,8 +70,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------------
 	void GpuProgram::destroy_internal()
 	{
-		// Nothing to destroy
-		IDestroyable::destroy();
+		CoreGpuObject::destroy_internal();
 	}
     //-----------------------------------------------------------------------------
     bool GpuProgram::isSupported(void) const

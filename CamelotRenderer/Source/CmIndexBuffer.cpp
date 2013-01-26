@@ -59,17 +59,12 @@ namespace CamelotEngine {
 
     }
 	//----------------------------------------------------------------------------
-	void IndexBuffer::destroy()
-	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&IndexBuffer::destroy_internal, this));
-	}
-	//----------------------------------------------------------------------------
 	void IndexBuffer::destroy_internal()
 	{
 		if (mMgr)
 			mMgr->_notifyIndexBufferDestroyed(this);
 
-		IDestroyable::destroy();
+		CoreGpuObject::destroy_internal();
 	}
 }
 

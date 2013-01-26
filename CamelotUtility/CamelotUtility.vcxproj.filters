@@ -207,9 +207,6 @@
     <ClInclude Include="Include\CmUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmIDestroyable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp">
@@ -303,9 +300,6 @@
       <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmPixelData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmIDestroyable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

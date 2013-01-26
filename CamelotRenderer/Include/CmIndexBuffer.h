@@ -31,7 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "CmIDestroyable.h"
+#include "CmCoreGpuObject.h"
 
 namespace CamelotEngine 
 {
@@ -42,39 +42,37 @@ namespace CamelotEngine
 	*  @{
 	*/
 	/** Specialisation of HardwareBuffer for vertex index buffers, still abstract. */
-    class CM_EXPORT IndexBuffer : public HardwareBuffer, public IDestroyable
+    class CM_EXPORT IndexBuffer : public HardwareBuffer, public CoreGpuObject
     {
-	    public:
-		    enum IndexType {
-			    IT_16BIT,
-			    IT_32BIT
-		    };
+	public:
+		enum IndexType {
+			IT_16BIT,
+			IT_32BIT
+		};
 
-	    protected:
-			HardwareBufferManager* mMgr;
-		    IndexType mIndexType;
-		    UINT32 mNumIndexes;
-            UINT32 mIndexSize;
+		/// Should be called by HardwareBufferManager
+		IndexBuffer(HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage,
+			bool useSystemMemory);
+		~IndexBuffer();
+		/// Return the manager of this buffer, if any
+		HardwareBufferManager* getManager() const { return mMgr; }
+		/// Get the type of indexes used in this buffer
+		IndexType getType(void) const { return mIndexType; }
+		/// Get the number of indexes in this buffer
+		UINT32 getNumIndexes(void) const { return mNumIndexes; }
+		/// Get the size in bytes of each index
+		UINT32 getIndexSize(void) const { return mIndexSize; }
 
-			virtual void destroy_internal();
+	protected:
+		HardwareBufferManager* mMgr;
+		IndexType mIndexType;
+		UINT32 mNumIndexes;
+		UINT32 mIndexSize;
 
-	    public:
-		    /// Should be called by HardwareBufferManager
-		    IndexBuffer(HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage,
-                bool useSystemMemory);
-            ~IndexBuffer();
-			/// Return the manager of this buffer, if any
-			HardwareBufferManager* getManager() const { return mMgr; }
-    		/// Get the type of indexes used in this buffer
-            IndexType getType(void) const { return mIndexType; }
-            /// Get the number of indexes in this buffer
-            UINT32 getNumIndexes(void) const { return mNumIndexes; }
-            /// Get the size in bytes of each index
-            UINT32 getIndexSize(void) const { return mIndexSize; }
-
-			void destroy();
-
-		    // NB subclasses should override lock, unlock, readData, writeData
+		/**
+		* @copydoc CoreGpuObject::destroy_internal()
+		*/
+		virtual void destroy_internal();
     };
 	/** @} */
 }

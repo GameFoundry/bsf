@@ -240,7 +240,7 @@ namespace CamelotEngine
 		
 		clearBufferViews();
 
-		IDestroyable::destroy();
+		CoreGpuObject::destroy_internal();
 	}
 	/****************************************************************************************/
 	D3D9Texture::TextureResources* D3D9Texture::getTextureResources(IDirect3DDevice9* d3d9Device)

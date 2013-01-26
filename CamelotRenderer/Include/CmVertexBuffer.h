@@ -31,7 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "CmIDestroyable.h"
+#include "CmCoreGpuObject.h"
 #include "CmColor.h"
 
 namespace CamelotEngine 
@@ -43,15 +43,13 @@ namespace CamelotEngine
 	*  @{
 	*/
 	/** Specialisation of HardwareBuffer for a vertex buffer. */
-    class CM_EXPORT VertexBuffer : public HardwareBuffer, public IDestroyable
+    class CM_EXPORT VertexBuffer : public HardwareBuffer, public CoreGpuObject
     {
 	public:
 		/// Should be called by HardwareBufferManager
 		VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices,
             GpuBufferUsage usage, bool useSystemMemory);
         ~VertexBuffer();
-
-		void destroy();
 
 		/// Return the manager of this buffer, if any
 		HardwareBufferManager* getManager() const { return mMgr; }
@@ -64,6 +62,9 @@ namespace CamelotEngine
 		UINT32 mNumVertices;
 		UINT32 mVertexSize;
 
+		/**
+		 * @copydoc CoreGpuObject::destroy_internal()
+		 */
 		virtual void destroy_internal();
     };
 }

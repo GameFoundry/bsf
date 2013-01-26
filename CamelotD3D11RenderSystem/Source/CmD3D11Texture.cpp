@@ -126,7 +126,7 @@ namespace CamelotEngine
 
 		clearBufferViews();
 
-		IDestroyable::destroy();
+		CoreGpuObject::destroy_internal();
 	}
 
 	void D3D11Texture::_create1DTex()

@@ -61,9 +61,6 @@ namespace CamelotEngine {
 		virtual Texture* createTextureImpl() = 0;
 		virtual RenderTexture* createRenderTextureImpl() = 0;
 
-		void destroy(Texture* texture);
-		virtual void destroy_internal(Texture* texture);
-
     public:
 
         TextureManager(void);

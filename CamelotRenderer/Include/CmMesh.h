@@ -55,7 +55,9 @@ namespace CamelotEngine
 		virtual void initialize_internal();
 		void throwIfNotRenderThread() const;
 
-		/** @copydoc Resource::destroy_internal(). */
+		/**
+		 * @copydoc Resource::destroy_internal()
+		 */
 		virtual void destroy_internal();
 
 		/************************************************************************/

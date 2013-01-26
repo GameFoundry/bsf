@@ -67,7 +67,14 @@ namespace CamelotEngine {
 		// Constructor
 		GLTexture(GLSupport& support);
 
+		/**
+		 * @copydoc Texture::initialize_internal()
+		 */
 		void initialize_internal();
+
+		/**
+		 * @copydoc Texture::destroy_internal()
+		 */
 		void destroy_internal();
 
 		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face);

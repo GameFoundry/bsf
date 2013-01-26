@@ -45,21 +45,15 @@ namespace CamelotEngine {
     {
     }
 
-	void RenderTarget::destroy()
-	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&RenderTarget::destroy_internal, this));
-	}
-
 	void RenderTarget::destroy_internal()
 	{
-		IDestroyable::destroy();
+		CoreGpuObject::destroy_internal();
 	}
 
     const String& RenderTarget::getName(void) const
     {
         return mName;
     }
-
 
     void RenderTarget::getMetrics(unsigned int& width, unsigned int& height, unsigned int& colourDepth)
     {

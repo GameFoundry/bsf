@@ -81,7 +81,7 @@ namespace CamelotEngine {
 	void GLSLGpuProgram::destroy_internal()
 	{
 		// Nothing to destroy
-		GpuProgram::destroy();
+		GpuProgram::destroy_internal();
 	}
 }
 

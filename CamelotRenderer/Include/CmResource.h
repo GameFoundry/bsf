@@ -2,14 +2,14 @@
 
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
-#include "CmIDestroyable.h"
+#include "CmCoreGpuObject.h"
 
 namespace CamelotEngine
 {
 	/**
 	 * @brief	Base class for all resources used in the engine.
 	 */
-	class CM_EXPORT Resource : public IReflectable, public IDestroyable
+	class CM_EXPORT Resource : public IReflectable, public CoreGpuObject
 	{
 	public:
 		Resource();
@@ -28,14 +28,6 @@ namespace CamelotEngine
 		 */
 		void waitUntilInitialized();
 
-		/**
-		 * @copydoc	IDestroyable::destroy()
-		 * 			
-		 * 	@note	Destruction is not done immediately, and is instead just scheduled on the
-		 * 			render thread. Unless called from render thread in which case it is executed right away.
-		 */
-		void destroy();
-
 	protected:
 		friend class Resources;
 		
@@ -47,9 +39,9 @@ namespace CamelotEngine
 		virtual void initialize_internal();
 
 		/**
-		 * @brief	Destroys all texture resources, but doesn't actually delete the object.
+		 * @copydoc CoreGpuObject::destroy_internal()
 		 */
-		virtual void destroy_internal() {} // TODO - This is temporarily non-abstract
+		virtual void destroy_internal();
 
 		/**
 		 * @brief	Marks the resource as initialized.

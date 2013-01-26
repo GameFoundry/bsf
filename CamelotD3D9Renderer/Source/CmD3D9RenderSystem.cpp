@@ -244,7 +244,6 @@ namespace CamelotEngine
 		{
 			// after catching the exception, clean up
 			mResourceManager->unlockDeviceAccess();
-			renderWindow->destroy();
 
 			// re-throw
 			throw;

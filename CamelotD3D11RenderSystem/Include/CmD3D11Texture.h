@@ -69,12 +69,12 @@ namespace CamelotEngine
 		void _unmapstaticbuffer();
 
 		/**
-		 * @brief	Resource::initialize_internal
+		 * @copydoc	Resource::initialize_internal()
 		 */
 		void initialize_internal();
 
 		/**
-		 * @brief	Resource::destroy_internal
+		 * @copydoc Resource::destroy_internal()
 		 */
 		void destroy_internal();
 

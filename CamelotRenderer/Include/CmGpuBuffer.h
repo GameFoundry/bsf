@@ -3,11 +3,11 @@
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
 #include "CmGpuBufferView.h"
-#include "CmIDestroyable.h"
+#include "CmCoreGpuObject.h"
 
 namespace CamelotEngine 
 {
-	class CM_EXPORT GpuBuffer : public IDestroyable
+	class CM_EXPORT GpuBuffer : public CoreGpuObject
     {
     public:
         GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
@@ -32,14 +32,6 @@ namespace CamelotEngine
 		UINT32 getElementCount() const { return mElementCount; }
 		UINT32 getElementSize() const { return mElementSize; }
 
-		/**
-		 * @copydoc	IDestroyable::destroy()
-		 * 			
-		 * 	@note	Destruction is not done immediately, and is instead just scheduled on the
-		 * 			render thread. Unless called from render thread in which case it is executed right away.
-		 */
-		void destroy();
-
 	protected:
 		GpuBufferType mType;
 		GpuBufferUsage mUsage;
@@ -52,6 +44,9 @@ namespace CamelotEngine
 		virtual void destroyView(GpuBufferView* view) = 0;
 		void clearBufferViews();
 
+		/**
+		 * @copydoc CoreGpuObject::destroy_internal()
+		 */
 		virtual void destroy_internal();
 
 		struct GpuBufferReference

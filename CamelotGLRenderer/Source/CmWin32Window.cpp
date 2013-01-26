@@ -106,10 +106,6 @@ namespace CamelotEngine {
 
 	void Win32Window::initialize(const RENDER_WINDOW_DESC& desc)
 	{
-		// destroy current window, if any
-		if (mHWnd)
-			destroy();
-
 #ifdef CM_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle( NULL );
 #else
