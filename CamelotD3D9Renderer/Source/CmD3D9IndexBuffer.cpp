@@ -341,8 +341,6 @@ namespace CamelotEngine {
 		mMapDeviceToBufferResources.clear();   
 		SAFE_DELETE_ARRAY(mSystemMemoryBuffer);
 
-		D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
-
 		IndexBuffer::destroy_internal();
 	}
 }

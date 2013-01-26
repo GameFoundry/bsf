@@ -189,8 +189,6 @@ namespace CamelotEngine {
 	{
 		releaseDeclaration();
 
-		D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
-
 		VertexDeclaration::destroy_internal();
 	}
 }

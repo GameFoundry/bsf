@@ -68,6 +68,7 @@ Plan today & saturday:
   - Make Resources::destroy() private
   - Have Resources::unload which calls destroy() internally
   - Have Resources::unloadUnused() which unloads all with reference count of 1
+  - Don't store heavyweight GUID in each ResourceHandle
 
 
 

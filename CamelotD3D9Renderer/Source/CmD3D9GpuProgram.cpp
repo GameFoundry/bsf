@@ -292,8 +292,6 @@ namespace CamelotEngine {
 		}
 		mMapDeviceToPixelShader.clear();	
 
-		D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
-
 		D3D9GpuProgram::destroy_internal();
     }
 	//-----------------------------------------------------------------------------

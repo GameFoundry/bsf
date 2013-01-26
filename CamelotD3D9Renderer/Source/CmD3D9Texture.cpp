@@ -240,8 +240,6 @@ namespace CamelotEngine
 		
 		clearBufferViews();
 
-		D3D9RenderSystem::getResourceManager()->_notifyResourceDestroyed(static_cast<D3D9Resource*>(this));
-
 		IDestroyable::destroy();
 	}
 	/****************************************************************************************/
