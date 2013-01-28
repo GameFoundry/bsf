@@ -494,7 +494,7 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return std::shared_ptr<Material>(new Material());
+			return Material::create();
 		}
 	};
 }

@@ -31,13 +31,6 @@ namespace CamelotEngine
 	class CM_EXPORT Material : public Resource
 	{
 	public:
-		Material();
-
-		/**
-		 * @brief	Overridden from Resource.
-		 */
-		virtual void initialize_internal();
-
 		/**
 		 * @brief	Sets a shader that will be used by the material. 
 		 * 			Shaders best technique will be retrieved and used in all subsequent Material
@@ -68,6 +61,7 @@ namespace CamelotEngine
 
 		PassParametersPtr getPassParameters(UINT32 passIdx) const;
 
+		static MaterialPtr create();
 	private:
 		ShaderPtr mShader;
 		TechniquePtr mBestTechnique;
@@ -87,6 +81,8 @@ namespace CamelotEngine
 		map<String, vector<Matrix4>::type>::type mMat4Values;
 		map<String, TextureHandle>::type mTextureValues;
 		map<String, SamplerStateHandle>::type mSamplerValues;
+
+		Material();
 
 		void throwIfNotInitialized() const;
 

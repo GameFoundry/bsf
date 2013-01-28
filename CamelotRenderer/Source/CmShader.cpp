@@ -12,9 +12,6 @@ namespace CamelotEngine
 
 	}
 
-	void Shader::initialize_internal()
-	{	}
-
 	TechniquePtr Shader::addTechnique(const String& renderSystem, const String& renderer)
 	{
 		TechniquePtr technique = TechniquePtr(new Technique(renderSystem, renderer));
@@ -201,6 +198,15 @@ namespace CamelotEngine
 		}
 
 		return false;
+	}
+
+	ShaderPtr Shader::create(const String& name)
+	{
+		ShaderPtr newShader(new Shader(name));
+		newShader->setThisPtr(newShader);
+		newShader->initialize();
+
+		return newShader;
 	}
 
 	RTTITypeBase* Shader::getRTTIStatic()

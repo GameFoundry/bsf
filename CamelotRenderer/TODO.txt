@@ -41,10 +41,10 @@ Stuff that needs to derive from CoreGpuObject:
  - GpuParamBlock
 ---
  Maybe
-  - Material
-  - Pass
-  - Shader
-  - Technique
+  - Material (DONE)
+  - Pass (NOT REQUIRED)
+  - Shader (DONE)
+  - Technique (NOT REQUIRED)
 
 Test if async loading still works
 

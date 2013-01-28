@@ -42,13 +42,6 @@ namespace CamelotEngine
 	class CM_EXPORT Shader : public Resource
 	{
 	public:
-		Shader(const String& name);
-
-		/**
-		 * @brief	Inherited from Resource.
-		 */
-		virtual void initialize_internal();
-
 		TechniquePtr addTechnique(const String& renderSystem, const String& renderer);
 		
 		void removeTechnique(UINT32 idx);
@@ -81,6 +74,8 @@ namespace CamelotEngine
 		static bool isSampler(GpuParamObjectType type);
 		static bool isTexture(GpuParamObjectType type);
 		static bool isBuffer(GpuParamObjectType type);
+
+		static ShaderPtr create(const String& name);
 	private:
 		String mName;
 		vector<TechniquePtr>::type mTechniques;
@@ -89,15 +84,12 @@ namespace CamelotEngine
 		map<String, SHADER_OBJECT_PARAM_DESC>::type mObjectParams;
 		map<String, SHADER_PARAM_BLOCK_DESC>::type mParamBlocks;
 
+		Shader(const String& name);
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 		
-		/**
-		 * @brief	Serialization only
-		 */
-		Shader() {}
-
 	public:
 		friend class ShaderRTTI;
 		static RTTITypeBase* getRTTIStatic();

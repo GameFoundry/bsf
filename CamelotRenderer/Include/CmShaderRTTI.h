@@ -219,7 +219,7 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return std::shared_ptr<Shader>(new Shader());
+			return Shader::create("");
 		}
 	};
 }

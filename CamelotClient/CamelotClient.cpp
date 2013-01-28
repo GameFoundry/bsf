@@ -163,7 +163,7 @@ int CALLBACK WinMain(
 	gResources().create(fragProgRef, "C:\\fragProgCg.vprog", true);
 	fragProgRef = static_resource_cast<HighLevelGpuProgram>(gResources().load("C:\\fragProgCg.vprog"));
 
-	ShaderPtr testShader = ShaderPtr(new Shader("TestShader"));
+	ShaderPtr testShader = Shader::create("TestShader");
 	testShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
 	testShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
 	testShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
@@ -186,13 +186,16 @@ int CALLBACK WinMain(
 	newPassDX11->setVertexProgram(vertProgRef);
 	newPassDX11->setFragmentProgram(fragProgRef);
 
-	MaterialHandle testMaterial = MaterialPtr(new Material());
+	MaterialHandle testMaterial = Material::create();
+	testMaterial.waitUntilLoaded(); // TODO - Material doesn't do anything GPU specific, so technically it should be possible to initialize on the spot
+	// but is that a good idea?
 	testMaterial->setShader(testShader);
 
 	testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
 
 	gResources().create(testMaterial, "C:\\testMaterial.mat", true);
 	testMaterial = static_resource_cast<MaterialHandle>(gResources().load("C:\\testMaterial.mat"));
+	testMaterial.waitUntilLoaded();
 
 	/*TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));*/
 	TextureHandle testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));

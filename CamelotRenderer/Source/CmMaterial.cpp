@@ -15,13 +15,7 @@ namespace CamelotEngine
 {
 	Material::Material()
 	{
-		// Material doesn't do anything render thread specific, so we can just initialize right away
-		initialize_internal();
-	}
 
-	void Material::initialize_internal()
-	{
-		Resource::initialize_internal();
 	}
 
 	void Material::setShader(ShaderPtr shader)
@@ -816,6 +810,15 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
 
 		return iterFind->second.at(arrayIdx);
+	}
+
+	MaterialPtr Material::create()
+	{
+		MaterialPtr newMat(new Material());
+		newMat->setThisPtr(newMat);
+		newMat->initialize();
+
+		return newMat;
 	}
 
 	RTTITypeBase* Material::getRTTIStatic()
