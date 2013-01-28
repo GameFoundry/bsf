@@ -17,7 +17,15 @@ namespace CamelotEngine
 
 		D3D11BlendState();
 
+		/**
+		 * @copydoc BlendState::initialize_internal().
+		 */
 		void initialize_internal();
+
+		/**
+		 * @copydoc BlendState::destroy_internal().
+		 */
+		void destroy_internal();
 
 		ID3D11BlendState* mBlendState;
 	};

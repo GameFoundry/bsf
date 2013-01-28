@@ -9,7 +9,7 @@ namespace CamelotEngine
 	{
 		mData = desc;
 
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&BlendState::initialize_internal, this));
+		CoreGpuObject::initialize();
 	}
 
 	const BlendStatePtr& BlendState::getDefault()

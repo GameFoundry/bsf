@@ -16,7 +16,15 @@ namespace CamelotEngine
 
 		D3D11SamplerState();
 
+		/**
+		 * @copydoc SamplerState::initialize_internal().
+		 */
 		void initialize_internal();
+
+		/**
+		 * @copydoc SamplerState::destroy_internal().
+		 */
+		void destroy_internal();
 
 		ID3D11SamplerState* mSamplerState;
 	};

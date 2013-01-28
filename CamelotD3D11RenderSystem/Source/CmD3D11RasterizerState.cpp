@@ -11,7 +11,6 @@ namespace CamelotEngine
 
 	D3D11RasterizerState::~D3D11RasterizerState()
 	{
-		SAFE_RELEASE(mRasterizerState);
 	}
 
 	void D3D11RasterizerState::initialize_internal()
@@ -40,5 +39,12 @@ namespace CamelotEngine
 		}
 
 		RasterizerState::initialize_internal();
+	}
+
+	void D3D11RasterizerState::destroy_internal()
+	{
+		SAFE_RELEASE(mRasterizerState);
+
+		RasterizerState::destroy_internal();
 	}
 }

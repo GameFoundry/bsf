@@ -10,7 +10,7 @@ namespace CamelotEngine
 	{
 		mData = desc;
 
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&SamplerState::initialize_internal, this));
+		CoreGpuObject::initialize();
 	}
 
 	const SamplerStatePtr& SamplerState::getDefault()

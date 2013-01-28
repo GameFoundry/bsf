@@ -11,7 +11,6 @@ namespace CamelotEngine
 
 	D3D11BlendState::~D3D11BlendState()
 	{
-		SAFE_RELEASE(mBlendState);
 	}
 
 	void D3D11BlendState::initialize_internal()
@@ -45,5 +44,12 @@ namespace CamelotEngine
 		}
 
 		BlendState::initialize_internal();
+	}
+
+	void D3D11BlendState::destroy_internal()
+	{
+		SAFE_RELEASE(mBlendState);
+
+		BlendState::destroy_internal();
 	}
 }

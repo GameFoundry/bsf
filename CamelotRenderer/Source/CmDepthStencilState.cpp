@@ -10,7 +10,7 @@ namespace CamelotEngine
 	{
 		mData = desc;
 
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&DepthStencilState::initialize_internal, this));
+		CoreGpuObject::initialize();
 	}
 
 	const DepthStencilStatePtr& DepthStencilState::getDefault()

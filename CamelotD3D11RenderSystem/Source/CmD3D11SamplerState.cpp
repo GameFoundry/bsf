@@ -11,7 +11,6 @@ namespace CamelotEngine
 
 	D3D11SamplerState::~D3D11SamplerState()
 	{
-		SAFE_RELEASE(mSamplerState);
 	}
 
 	void D3D11SamplerState::initialize_internal()
@@ -98,5 +97,12 @@ namespace CamelotEngine
 		}
 
 		SamplerState::initialize_internal();
+	}
+
+	void D3D11SamplerState::destroy_internal()
+	{
+		SAFE_RELEASE(mSamplerState);
+
+		SamplerState::destroy_internal();
 	}
 }

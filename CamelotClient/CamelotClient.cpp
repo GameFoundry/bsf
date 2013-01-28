@@ -239,6 +239,9 @@ int CALLBACK WinMain(
 	vertProgRef.reset();
 	vertProg = nullptr;
 
+	testModelGO->destroy();
+	testModelGO = nullptr;
+
 	newPassGL = nullptr;
 	newTechniqueGL = nullptr;
 

@@ -17,7 +17,15 @@ namespace CamelotEngine
 
 		D3D11DepthStencilState();
 
+		/**
+		 * @copydoc DepthStencilState::initialize_internal().
+		 */
 		void initialize_internal();
+
+		/**
+		 * @copydoc DepthStencilState::destroy_internal().
+		 */
+		void destroy_internal();
 
 		ID3D11DepthStencilState* mDepthStencilState;
 	};

@@ -11,7 +11,7 @@ namespace CamelotEngine
 
 	D3D11DepthStencilState::~D3D11DepthStencilState()
 	{
-		SAFE_RELEASE(mDepthStencilState);
+		
 	}
 
 	void D3D11DepthStencilState::initialize_internal()
@@ -45,5 +45,12 @@ namespace CamelotEngine
 		}
 
 		DepthStencilState::initialize_internal();
+	}
+
+	void D3D11DepthStencilState::destroy_internal()
+	{
+		SAFE_RELEASE(mDepthStencilState);
+
+		DepthStencilState::destroy_internal();
 	}
 }

@@ -17,17 +17,13 @@
 Pass
  - A way to bind buffers to a Pass, while specifying buffer range
  - GpuParams support for bools, buffers, structs
- - Fix MaterialRTTI saving (Save params per gpuprogram is simplest and cleanest) (Maybe wait until I have the Parser sorted out?)
- - Fix how and when is GpuParamBlock created/destroyed. Needs to happen on the render thread
 
-Resource destruction:
-Resources keep a permanent reference to each resource so they are never freed
- - Keep just a weak ptr?
-
-OR
-
-Keep a strong ptr, when Resource::destroy() internally calls Resources to remove the reference?
-And Resources.DestroyUnusedAssets destroys all with just 1 reference?
+ Null mesh VertexDeclaration never gets freed.
+  - Similar issue with all the four states and their defaults
+ Add MeshManager which creates a mesh and also creates and releases null mesh.
+Even if all resources are released I still get a crash on exit. Probably because I don't properly release all factories.
+ Test DX9 and DX11 versions, and see if everything is released properly.
+When rendering with renderable a lot of references don't get released so I need to check where are they kept
 
 Stuff that needs to derive from CoreGpuObject:
  - GpuProgram (DONE)
@@ -41,7 +37,7 @@ Stuff that needs to derive from CoreGpuObject:
  - RenderWindow (DONE)
  - RenderTexture (DONE)
  - MultiRenderTexture (DONE)
- - Blend/DepthStencil/Rasterizer/SamplerState
+ - Blend/DepthStencil/Rasterizer/SamplerState (DONE)
  - GpuParamBlock
 ---
  Maybe
@@ -59,8 +55,6 @@ RenderTextures and MultiRenderTextures will only work properly if used directly 
 OpenGL render window no longer looks for a monitor index
 
 CoreGpuObject and CoreGpuObjectManager
-  - Attempt to provide a debug version that tracks the callstack where resource was allocated, so user can know exactly which resource is he failing to release
- - Need to make sure I can release handles (ResourceHandle::reset()?)
  - make ::Destroy() virtual as Resources need to make it private
  
 ResourceHandle::reset removes ALL references to a resource. It's probably smarter if it just removes the one reference
@@ -98,6 +92,7 @@ Can be delayed:
   - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
   - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
  ImportOptions
+ Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  
 

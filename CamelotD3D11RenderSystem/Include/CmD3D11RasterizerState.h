@@ -16,7 +16,15 @@ namespace CamelotEngine
 
 		D3D11RasterizerState();
 
+		/**
+		 * @copydoc RasterizerState::initialize_internal().
+		 */
 		void initialize_internal();
+
+		/**
+		 * @copydoc RasterizerState::destroy_internal().
+		 */
+		void destroy_internal();
 
 		ID3D11RasterizerState* mRasterizerState;
 	};

@@ -23,7 +23,8 @@ namespace CamelotEngine
 	}
 
 	Mesh::~Mesh()
-	{ }
+	{
+	}
 
 	void Mesh::setMeshData(MeshDataPtr meshData)
 	{
@@ -38,6 +39,12 @@ namespace CamelotEngine
 		{
 			CM_EXCEPT(InternalErrorException, "Cannot load mesh. Mesh data is null.");
 		}
+
+		if(mVertexData != nullptr)
+			delete mVertexData;
+
+		if(mIndexData != nullptr)
+			delete mIndexData;
 
 		// Submeshes
 		for(UINT32 i = 0; i < meshData->subMeshes.size(); i++)

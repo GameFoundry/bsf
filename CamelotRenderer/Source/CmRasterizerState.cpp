@@ -9,7 +9,7 @@ namespace CamelotEngine
 	{
 		mData = desc;
 
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&RasterizerState::initialize_internal, this));
+		CoreGpuObject::initialize();
 	}
 
 	const RasterizerStatePtr& RasterizerState::getDefault()
