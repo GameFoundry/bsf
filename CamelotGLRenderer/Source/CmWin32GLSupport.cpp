@@ -58,42 +58,46 @@ namespace CamelotEngine
 
 	RenderWindow* Win32GLSupport::newWindow(const RENDER_WINDOW_DESC& desc)
 	{		
-		Win32Window* window = new Win32Window(*this);
+		Win32Window* window = new Win32Window(desc, *this);
 		
-		HMONITOR hMonitor = NULL;
-		int monitorIndex = desc.monitorIndex;
-		
-		// If monitor index found, try to assign the monitor handle based on it.
-		if(monitorIndex >= 0)
-		{
-			if (mMonitorInfoList.empty())		
-				EnumDisplayMonitors(NULL, NULL, sCreateMonitorsInfoEnumProc, (LPARAM)&mMonitorInfoList);			
+		// TODO - Looking for monitors is disabled for now, as it should be done on the render thread and I need to port it but 
+		//  I don't feel like it at the moment. Plus I'll probably implemented a more streamlined approach to this anyway.
 
-			if (monitorIndex < (int)mMonitorInfoList.size())					
-				hMonitor = mMonitorInfoList[monitorIndex].hMonitor;	
-		}
+		//HMONITOR hMonitor = NULL;
+		//int monitorIndex = desc.monitorIndex;
+		//
+		//// If monitor index found, try to assign the monitor handle based on it.
+		//if(monitorIndex >= 0)
+		//{
+		//	if (mMonitorInfoList.empty())		
+		//		EnumDisplayMonitors(NULL, NULL, sCreateMonitorsInfoEnumProc, (LPARAM)&mMonitorInfoList);			
 
-		// If we didn't specified the monitor index, or if it didn't find it
-		if (hMonitor == NULL)
-		{
-			POINT windowAnchorPoint;
-		
-			// Fill in anchor point.
-			windowAnchorPoint.x = desc.left;
-			windowAnchorPoint.y = desc.top;
+		//	if (monitorIndex < (int)mMonitorInfoList.size())					
+		//		hMonitor = mMonitorInfoList[monitorIndex].hMonitor;	
+		//}
+
+		//// If we didn't specified the monitor index, or if it didn't find it
+		//if (hMonitor == NULL)
+		//{
+		//	POINT windowAnchorPoint;
+		//
+		//	// Fill in anchor point.
+		//	windowAnchorPoint.x = desc.left;
+		//	windowAnchorPoint.y = desc.top;
 
 
-			// Get the nearest monitor to this window.
-			hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTONEAREST);				
-		}
+		//	// Get the nearest monitor to this window.
+		//	hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTONEAREST);				
+		//}
 
-		RENDER_WINDOW_DESC newDesc = desc;
-		newDesc.platformSpecific["monitorHandle"] = toString((size_t)hMonitor);
+		//RENDER_WINDOW_DESC newDesc = desc;
+		//newDesc.platformSpecific["monitorHandle"] = toString((size_t)hMonitor);
 
-		window->initialize(newDesc);
+		//window->initialize(newDesc);
 
 		if(!mInitialWindow)
 			mInitialWindow = window;
+
 		return window;
 	}
 

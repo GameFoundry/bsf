@@ -40,35 +40,7 @@ namespace CamelotEngine {
         UINT32 numVertices, GpuBufferUsage usage, 
         bool useSystemMemory)
 		: VertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMemory)
-    {
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
-		D3DPOOL eResourcePool;
-		       
-#if CM_D3D_MANAGE_BUFFERS
-		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : D3DPOOL_MANAGED;
-#else
-		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;
-#endif       		
-
-		// Set the desired memory pool.
-		mBufferDesc.Pool = eResourcePool;
-
-		// Allocate the system memory buffer.
-		mSystemMemoryBuffer = new char [getSizeInBytes()];
-		memset(mSystemMemoryBuffer, 0, getSizeInBytes());	
-
-		// Case we have to create this buffer resource on loading.
-		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
-		{
-			for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
-			{
-				IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
-
-				createBuffer(d3d9Device, mBufferDesc.Pool);
-			}
-		}				
-    }
+    {    }
 	//---------------------------------------------------------------------
     D3D9VertexBuffer::~D3D9VertexBuffer()
     {	    }
@@ -323,6 +295,39 @@ namespace CamelotEngine {
 		bufferResources->mLockOptions = GBL_READ_WRITE;
 
 		return true;		
+	}
+	//--------------------------------------------------------------------
+	void D3D9VertexBuffer::initialize_internal()
+	{
+		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
+
+		D3DPOOL eResourcePool;
+
+#if CM_D3D_MANAGE_BUFFERS
+		eResourcePool = mSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_MANAGED;
+#else
+		eResourcePool = mSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;
+#endif       		
+
+		// Set the desired memory pool.
+		mBufferDesc.Pool = eResourcePool;
+
+		// Allocate the system memory buffer.
+		mSystemMemoryBuffer = new char [getSizeInBytes()];
+		memset(mSystemMemoryBuffer, 0, getSizeInBytes());	
+
+		// Case we have to create this buffer resource on loading.
+		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
+		{
+			for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+			{
+				IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
+
+				createBuffer(d3d9Device, mBufferDesc.Pool);
+			}
+		}
+
+		VertexBuffer::initialize_internal();
 	}
 	//---------------------------------------------------------------------
 	void D3D9VertexBuffer::destroy_internal()

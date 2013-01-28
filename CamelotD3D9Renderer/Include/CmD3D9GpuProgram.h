@@ -41,11 +41,6 @@ namespace CamelotEngine {
     public:
         ~D3D9GpuProgram();
 
-		/**
-		 * @copydoc GpuProgram::initialize_internal().
-		 */
-		virtual void initialize_internal();
-
         /** Sets whether matrix packing in column-major order. */ 
         void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }
         /** Gets whether matrix packed in column-major order. */
@@ -67,6 +62,11 @@ namespace CamelotEngine {
 		D3D9GpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 
 		void createInternalResources(IDirect3DDevice9* d3d9Device);
+
+		/**
+		 * @copydoc GpuProgram::initialize_internal().
+		 */
+		void initialize_internal();
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().

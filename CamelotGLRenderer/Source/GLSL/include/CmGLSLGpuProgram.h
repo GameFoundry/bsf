@@ -76,16 +76,6 @@ namespace CamelotEngine {
 
     protected:
 		friend class GLSLProgramFactory;
-
-		/**
-		 * @copydoc GpuProgram::initialize_internal
-		 */
-		void initialize_internal();
-
-		/**
-		 * @copydoc GpuProgram::destroy_internal
-		 */
-		void destroy_internal();
     };
 }
 

@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "CmTextureManager.h"
 #include "CmException.h"
 #include "CmPixelUtil.h"
+#include "CmMultiRenderTexture.h"
 #include "CmRenderSystem.h"
 
 namespace CamelotEngine {
@@ -47,6 +48,7 @@ namespace CamelotEngine {
 		UINT32 fsaa, const String& fsaaHint)
     {
         TexturePtr ret = TexturePtr(createTextureImpl());
+		ret->setThisPtr(ret);
 		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, fsaa, fsaaHint);
 
 		return ret;
@@ -54,9 +56,10 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	TexturePtr TextureManager::createEmpty()
 	{
-		TexturePtr ret = TexturePtr(createTextureImpl());
+		TexturePtr texture = TexturePtr(createTextureImpl());
+		texture->setThisPtr(texture);
 
-		return ret;
+		return texture;
 	}
 	//-----------------------------------------------------------------------
 	RenderTexturePtr TextureManager::createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
@@ -67,18 +70,30 @@ namespace CamelotEngine {
 
 		TexturePtr depthStencil = nullptr;
 		if(createDepth)
+		{
 			depthStencil = createTexture(TEX_TYPE_2D, width, height, 0, depthStencilFormat, TU_DEPTHSTENCIL, false, fsaa, fsaaHint);
+		}
 
-		RenderTexturePtr newRT = RenderTexturePtr(createRenderTextureImpl());
+		RenderTexturePtr newRT = createEmptyRenderTexture();
 		newRT->setColorSurface(texture, 0, 1, 0);
 		newRT->setDepthStencilSurface(depthStencil, 0, 1, 0);
+		newRT->initialize();
 
 		return newRT;
 	}
 	//-----------------------------------------------------------------------
 	RenderTexturePtr TextureManager::createEmptyRenderTexture()
 	{
-		RenderTexturePtr newRT = RenderTexturePtr(createRenderTextureImpl());
+		RenderTexturePtr newRT = createRenderTextureImpl();
+		newRT->setThisPtr(newRT);
+
+		return newRT;
+	}
+	//-----------------------------------------------------------------------
+	MultiRenderTexturePtr TextureManager::createEmptyMultiRenderTexture()
+	{
+		MultiRenderTexturePtr newRT = createMultiRenderTextureImpl();
+		newRT->setThisPtr(newRT);
 
 		return newRT;
 	}

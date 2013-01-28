@@ -94,8 +94,10 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD
 
+		Texture::initialize_internal();
+
 			// load based on tex.type
-			switch (getTextureType())
+		switch (getTextureType())
 		{
 			case TEX_TYPE_1D:
 				_create1DTex();
@@ -111,8 +113,6 @@ namespace CamelotEngine
 				destroy_internal();
 				CM_EXCEPT(RenderingAPIException, "Unknown texture type");
 		}
-
-		Resource::initialize_internal();
 	}
 
 	void D3D11Texture::destroy_internal()
@@ -126,7 +126,7 @@ namespace CamelotEngine
 
 		clearBufferViews();
 
-		CoreGpuObject::destroy_internal();
+		Texture::destroy_internal();
 	}
 
 	void D3D11Texture::_create1DTex()

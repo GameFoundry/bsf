@@ -56,9 +56,6 @@ namespace CamelotEngine
 		bool requiresTextureFlipping() const { return false; }
 
 	protected:
-		TextureView* mColorSurface;
-		TextureView* mDepthStencilSurface;
-
 		RenderTexture();
 
 		void createInternalResources();
@@ -68,6 +65,10 @@ namespace CamelotEngine
 		 * @copydoc RenderTarget::destroy_internal()
 		 */
 		virtual void destroy_internal();
+
+	protected:
+		TextureView* mColorSurface;
+		TextureView* mDepthStencilSurface;
 
 	private:
 		void throwIfBuffersDontMatch() const;

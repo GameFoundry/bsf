@@ -69,6 +69,8 @@ namespace CamelotEngine {
 
 	void GLTexture::initialize_internal()
 	{
+		Texture::initialize_internal();
+
 		// Convert to nearest power-of-two size if required
 		mWidth = GLPixelUtil::optionalPO2(mWidth);      
 		mHeight = GLPixelUtil::optionalPO2(mHeight);
@@ -196,8 +198,6 @@ namespace CamelotEngine {
 		createSurfaceList();
 		// Get final internal format
 		mFormat = getBuffer(0,0)->getFormat();
-
-		Resource::initialize_internal();
 	}
 
 	void GLTexture::destroy_internal()
@@ -207,7 +207,7 @@ namespace CamelotEngine {
 
 		clearBufferViews();
 
-		CoreGpuObject::destroy_internal();
+		Texture::destroy_internal();
 	}
 
     GLenum GLTexture::getGLTextureTarget(void) const

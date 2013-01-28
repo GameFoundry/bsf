@@ -36,10 +36,8 @@ namespace CamelotEngine {
     class CM_RSGL_EXPORT Win32Window : public RenderWindow
     {
     public:
-        Win32Window(Win32GLSupport &glsupport);
         ~Win32Window();
 
-       void initialize(const RENDER_WINDOW_DESC& desc);
 	   void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
 		bool isActive(void) const;
         bool isVisible() const;
@@ -69,6 +67,11 @@ namespace CamelotEngine {
 			unsigned int* winWidth, unsigned int* winHeight);
 
 	protected:
+		friend class GLRenderWindowManager;
+		friend class Win32GLSupport;
+
+		Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport);
+
 		Win32GLSupport &mGLSupport;
 		HWND	mHWnd;					// Win32 Window handle
 		HDC		mHDC;
@@ -82,6 +85,14 @@ namespace CamelotEngine {
         int     mDisplayFrequency;      // fullscreen only, to restore display
         Win32Context *mContext;
 
+		/**
+		 * @copydoc RenderWindow::initialize_internal().
+		 */
+		void initialize_internal();
+
+		/**
+		 * @copydoc RenderWindow::destroy_internal().
+		 */
 		void destroy_internal();
     };
 }

@@ -37,9 +37,7 @@ namespace CamelotEngine {
     /** Specialisation of VertexDeclaration for D3D9 */
     class CM_D3D9_EXPORT D3D9VertexDeclaration : public VertexDeclaration, public D3D9Resource
     {
-    
     public:
-        D3D9VertexDeclaration();
         ~D3D9VertexDeclaration();
         
         /** See VertexDeclaration */
@@ -75,7 +73,15 @@ namespace CamelotEngine {
         IDirect3DVertexDeclaration9* getD3DVertexDeclaration(void);
 
 	protected:
+		friend class D3D9HardwareBufferManager;
+
+		D3D9VertexDeclaration();
+
 		void releaseDeclaration();
+
+		/**
+		 * @copydoc VertexDeclaration::destroy_internal().
+		 */
 		void destroy_internal();
 
 	protected:        

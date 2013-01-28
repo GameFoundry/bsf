@@ -50,9 +50,6 @@ namespace CamelotEngine
 			IT_32BIT
 		};
 
-		/// Should be called by HardwareBufferManager
-		IndexBuffer(HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage,
-			bool useSystemMemory);
 		~IndexBuffer();
 		/// Return the manager of this buffer, if any
 		HardwareBufferManager* getManager() const { return mMgr; }
@@ -69,10 +66,7 @@ namespace CamelotEngine
 		UINT32 mNumIndexes;
 		UINT32 mIndexSize;
 
-		/**
-		* @copydoc CoreGpuObject::destroy_internal()
-		*/
-		virtual void destroy_internal();
+		IndexBuffer(HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMemory);
     };
 	/** @} */
 }

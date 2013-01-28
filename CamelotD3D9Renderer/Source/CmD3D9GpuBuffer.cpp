@@ -6,11 +6,17 @@ namespace CamelotEngine
 	D3D9GpuBuffer::D3D9GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter) 
 		: GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter)
 	{
-		LOGWRN("Generic buffers are not supported in DirectX 9. Creating a dummy buffer. All operations on it will either be no-op or return a nullptr.");
 	}
 
 	D3D9GpuBuffer::~D3D9GpuBuffer()
 	{ }
+
+	void D3D9GpuBuffer::initialize_internal()
+	{
+		LOGWRN("Generic buffers are not supported in DirectX 9. Creating a dummy buffer. All operations on it will either be no-op or return a nullptr.");
+
+		GpuBuffer::initialize_internal();
+	}
 
 	void* D3D9GpuBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
 	{
@@ -41,10 +47,5 @@ namespace CamelotEngine
 
 	void D3D9GpuBuffer::destroyView(GpuBufferView* view)
 	{
-	}
-
-	void D3D9GpuBuffer::destroy_internal()
-	{
-		GpuBuffer::destroy_internal();
 	}
 }

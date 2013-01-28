@@ -15,9 +15,9 @@ namespace CamelotEngine
 
 	}
 
-	void D3D9MultiRenderTexture::destroy_internal()
+	void D3D9MultiRenderTexture::initialize_internal()
 	{
-		MultiRenderTexture::destroy_internal();
+		mDX9ColorSurfaces.resize(CM_MAX_MULTIPLE_RENDER_TARGETS);
 	}
 
 	void D3D9MultiRenderTexture::setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
@@ -71,10 +71,5 @@ namespace CamelotEngine
 			*pHwnd = NULL;
 			return;
 		}
-	}
-
-	void D3D9MultiRenderTexture::initialize()
-	{
-		mDX9ColorSurfaces.resize(CM_MAX_MULTIPLE_RENDER_TARGETS);
 	}
 }

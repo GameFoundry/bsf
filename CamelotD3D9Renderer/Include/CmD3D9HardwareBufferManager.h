@@ -36,35 +36,33 @@ namespace CamelotEngine {
     /** Implementation of HardwareBufferManager for D3D9. */
     class CM_D3D9_EXPORT D3D9HardwareBufferManager : public HardwareBufferManager
     {
-    protected:     
-        /// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
-        VertexDeclarationPtr createVertexDeclarationImpl(void);
-        /// Internal method for destroys a vertex declaration, may be overridden by certain rendering APIs
-        void destroyVertexDeclarationImpl(VertexDeclaration* decl);
-
     public:
         D3D9HardwareBufferManager();
         ~D3D9HardwareBufferManager();
 
-		/**
-		 * @copydoc HardwareBufferManager::createVertexBuffer
-		 */
-		VertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+	protected:     
+		/// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
+		VertexDeclarationPtr createVertexDeclarationImpl(void);
 
 		/**
-		 * @copydoc HardwareBufferManager::createIndexBuffer
+		 * @copydoc HardwareBufferManager::createVertexBufferImpl
 		 */
-		IndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+
+		/**
+		 * @copydoc HardwareBufferManager::createIndexBufferImpl
+		 */
+		IndexBufferPtr createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlock */
-		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC);
+		GpuParamBlockPtr createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC);
 
 		/**
-		 * @copydoc HardwareBufferManager::createGenericBuffer
+		 * @copydoc HardwareBufferManager::createGenericBufferImpl
 		 *
 		 * DirectX 9 does not support generic buffers so this method will return a dummy instance.
 		 */
-		GpuBufferPtr createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
+		GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
     };
 }

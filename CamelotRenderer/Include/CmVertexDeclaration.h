@@ -250,8 +250,6 @@ namespace CamelotEngine
         /// Sort routine for vertex elements
         static bool vertexElementLess(const VertexElement& e1, const VertexElement& e2);
 
-        /// Standard constructor, not you should use HardwareBufferManager::createVertexDeclaration
-        VertexDeclaration();
         virtual ~VertexDeclaration();
 
         /** Get the number of elements in the declaration. */
@@ -396,18 +394,18 @@ namespace CamelotEngine
         }
 
     protected:
-        VertexElementList mElementList;
-		size_t mHash;
+		friend class HardwareBufferManager;
+
+		VertexDeclaration();
 
 		/**
 		 * @brief	Generates a hash value based on all elements in the declaration.
 		 */
 		void recalculateHash();
 
-		/**
-		 * @copydoc CoreGpuObject::destroy_internal()
-		 */
-		virtual void destroy_internal();
+	protected:
+		VertexElementList mElementList;
+		size_t mHash;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

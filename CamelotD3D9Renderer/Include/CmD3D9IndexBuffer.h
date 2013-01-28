@@ -39,8 +39,6 @@ namespace CamelotEngine {
     {
   
     public:
-		D3D9IndexBuffer(HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
-			GpuBufferUsage usage, bool useSystemMem);
         ~D3D9IndexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);
@@ -78,6 +76,11 @@ namespace CamelotEngine {
 		};
 
 	protected:
+		friend class D3D9HardwareBufferManager;
+
+		D3D9IndexBuffer(HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
+			GpuBufferUsage usage, bool useSystemMem);
+
 		/** See HardwareBuffer. */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 		/** See HardwareBuffer. */
@@ -85,6 +88,14 @@ namespace CamelotEngine {
 		// updates buffer resources from system memory buffer.
 		bool updateBufferResources(const char* systemMemoryBuffer, BufferResources* bufferResources);
 
+		/**
+		 * @copydoc IndexBuffer::initialize_internal()
+		 */
+		void initialize_internal();	
+		
+		/**
+		 * @copydoc IndexBuffer::destroy_internal()
+		 */
 		void destroy_internal();
 
 	protected:		

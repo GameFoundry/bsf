@@ -46,9 +46,6 @@ namespace CamelotEngine
     class CM_EXPORT VertexBuffer : public HardwareBuffer, public CoreGpuObject
     {
 	public:
-		/// Should be called by HardwareBufferManager
-		VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices,
-            GpuBufferUsage usage, bool useSystemMemory);
         ~VertexBuffer();
 
 		/// Return the manager of this buffer, if any
@@ -62,10 +59,7 @@ namespace CamelotEngine
 		UINT32 mNumVertices;
 		UINT32 mVertexSize;
 
-		/**
-		 * @copydoc CoreGpuObject::destroy_internal()
-		 */
-		virtual void destroy_internal();
+		VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMemory);
     };
 }
 #endif

@@ -14,22 +14,19 @@ namespace CamelotEngine
 	D3D11TextureManager::~D3D11TextureManager()
 	{ }
 
-	Texture* D3D11TextureManager::createTextureImpl()
+	TexturePtr D3D11TextureManager::createTextureImpl()
 	{
-		return new D3D11Texture(); 
+		return TexturePtr(new D3D11Texture()); 
 	}
 
-	RenderTexture* D3D11TextureManager::createRenderTextureImpl()
+	RenderTexturePtr D3D11TextureManager::createRenderTextureImpl()
 	{
-		return new D3D11RenderTexture();
+		return RenderTexturePtr(new D3D11RenderTexture());
 	}
 
-	MultiRenderTexturePtr D3D11TextureManager::createMultiRenderTexture()
+	MultiRenderTexturePtr D3D11TextureManager::createMultiRenderTextureImpl()
 	{
-		D3D11MultiRenderTexture* newMRT = new D3D11MultiRenderTexture();
-		newMRT->initialize();
-
-		return MultiRenderTexturePtr(newMRT);
+		return MultiRenderTexturePtr(new D3D11MultiRenderTexture());
 	}
 
 	PixelFormat D3D11TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)

@@ -17,11 +17,6 @@ namespace CamelotEngine
 
 	}
 
-	void D3D9RenderTexture::destroy_internal()
-	{
-		RenderTexture::destroy_internal();
-	}
-
 	void D3D9RenderTexture::getCustomAttribute(const String& name, void* pData)
 	{
 		if(name == "DDBACKBUFFER")

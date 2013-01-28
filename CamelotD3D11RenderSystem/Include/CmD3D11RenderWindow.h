@@ -10,8 +10,6 @@ namespace CamelotEngine
 	public:
 		~D3D11RenderWindow();
 
-		void initialize(const RENDER_WINDOW_DESC& desc);
-
 		void reposition(int left, int top);
 		void resize(unsigned int width, unsigned int height);
 
@@ -35,7 +33,7 @@ namespace CamelotEngine
 
 	protected:
 		friend class D3D11RenderWindowManager;
-		D3D11RenderWindow(D3D11Device& device, IDXGIFactory* DXGIFactory);
+		D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory);
 
 		void _createSizeDependedD3DResources();
 		void _destroySizeDependedD3DResources();
@@ -50,8 +48,15 @@ namespace CamelotEngine
 		bool _getSwitchingFullscreen() const					{ return mSwitchingFullscreen; }
 		void _finishSwitchingFullscreen();
 		
-		void destroy_internal();
+		/**
+		 * @copydoc RenderWindow::initialize_internal().
+		 */
+		void initialize_internal();
 
+		/**
+		 * @copydoc RenderWindow::destroy_internal().
+		 */
+		void destroy_internal();
 	protected:
 		D3D11Device&	mDevice;			// D3D11 driver
 		IDXGIFactory*	mDXGIFactory;

@@ -11,6 +11,7 @@
 #include "CmVector2.h"
 #include "CmHighLevelGpuProgram.h"
 #include "CmHighLevelGpuProgramManager.h"
+#include "CmCoreGpuObjectManager.h"
 #include "CmDynLib.h"
 #include "CmDynLibManager.h"
 #include "CmSceneManager.h"
@@ -42,6 +43,8 @@ namespace CamelotEngine
 		Time::startUp(new Time());
 		Input::startUp(new Input());
 		DynLibManager::startUp(new DynLibManager());
+		CoreGpuObjectManager::startUp(new CoreGpuObjectManager());
+		Resources::startUp(new Resources("D:\\CamelotResourceMetas"));
 		HighLevelGpuProgramManager::startUp(new HighLevelGpuProgramManager());
 
 		RenderSystemManager::startUp(renderSystemName);
@@ -58,10 +61,14 @@ namespace CamelotEngine
 		renderWindowDesc.fullscreen = false;
 
 		mPrimaryRenderWindow = RenderWindow::create(renderWindowDesc);
+		mPrimaryRenderWindow->waitUntilInitialized(); // TODO: Created window is required for proper initialization of the render system so I need to wait
+		                                              // I plan on handling this differently. Either by somehow allowing the RS to be initialized without a window,
+		                                              // or forcing a window to be created with RenderSystemManager::startUp. Initializing OpenGL context without a window
+		                                              // is especially troublesome (apparently possible just poorly documented)
+
 		mPrimaryRenderContext = renderSystem->createDeferredContext();
 
 		SceneManager::startUp(new SceneManager());
-		Resources::startUp(new Resources("D:\\CamelotResourceMetas"));
 
 		Importer::startUp(new Importer());
 		loadPlugin("CamelotFreeImgImporter"); // TODO - Load this automatically somehow
@@ -139,9 +146,9 @@ namespace CamelotEngine
 		RenderSystem::shutDown();
 
 		HighLevelGpuProgramManager::shutDown();
-		//DynLibManager::shutDown(); // TODO - I never shut this down, because then I'd have to ensure I classes loaded from dynamic libraries
-		// are destroyed before shutting it down, which is too hard to ensure at the moment
 		Resources::shutDown();
+		CoreGpuObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
+		DynLibManager::shutDown();
 		Input::shutDown();
 		Time::shutDown();
 	}

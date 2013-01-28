@@ -60,11 +60,11 @@ namespace CamelotEngine
 			// load constructed assembler program (if it exists)
 			if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
 			{
-				mAssemblerProgram->initialize_internal();
+				mAssemblerProgram->initialize();
 			}
 		}
 
-		Resource::initialize_internal();
+		GpuProgram::initialize_internal();
     }
     //---------------------------------------------------------------------------
     void HighLevelGpuProgram::destroy_internal()

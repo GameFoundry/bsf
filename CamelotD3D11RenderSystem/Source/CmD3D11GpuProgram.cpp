@@ -11,6 +11,11 @@ namespace CamelotEngine
 
 	}
 
+	D3D11GpuProgram::~D3D11GpuProgram()
+	{
+
+	}
+
 	D3D11GpuVertexProgram::D3D11GpuVertexProgram(const String& profile) 
 		: D3D11GpuProgram(GPT_VERTEX_PROGRAM, profile)
 		, mVertexShader(nullptr)

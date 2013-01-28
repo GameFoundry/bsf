@@ -65,9 +65,6 @@ namespace CamelotEngine {
     public:
         virtual ~HighLevelGpuProgram();
 
-		/** @copydoc GpuProgram::initialize_internal(). */
-		virtual void initialize_internal();
-
         /** @copydoc GpuProgram::getBindingDelegate */
         virtual GpuProgram* getBindingDelegate(void) { return mAssemblerProgram.get(); }
 
@@ -78,7 +75,14 @@ namespace CamelotEngine {
 		HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
-		/** @copydoc GpuProgram::unload_internal() */
+		/**
+		 * @copydoc Resource::initialize_internal.
+		 */
+		virtual void initialize_internal();
+
+		/**
+		 * @copydoc Resource::destroy_internal.
+		 */
 		virtual void destroy_internal();
 
         /// The underlying assembler program

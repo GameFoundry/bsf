@@ -19,11 +19,6 @@ namespace CamelotEngine
 	{
 	}
 
-	void D3D11RenderTexture::destroy_internal()
-	{
-		RenderTexture::destroy_internal();
-	}
-
 	void D3D11RenderTexture::createInternalResourcesImpl()
 	{
 		// Do nothing

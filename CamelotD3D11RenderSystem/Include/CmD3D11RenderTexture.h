@@ -19,7 +19,5 @@ namespace CamelotEngine
 
 		D3D11RenderTexture();
 		void createInternalResourcesImpl();
-
-		void destroy_internal();
 	};
 }

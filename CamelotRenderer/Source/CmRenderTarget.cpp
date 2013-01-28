@@ -45,11 +45,6 @@ namespace CamelotEngine {
     {
     }
 
-	void RenderTarget::destroy_internal()
-	{
-		CoreGpuObject::destroy_internal();
-	}
-
     const String& RenderTarget::getName(void) const
     {
         return mName;

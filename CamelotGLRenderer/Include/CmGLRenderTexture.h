@@ -53,6 +53,10 @@ namespace CamelotEngine
 		friend class GLTextureManager;
 
 		GLRenderTexture();
+
+		/**
+		 * @copydoc RenderTexture::destroy_internal().
+		 */
 		void destroy_internal();
 
 		GLFrameBufferObject* mFB;

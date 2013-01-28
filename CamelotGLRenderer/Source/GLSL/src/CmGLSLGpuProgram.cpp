@@ -71,17 +71,5 @@ namespace CamelotEngine {
     GLSLGpuProgram::~GLSLGpuProgram()
     {
     }
-	//-----------------------------------------------------------------------------
-    void GLSLGpuProgram::initialize_internal(void)
-    {
-		// Nothing to load
-		GpuProgram::initialize_internal();
-    }
-	//-----------------------------------------------------------------------------
-	void GLSLGpuProgram::destroy_internal()
-	{
-		// Nothing to destroy
-		GpuProgram::destroy_internal();
-	}
 }
 

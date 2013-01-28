@@ -228,7 +228,7 @@ namespace CamelotEngine
 		msD3D9RenderSystem = NULL;
 	}
 	//--------------------------------------------------------------------
-	void D3D9RenderSystem::registerRenderWindow(D3D9RenderWindowPtr renderWindow)
+	void D3D9RenderSystem::registerRenderWindow(D3D9RenderWindow* renderWindow)
 	{		
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -238,7 +238,7 @@ namespace CamelotEngine
 
 		try
 		{
-			mDeviceManager->linkRenderWindow(renderWindow.get());
+			mDeviceManager->linkRenderWindow(renderWindow);
 		}
 		catch (const CamelotEngine::RenderingAPIException&)
 		{
@@ -252,9 +252,9 @@ namespace CamelotEngine
 		mResourceManager->unlockDeviceAccess();
 
 		// TODO - Storing raw pointer here might not be a good idea?
-		mRenderWindows.push_back(renderWindow.get());		
+		mRenderWindows.push_back(renderWindow);		
 
-		updateRenderSystemCapabilities(renderWindow.get());
+		updateRenderSystemCapabilities(renderWindow);
 
 		attachRenderTarget(*renderWindow);
 	}	

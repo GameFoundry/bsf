@@ -14,6 +14,16 @@ namespace CamelotEngine
 
 	}
 
+	void GLMultiRenderTexture::initialize_internal()
+	{
+		if(mFB != nullptr)
+			delete mFB;
+
+		mFB = new GLFrameBufferObject(mFSAA);
+
+		MultiRenderTexture::initialize_internal();
+	}
+
 	void GLMultiRenderTexture::destroy_internal()
 	{
 		if(mFB != nullptr)
@@ -66,15 +76,5 @@ namespace CamelotEngine
 		{
 			*static_cast<GLuint*>(pData) = mFB->getGLFBOID();
 		}
-	}
-
-	void GLMultiRenderTexture::initialize()
-	{
-		if(mFB != nullptr)
-			delete mFB;
-
-		mFB = new GLFrameBufferObject(mFSAA);
-
-		MultiRenderTexture::initialize();
 	}
 }

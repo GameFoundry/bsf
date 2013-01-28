@@ -36,8 +36,8 @@ THE SOFTWARE.
 
 namespace CamelotEngine
 {
-	D3D9RenderWindow::D3D9RenderWindow(HINSTANCE instance)
-        : mInstance(instance), mIsDepthBuffered(true)  
+	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
+        : RenderWindow(desc), mInstance(instance), mIsDepthBuffered(true)  
 	{
 		mDevice = NULL;
 		mIsFullScreen = false;		
@@ -54,36 +54,15 @@ namespace CamelotEngine
 	D3D9RenderWindow::~D3D9RenderWindow()
 	{ }
 
-	void D3D9RenderWindow::destroy_internal()
-	{
-		if (mDevice != NULL)
-		{
-			mDevice->detachRenderWindow(this);
-			mDevice = NULL;
-		}
-
-		if (mHWnd && !mIsExternal)
-		{
-			WindowEventUtilities::_removeRenderWindow(this);
-			DestroyWindow(mHWnd);
-		}
-
-		mHWnd = 0;
-		mActive = false;
-		mClosed = true;
-
-		RenderWindow::destroy_internal();
-	}
-
-	void D3D9RenderWindow::initialize(const RENDER_WINDOW_DESC& desc)
+	void D3D9RenderWindow::initialize_internal()
 	{
 		HINSTANCE hInst = mInstance;
-	
+
 		mFSAAType = D3DMULTISAMPLE_NONE;
 		mFSAAQuality = 0;
-		mFSAA = desc.FSAA;
-		mVSync = desc.vsync;
-		mVSyncInterval = desc.vsyncInterval;
+		mFSAA = mDesc.FSAA;
+		mVSync = mDesc.vsync;
+		mVSyncInterval = mDesc.vsyncInterval;
 		mUseNVPerfHUD = false;
 
 		HWND parentHWnd = 0;
@@ -91,12 +70,12 @@ namespace CamelotEngine
 
 		NameValuePairList::const_iterator opt;
 		// parentWindowHandle		-> parentHWnd
-		opt = desc.platformSpecific.find("parentWindowHandle");
-		if(opt != desc.platformSpecific.end())
+		opt = mDesc.platformSpecific.find("parentWindowHandle");
+		if(opt != mDesc.platformSpecific.end())
 			parentHWnd = (HWND)parseUnsignedInt(opt->second);
 		// externalWindowHandle		-> externalHandle
-		opt = desc.platformSpecific.find("externalWindowHandle");
-		if(opt != desc.platformSpecific.end())
+		opt = mDesc.platformSpecific.find("externalWindowHandle");
+		if(opt != mDesc.platformSpecific.end())
 			externalHandle = (HWND)parseUnsignedInt(opt->second);
 
 		if (!externalHandle)
@@ -108,13 +87,13 @@ namespace CamelotEngine
 			RECT		rc;
 
 			// If we specified which adapter we want to use - find it's monitor.
-			if (desc.monitorIndex != -1)
+			if (mDesc.monitorIndex != -1)
 			{
 				IDirect3D9* direct3D9 = D3D9RenderSystem::getDirect3D9();
 
 				for (UINT32 i=0; i < direct3D9->GetAdapterCount(); ++i)
 				{
-					if (i == desc.monitorIndex)
+					if (i == mDesc.monitorIndex)
 					{
 						hMonitor = direct3D9->GetAdapterMonitor(i);
 						break;
@@ -128,8 +107,8 @@ namespace CamelotEngine
 				POINT windowAnchorPoint;
 
 				// Fill in anchor point.
-				windowAnchorPoint.x = desc.left;
-				windowAnchorPoint.y = desc.top;
+				windowAnchorPoint.x = mDesc.left;
+				windowAnchorPoint.y = mDesc.top;
 
 				// Get the nearest monitor to this window.
 				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTOPRIMARY);
@@ -142,11 +121,11 @@ namespace CamelotEngine
 
 
 			unsigned int winWidth, winHeight;
-			winWidth = desc.width;
-			winHeight = desc.height;
+			winWidth = mDesc.width;
+			winHeight = mDesc.height;
 
-			UINT32 left = desc.left;
-			UINT32 top = desc.top;
+			UINT32 left = mDesc.left;
+			UINT32 top = mDesc.top;
 
 			// No specified top left -> Center the window in the middle of the monitor
 			if (left == -1 || top == -1)
@@ -160,26 +139,26 @@ namespace CamelotEngine
 
 				if (left == -1)
 					left = monitorInfo.rcWork.left + (screenw - outerw) / 2;
-				else if (desc.monitorIndex != -1)
+				else if (mDesc.monitorIndex != -1)
 					left += monitorInfo.rcWork.left;
 
 				if (top == -1)
 					top = monitorInfo.rcWork.top + (screenh - outerh) / 2;
-				else if (desc.monitorIndex != -1)
+				else if (mDesc.monitorIndex != -1)
 					top += monitorInfo.rcWork.top;
 			}
-			else if (desc.monitorIndex != -1)
+			else if (mDesc.monitorIndex != -1)
 			{
 				left += monitorInfo.rcWork.left;
 				top += monitorInfo.rcWork.top;
 			}
 
-			mWidth = mDesiredWidth = desc.width;
-			mHeight = mDesiredHeight = desc.height;
+			mWidth = mDesiredWidth = mDesc.width;
+			mHeight = mDesiredHeight = mDesc.height;
 			mTop = top;
 			mLeft = left;
 
-			if (desc.fullscreen)
+			if (mDesc.fullscreen)
 			{
 				dwStyleEx |= WS_EX_TOPMOST;
 				dwStyle |= WS_POPUP;
@@ -194,18 +173,18 @@ namespace CamelotEngine
 				}
 				else
 				{
-					if (desc.border == "none")
+					if (mDesc.border == "none")
 						dwStyle |= WS_POPUP;
-					else if (desc.border == "fixed")
+					else if (mDesc.border == "fixed")
 						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 						WS_SYSMENU | WS_MINIMIZEBOX;
 					else
 						dwStyle |= WS_OVERLAPPEDWINDOW;
 				}
 
-				adjustWindow(desc.width, desc.height, dwStyle, &winWidth, &winHeight);
+				adjustWindow(mDesc.width, mDesc.height, dwStyle, &winWidth, &winHeight);
 
-				if (!desc.outerDimensions)
+				if (!mDesc.outerDimensions)
 				{
 					// Calculate window dimensions required
 					// to get the requested client area
@@ -220,7 +199,7 @@ namespace CamelotEngine
 
 					if (mTop < monitorInfo.rcWork.top)					
 						mTop = monitorInfo.rcWork.top;					
-				
+
 					if (static_cast<int>(winWidth) > monitorInfo.rcWork.right - mLeft)					
 						winWidth = monitorInfo.rcWork.right - mLeft;	
 
@@ -228,7 +207,7 @@ namespace CamelotEngine
 						winHeight = monitorInfo.rcWork.bottom - mTop;										
 				}
 			}
-			
+
 
 			// Register the window class
 			// NB allow 4 bytes of window data for D3D9RenderWindow pointer
@@ -240,7 +219,7 @@ namespace CamelotEngine
 			// Create our main window
 			// Pass pointer to self
 			mIsExternal = false;
-			mHWnd = CreateWindowEx(dwStyleEx, "D3D9Wnd", desc.title.c_str(), dwStyle,
+			mHWnd = CreateWindowEx(dwStyleEx, "D3D9Wnd", mDesc.title.c_str(), dwStyle,
 				mLeft, mTop, winWidth, winHeight, parentHWnd, 0, hInst, this);
 			mStyle = dwStyle;
 
@@ -262,13 +241,39 @@ namespace CamelotEngine
 		mWidth = rc.right;
 		mHeight = rc.bottom;
 
-		mName = desc.title;
-		mIsDepthBuffered = desc.depthBuffer;
-		mIsFullScreen = desc.fullscreen;
-		mColorDepth = desc.colorDepth;
-									
+		mName = mDesc.title;
+		mIsDepthBuffered = mDesc.depthBuffer;
+		mIsFullScreen = mDesc.fullscreen;
+		mColorDepth = mDesc.colorDepth;
+
 		mActive = true;
 		mClosed = false;
+
+		D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(RenderSystem::instancePtr());
+		rs->registerRenderWindow(this);
+
+		RenderWindow::initialize_internal();
+	}
+
+	void D3D9RenderWindow::destroy_internal()
+	{
+		if (mDevice != NULL)
+		{
+			mDevice->detachRenderWindow(this);
+			mDevice = NULL;
+		}
+
+		if (mHWnd && !mIsExternal)
+		{
+			WindowEventUtilities::_removeRenderWindow(this);
+			DestroyWindow(mHWnd);
+		}
+
+		mHWnd = 0;
+		mActive = false;
+		mClosed = true;
+
+		RenderWindow::destroy_internal();
 	}
 
 	void D3D9RenderWindow::setFullscreen(bool fullScreen, unsigned int width, unsigned int height)

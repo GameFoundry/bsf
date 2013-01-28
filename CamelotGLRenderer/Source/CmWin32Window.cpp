@@ -41,7 +41,8 @@ namespace CamelotEngine {
 
 	#define _MAX_CLASS_NAME_ 128
 
-	Win32Window::Win32Window(Win32GLSupport &glsupport):
+	Win32Window::Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport):
+		RenderWindow(desc),
 		mGLSupport(glsupport),
 		mContext(0)
 	{
@@ -63,48 +64,7 @@ namespace CamelotEngine {
 
 	}
 
-	void Win32Window::destroy_internal()
-	{
-		if (!mHWnd)
-			return;
-
-		// Unregister and destroy OGRE GLContext
-		delete mContext;
-
-		if (!mIsExternalGLContext && mGlrc)
-		{
-			wglDeleteContext(mGlrc);
-			mGlrc = 0;
-		}
-		if (!mIsExternal)
-		{
-			WindowEventUtilities::_removeRenderWindow(this);
-
-			if (mIsFullScreen)
-				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
-			DestroyWindow(mHWnd);
-		}
-		else
-		{
-			// just release the DC
-			ReleaseDC(mHWnd, mHDC);
-		}
-
-		mActive = false;
-		mClosed = true;
-		mHDC = 0; // no release thanks to CS_OWNDC wndclass style
-		mHWnd = 0;
-
-		if (mDeviceName != NULL)
-		{
-			delete[] mDeviceName;
-			mDeviceName = NULL;
-		}
-
-		RenderWindow::destroy_internal();
-	}
-
-	void Win32Window::initialize(const RENDER_WINDOW_DESC& desc)
+	void Win32Window::initialize_internal()
 	{
 #ifdef CM_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle( NULL );
@@ -113,19 +73,21 @@ namespace CamelotEngine {
 #endif
 
 		mHWnd = 0;
-		mName = desc.title;
-		mIsFullScreen = desc.fullscreen;
+		mName = mDesc.title;
+		mIsFullScreen = mDesc.fullscreen;
 		mClosed = false;		
-		mDisplayFrequency = desc.displayFrequency;
-		mColorDepth = desc.colorDepth;
+		mDisplayFrequency = mDesc.displayFrequency;
+		mColorDepth = mDesc.colorDepth;
 		HWND parent = 0;
 		HMONITOR hMonitor = NULL;
 
+		int monitorIndex = mDesc.monitorIndex;
+
 		// Get variable-length params
 		NameValuePairList::const_iterator opt;
-		NameValuePairList::const_iterator end = desc.platformSpecific.end();
+		NameValuePairList::const_iterator end = mDesc.platformSpecific.end();
 
-		if ((opt = desc.platformSpecific.find("externalWindowHandle")) != end)
+		if ((opt = mDesc.platformSpecific.find("externalWindowHandle")) != end)
 		{
 			mHWnd = (HWND)parseUnsignedInt(opt->second);
 			if (mHWnd)
@@ -134,12 +96,12 @@ namespace CamelotEngine {
 				mIsFullScreen = false;
 			}
 
-			if ((opt = desc.platformSpecific.find("externalGLControl")) != end) {
+			if ((opt = mDesc.platformSpecific.find("externalGLControl")) != end) {
 				mIsExternalGLControl = parseBool(opt->second);
 			}
 		}
 
-		if ((opt = desc.platformSpecific.find("externalGLContext")) != end)
+		if ((opt = mDesc.platformSpecific.find("externalGLContext")) != end)
 		{
 			mGlrc = (HGLRC)parseUnsignedLong(opt->second);
 			if( mGlrc )
@@ -147,11 +109,11 @@ namespace CamelotEngine {
 		}
 
 		// incompatible with fullscreen
-		if ((opt = desc.platformSpecific.find("parentWindowHandle")) != end)
+		if ((opt = mDesc.platformSpecific.find("parentWindowHandle")) != end)
 			parent = (HWND)parseUnsignedInt(opt->second);
 
 		// monitor handle
-		if ((opt = desc.platformSpecific.find("monitorHandle")) != end)
+		if ((opt = mDesc.platformSpecific.find("monitorHandle")) != end)
 			hMonitor = (HMONITOR)parseInt(opt->second);			
 
 		if (!mIsFullScreen)
@@ -167,15 +129,15 @@ namespace CamelotEngine {
 			DWORD		  dwStyleEx = 0;					
 			MONITORINFOEX monitorInfoEx;
 			RECT		  rc;
-			
+
 			// If we didn't specified the adapter index, or if it didn't find it
 			if (hMonitor == NULL)
 			{
 				POINT windowAnchorPoint;
 
 				// Fill in anchor point.
-				windowAnchorPoint.x = desc.left;
-				windowAnchorPoint.y = desc.top;
+				windowAnchorPoint.x = mDesc.left;
+				windowAnchorPoint.y = mDesc.top;
 
 
 				// Get the nearest monitor to this window.
@@ -189,11 +151,11 @@ namespace CamelotEngine {
 
 			size_t devNameLen = strlen(monitorInfoEx.szDevice);
 			mDeviceName = new char[devNameLen + 1];
-	
+
 			strcpy_s(mDeviceName, devNameLen + 1, monitorInfoEx.szDevice);
 
-			UINT32 left = desc.left;
-			UINT32 top = desc.top;
+			UINT32 left = mDesc.left;
+			UINT32 top = mDesc.top;
 
 			// No specified top left -> Center the window in the middle of the monitor
 			if (left == -1 || top == -1)
@@ -202,7 +164,7 @@ namespace CamelotEngine {
 				int screenh = monitorInfoEx.rcWork.bottom - monitorInfoEx.rcWork.top;
 
 				unsigned int winWidth, winHeight;
-				adjustWindow(desc.width, desc.height, &winWidth, &winHeight);
+				adjustWindow(mDesc.width, mDesc.height, &winWidth, &winHeight);
 
 				// clamp window dimensions to screen size
 				int outerw = (int(winWidth) < screenw)? int(winWidth) : screenw;
@@ -210,22 +172,22 @@ namespace CamelotEngine {
 
 				if (left == -1)
 					left = monitorInfoEx.rcWork.left + (screenw - outerw) / 2;
-				else if (desc.monitorIndex != -1)
+				else if (mDesc.monitorIndex != -1)
 					left += monitorInfoEx.rcWork.left;
 
 				if (top == -1)
 					top = monitorInfoEx.rcWork.top + (screenh - outerh) / 2;
-				else if (desc.monitorIndex != -1)
+				else if (mDesc.monitorIndex != -1)
 					top += monitorInfoEx.rcWork.top;
 			}
-			else if (desc.monitorIndex != -1)
+			else if (mDesc.monitorIndex != -1)
 			{
 				left += monitorInfoEx.rcWork.left;
 				top += monitorInfoEx.rcWork.top;
 			}
 
-			mWidth = desc.width;
-			mHeight = desc.height;
+			mWidth = mDesc.width;
+			mHeight = mDesc.height;
 			mTop = top;
 			mLeft = left;
 
@@ -244,9 +206,9 @@ namespace CamelotEngine {
 				}
 				else
 				{
-					if (desc.border == "none")
+					if (mDesc.border == "none")
 						dwStyle |= WS_POPUP;
-					else if (desc.border == "fixed")
+					else if (mDesc.border == "fixed")
 						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 						WS_SYSMENU | WS_MINIMIZEBOX;
 					else
@@ -256,7 +218,7 @@ namespace CamelotEngine {
 				int screenw = GetSystemMetrics(SM_CXSCREEN);
 				int screenh = GetSystemMetrics(SM_CYSCREEN);
 
-				if (!desc.outerDimensions)
+				if (!mDesc.outerDimensions)
 				{
 					// Calculate window dimensions required
 					// to get the requested client area
@@ -316,9 +278,9 @@ namespace CamelotEngine {
 			}
 
 			// Pass pointer to self as WM_CREATE parameter
-			mHWnd = CreateWindowEx(dwStyleEx, "GLWindow", desc.title.c_str(),
+			mHWnd = CreateWindowEx(dwStyleEx, "GLWindow", mDesc.title.c_str(),
 				dwStyle, mLeft, mTop, mWidth, mHeight, parent, 0, hInst, this);
-		
+
 			WindowEventUtilities::_addRenderWindow(this);			
 		}
 
@@ -340,7 +302,7 @@ namespace CamelotEngine {
 		if (!mIsExternalGLControl)
 		{
 			int testFsaa = mFSAA;
-			bool testHwGamma = desc.gamma;
+			bool testHwGamma = mDesc.gamma;
 			bool formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
 			if (!formatOk)
 			{
@@ -351,7 +313,7 @@ namespace CamelotEngine {
 					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
 				}
 
-				if (!formatOk && desc.gamma)
+				if (!formatOk && mDesc.gamma)
 				{
 					// try without sRGB
 					testHwGamma = false;
@@ -359,7 +321,7 @@ namespace CamelotEngine {
 					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
 				}
 
-				if (!formatOk && desc.gamma && (mFSAA > 0))
+				if (!formatOk && mDesc.gamma && (mFSAA > 0))
 				{
 					// try without both
 					testHwGamma = false;
@@ -382,7 +344,7 @@ namespace CamelotEngine {
 			if (!mGlrc)
 			{
 				CM_EXCEPT(RenderingAPIException, 
-				"wglCreateContext failed: " + translateWGLError());
+					"wglCreateContext failed: " + translateWGLError());
 			}
 		}
 
@@ -397,24 +359,72 @@ namespace CamelotEngine {
 			PFNWGLSWAPINTERVALEXTPROC _wglSwapIntervalEXT = 
 				(PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
 			if (_wglSwapIntervalEXT)
-				_wglSwapIntervalEXT(desc.vsync ? desc.vsyncInterval : 0);
+				_wglSwapIntervalEXT(mDesc.vsync ? mDesc.vsyncInterval : 0);
 		}
 
-        if (old_context && old_context != mGlrc)
-        {
-            // Restore old context
-		    if (!wglMakeCurrent(old_hdc, old_context))
-			    CM_EXCEPT(RenderingAPIException, "wglMakeCurrent() failed");
+		if (old_context && old_context != mGlrc)
+		{
+			// Restore old context
+			if (!wglMakeCurrent(old_hdc, old_context))
+				CM_EXCEPT(RenderingAPIException, "wglMakeCurrent() failed");
 
-            // Share lists with old context
-		    if (!wglShareLists(old_context, mGlrc))
-			    CM_EXCEPT(RenderingAPIException, "wglShareLists() failed");
-        }
+			// Share lists with old context
+			if (!wglShareLists(old_context, mGlrc))
+				CM_EXCEPT(RenderingAPIException, "wglShareLists() failed");
+		}
 
 		// Create RenderSystem context
 		mContext = new Win32Context(mHDC, mGlrc);
 
 		mActive = true;
+
+		GLRenderSystem* rs = static_cast<GLRenderSystem*>(RenderSystem::instancePtr());
+
+		rs->attachRenderTarget(*this);
+		rs->registerContext(mContext);
+
+		RenderWindow::initialize_internal();
+	}
+
+	void Win32Window::destroy_internal()
+	{
+		if (!mHWnd)
+			return;
+
+		// Unregister and destroy OGRE GLContext
+		delete mContext;
+
+		if (!mIsExternalGLContext && mGlrc)
+		{
+			wglDeleteContext(mGlrc);
+			mGlrc = 0;
+		}
+		if (!mIsExternal)
+		{
+			WindowEventUtilities::_removeRenderWindow(this);
+
+			if (mIsFullScreen)
+				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
+			DestroyWindow(mHWnd);
+		}
+		else
+		{
+			// just release the DC
+			ReleaseDC(mHWnd, mHDC);
+		}
+
+		mActive = false;
+		mClosed = true;
+		mHDC = 0; // no release thanks to CS_OWNDC wndclass style
+		mHWnd = 0;
+
+		if (mDeviceName != NULL)
+		{
+			delete[] mDeviceName;
+			mDeviceName = NULL;
+		}
+
+		RenderWindow::destroy_internal();
 	}
 
 	void Win32Window::adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 

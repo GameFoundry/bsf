@@ -48,20 +48,6 @@ namespace CamelotEngine {
 	*/
 	class CM_EXPORT HardwareBufferManager : public Module<HardwareBufferManager>
 	{
-    protected:
-        /** WARNING: The following three members should place before all other members.
-            Members destruct order is very important here, because destructing other
-            members will cause notify back to this class, and then will access to this
-            two members.
-        */
-        typedef set<VertexBuffer*>::type VertexBufferList;
-        typedef set<IndexBuffer*>::type IndexBufferList;
-        VertexBufferList mVertexBuffers;
-        IndexBufferList mIndexBuffers;
-
-        /// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
-        virtual VertexDeclarationPtr createVertexDeclarationImpl(void);
-
     public:
         HardwareBufferManager();
         virtual ~HardwareBufferManager();
@@ -89,7 +75,7 @@ namespace CamelotEngine {
 			geometry shader.
         */
 		virtual VertexBufferPtr 
-            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
+            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/** Create a hardware index buffer.
         @remarks Note that because buffers can be shared, they are reference
@@ -101,7 +87,7 @@ namespace CamelotEngine {
         @param usage One or more members of the HardwareBuffer::Usage enumeration.
         */
 		virtual IndexBufferPtr 
-            createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
+            createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 		/**
 		 * @brief	Creates an GPU parameter block that you can use for setting parameters
@@ -109,7 +95,7 @@ namespace CamelotEngine {
 		 *
 		 * @return	The new GPU parameter block.
 		 */
-		virtual GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC) = 0;
+		virtual GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC);
 
 		/**
 		 * @brief	Creates a generic buffer that can be passed as a parameter to a shader.
@@ -124,15 +110,18 @@ namespace CamelotEngine {
 		 * Be aware that some of these settings cannot be used together, and you will receive an assert if in debug mode.
 		 */
 		virtual GpuBufferPtr createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
-			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false) = 0;
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
         /** Creates a new vertex declaration. */
         virtual VertexDeclarationPtr createVertexDeclaration(void);
 
-		/// Notification that a hardware vertex buffer has been destroyed
-		void _notifyVertexBufferDestroyed(VertexBuffer* buf);
-		/// Notification that a hardware index buffer has been destroyed
-		void _notifyIndexBufferDestroyed(IndexBuffer* buf);
+	protected:
+		virtual VertexDeclarationPtr createVertexDeclarationImpl(void);
+		virtual VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
+		virtual IndexBufferPtr createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
+		virtual GpuParamBlockPtr createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC) = 0;
+		virtual GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
+			bool randomGpuWrite = false, bool useCounter = false) = 0;
 	};
 
 	/** @} */

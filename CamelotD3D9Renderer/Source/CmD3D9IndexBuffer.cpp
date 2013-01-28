@@ -41,19 +41,27 @@ namespace CamelotEngine {
         bool useSystemMemory)
         : IndexBuffer(mgr, idxType, numIndexes, usage, useSystemMemory)
     {
+			
+    }
+	//---------------------------------------------------------------------
+    D3D9IndexBuffer::~D3D9IndexBuffer()
+    { }
+	//---------------------------------------------------------------------
+	void D3D9IndexBuffer::initialize_internal()
+	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		D3DPOOL eResourcePool;
 
 #if CM_D3D_MANAGE_BUFFERS
-		eResourcePool = useSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_MANAGED;
+		eResourcePool = mSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_MANAGED;
 #else
-		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;
+		eResourcePool = mSystemMemory? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;
 #endif
 
 		// Set the desired memory pool.
 		mBufferDesc.Pool = eResourcePool;
-				
+
 		// Allocate the system memory buffer.
 		mSystemMemoryBuffer = new char [getSizeInBytes()];
 		memset(mSystemMemoryBuffer, 0, getSizeInBytes());
@@ -67,11 +75,28 @@ namespace CamelotEngine {
 
 				createBuffer(d3d9Device, mBufferDesc.Pool);
 			}
-		}				
-    }
+		}	
+
+		IndexBuffer::initialize_internal();
+	}
 	//---------------------------------------------------------------------
-    D3D9IndexBuffer::~D3D9IndexBuffer()
-    { }
+	void D3D9IndexBuffer::destroy_internal()
+	{
+		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
+
+			DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
+
+		while (it != mMapDeviceToBufferResources.end())
+		{
+			SAFE_RELEASE(it->second->mBuffer);
+			SAFE_DELETE(it->second);
+			++it;
+		}	
+		mMapDeviceToBufferResources.clear();   
+		SAFE_DELETE_ARRAY(mSystemMemoryBuffer);
+
+		IndexBuffer::destroy_internal();
+	}
 	//---------------------------------------------------------------------
     void* D3D9IndexBuffer::lockImpl(UINT32 offset, 
         UINT32 length, GpuLockOptions options)
@@ -324,23 +349,5 @@ namespace CamelotEngine {
 		bufferResources->mLockOptions = GBL_READ_WRITE;
 
 		return true;			
-	}
-	//---------------------------------------------------------------------
-	void D3D9IndexBuffer::destroy_internal()
-	{
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
-			DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
-
-		while (it != mMapDeviceToBufferResources.end())
-		{
-			SAFE_RELEASE(it->second->mBuffer);
-			SAFE_DELETE(it->second);
-			++it;
-		}	
-		mMapDeviceToBufferResources.clear();   
-		SAFE_DELETE_ARRAY(mSystemMemoryBuffer);
-
-		IndexBuffer::destroy_internal();
 	}
 }

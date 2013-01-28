@@ -18,13 +18,9 @@ namespace CamelotEngine
         bool isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,
             bool preciseFormatOnly = false);		
 
-		/**
-		 * @copydoc TextureManager::createMultiRenderTexture()
-		 */
-		MultiRenderTexturePtr createMultiRenderTexture();
-
 	protected:		
-		Texture* createTextureImpl();
-		RenderTexture* createRenderTextureImpl();
+		TexturePtr createTextureImpl();
+		RenderTexturePtr createRenderTextureImpl();
+		MultiRenderTexturePtr createMultiRenderTextureImpl();
 	};
 }

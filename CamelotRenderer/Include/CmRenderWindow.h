@@ -95,16 +95,8 @@ namespace CamelotEngine
     */
     class CM_EXPORT RenderWindow : public RenderTarget
     {
-
     public:
-        /** Default constructor.
-        */
-        RenderWindow();
 		virtual ~RenderWindow();
-
-        /** Creates & displays a new window.
-        */
-		virtual void initialize(const RENDER_WINDOW_DESC& desc) = 0;
 
 		/** Alter fullscreen mode options. 
 		@note Nothing will happen unless the settings here are different from the
@@ -181,20 +173,22 @@ namespace CamelotEngine
 		static RenderWindowPtr create(const RENDER_WINDOW_DESC& desc);
 
     protected:
-        bool mIsFullScreen;
-        bool mIsPrimary;
-        bool mAutoDeactivatedOnFocusChange;
-        int mLeft;
-        int mTop;
+        /** Default constructor.
+        */
+        RenderWindow(const RENDER_WINDOW_DESC& desc);
         
         /** Indicates that this is the primary window. 
         */
         void _setPrimary() { mIsPrimary = true; }
 
-		/**
-		 * @copydoc RenderTarget::destroy_internal()
-		 */
-		virtual void destroy_internal();
+	protected:
+		bool mIsFullScreen;
+		bool mIsPrimary;
+		bool mAutoDeactivatedOnFocusChange;
+		int mLeft;
+		int mTop;
+
+		RENDER_WINDOW_DESC mDesc;
     };
 	/** @} */
 	/** @} */

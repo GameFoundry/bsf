@@ -80,36 +80,26 @@ namespace CamelotEngine {
 		_aligned_free(mScratchBufferPool);
     }
     //-----------------------------------------------------------------------
-    VertexBufferPtr GLHardwareBufferManager::createVertexBuffer(
+    VertexBufferPtr GLHardwareBufferManager::createVertexBufferImpl(
         UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
-		GLVertexBuffer* buf = 
-			new GLVertexBuffer(this, vertexSize, numVerts, usage);
-		{
-			mVertexBuffers.insert(buf);
-		}
-		return VertexBufferPtr(buf);
+		return VertexBufferPtr(new GLVertexBuffer(this, vertexSize, numVerts, usage));
     }
     //-----------------------------------------------------------------------
     IndexBufferPtr 
-    GLHardwareBufferManager::createIndexBuffer(
+    GLHardwareBufferManager::createIndexBufferImpl(
         IndexBuffer::IndexType itype, UINT32 numIndexes, 
         GpuBufferUsage usage)
     {
-		GLIndexBuffer* buf = 
-			new GLIndexBuffer(this, itype, numIndexes, usage);
-		{
-			mIndexBuffers.insert(buf);
-		}
-		return IndexBufferPtr(buf);
+		return IndexBufferPtr(new GLIndexBuffer(this, itype, numIndexes, usage));
     }
 	//---------------------------------------------------------------------
-	GpuParamBlockPtr GLHardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
+	GpuParamBlockPtr GLHardwareBufferManager::createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
 	{
 		return GpuParamBlockPtr(new GLGpuParamBlock(paramDesc, usage));
 	}
 	//---------------------------------------------------------------------
-	GpuBufferPtr GLHardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
+	GpuBufferPtr GLHardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
 		return GpuBufferPtr(new GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));

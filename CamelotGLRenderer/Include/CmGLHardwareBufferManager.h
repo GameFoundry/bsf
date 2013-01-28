@@ -40,38 +40,9 @@ namespace CamelotEngine {
     /** Implementation of HardwareBufferManager for OpenGL. */
     class CM_RSGL_EXPORT GLHardwareBufferManager : public HardwareBufferManager
     {
-	protected:
-		char* mScratchBufferPool;
-		CM_MUTEX(mScratchMutex)
-		UINT32 mMapBufferThreshold;
-
     public:
         GLHardwareBufferManager();
         ~GLHardwareBufferManager();
-
-		/**
-		 * @copydoc HardwareBufferManager::createVertexBuffer
-		 */
-        VertexBufferPtr createVertexBuffer(UINT32 vertexSize, 
-            UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
-
-		/**
-		 * @copydoc HardwareBufferManager::createIndexBuffer
-		 */
-        IndexBufferPtr createIndexBuffer(
-            IndexBuffer::IndexType itype, UINT32 numIndexes, 
-            GpuBufferUsage usage);
-
-		/** @copydoc HardwareBufferManager::createGpuParamBlock */
-		GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC);
-
-		/**
-		 * @copydoc HardwareBufferManager::createGenericBuffer
-		 *
-		 * OpenGL does not support generic buffers so this method will return a dummy instance.
-		 */
-		GpuBufferPtr createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
-			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
         /// Utility function to get the correct GL usage based on HBU's
         static GLenum getGLUsage(unsigned int usage);
@@ -95,6 +66,35 @@ namespace CamelotEngine {
 		*/
 		const UINT32 getGLMapBufferThreshold() const;
 		void setGLMapBufferThreshold( const UINT32 value );
+
+	protected:
+		char* mScratchBufferPool;
+		CM_MUTEX(mScratchMutex);
+		UINT32 mMapBufferThreshold;
+
+		/**
+		 * @copydoc HardwareBufferManager::createVertexBufferImpl
+		 */
+        VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, 
+            UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+
+		/**
+		 * @copydoc HardwareBufferManager::createIndexBufferImpl
+		 */
+        IndexBufferPtr createIndexBufferImpl(
+            IndexBuffer::IndexType itype, UINT32 numIndexes, 
+            GpuBufferUsage usage);
+
+		/** @copydoc HardwareBufferManager::createGpuParamBlockImpl */
+		GpuParamBlockPtr createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC);
+
+		/**
+		 * @copydoc HardwareBufferManager::createGenericBufferImpl
+		 *
+		 * OpenGL does not support generic buffers so this method will return a dummy instance.
+		 */
+		GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
+			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
     };
 }
 

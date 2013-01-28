@@ -45,22 +45,19 @@ namespace CamelotEngine {
 		glDeleteTextures(1, &mWarningTextureID);
     }
     //-----------------------------------------------------------------------------
-    Texture* GLTextureManager::createTextureImpl()
+    TexturePtr GLTextureManager::createTextureImpl()
     {
-        return new GLTexture(mGLSupport);
+        return TexturePtr(new GLTexture(mGLSupport));
     }
 	//-----------------------------------------------------------------------------
-	RenderTexture* GLTextureManager::createRenderTextureImpl()
+	RenderTexturePtr GLTextureManager::createRenderTextureImpl()
 	{
-		return new GLRenderTexture();
+		return RenderTexturePtr(new GLRenderTexture());
 	}
 	//----------------------------------------------------------------------------
-	MultiRenderTexturePtr GLTextureManager::createMultiRenderTexture()
+	MultiRenderTexturePtr GLTextureManager::createMultiRenderTextureImpl()
 	{
-		GLMultiRenderTexture* newMRT = new GLMultiRenderTexture();
-		newMRT->initialize();
-
-		return MultiRenderTexturePtr(newMRT);
+		return MultiRenderTexturePtr(new GLMultiRenderTexture());
 	}
 	//-----------------------------------------------------------------------------
 	void GLTextureManager::createWarningTexture()

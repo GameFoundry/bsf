@@ -9,8 +9,6 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11IndexBuffer : public IndexBuffer
 	{
 	public:
-		D3D11IndexBuffer(D3D11Device& device, HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
-			GpuBufferUsage usage, bool useSystemMem);
 		~D3D11IndexBuffer();
 
 		/**
@@ -35,6 +33,11 @@ namespace CamelotEngine
 		ID3D11Buffer* getD3DIndexBuffer() const { return mBuffer->getD3DBuffer(); }		
 
 	protected:
+		friend class D3D11HardwareBufferManager;
+
+		D3D11IndexBuffer(D3D11Device& device, HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
+			GpuBufferUsage usage, bool useSystemMem);
+
 		/**
 		* @copydoc HardwareBuffer::lockImpl
 		 */
@@ -45,8 +48,17 @@ namespace CamelotEngine
 		 */
 		void unlockImpl(void);
 
+		/**
+		 * @copydoc IndexBuffer::initialize_internal()
+		 */
+		void initialize_internal();	
+		
+		/**
+		 * @copydoc IndexBuffer::destroy_internal()
+		 */
 		void destroy_internal();
 
 		D3D11HardwareBuffer* mBuffer;
+		D3D11Device& mDevice;
 	};
 }

@@ -36,21 +36,6 @@ namespace CamelotEngine {
         UINT32 numVertices, GpuBufferUsage usage)
         : VertexBuffer(mgr, vertexSize, numVertices, usage, false)
     {
-        glGenBuffersARB( 1, &mBufferId );
-
-        if (!mBufferId)
-        {
-            CM_EXCEPT(InternalErrorException, 
-                "Cannot create GL vertex buffer");
-        }
-
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
-
-        // Initialise mapped buffer and set usage
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 
-            GLHardwareBufferManager::getGLUsage(usage));
-
-        //std::cerr << "creating vertex buffer = " << mBufferId << std::endl;
     }
 	//---------------------------------------------------------------------
     GLVertexBuffer::~GLVertexBuffer()
@@ -193,6 +178,25 @@ namespace CamelotEngine {
             glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, offset, length, pSource); 
         }
     }
+	//---------------------------------------------------------------------
+	void GLVertexBuffer::initialize_internal()
+	{
+		glGenBuffersARB( 1, &mBufferId );
+
+		if (!mBufferId)
+		{
+			CM_EXCEPT(InternalErrorException, 
+				"Cannot create GL vertex buffer");
+		}
+
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, mBufferId);
+
+		// Initialise mapped buffer and set usage
+		glBufferDataARB(GL_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 
+			GLHardwareBufferManager::getGLUsage(mUsage));
+
+		VertexBuffer::initialize_internal();
+	}
 	//---------------------------------------------------------------------
 	void GLVertexBuffer::destroy_internal()
 	{

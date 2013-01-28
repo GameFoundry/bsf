@@ -461,12 +461,6 @@ namespace CamelotEngine
 		}
 		return ret;
 	}
-
-	void VertexDeclaration::destroy_internal()
-	{
-		CoreGpuObject::destroy_internal();
-	}
-
 	//----------------------------------------------------------------------------
 	void VertexDeclaration::recalculateHash()
 	{

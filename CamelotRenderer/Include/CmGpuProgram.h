@@ -100,11 +100,6 @@ namespace CamelotEngine {
 	public:
 		virtual ~GpuProgram();
 
-		/**
-		 * @brief	Performs GpuProgram initialization. Only callable from the render thread.
-		 */
-		virtual void initialize_internal();
-
         /** Gets the syntax code for this program e.g. arbvp1, fp20, vs_1_1 etc */
         virtual const String& getSyntaxCode(void) const { return mSyntaxCode; }
 
@@ -150,6 +145,21 @@ namespace CamelotEngine {
         virtual const String& getLanguage(void) const;
 
 	protected:
+		friend class GpuProgramManager;
+
+		GpuProgram(const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
+
+        /** Internal method returns whether required capabilities for this program is supported.
+        */
+        bool isRequiredCapabilitiesSupported(void) const;
+
+		/// @copydoc Resource::calculateSize
+		size_t calculateSize(void) const { return 0; } // TODO 
+
+		void throwIfNotRenderThread() const;
+
+	protected:
 		/// The type of the program
 		GpuProgramType mType;
 		/// Does this (geometry) program require adjacency information?
@@ -167,37 +177,6 @@ namespace CamelotEngine {
 		 * @brief	Contains information about all parameters in a shader.
 		 */
 		GpuParamDesc mParametersDesc;
-
-		/**
-		 * @brief	Initializes the gpu program. This must be called right after the program is
-		 * 			constructed. Called by GpuManager upon creation, so usually you don't want
-		 * 			to call this manually.
-		 *		 
-		 * @note	Initialization is not done immediately, and is instead just scheduled on the
-		 * 			render thread. Unless called from render thread, in which case it is initialized
-		 * 			right away.
-		 */
-		void initialize();
-
-		/**
-		 * @copydoc Resource::destroy_internal.
-		 */
-		virtual void destroy_internal();
-
-        /** Internal method returns whether required capabilities for this program is supported.
-        */
-        bool isRequiredCapabilitiesSupported(void) const;
-
-		/// @copydoc Resource::calculateSize
-		size_t calculateSize(void) const { return 0; } // TODO 
-
-		void throwIfNotRenderThread() const;
-
-    protected:
-		friend class GpuProgramManager;
-
-		GpuProgram(const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

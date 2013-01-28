@@ -146,6 +146,7 @@ namespace CamelotEngine {
     {
 		HighLevelGpuProgramFactory* factory = getFactory(language);
         HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(source, entryPoint, gptype, profile));
+		ret->setThisPtr(ret);
 		ret->initialize();
 
         return ret;
@@ -155,6 +156,7 @@ namespace CamelotEngine {
 	{
 		HighLevelGpuProgramFactory* factory = getFactory(language);
 		HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create());
+		ret->setThisPtr(ret);
 		ret->initialize();
 
 		return ret;
@@ -164,6 +166,7 @@ namespace CamelotEngine {
 	{
 		HighLevelGpuProgramFactory* factory = getFactory(language);
 		HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create());
+		ret->setThisPtr(ret);
 
 		return ret;
 	}

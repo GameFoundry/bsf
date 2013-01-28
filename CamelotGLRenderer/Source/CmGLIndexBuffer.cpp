@@ -35,26 +35,36 @@ namespace CamelotEngine {
     GLIndexBuffer::GLIndexBuffer(HardwareBufferManager* mgr, IndexType idxType,
         UINT32 numIndexes, GpuBufferUsage usage)
         : IndexBuffer(mgr, idxType, numIndexes, usage, false)
-    {
-        glGenBuffersARB( 1, &mBufferId );
-
-        if (!mBufferId)
-        {
-			CM_EXCEPT(InternalErrorException, 
-                "Cannot create GL index buffer");
-        }
-
-        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId);
-
-        // Initialise buffer and set usage
-        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 
-            GLHardwareBufferManager::getGLUsage(usage));
-
-        //std::cerr << "creating index buffer " << mBufferId << std::endl;
-    }
+    {  }
 	//---------------------------------------------------------------------
     GLIndexBuffer::~GLIndexBuffer()
     {    }
+	//---------------------------------------------------------------------
+	void GLIndexBuffer::initialize_internal()
+	{
+		glGenBuffersARB( 1, &mBufferId );
+
+		if (!mBufferId)
+		{
+			CM_EXCEPT(InternalErrorException, 
+				"Cannot create GL index buffer");
+		}
+
+		glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mBufferId);
+
+		// Initialise buffer and set usage
+		glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mSizeInBytes, NULL, 
+			GLHardwareBufferManager::getGLUsage(mUsage));
+
+		IndexBuffer::initialize_internal();
+	}
+	//---------------------------------------------------------------------
+	void GLIndexBuffer::destroy_internal()
+	{
+		glDeleteBuffersARB(1, &mBufferId);
+
+		IndexBuffer::destroy_internal();
+	}
 	//---------------------------------------------------------------------
     void* GLIndexBuffer::lockImpl(UINT32 offset, 
         UINT32 length, GpuLockOptions options)
@@ -189,11 +199,4 @@ namespace CamelotEngine {
             glBufferSubDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, offset, length, pSource);
         }
     }
-	//---------------------------------------------------------------------
-	void GLIndexBuffer::destroy_internal()
-	{
-		 glDeleteBuffersARB(1, &mBufferId);
-
-		IndexBuffer::destroy_internal();
-	}
 }

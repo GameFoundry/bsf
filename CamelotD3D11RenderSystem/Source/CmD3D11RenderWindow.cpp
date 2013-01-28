@@ -9,8 +9,8 @@
 
 namespace CamelotEngine
 {
-	D3D11RenderWindow::D3D11RenderWindow(D3D11Device& device, IDXGIFactory* DXGIFactory)
-		: RenderWindow()
+	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc,D3D11Device& device, IDXGIFactory* DXGIFactory)
+		: RenderWindow(desc)
 		, mDevice(device)
 		, mDXGIFactory(DXGIFactory)
 		, mIsExternal(false)
@@ -32,33 +32,7 @@ namespace CamelotEngine
 	{
 	}
 
-	void D3D11RenderWindow::destroy_internal()
-	{
-		_destroySizeDependedD3DResources();
-
-		mActive = false;
-		mClosed = true;
-
-		SAFE_RELEASE(mSwapChain);
-
-		if (mHWnd && !mIsExternal)
-		{
-			WindowEventUtilities::_removeRenderWindow(this);
-			DestroyWindow(mHWnd);
-		}
-
-		if(mDepthStencilView != nullptr)
-		{
-			Texture::releaseView(mDepthStencilView);
-			mDepthStencilView = nullptr;
-		}
-
-		mHWnd = nullptr;
-
-		RenderWindow::destroy_internal();
-	}
-
-	void D3D11RenderWindow::initialize(const RENDER_WINDOW_DESC& desc)
+	void D3D11RenderWindow::initialize_internal()
 	{
 		mFSAAType.Count = 1;
 		mFSAAType.Quality = 0;
@@ -73,17 +47,17 @@ namespace CamelotEngine
 		NameValuePairList::const_iterator opt;
 
 		// parentWindowHandle		-> parentHWnd
-		opt = desc.platformSpecific.find("parentWindowHandle");
-		if(opt != desc.platformSpecific.end())
+		opt = mDesc.platformSpecific.find("parentWindowHandle");
+		if(opt != mDesc.platformSpecific.end())
 			parentHWnd = (HWND)parseUnsignedInt(opt->second);
 		// externalWindowHandle		-> externalHandle
-		opt = desc.platformSpecific.find("externalWindowHandle");
-		if(opt != desc.platformSpecific.end())
+		opt = mDesc.platformSpecific.find("externalWindowHandle");
+		if(opt != mDesc.platformSpecific.end())
 			externalHandle = (HWND)parseUnsignedInt(opt->second);
 
-		mName = desc.title;
-		mIsFullScreen = desc.fullscreen;
-		mColorDepth = desc.colorDepth;
+		mName = mDesc.title;
+		mIsFullScreen = mDesc.fullscreen;
+		mColorDepth = mDesc.colorDepth;
 		mWidth = mHeight = mLeft = mTop = 0;
 
 		mActive = true;
@@ -94,12 +68,12 @@ namespace CamelotEngine
 			DWORD dwStyle = (mHidden ? 0 : WS_VISIBLE) | WS_CLIPCHILDREN;
 			RECT rc;
 
-			mWidth = desc.width;
-			mHeight = desc.height;
-			mTop = desc.top;
-			mLeft = desc.left;
+			mWidth = mDesc.width;
+			mHeight = mDesc.height;
+			mTop = mDesc.top;
+			mLeft = mDesc.left;
 
-			if (!desc.fullscreen)
+			if (!mDesc.fullscreen)
 			{
 				if (parentHWnd)
 				{
@@ -107,16 +81,16 @@ namespace CamelotEngine
 				}
 				else
 				{
-					if (desc.border == "none")
+					if (mDesc.border == "none")
 						dwStyle |= WS_POPUP;
-					else if (desc.border == "fixed")
+					else if (mDesc.border == "fixed")
 						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 						WS_SYSMENU | WS_MINIMIZEBOX;
 					else
 						dwStyle |= WS_OVERLAPPEDWINDOW;
 				}
 
-				if (!desc.outerDimensions)
+				if (!mDesc.outerDimensions)
 				{
 					// Calculate window dimensions required
 					// to get the requested client area
@@ -145,7 +119,7 @@ namespace CamelotEngine
 			}
 
 			UINT classStyle = 0;
-			if (desc.enableDoubleClick)
+			if (mDesc.enableDoubleClick)
 				classStyle |= CS_DBLCLKS;
 
 			HINSTANCE hInst = NULL;
@@ -161,7 +135,7 @@ namespace CamelotEngine
 			// Create our main window
 			// Pass pointer to self
 			mIsExternal = false;
-			mHWnd = CreateWindow("D3D11Wnd", desc.title.c_str(), dwStyle,
+			mHWnd = CreateWindow("D3D11Wnd", mDesc.title.c_str(), dwStyle,
 				mLeft, mTop, mWidth, mHeight, parentHWnd, 0, hInst, this);
 
 			WindowEventUtilities::_addRenderWindow(this);
@@ -186,6 +160,38 @@ namespace CamelotEngine
 		_createSizeDependedD3DResources();
 		mDXGIFactory->MakeWindowAssociation(mHWnd, NULL);
 		setHidden(mHidden);
+
+		RenderSystem* rs = RenderSystem::instancePtr();
+		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(rs);
+		d3d11rs->attachRenderTarget(*this);
+
+		RenderWindow::initialize_internal();
+	}
+
+	void D3D11RenderWindow::destroy_internal()
+	{
+		_destroySizeDependedD3DResources();
+
+		mActive = false;
+		mClosed = true;
+
+		SAFE_RELEASE(mSwapChain);
+
+		if (mHWnd && !mIsExternal)
+		{
+			WindowEventUtilities::_removeRenderWindow(this);
+			DestroyWindow(mHWnd);
+		}
+
+		if(mDepthStencilView != nullptr)
+		{
+			Texture::releaseView(mDepthStencilView);
+			mDepthStencilView = nullptr;
+		}
+
+		mHWnd = nullptr;
+
+		RenderWindow::destroy_internal();
 	}
 
 	void D3D11RenderWindow::swapBuffers(bool waitForVSync)

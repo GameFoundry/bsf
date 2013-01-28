@@ -58,13 +58,5 @@ namespace CamelotEngine {
     {
 
     }
-	//----------------------------------------------------------------------------
-	void IndexBuffer::destroy_internal()
-	{
-		if (mMgr)
-			mMgr->_notifyIndexBufferDestroyed(this);
-
-		CoreGpuObject::destroy_internal();
-	}
 }
 

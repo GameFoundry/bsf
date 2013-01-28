@@ -108,7 +108,7 @@ namespace CamelotEngine
 		throwIfBuffersDontMatch();
 
 		if(mDepthStencilSurface != nullptr && mColorSurface != nullptr)
-			createInternalResourcesImpl();
+			createInternalResources();
 	}
 
 	void RenderTexture::setDepthStencilSurface(TexturePtr depthStencilSurface, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
@@ -130,7 +130,7 @@ namespace CamelotEngine
 		throwIfBuffersDontMatch();
 
 		if(mDepthStencilSurface != nullptr && mColorSurface != nullptr)
-			createInternalResourcesImpl();
+			createInternalResources();
 	}
 
 	void RenderTexture::throwIfBuffersDontMatch() const

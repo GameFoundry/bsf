@@ -12,9 +12,9 @@ namespace CamelotEngine
 
 	protected:
 		/**
-		 * @copydoc RenderWindowManager::create()
+		 * @copydoc RenderWindowManager::createImpl()
 		 */
-		void createImpl(const RENDER_WINDOW_DESC& desc, AsyncOp& asyncOp);
+		RenderWindowPtr createImpl(const RENDER_WINDOW_DESC& desc);
 
 	private:
 		GLRenderSystem* mRenderSystem;

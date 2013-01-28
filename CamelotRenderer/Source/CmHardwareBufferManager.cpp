@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "CmHardwareBufferManager.h"
 #include "CmVertexData.h"
 #include "CmIndexData.h"
+#include "CmGpuBuffer.h"
 #include "CmVertexDeclaration.h"
 
 namespace CamelotEngine {
@@ -39,39 +40,53 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     HardwareBufferManager::~HardwareBufferManager()
     {
-        // Clear vertex/index buffer list first, avoid destroyed notify do
-        // unnecessary work, and we'll destroy everything here.
-		mVertexBuffers.clear();
-		mIndexBuffers.clear();
     }
     //-----------------------------------------------------------------------
     VertexDeclarationPtr HardwareBufferManager::createVertexDeclaration(void)
     {
         VertexDeclarationPtr decl = createVertexDeclarationImpl();
+		decl->setThisPtr(decl);
+		decl->initialize();
         return decl;
     }
     //-----------------------------------------------------------------------
     VertexDeclarationPtr HardwareBufferManager::createVertexDeclarationImpl(void)
     {
-        return VertexDeclarationPtr(new VertexDeclaration());
+		return VertexDeclarationPtr(new VertexDeclaration());
     }
 	//-----------------------------------------------------------------------
-	void HardwareBufferManager::_notifyVertexBufferDestroyed(VertexBuffer* buf)
+	VertexBufferPtr HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
-		VertexBufferList::iterator i = mVertexBuffers.find(buf);
-		if (i != mVertexBuffers.end())
-		{
-            // release vertex buffer copies
-			mVertexBuffers.erase(i);
-		}
+		assert (numVerts > 0);
+
+		VertexBufferPtr vbuf = createVertexBufferImpl(vertexSize, numVerts, usage, streamOut);
+		vbuf->setThisPtr(vbuf);
+		vbuf->initialize();
+		return vbuf;
 	}
 	//-----------------------------------------------------------------------
-	void HardwareBufferManager::_notifyIndexBufferDestroyed(IndexBuffer* buf)
+	IndexBufferPtr HardwareBufferManager::createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 	{
-		IndexBufferList::iterator i = mIndexBuffers.find(buf);
-		if (i != mIndexBuffers.end())
-		{
-			mIndexBuffers.erase(i);
-		}
+		assert (numIndexes > 0);
+
+		IndexBufferPtr ibuf = createIndexBufferImpl(itype, numIndexes, usage);
+		ibuf->setThisPtr(ibuf);
+		ibuf->initialize();
+		return ibuf;
+
+	}
+	//-----------------------------------------------------------------------
+	GpuParamBlockPtr HardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
+	{
+		return createGpuParamBlockImpl(paramDesc, usage);
+	}
+	//-----------------------------------------------------------------------
+	GpuBufferPtr HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
+		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
+	{
+		GpuBufferPtr gbuf = createGpuBufferImpl(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+		gbuf->setThisPtr(gbuf);
+		gbuf->initialize();
+		return gbuf;
 	}
 }

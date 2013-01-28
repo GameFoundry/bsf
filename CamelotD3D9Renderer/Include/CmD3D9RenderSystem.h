@@ -293,7 +293,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Called internally by RenderWindowManager whenever a new window is created.
 		 */
-		void registerRenderWindow(D3D9RenderWindowPtr renderWindow);
+		void registerRenderWindow(D3D9RenderWindow* renderWindow);
 	
 		/************************************************************************/
 		/* 							Sampler states                     			*/

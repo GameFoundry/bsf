@@ -8,7 +8,6 @@ namespace CamelotEngine
 	class CM_RSGL_EXPORT GLGpuBuffer : public GpuBuffer
 	{
 	public:
-		GLGpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
         ~GLGpuBuffer();
 
 		/**
@@ -39,9 +38,16 @@ namespace CamelotEngine
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 
 	protected:
+		friend class GLHardwareBufferManager;
+
+		GLGpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+
 		virtual GpuBufferView* createView();
 		virtual void destroyView(GpuBufferView* view);
 
-		void destroy_internal();
+		/**
+		 * @copydoc GpuBuffer::initialize_internal()
+		 */
+		void initialize_internal();	
 	};
 }

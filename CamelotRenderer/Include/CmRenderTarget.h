@@ -71,7 +71,6 @@ namespace CamelotEngine
 			FB_AUTO
 		};
 
-        RenderTarget();
         virtual ~RenderTarget();
 
         /// Retrieve target's name.
@@ -233,6 +232,8 @@ namespace CamelotEngine
 		virtual void _endUpdate();
 
     protected:
+		RenderTarget();
+
         /// The name of this target.
         String mName;
 		/// The priority of the render target.
@@ -248,11 +249,6 @@ namespace CamelotEngine
 		// FSAA performed?
 		UINT32 mFSAA;
 		String mFSAAHint;
-			
-		/**
-		 * @copydoc CoreGpuObject::destroy_internal()
-		 */
-		virtual void destroy_internal();
     };
 	/** @} */
 	/** @} */

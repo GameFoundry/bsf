@@ -37,17 +37,8 @@ namespace CamelotEngine
 	class CM_D3D9_EXPORT D3D9RenderWindow : public RenderWindow
 	{
 	public:
-		/** Constructor.
-		@param instance The application instance
-		@param driver The root driver
-		@param deviceIfSwapChain The existing D3D device to create an additional swap chain from, if this is not
-			the first window.
-		*/
-		D3D9RenderWindow					(HINSTANCE instance);
 		~D3D9RenderWindow					();
 		
-		
-		void				initialize			(const RENDER_WINDOW_DESC& desc);
 		void				setFullscreen		(bool fullScreen, unsigned int width, unsigned int height);
 		bool				isActive			() const;
 		bool				isVisible			() const;
@@ -103,6 +94,23 @@ namespace CamelotEngine
 			DWORD style, unsigned int* winWidth, unsigned int* winHeight);
 
 	protected:
+		friend class D3D9RenderWindowManager;
+
+		D3D9RenderWindow (const RENDER_WINDOW_DESC& desc, HINSTANCE instance);
+
+		void updateWindowRect();
+
+		/**
+		 * @copydoc RenderWindow::initialize_internal().
+		 */
+		void initialize_internal();
+
+		/**
+		 * @copydoc RenderWindow::destroy_internal().
+		 */
+		void destroy_internal();
+
+	protected:
 		HINSTANCE					mInstance;				// Process instance
 		D3D9Device* 				mDevice;				// D3D9 device wrapper class.
 		bool						mDeviceValid;			// Device was validation succeeded.
@@ -121,10 +129,6 @@ namespace CamelotEngine
 		// Desired width / height after resizing
 		unsigned int mDesiredWidth;
 		unsigned int mDesiredHeight;
-
-		void updateWindowRect();
-
-		void destroy_internal();
 	};
 }
 #endif

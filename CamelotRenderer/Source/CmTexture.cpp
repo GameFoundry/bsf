@@ -73,7 +73,7 @@ namespace CamelotEngine {
 
 		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::initialize_internal, this));
+		Resource::initialize();
 	}
     //--------------------------------------------------------------------------
     bool Texture::hasAlpha(void) const

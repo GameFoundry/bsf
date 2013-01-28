@@ -39,6 +39,7 @@ THE SOFTWARE.
 #include "CmGLSLExtSupport.h"
 #include "CmGLSLPreprocessor.h"
 #include "CmGLSLParamParser.h"
+#include "CmHardwareBufferManager.h"
 
 #include "CmGLSLProgramRTTI.h"
 
@@ -63,6 +64,8 @@ namespace CamelotEngine
     //-----------------------------------------------------------------------
 	void GLSLProgram::initialize_internal()
 	{
+		mVertexDeclaration = HardwareBufferManager::instance().createVertexDeclaration();
+
 		// only create a shader object if glsl is supported
 		GLenum shaderType = 0x0000;
 		if (isSupported())
@@ -169,7 +172,7 @@ namespace CamelotEngine
 
 		GLSLParamParser paramParser;
 		paramParser.buildUniformDescriptions(mGLHandle, mParametersDesc);
-		paramParser.buildVertexDeclaration(mGLHandle, mVertexDeclaration);
+		paramParser.buildVertexDeclaration(mGLHandle, *mVertexDeclaration);
 
 		HighLevelGpuProgram::initialize_internal();
 	}
@@ -183,6 +186,8 @@ namespace CamelotEngine
 
 		if (isSupported())
 			glDeleteShader(mGLHandle);
+
+		mVertexDeclaration->destroy();
 
 		HighLevelGpuProgram::destroy_internal();
 	}

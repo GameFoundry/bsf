@@ -135,12 +135,12 @@ namespace CamelotEngine {
 		D3D9Texture();
 
 		/**
-		 * @copydoc Resource::initialize_internal()
+		 * @copydoc Texture::initialize_internal()
 		 */
 		void initialize_internal();	
 		
 		/**
-		 * @copydoc Resource::destroy_internal()
+		 * @copydoc Texture::destroy_internal()
 		 */
 		void destroy_internal();
 

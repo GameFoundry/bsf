@@ -10,7 +10,6 @@ namespace CamelotEngine
 	class CM_EXPORT GpuBuffer : public CoreGpuObject
     {
     public:
-        GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
         virtual ~GpuBuffer();
 
 		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options) = 0;
@@ -33,12 +32,7 @@ namespace CamelotEngine
 		UINT32 getElementSize() const { return mElementSize; }
 
 	protected:
-		GpuBufferType mType;
-		GpuBufferUsage mUsage;
-		bool mRandomGpuWrite;
-		bool mUseCounter;
-		UINT32 mElementCount;
-		UINT32 mElementSize;
+		GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
 		virtual GpuBufferView* createView() = 0;
 		virtual void destroyView(GpuBufferView* view) = 0;
@@ -60,5 +54,13 @@ namespace CamelotEngine
 		};
 
 		std::unordered_map<GPU_BUFFER_DESC, GpuBufferReference*, GpuBufferView::HashFunction, GpuBufferView::EqualFunction> mBufferViews;
+
+	protected:
+		GpuBufferType mType;
+		GpuBufferUsage mUsage;
+		bool mRandomGpuWrite;
+		bool mUseCounter;
+		UINT32 mElementCount;
+		UINT32 mElementSize;
     };
 }

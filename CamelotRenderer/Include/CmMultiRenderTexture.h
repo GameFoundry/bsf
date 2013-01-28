@@ -20,7 +20,6 @@ namespace CamelotEngine
 		TextureView* mDepthStencilSurface;
 
 		MultiRenderTexture();
-		virtual void initialize() {}
 
 		virtual void setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0) = 0;
 		virtual void setDepthStencilImpl(TexturePtr depthStencilstencil, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0) = 0;

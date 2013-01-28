@@ -292,10 +292,6 @@ namespace CamelotEngine
 
 		return ro;
 	}
-	void Mesh::initialize()
-	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&Mesh::initialize_internal, this));
-	}
 
 	void Mesh::initialize_internal()
 	{
@@ -319,7 +315,7 @@ namespace CamelotEngine
 		if(mIndexData)
 			delete mIndexData;
 
-		CoreGpuObject::destroy_internal();
+		Resource::destroy_internal();
 	}
 
 	void Mesh::throwIfNotRenderThread() const
@@ -349,6 +345,7 @@ namespace CamelotEngine
 	MeshPtr Mesh::create()
 	{
 		MeshPtr mesh = MeshPtr(new Mesh());
+		mesh->setThisPtr(mesh);
 		mesh->initialize();
 
 		return mesh;
@@ -357,6 +354,7 @@ namespace CamelotEngine
 	MeshPtr Mesh::createEmpty()
 	{
 		MeshPtr mesh = MeshPtr(new Mesh());
+		mesh->setThisPtr(mesh);
 
 		return mesh;
 	}

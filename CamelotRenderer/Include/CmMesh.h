@@ -28,8 +28,6 @@ namespace CamelotEngine
 	public:
 		virtual ~Mesh();
 
-		void initialize();
-
 		/**
 		 * @brief	Mesh data that is used for initializing the mesh. Needs to be set before calling load.
 		 */
@@ -52,8 +50,12 @@ namespace CamelotEngine
 
 		vector<SubMesh>::type mSubMeshes;
 
-		virtual void initialize_internal();
 		void throwIfNotRenderThread() const;
+
+		/**
+		 * @copydoc Resource::initialize_internal()
+		 */
+		virtual void initialize_internal();
 
 		/**
 		 * @copydoc Resource::destroy_internal()

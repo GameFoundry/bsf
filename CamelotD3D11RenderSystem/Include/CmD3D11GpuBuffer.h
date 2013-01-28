@@ -9,7 +9,6 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11GpuBuffer : public GpuBuffer
     {
     public:
-		D3D11GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
         ~D3D11GpuBuffer();
 
 		/**
@@ -42,11 +41,24 @@ namespace CamelotEngine
 		ID3D11Buffer* getDX11Buffer() const;
 
 	protected:
-		D3D11HardwareBuffer* mBuffer;
+		friend class D3D11HardwareBufferManager;
+
+		D3D11GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
 		virtual GpuBufferView* createView();
 		virtual void destroyView(GpuBufferView* view);
 
+		/**
+		 * @copydoc GpuBuffer::initialize_internal()
+		 */
+		void initialize_internal();	
+		
+		/**
+		 * @copydoc GpuBuffer::destroy_internal()
+		 */
 		void destroy_internal();
+
+	private:
+		D3D11HardwareBuffer* mBuffer;
     };
 }

@@ -50,12 +50,4 @@ namespace CamelotEngine
     {
 
     }
-
-	void VertexBuffer::destroy_internal()
-	{
-		if (mMgr)
-			mMgr->_notifyVertexBufferDestroyed(this);
-
-		CoreGpuObject::destroy_internal();
-	}
 }

@@ -39,8 +39,6 @@ namespace CamelotEngine {
     {   
 
     public:
-		D3D9VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, 
-			UINT32 numVertices, GpuBufferUsage usage, bool useSystemMem);
         ~D3D9VertexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);
@@ -76,6 +74,11 @@ namespace CamelotEngine {
 			GpuLockOptions					mLockOptions;
 			UINT32						mLastUsedFrame;
 		};
+
+		friend class D3D9HardwareBufferManager;
+
+		D3D9VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, 
+			UINT32 numVertices, GpuBufferUsage usage, bool useSystemMem);
 	
 		/** See HardwareBuffer. */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);		
@@ -84,6 +87,14 @@ namespace CamelotEngine {
 		// updates buffer resources from system memory buffer.
 		bool updateBufferResources(const char* systemMemoryBuffer, BufferResources* bufferResources);		
 
+		/**
+		 * @copydoc VertexBuffer::initialize_internal()
+		 */
+		void initialize_internal();	
+		
+		/**
+		 * @copydoc VertexBuffer::destroy_internal()
+		 */
 		void destroy_internal();
 
 		typedef map<IDirect3DDevice9*, BufferResources*>::type	DeviceToBufferResourcesMap;

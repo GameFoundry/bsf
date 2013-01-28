@@ -11,16 +11,8 @@ namespace CamelotEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	void D3D9RenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc, AsyncOp& asyncOp)
+	RenderWindowPtr D3D9RenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc)
 	{
-		// Create the window
-		D3D9RenderWindow* renderWindow = new D3D9RenderWindow(mRenderSystem->getInstanceHandle());
-
-		renderWindow->initialize(desc);
-
-		D3D9RenderWindowPtr winPtr(renderWindow);
-		mRenderSystem->registerRenderWindow(winPtr);
-
-		asyncOp.completeOperation(std::static_pointer_cast<RenderWindow>(winPtr));
+		return RenderWindowPtr(new D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle()));
 	}
 }

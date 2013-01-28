@@ -6,11 +6,17 @@ namespace CamelotEngine
 	GLGpuBuffer::GLGpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter) 
 		: GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter)
 	{
-		LOGWRN("Generic buffers are not supported in OpenGL. Creating a dummy buffer. All operations on it will either be no-op or return a nullptr.");
 	}
 
 	GLGpuBuffer::~GLGpuBuffer()
 	{
+	}
+
+	void GLGpuBuffer::initialize_internal()
+	{
+		LOGWRN("Generic buffers are not supported in OpenGL. Creating a dummy buffer. All operations on it will either be no-op or return a nullptr.");
+
+		GpuBuffer::initialize_internal();
 	}
 
 	void* GLGpuBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
@@ -42,10 +48,5 @@ namespace CamelotEngine
 
 	void GLGpuBuffer::destroyView(GpuBufferView* view)
 	{
-	}
-
-	void GLGpuBuffer::destroy_internal()
-	{
-		GpuBuffer::destroy_internal();
 	}
 }

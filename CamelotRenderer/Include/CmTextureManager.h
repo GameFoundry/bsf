@@ -58,9 +58,9 @@ namespace CamelotEngine {
     class CM_EXPORT TextureManager : public Module<TextureManager>
     {
 	protected:
-		virtual Texture* createTextureImpl() = 0;
-		virtual RenderTexture* createRenderTextureImpl() = 0;
-
+		virtual TexturePtr createTextureImpl() = 0;
+		virtual RenderTexturePtr createRenderTextureImpl() = 0;
+		virtual MultiRenderTexturePtr createMultiRenderTextureImpl() = 0;
     public:
 
         TextureManager(void);
@@ -187,7 +187,7 @@ namespace CamelotEngine {
 		 * @brief	Creates a new multi render texture. You may use this type of texture
 		 * 			to render to multiple output textures at once.
 		 */
-		virtual MultiRenderTexturePtr createMultiRenderTexture() = 0;
+		virtual MultiRenderTexturePtr createEmptyMultiRenderTexture();
 
 		/** Returns whether this render system can natively support the precise texture 
 			format requested with the given usage options.

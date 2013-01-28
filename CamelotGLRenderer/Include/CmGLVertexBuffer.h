@@ -37,7 +37,6 @@ namespace CamelotEngine {
     class CM_RSGL_EXPORT GLVertexBuffer : public VertexBuffer 
     {
     public:
-        GLVertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
         ~GLVertexBuffer();
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);
@@ -48,11 +47,23 @@ namespace CamelotEngine {
         GLuint getGLBufferId(void) const { return mBufferId; }
 
 	protected:
+		friend class GLHardwareBufferManager;
+
+		GLVertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
+
 		/** See HardwareBuffer. */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 		/** See HardwareBuffer. */
 		void unlockImpl(void);
 
+		/**
+		 * @copydoc VertexBuffer::initialize_internal()
+		 */
+		void initialize_internal();	
+		
+		/**
+		 * @copydoc VertexBuffer::destroy_internal()
+		 */
 		void destroy_internal();
 
 	private:

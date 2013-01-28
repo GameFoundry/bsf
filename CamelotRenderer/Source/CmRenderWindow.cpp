@@ -31,10 +31,11 @@ THE SOFTWARE.
 
 namespace CamelotEngine 
 {
-    RenderWindow::RenderWindow()
+    RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc)
         : RenderTarget()
 		, mIsPrimary(false)
 		, mIsFullScreen(false)
+		, mDesc(desc)
     {
         mAutoDeactivatedOnFocusChange = true;
     }
@@ -42,11 +43,6 @@ namespace CamelotEngine
 	RenderWindow::~RenderWindow() 
 	{
 
-	}
-
-	void RenderWindow::destroy_internal()
-	{
-		RenderTarget::destroy_internal();
 	}
 
     //-----------------------------------------------------------------------

@@ -46,7 +46,25 @@ namespace CamelotEngine {
 	{
 
 	}
-    
+	//-----------------------------------------------------------------------------
+	void D3D9GpuProgram::initialize_internal()
+	{
+		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+		{
+			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
+
+			createInternalResources(d3d9Device);
+		}		       
+
+		GpuProgram::initialize_internal();
+	}
+	//----------------------------------------------------------------------------
+	void D3D9GpuProgram::destroy_internal()
+	{
+		SAFE_RELEASE(mpExternalMicrocode);
+
+		GpuProgram::destroy_internal();
+	}
 	//-----------------------------------------------------------------------------
 	void D3D9GpuProgram::setExternalMicrocode(const void* pMicrocode, UINT32 size)
 	{
@@ -74,18 +92,6 @@ namespace CamelotEngine {
 	{
 		return mpExternalMicrocode;
 	}
-	//-----------------------------------------------------------------------------
-    void D3D9GpuProgram::initialize_internal()
-    {
-		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
-		{
-			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
-
-			createInternalResources(d3d9Device);
-		}		       
-
-		GpuProgram::initialize_internal();
-    }
 	//-----------------------------------------------------------------------------
 	void D3D9GpuProgram::createInternalResources(IDirect3DDevice9* d3d9Device)
 	{
@@ -126,13 +132,6 @@ namespace CamelotEngine {
 			SAFE_RELEASE(errors);
 		}
 	}
-	//----------------------------------------------------------------------------
-	void D3D9GpuProgram::destroy_internal()
-	{
-		SAFE_RELEASE(mpExternalMicrocode);
-
-		GpuProgram::destroy_internal();
-	}
     //-----------------------------------------------------------------------
 	GpuParamsPtr D3D9GpuProgram::createParameters()
 	{
@@ -150,6 +149,20 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------------
 	D3D9GpuVertexProgram::~D3D9GpuVertexProgram()
 	{	
+	}
+	//-----------------------------------------------------------------------------
+	void D3D9GpuVertexProgram::destroy_internal(void)
+	{
+		DeviceToVertexShaderIterator it = mMapDeviceToVertexShader.begin();
+
+		while (it != mMapDeviceToVertexShader.end())
+		{
+			SAFE_RELEASE(it->second);
+			++it;
+		}
+		mMapDeviceToVertexShader.clear();	
+
+		D3D9GpuProgram::destroy_internal();
 	}
 	//-----------------------------------------------------------------------------
     void D3D9GpuVertexProgram::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
@@ -184,26 +197,10 @@ namespace CamelotEngine {
 		}
     }
 	//-----------------------------------------------------------------------------
-    void D3D9GpuVertexProgram::destroy_internal(void)
-    {
-        DeviceToVertexShaderIterator it = mMapDeviceToVertexShader.begin();
-
-		while (it != mMapDeviceToVertexShader.end())
-		{
-			SAFE_RELEASE(it->second);
-			++it;
-		}
-		mMapDeviceToVertexShader.clear();	
-
-		D3D9GpuProgram::destroy_internal();
-    }
-
-	//-----------------------------------------------------------------------------
 	void D3D9GpuVertexProgram::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{
 		
 	}
-
 	//-----------------------------------------------------------------------------
 	void D3D9GpuVertexProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
@@ -249,6 +246,20 @@ namespace CamelotEngine {
 	{
 	}
 	//-----------------------------------------------------------------------------
+	void D3D9GpuFragmentProgram::destroy_internal()
+	{
+		DeviceToPixelShaderIterator it = mMapDeviceToPixelShader.begin();
+
+		while (it != mMapDeviceToPixelShader.end())
+		{
+			SAFE_RELEASE(it->second);
+			++it;
+		}
+		mMapDeviceToPixelShader.clear();	
+
+		D3D9GpuProgram::destroy_internal();
+	}
+	//-----------------------------------------------------------------------------
     void D3D9GpuFragmentProgram::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
     {
 		DeviceToPixelShaderIterator it = mMapDeviceToPixelShader.find(d3d9Device);
@@ -279,20 +290,6 @@ namespace CamelotEngine {
 
 			mMapDeviceToPixelShader[d3d9Device] = NULL;
 		}
-    }
-	//-----------------------------------------------------------------------------
-    void D3D9GpuFragmentProgram::destroy_internal()
-    {
-		DeviceToPixelShaderIterator it = mMapDeviceToPixelShader.begin();
-
-		while (it != mMapDeviceToPixelShader.end())
-		{
-			SAFE_RELEASE(it->second);
-			++it;
-		}
-		mMapDeviceToPixelShader.clear();	
-
-		D3D9GpuProgram::destroy_internal();
     }
 	//-----------------------------------------------------------------------------
 	void D3D9GpuFragmentProgram::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)

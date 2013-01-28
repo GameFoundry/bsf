@@ -29,9 +29,7 @@ OR
 Keep a strong ptr, when Resource::destroy() internally calls Resources to remove the reference?
 And Resources.DestroyUnusedAssets destroys all with just 1 reference?
 
-Resource::destroy_internal is not abstract temporarily so I can test
-
-Stuff that needs destroy():
+Stuff that needs to derive from CoreGpuObject:
  - GpuProgram (DONE)
  - HighLevelGpuProgram (DONE)
  - Texture (DONE)
@@ -44,6 +42,7 @@ Stuff that needs destroy():
  - RenderTexture (DONE)
  - MultiRenderTexture (DONE)
  - Blend/DepthStencil/Rasterizer/SamplerState
+ - GpuParamBlock
 ---
  Maybe
   - Material
@@ -51,17 +50,23 @@ Stuff that needs destroy():
   - Shader
   - Technique
 
-I am currently completely ignoring D3D9ResourceManager. It is not notified when a resource is destroyed (actually destructed), 
-so it's mResources array contains many invalid pointers. Normally resource was removed from that list whenever it was 
-destructed but with my current approach, that might be AFTER the render system is shut down, which doesn't work. I need to 
-figure out a better way of releasing all resources when the application shuts down so that this doesn't happen.
- - Also DynManager never gets shut down because I'd have to free all objects that use dynamic lib classes before shutting it down
- - MAYBE, rename IDestroyable to GpuResource and just have every GPU resource derive from that.
-   - interface provides destroy(), and also keeps track of all created resources?
+Test if async loading still works
+
+RenderTextures and MultiRenderTextures will only work properly if used directly from render thread, as setting each surface calls render methods, so its impossible to set one outside of render thread
+ - also they don't have initialize_internal
+ - I should probably make these immutable. Once they are set they can't be changed, so everything can be initialized when calling initialize()
+
+OpenGL render window no longer looks for a monitor index
+
+CoreGpuObject and CoreGpuObjectManager
+  - Attempt to provide a debug version that tracks the callstack where resource was allocated, so user can know exactly which resource is he failing to release
+ - Need to make sure I can release handles (ResourceHandle::reset()?)
+ - make ::Destroy() virtual as Resources need to make it private
+ 
+ResourceHandle::reset removes ALL references to a resource. It's probably smarter if it just removes the one reference
 
 Plan today & saturday:
  Add destroy() for remaining classes
- Handle the issue with destroy() and immediately releasing object reference before destroy gets executed()
 
  - Support loading of compound objects:
    - Loading Material also loads attached Shader and Textures/Samplers
@@ -70,10 +75,7 @@ Plan today & saturday:
   - Have Resources::unloadUnused() which unloads all with reference count of 1
   - Don't store heavyweight GUID in each ResourceHandle
 
-
-
-Calling destroy() and then immediately releasing last reference to an object will delete the object before it is destroyed. (Since destroy()) gets queued.
- - Upon calling destroy() I should keep a temporary reference to the object until it actually is destroyed.
+  Calling CoreGpuObject::waitUntilInitialized and initialization fails (or is never called) it will block forever
 
 Material RTTI should also serialize shared buffers (they need to be made into a resource)
  - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams

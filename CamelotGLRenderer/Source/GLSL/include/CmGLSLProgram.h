@@ -96,7 +96,7 @@ namespace CamelotEngine {
 		virtual void setMaxOutputVertices(int maxOutputVertices) 
 		{ mMaxOutputVertices = maxOutputVertices; }
 
-		const VertexDeclaration& getInputAttributes() const { return mVertexDeclaration; }
+		const VertexDeclaration& getInputAttributes() const { return *mVertexDeclaration; }
 
 	protected:
 		friend class GLSLProgramFactory;
@@ -127,7 +127,7 @@ namespace CamelotEngine {
 		int mMaxOutputVertices;
 		/// Preprocessor options
 		String mPreprocessorDefines;
-		VertexDeclaration mVertexDeclaration;
+		VertexDeclarationPtr mVertexDeclaration;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

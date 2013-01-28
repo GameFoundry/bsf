@@ -16,6 +16,15 @@ namespace CamelotEngine
 
 	void MultiRenderTexture::destroy_internal()
 	{
+		for(auto iter = mColorSurfaces.begin(); iter != mColorSurfaces.end(); ++iter)
+		{
+			if(*iter != nullptr)
+				Texture::releaseView(*iter);
+		}
+
+		if(mDepthStencilSurface != nullptr)
+			Texture::releaseView(mDepthStencilSurface);
+
 		RenderTarget::destroy_internal();
 	}
 

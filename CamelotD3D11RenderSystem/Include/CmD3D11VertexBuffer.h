@@ -9,8 +9,6 @@ namespace CamelotEngine
 	class CM_D3D11_EXPORT D3D11VertexBuffer : public VertexBuffer
 	{
 	public:
-		D3D11VertexBuffer(D3D11Device& device, HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, 
-			GpuBufferUsage usage, bool useSystemMem, bool streamOut);
 		~D3D11VertexBuffer();
 
 		/**
@@ -34,7 +32,12 @@ namespace CamelotEngine
 		 */
 		ID3D11Buffer* getD3DVertexBuffer() const { return mBuffer->getD3DBuffer(); }		
 
-	protected:
+	protected: 
+		friend class D3D11HardwareBufferManager;
+
+		D3D11VertexBuffer(D3D11Device& device, HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, 
+			GpuBufferUsage usage, bool useSystemMem, bool streamOut);
+
 		/**
 		* @copydoc HardwareBuffer::lockImpl
 		 */
@@ -45,8 +48,18 @@ namespace CamelotEngine
 		 */
 		void unlockImpl(void);
 
+		/**
+		 * @copydoc VertexBuffer::initialize_internal()
+		 */
+		void initialize_internal();	
+		
+		/**
+		 * @copydoc VertexBuffer::destroy_internal()
+		 */
 		void destroy_internal();
 
 		D3D11HardwareBuffer* mBuffer;
+		bool mStreamOut;
+		D3D11Device& mDevice;
 	};
 }

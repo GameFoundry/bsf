@@ -11,19 +11,14 @@ namespace CamelotEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	void GLRenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc, AsyncOp& asyncOp)
+	RenderWindowPtr GLRenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc)
 	{
 		GLSupport* glSupport = mRenderSystem->getGLSupport();
 
 		// Create the window
 		RenderWindow* win = glSupport->newWindow(desc);
 
-		mRenderSystem->attachRenderTarget(*win);
-		GLContext* context;
-		win->getCustomAttribute("GLCONTEXT", &context);
-		mRenderSystem->registerContext(context);
-
 		RenderWindowPtr winPtr(win);
-		asyncOp.completeOperation(winPtr);
+		return winPtr;
 	}
 }

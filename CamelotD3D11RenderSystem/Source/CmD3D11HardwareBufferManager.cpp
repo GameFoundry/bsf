@@ -16,52 +16,26 @@ namespace CamelotEngine
 
 	}
 
-	VertexBufferPtr D3D11HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, 
+	VertexBufferPtr D3D11HardwareBufferManager::createVertexBufferImpl(UINT32 vertexSize, 
 		UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
-		assert (numVerts > 0);
-		D3D11VertexBuffer* vbuf = new D3D11VertexBuffer(mDevice,
-			this, vertexSize, numVerts, usage, false, streamOut);
-		{
-			mVertexBuffers.insert(vbuf);
-		}
-
-		return VertexBufferPtr(vbuf);
+		return VertexBufferPtr(new D3D11VertexBuffer(mDevice, this, vertexSize, numVerts, usage, false, streamOut));
 	}
 
-	IndexBufferPtr D3D11HardwareBufferManager::createIndexBuffer(IndexBuffer::IndexType itype, 
+	IndexBufferPtr D3D11HardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, 
 		UINT32 numIndexes, GpuBufferUsage usage)
 	{
-		assert (numIndexes > 0);
-
-		D3D11IndexBuffer* idx = new D3D11IndexBuffer(mDevice,
-			this, itype, numIndexes, usage, false);
-		{
-
-				mIndexBuffers.insert(idx);
-		}
-
-		return IndexBufferPtr(idx);
+		return IndexBufferPtr(new D3D11IndexBuffer(mDevice, this, itype, numIndexes, usage, false));
 	}
 
-	GpuParamBlockPtr D3D11HardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& blockDesc, GpuParamBlockUsage usage)
+	GpuParamBlockPtr D3D11HardwareBufferManager::createGpuParamBlockImpl(const GpuParamBlockDesc& blockDesc, GpuParamBlockUsage usage)
 	{
 		return GpuParamBlockPtr(new D3D11GpuParamBlock(blockDesc, usage));
 	}
 
-	GpuBufferPtr D3D11HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
+	GpuBufferPtr D3D11HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
 		return GpuBufferPtr(new D3D11GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
-	}
-
-	VertexDeclarationPtr D3D11HardwareBufferManager::createVertexDeclarationImpl(void)
-	{
-		return VertexDeclarationPtr(new VertexDeclaration());
-	}
-
-	void D3D11HardwareBufferManager::destroyVertexDeclarationImpl(VertexDeclaration* decl)
-	{
-		delete decl;
 	}
 }

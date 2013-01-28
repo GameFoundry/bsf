@@ -131,6 +131,15 @@ namespace CamelotEngine
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
+		/**
+		 * @brief	Releases the reference held by this handle.
+		 */
+		void reset()
+		{
+			mData->mPtr = nullptr;
+			mData->mIsCreated = false;
+		}
+
 		std::shared_ptr<T> getInternalPtr() 
 		{ 
 			throwIfNotLoaded();

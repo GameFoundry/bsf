@@ -56,22 +56,6 @@ namespace CamelotEngine
 	GpuProgram::~GpuProgram()
 	{
 	}
-	//---------------------------------------------------------------------------
-	void GpuProgram::initialize()
-	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&GpuProgram::initialize_internal, this));
-	}
-	//---------------------------------------------------------------------------
-    void GpuProgram::initialize_internal(void)
-    {
-		// Nothing to initialize
-		Resource::initialize_internal();
-    }
-	//---------------------------------------------------------------------------
-	void GpuProgram::destroy_internal()
-	{
-		CoreGpuObject::destroy_internal();
-	}
     //-----------------------------------------------------------------------------
     bool GpuProgram::isSupported(void) const
     {

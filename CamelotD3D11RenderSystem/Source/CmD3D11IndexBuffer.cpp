@@ -4,7 +4,7 @@ namespace CamelotEngine
 {
 	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
 		GpuBufferUsage usage, bool useSystemMem)
-		:IndexBuffer(mgr, idxType, numIndexes, usage, useSystemMem)
+		:IndexBuffer(mgr, idxType, numIndexes, usage, useSystemMem), mDevice(device)
 	{
 		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_INDEX, usage, 1, mSizeInBytes, device, useSystemMem);
 	}
@@ -12,6 +12,21 @@ namespace CamelotEngine
 	D3D11IndexBuffer::~D3D11IndexBuffer()
 	{
 		
+	}
+
+	void D3D11IndexBuffer::initialize_internal()
+	{
+		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSizeInBytes, mDevice, mSystemMemory);
+
+		IndexBuffer::initialize_internal();
+	}
+
+	void D3D11IndexBuffer::destroy_internal()
+	{
+		if(mBuffer != nullptr)
+			delete mBuffer;
+
+		IndexBuffer::destroy_internal();
 	}
 
 	void* D3D11IndexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
@@ -38,13 +53,5 @@ namespace CamelotEngine
 		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer)
 	{
 		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer);
-	}
-
-	void D3D11IndexBuffer::destroy_internal()
-	{
-		if(mBuffer != nullptr)
-			delete mBuffer;
-
-		IndexBuffer::destroy_internal();
 	}
 }
