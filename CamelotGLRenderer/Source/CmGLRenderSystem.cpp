@@ -211,12 +211,6 @@ namespace CamelotEngine
 		if(mProgramPipelineManager != nullptr)
 			delete mProgramPipelineManager;
 
-		// Destroy render windows
-		for (auto i = mRenderTargets.begin(); i != mRenderTargets.end(); ++i)
-		{
-			delete *i;
-		}
-
 		mRenderTargets.clear();
 
 		if(mGLSupport)
@@ -230,24 +224,6 @@ namespace CamelotEngine
 
 		GpuProgram* bindingPrg = prg->getBindingDelegate();
 		GLSLGpuProgram* glprg = static_cast<GLSLGpuProgram*>(bindingPrg);
-
-		// Unbind previous gpu program first.
-		//
-		// Note:
-		//  1. Even if both previous and current are the same object, we can't
-		//     bypass re-bind completely since the object itself maybe modified.
-		//     But we can bypass unbind based on the assumption that object
-		//     internally GL program type shouldn't be changed after it has
-		//     been created. The behavior of bind to a GL program type twice
-		//     should be same as unbind and rebind that GL program type, even
-		//     for difference objects.
-		//  2. We also assumed that the program's type (vertex or fragment) should
-		//     not be changed during it's in using. If not, the following switch
-		//     statement will confuse GL state completely, and we can't fix it
-		//     here. To fix this case, we must coding the program implementation
-		//     itself, if type is changing (during load/unload, etc), and it's inuse,
-		//     unbind and notify render system to correct for its state.
-		//
 
 		switch (glprg->getType())
 		{

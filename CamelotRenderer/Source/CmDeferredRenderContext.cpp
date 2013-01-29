@@ -179,6 +179,7 @@ namespace CamelotEngine
 	void DeferredRenderContext::cancelAll()
 	{
 		vector<CommandQueue::Command>::type* commands = mCommandQueue->flush();
+		delete commands;
 
 		// TODO - This cancels the commands but doesn't revert the state variables
 	}

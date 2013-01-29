@@ -8,6 +8,8 @@ namespace CamelotEngine
 	class CM_EXPORT RenderStateManager : public Module<RenderStateManager>
 	{
 	public:
+		RenderStateManager();
+
 		/**
 		 * @brief	Creates and initializes a new SamplerState.
 		 */
@@ -55,5 +57,15 @@ namespace CamelotEngine
 		 * 			as it requires additional manual initialization that is not required normally.
 		 */
 		virtual BlendStatePtr createEmptyBlendState() const;
+
+		const SamplerStatePtr& getDefaultSamplerState() const { return mDefaultSamplerState; }
+		const BlendStatePtr& getDefaultBlendState() const { return mDefaultBlendState; }
+		const RasterizerStatePtr& getDefaultRasterizerState() const { return mDefaultRasterizerState; }
+		const DepthStencilStatePtr& getDefaultDepthStencilState() const { return mDefaultDepthStencilState; }
+	private:
+		SamplerStatePtr mDefaultSamplerState;
+		BlendStatePtr mDefaultBlendState;
+		RasterizerStatePtr mDefaultRasterizerState;
+		DepthStencilStatePtr mDefaultDepthStencilState;
 	};
 }

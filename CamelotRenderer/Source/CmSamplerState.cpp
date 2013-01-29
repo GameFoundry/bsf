@@ -15,9 +15,7 @@ namespace CamelotEngine
 
 	const SamplerStatePtr& SamplerState::getDefault()
 	{
-		static SamplerStatePtr samplerState = RenderStateManager::instance().createSamplerState(SAMPLER_STATE_DESC());
-
-		return samplerState;
+		return RenderStateManager::instance().getDefaultSamplerState();
 	}
 
 	FilterOptions SamplerState::getTextureFiltering(FilterType ft) const

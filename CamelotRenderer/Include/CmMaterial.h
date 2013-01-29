@@ -31,6 +31,8 @@ namespace CamelotEngine
 	class CM_EXPORT Material : public Resource
 	{
 	public:
+		~Material();
+
 		/**
 		 * @brief	Sets a shader that will be used by the material. 
 		 * 			Shaders best technique will be retrieved and used in all subsequent Material

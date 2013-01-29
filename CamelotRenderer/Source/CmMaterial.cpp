@@ -18,6 +18,11 @@ namespace CamelotEngine
 
 	}
 
+	Material::~Material()
+	{
+
+	}
+
 	void Material::setShader(ShaderPtr shader)
 	{
 		mShader = shader;

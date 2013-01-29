@@ -216,8 +216,8 @@ int CALLBACK WinMain(
 
 	//_ASSERT(_CrtCheckMemory());
 
-	//testRenderable->setMesh(dbgMesh);
-	//testRenderable->setMaterial(testMaterial);
+	testRenderable->setMesh(dbgMesh);
+	testRenderable->setMaterial(testMaterial);
 
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );
@@ -225,7 +225,7 @@ int CALLBACK WinMain(
 	gApplication().runMainLoop();
 
 	// Release everything before shutdown
-	//testMaterial->destroy();
+	testMaterial->destroy();
 	testMaterial.reset();
 
 	testTex->destroy();
@@ -244,6 +244,12 @@ int CALLBACK WinMain(
 
 	testModelGO->destroy();
 	testModelGO = nullptr;
+	testRenderable = nullptr;
+
+	cameraGO->destroy();
+	cameraGO = nullptr;
+	camera = nullptr;
+	debugCamera = nullptr;
 
 	newPassGL = nullptr;
 	newTechniqueGL = nullptr;
@@ -255,6 +261,8 @@ int CALLBACK WinMain(
 	newTechniqueDX11 = nullptr;
 
 	testShader = nullptr;
+	
+	renderWindow = nullptr;
 
 	gApplication().shutDown();
 

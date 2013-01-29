@@ -113,16 +113,6 @@ namespace CamelotEngine {
 	void RenderSystem::destroy_internal()
 	{
 		// Remove all the render targets.
-		// (destroy primary target last since others may depend on it)
-		RenderTarget* primary = 0;
-		for (auto it = mRenderTargets.begin(); it != mRenderTargets.end(); ++it)
-		{
-			if (!primary && (*it)->isPrimary())
-				primary = *it;
-			else
-				delete *it;
-		}
-		delete primary;
 		mRenderTargets.clear();
 
 		mPrioritisedRenderTargets.clear();

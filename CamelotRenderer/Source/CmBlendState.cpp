@@ -14,9 +14,7 @@ namespace CamelotEngine
 
 	const BlendStatePtr& BlendState::getDefault()
 	{
-		static BlendStatePtr blendState = RenderStateManager::instance().createBlendState(BLEND_STATE_DESC());
-
-		return blendState;
+		return RenderStateManager::instance().getDefaultBlendState();
 	}
 
 	bool BlendState::getBlendEnabled(UINT32 renderTargetIdx) const

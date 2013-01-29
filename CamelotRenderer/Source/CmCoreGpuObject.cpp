@@ -21,6 +21,14 @@ namespace CamelotEngine
 			LOGWRN("Destructor called but object is not destroyed. Object will leak.")
 		}
 
+#if CM_DEBUG_MODE
+		if(!mThis.expired())
+		{
+			CM_EXCEPT(InternalErrorException, "Shared pointer to this object still has active references but " \
+				"the object is being deleted? You shouldn't delete CoreGpuObjects manually.");
+		}
+#endif
+
 		CoreGpuObjectManager::instance().unregisterObject(this);
 	}
 
