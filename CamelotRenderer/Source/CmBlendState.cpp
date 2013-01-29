@@ -9,7 +9,7 @@ namespace CamelotEngine
 	{
 		mData = desc;
 
-		CoreGpuObject::initialize();
+		Resource::initialize();
 	}
 
 	const BlendStatePtr& BlendState::getDefault()

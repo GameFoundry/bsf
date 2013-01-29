@@ -6,14 +6,6 @@
 
 namespace CamelotEngine
 {
-	RenderStateManager::RenderStateManager()
-	{
-		mDefaultSamplerState = createSamplerState(SAMPLER_STATE_DESC());
-		mDefaultBlendState = createBlendState(BLEND_STATE_DESC());
-		mDefaultRasterizerState = createRasterizerState(RASTERIZER_STATE_DESC());
-		mDefaultDepthStencilState = createDepthStencilState(DEPTH_STENCIL_STATE_DESC());
-	}
-
 	SamplerStatePtr RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc) const
 	{
 		SamplerStatePtr samplerState = SamplerStatePtr(new SamplerState());
@@ -80,5 +72,37 @@ namespace CamelotEngine
 		blendState->setThisPtr(blendState);
 
 		return blendState;
+	}
+
+	const SamplerStatePtr& RenderStateManager::getDefaultSamplerState() const 
+	{ 
+		if(mDefaultSamplerState == nullptr)
+			mDefaultSamplerState = createSamplerState(SAMPLER_STATE_DESC());
+
+		return mDefaultSamplerState; 
+	}
+
+	const BlendStatePtr& RenderStateManager::getDefaultBlendState() const 
+	{ 
+		if(mDefaultBlendState == nullptr)
+			mDefaultBlendState = createBlendState(BLEND_STATE_DESC());
+
+		return mDefaultBlendState; 
+	}
+
+	const RasterizerStatePtr& RenderStateManager::getDefaultRasterizerState() const 
+	{ 
+		if(mDefaultRasterizerState == nullptr)
+			mDefaultRasterizerState = createRasterizerState(RASTERIZER_STATE_DESC());
+
+		return mDefaultRasterizerState; 
+	}
+
+	const DepthStencilStatePtr& RenderStateManager::getDefaultDepthStencilState() const 
+	{ 
+		if(mDefaultDepthStencilState == nullptr)
+			mDefaultDepthStencilState = createDepthStencilState(DEPTH_STENCIL_STATE_DESC());
+
+		return mDefaultDepthStencilState; 
 	}
 }

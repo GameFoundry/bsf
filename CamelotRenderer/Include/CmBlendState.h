@@ -71,6 +71,7 @@ namespace CamelotEngine
 		friend class RenderStateManager;
 
 		virtual void initialize(const BLEND_STATE_DESC& desc);
+
 		BLEND_STATE_DESC mData;
 
 		/************************************************************************/

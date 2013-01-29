@@ -10,7 +10,7 @@ namespace CamelotEngine
 	{
 		mData = desc;
 
-		CoreGpuObject::initialize();
+		Resource::initialize();
 	}
 
 	const DepthStencilStatePtr& DepthStencilState::getDefault()
