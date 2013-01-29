@@ -46,6 +46,11 @@ namespace CamelotEngine
 		 */
 		const String& getUUID() const { return mData->mUUID; }
 
+		/**
+		 * @brief	Gets the handle data. For internal use only.
+		 */
+		std::shared_ptr<ResourceHandleData> getHandleData() const { return mData; }
+
 	protected:
 		ResourceHandleBase();
 
@@ -113,12 +118,12 @@ namespace CamelotEngine
 		ResourceHandle(const ResourceHandle<T1>& ptr)
 			:ResourceHandleBase()
 		{
-			init(ptr);
+			mData = ptr.getHandleData();
 		}
 
 		operator ResourceHandle<Resource>() 
 		{
-			return ResourceHandle<Resource>(mData->mPtr); 
+			return ResourceHandle<Resource>(*this); 
 		}
 
 		// TODO Low priority - User can currently try to access these even if resource ptr is not resolved

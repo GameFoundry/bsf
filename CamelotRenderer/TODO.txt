@@ -12,73 +12,25 @@
 
 -----------------------IMMEDIATE TODO---------------------------------------------------------------
 
-
 >>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
 Pass
  - A way to bind buffers to a Pass, while specifying buffer range
  - GpuParams support for bools, buffers, structs
 
- Null mesh VertexDeclaration never gets freed.
-  - Similar issue with all the four states and their defaults
- Add MeshManager which creates a mesh and also creates and releases null mesh.
-Even if all resources are released I still get a crash on exit. Probably because I don't properly release all factories.
- Test DX9 and DX11 versions, and see if everything is released properly.
-When rendering with renderable a lot of references don't get released so I need to check where are they kept
-
-Stuff that needs to derive from CoreGpuObject:
- - GpuProgram (DONE)
- - HighLevelGpuProgram (DONE)
- - Texture (DONE)
- - Mesh - (DONE)
- - VertexBuffer (DONE)
- - IndexBuffer (DONE)
- - GpuBuffer (DONE)
- - VertexDeclaration (DONE)
- - RenderWindow (DONE)
- - RenderTexture (DONE)
- - MultiRenderTexture (DONE)
- - Blend/DepthStencil/Rasterizer/SamplerState (DONE)
- - GpuParamBlock
----
- Maybe
-  - Material (DONE)
-  - Pass (NOT REQUIRED)
-  - Shader (DONE)
-  - Technique (NOT REQUIRED)
-
-Test if async loading still works
+GpuParamBlock - Needs to derive from CoreGpuObject and needs to be initialized better
 
 RenderTextures and MultiRenderTextures will only work properly if used directly from render thread, as setting each surface calls render methods, so its impossible to set one outside of render thread
  - also they don't have initialize_internal
  - I should probably make these immutable. Once they are set they can't be changed, so everything can be initialized when calling initialize()
 
-OpenGL render window no longer looks for a monitor index
-
-CoreGpuObject and CoreGpuObjectManager
- - make ::Destroy() virtual as Resources need to make it private
- 
-ResourceHandle::reset removes ALL references to a resource. It's probably smarter if it just removes the one reference
-
-Plan today & saturday:
- Add destroy() for remaining classes
-
  - Support loading of compound objects:
    - Loading Material also loads attached Shader and Textures/Samplers
-  - Make Resources::destroy() private
-  - Have Resources::unload which calls destroy() internally
-  - Have Resources::unloadUnused() which unloads all with reference count of 1
-  - Don't store heavyweight GUID in each ResourceHandle
 
-  Calling CoreGpuObject::waitUntilInitialized and initialization fails (or is never called) it will block forever
-
-Material RTTI should also serialize shared buffers (they need to be made into a resource)
- - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
+Calling CoreGpuObject::waitUntilInitialized and initialization fails (or is never called) it will block forever
 
 Add support for include file resource
 Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it
  - Also a way to list all referenced includes, and a way to remove them
-
-Loading material should also load attached shader and textures/sampler states
 
  Refactor how we handle RenderTargets (no attach/detach, and no waitForVSync propery in RenderSystem)
  waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
@@ -93,6 +45,10 @@ Can be delayed:
   - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
  ImportOptions
  Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
+ OpenGL render window no longer looks for a monitor index
+ Test if async loading still works
+ Material RTTI should also serialize shared buffers (they need to be made into a resource)
+ - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  
 
@@ -182,7 +138,6 @@ HIGH PRIORITY TODO:
 Mid priority TODO:
  - monitorIndex is ignored in DX11
  - Make sure to queue up mesh deletion to make sure it gets destroyed on the render thread
- - Resource handle should store a unique integer ID, which just points to a table of GUIDs. Keeping GUID string everywhere in not efficient.
  - Add a field that tracks % of resource deserialization in BinarySerializer
  - Mesh loading:
   - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.

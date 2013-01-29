@@ -222,6 +222,33 @@ namespace CamelotEngine
 		return resource;
 	}
 
+	void Resources::unload(BaseResourceHandle resource)
+	{
+		if(!resource.isLoaded()) // If it's still loading wait until that finishes
+			resource.waitUntilLoaded(); // TODO - What if resource isn't being loaded at all, or has already been unloaded?
+
+		resource->destroy();
+		resource.reset();
+
+		mLoadedResources.erase(resource.getUUID());
+	}
+
+	void Resources::unloadAllUnused()
+	{
+		vector<BaseResourceHandle>::type resourcesToUnload;
+
+		for(auto iter = mLoadedResources.begin(); iter != mLoadedResources.end(); ++iter)
+		{
+			if(iter->second.getInternalPtr().unique()) // We just have this one reference, meaning nothing is using this resource
+				resourcesToUnload.push_back(iter->second);
+		}
+
+		for(auto iter = resourcesToUnload.begin(); iter != resourcesToUnload.end(); ++iter)
+		{
+			unload(*iter);
+		}
+	}
+
 	void Resources::create(BaseResourceHandle resource, const String& filePath, bool overwrite)
 	{
 		if(resource == nullptr)

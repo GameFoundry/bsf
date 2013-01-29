@@ -100,6 +100,21 @@ namespace CamelotEngine
 		BaseResourceHandle loadFromUUIDAsync(const String& uuid);
 
 		/**
+		 * @brief	Unloads the resource that is referenced by the handle.
+		 *
+		 * @param	resourceHandle	Handle of the resource.
+		 * 							
+		 * @note	GPU resources held by the resource will be scheduled to be destroyed on the render thread.
+		 * 			Actual resource pointer wont be deleted until all user-held references to it are removed.
+		 */
+		void unload(BaseResourceHandle resource);
+
+		/**
+		 * @brief	Finds all resources that aren't being referenced anywhere and unloads them.
+		 */
+		void unloadAllUnused();
+
+		/**
 		 * @brief	Saves the resource. Resource must be registered using Resources::create beforehand.
 		 *
 		 * @param	resource   	The resource.
