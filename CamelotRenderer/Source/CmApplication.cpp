@@ -48,10 +48,13 @@ namespace CamelotEngine
 		Resources::startUp(new Resources("D:\\CamelotResourceMetas"));
 		HighLevelGpuProgramManager::startUp(new HighLevelGpuProgramManager());
 
-		RenderSystemManager::startUp(renderSystemName);
+		RenderSystemManager::startUp(new RenderSystemManager());
+		RenderSystemManager::instance().setActive(renderSystemName);
+
+		RendererManager::startUp(new RendererManager());
 
 		loadPlugin(rendererName);
-		RendererManager::setActive("ForwardRenderer");
+		RendererManager::instance().setActive("ForwardRenderer");
 
 		RenderSystem* renderSystem = RenderSystem::instancePtr();
 
@@ -88,7 +91,7 @@ namespace CamelotEngine
 			gSceneManager().update();
 
 			RenderSystem* renderSystem = RenderSystem::instancePtr();
-			RendererManager::getActive()->renderAll();
+			RendererManager::instance().getActive()->renderAll();
 
 			// Only queue new commands if render thread has finished rendering
 			// TODO - There might be a more optimal way to sync simulation and render threads so we maximize
@@ -148,6 +151,7 @@ namespace CamelotEngine
 		MeshManager::shutDown();
 
 		SceneManager::shutDown();
+		RendererManager::shutDown();
 		RenderSystem::shutDown();
 
 		HighLevelGpuProgramManager::shutDown();

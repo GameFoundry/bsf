@@ -4,11 +4,9 @@
 
 namespace CamelotEngine
 {
-	RendererPtr RendererManager::mActiveRenderer;
-
 	void RendererManager::setActive(const String& name)
 	{
-		for(auto iter = getAvailableFactories().begin(); iter != getAvailableFactories().end(); ++iter)
+		for(auto iter = mAvailableFactories.begin(); iter != mAvailableFactories.end(); ++iter)
 		{
 			if((*iter)->name() == name)
 			{
@@ -31,12 +29,6 @@ namespace CamelotEngine
 	{
 		assert(factory != nullptr);
 
-		getAvailableFactories().push_back(factory);
-	}
-
-	std::vector<RendererFactoryPtr>& RendererManager::getAvailableFactories()
-	{
-		static std::vector<RendererFactoryPtr> availableFactories;
-		return availableFactories;
+		mAvailableFactories.push_back(factory);
 	}
 }

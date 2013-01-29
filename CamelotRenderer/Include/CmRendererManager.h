@@ -2,20 +2,21 @@
 
 #include "CmPrerequisites.h"
 #include "CmRendererFactory.h"
+#include "CmModule.h"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT RendererManager
+	class CM_EXPORT RendererManager : public Module<RendererManager>
 	{
 	public:
-		static void setActive(const String& name);
-		static RendererPtr getActive() { return mActiveRenderer; }
+		void setActive(const String& name);
+		RendererPtr getActive() { return mActiveRenderer; }
 
-		static void registerFactory(RendererFactoryPtr factory);
+		void registerFactory(RendererFactoryPtr factory);
 	private:
-		static std::vector<RendererFactoryPtr>& getAvailableFactories();
+		std::vector<RendererFactoryPtr> mAvailableFactories;
 
-		static RendererPtr mActiveRenderer;
+		RendererPtr mActiveRenderer;
 	};
 }
 

@@ -6,7 +6,7 @@
 
 namespace CamelotEngine
 {
-	void RenderSystemManager::startUp(const String& pluginFilename)
+	void RenderSystemManager::setActive(const String& pluginFilename)
 	{
 		DynLib* loadedLibrary = gDynLibManager().load(pluginFilename);
 		String name = "";
@@ -19,7 +19,7 @@ namespace CamelotEngine
 			name = getPluginNameFunc();
 		}
 
-		for(auto iter = getAvailableFactories().begin(); iter != getAvailableFactories().end(); ++iter)
+		for(auto iter = mAvailableFactories.begin(); iter != mAvailableFactories.end(); ++iter)
 		{
 			if((*iter)->name() == name)
 			{
@@ -33,12 +33,6 @@ namespace CamelotEngine
 	{
 		assert(factory != nullptr);
 
-		getAvailableFactories().push_back(factory);
-	}
-
-	std::vector<RenderSystemFactoryPtr>& RenderSystemManager::getAvailableFactories()
-	{
-		static std::vector<RenderSystemFactoryPtr> availableFactories;
-		return availableFactories;
+		mAvailableFactories.push_back(factory);
 	}
 }

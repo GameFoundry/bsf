@@ -11,6 +11,6 @@ namespace CamelotEngine
 
 	extern "C" CM_FWDRND_EXPORT void loadPlugin()
 	{
-		RendererManager::registerFactory(RendererFactoryPtr(new ForwardRendererFactory()));
+		RendererManager::instance().registerFactory(RendererFactoryPtr(new ForwardRendererFactory()));
 	}
 }

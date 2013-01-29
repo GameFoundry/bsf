@@ -49,7 +49,7 @@ namespace CamelotEngine
 	bool Technique::isSupported() const
 	{
 		if(RenderSystem::instancePtr()->getName() == mRenderSystem &&
-			RendererManager::getActive()->getName() == mRenderer)
+			RendererManager::instance().getActive()->getName() == mRenderer)
 		{
 			return true;
 		}
