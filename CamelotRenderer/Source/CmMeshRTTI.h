@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
 #include "CmMesh.h"
+#include "CmMeshManager.h"
 
 namespace CamelotEngine
 {
@@ -25,7 +26,7 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return std::shared_ptr<Mesh>(Mesh::createEmpty());
+			return MeshManager::instance().createEmpty();
 		}
 
 		virtual const String& getRTTIName() 
