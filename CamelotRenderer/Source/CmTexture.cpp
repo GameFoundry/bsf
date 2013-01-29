@@ -281,6 +281,7 @@ namespace CamelotEngine {
 		{
 			TextureViewReference* toRemove = iterFind->second;
 
+			texture->destroyView(iterFind->second->view);
 			texture->mTextureViews.erase(iterFind);
 
 			delete toRemove;
