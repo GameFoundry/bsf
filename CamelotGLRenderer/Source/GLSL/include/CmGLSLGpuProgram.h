@@ -46,7 +46,23 @@ namespace CamelotEngine {
 	*/
     class CM_RSGL_EXPORT GLSLGpuProgram : public GpuProgram
     {
-    private:
+	public:
+		~GLSLGpuProgram();
+
+		/// get the GLSLProgram for the shader object
+		GLSLProgram* getGLSLProgram(void) const { return mGLSLProgram; }
+
+		void setGLSLProgram(GLSLProgram* program) { mGLSLProgram = program; }
+		
+		/// Get the assigned GL program id
+		const UINT32 getProgramID(void) const { return mProgramID; }
+
+	private:
+		friend class GLGpuProgramManager;
+
+		GLSLGpuProgram(const String& source, const String& entryPoint, const String& language, 
+			GpuProgramType gptype, GpuProgramProfile profile);
+
 		/// GL Handle for the shader object
 		GLSLProgram* mGLSLProgram;
 
@@ -63,19 +79,6 @@ namespace CamelotEngine {
 
 		UINT32 mProgramID;
 		GLenum mProgramType;
-	public:
-		~GLSLGpuProgram();
-		GLSLGpuProgram(GLSLProgram* parent, const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile);
-
-		/// get the GLSLProgram for the shader object
-		GLSLProgram* getGLSLProgram(void) const { return mGLSLProgram; }
-		
-		/// Get the assigned GL program id
-		const UINT32 getProgramID(void) const { return mProgramID; }
-
-    protected:
-		friend class GLSLProgramFactory;
     };
 }
 

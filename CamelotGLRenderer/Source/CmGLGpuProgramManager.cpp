@@ -27,6 +27,7 @@ THE SOFTWARE.
 */
 
 #include "CmGLGpuProgramManager.h"
+#include "CmGLSLGpuProgram.h"
 #include "CmException.h"
 
 using namespace CamelotEngine;
@@ -40,24 +41,8 @@ GLGpuProgramManager::~GLGpuProgramManager()
 {
 }
 
-bool GLGpuProgramManager::registerProgramFactory(const String& syntaxCode, CreateGpuProgramCallback createFn)
-{
-    return mProgramMap.insert(ProgramMap::value_type(syntaxCode, createFn)).second;
-}
-
-bool GLGpuProgramManager::unregisterProgramFactory(const String& syntaxCode)
-{
-    return mProgramMap.erase(syntaxCode) != 0;
-}
-
 GpuProgram* GLGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
 {
-    ProgramMap::const_iterator iter = mProgramMap.find(language);
-    if(iter == mProgramMap.end())
-    {
-        CM_EXCEPT(InternalErrorException, "Cannot find propery factory to create GpuProgram of type: " + language);
-    }
-    
-    return (iter->second)(source, entryPoint, language, gptype, profile);
+    return new GLSLGpuProgram(source, entryPoint, language, gptype, profile);
 }
 

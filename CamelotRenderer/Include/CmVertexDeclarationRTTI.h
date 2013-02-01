@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
 #include "CmVertexBuffer.h"
+#include "CmHardwareBufferManager.h"
 
 namespace CamelotEngine
 {
@@ -47,7 +48,7 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return std::shared_ptr<VertexDeclaration>(new VertexDeclaration());
+			return HardwareBufferManager::instance().createVertexDeclaration();
 		}
 
 		virtual const String& getRTTIName() 

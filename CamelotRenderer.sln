@@ -11,6 +11,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotD3D9RenderSystem", "CamelotD3D9Renderer\CamelotD3D9Renderer.vcxproj", "{796B6DFF-BA04-42B7-A43A-2B14D707A33A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotClient", "CamelotClient\CamelotClient.vcxproj", "{67137A0D-7A67-4D0C-9FBF-AF904FABEF05}"
@@ -28,6 +29,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotGLRenderSystem", "CamelotGLRenderer\CamelotGLRenderer.vcxproj", "{F58FF869-2EA6-4FFF-AB84-328C531BA9D9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1D081E5A-615A-4C06-B2DF-0D8D9390DE02}"
@@ -38,6 +40,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotFreeImgImporter", "CamelotFreeImgImporter\CamelotFreeImgImporter.vcxproj", "{122B7A22-0C62-4B35-B661-EBF3F394EA79}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotFBXImporter", "CamelotFBXImporter\CamelotFBXImporter.vcxproj", "{7F449698-73DF-4203-9F31-0877DBF01695}"
@@ -49,6 +52,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotOISInput", "CamelotOISInput\CamelotOISInput.vcxproj", "{BFEBBAF8-8A84-4899-8899-D0D7196AF9A1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotForwardRenderer", "CamelotForwardRenderer\CamelotForwardRenderer.vcxproj", "{08975177-4A13-4EE7-BB21-3BB92FB3F3CC}"
@@ -60,6 +64,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotD3D11RenderSystem", "CamelotD3D11RenderSystem\CamelotD3D11RenderSystem.vcxproj", "{1437BB4E-DDB3-4307-AA41-8C035DA3014B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
+		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
 	EndProjectSection
 EndProject
 Global

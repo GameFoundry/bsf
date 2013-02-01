@@ -32,27 +32,18 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmGpuProgramManager.h"
 
-namespace CamelotEngine {
-
-class CM_RSGL_EXPORT GLGpuProgramManager : public GpuProgramManager
+namespace CamelotEngine 
 {
-public:
-    typedef GpuProgram* (*CreateGpuProgramCallback)(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+	class CM_RSGL_EXPORT GLGpuProgramManager : public GpuProgramManager
+	{
+		public:
+			GLGpuProgramManager();
+			~GLGpuProgramManager();
 
-private:
-    typedef map<String, CreateGpuProgramCallback>::type ProgramMap;
-    ProgramMap mProgramMap;
-
-protected:
-    /// Specialised create method with specific parameters
-    GpuProgram* create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
-
-public:
-    GLGpuProgramManager();
-    ~GLGpuProgramManager();
-    bool registerProgramFactory(const String& syntaxCode, CreateGpuProgramCallback createFn);
-    bool unregisterProgramFactory(const String& syntaxCode);
-};
+		protected:
+			/// Specialised create method with specific parameters
+			GpuProgram* create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+	};
 
 }; //namespace CamelotEngine
 

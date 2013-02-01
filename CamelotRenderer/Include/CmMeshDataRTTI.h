@@ -103,7 +103,13 @@ namespace CamelotEngine
 		/************************************************************************/
 
 		VertexDeclarationPtr getVertexDecl(MeshData* obj) { return obj->declaration; }
-		void setVertexDecl(MeshData* obj, VertexDeclarationPtr vertexDecl) { obj->declaration = vertexDecl; }
+		void setVertexDecl(MeshData* obj, VertexDeclarationPtr vertexDecl) 
+		{ 
+			if(obj->declaration)
+				obj->declaration->destroy();
+
+			obj->declaration = vertexDecl; 
+		}
 
 		/************************************************************************/
 		/* 								vertexData                      		*/

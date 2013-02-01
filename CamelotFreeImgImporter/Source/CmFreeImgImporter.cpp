@@ -127,7 +127,7 @@ namespace CamelotEngine
 		}
 	}
 
-	BaseResourceHandle FreeImgImporter::import(const String& filePath)
+	ResourcePtr FreeImgImporter::import(const String& filePath)
 	{
 		DataStreamPtr fileData = FileSystem::open(filePath, true);
 
@@ -135,10 +135,10 @@ namespace CamelotEngine
 		if(imgData == nullptr || imgData->getData() == nullptr)
 			return nullptr;
 
-		TextureHandle newTexture(Texture::create(TEX_TYPE_2D, 
-			imgData->getWidth(), imgData->getHeight(), imgData->getNumMipmaps(), imgData->getFormat()));
+		TexturePtr newTexture = Texture::create(TEX_TYPE_2D, 
+			imgData->getWidth(), imgData->getHeight(), imgData->getNumMipmaps(), imgData->getFormat());
 
-		newTexture.waitUntilLoaded();
+		newTexture->waitUntilInitialized();
 
 		for(UINT32 mip = 0; mip <= imgData->getNumMipmaps(); ++mip)
 		{
@@ -148,8 +148,6 @@ namespace CamelotEngine
 		}
 
 		fileData->close();
-
-		registerLoadedResource(newTexture);
 
 		return newTexture;
 	}

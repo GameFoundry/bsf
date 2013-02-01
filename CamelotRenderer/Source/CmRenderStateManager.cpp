@@ -6,6 +6,21 @@
 
 namespace CamelotEngine
 {
+	RenderStateManager::~RenderStateManager()
+	{
+		if(mDefaultSamplerState != nullptr)
+			mDefaultSamplerState->destroy();
+
+		if(mDefaultBlendState != nullptr)
+			mDefaultBlendState->destroy();
+
+		if(mDefaultRasterizerState != nullptr)
+			mDefaultRasterizerState->destroy();
+
+		if(mDefaultDepthStencilState != nullptr)
+			mDefaultDepthStencilState->destroy();
+	}
+
 	SamplerStatePtr RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc) const
 	{
 		SamplerStatePtr samplerState = SamplerStatePtr(new SamplerState());

@@ -122,15 +122,17 @@ namespace CamelotEngine
 		void save(BaseResourceHandle resource);
 
 		/**
-		 * @brief	Creates a new resource at the specified location. Throws an exception if resource already exists.
-		 * 			Automatically calls Resources::save.
+		 * @brief	Creates a new resource at the specified location. Throws an exception if resource
+		 * 			already exists. Automatically calls Resources::save.
 		 *
-		 * @param	resource 	The resource.
+		 * @param	resource 	Pointer to the resource.
 		 * @param	filePath 	Full pathname of the file.
-		 * @param	overwrite	(optional) If true, any existing resource at the specified location
-		 * 						will be overwritten.
+		 * @param	overwrite	(optional) If true, any existing resource at the specified location will
+		 * 						be overwritten.
+		 *
+		 * @return	Handle to the resource. 
 		 */
-		void create(BaseResourceHandle resource, const String& filePath, bool overwrite = false);
+		BaseResourceHandle create(ResourcePtr resource, const String& filePath, bool overwrite = false);
 
 	public:
 		struct ResourceMetaData : public IReflectable
@@ -179,14 +181,6 @@ namespace CamelotEngine
 		const String& getUUIDFromPath(const String& path) const;
 
 		String mMetaDataFolderPath;
-
-	private:
-		friend class SpecificImporter;
-
-		/**
-		 * @brief	Registers the newly loaded resource in the global Resources library.
-		 */
-		void registerLoadedResource(BaseResourceHandle resource);
 	};
 
 	CM_EXPORT Resources& gResources();

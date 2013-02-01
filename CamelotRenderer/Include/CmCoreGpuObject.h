@@ -20,7 +20,7 @@ namespace CamelotEngine
 
 		/**
 		 * @brief	Destroys this object. Make sure to call this before deleting the object.
-		 * 			
+o		 * 			
 		 * @note	Destruction is not done immediately, and is instead just scheduled on the
 		 * 			render thread. Unless called from render thread in which case it is executed right away.
 		 */

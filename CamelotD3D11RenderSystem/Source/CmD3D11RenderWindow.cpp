@@ -170,8 +170,6 @@ namespace CamelotEngine
 
 	void D3D11RenderWindow::destroy_internal()
 	{
-		_destroySizeDependedD3DResources();
-
 		mActive = false;
 		mClosed = true;
 
@@ -190,6 +188,8 @@ namespace CamelotEngine
 		}
 
 		mHWnd = nullptr;
+
+		_destroySizeDependedD3DResources();
 
 		RenderWindow::destroy_internal();
 	}
@@ -540,7 +540,11 @@ namespace CamelotEngine
 		SAFE_RELEASE(mBackBuffer);
 		SAFE_RELEASE(mRenderTargetView);
 
-		mDepthStencilBuffer = nullptr;
+		if(mDepthStencilBuffer != nullptr)
+		{
+			mDepthStencilBuffer->destroy();
+			mDepthStencilBuffer = nullptr;
+		}
 	}
 
 	void D3D11RenderWindow::_resizeSwapChainBuffers(unsigned width, unsigned height)

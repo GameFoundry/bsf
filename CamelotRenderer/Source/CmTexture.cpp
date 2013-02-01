@@ -123,13 +123,13 @@ namespace CamelotEngine {
 	void Texture::getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op)
 	{
 		UINT32 numMips = getNumMipmaps();
-
-		UINT32 totalSize = 0;
 		UINT32 width = getWidth();
 		UINT32 height = getHeight();
 		UINT32 depth = getDepth();
 
-		for(UINT32 j = 0; j <= mip; j++)
+		UINT32 totalSize = PixelUtil::getMemorySize(width, height, depth, mFormat);
+
+		for(UINT32 j = 0; j < mip; j++)
 		{
 			totalSize = PixelUtil::getMemorySize(width, height, depth, mFormat);
 

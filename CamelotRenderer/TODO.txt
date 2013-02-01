@@ -19,6 +19,17 @@ Pass
 
 GpuParamBlock - Needs to derive from CoreGpuObject and needs to be initialized better
 
+Loading meshes doesn't work
+ - And setMeshData is currently always synced
+creating a resource should add it to mLoaded
+also all unload() after creating a resource, for test purposes
+
+Having ResourceHandle closely tied in with Resources creates a problem when user just wants to create a resource in memory and use it? How to do it without saving it? e.g. material setTexture
+ - create() methods return a ResourceHandle.
+ - However those won't be released using unload() which is confusing.
+   - should create() register the resoruce with Resources right away?
+
+
 RenderTextures and MultiRenderTextures will only work properly if used directly from render thread, as setting each surface calls render methods, so its impossible to set one outside of render thread
  - also they don't have initialize_internal
  - I should probably make these immutable. Once they are set they can't be changed, so everything can be initialized when calling initialize()
@@ -207,6 +218,7 @@ After everything is polished
  - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
  - Go to GEA book and read about resource managers before implementing them
    - Actually I should re-read most of the chapers in the book, or all of it
+ - When building internal GUI make sure to use CEGUI as a reference
 
  - OpenGL non-Win32 window files haven't been properly parsed or tested
    - Since I probably can't compile them, try adding them to VS and see what intellisense says?

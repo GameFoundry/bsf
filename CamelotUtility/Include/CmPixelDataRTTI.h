@@ -33,6 +33,9 @@ namespace CamelotEngine
 		UINT32& getSlicePitch(PixelData* obj) { return obj->slicePitch; }
 		void setSlicePitch(PixelData* obj, UINT32& val) { obj->slicePitch = val; }
 
+		PixelFormat& getFormat(PixelData* obj) { return obj->format; }
+		void setFormat(PixelData* obj, PixelFormat& val) { obj->format = val; }
+
 		ManagedDataBlock getData(PixelData* obj) 
 		{ 
 			ManagedDataBlock dataBlock((UINT8*)obj->data, obj->getConsecutiveSize(), false);
@@ -55,8 +58,9 @@ namespace CamelotEngine
 			addPlainField("back", 5, &PixelDataRTTI::getBack, &PixelDataRTTI::setBack);
 			addPlainField("rowPitch", 6, &PixelDataRTTI::getRowPitch, &PixelDataRTTI::setRowPitch);
 			addPlainField("slicePitch", 7, &PixelDataRTTI::getSlicePitch, &PixelDataRTTI::setSlicePitch);
+			addPlainField("format", 8, &PixelDataRTTI::getFormat, &PixelDataRTTI::setFormat);
 
-			addDataBlockField("data", 8, &PixelDataRTTI::getData, &PixelDataRTTI::setData);
+			addDataBlockField("data", 9, &PixelDataRTTI::getData, &PixelDataRTTI::setData);
 		}
 
 		virtual const String& getRTTIName()

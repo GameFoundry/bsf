@@ -102,18 +102,6 @@ namespace CamelotEngine
 			:ResourceHandleBase()
 		{	}
 
-		explicit ResourceHandle(T* ptr)
-			:ResourceHandleBase()
-		{
-			init(ptr);
-		}
-
-		ResourceHandle(std::shared_ptr<T> ptr)
-			:ResourceHandleBase()
-		{
-			init(ptr);
-		}
-
 		template <typename T1>
 		ResourceHandle(const ResourceHandle<T1>& ptr)
 			:ResourceHandleBase()
@@ -136,15 +124,6 @@ namespace CamelotEngine
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
-		/**
-		 * @brief	Releases the reference held by this handle.
-		 */
-		void reset()
-		{
-			mData->mPtr = nullptr;
-			mData->mIsCreated = false;
-		}
-
 		std::shared_ptr<T> getInternalPtr() 
 		{ 
 			throwIfNotLoaded();
@@ -163,6 +142,30 @@ namespace CamelotEngine
 		operator int CM_Bool_struct<T>::*() const
 		{
 			return (((mData->mPtr != nullptr)) ? &CM_Bool_struct<T>::_Member : 0);
+		}
+
+	private:
+		friend class Resources;
+
+		explicit ResourceHandle(T* ptr)
+			:ResourceHandleBase()
+		{
+			init(ptr);
+		}
+
+		ResourceHandle(std::shared_ptr<T> ptr)
+			:ResourceHandleBase()
+		{
+			init(ptr);
+		}
+
+		/**
+		 * @brief	Releases the reference held by this handle.
+		 */
+		void reset()
+		{
+			mData->mPtr = nullptr;
+			mData->mIsCreated = false;
 		}
 	};
 

@@ -71,6 +71,7 @@ namespace CamelotEngine
     {   
         if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
         {
+			mAssemblerProgram->destroy();
             mAssemblerProgram = nullptr;
         }
 

@@ -168,7 +168,10 @@ namespace CamelotEngine
 			checkForGLSLError( "GLSLProgram::loadFromSource", "Cannot load GLSL high-level shader source : ", mGLHandle, GLSLOT_PROGRAM, true);
 		}
 
-		mAssemblerProgram = GpuProgramPtr(new GLSLGpuProgram(this, mSource, mEntryPoint, mSyntaxCode, mType, mProfile));
+		mAssemblerProgram = GpuProgramManager::instance().createProgram(mSource, mEntryPoint, mSyntaxCode, mType, mProfile);
+		
+		std::shared_ptr<GLSLGpuProgram> glslGpuProgram = std::static_pointer_cast<GLSLGpuProgram>(mAssemblerProgram);
+		glslGpuProgram->setGLSLProgram(this);
 
 		GLSLParamParser paramParser;
 		paramParser.buildUniformDescriptions(mGLHandle, mParametersDesc);
@@ -179,11 +182,12 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------------
 	void GLSLProgram::destroy_internal()
 	{   
-		// We didn't create mAssemblerProgram through a manager, so override this
-		// implementation so that we don't try to remove it from one. Since getCreator()
-		// is used, it might target a different matching handle!
-		mAssemblerProgram = nullptr;
-
+		if(mAssemblerProgram != nullptr)
+		{
+			mAssemblerProgram->destroy();
+			mAssemblerProgram = nullptr;
+		}
+		
 		if (isSupported())
 			glDeleteShader(mGLHandle);
 

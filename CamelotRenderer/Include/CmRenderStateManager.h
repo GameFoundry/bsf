@@ -8,6 +8,8 @@ namespace CamelotEngine
 	class CM_EXPORT RenderStateManager : public Module<RenderStateManager>
 	{
 	public:
+		virtual ~RenderStateManager();
+
 		/**
 		 * @brief	Creates and initializes a new SamplerState.
 		 */

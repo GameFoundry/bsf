@@ -18,15 +18,9 @@ namespace CamelotEngine
 			addReflectablePtrField("mMeshData", 0, &MeshRTTI::getMeshData, &MeshRTTI::setMeshData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
-		{
-			Mesh* mesh = static_cast<Mesh*>(obj);
-			mesh->initialize();
-		}
-
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return MeshManager::instance().createEmpty();
+			return MeshManager::instance().create();
 		}
 
 		virtual const String& getRTTIName() 

@@ -69,9 +69,9 @@ namespace CamelotEngine
 		if(getUsage() == TU_DEPTHSTENCIL)
 			CM_EXCEPT(InternalErrorException, "Cannot lock a depth stencil texture.");
 
-		UINT32 mipWidth = mipLevel >> mWidth;
-		UINT32 mipHeight = mipLevel >> mHeight;
-		UINT32 mipDepth = mipLevel >> mDepth;
+		UINT32 mipWidth = mWidth >> mipLevel;
+		UINT32 mipHeight = mHeight >> mipLevel;
+		UINT32 mipDepth = mDepth >> mipLevel;
 
 		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
 

@@ -3,8 +3,4 @@
 
 namespace CamelotEngine
 {
-	void SpecificImporter::registerLoadedResource(BaseResourceHandle resource)
-	{
-		gResources().instance().registerLoadedResource(resource);
-	}
 }

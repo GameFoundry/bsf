@@ -110,10 +110,12 @@ namespace CamelotEngine
 	{
 		mObjectMap.clear();
 		mDecodedObjects.clear();
+		mPtrFieldsToSet.clear();
 
 		// Create empty instances of all ptr objects
 		UINT32 bytesRead = 0;
 		UINT8* dataIter = nullptr;
+		std::shared_ptr<IReflectable> object = nullptr;
 		std::shared_ptr<IReflectable> rootObject = nullptr;
 		do 
 		{
@@ -141,21 +143,29 @@ namespace CamelotEngine
 					"Base class objects are only supposed to be parts of a larger object.");
 			}
 
-			std::shared_ptr<IReflectable> object = IReflectable::createInstanceFromTypeId(objectTypeId);
+			object = IReflectable::createInstanceFromTypeId(objectTypeId);
 			mObjectMap.insert(std::make_pair(objectId, object));
 			mObjectsToDecode.push_back(object);
 
 			if(rootObject == nullptr)
 				rootObject = object;
 
-		} while (decodeInternal(nullptr, dataIter, dataLength, bytesRead));
+		} while (decodeInternal(object, dataIter, dataLength, bytesRead));
 
-		bytesRead = 0;
-		for(auto objIter = mObjectsToDecode.begin(); objIter != mObjectsToDecode.end(); ++objIter)
+		// Go in reverse, as we want fields with the lowest depth to be set first
+		// (Encoding ensures that first objects in the file will be top level and go down from there)
+		// This makes sure that objects are fully initialized before sending them to objects that have references to them
+		// (e.g. a Mesh and MeshData. Mesh expects to receive fully initialized MeshData in SetMeshData, so we need to ensure
+		// that we fully deserialize MeshData (and any references it might hold) before setting it in Mesh)
+		for(auto iter = mPtrFieldsToSet.rbegin(); iter != mPtrFieldsToSet.rend(); ++iter)
 		{
-			dataIter = data + bytesRead;
+			std::shared_ptr<IReflectable> resolvedObject = nullptr;
 
-			decodeInternal(*objIter, dataIter, dataLength, bytesRead);
+			auto iterFind = mObjectMap.find(iter->objectId);
+			if(iterFind != mObjectMap.end())
+				resolvedObject = iterFind->second;
+
+			iter->func(resolvedObject);
 		}
 
 		// Finish serialization for all objects
@@ -583,13 +593,12 @@ namespace CamelotEngine
 
 							if(curField != nullptr)
 							{
-								std::shared_ptr<IReflectable> resolvedObject = nullptr;
+								// We just record all pointer fields and assign them once we have everything else decoded
+								PtrFieldToSet fieldFunc;
+								fieldFunc.objectId = objectId;
+								fieldFunc.func = boost::bind(&RTTIReflectablePtrFieldBase::setArrayValue, curField, object.get(), i, _1);
 
-								auto findIter = mObjectMap.find(objectId);
-								if(findIter != mObjectMap.end())
-									resolvedObject = findIter->second;
-
-								curField->setArrayValue(object.get(), i, resolvedObject);
+								mPtrFieldsToSet.push_back(fieldFunc);
 							}
 						}
 
@@ -669,13 +678,12 @@ namespace CamelotEngine
 
 						if(curField != nullptr)
 						{
-							std::shared_ptr<IReflectable> resolvedObject = nullptr;
+							// We just record all pointer fields and assign them once we have everything else decoded
+							PtrFieldToSet fieldFunc;
+							fieldFunc.objectId = objectId;
+							fieldFunc.func = boost::bind(&RTTIReflectablePtrFieldBase::setValue, curField, object.get(), _1);
 
-							auto findIter = mObjectMap.find(objectId);
-							if(findIter != mObjectMap.end())
-								resolvedObject = findIter->second;
-
-							curField->setValue(object.get(), resolvedObject);
+							mPtrFieldsToSet.push_back(fieldFunc);
 						}
 
 						break;

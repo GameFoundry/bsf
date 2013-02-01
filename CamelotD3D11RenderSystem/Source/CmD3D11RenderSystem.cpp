@@ -357,6 +357,9 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		if(!prg.isLoaded())
+			return;
+
 		switch(prg->getType())
 		{
 		case GPT_VERTEX_PROGRAM:

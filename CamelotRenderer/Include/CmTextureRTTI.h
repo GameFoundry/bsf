@@ -44,7 +44,7 @@ namespace CamelotEngine
 
 		UINT32 getPixelDataArraySize(Texture* obj)
 		{
-			return obj->getNumFaces() * obj->getNumMipmaps();
+			return obj->getNumFaces() * (obj->getNumMipmaps() + 1);
 		}
 
 		void setPixelDataArraySize(Texture* obj, UINT32 size)
@@ -100,7 +100,10 @@ namespace CamelotEngine
 				UINT32 face = (size_t)Math::Floor(i / (float)(texture->getNumMipmaps() + 1));
 				UINT32 mipmap = i % (texture->getNumMipmaps() + 1);
 
-				texture->setRawPixels_async(*pixelData->at(i), face, mipmap);
+				PixelData data(*pixelData->at(i));
+				data.ownsData = false;
+
+				texture->setRawPixels(data, face, mipmap);
 			}
 
 			delete pixelData;

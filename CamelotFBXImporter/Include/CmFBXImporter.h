@@ -35,7 +35,7 @@ namespace CamelotEngine
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
 
 		/** Inherited from SpecificImporter */
-		virtual BaseResourceHandle import(const String& filePath);
+		virtual ResourcePtr import(const String& filePath);
 	private:
 		vector<String>::type mExtensions;
 

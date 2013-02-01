@@ -85,6 +85,12 @@ namespace CamelotEngine
 			UINT32 typeId;
 		};
 
+		struct PtrFieldToSet
+		{
+			UINT32 objectId;
+			boost::function<void(std::shared_ptr<IReflectable>)> func;
+		};
+
 		std::unordered_map<void*, UINT32> mObjectAddrToId;
 		UINT32 mLastUsedObjectId;
 		std::vector<ObjectToEncode> mObjectsToEncode;
@@ -93,6 +99,7 @@ namespace CamelotEngine
 		std::unordered_map<UINT32, std::shared_ptr<IReflectable>> mObjectMap;
 		std::vector<std::shared_ptr<IReflectable>> mObjectsToDecode;
 		std::vector<std::shared_ptr<IReflectable>> mDecodedObjects;
+		std::vector<PtrFieldToSet> mPtrFieldsToSet;
 
 		UINT32 getObjectSize(IReflectable* object);
 

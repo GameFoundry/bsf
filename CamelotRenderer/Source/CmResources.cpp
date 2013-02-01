@@ -249,13 +249,12 @@ namespace CamelotEngine
 		}
 	}
 
-	void Resources::create(BaseResourceHandle resource, const String& filePath, bool overwrite)
+	BaseResourceHandle Resources::create(ResourcePtr resource, const String& filePath, bool overwrite)
 	{
 		if(resource == nullptr)
 			CM_EXCEPT(InvalidParametersException, "Trying to save an uninitialized resource.");
 
-		if(!resource.isLoaded())
-			resource.waitUntilLoaded();
+		resource->waitUntilInitialized();
 
 		if(metaExists_UUID(resource->getUUID()))
 			CM_EXCEPT(InvalidParametersException, "Specified resource already exists.");
@@ -276,7 +275,11 @@ namespace CamelotEngine
 			removeMetaData(existingUUID);
 
 		addMetaData(resource->getUUID(), filePath);
-		save(resource);
+
+		BaseResourceHandle handle = resource;
+		save(handle);
+
+		return handle;
 	}
 
 	void Resources::save(BaseResourceHandle resource)
@@ -291,19 +294,6 @@ namespace CamelotEngine
 
 		FileSerializer fs;
 		fs.encode(resource.get(), filePath);
-	}
-
-	void Resources::registerLoadedResource(BaseResourceHandle resource)
-	{
-		auto iterFind = mLoadedResources.find(resource->getUUID());
-		if(iterFind == mLoadedResources.end())
-		{
-			mLoadedResources.insert(std::make_pair(resource->getUUID(), resource));
-		}
-		else
-		{
-			LOGDBG("Resource with the same UUID (" + resource->getUUID() + ") already exists!");
-		}
 	}
 
 	void Resources::loadMetaData()

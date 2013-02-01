@@ -47,7 +47,7 @@ namespace CamelotEngine
 		return false;
 	}
 
-	BaseResourceHandle Importer::import(const String& inputFilePath)
+	ResourcePtr Importer::import(const String& inputFilePath)
 	{
 		if(!FileSystem::fileExists(inputFilePath))
 		{
@@ -72,7 +72,7 @@ namespace CamelotEngine
 			}
 		}
 
-		BaseResourceHandle importedResource = importer->import(inputFilePath);
+		ResourcePtr importedResource = importer->import(inputFilePath);
 
 		return importedResource;
 	}

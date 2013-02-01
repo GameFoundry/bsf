@@ -18,7 +18,9 @@ namespace CamelotEngine
 	{
 		if(mIsInitialized)
 		{
-			LOGWRN("Destructor called but object is not destroyed. Object will leak.")
+			// Object must be released with destroy() otherwise engine can still try to use it, even if it was destructed
+			// (e.g. if an object has one of its methods queued in a command queue, and is destructed, you will be accessing invalid memory)
+			CM_EXCEPT(InternalErrorException, "Destructor called but object is not destroyed. This will result in nasty issues.");
 		}
 
 #if CM_DEBUG_MODE
@@ -34,17 +36,20 @@ namespace CamelotEngine
 
 	void CoreGpuObject::destroy()
 	{
-#if CM_DEBUG_MODE
-		if(!mIsInitialized)
-			CM_EXCEPT(InternalErrorException, "Trying to destroy an object that is already destroyed (or it never was initialized).");
-#endif
-
 		CoreGpuObjectManager::instance().registerObjectToDestroy(mThis.lock());
 		RenderSystem::instancePtr()->queueCommand(boost::bind(&CoreGpuObject::destroy_internal, this));
 	}
 
 	void CoreGpuObject::destroy_internal()
 	{
+#if CM_DEBUG_MODE
+		if(!mIsInitialized)
+		{
+			CoreGpuObjectManager::instance().unregisterObjectToDestroy(mThis.lock());
+			CM_EXCEPT(InternalErrorException, "Trying to destroy an object that is already destroyed (or it never was initialized).");
+		}
+#endif
+
 		mIsInitialized = false;
 
 		CoreGpuObjectManager::instance().unregisterObjectToDestroy(mThis.lock());

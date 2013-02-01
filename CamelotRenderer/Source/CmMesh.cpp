@@ -29,7 +29,7 @@ namespace CamelotEngine
 
 	void Mesh::setMeshData(MeshDataPtr meshData)
 	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&Mesh::setMeshData_internal, this, meshData));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&Mesh::setMeshData_internal, this, meshData), true);
 	}
 
 	void Mesh::setMeshData_internal(MeshDataPtr meshData)
@@ -41,11 +41,28 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, "Cannot load mesh. Mesh data is null.");
 		}
 
+		mSubMeshes.clear();
+
 		if(mVertexData != nullptr)
+		{
+			for(UINT32 i = 0; i < mVertexData->getBufferCount(); i++)
+			{
+				VertexBufferPtr buffer = mVertexData->getBuffer(i);
+
+				if(buffer != nullptr)
+					buffer->destroy();
+			}
+
 			delete mVertexData;
+		}
 
 		if(mIndexData != nullptr)
+		{
+			if(mIndexData->indexBuffer != nullptr)
+				mIndexData->indexBuffer->destroy();
+
 			delete mIndexData;
+		}
 
 		// Submeshes
 		for(UINT32 i = 0; i < meshData->subMeshes.size(); i++)
@@ -73,6 +90,9 @@ namespace CamelotEngine
 		mVertexData = new VertexData();
 
 		mVertexData->vertexCount = meshData->vertexCount;
+
+		if(mVertexData->vertexDeclaration != nullptr)
+			mVertexData->vertexDeclaration->destroy();
 
 		mVertexData->vertexDeclaration = meshData->declaration->clone();
 
@@ -175,6 +195,7 @@ namespace CamelotEngine
 	{
 		MeshDataPtr meshData(new MeshData());
 
+		meshData->declaration->destroy();
 		meshData->declaration = mVertexData->vertexDeclaration->clone();
 		
 		for(UINT32 i = 0; i < mSubMeshes.size(); i++)
@@ -191,7 +212,7 @@ namespace CamelotEngine
 			meshData->indexCount = mIndexData->indexCount - mIndexData->indexStart;
 			meshData->index = new int[meshData->indexCount];
 
-			UINT16* idxData = static_cast<UINT16*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
+			UINT32* idxData = static_cast<UINT32*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
 
 			for(UINT32 i = 0; i < mIndexData->indexCount; i++)
 				meshData->index[i] = (UINT32)idxData[i];
@@ -317,11 +338,26 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		if(mVertexData)
-			delete mVertexData;
+		if(mVertexData != nullptr)
+		{
+			for(UINT32 i = 0; i < mVertexData->getBufferCount(); i++)
+			{
+				VertexBufferPtr buffer = mVertexData->getBuffer(i);
 
-		if(mIndexData)
+				if(buffer != nullptr)
+					buffer->destroy();
+			}
+
+			delete mVertexData;
+		}
+
+		if(mIndexData != nullptr)
+		{
+			if(mIndexData->indexBuffer != nullptr)
+				mIndexData->indexBuffer->destroy();
+
 			delete mIndexData;
+		}
 
 		Resource::destroy_internal();
 	}

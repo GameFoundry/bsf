@@ -39,14 +39,13 @@ namespace CamelotEngine {
 	UINT32 GLSLGpuProgram::mDomainShaderCount = 0;
 	UINT32 GLSLGpuProgram::mHullShaderCount = 0;
     //-----------------------------------------------------------------------------
-	GLSLGpuProgram::GLSLGpuProgram(GLSLProgram* parent, const String& source, const String& entryPoint, const String& language, 
+	GLSLGpuProgram::GLSLGpuProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile) 
-		:GpuProgram(source, entryPoint, language, gptype, profile), mGLSLProgram(parent)
+		:GpuProgram(source, entryPoint, language, gptype, profile)
     {
-        mType = parent->getType();
         mSyntaxCode = "glsl";
 
-		switch(parent->getType())
+		switch(mType)
 		{
 		case GPT_VERTEX_PROGRAM:
 			mProgramID = ++mVertexShaderCount;
@@ -64,7 +63,7 @@ namespace CamelotEngine {
 			mProgramID = ++mHullShaderCount;
 			break;
 		default:
-			CM_EXCEPT(InternalErrorException, "Invalid gpu program type: " + toString(parent->getType()));
+			CM_EXCEPT(InternalErrorException, "Invalid gpu program type: " + toString(mType));
 		}
     }
     //-----------------------------------------------------------------------

@@ -243,9 +243,9 @@ namespace CamelotEngine {
 		if(mLockedBuffer != nullptr)
 			CM_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
 
-		UINT32 mipWidth = mipLevel >> mWidth;
-		UINT32 mipHeight = mipLevel >> mHeight;
-		UINT32 mipDepth = mipLevel >> mDepth;
+		UINT32 mipWidth = mWidth >> mipLevel;
+		UINT32 mipHeight = mHeight >> mipLevel;
+		UINT32 mipDepth = mDepth >> mipLevel;
 
 		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
 
