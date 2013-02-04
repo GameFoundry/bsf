@@ -26,7 +26,7 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::swapAllRenderTargetBuffers, mRenderSystem, waitForVSync));
 	}
 
-	void DeferredRenderContext::setViewport(const Viewport& vp)
+	void DeferredRenderContext::setViewport(const Viewport* vp)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setViewport, mRenderSystem, vp));
 	}

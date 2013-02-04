@@ -56,8 +56,6 @@ namespace CamelotEngine
 
 	VertexData::~VertexData()
 	{
-		if(mOwnsDeclaration && (vertexDeclaration != nullptr))
-			vertexDeclaration->destroy();
 	}
 
 	void VertexData::setBuffer(UINT32 index, VertexBufferPtr buffer)

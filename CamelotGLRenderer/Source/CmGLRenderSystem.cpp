@@ -529,22 +529,24 @@ namespace CamelotEngine
 		setStencilRefValue(stencilRefValue);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setViewport(const Viewport& vp)
+	void GLRenderSystem::setViewport(const Viewport* vp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		assert(vp != nullptr);
+
 		RenderTargetPtr target;
-		target = vp.getTarget();
+		target = vp->getTarget();
 		setRenderTarget(target.get());
 		mActiveViewport = vp;
 		
 		GLsizei x, y, w, h;
 
 		// Calculate the "lower-left" corner of the viewport
-		w = vp.getActualWidth();
-		h = vp.getActualHeight();
-		x = vp.getActualLeft();
-		y = vp.getActualTop();
+		w = vp->getActualWidth();
+		h = vp->getActualHeight();
+		x = vp->getActualLeft();
+		y = vp->getActualTop();
 		if (!target->requiresTextureFlipping())
 		{
 			// Convert "upper-left" corner to "lower-left"
@@ -990,13 +992,13 @@ namespace CamelotEngine
 		{
 			glDisable(GL_SCISSOR_TEST);
 			// GL requires you to reset the scissor when disabling
-			w = mActiveViewport.getActualWidth();
-			h = mActiveViewport.getActualHeight();
-			x = mActiveViewport.getActualLeft();
+			w = mActiveViewport->getActualWidth();
+			h = mActiveViewport->getActualHeight();
+			x = mActiveViewport->getActualLeft();
 			if (flipping)
-				y = mActiveViewport.getActualTop();
+				y = mActiveViewport->getActualTop();
 			else
-				y = targetHeight - mActiveViewport.getActualTop() - h;
+				y = targetHeight - mActiveViewport->getActualTop() - h;
 			glScissor(x, y, w, h);
 		}
 	}

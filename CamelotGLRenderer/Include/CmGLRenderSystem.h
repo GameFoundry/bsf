@@ -115,7 +115,7 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc RenderSystem::setViewport()
 		 */
-        void setViewport(const Viewport& vp);
+        void setViewport(const Viewport* vp);
 
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()

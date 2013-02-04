@@ -14,6 +14,13 @@ namespace CamelotEngine
 	 */
 	class CM_EXPORT CoreGpuObject
 	{
+	protected:
+		enum Flags
+		{
+			CGO_INITIALIZED = 0x01,
+			CGO_SCHEDULED_FOR_DELETE = 0x02
+		};
+
 	public:
 		CoreGpuObject();
 		virtual ~CoreGpuObject();
@@ -39,7 +46,7 @@ o		 *
 		 * @brief	Returns true if the object has been properly initialized. You are not
 		 * 			allowed to call any methods on the resource until you are sure resource is initialized.
 		 */
-		bool isInitialized() const { return mIsInitialized; }
+		bool isInitialized() const { return (mFlags & CGO_INITIALIZED) != 0; }
 
 		/**
 		 * @brief	Blocks the current thread until the resource is fully initialized.
@@ -53,6 +60,13 @@ o		 *
 		 * @note	Called automatically by the factory creation methods so user should not call this manually.
 		 */
 		void setThisPtr(std::shared_ptr<CoreGpuObject> ptrThis);
+
+		/**
+		 * @brief	Schedules the object to be destroyed, and then deleted.
+		 *
+		 * @note	You should never call this manually. It's meant for internal use only.
+		 */
+		static void _deleteDelayed(CoreGpuObject* obj);
 
 	protected:
 		/**
@@ -76,10 +90,14 @@ o		 *
 		 */
 		UINT64 getInternalID() const { return mInternalID; }
 
+		bool isScheduledToBeDeleted() const { return (mFlags & CGO_SCHEDULED_FOR_DELETE) != 0; }
+
+		void setIsInitialized(bool initialized) { mFlags = initialized ? mFlags | CGO_INITIALIZED : mFlags & ~CGO_INITIALIZED; }
+		void setScheduledToBeDeleted(bool scheduled) { mFlags = scheduled ? mFlags | CGO_SCHEDULED_FOR_DELETE : mFlags & ~CGO_SCHEDULED_FOR_DELETE; }
 	private:
 		friend class CoreGpuObjectManager;
 
-		bool mIsInitialized;
+		UINT8 mFlags;
 		UINT64 mInternalID; // ID == 0 is not a valid ID
 		std::weak_ptr<CoreGpuObject> mThis;
 

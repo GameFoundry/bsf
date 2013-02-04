@@ -80,29 +80,29 @@ namespace CamelotEngine {
 		_aligned_free(mScratchBufferPool);
     }
     //-----------------------------------------------------------------------
-    VertexBufferPtr GLHardwareBufferManager::createVertexBufferImpl(
+    VertexBuffer* GLHardwareBufferManager::createVertexBufferImpl(
         UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
-		return VertexBufferPtr(new GLVertexBuffer(this, vertexSize, numVerts, usage));
+		return new GLVertexBuffer(this, vertexSize, numVerts, usage);
     }
     //-----------------------------------------------------------------------
-    IndexBufferPtr 
+    IndexBuffer* 
     GLHardwareBufferManager::createIndexBufferImpl(
         IndexBuffer::IndexType itype, UINT32 numIndexes, 
         GpuBufferUsage usage)
     {
-		return IndexBufferPtr(new GLIndexBuffer(this, itype, numIndexes, usage));
+		return new GLIndexBuffer(this, itype, numIndexes, usage);
     }
 	//---------------------------------------------------------------------
-	GpuParamBlockPtr GLHardwareBufferManager::createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
+	GpuParamBlock* GLHardwareBufferManager::createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
 	{
-		return GpuParamBlockPtr(new GLGpuParamBlock(paramDesc, usage));
+		return new GLGpuParamBlock(paramDesc, usage);
 	}
 	//---------------------------------------------------------------------
-	GpuBufferPtr GLHardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
+	GpuBuffer* GLHardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		return GpuBufferPtr(new GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
+		return new GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
 	}
     //---------------------------------------------------------------------
     GLenum GLHardwareBufferManager::getGLUsage(unsigned int usage)
@@ -141,7 +141,6 @@ namespace CamelotEngine {
                 return 0;
         };
     }
-	//---------------------------------------------------------------------
 	//---------------------------------------------------------------------
 	void* GLHardwareBufferManager::allocateScratch(UINT32 size)
 	{

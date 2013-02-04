@@ -44,25 +44,10 @@ namespace CamelotEngine
 		mSubMeshes.clear();
 
 		if(mVertexData != nullptr)
-		{
-			for(UINT32 i = 0; i < mVertexData->getBufferCount(); i++)
-			{
-				VertexBufferPtr buffer = mVertexData->getBuffer(i);
-
-				if(buffer != nullptr)
-					buffer->destroy();
-			}
-
 			delete mVertexData;
-		}
 
 		if(mIndexData != nullptr)
-		{
-			if(mIndexData->indexBuffer != nullptr)
-				mIndexData->indexBuffer->destroy();
-
 			delete mIndexData;
-		}
 
 		// Submeshes
 		for(UINT32 i = 0; i < meshData->subMeshes.size(); i++)
@@ -90,10 +75,6 @@ namespace CamelotEngine
 		mVertexData = new VertexData();
 
 		mVertexData->vertexCount = meshData->vertexCount;
-
-		if(mVertexData->vertexDeclaration != nullptr)
-			mVertexData->vertexDeclaration->destroy();
-
 		mVertexData->vertexDeclaration = meshData->declaration->clone();
 
 		for(auto iter = meshData->vertexBuffers.begin(); iter != meshData->vertexBuffers.end(); ++iter)
@@ -195,7 +176,6 @@ namespace CamelotEngine
 	{
 		MeshDataPtr meshData(new MeshData());
 
-		meshData->declaration->destroy();
 		meshData->declaration = mVertexData->vertexDeclaration->clone();
 		
 		for(UINT32 i = 0; i < mSubMeshes.size(); i++)
@@ -339,25 +319,10 @@ namespace CamelotEngine
 		THROW_IF_NOT_RENDER_THREAD;
 
 		if(mVertexData != nullptr)
-		{
-			for(UINT32 i = 0; i < mVertexData->getBufferCount(); i++)
-			{
-				VertexBufferPtr buffer = mVertexData->getBuffer(i);
-
-				if(buffer != nullptr)
-					buffer->destroy();
-			}
-
 			delete mVertexData;
-		}
 
 		if(mIndexData != nullptr)
-		{
-			if(mIndexData->indexBuffer != nullptr)
-				mIndexData->indexBuffer->destroy();
-
 			delete mIndexData;
-		}
 
 		Resource::destroy_internal();
 	}

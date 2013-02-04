@@ -9,14 +9,14 @@ namespace CamelotEngine
 	CM_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreGpuObject)
 
 	CoreGpuObject::CoreGpuObject()
-		: mIsInitialized(false), mInternalID(0)
+		: mFlags(0), mInternalID(0)
 	{
 		mInternalID = CoreGpuObjectManager::instance().registerObject(this);
 	}
 
 	CoreGpuObject::~CoreGpuObject() 
 	{
-		if(mIsInitialized)
+		if(isInitialized())
 		{
 			// Object must be released with destroy() otherwise engine can still try to use it, even if it was destructed
 			// (e.g. if an object has one of its methods queued in a command queue, and is destructed, you will be accessing invalid memory)
@@ -43,14 +43,14 @@ namespace CamelotEngine
 	void CoreGpuObject::destroy_internal()
 	{
 #if CM_DEBUG_MODE
-		if(!mIsInitialized)
+		if(!isInitialized())
 		{
 			CoreGpuObjectManager::instance().unregisterObjectToDestroy(mThis.lock());
 			CM_EXCEPT(InternalErrorException, "Trying to destroy an object that is already destroyed (or it never was initialized).");
 		}
 #endif
 
-		mIsInitialized = false;
+		setIsInitialized(false);
 
 		CoreGpuObjectManager::instance().unregisterObjectToDestroy(mThis.lock());
 	}
@@ -58,7 +58,7 @@ namespace CamelotEngine
 	void CoreGpuObject::initialize()
 	{
 #if CM_DEBUG_MODE
-		if(mIsInitialized)
+		if(isInitialized())
 			CM_EXCEPT(InternalErrorException, "Trying to initialize an object that is already initialized");
 #endif
 
@@ -69,7 +69,7 @@ namespace CamelotEngine
 	{
 		{
 			CM_LOCK_MUTEX(mCoreGpuObjectLoadedMutex);
-			mIsInitialized = true;
+			setIsInitialized(true);
 		}	
 
 		CM_THREAD_NOTIFY_ALL(mCoreGpuObjectLoadedCondition);
@@ -82,10 +82,10 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, "You cannot call this method on the render thread. It will cause a deadlock!");
 #endif
 
-		if(!mIsInitialized)
+		if(!isInitialized())
 		{
 			CM_LOCK_MUTEX_NAMED(mCoreGpuObjectLoadedMutex, lock);
-			while(!mIsInitialized)
+			while(!isInitialized())
 			{
 				CM_THREAD_WAIT(mCoreGpuObjectLoadedCondition, mCoreGpuObjectLoadedMutex, lock);
 			}
@@ -95,5 +95,30 @@ namespace CamelotEngine
 	void CoreGpuObject::setThisPtr(std::shared_ptr<CoreGpuObject> ptrThis)
 	{
 		mThis = ptrThis;
+	}
+
+	void CoreGpuObject::_deleteDelayed(CoreGpuObject* obj)
+	{
+		assert(obj != nullptr);
+
+		// This method usually gets called automatically by the shared pointer when all references are released. The process:
+		// - If the deletion flag is set or object was never initialized then we immediately delete the object
+		// - Otherwise:
+		//  - We re-create the reference to the object by setting mThis pointer
+		//  - We queue the object to be destroyed so all of its GPU resources may be released on the render thread
+		//    - destroy() makes sure it keeps a reference of mThis so object isn't deleted
+		//    - Once the destroy() finishes the reference is removed and delete is called again, but this time deletion flag is set
+
+		if(obj->isScheduledToBeDeleted() || !obj->isInitialized())
+		{
+			delete obj;
+		}
+		else
+		{
+			std::shared_ptr<CoreGpuObject> thisPtr(obj);
+			obj->setThisPtr(thisPtr);
+			obj->setScheduledToBeDeleted(true);
+			obj->destroy();
+		}
 	}
 }

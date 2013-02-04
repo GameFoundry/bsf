@@ -69,11 +69,7 @@ namespace CamelotEngine
     //---------------------------------------------------------------------------
     void HighLevelGpuProgram::destroy_internal()
     {   
-        if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
-        {
-			mAssemblerProgram->destroy();
-            mAssemblerProgram = nullptr;
-        }
+        mAssemblerProgram = nullptr;
 
 		GpuProgram::destroy_internal();
     }

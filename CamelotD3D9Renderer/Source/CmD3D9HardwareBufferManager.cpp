@@ -44,34 +44,34 @@ namespace CamelotEngine
     {
     }
     //-----------------------------------------------------------------------
-    VertexBufferPtr D3D9HardwareBufferManager::createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+    VertexBuffer* D3D9HardwareBufferManager::createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
 		assert (numVerts > 0);
 
-        return VertexBufferPtr(new D3D9VertexBuffer(this, vertexSize, numVerts, usage, false));
+        return new D3D9VertexBuffer(this, vertexSize, numVerts, usage, false);
     }
     //-----------------------------------------------------------------------
-	IndexBufferPtr D3D9HardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	IndexBuffer* D3D9HardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
     {
 		assert (numIndexes > 0);
 
-		return IndexBufferPtr(new D3D9IndexBuffer(this, itype, numIndexes, usage, false));
+		return new D3D9IndexBuffer(this, itype, numIndexes, usage, false);
             
     }
 	//-----------------------------------------------------------------------
-	GpuParamBlockPtr D3D9HardwareBufferManager::createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
+	GpuParamBlock* D3D9HardwareBufferManager::createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
 	{
-		return GpuParamBlockPtr(new GpuParamBlock(paramDesc, usage));
+		return new GpuParamBlock(paramDesc, usage);
 	}
 	//-----------------------------------------------------------------------
-	GpuBufferPtr D3D9HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
+	GpuBuffer* D3D9HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		return GpuBufferPtr(new D3D9GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
+		return new D3D9GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
 	}
     //-----------------------------------------------------------------------
-    VertexDeclarationPtr D3D9HardwareBufferManager::createVertexDeclarationImpl(void)
+    VertexDeclaration* D3D9HardwareBufferManager::createVertexDeclarationImpl(void)
     {
-        return VertexDeclarationPtr(new D3D9VertexDeclaration());
+        return new D3D9VertexDeclaration();
     }
 }

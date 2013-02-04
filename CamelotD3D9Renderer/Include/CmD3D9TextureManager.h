@@ -43,14 +43,10 @@ namespace CamelotEngine
 		/// @copydoc TextureManager::getNativeFormat
 		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
 
-        /// @copydoc TextureManager::isHardwareFilteringSupported
-        bool isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,
-            bool preciseFormatOnly = false);		
-
 	protected:		
-		TexturePtr createTextureImpl();
-		RenderTexturePtr createRenderTextureImpl();
-		MultiRenderTexturePtr createMultiRenderTextureImpl();
+		Texture* createTextureImpl();
+		RenderTexture* createRenderTextureImpl();
+		MultiRenderTexture* createMultiRenderTextureImpl();
 	};
 }
 #endif

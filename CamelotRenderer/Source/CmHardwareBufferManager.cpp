@@ -44,22 +44,17 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     VertexDeclarationPtr HardwareBufferManager::createVertexDeclaration(void)
     {
-        VertexDeclarationPtr decl = createVertexDeclarationImpl();
+        VertexDeclarationPtr decl = VertexDeclarationPtr(createVertexDeclarationImpl(), &CoreGpuObject::_deleteDelayed);
 		decl->setThisPtr(decl);
 		decl->initialize();
         return decl;
-    }
-    //-----------------------------------------------------------------------
-    VertexDeclarationPtr HardwareBufferManager::createVertexDeclarationImpl(void)
-    {
-		return VertexDeclarationPtr(new VertexDeclaration());
     }
 	//-----------------------------------------------------------------------
 	VertexBufferPtr HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
 		assert (numVerts > 0);
 
-		VertexBufferPtr vbuf = createVertexBufferImpl(vertexSize, numVerts, usage, streamOut);
+		VertexBufferPtr vbuf = VertexBufferPtr(createVertexBufferImpl(vertexSize, numVerts, usage, streamOut), &CoreGpuObject::_deleteDelayed);
 		vbuf->setThisPtr(vbuf);
 		vbuf->initialize();
 		return vbuf;
@@ -69,7 +64,7 @@ namespace CamelotEngine {
 	{
 		assert (numIndexes > 0);
 
-		IndexBufferPtr ibuf = createIndexBufferImpl(itype, numIndexes, usage);
+		IndexBufferPtr ibuf = IndexBufferPtr(createIndexBufferImpl(itype, numIndexes, usage), &CoreGpuObject::_deleteDelayed);
 		ibuf->setThisPtr(ibuf);
 		ibuf->initialize();
 		return ibuf;
@@ -78,15 +73,21 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	GpuParamBlockPtr HardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
 	{
-		return createGpuParamBlockImpl(paramDesc, usage);
+		return GpuParamBlockPtr(createGpuParamBlockImpl(paramDesc, usage));
 	}
 	//-----------------------------------------------------------------------
 	GpuBufferPtr HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		GpuBufferPtr gbuf = createGpuBufferImpl(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+		GpuBufferPtr gbuf = GpuBufferPtr(createGpuBufferImpl(elementCount, elementSize, type, 
+			usage, randomGpuWrite, useCounter), &CoreGpuObject::_deleteDelayed);
 		gbuf->setThisPtr(gbuf);
 		gbuf->initialize();
 		return gbuf;
+	}
+	//-----------------------------------------------------------------------
+	VertexDeclaration* HardwareBufferManager::createVertexDeclarationImpl(void)
+	{
+		return new VertexDeclaration();
 	}
 }

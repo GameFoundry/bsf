@@ -18,17 +18,15 @@ Pass
  - GpuParams support for bools, buffers, structs
 
 GpuParamBlock - Needs to derive from CoreGpuObject and needs to be initialized better
-
-Loading meshes doesn't work
- - And setMeshData is currently always synced
-creating a resource should add it to mLoaded
-also all unload() after creating a resource, for test purposes
+ - HardwareBufferManager::createGpuParamBlock needs &CoreGpuObject::_deleteDelayed added as a deleted to shared_ptr
 
 Having ResourceHandle closely tied in with Resources creates a problem when user just wants to create a resource in memory and use it? How to do it without saving it? e.g. material setTexture
  - create() methods return a ResourceHandle.
  - However those won't be released using unload() which is confusing.
-   - should create() register the resoruce with Resources right away?
+   - creating a resource should add it to mLoaded
 
+Switching the renderer will cause exceptions for the first couple of times I run it. It happens randomly and
+ goes away after I try to run the game for a few times. Restart the PC and try again if you want to get it to happen again.
 
 RenderTextures and MultiRenderTextures will only work properly if used directly from render thread, as setting each surface calls render methods, so its impossible to set one outside of render thread
  - also they don't have initialize_internal
@@ -60,6 +58,7 @@ Can be delayed:
  Test if async loading still works
  Material RTTI should also serialize shared buffers (they need to be made into a resource)
  - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
+ Mesh::setMeshData is currently always synced
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  
 

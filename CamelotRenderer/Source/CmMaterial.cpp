@@ -819,7 +819,7 @@ namespace CamelotEngine
 
 	MaterialPtr Material::create()
 	{
-		MaterialPtr newMat(new Material());
+		MaterialPtr newMat(new Material(), &CoreGpuObject::_deleteDelayed);
 		newMat->setThisPtr(newMat);
 		newMat->initialize();
 

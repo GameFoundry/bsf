@@ -55,7 +55,7 @@ namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
     RenderSystem::RenderSystem()
-        : mActiveRenderTarget(0)
+        : mActiveRenderTarget(nullptr)
         , mCullingMode(CULL_CLOCKWISE)
 		, mVsync(false)
 		, mVSyncInterval(1)
@@ -70,6 +70,7 @@ namespace CamelotEngine {
 		, mRenderThreadShutdown(false)
 		, mCommandQueue(nullptr)
 		, mMaxCommandNotifyId(0)
+		, mActiveViewport(nullptr)
     {
     }
 
@@ -209,7 +210,7 @@ namespace CamelotEngine {
 		return mDriverVersion; 
 	}
     //-----------------------------------------------------------------------
-    Viewport RenderSystem::getViewport(void)
+    const Viewport* RenderSystem::getViewport(void)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 

@@ -42,27 +42,27 @@ namespace CamelotEngine {
 
 	protected:     
 		/// Internal method for creates a new vertex declaration, may be overridden by certain rendering APIs
-		VertexDeclarationPtr createVertexDeclarationImpl(void);
+		VertexDeclaration* createVertexDeclarationImpl();
 
 		/**
 		 * @copydoc HardwareBufferManager::createVertexBufferImpl
 		 */
-		VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+		VertexBuffer* createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/**
 		 * @copydoc HardwareBufferManager::createIndexBufferImpl
 		 */
-		IndexBufferPtr createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		IndexBuffer* createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlock */
-		GpuParamBlockPtr createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC);
+		GpuParamBlock* createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC);
 
 		/**
 		 * @copydoc HardwareBufferManager::createGenericBufferImpl
 		 *
 		 * DirectX 9 does not support generic buffers so this method will return a dummy instance.
 		 */
-		GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
+		GpuBuffer* createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
     };
 }

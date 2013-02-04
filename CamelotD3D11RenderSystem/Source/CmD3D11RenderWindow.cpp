@@ -540,11 +540,7 @@ namespace CamelotEngine
 		SAFE_RELEASE(mBackBuffer);
 		SAFE_RELEASE(mRenderTargetView);
 
-		if(mDepthStencilBuffer != nullptr)
-		{
-			mDepthStencilBuffer->destroy();
-			mDepthStencilBuffer = nullptr;
-		}
+		mDepthStencilBuffer = nullptr;
 	}
 
 	void D3D11RenderWindow::_resizeSwapChainBuffers(unsigned width, unsigned height)

@@ -11,8 +11,8 @@ namespace CamelotEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	RenderWindowPtr D3D9RenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc)
+	RenderWindow* D3D9RenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc)
 	{
-		return RenderWindowPtr(new D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle()));
+		return new D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle());
 	}
 }

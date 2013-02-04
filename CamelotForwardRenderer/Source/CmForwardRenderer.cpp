@@ -45,7 +45,7 @@ namespace CamelotEngine
 		vector<RenderablePtr>::type allRenderables = gSceneManager().getVisibleRenderables(camera);
 
 		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
-		renderContext->setViewport(*camera->getViewport());
+		renderContext->setViewport(camera->getViewport());
 
 		Matrix4 projMatrixCstm = camera->getProjectionMatrix();
 		Matrix4 viewMatrixCstm = camera->getViewMatrix();

@@ -84,14 +84,8 @@ namespace CamelotEngine
 
     void D3D11HLSLProgram::destroy_internal()
 	{
-		if(mAssemblerProgram != nullptr)
-			mAssemblerProgram->destroy();
-
 		mAssemblerProgram = nullptr;
 		mMicrocode.clear();
-
-		if(mInputDeclaration != nullptr)
-			mInputDeclaration->destroy();
 
 		mInputDeclaration = nullptr;
 

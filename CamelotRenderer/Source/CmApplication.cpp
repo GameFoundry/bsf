@@ -147,7 +147,6 @@ namespace CamelotEngine
 
 	void Application::shutDown()
 	{
-		mPrimaryRenderWindow->destroy();
 		mPrimaryRenderWindow = nullptr;
 
 		Importer::shutDown();

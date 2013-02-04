@@ -47,7 +47,7 @@ namespace CamelotEngine
 		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue);
 
 		/** @copydoc RenderSystem::setViewport() */
-		void setViewport(const Viewport& vp);
+		void setViewport(const Viewport* vp);
 
 		/** @copydoc RenderSystem::setVertexBuffer() */
 		void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer);

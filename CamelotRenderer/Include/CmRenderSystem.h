@@ -188,9 +188,9 @@ namespace CamelotEngine
 
 		@param target Viewport to render to.
 		*/
-		virtual void setViewport(const Viewport& vp) = 0;
+		virtual void setViewport(const Viewport* vp) = 0;
 		/** Get the current active viewport for rendering. */
-		virtual Viewport getViewport(void);
+		virtual const Viewport* getViewport(void);
 
 		/** Sets the current vertex buffer for the specified source index.   
 		/** @note Set buffer to nullptr to clear the buffer at the specified index.*/
@@ -387,7 +387,7 @@ namespace CamelotEngine
 		RenderTarget* mActiveRenderTarget;
 
 		// Active viewport (dest for future rendering operations)
-		Viewport mActiveViewport;
+		const Viewport* mActiveViewport;
 
 		CullingMode mCullingMode;
 

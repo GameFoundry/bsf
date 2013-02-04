@@ -33,7 +33,7 @@ namespace CamelotEngine
 		void clear(RenderTargetPtr target, unsigned int buffers, const Color& color = Color::Black, float depth = 1.0f, unsigned short stencil = 0);
 
 		void setRenderTarget(RenderTarget* target);
-		void setViewport(const Viewport& vp);
+		void setViewport(const Viewport* vp);
 		void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
 		void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer);

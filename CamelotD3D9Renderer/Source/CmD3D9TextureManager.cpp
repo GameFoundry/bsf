@@ -45,19 +45,19 @@ namespace CamelotEngine
 
 	}
 
-    TexturePtr D3D9TextureManager::createTextureImpl()
+    Texture* D3D9TextureManager::createTextureImpl()
     {
-		return TexturePtr(new D3D9Texture());
+		return new D3D9Texture();
     }
 
-	RenderTexturePtr D3D9TextureManager::createRenderTextureImpl()
+	RenderTexture* D3D9TextureManager::createRenderTextureImpl()
 	{
-		return RenderTexturePtr(new D3D9RenderTexture());
+		return new D3D9RenderTexture();
 	}
 
-	MultiRenderTexturePtr D3D9TextureManager::createMultiRenderTextureImpl()
+	MultiRenderTexture* D3D9TextureManager::createMultiRenderTextureImpl()
 	{
-		return MultiRenderTexturePtr(new D3D9MultiRenderTexture());
+		return new D3D9MultiRenderTexture();
 	}
 
 	PixelFormat D3D9TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)
@@ -103,16 +103,4 @@ namespace CamelotEngine
 
 		return D3D9Mappings::_getPF(d3dPF);
 	}
-
-    bool D3D9TextureManager::isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,
-        bool preciseFormatOnly)
-    {
-        if (!preciseFormatOnly)
-            format = getNativeFormat(ttype, format, usage);
-
-        D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(
-            CamelotEngine::RenderSystem::instancePtr());
-
-        return rs->checkTextureFilteringSupported(ttype, format, usage);
-    }
 }

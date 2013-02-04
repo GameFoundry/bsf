@@ -263,6 +263,9 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
+		if(!prg.isLoaded())
+			return;
+
 		GpuProgram* bindingPrg = prg->getBindingDelegate();
 
 		HRESULT hr;
@@ -1121,9 +1124,11 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setViewport(const Viewport& vp)
+	void D3D9RenderSystem::setViewport(const Viewport* vp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		assert(vp != nullptr);
 
 		mActiveViewport = vp;
 
@@ -1132,16 +1137,16 @@ namespace CamelotEngine
 		HRESULT hr;
 
 		// Set render target
-		RenderTargetPtr target = vp.getTarget();
+		RenderTargetPtr target = vp->getTarget();
 		setRenderTarget(target.get());
 
 		setCullingMode( mCullingMode );
 
 		// set viewport dimensions
-		d3dvp.X = vp.getActualLeft();
-		d3dvp.Y = vp.getActualTop();
-		d3dvp.Width = vp.getActualWidth();
-		d3dvp.Height = vp.getActualHeight();
+		d3dvp.X = vp->getActualLeft();
+		d3dvp.Y = vp->getActualTop();
+		d3dvp.Width = vp->getActualWidth();
+		d3dvp.Height = vp->getActualHeight();
 		if (target->requiresTextureFlipping())
 		{
 			// Convert "top-left" to "bottom-left"
@@ -2361,7 +2366,7 @@ namespace CamelotEngine
 		// Restore previous active device.
 
 		// Invalidate active view port.
-		mActiveViewport = Viewport();
+		mActiveViewport = nullptr;
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::determineFSAASettings(IDirect3DDevice9* d3d9Device,

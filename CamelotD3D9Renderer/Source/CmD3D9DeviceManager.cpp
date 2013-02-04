@@ -77,7 +77,7 @@ namespace CamelotEngine
 			}	
 
 			// Invalidate active view port.
-			renderSystem->mActiveViewport = Viewport();
+			renderSystem->mActiveViewport = nullptr;
 		}						
 	}
 

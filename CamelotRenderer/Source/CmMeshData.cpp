@@ -61,8 +61,6 @@ namespace CamelotEngine
 			delete [] index;
 
 		vertexBuffers.clear();
-
-		declaration->destroy();
 	}
 
 	/************************************************************************/

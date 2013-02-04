@@ -57,10 +57,6 @@ namespace CamelotEngine {
      */
     class CM_EXPORT TextureManager : public Module<TextureManager>
     {
-	protected:
-		virtual TexturePtr createTextureImpl() = 0;
-		virtual RenderTexturePtr createRenderTextureImpl() = 0;
-		virtual MultiRenderTexturePtr createMultiRenderTextureImpl() = 0;
     public:
 
         TextureManager(void);
@@ -217,50 +213,10 @@ namespace CamelotEngine {
 		*/
 		virtual PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage) = 0;
 
-        /** Returns whether this render system has hardware filtering supported for the
-            texture format requested with the given usage options.
-        @remarks
-            Not all texture format are supports filtering by the hardware, i.e. some
-            cards support floating point format, but it doesn't supports filtering on
-            the floating point texture at all, or only a subset floating point formats
-            have flitering supported.
-        @par
-            In the case you want to write shader to work with floating point texture, and
-            you want to produce better visual quality, it's necessary to flitering the
-            texture manually in shader (potential requires four or more texture fetch
-            instructions, plus several arithmetic instructions) if filtering doesn't
-            supported by hardware. But in case on the hardware that supports floating
-            point filtering natively, it had better to adopt this capability for
-            performance (because only one texture fetch instruction are required) and
-            doesn't loss visual quality.
-        @par
-            This method allow you queries hardware texture filtering capability to deciding
-            which verion of the shader to be used. Note it's up to you to write multi-version
-            shaders for support various hardware, internal engine can't do that for you
-            automatically.
-        @note
-            Under GL, texture filtering are always supported by driver, but if it's not
-            supported by hardware natively, software simulation will be used, and you
-            will end up with very slow speed (less than 0.1 fps for example). To slove
-            this performance problem, you must disable filtering manually (by use
-            <b>filtering none</b> in the material script's texture_unit section, or
-            call TextureUnitState::setTextureFiltering with TFO_NONE if populate
-            material in code).
-		@param ttype The texture type requested
-		@param format The pixel format requested
-		@param usage The kind of usage this texture is intended for, a combination of 
-			the TextureUsage flags.
-        @param preciseFormatOnly Whether precise or fallback format mode is used to detecting.
-            In case the pixel format doesn't supported by device, false will be returned
-            if in precise mode, and natively used pixel format will be actually use to
-            check if in fallback mode.
-		@returns true if the texture filtering is supported.
-        */
-        virtual bool isHardwareFilteringSupported(TextureType ttype, PixelFormat format, int usage,
-            bool preciseFormatOnly = false) = 0;
-
-    protected:
-
+	protected:
+		virtual Texture* createTextureImpl() = 0;
+		virtual RenderTexture* createRenderTextureImpl() = 0;
+		virtual MultiRenderTexture* createMultiRenderTextureImpl() = 0;
     };
 	/** @} */
 	/** @} */

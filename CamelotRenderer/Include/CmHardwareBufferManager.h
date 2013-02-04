@@ -113,14 +113,14 @@ namespace CamelotEngine {
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
         /** Creates a new vertex declaration. */
-        virtual VertexDeclarationPtr createVertexDeclaration(void);
+        virtual VertexDeclarationPtr createVertexDeclaration();
 
 	protected:
-		virtual VertexDeclarationPtr createVertexDeclarationImpl(void);
-		virtual VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
-		virtual IndexBufferPtr createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
-		virtual GpuParamBlockPtr createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC) = 0;
-		virtual GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
+		virtual VertexDeclaration* createVertexDeclarationImpl();
+		virtual VertexBuffer* createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
+		virtual IndexBuffer* createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
+		virtual GpuParamBlock* createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC) = 0;
+		virtual GpuBuffer* createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
 			bool randomGpuWrite = false, bool useCounter = false) = 0;
 	};
 

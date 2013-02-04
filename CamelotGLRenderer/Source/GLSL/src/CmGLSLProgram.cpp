@@ -182,16 +182,10 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------------
 	void GLSLProgram::destroy_internal()
 	{   
-		if(mAssemblerProgram != nullptr)
-		{
-			mAssemblerProgram->destroy();
-			mAssemblerProgram = nullptr;
-		}
-		
+		mAssemblerProgram = nullptr;
+
 		if (isSupported())
 			glDeleteShader(mGLHandle);
-
-		mVertexDeclaration->destroy();
 
 		HighLevelGpuProgram::destroy_internal();
 	}

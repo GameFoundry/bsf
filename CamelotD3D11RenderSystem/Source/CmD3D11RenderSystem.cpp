@@ -275,26 +275,28 @@ namespace CamelotEngine
 		// Not used
 	}
 
-	void D3D11RenderSystem::setViewport(const Viewport& vp)
+	void D3D11RenderSystem::setViewport(const Viewport* vp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
+
+		assert(vp != nullptr);
 
 		mActiveViewport = vp;
 
 		// Set render target
-		RenderTargetPtr target = vp.getTarget();
+		RenderTargetPtr target = vp->getTarget();
 		setRenderTarget(target.get());
 
 		// set viewport dimensions
-		mViewport.TopLeftX = (FLOAT)vp.getActualLeft();
-		mViewport.TopLeftY = (FLOAT)vp.getActualTop();
-		mViewport.Width = (FLOAT)vp.getActualWidth();
-		mViewport.Height = (FLOAT)vp.getActualHeight();
+		mViewport.TopLeftX = (FLOAT)vp->getActualLeft();
+		mViewport.TopLeftY = (FLOAT)vp->getActualTop();
+		mViewport.Width = (FLOAT)vp->getActualWidth();
+		mViewport.Height = (FLOAT)vp->getActualHeight();
 
-		if (vp.getTarget()->requiresTextureFlipping())
+		if (vp->getTarget()->requiresTextureFlipping())
 		{
 			// Convert "top-left" to "bottom-left"
-			mViewport.TopLeftY = vp.getTarget()->getHeight() - mViewport.Height - mViewport.TopLeftY;
+			mViewport.TopLeftY = vp->getTarget()->getHeight() - mViewport.Height - mViewport.TopLeftY;
 		}
 
 		// Z-values from 0.0 to 1.0 (TODO: standardise with OpenGL)
