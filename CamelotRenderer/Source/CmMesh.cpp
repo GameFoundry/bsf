@@ -351,9 +351,11 @@ namespace CamelotEngine
 	/* 								STATICS		                     		*/
 	/************************************************************************/
 
-	MeshPtr Mesh::create()
+	MeshHandle Mesh::create()
 	{
-		return MeshManager::instance().create();
+		MeshPtr meshPtr = MeshManager::instance().create();
+
+		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
 	}
 }
 

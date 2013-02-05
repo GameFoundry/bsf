@@ -374,6 +374,9 @@
     <ClInclude Include="Include\CmMeshManager.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmMaterialManager.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -570,6 +573,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmMeshManager.cpp">
       <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\CmMaterialManager.cpp">
+      <Filter>Source Files\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

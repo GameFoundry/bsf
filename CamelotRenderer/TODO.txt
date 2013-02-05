@@ -20,16 +20,13 @@ Pass
 GpuParamBlock - Needs to derive from CoreGpuObject and needs to be initialized better
  - HardwareBufferManager::createGpuParamBlock needs &CoreGpuObject::_deleteDelayed added as a deleted to shared_ptr
 
-Having ResourceHandle closely tied in with Resources creates a problem when user just wants to create a resource in memory and use it? How to do it without saving it? e.g. material setTexture
- - create() methods return a ResourceHandle.
- - However those won't be released using unload() which is confusing.
-   - creating a resource should add it to mLoaded
+Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
 
 RenderTextures and MultiRenderTextures will only work properly if used directly from render thread, as setting each surface calls render methods, so its impossible to set one outside of render thread
  - also they don't have initialize_internal
  - I should probably make these immutable. Once they are set they can't be changed, so everything can be initialized when calling initialize()
 
- - Support loading of compound objects:
+Support loading of compound objects:
    - Loading Material also loads attached Shader and Textures/Samplers
 
 Add support for include file resource

@@ -127,7 +127,7 @@ namespace CamelotEngine
 		if(!metaExists_UUID(uuid))
 		{
 			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
-			return nullptr;
+			return BaseResourceHandle();
 		}
 
 		ResourceMetaDataPtr metaEntry = mResourceMetaData[uuid];
@@ -140,7 +140,7 @@ namespace CamelotEngine
 		if(!metaExists_UUID(uuid))
 		{
 			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
-			return nullptr;
+			return BaseResourceHandle();
 		}
 
 		ResourceMetaDataPtr metaEntry = mResourceMetaData[uuid];
@@ -186,7 +186,7 @@ namespace CamelotEngine
 		if(!FileSystem::fileExists(filePath))
 		{
 			gDebug().logWarning("Specified file: " + filePath + " doesn't exist.");
-			return nullptr;
+			return BaseResourceHandle();
 		}
 
 		BaseResourceHandle newResource;
@@ -228,7 +228,7 @@ namespace CamelotEngine
 			resource.waitUntilLoaded(); // TODO - What if resource isn't being loaded at all, or has already been unloaded?
 
 		resource->destroy();
-		resource.reset();
+		resource._invalidate();
 
 		mLoadedResources.erase(resource.getUUID());
 	}
@@ -249,12 +249,12 @@ namespace CamelotEngine
 		}
 	}
 
-	BaseResourceHandle Resources::create(ResourcePtr resource, const String& filePath, bool overwrite)
+	void Resources::create(BaseResourceHandle resource, const String& filePath, bool overwrite)
 	{
 		if(resource == nullptr)
 			CM_EXCEPT(InvalidParametersException, "Trying to save an uninitialized resource.");
 
-		resource->waitUntilInitialized();
+		resource.waitUntilLoaded();
 
 		if(metaExists_UUID(resource->getUUID()))
 			CM_EXCEPT(InvalidParametersException, "Specified resource already exists.");
@@ -276,10 +276,9 @@ namespace CamelotEngine
 
 		addMetaData(resource->getUUID(), filePath);
 
-		BaseResourceHandle handle = resource;
-		save(handle);
+		save(resource);
 
-		return handle;
+		mLoadedResources[resource->getUUID()] = resource;
 	}
 
 	void Resources::save(BaseResourceHandle resource)

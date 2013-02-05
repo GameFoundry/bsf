@@ -125,14 +125,12 @@ namespace CamelotEngine
 		 * @brief	Creates a new resource at the specified location. Throws an exception if resource
 		 * 			already exists. Automatically calls Resources::save.
 		 *
-		 * @param	resource 	Pointer to the resource.
+		 * @param	resource 	Handle to the resource.
 		 * @param	filePath 	Full pathname of the file.
 		 * @param	overwrite	(optional) If true, any existing resource at the specified location will
 		 * 						be overwritten.
-		 *
-		 * @return	Handle to the resource. 
 		 */
-		BaseResourceHandle create(ResourcePtr resource, const String& filePath, bool overwrite = false);
+		void create(BaseResourceHandle resource, const String& filePath, bool overwrite = false);
 
 	public:
 		struct ResourceMetaData : public IReflectable

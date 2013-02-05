@@ -60,7 +60,7 @@ namespace CamelotEngine
 		SceneBlendOperation getAlphaBlendOperation(UINT32 renderTargetIdx) const;
 		UINT8 getRenderTargetWriteMask(UINT32 renderTargetIdx) const;
 
-		static BlendStatePtr create(const BLEND_STATE_DESC& desc);
+		static BlendStateHandle create(const BLEND_STATE_DESC& desc);
 
 		/**
 		 * @brief	Returns the default blend state;

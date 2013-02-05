@@ -23,6 +23,7 @@
 #include "CmInput.h"
 #include "CmRendererManager.h"
 #include "CmMeshManager.h"
+#include "CmMaterialManager.h"
 #include "CmRenderer.h"
 #include "CmDeferredRenderContext.h"
 
@@ -75,6 +76,7 @@ namespace CamelotEngine
 		SceneManager::startUp(new SceneManager());
 
 		MeshManager::startUp(new MeshManager());
+		MaterialManager::startUp(new MaterialManager());
 		Importer::startUp(new Importer());
 		loadPlugin("CamelotFreeImgImporter"); // TODO - Load this automatically somehow
 		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow
@@ -150,6 +152,7 @@ namespace CamelotEngine
 		mPrimaryRenderWindow = nullptr;
 
 		Importer::shutDown();
+		MaterialManager::shutDown();
 		MeshManager::shutDown();
 
 		SceneManager::shutDown();

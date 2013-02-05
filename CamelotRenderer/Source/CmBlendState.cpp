@@ -73,9 +73,11 @@ namespace CamelotEngine
 		return mData.renderTargetDesc[renderTargetIdx].renderTargetWriteMask;
 	}
 
-	BlendStatePtr BlendState::create(const BLEND_STATE_DESC& desc)
+	BlendStateHandle BlendState::create(const BLEND_STATE_DESC& desc)
 	{
-		return RenderStateManager::instance().createBlendState(desc);
+		BlendStatePtr blendStatePtr = RenderStateManager::instance().createBlendState(desc);
+
+		return static_resource_cast<BlendState>(Resource::_createResourceHandle(blendStatePtr));
 	}
 
 	/************************************************************************/

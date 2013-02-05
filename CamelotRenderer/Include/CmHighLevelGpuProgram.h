@@ -92,7 +92,7 @@ namespace CamelotEngine {
 		/* 								STATICS		                     		*/
 		/************************************************************************/
 	public:
-		static HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, 
+		static HighLevelGpuProgramHandle create(const String& source, const String& entryPoint, 
 			const String& language, GpuProgramType gptype, GpuProgramProfile profile);
     };
 

@@ -74,10 +74,12 @@ namespace CamelotEngine
 		GpuProgram::destroy_internal();
     }
 	//---------------------------------------------------------------------
-	HighLevelGpuProgramPtr HighLevelGpuProgram::create(const String& source, const String& entryPoint, 
+	HighLevelGpuProgramHandle HighLevelGpuProgram::create(const String& source, const String& entryPoint, 
 		const String& language, GpuProgramType gptype, GpuProgramProfile profile)
 	{
-		return HighLevelGpuProgramManager::instance().create(source, entryPoint, language, gptype, profile);
+		HighLevelGpuProgramPtr programPtr = HighLevelGpuProgramManager::instance().create(source, entryPoint, language, gptype, profile);
+
+		return static_resource_cast<HighLevelGpuProgram>(Resource::_createResourceHandle(programPtr));
 	}
 }
 

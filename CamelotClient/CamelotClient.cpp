@@ -25,11 +25,6 @@
 
 using namespace CamelotEngine;
 
-void doNothing()
-{
-
-}
-
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
 	_In_  HINSTANCE hPrevInstance,
@@ -58,9 +53,6 @@ int CALLBACK WinMain(
 	GameObjectPtr testModelGO = GameObject::create("TestMesh");
 	RenderablePtr testRenderable = testModelGO->addComponent<Renderable>();
 
-	HighLevelGpuProgramPtr fragProg;
-	HighLevelGpuProgramPtr vertProg;
-
 	/////////////////// HLSL 9 SHADERS //////////////////////////
 	//String fragShaderCode = "sampler2D tex;			\
 	//						float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
@@ -69,7 +61,7 @@ int CALLBACK WinMain(
 	//						return color;										\
 	//						}";
 
-	//fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	//HighLevelGpuProgramHandle fragProgRef =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 
 	//String vertShaderCode = "float4x4 matViewProjection;	\
 	//						void vs_main(										\
@@ -82,7 +74,7 @@ int CALLBACK WinMain(
 	//						oUv = uv;											\
 	//						}";
 
-	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	//HighLevelGpuProgramHandle vertProgRef =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 
 	/////////////////// HLSL 11 SHADERS //////////////////////////
 	String fragShaderCode = "SamplerState samp : register(s0);			\
@@ -93,7 +85,7 @@ int CALLBACK WinMain(
 							return color;										\
 							}";
 
-	fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+	HighLevelGpuProgramHandle fragProgRef =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
 	String vertShaderCode = "float4x4 matViewProjection;	\
 							void vs_main(										\
@@ -106,7 +98,7 @@ int CALLBACK WinMain(
 							oUv = uv;											\
 							}";
 
-	vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+	HighLevelGpuProgramHandle vertProgRef =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
 
 	/////////////////// CG SHADERS //////////////////////////
 	//String fragShaderCode = "sampler2D tex;					\
@@ -116,7 +108,7 @@ int CALLBACK WinMain(
 	//						return color;										\
 	//						}";
 
-	//fragProg =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "cg", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	//HighLevelGpuProgramHandle fragProgRef =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "cg", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 
 	//String vertShaderCode = "float4x4 matViewProjection;	\
 	//						void vs_main(										\
@@ -129,7 +121,7 @@ int CALLBACK WinMain(
 	//						oUv = cm_texcoord0;											\
 	//						}";
 
-	//vertProg =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	//HighLevelGpuProgramHandle vertProgRef =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "cg", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 
 	///////////////// GLSL SHADERS ////////////////////////////
 	//String fragShaderCode = " #version 400 \n \
@@ -142,7 +134,7 @@ int CALLBACK WinMain(
 	//							  fragColor = texColor; \
 	//						  }";
 
-	//fragProg = HighLevelGpuProgram::create(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	//HighLevelGpuProgramHandle fragProgRef = HighLevelGpuProgram::create(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 
 	//// TODO - Make sure to document the strict input parameter naming. (Exact supported names are in GLSLParamParser)
 	//String vertShaderCode = "#version 400 \n \
@@ -156,13 +148,13 @@ int CALLBACK WinMain(
 	//							gl_Position = cm_position * matViewProjection; \
 	//						 }";
 
-	//vertProg = HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	//HighLevelGpuProgramHandle vertProgRef= HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
 
-	HighLevelGpuProgramHandle vertProgRef = gResources().create(vertProg, "C:\\vertProgCg.vprog", true);
+	gResources().create(vertProgRef, "C:\\vertProgCg.vprog", true);
 	gResources().unload(vertProgRef);
 	vertProgRef = gResources().load("C:\\vertProgCg.vprog");
 
-	HighLevelGpuProgramHandle fragProgRef = gResources().create(fragProg, "C:\\fragProgCg.vprog", true);
+	gResources().create(fragProgRef, "C:\\fragProgCg.vprog", true);
 	gResources().unload(fragProgRef);
 	fragProgRef = gResources().load("C:\\fragProgCg.vprog");
 
@@ -174,7 +166,6 @@ int CALLBACK WinMain(
 	PassPtr newPassGL = newTechniqueGL->addPass();
 	newPassGL->setVertexProgram(vertProgRef);
 	newPassGL->setFragmentProgram(fragProgRef);
-
 
 	// TODO - I need to create different techniques for different render systems (and renderers, if there were any),
 	// which is redundant as some techniques can be reused. I should add a functionality that supports multiple
@@ -189,37 +180,29 @@ int CALLBACK WinMain(
 	newPassDX11->setVertexProgram(vertProgRef);
 	newPassDX11->setFragmentProgram(fragProgRef);
 
-	MaterialPtr testMaterial = Material::create();
-	testMaterial->waitUntilInitialized(); // TODO - Material doesn't do anything GPU specific, so technically it should be possible to initialize on the spot
+	MaterialHandle testMaterial = Material::create();
+	testMaterial.waitUntilLoaded(); // TODO - Material doesn't do anything GPU specific, so technically it should be possible to initialize on the spot
 	// but is that a good idea?
 	testMaterial->setShader(testShader);
 
 	testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
-
-	RenderSystem::instance().queueCommand(&doNothing, true);
-
-	MaterialHandle testMaterialRef = gResources().create(testMaterial, "C:\\testMaterial.mat", true);
 	//testMaterialRef = gResources().load("C:\\testMaterial.mat");
 	//testMaterialRef.waitUntilLoaded();
 
 	/*TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));*/
-	TexturePtr testTex = std::static_pointer_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));
-	MeshPtr dbgMesh = std::static_pointer_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
+	TextureHandle testTexRef = static_resource_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));
+	MeshHandle dbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
 
 	//int tmpFlag = _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_CRT_DF | _CRTDBG_DELAY_FREE_MEM_DF);
 
-	TextureHandle testTexRef = gResources().create(testTex, "C:\\ExportTest.tex", true);
-	MeshHandle dbgMeshRef = gResources().create(dbgMesh, "C:\\ExportMesh.mesh", true);
+	gResources().create(testTexRef, "C:\\ExportTest.tex", true);
+	gResources().create(dbgMeshRef, "C:\\ExportMesh.mesh", true);
 
 	gResources().unload(testTexRef);
 	gResources().unload(dbgMeshRef);
 
 	testTexRef = static_resource_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
-	RenderSystem::instance().queueCommand(&doNothing, true);
-
 	dbgMeshRef = static_resource_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
-	RenderSystem::instance().queueCommand(&doNothing, true);
-
 
 	testMaterial->setTexture("tex", testTexRef);
 	//gResources().create(testMaterial, "C:\\ExportMaterial.mat", true);
@@ -231,7 +214,7 @@ int CALLBACK WinMain(
 	//dbgMeshRef.waitUntilLoaded();
 
 	testRenderable->setMesh(dbgMeshRef);
-	testRenderable->setMaterial(testMaterialRef);
+	testRenderable->setMaterial(testMaterial);
 
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );
@@ -241,19 +224,12 @@ int CALLBACK WinMain(
 	// Release everything before shutdown
 	
 	//testMaterial->destroy();
-	testMaterial = nullptr;
+	testMaterial.reset();
 
-	gResources().unload(testMaterialRef);
 	gResources().unload(testTexRef);
 	gResources().unload(dbgMeshRef);
 	gResources().unload(fragProgRef);
 	gResources().unload(vertProgRef);
-
-	fragProg = nullptr;
-	vertProg = nullptr;
-
-	testTex = nullptr;
-	dbgMesh = nullptr;
 
 	testModelGO->destroy();
 	testModelGO = nullptr;

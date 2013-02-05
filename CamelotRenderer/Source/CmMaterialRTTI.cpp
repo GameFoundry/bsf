@@ -1,4 +1,5 @@
 #include "CmMaterialRTTI.h"
+#include "CmMaterialManager.h"
 #include "CmGpuParamDesc.h"
 
 namespace CamelotEngine
@@ -297,5 +298,10 @@ namespace CamelotEngine
 		}
 
 		material->mRTTIData = nullptr; // This will delete temporary data as it's stored in a unique ptr
+	}
+
+	std::shared_ptr<IReflectable> MaterialRTTI::newRTTIObject()
+	{
+		return MaterialManager::instance().create();
 	}
 }

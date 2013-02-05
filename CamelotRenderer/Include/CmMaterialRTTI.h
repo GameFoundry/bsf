@@ -492,9 +492,6 @@ namespace CamelotEngine
 			return TID_Material;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
-		{
-			return Material::create();
-		}
+		virtual std::shared_ptr<IReflectable> newRTTIObject();
 	};
 }

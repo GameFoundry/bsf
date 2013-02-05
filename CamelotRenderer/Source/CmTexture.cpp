@@ -305,18 +305,22 @@ namespace CamelotEngine {
 	/************************************************************************/
 	/* 								STATICS	                      			*/
 	/************************************************************************/
-	TexturePtr Texture::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
+	TextureHandle Texture::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
 		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
 	{
-		return TextureManager::instance().createTexture(texType, 
+		TexturePtr texturePtr = TextureManager::instance().createTexture(texType, 
 			width, height, depth, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+
+		return static_resource_cast<Texture>(Resource::_createResourceHandle(texturePtr));
 	}
 	
-	TexturePtr Texture::create(TextureType texType, UINT32 width, UINT32 height, 
+	TextureHandle Texture::create(TextureType texType, UINT32 width, UINT32 height, 
 		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
 	{
-		return TextureManager::instance().createTexture(texType, 
+		TexturePtr texturePtr = TextureManager::instance().createTexture(texType, 
 			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+
+		return static_resource_cast<Texture>(Resource::_createResourceHandle(texturePtr));
 	}
 }
 

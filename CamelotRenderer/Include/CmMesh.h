@@ -77,6 +77,6 @@ namespace CamelotEngine
 		/************************************************************************/
 		
 	public:
-		static MeshPtr create();
+		static MeshHandle create();
 	};
 }

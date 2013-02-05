@@ -92,7 +92,7 @@ namespace CamelotEngine
 		 */
 		const Color& getBorderColor() const;
 
-		static SamplerStatePtr create(const SAMPLER_STATE_DESC& desc);
+		static SamplerStateHandle create(const SAMPLER_STATE_DESC& desc);
 
 		/**
 		 * @brief	Returns the default sampler state;

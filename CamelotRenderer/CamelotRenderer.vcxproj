@@ -208,6 +208,7 @@
     <ClInclude Include="Include\CmHardwareBuffer.h" />
     <ClInclude Include="Include\CmHardwareBufferManager.h" />
     <ClInclude Include="Include\CmIndexBuffer.h" />
+    <ClInclude Include="Include\CmMaterialManager.h" />
     <ClInclude Include="Include\CmMeshManager.h" />
     <ClInclude Include="Include\CmOcclusionQuery.h" />
     <ClInclude Include="Include\CmPixelBuffer.h" />
@@ -277,6 +278,7 @@
     <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Include\CmMaterialManager.cpp" />
     <ClCompile Include="Source\CamelotRenderer.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
     <ClCompile Include="Source\CmBlendState.cpp" />

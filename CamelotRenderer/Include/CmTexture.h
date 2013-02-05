@@ -275,11 +275,11 @@ namespace CamelotEngine {
 		/* 								STATICS		                     		*/
 		/************************************************************************/
 	public:
-		static TexturePtr create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
+		static TextureHandle create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
 			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
 
-		static TexturePtr create(TextureType texType, UINT32 width, UINT32 height, int num_mips,
+		static TextureHandle create(TextureType texType, UINT32 width, UINT32 height, int num_mips,
 			PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
     };

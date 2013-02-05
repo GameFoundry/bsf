@@ -2,6 +2,11 @@
 
 #include "CmPrerequisites.h"
 #include "CmResource.h"
+#include "CmVector2.h"
+#include "CmVector3.h"
+#include "CmVector4.h"
+#include "CmMatrix3.h"
+#include "CmMatrix4.h"
 #include "CmCommonEnums.h"
 
 namespace CamelotEngine
@@ -63,8 +68,10 @@ namespace CamelotEngine
 
 		PassParametersPtr getPassParameters(UINT32 passIdx) const;
 
-		static MaterialPtr create();
+		static MaterialHandle create();
 	private:
+		friend class MaterialManager;
+
 		ShaderPtr mShader;
 		TechniquePtr mBestTechnique;
 

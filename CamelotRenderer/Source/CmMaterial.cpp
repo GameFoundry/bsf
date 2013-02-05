@@ -9,6 +9,7 @@
 #include "CmGpuProgram.h"
 #include "CmGpuParamDesc.h"
 #include "CmMaterialRTTI.h"
+#include "CmMaterialManager.h"
 #include "CmDebug.h"
 
 namespace CamelotEngine
@@ -817,13 +818,11 @@ namespace CamelotEngine
 		return iterFind->second.at(arrayIdx);
 	}
 
-	MaterialPtr Material::create()
+	MaterialHandle Material::create()
 	{
-		MaterialPtr newMat(new Material(), &CoreGpuObject::_deleteDelayed);
-		newMat->setThisPtr(newMat);
-		newMat->initialize();
+		MaterialPtr materialPtr = MaterialManager::instance().create();
 
-		return newMat;
+		return static_resource_cast<Material>(Resource::_createResourceHandle(materialPtr));
 	}
 
 	RTTITypeBase* Material::getRTTIStatic()

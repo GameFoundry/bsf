@@ -51,7 +51,7 @@ namespace CamelotEngine
 		bool getMultisampleEnable() const { return mData.multisampleEnable; }
 		bool getAntialiasedLineEnable() const { return mData.antialiasedLineEnable; }
 
-		static RasterizerStatePtr create(const RASTERIZER_STATE_DESC& desc);
+		static RasterizerStateHandle create(const RASTERIZER_STATE_DESC& desc);
 
 		/**
 		 * @brief	Returns the default rasterizer state;

@@ -131,6 +131,25 @@ namespace CamelotEngine
 			return std::static_pointer_cast<T>(mData->mPtr); 
 		}
 
+		/**
+		 * @brief	Releases the reference held by this handle.
+		 */
+		void reset()
+		{
+			mData = std::shared_ptr<ResourceHandleData>(new ResourceHandleData());
+		}
+
+		/**
+		 * @brief	Clears the data this handle (and all copies of it) points to
+		 * 			
+		 * @note	Should only be called by internal methods
+		 */
+		void _invalidate()
+		{
+			mData->mPtr = nullptr;
+			mData->mIsCreated = false;
+		}
+
 		template<class _Ty>
 		struct CM_Bool_struct
 		{
@@ -145,7 +164,7 @@ namespace CamelotEngine
 		}
 
 	private:
-		friend class Resources;
+		friend class Resource;
 
 		explicit ResourceHandle(T* ptr)
 			:ResourceHandleBase()
@@ -157,15 +176,6 @@ namespace CamelotEngine
 			:ResourceHandleBase()
 		{
 			init(ptr);
-		}
-
-		/**
-		 * @brief	Releases the reference held by this handle.
-		 */
-		void reset()
-		{
-			mData->mPtr = nullptr;
-			mData->mIsCreated = false;
 		}
 	};
 
