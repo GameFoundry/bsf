@@ -396,7 +396,7 @@ namespace CamelotEngine {
 		while(true)
 		{
 			// Wait until we get some ready commands
-			vector<CommandQueue::Command>::type* commands = nullptr;
+			std::queue<CommandQueue::Command>* commands = nullptr;
 			{
 				CM_LOCK_MUTEX_NAMED(mCommandQueueMutex, lock)
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
+#include "CmException.h"
 #include "boost/any.hpp"
 
 namespace CamelotEngine

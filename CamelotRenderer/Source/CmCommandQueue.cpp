@@ -8,7 +8,7 @@ namespace CamelotEngine
 	CommandQueue::CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
 		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads)
 	{
-		mCommands = new vector<Command>::type();
+		mCommands = new std::queue<Command>();
 	}
 
 	CommandQueue::~CommandQueue()
@@ -38,10 +38,10 @@ namespace CamelotEngine
 #endif
 
 		Command newCommand(commandCallback, _notifyWhenComplete, _callbackId);
-		mCommands->push_back(newCommand);
+		mCommands->push(newCommand);
 
 #if CM_FORCE_SINGLETHREADED_RENDERING
-		vector<CommandQueue::Command>::type* commands = flush();
+		std::queue<CommandQueue::Command>* commands = flush();
 		playback(commands);
 #endif
 
@@ -60,28 +60,28 @@ namespace CamelotEngine
 #endif
 
 		Command newCommand(commandCallback, _notifyWhenComplete, _callbackId);
-		mCommands->push_back(newCommand);
+		mCommands->push(newCommand);
 
 #if CM_FORCE_SINGLETHREADED_RENDERING
-		vector<CommandQueue::Command>::type* commands = flush();
+		std::queue<CommandQueue::Command>* commands = flush();
 		playback(commands);
 #endif
 	}
 
-	vector<CommandQueue::Command>::type* CommandQueue::flush()
+	std::queue<CommandQueue::Command>* CommandQueue::flush()
 	{
-		vector<Command>::type* oldCommands = nullptr;
+		std::queue<Command>* oldCommands = nullptr;
 		{
 			CM_LOCK_MUTEX(mCommandBufferMutex);
 
 			oldCommands = mCommands;
-			mCommands = new vector<Command>::type();
+			mCommands = new std::queue<Command>();
 		}
 
 		return oldCommands;
 	}
 
-	void CommandQueue::playback(vector<CommandQueue::Command>::type* commands, boost::function<void(UINT32)> notifyCallback)
+	void CommandQueue::playback(std::queue<CommandQueue::Command>* commands, boost::function<void(UINT32)> notifyCallback)
 	{
 #if CM_DEBUG_MODE
 		RenderSystem* rs = RenderSystem::instancePtr();
@@ -93,9 +93,9 @@ namespace CamelotEngine
 		if(commands == nullptr)
 			return;
 
-		for(auto iter = commands->begin(); iter != commands->end(); ++iter)
+		while(!commands->empty())
 		{
-			Command& command = (*iter);
+			Command& command = commands->front();
 
 			if(command.returnsValue)
 			{
@@ -117,12 +117,14 @@ namespace CamelotEngine
 			{
 				notifyCallback(command.callbackId);
 			}
+
+			commands->pop();
 		}
 
 		delete commands;
 	}
 
-	void CommandQueue::playback(vector<Command>::type* commands)
+	void CommandQueue::playback(std::queue<Command>* commands)
 	{
 		playback(commands, boost::function<void(UINT32)>());
 	}

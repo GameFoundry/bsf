@@ -170,7 +170,7 @@ namespace CamelotEngine
 
 	void DeferredRenderContext::submitToGpu()
 	{
-		vector<CommandQueue::Command>::type* commands = mCommandQueue->flush();
+		std::queue<CommandQueue::Command>* commands = mCommandQueue->flush();
 
 		RenderSystem* rs = RenderSystem::instancePtr();
 		rs->queueCommand(boost::bind(&CommandQueue::playback, mCommandQueue, commands));
@@ -178,7 +178,7 @@ namespace CamelotEngine
 
 	void DeferredRenderContext::cancelAll()
 	{
-		vector<CommandQueue::Command>::type* commands = mCommandQueue->flush();
+		std::queue<CommandQueue::Command>* commands = mCommandQueue->flush();
 		delete commands;
 
 		// TODO - This cancels the commands but doesn't revert the state variables

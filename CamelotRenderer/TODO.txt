@@ -25,17 +25,12 @@ Having ResourceHandle closely tied in with Resources creates a problem when user
  - However those won't be released using unload() which is confusing.
    - creating a resource should add it to mLoaded
 
-Switching the renderer will cause exceptions for the first couple of times I run it. It happens randomly and
- goes away after I try to run the game for a few times. Restart the PC and try again if you want to get it to happen again.
-
 RenderTextures and MultiRenderTextures will only work properly if used directly from render thread, as setting each surface calls render methods, so its impossible to set one outside of render thread
  - also they don't have initialize_internal
  - I should probably make these immutable. Once they are set they can't be changed, so everything can be initialized when calling initialize()
 
  - Support loading of compound objects:
    - Loading Material also loads attached Shader and Textures/Samplers
-
-Calling CoreGpuObject::waitUntilInitialized and initialization fails (or is never called) it will block forever
 
 Add support for include file resource
 Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it
@@ -59,6 +54,7 @@ Can be delayed:
  Material RTTI should also serialize shared buffers (they need to be made into a resource)
  - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
  Mesh::setMeshData is currently always synced
+  register/unregisterObjectToDestroy might be redundant now that I save a reference with each queue entry?
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  
 

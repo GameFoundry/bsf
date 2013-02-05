@@ -87,7 +87,7 @@ namespace CamelotEngine
 		 * @brief	Returns a copy of all queued commands and makes room for new ones. Must be called from the thread
 		 * 			that created the command queue. Returned commands MUST be passed to playbackCommands.
 		 */
-		vector<Command>::type* flush();
+		std::queue<Command>* flush();
 
 		/**
 		 * @brief	Plays all provided commands. Should only be called from the render thread. To get the
@@ -96,13 +96,13 @@ namespace CamelotEngine
 		 * @param	notifyCallback  	Callback that will be called if a command that has "notifyOnComplete" flag set.
 		 * 								The callback will receive "callbackId" of the command.
 		 */
-		void playback(vector<Command>::type* commands, boost::function<void(UINT32)> notifyCallback);
+		void playback(std::queue<Command>* commands, boost::function<void(UINT32)> notifyCallback);
 
 		/**
 		 * @brief	Plays all provided commands. Should only be called from the render thread. To get
 		 * 			the commands call flushCommands().
 		 */
-		void playback(vector<Command>::type* commands);
+		void playback(std::queue<Command>* commands);
 
 		/**
 		 * @brief	Returns true if no commands are queued.
@@ -110,7 +110,7 @@ namespace CamelotEngine
 		bool isEmpty();
 
 	private:
-		vector<Command>::type* mCommands;
+		std::queue<Command>* mCommands;
 
 		bool mAllowAllThreads;
 

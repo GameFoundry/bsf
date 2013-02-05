@@ -36,8 +36,10 @@ namespace CamelotEngine
 
 	void CoreGpuObject::destroy()
 	{
+		setScheduledToBeDeleted(true);
 		CoreGpuObjectManager::instance().registerObjectToDestroy(mThis.lock());
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&CoreGpuObject::destroy_internal, this));
+
+		queueGpuCommand(mThis.lock(), &CoreGpuObject::destroy_internal);
 	}
 
 	void CoreGpuObject::destroy_internal()
@@ -58,11 +60,13 @@ namespace CamelotEngine
 	void CoreGpuObject::initialize()
 	{
 #if CM_DEBUG_MODE
-		if(isInitialized())
-			CM_EXCEPT(InternalErrorException, "Trying to initialize an object that is already initialized");
+		if(isInitialized() || isScheduledToBeInitialized())
+			CM_EXCEPT(InternalErrorException, "Trying to initialize an object that is already initialized.");
 #endif
 
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&CoreGpuObject::initialize_internal, this));
+		setScheduledToBeInitialized(true);
+
+		queueGpuCommand(mThis.lock(), &CoreGpuObject::initialize_internal);
 	}
 
 	void CoreGpuObject::initialize_internal()
@@ -71,6 +75,8 @@ namespace CamelotEngine
 			CM_LOCK_MUTEX(mCoreGpuObjectLoadedMutex);
 			setIsInitialized(true);
 		}	
+
+		setScheduledToBeInitialized(false);
 
 		CM_THREAD_NOTIFY_ALL(mCoreGpuObjectLoadedCondition);
 	}
@@ -87,6 +93,9 @@ namespace CamelotEngine
 			CM_LOCK_MUTEX_NAMED(mCoreGpuObjectLoadedMutex, lock);
 			while(!isInitialized())
 			{
+				if(!isScheduledToBeInitialized())
+					CM_EXCEPT(InternalErrorException, "Attempting to wait until initialization finishes but object is not scheduled to be initialized.");
+
 				CM_THREAD_WAIT(mCoreGpuObjectLoadedCondition, mCoreGpuObjectLoadedMutex, lock);
 			}
 		}
@@ -102,23 +111,56 @@ namespace CamelotEngine
 		assert(obj != nullptr);
 
 		// This method usually gets called automatically by the shared pointer when all references are released. The process:
-		// - If the deletion flag is set or object was never initialized then we immediately delete the object
+		// - If the object wasn't initialized delete it right away
 		// - Otherwise:
 		//  - We re-create the reference to the object by setting mThis pointer
 		//  - We queue the object to be destroyed so all of its GPU resources may be released on the render thread
 		//    - destroy() makes sure it keeps a reference of mThis so object isn't deleted
-		//    - Once the destroy() finishes the reference is removed and delete is called again, but this time deletion flag is set
+		//    - Once the destroy() finishes the reference is removed and the default shared_ptr deleter is called
 
-		if(obj->isScheduledToBeDeleted() || !obj->isInitialized())
+#if CM_DEBUG_MODE
+		if(obj->isScheduledToBeInitialized())
 		{
-			delete obj;
+			CM_EXCEPT(InternalErrorException, "Object scheduled to be initialized, yet it's being deleted. " \
+				"By design objects queued in the command queue should always have a reference count >= 1, therefore never be deleted " \
+				"while still in the queue.");
 		}
-		else
+#endif
+
+		if(obj->isInitialized())
 		{
 			std::shared_ptr<CoreGpuObject> thisPtr(obj);
 			obj->setThisPtr(thisPtr);
-			obj->setScheduledToBeDeleted(true);
 			obj->destroy();
 		}
+		else
+		{
+			delete obj;
+		}
+	}
+
+	void CoreGpuObject::queueGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*)> func)
+	{
+		// We call another internal method and go through an additional layer of abstraction in order to keep an active
+		// reference to the obj (saved in the bound function).
+		// We could have called the function directly using "this" pointer but then we couldn't have used a shared_ptr for the object,
+		// in which case there is a possibility that the object would be released and deleted while still being in the command queue.
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&CoreGpuObject::executeGpuCommand, obj, func));
+	}
+
+	AsyncOp CoreGpuObject::queueReturnGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*, AsyncOp&)> func)
+	{
+		// See queueGpuCommand
+		return RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&CoreGpuObject::executeReturnGpuCommand, obj, func, _1));
+	}
+
+	void CoreGpuObject::executeGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*)> func)
+	{
+		func(obj.get());
+	}
+
+	void CoreGpuObject::executeReturnGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*, AsyncOp&)> func, AsyncOp& op)
+	{
+		func(obj.get(), op);
 	}
 }

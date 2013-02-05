@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmAsyncOp.h"
+#include "boost/function.hpp"
 
 namespace CamelotEngine
 {
@@ -18,7 +20,8 @@ namespace CamelotEngine
 		enum Flags
 		{
 			CGO_INITIALIZED = 0x01,
-			CGO_SCHEDULED_FOR_DELETE = 0x02
+			CGO_SCHEDULED_FOR_INIT = 0x02,
+			CGO_SCHEDULED_FOR_DELETE = 0x04
 		};
 
 	public:
@@ -26,7 +29,7 @@ namespace CamelotEngine
 		virtual ~CoreGpuObject();
 
 		/**
-		 * @brief	Destroys this object. Make sure to call this before deleting the object.
+		 * @brief	Destroys all GPU resources of this object.
 o		 * 			
 		 * @note	Destruction is not done immediately, and is instead just scheduled on the
 		 * 			render thread. Unless called from render thread in which case it is executed right away.
@@ -86,13 +89,27 @@ o		 *
 		virtual void initialize_internal();
 
 		/**
+		 * @brief	Queues a command to be executed on the render thread, without a return value.
+		 */
+		static void queueGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*)> func);
+
+		/**
+		 * @brief	Queues a command to be executed on the render thread, with a return value in the form of AsyncOp.
+		 * 			
+		 * @see		AsyncOp
+		 */
+		static AsyncOp queueReturnGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*, AsyncOp&)> func);
+
+		/**
 		 * @brief	Returns an unique identifier for this object.
 		 */
 		UINT64 getInternalID() const { return mInternalID; }
 
+		bool isScheduledToBeInitialized() const { return (mFlags & CGO_SCHEDULED_FOR_INIT) != 0; }
 		bool isScheduledToBeDeleted() const { return (mFlags & CGO_SCHEDULED_FOR_DELETE) != 0; }
-
+		
 		void setIsInitialized(bool initialized) { mFlags = initialized ? mFlags | CGO_INITIALIZED : mFlags & ~CGO_INITIALIZED; }
+		void setScheduledToBeInitialized(bool scheduled) { mFlags = scheduled ? mFlags | CGO_SCHEDULED_FOR_INIT : mFlags & ~CGO_SCHEDULED_FOR_INIT; }
 		void setScheduledToBeDeleted(bool scheduled) { mFlags = scheduled ? mFlags | CGO_SCHEDULED_FOR_DELETE : mFlags & ~CGO_SCHEDULED_FOR_DELETE; }
 	private:
 		friend class CoreGpuObjectManager;
@@ -103,5 +120,8 @@ o		 *
 
 		CM_STATIC_THREAD_SYNCHRONISER(mCoreGpuObjectLoadedCondition)
 		CM_STATIC_MUTEX(mCoreGpuObjectLoadedMutex)
+
+		static void executeGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*)> func);
+		static void executeReturnGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*, AsyncOp&)> func, AsyncOp& op); 
 	};
 }

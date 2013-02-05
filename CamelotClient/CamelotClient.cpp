@@ -25,6 +25,11 @@
 
 using namespace CamelotEngine;
 
+void doNothing()
+{
+
+}
+
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
 	_In_  HINSTANCE hPrevInstance,
@@ -191,6 +196,8 @@ int CALLBACK WinMain(
 
 	testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
 
+	RenderSystem::instance().queueCommand(&doNothing, true);
+
 	MaterialHandle testMaterialRef = gResources().create(testMaterial, "C:\\testMaterial.mat", true);
 	//testMaterialRef = gResources().load("C:\\testMaterial.mat");
 	//testMaterialRef.waitUntilLoaded();
@@ -208,7 +215,11 @@ int CALLBACK WinMain(
 	gResources().unload(dbgMeshRef);
 
 	testTexRef = static_resource_cast<Texture>(gResources().load("C:\\ExportTest.tex"));
+	RenderSystem::instance().queueCommand(&doNothing, true);
+
 	dbgMeshRef = static_resource_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
+	RenderSystem::instance().queueCommand(&doNothing, true);
+
 
 	testMaterial->setTexture("tex", testTexRef);
 	//gResources().create(testMaterial, "C:\\ExportMaterial.mat", true);
