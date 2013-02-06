@@ -24,13 +24,16 @@ namespace CamelotEngine
 	}
 
 	TextureView::TextureView()
-	{
+	{ }
 
-	}
+	TextureView::~TextureView()
+	{ }
 
 	void TextureView::initialize(TexturePtr texture, TEXTURE_VIEW_DESC& _desc)
 	{
 		mOwnerTexture = texture;
 		mDesc = _desc;
+
+		CoreGpuObject::initialize();
 	}
 }

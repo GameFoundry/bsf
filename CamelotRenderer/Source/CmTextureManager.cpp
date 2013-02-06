@@ -74,18 +74,27 @@ namespace CamelotEngine {
 			depthStencil = createTexture(TEX_TYPE_2D, width, height, 0, depthStencilFormat, TU_DEPTHSTENCIL, false, fsaa, fsaaHint);
 		}
 
-		RenderTexturePtr newRT = createEmptyRenderTexture();
-		newRT->setColorSurface(texture, 0, 1, 0);
-		newRT->setDepthStencilSurface(depthStencil, 0, 1, 0);
-		newRT->initialize();
+		RENDER_TEXTURE_DESC desc;
+		desc.colorSurface.texture = texture;
+		desc.colorSurface.face = 0;
+		desc.colorSurface.mipLevel = 0;
+		desc.colorSurface.numFaces = 1;
+
+		desc.depthStencilSurface.texture = depthStencil;
+		desc.depthStencilSurface.face = 0;
+		desc.depthStencilSurface.mipLevel = 0;
+		desc.depthStencilSurface.numFaces = 1;
+
+		RenderTexturePtr newRT = createRenderTexture(desc);
 
 		return newRT;
 	}
 	//-----------------------------------------------------------------------
-	RenderTexturePtr TextureManager::createEmptyRenderTexture()
+	RenderTexturePtr TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
 	{
 		RenderTexturePtr newRT = RenderTexturePtr(createRenderTextureImpl(), &CoreGpuObject::_deleteDelayed);
 		newRT->setThisPtr(newRT);
+		newRT->initialize(desc);
 
 		return newRT;
 	}

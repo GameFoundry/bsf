@@ -50,7 +50,7 @@ namespace CamelotEngine
 		RenderTexture::destroy_internal();
 	}
 
-	void GLRenderTexture::createInternalResourcesImpl()
+	void GLRenderTexture::initialize_internal()
 	{
 		if(mFB != nullptr)
 			delete mFB;
@@ -72,6 +72,8 @@ namespace CamelotEngine
 			glDepthStencilTexture->getBuffer(mDepthStencilSurface->getFirstArraySlice(), mDepthStencilSurface->getMostDetailedMip()));
 
 		mFB->bindDepthStencil(depthStencilBuffer);
+
+		RenderTexture::initialize_internal();
 	}
 
 	void GLRenderTexture::getCustomAttribute(const String& name, void* pData)

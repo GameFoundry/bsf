@@ -359,7 +359,7 @@ namespace CamelotEngine
 		}
 		else if(name == "DSV")
 		{
-			D3D11TextureView* d3d11TextureView = static_cast<D3D11TextureView*>(mDepthStencilView);
+			D3D11TextureView* d3d11TextureView = static_cast<D3D11TextureView*>(mDepthStencilView.get());
 			*static_cast<ID3D11DepthStencilView**>(pData) = d3d11TextureView->getDSV();
 			return;
 		}

@@ -78,7 +78,6 @@ namespace CamelotEngine
 		 */
 		void destroy_internal();
 
-		TextureView* createView();
-		void destroyView(TextureView* view);
+		TextureViewPtr createView();
 	};
 }

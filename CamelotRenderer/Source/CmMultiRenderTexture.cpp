@@ -87,7 +87,7 @@ namespace CamelotEngine
 
 	void MultiRenderTexture::throwIfBuffersDontMatch() const
 	{
-		const TextureView* firstSurfaceDesc = nullptr;
+		TextureViewPtr firstSurfaceDesc = nullptr;
 		for(size_t i = 0; i < mColorSurfaces.size(); i++)
 		{
 			if(mColorSurfaces[i] == nullptr)

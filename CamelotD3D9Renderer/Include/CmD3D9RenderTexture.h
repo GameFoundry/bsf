@@ -19,9 +19,12 @@ namespace CamelotEngine
 
 		D3D9RenderTexture();
 
+		/**
+		 * @copydoc RenderTexture::initialize_internal().
+		 */
+		void initialize_internal();
+
 		IDirect3DSurface9* mDX9ColorSurface;
 		IDirect3DSurface9* mDX9DepthStencilSurface;
-
-		void createInternalResourcesImpl();
 	};
 }

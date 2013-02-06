@@ -588,15 +588,12 @@ namespace CamelotEngine
 		}
 	}
 
-	TextureView* D3D11Texture::createView()
+	TextureViewPtr D3D11Texture::createView()
 	{
-		return new D3D11TextureView();
-	}
+		TextureViewPtr viewPtr(new D3D11TextureView(), &CoreGpuObject::_deleteDelayed);
+		viewPtr->setThisPtr(viewPtr);
 
-	void D3D11Texture::destroyView(TextureView* view)
-	{
-		if(view != nullptr)
-			delete view;
+		return viewPtr;
 	}
 }
 

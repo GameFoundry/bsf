@@ -39,7 +39,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D9RenderTexture::createInternalResourcesImpl()
+	void D3D9RenderTexture::initialize_internal()
 	{
 		D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(mColorSurface->getTexture().get());
 		D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(
@@ -50,5 +50,7 @@ namespace CamelotEngine
 		D3D9PixelBuffer* depthStencilBuffer = static_cast<D3D9PixelBuffer*>(
 			d3d9DepthStencil->getBuffer(mDepthStencilSurface->getFirstArraySlice(), mDepthStencilSurface->getMostDetailedMip()).get());
 		mDX9DepthStencilSurface = depthStencilBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
+
+		RenderTexture::initialize_internal();
 	}
 }

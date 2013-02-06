@@ -203,22 +203,21 @@ namespace CamelotEngine {
 		/* 								TEXTURE VIEW                      		*/
 		/************************************************************************/
 
-		static TextureView* requestView(TexturePtr texture, UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
-		static void releaseView(TextureView* view);
+		static TextureViewPtr requestView(TexturePtr texture, UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
+		static void releaseView(TextureViewPtr view);
 
 	protected:
 
-		virtual TextureView* createView();
-		virtual void destroyView(TextureView* view);
+		virtual TextureViewPtr createView();
 		void clearBufferViews();
 
 		struct TextureViewReference
 		{
-			TextureViewReference(TextureView* _view)
+			TextureViewReference(TextureViewPtr _view)
 				:view(_view), refCount(0)
 			{ }
 
-			TextureView* view;
+			TextureViewPtr view;
 			UINT32 refCount;
 		};
 

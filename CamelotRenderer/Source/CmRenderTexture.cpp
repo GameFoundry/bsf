@@ -56,8 +56,41 @@ namespace CamelotEngine
 		RenderTarget::destroy_internal();
 	}
 
-	void RenderTexture::createInternalResources()
+	void RenderTexture::initialize(const RENDER_TEXTURE_DESC& desc)
 	{
+		if(desc.colorSurface.texture != nullptr)
+		{
+			TexturePtr texture = desc.colorSurface.texture;
+
+			if(texture->getUsage() != TU_RENDERTARGET)
+				CM_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
+
+			mColorSurface = Texture::requestView(texture, desc.colorSurface.mipLevel, 1, 
+				desc.colorSurface.face, desc.colorSurface.numFaces, GVU_RENDERTARGET);
+
+			mPriority = CM_REND_TO_TEX_RT_GROUP;
+			mWidth = texture->getWidth();
+			mHeight = texture->getWidth();
+			mColorDepth = CamelotEngine::PixelUtil::getNumElemBits(texture->getFormat());
+			mActive = true;
+			mHwGamma = texture->isHardwareGammaEnabled();
+			mFSAA = texture->getFSAA();
+			mFSAAHint = texture->getFSAAHint();
+		}
+
+		if(desc.depthStencilSurface.texture != nullptr)
+		{
+			TexturePtr texture = desc.depthStencilSurface.texture;
+
+			if(texture->getUsage() != TU_DEPTHSTENCIL)
+				CM_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
+
+			mDepthStencilSurface = Texture::requestView(texture, desc.depthStencilSurface.mipLevel, 1, 
+				desc.depthStencilSurface.face, desc.depthStencilSurface.numFaces, GVU_DEPTHSTENCIL);
+		}
+
+		throwIfBuffersDontMatch();
+
 		assert(mColorSurface != nullptr);
 		assert(mColorSurface->getTexture() != nullptr);
 
@@ -77,60 +110,7 @@ namespace CamelotEngine
 				toString(mColorSurface->getMostDetailedMip()) + ". Max num mipmaps: " + toString(mColorSurface->getTexture()->getNumMipmaps()));
 		}
 
-		createInternalResourcesImpl();
-	}
-
-	void RenderTexture::setColorSurface(TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
-	{
-		if(texture != nullptr && texture->getUsage() != TU_RENDERTARGET)
-			CM_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
-
-		if(mColorSurface != nullptr)
-		{
-			mColorSurface->getTexture()->releaseView(mColorSurface);
-			mColorSurface = nullptr;
-		}
-
-		if(texture == nullptr)
-			return;
-
-		mColorSurface = Texture::requestView(texture, mipLevel, 1, face, numFaces, GVU_RENDERTARGET);
-
-		mPriority = CM_REND_TO_TEX_RT_GROUP;
-		mWidth = texture->getWidth();
-		mHeight = texture->getWidth();
-		mColorDepth = CamelotEngine::PixelUtil::getNumElemBits(texture->getFormat());
-		mActive = true;
-		mHwGamma = texture->isHardwareGammaEnabled();
-		mFSAA = texture->getFSAA();
-		mFSAAHint = texture->getFSAAHint();
-		
-		throwIfBuffersDontMatch();
-
-		if(mDepthStencilSurface != nullptr && mColorSurface != nullptr)
-			createInternalResources();
-	}
-
-	void RenderTexture::setDepthStencilSurface(TexturePtr depthStencilSurface, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
-	{
-		if(depthStencilSurface != nullptr && depthStencilSurface->getUsage() != TU_DEPTHSTENCIL)
-			CM_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
-
-		if(mDepthStencilSurface != nullptr)
-		{
-			mDepthStencilSurface->getTexture()->releaseView(mDepthStencilSurface);
-			mDepthStencilSurface = nullptr;
-		}
-
-		if(depthStencilSurface == nullptr)
-			return;
-
-		mDepthStencilSurface = Texture::requestView(depthStencilSurface, mipLevel, 1, face, numFaces, GVU_DEPTHSTENCIL);
-
-		throwIfBuffersDontMatch();
-
-		if(mDepthStencilSurface != nullptr && mColorSurface != nullptr)
-			createInternalResources();
+		RenderTarget::initialize();
 	}
 
 	void RenderTexture::throwIfBuffersDontMatch() const

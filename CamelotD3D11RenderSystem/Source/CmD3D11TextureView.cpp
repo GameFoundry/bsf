@@ -13,11 +13,9 @@ namespace CamelotEngine
 
 	}
 
-	void D3D11TextureView::initialize(TexturePtr texture, TEXTURE_VIEW_DESC& _desc)
+	void D3D11TextureView::initialize_internal()
 	{
-		TextureView::initialize(texture, _desc);
-
-		D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(texture.get());
+		D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(mOwnerTexture.get());
 
 		if((mDesc.usage & GVU_RANDOMWRITE) != 0)
 			mUAV = createUAV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
@@ -27,14 +25,18 @@ namespace CamelotEngine
 			mDSV = createDSV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
 		else
 			mSRV = createSRV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
+
+		TextureView::initialize_internal();
 	}
 
-	D3D11TextureView::~D3D11TextureView()
+	void D3D11TextureView::destroy_internal()
 	{
 		SAFE_RELEASE(mSRV);
 		SAFE_RELEASE(mUAV);
 		SAFE_RELEASE(mDSV);
 		SAFE_RELEASE(mRTV);
+
+		TextureView::destroy_internal();
 	}
 
 	ID3D11ShaderResourceView* D3D11TextureView::createSRV(D3D11Texture* texture, 

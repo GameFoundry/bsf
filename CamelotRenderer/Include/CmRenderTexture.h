@@ -34,6 +34,20 @@ THE SOFTWARE.
 
 namespace CamelotEngine
 {    
+	struct RENDER_SURFACE_DESC
+	{
+		TexturePtr texture;
+		UINT32 face;
+		UINT32 numFaces;
+		UINT32 mipLevel;
+	};
+
+	struct CM_EXPORT RENDER_TEXTURE_DESC
+	{
+		RENDER_SURFACE_DESC colorSurface;
+		RENDER_SURFACE_DESC depthStencilSurface;
+	};
+
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -50,16 +64,12 @@ namespace CamelotEngine
 	public:
 		virtual ~RenderTexture();
 
-		void setColorSurface(TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0);
-		void setDepthStencilSurface(TexturePtr depthStencil, UINT32 face = 0, UINT32 numFaces = 0, UINT32 mipLevel = 0);
-
 		bool requiresTextureFlipping() const { return false; }
+
+		void initialize(const RENDER_TEXTURE_DESC& desc);
 
 	protected:
 		RenderTexture();
-
-		void createInternalResources();
-		virtual void createInternalResourcesImpl() = 0;
 
 		/**
 		 * @copydoc RenderTarget::destroy_internal()
@@ -67,8 +77,8 @@ namespace CamelotEngine
 		virtual void destroy_internal();
 
 	protected:
-		TextureView* mColorSurface;
-		TextureView* mDepthStencilSurface;
+		TextureViewPtr mColorSurface;
+		TextureViewPtr mDepthStencilSurface;
 
 	private:
 		void throwIfBuffersDontMatch() const;

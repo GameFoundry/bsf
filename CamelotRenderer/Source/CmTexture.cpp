@@ -216,29 +216,20 @@ namespace CamelotEngine {
 	/* 								TEXTURE VIEW                      		*/
 	/************************************************************************/
 
-	TextureView* Texture::createView()
+	TextureViewPtr Texture::createView()
 	{
-		return new TextureView();
-	}
+		TextureViewPtr viewPtr(new TextureView(), &CoreGpuObject::_deleteDelayed);
+		viewPtr->setThisPtr(viewPtr);
 
-	void Texture::destroyView(TextureView* view)
-	{
-		if(view != nullptr)
-			delete view;
+		return viewPtr;
 	}
 
 	void Texture::clearBufferViews()
 	{
-		for(auto iter = mTextureViews.begin(); iter != mTextureViews.end(); ++iter)
-		{
-			destroyView(iter->second->view);
-			delete iter->second;
-		}
-
 		mTextureViews.clear();
 	}
 
-	TextureView* Texture::requestView(TexturePtr texture, UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage)
+	TextureViewPtr Texture::requestView(TexturePtr texture, UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage)
 	{
 		assert(texture != nullptr);
 
@@ -252,7 +243,7 @@ namespace CamelotEngine {
 		auto iterFind = texture->mTextureViews.find(key);
 		if(iterFind == texture->mTextureViews.end())
 		{
-			TextureView* newView = texture->createView();
+			TextureViewPtr newView = texture->createView();
 			newView->initialize(texture, key);
 			texture->mTextureViews[key] = new TextureViewReference(newView);
 
@@ -263,7 +254,7 @@ namespace CamelotEngine {
 		return iterFind->second->view;
 	}
 
-	void Texture::releaseView(TextureView* view)
+	void Texture::releaseView(TextureViewPtr view)
 	{
 		assert(view != nullptr);
 
@@ -281,7 +272,6 @@ namespace CamelotEngine {
 		{
 			TextureViewReference* toRemove = iterFind->second;
 
-			texture->destroyView(iterFind->second->view);
 			texture->mTextureViews.erase(iterFind);
 
 			delete toRemove;

@@ -174,10 +174,9 @@ namespace CamelotEngine {
 			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
 		/**
-		 * @brief	Creates an empty RenderTexture. You need to assign color and depth/stencil buffers to
-		 * 			it manually before using it.
+		 * @brief	Creates a RenderTexture using the description struct.
 		 */
-		virtual RenderTexturePtr createEmptyRenderTexture();
+		virtual RenderTexturePtr createRenderTexture(const RENDER_TEXTURE_DESC& desc);
 
 		/**
 		 * @brief	Creates a new multi render texture. You may use this type of texture

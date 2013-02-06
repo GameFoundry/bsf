@@ -19,7 +19,7 @@ namespace CamelotEngine
 	{
 	}
 
-	void D3D11RenderTexture::createInternalResourcesImpl()
+	void D3D11RenderTexture::initialize_internal()
 	{
 		// Do nothing
 	}
@@ -29,7 +29,7 @@ namespace CamelotEngine
 		if(name == "RTV")
 		{
 			ID3D11RenderTargetView** pRTVs = (ID3D11RenderTargetView **)pData;			
-			D3D11TextureView* textureView = static_cast<D3D11TextureView*>(mColorSurface);
+			D3D11TextureView* textureView = static_cast<D3D11TextureView*>(mColorSurface.get());
 			*pRTVs = textureView->getRTV();		
 
 			return;
@@ -37,7 +37,7 @@ namespace CamelotEngine
 		else if(name == "DSV")
 		{
 			ID3D11DepthStencilView** pDSV = (ID3D11DepthStencilView **)pData;
-			D3D11TextureView* depthStencilView = static_cast<D3D11TextureView*>(mDepthStencilSurface);
+			D3D11TextureView* depthStencilView = static_cast<D3D11TextureView*>(mDepthStencilSurface.get());
 			*pDSV = depthStencilView->getDSV();
 			return;
 		}

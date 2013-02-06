@@ -18,6 +18,10 @@ namespace CamelotEngine
 		friend class D3D11TextureManager;
 
 		D3D11RenderTexture();
-		void createInternalResourcesImpl();
+
+		/**
+		 * @copydoc RenderTexture::initialize_internal().
+		 */
+		void initialize_internal();
 	};
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmCoreGpuObject.h"
 #include "CmCommonEnums.h"
 
 namespace CamelotEngine
@@ -14,7 +15,7 @@ namespace CamelotEngine
 		GpuViewUsage usage;
 	};
 
-	class CM_EXPORT TextureView
+	class CM_EXPORT TextureView : public CoreGpuObject
 	{
 	public:
 		class HashFunction
@@ -29,7 +30,8 @@ namespace CamelotEngine
 			bool operator()(const TEXTURE_VIEW_DESC &a, const TEXTURE_VIEW_DESC &b) const;
 		};
 
-		TextureView();
+		virtual ~TextureView();
+
 		virtual void initialize(TexturePtr texture, TEXTURE_VIEW_DESC& _desc);
 
 		UINT32 getMostDetailedMip() const { return mDesc.mostDetailMip; }
@@ -42,7 +44,11 @@ namespace CamelotEngine
 		TexturePtr getTexture() const { return mOwnerTexture; }
 
 	protected:
+		friend class Texture;
+
 		TEXTURE_VIEW_DESC mDesc;
 		TexturePtr mOwnerTexture;
+
+		TextureView();
 	};
 }

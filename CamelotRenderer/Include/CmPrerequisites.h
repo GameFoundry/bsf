@@ -163,6 +163,7 @@ namespace CamelotEngine {
 	struct RASTERIZER_STATE_DESC;
 	struct BLEND_STATE_DESC;
 	struct RENDER_TARGET_BLEND_STATE_DESC;
+	struct RENDER_TEXTURE_DESC;
 }
 
 /* Shared pointer typedefs*/

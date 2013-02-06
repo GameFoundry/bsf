@@ -55,13 +55,16 @@ namespace CamelotEngine
 		GLRenderTexture();
 
 		/**
+		 * @copydoc RenderTexture::initialize_internal().
+		 */
+		void initialize_internal();
+
+		/**
 		 * @copydoc RenderTexture::destroy_internal().
 		 */
 		void destroy_internal();
 
 		GLFrameBufferObject* mFB;
-
-		void createInternalResourcesImpl();
     };
 
     /** Manager/factory for RenderTextures.

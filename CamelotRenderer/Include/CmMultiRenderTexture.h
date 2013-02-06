@@ -16,8 +16,8 @@ namespace CamelotEngine
 		bool requiresTextureFlipping() const { return false; }
 
 	protected:
-		vector<TextureView*>::type mColorSurfaces;
-		TextureView* mDepthStencilSurface;
+		vector<TextureViewPtr>::type mColorSurfaces;
+		TextureViewPtr mDepthStencilSurface;
 
 		MultiRenderTexture();
 

@@ -20,8 +20,6 @@ Pass
 GpuParamBlock - Needs to derive from CoreGpuObject and needs to be initialized better
  - HardwareBufferManager::createGpuParamBlock needs &CoreGpuObject::_deleteDelayed added as a deleted to shared_ptr
 
-Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
-
 RenderTextures and MultiRenderTextures will only work properly if used directly from render thread, as setting each surface calls render methods, so its impossible to set one outside of render thread
  - also they don't have initialize_internal
  - I should probably make these immutable. Once they are set they can't be changed, so everything can be initialized when calling initialize()
@@ -37,6 +35,7 @@ Make sure we can add an include file to a HighLevelGpuProgram, and make sure it 
  waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
 
 Go through RenderSystem classes and make sure we don't hold any raw pointer references.
+Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
 
 Can be delayed:
  Make sure that I am able to blit contents from render textures on all render systems
