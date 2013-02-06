@@ -20,10 +20,6 @@ Pass
 GpuParamBlock - Needs to derive from CoreGpuObject and needs to be initialized better
  - HardwareBufferManager::createGpuParamBlock needs &CoreGpuObject::_deleteDelayed added as a deleted to shared_ptr
 
-RenderTextures and MultiRenderTextures will only work properly if used directly from render thread, as setting each surface calls render methods, so its impossible to set one outside of render thread
- - also they don't have initialize_internal
- - I should probably make these immutable. Once they are set they can't be changed, so everything can be initialized when calling initialize()
-
 Support loading of compound objects:
    - Loading Material also loads attached Shader and Textures/Samplers
 

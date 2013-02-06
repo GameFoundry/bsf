@@ -44,6 +44,14 @@ THE SOFTWARE.
 
 namespace CamelotEngine 
 {
+	struct CM_EXPORT RENDER_SURFACE_DESC
+	{
+		TexturePtr texture;
+		UINT32 face;
+		UINT32 numFaces;
+		UINT32 mipLevel;
+	};
+
 	/** \addtogroup Core
 	*  @{
 	*/

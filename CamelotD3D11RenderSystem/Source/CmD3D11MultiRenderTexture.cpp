@@ -16,12 +16,6 @@ namespace CamelotEngine
 
 	}
 
-	void D3D11MultiRenderTexture::setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
-	{	}
-
-	void D3D11MultiRenderTexture::setDepthStencilImpl(TexturePtr depthStencilSurface, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
-	{	}
-
 	void D3D11MultiRenderTexture::getCustomAttribute(const String& name, void* pData)
 	{
 		if(name == "RTV")

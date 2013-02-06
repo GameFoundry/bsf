@@ -21,6 +21,40 @@ namespace CamelotEngine
 
 		mFB = new GLFrameBufferObject(mFSAA);
 
+		for(size_t i = 0; i < mColorSurfaces.size(); i++)
+		{
+			if(mColorSurfaces[i] != nullptr)
+			{
+				GLTexture* glColorSurface = static_cast<GLTexture*>(mColorSurfaces[i]->getTexture().get());
+				GLPixelBufferPtr colorBuffer = std::static_pointer_cast<GLPixelBuffer>(
+					glColorSurface->getBuffer(mColorSurfaces[i]->getDesc().firstArraySlice, mColorSurfaces[i]->getDesc().mostDetailMip));
+
+				GLSurfaceDesc surfaceDesc;
+				surfaceDesc.numSamples = mFSAA;
+				surfaceDesc.zoffset = 0;
+				surfaceDesc.buffer = colorBuffer;
+
+				mFB->bindSurface((UINT32)i, surfaceDesc);
+			}
+			else
+			{
+				mFB->unbindSurface((UINT32)i);
+			}
+		}
+
+		if(mDepthStencilSurface != nullptr)
+		{
+			GLTexture* glDepthStencilSurface = static_cast<GLTexture*>(mDepthStencilSurface->getTexture().get());
+			GLPixelBufferPtr depthStencilBuffer = std::static_pointer_cast<GLPixelBuffer>(
+				glDepthStencilSurface->getBuffer(mDepthStencilSurface->getDesc().firstArraySlice, mDepthStencilSurface->getDesc().mostDetailMip));
+
+			mFB->bindDepthStencil(depthStencilBuffer);
+		}
+		else
+		{
+			mFB->unbindDepthStencil();
+		}
+
 		MultiRenderTexture::initialize_internal();
 	}
 
@@ -30,40 +64,6 @@ namespace CamelotEngine
 			delete mFB;
 
 		MultiRenderTexture::destroy_internal();
-	}
-
-	void GLMultiRenderTexture::setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
-	{
-		if(texture != nullptr)
-		{
-			GLSurfaceDesc surfaceDesc;
-			surfaceDesc.numSamples = mFSAA;
-			surfaceDesc.zoffset = 0;
-
-			GLTexture* glTexture = static_cast<GLTexture*>(texture.get());
-			surfaceDesc.buffer = std::static_pointer_cast<GLPixelBuffer>(glTexture->getBuffer(face, mipLevel));
-
-			mFB->bindSurface(surfaceIdx, surfaceDesc);
-		}
-		else
-		{
-			mFB->unbindSurface(surfaceIdx);
-		}
-	}
-
-	void GLMultiRenderTexture::setDepthStencilImpl(TexturePtr depthStencilSurface, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
-	{
-		if(depthStencilSurface != nullptr)
-		{
-			GLTexture* glDepthStencilSurface = static_cast<GLTexture*>(depthStencilSurface.get());
-			GLPixelBufferPtr depthStencilBuffer = std::static_pointer_cast<GLPixelBuffer>(glDepthStencilSurface->getBuffer(face, mipLevel));
-
-			mFB->bindDepthStencil(depthStencilBuffer);
-		}
-		else
-		{
-			mFB->unbindDepthStencil();
-		}
 	}
 
 	void GLMultiRenderTexture::getCustomAttribute(const String& name, void* pData)

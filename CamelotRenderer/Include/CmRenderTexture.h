@@ -34,14 +34,6 @@ THE SOFTWARE.
 
 namespace CamelotEngine
 {    
-	struct RENDER_SURFACE_DESC
-	{
-		TexturePtr texture;
-		UINT32 face;
-		UINT32 numFaces;
-		UINT32 mipLevel;
-	};
-
 	struct CM_EXPORT RENDER_TEXTURE_DESC
 	{
 		RENDER_SURFACE_DESC colorSurface;

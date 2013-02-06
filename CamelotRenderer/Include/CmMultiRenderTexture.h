@@ -5,13 +5,18 @@
 
 namespace CamelotEngine
 {
+	struct CM_EXPORT MULTI_RENDER_TEXTURE_DESC
+	{
+		vector<RENDER_SURFACE_DESC>::type colorSurfaces;
+		RENDER_SURFACE_DESC depthStencilSurface;
+	};
+
 	class CM_EXPORT MultiRenderTexture : public RenderTarget
 	{
 	public:
 		virtual ~MultiRenderTexture();
 
-		void setColorSurface(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0);
-		void setDepthStencilSurface(TexturePtr depthStencil, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0);
+		void initialize(const MULTI_RENDER_TEXTURE_DESC& desc);
 
 		bool requiresTextureFlipping() const { return false; }
 
@@ -20,9 +25,6 @@ namespace CamelotEngine
 		TextureViewPtr mDepthStencilSurface;
 
 		MultiRenderTexture();
-
-		virtual void setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0) = 0;
-		virtual void setDepthStencilImpl(TexturePtr depthStencilstencil, UINT32 face = 0, UINT32 numFaces = 1, UINT32 mipLevel = 0) = 0;
 
 		/**
 		 * @copydoc RenderTarget::destroy_internal()

@@ -17,35 +17,36 @@ namespace CamelotEngine
 
 	void D3D9MultiRenderTexture::initialize_internal()
 	{
-		mDX9ColorSurfaces.resize(CM_MAX_MULTIPLE_RENDER_TARGETS);
-	}
+		mDX9ColorSurfaces.resize(mColorSurfaces.size());
 
-	void D3D9MultiRenderTexture::setColorSurfaceImpl(UINT32 surfaceIdx, TexturePtr texture, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
-	{
-		if(texture != nullptr)
+		for(size_t i = 0; i < mColorSurfaces.size(); i++)
 		{
-			D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(texture.get());
-			D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(d3d9texture->getBuffer(face, mipLevel).get());
-			mDX9ColorSurfaces[surfaceIdx] = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
+			if(mColorSurfaces[i] != nullptr)
+			{
+				D3D9Texture* d3d9texture = static_cast<D3D9Texture*>(mColorSurfaces[i]->getTexture().get());
+				D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(
+					d3d9texture->getBuffer(mColorSurfaces[i]->getDesc().firstArraySlice, mColorSurfaces[i]->getDesc().mostDetailMip).get());
+				mDX9ColorSurfaces[i] = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
+			}
+			else
+			{
+				mDX9ColorSurfaces[i] = nullptr;
+			}
 		}
-		else
-		{
-			mDX9ColorSurfaces[surfaceIdx] = nullptr;
-		}
-	}
 
-	void D3D9MultiRenderTexture::setDepthStencilImpl(TexturePtr depthStencilSurface, UINT32 face, UINT32 numFaces, UINT32 mipLevel)
-	{
-		if(depthStencilSurface != nullptr)
+		if(mDepthStencilSurface != nullptr)
 		{
-			D3D9Texture* d3d9DepthStencil = static_cast<D3D9Texture*>(depthStencilSurface.get());
-			D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(d3d9DepthStencil->getBuffer(face, mipLevel).get());
+			D3D9Texture* d3d9DepthStencil = static_cast<D3D9Texture*>(mDepthStencilSurface->getTexture().get());
+			D3D9PixelBuffer* pixelBuffer = static_cast<D3D9PixelBuffer*>(
+				d3d9DepthStencil->getBuffer(mDepthStencilSurface->getDesc().firstArraySlice, mDepthStencilSurface->getDesc().mostDetailMip).get());
 			mDX9DepthStencilSurface = pixelBuffer->getSurface(D3D9RenderSystem::getActiveD3D9Device());
 		}
 		else
 		{
 			mDX9DepthStencilSurface = nullptr;
 		}
+
+		MultiRenderTexture::initialize_internal();
 	}
 
 	void D3D9MultiRenderTexture::getCustomAttribute(const String& name, void* pData)
