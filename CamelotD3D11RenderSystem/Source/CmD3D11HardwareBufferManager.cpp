@@ -28,9 +28,9 @@ namespace CamelotEngine
 		return new D3D11IndexBuffer(mDevice, this, itype, numIndexes, usage, false);
 	}
 
-	GpuParamBlock* D3D11HardwareBufferManager::createGpuParamBlockImpl(const GpuParamBlockDesc& blockDesc, GpuParamBlockUsage usage)
+	GpuParamBlock* D3D11HardwareBufferManager::createGpuParamBlockImpl()
 	{
-		return new D3D11GpuParamBlock(blockDesc, usage);
+		return new D3D11GpuParamBlock();
 	}
 
 	GpuBuffer* D3D11HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 

@@ -76,7 +76,9 @@ namespace CamelotEngine
 			for(UINT32 i = 0; i < material->getNumPasses(); i++)
 			{
 				setPass(material->getPass(i));
-				setPassParameters(material->getPassParameters(i));
+
+				PassParametersPtr paramsPtr = material->getPassParameters(i);
+				setPassParameters(paramsPtr);
 
 				renderContext->render(mesh->getRenderOperation());
 			}
@@ -177,5 +179,17 @@ namespace CamelotEngine
 		GpuProgramHandle geomProgram = mActivePass->getGeometryProgram();
 		if(geomProgram)
 			renderContext->bindGpuParams(GPT_GEOMETRY_PROGRAM, params->mGeomParams);
+
+		GpuProgramHandle hullProgram = mActivePass->getHullProgram();
+		if(hullProgram)
+			renderContext->bindGpuParams(GPT_HULL_PROGRAM, params->mHullParams);
+
+		GpuProgramHandle domainProgram = mActivePass->getDomainProgram();
+		if(domainProgram)
+			renderContext->bindGpuParams(GPT_DOMAIN_PROGRAM, params->mDomainParams);
+
+		GpuProgramHandle computeProgram = mActivePass->getComputeProgram();
+		if(computeProgram)
+			renderContext->bindGpuParams(GPT_COMPUTE_PROGRAM, params->mComputeParams);
 	}
 }

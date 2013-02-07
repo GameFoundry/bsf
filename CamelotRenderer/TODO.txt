@@ -2,9 +2,6 @@
 -----------------------LONGTERM TODO----------------------------------------------------------------
  - Debug tools 
    - Camera controls + world grid
- - Renderable (contains mesh/material)
- - RenderManager (iterated through Renderables and displays them on screen)
-   - And its plugin implementation ForwardRenderingManager
  - Integrate with Camelot Editor
  - SceneManager plugin
    - Frustum culling and octree (or some other) acceleration structure
@@ -16,9 +13,6 @@
 Pass
  - A way to bind buffers to a Pass, while specifying buffer range
  - GpuParams support for bools, buffers, structs
-
-GpuParamBlock - Needs to derive from CoreGpuObject and needs to be initialized better
- - HardwareBufferManager::createGpuParamBlock needs &CoreGpuObject::_deleteDelayed added as a deleted to shared_ptr
 
 Support loading of compound objects:
    - Loading Material also loads attached Shader and Textures/Samplers
@@ -32,6 +26,7 @@ Make sure we can add an include file to a HighLevelGpuProgram, and make sure it 
 
 Go through RenderSystem classes and make sure we don't hold any raw pointer references.
 Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
+Get rid of resource handlers in Resources?
 
 Can be delayed:
  Make sure that I am able to blit contents from render textures on all render systems
@@ -77,14 +72,7 @@ So final solution:
     - Not ALL methods need to be moved, only those that are resource heavy
     - Smaller methods may remain and always stay async, but keep internal state?
  - Resource creation on DX11 should be direct though, without a queue (especially if we manage to populate a resource in the same step)
- - (Make sure to update GpuParamBlock implementations as they do their copying internally)
-
-
-<<<<Issue of setting individual parameters on a material>>>
- - Material can contain multiple techniques
- - How do I ensure parameters are valid for all techniques?
- - Require user to create a Material parameter specification?
- - Also need a way to avoid displaying internal parameters used by the active renderer
+ - Remove & replace internal data copying in GpuParamBlock (or just use a allocator instead of new())
 
 <<<<RenderSystem needed modifications>>>>
   - Texture resource views (Specifying just a subresource of a texture as a shader parameter)
@@ -128,22 +116,17 @@ Editor IMPORTANT:
 -----------------------BACKLOG TODO---------------------------------------------------------------
 
 HIGH PRIORITY TODO:
- - Issue with deserialization and value types:
-  - Value types are only set at the end of deserialization, because I want to be sure all of their fields are initialized. However there is nothing stopping a custom RTTI method from accessing a (yet uninitialized) value in a ptr field. (See CmMaterialRTTI, setTexParam). I need to initialize fields in a better order.
-   - Solution?: Set (empty) ptr values immediately, and only load them later
  - GetRenderOperation doesn't consider sub-meshes
 
 Mid priority TODO:
  - monitorIndex is ignored in DX11
- - Make sure to queue up mesh deletion to make sure it gets destroyed on the render thread
  - Add a field that tracks % of resource deserialization in BinarySerializer
  - Mesh loading:
   - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
   - Imported FBX meshes are too big
-  - Search for all remaining "TODO PORT" comments and fix them
-  - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
-  - My log is not thread safe yet it is being called from multiple threads.
-  - Handling of shader array parameters? This needs testing
+ - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
+ - My log is not thread safe yet it is being called from multiple threads.
+ - Handling of shader array parameters? This needs testing
    - I'm currently ignoring array elements in GL due to the name their names are handled
  - RTTI:
      When defining RTTIType like so: 
@@ -151,12 +134,8 @@ Mid priority TODO:
      I need to make sure that HighLevelGpuProgram class has valid RTTI type as well. Otherwise the inheritance hierarchy will not be correct. Right now this isn't checked anywhere.
 
 Low priority TODO:
- - Can I assign a RenderTexture to a Pass?
  - Mesh loading:
   - Sub-meshes aren't being transformed by world matrices of their nodes
- - Are resource getting properly unloaded? e.g. when shared_ptr destroys a texture is it removed from gpu?
-  - Make sure resources only get properly unloaded at end of every frame. This is because a lot of RenderSystem stuff holds raw ptrs
-	to resources, and it keeps them throughout the frame (especially with deferred rendering). Plus this can only be done on the render thread anyway.
  - Remove template from RTTIType and move it to IReflectable? This way i can hopefully move GetRTTITypeStatic and GetRTTIType to IReflectable so I don't
    need to manually implement those for every method.
  - Viewport needs to be updated when I call RenderTarget::setFullscreen/finishSwitchingFullscreen/updateWindowRect/windowMovedOrResized. Currently it's not
@@ -167,7 +146,6 @@ Low priority TODO:
    if pointer is saved/loaded as a plain field. I need to add a check that ensures the type is POD. 
    See: http://www.boost.org/doc/libs/1_51_0/boost/mpi/datatype.hpp for a possible implementation of a compile time check.
  - Fix up WorkQueue as it doesn't lock when initializing, to make sure threads are actually started before returning
- - DepthStencilBuffer & Texture should possibly share the same interface instead of being two separate classes? I'll need to assign DepthStencil to shaders sometimes. Not possible in DX9 but possible in DX11.
  - CPU reading or writing to a render texture in OpenGL is not supported. (CmGLHardwarePixelBuffer::upload/download). 
  - When saving a resource, make sure resource is properly loaded before saving
    - Add doc to Resources::save that says it will block until render thread updates the resource
@@ -185,6 +163,10 @@ Optional TODO:
  - Extend texture copy so it accepts different subregions & subresources (currently only entire resource can be copied)
  - Need a way to convert MSAA render texture into a normal render texture
  - Vertex buffer start offset is not supported when calling Draw methods
+ - Issue with deserialization and value types:
+  - Value types are only set at the end of deserialization, because I want to be sure all of their fields are initialized. 
+     However there is nothing stopping a custom RTTI method from accessing a (yet uninitialized) value in a ptr field. 
+	 (See CmMaterialRTTI, setTexParam). I need to initialize fields in a better order.)
 
  -----------------------------------------------------------------------------------------------
 

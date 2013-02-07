@@ -89,16 +89,29 @@ o		 *
 		virtual void initialize_internal();
 
 		/**
-		 * @brief	Queues a command to be executed on the render thread, without a return value.
+		 * @brief	Returns a shared_ptr version of "this" pointer.
 		 */
-		static void queueGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*)> func);
+		std::shared_ptr<CoreGpuObject> getThisPtr() const { return mThis.lock(); }
+
+		/**
+		 * @brief	Queues a command to be executed on the render thread, without a return value.
+		 * 			
+		 * @note	Requires a shared pointer to the object this function will be executed on, in order to 
+		 * 			make sure the object is not deleted before the command executes. Can be null if the 
+		 * 			function is static or global.
+		 */
+		static void queueGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void()> func);
 
 		/**
 		 * @brief	Queues a command to be executed on the render thread, with a return value in the form of AsyncOp.
 		 * 			
 		 * @see		AsyncOp
+		 * 			
+		 * @note	Requires a shared pointer to the object this function will be executed on, in order to
+		 * 			make sure the object is not deleted before the command executes. Can be null if the
+		 * 			function is static or global.
 		 */
-		static AsyncOp queueReturnGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*, AsyncOp&)> func);
+		static AsyncOp queueReturnGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void(AsyncOp&)> func);
 
 		/**
 		 * @brief	Returns an unique identifier for this object.
@@ -121,7 +134,7 @@ o		 *
 		CM_STATIC_THREAD_SYNCHRONISER(mCoreGpuObjectLoadedCondition)
 		CM_STATIC_MUTEX(mCoreGpuObjectLoadedMutex)
 
-		static void executeGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*)> func);
-		static void executeReturnGpuCommand(std::shared_ptr<CoreGpuObject> obj, boost::function<void(CoreGpuObject*, AsyncOp&)> func, AsyncOp& op); 
+		static void executeGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void()> func);
+		static void executeReturnGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void(AsyncOp&)> func, AsyncOp& op); 
 	};
 }

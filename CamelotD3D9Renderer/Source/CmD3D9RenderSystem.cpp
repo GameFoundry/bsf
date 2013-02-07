@@ -330,8 +330,6 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		params->updateIfDirty();
-
 		const GpuParamDesc& paramDesc = params->getParamDesc();
 
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
@@ -365,7 +363,9 @@ namespace CamelotEngine
 					const GpuParamDataDesc& paramDesc = iter->second;
 
 					GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
-					const UINT8* ptrData = paramBlock->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
+					const GpuParamBlockBuffer* currentBlockBuffer = paramBlock->getBindableBuffer();
+
+					const UINT8* ptrData = currentBlockBuffer->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
 
 					switch(paramDesc.type)
 					{
@@ -417,7 +417,9 @@ namespace CamelotEngine
 					const GpuParamDataDesc& paramDesc = iter->second;
 
 					GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
-					const UINT8* ptrData = paramBlock->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
+					const GpuParamBlockBuffer* currentBlockBuffer = paramBlock->getBindableBuffer();
+
+					const UINT8* ptrData = currentBlockBuffer->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
 
 					switch(paramDesc.type)
 					{

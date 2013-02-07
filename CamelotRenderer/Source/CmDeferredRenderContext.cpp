@@ -129,8 +129,7 @@ namespace CamelotEngine
 
 	void DeferredRenderContext::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
 	{
-		GpuParamsPtr paramCopy = params->clone();
-		mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuParams, mRenderSystem, gptype, paramCopy));
+		mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuParams, mRenderSystem, gptype, params));
 	}
 
 	void DeferredRenderContext::setRenderTarget(RenderTarget* target)

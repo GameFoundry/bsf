@@ -73,7 +73,11 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	GpuParamBlockPtr HardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
 	{
-		return GpuParamBlockPtr(createGpuParamBlockImpl(paramDesc, usage));
+		GpuParamBlockPtr paramBlockPtr(createGpuParamBlockImpl(), &CoreGpuObject::_deleteDelayed);
+		paramBlockPtr->setThisPtr(paramBlockPtr);
+		paramBlockPtr->initialize(paramDesc, usage);
+
+		return paramBlockPtr;
 	}
 	//-----------------------------------------------------------------------
 	GpuBufferPtr HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 

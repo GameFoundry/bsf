@@ -86,7 +86,7 @@ namespace CamelotEngine {
             GpuBufferUsage usage);
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlockImpl */
-		GpuParamBlock* createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC);
+		GpuParamBlock* createGpuParamBlockImpl();
 
 		/**
 		 * @copydoc HardwareBufferManager::createGenericBufferImpl

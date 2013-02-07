@@ -94,9 +94,9 @@ namespace CamelotEngine {
 		return new GLIndexBuffer(this, itype, numIndexes, usage);
     }
 	//---------------------------------------------------------------------
-	GpuParamBlock* GLHardwareBufferManager::createGpuParamBlockImpl(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
+	GpuParamBlock* GLHardwareBufferManager::createGpuParamBlockImpl()
 	{
-		return new GLGpuParamBlock(paramDesc, usage);
+		return new GLGpuParamBlock();
 	}
 	//---------------------------------------------------------------------
 	GpuBuffer* GLHardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 

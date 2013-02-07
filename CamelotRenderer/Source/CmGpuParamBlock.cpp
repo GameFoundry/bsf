@@ -5,23 +5,77 @@
 
 namespace CamelotEngine
 {
-	GpuParamBlock::GpuParamBlock(const GpuParamBlockDesc& desc, GpuParamBlockUsage usage)
-		:mSize(desc.blockSize * sizeof(UINT32)), mOwnsSharedData(true), mUsage(usage)
+	GpuParamBlockBuffer::GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
+		:mData(new UINT8[size]), mSize(size), mUsage(usage)
 	{
-		mData = new UINT8[mSize];
 		memset(mData, 0, mSize);
+	}
 
-		sharedData = new GpuParamBlockSharedData();
-		sharedData->mDirty = true;
-		sharedData->mInitialized = false;
+	GpuParamBlockBuffer::~GpuParamBlockBuffer()
+	{
+		if(mData != nullptr)
+			delete[] mData;
+	}
+
+	void GpuParamBlockBuffer::writeAll(const void* data)
+	{
+		memcpy(mData, data, mSize);
+	}
+
+	const UINT8* GpuParamBlockBuffer::getDataPtr(UINT32 offset) const
+	{
+#if CM_DEBUG_MODE
+		if(offset < 0 || offset >= mSize)
+		{
+			CM_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
+				"Available range: 0 .. " + toString(mSize) + ". " \
+				"Wanted range: " + toString(offset) + " .. " + toString(offset) + ".");
+		}
+#endif
+
+		return &mData[offset];
+	}
+
+	GpuParamBlock::GpuParamBlock()
+		:mDirty(true), mUsage(GPBU_DYNAMIC), mData(nullptr), mBuffer(nullptr)
+	{
 	}
 
 	GpuParamBlock::~GpuParamBlock()
 	{
-		delete [] mData;
+		if(mData != nullptr)
+			delete [] mData;
+	}
 
-		if(mOwnsSharedData)
-			delete sharedData;
+	void GpuParamBlock::initialize(const GpuParamBlockDesc& desc, GpuParamBlockUsage usage)
+	{
+		mSize = desc.blockSize * sizeof(UINT32);
+		mData = new UINT8[mSize];
+		memset(mData, 0, mSize);
+
+		mUsage = usage;
+
+		CoreGpuObject::initialize();
+	}
+
+	void GpuParamBlock::initialize_internal()
+	{
+		mBuffer = createBuffer();
+
+		CoreGpuObject::initialize_internal();
+	}
+
+	void GpuParamBlock::destroy_internal()
+	{
+		if(mBuffer != nullptr)
+			delete mBuffer;
+
+		CoreGpuObject::destroy_internal();
+	}
+
+	GpuParamBlockBuffer* GpuParamBlock::createBuffer() const
+	{
+		return new GpuParamBlockBuffer(mSize, mUsage);
 	}
 
 	void GpuParamBlock::write(UINT32 offset, const void* data, UINT32 size)
@@ -37,7 +91,7 @@ namespace CamelotEngine
 
 		memcpy(mData + offset, data, size);
 
-		sharedData->mDirty = true;
+		mDirty = true;
 	}
 
 	void GpuParamBlock::zeroOut(UINT32 offset, UINT32 size)
@@ -53,39 +107,32 @@ namespace CamelotEngine
 
 		memset(mData + offset, 0, size);
 
-		sharedData->mDirty = true;
+		mDirty = true;
 	}
 
-	const UINT8* GpuParamBlock::getDataPtr(UINT32 offset) const
+	void GpuParamBlock::updateBuffer()
 	{
-#if CM_DEBUG_MODE
-		if(offset < 0 || offset >= mSize)
+		if(mDirty)
 		{
-			CM_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
-				"Available range: 0 .. " + toString(mSize) + ". " \
-				"Wanted range: " + toString(offset) + " .. " + toString(offset) + ".");
+			mDirty = false;
+
+			// Need to copy the data, as non-render threads might modify
+			// the data before render thread has a chance to process it
+			// TODO - Use an allocator
+			UINT8* dataCopy = new UINT8[mSize];
+			memcpy(dataCopy, mData, mSize);
+
+			queueGpuCommand(getThisPtr(), boost::bind(&GpuParamBlock::updateBuffer_internal, this, dataCopy));
 		}
-#endif
-
-		return &mData[offset];
 	}
 
-	void GpuParamBlock::updateIfDirty()
+	void GpuParamBlock::updateBuffer_internal(UINT8* data)
 	{
-		sharedData->mDirty = false;
+		assert(mBuffer != nullptr);
 
-		// Do nothing
-	}
+		mBuffer->writeAll(data);
 
-	GpuParamBlockPtr GpuParamBlock::clone() const
-	{
-		GpuParamBlockPtr clonedParamBlock(new GpuParamBlock(*this));
-		clonedParamBlock->mData = new UINT8[mSize];
-		clonedParamBlock->mSize = mSize;
-		clonedParamBlock->mOwnsSharedData = false;
-		memcpy(clonedParamBlock->mData, mData, mSize);
-
-		return clonedParamBlock;
+		delete[] data;
 	}
 
 	GpuParamBlockPtr GpuParamBlock::create(const GpuParamBlockDesc& desc)

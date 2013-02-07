@@ -3,57 +3,37 @@
 
 namespace CamelotEngine
 {
-	GLGpuParamBlock::GLGpuParamBlock(const GpuParamBlockDesc& desc, GpuParamBlockUsage usage)
-		:GpuParamBlock(desc, usage), mGLSharedData(nullptr)
+	GLGpuParamBlockBuffer::GLGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
+		:GpuParamBlockBuffer(size, usage)
 	{
-		mGLSharedData = new GLGpuParamBlockSharedData();
+		glGenBuffers(1, &mGLHandle);
+		glBindBuffer(GL_UNIFORM_BUFFER, mGLHandle);
+		if(mUsage == GPBU_STATIC)
+			glBufferData(GL_UNIFORM_BUFFER, mSize, (GLvoid*)mData, GL_STATIC_DRAW);
+		else if(mUsage == GPBU_DYNAMIC)
+			glBufferData(GL_UNIFORM_BUFFER, mSize, (GLvoid*)mData, GL_DYNAMIC_DRAW);
+		else
+			CM_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
+
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	GLGpuParamBlock::~GLGpuParamBlock()
+	GLGpuParamBlockBuffer::~GLGpuParamBlockBuffer()
 	{
-		if(mOwnsSharedData)
-		{
-			glDeleteBuffers(1, &mGLSharedData->mGLHandle);
-			delete mGLSharedData;
-		}
+		glDeleteBuffers(1, &mGLHandle);
 	}
 
-	void GLGpuParamBlock::updateIfDirty()
+	void GLGpuParamBlockBuffer::writeAll(const void* data)
 	{
-		if(!sharedData->mInitialized)
-		{
-			glGenBuffers(1, &mGLSharedData->mGLHandle);
-			glBindBuffer(GL_UNIFORM_BUFFER, mGLSharedData->mGLHandle);
-			if(mUsage == GPBU_STATIC)
-				glBufferData(GL_UNIFORM_BUFFER, mSize, (GLvoid*)mData, GL_STATIC_DRAW);
-			else if(mUsage == GPBU_DYNAMIC)
-				glBufferData(GL_UNIFORM_BUFFER, mSize, (GLvoid*)mData, GL_DYNAMIC_DRAW);
-			else
-				CM_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
+		glBindBuffer(GL_UNIFORM_BUFFER, mGLHandle);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0 , mSize, data);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-			sharedData->mInitialized = true;
-		}
-
-		if(sharedData->mDirty)
-		{
-			glBindBuffer(GL_UNIFORM_BUFFER, mGLSharedData->mGLHandle);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0 , mSize, mData);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		}
-
-		GpuParamBlock::updateIfDirty();
+		GpuParamBlockBuffer::writeAll(data);
 	}
 
-	GpuParamBlockPtr GLGpuParamBlock::clone() const
+	GpuParamBlockBuffer* GLGpuParamBlock::createBuffer() const
 	{
-		std::shared_ptr<GLGpuParamBlock> clonedParamBlock(new GLGpuParamBlock(*this));
-		clonedParamBlock->mData = new UINT8[mSize];
-		clonedParamBlock->mOwnsSharedData = false;
-		clonedParamBlock->mGLSharedData = mGLSharedData;
-		memcpy(clonedParamBlock->mData, mData, mSize);
-
-		return clonedParamBlock;
+		return new GLGpuParamBlockBuffer(mSize, mUsage);
 	}
 }

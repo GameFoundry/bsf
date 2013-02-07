@@ -440,8 +440,6 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		params->updateIfDirty();
-
 		const GpuParamDesc& paramDesc = params->getParamDesc();
 
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
@@ -474,8 +472,9 @@ namespace CamelotEngine
 
 			if(currentBlock != nullptr)
 			{
-				D3D11GpuParamBlock* d3d11paramBlock = static_cast<D3D11GpuParamBlock*>(currentBlock.get());
-				bufferArray[0] = d3d11paramBlock->getD3D11Buffer();
+				const GpuParamBlockBuffer* currentBlockBuffer = currentBlock->getBindableBuffer();
+				const D3D11GpuParamBlockBuffer* d3d11paramBlockBuffer = static_cast<const D3D11GpuParamBlockBuffer*>(currentBlockBuffer);
+				bufferArray[0] = d3d11paramBlockBuffer->getD3D11Buffer();
 			}
 			else
 				bufferArray[0] = nullptr;

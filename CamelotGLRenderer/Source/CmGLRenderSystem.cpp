@@ -281,8 +281,6 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		params->updateIfDirty();
-
 		const GpuParamDesc& paramDesc = params->getParamDesc();
 		GLSLGpuProgram* activeProgram = getActiveProgram(gptype);
 		GLuint glProgram = activeProgram->getGLSLProgram()->getGLHandle();
@@ -323,10 +321,12 @@ namespace CamelotEngine
 				continue;
 
 			GLGpuParamBlockPtr glParamBlock = std::static_pointer_cast<GLGpuParamBlock>(paramBlock);
+			const GpuParamBlockBuffer* paramBlockBuffer = glParamBlock->getBindableBuffer();
+			const GLGpuParamBlockBuffer* glParamBlockBuffer = static_cast<const GLGpuParamBlockBuffer*>(paramBlockBuffer);
 
 			UINT32 globalBlockBinding = getGLUniformBlockBinding(gptype, blockBinding);
 			glUniformBlockBinding(glProgram, iter->second.slot - 1, globalBlockBinding);
-			glBindBufferRange(GL_UNIFORM_BUFFER, globalBlockBinding, glParamBlock->getGLHandle(), 0, glParamBlock->getSize());
+			glBindBufferRange(GL_UNIFORM_BUFFER, globalBlockBinding, glParamBlockBuffer->getGLHandle(), 0, glParamBlockBuffer->getSize());
 
 			blockBinding++;
 		}
@@ -336,11 +336,12 @@ namespace CamelotEngine
 			const GpuParamDataDesc& paramDesc = iter->second;
 
 			GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
-			
+			const GpuParamBlockBuffer* paramBlockBuffer = paramBlock->getBindableBuffer();
+
 			if(paramDesc.paramBlockSlot != 0) // 0 means uniforms are not in a block
 				continue;
 
-			const UINT8* ptrData = paramBlock->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
+			const UINT8* ptrData = paramBlockBuffer->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
 
 			switch(paramDesc.type)
 			{

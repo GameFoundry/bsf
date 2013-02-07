@@ -735,7 +735,15 @@ namespace CamelotEngine
 		if(passIdx < 0 || passIdx >= mParametersPerPass.size())
 			CM_EXCEPT(InvalidParametersException, "Invalid pass index.");
 
-		return mParametersPerPass[passIdx];
+		PassParametersPtr params = mParametersPerPass[passIdx];
+
+		for(UINT32 i = 0; i < params->getNumParams(); i++)
+		{
+			if(params->getParamByIdx(i) != nullptr)
+				params->getParamByIdx(i)->updateParamBuffers();
+		}
+
+		return params;
 	}
 
 	TextureHandle Material::getTexture(const String& name) const
