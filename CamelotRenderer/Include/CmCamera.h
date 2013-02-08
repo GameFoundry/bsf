@@ -505,7 +505,7 @@ namespace CamelotEngine {
         /// Small constant used to reduce far plane projection to avoid inaccuracies
         static const float INFINITE_FAR_PLANE_ADJUST;
     protected:
-		Viewport* mViewport;
+		ViewportPtr mViewport;
 
     public:
         /** Standard destructor.
@@ -517,7 +517,7 @@ namespace CamelotEngine {
 			float width = 1.0f, float height = 1.0f,
 			int ZOrder = 0);
 
-		Viewport* getViewport() { return mViewport; }
+		ViewportPtr getViewport() { return mViewport; }
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

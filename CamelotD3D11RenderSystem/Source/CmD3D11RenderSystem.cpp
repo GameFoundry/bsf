@@ -275,13 +275,11 @@ namespace CamelotEngine
 		// Not used
 	}
 
-	void D3D11RenderSystem::setViewport(const Viewport* vp)
+	void D3D11RenderSystem::setViewport(ViewportPtr& vp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		assert(vp != nullptr);
-
-		mActiveViewport = vp;
 
 		// Set render target
 		RenderTargetPtr target = vp->getTarget();

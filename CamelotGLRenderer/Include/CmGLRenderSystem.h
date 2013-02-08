@@ -115,7 +115,7 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc RenderSystem::setViewport()
 		 */
-        void setViewport(const Viewport* vp);
+        void setViewport(ViewportPtr& vp);
 
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()
@@ -202,6 +202,7 @@ namespace CamelotEngine {
     private:
 		// Scissor test
 		UINT32 mScissorTop, mScissorBottom, mScissorLeft, mScissorRight;
+		UINT32 mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight;
 
 		UINT32 mStencilReadMask;
 		UINT32 mStencilWriteMask;

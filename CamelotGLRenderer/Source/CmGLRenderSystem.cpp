@@ -80,6 +80,7 @@ namespace CamelotEngine
 		mActivePipeline(nullptr),
 		mActiveTextureUnit(0),
 		mScissorTop(0), mScissorBottom(720), mScissorLeft(0), mScissorRight(1280),
+		mViewportLeft(0), mViewportTop(0), mViewportWidth(0), mViewportHeight(0),
 		mStencilReadMask(0xFFFFFFFF),
 		mStencilWriteMask(0xFFFFFFFF),
 		mStencilCompareFront(CMPF_ALWAYS_PASS),
@@ -527,7 +528,7 @@ namespace CamelotEngine
 		setStencilRefValue(stencilRefValue);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setViewport(const Viewport* vp)
+	void GLRenderSystem::setViewport(ViewportPtr& vp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -536,24 +537,22 @@ namespace CamelotEngine
 		RenderTargetPtr target;
 		target = vp->getTarget();
 		setRenderTarget(target.get());
-		mActiveViewport = vp;
-		
-		GLsizei x, y, w, h;
 
 		// Calculate the "lower-left" corner of the viewport
-		w = vp->getActualWidth();
-		h = vp->getActualHeight();
-		x = vp->getActualLeft();
-		y = vp->getActualTop();
+		mViewportWidth = vp->getActualWidth();
+		mViewportHeight = vp->getActualHeight();
+		mViewportLeft = vp->getActualLeft();
+		mViewportTop = vp->getActualTop();
+
 		if (!target->requiresTextureFlipping())
 		{
 			// Convert "upper-left" corner to "lower-left"
-			y = target->getHeight() - h - y;
+			mViewportTop = target->getHeight() - mViewportHeight - mViewportTop;
 		}
-		glViewport(x, y, w, h);
+		glViewport(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 
 		// Configure the viewport clipping
-		glScissor(x, y, w, h);
+		glScissor(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setRenderTarget(RenderTarget *target)
@@ -990,13 +989,14 @@ namespace CamelotEngine
 		{
 			glDisable(GL_SCISSOR_TEST);
 			// GL requires you to reset the scissor when disabling
-			w = mActiveViewport->getActualWidth();
-			h = mActiveViewport->getActualHeight();
-			x = mActiveViewport->getActualLeft();
+			w = mViewportWidth;
+			h = mViewportHeight;
+			x = mViewportLeft;
 			if (flipping)
-				y = mActiveViewport->getActualTop();
+				y = mViewportTop;
 			else
-				y = targetHeight - mActiveViewport->getActualTop() - h;
+				y = targetHeight - mViewportTop - h;
+
 			glScissor(x, y, w, h);
 		}
 	}

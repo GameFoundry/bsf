@@ -75,9 +75,6 @@ namespace CamelotEngine
 					break;
 				}				
 			}	
-
-			// Invalidate active view port.
-			renderSystem->mActiveViewport = nullptr;
 		}						
 	}
 

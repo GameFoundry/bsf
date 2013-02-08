@@ -68,7 +68,6 @@ namespace CamelotEngine {
 		, mRenderThreadShutdown(false)
 		, mCommandQueue(nullptr)
 		, mMaxCommandNotifyId(0)
-		, mActiveViewport(nullptr)
     {
     }
 
@@ -132,13 +131,6 @@ namespace CamelotEngine {
 
 		return mDriverVersion; 
 	}
-    //-----------------------------------------------------------------------
-    const Viewport* RenderSystem::getViewport(void)
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-        return mActiveViewport;
-    }
     //-----------------------------------------------------------------------
     void RenderSystem::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
     {

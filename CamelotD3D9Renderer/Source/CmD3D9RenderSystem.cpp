@@ -1104,13 +1104,11 @@ namespace CamelotEngine
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setViewport(const Viewport* vp)
+	void D3D9RenderSystem::setViewport(ViewportPtr& vp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		assert(vp != nullptr);
-
-		mActiveViewport = vp;
 
 		// ok, it's different, time to set render target and viewport params
 		D3DVIEWPORT9 d3dvp;
@@ -2342,11 +2340,6 @@ namespace CamelotEngine
 		// Reset state attributes.	
 		mVertexProgramBound = false;
 		mFragmentProgramBound = false;
-
-		// Restore previous active device.
-
-		// Invalidate active view port.
-		mActiveViewport = nullptr;
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::determineFSAASettings(IDirect3DDevice9* d3d9Device,

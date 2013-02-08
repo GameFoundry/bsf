@@ -62,8 +62,7 @@ namespace CamelotEngine {
 		mRecalcVertexData(true),
 		mCustomViewMatrix(false),
 		mCustomProjMatrix(false),
-		mFrustumExtentsManuallySet(false),
-		mViewport(nullptr)
+		mFrustumExtentsManuallySet(false)
     {
 		updateView();
 		updateFrustum();
@@ -85,12 +84,10 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     Camera::~Camera()
     {
-		if(mViewport != nullptr)
-			delete mViewport;
     }
 	void Camera::init(RenderTargetPtr target, float left, float top, float width, float height, int ZOrder)
 	{
-		mViewport = new Viewport(target, left, top, width, height, ZOrder);
+		mViewport = ViewportPtr(new Viewport(target, left, top, width, height, ZOrder));
 	}
 	//-----------------------------------------------------------------------
 	void Camera::setFOVy(const Radian& fov)

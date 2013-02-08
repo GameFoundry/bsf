@@ -203,6 +203,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<GpuParamBlock> GpuParamBlockPtr;
 	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
 	typedef std::shared_ptr<TextureView> TextureViewPtr;
+	typedef std::shared_ptr<Viewport> ViewportPtr;
 }
 
 // All type IDs used for RTTI

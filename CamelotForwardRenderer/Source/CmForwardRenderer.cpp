@@ -37,7 +37,7 @@ namespace CamelotEngine
 		{
 			render(*iter);
 
-			Viewport* vp = (*iter)->getViewport();
+			ViewportPtr vp = (*iter)->getViewport();
 			if(vp != nullptr)
 			{
 				RenderTargetPtr rt = vp->getTarget();

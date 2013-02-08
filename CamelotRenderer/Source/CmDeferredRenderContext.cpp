@@ -20,7 +20,7 @@ namespace CamelotEngine
 		delete mCommandQueue;
 	}
 
-	void DeferredRenderContext::setViewport(const Viewport* vp)
+	void DeferredRenderContext::setViewport(ViewportPtr& vp)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setViewport, mRenderSystem, vp));
 	}
