@@ -200,9 +200,6 @@ namespace CamelotEngine {
 		GLSupport* getGLSupport() const { return mGLSupport; }
 
     private:
-        /// Rendering loop control
-        bool mStopRendering;
-
 		// Scissor test
 		UINT32 mScissorTop, mScissorBottom, mScissorLeft, mScissorRight;
 

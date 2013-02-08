@@ -37,6 +37,7 @@ namespace CamelotEngine {
 		:mPriority(CM_DEFAULT_RT_GROUP),
 		mActive(true),
 		mHwGamma(false), 
+		mVSync(false),
 		mFSAA(0)
     {
     }
@@ -70,44 +71,23 @@ namespace CamelotEngine {
         return mColorDepth;
     }
 
-
-	void RenderTarget::_beginUpdate()
-	{
-	}
-
-	void RenderTarget::_endUpdate()
-	{
-	}
-
 	void RenderTarget::getCustomAttribute(const String& name, void* pData)
     {
         CM_EXCEPT(InvalidParametersException, "Attribute not found.");
     }
-    //-----------------------------------------------------------------------
+
     bool RenderTarget::isActive() const
     {
         return mActive;
     }
-    //-----------------------------------------------------------------------
+
     void RenderTarget::setActive( bool state )
     {
         mActive = state;
     }
-    //-----------------------------------------------------------------------
-    bool RenderTarget::isPrimary(void) const
-    {
-        // RenderWindow will override and return true for the primary window
-        return false;
-    }
-    //-----------------------------------------------------------------------
-    void RenderTarget::update(bool swap)
-    {
-		if (swap)
-		{
-			// Swap buffers
-    	    swapBuffers(CamelotEngine::RenderSystem::instancePtr()->getWaitForVerticalBlank());
-		}
-    }
-	
 
+	void RenderTarget::swapBuffers()
+	{
+		queueGpuCommand(getThisPtr(), boost::bind(&RenderTarget::swapBuffers_internal, this));
+	}
 }        

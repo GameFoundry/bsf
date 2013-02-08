@@ -250,7 +250,7 @@ namespace CamelotEngine
 		mClosed = false;
 
 		D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(RenderSystem::instancePtr());
-		rs->registerRenderWindow(this);
+		rs->_notifyWindowCreated(*this);
 
 		RenderWindow::initialize_internal();
 	}
@@ -604,7 +604,7 @@ namespace CamelotEngine
 		updateWindowRect();
 	}
 
-	void D3D9RenderWindow::swapBuffers( bool waitForVSync )
+	void D3D9RenderWindow::swapBuffers_internal()
 	{
 		if (mDeviceValid)
 			mDevice->present(this);		
@@ -658,47 +658,6 @@ namespace CamelotEngine
 	void D3D9RenderWindow::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
 		mDevice->copyContentsToMemory(this, dst, buffer);
-	}
-	//-----------------------------------------------------------------------------
-	void D3D9RenderWindow::_beginUpdate()
-	{		
-		// External windows should update per frame
-		// since it dosen't get the window resize/move messages.
-		if (mIsExternal)
-		{		
-			updateWindowRect();
-		}
-
-		if (mWidth == 0 || mHeight == 0)
-		{
-			mDeviceValid = false;
-			return;
-		}
-
-		D3D9RenderSystem::getDeviceManager()->setActiveRenderTargetDevice(mDevice);
-
-		// Check that device can be used for rendering operations.
-		mDeviceValid = mDevice->validate(this);
-		if (mDeviceValid)
-		{
-			// Finish window / fullscreen mode switch.
-			if (_getSwitchingFullscreen())
-			{
-				_finishSwitchingFullscreen();		
-				// have to re-validate since this may have altered dimensions
-				mDeviceValid = mDevice->validate(this);
-			}
-		}
-
-		RenderWindow::_beginUpdate();
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderWindow::_endUpdate()
-	{
-		RenderWindow::_endUpdate();
-
-		D3D9RenderSystem::getDeviceManager()->setActiveRenderTargetDevice(NULL);	
-
 	}
 	//-----------------------------------------------------------------------------
 	IDirect3DDevice9* D3D9RenderWindow::getD3D9Device()

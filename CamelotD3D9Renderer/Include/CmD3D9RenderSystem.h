@@ -59,7 +59,10 @@ namespace CamelotEngine
 		 */
 		const String& getShadingLanguageName() const;
 
-		void destroyRenderTarget(RenderTarget* renderTarget);
+		/**
+		 * @copydoc RenderSystem::_notifyWindowCreated.
+		 */
+		void _notifyWindowCreated(RenderWindow& renderWindow);
 
 		/**
 		 * @copydoc RenderSystem::setRenderTarget()
@@ -290,11 +293,6 @@ namespace CamelotEngine
         */
         bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
 
-		/**
-		 * @brief	Called internally by RenderWindowManager whenever a new window is created.
-		 */
-		void registerRenderWindow(D3D9RenderWindow* renderWindow);
-	
 		/************************************************************************/
 		/* 							Sampler states                     			*/
 		/************************************************************************/

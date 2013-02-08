@@ -197,7 +197,6 @@ namespace CamelotEngine
 		mBoundIndexBuffer = nullptr;
 
 		mGLSupport->stop();
-		mStopRendering = true;
 
 		TextureManager::shutDown();
 		RenderWindowManager::shutDown();
@@ -210,8 +209,6 @@ namespace CamelotEngine
 
 		if(mProgramPipelineManager != nullptr)
 			delete mProgramPipelineManager;
-
-		mRenderTargets.clear();
 
 		if(mGLSupport)
 			delete mGLSupport;

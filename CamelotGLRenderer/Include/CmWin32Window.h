@@ -44,7 +44,6 @@ namespace CamelotEngine {
         bool isClosed(void) const;
         void reposition(int left, int top);
         void resize(unsigned int width, unsigned int height);
-        void swapBuffers(bool waitForVSync);
 
 		/** Overridden - see RenderTarget. */
 		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
@@ -84,6 +83,8 @@ namespace CamelotEngine {
 		bool	mClosed;
         int     mDisplayFrequency;      // fullscreen only, to restore display
         Win32Context *mContext;
+
+		void swapBuffers_internal();
 
 		/**
 		 * @copydoc RenderWindow::initialize_internal().

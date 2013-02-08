@@ -139,14 +139,6 @@ namespace CamelotEngine
         */
         virtual bool isClosed(void) const = 0;
         
-        /** Indicates whether the window is the primary window. The
-        	primary window is special in that it is destroyed when 
-        	ogre is shut down, and cannot be destroyed directly.
-        	This is the case because it holds the context for vertex,
-        	index buffers and textures.
-        */
-        virtual bool isPrimary(void) const;
-
         /** Returns true if window is running in fullscreen mode.
         */
         virtual bool isFullScreen(void) const;
@@ -177,13 +169,8 @@ namespace CamelotEngine
         */
         RenderWindow(const RENDER_WINDOW_DESC& desc);
         
-        /** Indicates that this is the primary window. 
-        */
-        void _setPrimary() { mIsPrimary = true; }
-
 	protected:
 		bool mIsFullScreen;
-		bool mIsPrimary;
 		bool mAutoDeactivatedOnFocusChange;
 		int mLeft;
 		int mTop;

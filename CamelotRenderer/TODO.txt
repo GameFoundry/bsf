@@ -21,9 +21,6 @@ Add support for include file resource
 Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it
  - Also a way to list all referenced includes, and a way to remove them
 
- Refactor how we handle RenderTargets (no attach/detach, and no waitForVSync propery in RenderSystem)
- waitForVsync can probably be moved somewhere other than being directly in RenderSystem? (where is it in DX11?)
-
 Go through RenderSystem classes and make sure we don't hold any raw pointer references.
 Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
 Get rid of resource handlers in Resources?
@@ -42,6 +39,8 @@ Can be delayed:
  - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
  Mesh::setMeshData is currently always synced
   register/unregisterObjectToDestroy might be redundant now that I save a reference with each queue entry?
+ queueGpuCommand is handled weird. shared_ptr isn't used for setting (this) parameter, and could be optimized out by the compiler
+  - test if everything is okay in release mode
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  
 

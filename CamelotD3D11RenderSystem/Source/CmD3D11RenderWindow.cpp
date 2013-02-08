@@ -163,7 +163,7 @@ namespace CamelotEngine
 
 		RenderSystem* rs = RenderSystem::instancePtr();
 		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(rs);
-		d3d11rs->attachRenderTarget(*this);
+		d3d11rs->_notifyWindowCreated(*this);
 
 		RenderWindow::initialize_internal();
 	}
@@ -194,11 +194,11 @@ namespace CamelotEngine
 		RenderWindow::destroy_internal();
 	}
 
-	void D3D11RenderWindow::swapBuffers(bool waitForVSync)
+	void D3D11RenderWindow::swapBuffers_internal()
 	{
 		if(mDevice.getD3D11Device() != nullptr)
 		{
-			HRESULT hr = mSwapChain->Present(waitForVSync ? mVSyncInterval : 0, 0);
+			HRESULT hr = mSwapChain->Present(mVSync ? mVSyncInterval : 0, 0);
 
 			if( FAILED(hr) )
 				CM_EXCEPT(RenderingAPIException, "Error Presenting surfaces");

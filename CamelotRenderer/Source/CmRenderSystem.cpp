@@ -57,8 +57,6 @@ namespace CamelotEngine {
     RenderSystem::RenderSystem()
         : mActiveRenderTarget(nullptr)
         , mCullingMode(CULL_CLOCKWISE)
-		, mVsync(false)
-		, mVSyncInterval(1)
         , mInvertVertexWinding(false)
         , mDisabledTexUnitsFrom(0)
         , mVertexProgramBound(false)
@@ -113,88 +111,13 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::destroy_internal()
 	{
-		// Remove all the render targets.
-		mRenderTargets.clear();
-
-		mPrioritisedRenderTargets.clear();
 	}
-    //-----------------------------------------------------------------------
-    void RenderSystem::swapAllRenderTargetBuffers(bool waitForVSync)
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-        // Update all in order of priority
-        // This ensures render-to-texture targets get updated before render windows
-		RenderTargetPriorityMap::iterator itarg, itargend;
-		itargend = mPrioritisedRenderTargets.end();
-		for( itarg = mPrioritisedRenderTargets.begin(); itarg != itargend; ++itarg )
-		{
-			if( itarg->second->isActive())
-				itarg->second->swapBuffers(waitForVSync);
-		}
-    }
     //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderWindow(RenderWindow* renderWindow)
+    void RenderSystem::_notifyWindowCreated(RenderWindow& window)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
-        destroyRenderTarget(renderWindow);
     }
-    //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderTexture(RenderTexture* renderTexture)
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-        destroyRenderTarget(renderTexture);
-    }
-    //---------------------------------------------------------------------------------------------
-    void RenderSystem::destroyRenderTarget(RenderTarget* renderTarget)
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-        detachRenderTarget(*renderTarget);
-        delete renderTarget;
-    }
-    //---------------------------------------------------------------------------------------------
-    void RenderSystem::attachRenderTarget( RenderTarget &target )
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-		assert( target.getPriority() < CM_NUM_RENDERTARGET_GROUPS );
-
-        mRenderTargets.push_back(&target);
-        mPrioritisedRenderTargets.insert(
-            RenderTargetPriorityMap::value_type(target.getPriority(), &target ));
-    }
-	//---------------------------------------------------------------------------------------------
-	void RenderSystem::detachRenderTarget(RenderTarget& renderTarget)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		auto it = std::find(mRenderTargets.begin(), mRenderTargets.end(), &renderTarget);
-		RenderTarget* foundRT = nullptr;
-
-		if( it != mRenderTargets.end() )
-		{
-			foundRT = *it;
-
-			/* Remove the render target from the priority groups. */
-			RenderTargetPriorityMap::iterator itarg, itargend;
-			itargend = mPrioritisedRenderTargets.end();
-			for( itarg = mPrioritisedRenderTargets.begin(); itarg != itargend; ++itarg )
-			{
-				if( itarg->second == *it ) {
-					mPrioritisedRenderTargets.erase( itarg );
-					break;
-				}
-			}
-
-			mRenderTargets.erase( it );
-		}
-		/// If detached render target is the active render target, reset active render target
-		if(foundRT == mActiveRenderTarget)
-			mActiveRenderTarget = 0;
-	}
 	//---------------------------------------------------------------------------------------------
 	const RenderSystemCapabilities* RenderSystem::getCapabilities(void) const 
 	{ 
@@ -223,20 +146,6 @@ namespace CamelotEngine {
 
         setTexture(gptype, texUnit, false, sNullTexPtr);
     }
-	//-----------------------------------------------------------------------
-	bool RenderSystem::getWaitForVerticalBlank(void) const
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		return mVsync;
-	}
-	//-----------------------------------------------------------------------
-	void RenderSystem::setWaitForVerticalBlank(bool enabled)
-	{
-		THROW_IF_NOT_RENDER_THREAD;
-
-		mVsync = enabled;
-	}
 	//---------------------------------------------------------------------
 	void RenderSystem::addClipPlane (const Plane &p)
 	{

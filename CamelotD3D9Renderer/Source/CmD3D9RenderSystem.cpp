@@ -228,9 +228,11 @@ namespace CamelotEngine
 		msD3D9RenderSystem = NULL;
 	}
 	//--------------------------------------------------------------------
-	void D3D9RenderSystem::registerRenderWindow(D3D9RenderWindow* renderWindow)
+	void D3D9RenderSystem::_notifyWindowCreated(RenderWindow& renderWindow)
 	{		
 		THROW_IF_NOT_RENDER_THREAD;
+
+		D3D9RenderWindow* d3d9renderWindow = static_cast<D3D9RenderWindow*>(&renderWindow);
 
 		String msg;
 
@@ -238,7 +240,7 @@ namespace CamelotEngine
 
 		try
 		{
-			mDeviceManager->linkRenderWindow(renderWindow);
+			mDeviceManager->linkRenderWindow(d3d9renderWindow);
 		}
 		catch (const CamelotEngine::RenderingAPIException&)
 		{
@@ -252,11 +254,9 @@ namespace CamelotEngine
 		mResourceManager->unlockDeviceAccess();
 
 		// TODO - Storing raw pointer here might not be a good idea?
-		mRenderWindows.push_back(renderWindow);		
+		mRenderWindows.push_back(d3d9renderWindow);		
 
-		updateRenderSystemCapabilities(renderWindow);
-
-		attachRenderTarget(*renderWindow);
+		updateRenderSystemCapabilities(d3d9renderWindow);
 	}	
 
 	void D3D9RenderSystem::bindGpuProgram(GpuProgramHandle prg)
@@ -465,28 +465,6 @@ namespace CamelotEngine
 			}
 			break;
 		};
-	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::destroyRenderTarget(RenderTarget* renderTarget)
-	{		
-		THROW_IF_NOT_RENDER_THREAD;
-
-		D3D9RenderWindow* renderWindow = NULL;
-
-		// Check render windows
-		D3D9RenderWindowList::iterator sw;
-		for (sw = mRenderWindows.begin(); sw != mRenderWindows.end(); ++sw)
-		{
-			if ((*sw) == renderTarget)
-			{
-				renderWindow = (*sw);					
-				mRenderWindows.erase(sw);
-				break;
-			}
-		}
-		
-		// Do the real removal
-		RenderSystem::destroyRenderTarget(renderTarget);	
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& tex)

@@ -380,7 +380,7 @@ namespace CamelotEngine {
 
 		GLRenderSystem* rs = static_cast<GLRenderSystem*>(RenderSystem::instancePtr());
 
-		rs->attachRenderTarget(*this);
+		rs->_notifyWindowCreated(*this);
 		rs->registerContext(mContext);
 
 		RenderWindow::initialize_internal();
@@ -633,7 +633,7 @@ namespace CamelotEngine {
 		// TODO - Notify viewports of resize
 	}
 
-	void Win32Window::swapBuffers(bool waitForVSync)
+	void Win32Window::swapBuffers_internal()
 	{
 	  if (!mIsExternalGLControl) {
 	  	SwapBuffers(mHDC);

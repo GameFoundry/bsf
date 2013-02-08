@@ -17,7 +17,6 @@ namespace CamelotEngine
 		void setActive(bool state);
 		void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
 
-		void swapBuffers(bool waitForVSync = true);
 		void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
 
 		void windowMovedOrResized();
@@ -39,6 +38,8 @@ namespace CamelotEngine
 		void _destroySizeDependedD3DResources();
 
 		IDXGIDevice* _queryDxgiDevice(); 
+
+		void swapBuffers_internal();
 	
 		bool _checkMultiSampleQuality(UINT SampleCount, UINT *outQuality, DXGI_FORMAT format);
 

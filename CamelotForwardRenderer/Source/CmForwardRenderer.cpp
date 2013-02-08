@@ -11,6 +11,7 @@
 #include "CmDepthStencilState.h"
 #include "CmApplication.h"
 #include "CmViewport.h"
+#include "CmRenderTarget.h"
 
 namespace CamelotEngine
 {
@@ -35,9 +36,17 @@ namespace CamelotEngine
 		for(auto iter = allCameras.begin(); iter != allCameras.end(); ++iter)
 		{
 			render(*iter);
-		}
 
-		renderContext->swapAllRenderTargetBuffers(false);
+			Viewport* vp = (*iter)->getViewport();
+			if(vp != nullptr)
+			{
+				RenderTargetPtr rt = vp->getTarget();
+
+				if(rt != nullptr)
+					rt->swapBuffers(); // TODO - This is wrong as potentially multiple viewports can share a single render target, and swap shouldn't
+				// be done for every one of them
+			}
+		}
 	}
 
 	void ForwardRenderer::render(const CameraPtr camera) 

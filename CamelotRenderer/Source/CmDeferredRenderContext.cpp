@@ -10,7 +10,6 @@ namespace CamelotEngine
 {
 	DeferredRenderContext::DeferredRenderContext(RenderSystem* rs, CM_THREAD_ID_TYPE threadId)
 		:mCommandQueue(new CommandQueue(threadId))
-		, mWaitForVerticalBlank(true)
 		, mRenderSystem(rs)
 	{
 		assert(mRenderSystem != nullptr);
@@ -19,11 +18,6 @@ namespace CamelotEngine
 	DeferredRenderContext::~DeferredRenderContext()
 	{
 		delete mCommandQueue;
-	}
-
-	void DeferredRenderContext::swapAllRenderTargetBuffers(bool waitForVSync)
-	{
-		mCommandQueue->queue(boost::bind(&RenderSystem::swapAllRenderTargetBuffers, mRenderSystem, waitForVSync));
 	}
 
 	void DeferredRenderContext::setViewport(const Viewport* vp)
@@ -84,17 +78,6 @@ namespace CamelotEngine
 	void DeferredRenderContext::setScissorTest(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::setScissorRect, mRenderSystem, left, top, right, bottom));
-	}
-
-	bool DeferredRenderContext::getWaitForVerticalBlank(void) const
-	{
-		return mWaitForVerticalBlank;
-	}
-
-	void DeferredRenderContext::setWaitForVerticalBlank(bool enabled)
-	{
-		mWaitForVerticalBlank = enabled;
-		mCommandQueue->queue(boost::bind(&RenderSystem::setWaitForVerticalBlank, mRenderSystem, enabled));
 	}
 
 	void DeferredRenderContext::addClipPlane(const Plane &p)
@@ -179,7 +162,5 @@ namespace CamelotEngine
 	{
 		std::queue<CommandQueue::Command>* commands = mCommandQueue->flush();
 		delete commands;
-
-		// TODO - This cancels the commands but doesn't revert the state variables
 	}
 }

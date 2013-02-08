@@ -20,11 +20,6 @@ namespace CamelotEngine
 		DeferredRenderContext(RenderSystem* rs, CM_THREAD_ID_TYPE threadId);
 		~DeferredRenderContext();
 
-		/** @copydoc RenderSystem::setWaitForVerticalBlank() */
-		void setWaitForVerticalBlank(bool enabled);
-		/** @copydoc RenderSystem::getWaitForVerticalBlank() */
-		bool getWaitForVerticalBlank(void) const;
-
 		/** @copydoc RenderSystem::disableTextureUnit() */
 		void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 
@@ -97,8 +92,6 @@ namespace CamelotEngine
 		/** @copydoc RenderSystem::drawIndexed() */
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount);
 
-		/** @copydoc RenderSystem::swapAllRenderTargetBuffers() */
-		void swapAllRenderTargetBuffers(bool waitForVsync = true);
 		/** @copydoc RenderSystem::clear() */
 		void clear(RenderTargetPtr target, unsigned int buffers, const Color& color = Color::Black, float depth = 1.0f, unsigned short stencil = 0);
 
@@ -116,7 +109,5 @@ namespace CamelotEngine
 	private:
 		CommandQueue* mCommandQueue;
 		RenderSystem* mRenderSystem;
-
-		bool mWaitForVerticalBlank;
 	};
 }

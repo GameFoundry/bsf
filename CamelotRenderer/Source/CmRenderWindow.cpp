@@ -33,7 +33,6 @@ namespace CamelotEngine
 {
     RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc)
         : RenderTarget()
-		, mIsPrimary(false)
 		, mIsFullScreen(false)
 		, mDesc(desc)
     {
@@ -59,11 +58,6 @@ namespace CamelotEngine
     bool RenderWindow::isFullScreen(void) const
     {
         return mIsFullScreen;
-    }
-	//-----------------------------------------------------------------------
-    bool RenderWindow::isPrimary(void) const
-    {
-        return mIsPrimary;
     }
 
     bool RenderWindow::isDeactivatedOnFocusChange() const

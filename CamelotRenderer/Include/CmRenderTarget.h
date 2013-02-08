@@ -91,29 +91,6 @@ namespace CamelotEngine
         virtual unsigned int getHeight(void) const;
         virtual unsigned int getColourDepth(void) const;
 
-        /** Tells the target to update it's contents.
-            @remarks
-                If OGRE is not running in an automatic rendering loop
-                (started using Root::startRendering),
-                the user of the library is responsible for asking each render
-                target to refresh. This is the method used to do this. It automatically
-                re-renders the contents of the target using whatever cameras have been
-                pointed at it (using Camera::setRenderTarget).
-            @par
-                This allows OGRE to be used in multi-windowed utilities
-                and for contents to be refreshed only when required, rather than
-                constantly as with the automatic rendering loop.
-			@param swapBuffers For targets that support double-buffering, if set 
-				to true, the target will immediately
-				swap it's buffers after update. Otherwise, the buffers are
-				not swapped, and you have to call swapBuffers yourself sometime
-				later. You might want to do this on some rendersystems which 
-				pause for queued rendering commands to complete before accepting
-				swap buffers calls - so you could do other CPU tasks whilst the 
-				queued commands complete. Or, you might do this if you want custom
-				control over your windows, such as for externally created windows.
-        */
-        virtual void update(bool swapBuffers = true);
         /** Swaps the frame buffers to display the next frame.
             @remarks
                 For targets that are double-buffered so that no
@@ -121,21 +98,8 @@ namespace CamelotEngine
                 during rendering. Once rendering has completed (to
                 an off-screen version of the window) the buffers
                 are swapped to display the new frame.
-
-            @param
-                waitForVSync If true, the system waits for the
-                next vertical blank period (when the CRT beam turns off
-                as it travels from bottom-right to top-left at the
-                end of the pass) before flipping. If false, flipping
-                occurs no matter what the beam position. Waiting for
-                a vertical blank can be slower (and limits the
-                framerate to the monitor refresh rate) but results
-                in a steadier image with no 'tearing' (a flicker
-                resulting from flipping buffers when the beam is
-                in the progress of drawing the last frame).
         */
-        virtual void swapBuffers(bool waitForVSync = true)
-        { (void)waitForVSync; }
+        void swapBuffers();
 
         /** Gets a custom (maybe platform-specific) attribute.
             @remarks
@@ -181,14 +145,6 @@ namespace CamelotEngine
 
 		virtual bool requiresTextureFlipping() const = 0;
 
-        /** Indicates whether this target is the primary window. The
-            primary window is special in that it is destroyed when
-            ogre is shut down, and cannot be destroyed directly.
-            This is the case because it holds the context for vertex,
-            index buffers and textures.
-        */
-        virtual bool isPrimary(void) const;
-
 		/** Indicates whether on rendering, linear colour space is converted to 
 			sRGB gamma colour space. This is the exact opposite conversion of
 			what is indicated by Texture::isHardwareGammaEnabled, and can only
@@ -206,41 +162,20 @@ namespace CamelotEngine
 		*/
 		virtual const String& getFSAAHint() const { return mFSAAHint; }
 
-		/** Method for manual management of rendering : fires 'preRenderTargetUpdate'
-			and initialises statistics etc.
-		@remarks 
-		<ul>
-		<li>_beginUpdate resets statistics and fires 'preRenderTargetUpdate'.</li>
-		<li>_updateViewport renders the given viewport (even if it is not autoupdated),
-		fires preViewportUpdate and postViewportUpdate and manages statistics.</li>
-		<li>_updateAutoUpdatedViewports renders only viewports that are auto updated,
-		fires preViewportUpdate and postViewportUpdate and manages statistics.</li>
-		<li>_endUpdate() ends statistics calculation and fires postRenderTargetUpdate.</li>
-		</ul>
-		you can use it like this for example :
-		<pre>
-			renderTarget->_beginUpdate();
-			renderTarget->_updateViewport(1); // which is not auto updated
-			renderTarget->_updateViewport(2); // which is not auto updated
-			renderTarget->_updateAutoUpdatedViewports();
-			renderTarget->_endUpdate();
-			renderTarget->swapBuffers(true);
-		</pre>
-			Please note that in that case, the zorder may not work as you expect,
-			since you are responsible for calling _updateViewport in the correct order.
-        */
-		virtual void _beginUpdate();
-		
-		/** Method for manual management of rendering - finishes statistics calculation 
-			and fires 'postRenderTargetUpdate'.
-		@remarks
-		You should call it after a _beginUpdate
-		@see _beginUpdate for more details.
-		*/
-		virtual void _endUpdate();
+		/**
+		 * @brief	Returns true if the render target will wait for vertical sync before swapping buffers.
+		 */
+		bool getVSync() const { return mVSync; }
+
+		/**
+		 * @brief	Set whether the render target will wait for vertical sync before swapping buffers.
+		 */
+		void setVSync(bool vsync)  { mVSync = vsync; }
 
     protected:
 		RenderTarget();
+
+		virtual void swapBuffers_internal() {}
 
         /// The name of this target.
         String mName;
@@ -254,6 +189,8 @@ namespace CamelotEngine
         bool mActive;
 		// Hardware sRGB gamma conversion done on write?
 		bool mHwGamma;
+		// Wait for vsync?
+		bool mVSync;
 		// FSAA performed?
 		UINT32 mFSAA;
 		String mFSAAHint;

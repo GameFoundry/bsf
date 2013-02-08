@@ -46,7 +46,6 @@ namespace CamelotEngine
 		bool				isVSync				() const { return mVSync; }
 		void 				reposition			(int left, int top);
 		void 				resize				(unsigned int width, unsigned int height);
-		void 				swapBuffers			( bool waitForVSync = true );
 		HWND 				getWindowHandle		() const { return mHWnd; }				
 		IDirect3DDevice9*	getD3D9Device		();
 		D3D9Device*			getDevice			();
@@ -65,13 +64,6 @@ namespace CamelotEngine
 		/// Build the presentation parameters used with this window
 		void				buildPresentParameters	(D3DPRESENT_PARAMETERS* presentParams);
 		
-
-		/// @copydoc RenderTarget::_beginUpdate
-		void _beginUpdate();
-	
-		/// @copydoc RenderTarget::_endUpdate
-		void _endUpdate();
-
 		/// Accessor for render surface
 		IDirect3DSurface9* getRenderSurface();
 
@@ -99,6 +91,8 @@ namespace CamelotEngine
 		D3D9RenderWindow (const RENDER_WINDOW_DESC& desc, HINSTANCE instance);
 
 		void updateWindowRect();
+
+		void swapBuffers_internal();
 
 		/**
 		 * @copydoc RenderWindow::initialize_internal().
