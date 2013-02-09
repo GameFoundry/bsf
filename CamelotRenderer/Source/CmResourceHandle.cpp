@@ -9,16 +9,6 @@ namespace CamelotEngine
 	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mResourceCreatedCondition, ResourceHandleBase)
 	CM_STATIC_MUTEX_CLASS_INSTANCE(mResourceCreatedMutex, ResourceHandleBase)
 
-	RTTITypeBase* ResourceHandleData::getRTTIStatic()
-	{
-		return ResourceHandleDataRTTI::instance();
-	}
-
-	RTTITypeBase* ResourceHandleData::getRTTI() const
-	{
-		return ResourceHandleData::getRTTIStatic();
-	}
-
 	ResourceHandleBase::ResourceHandleBase()
 	{
 		mData = std::shared_ptr<ResourceHandleData>(new ResourceHandleData());

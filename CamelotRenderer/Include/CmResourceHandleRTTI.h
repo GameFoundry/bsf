@@ -7,46 +7,15 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT ResourceHandleDataRTTI : public RTTIType<ResourceHandleData, IReflectable, ResourceHandleDataRTTI>
-	{
-	private:
-		String& getUUID(ResourceHandleData* obj) { return obj->mUUID; }
-		void setUUID(ResourceHandleData* obj, String& uuid) 
-		{ 
-			obj->mUUID = uuid; 
-		} 
-	public:
-		ResourceHandleDataRTTI()
-		{
-			addPlainField("mUUID", 0, &ResourceHandleDataRTTI::getUUID, &ResourceHandleDataRTTI::setUUID);
-		}
-
-		virtual const String& getRTTIName()
-		{
-			static String name = "ResourceHandleData";
-			return name;
-		}
-
-		virtual UINT32 getRTTIId()
-		{
-			return TID_ResourceHandleData;
-		}
-
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
-		{
-			return std::shared_ptr<ResourceHandleData>(new ResourceHandleData());
-		}
-	};
-
 	class CM_EXPORT ResourceHandleRTTI : public RTTIType<ResourceHandleBase, IReflectable, ResourceHandleRTTI>
 	{
 	private:
-		std::shared_ptr<ResourceHandleData> getResData(ResourceHandleBase* obj) { return obj->mData; }
-		void setResData(ResourceHandleBase* obj, std::shared_ptr<ResourceHandleData> val) { obj->mData = val; }
+		String& getUUID(ResourceHandleBase* obj) { return obj->mData->mUUID; }
+		void setUUID(ResourceHandleBase* obj, String& uuid) { obj->mData->mUUID = uuid; } 
 	public:
 		ResourceHandleRTTI()
 		{
-			addReflectablePtrField("mData", 0, &ResourceHandleRTTI::getResData, &ResourceHandleRTTI::setResData);
+			addPlainField("mUUID", 0, &ResourceHandleRTTI::getUUID, &ResourceHandleRTTI::setUUID);
 		}
 
 		void onDeserializationEnded(IReflectable* obj)

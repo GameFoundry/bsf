@@ -7,7 +7,7 @@ namespace CamelotEngine
 	template <typename T>
 	class ResourceHandle;
 
-	struct CM_EXPORT ResourceHandleData : public IReflectable
+	struct CM_EXPORT ResourceHandleData
 	{
 		ResourceHandleData()
 			:mIsCreated(false)
@@ -15,15 +15,7 @@ namespace CamelotEngine
 
 		std::shared_ptr<Resource> mPtr;
 		String mUUID;
-		bool mIsCreated;
-
-		/************************************************************************/
-		/* 								RTTI		                     		*/
-		/************************************************************************/
-	public:
-		friend class ResourceHandleDataRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;		
+		bool mIsCreated;	
 	};
 
 	class CM_EXPORT ResourceHandleBase : public IReflectable

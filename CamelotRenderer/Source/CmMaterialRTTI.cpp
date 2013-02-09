@@ -142,12 +142,16 @@ namespace CamelotEngine
 						MaterialSamplerStateParam param;
 						param.name = iter->first;
 						param.value = material->getSamplerState(iter->first);
+
+						//params->samplerStateParams.push_back(param);
 					}
 					else if(Shader::isTexture(paramDesc.type))
 					{
 						MaterialTextureParam param;
 						param.name = iter->first;
 						param.value = material->getTexture(iter->first);
+
+						params->textureParams.push_back(param);
 					}
 					else if(Shader::isBuffer(paramDesc.type))
 					{

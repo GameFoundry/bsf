@@ -962,6 +962,12 @@ namespace CamelotEngine
 			return;
 		}
 
+		if(mActiveVertexShader == nullptr)
+		{
+			LOGWRN("Cannot apply input layout without a vertex shader. Set vertex shader before calling this method.");
+			return;
+		}
+
 		ID3D11InputLayout* ia = mIAManager->retrieveInputLayout(mActiveVertexShader->getInputDeclaration(), mActiveVertexDeclaration, *mActiveVertexShader);
 
 		mDevice->getImmediateContext()->IASetInputLayout(ia);

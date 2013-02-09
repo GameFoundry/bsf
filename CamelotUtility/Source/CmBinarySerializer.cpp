@@ -821,6 +821,7 @@ namespace CamelotEngine
 								for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
 								{
 									IReflectable& childObject = curField->getArrayValue(object, arrIdx);
+									objectSize += sizeof(UINT32); // Complex type size
 									objectSize += getObjectSize(&childObject);
 								}
 
@@ -861,6 +862,8 @@ namespace CamelotEngine
 						{
 							RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
 							IReflectable& childObject = curField->getValue(object);
+
+							objectSize += sizeof(UINT32); // Complex type size
 							objectSize += getObjectSize(&childObject);
 
 							break;

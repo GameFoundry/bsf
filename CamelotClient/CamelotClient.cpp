@@ -205,9 +205,11 @@ int CALLBACK WinMain(
 	dbgMeshRef = static_resource_cast<Mesh>(gResources().load("C:\\ExportMesh.mesh"));
 
 	testMaterial->setTexture("tex", testTexRef);
-	//gResources().create(testMaterial, "C:\\ExportMaterial.mat", true);
+	gResources().create(testMaterial, "C:\\ExportMaterial.mat", true);
 
-	//testMaterial = gResources().load("C:\\ExportMaterial.mat");
+	gResources().unload(testMaterial);
+
+	testMaterial = gResources().load("C:\\ExportMaterial.mat");
 
 	//_ASSERT(_CrtCheckMemory());
 
@@ -224,13 +226,14 @@ int CALLBACK WinMain(
 	// Release everything before shutdown
 	
 	//testMaterial->destroy();
-	testMaterial.reset();
 
 	gResources().unload(testTexRef);
 	gResources().unload(dbgMeshRef);
 	gResources().unload(fragProgRef);
 	gResources().unload(vertProgRef);
+	gResources().unload(testMaterial);
 
+	testMaterial.reset();
 	testTexRef.reset();
 	dbgMeshRef.reset();
 	fragProgRef.reset();
