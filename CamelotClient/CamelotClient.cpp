@@ -231,6 +231,11 @@ int CALLBACK WinMain(
 	gResources().unload(fragProgRef);
 	gResources().unload(vertProgRef);
 
+	testTexRef.reset();
+	dbgMeshRef.reset();
+	fragProgRef.reset();
+	vertProgRef.reset();
+
 	testModelGO->destroy();
 	testModelGO = nullptr;
 	testRenderable = nullptr;

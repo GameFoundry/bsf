@@ -225,10 +225,9 @@ namespace CamelotEngine
 	void Resources::unload(BaseResourceHandle resource)
 	{
 		if(!resource.isLoaded()) // If it's still loading wait until that finishes
-			resource.waitUntilLoaded(); // TODO - What if resource isn't being loaded at all, or has already been unloaded?
+			resource.waitUntilLoaded();
 
 		resource->destroy();
-		resource._invalidate();
 
 		mLoadedResources.erase(resource.getUUID());
 	}

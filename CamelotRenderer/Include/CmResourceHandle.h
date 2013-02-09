@@ -139,17 +139,6 @@ namespace CamelotEngine
 			mData = std::shared_ptr<ResourceHandleData>(new ResourceHandleData());
 		}
 
-		/**
-		 * @brief	Clears the data this handle (and all copies of it) points to
-		 * 			
-		 * @note	Should only be called by internal methods
-		 */
-		void _invalidate()
-		{
-			mData->mPtr = nullptr;
-			mData->mIsCreated = false;
-		}
-
 		template<class _Ty>
 		struct CM_Bool_struct
 		{
