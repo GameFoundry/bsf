@@ -37,7 +37,6 @@ namespace CamelotEngine
 	void CoreGpuObject::destroy()
 	{
 		setScheduledToBeDeleted(true);
-		CoreGpuObjectManager::instance().registerObjectToDestroy(mThis.lock());
 
 		queueGpuCommand(mThis.lock(), boost::bind(&CoreGpuObject::destroy_internal, this));
 	}
@@ -46,15 +45,10 @@ namespace CamelotEngine
 	{
 #if CM_DEBUG_MODE
 		if(!isInitialized())
-		{
-			CoreGpuObjectManager::instance().unregisterObjectToDestroy(mThis.lock());
 			CM_EXCEPT(InternalErrorException, "Trying to destroy an object that is already destroyed (or it never was initialized).");
-		}
 #endif
 
 		setIsInitialized(false);
-
-		CoreGpuObjectManager::instance().unregisterObjectToDestroy(mThis.lock());
 	}
 
 	void CoreGpuObject::initialize()

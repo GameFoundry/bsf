@@ -23,12 +23,6 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, "Core GPU object manager destroyed, but not all objects were released. User must release ALL " \
 				"engine objects before application shutdown.");
 		}
-
-		if(mObjectsToDestroy.size() > 0)
-		{
-			// This should never happen as higher levels of the engine make sure all scheduled objects are destroyed before shutdown is initialized.
-			CM_EXCEPT(InternalErrorException, "Objects scheduled for destruction, but shutdown initialized before destruction completed.");
-		}
 	}
 
 	UINT64 CoreGpuObjectManager::registerObject(CoreGpuObject* object)
@@ -49,19 +43,5 @@ namespace CamelotEngine
 		CM_LOCK_MUTEX(mObjectsMutex);
 
 		mObjects.erase(object->getInternalID());
-	}
-
-	void CoreGpuObjectManager::registerObjectToDestroy(std::shared_ptr<CoreGpuObject> object)
-	{
-		CM_LOCK_MUTEX(mObjectsToDestroyMutex);
-
-		mObjectsToDestroy[object->getInternalID()] = object;
-	}
-
-	void CoreGpuObjectManager::unregisterObjectToDestroy(std::shared_ptr<CoreGpuObject> object)
-	{
-		CM_LOCK_MUTEX(mObjectsToDestroyMutex);
-
-		mObjectsToDestroy.erase(object->getInternalID());
 	}
 }
