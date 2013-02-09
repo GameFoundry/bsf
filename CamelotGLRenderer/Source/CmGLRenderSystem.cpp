@@ -106,7 +106,6 @@ namespace CamelotEngine
 
 		mColourWrite[0] = mColourWrite[1] = mColourWrite[2] = mColourWrite[3] = true;
 
-		mActiveRenderTarget = 0;
 		mCurrentContext = 0;
 		mMainContext = 0;
 
@@ -536,7 +535,7 @@ namespace CamelotEngine
 
 		RenderTargetPtr target;
 		target = vp->getTarget();
-		setRenderTarget(target.get());
+		setRenderTarget(target);
 
 		// Calculate the "lower-left" corner of the viewport
 		mViewportWidth = vp->getActualWidth();
@@ -555,7 +554,7 @@ namespace CamelotEngine
 		glScissor(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setRenderTarget(RenderTarget *target)
+	void GLRenderSystem::setRenderTarget(RenderTargetPtr target)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -695,11 +694,11 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		RenderTarget* previousRenderTarget = mActiveRenderTarget;
-		if(target.get() != mActiveRenderTarget)
+		RenderTargetPtr previousRenderTarget = mActiveRenderTarget;
+		if(target != mActiveRenderTarget)
 		{
 			previousRenderTarget = mActiveRenderTarget;
-			setRenderTarget(target.get());
+			setRenderTarget(target);
 		}
 
 		bool colourMask = !mColourWrite[0] || !mColourWrite[1] 
@@ -765,7 +764,7 @@ namespace CamelotEngine
 			glStencilMask(mStencilWriteMask);
 		}
 
-		if(target.get() != previousRenderTarget)
+		if(target != previousRenderTarget)
 		{
 			setRenderTarget(previousRenderTarget);
 		}

@@ -98,6 +98,11 @@ namespace CamelotEngine
     public:
 		virtual ~RenderWindow();
 
+		/**
+		 * @copydoc RenderTarget::isWindow.
+		 */
+		bool isWindow() const { return true; }
+
 		/** Alter fullscreen mode options. 
 		@note Nothing will happen unless the settings here are different from the
 			current settings.

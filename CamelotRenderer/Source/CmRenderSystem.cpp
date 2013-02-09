@@ -55,8 +55,7 @@ namespace CamelotEngine {
 
     //-----------------------------------------------------------------------
     RenderSystem::RenderSystem()
-        : mActiveRenderTarget(nullptr)
-        , mCullingMode(CULL_CLOCKWISE)
+        : mCullingMode(CULL_CLOCKWISE)
         , mInvertVertexWinding(false)
         , mDisabledTexUnitsFrom(0)
         , mVertexProgramBound(false)
@@ -110,6 +109,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	void RenderSystem::destroy_internal()
 	{
+		mActiveRenderTarget = nullptr;
 	}
     //---------------------------------------------------------------------------------------------
     void RenderSystem::_notifyWindowCreated(RenderWindow& window)

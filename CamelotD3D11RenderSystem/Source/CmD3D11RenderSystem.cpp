@@ -283,7 +283,7 @@ namespace CamelotEngine
 
 		// Set render target
 		RenderTargetPtr target = vp->getTarget();
-		setRenderTarget(target.get());
+		setRenderTarget(target);
 
 		// set viewport dimensions
 		mViewport.TopLeftX = (FLOAT)vp->getActualLeft();
@@ -585,7 +585,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void D3D11RenderSystem::setRenderTarget(RenderTarget* target)
+	void D3D11RenderSystem::setRenderTarget(RenderTargetPtr target)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

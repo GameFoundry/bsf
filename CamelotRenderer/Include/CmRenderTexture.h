@@ -58,6 +58,11 @@ namespace CamelotEngine
 
 		bool requiresTextureFlipping() const { return false; }
 
+		/**
+		 * @copydoc RenderTarget::isWindow.
+		 */
+		bool isWindow() const { return false; }
+
 		void initialize(const RENDER_TEXTURE_DESC& desc);
 
 	protected:

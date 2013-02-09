@@ -22,14 +22,8 @@ Make sure we can add an include file to a HighLevelGpuProgram, and make sure it 
  - Also a way to list all referenced includes, and a way to remove them
 
 Go through RenderSystem classes and make sure we don't hold any raw pointer references:
-mActiveRenderTarget
- - when is this set to null?
- - I don't want it to be set in the background somewhere and then have the user wonder why aren't his references being released, or worse yet (since it isn't a shared_ptr) why the game crashes
-
 D3D9 keeps a list of render windows
  - it keeps a list of RAW pointers to those windows. That NEEDS to change
-
-mActiveViewport - keeps an active viewport using a RAW pointer
 
 D3D11 keeps an active vertex shader & active vertex delecaration
  - should be okay if they are both shared_ptr (they're not atm), and user knows how to reset them

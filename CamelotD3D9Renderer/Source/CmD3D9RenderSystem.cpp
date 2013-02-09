@@ -253,9 +253,6 @@ namespace CamelotEngine
 
 		mResourceManager->unlockDeviceAccess();
 
-		// TODO - Storing raw pointer here might not be a good idea?
-		mRenderWindows.push_back(d3d9renderWindow);		
-
 		updateRenderSystemCapabilities(d3d9renderWindow);
 	}	
 
@@ -1047,7 +1044,7 @@ namespace CamelotEngine
 			__SetSamplerState( static_cast<DWORD>(unit), D3DSAMP_MAXANISOTROPY, maxAnisotropy );
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setRenderTarget(RenderTarget* target)
+	void D3D9RenderSystem::setRenderTarget(RenderTargetPtr target)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -1055,15 +1052,11 @@ namespace CamelotEngine
 
 		HRESULT hr;
 
-		// If this is called without going through RenderWindow::update, then 
-		// the device will not have been set. Calling it twice is safe, the 
-		// implementation ensures nothing happens if the same device is set twice
-		if (std::find(mRenderWindows.begin(), mRenderWindows.end(), target) != mRenderWindows.end())
+		// Possibly change device if the target is a window
+		if (target->isWindow())
 		{
-			D3D9RenderWindow* window = static_cast<D3D9RenderWindow*>(target);
+			D3D9RenderWindow* window = static_cast<D3D9RenderWindow*>(target.get());
 			mDeviceManager->setActiveRenderTargetDevice(window->getDevice());
-			// also make sure we validate the device; if this never went 
-			// through update() it won't be set
 			window->_validateDevice();
 		}
 
@@ -1116,7 +1109,7 @@ namespace CamelotEngine
 
 		// Set render target
 		RenderTargetPtr target = vp->getTarget();
-		setRenderTarget(target.get());
+		setRenderTarget(target);
 
 		setCullingMode( mCullingMode );
 
@@ -1344,11 +1337,11 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		RenderTarget* previousRenderTarget = mActiveRenderTarget;
-		if(target.get() != mActiveRenderTarget)
+		RenderTargetPtr previousRenderTarget = mActiveRenderTarget;
+		if(target != mActiveRenderTarget)
 		{
 			previousRenderTarget = mActiveRenderTarget;
-			setRenderTarget(target.get());
+			setRenderTarget(target);
 		}
 
 		DWORD flags = 0;
@@ -1380,7 +1373,7 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
 		}
 
-		if(target.get() != previousRenderTarget)
+		if(target != previousRenderTarget)
 		{
 			setRenderTarget(previousRenderTarget);
 		}

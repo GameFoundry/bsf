@@ -60,7 +60,7 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc RenderSystem::setRenderTarget()
 		 */
-        void setRenderTarget(RenderTarget *target);
+        void setRenderTarget(RenderTargetPtr target);
 
         /**
 		 * @copydoc RenderSystem::setVertexBuffer()

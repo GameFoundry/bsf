@@ -101,6 +101,11 @@ namespace CamelotEngine
         */
         void swapBuffers();
 
+		/**
+		 * @brief	Returns true if the render target is a render window.
+		 */
+		virtual bool isWindow() const = 0;
+
         /** Gets a custom (maybe platform-specific) attribute.
             @remarks
                 This is a nasty way of satisfying any API's need to see platform-specific details.

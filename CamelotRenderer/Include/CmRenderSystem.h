@@ -275,7 +275,7 @@ namespace CamelotEngine
 		/**
          * Set current render target to target, enabling its device context if needed
          */
-        virtual void setRenderTarget(RenderTarget* target) = 0;
+        virtual void setRenderTarget(RenderTargetPtr target) = 0;
 
 		/************************************************************************/
 		/* 								UTILITY METHODS                    		*/
@@ -344,7 +344,7 @@ namespace CamelotEngine
 		friend class RenderSystemManager;
 
 		/** The Active render target. */
-		RenderTarget* mActiveRenderTarget;
+		RenderTargetPtr mActiveRenderTarget;
 
 		CullingMode mCullingMode;
 

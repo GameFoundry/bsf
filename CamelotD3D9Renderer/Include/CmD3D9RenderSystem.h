@@ -67,7 +67,7 @@ namespace CamelotEngine
 		/**
 		 * @copydoc RenderSystem::setRenderTarget()
 		 */
-		void setRenderTarget(RenderTarget* target);
+		void setRenderTarget(RenderTargetPtr target);
 
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()
@@ -249,10 +249,6 @@ namespace CamelotEngine
         void convertVertexShaderCaps(RenderSystemCapabilities* rsc) const;
         void convertPixelShaderCaps(RenderSystemCapabilities* rsc) const;
 		bool checkVertexTextureFormats(D3D9RenderWindow* renderWindow) const;
-	
-		typedef vector<D3D9RenderWindow*>::type D3D9RenderWindowList;
-		// List of additional windows after the first (swap chains)
-		D3D9RenderWindowList mRenderWindows;
 
 	protected:
 		// I know that's a lot of friends, but I'd rather have friend classes than exposing the needed methods

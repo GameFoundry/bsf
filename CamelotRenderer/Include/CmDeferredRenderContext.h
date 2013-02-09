@@ -69,7 +69,7 @@ namespace CamelotEngine
 		void setScissorTest(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
 		/** @copydoc RenderSystem::setRenderTarget() */
-		void setRenderTarget(RenderTarget *target);
+		void setRenderTarget(RenderTargetPtr target);
 
 		/** @copydoc RenderSystem::bindGpuProgram() */
 		void bindGpuProgram(GpuProgramHandle prg);
