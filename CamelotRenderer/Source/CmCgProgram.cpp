@@ -123,7 +123,7 @@ namespace CamelotEngine {
 		return getWrappedProgram()->createParameters();
 	}
 
-	GpuProgram* CgProgram::getBindingDelegate(void)
+	GpuProgramPtr CgProgram::getBindingDelegate(void)
 	{
 		if(mAssemblerProgram)
 			return getWrappedProgram()->getBindingDelegate();

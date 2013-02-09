@@ -263,14 +263,14 @@ namespace CamelotEngine
 		if(!prg.isLoaded())
 			return;
 
-		GpuProgram* bindingPrg = prg->getBindingDelegate();
+		GpuProgramPtr bindingPrg = prg->getBindingDelegate();
 
 		HRESULT hr;
 		switch (bindingPrg->getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			hr = getActiveD3D9Device()->SetVertexShader(
-				static_cast<D3D9GpuVertexProgram*>(bindingPrg)->getVertexShader());
+				static_cast<D3D9GpuVertexProgram*>(bindingPrg.get())->getVertexShader());
 			if (FAILED(hr))
 			{
 				CM_EXCEPT(RenderingAPIException, "Error calling SetVertexShader");
@@ -278,7 +278,7 @@ namespace CamelotEngine
 			break;
 		case GPT_FRAGMENT_PROGRAM:
 			hr = getActiveD3D9Device()->SetPixelShader(
-				static_cast<D3D9GpuFragmentProgram*>(bindingPrg)->getPixelShader());
+				static_cast<D3D9GpuFragmentProgram*>(bindingPrg.get())->getPixelShader());
 			if (FAILED(hr))
 			{
 				CM_EXCEPT(RenderingAPIException, "Error calling SetPixelShader");

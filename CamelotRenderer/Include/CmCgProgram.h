@@ -54,7 +54,7 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc HighLevelGpuProgram::getBindingDelegate().
 		 */
-		GpuProgram* getBindingDelegate();
+		GpuProgramPtr getBindingDelegate();
 
 		/**
 		 * @copydoc HighLevelGpuProgram::createParameters().

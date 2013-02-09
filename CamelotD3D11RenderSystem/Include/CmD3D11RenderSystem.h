@@ -110,7 +110,7 @@ namespace CamelotEngine
 		D3D11_RECT			mScissorRect;
 
 		VertexDeclarationPtr mActiveVertexDeclaration;
-		D3D11HLSLProgram*	 mActiveVertexShader;
+		D3D11HLSLProgramPtr	 mActiveVertexShader;
 
 		/**
 		 * @brief	Creates or retrieves a proper input layout depending on the currently set vertex shader

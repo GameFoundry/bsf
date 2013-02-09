@@ -113,11 +113,6 @@ namespace CamelotEngine
 
 		mMinFilter = FO_LINEAR;
 		mMipFilter = FO_POINT;
-		mCurrentVertexProgram = nullptr;
-		mCurrentGeometryProgram = nullptr;
-		mCurrentFragmentProgram = nullptr;
-		mCurrentHullProgram = nullptr;
-		mCurrentDomainProgram = nullptr;
 
 		mProgramPipelineManager = new GLSLProgramPipelineManager();
 	}
@@ -196,6 +191,12 @@ namespace CamelotEngine
 		mBoundVertexDeclaration = nullptr;
 		mBoundIndexBuffer = nullptr;
 
+		mCurrentVertexProgram = nullptr;
+		mCurrentFragmentProgram = nullptr;
+		mCurrentGeometryProgram = nullptr;
+		mCurrentHullProgram = nullptr;
+		mCurrentDomainProgram = nullptr;
+
 		mGLSupport->stop();
 
 		TextureManager::shutDown();
@@ -219,8 +220,8 @@ namespace CamelotEngine
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		GpuProgram* bindingPrg = prg->getBindingDelegate();
-		GLSLGpuProgram* glprg = static_cast<GLSLGpuProgram*>(bindingPrg);
+		GpuProgramPtr bindingPrg = prg->getBindingDelegate();
+		GLSLGpuProgramPtr glprg = std::static_pointer_cast<GLSLGpuProgram>(bindingPrg);
 
 		switch (glprg->getType())
 		{
@@ -279,7 +280,7 @@ namespace CamelotEngine
 		THROW_IF_NOT_RENDER_THREAD;
 
 		const GpuParamDesc& paramDesc = params->getParamDesc();
-		GLSLGpuProgram* activeProgram = getActiveProgram(gptype);
+		GLSLGpuProgramPtr activeProgram = getActiveProgram(gptype);
 		GLuint glProgram = activeProgram->getGLSLProgram()->getGLHandle();
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
@@ -1625,8 +1626,8 @@ namespace CamelotEngine
 			return;
 		}
 
-		const GLSLProgramPipeline* pipeline = mProgramPipelineManager->getPipeline(mCurrentVertexProgram, 
-			mCurrentFragmentProgram, mCurrentGeometryProgram, mCurrentHullProgram, mCurrentDomainProgram);
+		const GLSLProgramPipeline* pipeline = mProgramPipelineManager->getPipeline(mCurrentVertexProgram.get(), 
+			mCurrentFragmentProgram.get(), mCurrentGeometryProgram.get(), mCurrentHullProgram.get(), mCurrentDomainProgram.get());
 
 		if(mActivePipeline != pipeline)
 		{
@@ -2369,7 +2370,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void GLRenderSystem::setActiveProgram(GpuProgramType gptype, GLSLGpuProgram* program)
+	void GLRenderSystem::setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program)
 	{
 		switch (gptype)
 		{
@@ -2391,7 +2392,7 @@ namespace CamelotEngine
 		}
 	}
 
-	GLSLGpuProgram* GLRenderSystem::getActiveProgram(GpuProgramType gptype) const
+	GLSLGpuProgramPtr GLRenderSystem::getActiveProgram(GpuProgramType gptype) const
 	{
 		switch (gptype)
 		{

@@ -21,14 +21,6 @@ Add support for include file resource
 Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it
  - Also a way to list all referenced includes, and a way to remove them
 
-Go through RenderSystem classes and make sure we don't hold any raw pointer references:
-D3D11 keeps an active vertex shader & active vertex delecaration
- - should be okay if they are both shared_ptr (they're not atm), and user knows how to reset them
-
-GL keeps a list of RAW pointers for every Gpuprogram!
- - also a bound vertex/index buffer & vertex declaration
-
-
 Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
 Get rid of resource handlers in Resources?
 

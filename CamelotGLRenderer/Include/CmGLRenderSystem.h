@@ -261,11 +261,11 @@ namespace CamelotEngine {
 
         GLuint getCombinedMinMipFilter(void) const;
 
-        GLSLGpuProgram* mCurrentVertexProgram;
-        GLSLGpuProgram* mCurrentFragmentProgram;
-		GLSLGpuProgram* mCurrentGeometryProgram;
-		GLSLGpuProgram* mCurrentHullProgram;
-		GLSLGpuProgram* mCurrentDomainProgram;
+        GLSLGpuProgramPtr mCurrentVertexProgram;
+        GLSLGpuProgramPtr mCurrentFragmentProgram;
+		GLSLGpuProgramPtr mCurrentGeometryProgram;
+		GLSLGpuProgramPtr mCurrentHullProgram;
+		GLSLGpuProgramPtr mCurrentDomainProgram;
 
 		const GLSLProgramPipeline* mActivePipeline;
 
@@ -583,8 +583,8 @@ namespace CamelotEngine {
 		 */
 		void endDraw();
 
-		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgram* program);
-		GLSLGpuProgram* getActiveProgram(GpuProgramType gptype) const;
+		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program);
+		GLSLGpuProgramPtr getActiveProgram(GpuProgramType gptype) const;
 
 		/** Returns the main context */
 		GLContext* _getMainContext() {return mMainContext;} 

@@ -72,6 +72,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<D3D11SamplerState> D3D11SamplerStatePtr;
 	typedef std::shared_ptr<D3D11DepthStencilState> D3D11DepthStencilStatePtr;
 	typedef std::shared_ptr<D3D11RenderWindow> D3D11RenderWindowPtr;
+	typedef std::shared_ptr<D3D11HLSLProgram> D3D11HLSLProgramPtr;
 
 // Should we ask D3D to manage vertex/index buffers automatically?
 // Doing so avoids lost devices, but also has a performance impact

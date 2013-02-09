@@ -36,7 +36,7 @@ namespace CamelotEngine
 		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr)
 		, mActiveD3DDriver(nullptr), mFeatureLevel(D3D_FEATURE_LEVEL_9_1)
 		, mHLSLFactory(nullptr), mIAManager(nullptr)
-		, mStencilRef(0), mActiveVertexShader(nullptr)
+		, mStencilRef(0)
 	{
 		mClipPlanesDirty = false; // DX11 handles clip planes through shaders
 	}
@@ -141,6 +141,9 @@ namespace CamelotEngine
 
 		SAFE_DELETE(mIAManager);
 		SAFE_DELETE(mHLSLFactory);
+
+		mActiveVertexDeclaration = nullptr;
+		mActiveVertexShader = nullptr;
 
 		RenderStateManager::shutDown();
 		RenderWindowManager::shutDown();
@@ -364,38 +367,38 @@ namespace CamelotEngine
 		{
 		case GPT_VERTEX_PROGRAM:
 			{
-				D3D11GpuVertexProgram* d3d11GpuProgram = static_cast<D3D11GpuVertexProgram*>(prg->getBindingDelegate());
+				D3D11GpuVertexProgram* d3d11GpuProgram = static_cast<D3D11GpuVertexProgram*>(prg->getBindingDelegate().get());
 				mDevice->getImmediateContext()->VSSetShader(d3d11GpuProgram->getVertexShader(), nullptr, 0);
-				mActiveVertexShader = static_cast<D3D11HLSLProgram*>(prg.get());
+				mActiveVertexShader = std::static_pointer_cast<D3D11HLSLProgram>(prg.getInternalPtr());
 				break;
 			}
 		case GPT_FRAGMENT_PROGRAM:
 			{
-				D3D11GpuFragmentProgram* d3d11GpuProgram = static_cast<D3D11GpuFragmentProgram*>(prg->getBindingDelegate());
+				D3D11GpuFragmentProgram* d3d11GpuProgram = static_cast<D3D11GpuFragmentProgram*>(prg->getBindingDelegate().get());
 				mDevice->getImmediateContext()->PSSetShader(d3d11GpuProgram->getPixelShader(), nullptr, 0);
 				break;
 			}
 		case GPT_GEOMETRY_PROGRAM:
 			{
-				D3D11GpuGeometryProgram* d3d11GpuProgram = static_cast<D3D11GpuGeometryProgram*>(prg->getBindingDelegate());
+				D3D11GpuGeometryProgram* d3d11GpuProgram = static_cast<D3D11GpuGeometryProgram*>(prg->getBindingDelegate().get());
 				mDevice->getImmediateContext()->GSSetShader(d3d11GpuProgram->getGeometryShader(), nullptr, 0);
 				break;
 			}
 		case GPT_DOMAIN_PROGRAM:
 			{
-				D3D11GpuDomainProgram* d3d11GpuProgram = static_cast<D3D11GpuDomainProgram*>(prg->getBindingDelegate());
+				D3D11GpuDomainProgram* d3d11GpuProgram = static_cast<D3D11GpuDomainProgram*>(prg->getBindingDelegate().get());
 				mDevice->getImmediateContext()->DSSetShader(d3d11GpuProgram->getDomainShader(), nullptr, 0);
 				break;
 			}
 		case GPT_HULL_PROGRAM:
 			{
-				D3D11GpuHullProgram* d3d11GpuProgram = static_cast<D3D11GpuHullProgram*>(prg->getBindingDelegate());
+				D3D11GpuHullProgram* d3d11GpuProgram = static_cast<D3D11GpuHullProgram*>(prg->getBindingDelegate().get());
 				mDevice->getImmediateContext()->HSSetShader(d3d11GpuProgram->getHullShader(), nullptr, 0);
 				break;
 			}
 		case GPT_COMPUTE_PROGRAM:
 			{
-				D3D11GpuComputeProgram* d3d11GpuProgram = static_cast<D3D11GpuComputeProgram*>(prg->getBindingDelegate());
+				D3D11GpuComputeProgram* d3d11GpuProgram = static_cast<D3D11GpuComputeProgram*>(prg->getBindingDelegate().get());
 				mDevice->getImmediateContext()->CSSetShader(d3d11GpuProgram->getComputeShader(), nullptr, 0);
 				break;
 			}

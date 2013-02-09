@@ -114,7 +114,7 @@ namespace CamelotEngine {
         @remarks
             This method is simply to allow some subclasses of GpuProgram to delegate
             the program which is bound to the pipeline to a delegate, if required. */
-        virtual GpuProgram* getBindingDelegate(void) { return this; }
+        virtual GpuProgramPtr getBindingDelegate(void) { return std::static_pointer_cast<GpuProgram>(getThisPtr()); }
 
         /** Returns whether this program can be supported on the current renderer and hardware. */
         virtual bool isSupported(void) const;

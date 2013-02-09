@@ -66,7 +66,7 @@ namespace CamelotEngine {
         virtual ~HighLevelGpuProgram();
 
         /** @copydoc GpuProgram::getBindingDelegate */
-        virtual GpuProgram* getBindingDelegate(void) { return mAssemblerProgram.get(); }
+        virtual GpuProgramPtr getBindingDelegate(void) { return mAssemblerProgram; }
 
     protected:
 		friend class HighLevelGpuProgramManager;
