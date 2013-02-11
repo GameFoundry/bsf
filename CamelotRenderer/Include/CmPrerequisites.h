@@ -141,6 +141,7 @@ namespace CamelotEngine {
 	struct GpuParamDataDesc;
 	struct GpuParamObjectDesc;
 	struct GpuParamBlockDesc;
+	class GpuProgInclude;
 	class TextureView;
 	class CoreGpuObject;
 	// Asset import
@@ -204,6 +205,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
 	typedef std::shared_ptr<TextureView> TextureViewPtr;
 	typedef std::shared_ptr<Viewport> ViewportPtr;
+	typedef std::shared_ptr<GpuProgInclude> GpuProgIncludePtr;
 }
 
 // All type IDs used for RTTI
@@ -269,6 +271,7 @@ namespace CamelotEngine
 	typedef ResourceHandle<RasterizerState> RasterizerStateHandle;
 	typedef ResourceHandle<DepthStencilState> DepthStencilStateHandle;
 	typedef ResourceHandle<BlendState> BlendStateHandle;
+	typedef ResourceHandle<GpuProgInclude> GpuProgIncludeHandle;
 }
 
 #endif

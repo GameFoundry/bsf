@@ -35,7 +35,8 @@ namespace CamelotEngine
 		friend class D3D11HLSLProgramFactory;
 
 		D3D11HLSLProgram(const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
+			GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes, 
+			bool isAdjacencyInfoRequired = false);
 
         /**
          * @copydoc HighLevelGpuProgram::initialize_internal()

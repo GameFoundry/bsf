@@ -3,6 +3,7 @@
 #include "CmResource.h"
 #include "CmFileSystem.h"
 #include "CmSpecificImporter.h"
+#include "CmGpuProgIncludeImporter.h"
 #include "CmDebug.h"
 #include "CmDataStream.h"
 #include "CmException.h"
@@ -11,7 +12,7 @@ namespace CamelotEngine
 {
 	Importer::Importer()
 	{
-
+		registerAssetImporter(new GpuProgIncludeImporter());
 	}
 
 	Importer::~Importer()

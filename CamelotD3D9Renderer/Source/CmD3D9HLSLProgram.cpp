@@ -36,56 +36,10 @@ THE SOFTWARE.
 #include "CmD3D9HLSLProgramRTTI.h"
 
 namespace CamelotEngine {
-	class CM_D3D9_EXPORT HLSLIncludeHandler : public ID3DXInclude
-	{
-	public:
-		HLSLIncludeHandler(HighLevelGpuProgram* sourceProgram) 
-			: mProgram(sourceProgram) {}
-		~HLSLIncludeHandler() {}
-		
-		STDMETHOD(Open)(D3DXINCLUDE_TYPE IncludeType,
-			LPCSTR pFileName,
-			LPCVOID pParentData,
-			LPCVOID *ppData,
-			UINT *pByteLen
-			)
-		{
-			// TODO PORT - I'm not sure what to do with this. It will probably break something in its current state.
-
-			//// find & load source code
-			//DataStreamPtr stream = 
-			//	ResourceGroupManager::getSingleton().openResource(
-			//	String(pFileName), mProgram->getGroup(), true, mProgram);
-
-			//String source = stream->getAsString();
-			//// copy into separate c-string
-			//// Note - must NOT copy the null terminator, otherwise this will terminate
-			//// the entire program string!
-			//*pByteLen = static_cast<UINT>(source.length());
-			//char* pChar = new char[*pByteLen];
-			//memcpy(pChar, source.c_str(), *pByteLen);
-			//*ppData = pChar;
-
-			assert(false); // TODO - Include files not supported until I can figure out how to handle them
-
-			return S_OK;
-		}
-
-		STDMETHOD(Close)(LPCVOID pData)
-		{
-			char* pChar = (char*)pData;
-			delete [] pChar;
-			return S_OK;
-		}
-	protected:
-		HighLevelGpuProgram* mProgram;
-
-
-	};
 	//-----------------------------------------------------------------------
 	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
-		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired)
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes, bool isAdjacencyInfoRequired)
+		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired)
 		, mPreprocessorDefines()
 		, mColumnMajorMatrices(true)
 		, mpMicroCode(NULL)
@@ -213,7 +167,6 @@ namespace CamelotEngine {
 			LPD3DXBUFFER errors = 0;
 
 			// include handler
-			HLSLIncludeHandler includeHandler(this);
 			LPD3DXCONSTANTTABLE constTable;
 
 			String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
@@ -223,7 +176,7 @@ namespace CamelotEngine {
 				mSource.c_str(),
 				static_cast<UINT>(mSource.length()),
 				pDefines,
-				&includeHandler, 
+				nullptr, 
 				mEntryPoint.c_str(),
 				hlslProfile.c_str(),
 				compileFlags,

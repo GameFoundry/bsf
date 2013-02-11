@@ -377,6 +377,12 @@
     <ClInclude Include="Include\CmMaterialManager.h">
       <Filter>Header Files\Material</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGpuProgIncludeImporter.h">
+      <Filter>Header Files\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGpuProgInclude.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -576,6 +582,12 @@
     </ClCompile>
     <ClCompile Include="Include\CmMaterialManager.cpp">
       <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp">
+      <Filter>Source Files\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuProgInclude.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

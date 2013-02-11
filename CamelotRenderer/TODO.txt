@@ -14,31 +14,47 @@ Pass
  - A way to bind buffers to a Pass, while specifying buffer range
  - GpuParams support for bools, buffers, structs
 
-Support loading of compound objects:
-   - Loading Material also loads attached Shader and Textures/Samplers
-
 Add support for include file resource
 Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it
  - Also a way to list all referenced includes, and a way to remove them
 
+ Importer for shaders
+  - If GpuProgram is immutable then how do I add an include file to it after calling import()?
+  - Figure out a better way of assigning include files
+
 Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
 Get rid of resource handlers in Resources?
 
+Deserialization issues:
+ - Currently Reflectable is not allowed to hold a ReflectablePtr
+   - Because Reflectable might be assigned before a pointer is decoded and assigned, therefore
+      ending up with a null pointer. Changing the order when we decode pointers would solve this issue.
+ - Changing the order of pointer decoding increases the chance of getting an uninitialized pointer in your RTTI class. 
+    e.g. Mesh::setMeshData expects an initialized MeshDataPtr to be provided.
+
+SOLUTION: Decode all pointers ON THE SPOT (whether they are referenced by Reflectable or ReflectablePtr), before we assign them
+ - Recusive references remain an issue though
+   - Objects referencing themselves are checked during application start-up (or compile time?). User is warned of the situation, 
+      and he has so remedy it by making one of the references Weak (a special property assigned to the RTTI field)
+
 Can be delayed:
- Make sure that I am able to blit contents from render textures on all render systems
- Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones
- Better creation of PrimaryWindow
-  - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
-  - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
- ImportOptions
- Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
- OpenGL render window no longer looks for a monitor index
- Test if async loading still works
- Material RTTI should also serialize shared buffers (they need to be made into a resource)
- - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
- Mesh::setMeshData is currently always synced
- queueGpuCommand is handled weird. shared_ptr isn't used for setting (this) parameter, and could be optimized out by the compiler
-  - test if everything is okay in release mode
+ - Make sure that I am able to blit contents from render textures on all render systems
+ - Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones
+ - Better creation of PrimaryWindow
+   - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
+   - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
+ - ImportOptions
+ - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
+ - OpenGL render window no longer looks for a monitor index
+ - Test if async loading still works
+ - Material RTTI should also serialize shared buffers (they need to be made into a resource)
+   - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
+ - Mesh::setMeshData is currently always synced
+ - queueGpuCommand is handled weird. shared_ptr isn't used for setting (this) parameter, and could be optimized out by the compiler
+   - test if everything is okay in release mode
+ - Resources::unload will deadlock if the resource isn't being loaded!
+   - Maybe re-think how I handle ResourceHandle.isCreated?
+ - Check D3D9/D3D11/GL resource usages. DX11 reports many unreleased objects. I'm guessing DX9 will as well. Not sure how to check OpenGL.
 >>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
  
 
@@ -164,6 +180,7 @@ Optional TODO:
   - Value types are only set at the end of deserialization, because I want to be sure all of their fields are initialized. 
      However there is nothing stopping a custom RTTI method from accessing a (yet uninitialized) value in a ptr field. 
 	 (See CmMaterialRTTI, setTexParam). I need to initialize fields in a better order.)
+ - Creating stuff like gpu program include and shader, etc. still require initialize() (call to render thread)
 
  -----------------------------------------------------------------------------------------------
 

@@ -43,6 +43,6 @@ GLGpuProgramManager::~GLGpuProgramManager()
 
 GpuProgram* GLGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
 {
-    return new GLSLGpuProgram(source, entryPoint, language, gptype, profile);
+    return new GLSLGpuProgram(source, entryPoint, language, gptype, profile, nullptr);
 }
 

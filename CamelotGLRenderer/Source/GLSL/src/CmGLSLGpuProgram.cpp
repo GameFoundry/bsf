@@ -40,8 +40,8 @@ namespace CamelotEngine {
 	UINT32 GLSLGpuProgram::mHullShaderCount = 0;
     //-----------------------------------------------------------------------------
 	GLSLGpuProgram::GLSLGpuProgram(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile) 
-		:GpuProgram(source, entryPoint, language, gptype, profile)
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes) 
+		:GpuProgram(source, entryPoint, language, gptype, profile, includes)
     {
         mSyntaxCode = "glsl";
 

@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmAsyncOp.h"
 #include "CmGpuParams.h"
+#include "CmGpuProgInclude.h"
 #include "CmGpuProgramRTTI.h"
 
 #if CM_DEBUG_MODE
@@ -46,11 +47,29 @@ namespace CamelotEngine
 {
     //-----------------------------------------------------------------------------
     GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired) 
-        :mSource(source), mEntryPoint(entryPoint), mSyntaxCode(language), mType(gptype),
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes, bool isAdjacencyInfoRequired) 
+        :mEntryPoint(entryPoint), mSyntaxCode(language), mType(gptype),
 		mProfile(profile), mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
     {
+		if(includes != nullptr)
+		{
+			std::ostringstream stringStream;
+			for(auto iter = includes->begin(); iter != includes->end(); ++iter)
+			{
+				if(*iter != nullptr)
+				{
+					stringStream << (*iter)->getString();
+				}
+			}
 
+			stringStream << source;
+
+			mSource = stringStream.str();
+		}
+		else
+		{
+			mSource = source;
+		}
     }
 	//----------------------------------------------------------------------------
 	GpuProgram::~GpuProgram()

@@ -36,8 +36,9 @@ THE SOFTWARE.
 
 namespace CamelotEngine {
     //-----------------------------------------------------------------------------
-    D3D9GpuProgram::D3D9GpuProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) 
-        : GpuProgram(source, entryPoint, language, gptype, profile), mpExternalMicrocode(NULL), mColumnMajorMatrices(false)
+    D3D9GpuProgram::D3D9GpuProgram(const String& source, const String& entryPoint, const String& language, 
+		GpuProgramType gptype, GpuProgramProfile profile) 
+        : GpuProgram(source, entryPoint, language, gptype, profile, nullptr), mpExternalMicrocode(NULL), mColumnMajorMatrices(false)
     {
     }
 

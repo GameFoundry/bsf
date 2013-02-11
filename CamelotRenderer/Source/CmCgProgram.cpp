@@ -102,7 +102,7 @@ namespace CamelotEngine {
 			// Create a low-level program, give it the same name as us
 			mAssemblerProgram = 
 				HighLevelGpuProgramManager::instance().create(
-				sourceFromCg, mEntryPoint, RenderSystem::instance().getShadingLanguageName(), mType, mProfile);
+				sourceFromCg, mEntryPoint, RenderSystem::instance().getShadingLanguageName(), mType, mProfile, nullptr);
 
 			// Shader params need to be forwarded to low level implementation
 			mAssemblerProgram->setAdjacencyInfoRequired(isAdjacencyInfoRequired());
@@ -139,8 +139,8 @@ namespace CamelotEngine {
 	}
 
 	CgProgram::CgProgram(CGcontext context, const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
-        : HighLevelGpuProgram(source, entryPoint, language, gptype, profile, isAdjacencyInfoRequired), 
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes, bool isAdjacencyInfoRequired)
+        : HighLevelGpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired), 
         mCgContext(context), mCgProgram(0), 
         mSelectedCgProfile(CG_PROFILE_UNKNOWN)
     {

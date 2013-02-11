@@ -20,6 +20,7 @@
 #include "CmPass.h"
 #include "CmImporter.h"
 #include "CmMesh.h"
+#include "CmGpuProgInclude.h" // DEBUG ONLY
 
 #include "CmDebugCamera.h"
 
@@ -52,6 +53,9 @@ int CALLBACK WinMain(
 
 	GameObjectPtr testModelGO = GameObject::create("TestMesh");
 	RenderablePtr testRenderable = testModelGO->addComponent<Renderable>();
+
+	GpuProgIncludeHandle gpuProgInclude = Importer::instance().import("C:\\testInclude.gpuproginc");
+	const String& debugString = gpuProgInclude->getString();
 
 	/////////////////// HLSL 9 SHADERS //////////////////////////
 	//String fragShaderCode = "sampler2D tex;			\
