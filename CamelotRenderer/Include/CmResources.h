@@ -52,11 +52,6 @@ namespace CamelotEngine
 		~Resources();
 
 		/**
-		 * @brief	Called every frame by the main loop.
-		 */
-		void update();
-
-		/**
 		 * @brief	Loads the resource from a given path. Returns null if resource can't be loaded.
 		 *
 		 * @param	filePath					The path of the file to load. The file is searched for in
@@ -72,7 +67,7 @@ namespace CamelotEngine
 
 		/**
 		 * @brief	Loads the resource asynchronously. Initially returned resource should not be used
-		 * 			until BaseResourceHandle.isResolved gets set to true. (Set only at the end of each frame)
+		 * 			until BaseResourceHandle.isLoaded gets set to true.
 		 *
 		 * @param	filePath	Full pathname of the file.
 		 * 						
@@ -91,7 +86,7 @@ namespace CamelotEngine
 
 		/**
 		* @brief	Loads the resource with the given UUID asynchronously. Initially returned resource should not be used
-		* 			until BaseResourceHandle.isResolved gets set to true. (Set only at the end of each frame)
+		* 			until BaseResourceHandle.isLoaded gets set to true.
 		 *
 		 * @param	uuid	UUID of the resource to load. 
 		 *
@@ -152,6 +147,9 @@ namespace CamelotEngine
 		map<String, ResourceMetaDataPtr>::type mResourceMetaData;
 		map<String, ResourceMetaDataPtr>::type mResourceMetaData_FilePath;
 
+		CM_MUTEX(mInProgressResourcesMutex);
+		CM_MUTEX(mLoadedResourceMutex);
+
 		ResourceRequestHandler* mRequestHandler;
 		ResourceResponseHandler* mResponseHandler;
 
@@ -177,6 +175,9 @@ namespace CamelotEngine
 
 		const String& getPathFromUUID(const String& uuid) const;
 		const String& getUUIDFromPath(const String& path) const;
+
+		void notifyResourceLoadingFinished(BaseResourceHandle& handle);
+		void notifyNewResourceLoaded(BaseResourceHandle& handle);
 
 		String mMetaDataFolderPath;
 	};

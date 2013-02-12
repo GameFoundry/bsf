@@ -48,12 +48,6 @@ namespace CamelotEngine {
 			delete (*i);
 		}
 		mRequestQueue.clear();
-
-		for (ResponseQueue::iterator i = mResponseQueue.begin(); i != mResponseQueue.end(); ++i)
-		{
-			delete (*i);
-		}
-		mResponseQueue.clear();
 	}
 	//---------------------------------------------------------------------
 	void WorkQueue::startup(bool forceRestart)
@@ -219,8 +213,7 @@ namespace CamelotEngine {
 #endif
 		}
 
-
-		processRequestResponse(req, true);
+		processRequestResponse(req);
 
 		return rid;
 
@@ -241,7 +234,7 @@ namespace CamelotEngine {
 		mRequestQueue.push_back(req);
 		notifyWorkers();
 #else
-		processRequestResponse(req, true);
+		processRequestResponse(req);
 #endif
 	}
 	//---------------------------------------------------------------------
@@ -273,19 +266,6 @@ namespace CamelotEngine {
 						}
 					}
 			}
-
-			{
-				CM_LOCK_MUTEX(mResponseMutex)
-
-					for (ResponseQueue::iterator i = mResponseQueue.begin(); i != mResponseQueue.end(); ++i)
-					{
-						if( (*i)->getRequest()->getID() == id )
-						{
-							(*i)->abortRequest();
-							break;
-						}
-					}
-			}
 	}
 	//---------------------------------------------------------------------
 	void WorkQueue::abortRequestsByChannel(UINT16 channel)
@@ -311,18 +291,6 @@ namespace CamelotEngine {
 						}
 					}
 			}
-
-			{
-				CM_LOCK_MUTEX(mResponseMutex)
-
-					for (ResponseQueue::iterator i = mResponseQueue.begin(); i != mResponseQueue.end(); ++i)
-					{
-						if( (*i)->getRequest()->getChannel() == channel )
-						{
-							(*i)->abortRequest();
-						}
-					}
-			}
 	}
 	//---------------------------------------------------------------------
 	void WorkQueue::abortAllRequests()
@@ -338,15 +306,6 @@ namespace CamelotEngine {
 				CM_LOCK_MUTEX(mRequestMutex)
 
 					for (RequestQueue::iterator i = mRequestQueue.begin(); i != mRequestQueue.end(); ++i)
-					{
-						(*i)->abortRequest();
-					}
-			}
-
-			{
-				CM_LOCK_MUTEX(mResponseMutex)
-
-					for (ResponseQueue::iterator i = mResponseQueue.begin(); i != mResponseQueue.end(); ++i)
 					{
 						(*i)->abortRequest();
 					}
@@ -399,43 +358,13 @@ namespace CamelotEngine {
 		return i->second;
 	}
 	//---------------------------------------------------------------------
-	void WorkQueue::processResponses() 
-	{
-		// TODO Low priority - Processing a lot of responses can cause a frame rate spike. Maybe limit the processing to Xms?
-
-		// keep going until we run out of responses
-		while(true)
-		{
-			Response* response = 0;
-			{
-				CM_LOCK_MUTEX(mResponseMutex)
-
-					if (mResponseQueue.empty())
-						break; // exit loop
-					else
-					{
-						response = mResponseQueue.front();
-						mResponseQueue.pop_front();
-					}
-			}
-
-			if (response)
-			{
-				processResponse(response);
-
-				delete response;
-
-			}
-		}
-	}
-	//---------------------------------------------------------------------
-	void WorkQueue::processRequestResponse(Request* r, bool synchronous)
+	void WorkQueue::processRequestResponse(Request* r)
 	{
 		Response* response = processRequest(r);
 
 		CM_LOCK_MUTEX(mProcessMutex)
 
-			RequestQueue::iterator it;
+		RequestQueue::iterator it;
 		for( it = mProcessQueue.begin(); it != mProcessQueue.end(); ++it )
 		{
 			if( (*it) == r )
@@ -460,24 +389,9 @@ namespace CamelotEngine {
 					return;
 				}
 			}
-			if (synchronous)
-			{
-				processResponse(response);
-				delete response;
-			}
-			else
-			{
-				if( response->getRequest()->getAborted() )
-				{
-					// destroy response user data
-					response->abortRequest();
-				}
-				// Queue response
-				CM_LOCK_MUTEX(mResponseMutex)
-					mResponseQueue.push_back(response);
-				// no need to wake thread, this is processed by the main thread
-			}
 
+			processResponse(response);
+			delete response;
 		}
 		else
 		{
@@ -555,7 +469,7 @@ namespace CamelotEngine {
 
 		if (request)
 		{
-			processRequestResponse(request, false);
+			processRequestResponse(request);
 		}
 
 

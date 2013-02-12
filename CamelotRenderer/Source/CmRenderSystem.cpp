@@ -91,7 +91,7 @@ namespace CamelotEngine {
 	void RenderSystem::initialize()
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mCommandQueue = new CommandQueue(CM_THREAD_CURRENT_ID);
+		mCommandQueue = new CommandQueue(CM_THREAD_CURRENT_ID, true);
 
 		initRenderThread();
 

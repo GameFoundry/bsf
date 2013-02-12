@@ -112,7 +112,6 @@ namespace CamelotEngine
 				}
 				
 				renderSystem->queueCommand(boost::bind(&Application::updateMessagePump, this));
-				renderSystem->queueCommand(boost::bind(&Application::updateResourcesCallback, this));
 				mPrimaryRenderContext->submitToGpu();
 				renderSystem->queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
 			}
@@ -133,11 +132,6 @@ namespace CamelotEngine
 	void Application::updateMessagePump()
 	{
 		WindowEventUtilities::messagePump();
-	}
-
-	void Application::updateResourcesCallback()
-	{
-		gResources().update();
 	}
 
 	void Application::frameRenderingFinishedCallback()

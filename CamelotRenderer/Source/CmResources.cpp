@@ -34,16 +34,17 @@ namespace CamelotEngine
 	{
 		ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(res->getRequest()->getData());
 
-		auto iterFind = gResources().mInProgressResources.find(resRequest->resource.getUUID());
-		gResources().mInProgressResources.erase(iterFind);
-
 		if(res->getRequest()->getAborted())
 			return;
+
+		gResources().notifyResourceLoadingFinished(resRequest->resource);
 
 		if(res->succeeded())
 		{
 			ResourceLoadResponsePtr resResponse = boost::any_cast<ResourceLoadResponsePtr>(res->getData());
 			
+			// This should be thread safe without any sync primitives, if other threads read a few cycles out of date value
+			// and think this resource isn't created when it really is, it hardly makes any difference
 			resRequest->resource.resolve(resResponse->rawResource);
 
 			if(!gResources().metaExists_UUID(resResponse->rawResource->getUUID()))
@@ -52,7 +53,7 @@ namespace CamelotEngine
 				gResources().addMetaData(resResponse->rawResource->getUUID(), resRequest->filePath);
 			}
 
-			gResources().mLoadedResources[resResponse->rawResource->getUUID()] = resRequest->resource;
+			gResources().notifyNewResourceLoaded(resRequest->resource);
 		}
 		else
 		{
@@ -107,11 +108,6 @@ namespace CamelotEngine
 			delete mResponseHandler;
 	}
 
-	void Resources::update()
-	{
-		mWorkQueue->processResponses();
-	}
-
 	BaseResourceHandle Resources::load(const String& filePath)
 	{
 		return loadInternal(filePath, true);
@@ -162,24 +158,38 @@ namespace CamelotEngine
 
 		String uuid = getUUIDFromPath(filePath);
 
-		auto iterFind = mLoadedResources.find(uuid);
-		if(iterFind != mLoadedResources.end()) // Resource is already loaded
 		{
-			return iterFind->second;
+			CM_LOCK_MUTEX(mLoadedResourceMutex);
+			auto iterFind = mLoadedResources.find(uuid);
+			if(iterFind != mLoadedResources.end()) // Resource is already loaded
+			{
+				return iterFind->second;
+			}
 		}
 
-		auto iterFind2 = mInProgressResources.find(uuid);
-		if(iterFind2 != mInProgressResources.end()) // We're already loading this resource
-		{
-			ResourceAsyncOp& asyncOp = iterFind2->second;
+		bool resourceLoadingInProgress = false;
+		BaseResourceHandle existingResource;
 
+		{
+			CM_LOCK_MUTEX(mInProgressResourcesMutex);
+			auto iterFind2 = mInProgressResources.find(uuid);
+			if(iterFind2 != mInProgressResources.end()) 
+			{
+				existingResource = iterFind2->second.resource;
+				resourceLoadingInProgress = true;
+			}
+		}
+
+		if(resourceLoadingInProgress) // We're already loading this resource
+		{
 			if(!synchronous)
-				return asyncOp.resource;
+				return existingResource;
 			else
 			{
-				// It's already being loaded asynchronously but we want it right away,
-				// so abort the async operation and load it right away.
-				mWorkQueue->abortRequest(asyncOp.requestID);
+				// Previously being loaded as async but now we want it synced, so we wait
+				existingResource.waitUntilLoaded();
+
+				return existingResource;
 			}
 		}
 
@@ -201,7 +211,10 @@ namespace CamelotEngine
 		newAsyncOp.resource = newResource;
 		newAsyncOp.requestID = requestId;
 
-		mInProgressResources[uuid] = newAsyncOp;
+		{
+			CM_LOCK_MUTEX(mInProgressResourcesMutex);
+			mInProgressResources[uuid] = newAsyncOp;
+		}
 
 		mWorkQueue->addRequest(mWorkQueueChannel, resRequest, 0, synchronous);
 		return newResource;
@@ -229,17 +242,23 @@ namespace CamelotEngine
 
 		resource->destroy();
 
-		mLoadedResources.erase(resource.getUUID());
+		{
+			CM_LOCK_MUTEX(mLoadedResourceMutex);
+			mLoadedResources.erase(resource.getUUID());
+		}
 	}
 
 	void Resources::unloadAllUnused()
 	{
 		vector<BaseResourceHandle>::type resourcesToUnload;
 
-		for(auto iter = mLoadedResources.begin(); iter != mLoadedResources.end(); ++iter)
 		{
-			if(iter->second.getInternalPtr().unique()) // We just have this one reference, meaning nothing is using this resource
-				resourcesToUnload.push_back(iter->second);
+			CM_LOCK_MUTEX(mLoadedResourceMutex);
+			for(auto iter = mLoadedResources.begin(); iter != mLoadedResources.end(); ++iter)
+			{
+				if(iter->second.getInternalPtr().unique()) // We just have this one reference, meaning nothing is using this resource
+					resourcesToUnload.push_back(iter->second);
+			}
 		}
 
 		for(auto iter = resourcesToUnload.begin(); iter != resourcesToUnload.end(); ++iter)
@@ -277,7 +296,11 @@ namespace CamelotEngine
 
 		save(resource);
 
-		mLoadedResources[resource->getUUID()] = resource;
+		{
+			CM_LOCK_MUTEX(mLoadedResourceMutex);
+
+			mLoadedResources[resource->getUUID()] = resource;
+		}
 	}
 
 	void Resources::save(BaseResourceHandle resource)
@@ -400,6 +423,20 @@ namespace CamelotEngine
 		auto findIter = mResourceMetaData_FilePath.find(path);
 
 		return findIter != mResourceMetaData_FilePath.end();
+	}
+
+	void Resources::notifyResourceLoadingFinished(BaseResourceHandle& handle)
+	{
+		CM_LOCK_MUTEX(mInProgressResourcesMutex);
+
+		mInProgressResources.erase(handle.getUUID());
+	}
+
+	void Resources::notifyNewResourceLoaded(BaseResourceHandle& handle)
+	{
+		CM_LOCK_MUTEX(mLoadedResourceMutex);
+
+		mLoadedResources[handle.getUUID()] = handle;
 	}
 
 	CM_EXPORT Resources& gResources()

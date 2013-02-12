@@ -14,16 +14,9 @@ Pass
  - A way to bind buffers to a Pass, while specifying buffer range
  - GpuParams support for bools, buffers, structs
 
-Add support for include file resource
-Make sure we can add an include file to a HighLevelGpuProgram, and make sure it uses it
- - Also a way to list all referenced includes, and a way to remove them
-
- Importer for shaders
-  - If GpuProgram is immutable then how do I add an include file to it after calling import()?
-  - Figure out a better way of assigning include files
+Importers for shaders.
 
 Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
-Get rid of resource handlers in Resources?
 
 Deserialization issues:
  - Currently Reflectable is not allowed to hold a ReflectablePtr
@@ -44,6 +37,7 @@ Can be delayed:
    - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
    - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
  - ImportOptions
+  - Make sure Gpu prog include files can get assigned here
  - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
  - OpenGL render window no longer looks for a monitor index
  - Test if async loading still works
@@ -59,6 +53,17 @@ Can be delayed:
  
 
 ---------------------------------------------------
+
+<<<<Resource changes and reimport>>>>
+Use case example:
+ - User reimports a .gpuproginc file
+   - Dependencies are held by CoreGpuObjectManager. Objects are required to register/unregister
+      their dependencies in their methods manually.
+ - Editor calls SomeClass::reimport(handle) after it detects a change 
+   - this will load a new resource, release the old one and assign the new one to Handle without changing the GUID
+   - In order to make it thread safe force all threads to finish what they're doing and pause them until the switch is done
+     - Should be okay considering this should only happen in edit-mode so performance isn't imperative
+   - reimport is recursively called on all dependant objects as well.
 
 <<<<Handle multithreaded object management>>>:
  - Make everything that is possible immutable. Once created it cant be changed.

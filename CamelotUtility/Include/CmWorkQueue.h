@@ -180,10 +180,8 @@ namespace CamelotEngine
 		unsigned long mResposeTimeLimitMS;
 
 		typedef deque<Request*>::type RequestQueue;
-		typedef deque<Response*>::type ResponseQueue;
 		RequestQueue mRequestQueue;
 		RequestQueue mProcessQueue;
-		ResponseQueue mResponseQueue;
 
 		/// Thread function
 		struct WorkerFunc CM_THREAD_WORKER_INHERIT
@@ -269,7 +267,6 @@ namespace CamelotEngine
 		CM_MUTEX(mInitMutex)
 		CM_MUTEX(mRequestMutex)
 		CM_MUTEX(mProcessMutex)
-		CM_MUTEX(mResponseMutex)
 		CM_RW_MUTEX(mRequestHandlerMutex);
 
 #if CM_THREAD_SUPPORT
@@ -403,15 +400,8 @@ namespace CamelotEngine
 		/** Returns whether the queue is trying to shut down. */
 		bool isShuttingDown() const { return mShuttingDown; }
 
-		/** Process the responses in the queue.
-		@remarks
-			This method is public, and must be called from the main render
-			thread to 'pump' responses through the system.
-		*/
-		void processResponses(); 
-
 	protected:
-		void processRequestResponse(Request* r, bool synchronous);
+		void processRequestResponse(Request* r);
 		Response* processRequest(Request* r);
 		void processResponse(Response* r);
 
