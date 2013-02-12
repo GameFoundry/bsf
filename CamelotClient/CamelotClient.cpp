@@ -231,6 +231,8 @@ int CALLBACK WinMain(
 	
 	//testMaterial->destroy();
 
+	gpuProgInclude.reset();
+
 	gResources().unload(testTexRef);
 	gResources().unload(dbgMeshRef);
 	gResources().unload(fragProgRef);
