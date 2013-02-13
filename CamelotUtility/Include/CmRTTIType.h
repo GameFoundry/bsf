@@ -303,8 +303,11 @@ namespace CamelotEngine
 	};
 
 	/**
-	 * @brief	Pretty much just an extension of RTTITypeBase. Feel free to derive from this class and return
-	 * 			the derived class from IReflectable::getRTTI. This way you can separate serialization logic from
+	 * @brief	Allows you to provide a run-time type information for a specific class, along with 
+	 * 			support for serialization/deserialization.
+	 * 			
+	 * 			Derive from this class and return the derived class from IReflectable::getRTTI. 
+	 * 			This way you can separate serialization logic from
 	 * 			the actual class you're serializing.
 	 */
 	template <typename Type, typename BaseType, typename MyRTTIType>
@@ -320,7 +323,7 @@ namespace CamelotEngine
 	public:
 		RTTIType() 
 		{
-			// Templates only actually generate code for stuff that is directly used, including static data members,
+			// Compiler will only generate code for stuff that is directly used, including static data members,
 			// so we fool it here like we're using the class directly. Otherwise compiler won't generate the code for the member
 			// and our type won't get initialized on start (Actual behavior is a bit more random)
 			initOnStart.makeSureIAmInstantiated();

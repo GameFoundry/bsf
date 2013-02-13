@@ -29,7 +29,7 @@ namespace CamelotEngine
 		return true; // Plain-text so I don't even check for magic number
 	}
 
-	BaseResourceHandle GpuProgIncludeImporter::import(const String& filePath)
+	BaseResourceHandle GpuProgIncludeImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
 	{
 		DataStreamPtr stream = FileSystem::open(filePath);
 		String includeString = stream->getAsString();

@@ -4,6 +4,8 @@
 #include "CmFileSystem.h"
 #include "CmSpecificImporter.h"
 #include "CmGpuProgIncludeImporter.h"
+#include "CmGpuProgramImporter.h"
+#include "CmImportOptions.h"
 #include "CmDebug.h"
 #include "CmDataStream.h"
 #include "CmException.h"
@@ -13,6 +15,7 @@ namespace CamelotEngine
 	Importer::Importer()
 	{
 		registerAssetImporter(new GpuProgIncludeImporter());
+		registerAssetImporter(new GpuProgramImporter());
 	}
 
 	Importer::~Importer()
@@ -26,7 +29,7 @@ namespace CamelotEngine
 		mAssetImporters.clear();
 	}
 
-	bool Importer::supportsFileType(const std::string& extension) const
+	bool Importer::supportsFileType(const String& extension) const
 	{
 		for(auto iter = mAssetImporters.begin(); iter != mAssetImporters.end(); ++iter)
 		{
@@ -48,7 +51,7 @@ namespace CamelotEngine
 		return false;
 	}
 
-	BaseResourceHandle Importer::import(const String& inputFilePath)
+	BaseResourceHandle Importer::import(const String& inputFilePath, ConstImportOptionsPtr importOptions)
 	{
 		if(!FileSystem::fileExists(inputFilePath))
 		{
@@ -56,26 +59,40 @@ namespace CamelotEngine
 			return BaseResourceHandle();
 		}
 
-		String ext = Path::getExtension(inputFilePath);
-		ext = ext.substr(1, ext.size() - 1); // Remove the .
-		if(!supportsFileType(ext))
-		{
-			LOGWRN("There is no importer for the provided file type. (" + inputFilePath + ")");
+		SpecificImporter* importer = getImporterForFile(inputFilePath);
+		if(importer == nullptr)
 			return BaseResourceHandle();
-		}
 
-		SpecificImporter* importer = nullptr;
-		for(auto iter = mAssetImporters.begin(); iter != mAssetImporters.end(); ++iter)
+		if(importOptions == nullptr)
+			importOptions = importer->getDefaultImportOptions();
+		else
 		{
-			if(*iter != nullptr && (*iter)->isExtensionSupported(ext))
+			ConstImportOptionsPtr defaultImportOptions = importer->getDefaultImportOptions();
+			if(importOptions->getTypeId() != defaultImportOptions->getTypeId())
 			{
-				importer = *iter;
+				CM_EXCEPT(InvalidParametersException, "Provided import options is not of valid type. " \
+					"Expected: " + defaultImportOptions->getTypeName() + ". Got: " + importOptions->getTypeName() + ".");
 			}
 		}
 
-		BaseResourceHandle importedResource = importer->import(inputFilePath);
+		BaseResourceHandle importedResource = importer->import(inputFilePath, importOptions);
 
 		return importedResource;
+	}
+
+	ImportOptionsPtr Importer::createImportOptions(const String& inputFilePath)
+	{
+		if(!FileSystem::fileExists(inputFilePath))
+		{
+			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath);
+			return nullptr;
+		}
+
+		SpecificImporter* importer = getImporterForFile(inputFilePath);
+		if(importer == nullptr)
+			return nullptr;
+
+		return importer->createImportOptions();
 	}
 
 	void Importer::registerAssetImporter(SpecificImporter* importer)
@@ -87,5 +104,26 @@ namespace CamelotEngine
 		}
 
 		mAssetImporters.push_back(importer);
+	}
+
+	SpecificImporter* Importer::getImporterForFile(const String& inputFilePath) const
+	{
+		String ext = Path::getExtension(inputFilePath);
+		ext = ext.substr(1, ext.size() - 1); // Remove the .
+		if(!supportsFileType(ext))
+		{
+			LOGWRN("There is no importer for the provided file type. (" + inputFilePath + ")");
+			return nullptr;
+		}
+
+		for(auto iter = mAssetImporters.begin(); iter != mAssetImporters.end(); ++iter)
+		{
+			if(*iter != nullptr && (*iter)->isExtensionSupported(ext))
+			{
+				return *iter;
+			}
+		}
+
+		return nullptr;
 	}
 }

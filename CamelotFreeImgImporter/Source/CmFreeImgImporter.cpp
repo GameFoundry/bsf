@@ -127,7 +127,7 @@ namespace CamelotEngine
 		}
 	}
 
-	BaseResourceHandle FreeImgImporter::import(const String& filePath)
+	BaseResourceHandle FreeImgImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
 	{
 		DataStreamPtr fileData = FileSystem::open(filePath, true);
 

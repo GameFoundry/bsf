@@ -21,16 +21,34 @@ namespace CamelotEngine
 		/**
 		 * @brief	Imports a resource at the specified location, and returns the loaded data.
 		 *
-		 * @param	inputFilePath 	Pathname of the input file.
+		 * @param	inputFilePath	Pathname of the input file.
+		 * @param	importOptions	(optional) Options for controlling the import.
 		 */
-		BaseResourceHandle import(const String& inputFilePath);
+		BaseResourceHandle import(const String& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+
+		/**
+		 * @brief	Automatically detects the importer needed for the provided file and returns valid type of
+		 * 			import options for that importer.
+		 *
+		 * @param	inputFilePath	Pathname of the input file.
+		 *
+		 * @return	The new import options.
+		 * 			
+		 * @note	You will need to type cast the importer options to a valid type,
+		 * 			taking into consideration exact importer you expect to be used for this file type.
+		 * 			If you don't use a proper import options type, an exception will be thrown during import.
+		 * 			
+		 *			nullptr is returned if the file path is not valid, or if a valid importer cannot be found for
+		 *			the specified file.
+		 */
+		ImportOptionsPtr createImportOptions(const String& inputFilePath);
 
 		/**
 		 * @brief	Checks if we can import a file with the specified extension.
 		 *
 		 * @param	extension	The extension without leading dot.
 		 */
-		bool supportsFileType(const std::string& extension) const;
+		bool supportsFileType(const String& extension) const;
 
 		/**
 		 * @brief	Checks if we can import a file with the specified magic number.
@@ -52,5 +70,7 @@ namespace CamelotEngine
 		void registerAssetImporter(SpecificImporter* importer);
 	private:
 		vector<SpecificImporter*>::type mAssetImporters;
+
+		SpecificImporter* getImporterForFile(const String& inputFilePath) const;
 	};
 }

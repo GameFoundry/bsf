@@ -144,6 +144,7 @@ namespace CamelotEngine {
 	class GpuProgInclude;
 	class TextureView;
 	class CoreGpuObject;
+	class ImportOptions;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -167,7 +168,10 @@ namespace CamelotEngine {
 	struct RENDER_TEXTURE_DESC;
 }
 
-/* Shared pointer typedefs*/
+/************************************************************************/
+/* 						Shared pointer typedefs	                    	*/
+/************************************************************************/
+
 namespace CamelotEngine
 {
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
@@ -206,9 +210,13 @@ namespace CamelotEngine
 	typedef std::shared_ptr<TextureView> TextureViewPtr;
 	typedef std::shared_ptr<Viewport> ViewportPtr;
 	typedef std::shared_ptr<GpuProgInclude> GpuProgIncludePtr;
+	typedef std::shared_ptr<ImportOptions> ImportOptionsPtr;
+	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 }
 
-// All type IDs used for RTTI
+/************************************************************************/
+/* 									RTTI                      			*/
+/************************************************************************/
 namespace CamelotEngine
 {
 	enum TypeID_Core
@@ -249,8 +257,34 @@ namespace CamelotEngine
 		TID_BLEND_STATE_DESC = 1034,
 		TID_SHADER_DATA_PARAM_DESC = 1035,
 		TID_SHADER_OBJECT_PARAM_DESC = 1036,
-		TID_SHADER_PARAM_BLOCK_DESC = 1047
+		TID_SHADER_PARAM_BLOCK_DESC = 1047,
+		TID_ImportOptions = 1048,
+		TID_GpuProgramImportOptions = 1049
 	};
+
+	/**
+	 * @brief	Returns true if the provided object can be safely cast into type T.
+	 */
+	template<class T>
+	bool rtti_is_of_type(IReflectable* object)
+	{
+		BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, T>::value), 
+			"Invalid data type for type checking. It needs to derive from CamelotEngine::IReflectable.");
+
+		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
+	}
+
+	/**
+	 * @brief	Returns true if the provided object can be safely cast into type T.
+	 */
+	template<class T>
+	bool rtti_is_of_type(std::shared_ptr<IReflectable> object)
+	{
+		BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, T>::value), 
+			"Invalid data type for type checking. It needs to derive from CamelotEngine::IReflectable.");
+
+		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
+	}
 }
 
 /************************************************************************/

@@ -21,6 +21,7 @@
 #include "CmImporter.h"
 #include "CmMesh.h"
 #include "CmGpuProgInclude.h" // DEBUG ONLY
+#include "CmGpuProgramImportOptions.h"
 
 #include "CmDebugCamera.h"
 
@@ -56,6 +57,19 @@ int CALLBACK WinMain(
 
 	GpuProgIncludeHandle gpuProgInclude = Importer::instance().import("C:\\testInclude.gpuproginc");
 	const String& debugString = gpuProgInclude->getString();
+
+	ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions("C:\\testGpuProg.gpuprog");
+	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+	{
+		GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
+
+		importOptions->setEntryPoint("ps_main");
+		importOptions->setLanguage("hlsl");
+		importOptions->setProfile(GPP_PS_4_0);
+		importOptions->setType(GPT_FRAGMENT_PROGRAM);
+	}
+
+	HighLevelGpuProgramHandle importedGpuProgram = Importer::instance().import("C:\\testGpuProg.gpuprog", gpuProgImportOptions);
 
 	/////////////////// HLSL 9 SHADERS //////////////////////////
 	//String fragShaderCode = "sampler2D tex;			\

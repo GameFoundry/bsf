@@ -34,7 +34,7 @@ namespace CamelotEngine
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
 
 		/** Inherited from SpecificImporter */
-		virtual BaseResourceHandle import(const String& filePath);
+		virtual BaseResourceHandle import(const String& filePath, ConstImportOptionsPtr importOptions);
 	private:
 		vector<String>::type mExtensions;
 		std::unordered_map<String, int> mExtensionToFID;

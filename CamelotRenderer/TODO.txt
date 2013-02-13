@@ -14,7 +14,9 @@ Pass
  - A way to bind buffers to a Pass, while specifying buffer range
  - GpuParams support for bools, buffers, structs
 
-Importers for shaders.
+Shader import:
+ - Make sure none of the current shaders in CamelotClient are defined in code anymore
+ - Add include files to ImportOptions
 
 Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
 
@@ -36,11 +38,8 @@ Can be delayed:
  - Better creation of PrimaryWindow
    - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
    - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
- - ImportOptions
-  - Make sure Gpu prog include files can get assigned here
  - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
  - OpenGL render window no longer looks for a monitor index
- - Test if async loading still works
  - Material RTTI should also serialize shared buffers (they need to be made into a resource)
    - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
  - Mesh::setMeshData is currently always synced

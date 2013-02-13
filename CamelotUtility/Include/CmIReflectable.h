@@ -31,7 +31,7 @@ namespace CamelotEngine
 		}
 
 		/**
-		 * @brief	INTERNAL USE. Called by each type deriving from IReflectable,
+		 * @brief	INTERNAL USE ONLY. Called by each type deriving from IReflectable,
 		 * 			on program load.
 		 */
 		static void registerDerivedClass(RTTITypeBase* derivedClass);
@@ -45,8 +45,8 @@ namespace CamelotEngine
 		 */
 		bool isDerivedFrom(RTTITypeBase* base);
 
-		UINT32 getTypeId();
-
+		UINT32 getTypeId() const;
+		const String& getTypeName() const;
 	protected:
 		boost::any mRTTIData; // Temporary per-instance data storage used during various RTTI operations.
 							  // Needed since there is one RTTI class instance per type and sometimes we need per-instance data.

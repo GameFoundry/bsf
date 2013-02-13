@@ -80,8 +80,13 @@ namespace CamelotEngine
 		return false;
 	}
 
-	UINT32 IReflectable::getTypeId()
+	UINT32 IReflectable::getTypeId() const
 	{ 
 		return getRTTI()->getRTTIId(); 
+	}
+
+	const String& IReflectable::getTypeName() const
+	{
+		return getRTTI()->getRTTIName();
 	}
 }

@@ -28,6 +28,23 @@ namespace CamelotEngine
 		 *
 		 * @return	null if it fails, otherwise the loaded object.
 		 */
-		virtual BaseResourceHandle import(const String& filePath) = 0;
+		virtual BaseResourceHandle import(const String& filePath, ConstImportOptionsPtr importOptions) = 0;
+
+		/**
+		 * @brief	Creates import options specific for this importer. Import
+		 * 			options are provided when calling import() in order to customize the
+		 * 			import, and provide additional information.
+		 */
+		virtual ImportOptionsPtr createImportOptions() const;
+
+		/**
+		 * @brief	Gets the default import options.
+		 *
+		 * @return	The default import options.
+		 */
+		ConstImportOptionsPtr getDefaultImportOptions() const;
+
+	private:
+		mutable ConstImportOptionsPtr mDefaultImportOptions;
 	};
 }
