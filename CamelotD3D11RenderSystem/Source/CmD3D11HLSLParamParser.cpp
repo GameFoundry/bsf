@@ -200,13 +200,7 @@ namespace CamelotEngine
 			parseVariable(varTypeDesc, varDesc, desc, blockDesc);
 		}
 
-#if CM_DEBUG_MODE
-		if(constantBufferDesc.Size != (blockDesc.blockSize * 4))
-		{
-			CM_EXCEPT(InternalErrorException, "Calculated param block size and size returned by DirectX don't match. Calculated size is: " + toString(constantBufferDesc.Size) +
-				" and DirectX size is: " + toString(blockDesc.blockSize * 4));
-		}
-#endif
+		blockDesc.blockSize = constantBufferDesc.Size / 4; 
 	}
 
 	void D3D11HLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC& varTypeDesc, D3D11_SHADER_VARIABLE_DESC& varDesc, GpuParamDesc& desc, GpuParamBlockDesc& paramBlock)

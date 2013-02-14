@@ -22,6 +22,9 @@ namespace CamelotEngine
 	RTTITypeBase* MaterialMat4Param::getRTTIStatic() { return MaterialMat4ParamRTTI::instance(); }
 	RTTITypeBase* MaterialMat4Param::getRTTI() const { return MaterialMat4Param::getRTTIStatic(); }
 
+	RTTITypeBase* MaterialStructParam::getRTTIStatic() { return MaterialStructParamRTTI::instance(); }
+	RTTITypeBase* MaterialStructParam::getRTTI() const { return MaterialStructParam::getRTTIStatic(); }
+
 	RTTITypeBase* MaterialTextureParam::getRTTIStatic() { return MaterialTextureParamRTTI::instance(); }
 	RTTITypeBase* MaterialTextureParam::getRTTI() const { return MaterialTextureParam::getRTTIStatic(); }
 
@@ -129,6 +132,20 @@ namespace CamelotEngine
 							}
 						}
 						break;
+					case GPDT_STRUCT:
+						{
+							for(UINT32 i = 0; i < paramDesc.arraySize; i++)
+							{
+								MaterialStructParam param;
+								param.name = iter->first;
+								param.value = material->getStructData(iter->first, i);
+								param.arrayIdx = i;
+								param.elementSize = paramDesc.elementSize;
+
+								params->structParams.push_back(param);
+							}
+						}
+						break;
 					default:
 						CM_EXCEPT(InternalErrorException, "Cannot serialize this paramater type: " + toString(paramDesc.type));
 					}
@@ -143,7 +160,7 @@ namespace CamelotEngine
 						param.name = iter->first;
 						param.value = material->getSamplerState(iter->first);
 
-						//params->samplerStateParams.push_back(param);
+						params->samplerStateParams.push_back(param);
 					}
 					else if(Shader::isTexture(paramDesc.type))
 					{
@@ -272,6 +289,19 @@ namespace CamelotEngine
 					continue;
 
 				material->setMat4(iter->name, iter->value, iter->arrayIdx);
+			}
+
+			for(auto iter = params->structParams.begin(); iter != params->structParams.end(); ++iter)
+			{
+				if(!shader->hasDataParam(iter->name))
+					continue;
+
+				const SHADER_DATA_PARAM_DESC& paramDesc = shader->getDataParamDesc(iter->name);
+
+				if(paramDesc.type != GPDT_STRUCT || iter->arrayIdx < 0 || iter->arrayIdx >= paramDesc.arraySize || iter->elementSize != paramDesc.elementSize)
+					continue;
+
+				material->setStructData(iter->name, iter->value.data.get(), iter->value.size, iter->arrayIdx);
 			}
 
 			for(auto iter = params->samplerStateParams.begin(); iter != params->samplerStateParams.end(); ++iter)

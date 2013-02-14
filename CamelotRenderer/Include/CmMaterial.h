@@ -36,6 +36,23 @@ namespace CamelotEngine
 	class CM_EXPORT Material : public Resource
 	{
 	public:
+		struct StructData
+		{
+			StructData()
+				:size(0), data(nullptr)
+			{ }
+
+			StructData(void* _data, UINT32 _size)
+				:size(_size)
+			{
+				data = std::shared_ptr<void>(new UINT8[_size]);
+				memcpy(data.get(), _data, size);
+			}
+
+			std::shared_ptr<void> data;
+			UINT32 size;
+		};
+
 		~Material();
 
 		/**
@@ -59,6 +76,7 @@ namespace CamelotEngine
 		void setVec4(const String& name, const Vector4& value, UINT32 arrayIdx = 0);
 		void setMat3(const String& name, const Matrix3& value, UINT32 arrayIdx = 0);
 		void setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx = 0);
+		void setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx = 0);
 
 		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
 
@@ -88,6 +106,7 @@ namespace CamelotEngine
 		map<String, vector<Vector4>::type>::type mVec4Values;
 		map<String, vector<Matrix3>::type>::type mMat3Values;
 		map<String, vector<Matrix4>::type>::type mMat4Values;
+		map<String, vector<StructData>::type>::type mStructValues;
 		map<String, TextureHandle>::type mTextureValues;
 		map<String, SamplerStateHandle>::type mSamplerValues;
 
@@ -124,6 +143,7 @@ namespace CamelotEngine
 		Vector4 getVec4(const String& name, UINT32 arrayIdx = 0) const;
 		Matrix3 getMat3(const String& name, UINT32 arrayIdx = 0) const;
 		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const;
+		const StructData& getStructData(const String& name, UINT32 arrayIdx = 0) const;
 
 		void initBestTechnique();
 

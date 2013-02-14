@@ -86,6 +86,15 @@ namespace CamelotEngine
 		mParamBlocks[iterFind->second.slot] = paramBlock;
 	}
 
+	UINT32 GpuParams::getDataParamSize(const String& name) const
+	{
+		GpuParamDataDesc* desc = getParamDesc(name);
+		if(desc != nullptr)
+			return desc->elementSize * 4;
+
+		return 0;
+	}
+
 	bool GpuParams::hasParam(const String& name) const
 	{
 		return getParamDesc(name) != nullptr;

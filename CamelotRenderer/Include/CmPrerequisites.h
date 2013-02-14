@@ -259,7 +259,8 @@ namespace CamelotEngine
 		TID_SHADER_OBJECT_PARAM_DESC = 1036,
 		TID_SHADER_PARAM_BLOCK_DESC = 1047,
 		TID_ImportOptions = 1048,
-		TID_GpuProgramImportOptions = 1049
+		TID_GpuProgramImportOptions = 1049,
+		TID_MaterialParamStruct = 1050
 	};
 
 	/**

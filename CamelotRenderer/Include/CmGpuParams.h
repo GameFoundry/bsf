@@ -16,6 +16,7 @@ namespace CamelotEngine
 		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
 
 		const GpuParamDesc& getParamDesc() const { return mParamDesc; }
+		UINT32 getDataParamSize(const String& name) const;
 
 		bool hasParam(const String& name) const;
 		bool hasTexture(const String& name) const;

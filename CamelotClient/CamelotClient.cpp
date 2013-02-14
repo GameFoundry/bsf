@@ -105,15 +105,22 @@ int CALLBACK WinMain(
 
 	HighLevelGpuProgramHandle fragProgRef =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
-	String vertShaderCode = "float4x4 matViewProjection;	\
+	String vertShaderCode = "struct InputStruct									\
+							{													\
+								float matMultiplier;							\
+								float uvMultiplier;									\
+							};													\
+																				\
+							float4x4 matViewProjection;							\
+							InputStruct input;									\
 							void vs_main(										\
 							in float4 inPos : POSITION,							\
-							in float2 uv : TEXCOORD0,								\
+							in float2 uv : TEXCOORD0,							\
 							out float4 oPosition : SV_Position,					\
 							out float2 oUv : TEXCOORD0)							\
-							{														\
-							oPosition = mul(matViewProjection, inPos);			\
-							oUv = uv;											\
+							{													\
+							oPosition = mul(matViewProjection * input.matMultiplier, inPos);	\
+							oUv = uv * input.uvMultiplier;						\
 							}";
 
 	HighLevelGpuProgramHandle vertProgRef =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
@@ -177,7 +184,10 @@ int CALLBACK WinMain(
 	fragProgRef = gResources().load("C:\\fragProgCg.vprog");
 
 	ShaderPtr testShader = Shader::create("TestShader");
+
 	testShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
+	testShader->addParameter("input", "input", GPDT_STRUCT, 1, 8);
+
 	testShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
 	testShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
 	TechniquePtr newTechniqueGL = testShader->addTechnique("GLRenderSystem", "ForwardRenderer");
@@ -204,6 +214,13 @@ int CALLBACK WinMain(
 	testMaterial->setShader(testShader);
 
 	testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
+
+	float dbgMultipliers[2];
+	dbgMultipliers[0] = 1.0f;
+	dbgMultipliers[1] = 1.0f;
+
+	testMaterial->setStructData("input", dbgMultipliers, sizeof(dbgMultipliers));
+
 	//testMaterialRef = gResources().load("C:\\testMaterial.mat");
 	//testMaterialRef.waitUntilLoaded();
 

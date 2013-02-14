@@ -61,14 +61,18 @@ namespace CamelotEngine
 		// TODO - Low priority. Instead of throwing an exception use an extremely simple technique that will be supported almost everywhere as a fallback.
 	}
 
-	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize, bool hidden)
+	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize, UINT32 elementSize, bool hidden)
 	{
+		if(type == GPDT_STRUCT && elementSize <= 0)
+			CM_EXCEPT(InvalidParametersException, "You need to provide a non-zero element size for a struct parameter.")
+
 		SHADER_DATA_PARAM_DESC desc;
 		desc.name = name;
 		desc.gpuVariableName = gpuVariableName;
 		desc.type = type;
 		desc.arraySize = arraySize;
 		desc.hidden = hidden;
+		desc.elementSize = elementSize;
 
 		mDataParams[name] = desc;
 		mObjectParams.erase(name);

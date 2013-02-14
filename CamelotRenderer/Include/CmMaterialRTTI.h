@@ -93,6 +93,19 @@ namespace CamelotEngine
 		virtual RTTITypeBase* getRTTI() const;	
 	};
 
+	class CM_EXPORT MaterialStructParam : public IReflectable
+	{
+	public:
+		String name;
+		Material::StructData value;
+		UINT32 arrayIdx;
+		UINT32 elementSize;
+
+		friend class MaterialStructParamRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
+	};
+
 	class CM_EXPORT MaterialTextureParam : public IReflectable
 	{
 	public:
@@ -124,6 +137,7 @@ namespace CamelotEngine
 		vector<MaterialVec4Param>::type vec4Params;
 		vector<MaterialMat3Param>::type mat3Params;
 		vector<MaterialMat4Param>::type mat4Params;
+		vector<MaterialStructParam>::type structParams;
 		vector<MaterialTextureParam>::type textureParams;
 		vector<MaterialSamplerStateParam>::type samplerStateParams;
 
@@ -310,6 +324,50 @@ namespace CamelotEngine
 		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialMat4Param()); }
 	};
 
+	class CM_EXPORT MaterialStructParamRTTI : public RTTIType<MaterialStructParam, IReflectable, MaterialStructParamRTTI>
+	{
+	public:
+		String& getName(MaterialStructParam* obj) { return obj->name; }
+		void setName(MaterialStructParam* obj, String& name) { obj->name = name; }
+
+		ManagedDataBlock getValue(MaterialStructParam* obj) 
+		{ 
+			UINT8* data = new UINT8[obj->value.size];
+			memcpy(data, obj->value.data.get(), obj->value.size);
+
+			ManagedDataBlock returnValue(data, obj->value.size, true);
+			return returnValue; 
+		}
+
+		void setValue(MaterialStructParam* obj, ManagedDataBlock value) 
+		{ 
+			obj->value = Material::StructData(value.getData(), value.getSize()); 
+		}
+
+		UINT32& getArrayIdx(MaterialStructParam* obj) { return obj->arrayIdx; }
+		void setArrayIdx(MaterialStructParam* obj, UINT32& value) { obj->arrayIdx = value; }
+
+		UINT32& getElementSize(MaterialStructParam* obj) { return obj->elementSize; }
+		void setElementSize(MaterialStructParam* obj, UINT32& value) { obj->elementSize = value; }
+
+		MaterialStructParamRTTI()
+		{
+			addPlainField("name", 0, &MaterialStructParamRTTI::getName, &MaterialStructParamRTTI::setName);
+			addDataBlockField("value", 1, &MaterialStructParamRTTI::getValue, &MaterialStructParamRTTI::setValue);
+			addPlainField("arrayIdx", 2, &MaterialStructParamRTTI::getArrayIdx, &MaterialStructParamRTTI::setArrayIdx);
+			addPlainField("elementSize", 3, &MaterialStructParamRTTI::getElementSize, &MaterialStructParamRTTI::setElementSize);
+		}
+
+		virtual const String& getRTTIName()
+		{
+			static String name = "MaterialStructParam";
+			return name;
+		}
+
+		virtual UINT32 getRTTIId() { return TID_MaterialParamStruct; }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialStructParam()); }
+	};
+
 	class CM_EXPORT MaterialTextureParamRTTI : public RTTIType<MaterialTextureParam, IReflectable, MaterialTextureParamRTTI>
 	{
 	public:
@@ -393,6 +451,11 @@ namespace CamelotEngine
 		UINT32 getMat4ArraySize(MaterialParams* obj) { return (UINT32)obj->mat4Params.size(); }
 		void setMat4ArraySize(MaterialParams* obj, UINT32 size) { obj->mat4Params.resize(size); }
 
+		MaterialStructParam& getStructParam(MaterialParams* obj, UINT32 idx) { return obj->structParams[idx]; }
+		void setStructParam(MaterialParams* obj, UINT32 idx, MaterialStructParam& param) { obj->structParams[idx] = param; }
+		UINT32 getStructArraySize(MaterialParams* obj) { return (UINT32)obj->structParams.size(); }
+		void setStructArraySize(MaterialParams* obj, UINT32 size) { obj->structParams.resize(size); }
+
 		MaterialTextureParam& getTextureParam(MaterialParams* obj, UINT32 idx) { return obj->textureParams[idx]; }
 		void setTextureParam(MaterialParams* obj, UINT32 idx, MaterialTextureParam& param) { obj->textureParams[idx] = param; }
 		UINT32 getTextureArraySize(MaterialParams* obj) { return (UINT32)obj->textureParams.size(); }
@@ -423,10 +486,13 @@ namespace CamelotEngine
 			addReflectableArrayField("mat4Params", 5, &MaterialParamsRTTI::getMat4Param, 
 				&MaterialParamsRTTI::getMat4ArraySize, &MaterialParamsRTTI::setMat4Param, &MaterialParamsRTTI::setMat4ArraySize);
 
-			addReflectableArrayField("textureParams", 6, &MaterialParamsRTTI::getTextureParam, 
+			addReflectableArrayField("structParams", 6, &MaterialParamsRTTI::getStructParam, 
+				&MaterialParamsRTTI::getStructArraySize, &MaterialParamsRTTI::setStructParam, &MaterialParamsRTTI::setStructArraySize);
+
+			addReflectableArrayField("textureParams", 7, &MaterialParamsRTTI::getTextureParam, 
 				&MaterialParamsRTTI::getTextureArraySize, &MaterialParamsRTTI::setTextureParam, &MaterialParamsRTTI::setTextureArraySize);
 
-			addReflectableArrayField("samplerStateParams", 7, &MaterialParamsRTTI::getSamplerStateParam, 
+			addReflectableArrayField("samplerStateParams", 8, &MaterialParamsRTTI::getSamplerStateParam, 
 				&MaterialParamsRTTI::getSamplerStateArraySize, &MaterialParamsRTTI::setSamplerStateParam, &MaterialParamsRTTI::setSamplerStateArraySize);
 		}
 
@@ -439,9 +505,6 @@ namespace CamelotEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParams; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialParams()); }
 	};
-
-	// TODO - Add MaterialParamsRTTI
-	// - Add a way to fill and read from MaterialParams
 
 	class CM_EXPORT MaterialRTTI : public RTTIType<Material, Resource, MaterialRTTI>
 	{

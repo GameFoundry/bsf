@@ -23,6 +23,7 @@ namespace CamelotEngine
 			memory = rttiWriteElem(data.type, memory);
 			memory = rttiWriteElem(data.name, memory);
 			memory = rttiWriteElem(data.gpuVariableName, memory);
+			memory = rttiWriteElem(data.elementSize, memory);
 		}
 
 		static void fromMemory(SHADER_DATA_PARAM_DESC& data, char* memory)
@@ -36,12 +37,13 @@ namespace CamelotEngine
 			memory = rttiReadElem(data.type, memory);
 			memory = rttiReadElem(data.name, memory);
 			memory = rttiReadElem(data.gpuVariableName, memory);
+			memory = rttiReadElem(data.elementSize, memory);
 		}
 
 		static UINT32 getDynamicSize(SHADER_DATA_PARAM_DESC& data)	
 		{ 
 			UINT64 dataSize = rttiGetElemSize(data.arraySize) + rttiGetElemSize(data.hidden) + rttiGetElemSize(data.type) + 
-				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + sizeof(UINT32);
+				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + rttiGetElemSize(data.elementSize) + sizeof(UINT32);
 
 #if CM_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())

@@ -41,6 +41,7 @@ namespace CamelotEngine
 		mVec4Values.clear();
 		mMat3Values.clear();
 		mMat4Values.clear();
+		mStructValues.clear();
 		mTextureValues.clear();
 		mSamplerValues.clear();
 
@@ -197,6 +198,9 @@ namespace CamelotEngine
 					break;
 				case GPDT_MATRIX_4X4:
 					mMat4Values[iter->first].resize(iter->second.arraySize);
+					break;
+				case GPDT_STRUCT:
+					mStructValues[iter->first].resize(iter->second.arraySize);
 					break;
 				default:
 					CM_EXCEPT(InternalErrorException, "Unsupported data type.");
@@ -690,6 +694,47 @@ namespace CamelotEngine
 		savedValue[arrayIdx] = value;
 	}
 
+	void Material::setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx)
+	{
+		throwIfNotInitialized();
+
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return;
+		}
+
+		String& gpuVarName = iterFind->second;
+		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			PassParametersPtr params = *iter;
+
+			for(UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+				if(paramPtr)
+				{
+					if(paramPtr->hasParam(gpuVarName))
+					{
+						UINT32 structSize = paramPtr->getDataParamSize(gpuVarName);
+
+						if(structSize != size)
+						{
+							CM_EXCEPT(InternalErrorException, "Size provided doesn't match the shader struct size. Provided: " + 
+								toString(size) + ". Expected: " + toString(structSize));
+						}
+
+						paramPtr->setParam(gpuVarName, value, size, arrayIdx);
+					}
+				}
+			}
+		}
+
+		auto& savedValue = mStructValues[name];
+		savedValue[arrayIdx] = StructData(value, size);
+	}
+
 	void Material::setParamBlock(const String& name, GpuParamBlockPtr paramBlock)
 	{
 		auto iterFind = mValidShareableParamBlocks.find(name);
@@ -821,6 +866,16 @@ namespace CamelotEngine
 		auto iterFind = mMat4Values.find(name);
 
 		if(iterFind == mMat4Values.end())
+			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
+
+		return iterFind->second.at(arrayIdx);
+	}
+
+	const Material::StructData& Material::getStructData(const String& name, UINT32 arrayIdx) const
+	{
+		auto iterFind = mStructValues.find(name);
+
+		if(iterFind == mStructValues.end())
 			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
 
 		return iterFind->second.at(arrayIdx);

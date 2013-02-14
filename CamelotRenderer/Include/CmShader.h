@@ -13,6 +13,7 @@ namespace CamelotEngine
 		GpuParamDataType type;
 		UINT32 arraySize;
 		bool hidden;
+		UINT32 elementSize;
 	};
 
 	struct CM_EXPORT SHADER_OBJECT_PARAM_DESC
@@ -55,7 +56,21 @@ namespace CamelotEngine
 		 */
 		TechniquePtr getBestTechnique() const;
 
-		void addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize = 1, bool hidden = false);
+		/**
+		 * @brief	Registers a new parameter you can use for easily setting GpuProgram constants via Material.
+		 * 			Only data types may be set using this method. Use the other overload of the method if you want
+		 * 			to add object parameters.
+		 *
+		 * @param	name		   	The name of the parameter.
+		 * @param	gpuVariableName	Name of the GPU variable in the GpuProgram that the parameter corresponds with.
+		 * @param	type		   	The type of the parameter, must be the same as the type in GpuProgram.
+		 * @param	arraySize	   	(optional) If the parameter is an array, the number of elements in the array. Size of 1 means its not an array.
+		 * @param	elementSize	   	(optional) Size of an individual element in the array, in bytes. You only need to set this if you are setting variable
+		 * 							length parameters, like structs.
+		 * @param	hidden		   	(optional) Property that is not directly used by the material system, but can be useful if you need to mark certain parameters
+		 * 							as hidden to some system. (e.g. hiding internal engine-managed parameters from the user in the Editor)
+		 */
+		void addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize = 1, UINT32 elementSize = 0, bool hidden = false);
 		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, bool hidden = false);
 		void removeParameter(const String& name);
 		void setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage);
