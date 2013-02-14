@@ -200,7 +200,18 @@ namespace CamelotEngine
 			parseVariable(varTypeDesc, varDesc, desc, blockDesc);
 		}
 
-		blockDesc.blockSize = constantBufferDesc.Size / 4; 
+		// Buffer always needs to be a multiple of 4, so make it so
+		blockDesc.blockSize += (4 - (blockDesc.blockSize % 4));
+
+#if CM_DEBUG_MODE
+		if(constantBufferDesc.Size != (blockDesc.blockSize * 4))
+		{
+			CM_EXCEPT(InternalErrorException, "Calculated param block size and size returned by DirectX don't match. Calculated size is: " + toString(constantBufferDesc.Size) +
+				" and DirectX size is: " + toString(blockDesc.blockSize * 4));
+		}
+#endif
+
+		//blockDesc.blockSize = constantBufferDesc.Size / 4; 
 	}
 
 	void D3D11HLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC& varTypeDesc, D3D11_SHADER_VARIABLE_DESC& varDesc, GpuParamDesc& desc, GpuParamBlockDesc& paramBlock)
@@ -210,11 +221,44 @@ namespace CamelotEngine
 		memberDesc.paramBlockSlot = paramBlock.slot;
 		memberDesc.arraySize = varTypeDesc.Elements == 0 ? 1 : varTypeDesc.Elements;
 		memberDesc.elementSize = varDesc.Size / 4; // Stored in multiples of 4
+		memberDesc.arrayElementStride = memberDesc.elementSize;
 		memberDesc.gpuMemOffset = varDesc.StartOffset;
-		memberDesc.cpuMemOffset = paramBlock.blockSize;
+		
+		// Elements in array always start at 16 byte (4 float) boundaries so we handle them specially
+		if(memberDesc.arraySize == 1)
+		{
+			UINT32 freeSlotsInRegister = (((paramBlock.blockSize / 4) + 1) * 4) - paramBlock.blockSize;
 
-		paramBlock.blockSize += memberDesc.arraySize * memberDesc.elementSize;
-	
+			// Fits in current register
+			if(memberDesc.elementSize <= freeSlotsInRegister)
+			{
+				memberDesc.cpuMemOffset = paramBlock.blockSize;
+				paramBlock.blockSize += memberDesc.elementSize;
+			}
+			else
+			{
+				// Doesn't fit, so skip remaining slots in register and go to new one
+				paramBlock.blockSize += freeSlotsInRegister;
+				memberDesc.cpuMemOffset = paramBlock.blockSize;
+				paramBlock.blockSize +=  memberDesc.elementSize;
+			}
+		}
+		else
+		{
+			// Find array element size (reported size is total size of array, minus unused register slots)
+			int totalSlotsUsedByArray = (memberDesc.elementSize / 4 + 1) * 4;
+			int unusedSlotsInArray = totalSlotsUsedByArray - memberDesc.elementSize;
+
+			memberDesc.arrayElementStride = totalSlotsUsedByArray / memberDesc.arraySize; // TODO - Array element stride should be stored in ParamDataDesc and used for determining size
+			memberDesc.elementSize = memberDesc.arrayElementStride - unusedSlotsInArray;
+
+			int freeSlotsInRegister = (((paramBlock.blockSize / 4) + 1) * 4) - paramBlock.blockSize;
+
+			paramBlock.blockSize += freeSlotsInRegister;
+			memberDesc.cpuMemOffset = paramBlock.blockSize;
+			paramBlock.blockSize += memberDesc.arraySize * memberDesc.arrayElementStride - unusedSlotsInArray;
+		}
+			
 		switch(varTypeDesc.Class)
 		{
 		case D3D_SVC_SCALAR:

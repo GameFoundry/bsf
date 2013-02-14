@@ -273,6 +273,7 @@ namespace CamelotEngine
 						assert (arrayStride % 4 == 0);
 
 						gpuParam.elementSize = arrayStride / 4;
+						gpuParam.arrayElementStride = gpuParam.elementSize;
 					}
 
 					gpuParam.paramBlockSlot = blockIndex + 1; // 0 is reserved for globals
@@ -403,5 +404,7 @@ namespace CamelotEngine
 		default:
 			CM_EXCEPT(InternalErrorException, "Invalid shader parameter type: " + toString(uniformType) + " for parameter " + paramName);
 		}
+
+		desc.arrayElementStride = desc.elementSize;
 	}
 }

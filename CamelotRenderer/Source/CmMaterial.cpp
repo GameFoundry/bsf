@@ -487,7 +487,8 @@ namespace CamelotEngine
 
 	bool Material::areParamsEqual(const GpuParamDataDesc& paramA, const GpuParamDataDesc& paramB, bool ignoreBufferOffsets) const
 	{
-		bool equal = paramA.arraySize == paramB.arraySize && paramA.elementSize == paramB.elementSize && paramA.type == paramB.type;
+		bool equal = paramA.arraySize == paramB.arraySize && paramA.elementSize == paramB.elementSize 
+			&& paramA.type == paramB.type && paramA.arrayElementStride == paramB.arrayElementStride;
 
 		if(!ignoreBufferOffsets)
 			equal &= paramA.cpuMemOffset == paramB.cpuMemOffset && paramA.gpuMemOffset == paramB.gpuMemOffset;
@@ -716,17 +717,7 @@ namespace CamelotEngine
 				if(paramPtr)
 				{
 					if(paramPtr->hasParam(gpuVarName))
-					{
-						UINT32 structSize = paramPtr->getDataParamSize(gpuVarName);
-
-						if(structSize != size)
-						{
-							CM_EXCEPT(InternalErrorException, "Size provided doesn't match the shader struct size. Provided: " + 
-								toString(size) + ". Expected: " + toString(structSize));
-						}
-
 						paramPtr->setParam(gpuVarName, value, size, arrayIdx);
-					}
 				}
 			}
 		}

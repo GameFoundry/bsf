@@ -219,13 +219,13 @@ namespace CamelotEngine
 			return;
 		}
 
-		paramBlock->write((desc->cpuMemOffset + arrayIndex * desc->elementSize) * sizeof(UINT32), value, sizeBytes);
+		paramBlock->write((desc->cpuMemOffset + arrayIndex * desc->arrayElementStride) * sizeof(UINT32), value, sizeBytes);
 
 		// Set unused bytes to 0
 		if(sizeBytes < elementSizeBytes)
 		{
 			UINT32 diffSize = elementSizeBytes - sizeBytes;
-			paramBlock->zeroOut((desc->cpuMemOffset + arrayIndex * desc->elementSize + sizeBytes)  * sizeof(UINT32), diffSize);
+			paramBlock->zeroOut((desc->cpuMemOffset + arrayIndex * desc->arrayElementStride + sizeBytes)  * sizeof(UINT32), diffSize);
 		}
 	}
 

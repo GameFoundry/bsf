@@ -11,6 +11,7 @@ namespace CamelotEngine
 		String name;
 		UINT32 elementSize; // Multiple of 4 bytes
 		UINT32 arraySize;
+		UINT32 arrayElementStride; // Multiple of 4 bytes
 		GpuParamDataType type;
 
 		UINT32 paramBlockSlot;

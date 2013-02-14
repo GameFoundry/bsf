@@ -12,11 +12,19 @@
 >>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
 Pass
  - A way to bind buffers to a Pass, while specifying buffer range
- - GpuParams support for bools, buffers, structs
+ - GpuParams support for buffers, structs
 
 Shader import:
  - Make sure none of the current shaders in CamelotClient are defined in code anymore
  - Add include files to ImportOptions
+
+  arrays in GLSL should work fine if I increase locations sequentially based on the first element (so I don't need to introduce names like name[0])
+
+ Add a better way to test multiple configurations (probably just re-factor CamelotClient with a few includes)
+  - Need to comment out code for setting structs when working with DX9
+
+Test shader arrays
+Implement structs in GLSL
 
 Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
 

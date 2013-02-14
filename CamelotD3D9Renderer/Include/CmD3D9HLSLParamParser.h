@@ -104,7 +104,7 @@ namespace CamelotEngine
 				populateParamMemberDesc(memberDesc, desc);
 				mParamDesc.params.insert(std::make_pair(name, memberDesc));
 
-				blockDesc.blockSize += memberDesc.elementSize * memberDesc.arraySize;
+				blockDesc.blockSize += memberDesc.arrayElementStride * memberDesc.arraySize;
 			}
 			else if(desc.Type == D3DXPT_SAMPLER1D || desc.Type == D3DXPT_SAMPLER2D || desc.Type == D3DXPT_SAMPLER3D || desc.Type == D3DXPT_SAMPLERCUBE)
 			{
@@ -159,18 +159,22 @@ namespace CamelotEngine
 			case 1:
 				memberDesc.type = GPDT_INT1;
 				memberDesc.elementSize = 4;
+				memberDesc.arrayElementStride = 4;
 				break;
 			case 2:
 				memberDesc.type = GPDT_INT2;
 				memberDesc.elementSize = 4;
+				memberDesc.arrayElementStride = 4;
 				break;
 			case 3:
 				memberDesc.type = GPDT_INT3;
 				memberDesc.elementSize = 4;
+				memberDesc.arrayElementStride = 4;
 				break;
 			case 4:
 				memberDesc.type = GPDT_INT4;
 				memberDesc.elementSize = 4;
+				memberDesc.arrayElementStride = 4;
 				break;
 			} // columns
 			break;
@@ -196,14 +200,17 @@ namespace CamelotEngine
 						case 2:
 							memberDesc.type = GPDT_MATRIX_2X2;
 							memberDesc.elementSize = 8; // HLSL always packs
+							memberDesc.arrayElementStride = 8;
 							break;
 						case 3:
 							memberDesc.type = GPDT_MATRIX_2X3;
 							memberDesc.elementSize = 8; // HLSL always packs
+							memberDesc.arrayElementStride = 8;
 							break;
 						case 4:
 							memberDesc.type = GPDT_MATRIX_2X4;
 							memberDesc.elementSize = 8; 
+							memberDesc.arrayElementStride = 8;
 							break;
 						} // columns
 						break;
@@ -213,14 +220,17 @@ namespace CamelotEngine
 						case 2:
 							memberDesc.type = GPDT_MATRIX_3X2;
 							memberDesc.elementSize = 12; // HLSL always packs
+							memberDesc.arrayElementStride = 12;
 							break;
 						case 3:
 							memberDesc.type = GPDT_MATRIX_3X3;
 							memberDesc.elementSize = 12; // HLSL always packs
+							memberDesc.arrayElementStride = 12;
 							break;
 						case 4:
 							memberDesc.type = GPDT_MATRIX_3X4;
 							memberDesc.elementSize = 12; 
+							memberDesc.arrayElementStride = 12;
 							break;
 						} // columns
 						break;
@@ -230,14 +240,17 @@ namespace CamelotEngine
 						case 2:
 							memberDesc.type = GPDT_MATRIX_4X2;
 							memberDesc.elementSize = 16; // HLSL always packs
+							memberDesc.arrayElementStride = 16;
 							break;
 						case 3:
 							memberDesc.type = GPDT_MATRIX_4X3;
 							memberDesc.elementSize = 16; // HLSL always packs
+							memberDesc.arrayElementStride = 16;
 							break;
 						case 4:
 							memberDesc.type = GPDT_MATRIX_4X4;
 							memberDesc.elementSize = 16; 
+							memberDesc.arrayElementStride = 16;
 							break;
 						} // secondDim
 						break;
@@ -252,18 +265,22 @@ namespace CamelotEngine
 				case 1:
 					memberDesc.type = GPDT_FLOAT1;
 					memberDesc.elementSize = 4;
+					memberDesc.arrayElementStride = 4;
 					break;
 				case 2:
 					memberDesc.type = GPDT_FLOAT2;
 					memberDesc.elementSize = 4;
+					memberDesc.arrayElementStride = 4;
 					break;
 				case 3:
 					memberDesc.type = GPDT_FLOAT3;
 					memberDesc.elementSize = 4;
+					memberDesc.arrayElementStride = 4;
 					break;
 				case 4:
 					memberDesc.type = GPDT_FLOAT4;
 					memberDesc.elementSize = 4;
+					memberDesc.arrayElementStride = 4;
 					break;
 				} // columns
 				break;
@@ -272,6 +289,7 @@ namespace CamelotEngine
 		case D3DXPT_BOOL:
 			memberDesc.type = GPDT_BOOL;
 			memberDesc.elementSize = 1;
+			memberDesc.arrayElementStride = 1;
 			break;
 		default:
 			break;

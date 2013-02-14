@@ -111,16 +111,18 @@ int CALLBACK WinMain(
 								float uvMultiplier;									\
 							};													\
 																				\
+							float test1; \
+							InputStruct input[2];								\
 							float4x4 matViewProjection;							\
-							InputStruct input;									\
+														float test2; \
 							void vs_main(										\
 							in float4 inPos : POSITION,							\
 							in float2 uv : TEXCOORD0,							\
 							out float4 oPosition : SV_Position,					\
 							out float2 oUv : TEXCOORD0)							\
 							{													\
-							oPosition = mul(matViewProjection * input.matMultiplier, inPos);	\
-							oUv = uv * input.uvMultiplier;						\
+							oPosition = mul(matViewProjection * input[1].matMultiplier, inPos);	\
+							oUv = uv * input[1].uvMultiplier;						\
 							}";
 
 	HighLevelGpuProgramHandle vertProgRef =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
@@ -186,7 +188,7 @@ int CALLBACK WinMain(
 	ShaderPtr testShader = Shader::create("TestShader");
 
 	testShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
-	testShader->addParameter("input", "input", GPDT_STRUCT, 1, 8);
+	testShader->addParameter("input", "input", GPDT_STRUCT, 2, 8);
 
 	testShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
 	testShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
@@ -215,11 +217,16 @@ int CALLBACK WinMain(
 
 	testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
 
-	float dbgMultipliers[2];
-	dbgMultipliers[0] = 1.0f;
-	dbgMultipliers[1] = 1.0f;
+	float dbgMultipliers1[2];
+	dbgMultipliers1[0] = 0.0f;
+	dbgMultipliers1[1] = 0.0f;
 
-	testMaterial->setStructData("input", dbgMultipliers, sizeof(dbgMultipliers));
+	float dbgMultipliers2[2];
+	dbgMultipliers2[0] = 1.0f;
+	dbgMultipliers2[1] = 1.0f;
+
+	testMaterial->setStructData("input", dbgMultipliers1, sizeof(dbgMultipliers1), 0);
+	testMaterial->setStructData("input", dbgMultipliers2, sizeof(dbgMultipliers2), 1);
 
 	//testMaterialRef = gResources().load("C:\\testMaterial.mat");
 	//testMaterialRef.waitUntilLoaded();
