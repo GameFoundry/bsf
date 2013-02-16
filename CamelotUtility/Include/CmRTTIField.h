@@ -5,6 +5,7 @@
 #include <boost/function.hpp>
 #include <boost/any.hpp>
 #include <boost/static_assert.hpp>
+#include <type_traits>
 
 #include "CmPrerequisitesUtil.h"
 #include "CmIReflectable.h"
@@ -16,102 +17,6 @@ namespace CamelotEngine
 	class RTTITypeBase;
 	struct RTTIField;
 
-	/**
-	* @brief	Helper method when serializing known data types that have valid
-	* 			SerializableSimpleType specializations.
-	* 			
-	*			Returns the size of the element. If elements serializable type is 
-	*			specialized with hasDynamicSize == true, the dynamic size is calculated, 
-	*			otherwise sizeof() is used.
-	 */
-	template<class ElemType>
-	UINT32 rttiGetElemSize(ElemType& data)
-	{
-		if(SerializableSimpleType<ElemType>::hasDynamicSize == 1)
-			return SerializableSimpleType<ElemType>::getDynamicSize(data);
-		else
-			return sizeof(ElemType);
-	}
-
-	/**
-	 * @brief	Helper method when serializing known data types that have valid
-	 * 			SerializableSimpleType specializations.
-	 * 			
-	 *			Writes the specified data into memory, advances the memory pointer by the
-	 *			bytes written and returns pointer to new memory.
-	 */
-	template<class ElemType>
-	char* rttiWriteElem(ElemType& data, char* memory)
-	{
-		SerializableSimpleType<ElemType>::toMemory(data, memory);
-
-		return memory + rttiGetElemSize(data);
-	}
-
-	/**
-	 * @brief	Helper method when serializing known data types that have valid
-	 * 			SerializableSimpleType specializations.
-	 * 			
-	 *			Reads the specified data into memory, advances the memory pointer by the
-	 *			bytes read and returns pointer to new memory.
-	 */
-	template<class ElemType>
-	char* rttiReadElem(ElemType& data, char* memory)
-	{
-		SerializableSimpleType<ElemType>::fromMemory(data, memory);
-
-		return memory + rttiGetElemSize(data);
-	}
-
-	template<class T>
-	struct SerializableSimpleType 
-	{ 
-		//BOOST_STATIC_ASSERT_MSG(sizeof(T) == 0, // We need this hacky check, otherwise if we only use "false" compiler will evaluate the template and trigger this message 
-		//	"Provided data type isn't marked as serializable. Declare SerializableSimpleType template specialization to define a unique ID and needed methods for the type.");
-
-		enum { id = 0 }; 
-		enum { hasDynamicSize = 0 };
-
-		static void toMemory(T& data, char* memory)	
-		{ 
-			memcpy(memory, &data, sizeof(T)); 
-		}
-
-		static void fromMemory(T& data, char* memory)
-		{
-			memcpy(&data, memory, sizeof(T)); 
-		}
-
-		static UINT32 getDynamicSize(T& data)
-		{ 
-			assert(false); 
-			return sizeof(T);
-		}
-	};
-
-#define CM_SERIALIZABLE_SIMPLE_TYPE(type, type_id)				\
-	template<> struct SerializableSimpleType<##type##>			\
-	{	enum { id=##type_id }; enum { hasDynamicSize = 0 };		\
-	static void toMemory(##type##& data, char* memory)		\
-	{ memcpy(memory, &data, sizeof(##type##)); }			\
-	static void fromMemory(##type##& data, char* memory)	\
-	{ memcpy(&data, memory, sizeof(##type##)); }			\
-	static UINT32 getDynamicSize(##type##& data)			\
-	{ assert(false); return sizeof(##type##); }				\
-	}; 
-
-	CM_SERIALIZABLE_SIMPLE_TYPE(UINT8, 1);
-	CM_SERIALIZABLE_SIMPLE_TYPE(UINT16, 2);
-	CM_SERIALIZABLE_SIMPLE_TYPE(UINT32, 3);
-	CM_SERIALIZABLE_SIMPLE_TYPE(UINT64, 4);
-	CM_SERIALIZABLE_SIMPLE_TYPE(INT8, 5);
-	CM_SERIALIZABLE_SIMPLE_TYPE(INT16, 6);
-	CM_SERIALIZABLE_SIMPLE_TYPE(INT32, 7);
-	CM_SERIALIZABLE_SIMPLE_TYPE(INT64, 8);
-	CM_SERIALIZABLE_SIMPLE_TYPE(float, 9);
-	CM_SERIALIZABLE_SIMPLE_TYPE(double, 10);
-	CM_SERIALIZABLE_SIMPLE_TYPE(bool, 11);
-		
 	/**
 	 * @brief	Strings need to copy their data in a slightly more intricate way than just memcpy.
 	 */

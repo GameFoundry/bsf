@@ -7,6 +7,8 @@
 
 namespace CamelotEngine
 {
+	CM_ALLOW_MEMCPY_SERIALIZATION(RASTERIZER_STATE_DESC);
+
 	class CM_EXPORT RasterizerStateRTTI : public RTTIType<RasterizerState, IReflectable, RasterizerStateRTTI>
 	{
 	private:

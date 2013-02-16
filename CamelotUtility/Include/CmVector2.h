@@ -34,7 +34,6 @@ THE SOFTWARE.
 
 namespace CamelotEngine
 {
-
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -569,5 +568,6 @@ namespace CamelotEngine
 	/** @} */
 	/** @} */
 
+	CM_ALLOW_MEMCPY_SERIALIZATION(Vector2);
 }
 #endif

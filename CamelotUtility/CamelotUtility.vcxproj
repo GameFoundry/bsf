@@ -193,6 +193,7 @@
     <ClInclude Include="Include\CmRTTIField.h" />
     <ClInclude Include="Include\CmRTTIManagedDataBlockField.h" />
     <ClInclude Include="Include\CmRTTIPlainField.h" />
+    <ClInclude Include="Include\CmRTTIPrerequisites.h" />
     <ClInclude Include="Include\CmRTTIReflectableField.h" />
     <ClInclude Include="Include\CmRTTIReflectablePtrField.h" />
     <ClInclude Include="Include\CmRTTIType.h" />

@@ -66,6 +66,8 @@ namespace CamelotEngine
 		}
 	};
 
+	CM_ALLOW_MEMCPY_SERIALIZATION(MeshData::SubMeshData);
+
 	class CM_EXPORT MeshDataRTTI : public RTTIType<MeshData, IReflectable, MeshDataRTTI>
 	{
 	private:

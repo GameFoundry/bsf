@@ -71,3 +71,5 @@ THE SOFTWARE
 #include "CmFwdDeclUtil.h"
 
 #include "CmString.h"
+
+#include "CmRTTIPrerequisites.h"

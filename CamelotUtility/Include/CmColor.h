@@ -329,6 +329,7 @@ namespace CamelotEngine {
 	/** @} */
 	/** @} */
 
+	CM_ALLOW_MEMCPY_SERIALIZATION(Color);
 } // namespace
 
 #endif

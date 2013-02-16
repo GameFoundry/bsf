@@ -44,6 +44,8 @@ namespace CamelotEngine
 		CompareFunction backStencilComparisonFunc;
 	};
 
+	CM_ALLOW_MEMCPY_SERIALIZATION(DEPTH_STENCIL_STATE_DESC);
+
 	// TODO Low priority - Write doc explaining various states
 	class CM_EXPORT DepthStencilState : public Resource
 	{

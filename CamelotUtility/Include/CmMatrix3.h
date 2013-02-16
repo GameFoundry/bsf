@@ -268,5 +268,7 @@ namespace CamelotEngine
     };
 	/** @} */
 	/** @} */
+
+	CM_ALLOW_MEMCPY_SERIALIZATION(Matrix3);
 }
 #endif

@@ -160,9 +160,6 @@ Low priority TODO:
  - D3D9Texture::createTextureResources is commented out at the moment. It gets called on device reset, and at that point I should reload texture resources.
   - I should probably keep all resources by DX managed. OpenGL apparently keeps a mirror of all its resources anyway.
  - Device reset and resource re-loading in general
- - In RTTIType it is possible to add a non-plain data type using addPlainField. This can cause memory corruption issues
-   if pointer is saved/loaded as a plain field. I need to add a check that ensures the type is POD. 
-   See: http://www.boost.org/doc/libs/1_51_0/boost/mpi/datatype.hpp for a possible implementation of a compile time check.
  - Fix up WorkQueue as it doesn't lock when initializing, to make sure threads are actually started before returning
  - CPU reading or writing to a render texture in OpenGL is not supported. (CmGLHardwarePixelBuffer::upload/download). 
  - When saving a resource, make sure resource is properly loaded before saving

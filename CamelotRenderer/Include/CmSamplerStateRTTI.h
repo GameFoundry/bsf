@@ -7,6 +7,8 @@
 
 namespace CamelotEngine
 {
+	CM_ALLOW_MEMCPY_SERIALIZATION(SAMPLER_STATE_DESC);
+
 	class CM_EXPORT SamplerStateRTTI : public RTTIType<SamplerState, IReflectable, SamplerStateRTTI>
 	{
 	private:
