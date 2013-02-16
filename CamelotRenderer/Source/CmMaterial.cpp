@@ -706,6 +706,13 @@ namespace CamelotEngine
 			return;
 		}
 
+		const SHADER_DATA_PARAM_DESC& desc = mShader->getDataParamDesc(name);
+		if(desc.elementSize != size)
+		{
+			CM_EXCEPT(InvalidParametersException,
+				"Invalid size when writing a struct. Expected: " + toString(desc.elementSize) + ". Got: " + toString(size));
+		}
+
 		String& gpuVarName = iterFind->second;
 		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{

@@ -155,7 +155,7 @@ int CALLBACK WinMain(
 	String vertShaderCode = "#version 400 \n									\
 							struct InputStruct									\
 							{													\
-								float matMultiplier;							\
+								float matMultiplier[2];							\
 								float uvMultiplier;								\
 							};													\
 																				\
@@ -172,7 +172,7 @@ int CALLBACK WinMain(
 							 void main() \
 							 { \
 								texcoord0 = cm_texcoord0 * input[1].uvMultiplier; \
-								gl_Position = cm_position * (matViewProjection * input[1].matMultiplier); \
+								gl_Position = cm_position * (matViewProjection * input[1].matMultiplier[1]); \
 							 }";
 
 	HighLevelGpuProgramHandle vertProgRef= HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
@@ -190,8 +190,12 @@ int CALLBACK WinMain(
 
 	testShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
 
-#if defined DX11 || defined GL
+#if defined DX11
 	testShader->addParameter("input", "input", GPDT_STRUCT, 2, 8);
+#endif
+
+#if defined GL
+	testShader->addParameter("input", "input", GPDT_STRUCT, 2, 12);
 #endif
 
 	testShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
@@ -221,7 +225,7 @@ int CALLBACK WinMain(
 
 	testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
 
-#if defined DX11 || defined GL
+#if defined DX11
 	float dbgMultipliers1[2];
 	dbgMultipliers1[0] = 0.0f;
 	dbgMultipliers1[1] = 0.0f;
@@ -229,6 +233,21 @@ int CALLBACK WinMain(
 	float dbgMultipliers2[2];
 	dbgMultipliers2[0] = 1.0f;
 	dbgMultipliers2[1] = 1.0f;
+
+	testMaterial->setStructData("input", dbgMultipliers1, sizeof(dbgMultipliers1), 0);
+	testMaterial->setStructData("input", dbgMultipliers2, sizeof(dbgMultipliers2), 1);
+#endif
+
+#if defined GL
+	float dbgMultipliers1[3];
+	dbgMultipliers1[0] = 0.0f;
+	dbgMultipliers1[1] = 0.0f;
+	dbgMultipliers1[2] = 0.0f;
+
+	float dbgMultipliers2[3];
+	dbgMultipliers2[0] = 0.0f;
+	dbgMultipliers2[1] = 1.0f;
+	dbgMultipliers2[2] = 1.0f;
 
 	testMaterial->setStructData("input", dbgMultipliers1, sizeof(dbgMultipliers1), 0);
 	testMaterial->setStructData("input", dbgMultipliers2, sizeof(dbgMultipliers2), 1);
