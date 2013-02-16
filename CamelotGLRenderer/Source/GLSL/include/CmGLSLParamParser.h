@@ -517,7 +517,7 @@ namespace CamelotEngine
 			GLint arrayStride;
 			glGetActiveUniformsiv(programHandle, 1, &uniformIndex, GL_UNIFORM_ARRAY_STRIDE, &arrayStride);
 
-			if(arrayStride != 0)
+			if(arrayStride > 0)
 			{
 				assert (arrayStride % 4 == 0);
 

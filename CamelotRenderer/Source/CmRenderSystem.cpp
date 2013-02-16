@@ -64,6 +64,7 @@ namespace CamelotEngine {
 		, mClipPlanesDirty(true)
 		, mCurrentCapabilities(nullptr)
 		, mRenderThreadFunc(nullptr)
+		, mRenderThreadStarted(false)
 		, mRenderThreadShutdown(false)
 		, mCommandQueue(nullptr)
 		, mMaxCommandNotifyId(0)
@@ -278,8 +279,10 @@ namespace CamelotEngine {
 		CM_THREAD_CREATE(t, *mRenderThreadFunc);
 		mRenderThread = t;
 
-		CM_LOCK_MUTEX_NAMED(mRenderThreadStartMutex, lock)
-		CM_THREAD_WAIT(mRenderThreadStartCondition, mRenderThreadStartMutex, lock)
+		CM_LOCK_MUTEX_NAMED(mRenderThreadStartMutex, lock);
+
+		while(!mRenderThreadStarted)
+			CM_THREAD_WAIT(mRenderThreadStartCondition, mRenderThreadStartMutex, lock);
 
 #else
 		CM_EXCEPT(InternalErrorException, "Attempting to start a render thread but Camelot isn't compiled with thread support.");
@@ -291,6 +294,12 @@ namespace CamelotEngine {
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
+
+		{
+			CM_LOCK_MUTEX(mRenderThreadStartMutex);
+
+			mRenderThreadStarted = true;
+		}
 
 		CM_THREAD_NOTIFY_ALL(mRenderThreadStartCondition)
 
@@ -336,6 +345,8 @@ namespace CamelotEngine {
 		mRenderThread = nullptr;
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
 #endif
+
+		mRenderThreadStarted = false;
 	}
 
 	DeferredRenderContextPtr RenderSystem::createDeferredContext()

@@ -23,9 +23,6 @@ Add a better way of determining GLSL cpuMemOffset and block size (seems to be us
  - I probably need to determine struct sizes before assigning cpuMemOffset
  - I probably also need a preprocessing step to determine array sizes
 
-
-Seems there is a possible deadlock when starting the render thread, while waiting for the thread to be started
-
 Deserialization issues:
  - Currently Reflectable is not allowed to hold a ReflectablePtr
    - Because Reflectable might be assigned before a pointer is decoded and assigned, therefore
