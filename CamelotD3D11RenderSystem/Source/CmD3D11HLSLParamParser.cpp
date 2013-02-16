@@ -224,7 +224,12 @@ namespace CamelotEngine
 		memberDesc.arrayElementStride = memberDesc.elementSize;
 		memberDesc.gpuMemOffset = varDesc.StartOffset;
 		
+		// Calculate buffer offset and element size
+		// This is based on "Packing Rules for Constant Variables (DX11)":
+		// http://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx
+
 		// Elements in array always start at 16 byte (4 float) boundaries so we handle them specially
+		// (Determining individual element size in an array also takes some additional work)
 		if(memberDesc.arraySize == 1)
 		{
 			UINT32 freeSlotsInRegister = (((paramBlock.blockSize / 4) + 1) * 4) - paramBlock.blockSize;
@@ -249,7 +254,7 @@ namespace CamelotEngine
 			int totalSlotsUsedByArray = (memberDesc.elementSize / 4 + 1) * 4;
 			int unusedSlotsInArray = totalSlotsUsedByArray - memberDesc.elementSize;
 
-			memberDesc.arrayElementStride = totalSlotsUsedByArray / memberDesc.arraySize; // TODO - Array element stride should be stored in ParamDataDesc and used for determining size
+			memberDesc.arrayElementStride = totalSlotsUsedByArray / memberDesc.arraySize;
 			memberDesc.elementSize = memberDesc.arrayElementStride - unusedSlotsInArray;
 
 			int freeSlotsInRegister = (((paramBlock.blockSize / 4) + 1) * 4) - paramBlock.blockSize;

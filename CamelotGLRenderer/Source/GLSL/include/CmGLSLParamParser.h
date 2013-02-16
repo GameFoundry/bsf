@@ -164,6 +164,7 @@ namespace CamelotEngine
 		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount);
 
 		map<UINT32, String>::type blockSlotToName;
+		set<String>::type blockNames;
 		for (GLuint index = 0; index < (GLuint)uniformBlockCount; index++)
 		{
 			GLsizei unusedSize = 0;
@@ -177,7 +178,10 @@ namespace CamelotEngine
 
 			returnParamDesc.paramBlocks[newBlockDesc.name] = newBlockDesc;
 			blockSlotToName.insert(std::make_pair(newBlockDesc.slot, newBlockDesc.name));
+			blockNames.insert(newBlockDesc.name);
 		}
+
+		map<String, GpuParamDataDesc>::type foundStructs;
 
 		// get the number of active uniforms
 		GLint uniformCount = 0;
@@ -192,15 +196,67 @@ namespace CamelotEngine
 
 			String paramName = String(uniformName);
 
-			// If the uniform name has a "[" in it then its an array element uniform.
-			String::size_type arrayStart = paramName.find("[");
-			if (arrayStart != String::npos)
-			{
-				// if not the first array element then skip it and continue to the next uniform
-				if (paramName.compare(arrayStart, paramName.size() - 1, "[0]") != 0)
-					CM_EXCEPT(NotImplementedException, "No support for array parameters yet.");
+			// Naming rules and packing rules used here are described in
+			// OpenGL Core Specification 2.11.4
 
-				paramName = paramName.substr(0, arrayStart);
+			// Check if parameter is a part of a struct
+			vector<String>::type nameElements = StringUtil::tokenise(paramName, ".");
+
+			bool inStruct = false;
+			String structName;
+			if(nameElements.size() > 1)
+			{
+				auto uniformBlockFind = blockNames.find(nameElements[0]);
+
+				// Check if the name is not a struct, and instead a Uniform block namespace
+				if(uniformBlockFind != blockNames.end())
+				{
+					// Possibly it's a struct inside a named uniform block
+					if(nameElements.size() > 2)
+					{
+						inStruct = true;
+						structName = nameElements[1];
+					}
+				}
+				else
+				{
+					inStruct = true;
+					structName = nameElements[0];
+				}
+			}
+			
+			String cleanParamName = nameElements[nameElements.size() - 1]; // Param name without namespaces or array indexes
+
+			// Check if the parameter is in an array
+			UINT32 arrayIdx = 0;
+			bool isInArray = false;
+			if(inStruct)
+			{
+				// If the uniform name has a "[" in it then its an array element uniform.
+				String::size_type arrayStart = structName.find("[");
+				String::size_type arrayEnd = structName.find("]");
+				if (arrayStart != String::npos)
+				{
+					String strArrIdx = structName.substr(arrayStart + 1, arrayEnd - (arrayStart + 1));
+					arrayIdx = parseUnsignedInt(strArrIdx, 0);
+					isInArray = true;
+
+					structName = structName.substr(0, arrayStart);
+				}
+			}
+			else
+			{
+				// If the uniform name has a "[" in it then its an array element uniform.
+				String::size_type arrayStart = cleanParamName.find("[");
+				String::size_type arrayEnd = cleanParamName.find("]");
+				if (arrayStart != String::npos)
+				{
+					String strArrIdx = cleanParamName.substr(arrayStart + 1, arrayEnd - (arrayStart + 1));
+					arrayIdx = parseUnsignedInt(strArrIdx, 0);
+					isInArray = true;
+
+					cleanParamName = cleanParamName.substr(0, arrayStart);
+				}
 			}
 
 			GLint uniformType;
@@ -251,38 +307,28 @@ namespace CamelotEngine
 			}
 			else
 			{
-				GpuParamDataDesc gpuParam;
-				gpuParam.name = paramName;
-
 				GLint blockIndex;
 				glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_BLOCK_INDEX, &blockIndex);
 
+				GpuParamDataDesc gpuParam;
+				gpuParam.name = paramName;
 				determineParamInfo(gpuParam, paramName, glProgram, index);
 
 				if(blockIndex != -1)
 				{
 					GLint blockOffset;
 					glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_OFFSET, &blockOffset);
+					blockOffset = blockOffset / 4;
+
 					gpuParam.gpuMemOffset = blockOffset;
-
-					GLint arrayStride;
-					glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_ARRAY_STRIDE, &arrayStride);
-
-					if(arrayStride != 0)
-					{
-						assert (arrayStride % 4 == 0);
-
-						gpuParam.elementSize = arrayStride / 4;
-						gpuParam.arrayElementStride = gpuParam.elementSize;
-					}
 
 					gpuParam.paramBlockSlot = blockIndex + 1; // 0 is reserved for globals
 
 					String& blockName = blockSlotToName[gpuParam.paramBlockSlot];
 					GpuParamBlockDesc& curBlockDesc = returnParamDesc.paramBlocks[blockName];
 
-					gpuParam.cpuMemOffset = curBlockDesc.blockSize;
-					curBlockDesc.blockSize += gpuParam.elementSize * gpuParam.arraySize;
+					gpuParam.cpuMemOffset = blockOffset;
+					curBlockDesc.blockSize = std::max(curBlockDesc.blockSize, gpuParam.cpuMemOffset + gpuParam.arrayElementStride * gpuParam.arraySize);
 				}
 				else
 				{
@@ -290,11 +336,55 @@ namespace CamelotEngine
 					gpuParam.paramBlockSlot = 0;
 					gpuParam.cpuMemOffset = globalBlockDesc.blockSize;
 
-					globalBlockDesc.blockSize += gpuParam.elementSize * gpuParam.arraySize;
+					globalBlockDesc.blockSize = std::max(globalBlockDesc.blockSize, gpuParam.cpuMemOffset + gpuParam.arrayElementStride * gpuParam.arraySize);
 				}
 
-				returnParamDesc.params.insert(std::make_pair(gpuParam.name, gpuParam));
+				// If parameter is not a part of a struct we're done
+				if(!inStruct)
+				{
+					returnParamDesc.params.insert(std::make_pair(gpuParam.name, gpuParam));
+					continue;
+				}
+
+				// If the parameter is part of a struct, then we need to update the struct definition
+				auto findExistingStruct = foundStructs.find(structName);
+
+				// Create new definition if one doesn't exist
+				if(findExistingStruct == foundStructs.end())
+				{
+					foundStructs[structName] = GpuParamDataDesc();
+					GpuParamDataDesc& structDesc = foundStructs[structName];
+					structDesc.type = GPDT_STRUCT;
+					structDesc.name = structName;
+					structDesc.arraySize = 1;
+					structDesc.elementSize = 0;
+					structDesc.arrayElementStride = 0;
+					structDesc.gpuMemOffset = gpuParam.gpuMemOffset;
+					structDesc.cpuMemOffset = gpuParam.cpuMemOffset;
+					structDesc.paramBlockSlot = gpuParam.paramBlockSlot;
+				}
+
+				// Update struct with size of the new parameter
+				GpuParamDataDesc& structDesc = foundStructs[structName];
+				structDesc.arraySize = std::max(structDesc.arraySize, arrayIdx + 1);
+
+				assert(gpuParam.cpuMemOffset >= structDesc.cpuMemOffset);
+				if(arrayIdx == 0)
+				{
+					structDesc.elementSize = std::max(structDesc.elementSize, (gpuParam.cpuMemOffset - structDesc.cpuMemOffset) + gpuParam.arrayElementStride * gpuParam.arraySize);
+					structDesc.arrayElementStride = structDesc.elementSize; // TODO - Possibly aligned to 64 byte boundary?
+				}
 			}
+		}
+
+		for(auto iter = foundStructs.begin(); iter != foundStructs.end(); ++iter)
+			returnParamDesc.params.insert(std::make_pair(iter->first, iter->second));
+
+		// Param blocks alway needs to be a multiple of 4, so make it so
+		for(auto iter = returnParamDesc.paramBlocks.begin(); iter != returnParamDesc.paramBlocks.end(); ++iter)
+		{
+			GpuParamBlockDesc& blockDesc = iter->second;
+			blockDesc.blockSize += (4 - (blockDesc.blockSize % 4));
 		}
 
 #if CM_DEBUG_MODE
@@ -405,6 +495,19 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, "Invalid shader parameter type: " + toString(uniformType) + " for parameter " + paramName);
 		}
 
-		desc.arrayElementStride = desc.elementSize;
+		if(arraySize > 1)
+		{
+			GLint arrayStride;
+			glGetActiveUniformsiv(programHandle, 1, &uniformIndex, GL_UNIFORM_ARRAY_STRIDE, &arrayStride);
+
+			if(arrayStride != 0)
+			{
+				assert (arrayStride % 4 == 0);
+
+				desc.arrayElementStride = arrayStride / 4;
+			}
+		}
+		else
+			desc.arrayElementStride = desc.elementSize;
 	}
 }

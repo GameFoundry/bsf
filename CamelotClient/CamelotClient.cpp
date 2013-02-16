@@ -152,15 +152,27 @@ int CALLBACK WinMain(
 	HighLevelGpuProgramHandle fragProgRef = HighLevelGpuProgram::create(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
 
 	// TODO - Make sure to document the strict input parameter naming. (Exact supported names are in GLSLParamParser)
-	String vertShaderCode = "#version 400 \n \
-							 uniform mainFragBlock { mat4 matViewProjection; }; \
+	String vertShaderCode = "#version 400 \n									\
+							struct InputStruct									\
+							{													\
+								float matMultiplier;							\
+								float uvMultiplier;								\
+							};													\
+																				\
+							 uniform mainFragBlock								\
+							 {													\
+							 float test1;										\
+							 InputStruct input[2];								\
+							 mat4 matViewProjection;							\
+							 float test2;										\
+							 };													\
 							 in vec4 cm_position; \
 							 in vec2 cm_texcoord0; \
 							 out vec2 texcoord0; \
 							 void main() \
 							 { \
-								texcoord0 = cm_texcoord0; \
-								gl_Position = cm_position * matViewProjection; \
+								texcoord0 = cm_texcoord0 * input[1].uvMultiplier; \
+								gl_Position = cm_position * (matViewProjection * input[1].matMultiplier); \
 							 }";
 
 	HighLevelGpuProgramHandle vertProgRef= HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
@@ -178,7 +190,7 @@ int CALLBACK WinMain(
 
 	testShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
 
-#ifdef DX11
+#if defined DX11 || defined GL
 	testShader->addParameter("input", "input", GPDT_STRUCT, 2, 8);
 #endif
 
@@ -209,7 +221,7 @@ int CALLBACK WinMain(
 
 	testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
 
-#ifdef DX11
+#if defined DX11 || defined GL
 	float dbgMultipliers1[2];
 	dbgMultipliers1[0] = 0.0f;
 	dbgMultipliers1[1] = 0.0f;
