@@ -225,7 +225,7 @@ namespace CamelotEngine
 				}
 			}
 			
-			String cleanParamName = nameElements[nameElements.size() - 1]; // Param name without namespaces or array indexes
+			String cleanParamName = paramName; // Param name without array indexes
 
 			// Check if the parameter is in an array
 			UINT32 arrayIdx = 0;
@@ -307,11 +307,21 @@ namespace CamelotEngine
 			}
 			else
 			{
+				// If array index is larger than 0 and uniform is not a part of a struct,
+				// it means we already processed it (struct arrays are processed differently)
+				if(!inStruct && arrayIdx != 0)
+					continue;
+
 				GLint blockIndex;
 				glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_BLOCK_INDEX, &blockIndex);
 
 				GpuParamDataDesc gpuParam;
-				gpuParam.name = paramName;
+
+				if(isInArray)
+					gpuParam.name = cleanParamName;
+				else
+					gpuParam.name = paramName;
+
 				determineParamInfo(gpuParam, paramName, glProgram, index);
 
 				if(blockIndex != -1)

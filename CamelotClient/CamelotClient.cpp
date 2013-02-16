@@ -161,7 +161,7 @@ int CALLBACK WinMain(
 																				\
 							 uniform mainFragBlock								\
 							 {													\
-							 float test1;										\
+							 float test1[2];									\
 							 InputStruct input[2];								\
 							 mat4 matViewProjection;							\
 							 float test2;										\
@@ -171,8 +171,8 @@ int CALLBACK WinMain(
 							 out vec2 texcoord0; \
 							 void main() \
 							 { \
-								texcoord0 = cm_texcoord0 * input[1].uvMultiplier; \
-								gl_Position = cm_position * (matViewProjection * input[1].matMultiplier[1]); \
+							 texcoord0 = cm_texcoord0 * test1[0]; \
+							 gl_Position = cm_position * (matViewProjection * test1[1]); \
 							 }";
 
 	HighLevelGpuProgramHandle vertProgRef= HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
@@ -196,6 +196,7 @@ int CALLBACK WinMain(
 
 #if defined GL
 	testShader->addParameter("input", "input", GPDT_STRUCT, 2, 12);
+	testShader->addParameter("test1", "test1", GPDT_FLOAT1, 2);
 #endif
 
 	testShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
@@ -251,6 +252,8 @@ int CALLBACK WinMain(
 
 	testMaterial->setStructData("input", dbgMultipliers1, sizeof(dbgMultipliers1), 0);
 	testMaterial->setStructData("input", dbgMultipliers2, sizeof(dbgMultipliers2), 1);
+	testMaterial->setFloat("test1", 1.0f, 0);
+	testMaterial->setFloat("test1", 1.0f, 1);
 #endif
 
 	//testMaterialRef = gResources().load("C:\\testMaterial.mat");
