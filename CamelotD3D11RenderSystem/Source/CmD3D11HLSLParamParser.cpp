@@ -210,8 +210,6 @@ namespace CamelotEngine
 				" and DirectX size is: " + toString(blockDesc.blockSize * 4));
 		}
 #endif
-
-		//blockDesc.blockSize = constantBufferDesc.Size / 4; 
 	}
 
 	void D3D11HLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC& varTypeDesc, D3D11_SHADER_VARIABLE_DESC& varDesc, GpuParamDesc& desc, GpuParamBlockDesc& paramBlock)

@@ -366,14 +366,21 @@ namespace CamelotEngine
 
 				// Update struct with size of the new parameter
 				GpuParamDataDesc& structDesc = foundStructs[structName];
-				structDesc.arraySize = std::max(structDesc.arraySize, arrayIdx + 1);
-
+				
 				assert(gpuParam.cpuMemOffset >= structDesc.cpuMemOffset);
 				if(arrayIdx == 0)
 				{
 					structDesc.elementSize = std::max(structDesc.elementSize, (gpuParam.cpuMemOffset - structDesc.cpuMemOffset) + gpuParam.arrayElementStride * gpuParam.arraySize);
-					structDesc.arrayElementStride = structDesc.elementSize; // TODO - Possibly aligned to 64 byte boundary?
+					structDesc.arrayElementStride = structDesc.elementSize;
 				}
+
+				// New array element reached, determine arrayElementStride
+				if(arrayIdx > 0 && structDesc.arraySize == 1)
+				{
+					structDesc.arrayElementStride = gpuParam.cpuMemOffset - structDesc.cpuMemOffset; 
+				}
+
+				structDesc.arraySize = std::max(structDesc.arraySize, arrayIdx + 1);
 			}
 		}
 

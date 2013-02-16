@@ -9,6 +9,5 @@
      - packoffset on parameters is not supported and will likely result in invalid constant buffer size and/or element offsets
   - GLSL limitations
      - layout(row_major) is not supported and will likely result in incorrect matrices
-	 - Only std140 packing method is supported, others will likely result in invalid constant buffer size and/or element offsets
   - Texture limitations: Only 1D, 2D, 3D and Cube textures (and their samplers) are supported. Support for multisampled textures
      is included where necessary to implement render targets. Support for texture arrays and is not included.
