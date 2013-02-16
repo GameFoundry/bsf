@@ -12,16 +12,14 @@
 >>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
 Pass
  - A way to bind buffers to a Pass, while specifying buffer range
- - GpuParams support for buffers, structs
  - Add GL Texture buffers (They're equivalent to DX11 buffers) - http://www.opengl.org/wiki/Buffer_Texture
 
-Shader import:
- - Make sure none of the current shaders in CamelotClient are defined in code anymore
- - Add include files to ImportOptions
-
-Add a better way of determining GLSL cpuMemOffset and block size (seems to be using DX11 padding)
- - I probably need to determine struct sizes before assigning cpuMemOffset
- - I probably also need a preprocessing step to determine array sizes
+GLSL/HLSL
+ - Arrays of objects
+   - I'm assuming there will be a problem when OpenGL optimizes out a certain value
+ - See if I can make HLSL param offsets not fixed? (More like GLSL. It should be possible)
+ - Structs aren't supported in GLSL
+   - I probably need a custom parser for them
 
 Deserialization issues:
  - Currently Reflectable is not allowed to hold a ReflectablePtr

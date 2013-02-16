@@ -42,7 +42,7 @@ namespace CamelotEngine
 {
     //---------------------------------------------------------------------------
 	HighLevelGpuProgram::HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes, bool isAdjacencyInfoRequired)
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes, bool isAdjacencyInfoRequired)
         : GpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired), 
         mAssemblerProgram(nullptr)
     {
@@ -75,7 +75,7 @@ namespace CamelotEngine
     }
 	//---------------------------------------------------------------------
 	HighLevelGpuProgramHandle HighLevelGpuProgram::create(const String& source, const String& entryPoint, 
-		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes)
+		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes)
 	{
 		HighLevelGpuProgramPtr programPtr = HighLevelGpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, includes);
 

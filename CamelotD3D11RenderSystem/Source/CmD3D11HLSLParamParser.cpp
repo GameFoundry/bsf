@@ -201,7 +201,8 @@ namespace CamelotEngine
 		}
 
 		// Buffer always needs to be a multiple of 4, so make it so
-		blockDesc.blockSize += (4 - (blockDesc.blockSize % 4));
+		if(blockDesc.blockSize % 4 != 0)
+			blockDesc.blockSize += (4 - (blockDesc.blockSize % 4));
 
 #if CM_DEBUG_MODE
 		if(constantBufferDesc.Size != (blockDesc.blockSize * 4))

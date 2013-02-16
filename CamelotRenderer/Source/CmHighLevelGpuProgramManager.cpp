@@ -78,7 +78,7 @@ namespace CamelotEngine {
 			return sNullLang;
 		}
 		HighLevelGpuProgram* create(const String& source, const String& entryPoint, 
-			GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes)
+			GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes)
 		{
 			return new NullProgram();
 		}
@@ -143,7 +143,7 @@ namespace CamelotEngine {
 	}
     //---------------------------------------------------------------------------
     HighLevelGpuProgramPtr HighLevelGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes)
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes)
     {
 		HighLevelGpuProgramFactory* factory = getFactory(language);
         HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(source, entryPoint, gptype, profile, includes), &CoreGpuObject::_deleteDelayed);

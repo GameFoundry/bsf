@@ -159,14 +159,14 @@ namespace CamelotEngine
 
 				if(findIter->second->type != iter->second.type)
 				{
-					LOGWRN("Ignoring shader parameter " + iter->first  +". Type doesn't match the one defined in the gpu program. "
+					LOGWRN("Ignoring shader parameter \"" + iter->first  +"\". Type doesn't match the one defined in the gpu program. "
 						+ "Shader defined type: " + toString(iter->second.type) + " - Gpu program defined type: " + toString(findIter->second->type));
 					continue;
 				}
 
 				if(findIter->second->arraySize != iter->second.arraySize)
 				{
-					LOGWRN("Ignoring shader parameter " + iter->first  +". Array size doesn't match the one defined in the gpu program."
+					LOGWRN("Ignoring shader parameter \"" + iter->first  +"\". Array size doesn't match the one defined in the gpu program."
 						+ "Shader defined array size: " + toString(iter->second.arraySize) + " - Gpu program defined array size: " + toString(findIter->second->arraySize));
 					continue;
 				}

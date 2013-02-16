@@ -21,6 +21,11 @@ namespace CamelotEngine
 		GpuProgramType& getType(GpuProgramImportOptions* obj) { return obj->mType; }
 		void setType(GpuProgramImportOptions* obj, GpuProgramType& value) { obj->mType = value; }
 
+		GpuProgIncludeHandle& getInclude(GpuProgramImportOptions* obj, UINT32 arrIdx) { return obj->mIncludes[arrIdx]; }
+		void setInclude(GpuProgramImportOptions* obj, UINT32 arrIdx, GpuProgIncludeHandle& value) { obj->mIncludes[arrIdx] = value; }
+		UINT32 getNumIncludes(GpuProgramImportOptions* obj) { return (UINT32)obj->mIncludes.size(); }
+		void setNumIncludes(GpuProgramImportOptions* obj, UINT32 num) { obj->mIncludes.clear(); obj->mIncludes.resize(num); }
+
 	public:
 		GpuProgramImportOptionsRTTI()
 		{
@@ -28,6 +33,8 @@ namespace CamelotEngine
 			addPlainField("mLanguage", 1, &GpuProgramImportOptionsRTTI::getLanguage, &GpuProgramImportOptionsRTTI::setLanguage);
 			addPlainField("mProfile", 2, &GpuProgramImportOptionsRTTI::getProfile, &GpuProgramImportOptionsRTTI::setProfile);
 			addPlainField("mType", 3, &GpuProgramImportOptionsRTTI::getType, &GpuProgramImportOptionsRTTI::setType);
+			addReflectableArrayField("mIncludes", 4, &GpuProgramImportOptionsRTTI::getInclude, &GpuProgramImportOptionsRTTI::getNumIncludes, 
+				&GpuProgramImportOptionsRTTI::setInclude, &GpuProgramImportOptionsRTTI::setNumIncludes);
 		}
 
 		virtual const String& getRTTIName()

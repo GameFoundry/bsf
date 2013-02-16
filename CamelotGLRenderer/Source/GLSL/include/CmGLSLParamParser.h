@@ -36,6 +36,11 @@ namespace CamelotEngine
 		return -1;
 	}
 
+	struct GLSLParamArrayData
+	{
+		vector<UINT32>::type arrayIndices;
+	};
+
 	class GLSLParamParser
 	{
 	public:
@@ -181,6 +186,7 @@ namespace CamelotEngine
 			blockNames.insert(newBlockDesc.name);
 		}
 
+		map<String, UINT32>::type foundFirstArrayIndex; 
 		map<String, GpuParamDataDesc>::type foundStructs;
 
 		// get the number of active uniforms
@@ -258,6 +264,39 @@ namespace CamelotEngine
 					cleanParamName = cleanParamName.substr(0, arrayStart);
 				}
 			}
+
+			if(inStruct)	
+			{
+				// OpenGL makes struct management really difficult, which is why I have given up on implementing this so far
+				// Some of the issues I encountered:
+				//  - Elements will be optimized out if they are not used. This makes it hard to determine proper structure size.
+				//     - If struct is within a Uniform buffer block, then it is possible because the element won't be optimized out of the buffer
+				//     - If the struct is within a global buffer, it is impossible to determine actual size, since the element will be optimized out of the buffer too
+				//     - Same issue happens with arrays, as OpenGL will optimize out array elements. With global buffers this makes it impossible to determine
+				//       actual array size (e.g. suppose OpenGL optimized out few last elements)
+				//        - Normal arrays work fine as OpenGL has utilities for reporting their actual size, but those do not work with structs
+
+				CM_EXCEPT(NotImplementedException, "Structs are not supported.")
+			}
+
+			// GLSL will optimize out unused array indexes, so there's no guarantee that 0 is the first,
+			// so we store the first one here
+			int firstArrayIndex = 0;
+			if(isInArray)
+			{
+				String& nameToSearch = cleanParamName;
+				if(inStruct)
+					nameToSearch = structName;
+
+				auto arrayIndexFind = foundFirstArrayIndex.find(nameToSearch);
+				if(arrayIndexFind == foundFirstArrayIndex.end())
+				{
+					foundFirstArrayIndex[nameToSearch] = arrayIdx;
+				}
+
+				firstArrayIndex = foundFirstArrayIndex[nameToSearch];
+			}
+
 
 			GLint uniformType;
 			glGetActiveUniformsiv(glProgram, 1, &index, GL_UNIFORM_TYPE, &uniformType);
@@ -378,16 +417,17 @@ namespace CamelotEngine
 				GpuParamDataDesc& structDesc = foundStructs[structName];
 				
 				assert(gpuParam.cpuMemOffset >= structDesc.cpuMemOffset);
-				if(arrayIdx == 0)
+				if(arrayIdx == firstArrayIndex) // Determine element size only using the first array element
 				{
 					structDesc.elementSize = std::max(structDesc.elementSize, (gpuParam.cpuMemOffset - structDesc.cpuMemOffset) + gpuParam.arrayElementStride * gpuParam.arraySize);
 					structDesc.arrayElementStride = structDesc.elementSize;
 				}
 
 				// New array element reached, determine arrayElementStride
-				if(arrayIdx > 0 && structDesc.arraySize == 1)
+				if(arrayIdx != firstArrayIndex)
 				{
-					structDesc.arrayElementStride = gpuParam.cpuMemOffset - structDesc.cpuMemOffset; 
+					UINT32 numElements = arrayIdx - firstArrayIndex;
+					structDesc.arrayElementStride = (gpuParam.cpuMemOffset - structDesc.cpuMemOffset) / numElements; 
 				}
 
 				structDesc.arraySize = std::max(structDesc.arraySize, arrayIdx + 1);
@@ -401,7 +441,9 @@ namespace CamelotEngine
 		for(auto iter = returnParamDesc.paramBlocks.begin(); iter != returnParamDesc.paramBlocks.end(); ++iter)
 		{
 			GpuParamBlockDesc& blockDesc = iter->second;
-			blockDesc.blockSize += (4 - (blockDesc.blockSize % 4));
+
+			if(blockDesc.blockSize % 4 != 0)
+				blockDesc.blockSize += (4 - (blockDesc.blockSize % 4));
 		}
 
 #if CM_DEBUG_MODE
@@ -523,6 +565,8 @@ namespace CamelotEngine
 
 				desc.arrayElementStride = arrayStride / 4;
 			}
+			else
+				desc.arrayElementStride = desc.elementSize;
 		}
 		else
 			desc.arrayElementStride = desc.elementSize;

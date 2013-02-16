@@ -19,7 +19,7 @@ namespace CamelotEngine
     }
 
 	HighLevelGpuProgram* D3D11HLSLProgramFactory::create(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes)
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes)
     {
 		D3D11HLSLProgram* prog = new D3D11HLSLProgram(source, entryPoint, sLanguageName, gptype, profile, includes);
 

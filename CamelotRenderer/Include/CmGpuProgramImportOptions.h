@@ -15,11 +15,13 @@ namespace CamelotEngine
 		void setLanguage(const String& language) { mLanguage = language; }
 		void setProfile(GpuProgramProfile profile) { mProfile = profile; }
 		void setType(GpuProgramType type) { mType = type; }
+		void setIncludes(const vector<GpuProgIncludeHandle>::type& includes) { mIncludes = includes; }
 
 		const String& getEntryPoint() const { return mEntryPoint; }
 		const String& getLanguage() const { return mLanguage; }
 		GpuProgramProfile getProfile() const { return mProfile; }
 		GpuProgramType getType() const { return mType; }
+		const vector<GpuProgIncludeHandle>::type& getIncludes() const { return mIncludes; }
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -34,5 +36,6 @@ namespace CamelotEngine
 		String mLanguage;
 		GpuProgramProfile mProfile;
 		GpuProgramType mType;
+		vector<GpuProgIncludeHandle>::type mIncludes;
 	};
 }

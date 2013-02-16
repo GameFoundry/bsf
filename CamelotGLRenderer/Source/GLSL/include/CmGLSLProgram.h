@@ -102,7 +102,7 @@ namespace CamelotEngine {
 		friend class GLSLProgramFactory;
 
 		GLSLProgram(const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes, 
+			GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes, 
 			bool isAdjacencyInfoRequired = false);
 
 		/**

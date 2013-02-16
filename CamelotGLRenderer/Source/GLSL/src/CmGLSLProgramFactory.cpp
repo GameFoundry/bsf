@@ -39,7 +39,7 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------
     HighLevelGpuProgram* GLSLProgramFactory::create(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludePtr>::type* includes)
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes)
     {
 		GLSLProgram* prog = new GLSLProgram(source, entryPoint, sLanguageName, gptype, profile, includes);
 

@@ -65,34 +65,45 @@ int CALLBACK WinMain(
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
-	String fragShaderCode = "sampler2D tex;			\
-							float4 ps_main(float2 uv : TEXCOORD0) : COLOR0		\
-							{														\
-							float4 color = tex2D(tex, uv);				\
-							return color;										\
-							}";
+	String dx9psLoc = "C:\\Projects\\CamelotRenderer\\Data\\hlsl9_ps.gpuprog";
+	String dx9vsLoc = "C:\\Projects\\CamelotRenderer\\Data\\hlsl9_vs.gpuprog";
 
-	HighLevelGpuProgramHandle fragProgRef =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(dx9psLoc);
+	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+	{
+		GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
 
-	String vertShaderCode = "float4x4 matViewProjection;	\
-							void vs_main(										\
-							float4 inPos : POSITION,							\
-							float2 uv : TEXCOORD0,								\
-							out float4 oPosition : POSITION,					\
-							out float2 oUv : TEXCOORD0)							\
-							{														\
-							oPosition = mul(matViewProjection, inPos);			\
-							oUv = uv;											\
-							}";
+		importOptions->setEntryPoint("ps_main");
+		importOptions->setLanguage("hlsl");
+		importOptions->setProfile(GPP_PS_2_0);
+		importOptions->setType(GPT_FRAGMENT_PROGRAM);
+	}
 
-	HighLevelGpuProgramHandle vertProgRef =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	HighLevelGpuProgramHandle fragProgRef = Importer::instance().import(dx9psLoc, gpuProgImportOptions);
+
+	gpuProgImportOptions = Importer::instance().createImportOptions(dx9vsLoc);
+	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+	{
+		GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
+
+		importOptions->setEntryPoint("vs_main");
+		importOptions->setLanguage("hlsl");
+		importOptions->setProfile(GPP_VS_2_0);
+		importOptions->setType(GPT_VERTEX_PROGRAM);
+	}
+
+	HighLevelGpuProgramHandle vertProgRef = Importer::instance().import(dx9vsLoc, gpuProgImportOptions);
 
 #elif defined DX11
 
 	GpuProgIncludeHandle gpuProgInclude = Importer::instance().import("C:\\testInclude.gpuproginc");
 	const String& debugString = gpuProgInclude->getString();
+	
+	/////////////////// HLSL 11 SHADERS //////////////////////////
+	String dx11psLoc = "C:\\Projects\\CamelotRenderer\\Data\\hlsl11_ps.gpuprog";
+	String dx11vsLoc = "C:\\Projects\\CamelotRenderer\\Data\\hlsl11_vs.gpuprog";
 
-	ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions("C:\\testGpuProg.gpuprog");
+	ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(dx11psLoc);
 	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
 	{
 		GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
@@ -103,79 +114,51 @@ int CALLBACK WinMain(
 		importOptions->setType(GPT_FRAGMENT_PROGRAM);
 	}
 
-	HighLevelGpuProgramHandle importedGpuProgram = Importer::instance().import("C:\\testGpuProg.gpuprog", gpuProgImportOptions);
+	HighLevelGpuProgramHandle fragProgRef = Importer::instance().import(dx11psLoc, gpuProgImportOptions);
 
-	/////////////////// HLSL 11 SHADERS //////////////////////////
-	String fragShaderCode = "SamplerState samp : register(s0);			\
-							Texture2D tex : register(t0); \
-							float4 ps_main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target		\
-							{														\
-							float4 color = tex.Sample(samp, uv);				\
-							return color;										\
-							}";
+	gpuProgImportOptions = Importer::instance().createImportOptions(dx11vsLoc);
+	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+	{
+		GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
 
-	HighLevelGpuProgramHandle fragProgRef =  HighLevelGpuProgram::create(fragShaderCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+		importOptions->setEntryPoint("vs_main");
+		importOptions->setLanguage("hlsl");
+		importOptions->setProfile(GPP_VS_4_0);
+		importOptions->setType(GPT_VERTEX_PROGRAM);
+	}
 
-	String vertShaderCode = "struct InputStruct									\
-							{													\
-								float matMultiplier;							\
-								float uvMultiplier;									\
-							};													\
-																				\
-							float test1; \
-							InputStruct input[2];								\
-							float4x4 matViewProjection;							\
-														float test2; \
-							void vs_main(										\
-							in float4 inPos : POSITION,							\
-							in float2 uv : TEXCOORD0,							\
-							out float4 oPosition : SV_Position,					\
-							out float2 oUv : TEXCOORD0)							\
-							{													\
-							oPosition = mul(matViewProjection * input[1].matMultiplier, inPos);	\
-							oUv = uv * input[1].uvMultiplier;						\
-							}";
-
-	HighLevelGpuProgramHandle vertProgRef =  HighLevelGpuProgram::create(vertShaderCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+	HighLevelGpuProgramHandle vertProgRef = Importer::instance().import(dx11vsLoc, gpuProgImportOptions);
+	
 #else
 	///////////////// GLSL SHADERS ////////////////////////////
-	String fragShaderCode = " #version 400 \n \
-							  uniform sampler2D tex; \
-							  in vec2 texcoord0; \
-							  out vec4 fragColor; \
-							  void main() \
-							  {\
-								  vec4 texColor = texture2D(tex, texcoord0.st);\
-								  fragColor = texColor; \
-							  }";
+	String glslpsLoc = "C:\\Projects\\CamelotRenderer\\Data\\glsl_ps.gpuprog";
+	String glslvsLoc = "C:\\Projects\\CamelotRenderer\\Data\\glsl_vs.gpuprog";
 
-	HighLevelGpuProgramHandle fragProgRef = HighLevelGpuProgram::create(fragShaderCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+	ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(glslpsLoc);
+	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+	{
+		GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
 
-	// TODO - Make sure to document the strict input parameter naming. (Exact supported names are in GLSLParamParser)
-	String vertShaderCode = "#version 400 \n									\
-							struct InputStruct									\
-							{													\
-								float matMultiplier[2];							\
-								float uvMultiplier;								\
-							};													\
-																				\
-							 uniform mainFragBlock								\
-							 {													\
-							 float test1;										\
-							 mat4 matViewProjection;							\
-							 float test2;										\
-							 };													\
-							 uniform InputStruct input[2];						\
-							 in vec4 cm_position; \
-							 in vec2 cm_texcoord0; \
-							 out vec2 texcoord0; \
-							 void main() \
-							 { \
-							 texcoord0 = cm_texcoord0 * input[1].uvMultiplier; \
-							 gl_Position = cm_position * (matViewProjection * input[1].matMultiplier[1]); \
-							 }";
+		importOptions->setEntryPoint("main");
+		importOptions->setLanguage("glsl");
+		importOptions->setProfile(GPP_PS_2_0);
+		importOptions->setType(GPT_FRAGMENT_PROGRAM);
+	}
 
-	HighLevelGpuProgramHandle vertProgRef= HighLevelGpuProgram::create(vertShaderCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+	HighLevelGpuProgramHandle fragProgRef = Importer::instance().import(glslpsLoc, gpuProgImportOptions);
+
+	gpuProgImportOptions = Importer::instance().createImportOptions(glslvsLoc);
+	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+	{
+		GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
+
+		importOptions->setEntryPoint("main");
+		importOptions->setLanguage("glsl");
+		importOptions->setProfile(GPP_VS_2_0);
+		importOptions->setType(GPT_VERTEX_PROGRAM);
+	}
+
+	HighLevelGpuProgramHandle vertProgRef = Importer::instance().import(glslvsLoc, gpuProgImportOptions);
 #endif
 
 	gResources().create(vertProgRef, "C:\\vertProgCg.vprog", true);
@@ -192,10 +175,6 @@ int CALLBACK WinMain(
 
 #if defined DX11
 	testShader->addParameter("input", "input", GPDT_STRUCT, 2, 8);
-#endif
-
-#if defined GL
-	testShader->addParameter("input", "input", GPDT_STRUCT, 2, 12);
 #endif
 
 	testShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
@@ -233,21 +212,6 @@ int CALLBACK WinMain(
 	float dbgMultipliers2[2];
 	dbgMultipliers2[0] = 1.0f;
 	dbgMultipliers2[1] = 1.0f;
-
-	testMaterial->setStructData("input", dbgMultipliers1, sizeof(dbgMultipliers1), 0);
-	testMaterial->setStructData("input", dbgMultipliers2, sizeof(dbgMultipliers2), 1);
-#endif
-
-#if defined GL
-	float dbgMultipliers1[3];
-	dbgMultipliers1[0] = 0.0f;
-	dbgMultipliers1[1] = 0.0f;
-	dbgMultipliers1[2] = 0.0f;
-
-	float dbgMultipliers2[3];
-	dbgMultipliers2[0] = 0.0f;
-	dbgMultipliers2[1] = 1.0f;
-	dbgMultipliers2[2] = 1.0f;
 
 	testMaterial->setStructData("input", dbgMultipliers1, sizeof(dbgMultipliers1), 0);
 	testMaterial->setStructData("input", dbgMultipliers2, sizeof(dbgMultipliers2), 1);
