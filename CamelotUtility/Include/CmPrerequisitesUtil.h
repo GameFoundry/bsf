@@ -70,6 +70,6 @@ THE SOFTWARE
 // Forward declarations
 #include "CmFwdDeclUtil.h"
 
-#include "CmString.h"
-
 #include "CmRTTIPrerequisites.h"
+
+#include "CmString.h"

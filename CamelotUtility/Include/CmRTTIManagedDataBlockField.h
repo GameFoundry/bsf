@@ -24,11 +24,12 @@ namespace CamelotEngine
 		 * 						serializing data to disk and similar. It is primarily used for compatibility
 		 * 						between different versions of serialized data.
 		 * @param	getter  	The getter method for the field. Cannot be null. Must be a specific signature: SerializableDataBlock(ObjectType*)
-		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, SerializableDataBlock)
+		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, SerializableDataBlock)	
+		 * @param	flags		Various flags you can use to specialize how systems handle this field
 		 */
-		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter)
+		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
-			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_DataBlock);
+			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_DataBlock, flags);
 		}
 
 		virtual UINT32 getTypeSize()

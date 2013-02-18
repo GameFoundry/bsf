@@ -65,4 +65,10 @@ namespace CamelotEngine
 
 		mFields.push_back(field);
 	}
+
+	void RTTITypeBase::throwCircularRefException(const String& myType, const String& otherType) const
+	{
+		CM_EXCEPT(InternalErrorException, "Found circular reference on RTTI type: " + myType + " to type: " + otherType + "."
+			+ " Either remove one of the references or mark it as a weak reference when defining the RTTI field.");
+	}
 }

@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
 #include "CmShader.h"
+#include "CmMaterial.h"
 
 namespace CamelotEngine
 {

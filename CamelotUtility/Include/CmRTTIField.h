@@ -18,53 +18,6 @@ namespace CamelotEngine
 	struct RTTIField;
 
 	/**
-	 * @brief	Strings need to copy their data in a slightly more intricate way than just memcpy.
-	 */
-	template<> struct RTTIPlainType<String>
-	{	
-		enum { id = 20 }; enum { hasDynamicSize = 1 };
-
-		static void toMemory(String& data, char* memory)
-		{ 
-			UINT32 size = getDynamicSize(data);
-
-			memcpy(memory, &size, sizeof(UINT32));
-			memory += sizeof(UINT32);
-			size -= sizeof(UINT32);
-			memcpy(memory, data.data(), size); 
-		}
-
-		static void fromMemory(String& data, char* memory)
-		{ 
-			UINT32 size;
-			memcpy(&size, memory, sizeof(UINT32)); 
-			memory += sizeof(UINT32);
-
-			size -= sizeof(UINT32);
-			char* buffer = new char[size + 1]; // TODO - Use a better allocator
-			memcpy(buffer, memory, size); 
-			buffer[size] = '\0';
-			data = String(buffer);
-
-			delete[] buffer; 
-		}
-
-		static UINT32 getDynamicSize(String& data)	
-		{ 
-			UINT64 dataSize = data.size() * sizeof(String::value_type) + sizeof(UINT32);
-
-#if CM_DEBUG_MODE
-			if(dataSize > std::numeric_limits<UINT32>::max())
-			{
-				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
-			}
-#endif
-
-			return (UINT32)dataSize;
-		}	
-	}; 
-
-	/**
 	 * @brief	Types of fields we can serialize:
 	 * 			
 	 * - Plain - Native data types, POD (Plain old data) structures, or in general types we don't want to (or can't) inherit from IReflectable. 
@@ -73,9 +26,9 @@ namespace CamelotEngine
 	 *				 Managed data blocks have their buffers deleted after they go out of scope. This is useful if you need to return some
 	 *				 temporary data. On the other hand if the data in the block belongs to your class, and isn't temporary, keep the data unmanaged.
 	 *				 
-	 * - Complex - Field that is of IReflectable type. Cannot be a pointer to IReflectable and must be actual value type. 
+	 * - Reflectable - Field that is of IReflectable type. Cannot be a pointer to IReflectable and must be actual value type. 
 	 * 
-	 * - ComplexPtr - A pointer to IReflectable.
+	 * - ReflectablePtr - A pointer to IReflectable.
 	 */
 	enum SerializableFieldType
 	{
@@ -83,6 +36,24 @@ namespace CamelotEngine
 		SerializableFT_DataBlock,
 		SerializableFT_Reflectable,
 		SerializableFT_ReflectablePtr
+	};
+
+	/**
+	 * @brief	Various flags you can assign to RTTI fields.
+	 */
+	enum RTTIFieldFlag
+	{
+		// This flag is only used on field types of ReflectablePtr type, and it is used
+		// to solve circular references. Circular references cause an issue when deserializing, 
+		// as the algorithm doesn't know which object to deserialize first. By making one of 
+		// the references weak, you tell the algorithm that it doesn't have to guarantee 
+		// the object will be fully deserialized before being assigned to the field.
+		//
+		// In short: If you make a reference weak, when "set" method of that field is called,
+		// it is not guaranteed the value provided is fully initialized, so you should not access any of its
+		// data until deserialization is fully complete. You only need to use this flag if the RTTI system
+		// complains that is has found a circular reference.
+		RTTI_Flag_WeakRef = 0x01
 	};
 
 	/**
@@ -100,12 +71,15 @@ namespace CamelotEngine
 		UINT16 mUniqueId;
 		bool mIsVectorType;
 		SerializableFieldType mType;
+		UINT64 mFlags;
 
 		bool isPlainType() { return mType == SerializableFT_Plain; }
 		bool isDataBlockType() { return mType == SerializableFT_DataBlock; }
-		bool isComplexType() { return mType == SerializableFT_Reflectable; }
-		bool isComplexPtrType() { return mType == SerializableFT_ReflectablePtr; }
+		bool isReflectableType() { return mType == SerializableFT_Reflectable; }
+		bool isReflectablePtrType() { return mType == SerializableFT_ReflectablePtr; }
 		
+		UINT64 getFlags() const { return mFlags; }
+
 		virtual UINT32 getArraySize(void* object) = 0;
 		virtual void setArraySize(void* object, UINT32 size) = 0;
 
@@ -148,7 +122,7 @@ namespace CamelotEngine
 
 	protected:
 		void initAll(boost::any valueGetter, boost::any valueSetter, boost::any arraySizeGetter, boost::any arraySizeSetter,
-			std::string mName, UINT16 mUniqueId, bool mIsVectorType, SerializableFieldType type)
+			std::string mName, UINT16 mUniqueId, bool mIsVectorType, SerializableFieldType type, UINT64 flags)
 		{
 			this->valueGetter = valueGetter;
 			this->valueSetter = valueSetter;
@@ -158,6 +132,7 @@ namespace CamelotEngine
 			this->mUniqueId = mUniqueId;
 			this->mIsVectorType = mIsVectorType;
 			this->mType = type;
+			this->mFlags = flags;
 		}
 	};
 }

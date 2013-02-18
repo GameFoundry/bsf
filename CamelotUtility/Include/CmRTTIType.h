@@ -252,6 +252,40 @@ namespace CamelotEngine
 		 */
 		void addNewField(RTTIField* field);
 
+		/**
+		 * @brief	Checks if the templated DataType has any references back to us, that aren't weak.
+		 * 			
+		 * @note	This method assumes this class holds a non-weak reference to DataType.
+		 * 			DataType must derive from IReflectable and implement getRTTIStatic method.
+		 */
+		template<class DataType>
+		void checkForCircularReferences()
+		{
+			RTTITypeBase* type = DataType::getRTTIStatic();
+
+			for(UINT32 i = 0; i < type->getNumFields(); i++)
+			{
+				RTTIField* field = type->getField(i);
+
+				if(!field->isReflectablePtrType())
+					continue;
+
+				RTTIReflectablePtrFieldBase* reflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(field);
+
+				if(reflectablePtrField->getRTTIId() == getRTTIId() && ((reflectablePtrField->getFlags() & RTTI_Flag_WeakRef) == 0))
+				{
+					throwCircularRefException(getRTTIName(), reflectablePtrField->getRTTIName());
+				}
+			}
+		}
+
+		/**
+		 * @brief	Throws an exception warning the user that a circular reference was found. 
+		 *
+		 * @note Only a separate function so I don't need to include CmException header.
+		 */
+		void throwCircularRefException(const String& myType, const String& otherType) const;
+
 	private:
 		std::vector<RTTIField*> mFields;
 	};
@@ -362,69 +396,72 @@ namespace CamelotEngine
 		/* 			FIELDS OPERATING DIRECTLY ON SERIALIZABLE OBJECT            */
 		/************************************************************************/
 		template<class ObjectType, class DataType>
-		void addPlainField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), void (ObjectType::*setter)(DataType&) = nullptr)
+		void addPlainField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
+			void (ObjectType::*setter)(DataType&) = nullptr, UINT64 flags = 0)
 		{
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*)>(getter), 
-				boost::function<void(ObjectType*, DataType&)>(setter));
+				boost::function<void(ObjectType*, DataType&)>(setter), flags);
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectableField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), void (ObjectType::*setter)(DataType&) = nullptr)
+		void addReflectableField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
+			void (ObjectType::*setter)(DataType&) = nullptr, UINT64 flags = 0)
 		{
 			addReflectableField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*)>(getter), 
-				boost::function<void(ObjectType*, DataType&)>(setter));
+				boost::function<void(ObjectType*, DataType&)>(setter), flags);
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(), void (ObjectType::*setter)(std::shared_ptr<DataType>) = nullptr)
+		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(), 
+			void (ObjectType::*setter)(std::shared_ptr<DataType>) = nullptr, UINT64 flags = 0)
 		{
 			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<std::shared_ptr<DataType>(ObjectType*)>(getter), 
-				boost::function<void(ObjectType*, std::shared_ptr<DataType>)>(setter));
+				boost::function<void(ObjectType*, std::shared_ptr<DataType>)>(setter), flags);
 		}
 
 		template<class ObjectType, class DataType>
 		void addPlainArrayField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
-			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr)
+			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*, UINT32)>(getter), 
 				boost::function<UINT32(ObjectType*)>(getSize), 
 				boost::function<void(ObjectType*, UINT32, DataType&)>(setter), 
-				boost::function<void(ObjectType*, UINT32)>(setSize));
+				boost::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}	
 
 		template<class ObjectType, class DataType>
 		void addReflectableArrayField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
-			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr)
+			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addReflectableArrayField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*, UINT32)>(getter), 
 				boost::function<UINT32(ObjectType*)>(getSize), 
 				boost::function<void(ObjectType*, UINT32, DataType&)>(setter), 
-				boost::function<void(ObjectType*, UINT32)>(setSize));
+				boost::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}
 
 		template<class ObjectType, class DataType>
 		void addReflectablePtrArrayField(const std::string& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
-			void (ObjectType::*setter)(UINT32, std::shared_ptr<DataType>) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr)
+			void (ObjectType::*setter)(UINT32, std::shared_ptr<DataType>) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>(getter), 
 				boost::function<UINT32(ObjectType*)>(getSize), 
 				boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>(setter), 
-				boost::function<void(ObjectType*, UINT32)>(setSize));
+				boost::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}
 
 		template<class ObjectType>
 		void addDataBlockField(const std::string& name, UINT32 uniqueId, ManagedDataBlock (ObjectType::*getter)(), 
-			void (ObjectType::*setter)(ManagedDataBlock) = nullptr)
+			void (ObjectType::*setter)(ManagedDataBlock) = nullptr, UINT64 flags = 0)
 		{
 			addDataBlockField<ObjectType>(name, uniqueId, 
 				boost::function<ManagedDataBlock(ObjectType*)>(getter),  
-				boost::function<void(ObjectType*, ManagedDataBlock)>(setter));
+				boost::function<void(ObjectType*, ManagedDataBlock)>(setter), flags);
 		}	
 
 	protected:
@@ -437,7 +474,7 @@ namespace CamelotEngine
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addPlainField(const std::string& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, DataType&) = nullptr)
+			void (InterfaceType::*setter)(ObjectType*, DataType&), UINT64 flags = 0)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
 				"Class with the get/set methods must derive from CamelotEngine::RTTIType.");
@@ -447,35 +484,35 @@ namespace CamelotEngine
 
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)));
+				boost::function<void(ObjectType*, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectableField(const std::string& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, DataType&) = nullptr)
+			void (InterfaceType::*setter)(ObjectType*, DataType&), UINT64 flags = 0)
 		{
 			addReflectableField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)));
+				boost::function<void(ObjectType*, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, 
 			std::shared_ptr<DataType> (InterfaceType::*getter)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, std::shared_ptr<DataType>) = nullptr)
+			void (InterfaceType::*setter)(ObjectType*, std::shared_ptr<DataType>), UINT64 flags = 0)
 		{
 			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<std::shared_ptr<DataType>(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, std::shared_ptr<DataType>)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)));
+				boost::function<void(ObjectType*, std::shared_ptr<DataType>)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addPlainArrayField(const std::string& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*, UINT32), 
 			UINT32 (InterfaceType::*getSize)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&) = nullptr, 
-			void(InterfaceType::*setSize)(ObjectType*, UINT32) = nullptr)
+			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&), 
+			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
 				"Class with the get/set methods must derive from CamelotEngine::RTTIType.");
@@ -487,115 +524,121 @@ namespace CamelotEngine
 				boost::function<DataType&(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
 				boost::function<UINT32(ObjectType*)>(boost::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
 				boost::function<void(ObjectType*, UINT32, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
-				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)));
+				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}	
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectableArrayField(const std::string& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*, UINT32), 
 			UINT32 (InterfaceType::*getSize)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&) = nullptr, 
-			void(InterfaceType::*setSize)(ObjectType*, UINT32) = nullptr)
+			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&), 
+			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
 		{
 			addReflectableArrayField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<DataType&(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
 				boost::function<UINT32(ObjectType*)>(boost::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
 				boost::function<void(ObjectType*, UINT32, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
-				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)));
+				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectablePtrArrayField(const std::string& name, UINT32 uniqueId, 
 			std::shared_ptr<DataType> (InterfaceType::*getter)(ObjectType*, UINT32), 
 			UINT32 (InterfaceType::*getSize)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, UINT32, std::shared_ptr<DataType>) = nullptr, 
-			void(InterfaceType::*setSize)(ObjectType*, UINT32) = nullptr)
+			void (InterfaceType::*setter)(ObjectType*, UINT32, std::shared_ptr<DataType>), 
+			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
 		{
 			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
 				boost::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
 				boost::function<UINT32(ObjectType*)>(boost::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
 				boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
-				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)));
+				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType>
 		void addDataBlockField(const std::string& name, UINT32 uniqueId, ManagedDataBlock (InterfaceType::*getter)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, ManagedDataBlock) = nullptr)
+			void (InterfaceType::*setter)(ObjectType*, ManagedDataBlock), UINT64 flags = 0)
 		{
 			addDataBlockField<ObjectType>(name, uniqueId, 
 				boost::function<ManagedDataBlock(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)),  
-				boost::function<void(ObjectType*, ManagedDataBlock)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)));
+				boost::function<void(ObjectType*, ManagedDataBlock)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}	
 
 	private:
 		template<class ObjectType, class DataType>
-		void addPlainField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter = nullptr)
+		void addPlainField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
 			RTTIPlainField<DataType, ObjectType>* newField = new RTTIPlainField<DataType, ObjectType>();
-			newField->initSingle(name, uniqueId, getter, setter);
+			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}
 		
 		template<class ObjectType, class DataType>
-		void addReflectableField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter = nullptr)
+		void addReflectableField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
 
 			RTTIReflectableField<DataType, ObjectType>* newField = new RTTIReflectableField<DataType, ObjectType>();
-			newField->initSingle(name, uniqueId, getter, setter);
+			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter = nullptr)
+		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
 
+			if((flags & RTTI_Flag_WeakRef) == 0)
+				checkForCircularReferences<DataType>();
+
 			RTTIReflectablePtrField<DataType, ObjectType>* newField = new RTTIReflectablePtrField<DataType, ObjectType>();
-			newField->initSingle(name, uniqueId, getter, setter);
+			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}
 
 		template<class ObjectType, class DataType>
 		void addPlainArrayField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
-			boost::any setter = nullptr, boost::any setSize = nullptr)
+			boost::any setter, boost::any setSize, UINT64 flags)
 		{
 			RTTIPlainField<DataType, ObjectType>* newField = new RTTIPlainField<DataType, ObjectType>();
-			newField->initArray(name, uniqueId, getter, getSize, setter, setSize);
+			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
 		}	
 
 		template<class ObjectType, class DataType>
 		void addReflectableArrayField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
-			boost::any setter = nullptr, boost::any setSize = nullptr)
+			boost::any setter, boost::any setSize, UINT64 flags)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
 
 			RTTIReflectableField<DataType, ObjectType>* newField = new RTTIReflectableField<DataType, ObjectType>();
-			newField->initArray(name, uniqueId, getter, getSize, setter, setSize);
+			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
 		}
 
 		template<class ObjectType, class DataType>
 		void addReflectablePtrArrayField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
-			boost::any setter = nullptr, boost::any setSize = nullptr)
+			boost::any setter, boost::any setSize, UINT64 flags)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
 
+			if((flags & RTTI_Flag_WeakRef) == 0)
+				checkForCircularReferences<DataType>();
+
 			RTTIReflectablePtrField<DataType, ObjectType>* newField = new RTTIReflectablePtrField<DataType, ObjectType>();
-			newField->initArray(name, uniqueId, getter, getSize, setter, setSize);
+			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
 		}
 
 		template<class ObjectType>
-		void addDataBlockField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter = nullptr)
+		void addDataBlockField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
 			RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>* newField = new RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>();
-			newField->initSingle(name, uniqueId, getter,  setter);
+			newField->initSingle(name, uniqueId, getter,  setter, flags);
 			addNewField(newField);
 		}	
 	};

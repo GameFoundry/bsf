@@ -356,6 +356,55 @@ namespace CamelotEngine {
     CM_UTILITY_EXPORT bool isNumber(const String& val);
 	/** @} */
 
+	void CM_UTILITY_EXPORT __string_throwDataOverflowException();
+
+	/**
+	 * @brief	Strings need to copy their data in a slightly more intricate way than just memcpy.
+	 */
+	template<> struct RTTIPlainType<String>
+	{	
+		enum { id = 20 }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(String& data, char* memory)
+		{ 
+			UINT32 size = getDynamicSize(data);
+
+			memcpy(memory, &size, sizeof(UINT32));
+			memory += sizeof(UINT32);
+			size -= sizeof(UINT32);
+			memcpy(memory, data.data(), size); 
+		}
+
+		static void fromMemory(String& data, char* memory)
+		{ 
+			UINT32 size;
+			memcpy(&size, memory, sizeof(UINT32)); 
+			memory += sizeof(UINT32);
+
+			size -= sizeof(UINT32);
+			char* buffer = new char[size + 1]; // TODO - Use a better allocator
+			memcpy(buffer, memory, size); 
+			buffer[size] = '\0';
+			data = String(buffer);
+
+			delete[] buffer; 
+		}
+
+		static UINT32 getDynamicSize(String& data)	
+		{ 
+			UINT64 dataSize = data.size() * sizeof(String::value_type) + sizeof(UINT32);
+
+#if CM_DEBUG_MODE
+			if(dataSize > std::numeric_limits<UINT32>::max())
+			{
+				__string_throwDataOverflowException();
+			}
+#endif
+
+			return (UINT32)dataSize;
+		}	
+	}; 
+
 } // namespace CamelotEngine
 
 #endif // _String_H__

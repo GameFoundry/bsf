@@ -9,7 +9,7 @@ namespace CamelotEngine
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Plain type. Got: " + toString(mIsVectorType) + ", " + 
-				toString(isPlainType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
+				toString(isPlainType()) + ", " + toString(isReflectableType()) + ", " + toString(isDataBlockType()) + ", " + toString(isReflectablePtrType()));
 		}
 
 		checkIsArray(array);
@@ -21,17 +21,17 @@ namespace CamelotEngine
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Data block. Got: " + toString(mIsVectorType) + ", " + 
-				toString(isPlainType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
+				toString(isPlainType()) + ", " + toString(isReflectableType()) + ", " + toString(isDataBlockType()) + ", " + toString(isReflectablePtrType()));
 		}
 	}
 
 	void RTTIField::checkIsComplex(bool array)
 	{
-		if(!isComplexType())
+		if(!isReflectableType())
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Complex type. Got: " + toString(mIsVectorType) + ", " + 
-				toString(isPlainType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
+				toString(isPlainType()) + ", " + toString(isReflectableType()) + ", " + toString(isDataBlockType()) + ", " + toString(isReflectablePtrType()));
 		}
 
 		checkIsArray(array);
@@ -39,11 +39,11 @@ namespace CamelotEngine
 
 	void RTTIField::checkIsComplexPtr(bool array)
 	{
-		if(!isComplexPtrType())
+		if(!isReflectablePtrType())
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Complex ptr type. Got: " + toString(mIsVectorType) + ", " + 
-				toString(isPlainType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
+				toString(isPlainType()) + ", " + toString(isReflectableType()) + ", " + toString(isDataBlockType()) + ", " + toString(isReflectablePtrType()));
 		}
 
 		checkIsArray(array);

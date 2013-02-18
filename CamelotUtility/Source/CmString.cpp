@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include "CmVector2.h"
 #include "CmVector3.h"
 #include "CmVector4.h"
+#include "CmException.h"
 
 namespace CamelotEngine {
 
@@ -683,5 +684,10 @@ namespace CamelotEngine {
 		float tst;
 		str >> tst;
 		return !str.fail() && str.eof();
+	}
+	//----------------------------------------------------------------------
+	void __string_throwDataOverflowException()
+	{
+		CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
 	}
 }

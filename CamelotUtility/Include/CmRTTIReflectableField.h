@@ -32,10 +32,11 @@ namespace CamelotEngine
 		 * 						between different versions of serialized data.
 		 * @param	getter  	The getter method for the field. Cannot be null. Must be a specific signature: DataType&(ObjectType*)
 		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, DataType)
+		 * @param	flags		Various flags you can use to specialize how systems handle this field
 		 */
-		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter)
+		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
-			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_Reflectable);
+			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_Reflectable, flags);
 		}
 
 		/**
@@ -50,11 +51,12 @@ namespace CamelotEngine
 		 * @param	getSize 	Getter method that returns the size of an array. Cannot be null. Must be a specific signature: UINT32(ObjectType*)
 		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, UINT32, DataType)
 		 * @param	setSize 	Setter method that allows you to resize an array. Can be null. Can be null. Must be a specific signature: void(ObjectType*, UINT32)
+		 * @param	flags		Various flags you can use to specialize how systems handle this field
 		 */
 		void initArray(const std::string& name, UINT16 uniqueId, boost::any getter, 
-			boost::any getSize, boost::any setter, boost::any setSize)
+			boost::any getSize, boost::any setter, boost::any setSize, UINT64 flags)
 		{
-			initAll(getter, setter, getSize, setSize, name, uniqueId, true, SerializableFT_Reflectable);
+			initAll(getter, setter, getSize, setSize, name, uniqueId, true, SerializableFT_Reflectable, flags);
 		}
 
 		virtual UINT32 getTypeSize()
