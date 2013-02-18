@@ -6,7 +6,7 @@
 
 namespace CamelotEngine
 {
-	template<> struct SerializableSimpleType<SHADER_DATA_PARAM_DESC>
+	template<> struct RTTIPlainType<SHADER_DATA_PARAM_DESC>
 	{	
 		enum { id = TID_SHADER_DATA_PARAM_DESC }; enum { hasDynamicSize = 1 };
 
@@ -56,7 +56,7 @@ namespace CamelotEngine
 		}	
 	}; 
 
-	template<> struct SerializableSimpleType<SHADER_OBJECT_PARAM_DESC>
+	template<> struct RTTIPlainType<SHADER_OBJECT_PARAM_DESC>
 	{	
 		enum { id = TID_SHADER_OBJECT_PARAM_DESC }; enum { hasDynamicSize = 1 };
 
@@ -102,7 +102,7 @@ namespace CamelotEngine
 		}	
 	}; 
 
-	template<> struct SerializableSimpleType<SHADER_PARAM_BLOCK_DESC>
+	template<> struct RTTIPlainType<SHADER_PARAM_BLOCK_DESC>
 	{	
 		enum { id = TID_SHADER_PARAM_BLOCK_DESC }; enum { hasDynamicSize = 1 };
 

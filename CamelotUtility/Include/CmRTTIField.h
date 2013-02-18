@@ -20,7 +20,7 @@ namespace CamelotEngine
 	/**
 	 * @brief	Strings need to copy their data in a slightly more intricate way than just memcpy.
 	 */
-	template<> struct SerializableSimpleType<String>
+	template<> struct RTTIPlainType<String>
 	{	
 		enum { id = 20 }; enum { hasDynamicSize = 1 };
 
@@ -67,7 +67,7 @@ namespace CamelotEngine
 	/**
 	 * @brief	Types of fields we can serialize:
 	 * 			
-	 * - Simple - Native data types, POD (Plain old data) structures, or in general types we don't want to (or can't) inherit from IReflectable. 
+	 * - Plain - Native data types, POD (Plain old data) structures, or in general types we don't want to (or can't) inherit from IReflectable. 
 	 *			  
 	 * - DataBlock - Array of bytes of a certain size. When returning a data block you may specify if its managed or unmanaged.  
 	 *				 Managed data blocks have their buffers deleted after they go out of scope. This is useful if you need to return some
@@ -101,7 +101,7 @@ namespace CamelotEngine
 		bool mIsVectorType;
 		SerializableFieldType mType;
 
-		bool isSimpleType() { return mType == SerializableFT_Plain; }
+		bool isPlainType() { return mType == SerializableFT_Plain; }
 		bool isDataBlockType() { return mType == SerializableFT_DataBlock; }
 		bool isComplexType() { return mType == SerializableFT_Reflectable; }
 		bool isComplexPtrType() { return mType == SerializableFT_ReflectablePtr; }
@@ -113,11 +113,11 @@ namespace CamelotEngine
 		virtual bool hasDynamicSize() = 0;
 
 		/**
-		 * @brief	Throws an exception if this field doesn't contain a simple value.
+		 * @brief	Throws an exception if this field doesn't contain a plain value.
 		 *
-		 * @param	array	If true then the field must support simple array types.
+		 * @param	array	If true then the field must support plain array types.
 		 */
-		void checkIsSimple(bool array);
+		void checkIsPlain(bool array);
 
 		/**
 		 * @brief	Throws an exception if this field doesn't contain a complex value.

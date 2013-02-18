@@ -919,7 +919,7 @@ namespace CamelotEngine
 		//// D - Data block
 		//// P - Complex ptr
 		//// O - Object descriptor
-		//// Y - Simple field has dynamic size
+		//// Y - Plain field has dynamic size
 
 		return (id << 16 | size << 8 | 
 			(array ? 0x02 : 0) | 

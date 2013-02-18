@@ -152,11 +152,11 @@ namespace CamelotEngine
 		 */
 		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter)
 		{
-			int typeId = SerializableSimpleType<DataType>::id; // Just making sure provided type has a type ID
+			int typeId = RTTIPlainType<DataType>::id; // Just making sure provided type has a type ID
 
-			BOOST_STATIC_ASSERT_MSG((SerializableSimpleType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
+			BOOST_STATIC_ASSERT_MSG((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
 				"Trying to create a plain RTTI field with size larger than 255. In order to use larger sizes for plain types please specialize " \
-				" SerializableSimpleType, set hasDynamicSize to true.");
+				" RTTIPlainType, set hasDynamicSize to true.");
 
 			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_Plain);
 		}
@@ -179,11 +179,11 @@ namespace CamelotEngine
 		void initArray(const std::string& name, UINT16 uniqueId, boost::any getter, 
 			boost::any getSize, boost::any setter, boost::any setSize)
 		{
-			int typeId = SerializableSimpleType<DataType>::id; // Just making sure provided type has a type ID
+			int typeId = RTTIPlainType<DataType>::id; // Just making sure provided type has a type ID
 
-			BOOST_STATIC_ASSERT_MSG((SerializableSimpleType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
+			BOOST_STATIC_ASSERT_MSG((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
 				"Trying to create a plain RTTI field with size larger than 255. In order to use larger sizes for plain types please specialize " \
-				" SerializableSimpleType, set hasDynamicSize to true.");
+				" RTTIPlainType, set hasDynamicSize to true.");
 
 			initAll(getter, setter, getSize, setSize, name, uniqueId, true, SerializableFT_Plain);
 		}
@@ -195,12 +195,12 @@ namespace CamelotEngine
 
 		virtual UINT32 getTypeId()
 		{
-			return SerializableSimpleType<DataType>::id;
+			return RTTIPlainType<DataType>::id;
 		}
 
 		virtual bool hasDynamicSize()
 		{
-			return SerializableSimpleType<DataType>::hasDynamicSize != 0;
+			return RTTIPlainType<DataType>::hasDynamicSize != 0;
 		}
 
 		virtual UINT32 getDynamicSize(void* object)
@@ -212,7 +212,7 @@ namespace CamelotEngine
 
 			DataType value;
 			getValue(castObject, value);
-			return SerializableSimpleType<DataType>::getDynamicSize(value);
+			return RTTIPlainType<DataType>::getDynamicSize(value);
 		}
 
 		virtual UINT32 getArrayElemDynamicSize(void* object, int index)
@@ -224,7 +224,7 @@ namespace CamelotEngine
 
 			DataType value;
 			getArrayValue(castObject, index, value);
-			return SerializableSimpleType<DataType>::getDynamicSize(value);
+			return RTTIPlainType<DataType>::getDynamicSize(value);
 		}
 
 		virtual UINT32 getArraySize(void* object)
@@ -260,7 +260,7 @@ namespace CamelotEngine
 
 			DataType value;
 			getValue(castObject, value);
-			SerializableSimpleType<DataType>::toMemory(value, (char*)buffer);
+			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
 		}
 
 		virtual void arrayElemToBuffer(void* object, int index, void* buffer)
@@ -272,7 +272,7 @@ namespace CamelotEngine
 
 			DataType value;
 			getArrayValue(castObject, index, value);
-			SerializableSimpleType<DataType>::toMemory(value, (char*)buffer);
+			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
 		}
 
 		virtual void fromBuffer(void* object, void* buffer)
@@ -283,7 +283,7 @@ namespace CamelotEngine
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
 			DataType value;
-			SerializableSimpleType<DataType>::fromMemory(value, (char*)buffer);
+			RTTIPlainType<DataType>::fromMemory(value, (char*)buffer);
 			setValue(castObject, value);
 		}
 
@@ -295,7 +295,7 @@ namespace CamelotEngine
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
 			DataType value;
-			SerializableSimpleType<DataType>::fromMemory(value, (char*)buffer);
+			RTTIPlainType<DataType>::fromMemory(value, (char*)buffer);
 			setArrayValue(castObject, index, value);
 		}
 	};

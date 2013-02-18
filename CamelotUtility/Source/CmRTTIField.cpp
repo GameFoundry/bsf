@@ -3,13 +3,13 @@
 
 namespace CamelotEngine
 {
-	void RTTIField::checkIsSimple(bool array)
+	void RTTIField::checkIsPlain(bool array)
 	{
-		if(!isSimpleType())
+		if(!isPlainType())
 		{
 			CM_EXCEPT(InternalErrorException, 
-				"Invalid field type. Needed: Simple type. Got: " + toString(mIsVectorType) + ", " + 
-				toString(isSimpleType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
+				"Invalid field type. Needed: Plain type. Got: " + toString(mIsVectorType) + ", " + 
+				toString(isPlainType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
 		}
 
 		checkIsArray(array);
@@ -21,7 +21,7 @@ namespace CamelotEngine
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Data block. Got: " + toString(mIsVectorType) + ", " + 
-				toString(isSimpleType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
+				toString(isPlainType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
 		}
 	}
 
@@ -31,7 +31,7 @@ namespace CamelotEngine
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Complex type. Got: " + toString(mIsVectorType) + ", " + 
-				toString(isSimpleType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
+				toString(isPlainType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
 		}
 
 		checkIsArray(array);
@@ -43,7 +43,7 @@ namespace CamelotEngine
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Complex ptr type. Got: " + toString(mIsVectorType) + ", " + 
-				toString(isSimpleType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
+				toString(isPlainType()) + ", " + toString(isComplexType()) + ", " + toString(isDataBlockType()) + ", " + toString(isComplexPtrType()));
 		}
 
 		checkIsArray(array);

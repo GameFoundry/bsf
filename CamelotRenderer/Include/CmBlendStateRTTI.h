@@ -7,7 +7,7 @@
 
 namespace CamelotEngine
 {
-	template<> struct SerializableSimpleType<BLEND_STATE_DESC>
+	template<> struct RTTIPlainType<BLEND_STATE_DESC>
 	{	
 		enum { id = TID_BLEND_STATE_DESC }; enum { hasDynamicSize = 1 };
 

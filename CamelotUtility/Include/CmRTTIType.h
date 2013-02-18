@@ -60,7 +60,7 @@ namespace CamelotEngine
 		void setPlainValue(ObjectType* object, const std::string& name, DataType& value)
 		{
 			RTTIField* genericField = findField(name);
-			genericField->checkIsSimple(false);
+			genericField->checkIsPlain(false);
 
 			RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(genericField);
 			field->setValue(object, value);
@@ -70,7 +70,7 @@ namespace CamelotEngine
 		void setPlainArrayValue(ObjectType* object, const std::string& name, UINT32 index, DataType& value)
 		{
 			RTTIField* genericField = findField(name);
-			genericField->checkIsSimple(true);
+			genericField->checkIsPlain(true);
 
 			RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(genericField);
 			field->setArrayValue(object, index, value);
@@ -143,7 +143,7 @@ namespace CamelotEngine
 		void getPlainValue(ObjectType* object, const std::string& name, DataType& value)
 		{
 			RTTIField* genericField = findField(name);
-			genericField->checkIsSimple(false);
+			genericField->checkIsPlain(false);
 
 			RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(genericField);
 			field->getValue(object, value);
@@ -153,7 +153,7 @@ namespace CamelotEngine
 		void getPlainArrayValue(ObjectType* object, const std::string& name, UINT32 index, DataType& value)
 		{
 			RTTIField* genericField = findField(name);
-			genericField->checkIsSimple(true);
+			genericField->checkIsPlain(true);
 
 			RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(genericField);
 			field->getArrayValue(object, index, value);
