@@ -156,6 +156,7 @@ Low priority TODO:
    - Remove Response handlers from Resources
 - Cg doesn't work. Either remove it or get it to work
 - System is not yet ready for multiple rendering contexts
+- When serializing/deserializing derived classes, deserialization is done from most derived to base, while it should probably be done the other way around.
 
 Optional TODO:
  - Add precompiled headers to all projects
@@ -166,10 +167,6 @@ Optional TODO:
  - Extend texture copy so it accepts different subregions & subresources (currently only entire resource can be copied)
  - Need a way to convert MSAA render texture into a normal render texture
  - Vertex buffer start offset is not supported when calling Draw methods
- - Issue with deserialization and value types:
-  - Value types are only set at the end of deserialization, because I want to be sure all of their fields are initialized. 
-     However there is nothing stopping a custom RTTI method from accessing a (yet uninitialized) value in a ptr field. 
-	 (See CmMaterialRTTI, setTexParam). I need to initialize fields in a better order.)
  - Creating stuff like gpu program include and shader, etc. still require initialize() (call to render thread)
 
  -----------------------------------------------------------------------------------------------

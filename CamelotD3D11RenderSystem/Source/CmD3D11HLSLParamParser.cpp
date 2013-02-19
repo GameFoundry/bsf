@@ -200,17 +200,7 @@ namespace CamelotEngine
 			parseVariable(varTypeDesc, varDesc, desc, blockDesc);
 		}
 
-		// Buffer always needs to be a multiple of 4, so make it so
-		if(blockDesc.blockSize % 4 != 0)
-			blockDesc.blockSize += (4 - (blockDesc.blockSize % 4));
-
-#if CM_DEBUG_MODE
-		if(constantBufferDesc.Size != (blockDesc.blockSize * 4))
-		{
-			CM_EXCEPT(InternalErrorException, "Calculated param block size and size returned by DirectX don't match. Calculated size is: " + toString(constantBufferDesc.Size) +
-				" and DirectX size is: " + toString(blockDesc.blockSize * 4));
-		}
-#endif
+		blockDesc.blockSize = constantBufferDesc.Size / 4;
 	}
 
 	void D3D11HLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC& varTypeDesc, D3D11_SHADER_VARIABLE_DESC& varDesc, GpuParamDesc& desc, GpuParamBlockDesc& paramBlock)
@@ -219,48 +209,25 @@ namespace CamelotEngine
 		memberDesc.name = varDesc.Name;
 		memberDesc.paramBlockSlot = paramBlock.slot;
 		memberDesc.arraySize = varTypeDesc.Elements == 0 ? 1 : varTypeDesc.Elements;
-		memberDesc.elementSize = varDesc.Size / 4; // Stored in multiples of 4
-		memberDesc.arrayElementStride = memberDesc.elementSize;
-		memberDesc.gpuMemOffset = varDesc.StartOffset;
+		memberDesc.gpuMemOffset = varDesc.StartOffset / 4;
+		memberDesc.cpuMemOffset = varDesc.StartOffset / 4;
 		
-		// Calculate buffer offset and element size
-		// This is based on "Packing Rules for Constant Variables (DX11)":
-		// http://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx
-
-		// Elements in array always start at 16 byte (4 float) boundaries so we handle them specially
-		// (Determining individual element size in an array also takes some additional work)
-		if(memberDesc.arraySize == 1)
-		{
-			UINT32 freeSlotsInRegister = (((paramBlock.blockSize / 4) + 1) * 4) - paramBlock.blockSize;
-
-			// Fits in current register
-			if(memberDesc.elementSize <= freeSlotsInRegister)
-			{
-				memberDesc.cpuMemOffset = paramBlock.blockSize;
-				paramBlock.blockSize += memberDesc.elementSize;
-			}
-			else
-			{
-				// Doesn't fit, so skip remaining slots in register and go to new one
-				paramBlock.blockSize += freeSlotsInRegister;
-				memberDesc.cpuMemOffset = paramBlock.blockSize;
-				paramBlock.blockSize +=  memberDesc.elementSize;
-			}
-		}
-		else
+		// Determine individual element size in the array
+		if(memberDesc.arraySize > 1)
 		{
 			// Find array element size (reported size is total size of array, minus unused register slots)
-			int totalSlotsUsedByArray = (memberDesc.elementSize / 4 + 1) * 4;
-			int unusedSlotsInArray = totalSlotsUsedByArray - memberDesc.elementSize;
+			int totalArraySize = (varDesc.Size / 4);
+
+			int totalSlotsUsedByArray = (totalArraySize / 4 + 1) * 4;
+			int unusedSlotsInArray = totalSlotsUsedByArray - totalArraySize;
 
 			memberDesc.arrayElementStride = totalSlotsUsedByArray / memberDesc.arraySize;
 			memberDesc.elementSize = memberDesc.arrayElementStride - unusedSlotsInArray;
-
-			int freeSlotsInRegister = (((paramBlock.blockSize / 4) + 1) * 4) - paramBlock.blockSize;
-
-			paramBlock.blockSize += freeSlotsInRegister;
-			memberDesc.cpuMemOffset = paramBlock.blockSize;
-			paramBlock.blockSize += memberDesc.arraySize * memberDesc.arrayElementStride - unusedSlotsInArray;
+		}
+		else
+		{
+			memberDesc.elementSize = varDesc.Size / 4; // Stored in multiples of 4
+			memberDesc.arrayElementStride = memberDesc.elementSize;
 		}
 			
 		switch(varTypeDesc.Class)

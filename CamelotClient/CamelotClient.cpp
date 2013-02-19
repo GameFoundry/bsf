@@ -22,9 +22,9 @@
 
 #include "CmDebugCamera.h"
 
-//#define DX11
+#define DX11
 //#define DX9
-#define GL
+//#define GL
 
 using namespace CamelotEngine;
 
