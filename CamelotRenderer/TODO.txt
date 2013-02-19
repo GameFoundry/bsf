@@ -21,18 +21,6 @@ GLSL/HLSL
  - Structs aren't supported in GLSL
    - I probably need a custom parser for them
 
-Deserialization issues:
- - Currently Reflectable is not allowed to hold a ReflectablePtr
-   - Because Reflectable might be assigned before a pointer is decoded and assigned, therefore
-      ending up with a null pointer. Changing the order when we decode pointers would solve this issue.
- - Changing the order of pointer decoding increases the chance of getting an uninitialized pointer in your RTTI class. 
-    e.g. Mesh::setMeshData expects an initialized MeshDataPtr to be provided.
-
-SOLUTION: Decode all pointers ON THE SPOT (whether they are referenced by Reflectable or ReflectablePtr), before we assign them
- - Recusive references remain an issue though
-   - Objects referencing themselves are checked during application start-up (or compile time?). User is warned of the situation, 
-      and he has so remedy it by making one of the references Weak (a special property assigned to the RTTI field)
-
 Can be delayed:
  - Make sure that I am able to blit contents from render textures on all render systems
  - Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones

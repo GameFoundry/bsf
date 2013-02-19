@@ -1,6 +1,7 @@
 #include "CmBinarySerializer.h"
 
 #include "CmException.h"
+#include "CmDebug.h"
 #include "CmIReflectable.h"
 #include "CmRTTIType.h"
 #include "CmRTTIField.h"
@@ -109,13 +110,10 @@ namespace CamelotEngine
 	std::shared_ptr<IReflectable> BinarySerializer::decode(UINT8* data, UINT32 dataLength)
 	{
 		mObjectMap.clear();
-		mDecodedObjects.clear();
-		mPtrFieldsToSet.clear();
 
 		// Create empty instances of all ptr objects
 		UINT32 bytesRead = 0;
 		UINT8* dataIter = nullptr;
-		std::shared_ptr<IReflectable> object = nullptr;
 		std::shared_ptr<IReflectable> rootObject = nullptr;
 		do 
 		{
@@ -143,54 +141,27 @@ namespace CamelotEngine
 					"Base class objects are only supposed to be parts of a larger object.");
 			}
 
-			object = IReflectable::createInstanceFromTypeId(objectTypeId);
-			mObjectMap.insert(std::make_pair(objectId, object));
-			mObjectsToDecode.push_back(object);
+			std::shared_ptr<IReflectable> object = IReflectable::createInstanceFromTypeId(objectTypeId);
+			mObjectMap.insert(std::make_pair(objectId, ObjectToDecode(objectId, object, dataIter, bytesRead)));
 
 			if(rootObject == nullptr)
 				rootObject = object;
 
-		} while (decodeInternal(object, dataIter, dataLength, bytesRead));
+		} while (decodeInternal(nullptr, dataIter, dataLength, bytesRead));
 
-		// Go in reverse, as we want fields with the lowest depth to be set first
-		// (Encoding ensures that first objects in the file will be top level and go down from there)
-		// This makes sure that objects are fully initialized before sending them to objects that have references to them
-		// (e.g. a Mesh and MeshData. Mesh expects to receive fully initialized MeshData in SetMeshData, so we need to ensure
-		// that we fully deserialize MeshData (and any references it might hold) before setting it in Mesh)
-		for(auto iter = mPtrFieldsToSet.rbegin(); iter != mPtrFieldsToSet.rend(); ++iter)
+		// Now go through all of the objects and actually decode them
+		for(auto iter = mObjectMap.begin(); iter != mObjectMap.end(); ++iter)
 		{
-			std::shared_ptr<IReflectable> resolvedObject = nullptr;
+			ObjectToDecode& objToDecode = iter->second;
 
-			auto iterFind = mObjectMap.find(iter->objectId);
-			if(iterFind != mObjectMap.end())
-				resolvedObject = iterFind->second;
+			if(objToDecode.isDecoded)
+				continue;
 
-			iter->func(resolvedObject);
-		}
-
-		// Finish serialization for all objects
-		// TODO Low priority - If we're decoding a very large class hierarchy, finishing serialization
-		// only at the end of the entire decode process could cause issues. It would be better if I can do it 
-		// every time I know a certain object has been fully decoded. (This would probably involve resolving 
-		// pointers at an earlier stage as well)
-		for(auto iter = mDecodedObjects.rbegin(); iter != mDecodedObjects.rend(); ++iter)
-		{
-			std::shared_ptr<IReflectable> resolvedObject = *iter;
-
-			if(resolvedObject != nullptr)
-			{
-				RTTITypeBase* si = resolvedObject->getRTTI();
-
-				while(si != nullptr)
-				{
-					si->onDeserializationEnded(resolvedObject.get());
-					si = si->getBaseClass();
-				}
-			}
+			UINT32 objectBytesRead = objToDecode.locationInFile;
+			decodeInternal(objToDecode.object, objToDecode.locationInBuffer, dataLength, objectBytesRead);
 		}
 
 		mObjectMap.clear();
-		mDecodedObjects.clear();
 
 		return rootObject;
 	}
@@ -427,6 +398,8 @@ namespace CamelotEngine
 		static const int COMPLEX_TYPE_FIELD_SIZE = 4; // Size of the field storing the size of a child complex type
 		static const int DATA_BLOCK_TYPE_FIELD_SIZE = 4;
 
+		bool moreObjectsToProcess = false;
+
 		RTTITypeBase* si = nullptr;
 		if(object != nullptr)
 		{
@@ -454,9 +427,6 @@ namespace CamelotEngine
 		bool objectIsBaseClass = false;
 		decodeObjectMetaData(objectMetaData, objectId, objectTypeId, objectIsBaseClass);
 
-		if(object != nullptr && !objectIsBaseClass)
-			mDecodedObjects.push_back(object);
-		
 		while(bytesRead < dataLength)
 		{
 			int metaData = -1;
@@ -511,7 +481,10 @@ namespace CamelotEngine
 				else
 				{
 					if(objId != 0) 
-						return true; // New object, break out of this method and begin processing it from scratch
+					{
+						moreObjectsToProcess = true; // New object, break out of this method and begin processing it from scratch
+						goto exit;
+					}
 
 					// Objects with ID == 0 represent complex types serialized by value, but they should only get serialized
 					// if we encounter a field with one, not by just iterating through the file.
@@ -593,12 +566,28 @@ namespace CamelotEngine
 
 							if(curField != nullptr)
 							{
-								// We just record all pointer fields and assign them once we have everything else decoded
-								PtrFieldToSet fieldFunc;
-								fieldFunc.objectId = objectId;
-								fieldFunc.func = boost::bind(&RTTIReflectablePtrFieldBase::setArrayValue, curField, object.get(), i, _1);
+								auto findObj = mObjectMap.find(objectId);
 
-								mPtrFieldsToSet.push_back(fieldFunc);
+								if(findObj == mObjectMap.end())
+								{
+									LOGWRN("When deserializing, object ID: " + toString(objectId) + " was found but no such object was contained in the file.");
+									curField->setArrayValue(object.get(), i, nullptr);
+								}
+								else
+								{
+									ObjectToDecode& objToDecode = findObj->second;
+
+									bool needsDecoding = (curField->getFlags() & RTTI_Flag_WeakRef) == 0 && !objToDecode.isDecoded;
+									if(needsDecoding)
+									{
+										UINT32 objectBytesRead = objToDecode.locationInFile;
+										decodeInternal(objToDecode.object, objToDecode.locationInBuffer, dataLength, objectBytesRead);
+
+										objToDecode.isDecoded = true;
+									}
+
+									curField->setArrayValue(object.get(), i, objToDecode.object);
+								}
 							}
 						}
 
@@ -678,12 +667,28 @@ namespace CamelotEngine
 
 						if(curField != nullptr)
 						{
-							// We just record all pointer fields and assign them once we have everything else decoded
-							PtrFieldToSet fieldFunc;
-							fieldFunc.objectId = objectId;
-							fieldFunc.func = boost::bind(&RTTIReflectablePtrFieldBase::setValue, curField, object.get(), _1);
+							auto findObj = mObjectMap.find(objectId);
 
-							mPtrFieldsToSet.push_back(fieldFunc);
+							if(findObj == mObjectMap.end())
+							{
+								LOGWRN("When deserializing, object ID: " + toString(objectId) + " was found but no such object was contained in the file.");
+								curField->setValue(object.get(), nullptr);
+							}
+							else
+							{
+								ObjectToDecode& objToDecode = findObj->second;
+
+								bool needsDecoding = (curField->getFlags() & RTTI_Flag_WeakRef) == 0 && !objToDecode.isDecoded;
+								if(needsDecoding)
+								{
+									UINT32 objectBytesRead = objToDecode.locationInFile;
+									decodeInternal(objToDecode.object, objToDecode.locationInBuffer, dataLength, objectBytesRead);
+
+									objToDecode.isDecoded = true;
+								}
+
+								curField->setValue(object.get(), objToDecode.object);
+							}
 						}
 
 						break;
@@ -775,7 +780,31 @@ namespace CamelotEngine
 			}
 		}
 
-		return false;
+		moreObjectsToProcess = false;
+
+exit:
+		// Finish serialization (in reverse order then it was started)
+		if(object != nullptr)
+		{
+			stack<RTTITypeBase*>::type typesToProcess;
+
+			RTTITypeBase* currentType = object->getRTTI();
+			while(currentType != nullptr)
+			{
+				typesToProcess.push(currentType);
+				currentType = currentType->getBaseClass();
+			}
+
+			while(!typesToProcess.empty())
+			{
+				currentType = typesToProcess.top();
+				typesToProcess.pop();
+
+				currentType->onDeserializationEnded(object.get());
+			}
+		}
+
+		return moreObjectsToProcess;
 	}
 
 	// TODO - This needs serious fixing, it doesn't account for all properties

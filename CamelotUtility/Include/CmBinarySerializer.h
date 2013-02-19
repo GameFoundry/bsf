@@ -77,7 +77,18 @@ namespace CamelotEngine
 			std::shared_ptr<IReflectable> object;
 		};
 
+		struct ObjectToDecode
+		{
+			ObjectToDecode(UINT32 _objectId, std::shared_ptr<IReflectable> _object, UINT8* _locationInBuffer, UINT32 _locationInFile)
+				:objectId(_objectId), object(_object), locationInBuffer(_locationInBuffer), locationInFile(_locationInFile), isDecoded(false)
+			{ }
 
+			UINT32 objectId;
+			std::shared_ptr<IReflectable> object;
+			UINT8* locationInBuffer;
+			UINT32 locationInFile;
+			bool isDecoded;
+		};
 
 		struct ObjectMetaData
 		{
@@ -85,21 +96,12 @@ namespace CamelotEngine
 			UINT32 typeId;
 		};
 
-		struct PtrFieldToSet
-		{
-			UINT32 objectId;
-			boost::function<void(std::shared_ptr<IReflectable>)> func;
-		};
-
 		std::unordered_map<void*, UINT32> mObjectAddrToId;
 		UINT32 mLastUsedObjectId;
 		std::vector<ObjectToEncode> mObjectsToEncode;
 		int mTotalBytesWritten;
 
-		std::unordered_map<UINT32, std::shared_ptr<IReflectable>> mObjectMap;
-		std::vector<std::shared_ptr<IReflectable>> mObjectsToDecode;
-		std::vector<std::shared_ptr<IReflectable>> mDecodedObjects;
-		std::vector<PtrFieldToSet> mPtrFieldsToSet;
+		std::unordered_map<UINT32, ObjectToDecode> mObjectMap;
 
 		UINT32 getObjectSize(IReflectable* object);
 
