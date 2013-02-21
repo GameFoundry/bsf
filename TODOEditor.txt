@@ -1,5 +1,1 @@
-Rename CamelotRenderer to CameotCore(project & solution)
-
-CamelotEditor uses console subsystem
-
 Get rid of the .ui file

@@ -45,6 +45,14 @@ Qt setup instructions:
    - Qt5Core
    - Qt5Gui
    - Qt5Widgets
+ 6. Add Qt platform plugins:
+   - copy qtbase/plugins/platform/ contents from compiled Qt binaries to (CamelotRootDir)/bin/(Platform)/(Configuration)/qtplugins/platform/
+     - this folder contains platform-specific libraries (e.g. qwindows.dll for Windows)
+   - Create conf.qt file in (CamelotRootDir)/bin/(Platform)/(Configuration) containing:
+      [Paths]
+      Plugins = qtplugins
+
+   - This tells Qt where the plugins are located (i.e. in the "plugins" subfolder of the current folder)
 
 Compiling Qt using MSVC2012 compiler:
  - At the moment there are no provided precompiled libraries for 2012 version of MSVC so
