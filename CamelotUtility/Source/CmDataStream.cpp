@@ -550,7 +550,7 @@ namespace CamelotEngine
     size_t FileDataStream::read(void* buf, size_t count)
     {
 		mpInStream->read(static_cast<char*>(buf), static_cast<std::streamsize>(count));
-        return mpInStream->gcount();
+        return (size_t)mpInStream->gcount();
     }
 	//-----------------------------------------------------------------------
 	size_t FileDataStream::write(const void* buf, size_t count)
@@ -583,7 +583,7 @@ namespace CamelotEngine
 		}
 		// maxCount + 1 since count excludes terminator in getline
 		mpInStream->getline(buf, static_cast<std::streamsize>(maxCount+1), delim.at(0));
-		size_t ret = mpInStream->gcount();
+		size_t ret = (size_t)mpInStream->gcount();
 		// three options
 		// 1) we had an eof before we read a whole line
 		// 2) we ran out of buffer space

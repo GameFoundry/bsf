@@ -21,7 +21,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B21D41C-516B-43BF-9B10-E99B599C7589}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>CamelotRenderer</RootNamespace>
+    <RootNamespace>CamelotCore</RootNamespace>
+    <ProjectName>CamelotCore</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

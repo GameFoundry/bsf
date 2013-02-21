@@ -85,14 +85,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../CamelotRenderer/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CM_FBX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../lib/$(Configuration);../Dependencies/lib/Debug;./Dependencies/lib/Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotRenderer.lib;CamelotUtility.lib;fbxsdk-2013.3-mdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;fbxsdk-2013.3-mdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -100,14 +100,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../CamelotRenderer/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CM_FBX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug;./Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotRenderer.lib;CamelotUtility.lib;fbxsdk-2013.3-mdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;fbxsdk-2013.3-mdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -117,7 +117,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../CamelotRenderer/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CM_FBX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -126,7 +126,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../lib/$(Configuration);../Dependencies/lib/Release;./Dependencies/lib/Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotRenderer.lib;CamelotUtility.lib;fbxsdk-2013.3-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;fbxsdk-2013.3-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -136,7 +136,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../CamelotRenderer/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CM_FBX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -145,7 +145,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Release;./Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotRenderer.lib;CamelotUtility.lib;fbxsdk-2013.3-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;fbxsdk-2013.3-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>

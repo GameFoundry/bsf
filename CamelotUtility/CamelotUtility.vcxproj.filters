@@ -296,13 +296,13 @@
     <ClCompile Include="Source\CmWorkQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\CamelotRenderer\Source\CmManagedDataBlock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmInt2.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmPixelData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmManagedDataBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

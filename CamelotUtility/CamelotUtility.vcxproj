@@ -160,8 +160,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\CamelotRenderer\Source\CmManagedDataBlock.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />
+    <ClCompile Include="Source\CmManagedDataBlock.cpp" />
     <ClCompile Include="Source\CmPixelData.cpp" />
     <ClCompile Include="Source\CmUUID.cpp" />
     <ClCompile Include="Source\CmWorkQueue.cpp" />

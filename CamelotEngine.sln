@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotRenderer", "CamelotRenderer\CamelotRenderer.vcxproj", "{9B21D41C-516B-43BF-9B10-E99B599C7589}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotCore", "CamelotCore\CamelotCore.vcxproj", "{9B21D41C-516B-43BF-9B10-E99B599C7589}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
 	EndProjectSection
