@@ -175,11 +175,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="..\TODODoc.txt" />
-    <Text Include="HighLevelTODO.txt" />
-    <Text Include="TODO.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Include\CmApplication.h" />
     <ClInclude Include="Include\CmBlendStateRTTI.h" />
     <ClInclude Include="Include\CmCamera.h" />

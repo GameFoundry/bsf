@@ -14,13 +14,6 @@ Pass
  - A way to bind buffers to a Pass, while specifying buffer range
  - Add GL Texture buffers (They're equivalent to DX11 buffers) - http://www.opengl.org/wiki/Buffer_Texture
 
-GLSL/HLSL
- - Arrays of objects
-   - I'm assuming there will be a problem when OpenGL optimizes out a certain value
- - See if I can make HLSL param offsets not fixed? (More like GLSL. It should be possible)
- - Structs aren't supported in GLSL
-   - I probably need a custom parser for them
-
 Can be delayed:
  - Make sure that I am able to blit contents from render textures on all render systems
  - Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones
@@ -157,6 +150,12 @@ Low priority TODO:
 - Cg doesn't work. Either remove it or get it to work
 - System is not yet ready for multiple rendering contexts
 - When serializing/deserializing derived classes, deserialization is done from most derived to base, while it should probably be done the other way around.
+- Because GLSL introspection API is built around basic types I don't support structs or arrays of objects: 
+  - I can't determine the size of struct or object arrays, as GL compiler will optimize out unused elements
+  - Can't determine size of individual struct either, for the same reason (some struct members might get optimized out)
+  - Arrays of objects aren't supported in HLSL or GLSL because of limited GLSL introspection
+    - I might need to add an exception thrown if user tries to use them
+  - Structs aren't supported in GLSL for introspection reasons
 
 Optional TODO:
  - Add precompiled headers to all projects

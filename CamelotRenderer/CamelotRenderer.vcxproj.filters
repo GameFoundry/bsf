@@ -84,11 +84,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="TODO.txt" />
-    <Text Include="HighLevelTODO.txt" />
-    <Text Include="..\TODODoc.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Include\CmConfigOptionMap.h">
       <Filter>Header Files\ForRemoval</Filter>
     </ClInclude>

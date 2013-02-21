@@ -7,5 +7,8 @@
      before rendering a frame, so whichever context updated the resource last, was the version that will be used.
   - GLSL limitations
      - layout(row_major) is not supported and will likely result in incorrect matrices
+	 - Because GLSL introspection API is built around basic types I don't support structs or arrays of objects: 
+      - I can't determine the size of struct or object arrays, as GL compiler will optimize out unused elements
+ - Can't determine size of individual struct either, for the same reason (some struct members might get optimized out)
   - Texture limitations: Only 1D, 2D, 3D and Cube textures (and their samplers) are supported. Support for multisampled textures
      is included where necessary to implement render targets. Support for texture arrays and is not included.
