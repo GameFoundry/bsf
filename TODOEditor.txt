@@ -21,4 +21,8 @@ TODO for next few days:
    - Their layout data gets saved
    - The way I handle editor windows at the moment is pretty weird with alot of custom handling for resize/move
      - Attempt to get rid of that or at least dont use it until I have window look more fleshed out
+	 - Look at QSizeGrip for resizing
+	 - QStackWidget (or QStackLayout) for stacking and tabbed windows
  - Make sure entire interface is skinnable
+ - Create a generic "Prefs" system that supports arrays and loading/saving to ini files
+   - Using EditorPrefs is too cumbersome and it won't allow extensions to use it anyway

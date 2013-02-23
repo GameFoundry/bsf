@@ -57,9 +57,9 @@ namespace CamelotEditor
 
 	void QtEditor::retranslateUi()
 	{
-		setWindowTitle(QApplication::translate("CmQtEditor", "Camelot Editor"));
-		mFileMenu->setTitle(QApplication::translate("QtEditorTestClass", "File"));
-		mWindowMenu->setTitle(QApplication::translate("QtEditorTestClass", "Windows"));
+		setWindowTitle(tr("Camelot Editor"));
+		mFileMenu->setTitle(tr("File"));
+		mWindowMenu->setTitle(tr("Windows"));
 	}
 }
 

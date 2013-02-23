@@ -48,6 +48,15 @@
     <ClCompile Include="GeneratedFiles\moc_CmQtProjectSelection.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmEditorPrefs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmQtNewProject.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtNewProject.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="CmEditor.qrc">
@@ -57,6 +66,9 @@
       <Filter>Header Files\Qt</Filter>
     </CustomBuild>
     <CustomBuild Include="Include\CmQtProjectSelection.h">
+      <Filter>Header Files\Qt</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Include\CmQtNewProject.h">
       <Filter>Header Files\Qt</Filter>
     </CustomBuild>
   </ItemGroup>

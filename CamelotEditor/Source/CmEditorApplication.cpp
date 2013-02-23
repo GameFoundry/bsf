@@ -5,8 +5,6 @@
 #include "CmQtProjectSelection.h"
 #include <QtWidgets/QApplication>
 
-using namespace CamelotEngine;
-
 namespace CamelotEditor
 {
 	void EditorApplication::startUp()
@@ -21,6 +19,11 @@ namespace CamelotEditor
 		QApplication a(argc, nullptr);
 		QtEditor w;
 		w.show();
+
+		QtProjectSelection projSelection;
+		projSelection.onProjectSelected.connect(boost::bind(&EditorApplication::loadProject, this, _1));
+		projSelection.exec();
+
 		a.exec();
 	}
 
@@ -28,5 +31,27 @@ namespace CamelotEditor
 	{
 		LayoutManager::shutDown();
 		EditorPrefs::shutDown();
+	}
+
+	void EditorApplication::loadProject(const QString& projPath)
+	{
+		// TODO
+	}
+
+	void EditorApplication::createProject(const QString& projPath)
+	{
+		// TODO
+	}
+
+	bool EditorApplication::isValidProjectDirectory(const QString& projPath)
+	{
+		// TODO
+		return true;
+	}
+
+	EditorApplication& gEditorApp()
+	{
+		static EditorApplication application;
+		return application;
 	}
 }

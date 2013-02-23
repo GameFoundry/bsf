@@ -10,10 +10,9 @@ int CALLBACK WinMain(
 	_In_  int nCmdShow
 	)
 {
-	EditorApplication app;
-	app.startUp();
+	gEditorApp().startUp();
 
-	app.run();
+	gEditorApp().run();
 
-	app.shutDown();
+	gEditorApp().shutDown();
 }

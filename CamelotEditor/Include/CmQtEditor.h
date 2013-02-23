@@ -9,7 +9,7 @@ namespace CamelotEditor
 		Q_OBJECT
 
 	public:
-		QtEditor(QWidget *parent = 0);
+		QtEditor(QWidget *parent = nullptr);
 		~QtEditor();
 
 	private:
