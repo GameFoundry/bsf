@@ -1,1 +1,24 @@
-Get rid of the .ui file
+TODO for next few days:
+ - Layout manager that saves/restores user layout
+   - Keeps position, size ands possibly docking information for every window
+     (Main window probably needs to be handled specially)
+   - At startup all windows register with it
+   - Calling restore() will place all windows in proper positions
+   - It will also set up hooks to those windows so it gets updates when they get moved/sized/docked
+ - Project create/Project open window
+   - Shows at the start of the editor
+   - Also has hooks directly from File menu (Create project, Open project)
+ - EditorPrefs class
+   - Stores all of editor preferences, including layout information
+   - Also keeps a list of all known projects
+ - Menu bar:
+   - File->Create project, File->Open project
+   - Windows menu with a list of all windows
+     - List gets populated easily so people can write plugin windows
+	  - Plugin windows should possibly also be able to assign themselves to other Menu item than Windows
+ - Docking system
+   - All open windows can be docked/unocked
+   - Their layout data gets saved
+   - The way I handle editor windows at the moment is pretty weird with alot of custom handling for resize/move
+     - Attempt to get rid of that or at least dont use it until I have window look more fleshed out
+ - Make sure entire interface is skinnable

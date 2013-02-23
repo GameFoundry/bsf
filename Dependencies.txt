@@ -80,8 +80,8 @@ Compiling Qt using MSVC2012 compiler:
   1. Each header starting with CmQt* (or, more generally, each file containing Q_OBJECT) needs to be
      preprocessed by MOC, and MOC output needs to be compiled with the project
   2. Example command line for preprocessing a single file: 
-    "$(QTDIR)\bin\moc.exe"  ".\Include\CmQtEditor.h" -o ".\GeneratedFiles\x64\Debug\moc_CmQtEditor.cpp"  
-	-DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." 
+    "$(QTDIR)\bin\moc.exe"  ".\Include\CmQtEditor.h" -o ".\GeneratedFiles\moc_CmQtEditor.cpp"  
+	-DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include"
 	"-I.\..\CamelotRenderer\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"
   3. (Optional step) With Visual Studio you can set up a custom build set so this is done automatically
   4. (Optional step) Qt also provides a Visual Studio Add-In that handles MOC for your, although it is currently very buggy with VS2012 so I do not use it.

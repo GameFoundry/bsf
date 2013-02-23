@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h</Extensions>
     </Filter>
-    <Filter Include="Form Files">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
       <Extensions>qrc;*</Extensions>
@@ -23,15 +19,11 @@
       <Extensions>moc;h;cpp</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
-    <Filter Include="Generated Files\Debug">
-      <UniqueIdentifier>{65c0862c-e1b9-4a60-83bf-db64d90b8997}</UniqueIdentifier>
-      <Extensions>cpp;moc</Extensions>
-      <SourceControlFiles>False</SourceControlFiles>
+    <Filter Include="Header Files\Qt">
+      <UniqueIdentifier>{7e9abf8f-864a-43dd-85f4-8d3a270ac9c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Generated Files\Release">
-      <UniqueIdentifier>{a291b962-5a93-48d7-9fd5-36f4b0f096bd}</UniqueIdentifier>
-      <Extensions>cpp;moc</Extensions>
-      <SourceControlFiles>False</SourceControlFiles>
+    <Filter Include="Source Files\Qt">
+      <UniqueIdentifier>{7e192458-3c20-4536-878e-d4e95e2ac4c7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,26 +34,44 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmQtEditor.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtEditor.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmEditorApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_CmQtEditor.cpp">
-      <Filter>Generated Files\Debug</Filter>
+    <ClCompile Include="Source\CmQtProjectSelection.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtProjectSelection.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="CmEditor.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="CmEditor.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="Include\CmQtEditor.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Qt</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Include\CmQtProjectSelection.h">
+      <Filter>Header Files\Qt</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_CmEditor.h">
-      <Filter>Generated Files</Filter>
+    <ClInclude Include="Include\CmEditorPrefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmLayoutManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmEditorApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmEditorPrerequisites.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

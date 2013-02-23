@@ -1,7 +1,7 @@
-#include "CmQtEditor.h"
-#include <string>
-#include <QtWidgets/QApplication>
 #include <windows.h>
+#include "CmEditorApplication.h"
+
+using namespace CamelotEditor;
 
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
@@ -10,13 +10,10 @@ int CALLBACK WinMain(
 	_In_  int nCmdShow
 	)
 {
-	int argc = 1;
-	char** argv = new char*[1];
-	argv[0] = "CamelotEditor.exe";
+	EditorApplication app;
+	app.startUp();
 
-	QApplication a(argc, argv);
-	CamelotEditor w;
-	w.show();
-	return a.exec();
+	app.run();
+
+	app.shutDown();
 }
-
