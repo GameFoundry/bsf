@@ -57,6 +57,9 @@
     <ClCompile Include="GeneratedFiles\moc_CmQtNewProject.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmPreferences.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="CmEditor.qrc">
@@ -83,6 +86,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmEditorPrerequisites.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmPreferences.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

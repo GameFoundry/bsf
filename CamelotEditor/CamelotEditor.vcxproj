@@ -157,6 +157,7 @@
     </ClCompile>
     <ClCompile Include="Source\CmEditorApplication.cpp" />
     <ClCompile Include="Source\CmEditorPrefs.cpp" />
+    <ClCompile Include="Source\CmPreferences.cpp" />
     <ClCompile Include="Source\CmQtEditor.cpp" />
     <ClCompile Include="Source\CmQtNewProject.cpp" />
     <ClCompile Include="Source\CmQtProjectSelection.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="Include\CmEditorPrefs.h" />
     <ClInclude Include="Include\CmEditorPrerequisites.h" />
     <ClInclude Include="Include\CmLayoutManager.h" />
+    <ClInclude Include="Include\CmPreferences.h" />
     <CustomBuild Include="Include\CmQtNewProject.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)...</Message>
