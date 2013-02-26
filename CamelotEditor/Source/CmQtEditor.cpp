@@ -1,4 +1,5 @@
 #include "CmQtEditor.h"
+#include "CmProjectPrefs.h"
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QStatusBar>
@@ -57,7 +58,9 @@ namespace CamelotEditor
 
 	void QtEditor::retranslateUi()
 	{
-		setWindowTitle(tr("Camelot Editor"));
+		QString title = tr("Camelot Editor") + " - " + gProjectPrefs().getProjectName();
+
+		setWindowTitle(title);
 		mFileMenu->setTitle(tr("File"));
 		mWindowMenu->setTitle(tr("Windows"));
 	}

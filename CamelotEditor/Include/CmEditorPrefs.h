@@ -17,9 +17,14 @@ namespace CamelotEditor
 		void setLastUsedProjectDirectory(const QString& value);
 		const QString& getLastUsedProjectDirectory() const;
 
+		void save(const QString& path, bool overwrite = true) const;
+		void load(const QString& path);
+
 	private:
 		vector<QString>::type mRecentlyUsedProjects;
 		QString mLastUsedProjectDirectory;
+
+		void clear();
 	};
 
 	EditorPrefs& gEditorPrefs();

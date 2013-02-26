@@ -131,6 +131,11 @@ namespace CamelotEngine
 		boost::filesystem::create_directory(fullPath);
 	}
 
+	void FileSystem::deleteDir(const String& fullPath)
+	{
+		boost::filesystem::remove_all(fullPath);
+	}
+
 	vector<String>::type FileSystem::getFiles(const String& dirPath)
 	{
 		boost::filesystem::directory_iterator dirIter(dirPath);
@@ -146,5 +151,28 @@ namespace CamelotEngine
 		}
 
 		return foundFiles;
+	}
+
+	String FileSystem::getCurrentPath()
+	{
+		return boost::filesystem::current_path().string();
+	}
+
+	bool FileSystem::isValidFileName(const String& name)
+	{
+		return boost::filesystem::portable_file_name(name);
+	}
+
+	String FileSystem::getDirectoryPath(const String& path)
+	{
+		boost::filesystem::path p(path);
+
+		if(!is_directory(p))
+		{
+			boost::filesystem::path dir = p.parent_path();
+			return dir.string();
+		}
+
+		return path;
 	}
 }

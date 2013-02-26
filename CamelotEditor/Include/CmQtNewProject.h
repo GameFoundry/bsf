@@ -1,8 +1,9 @@
 #pragma once
 
 #include <QtWidgets/QDialog>
-#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QLabel>
 
 #ifndef Q_MOC_RUN // Qt MOC doesn't handle some of the macros inside this header
 #include <boost/signal.hpp>
@@ -17,13 +18,17 @@ namespace CamelotEditor
 	public:
 		QtNewProject(QWidget *parent = nullptr);
 		~QtNewProject();
+
+		QString getProjectPath() const;
 	public:
 		boost::signal<void(const QString&)> onProjectPathSelected;
 
 	private:
-		QTextEdit* mTxtProjectName;
+		QLabel* mLblProjectName;
+		QLineEdit* mTxtProjectName;
 		QPushButton* mBtnCreate;
-		QTextEdit* mTxtProjectPath;
+		QLabel* mLblProjectPath;
+		QLineEdit* mTxtProjectPath;
 		QPushButton* mBtnBrowse;
 
 		void setupUi();

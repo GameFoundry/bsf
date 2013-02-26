@@ -9,4 +9,5 @@ namespace CamelotEditor
 	class LayoutManager;
 	class EditorPrefs;
 	class EditorApplication;
+	class ProjectPrefs;
 }

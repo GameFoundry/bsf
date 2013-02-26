@@ -25,6 +25,9 @@
     <Filter Include="Source Files\Qt">
       <UniqueIdentifier>{7e192458-3c20-4536-878e-d4e95e2ac4c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rdParty">
+      <UniqueIdentifier>{008f134a-dd36-429b-9511-235fcec9fc16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\qrc_CmEditor.cpp">
@@ -60,6 +63,12 @@
     <ClCompile Include="Source\CmPreferences.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Include\3rdParty\pugixml\pugixml.cpp">
+      <Filter>3rdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmProjectPrefs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="CmEditor.qrc">
@@ -89,6 +98,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmPreferences.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\3rdParty\pugixml\pugiconfig.hpp">
+      <Filter>3rdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\3rdParty\pugixml\pugixml.hpp">
+      <Filter>3rdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmProjectPrefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -47,8 +47,7 @@ namespace CamelotEditor
 		centralLayout->addWidget(buttonsWidget);
 		setLayout(centralLayout);
 
-		for(int i = 0; i < gEditorPrefs().getNumRecentlyUsedProjects(); i++)
-			mListWidget->insertItem(i, gEditorPrefs().getRecentlyUsedProjectPath(i));
+		reloadProjectList();
 
 		retranslateUi();
 		setupSignals();
@@ -69,10 +68,21 @@ namespace CamelotEditor
 		connect(mBtnOpen, SIGNAL(clicked()), this, SLOT(openSelectedProject()));
 	}
 
+	void QtProjectSelection::reloadProjectList()
+	{
+		mListWidget->clear();
+
+		for(int i = 0; i < gEditorPrefs().getNumRecentlyUsedProjects(); i++)
+			mListWidget->insertItem(i, gEditorPrefs().getRecentlyUsedProjectPath(i));
+	}
+
 	void QtProjectSelection::newProject()
 	{
 		QtNewProject newProject;
-		newProject.exec();
+		if(newProject.exec() ==  QDialog::Accepted)
+		{
+			openProject(newProject.getProjectPath());
+		}
 	}
 
 	void QtProjectSelection::browseProject()
@@ -85,7 +95,7 @@ namespace CamelotEditor
 		if(lastUsedDir.exists())
 			dialog.setDirectory(lastUsedDir);
 
-		if(dialog.exec())
+		if(dialog.exec() == QDialog::Accepted)
 		{
 			QStringList fileNames = dialog.selectedFiles();
 
@@ -115,16 +125,16 @@ namespace CamelotEditor
 
 	void QtProjectSelection::openProject(const QString& path)
 	{
-		if(gEditorApp().isValidProjectDirectory(path))
+		if(gEditorApp().isValidProject(path))
 		{
 			addRecentlyUsedProject(path);
-			gEditorPrefs().setLastUsedProjectDirectory(path);
 			onProjectSelected(path);
-			close();
+			accept();
 		}
 		else
 		{		
 			removeRecentlyUsedProject(path);
+			reloadProjectList();
 
 			QMessageBox msgBox;
 			msgBox.setWindowTitle("Error");

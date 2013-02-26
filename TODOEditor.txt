@@ -26,3 +26,6 @@ TODO for next few days:
  - Make sure entire interface is skinnable
  - Create a generic "Prefs" system that supports arrays and loading/saving to ini files
    - Using EditorPrefs is too cumbersome and it won't allow extensions to use it anyway
+
+
+ - Make sure all paths have / & \ trimmed. Make sure to either use \ or /. Qt seems to be mixing both.

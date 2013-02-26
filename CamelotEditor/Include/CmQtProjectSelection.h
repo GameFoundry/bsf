@@ -34,6 +34,8 @@ namespace CamelotEditor
 		void addRecentlyUsedProject(const QString& path);
 		void removeRecentlyUsedProject(const QString& path);
 
+		void reloadProjectList();
+
 	private Q_SLOTS:
 		void newProject();
 		void browseProject();
