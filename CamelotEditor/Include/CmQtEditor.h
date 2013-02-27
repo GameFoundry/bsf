@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CmEditorPrerequisites.h"
 #include <QtWidgets/QMainWindow>
 
 namespace CamelotEditor
@@ -17,6 +18,7 @@ namespace CamelotEditor
 		QToolBar* mMainToolBar;
 		QWidget* mCentralWidget;
 		QStatusBar* mStatusBar;
+		QtDockOverlayWidget* mDockOverlayWidget;
 
 		QMenu* mFileMenu;
 		QMenu* mWindowMenu;

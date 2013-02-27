@@ -79,6 +79,14 @@ namespace CamelotEngine
 			isShutDown = true;
 		}
 
+		/**
+		 * @brief	Query if this object has been started.
+		 */
+		static bool isStarted()
+		{
+			return !isShutDown && !isDestroyed;
+		}
+
 	protected:
 		Module() 
 		{ 

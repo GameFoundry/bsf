@@ -1,5 +1,6 @@
 #include "CmQtEditor.h"
 #include "CmProjectPrefs.h"
+#include "CmQtDockOverlayWidget.h"
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QStatusBar>
@@ -50,6 +51,8 @@ namespace CamelotEditor
 
 		mMenuBar->addAction(mFileMenu->menuAction());
 		mMenuBar->addAction(mWindowMenu->menuAction());
+
+		mDockOverlayWidget = new QtDockOverlayWidget(this);
 
 		retranslateUi();
 

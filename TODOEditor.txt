@@ -28,4 +28,5 @@ TODO for next few days:
    - Using EditorPrefs is too cumbersome and it won't allow extensions to use it anyway
 
 
- - Make sure all paths have / & \ trimmed. Make sure to either use \ or /. Qt seems to be mixing both.
+Dock overlay widget colors need to be customizable
+QtEditorWindow style needs to be customizable

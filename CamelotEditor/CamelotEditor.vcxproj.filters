@@ -69,6 +69,21 @@
     <ClCompile Include="Source\CmProjectPrefs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmQtDockOverlayWidget.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmQtEditorWindow.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmWindowDockManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtDockOverlayWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtEditorWindow.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="CmEditor.qrc">
@@ -81,6 +96,12 @@
       <Filter>Header Files\Qt</Filter>
     </CustomBuild>
     <CustomBuild Include="Include\CmQtNewProject.h">
+      <Filter>Header Files\Qt</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Include\CmQtEditorWindow.h">
+      <Filter>Header Files\Qt</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Include\CmQtDockOverlayWidget.h">
       <Filter>Header Files\Qt</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -107,6 +128,9 @@
       <Filter>3rdParty</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmProjectPrefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmWindowDockManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

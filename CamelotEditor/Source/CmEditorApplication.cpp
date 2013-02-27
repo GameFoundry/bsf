@@ -55,6 +55,8 @@ namespace CamelotEditor
 		QtEditor w;
 		w.show();
 
+		//WindowDockManager::startUp(new WindowDockManager())
+
 		a.exec();
 	}
 
