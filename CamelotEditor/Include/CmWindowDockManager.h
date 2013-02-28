@@ -4,8 +4,6 @@
 #include "CmModule.h"
 #include "CmQtDockOverlayWidget.h"
 
-class QSplitter;
-
 namespace CamelotEditor
 {
 	class WindowDockManager : public Module<WindowDockManager>
@@ -17,8 +15,6 @@ namespace CamelotEditor
 		void windowReleased(QtEditorWindow* window, const QPoint& mousePos);
 		void windowClosed(QtEditorWindow* window);
 
-		void dockWindow(QtEditorWindow* windowToDock, QtEditorWindow* dockAtWidget, WindowDragDropLocation dockAtPosition);
-		void undockWindow(QtEditorWindow* windowToUndock);
 	private:
 		QtDockOverlayWidget* mDockOverlayWidget;
 		QWidget* mCentralWidget;
@@ -27,6 +23,9 @@ namespace CamelotEditor
 		QPoint mLastDragPosition;
 
 		std::vector<QtEditorWindow*> mDockedWindows;
+
+		void dockWindow(QtEditorWindow* windowToDock, QtEditorWindow* dockAtWidget, WindowDragDropLocation dockAtPosition);
+		void undockWindow(QtEditorWindow* windowToUndock);
 
 		QtEditorWindow* getDockedWindowAtPosition(const QPoint& globalPos);
 		bool isPositionInDockArea(const QPoint& globalPos);

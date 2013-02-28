@@ -13,3 +13,9 @@ namespace CamelotEditor
 	class QtDockOverlayWidget;
 	class QtEditorWindow;
 }
+
+// Qt
+class QWidget;
+class QLabel;
+class QPushButton;
+class QSplitter;

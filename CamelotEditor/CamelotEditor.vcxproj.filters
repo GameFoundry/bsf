@@ -75,14 +75,35 @@
     <ClCompile Include="Source\CmQtEditorWindow.cpp">
       <Filter>Source Files\Qt</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmWindowDockManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\moc_CmQtDockOverlayWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\moc_CmQtEditorWindow.cpp">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmQtSceneWindow.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmQtHierarchyWindow.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtHierarchyWindow.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtSceneWindow.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmWindowDockManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmSceneWindowFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHierarchyWindowFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmEditorWindowManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -104,12 +125,15 @@
     <CustomBuild Include="Include\CmQtDockOverlayWidget.h">
       <Filter>Header Files\Qt</Filter>
     </CustomBuild>
+    <CustomBuild Include="Include\CmQtHierarchyWindow.h">
+      <Filter>Header Files\Qt</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Include\CmQtSceneWindow.h">
+      <Filter>Header Files\Qt</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmEditorPrefs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmLayoutManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmEditorApplication.h">
@@ -131,6 +155,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmWindowDockManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmEditorWindowManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmEditorWindowFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmSceneWindowFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmHierarchyWindowFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

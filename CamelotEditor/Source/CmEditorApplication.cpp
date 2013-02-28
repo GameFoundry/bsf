@@ -1,9 +1,10 @@
 #include "CmEditorApplication.h"
-#include "CmLayoutManager.h"
 #include "CmEditorPrefs.h"
 #include "CmProjectPrefs.h"
 #include "CmQtEditor.h"
 #include "CmQtProjectSelection.h"
+#include "CmEditorWindowManager.h"
+#include "CmWindowDockManager.h"
 #include "CmFileSystem.h"
 #include "CmException.h"
 #include <QtWidgets/QApplication>
@@ -16,13 +17,15 @@ namespace CamelotEditor
 
 	struct EditorApplication::PImpl
 	{
-
+		QApplication* mApp;
+		QtEditor* mEditor;
 	};
 
 	EditorApplication::EditorApplication()
 		:p(new PImpl())
 	{
-
+		p->mApp = nullptr;
+		p->mEditor = nullptr;
 	}
 
 	EditorApplication::~EditorApplication()
@@ -38,31 +41,34 @@ namespace CamelotEditor
 			gEditorPrefs().load(getEditorPrefsPath());
 		
 		ProjectPrefs::startUp(new ProjectPrefs());
-		LayoutManager::startUp(new LayoutManager());
+
+		int argc = 0;
+		p->mApp = new QApplication(argc, nullptr);
+		p->mEditor = new QtEditor();
+
+		EditorWindowManager::startUp(new EditorWindowManager());
+		WindowDockManager::startUp(new WindowDockManager(p->mEditor->getCentralWidget(), p->mEditor->getDockOverlayWidget()));
 	}
 
 	void EditorApplication::run()
 	{
-		int argc = 0;
-		QApplication a(argc, nullptr);
-
 		QtProjectSelection projSelection;
 		projSelection.onProjectSelected.connect(boost::bind(&EditorApplication::loadProject, this, _1));
 		
 		if(projSelection.exec() == QDialog::Rejected)
 			return;
 
-		QtEditor w;
-		w.show();
-
-		//WindowDockManager::startUp(new WindowDockManager())
-
-		a.exec();
+		p->mEditor->show();
+		p->mApp->exec();
 	}
 
 	void EditorApplication::shutDown()
 	{
-		LayoutManager::shutDown();
+		WindowDockManager::shutDown();
+		EditorWindowManager::shutDown();
+
+		delete p->mApp;
+
 		ProjectPrefs::shutDown();
 
 		gEditorPrefs().save(getEditorPrefsPath());

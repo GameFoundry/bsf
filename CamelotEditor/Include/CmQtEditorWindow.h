@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "CmEditorPrerequisites.h"
 #include <QtWidgets/QWidget>
 #include <QtCore/QPoint>
 
@@ -23,7 +23,7 @@ namespace CamelotEditor
 		};
 
 	public:
-		QtEditorWindow(QWidget* parent, QWidget* content, const QString& title);
+		QtEditorWindow(QWidget* parent, const QString& title);
 		virtual ~QtEditorWindow() { }
 
 		void undock();
@@ -41,8 +41,14 @@ namespace CamelotEditor
 		bool mMoveMode;
 		QPoint mDragOffset;
 		QWidget* mTitleBar;
+		QLabel* mLblTitle;
+		QPushButton* mBtnClose;
 		QWidget* mCentralWidget;
 		bool mIsDocked;
+
+		void setupUi(QString title);
+		void setupSignals();
+		void retranslateUi(QString title);
 
 		void mousePressEvent(QMouseEvent* event);
 		void mouseReleaseEvent(QMouseEvent* event);

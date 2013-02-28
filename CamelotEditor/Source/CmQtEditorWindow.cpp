@@ -11,47 +11,50 @@
 #include "CmDebug.h"
 #include "CmWindowDockManager.h"
 
-using namespace CamelotEngine;
-
 namespace CamelotEditor
 {
-	QtEditorWindow::QtEditorWindow(QWidget* parent, QWidget* content, const QString& title)
-		:QWidget(parent), mContent(content), mResizeMode(RM_NONE), mMoveMode(false), mIsDocked(false)
+	QtEditorWindow::QtEditorWindow(QWidget* parent, const QString& title)
+		:QWidget(parent), mResizeMode(RM_NONE), mMoveMode(false), mIsDocked(false)
+	{
+		setupUi(title);
+	}
+
+	void QtEditorWindow::setupUi(QString title)
 	{
 		setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 
 		/************************************************************************/
 		/* 								TITLE BAR	                     		*/
 		/************************************************************************/
-		mTitleBar = new QWidget();
+		mTitleBar = new QWidget(this);
 		mTitleBar->setObjectName("titleBar");
 
-		QLabel* titleLabel = new QLabel();
-		titleLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
-		titleLabel->setText(title);
-
-		QPushButton* closeBtn = new QPushButton();
-		closeBtn->setText("Close");
-
-		QHBoxLayout* titleLayout = new QHBoxLayout();
+		mLblTitle = new QLabel(this);
+		mLblTitle->setAttribute(Qt::WA_TransparentForMouseEvents);
+		
+		mBtnClose = new QPushButton(this);
+		
+		QHBoxLayout* titleLayout = new QHBoxLayout(this);
 		titleLayout->setMargin(0);
-		titleLayout->addWidget(titleLabel, 1);
-		titleLayout->addWidget(closeBtn);
+		titleLayout->addWidget(mLblTitle, 1);
+		titleLayout->addWidget(mBtnClose);
 		mTitleBar->setLayout(titleLayout);
 
 		/************************************************************************/
 		/* 							CENTRAL LAYOUT                      		*/
 		/************************************************************************/
 
-		mCentralWidget = new QWidget();
+		mCentralWidget = new QWidget(this);
 		mCentralWidget->setObjectName("window");
 
-		QVBoxLayout* centralLayout = new QVBoxLayout();
+		mContent = new QWidget(this);
+
+		QVBoxLayout* centralLayout = new QVBoxLayout(this);
 		centralLayout->setMargin(0);
 		centralLayout->addWidget(mCentralWidget);
 		setLayout(centralLayout);
 
-		QVBoxLayout* mainLayout = new QVBoxLayout();
+		QVBoxLayout* mainLayout = new QVBoxLayout(this);
 		mainLayout->setMargin(0);
 		mainLayout->setContentsMargins(2, 0, 2, 2);
 		mainLayout->setSpacing(0);
@@ -69,7 +72,19 @@ namespace CamelotEditor
 
 		//setAttribute(Qt::WA_TransparentForMouseEvents);
 		
-		connect(closeBtn, SIGNAL(clicked()), this, SLOT(closeWindow()));
+		retranslateUi(title);
+		setupSignals();
+	}
+
+	void QtEditorWindow::setupSignals()
+	{
+		connect(mBtnClose, SIGNAL(clicked()), this, SLOT(closeWindow()));
+	}
+
+	void QtEditorWindow::retranslateUi(QString title)
+	{
+		mLblTitle->setText(title);
+		mBtnClose->setText(tr("Close"));
 	}
 
 	QSizePolicy	QtEditorWindow::sizePolicy() const

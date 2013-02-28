@@ -13,6 +13,9 @@ namespace CamelotEditor
 		QtEditor(QWidget *parent = nullptr);
 		~QtEditor();
 
+		QtDockOverlayWidget* getDockOverlayWidget() const { return mDockOverlayWidget; }
+		QWidget* getCentralWidget() const { return mCentralWidget; }
+
 	private:
 		QMenuBar* mMenuBar;
 		QToolBar* mMainToolBar;
