@@ -10,7 +10,9 @@ namespace CamelotEditor
 	class EditorPrefs;
 	class EditorApplication;
 	class ProjectPrefs;
+	class QtEditor;
 	class QtDockOverlayWidget;
+	class EditorWindowFactory;
 	class QtEditorWindow;
 }
 

@@ -3,7 +3,7 @@
 
 namespace CamelotEditor
 {
-	QtEditorWindow* SceneWindowFactory::create(QWidget* parent) const
+	QtEditorWindow* SceneWindowFactory::create(QWidget* parent)
 	{
 		return new QtSceneWindow(parent);
 	}

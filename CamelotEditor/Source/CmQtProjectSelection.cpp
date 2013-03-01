@@ -63,9 +63,9 @@ namespace CamelotEditor
 
 	void QtProjectSelection::setupSignals()
 	{
-		connect(mBtnNew, SIGNAL(clicked()), this, SLOT(newProject()));
-		connect(mBtnBrowse, SIGNAL(clicked()), this, SLOT(browseProject()));
-		connect(mBtnOpen, SIGNAL(clicked()), this, SLOT(openSelectedProject()));
+		connect(mBtnNew, &QPushButton::clicked, this, &QtProjectSelection::newProject);
+		connect(mBtnBrowse, &QPushButton::clicked, this, &QtProjectSelection::browseProject);
+		connect(mBtnOpen, &QPushButton::clicked, this, &QtProjectSelection::openSelectedProject);
 	}
 
 	void QtProjectSelection::reloadProjectList()

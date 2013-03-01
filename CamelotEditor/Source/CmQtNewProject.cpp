@@ -79,8 +79,8 @@ namespace CamelotEditor
 
 	void QtNewProject::setupSignals()
 	{
-		connect(mBtnCreate, SIGNAL(clicked()), this, SLOT(createProject()));
-		connect(mBtnBrowse, SIGNAL(clicked()), this, SLOT(browseProjectPath()));
+		connect(mBtnCreate, &QPushButton::clicked, this, &QtNewProject::createProject);
+		connect(mBtnBrowse, &QPushButton::clicked, this, &QtNewProject::browseProjectPath);
 	}
 
 	void QtNewProject::retranslateUi()

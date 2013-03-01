@@ -27,6 +27,8 @@ namespace CamelotEditor
 		bool projectExists(const QString& absProjPath) const;
 
 		QString getEditorRootPath() const;
+
+		QtEditor* getMainWindow() const;
 		
 	private:
 		static const QString PROJECT_PREFS_FILE_NAME;

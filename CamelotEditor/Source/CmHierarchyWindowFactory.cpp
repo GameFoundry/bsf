@@ -1,11 +1,11 @@
 #include "CmHierarchyWindowFactory.h"
-#include "CmQtSceneWindow.h"
+#include "CmQtHierarchyWindow.h"
 
 namespace CamelotEditor
 {
-	QtEditorWindow* HierarchyWindowFactory::create(QWidget* parent) const
+	QtEditorWindow* HierarchyWindowFactory::create(QWidget* parent)
 	{
-		return new QtSceneWindow(parent);
+		return new QtHierarchyWindow(parent);
 	}
 
 	const QString& HierarchyWindowFactory::getWindowName() const

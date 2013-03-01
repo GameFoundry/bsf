@@ -2,7 +2,8 @@
 
 #include "CmEditorPrerequisites.h"
 #include "CmModule.h"
-#include "CmEditorWindowFactory.h"
+#include <boost/function.hpp>
+#include <QtCore/QString>
 
 namespace CamelotEditor
 {
@@ -11,9 +12,16 @@ namespace CamelotEditor
 	public:
 		void registerWindowFactory(EditorWindowFactory* factory);
 
-		QtEditorWindow* create(const QString& name) const;
+		void openWindow(const QString& name);
+		boost::function<void()> getOpenCallback(const QString& name);
+
+		vector<QString>::type getAvailableWindowTypes() const;
 
 	private:
-		std::map<QString, EditorWindowFactory*> mFactories;
+		map<QString, EditorWindowFactory*>::type mFactories;
+
+		EditorWindowFactory* getFactory(const QString& name) const;
 	};
+
+	EditorWindowManager& gEditorWindowManager();
 }

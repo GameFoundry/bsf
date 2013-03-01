@@ -9,6 +9,11 @@
 
 -----------------------IMMEDIATE TODO---------------------------------------------------------------
 
+ Assets manifest
+  - I need to be able to create a list of assets used in the game. Assets referenced from the editor
+    should be easy to account for. But assets loaded from code are special. Maybe be like Unity and allow
+	special Resources folder?
+
 >>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
 Pass
  - A way to bind buffers to a Pass, while specifying buffer range
@@ -98,6 +103,11 @@ So final solution:
   - Sample mask when setting blend state (DX11, check if equivalent exists in GL)
   - RGBA blend factor when setting blend state(DX11, check if equivalent exists in GL)
   - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
+  - One camera -> one task (thread) approach for multithreading
+   - Also make sure to run off a thread pool (WorkQueue class already exists that provides needed interface)
+  - The way I handle rendering currently is to discard simulation results if gpu thread isn't finished.
+     - This reduces input lag but at worst case scenario the effect of multithreading might be completely eliminated as
+	   GPU ends up waiting for GPU, just because it was few milliseconds late. Maybe better to wait for GPU?
 
 Command buffer TODO:
  - Make CommandQueue not use mutexes and use atomics instead??

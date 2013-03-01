@@ -5,6 +5,8 @@
 #include "CmQtProjectSelection.h"
 #include "CmEditorWindowManager.h"
 #include "CmWindowDockManager.h"
+#include "CmSceneWindowFactory.h"
+#include "CmHierarchyWindowFactory.h"
 #include "CmFileSystem.h"
 #include "CmException.h"
 #include <QtWidgets/QApplication>
@@ -48,6 +50,15 @@ namespace CamelotEditor
 
 		EditorWindowManager::startUp(new EditorWindowManager());
 		WindowDockManager::startUp(new WindowDockManager(p->mEditor->getCentralWidget(), p->mEditor->getDockOverlayWidget()));
+
+		gEditorWindowManager().registerWindowFactory(new SceneWindowFactory());
+		gEditorWindowManager().registerWindowFactory(new HierarchyWindowFactory());
+
+		vector<QString>::type windowTypes = gEditorWindowManager().getAvailableWindowTypes();
+		for(auto iter = windowTypes.begin(); iter != windowTypes.end(); ++iter)
+		{
+			p->mEditor->addMenuItemCallback("Windows", *iter, gEditorWindowManager().getOpenCallback(*iter));
+		}
 	}
 
 	void EditorApplication::run()
@@ -58,6 +69,7 @@ namespace CamelotEditor
 		if(projSelection.exec() == QDialog::Rejected)
 			return;
 
+		p->mEditor->setProjectName(gProjectPrefs().getProjectName());
 		p->mEditor->show();
 		p->mApp->exec();
 	}
@@ -144,6 +156,11 @@ namespace CamelotEditor
 	QString EditorApplication::getEditorPrefsPath() const
 	{
 		return QDir::cleanPath(QDir::toNativeSeparators(getEditorRootPath() + QDir::separator() + EDITOR_PREFS_FILE_NAME));
+	}
+
+	QtEditor* EditorApplication::getMainWindow() const
+	{
+		return p->mEditor;
 	}
 
 	EditorApplication& gEditorApp()
