@@ -29,7 +29,6 @@ TODO for next few days:
 
 
 Dock overlay widget colors need to be customizable
-QtEditorWindow style needs to be customizable
 
-I want to rethink how the docking system works, and window management in general
- - those systems should be interconnected somehow
+
+I need to save EditorWindow layout. Especially dock information. Figure out how to save that.
