@@ -73,6 +73,7 @@ namespace CamelotEditor
 
 		setLayout(centralLayout);
 
+		setObjectNames();
 		retranslateUi();
 		setupSignals();
 	}
@@ -97,6 +98,16 @@ namespace CamelotEditor
 			mTxtProjectPath->setText(lastUsedDir.absolutePath());
 		else
 			mTxtProjectPath->setText(QString::fromStdString(FileSystem::getCurrentPath()));
+	}
+
+	void QtNewProject::setObjectNames()
+	{
+		mLblProjectName->setObjectName(QStringLiteral("LblProjectName"));
+		mTxtProjectName->setObjectName(QStringLiteral("TxtProjectName"));
+		mBtnCreate->setObjectName(QStringLiteral("BtnCreate"));
+		mLblProjectPath->setObjectName(QStringLiteral("LblProjectPath"));
+		mTxtProjectPath->setObjectName(QStringLiteral("TxtProjectPath"));
+		mBtnBrowse->setObjectName(QStringLiteral("BtnBrowse"));
 	}
 
 	void QtNewProject::createProject()

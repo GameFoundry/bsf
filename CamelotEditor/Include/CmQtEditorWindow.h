@@ -32,7 +32,7 @@ namespace CamelotEditor
 		bool isDocked() { return mIsDocked; }
 
 	protected:
-		QWidget* mContent;
+		QWidget* mContentWidget;
 
 		QSizePolicy	sizePolicy() const;
 
@@ -49,6 +49,7 @@ namespace CamelotEditor
 		void setupUi(QString title);
 		void setupSignals();
 		void retranslateUi(QString title);
+		void setObjectNames();
 
 		void mousePressEvent(QMouseEvent* event);
 		void mouseReleaseEvent(QMouseEvent* event);

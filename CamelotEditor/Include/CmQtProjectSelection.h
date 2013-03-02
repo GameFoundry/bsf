@@ -21,14 +21,15 @@ namespace CamelotEditor
 		boost::signal<void(const QString&)> onProjectSelected;
 
 	private:
-		QListWidget* mListWidget;
+		QListWidget* mListRecentProjects;
 		QPushButton* mBtnOpen;
 		QPushButton* mBtnNew;
-		QPushButton* mBtnBrowse;
+		QPushButton* mBtnOpenOther;
 
 		void setupUi();
 		void setupSignals();
 		void retranslateUi();
+		void setObjectNames();
 
 		void openProject(const QString& path);
 		void addRecentlyUsedProject(const QString& path);

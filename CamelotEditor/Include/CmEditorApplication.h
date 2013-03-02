@@ -33,11 +33,17 @@ namespace CamelotEditor
 	private:
 		static const QString PROJECT_PREFS_FILE_NAME;
 		static const QString EDITOR_PREFS_FILE_NAME;
+		static const QString STYLE_SHEETS_DIRECTORY_NAME;
 
 		PImpl* p;
 
 		QString getProjectPrefsPath(const QString& absProjPath) const;
 		QString getEditorPrefsPath() const;
+		QString getStyleSheetsDirectoryPath() const;
+
+		void startUpQt();
+		void shutDownQt();
+		void loadStyleSheets();
 	};
 
 	EditorApplication& gEditorApp();

@@ -32,6 +32,7 @@ namespace CamelotEditor
 
 		void setupUi();
 		void retranslateUi();
+		void setObjectNames();
 
 		QMenu* findOrCreateMenu(const QString& name);
 

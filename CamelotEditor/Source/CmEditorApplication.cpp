@@ -9,6 +9,7 @@
 #include "CmHierarchyWindowFactory.h"
 #include "CmFileSystem.h"
 #include "CmException.h"
+#include "CmDataStream.h"
 #include <QtWidgets/QApplication>
 #include <QtCore/QDir>
 
@@ -16,6 +17,7 @@ namespace CamelotEditor
 {
 	const QString EditorApplication::PROJECT_PREFS_FILE_NAME = "CamelotProject.xml";
 	const QString EditorApplication::EDITOR_PREFS_FILE_NAME = "Editor.xml";
+	const QString EditorApplication::STYLE_SHEETS_DIRECTORY_NAME = "Styles";
 
 	struct EditorApplication::PImpl
 	{
@@ -44,9 +46,7 @@ namespace CamelotEditor
 		
 		ProjectPrefs::startUp(new ProjectPrefs());
 
-		int argc = 0;
-		p->mApp = new QApplication(argc, nullptr);
-		p->mEditor = new QtEditor();
+		startUpQt();
 
 		EditorWindowManager::startUp(new EditorWindowManager());
 		WindowDockManager::startUp(new WindowDockManager(p->mEditor->getCentralWidget(), p->mEditor->getDockOverlayWidget()));
@@ -79,12 +79,49 @@ namespace CamelotEditor
 		WindowDockManager::shutDown();
 		EditorWindowManager::shutDown();
 
-		delete p->mApp;
-
+		shutDownQt();
+		
 		ProjectPrefs::shutDown();
 
 		gEditorPrefs().save(getEditorPrefsPath());
 		EditorPrefs::shutDown();
+	}
+
+	void EditorApplication::startUpQt()
+	{
+		int argc = 0;
+		p->mApp = new QApplication(argc, nullptr);
+		p->mEditor = new QtEditor();
+
+		loadStyleSheets();
+	}
+
+	void EditorApplication::shutDownQt()
+	{
+		delete p->mApp;
+	}
+
+	void EditorApplication::loadStyleSheets()
+	{
+		QDir styleSheetsDir = getStyleSheetsDirectoryPath();
+
+		if(!styleSheetsDir.exists())
+			return;
+
+		QStringList nameFilters;
+		nameFilters<<"*.css";
+
+		QFileInfoList fileInfos = styleSheetsDir.entryInfoList(nameFilters, QDir::Files | QDir::Readable);
+
+		QString styleSheet;
+		for(auto iter = fileInfos.begin(); iter != fileInfos.end(); ++iter)
+		{
+			DataStreamPtr dataStream = FileSystem::open(iter->absoluteFilePath().toStdString());
+
+			styleSheet += QString::fromStdString(dataStream->getAsString());
+		}
+
+		p->mApp->setStyleSheet(styleSheet);
 	}
 
 	void EditorApplication::loadProject(const QString& absProjPath)
@@ -161,6 +198,11 @@ namespace CamelotEditor
 	QtEditor* EditorApplication::getMainWindow() const
 	{
 		return p->mEditor;
+	}
+
+	QString EditorApplication::getStyleSheetsDirectoryPath() const
+	{
+		return QDir::cleanPath(QDir::toNativeSeparators(getEditorRootPath() + QDir::separator() + STYLE_SHEETS_DIRECTORY_NAME));
 	}
 
 	EditorApplication& gEditorApp()

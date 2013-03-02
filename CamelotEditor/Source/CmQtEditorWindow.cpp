@@ -27,7 +27,6 @@ namespace CamelotEditor
 		/* 								TITLE BAR	                     		*/
 		/************************************************************************/
 		mTitleBar = new QWidget(this);
-		mTitleBar->setObjectName("titleBar");
 
 		mLblTitle = new QLabel(this);
 		mLblTitle->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -45,9 +44,8 @@ namespace CamelotEditor
 		/************************************************************************/
 
 		mCentralWidget = new QWidget(this);
-		mCentralWidget->setObjectName("window");
 
-		mContent = new QWidget(this);
+		mContentWidget = new QWidget(this);
 
 		QVBoxLayout* centralLayout = new QVBoxLayout(this);
 		centralLayout->setMargin(0);
@@ -59,19 +57,10 @@ namespace CamelotEditor
 		mainLayout->setContentsMargins(2, 0, 2, 2);
 		mainLayout->setSpacing(0);
 		mainLayout->addWidget(mTitleBar);
-		mainLayout->addWidget(mContent, 1);
+		mainLayout->addWidget(mContentWidget, 1);
 		mCentralWidget->setLayout(mainLayout);
-
-		/************************************************************************/
-		/* 								OTHER		                      		*/
-		/************************************************************************/
-
-		// Style sheets // TODO - Load this from disk from unified storage
-		mTitleBar->setStyleSheet("QWidget#titleBar { background-color : rgb(157, 208, 250) }");
-		mCentralWidget->setStyleSheet("#window { border-style: solid; border-width: 2px; border-color: rgb(157, 208, 250); }");
-
-		//setAttribute(Qt::WA_TransparentForMouseEvents);
 		
+		setObjectNames();
 		retranslateUi(title);
 		setupSignals();
 	}
@@ -85,6 +74,16 @@ namespace CamelotEditor
 	{
 		mLblTitle->setText(title);
 		mBtnClose->setText(tr("Close"));
+	}
+
+	void QtEditorWindow::setObjectNames()
+	{
+		mTitleBar->setObjectName(QStringLiteral("TitleBar"));
+		mLblTitle->setObjectName(QStringLiteral("LblTitle"));
+		mBtnClose->setObjectName(QStringLiteral("BtnClose"));
+
+		mCentralWidget->setObjectName(QStringLiteral("CentralWidget"));
+		mContentWidget->setObjectName(QStringLiteral("ContentWidget"));
 	}
 
 	QSizePolicy	QtEditorWindow::sizePolicy() const

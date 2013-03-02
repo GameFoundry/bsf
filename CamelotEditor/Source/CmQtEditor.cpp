@@ -23,25 +23,18 @@ namespace CamelotEditor
 
 	void QtEditor::setupUi()
 	{
-		if (objectName().isEmpty())
-			setObjectName(QStringLiteral("CamelotEditorClass"));
-
 		resize(600, 400);
 
 		mMenuBar = new QMenuBar(this);
-		mMenuBar->setObjectName(QStringLiteral("menuBar"));
-
 		setMenuBar(mMenuBar);
-		mMainToolBar = new QToolBar(this);
-		mMainToolBar->setObjectName(QStringLiteral("mainToolBar"));
 
+		mMainToolBar = new QToolBar(this);
 		addToolBar(mMainToolBar);
+
 		mCentralWidget = new QWidget(this);
-		mCentralWidget->setObjectName(QStringLiteral("centralWidget"));
 		setCentralWidget(mCentralWidget);
 
 		mStatusBar = new QStatusBar(this);
-		mStatusBar->setObjectName(QStringLiteral("statusBar"));
 		setStatusBar(mStatusBar);
 		
 		addMenuItemCallback("File", "Open project", boost::bind(&QtEditor::openProject, this));
@@ -52,6 +45,7 @@ namespace CamelotEditor
 		mDockOverlayWidget = new QtDockOverlayWidget(this);
 
 		retranslateUi();
+		setObjectNames();
 
 		QMetaObject::connectSlotsByName(this);
 	}
@@ -59,6 +53,15 @@ namespace CamelotEditor
 	void QtEditor::retranslateUi()
 	{
 		setProjectName("No project");
+	}
+
+	void QtEditor::setObjectNames()
+	{
+		mMenuBar->setObjectName(QStringLiteral("MenuBar"));
+		mMainToolBar->setObjectName(QStringLiteral("MainToolBar"));
+		mCentralWidget->setObjectName(QStringLiteral("CentralWidget"));
+		mStatusBar->setObjectName(QStringLiteral("StatusBar"));
+		mDockOverlayWidget->setObjectName(QStringLiteral("DockOverlayWidget"));
 	}
 
 	void QtEditor::setProjectName(const QString& name)

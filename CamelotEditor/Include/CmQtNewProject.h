@@ -34,6 +34,7 @@ namespace CamelotEditor
 		void setupUi();
 		void setupSignals();
 		void retranslateUi();
+		void setObjectNames();
 
 		private Q_SLOTS:
 		void createProject();

@@ -27,28 +27,29 @@ namespace CamelotEditor
 		setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
 		setFixedSize(400, 170);
 
-		mListWidget = new QListWidget(this);
+		mListRecentProjects = new QListWidget(this);
 
 		QWidget* buttonsWidget = new QWidget(this);
 		mBtnNew = new QPushButton(buttonsWidget);
 		mBtnOpen = new QPushButton(buttonsWidget);
-		mBtnBrowse = new QPushButton(buttonsWidget);
+		mBtnOpenOther = new QPushButton(buttonsWidget);
 
 		QHBoxLayout* buttonLayout = new QHBoxLayout(this);
 		buttonLayout->setMargin(0);
 		buttonLayout->addWidget(mBtnNew);
-		buttonLayout->addWidget(mBtnBrowse);
+		buttonLayout->addWidget(mBtnOpenOther);
 		buttonLayout->addWidget(mBtnOpen);
 		buttonsWidget->setLayout(buttonLayout);
 		
 		QVBoxLayout* centralLayout = new QVBoxLayout(this);
 		centralLayout->setMargin(0);
-		centralLayout->addWidget(mListWidget);
+		centralLayout->addWidget(mListRecentProjects);
 		centralLayout->addWidget(buttonsWidget);
 		setLayout(centralLayout);
 
 		reloadProjectList();
 
+		setObjectNames();
 		retranslateUi();
 		setupSignals();
 	}
@@ -57,23 +58,31 @@ namespace CamelotEditor
 	{
 		setWindowTitle(tr("Project selection"));
 		mBtnNew->setText(tr("New"));
-		mBtnBrowse->setText(tr("Browse"));
+		mBtnOpenOther->setText(tr("Open other"));
 		mBtnOpen->setText(tr("Open"));
 	}
 
 	void QtProjectSelection::setupSignals()
 	{
 		connect(mBtnNew, &QPushButton::clicked, this, &QtProjectSelection::newProject);
-		connect(mBtnBrowse, &QPushButton::clicked, this, &QtProjectSelection::browseProject);
+		connect(mBtnOpenOther, &QPushButton::clicked, this, &QtProjectSelection::browseProject);
 		connect(mBtnOpen, &QPushButton::clicked, this, &QtProjectSelection::openSelectedProject);
+	}
+
+	void QtProjectSelection::setObjectNames()
+	{
+		mListRecentProjects->setObjectName(QStringLiteral("ListRecentProjects"));
+		mBtnOpen->setObjectName(QStringLiteral("BtnOpen"));
+		mBtnNew->setObjectName(QStringLiteral("BtnNew"));
+		mBtnOpenOther->setObjectName(QStringLiteral("BtnOpenOther"));
 	}
 
 	void QtProjectSelection::reloadProjectList()
 	{
-		mListWidget->clear();
+		mListRecentProjects->clear();
 
 		for(int i = 0; i < gEditorPrefs().getNumRecentlyUsedProjects(); i++)
-			mListWidget->insertItem(i, gEditorPrefs().getRecentlyUsedProjectPath(i));
+			mListRecentProjects->insertItem(i, gEditorPrefs().getRecentlyUsedProjectPath(i));
 	}
 
 	void QtProjectSelection::newProject()
@@ -108,7 +117,7 @@ namespace CamelotEditor
 
 	void QtProjectSelection::openSelectedProject()
 	{
-		QListWidgetItem* item = mListWidget->currentItem();
+		QListWidgetItem* item = mListRecentProjects->currentItem();
 
 		if(item == nullptr)
 		{
