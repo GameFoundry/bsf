@@ -36,6 +36,10 @@ namespace CamelotEditor
 
 		QMenu* findOrCreateMenu(const QString& name);
 
+		void changeEvent(QEvent* event);
+		void moveEvent(QMoveEvent* event);
+		void resizeEvent(QResizeEvent* event);
+
 		void openProject();
 		void saveProject();
 		void exitEditor();

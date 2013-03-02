@@ -1,10 +1,14 @@
 #include "CmQtEditor.h"
 #include "CmQtDockOverlayWidget.h"
+#include "CmEditorPrefs.h"
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QStatusBar>
 #include <QtCore/QLocale>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QDesktopWidget>
+#include <QtGui/QMoveEvent>
+#include <QtGui/QResizeEvent>
 #include <boost/bind.hpp>
 #include "CmException.h"
 
@@ -23,7 +27,16 @@ namespace CamelotEditor
 
 	void QtEditor::setupUi()
 	{
-		resize(600, 400);
+		WindowLayoutDesc desc = gEditorPrefs().getMainWindowLayout();
+
+		if(desc.maximized)
+		{
+			setWindowState(Qt::WindowMaximized);
+		}
+		else
+		{
+			setGeometry(desc.left, desc.top, desc.width, desc.height);
+		}
 
 		mMenuBar = new QMenuBar(this);
 		setMenuBar(mMenuBar);
@@ -106,6 +119,45 @@ namespace CamelotEditor
 		}
 		else
 			return iterFind->second;
+	}
+
+	void QtEditor::changeEvent(QEvent* event)
+	{
+		if(event->type() == QEvent::WindowStateChange) 
+		{
+			WindowLayoutDesc desc = gEditorPrefs().getMainWindowLayout();
+			if(isMaximized()) 
+				desc.maximized = true;
+			else 
+				desc.maximized = false;
+
+			desc.screenIdx = QApplication::desktop()->screenNumber(this);
+			gEditorPrefs().setMainWindowLayout(desc);
+		}
+
+		event->accept();
+	}
+
+	void QtEditor::moveEvent(QMoveEvent* event)
+	{
+		WindowLayoutDesc desc = gEditorPrefs().getMainWindowLayout();
+		desc.left = event->pos().x();
+		desc.top = event->pos().y();
+
+		gEditorPrefs().setMainWindowLayout(desc);
+
+		QWidget::moveEvent(event);
+	}
+
+	void QtEditor::resizeEvent(QResizeEvent* event)
+	{
+		WindowLayoutDesc desc = gEditorPrefs().getMainWindowLayout();
+		desc.width = event->size().width();
+		desc.height = event->size().height();
+
+		gEditorPrefs().setMainWindowLayout(desc);
+
+		QWidget::resizeEvent(event);
 	}
 
 	void QtEditor::openProject()
