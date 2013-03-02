@@ -23,7 +23,6 @@ namespace CamelotEditor
 
 	private:
 		QMenuBar* mMenuBar;
-		QToolBar* mMainToolBar;
 		QWidget* mCentralWidget;
 		QStatusBar* mStatusBar;
 		QtDockOverlayWidget* mDockOverlayWidget;

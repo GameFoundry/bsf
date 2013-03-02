@@ -7,6 +7,7 @@
 #include <QtCore/QLocale>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDesktopWidget>
+#include <QtWidgets/QHBoxLayout>
 #include <QtGui/QMoveEvent>
 #include <QtGui/QResizeEvent>
 #include <boost/bind.hpp>
@@ -31,6 +32,7 @@ namespace CamelotEditor
 
 		if(desc.maximized)
 		{
+			setGeometry(desc.left, desc.top, desc.width, desc.height);
 			setWindowState(Qt::WindowMaximized);
 		}
 		else
@@ -41,21 +43,20 @@ namespace CamelotEditor
 		mMenuBar = new QMenuBar(this);
 		setMenuBar(mMenuBar);
 
-		mMainToolBar = new QToolBar(this);
-		addToolBar(mMainToolBar);
-
 		mCentralWidget = new QWidget(this);
 		setCentralWidget(mCentralWidget);
 
+		mDockOverlayWidget = new QtDockOverlayWidget(this);
+
 		mStatusBar = new QStatusBar(this);
 		setStatusBar(mStatusBar);
+
+		setContextMenuPolicy(Qt::NoContextMenu);
 		
 		addMenuItemCallback("File", "Open project", boost::bind(&QtEditor::openProject, this));
 		addMenuItemCallback("File", "Save project", boost::bind(&QtEditor::saveProject, this));
 		addMenuItemSeparator("File");
 		addMenuItemCallback("File", "Exit", boost::bind(&QtEditor::exitEditor, this));
-
-		mDockOverlayWidget = new QtDockOverlayWidget(this);
 
 		retranslateUi();
 		setObjectNames();
@@ -71,7 +72,6 @@ namespace CamelotEditor
 	void QtEditor::setObjectNames()
 	{
 		mMenuBar->setObjectName(QStringLiteral("MenuBar"));
-		mMainToolBar->setObjectName(QStringLiteral("MainToolBar"));
 		mCentralWidget->setObjectName(QStringLiteral("CentralWidget"));
 		mStatusBar->setObjectName(QStringLiteral("StatusBar"));
 		mDockOverlayWidget->setObjectName(QStringLiteral("DockOverlayWidget"));
@@ -157,6 +157,7 @@ namespace CamelotEditor
 
 		gEditorPrefs().setMainWindowLayout(desc);
 
+		mDockOverlayWidget->resize(event->size());
 		QWidget::resizeEvent(event);
 	}
 
