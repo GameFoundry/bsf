@@ -7,6 +7,7 @@
 #include <QtWidgets/QApplication>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
+#include <QtCore/QTimer>
 
 #include "CmDebug.h"
 #include "CmWindowDockManager.h"
@@ -22,11 +23,17 @@ namespace CamelotEditor
 	void QtEditorWindow::setupUi(QString title)
 	{
 		setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+		
+		//setAttribute(Qt::WA_NoBackground, true);
+		//setAutoFillBackground(false);
+		// 
+		mTimer = new QTimer(this);
 
 		/************************************************************************/
 		/* 								TITLE BAR	                     		*/
 		/************************************************************************/
 		mTitleBar = new QWidget(this);
+		mTitleBar->setMouseTracking(true);
 
 		mLblTitle = new QLabel(this);
 		mLblTitle->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -68,6 +75,7 @@ namespace CamelotEditor
 	void QtEditorWindow::setupSignals()
 	{
 		connect(mBtnClose, SIGNAL(clicked()), this, SLOT(closeWindow()));
+		connect(mTimer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
 	}
 
 	void QtEditorWindow::retranslateUi(QString title)
@@ -109,12 +117,23 @@ namespace CamelotEditor
 		}
 	}
 
+	void QtEditorWindow::enterEvent(QEvent *e)
+	{
+		mTimer->start(100);
+	}
+
+	void QtEditorWindow::leaveEvent(QEvent *e)
+	{
+		mTimer->stop();
+	}
+
 	void QtEditorWindow::mousePressEvent(QMouseEvent* event)
 	{
 		if(event->buttons() & Qt::LeftButton)
 		{
 			if(isOverResizeArea(event->globalPos()))
 			{
+				//setUpdatesEnabled(false);
 				mResizeMode = getResizeMode(event->globalPos());
 			}
 			else if(isOverDragArea(event->globalPos()))
@@ -140,6 +159,7 @@ namespace CamelotEditor
 
 		mMoveMode = false;
 		mResizeMode = RM_NONE;
+		//setUpdatesEnabled(true);
 
 		QWidget::mouseReleaseEvent(event);
 	}
@@ -165,6 +185,9 @@ namespace CamelotEditor
 				int top = geometry().top();
 				int height = geometry().height();
 
+				int leftOld = left;
+				int topOld = top;
+
 				if (mResizeMode & RM_LEFT)
 				{
 					width = width + (left - event->globalPos().x());
@@ -187,12 +210,74 @@ namespace CamelotEditor
 					height = event->globalPos().y() - top;
 				}
 
+				// Check if we have reached width or height limit. We need to do some special
+				// steps otherwise the window will move (instead of resize) after the limit is reached
+				if(width < minimumWidth())
+				{
+					left = leftOld;
+					width = minimumWidth();
+				}
+
+				if(height < minimumHeight())
+				{
+					top = topOld;
+					height = minimumHeight();
+				}
+
 				setGeometry(left, top, width, height);
-				updateGeometry();
+
+				update();
 			}
 		}
 
 		QWidget::mouseMoveEvent(event);
+	}
+
+	void QtEditorWindow::timerUpdate()
+	{
+		if(!isDocked())
+		{
+			if(underMouse())
+			{
+				ResizeMode resizeMode = getResizeMode(QCursor::pos());
+
+				switch(resizeMode)
+				{
+				case RM_LEFT:
+					setCursor(Qt::SizeHorCursor);
+					break;
+				case RM_RIGHT:
+					setCursor(Qt::SizeHorCursor);
+					break;
+				case RM_TOP:
+					setCursor(Qt::SizeVerCursor);
+					break;
+				case RM_BOTTOM:
+					setCursor(Qt::SizeVerCursor);
+					break;
+				case (ResizeMode)(RM_BOTTOM | RM_RIGHT):
+					setCursor(Qt::SizeFDiagCursor);
+					break;
+				case (ResizeMode)(RM_TOP | RM_LEFT):
+					setCursor(Qt::SizeFDiagCursor);
+					break;
+				case (ResizeMode)(RM_BOTTOM | RM_LEFT):
+					setCursor(Qt::SizeBDiagCursor);
+					break;
+				case (ResizeMode)(RM_TOP | RM_RIGHT):
+					setCursor(Qt::SizeBDiagCursor);
+					break;
+				case RM_NONE:
+					setCursor(Qt::ArrowCursor);
+					break;
+				}
+			}
+			else
+			{
+				if(cursor().shape() != Qt::ArrowCursor)
+					unsetCursor();
+			}
+		}
 	}
 
 	void QtEditorWindow::closeWindow()

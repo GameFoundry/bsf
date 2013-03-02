@@ -7,7 +7,6 @@
 namespace CamelotEditor
 {
 	// TODO - Low priority. When resizing from left/top, the window resize noticeably lags behind
-	// TODO - Low priority. When resizing from left/top, if a minimum size is reached, the window will just move as if it's being dragged
 	// TODO - Low priority. When resizing or moving, the top/right sides seem to redraw a frame too late and borders appear invisible for a split second
 	class QtEditorWindow : public QWidget
 	{
@@ -44,12 +43,16 @@ namespace CamelotEditor
 		QLabel* mLblTitle;
 		QPushButton* mBtnClose;
 		QWidget* mCentralWidget;
+		QTimer* mTimer;
 		bool mIsDocked;
 
 		void setupUi(QString title);
 		void setupSignals();
 		void retranslateUi(QString title);
 		void setObjectNames();
+
+		void enterEvent(QEvent *e);
+		void leaveEvent(QEvent *e);
 
 		void mousePressEvent(QMouseEvent* event);
 		void mouseReleaseEvent(QMouseEvent* event);
@@ -72,6 +75,7 @@ namespace CamelotEditor
 		/* 								SLOTS		                     		*/
 		/************************************************************************/
 	private Q_SLOTS:
+		void timerUpdate();
 		void closeWindow();
 	};
 }
