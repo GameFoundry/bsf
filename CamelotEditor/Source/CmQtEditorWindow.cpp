@@ -11,11 +11,12 @@
 
 #include "CmDebug.h"
 #include "CmWindowDockManager.h"
+#include "CmEditorWindowManager.h"
 
 namespace CamelotEditor
 {
-	QtEditorWindow::QtEditorWindow(QWidget* parent, const QString& title)
-		:QWidget(parent), mResizeMode(RM_NONE), mMoveMode(false), mIsDocked(false)
+	QtEditorWindow::QtEditorWindow(QWidget* parent, const QString& name, const QString& title)
+		:QWidget(parent), mResizeMode(RM_NONE), mMoveMode(false), mIsDocked(false), mName(name)
 	{
 		setupUi(title);
 	}
@@ -114,6 +115,89 @@ namespace CamelotEditor
 		{
 			setWindowFlags(Qt::Widget);
 			mIsDocked = true;
+		}
+	}
+
+	WindowLayoutDesc QtEditorWindow::getLayoutDesc() const
+	{
+		WindowLayoutDesc desc;
+		desc.width = geometry().width();
+		desc.height = geometry().height();
+		desc.left = geometry().x();
+		desc.top = geometry().y();
+		desc.screenIdx = -1;
+		desc.name = getName();
+		desc.maximized = false;
+		desc.dockState = WDS_FLOATING;
+
+		if(isDocked())
+		{
+			WindowDragDropLocation dockLocation = gWindowDockManager().getDockLocation(this);
+
+			switch(dockLocation)
+			{
+			case CM_WINDROP_LEFT:
+				desc.dockState = WDS_LEFT;
+				break;
+			case CM_WINDROP_RIGHT:
+				desc.dockState = WDS_RIGHT;
+				break;
+			case CM_WINDROP_BOTTOM:
+				desc.dockState = WDS_BOTTOM;
+				break;
+			case CM_WINDROP_TOP:
+				desc.dockState = WDS_TOP;
+				break;
+			case CM_WINDROP_CENTER:
+				desc.dockState = WDS_CENTER;
+				break;
+			default:
+				assert(false);
+			}
+
+			desc.dockParentName = gWindowDockManager().getDockParentName(this);
+		}
+		else 
+		{
+			desc.dockState = WDS_FLOATING;
+			desc.dockParentName = "";
+		}
+
+		return desc;
+	}
+
+	void QtEditorWindow::restoreFromLayoutDesc(const WindowLayoutDesc& desc)
+	{
+		setGeometry(desc.left, desc.top, desc.width, desc.height);
+
+		if(desc.dockState != WDS_FLOATING)
+		{
+			WindowDragDropLocation dockLocation = CM_WINDROP_NONE;
+			switch(desc.dockState)
+			{
+			case WDS_LEFT:
+				dockLocation = CM_WINDROP_LEFT;
+				break;
+			case WDS_RIGHT:
+				dockLocation = CM_WINDROP_RIGHT;
+				break;
+			case WDS_BOTTOM:
+				dockLocation = CM_WINDROP_BOTTOM;
+				break;
+			case WDS_TOP:
+				dockLocation = CM_WINDROP_TOP;
+				break;
+			case WDS_CENTER:
+				dockLocation = CM_WINDROP_CENTER;
+				break;
+			}
+
+			QtEditorWindow* dockParent = nullptr;
+
+			if(gWindowDockManager().getRootDockNodeName() != desc.dockParentName)
+				dockParent = gEditorWindowManager().getOpenWindow(desc.dockParentName);
+				
+			gWindowDockManager().dockWindow(this, dockParent, dockLocation);
 		}
 	}
 
@@ -282,7 +366,8 @@ namespace CamelotEditor
 
 	void QtEditorWindow::closeWindow()
 	{
-		gWindowDockManager().windowClosed(this);
+		gWindowDockManager().windowClosed(this); // TODO - Hook this up to use onClosed signal as well
+		onClosed(this);
 		close();
 	}
 

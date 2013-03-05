@@ -87,7 +87,10 @@ namespace CamelotEditor
 		xml_node openWindows = camelotEditor.append_child("OpenWindows");
 		saveWindowLayout(openWindows, mMainWindowLayout);
 
-		// TODO - Add non-main windows
+		for(auto iter = mWindowLayouts.begin(); iter != mWindowLayouts.end(); ++iter)
+		{
+			saveWindowLayout(openWindows, *iter);
+		}
 
 		xmldoc.save_file(stdPath.c_str());
 	}
@@ -108,7 +111,8 @@ namespace CamelotEditor
 		windowScreen.append_attribute("screenIdx").set_value(desc.screenIdx);
 
 		xml_node dockInfo = windowLayout.append_child("DockInfo");
-		dockInfo.append_attribute("docked").set_value(desc.docked);
+		dockInfo.append_attribute("state").set_value((UINT32)desc.dockState);
+		dockInfo.append_attribute("parentName").set_value(desc.dockParentName.toStdString().c_str());
 	}
 
 	WindowLayoutDesc EditorPrefs::loadWindowLayout(xml_node node) const
@@ -125,9 +129,20 @@ namespace CamelotEditor
 		desc.maximized = node.child("Screen").attribute("fullscreen").as_bool();
 		desc.screenIdx = node.child("Screen").attribute("screenIdx").as_uint();
 
-		desc.docked = node.child("DockInfo").attribute("docked").as_bool();
+		desc.dockState = (WindowDockState)node.child("DockInfo").attribute("state").as_uint();
+		desc.dockParentName = node.child("DockInfo").attribute("parentName").as_string();
 
 		return desc;
+	}
+
+	void EditorPrefs::setWindowLayouts(const vector<WindowLayoutDesc>::type& descs)
+	{
+		mWindowLayouts = descs;
+	}
+
+	const vector<WindowLayoutDesc>::type& EditorPrefs::getWindowLayouts() const
+	{
+		return mWindowLayouts;
 	}
 
 	void EditorPrefs::load(const QString& path)
@@ -170,6 +185,10 @@ namespace CamelotEditor
 				mMainWindowLayout = desc;
 				foundMainWindowLayoutDesc = true;
 			}
+			else
+			{
+				mWindowLayouts.push_back(desc);
+			}
 		}
 	}
 
@@ -178,6 +197,7 @@ namespace CamelotEditor
 		mRecentlyUsedProjects.clear();
 		mLastUsedProjectDirectory = "";
 		mMainWindowLayout = WindowLayoutDesc();
+		mWindowLayouts.clear();
 	}
 
 	EditorPrefs& gEditorPrefs()

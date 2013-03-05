@@ -1,8 +1,10 @@
 #pragma once
 
 #include "CmEditorPrerequisites.h"
+#include "CmEditorPrefs.h"
 #include <QtWidgets/QWidget>
 #include <QtCore/QPoint>
+#include <boost/signal.hpp>
 
 namespace CamelotEditor
 {
@@ -22,14 +24,19 @@ namespace CamelotEditor
 		};
 
 	public:
-		QtEditorWindow(QWidget* parent, const QString& title);
+		QtEditorWindow(QWidget* parent, const QString& name, const QString& title);
 		virtual ~QtEditorWindow() { }
+
+		const QString& getName() const { return mName; }
 
 		void undock();
 		void dock();
 
-		bool isDocked() { return mIsDocked; }
+		bool isDocked() const { return mIsDocked; }
+		WindowLayoutDesc getLayoutDesc() const;
+		void restoreFromLayoutDesc(const WindowLayoutDesc& desc);
 
+		boost::signal<void(QtEditorWindow*)> onClosed;
 	protected:
 		QWidget* mContentWidget;
 
@@ -45,6 +52,7 @@ namespace CamelotEditor
 		QWidget* mCentralWidget;
 		QTimer* mTimer;
 		bool mIsDocked;
+		QString mName;
 
 		void setupUi(QString title);
 		void setupSignals();

@@ -7,11 +7,21 @@
 
 namespace CamelotEditor
 {
+	enum WindowDockState
+	{
+		WDS_LEFT,
+		WDS_RIGHT,
+		WDS_TOP,
+		WDS_BOTTOM,
+		WDS_CENTER,
+		WDS_FLOATING
+	};
+
 	struct WindowLayoutDesc
 	{
 		WindowLayoutDesc()
 			:width(0), height(0), left(0), top(0), 
-			screenIdx(-1), maximized(true), docked(false)
+			screenIdx(-1), maximized(true), dockState(WDS_FLOATING)
 		{
 
 		}
@@ -23,7 +33,8 @@ namespace CamelotEditor
 		UINT32 top;
 		UINT32 screenIdx;
 		bool maximized;
-		bool docked;
+		WindowDockState dockState;
+		QString dockParentName;
 	};
 
 	class EditorPrefs : public CamelotEngine::Module<EditorPrefs>
@@ -40,6 +51,9 @@ namespace CamelotEditor
 		void setMainWindowLayout(const WindowLayoutDesc& desc);
 		const WindowLayoutDesc& getMainWindowLayout() const;
 
+		void setWindowLayouts(const vector<WindowLayoutDesc>::type& descs);
+		const vector<WindowLayoutDesc>::type& getWindowLayouts() const;
+
 		void save(const QString& path, bool overwrite = true) const;
 		void load(const QString& path);
 
@@ -48,6 +62,7 @@ namespace CamelotEditor
 		QString mLastUsedProjectDirectory;
 
 		WindowLayoutDesc mMainWindowLayout;
+		vector<WindowLayoutDesc>::type mWindowLayouts;
 
 		void saveWindowLayout(pugi::xml_node parentNode, const WindowLayoutDesc& desc) const;
 		WindowLayoutDesc loadWindowLayout(pugi::xml_node node) const;

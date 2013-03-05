@@ -8,6 +8,12 @@ namespace CamelotEditor
 {
 	class WindowDockManager : public Module<WindowDockManager>
 	{
+		struct DockedWindowInfo
+		{
+			QString parentName;
+			WindowDragDropLocation dockLocation;
+		};
+
 	public:
 		WindowDockManager(QWidget* centralWidget, QtDockOverlayWidget* dockWidget);
 
@@ -15,6 +21,14 @@ namespace CamelotEditor
 		void windowReleased(QtEditorWindow* window, const QPoint& mousePos);
 		void windowClosed(QtEditorWindow* window);
 
+		void dockWindow(QtEditorWindow* windowToDock, QtEditorWindow* dockAtWidget, WindowDragDropLocation dockAtPosition);
+		void undockWindow(QtEditorWindow* windowToUndock);
+
+		bool isDocked(const QtEditorWindow* window) const;
+		WindowDragDropLocation getDockLocation(const QtEditorWindow* window) const;
+		QString getDockParentName(const QtEditorWindow* window) const;
+
+		const QString& getRootDockNodeName() const;
 	private:
 		QtDockOverlayWidget* mDockOverlayWidget;
 		QWidget* mCentralWidget;
@@ -22,10 +36,7 @@ namespace CamelotEditor
 		QtEditorWindow* mLastDraggedWindow;
 		QPoint mLastDragPosition;
 
-		std::vector<QtEditorWindow*> mDockedWindows;
-
-		void dockWindow(QtEditorWindow* windowToDock, QtEditorWindow* dockAtWidget, WindowDragDropLocation dockAtPosition);
-		void undockWindow(QtEditorWindow* windowToUndock);
+		map<QtEditorWindow*, DockedWindowInfo>::type mDockedWindows;
 
 		QtEditorWindow* getDockedWindowAtPosition(const QPoint& globalPos);
 		bool isPositionInDockArea(const QPoint& globalPos);

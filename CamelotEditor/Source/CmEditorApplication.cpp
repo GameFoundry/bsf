@@ -69,6 +69,8 @@ namespace CamelotEditor
 		if(projSelection.exec() == QDialog::Rejected)
 			return;
 
+		gEditorWindowManager().restoreWindowsFromPrefs();
+
 		p->mEditor->setProjectName(gProjectPrefs().getProjectName());
 		p->mEditor->show();
 		p->mApp->exec();
@@ -76,6 +78,8 @@ namespace CamelotEditor
 
 	void EditorApplication::shutDown()
 	{
+		gEditorWindowManager().saveWindowsToPrefs();
+
 		WindowDockManager::shutDown();
 		EditorWindowManager::shutDown();
 

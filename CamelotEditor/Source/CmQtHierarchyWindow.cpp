@@ -3,7 +3,7 @@
 namespace CamelotEditor
 {
 	QtHierarchyWindow::QtHierarchyWindow(QWidget* parent)
-		:QtEditorWindow(parent, "Hierarchy")
+		:QtEditorWindow(parent, "Hierarchy", tr("Hierarchy"))
 	{
 
 	}
