@@ -108,12 +108,12 @@ namespace CamelotEditor
 		return findIter->second.dockLocation;
 	}
 
-	QString WindowDockManager::getDockParentName(const QtEditorWindow* window) const
+	INT32 WindowDockManager::getDockParentId(const QtEditorWindow* window) const
 	{
 		auto findIter = mDockedWindows.find(const_cast<QtEditorWindow*>(window));
 		assert(findIter != mDockedWindows.end());
 
-		return findIter->second.parentName;
+		return findIter->second.parentId;
 	}
 
 	QtEditorWindow* WindowDockManager::getDockedWindowAtPosition(const QPoint& globalPos)
@@ -256,9 +256,9 @@ namespace CamelotEditor
 		DockedWindowInfo dockedInfo;
 		dockedInfo.dockLocation = dockAtPosition;
 		if(dockAtWidget == nullptr)
-			dockedInfo.parentName = getRootDockNodeName();
+			dockedInfo.parentId = -1;
 		else
-			dockedInfo.parentName = dockAtWidget->getName();
+			dockedInfo.parentId = dockAtWidget->getId();
 
 		mDockedWindows[windowToDock] = dockedInfo;
 	}
@@ -349,12 +349,6 @@ namespace CamelotEditor
 		dragLocations.push_back(center);
 
 		return dragLocations;
-	}
-
-	const QString& WindowDockManager::getRootDockNodeName() const
-	{
-		static QString rootWidgetName = "DockManagerRoot";
-		return rootWidgetName;
 	}
 
 	WindowDockManager& gWindowDockManager()

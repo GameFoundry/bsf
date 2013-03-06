@@ -47,7 +47,6 @@ namespace CamelotEditor
 	void EditorPrefs::setMainWindowLayout(const WindowLayoutDesc& desc)
 	{
 		mMainWindowLayout = desc;
-		mMainWindowLayout.name = "MainWindow";
 	}
 
 	const WindowLayoutDesc& EditorPrefs::getMainWindowLayout() const
@@ -98,7 +97,7 @@ namespace CamelotEditor
 	void EditorPrefs::saveWindowLayout(xml_node parentNode, const WindowLayoutDesc& desc) const
 	{
 		xml_node windowLayout = parentNode.append_child("WindowLayout");
-		windowLayout.append_attribute("name").set_value(desc.name.toStdString().c_str());
+		parentNode.append_attribute("id").set_value(desc.id);
 
 		xml_node windowGeometry = windowLayout.append_child("Geometry");
 		windowGeometry.append_attribute("left").set_value(desc.left);
@@ -112,14 +111,22 @@ namespace CamelotEditor
 
 		xml_node dockInfo = windowLayout.append_child("DockInfo");
 		dockInfo.append_attribute("state").set_value((UINT32)desc.dockState);
-		dockInfo.append_attribute("parentName").set_value(desc.dockParentName.toStdString().c_str());
+		dockInfo.append_attribute("parentId").set_value(desc.dockParentId);
+
+		xml_node childWidgets = windowLayout.append_child("ChildWidgets");
+		childWidgets.append_attribute("activeWidgetIdx").set_value(desc.activeWidget);
+
+		for(auto iter = desc.childWidgetNames.begin(); iter != desc.childWidgetNames.end(); ++iter)
+		{
+			childWidgets.append_child("ChildWidget").append_attribute("name").set_value(iter->toStdString().c_str());
+		}
 	}
 
 	WindowLayoutDesc EditorPrefs::loadWindowLayout(xml_node node) const
 	{
 		WindowLayoutDesc desc;
 
-		desc.name = node.attribute("name").value();
+		desc.id = node.attribute("id").as_uint();
 
 		desc.left = node.child("Geometry").attribute("left").as_uint();
 		desc.top = node.child("Geometry").attribute("top").as_uint();
@@ -130,7 +137,15 @@ namespace CamelotEditor
 		desc.screenIdx = node.child("Screen").attribute("screenIdx").as_uint();
 
 		desc.dockState = (WindowDockState)node.child("DockInfo").attribute("state").as_uint();
-		desc.dockParentName = node.child("DockInfo").attribute("parentName").as_string();
+		desc.dockParentId = node.child("DockInfo").attribute("parentId").as_int();
+
+		desc.activeWidget = node.child("ChildWidgets").attribute("activeWidgetIdx").as_uint();
+
+		xml_node childWidgets = node.child("ChildWidgets");
+		for (xml_node childWidget = childWidgets.child("ChildWidget"); childWidget; childWidget = childWidgets.next_sibling("ChildWidget"))
+		{
+			desc.childWidgetNames.push_back(childWidget.attribute("name").as_string());
+		}
 
 		return desc;
 	}

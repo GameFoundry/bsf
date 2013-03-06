@@ -30,5 +30,7 @@ TODO for next few days:
 
 Dock overlay widget colors need to be customizable
 
+Unique IDs for windows. Currently I don't guarantee IDs will be the same if user adds a window before I restore them from file.
 
-I need to save EditorWindow layout. Especially dock information. Figure out how to save that.
+When restoring windows what happens why I try to restore an unloaded plugin?
+ - A NullWindow?

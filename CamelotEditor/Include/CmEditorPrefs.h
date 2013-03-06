@@ -21,12 +21,15 @@ namespace CamelotEditor
 	{
 		WindowLayoutDesc()
 			:width(0), height(0), left(0), top(0), 
-			screenIdx(-1), maximized(true), dockState(WDS_FLOATING)
+			screenIdx(-1), maximized(true), dockState(WDS_FLOATING), 
+			dockParentId(-1), activeWidget(0), id(0)
 		{
 
 		}
 
-		QString name;
+		UINT32 activeWidget;
+		vector<QString>::type childWidgetNames;
+		UINT32 id;
 		UINT32 width;
 		UINT32 height;
 		UINT32 left;
@@ -34,7 +37,7 @@ namespace CamelotEditor
 		UINT32 screenIdx;
 		bool maximized;
 		WindowDockState dockState;
-		QString dockParentName;
+		INT32 dockParentId;
 	};
 
 	class EditorPrefs : public CamelotEngine::Module<EditorPrefs>

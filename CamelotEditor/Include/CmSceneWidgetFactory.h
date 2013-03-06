@@ -1,15 +1,15 @@
 #pragma once
 
 #include "CmEditorPrerequisites.h"
-#include "CmEditorWindowFactory.h"
+#include "CmEditorWidgetFactory.h"
 #include <QtCore/QString>
 
 namespace CamelotEditor
 {
-	class HierarchyWindowFactory : public EditorWindowFactory
+	class SceneWidgetFactory : public EditorWidgetFactory
 	{
 	public:
-		QtEditorWindow* create(QWidget* parent);
+		QtEditorWidget* create(QWidget* parent);
 
 		const QString& getWindowName() const;
 		const QString& getMenuCategory() const;

@@ -5,23 +5,25 @@
 #include <QtWidgets/QLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QStackedWidget>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
 #include <QtCore/QTimer>
 
 #include "CmDebug.h"
+#include "CmQtEditorWidget.h"
 #include "CmWindowDockManager.h"
 #include "CmEditorWindowManager.h"
 
 namespace CamelotEditor
 {
-	QtEditorWindow::QtEditorWindow(QWidget* parent, const QString& name, const QString& title)
-		:QWidget(parent), mResizeMode(RM_NONE), mMoveMode(false), mIsDocked(false), mName(name)
+	QtEditorWindow::QtEditorWindow(QWidget* parent, UINT32 id)
+		:QWidget(parent), mResizeMode(RM_NONE), mMoveMode(false), mIsDocked(false), mId(id), mActiveWidgetIdx(0)
 	{
-		setupUi(title);
+		setupUi();
 	}
 
-	void QtEditorWindow::setupUi(QString title)
+	void QtEditorWindow::setupUi()
 	{
 		setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 		
@@ -52,8 +54,7 @@ namespace CamelotEditor
 		/************************************************************************/
 
 		mCentralWidget = new QWidget(this);
-
-		mContentWidget = new QWidget(this);
+		mStackedWidget = new QStackedWidget(this);
 
 		QVBoxLayout* centralLayout = new QVBoxLayout(this);
 		centralLayout->setMargin(0);
@@ -65,11 +66,11 @@ namespace CamelotEditor
 		mainLayout->setContentsMargins(2, 0, 2, 2);
 		mainLayout->setSpacing(0);
 		mainLayout->addWidget(mTitleBar);
-		mainLayout->addWidget(mContentWidget, 1);
+		mainLayout->addWidget(mStackedWidget, 1);
 		mCentralWidget->setLayout(mainLayout);
 		
 		setObjectNames();
-		retranslateUi(title);
+		retranslateUi();
 		setupSignals();
 	}
 
@@ -79,9 +80,9 @@ namespace CamelotEditor
 		connect(mTimer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
 	}
 
-	void QtEditorWindow::retranslateUi(QString title)
+	void QtEditorWindow::retranslateUi()
 	{
-		mLblTitle->setText(title);
+		mLblTitle->setText("No title");
 		mBtnClose->setText(tr("Close"));
 	}
 
@@ -92,7 +93,7 @@ namespace CamelotEditor
 		mBtnClose->setObjectName(QStringLiteral("BtnClose"));
 
 		mCentralWidget->setObjectName(QStringLiteral("CentralWidget"));
-		mContentWidget->setObjectName(QStringLiteral("ContentWidget"));
+		mStackedWidget->setObjectName(QStringLiteral("StackedWidget"));
 	}
 
 	QSizePolicy	QtEditorWindow::sizePolicy() const
@@ -126,7 +127,7 @@ namespace CamelotEditor
 		desc.left = geometry().x();
 		desc.top = geometry().y();
 		desc.screenIdx = -1;
-		desc.name = getName();
+		desc.id = getId();
 		desc.maximized = false;
 		desc.dockState = WDS_FLOATING;
 
@@ -155,13 +156,18 @@ namespace CamelotEditor
 				assert(false);
 			}
 
-			desc.dockParentName = gWindowDockManager().getDockParentName(this);
+			desc.dockParentId = gWindowDockManager().getDockParentId(this);
 		}
 		else 
 		{
 			desc.dockState = WDS_FLOATING;
-			desc.dockParentName = "";
+			desc.dockParentId = -1;
 		}
+
+		desc.activeWidget = mActiveWidgetIdx;
+
+		for(auto iter = mEditorWidgets.begin(); iter != mEditorWidgets.end(); ++iter)
+			desc.childWidgetNames.push_back((*iter)->getName());
 
 		return desc;
 	}
@@ -169,6 +175,9 @@ namespace CamelotEditor
 	void QtEditorWindow::restoreFromLayoutDesc(const WindowLayoutDesc& desc)
 	{
 		setGeometry(desc.left, desc.top, desc.width, desc.height);
+
+		for(auto iter2 = desc.childWidgetNames.begin(); iter2 != desc.childWidgetNames.end(); ++iter2)
+			gEditorWindowManager().openWidget(*iter2, this);
 
 		if(desc.dockState != WDS_FLOATING)
 		{
@@ -194,11 +203,63 @@ namespace CamelotEditor
 
 			QtEditorWindow* dockParent = nullptr;
 
-			if(gWindowDockManager().getRootDockNodeName() != desc.dockParentName)
-				dockParent = gEditorWindowManager().getOpenWindow(desc.dockParentName);
+			if(desc.dockParentId != -1)
+				dockParent = gEditorWindowManager().getOpenWindow(desc.dockParentId);
 				
 			gWindowDockManager().dockWindow(this, dockParent, dockLocation);
 		}
+
+		setActiveWidget(desc.activeWidget);
+	}
+
+	void QtEditorWindow::addWidget(QtEditorWidget* widget)
+	{
+		assert(widget != nullptr);
+
+		auto iterFind = std::find(mEditorWidgets.begin(), mEditorWidgets.end(), widget);
+		if(iterFind != mEditorWidgets.end())
+			CM_EXCEPT(InvalidParametersException, "Specified widget already exists in this window.");
+
+		widget->setParentWindow(this);
+		mEditorWidgets.push_back(widget);
+	}
+
+	void QtEditorWindow::insertWidget(UINT32 idx, QtEditorWidget* widget)
+	{
+		assert(widget != nullptr);
+
+		auto iterFind = std::find(mEditorWidgets.begin(), mEditorWidgets.end(), widget);
+		if(iterFind != mEditorWidgets.end())
+			CM_EXCEPT(InvalidParametersException, "Specified widget already exists in this window.");
+
+		if(idx > (UINT32)mEditorWidgets.size())
+			idx = (UINT32)mEditorWidgets.size();
+
+		widget->setParentWindow(this);
+		mEditorWidgets.insert(mEditorWidgets.begin() + idx, widget);
+	}
+
+	void QtEditorWindow::removeWidget(UINT32 idx)
+	{
+		if(idx >= (UINT32)mEditorWidgets.size())
+			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) +". Valid range: 0 .. " + toString((UINT32)mEditorWidgets.size()));
+
+		mEditorWidgets.erase(mEditorWidgets.begin() + idx);
+	}
+
+	QtEditorWidget* QtEditorWindow::getWidget(UINT32 idx) const
+	{
+		return mEditorWidgets.at(idx);
+	}
+
+	void QtEditorWindow::setActiveWidget(UINT32 idx)
+	{
+		if(idx >= (UINT32)mEditorWidgets.size())
+			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) +". Valid range: 0 .. " + toString((UINT32)mEditorWidgets.size()));
+
+		mActiveWidgetIdx = idx;
+
+		// TODO
 	}
 
 	void QtEditorWindow::enterEvent(QEvent *e)

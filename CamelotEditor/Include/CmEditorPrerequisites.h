@@ -12,8 +12,9 @@ namespace CamelotEditor
 	class ProjectPrefs;
 	class QtEditor;
 	class QtDockOverlayWidget;
-	class EditorWindowFactory;
+	class EditorWidgetFactory;
 	class QtEditorWindow;
+	class QtEditorWidget;
 }
 
 // Qt
@@ -21,3 +22,4 @@ class QWidget;
 class QLabel;
 class QPushButton;
 class QSplitter;
+class QStackedWidget;

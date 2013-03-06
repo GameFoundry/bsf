@@ -81,29 +81,35 @@
     <ClCompile Include="GeneratedFiles\moc_CmQtEditorWindow.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmQtSceneWindow.cpp">
-      <Filter>Source Files\Qt</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmQtHierarchyWindow.cpp">
-      <Filter>Source Files\Qt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\moc_CmQtHierarchyWindow.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\moc_CmQtSceneWindow.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmWindowDockManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmSceneWindowFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmHierarchyWindowFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmEditorWindowManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmQtEditorWidget.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmQtSceneWidget.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmQtHierarchyWidget.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmSceneWidgetFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHierarchyWidgetFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtHierarchyWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtSceneWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtEditorWidget.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,10 +131,13 @@
     <CustomBuild Include="Include\CmQtDockOverlayWidget.h">
       <Filter>Header Files\Qt</Filter>
     </CustomBuild>
-    <CustomBuild Include="Include\CmQtHierarchyWindow.h">
+    <CustomBuild Include="Include\CmQtEditorWidget.h">
       <Filter>Header Files\Qt</Filter>
     </CustomBuild>
-    <CustomBuild Include="Include\CmQtSceneWindow.h">
+    <CustomBuild Include="Include\CmQtSceneWidget.h">
+      <Filter>Header Files\Qt</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Include\CmQtHierarchyWidget.h">
       <Filter>Header Files\Qt</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -160,13 +169,13 @@
     <ClInclude Include="Include\CmEditorWindowManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmEditorWindowFactory.h">
+    <ClInclude Include="Include\CmSceneWidgetFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmSceneWindowFactory.h">
+    <ClInclude Include="Include\CmHierarchyWidgetFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmHierarchyWindowFactory.h">
+    <ClInclude Include="Include\CmEditorWidgetFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

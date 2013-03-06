@@ -1,7 +1,7 @@
 #include "CmEditorWindowManager.h"
 #include "CmEditorApplication.h"
 #include "CmQtEditorWindow.h"
-#include "CmEditorWindowFactory.h"
+#include "CmEditorWidgetFactory.h"
 #include "CmWindowDockManager.h"
 #include "CmEditorPrefs.h"
 #include "CmException.h"
@@ -10,47 +10,71 @@
 
 namespace CamelotEditor
 {
-	struct WindowLayoutNode
-	{
-		QtEditorWindow* window;
-		WindowLayoutNode* child;
-	};
+	EditorWindowManager::EditorWindowManager()
+		:mMaxOpenWindowId(0)
+	{ }
 
-	void EditorWindowManager::registerWindowFactory(EditorWindowFactory* factory)
+	void EditorWindowManager::registerWidgetFactory(EditorWidgetFactory* factory)
 	{
 		assert(factory != nullptr);
 
 		mFactories[factory->getWindowName()] = factory;
 	}
 
-	QtEditorWindow* EditorWindowManager::openWindow(const QString& name)
+	void EditorWindowManager::openWidget(const QString& name, QtEditorWindow* parent)
 	{
-		auto iterFind = mOpenWindows.find(name);
-		if(iterFind != mOpenWindows.end())
-			return nullptr; // Window already open
+		auto iterFind = mOpenWidgets.find(name);
+		if(iterFind != mOpenWidgets.end())
+			return; // Widget already open
 
-		EditorWindowFactory* factory = getFactory(name);
-		QtEditorWindow* window = factory->create(gEditorApp().getMainWindow());
+		EditorWidgetFactory* factory = getFactory(name);
+		
+		if(parent == nullptr)
+			parent = openWindow();
+		
+		QtEditorWidget* widget = factory->create(parent);
+		parent->addWidget(widget);
+
+		mOpenWidgets[name] = widget;
+	}
+
+	boost::function<void()> EditorWindowManager::getOpenCallback(const QString& name)
+	{
+		return boost::bind(&EditorWindowManager::openWidget, this, name, nullptr);
+	}
+
+	QtEditorWindow* EditorWindowManager::openWindow(UINT32 forcedId)
+	{
+		if(forcedId != -1)
+		{
+			auto iterFindId = mOpenWindows.find(forcedId);
+			if(iterFindId != mOpenWindows.end())
+				CM_EXCEPT(InvalidParametersException, "Window with the specified id already exists: " + toString(forcedId));
+		}
+
+		UINT32 windowId = 0;
+		if(forcedId != -1)
+			windowId = -1;
+		else
+			windowId = mMaxOpenWindowId;
+
+		mMaxOpenWindowId = windowId + 1;
+
+		QtEditorWindow* window = new QtEditorWindow(gEditorApp().getMainWindow(), windowId);
+		mOpenWindows[windowId] = window;
 
 		window->onClosed.connect(boost::bind(&EditorWindowManager::windowClosed, this, _1));
 		window->setAttribute(Qt::WA_DeleteOnClose, true);
 		window->show();
 
-		mOpenWindows[name] = window;
-
 		return window;
 	}
 
-	boost::function<void()> EditorWindowManager::getOpenCallback(const QString& name)
+	QtEditorWindow* EditorWindowManager::getOpenWindow(INT32 id) const
 	{
-		return boost::bind(&EditorWindowManager::openWindow, this, name);
-	}
-
-	QtEditorWindow* EditorWindowManager::getOpenWindow(const QString& name) const
-	{
-		auto iterFind = mOpenWindows.find(name);
+		auto iterFind = mOpenWindows.find(id);
 		if(iterFind == mOpenWindows.end())
-			CM_EXCEPT(InvalidParametersException, "There is no open window with name " + name.toStdString() + ".");
+			CM_EXCEPT(InvalidParametersException, "There is no open window with id " + toString(id) + ".");
 
 		return iterFind->second;
 	}
@@ -59,19 +83,19 @@ namespace CamelotEditor
 	{
 		vector<WindowLayoutDesc>::type windowLayouts = gEditorPrefs().getWindowLayouts();
 		
-		WindowLayoutNode* rootDockNode = nullptr;
-		QString parentName = gWindowDockManager().getRootDockNodeName();
+		UINT32 parentId = -1;
 		bool foundDockedWindow = true;
 		while(foundDockedWindow)
 		{
 			foundDockedWindow = false;
 			for(auto iter = windowLayouts.begin(); iter != windowLayouts.end(); ++iter)
 			{
-				if(iter->dockState != WDS_FLOATING && iter->dockParentName == parentName)
+				if(iter->dockState != WDS_FLOATING && iter->dockParentId == parentId)
 				{
-					QtEditorWindow* window = openWindow(iter->name);
+					QtEditorWindow* window = openWindow(iter->id);
+					
 					window->restoreFromLayoutDesc(*iter);
-					parentName = window->getName();
+					parentId = window->getId();
 
 					foundDockedWindow = true;
 					break;
@@ -84,7 +108,7 @@ namespace CamelotEditor
 		{
 			if(iter->dockState == WDS_FLOATING)
 			{
-				QtEditorWindow* window = openWindow(iter->name);
+				QtEditorWindow* window = openWindow(iter->id);
 				window->restoreFromLayoutDesc(*iter);
 			}
 		}
@@ -112,7 +136,7 @@ namespace CamelotEditor
 		return types;
 	}
 
-	EditorWindowFactory* EditorWindowManager::getFactory(const QString& name) const
+	EditorWidgetFactory* EditorWindowManager::getFactory(const QString& name) const
 	{
 		auto iterFind = mFactories.find(name);
 
@@ -126,9 +150,9 @@ namespace CamelotEditor
 	{
 		assert(window != nullptr);
 
-		auto iterFind = mOpenWindows.find(window->getName());
+		auto iterFind = mOpenWindows.find(window->getId());
 		if(iterFind == mOpenWindows.end())
-			CM_EXCEPT(InternalErrorException, "Trying to close a window " + window->getName().toStdString() + " that is not in the open window list.");
+			CM_EXCEPT(InternalErrorException, "Trying to close a window " + toString(window->getId()) + " that is not in the open window list.");
 
 		assert(iterFind->second == window);
 

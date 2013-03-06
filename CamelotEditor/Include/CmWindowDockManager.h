@@ -10,7 +10,7 @@ namespace CamelotEditor
 	{
 		struct DockedWindowInfo
 		{
-			QString parentName;
+			INT32 parentId;
 			WindowDragDropLocation dockLocation;
 		};
 
@@ -26,9 +26,7 @@ namespace CamelotEditor
 
 		bool isDocked(const QtEditorWindow* window) const;
 		WindowDragDropLocation getDockLocation(const QtEditorWindow* window) const;
-		QString getDockParentName(const QtEditorWindow* window) const;
-
-		const QString& getRootDockNodeName() const;
+		INT32 getDockParentId(const QtEditorWindow* window) const;
 	private:
 		QtDockOverlayWidget* mDockOverlayWidget;
 		QWidget* mCentralWidget;

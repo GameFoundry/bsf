@@ -10,12 +10,23 @@ namespace CamelotEditor
 	class EditorWindowManager : public Module<EditorWindowManager>
 	{		
 	public:
-		void registerWindowFactory(EditorWindowFactory* factory);
+		EditorWindowManager();
 
-		QtEditorWindow* openWindow(const QString& name);
+		void registerWidgetFactory(EditorWidgetFactory* factory);
+
+		/**
+		 * @brief	Opens a widget with the specified name and adds it to a window. Only one widget of a
+		 * 			certain type may be open at one time.
+		 *
+		 * @param	name  	The name of the widget type. This will be used to find the widget factory.
+		 * @param	parent	(optional) Parent to which to attach the widget to. If null, a new window will be created.
+		 *
+		 * @return	Returns the window the widget was added to.
+		 */
+		void openWidget(const QString& name, QtEditorWindow* parent = nullptr);
 		boost::function<void()> getOpenCallback(const QString& name);
 
-		QtEditorWindow* getOpenWindow(const QString& name) const;
+		QtEditorWindow* getOpenWindow(INT32 id) const;
 
 		void restoreWindowsFromPrefs();
 		void saveWindowsToPrefs();
@@ -23,11 +34,14 @@ namespace CamelotEditor
 		vector<QString>::type getAvailableWindowTypes() const;
 
 	private:
-		map<QString, EditorWindowFactory*>::type mFactories;
-		map<QString, QtEditorWindow*>::type mOpenWindows;
+		map<QString, EditorWidgetFactory*>::type mFactories;
+		map<UINT32, QtEditorWindow*>::type mOpenWindows;
+		map<QString, QtEditorWidget*>::type mOpenWidgets;
+		UINT32 mMaxOpenWindowId;
 
-		EditorWindowFactory* getFactory(const QString& name) const;
+		EditorWidgetFactory* getFactory(const QString& name) const;
 
+		QtEditorWindow* openWindow(UINT32 forcedId = -1);
 		void windowClosed(QtEditorWindow* window);
 	};
 

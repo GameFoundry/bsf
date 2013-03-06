@@ -5,10 +5,10 @@
 
 namespace CamelotEditor
 {
-	class EditorWindowFactory
+	class EditorWidgetFactory
 	{
 	public:
-		virtual QtEditorWindow* create(QWidget* parent) = 0;
+		virtual QtEditorWidget* create(QWidget* parent) = 0;
 
 		virtual const QString& getWindowName() const = 0;
 		virtual const QString& getMenuCategory() const = 0;

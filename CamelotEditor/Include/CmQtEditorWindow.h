@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmEditorPrerequisites.h"
+#include "CmQtEditorWidget.h"
 #include "CmEditorPrefs.h"
 #include <QtWidgets/QWidget>
 #include <QtCore/QPoint>
@@ -24,25 +25,32 @@ namespace CamelotEditor
 		};
 
 	public:
-		QtEditorWindow(QWidget* parent, const QString& name, const QString& title);
+		QtEditorWindow(QWidget* parent, UINT32 id);
 		virtual ~QtEditorWindow() { }
-
-		const QString& getName() const { return mName; }
 
 		void undock();
 		void dock();
 
 		bool isDocked() const { return mIsDocked; }
+		UINT32 getId() const { return mId; }
+
 		WindowLayoutDesc getLayoutDesc() const;
 		void restoreFromLayoutDesc(const WindowLayoutDesc& desc);
 
+		void addWidget(QtEditorWidget* widget);
+		void insertWidget(UINT32 idx, QtEditorWidget* widget);
+		void removeWidget(UINT32 idx);
+		UINT32 getNumWidgets() const { return (UINT32)mEditorWidgets.size(); }
+		QtEditorWidget* getWidget(UINT32 idx) const;
+
+		void setActiveWidget(UINT32 idx);
+
 		boost::signal<void(QtEditorWindow*)> onClosed;
 	protected:
-		QWidget* mContentWidget;
-
 		QSizePolicy	sizePolicy() const;
 
 	private:
+		UINT32 mId;
 		ResizeMode mResizeMode;
 		bool mMoveMode;
 		QPoint mDragOffset;
@@ -50,13 +58,16 @@ namespace CamelotEditor
 		QLabel* mLblTitle;
 		QPushButton* mBtnClose;
 		QWidget* mCentralWidget;
+		QStackedWidget* mStackedWidget;
 		QTimer* mTimer;
 		bool mIsDocked;
-		QString mName;
 
-		void setupUi(QString title);
+		vector<QtEditorWidget*>::type mEditorWidgets;
+		UINT32 mActiveWidgetIdx;
+
+		void setupUi();
 		void setupSignals();
-		void retranslateUi(QString title);
+		void retranslateUi();
 		void setObjectNames();
 
 		void enterEvent(QEvent *e);

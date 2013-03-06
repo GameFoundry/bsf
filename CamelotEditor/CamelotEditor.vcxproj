@@ -156,11 +156,12 @@
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\moc_CmQtDockOverlayWidget.cpp" />
     <ClCompile Include="GeneratedFiles\moc_CmQtEditor.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_CmQtEditorWidget.cpp" />
     <ClCompile Include="GeneratedFiles\moc_CmQtEditorWindow.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_CmQtHierarchyWindow.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_CmQtHierarchyWidget.cpp" />
     <ClCompile Include="GeneratedFiles\moc_CmQtNewProject.cpp" />
     <ClCompile Include="GeneratedFiles\moc_CmQtProjectSelection.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_CmQtSceneWindow.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_CmQtSceneWidget.cpp" />
     <ClCompile Include="GeneratedFiles\qrc_CmEditor.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -175,19 +176,20 @@
     <ClCompile Include="Source\CmEditorApplication.cpp" />
     <ClCompile Include="Source\CmEditorPrefs.cpp" />
     <ClCompile Include="Source\CmEditorWindowManager.cpp" />
-    <ClCompile Include="Source\CmHierarchyWindowFactory.cpp" />
+    <ClCompile Include="Source\CmHierarchyWidgetFactory.cpp" />
     <ClCompile Include="Source\CmPreferences.cpp" />
     <ClCompile Include="Source\CmProjectPrefs.cpp" />
     <ClCompile Include="Source\CmQtDockOverlayWidget.cpp" />
     <ClCompile Include="Source\CmQtEditor.cpp" />
+    <ClCompile Include="Source\CmQtEditorWidget.cpp" />
     <ClCompile Include="Source\CmQtEditorWindow.cpp" />
-    <ClCompile Include="Source\CmQtHierarchyWindow.cpp" />
+    <ClCompile Include="Source\CmQtHierarchyWidget.cpp" />
     <ClCompile Include="Source\CmQtNewProject.cpp" />
     <ClCompile Include="Source\CmQtProjectSelection.cpp" />
-    <ClCompile Include="Source\CmSceneWindowFactory.cpp" />
+    <ClCompile Include="Source\CmSceneWidgetFactory.cpp" />
     <ClCompile Include="Source\CmWindowDockManager.cpp" />
     <ClCompile Include="Source\main.cpp" />
-    <ClCompile Include="Source\CmQtSceneWindow.cpp" />
+    <ClCompile Include="Source\CmQtSceneWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Include\CmQtEditor.h">
@@ -235,9 +237,9 @@
     <ClInclude Include="Include\CmEditorApplication.h" />
     <ClInclude Include="Include\CmEditorPrefs.h" />
     <ClInclude Include="Include\CmEditorPrerequisites.h" />
-    <ClInclude Include="Include\CmEditorWindowFactory.h" />
+    <ClInclude Include="Include\CmEditorWidgetFactory.h" />
     <ClInclude Include="Include\CmEditorWindowManager.h" />
-    <ClInclude Include="Include\CmHierarchyWindowFactory.h" />
+    <ClInclude Include="Include\CmHierarchyWidgetFactory.h" />
     <ClInclude Include="Include\CmPreferences.h" />
     <ClInclude Include="Include\CmProjectPrefs.h" />
     <CustomBuild Include="Include\CmQtDockOverlayWidget.h">
@@ -276,7 +278,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
-    <CustomBuild Include="Include\CmQtHierarchyWindow.h">
+    <CustomBuild Include="Include\CmQtHierarchyWidget.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
@@ -294,7 +296,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
-    <CustomBuild Include="Include\CmQtSceneWindow.h">
+    <CustomBuild Include="Include\CmQtSceneWidget.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
@@ -312,7 +314,25 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
-    <ClInclude Include="Include\CmSceneWindowFactory.h" />
+    <CustomBuild Include="Include\CmQtEditorWidget.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <ClInclude Include="Include\CmSceneWidgetFactory.h" />
     <ClInclude Include="Include\CmWindowDockManager.h" />
     <CustomBuild Include="Include\CmQtNewProject.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>

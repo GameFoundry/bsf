@@ -5,8 +5,8 @@
 #include "CmQtProjectSelection.h"
 #include "CmEditorWindowManager.h"
 #include "CmWindowDockManager.h"
-#include "CmSceneWindowFactory.h"
-#include "CmHierarchyWindowFactory.h"
+#include "CmSceneWidgetFactory.h"
+#include "CmHierarchyWidgetFactory.h"
 #include "CmFileSystem.h"
 #include "CmException.h"
 #include "CmDataStream.h"
@@ -51,8 +51,8 @@ namespace CamelotEditor
 		EditorWindowManager::startUp(new EditorWindowManager());
 		WindowDockManager::startUp(new WindowDockManager(p->mEditor->getCentralWidget(), p->mEditor->getDockOverlayWidget()));
 
-		gEditorWindowManager().registerWindowFactory(new SceneWindowFactory());
-		gEditorWindowManager().registerWindowFactory(new HierarchyWindowFactory());
+		gEditorWindowManager().registerWidgetFactory(new SceneWidgetFactory());
+		gEditorWindowManager().registerWidgetFactory(new HierarchyWidgetFactory());
 
 		vector<QString>::type windowTypes = gEditorWindowManager().getAvailableWindowTypes();
 		for(auto iter = windowTypes.begin(); iter != windowTypes.end(); ++iter)
