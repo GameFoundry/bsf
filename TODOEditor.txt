@@ -30,8 +30,10 @@ TODO for next few days:
 
 Dock overlay widget colors need to be customizable
 
-Test if new docked widgets work
 Unique IDs for windows. Currently I don't guarantee IDs will be the same if user adds a window before I restore them from file.
 
 When restoring windows what happens why I try to restore an unloaded plugin?
  - A NullWindow?
+
+ After I undock a window it needs to return itself to the default size
+  - Allow widgets to specify default size

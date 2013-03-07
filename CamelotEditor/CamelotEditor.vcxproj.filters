@@ -111,6 +111,12 @@
     <ClCompile Include="GeneratedFiles\moc_CmQtEditorWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmQtDynamicTabBar.cpp">
+      <Filter>Source Files\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_CmQtDynamicTabBar.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="CmEditor.qrc">
@@ -138,6 +144,9 @@
       <Filter>Header Files\Qt</Filter>
     </CustomBuild>
     <CustomBuild Include="Include\CmQtHierarchyWidget.h">
+      <Filter>Header Files\Qt</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Include\CmQtDynamicTabBar.h">
       <Filter>Header Files\Qt</Filter>
     </CustomBuild>
   </ItemGroup>

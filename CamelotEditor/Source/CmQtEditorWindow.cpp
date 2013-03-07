@@ -12,6 +12,7 @@
 
 #include "CmDebug.h"
 #include "CmQtEditorWidget.h"
+#include "CmQtDynamicTabBar.h"
 #include "CmWindowDockManager.h"
 #include "CmEditorWindowManager.h"
 
@@ -38,14 +39,13 @@ namespace CamelotEditor
 		mTitleBar = new QWidget(this);
 		mTitleBar->setMouseTracking(true);
 
-		mLblTitle = new QLabel(this);
-		mLblTitle->setAttribute(Qt::WA_TransparentForMouseEvents);
+		mTabBar = new QtDynamicTabBar(this);
 		
 		mBtnClose = new QPushButton(this);
 		
 		QHBoxLayout* titleLayout = new QHBoxLayout(this);
 		titleLayout->setMargin(0);
-		titleLayout->addWidget(mLblTitle, 1);
+		titleLayout->addWidget(mTabBar, 1);
 		titleLayout->addWidget(mBtnClose);
 		mTitleBar->setLayout(titleLayout);
 
@@ -78,18 +78,19 @@ namespace CamelotEditor
 	{
 		connect(mBtnClose, SIGNAL(clicked()), this, SLOT(closeWidget()));
 		connect(mTimer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
+		
+		mTabBar->onTabSelected.connect(boost::bind(&QtEditorWindow::setActiveWidget, this, _1));
 	}
 
 	void QtEditorWindow::retranslateUi()
 	{
-		mLblTitle->setText("No title");
 		mBtnClose->setText(tr("Close"));
 	}
 
 	void QtEditorWindow::setObjectNames()
 	{
 		mTitleBar->setObjectName(QStringLiteral("TitleBar"));
-		mLblTitle->setObjectName(QStringLiteral("LblTitle"));
+		mTabBar->setObjectName(QStringLiteral("TabBar"));
 		mBtnClose->setObjectName(QStringLiteral("BtnClose"));
 
 		mCentralWidget->setObjectName(QStringLiteral("CentralWidget"));
@@ -223,6 +224,7 @@ namespace CamelotEditor
 
 		widget->setParentWindow(this);
 		mEditorWidgets.push_back(widget);
+		mTabBar->addTab(widget->getName());
 	}
 
 	void QtEditorWindow::insertWidget(UINT32 idx, QtEditorWidget* widget)
@@ -238,6 +240,7 @@ namespace CamelotEditor
 
 		widget->setParentWindow(this);
 		mEditorWidgets.insert(mEditorWidgets.begin() + idx, widget);
+		mTabBar->insertTab(idx, widget->getName());
 	}
 
 	void QtEditorWindow::removeWidget(UINT32 idx)
@@ -246,6 +249,7 @@ namespace CamelotEditor
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) +". Valid range: 0 .. " + toString((UINT32)mEditorWidgets.size()));
 
 		mEditorWidgets.erase(mEditorWidgets.begin() + idx);
+		mTabBar->removeTab(idx);
 	}
 
 	QtEditorWidget* QtEditorWindow::getWidget(UINT32 idx) const
@@ -261,6 +265,11 @@ namespace CamelotEditor
 		mActiveWidgetIdx = idx;
 
 		// TODO
+	}
+
+	QWidget* QtEditorWindow::getContentWidget() const
+	{ 
+		return mStackedWidget; 
 	}
 
 	void QtEditorWindow::enterEvent(QEvent *e)

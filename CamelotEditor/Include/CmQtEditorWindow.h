@@ -44,6 +44,7 @@ namespace CamelotEditor
 		QtEditorWidget* getWidget(UINT32 idx) const;
 
 		void setActiveWidget(UINT32 idx);
+		QWidget* getContentWidget() const;
 
 		boost::signal<void(QtEditorWindow*)> onClosed;
 	protected:
@@ -55,7 +56,7 @@ namespace CamelotEditor
 		bool mMoveMode;
 		QPoint mDragOffset;
 		QWidget* mTitleBar;
-		QLabel* mLblTitle;
+		QtDynamicTabBar* mTabBar;
 		QPushButton* mBtnClose;
 		QWidget* mCentralWidget;
 		QStackedWidget* mStackedWidget;

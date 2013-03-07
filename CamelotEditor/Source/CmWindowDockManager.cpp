@@ -33,7 +33,11 @@ namespace CamelotEditor
 
 		if(!window->isDocked())
 		{
-			QWidget* dragOverWidget = getDockedWindowAtPosition(mousePos);
+			QtEditorWindow* windowUnderMouse = getDockedWindowAtPosition(mousePos);
+			QWidget* dragOverWidget = nullptr;
+			if(windowUnderMouse != nullptr)
+				dragOverWidget = windowUnderMouse->getContentWidget();
+
 			if(dragOverWidget == nullptr && isPositionInDockArea(mousePos))
 				dragOverWidget = mCentralWidget;
 
@@ -87,7 +91,7 @@ namespace CamelotEditor
 			QtEditorWindow* windowUnderCursor = getDockedWindowAtPosition(mousePos);
 			if(windowUnderCursor != nullptr)
 			{
-				WindowDragDropLocation dropLocation = getDropLocationAtPosition(windowUnderCursor, mousePos);
+				WindowDragDropLocation dropLocation = getDropLocationAtPosition(windowUnderCursor->getContentWidget(), mousePos);
 				dockWindow(window, windowUnderCursor, dropLocation);
 			}
 			else

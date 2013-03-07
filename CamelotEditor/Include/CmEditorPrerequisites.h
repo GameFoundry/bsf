@@ -15,6 +15,7 @@ namespace CamelotEditor
 	class EditorWidgetFactory;
 	class QtEditorWindow;
 	class QtEditorWidget;
+	class QtDynamicTabBar;
 }
 
 // Qt
@@ -23,3 +24,5 @@ class QLabel;
 class QPushButton;
 class QSplitter;
 class QStackedWidget;
+class QHBoxLayout;
+class QVBoxLayout;
