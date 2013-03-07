@@ -29,7 +29,7 @@ namespace CamelotEditor
 
 		UINT32 activeWidget;
 		vector<QString>::type childWidgetNames;
-		UINT32 id;
+		INT32 id;
 		UINT32 width;
 		UINT32 height;
 		UINT32 left;

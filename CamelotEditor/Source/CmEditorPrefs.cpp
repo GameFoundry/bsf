@@ -126,7 +126,7 @@ namespace CamelotEditor
 	{
 		WindowLayoutDesc desc;
 
-		desc.id = node.attribute("id").as_uint();
+		desc.id = node.attribute("id").as_int();
 
 		desc.left = node.child("Geometry").attribute("left").as_uint();
 		desc.top = node.child("Geometry").attribute("top").as_uint();

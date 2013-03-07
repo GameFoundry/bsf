@@ -45,7 +45,11 @@ namespace CamelotEditor
 				QPoint drawOffset = mCentralWidget->mapToGlobal(QPoint(0, 0)) - mDockOverlayWidget->mapToGlobal(QPoint(0, 0));
 
 				mDockOverlayWidget->enableDropOverlay(dropLocations, drawOffset);
-				mDockOverlayWidget->highlightDropLocation(dragLocation);
+
+				if(dragLocation != CM_WINDROP_CENTER)
+					mDockOverlayWidget->highlightDropLocation(dragLocation);
+				else
+					mDockOverlayWidget->highlightDropLocation(CM_WINDROP_NONE);
 			}
 			else
 			{
@@ -69,7 +73,16 @@ namespace CamelotEditor
 		mDockOverlayWidget->highlightDropLocation(CM_WINDROP_NONE);
 		mDockOverlayWidget->disableDropOverlay();
 
-		if(!window->isDocked())
+		if(mLastDraggedWindow != window)
+		{
+			mLastDragPosition = mousePos;
+			mLastDraggedWindow = window;
+		}
+
+		QPoint diff = mLastDragPosition - mousePos;
+		bool wasDragged = diff.manhattanLength() > 4; // Ensure user actually moved the window
+
+		if(wasDragged && !window->isDocked())
 		{
 			QtEditorWindow* windowUnderCursor = getDockedWindowAtPosition(mousePos);
 			if(windowUnderCursor != nullptr)
@@ -170,7 +183,7 @@ namespace CamelotEditor
 		auto findIter = mDockedWindows.find(windowToDock);
 		assert(findIter == mDockedWindows.end());
 
-		if(dockAtPosition == CM_WINDROP_NONE)
+		if(dockAtPosition == CM_WINDROP_NONE || dockAtPosition == CM_WINDROP_CENTER)
 			return;
 
 		if(dockAtWidget == nullptr)
@@ -188,65 +201,58 @@ namespace CamelotEditor
 				return;
 			}
 
-			if(dockAtPosition == CM_WINDROP_CENTER)
+			if(parentSplitter->orientation() == Qt::Horizontal)
 			{
-				CM_ASSERT(false); // TODO - Not implemented
+				int idxDockAt = parentSplitter->indexOf(dockAtWidget);
+				if(dockAtPosition == CM_WINDROP_LEFT)
+					parentSplitter->insertWidget(idxDockAt, windowToDock);
+				else if(dockAtPosition == CM_WINDROP_RIGHT)
+					parentSplitter->insertWidget(idxDockAt + 1, windowToDock);
+				else // Top or bottom
+				{
+					QSplitter* newSplitter = new QSplitter();
+					newSplitter->setOrientation(Qt::Vertical);
+					newSplitter->setChildrenCollapsible(false);
+						
+					if(dockAtPosition == CM_WINDROP_TOP)
+					{
+						newSplitter->addWidget(windowToDock);
+						newSplitter->addWidget(dockAtWidget);
+					}
+					else
+					{
+						newSplitter->addWidget(dockAtWidget);
+						newSplitter->addWidget(windowToDock);
+					}
+
+					parentSplitter->insertWidget(idxDockAt, newSplitter);
+				}
 			}
 			else
 			{
-				if(parentSplitter->orientation() == Qt::Horizontal)
+				int idxDockAt = parentSplitter->indexOf(dockAtWidget);
+				if(dockAtPosition == CM_WINDROP_TOP)
+					parentSplitter->insertWidget(idxDockAt, windowToDock);
+				else if(dockAtPosition == CM_WINDROP_BOTTOM)
+					parentSplitter->insertWidget(idxDockAt + 1, windowToDock);
+				else // Left or right
 				{
-					int idxDockAt = parentSplitter->indexOf(dockAtWidget);
+					QSplitter* newSplitter = new QSplitter();
+					newSplitter->setOrientation(Qt::Horizontal);
+					newSplitter->setChildrenCollapsible(false);
+
 					if(dockAtPosition == CM_WINDROP_LEFT)
-						parentSplitter->insertWidget(idxDockAt, windowToDock);
-					else if(dockAtPosition == CM_WINDROP_RIGHT)
-						parentSplitter->insertWidget(idxDockAt + 1, windowToDock);
-					else // Top or bottom
 					{
-						QSplitter* newSplitter = new QSplitter();
-						newSplitter->setOrientation(Qt::Vertical);
-						newSplitter->setChildrenCollapsible(false);
-						
-						if(dockAtPosition == CM_WINDROP_TOP)
-						{
-							newSplitter->addWidget(windowToDock);
-							newSplitter->addWidget(dockAtWidget);
-						}
-						else
-						{
-							newSplitter->addWidget(dockAtWidget);
-							newSplitter->addWidget(windowToDock);
-						}
-
-						parentSplitter->insertWidget(idxDockAt, newSplitter);
+						newSplitter->addWidget(windowToDock);
+						newSplitter->addWidget(dockAtWidget);
 					}
-				}
-				else
-				{
-					int idxDockAt = parentSplitter->indexOf(dockAtWidget);
-					if(dockAtPosition == CM_WINDROP_TOP)
-						parentSplitter->insertWidget(idxDockAt, windowToDock);
-					else if(dockAtPosition == CM_WINDROP_BOTTOM)
-						parentSplitter->insertWidget(idxDockAt + 1, windowToDock);
-					else // Left or right
+					else
 					{
-						QSplitter* newSplitter = new QSplitter();
-						newSplitter->setOrientation(Qt::Horizontal);
-						newSplitter->setChildrenCollapsible(false);
-
-						if(dockAtPosition == CM_WINDROP_LEFT)
-						{
-							newSplitter->addWidget(windowToDock);
-							newSplitter->addWidget(dockAtWidget);
-						}
-						else
-						{
-							newSplitter->addWidget(dockAtWidget);
-							newSplitter->addWidget(windowToDock);
-						}
-
-						parentSplitter->insertWidget(idxDockAt, newSplitter);
+						newSplitter->addWidget(dockAtWidget);
+						newSplitter->addWidget(windowToDock);
 					}
+
+					parentSplitter->insertWidget(idxDockAt, newSplitter);
 				}
 			}
 

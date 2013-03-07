@@ -78,6 +78,15 @@ So final solution:
  - Resource creation on DX11 should be direct though, without a queue (especially if we manage to populate a resource in the same step)
  - Remove & replace internal data copying in GpuParamBlock (or just use a allocator instead of new())
 
+A POSSIBLY BETTER SOLUTION THAN COPYING ALL THE DATA?
+Classes derive from ISharedMemoryBuffer
+ - For example PixelData, used when setting texture pixels
+ - They have lock, unlock & clone methods
+  - Users can choose whether they want to lock themselves out from modifying the class, or clone it, before passing it to a threaded method
+ - Downside is that I need to do this for every class that will be used in threaded methods
+ - Upside is that I think that is how DX handles its buffers at the moment
+
+
 <<<<RenderSystem needed modifications>>>>
   - Texture resource views (Specifying just a subresource of a texture as a shader parameter)
   - UAV for textures

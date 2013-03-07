@@ -25,7 +25,7 @@ namespace CamelotEditor
 		};
 
 	public:
-		QtEditorWindow(QWidget* parent, UINT32 id);
+		QtEditorWindow(QWidget* parent, INT32 id);
 		virtual ~QtEditorWindow() { }
 
 		void undock();
@@ -50,7 +50,7 @@ namespace CamelotEditor
 		QSizePolicy	sizePolicy() const;
 
 	private:
-		UINT32 mId;
+		INT32 mId;
 		ResizeMode mResizeMode;
 		bool mMoveMode;
 		QPoint mDragOffset;
@@ -80,6 +80,8 @@ namespace CamelotEditor
 		ResizeMode getResizeMode(QPoint mousePos);
 		bool isOverResizeArea(QPoint mousePos);
 
+		void closeWindow();
+
 		/**
 		 * @brief	Query if 'mousePos' is over the area that can be used for dragging the window around.
 		 *
@@ -95,6 +97,6 @@ namespace CamelotEditor
 		/************************************************************************/
 	private Q_SLOTS:
 		void timerUpdate();
-		void closeWindow();
+		void closeWidget();
 	};
 }

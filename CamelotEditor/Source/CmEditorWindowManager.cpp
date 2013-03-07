@@ -36,6 +36,7 @@ namespace CamelotEditor
 		parent->addWidget(widget);
 
 		mOpenWidgets[name] = widget;
+		widget->onClosed.connect(boost::bind(&EditorWindowManager::widgetClosed, this, _1));
 	}
 
 	boost::function<void()> EditorWindowManager::getOpenCallback(const QString& name)
@@ -43,7 +44,7 @@ namespace CamelotEditor
 		return boost::bind(&EditorWindowManager::openWidget, this, name, nullptr);
 	}
 
-	QtEditorWindow* EditorWindowManager::openWindow(UINT32 forcedId)
+	QtEditorWindow* EditorWindowManager::openWindow(INT32 forcedId)
 	{
 		if(forcedId != -1)
 		{
@@ -52,9 +53,9 @@ namespace CamelotEditor
 				CM_EXCEPT(InvalidParametersException, "Window with the specified id already exists: " + toString(forcedId));
 		}
 
-		UINT32 windowId = 0;
+		INT32 windowId = 0;
 		if(forcedId != -1)
-			windowId = -1;
+			windowId = forcedId;
 		else
 			windowId = mMaxOpenWindowId;
 
@@ -144,6 +145,19 @@ namespace CamelotEditor
 			CM_EXCEPT(InvalidParametersException, "Window with the name: \"" + name.toStdString() + "\" doesn't exist.");
 
 		return iterFind->second;
+	}
+
+	void EditorWindowManager::widgetClosed(QtEditorWidget* widget)
+	{
+		assert(widget != nullptr);
+
+		auto iterFind = mOpenWidgets.find(widget->getName());
+		if(iterFind == mOpenWidgets.end())
+			CM_EXCEPT(InternalErrorException, "Trying to close a widget " + widget->getName().toStdString() + " that is not in the open widget list.");
+
+		assert(iterFind->second == widget);
+
+		mOpenWidgets.erase(iterFind);
 	}
 
 	void EditorWindowManager::windowClosed(QtEditorWindow* window)

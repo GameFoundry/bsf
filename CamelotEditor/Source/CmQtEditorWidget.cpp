@@ -7,4 +7,10 @@ namespace CamelotEditor
 	{
 
 	}
+
+	void QtEditorWidget::closeWidget()
+	{
+		onClosed(this);
+		destroy();
+	}
 }

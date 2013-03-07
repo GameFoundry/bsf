@@ -2,6 +2,7 @@
 
 #include "CmEditorPrerequisites.h"
 #include <QtWidgets/QWidget>
+#include <boost/signal.hpp>
 
 namespace CamelotEditor
 {
@@ -18,6 +19,9 @@ namespace CamelotEditor
 
 		QtEditorWindow* getParentWindow() const { return mParentWindow; }
 
+		void closeWidget();
+
+		boost::signal<void(QtEditorWidget*)> onClosed;
 	private:
 		friend class QtEditorWindow;
 		

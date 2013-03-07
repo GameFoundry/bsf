@@ -17,7 +17,7 @@
 
 namespace CamelotEditor
 {
-	QtEditorWindow::QtEditorWindow(QWidget* parent, UINT32 id)
+	QtEditorWindow::QtEditorWindow(QWidget* parent, INT32 id)
 		:QWidget(parent), mResizeMode(RM_NONE), mMoveMode(false), mIsDocked(false), mId(id), mActiveWidgetIdx(0)
 	{
 		setupUi();
@@ -76,7 +76,7 @@ namespace CamelotEditor
 
 	void QtEditorWindow::setupSignals()
 	{
-		connect(mBtnClose, SIGNAL(clicked()), this, SLOT(closeWindow()));
+		connect(mBtnClose, SIGNAL(clicked()), this, SLOT(closeWidget()));
 		connect(mTimer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
 	}
 
@@ -175,6 +175,7 @@ namespace CamelotEditor
 	void QtEditorWindow::restoreFromLayoutDesc(const WindowLayoutDesc& desc)
 	{
 		setGeometry(desc.left, desc.top, desc.width, desc.height);
+		mId = desc.id;
 
 		for(auto iter2 = desc.childWidgetNames.begin(); iter2 != desc.childWidgetNames.end(); ++iter2)
 			gEditorWindowManager().openWidget(*iter2, this);
@@ -430,6 +431,17 @@ namespace CamelotEditor
 		gWindowDockManager().windowClosed(this); // TODO - Hook this up to use onClosed signal as well
 		onClosed(this);
 		close();
+	}
+
+	void QtEditorWindow::closeWidget()
+	{
+		QtEditorWidget* activeWidget = getWidget(mActiveWidgetIdx);
+		removeWidget(mActiveWidgetIdx);
+
+		activeWidget->closeWidget();
+
+		if(getNumWidgets() == 0)
+			closeWindow();		
 	}
 
 	QtEditorWindow::ResizeMode QtEditorWindow::getResizeMode(QPoint mousePos)

@@ -35,13 +35,14 @@ namespace CamelotEditor
 
 	private:
 		map<QString, EditorWidgetFactory*>::type mFactories;
-		map<UINT32, QtEditorWindow*>::type mOpenWindows;
+		map<INT32, QtEditorWindow*>::type mOpenWindows;
 		map<QString, QtEditorWidget*>::type mOpenWidgets;
 		UINT32 mMaxOpenWindowId;
 
 		EditorWidgetFactory* getFactory(const QString& name) const;
 
-		QtEditorWindow* openWindow(UINT32 forcedId = -1);
+		QtEditorWindow* openWindow(INT32 forcedId = -1);
+		void widgetClosed(QtEditorWidget* window);
 		void windowClosed(QtEditorWindow* window);
 	};
 
