@@ -27,14 +27,25 @@ namespace CamelotEditor
 		void enableDropOverlay(std::vector<QPolygon> dragLocations, const QPoint& offset);
 		void disableDropOverlay();
 
+		void highlightTabDropLocation(INT32 dropLocation);
+
+		void enableTabDropOverlay(std::vector<QPolygon> dragLocations, const QPoint& offset);
+		void disableTabDropOverlay();
+
 	private:
 		WindowDragDropLocation mHighlightedDropLocation;
 		bool mDropOverlayEnabled;
 		vector<QPolygon>::type mDragLocations;
 		QPoint mOverlayOffset;
 
+		INT32 mHighlightedTabDropLocation;
+		bool mTabDropOverlayEnabled;
+		vector<QPolygon>::type mTabDropLocations;
+		QPoint mTabOverlayOffset;
+
 		void paintEvent(QPaintEvent* event);
 
 		void drawDragLocations(const std::vector<QPolygon>& dragLocations, WindowDragDropLocation highlightedLocation);
+		void drawTabDropLocations(const std::vector<QPolygon>& dropLocations, INT32 highlightedLocation);
 	};
 }

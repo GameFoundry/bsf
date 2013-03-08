@@ -4,6 +4,7 @@
 #include "CmModule.h"
 #include <boost/function.hpp>
 #include <QtCore/QString>
+#include <QtCore/QPoint>
 
 namespace CamelotEditor
 {
@@ -27,6 +28,7 @@ namespace CamelotEditor
 		boost::function<void()> getOpenCallback(const QString& name);
 
 		QtEditorWindow* getOpenWindow(INT32 id) const;
+		QtEditorWindow* getWindowAtPosition(const QPoint& globalPos, vector<UINT32>::type windowsToIgnore = vector<UINT32>::type()) const;
 
 		void restoreWindowsFromPrefs();
 		void saveWindowsToPrefs();

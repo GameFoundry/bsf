@@ -9,7 +9,7 @@
 namespace CamelotEditor
 {
 	QtDockOverlayWidget::QtDockOverlayWidget(QWidget* parent)
-		:QWidget(parent), mHighlightedDropLocation(CM_WINDROP_NONE), mDropOverlayEnabled(false) 
+		:QWidget(parent), mHighlightedDropLocation(CM_WINDROP_NONE), mDropOverlayEnabled(false), mHighlightedTabDropLocation(-1), mTabDropOverlayEnabled(false)
 	{ 
 		setPalette(Qt::transparent);
 		setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -47,11 +47,47 @@ namespace CamelotEditor
 		}
 	}
 
+	void QtDockOverlayWidget::highlightTabDropLocation(INT32 dropLocation)
+	{
+		mHighlightedTabDropLocation = dropLocation;
+		repaint();
+	}
+
+	void QtDockOverlayWidget::enableTabDropOverlay(std::vector<QPolygon> dragLocations, const QPoint& offset)
+	{
+		mTabDropLocations = dragLocations;
+		mTabOverlayOffset = offset;
+
+		if(!mTabDropOverlayEnabled)
+		{
+			show();
+
+			mTabDropOverlayEnabled = true; 
+			repaint();
+		}
+	}
+
+	void QtDockOverlayWidget::disableTabDropOverlay()
+	{
+		if(mTabDropOverlayEnabled)
+		{
+			hide();
+
+			mTabDropOverlayEnabled = false; 
+			repaint();
+		}
+	}
+
 	void QtDockOverlayWidget::paintEvent(QPaintEvent *event)
 	{
 		if(mDropOverlayEnabled)
 		{
 			drawDragLocations(mDragLocations, mHighlightedDropLocation);
+		}
+
+		if(mTabDropOverlayEnabled)
+		{
+			drawTabDropLocations(mTabDropLocations, mHighlightedTabDropLocation);
 		}
 	}
 
@@ -65,6 +101,38 @@ namespace CamelotEditor
 
 		int idx = 0;
 		for(auto iter = dragLocations.begin(); iter != dragLocations.end(); ++iter)
+		{
+			painter.drawPolygon(*iter);
+
+			if(idx == (int)highlightedLocation)
+			{
+				QPainterPath highlightedPoly;
+				highlightedPoly.addPolygon(*iter);
+
+				painter.fillPath(highlightedPoly, QColor(190, 190, 190, 128));
+			}
+			else
+			{
+				QPainterPath highlightedPoly;
+				highlightedPoly.addPolygon(*iter);
+
+				painter.fillPath(highlightedPoly, QColor(210, 210, 210, 128));
+			}
+
+			++idx;
+		}
+	}
+
+	void QtDockOverlayWidget::drawTabDropLocations(const std::vector<QPolygon>& dropLocations, INT32 highlightedLocation)
+	{
+		QPainter painter(this);
+		painter.translate(mTabOverlayOffset);
+		painter.setRenderHint(QPainter::Antialiasing);
+		painter.setPen(QColor(208, 208, 208));
+		painter.setClipping(false);
+
+		int idx = 0;
+		for(auto iter = dropLocations.begin(); iter != dropLocations.end(); ++iter)
 		{
 			painter.drawPolygon(*iter);
 

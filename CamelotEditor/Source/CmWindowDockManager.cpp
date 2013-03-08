@@ -1,4 +1,5 @@
 #include "CmWindowDockManager.h"
+#include "CmEditorWindowManager.h"
 #include "CmQtEditorWindow.h"
 #include "CmDebug.h"
 
@@ -33,32 +34,81 @@ namespace CamelotEditor
 
 		if(!window->isDocked())
 		{
-			QtEditorWindow* windowUnderMouse = getDockedWindowAtPosition(mousePos);
+			vector<UINT32>::type windowsToIgnore;
+			windowsToIgnore.push_back(window->getId()); // Ignore myself
+
+			QtEditorWindow* windowUnderMouse = gEditorWindowManager().getWindowAtPosition(mousePos, windowsToIgnore);
 			QWidget* dragOverWidget = nullptr;
+
+			bool contentUnderMouse = false;
+			bool tabBarUnderMouse = false;
+
 			if(windowUnderMouse != nullptr)
+			{
 				dragOverWidget = windowUnderMouse->getContentWidget();
 
-			if(dragOverWidget == nullptr && isPositionInDockArea(mousePos))
-				dragOverWidget = mCentralWidget;
-
-			if(dragOverWidget != nullptr)
-			{
-				WindowDragDropLocation dragLocation = getDropLocationAtPosition(dragOverWidget, mousePos);
-				std::vector<QPolygon> dropLocations = getDropLocations(dragOverWidget);
-
-				QPoint drawOffset = mCentralWidget->mapToGlobal(QPoint(0, 0)) - mDockOverlayWidget->mapToGlobal(QPoint(0, 0));
-
-				mDockOverlayWidget->enableDropOverlay(dropLocations, drawOffset);
-
-				if(dragLocation != CM_WINDROP_CENTER)
-					mDockOverlayWidget->highlightDropLocation(dragLocation);
-				else
-					mDockOverlayWidget->highlightDropLocation(CM_WINDROP_NONE);
+				QPoint localMousePos = dragOverWidget->mapFromGlobal(mousePos);
+				if(dragOverWidget->geometry().contains(localMousePos))
+					contentUnderMouse = true;
+				
+				QWidget* tabBarWidget = windowUnderMouse->getTabWidget();
+				localMousePos = tabBarWidget->mapFromGlobal(mousePos);
+				if(tabBarWidget->geometry().contains(localMousePos))
+					tabBarUnderMouse = true;
 			}
-			else
+
+			if(!tabBarUnderMouse && dragOverWidget == nullptr && isPositionInDockArea(mousePos))
+			{
+				dragOverWidget = mCentralWidget;
+				contentUnderMouse = true;
+			}
+
+			if(contentUnderMouse)
+			{
+				mDockOverlayWidget->highlightTabDropLocation(-1);
+				mDockOverlayWidget->disableTabDropOverlay();
+
+				// Draw dock overlay
+				if(dragOverWidget != nullptr)
+				{
+					WindowDragDropLocation dragLocation = getDropLocationAtPosition(dragOverWidget, mousePos);
+					std::vector<QPolygon> dropLocations = getDropLocations(dragOverWidget);
+
+					QPoint drawOffset = mCentralWidget->mapToGlobal(QPoint(0, 0)) - mDockOverlayWidget->mapToGlobal(QPoint(0, 0));
+
+					mDockOverlayWidget->enableDropOverlay(dropLocations, drawOffset);
+
+					if(dragLocation != CM_WINDROP_CENTER)
+						mDockOverlayWidget->highlightDropLocation(dragLocation);
+					else
+						mDockOverlayWidget->highlightDropLocation(CM_WINDROP_NONE);
+				}
+				else
+				{
+					mDockOverlayWidget->highlightDropLocation(CM_WINDROP_NONE);
+					mDockOverlayWidget->disableDropOverlay();
+				}
+			}
+
+			if(tabBarUnderMouse)
 			{
 				mDockOverlayWidget->highlightDropLocation(CM_WINDROP_NONE);
 				mDockOverlayWidget->disableDropOverlay();
+
+				// Draw tab bar overlay
+				if(windowUnderMouse != nullptr)
+				{
+					std::vector<QPolygon> tabDropLocations = windowUnderMouse->getTabBarDropLocations();
+					INT32 activeTabDropLocation = windowUnderMouse->getActiveTabBarDropLocation(mousePos);
+
+					if(activeTabDropLocation != -1)
+					{
+						QPoint drawOffset = -mDockOverlayWidget->mapToGlobal(QPoint(0, 0));
+						mDockOverlayWidget->enableTabDropOverlay(tabDropLocations, drawOffset);
+				
+						mDockOverlayWidget->highlightTabDropLocation(activeTabDropLocation);
+					}
+				}
 			}
 		}
 		else
@@ -77,6 +127,9 @@ namespace CamelotEditor
 		mDockOverlayWidget->highlightDropLocation(CM_WINDROP_NONE);
 		mDockOverlayWidget->disableDropOverlay();
 
+		mDockOverlayWidget->highlightTabDropLocation(-1);
+		mDockOverlayWidget->disableTabDropOverlay();
+
 		if(mLastDraggedWindow != window)
 		{
 			mLastDragPosition = mousePos;
@@ -88,11 +141,46 @@ namespace CamelotEditor
 
 		if(wasDragged && !window->isDocked())
 		{
-			QtEditorWindow* windowUnderCursor = getDockedWindowAtPosition(mousePos);
+			vector<UINT32>::type windowsToIgnore;
+			windowsToIgnore.push_back(window->getId()); // Ignore myself
+			QtEditorWindow* windowUnderCursor = gEditorWindowManager().getWindowAtPosition(mousePos, windowsToIgnore);
+
 			if(windowUnderCursor != nullptr)
 			{
-				WindowDragDropLocation dropLocation = getDropLocationAtPosition(windowUnderCursor->getContentWidget(), mousePos);
-				dockWindow(window, windowUnderCursor, dropLocation);
+				bool contentUnderMouse = false;
+				bool tabBarUnderMouse = false;
+
+				QWidget* contentWidget = windowUnderCursor->getContentWidget();
+				QPoint localMousePos = contentWidget->mapFromGlobal(mousePos);
+				if(contentWidget->geometry().contains(localMousePos))
+					contentUnderMouse = true;
+
+				QWidget* tabBarWidget = windowUnderCursor->getTabWidget();
+				localMousePos = tabBarWidget->mapFromGlobal(mousePos);
+				if(tabBarWidget->geometry().contains(localMousePos))
+					tabBarUnderMouse = true;
+
+				if(contentUnderMouse)
+				{
+					WindowDragDropLocation dropLocation = getDropLocationAtPosition(windowUnderCursor->getContentWidget(), mousePos);
+					dockWindow(window, windowUnderCursor, dropLocation);
+				}
+				else if(tabBarUnderMouse)
+				{
+					INT32 dropLocation = windowUnderCursor->getActiveTabBarDropLocation(mousePos);
+					if(dropLocation != -1)
+					{
+						while(window->getNumWidgets() > 0)
+						{
+							QtEditorWidget* widget = window->getWidget(0);
+
+							window->removeWidget(0);
+							windowUnderCursor->insertWidget(dropLocation, widget);
+						}
+
+						window->closeWindow();
+					}
+				}
 			}
 			else
 			{
@@ -131,26 +219,6 @@ namespace CamelotEditor
 		assert(findIter != mDockedWindows.end());
 
 		return findIter->second.parentId;
-	}
-
-	QtEditorWindow* WindowDockManager::getDockedWindowAtPosition(const QPoint& globalPos)
-	{
-		QtEditorWindow* foundWindow = nullptr;
-		for(auto iter = mDockedWindows.begin(); iter != mDockedWindows.end(); ++iter)
-		{
-			QtEditorWindow* curWindow = iter->first;
-			QPoint globalWidgetPos = curWindow->mapToGlobal(QPoint(0, 0));
-
-			QRect widgetRect(globalWidgetPos, curWindow->geometry().size());
-
-			if(widgetRect.contains(globalPos))
-			{
-				foundWindow = curWindow;
-				break;
-			}
-		}
-
-		return foundWindow;
 	}
 
 	bool WindowDockManager::isPositionInDockArea(const QPoint& globalPos)

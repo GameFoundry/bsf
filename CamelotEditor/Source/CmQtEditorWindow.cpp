@@ -272,6 +272,32 @@ namespace CamelotEditor
 		return mStackedWidget; 
 	}
 
+	QWidget* QtEditorWindow::getTabWidget() const
+	{ 
+		return mTabBar; 
+	}
+
+	std::vector<QPolygon> QtEditorWindow::getTabBarDropLocations() const
+	{
+		return mTabBar->getDropLocations();
+	}
+
+	INT32 QtEditorWindow::getActiveTabBarDropLocation(const QPoint& mousePos) const
+	{
+		std::vector<QPolygon> dropLocations = getTabBarDropLocations();
+
+		INT32 idx = 0;
+		for(auto iter = dropLocations.begin(); iter != dropLocations.end(); ++iter)
+		{
+			if(iter->containsPoint(mousePos, Qt::OddEvenFill))
+				return idx;
+
+			idx++;
+		}
+
+		return -1;
+	}
+
 	void QtEditorWindow::enterEvent(QEvent *e)
 	{
 		mTimer->start(100);

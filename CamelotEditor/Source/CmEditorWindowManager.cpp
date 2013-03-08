@@ -80,6 +80,26 @@ namespace CamelotEditor
 		return iterFind->second;
 	}
 
+	QtEditorWindow* EditorWindowManager::getWindowAtPosition(const QPoint& globalPos, vector<UINT32>::type windowsToIgnore) const
+	{
+		for(auto iter = mOpenWindows.begin(); iter != mOpenWindows.end(); ++iter)
+		{
+			QtEditorWindow* curWindow = iter->second;
+
+			auto iterFind = std::find(windowsToIgnore.begin(), windowsToIgnore.end(), curWindow->getId());
+			if(iterFind != windowsToIgnore.end())
+				continue;
+
+			QPoint globalWidgetPos = curWindow->mapToGlobal(QPoint(0, 0));
+			QRect widgetRect(globalWidgetPos, curWindow->geometry().size());
+
+			if(widgetRect.contains(globalPos))
+				return curWindow;
+		}
+
+		return nullptr;
+	}
+
 	void EditorWindowManager::restoreWindowsFromPrefs()
 	{
 		vector<WindowLayoutDesc>::type windowLayouts = gEditorPrefs().getWindowLayouts();

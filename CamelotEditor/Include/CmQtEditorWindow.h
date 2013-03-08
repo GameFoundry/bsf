@@ -45,6 +45,12 @@ namespace CamelotEditor
 
 		void setActiveWidget(UINT32 idx);
 		QWidget* getContentWidget() const;
+		QWidget* getTabWidget() const;
+
+		std::vector<QPolygon> getTabBarDropLocations() const;
+		INT32 getActiveTabBarDropLocation(const QPoint& mousePos) const;
+
+		void closeWindow();
 
 		boost::signal<void(QtEditorWindow*)> onClosed;
 	protected:
@@ -80,8 +86,6 @@ namespace CamelotEditor
 
 		ResizeMode getResizeMode(QPoint mousePos);
 		bool isOverResizeArea(QPoint mousePos);
-
-		void closeWindow();
 
 		/**
 		 * @brief	Query if 'mousePos' is over the area that can be used for dragging the window around.

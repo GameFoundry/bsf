@@ -37,3 +37,11 @@ When restoring windows what happens why I try to restore an unloaded plugin?
 
  After I undock a window it needs to return itself to the default size
   - Allow widgets to specify default size
+
+
+  WindowDockManager
+ Checks if we're mousing over any dock widgets
+ If not it checks if we're mousing over DynamicTabBar (in any open window)
+   If we are it gets the polygons from DynamicTabBar and renders them
+   Also gets the current polygon and highlights it
+   Upon mouse release it find exactly at what index the mouse was released and adds the widget to the tab bar
