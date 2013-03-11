@@ -161,6 +161,13 @@ namespace CamelotEditor
 		QWidget::resizeEvent(event);
 	}
 
+	bool QtEditor::eventFilter(QObject* object, QEvent* event)
+	{
+
+
+		return false;
+	}
+
 	void QtEditor::openProject()
 	{
 		CM_EXCEPT(NotImplementedException, "Not implemented");

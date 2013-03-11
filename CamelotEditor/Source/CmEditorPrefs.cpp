@@ -142,7 +142,7 @@ namespace CamelotEditor
 		desc.activeWidget = node.child("ChildWidgets").attribute("activeWidgetIdx").as_uint();
 
 		xml_node childWidgets = node.child("ChildWidgets");
-		for (xml_node childWidget = childWidgets.child("ChildWidget"); childWidget; childWidget = childWidgets.next_sibling("ChildWidget"))
+		for (xml_node childWidget = childWidgets.child("ChildWidget"); childWidget; childWidget = childWidget.next_sibling("ChildWidget"))
 		{
 			desc.childWidgetNames.push_back(childWidget.attribute("name").as_string());
 		}

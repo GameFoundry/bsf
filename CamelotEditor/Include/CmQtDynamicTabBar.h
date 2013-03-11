@@ -29,15 +29,16 @@ namespace CamelotEditor
 		void paintEvent(QPaintEvent *event);
 
 		boost::signal<void(UINT32)> onTabSelected;
-
+		boost::signal<void(UINT32)> onTabDraggedOff;
 	private:
 		QHBoxLayout* mHLayout;
-		vector<QPushButton*>::type mTabs;
+		vector<QtTabButton*>::type mTabs;
 		bool dbg;
 
 		void setupUi();
 		void updateTabs();
 
 		void tabSelected(UINT32 idx);
+		void tabDraggedOff(UINT32 idx);
 	};
 }

@@ -45,3 +45,6 @@ When restoring windows what happens why I try to restore an unloaded plugin?
    If we are it gets the polygons from DynamicTabBar and renders them
    Also gets the current polygon and highlights it
    Upon mouse release it find exactly at what index the mouse was released and adds the widget to the tab bar
+
+   getWindowAtPosition doesn't consider if two or more windows are overlapping. It should return the front most
+Dragging window around occludes possible dock points. I need to make the window less visible while dragging.

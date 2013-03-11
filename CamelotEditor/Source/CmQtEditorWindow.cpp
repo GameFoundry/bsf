@@ -15,6 +15,8 @@
 #include "CmQtDynamicTabBar.h"
 #include "CmWindowDockManager.h"
 #include "CmEditorWindowManager.h"
+#include "CmQtEditor.h"
+#include "CmEditorApplication.h"
 
 namespace CamelotEditor
 {
@@ -40,12 +42,15 @@ namespace CamelotEditor
 		mTitleBar->setMouseTracking(true);
 
 		mTabBar = new QtDynamicTabBar(this);
+		mTabBar->setMouseTracking(true);
 		
 		mBtnClose = new QPushButton(this);
+		mBtnUndock = new QPushButton(this);
 		
 		QHBoxLayout* titleLayout = new QHBoxLayout(this);
 		titleLayout->setMargin(0);
 		titleLayout->addWidget(mTabBar, 1);
+		titleLayout->addWidget(mBtnUndock);
 		titleLayout->addWidget(mBtnClose);
 		mTitleBar->setLayout(titleLayout);
 
@@ -77,6 +82,7 @@ namespace CamelotEditor
 	void QtEditorWindow::setupSignals()
 	{
 		connect(mBtnClose, SIGNAL(clicked()), this, SLOT(closeWidget()));
+		connect(mBtnUndock, SIGNAL(clicked()), this, SLOT(undockWidget()));
 		connect(mTimer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
 		
 		mTabBar->onTabSelected.connect(boost::bind(&QtEditorWindow::setActiveWidget, this, _1));
@@ -84,6 +90,7 @@ namespace CamelotEditor
 
 	void QtEditorWindow::retranslateUi()
 	{
+		mBtnUndock->setText(tr("Undock"));
 		mBtnClose->setText(tr("Close"));
 	}
 
@@ -108,6 +115,9 @@ namespace CamelotEditor
 		{
 			setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 			mIsDocked = false;
+
+			QtEditorWidget* activeWidget = getWidget(mActiveWidgetIdx);
+			resizeCentered(activeWidget->getDefaultSize());
 		}
 	}
 
@@ -118,6 +128,13 @@ namespace CamelotEditor
 			setWindowFlags(Qt::Widget);
 			mIsDocked = true;
 		}
+	}
+
+	void QtEditorWindow::resizeCentered(const QSize& size)
+	{
+		int newX = x() + width() / 2 - size.width() / 2;
+
+		setGeometry(newX, y(), size.width(), size.height());
 	}
 
 	WindowLayoutDesc QtEditorWindow::getLayoutDesc() const
@@ -222,9 +239,12 @@ namespace CamelotEditor
 		if(iterFind != mEditorWidgets.end())
 			CM_EXCEPT(InvalidParametersException, "Specified widget already exists in this window.");
 
-		widget->setParentWindow(this);
+		widget->setParent(this);
 		mEditorWidgets.push_back(widget);
 		mTabBar->addTab(widget->getName());
+
+		if(getNumWidgets() == 1)
+			resizeCentered(widget->getDefaultSize());
 	}
 
 	void QtEditorWindow::insertWidget(UINT32 idx, QtEditorWidget* widget)
@@ -238,9 +258,12 @@ namespace CamelotEditor
 		if(idx > (UINT32)mEditorWidgets.size())
 			idx = (UINT32)mEditorWidgets.size();
 
-		widget->setParentWindow(this);
+		widget->setParent(this);
 		mEditorWidgets.insert(mEditorWidgets.begin() + idx, widget);
 		mTabBar->insertTab(idx, widget->getName());
+
+		if(getNumWidgets() == 1)
+			resizeCentered(widget->getDefaultSize());
 	}
 
 	void QtEditorWindow::removeWidget(UINT32 idx)
@@ -249,7 +272,7 @@ namespace CamelotEditor
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) +". Valid range: 0 .. " + toString((UINT32)mEditorWidgets.size()));
 
 		mEditorWidgets.erase(mEditorWidgets.begin() + idx);
-		mTabBar->removeTab(idx);
+		mTabBar->removeTab(idx);		
 	}
 
 	QtEditorWidget* QtEditorWindow::getWidget(UINT32 idx) const
@@ -476,7 +499,21 @@ namespace CamelotEditor
 		activeWidget->closeWidget();
 
 		if(getNumWidgets() == 0)
-			closeWindow();		
+			closeWindow();
+	}
+
+	void QtEditorWindow::undockWidget()
+	{
+		QtEditorWidget* widget = getWidget(mActiveWidgetIdx);
+
+		removeWidget(mActiveWidgetIdx);
+
+		QtEditorWindow* newWindow = gEditorWindowManager().openWindow();
+		newWindow->addWidget(widget);
+		newWindow->resizeCentered(widget->getDefaultSize());
+
+		if(getNumWidgets() == 0)
+			closeWindow();
 	}
 
 	QtEditorWindow::ResizeMode QtEditorWindow::getResizeMode(QPoint mousePos)

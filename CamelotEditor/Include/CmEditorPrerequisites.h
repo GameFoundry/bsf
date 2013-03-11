@@ -16,6 +16,7 @@ namespace CamelotEditor
 	class QtEditorWindow;
 	class QtEditorWidget;
 	class QtDynamicTabBar;
+	class QtTabButton;
 }
 
 // Qt

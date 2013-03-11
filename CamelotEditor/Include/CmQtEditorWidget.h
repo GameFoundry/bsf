@@ -11,11 +11,12 @@ namespace CamelotEditor
 		Q_OBJECT
 
 	public:
-		QtEditorWidget(QWidget* parent, const QString& name, const QString& title);
+		QtEditorWidget(QWidget* parent, const QString& name, const QString& title, const QSize& defaultSize);
 		virtual ~QtEditorWidget() { }
 
 		const QString& getName() const { return mName; }
 		const QString& getTitle() const { return mTitle; }
+		const QSize& getDefaultSize() const { return mDefaultSize; }
 
 		QtEditorWindow* getParentWindow() const { return mParentWindow; }
 
@@ -27,6 +28,7 @@ namespace CamelotEditor
 		
 		QString mName;
 		QString mTitle;
+		QSize mDefaultSize;
 
 		QtEditorWindow* mParentWindow;
 

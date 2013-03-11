@@ -64,6 +64,7 @@ namespace CamelotEditor
 		QWidget* mTitleBar;
 		QtDynamicTabBar* mTabBar;
 		QPushButton* mBtnClose;
+		QPushButton* mBtnUndock;
 		QWidget* mCentralWidget;
 		QStackedWidget* mStackedWidget;
 		QTimer* mTimer;
@@ -87,6 +88,8 @@ namespace CamelotEditor
 		ResizeMode getResizeMode(QPoint mousePos);
 		bool isOverResizeArea(QPoint mousePos);
 
+		void resizeCentered(const QSize& size);
+
 		/**
 		 * @brief	Query if 'mousePos' is over the area that can be used for dragging the window around.
 		 *
@@ -103,5 +106,6 @@ namespace CamelotEditor
 	private Q_SLOTS:
 		void timerUpdate();
 		void closeWidget();
+		void undockWidget();
 	};
 }

@@ -27,6 +27,8 @@ namespace CamelotEditor
 		void openWidget(const QString& name, QtEditorWindow* parent = nullptr);
 		boost::function<void()> getOpenCallback(const QString& name);
 
+		QtEditorWindow* openWindow(INT32 forcedId = -1);
+
 		QtEditorWindow* getOpenWindow(INT32 id) const;
 		QtEditorWindow* getWindowAtPosition(const QPoint& globalPos, vector<UINT32>::type windowsToIgnore = vector<UINT32>::type()) const;
 
@@ -43,7 +45,6 @@ namespace CamelotEditor
 
 		EditorWidgetFactory* getFactory(const QString& name) const;
 
-		QtEditorWindow* openWindow(INT32 forcedId = -1);
 		void widgetClosed(QtEditorWidget* window);
 		void windowClosed(QtEditorWindow* window);
 	};

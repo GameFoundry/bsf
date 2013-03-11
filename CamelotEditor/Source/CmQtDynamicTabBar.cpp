@@ -1,5 +1,6 @@
 #include "CmQtDynamicTabBar.h"
 #include "CmException.h"
+#include "CmQtTabButton.h"
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QHBoxLayout>
 #include <QtGui/QPainter>
@@ -14,7 +15,7 @@ namespace CamelotEditor
 
 	void QtDynamicTabBar::addTab(const QString& name)
 	{
-		QPushButton* newBtn = new QPushButton(this);
+		QtTabButton* newBtn = new QtTabButton(this);
 		newBtn->setMaximumWidth(100);
 		newBtn->setText(name);
 
@@ -28,7 +29,7 @@ namespace CamelotEditor
 		if(idx > (UINT32)mTabs.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) +". Valid range: 0 .. " + toString((UINT32)mTabs.size()));
 
-		QPushButton* newBtn = new QPushButton(this);
+		QtTabButton* newBtn = new QtTabButton(this);
 		newBtn->setMaximumWidth(100);
 		newBtn->setText(name);
 
@@ -42,7 +43,10 @@ namespace CamelotEditor
 		if(idx >= (UINT32)mTabs.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) +". Valid range: 0 .. " + toString((UINT32)mTabs.size()));
 
-		mTabs.erase(mTabs.begin() + idx);
+		auto iter = mTabs.begin() + idx;
+		delete *iter;
+
+		mTabs.erase(iter);
 
 		updateTabs();
 	}
@@ -150,8 +154,12 @@ namespace CamelotEditor
 		UINT32 idx = 0;
 		for(auto iter = mTabs.begin(); iter != mTabs.end(); ++iter)
 		{
-			(*iter)->disconnect();
-			/*connect(*iter, &QPushButton::clicked, std::bind(this, &QtDynamicTabBar::tabSelected, idx));*/
+			(*iter)->onSelected.disconnect_all_slots();
+			(*iter)->onSelected.connect(boost::bind(&QtDynamicTabBar::tabSelected, this, idx));
+
+			(*iter)->onDragged.disconnect_all_slots();
+			(*iter)->onDragged.connect(boost::bind(&QtDynamicTabBar::tabDraggedOff, this, idx));
+
 			mHLayout->addWidget(*iter);
 
 			idx++;
@@ -163,5 +171,10 @@ namespace CamelotEditor
 	void QtDynamicTabBar::tabSelected(UINT32 idx)
 	{
 		onTabSelected(idx);
+	}
+
+	void QtDynamicTabBar::tabDraggedOff(UINT32 idx)
+	{
+		onTabDraggedOff(idx);
 	}
 }

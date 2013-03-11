@@ -39,6 +39,8 @@ namespace CamelotEditor
 		void moveEvent(QMoveEvent* event);
 		void resizeEvent(QResizeEvent* event);
 
+		bool eventFilter(QObject* object, QEvent* event);
+
 		void openProject();
 		void saveProject();
 		void exitEditor();
