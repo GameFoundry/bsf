@@ -21,6 +21,10 @@ CamelotFreeImgImporter (optional) relies on:
  - FreeImage 3.13.1
   - http://freeimage.sourceforge.net
 
+CamelotFontImporter (optional) relies on:
+ - Freetype 2.3.5
+  - http://www.freetype.org
+
 Place plug-in specific dependency files in:
  - Library include files in (CamelotRootDir)/(PluginDir)/Dependencies/Include
  - Static library files in (CamelotRootDir)/(PluginDir)/Dependencies/lib/(Platform)/(Configuration)

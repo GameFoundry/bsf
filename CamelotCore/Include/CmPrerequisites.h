@@ -129,6 +129,7 @@ namespace CamelotEngine {
 	class PassParameters;
 	class AsyncOp;
 	class HardwareBufferManager;
+	class FontManager;
 	class CommandQueue;
 	class DeferredRenderContext;
 	class DepthStencilState;
@@ -153,6 +154,7 @@ namespace CamelotEngine {
 	class Resources;
 	class Texture;
 	class Mesh;
+	class Font;
 	// Scene
 	class GameObject;
 	class Component;
@@ -166,6 +168,7 @@ namespace CamelotEngine {
 	struct BLEND_STATE_DESC;
 	struct RENDER_TARGET_BLEND_STATE_DESC;
 	struct RENDER_TEXTURE_DESC;
+	struct FONT_DESC;
 }
 
 /************************************************************************/
@@ -212,6 +215,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<GpuProgInclude> GpuProgIncludePtr;
 	typedef std::shared_ptr<ImportOptions> ImportOptionsPtr;
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
+	typedef std::shared_ptr<Font> FontPtr;
 }
 
 /************************************************************************/
@@ -260,7 +264,12 @@ namespace CamelotEngine
 		TID_SHADER_PARAM_BLOCK_DESC = 1047,
 		TID_ImportOptions = 1048,
 		TID_GpuProgramImportOptions = 1049,
-		TID_MaterialParamStruct = 1050
+		TID_MaterialParamStruct = 1050,
+		TID_Font = 1051,
+		TID_FONT_DESC = 1052,
+		TID_CHAR_DESC = 1053,
+		TID_STDVECTOR = 1054,
+		TID_STDMAP = 1055
 	};
 
 	/**
@@ -307,6 +316,7 @@ namespace CamelotEngine
 	typedef ResourceHandle<DepthStencilState> DepthStencilStateHandle;
 	typedef ResourceHandle<BlendState> BlendStateHandle;
 	typedef ResourceHandle<GpuProgInclude> GpuProgIncludeHandle;
+	typedef ResourceHandle<Font> FontHandle;
 }
 
 #endif

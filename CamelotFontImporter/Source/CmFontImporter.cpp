@@ -1,5 +1,8 @@
 #include "CmFontImporter.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 namespace CamelotEngine
 {
 	FontImporter::FontImporter()

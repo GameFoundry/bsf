@@ -11,7 +11,7 @@ namespace CamelotEngine
 	{	
 		enum { id = TID_BLEND_STATE_DESC }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(BLEND_STATE_DESC& data, char* memory)
+		static void toMemory(const BLEND_STATE_DESC& data, char* memory)
 		{ 
 			UINT32 size = getDynamicSize(data);
 
@@ -21,17 +21,19 @@ namespace CamelotEngine
 			memcpy(memory, &data, size); 
 		}
 
-		static void fromMemory(BLEND_STATE_DESC& data, char* memory)
+		static UINT32 fromMemory(BLEND_STATE_DESC& data, char* memory)
 		{ 
 			UINT32 size;
 			memcpy(&size, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
 
-			size -= sizeof(UINT32);
-			memcpy((void*)&data, memory, size); 
+			UINT32 dataSize = size - sizeof(UINT32);
+			memcpy((void*)&data, memory, dataSize); 
+
+			return size;
 		}
 
-		static UINT32 getDynamicSize(BLEND_STATE_DESC& data)	
+		static UINT32 getDynamicSize(const BLEND_STATE_DESC& data)	
 		{ 
 			UINT64 dataSize = sizeof(data) + sizeof(UINT32);
 

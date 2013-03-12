@@ -11,7 +11,7 @@ namespace CamelotEngine
 	{	
 		enum { id = TID_SHADER_DATA_PARAM_DESC }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(SHADER_DATA_PARAM_DESC& data, char* memory)
+		static void toMemory(const SHADER_DATA_PARAM_DESC& data, char* memory)
 		{ 
 			UINT32 size = getDynamicSize(data);
 
@@ -27,7 +27,7 @@ namespace CamelotEngine
 			memory = rttiWriteElem(data.elementSize, memory);
 		}
 
-		static void fromMemory(SHADER_DATA_PARAM_DESC& data, char* memory)
+		static UINT32 fromMemory(SHADER_DATA_PARAM_DESC& data, char* memory)
 		{ 
 			UINT32 size;
 			memcpy(&size, memory, sizeof(UINT32)); 
@@ -39,9 +39,11 @@ namespace CamelotEngine
 			memory = rttiReadElem(data.name, memory);
 			memory = rttiReadElem(data.gpuVariableName, memory);
 			memory = rttiReadElem(data.elementSize, memory);
+
+			return size;
 		}
 
-		static UINT32 getDynamicSize(SHADER_DATA_PARAM_DESC& data)	
+		static UINT32 getDynamicSize(const SHADER_DATA_PARAM_DESC& data)	
 		{ 
 			UINT64 dataSize = rttiGetElemSize(data.arraySize) + rttiGetElemSize(data.hidden) + rttiGetElemSize(data.type) + 
 				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + rttiGetElemSize(data.elementSize) + sizeof(UINT32);
@@ -61,7 +63,7 @@ namespace CamelotEngine
 	{	
 		enum { id = TID_SHADER_OBJECT_PARAM_DESC }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(SHADER_OBJECT_PARAM_DESC& data, char* memory)
+		static void toMemory(const SHADER_OBJECT_PARAM_DESC& data, char* memory)
 		{ 
 			UINT32 size = getDynamicSize(data);
 
@@ -75,7 +77,7 @@ namespace CamelotEngine
 			memory = rttiWriteElem(data.gpuVariableName, memory);
 		}
 
-		static void fromMemory(SHADER_OBJECT_PARAM_DESC& data, char* memory)
+		static UINT32 fromMemory(SHADER_OBJECT_PARAM_DESC& data, char* memory)
 		{ 
 			UINT32 size;
 			memcpy(&size, memory, sizeof(UINT32)); 
@@ -85,9 +87,11 @@ namespace CamelotEngine
 			memory = rttiReadElem(data.type, memory);
 			memory = rttiReadElem(data.name, memory);
 			memory = rttiReadElem(data.gpuVariableName, memory);
+
+			return size;
 		}
 
-		static UINT32 getDynamicSize(SHADER_OBJECT_PARAM_DESC& data)	
+		static UINT32 getDynamicSize(const SHADER_OBJECT_PARAM_DESC& data)	
 		{ 
 			UINT64 dataSize = rttiGetElemSize(data.hidden) + rttiGetElemSize(data.type) + 
 				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + sizeof(UINT32);
@@ -107,7 +111,7 @@ namespace CamelotEngine
 	{	
 		enum { id = TID_SHADER_PARAM_BLOCK_DESC }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(SHADER_PARAM_BLOCK_DESC& data, char* memory)
+		static void toMemory(const SHADER_PARAM_BLOCK_DESC& data, char* memory)
 		{ 
 			UINT32 size = getDynamicSize(data);
 
@@ -120,7 +124,7 @@ namespace CamelotEngine
 			memory = rttiWriteElem(data.name, memory);
 		}
 
-		static void fromMemory(SHADER_PARAM_BLOCK_DESC& data, char* memory)
+		static UINT32 fromMemory(SHADER_PARAM_BLOCK_DESC& data, char* memory)
 		{ 
 			UINT32 size;
 			memcpy(&size, memory, sizeof(UINT32)); 
@@ -129,9 +133,11 @@ namespace CamelotEngine
 			memory = rttiReadElem(data.shared, memory);
 			memory = rttiReadElem(data.usage, memory);
 			memory = rttiReadElem(data.name, memory);
+
+			return size;
 		}
 
-		static UINT32 getDynamicSize(SHADER_PARAM_BLOCK_DESC& data)	
+		static UINT32 getDynamicSize(const SHADER_PARAM_BLOCK_DESC& data)	
 		{ 
 			UINT64 dataSize = rttiGetElemSize(data.shared) + rttiGetElemSize(data.usage) + 
 				rttiGetElemSize(data.name) + sizeof(UINT32);

@@ -365,7 +365,7 @@ namespace CamelotEngine {
 	{	
 		enum { id = 20 }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(String& data, char* memory)
+		static void toMemory(const String& data, char* memory)
 		{ 
 			UINT32 size = getDynamicSize(data);
 
@@ -375,22 +375,24 @@ namespace CamelotEngine {
 			memcpy(memory, data.data(), size); 
 		}
 
-		static void fromMemory(String& data, char* memory)
+		static UINT32 fromMemory(String& data, char* memory)
 		{ 
 			UINT32 size;
 			memcpy(&size, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
 
-			size -= sizeof(UINT32);
-			char* buffer = new char[size + 1]; // TODO - Use a better allocator
-			memcpy(buffer, memory, size); 
-			buffer[size] = '\0';
+			UINT32 stringSize = size - sizeof(UINT32);
+			char* buffer = new char[stringSize + 1]; // TODO - Use a better allocator
+			memcpy(buffer, memory, stringSize); 
+			buffer[stringSize] = '\0';
 			data = String(buffer);
 
 			delete[] buffer; 
+
+			return size;
 		}
 
-		static UINT32 getDynamicSize(String& data)	
+		static UINT32 getDynamicSize(const String& data)	
 		{ 
 			UINT64 dataSize = data.size() * sizeof(String::value_type) + sizeof(UINT32);
 

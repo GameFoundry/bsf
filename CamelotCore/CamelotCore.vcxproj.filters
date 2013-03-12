@@ -82,6 +82,12 @@
     <Filter Include="Source Files\Win32">
       <UniqueIdentifier>{5a1e28c5-e784-44e6-974f-f1d0d66474ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Text">
+      <UniqueIdentifier>{1daa1a6e-95c0-4e63-b339-4a884773fa64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Text">
+      <UniqueIdentifier>{96b913ee-4ffb-4c60-9aa9-a51e0faf8060}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmConfigOptionMap.h">
@@ -393,6 +399,21 @@
     <ClInclude Include="Include\CmGpuProgramImportOptionsRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmFont.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmFontDesc.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTextRenderer.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmFontRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmFontManager.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -607,6 +628,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmGpuProgramImportOptions.cpp">
       <Filter>Source Files\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmFont.cpp">
+      <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmFontManager.cpp">
+      <Filter>Source Files\Text</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

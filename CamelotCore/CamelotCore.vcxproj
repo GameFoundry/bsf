@@ -192,6 +192,10 @@
     <ClInclude Include="Include\CmDeferredRenderContext.h" />
     <ClInclude Include="Include\CmDepthStencilStateRTTI.h" />
     <ClInclude Include="Include\CmDepthStencilState.h" />
+    <ClInclude Include="Include\CmFont.h" />
+    <ClInclude Include="Include\CmFontDesc.h" />
+    <ClInclude Include="Include\CmFontManager.h" />
+    <ClInclude Include="Include\CmFontRTTI.h" />
     <ClInclude Include="Include\CmGpuBuffer.h" />
     <ClInclude Include="Include\CmGpuBufferView.h" />
     <ClInclude Include="Include\CmGpuParamBlock.h" />
@@ -215,6 +219,7 @@
     <ClInclude Include="Include\CmOcclusionQuery.h" />
     <ClInclude Include="Include\CmPixelBuffer.h" />
     <ClInclude Include="Include\CmGpuProgIncludeImporter.h" />
+    <ClInclude Include="Include\CmTextRenderer.h" />
     <ClInclude Include="Include\CmTextureView.h" />
     <ClInclude Include="Include\CmVertexBuffer.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgram.h" />
@@ -293,6 +298,8 @@
     <ClCompile Include="Source\CmCoreGpuObjectManager.cpp" />
     <ClCompile Include="Source\CmDeferredRenderContext.cpp" />
     <ClCompile Include="Source\CmDepthStencilState.cpp" />
+    <ClCompile Include="Source\CmFont.cpp" />
+    <ClCompile Include="Source\CmFontManager.cpp" />
     <ClCompile Include="Source\CmGpuBuffer.cpp" />
     <ClCompile Include="Source\CmGpuBufferView.cpp" />
     <ClCompile Include="Source\CmGpuParamBlock.cpp" />
