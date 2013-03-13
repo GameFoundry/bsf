@@ -8,11 +8,11 @@ namespace CamelotEngine
 	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mCoreGpuObjectLoadedCondition, CoreObject)
 	CM_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreObject)
 
-	CoreObject::CoreObject(bool requiresGpuInit)
+	CoreObject::CoreObject(bool initializeOnRenderThread)
 		: mFlags(0), mInternalID(0)
 	{
 		mInternalID = CoreGpuObjectManager::instance().registerObject(this);
-		mFlags = requiresGpuInit ? mFlags | CGO_REQUIRES_GPU_INIT : mFlags;
+		mFlags = initializeOnRenderThread ? mFlags | CGO_INIT_ON_RENDER_THREAD : mFlags;
 	}
 
 	CoreObject::~CoreObject() 
@@ -37,7 +37,7 @@ namespace CamelotEngine
 
 	void CoreObject::destroy()
 	{
-		if(requiresGpuInitialization())
+		if(requiresInitOnRenderThread())
 		{
 			setScheduledToBeDeleted(true);
 
@@ -66,7 +66,7 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, "Trying to initialize an object that is already initialized.");
 #endif
 
-		if(requiresGpuInitialization())
+		if(requiresInitOnRenderThread())
 		{
 			setScheduledToBeInitialized(true);
 
@@ -80,7 +80,7 @@ namespace CamelotEngine
 
 	void CoreObject::initialize_internal()
 	{
-		if(requiresGpuInitialization())
+		if(requiresInitOnRenderThread())
 		{
 			{
 				CM_LOCK_MUTEX(mCoreGpuObjectLoadedMutex);
@@ -106,7 +106,7 @@ namespace CamelotEngine
 
 		if(!isInitialized())
 		{
-			if(requiresGpuInitialization())
+			if(requiresInitOnRenderThread())
 			{
 				CM_LOCK_MUTEX_NAMED(mCoreGpuObjectLoadedMutex, lock);
 				while(!isInitialized())

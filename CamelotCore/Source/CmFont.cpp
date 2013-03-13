@@ -5,6 +5,7 @@
 namespace CamelotEngine
 {
 	Font::Font()
+		:Resource(false)
 	{
 
 	}

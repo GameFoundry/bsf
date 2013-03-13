@@ -20,7 +20,7 @@ namespace CamelotEngine
 		enum Flags
 		{
 			CGO_INITIALIZED = 0x01,
-			CGO_REQUIRES_GPU_INIT = 0x02,
+			CGO_INIT_ON_RENDER_THREAD = 0x02,
 			CGO_SCHEDULED_FOR_INIT = 0x04,
 			CGO_SCHEDULED_FOR_DELETE = 0x08
 		};
@@ -121,7 +121,7 @@ o		 *
 
 		bool isScheduledToBeInitialized() const { return (mFlags & CGO_SCHEDULED_FOR_INIT) != 0; }
 		bool isScheduledToBeDeleted() const { return (mFlags & CGO_SCHEDULED_FOR_DELETE) != 0; }
-		bool requiresGpuInitialization() const { return (mFlags & CGO_REQUIRES_GPU_INIT) != 0; }
+		bool requiresInitOnRenderThread() const { return (mFlags & CGO_INIT_ON_RENDER_THREAD) != 0; }
 
 		void setIsInitialized(bool initialized) { mFlags = initialized ? mFlags | CGO_INITIALIZED : mFlags & ~CGO_INITIALIZED; }
 		void setScheduledToBeInitialized(bool scheduled) { mFlags = scheduled ? mFlags | CGO_SCHEDULED_FOR_INIT : mFlags & ~CGO_SCHEDULED_FOR_INIT; }
