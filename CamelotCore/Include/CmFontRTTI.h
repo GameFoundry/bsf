@@ -10,6 +10,12 @@ namespace CamelotEngine
 {
 	class CM_EXPORT FontRTTI : public RTTIType<Font, Resource, FontRTTI>
 	{
+		struct FontInitData
+		{
+			FONT_DESC desc;
+			vector<TexturePtr>::type texturePages;
+		};
+
 	private:
 		FONT_DESC& getFontDesc(Font* obj)
 		{
@@ -18,7 +24,8 @@ namespace CamelotEngine
 
 		void setFontDesc(Font* obj, FONT_DESC& val)
 		{
-			obj->mFontDesc = val;
+			FontInitData* initData = boost::any_cast<FontInitData*>(obj->mRTTIData);
+			initData->desc = val;
 		}
 
 		TexturePtr getTexture(Font* obj, UINT32 idx)
@@ -28,7 +35,9 @@ namespace CamelotEngine
 
 		void setTexture(Font* obj, UINT32 idx, TexturePtr value)
 		{
-			obj->mTexturePages[idx] = value;
+			FontInitData* initData = boost::any_cast<FontInitData*>(obj->mRTTIData);
+
+			initData->texturePages[idx] = value;
 		}
 
 		UINT32 getTextureArraySize(Font* obj)
@@ -38,7 +47,9 @@ namespace CamelotEngine
 
 		void setTextureArraySize(Font* obj, UINT32 size)
 		{
-			obj->mTexturePages.resize(size);
+			FontInitData* initData = boost::any_cast<FontInitData*>(obj->mRTTIData);
+
+			initData->texturePages.resize(size);
 		}
 
 	public:
@@ -65,11 +76,22 @@ namespace CamelotEngine
 		}
 
 	protected:
+		virtual void onDeserializationStarted(IReflectable* obj)
+		{
+			FontInitData* initData = new FontInitData();
+
+			Font* font = static_cast<Font*>(obj);
+			font->mRTTIData = initData;
+		}
+
 		virtual void onDeserializationEnded(IReflectable* obj)
 		{
 			Font* font = static_cast<Font*>(obj);
-			
-			//font->initialize();
+			FontInitData* initData = boost::any_cast<FontInitData*>(font->mRTTIData);
+
+			font->initialize(initData->desc, initData->texturePages);
+
+			delete initData;
 		}
 	};
 }
