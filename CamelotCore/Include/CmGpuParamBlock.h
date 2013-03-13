@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
-#include "CmCoreGpuObject.h"
+#include "CmCoreObject.h"
 
 namespace CamelotEngine
 {
@@ -31,7 +31,7 @@ namespace CamelotEngine
 		UINT32 mSize;
 	};
 
-	class CM_EXPORT GpuParamBlock : public CoreGpuObject
+	class CM_EXPORT GpuParamBlock : public CoreObject
 	{
 	public:
 		GpuParamBlock();

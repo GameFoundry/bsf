@@ -13,12 +13,12 @@ namespace CamelotEngine
 		CoreGpuObjectManager();
 		~CoreGpuObjectManager();
 
-		UINT64 registerObject(CoreGpuObject* object);
-		void unregisterObject(CoreGpuObject* object);
+		UINT64 registerObject(CoreObject* object);
+		void unregisterObject(CoreObject* object);
 	private:
 		// Keeps a list of ALL loaded core GPU objects
 		UINT64 mNextAvailableID;
-		map<UINT64, CoreGpuObject*>::type mObjects;
+		map<UINT64, CoreObject*>::type mObjects;
 		CM_MUTEX(mObjectsMutex);
 	};
 }

@@ -218,7 +218,7 @@ namespace CamelotEngine {
 
 	TextureViewPtr Texture::createView()
 	{
-		TextureViewPtr viewPtr(new TextureView(), &CoreGpuObject::_deleteDelayed);
+		TextureViewPtr viewPtr(new TextureView(), &CoreObject::_deleteDelayed);
 		viewPtr->setThisPtr(viewPtr);
 
 		return viewPtr;

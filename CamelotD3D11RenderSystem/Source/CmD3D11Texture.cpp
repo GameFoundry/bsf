@@ -590,7 +590,7 @@ namespace CamelotEngine
 
 	TextureViewPtr D3D11Texture::createView()
 	{
-		TextureViewPtr viewPtr(new D3D11TextureView(), &CoreGpuObject::_deleteDelayed);
+		TextureViewPtr viewPtr(new D3D11TextureView(), &CoreObject::_deleteDelayed);
 		viewPtr->setThisPtr(viewPtr);
 
 		return viewPtr;

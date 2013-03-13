@@ -47,7 +47,7 @@ namespace CamelotEngine {
         PixelFormat format, int usage, bool hwGamma, 
 		UINT32 fsaa, const String& fsaaHint)
     {
-        TexturePtr ret = TexturePtr(createTextureImpl(), &CoreGpuObject::_deleteDelayed);
+        TexturePtr ret = TexturePtr(createTextureImpl(), &CoreObject::_deleteDelayed);
 		ret->setThisPtr(ret);
 		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, fsaa, fsaaHint);
 
@@ -56,7 +56,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	TexturePtr TextureManager::createEmpty()
 	{
-		TexturePtr texture = TexturePtr(createTextureImpl(), &CoreGpuObject::_deleteDelayed);
+		TexturePtr texture = TexturePtr(createTextureImpl(), &CoreObject::_deleteDelayed);
 		texture->setThisPtr(texture);
 
 		return texture;
@@ -92,7 +92,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	RenderTexturePtr TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
 	{
-		RenderTexturePtr newRT = RenderTexturePtr(createRenderTextureImpl(), &CoreGpuObject::_deleteDelayed);
+		RenderTexturePtr newRT = RenderTexturePtr(createRenderTextureImpl(), &CoreObject::_deleteDelayed);
 		newRT->setThisPtr(newRT);
 		newRT->initialize(desc);
 
@@ -101,7 +101,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	MultiRenderTexturePtr TextureManager::createEmptyMultiRenderTexture()
 	{
-		MultiRenderTexturePtr newRT = MultiRenderTexturePtr(createMultiRenderTextureImpl(), &CoreGpuObject::_deleteDelayed);
+		MultiRenderTexturePtr newRT = MultiRenderTexturePtr(createMultiRenderTextureImpl(), &CoreObject::_deleteDelayed);
 		newRT->setThisPtr(newRT);
 
 		return newRT;

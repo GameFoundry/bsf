@@ -5,7 +5,7 @@ namespace CamelotEngine
 {
 	FontPtr FontManager::create(const FONT_DESC& fontDesc, vector<TexturePtr>::type texturePages) const
 	{
-		FontPtr newFont(new Font(), &CoreGpuObject::_deleteDelayed);
+		FontPtr newFont(new Font(), &CoreObject::_deleteDelayed);
 		newFont->setThisPtr(newFont);
 		newFont->initialize(fontDesc, texturePages);
 
@@ -14,7 +14,7 @@ namespace CamelotEngine
 
 	FontPtr FontManager::createEmpty() const
 	{
-		FontPtr newFont(new Font(), &CoreGpuObject::_deleteDelayed);
+		FontPtr newFont(new Font(), &CoreObject::_deleteDelayed);
 		newFont->setThisPtr(newFont);
 
 		return newFont;

@@ -366,12 +366,6 @@
     <ClInclude Include="Include\CmGpuParamBlock.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmCoreGpuObject.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmCoreGpuObjectManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmMeshManager.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -413,6 +407,12 @@
     </ClInclude>
     <ClInclude Include="Include\CmFontManager.h">
       <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmCoreObject.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmCoreObjectManager.h">
+      <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -602,12 +602,6 @@
     <ClCompile Include="Source\CmGpuParamBlock.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmCoreGpuObject.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmCoreGpuObjectManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmMeshManager.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
@@ -634,6 +628,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmFontManager.cpp">
       <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCoreObject.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCoreObjectManager.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

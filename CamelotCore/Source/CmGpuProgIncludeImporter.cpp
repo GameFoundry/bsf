@@ -35,7 +35,6 @@ namespace CamelotEngine
 		String includeString = stream->getAsString();
 
 		GpuProgIncludeHandle gpuProgInclude = GpuProgInclude::create(includeString);
-		gpuProgInclude.waitUntilLoaded();
 
 		return gpuProgInclude;
 	}

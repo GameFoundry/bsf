@@ -3,11 +3,11 @@
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
 #include "CmGpuBufferView.h"
-#include "CmCoreGpuObject.h"
+#include "CmCoreObject.h"
 
 namespace CamelotEngine 
 {
-	class CM_EXPORT GpuBuffer : public CoreGpuObject
+	class CM_EXPORT GpuBuffer : public CoreObject
     {
     public:
         virtual ~GpuBuffer();

@@ -1,5 +1,5 @@
-#include "CmCoreGpuObjectManager.h"
-#include "CmCoreGpuObject.h"
+#include "CmCoreObjectManager.h"
+#include "CmCoreObject.h"
 #include "CmException.h"
 
 namespace CamelotEngine
@@ -25,7 +25,7 @@ namespace CamelotEngine
 		}
 	}
 
-	UINT64 CoreGpuObjectManager::registerObject(CoreGpuObject* object)
+	UINT64 CoreGpuObjectManager::registerObject(CoreObject* object)
 	{
 		assert(object != nullptr);
 
@@ -36,7 +36,7 @@ namespace CamelotEngine
 		return mNextAvailableID++;
 	}
 
-	void CoreGpuObjectManager::unregisterObject(CoreGpuObject* object)
+	void CoreGpuObjectManager::unregisterObject(CoreObject* object)
 	{
 		assert(object != nullptr);
 

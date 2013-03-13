@@ -2,17 +2,17 @@
 
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
-#include "CmCoreGpuObject.h"
+#include "CmCoreObject.h"
 
 namespace CamelotEngine
 {
 	/**
 	 * @brief	Base class for all resources used in the engine.
 	 */
-	class CM_EXPORT Resource : public IReflectable, public CoreGpuObject
+	class CM_EXPORT Resource : public IReflectable, public CoreObject
 	{
 	public:
-		Resource();
+		Resource(bool requiresGpuInitialization = true);
 		virtual ~Resource() {};
 
 		const String& getUUID() const { return mUUID; }

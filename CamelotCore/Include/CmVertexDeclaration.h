@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmColor.h"
-#include "CmCoreGpuObject.h"
+#include "CmCoreObject.h"
 
 namespace CamelotEngine
 {
@@ -242,7 +242,7 @@ namespace CamelotEngine
 	Like the other classes in this functional area, these declarations should be created and
 	destroyed using the HardwareBufferManager.
     */
-	class CM_EXPORT VertexDeclaration : public IReflectable, public CoreGpuObject
+	class CM_EXPORT VertexDeclaration : public IReflectable, public CoreObject
     {
     public:
 		/// Defines the list of vertex elements that makes up this declaration

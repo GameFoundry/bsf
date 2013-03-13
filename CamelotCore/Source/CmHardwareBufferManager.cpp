@@ -44,7 +44,7 @@ namespace CamelotEngine {
     //-----------------------------------------------------------------------
     VertexDeclarationPtr HardwareBufferManager::createVertexDeclaration(void)
     {
-        VertexDeclarationPtr decl = VertexDeclarationPtr(createVertexDeclarationImpl(), &CoreGpuObject::_deleteDelayed);
+        VertexDeclarationPtr decl = VertexDeclarationPtr(createVertexDeclarationImpl(), &CoreObject::_deleteDelayed);
 		decl->setThisPtr(decl);
 		decl->initialize();
         return decl;
@@ -54,7 +54,7 @@ namespace CamelotEngine {
 	{
 		assert (numVerts > 0);
 
-		VertexBufferPtr vbuf = VertexBufferPtr(createVertexBufferImpl(vertexSize, numVerts, usage, streamOut), &CoreGpuObject::_deleteDelayed);
+		VertexBufferPtr vbuf = VertexBufferPtr(createVertexBufferImpl(vertexSize, numVerts, usage, streamOut), &CoreObject::_deleteDelayed);
 		vbuf->setThisPtr(vbuf);
 		vbuf->initialize();
 		return vbuf;
@@ -64,7 +64,7 @@ namespace CamelotEngine {
 	{
 		assert (numIndexes > 0);
 
-		IndexBufferPtr ibuf = IndexBufferPtr(createIndexBufferImpl(itype, numIndexes, usage), &CoreGpuObject::_deleteDelayed);
+		IndexBufferPtr ibuf = IndexBufferPtr(createIndexBufferImpl(itype, numIndexes, usage), &CoreObject::_deleteDelayed);
 		ibuf->setThisPtr(ibuf);
 		ibuf->initialize();
 		return ibuf;
@@ -73,7 +73,7 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	GpuParamBlockPtr HardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
 	{
-		GpuParamBlockPtr paramBlockPtr(createGpuParamBlockImpl(), &CoreGpuObject::_deleteDelayed);
+		GpuParamBlockPtr paramBlockPtr(createGpuParamBlockImpl(), &CoreObject::_deleteDelayed);
 		paramBlockPtr->setThisPtr(paramBlockPtr);
 		paramBlockPtr->initialize(paramDesc, usage);
 
@@ -84,7 +84,7 @@ namespace CamelotEngine {
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
 		GpuBufferPtr gbuf = GpuBufferPtr(createGpuBufferImpl(elementCount, elementSize, type, 
-			usage, randomGpuWrite, useCounter), &CoreGpuObject::_deleteDelayed);
+			usage, randomGpuWrite, useCounter), &CoreObject::_deleteDelayed);
 		gbuf->setThisPtr(gbuf);
 		gbuf->initialize();
 		return gbuf;

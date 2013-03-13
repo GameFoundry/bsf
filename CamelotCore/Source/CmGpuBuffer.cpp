@@ -19,7 +19,7 @@ namespace CamelotEngine
 	{
 		clearBufferViews();
 
-		CoreGpuObject::destroy_internal();
+		CoreObject::destroy_internal();
 	}
 
 	void GpuBuffer::clearBufferViews()

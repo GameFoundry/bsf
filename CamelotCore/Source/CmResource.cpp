@@ -5,8 +5,8 @@
 
 namespace CamelotEngine
 {
-	Resource::Resource()
-		:mSize(0)
+	Resource::Resource(bool requiresGpuInitialization)
+		:CoreObject(requiresGpuInitialization), mSize(0)
 	{
 		// We always generate a random UUID, and then overwrite it with the actual one 
 		// during loading if one was previously generated and saved.

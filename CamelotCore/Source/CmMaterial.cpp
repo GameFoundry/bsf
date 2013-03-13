@@ -15,6 +15,7 @@
 namespace CamelotEngine
 {
 	Material::Material()
+		:Resource(false)
 	{
 
 	}

@@ -1,20 +1,21 @@
-#include "CmCoreGpuObject.h"
+#include "CmCoreObject.h"
 #include "CmRenderSystem.h"
-#include "CmCoreGpuObjectManager.h"
+#include "CmCoreObjectManager.h"
 #include "CmDebug.h"
 
 namespace CamelotEngine
 {
-	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mCoreGpuObjectLoadedCondition, CoreGpuObject)
-	CM_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreGpuObject)
+	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mCoreGpuObjectLoadedCondition, CoreObject)
+	CM_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreObject)
 
-	CoreGpuObject::CoreGpuObject()
+	CoreObject::CoreObject(bool requiresGpuInit)
 		: mFlags(0), mInternalID(0)
 	{
 		mInternalID = CoreGpuObjectManager::instance().registerObject(this);
+		mFlags = requiresGpuInit ? mFlags | CGO_REQUIRES_GPU_INIT : mFlags;
 	}
 
-	CoreGpuObject::~CoreGpuObject() 
+	CoreObject::~CoreObject() 
 	{
 		if(isInitialized())
 		{
@@ -34,14 +35,21 @@ namespace CamelotEngine
 		CoreGpuObjectManager::instance().unregisterObject(this);
 	}
 
-	void CoreGpuObject::destroy()
+	void CoreObject::destroy()
 	{
-		setScheduledToBeDeleted(true);
+		if(requiresGpuInitialization())
+		{
+			setScheduledToBeDeleted(true);
 
-		queueGpuCommand(mThis.lock(), boost::bind(&CoreGpuObject::destroy_internal, this));
+			queueGpuCommand(mThis.lock(), boost::bind(&CoreObject::destroy_internal, this));
+		}
+		else
+		{
+			destroy_internal();
+		}
 	}
 
-	void CoreGpuObject::destroy_internal()
+	void CoreObject::destroy_internal()
 	{
 #if CM_DEBUG_MODE
 		if(!isInitialized())
@@ -51,31 +59,45 @@ namespace CamelotEngine
 		setIsInitialized(false);
 	}
 
-	void CoreGpuObject::initialize()
+	void CoreObject::initialize()
 	{
 #if CM_DEBUG_MODE
 		if(isInitialized() || isScheduledToBeInitialized())
 			CM_EXCEPT(InternalErrorException, "Trying to initialize an object that is already initialized.");
 #endif
 
-		setScheduledToBeInitialized(true);
-
-		queueGpuCommand(mThis.lock(), boost::bind(&CoreGpuObject::initialize_internal, this));
-	}
-
-	void CoreGpuObject::initialize_internal()
-	{
+		if(requiresGpuInitialization())
 		{
-			CM_LOCK_MUTEX(mCoreGpuObjectLoadedMutex);
-			setIsInitialized(true);
-		}	
+			setScheduledToBeInitialized(true);
 
-		setScheduledToBeInitialized(false);
-
-		CM_THREAD_NOTIFY_ALL(mCoreGpuObjectLoadedCondition);
+			queueGpuCommand(mThis.lock(), boost::bind(&CoreObject::initialize_internal, this));
+		}
+		else
+		{
+			initialize_internal();
+		}
 	}
 
-	void CoreGpuObject::waitUntilInitialized()
+	void CoreObject::initialize_internal()
+	{
+		if(requiresGpuInitialization())
+		{
+			{
+				CM_LOCK_MUTEX(mCoreGpuObjectLoadedMutex);
+				setIsInitialized(true);
+			}	
+
+			setScheduledToBeInitialized(false);
+
+			CM_THREAD_NOTIFY_ALL(mCoreGpuObjectLoadedCondition);
+		}
+		else
+		{
+			setIsInitialized(true);
+		}
+	}
+
+	void CoreObject::waitUntilInitialized()
 	{
 #if CM_DEBUG_MODE
 		if(CM_THREAD_CURRENT_ID == RenderSystem::instancePtr()->getRenderThreadId())
@@ -84,23 +106,30 @@ namespace CamelotEngine
 
 		if(!isInitialized())
 		{
-			CM_LOCK_MUTEX_NAMED(mCoreGpuObjectLoadedMutex, lock);
-			while(!isInitialized())
+			if(requiresGpuInitialization())
 			{
-				if(!isScheduledToBeInitialized())
-					CM_EXCEPT(InternalErrorException, "Attempting to wait until initialization finishes but object is not scheduled to be initialized.");
+				CM_LOCK_MUTEX_NAMED(mCoreGpuObjectLoadedMutex, lock);
+				while(!isInitialized())
+				{
+					if(!isScheduledToBeInitialized())
+						CM_EXCEPT(InternalErrorException, "Attempting to wait until initialization finishes but object is not scheduled to be initialized.");
 
-				CM_THREAD_WAIT(mCoreGpuObjectLoadedCondition, mCoreGpuObjectLoadedMutex, lock);
+					CM_THREAD_WAIT(mCoreGpuObjectLoadedCondition, mCoreGpuObjectLoadedMutex, lock);
+				}
+			}
+			else
+			{
+				CM_EXCEPT(InternalErrorException, "Attempting to wait until initialization finishes but object is not scheduled to be initialized.");
 			}
 		}
 	}
 
-	void CoreGpuObject::setThisPtr(std::shared_ptr<CoreGpuObject> ptrThis)
+	void CoreObject::setThisPtr(std::shared_ptr<CoreObject> ptrThis)
 	{
 		mThis = ptrThis;
 	}
 
-	void CoreGpuObject::_deleteDelayed(CoreGpuObject* obj)
+	void CoreObject::_deleteDelayed(CoreObject* obj)
 	{
 		assert(obj != nullptr);
 
@@ -123,7 +152,7 @@ namespace CamelotEngine
 
 		if(obj->isInitialized())
 		{
-			std::shared_ptr<CoreGpuObject> thisPtr(obj);
+			std::shared_ptr<CoreObject> thisPtr(obj);
 			obj->setThisPtr(thisPtr);
 			obj->destroy();
 		}
@@ -133,31 +162,31 @@ namespace CamelotEngine
 		}
 	}
 
-	void CoreGpuObject::queueGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void()> func)
+	void CoreObject::queueGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func)
 	{
 		// We call another internal method and go through an additional layer of abstraction in order to keep an active
 		// reference to the obj (saved in the bound function).
 		// We could have called the function directly using "this" pointer but then we couldn't have used a shared_ptr for the object,
 		// in which case there is a possibility that the object would be released and deleted while still being in the command queue.
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&CoreGpuObject::executeGpuCommand, obj, func));
+		RenderSystem::instancePtr()->queueCommand(boost::bind(&CoreObject::executeGpuCommand, obj, func));
 	}
 
-	AsyncOp CoreGpuObject::queueReturnGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void(AsyncOp&)> func)
+	AsyncOp CoreObject::queueReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func)
 	{
 		// See queueGpuCommand
-		return RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&CoreGpuObject::executeReturnGpuCommand, obj, func, _1));
+		return RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&CoreObject::executeReturnGpuCommand, obj, func, _1));
 	}
 
-	void CoreGpuObject::executeGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void()> func)
+	void CoreObject::executeGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func)
 	{
-		volatile std::shared_ptr<CoreGpuObject> objParam = obj; // Makes sure obj isn't optimized out?
+		volatile std::shared_ptr<CoreObject> objParam = obj; // Makes sure obj isn't optimized out?
 
 		func();
 	}
 
-	void CoreGpuObject::executeReturnGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void(AsyncOp&)> func, AsyncOp& op)
+	void CoreObject::executeReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func, AsyncOp& op)
 	{
-		volatile std::shared_ptr<CoreGpuObject> objParam = obj; // Makes sure obj isn't optimized out?
+		volatile std::shared_ptr<CoreObject> objParam = obj; // Makes sure obj isn't optimized out?
 
 		func(op);
 	}

@@ -55,14 +55,14 @@ namespace CamelotEngine
 
 		mUsage = usage;
 
-		CoreGpuObject::initialize();
+		CoreObject::initialize();
 	}
 
 	void GpuParamBlock::initialize_internal()
 	{
 		mBuffer = createBuffer();
 
-		CoreGpuObject::initialize_internal();
+		CoreObject::initialize_internal();
 	}
 
 	void GpuParamBlock::destroy_internal()
@@ -70,7 +70,7 @@ namespace CamelotEngine
 		if(mBuffer != nullptr)
 			delete mBuffer;
 
-		CoreGpuObject::destroy_internal();
+		CoreObject::destroy_internal();
 	}
 
 	GpuParamBlockBuffer* GpuParamBlock::createBuffer() const

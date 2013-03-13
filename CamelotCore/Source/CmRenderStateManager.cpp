@@ -8,7 +8,7 @@ namespace CamelotEngine
 {
 	SamplerStatePtr RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc) const
 	{
-		SamplerStatePtr samplerState = SamplerStatePtr(createSamplerStateImpl(), &CoreGpuObject::_deleteDelayed);
+		SamplerStatePtr samplerState = SamplerStatePtr(createSamplerStateImpl(), &CoreObject::_deleteDelayed);
 		samplerState->setThisPtr(samplerState);
 		samplerState->initialize(desc);
 
@@ -17,7 +17,7 @@ namespace CamelotEngine
 
 	DepthStencilStatePtr RenderStateManager::createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const
 	{
-		DepthStencilStatePtr depthStencilState = DepthStencilStatePtr(createDepthStencilStateImpl(), &CoreGpuObject::_deleteDelayed);
+		DepthStencilStatePtr depthStencilState = DepthStencilStatePtr(createDepthStencilStateImpl(), &CoreObject::_deleteDelayed);
 		depthStencilState->setThisPtr(depthStencilState);
 		depthStencilState->initialize(desc);
 
@@ -26,7 +26,7 @@ namespace CamelotEngine
 
 	RasterizerStatePtr RenderStateManager::createRasterizerState(const RASTERIZER_STATE_DESC& desc) const
 	{
-		RasterizerStatePtr rasterizerState = RasterizerStatePtr(createRasterizerStateImpl(), &CoreGpuObject::_deleteDelayed);
+		RasterizerStatePtr rasterizerState = RasterizerStatePtr(createRasterizerStateImpl(), &CoreObject::_deleteDelayed);
 		rasterizerState->setThisPtr(rasterizerState);
 		rasterizerState->initialize(desc);
 
@@ -35,7 +35,7 @@ namespace CamelotEngine
 
 	BlendStatePtr RenderStateManager::createBlendState(const BLEND_STATE_DESC& desc) const
 	{
-		BlendStatePtr blendState = BlendStatePtr(createBlendStateImpl(), &CoreGpuObject::_deleteDelayed);
+		BlendStatePtr blendState = BlendStatePtr(createBlendStateImpl(), &CoreObject::_deleteDelayed);
 		blendState->setThisPtr(blendState);
 		blendState->initialize(desc);
 
@@ -44,7 +44,7 @@ namespace CamelotEngine
 
 	SamplerStatePtr RenderStateManager::createEmptySamplerState() const
 	{
-		SamplerStatePtr samplerState = SamplerStatePtr(createSamplerStateImpl(), &CoreGpuObject::_deleteDelayed);
+		SamplerStatePtr samplerState = SamplerStatePtr(createSamplerStateImpl(), &CoreObject::_deleteDelayed);
 		samplerState->setThisPtr(samplerState);
 
 		return samplerState;
@@ -52,7 +52,7 @@ namespace CamelotEngine
 
 	DepthStencilStatePtr RenderStateManager::createEmptyDepthStencilState() const
 	{
-		DepthStencilStatePtr depthStencilState = DepthStencilStatePtr(createDepthStencilStateImpl(), &CoreGpuObject::_deleteDelayed);
+		DepthStencilStatePtr depthStencilState = DepthStencilStatePtr(createDepthStencilStateImpl(), &CoreObject::_deleteDelayed);
 		depthStencilState->setThisPtr(depthStencilState);
 
 		return depthStencilState;
@@ -60,7 +60,7 @@ namespace CamelotEngine
 
 	RasterizerStatePtr RenderStateManager::createEmptyRasterizerState() const
 	{
-		RasterizerStatePtr rasterizerState = RasterizerStatePtr(createRasterizerStateImpl(), &CoreGpuObject::_deleteDelayed);
+		RasterizerStatePtr rasterizerState = RasterizerStatePtr(createRasterizerStateImpl(), &CoreObject::_deleteDelayed);
 		rasterizerState->setThisPtr(rasterizerState);
 
 		return rasterizerState;
@@ -68,7 +68,7 @@ namespace CamelotEngine
 
 	BlendStatePtr RenderStateManager::createEmptyBlendState() const
 	{
-		BlendStatePtr blendState = BlendStatePtr(createBlendStateImpl(), &CoreGpuObject::_deleteDelayed);
+		BlendStatePtr blendState = BlendStatePtr(createBlendStateImpl(), &CoreObject::_deleteDelayed);
 		blendState->setThisPtr(blendState);
 
 		return blendState;

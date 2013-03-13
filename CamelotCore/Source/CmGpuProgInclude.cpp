@@ -3,14 +3,14 @@
 namespace CamelotEngine
 {
 	GpuProgInclude::GpuProgInclude(const String& includeString)
-		:mString(includeString)
+		:Resource(false), mString(includeString)
 	{
 
 	}
 
 	GpuProgIncludeHandle GpuProgInclude::create(const String& includeString)
 	{
-		GpuProgIncludePtr gpuProgIncludePtr = GpuProgIncludePtr(new GpuProgInclude(includeString), &CoreGpuObject::_deleteDelayed);
+		GpuProgIncludePtr gpuProgIncludePtr = GpuProgIncludePtr(new GpuProgInclude(includeString), &CoreObject::_deleteDelayed);
 		gpuProgIncludePtr->setThisPtr(gpuProgIncludePtr);
 		gpuProgIncludePtr->initialize();
 

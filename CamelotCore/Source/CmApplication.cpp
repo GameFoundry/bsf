@@ -11,7 +11,7 @@
 #include "CmVector2.h"
 #include "CmHighLevelGpuProgram.h"
 #include "CmHighLevelGpuProgramManager.h"
-#include "CmCoreGpuObjectManager.h"
+#include "CmCoreObjectManager.h"
 #include "CmDynLib.h"
 #include "CmDynLibManager.h"
 #include "CmSceneManager.h"

@@ -14,19 +14,20 @@ namespace CamelotEngine
 	 * 			All core GPU objects are initialized on the render thread, and destroyed on the render thread,
 	 * 			so majority of these methods will just schedule object initialization/destruction.
 	 */
-	class CM_EXPORT CoreGpuObject
+	class CM_EXPORT CoreObject
 	{
 	protected:
 		enum Flags
 		{
 			CGO_INITIALIZED = 0x01,
-			CGO_SCHEDULED_FOR_INIT = 0x02,
-			CGO_SCHEDULED_FOR_DELETE = 0x04
+			CGO_REQUIRES_GPU_INIT = 0x02,
+			CGO_SCHEDULED_FOR_INIT = 0x04,
+			CGO_SCHEDULED_FOR_DELETE = 0x08
 		};
 
 	public:
-		CoreGpuObject();
-		virtual ~CoreGpuObject();
+		CoreObject(bool requiresGpuInit = true);
+		virtual ~CoreObject();
 
 		/**
 		 * @brief	Destroys all GPU resources of this object.
@@ -62,14 +63,14 @@ o		 *
 		 *
 		 * @note	Called automatically by the factory creation methods so user should not call this manually.
 		 */
-		void setThisPtr(std::shared_ptr<CoreGpuObject> ptrThis);
+		void setThisPtr(std::shared_ptr<CoreObject> ptrThis);
 
 		/**
 		 * @brief	Schedules the object to be destroyed, and then deleted.
 		 *
 		 * @note	You should never call this manually. It's meant for internal use only.
 		 */
-		static void _deleteDelayed(CoreGpuObject* obj);
+		static void _deleteDelayed(CoreObject* obj);
 
 	protected:
 		/**
@@ -91,7 +92,7 @@ o		 *
 		/**
 		 * @brief	Returns a shared_ptr version of "this" pointer.
 		 */
-		std::shared_ptr<CoreGpuObject> getThisPtr() const { return mThis.lock(); }
+		std::shared_ptr<CoreObject> getThisPtr() const { return mThis.lock(); }
 
 		/**
 		 * @brief	Queues a command to be executed on the render thread, without a return value.
@@ -100,7 +101,7 @@ o		 *
 		 * 			make sure the object is not deleted before the command executes. Can be null if the 
 		 * 			function is static or global.
 		 */
-		static void queueGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void()> func);
+		static void queueGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func);
 
 		/**
 		 * @brief	Queues a command to be executed on the render thread, with a return value in the form of AsyncOp.
@@ -111,7 +112,7 @@ o		 *
 		 * 			make sure the object is not deleted before the command executes. Can be null if the
 		 * 			function is static or global.
 		 */
-		static AsyncOp queueReturnGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void(AsyncOp&)> func);
+		static AsyncOp queueReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func);
 
 		/**
 		 * @brief	Returns an unique identifier for this object.
@@ -120,7 +121,8 @@ o		 *
 
 		bool isScheduledToBeInitialized() const { return (mFlags & CGO_SCHEDULED_FOR_INIT) != 0; }
 		bool isScheduledToBeDeleted() const { return (mFlags & CGO_SCHEDULED_FOR_DELETE) != 0; }
-		
+		bool requiresGpuInitialization() const { return (mFlags & CGO_REQUIRES_GPU_INIT) != 0; }
+
 		void setIsInitialized(bool initialized) { mFlags = initialized ? mFlags | CGO_INITIALIZED : mFlags & ~CGO_INITIALIZED; }
 		void setScheduledToBeInitialized(bool scheduled) { mFlags = scheduled ? mFlags | CGO_SCHEDULED_FOR_INIT : mFlags & ~CGO_SCHEDULED_FOR_INIT; }
 		void setScheduledToBeDeleted(bool scheduled) { mFlags = scheduled ? mFlags | CGO_SCHEDULED_FOR_DELETE : mFlags & ~CGO_SCHEDULED_FOR_DELETE; }
@@ -129,12 +131,12 @@ o		 *
 
 		UINT8 mFlags;
 		UINT64 mInternalID; // ID == 0 is not a valid ID
-		std::weak_ptr<CoreGpuObject> mThis;
+		std::weak_ptr<CoreObject> mThis;
 
 		CM_STATIC_THREAD_SYNCHRONISER(mCoreGpuObjectLoadedCondition)
 		CM_STATIC_MUTEX(mCoreGpuObjectLoadedMutex)
 
-		static void executeGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void()> func);
-		static void executeReturnGpuCommand(std::shared_ptr<CoreGpuObject>& obj, boost::function<void(AsyncOp&)> func, AsyncOp& op); 
+		static void executeGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func);
+		static void executeReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func, AsyncOp& op); 
 	};
 }

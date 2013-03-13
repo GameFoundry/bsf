@@ -31,7 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "CmCoreGpuObject.h"
+#include "CmCoreObject.h"
 
 namespace CamelotEngine 
 {
@@ -42,7 +42,7 @@ namespace CamelotEngine
 	*  @{
 	*/
 	/** Specialisation of HardwareBuffer for vertex index buffers, still abstract. */
-    class CM_EXPORT IndexBuffer : public HardwareBuffer, public CoreGpuObject
+    class CM_EXPORT IndexBuffer : public HardwareBuffer, public CoreObject
     {
 	public:
 		enum IndexType {

@@ -5,7 +5,7 @@ namespace CamelotEngine
 {
 	MaterialPtr MaterialManager::create() const
 	{
-		MaterialPtr newMat(new Material(), &CoreGpuObject::_deleteDelayed);
+		MaterialPtr newMat(new Material(), &CoreObject::_deleteDelayed);
 		newMat->setThisPtr(newMat);
 		newMat->initialize();
 

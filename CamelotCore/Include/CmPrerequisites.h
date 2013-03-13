@@ -144,7 +144,7 @@ namespace CamelotEngine {
 	struct GpuParamBlockDesc;
 	class GpuProgInclude;
 	class TextureView;
-	class CoreGpuObject;
+	class CoreObject;
 	class ImportOptions;
 	// Asset import
 	class SpecificImporter;

@@ -43,7 +43,7 @@ namespace CamelotEngine {
     //---------------------------------------------------------------------------
 	GpuProgramPtr GpuProgramManager::createProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
     {
-		GpuProgramPtr prg = GpuProgramPtr(create(source, entryPoint, language, gptype, profile), &CoreGpuObject::_deleteDelayed);
+		GpuProgramPtr prg = GpuProgramPtr(create(source, entryPoint, language, gptype, profile), &CoreObject::_deleteDelayed);
 		prg->setThisPtr(prg);
 
 		// TODO: Gpu programs get initialized by their parent HighLevelGpuProgram. I might handle that more intuitively later but

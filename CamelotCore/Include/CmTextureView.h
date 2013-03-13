@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmCoreGpuObject.h"
+#include "CmCoreObject.h"
 #include "CmCommonEnums.h"
 
 namespace CamelotEngine
@@ -15,7 +15,7 @@ namespace CamelotEngine
 		GpuViewUsage usage;
 	};
 
-	class CM_EXPORT TextureView : public CoreGpuObject
+	class CM_EXPORT TextureView : public CoreObject
 	{
 	public:
 		class HashFunction

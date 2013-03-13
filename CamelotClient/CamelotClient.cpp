@@ -195,8 +195,6 @@ int CALLBACK WinMain(
 	newPassDX11->setFragmentProgram(fragProgRef);
 
 	MaterialHandle testMaterial = Material::create();
-	testMaterial.waitUntilLoaded(); // TODO - Material doesn't do anything GPU specific, so technically it should be possible to initialize on the spot
-	// but is that a good idea?
 	testMaterial->setShader(testShader);
 
 	testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);

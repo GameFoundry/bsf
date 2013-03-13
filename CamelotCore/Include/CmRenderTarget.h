@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmString.h"
 #include "CmPixelUtil.h"
 #include "CmViewport.h"
-#include "CmCoreGpuObject.h"
+#include "CmCoreObject.h"
 
 /* Define the number of priority groups for the render system's render targets. */
 #ifndef CM_NUM_RENDERTARGET_GROUPS
@@ -69,7 +69,7 @@ namespace CamelotEngine
         @version
             1.0
      */
-    class CM_EXPORT RenderTarget : public CoreGpuObject
+    class CM_EXPORT RenderTarget : public CoreObject
     {
     public:
 		enum FrameBuffer

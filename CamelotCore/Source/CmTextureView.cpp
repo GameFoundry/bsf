@@ -34,6 +34,6 @@ namespace CamelotEngine
 		mOwnerTexture = texture;
 		mDesc = _desc;
 
-		CoreGpuObject::initialize();
+		CoreObject::initialize();
 	}
 }

@@ -36,7 +36,7 @@ namespace CamelotEngine
 
 	MeshPtr MeshManager::create()
 	{
-		MeshPtr mesh = MeshPtr(new Mesh(), &CoreGpuObject::_deleteDelayed);
+		MeshPtr mesh = MeshPtr(new Mesh(), &CoreObject::_deleteDelayed);
 		mesh->setThisPtr(mesh);
 		mesh->initialize();
 

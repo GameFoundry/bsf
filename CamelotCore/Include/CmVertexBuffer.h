@@ -31,7 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
-#include "CmCoreGpuObject.h"
+#include "CmCoreObject.h"
 #include "CmColor.h"
 
 namespace CamelotEngine 
@@ -43,7 +43,7 @@ namespace CamelotEngine
 	*  @{
 	*/
 	/** Specialisation of HardwareBuffer for a vertex buffer. */
-    class CM_EXPORT VertexBuffer : public HardwareBuffer, public CoreGpuObject
+    class CM_EXPORT VertexBuffer : public HardwareBuffer, public CoreObject
     {
 	public:
         ~VertexBuffer();
