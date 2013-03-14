@@ -475,7 +475,7 @@ namespace CamelotEngine
 		case D3DFMT_A4L4:
 			return PF_A4L4;
 		case D3DFMT_A8L8:
-			return PF_BYTE_LA;	// Assume little endian here
+			return PF_R8G8;	// Assume little endian here
 		case D3DFMT_R3G3B2:
 			return PF_R3G3B2;
 		case D3DFMT_A1R5G5B5:
@@ -535,9 +535,9 @@ namespace CamelotEngine
 		}
 	}
 	/****************************************************************************************/
-	D3DFORMAT D3D9Mappings::_getPF(PixelFormat ogrePF)
+	D3DFORMAT D3D9Mappings::_getPF(PixelFormat camelotPf)
 	{
-		switch(ogrePF)
+		switch(camelotPf)
 		{
 		case PF_L8:
 			return D3DFMT_L8;
@@ -547,7 +547,7 @@ namespace CamelotEngine
 			return D3DFMT_A8;
 		case PF_A4L4:
 			return D3DFMT_A4L4;
-		case PF_BYTE_LA:
+		case PF_R8G8:
 			return D3DFMT_A8L8; // Assume little endian here
 		case PF_R3G3B2:
 			return D3DFMT_R3G3B2;

@@ -1434,9 +1434,9 @@ namespace CamelotEngine {
                 ((UINT16*)dest)[2] = (UINT16)Bitwise::floatToFixed(b, 16);
                 ((UINT16*)dest)[3] = (UINT16)Bitwise::floatToFixed(a, 16);
 				break;
-			case PF_BYTE_LA:
+			case PF_R8G8:
 				((UINT8*)dest)[0] = (UINT8)Bitwise::floatToFixed(r, 8);
-                ((UINT8*)dest)[1] = (UINT8)Bitwise::floatToFixed(a, 8);
+                ((UINT8*)dest)[1] = (UINT8)Bitwise::floatToFixed(g, 8);
 				break;
             default:
                 // Not yet supported
@@ -1573,9 +1573,11 @@ namespace CamelotEngine {
 				*b = Bitwise::fixedToFloat(((UINT16*)src)[2], 16);
 				*a = Bitwise::fixedToFloat(((UINT16*)src)[3], 16);
 				break;
-			case PF_BYTE_LA:
-				*r = *g = *b = Bitwise::fixedToFloat(((UINT8*)src)[0], 8);
-				*a = Bitwise::fixedToFloat(((UINT8*)src)[1], 8);
+			case PF_R8G8:
+				*r = Bitwise::fixedToFloat(((UINT8*)src)[0], 8);
+				*g = Bitwise::fixedToFloat(((UINT8*)src)[1], 8);
+				*b = 0.0f;
+				*a = 1.0f;
 				break;
             default:
                 // Not yet supported
@@ -1765,7 +1767,7 @@ namespace CamelotEngine {
 		case FILTER_BILINEAR:
 			switch (src.format) 
 			{
-			case PF_L8: case PF_A8: case PF_BYTE_LA:
+			case PF_L8: case PF_A8: case PF_R8G8:
 			case PF_R8G8B8: case PF_B8G8R8:
 			case PF_R8G8B8A8: case PF_B8G8R8A8:
 			case PF_A8B8G8R8: case PF_A8R8G8B8:

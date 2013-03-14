@@ -72,7 +72,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
-    <OutDir>..\bin\$(Configuration)\</OutDir>
+    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\bin\$(Configuration)\</OutDir>
@@ -80,14 +80,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
-    <OutDir>..\bin\$(Configuration)\</OutDir>
+    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CM_FONT_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CM_FONT_EXPORTS;_WINDLL;USE_FREETYPE2_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -101,13 +101,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CM_FONT_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CM_FONT_EXPORTS;_WINDLL;USE_FREETYPE2_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug;./Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
       <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;freetypeD.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <ShowProgress>NotSet</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -117,7 +118,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CM_FONT_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CM_FONT_EXPORTS;_WINDLL;USE_FREETYPE2_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -135,7 +136,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CM_FONT_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CM_FONT_EXPORTS;_WINDLL;USE_FREETYPE2_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

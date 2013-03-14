@@ -24,6 +24,8 @@ CamelotFreeImgImporter (optional) relies on:
 CamelotFontImporter (optional) relies on:
  - Freetype 2.3.5
   - http://www.freetype.org
+  - IMPORTANT NOTE: When compiling as static library make sure to define "FREETYPE2_STATIC". It is not defined by default
+    in provided Visual Studio projects, which can cause a headache.
 
 Place plug-in specific dependency files in:
  - Library include files in (CamelotRootDir)/(PluginDir)/Dependencies/Include

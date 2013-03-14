@@ -9,11 +9,6 @@
 
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
-Figure out how to initialize material/font/etc without going to render thread
- - Rename CoreGpuObject to CoreObject
-  - initialize_internal->initializeGpuData
-  - destroy_internal->destroyGpuData
-  - add a bit-flag "requiresGpuInitialization"
 Figure out how to store texture references in a font?
  - Currently I store a copy of the textures but how do I automatically update the font if they change?
  - Flesh out the dependencies system?
@@ -23,11 +18,6 @@ Figure out how to store texture references in a font?
 	- Set up an "internalResource" system where resources hold references to each other and also release them?
 	 - In inspector they can be expanded as children of the main resource, but cannot be directly modified?
 	 - Deleting the main resource deletes the children too
-
-
- Can I make RTTIPlainType for vector?
- FontRTTI doesn't properly initialize or serialize FontDesc
- FontDEsc doesn't have RTTIPlainType defined
 
  Names: TextMesh & SpriteMesh instead of 2DText and 2DSprite!
 

@@ -43,8 +43,8 @@ namespace CamelotEngine  {
                 return GL_LUMINANCE;
             case PF_L16:
                 return GL_LUMINANCE;
-			case PF_BYTE_LA:
-				return GL_LUMINANCE_ALPHA;
+			case PF_R8G8:
+				return GL_RG;
 			case PF_R3G3B2:
 				return GL_RGB;
 			case PF_A1R5G5B5:
@@ -123,7 +123,7 @@ namespace CamelotEngine  {
             case PF_L8:
             case PF_R8G8B8:
             case PF_B8G8R8:
-			case PF_BYTE_LA:
+			case PF_R8G8:
                 return GL_UNSIGNED_BYTE;
 			case PF_R3G3B2:
 				return GL_UNSIGNED_BYTE_3_3_2;
@@ -218,8 +218,8 @@ namespace CamelotEngine  {
                 return GL_ALPHA8;
             case PF_A4L4:
                 return GL_LUMINANCE4_ALPHA4;
-			case PF_BYTE_LA:
-				return GL_LUMINANCE8_ALPHA8;
+			case PF_R8G8:
+				return GL_RG8;
 			case PF_R3G3B2:
 				return GL_R3_G3_B2;
 			case PF_A1R5G5B5:
@@ -340,9 +340,9 @@ namespace CamelotEngine  {
 			return PF_A8;
 		case GL_LUMINANCE4_ALPHA4:
 			// Unsupported by GL as input format, use the byte packed format
-			return PF_BYTE_LA;
-		case GL_LUMINANCE8_ALPHA8:
-			return PF_BYTE_LA;
+			return PF_R8G8;
+		case GL_RG8:
+			return PF_R8G8;
 		case GL_R3_G3_B2:
 			return PF_R3G3B2;
 		case GL_RGB5_A1:

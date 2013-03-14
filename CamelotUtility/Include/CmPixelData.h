@@ -22,8 +22,8 @@ namespace CamelotEngine
 		PF_BYTE_A = PF_A8,
         /// 8-bit pixel format, 4 bits alpha, 4 bits luminance.
         PF_A4L4 = 4,
-		/// 2 byte pixel format, 1 byte luminance, 1 byte alpha
-		PF_BYTE_LA = 5,
+		/// 2 byte pixel format, 1 byte red, 1 byte green
+		PF_R8G8 = 5,
         /// 16-bit pixel format, 5 bits red, 6 bits green, 5 bits blue.
         PF_R5G6B5 = 6,
 		/// 16-bit pixel format, 5 bits red, 6 bits green, 5 bits blue.

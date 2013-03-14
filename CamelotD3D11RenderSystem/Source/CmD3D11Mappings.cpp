@@ -634,8 +634,8 @@ namespace CamelotEngine
 			return DXGI_FORMAT_UNKNOWN;
 		case PF_A4L4:
 			return DXGI_FORMAT_UNKNOWN;
-		case PF_BYTE_LA:
-			return DXGI_FORMAT_UNKNOWN; 
+		case PF_R8G8:
+			return DXGI_FORMAT_R8G8_UNORM; 
 		case PF_R3G3B2:
 			return DXGI_FORMAT_UNKNOWN;
 		case PF_A1R5G5B5:

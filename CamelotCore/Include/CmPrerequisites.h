@@ -269,7 +269,8 @@ namespace CamelotEngine
 		TID_FONT_DESC = 1052,
 		TID_CHAR_DESC = 1053,
 		TID_STDVECTOR = 1054,
-		TID_STDMAP = 1055
+		TID_STDMAP = 1055,
+		TID_FontImportOptions = 1056
 	};
 
 	/**

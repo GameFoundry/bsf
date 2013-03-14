@@ -194,6 +194,8 @@
     <ClInclude Include="Include\CmDepthStencilState.h" />
     <ClInclude Include="Include\CmFont.h" />
     <ClInclude Include="Include\CmFontDesc.h" />
+    <ClInclude Include="Include\CmFontImportOptions.h" />
+    <ClInclude Include="Include\CmFontImportOptionsRTTI.h" />
     <ClInclude Include="Include\CmFontManager.h" />
     <ClInclude Include="Include\CmFontRTTI.h" />
     <ClInclude Include="Include\CmGpuBuffer.h" />
@@ -299,6 +301,7 @@
     <ClCompile Include="Source\CmDeferredRenderContext.cpp" />
     <ClCompile Include="Source\CmDepthStencilState.cpp" />
     <ClCompile Include="Source\CmFont.cpp" />
+    <ClCompile Include="Source\CmFontImportOptions.cpp" />
     <ClCompile Include="Source\CmFontManager.cpp" />
     <ClCompile Include="Source\CmGpuBuffer.cpp" />
     <ClCompile Include="Source\CmGpuBufferView.cpp" />
