@@ -33,6 +33,11 @@ namespace CamelotEngine
 
 		/** Inherited from SpecificImporter */
 		virtual BaseResourceHandle import(const String& filePath, ConstImportOptionsPtr importOptions);
+
+		/**
+		 * @copydoc SpecificImporter::createImportOptions().
+		 */
+		virtual ImportOptionsPtr createImportOptions() const;
 	private:
 		vector<String>::type mExtensions;
 	};

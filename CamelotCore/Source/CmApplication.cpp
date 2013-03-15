@@ -83,6 +83,7 @@ namespace CamelotEngine
 		Importer::startUp(new Importer());
 		loadPlugin("CamelotFreeImgImporter"); // TODO - Load this automatically somehow
 		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow
+		loadPlugin("CamelotFontImporter"); // TODO - Load this automatically somehow
 
 		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
 	}

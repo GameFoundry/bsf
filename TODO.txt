@@ -19,6 +19,9 @@ Figure out how to store texture references in a font?
 	 - In inspector they can be expanded as children of the main resource, but cannot be directly modified?
 	 - Deleting the main resource deletes the children too
 
+Add Debug.SaveToBMP(PixelData)
+Add TextureAtlas.Generate() -> accepts coords and returns new coords. Doesn't deal with actual textures
+
  Names: TextMesh & SpriteMesh instead of 2DText and 2DSprite!
 
 -----------------------IMMEDIATE TODO---------------------------------------------------------------
@@ -189,6 +192,7 @@ Low priority TODO:
   - Arrays of objects aren't supported in HLSL or GLSL because of limited GLSL introspection
     - I might need to add an exception thrown if user tries to use them
   - Structs aren't supported in GLSL for introspection reasons
+ - Go through pixel formats and removed unused ones: L8, L16, A4L4, and many others
 
 Optional TODO:
  - Add precompiled headers to all projects

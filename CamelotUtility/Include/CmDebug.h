@@ -18,6 +18,8 @@ namespace CamelotEngine
 
 		Log& getLog() { return mLog; }
 
+		void writeAsBMP(const PixelData& pixelData, const String& filePath, bool overwrite = true) const;
+
 	private:
 		Log mLog;
 	};

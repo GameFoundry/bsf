@@ -208,6 +208,8 @@ namespace CamelotEngine
     	{
     		setConsecutive();
     	}
+
+		PixelData(const PixelData& copy);
     	
         /// The data pointer 
         void *data;

@@ -3,6 +3,7 @@
 #include "CmPixelData.h"
 #include "CmTexture.h"
 #include "CmResources.h"
+#include "CmDebug.h"
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
@@ -34,6 +35,11 @@ namespace CamelotEngine
 	{
 		// TODO
 		return false;
+	}
+
+	ImportOptionsPtr FontImporter::createImportOptions() const
+	{
+		return ImportOptionsPtr(new FontImportOptions());
 	}
 
 	BaseResourceHandle FontImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
@@ -81,7 +87,12 @@ namespace CamelotEngine
 		INT32 maxHeight = 0;
 		for(UINT32 i = 33; i < 166; i++)
 		{
-			FT_Load_Char(face, i, FT_LOAD_RENDER);
+			error = FT_Load_Char(face, i, FT_LOAD_RENDER);
+
+			if(error)
+			{
+				CM_EXCEPT(InternalErrorException, "Failed to load a character");
+			}
 
 			FT_GlyphSlot slot = face->glyph;
 
@@ -95,7 +106,8 @@ namespace CamelotEngine
 		UINT32 texWidth = 1024;
 		UINT32 texHeight = 1024;
 
-		UINT8* pixelBuffer = new UINT8[texWidth * texHeight];
+		UINT8* pixelBuffer = new UINT8[texWidth * texHeight * 2];
+		memset(pixelBuffer, 0, texWidth * texHeight * 2);
 		PixelData pixelData(texWidth, texHeight, 1, PF_R8G8, pixelBuffer, true);
 
 		UINT32 curX = 0;
@@ -111,10 +123,15 @@ namespace CamelotEngine
 					CM_EXCEPT(InternalErrorException, "Texture to small to fit all glyphs.");
 			}
 
-			FT_Load_Char(face, i, FT_LOAD_RENDER);
+			error = FT_Load_Char(face, i, FT_LOAD_RENDER);
+			if(error)
+			{
+				CM_EXCEPT(InternalErrorException, "Failed to load a character");
+			}
+
 			FT_GlyphSlot slot = face->glyph;
 
-			if(slot->bitmap.buffer == nullptr)
+			if(slot->bitmap.buffer == nullptr && slot->bitmap.rows > 0 && slot->bitmap.width > 0)
 			{
 				CM_EXCEPT(InternalErrorException, "Failed to render glyph bitmap");
 			}
@@ -136,10 +153,13 @@ namespace CamelotEngine
 			curX += maxWidth;
 		}
 
-		TextureHandle newTex = Texture::create(TEX_TYPE_2D, texWidth, texHeight, 0, PF_R8G8);
-		newTex->setRawPixels(pixelData);
+		gDebug().writeAsBMP(pixelData, "C:\\FontTex.bmp");
 
-		Resources::instance().create(newTex, "C:\\FontTex.tex", true);
+		//TextureHandle newTex = Texture::create(TEX_TYPE_2D, texWidth, texHeight, 0, PF_R8G8);
+		//newTex->waitUntilInitialized();
+		//newTex->setRawPixels(pixelData);
+
+		//Resources::instance().create(newTex, "C:\\FontTex.tex", true);
 
 		/************************************************************************/
 		/* 								END DEBUG	                     		*/

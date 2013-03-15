@@ -160,6 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\CmBitmapWriter.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
     <ClCompile Include="Source\CmPixelData.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="Source\Win32\CmTimer.cpp" />
     <ClInclude Include="Include\CmAsyncOp.h" />
     <ClInclude Include="Include\CmBinarySerializer.h" />
+    <ClInclude Include="Include\CmBitmapWriter.h" />
     <ClInclude Include="Include\CmBitwise.h" />
     <ClInclude Include="Include\CmBox.h" />
     <ClInclude Include="Include\CmColor.h" />

@@ -60,6 +60,9 @@ int CALLBACK WinMain(
 	GameObjectPtr testModelGO = GameObject::create("TestMesh");
 	RenderablePtr testRenderable = testModelGO->addComponent<Renderable>();
 
+	// Debug test fonts
+	FontHandle font = Importer::instance().import("C:\\arial.ttf");
+
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
 	String dx9psLoc = "C:\\Projects\\CamelotEngine\\Data\\hlsl9_ps.gpuprog";

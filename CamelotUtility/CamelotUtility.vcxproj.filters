@@ -40,6 +40,12 @@
     <Filter Include="Header Files\RTTI">
       <UniqueIdentifier>{e58e84a8-5f39-4bbd-874e-cfa000ebd881}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Debug">
+      <UniqueIdentifier>{cdfa7307-cdee-490f-8d31-d8be0d929c70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Debug">
+      <UniqueIdentifier>{1f4518ad-c827-49dc-8e69-f99a37c82871}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmTypes.h">
@@ -210,6 +216,9 @@
     <ClInclude Include="Include\CmRTTIPrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmBitmapWriter.h">
+      <Filter>Header Files\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp">
@@ -304,6 +313,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmManagedDataBlock.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmBitmapWriter.cpp">
+      <Filter>Source Files\Debug</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

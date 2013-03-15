@@ -3,6 +3,16 @@
 
 namespace CamelotEngine
 {
+	PixelData::PixelData(const PixelData& copy)
+		:Box(copy), IReflectable(copy)
+	{
+		data = copy.data;
+		format = copy.format;
+		rowPitch = copy.rowPitch;
+		slicePitch = copy.slicePitch;
+		ownsData = false;
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/
