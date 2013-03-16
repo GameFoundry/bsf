@@ -6,6 +6,21 @@
 
 namespace CamelotEngine
 {
+	struct CM_EXPORT FontData : public IReflectable
+	{
+		UINT32 size;
+		FONT_DESC fontDesc;
+		vector<TexturePtr>::type texturePages;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class FontDataRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
+	};
+
 	// TODO - When saved on disk font currently stores a copy of the texture pages. This should be acceptable
 	// if you import a new TrueType or OpenType font since the texture will be generated on the spot
 	// but if you use a bitmap texture to initialize the font manually, then you will potentially have duplicate textures.
@@ -16,7 +31,7 @@ namespace CamelotEngine
 	public:
 		virtual ~Font();
 
-		void initialize(const FONT_DESC& fontDesc, vector<TexturePtr>::type texturePages);
+		void initialize(vector<FontData>::type& fontData);
 
 	protected:
 		friend class FontManager;
@@ -24,8 +39,7 @@ namespace CamelotEngine
 		Font();
 
 	private:
-		vector<TexturePtr>::type mTexturePages;
-		FONT_DESC mFontDesc;
+		map<UINT32, FontData>::type mFontDataPerSize;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -40,6 +54,6 @@ namespace CamelotEngine
 		/************************************************************************/
 		
 	public:
-		static FontHandle create(const FONT_DESC& fontDesc, vector<TexturePtr>::type texturePages);
+		static FontHandle create(vector<FontData>::type& fontInitData);
 	};
 }

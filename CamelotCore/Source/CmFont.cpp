@@ -4,28 +4,34 @@
 
 namespace CamelotEngine
 {
+	RTTITypeBase* FontData::getRTTIStatic()
+	{
+		return FontDataRTTI::instance();
+	}
+
+	RTTITypeBase* FontData::getRTTI() const
+	{
+		return FontData::getRTTIStatic();
+	}
+
 	Font::Font()
 		:Resource(false)
-	{
-
-	}
+	{ }
 
 	Font::~Font()
-	{
+	{ }
 
-	}
-
-	void Font::initialize(const FONT_DESC& fontDesc, vector<TexturePtr>::type texturePages)
+	void Font::initialize(vector<FontData>::type& fontData)
 	{
-		mFontDesc = fontDesc;
-		mTexturePages = texturePages;
+		for(auto iter = fontData.begin(); iter != fontData.end(); ++iter)
+			mFontDataPerSize[iter->size] = *iter;
 
 		Resource::initialize();
 	}
 
-	FontHandle Font::create(const FONT_DESC& fontDesc, vector<TexturePtr>::type texturePages)
+	FontHandle Font::create(vector<FontData>::type& fontData)
 	{
-		FontPtr newFont = FontManager::instance().create(fontDesc, texturePages);
+		FontPtr newFont = FontManager::instance().create(fontData);
 
 		return Resource::_createResourceHandle(newFont);
 	}

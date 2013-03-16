@@ -219,6 +219,9 @@
     <ClInclude Include="Include\CmBitmapWriter.h">
       <Filter>Header Files\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmTexAtlasGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp">
@@ -316,6 +319,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmBitmapWriter.cpp">
       <Filter>Source Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTexAtlasGenerator.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

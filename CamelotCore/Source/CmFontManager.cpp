@@ -3,11 +3,11 @@
 
 namespace CamelotEngine
 {
-	FontPtr FontManager::create(const FONT_DESC& fontDesc, vector<TexturePtr>::type texturePages) const
+	FontPtr FontManager::create(vector<FontData>::type& fontData) const
 	{
 		FontPtr newFont(new Font(), &CoreObject::_deleteDelayed);
 		newFont->setThisPtr(newFont);
-		newFont->initialize(fontDesc, texturePages);
+		newFont->initialize(fontData);
 
 		return newFont;
 	}

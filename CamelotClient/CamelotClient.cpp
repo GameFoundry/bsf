@@ -19,6 +19,7 @@
 #include "CmMesh.h"
 #include "CmGpuProgInclude.h" // DEBUG ONLY
 #include "CmGpuProgramImportOptions.h"
+#include "CmFontImportOptions.h"
 
 #include "CmDebugCamera.h"
 
@@ -61,7 +62,17 @@ int CALLBACK WinMain(
 	RenderablePtr testRenderable = testModelGO->addComponent<Renderable>();
 
 	// Debug test fonts
-	FontHandle font = Importer::instance().import("C:\\arial.ttf");
+	ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions("C:\\arial.ttf");
+	if(rtti_is_of_type<FontImportOptions>(fontImportOptions))
+	{
+		FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
+
+		vector<CamelotEngine::UINT32>::type fontSizes;
+		fontSizes.push_back(12);
+		importOptions->setFontSizes(fontSizes);
+	}
+
+	FontHandle font = Importer::instance().import("C:\\arial.ttf", fontImportOptions);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////

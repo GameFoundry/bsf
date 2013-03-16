@@ -40,5 +40,7 @@ namespace CamelotEngine
 		virtual ImportOptionsPtr createImportOptions() const;
 	private:
 		vector<String>::type mExtensions;
+
+		const static int MAXIMUM_TEXTURE_SIZE = 2048;
 	};
 }

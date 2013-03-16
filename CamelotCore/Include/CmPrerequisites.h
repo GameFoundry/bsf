@@ -146,6 +146,7 @@ namespace CamelotEngine {
 	class TextureView;
 	class CoreObject;
 	class ImportOptions;
+	struct FontData;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -270,7 +271,8 @@ namespace CamelotEngine
 		TID_CHAR_DESC = 1053,
 		TID_STDVECTOR = 1054,
 		TID_STDMAP = 1055,
-		TID_FontImportOptions = 1056
+		TID_FontImportOptions = 1056,
+		TID_FontData = 1057
 	};
 
 	/**

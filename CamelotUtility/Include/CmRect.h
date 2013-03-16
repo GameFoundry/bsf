@@ -13,6 +13,10 @@ namespace CamelotEngine
 	class Rect
 	{
 	public:
+		Rect()
+			:x(0), y(0), width(0), height(0)
+		{ }
+
 		Rect(int _x, int _y, int _width, int _height)
 			:x(_x), y(_y), width(_width), height(_height)
 		{ }

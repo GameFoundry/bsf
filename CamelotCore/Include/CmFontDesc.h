@@ -6,8 +6,7 @@ namespace CamelotEngine
 {
 	struct KerningPair
 	{
-		UINT32 leftCharId;
-		UINT32 rightCharId;
+		UINT32 otherCharId;
 		INT32 amount;
 	};
 
