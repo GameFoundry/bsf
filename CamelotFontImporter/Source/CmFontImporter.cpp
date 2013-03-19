@@ -101,9 +101,29 @@ namespace CamelotEngine
 				}
 			}
 
+			// Add missing glyph
+			{
+				error = FT_Load_Glyph(face, (FT_ULong)0, FT_LOAD_RENDER);
+
+				if(error)
+					CM_EXCEPT(InternalErrorException, "Failed to load a character");
+
+				FT_GlyphSlot slot = face->glyph;
+
+				TexAtlasElementDesc atlasElement;
+				atlasElement.input.width = slot->bitmap.width;
+				atlasElement.input.height = slot->bitmap.rows;
+
+				atlasElements.push_back(atlasElement);
+			}
+			
+
 			// Create an optimal layout for character bitmaps
 			TexAtlasGenerator texAtlasGen(false, MAXIMUM_TEXTURE_SIZE, MAXIMUM_TEXTURE_SIZE);
 			vector<TexAtlasPageDesc>::type pages = texAtlasGen.createAtlasLayout(atlasElements);
+
+			UINT32 baselineOffset = 0;
+			UINT32 lineHeight = 0;
 
 			// Create char bitmap atlas textures and load character information
 			UINT32 pageIdx = 0;
@@ -123,10 +143,20 @@ namespace CamelotEngine
 						continue;
 
 					TexAtlasElementDesc curElement = atlasElements[elementIdx];
+					bool isMissingGlypth = elementIdx == (atlasElements.size() - 1); // It's always the last element
 
-					UINT32 charIdx = seqIdxToCharIdx[(UINT32)elementIdx];
-					
-					error = FT_Load_Char(face, charIdx, FT_LOAD_RENDER);
+					UINT32 charIdx = 0;
+					if(!isMissingGlypth)
+					{
+						charIdx = seqIdxToCharIdx[(UINT32)elementIdx];
+
+						error = FT_Load_Char(face, charIdx, FT_LOAD_RENDER);
+					}
+					else
+					{
+						error = FT_Load_Glyph(face, 0, FT_LOAD_RENDER);
+					}
+
 					if(error)
 						CM_EXCEPT(InternalErrorException, "Failed to load a character");
 
@@ -168,40 +198,48 @@ namespace CamelotEngine
 					charDesc.xAdvance = slot->advance.x >> 6;
 					charDesc.yAdvance = slot->advance.y >> 6;
 
-					// Load kerning
-					FT_Vector resultKerning;
-					for(auto kerningIter = charIndexRanges.begin(); kerningIter != charIndexRanges.end(); ++kerningIter)
+					baselineOffset = std::max(baselineOffset, (UINT32)(slot->metrics.horiBearingY >> 6));
+					lineHeight = std::max(lineHeight, charDesc.height);
+
+					// Load kerning and store char
+					if(!isMissingGlypth)
 					{
-						for(UINT32 kerningCharIdx = kerningIter->first; kerningCharIdx <= kerningIter->second; kerningCharIdx++)
+						FT_Vector resultKerning;
+						for(auto kerningIter = charIndexRanges.begin(); kerningIter != charIndexRanges.end(); ++kerningIter)
 						{
-							if(kerningCharIdx == charIdx)
-								continue;
+							for(UINT32 kerningCharIdx = kerningIter->first; kerningCharIdx <= kerningIter->second; kerningCharIdx++)
+							{
+								if(kerningCharIdx == charIdx)
+									continue;
 
-							error = FT_Get_Kerning(face, charIdx, kerningCharIdx, FT_KERNING_DEFAULT, &resultKerning);
+								error = FT_Get_Kerning(face, charIdx, kerningCharIdx, FT_KERNING_DEFAULT, &resultKerning);
 
-							if(error)
-								CM_EXCEPT(InternalErrorException, "Failed to get kerning information for character: " + toString(charIdx));
+								if(error)
+									CM_EXCEPT(InternalErrorException, "Failed to get kerning information for character: " + toString(charIdx));
 
-							INT32 kerningX = (INT32)(resultKerning.x >> 6); // Y kerning is ignored because it is so rare
-							if(kerningX == 0) // We don't store 0 kerning, this is assumed default
-								continue;
+								INT32 kerningX = (INT32)(resultKerning.x >> 6); // Y kerning is ignored because it is so rare
+								if(kerningX == 0) // We don't store 0 kerning, this is assumed default
+									continue;
 
-							KerningPair pair;
-							pair.amount = kerningX;
-							pair.otherCharId = kerningCharIdx;
+								KerningPair pair;
+								pair.amount = kerningX;
+								pair.otherCharId = kerningCharIdx;
 
-							charDesc.kerningPairs.push_back(pair);
+								charDesc.kerningPairs.push_back(pair);
+							}
 						}
-					}
 
-					fontData.fontDesc.characters[charIdx] = charDesc;
+						fontData.fontDesc.characters[charIdx] = charDesc;
+					}
+					else
+					{
+						fontData.fontDesc.missingGlyph = charDesc;
+					}
 				}
 
 				TextureHandle newTex = Texture::create(TEX_TYPE_2D, pageIter->width, pageIter->height, 0, PF_R8G8);
 				newTex->waitUntilInitialized();
 				newTex->setRawPixels(pixelData);
-
-				gDebug().writeAsBMP(pixelData, "C:\\FontTex.bmp");
 
 				fontData.texturePages.push_back(newTex.getInternalPtr());
 
@@ -209,6 +247,17 @@ namespace CamelotEngine
 			}
 
 			fontData.size = fontSizes[i];
+			fontData.fontDesc.baselineOffset = baselineOffset;
+			fontData.fontDesc.lineHeight = lineHeight;
+
+			// Get space size
+			error = FT_Load_Char(face, 32, FT_LOAD_RENDER);
+
+			if(error)
+				CM_EXCEPT(InternalErrorException, "Failed to load a character");
+
+			fontData.fontDesc.spaceWidth = face->glyph->advance.x >> 6;
+
 			dataPerSize.push_back(fontData);
 		}
 

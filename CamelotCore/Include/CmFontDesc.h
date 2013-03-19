@@ -26,6 +26,10 @@ namespace CamelotEngine
 	struct FONT_DESC
 	{
 		map<UINT32, CHAR_DESC>::type characters;
+		UINT32 baselineOffset;
+		UINT32 lineHeight;
+		CHAR_DESC missingGlyph;
+		UINT32 spaceWidth;
 	};
 
 	// Make CHAR_DESC serializable
@@ -96,13 +100,6 @@ namespace CamelotEngine
 
 			dataSize += sizeof(UINT32);
 
-#if CM_DEBUG_MODE
-			if(dataSize > std::numeric_limits<UINT32>::max())
-			{
-				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
-			}
-#endif
-
 			return (UINT32)dataSize;
 		}	
 	}; 
@@ -120,6 +117,10 @@ namespace CamelotEngine
 			memory += sizeof(UINT32);
 			
 			RTTIPlainType<std::map<UINT32, CHAR_DESC>>::toMemory(data.characters, memory);
+			rttiWriteElem(data.baselineOffset, memory);
+			rttiWriteElem(data.lineHeight, memory);
+			rttiWriteElem(data.missingGlyph, memory);
+			rttiWriteElem(data.spaceWidth, memory);
 		}
 
 		static UINT32 fromMemory(FONT_DESC& data, char* memory)
@@ -129,6 +130,10 @@ namespace CamelotEngine
 			memory += sizeof(UINT32);
 
 			RTTIPlainType<std::map<UINT32, CHAR_DESC>>::fromMemory(data.characters, memory);
+			rttiReadElem(data.baselineOffset, memory);
+			rttiReadElem(data.lineHeight, memory);
+			rttiReadElem(data.missingGlyph, memory);
+			rttiReadElem(data.spaceWidth, memory);
 
 			return size;
 		}
@@ -137,14 +142,10 @@ namespace CamelotEngine
 		{ 
 			UINT64 dataSize = sizeof(UINT32);
 			dataSize += RTTIPlainType<std::map<UINT32, CHAR_DESC>>::getDynamicSize(data.characters);
-
-
-#if CM_DEBUG_MODE
-			if(dataSize > std::numeric_limits<UINT32>::max())
-			{
-				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
-			}
-#endif
+			dataSize += rttiGetElemSize(data.baselineOffset);
+			dataSize += rttiGetElemSize(data.lineHeight);
+			dataSize += rttiGetElemSize(data.missingGlyph);
+			dataSize += rttiGetElemSize(data.spaceWidth);
 
 			return (UINT32)dataSize;
 		}	

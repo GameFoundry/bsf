@@ -213,6 +213,7 @@
     <ClInclude Include="Include\CmGpuProgramRTTI.h" />
     <ClInclude Include="Include\CmHardwareBuffer.h" />
     <ClInclude Include="Include\CmHardwareBufferManager.h" />
+    <ClInclude Include="Include\CmImageSprite.h" />
     <ClInclude Include="Include\CmImportOptions.h" />
     <ClInclude Include="Include\CmImportOptionsRTTI.h" />
     <ClInclude Include="Include\CmIndexBuffer.h" />
@@ -221,7 +222,6 @@
     <ClInclude Include="Include\CmOcclusionQuery.h" />
     <ClInclude Include="Include\CmPixelBuffer.h" />
     <ClInclude Include="Include\CmGpuProgIncludeImporter.h" />
-    <ClInclude Include="Include\CmTextRenderer.h" />
     <ClInclude Include="Include\CmTextureView.h" />
     <ClInclude Include="Include\CmVertexBuffer.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgram.h" />
@@ -280,10 +280,12 @@
     <ClInclude Include="Include\CmComponent.h" />
     <ClInclude Include="Include\CmShader.h" />
     <ClInclude Include="Include\CmBlendState.h" />
+    <ClInclude Include="Include\CmSprite.h" />
     <ClInclude Include="Include\stdafx.h" />
     <ClInclude Include="Include\targetver.h" />
     <ClInclude Include="Include\CmVertexDeclarationRTTI.h" />
     <ClInclude Include="Include\CmTechnique.h" />
+    <ClInclude Include="Include\CmTextSprite.h" />
     <ClInclude Include="Include\Win32\CmOSCursorImpl.h" />
     <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
@@ -321,6 +323,8 @@
     <ClCompile Include="Source\CmOcclusionQuery.cpp" />
     <ClCompile Include="Source\CmPixelBuffer.cpp" />
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp" />
+    <ClCompile Include="Source\CmSprite.cpp" />
+    <ClCompile Include="Source\CmTextSprite.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
     <ClCompile Include="Source\CmVertexBuffer.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgram.cpp" />

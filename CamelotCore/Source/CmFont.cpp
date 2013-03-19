@@ -4,6 +4,17 @@
 
 namespace CamelotEngine
 {
+	const CHAR_DESC& FontData::getCharDesc(UINT32 charId) const
+	{
+		auto iterFind = fontDesc.characters.find(charId);
+		if(iterFind != fontDesc.characters.end())
+		{
+			return fontDesc.characters.at(charId);
+		}
+
+		return fontDesc.missingGlyph;
+	}
+
 	RTTITypeBase* FontData::getRTTIStatic()
 	{
 		return FontDataRTTI::instance();
@@ -27,6 +38,48 @@ namespace CamelotEngine
 			mFontDataPerSize[iter->size] = *iter;
 
 		Resource::initialize();
+	}
+
+	const FontData* Font::getFontDataForSize(UINT32 size) const
+	{
+		auto iterFind = mFontDataPerSize.find(size);
+
+		if(iterFind == mFontDataPerSize.end())
+			return nullptr;
+
+		return &iterFind->second;
+	}
+
+	INT32 Font::getClosestAvailableSize(UINT32 size) const
+	{
+		UINT32 minDiff = std::numeric_limits<UINT32>::max();
+		UINT32 bestSize = size;
+
+		for(auto iter = mFontDataPerSize.begin(); iter != mFontDataPerSize.end(); ++iter)
+		{
+			if(iter->first == size)
+				return size;
+			else if(iter->first > size)
+			{
+				UINT32 diff = iter->first - size;
+				if(diff < minDiff)
+				{
+					minDiff = diff;
+					bestSize = iter->first;
+				}
+			}
+			else
+			{
+				UINT32 diff = size - iter->first;
+				if(diff < minDiff)
+				{
+					minDiff = diff;
+					bestSize = iter->first;
+				}
+			}
+		}
+
+		return bestSize;
 	}
 
 	FontHandle Font::create(vector<FontData>::type& fontData)

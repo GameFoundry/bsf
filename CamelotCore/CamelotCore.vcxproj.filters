@@ -88,6 +88,12 @@
     <Filter Include="Source Files\Text">
       <UniqueIdentifier>{96b913ee-4ffb-4c60-9aa9-a51e0faf8060}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\2D">
+      <UniqueIdentifier>{2d09c863-07a9-4226-a55d-6c5c03d70ac8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\2D">
+      <UniqueIdentifier>{500c1648-85c9-4410-86e3-c16d102b4347}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmConfigOptionMap.h">
@@ -399,9 +405,6 @@
     <ClInclude Include="Include\CmFontDesc.h">
       <Filter>Header Files\Text</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmTextRenderer.h">
-      <Filter>Header Files\Text</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmFontRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -419,6 +422,15 @@
     </ClInclude>
     <ClInclude Include="Include\CmFontImportOptionsRTTI.h">
       <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmSprite.h">
+      <Filter>Header Files\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTextSprite.h">
+      <Filter>Header Files\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmImageSprite.h">
+      <Filter>Header Files\2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -643,6 +655,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmFontImportOptions.cpp">
       <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmSprite.cpp">
+      <Filter>Source Files\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTextSprite.cpp">
+      <Filter>Source Files\2D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

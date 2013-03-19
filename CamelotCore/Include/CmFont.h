@@ -12,6 +12,8 @@ namespace CamelotEngine
 		FONT_DESC fontDesc;
 		vector<TexturePtr>::type texturePages;
 
+		const CHAR_DESC& getCharDesc(UINT32 charId) const;
+
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
@@ -32,6 +34,9 @@ namespace CamelotEngine
 		virtual ~Font();
 
 		void initialize(vector<FontData>::type& fontData);
+
+		const FontData* getFontDataForSize(UINT32 size) const;
+		INT32 getClosestAvailableSize(UINT32 size) const;
 
 	protected:
 		friend class FontManager;
