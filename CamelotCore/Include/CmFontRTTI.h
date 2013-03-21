@@ -31,12 +31,12 @@ namespace CamelotEngine
 			obj->fontDesc = val;
 		}
 
-		TexturePtr getTexture(FontData* obj, UINT32 idx)
+		TextureHandle& getTexture(FontData* obj, UINT32 idx)
 		{
 			return obj->texturePages.at(idx);
 		}
 
-		void setTexture(FontData* obj, UINT32 idx, TexturePtr value)
+		void setTexture(FontData* obj, UINT32 idx, TextureHandle& value)
 		{
 			obj->texturePages[idx] = value;
 		}
@@ -56,7 +56,7 @@ namespace CamelotEngine
 		{
 			addPlainField("size", 0, &FontDataRTTI::getSize, &FontDataRTTI::setSize);
 			addPlainField("fontDesc", 1, &FontDataRTTI::getFontDesc, &FontDataRTTI::setFontDesc);
-			addReflectablePtrArrayField("texturePages", 2, &FontDataRTTI::getTexture, &FontDataRTTI::getTextureArraySize, &FontDataRTTI::setTexture, &FontDataRTTI::setTextureArraySize);
+			addReflectableArrayField("texturePages", 2, &FontDataRTTI::getTexture, &FontDataRTTI::getTextureArraySize, &FontDataRTTI::setTexture, &FontDataRTTI::setTextureArraySize);
 		}
 
 		virtual const String& getRTTIName()

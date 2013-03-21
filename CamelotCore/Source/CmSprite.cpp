@@ -17,6 +17,12 @@ namespace CamelotEngine
 
 	UINT32 Sprite::fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads)
 	{
+		if(mIsDirty)
+		{
+			updateMesh();
+			mIsDirty = false;
+		}
+
 		UINT32 startVert = startingQuad * 4;
 		UINT32 startIndex = startingQuad * 4;
 
@@ -26,12 +32,23 @@ namespace CamelotEngine
 		UINT32 mNumVertices = mNumMeshQuads * 4;
 		UINT32 mNumIndices = mNumMeshQuads * 6;
 
-		assert((startVert + mNumVertices) < maxVertIdx);
-		assert((startIndex + mNumIndices) < maxIndexIdx);
+		assert((startVert + mNumVertices) <= maxVertIdx);
+		assert((startIndex + mNumIndices) <= maxIndexIdx);
 
 		memcpy(&vertices[startVert], mVertices, mNumVertices * sizeof(Vector2));
 		memcpy(&uv[startVert], mUVs, mNumVertices * sizeof(Vector2));
-		memcpy(&indices[startIndex], mIndexes, mNumVertices * sizeof(UINT32));
+		memcpy(&indices[startIndex], mIndexes, mNumIndices * sizeof(UINT32));
+
+		return mNumMeshQuads;
+	}
+
+	UINT32 Sprite::getNumFaces()
+	{
+		if(mIsDirty)
+		{
+			updateMesh();
+			mIsDirty = false;
+		}
 
 		return mNumMeshQuads;
 	}

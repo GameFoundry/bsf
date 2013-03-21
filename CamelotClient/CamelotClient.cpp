@@ -22,12 +22,76 @@
 #include "CmFontImportOptions.h"
 
 #include "CmDebugCamera.h"
+#include "CmTestTextSprite.h"
 
 #define DX11
 //#define DX9
 //#define GL
 
 using namespace CamelotEngine;
+
+MaterialHandle createTextMaterial()
+{
+	#if defined DX9
+	// TODO
+	#elif defined DX11
+	String textShader_dx11psLoc = "C:\\Projects\\CamelotEngine\\Data\\textShader_hlsl11_ps.gpuprog";
+	String textShader_dx11vsLoc = "C:\\Projects\\CamelotEngine\\Data\\textShader_hlsl11_vs.gpuprog";
+
+	ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(textShader_dx11psLoc);
+	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+	{
+		GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
+
+		importOptions->setEntryPoint("ps_main");
+		importOptions->setLanguage("hlsl");
+		importOptions->setProfile(GPP_PS_4_0);
+		importOptions->setType(GPT_FRAGMENT_PROGRAM);
+	}
+
+	HighLevelGpuProgramHandle textShaderFragProgRef = Importer::instance().import(textShader_dx11psLoc, gpuProgImportOptions);
+
+	gpuProgImportOptions = Importer::instance().createImportOptions(textShader_dx11vsLoc);
+	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+	{
+		GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
+
+		importOptions->setEntryPoint("vs_main");
+		importOptions->setLanguage("hlsl");
+		importOptions->setProfile(GPP_VS_4_0);
+		importOptions->setType(GPT_VERTEX_PROGRAM);
+	}
+
+	HighLevelGpuProgramHandle textShaderVertProgRef = Importer::instance().import(textShader_dx11vsLoc, gpuProgImportOptions);
+
+	#else
+	// TODO
+#endif
+
+	ShaderPtr textShader = Shader::create("TextShader");
+
+	textShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
+	textShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
+	//TechniquePtr newTechniqueGL = textShader->addTechnique("GLRenderSystem", "ForwardRenderer");
+	//PassPtr newPassGL = newTechniqueGL->addPass();
+	//newPassGL->setVertexProgram(textShaderVertProgRef);
+	//newPassGL->setFragmentProgram(textShaderFragProgRef);
+
+	//TechniquePtr newTechniqueDX = textShader->addTechnique("D3D9RenderSystem", "ForwardRenderer");
+	//PassPtr newPassDX = newTechniqueDX->addPass();
+	//newPassDX->setVertexProgram(textShaderVertProgRef);
+	//newPassDX->setFragmentProgram(textShaderFragProgRef);
+
+	TechniquePtr newTechniqueDX11 = textShader->addTechnique("D3D11RenderSystem", "ForwardRenderer");
+	PassPtr newPassDX11 = newTechniqueDX11->addPass();
+	newPassDX11->setVertexProgram(textShaderVertProgRef);
+	newPassDX11->setFragmentProgram(textShaderFragProgRef);
+
+	MaterialHandle textMaterial = Material::create();
+	textMaterial->setShader(textShader);
+
+	return textMaterial;
+}
 
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
@@ -61,6 +125,9 @@ int CALLBACK WinMain(
 	GameObjectPtr testModelGO = GameObject::create("TestMesh");
 	RenderablePtr testRenderable = testModelGO->addComponent<Renderable>();
 
+	GameObjectPtr testTextGO = GameObject::create("TestText");
+	std::shared_ptr<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
+
 	// Debug test fonts
 	ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions("C:\\arial.ttf");
 	if(rtti_is_of_type<FontImportOptions>(fontImportOptions))
@@ -73,6 +140,10 @@ int CALLBACK WinMain(
 	}
 
 	FontHandle font = Importer::instance().import("C:\\arial.ttf", fontImportOptions);
+
+	MaterialHandle textMaterial = createTextMaterial();
+
+	textSprite->setText("TESTfAV", font, 12, textMaterial);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////

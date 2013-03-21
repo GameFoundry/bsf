@@ -18,6 +18,7 @@ namespace CamelotEngine
 	class CM_EXPORT TextSprite : public Sprite
 	{
 	public:
+		TextSprite();
 		TextSprite(const String& text, FontPtr font, UINT32 fontSize);
 
 		void setText(const String& text) { mText = text; setDirty(); }

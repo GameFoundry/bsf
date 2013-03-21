@@ -93,6 +93,8 @@ namespace CamelotEngine
 				mLastWord = newWord;
 
 				mWords.push_back(mLastWord);
+
+				mLastWord->addChar(charDesc);
 			}
 			else
 			{
@@ -182,20 +184,20 @@ namespace CamelotEngine
 
 						vertices[curVert + 0] = Vector2((float)curX, (float)curY);
 						vertices[curVert + 1] = Vector2((float)(curX + charIter->width), (float)curY);
-						vertices[curVert + 2] = Vector2((float)curX, (float)(curY + charIter->height));
-						vertices[curVert + 3] = Vector2((float)(curX + charIter->width), (float)(curY + charIter->height));
+						vertices[curVert + 2] = Vector2((float)curX, (float)curY - (float)charIter->height);
+						vertices[curVert + 3] = Vector2((float)(curX + charIter->width), (float)curY - (float)charIter->height);
 
 						uv[curVert + 0] = Vector2(charIter->uvX, charIter->uvY);
 						uv[curVert + 1] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY);
 						uv[curVert + 2] = Vector2(charIter->uvX, charIter->uvY + charIter->uvHeight);
 						uv[curVert + 3] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY + charIter->uvHeight);
 
-						indices[curIndex + 0] = 0;
-						indices[curIndex + 1] = 2;
-						indices[curIndex + 2] = 1;
-						indices[curIndex + 3] = 1;
-						indices[curIndex + 4] = 2;
-						indices[curIndex + 5] = 3;
+						indices[curIndex + 0] = curVert + 0;
+						indices[curIndex + 1] = curVert + 1;
+						indices[curIndex + 2] = curVert + 2;
+						indices[curIndex + 3] = curVert + 1;
+						indices[curIndex + 4] = curVert + 3;
+						indices[curIndex + 5] = curVert + 2;
 
 						penX += charIter->xAdvance + kerning;
 						curVert += 4;
@@ -236,6 +238,12 @@ namespace CamelotEngine
 		}
 	};
 
+	TextSprite::TextSprite()
+		:mFontSize(0), mWordWrap(false), mHorzAlign(THA_Left), mVertAlign(TVA_Top)
+	{
+
+	}
+
 	TextSprite::TextSprite(const String& text, FontPtr font, UINT32 fontSize)
 		:mText(text), mFont(font), mFontSize(fontSize), mWordWrap(false), mHorzAlign(THA_Left), mVertAlign(TVA_Top)
 	{
@@ -257,6 +265,7 @@ namespace CamelotEngine
 		}
 
 		bool heightIsLimited = mHeight > 0;
+		bool widthIsLimited = mWidth > 0;
 
 		TextLine* curLine = new TextLine();
 		vector<TextLine*>::type textLines;
@@ -291,7 +300,7 @@ namespace CamelotEngine
 			if(charDesc.charId != SPACE_CHAR)
 				mNumMeshQuads++;
 
-			if(curLine->getWidth() > mWidth)
+			if(widthIsLimited && curLine->getWidth() > mWidth)
 			{
 				if(mWordWrap)
 				{

@@ -167,12 +167,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CmDebugCamera.h" />
+    <ClInclude Include="CmTestTextSprite.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CamelotClient.cpp" />
     <ClCompile Include="CmDebugCamera.cpp" />
+    <ClCompile Include="CmTestTextSprite.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

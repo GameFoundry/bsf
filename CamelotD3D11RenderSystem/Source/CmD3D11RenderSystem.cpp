@@ -511,6 +511,11 @@ namespace CamelotEngine
 		applyInputLayout();
 
 		mDevice->getImmediateContext()->Draw(vertexCount, 0);
+
+#if CM_DEBUG_MODE
+		if(mDevice->hasError())
+			LOGWRN(mDevice->getErrorDescription());
+#endif
 	}
 
 	void D3D11RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
@@ -520,6 +525,11 @@ namespace CamelotEngine
 		applyInputLayout();
 
 		mDevice->getImmediateContext()->DrawIndexed(indexCount, startIndex, 0);
+
+#if CM_DEBUG_MODE
+		if(mDevice->hasError())
+			LOGWRN(mDevice->getErrorDescription());
+#endif
 	}
 
 	void D3D11RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)

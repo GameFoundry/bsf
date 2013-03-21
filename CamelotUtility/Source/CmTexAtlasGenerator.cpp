@@ -124,7 +124,7 @@ namespace CamelotEngine
 
 		UINT32 lastPageWidth = mMaxTexWidth;
 		UINT32 lastPageHeight = mMaxTexHeight;
-		UINT32 lastPageIdx = numPages - 1;
+		INT32 lastPageIdx = numPages - 1;
 
 		// If size isn't fixed, try to reduce the size of the last page
 		if(!mFixedSize)
@@ -155,7 +155,7 @@ namespace CamelotEngine
 				// Clear page indexes so we know which pages to process
 				for(size_t i = 0; i < elements.size(); i++)
 				{
-					if(elements[i].output.page == lastPageIdx)
+					if(elements[i].output.page >= lastPageIdx)
 						elements[i].output.page = -1;
 				}
 
@@ -165,7 +165,28 @@ namespace CamelotEngine
 					lastPageHeight = newLastPageHeight;
 				}
 				else
+				{
+					// We're done but we need to re-do all the pages with the last valid size
+					for(size_t i = 0; i < elements.size(); i++)
+					{
+						if(elements[i].output.page >= lastPageIdx)
+							elements[i].output.page = -1;
+					}
+
+					generatePagesForSize(elements, lastPageWidth, lastPageHeight, lastPageIdx);
+
 					break;
+				}
+			}
+		}
+
+		// Handle degenerate case
+		for(size_t i = 0; i < elements.size(); i++)
+		{
+			if(elements[i].output.page == -1 && elements[i].input.width == 0 && elements[i].input.height == 0)
+			{
+				elements[i].output.x = 0;
+				elements[i].output.y = 0;
 			}
 		}
 

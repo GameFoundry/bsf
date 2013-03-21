@@ -26,7 +26,7 @@ namespace CamelotEngine
 	struct FONT_DESC
 	{
 		map<UINT32, CHAR_DESC>::type characters;
-		UINT32 baselineOffset;
+		INT32 baselineOffset;
 		UINT32 lineHeight;
 		CHAR_DESC missingGlyph;
 		UINT32 spaceWidth;

@@ -62,7 +62,7 @@ namespace CamelotEngine
 			mIndexData->indexCount, 
 			GBU_STATIC);
 
-		UINT32* idxData = static_cast<UINT32*>(mIndexData->indexBuffer->lock(GBL_READ_WRITE));
+		UINT32* idxData = static_cast<UINT32*>(mIndexData->indexBuffer->lock(GBL_WRITE_ONLY_DISCARD));
 
 		for(UINT32 i = 0; i < mIndexData->indexCount; i++)
 		{
@@ -89,7 +89,7 @@ namespace CamelotEngine
 			mVertexData->setBuffer(streamIdx, vertexBuffer);
 
 			UINT32 vertexSize = vertexBuffer->getVertexSize();
-			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_WRITE));
+			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_WRITE_ONLY_DISCARD));
 
 			UINT32 numElements = mVertexData->vertexDeclaration->getElementCount();
 

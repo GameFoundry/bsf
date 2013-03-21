@@ -10,7 +10,7 @@ namespace CamelotEngine
 	{
 		UINT32 size;
 		FONT_DESC fontDesc;
-		vector<TexturePtr>::type texturePages;
+		vector<TextureHandle>::type texturePages;
 
 		const CHAR_DESC& getCharDesc(UINT32 charId) const;
 

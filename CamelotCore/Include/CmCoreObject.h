@@ -129,7 +129,7 @@ o		 *
 	private:
 		friend class CoreGpuObjectManager;
 
-		UINT8 mFlags;
+		volatile UINT8 mFlags;
 		UINT64 mInternalID; // ID == 0 is not a valid ID
 		std::weak_ptr<CoreObject> mThis;
 

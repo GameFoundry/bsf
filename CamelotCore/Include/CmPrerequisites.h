@@ -147,6 +147,7 @@ namespace CamelotEngine {
 	class CoreObject;
 	class ImportOptions;
 	struct FontData;
+	class TextSprite;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -217,6 +218,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<ImportOptions> ImportOptionsPtr;
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
+	typedef std::shared_ptr<TextSprite> TextSpritePtr;
 }
 
 /************************************************************************/

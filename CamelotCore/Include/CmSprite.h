@@ -37,6 +37,7 @@ namespace CamelotEngine
 		SpriteAnchor getAnchor() const { return mAnchor; }
 
 		UINT32 fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads);
+		UINT32 getNumFaces();
 
 	protected:
 		Point mOffset;

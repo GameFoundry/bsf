@@ -122,7 +122,7 @@ namespace CamelotEngine
 			TexAtlasGenerator texAtlasGen(false, MAXIMUM_TEXTURE_SIZE, MAXIMUM_TEXTURE_SIZE);
 			vector<TexAtlasPageDesc>::type pages = texAtlasGen.createAtlasLayout(atlasElements);
 
-			UINT32 baselineOffset = 0;
+			INT32 baselineOffset = 0;
 			UINT32 lineHeight = 0;
 
 			// Create char bitmap atlas textures and load character information
@@ -198,7 +198,7 @@ namespace CamelotEngine
 					charDesc.xAdvance = slot->advance.x >> 6;
 					charDesc.yAdvance = slot->advance.y >> 6;
 
-					baselineOffset = std::max(baselineOffset, (UINT32)(slot->metrics.horiBearingY >> 6));
+					baselineOffset = std::max(baselineOffset, (INT32)(slot->metrics.horiBearingY >> 6));
 					lineHeight = std::max(lineHeight, charDesc.height);
 
 					// Load kerning and store char
@@ -238,10 +238,10 @@ namespace CamelotEngine
 				}
 
 				TextureHandle newTex = Texture::create(TEX_TYPE_2D, pageIter->width, pageIter->height, 0, PF_R8G8);
-				newTex->waitUntilInitialized();
+				newTex.waitUntilLoaded();
 				newTex->setRawPixels(pixelData);
 
-				fontData.texturePages.push_back(newTex.getInternalPtr());
+				fontData.texturePages.push_back(newTex);
 
 				pageIdx++;
 			}
