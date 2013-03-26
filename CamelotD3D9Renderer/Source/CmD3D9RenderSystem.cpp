@@ -584,7 +584,7 @@ namespace CamelotEngine
 		}
 		else
 		{
-			setSceneBlending(SBF_ONE, SBF_ZERO, SBO_ADD);
+			setSceneBlending(BF_ONE, BF_ZERO, BO_ADD);
 		}
 
 		// Color write mask
@@ -672,12 +672,12 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set texture border colour");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
+	void D3D9RenderSystem::setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op )
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		HRESULT hr;
-		if( sourceFactor == SBF_ONE && destFactor == SBF_ZERO)
+		if( sourceFactor == BF_ONE && destFactor == BF_ZERO)
 		{
 			if (FAILED(hr = __SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE)))
 				CM_EXCEPT(RenderingAPIException, "Failed to set alpha blending option");
@@ -700,14 +700,14 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to set scene blending operation option");
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
-		SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp )
+	void D3D9RenderSystem::setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
+		BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp )
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		HRESULT hr;
-		if( sourceFactor == SBF_ONE && destFactor == SBF_ZERO && 
-			sourceFactorAlpha == SBF_ONE && destFactorAlpha == SBF_ZERO)
+		if( sourceFactor == BF_ONE && destFactor == BF_ZERO && 
+			sourceFactorAlpha == BF_ONE && destFactorAlpha == BF_ZERO)
 		{
 			if (FAILED(hr = __SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE)))
 				CM_EXCEPT(RenderingAPIException, "Failed to set alpha blending option");

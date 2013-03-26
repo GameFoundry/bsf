@@ -20,47 +20,47 @@ namespace CamelotEngine
 		return D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
 	}
 
-	D3D11_BLEND D3D11Mappings::get(SceneBlendFactor sbf)
+	D3D11_BLEND D3D11Mappings::get(BlendFactor sbf)
 	{
 		switch( sbf )
 		{
-		case SBF_ONE:
+		case BF_ONE:
 			return D3D11_BLEND_ONE;
-		case SBF_ZERO:
+		case BF_ZERO:
 			return D3D11_BLEND_ZERO;
-		case SBF_DEST_COLOUR:
+		case BF_DEST_COLOR:
 			return D3D11_BLEND_DEST_COLOR;
-		case SBF_SOURCE_COLOUR:
+		case BF_SOURCE_COLOR:
 			return D3D11_BLEND_SRC_COLOR;
-		case SBF_ONE_MINUS_DEST_COLOUR:
+		case BF_INV_DEST_COLOR:
 			return D3D11_BLEND_INV_DEST_COLOR;
-		case SBF_ONE_MINUS_SOURCE_COLOUR:
+		case BF_INV_SOURCE_COLOR:
 			return D3D11_BLEND_INV_SRC_COLOR;
-		case SBF_DEST_ALPHA:
+		case BF_DEST_ALPHA:
 			return D3D11_BLEND_DEST_ALPHA;
-		case SBF_SOURCE_ALPHA:
+		case BF_SOURCE_ALPHA:
 			return D3D11_BLEND_SRC_ALPHA;
-		case SBF_ONE_MINUS_DEST_ALPHA:
+		case BF_INV_DEST_ALPHA:
 			return D3D11_BLEND_INV_DEST_ALPHA;
-		case SBF_ONE_MINUS_SOURCE_ALPHA:
+		case BF_INV_SOURCE_ALPHA:
 			return D3D11_BLEND_INV_SRC_ALPHA;
 		}
 		return D3D11_BLEND_ZERO;
 	}
 
-	D3D11_BLEND_OP D3D11Mappings::get(SceneBlendOperation sbo)
+	D3D11_BLEND_OP D3D11Mappings::get(BlendOperation sbo)
 	{
 		switch( sbo )
 		{
-		case SBO_ADD:
+		case BO_ADD:
 			return D3D11_BLEND_OP_ADD;
-		case SBO_SUBTRACT:
+		case BO_SUBTRACT:
 			return D3D11_BLEND_OP_SUBTRACT;
-		case SBO_REVERSE_SUBTRACT:
+		case BO_REVERSE_SUBTRACT:
 			return D3D11_BLEND_OP_REV_SUBTRACT;
-		case SBO_MIN:
+		case BO_MIN:
 			return D3D11_BLEND_OP_MIN;
-		case SBO_MAX:
+		case BO_MAX:
 			return D3D11_BLEND_OP_MAX;
 		}
 		return D3D11_BLEND_OP_ADD;

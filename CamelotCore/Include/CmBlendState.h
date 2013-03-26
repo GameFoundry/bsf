@@ -10,22 +10,22 @@ namespace CamelotEngine
 	{
 		RENDER_TARGET_BLEND_STATE_DESC()
 			: blendEnable(false)
-			, srcBlend(SBF_ONE)
-			, dstBlend(SBF_ZERO)
-			, blendOp(SBO_ADD)
-			, srcBlendAlpha(SBF_ONE)
-			, dstBlendAlpha(SBF_ZERO)
-			, blendOpAlpha(SBO_ADD)
+			, srcBlend(BF_ONE)
+			, dstBlend(BF_ZERO)
+			, blendOp(BO_ADD)
+			, srcBlendAlpha(BF_ONE)
+			, dstBlendAlpha(BF_ZERO)
+			, blendOpAlpha(BO_ADD)
 			, renderTargetWriteMask(0xFF)
 		{ }
 
 		bool blendEnable;
-		SceneBlendFactor srcBlend;
-		SceneBlendFactor dstBlend;
-		SceneBlendOperation blendOp;
-		SceneBlendFactor srcBlendAlpha;
-		SceneBlendFactor dstBlendAlpha;
-		SceneBlendOperation blendOpAlpha;
+		BlendFactor srcBlend;
+		BlendFactor dstBlend;
+		BlendOperation blendOp;
+		BlendFactor srcBlendAlpha;
+		BlendFactor dstBlendAlpha;
+		BlendOperation blendOpAlpha;
 		// Enable write to RGBA channels separately by setting first four bits (0 - R, 1 - G, 2 - B, 3 - A)
 		UINT8 renderTargetWriteMask;
 	};
@@ -52,12 +52,12 @@ namespace CamelotEngine
 		bool getIndependantBlendEnable() const { return mData.independantBlendEnable; }
 
 		bool getBlendEnabled(UINT32 renderTargetIdx) const;
-		SceneBlendFactor getSrcBlend(UINT32 renderTargetIdx) const;
-		SceneBlendFactor getDstBlend(UINT32 renderTargetIdx) const;
-		SceneBlendOperation getBlendOperation(UINT32 renderTargetIdx) const;
-		SceneBlendFactor getAlphaSrcBlend(UINT32 renderTargetIdx) const;
-		SceneBlendFactor getAlphaDstBlend(UINT32 renderTargetIdx) const;
-		SceneBlendOperation getAlphaBlendOperation(UINT32 renderTargetIdx) const;
+		BlendFactor getSrcBlend(UINT32 renderTargetIdx) const;
+		BlendFactor getDstBlend(UINT32 renderTargetIdx) const;
+		BlendOperation getBlendOperation(UINT32 renderTargetIdx) const;
+		BlendFactor getAlphaSrcBlend(UINT32 renderTargetIdx) const;
+		BlendFactor getAlphaDstBlend(UINT32 renderTargetIdx) const;
+		BlendOperation getAlphaBlendOperation(UINT32 renderTargetIdx) const;
 		UINT8 getRenderTargetWriteMask(UINT32 renderTargetIdx) const;
 
 		static BlendStateHandle create(const BLEND_STATE_DESC& desc);

@@ -49,11 +49,11 @@ namespace CamelotEngine
 			for(UINT32 i = 0; i < CM_MAX_MULTIPLE_RENDER_TARGETS; i++)
 			{
 				// Transparent if destination color is taken into account
-				if (mBlendState->getDstBlend(i) != SBF_ZERO ||
-					mBlendState->getSrcBlend(i) == SBF_DEST_COLOUR ||
-					mBlendState->getSrcBlend(i) == SBF_ONE_MINUS_DEST_COLOUR ||
-					mBlendState->getSrcBlend(i) == SBF_DEST_ALPHA ||
-					mBlendState->getSrcBlend(i) == SBF_ONE_MINUS_DEST_ALPHA)
+				if (mBlendState->getDstBlend(i) != BF_ZERO ||
+					mBlendState->getSrcBlend(i) == BF_DEST_COLOR ||
+					mBlendState->getSrcBlend(i) == BF_INV_DEST_COLOR ||
+					mBlendState->getSrcBlend(i) == BF_DEST_ALPHA ||
+					mBlendState->getSrcBlend(i) == BF_INV_DEST_ALPHA)
 				{
 					transparent = true;
 				}

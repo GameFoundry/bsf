@@ -483,7 +483,7 @@ namespace CamelotEngine
 		}
 		else
 		{
-			setSceneBlending(SBF_ONE, SBF_ZERO, SBO_ADD);
+			setSceneBlending(BF_ONE, BF_ZERO, BO_ADD);
 		}
 
 		// Color write mask
@@ -822,11 +822,11 @@ namespace CamelotEngine
 		}
 
 	}
-	void GLRenderSystem::setSceneBlending(SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op )
+	void GLRenderSystem::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op )
 	{
 		GLint sourceBlend = getBlendMode(sourceFactor);
 		GLint destBlend = getBlendMode(destFactor);
-		if(sourceFactor == SBF_ONE && destFactor == SBF_ZERO)
+		if(sourceFactor == BF_ONE && destFactor == BF_ZERO)
 		{
 			glDisable(GL_BLEND);
 		}
@@ -839,19 +839,19 @@ namespace CamelotEngine
 		GLint func = GL_FUNC_ADD;
 		switch(op)
 		{
-		case SBO_ADD:
+		case BO_ADD:
 			func = GL_FUNC_ADD;
 			break;
-		case SBO_SUBTRACT:
+		case BO_SUBTRACT:
 			func = GL_FUNC_SUBTRACT;
 			break;
-		case SBO_REVERSE_SUBTRACT:
+		case BO_REVERSE_SUBTRACT:
 			func = GL_FUNC_REVERSE_SUBTRACT;
 			break;
-		case SBO_MIN:
+		case BO_MIN:
 			func = GL_MIN;
 			break;
-		case SBO_MAX:
+		case BO_MAX:
 			func = GL_MAX;
 			break;
 		}
@@ -867,17 +867,17 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setSceneBlending(
-		SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, 
-		SceneBlendFactor sourceFactorAlpha, SceneBlendFactor destFactorAlpha,
-		SceneBlendOperation op, SceneBlendOperation alphaOp )
+		BlendFactor sourceFactor, BlendFactor destFactor, 
+		BlendFactor sourceFactorAlpha, BlendFactor destFactorAlpha,
+		BlendOperation op, BlendOperation alphaOp )
 	{
 		GLint sourceBlend = getBlendMode(sourceFactor);
 		GLint destBlend = getBlendMode(destFactor);
 		GLint sourceBlendAlpha = getBlendMode(sourceFactorAlpha);
 		GLint destBlendAlpha = getBlendMode(destFactorAlpha);
 
-		if(sourceFactor == SBF_ONE && destFactor == SBF_ZERO && 
-			sourceFactorAlpha == SBF_ONE && destFactorAlpha == SBF_ZERO)
+		if(sourceFactor == BF_ONE && destFactor == BF_ZERO && 
+			sourceFactorAlpha == BF_ONE && destFactorAlpha == BF_ZERO)
 		{
 			glDisable(GL_BLEND);
 		}
@@ -891,38 +891,38 @@ namespace CamelotEngine
 
 		switch(op)
 		{
-		case SBO_ADD:
+		case BO_ADD:
 			func = GL_FUNC_ADD;
 			break;
-		case SBO_SUBTRACT:
+		case BO_SUBTRACT:
 			func = GL_FUNC_SUBTRACT;
 			break;
-		case SBO_REVERSE_SUBTRACT:
+		case BO_REVERSE_SUBTRACT:
 			func = GL_FUNC_REVERSE_SUBTRACT;
 			break;
-		case SBO_MIN:
+		case BO_MIN:
 			func = GL_MIN;
 			break;
-		case SBO_MAX:
+		case BO_MAX:
 			func = GL_MAX;
 			break;
 		}
 
 		switch(alphaOp)
 		{
-		case SBO_ADD:
+		case BO_ADD:
 			alphaFunc = GL_FUNC_ADD;
 			break;
-		case SBO_SUBTRACT:
+		case BO_SUBTRACT:
 			alphaFunc = GL_FUNC_SUBTRACT;
 			break;
-		case SBO_REVERSE_SUBTRACT:
+		case BO_REVERSE_SUBTRACT:
 			alphaFunc = GL_FUNC_REVERSE_SUBTRACT;
 			break;
-		case SBO_MIN:
+		case BO_MIN:
 			alphaFunc = GL_MIN;
 			break;
-		case SBO_MAX:
+		case BO_MAX:
 			alphaFunc = GL_MAX;
 			break;
 		}
@@ -1547,29 +1547,29 @@ namespace CamelotEngine
 		return (errString != 0) ? String((const char*) errString) : StringUtil::BLANK;
 	}
 	//-----------------------------------------------------------------------------
-	GLint GLRenderSystem::getBlendMode(SceneBlendFactor blendMode) const
+	GLint GLRenderSystem::getBlendMode(BlendFactor blendMode) const
 	{
 		switch(blendMode)
 		{
-		case SBF_ONE:
+		case BF_ONE:
 			return GL_ONE;
-		case SBF_ZERO:
+		case BF_ZERO:
 			return GL_ZERO;
-		case SBF_DEST_COLOUR:
+		case BF_DEST_COLOR:
 			return GL_DST_COLOR;
-		case SBF_SOURCE_COLOUR:
+		case BF_SOURCE_COLOR:
 			return GL_SRC_COLOR;
-		case SBF_ONE_MINUS_DEST_COLOUR:
+		case BF_INV_DEST_COLOR:
 			return GL_ONE_MINUS_DST_COLOR;
-		case SBF_ONE_MINUS_SOURCE_COLOUR:
+		case BF_INV_SOURCE_COLOR:
 			return GL_ONE_MINUS_SRC_COLOR;
-		case SBF_DEST_ALPHA:
+		case BF_DEST_ALPHA:
 			return GL_DST_ALPHA;
-		case SBF_SOURCE_ALPHA:
+		case BF_SOURCE_ALPHA:
 			return GL_SRC_ALPHA;
-		case SBF_ONE_MINUS_DEST_ALPHA:
+		case BF_INV_DEST_ALPHA:
 			return GL_ONE_MINUS_DST_ALPHA;
-		case SBF_ONE_MINUS_SOURCE_ALPHA:
+		case BF_INV_SOURCE_ALPHA:
 			return GL_ONE_MINUS_SRC_ALPHA;
 		};
 		// to keep compiler happy

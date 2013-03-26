@@ -21,6 +21,7 @@
 #include "CmGpuProgramImportOptions.h"
 #include "CmFontImportOptions.h"
 #include "CmCommandQueue.h"
+#include "CmBlendState.h"
 
 #include "CmDebugCamera.h"
 #include "CmTestTextSprite.h"
@@ -87,6 +88,15 @@ MaterialHandle createTextMaterial()
 	PassPtr newPassDX11 = newTechniqueDX11->addPass();
 	newPassDX11->setVertexProgram(textShaderVertProgRef);
 	newPassDX11->setFragmentProgram(textShaderFragProgRef);
+
+	BLEND_STATE_DESC desc;
+	desc.renderTargetDesc[0].blendEnable = true;
+	desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+	desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+	desc.renderTargetDesc[0].blendOp = BO_ADD;
+
+	BlendStateHandle blendState = BlendState::create(desc);
+	newPassDX11->setBlendState(blendState);
 
 	MaterialHandle textMaterial = Material::create();
 	textMaterial->setShader(textShader);

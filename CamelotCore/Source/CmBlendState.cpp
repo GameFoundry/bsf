@@ -24,42 +24,42 @@ namespace CamelotEngine
 		return mData.renderTargetDesc[renderTargetIdx].blendEnable;
 	}
 
-	SceneBlendFactor BlendState::getSrcBlend(UINT32 renderTargetIdx) const
+	BlendFactor BlendState::getSrcBlend(UINT32 renderTargetIdx) const
 	{
 		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].srcBlend;
 	}
 
-	SceneBlendFactor BlendState::getDstBlend(UINT32 renderTargetIdx) const
+	BlendFactor BlendState::getDstBlend(UINT32 renderTargetIdx) const
 	{
 		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].dstBlend;
 	}
 
-	SceneBlendOperation BlendState::getBlendOperation(UINT32 renderTargetIdx) const
+	BlendOperation BlendState::getBlendOperation(UINT32 renderTargetIdx) const
 	{
 		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].blendOp;
 	}
 
-	SceneBlendFactor BlendState::getAlphaSrcBlend(UINT32 renderTargetIdx) const
+	BlendFactor BlendState::getAlphaSrcBlend(UINT32 renderTargetIdx) const
 	{
 		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].srcBlendAlpha;
 	}
 
-	SceneBlendFactor BlendState::getAlphaDstBlend(UINT32 renderTargetIdx) const
+	BlendFactor BlendState::getAlphaDstBlend(UINT32 renderTargetIdx) const
 	{
 		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
 		
 		return mData.renderTargetDesc[renderTargetIdx].dstBlendAlpha;
 	}
 
-	SceneBlendOperation BlendState::getAlphaBlendOperation(UINT32 renderTargetIdx) const
+	BlendOperation BlendState::getAlphaBlendOperation(UINT32 renderTargetIdx) const
 	{
 		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
 

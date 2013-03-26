@@ -66,9 +66,9 @@ namespace CamelotEngine
 		/// return a D3D9 equivalent for a Ogre TextureAddressingMode value
 		static D3DTEXTUREADDRESS get(TextureAddressingMode tam, const D3DCAPS9& devCaps);
 		/// return a D3D9 equivalent for a Ogre SceneBlendFactor value
-		static D3DBLEND get(SceneBlendFactor sbf);
+		static D3DBLEND get(BlendFactor sbf);
 		/// return a D3D9 equivlalent for a Ogre SceneBlendOperation value
-		static D3DBLENDOP get(SceneBlendOperation sbo);
+		static D3DBLENDOP get(BlendOperation sbo);
 		/// return a D3D9 equivalent for a Ogre CompareFunction value
 		static DWORD get(CompareFunction cf);
 		/// return a D3D9 equivalent for a Ogre CillingMode value

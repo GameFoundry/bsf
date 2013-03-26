@@ -30,9 +30,9 @@ namespace CamelotEngine
 		/// return a D3D11 equivalent for an engine TextureAddressingMode value
 		static D3D11_TEXTURE_ADDRESS_MODE get(TextureAddressingMode tam);
 		/// return a D3D11 equivalent for an engine SceneBlendFactor value
-		static D3D11_BLEND get(SceneBlendFactor sbf);
+		static D3D11_BLEND get(BlendFactor sbf);
 		/// return a D3D11 equivalent for an engine SceneBlendOperation value
-		static D3D11_BLEND_OP get(SceneBlendOperation sbo);
+		static D3D11_BLEND_OP get(BlendOperation sbo);
 		/// return a D3D11 equivalent for an engine CompareFunction value
 		static D3D11_COMPARISON_FUNC get(CompareFunction cf);
 		/// return a D3D11 equivalent for an engine CillingMode value

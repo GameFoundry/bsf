@@ -333,7 +333,7 @@ namespace CamelotEngine
 		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
 		@param op The blend operation mode for combining pixels
 		*/
-		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendOperation op );
+		void setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op );
 
 		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
 		The result of the blending operation is:</p>
@@ -347,8 +347,8 @@ namespace CamelotEngine
 		@param op The blend operation mode for combining pixels
 		@param alphaOp The blend operation mode for combining pixel alpha values
 		*/
-		void setSceneBlending( SceneBlendFactor sourceFactor, SceneBlendFactor destFactor, SceneBlendFactor sourceFactorAlpha, 
-			SceneBlendFactor destFactorAlpha, SceneBlendOperation op, SceneBlendOperation alphaOp );
+		void setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
+			BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp );
 
 		/** Sets the global alpha rejection approach for future renders.
 		By default images are rendered regardless of texture alpha. This method lets you change that.

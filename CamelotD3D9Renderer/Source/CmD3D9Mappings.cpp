@@ -52,47 +52,47 @@ namespace CamelotEngine
 		return D3DTADDRESS_FORCE_DWORD;
 	}
 	//---------------------------------------------------------------------
-	D3DBLEND D3D9Mappings::get(SceneBlendFactor sbf)
+	D3DBLEND D3D9Mappings::get(BlendFactor sbf)
 	{
 		switch( sbf )
 		{
-		case SBF_ONE:
+		case BF_ONE:
 			return D3DBLEND_ONE;
-		case SBF_ZERO:
+		case BF_ZERO:
 			return D3DBLEND_ZERO;
-		case SBF_DEST_COLOUR:
+		case BF_DEST_COLOR:
 			return D3DBLEND_DESTCOLOR;
-		case SBF_SOURCE_COLOUR:
+		case BF_SOURCE_COLOR:
 			return D3DBLEND_SRCCOLOR;
-		case SBF_ONE_MINUS_DEST_COLOUR:
+		case BF_INV_DEST_COLOR:
 			return D3DBLEND_INVDESTCOLOR;
-		case SBF_ONE_MINUS_SOURCE_COLOUR:
+		case BF_INV_SOURCE_COLOR:
 			return D3DBLEND_INVSRCCOLOR;
-		case SBF_DEST_ALPHA:
+		case BF_DEST_ALPHA:
 			return D3DBLEND_DESTALPHA;
-		case SBF_SOURCE_ALPHA:
+		case BF_SOURCE_ALPHA:
 			return D3DBLEND_SRCALPHA;
-		case SBF_ONE_MINUS_DEST_ALPHA:
+		case BF_INV_DEST_ALPHA:
 			return D3DBLEND_INVDESTALPHA;
-		case SBF_ONE_MINUS_SOURCE_ALPHA:
+		case BF_INV_SOURCE_ALPHA:
 			return D3DBLEND_INVSRCALPHA;
 		}
 		return D3DBLEND_FORCE_DWORD;
 	}
 	//---------------------------------------------------------------------
-	D3DBLENDOP D3D9Mappings::get(CamelotEngine::SceneBlendOperation sbo)
+	D3DBLENDOP D3D9Mappings::get(CamelotEngine::BlendOperation sbo)
 	{
 		switch(sbo)
 		{
-		case SBO_ADD:
+		case BO_ADD:
 			return D3DBLENDOP_ADD;
-		case SBO_SUBTRACT:
+		case BO_SUBTRACT:
 			return D3DBLENDOP_SUBTRACT;
-		case SBO_REVERSE_SUBTRACT:
+		case BO_REVERSE_SUBTRACT:
 			return D3DBLENDOP_REVSUBTRACT;
-		case SBO_MIN:
+		case BO_MIN:
 			return D3DBLENDOP_MIN;
-		case SBO_MAX:
+		case BO_MAX:
 			return D3DBLENDOP_MAX;
 		}
 

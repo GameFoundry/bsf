@@ -54,32 +54,31 @@ namespace CamelotEngine {
         SceneBlendType that you like, then you can specify the blending factors directly to affect the
         combination of object and the existing scene. See Material::setSceneBlending for more details.
     */
-    enum SceneBlendFactor
+    enum BlendFactor
     {
-        SBF_ONE,
-        SBF_ZERO,
-        SBF_DEST_COLOUR,
-        SBF_SOURCE_COLOUR,
-        SBF_ONE_MINUS_DEST_COLOUR,
-        SBF_ONE_MINUS_SOURCE_COLOUR,
-        SBF_DEST_ALPHA,
-        SBF_SOURCE_ALPHA,
-        SBF_ONE_MINUS_DEST_ALPHA,
-        SBF_ONE_MINUS_SOURCE_ALPHA
-
+        BF_ONE,
+        BF_ZERO,
+        BF_DEST_COLOR,
+        BF_SOURCE_COLOR,
+        BF_INV_DEST_COLOR,
+        BF_INV_SOURCE_COLOR,
+        BF_DEST_ALPHA,
+        BF_SOURCE_ALPHA,
+        BF_INV_DEST_ALPHA,
+        BF_INV_SOURCE_ALPHA
     };
 
 	/** Blending operations controls how objects are blended into the scene. The default operation
 		is add (+) but by changing this you can change how drawn objects are blended into the
 		existing scene.
 	*/
-	enum SceneBlendOperation
+	enum BlendOperation
 	{
-		SBO_ADD,
-		SBO_SUBTRACT,
-		SBO_REVERSE_SUBTRACT,
-		SBO_MIN,
-		SBO_MAX
+		BO_ADD,
+		BO_SUBTRACT,
+		BO_REVERSE_SUBTRACT,
+		BO_MIN,
+		BO_MAX
 	};
 
     /** Comparison functions used for the depth/stencil buffer operations and 
