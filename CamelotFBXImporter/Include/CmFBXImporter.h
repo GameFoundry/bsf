@@ -46,8 +46,5 @@ namespace CamelotEngine
 		MeshDataPtr parseScene(FbxManager* manager, FbxScene* scene);
 
 		MeshDataPtr parseMesh(FbxMesh* mesh, bool createTangentsIfMissing = true);
-		MeshDataPtr mergeMeshData(vector<MeshDataPtr>::type meshes);
-
-		void initDeclarationForMeshData(MeshDataPtr meshData);
 	};
 }

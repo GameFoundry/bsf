@@ -27,6 +27,7 @@
 #include <cmath>
 
 #include <memory>
+#include <boost/shared_array.hpp>
 
 // STL containers
 #include <vector>

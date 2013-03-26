@@ -27,21 +27,9 @@ Add 0.5 offset to GUI shader (depending on render system)
 Add transparency to GUI shader
 TextSprite needs to return multiple buffers in case characters are from different pages
 
-
 Mesh usability overhaul:
- I need to be able to initialize Mesh without manually populating MeshData because it's very inconvenient
- I need to be able to provide non-fixed vertex data. Right now for example VertexData only accepts Vector3 as vertex data. While for UI stuff I need Vector2.
  A way to clear a mesh  (Mesh.Clear)
  A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
-
-Mesh
- -> Make sure MeshData can use 16bit index buffers, and variable size elements (not just limited for Vector3 for position for example)
- -> Make sure buffers aren't re-created each time SetMeshData is called. Instead clear existing buffers and update them. Possibly delete extra sub-mesh buffers.
- -> setVertices(data, num, stream = 0, submesh = 0)
- -> setVertices2D(data, num, stream = 0, submesh = 0)
- -> setUV(data, num, stream = 0, submesh = 0)
- - > similar methods for Normal, Color, Tangent Bitangent, UV1 and indices
- -> make MeshData.index a UINT32* ptr
 
  Names: TextMesh & SpriteMesh instead of 2DText and 2DSprite!
 

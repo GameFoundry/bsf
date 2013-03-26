@@ -220,6 +220,9 @@ namespace CamelotEngine
 		size_t calculateHash() const;
 
     };
+
+	CM_ALLOW_MEMCPY_SERIALIZATION(VertexElement);
+
     /** This class declares the format of a set of vertex inputs, which
         can be issued to the rendering API through a RenderOperation.
 	@remarks

@@ -8,25 +8,16 @@ namespace CamelotEngine
 	{
 		mNullMeshData = MeshDataPtr(new MeshData());
 
-		mNullMeshData->indexCount = 3;
-		mNullMeshData->vertexCount = 1;
+		auto indices = new UINT32[3];
+		indices[0] = 0;
+		indices[1] = 0;
+		indices[2] = 0;
 
-		mNullMeshData->index = new int[3];
-		mNullMeshData->index[0] = 0;
-		mNullMeshData->index[1] = 0;
-		mNullMeshData->index[2] = 0;
+		auto vertices = new Vector3[1];
+		vertices[0] = Vector3(0, 0, 0);
 
-		std::shared_ptr<MeshData::VertexData> vertexData = std::shared_ptr<MeshData::VertexData>(new MeshData::VertexData(1));
-		mNullMeshData->vertexBuffers.insert(std::make_pair(0, vertexData));
-		vertexData->vertex = new Vector3[1];
-		vertexData->vertex[0] = Vector3(0, 0, 0);
-
-		mNullMeshData->declaration->addElement(0, 0, VET_FLOAT3, VES_POSITION);
-
-		MeshData::SubMeshData subMesh;
-		subMesh.indexOffset = 0;
-		subMesh.indexCount = 3;
-		mNullMeshData->subMeshes.push_back(subMesh);
+		mNullMeshData->setPositions(vertices, 3);
+		mNullMeshData->setIndices(indices, 3);
 	}
 
 	MeshManager::~MeshManager()

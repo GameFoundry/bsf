@@ -7,8 +7,6 @@
 
 namespace CamelotEngine
 {
-	CM_ALLOW_MEMCPY_SERIALIZATION(VertexElement);
-
 	class VertexDeclarationRTTI : public RTTIType<VertexDeclaration, IReflectable, VertexDeclarationRTTI>
 	{
 	private:

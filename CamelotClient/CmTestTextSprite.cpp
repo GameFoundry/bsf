@@ -34,36 +34,25 @@ namespace CamelotEngine
 		UINT32 numIndices = numTextFaces * 6;
 
 		std::shared_ptr<MeshData> textData(new MeshData());
-		textData->declaration->addElement(0, 0, VET_FLOAT3, VES_POSITION);
-		textData->declaration->addElement(0, 12, VET_FLOAT2, VES_TEXCOORD);
 
-		textData->index = new int[numIndices];
-		textData->indexCount = numIndices;
-		textData->vertexCount = numVertices;
-		
-		std::shared_ptr<MeshData::VertexData> vertData(new MeshData::VertexData(numVertices));
-		vertData->vertex = new Vector3[numVertices];
-		vertData->uv0 = new Vector2[numVertices];
+		auto indices = new UINT32[numIndices];
+		auto vertices = new Vector3[numVertices];
+		auto uvs = new Vector2[numVertices];
 
-		Vector2* vec2Buffer = new Vector2[numVertices];
+		auto vec2Buffer = new Vector2[numVertices];
 
-		mTextSprite->fillBuffer(vec2Buffer, vertData->uv0, (UINT32*)textData->index, 0, numTextFaces);
+		mTextSprite->fillBuffer(vec2Buffer, uvs, indices, 0, numTextFaces);
 
 		for(UINT32 i = 0; i < numVertices; i++)
-		{
-			vertData->vertex[i] = Vector3(vec2Buffer[i].x, vec2Buffer[i].y, 0.0f);
-		}
-
-		textData->vertexBuffers[0] = vertData;
-
-		MeshData::SubMeshData subMeshData;
-		subMeshData.indexOffset = 0;
-		subMeshData.indexCount = numIndices;
-		textData->subMeshes.push_back(subMeshData);
-
-		mTextMesh->setMeshData(textData);
+			vertices[i] = Vector3(vec2Buffer[i].x, vec2Buffer[i].y, 0.0f);
 
 		delete[] vec2Buffer;
+
+		textData->setPositions(vertices, numVertices);
+		textData->setUV0(uvs, numVertices);
+		textData->setIndices(indices, numIndices);
+
+		mTextMesh->setMeshData(textData);
 
 		mTextRenderable->setMesh(mTextMesh);
 

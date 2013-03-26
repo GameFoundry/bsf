@@ -232,7 +232,7 @@ namespace CamelotEngine
 		TID_Mesh = 1002,
 		TID_MeshData = 1003,
 		TID_VertexDeclaration = 1004,
-		TID_VertexData = 1005,
+		TID_VertexElementData = 1005,
 		TID_Component = 1006,
 		TID_Camera = 1007,
 		TID_Renderable = 1008,
@@ -274,7 +274,8 @@ namespace CamelotEngine
 		TID_STDVECTOR = 1054,
 		TID_STDMAP = 1055,
 		TID_FontImportOptions = 1056,
-		TID_FontData = 1057
+		TID_FontData = 1057,
+		TID_IndexElementData = 1058
 	};
 
 	/**

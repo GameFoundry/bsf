@@ -38,7 +38,35 @@ namespace CamelotEngine
 
 		if(meshData == nullptr)
 		{
-			CM_EXCEPT(InternalErrorException, "Cannot load mesh. Mesh data is null.");
+			CM_EXCEPT(InvalidParametersException, "Cannot load mesh. Mesh data is null.");
+		}
+
+		// Ensure all vertex elements are of proper size
+		UINT32 numVertices = 0;
+
+		auto vertElemDataPerStream = meshData->mVertexData;
+		MeshData::VertexElementData* firstElemData = nullptr;
+		if(vertElemDataPerStream.size() > 0)
+		{
+			auto vertElemData = vertElemDataPerStream.begin()->second;
+			auto firstVertElem = vertElemData.begin();
+			if(firstVertElem != vertElemData.end())
+			{
+				numVertices = firstVertElem->elementCount;
+			}
+		}
+
+		for(auto& vertElems : meshData->mVertexData)
+		{
+			for(auto& vertElem : vertElems.second)
+			{
+				if(vertElem.elementCount != numVertices)
+				{
+					CM_EXCEPT(InvalidParametersException, "All vertex element arrays in MeshData need to be of the same size. Found an array with semantic: "
+						+ toString(vertElem.element.getSemantic()) + " and element count: " + toString(vertElem.elementCount) + ". This doesn't match with other "
+						+ "element with semantic: " + toString(firstElemData->element.getSemantic()) + " and element count: " + toString(firstElemData->elementCount));
+				}
+			}
 		}
 
 		mSubMeshes.clear();
@@ -50,23 +78,37 @@ namespace CamelotEngine
 			delete mIndexData;
 
 		// Submeshes
-		for(UINT32 i = 0; i < meshData->subMeshes.size(); i++)
-			mSubMeshes.push_back(SubMesh(meshData->subMeshes[i].indexOffset, meshData->subMeshes[i].indexCount));
+		UINT32 indexOffset = 0;
+		UINT32 totalIndexCount = 0;
+		for(auto& i : meshData->mIndices)
+		{
+			UINT32 numIndices = i.numIndices;
+
+			if(numIndices > 0)
+			{
+				mSubMeshes.push_back(SubMesh(indexOffset, numIndices));
+				indexOffset += numIndices;
+				totalIndexCount += numIndices;
+			}
+		}
 
 		// Indices
 		mIndexData = new IndexData();
 
-		mIndexData->indexCount = meshData->indexCount;
+		mIndexData->indexCount = totalIndexCount;
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
-			IndexBuffer::IT_32BIT,
+			meshData->mIndexType,
 			mIndexData->indexCount, 
 			GBU_STATIC);
 
-		UINT32* idxData = static_cast<UINT32*>(mIndexData->indexBuffer->lock(GBL_WRITE_ONLY_DISCARD));
+		UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_WRITE_ONLY));
+		UINT32 idxElementSize = meshData->getIndexElementSize();
 
-		for(UINT32 i = 0; i < mIndexData->indexCount; i++)
+		indexOffset = 0;
+		for(auto& i : meshData->mIndices)
 		{
-			idxData[i] = (UINT32)meshData->index[i];
+			memcpy(&idxData[indexOffset], i.indices, i.numIndices * idxElementSize);
+			indexOffset += i.numIndices;
 		}
 
 		mIndexData->indexBuffer->unlock();
@@ -74,12 +116,15 @@ namespace CamelotEngine
 		// Vertices
 		mVertexData = new VertexData();
 
-		mVertexData->vertexCount = meshData->vertexCount;
-		mVertexData->vertexDeclaration = meshData->declaration->clone();
+		mVertexData->vertexCount = numVertices;
+		mVertexData->vertexDeclaration = meshData->createDeclaration();
 
-		for(auto iter = meshData->vertexBuffers.begin(); iter != meshData->vertexBuffers.end(); ++iter)
+		for(auto& vertElems : meshData->mVertexData)
 		{
-			int streamIdx = iter->first; 
+			UINT32 streamIdx = vertElems.first;
+
+			if(vertElems.second.size() == 0)
+				continue;
 
 			VertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
 				mVertexData->vertexDeclaration->getVertexSize(streamIdx),
@@ -89,75 +134,22 @@ namespace CamelotEngine
 			mVertexData->setBuffer(streamIdx, vertexBuffer);
 
 			UINT32 vertexSize = vertexBuffer->getVertexSize();
-			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_WRITE_ONLY_DISCARD));
+			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_WRITE_ONLY));
 
 			UINT32 numElements = mVertexData->vertexDeclaration->getElementCount();
 
 			for(UINT32 j = 0; j < numElements; j++)
 			{
 				const VertexElement* element = mVertexData->vertexDeclaration->getElement(j);
-				VertexElementSemantic semantic = element->getSemantic();
 				UINT32 offset = element->getOffset();
 				UINT32 elemSize = element->getSize();
 
-				std::shared_ptr<MeshData::VertexData> vertexData = meshData->vertexBuffers[streamIdx];
+				MeshData::VertexElementData& elemData = meshData->getVertElemData(element->getType(), element->getSemantic(), element->getIndex(), streamIdx);
 
-				UINT8* source = nullptr;
-				switch(semantic)
+				UINT8* sourceData = elemData.data;
+				for(UINT32 k = 0; k < elemData.elementCount; k++)
 				{
-				case VES_POSITION:
-					if(vertexData->vertex)
-						source = (UINT8*)vertexData->vertex;
-
-					break;
-				case VES_COLOR:
-					if(vertexData->color)
-						source = (UINT8*)vertexData->color;
-
-					break;
-				case VES_NORMAL:
-					if(vertexData->normal)
-						source = (UINT8*)vertexData->normal;	
-
-					break;
-				case VES_TANGENT:
-					if(vertexData->tangent)
-						source = (UINT8*)vertexData->tangent;	
-
-					break;
-				case VES_BITANGENT:
-					if(vertexData->bitangent)
-						source = (UINT8*)vertexData->bitangent;	
-
-					break;
-				case VES_TEXCOORD:
-					if(element->getIndex() == 0)
-					{
-						if(vertexData->uv0)
-							source = (UINT8*)vertexData->uv0;	
-					}
-					else if(element->getIndex() == 1)
-					{
-						if(vertexData->uv1)
-							source = (UINT8*)vertexData->uv1;	
-					}
-
-					break;
-				default:
-					break;
-				}
-
-				if(source != nullptr)
-				{
-					for(UINT32 k = 0; k < mVertexData->vertexCount; k++)
-						memcpy(&vertBufferData[k * vertexSize + offset], &source[k * elemSize], elemSize);
-				}
-				else
-				{
-					LOGWRN("Vertex declaration contains semantic (" + toString(semantic) + ") but mesh doesn't have data for it. Data for the semantic will be zeroed out.");
-
-					for(UINT32 k = 0; k < mVertexData->vertexCount; k++)
-						memset(&vertBufferData[k * vertexSize + offset], 0, elemSize);
+					memcpy(&vertBufferData[k * vertexSize + offset], &sourceData[k * elemSize], elemSize);
 				}
 			}
 
@@ -174,112 +166,64 @@ namespace CamelotEngine
 
 	void Mesh::getMeshData_internal(AsyncOp& asyncOp)
 	{
-		MeshDataPtr meshData(new MeshData());
+		IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT;
+		if(mIndexData)
+			indexType = mIndexData->indexBuffer->getType();
 
-		meshData->declaration = mVertexData->vertexDeclaration->clone();
-		
-		for(UINT32 i = 0; i < mSubMeshes.size(); i++)
-		{
-			MeshData::SubMeshData subMesh;
-			subMesh.indexCount = mSubMeshes[i].indexCount;
-			subMesh.indexOffset = mSubMeshes[i].indexOffset;
-
-			meshData->subMeshes.push_back(subMesh);
-		}
+		MeshDataPtr meshData(new MeshData(indexType));
 
 		if(mIndexData)
 		{
-			meshData->indexCount = mIndexData->indexCount - mIndexData->indexStart;
-			meshData->index = new int[meshData->indexCount];
+			UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
+			UINT32 idxElemSize = mIndexData->indexBuffer->getIndexSize();
 
-			UINT32* idxData = static_cast<UINT32*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
+			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
+			{
+				UINT8* indices = new UINT8[mSubMeshes[i].indexCount * idxElemSize];
+				memcpy(indices, &idxData[mSubMeshes[i].indexOffset * idxElemSize], mSubMeshes[i].indexCount * idxElemSize);
 
-			for(UINT32 i = 0; i < mIndexData->indexCount; i++)
-				meshData->index[i] = (UINT32)idxData[i];
+				if(indexType == IndexBuffer::IT_16BIT)
+					meshData->setIndices((UINT16*)indices, mSubMeshes[i].indexCount, i);
+				else
+					meshData->setIndices((UINT32*)indices, mSubMeshes[i].indexCount, i);
+			}
 
 			mIndexData->indexBuffer->unlock();
 		}
 
 		if(mVertexData)
 		{
-			meshData->vertexCount = mVertexData->vertexCount;
-			
 			auto vertexBuffers = mVertexData->getBuffers();
 
+			UINT32 streamIdx = 0;
 			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
 			{
 				VertexBufferPtr vertexBuffer = iter->second;
 				UINT32 vertexSize = vertexBuffer->getVertexSize();
 				UINT8* vertDataIter = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
 
-				std::shared_ptr<MeshData::VertexData> vertexData(new MeshData::VertexData(meshData->vertexCount, iter->first));
-				meshData->vertexBuffers[iter->first] = vertexData;
-
 				UINT32 numElements = mVertexData->vertexDeclaration->getElementCount();
 				for(UINT32 j = 0; j < numElements; j++)
 				{
 					const VertexElement* element = mVertexData->vertexDeclaration->getElement(j);
-					VertexElementSemantic semantic = element->getSemantic();
+					VertexElementType type = element->getType();
+					VertexElementSemantic semantic = element->getSemantic(); 
+					UINT32 semanticIdx = element->getIndex();
 					UINT32 offset = element->getOffset();
 					UINT32 elemSize = element->getSize();
 
-					UINT8* dest = nullptr;
-					switch(semantic)
-					{
-					case VES_POSITION:
-						vertexData->vertex = new Vector3[meshData->vertexCount];
-						dest = (UINT8*)vertexData->vertex;
+					UINT8* dest = new UINT8[elemSize * mVertexData->vertexCount];
+					for(UINT32 k = 0; k < mVertexData->vertexCount; k++)
+						memcpy(&dest[k * elemSize], &vertDataIter[k * vertexSize + offset], elemSize);
 
-						break;
-					case VES_COLOR:
-						vertexData->color = new Color[meshData->vertexCount];
-						dest = (UINT8*)vertexData->color;
-
-						break;
-					case VES_NORMAL:
-						vertexData->normal = new Vector3[meshData->vertexCount];
-						dest = (UINT8*)vertexData->normal;	
-
-						break;
-					case VES_TANGENT:
-						vertexData->tangent = new Vector3[meshData->vertexCount];
-						dest = (UINT8*)vertexData->tangent;	
-
-						break;
-					case VES_BITANGENT:
-						vertexData->bitangent = new Vector3[meshData->vertexCount];
-						dest = (UINT8*)vertexData->bitangent;	
-
-						break;
-					case VES_TEXCOORD:
-						if(element->getIndex() == 0)
-						{
-							vertexData->uv0 = new Vector2[meshData->vertexCount];
-							dest = (UINT8*)vertexData->uv0;	
-						}
-						else if(element->getIndex() == 1)
-						{
-							vertexData->uv1 = new Vector2[meshData->vertexCount];
-							dest = (UINT8*)vertexData->uv1;	
-						}
-
-						break;
-					default:
-						LOGWRN("Vertex declaration contains semantic (" + toString(semantic) + ") but mesh data can't store it.");
-
-						break;
-					}
-
-					if(dest != nullptr)
-					{
-						for(UINT32 k = 0; k < mVertexData->vertexCount; k++)
-							memcpy(&dest[k * elemSize], &vertDataIter[k * vertexSize + offset], elemSize);
-					}
+					meshData->setVertexElementData(type, semantic, dest, mVertexData->vertexCount, semanticIdx, streamIdx);
 				}
 
 				vertexBuffer->unlock();
+
+				streamIdx++;
 			}
-		}		
+		}
 
 		asyncOp.completeOperation(meshData);
 	}

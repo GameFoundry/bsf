@@ -8,149 +8,159 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT VertexDataRTTI : public RTTIType<MeshData::VertexData, IReflectable, VertexDataRTTI>
+	class CM_EXPORT VertexElementDataRTTI : public RTTIType<MeshData::VertexElementData, IReflectable, VertexElementDataRTTI>
 	{
 	private:
-		ManagedDataBlock getVertex(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->vertex, obj->vertexCount * sizeof(Vector3), false); }	
-		void setVertex(MeshData::VertexData* obj, ManagedDataBlock val) { obj->vertex = (Vector3*)val.getData(); } 
+		ManagedDataBlock getVertexData(MeshData::VertexElementData* obj) { return ManagedDataBlock(obj->data, obj->elementCount * obj->element.getSize(), false); }	
+		void setVertexData(MeshData::VertexElementData* obj, ManagedDataBlock val) { obj->data = val.getData(); } 
 
-		ManagedDataBlock getColor(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->color, obj->vertexCount * sizeof(Color), false); }	
-		void setColor(MeshData::VertexData* obj, ManagedDataBlock val) { obj->color = (Color*)val.getData(); } 
+		UINT32& getNumElements(MeshData::VertexElementData* obj) { return obj->elementCount; }
+		void setNumElements(MeshData::VertexElementData* obj, UINT32& value) { obj->elementCount = value; }
 
-		ManagedDataBlock getNormal(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->normal, obj->vertexCount * sizeof(Vector3), false); }	
-		void setNormal(MeshData::VertexData* obj, ManagedDataBlock val) { obj->normal = (Vector3*)val.getData(); } 
+		VertexElement& getVertexElement(MeshData::VertexElementData* obj) { return obj->element; }
+		void setVertexElement(MeshData::VertexElementData* obj, VertexElement& value) { obj->element = value; }
 
-		ManagedDataBlock getTangent(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->tangent, obj->vertexCount * sizeof(Vector3), false); }	
-		void setTangent(MeshData::VertexData* obj, ManagedDataBlock val) { obj->tangent = (Vector3*)val.getData(); } 
-
-		ManagedDataBlock getBitangent(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->bitangent, obj->vertexCount * sizeof(Vector3), false); }	
-		void setBitangent(MeshData::VertexData* obj, ManagedDataBlock val) { obj->bitangent = (Vector3*)val.getData(); } 
-
-		ManagedDataBlock getUV0(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->uv0, obj->vertexCount * sizeof(Vector2), false); }	
-		void setUV0(MeshData::VertexData* obj, ManagedDataBlock val) { obj->uv0 = (Vector2*)val.getData(); } 
-
-		ManagedDataBlock getUV1(MeshData::VertexData* obj) { return ManagedDataBlock((UINT8*)obj->uv1, obj->vertexCount * sizeof(Vector2), false); }	
-		void setUV1(MeshData::VertexData* obj, ManagedDataBlock val) { obj->uv1 = (Vector2*)val.getData(); } 
-
-		CM_SETGET_MEMBER(vertexCount, UINT32, MeshData::VertexData);
-		CM_SETGET_MEMBER(streamIdx, UINT32, MeshData::VertexData);
 	public:
-		VertexDataRTTI()
+		VertexElementDataRTTI()
 		{
-			addDataBlockField("vertex", 0, &VertexDataRTTI::getVertex, &VertexDataRTTI::setVertex);
-			addDataBlockField("color", 1, &VertexDataRTTI::getColor, &VertexDataRTTI::setColor);
-			addDataBlockField("normal", 2, &VertexDataRTTI::getNormal, &VertexDataRTTI::setNormal);
-			addDataBlockField("tangent", 3, &VertexDataRTTI::getTangent, &VertexDataRTTI::setTangent);
-			addDataBlockField("bitangent", 4, &VertexDataRTTI::getBitangent, &VertexDataRTTI::setBitangent);
-			addDataBlockField("uv0", 5, &VertexDataRTTI::getUV0, &VertexDataRTTI::setUV0);
-			addDataBlockField("uv1", 6, &VertexDataRTTI::getUV1, &VertexDataRTTI::setUV1);
-
-			CM_ADD_PLAINFIELD(vertexCount, 7, VertexDataRTTI)
-			CM_ADD_PLAINFIELD(streamIdx, 8, VertexDataRTTI)
+			addDataBlockField("data", 0, &VertexElementDataRTTI::getVertexData, &VertexElementDataRTTI::setVertexData);
+			addPlainField("elementCount", 1, &VertexElementDataRTTI::getNumElements, &VertexElementDataRTTI::setNumElements);
+			addPlainField("element", 2, &VertexElementDataRTTI::getVertexElement, &VertexElementDataRTTI::setVertexElement);
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return std::shared_ptr<MeshData::VertexData>(new MeshData::VertexData(0));
+			return std::shared_ptr<MeshData::VertexElementData>(new MeshData::VertexElementData());
 		}
 
 		virtual const String& getRTTIName() 
 		{
-			static String name = "MeshData::VertexData";
+			static String name = "VertexElementData";
 			throw name;
 		}
 
 		virtual UINT32 getRTTIId() 
 		{
-			return TID_VertexData;
+			return TID_VertexElementData;
 		}
 	};
 
-	CM_ALLOW_MEMCPY_SERIALIZATION(MeshData::SubMeshData);
+	class CM_EXPORT IndexElementDataRTTI : public RTTIType<MeshData::IndexElementData, IReflectable, IndexElementDataRTTI>
+	{
+	private:
+		ManagedDataBlock getIndexData(MeshData::IndexElementData* obj) { return ManagedDataBlock(obj->indices, obj->numIndices * obj->elementSize, false); }	
+		void setIndexData(MeshData::IndexElementData* obj, ManagedDataBlock val) { obj->indices = val.getData(); } 
+
+		UINT32& getNumIndices(MeshData::IndexElementData* obj) { return obj->numIndices; }
+		void setNumIndices(MeshData::IndexElementData* obj, UINT32& value) { obj->numIndices = value; }
+
+		UINT32& getElementSize(MeshData::IndexElementData* obj) { return obj->elementSize; }
+		void setElementSize(MeshData::IndexElementData* obj, UINT32& value) { obj->elementSize = value; }
+
+		UINT32& getSubMesh(MeshData::IndexElementData* obj) { return obj->subMesh; }
+		void setSubMesh(MeshData::IndexElementData* obj, UINT32& value) { obj->subMesh = value; }
+	public:
+		IndexElementDataRTTI()
+		{
+			addDataBlockField("indices", 0, &IndexElementDataRTTI::getIndexData, &IndexElementDataRTTI::setIndexData);
+			addPlainField("numIndices", 1, &IndexElementDataRTTI::getNumIndices, &IndexElementDataRTTI::setNumIndices);
+			addPlainField("elementSize", 2, &IndexElementDataRTTI::getElementSize, &IndexElementDataRTTI::setElementSize);
+			addPlainField("subMesh", 3, &IndexElementDataRTTI::getSubMesh, &IndexElementDataRTTI::setSubMesh);
+		}
+
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{
+			return std::shared_ptr<MeshData::IndexElementData>(new MeshData::IndexElementData());
+		}
+
+		virtual const String& getRTTIName() 
+		{
+			static String name = "IndexElementData";
+			throw name;
+		}
+
+		virtual UINT32 getRTTIId() 
+		{
+			return TID_IndexElementData;
+		}
+	};
+
+	CM_ALLOW_MEMCPY_SERIALIZATION(IndexBuffer::IndexType);
 
 	class CM_EXPORT MeshDataRTTI : public RTTIType<MeshData, IReflectable, MeshDataRTTI>
 	{
 	private:
-		CM_SETGET_MEMBER(indexCount, INT32, MeshData)
-		CM_SETGET_MEMBER(vertexCount, INT32, MeshData);
-
-		ManagedDataBlock getIndex(MeshData* obj) { return ManagedDataBlock((UINT8*)obj->index, obj->indexCount * sizeof(int), false); }	
-		void setIndex(MeshData* obj, ManagedDataBlock val) { obj->index = (int*)val.getData(); } 
-
-		/************************************************************************/
-		/* 								subMeshes                      			*/
-		/************************************************************************/
-		MeshData::SubMeshData& getSubmesh(MeshData* obj, UINT32 idx)
+		struct TempMeshData
 		{
-			return obj->subMeshes[idx];
+			vector<MeshData::VertexElementData>::type vertexElements;
+		};
+
+		MeshData::VertexElementData& getVertexElementData(MeshData* obj, UINT32 arrayIdx)
+		{
+			auto tempData = boost::any_cast<std::shared_ptr<TempMeshData>>(obj->mRTTIData);
+			return tempData->vertexElements[arrayIdx];
 		}
 
-		void setSubmesh(MeshData* obj, UINT32 idx, MeshData::SubMeshData& data)
+		void setVertexElementData(MeshData* obj, UINT32 arrayIdx, MeshData::VertexElementData& value)
 		{
-			obj->subMeshes[idx] = data;
+			obj->setVertexElementData(value.element.getType(), value.element.getSemantic(), value.data, value.elementCount, value.element.getIndex(), value.element.getSource());
 		}
 
-		UINT32 getSubmeshArraySize(MeshData* obj)
+		UINT32 getNumVertexElementData(MeshData* obj)
 		{
-			return (UINT32)obj->subMeshes.size();
+			auto tempData = boost::any_cast<std::shared_ptr<TempMeshData>>(obj->mRTTIData);
+			return (UINT32)tempData->vertexElements.size();
 		}
 
-		void setSubmeshArraySize(MeshData* obj, UINT32 size)
+		void setNumVertexElementData(MeshData* obj, UINT32 numElements)
 		{
-			obj->subMeshes.resize(size);
+			// Do nothing
 		}
 
-		/************************************************************************/
-		/* 								vertexDeclaration                  		*/
-		/************************************************************************/
-
-		VertexDeclarationPtr getVertexDecl(MeshData* obj) { return obj->declaration; }
-		void setVertexDecl(MeshData* obj, VertexDeclarationPtr vertexDecl) { obj->declaration = vertexDecl; }
-
-		/************************************************************************/
-		/* 								vertexData                      		*/
-		/************************************************************************/
-		std::shared_ptr<MeshData::VertexData> getVertexData(MeshData* obj, UINT32 idx)
+		MeshData::IndexElementData& getIndexElementData(MeshData* obj, UINT32 arrayIdx)
 		{
-			int curIdx = 0;
-			for(auto iter = obj->vertexBuffers.begin(); iter != obj->vertexBuffers.end(); ++iter)
-			{
-				if(curIdx == idx)
-					return iter->second;
-
-				curIdx++;
-			}
-
-			CM_EXCEPT(InvalidParametersException, "Invalid index: " + toString(idx));
+			return obj->mIndices[arrayIdx];
 		}
 
-		void setVertexData(MeshData* obj, UINT32 idx, std::shared_ptr<MeshData::VertexData> data)
+		void setIndexElementData(MeshData* obj, UINT32 arrayIdx, MeshData::IndexElementData& value)
 		{
-			obj->vertexBuffers[data->streamIdx] = data;
+			obj->mIndices[arrayIdx] = value;
 		}
 
-		UINT32 getVertexDataArraySize(MeshData* obj)
+		UINT32 getNumIndexElementData(MeshData* obj)
 		{
-			return (UINT32)obj->vertexBuffers.size();
+			return (UINT32)obj->mIndices.size();
 		}
 
-		void setVertexDataArraySize(MeshData* obj, UINT32 size)
+		void setNumIndexElementData(MeshData* obj, UINT32 numElements)
 		{
-			// Do nothing, map will expand as entries are added
+			obj->mIndices.resize(numElements);
 		}
+
+		IndexBuffer::IndexType& getIndexType(MeshData* obj)
+		{
+			return obj->mIndexType;
+		}
+
+		void setIndexType(MeshData* obj, IndexBuffer::IndexType& value)
+		{
+			obj->mIndexType = value;
+		}
+
 	public:
 		MeshDataRTTI()
 		{
-			addDataBlockField("index", 0, &MeshDataRTTI::getIndex, &MeshDataRTTI::setIndex);
+			addReflectableArrayField("mVertexData", 0, &MeshDataRTTI::getVertexElementData, 
+				&MeshDataRTTI::getNumVertexElementData, &MeshDataRTTI::setVertexElementData, &MeshDataRTTI::setNumVertexElementData);
 
-			CM_ADD_PLAINFIELD(indexCount, 1, MeshDataRTTI)
-			CM_ADD_PLAINFIELD(vertexCount, 2, MeshDataRTTI)
+			addReflectableArrayField("mIndexBuffer", 1, &MeshDataRTTI::getIndexElementData, 
+				&MeshDataRTTI::getNumIndexElementData, &MeshDataRTTI::setIndexElementData, &MeshDataRTTI::setNumIndexElementData);
 
-			addPlainArrayField("subMeshes", 3, &MeshDataRTTI::getSubmesh, &MeshDataRTTI::getSubmeshArraySize, &MeshDataRTTI::setSubmesh, &MeshDataRTTI::setSubmeshArraySize);
-			addReflectablePtrField("vertexDeclaration", 4, &MeshDataRTTI::getVertexDecl, &MeshDataRTTI::setVertexDecl);
-			addReflectablePtrArrayField("vertexBuffer", 5, &MeshDataRTTI::getVertexData, &MeshDataRTTI::getVertexDataArraySize, 
-				&MeshDataRTTI::setVertexData, &MeshDataRTTI::setVertexDataArraySize);
+			addPlainField("mIndexType", 2, &MeshDataRTTI::getIndexType, &MeshDataRTTI::setIndexType);
 		}
+
+		virtual void onSerializationStarted(IReflectable* obj);
+		virtual void onSerializationEnded(IReflectable* obj);
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{

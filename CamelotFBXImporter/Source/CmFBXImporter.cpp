@@ -170,7 +170,7 @@ namespace CamelotEngine
 		else if(allMeshes.size() == 1)
 			return allMeshes[0];
 		else
-			return mergeMeshData(allMeshes);
+			return MeshData::combine(allMeshes);
 	}
 
 	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, bool createTangentsIfMissing)
@@ -188,6 +188,8 @@ namespace CamelotEngine
 		// Count the polygon count of each material
 		FbxLayerElementArrayTemplate<int>* lMaterialIndice = NULL;
 		FbxGeometryElement::EMappingMode lMaterialMappingMode = FbxGeometryElement::eNone;
+		vector<SubMesh>::type subMeshes;
+		vector<UINT32*>::type indices;
 		if (mesh->GetElementMaterial())
 		{
 			lMaterialIndice = &mesh->GetElementMaterial()->GetIndexArray();
@@ -201,23 +203,23 @@ namespace CamelotEngine
 					for (int lPolygonIndex = 0; lPolygonIndex < lPolygonCount; ++lPolygonIndex)
 					{
 						const UINT32 lMaterialIndex = (UINT32)lMaterialIndice->GetAt(lPolygonIndex);
-						if (meshData->subMeshes.size() < lMaterialIndex + 1)
+						if (subMeshes.size() < lMaterialIndex + 1)
 						{
-							meshData->subMeshes.resize(lMaterialIndex + 1);
+							subMeshes.resize(lMaterialIndex + 1);
 						}
 
-						meshData->subMeshes[lMaterialIndex].indexCount += 3;
+						subMeshes[lMaterialIndex].indexCount += 3;
 					}
 
-					// Record the offset (how many vertex)
-					const int lMaterialCount = (const int)meshData->subMeshes.size();
+					// Record the offsets and allocate index arrays
+					indices.resize(subMeshes.size());
+					const int lMaterialCount = (const int)subMeshes.size();
 					int lOffset = 0;
 					for (int lIndex = 0; lIndex < lMaterialCount; ++lIndex)
 					{
-						meshData->subMeshes[lIndex].indexOffset = lOffset;
-						lOffset += meshData->subMeshes[lIndex].indexCount;
-						// This will be used as counter in the following procedures, reset to zero
-						meshData->subMeshes[lIndex].indexCount = 0;
+						subMeshes[lIndex].indexOffset = lOffset;
+						lOffset += subMeshes[lIndex].indexCount;
+						indices[lIndex] = new UINT32[subMeshes[lIndex].indexCount];
 					}
 					FBX_ASSERT(lOffset == lPolygonCount * 3);
 				}
@@ -225,8 +227,13 @@ namespace CamelotEngine
 		}
 
 		// All faces will use the same material.
-		if (meshData->subMeshes.size() == 0)
-			meshData->subMeshes.resize(1);
+		if (subMeshes.size() == 0)
+		{
+			subMeshes.resize(1);
+			indices.resize(1);
+			subMeshes[0].indexCount = lPolygonCount * 3;
+			indices[0] = new UINT32[subMeshes[0].indexCount];
+		}
 
 		// Find out which vertex attributes exist
 		bool allByControlPoint = true;
@@ -324,40 +331,40 @@ namespace CamelotEngine
 		if (!allByControlPoint)
 			lPolygonVertexCount = lPolygonCount * 3;
 
-		meshData->indexCount = lPolygonCount * 3;
-		meshData->vertexCount = lPolygonVertexCount;
-		
-		meshData->index = new int[lPolygonCount * 3];
+		UINT32 vertexCount = lPolygonVertexCount;
+		Vector3* vertex = new Vector3[vertexCount];
 
-		std::shared_ptr<MeshData::VertexData> vertexData = std::shared_ptr<MeshData::VertexData>(new MeshData::VertexData(lPolygonVertexCount));
-		meshData->vertexBuffers.insert(std::make_pair(0, vertexData));
-		vertexData->vertex = new Vector3[lPolygonVertexCount];
-
+		Color* color = nullptr;
 		if(hasColor)
-			vertexData->color = new Color[lPolygonVertexCount];
+			color = new Color[vertexCount];
 
+		Vector3* normal = nullptr;
 		if (hasNormal)
-			vertexData->normal = new Vector3[lPolygonVertexCount];
+			normal = new Vector3[vertexCount];
 
+		Vector3* tangent = nullptr;
 		if (hasTangent)
-			vertexData->tangent = new Vector3[lPolygonVertexCount];
+			tangent = new Vector3[vertexCount];
 
+		Vector3* bitangent = nullptr;
 		if (hasBitangent)
-			vertexData->bitangent = new Vector3[lPolygonVertexCount];
+			bitangent = new Vector3[vertexCount];
 
 		FbxStringList lUVNames;
 		mesh->GetUVSetNames(lUVNames);
 		const char * lUVName0 = NULL;
+		Vector2* uv0 = nullptr;
 		if (hasUV0 && lUVNames.GetCount() > 0)
 		{
-			vertexData->uv0 = new Vector2[lPolygonVertexCount];
+			uv0 = new Vector2[vertexCount];
 			lUVName0 = lUVNames[0];
 		}
 
 		const char * lUVName1 = NULL;
+		Vector2* uv1 = nullptr;
 		if (hasUV1 && lUVNames.GetCount() > 1)
 		{
-			vertexData->uv1 = new Vector2[lPolygonVertexCount];
+			uv1 = new Vector2[vertexCount];
 			lUVName1 = lUVNames[1];
 		}
 
@@ -397,9 +404,9 @@ namespace CamelotEngine
 			{
 				// Save the vertex position.
 				lCurrentVertex = lControlPoints[lIndex];
-				vertexData->vertex[lIndex][0] = static_cast<float>(lCurrentVertex[0]);
-				vertexData->vertex[lIndex][1] = static_cast<float>(lCurrentVertex[1]);
-				vertexData->vertex[lIndex][2] = static_cast<float>(lCurrentVertex[2]);
+				vertex[lIndex][0] = static_cast<float>(lCurrentVertex[0]);
+				vertex[lIndex][1] = static_cast<float>(lCurrentVertex[1]);
+				vertex[lIndex][2] = static_cast<float>(lCurrentVertex[2]);
 
 				// Save vertex color
 				if(hasColor)
@@ -409,10 +416,10 @@ namespace CamelotEngine
 						lColorIndex = lColorElement->GetIndexArray().GetAt(lIndex);
 
 					FbxColor lCurrentColor = lColorElement->GetDirectArray().GetAt(lColorIndex);
-					vertexData->color[lIndex][0] = static_cast<float>(lCurrentColor[0]);
-					vertexData->color[lIndex][1] = static_cast<float>(lCurrentColor[1]);
-					vertexData->color[lIndex][2] = static_cast<float>(lCurrentColor[2]);
-					vertexData->color[lIndex][3] = static_cast<float>(lCurrentColor[3]);
+					color[lIndex][0] = static_cast<float>(lCurrentColor[0]);
+					color[lIndex][1] = static_cast<float>(lCurrentColor[1]);
+					color[lIndex][2] = static_cast<float>(lCurrentColor[2]);
+					color[lIndex][3] = static_cast<float>(lCurrentColor[3]);
 				}
 
 				// Save the normal.
@@ -423,9 +430,9 @@ namespace CamelotEngine
 						lNormalIndex = lNormalElement->GetIndexArray().GetAt(lIndex);
 
 					lCurrentNormal = lNormalElement->GetDirectArray().GetAt(lNormalIndex);
-					vertexData->normal[lIndex][0] = static_cast<float>(lCurrentNormal[0]);
-					vertexData->normal[lIndex][1] = static_cast<float>(lCurrentNormal[1]);
-					vertexData->normal[lIndex][2] = static_cast<float>(lCurrentNormal[2]);
+					normal[lIndex][0] = static_cast<float>(lCurrentNormal[0]);
+					normal[lIndex][1] = static_cast<float>(lCurrentNormal[1]);
+					normal[lIndex][2] = static_cast<float>(lCurrentNormal[2]);
 				}
 
 				// Save the tangent.
@@ -436,12 +443,12 @@ namespace CamelotEngine
 						lTangentIndex = lTangentElement->GetIndexArray().GetAt(lIndex);
 
 					FbxVector4 lCurrentTangent = lTangentElement->GetDirectArray().GetAt(lTangentIndex);
-					vertexData->tangent[lIndex][0] = static_cast<float>(lCurrentTangent[0]);
-					vertexData->tangent[lIndex][1] = static_cast<float>(lCurrentTangent[1]);
-					vertexData->tangent[lIndex][2] = static_cast<float>(lCurrentTangent[2]);
+					tangent[lIndex][0] = static_cast<float>(lCurrentTangent[0]);
+					tangent[lIndex][1] = static_cast<float>(lCurrentTangent[1]);
+					tangent[lIndex][2] = static_cast<float>(lCurrentTangent[2]);
 				}
 
-				// Save the tangent.
+				// Save the bitangent.
 				if (hasBitangent)
 				{
 					int lBitangentIndex = lIndex;
@@ -449,9 +456,9 @@ namespace CamelotEngine
 						lBitangentIndex = lBitangentElement->GetIndexArray().GetAt(lIndex);
 
 					FbxVector4 lCurrentBitangent = lBitangentElement->GetDirectArray().GetAt(lBitangentIndex);
-					vertexData->bitangent[lIndex][0] = static_cast<float>(lCurrentBitangent[0]);
-					vertexData->bitangent[lIndex][1] = static_cast<float>(lCurrentBitangent[1]);
-					vertexData->bitangent[lIndex][2] = static_cast<float>(lCurrentBitangent[2]);
+					bitangent[lIndex][0] = static_cast<float>(lCurrentBitangent[0]);
+					bitangent[lIndex][1] = static_cast<float>(lCurrentBitangent[1]);
+					bitangent[lIndex][2] = static_cast<float>(lCurrentBitangent[2]);
 				}
 
 				// Save the UV.
@@ -462,8 +469,8 @@ namespace CamelotEngine
 						lUVIndex = lUVElement0->GetIndexArray().GetAt(lIndex);
 
 					lCurrentUV = lUVElement0->GetDirectArray().GetAt(lUVIndex);
-					vertexData->uv0[lIndex][0] = static_cast<float>(lCurrentUV[0]);
-					vertexData->uv0[lIndex][1] = static_cast<float>(lCurrentUV[1]);
+					uv0[lIndex][0] = static_cast<float>(lCurrentUV[0]);
+					uv0[lIndex][1] = static_cast<float>(lCurrentUV[1]);
 				}
 
 				if (hasUV1)
@@ -473,13 +480,16 @@ namespace CamelotEngine
 						lUVIndex = lUVElement1->GetIndexArray().GetAt(lIndex);
 
 					lCurrentUV = lUVElement1->GetDirectArray().GetAt(lUVIndex);
-					vertexData->uv1[lIndex][0] = static_cast<float>(lCurrentUV[0]);
-					vertexData->uv1[lIndex][1] = static_cast<float>(lCurrentUV[1]);
+					uv1[lIndex][0] = static_cast<float>(lCurrentUV[0]);
+					uv1[lIndex][1] = static_cast<float>(lCurrentUV[1]);
 				}
 			}
 		}
 
 		int lVertexCount = 0;
+		vector<UINT32>::type indexOffsetPerSubmesh;
+		indexOffsetPerSubmesh.resize(subMeshes.size(), 0);
+
 		for (int lPolygonIndex = 0; lPolygonIndex < lPolygonCount; ++lPolygonIndex)
 		{
 			// The material for current face.
@@ -490,24 +500,24 @@ namespace CamelotEngine
 			}
 
 			// Where should I save the vertex attribute index, according to the material
-			const int lIndexOffset = meshData->subMeshes[lMaterialIndex].indexOffset + meshData->subMeshes[lMaterialIndex].indexCount;
+			int lIndexOffset = subMeshes[lMaterialIndex].indexOffset + indexOffsetPerSubmesh[lMaterialIndex];
 			for (int lVerticeIndex = 0; lVerticeIndex < 3; ++lVerticeIndex)
 			{
 				const int lControlPointIndex = mesh->GetPolygonVertex(lPolygonIndex, lVerticeIndex);
 
 				if (allByControlPoint)
 				{
-					meshData->index[lIndexOffset + lVerticeIndex] = static_cast<unsigned int>(lControlPointIndex);
+					indices[lMaterialIndex][lIndexOffset + lVerticeIndex] = static_cast<unsigned int>(lControlPointIndex);
 				}
 				// Populate the array with vertex attribute, if by polygon vertex.
 				else
 				{
-					meshData->index[lIndexOffset + lVerticeIndex] = static_cast<unsigned int>(lVertexCount);
+					indices[lMaterialIndex][lIndexOffset + lVerticeIndex] = static_cast<unsigned int>(lVertexCount);
 
 					lCurrentVertex = lControlPoints[lControlPointIndex];
-					vertexData->vertex[lVertexCount][0] = static_cast<float>(lCurrentVertex[0]);
-					vertexData->vertex[lVertexCount][1] = static_cast<float>(lCurrentVertex[1]);
-					vertexData->vertex[lVertexCount][2] = static_cast<float>(lCurrentVertex[2]);
+					vertex[lVertexCount][0] = static_cast<float>(lCurrentVertex[0]);
+					vertex[lVertexCount][1] = static_cast<float>(lCurrentVertex[1]);
+					vertex[lVertexCount][2] = static_cast<float>(lCurrentVertex[2]);
 
 					if(hasColor)
 					{
@@ -516,18 +526,18 @@ namespace CamelotEngine
 							lColorIndex = lColorElement->GetIndexArray().GetAt(lColorIndex);
 
 						FbxColor lCurrentColor = lColorElement->GetDirectArray().GetAt(lColorIndex);
-						vertexData->color[lVertexCount][0] = static_cast<float>(lCurrentColor[0]);
-						vertexData->color[lVertexCount][1] = static_cast<float>(lCurrentColor[1]);
-						vertexData->color[lVertexCount][2] = static_cast<float>(lCurrentColor[2]);
-						vertexData->color[lVertexCount][3] = static_cast<float>(lCurrentColor[3]);
+						color[lVertexCount][0] = static_cast<float>(lCurrentColor[0]);
+						color[lVertexCount][1] = static_cast<float>(lCurrentColor[1]);
+						color[lVertexCount][2] = static_cast<float>(lCurrentColor[2]);
+						color[lVertexCount][3] = static_cast<float>(lCurrentColor[3]);
 					}
 
 					if (hasNormal)
 					{
 						mesh->GetPolygonVertexNormal(lPolygonIndex, lVerticeIndex, lCurrentNormal);
-						vertexData->normal[lVertexCount][0] = static_cast<float>(lCurrentNormal[0]);
-						vertexData->normal[lVertexCount][1] = static_cast<float>(lCurrentNormal[1]);
-						vertexData->normal[lVertexCount][2] = static_cast<float>(lCurrentNormal[2]);
+						normal[lVertexCount][0] = static_cast<float>(lCurrentNormal[0]);
+						normal[lVertexCount][1] = static_cast<float>(lCurrentNormal[1]);
+						normal[lVertexCount][2] = static_cast<float>(lCurrentNormal[2]);
 					}
 
 					if (hasTangent)
@@ -537,9 +547,9 @@ namespace CamelotEngine
 							lTangentIndex = lTangentElement->GetIndexArray().GetAt(lTangentIndex);
 
 						FbxVector4 lCurrentTangent = lTangentElement->GetDirectArray().GetAt(lTangentIndex);
-						vertexData->tangent[lVertexCount][0] = static_cast<float>(lCurrentTangent[0]);
-						vertexData->tangent[lVertexCount][1] = static_cast<float>(lCurrentTangent[1]);
-						vertexData->tangent[lVertexCount][2] = static_cast<float>(lCurrentTangent[2]);
+						tangent[lVertexCount][0] = static_cast<float>(lCurrentTangent[0]);
+						tangent[lVertexCount][1] = static_cast<float>(lCurrentTangent[1]);
+						tangent[lVertexCount][2] = static_cast<float>(lCurrentTangent[2]);
 					}
 
 					if (hasBitangent)
@@ -549,257 +559,56 @@ namespace CamelotEngine
 							lBitangentIndex = lBitangentElement->GetIndexArray().GetAt(lBitangentIndex);
 
 						FbxVector4 lCurrentBitangent = lBitangentElement->GetDirectArray().GetAt(lBitangentIndex);
-						vertexData->bitangent[lVertexCount][0] = static_cast<float>(lCurrentBitangent[0]);
-						vertexData->bitangent[lVertexCount][1] = static_cast<float>(lCurrentBitangent[1]);
-						vertexData->bitangent[lVertexCount][2] = static_cast<float>(lCurrentBitangent[2]);
+						bitangent[lVertexCount][0] = static_cast<float>(lCurrentBitangent[0]);
+						bitangent[lVertexCount][1] = static_cast<float>(lCurrentBitangent[1]);
+						bitangent[lVertexCount][2] = static_cast<float>(lCurrentBitangent[2]);
 					}
 
 					if (hasUV0)
 					{
 						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName0, lCurrentUV);
-						vertexData->uv0[lVertexCount][0] = static_cast<float>(lCurrentUV[0]);
-						vertexData->uv0[lVertexCount][1] = static_cast<float>(lCurrentUV[1]);
+						uv0[lVertexCount][0] = static_cast<float>(lCurrentUV[0]);
+						uv0[lVertexCount][1] = static_cast<float>(lCurrentUV[1]);
 					}
 
 					if (hasUV1)
 					{
 						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName1, lCurrentUV);
-						vertexData->uv1[lVertexCount][0] = static_cast<float>(lCurrentUV[0]);
-						vertexData->uv1[lVertexCount][1] = static_cast<float>(lCurrentUV[1]);
+						uv1[lVertexCount][0] = static_cast<float>(lCurrentUV[0]);
+						uv1[lVertexCount][1] = static_cast<float>(lCurrentUV[1]);
 					}
 				}
 				++lVertexCount;
 			}
 
-			meshData->subMeshes[lMaterialIndex].indexCount += 3;
+			indexOffsetPerSubmesh[lMaterialIndex] += 3;
 		}
 
-		initDeclarationForMeshData(meshData);
+		if(vertex != nullptr)
+			meshData->setPositions(vertex, vertexCount);
 
-		return meshData;
-	}
+		if(color != nullptr)
+			meshData->setColors(color, vertexCount);
 
-	void FBXImporter::initDeclarationForMeshData(MeshDataPtr meshData)
-	{
-		std::shared_ptr<MeshData::VertexData> vertexData = meshData->vertexBuffers[0];
+		if(normal != nullptr)
+			meshData->setNormals(normal, vertexCount);
 
-		UINT32 offset = 0;
-		if(vertexData->vertex)
+		if(tangent != nullptr)
+			meshData->setTangents(tangent, vertexCount);
+
+		if(bitangent != nullptr)
+			meshData->setBitangents(bitangent, vertexCount);
+
+		if(uv0 != nullptr)
+			meshData->setUV0(uv0, vertexCount);
+
+		if(uv1 != nullptr)
+			meshData->setUV1(uv1, vertexCount);
+
+		for(size_t i = 0; i < subMeshes.size(); i++)
 		{
-			meshData->declaration->addElement(0, offset, VET_FLOAT3, VES_POSITION, 0);
-			offset += VertexElement::getTypeSize(VET_FLOAT3);
+			meshData->setIndices(indices[i], subMeshes[i].indexCount, (UINT32)i);
 		}
-
-		if(vertexData->color)
-		{
-			meshData->declaration->addElement(0, offset, VET_COLOR, VES_COLOR, 0);
-			offset += VertexElement::getTypeSize(VET_COLOR);
-		}
-
-		if(vertexData->normal)
-		{
-			meshData->declaration->addElement(0, offset, VET_FLOAT3, VES_NORMAL, 0);
-			offset += VertexElement::getTypeSize(VET_FLOAT3);
-		}
-
-		if(vertexData->tangent)
-		{
-			meshData->declaration->addElement(0, offset, VET_FLOAT3, VES_TANGENT, 0);
-			offset += VertexElement::getTypeSize(VET_FLOAT3);
-		}
-
-		// TODO - Storing bitangents with the mesh is probably not a good idea. It's likely cheaper to recreate them in the shader
-		if(vertexData->bitangent)
-		{
-			meshData->declaration->addElement(0, offset, VET_FLOAT3, VES_BITANGENT, 0);
-			offset += VertexElement::getTypeSize(VET_FLOAT3);
-		}
-
-		if(vertexData->uv0)
-		{
-			meshData->declaration->addElement(0, offset, VET_FLOAT2, VES_TEXCOORD, 0);
-			offset += VertexElement::getTypeSize(VET_FLOAT2);
-		}
-
-		if(vertexData->uv1)
-		{
-			meshData->declaration->addElement(0, offset, VET_FLOAT2, VES_TEXCOORD, 1);
-			offset += VertexElement::getTypeSize(VET_FLOAT2);
-		}
-	}
-
-	MeshDataPtr FBXImporter::mergeMeshData(vector<MeshDataPtr>::type meshes)
-	{
-		// TODO Low priority - Throughout this method we're assuming mesh data only has a single stream, which is a fair assumption now, but that might change later.
-
-		MeshDataPtr meshData = MeshDataPtr(new MeshData());
-
-		bool hasPosition = false;
-		bool hasColors = false;
-		bool hasNormals = false;
-		bool hasTangents = false;
-		bool hasBitangents = false;
-		bool hasUV0 = false;
-		bool hasUV1 = false;
-
-		// Count all vertices and indexes. And determine all data types.
-		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
-		{
-			meshData->indexCount += (*iter)->indexCount;
-			meshData->vertexCount += (*iter)->vertexCount;
-
-			std::shared_ptr<MeshData::VertexData> vertData = (*iter)->vertexBuffers[0];
-			if(vertData)
-			{
-				if(vertData->vertex)
-					hasPosition = true;
-
-				if(vertData->color)
-					hasColors = true;
-
-				if(vertData->normal)
-					hasNormals = true;
-
-				if(vertData->tangent)
-					hasTangents = true;
-
-				if(vertData->bitangent)
-					hasBitangents = true;
-
-				if(vertData->uv0)
-					hasUV0 = true;
-
-				if(vertData->uv1)
-					hasUV1 = true;
-			}
-		}
-
-		// Copy indices
-		meshData->index = new int[meshData->indexCount];
-
-		int currentIndexIdx = 0;
-		int currentVertIdx = 0;
-		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
-		{
-			int indexCount = (*iter)->indexCount;
-
-			for(int i = 0; i < indexCount; i++)
-				meshData->index[currentIndexIdx + i] = (*iter)->index[i] + currentVertIdx;
-
-			currentIndexIdx += indexCount;
-			currentVertIdx += (*iter)->vertexCount;
-		}
-
-		// Copy vertex data
-		std::shared_ptr<MeshData::VertexData> combinedVertData(new MeshData::VertexData(meshData->vertexCount, 0));
-		meshData->vertexBuffers[0] = combinedVertData;
-
-		if(hasPosition)
-			combinedVertData->vertex = new Vector3[meshData->vertexCount];
-
-		if(hasColors)
-			combinedVertData->color = new Color[meshData->vertexCount];
-
-		if(hasNormals)
-			combinedVertData->normal = new Vector3[meshData->vertexCount];
-
-		if(hasTangents)
-			combinedVertData->tangent = new Vector3[meshData->vertexCount];
-
-		if(hasBitangents)
-			combinedVertData->bitangent = new Vector3[meshData->vertexCount];
-
-		if(hasUV0)
-			combinedVertData->uv0 = new Vector2[meshData->vertexCount];
-
-		if(hasUV1)
-			combinedVertData->uv1 = new Vector2[meshData->vertexCount];
-
-		currentVertIdx = 0;
-		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
-		{
-			int indexCount = (*iter)->indexCount;
-
-			std::shared_ptr<MeshData::VertexData> vertData = (*iter)->vertexBuffers[0];
-
-			if(hasPosition)
-			{
-				if(vertData && vertData->vertex)
-					memcpy(&combinedVertData->vertex[currentVertIdx], vertData->vertex, (*iter)->vertexCount * sizeof(Vector3));
-				else
-					memset(&combinedVertData->vertex[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector3));
-			}
-
-			if(hasColors)
-			{
-				if(vertData && vertData->color)
-					memcpy(&combinedVertData->color[currentVertIdx], vertData->color, (*iter)->vertexCount * sizeof(Color));
-				else
-					memset(&combinedVertData->color[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Color));
-			}
-
-			if(hasNormals)
-			{
-				if(vertData && vertData->normal)
-					memcpy(&combinedVertData->normal[currentVertIdx], vertData->normal, (*iter)->vertexCount * sizeof(Vector3));
-				else
-					memset(&combinedVertData->normal[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector3));
-			}
-
-			if(hasTangents)
-			{
-				if(vertData && vertData->tangent)
-					memcpy(&combinedVertData->tangent[currentVertIdx], vertData->tangent, (*iter)->vertexCount * sizeof(Vector3));
-				else
-					memset(&combinedVertData->tangent[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector3));
-			}
-
-			if(hasBitangents)
-			{
-				if(vertData && vertData->bitangent)
-					memcpy(&combinedVertData->bitangent[currentVertIdx], vertData->bitangent, (*iter)->vertexCount * sizeof(Vector3));
-				else
-					memset(&combinedVertData->bitangent[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector3));
-			}
-
-			if(hasUV0)
-			{
-				if(vertData && vertData->uv0)
-					memcpy(&combinedVertData->uv0[currentVertIdx], vertData->uv0, (*iter)->vertexCount * sizeof(Vector2));
-				else
-					memset(&combinedVertData->uv0[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector2));
-			}
-
-			if(hasUV1)
-			{
-				if(vertData && vertData->uv1)
-					memcpy(&combinedVertData->uv1[currentVertIdx], vertData->uv1, (*iter)->vertexCount * sizeof(Vector2));
-				else
-					memset(&combinedVertData->uv1[currentVertIdx], 0, (*iter)->vertexCount * sizeof(Vector2));
-			}
-
-			currentVertIdx += (*iter)->vertexCount;
-		}
-
-		// Copy submesh data
-		currentIndexIdx = 0;
-		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
-		{
-			UINT32 subMeshCount = (UINT32)(*iter)->subMeshes.size();
-
-			for(UINT32 i = 0; i < subMeshCount; i++)
-			{
-				MeshData::SubMeshData newSubMesh;
-				newSubMesh.indexCount = (*iter)->subMeshes[i].indexCount;
-				newSubMesh.indexOffset = (*iter)->subMeshes[i].indexOffset + currentIndexIdx;
-
-				meshData->subMeshes.push_back(newSubMesh);
-			}
-
-			currentIndexIdx += (*iter)->indexCount;
-		}
-
-		initDeclarationForMeshData(meshData);
 
 		return meshData;
 	}

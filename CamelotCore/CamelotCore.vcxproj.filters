@@ -662,5 +662,8 @@
     <ClCompile Include="Source\CmTextSprite.cpp">
       <Filter>Source Files\2D</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmMeshDataRTTI.cpp">
+      <Filter>Source Files\RTTI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
