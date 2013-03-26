@@ -179,8 +179,8 @@ namespace CamelotEngine
 						assert(curVert < maxVertIdx);
 						assert(curIndex < maxIndexIdx);
 
-						UINT32 curX = penX + charIter->xOffset;
-						UINT32 curY = baselineY - charIter->yOffset;
+						INT32 curX = penX + charIter->xOffset;
+						INT32 curY = -(baselineY - charIter->yOffset);
 
 						vertices[curVert + 0] = Vector2((float)curX, (float)curY);
 						vertices[curVert + 1] = Vector2((float)(curX + charIter->width), (float)curY);
