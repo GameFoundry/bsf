@@ -2,14 +2,29 @@
 #include "CmException.h"
 #include "CmRenderSystem.h"
 #include "CmDebug.h"
+#include "CmUtil.h"
 
 namespace CamelotEngine
 {
+#if CM_DEBUG_MODE
+	CommandQueue::CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
+		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads), mMaxDebugIdx(0)
+	{
+		mCommands = new std::queue<Command>();
+
+		{
+			CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
+
+			mCommandQueueIdx = MaxCommandQueueIdx++;
+		}
+	}
+#else
 	CommandQueue::CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
 		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads)
 	{
 		mCommands = new std::queue<Command>();
 	}
+#endif
 
 	CommandQueue::~CommandQueue()
 	{
@@ -37,7 +52,14 @@ namespace CamelotEngine
 #endif
 #endif
 
+#if CM_DEBUG_MODE
+		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
+
+		Command newCommand(commandCallback, mMaxDebugIdx++, _notifyWhenComplete, _callbackId);
+#else
 		Command newCommand(commandCallback, _notifyWhenComplete, _callbackId);
+#endif
+
 		mCommands->push(newCommand);
 
 #if CM_FORCE_SINGLETHREADED_RENDERING
@@ -59,7 +81,14 @@ namespace CamelotEngine
 #endif
 #endif
 
+#if CM_DEBUG_MODE
+		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
+
+		Command newCommand(commandCallback, mMaxDebugIdx++, _notifyWhenComplete, _callbackId);
+#else
 		Command newCommand(commandCallback, _notifyWhenComplete, _callbackId);
+#endif
+
 		mCommands->push(newCommand);
 
 #if CM_FORCE_SINGLETHREADED_RENDERING
@@ -138,4 +167,48 @@ namespace CamelotEngine
 
 		return true;
 	}
+
+#if CM_DEBUG_MODE
+	CM_STATIC_MUTEX_CLASS_INSTANCE(CommandQueueBreakpointMutex, CommandQueue);
+	UINT32 CommandQueue::MaxCommandQueueIdx = 0;
+	std::unordered_set<CommandQueue::QueueBreakpoint, CommandQueue::QueueBreakpoint::HashFunction, 
+		CommandQueue::QueueBreakpoint::EqualFunction> CommandQueue::SetBreakpoints;
+
+	inline size_t CommandQueue::QueueBreakpoint::HashFunction::operator()(const QueueBreakpoint& v) const
+	{
+		size_t seed = 0;
+		hash_combine(seed, v.queueIdx);
+		hash_combine(seed, v.commandIdx);
+		return seed;
+	}
+
+	inline bool CommandQueue::QueueBreakpoint::EqualFunction::operator()(const QueueBreakpoint &a, const QueueBreakpoint &b) const
+	{
+		return a.queueIdx == b.queueIdx && a.commandIdx == b.commandIdx;
+	}
+
+	void CommandQueue::addBreakpoint(UINT32 queueIdx, UINT32 commandIdx)
+	{
+		CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
+
+		SetBreakpoints.insert(QueueBreakpoint(queueIdx, commandIdx));
+	}
+
+	void CommandQueue::breakIfNeeded(UINT32 queueIdx, UINT32 commandIdx)
+	{
+		// I purposely don't use a mutex here, as this gets called very often. Generally breakpoints
+		// will only be added at the start of the application, so race conditions should not occur.
+		auto iterFind = SetBreakpoints.find(QueueBreakpoint(queueIdx, commandIdx));
+
+		if(iterFind != SetBreakpoints.end())
+		{
+			assert(false && "Command queue breakpoint triggered!");
+		}
+	}
+#else
+	void CommandQueue::addBreakpoint(UINT32 queueIdx, UINT32 commandIdx)
+	{
+		// Do nothing, no breakpoints in release
+	}
+#endif
 }

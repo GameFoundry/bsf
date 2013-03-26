@@ -21,6 +21,10 @@ Figure out how to store texture references in a font?
 
 Move Debug to CamelotCore and add SetFillMode
 
+Test:
+Better font (Terminal?)
+Shader with scene blending
+Test word wrap, implement clipping
 Add HLSL9 and GLSL text materials & shaders
 Add resolution to GUI shader
 Add 0.5 offset to GUI shader (depending on render system)

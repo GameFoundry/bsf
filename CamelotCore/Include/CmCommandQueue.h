@@ -4,6 +4,7 @@
 #include "CmAsyncOp.h"
 #include "CmCommonEnums.h"
 #include "boost/function.hpp"
+#include <functional>
 
 namespace CamelotEngine
 {
@@ -11,11 +12,22 @@ namespace CamelotEngine
 	 * @brief	Contains a list of commands that can be queued by one thread,
 	 * 			and executed by another.
 	 */
-	class CommandQueue
+	class CM_EXPORT CommandQueue
 	{
 	public:
 		struct Command
 		{
+#ifdef CM_DEBUG_MODE
+			Command(boost::function<void(AsyncOp&)> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+				:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
+			{ }
+
+			Command(boost::function<void()> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+				:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
+			{ }
+
+			UINT32 debugId;
+#else
 			Command(boost::function<void(AsyncOp&)> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 				:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
 			{ }
@@ -23,6 +35,7 @@ namespace CamelotEngine
 			Command(boost::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 				:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
 			{ }
+#endif
 
 			boost::function<void()> callback;
 			boost::function<void(AsyncOp&)> callbackWithReturnValue;
@@ -109,12 +122,62 @@ namespace CamelotEngine
 		 */
 		bool isEmpty();
 
+		/**
+		 * @brief	Allows you to set a breakpoint that will trigger when the specified command is executed.
+		 * 			
+		 * @note	This is helpful when you receive an error on the executing thread and you cannot tell from where was
+		 * 			the command that caused the error queued from. However you can make a note of the queue and command index
+		 * 			and set a breakpoint so that it gets triggered next time you run the program. At that point you can know 
+		 * 			exactly which part of code queued the command by examining the stack trace.
+		 *
+		 * @param	queueIdx  	Zero-based index of the queue the command was queued on.
+		 * @param	commandIdx	Zero-based index of the command.
+		 */
+		static void addBreakpoint(UINT32 queueIdx, UINT32 commandIdx);
+
 	private:
 		std::queue<Command>* mCommands;
 
 		bool mAllowAllThreads;
-
+		
 		CM_THREAD_ID_TYPE mMyThreadId;
 		CM_MUTEX(mCommandBufferMutex);
+
+		// Various variables that allow for easier debugging by allowing us to trigger breakpoints
+		// when a certain command was queued.
+#if CM_DEBUG_MODE
+		struct QueueBreakpoint
+		{
+			class HashFunction
+			{
+			public:
+				size_t operator()(const QueueBreakpoint &key) const;
+			};
+
+			class EqualFunction
+			{
+			public:
+				bool operator()(const QueueBreakpoint &a, const QueueBreakpoint &b) const;
+			};
+
+			QueueBreakpoint(UINT32 _queueIdx, UINT32 _commandIdx)
+				:queueIdx(_queueIdx), commandIdx(_commandIdx)
+			{ }
+
+			UINT32 queueIdx;
+			UINT32 commandIdx;
+
+			inline size_t operator()(const QueueBreakpoint& v) const;
+		};
+
+		UINT32 mMaxDebugIdx;
+		UINT32 mCommandQueueIdx;
+
+		static UINT32 MaxCommandQueueIdx;
+		static std::unordered_set<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction> SetBreakpoints;
+		CM_STATIC_MUTEX(CommandQueueBreakpointMutex);
+
+		static void breakIfNeeded(UINT32 queueIdx, UINT32 commandIdx);
+#endif
 	};
 }

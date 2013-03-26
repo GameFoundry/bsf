@@ -20,6 +20,7 @@
 #include "CmGpuProgInclude.h" // DEBUG ONLY
 #include "CmGpuProgramImportOptions.h"
 #include "CmFontImportOptions.h"
+#include "CmCommandQueue.h"
 
 #include "CmDebugCamera.h"
 #include "CmTestTextSprite.h"
@@ -107,6 +108,8 @@ int CALLBACK WinMain(
 #else
 	gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
 #endif
+
+	//CommandQueue::addBreakpoint(1, 11);
 
 	RenderSystem* renderSystem = RenderSystem::instancePtr();
 	RenderWindowPtr renderWindow = gApplication().getPrimaryRenderWindow();
