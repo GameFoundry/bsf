@@ -19,6 +19,19 @@ namespace CamelotEngine
 		SA_BottomRight
 	};
 
+	struct SpriteRenderElement
+	{
+		SpriteRenderElement()
+			:vertices(nullptr), uvs(nullptr), indexes(nullptr), numQuads(0)
+		{ }
+
+		Vector2* vertices;
+		Vector2* uvs;
+		UINT32* indexes;
+		UINT32 numQuads;
+		MaterialHandle material;
+	};
+
 	class CM_EXPORT Sprite
 	{
 	public:
@@ -36,8 +49,51 @@ namespace CamelotEngine
 		Rect getClipRect() const { return mClipRect; }
 		SpriteAnchor getAnchor() const { return mAnchor; }
 
-		UINT32 fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads);
-		UINT32 getNumFaces();
+		/**
+		 * @brief	Returns the number of separate render elements in the sprite. Normally this is one, but some sprites
+		 * 			may consist of multiple materials, in which case each will require it's own mesh (render element)
+		 * 			
+		 * @return	The number render elements.
+		 */
+		UINT32 getNumRenderElements() const;
+
+		/**
+		 * @brief	Gets a material for the specified render element index.
+		 * 			
+		 * @see getNumRenderElements()
+		 * 		
+		 * @return	Handle to the material.
+		 */
+		const MaterialHandle& getMaterial(UINT32 renderElementIdx) const;
+
+		/**
+		 * @brief	Returns the number of quads that the specified render element will use. You will need this
+		 * 			value when creating the buffers before calling "fillBuffer".
+		 * 			
+		 * @see getNumRenderElements()
+		 * @see fillBuffer()
+		 * 		
+		 * @note	Number of vertices = Number of quads * 4
+		 *			Number of indices = Number of quads * 6
+		 *			
+		 * @return	Number of quads for the specified render element. 
+		 */
+		UINT32 getNumQuads(UINT32 renderElementIdx) const;
+
+		/**
+		 * @brief	Fill the pre-allocated vertex, uv and index buffers with the mesh data for the specified render element.
+		 *
+		 * @see getNumRenderElements()
+		 * @see	getNumQuads()
+		 * 		
+		 * @param   vertices			Previously allocated buffer where to store the vertices.
+		 * @param   uv					Previously allocated buffer where to store the uv coordinates.
+		 * @param   indices 			Previously allocated buffer where to store the indices.
+		 * @param	startingQuad		At which quad should the method start filling the buffer.
+		 * @param	maxNumQuads			Total number of quads the buffers were allocated for. Used only for memory safety.
+		 * @param	renderElementIdx	Zero-based index of the render element.
+		 */
+		UINT32 fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const;
 
 	protected:
 		Point mOffset;
@@ -45,16 +101,13 @@ namespace CamelotEngine
 		Rect mClipRect;
 		SpriteAnchor mAnchor;
 
-		bool mIsDirty;
-		Vector2* mVertices;
-		Vector2* mUVs;
-		UINT32* mIndexes;
-		UINT32 mNumMeshQuads;
+		mutable bool mIsDirty;
+		mutable vector<SpriteRenderElement>::type mCachedRenderElements;
 
 		void setDirty() { mIsDirty = true; }
 		Point getAnchorOffset() const;
 
-		virtual void updateMesh() = 0;
-		void clearMesh();
+		virtual void updateMesh() const = 0;
+		void clearMesh() const;
 	};
 }

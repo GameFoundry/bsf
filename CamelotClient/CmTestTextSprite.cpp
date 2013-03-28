@@ -29,7 +29,7 @@ namespace CamelotEngine
 		mTextSprite->setText(text);
 		mTextSprite->setFont(font.getInternalPtr(), fontSize);
 
-		UINT32 numTextFaces = mTextSprite->getNumFaces();
+		UINT32 numTextFaces = mTextSprite->getNumQuads(0);
 		UINT32 numVertices = numTextFaces * 4;
 		UINT32 numIndices = numTextFaces * 6;
 
@@ -41,7 +41,7 @@ namespace CamelotEngine
 
 		auto vec2Buffer = new Vector2[numVertices];
 
-		mTextSprite->fillBuffer(vec2Buffer, uvs, indices, 0, numTextFaces);
+		mTextSprite->fillBuffer(vec2Buffer, uvs, indices, 0, numTextFaces, 0);
 
 		for(UINT32 i = 0; i < numVertices; i++)
 			vertices[i] = Vector3(vec2Buffer[i].x, vec2Buffer[i].y, 0.0f);

@@ -23,6 +23,10 @@ Move Debug to CamelotCore and add SetFillMode
 
 Test:
 Need sorted rendering as fonts render before scene and blending doesn't work as it should
+ - Implemented 2D renderer and ensure it runs after everything else
+ - Or just add render queue ID to meshes?
+Start work on GUILabel element?
+ - Work on other sprites after that.
 Better font (Terminal?)
 Test word wrap, implement clipping
 Add HLSL9 and GLSL text materials & shaders

@@ -4,8 +4,7 @@
 namespace CamelotEngine
 {
 	Sprite::Sprite()
-		:mWidth(0), mHeight(0), mAnchor(SA_TopLeft), mIsDirty(true),
-		mVertices(nullptr), mUVs(nullptr), mIndexes(nullptr), mNumMeshQuads(0)
+		:mWidth(0), mHeight(0), mAnchor(SA_TopLeft), mIsDirty(true)
 	{
 
 	}
@@ -15,13 +14,42 @@ namespace CamelotEngine
 
 	}
 
-	UINT32 Sprite::fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads)
+	UINT32 Sprite::getNumRenderElements() const
 	{
 		if(mIsDirty)
 		{
 			updateMesh();
 			mIsDirty = false;
 		}
+
+		return (UINT32)mCachedRenderElements.size();
+	}
+
+	const MaterialHandle& Sprite::getMaterial(UINT32 renderElementIdx) const
+	{
+		return mCachedRenderElements.at(renderElementIdx).material;
+	}
+
+	UINT32 Sprite::getNumQuads(UINT32 renderElementIdx) const
+	{
+		if(mIsDirty)
+		{
+			updateMesh();
+			mIsDirty = false;
+		}
+
+		return mCachedRenderElements.at(renderElementIdx).numQuads;
+	}
+
+	UINT32 Sprite::fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const
+	{
+		if(mIsDirty)
+		{
+			updateMesh();
+			mIsDirty = false;
+		}
+
+		auto renderElem = mCachedRenderElements.at(renderElementIdx);
 
 		UINT32 startVert = startingQuad * 4;
 		UINT32 startIndex = startingQuad * 4;
@@ -29,28 +57,17 @@ namespace CamelotEngine
 		UINT32 maxVertIdx = maxNumQuads * 4;
 		UINT32 maxIndexIdx = maxNumQuads * 6;
 
-		UINT32 mNumVertices = mNumMeshQuads * 4;
-		UINT32 mNumIndices = mNumMeshQuads * 6;
+		UINT32 mNumVertices = renderElem.numQuads * 4;
+		UINT32 mNumIndices = renderElem.numQuads * 6;
 
 		assert((startVert + mNumVertices) <= maxVertIdx);
 		assert((startIndex + mNumIndices) <= maxIndexIdx);
 
-		memcpy(&vertices[startVert], mVertices, mNumVertices * sizeof(Vector2));
-		memcpy(&uv[startVert], mUVs, mNumVertices * sizeof(Vector2));
-		memcpy(&indices[startIndex], mIndexes, mNumIndices * sizeof(UINT32));
+		memcpy(&vertices[startVert], renderElem.vertices, mNumVertices * sizeof(Vector2));
+		memcpy(&uv[startVert], renderElem.uvs, mNumVertices * sizeof(Vector2));
+		memcpy(&indices[startIndex], renderElem.indexes, mNumIndices * sizeof(UINT32));
 
-		return mNumMeshQuads;
-	}
-
-	UINT32 Sprite::getNumFaces()
-	{
-		if(mIsDirty)
-		{
-			updateMesh();
-			mIsDirty = false;
-		}
-
-		return mNumMeshQuads;
+		return renderElem.numQuads;
 	}
 
 	Point Sprite::getAnchorOffset() const
@@ -80,17 +97,20 @@ namespace CamelotEngine
 		return Point();
 	}
 
-	void Sprite::clearMesh()
+	void Sprite::clearMesh() const
 	{
-		if(mVertices != nullptr)
-			delete[] mVertices;
+		for(auto& renderElem : mCachedRenderElements)
+		{
+			if(renderElem.vertices != nullptr)
+				delete[] renderElem.vertices;
 
-		if(mUVs != nullptr)
-			delete[] mUVs;
+			if(renderElem.uvs != nullptr)
+				delete[] renderElem.uvs;
 
-		if(mIndexes != nullptr)
-			delete[] mIndexes;
+			if(renderElem.indexes != nullptr)
+				delete[] renderElem.indexes;
+		}
 
-		mNumMeshQuads = 0;
+		mCachedRenderElements.clear();
 	}
 }

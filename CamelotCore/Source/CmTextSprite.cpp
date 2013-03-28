@@ -154,14 +154,8 @@ namespace CamelotEngine
 		Point getPosition() const { return mPosition; }
 		void setPosition(const Point& pos) { mPosition = pos; }
 
-		UINT32 fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, const FontData& fontData)
+		void fillBuffer(const vector<SpriteRenderElement>::type& renderElements, vector<UINT32>::type& faceOffsets, const FontData& fontData)
 		{
-			UINT32 curVert = startingQuad * 4;
-			UINT32 curIndex = startingQuad * 6;
-
-			UINT32 maxVertIdx = maxNumQuads * 4;
-			UINT32 maxIndexIdx = maxNumQuads * 6;
-
 			UINT32 penX = mPosition.x;
 			UINT32 baselineY = mPosition.y + fontData.fontDesc.baselineOffset;
 			for(auto wordIter = mWords.begin(); wordIter != mWords.end(); ++wordIter)
@@ -176,33 +170,34 @@ namespace CamelotEngine
 					UINT32 kerning = 0;
 					for(auto charIter = chars.begin(); charIter != chars.end(); ++charIter)
 					{
-						assert(curVert < maxVertIdx);
-						assert(curIndex < maxIndexIdx);
-
 						INT32 curX = penX + charIter->xOffset;
-						INT32 curY = -(baselineY - charIter->yOffset);
+						INT32 curY = -((INT32)baselineY - charIter->yOffset);
 
-						vertices[curVert + 0] = Vector2((float)curX, (float)curY);
-						vertices[curVert + 1] = Vector2((float)(curX + charIter->width), (float)curY);
-						vertices[curVert + 2] = Vector2((float)curX, (float)curY - (float)charIter->height);
-						vertices[curVert + 3] = Vector2((float)(curX + charIter->width), (float)curY - (float)charIter->height);
+						UINT32 curVert = faceOffsets[charIter->page] * 4;
+						UINT32 curIndex = faceOffsets[charIter->page] * 6;
 
-						uv[curVert + 0] = Vector2(charIter->uvX, charIter->uvY);
-						uv[curVert + 1] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY);
-						uv[curVert + 2] = Vector2(charIter->uvX, charIter->uvY + charIter->uvHeight);
-						uv[curVert + 3] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY + charIter->uvHeight);
+						const SpriteRenderElement& renderElem = renderElements[charIter->page];
 
-						indices[curIndex + 0] = curVert + 0;
-						indices[curIndex + 1] = curVert + 1;
-						indices[curIndex + 2] = curVert + 2;
-						indices[curIndex + 3] = curVert + 1;
-						indices[curIndex + 4] = curVert + 3;
-						indices[curIndex + 5] = curVert + 2;
+						renderElem.vertices[curVert + 0] = Vector2((float)curX, (float)curY);
+						renderElem.vertices[curVert + 1] = Vector2((float)(curX + charIter->width), (float)curY);
+						renderElem.vertices[curVert + 2] = Vector2((float)curX, (float)curY - (float)charIter->height);
+						renderElem.vertices[curVert + 3] = Vector2((float)(curX + charIter->width), (float)curY - (float)charIter->height);
+
+						renderElem.uvs[curVert + 0] = Vector2(charIter->uvX, charIter->uvY);
+						renderElem.uvs[curVert + 1] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY);
+						renderElem.uvs[curVert + 2] = Vector2(charIter->uvX, charIter->uvY + charIter->uvHeight);
+						renderElem.uvs[curVert + 3] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY + charIter->uvHeight);
+
+						renderElem.indexes[curIndex + 0] = curVert + 0;
+						renderElem.indexes[curIndex + 1] = curVert + 1;
+						renderElem.indexes[curIndex + 2] = curVert + 2;
+						renderElem.indexes[curIndex + 3] = curVert + 1;
+						renderElem.indexes[curIndex + 4] = curVert + 3;
+						renderElem.indexes[curIndex + 5] = curVert + 2;
 
 						penX += charIter->xAdvance + kerning;
-						curVert += 4;
-						curIndex += 6;
-						
+						faceOffsets[charIter->page]++;
+
 						kerning = 0;
 						if((charIter + 1) != chars.end())
 						{
@@ -218,8 +213,6 @@ namespace CamelotEngine
 					}
 				}
 			}
-
-			return (curVert / 4) - startingQuad;
 		}
 
 	private:
@@ -250,7 +243,7 @@ namespace CamelotEngine
 
 	}
 
-	void TextSprite::updateMesh()
+	void TextSprite::updateMesh() const
 	{
 		const FontData* fontData = getFontData();
 
@@ -273,7 +266,7 @@ namespace CamelotEngine
 
 		UINT32 curHeight = fontData->fontDesc.lineHeight;
 		UINT32 charIdx = 0;
-		mNumMeshQuads = 0;
+
 		while(true)
 		{
 			if(charIdx >= mText.size())
@@ -298,7 +291,12 @@ namespace CamelotEngine
 			curLine->add(charDesc);
 
 			if(charDesc.charId != SPACE_CHAR)
-				mNumMeshQuads++;
+			{
+				if(charDesc.page >= (UINT32)mCachedRenderElements.size())
+					mCachedRenderElements.resize(charDesc.page + 1);
+
+				mCachedRenderElements[charDesc.page].numQuads++;
+			}
 
 			if(widthIsLimited && curLine->getWidth() > mWidth)
 			{
@@ -370,17 +368,16 @@ namespace CamelotEngine
 		}
 
 		// Actually generate a mesh
-		mVertices = new Vector2[mNumMeshQuads * 4];
-		mUVs = new Vector2[mNumMeshQuads * 4];
-		mIndexes = new UINT32[mNumMeshQuads * 6];
-
-		UINT32 curFace = 0;
-		for(size_t i = 0; i < textLines.size(); i++)
+		for(auto& renderElem : mCachedRenderElements)
 		{
-			UINT32 newFaces = textLines[i]->fillBuffer(mVertices, mUVs, mIndexes, curFace, mNumMeshQuads, *fontData);
-
-			curFace += newFaces;
+			renderElem.vertices = new Vector2[renderElem.numQuads * 4];
+			renderElem.uvs = new Vector2[renderElem.numQuads * 4];
+			renderElem.indexes = new UINT32[renderElem.numQuads * 6];
 		}
+
+		vector<UINT32>::type faceOffsets(mCachedRenderElements.size(), 0);
+		for(size_t i = 0; i < textLines.size(); i++)
+			textLines[i]->fillBuffer(mCachedRenderElements, faceOffsets, *fontData);
 
 		for(size_t i = 0; i < textLines.size(); i++)
 			delete textLines[i];

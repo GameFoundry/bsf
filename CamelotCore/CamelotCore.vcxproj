@@ -211,6 +211,11 @@
     <ClInclude Include="Include\CmGpuProgramManager.h" />
     <ClInclude Include="Include\CmGpuProgramParams.h" />
     <ClInclude Include="Include\CmGpuProgramRTTI.h" />
+    <ClInclude Include="Include\CmGUI.h" />
+    <ClInclude Include="Include\CmGUIElement.h" />
+    <ClInclude Include="Include\CmGUILabel.h" />
+    <ClInclude Include="Include\CmGUIManager.h" />
+    <ClInclude Include="Include\CmGUIWidget.h" />
     <ClInclude Include="Include\CmHardwareBuffer.h" />
     <ClInclude Include="Include\CmHardwareBufferManager.h" />
     <ClInclude Include="Include\CmImageSprite.h" />
@@ -222,6 +227,7 @@
     <ClInclude Include="Include\CmOcclusionQuery.h" />
     <ClInclude Include="Include\CmPixelBuffer.h" />
     <ClInclude Include="Include\CmGpuProgIncludeImporter.h" />
+    <ClInclude Include="Include\CmSpriteTexture.h" />
     <ClInclude Include="Include\CmTextureView.h" />
     <ClInclude Include="Include\CmVertexBuffer.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgram.h" />
@@ -315,6 +321,11 @@
     <ClCompile Include="Source\CmGpuProgramImportOptions.cpp" />
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />
+    <ClCompile Include="Source\CmGUI.cpp" />
+    <ClCompile Include="Source\CmGUIElement.cpp" />
+    <ClCompile Include="Source\CmGUILabel.cpp" />
+    <ClCompile Include="Source\CmGUIManager.cpp" />
+    <ClCompile Include="Source\CmGUIWidget.cpp" />
     <ClCompile Include="Source\CmHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmImportOptions.cpp" />
     <ClCompile Include="Source\CmIndexBuffer.cpp" />

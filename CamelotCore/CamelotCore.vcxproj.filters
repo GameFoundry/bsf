@@ -94,6 +94,12 @@
     <Filter Include="Source Files\2D">
       <UniqueIdentifier>{500c1648-85c9-4410-86e3-c16d102b4347}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GUI">
+      <UniqueIdentifier>{0a7006f4-fd1d-49f9-92c5-b5c7b64c2578}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI">
+      <UniqueIdentifier>{62806522-68be-448c-8669-b8b211de0e15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmConfigOptionMap.h">
@@ -432,6 +438,24 @@
     <ClInclude Include="Include\CmImageSprite.h">
       <Filter>Header Files\2D</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGUI.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGUIWidget.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGUILabel.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGUIElement.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGUIManager.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmSpriteTexture.h">
+      <Filter>Header Files\2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -664,6 +688,21 @@
     </ClCompile>
     <ClCompile Include="Source\CmMeshDataRTTI.cpp">
       <Filter>Source Files\RTTI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGUIWidget.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGUILabel.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGUIElement.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGUIManager.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

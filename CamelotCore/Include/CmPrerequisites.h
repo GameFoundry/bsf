@@ -148,6 +148,7 @@ namespace CamelotEngine {
 	class ImportOptions;
 	struct FontData;
 	class TextSprite;
+	class SpriteTexture;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -161,6 +162,12 @@ namespace CamelotEngine {
 	class GameObject;
 	class Component;
 	class SceneManager;
+	// GUI
+	class GUIManager;
+	class GUIWidget;
+	class GUIElement;
+	class GUILabel;
+	class GUI;
 	// RTTI
 	class MeshRTTI;
 	// Desc structs

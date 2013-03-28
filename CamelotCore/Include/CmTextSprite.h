@@ -42,7 +42,7 @@ namespace CamelotEngine
 		TextHorzAlign mHorzAlign;
 		TextVertAlign mVertAlign;
 
-		virtual void updateMesh();
+		virtual void updateMesh() const;
 
 		const FontData* getFontData() const;
 	};
