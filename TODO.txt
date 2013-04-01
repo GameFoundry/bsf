@@ -21,13 +21,14 @@ Figure out how to store texture references in a font?
 
 Move Debug to CamelotCore and add SetFillMode
 
+Add TextUtil class
+ - Ability to calculate a size of a line (will need this if I want to add "..." to text that doesn't fit)
+ - Maybe even move line and word classes to it
+
 Immediate TODO:
-Add clone() method to Materials
 Implement image shader for D3D11BuiltinMaterialManager
 Improve text shader so it doesn't have resolution values hardcoded in
-Start-up D3D11BuiltinMaterialManager
 Implement D3D9 and GL BuiltInMaterialManager
-Start-up GUIManager
 
 
 Test:

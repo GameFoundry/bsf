@@ -106,6 +106,7 @@ namespace CamelotEngine
 
 		void setDirty() { mIsDirty = true; }
 		Point getAnchorOffset() const;
+		bool isClipRectangleValid() const;
 
 		virtual void updateMesh() const = 0;
 		void clearMesh() const;

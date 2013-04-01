@@ -98,6 +98,11 @@ namespace CamelotEngine
 		return Point();
 	}
 
+	bool Sprite::isClipRectangleValid() const
+	{
+		return mClipRect.width > 0 && mClipRect.height > 0;
+	}
+
 	void Sprite::clearMesh() const
 	{
 		for(auto& renderElem : mCachedRenderElements)

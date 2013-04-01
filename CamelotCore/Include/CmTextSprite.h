@@ -45,5 +45,7 @@ namespace CamelotEngine
 		virtual void updateMesh() const;
 
 		const FontData* getFontData() const;
+
+		void clipToRect(Vector2* vertices, Vector2* uv, UINT32 numQuads, Rect clipRect) const;
 	};
 }

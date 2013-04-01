@@ -3,6 +3,7 @@
 #include "CmFontDesc.h"
 #include "CmFont.h"
 #include "CmVector2.h"
+#include "CmMath.h"
 #include "CmGUIMaterialManager.h"
 
 namespace CamelotEngine
@@ -386,9 +387,13 @@ namespace CamelotEngine
 		for(size_t i = 0; i < textLines.size(); i++)
 			delete textLines[i];
 
-		// TODO - Clip the mesh based on mWidth/mHeight
-		
-		// TODO - How do I implement a scrollable text area without a clip rect?
+		if(isClipRectangleValid())
+		{
+			for(auto& renderElem : mCachedRenderElements)
+			{
+				clipToRect(renderElem.vertices, renderElem.uvs, renderElem.numQuads, mClipRect);
+			}
+		}
 	}
 
 	const FontData* TextSprite::getFontData() const
@@ -399,5 +404,67 @@ namespace CamelotEngine
 		UINT32 nearestSize = mFont->getClosestAvailableSize(mFontSize);
 
 		return mFont->getFontDataForSize(nearestSize);
+	}
+
+	// This will only properly clip an array of rectangular quads
+	// Vertices in the quad must be in a specific order: top left, top right, bottom left, bottom right
+	// (0, 0) represents top left of the screen
+	void TextSprite::clipToRect(Vector2* vertices, Vector2* uv, UINT32 numQuads, Rect clipRect) const
+	{
+		float left = (float)clipRect.x;
+		float right = (float)clipRect.x + clipRect.width;
+		float top = (float)clipRect.y;
+		float bottom = (float)clipRect.y - clipRect.height;
+
+		for(UINT32 i = 0; i < numQuads; i++)
+		{
+			UINT32 vertIdx = i * 4;
+
+			// Attempt to skip those that are definitely not clipped
+			if(vertices[vertIdx + 0].x >= left && vertices[vertIdx + 1].x <= right &&
+				vertices[vertIdx + 0].y <= top && vertices[vertIdx + 2].y >= bottom)
+			{
+				continue;
+			}
+
+			float du = (uv[vertIdx + 1].x - uv[vertIdx + 0].x) / (vertices[vertIdx + 1].x - vertices[vertIdx + 0].x);
+			float dv = (uv[vertIdx + 0].y - uv[vertIdx + 2].y) / (vertices[vertIdx + 0].y - vertices[vertIdx + 2].y);
+
+			// Clip left
+			float newLeft = Math::Clamp(vertices[vertIdx + 0].x, left, right);
+			float uvLeftOffset = (newLeft - vertices[vertIdx + 0].x) * du;
+
+			vertices[vertIdx + 0].x = newLeft;
+			vertices[vertIdx + 2].x = newLeft;
+			uv[vertIdx + 0].x += uvLeftOffset;
+			uv[vertIdx + 2].x += uvLeftOffset;
+
+			// Clip right
+			float newRight = Math::Clamp(vertices[vertIdx + 1].x, left, right);
+			float uvRightOffset = (vertices[vertIdx + 1].x - newRight) * du;
+
+			vertices[vertIdx + 1].x = newRight;
+			vertices[vertIdx + 3].x = newRight;
+			uv[vertIdx + 1].x -= uvRightOffset;
+			uv[vertIdx + 3].x -= uvRightOffset;
+
+			// Clip top
+			float newTop = Math::Clamp(vertices[vertIdx + 0].y, bottom, top);
+			float uvTopOffset = (vertices[vertIdx + 0].y - newTop) * dv;
+
+			vertices[vertIdx + 0].y = newTop;
+			vertices[vertIdx + 1].y = newTop;
+			uv[vertIdx + 0].y -= uvTopOffset;
+			uv[vertIdx + 1].y -= uvTopOffset;
+
+			// Clip bottom
+			float newBottom = Math::Clamp(vertices[vertIdx + 2].y, bottom, top);
+			float uvBottomOffset = (newBottom - vertices[vertIdx + 2].y) * dv;
+
+			vertices[vertIdx + 2].y = newBottom;
+			vertices[vertIdx + 3].y = newBottom;
+			uv[vertIdx + 2].y += uvBottomOffset;
+			uv[vertIdx + 3].y += uvBottomOffset;
+		}
 	}
 }
