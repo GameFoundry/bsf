@@ -66,6 +66,11 @@ o		 *
 		void setThisPtr(std::shared_ptr<CoreObject> ptrThis);
 
 		/**
+		 * @brief	Returns an unique identifier for this object.
+		 */
+		UINT64 getInternalID() const { return mInternalID; }
+
+		/**
 		 * @brief	Schedules the object to be destroyed, and then deleted.
 		 *
 		 * @note	You should never call this manually. It's meant for internal use only.
@@ -113,11 +118,6 @@ o		 *
 		 * 			function is static or global.
 		 */
 		static AsyncOp queueReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func);
-
-		/**
-		 * @brief	Returns an unique identifier for this object.
-		 */
-		UINT64 getInternalID() const { return mInternalID; }
 
 		bool isScheduledToBeInitialized() const { return (mFlags & CGO_SCHEDULED_FOR_INIT) != 0; }
 		bool isScheduledToBeDeleted() const { return (mFlags & CGO_SCHEDULED_FOR_DELETE) != 0; }

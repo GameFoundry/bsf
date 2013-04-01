@@ -3,6 +3,7 @@
 #include "CmFontDesc.h"
 #include "CmFont.h"
 #include "CmVector2.h"
+#include "CmGUIMaterialManager.h"
 
 namespace CamelotEngine
 {
@@ -368,11 +369,14 @@ namespace CamelotEngine
 		}
 
 		// Actually generate a mesh
+		UINT32 texPage = 0;
 		for(auto& renderElem : mCachedRenderElements)
 		{
 			renderElem.vertices = new Vector2[renderElem.numQuads * 4];
 			renderElem.uvs = new Vector2[renderElem.numQuads * 4];
 			renderElem.indexes = new UINT32[renderElem.numQuads * 6];
+			renderElem.material = GUIMaterialManager::instance().requestTextMaterial(fontData->texturePages[texPage]);
+			texPage++;
 		}
 
 		vector<UINT32>::type faceOffsets(mCachedRenderElements.size(), 0);

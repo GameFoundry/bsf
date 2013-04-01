@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\CmD3D9BuiltinMaterialManager.h" />
     <ClInclude Include="Include\CmD3D9Device.h" />
     <ClInclude Include="Include\CmD3D9DeviceManager.h" />
     <ClInclude Include="Include\CmD3D9Driver.h" />
@@ -185,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CmD3D9Plugin.cpp" />
+    <ClCompile Include="Source\CmD3D9BuiltinMaterialManager.cpp" />
     <ClCompile Include="Source\CmD3D9Device.cpp" />
     <ClCompile Include="Source\CmD3D9DeviceManager.cpp" />
     <ClCompile Include="Source\CmD3D9Driver.cpp" />

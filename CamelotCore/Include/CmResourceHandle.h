@@ -111,12 +111,12 @@ namespace CamelotEngine
 		{ 
 			throwIfNotLoaded();
 
-			return static_cast<T*>(mData->mPtr.get()); 
+			return reinterpret_cast<T*>(mData->mPtr.get()); 
 		}
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
-		std::shared_ptr<T> getInternalPtr() 
+		std::shared_ptr<T> getInternalPtr() const
 		{ 
 			throwIfNotLoaded();
 

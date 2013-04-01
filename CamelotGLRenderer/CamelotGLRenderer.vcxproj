@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\CmGLBuiltinMaterialManager.h" />
     <ClInclude Include="Include\CmGLContext.h" />
     <ClInclude Include="Include\CmGLFrameBufferObject.h" />
     <ClInclude Include="Include\CmGLGpuBuffer.h" />
@@ -187,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CmGLPlugin.cpp" />
+    <ClCompile Include="Source\CmGLBuiltinMaterialManager.cpp" />
     <ClCompile Include="Source\CmGLContext.cpp" />
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp" />
     <ClCompile Include="Source\CmGLGpuBuffer.cpp" />

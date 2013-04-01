@@ -178,6 +178,7 @@
   <ItemGroup>
     <ClInclude Include="Include\CmApplication.h" />
     <ClInclude Include="Include\CmBlendStateRTTI.h" />
+    <ClInclude Include="Include\CmBuiltinMaterialManager.h" />
     <ClInclude Include="Include\CmCamera.h" />
     <ClInclude Include="Include\CmCameraRTTI.h" />
     <ClInclude Include="Include\CmCgProgram.h" />
@@ -215,6 +216,7 @@
     <ClInclude Include="Include\CmGUIElement.h" />
     <ClInclude Include="Include\CmGUILabel.h" />
     <ClInclude Include="Include\CmGUIManager.h" />
+    <ClInclude Include="Include\CmGUIMaterialManager.h" />
     <ClInclude Include="Include\CmGUIWidget.h" />
     <ClInclude Include="Include\CmHardwareBuffer.h" />
     <ClInclude Include="Include\CmHardwareBufferManager.h" />
@@ -325,6 +327,7 @@
     <ClCompile Include="Source\CmGUIElement.cpp" />
     <ClCompile Include="Source\CmGUILabel.cpp" />
     <ClCompile Include="Source\CmGUIManager.cpp" />
+    <ClCompile Include="Source\CmGUIMaterialManager.cpp" />
     <ClCompile Include="Source\CmGUIWidget.cpp" />
     <ClCompile Include="Source\CmHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmImportOptions.cpp" />

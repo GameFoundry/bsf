@@ -21,6 +21,15 @@ Figure out how to store texture references in a font?
 
 Move Debug to CamelotCore and add SetFillMode
 
+Immediate TODO:
+Add clone() method to Materials
+Implement image shader for D3D11BuiltinMaterialManager
+Improve text shader so it doesn't have resolution values hardcoded in
+Start-up D3D11BuiltinMaterialManager
+Implement D3D9 and GL BuiltInMaterialManager
+Start-up GUIManager
+
+
 Test:
 Need sorted rendering as fonts render before scene and blending doesn't work as it should
  - Implemented 2D renderer and ensure it runs after everything else
@@ -210,6 +219,8 @@ Low priority TODO:
  - Go through pixel formats and removed unused ones: L8, L16, A4L4, and many others
 
 Optional TODO:
+ - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic
+    for Materials for things like text and sprites, which should run on all renderers, even if user adds a new one
  - Add precompiled headers to all projects
  - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
  - Move all x86 libs to x86 folders. Move all binaries to x86 folders as well

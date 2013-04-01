@@ -44,7 +44,7 @@ namespace CamelotEngine
 		 */
 		void setParam(const String& name, const void* value, UINT32 sizeBytes, UINT32 arrayIndex = 0);
 
-		void setTexture(const String& name, TextureHandle& val);
+		void setTexture(const String& name, const TextureHandle& val);
 		TextureHandle getTexture(UINT32 slot);
 
 		void setSamplerState(const String& name, SamplerStateHandle& val);

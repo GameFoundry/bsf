@@ -20,6 +20,7 @@
 #include "CmD3D11GpuParamBlock.h"
 #include "CmD3D11InputLayoutManager.h"
 #include "CmD3D11HLSLProgram.h"
+#include "CmD3D11BuiltinMaterialManager.h"
 #include "CmGpuParams.h"
 #include "CmDebug.h"
 #include "CmException.h"
@@ -125,6 +126,8 @@ namespace CamelotEngine
 		// Create render state manager
 		RenderStateManager::startUp(new D3D11RenderStateManager());
 
+		BuiltinMaterialManager::startUp(new D3D11BuiltinMaterialManager());
+
 		mCurrentCapabilities = createRenderSystemCapabilities();
 
 		mCurrentCapabilities->addShaderProfile("hlsl");
@@ -145,6 +148,7 @@ namespace CamelotEngine
 		mActiveVertexDeclaration = nullptr;
 		mActiveVertexShader = nullptr;
 
+		BuiltinMaterialManager::shutDown();
 		RenderStateManager::shutDown();
 		RenderWindowManager::shutDown();
 		GpuProgramManager::shutDown();

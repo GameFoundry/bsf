@@ -9,5 +9,6 @@ namespace CamelotEngine
 	{
 	public:
 		MaterialPtr create() const;
+		MaterialPtr create(ShaderPtr shader) const;
 	};
 }

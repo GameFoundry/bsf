@@ -62,6 +62,8 @@ namespace CamelotEngine
 
 			_instance = moduleInstance;
 			isShutDown = false;
+
+			moduleInstance->onStartUp();
 		}
 
 		/**
@@ -74,6 +76,8 @@ namespace CamelotEngine
 				CM_EXCEPT(InternalErrorException, 
 					"Trying to shut down an already shut down module.");
 			}
+
+			_instance->onShutDown();
 
 			delete _instance;
 			isShutDown = true;
@@ -100,6 +104,9 @@ namespace CamelotEngine
 
 		Module(const Module&) { }
 		Module& operator=(const Module&) { return *this; }
+
+		virtual void onStartUp() {}
+		virtual void onShutDown() {}
 
 	private:
 		static T* _instance;

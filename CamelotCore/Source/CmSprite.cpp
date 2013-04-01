@@ -1,5 +1,6 @@
 #include "CmTextSprite.h"
 #include "CmVector2.h"
+#include "CmGUIMaterialManager.h"
 
 namespace CamelotEngine
 {
@@ -11,7 +12,7 @@ namespace CamelotEngine
 
 	Sprite::~Sprite()
 	{
-
+		clearMesh();
 	}
 
 	UINT32 Sprite::getNumRenderElements() const
@@ -109,6 +110,11 @@ namespace CamelotEngine
 
 			if(renderElem.indexes != nullptr)
 				delete[] renderElem.indexes;
+
+			if(renderElem.material != nullptr)
+			{
+				GUIMaterialManager::instance().releaseMaterial(renderElem.material);
+			}
 		}
 
 		mCachedRenderElements.clear();

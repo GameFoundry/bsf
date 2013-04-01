@@ -229,7 +229,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void GpuParams::setTexture(const String& name, TextureHandle& val)
+	void GpuParams::setTexture(const String& name, const TextureHandle& val)
 	{
 		auto paramIter = mParamDesc.textures.find(name);
 		if(paramIter == mParamDesc.textures.end())

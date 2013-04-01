@@ -510,7 +510,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void Material::setTexture(const String& name, TextureHandle& value)
+	void Material::setTexture(const String& name, const TextureHandle& value)
 	{
 		throwIfNotInitialized();
 
@@ -883,6 +883,13 @@ namespace CamelotEngine
 	MaterialHandle Material::create()
 	{
 		MaterialPtr materialPtr = MaterialManager::instance().create();
+
+		return static_resource_cast<Material>(Resource::_createResourceHandle(materialPtr));
+	}
+
+	MaterialHandle Material::create(ShaderPtr shader)
+	{
+		MaterialPtr materialPtr = MaterialManager::instance().create(shader);
 
 		return static_resource_cast<Material>(Resource::_createResourceHandle(materialPtr));
 	}

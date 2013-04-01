@@ -67,7 +67,7 @@ namespace CamelotEngine
 
 		ShaderPtr getShader() const { return mShader; }
 
-		void setTexture(const String& name, TextureHandle& value);
+		void setTexture(const String& name, const TextureHandle& value);
 		void setSamplerState(const String& name, SamplerStateHandle& samplerState);
 		void setFloat(const String& name, float value, UINT32 arrayIdx = 0);
 		void setColor(const String& name, const Color& value, UINT32 arrayIdx = 0);
@@ -80,6 +80,16 @@ namespace CamelotEngine
 
 		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
 
+		TextureHandle getTexture(const String& name) const;
+		SamplerStateHandle getSamplerState(const String& name) const;
+		float getFloat(const String& name, UINT32 arrayIdx = 0) const;
+		Vector2 getVec2(const String& name, UINT32 arrayIdx = 0) const;
+		Vector3 getVec3(const String& name, UINT32 arrayIdx = 0) const;
+		Vector4 getVec4(const String& name, UINT32 arrayIdx = 0) const;
+		Matrix3 getMat3(const String& name, UINT32 arrayIdx = 0) const;
+		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const;
+		const StructData& getStructData(const String& name, UINT32 arrayIdx = 0) const;
+
 		UINT32 getNumPasses() const;
 
 		PassPtr getPass(UINT32 passIdx) const;
@@ -87,6 +97,7 @@ namespace CamelotEngine
 		PassParametersPtr getPassParameters(UINT32 passIdx) const;
 
 		static MaterialHandle create();
+		static MaterialHandle create(ShaderPtr shader);
 	private:
 		friend class MaterialManager;
 
@@ -134,16 +145,6 @@ namespace CamelotEngine
 		}
 
 		const map<String, String>::type& getValidParamNames() const { return mValidParams; }
-
-		TextureHandle getTexture(const String& name) const;
-		SamplerStateHandle getSamplerState(const String& name) const;
-		float getFloat(const String& name, UINT32 arrayIdx = 0) const;
-		Vector2 getVec2(const String& name, UINT32 arrayIdx = 0) const;
-		Vector3 getVec3(const String& name, UINT32 arrayIdx = 0) const;
-		Vector4 getVec4(const String& name, UINT32 arrayIdx = 0) const;
-		Matrix3 getMat3(const String& name, UINT32 arrayIdx = 0) const;
-		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const;
-		const StructData& getStructData(const String& name, UINT32 arrayIdx = 0) const;
 
 		void initBestTechnique();
 

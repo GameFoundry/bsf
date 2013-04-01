@@ -27,6 +27,8 @@
 #include "CmFontManager.h"
 #include "CmRenderer.h"
 #include "CmDeferredRenderContext.h"
+#include "CmGUIMaterialManager.h"
+#include "CmGUIManager.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -84,6 +86,9 @@ namespace CamelotEngine
 		loadPlugin("CamelotFreeImgImporter"); // TODO - Load this automatically somehow
 		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow
 		loadPlugin("CamelotFontImporter"); // TODO - Load this automatically somehow
+
+		GUIMaterialManager::startUp(new GUIMaterialManager());
+		GUIManager::startUp(new GUIManager());
 
 		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
 	}
@@ -148,6 +153,9 @@ namespace CamelotEngine
 	void Application::shutDown()
 	{
 		mPrimaryRenderWindow = nullptr;
+
+		GUIManager::shutDown();
+		GUIMaterialManager::shutDown();
 
 		Importer::shutDown();
 		FontManager::shutDown();

@@ -25,6 +25,12 @@ namespace CamelotEngine
 		}
 	}
 
+	const String& RendererManager::getCoreRendererName()
+	{
+		static String name = "CoreRenderer";
+		return name;
+	}
+
 	void RendererManager::registerFactory(RendererFactoryPtr factory)
 	{
 		assert(factory != nullptr);

@@ -99,15 +99,15 @@ namespace CamelotEngine
 
 	void CoreObject::waitUntilInitialized()
 	{
-#if CM_DEBUG_MODE
-		if(CM_THREAD_CURRENT_ID == RenderSystem::instancePtr()->getRenderThreadId())
-			CM_EXCEPT(InternalErrorException, "You cannot call this method on the render thread. It will cause a deadlock!");
-#endif
-
 		if(!isInitialized())
 		{
 			if(requiresInitOnRenderThread())
 			{
+#if CM_DEBUG_MODE
+				if(CM_THREAD_CURRENT_ID == RenderSystem::instancePtr()->getRenderThreadId())
+					CM_EXCEPT(InternalErrorException, "You cannot call this method on the render thread. It will cause a deadlock!");
+#endif
+
 				CM_LOCK_MUTEX_NAMED(mCoreGpuObjectLoadedMutex, lock);
 				while(!isInitialized())
 				{

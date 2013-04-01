@@ -47,6 +47,7 @@ THE SOFTWARE.
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
 #include "CmD3D9RenderWindowManager.h"
+#include "CmD3D9BuiltinMaterialManager.h"
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmRenderStateManager.h"
 #include "CmAsyncOp.h"
@@ -182,6 +183,8 @@ namespace CamelotEngine
 		// Create render state manager
 		RenderStateManager::startUp(new RenderStateManager());
 
+		BuiltinMaterialManager::startUp(new D3D9BuiltinMaterialManager());
+
 		// call superclass method
 		RenderSystem::initialize_internal();
 	}
@@ -201,6 +204,7 @@ namespace CamelotEngine
 		SAFE_DELETE( mDriverList );
 		mActiveD3DDriver = NULL;	
 
+		BuiltinMaterialManager::shutDown();
 		TextureManager::shutDown();
 		HardwareBufferManager::shutDown();
 		GpuProgramManager::shutDown();	
