@@ -167,7 +167,8 @@ namespace CamelotEngine {
 	class GUIWidget;
 	class GUIElement;
 	class GUILabel;
-	class GUI;
+	struct GUIElementStyle;
+	class GUISkin;
 	// RTTI
 	class MeshRTTI;
 	// Desc structs

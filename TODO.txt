@@ -26,6 +26,8 @@ Add TextUtil class
  - Maybe even move line and word classes to it
 
 Immediate TODO:
+ IMPORTANT - GUIElement in its constructor calls a virtual method to detect actual type, which won't work
+
 Implement image shader for D3D11BuiltinMaterialManager
 Improve text shader so it doesn't have resolution values hardcoded in
 Implement D3D9 and GL BuiltInMaterialManager

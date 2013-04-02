@@ -8,15 +8,9 @@ namespace CamelotEngine
 	class CM_EXPORT GUIElement
 	{
 	public:
-		GUIElement();
+		GUIElement(GUIWidget* parent, const GUISkin* skin);
 		~GUIElement();
 
-		//  onMouseMove
-		//	onMousePress
-		//	onMouseReleased
-		//	onKeyPressed
-		//	onKeyReleased
-	protected:
 		/**
 		 * @brief	Returns the number of separate render elements in the GUI element.
 		 * 			
@@ -65,5 +59,16 @@ namespace CamelotEngine
 		 * @param	renderElementIdx	Zero-based index of the render element.
 		 */
 		virtual void fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const = 0;
+
+		//  onMouseMove
+		//	onMousePress
+		//	onMouseReleased
+		//	onKeyPressed
+		//	onKeyReleased
+	protected:
+		GUIWidget* mParent;
+		const GUIElementStyle* mStyle;
+
+		virtual const String& getGUITypeName() = 0;
 	};
 }

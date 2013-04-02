@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmModule.h"
+#include "CmRenderOperation.h"
 
 namespace CamelotEngine
 {
@@ -14,9 +15,13 @@ namespace CamelotEngine
 		void registerWidget(GUIWidget* widget);
 		void unregisterWidget(GUIWidget* widget);
 
-		void renderGUI();
+		vector<RenderObject>::type getRenderObjects();
 
 	private:
+		vector<GUIWidget*>::type mWidgets;
+		vector<MeshHandle>::type mMeshes;
+		vector<MaterialHandle>::type mMaterials;
+
 		void updateDirtyMeshes();
 	};
 }

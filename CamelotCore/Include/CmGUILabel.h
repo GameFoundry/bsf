@@ -28,11 +28,12 @@ namespace CamelotEngine
 		 */
 		virtual void fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const;
 	private:
-		friend class GUI;
-
-		GUILabel(const String& text, const FontPtr& font, UINT32 fontSize);
-
 		TextSprite* mTextSprite;
 		String mText;
+
+		friend class GUIWidget;
+		GUILabel(GUIWidget* parent, const String& text, const GUISkin* skin);
+
+		virtual const String& getGUITypeName();
 	};
 }
