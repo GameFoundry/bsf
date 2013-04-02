@@ -104,6 +104,16 @@ namespace CamelotEngine
 		/** Gets the compute program used by this pass. */
 		const GpuProgramHandle& getComputeProgram(void) const { return mComputeProgram; }
 
+		/**
+		 * @brief	Makes this pass active. Anything rendered after this command will use this pass.
+		 */
+		void activate(DeferredRenderContextPtr& renderContext) const;
+
+		/**
+		 * @brief	Applies specified parameters to the active pass. 
+		 */
+		void bindParameters(DeferredRenderContextPtr& renderContext, const PassParametersPtr& params) const;
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/

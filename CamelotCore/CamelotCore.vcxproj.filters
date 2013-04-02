@@ -465,6 +465,12 @@
     <ClInclude Include="Include\CmGUISkin.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmOverlay.h">
+      <Filter>Header Files\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmOverlayManager.h">
+      <Filter>Header Files\2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -715,6 +721,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmGUISkin.cpp">
       <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmOverlay.cpp">
+      <Filter>Source Files\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmOverlayManager.cpp">
+      <Filter>Source Files\2D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

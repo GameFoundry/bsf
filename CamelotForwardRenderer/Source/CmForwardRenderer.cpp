@@ -12,6 +12,7 @@
 #include "CmApplication.h"
 #include "CmViewport.h"
 #include "CmRenderTarget.h"
+#include "CmOverlayManager.h"
 
 namespace CamelotEngine
 {
@@ -84,121 +85,22 @@ namespace CamelotEngine
 
 			for(UINT32 i = 0; i < material->getNumPasses(); i++)
 			{
-				setPass(material->getPass(i));
+				PassPtr pass = material->getPass(i);
+				pass->activate(renderContext);
 
 				PassParametersPtr paramsPtr = material->getPassParameters(i);
-				setPassParameters(paramsPtr);
+				pass->bindParameters(renderContext, paramsPtr);
 
 				renderContext->render(mesh->getRenderOperation());
 			}
 		}
 
+		// Render overlays for this camera
+		OverlayManager::instance().render(camera, renderContext);
+
 		renderContext->endFrame();
 
 		// TODO - Sort renderables
 		// Render them
-	}
-
-	void ForwardRenderer::setPass(PassPtr pass)
-	{
-		// TODO - When applying passes, don't re-apply states that are already the same as from previous pass.
-		// Also check if it's maybe the exactly the same pass as the previous one.
-
-		mActivePass = pass;
-
-		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
-
-		GpuProgramHandle vertProgram = pass->getVertexProgram();
-		if(vertProgram)
-		{
-			renderContext->bindGpuProgram(vertProgram);
-		}
-		else
-		{
-			//if(renderSystem->isGpuProgramBound(GPT_VERTEX_PROGRAM))
-				renderContext->unbindGpuProgram(GPT_VERTEX_PROGRAM);
-		}
-
-		GpuProgramHandle fragProgram = pass->getFragmentProgram();
-		if(fragProgram)
-		{
-			renderContext->bindGpuProgram(fragProgram);
-		}
-		else
-		{
-			//if(renderSystem->isGpuProgramBound(GPT_FRAGMENT_PROGRAM))
-				renderContext->unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
-		}
-
-		GpuProgramHandle geomProgram = pass->getGeometryProgram();
-		if(geomProgram)
-		{
-			renderContext->bindGpuProgram(geomProgram);
-		}	
-		else
-		{
-			//if(renderSystem->isGpuProgramBound(GPT_GEOMETRY_PROGRAM))
-				renderContext->unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
-		}
-
-		// The rest of the settings are the same no matter whether we use programs or not
-		BlendStateHandle blendState = pass->getBlendState();
-		if(blendState != nullptr)
-			renderContext->setBlendState(blendState.getInternalPtr());
-		else
-			renderContext->setBlendState(BlendState::getDefault());
-		
-		// TODO - Try to limit amount of state changes, if previous state is already the same (especially with textures)
-
-		// TODO: Disable remaining texture units
-		//renderSystem->_disableTextureUnitsFrom(pass->getNumTextures());
-
-
-		// Set up non-texture related material settings
-		// Stencil & depth buffer settings
-		DepthStencilStateHandle depthStancilState = pass->getDepthStencilState();
-		if(depthStancilState != nullptr)
-			renderContext->setDepthStencilState(depthStancilState.getInternalPtr(), pass->getStencilRefValue());
-		else
-			renderContext->setDepthStencilState(DepthStencilState::getDefault(), pass->getStencilRefValue());
-
-		RasterizerStateHandle rasterizerState = pass->getRasterizerState();
-		if(rasterizerState != nullptr)
-			renderContext->setRasterizerState(rasterizerState.getInternalPtr());
-		else
-			renderContext->setRasterizerState(RasterizerState::getDefault());
-	}
-
-	void ForwardRenderer::setPassParameters(PassParametersPtr params)
-	{
-		// TODO - When applying passes, don't re-apply states that are already the same as from previous pass.
-		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
-
-		if(mActivePass == nullptr)
-			CM_EXCEPT(InternalErrorException, "Trying to set pass parameters, but no pass is set.");
-
-		GpuProgramHandle vertProgram = mActivePass->getVertexProgram();
-		if(vertProgram)
-			renderContext->bindGpuParams(GPT_VERTEX_PROGRAM, params->mVertParams);
-
-		GpuProgramHandle fragProgram = mActivePass->getFragmentProgram();
-		if(fragProgram)
-			renderContext->bindGpuParams(GPT_FRAGMENT_PROGRAM, params->mFragParams);
-
-		GpuProgramHandle geomProgram = mActivePass->getGeometryProgram();
-		if(geomProgram)
-			renderContext->bindGpuParams(GPT_GEOMETRY_PROGRAM, params->mGeomParams);
-
-		GpuProgramHandle hullProgram = mActivePass->getHullProgram();
-		if(hullProgram)
-			renderContext->bindGpuParams(GPT_HULL_PROGRAM, params->mHullParams);
-
-		GpuProgramHandle domainProgram = mActivePass->getDomainProgram();
-		if(domainProgram)
-			renderContext->bindGpuParams(GPT_DOMAIN_PROGRAM, params->mDomainParams);
-
-		GpuProgramHandle computeProgram = mActivePass->getComputeProgram();
-		if(computeProgram)
-			renderContext->bindGpuParams(GPT_COMPUTE_PROGRAM, params->mComputeParams);
 	}
 }

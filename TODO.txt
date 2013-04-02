@@ -25,6 +25,8 @@ Add TextUtil class
  - Ability to calculate a size of a line (will need this if I want to add "..." to text that doesn't fit)
  - Maybe even move line and word classes to it
 
+ When rendering GUIWidget its individual elements need to be sorted based on Z depth so the transparency works as expected
+
 Immediate TODO:
  IMPORTANT - GUIElement in its constructor calls a virtual method to detect actual type, which won't work
 

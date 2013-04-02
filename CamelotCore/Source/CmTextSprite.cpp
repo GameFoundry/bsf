@@ -249,10 +249,11 @@ namespace CamelotEngine
 	{
 		const FontData* fontData = getFontData();
 
-		clearMesh();
-
 		if(fontData == nullptr)
+		{
+			clearMesh();
 			return;
+		}
 
 		if(fontData->size != mFontSize)
 		{
@@ -269,6 +270,7 @@ namespace CamelotEngine
 		UINT32 curHeight = fontData->fontDesc.lineHeight;
 		UINT32 charIdx = 0;
 
+		vector<UINT32>::type newRenderElemSizes;
 		while(true)
 		{
 			if(charIdx >= mText.size())
@@ -294,10 +296,10 @@ namespace CamelotEngine
 
 			if(charDesc.charId != SPACE_CHAR)
 			{
-				if(charDesc.page >= (UINT32)mCachedRenderElements.size())
-					mCachedRenderElements.resize(charDesc.page + 1);
+				if(charDesc.page >= (UINT32)newRenderElemSizes.size())
+					newRenderElemSizes.resize(charDesc.page + 1);
 
-				mCachedRenderElements[charDesc.page].numQuads++;
+				newRenderElemSizes[charDesc.page]++;
 			}
 
 			if(widthIsLimited && curLine->getWidth() > mWidth)
@@ -370,13 +372,31 @@ namespace CamelotEngine
 		}
 
 		// Actually generate a mesh
+		if(mCachedRenderElements.size() < newRenderElemSizes.size())
+			mCachedRenderElements.resize(newRenderElemSizes.size());
+
 		UINT32 texPage = 0;
-		for(auto& renderElem : mCachedRenderElements)
+		for(auto& cachedElem : mCachedRenderElements)
 		{
-			renderElem.vertices = new Vector2[renderElem.numQuads * 4];
-			renderElem.uvs = new Vector2[renderElem.numQuads * 4];
-			renderElem.indexes = new UINT32[renderElem.numQuads * 6];
-			renderElem.material = GUIMaterialManager::instance().requestTextMaterial(fontData->texturePages[texPage]);
+			UINT32 newNumQuads = newRenderElemSizes[texPage];
+			if(newNumQuads != cachedElem.numQuads)
+			{
+				if(cachedElem.vertices != nullptr) delete[] cachedElem.vertices;
+				if(cachedElem.uvs != nullptr) delete[] cachedElem.uvs;
+				if(cachedElem.indexes != nullptr) delete[] cachedElem.indexes;
+
+				cachedElem.vertices = new Vector2[newNumQuads * 4];
+				cachedElem.uvs = new Vector2[newNumQuads * 4];
+				cachedElem.indexes = new UINT32[newNumQuads * 6];
+				cachedElem.numQuads = newNumQuads;
+			}
+
+			MaterialHandle newMaterial = GUIMaterialManager::instance().requestTextMaterial(fontData->texturePages[texPage]);
+			if(cachedElem.material != nullptr)
+				GUIMaterialManager::instance().releaseMaterial(newMaterial);
+
+			cachedElem.material = newMaterial;
+
 			texPage++;
 		}
 

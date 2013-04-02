@@ -8,6 +8,8 @@ namespace CamelotEngine
 	class CM_EXPORT GUILabel : public GUIElement
 	{
 	protected:
+		~GUILabel();
+
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
 		 */

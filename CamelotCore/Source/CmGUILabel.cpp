@@ -14,6 +14,11 @@ namespace CamelotEngine
 		mTextSprite = new TextSprite(text, mStyle->font, mStyle->fontSize);
 	}
 
+	GUILabel::~GUILabel()
+	{
+		delete mTextSprite;
+	}
+
 	UINT32 GUILabel::getNumRenderElements() const
 	{
 		return mTextSprite->getNumRenderElements();

@@ -162,6 +162,9 @@ namespace CamelotEngine {
 	class GameObject;
 	class Component;
 	class SceneManager;
+	// 2D
+	class Overlay;
+	class OverlayManager;
 	// GUI
 	class GUIManager;
 	class GUIWidget;
@@ -227,6 +230,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
 	typedef std::shared_ptr<TextSprite> TextSpritePtr;
+	typedef std::shared_ptr<Overlay> OverlayPtr;
 }
 
 /************************************************************************/

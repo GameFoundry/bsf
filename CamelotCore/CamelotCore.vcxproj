@@ -176,6 +176,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\CmOverlay.h" />
     <ClInclude Include="Include\CmApplication.h" />
     <ClInclude Include="Include\CmBlendStateRTTI.h" />
     <ClInclude Include="Include\CmBuiltinMaterialManager.h" />
@@ -228,6 +229,7 @@
     <ClInclude Include="Include\CmMaterialManager.h" />
     <ClInclude Include="Include\CmMeshManager.h" />
     <ClInclude Include="Include\CmOcclusionQuery.h" />
+    <ClInclude Include="Include\CmOverlayManager.h" />
     <ClInclude Include="Include\CmPixelBuffer.h" />
     <ClInclude Include="Include\CmGpuProgIncludeImporter.h" />
     <ClInclude Include="Include\CmSpriteTexture.h" />
@@ -301,6 +303,7 @@
   <ItemGroup>
     <ClCompile Include="Include\CmMaterialManager.cpp" />
     <ClCompile Include="Source\CamelotRenderer.cpp" />
+    <ClCompile Include="Source\CmOverlay.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
     <ClCompile Include="Source\CmBlendState.cpp" />
     <ClCompile Include="Source\CmCamera.cpp" />
@@ -337,6 +340,7 @@
     <ClCompile Include="Source\CmMeshDataRTTI.cpp" />
     <ClCompile Include="Source\CmMeshManager.cpp" />
     <ClCompile Include="Source\CmOcclusionQuery.cpp" />
+    <ClCompile Include="Source\CmOverlayManager.cpp" />
     <ClCompile Include="Source\CmPixelBuffer.cpp" />
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp" />
     <ClCompile Include="Source\CmSprite.cpp" />

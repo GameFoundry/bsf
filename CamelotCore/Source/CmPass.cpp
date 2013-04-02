@@ -3,6 +3,8 @@
 #include "CmBlendState.h"
 #include "CmDepthStencilState.h"
 #include "CmPassRTTI.h"
+#include "CmDeferredRenderContext.h"
+#include "CmMaterial.h"
 #include "CmException.h"
 
 namespace CamelotEngine
@@ -101,6 +103,90 @@ namespace CamelotEngine
 	UINT32 Pass::getStencilRefValue() const
 	{
 		return mStencilRefValue;
+	}
+	//----------------------------------------------------------------------
+	void Pass::activate(DeferredRenderContextPtr& renderContext) const
+	{
+		GpuProgramHandle vertProgram = getVertexProgram();
+		if(vertProgram)
+			renderContext->bindGpuProgram(vertProgram);
+		else
+			renderContext->unbindGpuProgram(GPT_VERTEX_PROGRAM);
+
+		GpuProgramHandle fragProgram = getFragmentProgram();
+		if(fragProgram)
+			renderContext->bindGpuProgram(fragProgram);
+		else
+			renderContext->unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
+
+		GpuProgramHandle geomProgram = getGeometryProgram();
+		if(geomProgram)
+			renderContext->bindGpuProgram(geomProgram);
+		else
+			renderContext->unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
+
+		GpuProgramHandle hullProgram = getHullProgram();
+		if(hullProgram)
+			renderContext->bindGpuProgram(hullProgram);
+		else
+			renderContext->unbindGpuProgram(GPT_HULL_PROGRAM);
+
+		GpuProgramHandle domainProgram = getDomainProgram();
+		if(domainProgram)
+			renderContext->bindGpuProgram(domainProgram);
+		else
+			renderContext->unbindGpuProgram(GPT_DOMAIN_PROGRAM);
+
+		// TODO - Try to limit amount of state changes, if previous state is already the same (especially with textures)
+
+		// TODO: Disable remaining texture units
+		//renderSystem->_disableTextureUnitsFrom(pass->getNumTextures());
+
+		// Set up non-texture related pass settings
+		BlendStateHandle blendState = getBlendState();
+		if(blendState != nullptr)
+			renderContext->setBlendState(blendState.getInternalPtr());
+		else
+			renderContext->setBlendState(BlendState::getDefault());
+
+		DepthStencilStateHandle depthStancilState = getDepthStencilState();
+		if(depthStancilState != nullptr)
+			renderContext->setDepthStencilState(depthStancilState.getInternalPtr(), getStencilRefValue());
+		else
+			renderContext->setDepthStencilState(DepthStencilState::getDefault(), getStencilRefValue());
+
+		RasterizerStateHandle rasterizerState = getRasterizerState();
+		if(rasterizerState != nullptr)
+			renderContext->setRasterizerState(rasterizerState.getInternalPtr());
+		else
+			renderContext->setRasterizerState(RasterizerState::getDefault());
+	}
+	//----------------------------------------------------------------------
+	void Pass::bindParameters(DeferredRenderContextPtr& renderContext, const PassParametersPtr& params) const
+	{
+		GpuProgramHandle vertProgram = getVertexProgram();
+		if(vertProgram)
+			renderContext->bindGpuParams(GPT_VERTEX_PROGRAM, params->mVertParams);
+
+		GpuProgramHandle fragProgram = getFragmentProgram();
+		if(fragProgram)
+			renderContext->bindGpuParams(GPT_FRAGMENT_PROGRAM, params->mFragParams);
+
+		GpuProgramHandle geomProgram = getGeometryProgram();
+		if(geomProgram)
+			renderContext->bindGpuParams(GPT_GEOMETRY_PROGRAM, params->mGeomParams);
+
+		GpuProgramHandle hullProgram = getHullProgram();
+		if(hullProgram)
+			renderContext->bindGpuParams(GPT_HULL_PROGRAM, params->mHullParams);
+
+		GpuProgramHandle domainProgram = getDomainProgram();
+		if(domainProgram)
+			renderContext->bindGpuParams(GPT_DOMAIN_PROGRAM, params->mDomainParams);
+
+		GpuProgramHandle computeProgram = getComputeProgram();
+		if(computeProgram)
+			renderContext->bindGpuParams(GPT_COMPUTE_PROGRAM, params->mComputeParams);
 	}
 	//----------------------------------------------------------------------
 	RTTITypeBase* Pass::getRTTIStatic()

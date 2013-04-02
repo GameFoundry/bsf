@@ -1,17 +1,16 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmComponent.h"
+#include "CmOverlay.h"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT GUIWidget : public Component
+	class CM_EXPORT GUIWidget : public Overlay
 	{
 	public:
-		~GUIWidget();
+		virtual ~GUIWidget();
 
-		virtual void update();
-
+		virtual void render(const CameraPtr& camera, DeferredRenderContextPtr& renderContext) const;
 	protected:
 		GUILabel* addLabel(const String& text);
 
@@ -19,18 +18,14 @@ namespace CamelotEngine
 
 	private:
 		friend class GameObject;
-		friend class GUIManager;
 
 		GUIWidget(GameObjectPtr parent);
 
+		void updateMeshes() const;
+
 		vector<GUIElement*>::type mElements;
-		/**
-		 * @brief	GUIWidgets sharing the same mesh group ID will attempted to be merged into
-		 * 			a single render mesh (as much as materials allow).
-		 * 			
-		 * @note	ID of -1 means that the widget mesh should never be grouped.
-		 */
-		INT32 mMeshGroupID;
+		mutable vector<MeshHandle>::type mCachedMeshes;
+		mutable vector<MaterialHandle>::type mCachedMaterials;
 		const GUISkin* mSkin;
 		static GUISkin DefaultSkin;
 	};

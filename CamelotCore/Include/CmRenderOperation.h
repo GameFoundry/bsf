@@ -82,10 +82,4 @@ namespace CamelotEngine
 	};
 	/** @} */
 	/** @} */
-
-	struct RenderObject
-	{
-		RenderOperation op;
-		MaterialHandle mat;
-	};
 }
