@@ -6,62 +6,37 @@
 #include "CmTextSprite.h"
 #include "CmFont.h"
 #include "CmMaterial.h"
+#include "CmGUILabel.h"
+#include "CmGUISkin.h"
+#include "CmOverlayManager.h"
 
 namespace CamelotEngine
 {
 	TestTextSprite::TestTextSprite(GameObjectPtr parent)
-		:Component(parent), mTextSprite(nullptr)
+		:GUIWidget(parent), mSkin(nullptr)
 	{
-		mTextRenderable = gameObject()->addComponent<Renderable>();
-		mTextMesh = Mesh::create();
-
-		mTextSprite = new TextSprite();
 	}
 
 	TestTextSprite::~TestTextSprite()
 	{
-		if(mTextSprite != nullptr)
-			delete mTextSprite;
+		if(mSkin != nullptr)
+			delete mSkin;
 	}
 
-	void TestTextSprite::setText(const String& text, FontHandle font, UINT32 fontSize, MaterialHandle textMaterial)
+	void TestTextSprite::setText(const CameraPtr& camera, const String& text, FontHandle font, UINT32 fontSize)
 	{
-		mTextSprite->setText(text);
-		mTextSprite->setFont(font.getInternalPtr(), fontSize);
+		mSkin = new GUISkin();
 
-		UINT32 numTextFaces = mTextSprite->getNumQuads(0);
-		UINT32 numVertices = numTextFaces * 4;
-		UINT32 numIndices = numTextFaces * 6;
+		OverlayManager::instance().attachOverlay(camera, this);		
 
-		std::shared_ptr<MeshData> textData(new MeshData());
+		GUIElementStyle labelStyle;
+		labelStyle.font = font;
+		labelStyle.fontSize = fontSize;
 
-		auto indices = new UINT32[numIndices];
-		auto vertices = new Vector3[numVertices];
-		auto uvs = new Vector2[numVertices];
+		mSkin->setStyle(GUILabel::getGUITypeName(), labelStyle);
 
-		auto vec2Buffer = new Vector2[numVertices];
-
-		mTextSprite->fillBuffer(vec2Buffer, uvs, indices, 0, numTextFaces, 0);
-
-		for(UINT32 i = 0; i < numVertices; i++)
-			vertices[i] = Vector3(vec2Buffer[i].x, vec2Buffer[i].y, 0.0f);
-
-		delete[] vec2Buffer;
-
-		textData->setPositions(vertices, numVertices);
-		textData->setUV0(uvs, numVertices);
-		textData->setIndices(indices, numIndices);
-
-		mTextMesh->setMeshData(textData);
-
-		mTextRenderable->setMesh(mTextMesh);
-
-		UINT32 nearestSize = font->getClosestAvailableSize(12);
-		const FontData* fontData = font->getFontDataForSize(nearestSize);
-
-		TextureHandle texturePage = fontData->texturePages[0]; // TODO - This won't work if font uses multiple pages
-		textMaterial->setTexture("tex", texturePage);
-		mTextRenderable->setMaterial(textMaterial);
+		setSkin(mSkin);
+		addLabel(text);
 	}
 
 	void TestTextSprite::update()

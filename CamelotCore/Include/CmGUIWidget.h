@@ -12,14 +12,15 @@ namespace CamelotEngine
 
 		virtual void render(const CameraPtr& camera, DeferredRenderContextPtr& renderContext) const;
 	protected:
-		GUILabel* addLabel(const String& text);
-
-		const GUISkin* getGUISkin() const;
-
-	private:
 		friend class GameObject;
 
 		GUIWidget(GameObjectPtr parent);
+
+		GUILabel* addLabel(const String& text);
+
+		void setSkin(const GUISkin* skin);
+		const GUISkin* getGUISkin() const;
+	private:
 
 		void updateMeshes() const;
 

@@ -7,6 +7,9 @@ namespace CamelotEngine
 {
 	class CM_EXPORT GUILabel : public GUIElement
 	{
+	public:
+		static const String& getGUITypeName();
+
 	protected:
 		~GUILabel();
 
@@ -35,7 +38,5 @@ namespace CamelotEngine
 
 		friend class GUIWidget;
 		GUILabel(GUIWidget* parent, const String& text, const GUISkin* skin);
-
-		virtual const String& getGUITypeName();
 	};
 }

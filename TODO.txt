@@ -28,7 +28,7 @@ Add TextUtil class
  When rendering GUIWidget its individual elements need to be sorted based on Z depth so the transparency works as expected
 
 Immediate TODO:
- IMPORTANT - GUIElement in its constructor calls a virtual method to detect actual type, which won't work
+ BuiltinMaterialManager creates a shader before shader factory is initialized
 
 Implement image shader for D3D11BuiltinMaterialManager
 Improve text shader so it doesn't have resolution values hardcoded in

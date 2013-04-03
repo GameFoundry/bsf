@@ -126,14 +126,14 @@ namespace CamelotEngine
 		// Create render state manager
 		RenderStateManager::startUp(new D3D11RenderStateManager());
 
-		BuiltinMaterialManager::startUp(new D3D11BuiltinMaterialManager());
-
 		mCurrentCapabilities = createRenderSystemCapabilities();
 
 		mCurrentCapabilities->addShaderProfile("hlsl");
 		HighLevelGpuProgramManager::instance().addFactory(mHLSLFactory);
 
 		mIAManager = new D3D11InputLayoutManager();
+
+		BuiltinMaterialManager::startUp(new D3D11BuiltinMaterialManager());
 
 		RenderSystem::initialize_internal();
 	}

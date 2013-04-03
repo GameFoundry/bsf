@@ -68,7 +68,5 @@ namespace CamelotEngine
 	protected:
 		GUIWidget* mParent;
 		const GUIElementStyle* mStyle;
-
-		virtual const String& getGUITypeName() = 0;
 	};
 }

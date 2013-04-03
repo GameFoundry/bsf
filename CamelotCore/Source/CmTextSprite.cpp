@@ -239,7 +239,7 @@ namespace CamelotEngine
 
 	}
 
-	TextSprite::TextSprite(const String& text, FontPtr font, UINT32 fontSize)
+	TextSprite::TextSprite(const String& text, FontHandle font, UINT32 fontSize)
 		:mText(text), mFont(font), mFontSize(fontSize), mWordWrap(false), mHorzAlign(THA_Left), mVertAlign(TVA_Top)
 	{
 

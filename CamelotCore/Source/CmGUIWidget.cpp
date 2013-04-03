@@ -37,6 +37,11 @@ namespace CamelotEngine
 		return label;
 	}
 
+	void GUIWidget::setSkin(const GUISkin* skin)
+	{
+		mSkin = skin;
+	}
+
 	const GUISkin* GUIWidget::getGUISkin() const
 	{
 		if(mSkin != nullptr)
@@ -121,6 +126,7 @@ namespace CamelotEngine
 		{
 			MeshHandle newMesh = Mesh::create();
 			mCachedMeshes.push_back(newMesh);
+			newMesh.waitUntilLoaded();
 		}
 
 		while((UINT32)mCachedMeshes.size() > numMeshes && (UINT32)mCachedMeshes.size() > 0)

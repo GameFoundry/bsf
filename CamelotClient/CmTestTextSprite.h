@@ -1,24 +1,21 @@
 #include "CmPrerequisites.h"
-#include "CmComponent.h"
+#include "CmGUIWidget.h"
 
 namespace CamelotEngine
 {
-	class TestTextSprite : public Component
+	class TestTextSprite : public GUIWidget
 	{
 	private:
 		friend class GameObject;
 
 		TestTextSprite(GameObjectPtr parent);
 
-		RenderablePtr mTextRenderable;
-		MeshHandle mTextMesh;
-		TextSprite* mTextSprite;
-
+		GUISkin* mSkin;
 	public:
 		~TestTextSprite();
 
 		virtual void update();
 
-		void setText(const String& text, FontHandle font, UINT32 fontSize, MaterialHandle textMaterial);
+		void setText(const CameraPtr& camera, const String& text, FontHandle font, UINT32 fontSize);
 	};
 }
