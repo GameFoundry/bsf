@@ -40,7 +40,8 @@ namespace CamelotEngine
 
 	ImportOptionsPtr FontImporter::createImportOptions() const
 	{
-		return ImportOptionsPtr(new FontImportOptions());
+		return ImportOptionsPtr(CM_NEW(FontImportOptions, SmallScratchAlloc) FontImportOptions(),
+			&MemAllocDeleter<FontImportOptions, SmallScratchAlloc>::deleter);
 	}
 
 	BaseResourceHandle FontImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)

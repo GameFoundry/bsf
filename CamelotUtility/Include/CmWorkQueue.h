@@ -82,14 +82,14 @@ namespace CamelotEngine
 		struct CM_UTILITY_EXPORT Response
 		{
 			/// Pointer to the request that this response is in relation to
-			const Request* mRequest;
+			Request* mRequest;
 			/// Whether the work item succeeded or not
 			bool mSuccess;
 			/// Data associated with the result of the process
 			boost::any mData;
 
 		public:
-			Response(const Request* rq, bool success, const boost::any& data);
+			Response(Request* rq, bool success, const boost::any& data);
 			~Response();
 			/// Get the request that this is a response to (NB destruction destroys this)
 			const Request* getRequest() const { return mRequest; }
@@ -139,7 +139,7 @@ namespace CamelotEngine
 			@return Pointer to a Response object - the caller is responsible
 			for deleting the object.
 			*/
-			virtual Response* handleRequest(const Request* req, const WorkQueue* srcQ) = 0;
+			virtual Response* handleRequest(Request* req, const WorkQueue* srcQ) = 0;
 		};
 
 		/** Interface definition for a handler of responses. 
@@ -226,7 +226,7 @@ namespace CamelotEngine
 			/** Process a request if possible.
 			@return Valid response if processed, null otherwise
 			*/
-			Response* handleRequest(const Request* req, const WorkQueue* srcQ)
+			Response* handleRequest(Request* req, const WorkQueue* srcQ)
 			{
 				// Read mutex so that multiple requests can be processed by the
 				// same handler in parallel if required

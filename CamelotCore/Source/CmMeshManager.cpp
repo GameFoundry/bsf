@@ -6,7 +6,7 @@ namespace CamelotEngine
 {
 	MeshManager::MeshManager()
 	{
-		mNullMeshData = MeshDataPtr(new MeshData());
+		mNullMeshData = MeshDataPtr(CM_NEW(MeshData, GenAlloc) MeshData(), &MemAllocDeleter<MeshData, GenAlloc>::deleter);
 
 		auto indices = new UINT32[3];
 		indices[0] = 0;
@@ -36,7 +36,7 @@ namespace CamelotEngine
 
 	MeshPtr MeshManager::createEmpty()
 	{
-		MeshPtr mesh = MeshPtr(new Mesh());
+		MeshPtr mesh = MeshPtr(new Mesh(), &CoreObject::_deleteDelayed);
 		mesh->setThisPtr(mesh);
 
 		return mesh;

@@ -31,6 +31,16 @@ namespace CamelotEngine
 		}
 	};
 
+	template<class T, class category>
+	class MemAllocDeleter
+	{
+	public:
+		static void deleter(T* ptr)
+		{
+			__cm_destruct<T, category>(ptr);
+		}
+	};
+
 	template<class T, class category> 
 	inline T* __cm_construct_array(unsigned int count)
 	{
@@ -62,6 +72,13 @@ namespace CamelotEngine
 	}
 
 	class GenAlloc
+	{ };
+
+	/**
+	 * @brief	Allocator used for allocating small amounts of temporary memory that
+	 * 			used and then quickly released
+	 */
+	class SmallScratchAlloc
 	{ };
 }
 

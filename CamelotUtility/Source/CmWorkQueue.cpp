@@ -45,7 +45,7 @@ namespace CamelotEngine {
 
 		for (RequestQueue::iterator i = mRequestQueue.begin(); i != mRequestQueue.end(); ++i)
 		{
-			delete (*i);
+			CM_DELETE(*i, WorkQueue::Request, SmallScratchAlloc);
 		}
 		mRequestQueue.clear();
 	}
@@ -62,7 +62,7 @@ namespace CamelotEngine {
 
 		mShuttingDown = false;
 
-		mWorkerFunc = new WorkerFunc(this);
+		mWorkerFunc = CM_NEW(WorkerFunc, GenAlloc) WorkerFunc(this);
 
 #if CM_THREAD_SUPPORT
 		for (UINT8 i = 0; i < mWorkerThreadCount; ++i)
@@ -95,10 +95,10 @@ namespace CamelotEngine {
 			mWorkers.clear();
 #endif
 
-			if (mWorkerFunc)
+			if (mWorkerFunc != nullptr)
 			{
-				delete mWorkerFunc;
-				mWorkerFunc = 0;
+				CM_DELETE(mWorkerFunc, WorkQueue::WorkerFunc, GenAlloc);
+				mWorkerFunc = nullptr;
 			}
 
 			mIsRunning = false;
@@ -123,7 +123,8 @@ namespace CamelotEngine {
 			}
 		}
 		if (!duplicate)
-			handlers.push_back(RequestHandlerHolderPtr(new RequestHandlerHolder(rh)));
+			handlers.push_back(RequestHandlerHolderPtr(CM_NEW(RequestHandlerHolder, GenAlloc) RequestHandlerHolder(rh),
+				&MemAllocDeleter<RequestHandlerHolder, GenAlloc>::deleter));
 
 	}
 	//---------------------------------------------------------------------
@@ -201,7 +202,7 @@ namespace CamelotEngine {
 					return 0;
 
 			rid = ++mRequestCount;
-			req = new Request(channel, rData, retryCount, rid);
+			req = CM_NEW(Request, SmallScratchAlloc) Request(channel, rData, retryCount, rid);
 
 #if CM_THREAD_SUPPORT
 			if (!forceSynchronous)
@@ -228,7 +229,7 @@ namespace CamelotEngine {
 		if (mShuttingDown)
 			return;
 
-		Request* req = new Request(channel, rData, retryCount, rid);
+		Request* req = CM_NEW(Request, SmallScratchAlloc) Request(channel, rData, retryCount, rid);
 
 #if CM_THREAD_SUPPORT
 		mRequestQueue.push_back(req);
@@ -385,20 +386,21 @@ namespace CamelotEngine {
 					addRequestWithRID(req->getID(), req->getChannel(), req->getData(), 
 						req->getRetryCount() - 1);
 					// discard response (this also deletes request)
-					delete response;
+					CM_DELETE(response, WorkQueue::Response, SmallScratchAlloc);
 					return;
 				}
 			}
 
 			processResponse(response);
-			delete response;
+			CM_DELETE(response, WorkQueue::Response, SmallScratchAlloc);
 		}
 		else
 		{
 			// no response, delete request
 			gDebug().logWarning("warning: no handler processed request "
 				+ toString(r->getID()) + ", channel " + toString(r->getChannel()));
-			delete r;
+
+			CM_DELETE(r, WorkQueue::Request, SmallScratchAlloc);
 		}
 
 	}
@@ -524,7 +526,7 @@ namespace CamelotEngine {
 	}
 	//---------------------------------------------------------------------
 	//---------------------------------------------------------------------
-	WorkQueue::Response::Response(const Request* rq, bool success, const boost::any& data)
+	WorkQueue::Response::Response(Request* rq, bool success, const boost::any& data)
 		: mRequest(rq), mSuccess(success), mData(data)
 	{
 
@@ -532,7 +534,7 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	WorkQueue::Response::~Response()
 	{
-		delete mRequest;
+		CM_DELETE(mRequest, WorkQueue::Request, SmallScratchAlloc);
 	}
 	//---------------------------------------------------------------------
 	void WorkQueue::WorkerFunc::operator()()

@@ -116,7 +116,7 @@ namespace CamelotEngine
 		mMinFilter = FO_LINEAR;
 		mMipFilter = FO_POINT;
 
-		mProgramPipelineManager = new GLSLProgramPipelineManager();
+		mProgramPipelineManager = CM_NEW(GLSLProgramPipelineManager, GenAlloc) GLSLProgramPipelineManager();
 	}
 
 	GLRenderSystem::~GLRenderSystem()
@@ -214,10 +214,10 @@ namespace CamelotEngine
 		mGLInitialised = 0;
 
 		if(mProgramPipelineManager != nullptr)
-			delete mProgramPipelineManager;
+			CM_DELETE(mProgramPipelineManager, GLSLProgramPipelineManager, GenAlloc);
 
 		if(mGLSupport)
-			delete mGLSupport;
+			CM_DELETE(mGLSupport, GLSupport, GenAlloc);
 
 		if(mTextureTypes != nullptr)
 			CM_DELETE_ARRAY(mTextureTypes, GLenum, mNumTextureTypes, GenAlloc);

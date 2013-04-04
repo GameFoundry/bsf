@@ -14,8 +14,8 @@ namespace CamelotEngine
 {
 	Importer::Importer()
 	{
-		registerAssetImporter(new GpuProgIncludeImporter());
-		registerAssetImporter(new GpuProgramImporter());
+		registerAssetImporter(CM_NEW(GpuProgIncludeImporter, GenAlloc) GpuProgIncludeImporter());
+		registerAssetImporter(CM_NEW(GpuProgramImporter, GenAlloc) GpuProgramImporter());
 	}
 
 	Importer::~Importer()
@@ -23,7 +23,7 @@ namespace CamelotEngine
 		for(auto i = mAssetImporters.begin(); i != mAssetImporters.end(); ++i)
 		{
 			if((*i) != nullptr)
-				delete *i;
+				CM_DELETE(*i, SpecificImporter, GenAlloc);
 		}
 
 		mAssetImporters.clear();

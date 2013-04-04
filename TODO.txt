@@ -37,6 +37,15 @@ Implement image shader for D3D11BuiltinMaterialManager
 Improve text shader so it doesn't have resolution values hardcoded in
 Implement D3D9 and GL BuiltInMaterialManager
 
+FInish porting memory allocation:
+Check allocationChanges.txt on C
+How to I deallocate things used _deleteDelayed?
+ - Sometimes I will want CoreObjects to use a special allocator
+
+Similar issue with passing arrays to classes like MeshData. In some cases SmallScratchBuffer is useful, while in others a LargeScratchBuffer is more appropriate?
+ - Although LargeScratchBuffer is probably more appropriate in general situations, but still the user needs to know that, which I think is a bit hidden. Maybe change the behaviour so that MeshData internally allocates memory and just returns a pointer?
+
+PixelData needs something similar as mesh data
 
 Test:
 Need sorted rendering as fonts render before scene and blending doesn't work as it should

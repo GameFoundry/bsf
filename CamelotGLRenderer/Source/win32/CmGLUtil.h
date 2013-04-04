@@ -35,7 +35,7 @@ namespace CamelotEngine {
     
 inline GLSupport* getGLSupport()
 {
-    return new Win32GLSupport();
+    return CM_NEW(Win32GLSupport, GenAlloc) Win32GLSupport();
 }
 
 };

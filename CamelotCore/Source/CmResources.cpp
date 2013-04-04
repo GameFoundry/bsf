@@ -15,14 +15,15 @@ namespace CamelotEngine
 		return true;
 	}
 
-	WorkQueue::Response* Resources::ResourceRequestHandler::handleRequest(const WorkQueue::Request* req, const WorkQueue* srcQ)
+	WorkQueue::Response* Resources::ResourceRequestHandler::handleRequest(WorkQueue::Request* req, const WorkQueue* srcQ)
 	{
 		ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(req->getData());
 
-		ResourceLoadResponsePtr resResponse = ResourceLoadResponsePtr(new Resources::ResourceLoadResponse());
+		ResourceLoadResponsePtr resResponse = ResourceLoadResponsePtr(CM_NEW(Resources::ResourceLoadResponse, SmallScratchAlloc) Resources::ResourceLoadResponse(),
+			&MemAllocDeleter<Resources::ResourceLoadResponse, SmallScratchAlloc>::deleter);
 		resResponse->rawResource = gResources().loadFromDiskAndDeserialize(resRequest->filePath);
 
-		return new WorkQueue::Response(req, true, resResponse);
+		return CM_NEW(WorkQueue::Response, SmallScratchAlloc) WorkQueue::Response(req, true, resResponse);
 	}
 
 	bool Resources::ResourceResponseHandler::canHandleResponse(const WorkQueue::Response* res, const WorkQueue* srcQ)
@@ -62,7 +63,7 @@ namespace CamelotEngine
 	}
 
 	Resources::Resources(const String& metaDataFolder)
-		:mRequestHandler(nullptr), mResponseHandler(nullptr)
+		:mRequestHandler(nullptr), mResponseHandler(nullptr), mWorkQueue(nullptr)
 	{
 		mMetaDataFolderPath = metaDataFolder;
 
@@ -73,10 +74,10 @@ namespace CamelotEngine
 
 		loadMetaData();
 
-		mWorkQueue = WorkQueuePtr(new WorkQueue());
+		mWorkQueue = CM_NEW(WorkQueue, GenAlloc) WorkQueue();
 		mWorkQueueChannel = mWorkQueue->getChannel("Resources");
-		mRequestHandler = new ResourceRequestHandler();
-		mResponseHandler = new ResourceResponseHandler();
+		mRequestHandler = CM_NEW(ResourceRequestHandler, GenAlloc) ResourceRequestHandler();
+		mResponseHandler = CM_NEW(ResourceResponseHandler, GenAlloc) ResourceResponseHandler();
 
 		mWorkQueue->addRequestHandler(mWorkQueueChannel, mRequestHandler);
 		mWorkQueue->addResponseHandler(mWorkQueueChannel, mResponseHandler);
@@ -99,13 +100,15 @@ namespace CamelotEngine
 				mWorkQueue->removeResponseHandler(mWorkQueueChannel, mResponseHandler);
 
 			mWorkQueue->shutdown();
+
+			CM_DELETE(mWorkQueue, WorkQueue, GenAlloc);
 		}
 
 		if(mRequestHandler != nullptr)
-			delete mRequestHandler;
+			CM_DELETE(mRequestHandler, ResourceRequestHandler, GenAlloc);
 
 		if(mResponseHandler != nullptr)
-			delete mResponseHandler;
+			CM_DELETE(mResponseHandler, ResourceResponseHandler, GenAlloc);
 	}
 
 	BaseResourceHandle Resources::load(const String& filePath)
@@ -202,7 +205,8 @@ namespace CamelotEngine
 		BaseResourceHandle newResource;
 		newResource.setUUID(uuid); // UUID needs to be set immediately if the resource gets loaded async
 
-		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(new Resources::ResourceLoadRequest());
+		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(CM_NEW(Resources::ResourceLoadRequest, SmallScratchAlloc) Resources::ResourceLoadRequest(),
+			&MemAllocDeleter<Resources::ResourceLoadRequest, SmallScratchAlloc>::deleter);
 		resRequest->filePath = filePath;
 		resRequest->resource = newResource;
 
@@ -368,7 +372,8 @@ namespace CamelotEngine
 		if(metaExists_UUID(uuid))
 			CM_EXCEPT(InternalErrorException, "Resource with the same UUID already exists. UUID: " + uuid);
 
-		ResourceMetaDataPtr dbEntry(new ResourceMetaData());
+		ResourceMetaDataPtr dbEntry(CM_NEW(ResourceMetaData, GenAlloc) ResourceMetaData(),
+			&MemAllocDeleter<ResourceMetaData, GenAlloc>::deleter);
 		dbEntry->mPath = filePath;
 		dbEntry->mUUID = uuid;
 

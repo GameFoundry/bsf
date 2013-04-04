@@ -12,7 +12,7 @@ namespace CamelotEngine
 		class CM_EXPORT ResourceRequestHandler : public WorkQueue::RequestHandler
 		{
 			virtual bool canHandleRequest( const WorkQueue::Request* req, const WorkQueue* srcQ );
-			virtual WorkQueue::Response* handleRequest( const WorkQueue::Request* req, const WorkQueue* srcQ );
+			virtual WorkQueue::Response* handleRequest(WorkQueue::Request* req, const WorkQueue* srcQ );
 		};
 
 		class CM_EXPORT ResourceResponseHandler : public WorkQueue::ResponseHandler
@@ -153,7 +153,7 @@ namespace CamelotEngine
 		ResourceRequestHandler* mRequestHandler;
 		ResourceResponseHandler* mResponseHandler;
 
-		WorkQueuePtr mWorkQueue; // TODO Low priority - I might want to make this more global so other classes can use it
+		WorkQueue* mWorkQueue;
 		UINT16 mWorkQueueChannel;
 
 		unordered_map<String, BaseResourceHandle>::type mLoadedResources; // TODO Low priority - I'm not sure how will UUID (a string) do as key do performance wise

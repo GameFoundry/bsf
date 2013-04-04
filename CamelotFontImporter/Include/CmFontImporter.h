@@ -20,7 +20,7 @@ namespace CamelotEngine
 			static FontImporter* importer = nullptr;
 			if(importer == nullptr)
 			{
-				importer = new FontImporter();
+				importer = CM_NEW(FontImporter, GenAlloc) FontImporter();
 				Importer::instance().registerAssetImporter(importer);
 			}
 		}

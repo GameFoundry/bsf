@@ -357,7 +357,8 @@ namespace CamelotEngine {
 
 	DeferredRenderContextPtr RenderSystem::createDeferredContext()
 	{
-		return DeferredRenderContextPtr(new DeferredRenderContext(this, CM_THREAD_CURRENT_ID));
+		return DeferredRenderContextPtr(CM_NEW(DeferredRenderContext, GenAlloc) DeferredRenderContext(this, CM_THREAD_CURRENT_ID), 
+			&MemAllocDeleter<DeferredRenderContext, GenAlloc>::deleter);
 	}
 	
 	AsyncOp RenderSystem::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)
