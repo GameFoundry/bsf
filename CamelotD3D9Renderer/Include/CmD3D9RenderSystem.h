@@ -215,6 +215,7 @@ namespace CamelotEngine
 			IDirect3DBaseTexture9 *pVertexTex;
 		};
 
+		UINT32 mNumTexStages;
 		sD3DTextureStageDesc* mTexStageDesc;
 
 		D3D9DriverList* getDirect3DDrivers();

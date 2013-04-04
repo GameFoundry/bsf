@@ -81,18 +81,18 @@ namespace CamelotEngine {
 
 		if(mCommandQueue != nullptr)
 		{
-			delete mCommandQueue;
+			CM_DELETE(mCommandQueue, CommandQueue, GenAlloc);
 			mCommandQueue = nullptr;
 		}
 
-		delete mCurrentCapabilities;
-		mCurrentCapabilities = 0;
+		CM_DELETE(mCurrentCapabilities, RenderSystemCapabilities, GenAlloc);
+		mCurrentCapabilities = nullptr;
     }
 	//-----------------------------------------------------------------------
 	void RenderSystem::initialize()
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mCommandQueue = new CommandQueue(CM_THREAD_CURRENT_ID, true);
+		mCommandQueue = CM_NEW(CommandQueue, GenAlloc) CommandQueue(CM_THREAD_CURRENT_ID, true);
 
 		initRenderThread();
 
@@ -273,7 +273,7 @@ namespace CamelotEngine {
 	void RenderSystem::initRenderThread()
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
-		mRenderThreadFunc = new RenderWorkerFunc(this);
+		mRenderThreadFunc = CM_NEW(RenderWorkerFunc, GenAlloc) RenderWorkerFunc(this);
 
 #if CM_THREAD_SUPPORT
 		CM_THREAD_CREATE(t, *mRenderThreadFunc);
@@ -344,6 +344,12 @@ namespace CamelotEngine {
 
 		mRenderThread = nullptr;
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
+
+		if(mRenderThreadFunc != nullptr)
+		{
+			CM_DELETE(mRenderThreadFunc, RenderWorkerFunc, GenAlloc);
+			mRenderThreadFunc = nullptr;
+		}
 #endif
 
 		mRenderThreadStarted = false;

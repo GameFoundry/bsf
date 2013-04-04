@@ -91,6 +91,7 @@ namespace CamelotEngine
 		mVertexTexOffset(0),
 		mGeometryTexOffset(0),
 		mTextureTypes(nullptr),
+		mNumTextureTypes(0),
 		mFragmentUBOffset(0),
 		mVertexUBOffset(0),
 		mGeometryUBOffset(0),
@@ -142,11 +143,11 @@ namespace CamelotEngine
 		THROW_IF_NOT_RENDER_THREAD;
 
 		mGLSupport->start();
-		RenderWindowManager::startUp(new GLRenderWindowManager(this));
+		RenderWindowManager::startUp(CM_NEW(GLRenderWindowManager, GenAlloc) GLRenderWindowManager(this));
 
-		RenderStateManager::startUp(new RenderStateManager());
+		RenderStateManager::startUp(CM_NEW(RenderStateManager, GenAlloc) RenderStateManager());
 
-		BuiltinMaterialManager::startUp(new GLBuiltinMaterialManager());
+		BuiltinMaterialManager::startUp(CM_NEW(GLBuiltinMaterialManager, GenAlloc) GLBuiltinMaterialManager());
 
 		RenderSystem::initialize_internal();
 	}
@@ -160,8 +161,8 @@ namespace CamelotEngine
 		{
 			// Remove from manager safely
 			HighLevelGpuProgramManager::instance().removeFactory(mGLSLProgramFactory);
-			delete mGLSLProgramFactory;
-			mGLSLProgramFactory = 0;
+			CM_DELETE(mGLSLProgramFactory, GLSLProgramFactory, GenAlloc);
+			mGLSLProgramFactory = nullptr;
 		}
 
 		// Deleting Cg GLSL program factory
@@ -169,8 +170,8 @@ namespace CamelotEngine
 		{
 			// Remove from manager safely
 			HighLevelGpuProgramManager::instance().removeFactory(mCgProgramFactory);
-			delete mCgProgramFactory;
-			mCgProgramFactory = 0;
+			CM_DELETE(mCgProgramFactory, CgProgramFactory, GenAlloc);
+			mCgProgramFactory = nullptr;
 		}
 
 		// Deleting the GPU program manager and hardware buffer manager.  Has to be done before the mGLSupport->stop().
@@ -217,6 +218,9 @@ namespace CamelotEngine
 
 		if(mGLSupport)
 			delete mGLSupport;
+
+		if(mTextureTypes != nullptr)
+			CM_DELETE_ARRAY(mTextureTypes, GLenum, mNumTextureTypes, GenAlloc);
 	}
 
 	//---------------------------------------------------------------------
@@ -1818,25 +1822,23 @@ namespace CamelotEngine
 			glUnmapBufferARB = glUnmapBuffer;
 		}
 
-		HardwareBufferManager::startUp(new GLHardwareBufferManager);
+		HardwareBufferManager::startUp(CM_NEW(GLHardwareBufferManager, GenAlloc) GLHardwareBufferManager);
 		checkForErrors();
 
 		// GPU Program Manager setup
-		GpuProgramManager::startUp(new GLGpuProgramManager());
+		GpuProgramManager::startUp(CM_NEW(GLGpuProgramManager, GenAlloc) GLGpuProgramManager());
 		checkForErrors();
 
 		if(caps->isShaderProfileSupported("glsl"))
 		{
-			// NFZ - check for GLSL vertex and fragment shader support successful
-			mGLSLProgramFactory = new GLSLProgramFactory();
+			mGLSLProgramFactory = CM_NEW(GLSLProgramFactory, GenAlloc) GLSLProgramFactory();
 			HighLevelGpuProgramManager::instance().addFactory(mGLSLProgramFactory);
 			checkForErrors();
 		}
 
 		if(caps->isShaderProfileSupported("cg"))
 		{
-			// NFZ - check for GLSL vertex and fragment shader support successful
-			mCgProgramFactory = new CgProgramFactory();
+			mCgProgramFactory = CM_NEW(CgProgramFactory, GenAlloc) CgProgramFactory();
 			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
 			checkForErrors();
 		}
@@ -1870,7 +1872,7 @@ namespace CamelotEngine
 			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
 			{
 				// Create FBO manager
-				GLRTTManager::startUp(new GLRTTManager());
+				GLRTTManager::startUp(CM_NEW(GLRTTManager, GenAlloc) GLRTTManager());
 				checkForErrors();
 			}
 		}
@@ -1895,7 +1897,8 @@ namespace CamelotEngine
 		if(totalNumTexUnits > numCombinedTexUnits)
 			CM_EXCEPT(InternalErrorException, "Number of combined texture units less than the number of individual units!?");
 
-		mTextureTypes = new GLenum[numCombinedTexUnits];
+		mNumTextureTypes = numCombinedTexUnits;
+		mTextureTypes = CM_NEW_ARRAY(GLenum, mNumTextureTypes, GenAlloc);
 		for(UINT16 i = 0; i < numCombinedTexUnits; i++)
 			mTextureTypes[i] = 0;
 
@@ -1918,7 +1921,7 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
 		/// Create the texture manager        
-		TextureManager::startUp(new GLTextureManager(*mGLSupport)); 
+		TextureManager::startUp(CM_NEW(GLTextureManager, GenAlloc) GLTextureManager(*mGLSupport)); 
 		checkForErrors();
 
 		mGLInitialised = true;
@@ -1926,7 +1929,7 @@ namespace CamelotEngine
 
 	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
 	{
-		RenderSystemCapabilities* rsc = new RenderSystemCapabilities();
+		RenderSystemCapabilities* rsc = CM_NEW(RenderSystemCapabilities, GenAlloc) RenderSystemCapabilities();
 
 		rsc->setCategoryRelevant(CAPS_CATEGORY_GL, true);
 		rsc->setDriverVersion(mDriverVersion);

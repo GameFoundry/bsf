@@ -73,3 +73,5 @@ THE SOFTWARE
 #include "CmRTTIPrerequisites.h"
 
 #include "CmString.h"
+
+#include "CmMemoryAllocator.h"

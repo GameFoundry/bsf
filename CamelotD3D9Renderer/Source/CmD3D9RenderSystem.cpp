@@ -92,6 +92,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	D3D9RenderSystem::D3D9RenderSystem( HINSTANCE hInstance )
 		: mTexStageDesc(nullptr)
+		, mNumTexStages(0)
 		, mCurrentDrawOperation(DOT_TRIANGLE_LIST)
 	{
 		// update singleton access pointer.
@@ -139,7 +140,7 @@ namespace CamelotEngine
 		THROW_IF_NOT_RENDER_THREAD;
 
 		// Create the resource manager.
-		mResourceManager = new D3D9ResourceManager();
+		mResourceManager = CM_NEW(D3D9ResourceManager, GenAlloc) D3D9ResourceManager();
 
 		// Create our Direct3D object
 		if( NULL == (mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) )
@@ -160,30 +161,30 @@ namespace CamelotEngine
 		mDriverVersion.build = LOWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.LowPart);
 
 		// Create the device manager.
-		mDeviceManager = new D3D9DeviceManager();
+		mDeviceManager = CM_NEW(D3D9DeviceManager, GenAlloc) D3D9DeviceManager();
 
 		// Create the texture manager for use by others		
-		TextureManager::startUp(new D3D9TextureManager());
+		TextureManager::startUp(CM_NEW(D3D9TextureManager, GenAlloc) D3D9TextureManager());
 
 		// Also create hardware buffer manager		
-		HardwareBufferManager::startUp(new D3D9HardwareBufferManager());
+		HardwareBufferManager::startUp(CM_NEW(D3D9HardwareBufferManager, GenAlloc) D3D9HardwareBufferManager());
 
 		// Create the GPU program manager		
-		GpuProgramManager::startUp(new D3D9GpuProgramManager());
+		GpuProgramManager::startUp(CM_NEW(D3D9GpuProgramManager, GenAlloc) D3D9GpuProgramManager());
 
 		// Create & register HLSL factory		
-		mHLSLProgramFactory = new D3D9HLSLProgramFactory();
+		mHLSLProgramFactory = CM_NEW(D3D9HLSLProgramFactory, GenAlloc) D3D9HLSLProgramFactory();
 
 		// Create & register Cg factory		
-		mCgProgramFactory = new CgProgramFactory();
+		mCgProgramFactory = CM_NEW(CgProgramFactory, GenAlloc) CgProgramFactory();
 
 		// Create render window manager
-		RenderWindowManager::startUp(new D3D9RenderWindowManager(this));
+		RenderWindowManager::startUp(CM_NEW(D3D9RenderWindowManager, GenAlloc) D3D9RenderWindowManager(this));
 
 		// Create render state manager
-		RenderStateManager::startUp(new RenderStateManager());
+		RenderStateManager::startUp(CM_NEW(RenderStateManager, GenAlloc) RenderStateManager());
 
-		BuiltinMaterialManager::startUp(new D3D9BuiltinMaterialManager());
+		BuiltinMaterialManager::startUp(CM_NEW(D3D9BuiltinMaterialManager, GenAlloc) D3D9BuiltinMaterialManager());
 
 		// call superclass method
 		RenderSystem::initialize_internal();
@@ -193,15 +194,23 @@ namespace CamelotEngine
 	{
 		if(mTexStageDesc != nullptr)
 		{
-			delete[] mTexStageDesc;
+			CM_DELETE_ARRAY(mTexStageDesc, sD3DTextureStageDesc, mNumTexStages, GenAlloc);
 			mTexStageDesc = nullptr;
 		}
 
 		RenderSystem::destroy_internal();
 
-		SAFE_DELETE( mDeviceManager );
+		if(mDeviceManager != nullptr)
+		{
+			CM_DELETE(mDeviceManager, D3D9DeviceManager, GenAlloc);
+			mDeviceManager = nullptr;
+		}
 
-		SAFE_DELETE( mDriverList );
+		if(mDriverList != nullptr)
+		{
+			CM_DELETE(mDriverList, D3D9DriverList, GenAlloc);
+			mDriverList = nullptr;
+		}
 		mActiveD3DDriver = NULL;	
 
 		BuiltinMaterialManager::shutDown();
@@ -215,19 +224,24 @@ namespace CamelotEngine
 		if (mHLSLProgramFactory)
 		{
 			HighLevelGpuProgramManager::instance().removeFactory(mHLSLProgramFactory);
-			delete mHLSLProgramFactory;
+			CM_DELETE(mHLSLProgramFactory, D3D9HLSLProgramFactory, GenAlloc);
 			mHLSLProgramFactory = 0;
 		}
 
 		if(mCgProgramFactory)
 		{
 			HighLevelGpuProgramManager::instance().removeFactory(mCgProgramFactory);
-			delete mCgProgramFactory;
+			CM_DELETE(mCgProgramFactory, CgProgramFactory, GenAlloc);
 			mCgProgramFactory = 0;
 		}
 
 		SAFE_RELEASE( mpD3D );
-		SAFE_DELETE ( mResourceManager );
+
+		if(mResourceManager != nullptr)
+		{
+			CM_DELETE(mResourceManager, D3D9ResourceManager, GenAlloc);
+			mResourceManager = nullptr;
+		}
 
 		msD3D9RenderSystem = NULL;
 	}
@@ -1066,12 +1080,12 @@ namespace CamelotEngine
 
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
-		IDirect3DSurface9** pBack = new IDirect3DSurface9*[maxRenderTargets];
+		IDirect3DSurface9** pBack = CM_NEW_ARRAY(IDirect3DSurface9*, maxRenderTargets, SmallScratchAlloc);
 		memset(pBack, 0, sizeof(IDirect3DSurface9*) * maxRenderTargets);
 		target->getCustomAttribute( "DDBACKBUFFER", pBack );
 		if (!pBack[0])
 		{
-			delete[] pBack;
+			CM_DELETE_ARRAY(pBack, IDirect3DSurface9*, maxRenderTargets, SmallScratchAlloc);
 			return;
 		}
 
@@ -1091,7 +1105,7 @@ namespace CamelotEngine
 			}
 		}
 
-		delete[] pBack;
+		CM_DELETE_ARRAY(pBack, IDirect3DSurface9*, maxRenderTargets, SmallScratchAlloc);
 
 		hr = getActiveD3D9Device()->SetDepthStencilSurface(pDepth);
 		if (FAILED(hr))
@@ -1538,7 +1552,7 @@ namespace CamelotEngine
 	D3D9DriverList* D3D9RenderSystem::getDirect3DDrivers()
 	{
 		if( !mDriverList )
-			mDriverList = new D3D9DriverList();
+			mDriverList = CM_NEW(D3D9DriverList, GenAlloc) D3D9DriverList();
 
 		return mDriverList;
 	}
@@ -1618,7 +1632,7 @@ namespace CamelotEngine
 	{			
 		RenderSystemCapabilities* rsc = mCurrentCapabilities;
 		if (rsc == NULL)
-			rsc = new RenderSystemCapabilities();
+			rsc = CM_NEW(RenderSystemCapabilities, GenAlloc) RenderSystemCapabilities();
 
 		rsc->setCategoryRelevant(CAPS_CATEGORY_D3D9, true);
 		rsc->setDriverVersion(mDriverVersion);
@@ -2233,11 +2247,11 @@ namespace CamelotEngine
 		if (caps->isShaderProfileSupported("cg"))
 			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
 
-		UINT32 maxNumCombinedTextures = caps->getNumCombinedTextureUnits();
-		mTexStageDesc = new sD3DTextureStageDesc[maxNumCombinedTextures];
+		mNumTexStages = caps->getNumCombinedTextureUnits();
+		mTexStageDesc = CM_NEW_ARRAY(sD3DTextureStageDesc, mNumTexStages, GenAlloc);
 
 		// set stages desc. to defaults
-		for (UINT32 n = 0; n < maxNumCombinedTextures; n++)
+		for (UINT32 n = 0; n < mNumTexStages; n++)
 		{
 			mTexStageDesc[n].coordIndex = 0;
 			mTexStageDesc[n].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;

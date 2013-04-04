@@ -218,6 +218,7 @@ namespace CamelotEngine {
         FilterOptions mMipFilter;
 
         /// Holds texture type settings for every stage
+        UINT32	mNumTextureTypes;
         GLenum* mTextureTypes;
 
         void initInputDevices(void);

@@ -84,6 +84,8 @@ THE SOFTWARE
 
 #endif
 
+#include "CmMemAllocCategories.h"
+
 namespace CamelotEngine {
 
 // Pre-declare classes

@@ -46,17 +46,17 @@ namespace CamelotEngine
 
 	void Application::startUp(const String& renderSystemName, const String& rendererName)
 	{
-		Time::startUp(new Time());
-		Input::startUp(new Input());
-		DynLibManager::startUp(new DynLibManager());
-		CoreGpuObjectManager::startUp(new CoreGpuObjectManager());
-		Resources::startUp(new Resources("D:\\CamelotResourceMetas"));
-		HighLevelGpuProgramManager::startUp(new HighLevelGpuProgramManager());
+		Time::startUp(CM_NEW(Time, GenAlloc) Time());
+		Input::startUp(CM_NEW(Input, GenAlloc) Input());
+		DynLibManager::startUp(CM_NEW(DynLibManager, GenAlloc) DynLibManager());
+		CoreGpuObjectManager::startUp(CM_NEW(CoreGpuObjectManager, GenAlloc) CoreGpuObjectManager());
+		Resources::startUp(CM_NEW(Resources, GenAlloc) Resources("D:\\CamelotResourceMetas"));
+		HighLevelGpuProgramManager::startUp(CM_NEW(HighLevelGpuProgramManager, GenAlloc) HighLevelGpuProgramManager());
 
-		RenderSystemManager::startUp(new RenderSystemManager());
+		RenderSystemManager::startUp(CM_NEW(RenderSystemManager, GenAlloc) RenderSystemManager());
 		RenderSystemManager::instance().setActive(renderSystemName);
 
-		RendererManager::startUp(new RendererManager());
+		RendererManager::startUp(CM_NEW(RendererManager, GenAlloc) RendererManager());
 
 		loadPlugin(rendererName);
 		RendererManager::instance().setActive("ForwardRenderer");
@@ -77,20 +77,20 @@ namespace CamelotEngine
 
 		mPrimaryRenderContext = renderSystem->createDeferredContext();
 
-		SceneManager::startUp(new SceneManager());
+		SceneManager::startUp(CM_NEW(SceneManager, GenAlloc) SceneManager());
 
-		MeshManager::startUp(new MeshManager());
-		MaterialManager::startUp(new MaterialManager());
-		FontManager::startUp(new FontManager());
+		MeshManager::startUp(CM_NEW(MeshManager, GenAlloc) MeshManager());
+		MaterialManager::startUp(CM_NEW(MaterialManager, GenAlloc) MaterialManager());
+		FontManager::startUp(CM_NEW(FontManager, GenAlloc) FontManager());
 
-		Importer::startUp(new Importer());
+		Importer::startUp(CM_NEW(Importer, GenAlloc) Importer());
 		loadPlugin("CamelotFreeImgImporter"); // TODO - Load this automatically somehow
 		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow
 		loadPlugin("CamelotFontImporter"); // TODO - Load this automatically somehow
 
-		OverlayManager::startUp(new OverlayManager());
-		GUIMaterialManager::startUp(new GUIMaterialManager());
-		GUIManager::startUp(new GUIManager());
+		OverlayManager::startUp(CM_NEW(OverlayManager, GenAlloc) OverlayManager());
+		GUIMaterialManager::startUp(CM_NEW(GUIMaterialManager, GenAlloc) GUIMaterialManager());
+		GUIManager::startUp(CM_NEW(GUIManager, GenAlloc) GUIManager());
 
 		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
 	}

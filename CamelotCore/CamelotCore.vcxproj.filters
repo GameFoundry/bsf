@@ -471,6 +471,9 @@
     <ClInclude Include="Include\CmOverlayManager.h">
       <Filter>Header Files\2D</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmMemAllocCategories.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">

@@ -23,7 +23,7 @@ namespace CamelotEngine
 
 		for(auto& elem : mElements)
 		{
-			delete elem;
+			CM_DELETE(elem, GUIElement, GUIAlloc);
 		}
 
 		mElements.clear();
@@ -31,7 +31,7 @@ namespace CamelotEngine
 
 	GUILabel* GUIWidget::addLabel(const String& text)
 	{
-		GUILabel* label = new GUILabel(this, text, getGUISkin());
+		GUILabel* label = CM_NEW(GUILabel, GUIAlloc) GUILabel(this, text, getGUISkin());
 		mElements.push_back(label);
 
 		return label;

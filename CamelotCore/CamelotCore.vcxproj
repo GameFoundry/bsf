@@ -176,6 +176,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmOverlay.h" />
     <ClInclude Include="Include\CmApplication.h" />
     <ClInclude Include="Include\CmBlendStateRTTI.h" />

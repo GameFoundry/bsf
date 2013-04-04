@@ -20,12 +20,12 @@ namespace CamelotEngine
 	TestTextSprite::~TestTextSprite()
 	{
 		if(mSkin != nullptr)
-			delete mSkin;
+			CM_DELETE(mSkin, GUISkin, GUIAlloc);
 	}
 
 	void TestTextSprite::setText(const CameraPtr& camera, const String& text, FontHandle font, UINT32 fontSize)
 	{
-		mSkin = new GUISkin();
+		mSkin = CM_NEW(GUISkin, GUIAlloc) GUISkin();
 
 		OverlayManager::instance().attachOverlay(camera, this);		
 

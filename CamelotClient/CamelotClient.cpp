@@ -85,7 +85,7 @@ int CALLBACK WinMain(
 		font = Importer::instance().import("C:\\arial.ttf", fontImportOptions);
 	}
 
-	//textSprite->setText(camera, "TESTfAV", font, 12);
+	textSprite->setText(camera, "TESTfAV", font, 12);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////

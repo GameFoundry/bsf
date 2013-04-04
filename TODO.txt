@@ -27,6 +27,9 @@ Add TextUtil class
 
  When rendering GUIWidget its individual elements need to be sorted based on Z depth so the transparency works as expected
 
+ Port gameObjects and components so that they are no shared pointers. They are meant to be destroyed on shutdown and I can't have calling code keep references to them.
+ - But how do I easily do GameObject.Destroy or Component.Destroy, while notifying any code referencing them?
+
 Immediate TODO:
  BuiltinMaterialManager creates a shader before shader factory is initialized
 

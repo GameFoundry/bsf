@@ -11,7 +11,7 @@ namespace CamelotEngine
 		HINSTANCE hInst = GetModuleHandle( "CamelotD3D9RenderSystem.dll" );
 	#endif
 
-		RenderSystem::startUp(new D3D9RenderSystem(hInst));
+		RenderSystem::startUp(CM_NEW(D3D9RenderSystem, GenAlloc) D3D9RenderSystem(hInst));
 	}
 
 	D3D9RenderSystemFactory::InitOnStart D3D9RenderSystemFactory::initOnStart;

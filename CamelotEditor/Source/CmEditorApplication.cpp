@@ -26,7 +26,7 @@ namespace CamelotEditor
 	};
 
 	EditorApplication::EditorApplication()
-		:p(new PImpl())
+		:p(CM_NEW(PImpl, GenAlloc) PImpl())
 	{
 		p->mApp = nullptr;
 		p->mEditor = nullptr;
@@ -34,22 +34,22 @@ namespace CamelotEditor
 
 	EditorApplication::~EditorApplication()
 	{
-		delete p;
+		CM_DELETE(p, PImpl, GenAlloc);
 	}
 
 	void EditorApplication::startUp()
 	{
-		EditorPrefs::startUp(new EditorPrefs());
+		EditorPrefs::startUp(CM_NEW(EditorPrefs, GenAlloc) EditorPrefs());
 
 		if(FileSystem::fileExists(getEditorPrefsPath().toStdString()))
 			gEditorPrefs().load(getEditorPrefsPath());
 		
-		ProjectPrefs::startUp(new ProjectPrefs());
+		ProjectPrefs::startUp(CM_NEW(EditorPrefs, GenAlloc) ProjectPrefs());
 
 		startUpQt();
 
-		EditorWindowManager::startUp(new EditorWindowManager());
-		WindowDockManager::startUp(new WindowDockManager(p->mEditor->getCentralWidget(), p->mEditor->getDockOverlayWidget()));
+		EditorWindowManager::startUp(CM_NEW(EditorWindowManager, GenAlloc) EditorWindowManager());
+		WindowDockManager::startUp(CM_NEW(WindowDockManager, GenAlloc) WindowDockManager(p->mEditor->getCentralWidget(), p->mEditor->getDockOverlayWidget()));
 
 		gEditorWindowManager().registerWidgetFactory(new SceneWidgetFactory());
 		gEditorWindowManager().registerWidgetFactory(new HierarchyWidgetFactory());
