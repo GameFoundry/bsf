@@ -176,7 +176,11 @@ namespace CamelotEngine
 		}
 
 		virtual UINT32 getRTTIId() { return TID_MaterialParamFloat; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialFloatParam()); }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{ 
+			return std::shared_ptr<IReflectable>(CM_NEW(MaterialFloatParam, ScratchAlloc) MaterialFloatParam(),
+				&MemAllocDeleter<MaterialFloatParam, ScratchAlloc>::deleter); 
+		}
 	};
 
 	class CM_EXPORT MaterialVec2ParamRTTI : public RTTIType<MaterialVec2Param, IReflectable, MaterialVec2ParamRTTI>
@@ -205,7 +209,11 @@ namespace CamelotEngine
 		}
 
 		virtual UINT32 getRTTIId() { return TID_MaterialParamVec2; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialVec2Param()); }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{ 
+			return std::shared_ptr<IReflectable>(CM_NEW(MaterialVec2Param, ScratchAlloc) MaterialVec2Param(),
+				&MemAllocDeleter<MaterialVec2Param, ScratchAlloc>::deleter); 
+		}
 	};
 
 	class CM_EXPORT MaterialVec3ParamRTTI : public RTTIType<MaterialVec3Param, IReflectable, MaterialVec3ParamRTTI>
@@ -234,7 +242,11 @@ namespace CamelotEngine
 		}
 
 		virtual UINT32 getRTTIId() { return TID_MaterialParamVec3; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialVec3Param()); }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{ 
+			return std::shared_ptr<IReflectable>(CM_NEW(MaterialVec3Param, ScratchAlloc) MaterialVec3Param(),
+				&MemAllocDeleter<MaterialVec3Param, ScratchAlloc>::deleter); 
+		}
 	};
 
 	class CM_EXPORT MaterialVec4ParamRTTI : public RTTIType<MaterialVec4Param, IReflectable, MaterialVec4ParamRTTI>
@@ -263,7 +275,11 @@ namespace CamelotEngine
 		}
 
 		virtual UINT32 getRTTIId() { return TID_MaterialParamVec4; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialVec4Param()); }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{
+			return std::shared_ptr<IReflectable>(CM_NEW(MaterialVec4Param, ScratchAlloc) MaterialVec4Param(),
+				&MemAllocDeleter<MaterialVec4Param, ScratchAlloc>::deleter); 
+		}
 	};
 
 	class CM_EXPORT MaterialMat3ParamRTTI : public RTTIType<MaterialMat3Param, IReflectable, MaterialMat3ParamRTTI>
@@ -292,7 +308,11 @@ namespace CamelotEngine
 		}
 
 		virtual UINT32 getRTTIId() { return TID_MaterialParamMat3; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialMat3Param()); }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{ 
+			return std::shared_ptr<IReflectable>(CM_NEW(MaterialMat3Param, ScratchAlloc) MaterialMat3Param(),
+				&MemAllocDeleter<MaterialMat3Param, ScratchAlloc>::deleter); 
+		}
 	};
 
 	class CM_EXPORT MaterialMat4ParamRTTI : public RTTIType<MaterialMat4Param, IReflectable, MaterialMat4ParamRTTI>
@@ -321,7 +341,11 @@ namespace CamelotEngine
 		}
 
 		virtual UINT32 getRTTIId() { return TID_MaterialParamMat4; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialMat4Param()); }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{ 
+			return std::shared_ptr<IReflectable>(CM_NEW(MaterialMat4Param, ScratchAlloc) MaterialMat4Param(),
+				&MemAllocDeleter<MaterialMat4Param, ScratchAlloc>::deleter); 
+		}
 	};
 
 	class CM_EXPORT MaterialStructParamRTTI : public RTTIType<MaterialStructParam, IReflectable, MaterialStructParamRTTI>
@@ -365,7 +389,11 @@ namespace CamelotEngine
 		}
 
 		virtual UINT32 getRTTIId() { return TID_MaterialParamStruct; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialStructParam()); }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{ 
+			return std::shared_ptr<IReflectable>(CM_NEW(MaterialStructParam, ScratchAlloc) MaterialStructParam(),
+				&MemAllocDeleter<MaterialStructParam, ScratchAlloc>::deleter);
+		}
 	};
 
 	class CM_EXPORT MaterialTextureParamRTTI : public RTTIType<MaterialTextureParam, IReflectable, MaterialTextureParamRTTI>
@@ -390,7 +418,11 @@ namespace CamelotEngine
 		}
 
 		virtual UINT32 getRTTIId() { return TID_MaterialParamTexture; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialTextureParam()); }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{ 
+			return std::shared_ptr<IReflectable>(CM_NEW(MaterialTextureParam, ScratchAlloc) MaterialTextureParam(),
+				&MemAllocDeleter<MaterialTextureParam, ScratchAlloc>::deleter);
+		}
 	};
 
 	class CM_EXPORT MaterialSamplerStateParamRTTI : public RTTIType<MaterialSamplerStateParam, IReflectable, MaterialSamplerStateParamRTTI>
@@ -415,7 +447,11 @@ namespace CamelotEngine
 		}
 
 		virtual UINT32 getRTTIId() { return TID_MaterialParamSamplerState; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialSamplerStateParam()); }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{ 
+			return std::shared_ptr<IReflectable>(CM_NEW(MaterialSamplerStateParam, ScratchAlloc) MaterialSamplerStateParam(),
+				&MemAllocDeleter<MaterialSamplerStateParam, ScratchAlloc>::deleter);
+		}
 	};
 
 	class CM_EXPORT MaterialParamsRTTI : public RTTIType<MaterialParams, IReflectable, MaterialParamsRTTI>
@@ -503,7 +539,11 @@ namespace CamelotEngine
 		}
 
 		virtual UINT32 getRTTIId() { return TID_MaterialParams; }
-		virtual std::shared_ptr<IReflectable> newRTTIObject() { return std::shared_ptr<IReflectable>(new MaterialParams()); }
+		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		{ 
+			return std::shared_ptr<IReflectable>(CM_NEW(MaterialParams, ScratchAlloc) MaterialParams(),
+				&MemAllocDeleter<MaterialParams, ScratchAlloc>::deleter);
+		}
 	};
 
 	class CM_EXPORT MaterialRTTI : public RTTIType<Material, Resource, MaterialRTTI>

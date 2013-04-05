@@ -233,6 +233,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<Font> FontPtr;
 	typedef std::shared_ptr<TextSprite> TextSpritePtr;
 	typedef std::shared_ptr<Overlay> OverlayPtr;
+	typedef std::shared_ptr<InputHandler> InputHandlerPtr;
 }
 
 /************************************************************************/

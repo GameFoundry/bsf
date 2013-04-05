@@ -49,14 +49,14 @@ namespace CamelotEngine
 		UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(pixelData.format);
 
 		UINT32 bmpDataSize = BitmapWriter::getBMPSize(pixelData.getWidth(), pixelData.getHeight(), bytesPerPixel);
-		UINT8* bmpBuffer = new UINT8[bmpDataSize];
+		UINT8* bmpBuffer = CM_NEW_ARRAY(UINT8, bmpDataSize, ScratchAlloc);
 
 		BitmapWriter::rawPixelsToBMP((UINT8*)pixelData.data, bmpBuffer, pixelData.getWidth(), pixelData.getHeight(), bytesPerPixel);
 
 		ds->write(bmpBuffer, bmpDataSize);
 		ds->close();
 
-		delete [] bmpBuffer;
+		CM_DELETE_ARRAY(bmpBuffer, UINT8, bmpDataSize, ScratchAlloc);
 	}
 
 	CM_UTILITY_EXPORT Debug& gDebug()

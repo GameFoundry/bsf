@@ -90,13 +90,13 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	HighLevelGpuProgramManager::HighLevelGpuProgramManager()
 	{
-		mNullFactory = new NullProgramFactory();
+		mNullFactory = CM_NEW(NullProgramFactory, GenAlloc) NullProgramFactory();
 		addFactory(mNullFactory);
 	}
 	//-----------------------------------------------------------------------
 	HighLevelGpuProgramManager::~HighLevelGpuProgramManager()
 	{
-		delete mNullFactory;
+		CM_DELETE((NullProgramFactory*)mNullFactory, NullProgramFactory, GenAlloc);
 	}
     //---------------------------------------------------------------------------
 	void HighLevelGpuProgramManager::addFactory(HighLevelGpuProgramFactory* factory)

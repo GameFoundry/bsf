@@ -84,14 +84,14 @@ namespace CamelotEngine
 		~TextLine()
 		{
 			for(auto iter = mWords.begin(); iter != mWords.end(); ++iter)
-				delete *iter;
+				CM_DELETE(*iter, TextWord, ScratchAlloc);
 		}
 
 		void add(const CHAR_DESC& charDesc)
 		{
 			if(mLastWord == nullptr)
 			{
-				TextWord* newWord = new TextWord(charDesc.charId == SPACE_CHAR);
+				TextWord* newWord = CM_NEW(TextWord, ScratchAlloc) TextWord(charDesc.charId == SPACE_CHAR);
 				mLastWord = newWord;
 
 				mWords.push_back(mLastWord);
@@ -104,7 +104,7 @@ namespace CamelotEngine
 				{
 					if(mLastWord->isSpacer())
 					{
-						TextWord* newWord = new TextWord(false);
+						TextWord* newWord = CM_NEW(TextWord, ScratchAlloc) TextWord(false);
 						mLastWord = newWord;
 
 						mWords.push_back(mLastWord);
@@ -114,7 +114,7 @@ namespace CamelotEngine
 				}
 				else
 				{
-					TextWord* newWord = new TextWord(true); // Each space is counted as its own word, to make certain operations easier
+					TextWord* newWord = CM_NEW(TextWord, ScratchAlloc) TextWord(true); // Each space is counted as its own word, to make certain operations easier
 					mLastWord = newWord;
 
 					mWords.push_back(mLastWord);
@@ -263,7 +263,7 @@ namespace CamelotEngine
 		bool heightIsLimited = mHeight > 0;
 		bool widthIsLimited = mWidth > 0;
 
-		TextLine* curLine = new TextLine();
+		TextLine* curLine = CM_NEW(TextLine, ScratchAlloc) TextLine();
 		vector<TextLine*>::type textLines;
 		textLines.push_back(curLine);
 
@@ -281,7 +281,7 @@ namespace CamelotEngine
 				if(heightIsLimited && (curHeight + fontData->fontDesc.lineHeight * 2) > mHeight)
 					break; // Max height reached
 
-				curLine = new TextLine();
+				curLine = CM_NEW(TextLine, ScratchAlloc) TextLine();
 				textLines.push_back(curLine);
 				curHeight += fontData->fontDesc.lineHeight;
 
@@ -314,7 +314,7 @@ namespace CamelotEngine
 					if(heightIsLimited && (curHeight + fontData->fontDesc.lineHeight * 2) > mHeight)
 						break;
 
-					curLine = new TextLine();
+					curLine = CM_NEW(TextLine, ScratchAlloc) TextLine();
 					textLines.push_back(curLine);
 					curHeight += fontData->fontDesc.lineHeight;
 
@@ -381,13 +381,16 @@ namespace CamelotEngine
 			UINT32 newNumQuads = newRenderElemSizes[texPage];
 			if(newNumQuads != cachedElem.numQuads)
 			{
-				if(cachedElem.vertices != nullptr) delete[] cachedElem.vertices;
-				if(cachedElem.uvs != nullptr) delete[] cachedElem.uvs;
-				if(cachedElem.indexes != nullptr) delete[] cachedElem.indexes;
+				UINT32 oldVertexCount = cachedElem.numQuads * 4;
+				UINT32 oldIndexCount = cachedElem.numQuads * 6;
 
-				cachedElem.vertices = new Vector2[newNumQuads * 4];
-				cachedElem.uvs = new Vector2[newNumQuads * 4];
-				cachedElem.indexes = new UINT32[newNumQuads * 6];
+				if(cachedElem.vertices != nullptr) CM_DELETE_ARRAY(cachedElem.vertices, Vector2, oldVertexCount, ScratchAlloc);
+				if(cachedElem.uvs != nullptr) CM_DELETE_ARRAY(cachedElem.uvs, Vector2, oldVertexCount, ScratchAlloc);
+				if(cachedElem.indexes != nullptr) CM_DELETE_ARRAY(cachedElem.indexes, UINT32, oldIndexCount, ScratchAlloc);
+
+				cachedElem.vertices = CM_NEW_ARRAY(Vector2, newNumQuads * 4, ScratchAlloc);
+				cachedElem.uvs = CM_NEW_ARRAY(Vector2, newNumQuads * 4, ScratchAlloc);
+				cachedElem.indexes = CM_NEW_ARRAY(UINT32, newNumQuads * 6, ScratchAlloc);
 				cachedElem.numQuads = newNumQuads;
 			}
 
@@ -405,7 +408,7 @@ namespace CamelotEngine
 			textLines[i]->fillBuffer(mCachedRenderElements, faceOffsets, *fontData);
 
 		for(size_t i = 0; i < textLines.size(); i++)
-			delete textLines[i];
+			CM_DELETE(textLines[i], TextLine, ScratchAlloc);
 
 		if(isClipRectangleValid())
 		{

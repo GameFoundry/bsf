@@ -9,7 +9,7 @@ namespace CamelotEngine
 	RTTITypeBase::~RTTITypeBase() 
 	{
 		for(auto iter = mFields.begin(); iter != mFields.end(); ++iter)
-			delete *iter;
+			CM_DELETE(*iter, RTTIField, GenAlloc);
 
 		mFields.clear();
 	}

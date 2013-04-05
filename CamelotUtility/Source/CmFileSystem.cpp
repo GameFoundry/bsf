@@ -45,13 +45,13 @@ namespace CamelotEngine
 		if (!readOnly)
 		{
 			mode |= std::ios::out;
-			rwStream = new std::fstream();
+			rwStream = CM_NEW(std::fstream, ScratchAlloc) std::fstream();
 			rwStream->open(fullPath.c_str(), mode);
 			baseStream = rwStream;
 		}
 		else
 		{
-			roStream = new std::ifstream();
+			roStream = CM_NEW(std::ifstream, ScratchAlloc) std::ifstream();
 			roStream->open(fullPath.c_str(), mode);
 			baseStream = roStream;
 		}
@@ -60,10 +60,10 @@ namespace CamelotEngine
 		if (baseStream->fail())
 		{
 			if(roStream != nullptr)
-				delete roStream;
+				CM_DELETE(roStream, std::ifstream, ScratchAlloc);
 
 			if(rwStream != nullptr)
-				delete rwStream;
+				CM_DELETE(rwStream, std::fstream, ScratchAlloc);
 
 			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath);
 		}
@@ -73,14 +73,14 @@ namespace CamelotEngine
 		if (rwStream)
 		{
 			// use the writeable stream 
-			stream = new FileDataStream(fullPath, rwStream, (size_t)tagStat.st_size, true);
+			stream = CM_NEW(FileDataStream, ScratchAlloc) FileDataStream(fullPath, rwStream, (size_t)tagStat.st_size, true);
 		}
 		else
 		{
 			// read-only stream
-			stream = new FileDataStream(fullPath, roStream, (size_t)tagStat.st_size, true);
+			stream = CM_NEW(FileDataStream, ScratchAlloc) FileDataStream(fullPath, roStream, (size_t)tagStat.st_size, true);
 		}
-		return DataStreamPtr(stream);
+		return DataStreamPtr(stream, &MemAllocDeleter<FileDataStream, ScratchAlloc>::deleter);
 	}
 
 	DataStreamPtr FileSystem::create(const String& fullPath)
@@ -88,21 +88,21 @@ namespace CamelotEngine
 		// Always open in binary mode
 		// Also, always include reading
 		std::ios::openmode mode = std::ios::out | std::ios::binary;
-		std::fstream* rwStream = new std::fstream();
+		std::fstream* rwStream = CM_NEW(std::fstream, ScratchAlloc) std::fstream();
 		rwStream->open(fullPath.c_str(), mode);
 
 		// Should check ensure open succeeded, in case fail for some reason.
 		if (rwStream->fail())
 		{
 			if(rwStream != nullptr)
-				delete rwStream;
+				CM_DELETE(rwStream, std::fstream, ScratchAlloc); ;
 
 			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath);
 		}
 
 		/// Construct return stream, tell it to delete on destroy
-		FileDataStream* stream = new FileDataStream(fullPath, rwStream, 0, true);
-		return DataStreamPtr(stream);
+		FileDataStream* stream = CM_NEW(FileDataStream, ScratchAlloc) FileDataStream(fullPath, rwStream, 0, true);
+		return DataStreamPtr(stream, &MemAllocDeleter<FileDataStream, ScratchAlloc>::deleter);
 	}
 
 	void FileSystem::remove(const String& fullPath)

@@ -22,7 +22,7 @@ namespace CamelotEngine
 
 
 		void initClipRect(Rect& clipRect);
-		void registerInputHandler(InputHandler* inputHandler);
+		void registerInputHandler(InputHandlerPtr inputHandler);
 
 		/**
 		 * @brief	Called every frame. Should only be called by Application.
@@ -44,7 +44,7 @@ namespace CamelotEngine
 		float getVerticalAxis() const;
 
 	private:
-		InputHandler* mInputHandler;
+		InputHandlerPtr mInputHandler;
 
 		float mSmoothHorizontalAxis;
 		float mSmoothVerticalAxis;

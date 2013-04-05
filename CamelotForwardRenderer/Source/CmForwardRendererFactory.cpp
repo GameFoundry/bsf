@@ -6,7 +6,7 @@ namespace CamelotEngine
 {
 	RendererPtr ForwardRendererFactory::create()
 	{
-		return RendererPtr(new ForwardRenderer());
+		return RendererPtr(CM_NEW(ForwardRenderer, GenAlloc) ForwardRenderer(), &MemAllocDeleter<ForwardRenderer, GenAlloc>::deleter);
 	}
 
 	const std::string& ForwardRendererFactory::name() const

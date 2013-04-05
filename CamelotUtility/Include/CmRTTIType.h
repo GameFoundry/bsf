@@ -8,6 +8,7 @@
 #include <boost/bind.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/static_assert.hpp>
+#include <boost/preprocessor/punctuation/comma.hpp>
 
 #include "CmPrerequisitesUtil.h"
 #include "CmManagedDataBlock.h"
@@ -568,7 +569,8 @@ namespace CamelotEngine
 		template<class ObjectType, class DataType>
 		void addPlainField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
-			RTTIPlainField<DataType, ObjectType>* newField = new RTTIPlainField<DataType, ObjectType>();
+			RTTIPlainField<DataType, ObjectType>* newField = 
+				CM_NEW(RTTIPlainField<DataType BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIPlainField<DataType, ObjectType>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}
@@ -579,7 +581,8 @@ namespace CamelotEngine
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
 
-			RTTIReflectableField<DataType, ObjectType>* newField = new RTTIReflectableField<DataType, ObjectType>();
+			RTTIReflectableField<DataType, ObjectType>* newField = 
+				CM_NEW(RTTIReflectableField<DataType BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIReflectableField<DataType, ObjectType>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}
@@ -593,7 +596,8 @@ namespace CamelotEngine
 			if((flags & RTTI_Flag_WeakRef) == 0)
 				checkForCircularReferences<DataType>();
 
-			RTTIReflectablePtrField<DataType, ObjectType>* newField = new RTTIReflectablePtrField<DataType, ObjectType>();
+			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
+				CM_NEW(RTTIReflectablePtrField<DataType BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIReflectablePtrField<DataType, ObjectType>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}
@@ -602,7 +606,8 @@ namespace CamelotEngine
 		void addPlainArrayField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
 			boost::any setter, boost::any setSize, UINT64 flags)
 		{
-			RTTIPlainField<DataType, ObjectType>* newField = new RTTIPlainField<DataType, ObjectType>();
+			RTTIPlainField<DataType, ObjectType>* newField = 
+				CM_NEW(RTTIPlainField<DataType BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIPlainField<DataType, ObjectType>();
 			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
 		}	
@@ -614,7 +619,8 @@ namespace CamelotEngine
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
 
-			RTTIReflectableField<DataType, ObjectType>* newField = new RTTIReflectableField<DataType, ObjectType>();
+			RTTIReflectableField<DataType, ObjectType>* newField = 
+				CM_NEW(RTTIReflectableField<DataType BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIReflectableField<DataType, ObjectType>();
 			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
 		}
@@ -629,7 +635,8 @@ namespace CamelotEngine
 			if((flags & RTTI_Flag_WeakRef) == 0)
 				checkForCircularReferences<DataType>();
 
-			RTTIReflectablePtrField<DataType, ObjectType>* newField = new RTTIReflectablePtrField<DataType, ObjectType>();
+			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
+				CM_NEW(RTTIReflectablePtrField<DataType BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIReflectablePtrField<DataType, ObjectType>();
 			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
 		}
@@ -637,7 +644,8 @@ namespace CamelotEngine
 		template<class ObjectType>
 		void addDataBlockField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
-			RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>* newField = new RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>();
+			RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>* newField = 
+				CM_NEW(RTTIManagedDataBlockField<ManagedDataBlock BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>();
 			newField->initSingle(name, uniqueId, getter,  setter, flags);
 			addNewField(newField);
 		}	
