@@ -213,9 +213,9 @@ namespace CamelotEngine {
 		virtual PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage) = 0;
 
 	protected:
-		virtual Texture* createTextureImpl() = 0;
-		virtual RenderTexture* createRenderTextureImpl() = 0;
-		virtual MultiRenderTexture* createMultiRenderTextureImpl() = 0;
+		virtual TexturePtr createTextureImpl() = 0;
+		virtual RenderTexturePtr createRenderTextureImpl() = 0;
+		virtual MultiRenderTexturePtr createMultiRenderTextureImpl() = 0;
     };
 	/** @} */
 	/** @} */

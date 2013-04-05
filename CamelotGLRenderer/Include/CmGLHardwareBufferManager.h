@@ -75,25 +75,25 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc HardwareBufferManager::createVertexBufferImpl
 		 */
-        VertexBuffer* createVertexBufferImpl(UINT32 vertexSize, 
+        VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, 
             UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/**
 		 * @copydoc HardwareBufferManager::createIndexBufferImpl
 		 */
-        IndexBuffer* createIndexBufferImpl(
+        IndexBufferPtr createIndexBufferImpl(
             IndexBuffer::IndexType itype, UINT32 numIndexes, 
             GpuBufferUsage usage);
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlockImpl */
-		GpuParamBlock* createGpuParamBlockImpl();
+		GpuParamBlockPtr createGpuParamBlockImpl();
 
 		/**
 		 * @copydoc HardwareBufferManager::createGenericBufferImpl
 		 *
 		 * OpenGL does not support generic buffers so this method will return a dummy instance.
 		 */
-		GpuBuffer* createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
+		GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
     };
 }

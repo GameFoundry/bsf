@@ -51,7 +51,7 @@ namespace CamelotEngine {
 	protected:
 		/** General create method
         */
-        virtual GpuProgram* create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) = 0;
+        virtual GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) = 0;
 
 	public:
 		GpuProgramManager();

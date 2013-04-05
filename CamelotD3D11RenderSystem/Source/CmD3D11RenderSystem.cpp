@@ -577,13 +577,13 @@ namespace CamelotEngine
 		{
 			UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 
-			ID3D11RenderTargetView** views = CM_NEW_ARRAY(ID3D11RenderTargetView*, maxRenderTargets, SmallScratchAlloc);
+			ID3D11RenderTargetView** views = CM_NEW_ARRAY(ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
 			memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 
 			target->getCustomAttribute("RTV", views);
 			if (!views[0])
 			{
-				CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, SmallScratchAlloc);
+				CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
 				return;
 			}
 
@@ -599,7 +599,7 @@ namespace CamelotEngine
 					mDevice->getImmediateContext()->ClearRenderTargetView(views[i], clearColor);
 			}
 
-			CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, SmallScratchAlloc);
+			CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
 		}
 
 		// Clear depth stencil
@@ -630,12 +630,12 @@ namespace CamelotEngine
 
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
-		ID3D11RenderTargetView** views = CM_NEW_ARRAY(ID3D11RenderTargetView*, maxRenderTargets, SmallScratchAlloc);
+		ID3D11RenderTargetView** views = CM_NEW_ARRAY(ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
 		memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 		target->getCustomAttribute("RTV", views);
 		if (!views[0])
 		{
-			CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, SmallScratchAlloc);
+			CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
 			return;
 		}
 
@@ -648,7 +648,7 @@ namespace CamelotEngine
 		if (mDevice->hasError())
 			CM_EXCEPT(RenderingAPIException, "Failed to setRenderTarget : " + mDevice->getErrorDescription());
 
-		CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, SmallScratchAlloc);
+		CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
 	}
 
 	void D3D11RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)

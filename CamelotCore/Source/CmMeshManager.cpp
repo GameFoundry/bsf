@@ -27,7 +27,7 @@ namespace CamelotEngine
 
 	MeshPtr MeshManager::create()
 	{
-		MeshPtr mesh = MeshPtr(new Mesh(), &CoreObject::_deleteDelayed);
+		MeshPtr mesh = MeshPtr(CM_NEW(Mesh, PoolAlloc) Mesh(), &CoreObject::_deleteDelayed<Mesh, PoolAlloc>);
 		mesh->setThisPtr(mesh);
 		mesh->initialize();
 
@@ -36,7 +36,7 @@ namespace CamelotEngine
 
 	MeshPtr MeshManager::createEmpty()
 	{
-		MeshPtr mesh = MeshPtr(new Mesh(), &CoreObject::_deleteDelayed);
+		MeshPtr mesh = MeshPtr(CM_NEW(Mesh, PoolAlloc) Mesh(), &CoreObject::_deleteDelayed<Mesh, PoolAlloc>);
 		mesh->setThisPtr(mesh);
 
 		return mesh;

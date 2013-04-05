@@ -77,21 +77,15 @@ namespace CamelotEngine {
 		{ 
 			return sNullLang;
 		}
-		HighLevelGpuProgram* create(const String& source, const String& entryPoint, 
+		HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, 
 			GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes)
 		{
-			return new NullProgram();
+			return HighLevelGpuProgramPtr(CM_NEW(NullProgram, PoolAlloc) NullProgram(), &CoreObject::_deleteDelayed<NullProgram, PoolAlloc>);
 		}
-		HighLevelGpuProgram* create()
+		HighLevelGpuProgramPtr create()
 		{
-			return new NullProgram();
+			return HighLevelGpuProgramPtr(CM_NEW(NullProgram, PoolAlloc) NullProgram(), &CoreObject::_deleteDelayed<NullProgram, PoolAlloc>);
 		}
-
-		void destroy_internal(HighLevelGpuProgram* prog)
-		{
-			delete prog;
-		}
-
 	};
 	//-----------------------------------------------------------------------
 	HighLevelGpuProgramManager::HighLevelGpuProgramManager()
@@ -146,7 +140,7 @@ namespace CamelotEngine {
 		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes)
     {
 		HighLevelGpuProgramFactory* factory = getFactory(language);
-        HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(source, entryPoint, gptype, profile, includes), &CoreObject::_deleteDelayed);
+        HighLevelGpuProgramPtr ret = factory->create(source, entryPoint, gptype, profile, includes);
 		ret->setThisPtr(ret);
 		ret->initialize();
 
@@ -156,7 +150,7 @@ namespace CamelotEngine {
 	HighLevelGpuProgramPtr HighLevelGpuProgramManager::create(const String& language)
 	{
 		HighLevelGpuProgramFactory* factory = getFactory(language);
-		HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(), &CoreObject::_deleteDelayed);
+		HighLevelGpuProgramPtr ret = factory->create();
 		ret->setThisPtr(ret);
 		ret->initialize();
 
@@ -166,7 +160,7 @@ namespace CamelotEngine {
 	HighLevelGpuProgramPtr HighLevelGpuProgramManager::createEmpty(const String& language)
 	{
 		HighLevelGpuProgramFactory* factory = getFactory(language);
-		HighLevelGpuProgramPtr ret = HighLevelGpuProgramPtr(factory->create(), &CoreObject::_deleteDelayed);
+		HighLevelGpuProgramPtr ret = factory->create();
 		ret->setThisPtr(ret);
 
 		return ret;

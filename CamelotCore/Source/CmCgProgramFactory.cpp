@@ -54,25 +54,19 @@ namespace CamelotEngine {
         return sLanguageName;
     }
     //-----------------------------------------------------------------------
-    HighLevelGpuProgram* CgProgramFactory::create(const String& source, const String& entryPoint, 
+    HighLevelGpuProgramPtr CgProgramFactory::create(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes)
     {
-		CgProgram* prog = new CgProgram(mCgContext, source, entryPoint, sLanguageName, gptype, profile, includes);
+		CgProgram* prog = CM_NEW(CgProgram, PoolAlloc) CgProgram(mCgContext, source, entryPoint, sLanguageName, gptype, profile, includes);
 
-		return prog;
+		return HighLevelGpuProgramPtr(prog, &CoreObject::_deleteDelayed<CgProgram, PoolAlloc>);
     }
 	//----------------------------------------------------------------------
-	HighLevelGpuProgram* CgProgramFactory::create()
+	HighLevelGpuProgramPtr CgProgramFactory::create()
 	{
-		CgProgram* prog = new CgProgram(mCgContext, "", "", sLanguageName, GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
+		CgProgram* prog = CM_NEW(CgProgram, PoolAlloc) CgProgram(mCgContext, "", "", sLanguageName, GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
 
-		return prog;
+		return HighLevelGpuProgramPtr(prog, &CoreObject::_deleteDelayed<CgProgram, PoolAlloc>);
 	}
     //-----------------------------------------------------------------------
-	void CgProgramFactory::destroy_internal(HighLevelGpuProgram* prog)
-    {
-        delete prog;
-    }
-    //-----------------------------------------------------------------------
-
 }

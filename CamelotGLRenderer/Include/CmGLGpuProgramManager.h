@@ -42,7 +42,7 @@ namespace CamelotEngine
 
 		protected:
 			/// Specialised create method with specific parameters
-			GpuProgram* create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+			GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 	};
 
 }; //namespace CamelotEngine

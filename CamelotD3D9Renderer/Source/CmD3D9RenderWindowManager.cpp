@@ -11,8 +11,10 @@ namespace CamelotEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	RenderWindow* D3D9RenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc)
+	RenderWindowPtr D3D9RenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc)
 	{
-		return new D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle());
+		D3D9RenderWindow* window = CM_NEW(D3D9RenderWindow, PoolAlloc) D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle());
+
+		return RenderWindowPtr(window, &CoreObject::_deleteDelayed<D3D9RenderWindow, PoolAlloc>);
 	}
 }

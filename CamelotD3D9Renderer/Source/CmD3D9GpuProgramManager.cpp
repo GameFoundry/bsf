@@ -42,15 +42,19 @@ namespace CamelotEngine {
 
     }
     //-----------------------------------------------------------------------------
-    GpuProgram* D3D9GpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
+    GpuProgramPtr D3D9GpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
     {
         if (gptype == GPT_VERTEX_PROGRAM)
         {
-            return new D3D9GpuVertexProgram(source, entryPoint, language, gptype, profile);
+            D3D9GpuVertexProgram* prog = CM_NEW(D3D9GpuVertexProgram, PoolAlloc) D3D9GpuVertexProgram(source, entryPoint, language, gptype, profile);
+
+			return GpuProgramPtr(prog, &CoreObject::_deleteDelayed<D3D9GpuVertexProgram, PoolAlloc>);
         }
         else
         {
-            return new D3D9GpuFragmentProgram(source, entryPoint, language, gptype, profile);
+            D3D9GpuFragmentProgram* prog = CM_NEW(D3D9GpuFragmentProgram, PoolAlloc) D3D9GpuFragmentProgram(source, entryPoint, language, gptype, profile);
+
+			return GpuProgramPtr(prog, &CoreObject::_deleteDelayed<D3D9GpuFragmentProgram, PoolAlloc>);
         }
     }
 }

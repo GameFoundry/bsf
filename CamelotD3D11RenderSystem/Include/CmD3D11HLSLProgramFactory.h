@@ -14,8 +14,8 @@ namespace CamelotEngine
 		~D3D11HLSLProgramFactory();
 
 		const String& getLanguage(void) const;
-		HighLevelGpuProgram* create(const String& source, const String& entryPoint, GpuProgramType gptype, 
+		HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, 
 			GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes);
-		HighLevelGpuProgram* create();
+		HighLevelGpuProgramPtr create();
 	};
 }

@@ -62,10 +62,10 @@ namespace CamelotEngine
 		const DepthStencilStatePtr& getDefaultDepthStencilState() const;
 
 	protected:
-		virtual SamplerState* createSamplerStateImpl() const;
-		virtual BlendState* createBlendStateImpl() const;
-		virtual RasterizerState* createRasterizerStateImpl() const;
-		virtual DepthStencilState* createDepthStencilStateImpl() const;
+		virtual SamplerStatePtr createSamplerStateImpl() const;
+		virtual BlendStatePtr createBlendStateImpl() const;
+		virtual RasterizerStatePtr createRasterizerStateImpl() const;
+		virtual DepthStencilStatePtr createDepthStencilStateImpl() const;
 
 	private:
 		mutable SamplerStatePtr mDefaultSamplerState;

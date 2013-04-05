@@ -15,8 +15,8 @@ namespace CamelotEngine
 		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
 
 	protected:		
-		Texture* createTextureImpl();
-		RenderTexture* createRenderTextureImpl();
-		MultiRenderTexture* createMultiRenderTextureImpl();
+		TexturePtr createTextureImpl();
+		RenderTexturePtr createRenderTextureImpl();
+		MultiRenderTexturePtr createMultiRenderTextureImpl();
 	};
 }

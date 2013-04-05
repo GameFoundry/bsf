@@ -1080,12 +1080,12 @@ namespace CamelotEngine
 
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
-		IDirect3DSurface9** pBack = CM_NEW_ARRAY(IDirect3DSurface9*, maxRenderTargets, SmallScratchAlloc);
+		IDirect3DSurface9** pBack = CM_NEW_ARRAY(IDirect3DSurface9*, maxRenderTargets, ScratchAlloc);
 		memset(pBack, 0, sizeof(IDirect3DSurface9*) * maxRenderTargets);
 		target->getCustomAttribute( "DDBACKBUFFER", pBack );
 		if (!pBack[0])
 		{
-			CM_DELETE_ARRAY(pBack, IDirect3DSurface9*, maxRenderTargets, SmallScratchAlloc);
+			CM_DELETE_ARRAY(pBack, IDirect3DSurface9*, maxRenderTargets, ScratchAlloc);
 			return;
 		}
 
@@ -1105,7 +1105,7 @@ namespace CamelotEngine
 			}
 		}
 
-		CM_DELETE_ARRAY(pBack, IDirect3DSurface9*, maxRenderTargets, SmallScratchAlloc);
+		CM_DELETE_ARRAY(pBack, IDirect3DSurface9*, maxRenderTargets, ScratchAlloc);
 
 		hr = getActiveD3D9Device()->SetDepthStencilSurface(pDepth);
 		if (FAILED(hr))

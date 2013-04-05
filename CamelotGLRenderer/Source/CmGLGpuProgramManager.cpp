@@ -30,19 +30,21 @@ THE SOFTWARE.
 #include "CmGLSLGpuProgram.h"
 #include "CmException.h"
 
-using namespace CamelotEngine;
-
-GLGpuProgramManager::GLGpuProgramManager()
+namespace CamelotEngine
 {
-    // Superclass sets up members 
-}
+	GLGpuProgramManager::GLGpuProgramManager()
+	{
+		// Superclass sets up members 
+	}
 
-GLGpuProgramManager::~GLGpuProgramManager()
-{
-}
+	GLGpuProgramManager::~GLGpuProgramManager()
+	{
+	}
 
-GpuProgram* GLGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
-{
-    return new GLSLGpuProgram(source, entryPoint, language, gptype, profile, nullptr);
-}
+	GpuProgramPtr GLGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
+	{
+		GLSLGpuProgram* prog = CM_NEW(GLSLGpuProgram, PoolAlloc) GLSLGpuProgram(source, entryPoint, language, gptype, profile, nullptr);
 
+		return GpuProgramPtr(prog, &CoreObject::_deleteDelayed<GLSLGpuProgram, PoolAlloc>);
+	}
+}

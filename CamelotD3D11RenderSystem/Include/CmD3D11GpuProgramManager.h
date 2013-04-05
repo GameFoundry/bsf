@@ -14,6 +14,6 @@ namespace CamelotEngine
 	protected:
 		D3D11Device& mDevice;
 		
-		GpuProgram* create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+		GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 	};
 }

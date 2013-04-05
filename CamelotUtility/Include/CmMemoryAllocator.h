@@ -78,7 +78,10 @@ namespace CamelotEngine
 	 * @brief	Allocator used for allocating small amounts of temporary memory that
 	 * 			used and then quickly released
 	 */
-	class SmallScratchAlloc
+	class ScratchAlloc
+	{ };
+
+	class PoolAlloc
 	{ };
 }
 

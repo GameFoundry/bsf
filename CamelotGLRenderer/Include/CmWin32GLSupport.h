@@ -14,7 +14,7 @@ namespace CamelotEngine
         Win32GLSupport();
 
 		/// @copydoc RenderSystem::_createRenderWindow
-		virtual RenderWindow* newWindow(const RENDER_WINDOW_DESC& desc);
+		virtual RenderWindowPtr newWindow(const RENDER_WINDOW_DESC& desc);
 
 		/**
 		* Start anything special

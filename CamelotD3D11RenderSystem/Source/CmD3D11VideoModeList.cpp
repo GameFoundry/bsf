@@ -44,11 +44,13 @@ namespace CamelotEngine
 			CM_EXCEPT(InternalErrorException, "Error while enumerating adapter output video modes. Output index: " + toString(adapterOutput));
 		}
 
-		DXGI_MODE_DESC* modeDesc = new DXGI_MODE_DESC[numModes];
+		DXGI_MODE_DESC* modeDesc = CM_NEW_ARRAY(DXGI_MODE_DESC, numModes, ScratchAlloc);
 
 		hr = output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &numModes, modeDesc);
 		if(FAILED(hr))
 		{
+			CM_DELETE_ARRAY(modeDesc, DXGI_MODE_DESC, numModes, ScratchAlloc);
+
 			SAFE_RELEASE(output);
 			CM_EXCEPT(InternalErrorException, "Error while enumerating adapter output video modes. Output index: " + toString(adapterOutput));
 		}
@@ -83,6 +85,8 @@ namespace CamelotEngine
 			if(!found)
 				mModeList.push_back(D3D11VideoMode(outputDesc, displayMode));
 		}
+
+		CM_DELETE_ARRAY(modeDesc, DXGI_MODE_DESC, numModes, ScratchAlloc);
 	}
 
 	UINT32 D3D11VideoModeList::count() const

@@ -5,7 +5,7 @@ namespace CamelotEngine
 {
 	FontPtr FontManager::create(vector<FontData>::type& fontData) const
 	{
-		FontPtr newFont(new Font(), &CoreObject::_deleteDelayed);
+		FontPtr newFont(CM_NEW(Font, PoolAlloc) Font(), &CoreObject::_deleteDelayed<Font, PoolAlloc>);
 		newFont->setThisPtr(newFont);
 		newFont->initialize(fontData);
 
@@ -14,7 +14,7 @@ namespace CamelotEngine
 
 	FontPtr FontManager::createEmpty() const
 	{
-		FontPtr newFont(new Font(), &CoreObject::_deleteDelayed);
+		FontPtr newFont(CM_NEW(Font, PoolAlloc) Font(), &CoreObject::_deleteDelayed<Font, PoolAlloc>);
 		newFont->setThisPtr(newFont);
 
 		return newFont;

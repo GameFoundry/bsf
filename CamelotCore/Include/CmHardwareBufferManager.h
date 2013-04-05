@@ -116,11 +116,11 @@ namespace CamelotEngine {
         virtual VertexDeclarationPtr createVertexDeclaration();
 
 	protected:
-		virtual VertexDeclaration* createVertexDeclarationImpl();
-		virtual VertexBuffer* createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
-		virtual IndexBuffer* createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
-		virtual GpuParamBlock* createGpuParamBlockImpl() = 0;
-		virtual GpuBuffer* createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
+		virtual VertexDeclarationPtr createVertexDeclarationImpl();
+		virtual VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
+		virtual IndexBufferPtr createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
+		virtual GpuParamBlockPtr createGpuParamBlockImpl() = 0;
+		virtual GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
 			bool randomGpuWrite = false, bool useCounter = false) = 0;
 	};
 

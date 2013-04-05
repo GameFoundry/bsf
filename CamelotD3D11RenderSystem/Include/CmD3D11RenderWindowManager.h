@@ -14,7 +14,7 @@ namespace CamelotEngine
 		/**
 		 * @copydoc RenderWindowManager::createImpl()
 		 */
-		RenderWindow* createImpl(const RENDER_WINDOW_DESC& desc);
+		RenderWindowPtr createImpl(const RENDER_WINDOW_DESC& desc);
 
 	private:
 		D3D11RenderSystem* mRenderSystem;

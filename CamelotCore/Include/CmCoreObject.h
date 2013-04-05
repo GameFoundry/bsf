@@ -75,7 +75,22 @@ o		 *
 		 *
 		 * @note	You should never call this manually. It's meant for internal use only.
 		 */
-		static void _deleteDelayed(CoreObject* obj);
+		template<class T, class MemAlloc>
+		static void _deleteDelayed(CoreObject* obj)
+		{
+			_deleteDelayedInternal(obj);
+
+			if(obj->isInitialized())
+			{
+				std::shared_ptr<CoreObject> thisPtr(obj);
+				obj->setThisPtr(thisPtr);
+				obj->destroy();
+			}
+			else
+			{
+				CM_DELETE((T*)obj, T, MemAlloc);
+			}
+		}
 
 	protected:
 		/**
@@ -98,6 +113,8 @@ o		 *
 		 * @brief	Returns a shared_ptr version of "this" pointer.
 		 */
 		std::shared_ptr<CoreObject> getThisPtr() const { return mThis.lock(); }
+
+		static void _deleteDelayedInternal(CoreObject* obj);
 
 		/**
 		 * @brief	Queues a command to be executed on the render thread, without a return value.

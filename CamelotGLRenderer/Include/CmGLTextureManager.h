@@ -48,9 +48,9 @@ namespace CamelotEngine {
 		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
 
 	protected:		
-		Texture* createTextureImpl();
-		RenderTexture* createRenderTextureImpl();
-		MultiRenderTexture* createMultiRenderTextureImpl();
+		TexturePtr createTextureImpl();
+		RenderTexturePtr createRenderTextureImpl();
+		MultiRenderTexturePtr createMultiRenderTextureImpl();
 
 		/// Internal method to create a warning texture (bound when a texture unit is blank)
 		void createWarningTexture();

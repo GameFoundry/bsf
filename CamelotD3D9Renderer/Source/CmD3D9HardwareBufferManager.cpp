@@ -44,34 +44,38 @@ namespace CamelotEngine
     {
     }
     //-----------------------------------------------------------------------
-    VertexBuffer* D3D9HardwareBufferManager::createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+    VertexBufferPtr D3D9HardwareBufferManager::createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
 		assert (numVerts > 0);
 
-        return new D3D9VertexBuffer(this, vertexSize, numVerts, usage, false);
+        D3D9VertexBuffer* buffer = CM_NEW(D3D9VertexBuffer, PoolAlloc) D3D9VertexBuffer(this, vertexSize, numVerts, usage, false);
+		return VertexBufferPtr(buffer, &CoreObject::_deleteDelayed<D3D9VertexBuffer, PoolAlloc>);
     }
     //-----------------------------------------------------------------------
-	IndexBuffer* D3D9HardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	IndexBufferPtr D3D9HardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
     {
 		assert (numIndexes > 0);
 
-		return new D3D9IndexBuffer(this, itype, numIndexes, usage, false);
-            
+		D3D9IndexBuffer* buffer = CM_NEW(D3D9IndexBuffer, PoolAlloc) D3D9IndexBuffer(this, itype, numIndexes, usage, false);
+		return IndexBufferPtr(buffer, &CoreObject::_deleteDelayed<D3D9IndexBuffer, PoolAlloc>);
     }
 	//-----------------------------------------------------------------------
-	GpuParamBlock* D3D9HardwareBufferManager::createGpuParamBlockImpl()
+	GpuParamBlockPtr D3D9HardwareBufferManager::createGpuParamBlockImpl()
 	{
-		return new GpuParamBlock();
+		GpuParamBlock* paramBlock = CM_NEW(GpuParamBlock, PoolAlloc) GpuParamBlock();
+		return GpuParamBlockPtr(paramBlock, &CoreObject::_deleteDelayed<GpuParamBlock, PoolAlloc>);
 	}
 	//-----------------------------------------------------------------------
-	GpuBuffer* D3D9HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
+	GpuBufferPtr D3D9HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		return new D3D9GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+		D3D9GpuBuffer* buffer = CM_NEW(D3D9GpuBuffer, PoolAlloc) D3D9GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+		return GpuBufferPtr(buffer, &CoreObject::_deleteDelayed<D3D9GpuBuffer, PoolAlloc>);
 	}
     //-----------------------------------------------------------------------
-    VertexDeclaration* D3D9HardwareBufferManager::createVertexDeclarationImpl(void)
+    VertexDeclarationPtr D3D9HardwareBufferManager::createVertexDeclarationImpl(void)
     {
-        return new D3D9VertexDeclaration();
+        D3D9VertexDeclaration* decl = CM_NEW(D3D9VertexDeclaration, PoolAlloc) D3D9VertexDeclaration();
+		return VertexDeclarationPtr(decl, &CoreObject::_deleteDelayed<D3D9VertexDeclaration, PoolAlloc>);
     }
 }

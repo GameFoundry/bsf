@@ -129,7 +129,7 @@ namespace CamelotEngine
 		mThis = ptrThis;
 	}
 
-	void CoreObject::_deleteDelayed(CoreObject* obj)
+	void CoreObject::_deleteDelayedInternal(CoreObject* obj)
 	{
 		assert(obj != nullptr);
 
@@ -149,17 +149,6 @@ namespace CamelotEngine
 				"while still in the queue.");
 		}
 #endif
-
-		if(obj->isInitialized())
-		{
-			std::shared_ptr<CoreObject> thisPtr(obj);
-			obj->setThisPtr(thisPtr);
-			obj->destroy();
-		}
-		else
-		{
-			delete obj;
-		}
 	}
 
 	void CoreObject::queueGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func)

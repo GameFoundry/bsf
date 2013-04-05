@@ -45,19 +45,25 @@ namespace CamelotEngine
 
 	}
 
-    Texture* D3D9TextureManager::createTextureImpl()
+    TexturePtr D3D9TextureManager::createTextureImpl()
     {
-		return new D3D9Texture();
+		D3D9Texture* tex = CM_NEW(D3D9Texture, PoolAlloc) D3D9Texture();
+
+		return TexturePtr(tex, &CoreObject::_deleteDelayed<D3D9Texture, PoolAlloc>);
     }
 
-	RenderTexture* D3D9TextureManager::createRenderTextureImpl()
+	RenderTexturePtr D3D9TextureManager::createRenderTextureImpl()
 	{
-		return new D3D9RenderTexture();
+		D3D9RenderTexture* tex = CM_NEW(D3D9RenderTexture, PoolAlloc) D3D9RenderTexture();
+
+		return RenderTexturePtr(tex, &CoreObject::_deleteDelayed<D3D9RenderTexture, PoolAlloc>);
 	}
 
-	MultiRenderTexture* D3D9TextureManager::createMultiRenderTextureImpl()
+	MultiRenderTexturePtr D3D9TextureManager::createMultiRenderTextureImpl()
 	{
-		return new D3D9MultiRenderTexture();
+		D3D9MultiRenderTexture* tex = CM_NEW(D3D9MultiRenderTexture, PoolAlloc) D3D9MultiRenderTexture();
+
+		return MultiRenderTexturePtr(tex, &CoreObject::_deleteDelayed<D3D9MultiRenderTexture, PoolAlloc>);
 	}
 
 	PixelFormat D3D9TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)

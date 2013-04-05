@@ -206,7 +206,7 @@ namespace CamelotEngine
 
 	ShaderPtr Shader::create(const String& name)
 	{
-		ShaderPtr newShader(new Shader(name), &CoreObject::_deleteDelayed);
+		ShaderPtr newShader(CM_NEW(Shader, PoolAlloc) Shader(name), &CoreObject::_deleteDelayed<Shader, PoolAlloc>);
 		newShader->setThisPtr(newShader);
 		newShader->initialize();
 

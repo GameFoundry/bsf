@@ -45,7 +45,7 @@ namespace CamelotEngine {
 
 		for (RequestQueue::iterator i = mRequestQueue.begin(); i != mRequestQueue.end(); ++i)
 		{
-			CM_DELETE(*i, WorkQueue::Request, SmallScratchAlloc);
+			CM_DELETE(*i, WorkQueue::Request, ScratchAlloc);
 		}
 		mRequestQueue.clear();
 	}
@@ -202,7 +202,7 @@ namespace CamelotEngine {
 					return 0;
 
 			rid = ++mRequestCount;
-			req = CM_NEW(Request, SmallScratchAlloc) Request(channel, rData, retryCount, rid);
+			req = CM_NEW(Request, ScratchAlloc) Request(channel, rData, retryCount, rid);
 
 #if CM_THREAD_SUPPORT
 			if (!forceSynchronous)
@@ -229,7 +229,7 @@ namespace CamelotEngine {
 		if (mShuttingDown)
 			return;
 
-		Request* req = CM_NEW(Request, SmallScratchAlloc) Request(channel, rData, retryCount, rid);
+		Request* req = CM_NEW(Request, ScratchAlloc) Request(channel, rData, retryCount, rid);
 
 #if CM_THREAD_SUPPORT
 		mRequestQueue.push_back(req);
@@ -386,13 +386,13 @@ namespace CamelotEngine {
 					addRequestWithRID(req->getID(), req->getChannel(), req->getData(), 
 						req->getRetryCount() - 1);
 					// discard response (this also deletes request)
-					CM_DELETE(response, WorkQueue::Response, SmallScratchAlloc);
+					CM_DELETE(response, WorkQueue::Response, ScratchAlloc);
 					return;
 				}
 			}
 
 			processResponse(response);
-			CM_DELETE(response, WorkQueue::Response, SmallScratchAlloc);
+			CM_DELETE(response, WorkQueue::Response, ScratchAlloc);
 		}
 		else
 		{
@@ -400,7 +400,7 @@ namespace CamelotEngine {
 			gDebug().logWarning("warning: no handler processed request "
 				+ toString(r->getID()) + ", channel " + toString(r->getChannel()));
 
-			CM_DELETE(r, WorkQueue::Request, SmallScratchAlloc);
+			CM_DELETE(r, WorkQueue::Request, ScratchAlloc);
 		}
 
 	}
@@ -534,7 +534,7 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	WorkQueue::Response::~Response()
 	{
-		CM_DELETE(mRequest, WorkQueue::Request, SmallScratchAlloc);
+		CM_DELETE(mRequest, WorkQueue::Request, ScratchAlloc);
 	}
 	//---------------------------------------------------------------------
 	void WorkQueue::WorkerFunc::operator()()

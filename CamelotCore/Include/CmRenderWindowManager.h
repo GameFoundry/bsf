@@ -14,6 +14,6 @@ namespace CamelotEngine
 		RenderWindowPtr create(const RENDER_WINDOW_DESC& desc);
 
 	protected:
-		virtual RenderWindow* createImpl(const RENDER_WINDOW_DESC& desc) = 0;
+		virtual RenderWindowPtr createImpl(const RENDER_WINDOW_DESC& desc) = 0;
 	};
 }

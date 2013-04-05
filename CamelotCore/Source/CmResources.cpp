@@ -19,11 +19,11 @@ namespace CamelotEngine
 	{
 		ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(req->getData());
 
-		ResourceLoadResponsePtr resResponse = ResourceLoadResponsePtr(CM_NEW(Resources::ResourceLoadResponse, SmallScratchAlloc) Resources::ResourceLoadResponse(),
-			&MemAllocDeleter<Resources::ResourceLoadResponse, SmallScratchAlloc>::deleter);
+		ResourceLoadResponsePtr resResponse = ResourceLoadResponsePtr(CM_NEW(Resources::ResourceLoadResponse, ScratchAlloc) Resources::ResourceLoadResponse(),
+			&MemAllocDeleter<Resources::ResourceLoadResponse, ScratchAlloc>::deleter);
 		resResponse->rawResource = gResources().loadFromDiskAndDeserialize(resRequest->filePath);
 
-		return CM_NEW(WorkQueue::Response, SmallScratchAlloc) WorkQueue::Response(req, true, resResponse);
+		return CM_NEW(WorkQueue::Response, ScratchAlloc) WorkQueue::Response(req, true, resResponse);
 	}
 
 	bool Resources::ResourceResponseHandler::canHandleResponse(const WorkQueue::Response* res, const WorkQueue* srcQ)
@@ -205,8 +205,8 @@ namespace CamelotEngine
 		BaseResourceHandle newResource;
 		newResource.setUUID(uuid); // UUID needs to be set immediately if the resource gets loaded async
 
-		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(CM_NEW(Resources::ResourceLoadRequest, SmallScratchAlloc) Resources::ResourceLoadRequest(),
-			&MemAllocDeleter<Resources::ResourceLoadRequest, SmallScratchAlloc>::deleter);
+		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(CM_NEW(Resources::ResourceLoadRequest, ScratchAlloc) Resources::ResourceLoadRequest(),
+			&MemAllocDeleter<Resources::ResourceLoadRequest, ScratchAlloc>::deleter);
 		resRequest->filePath = filePath;
 		resRequest->resource = newResource;
 

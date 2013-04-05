@@ -47,18 +47,18 @@ namespace CamelotEngine {
         return sLanguageName;
     }
     //-----------------------------------------------------------------------
-	HighLevelGpuProgram* D3D9HLSLProgramFactory::create(const String& source, const String& entryPoint, 
+	HighLevelGpuProgramPtr D3D9HLSLProgramFactory::create(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes)
     {
-		D3D9HLSLProgram* prog = new D3D9HLSLProgram(source, entryPoint, sLanguageName, gptype, profile, includes);
+		D3D9HLSLProgram* prog = CM_NEW(D3D9HLSLProgram, PoolAlloc) D3D9HLSLProgram(source, entryPoint, sLanguageName, gptype, profile, includes);
 
-        return prog;
+        return HighLevelGpuProgramPtr(prog, &CoreObject::_deleteDelayed<D3D9HLSLProgram, PoolAlloc>);
     }
 	//-----------------------------------------------------------------------
-	HighLevelGpuProgram* D3D9HLSLProgramFactory::create()
+	HighLevelGpuProgramPtr D3D9HLSLProgramFactory::create()
 	{
-		D3D9HLSLProgram* prog = new D3D9HLSLProgram("", "", sLanguageName, GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
+		D3D9HLSLProgram* prog = CM_NEW(D3D9HLSLProgram, PoolAlloc) D3D9HLSLProgram("", "", sLanguageName, GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
 
-		return prog;
+		return HighLevelGpuProgramPtr(prog, &CoreObject::_deleteDelayed<D3D9HLSLProgram, PoolAlloc>);
 	}
 }
