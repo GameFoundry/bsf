@@ -3,7 +3,7 @@
 
 namespace CamelotEngine
 {
-	Renderable::Renderable(GameObjectPtr parent)
+	Renderable::Renderable(const HGameObject& parent)
 		:Component(parent)
 	{ }
 

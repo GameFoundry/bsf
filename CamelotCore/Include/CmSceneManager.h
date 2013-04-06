@@ -17,7 +17,7 @@ namespace CamelotEngine
 		SceneManager();
 		virtual ~SceneManager();
 
-		GameObjectPtr getRootNode() const { return mRootNode; }
+		HGameObject getRootNode() const { return mRootNode; }
 
 		virtual void update();
 
@@ -30,7 +30,7 @@ namespace CamelotEngine
 
 	private:
 		friend class GameObject;
-		GameObjectPtr mRootNode;
+		HGameObject mRootNode;
 
 		/**
 		 * @brief	Register a new node in the scene manager, on the top-most level of the hierarchy.
@@ -40,7 +40,7 @@ namespace CamelotEngine
 		 *
 		 * @param [in]	node	Node you wish to add. It's your responsibility not to add duplicate or null nodes. This method won't check.
 		 */
-		void registerNewGO(GameObjectPtr node);
+		void registerNewGO(const HGameObject& node);
 
 		void notifyComponentAdded(ComponentPtr component);
 		void notifyComponentRemoved(ComponentPtr component);

@@ -527,7 +527,7 @@ namespace CamelotEngine {
 
 		/** Standard constructor.
         */
-		Camera(GameObjectPtr parent);
+		Camera(const HGameObject& parent);
 
 	public:
 		virtual void update() {}

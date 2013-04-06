@@ -11,39 +11,52 @@ namespace CamelotEngine
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::UNIT_SCALE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
 		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false),
-		mCustomWorldTfrm(Matrix4::IDENTITY), mIsCustomTfrmModeActive(false),
-		mIsDestroyed(false)
+		mCustomWorldTfrm(Matrix4::IDENTITY), mIsCustomTfrmModeActive(false)
 	{ }
 
 	GameObject::~GameObject()
 	{
-		if(!mIsDestroyed)
-			destroy();
+		if(!mThisHandle.isDestroyed())
+		{
+			LOGWRN("Object is being deleted without being destroyed first?");
+			destroyInternal();
+		}
 	}
 
-	GameObjectPtr GameObject::create(const String& name)
+	HGameObject GameObject::create(const String& name)
 	{
-		GameObjectPtr newObject = createInternal(name);
+		HGameObject newObject = createInternal(name);
 
 		gSceneManager().registerNewGO(newObject);
 
 		return newObject;
 	}
 
-	GameObjectPtr GameObject::createInternal(const String& name)
+	HGameObject GameObject::createInternal(const String& name)
 	{
-		GameObjectPtr newObject = GameObjectPtr(new GameObject(name));
-		newObject->mThis = newObject;
+		HGameObject gameObject = HGameObject(new GameObject(name));
+		gameObject->mThisHandle = gameObject;
 
-		return newObject;
+		return gameObject;
 	}
 
 	void GameObject::destroy()
 	{
-		mIsDestroyed = true;
+		// Parent is our owner, so when his reference to us is removed, delete might be called.
+		// So make sure this is the last thing we do.
+		if(mParent != nullptr)
+		{
+			if(!mParent.isDestroyed())
+				mParent->removeChild(mThisHandle);
+		}
 
+		destroyInternal();
+	}
+
+	void GameObject::destroyInternal()
+	{
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
-			(*iter)->destroy();
+			(*iter)->destroyInternal();
 
 		mChildren.clear();
 
@@ -52,15 +65,7 @@ namespace CamelotEngine
 
 		mComponents.clear();
 
-		// Parent is our owner, so when his reference to us is removed, delete might be called.
-		// So make sure this is the last thing we do.
-		if(!mParent.expired())
-		{
-			GameObjectPtr parentPtr = mParent.lock();
-
-			if(!parentPtr->isDestroyed())
-				parentPtr->removeChild(mThis.lock());
-		}
+		mThisHandle.releaseHeldObject();
 	}
 
 	/************************************************************************/
@@ -230,18 +235,16 @@ namespace CamelotEngine
 
 	void GameObject::updateWorldTfrm() const
 	{
-		if(!mParent.expired())
+		if(mParent != nullptr)
 		{
-			GameObjectPtr tempParentPtr = mParent.lock();
-
-			mCachedWorldTfrm = getLocalTfrm() * tempParentPtr->getWorldTfrm();
+			mCachedWorldTfrm = getLocalTfrm() * mParent->getWorldTfrm();
 
 			// Update orientation
-			const Quaternion& parentOrientation = tempParentPtr->getWorldRotation();
+			const Quaternion& parentOrientation = mParent->getWorldRotation();
 			mWorldRotation = parentOrientation * mRotation;
 
 			// Update scale
-			const Vector3& parentScale = tempParentPtr->getWorldScale();
+			const Vector3& parentScale = mParent->getWorldScale();
 			// Scale own position by parent scale, NB just combine
 			// as equivalent axes, no shearing
 			mWorldScale = parentScale * mScale;
@@ -250,7 +253,7 @@ namespace CamelotEngine
 			mWorldPosition = parentOrientation * (parentScale * mPosition);
 
 			// Add altered position vector to parents
-			mWorldPosition += tempParentPtr->getWorldPosition();
+			mWorldPosition += mParent->getWorldPosition();
 		}
 		else
 		{
@@ -275,28 +278,28 @@ namespace CamelotEngine
 	/* 								Hierarchy	                     		*/
 	/************************************************************************/
 
-	void GameObject::setParent(GameObjectPtr parent)
+	void GameObject::setParent(const HGameObject& parent)
 	{
-		if(parent == nullptr || parent->isDestroyed())
+		if(parent.isDestroyed())
 		{
 			CM_EXCEPT(InternalErrorException, 
-				"Parent is not allowed to be NULL or destroyed.");
+				"Trying to assign a GameObject parent that is destroyed.");
 		}
 
-		if(mParent.expired() || mParent.lock() != parent)
+		if(mParent == nullptr || mParent != parent)
 		{
-			if(!mParent.expired())
-				mParent.lock()->removeChild(mThis.lock());
+			if(mParent != nullptr)
+				mParent->removeChild(mThisHandle);
 
 			if(parent != nullptr)
-				parent->addChild(mThis.lock());
+				parent->addChild(mThisHandle);
 
 			mParent = parent;
 			markTfrmDirty();
 		}
 	}
 
-	GameObjectPtr GameObject::getChild(unsigned int idx) const
+	HGameObject GameObject::getChild(unsigned int idx) const
 	{
 		if(idx < 0 || idx >= mChildren.size())
 		{
@@ -307,7 +310,7 @@ namespace CamelotEngine
 		return mChildren[idx];
 	}
 
-	int GameObject::indexOfChild(const GameObjectPtr child) const
+	int GameObject::indexOfChild(const HGameObject& child) const
 	{
 		for(int i = 0; i < (int)mChildren.size(); i++)
 		{
@@ -318,12 +321,12 @@ namespace CamelotEngine
 		return -1;
 	}
 
-	void GameObject::addChild(GameObjectPtr object)
+	void GameObject::addChild(const HGameObject& object)
 	{
 		mChildren.push_back(object); 
 	}
 
-	void GameObject::removeChild(GameObjectPtr object)
+	void GameObject::removeChild(const HGameObject& object)
 	{
 		auto result = find(mChildren.begin(), mChildren.end(), object);
 

@@ -15,18 +15,17 @@ namespace CamelotEngine
 	{
 		friend class SceneManager;
 	public:
-		static GameObjectPtr create(const String& name);
-		~GameObject();
-
+		static HGameObject create(const String& name);
 		void destroy();
-		bool isDestroyed() { return mIsDestroyed; }
 
 	private:
-		GameObject(const String& name);
-		static GameObjectPtr createInternal(const String& name);
+		HGameObject mThisHandle;
 
-		std::weak_ptr<GameObject> mThis;
-		bool mIsDestroyed;
+		GameObject(const String& name);
+		~GameObject();
+
+		static HGameObject createInternal(const String& name);
+		void destroyInternal();
 
 		/************************************************************************/
 		/* 								Transform	                     		*/
@@ -151,14 +150,14 @@ namespace CamelotEngine
 		 *
 		 * @param [in]	parent	New parent.
 		 */
-		void setParent(GameObjectPtr parent);
+		void setParent(const HGameObject& parent);
 
 		/**
 		 * @brief	Gets the parent of this object.
 		 *
 		 * @return	Parent object, or nullptr if this GameObject is at root level.
 		 */
-		GameObjectPtr getParent() const { return mParent.lock(); }
+		HGameObject getParent() const { return mParent; }
 
 		/**
 		 * @brief	Gets a child of this item.
@@ -169,7 +168,7 @@ namespace CamelotEngine
 		 * 			
 		 * @throws ERR_INVALIDPARAMS If the index is out of range.
 		 */
-		GameObjectPtr getChild(unsigned int idx) const;
+		HGameObject getChild(unsigned int idx) const;
 
 		/**
 		 * @brief	Find the index of the specified child. Don't persist this value as
@@ -179,7 +178,7 @@ namespace CamelotEngine
 		 *
 		 * @return	The zero-based index of the found child, or -1 if no match was found.
 		 */
-		int indexOfChild(const GameObjectPtr child) const;
+		int indexOfChild(const HGameObject& child) const;
 
 		/**
 		 * @brief	Gets the number of all child GameObjects.
@@ -187,15 +186,15 @@ namespace CamelotEngine
 		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
 
 	private:
-		std::weak_ptr<GameObject> mParent;
-		vector<GameObjectPtr>::type mChildren;
+		HGameObject mParent;
+		vector<HGameObject>::type mChildren;
 
 		/**
 		 * @brief	Adds a child to the child array. This method doesn't check for null or duplicate values.
 		 *
 		 * @param [in]	object	New child.
 		 */
-		void addChild(GameObjectPtr object);
+		void addChild(const HGameObject& object);
 		
 		/**
 		 * @brief	Removes the child from the object. 
@@ -204,7 +203,7 @@ namespace CamelotEngine
 		 * 					
 		 * @throws INTERNAL_ERROR If the provided child isn't a child of the current object.
 		 */
-		void removeChild(GameObjectPtr object);
+		void removeChild(const HGameObject& object);
 
 		/************************************************************************/
 		/* 								Component	                     		*/
@@ -216,7 +215,7 @@ namespace CamelotEngine
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
-			std::shared_ptr<T> newComponent(new T(mThis.lock()));
+			std::shared_ptr<T> newComponent(new T(mThisHandle));
 			mComponents.push_back(newComponent);
 
 			gSceneManager().notifyComponentAdded(newComponent);

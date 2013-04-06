@@ -35,7 +35,6 @@ namespace CamelotEngine
 
 	protected:
 		GameObjectHandleBase();
-		GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData>& data);
 
 		inline void throwIfDestroyed() const;
 		std::shared_ptr<GameObjectHandleData> getHandleData() const { return mData; }
@@ -49,12 +48,16 @@ namespace CamelotEngine
 	public:
 		GameObjectHandle()
 			:GameObjectHandleBase()
-		{	}
+		{	
+			mData = std::shared_ptr<GameObjectHandleData>(new GameObjectHandleData());
+		}
 
 		template <typename T1>
 		GameObjectHandle(const GameObjectHandle<T1>& ptr)
 			:GameObjectHandleBase(ptr.getHandleData())
-		{ 	}
+		{ 	
+			mData = ptr.getHandleData();
+		}
 
 		T* get() const 
 		{ 
@@ -64,6 +67,13 @@ namespace CamelotEngine
 		}
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
+
+		std::shared_ptr<T> getInternalPtr() const
+		{ 
+			throwIfDestroyed();
+
+			return std::static_pointer_cast<T>(mData->mPtr); 
+		}
 
 		template<class _Ty>
 		struct CM_Bool_struct
@@ -82,8 +92,10 @@ namespace CamelotEngine
 		friend T;
 
 		explicit GameObjectHandle(T* ptr)
-			:GameObjectHandleBase(std::shared_ptr<GameObjectHandleData>(new GameObjectHandleData(ptr));)
-		{ }
+			:GameObjectHandleBase()
+		{
+			mData = std::shared_ptr<GameObjectHandleData>(new GameObjectHandleData(ptr));
+		}
 
 		void releaseHeldObject()
 		{

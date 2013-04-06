@@ -21,6 +21,6 @@ namespace CamelotEngine
 	protected:
 		friend class GameObject;
 
-		Overlay(GameObjectPtr parent);
+		Overlay(const HGameObject& parent);
 	};
 }

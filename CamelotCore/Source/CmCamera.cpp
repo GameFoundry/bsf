@@ -44,7 +44,7 @@ namespace CamelotEngine {
 	const float Camera::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
     //-----------------------------------------------------------------------
-	Camera::Camera(GameObjectPtr parent)
+	Camera::Camera(const HGameObject& parent)
         : Component(parent),
 		mProjType(PT_PERSPECTIVE), 
 		mFOVy(Radian(Math::PI/4.0f)), 

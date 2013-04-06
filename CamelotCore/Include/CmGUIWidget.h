@@ -14,7 +14,7 @@ namespace CamelotEngine
 	protected:
 		friend class GameObject;
 
-		GUIWidget(GameObjectPtr parent);
+		GUIWidget(const HGameObject& parent);
 
 		GUILabel* addLabel(const String& text);
 

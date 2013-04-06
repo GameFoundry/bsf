@@ -8,7 +8,7 @@ namespace CamelotEngine
 	private:
 		friend class GameObject;
 
-		TestTextSprite(GameObjectPtr parent);
+		TestTextSprite(const HGameObject& parent);
 
 		GUISkin* mSkin;
 	public:

@@ -26,7 +26,7 @@ namespace CamelotEngine
 
 		/** Standard constructor.
         */
-		Renderable(GameObjectPtr parent);
+		Renderable(const HGameObject& parent);
 
 	public:
 		virtual void update() {}

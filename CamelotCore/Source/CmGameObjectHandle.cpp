@@ -5,11 +5,6 @@
 namespace CamelotEngine
 {
 	GameObjectHandleBase::GameObjectHandleBase()
-		:mData(new GameObjectHandleData())
-	{ }
-
-	GameObjectHandleBase::GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData>& data)
-		:mData(data)
 	{ }
 
 	void GameObjectHandleBase::throwIfDestroyed() const

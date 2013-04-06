@@ -19,12 +19,12 @@ namespace CamelotEngine
 
 	void SceneManager::update()
 	{
-		stack<GameObjectPtr>::type todo;
+		stack<HGameObject>::type todo;
 		todo.push(mRootNode);
 
 		while(!todo.empty())
 		{
-			GameObjectPtr currentGO = todo.top();
+			HGameObject currentGO = todo.top();
 			todo.pop();
 			                  
 			vector<ComponentPtr>::type components = currentGO->getComponents();
@@ -45,12 +45,12 @@ namespace CamelotEngine
 
 		vector<RenderablePtr>::type renderables;
 
-		stack<GameObjectPtr>::type todo;
+		stack<HGameObject>::type todo;
 		todo.push(mRootNode);
 
 		while(!todo.empty())
 		{
-			GameObjectPtr currentGO = todo.top();
+			HGameObject currentGO = todo.top();
 			todo.pop();
 
 			RenderablePtr curRenderable = currentGO->getComponent<Renderable>();
@@ -64,7 +64,7 @@ namespace CamelotEngine
 		return renderables;
 	}
 
-	void SceneManager::registerNewGO(GameObjectPtr node) 
+	void SceneManager::registerNewGO(const HGameObject& node) 
 	{ 
 		if(mRootNode) // If root node is null, then this new node is the root node
 			node->setParent(mRootNode);

@@ -15,7 +15,7 @@ namespace CamelotEngine
 	const float DebugCamera::FAST_MODE_MULTIPLIER = 2.0f;
 	const float DebugCamera::ROTATION_SPEED = 0.5f; // Degrees/pixel
 
-	DebugCamera::DebugCamera(GameObjectPtr parent)
+	DebugCamera::DebugCamera(const HGameObject& parent)
 		:Component(parent), mGoingForward(false), mGoingBack(false), mGoingLeft(false), mGoingRight(false), 
 		mFastMove(false), mCameraRotating(false), mPitch(0.0f), mYaw(0.0f)
 	{

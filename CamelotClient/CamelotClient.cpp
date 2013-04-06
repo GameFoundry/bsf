@@ -52,7 +52,7 @@ int CALLBACK WinMain(
 	RenderSystem* renderSystem = RenderSystem::instancePtr();
 	RenderWindowPtr renderWindow = gApplication().getPrimaryRenderWindow();
 
-	GameObjectPtr cameraGO = GameObject::create("MainCamera");
+	HGameObject cameraGO = GameObject::create("MainCamera");
 	CameraPtr camera = cameraGO->addComponent<Camera>();
 
 	camera->init(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
@@ -63,10 +63,10 @@ int CALLBACK WinMain(
 
 	std::shared_ptr<DebugCamera> debugCamera = cameraGO->addComponent<DebugCamera>();
 
-	GameObjectPtr testModelGO = GameObject::create("TestMesh");
+	HGameObject testModelGO = GameObject::create("TestMesh");
 	RenderablePtr testRenderable = testModelGO->addComponent<Renderable>();
 
-	GameObjectPtr testTextGO = GameObject::create("TestText");
+	HGameObject testTextGO = GameObject::create("TestText");
 	std::shared_ptr<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
 	HFont font;
@@ -298,11 +298,9 @@ int CALLBACK WinMain(
 	vertProgRef.reset();
 
 	testModelGO->destroy();
-	testModelGO = nullptr;
 	testRenderable = nullptr;
 
 	cameraGO->destroy();
-	cameraGO = nullptr;
 	camera = nullptr;
 	debugCamera = nullptr;
 

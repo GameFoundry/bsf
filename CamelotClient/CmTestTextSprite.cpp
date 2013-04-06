@@ -12,7 +12,7 @@
 
 namespace CamelotEngine
 {
-	TestTextSprite::TestTextSprite(GameObjectPtr parent)
+	TestTextSprite::TestTextSprite(const HGameObject& parent)
 		:GUIWidget(parent), mSkin(nullptr)
 	{
 	}

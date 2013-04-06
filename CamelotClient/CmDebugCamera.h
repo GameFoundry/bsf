@@ -44,7 +44,7 @@ namespace CamelotEngine
 
 		/** Standard constructor.
         */
-		DebugCamera(GameObjectPtr parent);
+		DebugCamera(const HGameObject& parent);
 
 	public:
 		virtual void update();

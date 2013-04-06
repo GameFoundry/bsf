@@ -3,7 +3,7 @@
 
 namespace CamelotEngine
 {
-	Overlay::Overlay(GameObjectPtr parent)
+	Overlay::Overlay(const HGameObject& parent)
 		:Component(parent)
 	{
 

@@ -3,7 +3,7 @@
 
 namespace CamelotEngine
 {
-	Component::Component(GameObjectPtr parent)
+	Component::Component(const HGameObject& parent)
 		:mParent(parent), mIsDestroyed(false)
 	{
 

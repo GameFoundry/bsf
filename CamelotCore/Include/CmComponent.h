@@ -11,12 +11,12 @@ namespace CamelotEngine
 		/**
 		 * @brief	Returns the GameObject this Component is assigned to.
 		 */
-		GameObjectPtr gameObject() const { return mParent.lock(); }
+		HGameObject gameObject() const { return mParent; }
 
 		/**
 		 * @brief	Same as gameObject(), just a shorter name.
 		 */
-		GameObjectPtr GO() const { return gameObject(); }
+		HGameObject GO() const { return gameObject(); }
 
 		/**
 		 * @brief	Called once per frame on all components.
@@ -27,7 +27,7 @@ namespace CamelotEngine
 	protected:
 		friend class GameObject;
 
-		Component(GameObjectPtr parent);
+		Component(const HGameObject& parent);
 
 		/**
 		 * @brief	Destroys the Component and makes it unusable, without actually deleting it.
@@ -36,7 +36,7 @@ namespace CamelotEngine
 		 */
 		void destroy();
 
-		std::weak_ptr<GameObject> mParent;
+		HGameObject mParent;
 		bool mIsDestroyed;
 
 		/************************************************************************/
