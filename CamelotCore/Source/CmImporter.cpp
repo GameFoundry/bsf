@@ -51,17 +51,17 @@ namespace CamelotEngine
 		return false;
 	}
 
-	BaseResourceHandle Importer::import(const String& inputFilePath, ConstImportOptionsPtr importOptions)
+	HResource Importer::import(const String& inputFilePath, ConstImportOptionsPtr importOptions)
 	{
 		if(!FileSystem::fileExists(inputFilePath))
 		{
 			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath);
-			return BaseResourceHandle();
+			return HResource();
 		}
 
 		SpecificImporter* importer = getImporterForFile(inputFilePath);
 		if(importer == nullptr)
-			return BaseResourceHandle();
+			return HResource();
 
 		if(importOptions == nullptr)
 			importOptions = importer->getDefaultImportOptions();
@@ -75,7 +75,7 @@ namespace CamelotEngine
 			}
 		}
 
-		BaseResourceHandle importedResource = importer->import(inputFilePath, importOptions);
+		HResource importedResource = importer->import(inputFilePath, importOptions);
 
 		return importedResource;
 	}

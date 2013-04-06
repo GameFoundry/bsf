@@ -69,7 +69,7 @@ int CALLBACK WinMain(
 	GameObjectPtr testTextGO = GameObject::create("TestText");
 	std::shared_ptr<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
-	FontHandle font;
+	HFont font;
 	
 	{
 		ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions("C:\\arial.ttf");
@@ -103,7 +103,7 @@ int CALLBACK WinMain(
 		importOptions->setType(GPT_FRAGMENT_PROGRAM);
 	}
 
-	HighLevelGpuProgramHandle fragProgRef = Importer::instance().import(dx9psLoc, gpuProgImportOptions);
+	HHighLevelGpuProgram fragProgRef = Importer::instance().import(dx9psLoc, gpuProgImportOptions);
 
 	gpuProgImportOptions = Importer::instance().createImportOptions(dx9vsLoc);
 	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
@@ -116,11 +116,11 @@ int CALLBACK WinMain(
 		importOptions->setType(GPT_VERTEX_PROGRAM);
 	}
 
-	HighLevelGpuProgramHandle vertProgRef = Importer::instance().import(dx9vsLoc, gpuProgImportOptions);
+	HHighLevelGpuProgram vertProgRef = Importer::instance().import(dx9vsLoc, gpuProgImportOptions);
 
 #elif defined DX11
 
-	GpuProgIncludeHandle gpuProgInclude = Importer::instance().import("C:\\testInclude.gpuproginc");
+	HGpuProgInclude gpuProgInclude = Importer::instance().import("C:\\testInclude.gpuproginc");
 	const String& debugString = gpuProgInclude->getString();
 	
 	/////////////////// HLSL 11 SHADERS //////////////////////////
@@ -138,7 +138,7 @@ int CALLBACK WinMain(
 		importOptions->setType(GPT_FRAGMENT_PROGRAM);
 	}
 
-	HighLevelGpuProgramHandle fragProgRef = Importer::instance().import(dx11psLoc, gpuProgImportOptions);
+	HHighLevelGpuProgram fragProgRef = Importer::instance().import(dx11psLoc, gpuProgImportOptions);
 
 	gpuProgImportOptions = Importer::instance().createImportOptions(dx11vsLoc);
 	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
@@ -151,7 +151,7 @@ int CALLBACK WinMain(
 		importOptions->setType(GPT_VERTEX_PROGRAM);
 	}
 
-	HighLevelGpuProgramHandle vertProgRef = Importer::instance().import(dx11vsLoc, gpuProgImportOptions);
+	HHighLevelGpuProgram vertProgRef = Importer::instance().import(dx11vsLoc, gpuProgImportOptions);
 	
 #else
 	///////////////// GLSL SHADERS ////////////////////////////
@@ -169,7 +169,7 @@ int CALLBACK WinMain(
 		importOptions->setType(GPT_FRAGMENT_PROGRAM);
 	}
 
-	HighLevelGpuProgramHandle fragProgRef = Importer::instance().import(glslpsLoc, gpuProgImportOptions);
+	HHighLevelGpuProgram fragProgRef = Importer::instance().import(glslpsLoc, gpuProgImportOptions);
 
 	gpuProgImportOptions = Importer::instance().createImportOptions(glslvsLoc);
 	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
@@ -182,7 +182,7 @@ int CALLBACK WinMain(
 		importOptions->setType(GPT_VERTEX_PROGRAM);
 	}
 
-	HighLevelGpuProgramHandle vertProgRef = Importer::instance().import(glslvsLoc, gpuProgImportOptions);
+	HHighLevelGpuProgram vertProgRef = Importer::instance().import(glslvsLoc, gpuProgImportOptions);
 #endif
 
 	gResources().create(vertProgRef, "C:\\vertProgCg.vprog", true);
@@ -221,7 +221,7 @@ int CALLBACK WinMain(
 	newPassDX11->setVertexProgram(vertProgRef);
 	newPassDX11->setFragmentProgram(fragProgRef);
 
-	MaterialHandle testMaterial = Material::create();
+	HMaterial testMaterial = Material::create();
 	testMaterial->setShader(testShader);
 
 	testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
@@ -243,8 +243,8 @@ int CALLBACK WinMain(
 	//testMaterialRef.waitUntilLoaded();
 
 	/*TextureRef testTex = static_resource_cast<Texture>(Importer::instance().import("C:\\ImportTest.tga"));*/
-	TextureHandle testTexRef = static_resource_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));
-	MeshHandle dbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
+	HTexture testTexRef = static_resource_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));
+	HMesh dbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
 
 	//int tmpFlag = _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_CRT_DF | _CRTDBG_DELAY_FREE_MEM_DF);
 

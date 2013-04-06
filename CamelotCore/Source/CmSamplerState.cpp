@@ -38,7 +38,7 @@ namespace CamelotEngine
 		return mData.borderColor;
 	}
 
-	SamplerStateHandle SamplerState::create(const SAMPLER_STATE_DESC& desc)
+	HSamplerState SamplerState::create(const SAMPLER_STATE_DESC& desc)
 	{
 		SamplerStatePtr samplerPtr = RenderStateManager::instance().createSamplerState(desc);
 

@@ -5,11 +5,11 @@
 
 namespace CamelotEngine
 {
-	const MaterialHandle& GUIMaterialManager::requestTextMaterial(const TextureHandle& texture) const
+	const HMaterial& GUIMaterialManager::requestTextMaterial(const HTexture& texture) const
 	{
 		for(auto& matHandle : mTextMaterials)
 		{
-			const MaterialHandle& material = matHandle.handle;
+			const HMaterial& material = matHandle.handle;
 			if(material->getTexture("mainTexture") == texture)
 			{
 				matHandle.refCount++;
@@ -27,11 +27,11 @@ namespace CamelotEngine
 		return material.handle;
 	}
 
-	const MaterialHandle& GUIMaterialManager::requestImageMaterial(const TextureHandle& texture) const
+	const HMaterial& GUIMaterialManager::requestImageMaterial(const HTexture& texture) const
 	{
 		for(auto& matHandle : mImageMaterials)
 		{
-			const MaterialHandle& material = matHandle.handle;
+			const HMaterial& material = matHandle.handle;
 			if(material->getTexture("mainTexture") == texture)
 			{
 				matHandle.refCount++;
@@ -49,7 +49,7 @@ namespace CamelotEngine
 		return material.handle;
 	}
 
-	void GUIMaterialManager::releaseMaterial(const MaterialHandle& material) const
+	void GUIMaterialManager::releaseMaterial(const HMaterial& material) const
 	{
 		bool released = false;
 

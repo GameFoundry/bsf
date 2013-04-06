@@ -26,7 +26,7 @@ namespace CamelotEngine
 		return (UINT32)mCachedRenderElements.size();
 	}
 
-	const MaterialHandle& Sprite::getMaterial(UINT32 renderElementIdx) const
+	const HMaterial& Sprite::getMaterial(UINT32 renderElementIdx) const
 	{
 		return mCachedRenderElements.at(renderElementIdx).material;
 	}

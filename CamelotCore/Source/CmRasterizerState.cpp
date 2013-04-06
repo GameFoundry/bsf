@@ -17,7 +17,7 @@ namespace CamelotEngine
 		return RenderStateManager::instance().getDefaultRasterizerState();
 	}
 
-	RasterizerStateHandle RasterizerState::create(const RASTERIZER_STATE_DESC& desc)
+	HRasterizerState RasterizerState::create(const RASTERIZER_STATE_DESC& desc)
 	{
 		RasterizerStatePtr rasterizerPtr = RenderStateManager::instance().createRasterizerState(desc);
 

@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\ForRemoval">
-      <UniqueIdentifier>{f916bd59-03a7-42a7-9b9c-60abe94020bc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Utility">
       <UniqueIdentifier>{2c09857e-4a4a-480f-8ebb-1661a9ce78dd}</UniqueIdentifier>
     </Filter>
@@ -102,9 +99,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmConfigOptionMap.h">
-      <Filter>Header Files\ForRemoval</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmWindowEventUtilities.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
@@ -474,6 +468,9 @@
     <ClInclude Include="Include\CmMemAllocCategories.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGameObjectHandle.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -730,6 +727,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmOverlayManager.cpp">
       <Filter>Source Files\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGameObjectHandle.cpp">
+      <Filter>Source Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

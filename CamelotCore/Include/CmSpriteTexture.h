@@ -8,10 +8,10 @@ namespace CamelotEngine
 	class CM_EXPORT SpriteTexture
 	{
 	public:
-		const TextureHandle& getBaseTexture() const { return mBaseTexture; }
+		const HTexture& getBaseTexture() const { return mBaseTexture; }
 
 	private:
-		TextureHandle mBaseTexture;
+		HTexture mBaseTexture;
 		Vector2 mUVOffset;
 		Vector2 mUVScale;
 	};

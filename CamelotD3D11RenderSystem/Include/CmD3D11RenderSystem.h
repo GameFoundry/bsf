@@ -48,7 +48,7 @@ namespace CamelotEngine
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount);
 
 		/** @copydoc RenderSystem::bindGpuProgram() */
-		void bindGpuProgram(GpuProgramHandle prg);
+		void bindGpuProgram(HGpuProgram prg);
 		/** @copydoc RenderSystem::unbindGpuProgram() */
 		void unbindGpuProgram(GpuProgramType gptype);
 		/** @copydoc RenderSystem::bindGpuParams() */

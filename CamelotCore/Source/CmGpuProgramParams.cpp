@@ -141,7 +141,7 @@ namespace CamelotEngine
 		if (namedConstants->textureCount > mTextures.size())
 		{
 			mTextures.insert(mTextures.end(), 
-				namedConstants->textureCount - mTextures.size(), TextureHandle());
+				namedConstants->textureCount - mTextures.size(), HTexture());
 		}
 		if (namedConstants->samplerCount > mSamplerStates.size())
 		{
@@ -187,7 +187,7 @@ namespace CamelotEngine
 		if ((textureIndexMap != nullptr) &&  textureIndexMap->bufferSize > mTextures.size())
 		{
 			mTextures.insert(mTextures.end(), 
-				textureIndexMap->bufferSize - mTextures.size(), TextureHandle());
+				textureIndexMap->bufferSize - mTextures.size(), HTexture());
 		}
 	}
 	//---------------------------------------------------------------------()
@@ -408,7 +408,7 @@ namespace CamelotEngine
 		memcpy(dest, &mIntConstants[physicalIndex], sizeof(int) * count);
 	}
 	//-----------------------------------------------------------------------------
-	void GpuProgramParameters::_readTexture(UINT32 physicalIndex, TextureHandle& dest)
+	void GpuProgramParameters::_readTexture(UINT32 physicalIndex, HTexture& dest)
 	{
 		assert(physicalIndex < mTextures.size());
 		dest = mTextures[physicalIndex];
@@ -685,11 +685,11 @@ namespace CamelotEngine
 		return *def;
 	}
 	//----------------------------------------------------------------------------
-	TextureHandle GpuProgramParameters::getTexture(UINT32 pos) const 
+	HTexture GpuProgramParameters::getTexture(UINT32 pos) const 
 	{ 
 		if(!mTextures[pos].isLoaded())
 		{
-			return TextureHandle();
+			return HTexture();
 		}
 
 		return mTextures[pos]; 
@@ -737,7 +737,7 @@ namespace CamelotEngine
 		}
 	}
 	//----------------------------------------------------------------------------
-	void GpuProgramParameters::setNamedConstant(const String& name, TextureHandle val)
+	void GpuProgramParameters::setNamedConstant(const String& name, HTexture val)
 	{
 		// look up, and throw an exception if we're not ignoring missing
 		const GpuConstantDefinition* def = 

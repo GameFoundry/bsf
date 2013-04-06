@@ -11,8 +11,8 @@ namespace CamelotEngine
 	class D3D11BuiltinMaterialManager : public BuiltinMaterialManager
 	{
 	public:
-		MaterialHandle createSpriteTextMaterial() const;
-		MaterialHandle createSpriteImageMaterial() const;
+		HMaterial createSpriteTextMaterial() const;
+		HMaterial createSpriteImageMaterial() const;
 
 	protected:
 		ShaderPtr mSpriteTextShader;

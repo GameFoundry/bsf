@@ -77,6 +77,6 @@ namespace CamelotEngine
 		/************************************************************************/
 		
 	public:
-		static MeshHandle create();
+		static HMesh create();
 	};
 }

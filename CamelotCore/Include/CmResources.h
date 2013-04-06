@@ -24,7 +24,7 @@ namespace CamelotEngine
 		struct CM_EXPORT ResourceLoadRequest
 		{
 			String filePath;
-			BaseResourceHandle resource;
+			HResource resource;
 		};
 
 		struct CM_EXPORT ResourceLoadResponse
@@ -34,7 +34,7 @@ namespace CamelotEngine
 
 		struct CM_EXPORT ResourceAsyncOp
 		{
-			BaseResourceHandle resource;
+			HResource resource;
 			WorkQueue::RequestID requestID;
 		};
 
@@ -63,7 +63,7 @@ namespace CamelotEngine
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		BaseResourceHandle load(const String& filePath);
+		HResource load(const String& filePath);
 
 		/**
 		 * @brief	Loads the resource asynchronously. Initially returned resource should not be used
@@ -73,7 +73,7 @@ namespace CamelotEngine
 		 * 						
 		 * @return	Resource where the data will eventually be loaded, or null if the file cannot be found.
 		 */
-		BaseResourceHandle loadAsync(const String& filePath);
+		HResource loadAsync(const String& filePath);
 
 		/**
 		 * @brief	Loads the resource with the given uuid.
@@ -82,7 +82,7 @@ namespace CamelotEngine
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		BaseResourceHandle loadFromUUID(const String& uuid);
+		HResource loadFromUUID(const String& uuid);
 
 		/**
 		* @brief	Loads the resource with the given UUID asynchronously. Initially returned resource should not be used
@@ -92,7 +92,7 @@ namespace CamelotEngine
 		 *
 		 * @return	Resource where the data will eventually be loaded, or null if the file cannot be found.
 		 */
-		BaseResourceHandle loadFromUUIDAsync(const String& uuid);
+		HResource loadFromUUIDAsync(const String& uuid);
 
 		/**
 		 * @brief	Unloads the resource that is referenced by the handle.
@@ -102,7 +102,7 @@ namespace CamelotEngine
 		 * @note	GPU resources held by the resource will be scheduled to be destroyed on the render thread.
 		 * 			Actual resource pointer wont be deleted until all user-held references to it are removed.
 		 */
-		void unload(BaseResourceHandle resource);
+		void unload(HResource resource);
 
 		/**
 		 * @brief	Finds all resources that aren't being referenced anywhere and unloads them.
@@ -114,7 +114,7 @@ namespace CamelotEngine
 		 *
 		 * @param	resource   	The resource.
 		 */
-		void save(BaseResourceHandle resource);
+		void save(HResource resource);
 
 		/**
 		 * @brief	Creates a new resource at the specified location. Throws an exception if resource
@@ -125,7 +125,7 @@ namespace CamelotEngine
 		 * @param	overwrite	(optional) If true, any existing resource at the specified location will
 		 * 						be overwritten.
 		 */
-		void create(BaseResourceHandle resource, const String& filePath, bool overwrite = false);
+		void create(HResource resource, const String& filePath, bool overwrite = false);
 
 	public:
 		struct ResourceMetaData : public IReflectable
@@ -156,10 +156,10 @@ namespace CamelotEngine
 		WorkQueue* mWorkQueue;
 		UINT16 mWorkQueueChannel;
 
-		unordered_map<String, BaseResourceHandle>::type mLoadedResources; // TODO Low priority - I'm not sure how will UUID (a string) do as key do performance wise
+		unordered_map<String, HResource>::type mLoadedResources; // TODO Low priority - I'm not sure how will UUID (a string) do as key do performance wise
 		unordered_map<String, ResourceAsyncOp>::type mInProgressResources; // Resources that are being asynchronously loaded
 
-		BaseResourceHandle loadInternal(const String& filePath, bool synchronous); 
+		HResource loadInternal(const String& filePath, bool synchronous); 
 		ResourcePtr loadFromDiskAndDeserialize(const String& filePath);
 
 		void loadMetaData();
@@ -176,8 +176,8 @@ namespace CamelotEngine
 		const String& getPathFromUUID(const String& uuid) const;
 		const String& getUUIDFromPath(const String& path) const;
 
-		void notifyResourceLoadingFinished(BaseResourceHandle& handle);
-		void notifyNewResourceLoaded(BaseResourceHandle& handle);
+		void notifyResourceLoadingFinished(HResource& handle);
+		void notifyNewResourceLoaded(HResource& handle);
 
 		String mMetaDataFolderPath;
 	};

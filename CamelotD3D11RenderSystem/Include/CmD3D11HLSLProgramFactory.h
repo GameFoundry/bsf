@@ -15,7 +15,7 @@ namespace CamelotEngine
 
 		const String& getLanguage(void) const;
 		HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes);
+			GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes);
 		HighLevelGpuProgramPtr create();
 	};
 }

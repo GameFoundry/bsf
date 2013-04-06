@@ -21,8 +21,8 @@ namespace CamelotEngine
 		GpuProgramType& getType(GpuProgramImportOptions* obj) { return obj->mType; }
 		void setType(GpuProgramImportOptions* obj, GpuProgramType& value) { obj->mType = value; }
 
-		GpuProgIncludeHandle& getInclude(GpuProgramImportOptions* obj, UINT32 arrIdx) { return obj->mIncludes[arrIdx]; }
-		void setInclude(GpuProgramImportOptions* obj, UINT32 arrIdx, GpuProgIncludeHandle& value) { obj->mIncludes[arrIdx] = value; }
+		HGpuProgInclude& getInclude(GpuProgramImportOptions* obj, UINT32 arrIdx) { return obj->mIncludes[arrIdx]; }
+		void setInclude(GpuProgramImportOptions* obj, UINT32 arrIdx, HGpuProgInclude& value) { obj->mIncludes[arrIdx] = value; }
 		UINT32 getNumIncludes(GpuProgramImportOptions* obj) { return (UINT32)obj->mIncludes.size(); }
 		void setNumIncludes(GpuProgramImportOptions* obj, UINT32 num) { obj->mIncludes.clear(); obj->mIncludes.resize(num); }
 

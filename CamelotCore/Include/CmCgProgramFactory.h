@@ -46,7 +46,7 @@ namespace CamelotEngine
 		/// Get the name of the language this factory creates programs for
 		const String& getLanguage(void) const;
         HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes = nullptr);
+			GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes = nullptr);
 		HighLevelGpuProgramPtr create();
     };
 }

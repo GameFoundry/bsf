@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include "CmGLRenderSystem.h"
 
 #include "CmRenderWindow.h"
-#include "CmConfigOptionMap.h"
 
 namespace CamelotEngine
 {

@@ -8,12 +8,12 @@
 
 namespace CamelotEngine
 {
-	MaterialHandle GLBuiltinMaterialManager::createSpriteTextMaterial() const
+	HMaterial GLBuiltinMaterialManager::createSpriteTextMaterial() const
 	{
 		return Material::create(mSpriteTextShader);
 	}
 
-	MaterialHandle GLBuiltinMaterialManager::createSpriteImageMaterial() const
+	HMaterial GLBuiltinMaterialManager::createSpriteImageMaterial() const
 	{
 		return Material::create(mSpriteImageShader);
 	}

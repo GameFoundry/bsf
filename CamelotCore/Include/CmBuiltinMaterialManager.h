@@ -13,7 +13,7 @@ namespace CamelotEngine
 	class CM_EXPORT BuiltinMaterialManager : public Module<BuiltinMaterialManager>
 	{
 	public:
-		virtual MaterialHandle createSpriteTextMaterial() const = 0;
-		virtual MaterialHandle createSpriteImageMaterial() const = 0;
+		virtual HMaterial createSpriteTextMaterial() const = 0;
+		virtual HMaterial createSpriteImageMaterial() const = 0;
 	};
 }

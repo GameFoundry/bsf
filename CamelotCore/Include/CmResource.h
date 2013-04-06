@@ -20,7 +20,7 @@ namespace CamelotEngine
 		/**
 		 * @brief	Creates a new resource handle. Should only be called by internal methods.
 		 */
-		static BaseResourceHandle _createResourceHandle(ResourcePtr obj);
+		static HResource _createResourceHandle(ResourcePtr obj);
 
 	protected:
 		friend class Resources;

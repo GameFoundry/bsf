@@ -177,7 +177,7 @@ namespace CamelotEngine {
 		}
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::bindGpuProgram(GpuProgramHandle prg)
+	void RenderSystem::bindGpuProgram(HGpuProgram prg)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

@@ -65,32 +65,32 @@ namespace CamelotEngine
 		return transparent;
     }
 	//----------------------------------------------------------------------
-	void Pass::setBlendState(BlendStateHandle& blendState)
+	void Pass::setBlendState(HBlendState& blendState)
 	{
 		mBlendState = blendState;
 	}
 	//----------------------------------------------------------------------
-	BlendStateHandle Pass::getBlendState() const
+	HBlendState Pass::getBlendState() const
 	{
 		return mBlendState;
 	}
 	//----------------------------------------------------------------------
-	void Pass::setRasterizerState(RasterizerStateHandle& rasterizerState)
+	void Pass::setRasterizerState(HRasterizerState& rasterizerState)
 	{
 		mRasterizerState = rasterizerState;
 	}
 	//----------------------------------------------------------------------
-	RasterizerStateHandle Pass::getRasterizerState() const
+	HRasterizerState Pass::getRasterizerState() const
 	{
 		return mRasterizerState;
 	}
 	//-----------------------------------------------------------------------
-	void Pass::setDepthStencilState(DepthStencilStateHandle& depthStencilState)
+	void Pass::setDepthStencilState(HDepthStencilState& depthStencilState)
 	{
 		mDepthStencilState = depthStencilState;
 	}
 	//-----------------------------------------------------------------------
-	DepthStencilStateHandle Pass::getDepthStencilState() const
+	HDepthStencilState Pass::getDepthStencilState() const
 	{
 		return mDepthStencilState;
 	}
@@ -107,31 +107,31 @@ namespace CamelotEngine
 	//----------------------------------------------------------------------
 	void Pass::activate(DeferredRenderContextPtr& renderContext) const
 	{
-		GpuProgramHandle vertProgram = getVertexProgram();
+		HGpuProgram vertProgram = getVertexProgram();
 		if(vertProgram)
 			renderContext->bindGpuProgram(vertProgram);
 		else
 			renderContext->unbindGpuProgram(GPT_VERTEX_PROGRAM);
 
-		GpuProgramHandle fragProgram = getFragmentProgram();
+		HGpuProgram fragProgram = getFragmentProgram();
 		if(fragProgram)
 			renderContext->bindGpuProgram(fragProgram);
 		else
 			renderContext->unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
 
-		GpuProgramHandle geomProgram = getGeometryProgram();
+		HGpuProgram geomProgram = getGeometryProgram();
 		if(geomProgram)
 			renderContext->bindGpuProgram(geomProgram);
 		else
 			renderContext->unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
 
-		GpuProgramHandle hullProgram = getHullProgram();
+		HGpuProgram hullProgram = getHullProgram();
 		if(hullProgram)
 			renderContext->bindGpuProgram(hullProgram);
 		else
 			renderContext->unbindGpuProgram(GPT_HULL_PROGRAM);
 
-		GpuProgramHandle domainProgram = getDomainProgram();
+		HGpuProgram domainProgram = getDomainProgram();
 		if(domainProgram)
 			renderContext->bindGpuProgram(domainProgram);
 		else
@@ -143,19 +143,19 @@ namespace CamelotEngine
 		//renderSystem->_disableTextureUnitsFrom(pass->getNumTextures());
 
 		// Set up non-texture related pass settings
-		BlendStateHandle blendState = getBlendState();
+		HBlendState blendState = getBlendState();
 		if(blendState != nullptr)
 			renderContext->setBlendState(blendState.getInternalPtr());
 		else
 			renderContext->setBlendState(BlendState::getDefault());
 
-		DepthStencilStateHandle depthStancilState = getDepthStencilState();
+		HDepthStencilState depthStancilState = getDepthStencilState();
 		if(depthStancilState != nullptr)
 			renderContext->setDepthStencilState(depthStancilState.getInternalPtr(), getStencilRefValue());
 		else
 			renderContext->setDepthStencilState(DepthStencilState::getDefault(), getStencilRefValue());
 
-		RasterizerStateHandle rasterizerState = getRasterizerState();
+		HRasterizerState rasterizerState = getRasterizerState();
 		if(rasterizerState != nullptr)
 			renderContext->setRasterizerState(rasterizerState.getInternalPtr());
 		else
@@ -164,27 +164,27 @@ namespace CamelotEngine
 	//----------------------------------------------------------------------
 	void Pass::bindParameters(DeferredRenderContextPtr& renderContext, const PassParametersPtr& params) const
 	{
-		GpuProgramHandle vertProgram = getVertexProgram();
+		HGpuProgram vertProgram = getVertexProgram();
 		if(vertProgram)
 			renderContext->bindGpuParams(GPT_VERTEX_PROGRAM, params->mVertParams);
 
-		GpuProgramHandle fragProgram = getFragmentProgram();
+		HGpuProgram fragProgram = getFragmentProgram();
 		if(fragProgram)
 			renderContext->bindGpuParams(GPT_FRAGMENT_PROGRAM, params->mFragParams);
 
-		GpuProgramHandle geomProgram = getGeometryProgram();
+		HGpuProgram geomProgram = getGeometryProgram();
 		if(geomProgram)
 			renderContext->bindGpuParams(GPT_GEOMETRY_PROGRAM, params->mGeomParams);
 
-		GpuProgramHandle hullProgram = getHullProgram();
+		HGpuProgram hullProgram = getHullProgram();
 		if(hullProgram)
 			renderContext->bindGpuParams(GPT_HULL_PROGRAM, params->mHullParams);
 
-		GpuProgramHandle domainProgram = getDomainProgram();
+		HGpuProgram domainProgram = getDomainProgram();
 		if(domainProgram)
 			renderContext->bindGpuParams(GPT_DOMAIN_PROGRAM, params->mDomainParams);
 
-		GpuProgramHandle computeProgram = getComputeProgram();
+		HGpuProgram computeProgram = getComputeProgram();
 		if(computeProgram)
 			renderContext->bindGpuParams(GPT_COMPUTE_PROGRAM, params->mComputeParams);
 	}

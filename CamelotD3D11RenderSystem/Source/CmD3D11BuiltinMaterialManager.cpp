@@ -9,12 +9,12 @@
 
 namespace CamelotEngine
 {
-	MaterialHandle D3D11BuiltinMaterialManager::createSpriteTextMaterial() const
+	HMaterial D3D11BuiltinMaterialManager::createSpriteTextMaterial() const
 	{
 		return Material::create(mSpriteTextShader);
 	}
 
-	MaterialHandle D3D11BuiltinMaterialManager::createSpriteImageMaterial() const
+	HMaterial D3D11BuiltinMaterialManager::createSpriteImageMaterial() const
 	{
 		return Material::create(mSpriteImageShader);
 	}
@@ -52,8 +52,8 @@ namespace CamelotEngine
 				return color;																		\
 			}";
 
-		HighLevelGpuProgramHandle vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-		HighLevelGpuProgramHandle psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
 		vsProgram.waitUntilLoaded();
 		psProgram.waitUntilLoaded();
@@ -74,7 +74,7 @@ namespace CamelotEngine
 		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
 		desc.renderTargetDesc[0].blendOp = BO_ADD;
 
-		BlendStateHandle blendState = BlendState::create(desc);
+		HBlendState blendState = BlendState::create(desc);
 		newPass->setBlendState(blendState);
 	}
 

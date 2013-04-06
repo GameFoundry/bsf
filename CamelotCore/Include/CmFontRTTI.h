@@ -31,12 +31,12 @@ namespace CamelotEngine
 			obj->fontDesc = val;
 		}
 
-		TextureHandle& getTexture(FontData* obj, UINT32 idx)
+		HTexture& getTexture(FontData* obj, UINT32 idx)
 		{
 			return obj->texturePages.at(idx);
 		}
 
-		void setTexture(FontData* obj, UINT32 idx, TextureHandle& value)
+		void setTexture(FontData* obj, UINT32 idx, HTexture& value)
 		{
 			obj->texturePages[idx] = value;
 		}

@@ -63,42 +63,42 @@ namespace CamelotEngine
 			{
 				PassPtr curPass = mBestTechnique->getPass(i);
 
-				GpuProgramHandle vertProgram = curPass->getVertexProgram();
+				HGpuProgram vertProgram = curPass->getVertexProgram();
 				if(vertProgram)
 				{
 					vertProgram.waitUntilLoaded();
 					allParamDescs.push_back(&vertProgram->getParamDesc());
 				}
 
-				GpuProgramHandle fragProgram = curPass->getFragmentProgram();
+				HGpuProgram fragProgram = curPass->getFragmentProgram();
 				if(fragProgram)
 				{
 					fragProgram.waitUntilLoaded();
 					allParamDescs.push_back(&fragProgram->getParamDesc());
 				}
 
-				GpuProgramHandle geomProgram = curPass->getGeometryProgram();
+				HGpuProgram geomProgram = curPass->getGeometryProgram();
 				if(geomProgram)
 				{
 					geomProgram.waitUntilLoaded();
 					allParamDescs.push_back(&geomProgram->getParamDesc());
 				}
 
-				GpuProgramHandle hullProgram = curPass->getHullProgram();
+				HGpuProgram hullProgram = curPass->getHullProgram();
 				if(hullProgram)
 				{
 					hullProgram.waitUntilLoaded();
 					allParamDescs.push_back(&hullProgram->getParamDesc());
 				}
 
-				GpuProgramHandle domainProgram = curPass->getDomainProgram();
+				HGpuProgram domainProgram = curPass->getDomainProgram();
 				if(domainProgram)
 				{
 					domainProgram.waitUntilLoaded();
 					allParamDescs.push_back(&domainProgram->getParamDesc());
 				}
 
-				GpuProgramHandle computeProgram = curPass->getComputeProgram();
+				HGpuProgram computeProgram = curPass->getComputeProgram();
 				if(computeProgram)
 				{
 					computeProgram.waitUntilLoaded();
@@ -222,11 +222,11 @@ namespace CamelotEngine
 
 				if(Shader::isSampler(iter->second.type))
 				{
-					mSamplerValues[iter->first] = SamplerStateHandle();
+					mSamplerValues[iter->first] = HSamplerState();
 				}
 				else if(Shader::isTexture(iter->second.type))
 				{
-					mTextureValues[iter->first] = TextureHandle();
+					mTextureValues[iter->first] = HTexture();
 				}
 				else if(Shader::isBuffer(iter->second.type))
 				{
@@ -243,27 +243,27 @@ namespace CamelotEngine
 				PassPtr curPass = mBestTechnique->getPass(i);
 				PassParametersPtr params = PassParametersPtr(new PassParameters());
 
-				GpuProgramHandle vertProgram = curPass->getVertexProgram();
+				HGpuProgram vertProgram = curPass->getVertexProgram();
 				if(vertProgram)
 					params->mVertParams = vertProgram->createParameters();
 
-				GpuProgramHandle fragProgram = curPass->getFragmentProgram();
+				HGpuProgram fragProgram = curPass->getFragmentProgram();
 				if(fragProgram)
 					params->mFragParams = fragProgram->createParameters();
 
-				GpuProgramHandle geomProgram = curPass->getGeometryProgram();
+				HGpuProgram geomProgram = curPass->getGeometryProgram();
 				if(geomProgram)
 					params->mGeomParams = geomProgram->createParameters();	
 
-				GpuProgramHandle hullProgram = curPass->getHullProgram();
+				HGpuProgram hullProgram = curPass->getHullProgram();
 				if(hullProgram)
 					params->mHullParams = hullProgram->createParameters();
 
-				GpuProgramHandle domainProgram = curPass->getDomainProgram();
+				HGpuProgram domainProgram = curPass->getDomainProgram();
 				if(domainProgram)
 					params->mDomainParams = domainProgram->createParameters();
 
-				GpuProgramHandle computeProgram = curPass->getComputeProgram();
+				HGpuProgram computeProgram = curPass->getComputeProgram();
 				if(computeProgram)
 					params->mComputeParams = computeProgram->createParameters();	
 
@@ -510,7 +510,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void Material::setTexture(const String& name, const TextureHandle& value)
+	void Material::setTexture(const String& name, const HTexture& value)
 	{
 		throwIfNotInitialized();
 
@@ -540,7 +540,7 @@ namespace CamelotEngine
 		mTextureValues[name] = value;
 	}
 
-	void Material::setSamplerState(const String& name, SamplerStateHandle& samplerState)
+	void Material::setSamplerState(const String& name, HSamplerState& samplerState)
 	{
 		throwIfNotInitialized();
 
@@ -790,7 +790,7 @@ namespace CamelotEngine
 		return params;
 	}
 
-	TextureHandle Material::getTexture(const String& name) const
+	HTexture Material::getTexture(const String& name) const
 	{
 		auto iterFind = mTextureValues.find(name);
 
@@ -800,7 +800,7 @@ namespace CamelotEngine
 		return iterFind->second;
 	}
 
-	SamplerStateHandle Material::getSamplerState(const String& name) const
+	HSamplerState Material::getSamplerState(const String& name) const
 	{
 		auto iterFind = mSamplerValues.find(name);
 
@@ -880,14 +880,14 @@ namespace CamelotEngine
 		return iterFind->second.at(arrayIdx);
 	}
 
-	MaterialHandle Material::create()
+	HMaterial Material::create()
 	{
 		MaterialPtr materialPtr = MaterialManager::instance().create();
 
 		return static_resource_cast<Material>(Resource::_createResourceHandle(materialPtr));
 	}
 
-	MaterialHandle Material::create(ShaderPtr shader)
+	HMaterial Material::create(ShaderPtr shader)
 	{
 		MaterialPtr materialPtr = MaterialManager::instance().create(shader);
 

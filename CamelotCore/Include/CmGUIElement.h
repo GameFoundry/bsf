@@ -29,7 +29,7 @@ namespace CamelotEngine
 		 * 		
 		 * @return	Handle to the material.
 		 */
-		virtual const MaterialHandle& getMaterial(UINT32 renderElementIdx) const = 0;
+		virtual const HMaterial& getMaterial(UINT32 renderElementIdx) const = 0;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this

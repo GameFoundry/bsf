@@ -217,7 +217,7 @@ namespace CamelotEngine
 		@remarks Only one GpuProgram of each type can be bound at once, binding another
 		one will simply replace the existing one.
 		*/
-		virtual void bindGpuProgram(GpuProgramHandle prg);
+		virtual void bindGpuProgram(HGpuProgram prg);
 
 		/** Bind Gpu program parameters.
 		@param gptype The type of program to bind the parameters to

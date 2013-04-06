@@ -10,7 +10,7 @@ namespace CamelotEngine
 	{
 		UINT32 size;
 		FONT_DESC fontDesc;
-		vector<TextureHandle>::type texturePages;
+		vector<HTexture>::type texturePages;
 
 		const CHAR_DESC& getCharDesc(UINT32 charId) const;
 
@@ -59,6 +59,6 @@ namespace CamelotEngine
 		/************************************************************************/
 		
 	public:
-		static FontHandle create(vector<FontData>::type& fontInitData);
+		static HFont create(vector<FontData>::type& fontInitData);
 	};
 }

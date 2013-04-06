@@ -29,7 +29,7 @@ namespace CamelotEngine
 		Vector2* uvs;
 		UINT32* indexes;
 		UINT32 numQuads;
-		MaterialHandle material;
+		HMaterial material;
 	};
 
 	class CM_EXPORT Sprite
@@ -64,7 +64,7 @@ namespace CamelotEngine
 		 * 		
 		 * @return	Handle to the material.
 		 */
-		const MaterialHandle& getMaterial(UINT32 renderElementIdx) const;
+		const HMaterial& getMaterial(UINT32 renderElementIdx) const;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this

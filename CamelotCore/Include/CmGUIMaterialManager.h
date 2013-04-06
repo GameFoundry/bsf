@@ -20,7 +20,7 @@ namespace CamelotEngine
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
 		 */
-		const MaterialHandle& requestTextMaterial(const TextureHandle& texture) const;
+		const HMaterial& requestTextMaterial(const HTexture& texture) const;
 
 		/**
 		 * @brief	Creates a new material, or returns a reference to an existing one based on
@@ -30,13 +30,13 @@ namespace CamelotEngine
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
 		 */
-		const MaterialHandle& requestImageMaterial(const TextureHandle& texture) const;
+		const HMaterial& requestImageMaterial(const HTexture& texture) const;
 
 		/**
 		 * @brief	Releases the held reference to the material. This allows us to fully unload a material
 		 * 			and their textures when they are no longer being used.
 		 */
-		void releaseMaterial(const MaterialHandle& material) const;
+		void releaseMaterial(const HMaterial& material) const;
 	private:
 		struct GUIMaterial
 		{
@@ -44,7 +44,7 @@ namespace CamelotEngine
 				:refCount(0)
 			{ }
 
-			MaterialHandle handle;
+			HMaterial handle;
 			UINT32 refCount;
 		};
 

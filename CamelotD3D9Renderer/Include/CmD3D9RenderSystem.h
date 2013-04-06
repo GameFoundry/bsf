@@ -30,7 +30,6 @@ THE SOFTWARE.
 
 #include "CmD3D9Prerequisites.h"
 #include "CmString.h"
-#include "CmConfigOptionMap.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmD3D9Mappings.h"
@@ -72,7 +71,7 @@ namespace CamelotEngine
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()
 		 */
-		void bindGpuProgram(GpuProgramHandle prg);
+		void bindGpuProgram(HGpuProgram prg);
 
 		/**
 		 * @copydoc RenderSystem::unbindGpuProgram()

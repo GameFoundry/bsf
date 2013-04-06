@@ -47,7 +47,7 @@ namespace CamelotEngine
 {
     //-----------------------------------------------------------------------------
     GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes, bool isAdjacencyInfoRequired) 
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired) 
         :mEntryPoint(entryPoint), mSyntaxCode(language), mType(gptype),
 		mProfile(profile), mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
     {

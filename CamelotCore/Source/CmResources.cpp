@@ -111,22 +111,22 @@ namespace CamelotEngine
 			CM_DELETE(mResponseHandler, ResourceResponseHandler, GenAlloc);
 	}
 
-	BaseResourceHandle Resources::load(const String& filePath)
+	HResource Resources::load(const String& filePath)
 	{
 		return loadInternal(filePath, true);
 	}
 
-	BaseResourceHandle Resources::loadAsync(const String& filePath)
+	HResource Resources::loadAsync(const String& filePath)
 	{
 		return loadInternal(filePath, false);
 	}
 
-	BaseResourceHandle Resources::loadFromUUID(const String& uuid)
+	HResource Resources::loadFromUUID(const String& uuid)
 	{
 		if(!metaExists_UUID(uuid))
 		{
 			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
-			return BaseResourceHandle();
+			return HResource();
 		}
 
 		ResourceMetaDataPtr metaEntry = mResourceMetaData[uuid];
@@ -134,12 +134,12 @@ namespace CamelotEngine
 		return load(metaEntry->mPath);
 	}
 
-	BaseResourceHandle Resources::loadFromUUIDAsync(const String& uuid)
+	HResource Resources::loadFromUUIDAsync(const String& uuid)
 	{
 		if(!metaExists_UUID(uuid))
 		{
 			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
-			return BaseResourceHandle();
+			return HResource();
 		}
 
 		ResourceMetaDataPtr metaEntry = mResourceMetaData[uuid];
@@ -147,7 +147,7 @@ namespace CamelotEngine
 		return loadAsync(metaEntry->mPath);
 	}
 
-	BaseResourceHandle Resources::loadInternal(const String& filePath, bool synchronous)
+	HResource Resources::loadInternal(const String& filePath, bool synchronous)
 	{
 		// TODO Low priority - Right now I don't allow loading of resources that don't have meta-data, because I need to know resources UUID
 		// at this point. And I can't do that without having meta-data. Other option is to partially load the resource to read the UUID but due to the
@@ -171,7 +171,7 @@ namespace CamelotEngine
 		}
 
 		bool resourceLoadingInProgress = false;
-		BaseResourceHandle existingResource;
+		HResource existingResource;
 
 		{
 			CM_LOCK_MUTEX(mInProgressResourcesMutex);
@@ -199,10 +199,10 @@ namespace CamelotEngine
 		if(!FileSystem::fileExists(filePath))
 		{
 			gDebug().logWarning("Specified file: " + filePath + " doesn't exist.");
-			return BaseResourceHandle();
+			return HResource();
 		}
 
-		BaseResourceHandle newResource;
+		HResource newResource;
 		newResource.setUUID(uuid); // UUID needs to be set immediately if the resource gets loaded async
 
 		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(CM_NEW(Resources::ResourceLoadRequest, ScratchAlloc) Resources::ResourceLoadRequest(),
@@ -239,7 +239,7 @@ namespace CamelotEngine
 		return resource;
 	}
 
-	void Resources::unload(BaseResourceHandle resource)
+	void Resources::unload(HResource resource)
 	{
 		if(!resource.isLoaded()) // If it's still loading wait until that finishes
 			resource.waitUntilLoaded();
@@ -254,7 +254,7 @@ namespace CamelotEngine
 
 	void Resources::unloadAllUnused()
 	{
-		vector<BaseResourceHandle>::type resourcesToUnload;
+		vector<HResource>::type resourcesToUnload;
 
 		{
 			CM_LOCK_MUTEX(mLoadedResourceMutex);
@@ -271,7 +271,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void Resources::create(BaseResourceHandle resource, const String& filePath, bool overwrite)
+	void Resources::create(HResource resource, const String& filePath, bool overwrite)
 	{
 		if(resource == nullptr)
 			CM_EXCEPT(InvalidParametersException, "Trying to save an uninitialized resource.");
@@ -307,7 +307,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void Resources::save(BaseResourceHandle resource)
+	void Resources::save(HResource resource)
 	{
 		if(!resource.isLoaded())
 			resource.waitUntilLoaded();
@@ -430,14 +430,14 @@ namespace CamelotEngine
 		return findIter != mResourceMetaData_FilePath.end();
 	}
 
-	void Resources::notifyResourceLoadingFinished(BaseResourceHandle& handle)
+	void Resources::notifyResourceLoadingFinished(HResource& handle)
 	{
 		CM_LOCK_MUTEX(mInProgressResourcesMutex);
 
 		mInProgressResources.erase(handle.getUUID());
 	}
 
-	void Resources::notifyNewResourceLoaded(BaseResourceHandle& handle)
+	void Resources::notifyNewResourceLoaded(HResource& handle)
 	{
 		CM_LOCK_MUTEX(mLoadedResourceMutex);
 

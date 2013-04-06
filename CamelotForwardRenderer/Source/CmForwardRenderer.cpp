@@ -68,12 +68,12 @@ namespace CamelotEngine
 		// TODO - sort renderables by material/pass/parameters to minimize state changes
 		for(auto iter = allRenderables.begin(); iter != allRenderables.end(); ++iter)
 		{
-			MaterialHandle material = (*iter)->getMaterial();
+			HMaterial material = (*iter)->getMaterial();
 
 			if(material == nullptr || !material.isLoaded())
 				continue;
 
-			MeshHandle mesh = (*iter)->getMesh();
+			HMesh mesh = (*iter)->getMesh();
 
 			if(mesh == nullptr || !mesh.isLoaded())
 				continue;

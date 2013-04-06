@@ -23,7 +23,7 @@ namespace CamelotEngine
 			CM_DELETE(mSkin, GUISkin, GUIAlloc);
 	}
 
-	void TestTextSprite::setText(const CameraPtr& camera, const String& text, FontHandle font, UINT32 fontSize)
+	void TestTextSprite::setText(const CameraPtr& camera, const String& text, HFont font, UINT32 fontSize)
 	{
 		mSkin = CM_NEW(GUISkin, GUIAlloc) GUISkin();
 

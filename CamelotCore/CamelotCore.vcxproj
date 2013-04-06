@@ -176,6 +176,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\CmGameObjectHandle.h" />
     <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmOverlay.h" />
     <ClInclude Include="Include\CmApplication.h" />
@@ -189,7 +190,6 @@
     <ClInclude Include="Include\CmCommandQueue.h" />
     <ClInclude Include="Include\CmCommonEnums.h" />
     <ClInclude Include="Include\CmComponentRTTI.h" />
-    <ClInclude Include="Include\CmConfigOptionMap.h" />
     <ClInclude Include="Include\CmCoreObject.h" />
     <ClInclude Include="Include\CmCoreObjectManager.h" />
     <ClInclude Include="Include\CmDeferredRenderContext.h" />
@@ -304,6 +304,7 @@
   <ItemGroup>
     <ClCompile Include="Include\CmMaterialManager.cpp" />
     <ClCompile Include="Source\CamelotRenderer.cpp" />
+    <ClCompile Include="Source\CmGameObjectHandle.cpp" />
     <ClCompile Include="Source\CmOverlay.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
     <ClCompile Include="Source\CmBlendState.cpp" />

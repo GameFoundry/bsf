@@ -25,8 +25,8 @@ namespace CamelotEngine
 		void updateMeshes() const;
 
 		vector<GUIElement*>::type mElements;
-		mutable vector<MeshHandle>::type mCachedMeshes;
-		mutable vector<MaterialHandle>::type mCachedMaterials;
+		mutable vector<HMesh>::type mCachedMeshes;
+		mutable vector<HMaterial>::type mCachedMaterials;
 		const GUISkin* mSkin;
 		static GUISkin DefaultSkin;
 	};

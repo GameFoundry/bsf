@@ -82,7 +82,7 @@ namespace CamelotEngine
 		return bestSize;
 	}
 
-	FontHandle Font::create(vector<FontData>::type& fontData)
+	HFont Font::create(vector<FontData>::type& fontData)
 	{
 		FontPtr newFont = FontManager::instance().create(fontData);
 

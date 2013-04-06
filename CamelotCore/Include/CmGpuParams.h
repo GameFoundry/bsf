@@ -44,11 +44,11 @@ namespace CamelotEngine
 		 */
 		void setParam(const String& name, const void* value, UINT32 sizeBytes, UINT32 arrayIndex = 0);
 
-		void setTexture(const String& name, const TextureHandle& val);
-		TextureHandle getTexture(UINT32 slot);
+		void setTexture(const String& name, const HTexture& val);
+		HTexture getTexture(UINT32 slot);
 
-		void setSamplerState(const String& name, SamplerStateHandle& val);
-		SamplerStateHandle getSamplerState(UINT32 slot);
+		void setSamplerState(const String& name, HSamplerState& val);
+		HSamplerState getSamplerState(UINT32 slot);
 
 		void setTransposeMatrices(bool transpose) { mTransposeMatrices = transpose; }
 
@@ -61,7 +61,7 @@ namespace CamelotEngine
 		GpuParamDataDesc* getParamDesc(const String& name) const;
 
 		vector<GpuParamBlockPtr>::type mParamBlocks;
-		vector<TextureHandle>::type mTextures;
-		vector<SamplerStateHandle>::type mSamplerStates;
+		vector<HTexture>::type mTextures;
+		vector<HSamplerState>::type mSamplerStates;
 	};
 }

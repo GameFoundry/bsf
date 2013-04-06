@@ -26,7 +26,7 @@ namespace CamelotEngine
 			{
 				// NOTE: This will cause Resources::load to be called recursively with resources that contain other
 				// resources. This might cause problems. Keep this note here as a warning until I prove otherwise.
-				BaseResourceHandle loadedResource = gResources().loadFromUUID(resourceHandle->mData->mUUID);
+				HResource loadedResource = gResources().loadFromUUID(resourceHandle->mData->mUUID);
 
 				if(loadedResource)
 					resourceHandle->resolve(loadedResource.getInternalPtr());

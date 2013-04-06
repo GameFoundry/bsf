@@ -8,12 +8,12 @@
 
 namespace CamelotEngine
 {
-	MaterialHandle D3D9BuiltinMaterialManager::createSpriteTextMaterial() const
+	HMaterial D3D9BuiltinMaterialManager::createSpriteTextMaterial() const
 	{
 		return Material::create(mSpriteTextShader);
 	}
 
-	MaterialHandle D3D9BuiltinMaterialManager::createSpriteImageMaterial() const
+	HMaterial D3D9BuiltinMaterialManager::createSpriteImageMaterial() const
 	{
 		return Material::create(mSpriteImageShader);
 	}

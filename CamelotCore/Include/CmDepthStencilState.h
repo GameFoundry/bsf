@@ -70,7 +70,7 @@ namespace CamelotEngine
 		StencilOperation getStencilBackPassOp() const { return mData.backStencilPassOp; }
 		CompareFunction getStencilBackCompFunc() const { return mData.backStencilComparisonFunc; }
 
-		static DepthStencilStateHandle create(const DEPTH_STENCIL_STATE_DESC& desc);
+		static HDepthStencilState create(const DEPTH_STENCIL_STATE_DESC& desc);
 
 		/**
 		 * @brief	Returns the default depth stencil state;

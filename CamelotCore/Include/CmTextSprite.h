@@ -19,16 +19,16 @@ namespace CamelotEngine
 	{
 	public:
 		TextSprite();
-		TextSprite(const String& text, FontHandle font, UINT32 fontSize);
+		TextSprite(const String& text, HFont font, UINT32 fontSize);
 
 		void setText(const String& text) { mText = text; setDirty(); }
-		void setFont(FontHandle font, UINT32 fontSize) { mFont = font; mFontSize = fontSize; setDirty(); }
+		void setFont(HFont font, UINT32 fontSize) { mFont = font; mFontSize = fontSize; setDirty(); }
 		void setWordWrap(bool wordWrap) { mWordWrap = wordWrap; setDirty(); }
 		void setAlignment(TextHorzAlign horzAlign, TextVertAlign vertAlign = TVA_Top) 
 			{ mHorzAlign = horzAlign; mVertAlign = vertAlign; setDirty(); }
 
 		String getText() const { return mText; }
-		FontHandle getFont() const { return mFont; }
+		HFont getFont() const { return mFont; }
 		UINT32 getFontSize() const { return mFontSize; }
 		bool getWordWrap() const { return mWordWrap; }
 		TextHorzAlign getTextHorzAlign() const { return mHorzAlign; }
@@ -36,7 +36,7 @@ namespace CamelotEngine
 
 	protected:
 		String mText;
-		FontHandle mFont;
+		HFont mFont;
 		UINT32 mFontSize;
 		bool mWordWrap;
 		TextHorzAlign mHorzAlign;

@@ -67,8 +67,8 @@ namespace CamelotEngine
 
 		ShaderPtr getShader() const { return mShader; }
 
-		void setTexture(const String& name, const TextureHandle& value);
-		void setSamplerState(const String& name, SamplerStateHandle& samplerState);
+		void setTexture(const String& name, const HTexture& value);
+		void setSamplerState(const String& name, HSamplerState& samplerState);
 		void setFloat(const String& name, float value, UINT32 arrayIdx = 0);
 		void setColor(const String& name, const Color& value, UINT32 arrayIdx = 0);
 		void setVec2(const String& name, const Vector2& value, UINT32 arrayIdx = 0);
@@ -80,8 +80,8 @@ namespace CamelotEngine
 
 		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
 
-		TextureHandle getTexture(const String& name) const;
-		SamplerStateHandle getSamplerState(const String& name) const;
+		HTexture getTexture(const String& name) const;
+		HSamplerState getSamplerState(const String& name) const;
 		float getFloat(const String& name, UINT32 arrayIdx = 0) const;
 		Vector2 getVec2(const String& name, UINT32 arrayIdx = 0) const;
 		Vector3 getVec3(const String& name, UINT32 arrayIdx = 0) const;
@@ -96,8 +96,8 @@ namespace CamelotEngine
 
 		PassParametersPtr getPassParameters(UINT32 passIdx) const;
 
-		static MaterialHandle create();
-		static MaterialHandle create(ShaderPtr shader);
+		static HMaterial create();
+		static HMaterial create(ShaderPtr shader);
 	private:
 		friend class MaterialManager;
 
@@ -118,8 +118,8 @@ namespace CamelotEngine
 		map<String, vector<Matrix3>::type>::type mMat3Values;
 		map<String, vector<Matrix4>::type>::type mMat4Values;
 		map<String, vector<StructData>::type>::type mStructValues;
-		map<String, TextureHandle>::type mTextureValues;
-		map<String, SamplerStateHandle>::type mSamplerValues;
+		map<String, HTexture>::type mTextureValues;
+		map<String, HSamplerState>::type mSamplerValues;
 
 		Material();
 

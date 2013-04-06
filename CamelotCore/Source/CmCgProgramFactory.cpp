@@ -55,7 +55,7 @@ namespace CamelotEngine {
     }
     //-----------------------------------------------------------------------
     HighLevelGpuProgramPtr CgProgramFactory::create(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes)
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes)
     {
 		CgProgram* prog = CM_NEW(CgProgram, PoolAlloc) CgProgram(mCgContext, source, entryPoint, sLanguageName, gptype, profile, includes);
 

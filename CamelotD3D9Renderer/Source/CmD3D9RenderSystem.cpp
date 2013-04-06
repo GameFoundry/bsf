@@ -274,7 +274,7 @@ namespace CamelotEngine
 		updateRenderSystemCapabilities(d3d9renderWindow);
 	}	
 
-	void D3D9RenderSystem::bindGpuProgram(GpuProgramHandle prg)
+	void D3D9RenderSystem::bindGpuProgram(HGpuProgram prg)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -349,7 +349,7 @@ namespace CamelotEngine
 
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			SamplerStateHandle& samplerState = params->getSamplerState(iter->second.slot);
+			HSamplerState& samplerState = params->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
@@ -359,7 +359,7 @@ namespace CamelotEngine
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			TextureHandle texture = params->getTexture(iter->second.slot);
+			HTexture texture = params->getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
 				setTexture(gptype, iter->second.slot, false, nullptr);

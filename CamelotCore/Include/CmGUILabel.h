@@ -21,7 +21,7 @@ namespace CamelotEngine
 		/**
 		 * @copydoc GUIElement::getMaterial()
 		 */
-		virtual const MaterialHandle& getMaterial(UINT32 renderElementIdx) const;
+		virtual const HMaterial& getMaterial(UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::getNumQuads()

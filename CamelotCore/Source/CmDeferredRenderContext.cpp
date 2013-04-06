@@ -100,7 +100,7 @@ namespace CamelotEngine
 		mCommandQueue->queue(boost::bind(&RenderSystem::resetClipPlanes, mRenderSystem));
 	}
 
-	void DeferredRenderContext::bindGpuProgram(GpuProgramHandle prg)
+	void DeferredRenderContext::bindGpuProgram(HGpuProgram prg)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuProgram, mRenderSystem, prg));
 	}

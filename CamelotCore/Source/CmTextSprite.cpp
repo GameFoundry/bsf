@@ -239,7 +239,7 @@ namespace CamelotEngine
 
 	}
 
-	TextSprite::TextSprite(const String& text, FontHandle font, UINT32 fontSize)
+	TextSprite::TextSprite(const String& text, HFont font, UINT32 fontSize)
 		:mText(text), mFont(font), mFontSize(fontSize), mWordWrap(false), mHorzAlign(THA_Left), mVertAlign(TVA_Top)
 	{
 
@@ -394,7 +394,7 @@ namespace CamelotEngine
 				cachedElem.numQuads = newNumQuads;
 			}
 
-			MaterialHandle newMaterial = GUIMaterialManager::instance().requestTextMaterial(fontData->texturePages[texPage]);
+			HMaterial newMaterial = GUIMaterialManager::instance().requestTextMaterial(fontData->texturePages[texPage]);
 			if(cachedElem.material != nullptr)
 				GUIMaterialManager::instance().releaseMaterial(newMaterial);
 

@@ -72,7 +72,7 @@ namespace CamelotEngine
 		void setRenderTarget(RenderTargetPtr target);
 
 		/** @copydoc RenderSystem::bindGpuProgram() */
-		void bindGpuProgram(GpuProgramHandle prg);
+		void bindGpuProgram(HGpuProgram prg);
 		/** @copydoc RenderSystem::unbindGpuProgram() */
 		void unbindGpuProgram(GpuProgramType gptype);
 		/** @copydoc RenderSystem::bindGpuParams() */

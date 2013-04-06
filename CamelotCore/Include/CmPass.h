@@ -17,17 +17,17 @@ namespace CamelotEngine
 	class CM_EXPORT Pass : public IReflectable
     {
     protected:
-		BlendStateHandle mBlendState;
-		RasterizerStateHandle mRasterizerState;
-		DepthStencilStateHandle mDepthStencilState;
+		HBlendState mBlendState;
+		HRasterizerState mRasterizerState;
+		HDepthStencilState mDepthStencilState;
 		UINT32 mStencilRefValue;
 
-		GpuProgramHandle mVertexProgram;
-		GpuProgramHandle mFragmentProgram;
-		GpuProgramHandle mGeometryProgram;
-		GpuProgramHandle mHullProgram;
-		GpuProgramHandle mDomainProgram;
-		GpuProgramHandle mComputeProgram;
+		HGpuProgram mVertexProgram;
+		HGpuProgram mFragmentProgram;
+		HGpuProgram mGeometryProgram;
+		HGpuProgram mHullProgram;
+		HGpuProgram mDomainProgram;
+		HGpuProgram mComputeProgram;
     public:
         /// Default constructor
 		Pass();
@@ -50,59 +50,59 @@ namespace CamelotEngine
 		/**
 		 * @brief	Sets a blend state used for all active render targets.
 		 */
-		void setBlendState(BlendStateHandle& blendState);
-		BlendStateHandle getBlendState() const;
+		void setBlendState(HBlendState& blendState);
+		HBlendState getBlendState() const;
 
-		void setRasterizerState(RasterizerStateHandle& rasterizerState);
-		RasterizerStateHandle getRasterizerState() const;
+		void setRasterizerState(HRasterizerState& rasterizerState);
+		HRasterizerState getRasterizerState() const;
 
-		void setDepthStencilState(DepthStencilStateHandle& depthStencilState);
-		DepthStencilStateHandle getDepthStencilState() const;
+		void setDepthStencilState(HDepthStencilState& depthStencilState);
+		HDepthStencilState getDepthStencilState() const;
 
 		void setStencilRefValue(UINT32 refValue);
 		UINT32 getStencilRefValue() const;
 
 		/** Sets the details of the vertex program to use.
 		*/
-		void setVertexProgram(GpuProgramHandle gpuProgram) { mVertexProgram = gpuProgram; }
+		void setVertexProgram(HGpuProgram gpuProgram) { mVertexProgram = gpuProgram; }
 
 		/** Gets the vertex program used by this pass. */
-		const GpuProgramHandle& getVertexProgram(void) const { return mVertexProgram; }
+		const HGpuProgram& getVertexProgram(void) const { return mVertexProgram; }
 
 		/** Sets the details of the fragment program to use.
 		*/
-		void setFragmentProgram(GpuProgramHandle gpuProgram) { mFragmentProgram = gpuProgram; }
+		void setFragmentProgram(HGpuProgram gpuProgram) { mFragmentProgram = gpuProgram; }
 		
 		/** Gets the fragment program used by this pass. */
-		const GpuProgramHandle& getFragmentProgram(void) const { return mFragmentProgram; }
+		const HGpuProgram& getFragmentProgram(void) const { return mFragmentProgram; }
 
 		/** Sets the details of the geometry program to use.
 		*/
-		void setGeometryProgram(GpuProgramHandle gpuProgram) { mGeometryProgram = gpuProgram; }
+		void setGeometryProgram(HGpuProgram gpuProgram) { mGeometryProgram = gpuProgram; }
 		
 		/** Gets the geometry program used by this pass. */
-		const GpuProgramHandle& getGeometryProgram(void) const { return mGeometryProgram; }
+		const HGpuProgram& getGeometryProgram(void) const { return mGeometryProgram; }
 
 		/** Sets the details of the hull program to use.
 		*/
-		void setHullProgram(GpuProgramHandle gpuProgram) { mHullProgram = gpuProgram; }
+		void setHullProgram(HGpuProgram gpuProgram) { mHullProgram = gpuProgram; }
 		
 		/** Gets the hull program used by this pass. */
-		const GpuProgramHandle& getHullProgram(void) const { return mHullProgram; }
+		const HGpuProgram& getHullProgram(void) const { return mHullProgram; }
 
 		/** Sets the details of the domain program to use.
 		*/
-		void setDomainProgram(GpuProgramHandle gpuProgram) { mDomainProgram = gpuProgram;}
+		void setDomainProgram(HGpuProgram gpuProgram) { mDomainProgram = gpuProgram;}
 		
 		/** Gets the domain program used by this pass. */
-		const GpuProgramHandle& getDomainProgram(void) const { return mDomainProgram; }
+		const HGpuProgram& getDomainProgram(void) const { return mDomainProgram; }
 
 		/** Sets the details of the compute program to use.
 		*/
-		void setComputeProgram(GpuProgramHandle gpuProgram) { mComputeProgram = gpuProgram; }
+		void setComputeProgram(HGpuProgram gpuProgram) { mComputeProgram = gpuProgram; }
 		
 		/** Gets the compute program used by this pass. */
-		const GpuProgramHandle& getComputeProgram(void) const { return mComputeProgram; }
+		const HGpuProgram& getComputeProgram(void) const { return mComputeProgram; }
 
 		/**
 		 * @brief	Makes this pass active. Anything rendered after this command will use this pass.

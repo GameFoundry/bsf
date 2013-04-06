@@ -28,7 +28,7 @@ namespace CamelotEngine
 		 *
 		 * @return	null if it fails, otherwise the loaded object.
 		 */
-		virtual BaseResourceHandle import(const String& filePath, ConstImportOptionsPtr importOptions) = 0;
+		virtual HResource import(const String& filePath, ConstImportOptionsPtr importOptions) = 0;
 
 		/**
 		 * @brief	Creates import options specific for this importer. Import

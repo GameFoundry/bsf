@@ -64,7 +64,7 @@ namespace CamelotEngine
 			Vector2* vertices;
 			Vector2* uvs;
 			UINT32* indices;
-			MaterialHandle material;
+			HMaterial material;
 		};
 
 		std::unordered_map<UINT64, TempMeshData> meshDataPerRenderElement;
@@ -77,7 +77,7 @@ namespace CamelotEngine
 
 			for(UINT32 i = 0; i < numRenderElems; i++)
 			{
-				const MaterialHandle& mat = elem->getMaterial(i);
+				const HMaterial& mat = elem->getMaterial(i);
 
 				UINT64 meshGroup = mat->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
 				// this system won't detect it. Find a better way of determining material similarity?
@@ -105,7 +105,7 @@ namespace CamelotEngine
 
 			for(UINT32 i = 0; i < numRenderElems; i++)
 			{
-				const MaterialHandle& mat = elem->getMaterial(i);
+				const HMaterial& mat = elem->getMaterial(i);
 				UINT64 meshGroup = mat->getInternalID(); 
 
 				Vector2* vertices = meshDataPerRenderElement[meshGroup].vertices;
@@ -124,7 +124,7 @@ namespace CamelotEngine
 		// Update meshes
 		for(UINT32 i = (UINT32)mCachedMeshes.size(); i < numMeshes; i++)
 		{
-			MeshHandle newMesh = Mesh::create();
+			HMesh newMesh = Mesh::create();
 			mCachedMeshes.push_back(newMesh);
 			newMesh.waitUntilLoaded();
 		}
@@ -163,7 +163,7 @@ namespace CamelotEngine
 		UINT32 meshIdx = 0;
 		for(auto& mesh : mCachedMeshes)
 		{
-			MaterialHandle material = mCachedMaterials[meshIdx];
+			HMaterial material = mCachedMaterials[meshIdx];
 
 			if(material == nullptr || !material.isLoaded())
 				continue;

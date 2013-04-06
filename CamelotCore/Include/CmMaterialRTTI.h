@@ -110,7 +110,7 @@ namespace CamelotEngine
 	{
 	public:
 		String name;
-		TextureHandle value;
+		HTexture value;
 
 		friend class MaterialTextureParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -121,7 +121,7 @@ namespace CamelotEngine
 	{
 	public:
 		String name;
-		SamplerStateHandle value;
+		HSamplerState value;
 
 		friend class MaterialSamplerStateParamRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -402,8 +402,8 @@ namespace CamelotEngine
 		String& getName(MaterialTextureParam* obj) { return obj->name; }
 		void setName(MaterialTextureParam* obj, String& name) { obj->name = name; }
 
-		TextureHandle& getValue(MaterialTextureParam* obj) { return obj->value; }
-		void setValue(MaterialTextureParam* obj, TextureHandle& value) { obj->value = value; }
+		HTexture& getValue(MaterialTextureParam* obj) { return obj->value; }
+		void setValue(MaterialTextureParam* obj, HTexture& value) { obj->value = value; }
 
 		MaterialTextureParamRTTI()
 		{
@@ -431,8 +431,8 @@ namespace CamelotEngine
 		String& getName(MaterialSamplerStateParam* obj) { return obj->name; }
 		void setName(MaterialSamplerStateParam* obj, String& name) { obj->name = name; }
 
-		SamplerStateHandle& getValue(MaterialSamplerStateParam* obj) { return obj->value; }
-		void setValue(MaterialSamplerStateParam* obj, SamplerStateHandle& value) { obj->value = value; }
+		HSamplerState& getValue(MaterialSamplerStateParam* obj) { return obj->value; }
+		void setValue(MaterialSamplerStateParam* obj, HSamplerState& value) { obj->value = value; }
 
 		MaterialSamplerStateParamRTTI()
 		{

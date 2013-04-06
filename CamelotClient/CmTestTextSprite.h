@@ -16,6 +16,6 @@ namespace CamelotEngine
 
 		virtual void update();
 
-		void setText(const CameraPtr& camera, const String& text, FontHandle font, UINT32 fontSize);
+		void setText(const CameraPtr& camera, const String& text, HFont font, UINT32 fontSize);
 	};
 }

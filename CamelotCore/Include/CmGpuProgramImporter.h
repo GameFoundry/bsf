@@ -21,7 +21,7 @@ namespace CamelotEngine
 		/**
 		 * @copydoc SpecificImporter::import().
 		 */
-		virtual BaseResourceHandle import(const String& filePath, ConstImportOptionsPtr importOptions);
+		virtual HResource import(const String& filePath, ConstImportOptionsPtr importOptions);
 
 		/**
 		 * @copydoc SpecificImporter::createImportOptions().

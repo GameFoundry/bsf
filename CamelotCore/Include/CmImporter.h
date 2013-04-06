@@ -24,7 +24,7 @@ namespace CamelotEngine
 		 * @param	inputFilePath	Pathname of the input file.
 		 * @param	importOptions	(optional) Options for controlling the import.
 		 */
-		BaseResourceHandle import(const String& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+		HResource import(const String& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
 
 		/**
 		 * @brief	Automatically detects the importer needed for the provided file and returns valid type of

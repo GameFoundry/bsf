@@ -406,7 +406,7 @@ namespace CamelotEngine {
 		/// Packed list of integer constants (physical indexing)
 		IntConstantList mIntConstants;
 		/// List of all texture parameters
-		vector<TextureHandle>::type mTextures;
+		vector<HTexture>::type mTextures;
 		// List of all sampler states
 		vector<SamplerStatePtr>::type mSamplerStates;
 		/** Logical index to physical index map - for low-level programs
@@ -580,7 +580,7 @@ namespace CamelotEngine {
 		@param physicalIndex The array position of the texture
 		@param dest Reference of the texture to store
 		*/
-		void _readTexture(UINT32 physicalIndex, TextureHandle& dest);
+		void _readTexture(UINT32 physicalIndex, HTexture& dest);
 		/** Write a 4-element floating-point parameter to the program directly to 
 		the underlying constants buffer.
 		@note You can use these methods if you have already derived the physical
@@ -722,11 +722,11 @@ namespace CamelotEngine {
 		/// Get a pointer to the 'nth' item in the int buffer
 		const int* getIntPointer(UINT32 pos) const { return &mIntConstants[pos]; }
 		const GpuLogicalBufferStructPtr& getTextureLogicalBufferStruct() const { return mTextureLogicalToPhysical; }
-		TextureHandle getTexture(UINT32 pos) const;
+		HTexture getTexture(UINT32 pos) const;
 		const GpuLogicalBufferStructPtr& getSamplerLogicalBufferStruct() const { return mSamplerLogicalToPhysical; }
 		SamplerStatePtr getSamplerState(UINT32 pos) const;
 		/// Get a reference to the list of textures
-		const vector<TextureHandle>::type& getTextureList() const { return mTextures; }
+		const vector<HTexture>::type& getTextureList() const { return mTextures; }
 		UINT32 getNumTextures() const { return (UINT32)mTextures.size(); }
 		const vector<SamplerStatePtr>::type& getSamplerStateList() const { return mSamplerStates; }
 		UINT32 getNumSamplerStates() const { return (UINT32)mSamplerStates.size(); }
@@ -754,7 +754,7 @@ namespace CamelotEngine {
 		@param name The name of the parameter
 		@param val The value to set
 		*/
-		void setNamedConstant(const String& name, TextureHandle val);
+		void setNamedConstant(const String& name, HTexture val);
 
 		/** Sets a sampler state to the program. Name of the sampler should be the same
 		as the name of the texture parameter it is being set for.

@@ -12,7 +12,7 @@ namespace CamelotEngine
 
 		}
 
-		FontHandle font;
+		HFont font;
 		UINT32 fontSize;
 	};
 }

@@ -33,7 +33,6 @@ THE SOFTWARE.
 #include "CmGLHardwareBufferManager.h"
 #include "CmGLGpuProgramManager.h"
 #include "CmGLSLProgramFactory.h"
-#include "CmConfigOptionMap.h"
 #include "CmCgProgramFactory.h"
 #include "CmVector4.h"
 
@@ -120,7 +119,7 @@ namespace CamelotEngine {
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()
 		 */
-		void bindGpuProgram(GpuProgramHandle prg);
+		void bindGpuProgram(HGpuProgram prg);
 
 		/**
 		 * @copydoc RenderSystem::unbindGpuProgram()

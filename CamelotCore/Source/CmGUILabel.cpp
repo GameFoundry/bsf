@@ -24,7 +24,7 @@ namespace CamelotEngine
 		return mTextSprite->getNumRenderElements();
 	}
 
-	const MaterialHandle& GUILabel::getMaterial(UINT32 renderElementIdx) const
+	const HMaterial& GUILabel::getMaterial(UINT32 renderElementIdx) const
 	{
 		return mTextSprite->getMaterial(renderElementIdx);
 	}

@@ -323,21 +323,22 @@ namespace CamelotEngine
 /************************************************************************/
 
 #include "CmResourceHandle.h"
+#include "CmGameObjectHandle.h"
 
 namespace CamelotEngine
 {
-	typedef ResourceHandle<Resource> BaseResourceHandle;
-	typedef ResourceHandle<Texture> TextureHandle;
-	typedef ResourceHandle<Mesh> MeshHandle;
-	typedef ResourceHandle<GpuProgram> GpuProgramHandle;
-	typedef ResourceHandle<HighLevelGpuProgram> HighLevelGpuProgramHandle;
-	typedef ResourceHandle<Material> MaterialHandle;
-	typedef ResourceHandle<SamplerState> SamplerStateHandle;
-	typedef ResourceHandle<RasterizerState> RasterizerStateHandle;
-	typedef ResourceHandle<DepthStencilState> DepthStencilStateHandle;
-	typedef ResourceHandle<BlendState> BlendStateHandle;
-	typedef ResourceHandle<GpuProgInclude> GpuProgIncludeHandle;
-	typedef ResourceHandle<Font> FontHandle;
+	typedef ResourceHandle<Resource> HResource;
+	typedef ResourceHandle<Texture> HTexture;
+	typedef ResourceHandle<Mesh> HMesh;
+	typedef ResourceHandle<GpuProgram> HGpuProgram;
+	typedef ResourceHandle<HighLevelGpuProgram> HHighLevelGpuProgram;
+	typedef ResourceHandle<Material> HMaterial;
+	typedef ResourceHandle<SamplerState> HSamplerState;
+	typedef ResourceHandle<RasterizerState> HRasterizerState;
+	typedef ResourceHandle<DepthStencilState> HDepthStencilState;
+	typedef ResourceHandle<BlendState> HBlendState;
+	typedef ResourceHandle<GpuProgInclude> HGpuProgInclude;
+	typedef ResourceHandle<Font> HFont;
 }
 
 #endif

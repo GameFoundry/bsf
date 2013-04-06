@@ -10,7 +10,7 @@ namespace CamelotEngine
 	public:
 		const String& getString() const { return mString; }
 
-		static GpuProgIncludeHandle create(const String& includeString);
+		static HGpuProgInclude create(const String& includeString);
 	private:
 		GpuProgInclude(const String& includeString);
 

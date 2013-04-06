@@ -47,7 +47,7 @@ namespace CamelotEngine
 {
 	//-----------------------------------------------------------------------
 	GLSLProgram::GLSLProgram(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, const vector<GpuProgIncludeHandle>::type* includes, bool isAdjacencyInfoRequired)
+		GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
 		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired),
 		mInputOperationType(DOT_TRIANGLE_LIST),
 		mOutputOperationType(DOT_TRIANGLE_LIST), mMaxOutputVertices(3)

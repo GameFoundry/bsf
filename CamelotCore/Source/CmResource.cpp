@@ -13,9 +13,9 @@ namespace CamelotEngine
 		mUUID = UUIDGenerator::generateRandom();
 	}
 
-	BaseResourceHandle Resource::_createResourceHandle(ResourcePtr obj)
+	HResource Resource::_createResourceHandle(ResourcePtr obj)
 	{
-		return BaseResourceHandle(obj);
+		return HResource(obj);
 	}
 
 	RTTITypeBase* Resource::getRTTIStatic()

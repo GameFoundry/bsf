@@ -44,7 +44,7 @@ namespace CamelotEngine
 			&MemAllocDeleter<FontImportOptions, ScratchAlloc>::deleter);
 	}
 
-	BaseResourceHandle FontImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
+	HResource FontImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
 	{
 		const FontImportOptions* gpuProgImportOptions = static_cast<const FontImportOptions*>(importOptions.get());
 
@@ -238,7 +238,7 @@ namespace CamelotEngine
 					}
 				}
 
-				TextureHandle newTex = Texture::create(TEX_TYPE_2D, pageIter->width, pageIter->height, 0, PF_R8G8);
+				HTexture newTex = Texture::create(TEX_TYPE_2D, pageIter->width, pageIter->height, 0, PF_R8G8);
 				newTex.waitUntilLoaded();
 				newTex->setRawPixels(pixelData);
 
@@ -262,7 +262,7 @@ namespace CamelotEngine
 			dataPerSize.push_back(fontData);
 		}
 
-		FontHandle newFont = Font::create(dataPerSize);
+		HFont newFont = Font::create(dataPerSize);
 
 		FT_Done_FreeType(library);
 
