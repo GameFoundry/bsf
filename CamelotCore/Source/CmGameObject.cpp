@@ -34,7 +34,7 @@ namespace CamelotEngine
 
 	HGameObject GameObject::createInternal(const String& name)
 	{
-		HGameObject gameObject = HGameObject(new GameObject(name));
+		HGameObject gameObject = HGameObject::_create(new GameObject(name));
 		gameObject->mThisHandle = gameObject;
 
 		return gameObject;
@@ -339,7 +339,7 @@ namespace CamelotEngine
 		}
 	}
 
-	ComponentPtr GameObject::getComponent(UINT32 typeId) const
+	HComponent GameObject::getComponent(UINT32 typeId) const
 	{
 		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
 		{
@@ -347,10 +347,10 @@ namespace CamelotEngine
 				return *iter;
 		}
 
-		return nullptr;
+		return HComponent();
 	}
 
-	void GameObject::destroyComponent(ComponentPtr component)
+	void GameObject::destroyComponent(const HComponent& component)
 	{
 		if(component == nullptr)
 		{

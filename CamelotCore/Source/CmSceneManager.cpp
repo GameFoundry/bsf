@@ -27,7 +27,7 @@ namespace CamelotEngine
 			HGameObject currentGO = todo.top();
 			todo.pop();
 			                  
-			vector<ComponentPtr>::type components = currentGO->getComponents();
+			vector<HComponent>::type components = currentGO->getComponents();
 
 			for(auto iter = components.begin(); iter != components.end(); ++iter)
 			{
@@ -39,11 +39,11 @@ namespace CamelotEngine
 		}
 	}
 
-	vector<RenderablePtr>::type SceneManager::getVisibleRenderables(const CameraPtr camera) const
+	vector<HRenderable>::type SceneManager::getVisibleRenderables(const HCamera& camera) const
 	{
 		// TODO - Cull invisible objects
 
-		vector<RenderablePtr>::type renderables;
+		vector<HRenderable>::type renderables;
 
 		stack<HGameObject>::type todo;
 		todo.push(mRootNode);
@@ -53,7 +53,7 @@ namespace CamelotEngine
 			HGameObject currentGO = todo.top();
 			todo.pop();
 
-			RenderablePtr curRenderable = currentGO->getComponent<Renderable>();
+			HRenderable curRenderable = currentGO->getComponent<Renderable>();
 			if(curRenderable != nullptr)
 				renderables.push_back(curRenderable);
 
@@ -70,11 +70,11 @@ namespace CamelotEngine
 			node->setParent(mRootNode);
 	}
 
-	void SceneManager::notifyComponentAdded(ComponentPtr component)
+	void SceneManager::notifyComponentAdded(const HComponent& component)
 	{
 		if(component->getTypeId() == TID_Camera)
 		{
-			CameraPtr camera = std::static_pointer_cast<Camera>(component);
+			HCamera camera = static_object_cast<Camera>(component);
 			auto findIter = std::find(mCachedCameras.begin(), mCachedCameras.end(), camera);
 
 			if(findIter != mCachedCameras.end())
@@ -86,11 +86,11 @@ namespace CamelotEngine
 		}
 	}
 
-	void SceneManager::notifyComponentRemoved(ComponentPtr component)
+	void SceneManager::notifyComponentRemoved(const HComponent& component)
 	{
 		if(component->getTypeId() == TID_Camera)
 		{
-			CameraPtr camera = std::static_pointer_cast<Camera>(component);
+			HCamera camera = static_object_cast<Camera>(component);
 			auto findIter = std::find(mCachedCameras.begin(), mCachedCameras.end(), camera);
 
 			if(findIter == mCachedCameras.end())

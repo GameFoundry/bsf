@@ -23,11 +23,11 @@ namespace CamelotEngine
 			CM_DELETE(mSkin, GUISkin, GUIAlloc);
 	}
 
-	void TestTextSprite::setText(const CameraPtr& camera, const String& text, HFont font, UINT32 fontSize)
+	void TestTextSprite::setText(const HCamera& camera, const String& text, HFont font, UINT32 fontSize)
 	{
 		mSkin = CM_NEW(GUISkin, GUIAlloc) GUISkin();
 
-		OverlayManager::instance().attachOverlay(camera, this);		
+		OverlayManager::instance().attachOverlay(camera.getInternalPtr(), this);		
 
 		GUIElementStyle labelStyle;
 		labelStyle.font = font;

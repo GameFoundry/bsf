@@ -33,7 +33,7 @@ namespace CamelotEngine
 	{
 		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
 
-		const vector<CameraPtr>::type& allCameras = gSceneManager().getAllCameras();
+		const vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
 		for(auto iter = allCameras.begin(); iter != allCameras.end(); ++iter)
 		{
 			render(*iter);
@@ -50,9 +50,9 @@ namespace CamelotEngine
 		}
 	}
 
-	void ForwardRenderer::render(const CameraPtr camera) 
+	void ForwardRenderer::render(const HCamera& camera) 
 	{
-		vector<RenderablePtr>::type allRenderables = gSceneManager().getVisibleRenderables(camera);
+		vector<HRenderable>::type allRenderables = gSceneManager().getVisibleRenderables(camera);
 
 		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
 		renderContext->setViewport(camera->getViewport());
@@ -96,7 +96,7 @@ namespace CamelotEngine
 		}
 
 		// Render overlays for this camera
-		OverlayManager::instance().render(camera, renderContext);
+		OverlayManager::instance().render(camera.getInternalPtr(), renderContext);
 
 		renderContext->endFrame();
 

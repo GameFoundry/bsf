@@ -24,9 +24,9 @@ namespace CamelotEngine
 		/**
 		 * @brief	Returns all cameras in the scene.
 		 */
-		const vector<CameraPtr>::type& getAllCameras() const { return mCachedCameras; }
+		const vector<HCamera>::type& getAllCameras() const { return mCachedCameras; }
 
-		vector<RenderablePtr>::type getVisibleRenderables(const CameraPtr camera) const;
+		vector<HRenderable>::type getVisibleRenderables(const HCamera& camera) const;
 
 	private:
 		friend class GameObject;
@@ -42,10 +42,10 @@ namespace CamelotEngine
 		 */
 		void registerNewGO(const HGameObject& node);
 
-		void notifyComponentAdded(ComponentPtr component);
-		void notifyComponentRemoved(ComponentPtr component);
+		void notifyComponentAdded(const HComponent& component);
+		void notifyComponentRemoved(const HComponent& component);
 
-		vector<CameraPtr>::type mCachedCameras;
+		vector<HCamera>::type mCachedCameras;
 	};
 
 	CM_EXPORT SceneManager& gSceneManager();

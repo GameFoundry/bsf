@@ -17,6 +17,6 @@ namespace CamelotEngine
 		/**
 		 * @brief	 Renders the scene from the perspective of a single camera
 		 */
-		virtual void render(const CameraPtr camera) = 0;
+		virtual void render(const HCamera& camera) = 0;
 	};
 }

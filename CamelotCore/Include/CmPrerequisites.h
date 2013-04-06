@@ -344,6 +344,8 @@ namespace CamelotEngine
 	// Game object handles
 	typedef GameObjectHandle<GameObject> HGameObject;
 	typedef GameObjectHandle<Component> HComponent;
+	typedef GameObjectHandle<Camera> HCamera;
+	typedef GameObjectHandle<Renderable> HRenderable;
 }
 
 #endif

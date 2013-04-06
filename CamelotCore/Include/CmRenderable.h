@@ -21,7 +21,7 @@ namespace CamelotEngine
 		/* 							COMPONENT OVERRIDES                    		*/
 		/************************************************************************/
 
-	private:
+	protected:
 		friend class GameObject;
 
 		/** Standard constructor.

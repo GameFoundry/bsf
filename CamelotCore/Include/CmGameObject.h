@@ -210,12 +210,12 @@ namespace CamelotEngine
 		/************************************************************************/
 	public:
 		template <typename T>
-		std::shared_ptr<T> addComponent()
+		GameObjectHandle<T> addComponent()
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
-			std::shared_ptr<T> newComponent(new T(mThisHandle));
+			GameObjectHandle<T> newComponent = GameObjectHandle<T>::_create(new T(mThisHandle));
 			mComponents.push_back(newComponent);
 
 			gSceneManager().notifyComponentAdded(newComponent);
@@ -235,12 +235,12 @@ namespace CamelotEngine
 		 * @return	Component if found, nullptr otherwise.
 		 */
 		template <typename T>
-		std::shared_ptr<T> getComponent()
+		GameObjectHandle<T> getComponent()
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
-			return std::static_pointer_cast<T>(getComponent(T::getRTTIStatic()->getRTTIId()));
+			return static_object_cast<T>(getComponent(T::getRTTIStatic()->getRTTIId()));
 		}
 
 		/**
@@ -254,21 +254,21 @@ namespace CamelotEngine
 		 *
 		 * @return	Component if found, nullptr otherwise.
 		 */
-		ComponentPtr getComponent(UINT32 typeId) const;
+		HComponent getComponent(UINT32 typeId) const;
 
 		/**
 		 * @brief	Removes the component from this GameObject, and deallocates it.
 		 *
 		 * @param [in]	component	The component to destroy.
 		 */
-		void destroyComponent(ComponentPtr component);
+		void destroyComponent(const HComponent& component);
 
 		/**
 		 * @brief	Returns all components on this GameObject.
 		 */
-		vector<ComponentPtr>::type& getComponents() { return mComponents; }
+		vector<HComponent>::type& getComponents() { return mComponents; }
 
 	private:
-		vector<ComponentPtr>::type mComponents;
+		vector<HComponent>::type mComponents;
 	};
 }

@@ -22,7 +22,7 @@ namespace CamelotEngine
 		Degree mPitch;
 		Degree mYaw;
 
-		CameraPtr mCamera;
+		HCamera mCamera;
 
 		void keyDown(CamelotEngine::KeyCode keyCode);
 		void keyUp(CamelotEngine::KeyCode keyCode);
@@ -39,7 +39,7 @@ namespace CamelotEngine
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
 		/************************************************************************/
-	private:
+	protected:
 		friend class GameObject;
 
 		/** Standard constructor.

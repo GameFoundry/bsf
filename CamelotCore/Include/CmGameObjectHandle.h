@@ -33,11 +33,15 @@ namespace CamelotEngine
 		 */
 		bool isDestroyed() const { return mData->mPtr == nullptr; }
 
+		/**
+		 * @brief	Internal method only. Not meant to be called directly.
+		 */
+		std::shared_ptr<GameObjectHandleData> getHandleData() const { return mData; }
 	protected:
 		GameObjectHandleBase();
 
 		inline void throwIfDestroyed() const;
-		std::shared_ptr<GameObjectHandleData> getHandleData() const { return mData; }
+		
 
 		std::shared_ptr<GameObjectHandleData> mData;
 	};
@@ -54,9 +58,17 @@ namespace CamelotEngine
 
 		template <typename T1>
 		GameObjectHandle(const GameObjectHandle<T1>& ptr)
-			:GameObjectHandleBase(ptr.getHandleData())
+			:GameObjectHandleBase()
 		{ 	
 			mData = ptr.getHandleData();
+		}
+
+		/**
+		 * @brief	Creates a new handle. Internal use only. Don't call this manually.
+		 */
+		static GameObjectHandle<T> _create(T* ptr)
+		{
+			return GameObjectHandle<T>(ptr);
 		}
 
 		T* get() const 
@@ -104,7 +116,7 @@ namespace CamelotEngine
 	};
 
 	template<class _Ty1, class _Ty2>
-		GameObjectHandle<_Ty1> static_resource_cast(const GameObjectHandle<_Ty2>& other)
+		GameObjectHandle<_Ty1> static_object_cast(const GameObjectHandle<_Ty2>& other)
 	{	
 		return GameObjectHandle<_Ty1>(other);
 	}
