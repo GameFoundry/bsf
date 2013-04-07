@@ -21,6 +21,27 @@ Figure out how to store texture references in a font?
 
 Move Debug to CamelotCore and add SetFillMode
 
+
+
+
+
+Rename GameObject -> SceneObject
+Rename GameObjectREAL -> GameObject
+
+IReflectable doesn't have a virtual destructor. When I add it the program crashes
+
+GameObjectREAL is IReflectable but doesn't have RTTI
+ - COmponentRTTI doesn't account its new parent is GameObjectREAL so change that
+
+Make GameObjectHandle hold a normal pointer instead of a shared one
+ - By its definition its guaranteed to have only one reference so there's no need for shared ptr
+
+getVisibleRederables iterates over all gameobjects and calls getType, which will return empty handle if none is found, which is expensive
+
+
+
+
+
 Add TextUtil class
  - Ability to calculate a size of a line (will need this if I want to add "..." to text that doesn't fit)
  - Maybe even move line and word classes to it
@@ -234,6 +255,10 @@ Low priority TODO:
     - I might need to add an exception thrown if user tries to use them
   - Structs aren't supported in GLSL for introspection reasons
  - Go through pixel formats and removed unused ones: L8, L16, A4L4, and many others
+ - Having shared_ptrs used in RenderSystem and CommandQueue can cause potential performance problems. Dozends of thousands of shared
+    pointers may be getting queued in command queue per frame, in a slightly more complex scene, which will most certainly cause performance problems
+    due to thread safety and atomics used by shared_ptr. However I still need some guarantee that objects queued in RenderSystem won't be destroyed
+	by the sim. thread.
 
 Optional TODO:
  - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic

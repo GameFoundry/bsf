@@ -16,10 +16,10 @@ namespace CamelotEngine
 	class CM_EXPORT OverlayManager : public Module<OverlayManager>
 	{
 	public:
-		void render(const CameraPtr& camera, DeferredRenderContextPtr& renderContext) const;
+		void render(const Camera* camera, DeferredRenderContextPtr& renderContext) const;
 
-		void attachOverlay(const CameraPtr& camera, const Overlay* overlay);
-		void detachOverlay(const CameraPtr& camera, const Overlay* overlay);
+		void attachOverlay(const Camera* camera, const Overlay* overlay);
+		void detachOverlay(const Camera* camera, const Overlay* overlay);
 		void detachOverlayFromAll(const Overlay* overlay);
 	private:
 		unordered_map<const Camera*, unordered_set<const Overlay*>::type>::type mOverlaysPerCamera;

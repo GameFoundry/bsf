@@ -4,20 +4,14 @@
 namespace CamelotEngine
 {
 	Component::Component(const HGameObject& parent)
-		:mParent(parent), mIsDestroyed(false)
+		:mParent(parent)
 	{
 
 	}
 
 	Component::~Component()
 	{
-		if(!mIsDestroyed)
-			destroy();
-	}
 
-	void Component::destroy()
-	{
-		mIsDestroyed = true;
 	}
 
 	RTTITypeBase* Component::getRTTIStatic()

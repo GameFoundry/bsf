@@ -3,6 +3,7 @@
 #include "CmSceneManager.h"
 #include "CmException.h"
 #include "CmDebug.h"
+#include "CmGameObjectRTTI.h"
 
 namespace CamelotEngine
 {
@@ -61,11 +62,13 @@ namespace CamelotEngine
 		mChildren.clear();
 
 		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
-			(*iter)->destroy();
+		{
+			(*iter).destroy();
+		}
 
 		mComponents.clear();
 
-		mThisHandle.releaseHeldObject();
+		mThisHandle.destroy();
 	}
 
 	/************************************************************************/
@@ -362,12 +365,22 @@ namespace CamelotEngine
 
 		if(iter != mComponents.end())
 		{
-			(*iter)->destroy();
+			(*iter).destroy();
 			mComponents.erase(iter);
 
 			gSceneManager().notifyComponentRemoved((*iter));
 		}
 		else
 			LOGDBG("Trying to remove a component that doesn't exist on this GameObject.");
+	}
+
+	RTTITypeBase* GameObject::getRTTIStatic()
+	{
+		return GameObjectRTTI::instance();
+	}
+
+	RTTITypeBase* GameObject::getRTTI() const
+	{
+		return GameObject::getRTTIStatic();
 	}
 }

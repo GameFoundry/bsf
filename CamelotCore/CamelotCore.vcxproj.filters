@@ -471,6 +471,12 @@
     <ClInclude Include="Include\CmGameObjectHandle.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGameObjectREAL.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGameObjectRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">
@@ -729,6 +735,9 @@
       <Filter>Source Files\2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGameObjectHandle.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGameObjectREAL.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>

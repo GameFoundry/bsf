@@ -6,12 +6,13 @@
 #include "CmQuaternion.h"
 #include "CmRTTIType.h"
 #include "CmSceneManager.h"
+#include "CmGameObjectREAL.h"
 
 #include "boost/static_assert.hpp"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT GameObject
+	class CM_EXPORT GameObject : public GameObjectREAL
 	{
 		friend class SceneManager;
 	public:
@@ -270,5 +271,13 @@ namespace CamelotEngine
 
 	private:
 		vector<HComponent>::type mComponents;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class GameObjectRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

@@ -83,14 +83,14 @@ namespace CamelotEngine
 		MaterialManager::startUp(CM_NEW(MaterialManager, GenAlloc) MaterialManager());
 		FontManager::startUp(CM_NEW(FontManager, GenAlloc) FontManager());
 
+		OverlayManager::startUp(CM_NEW(OverlayManager, GenAlloc) OverlayManager());
+		GUIMaterialManager::startUp(CM_NEW(GUIMaterialManager, GenAlloc) GUIMaterialManager());
+		GUIManager::startUp(CM_NEW(GUIManager, GenAlloc) GUIManager());
+
 		Importer::startUp(CM_NEW(Importer, GenAlloc) Importer());
 		loadPlugin("CamelotFreeImgImporter"); // TODO - Load this automatically somehow
 		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow
 		loadPlugin("CamelotFontImporter"); // TODO - Load this automatically somehow
-
-		OverlayManager::startUp(CM_NEW(OverlayManager, GenAlloc) OverlayManager());
-		GUIMaterialManager::startUp(CM_NEW(GUIMaterialManager, GenAlloc) GUIMaterialManager());
-		GUIManager::startUp(CM_NEW(GUIManager, GenAlloc) GUIManager());
 
 		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
 	}
@@ -156,24 +156,24 @@ namespace CamelotEngine
 	{
 		mPrimaryRenderWindow = nullptr;
 
-		GUIManager::shutDown();
-		GUIMaterialManager::shutDown();
-		OverlayManager::shutDown();
-
 		Importer::shutDown();
 		FontManager::shutDown();
 		MaterialManager::shutDown();
 		MeshManager::shutDown();
 
 		SceneManager::shutDown();
+		GUIManager::shutDown();
+		GUIMaterialManager::shutDown();
+		OverlayManager::shutDown();
+
 		RendererManager::shutDown();
 		RenderSystem::shutDown();
 
 		HighLevelGpuProgramManager::shutDown();
 		Resources::shutDown();
 		CoreGpuObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
-		DynLibManager::shutDown();
 		Input::shutDown();
+		DynLibManager::shutDown();
 		Time::shutDown();
 	}
 

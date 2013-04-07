@@ -11,6 +11,8 @@ namespace CamelotEngine
 	class CM_UTILITY_EXPORT IReflectable
 	{
 	public:
+		virtual ~IReflectable() {}
+
 		/**
 		 * @brief	Returns an interface you can use to access class Run Time Type Information.
 		 *

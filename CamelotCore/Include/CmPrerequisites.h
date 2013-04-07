@@ -151,6 +151,7 @@ namespace CamelotEngine {
 	struct FontData;
 	class TextSprite;
 	class SpriteTexture;
+	class GameObjectREAL;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -290,7 +291,8 @@ namespace CamelotEngine
 		TID_STDMAP = 1055,
 		TID_FontImportOptions = 1056,
 		TID_FontData = 1057,
-		TID_IndexElementData = 1058
+		TID_IndexElementData = 1058,
+		TID_GameObject = 1059
 	};
 
 	/**

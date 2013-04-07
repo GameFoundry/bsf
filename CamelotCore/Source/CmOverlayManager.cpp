@@ -4,9 +4,9 @@
 
 namespace CamelotEngine
 {
-	void OverlayManager::render(const CameraPtr& camera, DeferredRenderContextPtr& renderContext) const
+	void OverlayManager::render(const Camera* camera, DeferredRenderContextPtr& renderContext) const
 	{
-		auto overlays = mOverlaysPerCamera.find(camera.get());
+		auto overlays = mOverlaysPerCamera.find(camera);
 
 		if(overlays == mOverlaysPerCamera.end())
 			return;
@@ -17,14 +17,14 @@ namespace CamelotEngine
 		}
 	}
 
-	void OverlayManager::attachOverlay(const CameraPtr& camera, const Overlay* overlay)
+	void OverlayManager::attachOverlay(const Camera* camera, const Overlay* overlay)
 	{
-		mOverlaysPerCamera[camera.get()].insert(overlay);
+		mOverlaysPerCamera[camera].insert(overlay);
 	}
 
-	void OverlayManager::detachOverlay(const CameraPtr& camera, const Overlay* overlay)
+	void OverlayManager::detachOverlay(const Camera* camera, const Overlay* overlay)
 	{
-		mOverlaysPerCamera[camera.get()].erase(overlay);
+		mOverlaysPerCamera[camera].erase(overlay);
 	}
 
 	void OverlayManager::detachOverlayFromAll(const Overlay* overlay)

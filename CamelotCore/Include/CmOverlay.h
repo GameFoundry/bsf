@@ -16,7 +16,7 @@ namespace CamelotEngine
 	public:
 		virtual ~Overlay();
 
-		virtual void render(const CameraPtr& camera, DeferredRenderContextPtr& renderContext) const = 0;
+		virtual void render(const Camera* camera, DeferredRenderContextPtr& renderContext) const = 0;
 
 	protected:
 		friend class GameObject;

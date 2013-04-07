@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CmGameObjectREAL.h"
+
 namespace CamelotEngine
 {
 	struct CM_EXPORT GameObjectHandleData
@@ -7,11 +9,11 @@ namespace CamelotEngine
 		GameObjectHandleData()
 		{ }
 
-		GameObjectHandleData(void* ptr)
+		GameObjectHandleData(GameObjectREAL* ptr)
 			:mPtr(ptr)
 		{ }
 
-		std::shared_ptr<void> mPtr;
+		std::shared_ptr<GameObjectREAL> mPtr;
 	};
 
 	/**
@@ -63,14 +65,6 @@ namespace CamelotEngine
 			mData = ptr.getHandleData();
 		}
 
-		/**
-		 * @brief	Creates a new handle. Internal use only. Don't call this manually.
-		 */
-		static GameObjectHandle<T> _create(T* ptr)
-		{
-			return GameObjectHandle<T>(ptr);
-		}
-
 		T* get() const 
 		{ 
 			throwIfDestroyed();
@@ -79,13 +73,6 @@ namespace CamelotEngine
 		}
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
-
-		std::shared_ptr<T> getInternalPtr() const
-		{ 
-			throwIfDestroyed();
-
-			return std::static_pointer_cast<T>(mData->mPtr); 
-		}
 
 		template<class _Ty>
 		struct CM_Bool_struct
@@ -101,15 +88,20 @@ namespace CamelotEngine
 		}
 
 	private:
-		friend T;
+		friend GameObject;
 
 		explicit GameObjectHandle(T* ptr)
 			:GameObjectHandleBase()
 		{
-			mData = std::shared_ptr<GameObjectHandleData>(new GameObjectHandleData(ptr));
+			mData = std::shared_ptr<GameObjectHandleData>(new GameObjectHandleData((GameObjectREAL*)ptr));
 		}
 
-		void releaseHeldObject()
+		static GameObjectHandle<T> _create(T* ptr)
+		{
+			return GameObjectHandle<T>(ptr);
+		}
+
+		void destroy()
 		{
 			mData->mPtr = nullptr;
 		}

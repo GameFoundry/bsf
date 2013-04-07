@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmIReflectable.h"
+#include "CmGameObjectREAL.h"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT Component : public IReflectable
+	class CM_EXPORT Component : public GameObjectREAL
 	{
 	public:
 		/**
@@ -29,15 +29,7 @@ namespace CamelotEngine
 
 		Component(const HGameObject& parent);
 
-		/**
-		 * @brief	Destroys the Component and makes it unusable, without actually deleting it.
-		 * 			
-		 *			This is an internal method that should only get called by GameObject.
-		 */
-		void destroy();
-
 		HGameObject mParent;
-		bool mIsDestroyed;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

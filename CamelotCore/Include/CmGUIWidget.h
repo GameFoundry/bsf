@@ -10,7 +10,7 @@ namespace CamelotEngine
 	public:
 		virtual ~GUIWidget();
 
-		virtual void render(const CameraPtr& camera, DeferredRenderContextPtr& renderContext) const;
+		virtual void render(const Camera* camera, DeferredRenderContextPtr& renderContext) const;
 	protected:
 		friend class GameObject;
 

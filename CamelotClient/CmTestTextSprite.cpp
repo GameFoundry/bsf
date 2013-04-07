@@ -27,7 +27,7 @@ namespace CamelotEngine
 	{
 		mSkin = CM_NEW(GUISkin, GUIAlloc) GUISkin();
 
-		OverlayManager::instance().attachOverlay(camera.getInternalPtr(), this);		
+		OverlayManager::instance().attachOverlay(camera.get(), this);		
 
 		GUIElementStyle labelStyle;
 		labelStyle.font = font;

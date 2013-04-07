@@ -177,6 +177,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmGameObjectHandle.h" />
+    <ClInclude Include="Include\CmGameObjectREAL.h" />
+    <ClInclude Include="Include\CmGameObjectRTTI.h" />
     <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmOverlay.h" />
     <ClInclude Include="Include\CmApplication.h" />
@@ -305,6 +307,7 @@
     <ClCompile Include="Include\CmMaterialManager.cpp" />
     <ClCompile Include="Source\CamelotRenderer.cpp" />
     <ClCompile Include="Source\CmGameObjectHandle.cpp" />
+    <ClCompile Include="Source\CmGameObjectREAL.cpp" />
     <ClCompile Include="Source\CmOverlay.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
     <ClCompile Include="Source\CmBlendState.cpp" />

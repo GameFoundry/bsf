@@ -153,7 +153,7 @@ namespace CamelotEngine
 		}
 	}
 
-	void GUIWidget::render(const CameraPtr& camera, DeferredRenderContextPtr& renderContext) const
+	void GUIWidget::render(const Camera* camera, DeferredRenderContextPtr& renderContext) const
 	{
 		// Mesh is re-created every frame. There might be a better approach that only recreates it upon change,
 		// but for now it seems like too much hassle for something like GUI that is pretty dynamic anyway.

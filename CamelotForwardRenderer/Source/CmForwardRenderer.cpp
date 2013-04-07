@@ -96,7 +96,7 @@ namespace CamelotEngine
 		}
 
 		// Render overlays for this camera
-		OverlayManager::instance().render(camera.getInternalPtr(), renderContext);
+		OverlayManager::instance().render(camera.get(), renderContext);
 
 		renderContext->endFrame();
 
