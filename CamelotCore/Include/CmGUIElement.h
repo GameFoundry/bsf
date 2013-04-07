@@ -9,7 +9,7 @@ namespace CamelotEngine
 	{
 	public:
 		GUIElement(GUIWidget* parent, const GUISkin* skin);
-		~GUIElement();
+		virtual ~GUIElement();
 
 		/**
 		 * @brief	Returns the number of separate render elements in the GUI element.

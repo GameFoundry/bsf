@@ -64,7 +64,7 @@ int CALLBACK WinMain(
 	GameObjectHandle<DebugCamera> debugCamera = cameraGO->addComponent<DebugCamera>();
 
 	HGameObject testModelGO = GameObject::create("TestMesh");
-	//HRenderable testRenderable = testModelGO->addComponent<Renderable>();
+	HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
 	HGameObject testTextGO = GameObject::create("TestText");
 	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
@@ -85,7 +85,7 @@ int CALLBACK WinMain(
 		font = Importer::instance().import("C:\\arial.ttf", fontImportOptions);
 	}
 
-	//textSprite->setText(camera, "TESTfAV", font, 12);
+	textSprite->setText(camera, "TESTfAV", font, 12);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
@@ -269,8 +269,8 @@ int CALLBACK WinMain(
 
 	//_ASSERT(_CrtCheckMemory());
 
-	//testRenderable->setMesh(dbgMeshRef);
-	//testRenderable->setMaterial(testMaterial);
+	testRenderable->setMesh(dbgMeshRef);
+	testRenderable->setMaterial(testMaterial);
 
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );
