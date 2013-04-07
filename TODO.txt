@@ -21,15 +21,6 @@ Figure out how to store texture references in a font?
 
 Move Debug to CamelotCore and add SetFillMode
 
-
-
-
-
-Rename GameObject -> SceneObject
-Rename GameObjectREAL -> GameObject
-
-IReflectable doesn't have a virtual destructor. When I add it the program crashes
-
 GameObjectREAL is IReflectable but doesn't have RTTI
  - COmponentRTTI doesn't account its new parent is GameObjectREAL so change that
 
@@ -48,20 +39,13 @@ Add TextUtil class
 
  When rendering GUIWidget its individual elements need to be sorted based on Z depth so the transparency works as expected
 
- Port gameObjects and components so that they are no shared pointers. They are meant to be destroyed on shutdown and I can't have calling code keep references to them.
- - But how do I easily do GameObject.Destroy or Component.Destroy, while notifying any code referencing them?
-
 Immediate TODO:
- BuiltinMaterialManager creates a shader before shader factory is initialized
-
 Implement image shader for D3D11BuiltinMaterialManager
 Improve text shader so it doesn't have resolution values hardcoded in
 Implement D3D9 and GL BuiltInMaterialManager
 
 FInish porting memory allocation:
 Check allocationChanges.txt on C
-How to I deallocate things used _deleteDelayed?
- - Sometimes I will want CoreObjects to use a special allocator
 
 Similar issue with passing arrays to classes like MeshData. In some cases SmallScratchBuffer is useful, while in others a LargeScratchBuffer is more appropriate?
  - Although LargeScratchBuffer is probably more appropriate in general situations, but still the user needs to know that, which I think is a bit hidden. Maybe change the behaviour so that MeshData internally allocates memory and just returns a pointer?

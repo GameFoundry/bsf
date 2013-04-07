@@ -180,9 +180,6 @@
     <ClInclude Include="Include\CmCgProgramFactory.h">
       <Filter>Header Files\Cg</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGameObject.h">
-      <Filter>Header Files\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmComponent.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
@@ -471,11 +468,14 @@
     <ClInclude Include="Include\CmGameObjectHandle.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGameObjectREAL.h">
+    <ClInclude Include="Include\CmSceneObject.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGameObjectRTTI.h">
+    <ClInclude Include="Include\CmSceneObjectRTTI.h">
       <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGameObject.h">
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -547,9 +547,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmCgProgramFactory.cpp">
       <Filter>Source Files\Cg</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGameObject.cpp">
-      <Filter>Source Files\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmComponent.cpp">
       <Filter>Source Files\Scene</Filter>
@@ -737,7 +734,10 @@
     <ClCompile Include="Source\CmGameObjectHandle.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmGameObjectREAL.cpp">
+    <ClCompile Include="Source\CmSceneObject.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGameObject.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>

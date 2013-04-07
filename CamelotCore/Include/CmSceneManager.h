@@ -17,7 +17,7 @@ namespace CamelotEngine
 		SceneManager();
 		virtual ~SceneManager();
 
-		HGameObject getRootNode() const { return mRootNode; }
+		HSceneObject getRootNode() const { return mRootNode; }
 
 		virtual void update();
 
@@ -29,18 +29,18 @@ namespace CamelotEngine
 		vector<HRenderable>::type getVisibleRenderables(const HCamera& camera) const;
 
 	private:
-		friend class GameObject;
-		HGameObject mRootNode;
+		friend class SceneObject;
+		HSceneObject mRootNode;
 
 		/**
 		 * @brief	Register a new node in the scene manager, on the top-most level of the hierarchy.
 		 * 			
 		 * @note	After you add a node in the scene manager, it takes ownership of its memory and is responsible for releasing it.
-		 * 			Do NOT add nodes that have already been added (i.e. if you just want to change their parent). Normally this method will only be called by GameObject.
+		 * 			Do NOT add nodes that have already been added (i.e. if you just want to change their parent). Normally this method will only be called by SceneObject.
 		 *
 		 * @param [in]	node	Node you wish to add. It's your responsibility not to add duplicate or null nodes. This method won't check.
 		 */
-		void registerNewGO(const HGameObject& node);
+		void registerNewGO(const HSceneObject& node);
 
 		void notifyComponentAdded(const HComponent& component);
 		void notifyComponentRemoved(const HComponent& component);

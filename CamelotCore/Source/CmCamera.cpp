@@ -38,13 +38,13 @@ THE SOFTWARE.
 #include "CmIndexBuffer.h"
 #include "CmException.h"
 #include "CmRenderSystem.h"
-#include "CmGameObject.h"
+#include "CmSceneObject.h"
 
 namespace CamelotEngine {
 	const float Camera::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
     //-----------------------------------------------------------------------
-	Camera::Camera(const HGameObject& parent)
+	Camera::Camera(const HSceneObject& parent)
         : Component(parent),
 		mProjType(PT_PERSPECTIVE), 
 		mFOVy(Radian(Math::PI/4.0f)), 
@@ -545,8 +545,8 @@ namespace CamelotEngine {
 		if (!mCustomViewMatrix)
 		{
 			Matrix3 rot;
-			const Quaternion& orientation = gameObject()->getWorldRotation();
-			const Vector3& position = gameObject()->getWorldPosition();
+			const Quaternion& orientation = sceneObject()->getWorldRotation();
+			const Vector3& position = sceneObject()->getWorldPosition();
 
 			mViewMatrix = Math::makeViewMatrix(position, orientation, 0);
 		}

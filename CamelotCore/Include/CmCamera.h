@@ -523,11 +523,11 @@ namespace CamelotEngine {
 		/* 						COMPONENT OVERRIDES                      		*/
 		/************************************************************************/
 	protected:
-		friend class GameObject;
+		friend class SceneObject;
 
 		/** Standard constructor.
         */
-		Camera(const HGameObject& parent);
+		Camera(const HSceneObject& parent);
 
 	public:
 		virtual void update() {}

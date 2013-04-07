@@ -12,9 +12,9 @@ namespace CamelotEngine
 
 		virtual void render(const Camera* camera, DeferredRenderContextPtr& renderContext) const;
 	protected:
-		friend class GameObject;
+		friend class SceneObject;
 
-		GUIWidget(const HGameObject& parent);
+		GUIWidget(const HSceneObject& parent);
 
 		GUILabel* addLabel(const String& text);
 

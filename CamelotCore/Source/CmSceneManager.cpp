@@ -1,5 +1,5 @@
 #include "CmSceneManager.h"
-#include "CmGameObject.h"
+#include "CmSceneObject.h"
 #include "CmComponent.h"
 #include "CmCamera.h"
 #include "CmRenderable.h"
@@ -8,7 +8,7 @@ namespace CamelotEngine
 {
 	SceneManager::SceneManager()
 	{
-		mRootNode = GameObject::createInternal("SceneRoot");
+		mRootNode = SceneObject::createInternal("SceneRoot");
 	}
 
 	SceneManager::~SceneManager()
@@ -19,12 +19,12 @@ namespace CamelotEngine
 
 	void SceneManager::update()
 	{
-		stack<HGameObject>::type todo;
+		stack<HSceneObject>::type todo;
 		todo.push(mRootNode);
 
 		while(!todo.empty())
 		{
-			HGameObject currentGO = todo.top();
+			HSceneObject currentGO = todo.top();
 			todo.pop();
 			                  
 			vector<HComponent>::type components = currentGO->getComponents();
@@ -45,12 +45,12 @@ namespace CamelotEngine
 
 		vector<HRenderable>::type renderables;
 
-		stack<HGameObject>::type todo;
+		stack<HSceneObject>::type todo;
 		todo.push(mRootNode);
 
 		while(!todo.empty())
 		{
-			HGameObject currentGO = todo.top();
+			HSceneObject currentGO = todo.top();
 			todo.pop();
 
 			HRenderable curRenderable = currentGO->getComponent<Renderable>();
@@ -64,7 +64,7 @@ namespace CamelotEngine
 		return renderables;
 	}
 
-	void SceneManager::registerNewGO(const HGameObject& node) 
+	void SceneManager::registerNewGO(const HSceneObject& node) 
 	{ 
 		if(mRootNode) // If root node is null, then this new node is the root node
 			node->setParent(mRootNode);

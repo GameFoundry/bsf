@@ -4,7 +4,7 @@
 #include "CmApplication.h"
 #include "CmDynLibManager.h"
 
-#include "CmGameObject.h"
+#include "CmSceneObject.h"
 #include "CmCamera.h"
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmRenderSystem.h"
@@ -52,7 +52,7 @@ int CALLBACK WinMain(
 	RenderSystem* renderSystem = RenderSystem::instancePtr();
 	RenderWindowPtr renderWindow = gApplication().getPrimaryRenderWindow();
 
-	HGameObject cameraGO = GameObject::create("MainCamera");
+	HSceneObject cameraGO = SceneObject::create("MainCamera");
 	HCamera camera = cameraGO->addComponent<Camera>();
 
 	camera->init(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
@@ -63,10 +63,10 @@ int CALLBACK WinMain(
 
 	GameObjectHandle<DebugCamera> debugCamera = cameraGO->addComponent<DebugCamera>();
 
-	HGameObject testModelGO = GameObject::create("TestMesh");
+	HSceneObject testModelGO = SceneObject::create("TestMesh");
 	HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
-	HGameObject testTextGO = GameObject::create("TestText");
+	HSceneObject testTextGO = SceneObject::create("TestText");
 	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
 	HFont font;

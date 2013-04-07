@@ -1,22 +1,22 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmGameObjectREAL.h"
+#include "CmGameObject.h"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT Component : public GameObjectREAL
+	class CM_EXPORT Component : public GameObject
 	{
 	public:
 		/**
-		 * @brief	Returns the GameObject this Component is assigned to.
+		 * @brief	Returns the SceneObject this Component is assigned to.
 		 */
-		HGameObject gameObject() const { return mParent; }
+		HSceneObject sceneObject() const { return mParent; }
 
 		/**
-		 * @brief	Same as gameObject(), just a shorter name.
+		 * @brief	Same as sceneObject(), just a shorter name.
 		 */
-		HGameObject GO() const { return gameObject(); }
+		HSceneObject SO() const { return sceneObject(); }
 
 		/**
 		 * @brief	Called once per frame on all components.
@@ -25,11 +25,11 @@ namespace CamelotEngine
 
 		virtual ~Component();
 	protected:
-		friend class GameObject;
+		friend class SceneObject;
 
-		Component(const HGameObject& parent);
+		Component(const HSceneObject& parent);
 
-		HGameObject mParent;
+		HSceneObject mParent;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

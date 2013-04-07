@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CmGameObjectREAL.h"
+#include "CmGameObject.h"
 
 namespace CamelotEngine
 {
@@ -9,11 +9,11 @@ namespace CamelotEngine
 		GameObjectHandleData()
 		{ }
 
-		GameObjectHandleData(GameObjectREAL* ptr)
+		GameObjectHandleData(GameObject* ptr)
 			:mPtr(ptr)
 		{ }
 
-		std::shared_ptr<GameObjectREAL> mPtr;
+		std::shared_ptr<GameObject> mPtr;
 	};
 
 	/**
@@ -88,12 +88,12 @@ namespace CamelotEngine
 		}
 
 	private:
-		friend GameObject;
+		friend SceneObject;
 
 		explicit GameObjectHandle(T* ptr)
 			:GameObjectHandleBase()
 		{
-			mData = std::shared_ptr<GameObjectHandleData>(new GameObjectHandleData((GameObjectREAL*)ptr));
+			mData = std::shared_ptr<GameObjectHandleData>(new GameObjectHandleData((GameObject*)ptr));
 		}
 
 		static GameObjectHandle<T> _create(T* ptr)

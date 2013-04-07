@@ -1,5 +1,5 @@
 #include "CmTestTextSprite.h"
-#include "CmGameObject.h"
+#include "CmSceneObject.h"
 #include "CmRenderable.h"
 #include "CmMesh.h"
 #include "CmVector2.h"
@@ -12,7 +12,7 @@
 
 namespace CamelotEngine
 {
-	TestTextSprite::TestTextSprite(const HGameObject& parent)
+	TestTextSprite::TestTextSprite(const HSceneObject& parent)
 		:GUIWidget(parent), mSkin(nullptr)
 	{
 	}

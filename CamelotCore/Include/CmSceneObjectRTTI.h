@@ -2,29 +2,29 @@
 
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
-#include "CmGameObject.h"
+#include "CmSceneObject.h"
 
 namespace CamelotEngine
 {
-	class CM_EXPORT GameObjectRTTI : public RTTIType<GameObject, IReflectable, GameObjectRTTI>
+	class CM_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, IReflectable, SceneObjectRTTI>
 	{
 	private:
 
 	public:
-		GameObjectRTTI()
+		SceneObjectRTTI()
 		{
 
 		}
 
 		virtual const String& getRTTIName()
 		{
-			static String name = "GameObject";
+			static String name = "SceneObject";
 			return name;
 		}
 
 		virtual UINT32 getRTTIId()
 		{
-			return TID_GameObject;
+			return TID_SceneObject;
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()

@@ -3,7 +3,7 @@
 #include "CmVector3.h"
 #include "CmTime.h"
 #include "CmMath.h"
-#include "CmGameObject.h"
+#include "CmSceneObject.h"
 #include "CmCamera.h"
 #include "CmOSCursor.h"
 
@@ -15,18 +15,18 @@ namespace CamelotEngine
 	const float DebugCamera::FAST_MODE_MULTIPLIER = 2.0f;
 	const float DebugCamera::ROTATION_SPEED = 0.5f; // Degrees/pixel
 
-	DebugCamera::DebugCamera(const HGameObject& parent)
+	DebugCamera::DebugCamera(const HSceneObject& parent)
 		:Component(parent), mGoingForward(false), mGoingBack(false), mGoingLeft(false), mGoingRight(false), 
 		mFastMove(false), mCameraRotating(false), mPitch(0.0f), mYaw(0.0f)
 	{
-		mCamera = gameObject()->getComponent<Camera>();
+		mCamera = sceneObject()->getComponent<Camera>();
 		mCamera->setNearClipDistance(5);
 
 		//gameObject()->setPosition(Vector3(0,0,5050));
 		//gameObject()->lookAt(Vector3(0,0,-300));
 
-		gameObject()->setPosition(Vector3(0,0,0));
-		gameObject()->lookAt(Vector3(0,0,-1));
+		sceneObject()->setPosition(Vector3(0,0,0));
+		sceneObject()->lookAt(Vector3(0,0,-1));
 
 		gInput().onKeyDown.connect(boost::bind(&DebugCamera::keyDown, this, _1));
 		gInput().onKeyUp.connect(boost::bind(&DebugCamera::keyUp, this, _1));
@@ -86,10 +86,10 @@ namespace CamelotEngine
 	void DebugCamera::update()
 	{
 		Vector3 direction = Vector3::ZERO;
-		if (mGoingForward) direction += GO()->getForward();
-		if (mGoingBack) direction -= GO()->getForward();
-		if (mGoingRight) direction += GO()->getRight();
-		if (mGoingLeft) direction -= GO()->getRight();
+		if (mGoingForward) direction += SO()->getForward();
+		if (mGoingBack) direction -= SO()->getForward();
+		if (mGoingRight) direction += SO()->getRight();
+		if (mGoingLeft) direction -= SO()->getRight();
 
 		if (direction.squaredLength() != 0)
 		{
@@ -111,7 +111,7 @@ namespace CamelotEngine
 		if(mCurrentSpeed > tooSmall)
 		{
 			Vector3 velocity = direction * mCurrentSpeed;
-			GO()->move(velocity * gTime().getFrameDelta());
+			SO()->move(velocity * gTime().getFrameDelta());
 		}
 
 		if(mCameraRotating)
@@ -127,7 +127,7 @@ namespace CamelotEngine
 
 			Quaternion camRot = xRot * yRot;
 
-			GO()->setRotation(camRot);
+			SO()->setRotation(camRot);
 		}
 	}
 }

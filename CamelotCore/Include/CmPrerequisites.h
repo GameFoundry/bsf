@@ -151,7 +151,7 @@ namespace CamelotEngine {
 	struct FontData;
 	class TextSprite;
 	class SpriteTexture;
-	class GameObjectREAL;
+	class GameObject;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -162,7 +162,7 @@ namespace CamelotEngine {
 	class Mesh;
 	class Font;
 	// Scene
-	class GameObject;
+	class SceneObject;
 	class Component;
 	class SceneManager;
 	// 2D
@@ -214,7 +214,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<WorkQueue> WorkQueuePtr;
 	typedef std::shared_ptr<PassParameters> PassParametersPtr;
 	typedef std::shared_ptr<Component> ComponentPtr;
-	typedef std::shared_ptr<GameObject> GameObjectPtr;
+	typedef std::shared_ptr<SceneObject> GameObjectPtr;
 	typedef std::shared_ptr<DeferredRenderContext> DeferredRenderContextPtr;
 	typedef std::shared_ptr<SamplerState> SamplerStatePtr;
 	typedef std::shared_ptr<DepthStencilState> DepthStencilStatePtr;
@@ -292,7 +292,7 @@ namespace CamelotEngine
 		TID_FontImportOptions = 1056,
 		TID_FontData = 1057,
 		TID_IndexElementData = 1058,
-		TID_GameObject = 1059
+		TID_SceneObject = 1059
 	};
 
 	/**
@@ -344,7 +344,7 @@ namespace CamelotEngine
 	typedef ResourceHandle<Font> HFont;
 
 	// Game object handles
-	typedef GameObjectHandle<GameObject> HGameObject;
+	typedef GameObjectHandle<SceneObject> HSceneObject;
 	typedef GameObjectHandle<Component> HComponent;
 	typedef GameObjectHandle<Camera> HCamera;
 	typedef GameObjectHandle<Renderable> HRenderable;

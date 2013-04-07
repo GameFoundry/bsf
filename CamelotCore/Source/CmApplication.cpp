@@ -18,7 +18,7 @@
 #include "CmImporter.h"
 #include "CmResources.h"
 #include "CmMesh.h"
-#include "CmGameObject.h"
+#include "CmSceneObject.h"
 #include "CmTime.h"
 #include "CmInput.h"
 #include "CmRendererManager.h"

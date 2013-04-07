@@ -19,8 +19,8 @@ namespace CamelotEngine
 		virtual void render(const Camera* camera, DeferredRenderContextPtr& renderContext) const = 0;
 
 	protected:
-		friend class GameObject;
+		friend class SceneObject;
 
-		Overlay(const HGameObject& parent);
+		Overlay(const HSceneObject& parent);
 	};
 }

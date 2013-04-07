@@ -22,11 +22,11 @@ namespace CamelotEngine
 		/************************************************************************/
 
 	protected:
-		friend class GameObject;
+		friend class SceneObject;
 
 		/** Standard constructor.
         */
-		Renderable(const HGameObject& parent);
+		Renderable(const HSceneObject& parent);
 
 	public:
 		virtual void update() {}

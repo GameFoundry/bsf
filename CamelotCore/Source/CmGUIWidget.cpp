@@ -11,7 +11,7 @@ namespace CamelotEngine
 {
 	GUISkin GUIWidget::DefaultSkin;
 
-	GUIWidget::GUIWidget(const HGameObject& parent)
+	GUIWidget::GUIWidget(const HSceneObject& parent)
 		:Overlay(parent), mSkin(nullptr)
 	{
 		GUIManager::instance().registerWidget(this);

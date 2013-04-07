@@ -6,9 +6,9 @@ namespace CamelotEngine
 	class TestTextSprite : public GUIWidget
 	{
 	protected:
-		friend class GameObject;
+		friend class SceneObject;
 
-		TestTextSprite(const HGameObject& parent);
+		TestTextSprite(const HSceneObject& parent);
 
 		GUISkin* mSkin;
 	public:
