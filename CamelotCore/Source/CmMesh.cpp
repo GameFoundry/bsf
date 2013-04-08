@@ -179,13 +179,14 @@ namespace CamelotEngine
 
 			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
 			{
-				UINT8* indices = new UINT8[mSubMeshes[i].indexCount * idxElemSize];
-				memcpy(indices, &idxData[mSubMeshes[i].indexOffset * idxElemSize], mSubMeshes[i].indexCount * idxElemSize);
-
+				UINT8* indices = nullptr;
+				
 				if(indexType == IndexBuffer::IT_16BIT)
-					meshData->setIndices((UINT16*)indices, mSubMeshes[i].indexCount, i);
+					indices = (UINT8*)meshData->addIndices16(mSubMeshes[i].indexCount, i);
 				else
-					meshData->setIndices((UINT32*)indices, mSubMeshes[i].indexCount, i);
+					indices = (UINT8*)meshData->addIndices32(mSubMeshes[i].indexCount, i);
+				
+				memcpy(indices, &idxData[mSubMeshes[i].indexOffset * idxElemSize], mSubMeshes[i].indexCount * idxElemSize);
 			}
 
 			mIndexData->indexBuffer->unlock();
@@ -212,11 +213,9 @@ namespace CamelotEngine
 					UINT32 offset = element->getOffset();
 					UINT32 elemSize = element->getSize();
 
-					UINT8* dest = new UINT8[elemSize * mVertexData->vertexCount];
+					UINT8* dest = meshData->addVertexElementData(type, semantic, mVertexData->vertexCount, semanticIdx, streamIdx);
 					for(UINT32 k = 0; k < mVertexData->vertexCount; k++)
 						memcpy(&dest[k * elemSize], &vertDataIter[k * vertexSize + offset], elemSize);
-
-					meshData->setVertexElementData(type, semantic, dest, mVertexData->vertexCount, semanticIdx, streamIdx);
 				}
 
 				vertexBuffer->unlock();

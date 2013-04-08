@@ -103,7 +103,9 @@ namespace CamelotEngine
 
 		void setVertexElementData(MeshData* obj, UINT32 arrayIdx, MeshData::VertexElementData& value)
 		{
-			obj->setVertexElementData(value.element.getType(), value.element.getSemantic(), value.data, value.elementCount, value.element.getIndex(), value.element.getSource());
+			obj->clearIfItExists(value.element.getType(), value.element.getSemantic(), value.element.getIndex(), value.element.getSource());
+
+			obj->mVertexData[value.element.getSource()].push_back(value);
 		}
 
 		UINT32 getNumVertexElementData(MeshData* obj)

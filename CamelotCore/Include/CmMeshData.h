@@ -58,168 +58,158 @@ namespace CamelotEngine
 		~MeshData();
 
 		/**
-		 * @brief	Provides a convenient way of setting mesh positions. 
+		 * @brief	Allocates a buffer for holding a specified amount of vertex positions, and returns a
+		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
+		 * 			in this same stream slot, it will be deleted.
 		 *
-		 * @param 	elements			Pointer to pre-allocated array of positions. Any previous position data will be deleted.
 		 * @param	numElements			Number of elements in the elements array.
 		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
 		 * 								internally be represented as a single vertex buffer.
-		 * 								
-		 * @note MeshData will take ownership of the provided memory, and will delete it upon 
-		 * 		 destruction or when you replace it with other data.
 		 */
-		void setPositions(Vector2* elements, UINT32 numElements, UINT32 streamIdx = 0);
+		Vector2* addPositionsVec2(UINT32 numElements, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Provides a convenient way of setting mesh positions. 
+		 * @brief	Allocates a buffer for holding a specified amount of vertex positions, and returns a
+		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
+		 * 			in this same stream slot, it will be deleted.
 		 *
-		 * @param 	elements			Pointer to pre-allocated array of positions. Any previous position data will be deleted.
 		 * @param	numElements			Number of elements in the elements array.
 		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
 		 * 								internally be represented as a single vertex buffer.
-		 * 								
-		 * @note MeshData will take ownership of the provided memory, and will delete it upon 
-		 * 		 destruction or when you replace it with other data.
 		 */
-		void setPositions(Vector3* elements, UINT32 numElements, UINT32 streamIdx = 0);
+		Vector3* addPositionsVec3(UINT32 numElements, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Provides a convenient way of setting mesh positions. 
+		 * @brief	Allocates a buffer for holding a specified amount of vertex positions, and returns a
+		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
+		 * 			in this same stream slot, it will be deleted.
 		 *
-		 * @param 	elements			Pointer to pre-allocated array of positions. Any previous position data will be deleted.
 		 * @param	numElements			Number of elements in the elements array.
 		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
 		 * 								internally be represented as a single vertex buffer.
-		 * 								
-		 * @note MeshData will take ownership of the provided memory, and will delete it upon 
-		 * 		 destruction or when you replace it with other data.
-		 * 		 
 		 */
-		void setPositions(Vector4* elements, UINT32 numElements, UINT32 streamIdx = 0);
+		Vector4* addPositionsVec4(UINT32 numElements, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Provides a convenient way of setting mesh normals.
+		 * @brief	Allocates a buffer for holding a specified amount of vertex normals, and returns a
+		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
+		 * 			in this same stream slot, it will be deleted.
 		 *
-		 * @param 	elements			Pointer to pre-allocated array of normals. Any previous normal data will be deleted.
 		 * @param	numElements			Number of elements in the elements array.
 		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
 		 * 								internally be represented as a single vertex buffer.
-		 * 								
-		 * @note MeshData will take ownership of the provided memory, and will delete it upon 
-		 * 		 destruction or when you replace it with other data.
 		 */
-		void setNormals(Vector3* elements, UINT32 numElements, UINT32 streamIdx = 0);
+		Vector3* addNormals(UINT32 numElements, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Provides a convenient way of setting mesh tangents.
+		 * @brief	Allocates a buffer for holding a specified amount of vertex tangents, and returns a
+		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
+		 * 			in this same stream slot, it will be deleted.
 		 *
-		 * @param 	elements			Pointer to pre-allocated array of tangents. Any previous tangent data will be deleted.
 		 * @param	numElements			Number of elements in the elements array.
 		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
 		 * 								internally be represented as a single vertex buffer.
-		 * 								
-		 * @note MeshData will take ownership of the provided memory, and will delete it upon 
-		 * 		 destruction or when you replace it with other data.
 		 */
-		void setTangents(Vector3* elements, UINT32 numElements, UINT32 streamIdx = 0);
+		Vector3* addTangentsVec3(UINT32 numElements, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Provides a convenient way of setting mesh tangents.
+		 * @brief	Allocates a buffer for holding a specified amount of vertex tangents, and returns a
+		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
+		 * 			in this same stream slot, it will be deleted.
 		 *
-		 * @param 	elements			Pointer to pre-allocated array of tangents. Any previous tangent data will be deleted.
 		 * @param	numElements			Number of elements in the elements array.
 		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
 		 * 								internally be represented as a single vertex buffer.
-		 * 								
-		 * @note MeshData will take ownership of the provided memory, and will delete it upon 
-		 * 		 destruction or when you replace it with other data.
 		 */
-		void setTangents(Vector4* elements, UINT32 numElements, UINT32 streamIdx = 0);
+		Vector4* addTangentsVec4(UINT32 numElements, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Provides a convenient way of setting mesh bitangents. 
+		 * @brief	Allocates a buffer for holding a specified amount of vertex bitangents, and returns a
+		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
+		 * 			in this same stream slot, it will be deleted.
 		 *
-		 * @param 	elements			Pointer to pre-allocated array of bitangents. Any previous bitangent data will be deleted.
 		 * @param	numElements			Number of elements in the elements array.
 		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
 		 * 								internally be represented as a single vertex buffer.
-		 * 								
-		 * @note MeshData will take ownership of the provided memory, and will delete it upon 
-		 * 		 destruction or when you replace it with other data.
 		 */
-		void setBitangents(Vector3* elements, UINT32 numElements, UINT32 streamIdx = 0);
+		Vector3* addBitangents(UINT32 numElements, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Provides a convenient way of setting mesh texture coordinates.
+		 * @brief	Allocates a buffer for holding a specified amount of vertex texture coordinates, 
+		 * 			and returns a pointer the user can use to populate the buffer. If a previous set 
+		 * 			of data exists in this same stream slot, it will be deleted.
 		 *
-		 * @param 	elements			Pointer to pre-allocated array of texture coordinates. Any previous uv0 data will be deleted.
 		 * @param	numElements			Number of elements in the elements array.
 		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
 		 * 								internally be represented as a single vertex buffer.
-		 * 								
-		 * @note MeshData will take ownership of the provided memory, and will delete it upon 
-		 * 		 destruction or when you replace it with other data.
 		 */
-		void setUV0(Vector2* elements, UINT32 numElements, UINT32 streamIdx = 0);
+		Vector2* addUV0(UINT32 numElements, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Provides a convenient way of setting mesh texture coordinates. 
+		 * @brief	Allocates a buffer for holding a specified amount of vertex texture coordinates, 
+		 * 			and returns a pointer the user can use to populate the buffer. If a previous set 
+		 * 			of data exists in this same stream slot, it will be deleted.
 		 *
-		 * @param 	elements			Pointer to pre-allocated array of texture coordinates. Any previous uv1 data will be deleted.
 		 * @param	numElements			Number of elements in the elements array.
 		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
 		 * 								internally be represented as a single vertex buffer.
-		 * 								
-		 * @note MeshData will take ownership of the provided memory, and will delete it upon 
-		 * 		 destruction or when you replace it with other data.
 		 */
-		void setUV1(Vector2* elements, UINT32 numElements, UINT32 streamIdx = 0);
+		Vector2* addUV1(UINT32 numElements, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Provides a convenient way of setting mesh colors. 
+		 * @brief	Allocates a buffer for holding a specified amount of vertex colors, and returns a
+		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
+		 * 			in this same stream slot, it will be deleted.
 		 *
-		 * @param 	elements			Pointer to pre-allocated array of colors. Any previous color data will be deleted.
 		 * @param	numElements			Number of elements in the elements array.
 		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
 		 * 								internally be represented as a single vertex buffer.
-		 * 								
-		 * @note MeshData will take ownership of the provided memory, and will delete it upon 
-		 * 		 destruction or when you replace it with other data.
 		 */
-		void setColors(Color* elements, UINT32 numElements, UINT32 streamIdx = 0);
+		Color* addColorsFloat(UINT32 numElements, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Adds (or replaces) a new set of vertex element data. Anything that was previously
+		 * @brief	Allocates a buffer for holding a specified amount of vertex colors, and returns a
+		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
+		 * 			in this same stream slot, it will be deleted.
+		 *
+		 * @param	numElements			Number of elements in the elements array.
+		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
+		 * 								internally be represented as a single vertex buffer.
+		 */
+		UINT32* addColorsDWORD(UINT32 numElements, UINT32 streamIdx = 0);
+
+		/**
+		* @brief	Allocates a buffer for holding a specified amount of vertex data, and returns a
+		* 			pointer the user can use to populate the buffer. Anything that was previously
 		 * 			present at the same data slot is removed.
 		 *
 		 * @param	type	   	Type of the vertex element. Determines size.
 		 * @param	semantic   	Semantic that allows the engine to connect the data to a shader input slot.
-		 * @param	elements   	Allocated array of elements. Total size should be size of element type * number of elements. Any previous data at the same slot will be deleted.
 		 * @param	numElements	Number of elements in the array.
 		 * @param	semanticIdx	(optional) If there are multiple semantics with the same name, use different index to differentiate between them.
 		 * @param	streamIdx  	(optional) Zero-based index of the stream. Each stream will internally be represented as a single vertex buffer.
 		 */
-		void setVertexElementData(VertexElementType type, VertexElementSemantic semantic, UINT8* elements, UINT32 numElements, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+		UINT8* addVertexElementData(VertexElementType type, VertexElementSemantic semantic, UINT32 numElements, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Sets a list of indices for the specified sub mesh. Any indexes previously
+		* @brief	Allocates buffer for the indices for the specified sub mesh, and returns a
+		* 			pointer the user can use to populate the buffer. Any indexes previously
 		 * 			set for the sub mesh are deleted.
 		 *
-		 * @param 	indices	If non-null, the indices.
 		 * @param	numIndices	   	Number of indices.
 		 * @param	subMesh		   	(optional) the sub mesh.
 		 */
-		void setIndices(UINT32* indices, UINT32 numIndices, UINT32 subMesh = 0);
+		UINT32* addIndices32(UINT32 numIndices, UINT32 subMesh = 0);
 
 		/**
-		 * @brief	Sets a list of indices for the specified sub mesh. Any indexes previously
+		* @brief	Allocates buffer for the indices for the specified sub mesh, and returns a
+		* 			pointer the user can use to populate the buffer. Any indexes previously
 		 * 			set for the sub mesh are deleted.
 		 *
-		 * @param 	indices	If non-null, the indices.
 		 * @param	numIndices	   	Number of indices.
 		 * @param	subMesh		   	(optional) the sub mesh.
 		 */
-		void setIndices(UINT16* indices, UINT32 numIndices, UINT32 subMesh = 0);
+		UINT16* addIndices16(UINT32 numIndices, UINT32 subMesh = 0);
 
 		/**
 		 * @brief	Query if we have vertex data for the specified semantic.

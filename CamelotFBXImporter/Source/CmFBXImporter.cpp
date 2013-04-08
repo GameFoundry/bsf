@@ -219,7 +219,7 @@ namespace CamelotEngine
 					{
 						subMeshes[lIndex].indexOffset = lOffset;
 						lOffset += subMeshes[lIndex].indexCount;
-						indices[lIndex] = new UINT32[subMeshes[lIndex].indexCount];
+						indices[lIndex] = meshData->addIndices32(subMeshes[lIndex].indexCount, lIndex);
 					}
 					FBX_ASSERT(lOffset == lPolygonCount * 3);
 				}
@@ -232,7 +232,7 @@ namespace CamelotEngine
 			subMeshes.resize(1);
 			indices.resize(1);
 			subMeshes[0].indexCount = lPolygonCount * 3;
-			indices[0] = new UINT32[subMeshes[0].indexCount];
+			indices[0] = meshData->addIndices32(subMeshes[0].indexCount);
 		}
 
 		// Find out which vertex attributes exist
@@ -332,23 +332,23 @@ namespace CamelotEngine
 			lPolygonVertexCount = lPolygonCount * 3;
 
 		UINT32 vertexCount = lPolygonVertexCount;
-		Vector3* vertex = new Vector3[vertexCount];
+		Vector3* vertex = meshData->addPositionsVec3(vertexCount);
 
 		Color* color = nullptr;
 		if(hasColor)
-			color = new Color[vertexCount];
+			color = meshData->addColorsFloat(vertexCount);
 
 		Vector3* normal = nullptr;
 		if (hasNormal)
-			normal = new Vector3[vertexCount];
+			normal = meshData->addNormals(vertexCount);
 
 		Vector3* tangent = nullptr;
 		if (hasTangent)
-			tangent = new Vector3[vertexCount];
+			tangent = meshData->addTangentsVec3(vertexCount);
 
 		Vector3* bitangent = nullptr;
 		if (hasBitangent)
-			bitangent = new Vector3[vertexCount];
+			bitangent = meshData->addBitangents(vertexCount);
 
 		FbxStringList lUVNames;
 		mesh->GetUVSetNames(lUVNames);
@@ -356,7 +356,7 @@ namespace CamelotEngine
 		Vector2* uv0 = nullptr;
 		if (hasUV0 && lUVNames.GetCount() > 0)
 		{
-			uv0 = new Vector2[vertexCount];
+			uv0 = meshData->addUV0(vertexCount);
 			lUVName0 = lUVNames[0];
 		}
 
@@ -364,7 +364,7 @@ namespace CamelotEngine
 		Vector2* uv1 = nullptr;
 		if (hasUV1 && lUVNames.GetCount() > 1)
 		{
-			uv1 = new Vector2[vertexCount];
+			uv1 = meshData->addUV1(vertexCount);
 			lUVName1 = lUVNames[1];
 		}
 
@@ -582,32 +582,6 @@ namespace CamelotEngine
 			}
 
 			indexOffsetPerSubmesh[lMaterialIndex] += 3;
-		}
-
-		if(vertex != nullptr)
-			meshData->setPositions(vertex, vertexCount);
-
-		if(color != nullptr)
-			meshData->setColors(color, vertexCount);
-
-		if(normal != nullptr)
-			meshData->setNormals(normal, vertexCount);
-
-		if(tangent != nullptr)
-			meshData->setTangents(tangent, vertexCount);
-
-		if(bitangent != nullptr)
-			meshData->setBitangents(bitangent, vertexCount);
-
-		if(uv0 != nullptr)
-			meshData->setUV0(uv0, vertexCount);
-
-		if(uv1 != nullptr)
-			meshData->setUV1(uv1, vertexCount);
-
-		for(size_t i = 0; i < subMeshes.size(); i++)
-		{
-			meshData->setIndices(indices[i], subMeshes[i].indexCount, (UINT32)i);
 		}
 
 		return meshData;

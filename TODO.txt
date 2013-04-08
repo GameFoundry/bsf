@@ -24,6 +24,8 @@ Move Debug to CamelotCore and add SetFillMode
 GameObjectREAL is IReflectable but doesn't have RTTI
  - COmponentRTTI doesn't account its new parent is GameObjectREAL so change that
 
+GameObjectHandle has  SceneObject friend which doesn't make sense
+
 Make GameObjectHandle hold a normal pointer instead of a shared one
  - By its definition its guaranteed to have only one reference so there's no need for shared ptr
 
@@ -102,6 +104,26 @@ Can be delayed:
  
 
 ---------------------------------------------------
+
+<<<<DirectDraw>>>>
+ - Used for quickly drawing something, usually for debug and editor purposes.
+ - It consists of methods like: DrawLine, DrawPolygon, DrawCube, DrawSphere, etc.
+ - It may also contain other fancier methods like DrawWireframeMesh, DrawWorldGrid etc.
+ - Commands get queued from various Component::update methods and get executed at the end of frame. After they're executed they are cleared and need to be re-queued next frame.
+ - Internally DirectDraw manages dynamic meshes so it can merge multiple DrawLine class into one and such. This can help performance, but generally performance of this class should not be a major concern.
+ - Example uses for it: 
+    - Drawing GUI element bounds when debugging GUI
+    - Drawing a wireframe selection effect when a mesh is selected in the scene
+
+
+<<<<Multithreaded memory allocator>>>>
+ - Singlethreaded implementation from Game Engine Gems 2 book
+ - Small and medium allocators separate for each thread. Memory overhead should be minimal considering how small the pages are. But performance benefits are great.
+ - Large allocator just uses some simple form of page allocation and reuse, using atomics?
+ - Must ensure that memory allocated on one thread can only be freed from that thread
+ - How do I easily tell which allocator to call based on current thread? Require a thread ID with each alloc/dealloc?
+ - Need to think this through more
+ 
 
 <<<<Resource changes and reimport>>>>
 Use case example:

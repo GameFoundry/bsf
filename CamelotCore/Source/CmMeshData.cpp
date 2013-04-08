@@ -32,70 +32,77 @@ namespace CamelotEngine
 		}
 	}
 
-	void MeshData::setPositions(Vector2* elements, UINT32 numElements, UINT32 streamIdx)
+	Vector2* MeshData::addPositionsVec2(UINT32 numElements, UINT32 streamIdx)
 	{
-		setVertexElementData(VET_FLOAT2, VES_POSITION, (UINT8*)(elements), numElements, 0, streamIdx);
+		return reinterpret_cast<Vector2*>(addVertexElementData(VET_FLOAT2, VES_POSITION, numElements, 0, streamIdx));
 	}
 
-	void MeshData::setPositions(Vector3* elements, UINT32 numElements, UINT32 streamIdx)
+	Vector3* MeshData::addPositionsVec3(UINT32 numElements, UINT32 streamIdx)
 	{
-		setVertexElementData(VET_FLOAT3, VES_POSITION, (UINT8*)(elements), numElements, 0, streamIdx);
+		return reinterpret_cast<Vector3*>(addVertexElementData(VET_FLOAT3, VES_POSITION, numElements, 0, streamIdx));
 	}
 
-	void MeshData::setPositions(Vector4* elements, UINT32 numElements, UINT32 streamIdx)
+	Vector4* MeshData::addPositionsVec4(UINT32 numElements, UINT32 streamIdx)
 	{
-		setVertexElementData(VET_FLOAT4, VES_POSITION, (UINT8*)(elements), numElements, 0, streamIdx);
+		return reinterpret_cast<Vector4*>(addVertexElementData(VET_FLOAT4, VES_POSITION, numElements, 0, streamIdx));
 	}
 
-	void MeshData::setNormals(Vector3* elements, UINT32 numElements, UINT32 streamIdx)
+	Vector3* MeshData::addNormals(UINT32 numElements, UINT32 streamIdx)
 	{
-		setVertexElementData(VET_FLOAT3, VES_NORMAL, (UINT8*)(elements), numElements, 0, streamIdx);
+		return reinterpret_cast<Vector3*>(addVertexElementData(VET_FLOAT3, VES_NORMAL, numElements, 0, streamIdx));
 	}
 
-	void MeshData::setTangents(Vector3* elements, UINT32 numElements, UINT32 streamIdx)
+	Vector3* MeshData::addTangentsVec3(UINT32 numElements, UINT32 streamIdx)
 	{
-		setVertexElementData(VET_FLOAT3, VES_TANGENT, (UINT8*)(elements), numElements, 0, streamIdx);
+		return reinterpret_cast<Vector3*>(addVertexElementData(VET_FLOAT3, VES_TANGENT, numElements, 0, streamIdx));
 	}
 
-	void MeshData::setTangents(Vector4* elements, UINT32 numElements, UINT32 streamIdx)
+	Vector4* MeshData::addTangentsVec4(UINT32 numElements, UINT32 streamIdx)
 	{
-		setVertexElementData(VET_FLOAT4, VES_TANGENT, (UINT8*)(elements), numElements, 0, streamIdx);
+		return reinterpret_cast<Vector4*>(addVertexElementData(VET_FLOAT4, VES_TANGENT, numElements, 0, streamIdx));
 	}
 
-	void MeshData::setBitangents(Vector3* elements, UINT32 numElements, UINT32 streamIdx)
+	Vector3* MeshData::addBitangents(UINT32 numElements, UINT32 streamIdx)
 	{
-		setVertexElementData(VET_FLOAT3, VES_BITANGENT, (UINT8*)(elements), numElements, 0, streamIdx);
+		return reinterpret_cast<Vector3*>(addVertexElementData(VET_FLOAT3, VES_BITANGENT, numElements, 0, streamIdx));
 	}
 
-	void MeshData::setUV0(Vector2* elements, UINT32 numElements, UINT32 streamIdx)
+	Vector2* MeshData::addUV0(UINT32 numElements, UINT32 streamIdx)
 	{
-		setVertexElementData(VET_FLOAT2, VES_TEXCOORD, (UINT8*)(elements), numElements, 0, streamIdx);
+		return reinterpret_cast<Vector2*>(addVertexElementData(VET_FLOAT2, VES_TEXCOORD, numElements, 0, streamIdx));
 	}
 
-	void MeshData::setUV1(Vector2* elements, UINT32 numElements, UINT32 streamIdx)
+	Vector2* MeshData::addUV1(UINT32 numElements, UINT32 streamIdx)
 	{
-		setVertexElementData(VET_FLOAT2, VES_TEXCOORD, (UINT8*)(elements), numElements, 1, streamIdx);
+		return reinterpret_cast<Vector2*>(addVertexElementData(VET_FLOAT2, VES_TEXCOORD, numElements, 1, streamIdx));
 	}
 
-	void MeshData::setColors(Color* elements, UINT32 numElements, UINT32 streamIdx)
+	Color* MeshData::addColorsFloat(UINT32 numElements, UINT32 streamIdx)
 	{
-		setVertexElementData(VET_COLOR, VES_COLOR, (UINT8*)(elements), numElements, 0, streamIdx);
+		return reinterpret_cast<Color*>(addVertexElementData(VET_FLOAT4, VES_COLOR, numElements, 0, streamIdx));
 	}
 
-	void MeshData::setVertexElementData(VertexElementType type, VertexElementSemantic semantic, UINT8* elements, UINT32 numElements, UINT32 semanticIdx, UINT32 streamIdx)
+	UINT32* MeshData::addColorsDWORD(UINT32 numElements, UINT32 streamIdx)
+	{
+		return reinterpret_cast<UINT32*>(addVertexElementData(VET_COLOR, VES_COLOR, numElements, 0, streamIdx));
+	}
+
+	UINT8* MeshData::addVertexElementData(VertexElementType type, VertexElementSemantic semantic, UINT32 numElements, UINT32 semanticIdx, UINT32 streamIdx)
 	{
 		clearIfItExists(type, semantic, semanticIdx, streamIdx);
 
-		if(elements != nullptr)
-		{
-			vector<VertexElementData>::type& elemData = mVertexData[streamIdx];
+		UINT32 elemSize = VertexElement::getTypeSize(type);
+		UINT8* elements = new UINT8[elemSize * numElements];
 
-			VertexElementData newElement(type, semantic, semanticIdx, streamIdx, elements, numElements);
-			elemData.push_back(newElement);
-		}
+		vector<VertexElementData>::type& elemData = mVertexData[streamIdx];
+
+		VertexElementData newElement(type, semantic, semanticIdx, streamIdx, elements, numElements);
+		elemData.push_back(newElement);
+
+		return elements;
 	}
 
-	void MeshData::setIndices(UINT32* indices, UINT32 numIndices, UINT32 subMesh)
+	UINT32* MeshData::addIndices32(UINT32 numIndices, UINT32 subMesh)
 	{
 		if(mIndexType != IndexBuffer::IT_32BIT)
 			CM_EXCEPT(InvalidParametersException, "Trying to set 32bit indices but the MeshData was initialized as 16bit.");
@@ -108,15 +115,19 @@ namespace CamelotEngine
 		if(indexData.indices != nullptr)
 			delete[] indexData.indices;
 
+		UINT32* indices = new UINT32[numIndices];
+
 		indexData.indices = (UINT8*)indices;
 		indexData.numIndices = numIndices;
 		indexData.elementSize = getIndexElementSize();
 		indexData.subMesh = subMesh;
 
 		mIndices[subMesh] = indexData;
+
+		return indices;
 	}
 
-	void MeshData::setIndices(UINT16* indices, UINT32 numIndices, UINT32 subMesh)
+	UINT16* MeshData::addIndices16(UINT32 numIndices, UINT32 subMesh)
 	{
 		if(mIndexType != IndexBuffer::IT_16BIT)
 			CM_EXCEPT(InvalidParametersException, "Trying to set 16bit indices but the MeshData was initialized as 32bit.");
@@ -129,12 +140,16 @@ namespace CamelotEngine
 		if(indexData.indices != nullptr)
 			delete[] indexData.indices;
 
+		UINT16* indices = new UINT16[numIndices];
+
 		indexData.indices = (UINT8*)indices;
 		indexData.numIndices = numIndices;
 		indexData.elementSize = getIndexElementSize();
 		indexData.subMesh = subMesh;
 
 		mIndices[subMesh] = indexData;
+
+		return indices;
 	}
 
 	VertexDeclarationPtr MeshData::createDeclaration() const
@@ -223,6 +238,7 @@ namespace CamelotEngine
 		UINT32 subMeshIndex = 0;
 		vector<VertexElement>::type combinedVertexElements;
 		vector<UINT8*>::type vertexElemData;
+		vector<UINT32>::type bufferOffsets;
 		UINT32 totalVertexCount = 0;
 
 		UINT32 vertexIndexOffset = 0;
@@ -231,14 +247,13 @@ namespace CamelotEngine
 			for(UINT32 i = 0; i < meshData->getNumSubmeshes(); i++)
 			{
 				UINT32 numIndices = meshData->getNumIndices(i);
-				UINT32* indices = new UINT32[numIndices];
+				UINT32* indices = combinedMeshData->addIndices32(numIndices, subMeshIndex);
 
 				UINT32* sourceIndices = meshData->getIndices32(i);
 
 				for(UINT32 j = 0; j < numIndices; j++)
 					indices[j] = sourceIndices[j] + vertexIndexOffset;
 
-				combinedMeshData->setIndices(indices, numIndices, subMeshIndex);
 				subMeshIndex++;
 			}
 
@@ -271,18 +286,21 @@ namespace CamelotEngine
 				if(alreadyExistsIdx == -1)
 				{
 					combinedVertexElements.push_back(newElement);
+					
+					UINT8* newBuffer = combinedMeshData->addVertexElementData(newElement.getType(), newElement.getSemantic(), totalVertexCount, newElement.getIndex(), newElement.getSource());
+					
 					UINT32 newBufferSize = totalVertexCount * newElement.getSize();
-					UINT8* newBuffer = new UINT8[newBufferSize];
 					memset(newBuffer, 0, newBufferSize);
 
 					vertexElemData.push_back(newBuffer);
+					bufferOffsets.push_back(0);
 					alreadyExistsIdx = (UINT32)vertexElemData.size() - 1;
 				}
 
 				UINT8* source = meshData->getVertElemData(newElement.getType(), newElement.getSemantic(), newElement.getIndex(), newElement.getSource()).data;
-				memcpy(&(vertexElemData[alreadyExistsIdx]), source, numVertices * newElement.getSize());
+				UINT32 offset = vertexOffset * newElement.getSize();
 
-				combinedMeshData->setVertexElementData(newElement.getType(), newElement.getSemantic(), source, numVertices, newElement.getIndex(), newElement.getSource());
+				memcpy(&(vertexElemData[alreadyExistsIdx]) + offset, source, numVertices * newElement.getSize());
 			}
 
 			vertexOffset += meshData->getNumVertices();

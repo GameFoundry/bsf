@@ -65,6 +65,7 @@ namespace CamelotEngine
 			Vector2* uvs;
 			UINT32* indices;
 			HMaterial material;
+			std::shared_ptr<MeshData> meshData;
 		};
 
 		std::unordered_map<UINT64, TempMeshData> meshDataPerRenderElement;
@@ -92,9 +93,10 @@ namespace CamelotEngine
 		UINT32 numMeshes = 0;
 		for(auto& renderElem : meshDataPerRenderElement)
 		{
-			renderElem.second.vertices = new Vector2[renderElem.second.numQuads * 4];
-			renderElem.second.uvs = new Vector2[renderElem.second.numQuads * 4];
-			renderElem.second.indices = new UINT32[renderElem.second.numQuads * 6];
+			renderElem.second.meshData = std::shared_ptr<MeshData>(new MeshData());
+			renderElem.second.vertices = renderElem.second.meshData->addPositionsVec2(renderElem.second.numQuads * 4);
+			renderElem.second.uvs = renderElem.second.meshData->addUV0(renderElem.second.numQuads * 4);
+			renderElem.second.indices = renderElem.second.meshData->addIndices32(renderElem.second.numQuads * 6);
 			numMeshes++;
 		}
 
@@ -140,13 +142,7 @@ namespace CamelotEngine
 		UINT32 meshIdx = 0;
 		for(auto& renderElem : meshDataPerRenderElement)
 		{
-			std::shared_ptr<MeshData> meshData(new MeshData());
-
-			meshData->setPositions(renderElem.second.vertices, renderElem.second.numQuads * 4);
-			meshData->setUV0(renderElem.second.uvs, renderElem.second.numQuads * 4);
-			meshData->setIndices(renderElem.second.indices, renderElem.second.numQuads * 6);
-
-			mCachedMeshes[meshIdx]->setMeshData(meshData);
+			mCachedMeshes[meshIdx]->setMeshData(renderElem.second.meshData);
 			mCachedMaterials[meshIdx] = renderElem.second.material;
 
 			meshIdx++;
