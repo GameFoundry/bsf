@@ -8,8 +8,18 @@ namespace CamelotEngine
 {
 	struct RTTIManagedDataBlockFieldBase : public RTTIField
 	{
+		boost::function<UINT8*(UINT32)> mCustomAllocator;
+
 		virtual ManagedDataBlock getValue(void* object) = 0;
 		virtual void setValue(void* object, ManagedDataBlock value) = 0;
+
+		UINT8* allocate(UINT32 bytes)
+		{
+			if(mCustomAllocator.empty())
+				return new UINT8[bytes];
+			else
+				return mCustomAllocator(bytes);
+		}
 	};
 
 	template <class DataType, class ObjectType>
@@ -26,10 +36,12 @@ namespace CamelotEngine
 		 * @param	getter  	The getter method for the field. Cannot be null. Must be a specific signature: SerializableDataBlock(ObjectType*)
 		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, SerializableDataBlock)	
 		 * @param	flags		Various flags you can use to specialize how systems handle this field
+		 * @param	customAllocator (optional) Custom allocator that will be used when de-serializing DataBlock memory.
 		 */
-		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::function<UINT8*(UINT32)> customAllocator = 0)
 		{
 			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_DataBlock, flags);
+			mCustomAllocator = customAllocator;
 		}
 
 		virtual UINT32 getTypeSize()

@@ -642,11 +642,11 @@ namespace CamelotEngine
 		}
 
 		template<class ObjectType>
-		void addDataBlockField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void addDataBlockField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::function<UINT8*(UINT32)> customAllocator = 0)
 		{
 			RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>* newField = 
 				CM_NEW(RTTIManagedDataBlockField<ManagedDataBlock BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>();
-			newField->initSingle(name, uniqueId, getter,  setter, flags);
+			newField->initSingle(name, uniqueId, getter,  setter, flags, customAllocator);
 			addNewField(newField);
 		}	
 	};
