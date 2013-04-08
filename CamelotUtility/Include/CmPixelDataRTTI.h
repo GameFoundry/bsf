@@ -47,6 +47,11 @@ namespace CamelotEngine
 			obj->data = val.getData();
 		}
 
+		static UINT8* allocateData(UINT32 numBytes)
+		{
+			return CM_NEW_BYTES(numBytes, ScratchAlloc);
+		}
+
 	public:
 		PixelDataRTTI()
 		{
@@ -60,7 +65,7 @@ namespace CamelotEngine
 			addPlainField("slicePitch", 7, &PixelDataRTTI::getSlicePitch, &PixelDataRTTI::setSlicePitch);
 			addPlainField("format", 8, &PixelDataRTTI::getFormat, &PixelDataRTTI::setFormat);
 
-			addDataBlockField("data", 9, &PixelDataRTTI::getData, &PixelDataRTTI::setData);
+			addDataBlockField("data", 9, &PixelDataRTTI::getData, &PixelDataRTTI::setData, 0, &PixelDataRTTI::allocateData);
 		}
 
 		virtual const String& getRTTIName()

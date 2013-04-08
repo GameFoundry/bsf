@@ -106,9 +106,8 @@ namespace CamelotEngine
 					dev->TestCooperativeLevel() == D3D_OK)
 				{
 					Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
-					PixelData dstBox(fullBufferBox, mFormat);
+					PixelData dstBox(fullBufferBox, mFormat, new char[getSizeInBytes()]);
 
-					dstBox.data = new char[getSizeInBytes()];
 					blitToMemory(fullBufferBox, dstBox, it->second, it->first);
 					blitFromMemory(dstBox, fullBufferBox, bufferResources);
 					SAFE_DELETE_ARRAY(dstBox.data);
@@ -163,9 +162,8 @@ namespace CamelotEngine
 					dev->TestCooperativeLevel() == D3D_OK)
 				{
 					Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
-					PixelData dstBox(fullBufferBox, mFormat);
+					PixelData dstBox(fullBufferBox, mFormat, new char[getSizeInBytes()]);
 
-					dstBox.data = new char[getSizeInBytes()];
 					blitToMemory(fullBufferBox, dstBox, it->second, it->first);
 					blitFromMemory(dstBox, fullBufferBox, bufferResources);
 					SAFE_DELETE(dstBox.data);

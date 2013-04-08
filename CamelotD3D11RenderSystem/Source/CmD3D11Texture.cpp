@@ -515,10 +515,9 @@ namespace CamelotEngine
 		UINT32 sizeOfImage = lock.getConsecutiveSize();
 		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
 
-		UINT8* bufferData = new UINT8[sizeOfImage];
-		mStaticBuffer = new PixelData(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat(), bufferData, true);
+		mStaticBuffer = new PixelData(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat());
 
-		return bufferData;
+		return mStaticBuffer->allocData(sizeOfImage);
 	}
 
 	void D3D11Texture::_unmapstaticbuffer()

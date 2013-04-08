@@ -174,7 +174,7 @@ namespace CamelotEngine
 		~PixelData() 
 		{
 			if(ownsData && data != nullptr)
-				delete[] data;
+				CM_DELETE_BYTES(data, ScratchAlloc);
 
 			data = nullptr;
 		}
@@ -184,13 +184,13 @@ namespace CamelotEngine
     		@param extents	    Extents of the region defined by data
     		@param pixelFormat	Format of this buffer
     		@param pixelData	Pointer to the actual data
-			@param ownsPixelData  If true then PixelData owns the data buffer and will release it when destroyed.
     	*/
-		PixelData(const Box &extents, PixelFormat pixelFormat, void *pixelData = 0, bool ownsPixelData = false):
-			Box(extents), data(pixelData), format(pixelFormat), ownsData(ownsPixelData)
+		PixelData(const Box &extents, PixelFormat pixelFormat, void *pixelData = nullptr):
+			Box(extents), data(pixelData), format(pixelFormat), ownsData(false)
 		{
 			setConsecutive();
 		}
+
     	/** Constructor providing width, height and depth. This constructor
     		assumes the pixel data is laid out consecutively in memory. (this
     		means row after row, slice after slice, with no space in between)
@@ -199,18 +199,21 @@ namespace CamelotEngine
     		@param depth	    Depth of the region
     		@param pixelFormat	Format of this buffer
     		@param pixelData    Pointer to the actual data
-			@param ownsPixelData  If true then PixelData owns the data buffer and will release it when destroyed.
     	*/
-    	PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat, 
-				void *pixelData = 0, bool ownsPixelData = false):
+    	PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat, void *pixelData = nullptr):
     		Box(0, 0, 0, width, height, depth),
-    		data(pixelData), format(pixelFormat), ownsData(ownsPixelData)
+    		data(pixelData), format(pixelFormat), ownsData(false)
     	{
     		setConsecutive();
     	}
 
 		PixelData(const PixelData& copy);
     	
+		/**
+		 * @brief	Allocates an internal buffer for storing data.
+		 */
+		UINT8* allocData(UINT32 size);
+
         /// The data pointer 
         void *data;
         /// The pixel format 

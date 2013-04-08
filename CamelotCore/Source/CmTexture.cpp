@@ -138,8 +138,8 @@ namespace CamelotEngine {
 			if(depth != 1) depth /= 2;
 		}
 
-		UINT8* buffer = new UINT8[totalSize]; 
-		PixelDataPtr dst(new PixelData(width, height, depth, getFormat(), buffer, true));
+		PixelDataPtr dst(new PixelData(width, height, depth, getFormat()));
+		UINT8* buffer = (UINT8*)dst->allocData(totalSize);
 
 		PixelData myData = lock(GBL_READ_ONLY, mip, face);
 

@@ -1,4 +1,5 @@
 #include "CmPixelData.h"
+#include "CmPixelUtil.h"
 #include "CmPixelDataRTTI.h"
 
 namespace CamelotEngine
@@ -11,6 +12,14 @@ namespace CamelotEngine
 		rowPitch = copy.rowPitch;
 		slicePitch = copy.slicePitch;
 		ownsData = false;
+	}
+
+	UINT8* PixelData::allocData(UINT32 size)
+	{
+		data = CM_NEW_BYTES(size, ScratchAlloc);
+		ownsData = true;
+
+		return (UINT8*)data;
 	}
 
 	/************************************************************************/

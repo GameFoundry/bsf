@@ -117,7 +117,6 @@ namespace CamelotEngine
 
 				atlasElements.push_back(atlasElement);
 			}
-			
 
 			// Create an optimal layout for character bitmaps
 			TexAtlasGenerator texAtlasGen(false, MAXIMUM_TEXTURE_SIZE, MAXIMUM_TEXTURE_SIZE);
@@ -132,10 +131,10 @@ namespace CamelotEngine
 			{
 				UINT32 bufferSize = pageIter->width * pageIter->height * 2;
 
-				UINT8* pixelBuffer = new UINT8[bufferSize];
-				memset(pixelBuffer, 0, bufferSize);
+				PixelData pixelData(pageIter->width, pageIter->height, 1, PF_R8G8);
 
-				PixelData pixelData(pageIter->width, pageIter->height, 1, PF_R8G8, pixelBuffer, true);
+				UINT8* pixelBuffer = pixelData.allocData(bufferSize);
+				memset(pixelBuffer, 0, bufferSize);
 
 				for(size_t elementIdx = 0; elementIdx < atlasElements.size(); elementIdx++)
 				{
