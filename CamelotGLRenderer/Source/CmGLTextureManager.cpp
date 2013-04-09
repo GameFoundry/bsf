@@ -71,7 +71,7 @@ namespace CamelotEngine {
 		// Generate warning texture
 		UINT32 width = 8;
 		UINT32 height = 8;
-		UINT32 *data = new UINT32[width*height];		// 0xXXRRGGBB
+		UINT32 *data = (UINT32*)CM_NEW_BYTES(sizeof(UINT32)*width*height, ScratchAlloc);		// 0xXXRRGGBB
 		// Yellow/black stripes
 		for(UINT32 y=0; y<height; ++y)
 		{
@@ -93,7 +93,7 @@ namespace CamelotEngine {
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_BGRA, GL_UNSIGNED_INT, (void*)data);
 		}
 		// Free memory
-		delete [] data;
+		CM_DELETE_BYTES(data, ScratchAlloc);
 	}
 	//-----------------------------------------------------------------------------
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)

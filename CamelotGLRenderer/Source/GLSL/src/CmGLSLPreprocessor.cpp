@@ -243,6 +243,12 @@ static void DefaultError (void *iData, int iLine, const char *iError,
 
 CPreprocessor::ErrorHandlerFunc CPreprocessor::ErrorHandler = DefaultError;
 
+CPreprocessor::Macro::~Macro()
+{ 
+	CM_DELETE_ARRAY(Args, Token, NumArgs, ScratchAlloc); 
+	CM_DELETE(Next, Macro, ScratchAlloc); 
+}
+
 CPreprocessor::CPreprocessor (const Token &iToken, int iLine) : MacroList (NULL)
 {
     Source = iToken.String;
@@ -254,7 +260,8 @@ CPreprocessor::CPreprocessor (const Token &iToken, int iLine) : MacroList (NULL)
 
 CPreprocessor::~CPreprocessor ()
 {
-    delete MacroList;
+	if(MacroList != nullptr)
+		CM_DELETE(MacroList, Macro, ScratchAlloc);
 }
 
 void CPreprocessor::Error (int iLine, const char *iError, const Token *iToken)
@@ -420,7 +427,7 @@ CPreprocessor::Token CPreprocessor::ExpandMacro (const Token &iToken)
             Token t = GetArguments (nargs, args, cur->ExpandFunc ? false : true);
             if (t.Type == Token::TK_ERROR)
             {
-                delete [] args;
+                CM_DELETE_ARRAY(args, Token, nargs, ScratchAlloc);
                 return t;
             }
 
@@ -449,7 +456,7 @@ CPreprocessor::Token CPreprocessor::ExpandMacro (const Token &iToken)
             cur->Expand (nargs, args, MacroList);
         t.AppendNL (Line - old_line);
 
-        delete [] args;
+		CM_DELETE_ARRAY(args, Token, nargs, ScratchAlloc);
 
         return t;
     }
@@ -860,7 +867,7 @@ CPreprocessor::Token CPreprocessor::GetArguments (int &oNumArgs, Token *&oArgs,
 
 Done:
     oNumArgs = nargs;
-    oArgs = new Token [nargs];
+    oArgs = CM_NEW_ARRAY(Token, nargs, ScratchAlloc);
     for (int i = 0; i < nargs; i++)
         oArgs [i] = args [i];
     return t;
@@ -878,7 +885,7 @@ bool CPreprocessor::HandleDefine (Token &iBody, int iLine)
         return false;
     }
 
-    Macro *m = new Macro (t);
+    Macro *m = CM_NEW(Macro, ScratchAlloc) Macro (t);
     m->Body = iBody;
     t = cpp.GetArguments (m->NumArgs, m->Args, false);
     while (t.Type == Token::TK_WHITESPACE)
@@ -893,7 +900,7 @@ bool CPreprocessor::HandleDefine (Token &iBody, int iLine)
             break;
 
         case Token::TK_ERROR:
-            delete m;
+            CM_DELETE(m, Macro, ScratchAlloc);
             return false;
 
         default:
@@ -1146,7 +1153,7 @@ Done:
 void CPreprocessor::Define (const char *iMacroName, size_t iMacroNameLen,
                             const char *iMacroValue, size_t iMacroValueLen)
 {
-    Macro *m = new Macro (Token (Token::TK_KEYWORD, iMacroName, iMacroNameLen));
+    Macro *m = CM_NEW(Macro, ScratchAlloc) Macro (Token (Token::TK_KEYWORD, iMacroName, iMacroNameLen));
     m->Value = Token (Token::TK_TEXT, iMacroValue, iMacroValueLen);
     m->Next = MacroList;
     MacroList = m;
@@ -1155,7 +1162,7 @@ void CPreprocessor::Define (const char *iMacroName, size_t iMacroNameLen,
 void CPreprocessor::Define (const char *iMacroName, size_t iMacroNameLen,
                             long iMacroValue)
 {
-    Macro *m = new Macro (Token (Token::TK_KEYWORD, iMacroName, iMacroNameLen));
+    Macro *m = CM_NEW(Macro, ScratchAlloc) Macro (Token (Token::TK_KEYWORD, iMacroName, iMacroNameLen));
     m->Value.SetValue (iMacroValue);
     m->Next = MacroList;
     MacroList = m;
@@ -1171,7 +1178,7 @@ bool CPreprocessor::Undef (const char *iMacroName, size_t iMacroNameLen)
         {
             Macro *next = (*cur)->Next;
             (*cur)->Next = NULL;
-            delete (*cur);
+            CM_DELETE((*cur), Macro, ScratchAlloc);
             *cur = next;
             return true;
         }

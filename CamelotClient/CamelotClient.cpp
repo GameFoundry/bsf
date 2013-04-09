@@ -26,9 +26,9 @@
 #include "CmDebugCamera.h"
 #include "CmTestTextSprite.h"
 
-#define DX11
+//#define DX11
 //#define DX9
-//#define GL
+#define GL
 
 using namespace CamelotEngine;
 
@@ -66,8 +66,8 @@ int CALLBACK WinMain(
 	HSceneObject testModelGO = SceneObject::create("TestMesh");
 	HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
-	HSceneObject testTextGO = SceneObject::create("TestText");
-	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
+	//HSceneObject testTextGO = SceneObject::create("TestText");
+	//GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
 	HFont font;
 	
@@ -85,7 +85,7 @@ int CALLBACK WinMain(
 		font = Importer::instance().import("C:\\arial.ttf", fontImportOptions);
 	}
 
-	textSprite->setText(camera, "TESTfAV", font, 12);
+	//textSprite->setText(camera, "TESTfAV", font, 12);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////

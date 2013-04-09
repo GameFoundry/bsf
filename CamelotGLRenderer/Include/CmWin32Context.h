@@ -44,8 +44,6 @@ namespace CamelotEngine {
         virtual void setCurrent();
 		/** See GLContext */
 		virtual void endCurrent();
-		/// @copydoc GLContext::clone
-		GLContext* clone() const;
 
 		virtual void releaseContext();
 

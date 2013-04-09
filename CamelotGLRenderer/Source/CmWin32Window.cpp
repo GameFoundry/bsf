@@ -150,7 +150,7 @@ namespace CamelotEngine {
 			GetMonitorInfo(hMonitor, &monitorInfoEx);
 
 			size_t devNameLen = strlen(monitorInfoEx.szDevice);
-			mDeviceName = new char[devNameLen + 1];
+			mDeviceName = (char*)CM_NEW_BYTES((UINT32)(devNameLen + 1), ScratchAlloc);
 
 			strcpy_s(mDeviceName, devNameLen + 1, monitorInfoEx.szDevice);
 
@@ -374,7 +374,7 @@ namespace CamelotEngine {
 		}
 
 		// Create RenderSystem context
-		mContext = new Win32Context(mHDC, mGlrc);
+		mContext = CM_NEW(Win32Context, GenAlloc) Win32Context(mHDC, mGlrc);
 
 		mActive = true;
 
@@ -391,8 +391,8 @@ namespace CamelotEngine {
 		if (!mHWnd)
 			return;
 
-		// Unregister and destroy OGRE GLContext
-		delete mContext;
+		// Unregister and destroy GLContext
+		CM_DELETE(mContext, Win32Context, GenAlloc);
 
 		if (!mIsExternalGLContext && mGlrc)
 		{
@@ -420,7 +420,7 @@ namespace CamelotEngine {
 
 		if (mDeviceName != NULL)
 		{
-			delete[] mDeviceName;
+			CM_DELETE_BYTES(mDeviceName, ScratchAlloc);
 			mDeviceName = NULL;
 		}
 
@@ -677,7 +677,7 @@ namespace CamelotEngine {
 		{
 			size_t rowSpan = dst.getWidth() * PixelUtil::getNumElemBytes(dst.format);
 			size_t height = dst.getHeight();
-			UINT8 *tmpData = new UINT8[rowSpan * height];
+			UINT8 *tmpData = CM_NEW_BYTES((UINT32)(rowSpan * height), ScratchAlloc);
 			UINT8 *srcRow = (UINT8 *)dst.data, *tmpRow = tmpData + (height - 1) * rowSpan;
 
 			while (tmpRow >= tmpData)
@@ -688,7 +688,7 @@ namespace CamelotEngine {
 			}
 			memcpy(dst.data, tmpData, rowSpan * height);
 
-			delete [] tmpData;
+			CM_DELETE_BYTES(tmpData, ScratchAlloc);
 		}
 	}
 

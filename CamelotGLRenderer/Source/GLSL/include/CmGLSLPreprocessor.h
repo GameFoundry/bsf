@@ -196,8 +196,7 @@ class CPreprocessor
             ExpandFunc (NULL), Expanding (false)
         { }
 
-        ~Macro ()
-        { delete [] Args; delete Next; }
+        ~Macro ();
 
         /// Expand the macro value (will not work for functions)
         Token Expand (int iNumArgs, Token *iArgs, Macro *iMacros);

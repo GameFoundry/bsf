@@ -286,9 +286,9 @@ namespace CamelotEngine {
 		{
 			for(UINT32 mip=0; mip<=getNumMipmaps(); mip++)
 			{
-                GLPixelBuffer *buf = new GLTextureBuffer("", getGLTextureTarget(), mTextureID, face, mip,
+                GLPixelBuffer *buf = CM_NEW(GLTextureBuffer, PoolAlloc) GLTextureBuffer("", getGLTextureTarget(), mTextureID, face, mip,
 						static_cast<GpuBufferUsage>(mUsage), false, mHwGamma, mFSAA);
-				mSurfaceList.push_back(PixelBufferPtr(buf));
+				mSurfaceList.push_back(PixelBufferPtr(buf, &MemAllocDeleter<GLPixelBuffer, PoolAlloc>::deleter));
                 
                 /// Check for error
                 if(buf->getWidth()==0 || buf->getHeight()==0 || buf->getDepth()==0)

@@ -363,10 +363,9 @@ namespace CamelotEngine
 	String translateWGLError()
 	{
 		int winError = GetLastError();
-		char* errDesc;
+		char errDesc[255];
 		int i;
 
-		errDesc = new char[255];
 		// Try windows errors first
 		i = FormatMessage(
 			FORMAT_MESSAGE_FROM_SYSTEM |

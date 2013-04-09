@@ -50,7 +50,7 @@ namespace CamelotEngine
 	GLPixelBuffer::~GLPixelBuffer()
 	{
 		// Force free buffer
-		delete [] (UINT8*)mBuffer.data;
+		CM_DELETE_BYTES(mBuffer.data, ScratchAlloc);
 	}
 	//-----------------------------------------------------------------------------  
 	void GLPixelBuffer::allocateBuffer()
@@ -58,7 +58,7 @@ namespace CamelotEngine
 		if(mBuffer.data)
 			// Already allocated
 			return;
-		mBuffer.data = new UINT8[mSizeInBytes];
+		mBuffer.data = CM_NEW_BYTES(mSizeInBytes, ScratchAlloc);
 		// TODO: use PBO if we're HBU_DYNAMIC
 	}
 	//-----------------------------------------------------------------------------  
@@ -67,7 +67,7 @@ namespace CamelotEngine
 		// Free buffer if we're STATIC to save memory
 		if(mUsage & GBU_STATIC)
 		{
-			delete [] (UINT8*)mBuffer.data;
+			CM_DELETE_BYTES(mBuffer.data, ScratchAlloc);
 			mBuffer.data = 0;
 		}
 	}
@@ -699,7 +699,7 @@ namespace CamelotEngine
 		if(GLPixelUtil::getGLOriginFormat(src_orig.format) == 0)
 		{
 			/// Convert to buffer internal format
-			data = new void*[PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat)];
+			data = CM_NEW_BYTES(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat), ScratchAlloc);
 			src = PixelData(src_orig.getWidth(), src_orig.getHeight(), src_orig.getDepth(), mFormat, data);
 			PixelUtil::bulkPixelConversion(src_orig, src);
 		}
@@ -747,7 +747,7 @@ namespace CamelotEngine
 		glDeleteTextures(1, &id);
 
 		if(data != NULL)
-			delete[] data;
+			CM_DELETE_BYTES(data, ScratchAlloc);
 	}
 	//********* GLRenderBuffer
 	//----------------------------------------------------------------------------- 

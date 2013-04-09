@@ -59,33 +59,6 @@ namespace CamelotEngine {
 		wglMakeCurrent(NULL, NULL);
 	}
 
-	GLContext* Win32Context::clone() const
-	{
-		// Create new context based on own HDC
-		HGLRC newCtx = wglCreateContext(mHDC);
-		
-		if (!newCtx)
-		{
-			CM_EXCEPT(InternalErrorException, "Error calling wglCreateContext");
-		}
-
-		HGLRC oldrc = wglGetCurrentContext();
-		HDC oldhdc = wglGetCurrentDC();
-		wglMakeCurrent(NULL, NULL);
-		// Share lists with old context
-	    if (!wglShareLists(mGlrc, newCtx))
-		{
-			String errorMsg = translateWGLError();
-			wglDeleteContext(newCtx);
-			CM_EXCEPT(RenderingAPIException, String("wglShareLists() failed: ") + errorMsg);
-		}
-		// restore old context
-		wglMakeCurrent(oldhdc, oldrc);
-		
-
-		return new Win32Context(mHDC, newCtx);
-	}
-
 	void Win32Context::releaseContext()
 	{
 		if (mGlrc != NULL)
@@ -108,7 +81,7 @@ WGLEWContext * wglewGetContext()
 	WGLEWContext * currentWGLEWContextsPtr = CM_THREAD_POINTER_GET(WGLEWContextsPtr);
 	if (currentWGLEWContextsPtr == NULL)
 	{
-		currentWGLEWContextsPtr = new WGLEWContext();
+		currentWGLEWContextsPtr = CM_NEW(WGLEWContext, GenAlloc) WGLEWContext();
 		CM_THREAD_POINTER_SET(WGLEWContextsPtr, currentWGLEWContextsPtr);
 		ZeroMemory(currentWGLEWContextsPtr, sizeof(WGLEWContext));
 		wglewInit();

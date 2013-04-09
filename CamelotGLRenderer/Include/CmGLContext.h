@@ -57,12 +57,6 @@ namespace CamelotEngine {
         bool getInitialized() { return initialized; };
         void setInitialized() { initialized = true; };
 
-		/** Create a new context based on the same window/pbuffer as this
-			context - mostly useful for additional threads.
-		@note The caller is responsible for deleting the returned context.
-		*/
-		virtual GLContext* clone() const = 0;
-
 		/**
 		* Release the render context.
 		*/

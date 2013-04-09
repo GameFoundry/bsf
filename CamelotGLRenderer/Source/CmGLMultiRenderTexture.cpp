@@ -17,9 +17,9 @@ namespace CamelotEngine
 	void GLMultiRenderTexture::initialize_internal()
 	{
 		if(mFB != nullptr)
-			delete mFB;
+			CM_DELETE(mFB, GLFrameBufferObject, GenAlloc);
 
-		mFB = new GLFrameBufferObject(mFSAA);
+		mFB = CM_NEW(GLFrameBufferObject, PoolAlloc) GLFrameBufferObject(mFSAA);
 
 		for(size_t i = 0; i < mColorSurfaces.size(); i++)
 		{
@@ -61,7 +61,7 @@ namespace CamelotEngine
 	void GLMultiRenderTexture::destroy_internal()
 	{
 		if(mFB != nullptr)
-			delete mFB;
+			CM_DELETE(mFB, GLFrameBufferObject, GenAlloc);
 
 		MultiRenderTexture::destroy_internal();
 	}

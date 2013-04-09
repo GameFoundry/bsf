@@ -68,7 +68,7 @@ namespace CamelotEngine
 		GLint maxNameSize = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxNameSize);
 
-		GLchar* attributeName = new GLchar[maxNameSize];
+		GLchar* attributeName = (GLchar*)CM_NEW_BYTES(sizeof(GLchar) * maxNameSize, ScratchAlloc);
 
 		for(GLint i = 0; i < numAttributes; i++)
 		{
@@ -90,7 +90,7 @@ namespace CamelotEngine
 			}
 		}
 
-		delete[] attributeName;
+		CM_DELETE_BYTES(attributeName, ScratchAlloc);
 	}
 
 	VertexElementType GLSLParamParser::glTypeToAttributeType(GLenum glType)
@@ -152,7 +152,7 @@ namespace CamelotEngine
 		if(maxBlockNameBufferSize > maxBufferSize)
 			maxBufferSize = maxBlockNameBufferSize;
 
-		GLchar* uniformName = new GLchar[maxBufferSize];
+		GLchar* uniformName = (GLchar*)CM_NEW_BYTES(sizeof(GLchar) * maxBufferSize, ScratchAlloc);
 
 		GpuParamBlockDesc newGlobalBlockDesc;
 		newGlobalBlockDesc.slot = 0;
@@ -464,7 +464,7 @@ namespace CamelotEngine
 		}
 #endif
 
-		delete[] uniformName;
+		CM_DELETE_BYTES(uniformName, ScratchAlloc);
 	}
 
 	void GLSLParamParser::determineParamInfo(GpuParamDataDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex)
