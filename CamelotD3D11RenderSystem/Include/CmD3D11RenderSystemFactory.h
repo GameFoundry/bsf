@@ -24,7 +24,8 @@ namespace CamelotEngine
 				static RenderSystemFactoryPtr newFactory;
 				if(newFactory == nullptr)
 				{
-					newFactory = RenderSystemFactoryPtr(new D3D11RenderSystemFactory());
+					newFactory = RenderSystemFactoryPtr(CM_NEW(D3D11RenderSystemFactory, GenAlloc) D3D11RenderSystemFactory(),
+						&MemAllocDeleter<D3D11RenderSystemFactory, GenAlloc>::deleter);
 					RenderSystemManager::instance().registerRenderSystemFactory(newFactory);
 				}
 			}

@@ -12,9 +12,9 @@ namespace CamelotEngine
 		D3D11Device& device = d3d11rs->getPrimaryDevice();
 
 		if(mUsage == GPBU_STATIC)
-			mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_CONSTANT, GBU_STATIC, 1, mSize, device);
+			mBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(D3D11HardwareBuffer::BT_CONSTANT, GBU_STATIC, 1, mSize, device);
 		else if(mUsage == GPBU_DYNAMIC)
-			mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_CONSTANT, GBU_DYNAMIC, 1, mSize, device);
+			mBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(D3D11HardwareBuffer::BT_CONSTANT, GBU_DYNAMIC, 1, mSize, device);
 		else
 			CM_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
 	}
@@ -22,7 +22,7 @@ namespace CamelotEngine
 	D3D11GpuParamBlockBuffer::~D3D11GpuParamBlockBuffer()
 	{
 		if(mBuffer != nullptr)
-			delete mBuffer;
+			CM_DELETE(mBuffer, D3D11HardwareBuffer, PoolAlloc);
 	}
 
 	ID3D11Buffer* D3D11GpuParamBlockBuffer::getD3D11Buffer() const
@@ -39,6 +39,6 @@ namespace CamelotEngine
 
 	GpuParamBlockBuffer* D3D11GpuParamBlock::createBuffer() const
 	{
-		return new D3D11GpuParamBlockBuffer(mSize, mUsage);
+		return CM_NEW(D3D11GpuParamBlockBuffer, PoolAlloc) D3D11GpuParamBlockBuffer(mSize, mUsage);
 	}
 }

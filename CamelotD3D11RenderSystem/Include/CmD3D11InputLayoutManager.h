@@ -13,7 +13,7 @@ namespace CamelotEngine
 			size_t bufferDeclHash;
 			UINT32 vertexProgramId;
 
-			const list<VertexElement>::type* bufferDeclElements;
+			list<VertexElement>::type* bufferDeclElements;
 		};
 
 		class HashFunc 
@@ -30,6 +30,8 @@ namespace CamelotEngine
 
 		struct InputLayoutEntry
 		{
+			InputLayoutEntry() {}
+
 			ID3D11InputLayout* inputLayout;
 			UINT32 lastUsedIdx;
 		};

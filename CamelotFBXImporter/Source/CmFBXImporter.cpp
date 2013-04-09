@@ -175,7 +175,7 @@ namespace CamelotEngine
 
 	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, bool createTangentsIfMissing)
 	{
-		MeshDataPtr meshData = MeshDataPtr(new MeshData());
+		MeshDataPtr meshData = MeshDataPtr(CM_NEW(MeshData, ScratchAlloc) MeshData(), &MemAllocDeleter<MeshData, ScratchAlloc>::deleter);
 
 		if (!mesh->GetNode())
 			return meshData;

@@ -4,9 +4,9 @@ namespace CamelotEngine
 {
 	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
 		GpuBufferUsage usage, bool useSystemMem)
-		:IndexBuffer(mgr, idxType, numIndexes, usage, useSystemMem), mDevice(device)
+		:IndexBuffer(mgr, idxType, numIndexes, usage, useSystemMem), mDevice(device), mBuffer(nullptr)
 	{
-		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_INDEX, usage, 1, mSizeInBytes, device, useSystemMem);
+
 	}
 
 	D3D11IndexBuffer::~D3D11IndexBuffer()
@@ -16,7 +16,7 @@ namespace CamelotEngine
 
 	void D3D11IndexBuffer::initialize_internal()
 	{
-		mBuffer = new D3D11HardwareBuffer(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSizeInBytes, mDevice, mSystemMemory);
+		mBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSizeInBytes, mDevice, mSystemMemory);
 
 		IndexBuffer::initialize_internal();
 	}
@@ -24,7 +24,7 @@ namespace CamelotEngine
 	void D3D11IndexBuffer::destroy_internal()
 	{
 		if(mBuffer != nullptr)
-			delete mBuffer;
+			CM_DELETE(mBuffer, D3D11HardwareBuffer, PoolAlloc) ;
 
 		IndexBuffer::destroy_internal();
 	}

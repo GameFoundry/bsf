@@ -515,7 +515,7 @@ namespace CamelotEngine
 		UINT32 sizeOfImage = lock.getConsecutiveSize();
 		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
 
-		mStaticBuffer = new PixelData(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat());
+		mStaticBuffer = CM_NEW(PixelData, PoolAlloc) PixelData(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat());
 
 		return mStaticBuffer->allocData(sizeOfImage);
 	}
@@ -535,7 +535,8 @@ namespace CamelotEngine
 			CM_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
 		}
 
-		SAFE_DELETE(mStaticBuffer);
+		if(mStaticBuffer != nullptr)
+			CM_DELETE(mStaticBuffer, PixelData, PoolAlloc);
 	}
 
 	void D3D11Texture::_createStagingBuffer()

@@ -55,9 +55,9 @@ namespace CamelotEngine
 		{
 			auto firstElem = mInputLayoutMap.begin();
 
-			delete firstElem->first.bufferDeclElements;
+			CM_DELETE(firstElem->first.bufferDeclElements, list<VertexElement>::type, PoolAlloc);
 			SAFE_RELEASE(firstElem->second->inputLayout);
-			delete firstElem->second;
+			CM_DELETE(firstElem->second, InputLayoutEntry, PoolAlloc);
 
 			mInputLayoutMap.erase(firstElem);
 		}
@@ -67,7 +67,7 @@ namespace CamelotEngine
 	{
 		VertexDeclarationKey pair;
 		pair.bufferDeclHash = vertexBufferDecl->getHash();
-		pair.bufferDeclElements = &vertexBufferDecl->getElements();
+		pair.bufferDeclElements = const_cast<list<VertexElement>::type*>(&vertexBufferDecl->getElements());
 		pair.vertexProgramId = vertexProgram.getProgramId();
 
 		auto iterFind = mInputLayoutMap.find(pair);
@@ -94,7 +94,7 @@ namespace CamelotEngine
 			return; // Error was already reported, so just quit here
 
 		UINT32 numElements = vertexBufferDecl->getElementCount();
-		D3D11_INPUT_ELEMENT_DESC* declElements = new D3D11_INPUT_ELEMENT_DESC[numElements];
+		D3D11_INPUT_ELEMENT_DESC* declElements = CM_NEW_ARRAY(D3D11_INPUT_ELEMENT_DESC, numElements, ScratchAlloc);
 		ZeroMemory(declElements, sizeof(D3D11_INPUT_ELEMENT_DESC) * numElements);
 
 		unsigned int idx = 0;
@@ -116,7 +116,7 @@ namespace CamelotEngine
 
 		const HLSLMicroCode& microcode = vertexProgram.getMicroCode();
 
-		InputLayoutEntry* newEntry = new InputLayoutEntry();
+		InputLayoutEntry* newEntry = CM_NEW(InputLayoutEntry, PoolAlloc) InputLayoutEntry();
 		newEntry->lastUsedIdx = ++mLastUsedCounter;
 		newEntry->inputLayout = nullptr; 
 		HRESULT hr = device.getD3D11Device()->CreateInputLayout( 
@@ -126,6 +126,8 @@ namespace CamelotEngine
 			microcode.size(),
 			&newEntry->inputLayout);
 
+		//CM_DELETE_ARRAY(declElements, D3D11_INPUT_ELEMENT_DESC, numElements, ScratchAlloc);
+
 		if (FAILED(hr)|| device.hasError())
 			CM_EXCEPT(RenderingAPIException, "Unable to set D3D11 vertex declaration" + device.getErrorDescription());
 
@@ -133,7 +135,7 @@ namespace CamelotEngine
 		VertexDeclarationKey pair;
 		pair.bufferDeclHash = vertexBufferDecl->getHash();
 
-		list<VertexElement>::type* bufferDeclElements = new list<VertexElement>::type(); 
+		list<VertexElement>::type* bufferDeclElements = CM_NEW(list<VertexElement>::type, PoolAlloc) list<VertexElement>::type(); 
 		pair.bufferDeclElements = bufferDeclElements;
 		pair.vertexProgramId = vertexProgram.getProgramId();
 

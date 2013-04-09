@@ -308,7 +308,9 @@ namespace CamelotEngine
 		UINT32 size = dstPitch * height;
 
 		// Bind output buffer
-		UINT8* output = new UINT8[size]; // TextureData frees this when its released
+		TextureDataPtr texData(CM_NEW(TextureData, ScratchAlloc) TextureData(width, height, size, format, 1, 0, 0),
+			&MemAllocDeleter<TextureData, ScratchAlloc>::deleter);
+		UINT8* output = texData->getData();
 
 		UINT8* pSrc;
 		UINT8* pDst = output;
@@ -322,7 +324,7 @@ namespace CamelotEngine
 		FreeImage_Unload(fiBitmap);
 		FreeImage_CloseMemory(fiMem);
 
-		TextureDataPtr texData(new TextureData(width, height, size, format, output, 1, 0, 0));
+		
 		return texData;
 	}
 }

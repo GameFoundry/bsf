@@ -35,9 +35,14 @@ namespace CamelotEngine
 	D3D11Driver::~D3D11Driver()
 	{
 		for(UINT32 i = 0; i < mNumOutputs; i++)
-			SAFE_DELETE(mVideoModeList[i]);
+		{
+			if(mVideoModeList[i] != nullptr)
+				CM_DELETE(mVideoModeList[i], D3D11VideoModeList, GenAlloc);
+		}
 
-		SAFE_DELETE(mVideoModeList);
+		if(mVideoModeList != nullptr)
+			CM_DELETE_ARRAY(mVideoModeList, D3D11VideoModeList*, mNumOutputs, GenAlloc);
+
 		SAFE_RELEASE(mDXGIAdapter);
 	}
 
@@ -54,9 +59,9 @@ namespace CamelotEngine
 
 		mNumOutputs = outputIdx;
 
-		mVideoModeList = new D3D11VideoModeList*[mNumOutputs];
+		mVideoModeList = CM_NEW_ARRAY(D3D11VideoModeList*, mNumOutputs, GenAlloc);
 		for(UINT32 i = 0; i < mNumOutputs; i++)
-			mVideoModeList[i] = new D3D11VideoModeList(this, i);
+			mVideoModeList[i] = CM_NEW(D3D11VideoModeList, GenAlloc) D3D11VideoModeList(this, i);
 	}
 
 	D3D11Driver& D3D11Driver::operator=(const D3D11Driver& ob)
@@ -78,24 +83,26 @@ namespace CamelotEngine
 	String D3D11Driver::getDriverName() const
 	{
 		size_t size = wcslen(mAdapterIdentifier.Description);
-		char* str = new char[size + 1];
+		char* str = (char*)CM_NEW_BYTES((UINT32)(size + 1), ScratchAlloc);
 
 		wcstombs(str, mAdapterIdentifier.Description, size);
 		str[size] = '\0';
 		String Description = str;
-		delete str;
+		
+		CM_DELETE_BYTES(str, ScratchAlloc);
 		return String(Description );
 	}
 
 	String D3D11Driver::getDriverDescription() const
 	{
 		size_t size = wcslen(mAdapterIdentifier.Description);
-		char* str = new char[size + 1];
+		char* str = (char*)CM_NEW_BYTES((UINT32)(size + 1), ScratchAlloc);
 
 		wcstombs(str, mAdapterIdentifier.Description, size);
 		str[size] = '\0';
 		String driverDescription = str;
-		delete [] str;
+
+		CM_DELETE_BYTES(str, ScratchAlloc);
 		StringUtil::trim(driverDescription);
 
 		return driverDescription;

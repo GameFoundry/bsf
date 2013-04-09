@@ -13,7 +13,7 @@ namespace CamelotEngine
 	{
 		for(size_t i = 0; i < mDriverList.size(); i++)
 		{
-			delete (mDriverList[i]);
+			CM_DELETE(mDriverList[i], D3D11Driver, GenAlloc);
 		}
 
 		mDriverList.clear();
@@ -33,7 +33,7 @@ namespace CamelotEngine
 				CM_EXCEPT(InternalErrorException, "Enumerating adapters failed.");
 			}
 
-			mDriverList.push_back(new D3D11Driver(adapterIdx, dxgiAdapter));
+			mDriverList.push_back(CM_NEW(D3D11Driver, GenAlloc) D3D11Driver(adapterIdx, dxgiAdapter));
 
 			SAFE_RELEASE(dxgiAdapter);
 			adapterIdx++;

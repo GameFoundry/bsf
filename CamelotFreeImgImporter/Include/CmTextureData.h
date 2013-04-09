@@ -16,7 +16,7 @@ namespace CamelotEngine
 	{
 	public:
 		TextureData(UINT32 width, UINT32 height, UINT32 size, 
-			PixelFormat format, UINT8* data, UINT32 depth = 1, INT32 flags = 0, UINT32 numMipmaps = 1);
+			PixelFormat format, UINT32 depth = 1, INT32 flags = 0, UINT32 numMipmaps = 1);
 		~TextureData();
 
 		/** Returns a pointer to the internal image buffer.

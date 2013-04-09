@@ -34,6 +34,6 @@ namespace CamelotEngine
 
 	GpuParamBlockBuffer* GLGpuParamBlock::createBuffer() const
 	{
-		return new GLGpuParamBlockBuffer(mSize, mUsage);
+		return CM_NEW(GLGpuParamBlockBuffer, PoolAlloc) GLGpuParamBlockBuffer(mSize, mUsage);
 	}
 }

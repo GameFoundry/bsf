@@ -90,7 +90,9 @@ namespace CamelotEngine
 	D3D11HardwareBuffer::~D3D11HardwareBuffer()
 	{
 		SAFE_RELEASE(mD3DBuffer);
-		SAFE_DELETE(mpTempStagingBuffer); // should never be nonzero unless destroyed while locked
+
+		if(mpTempStagingBuffer != nullptr)
+			CM_DELETE(mpTempStagingBuffer, D3D11HardwareBuffer, PoolAlloc);
 	}
 
 	void* D3D11HardwareBuffer::lockImpl(UINT32 offset, 
@@ -186,7 +188,7 @@ namespace CamelotEngine
 			if (!mpTempStagingBuffer)
 			{
 				// create another buffer instance but use system memory
-				mpTempStagingBuffer = new D3D11HardwareBuffer(mBufferType, mUsage, 1, mSizeInBytes, mDevice, true);
+				mpTempStagingBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(mBufferType, mUsage, 1, mSizeInBytes, mDevice, true);
 			}
 
 			// schedule a copy to the staging
@@ -216,7 +218,11 @@ namespace CamelotEngine
 
 			// delete
 			// not that efficient, but we should not be locking often
-			SAFE_DELETE(mpTempStagingBuffer);
+			if(mpTempStagingBuffer != nullptr)
+			{
+				CM_DELETE(mpTempStagingBuffer, D3D11HardwareBuffer, PoolAlloc);
+				mpTempStagingBuffer = nullptr;
+			}
 		}
 		else
 		{

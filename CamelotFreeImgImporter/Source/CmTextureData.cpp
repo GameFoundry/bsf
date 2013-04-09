@@ -4,17 +4,18 @@
 namespace CamelotEngine
 {
 	TextureData::TextureData(UINT32 width, UINT32 height, UINT32 size, 
-		PixelFormat format, UINT8* data, UINT32 depth, INT32 flags, UINT32 numMipmaps)
+		PixelFormat format, UINT32 depth, INT32 flags, UINT32 numMipmaps)
 		:mWidth(width), mHeight(height), mDepth(depth), mSize(size), mFormat(format),
-		mFlags(flags), mNumMipmaps(numMipmaps), mData(data)
+		mFlags(flags), mNumMipmaps(numMipmaps)
 	{
 		mBPP = static_cast<UINT8>(PixelUtil::getNumElemBytes(mFormat)) * 8;
+		mData = CM_NEW_BYTES(size, ScratchAlloc);
 	}
 
 	TextureData::~TextureData()
 	{
 		if(mData != nullptr)
-			delete[] mData;
+			CM_DELETE_BYTES(mData, ScratchAlloc);
 	}
 
 	PixelData TextureData::getPixels(UINT32 mip)

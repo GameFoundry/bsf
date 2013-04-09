@@ -68,14 +68,14 @@ namespace CamelotEngine
 	void GpuParamBlock::destroy_internal()
 	{
 		if(mBuffer != nullptr)
-			delete mBuffer;
+			CM_DELETE(mBuffer, GpuParamBlockBuffer, PoolAlloc);
 
 		CoreObject::destroy_internal();
 	}
 
 	GpuParamBlockBuffer* GpuParamBlock::createBuffer() const
 	{
-		return new GpuParamBlockBuffer(mSize, mUsage);
+		return CM_NEW(GpuParamBlockBuffer, PoolAlloc) GpuParamBlockBuffer(mSize, mUsage);
 	}
 
 	void GpuParamBlock::write(UINT32 offset, const void* data, UINT32 size)
