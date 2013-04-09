@@ -30,7 +30,8 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return ImportOptionsPtr(new FontImportOptions());
+			return ImportOptionsPtr(CM_NEW(FontImportOptions, PoolAlloc) FontImportOptions(),
+				&MemAllocDeleter<FontImportOptions, PoolAlloc>::deleter);
 		}
 	};
 }

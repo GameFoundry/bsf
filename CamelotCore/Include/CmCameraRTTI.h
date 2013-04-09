@@ -29,7 +29,7 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return std::shared_ptr<Camera>(new Camera());
+			return std::shared_ptr<Camera>(CM_NEW(Camera, PoolAlloc) Camera(), &MemAllocDeleter<Camera, PoolAlloc>::deleter);
 		}
 	};
 }

@@ -9,9 +9,13 @@ namespace CamelotEngine
 		GameObjectHandleData()
 		{ }
 
-		GameObjectHandleData(GameObject* ptr)
-			:mPtr(ptr)
-		{ }
+		GameObjectHandleData(GameObject* ptr, void(*deleter)(GameObject*))
+		{
+			if(deleter != nullptr)
+				mPtr = std::shared_ptr<GameObject>(ptr, deleter);
+			else
+				mPtr = std::shared_ptr<GameObject>(ptr);
+		}
 
 		std::shared_ptr<GameObject> mPtr;
 	};
@@ -55,7 +59,8 @@ namespace CamelotEngine
 		GameObjectHandle()
 			:GameObjectHandleBase()
 		{	
-			mData = std::shared_ptr<GameObjectHandleData>(new GameObjectHandleData());
+			mData = std::shared_ptr<GameObjectHandleData>(CM_NEW(GameObjectHandleData, PoolAlloc) GameObjectHandleData(),
+				&MemAllocDeleter<GameObjectHandleData, PoolAlloc>::deleter);
 		}
 
 		template <typename T1>
@@ -90,15 +95,16 @@ namespace CamelotEngine
 	private:
 		friend SceneObject;
 
-		explicit GameObjectHandle(T* ptr)
+		explicit GameObjectHandle(T* ptr, void(*deleter)(GameObject*) = nullptr)
 			:GameObjectHandleBase()
 		{
-			mData = std::shared_ptr<GameObjectHandleData>(new GameObjectHandleData((GameObject*)ptr));
+			mData = std::shared_ptr<GameObjectHandleData>(CM_NEW(GameObjectHandleData, PoolAlloc) GameObjectHandleData((GameObject*)ptr, deleter),
+				&MemAllocDeleter<GameObjectHandleData, PoolAlloc>::deleter);
 		}
 
-		static GameObjectHandle<T> _create(T* ptr)
+		static GameObjectHandle<T> _create(T* ptr, void(*deleter)(GameObject*))
 		{
-			return GameObjectHandle<T>(ptr);
+			return GameObjectHandle<T>(ptr, deleter);
 		}
 
 		void destroy()

@@ -57,7 +57,8 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return std::shared_ptr<Technique>(new Technique());
+			return std::shared_ptr<Technique>(CM_NEW(Technique, PoolAlloc) Technique(),
+				&MemAllocDeleter<Technique, PoolAlloc>::deleter);
 		}
 	};
 }

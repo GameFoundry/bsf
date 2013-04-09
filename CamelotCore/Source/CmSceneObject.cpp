@@ -35,7 +35,8 @@ namespace CamelotEngine
 
 	HSceneObject SceneObject::createInternal(const String& name)
 	{
-		HSceneObject sceneObject = HSceneObject::_create(new SceneObject(name));
+		HSceneObject sceneObject = HSceneObject::_create(CM_NEW(SceneObject, PoolAlloc) SceneObject(name),
+			&MemAllocDeleter<GameObject, PoolAlloc>::deleter);
 		sceneObject->mThisHandle = sceneObject;
 
 		return sceneObject;

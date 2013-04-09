@@ -26,7 +26,8 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return ImportOptionsPtr(new ImportOptions());
+			return ImportOptionsPtr(CM_NEW(ImportOptions, PoolAlloc) ImportOptions(),
+				&MemAllocDeleter<ImportOptions, PoolAlloc>::deleter);
 		}
 	};
 }

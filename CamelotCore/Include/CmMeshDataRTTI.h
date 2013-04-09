@@ -30,7 +30,8 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return std::shared_ptr<MeshData::VertexElementData>(new MeshData::VertexElementData());
+			return std::shared_ptr<MeshData::VertexElementData>(CM_NEW(MeshData::VertexElementData, PoolAlloc) MeshData::VertexElementData(),
+				&MemAllocDeleter<MeshData::VertexElementData, PoolAlloc>::deleter);
 		}
 
 		virtual const String& getRTTIName() 
@@ -70,7 +71,8 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return std::shared_ptr<MeshData::IndexElementData>(new MeshData::IndexElementData());
+			return std::shared_ptr<MeshData::IndexElementData>(CM_NEW(MeshData::IndexElementData, PoolAlloc) MeshData::IndexElementData(),
+				&MemAllocDeleter<MeshData::IndexElementData, PoolAlloc>::deleter);
 		}
 
 		virtual const String& getRTTIName() 
@@ -166,7 +168,8 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return std::shared_ptr<MeshData>(new MeshData());
+			return std::shared_ptr<MeshData>(CM_NEW(MeshData, PoolAlloc) MeshData(),
+				&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
 		}
 
 		virtual const String& getRTTIName() 

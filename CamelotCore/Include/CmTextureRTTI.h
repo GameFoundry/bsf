@@ -78,7 +78,7 @@ namespace CamelotEngine
 		{
 			Texture* texture = static_cast<Texture*>(obj);
 
-			texture->mRTTIData = new vector<PixelDataPtr>::type();
+			texture->mRTTIData = CM_NEW(vector<PixelDataPtr>::type, PoolAlloc) vector<PixelDataPtr>::type();
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj)
@@ -106,7 +106,7 @@ namespace CamelotEngine
 				texture->setRawPixels(data, face, mipmap);
 			}
 
-			delete pixelData;
+			CM_DELETE(pixelData, vector<PixelDataPtr>::type, PoolAlloc);
 			texture->mRTTIData = nullptr;	
 		}
 

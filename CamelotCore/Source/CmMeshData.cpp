@@ -21,14 +21,14 @@ namespace CamelotEngine
 			for(auto& vertElem : vertElems.second)
 			{
 				if(vertElem.data != nullptr)
-					delete[] vertElem.data;
+					CM_DELETE_BYTES(vertElem.data, ScratchAlloc);
 			}
 		}
 
 		for(auto& indexData : mIndices)
 		{
 			if(indexData.indices != nullptr)
-				delete[] indexData.indices;
+				CM_DELETE_BYTES(indexData.indices, ScratchAlloc);
 		}
 	}
 
@@ -92,7 +92,7 @@ namespace CamelotEngine
 		clearIfItExists(type, semantic, semanticIdx, streamIdx);
 
 		UINT32 elemSize = VertexElement::getTypeSize(type);
-		UINT8* elements = new UINT8[elemSize * numElements];
+		UINT8* elements = CM_NEW_BYTES(elemSize * numElements, ScratchAlloc);
 
 		vector<VertexElementData>::type& elemData = mVertexData[streamIdx];
 
@@ -113,9 +113,9 @@ namespace CamelotEngine
 		IndexElementData indexData = mIndices[subMesh];
 
 		if(indexData.indices != nullptr)
-			delete[] indexData.indices;
+			CM_DELETE_BYTES(indexData.indices, ScratchAlloc);
 
-		UINT32* indices = new UINT32[numIndices];
+		UINT32* indices = (UINT32*)CM_NEW_BYTES(numIndices * sizeof(UINT32), ScratchAlloc);
 
 		indexData.indices = (UINT8*)indices;
 		indexData.numIndices = numIndices;
@@ -138,9 +138,9 @@ namespace CamelotEngine
 		IndexElementData indexData = mIndices[subMesh];
 
 		if(indexData.indices != nullptr)
-			delete[] indexData.indices;
+			CM_DELETE_BYTES(indexData.indices, ScratchAlloc);
 
-		UINT16* indices = new UINT16[numIndices];
+		UINT16* indices = (UINT16*)CM_NEW_BYTES(numIndices * sizeof(UINT16), ScratchAlloc);
 
 		indexData.indices = (UINT8*)indices;
 		indexData.numIndices = numIndices;
@@ -233,7 +233,8 @@ namespace CamelotEngine
 
 	MeshDataPtr MeshData::combine(const vector<MeshDataPtr>::type& elements)
 	{
-		MeshDataPtr combinedMeshData(new MeshData());
+		MeshDataPtr combinedMeshData(CM_NEW(MeshData, PoolAlloc) MeshData(),
+			&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
 
 		UINT32 subMeshIndex = 0;
 		vector<VertexElement>::type combinedVertexElements;
@@ -343,7 +344,7 @@ namespace CamelotEngine
 		if(findIter != elemData.end())
 		{
 			if(findIter->data != nullptr)
-				delete[] findIter->data;
+				CM_DELETE_BYTES(findIter->data, ScratchAlloc);
 
 			elemData.erase(findIter);
 		}

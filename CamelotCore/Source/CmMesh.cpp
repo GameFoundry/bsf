@@ -72,10 +72,10 @@ namespace CamelotEngine
 		mSubMeshes.clear();
 
 		if(mVertexData != nullptr)
-			delete mVertexData;
+			CM_DELETE(mVertexData, VertexData, PoolAlloc);
 
 		if(mIndexData != nullptr)
-			delete mIndexData;
+			CM_DELETE(mIndexData, IndexData, PoolAlloc);
 
 		// Submeshes
 		UINT32 indexOffset = 0;
@@ -93,7 +93,7 @@ namespace CamelotEngine
 		}
 
 		// Indices
-		mIndexData = new IndexData();
+		mIndexData = CM_NEW(IndexData, PoolAlloc) IndexData();
 
 		mIndexData->indexCount = totalIndexCount;
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
@@ -114,7 +114,7 @@ namespace CamelotEngine
 		mIndexData->indexBuffer->unlock();
 
 		// Vertices
-		mVertexData = new VertexData();
+		mVertexData = CM_NEW(VertexData, PoolAlloc) VertexData();
 
 		mVertexData->vertexCount = numVertices;
 		mVertexData->vertexDeclaration = meshData->createDeclaration();
@@ -170,7 +170,8 @@ namespace CamelotEngine
 		if(mIndexData)
 			indexType = mIndexData->indexBuffer->getType();
 
-		MeshDataPtr meshData(new MeshData(indexType));
+		MeshDataPtr meshData(CM_NEW(MeshData, PoolAlloc) MeshData(indexType),
+			&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
 
 		if(mIndexData)
 		{
@@ -262,10 +263,10 @@ namespace CamelotEngine
 		THROW_IF_NOT_RENDER_THREAD;
 
 		if(mVertexData != nullptr)
-			delete mVertexData;
+			CM_DELETE(mVertexData, VertexData, PoolAlloc);
 
 		if(mIndexData != nullptr)
-			delete mIndexData;
+			CM_DELETE(mIndexData, IndexData, PoolAlloc);
 
 		Resource::destroy_internal();
 	}

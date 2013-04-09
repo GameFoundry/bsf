@@ -128,7 +128,8 @@ namespace CamelotEngine
 		 */
 		void reset()
 		{
-			mData = std::shared_ptr<ResourceHandleData>(new ResourceHandleData());
+			mData = std::shared_ptr<ResourceHandleData>(CM_NEW(ResourceHandleData, ScratchAlloc) ResourceHandleData(),
+				&MemAllocDeleter<ResourceHandleData, ScratchAlloc>::deleter);
 		}
 
 		template<class _Ty>

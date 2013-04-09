@@ -41,6 +41,16 @@ namespace CamelotEngine
 		}
 	};
 
+	template<class category>
+	class MemAllocBytesDeleter
+	{
+	public:
+		static void deleter(void* ptr)
+		{
+			MemoryAllocator<category>::free(ptr);
+		}
+	};
+
 	template<class T, class category> 
 	inline T* __cm_construct_array(unsigned int count)
 	{
