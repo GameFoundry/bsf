@@ -182,7 +182,6 @@
     <ClInclude Include="Include\CmInt2.h" />
     <ClInclude Include="Include\CmIReflectable.h" />
     <ClInclude Include="Include\CmKeyValuePair.h" />
-    <ClInclude Include="Include\CmLockedPtr.h" />
     <ClInclude Include="Include\CmLog.h" />
     <ClInclude Include="Include\CmManagedDataBlock.h" />
     <ClInclude Include="Include\CmMathAsm.h" />

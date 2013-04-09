@@ -8,13 +8,13 @@ namespace CamelotEngine
 	Time::Time()
 		:mAppStartTime(0), mLastFrameTime(0), mFrameDelta(0.0f), mTimeSinceStart(0.0f), mCurrentFrame(0)
 	{
-		mTimer = new Timer();
+		mTimer = CM_NEW(Timer, GenAlloc) Timer();
 		mAppStartTime = mTimer->getMicroseconds();
 	}
 
 	Time::~Time()
 	{
-		delete mTimer;
+		CM_DELETE(mTimer, Timer, GenAlloc);
 	}
 
 	void Time::update()

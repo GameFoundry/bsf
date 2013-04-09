@@ -201,9 +201,6 @@
     <ClInclude Include="Include\CmAsyncOp.h">
       <Filter>Header Files\Threading</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmLockedPtr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmPixelData.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -11,12 +11,12 @@ namespace CamelotEngine
 {
 	FileSerializer::FileSerializer()
 	{
-		mWriteBuffer = new UINT8[WRITE_BUFFER_SIZE];
+		mWriteBuffer = CM_NEW_BYTES(WRITE_BUFFER_SIZE, ScratchAlloc);
 	}
 
 	FileSerializer::~FileSerializer()
 	{
-		delete[] mWriteBuffer;
+		CM_DELETE_BYTES(mWriteBuffer, ScratchAlloc);
 	}
 
 	void FileSerializer::encode(IReflectable* object, std::string fileLocation)
@@ -42,7 +42,7 @@ namespace CamelotEngine
 				"File size is larger that UINT32 can hold. Ask a programmer to use a bigger data type.");
 		}
 
-		UINT8* readBuffer = new UINT8[(UINT32)fileSize]; // TODO - Low priority. Consider upgrading BinarySerializer so we don't have to read everything at once
+		UINT8* readBuffer = CM_NEW_BYTES((UINT32)fileSize, ScratchAlloc); // TODO - Low priority. Consider upgrading BinarySerializer so we don't have to read everything at once
 
 		mInputStream.seekg(0, std::ios::beg);
 		mInputStream.read((char*)readBuffer, fileSize);
@@ -53,7 +53,7 @@ namespace CamelotEngine
 		mInputStream.close();
 		mInputStream.clear();
 
-		delete[] readBuffer;
+		CM_DELETE_BYTES(readBuffer, ScratchAlloc);
 
 		return object;
 	}

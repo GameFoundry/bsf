@@ -61,6 +61,8 @@ THE SOFTWARE
 // Short-hand names for various built-in types
 #include "CmTypes.h"
 
+#include "CmMemoryAllocator.h"
+
 // Useful threading defines
 #include "CmThreadDefines.h"
 
@@ -73,5 +75,3 @@ THE SOFTWARE
 #include "CmRTTIPrerequisites.h"
 
 #include "CmString.h"
-
-#include "CmMemoryAllocator.h"

@@ -17,7 +17,7 @@ namespace CamelotEngine
 		~TexAtlasNode()
 		{
 			if(children != nullptr)
-				delete[] children;
+				CM_DELETE_ARRAY(children, TexAtlasNode, 2, ScratchAlloc);
 		}
 
 		UINT32 x, y, width, height;
@@ -60,7 +60,7 @@ namespace CamelotEngine
 				float dw = (float)(width - element.input.width);
 				float dh = (height - element.input.height) * aspect;
 
-				children = new TexAtlasNode[2];
+				children = CM_NEW_ARRAY(TexAtlasNode, 2, ScratchAlloc);
 
 				if (dw > dh)
 				{

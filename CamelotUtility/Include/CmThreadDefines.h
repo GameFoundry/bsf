@@ -49,7 +49,6 @@ THE SOFTWARE
 // like CM_AUTO_MUTEX but mutex held by pointer
 #define CM_AUTO_SHARED_MUTEX mutable boost::recursive_mutex *CM_AUTO_MUTEX_NAME;
 #define CM_LOCK_AUTO_SHARED_MUTEX assert(CM_AUTO_MUTEX_NAME); boost::recursive_mutex::scoped_lock cmAutoMutexLock(*CM_AUTO_MUTEX_NAME);
-#define CM_NEW_AUTO_SHARED_MUTEX assert(!CM_AUTO_MUTEX_NAME); CM_AUTO_MUTEX_NAME = new boost::recursive_mutex();
 #define CM_DELETE_AUTO_SHARED_MUTEX assert(CM_AUTO_MUTEX_NAME); delete CM_AUTO_MUTEX_NAME;
 #define CM_COPY_AUTO_SHARED_MUTEX(from) assert(!CM_AUTO_MUTEX_NAME); CM_AUTO_MUTEX_NAME = from;
 #define CM_SET_AUTO_SHARED_MUTEX_NULL CM_AUTO_MUTEX_NAME = 0;
@@ -73,8 +72,8 @@ THE SOFTWARE
 #define CM_THREAD_POINTER_DELETE(var) var.reset(0)
 // Thread objects and related functions
 #define CM_THREAD_TYPE boost::thread
-#define CM_THREAD_CREATE(name, worker) boost::thread* name = new boost::thread(worker);
-#define CM_THREAD_DESTROY(name) delete name;
+#define CM_THREAD_CREATE(name, worker) boost::thread* name = new (CamelotEngine::MemoryAllocator<CamelotEngine::GenAlloc>::allocate(sizeof(boost::thread))) boost::thread(worker);
+#define CM_THREAD_DESTROY(name) CamelotEngine::__cm_destruct<boost::thread, CamelotEngine::GenAlloc>(name);
 #define CM_THREAD_HARDWARE_CONCURRENCY boost::thread::hardware_concurrency()
 #define CM_THREAD_CURRENT_ID boost::this_thread::get_id()
 #define CM_THREAD_ID_TYPE boost::thread::id
@@ -94,7 +93,6 @@ THE SOFTWARE
 #define CM_LOCK_MUTEX_NAMED(mutexName, lockName)
 #define CM_AUTO_SHARED_MUTEX
 #define CM_LOCK_AUTO_SHARED_MUTEX
-#define CM_NEW_AUTO_SHARED_MUTEX
 #define CM_DELETE_AUTO_SHARED_MUTEX
 #define CM_COPY_AUTO_SHARED_MUTEX(from)
 #define CM_SET_AUTO_SHARED_MUTEX_NULL

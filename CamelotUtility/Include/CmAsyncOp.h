@@ -27,7 +27,7 @@ namespace CamelotEngine
 
 	public:
 		AsyncOp()
-			:mData(new AsyncOpData())
+			:mData(CM_NEW(AsyncOpData, ScratchAlloc) AsyncOpData(), &MemAllocDeleter<AsyncOpData, ScratchAlloc>::deleter)
 		{}
 
 		/**

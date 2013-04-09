@@ -382,12 +382,12 @@ namespace CamelotEngine {
 			memory += sizeof(UINT32);
 
 			UINT32 stringSize = size - sizeof(UINT32);
-			char* buffer = new char[stringSize + 1]; // TODO - Use a better allocator
+			char* buffer = (char*)CM_NEW_BYTES(stringSize + 1, ScratchAlloc);
 			memcpy(buffer, memory, stringSize); 
 			buffer[stringSize] = '\0';
 			data = String(buffer);
 
-			delete[] buffer; 
+			CM_DELETE_BYTES(buffer, ScratchAlloc);
 
 			return size;
 		}

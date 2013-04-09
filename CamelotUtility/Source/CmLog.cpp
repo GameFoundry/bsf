@@ -17,12 +17,12 @@ namespace CamelotEngine
 		flush();
 
 		for(auto iter = mEntries.begin(); iter != mEntries.end(); ++iter)
-			delete *iter;
+			CM_DELETE(*iter, LogEntry, PoolAlloc);
 	}
 
 	void Log::logMsg(const String& message, const String& level)
 	{
-		LogEntry* newEntry = new LogEntry(message, level);
+		LogEntry* newEntry = CM_NEW(LogEntry, PoolAlloc) LogEntry(message, level);
 		mEntries.push_back(newEntry);
 
 		doOnEntryAdded(*newEntry);

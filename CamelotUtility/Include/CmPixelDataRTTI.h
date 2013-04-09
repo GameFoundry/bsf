@@ -81,7 +81,8 @@ namespace CamelotEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			PixelDataPtr newPixelData(new PixelData());
+			PixelDataPtr newPixelData(CM_NEW(PixelData, PoolAlloc) PixelData(),
+				&MemAllocDeleter<PixelData, PoolAlloc>::deleter);
 			newPixelData->ownsData = true;
 
 			return newPixelData;
