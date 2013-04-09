@@ -14,24 +14,23 @@ namespace CamelotEngine
 		 * @brief	Constructor
 		 *
 		 * @param [in]	data		Array of bytes to store. Direct pointer to the provided
-		 * 							array will be stored, no copying will be done. Data won't be modified
-		 * 							unless "managed" is true.
+		 * 							array will be stored, no copying will be done. 
 		 * @param	size			Size of the array, in bytes.
-		 * @param	managed			If true then the provided data array will be deleted once
-		 * 							it is no longer being used. When serializing it is always faster to provide direct
-		 * 							pointer to the data, but sometimes you need to provide a copy of the data
-		 * 							instead (e.g. maybe it's needed in a different format). 
-		 * 							In that case set managed to true so it can be properly freed.
 		 */
-		ManagedDataBlock(UINT8* data, UINT32 size, bool managed);
+		ManagedDataBlock(UINT8* data, UINT32 size);
+
+		/**
+		 * @brief	Constructor that will automatically allocate an internal buffer of the specified size.
+		 * 			Copying ManagedDataBlock transfers ownership of the buffer to the copy of the buffer.
+		 * 			Buffer is deleted when the latest copy is deleted.
+		 *
+		 * @param	size	The size of the data in bytes.
+		 */
+		ManagedDataBlock(UINT32 size);
+
 		ManagedDataBlock(const ManagedDataBlock& source);
 
 		~ManagedDataBlock();
-
-		/**
-		 * @brief	Destroy underlying buffers for unmanaged data blocks.
-		 */
-		void destroy();
 
 		UINT8* getData() { return mData; }
 		UINT32 getSize() { return mData ? mSize : 0; }

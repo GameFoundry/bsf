@@ -16,7 +16,7 @@ namespace CamelotEngine
 		UINT8* allocate(UINT32 bytes)
 		{
 			if(mCustomAllocator.empty())
-				return new UINT8[bytes];
+				return CM_NEW_BYTES(bytes, ScratchAlloc);
 			else
 				return mCustomAllocator(bytes);
 		}

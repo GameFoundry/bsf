@@ -763,7 +763,7 @@ namespace CamelotEngine
 							UINT8* dataCopy = curField->allocate(dataBlockSize); // TODO - Low priority. I need to read files better, so I
 							memcpy(dataCopy, data, dataBlockSize);		//    can just pass the buffer pointer directly without copying (possibly large amounts of data)
 
-							ManagedDataBlock value(dataCopy, dataBlockSize, false); // Not managed because I assume the owner class will decide whether to delete the data or keep it
+							ManagedDataBlock value(dataCopy, dataBlockSize); // Not managed because I assume the owner class will decide whether to delete the data or keep it
 							curField->setValue(object.get(), value);
 						}
 

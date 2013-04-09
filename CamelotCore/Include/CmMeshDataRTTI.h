@@ -11,7 +11,7 @@ namespace CamelotEngine
 	class CM_EXPORT VertexElementDataRTTI : public RTTIType<MeshData::VertexElementData, IReflectable, VertexElementDataRTTI>
 	{
 	private:
-		ManagedDataBlock getVertexData(MeshData::VertexElementData* obj) { return ManagedDataBlock(obj->data, obj->elementCount * obj->element.getSize(), false); }	
+		ManagedDataBlock getVertexData(MeshData::VertexElementData* obj) { return ManagedDataBlock(obj->data, obj->elementCount * obj->element.getSize()); }	
 		void setVertexData(MeshData::VertexElementData* obj, ManagedDataBlock val) { obj->data = val.getData(); } 
 
 		UINT32& getNumElements(MeshData::VertexElementData* obj) { return obj->elementCount; }
@@ -48,7 +48,7 @@ namespace CamelotEngine
 	class CM_EXPORT IndexElementDataRTTI : public RTTIType<MeshData::IndexElementData, IReflectable, IndexElementDataRTTI>
 	{
 	private:
-		ManagedDataBlock getIndexData(MeshData::IndexElementData* obj) { return ManagedDataBlock(obj->indices, obj->numIndices * obj->elementSize, false); }	
+		ManagedDataBlock getIndexData(MeshData::IndexElementData* obj) { return ManagedDataBlock(obj->indices, obj->numIndices * obj->elementSize); }	
 		void setIndexData(MeshData::IndexElementData* obj, ManagedDataBlock val) { obj->indices = val.getData(); } 
 
 		UINT32& getNumIndices(MeshData::IndexElementData* obj) { return obj->numIndices; }

@@ -356,10 +356,11 @@ namespace CamelotEngine
 
 		ManagedDataBlock getValue(MaterialStructParam* obj) 
 		{ 
-			UINT8* data = new UINT8[obj->value.size];
+			ManagedDataBlock returnValue(obj->value.size);
+
+			UINT8* data = returnValue.getData();
 			memcpy(data, obj->value.data.get(), obj->value.size);
 
-			ManagedDataBlock returnValue(data, obj->value.size, true);
 			return returnValue; 
 		}
 

@@ -38,7 +38,7 @@ namespace CamelotEngine
 
 		ManagedDataBlock getData(PixelData* obj) 
 		{ 
-			ManagedDataBlock dataBlock((UINT8*)obj->data, obj->getConsecutiveSize(), false);
+			ManagedDataBlock dataBlock((UINT8*)obj->data, obj->getConsecutiveSize());
 			return dataBlock; 
 		}
 
