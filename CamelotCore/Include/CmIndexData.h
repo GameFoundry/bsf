@@ -20,13 +20,6 @@ namespace CamelotEngine
 		/// The number of indexes to use from the buffer
 		UINT32 indexCount;
 
-		/** Clones this index data, potentially including replicating the index buffer.
-		@param copyData Whether to create new buffers too or just reference the existing ones
-		@param mgr If supplied, the buffer manager through which copies should be made
-		@remarks The caller is expected to delete the returned pointer when finished
-		*/
-		IndexData* clone(bool copyData = true, HardwareBufferManager* mgr = 0) const;
-
 		/** Re-order the indexes in this index data structure to be more
 			vertex cache friendly; that is to re-use the same vertices as close
 			together as possible. 

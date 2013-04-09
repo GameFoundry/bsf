@@ -92,7 +92,8 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	GpuParamsPtr GpuProgram::createParameters(void)
 	{
-		return GpuParamsPtr(new GpuParams(mParametersDesc));
+		return GpuParamsPtr(CM_NEW(GpuParams, PoolAlloc) GpuParams(mParametersDesc),
+			&MemAllocDeleter<GpuParams, PoolAlloc>::deleter);
 	}
     //-----------------------------------------------------------------------
     const String& GpuProgram::getLanguage(void) const

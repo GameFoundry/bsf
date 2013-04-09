@@ -14,7 +14,8 @@ namespace CamelotEngine
 
 	TechniquePtr Shader::addTechnique(const String& renderSystem, const String& renderer)
 	{
-		TechniquePtr technique = TechniquePtr(new Technique(renderSystem, renderer));
+		TechniquePtr technique = TechniquePtr(CM_NEW(Technique, PoolAlloc) Technique(renderSystem, renderer),
+			&MemAllocDeleter<Technique, PoolAlloc>::deleter);
 		mTechniques.push_back(technique);
 
 		return technique;

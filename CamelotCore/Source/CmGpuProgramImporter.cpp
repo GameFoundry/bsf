@@ -45,6 +45,7 @@ namespace CamelotEngine
 
 	ImportOptionsPtr GpuProgramImporter::createImportOptions() const
 	{
-		return ImportOptionsPtr(new GpuProgramImportOptions());
+		return ImportOptionsPtr(CM_NEW(GpuProgramImportOptions, PoolAlloc) GpuProgramImportOptions(),
+			&MemAllocDeleter<GpuProgramImportOptions, PoolAlloc>::deleter);
 	}
 }

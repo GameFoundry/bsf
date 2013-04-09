@@ -77,13 +77,6 @@ namespace CamelotEngine {
 		UINT32 getBufferCount(void) const { return (UINT32)mVertexBuffers.size(); }
 		UINT32 getMaxBufferIndex(void) const { return (UINT32)mVertexBuffers.size(); }
 
-		/** Clones this vertex data, potentially including replicating any vertex buffers.
-		@param copyData Whether to create new vertex buffers too or just reference the existing ones
-		@param mgr If supplied, the buffer manager through which copies should be made
-		@remarks The caller is expected to delete the returned pointer when ready
-		*/
-		VertexData* clone(bool copyData = true, HardwareBufferManager* mgr = 0) const;
-
 		/** Convert all packed colour values (VET_COLOUR_*) in buffers used to
 			another type.
 		@param srcType The source colour type to assume if the ambiguous VET_COLOUR

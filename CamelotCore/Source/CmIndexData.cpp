@@ -19,28 +19,6 @@ namespace CamelotEngine
 	{
 	}
 
-	IndexData* IndexData::clone(bool copyData, HardwareBufferManager* mgr) const
-	{
-		HardwareBufferManager* pManager = mgr ? mgr : HardwareBufferManager::instancePtr();
-		IndexData* dest = new IndexData();
-		if (indexBuffer.get())
-		{
-            if (copyData)
-            {
-			    dest->indexBuffer = pManager->createIndexBuffer(indexBuffer->getType(), indexBuffer->getNumIndexes(),
-				    indexBuffer->getUsage());
-			    dest->indexBuffer->copyData(*indexBuffer, 0, 0, indexBuffer->getSizeInBytes(), true);
-            }
-            else
-            {
-                dest->indexBuffer = indexBuffer;
-            }
-        }
-		dest->indexCount = indexCount;
-		dest->indexStart = indexStart;
-		return dest;
-	}
-
 	// Local Utility class for vertex cache optimizer
 	class Triangle
     {

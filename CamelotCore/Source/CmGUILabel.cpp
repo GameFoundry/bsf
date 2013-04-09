@@ -11,12 +11,12 @@ namespace CamelotEngine
 		// This is calling a virtual method but it's okay because we always want the one
 		// existing on this class.
 		mStyle = skin->getStyle(getGUITypeName());
-		mTextSprite = new TextSprite(text, mStyle->font, mStyle->fontSize);
+		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite(text, mStyle->font, mStyle->fontSize);
 	}
 
 	GUILabel::~GUILabel()
 	{
-		delete mTextSprite;
+		CM_DELETE(mTextSprite, TextSprite, PoolAlloc);
 	}
 
 	UINT32 GUILabel::getNumRenderElements() const

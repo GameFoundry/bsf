@@ -87,7 +87,8 @@ namespace CamelotEngine {
     }
 	void Camera::init(RenderTargetPtr target, float left, float top, float width, float height, int ZOrder)
 	{
-		mViewport = ViewportPtr(new Viewport(target, left, top, width, height, ZOrder));
+		mViewport = ViewportPtr(CM_NEW(Viewport, PoolAlloc) Viewport(target, left, top, width, height, ZOrder),
+			&MemAllocDeleter<Viewport, PoolAlloc>::deleter);
 	}
 	//-----------------------------------------------------------------------
 	void Camera::setFOVy(const Radian& fov)

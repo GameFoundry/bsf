@@ -27,7 +27,7 @@ namespace CamelotEngine
 		for(auto iter = mBufferViews.begin(); iter != mBufferViews.end(); ++iter)
 		{
 			destroyView(iter->second->view);
-			delete iter->second;
+			CM_DELETE(iter->second, GpuBufferReference, PoolAlloc);
 		}
 
 		mBufferViews.clear();
@@ -47,7 +47,7 @@ namespace CamelotEngine
 		{
 			GpuBufferView* newView = buffer->createView();
 			newView->initialize(buffer, key);
-			buffer->mBufferViews[key] = new GpuBufferReference(newView);
+			buffer->mBufferViews[key] = CM_NEW(GpuBufferReference, PoolAlloc) GpuBufferReference(newView);
 
 			iterFind = buffer->mBufferViews.find(key);
 		}
@@ -75,7 +75,7 @@ namespace CamelotEngine
 			buffer->mBufferViews.erase(iterFind);
 
 			buffer->destroyView(toRemove->view);
-			delete toRemove;
+			CM_DELETE(toRemove, GpuBufferReference, PoolAlloc);
 		}
 	}
 }

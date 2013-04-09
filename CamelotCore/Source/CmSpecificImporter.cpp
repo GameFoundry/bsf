@@ -6,7 +6,8 @@ namespace CamelotEngine
 {
 	ImportOptionsPtr SpecificImporter::createImportOptions() const
 	{
-		return ImportOptionsPtr(new ImportOptions());
+		return ImportOptionsPtr(CM_NEW(ImportOptions, PoolAlloc) ImportOptions(),
+			&MemAllocDeleter<ImportOptions, PoolAlloc>::deleter);
 	}
 
 	ConstImportOptionsPtr SpecificImporter::getDefaultImportOptions() const

@@ -86,56 +86,6 @@ namespace CamelotEngine
 		return false;
 	}
 
-	VertexData* VertexData::clone(bool copyData, HardwareBufferManager* mgr) const
-	{
-		HardwareBufferManager* pManager = mgr ? mgr : mMgr;
-
-		VertexData* dest = new VertexData(mgr);
-
-		// Copy vertex buffers in turn
-		for (auto iter = mVertexBuffers.begin(); iter != mVertexBuffers.end(); ++iter)
-		{
-			VertexBufferPtr srcbuf = iter->second;
-            VertexBufferPtr dstBuf;
-            if (copyData)
-            {
-			    // create new buffer with the same settings
-			    dstBuf = pManager->createVertexBuffer(
-					    srcbuf->getVertexSize(), srcbuf->getNumVertices(), srcbuf->getUsage());
-
-			    // copy data
-			    dstBuf->copyData(*srcbuf, 0, 0, srcbuf->getSizeInBytes(), true);
-            }
-            else
-            {
-                // don't copy, point at existing buffer
-                dstBuf = srcbuf;
-            }
-
-			// Copy binding
-			dest->setBuffer(iter->first, dstBuf);
-        }
-
-        // Basic vertex info
-		dest->vertexCount = this->vertexCount;
-        // Copy elements
-        const VertexDeclaration::VertexElementList elems = 
-            this->vertexDeclaration->getElements();
-        VertexDeclaration::VertexElementList::const_iterator ei, eiend;
-        eiend = elems.end();
-        for (ei = elems.begin(); ei != eiend; ++ei)
-        {
-            dest->vertexDeclaration->addElement(
-                ei->getSource(),
-                ei->getOffset(),
-                ei->getType(),
-                ei->getSemantic(),
-                ei->getIndex() );
-        }
-
-        return dest;
-	}
-
 	void VertexData::convertPackedColour(
 		VertexElementType srcType, VertexElementType destType)
 	{

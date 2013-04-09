@@ -37,7 +37,8 @@ namespace CamelotEngine
 	void MaterialRTTI::onSerializationStarted(IReflectable* obj)
 	{
 		Material* material = static_cast<Material*>(obj);
-		std::shared_ptr<MaterialParams> params = std::shared_ptr<MaterialParams>(new MaterialParams());
+		std::shared_ptr<MaterialParams> params = std::shared_ptr<MaterialParams>(CM_NEW(MaterialParams, ScratchAlloc) MaterialParams(),
+			&MemAllocDeleter<MaterialParams, ScratchAlloc>::deleter);
 
 		ShaderPtr shader = material->getShader();
 		if(shader != nullptr)

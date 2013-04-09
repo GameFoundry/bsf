@@ -6,7 +6,7 @@
 namespace CamelotEngine
 {
 	GpuParamBlockBuffer::GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
-		:mData(new UINT8[size]), mSize(size), mUsage(usage)
+		:mData(CM_NEW_BYTES(size, ScratchAlloc)), mSize(size), mUsage(usage)
 	{
 		memset(mData, 0, mSize);
 	}
@@ -14,7 +14,7 @@ namespace CamelotEngine
 	GpuParamBlockBuffer::~GpuParamBlockBuffer()
 	{
 		if(mData != nullptr)
-			delete[] mData;
+			CM_DELETE_BYTES(mData, ScratchAlloc);
 	}
 
 	void GpuParamBlockBuffer::writeAll(const void* data)
@@ -44,13 +44,13 @@ namespace CamelotEngine
 	GpuParamBlock::~GpuParamBlock()
 	{
 		if(mData != nullptr)
-			delete [] mData;
+			CM_DELETE_BYTES(mData, ScratchAlloc);
 	}
 
 	void GpuParamBlock::initialize(const GpuParamBlockDesc& desc, GpuParamBlockUsage usage)
 	{
 		mSize = desc.blockSize * sizeof(UINT32);
-		mData = new UINT8[mSize];
+		mData = CM_NEW_BYTES(mSize, ScratchAlloc);
 		memset(mData, 0, mSize);
 
 		mUsage = usage;
@@ -119,7 +119,7 @@ namespace CamelotEngine
 			// Need to copy the data, as non-render threads might modify
 			// the data before render thread has a chance to process it
 			// TODO - Use an allocator
-			UINT8* dataCopy = new UINT8[mSize];
+			UINT8* dataCopy = CM_NEW_BYTES(mSize, ScratchAlloc);
 			memcpy(dataCopy, mData, mSize);
 
 			queueGpuCommand(getThisPtr(), boost::bind(&GpuParamBlock::updateBuffer_internal, this, dataCopy));
@@ -132,7 +132,7 @@ namespace CamelotEngine
 
 		mBuffer->writeAll(data);
 
-		delete[] data;
+		CM_DELETE_BYTES(data, ScratchAlloc);
 	}
 
 	GpuParamBlockPtr GpuParamBlock::create(const GpuParamBlockDesc& desc)

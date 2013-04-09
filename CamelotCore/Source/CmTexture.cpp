@@ -138,7 +138,8 @@ namespace CamelotEngine {
 			if(depth != 1) depth /= 2;
 		}
 
-		PixelDataPtr dst(new PixelData(width, height, depth, getFormat()));
+		PixelDataPtr dst(CM_NEW(PixelData, PoolAlloc) PixelData(width, height, depth, getFormat()),
+			&MemAllocDeleter<PixelData, PoolAlloc>::deleter);
 		UINT8* buffer = (UINT8*)dst->allocData(totalSize);
 
 		PixelData myData = lock(GBL_READ_ONLY, mip, face);
@@ -245,7 +246,7 @@ namespace CamelotEngine {
 		{
 			TextureViewPtr newView = texture->createView();
 			newView->initialize(texture, key);
-			texture->mTextureViews[key] = new TextureViewReference(newView);
+			texture->mTextureViews[key] = CM_NEW(TextureViewReference, PoolAlloc) TextureViewReference(newView);
 
 			iterFind = texture->mTextureViews.find(key);
 		}
@@ -274,7 +275,7 @@ namespace CamelotEngine {
 
 			texture->mTextureViews.erase(iterFind);
 
-			delete toRemove;
+			CM_DELETE(toRemove, TextureViewReference, PoolAlloc);
 		}
 	}
 

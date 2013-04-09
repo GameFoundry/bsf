@@ -16,7 +16,7 @@ namespace CamelotEngine
 
 	PassPtr Technique::addPass()
 	{
-		PassPtr newPass(new Pass());
+		PassPtr newPass(CM_NEW(Pass, PoolAlloc) Pass(), &MemAllocDeleter<Pass, PoolAlloc>::deleter);
 
 		mPasses.push_back(newPass);
 		return newPass;

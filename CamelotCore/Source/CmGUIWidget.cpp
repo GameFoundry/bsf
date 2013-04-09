@@ -93,7 +93,8 @@ namespace CamelotEngine
 		UINT32 numMeshes = 0;
 		for(auto& renderElem : meshDataPerRenderElement)
 		{
-			renderElem.second.meshData = std::shared_ptr<MeshData>(new MeshData());
+			renderElem.second.meshData = std::shared_ptr<MeshData>(CM_NEW(MeshData, PoolAlloc) MeshData(),
+				&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
 			renderElem.second.vertices = renderElem.second.meshData->addPositionsVec2(renderElem.second.numQuads * 4);
 			renderElem.second.uvs = renderElem.second.meshData->addUV0(renderElem.second.numQuads * 4);
 			renderElem.second.indices = renderElem.second.meshData->addIndices32(renderElem.second.numQuads * 6);

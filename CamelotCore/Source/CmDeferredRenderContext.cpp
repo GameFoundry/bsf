@@ -9,7 +9,7 @@
 namespace CamelotEngine
 {
 	DeferredRenderContext::DeferredRenderContext(RenderSystem* rs, CM_THREAD_ID_TYPE threadId)
-		:mCommandQueue(new CommandQueue(threadId))
+		:mCommandQueue(CM_NEW(CommandQueue, GenAlloc) CommandQueue(threadId))
 		, mRenderSystem(rs)
 	{
 		assert(mRenderSystem != nullptr);
@@ -17,7 +17,7 @@ namespace CamelotEngine
 
 	DeferredRenderContext::~DeferredRenderContext()
 	{
-		delete mCommandQueue;
+		CM_DELETE(mCommandQueue, CommandQueue, GenAlloc);
 	}
 
 	void DeferredRenderContext::setViewport(ViewportPtr& vp)
