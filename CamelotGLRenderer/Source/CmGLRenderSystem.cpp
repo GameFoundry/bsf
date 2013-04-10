@@ -179,18 +179,6 @@ namespace CamelotEngine
 		HardwareBufferManager::shutDown();
 		GLRTTManager::shutDown();
 
-		// Delete extra threads contexts
-		for (GLContextList::iterator i = mBackgroundContextList.begin(); 
-			i != mBackgroundContextList.end(); ++i)
-		{
-			GLContext* pCurContext = *i;
-
-			pCurContext->releaseContext();
-
-			delete pCurContext;
-		}
-		mBackgroundContextList.clear();
-
 		mBoundVertexBuffers.clear();
 		mBoundVertexDeclaration = nullptr;
 		mBoundIndexBuffer = nullptr;

@@ -469,7 +469,7 @@ namespace CamelotEngine
     }
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
-    FileDataStream::FileDataStream(std::ifstream* s, bool freeOnClose)
+    FileDataStream::FileDataStream(std::shared_ptr<std::ifstream> s, bool freeOnClose)
         : DataStream(), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
     {
         // calculate the size
@@ -480,7 +480,7 @@ namespace CamelotEngine
     }
     //-----------------------------------------------------------------------
     FileDataStream::FileDataStream(const String& name, 
-        std::ifstream* s, bool freeOnClose)
+        std::shared_ptr<std::ifstream> s, bool freeOnClose)
         : DataStream(name), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
     {
         // calculate the size
@@ -491,7 +491,7 @@ namespace CamelotEngine
     }
     //-----------------------------------------------------------------------
     FileDataStream::FileDataStream(const String& name, 
-        std::ifstream* s, size_t inSize, bool freeOnClose)
+        std::shared_ptr<std::ifstream> s, size_t inSize, bool freeOnClose)
         : DataStream(name), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
     {
         // Size is passed in
@@ -499,7 +499,7 @@ namespace CamelotEngine
 		determineAccess();
     }
 	//---------------------------------------------------------------------
-	FileDataStream::FileDataStream(std::fstream* s, bool freeOnClose)
+	FileDataStream::FileDataStream(std::shared_ptr<std::fstream> s, bool freeOnClose)
 		: DataStream(false), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
 	{
 		// writeable!
@@ -512,7 +512,7 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------
 	FileDataStream::FileDataStream(const String& name, 
-		std::fstream* s, bool freeOnClose)
+		std::shared_ptr<std::fstream> s, bool freeOnClose)
 		: DataStream(name, false), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
 	{
 		// writeable!
@@ -524,7 +524,7 @@ namespace CamelotEngine
 	}
 	//-----------------------------------------------------------------------
 	FileDataStream::FileDataStream(const String& name, 
-		std::fstream* s, size_t inSize, bool freeOnClose)
+		std::shared_ptr<std::fstream> s, size_t inSize, bool freeOnClose)
 		: DataStream(name, false), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
 	{
 		// writeable!
@@ -678,14 +678,9 @@ namespace CamelotEngine
 
             if (mFreeOnClose)
             {
-                // delete the stream too
-				if (mpFStreamRO)
-					delete mpFStreamRO;
-				if (mpFStream)
-					delete mpFStream;
-				mpInStream = 0;
-				mpFStreamRO = 0; 
-				mpFStream = 0; 
+				mpInStream = nullptr;
+				mpFStreamRO = nullptr; 
+				mpFStream = nullptr; 
             }
         }
     }

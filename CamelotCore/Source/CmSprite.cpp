@@ -107,14 +107,17 @@ namespace CamelotEngine
 	{
 		for(auto& renderElem : mCachedRenderElements)
 		{
+			UINT32 vertexCount = renderElem.numQuads * 4;
+			UINT32 indexCount = renderElem.numQuads * 6;
+
 			if(renderElem.vertices != nullptr)
-				delete[] renderElem.vertices;
+				CM_DELETE_ARRAY(renderElem.vertices, Vector2, vertexCount, ScratchAlloc);
 
 			if(renderElem.uvs != nullptr)
-				delete[] renderElem.uvs;
+				CM_DELETE_ARRAY(renderElem.uvs, Vector2, vertexCount, ScratchAlloc);
 
 			if(renderElem.indexes != nullptr)
-				delete[] renderElem.indexes;
+				CM_DELETE_ARRAY(renderElem.indexes, UINT32, indexCount, ScratchAlloc);
 
 			if(renderElem.material != nullptr)
 			{

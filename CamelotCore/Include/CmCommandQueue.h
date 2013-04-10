@@ -103,6 +103,11 @@ namespace CamelotEngine
 		std::queue<Command>* flush();
 
 		/**
+		 * @brief	Cancels all currently queued commands.
+		 */
+		void cancelAll();
+
+		/**
 		 * @brief	Plays all provided commands. Should only be called from the render thread. To get the
 		 * 			commands call flushCommands().
 		 *

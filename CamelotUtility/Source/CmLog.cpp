@@ -34,7 +34,7 @@ namespace CamelotEngine
 	void Log::clear()
 	{
 		for(auto iter = mEntries.begin(); iter != mEntries.end(); ++iter)
-			delete *iter;
+			CM_DELETE(*iter, LogEntry, PoolAlloc);
 
 		mEntries.clear();
 

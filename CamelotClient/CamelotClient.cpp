@@ -26,8 +26,8 @@
 #include "CmDebugCamera.h"
 #include "CmTestTextSprite.h"
 
-//#define DX11
-#define DX9
+#define DX11
+//#define DX9
 //#define GL
 
 using namespace CamelotEngine;

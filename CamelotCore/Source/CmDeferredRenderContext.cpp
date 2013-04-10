@@ -160,7 +160,6 @@ namespace CamelotEngine
 
 	void DeferredRenderContext::cancelAll()
 	{
-		std::queue<CommandQueue::Command>* commands = mCommandQueue->flush();
-		delete commands;
+		mCommandQueue->cancelAll();
 	}
 }

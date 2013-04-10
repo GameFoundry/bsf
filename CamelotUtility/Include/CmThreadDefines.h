@@ -49,7 +49,6 @@ THE SOFTWARE
 // like CM_AUTO_MUTEX but mutex held by pointer
 #define CM_AUTO_SHARED_MUTEX mutable boost::recursive_mutex *CM_AUTO_MUTEX_NAME;
 #define CM_LOCK_AUTO_SHARED_MUTEX assert(CM_AUTO_MUTEX_NAME); boost::recursive_mutex::scoped_lock cmAutoMutexLock(*CM_AUTO_MUTEX_NAME);
-#define CM_DELETE_AUTO_SHARED_MUTEX assert(CM_AUTO_MUTEX_NAME); delete CM_AUTO_MUTEX_NAME;
 #define CM_COPY_AUTO_SHARED_MUTEX(from) assert(!CM_AUTO_MUTEX_NAME); CM_AUTO_MUTEX_NAME = from;
 #define CM_SET_AUTO_SHARED_MUTEX_NULL CM_AUTO_MUTEX_NAME = 0;
 #define CM_MUTEX_CONDITIONAL(mutex) if (mutex)
@@ -63,13 +62,6 @@ THE SOFTWARE
 #define CM_RW_MUTEX(name) mutable boost::shared_mutex name
 #define CM_LOCK_RW_MUTEX_READ(name) boost::shared_lock<boost::shared_mutex> cmnameLock(name)
 #define CM_LOCK_RW_MUTEX_WRITE(name) boost::unique_lock<boost::shared_mutex> cmnameLock(name)
-// Thread-local pointer
-#define CM_THREAD_POINTER(T, var) boost::thread_specific_ptr<T> var
-#define CM_THREAD_POINTER_INIT(var) var(&deletePtr)
-#define CM_THREAD_POINTER_VAR(T, var) boost::thread_specific_ptr<T> var (&deletePtr<T>)
-#define CM_THREAD_POINTER_SET(var, expr) var.reset(expr)
-#define CM_THREAD_POINTER_GET(var) var.get()
-#define CM_THREAD_POINTER_DELETE(var) var.reset(0)
 // Thread objects and related functions
 #define CM_THREAD_TYPE boost::thread
 #define CM_THREAD_CREATE(name, worker) boost::thread* name = new (CamelotEngine::MemoryAllocator<CamelotEngine::GenAlloc>::allocate(sizeof(boost::thread))) boost::thread(worker);
@@ -93,7 +85,6 @@ THE SOFTWARE
 #define CM_LOCK_MUTEX_NAMED(mutexName, lockName)
 #define CM_AUTO_SHARED_MUTEX
 #define CM_LOCK_AUTO_SHARED_MUTEX
-#define CM_DELETE_AUTO_SHARED_MUTEX
 #define CM_COPY_AUTO_SHARED_MUTEX(from)
 #define CM_SET_AUTO_SHARED_MUTEX_NULL
 #define CM_MUTEX_CONDITIONAL(name) if(true)
@@ -106,12 +97,6 @@ THE SOFTWARE
 #define CM_THREAD_WAIT(sync, lock) 
 #define CM_THREAD_NOTIFY_ONE(sync) 
 #define CM_THREAD_NOTIFY_ALL(sync) 
-#define CM_THREAD_POINTER(T, var) T* var
-#define CM_THREAD_POINTER_INIT(var) var(0)
-#define CM_THREAD_POINTER_VAR(T, var) T* var = 0
-#define CM_THREAD_POINTER_SET(var, expr) var = expr
-#define CM_THREAD_POINTER_GET(var) var
-#define CM_THREAD_POINTER_DELETE(var) { delete var; var = 0; }
 #define CM_THREAD_SLEEP(ms)
 #define CM_THREAD_ID_TYPE UINT32
 #define CM_THREAD_WORKER_INHERIT

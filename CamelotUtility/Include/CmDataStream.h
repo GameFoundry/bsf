@@ -375,11 +375,11 @@ namespace CamelotEngine
 	{
 	protected:
 		/// Reference to source stream (read)
-		std::istream* mpInStream;
+		std::shared_ptr<std::istream> mpInStream;
 		/// Reference to source file stream (read-only)
-		std::ifstream* mpFStreamRO;
+		std::shared_ptr<std::ifstream> mpFStreamRO;
 		/// Reference to source file stream (read-write)
-		std::fstream* mpFStream;
+		std::shared_ptr<std::fstream> mpFStream;
         bool mFreeOnClose;	
 
 		void determineAccess();
@@ -389,14 +389,14 @@ namespace CamelotEngine
         @param freeOnClose Whether to delete the underlying stream on 
             destruction of this class
         */
-		FileDataStream(std::ifstream* s, 
+		FileDataStream(std::shared_ptr<std::ifstream> s, 
             bool freeOnClose = true);
 		/** Construct a read-write stream from an STL stream
 		@param s Pointer to source stream
 		@param freeOnClose Whether to delete the underlying stream on 
 		destruction of this class
 		*/
-		FileDataStream(std::fstream* s, 
+		FileDataStream(std::shared_ptr<std::fstream> s, 
 			bool freeOnClose = true);
 
 		/** Construct named read-only stream from an STL stream
@@ -406,7 +406,7 @@ namespace CamelotEngine
             destruction of this class
         */
 		FileDataStream(const String& name, 
-            std::ifstream* s, 
+            std::shared_ptr<std::ifstream> s, 
             bool freeOnClose = true);
 
 		/** Construct named read-write stream from an STL stream
@@ -416,7 +416,7 @@ namespace CamelotEngine
 		destruction of this class
 		*/
 		FileDataStream(const String& name, 
-			std::fstream* s, 
+			std::shared_ptr<std::fstream> s, 
 			bool freeOnClose = true);
 
 		/** Construct named read-only stream from an STL stream, and tell it the size
@@ -434,7 +434,7 @@ namespace CamelotEngine
 			MEMCATEGRORY_GENERAL.
         */
 		FileDataStream(const String& name, 
-            std::ifstream* s, 
+            std::shared_ptr<std::ifstream> s, 
             size_t size, 
             bool freeOnClose = true);
 
@@ -453,7 +453,7 @@ namespace CamelotEngine
 		MEMCATEGRORY_GENERAL.
 		*/
 		FileDataStream(const String& name, 
-			std::fstream* s, 
+			std::shared_ptr<std::fstream> s, 
 			size_t size, 
 			bool freeOnClose = true);
 

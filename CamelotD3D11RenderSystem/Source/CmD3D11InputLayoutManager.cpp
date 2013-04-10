@@ -166,9 +166,9 @@ namespace CamelotEngine
 		{
 			auto inputLayoutIter = mInputLayoutMap.find(iter->second);
 
-			delete inputLayoutIter->first.bufferDeclElements;
+			CM_DELETE(inputLayoutIter->first.bufferDeclElements, list<VertexElement>::type, PoolAlloc);
 			SAFE_RELEASE(inputLayoutIter->second->inputLayout);
-			delete inputLayoutIter->second;
+			CM_DELETE(inputLayoutIter->second, InputLayoutEntry, PoolAlloc);
 
 			mInputLayoutMap.erase(inputLayoutIter);
 

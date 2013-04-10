@@ -158,6 +158,12 @@ namespace CamelotEngine
 		playback(commands, boost::function<void(UINT32)>());
 	}
 
+	void CommandQueue::cancelAll()
+	{
+		std::queue<CommandQueue::Command>* commands = flush();
+		CM_DELETE(commands, std::queue<Command>, PoolAlloc);
+	}
+
 	bool CommandQueue::isEmpty()
 	{
 		CM_LOCK_MUTEX(mCommandBufferMutex);

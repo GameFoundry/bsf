@@ -38,35 +38,29 @@ namespace CamelotEngine
 		// Always open in binary mode
 		// Also, always include reading
 		std::ios::openmode mode = std::ios::in | std::ios::binary;
-		std::istream* baseStream = 0;
-		std::ifstream* roStream = 0;
-		std::fstream* rwStream = 0;
+		std::shared_ptr<std::istream> baseStream = 0;
+		std::shared_ptr<std::ifstream> roStream = 0;
+		std::shared_ptr<std::fstream> rwStream = 0;
 
 		if (!readOnly)
 		{
 			mode |= std::ios::out;
-			rwStream = CM_NEW(std::fstream, ScratchAlloc) std::fstream();
+			rwStream = std::shared_ptr<std::fstream>(CM_NEW(std::fstream, ScratchAlloc) std::fstream(),
+				&MemAllocDeleter<std::fstream, ScratchAlloc>::deleter);
 			rwStream->open(fullPath.c_str(), mode);
 			baseStream = rwStream;
 		}
 		else
 		{
-			roStream = CM_NEW(std::ifstream, ScratchAlloc) std::ifstream();
+			roStream = std::shared_ptr<std::ifstream>(CM_NEW(std::ifstream, ScratchAlloc) std::ifstream(),
+				&MemAllocDeleter<std::ifstream, ScratchAlloc>::deleter);
 			roStream->open(fullPath.c_str(), mode);
 			baseStream = roStream;
 		}
 
 		// Should check ensure open succeeded, in case fail for some reason.
 		if (baseStream->fail())
-		{
-			if(roStream != nullptr)
-				CM_DELETE(roStream, std::ifstream, ScratchAlloc);
-
-			if(rwStream != nullptr)
-				CM_DELETE(rwStream, std::fstream, ScratchAlloc);
-
 			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath);
-		}
 
 		/// Construct return stream, tell it to delete on destroy
 		FileDataStream* stream = 0;
@@ -88,17 +82,13 @@ namespace CamelotEngine
 		// Always open in binary mode
 		// Also, always include reading
 		std::ios::openmode mode = std::ios::out | std::ios::binary;
-		std::fstream* rwStream = CM_NEW(std::fstream, ScratchAlloc) std::fstream();
+		std::shared_ptr<std::fstream> rwStream(CM_NEW(std::fstream, ScratchAlloc) std::fstream(),
+			&MemAllocDeleter<std::fstream, ScratchAlloc>::deleter);
 		rwStream->open(fullPath.c_str(), mode);
 
 		// Should check ensure open succeeded, in case fail for some reason.
 		if (rwStream->fail())
-		{
-			if(rwStream != nullptr)
-				CM_DELETE(rwStream, std::fstream, ScratchAlloc); ;
-
 			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath);
-		}
 
 		/// Construct return stream, tell it to delete on destroy
 		FileDataStream* stream = CM_NEW(FileDataStream, ScratchAlloc) FileDataStream(fullPath, rwStream, 0, true);

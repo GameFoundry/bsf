@@ -290,8 +290,6 @@ namespace CamelotEngine {
         /* The current GL context  - main thread only */
         GLContext *mCurrentContext;
 		typedef list<GLContext*>::type GLContextList;
-		/// List of background thread contexts
-		GLContextList mBackgroundContextList;
 
 		vector<GLuint>::type mBoundAttributes; // Only full between begin/endDraw calls
 		bool mDrawCallInProgress;
