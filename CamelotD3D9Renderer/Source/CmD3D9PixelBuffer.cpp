@@ -53,7 +53,10 @@ namespace CamelotEngine
 		{
 			SAFE_RELEASE(it->second->surface);
 			SAFE_RELEASE(it->second->volume);
-			SAFE_DELETE(it->second);
+
+			if(it->second != nullptr)
+				CM_DELETE(it->second, BufferResources, PoolAlloc);
+
 			DeviceToBufferResourcesIterator deadi = it++;
 			mMapDeviceToBufferResources.erase(deadi);
 		}
@@ -106,11 +109,14 @@ namespace CamelotEngine
 					dev->TestCooperativeLevel() == D3D_OK)
 				{
 					Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
-					PixelData dstBox(fullBufferBox, mFormat, new char[getSizeInBytes()]);
+					PixelData dstBox(fullBufferBox, mFormat, (char*)CM_NEW_BYTES(getSizeInBytes(), ScratchAlloc));
 
 					blitToMemory(fullBufferBox, dstBox, it->second, it->first);
 					blitFromMemory(dstBox, fullBufferBox, bufferResources);
-					SAFE_DELETE_ARRAY(dstBox.data);
+
+					if(dstBox.data != nullptr)
+						CM_DELETE_BYTES(dstBox.data, ScratchAlloc);
+
 					break;
 				}
 				++it;			
@@ -162,11 +168,14 @@ namespace CamelotEngine
 					dev->TestCooperativeLevel() == D3D_OK)
 				{
 					Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
-					PixelData dstBox(fullBufferBox, mFormat, new char[getSizeInBytes()]);
+					PixelData dstBox(fullBufferBox, mFormat, (char*)CM_NEW_BYTES(getSizeInBytes(), ScratchAlloc));
 
 					blitToMemory(fullBufferBox, dstBox, it->second, it->first);
 					blitFromMemory(dstBox, fullBufferBox, bufferResources);
-					SAFE_DELETE(dstBox.data);
+					
+					if(dstBox.data != nullptr)
+						CM_DELETE_BYTES(dstBox.data, ScratchAlloc);
+
 					break;
 				}
 				++it;			
@@ -188,7 +197,7 @@ namespace CamelotEngine
 	//-----------------------------------------------------------------------------  
 	D3D9PixelBuffer::BufferResources* D3D9PixelBuffer::createBufferResources()
 	{
-		BufferResources* newResources = new BufferResources;
+		BufferResources* newResources = CM_NEW(BufferResources, PoolAlloc) BufferResources;
 
 		memset(newResources, 0, sizeof(BufferResources));
 
@@ -206,7 +215,10 @@ namespace CamelotEngine
 		{
 			SAFE_RELEASE(it->second->surface);
 			SAFE_RELEASE(it->second->volume);	
-			SAFE_DELETE(it->second);
+
+			if(it->second != nullptr)
+				CM_DELETE(it->second, BufferResources, PoolAlloc);
+
 			mMapDeviceToBufferResources.erase(it);
 		}
 	}
@@ -592,7 +604,7 @@ namespace CamelotEngine
 		// convert to pixelbuffer's native format if necessary
 		if (D3D9Mappings::_getPF(src.format) == D3DFMT_UNKNOWN)
 		{
-			data = new void*[PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat)];
+			data = (void*)CM_NEW_BYTES(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat), ScratchAlloc);
 			converted = PixelData(src.getWidth(), src.getHeight(), src.getDepth(), mFormat, data);
 			PixelUtil::bulkPixelConversion(src, converted);
 		}
@@ -670,8 +682,8 @@ namespace CamelotEngine
 		if(mDoMipmapGen)
 			_genMipmaps(dstBufferResources->mipTex);
 
-		if(data != NULL)
-			delete[] data;
+		if(data != nullptr)
+			CM_DELETE_BYTES(data, ScratchAlloc);
 	}
 
 	//-----------------------------------------------------------------------------  

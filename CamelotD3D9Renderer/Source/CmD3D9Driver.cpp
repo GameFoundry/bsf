@@ -63,7 +63,8 @@ namespace CamelotEngine
 
 	D3D9Driver::~D3D9Driver()
 	{
-		SAFE_DELETE( mpVideoModeList );		
+		if(mpVideoModeList != nullptr)
+			CM_DELETE(mpVideoModeList, D3D9VideoModeList, GenAlloc);
 	}
 
 	String D3D9Driver::DriverName() const
@@ -84,7 +85,7 @@ namespace CamelotEngine
 	D3D9VideoModeList* D3D9Driver::getVideoModeList()
 	{
 		if( !mpVideoModeList )
-			mpVideoModeList = new D3D9VideoModeList( this );
+			mpVideoModeList = CM_NEW(D3D9VideoModeList, GenAlloc) D3D9VideoModeList( this );
 
 		return mpVideoModeList;
 	}	

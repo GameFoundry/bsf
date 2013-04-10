@@ -231,7 +231,9 @@ namespace CamelotEngine
 		{
 			TextureResources* textureResource = it->second;
 
-			SAFE_DELETE(textureResource);
+			if(textureResource != nullptr)
+				CM_DELETE(textureResource, TextureResources, PoolAlloc);
+
 			++it;
 		}		
 
@@ -258,7 +260,7 @@ namespace CamelotEngine
 	{
 		assert(mMapDeviceToTextureResources.find(d3d9Device) == mMapDeviceToTextureResources.end());
 
-		TextureResources* textureResources = new TextureResources;
+		TextureResources* textureResources = CM_NEW(TextureResources, PoolAlloc) TextureResources;
 
 		textureResources->pNormTex		= NULL;
 		textureResources->pCubeTex		= NULL;
@@ -987,8 +989,8 @@ namespace CamelotEngine
 			{
 				for(UINT32 mip=0; mip<=mNumMipmaps; ++mip)
 				{
-					buffer = new D3D9PixelBuffer((GpuBufferUsage)bufusage, this);
-					mSurfaceList.push_back(PixelBufferPtr(buffer));
+					buffer = CM_NEW(D3D9PixelBuffer, PoolAlloc) D3D9PixelBuffer((GpuBufferUsage)bufusage, this);
+					mSurfaceList.push_back(PixelBufferPtr(buffer, &MemAllocDeleter<D3D9PixelBuffer, PoolAlloc>::deleter));
 				}
 			}
 		}
@@ -1146,7 +1148,8 @@ namespace CamelotEngine
 			// after device reset.
 			freeTextureResources(d3d9Device, textureResource);
 
-			SAFE_DELETE(textureResource);
+			if(textureResource != nullptr)
+				CM_DELETE(textureResource, TextureResources, PoolAlloc);
 
 			mMapDeviceToTextureResources.erase(it);
 		}	

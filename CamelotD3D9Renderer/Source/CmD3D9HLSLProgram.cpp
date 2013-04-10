@@ -243,7 +243,8 @@ namespace CamelotEngine {
 	//-----------------------------------------------------------------------
 	GpuParamsPtr D3D9HLSLProgram::createParameters()
 	{
-		GpuParamsPtr params(new GpuParams(mParametersDesc));
+		GpuParamsPtr params(CM_NEW(GpuParams, PoolAlloc) GpuParams(mParametersDesc),
+			&MemAllocDeleter<GpuParams, PoolAlloc>::deleter);
 		params->setTransposeMatrices(mColumnMajorMatrices);
 
 		return params;

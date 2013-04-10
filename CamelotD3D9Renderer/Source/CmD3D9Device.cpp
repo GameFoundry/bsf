@@ -84,7 +84,7 @@ namespace CamelotEngine
 
 		if (it == mMapRenderWindowToResoruces.end())
 		{
-			RenderWindowResources* renderWindowResources = new RenderWindowResources;
+			RenderWindowResources* renderWindowResources = CM_NEW(RenderWindowResources, PoolAlloc) RenderWindowResources;
 
 			memset(renderWindowResources, 0, sizeof(RenderWindowResources));						
 			renderWindowResources->adapterOrdinalInGroupIndex = 0;					
@@ -116,7 +116,8 @@ namespace CamelotEngine
 
 			releaseRenderWindowResources(renderWindowResources);
 
-			SAFE_DELETE(renderWindowResources);
+			if(renderWindowResources != nullptr)
+				CM_DELETE(renderWindowResources, RenderWindowResources, PoolAlloc);
 			
 			mMapRenderWindowToResoruces.erase(it);		
 		}
@@ -281,7 +282,9 @@ namespace CamelotEngine
 			if (it->first->getWindowHandle() == msSharedFocusWindow)
 				setSharedWindowHandle(NULL);
 
-			SAFE_DELETE(it->second);
+			if(it->second != nullptr)
+				CM_DELETE(it->second, RenderWindowResources, PoolAlloc);
+
 			++it;
 		}
 		mMapRenderWindowToResoruces.clear();
@@ -289,7 +292,10 @@ namespace CamelotEngine
 		// Reset dynamic attributes.		
 		mFocusWindow			= NULL;		
 		mD3D9DeviceCapsValid	= false;
-		SAFE_DELETE_ARRAY(mPresentationParams);
+
+		if(mPresentationParams != nullptr)
+			CM_DELETE_ARRAY(mPresentationParams, D3DPRESENT_PARAMETERS, mPresentationParamsCount, PoolAlloc);
+
 		mPresentationParamsCount = 0;
 
 		// Notify the device manager on this instance destruction.	
@@ -464,12 +470,14 @@ namespace CamelotEngine
 	void D3D9Device::updatePresentationParameters()
 	{		
 		// Clear old presentation parameters.
-		SAFE_DELETE_ARRAY(mPresentationParams);
+		if(mPresentationParams != nullptr)
+			CM_DELETE_ARRAY(mPresentationParams, D3DPRESENT_PARAMETERS, mPresentationParamsCount, PoolAlloc);
+
 		mPresentationParamsCount = 0;		
 
 		if (mMapRenderWindowToResoruces.size() > 0)
 		{
-			mPresentationParams = new D3DPRESENT_PARAMETERS[mMapRenderWindowToResoruces.size()];
+			mPresentationParams = CM_NEW_ARRAY(D3DPRESENT_PARAMETERS, (UINT32)mMapRenderWindowToResoruces.size(), PoolAlloc);
 
 			RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
 

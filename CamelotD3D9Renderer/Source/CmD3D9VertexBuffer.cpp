@@ -147,7 +147,10 @@ namespace CamelotEngine {
 		if (it != mMapDeviceToBufferResources.end())	
 		{								
 			SAFE_RELEASE(it->second->mBuffer);
-			SAFE_DELETE(it->second);
+
+			if(it->second != nullptr)
+				CM_DELETE(it->second, BufferResources, PoolAlloc);
+
 			mMapDeviceToBufferResources.erase(it);
 		}	
 	}
@@ -193,7 +196,7 @@ namespace CamelotEngine {
 		}
 		else
 		{
-			bufferResources = new BufferResources;			
+			bufferResources = CM_NEW(BufferResources, PoolAlloc) BufferResources;			
 			mMapDeviceToBufferResources[d3d9Device] = bufferResources;
 		}
 
@@ -313,7 +316,7 @@ namespace CamelotEngine {
 		mBufferDesc.Pool = eResourcePool;
 
 		// Allocate the system memory buffer.
-		mSystemMemoryBuffer = new char [getSizeInBytes()];
+		mSystemMemoryBuffer = (char*)CM_NEW_BYTES(getSizeInBytes(), ScratchAlloc);
 		memset(mSystemMemoryBuffer, 0, getSizeInBytes());	
 
 		// Case we have to create this buffer resource on loading.
@@ -339,11 +342,16 @@ namespace CamelotEngine {
 		while (it != mMapDeviceToBufferResources.end())
 		{
 			SAFE_RELEASE(it->second->mBuffer);
-			SAFE_DELETE(it->second);
+
+			if(it->second != nullptr)
+				CM_DELETE(it->second, BufferResources, PoolAlloc);
+
 			++it;
 		}	
 		mMapDeviceToBufferResources.clear();   
-		SAFE_DELETE_ARRAY(mSystemMemoryBuffer);
+
+		if(mSystemMemoryBuffer != nullptr)
+			CM_DELETE_BYTES(mSystemMemoryBuffer, ScratchAlloc);
 
 		VertexBuffer::destroy_internal();
 	}

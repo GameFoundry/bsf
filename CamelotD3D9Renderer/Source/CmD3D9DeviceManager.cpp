@@ -222,7 +222,7 @@ namespace CamelotEngine
 		// No matching device found -> create new one.
 		if (renderDevice == NULL)
 		{
-			renderDevice = new D3D9Device(this, nAdapterOrdinal, direct3D9->GetAdapterMonitor(nAdapterOrdinal), devType, extraFlags);
+			renderDevice = CM_NEW(D3D9Device, GenAlloc) D3D9Device(this, nAdapterOrdinal, direct3D9->GetAdapterMonitor(nAdapterOrdinal), devType, extraFlags);
 			mRenderDevices.push_back(renderDevice);
 			if (mActiveDevice == NULL)			
 				setActiveDevice(renderDevice);											
@@ -272,7 +272,9 @@ namespace CamelotEngine
 			{			
 				if (*itDevice == device)
 				{					
-					SAFE_DELETE(device);
+					if(device != nullptr)
+						CM_DELETE(device, D3D9Device, GenAlloc);
+
 					mRenderDevices.erase(itDevice);
 					break;
 				}												
