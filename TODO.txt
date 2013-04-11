@@ -21,20 +21,6 @@ Figure out how to store texture references in a font?
 
 Move Debug to CamelotCore and add SetFillMode
 
-GameObjectHandle has  SceneObject friend which doesn't make sense
-
-GameObject destructor should be private and only callable by GameObjectHandle
- - This was I can ensure object is only destroyed when calling destroy(), and I can replace internal shared_ptr
-
-Make GameObjectHandle hold a normal pointer instead of a shared one
- - By its definition its guaranteed to have only one reference so there's no need for shared ptr
-
-getVisibleRederables iterates over all gameobjects and calls getType, which will return empty handle if none is found, which is expensive
-
-
-
-
-
 Add TextUtil class
  - Ability to calculate a size of a line (will need this if I want to add "..." to text that doesn't fit)
  - Maybe even move line and word classes to it

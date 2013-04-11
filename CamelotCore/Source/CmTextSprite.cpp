@@ -14,7 +14,7 @@ namespace CamelotEngine
 	{
 	public:
 		TextWord(bool spacer)
-			:mWidth(0), mSpacer(spacer)
+			:mWidth(0), mSpacer(spacer), mSpaceWidth(0)
 		{ }
 
 		void addChar(const CHAR_DESC& desc)
@@ -22,6 +22,11 @@ namespace CamelotEngine
 			mChars.push_back(desc);
 
 			calculateWidth();
+		}
+
+		void addSpace(UINT32 spaceWidth)
+		{
+			mSpaceWidth += spaceWidth;
 		}
 
 		void removeLastChar()
@@ -42,9 +47,16 @@ namespace CamelotEngine
 		vector<CHAR_DESC>::type mChars;
 		UINT32 mWidth;
 		bool mSpacer;
+		UINT32 mSpaceWidth;
 
 		void calculateWidth()
 		{
+			if(isSpacer())
+			{
+				mWidth = mSpaceWidth;
+				return;
+			}
+
 			if(mChars.size() == 0)
 			{
 				mWidth = 0;
@@ -91,7 +103,7 @@ namespace CamelotEngine
 		{
 			if(mLastWord == nullptr)
 			{
-				TextWord* newWord = CM_NEW(TextWord, ScratchAlloc) TextWord(charDesc.charId == SPACE_CHAR);
+				TextWord* newWord = CM_NEW(TextWord, ScratchAlloc) TextWord(false);
 				mLastWord = newWord;
 
 				mWords.push_back(mLastWord);
@@ -100,27 +112,39 @@ namespace CamelotEngine
 			}
 			else
 			{
-				if(charDesc.charId != SPACE_CHAR)
+				if(mLastWord->isSpacer())
 				{
-					if(mLastWord->isSpacer())
-					{
-						TextWord* newWord = CM_NEW(TextWord, ScratchAlloc) TextWord(false);
-						mLastWord = newWord;
-
-						mWords.push_back(mLastWord);
-					}
-
-					mLastWord->addChar(charDesc);
-				}
-				else
-				{
-					TextWord* newWord = CM_NEW(TextWord, ScratchAlloc) TextWord(true); // Each space is counted as its own word, to make certain operations easier
+					TextWord* newWord = CM_NEW(TextWord, ScratchAlloc) TextWord(false);
 					mLastWord = newWord;
 
 					mWords.push_back(mLastWord);
-
-					mLastWord->addChar(charDesc);
 				}
+
+				mLastWord->addChar(charDesc);
+			}
+
+			calculateBounds();
+		}
+
+		void addSpace(UINT32 spaceWidth)
+		{
+			if(mLastWord == nullptr)
+			{
+				TextWord* newWord = CM_NEW(TextWord, ScratchAlloc) TextWord(true);
+				mLastWord = newWord;
+
+				mWords.push_back(mLastWord);
+
+				mLastWord->addSpace(spaceWidth);
+			}
+			else
+			{
+				TextWord* newWord = CM_NEW(TextWord, ScratchAlloc) TextWord(true); // Each space is counted as its own word, to make certain operations easier
+				mLastWord = newWord;
+
+				mWords.push_back(mLastWord);
+
+				mLastWord->addSpace(spaceWidth);
 			}
 
 			calculateBounds();
@@ -292,15 +316,17 @@ namespace CamelotEngine
 			UINT32 charId = mText[charIdx];
 			const CHAR_DESC& charDesc = fontData->getCharDesc(charId);
 
-			curLine->add(charDesc);
-
-			if(charDesc.charId != SPACE_CHAR)
+			if(charId != SPACE_CHAR)
 			{
+				curLine->add(charDesc);
+
 				if(charDesc.page >= (UINT32)newRenderElemSizes.size())
 					newRenderElemSizes.resize(charDesc.page + 1);
 
 				newRenderElemSizes[charDesc.page]++;
 			}
+			else
+				curLine->addSpace(fontData->fontDesc.spaceWidth);
 
 			if(widthIsLimited && curLine->getWidth() > mWidth)
 			{

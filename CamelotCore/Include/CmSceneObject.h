@@ -246,6 +246,24 @@ namespace CamelotEngine
 		}
 
 		/**
+		 * @brief	Checks if the current object contains the specified component
+		 * 			 			
+		 * @note	Don't call this too often as it is relatively slow. 
+		 *
+		 * @tparam	typename T	Type of the component.
+		 *
+		 * @return	True if component exists on the object.
+		 */
+		template <typename T>
+		bool hasComponent()
+		{
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
+				"Specified type is not a valid Component.");
+
+			return hasComponent(T::getRTTIStatic()->getRTTIId());
+		}
+
+		/**
 		 * @brief	Searches for a component with the specified type id and returns the first one it
 		 * 			finds.
 		 * 			

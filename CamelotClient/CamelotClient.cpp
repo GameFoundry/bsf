@@ -66,8 +66,8 @@ int CALLBACK WinMain(
 	HSceneObject testModelGO = SceneObject::create("TestMesh");
 	HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
-	//HSceneObject testTextGO = SceneObject::create("TestText");
-	//GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
+	HSceneObject testTextGO = SceneObject::create("TestText");
+	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
 	HFont font;
 	
@@ -85,7 +85,7 @@ int CALLBACK WinMain(
 		font = Importer::instance().import("C:\\arial.ttf", fontImportOptions);
 	}
 
-	//textSprite->setText(camera, "TESTfAV", font, 12);
+	textSprite->setText(camera, "Testing in a new row, does this work?", font, 12);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
