@@ -326,7 +326,6 @@ namespace CamelotEngine
 /************************************************************************/
 
 #include "CmResourceHandle.h"
-#include "CmGameObjectHandle.h"
 
 namespace CamelotEngine
 {
@@ -343,13 +342,6 @@ namespace CamelotEngine
 	typedef ResourceHandle<BlendState> HBlendState;
 	typedef ResourceHandle<GpuProgInclude> HGpuProgInclude;
 	typedef ResourceHandle<Font> HFont;
-
-	// Game object handles
-	typedef GameObjectHandle<GameObject> HGameObject;
-	typedef GameObjectHandle<SceneObject> HSceneObject;
-	typedef GameObjectHandle<Component> HComponent;
-	typedef GameObjectHandle<Camera> HCamera;
-	typedef GameObjectHandle<Renderable> HRenderable;
 }
 
 #endif

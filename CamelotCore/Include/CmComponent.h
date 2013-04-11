@@ -23,11 +23,11 @@ namespace CamelotEngine
 		 */
 		virtual void update() = 0;
 
-		virtual ~Component();
 	protected:
 		friend class SceneObject;
 
 		Component(const HSceneObject& parent);
+		virtual ~Component();
 
 		HSceneObject mParent;
 

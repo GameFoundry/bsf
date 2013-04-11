@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmGameObject.h"
 
 namespace CamelotEngine
 {

@@ -1,23 +1,23 @@
 #pragma once
 
-#include "CmGameObject.h"
-
 namespace CamelotEngine
 {
 	struct CM_EXPORT GameObjectHandleData
 	{
 		GameObjectHandleData()
+			:mPtr(nullptr), mDeleter(nullptr)
 		{ }
 
 		GameObjectHandleData(GameObject* ptr, void(*deleter)(GameObject*))
 		{
-			if(deleter != nullptr)
-				mPtr = std::shared_ptr<GameObject>(ptr, deleter);
-			else
-				mPtr = std::shared_ptr<GameObject>(ptr);
+			mPtr = ptr;
+			mDeleter = deleter;
 		}
 
-		std::shared_ptr<GameObject> mPtr;
+		typedef void(*HandleDeleter)(GameObject*);
+
+		GameObject* mPtr;
+		HandleDeleter mDeleter;
 	};
 
 	/**
@@ -52,7 +52,17 @@ namespace CamelotEngine
 		
 		void destroy()
 		{
-			mData->mPtr = nullptr;
+			if(mData->mPtr != nullptr)
+			{
+				GameObject* toDelete = mData->mPtr;
+				mData->mPtr = nullptr; // Need to set this to null before deleting, otherwise destructor thinks object isn't destroyed
+				// and we end up here again
+
+				if(mData->mDeleter != nullptr)
+					mData->mDeleter(toDelete);
+				else
+					delete toDelete;
+			}
 		}
 
 		std::shared_ptr<GameObjectHandleData> mData;
@@ -80,7 +90,7 @@ namespace CamelotEngine
 		{ 
 			throwIfDestroyed();
 
-			return reinterpret_cast<T*>(mData->mPtr.get()); 
+			return reinterpret_cast<T*>(mData->mPtr); 
 		}
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }

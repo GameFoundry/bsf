@@ -1,4 +1,5 @@
 #include "CmPrerequisites.h"
+#include "CmGameObject.h"
 #include "CmGameObjectHandle.h"
 #include "CmException.h"
 

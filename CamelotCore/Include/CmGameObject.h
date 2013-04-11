@@ -20,3 +20,15 @@ namespace CamelotEngine
 		virtual RTTITypeBase* getRTTI() const;
 	};
 }
+
+#include "CmGameObjectHandle.h"
+
+namespace CamelotEngine
+{
+	// Game object handles
+	typedef GameObjectHandle<GameObject> HGameObject;
+	typedef GameObjectHandle<SceneObject> HSceneObject;
+	typedef GameObjectHandle<Component> HComponent;
+	typedef GameObjectHandle<Camera> HCamera;
+	typedef GameObjectHandle<Renderable> HRenderable;
+}

@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmModule.h"
+#include "CmGameObject.h"
 
 namespace CamelotEngine
 {
