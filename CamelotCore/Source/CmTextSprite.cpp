@@ -27,6 +27,8 @@ namespace CamelotEngine
 		void addSpace(UINT32 spaceWidth)
 		{
 			mSpaceWidth += spaceWidth;
+
+			calculateWidth();
 		}
 
 		void removeLastChar()
@@ -337,7 +339,7 @@ namespace CamelotEngine
 						curLine->addWord(lastWord); // Spaces can stay on previous line even if they don't technically fit
 
 					// No more lines fit vertically so we're done
-					if(heightIsLimited && (curHeight + fontData->fontDesc.lineHeight * 2) > mHeight)
+					if(heightIsLimited && curHeight > mHeight)
 						break;
 
 					curLine = CM_NEW(TextLine, ScratchAlloc) TextLine();

@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmGUIElement.h"
+#include "CmTextSprite.h"
 
 namespace CamelotEngine
 {
@@ -35,8 +36,13 @@ namespace CamelotEngine
 	private:
 		TextSprite* mTextSprite;
 		String mText;
+		UINT32 mFixedWidth, mFixedHeight;
+		bool mWordWrap;
+		TextHorzAlign mHorzAlign;
+		TextVertAlign mVertAlign;
 
 		friend class GUIWidget;
-		GUILabel(GUIWidget* parent, const String& text, const GUISkin* skin);
+		GUILabel(GUIWidget* parent, const String& text, const GUISkin* skin, UINT32 fixedWidth, UINT32 fixedHeight, 
+			bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign);
 	};
 }

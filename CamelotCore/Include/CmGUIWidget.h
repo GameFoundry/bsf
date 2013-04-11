@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmOverlay.h"
+#include "CmTextSprite.h"
 
 namespace CamelotEngine
 {
@@ -16,7 +17,8 @@ namespace CamelotEngine
 
 		GUIWidget(const HSceneObject& parent);
 
-		GUILabel* addLabel(const String& text);
+		GUILabel* addLabel(const String& text, UINT32 fixedWidth = 0, UINT32 fixedHeight = 0, bool wordWrap = false, TextHorzAlign horzAlign = THA_Left, TextVertAlign vertAlign = TVA_Top);
+		GUILabel* addLabel(const String& text, TextHorzAlign horzAlign = THA_Left, TextVertAlign vertAlign = TVA_Top);
 
 		void setSkin(const GUISkin* skin);
 		const GUISkin* getGUISkin() const;

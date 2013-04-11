@@ -5,13 +5,19 @@
 
 namespace CamelotEngine
 {
-	GUILabel::GUILabel(GUIWidget* parent, const String& text, const GUISkin* skin)
-		:GUIElement(parent, skin), mText(text)
+	GUILabel::GUILabel(GUIWidget* parent, const String& text, const GUISkin* skin, UINT32 fixedWidth, UINT32 fixedHeight, 
+		bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign)
+		:GUIElement(parent, skin), mText(text), mFixedWidth(fixedWidth), mFixedHeight(fixedHeight), mWordWrap(wordWrap),
+		mHorzAlign(horzAlign), mVertAlign(vertAlign)
 	{
 		// This is calling a virtual method but it's okay because we always want the one
 		// existing on this class.
 		mStyle = skin->getStyle(getGUITypeName());
 		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite(text, mStyle->font, mStyle->fontSize);
+		mTextSprite->setSize(fixedWidth, fixedHeight);
+		mTextSprite->setWordWrap(wordWrap);
+		mTextSprite->setClipRect(Rect(0, 0, fixedWidth, fixedHeight));
+		mTextSprite->setAlignment(horzAlign, vertAlign);
 	}
 
 	GUILabel::~GUILabel()
