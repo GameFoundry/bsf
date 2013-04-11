@@ -28,14 +28,17 @@ namespace CamelotEngine
 	void D3D11BuiltinMaterialManager::initSpriteTextShader()
 	{
 		String vsCode = "										\
+			float halfViewportWidth;							\
+			float halfViewportHeight;							\
+																\
 			void vs_main(										\
 			in float3 inPos : POSITION,							\
 			in float2 uv : TEXCOORD0,							\
 			out float4 oPosition : SV_Position,					\
 			out float2 oUv : TEXCOORD0)							\
 			{													\
-				float tfrmdX = (inPos.x / 640) - 1.0f;			\
-				float tfrmdY = (inPos.y / 360) + 1.0f;			\
+				float tfrmdX = (inPos.x / halfViewportWidth) - 1.0f;			\
+				float tfrmdY = (inPos.y / halfViewportHeight) + 1.0f;			\
 																\
 				oPosition = float4(tfrmdX, tfrmdY, 0, 1);		\
 				oUv = uv;										\
@@ -60,6 +63,8 @@ namespace CamelotEngine
 
 		mSpriteTextShader = Shader::create("TextShader");
 
+		mSpriteTextShader->addParameter("halfViewportWidth", "halfViewportWidth", GPDT_FLOAT1);
+		mSpriteTextShader->addParameter("halfViewportHeight", "halfViewportHeight", GPDT_FLOAT1);
 		mSpriteTextShader->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
 		mSpriteTextShader->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
 

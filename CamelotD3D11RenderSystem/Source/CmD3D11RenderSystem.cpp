@@ -313,10 +313,10 @@ namespace CamelotEngine
 		setRenderTarget(target);
 
 		// set viewport dimensions
-		mViewport.TopLeftX = (FLOAT)vp->getActualLeft();
-		mViewport.TopLeftY = (FLOAT)vp->getActualTop();
-		mViewport.Width = (FLOAT)vp->getActualWidth();
-		mViewport.Height = (FLOAT)vp->getActualHeight();
+		mViewport.TopLeftX = (FLOAT)vp->getLeft();
+		mViewport.TopLeftY = (FLOAT)vp->getTop();
+		mViewport.Width = (FLOAT)vp->getWidth();
+		mViewport.Height = (FLOAT)vp->getHeight();
 
 		if (vp->getTarget()->requiresTextureFlipping())
 		{

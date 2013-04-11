@@ -1132,10 +1132,10 @@ namespace CamelotEngine
 		setCullingMode( mCullingMode );
 
 		// set viewport dimensions
-		d3dvp.X = vp->getActualLeft();
-		d3dvp.Y = vp->getActualTop();
-		d3dvp.Width = vp->getActualWidth();
-		d3dvp.Height = vp->getActualHeight();
+		d3dvp.X = vp->getLeft();
+		d3dvp.Y = vp->getTop();
+		d3dvp.Width = vp->getWidth();
+		d3dvp.Height = vp->getHeight();
 		if (target->requiresTextureFlipping())
 		{
 			// Convert "top-left" to "bottom-left"

@@ -97,42 +97,42 @@ namespace CamelotEngine {
 		/** Gets one of the relative dimensions of the viewport,
             a value between 0.0 and 1.0.
         */
-        float getLeft(void) const;
+        float getNormalizedLeft(void) const;
 
         /** Gets one of the relative dimensions of the viewport, a value
             between 0.0 and 1.0.
         */
-        float getTop(void) const;
+        float getNormalizedTop(void) const;
 
         /** Gets one of the relative dimensions of the viewport, a value
             between 0.0 and 1.0.
         */
 
-        float getWidth(void) const;
+        float getNormalizedWidth(void) const;
         /** Gets one of the relative dimensions of the viewport, a value
             between 0.0 and 1.0.
         */
 
-        float getHeight(void) const;
+        float getNormalizedHeight(void) const;
         /** Gets one of the actual dimensions of the viewport, a value in
             pixels.
         */
 
-        int getActualLeft(void) const;
+        int getLeft(void) const;
         /** Gets one of the actual dimensions of the viewport, a value in
             pixels.
         */
 
-        int getActualTop(void) const;
+        int getTop(void) const;
         /** Gets one of the actual dimensions of the viewport, a value in
             pixels.
         */
-        int getActualWidth(void) const;
+        int getWidth(void) const;
         /** Gets one of the actual dimensions of the viewport, a value in
             pixels.
         */
 
-        int getActualHeight(void) const;
+        int getHeight(void) const;
                
         /** Sets the dimensions (after creation).
             @param

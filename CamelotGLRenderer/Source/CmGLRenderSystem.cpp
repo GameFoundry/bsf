@@ -535,10 +535,10 @@ namespace CamelotEngine
 		setRenderTarget(target);
 
 		// Calculate the "lower-left" corner of the viewport
-		mViewportWidth = vp->getActualWidth();
-		mViewportHeight = vp->getActualHeight();
-		mViewportLeft = vp->getActualLeft();
-		mViewportTop = vp->getActualTop();
+		mViewportWidth = vp->getWidth();
+		mViewportHeight = vp->getHeight();
+		mViewportLeft = vp->getLeft();
+		mViewportTop = vp->getTop();
 
 		if (!target->requiresTextureFlipping())
 		{

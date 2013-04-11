@@ -517,7 +517,7 @@ namespace CamelotEngine {
 			float width = 1.0f, float height = 1.0f,
 			int ZOrder = 0);
 
-		ViewportPtr getViewport() { return mViewport; }
+		ViewportPtr getViewport() const { return mViewport; }
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

@@ -6,6 +6,8 @@
 #include "CmMaterial.h"
 #include "CmPass.h"
 #include "CmMesh.h"
+#include "CmCamera.h"
+#include "CmViewport.h"
 
 namespace CamelotEngine
 {
@@ -166,6 +168,11 @@ namespace CamelotEngine
 		for(auto& mesh : mCachedMeshes)
 		{
 			HMaterial material = mCachedMaterials[meshIdx];
+
+			// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
+			// might be more optimal to just scale the mesh as the resolution changes?
+			material->setFloat("halfViewportWidth", camera->getViewport()->getWidth() * 0.5f);
+			material->setFloat("halfViewportHeight", camera->getViewport()->getHeight() * 0.5f);
 
 			if(material == nullptr || !material.isLoaded())
 				continue;

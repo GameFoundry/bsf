@@ -90,42 +90,42 @@ namespace CamelotEngine {
         return mTarget;
     }
     //---------------------------------------------------------------------
-    float Viewport::getLeft(void) const
+    float Viewport::getNormalizedLeft(void) const
     {
         return mRelLeft;
     }
     //---------------------------------------------------------------------
-    float Viewport::getTop(void) const
+    float Viewport::getNormalizedTop(void) const
     {
         return mRelTop;
     }
     //---------------------------------------------------------------------
-    float Viewport::getWidth(void) const
+    float Viewport::getNormalizedWidth(void) const
     {
         return mRelWidth;
     }
     //---------------------------------------------------------------------
-    float Viewport::getHeight(void) const
+    float Viewport::getNormalizedHeight(void) const
     {
         return mRelHeight;
     }
     //---------------------------------------------------------------------
-    int Viewport::getActualLeft(void) const
+    int Viewport::getLeft(void) const
     {
         return mActLeft;
     }
     //---------------------------------------------------------------------
-    int Viewport::getActualTop(void) const
+    int Viewport::getTop(void) const
     {
         return mActTop;
     }
     //---------------------------------------------------------------------
-    int Viewport::getActualWidth(void) const
+    int Viewport::getWidth(void) const
     {
         return mActWidth;
     }
     //---------------------------------------------------------------------
-    int Viewport::getActualHeight(void) const
+    int Viewport::getHeight(void) const
     {
         return mActHeight;
     }
