@@ -216,7 +216,7 @@ namespace CamelotEngine
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
-			GameObjectHandle<T> newComponent = GameObjectHandle<T>::_create(CM_NEW(T, PoolAlloc) T(mThisHandle),
+			GameObjectHandle<T> newComponent = GameObjectHandle<T>(CM_NEW(T, PoolAlloc) T(mThisHandle),
 				&MemAllocDeleter<GameObject, PoolAlloc>::deleter);
 			mComponents.push_back(newComponent);
 

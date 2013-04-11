@@ -21,10 +21,10 @@ Figure out how to store texture references in a font?
 
 Move Debug to CamelotCore and add SetFillMode
 
-GameObjectREAL is IReflectable but doesn't have RTTI
- - COmponentRTTI doesn't account its new parent is GameObjectREAL so change that
-
 GameObjectHandle has  SceneObject friend which doesn't make sense
+
+GameObject destructor should be private and only callable by GameObjectHandle
+ - This was I can ensure object is only destroyed when calling destroy(), and I can replace internal shared_ptr
 
 Make GameObjectHandle hold a normal pointer instead of a shared one
  - By its definition its guaranteed to have only one reference so there's no need for shared ptr
@@ -46,14 +46,6 @@ Implement image shader for D3D11BuiltinMaterialManager
 Improve text shader so it doesn't have resolution values hardcoded in
 Implement D3D9 and GL BuiltInMaterialManager
 
-FInish porting memory allocation:
-Check allocationChanges.txt on C
-
-Similar issue with passing arrays to classes like MeshData. In some cases SmallScratchBuffer is useful, while in others a LargeScratchBuffer is more appropriate?
- - Although LargeScratchBuffer is probably more appropriate in general situations, but still the user needs to know that, which I think is a bit hidden. Maybe change the behaviour so that MeshData internally allocates memory and just returns a pointer?
-
-PixelData needs something similar as mesh data
-
 Test:
 Need sorted rendering as fonts render before scene and blending doesn't work as it should
  - Implemented 2D renderer and ensure it runs after everything else
@@ -69,8 +61,6 @@ TextSprite needs to return multiple buffers in case characters are from differen
 Mesh usability overhaul:
  A way to clear a mesh  (Mesh.Clear)
  A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
-
- Names: TextMesh & SpriteMesh instead of 2DText and 2DSprite!
 
 -----------------------IMMEDIATE TODO---------------------------------------------------------------
 

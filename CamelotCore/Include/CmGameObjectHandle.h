@@ -44,10 +44,16 @@ namespace CamelotEngine
 		 */
 		std::shared_ptr<GameObjectHandleData> getHandleData() const { return mData; }
 	protected:
+		friend SceneObject;
+
 		GameObjectHandleBase();
 
 		inline void throwIfDestroyed() const;
 		
+		void destroy()
+		{
+			mData->mPtr = nullptr;
+		}
 
 		std::shared_ptr<GameObjectHandleData> mData;
 	};
@@ -100,16 +106,6 @@ namespace CamelotEngine
 		{
 			mData = std::shared_ptr<GameObjectHandleData>(CM_NEW(GameObjectHandleData, PoolAlloc) GameObjectHandleData((GameObject*)ptr, deleter),
 				&MemAllocDeleter<GameObjectHandleData, PoolAlloc>::deleter);
-		}
-
-		static GameObjectHandle<T> _create(T* ptr, void(*deleter)(GameObject*))
-		{
-			return GameObjectHandle<T>(ptr, deleter);
-		}
-
-		void destroy()
-		{
-			mData->mPtr = nullptr;
 		}
 	};
 

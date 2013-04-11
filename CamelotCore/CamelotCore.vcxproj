@@ -178,6 +178,7 @@
   <ItemGroup>
     <ClInclude Include="Include\CmGameObjectHandle.h" />
     <ClInclude Include="Include\CmGameObject.h" />
+    <ClInclude Include="Include\CmGameObjectRTTI.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
     <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmOverlay.h" />

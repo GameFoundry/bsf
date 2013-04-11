@@ -292,7 +292,8 @@ namespace CamelotEngine
 		TID_FontImportOptions = 1056,
 		TID_FontData = 1057,
 		TID_IndexElementData = 1058,
-		TID_SceneObject = 1059
+		TID_SceneObject = 1059,
+		TID_GameObject = 1060
 	};
 
 	/**
@@ -344,6 +345,7 @@ namespace CamelotEngine
 	typedef ResourceHandle<Font> HFont;
 
 	// Game object handles
+	typedef GameObjectHandle<GameObject> HGameObject;
 	typedef GameObjectHandle<SceneObject> HSceneObject;
 	typedef GameObjectHandle<Component> HComponent;
 	typedef GameObjectHandle<Camera> HCamera;

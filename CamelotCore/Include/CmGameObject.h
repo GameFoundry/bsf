@@ -10,5 +10,13 @@ namespace CamelotEngine
 	public:
 		virtual ~GameObject() 
 		{ }
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class GameObjectRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

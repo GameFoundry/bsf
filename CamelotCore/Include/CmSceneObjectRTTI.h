@@ -6,7 +6,7 @@
 
 namespace CamelotEngine
 {
-	class CM_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, IReflectable, SceneObjectRTTI>
+	class CM_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, GameObject, SceneObjectRTTI>
 	{
 	private:
 
