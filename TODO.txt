@@ -33,6 +33,31 @@ Immediate sprite related stuff:
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
  - Transformable GUI elements and their bounds
 
+ GUIWidget::update
+ - Gets bounds from all elements and transforms them by its own transform matrix
+  - Stores them in a map so I can easily scan through them later and find referenced element
+  - Keeps a total bound of all elements so I can easily reject elements that not even under the cursor
+ - Has mouseEvent, keyboardEvent handlers that it propagates to its children
+   - (possibly not keyboardEvent, see below why)
+   - mouse events only if cursor is over the element
+   - events originate from GUIManager
+ - When bounds are transformed it also transforms elements center
+   - Elements are sorted based on that center so when rendering we can render them back to front
+     - (back to front because they can be transparent)
+
+GUIElement
+ - Extend it with "hasFocus" flag
+  - flag gets set whenever user clicks on the element
+   - but how do I unset the flag? register element in focus with GUIManager?
+ - Only elements in focus receive keyboard events
+
+GUI windows!? - Figure out how to handle GUI window creation easily
+
+
+There is an issue that custom-UIs won't have their mesh shared. For example most game UIs will be advanced and will 
+likely use on GUIWidget per element. However currently I only perform batching within a single widget which 
+doesn't help in the mentioned case.
+
 -----------------------IMMEDIATE TODO---------------------------------------------------------------
 
  Assets manifest

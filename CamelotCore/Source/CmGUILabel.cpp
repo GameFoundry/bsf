@@ -18,6 +18,8 @@ namespace CamelotEngine
 		mTextSprite->setWordWrap(wordWrap);
 		mTextSprite->setClipRect(Rect(0, 0, fixedWidth, fixedHeight));
 		mTextSprite->setAlignment(horzAlign, vertAlign);
+
+		mBounds = mTextSprite->getBounds();
 	}
 
 	GUILabel::~GUILabel()

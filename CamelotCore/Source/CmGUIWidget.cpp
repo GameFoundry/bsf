@@ -8,6 +8,7 @@
 #include "CmMesh.h"
 #include "CmCamera.h"
 #include "CmViewport.h"
+#include "CmSceneObject.h"
 
 namespace CamelotEngine
 {
@@ -159,6 +160,8 @@ namespace CamelotEngine
 
 	void GUIWidget::render(const Camera* camera, DeferredRenderContextPtr& renderContext) const
 	{
+		SO()->setPosition(Vector3(200, 100, 0));
+
 		// Mesh is re-created every frame. There might be a better approach that only recreates it upon change,
 		// but for now it seems like too much hassle for something like GUI that is pretty dynamic anyway.
 		updateMeshes();
@@ -173,6 +176,7 @@ namespace CamelotEngine
 			// might be more optimal to just scale the mesh as the resolution changes?
 			material->setFloat("halfViewportWidth", camera->getViewport()->getWidth() * 0.5f);
 			material->setFloat("halfViewportHeight", camera->getViewport()->getHeight() * 0.5f);
+			material->setMat4("worldTransform", SO()->getWorldTfrm());
 
 			if(material == nullptr || !material.isLoaded())
 				continue;
@@ -180,7 +184,6 @@ namespace CamelotEngine
 			if(mesh == nullptr || !mesh.isLoaded())
 				continue;
 
-			// TODO - Set current viewport resolution so that GUI can be rendered properly
 			for(UINT32 i = 0; i < material->getNumPasses(); i++)
 			{
 				PassPtr pass = material->getPass(i);

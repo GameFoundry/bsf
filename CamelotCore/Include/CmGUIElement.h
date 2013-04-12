@@ -60,6 +60,8 @@ namespace CamelotEngine
 		 */
 		virtual void fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const = 0;
 
+		const Rect& getBounds() const { return mBounds; }
+
 		//  onMouseMove
 		//	onMousePress
 		//	onMouseReleased
@@ -67,6 +69,7 @@ namespace CamelotEngine
 		//	onKeyReleased
 	protected:
 		GUIWidget* mParent;
+		Rect mBounds;
 		const GUIElementStyle* mStyle;
 	};
 }

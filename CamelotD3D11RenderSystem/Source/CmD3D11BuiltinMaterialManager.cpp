@@ -30,6 +30,7 @@ namespace CamelotEngine
 		String vsCode = "										\
 			float halfViewportWidth;							\
 			float halfViewportHeight;							\
+			float4x4 worldTransform;							\
 																\
 			void vs_main(										\
 			in float3 inPos : POSITION,							\
@@ -37,8 +38,10 @@ namespace CamelotEngine
 			out float4 oPosition : SV_Position,					\
 			out float2 oUv : TEXCOORD0)							\
 			{													\
-				float tfrmdX = (inPos.x / halfViewportWidth) - 1.0f;			\
-				float tfrmdY = (inPos.y / halfViewportHeight) + 1.0f;			\
+				float4 tfrmdPos = mul(worldTransform, float4(inPos.xy, 0, 1));	\
+																\
+				float tfrmdX = (tfrmdPos.x / halfViewportWidth) - 1.0f;			\
+				float tfrmdY = (tfrmdPos.y / halfViewportHeight) + 1.0f;		\
 																\
 				oPosition = float4(tfrmdX, tfrmdY, 0, 1);		\
 				oUv = uv;										\
@@ -63,6 +66,7 @@ namespace CamelotEngine
 
 		mSpriteTextShader = Shader::create("TextShader");
 
+		mSpriteTextShader->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
 		mSpriteTextShader->addParameter("halfViewportWidth", "halfViewportWidth", GPDT_FLOAT1);
 		mSpriteTextShader->addParameter("halfViewportHeight", "halfViewportHeight", GPDT_FLOAT1);
 		mSpriteTextShader->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);

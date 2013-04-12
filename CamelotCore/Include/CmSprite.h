@@ -48,6 +48,7 @@ namespace CamelotEngine
 		UINT32 getHeight() const { return mHeight; }
 		Rect getClipRect() const { return mClipRect; }
 		SpriteAnchor getAnchor() const { return mAnchor; }
+		const Rect& getBounds() const;
 
 		/**
 		 * @brief	Returns the number of separate render elements in the sprite. Normally this is one, but some sprites
@@ -101,6 +102,7 @@ namespace CamelotEngine
 		Rect mClipRect;
 		SpriteAnchor mAnchor;
 
+		mutable Rect mBounds;
 		mutable bool mIsDirty;
 		mutable vector<SpriteRenderElement>::type mCachedRenderElements;
 
@@ -109,6 +111,7 @@ namespace CamelotEngine
 		bool isClipRectangleValid() const;
 
 		virtual void updateMesh() const = 0;
+		void updateBounds() const;
 		void clearMesh() const;
 	};
 }

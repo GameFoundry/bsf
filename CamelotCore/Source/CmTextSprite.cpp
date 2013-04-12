@@ -445,6 +445,8 @@ namespace CamelotEngine
 				clipToRect(renderElem.vertices, renderElem.uvs, renderElem.numQuads, mClipRect);
 			}
 		}
+
+		updateBounds();
 	}
 
 	const FontData* TextSprite::getFontData() const

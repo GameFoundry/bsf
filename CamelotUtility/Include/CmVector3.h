@@ -769,6 +769,16 @@ namespace CamelotEngine
 			return Math::isNaN(x) || Math::isNaN(y) || Math::isNaN(z);
 		}
 
+		static Vector3 min(const Vector3& a, const Vector3& b)
+		{
+			return Vector3(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
+		}
+
+		static Vector3 max(const Vector3& a, const Vector3& b)
+		{
+			return Vector3(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
+		}
+
 		// special points
         static const Vector3 ZERO;
         static const Vector3 UNIT_X;

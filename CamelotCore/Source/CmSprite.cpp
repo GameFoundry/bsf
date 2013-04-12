@@ -103,6 +103,51 @@ namespace CamelotEngine
 		return mClipRect.width > 0 && mClipRect.height > 0;
 	}
 
+	const Rect& Sprite::getBounds() const
+	{
+		if(mIsDirty)
+		{
+			updateMesh();
+			mIsDirty = false;
+		}
+
+		return mBounds;
+	}
+
+	void Sprite::updateBounds() const
+	{
+		Vector2 min;
+		Vector2 max;
+
+		// Find starting point
+		for(auto& renderElem : mCachedRenderElements)
+		{
+			if(renderElem.vertices != nullptr && renderElem.numQuads > 0)
+			{
+				min = renderElem.vertices[0];
+				max = renderElem.vertices[0];
+				break;
+			}
+		}
+
+		// Calculate bounds
+		for(auto& renderElem : mCachedRenderElements)
+		{
+			if(renderElem.vertices != nullptr && renderElem.numQuads > 0)
+			{
+				UINT32 vertexCount = renderElem.numQuads * 4;
+
+				for(UINT32 i = 0; i < vertexCount; i++)
+				{
+					min = Vector2::min(min, renderElem.vertices[i]);
+					max = Vector2::max(max, renderElem.vertices[i]);
+				}
+			}
+		}
+
+		mBounds = Rect((int)min.x, (int)min.y, (int)(max.x - min.x), (int)(max.y - min.y));
+	}
+
 	void Sprite::clearMesh() const
 	{
 		for(auto& renderElem : mCachedRenderElements)
@@ -126,5 +171,6 @@ namespace CamelotEngine
 		}
 
 		mCachedRenderElements.clear();
+		updateBounds();
 	}
 }
