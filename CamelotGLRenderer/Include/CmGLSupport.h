@@ -42,7 +42,7 @@ public:
     GLSupport() { }
     virtual ~GLSupport() { }
 
-	virtual RenderWindowPtr newWindow(const RENDER_WINDOW_DESC& desc) = 0;
+	virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow) = 0;
 
     virtual bool supportsPBuffers();
 

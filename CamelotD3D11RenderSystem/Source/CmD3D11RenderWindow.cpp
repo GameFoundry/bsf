@@ -5,6 +5,8 @@
 #include "CmD3D11RenderTexture.h"
 #include "CmD3D11TextureView.h"
 #include "CmTextureManager.h"
+#include "CmD3D11DriverList.h"
+#include "CmD3D11Driver.h"
 #include "CmException.h"
 
 namespace CamelotEngine
@@ -42,6 +44,7 @@ namespace CamelotEngine
 		mVSyncInterval = 1;
 		HWND parentHWnd = 0;
 		HWND externalHandle = 0;
+		HMONITOR hMonitor = NULL;
 
 		// Get variable-length params
 		NameValuePairList::const_iterator opt;
@@ -54,6 +57,10 @@ namespace CamelotEngine
 		opt = mDesc.platformSpecific.find("externalWindowHandle");
 		if(opt != mDesc.platformSpecific.end())
 			externalHandle = (HWND)parseUnsignedInt(opt->second);
+		// monitor handle
+		opt = mDesc.platformSpecific.find("monitorHandle");
+		if (opt != mDesc.platformSpecific.end())
+			hMonitor = (HMONITOR)parseInt(opt->second);		
 
 		mName = mDesc.title;
 		mIsFullScreen = mDesc.fullscreen;
@@ -66,24 +73,112 @@ namespace CamelotEngine
 		if (!externalHandle)
 		{
 			DWORD dwStyle = (mHidden ? 0 : WS_VISIBLE) | WS_CLIPCHILDREN;
+			DWORD dwStyleEx = 0;
 			RECT rc;
+			MONITORINFO monitorInfo;
+
+			// If we specified which adapter we want to use - find it's monitor.
+			if (mDesc.monitorIndex != -1)
+			{
+				RenderSystem* rs = RenderSystem::instancePtr();
+				D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(rs);
+
+				D3D11DriverList* driverList = d3d11rs->getDriverList();
+
+				UINT32 curOutput = 0;
+				for(UINT32 i = 0; i < driverList->count(); i++)
+				{
+					D3D11Driver* driver = driverList->item(i);
+					UINT32 numOutputs = driver->getNumAdapterOutputs();
+
+					for(UINT32 j = 0; j < numOutputs; j++)
+					{
+						if(curOutput == mDesc.monitorIndex)
+						{
+							hMonitor = driver->getOutputDesc(j).Monitor;
+							break;
+						}
+
+						curOutput++;
+					}
+
+					if(curOutput == mDesc.monitorIndex)
+						break;
+				}			
+			}
+
+			// If we didn't specified the adapter index, or if it didn't find it
+			if (hMonitor == NULL)
+			{
+				POINT windowAnchorPoint;
+
+				// Fill in anchor point.
+				windowAnchorPoint.x = mDesc.left;
+				windowAnchorPoint.y = mDesc.top;
+
+				// Get the nearest monitor to this window.
+				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTOPRIMARY);
+			}
+
+			// Get the target monitor info		
+			memset(&monitorInfo, 0, sizeof(MONITORINFO));
+			monitorInfo.cbSize = sizeof(MONITORINFO);
+			GetMonitorInfo(hMonitor, &monitorInfo);
+
+
+			unsigned int winWidth, winHeight;
+			winWidth = mDesc.width;
+			winHeight = mDesc.height;
+
+			UINT32 left = mDesc.left;
+			UINT32 top = mDesc.top;
+
+			// No specified top left -> Center the window in the middle of the monitor
+			if (left == -1 || top == -1)
+			{				
+				int screenw = monitorInfo.rcWork.right  - monitorInfo.rcWork.left;
+				int screenh = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
+
+				// clamp window dimensions to screen size
+				int outerw = (int(winWidth) < screenw)? int(winWidth) : screenw;
+				int outerh = (int(winHeight) < screenh)? int(winHeight) : screenh;
+
+				if (left == -1)
+					left = monitorInfo.rcWork.left + (screenw - outerw) / 2;
+				else if (mDesc.monitorIndex != -1)
+					left += monitorInfo.rcWork.left;
+
+				if (top == -1)
+					top = monitorInfo.rcWork.top + (screenh - outerh) / 2;
+				else if (mDesc.monitorIndex != -1)
+					top += monitorInfo.rcWork.top;
+			}
+			else if (mDesc.monitorIndex != -1)
+			{
+				left += monitorInfo.rcWork.left;
+				top += monitorInfo.rcWork.top;
+			}
 
 			mWidth = mDesc.width;
 			mHeight = mDesc.height;
-			mTop = mDesc.top;
-			mLeft = mDesc.left;
+			mTop = top;
+			mLeft = left;
 
 			if (!mDesc.fullscreen)
 			{
 				if (parentHWnd)
 				{
-					dwStyle |= WS_CHILD;
+					if(mDesc.toolWindow)
+						dwStyleEx = WS_EX_TOOLWINDOW;
+					else
+						dwStyle |= WS_CHILD;
 				}
-				else
+
+				if (!parentHWnd || mDesc.toolWindow)
 				{
-					if (mDesc.border == "none")
+					if (mDesc.border == WindowBorder::None)
 						dwStyle |= WS_POPUP;
-					else if (mDesc.border == "fixed")
+					else if (mDesc.border == WindowBorder::Fixed)
 						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 						WS_SYSMENU | WS_MINIMIZEBOX;
 					else
@@ -135,7 +230,7 @@ namespace CamelotEngine
 			// Create our main window
 			// Pass pointer to self
 			mIsExternal = false;
-			mHWnd = CreateWindow("D3D11Wnd", mDesc.title.c_str(), dwStyle,
+			mHWnd = CreateWindowEx(dwStyleEx, "D3D11Wnd", mDesc.title.c_str(), dwStyle,
 				mLeft, mTop, mWidth, mHeight, parentHWnd, 0, hInst, this);
 
 			WindowEventUtilities::_addRenderWindow(this);

@@ -36,7 +36,7 @@ namespace CamelotEngine
 		, mIsFullScreen(false)
 		, mDesc(desc)
     {
-        mAutoDeactivatedOnFocusChange = true;
+        mAutoDeactivatedOnFocusChange = false;
     }
 
 	RenderWindow::~RenderWindow() 
@@ -70,8 +70,8 @@ namespace CamelotEngine
         mAutoDeactivatedOnFocusChange = deactivate;
     }
 
-	RenderWindowPtr RenderWindow::create(const RENDER_WINDOW_DESC& desc)
+	RenderWindowPtr RenderWindow::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{
-		return RenderWindowManager::instance().create(desc);
+		return RenderWindowManager::instance().create(desc, parentWindow);
 	}
 }

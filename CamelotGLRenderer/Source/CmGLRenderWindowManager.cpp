@@ -11,11 +11,11 @@ namespace CamelotEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	RenderWindowPtr GLRenderWindowManager::createImpl(const RENDER_WINDOW_DESC& desc)
+	RenderWindowPtr GLRenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{
 		GLSupport* glSupport = mRenderSystem->getGLSupport();
 
 		// Create the window
-		return glSupport->newWindow(desc);
+		return glSupport->newWindow(desc, parentWindow);
 	}
 }

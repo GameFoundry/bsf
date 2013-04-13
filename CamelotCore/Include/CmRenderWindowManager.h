@@ -11,9 +11,9 @@ namespace CamelotEngine
 	public:
 		/** Creates a new rendering window.
 		*/
-		RenderWindowPtr create(const RENDER_WINDOW_DESC& desc);
+		RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow);
 
 	protected:
-		virtual RenderWindowPtr createImpl(const RENDER_WINDOW_DESC& desc) = 0;
+		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow) = 0;
 	};
 }

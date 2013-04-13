@@ -14,7 +14,7 @@ namespace CamelotEngine
 		/**
 		 * @copydoc RenderWindowManager::createImpl()
 		 */
-		RenderWindowPtr createImpl(const RENDER_WINDOW_DESC& desc);
+		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow);
 
 	private:
 		GLRenderSystem* mRenderSystem;

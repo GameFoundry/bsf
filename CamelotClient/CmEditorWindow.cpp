@@ -1,5 +1,6 @@
 #include "CmEditorWindow.h"
 #include "CmRenderWindow.h"
+#include "CmApplication.h"
 
 namespace CamelotEditor
 {
@@ -10,8 +11,10 @@ namespace CamelotEditor
 		renderWindowDesc.height = 720;
 		renderWindowDesc.title = "EditorWindow";
 		renderWindowDesc.fullscreen = false;
+		renderWindowDesc.border = WindowBorder::None;
+		renderWindowDesc.toolWindow = true;
 
-		mRenderWindow = RenderWindow::create(renderWindowDesc);
+		mRenderWindow = RenderWindow::create(renderWindowDesc, gApplication().getPrimaryRenderWindow());
 	}
 
 	EditorWindow::~EditorWindow()

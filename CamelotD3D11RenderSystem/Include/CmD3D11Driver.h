@@ -16,10 +16,11 @@ namespace CamelotEngine
 		String getDriverName() const;
 		String getDriverDescription() const;
 		UINT32 getAdapterNumber() const { return mAdapterNumber; }
-		UINT32 getNumAdapterOutputs() const;
+		UINT32 getNumAdapterOutputs() const { return mNumOutputs; }
 		const DXGI_ADAPTER_DESC& getAdapterIdentifier() const { return mAdapterIdentifier; }
 		const DXGI_MODE_DESC& getDesktopMode() const { return mDesktopDisplayMode; }
 		IDXGIAdapter* getDeviceAdapter() { return mDXGIAdapter; }
+		DXGI_OUTPUT_DESC getOutputDesc(UINT32 adapterOutputIdx) const;
 		const D3D11VideoModeList* getVideoModeList(UINT32 adapterOutputIdx) const;
 
 	private:

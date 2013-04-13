@@ -56,8 +56,15 @@ namespace CamelotEngine
 		return TRUE;
 	}
 
-	RenderWindowPtr Win32GLSupport::newWindow(const RENDER_WINDOW_DESC& desc)
+	RenderWindowPtr Win32GLSupport::newWindow(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{		
+		if(parentWindow != nullptr)
+		{
+			HWND hWnd;
+			parentWindow->getCustomAttribute("WINDOW", &hWnd);
+			desc.platformSpecific["parentWindowHandle"] = toString((unsigned long)hWnd);
+		}
+
 		Win32Window* window = CM_NEW(Win32Window, PoolAlloc) Win32Window(desc, *this);
 		
 		// TODO - Looking for monitors is disabled for now, as it should be done on the render thread and I need to port it but 

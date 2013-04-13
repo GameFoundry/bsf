@@ -78,6 +78,11 @@ namespace CamelotEngine
 		IDXGIFactory* getDXGIFactory() const { return mDXGIFactory; }
 		D3D11Device& getPrimaryDevice() const { return *mDevice; }
 		
+		/**
+		 * @brief	Returns a total number of outputs (e.g. monitors), across all adapters.
+		 */
+		D3D11DriverList* getDriverList() const { return mDriverList; }
+
 	protected:
 		friend class D3D11RenderSystemFactory;
 		D3D11RenderSystem();

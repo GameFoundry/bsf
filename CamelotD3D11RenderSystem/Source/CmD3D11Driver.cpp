@@ -1,5 +1,6 @@
 #include "CmD3D11Driver.h"
 #include "CmD3D11VideoModeList.h"
+#include "CmException.h"
 
 namespace CamelotEngine
 {
@@ -51,10 +52,11 @@ namespace CamelotEngine
 		assert(mDXGIAdapter != nullptr);
 
 		UINT32 outputIdx = 0;
-		IDXGIOutput* output;
+		IDXGIOutput* output = nullptr;
 		while(mDXGIAdapter->EnumOutputs(outputIdx, &output) != DXGI_ERROR_NOT_FOUND)
 		{
 			outputIdx++;
+			SAFE_RELEASE(output);
 		}
 
 		mNumOutputs = outputIdx;
@@ -113,5 +115,22 @@ namespace CamelotEngine
 		assert(adapterOutputIdx >= 0 && adapterOutputIdx < mNumOutputs);
 
 		return mVideoModeList[adapterOutputIdx];
+	}
+
+	DXGI_OUTPUT_DESC D3D11Driver::getOutputDesc(UINT32 adapterOutputIdx) const
+	{
+		DXGI_OUTPUT_DESC desc;
+		
+		IDXGIOutput* output = nullptr;
+		if(mDXGIAdapter->EnumOutputs(adapterOutputIdx, &output) == DXGI_ERROR_NOT_FOUND)
+		{
+			CM_EXCEPT(InvalidParametersException, "Cannot find output with the specified index: " + toString(adapterOutputIdx));
+		}
+
+		output->GetDesc(&desc);
+
+		SAFE_RELEASE(output);
+
+		return desc;
 	}
 }

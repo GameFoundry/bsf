@@ -25,12 +25,14 @@
 
 #include "CmDebugCamera.h"
 #include "CmTestTextSprite.h"
+#include "CmEditorWindow.h"
 
 #define DX11
 //#define DX9
 //#define GL
 
 using namespace CamelotEngine;
+using namespace CamelotEditor;
 
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
@@ -66,8 +68,8 @@ int CALLBACK WinMain(
 	HSceneObject testModelGO = SceneObject::create("TestMesh");
 	HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
-	HSceneObject testTextGO = SceneObject::create("TestText");
-	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
+	//HSceneObject testTextGO = SceneObject::create("TestText");
+	//GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
 	HFont font;
 	
@@ -85,7 +87,7 @@ int CALLBACK WinMain(
 		font = Importer::instance().import("C:\\arial.ttf", fontImportOptions);
 	}
 
-	textSprite->setText(camera, "Testing in a new row, does this work?", font, 12);
+	//textSprite->setText(camera, "Testing in a new row, does this work?", font, 12);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
@@ -274,11 +276,15 @@ int CALLBACK WinMain(
 
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );
+	
+	EditorWindow* newWindow = new EditorWindow("Test window");
 
 	gApplication().runMainLoop();
 
 	// Release everything before shutdown
 	
+	delete newWindow;
+
 	//testMaterial->destroy();
 #ifdef DX11
 	gpuProgInclude.reset();

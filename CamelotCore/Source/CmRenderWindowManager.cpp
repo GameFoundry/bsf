@@ -2,9 +2,9 @@
 
 namespace CamelotEngine
 {
-	RenderWindowPtr RenderWindowManager::create(const RENDER_WINDOW_DESC& desc)
+	RenderWindowPtr RenderWindowManager::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{
-		RenderWindowPtr renderWindow = createImpl(desc);
+		RenderWindowPtr renderWindow = createImpl(desc, parentWindow);
 		renderWindow->setThisPtr(renderWindow);
 		renderWindow->initialize();
 

@@ -169,13 +169,17 @@ namespace CamelotEngine
 			{
 				if (parentHWnd)
 				{
-					dwStyle |= WS_CHILD;
+					if(mDesc.toolWindow)
+						dwStyleEx = WS_EX_TOOLWINDOW;
+					else
+						dwStyle |= WS_CHILD;
 				}
-				else
+
+				if (!parentHWnd || mDesc.toolWindow)
 				{
-					if (mDesc.border == "none")
+					if (mDesc.border == WindowBorder::None)
 						dwStyle |= WS_POPUP;
-					else if (mDesc.border == "fixed")
+					else if (mDesc.border == WindowBorder::Fixed)
 						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
 						WS_SYSMENU | WS_MINIMIZEBOX;
 					else

@@ -32,6 +32,13 @@ THE SOFTWARE
 
 namespace CamelotEngine
 {
+	enum class WindowBorder
+	{
+		Normal,
+		None,
+		Fixed
+	};
+
 	struct CM_EXPORT RENDER_WINDOW_DESC
 	{
 		RENDER_WINDOW_DESC()
@@ -39,8 +46,8 @@ namespace CamelotEngine
 			, vsync(false), vsyncInterval(1), hidden(false)
 			, displayFrequency(60), colorDepth(32), depthBuffer(true)
 			, FSAA(0), FSAAHint(""), gamma(false), left(-1), top(-1)
-			, title(""), border(""), outerDimensions(false), enableDoubleClick(false)
-			, monitorIndex(-1)
+			, title(""), border(WindowBorder::Normal), outerDimensions(false), enableDoubleClick(false)
+			, monitorIndex(-1), toolWindow(false)
 		{ }
 
 		UINT32 width;
@@ -58,9 +65,10 @@ namespace CamelotEngine
 		INT32 left; // -1 == screen center
 		INT32 top; // -1 == screen center
 		String title;
-		String border;
+		WindowBorder border;
 		bool outerDimensions;
 		bool enableDoubleClick;
+		bool toolWindow;
 		UINT32 monitorIndex; // -1 == select based on coordinates
 
 		NameValuePairList platformSpecific;
@@ -167,7 +175,7 @@ namespace CamelotEngine
           */
         void setDeactivateOnFocusChange(bool deactivate);
 
-		static RenderWindowPtr create(const RENDER_WINDOW_DESC& desc);
+		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);
 
     protected:
         /** Default constructor.
