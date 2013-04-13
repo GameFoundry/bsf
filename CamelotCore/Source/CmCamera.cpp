@@ -593,7 +593,7 @@ namespace CamelotEngine {
 		// Renormalise any normals which were not unit length
 		for(int i=0; i<6; i++ ) 
 		{
-			float length = mFrustumPlanes[i].normal.normalise();
+			float length = mFrustumPlanes[i].normal.normalize();
 			mFrustumPlanes[i].d /= length;
 		}
 

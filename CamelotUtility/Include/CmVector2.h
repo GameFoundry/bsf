@@ -396,7 +396,7 @@ namespace CamelotEngine
                 will be no changes made to their components.
             @returns The previous length of the vector.
         */
-        inline float normalise()
+        inline float normalize()
         {
             float fLength = Math::Sqrt( x * x + y * y);
 
@@ -527,10 +527,10 @@ namespace CamelotEngine
 
         /** As normalise, except that this vector is unaffected and the
             normalised vector is returned as a copy. */
-        inline Vector2 normalisedCopy(void) const
+        inline Vector2 normalizedCopy(void) const
         {
             Vector2 ret = *this;
-            ret.normalise();
+            ret.normalize();
             return ret;
         }
 

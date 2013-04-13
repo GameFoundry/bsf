@@ -25,6 +25,15 @@ Add TextUtil class
  - Ability to calculate a size of a line (will need this if I want to add "..." to text that doesn't fit)
  - Maybe even move line and word classes to it
 
+ SATURDAY:
+  - Get bounds working correctly
+  - (optional) Implement DirectDraw for drawing the bounds so I know they're correct
+  - Figure out a decent way how to deal with windows
+  - If there's time try to add GUIButton class and hook up GUI events
+  - (Adding a MessageBox-like class should probably be the initial test case)
+    - If I add it, it will probably belong in CamelotEditor project. So possibly rename (don't delete yet)
+	   CamelotEditor to CamelotEditorOLD and then start work on the new one.
+
 Immediate sprite related stuff:
  - Implement image shader for D3D11BuiltinMaterialManager
  - Improve text shader so it doesn't have resolution values hardcoded in
@@ -33,17 +42,15 @@ Immediate sprite related stuff:
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
  - Transformable GUI elements and their bounds
 
+  - TextSprite bounds are wrong. Y coordinate is flipped
+  - Calculate entire GUIWidget bounds and store them
+  - Current way of transforming ORect from GUIWidget is almost certainly not correct
+
  GUIWidget::update
- - Gets bounds from all elements and transforms them by its own transform matrix
-  - Stores them in a map so I can easily scan through them later and find referenced element
-  - Keeps a total bound of all elements so I can easily reject elements that not even under the cursor
  - Has mouseEvent, keyboardEvent handlers that it propagates to its children
    - (possibly not keyboardEvent, see below why)
    - mouse events only if cursor is over the element
    - events originate from GUIManager
- - When bounds are transformed it also transforms elements center
-   - Elements are sorted based on that center so when rendering we can render them back to front
-     - (back to front because they can be transparent)
 
 GUIElement
  - Extend it with "hasFocus" flag

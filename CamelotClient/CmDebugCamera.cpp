@@ -93,7 +93,7 @@ namespace CamelotEngine
 
 		if (direction.squaredLength() != 0)
 		{
-			direction.normalise();
+			direction.normalize();
 
 			float multiplier = 1.0f;
 			if(mFastMove)

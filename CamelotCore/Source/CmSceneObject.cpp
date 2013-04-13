@@ -121,7 +121,7 @@ namespace CamelotEngine
 	void SceneObject::lookAt(const Vector3& location, const Vector3& up)
 	{
 		Vector3 forward = location - mPosition;
-		forward.normalise();
+		forward.normalize();
 
 		// TODO - I'm ignoring "up" direction
 		setForward(forward);
@@ -172,7 +172,7 @@ namespace CamelotEngine
 
 		// Normalize the quat to avoid cumulative problems with precision
 		Quaternion qnorm = q;
-		qnorm.normalise();
+		qnorm.normalize();
 		setRotation(qnorm * mRotation);
 	}
 
@@ -201,7 +201,7 @@ namespace CamelotEngine
 		if (forwardDir == Vector3::ZERO) 
 			return;
 
-		Vector3 nrmForwardDir = forwardDir.normalisedCopy();
+		Vector3 nrmForwardDir = forwardDir.normalizedCopy();
 		Vector3 currentForwardDir = getForward();
 		
 		const Quaternion& currentRotation = getWorldRotation();

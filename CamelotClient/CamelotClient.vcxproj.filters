@@ -30,6 +30,9 @@
     <ClInclude Include="CmTestTextSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CmEditorWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CmTestTextSprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CmEditorWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

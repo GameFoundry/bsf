@@ -167,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CmDebugCamera.h" />
+    <ClInclude Include="CmEditorWindow.h" />
     <ClInclude Include="CmTestTextSprite.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -174,6 +175,7 @@
   <ItemGroup>
     <ClCompile Include="CamelotClient.cpp" />
     <ClCompile Include="CmDebugCamera.cpp" />
+    <ClCompile Include="CmEditorWindow.cpp" />
     <ClCompile Include="CmTestTextSprite.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>

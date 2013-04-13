@@ -70,7 +70,7 @@ namespace CamelotEngine
 		renderWindowDesc.fullscreen = false;
 
 		mPrimaryRenderWindow = RenderWindow::create(renderWindowDesc);
-		mPrimaryRenderWindow->waitUntilInitialized(); // TODO: Created window is required for proper initialization of the render system so I need to wait
+		mPrimaryRenderWindow->waitUntilInitialized(); // TODO: Created window is required for proper initialization of the render system so I need to wait.
 		                                              // I plan on handling this differently. Either by somehow allowing the RS to be initialized without a window,
 		                                              // or forcing a window to be created with RenderSystemManager::startUp. Initializing OpenGL context without a window
 		                                              // is especially troublesome (apparently possible just poorly documented)

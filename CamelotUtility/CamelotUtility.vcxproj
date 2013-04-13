@@ -163,6 +163,7 @@
     <ClCompile Include="Source\CmBitmapWriter.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
+    <ClCompile Include="Source\CmORect.cpp" />
     <ClCompile Include="Source\CmPixelData.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
     <ClCompile Include="Source\CmUUID.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Include\CmMathAsm.h" />
     <ClInclude Include="Include\CmMemoryAllocator.h" />
     <ClInclude Include="Include\CmModule.h" />
+    <ClInclude Include="Include\CmORect.h" />
     <ClInclude Include="Include\CmPath.h" />
     <ClInclude Include="Include\CmPixelData.h" />
     <ClInclude Include="Include\CmPixelDataRTTI.h" />

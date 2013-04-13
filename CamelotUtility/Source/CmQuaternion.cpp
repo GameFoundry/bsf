@@ -85,7 +85,7 @@ namespace CamelotEngine {
             *apkQuat[k] = (kRot[k][i]+kRot[i][k])*fRoot;
         }
 
-		normalise();
+		normalize();
     }
     //-----------------------------------------------------------------------
     void Quaternion::ToRotationMatrix (Matrix3& kRot) const
@@ -459,7 +459,7 @@ namespace CamelotEngine {
             //    have method to fix this case, so just use linear interpolation here.
             Quaternion t = (1.0f - fT) * rkP + fT * rkT;
             // taking the complement requires renormalisation
-            t.normalise();
+            t.normalize();
             return t;
         }
     }
@@ -508,7 +508,7 @@ namespace CamelotEngine {
         return Slerp(fSlerpT, kSlerpP ,kSlerpQ);
     }
     //-----------------------------------------------------------------------
-    float Quaternion::normalise(void)
+    float Quaternion::normalize(void)
     {
         float len = Norm();
         float factor = 1.0f / Math::Sqrt(len);
@@ -604,7 +604,7 @@ namespace CamelotEngine {
 		{
 			result = rkP + fT * (rkQ - rkP);
 		}
-        result.normalise();
+        result.normalize();
         return result;
     }
 }

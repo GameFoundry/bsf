@@ -438,7 +438,7 @@ namespace CamelotEngine
                 will be no changes made to their components.
             @returns The previous length of the vector.
         */
-        inline float normalise()
+        inline float normalize()
         {
             float fLength = Math::Sqrt( x * x + y * y + z * z );
 
@@ -570,7 +570,7 @@ namespace CamelotEngine
                 */
                 perp = this->crossProduct( Vector3::UNIT_Y );
             }
-			perp.normalise();
+			perp.normalize();
 
             return perp;
         }
@@ -653,8 +653,8 @@ namespace CamelotEngine
             // Copy, since cannot modify local
             Vector3 v0 = *this;
             Vector3 v1 = dest;
-            v0.normalise();
-            v1.normalise();
+            v0.normalize();
+            v1.normalize();
 
             float d = v0.dotProduct(v1);
             // If dot == 1, vectors are the same
@@ -675,7 +675,7 @@ namespace CamelotEngine
 					Vector3 axis = Vector3::UNIT_X.crossProduct(*this);
 					if (axis.isZeroLength()) // pick another if colinear
 						axis = Vector3::UNIT_Y.crossProduct(*this);
-					axis.normalise();
+					axis.normalize();
 					q.FromAngleAxis(Radian(Math::PI), axis);
 				}
 			}
@@ -690,7 +690,7 @@ namespace CamelotEngine
         	    q.y = c.y * invs;
             	q.z = c.z * invs;
             	q.w = s * 0.5f;
-				q.normalise();
+				q.normalize();
 			}
             return q;
         }
@@ -705,10 +705,10 @@ namespace CamelotEngine
 
         /** As normalise, except that this vector is unaffected and the
             normalised vector is returned as a copy. */
-        inline Vector3 normalisedCopy(void) const
+        inline Vector3 normalizedCopy(void) const
         {
             Vector3 ret = *this;
-            ret.normalise();
+            ret.normalize();
             return ret;
         }
 

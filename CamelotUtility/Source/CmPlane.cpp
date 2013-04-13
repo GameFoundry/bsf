@@ -120,7 +120,7 @@ namespace CamelotEngine {
 		Vector3 kEdge1 = rkPoint1 - rkPoint0;
 		Vector3 kEdge2 = rkPoint2 - rkPoint0;
 		normal = kEdge1.crossProduct(kEdge2);
-		normal.normalise();
+		normal.normalize();
 		d = -normal.dotProduct(rkPoint0);
 	}
 	//-----------------------------------------------------------------------
@@ -147,7 +147,7 @@ namespace CamelotEngine {
 
 	}
 	//-----------------------------------------------------------------------
-    float Plane::normalise(void)
+    float Plane::normalize(void)
     {
         float fLength = normal.length();
 

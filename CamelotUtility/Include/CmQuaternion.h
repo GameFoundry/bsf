@@ -173,7 +173,7 @@ namespace CamelotEngine {
         float Dot (const Quaternion& rkQ) const;  // dot product
         float Norm () const;  // squared-length
         /// Normalises this quaternion, and returns the previous length
-        float normalise(void); 
+        float normalize(void); 
         Quaternion Inverse () const;  // apply to non-zero quaternion
         Quaternion UnitInverse () const;  // apply to unit-length quaternion
         Quaternion Exp () const;

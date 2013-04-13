@@ -480,6 +480,9 @@
     <ClInclude Include="Include\CmGameObjectRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGUIMouseEvent.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CamelotRenderer.cpp">

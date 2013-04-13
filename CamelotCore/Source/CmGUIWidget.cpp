@@ -58,6 +58,11 @@ namespace CamelotEngine
 			return &DefaultSkin;
 	}
 
+	void GUIWidget::mouseEvent(const GUIMouseEvent& ev)
+	{
+
+	}
+
 	void GUIWidget::updateMeshes() const
 	{
 		struct TempMeshData
@@ -109,8 +114,18 @@ namespace CamelotEngine
 			numMeshes++;
 		}
 
+		// TODO - Sorting from scratch every time is not optimal.
+		//  If more performance is needed, try re-sorting only modified elements
+		//  Sort so that farthest away elements get drawn first (needed due to transparency)
+		std::vector<GUIElement*> sortedElements = mElements;
+		std::sort(sortedElements.begin(), sortedElements.end(), 
+			[](GUIElement* a, GUIElement* b)
+		{
+			return a->getDepth() > b->getDepth();
+		});
+
 		// Fill buffers for each group
-		for(auto& elem : mElements)
+		for(auto& elem : sortedElements)
 		{
 			UINT32 numRenderElems = elem->getNumRenderElements();
 
@@ -156,12 +171,27 @@ namespace CamelotEngine
 
 			meshIdx++;
 		}
+
+		updateBounds();
+	}
+
+	void GUIWidget::updateBounds() const
+	{
+		mCachedBounds.clear();
+
+		const Matrix4& worldTfrm = SO()->getWorldTfrm();
+
+		for(auto& elem : mElements)
+		{
+			ORect elemBounds(elem->getBounds());
+			elemBounds.applyTransform(worldTfrm);
+
+			mCachedBounds.push_back(std::make_pair(elemBounds, elem));
+		}
 	}
 
 	void GUIWidget::render(const Camera* camera, DeferredRenderContextPtr& renderContext) const
 	{
-		SO()->setPosition(Vector3(200, 100, 0));
-
 		// Mesh is re-created every frame. There might be a better approach that only recreates it upon change,
 		// but for now it seems like too much hassle for something like GUI that is pretty dynamic anyway.
 		updateMeshes();

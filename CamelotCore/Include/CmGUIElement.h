@@ -62,6 +62,9 @@ namespace CamelotEngine
 
 		const Rect& getBounds() const { return mBounds; }
 
+		void setDepth(INT32 depth) { mDepth = depth; }
+		INT32 getDepth() const { return mDepth; }
+
 		//  onMouseMove
 		//	onMousePress
 		//	onMouseReleased
@@ -70,6 +73,7 @@ namespace CamelotEngine
 	protected:
 		GUIWidget* mParent;
 		Rect mBounds;
+		INT32 mDepth;
 		const GUIElementStyle* mStyle;
 	};
 }

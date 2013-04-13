@@ -175,6 +175,7 @@ namespace CamelotEngine {
 	class GUILabel;
 	struct GUIElementStyle;
 	class GUISkin;
+	struct GUIMouseEvent;
 	// RTTI
 	class MeshRTTI;
 	// Desc structs

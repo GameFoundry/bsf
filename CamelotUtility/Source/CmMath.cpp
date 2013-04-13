@@ -858,17 +858,17 @@ namespace CamelotEngine
 	    Vector3 side1 = position3 - position1;
 	    //Calculate face normal
 	    Vector3 normal = side1.crossProduct(side0);
-	    normal.normalise();
+	    normal.normalize();
 	    //Now we use a formula to calculate the tangent. 
 	    float deltaV0 = v1 - v2;
 	    float deltaV1 = v3 - v1;
 	    Vector3 tangent = deltaV1 * side0 - deltaV0 * side1;
-	    tangent.normalise();
+	    tangent.normalize();
 	    //Calculate binormal
 	    float deltaU0 = u1 - u2;
 	    float deltaU1 = u3 - u1;
 	    Vector3 binormal = deltaU1 * side0 - deltaU0 * side1;
-	    binormal.normalise();
+	    binormal.normalize();
 	    //Now, we take the cross product of the tangents to get a vector which 
 	    //should point in the same direction as our normal calculated above. 
 	    //If it points in the opposite direction (the dot product between the normals is less than zero), 
@@ -905,7 +905,7 @@ namespace CamelotEngine
     Vector3 Math::calculateBasicFaceNormal(const Vector3& v1, const Vector3& v2, const Vector3& v3)
     {
         Vector3 normal = (v2 - v1).crossProduct(v3 - v1);
-        normal.normalise();
+        normal.normalize();
         return normal;
     }
     //-----------------------------------------------------------------------

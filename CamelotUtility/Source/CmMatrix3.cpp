@@ -914,7 +914,7 @@ namespace CamelotEngine
                 rkAxis.x = m[2][1]-m[1][2];
                 rkAxis.y = m[0][2]-m[2][0];
                 rkAxis.z = m[1][0]-m[0][1];
-                rkAxis.normalise();
+                rkAxis.normalize();
             }
             else
             {

@@ -139,7 +139,7 @@ namespace CamelotEngine {
                 will be no changes made to their components.
             @returns The previous length of the plane's normal.
         */
-        float normalise(void);
+        float normalize(void);
 
 		Vector3 normal;
         float d;
