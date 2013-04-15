@@ -1,15 +1,40 @@
-
------------------------LONGTERM TODO----------------------------------------------------------------
- - Debug tools 
-   - Camera controls + world grid
- - Integrate with Camelot Editor
- - SceneManager plugin
-   - Frustum culling and octree (or some other) acceleration structure
-   - Render queue and sorting
-
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
-Figure out how to store texture references in a font?
+----------------------------------------------------------------------------------------------
+Immediate TODO:
+ - Issue with rendering same object from multiple cameras:
+   - Material parameters should be copied after being submitted to the render context
+   - Otherwise the last camera that submits the object for rendering ends up being the only one whos view matrix actually gets used.
+ - Everything is rendering in both windows
+  - Implement layers for SceneObjects?
+  - Mark EditorWindow GameObjects (containing GUIWidgets and other editor classes) with DontSave and HideInHierarchy flags. User-created elements will exists in the 
+    same hierarchy, they will just not be hidden.
+ - Get bounds working correctly
+ - (optional) Implement DirectDraw for drawing the bounds so I know they're correct
+ - TextSprite bounds are wrong. Y coordinate is flipped
+ - Calculate entire GUIWidget bounds and store them
+ - Current way of transforming ORect from GUIWidget is almost certainly not correct
+ - Implement image shader for D3D11BuiltinMaterialManager
+ - Improve text shader so it doesn't have resolution values hardcoded in
+ - Implement D3D9 and GL BuiltInMaterialManager
+ - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
+ - Transformable GUI elements and their bounds
+
+------------------------------------------------------------------------------------------------
+Longterm plans:
+
+<<Multithreaded GUI rendering>>
+ - Event handling and normal "update" will still be done on the main thread
+ - At the beginning of each frame a GUI mesh update is queued on the GUI thread
+   - I might need to modify Sprite/TextSprite as they might re-create their meshes whenever they are dirty. I probably want them to do it only 
+     when specifically commanded by calling "updateMesh" to make sure they're only updated on GUI thread.
+ - Since we're queuing the update at the beggining of the frame we will be using last frames transform and gui element states.
+   - When queing we need to make sure to store GUIWidget transform, and specific element states (e.g. "text" in GUILabel)
+     - I might want to remove Sprite and TextSprite classes in their current form and just make them utility classes? Because right now I'm storing 
+	   same data (e.g. text, font, etc) in both GUILabel (for example) and TextSprite, which makes state-saving problematic.
+ - At the end of simulation frame wait until GUI update is complete. After both simulation and GUI updates are complete, proceed with submitting it to render system.
+
+<<Figure out how to store texture references in a font>>
  - Currently I store a copy of the textures but how do I automatically update the font if they change?
  - Flesh out the dependencies system?
  - I can import texture as normal, and keep it as an actual TextureHandle, only keep it hidden
@@ -19,217 +44,64 @@ Figure out how to store texture references in a font?
 	 - In inspector they can be expanded as children of the main resource, but cannot be directly modified?
 	 - Deleting the main resource deletes the children too
 
-Move Debug to CamelotCore and add SetFillMode
+<<Window controls>>
+ - Create GUIWindowFrame/GUITitleBar control that can be added to the widget
+   - it has onMaximize, onMinimize, onClose, onMove, onResize callbacks
+    - when window is floating onMove/onResize will resize the actual Window
+    - when docked (EditorWindow should know if it's docked or not) it will call back the layout manager
+   - (Frame and title bar need to be separate as some windows will used tabbed bar instead of normal title bar)
+ - GUITabbedArea that will serve for tabbed EditorWindows
+   - GUITabArea allows you to move tabs around, but also dock/undock them if the user drags the tab outside.
+ - MainEditorWindow - handled specially, no need for a good interface
+   - Keeps a title bar, status bar and a layout manager (i.e. docking manager)
 
-Add TextUtil class
- - Ability to calculate a size of a line (will need this if I want to add "..." to text that doesn't fit)
- - Maybe even move line and word classes to it
+<<MessageBox class>>
+ - A good first test case for my GUI windows
 
- SATURDAY:
-  - Get bounds working correctly
-  - (optional) Implement DirectDraw for drawing the bounds so I know they're correct
-  - Figure out a decent way how to deal with windows
-  - If there's time try to add GUIButton class and hook up GUI events
-  - (Adding a MessageBox-like class should probably be the initial test case)
-    - If I add it, it will probably belong in CamelotEditor project. So possibly rename (don't delete yet)
-	   CamelotEditor to CamelotEditorOLD and then start work on the new one.
+<<Other>>
+ - GUIManager events
+ - GUIElement and GUIWidget "hasFocus" flag
+   - Only elements in focus receive keyboard events
+ - There is an issue that custom-UIs won't have their mesh shared. For example most game UIs will be advanced and will 
+   likely use on GUIWidget per element. However currently I only perform batching within a single widget which 
+   doesn't help in the mentioned case.
 
-Immediate sprite related stuff:
- - Implement image shader for D3D11BuiltinMaterialManager
- - Improve text shader so it doesn't have resolution values hardcoded in
- - Implement D3D9 and GL BuiltInMaterialManager
- - When rendering GUIWidget its individual elements need to be sorted based on Z depth so the transparency works as expected
- - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
- - Transformable GUI elements and their bounds
-
-  - TextSprite bounds are wrong. Y coordinate is flipped
-  - Calculate entire GUIWidget bounds and store them
-  - Current way of transforming ORect from GUIWidget is almost certainly not correct
-
- GUIWidget::update
- - Has mouseEvent, keyboardEvent handlers that it propagates to its children
-   - (possibly not keyboardEvent, see below why)
-   - mouse events only if cursor is over the element
-   - events originate from GUIManager
-
-GUIElement
- - Extend it with "hasFocus" flag
-  - flag gets set whenever user clicks on the element
-   - but how do I unset the flag? register element in focus with GUIManager?
- - Only elements in focus receive keyboard events
-
-GUI windows!? - Figure out how to handle GUI window creation easily
-
-
-There is an issue that custom-UIs won't have their mesh shared. For example most game UIs will be advanced and will 
-likely use on GUIWidget per element. However currently I only perform batching within a single widget which 
-doesn't help in the mentioned case.
-
------------------------IMMEDIATE TODO---------------------------------------------------------------
-
- Assets manifest
-  - I need to be able to create a list of assets used in the game. Assets referenced from the editor
-    should be easy to account for. But assets loaded from code are special. Maybe be like Unity and allow
-	special Resources folder?
-
->>>>>>>>>>FINAL SPRINT BEFORE EDITOR WORK
-Pass
- - A way to bind buffers to a Pass, while specifying buffer range
- - Add GL Texture buffers (They're equivalent to DX11 buffers) - http://www.opengl.org/wiki/Buffer_Texture
-
-Can be delayed:
- - Make sure that I am able to blit contents from render textures on all render systems
- - Once I get DX11 running make sure to test if driver complains about missing shader attributes or invalid size ones
- - Better creation of PrimaryWindow
-   - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
-   - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
- - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
- - OpenGL render window no longer looks for a monitor index
- - Material RTTI should also serialize shared buffers (they need to be made into a resource)
-   - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
- - Mesh::setMeshData is currently always synced
- - queueGpuCommand is handled weird. shared_ptr isn't used for setting (this) parameter, and could be optimized out by the compiler
-   - test if everything is okay in release mode
- - Resources::unload will deadlock if the resource isn't being loaded!
-   - Maybe re-think how I handle ResourceHandle.isCreated?
- - Check D3D9/D3D11/GL resource usages. DX11 reports many unreleased objects. I'm guessing DX9 will as well. Not sure how to check OpenGL.
->>>>>>>>>>>>>>>START WORKING ON THE EDITOR!
- 
-
----------------------------------------------------
-
-<<<<DirectDraw>>>>
- - Used for quickly drawing something, usually for debug and editor purposes.
- - It consists of methods like: DrawLine, DrawPolygon, DrawCube, DrawSphere, etc.
- - It may also contain other fancier methods like DrawWireframeMesh, DrawWorldGrid etc.
- - Commands get queued from various Component::update methods and get executed at the end of frame. After they're executed they are cleared and need to be re-queued next frame.
- - Internally DirectDraw manages dynamic meshes so it can merge multiple DrawLine class into one and such. This can help performance, but generally performance of this class should not be a major concern.
- - Example uses for it: 
-    - Drawing GUI element bounds when debugging GUI
-    - Drawing a wireframe selection effect when a mesh is selected in the scene
-
-
-<<<<Multithreaded memory allocator>>>>
- - Singlethreaded implementation from Game Engine Gems 2 book
- - Small and medium allocators separate for each thread. Memory overhead should be minimal considering how small the pages are. But performance benefits are great.
- - Large allocator just uses some simple form of page allocation and reuse, using atomics?
- - Must ensure that memory allocated on one thread can only be freed from that thread
- - How do I easily tell which allocator to call based on current thread? Require a thread ID with each alloc/dealloc?
- - Need to think this through more
- 
-
-<<<<Resource changes and reimport>>>>
-Use case example:
- - User reimports a .gpuproginc file
-   - Dependencies are held by CoreGpuObjectManager. Objects are required to register/unregister
-      their dependencies in their methods manually.
- - Editor calls SomeClass::reimport(handle) after it detects a change 
-   - this will load a new resource, release the old one and assign the new one to Handle without changing the GUID
-   - In order to make it thread safe force all threads to finish what they're doing and pause them until the switch is done
-     - Should be okay considering this should only happen in edit-mode so performance isn't imperative
-   - reimport is recursively called on all dependant objects as well.
-
-<<<<Handle multithreaded object management>>>:
- - Make everything that is possible immutable. Once created it cant be changed.
-  - Example are shaders, state objects and similar
- - Things like Textures, Vertex, Index buffers, GpuParams may be changed
-  - Make Vertex/Index buffers and similar only accesible from render thread. Higher level classes like meshes can have deferred methods
-  - TODO - How to handle the remaining actually deferred methods? Like Textures?
-
-DirectX11 supports concurrent drawing and resource creation so all my resource updates should be direct calls to DX methods (I'll need a deferred context?)
- - DX9 doesn't so creating/updating resources should wait for render thread?
-  - Although these are sync points which kill the whole concept of separate render thread
-  - Updating via copy then? (DX11 driver does it internally if resource is used anyway)
- - OpenGL? No idea, need to study GL contexts
- - Although it seems DX11 also copies data when mapping/unmapping or updating on a non-immediate context. So maybe copy is the solution?
-
-So final solution:
- - Copy all data that will be updated on a deferred context
-  - Make deferred context have a scratch buffer it can use for storing temporary copied data
- - Immediate context will execute all commands right away
-  - This applies when rendering thread calls resource create/update internally
-  - Or when other thread blocks and waits for rendering thread
- - Create a simple distinction so user knows when is something executed deferred and when immediate?
-  - Move resource update/create methods to DeferredContext?
-    - Not ALL methods need to be moved, only those that are resource heavy
-    - Smaller methods may remain and always stay async, but keep internal state?
- - Resource creation on DX11 should be direct though, without a queue (especially if we manage to populate a resource in the same step)
- - Remove & replace internal data copying in GpuParamBlock (or just use a allocator instead of new())
-
-A POSSIBLY BETTER SOLUTION THAN COPYING ALL THE DATA?
-Classes derive from ISharedMemoryBuffer
- - For example PixelData, used when setting texture pixels
- - They have lock, unlock & clone methods
-  - Users can choose whether they want to lock themselves out from modifying the class, or clone it, before passing it to a threaded method
- - Downside is that I need to do this for every class that will be used in threaded methods
- - Upside is that I think that is how DX handles its buffers at the moment
-
-
-<<<<RenderSystem needed modifications>>>>
-  - Texture resource views (Specifying just a subresource of a texture as a shader parameter)
-  - UAV for textures
-  - Stream out (write vertex buffers) (DX11 and GL)
-  - Texture buffers 
-   - Just add a special texture type? OpenGL doesn't support getting offset from within a texture buffer anyway
-  - Tesselation (hull/domain) shader
-  - Detachable and readable depthstencil buffer (Window buffers not required as they behave a bit differently in OpenGL)
-  - OpenGL provides image load/store which seems to be GL UAV equivalent (http://www.opengl.org/wiki/Image_Load_Store)
-  - Resolving MSAA textures (i.e. copying them to non-MSAA so they can be displayed on-screen). DX has ResolveSubresource, and OpenGL might have something similar.
-  - Single and dual channel textures (especially render textures, which are very important for effects like SSAO)
-  - Compute pipeline
-  - Instancing (DrawInstanced) (DX11 and GL)
-  - OpenGL append/consume buffers
-  - Indirect drawing via indirect argument buffers
-  - Texture arrays
-  - Rendertargets that aren't just 2D (Volumetric (3D) render targets in particular)
-  - Shader support for doubles
-  - Dynamic shader linkage (Interfaces and similar)
-  - Multisampled texture resources
-  - Multiple adapters (multi gpu)
-  - Passing initial data when creating a resource (DX11, but possibly GL too)
-  - Sample mask when setting blend state (DX11, check if equivalent exists in GL)
-  - RGBA blend factor when setting blend state(DX11, check if equivalent exists in GL)
-  - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
-  - One camera -> one task (thread) approach for multithreading
-   - Also make sure to run off a thread pool (WorkQueue class already exists that provides needed interface)
-  - The way I handle rendering currently is to discard simulation results if gpu thread isn't finished.
-     - This reduces input lag but at worst case scenario the effect of multithreading might be completely eliminated as
-	   GPU ends up waiting for GPU, just because it was few milliseconds late. Maybe better to wait for GPU?
-
-Command buffer TODO:
- - Make CommandQueue not use mutexes and use atomics instead??
- - Figure out how to handle accessing texture from a non-render thread?
- - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
- - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after
-    that call.
- - In general I need to rethink how to handle modifying resources with multithreading
-
-Editor IMPORTANT:
- - When displaying inspector data for a component, take into consideration that it will need to be able
-    to display that data for user created C# classes as well. AND I will most certainly have C# versions of all my
-	components. Therefore is there any purpose of having C++ only inspector parsing code?
+----------------------------------------------------------------------------------------------
+Other:
+ - Move Debug to CamelotCore and add SetFillMode
+ - Add TextUtil class
+  - Ability to calculate a size of a line (will need this if I want to add "..." to text that doesn't fit)
+  - Maybe even move line and word classes to it
 
 -----------------------BACKLOG TODO---------------------------------------------------------------
 
-HIGH PRIORITY TODO:
+----------------------------------------------------------------------------------------------
+High priority:
  - GetRenderOperation doesn't consider sub-meshes
 
-Mid priority TODO:
- - monitorIndex is ignored in DX11
+----------------------------------------------------------------------------------------------
+Medium priority:
  - Add a field that tracks % of resource deserialization in BinarySerializer
  - Mesh loading:
   - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
   - Imported FBX meshes are too big
  - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
  - My log is not thread safe yet it is being called from multiple threads.
- - Handling of shader array parameters? This needs testing
-   - I'm currently ignoring array elements in GL due to the name their names are handled
  - RTTI:
      When defining RTTIType like so: 
       RTTIType<D3D9HLSLProgram, HighLevelGpuProgram, D3D9HLSLProgramRTTI>
      I need to make sure that HighLevelGpuProgram class has valid RTTI type as well. Otherwise the inheritance hierarchy will not be correct. Right now this isn't checked anywhere.
+ - Make sure that I am able to blit contents from render textures on all render systems
+ - Command buffer:
+   - Make CommandQueue not use mutexes and use atomics instead??
+   - Figure out how to handle accessing texture from a non-render thread?
+   - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
+   - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after that call.
+   - In general I need to rethink how to handle modifying resources with multithreading
+ - Closing down a window (any window) will shut down main rendering loop
 
-Low priority TODO:
+----------------------------------------------------------------------------------------------
+Low priority TODO
  - Mesh loading:
   - Sub-meshes aren't being transformed by world matrices of their nodes
  - Remove template from RTTIType and move it to IReflectable? This way i can hopefully move GetRTTITypeStatic and GetRTTIType to IReflectable so I don't
@@ -258,8 +130,23 @@ Low priority TODO:
     pointers may be getting queued in command queue per frame, in a slightly more complex scene, which will most certainly cause performance problems
     due to thread safety and atomics used by shared_ptr. However I still need some guarantee that objects queued in RenderSystem won't be destroyed
 	by the sim. thread.
+  - A way to bind buffers to a Pass, while specifying buffer range
+  - Add GL Texture buffers (They're equivalent to DX11 buffers) - http://www.opengl.org/wiki/Buffer_Texture
+  - Better creation of PrimaryWindow
+    - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
+    - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
+  - OpenGL render window no longer looks for a monitor index
+  - Material RTTI should also serialize shared buffers (they need to be made into a resource)
+    - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
+  - Mesh::setMeshData is currently always synced
+  - queueGpuCommand is handled weird. shared_ptr isn't used for setting (this) parameter, and could be optimized out by the compiler
+    - test if everything is okay in release mode
+  - Resources::unload will deadlock if the resource isn't being loaded!
+    - Maybe re-think how I handle ResourceHandle.isCreated?
+  - Check D3D9/D3D11/GL resource usages. DX11 reports many unreleased objects. I'm guessing DX9 will as well. Not sure how to check OpenGL.
 
-Optional TODO:
+----------------------------------------------------------------------------------------------
+Optional:
  - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic
     for Materials for things like text and sprites, which should run on all renderers, even if user adds a new one
  - Add precompiled headers to all projects
@@ -270,11 +157,10 @@ Optional TODO:
  - Extend texture copy so it accepts different subregions & subresources (currently only entire resource can be copied)
  - Need a way to convert MSAA render texture into a normal render texture
  - Vertex buffer start offset is not supported when calling Draw methods
- - Creating stuff like gpu program include and shader, etc. still require initialize() (call to render thread)
+ - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
 
- -----------------------------------------------------------------------------------------------
-
-After everything is polished
+ ----------------------------------------------------------------------------------------------
+After polish and ideas:
  - Each view (i.e. camera) of the scene should be put into its own thread
  - How do I handle multiple mesh formats? Some files need animation, other don't. Some would mabye like to use QTangent, others the proper tangent frame.
   - Asset postprocessor? Imports a regular mesh using normal importers and then postprocesses it into a specialized format?
@@ -286,15 +172,13 @@ After everything is polished
  - Remove HardwarePixelBuffer (DX11 doesn't use it, and DX9 and OpenGL textures can be rewritten so they have its methods internally)
  - Multihead device
  - 3D rendering (use low level hardware methods for it)
- 
  - Don't forget to check out Unity DX11 documentation on how to implement DX11 features (http://docs.unity3d.com/Documentation/Manual/DirectX11.html)
  - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
  - Go to GEA book and read about resource managers before implementing them
    - Actually I should re-read most of the chapers in the book, or all of it
  - When building internal GUI make sure to use CEGUI as a reference
-
  - OpenGL non-Win32 window files haven't been properly parsed or tested
    - Since I probably can't compile them, try adding them to VS and see what intellisense says?
-
  - Textures and all other buffers keep a copy of their data in system memory. If there are memory constraints we might need a way to avoid this.
-
+ - Move all multiplatform files (window creation, cursor, etc.) into a separate PlatformSpecific folder. So anyone porting it to a new platform
+   knows that he only needs to change those files.

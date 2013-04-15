@@ -174,7 +174,7 @@ namespace CamelotEngine {
 
     /** Defines the frame buffer types. */
     enum FrameBufferType {
-        FBT_COLOUR  = 0x1,
+        FBT_COLOR  = 0x1,
         FBT_DEPTH   = 0x2,
         FBT_STENCIL = 0x4
     };

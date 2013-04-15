@@ -1363,7 +1363,7 @@ namespace CamelotEngine
 		}
 
 		DWORD flags = 0;
-		if (buffers & FBT_COLOUR)
+		if (buffers & FBT_COLOR)
 		{
 			flags |= D3DCLEAR_TARGET;
 		}

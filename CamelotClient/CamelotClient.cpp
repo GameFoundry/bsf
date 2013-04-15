@@ -277,7 +277,7 @@ int CALLBACK WinMain(
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );
 	
-	EditorWindow* newWindow = new EditorWindow("Test window");
+	EditorWindow* newWindow = new EditorWindow("Test window", font, 12);
 
 	gApplication().runMainLoop();
 

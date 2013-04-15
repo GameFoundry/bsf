@@ -702,7 +702,7 @@ namespace CamelotEngine
 		|| !mColourWrite[2] || !mColourWrite[3]; 
 
 		GLbitfield flags = 0;
-		if (buffers & FBT_COLOUR)
+		if (buffers & FBT_COLOR)
 		{
 			flags |= GL_COLOR_BUFFER_BIT;
 			// Enable buffer for writing if it isn't
@@ -752,7 +752,7 @@ namespace CamelotEngine
 		{
 			glDepthMask( GL_FALSE );
 		}
-		if (colourMask && (buffers & FBT_COLOUR))
+		if (colourMask && (buffers & FBT_COLOR))
 		{
 			glColorMask(mColourWrite[0], mColourWrite[1], mColourWrite[2], mColourWrite[3]);
 		}

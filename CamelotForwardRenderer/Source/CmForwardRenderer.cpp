@@ -62,7 +62,8 @@ namespace CamelotEngine
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
-		renderContext->clear(camera->getViewport()->getTarget(), FBT_COLOUR | FBT_DEPTH, Color::Blue);
+		renderContext->clear(camera->getViewport()->getTarget(), FBT_COLOR | FBT_DEPTH, Color::Blue);
+
 		renderContext->beginFrame();
 
 		// TODO - sort renderables by material/pass/parameters to minimize state changes

@@ -573,7 +573,7 @@ namespace CamelotEngine
 		THROW_IF_NOT_RENDER_THREAD;
 
 		// Clear render surfaces
-		if (buffers & FBT_COLOUR)
+		if (buffers & FBT_COLOR)
 		{
 			UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 

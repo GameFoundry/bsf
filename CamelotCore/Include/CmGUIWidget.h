@@ -12,8 +12,10 @@ namespace CamelotEngine
 	public:
 		virtual ~GUIWidget();
 
-		GUILabel* addLabel(const String& text, UINT32 fixedWidth = 0, UINT32 fixedHeight = 0, bool wordWrap = false, TextHorzAlign horzAlign = THA_Left, TextVertAlign vertAlign = TVA_Top);
-		GUILabel* addLabel(const String& text, TextHorzAlign horzAlign = THA_Left, TextVertAlign vertAlign = TVA_Top);
+		GUILabel* addLabel(const String& text);
+		GUILabel* addLabel(const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap);
+		GUILabel* addLabel(const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign);
+		GUILabel* addLabel(const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign);
 
 		void setSkin(const GUISkin* skin);
 		const GUISkin* getGUISkin() const;

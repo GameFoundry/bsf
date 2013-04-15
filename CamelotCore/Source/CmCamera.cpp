@@ -87,6 +87,8 @@ namespace CamelotEngine {
     }
 	void Camera::init(RenderTargetPtr target, float left, float top, float width, float height, int ZOrder)
 	{
+		target->waitUntilInitialized();
+
 		mViewport = ViewportPtr(CM_NEW(Viewport, PoolAlloc) Viewport(target, left, top, width, height, ZOrder),
 			&MemAllocDeleter<Viewport, PoolAlloc>::deleter);
 	}

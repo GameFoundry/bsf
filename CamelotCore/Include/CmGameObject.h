@@ -31,4 +31,5 @@ namespace CamelotEngine
 	typedef GameObjectHandle<Component> HComponent;
 	typedef GameObjectHandle<Camera> HCamera;
 	typedef GameObjectHandle<Renderable> HRenderable;
+	typedef GameObjectHandle<GUIWidget> HGUIWidget;
 }

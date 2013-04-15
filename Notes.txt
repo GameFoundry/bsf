@@ -1,0 +1,125 @@
+----------------------------------------------------------------------------------------------
+General longterm systems:   
+   - Camera controls + world grid
+   - Frustum culling and octree (or some other) acceleration structure
+   - Render queue and sorting
+
+----------------------------------------------------------------------------------------------
+Reminders:
+  - Assets manifest
+     - I need to be able to create a list of assets used in the game. Assets referenced from the editor
+       should be easy to account for. But assets loaded from code are special. Maybe be like Unity and allow
+	   special Resources folder?
+  - When displaying inspector data for a component, take into consideration that it will need to be able
+    to display that data for user created C# classes as well. AND I will most certainly have C# versions of all my
+	components. Therefore is there any purpose of having C++ only inspector parsing code?
+
+----------------------------------------------------------------------------------------------
+More detailed thought out system descriptions:
+
+<<<<DirectDraw>>>>
+ - Used for quickly drawing something, usually for debug and editor purposes.
+ - It consists of methods like: DrawLine, DrawPolygon, DrawCube, DrawSphere, etc.
+ - It may also contain other fancier methods like DrawWireframeMesh, DrawWorldGrid etc.
+ - Commands get queued from various Component::update methods and get executed at the end of frame. After they're executed they are cleared and need to be re-queued next frame.
+ - Internally DirectDraw manages dynamic meshes so it can merge multiple DrawLine class into one and such. This can help performance, but generally performance of this class should not be a major concern.
+ - Example uses for it: 
+    - Drawing GUI element bounds when debugging GUI
+    - Drawing a wireframe selection effect when a mesh is selected in the scene
+
+
+<<<<Multithreaded memory allocator>>>>
+ - Singlethreaded implementation from Game Engine Gems 2 book
+ - Small and medium allocators separate for each thread. Memory overhead should be minimal considering how small the pages are. But performance benefits are great.
+ - Large allocator just uses some simple form of page allocation and reuse, using atomics?
+ - Must ensure that memory allocated on one thread can only be freed from that thread
+ - How do I easily tell which allocator to call based on current thread? Require a thread ID with each alloc/dealloc?
+ - Need to think this through more
+ 
+<<<<More on memory allocator>>>>
+ - Regarding potentially often allocating large amounts of memory:
+  - Ignore this for now. Allocating large amounts (16K+ of memory often probably won't be the case). This will only happen when modifying textures or meshes and I can assume there won't be many of such updates.
+    - (But there will be multiple such updates per frame when it comes to GUI meshes for example)
+  - However I should implement allocation counter in my allocator so I can know if I have a bottleneck.
+  - For those allocations that do hit this limit I should implement a FrameAllocator. Memory is allocated during simulation step and the entire block is cleared when the frame ends.
+   - Allocations like copying MeshData, PixelData, PassParams, etc. when queing commands for render thread should all be using this.
+   - Problem with such allocator is safety
+  - Allocations that are created and deleted in a single function should use a Stack allocator
+
+<<<<Resource changes and reimport>>>>
+Use case example:
+ - User reimports a .gpuproginc file
+   - Dependencies are held by CoreGpuObjectManager. Objects are required to register/unregister
+      their dependencies in their methods manually.
+ - Editor calls SomeClass::reimport(handle) after it detects a change 
+   - this will load a new resource, release the old one and assign the new one to Handle without changing the GUID
+   - In order to make it thread safe force all threads to finish what they're doing and pause them until the switch is done
+     - Should be okay considering this should only happen in edit-mode so performance isn't imperative
+   - reimport is recursively called on all dependant objects as well.
+
+<<<<Handle multithreaded object management>>>:
+ - Make everything that is possible immutable. Once created it cant be changed.
+  - Example are shaders, state objects and similar
+ - Things like Textures, Vertex, Index buffers, GpuParams may be changed
+  - Make Vertex/Index buffers and similar only accesible from render thread. Higher level classes like meshes can have deferred methods
+  - TODO - How to handle the remaining actually deferred methods? Like Textures?
+
+DirectX11 supports concurrent drawing and resource creation so all my resource updates should be direct calls to DX methods (I'll need a deferred context?)
+ - DX9 doesn't so creating/updating resources should wait for render thread?
+  - Although these are sync points which kill the whole concept of separate render thread
+  - Updating via copy then? (DX11 driver does it internally if resource is used anyway)
+ - OpenGL? No idea, need to study GL contexts
+ - Although it seems DX11 also copies data when mapping/unmapping or updating on a non-immediate context. So maybe copy is the solution?
+
+So final solution:
+ - Copy all data that will be updated on a deferred context
+  - Make deferred context have a scratch buffer it can use for storing temporary copied data
+ - Immediate context will execute all commands right away
+  - This applies when rendering thread calls resource create/update internally
+  - Or when other thread blocks and waits for rendering thread
+ - Create a simple distinction so user knows when is something executed deferred and when immediate?
+  - Move resource update/create methods to DeferredContext?
+    - Not ALL methods need to be moved, only those that are resource heavy
+    - Smaller methods may remain and always stay async, but keep internal state?
+ - Resource creation on DX11 should be direct though, without a queue (especially if we manage to populate a resource in the same step)
+ - Remove & replace internal data copying in GpuParamBlock (or just use a allocator instead of new())
+
+A POSSIBLY BETTER SOLUTION THAN COPYING ALL THE DATA?
+Classes derive from ISharedMemoryBuffer
+ - For example PixelData, used when setting texture pixels
+ - They have lock, unlock & clone methods
+  - Users can choose whether they want to lock themselves out from modifying the class, or clone it, before passing it to a threaded method
+ - Downside is that I need to do this for every class that will be used in threaded methods
+ - Upside is that I think that is how DX handles its buffers at the moment
+
+
+<<<<RenderSystem needed modifications>>>>
+  - Texture resource views (Specifying just a subresource of a texture as a shader parameter)
+  - UAV for textures
+  - Stream out (write vertex buffers) (DX11 and GL)
+  - Texture buffers 
+   - Just add a special texture type? OpenGL doesn't support getting offset from within a texture buffer anyway
+  - Tesselation (hull/domain) shader
+  - Detachable and readable depthstencil buffer (Window buffers not required as they behave a bit differently in OpenGL)
+  - OpenGL provides image load/store which seems to be GL UAV equivalent (http://www.opengl.org/wiki/Image_Load_Store)
+  - Resolving MSAA textures (i.e. copying them to non-MSAA so they can be displayed on-screen). DX has ResolveSubresource, and OpenGL might have something similar.
+  - Single and dual channel textures (especially render textures, which are very important for effects like SSAO)
+  - Compute pipeline
+  - Instancing (DrawInstanced) (DX11 and GL)
+  - OpenGL append/consume buffers
+  - Indirect drawing via indirect argument buffers
+  - Texture arrays
+  - Rendertargets that aren't just 2D (Volumetric (3D) render targets in particular)
+  - Shader support for doubles
+  - Dynamic shader linkage (Interfaces and similar)
+  - Multisampled texture resources
+  - Multiple adapters (multi gpu)
+  - Passing initial data when creating a resource (DX11, but possibly GL too)
+  - Sample mask when setting blend state (DX11, check if equivalent exists in GL)
+  - RGBA blend factor when setting blend state(DX11, check if equivalent exists in GL)
+  - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
+  - One camera -> one task (thread) approach for multithreading
+   - Also make sure to run off a thread pool (WorkQueue class already exists that provides needed interface)
+  - The way I handle rendering currently is to discard simulation results if gpu thread isn't finished.
+     - This reduces input lag but at worst case scenario the effect of multithreading might be completely eliminated as
+	   GPU ends up waiting for GPU, just because it was few milliseconds late. Maybe better to wait for GPU?

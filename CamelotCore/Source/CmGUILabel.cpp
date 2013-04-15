@@ -10,8 +10,6 @@ namespace CamelotEngine
 		:GUIElement(parent, skin), mText(text), mFixedWidth(fixedWidth), mFixedHeight(fixedHeight), mWordWrap(wordWrap),
 		mHorzAlign(horzAlign), mVertAlign(vertAlign)
 	{
-		// This is calling a virtual method but it's okay because we always want the one
-		// existing on this class.
 		mStyle = skin->getStyle(getGUITypeName());
 		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite(text, mStyle->font, mStyle->fontSize);
 		mTextSprite->setSize(fixedWidth, fixedHeight);
