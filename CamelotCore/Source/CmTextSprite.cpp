@@ -260,20 +260,18 @@ namespace CamelotEngine
 	};
 
 	TextSprite::TextSprite()
-		:mFontSize(0), mWordWrap(false), mHorzAlign(THA_Left), mVertAlign(TVA_Top)
 	{
 
 	}
 
-	TextSprite::TextSprite(const String& text, HFont font, UINT32 fontSize)
-		:mText(text), mFont(font), mFontSize(fontSize), mWordWrap(false), mHorzAlign(THA_Left), mVertAlign(TVA_Top)
+	void TextSprite::update(const TEXT_SPRITE_DESC& desc)
 	{
-
-	}
-
-	void TextSprite::updateMesh() const
-	{
-		const FontData* fontData = getFontData();
+		const FontData* fontData = nullptr;
+		if(desc.font != nullptr)
+		{
+			UINT32 nearestSize = desc.font->getClosestAvailableSize(desc.fontSize);
+			fontData = desc.font->getFontDataForSize(nearestSize);
+		}
 
 		if(fontData == nullptr)
 		{
@@ -281,13 +279,13 @@ namespace CamelotEngine
 			return;
 		}
 
-		if(fontData->size != mFontSize)
+		if(fontData->size != desc.fontSize)
 		{
-			LOGWRN("Unable to find font with specified size (" + toString(mFontSize) + "). Using nearest available size: " + toString(fontData->size));
+			LOGWRN("Unable to find font with specified size (" + toString(desc.fontSize) + "). Using nearest available size: " + toString(fontData->size));
 		}
 
-		bool heightIsLimited = mHeight > 0;
-		bool widthIsLimited = mWidth > 0;
+		bool heightIsLimited = desc.height > 0;
+		bool widthIsLimited = desc.width > 0;
 
 		TextLine* curLine = CM_NEW(TextLine, ScratchAlloc) TextLine();
 		vector<TextLine*>::type textLines;
@@ -299,12 +297,12 @@ namespace CamelotEngine
 		vector<UINT32>::type newRenderElemSizes;
 		while(true)
 		{
-			if(charIdx >= mText.size())
+			if(charIdx >= desc.text.size())
 				break;
 
-			if(mText[charIdx] == '\n')
+			if(desc.text[charIdx] == '\n')
 			{
-				if(heightIsLimited && (curHeight + fontData->fontDesc.lineHeight * 2) > mHeight)
+				if(heightIsLimited && (curHeight + fontData->fontDesc.lineHeight * 2) > desc.height)
 					break; // Max height reached
 
 				curLine = CM_NEW(TextLine, ScratchAlloc) TextLine();
@@ -315,7 +313,7 @@ namespace CamelotEngine
 				continue;
 			}
 
-			UINT32 charId = mText[charIdx];
+			UINT32 charId = desc.text[charIdx];
 			const CHAR_DESC& charDesc = fontData->getCharDesc(charId);
 
 			if(charId != SPACE_CHAR)
@@ -330,16 +328,16 @@ namespace CamelotEngine
 			else
 				curLine->addSpace(fontData->fontDesc.spaceWidth);
 
-			if(widthIsLimited && curLine->getWidth() > mWidth)
+			if(widthIsLimited && curLine->getWidth() > desc.width)
 			{
-				if(mWordWrap)
+				if(desc.wordWrap)
 				{
 					TextWord* lastWord = curLine->removeLastWord();
 					if(lastWord->isSpacer())
 						curLine->addWord(lastWord); // Spaces can stay on previous line even if they don't technically fit
 
 					// No more lines fit vertically so we're done
-					if(heightIsLimited && curHeight > mHeight)
+					if(heightIsLimited && curHeight > desc.height)
 						break;
 
 					curLine = CM_NEW(TextLine, ScratchAlloc) TextLine();
@@ -360,37 +358,37 @@ namespace CamelotEngine
 		}
 
 		// Calc vertical alignment offset
-		UINT32 vertDiff = std::max(0U, mHeight - curHeight);
+		UINT32 vertDiff = std::max(0U, desc.height - curHeight);
 		UINT32 vertOffset = 0;
-		switch(mVertAlign)
+		switch(desc.vertAlign)
 		{
 		case TVA_Top:
 			vertOffset = 0;
 			break;
 		case TVA_Bottom:
-			vertOffset = std::max(0, (INT32)(mHeight - curHeight));
+			vertOffset = std::max(0, (INT32)(desc.height - curHeight));
 			break;
 		case TVA_Center:
-			vertOffset = std::max(0, (INT32)(mHeight - curHeight)) / 2;
+			vertOffset = std::max(0, (INT32)(desc.height - curHeight)) / 2;
 			break;
 		}
 
 		// Calc horizontal alignment offset and set final line positions
-		Point offset = mOffset + getAnchorOffset();
+		Point offset = desc.offset + getAnchorOffset(desc.anchor, desc.width, desc.height);
 		UINT32 curY = 0;
 		for(size_t i = 0; i < textLines.size(); i++)
 		{
 			UINT32 horzOffset = 0;
-			switch(mHorzAlign)
+			switch(desc.horzAlign)
 			{
 			case THA_Left:
 				horzOffset = 0;
 				break;
 			case THA_Right:
-				horzOffset = std::max(0, (INT32)(mWidth - textLines[i]->getWidth()));
+				horzOffset = std::max(0, (INT32)(desc.width - textLines[i]->getWidth()));
 				break;
 			case THA_Center:
-				horzOffset = std::max(0, (INT32)(mWidth - textLines[i]->getWidth())) / 2;
+				horzOffset = std::max(0, (INT32)(desc.width - textLines[i]->getWidth())) / 2;
 				break;
 			}
 
@@ -438,86 +436,14 @@ namespace CamelotEngine
 		for(size_t i = 0; i < textLines.size(); i++)
 			CM_DELETE(textLines[i], TextLine, ScratchAlloc);
 
-		if(isClipRectangleValid())
+		if(desc.clipRect.width > 0 && desc.clipRect.height > 0)
 		{
 			for(auto& renderElem : mCachedRenderElements)
 			{
-				clipToRect(renderElem.vertices, renderElem.uvs, renderElem.numQuads, mClipRect);
+				clipToRect(renderElem.vertices, renderElem.uvs, renderElem.numQuads, desc.clipRect);
 			}
 		}
 
 		updateBounds();
-	}
-
-	const FontData* TextSprite::getFontData() const
-	{
-		if(mFont == nullptr)
-			return nullptr;
-
-		UINT32 nearestSize = mFont->getClosestAvailableSize(mFontSize);
-
-		return mFont->getFontDataForSize(nearestSize);
-	}
-
-	// This will only properly clip an array of rectangular quads
-	// Vertices in the quad must be in a specific order: top left, top right, bottom left, bottom right
-	// (0, 0) represents top left of the screen
-	void TextSprite::clipToRect(Vector2* vertices, Vector2* uv, UINT32 numQuads, Rect clipRect) const
-	{
-		float left = (float)clipRect.x;
-		float right = (float)clipRect.x + clipRect.width;
-		float top = (float)clipRect.y;
-		float bottom = (float)clipRect.y - clipRect.height;
-
-		for(UINT32 i = 0; i < numQuads; i++)
-		{
-			UINT32 vertIdx = i * 4;
-
-			// Attempt to skip those that are definitely not clipped
-			if(vertices[vertIdx + 0].x >= left && vertices[vertIdx + 1].x <= right &&
-				vertices[vertIdx + 0].y <= top && vertices[vertIdx + 2].y >= bottom)
-			{
-				continue;
-			}
-
-			float du = (uv[vertIdx + 1].x - uv[vertIdx + 0].x) / (vertices[vertIdx + 1].x - vertices[vertIdx + 0].x);
-			float dv = (uv[vertIdx + 0].y - uv[vertIdx + 2].y) / (vertices[vertIdx + 0].y - vertices[vertIdx + 2].y);
-
-			// Clip left
-			float newLeft = Math::Clamp(vertices[vertIdx + 0].x, left, right);
-			float uvLeftOffset = (newLeft - vertices[vertIdx + 0].x) * du;
-
-			vertices[vertIdx + 0].x = newLeft;
-			vertices[vertIdx + 2].x = newLeft;
-			uv[vertIdx + 0].x += uvLeftOffset;
-			uv[vertIdx + 2].x += uvLeftOffset;
-
-			// Clip right
-			float newRight = Math::Clamp(vertices[vertIdx + 1].x, left, right);
-			float uvRightOffset = (vertices[vertIdx + 1].x - newRight) * du;
-
-			vertices[vertIdx + 1].x = newRight;
-			vertices[vertIdx + 3].x = newRight;
-			uv[vertIdx + 1].x -= uvRightOffset;
-			uv[vertIdx + 3].x -= uvRightOffset;
-
-			// Clip top
-			float newTop = Math::Clamp(vertices[vertIdx + 0].y, bottom, top);
-			float uvTopOffset = (vertices[vertIdx + 0].y - newTop) * dv;
-
-			vertices[vertIdx + 0].y = newTop;
-			vertices[vertIdx + 1].y = newTop;
-			uv[vertIdx + 0].y -= uvTopOffset;
-			uv[vertIdx + 1].y -= uvTopOffset;
-
-			// Clip bottom
-			float newBottom = Math::Clamp(vertices[vertIdx + 2].y, bottom, top);
-			float uvBottomOffset = (newBottom - vertices[vertIdx + 2].y) * dv;
-
-			vertices[vertIdx + 2].y = newBottom;
-			vertices[vertIdx + 3].y = newBottom;
-			uv[vertIdx + 2].y += uvBottomOffset;
-			uv[vertIdx + 3].y += uvBottomOffset;
-		}
 	}
 }

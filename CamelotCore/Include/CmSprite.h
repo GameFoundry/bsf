@@ -38,17 +38,7 @@ namespace CamelotEngine
 		Sprite();
 		virtual ~Sprite();
 
-		void setOffset(const Point& offset) { mOffset = offset; setDirty(); }
-		void setSize(UINT32 width, UINT32 height) { mWidth = width; mHeight = height; setDirty(); }
-		void setClipRect(const Rect& clipRect) { mClipRect = clipRect; setDirty(); }
-		void setAnchor(SpriteAnchor anchor) { mAnchor = anchor; setDirty(); }
-
-		Point getOffset() const { return mOffset; }
-		UINT32 getWidth() const { return mWidth; }
-		UINT32 getHeight() const { return mHeight; }
-		Rect getClipRect() const { return mClipRect; }
-		SpriteAnchor getAnchor() const { return mAnchor; }
-		const Rect& getBounds() const;
+		const Rect& getBounds() const { return mBounds; }
 
 		/**
 		 * @brief	Returns the number of separate render elements in the sprite. Normally this is one, but some sprites
@@ -97,21 +87,13 @@ namespace CamelotEngine
 		UINT32 fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const;
 
 	protected:
-		Point mOffset;
-		UINT32 mWidth, mHeight;
-		Rect mClipRect;
-		SpriteAnchor mAnchor;
-
 		mutable Rect mBounds;
-		mutable bool mIsDirty;
 		mutable vector<SpriteRenderElement>::type mCachedRenderElements;
 
-		void setDirty() { mIsDirty = true; }
-		Point getAnchorOffset() const;
-		bool isClipRectangleValid() const;
-
-		virtual void updateMesh() const = 0;
 		void updateBounds() const;
 		void clearMesh() const;
+
+		void clipToRect(Vector2* vertices, Vector2* uv, UINT32 numQuads, const Rect& clipRect) const;
+		Point getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height) const;
 	};
 }

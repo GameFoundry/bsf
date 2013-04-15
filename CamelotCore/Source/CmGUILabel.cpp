@@ -11,11 +11,19 @@ namespace CamelotEngine
 		mHorzAlign(horzAlign), mVertAlign(vertAlign)
 	{
 		mStyle = skin->getStyle(getGUITypeName());
-		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite(text, mStyle->font, mStyle->fontSize);
-		mTextSprite->setSize(fixedWidth, fixedHeight);
-		mTextSprite->setWordWrap(wordWrap);
-		mTextSprite->setClipRect(Rect(0, 0, fixedWidth, fixedHeight));
-		mTextSprite->setAlignment(horzAlign, vertAlign);
+		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite();
+
+		TEXT_SPRITE_DESC desc;
+		desc.text = text;
+		desc.font = mStyle->font;
+		desc.fontSize = mStyle->fontSize;
+		desc.width = fixedWidth;
+		desc.height = fixedHeight;
+		desc.wordWrap = wordWrap;
+		desc.clipRect = Rect(0, 0, fixedWidth, fixedHeight);
+		desc.horzAlign = horzAlign;
+		desc.vertAlign = vertAlign;
+		mTextSprite->update(desc);
 
 		mBounds = mTextSprite->getBounds();
 	}

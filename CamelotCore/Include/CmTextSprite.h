@@ -15,37 +15,32 @@ namespace CamelotEngine
 		TVA_Top, TVA_Center, TVA_Bottom
 	};
 
+	struct TEXT_SPRITE_DESC
+	{
+		TEXT_SPRITE_DESC()
+			:width(0), height(0), anchor(SA_TopLeft), fontSize(0),
+			horzAlign(THA_Left), vertAlign(TVA_Top), wordWrap(false)
+		{ }
+
+		Point offset;
+		UINT32 width;
+		UINT32 height;
+		Rect clipRect;
+		SpriteAnchor anchor;
+
+		String text;
+		HFont font;
+		UINT32 fontSize;
+		TextHorzAlign horzAlign;
+		TextVertAlign vertAlign;
+		bool wordWrap;
+	};
+
 	class CM_EXPORT TextSprite : public Sprite
 	{
 	public:
 		TextSprite();
-		TextSprite(const String& text, HFont font, UINT32 fontSize);
 
-		void setText(const String& text) { mText = text; setDirty(); }
-		void setFont(HFont font, UINT32 fontSize) { mFont = font; mFontSize = fontSize; setDirty(); }
-		void setWordWrap(bool wordWrap) { mWordWrap = wordWrap; setDirty(); }
-		void setAlignment(TextHorzAlign horzAlign, TextVertAlign vertAlign = TVA_Top) 
-			{ mHorzAlign = horzAlign; mVertAlign = vertAlign; setDirty(); }
-
-		String getText() const { return mText; }
-		HFont getFont() const { return mFont; }
-		UINT32 getFontSize() const { return mFontSize; }
-		bool getWordWrap() const { return mWordWrap; }
-		TextHorzAlign getTextHorzAlign() const { return mHorzAlign; }
-		TextVertAlign getTextVertAlign() const { return mVertAlign; }
-
-	protected:
-		String mText;
-		HFont mFont;
-		UINT32 mFontSize;
-		bool mWordWrap;
-		TextHorzAlign mHorzAlign;
-		TextVertAlign mVertAlign;
-
-		virtual void updateMesh() const;
-
-		const FontData* getFontData() const;
-
-		void clipToRect(Vector2* vertices, Vector2* uv, UINT32 numQuads, Rect clipRect) const;
+		void update(const TEXT_SPRITE_DESC& desc);
 	};
 }
