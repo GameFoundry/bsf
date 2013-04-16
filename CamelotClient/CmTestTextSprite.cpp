@@ -10,6 +10,8 @@
 #include "CmGUISkin.h"
 #include "CmOverlayManager.h"
 
+using namespace BansheeEngine;
+
 namespace CamelotEngine
 {
 	TestTextSprite::TestTextSprite(const HSceneObject& parent)
@@ -33,10 +35,10 @@ namespace CamelotEngine
 		labelStyle.font = font;
 		labelStyle.fontSize = fontSize;
 
-		mSkin->setStyle(GUILabel::getGUITypeName(), labelStyle);
+		mSkin->setStyle(BansheeEngine::GUILabel::getGUITypeName(), labelStyle);
 
 		setSkin(mSkin);
-		GUILabel::create(this, text, 400, 400, true, THA_Right, TVA_Bottom);
+		BansheeEngine::GUILabel::create(this, text, 400, 400, true, THA_Right, TVA_Bottom);
 	}
 
 	void TestTextSprite::update()

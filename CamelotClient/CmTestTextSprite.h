@@ -1,4 +1,4 @@
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include "CmGUIWidget.h"
 
 namespace CamelotEngine

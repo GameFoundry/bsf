@@ -4,7 +4,9 @@
 #include "CmGUISkin.h"
 #include "CmGUIWidget.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	GUILabel::GUILabel(GUIWidget* parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, 
 		bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign)

@@ -120,7 +120,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;CM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>./Include;../CamelotUtility/Include;../Dependencies/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./Include;../CamelotUtility/Include;../Dependencies/Include;../BansheeEngine/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -221,7 +221,6 @@
     <ClInclude Include="Include\CmGpuProgramRTTI.h" />
     <ClInclude Include="Include\CmGUIElement.h" />
     <ClInclude Include="Include\CmGUIElementStyle.h" />
-    <ClInclude Include="Include\CmGUILabel.h" />
     <ClInclude Include="Include\CmGUIManager.h" />
     <ClInclude Include="Include\CmGUIMaterialManager.h" />
     <ClInclude Include="Include\CmGUISkin.h" />
@@ -337,7 +336,6 @@
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />
     <ClCompile Include="Source\CmGUIElement.cpp" />
-    <ClCompile Include="Source\CmGUILabel.cpp" />
     <ClCompile Include="Source\CmGUIManager.cpp" />
     <ClCompile Include="Source\CmGUIMaterialManager.cpp" />
     <ClCompile Include="Source\CmGUISkin.cpp" />

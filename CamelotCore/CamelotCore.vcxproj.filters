@@ -432,9 +432,6 @@
     <ClInclude Include="Include\CmGUIWidget.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGUILabel.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmGUIElement.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -717,9 +714,6 @@
       <Filter>Source Files\RTTI</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGUIWidget.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGUILabel.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGUIElement.cpp">
