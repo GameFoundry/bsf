@@ -38,7 +38,7 @@ namespace CamelotEngine
 #endif
 
 		if(mCommands != nullptr)
-			CM_DELETE(mCommands, std::queue<Command>, PoolAlloc);
+			CM_DELETE(mCommands, queue<Command>, PoolAlloc);
 	}
 
 	AsyncOp CommandQueue::queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
@@ -150,7 +150,7 @@ namespace CamelotEngine
 			commands->pop();
 		}
 
-		CM_DELETE(commands, std::queue<Command>, PoolAlloc);
+		CM_DELETE(commands, queue<Command>, PoolAlloc);
 	}
 
 	void CommandQueue::playback(std::queue<Command>* commands)
@@ -161,7 +161,7 @@ namespace CamelotEngine
 	void CommandQueue::cancelAll()
 	{
 		std::queue<CommandQueue::Command>* commands = flush();
-		CM_DELETE(commands, std::queue<Command>, PoolAlloc);
+		CM_DELETE(commands, queue<Command>, PoolAlloc);
 	}
 
 	bool CommandQueue::isEmpty()

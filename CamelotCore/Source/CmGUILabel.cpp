@@ -2,14 +2,17 @@
 #include "CmGUIElementStyle.h"
 #include "CmTextSprite.h"
 #include "CmGUISkin.h"
+#include "CmGUIWidget.h"
 
 namespace CamelotEngine
 {
-	GUILabel::GUILabel(GUIWidget* parent, const String& text, const GUISkin* skin, UINT32 fixedWidth, UINT32 fixedHeight, 
+	GUILabel::GUILabel(GUIWidget* parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, 
 		bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign)
-		:GUIElement(parent, skin), mText(text), mFixedWidth(fixedWidth), mFixedHeight(fixedHeight), mWordWrap(wordWrap),
+		:GUIElement(parent), mText(text), mFixedWidth(fixedWidth), mFixedHeight(fixedHeight), mWordWrap(wordWrap),
 		mHorzAlign(horzAlign), mVertAlign(vertAlign)
 	{
+		const GUISkin* skin = parent->getGUISkin();
+
 		mStyle = skin->getStyle(getGUITypeName());
 		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite();
 
@@ -51,6 +54,26 @@ namespace CamelotEngine
 	void GUILabel::fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const
 	{
 		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, renderElementIdx);
+	}
+
+	GUILabel* GUILabel::create(GUIWidget* parent, const String& text)
+	{
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, 0, 0, false, THA_Left, TVA_Top);
+	}
+
+	GUILabel* GUILabel::create(GUIWidget* parent, const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign)
+	{
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, 0, 0, false, horzAlign, vertAlign);
+	}
+
+	GUILabel* GUILabel::create(GUIWidget* parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap)
+	{
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, fixedWidth, fixedHeight, wordWrap, THA_Left, TVA_Top);
+	}
+
+	GUILabel* GUILabel::create(GUIWidget* parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign)
+	{
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, fixedWidth, fixedHeight, wordWrap, horzAlign, vertAlign);
 	}
 
 	const String& GUILabel::getGUITypeName()

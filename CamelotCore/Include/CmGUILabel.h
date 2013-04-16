@@ -11,6 +11,11 @@ namespace CamelotEngine
 	public:
 		static const String& getGUITypeName();
 
+		static GUILabel* create(GUIWidget* parent, const String& text);
+		static GUILabel* create(GUIWidget* parent, const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign);
+		static GUILabel* create(GUIWidget* parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap);
+		static GUILabel* create(GUIWidget* parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign);
+
 	protected:
 		~GUILabel();
 
@@ -41,8 +46,7 @@ namespace CamelotEngine
 		TextHorzAlign mHorzAlign;
 		TextVertAlign mVertAlign;
 
-		friend class GUIWidget;
-		GUILabel(GUIWidget* parent, const String& text, const GUISkin* skin, UINT32 fixedWidth, UINT32 fixedHeight, 
+		GUILabel(GUIWidget* parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, 
 			bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign);
 	};
 }

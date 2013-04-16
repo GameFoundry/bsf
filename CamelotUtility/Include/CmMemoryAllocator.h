@@ -98,7 +98,7 @@ namespace CamelotEngine
 #define CM_NEW(T, category) new (MemoryAllocator<category>::allocate(sizeof(T)))
 #define CM_NEW_BYTES(count, category) (UINT8*)MemoryAllocator<category>::allocate(count)
 #define CM_NEW_ARRAY(T, count, category) __cm_construct_array<T, category>(count)
-#define CM_DELETE(ptr, T, category) __cm_destruct<T, category>(ptr)
+#define CM_DELETE(ptr, T, category) {(ptr)->~T(); MemoryAllocator<category>::free(ptr);}
 #define CM_DELETE_BYTES(ptr, category) MemoryAllocator<category>::free(ptr)
 #define CM_DELETE_ARRAY(ptr, T, count, category) __cm_destruct_array<T, category>(ptr, count)
 

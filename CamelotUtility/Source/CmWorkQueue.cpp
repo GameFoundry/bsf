@@ -45,7 +45,7 @@ namespace CamelotEngine {
 
 		for (RequestQueue::iterator i = mRequestQueue.begin(); i != mRequestQueue.end(); ++i)
 		{
-			CM_DELETE(*i, WorkQueue::Request, ScratchAlloc);
+			CM_DELETE(*i, Request, ScratchAlloc);
 		}
 		mRequestQueue.clear();
 	}
@@ -97,7 +97,7 @@ namespace CamelotEngine {
 
 			if (mWorkerFunc != nullptr)
 			{
-				CM_DELETE(mWorkerFunc, WorkQueue::WorkerFunc, GenAlloc);
+				CM_DELETE(mWorkerFunc, WorkerFunc, GenAlloc);
 				mWorkerFunc = nullptr;
 			}
 
@@ -386,13 +386,13 @@ namespace CamelotEngine {
 					addRequestWithRID(req->getID(), req->getChannel(), req->getData(), 
 						req->getRetryCount() - 1);
 					// discard response (this also deletes request)
-					CM_DELETE(response, WorkQueue::Response, ScratchAlloc);
+					CM_DELETE(response, Response, ScratchAlloc);
 					return;
 				}
 			}
 
 			processResponse(response);
-			CM_DELETE(response, WorkQueue::Response, ScratchAlloc);
+			CM_DELETE(response, Response, ScratchAlloc);
 		}
 		else
 		{
@@ -400,7 +400,7 @@ namespace CamelotEngine {
 			gDebug().logWarning("warning: no handler processed request "
 				+ toString(r->getID()) + ", channel " + toString(r->getChannel()));
 
-			CM_DELETE(r, WorkQueue::Request, ScratchAlloc);
+			CM_DELETE(r, Request, ScratchAlloc);
 		}
 
 	}
@@ -534,7 +534,7 @@ namespace CamelotEngine {
 	//---------------------------------------------------------------------
 	WorkQueue::Response::~Response()
 	{
-		CM_DELETE(mRequest, WorkQueue::Request, ScratchAlloc);
+		CM_DELETE(mRequest, Request, ScratchAlloc);
 	}
 	//---------------------------------------------------------------------
 	void WorkQueue::WorkerFunc::operator()()

@@ -26,33 +26,15 @@ namespace CamelotEngine
 
 		for(auto& elem : mElements)
 		{
-			CM_DELETE(elem, GUIElement, GUIAlloc);
+			GUIElement::destroy(elem);
 		}
 
 		mElements.clear();
 	}
 
-	GUILabel* GUIWidget::addLabel(const String& text)
+	void GUIWidget::registerElement(GUIElement* elem)
 	{
-		return addLabel(text, 0, 0, false, THA_Left, TVA_Top);
-	}
-
-	GUILabel* GUIWidget::addLabel(const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign)
-	{
-		return addLabel(text, 0, 0, false, horzAlign, vertAlign);
-	}
-
-	GUILabel* GUIWidget::addLabel(const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap)
-	{
-		return addLabel(text, fixedWidth, fixedHeight, wordWrap, THA_Left, TVA_Top);
-	}
-
-	GUILabel* GUIWidget::addLabel(const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign)
-	{
-		GUILabel* label = CM_NEW(GUILabel, GUIAlloc) GUILabel(this, text, getGUISkin(), fixedWidth, fixedHeight, wordWrap, horzAlign, vertAlign);
-		mElements.push_back(label);
-
-		return label;
+		mElements.push_back(elem);
 	}
 
 	void GUIWidget::setSkin(const GUISkin* skin)

@@ -12,21 +12,19 @@ namespace CamelotEngine
 	public:
 		virtual ~GUIWidget();
 
-		GUILabel* addLabel(const String& text);
-		GUILabel* addLabel(const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap);
-		GUILabel* addLabel(const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign);
-		GUILabel* addLabel(const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign);
-
 		void setSkin(const GUISkin* skin);
 		const GUISkin* getGUISkin() const;
 
 		virtual void render(const Camera* camera, DeferredRenderContextPtr& renderContext) const;
 	protected:
 		friend class SceneObject;
+		friend class GUIElement;
 
 		GUIWidget(const HSceneObject& parent);
 
 		void mouseEvent(const GUIMouseEvent& ev);
+
+		void registerElement(GUIElement* elem);
 	private:
 
 		void updateMeshes() const;

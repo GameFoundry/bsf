@@ -106,7 +106,7 @@ namespace CamelotEngine
 				texture->setRawPixels(data, face, mipmap);
 			}
 
-			CM_DELETE(pixelData, vector<PixelDataPtr>::type, PoolAlloc);
+			CM_DELETE(pixelData, vector<PixelDataPtr>, PoolAlloc);
 			texture->mRTTIData = nullptr;	
 		}
 

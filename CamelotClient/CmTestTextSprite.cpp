@@ -36,7 +36,7 @@ namespace CamelotEngine
 		mSkin->setStyle(GUILabel::getGUITypeName(), labelStyle);
 
 		setSkin(mSkin);
-		addLabel(text, 400, 400, true, THA_Right, TVA_Bottom);
+		GUILabel::create(this, text, 400, 400, true, THA_Right, TVA_Bottom);
 	}
 
 	void TestTextSprite::update()

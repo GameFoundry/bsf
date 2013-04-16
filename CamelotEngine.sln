@@ -85,6 +85,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CamelotFontImporter", "Came
 		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BansheeEngine", "BansheeEngine\BansheeEngine.vcxproj", "{07B0C186-5173-46F2-BE26-7E4148BD0CCA}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -269,6 +271,18 @@ Global
 		{AB6C9284-D1CB-4AAD-BA4B-8A9E81AD1A73}.Release|Win32.Build.0 = Release|Win32
 		{AB6C9284-D1CB-4AAD-BA4B-8A9E81AD1A73}.Release|x64.ActiveCfg = Release|x64
 		{AB6C9284-D1CB-4AAD-BA4B-8A9E81AD1A73}.Release|x64.Build.0 = Release|x64
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Debug|Win32.Build.0 = Debug|Win32
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Debug|x64.ActiveCfg = Debug|x64
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Release|Any CPU.ActiveCfg = Release|Win32
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Release|Win32.ActiveCfg = Release|Win32
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Release|Win32.Build.0 = Release|Win32
+		{07B0C186-5173-46F2-BE26-7E4148BD0CCA}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

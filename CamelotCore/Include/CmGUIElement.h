@@ -8,8 +8,7 @@ namespace CamelotEngine
 	class CM_EXPORT GUIElement
 	{
 	public:
-		GUIElement(GUIWidget* parent, const GUISkin* skin);
-		virtual ~GUIElement();
+		GUIElement(GUIWidget* parent);
 
 		/**
 		 * @brief	Returns the number of separate render elements in the GUI element.
@@ -71,9 +70,15 @@ namespace CamelotEngine
 		//	onKeyPressed
 		//	onKeyReleased
 	protected:
+		friend class GUIWidget;
+
+		virtual ~GUIElement();
+
 		GUIWidget* mParent;
 		Rect mBounds;
 		INT32 mDepth;
 		const GUIElementStyle* mStyle;
+
+		static void destroy(GUIElement* element);
 	};
 }
