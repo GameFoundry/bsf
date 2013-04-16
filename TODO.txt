@@ -26,12 +26,8 @@ Longterm plans:
 <<Multithreaded GUI rendering>>
  - Event handling and normal "update" will still be done on the main thread
  - At the beginning of each frame a GUI mesh update is queued on the GUI thread
-   - I might need to modify Sprite/TextSprite as they might re-create their meshes whenever they are dirty. I probably want them to do it only 
-     when specifically commanded by calling "updateMesh" to make sure they're only updated on GUI thread.
  - Since we're queuing the update at the beggining of the frame we will be using last frames transform and gui element states.
    - When queing we need to make sure to store GUIWidget transform, and specific element states (e.g. "text" in GUILabel)
-     - I might want to remove Sprite and TextSprite classes in their current form and just make them utility classes? Because right now I'm storing 
-	   same data (e.g. text, font, etc) in both GUILabel (for example) and TextSprite, which makes state-saving problematic.
  - At the end of simulation frame wait until GUI update is complete. After both simulation and GUI updates are complete, proceed with submitting it to render system.
 
 <<Figure out how to store texture references in a font>>

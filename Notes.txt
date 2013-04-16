@@ -13,6 +13,8 @@ Reminders:
   - When displaying inspector data for a component, take into consideration that it will need to be able
     to display that data for user created C# classes as well. AND I will most certainly have C# versions of all my
 	components. Therefore is there any purpose of having C++ only inspector parsing code?
+  - When I'll be doing SRGB write make sure GUI textures are handled properly. Right now they are read in gamma space, and displayed
+    as normal, but if I switch to SRGB write then gamma would be applied twice to those textures.
 
 ----------------------------------------------------------------------------------------------
 More detailed thought out system descriptions:

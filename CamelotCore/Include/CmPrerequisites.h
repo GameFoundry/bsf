@@ -168,6 +168,7 @@ namespace CamelotEngine {
 	// 2D
 	class Overlay;
 	class OverlayManager;
+	class SpriteTexture;
 	// GUI
 	class GUIManager;
 	class GUIWidget;
@@ -236,6 +237,7 @@ namespace CamelotEngine
 	typedef std::shared_ptr<TextSprite> TextSpritePtr;
 	typedef std::shared_ptr<Overlay> OverlayPtr;
 	typedef std::shared_ptr<InputHandler> InputHandlerPtr;
+	typedef std::shared_ptr<SpriteTexture> SpriteTexturePtr;
 }
 
 /************************************************************************/

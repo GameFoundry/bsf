@@ -180,6 +180,7 @@
     <ClInclude Include="Include\CmGameObject.h" />
     <ClInclude Include="Include\CmGameObjectRTTI.h" />
     <ClInclude Include="Include\CmGUIMouseEvent.h" />
+    <ClInclude Include="Include\CmGUIWindowFrame.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
     <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmOverlay.h" />
@@ -310,6 +311,7 @@
     <ClCompile Include="Source\CamelotRenderer.cpp" />
     <ClCompile Include="Source\CmGameObjectHandle.cpp" />
     <ClCompile Include="Source\CmGameObject.cpp" />
+    <ClCompile Include="Source\CmImageSprite.cpp" />
     <ClCompile Include="Source\CmOverlay.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
     <ClCompile Include="Source\CmBlendState.cpp" />
@@ -351,6 +353,7 @@
     <ClCompile Include="Source\CmPixelBuffer.cpp" />
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp" />
     <ClCompile Include="Source\CmSprite.cpp" />
+    <ClCompile Include="Source\CmSpriteTexture.cpp" />
     <ClCompile Include="Source\CmTextSprite.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
     <ClCompile Include="Source\CmVertexBuffer.cpp" />
