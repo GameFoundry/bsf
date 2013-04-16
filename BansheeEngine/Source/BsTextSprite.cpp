@@ -1,12 +1,14 @@
-#include "CmTextSprite.h"
+#include "BsTextSprite.h"
+#include "BsGUIMaterialManager.h"
 #include "CmDebug.h"
 #include "CmFontDesc.h"
 #include "CmFont.h"
 #include "CmVector2.h"
 #include "CmMath.h"
-#include "CmGUIMaterialManager.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	const int SPACE_CHAR = 32;
 

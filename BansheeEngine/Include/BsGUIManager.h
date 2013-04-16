@@ -1,20 +1,20 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include "CmModule.h"
 
-namespace CamelotEngine
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Manages the rendering of all GUI widgets in the scene. 
 	 */
-	class CM_EXPORT GUIManager : public Module<GUIManager>
+	class BS_EXPORT GUIManager : public CM::Module<GUIManager>
 	{
 	public:
 		void registerWidget(GUIWidget* widget);
 		void unregisterWidget(GUIWidget* widget);
 
 	private:
-		vector<GUIWidget*>::type mWidgets;
+		std::vector<GUIWidget*> mWidgets;
 	};
 }

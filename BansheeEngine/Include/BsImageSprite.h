@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CmPrerequisites.h"
-#include "CmSprite.h"
+#include "BsPrerequisites.h"
+#include "BsSprite.h"
 
-namespace CamelotEngine
+namespace BansheeEngine
 {
 	struct IMAGE_SPRITE_DESC
 	{
@@ -12,17 +12,17 @@ namespace CamelotEngine
 			borderTop(0), borderBottom(0)
 		{ }
 
-		Point offset;
+		CM::Point offset;
 		UINT32 width;
 		UINT32 height;
-		Rect clipRect;
+		CM::Rect clipRect;
 		SpriteAnchor anchor;
 
 		SpriteTexturePtr texture;
 		UINT32 borderLeft, borderRight, borderTop, borderBottom;
 	};
 
-	class CM_EXPORT ImageSprite : public Sprite
+	class BS_EXPORT ImageSprite : public Sprite
 	{
 	public:
 		ImageSprite();

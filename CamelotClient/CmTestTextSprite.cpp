@@ -3,11 +3,11 @@
 #include "CmRenderable.h"
 #include "CmMesh.h"
 #include "CmVector2.h"
-#include "CmTextSprite.h"
+#include "BsTextSprite.h"
 #include "CmFont.h"
 #include "CmMaterial.h"
-#include "CmGUILabel.h"
-#include "CmGUISkin.h"
+#include "BsGUILabel.h"
+#include "BsGUISkin.h"
 #include "CmOverlayManager.h"
 
 using namespace BansheeEngine;
@@ -21,13 +21,15 @@ namespace CamelotEngine
 
 	TestTextSprite::~TestTextSprite()
 	{
-		if(mSkin != nullptr)
-			CM_DELETE(mSkin, GUISkin, GUIAlloc);
+
+		// TODO - temporarily not deleting this
+		//if(mSkin != nullptr)
+		//	CM_DELETE(mSkin, GUISkin, PoolAlloc);
 	}
 
 	void TestTextSprite::setText(const HCamera& camera, const String& text, HFont font, UINT32 fontSize)
 	{
-		mSkin = CM_NEW(GUISkin, GUIAlloc) GUISkin();
+		mSkin = CM_NEW(GUISkin, PoolAlloc) GUISkin();
 
 		OverlayManager::instance().attachOverlay(camera.get(), this);		
 

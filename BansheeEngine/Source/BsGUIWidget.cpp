@@ -1,7 +1,7 @@
-#include "CmGUIWidget.h"
-#include "CmGUIManager.h"
-#include "CmGUISkin.h"
-#include "CmGUILabel.h"
+#include "BsGUIWidget.h"
+#include "BsGUIManager.h"
+#include "BsGUISkin.h"
+#include "BsGUILabel.h"
 #include "CmDeferredRenderContext.h"
 #include "CmMaterial.h"
 #include "CmPass.h"
@@ -10,7 +10,9 @@
 #include "CmViewport.h"
 #include "CmSceneObject.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	GUISkin GUIWidget::DefaultSkin;
 

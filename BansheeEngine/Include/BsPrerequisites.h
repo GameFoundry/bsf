@@ -18,11 +18,13 @@
 #    define BS_EXPORT
 #endif
 
+#include "CmGameObject.h"
+
+// To avoid a lot of typing
+namespace CM = CamelotEngine;
+
 namespace BansheeEngine
 {
-	// To avoid a lot of typing
-	namespace CM = CamelotEngine;
-
 	typedef char INT8;
 	typedef unsigned char UINT8;
 	typedef short INT16;
@@ -38,4 +40,24 @@ namespace BansheeEngine
 	typedef unsigned long long UINT64;
 	typedef long long INT64;
 #endif
+
+	// GUI
+	class GUIManager;
+	class GUIWidget;
+	class GUIElement;
+	class GUILabel;
+	class GUISkin;
+	struct GUIElementStyle;
+	struct GUIMouseEvent;
+
+	// 2D
+	class TextSprite;
+	class SpriteTexture;
+
+	typedef std::shared_ptr<TextSprite> TextSpritePtr;
+	typedef std::shared_ptr<SpriteTexture> SpriteTexturePtr;
+
+	typedef CM::GameObjectHandle<GUIWidget> HGUIWidget;
 }
+
+namespace BS = BansheeEngine;

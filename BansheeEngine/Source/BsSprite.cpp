@@ -1,8 +1,10 @@
-#include "CmTextSprite.h"
+#include "BsTextSprite.h"
+#include "BsGUIMaterialManager.h"
 #include "CmVector2.h"
-#include "CmGUIMaterialManager.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	Sprite::Sprite()
 	{

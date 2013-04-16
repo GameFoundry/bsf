@@ -1,16 +1,16 @@
 #include "BsPrerequisites.h"
-#include "CmGUIWidget.h"
+#include "BsGUIWidget.h"
 
 namespace CamelotEngine
 {
-	class TestTextSprite : public GUIWidget
+	class TestTextSprite : public BansheeEngine::GUIWidget
 	{
 	protected:
 		friend class SceneObject;
 
 		TestTextSprite(const HSceneObject& parent);
 
-		GUISkin* mSkin;
+		BansheeEngine::GUISkin* mSkin;
 	public:
 		~TestTextSprite();
 

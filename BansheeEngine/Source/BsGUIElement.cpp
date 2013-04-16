@@ -1,9 +1,11 @@
-#include "CmGUIElement.h"
-#include "CmGUIWidget.h"
-#include "CmGUISkin.h"
+#include "BsGUIElement.h"
+#include "BsGUIWidget.h"
+#include "BsGUISkin.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	GUIElement::GUIElement(GUIWidget* parent)
 		:mParent(parent)

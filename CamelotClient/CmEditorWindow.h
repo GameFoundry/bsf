@@ -1,20 +1,18 @@
 #pragma once
 
-#include "CmPrerequisites.h"
-
-using namespace CamelotEngine;
+#include "BsPrerequisites.h"
 
 namespace CamelotEditor
 {
 	class EditorWindow
 	{
 	public:
-		EditorWindow(const String& name, const HFont& dbgFont, CamelotEngine::UINT32 dbgFontSize);
+		EditorWindow(const CM::String& name, const CM::HFont& dbgFont, CamelotEngine::UINT32 dbgFontSize);
 		virtual ~EditorWindow();
 
 	private:
-		RenderWindowPtr mRenderWindow;
+		CM::RenderWindowPtr mRenderWindow;
 
-		GUISkin* mSkin; // dbg only
+		BS::GUISkin* mSkin; // dbg only
 	};
 }

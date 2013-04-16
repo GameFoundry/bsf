@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CmPrerequisites.h"
-#include "CmSprite.h"
+#include "BsPrerequisites.h"
+#include "BsSprite.h"
 
-namespace CamelotEngine
+namespace BansheeEngine
 {
 	enum TextHorzAlign
 	{
@@ -22,21 +22,21 @@ namespace CamelotEngine
 			horzAlign(THA_Left), vertAlign(TVA_Top), wordWrap(false)
 		{ }
 
-		Point offset;
+		CM::Point offset;
 		UINT32 width;
 		UINT32 height;
-		Rect clipRect;
+		CM::Rect clipRect;
 		SpriteAnchor anchor;
 
-		String text;
-		HFont font;
+		CM::String text;
+		CM::HFont font;
 		UINT32 fontSize;
 		TextHorzAlign horzAlign;
 		TextVertAlign vertAlign;
 		bool wordWrap;
 	};
 
-	class CM_EXPORT TextSprite : public Sprite
+	class BS_EXPORT TextSprite : public Sprite
 	{
 	public:
 		TextSprite();

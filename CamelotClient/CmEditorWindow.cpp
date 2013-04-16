@@ -2,11 +2,13 @@
 #include "CmRenderWindow.h"
 #include "CmApplication.h"
 #include "CmSceneObject.h"
-#include "CmGUIWidget.h"
-#include "CmGUILabel.h"
-#include "CmGUISkin.h"
+#include "BsGUIWidget.h"
+#include "BsGUILabel.h"
+#include "BsGUISkin.h"
 #include "CmOverlayManager.h"
 #include "CmCamera.h"
+
+using namespace CamelotEngine;
 
 namespace CamelotEditor
 {

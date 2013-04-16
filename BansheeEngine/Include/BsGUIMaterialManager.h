@@ -1,15 +1,15 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include "CmModule.h"
 
-namespace CamelotEngine
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Manages the materials used by the GUI system. Ensures that the GUI system doesn't
 	 * 			create an unnecessarily large amount of equivalent materials.
 	 */
-	class CM_EXPORT GUIMaterialManager : public Module<GUIMaterialManager>
+	class BS_EXPORT GUIMaterialManager : public CM::Module<GUIMaterialManager>
 	{
 	public:
 		/**
@@ -20,7 +20,7 @@ namespace CamelotEngine
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
 		 */
-		const HMaterial& requestTextMaterial(const HTexture& texture) const;
+		const CM::HMaterial& requestTextMaterial(const CM::HTexture& texture) const;
 
 		/**
 		 * @brief	Creates a new material, or returns a reference to an existing one based on
@@ -30,13 +30,13 @@ namespace CamelotEngine
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
 		 */
-		const HMaterial& requestImageMaterial(const HTexture& texture) const;
+		const CM::HMaterial& requestImageMaterial(const CM::HTexture& texture) const;
 
 		/**
 		 * @brief	Releases the held reference to the material. This allows us to fully unload a material
 		 * 			and their textures when they are no longer being used.
 		 */
-		void releaseMaterial(const HMaterial& material) const;
+		void releaseMaterial(const CM::HMaterial& material) const;
 	private:
 		struct GUIMaterial
 		{
@@ -44,11 +44,11 @@ namespace CamelotEngine
 				:refCount(0)
 			{ }
 
-			HMaterial handle;
+			CM::HMaterial handle;
 			UINT32 refCount;
 		};
 
-		mutable vector<GUIMaterial>::type mTextMaterials;
-		mutable vector<GUIMaterial>::type mImageMaterials;
+		mutable std::vector<GUIMaterial> mTextMaterials;
+		mutable std::vector<GUIMaterial> mImageMaterials;
 	};
 }

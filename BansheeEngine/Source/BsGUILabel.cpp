@@ -1,8 +1,8 @@
-#include "CmGUILabel.h"
-#include "CmGUIElementStyle.h"
-#include "CmTextSprite.h"
-#include "CmGUISkin.h"
-#include "CmGUIWidget.h"
+#include "BsGUILabel.h"
+#include "BsGUIElementStyle.h"
+#include "BsTextSprite.h"
+#include "BsGUISkin.h"
+#include "BsGUIWidget.h"
 
 using namespace CamelotEngine;
 

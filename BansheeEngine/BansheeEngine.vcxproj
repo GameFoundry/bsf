@@ -85,7 +85,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -99,7 +99,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -115,7 +115,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -133,7 +133,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -147,10 +147,31 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsPrerequisites.h" />
-    <ClInclude Include="Include\CmGUILabel.h" />
+    <ClInclude Include="Include\BsGUIElement.h" />
+    <ClInclude Include="Include\BsGUIElementStyle.h" />
+    <ClInclude Include="Include\BsGUILabel.h" />
+    <ClInclude Include="Include\BsGUIManager.h" />
+    <ClInclude Include="Include\BsGUIMaterialManager.h" />
+    <ClInclude Include="Include\BsGUIMouseEvent.h" />
+    <ClInclude Include="Include\BsGUISkin.h" />
+    <ClInclude Include="Include\BsGUIWidget.h" />
+    <ClInclude Include="Include\BsGUIWindowFrame.h" />
+    <ClInclude Include="Include\BsImageSprite.h" />
+    <ClInclude Include="Include\BsSprite.h" />
+    <ClInclude Include="Include\BsSpriteTexture.h" />
+    <ClInclude Include="Include\BsTextSprite.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Include\CmGUILabel.cpp" />
+    <ClCompile Include="Source\BsGUIElement.cpp" />
+    <ClCompile Include="Source\BsGUILabel.cpp" />
+    <ClCompile Include="Source\BsGUIManager.cpp" />
+    <ClCompile Include="Source\BsGUIMaterialManager.cpp" />
+    <ClCompile Include="Source\BsGUISkin.cpp" />
+    <ClCompile Include="Source\BsGUIWidget.cpp" />
+    <ClCompile Include="Source\BsImageSprite.cpp" />
+    <ClCompile Include="Source\BsSprite.cpp" />
+    <ClCompile Include="Source\BsSpriteTexture.cpp" />
+    <ClCompile Include="Source\BsTextSprite.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

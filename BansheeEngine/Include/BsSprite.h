@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include "CmPoint.h"
 #include "CmRect.h"
 
-namespace CamelotEngine
+namespace BansheeEngine
 {
 	enum SpriteAnchor
 	{
@@ -25,20 +25,20 @@ namespace CamelotEngine
 			:vertices(nullptr), uvs(nullptr), indexes(nullptr), numQuads(0)
 		{ }
 
-		Vector2* vertices;
-		Vector2* uvs;
+		CM::Vector2* vertices;
+		CM::Vector2* uvs;
 		UINT32* indexes;
 		UINT32 numQuads;
-		HMaterial material;
+		CM::HMaterial material;
 	};
 
-	class CM_EXPORT Sprite
+	class BS_EXPORT Sprite
 	{
 	public:
 		Sprite();
 		virtual ~Sprite();
 
-		const Rect& getBounds() const { return mBounds; }
+		const CM::Rect& getBounds() const { return mBounds; }
 
 		/**
 		 * @brief	Returns the number of separate render elements in the sprite. Normally this is one, but some sprites
@@ -55,7 +55,7 @@ namespace CamelotEngine
 		 * 		
 		 * @return	Handle to the material.
 		 */
-		const HMaterial& getMaterial(UINT32 renderElementIdx) const;
+		const CM::HMaterial& getMaterial(UINT32 renderElementIdx) const;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this
@@ -84,16 +84,16 @@ namespace CamelotEngine
 		 * @param	maxNumQuads			Total number of quads the buffers were allocated for. Used only for memory safety.
 		 * @param	renderElementIdx	Zero-based index of the render element.
 		 */
-		UINT32 fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const;
+		UINT32 fillBuffer(CM::Vector2* vertices, CM::Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const;
 
 	protected:
-		mutable Rect mBounds;
-		mutable vector<SpriteRenderElement>::type mCachedRenderElements;
+		mutable CM::Rect mBounds;
+		mutable std::vector<SpriteRenderElement> mCachedRenderElements;
 
 		void updateBounds() const;
 		void clearMesh() const;
 
-		void clipToRect(Vector2* vertices, Vector2* uv, UINT32 numQuads, const Rect& clipRect) const;
-		Point getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height) const;
+		void clipToRect(CM::Vector2* vertices, CM::Vector2* uv, UINT32 numQuads, const CM::Rect& clipRect) const;
+		CM::Point getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height) const;
 	};
 }

@@ -1,6 +1,8 @@
-#include "CmSpriteTexture.h"
+#include "BsSpriteTexture.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	SpriteTexture::SpriteTexture(const HTexture& baseTexture)
 		:mBaseTexture(baseTexture), mUsingAtlas(false)

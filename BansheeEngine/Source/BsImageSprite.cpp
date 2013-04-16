@@ -1,8 +1,10 @@
-#include "CmImageSprite.h"
-#include "CmSpriteTexture.h"
-#include "CmGUIMaterialManager.h"
+#include "BsImageSprite.h"
+#include "BsSpriteTexture.h"
+#include "BsGUIMaterialManager.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	ImageSprite::ImageSprite()
 	{
@@ -17,8 +19,6 @@ namespace CamelotEngine
 			clearMesh();
 			return;
 		}
-
-		
 
 		// Actually generate a mesh
 		if(mCachedRenderElements.size() < 1)

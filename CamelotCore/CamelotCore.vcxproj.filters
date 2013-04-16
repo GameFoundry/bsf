@@ -91,12 +91,6 @@
     <Filter Include="Source Files\2D">
       <UniqueIdentifier>{500c1648-85c9-4410-86e3-c16d102b4347}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\GUI">
-      <UniqueIdentifier>{0a7006f4-fd1d-49f9-92c5-b5c7b64c2578}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\GUI">
-      <UniqueIdentifier>{62806522-68be-448c-8669-b8b211de0e15}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmWindowEventUtilities.h">
@@ -420,39 +414,6 @@
     <ClInclude Include="Include\CmFontImportOptionsRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmSprite.h">
-      <Filter>Header Files\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmTextSprite.h">
-      <Filter>Header Files\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmImageSprite.h">
-      <Filter>Header Files\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGUIWidget.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGUIElement.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGUIManager.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmSpriteTexture.h">
-      <Filter>Header Files\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGUIMaterialManager.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmBuiltinMaterialManager.h">
-      <Filter>Source Files\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGUIElementStyle.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGUISkin.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmOverlay.h">
       <Filter>Header Files\2D</Filter>
     </ClInclude>
@@ -477,11 +438,8 @@
     <ClInclude Include="Include\CmGameObjectRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGUIMouseEvent.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGUIWindowFrame.h">
-      <Filter>Header Files\GUI</Filter>
+    <ClInclude Include="Include\CmBuiltinMaterialManager.h">
+      <Filter>Header Files\Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -704,29 +662,8 @@
     <ClCompile Include="Source\CmFontImportOptions.cpp">
       <Filter>Source Files\Text</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmSprite.cpp">
-      <Filter>Source Files\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmTextSprite.cpp">
-      <Filter>Source Files\2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmMeshDataRTTI.cpp">
       <Filter>Source Files\RTTI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGUIWidget.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGUIElement.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGUIManager.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGUIMaterialManager.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGUISkin.cpp">
-      <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmOverlay.cpp">
       <Filter>Source Files\2D</Filter>
@@ -743,11 +680,8 @@
     <ClCompile Include="Source\CmGameObject.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmSpriteTexture.cpp">
-      <Filter>Source Files\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmImageSprite.cpp">
-      <Filter>Source Files\2D</Filter>
+    <ClCompile Include="Source\CmBuiltinMaterialManager.cpp">
+      <Filter>Source Files\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

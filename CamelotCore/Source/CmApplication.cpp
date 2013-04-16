@@ -28,8 +28,6 @@
 #include "CmRenderer.h"
 #include "CmDeferredRenderContext.h"
 #include "CmOverlayManager.h"
-#include "CmGUIMaterialManager.h"
-#include "CmGUIManager.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -84,8 +82,7 @@ namespace CamelotEngine
 		FontManager::startUp(CM_NEW(FontManager, GenAlloc) FontManager());
 
 		OverlayManager::startUp(CM_NEW(OverlayManager, GenAlloc) OverlayManager());
-		GUIMaterialManager::startUp(CM_NEW(GUIMaterialManager, GenAlloc) GUIMaterialManager());
-		GUIManager::startUp(CM_NEW(GUIManager, GenAlloc) GUIManager());
+
 
 		Importer::startUp(CM_NEW(Importer, GenAlloc) Importer());
 		loadPlugin("CamelotFreeImgImporter"); // TODO - Load this automatically somehow
@@ -162,8 +159,6 @@ namespace CamelotEngine
 		MeshManager::shutDown();
 
 		SceneManager::shutDown();
-		GUIManager::shutDown();
-		GUIMaterialManager::shutDown();
 		OverlayManager::shutDown();
 
 		RendererManager::shutDown();

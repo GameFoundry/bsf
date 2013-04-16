@@ -1,12 +1,12 @@
-#include "CmGUIManager.h"
-#include "CmGUIWidget.h"
-#include "CmGUIElement.h"
+#include "BsGUIManager.h"
+#include "BsGUIWidget.h"
+#include "BsGUIElement.h"
 #include "CmMaterial.h"
 #include "CmMeshData.h"
 #include "CmMesh.h"
 #include "CmUtil.h"
 
-namespace CamelotEngine
+namespace BansheeEngine
 {
 	void GUIManager::registerWidget(GUIWidget* widget)
 	{

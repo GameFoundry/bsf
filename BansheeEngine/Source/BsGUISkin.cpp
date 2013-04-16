@@ -1,8 +1,10 @@
-#include "CmGUISkin.h"
-#include "CmGUIElementStyle.h"
+#include "BsGUISkin.h"
+#include "BsGUIElementStyle.h"
 #include "CmDebug.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	GUIElementStyle GUISkin::DefaultStyle;
 

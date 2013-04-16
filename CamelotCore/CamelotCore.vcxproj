@@ -179,8 +179,6 @@
     <ClInclude Include="Include\CmGameObjectHandle.h" />
     <ClInclude Include="Include\CmGameObject.h" />
     <ClInclude Include="Include\CmGameObjectRTTI.h" />
-    <ClInclude Include="Include\CmGUIMouseEvent.h" />
-    <ClInclude Include="Include\CmGUIWindowFrame.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
     <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmOverlay.h" />
@@ -219,15 +217,8 @@
     <ClInclude Include="Include\CmGpuProgramManager.h" />
     <ClInclude Include="Include\CmGpuProgramParams.h" />
     <ClInclude Include="Include\CmGpuProgramRTTI.h" />
-    <ClInclude Include="Include\CmGUIElement.h" />
-    <ClInclude Include="Include\CmGUIElementStyle.h" />
-    <ClInclude Include="Include\CmGUIManager.h" />
-    <ClInclude Include="Include\CmGUIMaterialManager.h" />
-    <ClInclude Include="Include\CmGUISkin.h" />
-    <ClInclude Include="Include\CmGUIWidget.h" />
     <ClInclude Include="Include\CmHardwareBuffer.h" />
     <ClInclude Include="Include\CmHardwareBufferManager.h" />
-    <ClInclude Include="Include\CmImageSprite.h" />
     <ClInclude Include="Include\CmImportOptions.h" />
     <ClInclude Include="Include\CmImportOptionsRTTI.h" />
     <ClInclude Include="Include\CmIndexBuffer.h" />
@@ -237,7 +228,6 @@
     <ClInclude Include="Include\CmOverlayManager.h" />
     <ClInclude Include="Include\CmPixelBuffer.h" />
     <ClInclude Include="Include\CmGpuProgIncludeImporter.h" />
-    <ClInclude Include="Include\CmSpriteTexture.h" />
     <ClInclude Include="Include\CmTextureView.h" />
     <ClInclude Include="Include\CmVertexBuffer.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgram.h" />
@@ -296,21 +286,19 @@
     <ClInclude Include="Include\CmComponent.h" />
     <ClInclude Include="Include\CmShader.h" />
     <ClInclude Include="Include\CmBlendState.h" />
-    <ClInclude Include="Include\CmSprite.h" />
     <ClInclude Include="Include\stdafx.h" />
     <ClInclude Include="Include\targetver.h" />
     <ClInclude Include="Include\CmVertexDeclarationRTTI.h" />
     <ClInclude Include="Include\CmTechnique.h" />
-    <ClInclude Include="Include\CmTextSprite.h" />
     <ClInclude Include="Include\Win32\CmOSCursorImpl.h" />
     <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmMaterialManager.cpp" />
     <ClCompile Include="Source\CamelotRenderer.cpp" />
+    <ClCompile Include="Source\CmBuiltinMaterialManager.cpp" />
     <ClCompile Include="Source\CmGameObjectHandle.cpp" />
     <ClCompile Include="Source\CmGameObject.cpp" />
-    <ClCompile Include="Source\CmImageSprite.cpp" />
     <ClCompile Include="Source\CmOverlay.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
     <ClCompile Include="Source\CmBlendState.cpp" />
@@ -335,11 +323,6 @@
     <ClCompile Include="Source\CmGpuProgramImportOptions.cpp" />
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />
-    <ClCompile Include="Source\CmGUIElement.cpp" />
-    <ClCompile Include="Source\CmGUIManager.cpp" />
-    <ClCompile Include="Source\CmGUIMaterialManager.cpp" />
-    <ClCompile Include="Source\CmGUISkin.cpp" />
-    <ClCompile Include="Source\CmGUIWidget.cpp" />
     <ClCompile Include="Source\CmHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmImportOptions.cpp" />
     <ClCompile Include="Source\CmIndexBuffer.cpp" />
@@ -350,9 +333,6 @@
     <ClCompile Include="Source\CmOverlayManager.cpp" />
     <ClCompile Include="Source\CmPixelBuffer.cpp" />
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp" />
-    <ClCompile Include="Source\CmSprite.cpp" />
-    <ClCompile Include="Source\CmSpriteTexture.cpp" />
-    <ClCompile Include="Source\CmTextSprite.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
     <ClCompile Include="Source\CmVertexBuffer.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgram.cpp" />

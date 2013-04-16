@@ -149,8 +149,6 @@ namespace CamelotEngine {
 	class CoreObject;
 	class ImportOptions;
 	struct FontData;
-	class TextSprite;
-	class SpriteTexture;
 	class GameObject;
 	// Asset import
 	class SpecificImporter;
@@ -168,15 +166,6 @@ namespace CamelotEngine {
 	// 2D
 	class Overlay;
 	class OverlayManager;
-	class SpriteTexture;
-	// GUI
-	class GUIManager;
-	class GUIWidget;
-	class GUIElement;
-	class GUILabel;
-	struct GUIElementStyle;
-	class GUISkin;
-	struct GUIMouseEvent;
 	// RTTI
 	class MeshRTTI;
 	// Desc structs
@@ -234,10 +223,8 @@ namespace CamelotEngine
 	typedef std::shared_ptr<ImportOptions> ImportOptionsPtr;
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
-	typedef std::shared_ptr<TextSprite> TextSpritePtr;
 	typedef std::shared_ptr<Overlay> OverlayPtr;
 	typedef std::shared_ptr<InputHandler> InputHandlerPtr;
-	typedef std::shared_ptr<SpriteTexture> SpriteTexturePtr;
 }
 
 /************************************************************************/

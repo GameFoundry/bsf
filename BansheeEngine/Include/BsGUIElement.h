@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include "CmRect.h"
 
-namespace CamelotEngine
+namespace BansheeEngine
 {
-	class CM_EXPORT GUIElement
+	class BS_EXPORT GUIElement
 	{
 	public:
 		GUIElement(GUIWidget* parent);
@@ -28,7 +28,7 @@ namespace CamelotEngine
 		 * 		
 		 * @return	Handle to the material.
 		 */
-		virtual const HMaterial& getMaterial(UINT32 renderElementIdx) const = 0;
+		virtual const CM::HMaterial& getMaterial(UINT32 renderElementIdx) const = 0;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this
@@ -57,9 +57,9 @@ namespace CamelotEngine
 		 * @param	maxNumQuads			Total number of quads the buffers were allocated for. Used only for memory safety.
 		 * @param	renderElementIdx	Zero-based index of the render element.
 		 */
-		virtual void fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const = 0;
+		virtual void fillBuffer(CM::Vector2* vertices, CM::Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const = 0;
 
-		const Rect& getBounds() const { return mBounds; }
+		const CM::Rect& getBounds() const { return mBounds; }
 
 		void setDepth(INT32 depth) { mDepth = depth; }
 		INT32 getDepth() const { return mDepth; }
@@ -75,7 +75,7 @@ namespace CamelotEngine
 		virtual ~GUIElement();
 
 		GUIWidget* mParent;
-		Rect mBounds;
+		CM::Rect mBounds;
 		INT32 mDepth;
 		const GUIElementStyle* mStyle;
 

@@ -1,9 +1,11 @@
-#include "CmGUIMaterialManager.h"
+#include "BsGUIMaterialManager.h"
 #include "CmMaterial.h"
 #include "CmDebug.h"
 #include "CmBuiltinMaterialManager.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	const HMaterial& GUIMaterialManager::requestTextMaterial(const HTexture& texture) const
 	{
