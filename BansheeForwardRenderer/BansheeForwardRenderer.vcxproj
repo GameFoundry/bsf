@@ -85,14 +85,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CM_FWDRND_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BS_FWDRND_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../lib/$(Configuration);../Dependencies/lib/Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -100,14 +100,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CM_FWDRND_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BS_FWDRND_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -117,8 +117,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CM_FWDRND_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BS_FWDRND_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -126,7 +126,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../lib/$(Configuration);../Dependencies/lib/Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -136,8 +136,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CM_FWDRND_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BS_FWDRND_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -145,19 +145,19 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmForwardRenderer.h" />
-    <ClInclude Include="Include\CmForwardRendererFactory.h" />
-    <ClInclude Include="Include\CmForwardRendererPrerequisites.h" />
+    <ClInclude Include="Include\BsForwardRenderer.h" />
+    <ClInclude Include="Include\BsForwardRendererFactory.h" />
+    <ClInclude Include="Include\BsForwardRendererPrerequisites.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmForwardRenderer.cpp" />
-    <ClCompile Include="Source\CmForwardRendererFactory.cpp" />
-    <ClCompile Include="Source\CmForwardRendererPlugin.cpp" />
+    <ClCompile Include="Source\BsForwardRenderer.cpp" />
+    <ClCompile Include="Source\BsForwardRendererFactory.cpp" />
+    <ClCompile Include="Source\BsForwardRendererPlugin.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

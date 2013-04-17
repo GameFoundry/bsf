@@ -44,11 +44,11 @@ int CALLBACK WinMain(
 	)
 {
 #ifdef DX11
-	gBansheeApp().startUp("CamelotD3D11RenderSystem", "CamelotForwardRenderer", "D:\\CamelotResourceMetas");
+	gBansheeApp().startUp("CamelotD3D11RenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
 #elif defined DX9
-	gBansheeApp().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer", "D:\\CamelotResourceMetas");
+	gBansheeApp().startUp("CamelotD3D9RenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
 #else
-	gBansheeApp().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer", "D:\\CamelotResourceMetas");
+	gBansheeApp().startUp("CamelotGLRenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
 #endif
 
 	//CommandQueue::addBreakpoint(1, 11);

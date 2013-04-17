@@ -1,8 +1,10 @@
-#include "CmForwardRendererFactory.h"
+#include "BsForwardRendererFactory.h"
 #include "CmRenderer.h"
-#include "CmForwardRenderer.h"
+#include "BsForwardRenderer.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	RendererPtr ForwardRendererFactory::create()
 	{

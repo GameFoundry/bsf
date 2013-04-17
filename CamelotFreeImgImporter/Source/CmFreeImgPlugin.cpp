@@ -9,8 +9,10 @@ namespace CamelotEngine
 		return pluginName;
 	}
 
-	extern "C" CM_FREEIMG_EXPORT void loadPlugin()
+	extern "C" CM_FREEIMG_EXPORT void* loadPlugin()
 	{
 		FreeImgImporter::startUp();
+
+		return nullptr;
 	}
 }

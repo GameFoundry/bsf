@@ -19,8 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{07B0C186-5173-46F2-BE26-7E4148BD0CCA}</ProjectGuid>
-    <RootNamespace>BansheeEngine</RootNamespace>
+    <ProjectGuid>{41CC18CE-139E-45A5-A9AA-336CBA2E1521}</ProjectGuid>
+    <RootNamespace>CamelotOctreeSM</RootNamespace>
+    <ProjectName>BansheeOctreeSM</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -67,15 +68,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\bin\$(Configuration)\</OutDir>
-    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>.\Intermediate\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\bin\$(Configuration)\</OutDir>
-    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>.\Intermediate\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
@@ -85,13 +86,13 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../CamelotUtility/Include;../CamelotCore/Include;../BansheeEngine/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;BS_SM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\lib\$(Configuration);..\Dependencies\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -99,13 +100,13 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../CamelotUtility/Include;../CamelotCore/Include;../BansheeEngine/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;BS_SM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -115,15 +116,15 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../CamelotUtility/Include;../CamelotCore/Include;../BansheeEngine/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;BS_SM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\lib\$(Configuration);..\Dependencies\lib\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib\$(Configuration);..\Dependencies\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -133,49 +134,25 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../CamelotUtility/Include;../CamelotCore/Include;../BansheeEngine/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;BS_SM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsApplication.h" />
-    <ClInclude Include="Include\BsPrerequisites.h" />
-    <ClInclude Include="Include\BsGUIElement.h" />
-    <ClInclude Include="Include\BsGUIElementStyle.h" />
-    <ClInclude Include="Include\BsGUILabel.h" />
-    <ClInclude Include="Include\BsGUIManager.h" />
-    <ClInclude Include="Include\BsGUIMaterialManager.h" />
-    <ClInclude Include="Include\BsGUIMouseEvent.h" />
-    <ClInclude Include="Include\BsGUISkin.h" />
-    <ClInclude Include="Include\BsGUIWidget.h" />
-    <ClInclude Include="Include\BsGUIWindowFrame.h" />
-    <ClInclude Include="Include\BsImageSprite.h" />
-    <ClInclude Include="Include\BsSceneManager.h" />
-    <ClInclude Include="Include\BsSprite.h" />
-    <ClInclude Include="Include\BsSpriteTexture.h" />
-    <ClInclude Include="Include\BsTextSprite.h" />
+    <ClInclude Include="Include\BsOctreeSceneManager.h" />
+    <ClInclude Include="Include\BsOctreeSMPrerequisites.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsApplication.cpp" />
-    <ClCompile Include="Source\BsGUIElement.cpp" />
-    <ClCompile Include="Source\BsGUILabel.cpp" />
-    <ClCompile Include="Source\BsGUIManager.cpp" />
-    <ClCompile Include="Source\BsGUIMaterialManager.cpp" />
-    <ClCompile Include="Source\BsGUISkin.cpp" />
-    <ClCompile Include="Source\BsGUIWidget.cpp" />
-    <ClCompile Include="Source\BsImageSprite.cpp" />
-    <ClCompile Include="Source\BsSceneManager.cpp" />
-    <ClCompile Include="Source\BsSprite.cpp" />
-    <ClCompile Include="Source\BsSpriteTexture.cpp" />
-    <ClCompile Include="Source\BsTextSprite.cpp" />
+    <ClCompile Include="Source\BsOctreeSceneManager.cpp" />
+    <ClCompile Include="Source\BsSceneManagerPlugin.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

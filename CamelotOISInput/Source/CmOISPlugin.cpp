@@ -11,7 +11,7 @@ namespace CamelotEngine
 		return pluginName;
 	}
 
-	extern "C" CM_OIS_EXPORT void loadPlugin()
+	extern "C" CM_OIS_EXPORT void* loadPlugin()
 	{
 		// TODO - Window handles in Windows are 64 bits when compiled as x64, but OIS only accepts a 32bit value. Is this okay?
 		UINT32 windowId = (UINT32)gApplication().getAppWindowId();
@@ -19,5 +19,7 @@ namespace CamelotEngine
 		InputHandlerPtr inputHandler = InputHandlerPtr(CM_NEW(InputHandlerOIS, GenAlloc) InputHandlerOIS(windowId), &MemAllocDeleter<InputHandlerOIS, GenAlloc>::deleter);
 
 		gInput().registerInputHandler(inputHandler);
+
+		return nullptr;
 	}
 }

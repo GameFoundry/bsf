@@ -75,7 +75,7 @@ namespace CamelotEngine
 
 		mPrimaryRenderContext = renderSystem->createDeferredContext();
 
-		SceneManager::startUp(CM_NEW(SceneManager, GenAlloc) SceneManager());
+		SceneManager::startUp((SceneManager*)loadPlugin(desc.sceneManager));
 
 		MeshManager::startUp(CM_NEW(MeshManager, GenAlloc) MeshManager());
 		MaterialManager::startUp(CM_NEW(MaterialManager, GenAlloc) MaterialManager());
@@ -172,7 +172,7 @@ namespace CamelotEngine
 		Time::shutDown();
 	}
 
-	void Application::loadPlugin(const String& pluginName)
+	void* Application::loadPlugin(const String& pluginName)
 	{
 		String name = pluginName;
 #if CM_PLATFORM == CM_PLATFORM_LINUX
@@ -194,11 +194,13 @@ namespace CamelotEngine
 
 		if(library != nullptr)
 		{
-			typedef const void (*LoadPluginFunc)();
+			typedef void* (*LoadPluginFunc)();
 
 			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)library->getSymbol("loadPlugin");
-			loadPluginFunc();
+			return loadPluginFunc();
 		}
+
+		return nullptr;
 	}
 
 	UINT64 Application::getAppWindowId()

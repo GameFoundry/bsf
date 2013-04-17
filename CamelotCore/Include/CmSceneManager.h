@@ -21,15 +21,7 @@ namespace CamelotEngine
 		HSceneObject getRootNode() const { return mRootNode; }
 
 		virtual void update();
-
-		/**
-		 * @brief	Returns all cameras in the scene.
-		 */
-		const vector<HCamera>::type& getAllCameras() const { return mCachedCameras; }
-
-		vector<HRenderable>::type getVisibleRenderables(const HCamera& camera) const;
-
-	private:
+	protected:
 		friend class SceneObject;
 		HSceneObject mRootNode;
 
@@ -43,10 +35,8 @@ namespace CamelotEngine
 		 */
 		void registerNewGO(const HSceneObject& node);
 
-		void notifyComponentAdded(const HComponent& component);
-		void notifyComponentRemoved(const HComponent& component);
-
-		vector<HCamera>::type mCachedCameras;
+		virtual void notifyComponentAdded(const HComponent& component);
+		virtual void notifyComponentRemoved(const HComponent& component);
 	};
 
 	CM_EXPORT SceneManager& gSceneManager();

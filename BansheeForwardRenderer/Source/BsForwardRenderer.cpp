@@ -1,6 +1,6 @@
-#include "CmForwardRenderer.h"
+#include "BsForwardRenderer.h"
 #include "CmCamera.h"
-#include "CmSceneManager.h"
+#include "BsSceneManager.h"
 #include "CmDeferredRenderContext.h"
 #include "CmRenderable.h"
 #include "CmMaterial.h"
@@ -14,7 +14,9 @@
 #include "CmRenderTarget.h"
 #include "CmOverlayManager.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
 	ForwardRenderer::ForwardRenderer()
 	{
@@ -31,6 +33,8 @@ namespace CamelotEngine
 
 	void ForwardRenderer::renderAll() 
 	{
+		
+
 		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
 
 		const vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();

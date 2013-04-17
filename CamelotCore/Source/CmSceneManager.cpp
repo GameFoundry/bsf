@@ -39,68 +39,14 @@ namespace CamelotEngine
 		}
 	}
 
-	vector<HRenderable>::type SceneManager::getVisibleRenderables(const HCamera& camera) const
-	{
-		// TODO - Cull invisible objects
-
-		vector<HRenderable>::type renderables;
-
-		stack<HSceneObject>::type todo;
-		todo.push(mRootNode);
-
-		while(!todo.empty())
-		{
-			HSceneObject currentGO = todo.top();
-			todo.pop();
-
-			HRenderable curRenderable = currentGO->getComponent<Renderable>();
-			if(curRenderable != nullptr)
-				renderables.push_back(curRenderable);
-
-			for(UINT32 i = 0; i < currentGO->getNumChildren(); i++)
-				todo.push(currentGO->getChild(i));
-		}
-
-		return renderables;
-	}
-
 	void SceneManager::registerNewGO(const HSceneObject& node) 
 	{ 
 		if(mRootNode) // If root node is null, then this new node is the root node
 			node->setParent(mRootNode);
 	}
 
-	void SceneManager::notifyComponentAdded(const HComponent& component)
-	{
-		if(component->getTypeId() == TID_Camera)
-		{
-			HCamera camera = static_object_cast<Camera>(component);
-			auto findIter = std::find(mCachedCameras.begin(), mCachedCameras.end(), camera);
-
-			if(findIter != mCachedCameras.end())
-			{
-				CM_EXCEPT(InternalErrorException, "Trying to add an already existing camera!");
-			}
-
-			mCachedCameras.push_back(camera);
-		}
-	}
-
-	void SceneManager::notifyComponentRemoved(const HComponent& component)
-	{
-		if(component->getTypeId() == TID_Camera)
-		{
-			HCamera camera = static_object_cast<Camera>(component);
-			auto findIter = std::find(mCachedCameras.begin(), mCachedCameras.end(), camera);
-
-			if(findIter == mCachedCameras.end())
-			{
-				CM_EXCEPT(InternalErrorException, "Cannot find specified camera!");
-			}
-
-			mCachedCameras.erase(findIter);
-		}
-	}
+	void SceneManager::notifyComponentAdded(const HComponent& component) { }
+	void SceneManager::notifyComponentRemoved(const HComponent& component) { }
 
 	SceneManager& gSceneManager()
 	{

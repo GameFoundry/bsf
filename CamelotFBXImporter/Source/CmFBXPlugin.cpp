@@ -9,8 +9,10 @@ namespace CamelotEngine
 		return pluginName;
 	}
 
-	extern "C" CM_FBX_EXPORT void loadPlugin()
+	extern "C" CM_FBX_EXPORT void* loadPlugin()
 	{
 		FBXImporter::startUp();
+
+		return nullptr;
 	}
 }

@@ -19,6 +19,7 @@ namespace CamelotEngine
 		String renderer;
 
 		String input;
+		String sceneManager;
 
 		std::vector<String> importers;
 
@@ -67,7 +68,7 @@ namespace CamelotEngine
 			 *
 			 * @param	pluginName	Name of the plugin to load, without extension.
 			 */
-			void loadPlugin(const String& pluginName);
+			void* loadPlugin(const String& pluginName);
 
 	private:
 		RenderWindowPtr mPrimaryRenderWindow;

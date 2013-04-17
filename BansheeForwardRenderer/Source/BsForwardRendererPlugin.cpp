@@ -1,18 +1,22 @@
-#include "CmForwardRendererPrerequisites.h"
-#include "CmForwardRendererFactory.h"
+#include "BsForwardRendererPrerequisites.h"
+#include "BsForwardRendererFactory.h"
 #include "CmRendererManager.h"
 
-namespace CamelotEngine
+using namespace CamelotEngine;
+
+namespace BansheeEngine
 {
-	extern "C" CM_FWDRND_EXPORT const String& getPluginName()
+	extern "C" BS_FWDRND_EXPORT const String& getPluginName()
 	{
 		return SystemName;
 	}
 
-	extern "C" CM_FWDRND_EXPORT void loadPlugin()
+	extern "C" BS_FWDRND_EXPORT void* loadPlugin()
 	{
 		RendererManager::instance().registerFactory(
 			RendererFactoryPtr(CM_NEW(ForwardRendererFactory, GenAlloc) ForwardRendererFactory(),
 			&MemAllocDeleter<ForwardRendererFactory, GenAlloc>::deleter));
+
+		return nullptr;
 	}
 }

@@ -20,6 +20,7 @@ namespace BansheeEngine
 		desc.resourceCacheDirectory = resourceCacheDir;
 
 		desc.input = "CamelotOISInput";
+		desc.sceneManager = "BansheeOctreeSM";
 		desc.importers.push_back("CamelotFreeImgImporter");
 		desc.importers.push_back("CamelotFBXImporter");
 		desc.importers.push_back("CamelotFontImporter");

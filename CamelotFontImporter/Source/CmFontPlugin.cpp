@@ -9,8 +9,10 @@ namespace CamelotEngine
 		return pluginName;
 	}
 
-	extern "C" CM_FONT_EXPORT void loadPlugin()
+	extern "C" CM_FONT_EXPORT void* loadPlugin()
 	{
 		FontImporter::startUp();
+
+		return nullptr;
 	}
 }
