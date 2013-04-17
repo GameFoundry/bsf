@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "CmMatrix3.h"
 #include "CmVector3.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     const float Quaternion::ms_fEpsilon = 1e-03f;
     const Quaternion Quaternion::ZERO(0.0,0.0,0.0,0.0);

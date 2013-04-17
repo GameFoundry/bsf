@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     RenderTarget::RenderTarget()
 		:mPriority(CM_DEFAULT_RT_GROUP),

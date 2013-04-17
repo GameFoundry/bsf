@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmMath.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	//---------------------------------------------------------------------
 	Viewport::Viewport()

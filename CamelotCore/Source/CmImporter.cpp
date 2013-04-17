@@ -10,7 +10,7 @@
 #include "CmDataStream.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Importer::Importer()
 	{

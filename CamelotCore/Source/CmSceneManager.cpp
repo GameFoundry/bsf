@@ -4,7 +4,7 @@
 #include "CmCamera.h"
 #include "CmRenderable.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	SceneManager::SceneManager()
 	{

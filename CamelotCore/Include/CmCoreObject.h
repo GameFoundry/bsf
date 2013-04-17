@@ -4,7 +4,7 @@
 #include "CmAsyncOp.h"
 #include "boost/function.hpp"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	This class provides some common functionality that all low-level GPU-related objects

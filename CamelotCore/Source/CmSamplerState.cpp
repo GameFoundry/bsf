@@ -4,7 +4,7 @@
 #include "CmRenderSystem.h"
 #include "CmException.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	void SamplerState::initialize(const SAMPLER_STATE_DESC& desc)
 	{

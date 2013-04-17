@@ -49,7 +49,7 @@ THE SOFTWARE.
 #include "boost/function.hpp"
 #include "boost/signal.hpp"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/** \addtogroup Core
 	*  @{

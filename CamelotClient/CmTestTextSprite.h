@@ -1,7 +1,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIWidget.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class TestTextSprite : public BansheeEngine::GUIWidget
 	{

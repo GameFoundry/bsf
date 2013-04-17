@@ -61,13 +61,13 @@
 #  define GLEW_CONTEXT_ARG_DEF_LIST GLEWContext* ctx
 #else /* GLEW_MX */
 // SJS
-#  define GLEW_CONTEXT_ARG_DEF_INIT CamelotEngine::GLSupport *glSupport
+#  define GLEW_CONTEXT_ARG_DEF_INIT CamelotFramework::GLSupport *glSupport
 #  define GLEW_CONTEXT_ARG_VAR_INIT glSupport
-#  define GLEW_CONTEXT_ARG_DEF_LIST CamelotEngine::GLSupport *glSupport
-#  define WGLEW_CONTEXT_ARG_DEF_INIT CamelotEngine::GLSupport *glSupport
-#  define WGLEW_CONTEXT_ARG_DEF_LIST CamelotEngine::GLSupport *glSupport
-#  define GLXEW_CONTEXT_ARG_DEF_INIT CamelotEngine::GLSupport *glSupport
-#  define GLXEW_CONTEXT_ARG_DEF_LIST CamelotEngine::GLSupport *glSupport
+#  define GLEW_CONTEXT_ARG_DEF_LIST CamelotFramework::GLSupport *glSupport
+#  define WGLEW_CONTEXT_ARG_DEF_INIT CamelotFramework::GLSupport *glSupport
+#  define WGLEW_CONTEXT_ARG_DEF_LIST CamelotFramework::GLSupport *glSupport
+#  define GLXEW_CONTEXT_ARG_DEF_INIT CamelotFramework::GLSupport *glSupport
+#  define GLXEW_CONTEXT_ARG_DEF_LIST CamelotFramework::GLSupport *glSupport
 //#  define GLEW_CONTEXT_ARG_DEF_INIT void
 //#  define GLEW_CONTEXT_ARG_VAR_INIT
 //#  define GLEW_CONTEXT_ARG_DEF_LIST void

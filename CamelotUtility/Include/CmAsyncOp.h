@@ -4,7 +4,7 @@
 #include "CmException.h"
 #include "boost/any.hpp"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Asynchronous operation. Contains uninitialized data until

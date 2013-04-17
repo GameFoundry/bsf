@@ -3,7 +3,7 @@
 #include "CmRenderSystem.h"
 #include "CmRasterizerStateRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void RasterizerState::initialize(const RASTERIZER_STATE_DESC& desc)
 	{

@@ -2,7 +2,7 @@
 #include "CmD3D11VideoModeList.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11Driver::D3D11Driver( const D3D11Driver &ob ) 
 	{

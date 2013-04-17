@@ -37,7 +37,7 @@ THE SOFTWARE.
 #include "CmWindowEventUtilities.h"
 #include "CmGLPixelFormat.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	#define _MAX_CLASS_NAME_ 128
 
@@ -658,8 +658,8 @@ namespace CamelotEngine {
 			buffer = mIsFullScreen? FB_FRONT : FB_BACK;
 		}
 
-		GLenum format = CamelotEngine::GLPixelUtil::getGLOriginFormat(dst.format);
-		GLenum type = CamelotEngine::GLPixelUtil::getGLOriginDataType(dst.format);
+		GLenum format = CamelotFramework::GLPixelUtil::getGLOriginFormat(dst.format);
+		GLenum type = CamelotFramework::GLPixelUtil::getGLOriginDataType(dst.format);
 
 		if ((format == GL_NONE) || (type == 0))
 		{

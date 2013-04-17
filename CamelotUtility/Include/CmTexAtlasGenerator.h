@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmVector2.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Represents a single element used as in input to

@@ -5,7 +5,7 @@
 
 using namespace boost::uuids;
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	String UUIDGenerator::generateRandom()
 	{

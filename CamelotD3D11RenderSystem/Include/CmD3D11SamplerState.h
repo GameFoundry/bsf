@@ -3,7 +3,7 @@
 #include "CmD3D11Prerequisites.h"
 #include "CmSamplerState.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_D3D11_EXPORT D3D11SamplerState : public SamplerState
 	{

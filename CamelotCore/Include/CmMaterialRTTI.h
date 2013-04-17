@@ -15,7 +15,7 @@
 #include "CmException.h"
 #include "CmKeyValuePair.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/************************************************************************/
 	/* 					HELPER STRUCTS TO HELP SERIALIZING                  */

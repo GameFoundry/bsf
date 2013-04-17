@@ -12,7 +12,7 @@
 
 using namespace BansheeEngine;
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	TestTextSprite::TestTextSprite(const HSceneObject& parent)
 		:GUIWidget(parent), mSkin(nullptr)

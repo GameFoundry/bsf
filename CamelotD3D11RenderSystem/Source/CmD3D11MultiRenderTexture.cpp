@@ -3,7 +3,7 @@
 #include "CmD3D11RenderTexture.h"
 #include "CmD3D11TextureView.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11MultiRenderTexture::D3D11MultiRenderTexture()
 		:MultiRenderTexture()

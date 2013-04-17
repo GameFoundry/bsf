@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmD3D9Prerequisites.h"
 #include "CmString.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	static unsigned int modeCount = 0;
 

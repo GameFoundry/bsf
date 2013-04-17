@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmPixelUtil.h"
 #include "CmTextureView.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	/** \addtogroup Core
 	*  @{

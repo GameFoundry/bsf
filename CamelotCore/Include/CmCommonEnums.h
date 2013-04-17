@@ -42,7 +42,7 @@ THE SOFTWARE.
 #   pragma GCC visibility pop
 #endif
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	/** \addtogroup Core
 	*  @{
 	*/

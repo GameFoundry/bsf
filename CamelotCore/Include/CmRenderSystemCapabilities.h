@@ -46,7 +46,7 @@ THE SOFTWARE.
 #define CAPS_CATEGORY_MASK (((1 << CAPS_CATEGORY_SIZE) - 1) << CM_CAPS_BITSHIFT)
 #define CM_CAPS_VALUE(cat, val) ((cat << CM_CAPS_BITSHIFT) | (1 << val))
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	/** \addtogroup Core
 	*  @{
@@ -198,7 +198,7 @@ namespace CamelotEngine
 
 		void fromString(const String& versionString)
 		{
-			std::vector<CamelotEngine::String> tokens = StringUtil::split(versionString, ".");
+			std::vector<CamelotFramework::String> tokens = StringUtil::split(versionString, ".");
 			if(!tokens.empty())
 			{
 				major = parseInt(tokens[0]);
@@ -251,7 +251,7 @@ namespace CamelotEngine
 		/// GPU Vendor
 		GPUVendor mVendor;
 
-		static std::vector<CamelotEngine::String> msGPUVendorStrings;
+		static std::vector<CamelotFramework::String> msGPUVendorStrings;
 		static void initVendorStrings();
 
 		/// The number of world matrices available

@@ -4,7 +4,7 @@
 #include "CmModule.h"
 #include "CmGameObject.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Manages all objects in the scene and provides various query methods

@@ -5,7 +5,7 @@
 #include "CmShader.h"
 #include "CmMaterial.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	template<> struct RTTIPlainType<SHADER_DATA_PARAM_DESC>
 	{	

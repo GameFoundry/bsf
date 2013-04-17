@@ -4,7 +4,7 @@
 #include "CmModule.h"
 #include "CmWorkQueue.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT Resources : public Module<Resources>
 	{

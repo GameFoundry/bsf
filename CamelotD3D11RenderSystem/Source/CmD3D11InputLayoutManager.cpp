@@ -7,7 +7,7 @@
 #include "CmDebug.h"
 #include "CmUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	size_t D3D11InputLayoutManager::HashFunc::operator()
 		(const D3D11InputLayoutManager::VertexDeclarationKey &key) const

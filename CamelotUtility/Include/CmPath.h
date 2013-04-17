@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include <boost/filesystem.hpp>
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Various utility methods for handling file paths.

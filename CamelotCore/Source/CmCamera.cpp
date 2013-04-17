@@ -40,7 +40,7 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmSceneObject.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	const float Camera::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
     //-----------------------------------------------------------------------
@@ -491,7 +491,7 @@ namespace CamelotEngine {
 			} // ortho            
 		} // !mCustomProjMatrix
 
-		RenderSystem* renderSystem = CamelotEngine::RenderSystem::instancePtr();
+		RenderSystem* renderSystem = CamelotFramework::RenderSystem::instancePtr();
 		// API specific
 		renderSystem->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
 		// API specific for Gpu Programs
@@ -963,4 +963,4 @@ namespace CamelotEngine {
 	{
 		return Camera::getRTTIStatic();
 	}
-} // namespace CamelotEngine
+} // namespace CamelotFramework

@@ -2,7 +2,7 @@
 
 #include "CmIReflectable.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	template <typename T>
 	class ResourceHandle;

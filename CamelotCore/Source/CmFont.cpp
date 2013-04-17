@@ -2,7 +2,7 @@
 #include "CmFontRTTI.h"
 #include "CmFontManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	const CHAR_DESC& FontData::getCharDesc(UINT32 charId) const
 	{

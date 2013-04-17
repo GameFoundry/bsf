@@ -2,7 +2,7 @@
 #include "CmImportOptions.h"
 #include "CmResources.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	ImportOptionsPtr SpecificImporter::createImportOptions() const
 	{

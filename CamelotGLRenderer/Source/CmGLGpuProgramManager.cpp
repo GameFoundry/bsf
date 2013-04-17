@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmGLSLGpuProgram.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GLGpuProgramManager::GLGpuProgramManager()
 	{

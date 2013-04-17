@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmComponent.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Overlay components are a special type of components that can be attached directly
@@ -20,7 +20,7 @@ namespace CamelotEngine
 		virtual void update() {}
 
 	protected:
-		friend class CamelotEngine::SceneObject;
+		friend class CamelotFramework::SceneObject;
 
 		Overlay(const HSceneObject& parent);
 	};

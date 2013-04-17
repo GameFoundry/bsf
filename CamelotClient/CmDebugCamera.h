@@ -5,7 +5,7 @@
 #include "CmInputHandler.h"
 #include "CmMath.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class DebugCamera : public Component
 	{
@@ -24,11 +24,11 @@ namespace CamelotEngine
 
 		HCamera mCamera;
 
-		void keyDown(CamelotEngine::KeyCode keyCode);
-		void keyUp(CamelotEngine::KeyCode keyCode);
+		void keyDown(CamelotFramework::KeyCode keyCode);
+		void keyUp(CamelotFramework::KeyCode keyCode);
 
-		void mouseDown(const CamelotEngine::MouseEvent& event, CamelotEngine::MouseButton buttonID);
-		void mouseUp(const CamelotEngine::MouseEvent& event, CamelotEngine::MouseButton buttonID);
+		void mouseDown(const CamelotFramework::MouseEvent& event, CamelotFramework::MouseButton buttonID);
+		void mouseUp(const CamelotFramework::MouseEvent& event, CamelotFramework::MouseButton buttonID);
 
 		static const float START_SPEED;
 		static const float TOP_SPEED;

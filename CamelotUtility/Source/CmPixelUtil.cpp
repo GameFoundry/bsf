@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmException.h"
 
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	//-----------------------------------------------------------------------
     /**

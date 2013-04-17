@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmPass.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT PassRTTI : public RTTIType<Pass, IReflectable, PassRTTI>
 	{

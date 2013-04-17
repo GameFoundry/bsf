@@ -7,7 +7,7 @@
 #define FBXSDK_NEW_API
 #include <fbxsdk.h>
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_FBX_EXPORT FBXImporter : public SpecificImporter
 	{

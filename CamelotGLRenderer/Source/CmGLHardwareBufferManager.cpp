@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     //-----------------------------------------------------------------------
 	// Scratch pool management (32 bit structure)
 	struct GLScratchBufferAlloc
@@ -67,7 +67,7 @@ namespace CamelotEngine {
 		// Win32 machines with ATI GPU are having issues glMapBuffer, looks like buffer corruption
 		// disable for now until we figure out where the problem lies			
 #	if CM_PLATFORM == CM_PLATFORM_WIN32
-		if (CamelotEngine::RenderSystem::instancePtr()->getCapabilities()->getVendor() == GPU_ATI) 
+		if (CamelotFramework::RenderSystem::instancePtr()->getCapabilities()->getVendor() == GPU_ATI) 
 		{
 			mMapBufferThreshold = 0xffffffffUL  /* maximum unsigned long value */;
 		}

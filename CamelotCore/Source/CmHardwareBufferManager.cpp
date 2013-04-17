@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmGpuBuffer.h"
 #include "CmVertexDeclaration.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     //-----------------------------------------------------------------------
     HardwareBufferManager::HardwareBufferManager()
     {

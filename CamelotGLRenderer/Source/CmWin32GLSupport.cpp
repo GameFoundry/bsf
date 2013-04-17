@@ -7,13 +7,13 @@
 #include "CmWin32Window.h"
 #include <GL/wglext.h>
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 #if CM_THREAD_SUPPORT != 1
-GLenum wglewContextInit (CamelotEngine::GLSupport *glSupport);
+GLenum wglewContextInit (CamelotFramework::GLSupport *glSupport);
 #endif
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	Win32GLSupport::Win32GLSupport()
         : mInitialWindow(0)

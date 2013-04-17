@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmCgProgramRTTI.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	void checkForCgError(const String& ogreMethod, const String& errorTextPrefix, CGcontext context)
 	{

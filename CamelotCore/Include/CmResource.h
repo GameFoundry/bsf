@@ -4,7 +4,7 @@
 #include "CmIReflectable.h"
 #include "CmCoreObject.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Base class for all resources used in the engine.

@@ -4,7 +4,7 @@
 #include "CmIReflectable.h"
 #include "CmRTTIType.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	template <typename Key, typename Value, typename RTTIClass>
 	class KeyValuePair : public IReflectable

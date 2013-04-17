@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Represents one engine module. Essentially it is a specialized type of singleton.

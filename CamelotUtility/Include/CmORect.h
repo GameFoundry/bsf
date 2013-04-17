@@ -5,7 +5,7 @@
 #include "CmRect.h"
 #include "CmMatrix4.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Oriented rectangle. Can be rotated/translated/scaled. Skewing and similar transformations

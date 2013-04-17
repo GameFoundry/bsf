@@ -4,7 +4,7 @@
 #include "CmRenderSystem.h"
 #include "CmUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	VertexElement::VertexElement(unsigned short source, UINT32 offset, 
 		VertexElementType theType, VertexElementSemantic semantic, unsigned short index)
@@ -122,9 +122,9 @@ namespace CamelotEngine
 	VertexElementType VertexElement::getBestColourVertexElementType(void)
 	{
 		// Use the current render system to determine if possible
-		if (CamelotEngine::RenderSystem::instancePtr())
+		if (CamelotFramework::RenderSystem::instancePtr())
 		{
-			return CamelotEngine::RenderSystem::instancePtr()->getColorVertexElementType();
+			return CamelotFramework::RenderSystem::instancePtr()->getColorVertexElementType();
 		}
 		else
 		{

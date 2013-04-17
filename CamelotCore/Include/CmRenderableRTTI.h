@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmRenderable.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT RenderableRTTI : public RTTIType<Renderable, Component, RenderableRTTI>
 	{

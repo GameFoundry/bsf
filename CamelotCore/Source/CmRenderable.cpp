@@ -1,7 +1,7 @@
 #include "CmRenderable.h"
 #include "CmRenderableRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Renderable::Renderable(const HSceneObject& parent)
 		:Component(parent)

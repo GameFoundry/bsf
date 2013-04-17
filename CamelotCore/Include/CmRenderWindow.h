@@ -30,7 +30,7 @@ THE SOFTWARE
 
 #include "CmRenderTarget.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	enum class WindowBorder
 	{

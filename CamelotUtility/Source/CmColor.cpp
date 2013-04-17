@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmColor.h"
 #include "CmMath.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     const Color Color::ZERO = Color(0.0,0.0,0.0,0.0);
     const Color Color::Black = Color(0.0,0.0,0.0);

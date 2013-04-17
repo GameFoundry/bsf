@@ -2,7 +2,7 @@
 
 #include "CmD3D11Prerequisites.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class D3D11Driver
 	{

@@ -1,7 +1,7 @@
 #include "CmComponent.h"
 #include "CmComponentRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Component::Component(const HSceneObject& parent)
 		:mParent(parent)

@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "CmCgProgramFactory.h"
 #include "CmVector4.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     /**
       Implementation of GL as a rendering system.
      */

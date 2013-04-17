@@ -4,7 +4,7 @@
 #include "CmResourceHandleRTTI.h"
 #include "CmResources.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mResourceCreatedCondition, ResourceHandleBase)
 	CM_STATIC_MUTEX_CLASS_INSTANCE(mResourceCreatedMutex, ResourceHandleBase)

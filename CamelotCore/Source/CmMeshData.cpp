@@ -6,7 +6,7 @@
 #include "CmVertexDeclaration.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	MeshData::MeshData(IndexBuffer::IndexType indexType)
 	   :mIndexType(indexType)

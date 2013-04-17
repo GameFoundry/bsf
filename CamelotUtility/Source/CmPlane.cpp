@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmMatrix3.h"
 #include "CmAxisAlignedBox.h" 
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	//-----------------------------------------------------------------------
 	Plane::Plane ()
 	{
@@ -167,4 +167,4 @@ namespace CamelotEngine {
 		o << "Plane(normal=" << p.normal << ", d=" << p.d << ")";
 		return o;
 	}
-} // namespace CamelotEngine
+} // namespace CamelotFramework

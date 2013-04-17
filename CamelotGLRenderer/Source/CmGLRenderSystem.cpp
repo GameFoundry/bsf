@@ -64,10 +64,10 @@ THE SOFTWARE.s
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #if CM_THREAD_SUPPORT != 1
-GLenum glewContextInit (CamelotEngine::GLSupport *glSupport);
+GLenum glewContextInit (CamelotFramework::GLSupport *glSupport);
 #endif
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	/************************************************************************/
 	/* 								PUBLIC INTERFACE                   		*/
@@ -102,7 +102,7 @@ namespace CamelotEngine
 		mCurrentDrawOperation(DOT_TRIANGLE_LIST)
 	{
 		// Get our GLSupport
-		mGLSupport = CamelotEngine::getGLSupport();
+		mGLSupport = CamelotFramework::getGLSupport();
 
 		mViewMatrix = Matrix4::IDENTITY;
 
@@ -1360,7 +1360,7 @@ namespace CamelotEngine
 
 			checkForErrors();
 
-			std::vector<CamelotEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+			std::vector<CamelotFramework::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
 
 			if (!tokens.empty())
 			{

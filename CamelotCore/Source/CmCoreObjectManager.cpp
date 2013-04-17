@@ -2,7 +2,7 @@
 #include "CmCoreObject.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	CoreGpuObjectManager::CoreGpuObjectManager()
 		:mNextAvailableID(1)

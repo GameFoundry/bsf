@@ -6,7 +6,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmRTTIField.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class IReflectable;
 	struct RTTIReflectableFieldBase;

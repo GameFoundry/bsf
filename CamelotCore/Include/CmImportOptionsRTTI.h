@@ -4,7 +4,7 @@
 #include "CmImportOptions.h"
 #include "CmRTTIType.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT ImportOptionsRTTI : public RTTIType<ImportOptions, IReflectable, ImportOptionsRTTI>
 	{

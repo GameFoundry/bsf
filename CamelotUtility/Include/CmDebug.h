@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmLog.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class Log;
 
@@ -34,10 +34,10 @@ namespace CamelotEngine
 		return ss.str();
 	}
 
-#define LOGDBG(x) CamelotEngine::gDebug().logDebug((x));
-#define LOGINFO(x) CamelotEngine::gDebug().logInfo((x));
-#define LOGWRN(x) CamelotEngine::gDebug().logWarning((x));
-#define LOGERR(x) CamelotEngine::gDebug().logError((x));
+#define LOGDBG(x) CamelotFramework::gDebug().logDebug((x));
+#define LOGINFO(x) CamelotFramework::gDebug().logInfo((x));
+#define LOGWRN(x) CamelotFramework::gDebug().logWarning((x));
+#define LOGERR(x) CamelotFramework::gDebug().logError((x));
 
 #define CM_ASSERT(x) assert(x)
 }

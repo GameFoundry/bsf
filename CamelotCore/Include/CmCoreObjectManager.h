@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	// TODO - Add debug option that would remember a call stack for each resource initialization,
 	// so when we fail to release one we know which one it is.

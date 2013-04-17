@@ -3,7 +3,7 @@
 #include "CmCoreObjectManager.h"
 #include "CmDebug.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mCoreGpuObjectLoadedCondition, CoreObject)
 	CM_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreObject)

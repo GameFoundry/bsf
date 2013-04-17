@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     // Forward declarations
     class GLSupport;
     class GLRenderSystem;

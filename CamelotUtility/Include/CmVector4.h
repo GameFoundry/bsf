@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmPrerequisitesUtil.h"
 #include "CmVector3.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/** \addtogroup Core
 	*  @{

@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmRenderTarget.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct CM_EXPORT MULTI_RENDER_TEXTURE_DESC
 	{

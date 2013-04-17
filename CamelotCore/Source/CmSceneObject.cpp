@@ -5,7 +5,7 @@
 #include "CmDebug.h"
 #include "CmSceneObjectRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	SceneObject::SceneObject(const String& name)
 		:mName(name), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::UNIT_SCALE),

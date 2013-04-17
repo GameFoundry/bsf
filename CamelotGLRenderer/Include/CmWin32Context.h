@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmWin32Prerequisites.h"
 #include "CmGLContext.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     class CM_RSGL_EXPORT Win32Context: public GLContext
     {

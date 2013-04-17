@@ -6,7 +6,7 @@
 #include "CmHighLevelGpuProgram.h"
 #include "CmGLSLProgram.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_RSGL_EXPORT GLSLProgramRTTI : public RTTIType<GLSLProgram, HighLevelGpuProgram, GLSLProgramRTTI>
 	{

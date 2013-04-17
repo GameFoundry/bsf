@@ -3,7 +3,7 @@
 #include "CmD3D11Prerequisites.h"
 #include "CmVertexDeclaration.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class D3D11InputLayoutManager
 	{

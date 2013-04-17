@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmGLPrerequisites.h"
 #include "CmPixelUtil.h"
-namespace CamelotEngine {
+namespace CamelotFramework {
     
 	/**
 	* Class to do pixel format mapping between GL and OGRE

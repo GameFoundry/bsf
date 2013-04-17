@@ -1,7 +1,7 @@
 #include "CmFBXPrerequisites.h"
 #include "CmFBXImporter.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	extern "C" CM_FBX_EXPORT const String& getPluginName()
 	{

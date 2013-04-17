@@ -12,7 +12,7 @@
 #include "CmMaterialManager.h"
 #include "CmDebug.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Material::Material()
 		:Resource(false)

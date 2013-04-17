@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 #include "CmWin32GLSupport.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     
 inline GLSupport* getGLSupport()
 {

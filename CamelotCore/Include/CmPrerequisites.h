@@ -86,7 +86,7 @@ THE SOFTWARE
 
 #include "CmMemAllocCategories.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 // Pre-declare classes
 // Allows use of pointers in header files without including individual .h
@@ -182,7 +182,7 @@ namespace CamelotEngine {
 /* 						Shared pointer typedefs	                    	*/
 /************************************************************************/
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
 	typedef std::shared_ptr<HighLevelGpuProgram> HighLevelGpuProgramPtr;
@@ -230,7 +230,7 @@ namespace CamelotEngine
 /************************************************************************/
 /* 									RTTI                      			*/
 /************************************************************************/
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	enum TypeID_Core
 	{
@@ -292,8 +292,8 @@ namespace CamelotEngine
 	template<class T>
 	bool rtti_is_of_type(IReflectable* object)
 	{
-		BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, T>::value), 
-			"Invalid data type for type checking. It needs to derive from CamelotEngine::IReflectable.");
+		BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, T>::value), 
+			"Invalid data type for type checking. It needs to derive from CamelotFramework::IReflectable.");
 
 		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
 	}
@@ -304,8 +304,8 @@ namespace CamelotEngine
 	template<class T>
 	bool rtti_is_of_type(std::shared_ptr<IReflectable> object)
 	{
-		BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, T>::value), 
-			"Invalid data type for type checking. It needs to derive from CamelotEngine::IReflectable.");
+		BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, T>::value), 
+			"Invalid data type for type checking. It needs to derive from CamelotFramework::IReflectable.");
 
 		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
 	}
@@ -317,7 +317,7 @@ namespace CamelotEngine
 
 #include "CmResourceHandle.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	// Resource handles
 	typedef ResourceHandle<Resource> HResource;

@@ -42,7 +42,7 @@ THE SOFTWARE.
 #define THROW_IF_NOT_RENDER_THREAD 
 #endif
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	/****************************************************************************************/
     D3D9Texture::D3D9Texture()
@@ -402,7 +402,7 @@ namespace CamelotEngine
 		// Check FSAA level
 		if (mUsage & TU_RENDERTARGET)
 		{
-			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
+			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
 			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
 				&mFSAAType, &mFSAAQuality);
 		}

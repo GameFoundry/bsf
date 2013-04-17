@@ -3,7 +3,7 @@
 #include "CmGLPrerequisites.h"
 #include "CmGpuBuffer.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_RSGL_EXPORT GLGpuBuffer : public GpuBuffer
 	{

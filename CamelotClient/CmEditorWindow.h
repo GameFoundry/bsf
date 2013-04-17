@@ -7,7 +7,7 @@ namespace CamelotEditor
 	class EditorWindow
 	{
 	public:
-		EditorWindow(const CM::String& name, const CM::HFont& dbgFont, CamelotEngine::UINT32 dbgFontSize);
+		EditorWindow(const CM::String& name, const CM::HFont& dbgFont, CamelotFramework::UINT32 dbgFontSize);
 		virtual ~EditorWindow();
 
 	private:

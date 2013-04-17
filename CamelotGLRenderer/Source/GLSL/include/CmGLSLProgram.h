@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmHighLevelGpuProgram.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     /** Specialisation of HighLevelGpuProgram to provide support for OpenGL 
         Shader Language (GLSL).
     @remarks

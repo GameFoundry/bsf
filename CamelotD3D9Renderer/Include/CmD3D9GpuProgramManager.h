@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmGpuProgram.h"
 #include "CmGpuProgramManager.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     class CM_D3D9_EXPORT D3D9GpuProgramManager : public GpuProgramManager
     {

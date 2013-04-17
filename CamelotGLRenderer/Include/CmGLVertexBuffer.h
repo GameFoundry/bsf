@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmVertexBuffer.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     /// Specialisation of HardwareVertexBuffer for OpenGL
     class CM_RSGL_EXPORT GLVertexBuffer : public VertexBuffer 

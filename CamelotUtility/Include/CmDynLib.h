@@ -53,7 +53,7 @@ typedef struct HINSTANCE__* hInstance;
 
 #endif
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	/** \addtogroup Core
 	*  @{
 	*/

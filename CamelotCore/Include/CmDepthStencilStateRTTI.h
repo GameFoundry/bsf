@@ -5,7 +5,7 @@
 #include "CmDepthStencilState.h"
 #include "CmRenderStateManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT DepthStencilStateRTTI : public RTTIType<DepthStencilState, IReflectable, DepthStencilStateRTTI>
 	{

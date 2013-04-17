@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "CmPixelBuffer.h"
 #include "CmException.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
   
     //-----------------------------------------------------------------------------    

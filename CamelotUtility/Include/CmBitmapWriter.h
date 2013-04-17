@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_UTILITY_EXPORT BitmapWriter
 	{

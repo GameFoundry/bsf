@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmD3D9Prerequisites.h"
 #include "CmHighLevelGpuProgramManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     /** Factory class for D3D9 HLSL programs. */
     class CM_D3D9_EXPORT D3D9HLSLProgramFactory : public HighLevelGpuProgramFactory

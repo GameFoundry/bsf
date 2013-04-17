@@ -1,7 +1,7 @@
 #include "CmGLRenderSystemFactory.h"
 #include "CmGLRenderSystem.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void GLRenderSystemFactory::create()
 	{

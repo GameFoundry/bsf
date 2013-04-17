@@ -3,7 +3,7 @@
 #include "CmGLPrerequisites.h"
 #include "CmBuiltinMaterialManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @copydoc BuiltinMaterialManager

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmCgProgramFactory.h"
 #include "CmCgProgram.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     //-----------------------------------------------------------------------
     String CgProgramFactory::sLanguageName = "cg";
     //-----------------------------------------------------------------------

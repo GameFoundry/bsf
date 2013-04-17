@@ -9,7 +9,7 @@
 // DEBUG ONLY
 #include "CmTextureManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT TextureRTTI : public RTTIType<Texture, Resource, TextureRTTI>
 	{

@@ -10,7 +10,7 @@
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_UTILITY_EXPORT Exception : public std::exception
     {
@@ -133,7 +133,7 @@ namespace CamelotEngine
 #ifndef CM_EXCEPT
 #define CM_EXCEPT(type, desc)	\
 	{                           \
-	BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Exception, type##>::value), "Invalid exception type (" #type ") for CM_EXCEPT macro. It needs to derive from CamelotEngine::Exception."); \
+	BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Exception, type##>::value), "Invalid exception type (" #type ") for CM_EXCEPT macro. It needs to derive from CamelotFramework::Exception."); \
 	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
 	}
 #endif

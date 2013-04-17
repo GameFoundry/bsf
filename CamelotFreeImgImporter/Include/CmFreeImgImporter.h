@@ -4,7 +4,7 @@
 #include "CmSpecificImporter.h"
 #include "CmImporter.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class FreeImgImporter : public SpecificImporter
 	{

@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmHighLevelGpuProgram.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class RenderWindow;
 	class Viewport;
@@ -11,7 +11,7 @@ namespace CamelotEngine
 	class HighLevelGpuProgramManager;
 }
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct START_UP_DESC
 	{

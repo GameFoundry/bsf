@@ -7,7 +7,7 @@
 #include <numeric>
 #include <boost/bind.hpp>
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	FileSerializer::FileSerializer()
 	{

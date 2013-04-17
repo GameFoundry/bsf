@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct CM_EXPORT GPU_BUFFER_DESC
 	{

@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmGLPixelBuffer.h"
 #include "CmPixelData.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	/** GL surface descriptor. Points to a 2D surface that can be rendered to. 
     */

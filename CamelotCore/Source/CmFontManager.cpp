@@ -1,7 +1,7 @@
 #include "CmFontManager.h"
 #include "CmFont.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	FontPtr FontManager::create(vector<FontData>::type& fontData) const
 	{

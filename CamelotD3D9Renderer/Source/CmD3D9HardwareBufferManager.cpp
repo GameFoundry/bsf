@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmGpuParamBlock.h"
 #include "CmException.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
     //-----------------------------------------------------------------------
     D3D9HardwareBufferManager::D3D9HardwareBufferManager()       

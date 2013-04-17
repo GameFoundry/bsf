@@ -6,7 +6,7 @@
 
 #include <boost/bind.hpp>
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	const int Input::HISTORY_BUFFER_SIZE = 10; // Size of buffer used for input smoothing
 	const float Input::WEIGHT_MODIFIER = 0.5f;

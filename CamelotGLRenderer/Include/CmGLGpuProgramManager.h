@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmGpuProgramManager.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	class CM_RSGL_EXPORT GLGpuProgramManager : public GpuProgramManager
 	{
@@ -45,6 +45,6 @@ namespace CamelotEngine
 			GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 	};
 
-}; //namespace CamelotEngine
+}; //namespace CamelotFramework
 
 #endif //__GLGpuProgramManager_H__

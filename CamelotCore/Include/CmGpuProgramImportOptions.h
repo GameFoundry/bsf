@@ -4,7 +4,7 @@
 #include "CmImportOptions.h"
 #include "CmGpuProgram.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT GpuProgramImportOptions : public ImportOptions
 	{

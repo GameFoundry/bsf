@@ -5,7 +5,7 @@
 #include "CmGpuProgramImportOptions.h"
 #include "CmHighLevelGpuProgram.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	bool GpuProgramImporter::isExtensionSupported(const String& ext) const
 	{

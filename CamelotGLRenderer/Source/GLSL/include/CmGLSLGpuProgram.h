@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmGLSLExtSupport.h"
 #include "CmGpuProgram.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     /** GLSL low level compiled shader object - this class is used to get at the linked program object 
 		and provide an interface for GLRenderSystem calls.  GLSL does not provide access to the

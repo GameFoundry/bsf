@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	// TODO - Low priority. Eventually I'll want to generalize BinarySerializer to Serializer class, then I can make this class accept
 	// a generic Serializer interface so it may write both binary, plain-text or some other form of data.

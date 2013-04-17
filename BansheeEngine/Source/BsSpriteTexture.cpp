@@ -1,6 +1,6 @@
 #include "BsSpriteTexture.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

@@ -31,7 +31,7 @@
 #define THROW_IF_NOT_RENDER_THREAD 
 #endif
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11RenderSystem::D3D11RenderSystem()
 		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr)

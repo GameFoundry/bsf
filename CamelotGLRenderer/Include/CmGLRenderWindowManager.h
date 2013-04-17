@@ -3,7 +3,7 @@
 #include "CmGLPrerequisites.h"
 #include "CmRenderWindowManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_RSGL_EXPORT GLRenderWindowManager : public RenderWindowManager
 	{

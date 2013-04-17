@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct CM_UTILITY_EXPORT Int2
 	{

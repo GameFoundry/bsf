@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "CmPlane.h"
 
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 
     const float Math::POS_INFINITY = std::numeric_limits<float>::infinity();

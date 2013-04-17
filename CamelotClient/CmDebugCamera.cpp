@@ -7,7 +7,7 @@
 #include "CmCamera.h"
 #include "CmOSCursor.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	const float DebugCamera::START_SPEED = 40.0f;
 	const float DebugCamera::TOP_SPEED = 130.0f;

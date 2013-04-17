@@ -5,7 +5,7 @@
 #include "CmVertexBuffer.h"
 #include "CmHardwareBufferManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class VertexDeclarationRTTI : public RTTIType<VertexDeclaration, IReflectable, VertexDeclarationRTTI>
 	{

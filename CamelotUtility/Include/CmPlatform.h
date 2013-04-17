@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #pragma once
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 /* Initial platform/compiler-related stuff to set.
 */
 #define CM_PLATFORM_WIN32 1

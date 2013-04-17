@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT GameObject : public IReflectable
 	{
@@ -23,7 +23,7 @@ namespace CamelotEngine
 
 #include "CmGameObjectHandle.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	// Game object handles
 	typedef GameObjectHandle<GameObject> HGameObject;

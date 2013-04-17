@@ -5,7 +5,7 @@
 #include "CmDebug.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GpuParams::GpuParams(GpuParamDesc& paramDesc)
 		:mParamDesc(paramDesc), mTransposeMatrices(false)

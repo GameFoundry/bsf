@@ -3,7 +3,7 @@
 #include "CmHardwareBufferManager.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GpuParamBlockBuffer::GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
 		:mData(CM_NEW_BYTES(size, ScratchAlloc)), mSize(size), mUsage(usage)

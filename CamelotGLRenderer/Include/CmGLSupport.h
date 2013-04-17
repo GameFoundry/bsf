@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 #include "CmRenderWindow.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     
 class CM_RSGL_EXPORT GLSupport
@@ -106,6 +106,6 @@ private:
 
 }; // class GLSupport
 
-}; // namespace CamelotEngine
+}; // namespace CamelotFramework
 
-#endif // OGRE_GLSUPPORT_H
+#endif 

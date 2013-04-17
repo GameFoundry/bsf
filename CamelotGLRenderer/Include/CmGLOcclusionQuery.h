@@ -51,7 +51,7 @@ initialised and used in glRenderSystem and copy what is done there.
 #include "CmOcclusionQuery.h"
 
 
-namespace CamelotEngine { 
+namespace CamelotFramework { 
 
 
 // If you use multiple rendering passes you can test only the first pass and all other passes don't have to be rendered 

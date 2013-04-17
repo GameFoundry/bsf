@@ -3,7 +3,7 @@
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Mappings.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11DepthStencilState::D3D11DepthStencilState()
 		:mDepthStencilState(nullptr)

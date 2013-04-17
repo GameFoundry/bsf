@@ -12,7 +12,7 @@
 #define THROW_IF_NOT_RENDER_THREAD 
 #endif
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11Texture::D3D11Texture()
 		: Texture()

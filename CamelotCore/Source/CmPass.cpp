@@ -7,7 +7,7 @@
 #include "CmMaterial.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     //-----------------------------------------------------------------------------
 	Pass::Pass()

@@ -7,7 +7,7 @@
 #include "CmMaterial.h"
 #include "CmBlendState.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	HMaterial D3D11BuiltinMaterialManager::createSpriteTextMaterial() const
 	{

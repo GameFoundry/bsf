@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmSceneObject.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, GameObject, SceneObjectRTTI>
 	{

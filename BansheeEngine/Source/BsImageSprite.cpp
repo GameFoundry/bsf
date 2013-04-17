@@ -2,7 +2,7 @@
 #include "BsSpriteTexture.h"
 #include "BsGUIMaterialManager.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

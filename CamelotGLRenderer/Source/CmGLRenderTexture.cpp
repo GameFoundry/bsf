@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmGLPixelBuffer.h"
 #include "CmTextureView.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	GLRenderTexture::GLRenderTexture()
 		:mFB(nullptr)

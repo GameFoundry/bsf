@@ -1,7 +1,7 @@
 #include "BsOctreeSMPrerequisites.h"
 #include "BsOctreeSceneManager.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

@@ -1,7 +1,7 @@
 #include "CmManagedDataBlock.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	ManagedDataBlock::ManagedDataBlock(UINT8* data, UINT32 size)
 		:mData(data), mSize(size), mManaged(false), mIsDataOwner(true)

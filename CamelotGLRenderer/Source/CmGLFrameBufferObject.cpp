@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLPixelBuffer.h"
 #include "CmGLRenderTexture.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
     GLFrameBufferObject::GLFrameBufferObject(UINT32 fsaa)
 		:mNumSamples(fsaa)
@@ -107,7 +107,7 @@ namespace CamelotEngine
         UINT32 height = mColor[0].buffer->getHeight();
         GLuint glformat = mColor[0].buffer->getGLFormat();
         PixelFormat format = mColor[0].buffer->getFormat();
-        UINT16 maxSupportedMRTs = CamelotEngine::RenderSystem::instancePtr()->getCapabilities()->getNumMultiRenderTargets();
+        UINT16 maxSupportedMRTs = CamelotFramework::RenderSystem::instancePtr()->getCapabilities()->getNumMultiRenderTargets();
 
 		// Bind simple buffer to add colour attachments
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mFB);

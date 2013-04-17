@@ -5,7 +5,7 @@
 #include "CmD3D11GpuParamBlock.h"
 #include "CmGpuParamDesc.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11HardwareBufferManager::D3D11HardwareBufferManager(D3D11Device& device)
 		: mDevice(device)

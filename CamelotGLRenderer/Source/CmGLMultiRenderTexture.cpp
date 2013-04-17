@@ -1,7 +1,7 @@
 #include "CmGLMultiRenderTexture.h"
 #include "CmGLTexture.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GLMultiRenderTexture::GLMultiRenderTexture()
 		:MultiRenderTexture(), mFB(nullptr)

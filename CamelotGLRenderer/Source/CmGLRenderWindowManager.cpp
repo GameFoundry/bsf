@@ -3,7 +3,7 @@
 #include "CmGLSupport.h"
 #include "CmAsyncOp.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GLRenderWindowManager::GLRenderWindowManager(GLRenderSystem* renderSystem)
 		:mRenderSystem(renderSystem)

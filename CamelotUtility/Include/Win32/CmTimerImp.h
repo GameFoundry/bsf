@@ -38,7 +38,7 @@ THE SOFTWARE.
 #endif
 #include "windows.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/** \addtogroup Core
 	*  @{

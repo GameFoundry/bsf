@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmWin32Prerequisites.h"
 #include "CmRenderWindow.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     class CM_RSGL_EXPORT Win32Window : public RenderWindow
     {
     public:

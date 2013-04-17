@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmPoint.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	A rectangle. Although you may use any coordinate system, Camelot assumes

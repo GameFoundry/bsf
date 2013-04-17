@@ -2,7 +2,7 @@
 #include "CmPixelUtil.h"
 #include "CmPixelDataRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	PixelData::PixelData(const PixelData& copy)
 		:Box(copy), IReflectable(copy)

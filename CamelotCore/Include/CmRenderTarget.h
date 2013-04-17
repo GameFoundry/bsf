@@ -42,7 +42,7 @@ THE SOFTWARE.
 	#define CM_REND_TO_TEX_RT_GROUP 2
 #endif
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	struct CM_EXPORT RENDER_SURFACE_DESC
 	{

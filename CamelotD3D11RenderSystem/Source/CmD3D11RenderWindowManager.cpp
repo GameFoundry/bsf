@@ -3,7 +3,7 @@
 #include "CmD3D11RenderWindow.h"
 #include "CmAsyncOp.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11RenderWindowManager::D3D11RenderWindowManager(D3D11RenderSystem* renderSystem)
 		:mRenderSystem(renderSystem)

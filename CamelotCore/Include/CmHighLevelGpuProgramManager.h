@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmHighLevelGpuProgram.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	/** \addtogroup Core
 	*  @{

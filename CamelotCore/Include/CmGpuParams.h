@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT GpuParams
 	{

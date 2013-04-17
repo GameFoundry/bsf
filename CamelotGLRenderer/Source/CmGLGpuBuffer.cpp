@@ -1,7 +1,7 @@
 #include "CmGLGpuBuffer.h"
 #include "CmDebug.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GLGpuBuffer::GLGpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter) 
 		: GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter)

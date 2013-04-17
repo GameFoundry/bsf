@@ -21,7 +21,7 @@
 #include "CmGameObject.h"
 
 // To avoid a lot of typing
-namespace CM = CamelotEngine;
+namespace CM = CamelotFramework;
 
 namespace BansheeEngine
 {

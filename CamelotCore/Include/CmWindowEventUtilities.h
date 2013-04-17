@@ -42,7 +42,7 @@ THE SOFTWARE.
 
 
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/** \addtogroup Core
 	*  @{

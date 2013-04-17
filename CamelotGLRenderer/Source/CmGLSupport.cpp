@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLSupport.h"
 #include "CmGLTexture.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     void GLSupport::initialiseExtensions(void)
     {

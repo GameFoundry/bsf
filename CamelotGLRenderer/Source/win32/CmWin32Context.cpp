@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmGLRenderSystem.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     Win32Context::Win32Context(HDC     HDC,
                  HGLRC   Glrc):
@@ -46,7 +46,7 @@ namespace CamelotEngine {
     {
 		// NB have to do this is subclass to ensure any methods called back
 		// are on this subclass and not half-destructed superclass
-		GLRenderSystem *rs = static_cast<GLRenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
+		GLRenderSystem *rs = static_cast<GLRenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
 		rs->unregisterContext(this);
     }
         
@@ -75,7 +75,7 @@ namespace CamelotEngine {
 // declared in CmGLPrerequisites.h 
 WGLEWContext * wglewGetContext()
 {
-	using namespace CamelotEngine;
+	using namespace CamelotFramework;
 	static CM_THREAD_POINTER_VAR(WGLEWContext, WGLEWContextsPtr);
 
 	WGLEWContext * currentWGLEWContextsPtr = CM_THREAD_POINTER_GET(WGLEWContextsPtr);

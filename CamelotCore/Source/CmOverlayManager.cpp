@@ -2,7 +2,7 @@
 #include "CmCamera.h"
 #include "CmOverlay.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void OverlayManager::render(const Camera* camera, DeferredRenderContextPtr& renderContext) const
 	{

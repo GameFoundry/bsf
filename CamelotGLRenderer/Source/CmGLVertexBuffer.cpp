@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmGLVertexBuffer.h"
 #include "CmException.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	//---------------------------------------------------------------------
     GLVertexBuffer::GLVertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, 

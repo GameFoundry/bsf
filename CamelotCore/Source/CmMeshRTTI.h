@@ -5,7 +5,7 @@
 #include "CmMesh.h"
 #include "CmMeshManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class MeshRTTI : public RTTIType<Mesh, Resource, MeshRTTI>
 	{

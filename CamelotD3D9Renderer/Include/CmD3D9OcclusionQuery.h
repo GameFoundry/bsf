@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmD3D9Resource.h"
 
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	// If you use multiple rendering passes you can test only the first pass and all other passes don't have to be rendered 
 	// if the first pass results has too few pixels visible.

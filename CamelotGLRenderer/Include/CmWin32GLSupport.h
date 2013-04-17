@@ -5,7 +5,7 @@
 #include "CmGLSupport.h"
 #include "CmGLRenderSystem.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     
 	class CM_RSGL_EXPORT Win32GLSupport : public GLSupport

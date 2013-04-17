@@ -5,7 +5,7 @@
 #include "CmGpuBufferView.h"
 #include "CmCoreObject.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	class CM_EXPORT GpuBuffer : public CoreObject
     {

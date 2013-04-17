@@ -36,7 +36,7 @@ memcpy(buffer, dataIter##, size##);										\
 buffer += size##;														\
 *bytesWritten += size##;
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	BinarySerializer::BinarySerializer()
 		:mLastUsedObjectId(1)

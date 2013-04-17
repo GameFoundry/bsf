@@ -1,6 +1,6 @@
 #include "CmD3D11VideoMode.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11VideoMode::D3D11VideoMode(DXGI_OUTPUT_DESC d3ddm, DXGI_MODE_DESC modeDesc)
 		:mDisplayMode(d3ddm), mModeDesc(modeDesc)

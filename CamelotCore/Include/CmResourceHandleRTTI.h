@@ -5,7 +5,7 @@
 #include "CmResourceHandle.h"
 #include "CmResources.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT ResourceHandleRTTI : public RTTIType<ResourceHandleBase, IReflectable, ResourceHandleRTTI>
 	{

@@ -1,7 +1,7 @@
 #include "CmBitmapWriter.h"
 #include "CmPixelData.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 #pragma pack(push, 2) // Align to 2byte boundary so we don't get extra 2 bytes for this struct
 

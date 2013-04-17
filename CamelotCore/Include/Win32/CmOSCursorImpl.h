@@ -4,7 +4,7 @@
 #include "CmInt2.h"
 #include <windows.h>
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Provides controls for Windows operating system cursor.

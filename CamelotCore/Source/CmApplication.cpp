@@ -36,7 +36,7 @@
 
 #include "CmRendererManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Application::Application()
 		:mPrimaryRenderWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false)

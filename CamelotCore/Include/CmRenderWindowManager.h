@@ -4,7 +4,7 @@
 #include "CmModule.h"
 #include "CmRenderWindow.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT RenderWindowManager : public Module<RenderWindowManager>
 	{

@@ -4,7 +4,7 @@
 #include "CmMultiRenderTexture.h"
 #include "CmGLFrameBufferObject.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_RSGL_EXPORT GLMultiRenderTexture : public MultiRenderTexture
 	{

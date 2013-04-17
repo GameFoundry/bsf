@@ -4,7 +4,7 @@
 #include "CmResource.h"
 #include "CmCommonEnums.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct CM_EXPORT RENDER_TARGET_BLEND_STATE_DESC
 	{

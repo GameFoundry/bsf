@@ -3,7 +3,7 @@
 #include "BsGUISkin.h"
 #include "CmException.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

@@ -3,7 +3,7 @@
 #include "CmDebug.h"
 #include "CmBuiltinMaterialManager.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

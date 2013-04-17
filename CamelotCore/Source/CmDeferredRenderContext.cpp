@@ -6,7 +6,7 @@
 #include "CmDepthStencilState.h"
 #include "CmGpuParams.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	DeferredRenderContext::DeferredRenderContext(RenderSystem* rs, CM_THREAD_ID_TYPE threadId)
 		:mCommandQueue(CM_NEW(CommandQueue, GenAlloc) CommandQueue(threadId))

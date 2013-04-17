@@ -1,6 +1,6 @@
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Exception::Exception(const char* type, const String& desc, const String& src) 
 		:mLine(0), mTypeName(type), mDescription(desc), mSource(src)

@@ -1,7 +1,7 @@
 #include "CmImportOptions.h"
 #include "CmImportOptionsRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

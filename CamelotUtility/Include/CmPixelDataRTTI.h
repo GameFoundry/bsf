@@ -5,7 +5,7 @@
 #include "CmRTTIType.h"
 #include "CmManagedDataBlock.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_UTILITY_EXPORT PixelDataRTTI : public RTTIType<PixelData, IReflectable, PixelDataRTTI>
 	{

@@ -32,7 +32,7 @@
 //#define DX9
 //#define GL
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 using namespace CamelotEditor;
 using namespace BansheeEngine;
 
@@ -81,7 +81,7 @@ int CALLBACK WinMain(
 		{
 			FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
 
-			vector<CamelotEngine::UINT32>::type fontSizes;
+			vector<CamelotFramework::UINT32>::type fontSizes;
 			fontSizes.push_back(12);
 			importOptions->setFontSizes(fontSizes);
 		}
@@ -93,8 +93,8 @@ int CALLBACK WinMain(
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
-	String dx9psLoc = "C:\\Projects\\CamelotEngine\\Data\\hlsl9_ps.gpuprog";
-	String dx9vsLoc = "C:\\Projects\\CamelotEngine\\Data\\hlsl9_vs.gpuprog";
+	String dx9psLoc = "C:\\Projects\\BansheeEngine\\Data\\hlsl9_ps.gpuprog";
+	String dx9vsLoc = "C:\\Projects\\BansheeEngine\\Data\\hlsl9_vs.gpuprog";
 
 	ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(dx9psLoc);
 	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
@@ -128,8 +128,8 @@ int CALLBACK WinMain(
 	const String& debugString = gpuProgInclude->getString();
 	
 	/////////////////// HLSL 11 SHADERS //////////////////////////
-	String dx11psLoc = "C:\\Projects\\CamelotEngine\\Data\\hlsl11_ps.gpuprog";
-	String dx11vsLoc = "C:\\Projects\\CamelotEngine\\Data\\hlsl11_vs.gpuprog";
+	String dx11psLoc = "C:\\Projects\\BansheeEngine\\Data\\hlsl11_ps.gpuprog";
+	String dx11vsLoc = "C:\\Projects\\BansheeEngine\\Data\\hlsl11_vs.gpuprog";
 
 	ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(dx11psLoc);
 	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
@@ -159,8 +159,8 @@ int CALLBACK WinMain(
 	
 #else
 	///////////////// GLSL SHADERS ////////////////////////////
-	String glslpsLoc = "C:\\Projects\\CamelotEngine\\Data\\glsl_ps.gpuprog";
-	String glslvsLoc = "C:\\Projects\\CamelotEngine\\Data\\glsl_vs.gpuprog";
+	String glslpsLoc = "C:\\Projects\\BansheeEngine\\Data\\glsl_ps.gpuprog";
+	String glslvsLoc = "C:\\Projects\\BansheeEngine\\Data\\glsl_vs.gpuprog";
 
 	ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(glslpsLoc);
 	if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))

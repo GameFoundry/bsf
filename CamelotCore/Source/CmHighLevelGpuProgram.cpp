@@ -38,7 +38,7 @@ THE SOFTWARE.
 #define THROW_IF_NOT_RENDER_THREAD 
 #endif
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     //---------------------------------------------------------------------------
 	HighLevelGpuProgram::HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 

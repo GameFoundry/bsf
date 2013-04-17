@@ -4,7 +4,7 @@
 #include "CmBox.h"
 #include "CmIReflectable.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/** The pixel format used for images, textures, and render surfaces */
     enum PixelFormat

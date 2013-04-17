@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmHardwareBufferManager.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     //-----------------------------------------------------------------------------
     IndexBuffer::IndexBuffer(HardwareBufferManager* mgr, IndexType idxType, 

@@ -43,7 +43,7 @@ THE SOFTWARE.
 #define THROW_IF_NOT_RENDER_THREAD 
 #endif
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     //-----------------------------------------------------------------------------
     GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language, 
@@ -81,7 +81,7 @@ namespace CamelotEngine
         if (!isRequiredCapabilitiesSupported())
             return false;
 
-		RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
+		RenderSystem* rs = CamelotFramework::RenderSystem::instancePtr();
 		return rs->getCapabilities()->isShaderProfileSupported(mSyntaxCode);
     }
 	//-----------------------------------------------------------------------------

@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "CmException.h"
 
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 
 	bool GpuNamedConstants::msGenerateAllConstantDefinitionArrayEntries = false;

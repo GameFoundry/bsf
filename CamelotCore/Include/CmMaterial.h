@@ -9,7 +9,7 @@
 #include "CmMatrix4.h"
 #include "CmCommonEnums.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT PassParameters
 	{

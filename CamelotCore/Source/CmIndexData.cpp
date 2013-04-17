@@ -7,7 +7,7 @@
 #include "CmException.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	IndexData::IndexData()
 	{

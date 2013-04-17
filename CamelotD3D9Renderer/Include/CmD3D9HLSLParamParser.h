@@ -2,7 +2,7 @@
 
 #include "CmD3D9Prerequisites.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class D3D9HLSLParamParser
 	{

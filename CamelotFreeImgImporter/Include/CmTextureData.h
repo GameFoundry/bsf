@@ -3,7 +3,7 @@
 #include "CmFreeImgPrerequisites.h"
 #include "CmPixelUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	enum TextureDataFlags
 	{

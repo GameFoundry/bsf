@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmBitwise.h"
 #include "CmGLRenderTexture.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	//----------------------------------------------------------------------------- 
 	GLPixelBuffer::GLPixelBuffer(UINT32 inWidth, UINT32 inHeight, UINT32 inDepth,

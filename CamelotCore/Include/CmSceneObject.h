@@ -10,7 +10,7 @@
 
 #include "boost/static_assert.hpp"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT SceneObject : public GameObject
 	{
@@ -213,7 +213,7 @@ namespace CamelotEngine
 		template <typename T>
 		GameObjectHandle<T> addComponent()
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
 			GameObjectHandle<T> newComponent = GameObjectHandle<T>(CM_NEW(T, PoolAlloc) T(mThisHandle),
@@ -239,7 +239,7 @@ namespace CamelotEngine
 		template <typename T>
 		GameObjectHandle<T> getComponent()
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
 			return static_object_cast<T>(getComponent(T::getRTTIStatic()->getRTTIId()));
@@ -257,7 +257,7 @@ namespace CamelotEngine
 		template <typename T>
 		bool hasComponent()
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::Component, T>::value), 
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
 			return hasComponent(T::getRTTIStatic()->getRTTIId());

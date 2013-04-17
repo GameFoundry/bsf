@@ -1,6 +1,6 @@
 #include "CmD3D11IndexBuffer.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
 		GpuBufferUsage usage, bool useSystemMem)

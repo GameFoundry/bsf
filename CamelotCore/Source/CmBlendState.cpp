@@ -3,7 +3,7 @@
 #include "CmRenderSystem.h"
 #include "CmBlendStateRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void BlendState::initialize(const BLEND_STATE_DESC& desc)
 	{

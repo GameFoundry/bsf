@@ -6,7 +6,7 @@
 #include "CmGpuProgram.h"
 #include "CmColor.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Deferred render context allows you to execute RenderSystem commands outside of the render thread.

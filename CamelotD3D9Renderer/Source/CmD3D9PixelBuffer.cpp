@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmBitwise.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	CM_STATIC_MUTEX_INSTANCE(D3D9PixelBuffer::msDeviceAccessMutex)
 	//-----------------------------------------------------------------------------  
@@ -363,7 +363,7 @@ namespace CamelotEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	CamelotEngine::PixelData D3D9PixelBuffer::lockBuffer(BufferResources* bufferResources, 
+	CamelotFramework::PixelData D3D9PixelBuffer::lockBuffer(BufferResources* bufferResources, 
 													   const Box &lockBox, 
 													   DWORD flags)
 	{

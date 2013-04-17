@@ -2,7 +2,7 @@
 #include "CmApplication.h"
 #include "CmRenderWindow.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Int2 OSCursor::getPosition()
 	{

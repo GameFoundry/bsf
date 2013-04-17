@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmPixelBuffer.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	class CM_RSGL_EXPORT GLPixelBuffer: public PixelBuffer
 	{
 	protected:  

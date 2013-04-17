@@ -5,7 +5,7 @@
 #include "CmRasterizerState.h"
 #include "CmRenderStateManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	CM_ALLOW_MEMCPY_SERIALIZATION(RASTERIZER_STATE_DESC);
 

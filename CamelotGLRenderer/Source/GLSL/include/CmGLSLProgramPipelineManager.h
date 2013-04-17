@@ -2,7 +2,7 @@
 
 #include "CmGLPrerequisites.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct GLSLProgramPipeline
 	{

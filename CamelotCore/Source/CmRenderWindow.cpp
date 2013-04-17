@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmRenderWindowManager.h"
 #include "CmViewport.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
     RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc)
         : RenderTarget()

@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmModule.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Manages all time related functionality

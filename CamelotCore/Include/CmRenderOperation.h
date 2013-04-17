@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmVertexData.h"
 #include "CmIndexData.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	/// The rendering operation type to perform
 	enum DrawOperationType {

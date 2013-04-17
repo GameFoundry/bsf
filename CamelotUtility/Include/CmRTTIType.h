@@ -19,7 +19,7 @@
 #include "CmRTTIManagedDataBlockField.h"
 #include "CmIReflectable.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 #define CM_SETGET_MEMBER(name, type, parentType)								\
 	type##& get##name(parentType##* obj) { return obj->##name; }				\
@@ -80,8 +80,8 @@ namespace CamelotEngine
 		template <class ObjectType, class DataType>
 		void setReflectableValue(ObjectType* object, const std::string& name, DataType& value)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
 
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplex(false);
@@ -93,8 +93,8 @@ namespace CamelotEngine
 		template <class ObjectType, class DataType>
 		void setReflectableArrayValue(ObjectType* object, const std::string& name, UINT32 index, DataType& value)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
 
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplex(true);
@@ -117,8 +117,8 @@ namespace CamelotEngine
 		template <class ObjectType, class DataType>
 		void setReflectablePtrValue(ObjectType* object, const std::string& name, std::shared_ptr<DataType> value)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
 
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplexPtr(false);
@@ -130,8 +130,8 @@ namespace CamelotEngine
 		template <class ObjectType, class DataType>
 		void setReflectablePtrArrayValue(ObjectType* object, const std::string& name, UINT32 index, std::shared_ptr<DataType> value)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
 
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplexPtr(true);
@@ -477,10 +477,10 @@ namespace CamelotEngine
 			DataType& (InterfaceType::*getter)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, DataType&), UINT64 flags = 0)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
-				"Class with the get/set methods must derive from CamelotEngine::RTTIType.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
+				"Class with the get/set methods must derive from CamelotFramework::RTTIType.");
 
-			BOOST_STATIC_ASSERT_MSG(!(boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
+			BOOST_STATIC_ASSERT_MSG(!(boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
 				"Data type derives from IReflectable but it is being added as a plain field.");
 
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
@@ -515,10 +515,10 @@ namespace CamelotEngine
 			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&), 
 			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
-				"Class with the get/set methods must derive from CamelotEngine::RTTIType.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
+				"Class with the get/set methods must derive from CamelotFramework::RTTIType.");
 
-			BOOST_STATIC_ASSERT_MSG(!(boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
+			BOOST_STATIC_ASSERT_MSG(!(boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
 				"Data type derives from IReflectable but it is being added as a plain field.");
 
 			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
@@ -578,8 +578,8 @@ namespace CamelotEngine
 		template<class ObjectType, class DataType>
 		void addReflectableField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
 
 			RTTIReflectableField<DataType, ObjectType>* newField = 
 				CM_NEW(RTTIReflectableField<DataType BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIReflectableField<DataType, ObjectType>();
@@ -590,8 +590,8 @@ namespace CamelotEngine
 		template<class ObjectType, class DataType>
 		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
 
 			if((flags & RTTI_Flag_WeakRef) == 0)
 				checkForCircularReferences<DataType>();
@@ -616,8 +616,8 @@ namespace CamelotEngine
 		void addReflectableArrayField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
 			boost::any setter, boost::any setSize, UINT64 flags)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
 
 			RTTIReflectableField<DataType, ObjectType>* newField = 
 				CM_NEW(RTTIReflectableField<DataType BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIReflectableField<DataType, ObjectType>();
@@ -629,8 +629,8 @@ namespace CamelotEngine
 		void addReflectablePtrArrayField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
 			boost::any setter, boost::any setSize, UINT64 flags)
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotEngine::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotEngine::IReflectable.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
 
 			if((flags & RTTI_Flag_WeakRef) == 0)
 				checkForCircularReferences<DataType>();

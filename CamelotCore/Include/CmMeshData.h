@@ -6,7 +6,7 @@
 #include "CmIndexBuffer.h"
 #include "CmVertexDeclaration.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT MeshData : public IReflectable
 	{

@@ -2,7 +2,7 @@
 #include "CmTexture.h"
 #include "CmUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	size_t TextureView::HashFunction::operator()(const TEXTURE_VIEW_DESC &key) const
 	{

@@ -46,7 +46,7 @@ THE SOFTWARE.
 #include "CmRay.h"
 #include "CmComponent.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	/** Specifies perspective (realistic) or orthographic (architectural) projection.
     */
@@ -546,5 +546,5 @@ namespace CamelotEngine {
 	 /** @} */
 	 /** @} */
 
-} // namespace CamelotEngine
+} // namespace CamelotFramework
 #endif

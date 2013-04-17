@@ -6,7 +6,7 @@
 #include "boost/function.hpp"
 #include <functional>
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Contains a list of commands that can be queued by one thread,

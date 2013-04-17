@@ -4,7 +4,7 @@
 #include "CmCommonEnums.h"
 #include "CmCoreObject.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Represents an actual GPU buffer. 

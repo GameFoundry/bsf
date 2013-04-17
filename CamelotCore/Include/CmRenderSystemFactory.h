@@ -3,12 +3,12 @@
 #include <string>
 #include <memory>
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class RenderSystem;
 }
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	typedef std::shared_ptr<RenderSystem> RenderSystemPtr;
 

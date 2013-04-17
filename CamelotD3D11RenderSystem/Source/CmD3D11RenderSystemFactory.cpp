@@ -1,7 +1,7 @@
 #include "CmD3D11RenderSystemFactory.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void D3D11RenderSystemFactory::create()
 	{

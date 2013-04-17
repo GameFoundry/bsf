@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmGLHardwareBufferManager.h"
 #include "CmException.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	//---------------------------------------------------------------------
     GLIndexBuffer::GLIndexBuffer(HardwareBufferManager* mgr, IndexType idxType,

@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "CmIndexBuffer.h"
 #include "CmGpuParamBlock.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	/** \addtogroup Core
 	*  @{
 	*/

@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "CmOcclusionQuery.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 
     OcclusionQuery::OcclusionQuery() : 

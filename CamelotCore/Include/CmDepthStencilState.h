@@ -4,7 +4,7 @@
 #include "CmCommonEnums.h"
 #include "CmResource.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct CM_EXPORT DEPTH_STENCIL_STATE_DESC
 	{

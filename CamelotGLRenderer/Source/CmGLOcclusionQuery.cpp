@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmGLOcclusionQuery.h"
 #include "CmException.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 /**
   * This is a class that is the base class of the query class for 

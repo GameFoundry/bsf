@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmHardwareBufferManager.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 // Default threshold at which glMapBuffer becomes more efficient than glBufferSubData (32k?)
 #	define CM_GL_DEFAULT_MAP_BUFFER_THRESHOLD (1024 * 32)

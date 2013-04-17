@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "CmWorkQueue.h"
 #include "CmDebug.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	WorkQueue::WorkQueue() 
 		: mNextChannel(0) 		
 		, mWorkerThreadCount(1)

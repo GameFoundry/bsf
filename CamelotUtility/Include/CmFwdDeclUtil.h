@@ -1,6 +1,6 @@
 #pragma once
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	// Pre-declare classes
 	// Allows use of pointers in header files without including individual .h
 	// so decreases dependencies between files

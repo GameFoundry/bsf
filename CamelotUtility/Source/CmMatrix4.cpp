@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmVector3.h"
 #include "CmMatrix3.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 
     const Matrix4 Matrix4::ZERO(

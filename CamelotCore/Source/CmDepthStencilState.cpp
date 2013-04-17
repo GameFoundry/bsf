@@ -4,7 +4,7 @@
 #include "CmDepthStencilStateRTTI.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void DepthStencilState::initialize(const DEPTH_STENCIL_STATE_DESC& desc)
 	{

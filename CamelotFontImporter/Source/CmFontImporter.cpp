@@ -10,7 +10,7 @@
 #include <freetype/freetype.h>
 #include FT_FREETYPE_H
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	FontImporter::FontImporter()
 		:SpecificImporter() 

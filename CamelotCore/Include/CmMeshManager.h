@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT MeshManager : public Module<MeshManager>
 	{

@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "CmVector4.h"
 #include "CmPlane.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/** \addtogroup Core
 	*  @{

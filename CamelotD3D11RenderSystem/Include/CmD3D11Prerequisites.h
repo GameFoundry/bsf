@@ -19,7 +19,7 @@
 #include <d3d11shader.h>
 #include <D3Dcompiler.h>
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	// Predefine classes
 	class D3D11RenderSystem;

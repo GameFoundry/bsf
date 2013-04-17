@@ -5,7 +5,7 @@
 #include "CmBlendState.h"
 #include "CmRenderStateManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	template<> struct RTTIPlainType<BLEND_STATE_DESC>
 	{	

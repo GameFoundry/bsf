@@ -1,6 +1,6 @@
 #pragma once
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Memory allocator providing a generic implementation. 

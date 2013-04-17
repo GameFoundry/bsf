@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmGpuProgram.h"
 #include "CmModule.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	/** \addtogroup Core
 	*  @{

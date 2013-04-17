@@ -10,7 +10,7 @@
 #include "CmViewport.h"
 #include "CmSceneObject.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

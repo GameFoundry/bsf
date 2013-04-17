@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmGameObject.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT GameObjectRTTI : public RTTIType<GameObject, IReflectable, GameObjectRTTI>
 	{

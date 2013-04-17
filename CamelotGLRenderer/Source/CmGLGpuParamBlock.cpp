@@ -1,7 +1,7 @@
 #include "CmGLGpuParamBlock.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GLGpuParamBlockBuffer::GLGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
 		:GpuParamBlockBuffer(size, usage)

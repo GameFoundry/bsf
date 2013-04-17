@@ -3,7 +3,7 @@
 #include "CmUUID.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Resource::Resource(bool initializeOnRenderThread)
 		:CoreObject(initializeOnRenderThread), mSize(0)

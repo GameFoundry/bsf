@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmGpuProgram.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT GpuProgramRTTI : public RTTIType<GpuProgram, Resource, GpuProgramRTTI>
 	{

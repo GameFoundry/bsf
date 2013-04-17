@@ -81,7 +81,7 @@ D3DFORMAT ddDepthStencilFormats[]={
 };
 #define NDSFORMATS (sizeof(ddDepthStencilFormats)/sizeof(D3DFORMAT))
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	D3D9RenderSystem* D3D9RenderSystem::msD3D9RenderSystem = NULL;
 
@@ -260,7 +260,7 @@ namespace CamelotEngine
 		{
 			mDeviceManager->linkRenderWindow(d3d9renderWindow);
 		}
-		catch (const CamelotEngine::RenderingAPIException&)
+		catch (const CamelotFramework::RenderingAPIException&)
 		{
 			// after catching the exception, clean up
 			mResourceManager->unlockDeviceAccess();

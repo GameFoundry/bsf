@@ -3,7 +3,7 @@
 #include "CmD3D11Prerequisites.h"
 #include "CmGpuProgramManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class D3D11GpuProgramManager : public GpuProgramManager
 	{

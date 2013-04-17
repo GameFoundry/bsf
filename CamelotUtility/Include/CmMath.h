@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/** \addtogroup Core
 	*  @{

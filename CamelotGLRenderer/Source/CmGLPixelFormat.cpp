@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmBitwise.h"
 #include "CmDebug.h"
 
-namespace CamelotEngine  {
+namespace CamelotFramework  {
 	//-----------------------------------------------------------------------------
     GLenum GLPixelUtil::getGLOriginFormat(PixelFormat mFormat)
     {
@@ -422,7 +422,7 @@ namespace CamelotEngine  {
     //-----------------------------------------------------------------------------    
     UINT32 GLPixelUtil::optionalPO2(UINT32 value)
     {
-        const RenderSystemCapabilities *caps = CamelotEngine::RenderSystem::instancePtr()->getCapabilities();
+        const RenderSystemCapabilities *caps = CamelotFramework::RenderSystem::instancePtr()->getCapabilities();
         if(caps->hasCapability(RSC_NON_POWER_OF_2_TEXTURES))
             return value;
         else

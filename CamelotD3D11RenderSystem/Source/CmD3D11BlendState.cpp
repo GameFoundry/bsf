@@ -3,7 +3,7 @@
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11BlendState::D3D11BlendState()
 		:mBlendState(nullptr)

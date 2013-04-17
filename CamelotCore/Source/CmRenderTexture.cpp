@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmTexture.h"
 #include "CmTextureManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	RenderTexture::RenderTexture()
 		:mColorSurface(nullptr), mDepthStencilSurface(nullptr)
@@ -71,7 +71,7 @@ namespace CamelotEngine
 			mPriority = CM_REND_TO_TEX_RT_GROUP;
 			mWidth = texture->getWidth();
 			mHeight = texture->getWidth();
-			mColorDepth = CamelotEngine::PixelUtil::getNumElemBits(texture->getFormat());
+			mColorDepth = CamelotFramework::PixelUtil::getNumElemBits(texture->getFormat());
 			mActive = true;
 			mHwGamma = texture->isHardwareGammaEnabled();
 			mFSAA = texture->getFSAA();

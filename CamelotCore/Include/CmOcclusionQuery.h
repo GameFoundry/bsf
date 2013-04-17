@@ -31,7 +31,7 @@ THE SOFTWARE.
 // Precompiler options
 #include "CmPrerequisites.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 
 

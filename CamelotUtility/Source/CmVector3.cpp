@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "CmVector3.h"
 #include "CmMath.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     const Vector3 Vector3::ZERO( 0, 0, 0 );
 

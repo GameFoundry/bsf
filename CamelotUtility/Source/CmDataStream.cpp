@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmDebug.h"
 #include "CmException.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 
     //-----------------------------------------------------------------------

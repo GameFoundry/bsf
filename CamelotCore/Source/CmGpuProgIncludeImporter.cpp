@@ -3,7 +3,7 @@
 #include "CmDataStream.h"
 #include "CmFileSystem.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GpuProgIncludeImporter::GpuProgIncludeImporter()
 		:SpecificImporter()

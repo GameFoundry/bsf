@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmD3D9ResourceManager.h"
 #include "CmD3D9PixelBuffer.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	
 	//-----------------------------------------------------------------------

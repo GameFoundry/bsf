@@ -1,7 +1,7 @@
 #include "CmRTTIField.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void RTTIField::checkIsPlain(bool array)
 	{

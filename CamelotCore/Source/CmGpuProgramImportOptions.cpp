@@ -1,7 +1,7 @@
 #include "CmGpuProgramImportOptions.h"
 #include "CmGpuProgramImportOptionsRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GpuProgramImportOptions::GpuProgramImportOptions()
 		:mProfile(GPP_NONE), mType(GPT_VERTEX_PROGRAM)

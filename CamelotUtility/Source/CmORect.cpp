@@ -1,6 +1,6 @@
 #include "CmORect.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	ORect::ORect()
 	{	}

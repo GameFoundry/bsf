@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmVertexDeclaration.h"
 #include "CmVertexBuffer.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	/** \addtogroup Core
 	*  @{
 	*/

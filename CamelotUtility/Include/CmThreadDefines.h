@@ -64,8 +64,8 @@ THE SOFTWARE
 #define CM_LOCK_RW_MUTEX_WRITE(name) boost::unique_lock<boost::shared_mutex> cmnameLock(name)
 // Thread objects and related functions
 #define CM_THREAD_TYPE boost::thread
-#define CM_THREAD_CREATE(name, worker) boost::thread* name = new (CamelotEngine::MemoryAllocator<CamelotEngine::GenAlloc>::allocate(sizeof(boost::thread))) boost::thread(worker);
-#define CM_THREAD_DESTROY(name) CamelotEngine::__cm_destruct<boost::thread, CamelotEngine::GenAlloc>(name);
+#define CM_THREAD_CREATE(name, worker) boost::thread* name = new (CamelotFramework::MemoryAllocator<CamelotFramework::GenAlloc>::allocate(sizeof(boost::thread))) boost::thread(worker);
+#define CM_THREAD_DESTROY(name) CamelotFramework::__cm_destruct<boost::thread, CamelotFramework::GenAlloc>(name);
 #define CM_THREAD_HARDWARE_CONCURRENCY boost::thread::hardware_concurrency()
 #define CM_THREAD_CURRENT_ID boost::this_thread::get_id()
 #define CM_THREAD_ID_TYPE boost::thread::id

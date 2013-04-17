@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 /** Structure used to define a box in a 3-D integer space.
     Note that the left, top, and front edges are included but the right, 

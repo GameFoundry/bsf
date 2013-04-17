@@ -10,7 +10,7 @@
 #include "CmSamplerState.h"
 #include "CmRenderOperation.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_D3D11_EXPORT D3D11Mappings
 	{

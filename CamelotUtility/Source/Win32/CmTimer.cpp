@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmTimer.h"
 #include "CmBitwise.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 //-------------------------------------------------------------------------
 Timer::Timer()

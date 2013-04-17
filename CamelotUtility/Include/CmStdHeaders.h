@@ -72,7 +72,7 @@
 #include <sstream>
 
 #ifdef __BORLANDC__
-namespace CamelotEngine
+namespace CamelotFramework
 {
     using namespace std;
 }
@@ -117,7 +117,7 @@ extern "C" {
 #   pragma GCC visibility pop
 #endif
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 #if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310
 #   if CM_COMP_VER >= 430

@@ -3,7 +3,7 @@
 #include "CmD3D11Prerequisites.h"
 #include "CmRenderWindowManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_D3D11_EXPORT D3D11RenderWindowManager : public RenderWindowManager
 	{

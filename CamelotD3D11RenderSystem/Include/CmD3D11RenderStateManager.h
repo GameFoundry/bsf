@@ -3,7 +3,7 @@
 #include "CmD3D11Prerequisites.h"
 #include "CmRenderStateManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_D3D11_EXPORT D3D11RenderStateManager : public RenderStateManager
 	{

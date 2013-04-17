@@ -4,7 +4,7 @@
 #include "BsGUISkin.h"
 #include "BsGUIWidget.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

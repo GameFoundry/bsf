@@ -4,7 +4,7 @@
 #include "CmDynLib.h"
 #include "CmDynLibManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void RenderSystemManager::setActive(const String& pluginFilename)
 	{

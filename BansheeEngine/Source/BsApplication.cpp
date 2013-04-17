@@ -3,7 +3,7 @@
 #include "BsGUIManager.h"
 #include "CmApplication.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

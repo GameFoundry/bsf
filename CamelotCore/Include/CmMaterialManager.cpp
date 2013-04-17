@@ -1,7 +1,7 @@
 #include "CmMaterialManager.h"
 #include "CmMaterial.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	MaterialPtr MaterialManager::create() const
 	{

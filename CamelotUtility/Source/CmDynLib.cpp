@@ -43,7 +43,7 @@ THE SOFTWARE.
 #endif
 
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     //-----------------------------------------------------------------------
     DynLib::DynLib( const String& name )

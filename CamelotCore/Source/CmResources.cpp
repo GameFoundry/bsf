@@ -8,7 +8,7 @@
 #include "CmDebug.h"
 #include "CmResourcesRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	bool Resources::ResourceRequestHandler::canHandleRequest(const WorkQueue::Request* req, const WorkQueue* srcQ)
 	{

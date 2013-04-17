@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Module responsible for importing various asset types and converting

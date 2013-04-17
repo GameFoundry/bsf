@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmGpuProgramImportOptions.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT GpuProgramImportOptionsRTTI : public RTTIType<GpuProgramImportOptions, IReflectable, GpuProgramImportOptionsRTTI>
 	{

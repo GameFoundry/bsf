@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmResources.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class ResourceMetaDataRTTI : public RTTIType<Resources::ResourceMetaData, IReflectable, ResourceMetaDataRTTI>
 	{

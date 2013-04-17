@@ -5,7 +5,7 @@
 #include "CmUtil.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11GpuBufferView::D3D11GpuBufferView()
 		:GpuBufferView(), mSRV(nullptr), mUAV(nullptr)

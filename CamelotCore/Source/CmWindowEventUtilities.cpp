@@ -31,10 +31,10 @@ THE SOFTWARE.
 #include "CmException.h"
 #if CM_PLATFORM == CM_PLATFORM_LINUX
 #include <X11/Xlib.h>
-void GLXProc( CamelotEngine::RenderWindow *win, const XEvent &event );
+void GLXProc( CamelotFramework::RenderWindow *win, const XEvent &event );
 #endif
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 WindowEventUtilities::WindowEventListeners WindowEventUtilities::_msListeners;
 WindowEventUtilities::Windows WindowEventUtilities::_msWindows;

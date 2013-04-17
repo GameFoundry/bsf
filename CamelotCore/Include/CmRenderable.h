@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmComponent.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT Renderable : public Component
 	{

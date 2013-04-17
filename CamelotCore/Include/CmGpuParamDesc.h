@@ -4,7 +4,7 @@
 #include "CmCommonEnums.h"
 #include "CmGpuProgramParams.h" // TODO - Only here because I need some type definitions (GpuConstantType) - Remove later
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct GpuParamDataDesc
 	{

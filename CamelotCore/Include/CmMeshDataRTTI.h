@@ -6,7 +6,7 @@
 #include "CmManagedDataBlock.h"
 #include "CmVertexDeclaration.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT VertexElementDataRTTI : public RTTIType<MeshData::VertexElementData, IReflectable, VertexElementDataRTTI>
 	{

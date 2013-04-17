@@ -4,7 +4,7 @@
 #include "CmDebug.h"
 #include "CmShaderRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Shader::Shader(const String& name)
 		:mName(name)

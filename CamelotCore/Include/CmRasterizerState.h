@@ -4,7 +4,7 @@
 #include "CmCommonEnums.h"
 #include "CmResource.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct CM_EXPORT RASTERIZER_STATE_DESC
 	{

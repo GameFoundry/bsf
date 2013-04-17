@@ -2,7 +2,7 @@
 #include "CmPoint.h"
 #include "OIS/OISException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	InputHandlerOIS::InputHandlerOIS(unsigned int hWnd)
 		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr)

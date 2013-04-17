@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmIndexBuffer.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	/** Summary class collecting together index data source information. */
 	class CM_EXPORT IndexData

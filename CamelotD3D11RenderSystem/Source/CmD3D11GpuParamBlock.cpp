@@ -3,7 +3,7 @@
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11GpuParamBlockBuffer::D3D11GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
 		:GpuParamBlockBuffer(size, usage), mBuffer(nullptr)

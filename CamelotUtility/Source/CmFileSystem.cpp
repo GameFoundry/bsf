@@ -24,7 +24,7 @@
 #  include <io.h>
 #endif
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	DataStreamPtr FileSystem::open(const String& fullPath, bool readOnly)
 	{

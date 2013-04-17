@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmD3D9Prerequisites.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	enum D3D9ResourceCreationPolicy
 	{

@@ -4,7 +4,7 @@
 #include "CmRTTIField.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct RTTIPlainFieldBase : public RTTIField
 	{

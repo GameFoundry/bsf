@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include <boost/any.hpp>
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Interface implemented by classes that provide run time type information.

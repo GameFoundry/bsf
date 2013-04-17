@@ -6,7 +6,7 @@
 #include "CmHighLevelGpuProgram.h"
 #include "CmCgProgram.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT CgProgramRTTI : public RTTIType<CgProgram, HighLevelGpuProgram, CgProgramRTTI>
 	{

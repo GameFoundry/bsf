@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmD3D9RenderSystem.h"
 #include "CmD3D9ResourceManager.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     //-----------------------------------------------------------------------
     D3D9VertexDeclaration::D3D9VertexDeclaration()         

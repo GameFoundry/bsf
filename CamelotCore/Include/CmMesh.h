@@ -7,7 +7,7 @@
 #include "CmIndexData.h"
 #include "CmRenderOperation.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct CM_EXPORT SubMesh
 	{

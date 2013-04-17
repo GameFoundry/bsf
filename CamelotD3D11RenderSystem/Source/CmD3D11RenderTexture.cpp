@@ -7,7 +7,7 @@
 #include "CmTextureManager.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11RenderTexture::D3D11RenderTexture()
 		:RenderTexture()

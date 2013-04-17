@@ -3,7 +3,7 @@
 #include "CmGameObjectHandle.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GameObjectHandleBase::GameObjectHandleBase()
 	{ }

@@ -4,7 +4,7 @@
 #include "CmResource.h"
 #include "CmFontDesc.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct CM_EXPORT FontData : public IReflectable
 	{

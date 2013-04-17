@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmGpuProgram.h"
 #include "CmD3D9Resource.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     /** Direct3D implementation of a few things common to low-level vertex & fragment programs. */
     class CM_D3D9_EXPORT D3D9GpuProgram : public GpuProgram, public D3D9Resource

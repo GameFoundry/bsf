@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmGLSupport.h"
 #include "CmDebug.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     void checkForGLSLError(const String& ogreMethod, const String& errorTextPrefix, const GLuint obj, 
 		GLSLObjectType objectType, const bool forceInfoLog, const bool forceException)
@@ -137,4 +137,4 @@ namespace CamelotEngine
 		return false;
 	}
 
-} // namespace CamelotEngine
+} // namespace CamelotFramework

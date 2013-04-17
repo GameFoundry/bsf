@@ -1,7 +1,7 @@
 #include "CmOverlay.h"
 #include "CmOverlayManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Overlay::Overlay(const HSceneObject& parent)
 		:Component(parent)

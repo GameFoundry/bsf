@@ -36,7 +36,7 @@ THE SOFTWARE.
 //
 // OpenGL Shading Language entry points
 //
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	enum GLSLObjectType
 	{
@@ -73,6 +73,6 @@ namespace CamelotEngine
 	bool logProgramInfo(String& msg, const GLuint obj);
 
 
-} // namespace CamelotEngine
+} // namespace CamelotFramework
 
 #endif // __GLSLExtSupport_H__

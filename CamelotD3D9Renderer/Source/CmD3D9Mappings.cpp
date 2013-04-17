@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmDebug.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	//---------------------------------------------------------------------
 	D3DTEXTUREADDRESS D3D9Mappings::get(TextureAddressingMode tam, const D3DCAPS9& devCaps)
@@ -80,7 +80,7 @@ namespace CamelotEngine
 		return D3DBLEND_FORCE_DWORD;
 	}
 	//---------------------------------------------------------------------
-	D3DBLENDOP D3D9Mappings::get(CamelotEngine::BlendOperation sbo)
+	D3DBLENDOP D3D9Mappings::get(CamelotFramework::BlendOperation sbo)
 	{
 		switch(sbo)
 		{

@@ -7,19 +7,19 @@ namespace CamelotEditor
 	class Preferences
 	{
 	public:
-		void setValue(const String& key, const String& value, CamelotEngine::UINT32 arrayIdx = 0);
+		void setValue(const String& key, const String& value, CamelotFramework::UINT32 arrayIdx = 0);
 		void addValue(const String& key, const String& value);
-		const String& getValue(const String& key, const String& defaultValue = StringUtil::BLANK, CamelotEngine::UINT32 arrayIdx = 0);
+		const String& getValue(const String& key, const String& defaultValue = StringUtil::BLANK, CamelotFramework::UINT32 arrayIdx = 0);
 
-		void setValue(const String& key, const int value, CamelotEngine::UINT32 arrayIdx = 0);
+		void setValue(const String& key, const int value, CamelotFramework::UINT32 arrayIdx = 0);
 		void addValue(const String& key, const int value);
-		int getValue(const String& key, int defaultValue = 0, CamelotEngine::UINT32 arrayIdx = 0);
+		int getValue(const String& key, int defaultValue = 0, CamelotFramework::UINT32 arrayIdx = 0);
 
-		void setValue(const String& key, float value, CamelotEngine::UINT32 arrayIdx = 0);
+		void setValue(const String& key, float value, CamelotFramework::UINT32 arrayIdx = 0);
 		void addValue(const String& key, float value);
-		float getValue(const String& key, float defaultValue = 0.0f, CamelotEngine::UINT32 arrayIdx = 0);
+		float getValue(const String& key, float defaultValue = 0.0f, CamelotFramework::UINT32 arrayIdx = 0);
 
-		CamelotEngine::UINT32 getNumValues(const String& key);
+		CamelotFramework::UINT32 getNumValues(const String& key);
 
 		void save(const String& path, bool overwrite = true) const;
 		void load(const String& path);
@@ -50,7 +50,7 @@ namespace CamelotEditor
 		struct KeyMapIndex
 		{
 			ValueMapType mapType;
-			CamelotEngine::UINT32 entryIdx;
+			CamelotFramework::UINT32 entryIdx;
 		};
 
 		struct EntryToSave

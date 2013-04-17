@@ -57,7 +57,7 @@ THE SOFTWARE.
 #include <DxErr.h>
 
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	// Predefine classes
 	class D3D9RenderSystem;

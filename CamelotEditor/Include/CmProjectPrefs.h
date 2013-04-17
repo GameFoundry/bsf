@@ -6,7 +6,7 @@
 
 namespace CamelotEditor
 {
-	class ProjectPrefs : public CamelotEngine::Module<ProjectPrefs>
+	class ProjectPrefs : public CamelotFramework::Module<ProjectPrefs>
 	{
 	public:
 		void save(const QString& path, bool overwrite = true) const;

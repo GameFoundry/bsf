@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "CmD3D9HLSLParamParser.h"
 #include "CmD3D9HLSLProgramRTTI.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	//-----------------------------------------------------------------------
 	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
@@ -237,7 +237,7 @@ namespace CamelotEngine {
 
 		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 
-		RenderSystem* rs = CamelotEngine::RenderSystem::instancePtr();
+		RenderSystem* rs = CamelotFramework::RenderSystem::instancePtr();
 		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile);
     }
 	//-----------------------------------------------------------------------

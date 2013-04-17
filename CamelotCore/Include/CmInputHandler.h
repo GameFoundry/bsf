@@ -4,7 +4,7 @@
 #include <boost/signal.hpp>
 #include "CmPoint.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	enum KeyCode
 	{

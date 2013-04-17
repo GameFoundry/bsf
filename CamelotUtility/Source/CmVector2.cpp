@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmVector2.h"
 #include "CmMath.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     const Vector2 Vector2::ZERO( 0, 0);
 

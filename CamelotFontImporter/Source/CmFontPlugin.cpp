@@ -1,7 +1,7 @@
 #include "CmFontPrerequisites.h"
 #include "CmFontImporter.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	extern "C" CM_FONT_EXPORT const String& getPluginName()
 	{

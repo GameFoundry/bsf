@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmGLSupport.h"
 #include "CmTextureManager.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     /** GL-specific implementation of a TextureManager */
     class CM_RSGL_EXPORT GLTextureManager : public TextureManager
     {

@@ -1,7 +1,7 @@
 #include "CmLog.h"
 #include "boost/signal.hpp"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	LogEntry::LogEntry(const String& msg, const String& level)
 		:mMsg(msg), mChannel(level)

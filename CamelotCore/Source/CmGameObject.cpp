@@ -1,7 +1,7 @@
 #include "CmGameObject.h"
 #include "CmGameObjectRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	RTTITypeBase* GameObject::getRTTIStatic()
 	{

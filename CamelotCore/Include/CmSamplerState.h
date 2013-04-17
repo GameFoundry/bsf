@@ -9,7 +9,7 @@
 #include "CmColor.h"
 #include "CmResource.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	struct CM_EXPORT SAMPLER_STATE_DESC
 	{

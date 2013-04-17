@@ -4,7 +4,7 @@
 #include "CmRTTIField.h"
 #include "CmManagedDataBlock.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct RTTIManagedDataBlockFieldBase : public RTTIField
 	{

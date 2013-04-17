@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmVertexDeclaration.h"
 #include "CmD3D9Resource.h"
 
-namespace CamelotEngine { 
+namespace CamelotFramework { 
 
     /** Specialisation of VertexDeclaration for D3D9 */
     class CM_D3D9_EXPORT D3D9VertexDeclaration : public VertexDeclaration, public D3D9Resource

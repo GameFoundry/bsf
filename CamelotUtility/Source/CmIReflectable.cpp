@@ -2,7 +2,7 @@
 #include "CmRTTIType.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void IReflectable::registerDerivedClass(RTTITypeBase* derivedClass)
 	{

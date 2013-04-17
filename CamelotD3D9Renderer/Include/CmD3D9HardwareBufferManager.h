@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmD3D9Prerequisites.h"
 #include "CmHardwareBufferManager.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     /** Implementation of HardwareBufferManager for D3D9. */
     class CM_D3D9_EXPORT D3D9HardwareBufferManager : public HardwareBufferManager

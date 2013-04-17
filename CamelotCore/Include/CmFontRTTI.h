@@ -6,7 +6,7 @@
 #include "CmFontManager.h"
 #include "CmTexture.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT FontDataRTTI : public RTTIType<FontData, Resource, FontDataRTTI>
 	{

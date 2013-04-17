@@ -2,7 +2,7 @@
 
 #include "CmMemoryAllocator.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Allocator used for various GUI elements.

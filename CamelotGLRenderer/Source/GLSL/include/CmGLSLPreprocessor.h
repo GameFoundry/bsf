@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 /**
  * This is a simplistic C/C++-like preprocessor.
@@ -520,6 +520,6 @@ public:
     void *ErrorData;
 };
 
-} // namespace CamelotEngine
+} // namespace CamelotFramework
 
-#endif // __OGRE_CPREPROCESSOR_H__
+#endif 

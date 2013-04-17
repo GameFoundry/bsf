@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	VertexData::VertexData(HardwareBufferManager* mgr)
 		:mOwnsDeclaration(true)

@@ -9,7 +9,7 @@
 #include "CmVector3.h"
 #include "CmVector4.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	FBXImporter::FBXImporter()
 		:SpecificImporter() 

@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	template <class T>
 	inline void hash_combine(std::size_t& seed, const T& v)

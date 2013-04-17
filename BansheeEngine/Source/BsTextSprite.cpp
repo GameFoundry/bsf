@@ -6,7 +6,7 @@
 #include "CmVector2.h"
 #include "CmMath.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmD3D9Prerequisites.h"
 #include "CmPixelBuffer.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	class D3D9Texture;
 	class D3D9RenderTexture;

@@ -7,7 +7,7 @@
 #include "CmPixelData.h"
 #include "CmPixelUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void Debug::logDebug(std::string msg)
 	{

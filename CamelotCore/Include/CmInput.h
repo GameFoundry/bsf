@@ -5,7 +5,7 @@
 #include "CmRect.h"
 #include "CmInputHandler.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT Input : public Module<Input>
 	{

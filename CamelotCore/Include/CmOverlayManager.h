@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Takes care which overlay gets rendered on which camera.

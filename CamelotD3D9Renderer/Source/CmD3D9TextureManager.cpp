@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmD3D9RenderSystem.h"
 #include "CmD3D9MultiRenderTexture.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	D3D9TextureManager::D3D9TextureManager()
 		:TextureManager()

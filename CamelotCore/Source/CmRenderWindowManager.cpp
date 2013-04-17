@@ -1,6 +1,6 @@
 #include "CmRenderWindowManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	RenderWindowPtr RenderWindowManager::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{

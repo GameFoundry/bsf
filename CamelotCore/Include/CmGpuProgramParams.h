@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmRenderOperation.h"
 #include "CmSamplerState.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	/** \addtogroup Core
 	*  @{

@@ -4,7 +4,7 @@
 #include "CmModule.h"
 #include "CmRenderSystemFactory.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	typedef std::shared_ptr<RenderSystemFactory> RenderSystemFactoryPtr;
 

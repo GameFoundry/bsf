@@ -1,6 +1,6 @@
 #pragma once
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	* @brief	Helper method when serializing known data types that have valid

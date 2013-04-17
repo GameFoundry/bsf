@@ -2,7 +2,7 @@
 #include "BsGUIMaterialManager.h"
 #include "CmVector2.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

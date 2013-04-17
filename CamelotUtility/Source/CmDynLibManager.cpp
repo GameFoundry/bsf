@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "CmDynLibManager.h"
 #include "CmDynLib.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
     //-----------------------------------------------------------------------
 	DynLibManager::DynLibManager()

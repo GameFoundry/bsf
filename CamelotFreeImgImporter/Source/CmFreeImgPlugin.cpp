@@ -1,7 +1,7 @@
 #include "CmFreeImgPrerequisites.h"
 #include "CmFreeImgImporter.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	extern "C" CM_FREEIMG_EXPORT const String& getPluginName()
 	{

@@ -6,7 +6,7 @@
 #include "CmRenderer.h"
 #include "CmTechniqueRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	Technique::Technique(const String& renderSystem, const String& renderer)
 		:mRenderSystem(renderSystem), mRenderer(renderer)

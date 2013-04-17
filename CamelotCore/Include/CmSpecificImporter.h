@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Abstract class that is to be specialized in converting

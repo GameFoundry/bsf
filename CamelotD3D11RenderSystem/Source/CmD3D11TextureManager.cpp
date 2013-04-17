@@ -5,7 +5,7 @@
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11MultiRenderTexture.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11TextureManager::D3D11TextureManager() 
 		:TextureManager()

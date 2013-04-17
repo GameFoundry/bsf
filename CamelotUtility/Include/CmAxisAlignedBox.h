@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmVector3.h"
 #include "CmMatrix4.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 	/** \addtogroup Core
 	*  @{
 	*/
@@ -808,6 +808,6 @@ namespace CamelotEngine {
 
 	/** @} */
 	/** @} */
-} // namespace CamelotEngine
+} // namespace CamelotFramework
 
 #endif

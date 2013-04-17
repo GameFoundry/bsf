@@ -40,7 +40,7 @@ namespace CamelotEditor
 		INT32 dockParentId;
 	};
 
-	class EditorPrefs : public CamelotEngine::Module<EditorPrefs>
+	class EditorPrefs : public CamelotFramework::Module<EditorPrefs>
 	{
 	public:
 		UINT32 getNumRecentlyUsedProjects() const;

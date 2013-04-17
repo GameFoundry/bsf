@@ -5,7 +5,7 @@
 #include "CmRenderSystemManager.h"
 #include "CmGLRenderSystem.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	const std::string SystemName = "GLRenderSystem";
 

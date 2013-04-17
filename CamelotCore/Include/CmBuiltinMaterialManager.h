@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	Provides access to various materials that are required for core engine systems. 

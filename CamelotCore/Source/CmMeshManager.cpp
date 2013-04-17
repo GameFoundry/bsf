@@ -2,7 +2,7 @@
 #include "CmVector3.h"
 #include "CmMesh.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	MeshManager::MeshManager()
 	{

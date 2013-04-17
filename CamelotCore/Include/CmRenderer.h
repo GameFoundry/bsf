@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmGameObject.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class Renderer
 	{

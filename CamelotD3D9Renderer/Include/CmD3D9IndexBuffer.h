@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmIndexBuffer.h"
 #include "CmD3D9Resource.h"
 
-namespace CamelotEngine { 
+namespace CamelotFramework { 
 
 
     class CM_D3D9_EXPORT D3D9IndexBuffer : public IndexBuffer, public D3D9Resource

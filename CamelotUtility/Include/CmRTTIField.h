@@ -12,7 +12,7 @@
 #include "CmManagedDataBlock.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class RTTITypeBase;
 	struct RTTIField;

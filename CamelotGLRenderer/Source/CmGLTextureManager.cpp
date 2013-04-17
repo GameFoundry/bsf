@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLRenderTexture.h"
 #include "CmGLMultiRenderTexture.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     //-----------------------------------------------------------------------------
     GLTextureManager::GLTextureManager(GLSupport& support)
         :TextureManager(), mGLSupport(support), mWarningTextureID(0)
@@ -99,7 +99,7 @@ namespace CamelotEngine {
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)
 	{
 		// Adjust requested parameters to capabilities
-        const RenderSystemCapabilities *caps = CamelotEngine::RenderSystem::instancePtr()->getCapabilities();
+        const RenderSystemCapabilities *caps = CamelotFramework::RenderSystem::instancePtr()->getCapabilities();
 
 		// Check compressed texture support
 		// if a compressed format not supported, revert to PF_A8R8G8B8

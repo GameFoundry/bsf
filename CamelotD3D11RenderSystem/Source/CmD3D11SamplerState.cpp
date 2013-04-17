@@ -3,7 +3,7 @@
 #include "CmD3D11Device.h"
 #include "CmD3D11Mappings.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D11SamplerState::D3D11SamplerState()
 		:mSamplerState(nullptr)

@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmSpecificImporter.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT GpuProgramImporter : public SpecificImporter
 	{

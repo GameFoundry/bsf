@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmWindowEventUtilities.h"
 #include "CmD3D9DeviceManager.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
         : RenderWindow(desc), mInstance(instance), mIsDepthBuffered(true)  
@@ -542,7 +542,7 @@ namespace CamelotEngine
 			// 16-bit depth, software stencil
 			presentParams->AutoDepthStencilFormat	= D3DFMT_D16;
 
-		D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
+		D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
 
 		rsys->determineFSAASettings(mDevice->getD3D9Device(),
 			mFSAA, mFSAAHint, presentParams->BackBufferFormat, mIsFullScreen, 

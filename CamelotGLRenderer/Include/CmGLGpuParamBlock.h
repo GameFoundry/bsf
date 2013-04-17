@@ -4,7 +4,7 @@
 #include "CmGpuParamBlock.h"
 #include "CmCommonEnums.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_RSGL_EXPORT GLGpuParamBlockBuffer : public GpuParamBlockBuffer
 	{

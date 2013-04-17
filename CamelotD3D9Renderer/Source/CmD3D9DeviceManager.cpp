@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmD3D9DriverList.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	//---------------------------------------------------------------------
 	D3D9DeviceManager::D3D9DeviceManager()
@@ -62,7 +62,7 @@ namespace CamelotEngine
 		{
 			mActiveDevice = device;
 
-			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
+			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
 			D3D9DriverList*		driverList	 = renderSystem->getDirect3DDrivers();
 
 			// Update the active driver member.
@@ -148,7 +148,7 @@ namespace CamelotEngine
 	//---------------------------------------------------------------------
 	D3D9Device* D3D9DeviceManager::selectDevice(D3D9RenderWindow* renderWindow, D3D9RenderWindowList& renderWindowsGroup)
 	{
-		D3D9RenderSystem*		renderSystem	 = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());
+		D3D9RenderSystem*		renderSystem	 = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
 		D3D9Device*				renderDevice	 = NULL;	
 		IDirect3D9*				direct3D9	     = D3D9RenderSystem::getDirect3D9();
 		UINT					nAdapterOrdinal  = D3DADAPTER_DEFAULT;
@@ -234,7 +234,7 @@ namespace CamelotEngine
 	//-----------------------------------------------------------------------
 	D3D9Driver* D3D9DeviceManager::findDriver(D3D9RenderWindow* renderWindow)
 	{
-		D3D9RenderSystem*		renderSystem	 = static_cast<D3D9RenderSystem*>(CamelotEngine::RenderSystem::instancePtr());		
+		D3D9RenderSystem*		renderSystem	 = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());		
 		IDirect3D9*				direct3D9	     = D3D9RenderSystem::getDirect3D9();
 		UINT					nAdapterOrdinal  = D3DADAPTER_DEFAULT;						
 		HMONITOR				hRenderWindowMonitor = NULL;			

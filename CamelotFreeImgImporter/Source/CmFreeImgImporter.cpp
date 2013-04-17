@@ -22,7 +22,7 @@
 #endif
 #endif
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void FreeImageLoadErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) 
 	{

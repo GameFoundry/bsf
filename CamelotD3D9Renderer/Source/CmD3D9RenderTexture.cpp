@@ -4,7 +4,7 @@
 #include "CmD3D9RenderSystem.h"
 #include "CmTextureView.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	D3D9RenderTexture::D3D9RenderTexture()
 		:mDX9ColorSurface(nullptr), mDX9DepthStencilSurface(nullptr)

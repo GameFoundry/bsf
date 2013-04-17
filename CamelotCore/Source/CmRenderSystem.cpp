@@ -49,7 +49,7 @@ THE SOFTWARE.
 #define THROW_IF_NOT_RENDER_THREAD 
 #endif
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     static const TexturePtr sNullTexPtr;
 

@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmD3D9RenderSystem.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	/**
 	* This is a class that is the DirectX9 implementation of 

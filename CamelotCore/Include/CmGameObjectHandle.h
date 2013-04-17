@@ -1,6 +1,6 @@
 #pragma once
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct CM_EXPORT GameObjectHandleData
 	{

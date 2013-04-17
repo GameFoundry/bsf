@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "CmGLContext.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     // Empty base class
     GLContext::GLContext():
         initialized(false) {
@@ -47,7 +47,7 @@ namespace CamelotEngine {
 // declared in CmGLPrerequisites.h 
 GLEWContext * glewGetContext()
 {
-	using namespace CamelotEngine;
+	using namespace CamelotFramework;
 	static CM_THREAD_POINTER_VAR(GLEWContext, GLEWContextsPtr);
 
 	GLEWContext * currentGLEWContextsPtr =  CM_THREAD_POINTER_GET(GLEWContextsPtr);

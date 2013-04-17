@@ -2,7 +2,7 @@
 #include "BsForwardRendererFactory.h"
 #include "CmRendererManager.h"
 
-using namespace CamelotEngine;
+using namespace CamelotFramework;
 
 namespace BansheeEngine
 {

@@ -1,7 +1,7 @@
 #include "CmFontImportOptions.h"
 #include "CmFontImportOptionsRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	FontImportOptions::FontImportOptions()
 		:mDPI(96)

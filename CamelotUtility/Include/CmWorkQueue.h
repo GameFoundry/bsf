@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "boost/any.hpp"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/** \addtogroup Core
 	*  @{

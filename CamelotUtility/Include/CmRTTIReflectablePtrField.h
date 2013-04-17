@@ -4,7 +4,7 @@
 #include "CmRTTIField.h"
 #include "CmIReflectable.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	struct RTTIReflectablePtrFieldBase : public RTTIField
 	{

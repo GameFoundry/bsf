@@ -4,7 +4,7 @@
 #include "CmRasterizerState.h"
 #include "CmBlendState.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	SamplerStatePtr RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc) const
 	{

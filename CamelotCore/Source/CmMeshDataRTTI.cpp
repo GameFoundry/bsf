@@ -1,6 +1,6 @@
 #include "CmMeshDataRTTI.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void MeshDataRTTI::onSerializationStarted(IReflectable* obj)
 	{

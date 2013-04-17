@@ -18,7 +18,7 @@
 #    define CM_FREEIMG_EXPORT
 #endif
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class TextureData;
 	typedef std::shared_ptr<TextureData> TextureDataPtr;

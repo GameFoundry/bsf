@@ -4,7 +4,7 @@
 #include "CmDebug.h"
 #include "CmUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 #if CM_DEBUG_MODE
 	CommandQueue::CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)

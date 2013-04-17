@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include <CmGLPrerequisites.h>
 
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     // Forward declarations
     class Win32GLSupport;
     class Win32Window;

@@ -2,7 +2,7 @@
 #include "CmRenderer.h"
 #include "CmException.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	void RendererManager::setActive(const String& name)
 	{

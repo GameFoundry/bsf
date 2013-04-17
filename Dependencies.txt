@@ -5,9 +5,9 @@ Camelot relies on the following 3rd party libraries:
     - http://developer.nvidia.com/cg-toolkit
 
 Place dependency files in:
- - Library include files in (CamelotRootDir)/Dependencies/Include
- - Static library files in (CamelotRootDir)/Dependencies/lib/(Platform)/(Configuration)
- - Dynamic library files in (CamelotRootDir)/bin/(Platform)/(Configuration)
+ - Library include files in (BansheeRootDir)/Dependencies/Include
+ - Static library files in (BansheeRootDir)/Dependencies/lib/(Platform)/(Configuration)
+ - Dynamic library files in (BansheeRootDir)/bin/(Platform)/(Configuration)
 
 ----------------------------------------------------------------------------------
 
@@ -28,13 +28,13 @@ CamelotFontImporter (optional) relies on:
     in provided Visual Studio projects, which can cause a headache.
 
 Place plug-in specific dependency files in:
- - Library include files in (CamelotRootDir)/(PluginDir)/Dependencies/Include
- - Static library files in (CamelotRootDir)/(PluginDir)/Dependencies/lib/(Platform)/(Configuration)
- - Dynamic library files in (CamelotRootDir)/bin/(Platform)/(Configuration)
+ - Library include files in (BansheeRootDir)/(PluginDir)/Dependencies/Include
+ - Static library files in (BansheeRootDir)/(PluginDir)/Dependencies/lib/(Platform)/(Configuration)
+ - Dynamic library files in (BansheeRootDir)/bin/(Platform)/(Configuration)
 
  ----------------------------------------------------------------------------------
 
- Camelot editor dependencies:
+ Banshee editor dependencies:
   - Qt Toolkit
     - http://qt-project.org/downloads
 
@@ -46,15 +46,15 @@ Qt setup instructions:
  3. Add Qt libraries to CamelotEditor/Dependencies/lib/Debug, CamelotEditor/Dependencies/lib/Release, CamelotEditor/Dependencies/lib/x64/Debug and CamelotEditor/Dependencies/lib/x64/Release
    - You may download pre-compiled 32bit versions of the libraries for some compilers from the Qt web
    - For other cases you will need to compile them yourself
- 4. Add dynamic Qt libraries in (CamelotRootDir)/bin/(Platform)/(Configuration)
+ 4. Add dynamic Qt libraries in (BansheeRootDir)/bin/(Platform)/(Configuration)
  5. Only some Qt libraries are used, so you don't need to add them all. We use:
    - Qt5Core
    - Qt5Gui
    - Qt5Widgets
  6. Add Qt platform plugins:
-   - copy qtbase/plugins/platform/ contents from compiled Qt binaries to (CamelotRootDir)/bin/(Platform)/(Configuration)/qtplugins/platform/
+   - copy qtbase/plugins/platform/ contents from compiled Qt binaries to (BansheeRootDir)/bin/(Platform)/(Configuration)/qtplugins/platform/
      - this folder contains platform-specific libraries (e.g. qwindows.dll for Windows)
-   - Create conf.qt file in (CamelotRootDir)/bin/(Platform)/(Configuration) containing:
+   - Create conf.qt file in (BansheeRootDir)/bin/(Platform)/(Configuration) containing:
       [Paths]
       Plugins = qtplugins
 
@@ -88,14 +88,14 @@ Compiling Qt using MSVC2012 compiler:
   2. Example command line for preprocessing a single file: 
     "$(QTDIR)\bin\moc.exe"  ".\Include\CmQtEditor.h" -o ".\GeneratedFiles\moc_CmQtEditor.cpp"  
 	-DUNICODE -DWIN32 -DQT_NO_KEYWORDS -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include"
-	"-I.\..\CamelotRenderer\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"
+	"-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"
   3. (Optional step) With Visual Studio you can set up a custom build set so this is done automatically
   4. (Optional step) Qt also provides a Visual Studio Add-In that handles MOC for your, although it is currently very buggy with VS2012 so I do not use it.
 
  ----------------------------------------------------------------------------------
 
  Legend:
-  (CamelotRootDir) - Path to CamelotEngine folder
+  (BansheeRootDir) - Path to BansheeEngine folder
   (Platform) - Platform you're compiling for, e.g. Win32, x64, etc.
              - In some cases 32bit platforms don't reside in their own platform folder, in which case ignore this field
   (Configuration) - Debug, Release, etc.

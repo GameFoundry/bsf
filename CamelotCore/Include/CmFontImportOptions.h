@@ -4,7 +4,7 @@
 #include "CmImportOptions.h"
 #include "CmFont.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT FontImportOptions : public ImportOptions
 	{

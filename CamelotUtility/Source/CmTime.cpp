@@ -1,7 +1,7 @@
 #include "CmTime.h"
 #include "CmTimer.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	const double Time::MICROSEC_TO_SEC = 1.0/1000000.0;
 

@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT Technique : public IReflectable
 	{

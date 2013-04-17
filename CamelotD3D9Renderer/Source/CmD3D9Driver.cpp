@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmD3D9VideoModeList.h"
 #include "CmD3D9VideoMode.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {   
 	D3D9Driver::D3D9Driver()
 	{						

@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmRenderWindow.h"
 #include "CmD3D9Device.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	class CM_D3D9_EXPORT D3D9RenderWindow : public RenderWindow
 	{

@@ -1,7 +1,7 @@
 #include "CmGpuBufferView.h"
 #include "CmUtil.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	size_t GpuBufferView::HashFunction::operator()(const GPU_BUFFER_DESC& key) const
 	{

@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "boost/signal.hpp"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	/**
 	 * @brief	A single log entry, usually used in QtLogModel as

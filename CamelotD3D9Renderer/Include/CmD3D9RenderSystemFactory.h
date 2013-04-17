@@ -5,7 +5,7 @@
 #include "CmRenderSystemManager.h"
 #include "CmD3D9RenderSystem.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	const std::string SystemName = "D3D9RenderSystem";
 

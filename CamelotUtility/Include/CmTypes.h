@@ -2,7 +2,7 @@
 
 #include "CmPlatform.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	typedef char INT8;
 	typedef unsigned char UINT8;

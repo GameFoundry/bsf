@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmHardwareBuffer.h"
 #include "CmIndexBuffer.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	class CM_D3D9_EXPORT D3D9Mappings
 	{

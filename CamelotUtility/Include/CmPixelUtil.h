@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmPrerequisitesUtil.h"
 #include "CmPixelData.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
     /**
      * Some utility functions for packing and unpacking pixel data
      */

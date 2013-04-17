@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmVertexBuffer.h"
 #include "CmD3D9Resource.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
     /// Specialisation of HardwareVertexBuffer for D3D9
     class CM_D3D9_EXPORT D3D9VertexBuffer : public VertexBuffer, public D3D9Resource

@@ -37,7 +37,7 @@ THE SOFTWARE.
 #include "CmVector4.h"
 #include "CmException.h"
 
-namespace CamelotEngine {
+namespace CamelotFramework {
 
 	//-----------------------------------------------------------------------
 	const String StringUtil::BLANK;
@@ -75,9 +75,9 @@ namespace CamelotEngine {
     }
 
     //-----------------------------------------------------------------------
-    std::vector<CamelotEngine::String> StringUtil::split( const String& str, const String& delims, unsigned int maxSplits)
+    std::vector<CamelotFramework::String> StringUtil::split( const String& str, const String& delims, unsigned int maxSplits)
     {
-        std::vector<CamelotEngine::String> ret;
+        std::vector<CamelotFramework::String> ret;
         // Pre-allocate some space for performance
         ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
 
@@ -117,9 +117,9 @@ namespace CamelotEngine {
         return ret;
     }
 	//-----------------------------------------------------------------------
-	std::vector<CamelotEngine::String> StringUtil::tokenise( const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
+	std::vector<CamelotFramework::String> StringUtil::tokenise( const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
 	{
-        std::vector<CamelotEngine::String> ret;
+        std::vector<CamelotFramework::String> ret;
         // Pre-allocate some space for performance
         ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
 
@@ -265,11 +265,11 @@ namespace CamelotEngine {
 
     }
 	//-----------------------------------------------------------------------
-	void StringUtil::splitBaseFilename(const CamelotEngine::String& fullName, 
-		CamelotEngine::String& outBasename, CamelotEngine::String& outExtention)
+	void StringUtil::splitBaseFilename(const CamelotFramework::String& fullName, 
+		CamelotFramework::String& outBasename, CamelotFramework::String& outExtention)
 	{
 		size_t i = fullName.find_last_of(".");
-		if (i == CamelotEngine::String::npos)
+		if (i == CamelotFramework::String::npos)
 		{
 			outExtention.clear();
 			outBasename = fullName;
@@ -281,10 +281,10 @@ namespace CamelotEngine {
 		}
 	}
 	// ----------------------------------------------------------------------------------------------------------------------------------------------
-	void StringUtil::splitFullFilename(	const CamelotEngine::String& qualifiedName, 
-		CamelotEngine::String& outBasename, CamelotEngine::String& outExtention, CamelotEngine::String& outPath )
+	void StringUtil::splitFullFilename(	const CamelotFramework::String& qualifiedName, 
+		CamelotFramework::String& outBasename, CamelotFramework::String& outExtention, CamelotFramework::String& outPath )
 	{
-		CamelotEngine::String fullName;
+		CamelotFramework::String fullName;
 		splitFilename( qualifiedName, fullName, outPath );
 		splitBaseFilename( fullName, outBasename, outExtention );
 	}
@@ -595,10 +595,10 @@ namespace CamelotEngine {
 		return stream.str();
 	}
 	//-----------------------------------------------------------------------
-	String toString(const std::vector<CamelotEngine::String>& val)
+	String toString(const std::vector<CamelotFramework::String>& val)
 	{
 		stringstream stream;
-		std::vector<CamelotEngine::String>::const_iterator i, iend, ibegin;
+		std::vector<CamelotFramework::String>::const_iterator i, iend, ibegin;
 		ibegin = val.begin();
 		iend = val.end();
 		for (i = ibegin; i != iend; ++i)
@@ -673,7 +673,7 @@ namespace CamelotEngine {
 			return defaultValue;
 	}
 	//-----------------------------------------------------------------------
-	std::vector<CamelotEngine::String> parseStringVector(const String& val)
+	std::vector<CamelotFramework::String> parseStringVector(const String& val)
 	{
 		return StringUtil::split(val);
 	}

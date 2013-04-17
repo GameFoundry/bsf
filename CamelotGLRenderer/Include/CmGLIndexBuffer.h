@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmIndexBuffer.h"
 
-namespace CamelotEngine { 
+namespace CamelotFramework { 
 
 
     class CM_RSGL_EXPORT GLIndexBuffer : public IndexBuffer

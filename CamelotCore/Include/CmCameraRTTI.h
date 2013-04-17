@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmComponent.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	class CM_EXPORT CameraRTTI : public RTTIType<Camera, Component, CameraRTTI>
 	{

@@ -43,7 +43,7 @@ THE SOFTWARE.
 
 #include "CmGLSLProgramRTTI.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	//-----------------------------------------------------------------------
 	GLSLProgram::GLSLProgram(const String& source, const String& entryPoint, const String& language, 

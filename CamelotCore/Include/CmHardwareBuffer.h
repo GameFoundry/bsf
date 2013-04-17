@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
 
-namespace CamelotEngine 
+namespace CamelotFramework 
 {
 	/** \addtogroup Core
 	*  @{

@@ -1,6 +1,6 @@
 #include "CmGpuProgInclude.h"
 
-namespace CamelotEngine
+namespace CamelotFramework
 {
 	GpuProgInclude::GpuProgInclude(const String& includeString)
 		:Resource(false), mString(includeString)
