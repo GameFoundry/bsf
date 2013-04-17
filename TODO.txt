@@ -1,6 +1,18 @@
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------
+
+BansheeEngine refactor:
+ - Move built-in materials and their managers to BansheeEngine
+ - Move Camera class
+ - Move Overlay & OverlayManager
+ - Move Renderable
+ - Extend SceneManager so it works without knowing about Camera/Renderable
+ - Remove all mentioned classes from CmPrerequisites (including Ptrs, and handles from GameObject.h)
+ - Rename CamelotEngine -> CamelotFramework
+ - Rename main folder to BansheeEngine
+ - I'm temporarily not deleting GUISkin in TestTextSprite because of an issue with CM_DELETE and namespaces. Figure that out
+
 Immediate TODO:
  - Issue with rendering same object from multiple cameras:
    - Material parameters should be copied after being submitted to the render context

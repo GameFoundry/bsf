@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 		virtual void render(const CM::Camera* camera, CM::DeferredRenderContextPtr& renderContext) const;
 	protected:
-		friend class SceneObject;
+		friend class CM::SceneObject;
 		friend class GUIElement;
 
 		GUIWidget(const CM::HSceneObject& parent);

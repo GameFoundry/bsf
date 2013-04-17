@@ -13,6 +13,18 @@ namespace CamelotEngine
 
 namespace CamelotEngine
 {
+	struct START_UP_DESC
+	{
+		String renderSystem;
+		String renderer;
+
+		String input;
+
+		std::vector<String> importers;
+
+		String resourceCacheDirectory;
+	};
+
 	class CM_EXPORT Application
 	{
 		public:
@@ -22,7 +34,7 @@ namespace CamelotEngine
 			 * @brief	Starts the application using the specified options. 
 			 * 			This is how you start the engine.
 			 */
-			void startUp(const String& renderSystemDll, const String& rendererDll);
+			void startUp(const START_UP_DESC& desc);
 
 			/**
 			 * @brief	Executes the main loop. This will cause actually rendering to be performed

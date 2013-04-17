@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsPrerequisites.h" />
     <ClInclude Include="Include\BsGUIElement.h" />
     <ClInclude Include="Include\BsGUIElementStyle.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Include\BsTextSprite.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsApplication.cpp" />
     <ClCompile Include="Source\BsGUIElement.cpp" />
     <ClCompile Include="Source\BsGUILabel.cpp" />
     <ClCompile Include="Source\BsGUIManager.cpp" />

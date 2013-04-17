@@ -5,7 +5,7 @@
 
 namespace CamelotEngine
 {
-	const std::string SystemName = "ForwardRenderer";
+	const std::string SystemName = "CamelotForwardRenderer";
 
 	class CM_FWDRND_EXPORT ForwardRendererFactory : public RendererFactory
 	{

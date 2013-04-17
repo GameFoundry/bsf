@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <windows.h>
 
+#include "BsApplication.h"
 #include "CmApplication.h"
 #include "CmDynLibManager.h"
 
@@ -33,6 +34,7 @@
 
 using namespace CamelotEngine;
 using namespace CamelotEditor;
+using namespace BansheeEngine;
 
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
@@ -42,11 +44,11 @@ int CALLBACK WinMain(
 	)
 {
 #ifdef DX11
-	gApplication().startUp("CamelotD3D11RenderSystem", "CamelotForwardRenderer");
+	gBansheeApp().startUp("CamelotD3D11RenderSystem", "CamelotForwardRenderer", "D:\\CamelotResourceMetas");
 #elif defined DX9
-	gApplication().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer");
+	gBansheeApp().startUp("CamelotD3D9RenderSystem", "CamelotForwardRenderer", "D:\\CamelotResourceMetas");
 #else
-	gApplication().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer");
+	gBansheeApp().startUp("CamelotGLRenderSystem", "CamelotForwardRenderer", "D:\\CamelotResourceMetas");
 #endif
 
 	//CommandQueue::addBreakpoint(1, 11);
@@ -68,8 +70,8 @@ int CALLBACK WinMain(
 	HSceneObject testModelGO = SceneObject::create("TestMesh");
 	HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
-	//HSceneObject testTextGO = SceneObject::create("TestText");
-	//GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
+	HSceneObject testTextGO = SceneObject::create("TestText");
+	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
 	HFont font;
 	
@@ -87,7 +89,7 @@ int CALLBACK WinMain(
 		font = Importer::instance().import("C:\\arial.ttf", fontImportOptions);
 	}
 
-	//textSprite->setText(camera, "Testing in a new row, does this work?", font, 12);
+	textSprite->setText(camera, "Testing in a new row, does this work?", font, 12);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
@@ -279,7 +281,7 @@ int CALLBACK WinMain(
 	
 	EditorWindow* newWindow = new EditorWindow("Test window", font, 12);
 
-	gApplication().runMainLoop();
+	gBansheeApp().runMainLoop();
 
 	// Release everything before shutdown
 	
@@ -319,7 +321,7 @@ int CALLBACK WinMain(
 	
 	renderWindow = nullptr;
 	
-	gApplication().shutDown();
+	gBansheeApp().shutDown();
 
 	return 0;
 }

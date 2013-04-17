@@ -6,7 +6,7 @@ namespace CamelotEngine
 	class TestTextSprite : public BansheeEngine::GUIWidget
 	{
 	protected:
-		friend class SceneObject;
+		friend class CM::SceneObject;
 
 		TestTextSprite(const HSceneObject& parent);
 

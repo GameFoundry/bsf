@@ -42,22 +42,22 @@ namespace CamelotEngine
 		:mPrimaryRenderWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false)
 	{ }
 
-	void Application::startUp(const String& renderSystemName, const String& rendererName)
+	void Application::startUp(const START_UP_DESC& desc)
 	{
 		Time::startUp(CM_NEW(Time, GenAlloc) Time());
 		Input::startUp(CM_NEW(Input, GenAlloc) Input());
 		DynLibManager::startUp(CM_NEW(DynLibManager, GenAlloc) DynLibManager());
 		CoreGpuObjectManager::startUp(CM_NEW(CoreGpuObjectManager, GenAlloc) CoreGpuObjectManager());
-		Resources::startUp(CM_NEW(Resources, GenAlloc) Resources("D:\\CamelotResourceMetas"));
+		Resources::startUp(CM_NEW(Resources, GenAlloc) Resources(desc.resourceCacheDirectory));
 		HighLevelGpuProgramManager::startUp(CM_NEW(HighLevelGpuProgramManager, GenAlloc) HighLevelGpuProgramManager());
 
 		RenderSystemManager::startUp(CM_NEW(RenderSystemManager, GenAlloc) RenderSystemManager());
-		RenderSystemManager::instance().setActive(renderSystemName);
+		RenderSystemManager::instance().setActive(desc.renderSystem);
 
 		RendererManager::startUp(CM_NEW(RendererManager, GenAlloc) RendererManager());
 
-		loadPlugin(rendererName);
-		RendererManager::instance().setActive("ForwardRenderer");
+		loadPlugin(desc.renderer);
+		RendererManager::instance().setActive(desc.renderer);
 
 		RenderSystem* renderSystem = RenderSystem::instancePtr();
 
@@ -85,11 +85,11 @@ namespace CamelotEngine
 
 
 		Importer::startUp(CM_NEW(Importer, GenAlloc) Importer());
-		loadPlugin("CamelotFreeImgImporter"); // TODO - Load this automatically somehow
-		loadPlugin("CamelotFBXImporter"); // TODO - Load this automatically somehow
-		loadPlugin("CamelotFontImporter"); // TODO - Load this automatically somehow
 
-		loadPlugin("CamelotOISInput"); // TODO - Load this automatically somehow
+		for(auto& importerName : desc.importers)
+			loadPlugin(importerName);
+
+		loadPlugin(desc.input);
 	}
 
 	void Application::runMainLoop()

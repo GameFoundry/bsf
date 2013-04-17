@@ -86,10 +86,11 @@ namespace BansheeEngine
 
 			i++;
 		}
+	}
 
-		if(!released)
-		{
-			LOGWRN("Trying to release a material that doesn't exist in the GUI Manager. Material ID: " + toString(material->getInternalID()));
-		}
+	void GUIMaterialManager::forceReleaseAllMaterials()
+	{
+		mTextMaterials.clear();
+		mImageMaterials.clear();
 	}
 }

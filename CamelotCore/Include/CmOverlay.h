@@ -20,7 +20,7 @@ namespace CamelotEngine
 		virtual void update() {}
 
 	protected:
-		friend class SceneObject;
+		friend class CamelotEngine::SceneObject;
 
 		Overlay(const HSceneObject& parent);
 	};

@@ -37,6 +37,8 @@ namespace BansheeEngine
 		 * 			and their textures when they are no longer being used.
 		 */
 		void releaseMaterial(const CM::HMaterial& material) const;
+
+		void forceReleaseAllMaterials();
 	private:
 		struct GUIMaterial
 		{

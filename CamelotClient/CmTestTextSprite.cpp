@@ -21,10 +21,8 @@ namespace CamelotEngine
 
 	TestTextSprite::~TestTextSprite()
 	{
-
-		// TODO - temporarily not deleting this
-		//if(mSkin != nullptr)
-		//	CM_DELETE(mSkin, GUISkin, PoolAlloc);
+		if(mSkin != nullptr)
+			CM_DELETE(mSkin, GUISkin, PoolAlloc);
 	}
 
 	void TestTextSprite::setText(const HCamera& camera, const String& text, HFont font, UINT32 fontSize)

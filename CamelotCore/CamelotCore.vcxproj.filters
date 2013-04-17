@@ -443,9 +443,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CamelotRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
