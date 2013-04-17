@@ -31,8 +31,6 @@ THE SOFTWARE.
 #include "CmGLPixelFormat.h"
 #include "CmGLPixelBuffer.h"
 
-//#include "CmTextureManager.h"
-#include "CmCamera.h"
 #include "CmException.h"
 #include "CmBitwise.h"
 #include "CmTextureManager.h"

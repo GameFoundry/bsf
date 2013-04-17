@@ -29,6 +29,4 @@ namespace CamelotFramework
 	typedef GameObjectHandle<GameObject> HGameObject;
 	typedef GameObjectHandle<SceneObject> HSceneObject;
 	typedef GameObjectHandle<Component> HComponent;
-	typedef GameObjectHandle<Camera> HCamera;
-	typedef GameObjectHandle<Renderable> HRenderable;
 }

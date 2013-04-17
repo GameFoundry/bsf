@@ -1,8 +1,8 @@
 #include "BsForwardRenderer.h"
-#include "CmCamera.h"
+#include "BsCamera.h"
 #include "BsSceneManager.h"
 #include "CmDeferredRenderContext.h"
-#include "CmRenderable.h"
+#include "BsRenderable.h"
 #include "CmMaterial.h"
 #include "CmMesh.h"
 #include "CmPass.h"
@@ -12,7 +12,7 @@
 #include "CmApplication.h"
 #include "CmViewport.h"
 #include "CmRenderTarget.h"
-#include "CmOverlayManager.h"
+#include "BsOverlayManager.h"
 
 using namespace CamelotFramework;
 

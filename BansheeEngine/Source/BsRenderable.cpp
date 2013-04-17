@@ -1,7 +1,9 @@
-#include "CmRenderable.h"
-#include "CmRenderableRTTI.h"
+#include "BsRenderable.h"
+#include "BsRenderableRTTI.h"
 
-namespace CamelotFramework
+using namespace CamelotFramework;
+
+namespace BansheeEngine
 {
 	Renderable::Renderable(const HSceneObject& parent)
 		:Component(parent)

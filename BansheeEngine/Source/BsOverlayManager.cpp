@@ -1,8 +1,10 @@
-#include "CmOverlayManager.h"
-#include "CmCamera.h"
-#include "CmOverlay.h"
+#include "BsOverlayManager.h"
+#include "BsCamera.h"
+#include "BsOverlay.h"
 
-namespace CamelotFramework
+using namespace CamelotFramework;
+
+namespace BansheeEngine
 {
 	void OverlayManager::render(const Camera* camera, DeferredRenderContextPtr& renderContext) const
 	{

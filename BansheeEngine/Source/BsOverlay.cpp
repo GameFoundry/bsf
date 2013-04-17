@@ -1,7 +1,9 @@
-#include "CmOverlay.h"
-#include "CmOverlayManager.h"
+#include "BsOverlay.h"
+#include "BsOverlayManager.h"
 
-namespace CamelotFramework
+using namespace CamelotFramework;
+
+namespace BansheeEngine
 {
 	Overlay::Overlay(const HSceneObject& parent)
 		:Component(parent)

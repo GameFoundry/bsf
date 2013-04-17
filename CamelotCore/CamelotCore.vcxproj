@@ -181,12 +181,9 @@
     <ClInclude Include="Include\CmGameObjectRTTI.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
     <ClInclude Include="Include\CmMemAllocCategories.h" />
-    <ClInclude Include="Include\CmOverlay.h" />
     <ClInclude Include="Include\CmApplication.h" />
     <ClInclude Include="Include\CmBlendStateRTTI.h" />
     <ClInclude Include="Include\CmBuiltinMaterialManager.h" />
-    <ClInclude Include="Include\CmCamera.h" />
-    <ClInclude Include="Include\CmCameraRTTI.h" />
     <ClInclude Include="Include\CmCgProgram.h" />
     <ClInclude Include="Include\CmCgProgramFactory.h" />
     <ClInclude Include="Include\CmCgProgramRTTI.h" />
@@ -225,7 +222,6 @@
     <ClInclude Include="Include\CmMaterialManager.h" />
     <ClInclude Include="Include\CmMeshManager.h" />
     <ClInclude Include="Include\CmOcclusionQuery.h" />
-    <ClInclude Include="Include\CmOverlayManager.h" />
     <ClInclude Include="Include\CmPixelBuffer.h" />
     <ClInclude Include="Include\CmGpuProgIncludeImporter.h" />
     <ClInclude Include="Include\CmTextureView.h" />
@@ -247,8 +243,6 @@
     <ClInclude Include="Include\CmPrerequisites.h" />
     <ClInclude Include="Include\CmRasterizerState.h" />
     <ClInclude Include="Include\CmRasterizerStateRTTI.h" />
-    <ClInclude Include="Include\CmRenderable.h" />
-    <ClInclude Include="Include\CmRenderableRTTI.h" />
     <ClInclude Include="Include\CmRenderer.h" />
     <ClInclude Include="Include\CmRendererFactory.h" />
     <ClInclude Include="Include\CmRendererManager.h" />
@@ -298,10 +292,8 @@
     <ClCompile Include="Source\CmBuiltinMaterialManager.cpp" />
     <ClCompile Include="Source\CmGameObjectHandle.cpp" />
     <ClCompile Include="Source\CmGameObject.cpp" />
-    <ClCompile Include="Source\CmOverlay.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />
     <ClCompile Include="Source\CmBlendState.cpp" />
-    <ClCompile Include="Source\CmCamera.cpp" />
     <ClCompile Include="Source\CmCgProgram.cpp" />
     <ClCompile Include="Source\CmCgProgramFactory.cpp" />
     <ClCompile Include="Source\CmCommandQueue.cpp" />
@@ -329,7 +321,6 @@
     <ClCompile Include="Source\CmMeshDataRTTI.cpp" />
     <ClCompile Include="Source\CmMeshManager.cpp" />
     <ClCompile Include="Source\CmOcclusionQuery.cpp" />
-    <ClCompile Include="Source\CmOverlayManager.cpp" />
     <ClCompile Include="Source\CmPixelBuffer.cpp" />
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
@@ -345,7 +336,6 @@
     <ClCompile Include="Source\CmMultiRenderTexture.cpp" />
     <ClCompile Include="Source\CmPass.cpp" />
     <ClCompile Include="Source\CmRasterizerState.cpp" />
-    <ClCompile Include="Source\CmRenderable.cpp" />
     <ClCompile Include="Source\CmRendererManager.cpp" />
     <ClCompile Include="Source\CmRenderSystem.cpp" />
     <ClCompile Include="Source\CmRenderSystemCapabilities.cpp" />

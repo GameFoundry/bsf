@@ -85,21 +85,12 @@
     <Filter Include="Source Files\Text">
       <UniqueIdentifier>{96b913ee-4ffb-4c60-9aa9-a51e0faf8060}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\2D">
-      <UniqueIdentifier>{2d09c863-07a9-4226-a55d-6c5c03d70ac8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\2D">
-      <UniqueIdentifier>{500c1648-85c9-4410-86e3-c16d102b4347}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmWindowEventUtilities.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmApplication.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmViewport.h">
@@ -214,15 +205,6 @@
       <Filter>Header Files\Input</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmComponentRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmCameraRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmRenderable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmRenderableRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmTechnique.h">
@@ -414,12 +396,6 @@
     <ClInclude Include="Include\CmFontImportOptionsRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmOverlay.h">
-      <Filter>Header Files\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmOverlayManager.h">
-      <Filter>Header Files\2D</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmMemAllocCategories.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -444,9 +420,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmViewport.cpp">
@@ -529,9 +502,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmInput.cpp">
       <Filter>Source Files\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmRenderable.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmPass.cpp">
       <Filter>Source Files\Material</Filter>
@@ -661,12 +631,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmMeshDataRTTI.cpp">
       <Filter>Source Files\RTTI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmOverlay.cpp">
-      <Filter>Source Files\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmOverlayManager.cpp">
-      <Filter>Source Files\2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGameObjectHandle.cpp">
       <Filter>Source Files\Scene</Filter>

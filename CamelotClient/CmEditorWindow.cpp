@@ -5,14 +5,15 @@
 #include "BsGUIWidget.h"
 #include "BsGUILabel.h"
 #include "BsGUISkin.h"
-#include "CmOverlayManager.h"
-#include "CmCamera.h"
+#include "BsOverlayManager.h"
+#include "BsCamera.h"
 
 using namespace CamelotFramework;
+using namespace BansheeEngine;
 
 namespace CamelotEditor
 {
-	EditorWindow::EditorWindow(const String& name, const HFont& dbgFont, UINT32 dbgFontSize)
+	EditorWindow::EditorWindow(const String& name, const HFont& dbgFont, CM::UINT32 dbgFontSize)
 	{
 		RENDER_WINDOW_DESC renderWindowDesc;
 		renderWindowDesc.width = 200;

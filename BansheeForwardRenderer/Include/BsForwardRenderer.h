@@ -14,7 +14,7 @@ namespace BansheeEngine
 		virtual const CM::String& getName() const;
 
 		virtual void renderAll();
-		virtual void render(const CM::HCamera& camera);
+		virtual void render(const HCamera& camera);
 
 	protected:
 		CM::RenderCommandBuffer* mCommandBuffer;

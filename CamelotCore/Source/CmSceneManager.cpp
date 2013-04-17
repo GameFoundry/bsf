@@ -1,8 +1,6 @@
 #include "CmSceneManager.h"
 #include "CmSceneObject.h"
 #include "CmComponent.h"
-#include "CmCamera.h"
-#include "CmRenderable.h"
 
 namespace CamelotFramework
 {

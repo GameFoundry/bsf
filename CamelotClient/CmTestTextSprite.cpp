@@ -1,6 +1,6 @@
 #include "CmTestTextSprite.h"
 #include "CmSceneObject.h"
-#include "CmRenderable.h"
+#include "BsRenderable.h"
 #include "CmMesh.h"
 #include "CmVector2.h"
 #include "BsTextSprite.h"
@@ -8,7 +8,7 @@
 #include "CmMaterial.h"
 #include "BsGUILabel.h"
 #include "BsGUISkin.h"
-#include "CmOverlayManager.h"
+#include "BsOverlayManager.h"
 
 using namespace BansheeEngine;
 

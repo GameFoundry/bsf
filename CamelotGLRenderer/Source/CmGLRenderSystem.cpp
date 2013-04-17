@@ -29,7 +29,6 @@ THE SOFTWARE.s
 
 #include "CmGLRenderSystem.h"
 #include "CmRenderSystem.h"
-#include "CmCamera.h"
 #include "CmGLTextureManager.h"
 #include "CmGLVertexBuffer.h"
 #include "CmGLIndexBuffer.h"

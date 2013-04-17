@@ -53,11 +53,28 @@ namespace BansheeEngine
 	// 2D
 	class TextSprite;
 	class SpriteTexture;
+	class OverlayManager;
+
+	// Components
+	class Overlay;
+	class Renderable;
+	class Camera;
 
 	typedef std::shared_ptr<TextSprite> TextSpritePtr;
 	typedef std::shared_ptr<SpriteTexture> SpriteTexturePtr;
+	typedef std::shared_ptr<Overlay> OverlayPtr;
+	typedef std::shared_ptr<Camera> CameraPtr;
+	typedef std::shared_ptr<Renderable> RenderablePtr;
 
 	typedef CM::GameObjectHandle<GUIWidget> HGUIWidget;
+	typedef CM::GameObjectHandle<Camera> HCamera;
+	typedef CM::GameObjectHandle<Renderable> HRenderable;
+
+	enum TypeID_Banshe
+	{
+		TID_Camera = 30000,
+		TID_Renderable = 30001
+	};
 }
 
 namespace BS = BansheeEngine;

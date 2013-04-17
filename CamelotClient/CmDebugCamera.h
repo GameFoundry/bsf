@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include "CmComponent.h"
 #include "CmInputHandler.h"
 #include "CmMath.h"
@@ -22,7 +22,7 @@ namespace CamelotFramework
 		Degree mPitch;
 		Degree mYaw;
 
-		HCamera mCamera;
+		BS::HCamera mCamera;
 
 		void keyDown(CamelotFramework::KeyCode keyCode);
 		void keyUp(CamelotFramework::KeyCode keyCode);

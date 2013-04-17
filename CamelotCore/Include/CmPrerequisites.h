@@ -91,7 +91,6 @@ namespace CamelotFramework {
 // Pre-declare classes
 // Allows use of pointers in header files without including individual .h
 // so decreases dependencies between files
-    class Camera;
     class Color;
     class GpuProgram;
     class GpuProgramManager;
@@ -123,7 +122,6 @@ namespace CamelotFramework {
     class VertexDeclaration;
 	class Input;
 	class InputHandler;
-	class Renderable;
 	class Renderer;
 	class RendererFactory;
 	class RenderCommandBuffer;
@@ -163,9 +161,6 @@ namespace CamelotFramework {
 	class SceneObject;
 	class Component;
 	class SceneManager;
-	// 2D
-	class Overlay;
-	class OverlayManager;
 	// RTTI
 	class MeshRTTI;
 	// Desc structs
@@ -194,8 +189,6 @@ namespace CamelotFramework
 	typedef std::shared_ptr<Mesh> MeshPtr;
 	typedef std::shared_ptr<Texture> TexturePtr;
 	typedef std::shared_ptr<Resource> ResourcePtr;
-	typedef std::shared_ptr<Camera> CameraPtr;
-	typedef std::shared_ptr<Renderable> RenderablePtr;
 	typedef std::shared_ptr<Technique> TechniquePtr;
 	typedef std::shared_ptr<Pass> PassPtr;
 	typedef std::shared_ptr<Shader> ShaderPtr;
@@ -223,7 +216,6 @@ namespace CamelotFramework
 	typedef std::shared_ptr<ImportOptions> ImportOptionsPtr;
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
-	typedef std::shared_ptr<Overlay> OverlayPtr;
 	typedef std::shared_ptr<InputHandler> InputHandlerPtr;
 }
 
@@ -240,8 +232,6 @@ namespace CamelotFramework
 		TID_VertexDeclaration = 1004,
 		TID_VertexElementData = 1005,
 		TID_Component = 1006,
-		TID_Camera = 1007,
-		TID_Renderable = 1008,
 		TID_ResourceHandle = 1009,
 		TID_GpuProgram = 1010,
 		TID_ResourceHandleData = 1011,

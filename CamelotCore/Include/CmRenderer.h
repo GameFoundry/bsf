@@ -17,7 +17,8 @@ namespace CamelotFramework
 
 		/**
 		 * @brief	 Renders the scene from the perspective of a single camera
+		 * 			 // TODO - Temporarily disabled since I moved Camera out of Camelot
 		 */
-		virtual void render(const HCamera& camera) = 0;
+		//virtual void render(const HCamera& camera) = 0;
 	};
 }

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define __Camera_H__
 
 // Default options
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 
 #include "CmString.h"
 
@@ -46,7 +46,7 @@ THE SOFTWARE.
 #include "CmRay.h"
 #include "CmComponent.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	/** Specifies perspective (realistic) or orthographic (architectural) projection.
     */
@@ -103,14 +103,14 @@ namespace CamelotFramework {
             This is useful for implementing more complex Camera / object
             relationships i.e. having a camera attached to a world object.
     */
-    class CM_EXPORT Camera : public Component
+    class BS_EXPORT Camera : public CM::Component
     {
 	protected:
         /// Orthographic or perspective?
         ProjectionType mProjType;
 
         /// y-direction field-of-view (default 45)
-        Radian mFOVy;
+        CM::Radian mFOVy;
         /// Far clip distance - default 10000
         float mFarDist;
         /// Near clip distance - default 100
@@ -120,25 +120,25 @@ namespace CamelotFramework {
 		/// Ortho height size (world units)
 		float mOrthoHeight;
         /// Off-axis frustum center offset - default (0.0, 0.0)
-        Vector2 mFrustumOffset;
+        CM::Vector2 mFrustumOffset;
         /// Focal length of frustum (for stereo rendering, defaults to 1.0)
         float mFocalLength;
 
         /// The 6 main clipping planes
-        mutable Plane mFrustumPlanes[6];
+        mutable CM::Plane mFrustumPlanes[6];
 
         /// Stored versions of parent orientation / position
-        mutable Quaternion mLastParentOrientation;
-        mutable Vector3 mLastParentPosition;
+        mutable CM::Quaternion mLastParentOrientation;
+        mutable CM::Vector3 mLastParentPosition;
 
         /// Pre-calced projection matrix for the specific render system
-        mutable Matrix4 mProjMatrixRS;
+        mutable CM::Matrix4 mProjMatrixRS;
         /// Pre-calced standard projection matrix but with render system depth range
-        mutable Matrix4 mProjMatrixRSDepth;
+        mutable CM::Matrix4 mProjMatrixRSDepth;
         /// Pre-calced standard projection matrix
-        mutable Matrix4 mProjMatrix;
+        mutable CM::Matrix4 mProjMatrix;
         /// Pre-calced view matrix
-        mutable Matrix4 mViewMatrix;
+        mutable CM::Matrix4 mViewMatrix;
         /// Something's changed in the frustum shape?
         mutable bool mRecalcFrustum;
         /// Something re the frustum planes has changed
@@ -173,9 +173,9 @@ namespace CamelotFramework {
         /// Signal to update frustum information.
         virtual void invalidateFrustum(void) const;
 
-        mutable AxisAlignedBox mBoundingBox;
+        mutable CM::AxisAlignedBox mBoundingBox;
 
-        mutable Vector3 mWorldSpaceCorners[8];
+        mutable CM::Vector3 mWorldSpaceCorners[8];
 
     public:
         /** Sets the Y-dimension Field Of View (FOV) of the frustum.
@@ -190,11 +190,11 @@ namespace CamelotFramework {
             @note
                 Setting the FOV overrides the value supplied for frustum::setNearClipPlane.
          */
-        virtual void setFOVy(const Radian& fovy);
+        virtual void setFOVy(const CM::Radian& fovy);
 
         /** Retrieves the frustums Y-dimension Field Of View (FOV).
         */
-        virtual const Radian& getFOVy(void) const;
+        virtual const CM::Radian& getFOVy(void) const;
 
         /** Sets the position of the near clipping plane.
             @remarks
@@ -264,7 +264,7 @@ namespace CamelotFramework {
             @param
                 offset The horizontal and vertical plane offsets.
         */
-        virtual void setFrustumOffset(const Vector2& offset);
+        virtual void setFrustumOffset(const CM::Vector2& offset);
 
         /** Sets frustum offsets, used in stereo rendering.
             @remarks
@@ -283,7 +283,7 @@ namespace CamelotFramework {
 
         /** Retrieves the frustum offsets.
         */
-        virtual const Vector2& getFrustumOffset() const;
+        virtual const CM::Vector2& getFrustumOffset() const;
 
         /** Sets frustum focal length (used in stereo rendering).
             @param
@@ -315,7 +315,7 @@ namespace CamelotFramework {
             getProjectionMatrix.
 
         */
-        virtual const Matrix4& getProjectionMatrixRS(void) const;
+        virtual const CM::Matrix4& getProjectionMatrixRS(void) const;
         /** Gets the depth-adjusted projection matrix for the current rendersystem,
 			but one which still conforms to right-hand rules.
         @remarks
@@ -327,7 +327,7 @@ namespace CamelotFramework {
             GL uses [-1,1], and the range must be kept the same between programmable
             and fixed-function pipelines.
         */
-        virtual const Matrix4& getProjectionMatrixWithRSDepth(void) const;
+        virtual const CM::Matrix4& getProjectionMatrixWithRSDepth(void) const;
         /** Gets the normal projection matrix for this frustum, ie the 
         projection matrix which conforms to standard right-handed rules and
         uses depth range [-1,+1].
@@ -337,11 +337,11 @@ namespace CamelotFramework {
             range [-1,+1], result no matter what rendering API is being used - this
             is required for some uniform algebra for example.
         */
-        virtual const Matrix4& getProjectionMatrix(void) const;
+        virtual const CM::Matrix4& getProjectionMatrix(void) const;
 
         /** Gets the view matrix for this frustum. Mainly for use by OGRE internally.
         */
-        virtual const Matrix4& getViewMatrix(void) const;
+        virtual const CM::Matrix4& getViewMatrix(void) const;
 
 		/** Set whether to use a custom view matrix on this frustum.
 		@remarks
@@ -361,7 +361,7 @@ namespace CamelotFramework {
 		@see Frustum::setCustomProjectionMatrix, Matrix4::isAffine
 		*/
 		virtual void setCustomViewMatrix(bool enable, 
-			const Matrix4& viewMatrix = Matrix4::IDENTITY);
+			const CM::Matrix4& viewMatrix = CM::Matrix4::IDENTITY);
 		/// Returns whether a custom view matrix is in use
 		virtual bool isCustomViewMatrixEnabled(void) const 
 		{ return mCustomViewMatrix; }
@@ -386,7 +386,7 @@ namespace CamelotFramework {
 		@see Frustum::setCustomViewMatrix
 		*/
 		virtual void setCustomProjectionMatrix(bool enable, 
-			const Matrix4& projectionMatrix = Matrix4::IDENTITY);
+			const CM::Matrix4& projectionMatrix = CM::Matrix4::IDENTITY);
 		/// Returns whether a custom projection matrix is in use
 		virtual bool isCustomProjectionMatrixEnabled(void) const
 		{ return mCustomProjMatrix; }
@@ -395,13 +395,13 @@ namespace CamelotFramework {
         @remarks
             The clipping planes are ordered as declared in enumerate constants FrustumPlane.
         */
-        virtual const Plane* getFrustumPlanes(void) const;
+        virtual const CM::Plane* getFrustumPlanes(void) const;
 
         /** Retrieves a specified plane of the frustum (world space).
             @remarks
                 Gets a reference to one of the planes which make up the frustum frustum, e.g. for clipping purposes.
         */
-        virtual const Plane& getFrustumPlane( unsigned short plane ) const;
+        virtual const CM::Plane& getFrustumPlane( unsigned short plane ) const;
 
         /** Tests whether the given container is visible in the Frustum.
             @param
@@ -414,7 +414,7 @@ namespace CamelotFramework {
             @par
                 Otherwise, false is returned.
         */
-        virtual bool isVisible(const AxisAlignedBox& bound, FrustumPlane* culledBy = 0) const;
+        virtual bool isVisible(const CM::AxisAlignedBox& bound, FrustumPlane* culledBy = 0) const;
 
         /** Tests whether the given container is visible in the Frustum.
             @param
@@ -427,7 +427,7 @@ namespace CamelotFramework {
             @par
                 Otherwise, false is returned.
         */
-        virtual bool isVisible(const Sphere& bound, FrustumPlane* culledBy = 0) const;
+        virtual bool isVisible(const CM::Sphere& bound, FrustumPlane* culledBy = 0) const;
 
         /** Tests whether the given vertex is visible in the Frustum.
             @param
@@ -440,10 +440,10 @@ namespace CamelotFramework {
             @par
                 Otherwise, false is returned.
         */
-        virtual bool isVisible(const Vector3& vert, FrustumPlane* culledBy = 0) const;
+        virtual bool isVisible(const CM::Vector3& vert, FrustumPlane* culledBy = 0) const;
 
         /** Overridden from MovableObject */
-        const AxisAlignedBox& getBoundingBox(void) const;
+        const CM::AxisAlignedBox& getBoundingBox(void) const;
 
         /** Overridden from MovableObject */
 		float getBoundingRadius(void) const;
@@ -454,7 +454,7 @@ namespace CamelotFramework {
             top-left near, bottom-left near, bottom-right near, 
             top-right far, top-left far, bottom-left far, bottom-right far.
         */
-        virtual const Vector3* getWorldSpaceCorners(void) const;
+        virtual const CM::Vector3* getWorldSpaceCorners(void) const;
 
         /** Sets the type of projection to use (orthographic or perspective). Default is perspective.
         */
@@ -499,35 +499,35 @@ namespace CamelotFramework {
         @returns true if the sphere was projected to a subset of the near plane,
             false if the entire near plane was contained
         */
-        virtual bool projectSphere(const Sphere& sphere, 
+        virtual bool projectSphere(const CM::Sphere& sphere, 
             float* left, float* top, float* right, float* bottom) const;
 
         /// Small constant used to reduce far plane projection to avoid inaccuracies
         static const float INFINITE_FAR_PLANE_ADJUST;
     protected:
-		ViewportPtr mViewport;
+		CM::ViewportPtr mViewport;
 
     public:
         /** Standard destructor.
         */
         virtual ~Camera();
 
-		void init(RenderTargetPtr target = nullptr,
+		void init(CM::RenderTargetPtr target = nullptr,
 			float left = 0.0f, float top = 0.0f,
 			float width = 1.0f, float height = 1.0f,
 			int ZOrder = 0);
 
-		ViewportPtr getViewport() const { return mViewport; }
+		CM::ViewportPtr getViewport() const { return mViewport; }
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
 		/************************************************************************/
 	protected:
-		friend class SceneObject;
+		friend class CM::SceneObject;
 
 		/** Standard constructor.
         */
-		Camera(const HSceneObject& parent);
+		Camera(const CM::HSceneObject& parent);
 
 	public:
 		virtual void update() {}
@@ -537,8 +537,8 @@ namespace CamelotFramework {
 		/************************************************************************/
 	public:
 		friend class CameraRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		static CM::RTTITypeBase* getRTTIStatic();
+		virtual CM::RTTITypeBase* getRTTI() const;
 
 	protected:
 		Camera() {} // Serialization only

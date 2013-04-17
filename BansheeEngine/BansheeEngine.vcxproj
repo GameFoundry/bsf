@@ -162,6 +162,12 @@
     <ClInclude Include="Include\BsSprite.h" />
     <ClInclude Include="Include\BsSpriteTexture.h" />
     <ClInclude Include="Include\BsTextSprite.h" />
+    <ClInclude Include="Include\BsCamera.h" />
+    <ClInclude Include="Include\BsCameraRTTI.h" />
+    <ClInclude Include="Include\BsOverlay.h" />
+    <ClInclude Include="Include\BsOverlayManager.h" />
+    <ClInclude Include="Include\BsRenderable.h" />
+    <ClInclude Include="Include\BsRenderableRTTI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />
@@ -176,6 +182,10 @@
     <ClCompile Include="Source\BsSprite.cpp" />
     <ClCompile Include="Source\BsSpriteTexture.cpp" />
     <ClCompile Include="Source\BsTextSprite.cpp" />
+    <ClCompile Include="Source\BsCamera.cpp" />
+    <ClCompile Include="Source\BsOverlay.cpp" />
+    <ClCompile Include="Source\BsOverlayManager.cpp" />
+    <ClCompile Include="Source\BsRenderable.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

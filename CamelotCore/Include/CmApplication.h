@@ -7,7 +7,6 @@ namespace CamelotFramework
 {
 	class RenderWindow;
 	class Viewport;
-	class Camera;
 	class HighLevelGpuProgramManager;
 }
 

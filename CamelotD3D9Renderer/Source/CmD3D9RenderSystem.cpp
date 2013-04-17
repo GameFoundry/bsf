@@ -35,7 +35,6 @@ THE SOFTWARE.
 #include "CmD3D9TextureManager.h"
 #include "CmD3D9Texture.h"
 #include "CmMath.h"
-#include "CmCamera.h"
 #include "CmD3D9HardwareBufferManager.h"
 #include "CmD3D9IndexBuffer.h"
 #include "CmD3D9VertexBuffer.h"

@@ -2,8 +2,8 @@
 #include "CmComponent.h"
 #include "CmException.h"
 #include "CmSceneObject.h"
-#include "CmRenderable.h"
-#include "CmCamera.h"
+#include "BsRenderable.h"
+#include "BsCamera.h"
 
 using namespace CamelotFramework;
 

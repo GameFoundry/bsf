@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include "CmModule.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Takes care which overlay gets rendered on which camera.
@@ -13,15 +13,15 @@ namespace CamelotFramework
 	 * 
 	 * @see Overlay
 	 */
-	class CM_EXPORT OverlayManager : public Module<OverlayManager>
+	class BS_EXPORT OverlayManager : public CM::Module<OverlayManager>
 	{
 	public:
-		void render(const Camera* camera, DeferredRenderContextPtr& renderContext) const;
+		void render(const Camera* camera, CM::DeferredRenderContextPtr& renderContext) const;
 
 		void attachOverlay(const Camera* camera, const Overlay* overlay);
 		void detachOverlay(const Camera* camera, const Overlay* overlay);
 		void detachOverlayFromAll(const Overlay* overlay);
 	private:
-		unordered_map<const Camera*, unordered_set<const Overlay*>::type>::type mOverlaysPerCamera;
+		std::unordered_map<const Camera*, std::unordered_set<const Overlay*>> mOverlaysPerCamera;
 	};
 }

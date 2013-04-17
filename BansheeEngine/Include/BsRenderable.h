@@ -1,32 +1,32 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include "CmComponent.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
-	class CM_EXPORT Renderable : public Component
+	class BS_EXPORT Renderable : public CM::Component
 	{
 	public:
-		void setMesh(HMesh mesh) { mMesh = mesh; }
-		void setMaterial(HMaterial material) { mMaterial = material; }
+		void setMesh(CM::HMesh mesh) { mMesh = mesh; }
+		void setMaterial(CM::HMaterial material) { mMaterial = material; }
 
-		HMesh getMesh() const { return mMesh; }
-		HMaterial getMaterial() const { return mMaterial; }
+		CM::HMesh getMesh() const { return mMesh; }
+		CM::HMaterial getMaterial() const { return mMaterial; }
 	private:
-		HMesh mMesh;
-		HMaterial mMaterial;
+		CM::HMesh mMesh;
+		CM::HMaterial mMaterial;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/
 		/************************************************************************/
 
 	protected:
-		friend class SceneObject;
+		friend class CM::SceneObject;
 
 		/** Standard constructor.
         */
-		Renderable(const HSceneObject& parent);
+		Renderable(const CM::HSceneObject& parent);
 
 	public:
 		virtual void update() {}
@@ -36,8 +36,8 @@ namespace CamelotFramework
 		/************************************************************************/
 	public:
 		friend class RenderableRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		static CM::RTTITypeBase* getRTTIStatic();
+		virtual CM::RTTITypeBase* getRTTI() const;
 
 	protected:
 		Renderable() {} // Serialization only

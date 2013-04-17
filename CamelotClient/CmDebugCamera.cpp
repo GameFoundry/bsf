@@ -4,8 +4,10 @@
 #include "CmTime.h"
 #include "CmMath.h"
 #include "CmSceneObject.h"
-#include "CmCamera.h"
+#include "BsCamera.h"
 #include "CmOSCursor.h"
+
+using namespace BansheeEngine;
 
 namespace CamelotFramework
 {

@@ -1,6 +1,7 @@
 #include "BsApplication.h"
 #include "BsGUIMaterialManager.h"
 #include "BsGUIManager.h"
+#include "BsOverlayManager.h"
 #include "CmApplication.h"
 
 using namespace CamelotFramework;
@@ -27,6 +28,7 @@ namespace BansheeEngine
 
 		CM::gApplication().startUp(desc);
 
+		OverlayManager::startUp(CM_NEW(OverlayManager, GenAlloc) OverlayManager());
 		GUIManager::startUp(CM_NEW(GUIManager, GenAlloc) GUIManager());
 		GUIMaterialManager::startUp(CM_NEW(GUIMaterialManager, GenAlloc) GUIMaterialManager());
 	}
@@ -44,6 +46,7 @@ namespace BansheeEngine
 
 		GUIMaterialManager::shutDown();
 		GUIManager::shutDown();
+		OverlayManager::shutDown();
 	}
 
 	Application& gBansheeApp()

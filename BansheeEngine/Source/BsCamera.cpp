@@ -25,8 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "CmCamera.h"
-#include "CmCameraRTTI.h"
+#include "BsCamera.h"
+#include "BsCameraRTTI.h"
 
 #include "CmMath.h"
 #include "CmMatrix3.h"
@@ -40,7 +40,10 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmSceneObject.h"
 
-namespace CamelotFramework {
+using namespace CamelotFramework;
+
+namespace BansheeEngine 
+{
 	const float Camera::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
     //-----------------------------------------------------------------------

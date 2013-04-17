@@ -6,7 +6,7 @@
 #include "CmMaterial.h"
 #include "CmPass.h"
 #include "CmMesh.h"
-#include "CmCamera.h"
+#include "BsCamera.h"
 #include "CmViewport.h"
 #include "CmSceneObject.h"
 

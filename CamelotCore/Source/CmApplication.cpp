@@ -6,7 +6,6 @@
 #include "CmWindowEventUtilities.h"
 #include "CmHardwareBufferManager.h"
 #include "CmRenderWindow.h"
-#include "CmCamera.h"
 #include "CmViewport.h"
 #include "CmVector2.h"
 #include "CmHighLevelGpuProgram.h"
@@ -27,7 +26,6 @@
 #include "CmFontManager.h"
 #include "CmRenderer.h"
 #include "CmDeferredRenderContext.h"
-#include "CmOverlayManager.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -80,9 +78,6 @@ namespace CamelotFramework
 		MeshManager::startUp(CM_NEW(MeshManager, GenAlloc) MeshManager());
 		MaterialManager::startUp(CM_NEW(MaterialManager, GenAlloc) MaterialManager());
 		FontManager::startUp(CM_NEW(FontManager, GenAlloc) FontManager());
-
-		OverlayManager::startUp(CM_NEW(OverlayManager, GenAlloc) OverlayManager());
-
 
 		Importer::startUp(CM_NEW(Importer, GenAlloc) Importer());
 
@@ -159,7 +154,6 @@ namespace CamelotFramework
 		MeshManager::shutDown();
 
 		SceneManager::shutDown();
-		OverlayManager::shutDown();
 
 		RendererManager::shutDown();
 		RenderSystem::shutDown();

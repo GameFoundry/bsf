@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include "CmComponent.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Overlay components are a special type of components that can be attached directly
@@ -11,17 +11,17 @@ namespace CamelotFramework
 	 * 			components after it has rendered the rest of the scene, so these components are usually 
 	 * 			used for GUI elements and full screen effects.
 	 */
-	class CM_EXPORT Overlay : public Component
+	class BS_EXPORT Overlay : public CM::Component
 	{
 	public:
 		virtual ~Overlay();
 
-		virtual void render(const Camera* camera, DeferredRenderContextPtr& renderContext) const = 0;
+		virtual void render(const Camera* camera, CM::DeferredRenderContextPtr& renderContext) const = 0;
 		virtual void update() {}
 
 	protected:
-		friend class CamelotFramework::SceneObject;
+		friend class CM::SceneObject;
 
-		Overlay(const HSceneObject& parent);
+		Overlay(const CM::HSceneObject& parent);
 	};
 }

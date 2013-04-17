@@ -1,13 +1,13 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmOverlay.h"
+#include "BsOverlay.h"
 #include "BsTextSprite.h"
 #include "CmORect.h"
 
 namespace BansheeEngine
 {
-	class BS_EXPORT GUIWidget : public CM::Overlay
+	class BS_EXPORT GUIWidget : public Overlay
 	{
 	public:
 		virtual ~GUIWidget();
@@ -15,7 +15,7 @@ namespace BansheeEngine
 		void setSkin(const GUISkin* skin);
 		const GUISkin* getGUISkin() const;
 
-		virtual void render(const CM::Camera* camera, CM::DeferredRenderContextPtr& renderContext) const;
+		virtual void render(const Camera* camera, CM::DeferredRenderContextPtr& renderContext) const;
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;
