@@ -123,9 +123,6 @@
     <ClInclude Include="Include\CmGLGpuBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGLBuiltinMaterialManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp">
@@ -216,9 +213,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLGpuBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGLBuiltinMaterialManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

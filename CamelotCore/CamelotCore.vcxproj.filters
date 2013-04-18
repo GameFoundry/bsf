@@ -414,9 +414,6 @@
     <ClInclude Include="Include\CmGameObjectRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmBuiltinMaterialManager.h">
-      <Filter>Header Files\Material</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -640,9 +637,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmGameObject.cpp">
       <Filter>Source Files\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmBuiltinMaterialManager.cpp">
-      <Filter>Source Files\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -111,9 +111,6 @@
     <ClInclude Include="Include\CmD3D9HLSLParamParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D9BuiltinMaterialManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmD3D9Device.cpp">
@@ -201,9 +198,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmD3D9GpuBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmD3D9BuiltinMaterialManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -168,6 +168,10 @@
     <ClInclude Include="Include\BsOverlayManager.h" />
     <ClInclude Include="Include\BsRenderable.h" />
     <ClInclude Include="Include\BsRenderableRTTI.h" />
+    <ClInclude Include="Include\BsBuiltinMaterialManager.h" />
+    <ClInclude Include="Include\BsD3D11BuiltinMaterialFactory.h" />
+    <ClInclude Include="Include\BsD3D9BuiltinMaterialFactory.h" />
+    <ClInclude Include="Include\BsGLBuiltinMaterialFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />
@@ -186,6 +190,10 @@
     <ClCompile Include="Source\BsOverlay.cpp" />
     <ClCompile Include="Source\BsOverlayManager.cpp" />
     <ClCompile Include="Source\BsRenderable.cpp" />
+    <ClCompile Include="Source\BsBuiltinMaterialManager.cpp" />
+    <ClCompile Include="Source\BsD3D11BuiltinMaterialFactory.cpp" />
+    <ClCompile Include="Source\BsD3D9BuiltinMaterialFactory.cpp" />
+    <ClCompile Include="Source\BsGLBuiltinMaterialFactory.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -20,7 +20,6 @@
 #include "CmD3D11GpuParamBlock.h"
 #include "CmD3D11InputLayoutManager.h"
 #include "CmD3D11HLSLProgram.h"
-#include "CmD3D11BuiltinMaterialManager.h"
 #include "CmGpuParams.h"
 #include "CmDebug.h"
 #include "CmException.h"
@@ -133,8 +132,6 @@ namespace CamelotFramework
 
 		mIAManager = CM_NEW(D3D11InputLayoutManager, GenAlloc) D3D11InputLayoutManager();
 
-		BuiltinMaterialManager::startUp(CM_NEW(D3D11BuiltinMaterialManager, GenAlloc) D3D11BuiltinMaterialManager());
-
 		RenderSystem::initialize_internal();
 	}
 
@@ -157,7 +154,6 @@ namespace CamelotFramework
 		mActiveVertexDeclaration = nullptr;
 		mActiveVertexShader = nullptr;
 
-		BuiltinMaterialManager::shutDown();
 		RenderStateManager::shutDown();
 		RenderWindowManager::shutDown();
 		GpuProgramManager::shutDown();

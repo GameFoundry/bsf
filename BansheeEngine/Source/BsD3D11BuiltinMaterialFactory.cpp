@@ -1,4 +1,4 @@
-#include "CmD3D11BuiltinMaterialManager.h"
+#include "BsD3D11BuiltinMaterialFactory.h"
 #include "CmRendererManager.h"
 #include "CmHighLevelGpuProgram.h"
 #include "CmShader.h"
@@ -7,25 +7,40 @@
 #include "CmMaterial.h"
 #include "CmBlendState.h"
 
-namespace CamelotFramework
+using namespace CamelotFramework;
+
+namespace BansheeEngine
 {
-	HMaterial D3D11BuiltinMaterialManager::createSpriteTextMaterial() const
-	{
-		return Material::create(mSpriteTextShader);
-	}
-
-	HMaterial D3D11BuiltinMaterialManager::createSpriteImageMaterial() const
-	{
-		return Material::create(mSpriteImageShader);
-	}
-
-	void D3D11BuiltinMaterialManager::onStartUp()
+	void D3D11BuiltinMaterialFactory::startUp()
 	{
 		initSpriteTextShader();
 		initSpriteImageShader();
 	}
 
-	void D3D11BuiltinMaterialManager::initSpriteTextShader()
+	void D3D11BuiltinMaterialFactory::shutDown()
+	{
+		mSpriteTextShader = nullptr;
+		mSpriteImageShader = nullptr;
+	}
+
+	const CM::String& D3D11BuiltinMaterialFactory::getSupportedRenderSystem() const
+	{
+		static String renderSystem = "CamelotD3D11RenderSystem";
+
+		return renderSystem;
+	}
+
+	HMaterial D3D11BuiltinMaterialFactory::createSpriteTextMaterial() const
+	{
+		return Material::create(mSpriteTextShader);
+	}
+
+	HMaterial D3D11BuiltinMaterialFactory::createSpriteImageMaterial() const
+	{
+		return Material::create(mSpriteImageShader);
+	}
+
+	void D3D11BuiltinMaterialFactory::initSpriteTextShader()
 	{
 		String vsCode = "										\
 			float halfViewportWidth;							\
@@ -87,7 +102,7 @@ namespace CamelotFramework
 		newPass->setBlendState(blendState);
 	}
 
-	void D3D11BuiltinMaterialManager::initSpriteImageShader()
+	void D3D11BuiltinMaterialFactory::initSpriteImageShader()
 	{
 		String vsCode = "										\
 						float halfViewportWidth;							\

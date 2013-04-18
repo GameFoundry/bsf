@@ -2,6 +2,10 @@
 #include "BsGUIMaterialManager.h"
 #include "BsGUIManager.h"
 #include "BsOverlayManager.h"
+#include "BsBuiltinMaterialManager.h"
+#include "BsD3D9BuiltinMaterialFactory.h"
+#include "BsD3D11BuiltinMaterialFactory.h"
+#include "BsGLBuiltinMaterialFactory.h"
 #include "CmApplication.h"
 
 using namespace CamelotFramework;
@@ -26,11 +30,17 @@ namespace BansheeEngine
 		desc.importers.push_back("CamelotFBXImporter");
 		desc.importers.push_back("CamelotFontImporter");
 
-		CM::gApplication().startUp(desc);
-
-		OverlayManager::startUp(CM_NEW(OverlayManager, GenAlloc) OverlayManager());
 		GUIManager::startUp(CM_NEW(GUIManager, GenAlloc) GUIManager());
 		GUIMaterialManager::startUp(CM_NEW(GUIMaterialManager, GenAlloc) GUIMaterialManager());
+		OverlayManager::startUp(CM_NEW(OverlayManager, GenAlloc) OverlayManager());
+
+		CM::gApplication().startUp(desc);
+
+		BuiltinMaterialManager::startUp(CM_NEW(BuiltinMaterialManager, GenAlloc) BuiltinMaterialManager());
+		BuiltinMaterialManager::instance().addFactory(CM_NEW(D3D9BuiltinMaterialFactory, GenAlloc) D3D9BuiltinMaterialFactory());
+		BuiltinMaterialManager::instance().addFactory(CM_NEW(D3D11BuiltinMaterialFactory, GenAlloc) D3D11BuiltinMaterialFactory());
+		BuiltinMaterialManager::instance().addFactory(CM_NEW(GLBuiltinMaterialFactory, GenAlloc) GLBuiltinMaterialFactory());
+		BuiltinMaterialManager::instance().setActive(desc.renderSystem);
 	}
 
 	void Application::runMainLoop()
@@ -42,11 +52,13 @@ namespace BansheeEngine
 	{
 		GUIMaterialManager::instance().forceReleaseAllMaterials();
 
+		BuiltinMaterialManager::shutDown();
+
 		CM::gApplication().shutDown();
 
+		OverlayManager::shutDown();
 		GUIMaterialManager::shutDown();
 		GUIManager::shutDown();
-		OverlayManager::shutDown();
 	}
 
 	Application& gBansheeApp()

@@ -2,9 +2,6 @@
 
 ----------------------------------------------------------------------------------------------
 
-BansheeEngine refactor:
- - Move built-in materials and their managers to BansheeEngine
-
 Immediate TODO:
  - Issue with rendering same object from multiple cameras:
    - Material parameters should be copied after being submitted to the render context
@@ -158,6 +155,7 @@ Optional:
  - Need a way to convert MSAA render texture into a normal render texture
  - Vertex buffer start offset is not supported when calling Draw methods
  - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
+ - Renderer::render(CameraPtr) is currently commented out because I moved Camera out of Camelot and I didn't want to bother figuring how to port this
 
  ----------------------------------------------------------------------------------------------
 After polish and ideas:

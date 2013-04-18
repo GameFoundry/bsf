@@ -1,7 +1,7 @@
 #include "BsGUIMaterialManager.h"
 #include "CmMaterial.h"
 #include "CmDebug.h"
-#include "CmBuiltinMaterialManager.h"
+#include "BsBuiltinMaterialManager.h"
 
 using namespace CamelotFramework;
 

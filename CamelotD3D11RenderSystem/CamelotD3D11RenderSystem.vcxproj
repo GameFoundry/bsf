@@ -151,7 +151,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmD3D11BlendState.h" />
-    <ClInclude Include="Include\CmD3D11BuiltinMaterialManager.h" />
     <ClInclude Include="Include\CmD3D11DepthStencilState.h" />
     <ClInclude Include="Include\CmD3D11GpuBuffer.h" />
     <ClInclude Include="Include\CmD3D11GpuBufferView.h" />
@@ -189,7 +188,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmD3D11BlendState.cpp" />
-    <ClCompile Include="Source\CmD3D11BuiltinMaterialManager.cpp" />
     <ClCompile Include="Source\CmD3D11DepthStencilState.cpp" />
     <ClCompile Include="Source\CmD3D11Device.cpp" />
     <ClCompile Include="Source\CmD3D11Driver.cpp" />

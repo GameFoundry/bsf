@@ -46,7 +46,6 @@ THE SOFTWARE.s
 #include "CmDepthStencilState.h"
 #include "CmGLRenderTexture.h"
 #include "CmGLRenderWindowManager.h"
-#include "CmGLBuiltinMaterialManager.h"
 #include "CmGLSLProgramPipelineManager.h"
 #include "CmRenderStateManager.h"
 #include "CmGpuParams.h"
@@ -146,8 +145,6 @@ namespace CamelotFramework
 
 		RenderStateManager::startUp(CM_NEW(RenderStateManager, GenAlloc) RenderStateManager());
 
-		BuiltinMaterialManager::startUp(CM_NEW(GLBuiltinMaterialManager, GenAlloc) GLBuiltinMaterialManager());
-
 		RenderSystem::initialize_internal();
 	}
 
@@ -191,7 +188,6 @@ namespace CamelotFramework
 		mGLSupport->stop();
 
 		TextureManager::shutDown();
-		BuiltinMaterialManager::shutDown();
 		RenderWindowManager::shutDown();
 		RenderStateManager::shutDown();
 
