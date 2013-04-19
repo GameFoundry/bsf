@@ -52,7 +52,6 @@ namespace CamelotFramework
         /// 32-bit pixel format, 8 bits for blue, 8 bits for green, 8 bits for red
         /// like PF_A8B8G8R8, but alpha will get discarded
         PF_X8B8G8R8 = 27,
-#if CM_ENDIAN == CM_ENDIAN_BIG
 		/// 3 byte pixel format, 1 byte for red, 1 byte for green, 1 byte for blue
 		PF_BYTE_RGB = PF_R8G8B8,
 		/// 3 byte pixel format, 1 byte for blue, 1 byte for green, 1 byte for red
@@ -60,17 +59,7 @@ namespace CamelotFramework
 		/// 4 byte pixel format, 1 byte for blue, 1 byte for green, 1 byte for red and one byte for alpha
 		PF_BYTE_BGRA = PF_B8G8R8A8,
 		/// 4 byte pixel format, 1 byte for red, 1 byte for green, 1 byte for blue, and one byte for alpha
-		PF_BYTE_RGBA = PF_R8G8B8A8,
-#else
-		/// 3 byte pixel format, 1 byte for red, 1 byte for green, 1 byte for blue
-		PF_BYTE_RGB = PF_B8G8R8,
-		/// 3 byte pixel format, 1 byte for blue, 1 byte for green, 1 byte for red
-		PF_BYTE_BGR = PF_R8G8B8,
-		/// 4 byte pixel format, 1 byte for blue, 1 byte for green, 1 byte for red and one byte for alpha
-		PF_BYTE_BGRA = PF_A8R8G8B8,
-		/// 4 byte pixel format, 1 byte for red, 1 byte for green, 1 byte for blue, and one byte for alpha
-		PF_BYTE_RGBA = PF_A8B8G8R8,
-#endif        
+		PF_BYTE_RGBA = PF_R8G8B8A8,      
         /// 32-bit pixel format, 2 bits for alpha, 10 bits for red, green and blue.
         PF_A2R10G10B10 = 15,
         /// 32-bit pixel format, 10 bits for blue, green and red, 2 bits for alpha.

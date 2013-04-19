@@ -450,7 +450,7 @@ namespace CamelotFramework
 		case DXGI_FORMAT_R32G32B32A32_SINT	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_R32G32B32_TYPELESS	:
-			return PF_UNKNOWN;
+			return PF_FLOAT32_RGB;
 		case DXGI_FORMAT_R32G32B32_FLOAT	:
 			return PF_FLOAT32_RGB;
 		case DXGI_FORMAT_R32G32B32_UINT	:
@@ -460,7 +460,7 @@ namespace CamelotFramework
 		case DXGI_FORMAT_R16G16B16A16_TYPELESS	:
 			return PF_FLOAT16_RGBA;
 		case DXGI_FORMAT_R16G16B16A16_FLOAT	:
-			return PF_UNKNOWN;
+			return PF_FLOAT16_RGBA;
 		case DXGI_FORMAT_R16G16B16A16_UNORM	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_R16G16B16A16_UINT	:
@@ -480,7 +480,7 @@ namespace CamelotFramework
 		case DXGI_FORMAT_R32G8X24_TYPELESS	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT	:
-			return PF_UNKNOWN;
+			return PF_D32_S8X24;
 		case DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_X32_TYPELESS_G8X24_UINT	:
@@ -520,7 +520,7 @@ namespace CamelotFramework
 		case DXGI_FORMAT_R32_TYPELESS	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_D32_FLOAT	:
-			return PF_UNKNOWN;
+			return PF_D32;
 		case DXGI_FORMAT_R32_FLOAT	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_R32_UINT	:
@@ -530,7 +530,7 @@ namespace CamelotFramework
 		case DXGI_FORMAT_R24G8_TYPELESS	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_D24_UNORM_S8_UINT	:
-			return PF_UNKNOWN;
+			return PF_D24S8;
 		case DXGI_FORMAT_R24_UNORM_X8_TYPELESS	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_X24_TYPELESS_G8_UINT	:
@@ -538,7 +538,7 @@ namespace CamelotFramework
 		case DXGI_FORMAT_R8G8_TYPELESS	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_R8G8_UNORM	:
-			return PF_UNKNOWN;
+			return PF_R8G8;
 		case DXGI_FORMAT_R8G8_UINT	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_R8G8_SNORM	:
@@ -610,11 +610,11 @@ namespace CamelotFramework
 		case DXGI_FORMAT_BC5_SNORM	:
 			return PF_DXT5;
 		case DXGI_FORMAT_B5G6R5_UNORM	:
-			return PF_DXT5;
+			return PF_UNKNOWN;
 		case DXGI_FORMAT_B5G5R5A1_UNORM	:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_B8G8R8A8_UNORM	:
-			return PF_UNKNOWN;
+			return PF_B8G8R8A8;
 		case DXGI_FORMAT_B8G8R8X8_UNORM	:
 			return PF_UNKNOWN;
 		default:
@@ -649,13 +649,17 @@ namespace CamelotFramework
 		case PF_A8R8G8B8:
 			return DXGI_FORMAT_UNKNOWN;
 		case PF_A8B8G8R8:
-			return DXGI_FORMAT_R8G8B8A8_UNORM;
+			return DXGI_FORMAT_UNKNOWN;
 		case PF_X8R8G8B8:
 			return DXGI_FORMAT_UNKNOWN;
 		case PF_X8B8G8R8:
 			return DXGI_FORMAT_UNKNOWN;
+		case PF_R8G8B8A8:
+			return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case PF_B8G8R8A8:
+			return DXGI_FORMAT_B8G8R8A8_UNORM;
 		case PF_A2B10G10R10:
-			return DXGI_FORMAT_R10G10B10A2_TYPELESS;
+			return DXGI_FORMAT_UNKNOWN;
 		case PF_A2R10G10B10:
 			return DXGI_FORMAT_UNKNOWN;
 		case PF_FLOAT16_R:
@@ -706,7 +710,7 @@ namespace CamelotFramework
 			return PF_FLOAT32_RGBA;
 		case PF_UNKNOWN:
 		default:
-			return PF_A8B8G8R8;
+			return PF_R8G8B8A8;
 		}
 	}
 

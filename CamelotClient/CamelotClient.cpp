@@ -28,9 +28,9 @@
 #include "CmTestTextSprite.h"
 #include "CmEditorWindow.h"
 
-#define DX11
+//#define DX11
 //#define DX9
-//#define GL
+#define GL
 
 using namespace CamelotFramework;
 using namespace CamelotEditor;
@@ -70,8 +70,8 @@ int CALLBACK WinMain(
 	HSceneObject testModelGO = SceneObject::create("TestMesh");
 	HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
-	HSceneObject testTextGO = SceneObject::create("TestText");
-	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
+//	HSceneObject testTextGO = SceneObject::create("TestText");
+//	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
 	HFont font;
 	
@@ -89,7 +89,12 @@ int CALLBACK WinMain(
 		font = Importer::instance().import("C:\\arial.ttf", fontImportOptions);
 	}
 
-	textSprite->setText(camera, "Testing in a new row, does this work?", font, 12);
+//	HTexture windowFrameTex = static_resource_cast<Texture>(Importer::instance().import("C:\\WindowFrameTest.bmp"));
+//	gResources().create(windowFrameTex, "C:\\WindowFrameTest.tex", true);
+
+//	windowFrameTex.waitUntilLoaded();
+
+//	textSprite->init(camera, "Testing in a new row, does this work?", font, 12, windowFrameTex);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
@@ -279,13 +284,13 @@ int CALLBACK WinMain(
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );
 	
-	EditorWindow* newWindow = new EditorWindow("Test window", font, 12);
+	//EditorWindow* newWindow = new EditorWindow("Test window", font, 12);
 
 	gBansheeApp().runMainLoop();
 
 	// Release everything before shutdown
 	
-	delete newWindow;
+	//delete newWindow;
 
 	//testMaterial->destroy();
 #ifdef DX11
@@ -297,6 +302,7 @@ int CALLBACK WinMain(
 	gResources().unload(fragProgRef);
 	gResources().unload(vertProgRef);
 	gResources().unload(testMaterial);
+	//windowFrameTex->destroy();
 
 	font.reset();
 	testMaterial.reset();

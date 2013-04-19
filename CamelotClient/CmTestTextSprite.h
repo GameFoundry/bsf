@@ -16,6 +16,6 @@ namespace CamelotFramework
 
 		virtual void update();
 
-		void setText(const BS::HCamera& camera, const String& text, HFont font, UINT32 fontSize);
+		void init(const BS::HCamera& camera, const String& text, HFont font, UINT32 fontSize, const HTexture& windowFrameTex);
 	};
 }

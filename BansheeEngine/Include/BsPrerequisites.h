@@ -52,6 +52,7 @@ namespace BansheeEngine
 
 	// 2D
 	class TextSprite;
+	class ImageSprite;
 	class SpriteTexture;
 	class OverlayManager;
 

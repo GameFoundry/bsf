@@ -176,5 +176,8 @@
     <ClCompile Include="Source\BsGLBuiltinMaterialFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\BsGUIWindowFrame.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

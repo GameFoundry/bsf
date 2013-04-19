@@ -194,8 +194,6 @@ namespace CamelotFramework {
 		}
 
 		createSurfaceList();
-		// Get final internal format
-		mFormat = getBuffer(0,0)->getFormat();
 	}
 
 	void GLTexture::destroy_internal()

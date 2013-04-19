@@ -7,8 +7,10 @@
 #include "CmFont.h"
 #include "CmMaterial.h"
 #include "BsGUILabel.h"
+#include "BsGUIWindowFrame.h"
 #include "BsGUISkin.h"
 #include "BsOverlayManager.h"
+#include "BsSpriteTexture.h"
 
 using namespace BansheeEngine;
 
@@ -25,7 +27,7 @@ namespace CamelotFramework
 			CM_DELETE(mSkin, GUISkin, PoolAlloc);
 	}
 
-	void TestTextSprite::setText(const HCamera& camera, const String& text, HFont font, UINT32 fontSize)
+	void TestTextSprite::init(const HCamera& camera, const String& text, HFont font, UINT32 fontSize, const HTexture& windowFrameTex)
 	{
 		mSkin = CM_NEW(GUISkin, PoolAlloc) GUISkin();
 
@@ -35,10 +37,13 @@ namespace CamelotFramework
 		labelStyle.font = font;
 		labelStyle.fontSize = fontSize;
 
-		mSkin->setStyle(BansheeEngine::GUILabel::getGUITypeName(), labelStyle);
+		mSkin->setStyle(GUILabel::getGUITypeName(), labelStyle);
 
 		setSkin(mSkin);
-		BansheeEngine::GUILabel::create(this, text, 400, 400, true, THA_Right, TVA_Bottom);
+		GUILabel::create(this, text, 400, 400, true, THA_Right, TVA_Bottom);
+
+		SpriteTexturePtr frameSpriteTex(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(windowFrameTex), &MemAllocDeleter<SpriteTexture, PoolAlloc>::deleter);
+		GUIWindowFrame::create(this, frameSpriteTex);
 	}
 
 	void TestTextSprite::update()

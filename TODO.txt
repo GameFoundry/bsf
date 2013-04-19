@@ -2,6 +2,14 @@
 
 ----------------------------------------------------------------------------------------------
 
+24bit textures don't seem to load properly
+ - Seems DX11 doesn't support 24bit texture format so instead it chooses a 32bit one but 
+   when we write to texture we still assume the format is the original 24bit one. 
+ - After creating the texture I need to update the actual format
+ - And when copying texture data make sure I copy it channel by channel
+32bit textures seem to have some channels flipped
+ 
+
 Immediate TODO:
  - Issue with rendering same object from multiple cameras:
    - Material parameters should be copied after being submitted to the render context

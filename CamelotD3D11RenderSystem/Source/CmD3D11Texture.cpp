@@ -137,6 +137,7 @@ namespace CamelotFramework
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat));
+		mFormat = D3D11Mappings::_getPF(d3dPF);
 
 		D3D11_TEXTURE1D_DESC desc;
 		desc.Width			= static_cast<UINT32>(mWidth);
@@ -220,6 +221,7 @@ namespace CamelotFramework
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat));
+		mFormat = D3D11Mappings::_getPF(d3dPF);
 
 		D3D11_TEXTURE2D_DESC desc;
 		desc.Width			= static_cast<UINT32>(mWidth);
@@ -376,6 +378,7 @@ namespace CamelotFramework
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat));
+		mFormat = D3D11Mappings::_getPF(d3dPF);
 
 		D3D11_TEXTURE3D_DESC desc;
 		desc.Width			= static_cast<UINT32>(mWidth);

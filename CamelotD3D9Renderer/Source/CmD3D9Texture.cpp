@@ -748,12 +748,6 @@ namespace CamelotFramework
 				"Height: " + toString(height) + "/" + toString(mHeight) +
 				"Depth: " + toString(depth) + "/" + toString(mDepth));
 		}
-
-		if(mFormat != format)
-		{
-			CM_EXCEPT(InternalErrorException, "Wanted and created texture format doesn't match: " + 
-				toString(format) + "/" + toString(mFormat));
-		}
 		
 		// Create list of subsurfaces for getBuffer()
 		_createSurfaceList(d3d9Device, textureResources);

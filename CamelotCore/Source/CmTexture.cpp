@@ -104,7 +104,7 @@ namespace CamelotFramework {
 	void Texture::setRawPixels_internal(const PixelData& data, UINT32 face, UINT32 mip)
 	{
 		PixelData myData = lock(GBL_WRITE_ONLY_DISCARD, mip, face);
-		memcpy(myData.data, data.data, data.getConsecutiveSize());
+		PixelUtil::bulkPixelConversion(data, myData);
 		unlock();
 	}
 
@@ -152,7 +152,8 @@ namespace CamelotFramework {
 		}
 #endif
 
-		memcpy(dst->data, myData.data, dst->getConsecutiveSize());
+		PixelUtil::bulkPixelConversion(myData, *dst);
+
 		unlock();
 
 		op.completeOperation(dst);
