@@ -91,8 +91,6 @@ namespace CamelotFramework {
         static bool isDepth(PixelFormat format);
         /** Shortcut method to determine if the format is in native endian format. */
         static bool isNativeEndian(PixelFormat format);
-        /** Shortcut method to determine if the format is a luminance format. */
-        static bool isLuminance(PixelFormat format);
 		
 		/** Return wether a certain image extent is valid for this image format.
 			@param width
@@ -164,17 +162,6 @@ namespace CamelotFramework {
             @returns                A string contains the BNF expression.
         */
         static String getBNFExpressionOfPixelFormats(bool accessibleOnly = false);
-
-        /** Returns the similar format but acoording with given bit depths.
-            @param fmt      The original foamt.
-            @param integerBits Preferred bit depth (pixel bits) for integer pixel format.
-                            Available values: 0, 16 and 32, where 0 (the default) means as it is.
-            @param floatBits Preferred bit depth (channel bits) for float pixel format.
-                            Available values: 0, 16 and 32, where 0 (the default) means as it is.
-            @returns        The format that similar original format with bit depth according
-                            with preferred bit depth, or original format if no convertion occuring.
-        */
-        static PixelFormat getFormatForBitDepths(PixelFormat fmt, UINT16 integerBits, UINT16 floatBits);
 
         /** Pack a colour value to memory
         	@param colour	The colour

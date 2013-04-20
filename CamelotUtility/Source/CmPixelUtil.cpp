@@ -384,127 +384,33 @@ namespace CamelotFramework {
         /* Masks and shifts */
         0, 0, 0, 0, 0, 0, 0, 0
         },
-	//-----------------------------------------------------------------------
-        {"PF_L8",
-        /* Bytes per element */
-        1,
-        /* Flags */
-        PFF_LUMINANCE | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 1,
-        /* rbits, gbits, bbits, abits */
-        8, 0, 0, 0,
-        /* Masks and shifts */
-        0xFF, 0, 0, 0, 0, 0, 0, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_L16",
-        /* Bytes per element */
-        2,
-        /* Flags */
-        PFF_LUMINANCE | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_SHORT, 1,
-        /* rbits, gbits, bbits, abits */
-        16, 0, 0, 0,
-        /* Masks and shifts */
-        0xFFFF, 0, 0, 0, 0, 0, 0, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_A8",
-        /* Bytes per element */
-        1,
-        /* Flags */
-        PFF_HASALPHA | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 1,
-        /* rbits, gbits, bbits, abits */
-        0, 0, 0, 8,
-        /* Masks and shifts */
-        0, 0, 0, 0xFF, 0, 0, 0, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_A4L4",
-        /* Bytes per element */
-        1,
-        /* Flags */
-        PFF_HASALPHA | PFF_LUMINANCE | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 2,
-        /* rbits, gbits, bbits, abits */
-        4, 0, 0, 4,
-        /* Masks and shifts */
-        0x0F, 0, 0, 0xF0, 0, 0, 0, 4
-        },
-	//-----------------------------------------------------------------------
-        {"PF_BYTE_LA",
-        /* Bytes per element */
-        2,
-        /* Flags */
-        PFF_HASALPHA | PFF_LUMINANCE,
-        /* Component type and count */
-        PCT_BYTE, 2,
-        /* rbits, gbits, bbits, abits */
-        8, 0, 0, 8,
-        /* Masks and shifts */
-        0,0,0,0,0,0,0,0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_R5G6B5",
-        /* Bytes per element */
-        2,
-        /* Flags */
-        PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 3,
-        /* rbits, gbits, bbits, abits */
-        5, 6, 5, 0,
-        /* Masks and shifts */
-        0xF800, 0x07E0, 0x001F, 0,
-        11, 5, 0, 0
-        },
-	//-----------------------------------------------------------------------
-		{"PF_B5G6R5",
-        /* Bytes per element */
-        2,
-        /* Flags */
-        PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 3,
-        /* rbits, gbits, bbits, abits */
-        5, 6, 5, 0,
-        /* Masks and shifts */
-        0x001F, 0x07E0, 0xF800, 0,
-        0, 5, 11, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_A4R4G4B4",
-        /* Bytes per element */
-        2,
-        /* Flags */
-        PFF_HASALPHA | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 4,
-        /* rbits, gbits, bbits, abits */
-        4, 4, 4, 4,
-        /* Masks and shifts */
-        0x0F00, 0x00F0, 0x000F, 0xF000,
-        8, 4, 0, 12
-        },
-	//-----------------------------------------------------------------------
-        {"PF_A1R5G5B5",
-        /* Bytes per element */
-        2,
-        /* Flags */
-        PFF_HASALPHA | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 4,
-        /* rbits, gbits, bbits, abits */
-        5, 5, 5, 1,
-        /* Masks and shifts */
-        0x7C00, 0x03E0, 0x001F, 0x8000,
-        10, 5, 0, 15,
-        },
+		//-----------------------------------------------------------------------
+		{"PF_R8",
+		/* Bytes per element */
+		1,
+		/* Flags */
+		PFF_NATIVEENDIAN,
+		/* Component type and count */
+		PCT_BYTE, 1,
+		/* rbits, gbits, bbits, abits */
+		8, 0, 0, 0,
+		/* Masks and shifts */
+		0xFF, 0, 0, 0, 0, 0, 0, 0
+		},
+		//-----------------------------------------------------------------------
+		{"PF_R8G8",
+		/* Bytes per element */
+		1,
+		/* Flags */
+		PFF_NATIVEENDIAN,
+		/* Component type and count */
+		PCT_BYTE, 2,
+		/* rbits, gbits, bbits, abits */
+		8, 8, 0, 0,
+		/* Masks and shifts */
+		0xFF, 0x00FF, 0, 0, 
+		16, 8, 0, 0
+		},
 	//-----------------------------------------------------------------------
         {"PF_R8G8B8",
         /* Bytes per element */
@@ -576,33 +482,47 @@ namespace CamelotFramework {
         8, 16, 24, 0
         },
 	//-----------------------------------------------------------------------
-        {"PF_A2R10G10B10",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_HASALPHA | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 4,
-        /* rbits, gbits, bbits, abits */
-        10, 10, 10, 2,
-        /* Masks and shifts */
-        0x3FF00000, 0x000FFC00, 0x000003FF, 0xC0000000,
-        20, 10, 0, 30
-        },
+		{"PF_R8G8B8A8",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_HASALPHA | PFF_NATIVEENDIAN,
+		/* Component type and count */
+		PCT_BYTE, 4,
+		/* rbits, gbits, bbits, abits */
+		8, 8, 8, 8,
+		/* Masks and shifts */
+		0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF,
+		24, 16, 8, 0
+		},
 	//-----------------------------------------------------------------------
-        {"PF_A2B10G10R10",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_HASALPHA | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 4,
-        /* rbits, gbits, bbits, abits */
-        10, 10, 10, 2,
-        /* Masks and shifts */
-        0x000003FF, 0x000FFC00, 0x3FF00000, 0xC0000000,
-        0, 10, 20, 30
-        },
+		{"PF_X8R8G8B8",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_NATIVEENDIAN,
+		/* Component type and count */
+		PCT_BYTE, 3,
+		/* rbits, gbits, bbits, abits */
+		8, 8, 8, 0,
+		/* Masks and shifts */
+		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000,
+		16, 8, 0, 24
+		},
+	//-----------------------------------------------------------------------
+		{"PF_X8B8G8R8",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_NATIVEENDIAN,
+		/* Component type and count */
+		PCT_BYTE, 3,
+		/* rbits, gbits, bbits, abits */
+		8, 8, 8, 0,
+		/* Masks and shifts */
+		0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000,
+		0, 8, 16, 24
+		},
 	//-----------------------------------------------------------------------
         {"PF_DXT1",
         /* Bytes per element */
@@ -669,6 +589,32 @@ namespace CamelotFramework {
         0, 0, 0, 0, 0, 0, 0, 0
         },
 	//-----------------------------------------------------------------------
+		{"PF_FLOAT16_R",
+		/* Bytes per element */
+		2,
+		/* Flags */
+		PFF_FLOAT,
+		/* Component type and count */
+		PCT_FLOAT16, 1,
+		/* rbits, gbits, bbits, abits */
+		16, 0, 0, 0,
+		/* Masks and shifts */
+		0, 0, 0, 0, 0, 0, 0, 0
+		},
+	//-----------------------------------------------------------------------
+		{"PF_FLOAT16_RG",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_FLOAT,
+		/* Component type and count */
+		PCT_FLOAT16, 2,
+		/* rbits, gbits, bbits, abits */
+		16, 16, 0, 0,
+		/* Masks and shifts */
+		0, 0, 0, 0, 0, 0, 0, 0
+		},
+	//-----------------------------------------------------------------------
         {"PF_FLOAT16_RGB",
         /* Bytes per element */
         6,
@@ -695,6 +641,32 @@ namespace CamelotFramework {
         0, 0, 0, 0, 0, 0, 0, 0
         },
 	//-----------------------------------------------------------------------
+		{"PF_FLOAT32_R",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_FLOAT,
+		/* Component type and count */
+		PCT_FLOAT32, 1,
+		/* rbits, gbits, bbits, abits */
+		32, 0, 0, 0,
+		/* Masks and shifts */
+		0, 0, 0, 0, 0, 0, 0, 0
+		},
+	//-----------------------------------------------------------------------
+		{"PF_FLOAT32_RG",
+		/* Bytes per element */
+		8,
+		/* Flags */
+		PFF_FLOAT,
+		/* Component type and count */
+		PCT_FLOAT32, 2,
+		/* rbits, gbits, bbits, abits */
+		32, 32, 0, 0,
+		/* Masks and shifts */
+		0, 0, 0, 0, 0, 0, 0, 0
+		},
+	//-----------------------------------------------------------------------
         {"PF_FLOAT32_RGB",
         /* Bytes per element */
         12,
@@ -717,219 +689,6 @@ namespace CamelotFramework {
         PCT_FLOAT32, 4,
         /* rbits, gbits, bbits, abits */
         32, 32, 32, 32,
-        /* Masks and shifts */
-        0, 0, 0, 0, 0, 0, 0, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_X8R8G8B8",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 3,
-        /* rbits, gbits, bbits, abits */
-        8, 8, 8, 0,
-        /* Masks and shifts */
-        0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000,
-        16, 8, 0, 24
-        },
-	//-----------------------------------------------------------------------
-        {"PF_X8B8G8R8",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 3,
-        /* rbits, gbits, bbits, abits */
-        8, 8, 8, 0,
-        /* Masks and shifts */
-        0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000,
-        0, 8, 16, 24
-        },
-	//-----------------------------------------------------------------------
-        {"PF_R8G8B8A8",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_HASALPHA | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 4,
-        /* rbits, gbits, bbits, abits */
-        8, 8, 8, 8,
-        /* Masks and shifts */
-        0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF,
-        24, 16, 8, 0
-        },
-	//-----------------------------------------------------------------------
-		{"PF_DEPTH",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_DEPTH,
-        /* Component type and count */
-        PCT_FLOAT32, 1, // ?
-        /* rbits, gbits, bbits, abits */
-        0, 0, 0, 0,
-        /* Masks and shifts */
-		0, 0, 0, 0, 0, 0, 0, 0
-        },
-	//-----------------------------------------------------------------------
-		{"PF_SHORT_RGBA",
-		/* Bytes per element */
-        8,
-        /* Flags */
-        PFF_HASALPHA,
-        /* Component type and count */
-        PCT_SHORT, 4,
-        /* rbits, gbits, bbits, abits */
-        16, 16, 16, 16,
-        /* Masks and shifts */
-		0, 0, 0, 0, 0, 0, 0, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_R3G3B2",
-        /* Bytes per element */
-        1,
-        /* Flags */
-        PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 3,
-        /* rbits, gbits, bbits, abits */
-        3, 3, 2, 0,
-        /* Masks and shifts */
-        0xE0, 0x1C, 0x03, 0,
-        5, 2, 0, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_FLOAT16_R",
-        /* Bytes per element */
-        2,
-        /* Flags */
-        PFF_FLOAT,
-        /* Component type and count */
-        PCT_FLOAT16, 1,
-        /* rbits, gbits, bbits, abits */
-        16, 0, 0, 0,
-        /* Masks and shifts */
-        0, 0, 0, 0, 0, 0, 0, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_FLOAT32_R",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_FLOAT,
-        /* Component type and count */
-        PCT_FLOAT32, 1,
-        /* rbits, gbits, bbits, abits */
-        32, 0, 0, 0,
-        /* Masks and shifts */
-        0, 0, 0, 0, 0, 0, 0, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_SHORT_GR",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_SHORT, 2,
-        /* rbits, gbits, bbits, abits */
-        16, 16, 0, 0,
-        /* Masks and shifts */
-        0x0000FFFF, 0xFFFF0000, 0, 0, 
-		0, 16, 0, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_FLOAT16_GR",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_FLOAT,
-        /* Component type and count */
-        PCT_FLOAT16, 2,
-        /* rbits, gbits, bbits, abits */
-        16, 16, 0, 0,
-        /* Masks and shifts */
-        0, 0, 0, 0, 0, 0, 0, 0
-        },
-	//-----------------------------------------------------------------------
-        {"PF_FLOAT32_GR",
-        /* Bytes per element */
-        8,
-        /* Flags */
-        PFF_FLOAT,
-        /* Component type and count */
-        PCT_FLOAT32, 2,
-        /* rbits, gbits, bbits, abits */
-        32, 32, 0, 0,
-        /* Masks and shifts */
-        0, 0, 0, 0, 0, 0, 0, 0
-        },
-	//-----------------------------------------------------------------------
-		{"PF_SHORT_RGB",
-		/* Bytes per element */
-        6,
-        /* Flags */
-        0,
-        /* Component type and count */
-        PCT_SHORT, 3,
-        /* rbits, gbits, bbits, abits */
-        16, 16, 16, 0,
-        /* Masks and shifts */
-		0, 0, 0, 0, 0, 0, 0, 0
-        },
-    //-----------------------------------------------------------------------
-		{"PF_PVRTC_RGB2",
-        /* Bytes per element */
-        0,
-        /* Flags */
-        PFF_COMPRESSED,
-        /* Component type and count */
-        PCT_BYTE, 3,
-        /* rbits, gbits, bbits, abits */
-        0, 0, 0, 0,
-        /* Masks and shifts */
-        0, 0, 0, 0, 0, 0, 0, 0
-        },
-    //-----------------------------------------------------------------------
-		{"PF_PVRTC_RGBA2",
-        /* Bytes per element */
-        0,
-        /* Flags */
-        PFF_COMPRESSED | PFF_HASALPHA,
-        /* Component type and count */
-        PCT_BYTE, 4,
-        /* rbits, gbits, bbits, abits */
-        0, 0, 0, 0,
-        /* Masks and shifts */
-        0, 0, 0, 0, 0, 0, 0, 0
-        },
-    //-----------------------------------------------------------------------
-		{"PF_PVRTC_RGB4",
-        /* Bytes per element */
-        0,
-        /* Flags */
-        PFF_COMPRESSED,
-        /* Component type and count */
-        PCT_BYTE, 3,
-        /* rbits, gbits, bbits, abits */
-        0, 0, 0, 0,
-        /* Masks and shifts */
-        0, 0, 0, 0, 0, 0, 0, 0
-        },
-    //-----------------------------------------------------------------------
-		{"PF_PVRTC_RGBA4",
-        /* Bytes per element */
-        0,
-        /* Flags */
-        PFF_COMPRESSED | PFF_HASALPHA,
-        /* Component type and count */
-        PCT_BYTE, 4,
-        /* rbits, gbits, bbits, abits */
-        0, 0, 0, 0,
         /* Masks and shifts */
         0, 0, 0, 0, 0, 0, 0, 0
         },
@@ -1058,17 +817,6 @@ namespace CamelotFramework {
 				case PF_DXT5:
 					return ((width+3)/4)*((height+3)/4)*16 * depth;
 
-                // Size calculations from the PVRTC OpenGL extension spec
-                // http://www.khronos.org/registry/gles/extensions/IMG/IMG_texture_compression_pvrtc.txt
-                // Basically, 32 bytes is the minimum texture size.  Smaller textures are padded up to 32 bytes
-                case PF_PVRTC_RGB2:
-                case PF_PVRTC_RGBA2:
-					assert(depth == 1);
-                    return (std::max((int)width, 16) * std::max((int)height, 8) * 2 + 7) / 8;
-                case PF_PVRTC_RGB4:
-                case PF_PVRTC_RGBA4:
-					assert(depth == 1);
-                    return (std::max((int)width, 8) * std::max((int)height, 8) * 4 + 7) / 8;
 				default:
 				CM_EXCEPT(InvalidParametersException, "Invalid compressed pixel format");
 			}
@@ -1112,11 +860,6 @@ namespace CamelotFramework {
     bool PixelUtil::isNativeEndian(PixelFormat format)
     {
         return (PixelUtil::getFlags(format) & PFF_NATIVEENDIAN) > 0;
-    }
-    //-----------------------------------------------------------------------
-    bool PixelUtil::isLuminance(PixelFormat format)
-    {
-        return (PixelUtil::getFlags(format) & PFF_LUMINANCE) > 0;
     }
     //-----------------------------------------------------------------------
 	bool PixelUtil::isValidExtent(size_t width, size_t height, size_t depth, PixelFormat format)
@@ -1243,109 +986,6 @@ namespace CamelotFramework {
         return result;
     }
     //-----------------------------------------------------------------------
-    PixelFormat PixelUtil::getFormatForBitDepths(PixelFormat fmt, UINT16 integerBits, UINT16 floatBits)
-    {
-        switch (integerBits)
-        {
-        case 16:
-            switch (fmt)
-            {
-            case PF_R8G8B8:
-            case PF_X8R8G8B8:
-                return PF_R5G6B5;
-
-            case PF_B8G8R8:
-            case PF_X8B8G8R8:
-                return PF_B5G6R5;
-
-            case PF_A8R8G8B8:
-            case PF_R8G8B8A8:
-            case PF_A8B8G8R8:
-            case PF_B8G8R8A8:
-                return PF_A4R4G4B4;
-
-            case PF_A2R10G10B10:
-            case PF_A2B10G10R10:
-                return PF_A1R5G5B5;
-
-            default:
-                // use original image format
-                break;
-            }
-            break;
-
-        case 32:
-            switch (fmt)
-            {
-            case PF_R5G6B5:
-                return PF_X8R8G8B8;
-
-            case PF_B5G6R5:
-                return PF_X8B8G8R8;
-
-            case PF_A4R4G4B4:
-                return PF_A8R8G8B8;
-
-            case PF_A1R5G5B5:
-                return PF_A2R10G10B10;
-
-            default:
-                // use original image format
-                break;
-            }
-            break;
-
-        default:
-            // use original image format
-            break;
-        }
-
-        switch (floatBits)
-        {
-        case 16:
-            switch (fmt)
-            {
-            case PF_FLOAT32_R:
-                return PF_FLOAT16_R;
-
-            case PF_FLOAT32_RGB:
-                return PF_FLOAT16_RGB;
-
-            case PF_FLOAT32_RGBA:
-                return PF_FLOAT16_RGBA;
-
-            default:
-                // use original image format
-                break;
-            }
-            break;
-
-        case 32:
-            switch (fmt)
-            {
-            case PF_FLOAT16_R:
-                return PF_FLOAT32_R;
-
-            case PF_FLOAT16_RGB:
-                return PF_FLOAT32_RGB;
-
-            case PF_FLOAT16_RGBA:
-                return PF_FLOAT32_RGBA;
-
-            default:
-                // use original image format
-                break;
-            }
-            break;
-
-        default:
-            // use original image format
-            break;
-        }
-
-        return fmt;
-    }
-    //-----------------------------------------------------------------------
     /*************************************************************************
     * Pixel packing/unpacking utilities
     */
@@ -1390,7 +1030,7 @@ namespace CamelotFramework {
             case PF_FLOAT32_R:
                 ((float*)dest)[0] = r;
                 break;
-			case PF_FLOAT32_GR:
+			case PF_FLOAT32_RG:
 				((float*)dest)[0] = g;
 				((float*)dest)[1] = r;
 				break;
@@ -1408,7 +1048,7 @@ namespace CamelotFramework {
             case PF_FLOAT16_R:
                 ((UINT16*)dest)[0] = Bitwise::floatToHalf(r);
                 break;
-			case PF_FLOAT16_GR:
+			case PF_FLOAT16_RG:
 				((UINT16*)dest)[0] = Bitwise::floatToHalf(g);
 				((UINT16*)dest)[1] = Bitwise::floatToHalf(r);
 				break;
@@ -1423,17 +1063,6 @@ namespace CamelotFramework {
                 ((UINT16*)dest)[2] = Bitwise::floatToHalf(b);
                 ((UINT16*)dest)[3] = Bitwise::floatToHalf(a);
                 break;
-            case PF_SHORT_RGB:
-				((UINT16*)dest)[0] = (UINT16)Bitwise::floatToFixed(r, 16);
-                ((UINT16*)dest)[1] = (UINT16)Bitwise::floatToFixed(g, 16);
-                ((UINT16*)dest)[2] = (UINT16)Bitwise::floatToFixed(b, 16);
-                break;
-			case PF_SHORT_RGBA:
-				((UINT16*)dest)[0] = (UINT16)Bitwise::floatToFixed(r, 16);
-                ((UINT16*)dest)[1] = (UINT16)Bitwise::floatToFixed(g, 16);
-                ((UINT16*)dest)[2] = (UINT16)Bitwise::floatToFixed(b, 16);
-                ((UINT16*)dest)[3] = (UINT16)Bitwise::floatToFixed(a, 16);
-				break;
 			case PF_R8G8:
 				((UINT8*)dest)[0] = (UINT8)Bitwise::floatToFixed(r, 8);
                 ((UINT8*)dest)[1] = (UINT8)Bitwise::floatToFixed(g, 8);
@@ -1458,18 +1087,11 @@ namespace CamelotFramework {
         if(des.flags & PFF_NATIVEENDIAN) {
             // Shortcut for integer formats unpacking
             const unsigned int value = Bitwise::intRead(src, des.elemBytes);
-            if(des.flags & PFF_LUMINANCE)
-            {
-                // Luminance format -- only rbits used
-                *r = *g = *b = (UINT8)Bitwise::fixedToFixed(
-                    (value & des.rmask)>>des.rshift, des.rbits, 8);
-            }
-            else
-            {
-                *r = (UINT8)Bitwise::fixedToFixed((value & des.rmask)>>des.rshift, des.rbits, 8);
-                *g = (UINT8)Bitwise::fixedToFixed((value & des.gmask)>>des.gshift, des.gbits, 8);
-                *b = (UINT8)Bitwise::fixedToFixed((value & des.bmask)>>des.bshift, des.bbits, 8);
-            }
+
+            *r = (UINT8)Bitwise::fixedToFixed((value & des.rmask)>>des.rshift, des.rbits, 8);
+            *g = (UINT8)Bitwise::fixedToFixed((value & des.gmask)>>des.gshift, des.gbits, 8);
+            *b = (UINT8)Bitwise::fixedToFixed((value & des.bmask)>>des.bshift, des.bbits, 8);
+
             if(des.flags & PFF_HASALPHA)
             {
                 *a = (UINT8)Bitwise::fixedToFixed((value & des.amask)>>des.ashift, des.abits, 8);
@@ -1496,18 +1118,11 @@ namespace CamelotFramework {
         if(des.flags & PFF_NATIVEENDIAN) {
             // Shortcut for integer formats unpacking
             const unsigned int value = Bitwise::intRead(src, des.elemBytes);
-            if(des.flags & PFF_LUMINANCE)
-            {
-                // Luminance format -- only rbits used
-                *r = *g = *b = Bitwise::fixedToFloat(
-                    (value & des.rmask)>>des.rshift, des.rbits);
-            }
-            else
-            {
-                *r = Bitwise::fixedToFloat((value & des.rmask)>>des.rshift, des.rbits);
-                *g = Bitwise::fixedToFloat((value & des.gmask)>>des.gshift, des.gbits);
-                *b = Bitwise::fixedToFloat((value & des.bmask)>>des.bshift, des.bbits);
-            }
+
+			*r = Bitwise::fixedToFloat((value & des.rmask)>>des.rshift, des.rbits);
+			*g = Bitwise::fixedToFloat((value & des.gmask)>>des.gshift, des.gbits);
+			*b = Bitwise::fixedToFloat((value & des.bmask)>>des.bshift, des.bbits);
+
             if(des.flags & PFF_HASALPHA)
             {
                 *a = Bitwise::fixedToFloat((value & des.amask)>>des.ashift, des.abits);
@@ -1523,7 +1138,7 @@ namespace CamelotFramework {
                 *r = *g = *b = ((float*)src)[0];
                 *a = 1.0f;
                 break;
-			case PF_FLOAT32_GR:
+			case PF_FLOAT32_RG:
 				*g = ((float*)src)[0];
 				*r = *b = ((float*)src)[1];
 				*a = 1.0f;
@@ -1544,7 +1159,7 @@ namespace CamelotFramework {
                 *r = *g = *b = Bitwise::halfToFloat(((UINT16*)src)[0]);
                 *a = 1.0f;
                 break;
-			case PF_FLOAT16_GR:
+			case PF_FLOAT16_RG:
 				*g = Bitwise::halfToFloat(((UINT16*)src)[0]);
 				*r = *b = Bitwise::halfToFloat(((UINT16*)src)[1]);
 				*a = 1.0f;
@@ -1561,18 +1176,6 @@ namespace CamelotFramework {
                 *b = Bitwise::halfToFloat(((UINT16*)src)[2]);
                 *a = Bitwise::halfToFloat(((UINT16*)src)[3]);
                 break;
-			case PF_SHORT_RGB:
-				*r = Bitwise::fixedToFloat(((UINT16*)src)[0], 16);
-                *g = Bitwise::fixedToFloat(((UINT16*)src)[1], 16);
-				*b = Bitwise::fixedToFloat(((UINT16*)src)[2], 16);
-				*a = 1.0f;
-				break;
-			case PF_SHORT_RGBA:
-				*r = Bitwise::fixedToFloat(((UINT16*)src)[0], 16);
-                *g = Bitwise::fixedToFloat(((UINT16*)src)[1], 16);
-				*b = Bitwise::fixedToFloat(((UINT16*)src)[2], 16);
-				*a = Bitwise::fixedToFloat(((UINT16*)src)[3], 16);
-				break;
 			case PF_R8G8:
 				*r = Bitwise::fixedToFloat(((UINT8*)src)[0], 8);
 				*g = Bitwise::fixedToFloat(((UINT8*)src)[1], 8);
@@ -1767,7 +1370,7 @@ namespace CamelotFramework {
 		case FILTER_BILINEAR:
 			switch (src.format) 
 			{
-			case PF_L8: case PF_A8: case PF_R8G8:
+			case PF_R8G8:
 			case PF_R8G8B8: case PF_B8G8R8:
 			case PF_R8G8B8A8: case PF_B8G8R8A8:
 			case PF_A8B8G8R8: case PF_A8R8G8B8:

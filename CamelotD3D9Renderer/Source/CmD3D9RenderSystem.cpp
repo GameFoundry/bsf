@@ -2208,7 +2208,7 @@ namespace CamelotFramework
 		D3DSURFACE_DESC bbSurfDesc;
 		bbSurf->GetDesc(&bbSurfDesc);
 
-		for (UINT32 ipf = static_cast<UINT32>(PF_L8); ipf < static_cast<UINT32>(PF_COUNT); ++ipf)
+		for (UINT32 ipf = 1; ipf < static_cast<UINT32>(PF_COUNT); ++ipf)
 		{
 			PixelFormat pf = (PixelFormat)ipf;
 

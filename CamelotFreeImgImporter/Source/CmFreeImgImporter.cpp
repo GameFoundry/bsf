@@ -10,18 +10,6 @@
 
 #include "FreeImage.h"
 
-// freeimage 3.9.1~3.11.0 interoperability fix
-#ifndef FREEIMAGE_COLORORDER
-// we have freeimage 3.9.1, define these symbols in such way as 3.9.1 really work (do not use 3.11.0 definition, as color order was changed between these two versions on Apple systems)
-#define FREEIMAGE_COLORORDER_BGR	0
-#define FREEIMAGE_COLORORDER_RGB	1
-#if defined(FREEIMAGE_BIGENDIAN)
-#define FREEIMAGE_COLORORDER FREEIMAGE_COLORORDER_RGB
-#else
-#define FREEIMAGE_COLORORDER FREEIMAGE_COLORORDER_BGR
-#endif
-#endif
-
 namespace CamelotFramework
 {
 	void FreeImageLoadErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) 
@@ -239,19 +227,21 @@ namespace CamelotFramework
 			switch(bpp)
 			{
 			case 8:
-				format = PF_L8;
+				format = PF_R8;
 				break;
 			case 16:
 				// Determine 555 or 565 from green mask
 				// cannot be 16-bit greyscale since that's FIT_UINT16
 				if(FreeImage_GetGreenMask(fiBitmap) == FI16_565_GREEN_MASK)
 				{
-					format = PF_R5G6B5;
+					assert(false && "Format not supported by the engine. TODO.");
+					return nullptr;
 				}
 				else
 				{
+					assert(false && "Format not supported by the engine. TODO.");
+					return nullptr;
 					// FreeImage doesn't support 4444 format so must be 1555
-					format = PF_A1R5G5B5;
 				}
 				break;
 			case 24:
@@ -278,17 +268,18 @@ namespace CamelotFramework
 		case FIT_UINT16:
 		case FIT_INT16:
 			// 16-bit greyscale
-			format = PF_L16;
+			assert(false && "No INT pixel formats supported currently. TODO.");
+			return nullptr;
 			break;
 		case FIT_FLOAT:
 			// Single-component floating point data
 			format = PF_FLOAT32_R;
 			break;
 		case FIT_RGB16:
-			format = PF_SHORT_RGB;
+			format = PF_FLOAT16_RGB;
 			break;
 		case FIT_RGBA16:
-			format = PF_SHORT_RGBA;
+			format = PF_FLOAT16_RGBA;
 			break;
 		case FIT_RGBF:
 			format = PF_FLOAT32_RGB;

@@ -2,13 +2,20 @@
 
 ----------------------------------------------------------------------------------------------
 
-24bit textures don't seem to load properly
- - Seems DX11 doesn't support 24bit texture format so instead it chooses a 32bit one but 
-   when we write to texture we still assume the format is the original 24bit one. 
- - After creating the texture I need to update the actual format
- - And when copying texture data make sure I copy it channel by channel
-32bit textures seem to have some channels flipped
+Texture format changes:
+I screwed up R8G8 format by making it NATIVENDIAN
+
+Unify formats and their masks/shifts - Use DX11 model everywhere (already used on floating point formats)
+
+DirectX9 - most significant to least significant - ARGB is actually BGRA in memory
+DirectX11 - least significant to most significant - RGBA is RGBA in memory
+OpenGL seems to be the same as DirectX11 although I can't confirm
+
+Go through all formats and check if they match this. (Ogre components seem to assume the DX9 model)
+Floating point formats all seem to be in DX11 order in memory for all render systems
  
+When loading WindowFrameTex manually, it doesn't get released properly
+
 
 Immediate TODO:
  - Issue with rendering same object from multiple cameras:

@@ -680,8 +680,6 @@ namespace CamelotFramework
 		/// - Either source or target is luminance due doesn't looks like supported by hardware
 		/// - the source dimensions match the destination ones, in which case no scaling is needed
 		if(!GLEW_EXT_framebuffer_object ||
-			PixelUtil::isLuminance(src_orig.format) ||
-			PixelUtil::isLuminance(mFormat) ||
 			(src_orig.getWidth() == dstBox.getWidth() &&
 			src_orig.getHeight() == dstBox.getHeight() &&
 			src_orig.getDepth() == dstBox.getDepth()))
