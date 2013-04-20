@@ -389,7 +389,7 @@ namespace CamelotFramework {
 		/* Bytes per element */
 		1,
 		/* Flags */
-		PFF_NATIVEENDIAN,
+		0,
 		/* Component type and count */
 		PCT_BYTE, 1,
 		/* rbits, gbits, bbits, abits */
@@ -400,9 +400,9 @@ namespace CamelotFramework {
 		//-----------------------------------------------------------------------
 		{"PF_R8G8",
 		/* Bytes per element */
-		1,
+		2,
 		/* Flags */
-		PFF_NATIVEENDIAN,
+		0,
 		/* Component type and count */
 		PCT_BYTE, 2,
 		/* rbits, gbits, bbits, abits */
@@ -1031,8 +1031,8 @@ namespace CamelotFramework {
                 ((float*)dest)[0] = r;
                 break;
 			case PF_FLOAT32_RG:
-				((float*)dest)[0] = g;
-				((float*)dest)[1] = r;
+				((float*)dest)[0] = r;
+				((float*)dest)[1] = g;
 				break;
             case PF_FLOAT32_RGB:
                 ((float*)dest)[0] = r;
@@ -1049,8 +1049,8 @@ namespace CamelotFramework {
                 ((UINT16*)dest)[0] = Bitwise::floatToHalf(r);
                 break;
 			case PF_FLOAT16_RG:
-				((UINT16*)dest)[0] = Bitwise::floatToHalf(g);
-				((UINT16*)dest)[1] = Bitwise::floatToHalf(r);
+				((UINT16*)dest)[0] = Bitwise::floatToHalf(r);
+				((UINT16*)dest)[1] = Bitwise::floatToHalf(g);
 				break;
             case PF_FLOAT16_RGB:
                 ((UINT16*)dest)[0] = Bitwise::floatToHalf(r);
@@ -1066,6 +1066,9 @@ namespace CamelotFramework {
 			case PF_R8G8:
 				((UINT8*)dest)[0] = (UINT8)Bitwise::floatToFixed(r, 8);
                 ((UINT8*)dest)[1] = (UINT8)Bitwise::floatToFixed(g, 8);
+				break;
+			case PF_R8:
+				((UINT8*)dest)[0] = (UINT8)Bitwise::floatToFixed(r, 8);
 				break;
             default:
                 // Not yet supported
@@ -1139,8 +1142,8 @@ namespace CamelotFramework {
                 *a = 1.0f;
                 break;
 			case PF_FLOAT32_RG:
-				*g = ((float*)src)[0];
-				*r = *b = ((float*)src)[1];
+				*r = ((float*)src)[0];
+				*g = *b = ((float*)src)[1];
 				*a = 1.0f;
 				break;
             case PF_FLOAT32_RGB:
@@ -1160,8 +1163,8 @@ namespace CamelotFramework {
                 *a = 1.0f;
                 break;
 			case PF_FLOAT16_RG:
-				*g = Bitwise::halfToFloat(((UINT16*)src)[0]);
-				*r = *b = Bitwise::halfToFloat(((UINT16*)src)[1]);
+				*r = Bitwise::halfToFloat(((UINT16*)src)[0]);
+				*g = *b = Bitwise::halfToFloat(((UINT16*)src)[1]);
 				*a = 1.0f;
 				break;
             case PF_FLOAT16_RGB:
@@ -1179,6 +1182,12 @@ namespace CamelotFramework {
 			case PF_R8G8:
 				*r = Bitwise::fixedToFloat(((UINT8*)src)[0], 8);
 				*g = Bitwise::fixedToFloat(((UINT8*)src)[1], 8);
+				*b = 0.0f;
+				*a = 1.0f;
+				break;
+			case PF_R8:
+				*r = Bitwise::fixedToFloat(((UINT8*)src)[0], 8);
+				*g = 0.0f;
 				*b = 0.0f;
 				*a = 1.0f;
 				break;
