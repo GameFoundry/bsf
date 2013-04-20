@@ -365,6 +365,7 @@ namespace CamelotFramework
 		// determine wich D3D9 pixel format we'll use
 		HRESULT hr;
 		D3DFORMAT d3dPF = _chooseD3DFormat(d3d9Device);
+		mFormat = D3D9Mappings::_getPF(d3dPF);
 
 		// let's D3DX check the corrected pixel format
 		hr = D3DXCheckTextureRequirements(d3d9Device, NULL, NULL, NULL, 0, &d3dPF, mD3DPool);
@@ -539,6 +540,7 @@ namespace CamelotFramework
 		// determine wich D3D9 pixel format we'll use
 		HRESULT hr;
 		D3DFORMAT d3dPF = _chooseD3DFormat(d3d9Device);
+		mFormat = D3D9Mappings::_getPF(d3dPF);
 
 		// let's D3DX check the corrected pixel format
 		hr = D3DXCheckCubeTextureRequirements(d3d9Device, NULL, NULL, 0, &d3dPF, mD3DPool);
@@ -645,6 +647,8 @@ namespace CamelotFramework
 		// determine which D3D9 pixel format we'll use
 		HRESULT hr;
 		D3DFORMAT d3dPF = _chooseD3DFormat(d3d9Device);
+		mFormat = D3D9Mappings::_getPF(d3dPF);
+
 		// let's D3DX check the corrected pixel format
 		hr = D3DXCheckVolumeTextureRequirements(d3d9Device, NULL, NULL, NULL, NULL, 0, &d3dPF, mD3DPool);
 

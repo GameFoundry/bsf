@@ -287,8 +287,6 @@ namespace CamelotFramework
 		case FIT_RGBAF:
 			format = PF_FLOAT32_RGBA;
 			break;
-
-
 		};
 
 		unsigned char* srcData = FreeImage_GetBits(fiBitmap);

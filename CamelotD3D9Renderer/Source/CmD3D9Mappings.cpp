@@ -466,29 +466,27 @@ namespace CamelotFramework
 	{
 		switch(d3dPF)
 		{
-		case D3DFMT_L8:
-			return PF_R8;
 		case D3DFMT_R8G8B8:
-			return PF_R8G8B8;
-		case D3DFMT_X8R8G8B8:
-			return PF_X8R8G8B8;
+			return PF_B8G8R8;
 		case D3DFMT_A8R8G8B8:
-			return PF_A8R8G8B8;
-		case D3DFMT_X8B8G8R8:
-			return PF_X8B8G8R8;
+			return PF_B8G8R8A8;
 		case D3DFMT_A8B8G8R8:
-			return PF_A8B8G8R8;
+			return PF_R8G8B8A8;
+		case D3DFMT_X8B8G8R8:
+			return PF_R8G8B8X8;
+		case D3DFMT_X8R8G8B8:
+			return PF_B8G8R8X8;
 		case D3DFMT_R16F:
 			return PF_FLOAT16_R;
 		case D3DFMT_A16B16G16R16F:
 			return PF_FLOAT16_RGBA;
 		case D3DFMT_R32F:
 			return PF_FLOAT32_R;
-		case D3DFMT_G32R32F:
+		case D3DFMT_G32R32F: // TODO - For some reason G and R are flipped in DX9 which might not be compatible with other render systems directly
 			return PF_FLOAT32_RG;
 		case D3DFMT_A32B32G32R32F:
 			return PF_FLOAT32_RGBA;
-		case D3DFMT_G16R16F:
+		case D3DFMT_G16R16F: // TODO - For some reason G and R are flipped in DX9 which might not be compatible with other render systems directly
 			return PF_FLOAT16_RG;
 		case D3DFMT_DXT1:
 			return PF_DXT1;
@@ -513,20 +511,22 @@ namespace CamelotFramework
 	/****************************************************************************************/
 	D3DFORMAT D3D9Mappings::_getPF(PixelFormat camelotPf)
 	{
+		// DX9 uses different format semantics than most render systems, where most significant bit is signified by the
+		// first channel letter. For example in RGBA8 format, R is most-significant byte. Which is why most formats map to their
+		// reverse version in-engine as seen below.
+		// (This is not the case for floating point formats, EXCEPT for green-red one)
 		switch(camelotPf)
 		{
-		case PF_R8:
-			return D3DFMT_L8;
-		case PF_R8G8B8:
+		case PF_B8G8R8:
 			return D3DFMT_R8G8B8;
-		case PF_A8R8G8B8:
+		case PF_B8G8R8A8:
 			return D3DFMT_A8R8G8B8;
-		case PF_A8B8G8R8:
+		case PF_R8G8B8A8:
 			return D3DFMT_A8B8G8R8;
-		case PF_X8R8G8B8:
-			return D3DFMT_X8R8G8B8;
-		case PF_X8B8G8R8:
+		case PF_R8G8B8X8:
 			return D3DFMT_X8B8G8R8;
+		case PF_B8G8R8X8:
+			return D3DFMT_X8R8G8B8;
 		case PF_FLOAT16_R:
 			return D3DFMT_R16F;
 		case PF_FLOAT16_RG:
@@ -570,10 +570,16 @@ namespace CamelotFramework
 
 		switch(enginePF)
 		{
-		case PF_B8G8R8:
-			return PF_R8G8B8;
-		case PF_B8G8R8A8:
-			return PF_A8R8G8B8;
+		case PF_R8:
+			return PF_B8G8R8;
+		case PF_R8G8:
+			return PF_B8G8R8;
+		case PF_A8R8G8B8:
+			return PF_B8G8R8A8;
+		case PF_A8B8G8R8:
+			return PF_R8G8B8A8;
+		case PF_R8G8B8:
+			return PF_B8G8R8;
 		case PF_FLOAT16_RGB:
 			return PF_FLOAT16_RGBA;
 		case PF_FLOAT32_RGB:
@@ -582,7 +588,7 @@ namespace CamelotFramework
 			return PF_D24S8;
 		case PF_UNKNOWN:
 		default:
-			return PF_A8R8G8B8;
+			return PF_B8G8R8A8;
 		}
 	}
 

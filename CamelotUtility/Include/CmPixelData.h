@@ -33,6 +33,12 @@ namespace CamelotFramework
         /// 32-bit pixel format, 8 bits for blue, 8 bits for green, 8 bits for red
         /// like PF_A8B8G8R8, but alpha will get discarded
         PF_X8B8G8R8 = 10,
+		/// 32-bit pixel format, 8 bits for red, 8 bits for green, 8 bits for blue
+		/// like PF_R8G8B8A8, but alpha will get discarded
+		PF_R8G8B8X8 = 11,
+		/// 32-bit pixel format, 8 bits for blue, 8 bits for green, 8 bits for red
+		/// like PF_B8G8R8A8, but alpha will get discarded
+		PF_B8G8R8X8 = 12,
 		/// 3 byte pixel format, 1 byte for red, 1 byte for green, 1 byte for blue
 		PF_BYTE_RGB = PF_R8G8B8,
 		/// 3 byte pixel format, 1 byte for blue, 1 byte for green, 1 byte for red
@@ -42,41 +48,41 @@ namespace CamelotFramework
 		/// 4 byte pixel format, 1 byte for red, 1 byte for green, 1 byte for blue, and one byte for alpha
 		PF_BYTE_RGBA = PF_R8G8B8A8,      
         /// DDS (DirectDraw Surface) DXT1 format
-        PF_DXT1 = 11,
+        PF_DXT1 = 13,
         /// DDS (DirectDraw Surface) DXT2 format
-        PF_DXT2 = 12,
+        PF_DXT2 = 14,
         /// DDS (DirectDraw Surface) DXT3 format
-        PF_DXT3 = 13,
+        PF_DXT3 = 15,
         /// DDS (DirectDraw Surface) DXT4 format
-        PF_DXT4 = 14,
+        PF_DXT4 = 16,
         /// DDS (DirectDraw Surface) DXT5 format
-        PF_DXT5 = 15,
+        PF_DXT5 = 17,
 		// 16-bit pixel format, 16 bits (float) for red
-        PF_FLOAT16_R = 16,
+        PF_FLOAT16_R = 18,
 		// 32-bit, 2-channel s10e5 floating point pixel format, 16-bit red, 16-bit green
-		PF_FLOAT16_RG = 17,
+		PF_FLOAT16_RG = 19,
         // 48-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue
-        PF_FLOAT16_RGB = 18,
+        PF_FLOAT16_RGB = 20,
         // 64-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue, 16 bits (float) for alpha
-        PF_FLOAT16_RGBA = 19,
+        PF_FLOAT16_RGBA = 21,
 		// 32-bit pixel format, 32 bits (float) for red
-        PF_FLOAT32_R = 20,
+        PF_FLOAT32_R = 22,
 		// 64-bit, 2-channel floating point pixel format, 32-bit red, 32-bit green
-		PF_FLOAT32_RG = 21,
+		PF_FLOAT32_RG = 23,
         // 96-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue
-        PF_FLOAT32_RGB = 22,
+        PF_FLOAT32_RGB = 24,
         // 128-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue, 32 bits (float) for alpha
-        PF_FLOAT32_RGBA = 23,
+        PF_FLOAT32_RGBA = 25,
 		// Depth stencil, 32bit depth, 8bit stencil + 24 unused
-		PF_D32_S8X24 = 24,
+		PF_D32_S8X24 = 26,
 		// Depth stencil, 24bit depth + 8bit stencil
-		PF_D24S8 = 25,
+		PF_D24S8 = 27,
 		// Depth, 32bits
-		PF_D32 = 26,
+		PF_D32 = 28,
 		// Depth, 16bits
-		PF_D16 = 27,
+		PF_D16 = 29,
 		// Number of pixel formats currently defined
-        PF_COUNT = 28
+        PF_COUNT = 30
     };
 	typedef vector<PixelFormat>::type PixelFormatList;
 
