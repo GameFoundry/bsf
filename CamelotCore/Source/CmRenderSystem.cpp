@@ -55,7 +55,7 @@ namespace CamelotFramework {
 
     //-----------------------------------------------------------------------
     RenderSystem::RenderSystem()
-        : mCullingMode(CULL_CLOCKWISE)
+        : mCullingMode(CULL_COUNTERCLOCKWISE)
         , mInvertVertexWinding(false)
         , mDisabledTexUnitsFrom(0)
         , mVertexProgramBound(false)

@@ -10,7 +10,7 @@ namespace CamelotFramework
 	{
 		RASTERIZER_STATE_DESC()
 			: polygonMode(PM_SOLID)
-			, cullMode(CULL_CLOCKWISE)
+			, cullMode(CULL_COUNTERCLOCKWISE)
 			, depthBias(0)
 			, depthBiasClamp(0.0f)
 			, slopeScaledDepthBias(0.0f)

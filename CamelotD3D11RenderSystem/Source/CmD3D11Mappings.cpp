@@ -90,22 +90,16 @@ namespace CamelotFramework
 		return D3D11_COMPARISON_ALWAYS;
 	}
 
-	D3D11_CULL_MODE D3D11Mappings::get(CullingMode cm, bool flip)
+	D3D11_CULL_MODE D3D11Mappings::get(CullingMode cm)
 	{
 		switch( cm )
 		{
 		case CULL_NONE:
 			return D3D11_CULL_NONE;
 		case CULL_CLOCKWISE:
-			if( flip )
-				return D3D11_CULL_FRONT;
-			else
-				return D3D11_CULL_BACK;
+			return D3D11_CULL_FRONT;
 		case CULL_COUNTERCLOCKWISE:
-			if( flip )
-				return D3D11_CULL_BACK;
-			else
-				return D3D11_CULL_FRONT;
+			return D3D11_CULL_BACK;
 		}
 		return D3D11_CULL_NONE;
 	}

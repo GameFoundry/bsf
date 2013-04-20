@@ -27,6 +27,7 @@ namespace CamelotFramework
 		rasterizerStateDesc.MultisampleEnable = mData.multisampleEnable;
 		rasterizerStateDesc.ScissorEnable = mData.scissorEnable;
 		rasterizerStateDesc.SlopeScaledDepthBias = mData.slopeScaledDepthBias;
+		rasterizerStateDesc.FrontCounterClockwise = false;
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();

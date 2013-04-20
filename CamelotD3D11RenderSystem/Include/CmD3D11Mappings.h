@@ -36,7 +36,7 @@ namespace CamelotFramework
 		/// return a D3D11 equivalent for an engine CompareFunction value
 		static D3D11_COMPARISON_FUNC get(CompareFunction cf);
 		/// return a D3D11 equivalent for an engine CillingMode value
-		static D3D11_CULL_MODE get(CullingMode cm, bool flip = false);
+		static D3D11_CULL_MODE get(CullingMode cm);
 		/// return a D3D11 equivalent for an engine PolygonMode value
 		static D3D11_FILL_MODE get(PolygonMode level);
 		/// return a D3D11 equivalent for an engine StencilOperation value
