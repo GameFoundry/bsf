@@ -225,7 +225,7 @@ namespace CamelotFramework
 		if(sizeBytes < elementSizeBytes)
 		{
 			UINT32 diffSize = elementSizeBytes - sizeBytes;
-			paramBlock->zeroOut((desc->cpuMemOffset + arrayIndex * desc->arrayElementStride + sizeBytes)  * sizeof(UINT32), diffSize);
+			paramBlock->zeroOut((desc->cpuMemOffset + arrayIndex * desc->arrayElementStride)  * sizeof(UINT32) + sizeBytes, diffSize);
 		}
 	}
 
