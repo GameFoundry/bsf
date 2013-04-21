@@ -525,20 +525,6 @@ namespace CamelotFramework {
 		24, 16, 8, 0
 		},
 	//-----------------------------------------------------------------------
-		{"PF_B8G8R8X8",
-		/* Bytes per element */
-		4,
-		/* Flags */
-		PFF_HASALPHA | PFF_NATIVEENDIAN,
-		/* Component type and count */
-		PCT_BYTE, 3,
-		/* rbits, gbits, bbits, abits */
-		8, 8, 8, 0,
-		/* Masks and shifts */
-		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000,
-		16, 8, 0, 0
-		},
-	//-----------------------------------------------------------------------
 		{"PF_R8G8B8X8",
 		/* Bytes per element */
 		4,
@@ -551,6 +537,20 @@ namespace CamelotFramework {
 		/* Masks and shifts */
 		0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000,
 		0, 8, 16, 0
+		},
+	//-----------------------------------------------------------------------
+		{"PF_B8G8R8X8",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_HASALPHA | PFF_NATIVEENDIAN,
+		/* Component type and count */
+		PCT_BYTE, 3,
+		/* rbits, gbits, bbits, abits */
+		8, 8, 8, 0,
+		/* Masks and shifts */
+		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000,
+		16, 8, 0, 0
 		},
 	//-----------------------------------------------------------------------
         {"PF_DXT1",

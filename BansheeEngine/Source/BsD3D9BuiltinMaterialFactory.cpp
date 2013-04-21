@@ -56,8 +56,8 @@ namespace BansheeEngine
 			{													\
 				float4 tfrmdPos = mul(worldTransform, float4(inPos.xy, 0, 1));	\
 																\
-				float tfrmdX = (tfrmdPos.x / halfViewportWidth) - 1.0f;			\
-				float tfrmdY = (tfrmdPos.y / halfViewportHeight) + 1.0f;		\
+				float tfrmdX = ((tfrmdPos.x - 0.5f) / halfViewportWidth) - 1.0f;			\
+				float tfrmdY = ((tfrmdPos.y + 0.5f) / halfViewportHeight) + 1.0f;		\
 																\
 				oPosition = float4(tfrmdX, tfrmdY, 0, 1);		\
 				oUv = uv;										\
@@ -117,8 +117,8 @@ namespace BansheeEngine
 						{													\
 						float4 tfrmdPos = mul(worldTransform, float4(inPos.xy, 0, 1));	\
 						\
-						float tfrmdX = (tfrmdPos.x / halfViewportWidth) - 1.0f;			\
-						float tfrmdY = (tfrmdPos.y / halfViewportHeight) + 1.0f;		\
+						float tfrmdX = ((tfrmdPos.x - 0.5f) / halfViewportWidth) - 1.0f;			\
+						float tfrmdY = ((tfrmdPos.y + 0.5f) / halfViewportHeight) + 1.0f;		\
 						\
 						oPosition = float4(tfrmdX, tfrmdY, 0, 1);		\
 						oUv = uv;										\

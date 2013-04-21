@@ -2,20 +2,11 @@
 
 ----------------------------------------------------------------------------------------------
 
-Texture format changes:
-I screwed up R8G8 format by making it NATIVENDIAN
-
-Unify formats and their masks/shifts - Use DX11 model everywhere (already used on floating point formats)
-
-DirectX9 - most significant to least significant - ARGB is actually BGRA in memory
-DirectX11 - least significant to most significant - RGBA is RGBA in memory
-OpenGL seems to be the same as DirectX11 although I can't confirm
-
-Go through all formats and check if they match this. (Ogre components seem to assume the DX9 model)
-Floating point formats all seem to be in DX11 order in memory for all render systems
- 
 When loading WindowFrameTex manually, it doesn't get released properly
 
+ - My test model is rendering back faces. I need to flip them.
+  - Although more than likely I am loading the model incorrectly since it works in Unity?
+  - I probably want to determine front faces based on normals
 
 Immediate TODO:
  - Issue with rendering same object from multiple cameras:
@@ -30,8 +21,6 @@ Immediate TODO:
  - TextSprite bounds are wrong. Y coordinate is flipped
  - Calculate entire GUIWidget bounds and store them
  - Current way of transforming ORect from GUIWidget is almost certainly not correct
- - Implement image shader for D3D11BuiltinMaterialManager
- - Improve text shader so it doesn't have resolution values hardcoded in
  - Implement D3D9 and GL BuiltInMaterialManager
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
  - Transformable GUI elements and their bounds
