@@ -194,6 +194,11 @@ namespace CamelotFramework {
 		}
 
 		createSurfaceList();
+
+		PixelBufferPtr buffer = getBuffer(0, 0);
+
+		if(buffer != nullptr)
+			mFormat = buffer->getFormat();
 	}
 
 	void GLTexture::destroy_internal()

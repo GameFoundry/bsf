@@ -42,21 +42,19 @@ namespace CamelotFramework  {
 			case PF_R8G8:
 				return GL_RG;
             case PF_R8G8B8:
-                return GL_BGR;
-            case PF_B8G8R8:
                 return GL_RGB;
-			case PF_X8R8G8B8:
+            case PF_B8G8R8:
+                return GL_BGR;
+			case PF_R8G8B8X8:
+			case PF_R8G8B8A8:
 			case PF_A8R8G8B8:
-				return GL_BGRA;
-			case PF_X8B8G8R8:
-            case PF_A8B8G8R8:
+			case PF_X8R8G8B8:
                 return GL_RGBA;
             case PF_B8G8R8A8:
 			case PF_B8G8R8X8:
+			case PF_A8B8G8R8:
+			case PF_X8B8G8R8:
                 return GL_BGRA;
-			case PF_R8G8B8X8:
-			case PF_R8G8B8A8:
-				return GL_RGBA;
 			case PF_FLOAT16_R:
                 return GL_RED;
 			case PF_FLOAT16_RG:
@@ -92,19 +90,19 @@ namespace CamelotFramework  {
             case PF_R8G8B8:
             case PF_B8G8R8:
 			case PF_R8G8:
-                return GL_UNSIGNED_BYTE;
+                return GL_UNSIGNED_INT_8_8_8_8_REV;
 			case PF_X8B8G8R8:
 			case PF_A8B8G8R8:
-                return GL_UNSIGNED_BYTE;
+                return GL_UNSIGNED_INT_8_8_8_8;
 			case PF_X8R8G8B8:
             case PF_A8R8G8B8:
-				return GL_UNSIGNED_BYTE;
+				return GL_UNSIGNED_INT_8_8_8_8;
             case PF_B8G8R8A8:
 			case PF_B8G8R8X8:
-                return GL_UNSIGNED_INT_8_8_8_8;
+                return GL_UNSIGNED_INT_8_8_8_8_REV;
 			case PF_R8G8B8A8:
 			case PF_R8G8B8X8:
-				return GL_UNSIGNED_INT_8_8_8_8;
+				return GL_UNSIGNED_INT_8_8_8_8_REV;
 			case PF_FLOAT16_R:
 			case PF_FLOAT16_RG:
             case PF_FLOAT16_RGB:
@@ -154,24 +152,22 @@ namespace CamelotFramework  {
 				return GL_RG8;
             case PF_R8G8B8:
             case PF_B8G8R8:
-			case PF_X8B8G8R8:
-			case PF_X8R8G8B8:
 			case PF_B8G8R8X8:
 			case PF_R8G8B8X8:
 				if (hwGamma)
 					return GL_SRGB8;
 				else
 					return GL_RGB8;
-            case PF_A8R8G8B8:
             case PF_B8G8R8A8:
+			case PF_R8G8B8A8:
 				if (hwGamma)
 					return GL_SRGB8_ALPHA8;
 				else
 					return GL_RGBA8;
 			case PF_FLOAT16_R:
-				return GL_LUMINANCE16F_ARB;
+				return GL_R16F;
             case PF_FLOAT16_RGB:
-                return GL_RGB16F_ARB;
+                return GL_RGB16F;
 			case PF_FLOAT16_RG: 
 				return GL_RG16F;
             case PF_FLOAT16_RGBA:
@@ -254,10 +250,10 @@ namespace CamelotFramework  {
 			return PF_R8G8;
 		case GL_RGB8:
 		case GL_SRGB8:
-			return PF_X8R8G8B8;
+			return PF_R8G8B8X8;
 		case GL_RGBA8:
 		case GL_SRGB8_ALPHA8:
-			return PF_A8R8G8B8;
+			return PF_R8G8B8A8;
 		case GL_R16F:
 			return PF_FLOAT16_R;
 		case GL_RG16F:
@@ -286,7 +282,7 @@ namespace CamelotFramework  {
 		case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT:
 			return PF_DXT5;
 		default:
-			return PF_A8R8G8B8;
+			return PF_R8G8B8A8;
 		};
 	}
 	//----------------------------------------------------------------------------- 

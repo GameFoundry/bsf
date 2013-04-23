@@ -16,7 +16,16 @@ Reminders:
   - When I'll be doing SRGB write make sure GUI textures are handled properly. Right now they are read in gamma space, and displayed
     as normal, but if I switch to SRGB write then gamma would be applied twice to those textures.
   - Make editor background have a tileable pattern (see Mini paper app on my cell). Since tileable images wouldn't work with scale9grid, it should be an overlay over the solid background.
+    - Maybe use the background type I used for website in WebDIP?
+    - Use black with yellow-orange highlights (highlight = selected button, selected frame border, selected entry box, etc.)
 
+Potential optimizations:
+ - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.
+ - UI buffer updates
+   - https://developer.nvidia.com/sites/default/files/akamai/gamedev/files/gdc12/Efficient_Buffer_Management_McDonald.pdf
+   - See here how to avoid locks and stalls when updating just parts of a GUI buffer. In need to modify my mesh update code because it currently always updates 100% of the buffer.
+  - Maybe get rid of CPU UI buffers completely.
+ - UI shader resolution params for gui should be in a separate constant buffer
 ----------------------------------------------------------------------------------------------
 More detailed thought out system descriptions:
 

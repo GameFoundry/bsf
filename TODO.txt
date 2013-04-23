@@ -8,6 +8,9 @@ When loading WindowFrameTex manually, it doesn't get released properly
   - Although more than likely I am loading the model incorrectly since it works in Unity?
   - I probably want to determine front faces based on normals
 
+invalid operation in GL. Most likely created by enabling a certain vertex attrib without disabling it when using another shader. 
+  - try just using text shader without mesh and see if that helps
+
 Immediate TODO:
  - Issue with rendering same object from multiple cameras:
    - Material parameters should be copied after being submitted to the render context
