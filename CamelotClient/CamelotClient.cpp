@@ -304,7 +304,7 @@ int CALLBACK WinMain(
 	gResources().unload(fragProgRef);
 	gResources().unload(vertProgRef);
 	gResources().unload(testMaterial);
-	//windowFrameTex->destroy();
+	gResources().unload(windowFrameTex);
 
 	font.reset();
 	testMaterial.reset();
@@ -312,6 +312,7 @@ int CALLBACK WinMain(
 	dbgMeshRef.reset();
 	fragProgRef.reset();
 	vertProgRef.reset();
+	windowFrameTex.reset();
 
 	testModelGO->destroy();
 	cameraGO->destroy();
