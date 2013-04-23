@@ -185,7 +185,7 @@ namespace CamelotFramework
 		mAssemblerProgram = nullptr;
 
 		if (isSupported())
-			glDeleteShader(mGLHandle);
+			glDeleteProgram(mGLHandle);
 
 		HighLevelGpuProgram::destroy_internal();
 	}

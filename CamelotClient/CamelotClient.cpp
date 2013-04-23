@@ -51,7 +51,9 @@ int CALLBACK WinMain(
 	gBansheeApp().startUp("CamelotGLRenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
 #endif
 
-	//CommandQueue::addBreakpoint(1, 11);
+	//CommandQueue::addBreakpoint(0, 19);
+	//CommandQueue::addBreakpoint(0, 22);
+	//CommandQueue::addBreakpoint(0, 12);
 
 	RenderSystem* renderSystem = RenderSystem::instancePtr();
 	RenderWindowPtr renderWindow = gApplication().getPrimaryRenderWindow();

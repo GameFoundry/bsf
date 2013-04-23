@@ -128,11 +128,11 @@ namespace BansheeEngine
 						";
 
 		String psCode = "#version 400\n										\
-																			\
+						\
 						uniform sampler2D mainTexture;						\
 						in vec2 texcoord0;									\
 						out vec4 fragColor;									\
-																			\
+						\
 						void main()										\
 						{													\
 						vec4 color = texture2D(mainTexture, texcoord0.st);	\

@@ -24,7 +24,6 @@ Immediate TODO:
  - TextSprite bounds are wrong. Y coordinate is flipped
  - Calculate entire GUIWidget bounds and store them
  - Current way of transforming ORect from GUIWidget is almost certainly not correct
- - Implement D3D9 and GL BuiltInMaterialManager
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
  - Transformable GUI elements and their bounds
 
