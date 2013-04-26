@@ -340,8 +340,22 @@ namespace CamelotFramework
 	}
 
 	BindableGpuParams::BindableGpuParams(GpuParams* params)
-		:mParams(params)
+		:mParams(params), mIsDataOwner(true)
 	{
 
+	}
+
+	BindableGpuParams::~BindableGpuParams()
+	{
+		if(mIsDataOwner)
+			GpuParams::releaseBindableCopy(*this);
+	}
+
+	BindableGpuParams::BindableGpuParams(const BindableGpuParams& source)
+	{
+		mParams = source.mParams;
+
+		mIsDataOwner = true;
+		source.mIsDataOwner = false;
 	}
 }

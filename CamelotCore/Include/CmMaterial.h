@@ -98,6 +98,9 @@ namespace CamelotFramework
 
 		static HMaterial create();
 		static HMaterial create(ShaderPtr shader);
+	protected:
+		void destroy_internal();
+
 	private:
 		friend class MaterialManager;
 
@@ -108,6 +111,7 @@ namespace CamelotFramework
 		map<String, String>::type mValidParams; // Also maps Shader param name -> gpu variable name
 
 		vector<PassParametersPtr>::type mParametersPerPass;
+		vector<GpuParamBlockBufferPtr>::type mParamBuffers;
 
 		// These maps aren't necessary as we can read these values from the GpuParams directly
 		// but they make many things (especially serializing and getting values) so much easier
@@ -154,6 +158,8 @@ namespace CamelotFramework
 		map<String, String>::type determineParameterToBlockMapping(const vector<const GpuParamDesc*>::type& paramDescs);
 
 		bool areParamsEqual(const GpuParamDataDesc& paramA, const GpuParamDataDesc& paramB, bool ignoreBufferOffsets = false) const;
+
+		void freeParamBuffers();
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

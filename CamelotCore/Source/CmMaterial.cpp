@@ -7,6 +7,7 @@
 #include "CmGpuProgramParams.h"
 #include "CmHardwareBufferManager.h"
 #include "CmGpuProgram.h"
+#include "CmGpuParamBlockBuffer.h"
 #include "CmGpuParamDesc.h"
 #include "CmMaterialRTTI.h"
 #include "CmMaterialManager.h"
@@ -22,7 +23,7 @@ namespace CamelotFramework
 
 	Material::~Material()
 	{
-
+		
 	}
 
 	void Material::setShader(ShaderPtr shader)
@@ -45,6 +46,7 @@ namespace CamelotFramework
 		mStructValues.clear();
 		mTextureValues.clear();
 		mSamplerValues.clear();
+		freeParamBuffers();
 
 		if(mShader)
 		{
@@ -142,7 +144,10 @@ namespace CamelotFramework
 
 				GpuParamBlockBufferPtr newParamBlockBuffer;
 				if(!isShared)
+				{
 					newParamBlockBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(blockDesc.blockSize * sizeof(UINT32), usage);
+					mParamBuffers.push_back(newParamBlockBuffer);
+				}
 
 				paramBlockBuffers[*iter] = newParamBlockBuffer;
 				mValidShareableParamBlocks.insert(*iter);
@@ -299,6 +304,7 @@ namespace CamelotFramework
 							if(!iterBlockDesc->second.isShareable)
 							{
 								GpuParamBlockBufferPtr newParamBlockBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(iterBlockDesc->second.blockSize * sizeof(UINT32));
+								mParamBuffers.push_back(newParamBlockBuffer);
 
 								paramPtr->setParamBlockBuffer(iterBlockDesc->first, newParamBlockBuffer);
 							}
@@ -873,6 +879,23 @@ namespace CamelotFramework
 			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
 
 		return iterFind->second.at(arrayIdx);
+	}
+
+	void Material::destroy_internal()
+	{
+		freeParamBuffers();
+
+		Resource::destroy_internal();
+	}
+
+	void Material::freeParamBuffers()
+	{
+		for(auto& buffer : mParamBuffers)
+		{
+			buffer->destroy();
+		}
+
+		mParamBuffers.clear();
 	}
 
 	HMaterial Material::create()

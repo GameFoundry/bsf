@@ -80,9 +80,20 @@ namespace CamelotFramework
 		vector<HSamplerState>::type mSamplerStates;
 	};
 
+	/**
+	 * @brief	Specialized class for binding GPU parameters to the render system. You should not
+	 * 			handle this class manually.
+	 * 			
+	 * @note	Upon assignment this class transfers ownership of its data. Internal data
+	 * 			is destroyed when last assigned instance goes out of scope.
+	 * 			(In short, you should never have more than one active copy of an instance of this class)
+	 */
 	class CM_EXPORT BindableGpuParams
 	{
 	public:
+		BindableGpuParams(const BindableGpuParams& source);
+		~BindableGpuParams();
+
 		GpuParams& getParams() const { return *mParams; }
 
 	private:
@@ -91,5 +102,6 @@ namespace CamelotFramework
 		BindableGpuParams(GpuParams* params);
 
 		GpuParams *mParams;
+		mutable bool mIsDataOwner;
 	};
 }

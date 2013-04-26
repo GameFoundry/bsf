@@ -414,8 +414,6 @@ namespace CamelotFramework
 		{
 			CM_DELETE_BYTES(uniformBufferData, ScratchAlloc);
 		}
-
-		GpuParams::releaseBindableCopy(bindableParams);
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)

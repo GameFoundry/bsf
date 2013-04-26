@@ -496,8 +496,6 @@ namespace CamelotFramework
 		{
 			CM_DELETE_BYTES(curBufferData.second, ScratchAlloc);
 		}
-
-		GpuParams::releaseBindableCopy(bindableParams);
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& tex)

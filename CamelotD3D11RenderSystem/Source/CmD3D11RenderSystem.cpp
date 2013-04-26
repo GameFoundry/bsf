@@ -524,8 +524,6 @@ namespace CamelotFramework
 				break;
 			};
 		}
-
-		GpuParams::releaseBindableCopy(bindableParams);
 	}
 
 	void D3D11RenderSystem::draw(UINT32 vertexCount)
