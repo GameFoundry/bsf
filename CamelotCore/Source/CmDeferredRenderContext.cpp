@@ -110,7 +110,7 @@ namespace CamelotFramework
 		mCommandQueue->queue(boost::bind(&RenderSystem::unbindGpuProgram, mRenderSystem, gptype));
 	}
 
-	void DeferredRenderContext::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
+	void DeferredRenderContext::bindGpuParams(GpuProgramType gptype, BindableGpuParams& params)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuParams, mRenderSystem, gptype, params));
 	}

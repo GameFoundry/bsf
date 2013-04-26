@@ -2,14 +2,57 @@
 
 ----------------------------------------------------------------------------------------------
 
-When loading WindowFrameTex manually, it doesn't get released properly
+<<<<<<<Resource update/read>>>>>>>>
+Make sure to update the actual buffer in bindGpuParams
+ - It needs to accept an Unique GpuParams ptr
+ - It needs to call releaseCopyForDeferred when it ends
+
+Material::setParamBlock probably doesn't work anymore (and is atm commented out)
+
+INSTEAD OF createCopyForDeferred create a new BindableGpuParams class which basically just wraps GpuParams, with the difference that it is accepted in render system, and normal GpuParams isn't. Also create a special deleter that automatically calls releaseCopyForDeferred so that it doesn't need to be called manually.
+ - unique_ptr doesn't seem to work for GpuParams so maybe have that class handle that as well.
+ - pass a reference instead? take care with bind so it doesn't store a copy (boost::ref)
+
+
+All data classes (MeshData, PixelData, etc) derive from GpuBufferData class. 
+ - It contains basically just raw bytes.
+ - It has lock/unlock methods (used mostly internally)
+ - Upon submitting GpuBufferData to updateResource it gets locked so user cannot change it anymore
+
+QUESTION: How to deal with GpuBufferData for MeshData?
+ - It updates two separate buffers
+
+QUESTION: How to implement readResource and have the user be able to accurately read the returned data via
+ MeshData/PixelData?
+
+Inherit all buffer classes (texture, mesh, GPUBlock) from IGpuBuffer interface
+
+DeferredRenderContext::updateResource(IGpuBuffer, GpuBufferData)
+AsyncOp DeferredRenderContext::readResource(IGpuBuffer)
+
+--------
+
+Methods to port:
+WRITE:
+ - setRawPixels
+ - setRawPixels_async
+ - setMeshData
+ - GpuParamBlock::updateBuffer
+ - RenderTarget::swapBuffers
+READ:
+ - getMeshData
+ - getRawPixels
+ - getRawPixels_async
+
+--------
+
+Start with just GpuParamBlock and then move to Mesh/Texture later
+
+
 
  - My test model is rendering back faces. I need to flip them.
   - Although more than likely I am loading the model incorrectly since it works in Unity?
   - I probably want to determine front faces based on normals
-
-invalid operation in GL. Most likely created by enabling a certain vertex attrib without disabling it when using another shader. 
-  - try just using text shader without mesh and see if that helps
 
 Immediate TODO:
  - Issue with rendering same object from multiple cameras:

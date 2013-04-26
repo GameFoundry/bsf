@@ -78,7 +78,7 @@ namespace CamelotFramework
 		void setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx = 0);
 		void setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx = 0);
 
-		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
+		//void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
 
 		HTexture getTexture(const String& name) const;
 		HSamplerState getSamplerState(const String& name) const;

@@ -24,8 +24,8 @@ namespace CamelotFramework
 		 */
 		IndexBufferPtr createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
-		/** @copydoc HardwareBufferManager::createGpuParamBlock */
-		GpuParamBlockPtr createGpuParamBlockImpl();
+		/** @copydoc HardwareBufferManager::createGpuParamBlockBufferImpl */
+		GpuParamBlockBufferPtr createGpuParamBlockBufferImpl();
 
 		/**
 		 * @copydoc HardwareBufferManager::createGenericBufferImpl

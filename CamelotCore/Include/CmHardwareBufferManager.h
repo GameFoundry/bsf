@@ -95,7 +95,7 @@ namespace CamelotFramework {
 		 *
 		 * @return	The new GPU parameter block.
 		 */
-		virtual GpuParamBlockPtr createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage = GPBU_STATIC);
+		virtual GpuParamBlockBufferPtr createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
 
 		/**
 		 * @brief	Creates a generic buffer that can be passed as a parameter to a shader.
@@ -119,7 +119,7 @@ namespace CamelotFramework {
 		virtual VertexDeclarationPtr createVertexDeclarationImpl();
 		virtual VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
 		virtual IndexBufferPtr createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
-		virtual GpuParamBlockPtr createGpuParamBlockImpl() = 0;
+		virtual GpuParamBlockBufferPtr createGpuParamBlockBufferImpl() = 0;
 		virtual GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
 			bool randomGpuWrite = false, bool useCounter = false) = 0;
 	};

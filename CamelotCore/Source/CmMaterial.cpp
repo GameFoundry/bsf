@@ -112,7 +112,7 @@ namespace CamelotFramework
 
 			set<String>::type validShareableParamBlocks = determineValidShareableParamBlocks(allParamDescs);
 			map<String, String>::type paramToParamBlockMap = determineParameterToBlockMapping(allParamDescs);
-			map<String, GpuParamBlockPtr>::type paramBlocks;
+			map<String, GpuParamBlockBufferPtr>::type paramBlockBuffers;
 
 			// Create param blocks
 			const map<String, SHADER_PARAM_BLOCK_DESC>::type& shaderDesc = mShader->getParamBlocks();
@@ -140,11 +140,11 @@ namespace CamelotFramework
 					}
 				}
 
-				GpuParamBlockPtr newParamBlockBuffer;
+				GpuParamBlockBufferPtr newParamBlockBuffer;
 				if(!isShared)
-					newParamBlockBuffer = HardwareBufferManager::instance().createGpuParamBlock(blockDesc, usage);
+					newParamBlockBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(blockDesc.blockSize * sizeof(UINT32), usage);
 
-				paramBlocks[*iter] = newParamBlockBuffer;
+				paramBlockBuffers[*iter] = newParamBlockBuffer;
 				mValidShareableParamBlocks.insert(*iter);
 			}
 
@@ -286,9 +286,9 @@ namespace CamelotFramework
 							const String& paramBlockName = *iterBlock;
 							if(paramPtr->hasParamBlock(paramBlockName))
 							{
-								GpuParamBlockPtr blockBuffer = paramBlocks[paramBlockName];
+								GpuParamBlockBufferPtr blockBuffer = paramBlockBuffers[paramBlockName];
 
-								paramPtr->setParamBlock(paramBlockName, blockBuffer);
+								paramPtr->setParamBlockBuffer(paramBlockName, blockBuffer);
 							}
 						}
 
@@ -298,8 +298,9 @@ namespace CamelotFramework
 						{
 							if(!iterBlockDesc->second.isShareable)
 							{
-								GpuParamBlockPtr newParamBlockBuffer = HardwareBufferManager::instance().createGpuParamBlock(iterBlockDesc->second);
-								paramPtr->setParamBlock(iterBlockDesc->first, newParamBlockBuffer);
+								GpuParamBlockBufferPtr newParamBlockBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(iterBlockDesc->second.blockSize * sizeof(UINT32));
+
+								paramPtr->setParamBlockBuffer(iterBlockDesc->first, newParamBlockBuffer);
 							}
 						}
 					}
@@ -734,30 +735,30 @@ namespace CamelotFramework
 		savedValue[arrayIdx] = StructData(value, size);
 	}
 
-	void Material::setParamBlock(const String& name, GpuParamBlockPtr paramBlock)
-	{
-		auto iterFind = mValidShareableParamBlocks.find(name);
-		if(iterFind == mValidShareableParamBlocks.end())
-		{
-			LOGWRN("Material doesn't have a parameter block named " + name);
-			return;
-		}
+	//void Material::setParamBlock(const String& name, GpuParamBlockPtr paramBlock)
+	//{
+	//	auto iterFind = mValidShareableParamBlocks.find(name);
+	//	if(iterFind == mValidShareableParamBlocks.end())
+	//	{
+	//		LOGWRN("Material doesn't have a parameter block named " + name);
+	//		return;
+	//	}
 
-		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-		{
-			PassParametersPtr params = *iter;
+	//	for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+	//	{
+	//		PassParametersPtr params = *iter;
 
-			for(UINT32 i = 0; i < params->getNumParams(); i++)
-			{
-				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
-				if(paramPtr)
-				{
-					if(paramPtr->hasParamBlock(name))
-						paramPtr->setParam(name, paramBlock);
-				}
-			}
-		}
-	}
+	//		for(UINT32 i = 0; i < params->getNumParams(); i++)
+	//		{
+	//			GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+	//			if(paramPtr)
+	//			{
+	//				if(paramPtr->hasParamBlock(name))
+	//					paramPtr->setParam(name, paramBlock);
+	//			}
+	//		}
+	//	}
+	//}
 
 	UINT32 Material::getNumPasses() const
 	{
@@ -780,12 +781,6 @@ namespace CamelotFramework
 			CM_EXCEPT(InvalidParametersException, "Invalid pass index.");
 
 		PassParametersPtr params = mParametersPerPass[passIdx];
-
-		for(UINT32 i = 0; i < params->getNumParams(); i++)
-		{
-			if(params->getParamByIdx(i) != nullptr)
-				params->getParamByIdx(i)->updateParamBuffers();
-		}
 
 		return params;
 	}

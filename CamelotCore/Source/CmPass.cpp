@@ -5,6 +5,7 @@
 #include "CmPassRTTI.h"
 #include "CmDeferredRenderContext.h"
 #include "CmMaterial.h"
+#include "CmGpuParams.h"
 #include "CmException.h"
 
 namespace CamelotFramework
@@ -166,27 +167,27 @@ namespace CamelotFramework
 	{
 		HGpuProgram vertProgram = getVertexProgram();
 		if(vertProgram)
-			renderContext->bindGpuParams(GPT_VERTEX_PROGRAM, params->mVertParams);
+			renderContext->bindGpuParams(GPT_VERTEX_PROGRAM, GpuParams::createBindableCopy(params->mVertParams));
 
 		HGpuProgram fragProgram = getFragmentProgram();
 		if(fragProgram)
-			renderContext->bindGpuParams(GPT_FRAGMENT_PROGRAM, params->mFragParams);
+			renderContext->bindGpuParams(GPT_FRAGMENT_PROGRAM, GpuParams::createBindableCopy(params->mFragParams));
 
 		HGpuProgram geomProgram = getGeometryProgram();
 		if(geomProgram)
-			renderContext->bindGpuParams(GPT_GEOMETRY_PROGRAM, params->mGeomParams);
+			renderContext->bindGpuParams(GPT_GEOMETRY_PROGRAM, GpuParams::createBindableCopy(params->mGeomParams));
 
 		HGpuProgram hullProgram = getHullProgram();
 		if(hullProgram)
-			renderContext->bindGpuParams(GPT_HULL_PROGRAM, params->mHullParams);
+			renderContext->bindGpuParams(GPT_HULL_PROGRAM, GpuParams::createBindableCopy(params->mHullParams));
 
 		HGpuProgram domainProgram = getDomainProgram();
 		if(domainProgram)
-			renderContext->bindGpuParams(GPT_DOMAIN_PROGRAM, params->mDomainParams);
+			renderContext->bindGpuParams(GPT_DOMAIN_PROGRAM, GpuParams::createBindableCopy(params->mDomainParams));
 
 		HGpuProgram computeProgram = getComputeProgram();
 		if(computeProgram)
-			renderContext->bindGpuParams(GPT_COMPUTE_PROGRAM, params->mComputeParams);
+			renderContext->bindGpuParams(GPT_COMPUTE_PROGRAM, GpuParams::createBindableCopy(params->mComputeParams));
 	}
 	//----------------------------------------------------------------------
 	RTTITypeBase* Pass::getRTTIStatic()

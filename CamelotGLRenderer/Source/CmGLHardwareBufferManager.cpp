@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmGLIndexBuffer.h"
 #include "CmGLGpuBuffer.h"
 #include "CmHardwareBuffer.h"
-#include "CmGLGpuParamBlock.h"
+#include "CmGLGpuParamBlockBuffer.h"
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"
 
@@ -96,10 +96,10 @@ namespace CamelotFramework {
 			&CoreObject::_deleteDelayed<GLIndexBuffer, PoolAlloc>);
     }
 	//---------------------------------------------------------------------
-	GpuParamBlockPtr GLHardwareBufferManager::createGpuParamBlockImpl()
+	GpuParamBlockBufferPtr GLHardwareBufferManager::createGpuParamBlockBufferImpl()
 	{
-		return GpuParamBlockPtr(CM_NEW(GLGpuParamBlock, PoolAlloc) GLGpuParamBlock(),
-			&CoreObject::_deleteDelayed<GLGpuParamBlock, PoolAlloc>);
+		return GpuParamBlockBufferPtr(CM_NEW(GLGpuParamBlockBuffer, PoolAlloc) GLGpuParamBlockBuffer(),
+			&CoreObject::_deleteDelayed<GLGpuParamBlockBuffer, PoolAlloc>);
 	}
 	//---------------------------------------------------------------------
 	GpuBufferPtr GLHardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 

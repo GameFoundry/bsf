@@ -49,7 +49,7 @@ THE SOFTWARE.s
 #include "CmGLSLProgramPipelineManager.h"
 #include "CmRenderStateManager.h"
 #include "CmGpuParams.h"
-#include "CmGLGpuParamBlock.h"
+#include "CmGLGpuParamBlockBuffer.h"
 #include "CmDebug.h"
 
 #if CM_DEBUG_MODE
@@ -266,17 +266,19 @@ namespace CamelotFramework
 		RenderSystem::unbindGpuProgram(gptype);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
+	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		const GpuParamDesc& paramDesc = params->getParamDesc();
+		GpuParams& params = bindableParams.getParams();
+		params.updateHardwareBuffers();
+		const GpuParamDesc& paramDesc = params.getParamDesc();
 		GLSLGpuProgramPtr activeProgram = getActiveProgram(gptype);
 		GLuint glProgram = activeProgram->getGLSLProgram()->getGLHandle();
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			HTexture texture = params->getTexture(iter->second.slot);
+			HTexture texture = params.getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
 				setTexture(gptype, iter->second.slot, false, nullptr);
@@ -287,7 +289,7 @@ namespace CamelotFramework
 		UINT32 texUnit = 0;
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = params->getSamplerState(iter->second.slot);
+			HSamplerState& samplerState = params.getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
@@ -299,19 +301,28 @@ namespace CamelotFramework
 			texUnit++;
 		}
 
+		UINT8* uniformBufferData = nullptr;
+
 		UINT32 blockBinding = 0;
 		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
 		{
+			GpuParamBlockBufferPtr paramBlockBuffer = params.getParamBlockBuffer(iter->second.slot);
+			if(paramBlockBuffer == nullptr)
+				continue;
+
 			if(iter->second.slot == 0)
-				continue;
+			{
+				// 0 means uniforms are not in block, in which case we handle it specially
+				if(uniformBufferData == nullptr)
+				{
+					uniformBufferData = CM_NEW_BYTES(paramBlockBuffer->getSize(), ScratchAlloc);
+					paramBlockBuffer->readData(uniformBufferData);
+				}
 
-			GpuParamBlockPtr paramBlock = params->getParamBlock(iter->second.slot);
-			if(paramBlock == nullptr)
 				continue;
+			}
 
-			GLGpuParamBlockPtr glParamBlock = std::static_pointer_cast<GLGpuParamBlock>(paramBlock);
-			const GpuParamBlockBuffer* paramBlockBuffer = glParamBlock->getBindableBuffer();
-			const GLGpuParamBlockBuffer* glParamBlockBuffer = static_cast<const GLGpuParamBlockBuffer*>(paramBlockBuffer);
+			const GLGpuParamBlockBuffer* glParamBlockBuffer = static_cast<const GLGpuParamBlockBuffer*>(paramBlockBuffer.get());
 
 			UINT32 globalBlockBinding = getGLUniformBlockBinding(gptype, blockBinding);
 			glUniformBlockBinding(glProgram, iter->second.slot - 1, globalBlockBinding);
@@ -324,13 +335,10 @@ namespace CamelotFramework
 		{
 			const GpuParamDataDesc& paramDesc = iter->second;
 
-			GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
-			const GpuParamBlockBuffer* paramBlockBuffer = paramBlock->getBindableBuffer();
-
 			if(paramDesc.paramBlockSlot != 0) // 0 means uniforms are not in a block
 				continue;
 
-			const UINT8* ptrData = paramBlockBuffer->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
+			const UINT8* ptrData = uniformBufferData + paramDesc.cpuMemOffset * sizeof(UINT32);
 
 			switch(paramDesc.type)
 			{
@@ -401,6 +409,13 @@ namespace CamelotFramework
 				break;
 			}
 		}
+
+		if(uniformBufferData != nullptr)
+		{
+			CM_DELETE_BYTES(uniformBufferData, ScratchAlloc);
+		}
+
+		GpuParams::releaseBindableCopy(bindableParams);
 	}
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)

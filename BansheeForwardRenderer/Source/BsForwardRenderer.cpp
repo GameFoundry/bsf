@@ -33,8 +33,6 @@ namespace BansheeEngine
 
 	void ForwardRenderer::renderAll() 
 	{
-		
-
 		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
 
 		const vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();

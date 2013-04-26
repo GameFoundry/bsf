@@ -8,12 +8,13 @@ namespace CamelotFramework
 	{
 	public:
 		GpuParams(GpuParamDesc& paramDesc);
+		~GpuParams();
 
-		GpuParamBlockPtr getParamBlock(UINT32 slot) const;
-		GpuParamBlockPtr getParamBlock(const String& name) const;
+		GpuParamBlockBufferPtr getParamBlockBuffer(UINT32 slot) const;
+		GpuParamBlockBufferPtr getParamBlockBuffer(const String& name) const;
 
-		void setParamBlock(UINT32 slot, GpuParamBlockPtr paramBlock);
-		void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
+		void setParamBlockBuffer(UINT32 slot, GpuParamBlockBufferPtr paramBlockBuffer);
+		void setParamBlockBuffer(const String& name, GpuParamBlockBufferPtr paramBlockBuffer);
 
 		const GpuParamDesc& getParamDesc() const { return mParamDesc; }
 		UINT32 getDataParamSize(const String& name) const;
@@ -52,16 +53,43 @@ namespace CamelotFramework
 
 		void setTransposeMatrices(bool transpose) { mTransposeMatrices = transpose; }
 
-		void updateParamBuffers();
+		/**
+		 * @brief	Updates all used hardware parameter buffers. Should ONLY be called from render thread.
+		 */
+		void updateHardwareBuffers();
 
+		/**
+		 * @brief	Creates the copy of this object in a special way. Should only be called
+		 * 			internally by deferred render context when passing gpu params to the render thread.
+		 */
+		static BindableGpuParams createBindableCopy(GpuParamsPtr params);
+
+		/**
+		 * @brief	Needs to be called on any copy created with "createCopyForDeferred" before the object is deleted.
+		 */
+		static void releaseBindableCopy(BindableGpuParams& bindableParams);
 	private:
 		GpuParamDesc& mParamDesc;
 		bool mTransposeMatrices;
 
 		GpuParamDataDesc* getParamDesc(const String& name) const;
 
-		vector<GpuParamBlockPtr>::type mParamBlocks;
+		vector<GpuParamBlock*>::type mParamBlocks;
+		vector<GpuParamBlockBufferPtr>::type mParamBlockBuffers;
 		vector<HTexture>::type mTextures;
 		vector<HSamplerState>::type mSamplerStates;
+	};
+
+	class CM_EXPORT BindableGpuParams
+	{
+	public:
+		GpuParams& getParams() const { return *mParams; }
+
+	private:
+		friend class GpuParams;
+
+		BindableGpuParams(GpuParams* params);
+
+		GpuParams *mParams;
 	};
 }

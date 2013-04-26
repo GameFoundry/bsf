@@ -17,7 +17,7 @@
 #include "CmD3D11VertexBuffer.h"
 #include "CmD3D11IndexBuffer.h"
 #include "CmD3D11RenderStateManager.h"
-#include "CmD3D11GpuParamBlock.h"
+#include "CmD3D11GpuParamBlockBuffer.h"
 #include "CmD3D11InputLayoutManager.h"
 #include "CmD3D11HLSLProgram.h"
 #include "CmGpuParams.h"
@@ -457,15 +457,18 @@ namespace CamelotFramework
 		}
 	}
 
-	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
+	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		const GpuParamDesc& paramDesc = params->getParamDesc();
+		GpuParams& params = bindableParams.getParams();
+		params.updateHardwareBuffers();
 
+		const GpuParamDesc& paramDesc = params.getParamDesc();
+		
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = params->getSamplerState(iter->second.slot);
+			HSamplerState& samplerState = params.getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
@@ -475,7 +478,7 @@ namespace CamelotFramework
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			HTexture texture = params->getTexture(iter->second.slot);
+			HTexture texture = params.getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
 				setTexture(gptype, iter->second.slot, false, nullptr);
@@ -489,12 +492,11 @@ namespace CamelotFramework
 
 		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
 		{
-			GpuParamBlockPtr currentBlock = params->getParamBlock(iter->second.slot);
+			GpuParamBlockBufferPtr currentBlockBuffer = params.getParamBlockBuffer(iter->second.slot);
 
-			if(currentBlock != nullptr)
+			if(currentBlockBuffer != nullptr)
 			{
-				const GpuParamBlockBuffer* currentBlockBuffer = currentBlock->getBindableBuffer();
-				const D3D11GpuParamBlockBuffer* d3d11paramBlockBuffer = static_cast<const D3D11GpuParamBlockBuffer*>(currentBlockBuffer);
+				const D3D11GpuParamBlockBuffer* d3d11paramBlockBuffer = static_cast<const D3D11GpuParamBlockBuffer*>(currentBlockBuffer.get());
 				bufferArray[0] = d3d11paramBlockBuffer->getD3D11Buffer();
 			}
 			else
@@ -522,6 +524,8 @@ namespace CamelotFramework
 				break;
 			};
 		}
+
+		GpuParams::releaseBindableCopy(bindableParams);
 	}
 
 	void D3D11RenderSystem::draw(UINT32 vertexCount)

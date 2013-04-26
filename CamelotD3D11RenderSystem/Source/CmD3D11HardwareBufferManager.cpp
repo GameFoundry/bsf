@@ -2,7 +2,7 @@
 #include "CmD3D11VertexBuffer.h"
 #include "CmD3D11IndexBuffer.h"
 #include "CmD3D11GpuBuffer.h"
-#include "CmD3D11GpuParamBlock.h"
+#include "CmD3D11GpuParamBlockBuffer.h"
 #include "CmGpuParamDesc.h"
 
 namespace CamelotFramework
@@ -32,11 +32,11 @@ namespace CamelotFramework
 		return IndexBufferPtr(buffer, &CoreObject::_deleteDelayed<D3D11IndexBuffer, PoolAlloc>);
 	}
 
-	GpuParamBlockPtr D3D11HardwareBufferManager::createGpuParamBlockImpl()
+	GpuParamBlockBufferPtr D3D11HardwareBufferManager::createGpuParamBlockBufferImpl()
 	{
-		D3D11GpuParamBlock* paramBlock = CM_NEW(D3D11GpuParamBlock, PoolAlloc) D3D11GpuParamBlock();
+		D3D11GpuParamBlockBuffer* paramBlockBuffer = CM_NEW(D3D11GpuParamBlockBuffer, PoolAlloc) D3D11GpuParamBlockBuffer();
 
-		return GpuParamBlockPtr(paramBlock, &CoreObject::_deleteDelayed<D3D11GpuParamBlock, PoolAlloc>);
+		return GpuParamBlockBufferPtr(paramBlockBuffer, &CoreObject::_deleteDelayed<D3D11GpuParamBlockBuffer, PoolAlloc>);
 	}
 
 	GpuBufferPtr D3D11HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 

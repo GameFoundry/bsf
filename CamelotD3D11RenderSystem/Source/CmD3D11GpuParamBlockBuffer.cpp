@@ -1,12 +1,17 @@
-#include "CmD3D11GpuParamBlock.h"
+#include "CmD3D11GpuParamBlockBuffer.h"
 #include "CmD3D11HardwareBuffer.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
 
 namespace CamelotFramework
 {
-	D3D11GpuParamBlockBuffer::D3D11GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
-		:GpuParamBlockBuffer(size, usage), mBuffer(nullptr)
+	D3D11GpuParamBlockBuffer::D3D11GpuParamBlockBuffer()
+		:mBuffer(nullptr)
+	{
+
+	}
+
+	void D3D11GpuParamBlockBuffer::initialize_internal()
 	{
 		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = d3d11rs->getPrimaryDevice();
@@ -17,12 +22,16 @@ namespace CamelotFramework
 			mBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(D3D11HardwareBuffer::BT_CONSTANT, GBU_DYNAMIC, 1, mSize, device);
 		else
 			CM_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
+
+		GpuParamBlockBuffer::initialize_internal();
 	}
 
-	D3D11GpuParamBlockBuffer::~D3D11GpuParamBlockBuffer()
+	void D3D11GpuParamBlockBuffer::destroy_internal()
 	{
 		if(mBuffer != nullptr)
 			CM_DELETE(mBuffer, D3D11HardwareBuffer, PoolAlloc);
+
+		GpuParamBlockBuffer::destroy_internal();
 	}
 
 	ID3D11Buffer* D3D11GpuParamBlockBuffer::getD3D11Buffer() const
@@ -30,15 +39,13 @@ namespace CamelotFramework
 		return mBuffer->getD3DBuffer();
 	}
 
-	void D3D11GpuParamBlockBuffer::writeAll(const void* data)
+	void D3D11GpuParamBlockBuffer::writeData(const UINT8* data)
 	{
 		mBuffer->writeData(0, mSize, data, true);
-
-		GpuParamBlockBuffer::writeAll(data);
 	}
 
-	GpuParamBlockBuffer* D3D11GpuParamBlock::createBuffer() const
+	void D3D11GpuParamBlockBuffer::readData(UINT8* data) const
 	{
-		return CM_NEW(D3D11GpuParamBlockBuffer, PoolAlloc) D3D11GpuParamBlockBuffer(mSize, mUsage);
+		mBuffer->readData(0, mSize, data);
 	}
 }

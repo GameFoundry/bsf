@@ -54,7 +54,7 @@ THE SOFTWARE.
 #include "CmDepthStencilState.h"
 #include "CmGpuParams.h"
 #include "CmGpuParamDesc.h"
-#include "CmGpuParamBlock.h"
+#include "CmGpuParamBlockBuffer.h"
 #include "CmDebug.h"
 
 #if CM_DEBUG_MODE
@@ -336,15 +336,17 @@ namespace CamelotFramework
 		RenderSystem::unbindGpuProgram(gptype);
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr params)
+	void D3D9RenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		const GpuParamDesc& paramDesc = params->getParamDesc();
+		GpuParams& params = bindableParams.getParams();
+		params.updateHardwareBuffers();
+		const GpuParamDesc& paramDesc = params.getParamDesc();
 
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = params->getSamplerState(iter->second.slot);
+			HSamplerState& samplerState = params.getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
@@ -354,12 +356,32 @@ namespace CamelotFramework
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			HTexture texture = params->getTexture(iter->second.slot);
+			HTexture texture = params.getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
 				setTexture(gptype, iter->second.slot, false, nullptr);
 			else
 				setTexture(gptype, iter->second.slot, true, texture.getInternalPtr());
+		}
+
+		// Read all the buffer data so we can assign it. Not the most efficient way of accessing data
+		// but it is required in order to have standardized buffer interface.
+		std::unordered_map<UINT32, UINT8*> bufferData;
+
+		for(auto& curParam : paramDesc.params)
+		{
+			UINT32 paramBlockSlot = curParam.second.paramBlockSlot;
+			auto iterFind = bufferData.find(paramBlockSlot);
+
+			if(iterFind == bufferData.end())
+			{
+				GpuParamBlockBufferPtr paramBlock = params.getParamBlockBuffer(paramBlockSlot);
+
+				UINT8* data = CM_NEW_BYTES(paramBlock->getSize(), ScratchAlloc);
+				paramBlock->readData(data);
+
+				bufferData[paramBlockSlot] = data;
+			}
 		}
 
 		HRESULT hr;
@@ -372,10 +394,7 @@ namespace CamelotFramework
 				{
 					const GpuParamDataDesc& paramDesc = iter->second;
 
-					GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
-					const GpuParamBlockBuffer* currentBlockBuffer = paramBlock->getBindableBuffer();
-
-					const UINT8* ptrData = currentBlockBuffer->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
+					const UINT8* ptrData = bufferData[paramDesc.paramBlockSlot] + paramDesc.cpuMemOffset * sizeof(UINT32);
 
 					switch(paramDesc.type)
 					{
@@ -426,10 +445,7 @@ namespace CamelotFramework
 				{
 					const GpuParamDataDesc& paramDesc = iter->second;
 
-					GpuParamBlockPtr paramBlock = params->getParamBlock(paramDesc.paramBlockSlot);
-					const GpuParamBlockBuffer* currentBlockBuffer = paramBlock->getBindableBuffer();
-
-					const UINT8* ptrData = currentBlockBuffer->getDataPtr(paramDesc.cpuMemOffset * sizeof(UINT32));
+					const UINT8* ptrData = bufferData[paramDesc.paramBlockSlot] + paramDesc.cpuMemOffset * sizeof(UINT32);
 
 					switch(paramDesc.type)
 					{
@@ -475,6 +491,13 @@ namespace CamelotFramework
 			}
 			break;
 		};
+
+		for(auto& curBufferData : bufferData)
+		{
+			CM_DELETE_BYTES(curBufferData.second, ScratchAlloc);
+		}
+
+		GpuParams::releaseBindableCopy(bindableParams);
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& tex)

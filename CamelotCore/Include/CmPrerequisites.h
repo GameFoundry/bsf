@@ -137,6 +137,7 @@ namespace CamelotFramework {
 	class RasterizerState;
 	class BlendState;
 	class GpuParamBlock;
+	class GpuParamBlockBuffer;
 	class GpuParams;
 	struct GpuParamDesc;
 	struct GpuParamDataDesc;
@@ -148,6 +149,8 @@ namespace CamelotFramework {
 	class ImportOptions;
 	struct FontData;
 	class GameObject;
+	class GpuBufferData;
+	class BindableGpuParams;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -209,6 +212,7 @@ namespace CamelotFramework
 	typedef std::shared_ptr<RenderTexture> RenderTexturePtr;
 	typedef std::shared_ptr<MultiRenderTexture> MultiRenderTexturePtr;
 	typedef std::shared_ptr<GpuParamBlock> GpuParamBlockPtr;
+	typedef std::shared_ptr<GpuParamBlockBuffer> GpuParamBlockBufferPtr;
 	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
 	typedef std::shared_ptr<TextureView> TextureViewPtr;
 	typedef std::shared_ptr<Viewport> ViewportPtr;
@@ -217,6 +221,7 @@ namespace CamelotFramework
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
 	typedef std::shared_ptr<InputHandler> InputHandlerPtr;
+	typedef std::shared_ptr<GpuBufferData> GpuBufferDataPtr;
 }
 
 /************************************************************************/

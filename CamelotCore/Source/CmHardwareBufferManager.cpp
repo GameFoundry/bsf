@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "CmIndexData.h"
 #include "CmGpuBuffer.h"
 #include "CmVertexDeclaration.h"
+#include "CmGpuParamBlockBuffer.h"
 
 namespace CamelotFramework {
     //-----------------------------------------------------------------------
@@ -71,11 +72,11 @@ namespace CamelotFramework {
 
 	}
 	//-----------------------------------------------------------------------
-	GpuParamBlockPtr HardwareBufferManager::createGpuParamBlock(const GpuParamBlockDesc& paramDesc, GpuParamBlockUsage usage)
+	GpuParamBlockBufferPtr HardwareBufferManager::createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
 	{
-		GpuParamBlockPtr paramBlockPtr = createGpuParamBlockImpl();
+		GpuParamBlockBufferPtr paramBlockPtr = createGpuParamBlockBufferImpl();
 		paramBlockPtr->setThisPtr(paramBlockPtr);
-		paramBlockPtr->initialize(paramDesc, usage);
+		paramBlockPtr->initialize(size, usage);
 
 		return paramBlockPtr;
 	}

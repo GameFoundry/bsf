@@ -81,7 +81,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderSystem::bindGpuParams()
 		 */
-		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
+		void bindGpuParams(GpuProgramType gptype, BindableGpuParams& params);
 
 		/**
 		 * @copydoc RenderSystem::setVertexBuffer()

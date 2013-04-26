@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmD3D9IndexBuffer.h"
 #include "CmD3D9VertexDeclaration.h"
 #include "CmD3D9GpuBuffer.h"
-#include "CmGpuParamBlock.h"
+#include "CmGpuParamBlockBuffer.h"
 #include "CmException.h"
 
 namespace CamelotFramework 
@@ -60,10 +60,10 @@ namespace CamelotFramework
 		return IndexBufferPtr(buffer, &CoreObject::_deleteDelayed<D3D9IndexBuffer, PoolAlloc>);
     }
 	//-----------------------------------------------------------------------
-	GpuParamBlockPtr D3D9HardwareBufferManager::createGpuParamBlockImpl()
+	GpuParamBlockBufferPtr D3D9HardwareBufferManager::createGpuParamBlockBufferImpl()
 	{
-		GpuParamBlock* paramBlock = CM_NEW(GpuParamBlock, PoolAlloc) GpuParamBlock();
-		return GpuParamBlockPtr(paramBlock, &CoreObject::_deleteDelayed<GpuParamBlock, PoolAlloc>);
+		GpuParamBlockBuffer* paramBlockBuffer = CM_NEW(GenericGpuParamBlockBuffer, PoolAlloc) GenericGpuParamBlockBuffer();
+		return GpuParamBlockBufferPtr(paramBlockBuffer, &CoreObject::_deleteDelayed<GpuParamBlockBuffer, PoolAlloc>);
 	}
 	//-----------------------------------------------------------------------
 	GpuBufferPtr D3D9HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 

@@ -223,7 +223,7 @@ namespace CamelotFramework
 		@param gptype The type of program to bind the parameters to
 		@param params The parameters to bind
 		*/
-		virtual void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params) = 0;
+		virtual void bindGpuParams(GpuProgramType gptype, BindableGpuParams& params) = 0;
 
 		/** Unbinds GpuPrograms of a given GpuProgramType.
 		@remarks
