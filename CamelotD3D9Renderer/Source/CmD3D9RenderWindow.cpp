@@ -254,7 +254,7 @@ namespace CamelotFramework
 		mClosed = false;
 
 		D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(RenderSystem::instancePtr());
-		rs->_notifyWindowCreated(*this);
+		rs->registerWindow(*this);
 
 		RenderWindow::initialize_internal();
 	}

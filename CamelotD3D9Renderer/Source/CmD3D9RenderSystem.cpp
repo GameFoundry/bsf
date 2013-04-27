@@ -182,8 +182,15 @@ namespace CamelotFramework
 		// Create render state manager
 		RenderStateManager::startUp(CM_NEW(RenderStateManager, GenAlloc) RenderStateManager());
 
+		// Create primary window and finalize initialization
+		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
+		D3D9RenderWindow* d3d9renderWindow = static_cast<D3D9RenderWindow*>(primaryWindow.get());
+		updateRenderSystemCapabilities(d3d9renderWindow);
+
 		// call superclass method
 		RenderSystem::initialize_internal(asyncOp);
+
+		asyncOp.completeOperation(primaryWindow);
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::destroy_internal()
@@ -241,7 +248,7 @@ namespace CamelotFramework
 		msD3D9RenderSystem = NULL;
 	}
 	//--------------------------------------------------------------------
-	void D3D9RenderSystem::_notifyWindowCreated(RenderWindow& renderWindow)
+	void D3D9RenderSystem::registerWindow(RenderWindow& renderWindow)
 	{		
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -265,8 +272,6 @@ namespace CamelotFramework
 		}
 
 		mResourceManager->unlockDeviceAccess();
-
-		updateRenderSystemCapabilities(d3d9renderWindow);
 	}	
 
 	void D3D9RenderSystem::bindGpuProgram(HGpuProgram prg)

@@ -1,8 +1,9 @@
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------
-<<<<<<OpenGL issues>>>>>>>
-Camera in new window in OpenGL doesn't render anything
+Finish up DX9 window init
+Attempt to remove _notifyWindowCreated method
+ - instead make sure of RenderWindowManager?
 
 -------------
 
