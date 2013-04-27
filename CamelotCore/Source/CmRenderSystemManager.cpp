@@ -6,7 +6,7 @@
 
 namespace CamelotFramework
 {
-	void RenderSystemManager::setActive(const String& pluginFilename)
+	RenderWindowPtr RenderSystemManager::initialize(const String& pluginFilename, RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
 		DynLib* loadedLibrary = gDynLibManager().load(pluginFilename);
 		String name = "";
@@ -24,9 +24,11 @@ namespace CamelotFramework
 			if((*iter)->name() == name)
 			{
 				(*iter)->create();		
-				RenderSystem::instance().initialize();
+				return RenderSystem::instance().initialize(primaryWindowDesc);
 			}
 		}
+
+		return nullptr;
 	}
 
 	void RenderSystemManager::registerRenderSystemFactory(RenderSystemFactoryPtr factory)

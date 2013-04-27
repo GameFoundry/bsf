@@ -40,7 +40,7 @@ namespace CamelotFramework
 		:mPrimaryRenderWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false)
 	{ }
 
-	void Application::startUp(const START_UP_DESC& desc)
+	void Application::startUp(START_UP_DESC& desc)
 	{
 		Time::startUp(CM_NEW(Time, GenAlloc) Time());
 		Input::startUp(CM_NEW(Input, GenAlloc) Input());
@@ -50,7 +50,7 @@ namespace CamelotFramework
 		HighLevelGpuProgramManager::startUp(CM_NEW(HighLevelGpuProgramManager, GenAlloc) HighLevelGpuProgramManager());
 
 		RenderSystemManager::startUp(CM_NEW(RenderSystemManager, GenAlloc) RenderSystemManager());
-		RenderSystemManager::instance().setActive(desc.renderSystem);
+		mPrimaryRenderWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
 
 		RendererManager::startUp(CM_NEW(RendererManager, GenAlloc) RendererManager());
 
@@ -58,18 +58,6 @@ namespace CamelotFramework
 		RendererManager::instance().setActive(desc.renderer);
 
 		RenderSystem* renderSystem = RenderSystem::instancePtr();
-
-		RENDER_WINDOW_DESC renderWindowDesc;
-		renderWindowDesc.width = 1280;
-		renderWindowDesc.height = 720;
-		renderWindowDesc.title = "Camelot Renderer";
-		renderWindowDesc.fullscreen = false;
-
-		mPrimaryRenderWindow = RenderWindow::create(renderWindowDesc);
-		mPrimaryRenderWindow->waitUntilInitialized(); // TODO: Created window is required for proper initialization of the render system so I need to wait.
-		                                              // I plan on handling this differently. Either by somehow allowing the RS to be initialized without a window,
-		                                              // or forcing a window to be created with RenderSystemManager::startUp. Initializing OpenGL context without a window
-		                                              // is especially troublesome (apparently possible just poorly documented)
 
 		mPrimaryRenderContext = renderSystem->createDeferredContext();
 

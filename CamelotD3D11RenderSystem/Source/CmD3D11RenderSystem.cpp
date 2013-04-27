@@ -59,7 +59,7 @@ namespace CamelotFramework
 		return strName;
 	}
 
-	void D3D11RenderSystem::initialize_internal()
+	void D3D11RenderSystem::initialize_internal(AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -132,7 +132,11 @@ namespace CamelotFramework
 
 		mIAManager = CM_NEW(D3D11InputLayoutManager, GenAlloc) D3D11InputLayoutManager();
 
-		RenderSystem::initialize_internal();
+		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
+
+		RenderSystem::initialize_internal(asyncOp);
+
+		asyncOp.completeOperation(primaryWindow);
 	}
 
     void D3D11RenderSystem::destroy_internal()

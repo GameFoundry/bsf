@@ -54,15 +54,10 @@ namespace CamelotFramework {
          */
         virtual void endCurrent() = 0;
         
-        bool getInitialized() { return initialized; };
-        void setInitialized() { initialized = true; };
-
 		/**
 		* Release the render context.
 		*/
 		virtual void releaseContext() {}
-    protected:
-        bool initialized;
     };
 }
 

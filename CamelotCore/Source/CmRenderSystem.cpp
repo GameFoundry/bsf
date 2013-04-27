@@ -89,17 +89,19 @@ namespace CamelotFramework {
 		mCurrentCapabilities = nullptr;
     }
 	//-----------------------------------------------------------------------
-	void RenderSystem::initialize()
+	RenderWindowPtr RenderSystem::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
 		mCommandQueue = CM_NEW(CommandQueue, GenAlloc) CommandQueue(CM_THREAD_CURRENT_ID, true);
+		mPrimaryWindowDesc = primaryWindowDesc;
 
 		initRenderThread();
 
-		queueCommand(boost::bind(&RenderSystem::initialize_internal, this), true);
+		AsyncOp op = queueReturnCommand(boost::bind(&RenderSystem::initialize_internal, this, _1), true);
+		return op.getReturnValue<RenderWindowPtr>();
 	}
 	//-----------------------------------------------------------------------
-	void RenderSystem::initialize_internal()
+	void RenderSystem::initialize_internal(AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 

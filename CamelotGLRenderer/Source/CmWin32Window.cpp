@@ -288,9 +288,6 @@ namespace CamelotFramework {
 			WindowEventUtilities::_addRenderWindow(this);			
 		}
 
-		HDC old_hdc = wglGetCurrentDC();
-		HGLRC old_context = wglGetCurrentContext();
-
 		RECT rc;
 		// top and left represent outer window position
 		GetWindowRect(mHWnd, &rc);
@@ -342,50 +339,33 @@ namespace CamelotFramework {
 			mHwGamma = testHwGamma;
 			mFSAA = testFsaa;
 		}
-		if (!mIsExternalGLContext)
-		{
-			mGlrc = wglCreateContext(mHDC);
-			if (!mGlrc)
-			{
-				CM_EXCEPT(RenderingAPIException, 
-					"wglCreateContext failed: " + translateWGLError());
-			}
-		}
-
-		if (!wglMakeCurrent(mHDC, mGlrc))
-		{
-			CM_EXCEPT(RenderingAPIException, "wglMakeCurrent");
-		}
-
-		// Do not change vsync if the external window has the OpenGL control
-		if (!mIsExternalGLControl) {
-			// Don't use wglew as if this is the first window, we won't have initialised yet
-			PFNWGLSWAPINTERVALEXTPROC _wglSwapIntervalEXT = 
-				(PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-			if (_wglSwapIntervalEXT)
-				_wglSwapIntervalEXT(mDesc.vsync ? mDesc.vsyncInterval : 0);
-		}
-
-		if (old_context && old_context != mGlrc)
-		{
-			// Restore old context
-			if (!wglMakeCurrent(old_hdc, old_context))
-				CM_EXCEPT(RenderingAPIException, "wglMakeCurrent() failed");
-
-			// Share lists with old context
-			if (!wglShareLists(old_context, mGlrc))
-				CM_EXCEPT(RenderingAPIException, "wglShareLists() failed");
-		}
-
-		// Create RenderSystem context
-		mContext = CM_NEW(Win32Context, GenAlloc) Win32Context(mHDC, mGlrc);
-
+		
 		mActive = true;
 
 		GLRenderSystem* rs = static_cast<GLRenderSystem*>(RenderSystem::instancePtr());
 
-		rs->_notifyWindowCreated(*this);
-		rs->registerContext(mContext);
+		// If RenderSystem has initialized a context use that, otherwise we create our own
+		if(!rs->isContextInitialized())
+		{
+			if (!mIsExternalGLContext)
+			{
+				mGlrc = wglCreateContext(mHDC);
+
+				if (!mGlrc)
+				{
+					CM_EXCEPT(RenderingAPIException, 
+						"wglCreateContext failed: " + translateWGLError());
+				}
+			}
+		}
+		else
+		{
+			rs->getMainContext()->setCurrent();
+			mGlrc = wglGetCurrentContext();
+		}
+
+		// Create RenderSystem context
+		mContext = CM_NEW(Win32Context, GenAlloc) Win32Context(mHDC, mGlrc);
 
 		RenderWindow::initialize_internal();
 	}

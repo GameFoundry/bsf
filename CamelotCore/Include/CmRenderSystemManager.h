@@ -11,7 +11,7 @@ namespace CamelotFramework
 	class CM_EXPORT RenderSystemManager : public Module<RenderSystemManager>
 	{
 	public:
-		void setActive(const String& name);
+		RenderWindowPtr initialize(const String& name, RENDER_WINDOW_DESC& primaryWindowDesc);
 
 		void registerRenderSystemFactory(RenderSystemFactoryPtr factory);
 	private:

@@ -3,8 +3,6 @@
 ----------------------------------------------------------------------------------------------
 <<<<<<OpenGL issues>>>>>>>
 Camera in new window in OpenGL doesn't render anything
-Destroying OpenGL window doesn't work
-OpenGL camera/rendering is acting really jerky and weird
 
 -------------
 
@@ -13,10 +11,6 @@ When I'm canceling command queue commands I might be canceling important user co
  - render commands can be cancelled with no repercussions?
  - maybe I should someone block sim thread if its running too fast?
    - input lag?
-
-Shared GPU buffers
- - wouldn't work atm due to the way I update the buffers (and the way I mark them dirty)
- - Material::setParamBlock is commented out
 
 <<<<<<<Resource update/read>>>>>>>>
 All data classes (MeshData, PixelData, etc) derive from GpuBufferData class. 
@@ -196,7 +190,9 @@ Low priority TODO
   - Resources::unload will deadlock if the resource isn't being loaded!
     - Maybe re-think how I handle ResourceHandle.isCreated?
   - Check D3D9/D3D11/GL resource usages. DX11 reports many unreleased objects. I'm guessing DX9 will as well. Not sure how to check OpenGL.
-
+ - Shared GPU buffers
+   - wouldn't work atm due to the way I update the buffers (and the way I mark them dirty)
+   - Material::setParamBlock is commented out
 ----------------------------------------------------------------------------------------------
 Optional:
  - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic

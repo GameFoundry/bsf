@@ -260,7 +260,7 @@ namespace CamelotFramework
 		friend class D3D9DeviceManager;		
 		friend class D3D9RenderWindowManager;
 
-		void initialize_internal();
+		void initialize_internal(AsyncOp& asyncOp);
 		void destroy_internal();
 
 		void setClipPlanesImpl(const PlaneList& clipPlanes);	

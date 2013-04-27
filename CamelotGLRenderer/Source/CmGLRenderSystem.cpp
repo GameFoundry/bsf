@@ -136,7 +136,7 @@ namespace CamelotFramework
 		return strName;
 	}
 
-	void GLRenderSystem::initialize_internal()
+	void GLRenderSystem::initialize_internal(AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -145,7 +145,44 @@ namespace CamelotFramework
 
 		RenderStateManager::startUp(CM_NEW(RenderStateManager, GenAlloc) RenderStateManager());
 
-		RenderSystem::initialize_internal();
+		// Initialize a window so we have something to create a GL context with
+		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
+		             
+		// Get the context from the window and finish initialization
+		GLContext *context = nullptr;
+		primaryWindow->getCustomAttribute("GLCONTEXT", &context);
+		initializeContext(context);
+
+		checkForErrors();
+
+		std::vector<CamelotFramework::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+
+		if (!tokens.empty())
+		{
+			mDriverVersion.major = parseInt(tokens[0]);
+			if (tokens.size() > 1)
+				mDriverVersion.minor = parseInt(tokens[1]);
+			if (tokens.size() > 2)
+				mDriverVersion.release = parseInt(tokens[2]); 
+		}
+		mDriverVersion.build = 0;
+		// Initialise GL after the first window has been created
+		// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
+		mCurrentCapabilities = createRenderSystemCapabilities();
+		checkForErrors();
+
+		initialiseFromRenderSystemCapabilities(mCurrentCapabilities);
+		checkForErrors();
+
+		// Initialise the main context
+		oneTimeContextInitialization();
+		checkForErrors();
+
+		mGLInitialised = true;
+
+		RenderSystem::initialize_internal(asyncOp);
+
+		asyncOp.completeOperation(primaryWindow);
 	}
 
 	void GLRenderSystem::destroy_internal()
@@ -1331,13 +1368,6 @@ namespace CamelotFramework
 		mCurrentContext = context;
 		mCurrentContext->setCurrent();
 
-		// Check if the context has already done one-time initialisation
-		if(!mCurrentContext->getInitialized()) 
-		{
-			oneTimeContextInitialization();
-			mCurrentContext->setInitialized();
-		}
-
 		// Must reset depth/colour write mask to according with user desired, otherwise,
 		// clearFrameBuffer would be wrong because the value we are recorded may be
 		// difference with the really state stored in GL context.
@@ -1345,63 +1375,6 @@ namespace CamelotFramework
 		glColorMask(mColourWrite[0], mColourWrite[1], mColourWrite[2], mColourWrite[3]);
 		glStencilMask(mStencilWriteMask);
 
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::registerContext(GLContext* context)
-	{
-		if (!mGLInitialised) 
-		{                
-			// set up glew and GLSupport
-			initialiseContext(context);
-
-			checkForErrors();
-
-			std::vector<CamelotFramework::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
-
-			if (!tokens.empty())
-			{
-				mDriverVersion.major = parseInt(tokens[0]);
-				if (tokens.size() > 1)
-					mDriverVersion.minor = parseInt(tokens[1]);
-				if (tokens.size() > 2)
-					mDriverVersion.release = parseInt(tokens[2]); 
-			}
-			mDriverVersion.build = 0;
-			// Initialise GL after the first window has been created
-			// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
-			mCurrentCapabilities = createRenderSystemCapabilities();
-			checkForErrors();
-
-			initialiseFromRenderSystemCapabilities(mCurrentCapabilities);
-			checkForErrors();
-
-			// Initialise the main context
-			oneTimeContextInitialization();
-			checkForErrors();
-
-			if(mCurrentContext)
-			{
-				mCurrentContext->setInitialized();
-				checkForErrors();
-			}
-		}
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::unregisterContext(GLContext *context)
-	{
-		if(mCurrentContext == context) {
-			// Change the context to something else so that a valid context
-			// remains active. When this is the main context being unregistered,
-			// we set the main context to 0.
-			if(mCurrentContext != mMainContext) {
-				switchContext(mMainContext);
-			} else {
-				/// No contexts remain
-				mCurrentContext->endCurrent();
-				mCurrentContext = 0;
-				mMainContext = 0;
-			}
-		}
 	}
 	//---------------------------------------------------------------------
 	bool GLRenderSystem::activateGLTextureUnit(UINT16 unit)
@@ -1763,7 +1736,7 @@ namespace CamelotFramework
 		return primType;
 	}
 	//-----------------------------------------------------------------------
-	void GLRenderSystem::initialiseContext(GLContext* primary)
+	void GLRenderSystem::initializeContext(GLContext* primary)
 	{
 		// Set main and current context
 		mMainContext = primary;
@@ -1907,8 +1880,6 @@ namespace CamelotFramework
 		/// Create the texture manager        
 		TextureManager::startUp(CM_NEW(GLTextureManager, GenAlloc) GLTextureManager(*mGLSupport)); 
 		checkForErrors();
-
-		mGLInitialised = true;
 	}
 
 	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const

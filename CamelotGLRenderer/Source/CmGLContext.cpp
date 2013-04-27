@@ -30,16 +30,14 @@ THE SOFTWARE.
 
 namespace CamelotFramework {
     // Empty base class
-    GLContext::GLContext():
-        initialized(false) {
-    }
+    GLContext::GLContext()
+	{ }
     
-    GLContext::~GLContext() {        
-    }
+    GLContext::~GLContext() 
+	{ }
     
-    void GLContext::endCurrent() {
-    }
-    
+    void GLContext::endCurrent() 
+	{ } 
 }
 
 #if CM_THREAD_SUPPORT == 1

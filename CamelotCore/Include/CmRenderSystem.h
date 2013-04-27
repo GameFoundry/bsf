@@ -42,6 +42,7 @@ THE SOFTWARE.
 #include "CmRenderSystemCapabilities.h"
 #include "CmRenderTarget.h"
 #include "CmRenderTexture.h"
+#include "CmRenderWindow.h"
 #include "CmGpuProgram.h"
 #include "CmPlane.h"
 #include "CmModule.h"
@@ -370,11 +371,17 @@ namespace CamelotFramework
 		/// Used to store the capabilities of the graphics card
 		RenderSystemCapabilities* mCurrentCapabilities;
 
+		// TODO - Only used between initialize and initialize_internal. Handle it better?
+		RENDER_WINDOW_DESC mPrimaryWindowDesc;
+
 		/**
-		 * @brief	Call right after creation to properly initialize the RenderSystem;
+		 * @brief	Initializes the render system and creates a primary render window.
+		 * 			
+		 * @note	Although I'd like otherwise, due to the nature of some render system implementations, 
+		 * 			you cannot initialize the render system without a window.
 		 */
-		void initialize();
-		virtual void initialize_internal();
+		RenderWindowPtr initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
+		virtual void initialize_internal(AsyncOp& asyncOp);
 		virtual void destroy_internal();
 
 		/// Internal method used to set the underlying clip planes when needed

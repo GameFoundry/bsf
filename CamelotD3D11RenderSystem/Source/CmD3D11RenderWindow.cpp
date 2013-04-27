@@ -256,10 +256,6 @@ namespace CamelotFramework
 		mDXGIFactory->MakeWindowAssociation(mHWnd, NULL);
 		setHidden(mHidden);
 
-		RenderSystem* rs = RenderSystem::instancePtr();
-		D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(rs);
-		d3d11rs->_notifyWindowCreated(*this);
-
 		RenderWindow::initialize_internal();
 	}
 

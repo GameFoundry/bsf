@@ -193,9 +193,9 @@ namespace CamelotFramework {
 		/* 				Internal use by OpenGL RenderSystem only                */
 		/************************************************************************/
 
-        void unregisterContext(GLContext *context);
-		void registerContext(GLContext* context);
+		bool isContextInitialized() const { return mGLInitialised; }
 
+		GLContext* getMainContext() const { return mMainContext; } 
 		GLSupport* getGLSupport() const { return mGLSupport; }
 
     private:
@@ -227,7 +227,7 @@ namespace CamelotFramework {
  
         GLint getBlendMode(BlendFactor ogreBlend) const;
 		GLint getTextureAddressingMode(TextureAddressingMode tam) const;
-		void initialiseContext(GLContext* primary);
+		void initializeContext(GLContext* primary);
 
 		/** See
           RenderSystem
@@ -285,11 +285,8 @@ namespace CamelotFramework {
 		IndexBufferPtr mBoundIndexBuffer;
 		DrawOperationType mCurrentDrawOperation;
 
-		/* The main GL context - main thread only */
         GLContext *mMainContext;
-        /* The current GL context  - main thread only */
         GLContext *mCurrentContext;
-		typedef list<GLContext*>::type GLContextList;
 
 		vector<GLuint>::type mBoundAttributes; // Only full between begin/endDraw calls
 		bool mDrawCallInProgress;
@@ -300,7 +297,7 @@ namespace CamelotFramework {
 		/**
 		 * @copydoc	RenderSystem::initialize_internal().
 		 */
-		void initialize_internal();
+		void initialize_internal(AsyncOp& asyncOp);
 
 		/**
 		 * @copydoc	RenderSystem::destroy_internal().
@@ -583,9 +580,6 @@ namespace CamelotFramework {
 
 		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program);
 		GLSLGpuProgramPtr getActiveProgram(GpuProgramType gptype) const;
-
-		/** Returns the main context */
-		GLContext* _getMainContext() {return mMainContext;} 
     };
 }
 #endif

@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmHighLevelGpuProgram.h"
+#include "CmRenderWindow.h"
 
 namespace CamelotFramework
 {
@@ -20,6 +21,8 @@ namespace CamelotFramework
 		String input;
 		String sceneManager;
 
+		RENDER_WINDOW_DESC primaryWindowDesc;
+
 		std::vector<String> importers;
 
 		String resourceCacheDirectory;
@@ -34,7 +37,7 @@ namespace CamelotFramework
 			 * @brief	Starts the application using the specified options. 
 			 * 			This is how you start the engine.
 			 */
-			void startUp(const START_UP_DESC& desc);
+			void startUp(START_UP_DESC& desc);
 
 			/**
 			 * @brief	Executes the main loop. This will cause actually rendering to be performed

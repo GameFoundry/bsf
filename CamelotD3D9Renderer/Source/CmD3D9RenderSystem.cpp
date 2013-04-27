@@ -133,7 +133,7 @@ namespace CamelotFramework
 		return strName;
 	}
 
-	void D3D9RenderSystem::initialize_internal()
+	void D3D9RenderSystem::initialize_internal(AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
@@ -183,7 +183,7 @@ namespace CamelotFramework
 		RenderStateManager::startUp(CM_NEW(RenderStateManager, GenAlloc) RenderStateManager());
 
 		// call superclass method
-		RenderSystem::initialize_internal();
+		RenderSystem::initialize_internal(asyncOp);
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::destroy_internal()

@@ -90,7 +90,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc	RenderSystem::initialize_internal().
 		 */
-		void initialize_internal();
+		void initialize_internal(AsyncOp& asyncOp);
 
 		/**
 		 * @copydoc	RenderSystem::destroy_internal().

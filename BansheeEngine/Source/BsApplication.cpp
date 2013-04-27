@@ -17,12 +17,13 @@ namespace BansheeEngine
 
 	}
 
-	void Application::startUp(const String& renderSystem, const String& renderer, const String& resourceCacheDir)
+	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer, const String& resourceCacheDir)
 	{
 		CM::START_UP_DESC desc;
 		desc.renderSystem = renderSystem;
 		desc.renderer= renderer;
 		desc.resourceCacheDirectory = resourceCacheDir;
+		desc.primaryWindowDesc = primaryWindowDesc;
 
 		desc.input = "CamelotOISInput";
 		desc.sceneManager = "BansheeOctreeSM";

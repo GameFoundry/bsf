@@ -31,7 +31,6 @@ THE SOFTWARE.
 #endif
 #include "CmWin32Context.h"
 #include "CmException.h"
-#include "CmGLRenderSystem.h"
 
 namespace CamelotFramework {
 
@@ -44,10 +43,7 @@ namespace CamelotFramework {
     
     Win32Context::~Win32Context()
     {
-		// NB have to do this is subclass to ensure any methods called back
-		// are on this subclass and not half-destructed superclass
-		GLRenderSystem *rs = static_cast<GLRenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
-		rs->unregisterContext(this);
+
     }
         
     void Win32Context::setCurrent()

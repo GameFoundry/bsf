@@ -173,6 +173,7 @@ namespace CamelotFramework {
 	struct BLEND_STATE_DESC;
 	struct RENDER_TARGET_BLEND_STATE_DESC;
 	struct RENDER_TEXTURE_DESC;
+	struct RENDER_WINDOW_DESC;
 	struct FONT_DESC;
 }
 

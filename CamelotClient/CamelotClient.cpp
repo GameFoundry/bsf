@@ -29,8 +29,8 @@
 #include "CmEditorWindow.h"
 
 //#define DX11
-//#define DX9
-#define GL
+#define DX9
+//#define GL
 
 using namespace CamelotFramework;
 using namespace CamelotEditor;
@@ -43,12 +43,18 @@ int CALLBACK WinMain(
 	_In_  int nCmdShow
 	)
 {
+	RENDER_WINDOW_DESC renderWindowDesc;
+	renderWindowDesc.width = 1280;
+	renderWindowDesc.height = 720;
+	renderWindowDesc.title = "Banshee";
+	renderWindowDesc.fullscreen = false;
+
 #ifdef DX11
-	gBansheeApp().startUp("CamelotD3D11RenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
+	gBansheeApp().startUp(renderWindowDesc, "CamelotD3D11RenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
 #elif defined DX9
-	gBansheeApp().startUp("CamelotD3D9RenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
+	gBansheeApp().startUp(renderWindowDesc, "CamelotD3D9RenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
 #else
-	gBansheeApp().startUp("CamelotGLRenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
+	gBansheeApp().startUp(renderWindowDesc, "CamelotGLRenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
 #endif
 
 	//CommandQueue::addBreakpoint(0, 19);
@@ -72,8 +78,8 @@ int CALLBACK WinMain(
 	HSceneObject testModelGO = SceneObject::create("TestMesh");
 	HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
-	//HSceneObject testTextGO = SceneObject::create("TestText");
-	//GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
+	HSceneObject testTextGO = SceneObject::create("TestText");
+	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
 	HFont font;
 	
@@ -96,7 +102,7 @@ int CALLBACK WinMain(
 
 	windowFrameTex.waitUntilLoaded();
 
-	//textSprite->init(camera, "Testing in a new row, does this work?", font, 12, windowFrameTex);
+	textSprite->init(camera, "Testing in a new row, does this work?", font, 12, windowFrameTex);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
