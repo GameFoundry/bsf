@@ -146,6 +146,7 @@ namespace CamelotFramework
 
 	void Application::shutDown()
 	{
+		mPrimaryRenderWindow->destroy();
 		mPrimaryRenderWindow = nullptr;
 
 		Importer::shutDown();
@@ -201,7 +202,7 @@ namespace CamelotFramework
 	{
 		if(!mPrimaryRenderWindow)
 		{
-			CM_EXCEPT(InternalErrorException, "Unable to get window handle. No active window is set!");
+			CM_EXCEPT(InternalErrorException, "Unable to get window handle. No active window exists!");
 		}
 
 		UINT64 windowId = 0;

@@ -1,19 +1,24 @@
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------
+<<<<<<OpenGL issues>>>>>>>
+Camera in new window in OpenGL doesn't render anything
+Destroying OpenGL window doesn't work
+OpenGL camera/rendering is acting really jerky and weird
+
+-------------
+
+When I'm canceling command queue commands I might be canceling important user commands.
+ - (e.g. user schedules a resource update and I cancel the command)
+ - render commands can be cancelled with no repercussions?
+ - maybe I should someone block sim thread if its running too fast?
+   - input lag?
+
+Shared GPU buffers
+ - wouldn't work atm due to the way I update the buffers (and the way I mark them dirty)
+ - Material::setParamBlock is commented out
 
 <<<<<<<Resource update/read>>>>>>>>
-Make sure to update the actual buffer in bindGpuParams
- - It needs to accept an Unique GpuParams ptr
- - It needs to call releaseCopyForDeferred when it ends
-
-Material::setParamBlock probably doesn't work anymore (and is atm commented out)
-
-INSTEAD OF createCopyForDeferred create a new BindableGpuParams class which basically just wraps GpuParams, with the difference that it is accepted in render system, and normal GpuParams isn't. Also create a special deleter that automatically calls releaseCopyForDeferred so that it doesn't need to be called manually.
- - unique_ptr doesn't seem to work for GpuParams so maybe have that class handle that as well.
- - pass a reference instead? take care with bind so it doesn't store a copy (boost::ref)
-
-
 All data classes (MeshData, PixelData, etc) derive from GpuBufferData class. 
  - It contains basically just raw bytes.
  - It has lock/unlock methods (used mostly internally)
@@ -29,6 +34,7 @@ Inherit all buffer classes (texture, mesh, GPUBlock) from IGpuBuffer interface
 
 DeferredRenderContext::updateResource(IGpuBuffer, GpuBufferData)
 AsyncOp DeferredRenderContext::readResource(IGpuBuffer)
+ - When Resources::save needs to save a resource how do I easily read the data!?
 
 --------
 

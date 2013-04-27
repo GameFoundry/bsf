@@ -1301,18 +1301,6 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void GLRenderSystem::oneTimeContextInitialization()
 	{
-		if (GLEW_VERSION_1_2)
-		{
-		// Set nicer lighting model -- d3d9 has this by default
-		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
-		glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);        
-		}
-		if (GLEW_VERSION_1_4)
-		{
-		glEnable(GL_COLOR_SUM);
-		glDisable(GL_DITHER);
-		}
-
 		// Check for FSAA
 		// Enable the extension if it was enabled by the GLSupport
 		if (mGLSupport->checkExtension("GL_ARB_multisample"))
