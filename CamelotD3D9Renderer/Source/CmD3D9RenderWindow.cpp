@@ -608,7 +608,7 @@ namespace CamelotFramework
 		updateWindowRect();
 	}
 
-	void D3D9RenderWindow::swapBuffers_internal()
+	void D3D9RenderWindow::swapBuffers()
 	{
 		if (mDeviceValid)
 			mDevice->present(this);		

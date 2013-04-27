@@ -48,6 +48,8 @@ namespace CamelotFramework {
 		/** Overridden - see RenderTarget. */
 		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
 
+		void swapBuffers();
+
 		bool requiresTextureFlipping() const { return false; }
 
 		HWND getWindowHandle() const { return mHWnd; }
@@ -83,8 +85,6 @@ namespace CamelotFramework {
 		bool	mClosed;
         int     mDisplayFrequency;      // fullscreen only, to restore display
         Win32Context *mContext;
-
-		void swapBuffers_internal();
 
 		/**
 		 * @copydoc RenderWindow::initialize_internal().

@@ -265,6 +265,11 @@ namespace CamelotFramework {
 		else
 			draw(op.vertexData->vertexCount);
 	}
+	//-----------------------------------------------------------------------
+	void RenderSystem::swapBuffers(RenderTargetPtr target)
+	{
+		target->swapBuffers();
+	}
 
 	/************************************************************************/
 	/* 								PRIVATE		                     		*/

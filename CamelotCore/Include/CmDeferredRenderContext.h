@@ -95,6 +95,9 @@ namespace CamelotFramework
 		/** @copydoc RenderSystem::clear() */
 		void clear(RenderTargetPtr target, unsigned int buffers, const Color& color = Color::Black, float depth = 1.0f, unsigned short stencil = 0);
 
+		/** @copydoc RenderSystem::swapBuffers() */
+		void swapBuffers(RenderTargetPtr target);
+
 		/**
 		 * @brief	Makes all the currently queued commands available to the GPU. They will be executed
 		 * 			as soon as the render thread is ready.

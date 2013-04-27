@@ -18,6 +18,7 @@ namespace CamelotFramework
 		void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
 
 		void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
+		void swapBuffers();
 
 		void windowMovedOrResized();
 
@@ -39,8 +40,6 @@ namespace CamelotFramework
 
 		IDXGIDevice* _queryDxgiDevice(); 
 
-		void swapBuffers_internal();
-	
 		bool _checkMultiSampleQuality(UINT SampleCount, UINT *outQuality, DXGI_FORMAT format);
 
 		void _createSwapChain();

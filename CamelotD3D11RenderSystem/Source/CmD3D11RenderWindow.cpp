@@ -289,7 +289,7 @@ namespace CamelotFramework
 		RenderWindow::destroy_internal();
 	}
 
-	void D3D11RenderWindow::swapBuffers_internal()
+	void D3D11RenderWindow::swapBuffers()
 	{
 		if(mDevice.getD3D11Device() != nullptr)
 		{

@@ -3,8 +3,8 @@
     - For example HighLevelGpuProgram is thread safe but GpuProgram itself isn't
     - Classes that are safe to use outside of the render thread: RenderSystem, Mesh, Texture, HighLevelGpuProgram, Material, Shader, Technique
 	- Classes that are only accessible from the render thread: GpuProgram, HardwarePixelBuffer, HardwareVertexBuffer, HardwareIndexBuffer
-  - Make sure the user knows resources are shared between contexts. All resource updates are executed 
-     before rendering a frame, so whichever context updated the resource last, was the version that will be used.
+   - Add documentation notes to specific methods of classes that may be used both in and out of render thread
+     - RenderTarget & RenderWindow for example. Methods like getWidth/getHeight can be made thread safe, while swapBuffers() cannot
   - GLSL limitations
      - layout(row_major) is not supported and will likely result in incorrect matrices
 	 - Because GLSL introspection API is built around basic types I don't support structs or arrays of objects: 

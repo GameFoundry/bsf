@@ -206,6 +206,11 @@ namespace CamelotFramework
 		 */
 		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount) = 0;
 
+		/**
+		 * @brief	Swap the front and back buffer of the specified render target.
+		 */
+		virtual void swapBuffers(RenderTargetPtr target);
+
 		/** Gets the capabilities of the render system. */
 		const RenderSystemCapabilities* getCapabilities(void) const;
 

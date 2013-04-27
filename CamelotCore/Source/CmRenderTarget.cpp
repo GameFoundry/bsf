@@ -85,9 +85,4 @@ namespace CamelotFramework {
     {
         mActive = state;
     }
-
-	void RenderTarget::swapBuffers()
-	{
-		queueGpuCommand(getThisPtr(), boost::bind(&RenderTarget::swapBuffers_internal, this));
-	}
 }        

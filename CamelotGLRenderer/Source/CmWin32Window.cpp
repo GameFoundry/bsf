@@ -637,7 +637,7 @@ namespace CamelotFramework {
 		// TODO - Notify viewports of resize
 	}
 
-	void Win32Window::swapBuffers_internal()
+	void Win32Window::swapBuffers()
 	{
 	  if (!mIsExternalGLControl) {
 	  	SwapBuffers(mHDC);

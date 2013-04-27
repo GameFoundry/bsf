@@ -58,6 +58,8 @@ namespace CamelotFramework
 		void				copyContentsToMemory	(const PixelData &dst, FrameBuffer buffer);
 		bool				requiresTextureFlipping	() const { return false; }
 
+		void				swapBuffers();
+
 		// Method for dealing with resize / move & 3d library
 		void				windowMovedOrResized	();
 	
@@ -91,8 +93,6 @@ namespace CamelotFramework
 		D3D9RenderWindow (const RENDER_WINDOW_DESC& desc, HINSTANCE instance);
 
 		void updateWindowRect();
-
-		void swapBuffers_internal();
 
 		/**
 		 * @copydoc RenderWindow::initialize_internal().

@@ -91,15 +91,12 @@ namespace CamelotFramework
         virtual unsigned int getHeight(void) const;
         virtual unsigned int getColourDepth(void) const;
 
-        /** Swaps the frame buffers to display the next frame.
-            @remarks
-                For targets that are double-buffered so that no
-                'in-progress' versions of the scene are displayed
-                during rendering. Once rendering has completed (to
-                an off-screen version of the window) the buffers
-                are swapped to display the new frame.
-        */
-        void swapBuffers();
+        /**
+         * @brief	Swaps the frame buffers to display the next frame.
+         * 			
+		 * @note	Render thread only.
+         */
+		virtual void swapBuffers() {};
 
 		/**
 		 * @brief	Returns true if the render target is a render window.
@@ -179,8 +176,6 @@ namespace CamelotFramework
 
     protected:
 		RenderTarget();
-
-		virtual void swapBuffers_internal() {}
 
         /// The name of this target.
         String mName;

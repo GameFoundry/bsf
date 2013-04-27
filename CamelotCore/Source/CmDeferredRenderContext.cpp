@@ -135,6 +135,11 @@ namespace CamelotFramework
 		mCommandQueue->queue(boost::bind(&RenderSystem::endFrame, mRenderSystem));
 	}
 
+	void DeferredRenderContext::swapBuffers(RenderTargetPtr target)
+	{
+		mCommandQueue->queue(boost::bind(&RenderSystem::swapBuffers, mRenderSystem, target));
+	}
+
 	void DeferredRenderContext::render(const RenderOperation& op)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::render, mRenderSystem, op));
