@@ -55,8 +55,8 @@ namespace CamelotFramework {
 			// assert(src.format == dst.format);
 
 			// srcdata stays at beginning, pdst is a moving pointer
-			UINT8* srcdata = (UINT8*)src.data;
-			UINT8* pdst = (UINT8*)dst.data;
+			UINT8* srcdata = (UINT8*)src.getData();
+			UINT8* pdst = (UINT8*)dst.getData();
 
 			// sx_48,sy_48,sz_48 represent current position in source
 			// using 16/48-bit fixed precision, incremented by steps
@@ -96,8 +96,8 @@ namespace CamelotFramework {
 			size_t dstelemsize = PixelUtil::getNumElemBytes(dst.format);
 
 			// srcdata stays at beginning, pdst is a moving pointer
-			UINT8* srcdata = (UINT8*)src.data;
-			UINT8* pdst = (UINT8*)dst.data;
+			UINT8* srcdata = (UINT8*)src.getData();
+			UINT8* pdst = (UINT8*)dst.getData();
 
 			// sx_48,sy_48,sz_48 represent current position in source
 			// using 16/48-bit fixed precision, incremented by steps
@@ -181,8 +181,8 @@ namespace CamelotFramework {
 			// assert(dstchannels == 3 || dstchannels == 4);
 
 			// srcdata stays at beginning, pdst is a moving pointer
-			float* srcdata = (float*)src.data;
-			float* pdst = (float*)dst.data;
+			float* srcdata = (float*)src.getData();
+			float* pdst = (float*)dst.getData();
 
 			// sx_48,sy_48,sz_48 represent current position in source
 			// using 16/48-bit fixed precision, incremented by steps
@@ -292,8 +292,8 @@ namespace CamelotFramework {
 			}
 
 			// srcdata stays at beginning of slice, pdst is a moving pointer
-			UINT8* srcdata = (UINT8*)src.data;
-			UINT8* pdst = (UINT8*)dst.data;
+			UINT8* srcdata = (UINT8*)src.getData();
+			UINT8* pdst = (UINT8*)dst.getData();
 
 			// sx_48,sy_48 represent current position in source
 			// using 16/48-bit fixed precision, incremented by steps
@@ -800,11 +800,11 @@ namespace CamelotFramework {
 		// Calculate new data origin
 		// Notice how we do not propagate left/top/front from the incoming box, since
 		// the returned pointer is already offset
-		PixelData rval(def.getWidth(), def.getHeight(), def.getDepth(), format, 
-			((UINT8*)data) + ((def.left-left)*elemSize)
+		PixelData rval(def.getWidth(), def.getHeight(), def.getDepth(), format);
+
+		rval.setExternalDataPtr(((UINT8*)getData()) + ((def.left-left)*elemSize)
 			+ ((def.top-top)*rowPitch*elemSize)
-			+ ((def.front-front)*slicePitch*elemSize)
-		);
+			+ ((def.front-front)*slicePitch*elemSize));
 
 		rval.rowPitch = rowPitch;
 		rval.slicePitch = slicePitch;
@@ -1229,16 +1229,6 @@ namespace CamelotFramework {
         }
     }
     //-----------------------------------------------------------------------
-    /* Convert pixels from one format to another */
-    void PixelUtil::bulkPixelConversion(void *srcp, PixelFormat srcFormat,
-        void *destp, PixelFormat dstFormat, unsigned int count)
-    {
-        PixelData src(count, 1, 1, srcFormat, srcp),
-				 dst(count, 1, 1, dstFormat, destp);
-
-        bulkPixelConversion(src, dst);
-    }
-    //-----------------------------------------------------------------------
     void PixelUtil::bulkPixelConversion(const PixelData &src, const PixelData &dst)
     {
         assert(src.getWidth() == dst.getWidth() &&
@@ -1250,7 +1240,7 @@ namespace CamelotFramework {
 		{
 			if(src.format == dst.format)
 			{
-				memcpy(dst.data, src.data, src.getConsecutiveSize());
+				memcpy(dst.getData(), src.getData(), src.getConsecutiveSize());
 				return;
 			}
 			else
@@ -1264,15 +1254,15 @@ namespace CamelotFramework {
             // Everything consecutive?
             if(src.isConsecutive() && dst.isConsecutive())
             {
-				memcpy(dst.data, src.data, src.getConsecutiveSize());
+				memcpy(dst.getData(), src.getData(), src.getConsecutiveSize());
                 return;
             }
 
             const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.format);
             const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.format);
-            UINT8 *srcptr = static_cast<UINT8*>(src.data)
+            UINT8 *srcptr = static_cast<UINT8*>(src.getData())
                 + (src.left + src.top * src.rowPitch + src.front * src.slicePitch) * srcPixelSize;
-            UINT8 *dstptr = static_cast<UINT8*>(dst.data)
+            UINT8 *dstptr = static_cast<UINT8*>(dst.getData())
 				+ (dst.left + dst.top * dst.rowPitch + dst.front * dst.slicePitch) * dstPixelSize;
 
             // Calculate pitches+skips in bytes
@@ -1324,9 +1314,9 @@ namespace CamelotFramework {
 
         const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.format);
         const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.format);
-        UINT8 *srcptr = static_cast<UINT8*>(src.data)
+        UINT8 *srcptr = static_cast<UINT8*>(src.getData())
             + (src.left + src.top * src.rowPitch + src.front * src.slicePitch) * srcPixelSize;
-        UINT8 *dstptr = static_cast<UINT8*>(dst.data)
+        UINT8 *dstptr = static_cast<UINT8*>(dst.getData())
             + (dst.left + dst.top * dst.rowPitch + dst.front * dst.slicePitch) * dstPixelSize;
 		
 		// Old way, not taking into account box dimensions
@@ -1378,7 +1368,7 @@ namespace CamelotFramework {
 			{
 				// Allocate temporary buffer of destination size in source format 
 				temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.format);
-				temp.data = malloc(temp.getConsecutiveSize());
+				temp.allocData(temp.getConsecutiveSize());
 			}
 			// super-optimized: no conversion
 			switch (PixelUtil::getNumElemBytes(src.format)) 
@@ -1395,12 +1385,12 @@ namespace CamelotFramework {
 				// never reached
 				assert(false);
 			}
-			if(temp.data != scaled.data)
+			if(temp.getData() != scaled.getData())
 			{
 				// Blit temp buffer
 				PixelUtil::bulkPixelConversion(temp, scaled);
 
-				free(temp.data);
+				temp.freeData();
 			}
 			break;
 
@@ -1422,7 +1412,7 @@ namespace CamelotFramework {
 				{
 					// Allocate temp buffer of destination size in source format 
 					temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.format);
-					temp.data = malloc(temp.getConsecutiveSize());
+					temp.allocData(temp.getConsecutiveSize());
 				}
 				// super-optimized: byte-oriented math, no conversion
 				switch (PixelUtil::getNumElemBytes(src.format)) 
@@ -1435,11 +1425,11 @@ namespace CamelotFramework {
 					// never reached
 					assert(false);
 				}
-				if(temp.data != scaled.data)
+				if(temp.getData() != scaled.getData())
 				{
 					// Blit temp buffer
 					PixelUtil::bulkPixelConversion(temp, scaled);
-					free(temp.data);
+					temp.freeData();
 				}
 				break;
 			case PF_FLOAT32_RGB:
@@ -1505,7 +1495,7 @@ namespace CamelotFramework {
 
         UINT32 pixelSize = PixelUtil::getNumElemBytes(format);
         UINT32 pixelOffset = pixelSize * (z * slicePitch + y * rowPitch + x);
-        PixelUtil::unpackColour(&cv, format, (unsigned char *)data + pixelOffset);
+        PixelUtil::unpackColour(&cv, format, (unsigned char *)getData() + pixelOffset);
 
         return cv;
     }
@@ -1514,6 +1504,6 @@ namespace CamelotFramework {
     {
         UINT32 pixelSize = PixelUtil::getNumElemBytes(format);
         UINT32 pixelOffset = pixelSize * (z * slicePitch + y * rowPitch + x);
-        PixelUtil::packColour(cv, format, (unsigned char *)data + pixelOffset);
+        PixelUtil::packColour(cv, format, (unsigned char *)getData() + pixelOffset);
     }
 }

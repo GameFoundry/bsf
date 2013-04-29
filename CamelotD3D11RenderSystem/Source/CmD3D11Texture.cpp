@@ -61,15 +61,15 @@ namespace CamelotFramework
 
 		if(flags == D3D11_MAP_READ || flags == D3D11_MAP_READ_WRITE)
 		{
-			lockedArea.data = _mapstagingbuffer(flags, face, mipLevel);
+			lockedArea.setExternalDataPtr((UINT8*)_mapstagingbuffer(flags, face, mipLevel));
 			mLockedForReading = true;
 		}
 		else
 		{
 			if(mUsage == TU_DYNAMIC)
-				lockedArea.data = _map(mTex, flags, face, mipLevel);
+				lockedArea.setExternalDataPtr((UINT8*)_map(mTex, flags, face, mipLevel));
 			else
-				lockedArea.data = _mapstaticbuffer(lockedArea, mipLevel, face);
+				lockedArea.setExternalDataPtr((UINT8*)_mapstaticbuffer(lockedArea, mipLevel, face));
 
 			mLockedForReading = false;
 		}
@@ -530,7 +530,7 @@ namespace CamelotFramework
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
-		device.getImmediateContext()->UpdateSubresource(mTex, mLockedSubresourceIdx, nullptr, mStaticBuffer->data, rowWidth, sliceWidth);
+		device.getImmediateContext()->UpdateSubresource(mTex, mLockedSubresourceIdx, nullptr, mStaticBuffer->getData(), rowWidth, sliceWidth);
 
 		if (device.hasError())
 		{

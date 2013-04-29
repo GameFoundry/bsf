@@ -22,6 +22,24 @@ namespace CamelotFramework
 		return (UINT8*)data;
 	}
 
+	void PixelData::freeData()
+	{
+		if(ownsData && getData() != nullptr)
+		{
+			CM_DELETE_BYTES(getData(), ScratchAlloc);
+
+			data = nullptr;
+		}
+	}
+
+	void PixelData::setExternalDataPtr(UINT8* data)
+	{
+		freeData();
+
+		this->data = data;
+		ownsData = false;
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/

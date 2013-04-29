@@ -109,13 +109,13 @@ namespace CamelotFramework
 					dev->TestCooperativeLevel() == D3D_OK)
 				{
 					Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
-					PixelData dstBox(fullBufferBox, mFormat, (char*)CM_NEW_BYTES(getSizeInBytes(), ScratchAlloc));
+					PixelData dstBox(fullBufferBox, mFormat);
+					dstBox.allocData(getSizeInBytes());
 
 					blitToMemory(fullBufferBox, dstBox, it->second, it->first);
 					blitFromMemory(dstBox, fullBufferBox, bufferResources);
 
-					if(dstBox.data != nullptr)
-						CM_DELETE_BYTES(dstBox.data, ScratchAlloc);
+					dstBox.freeData();
 
 					break;
 				}
@@ -168,13 +168,13 @@ namespace CamelotFramework
 					dev->TestCooperativeLevel() == D3D_OK)
 				{
 					Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
-					PixelData dstBox(fullBufferBox, mFormat, (char*)CM_NEW_BYTES(getSizeInBytes(), ScratchAlloc));
+					PixelData dstBox(fullBufferBox, mFormat);
+					dstBox.allocData(getSizeInBytes());
 
 					blitToMemory(fullBufferBox, dstBox, it->second, it->first);
 					blitFromMemory(dstBox, fullBufferBox, bufferResources);
 					
-					if(dstBox.data != nullptr)
-						CM_DELETE_BYTES(dstBox.data, ScratchAlloc);
+					dstBox.freeData();
 
 					break;
 				}
@@ -256,7 +256,7 @@ namespace CamelotFramework
 			CM_EXCEPT(InvalidParametersException, "Invalid pixel format");
 		}
 
-		rval.data = lrect.pBits;
+		rval.setExternalDataPtr((UINT8*)lrect.pBits);
 	}
 	void fromD3DLock(PixelData &rval, const D3DLOCKED_BOX &lbox)
 	{
@@ -277,7 +277,7 @@ namespace CamelotFramework
 		{
 			CM_EXCEPT(InvalidParametersException, "Invalid pixel format");
 		}
-		rval.data = lbox.pBits;
+		rval.setExternalDataPtr((UINT8*)lbox.pBits);
 	}
 	// Convert Ogre integer Box to D3D rectangle
 	RECT toD3DRECT(const Box &lockBox)
@@ -598,14 +598,13 @@ namespace CamelotFramework
 	void D3D9PixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox, BufferResources* dstBufferResources)
 	{
 		// for scoped deletion of conversion buffer
-		void* data = NULL;
 		PixelData converted = src;
 
 		// convert to pixelbuffer's native format if necessary
 		if (D3D9Mappings::_getPF(src.format) == D3DFMT_UNKNOWN)
 		{
-			data = (void*)CM_NEW_BYTES(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat), ScratchAlloc);
-			converted = PixelData(src.getWidth(), src.getHeight(), src.getDepth(), mFormat, data);
+			converted = PixelData(src.getWidth(), src.getHeight(), src.getDepth(), mFormat);
+			converted.allocData(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat));
 			PixelUtil::bulkPixelConversion(src, converted);
 		}
 
@@ -637,7 +636,7 @@ namespace CamelotFramework
 			destRect = toD3DRECT(dstBox);
 
 			if(D3DXLoadSurfaceFromMemory(dstBufferResources->surface, NULL, &destRect, 
-				converted.data, D3D9Mappings::_getPF(converted.format),
+				converted.getData(), D3D9Mappings::_getPF(converted.format),
 				static_cast<UINT>(rowWidth),
 				NULL, &srcRect, D3DX_DEFAULT, 0) != D3D_OK)
 			{
@@ -671,7 +670,7 @@ namespace CamelotFramework
 			}
 
 			if(D3DXLoadVolumeFromMemory(dstBufferResources->volume, NULL, &destBox, 
-				converted.data, D3D9Mappings::_getPF(converted.format),
+				converted.getData(), D3D9Mappings::_getPF(converted.format),
 				static_cast<UINT>(rowWidth), static_cast<UINT>(sliceWidth),
 				NULL, &srcBox, D3DX_DEFAULT, 0) != D3D_OK)
 			{
@@ -682,8 +681,7 @@ namespace CamelotFramework
 		if(mDoMipmapGen)
 			_genMipmaps(dstBufferResources->mipTex);
 
-		if(data != nullptr)
-			CM_DELETE_BYTES(data, ScratchAlloc);
+		converted.freeData();
 	}
 
 	//-----------------------------------------------------------------------------  

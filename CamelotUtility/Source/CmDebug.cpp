@@ -51,7 +51,7 @@ namespace CamelotFramework
 		UINT32 bmpDataSize = BitmapWriter::getBMPSize(pixelData.getWidth(), pixelData.getHeight(), bytesPerPixel);
 		UINT8* bmpBuffer = CM_NEW_ARRAY(UINT8, bmpDataSize, ScratchAlloc);
 
-		BitmapWriter::rawPixelsToBMP((UINT8*)pixelData.data, bmpBuffer, pixelData.getWidth(), pixelData.getHeight(), bytesPerPixel);
+		BitmapWriter::rawPixelsToBMP((UINT8*)pixelData.getData(), bmpBuffer, pixelData.getWidth(), pixelData.getHeight(), bytesPerPixel);
 
 		ds->write(bmpBuffer, bmpDataSize);
 		ds->close();

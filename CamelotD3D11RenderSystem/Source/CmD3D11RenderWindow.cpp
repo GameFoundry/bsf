@@ -522,7 +522,9 @@ namespace CamelotFramework
 		mDevice.getImmediateContext()->Map(pTempTexture2D, 0,D3D11_MAP_READ, 0, &mappedTex2D);
 
 		// copy the the texture to the dest
-		PixelUtil::bulkPixelConversion(PixelData(mWidth, mHeight, 1, PF_A8B8G8R8, mappedTex2D.pData), dst);
+		PixelData src(mWidth, mHeight, 1, PF_A8B8G8R8);
+		src.setExternalDataPtr((UINT8*)mappedTex2D.pData);
+		PixelUtil::bulkPixelConversion(src, dst);
 
 		// unmap the temp buffer
 		mDevice.getImmediateContext()->Unmap(pTempTexture2D, 0);

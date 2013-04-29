@@ -58,7 +58,7 @@ namespace CamelotFramework
         
         Box myBox(0, 0, 0, mWidth, mHeight, mDepth);
         const PixelData &rv = lock(myBox, options);
-        return rv.data;
+        return rv.getData();
     }
     
     //-----------------------------------------------------------------------------    

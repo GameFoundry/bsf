@@ -1328,7 +1328,8 @@ namespace CamelotFramework
 			CM_EXCEPT(RenderingAPIException, "Unsupported format");
 		}
 
-		PixelData src(dst.getWidth(), dst.getHeight(), 1, format, lockedRect.pBits);
+		PixelData src(dst.getWidth(), dst.getHeight(), 1, format);
+		src.setExternalDataPtr((UINT8*)lockedRect.pBits);
 		src.rowPitch = lockedRect.Pitch / PixelUtil::getNumElemBytes(format);
 		src.slicePitch = desc.Height * src.rowPitch;
 

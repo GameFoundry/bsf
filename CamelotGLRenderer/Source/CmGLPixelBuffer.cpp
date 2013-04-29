@@ -50,15 +50,16 @@ namespace CamelotFramework
 	GLPixelBuffer::~GLPixelBuffer()
 	{
 		// Force free buffer
-		CM_DELETE_BYTES(mBuffer.data, ScratchAlloc);
+		mBuffer.freeData();
 	}
 	//-----------------------------------------------------------------------------  
 	void GLPixelBuffer::allocateBuffer()
 	{
-		if(mBuffer.data)
+		if(mBuffer.getData())
 			// Already allocated
 			return;
-		mBuffer.data = CM_NEW_BYTES(mSizeInBytes, ScratchAlloc);
+
+		mBuffer.allocData(mSizeInBytes);
 		// TODO: use PBO if we're HBU_DYNAMIC
 	}
 	//-----------------------------------------------------------------------------  
@@ -67,8 +68,7 @@ namespace CamelotFramework
 		// Free buffer if we're STATIC to save memory
 		if(mUsage & GBU_STATIC)
 		{
-			CM_DELETE_BYTES(mBuffer.data, ScratchAlloc);
-			mBuffer.data = 0;
+			mBuffer.freeData();
 		}
 	}
 	//-----------------------------------------------------------------------------  
@@ -267,7 +267,7 @@ namespace CamelotFramework
 							dest.getWidth(),
 							0,
 							data.getConsecutiveSize(),
-							data.data);
+							data.getData());
 					}
 					else
 					{
@@ -275,7 +275,7 @@ namespace CamelotFramework
 							dest.left,
 							dest.getWidth(),
 							format, data.getConsecutiveSize(),
-							data.data);
+							data.getData());
 					}
 					break;
 				case GL_TEXTURE_2D:
@@ -290,7 +290,7 @@ namespace CamelotFramework
 							dest.getHeight(),
 							0,
 							data.getConsecutiveSize(),
-							data.data);
+							data.getData());
 					}
 					else
 					{
@@ -298,7 +298,7 @@ namespace CamelotFramework
 							dest.left, dest.top, 
 							dest.getWidth(), dest.getHeight(),
 							format, data.getConsecutiveSize(),
-							data.data);
+							data.getData());
 					}
 					break;
 				case GL_TEXTURE_3D:
@@ -313,7 +313,7 @@ namespace CamelotFramework
 							dest.getDepth(),
 							0,
 							data.getConsecutiveSize(),
-							data.data);
+							data.getData());
 					}
 					else
 					{			
@@ -321,7 +321,7 @@ namespace CamelotFramework
 							dest.left, dest.top, dest.front,
 							dest.getWidth(), dest.getHeight(), dest.getDepth(),
 							format, data.getConsecutiveSize(),
-							data.data);
+							data.getData());
 					}
 					break;
 			}
@@ -345,7 +345,7 @@ namespace CamelotFramework
 						dest.left,
 						dest.getWidth(),
 						GLPixelUtil::getGLOriginFormat(data.format), GLPixelUtil::getGLOriginDataType(data.format),
-						data.data);
+						data.getData());
 					break;
 				case GL_TEXTURE_2D:
 				case GL_TEXTURE_CUBE_MAP:
@@ -353,7 +353,7 @@ namespace CamelotFramework
 						dest.left, dest.top, 
 						dest.getWidth(), dest.getHeight(),
 						GLPixelUtil::getGLOriginFormat(data.format), GLPixelUtil::getGLOriginDataType(data.format),
-						data.data);
+						data.getData());
 					break;
 				case GL_TEXTURE_3D:
 					glTexSubImage3D(
@@ -361,7 +361,7 @@ namespace CamelotFramework
 						dest.left, dest.top, dest.front,
 						dest.getWidth(), dest.getHeight(), dest.getDepth(),
 						GLPixelUtil::getGLOriginFormat(data.format), GLPixelUtil::getGLOriginDataType(data.format),
-						data.data);
+						data.getData());
 					break;
 			}	
 		}
@@ -393,7 +393,7 @@ namespace CamelotFramework
 				"Compressed images must be consecutive, in the source format");
 			// Data must be consecutive and at beginning of buffer as PixelStorei not allowed
 			// for compressed formate
-			glGetCompressedTexImage(mFaceTarget, mLevel, data.data);
+			glGetCompressedTexImage(mFaceTarget, mLevel, data.getData());
 		} 
 		else
 		{
@@ -410,7 +410,7 @@ namespace CamelotFramework
 			// We can only get the entire texture
 			glGetTexImage(mFaceTarget, mLevel, 
 				GLPixelUtil::getGLOriginFormat(data.format), GLPixelUtil::getGLOriginDataType(data.format),
-				data.data);
+				data.getData());
 			// Restore defaults
 			glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 			glPixelStorei(GL_PACK_IMAGE_HEIGHT, 0);
@@ -690,15 +690,14 @@ namespace CamelotFramework
 		if(!mBuffer.contains(dstBox))
 			CM_EXCEPT(InvalidParametersException, "destination box out of range");
 		/// For scoped deletion of conversion buffer
-		void* data = NULL;
 		PixelData src;
     
 		/// First, convert the srcbox to a OpenGL compatible pixel format
 		if(GLPixelUtil::getGLOriginFormat(src_orig.format) == 0)
 		{
 			/// Convert to buffer internal format
-			data = CM_NEW_BYTES(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat), ScratchAlloc);
-			src = PixelData(src_orig.getWidth(), src_orig.getHeight(), src_orig.getDepth(), mFormat, data);
+			src = PixelData(src_orig.getWidth(), src_orig.getHeight(), src_orig.getDepth(), mFormat);
+			src.allocData(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat));
 			PixelUtil::bulkPixelConversion(src_orig, src);
 		}
 		else
@@ -743,9 +742,6 @@ namespace CamelotFramework
     
 		/// Delete temp texture
 		glDeleteTextures(1, &id);
-
-		if(data != NULL)
-			CM_DELETE_BYTES(data, ScratchAlloc);
 	}
 	//********* GLRenderBuffer
 	//----------------------------------------------------------------------------- 

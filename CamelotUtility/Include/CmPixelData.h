@@ -126,10 +126,7 @@ namespace CamelotFramework
     	PixelData() {}
 		~PixelData() 
 		{
-			if(ownsData && data != nullptr)
-				CM_DELETE_BYTES(data, ScratchAlloc);
-
-			data = nullptr;
+			freeData();
 		}
 		/** Constructor providing extents in the form of a Box object. This constructor
     		assumes the pixel data is laid out consecutively in memory. (this
@@ -138,8 +135,8 @@ namespace CamelotFramework
     		@param pixelFormat	Format of this buffer
     		@param pixelData	Pointer to the actual data
     	*/
-		PixelData(const Box &extents, PixelFormat pixelFormat, void *pixelData = nullptr):
-			Box(extents), data(pixelData), format(pixelFormat), ownsData(false)
+		PixelData(const Box &extents, PixelFormat pixelFormat):
+			Box(extents), data(nullptr), format(pixelFormat), ownsData(false)
 		{
 			setConsecutive();
 		}
@@ -153,9 +150,9 @@ namespace CamelotFramework
     		@param pixelFormat	Format of this buffer
     		@param pixelData    Pointer to the actual data
     	*/
-    	PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat, void *pixelData = nullptr):
+    	PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat):
     		Box(0, 0, 0, width, height, depth),
-    		data(pixelData), format(pixelFormat), ownsData(false)
+    		data(nullptr), format(pixelFormat), ownsData(false)
     	{
     		setConsecutive();
     	}
@@ -167,8 +164,16 @@ namespace CamelotFramework
 		 */
 		UINT8* allocData(UINT32 size);
 
-        /// The data pointer 
-        void *data;
+		/**
+		 * @brief	Frees the buffer data. Normally you don't need to call this manually as the
+		 * 			data will be freed automatically when an instance of PixelData is freed.
+		 */
+		void freeData();
+
+		void setExternalDataPtr(UINT8* data);
+
+		void* getData() const { return data; }
+
         /// The pixel format 
         PixelFormat format;
         /** Number of elements between the leftmost pixel of one row and the left
@@ -243,6 +248,10 @@ namespace CamelotFramework
          * mipmap.
          */
         void setColourAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z);
+
+	private:
+		/// The data pointer 
+		void *data;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

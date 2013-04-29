@@ -114,12 +114,6 @@ namespace CamelotFramework {
 		mActiveRenderTarget = nullptr;
 	}
 
-    void RenderSystem::_notifyWindowCreated(RenderWindow& window)
-    {
-		THROW_IF_NOT_RENDER_THREAD;
-
-    }
-
 	const RenderSystemCapabilities* RenderSystem::getCapabilities(void) const 
 	{ 
 		THROW_IF_NOT_RENDER_THREAD;

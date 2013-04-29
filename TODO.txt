@@ -1,11 +1,6 @@
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------
-Finish up DX9 window init
-Attempt to remove _notifyWindowCreated method
- - instead make sure of RenderWindowManager?
-
--------------
 
 When I'm canceling command queue commands I might be canceling important user commands.
  - (e.g. user schedules a resource update and I cancel the command)
@@ -14,6 +9,15 @@ When I'm canceling command queue commands I might be canceling important user co
    - input lag?
 
 <<<<<<<Resource update/read>>>>>>>>
+In order to get write/readSubresource usable I probably need to add AsyncOp.waitUntilComplete
+ - (Also remove "blockUntilFinished" parameters when queuing commands, as waitUntilComplete can be used instead)
+   - Or can it? Some operations don't return AsyncOp
+DeferredContext
+ - updateSubresource
+ - readSubresource - how to avoid casting returned value to either MeshData or PixelData?
+   - Have it as a parameter, that is created on main thread, using the source resource. (e.g. Texture::createCPUBuffer)
+
+
 All data classes (MeshData, PixelData, etc) derive from GpuBufferData class. 
  - It contains basically just raw bytes.
  - It has lock/unlock methods (used mostly internally)

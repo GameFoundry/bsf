@@ -652,7 +652,7 @@ namespace CamelotFramework {
 		glReadBuffer((buffer == FB_FRONT)? GL_FRONT : GL_BACK);
 		glReadPixels((GLint)dst.left, (GLint)dst.top,
 					 (GLsizei)dst.getWidth(), (GLsizei)dst.getHeight(),
-					 format, type, dst.data);
+					 format, type, dst.getData());
 
 		// restore default alignment
 		glPixelStorei(GL_PACK_ALIGNMENT, 4);
@@ -662,7 +662,7 @@ namespace CamelotFramework {
 			size_t rowSpan = dst.getWidth() * PixelUtil::getNumElemBytes(dst.format);
 			size_t height = dst.getHeight();
 			UINT8 *tmpData = CM_NEW_BYTES((UINT32)(rowSpan * height), ScratchAlloc);
-			UINT8 *srcRow = (UINT8 *)dst.data, *tmpRow = tmpData + (height - 1) * rowSpan;
+			UINT8 *srcRow = (UINT8 *)dst.getData(), *tmpRow = tmpData + (height - 1) * rowSpan;
 
 			while (tmpRow >= tmpData)
 			{
@@ -670,7 +670,7 @@ namespace CamelotFramework {
 				srcRow += rowSpan;
 				tmpRow -= rowSpan;
 			}
-			memcpy(dst.data, tmpData, rowSpan * height);
+			memcpy(dst.getData(), tmpData, rowSpan * height);
 
 			CM_DELETE_BYTES(tmpData, ScratchAlloc);
 		}

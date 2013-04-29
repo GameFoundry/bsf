@@ -96,12 +96,6 @@ namespace CamelotFramework
 		 */
 		virtual const String& getShadingLanguageName() const = 0;
 
-		/** Notifies the render system that a new window was created.  
-		* 
-		* @note Should only be called by internal methods.
-		*/
-		virtual void _notifyWindowCreated(RenderWindow& window);
-
 		/**
 		 * @brief	Sets a sampler state for the specified texture unit.
 		 * @see		SamplerState

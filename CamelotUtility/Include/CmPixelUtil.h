@@ -206,16 +206,6 @@ namespace CamelotFramework {
         */
         static void unpackColour(float *r, float *g, float *b, float *a, PixelFormat pf,  const void* src); 
         
-        /** Convert consecutive pixels from one format to another. No dithering or filtering is being done. 
-         	Converting from RGB to luminance takes the R channel.  In case the source and destination format match,
-         	just a copy is done.
-         	@param	src			Pointer to source region
-         	@param	srcFormat	Pixel format of source region
-         	@param   dst			Pointer to destination region
-         	@param	dstFormat	Pixel format of destination region
-         */
-        static void bulkPixelConversion(void *src, PixelFormat srcFormat, void *dest, PixelFormat dstFormat, unsigned int count);
-
       	/** Convert pixels from one format to another. No dithering or filtering is being done. Converting
           	from RGB to luminance takes the R channel. 
 		 	@param	src			PixelBox containing the source pixels, pitches and format
