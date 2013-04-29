@@ -179,8 +179,10 @@
     <ClInclude Include="Include\CmGameObjectHandle.h" />
     <ClInclude Include="Include\CmGameObject.h" />
     <ClInclude Include="Include\CmGameObjectRTTI.h" />
-    <ClInclude Include="Include\CmGpuBufferData.h" />
+    <ClInclude Include="Include\CmGpuResourceData.h" />
     <ClInclude Include="Include\CmGpuParamBlockBuffer.h" />
+    <ClInclude Include="Include\CmGpuResource.h" />
+    <ClInclude Include="Include\CmGpuResourceRTTI.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
     <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmApplication.h" />
@@ -281,7 +283,6 @@
     <ClInclude Include="Include\CmComponent.h" />
     <ClInclude Include="Include\CmShader.h" />
     <ClInclude Include="Include\CmBlendState.h" />
-    <ClInclude Include="Include\CmIGpuBuffer.h" />
     <ClInclude Include="Include\stdafx.h" />
     <ClInclude Include="Include\targetver.h" />
     <ClInclude Include="Include\CmVertexDeclarationRTTI.h" />
@@ -306,7 +307,6 @@
     <ClCompile Include="Source\CmFontImportOptions.cpp" />
     <ClCompile Include="Source\CmFontManager.cpp" />
     <ClCompile Include="Source\CmGpuBuffer.cpp" />
-    <ClCompile Include="Source\CmGpuBufferData.cpp" />
     <ClCompile Include="Source\CmGpuBufferView.cpp" />
     <ClCompile Include="Source\CmGpuParamBlock.cpp" />
     <ClCompile Include="Source\CmGpuParamBlockBuffer.cpp" />
@@ -317,6 +317,8 @@
     <ClCompile Include="Source\CmGpuProgramImportOptions.cpp" />
     <ClCompile Include="Source\CmGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGpuProgramParams.cpp" />
+    <ClCompile Include="Source\CmGpuResource.cpp" />
+    <ClCompile Include="Source\CmGpuResourceData.cpp" />
     <ClCompile Include="Source\CmHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmImportOptions.cpp" />
     <ClCompile Include="Source\CmIndexBuffer.cpp" />

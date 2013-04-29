@@ -1,21 +1,21 @@
-#include "CmGpuBufferData.h"
+#include "CmGpuResourceData.h"
 #include "CmException.h"
 
 namespace CamelotFramework
 {
-	GpuBufferData::GpuBufferData()
+	GpuResourceData::GpuResourceData()
 		:mData(nullptr), mLocked(false)
 	{
 
 	}
 
-	GpuBufferData::~GpuBufferData()
+	GpuResourceData::~GpuResourceData()
 	{
 		if(mData != nullptr)
 			CM_DELETE_BYTES(mData, ScratchAlloc);
 	}
 
-	UINT8* GpuBufferData::getData() const
+	UINT8* GpuResourceData::getData() const
 	{
 		if(mLocked)
 			CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data when the buffer is locked.");
@@ -23,17 +23,17 @@ namespace CamelotFramework
 		return mData;
 	}
 
-	void GpuBufferData::initialize(UINT32 size)
+	void GpuResourceData::initialize(UINT32 size)
 	{
 		mData = CM_NEW_BYTES(size, ScratchAlloc);
 	}
 
-	void GpuBufferData::lock()
+	void GpuResourceData::lock() const
 	{
 		mLocked = true;
 	}
 
-	void GpuBufferData::unlock()
+	void GpuResourceData::unlock() const
 	{
 		mLocked = false;
 	}

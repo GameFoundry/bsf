@@ -99,6 +99,24 @@ namespace CamelotFramework
 		void swapBuffers(RenderTargetPtr target);
 
 		/**
+		 * @copydoc RenderSystem::writeSubresource()
+		 *
+		 * @note Resource is updated with data from "data" parameter when the async operation completes. 
+		 * 		 Until the async operation completes "data" is owned by the render thread and you won't
+		 * 		 be able to access it. 
+		 */
+		AsyncOp writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceData& data);
+
+		/**
+		 * @copydoc RenderSystem::writeSubresource()
+		 *
+		 * @note "data" parameter is populated with subresource data when the async operation completes. 
+		 * 		 Until the async operation completes "data" is owned by the render thread and you won't
+		 * 		 be able to access it.
+		 */
+		AsyncOp readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceData& data);
+
+		/**
 		 * @brief	Makes all the currently queued commands available to the GPU. They will be executed
 		 * 			as soon as the render thread is ready.
 		 */

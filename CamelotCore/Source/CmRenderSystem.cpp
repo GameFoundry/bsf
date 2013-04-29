@@ -41,6 +41,7 @@ THE SOFTWARE.
 #include "CmOcclusionQuery.h"
 #include "CmCommandQueue.h"
 #include "CmDeferredRenderContext.h"
+#include "CmGpuResource.h"
 #include "boost/bind.hpp"
 
 #if CM_DEBUG_MODE
@@ -53,7 +54,6 @@ namespace CamelotFramework {
 
     static const TexturePtr sNullTexPtr;
 
-    //-----------------------------------------------------------------------
     RenderSystem::RenderSystem()
         : mCullingMode(CULL_COUNTERCLOCKWISE)
         , mInvertVertexWinding(false)
@@ -71,7 +71,6 @@ namespace CamelotFramework {
     {
     }
 
-    //-----------------------------------------------------------------------
     RenderSystem::~RenderSystem()
     {
 		// Base classes need to call virtual destroy_internal method (queue it on render thread)
@@ -88,7 +87,7 @@ namespace CamelotFramework {
 		CM_DELETE(mCurrentCapabilities, RenderSystemCapabilities, GenAlloc);
 		mCurrentCapabilities = nullptr;
     }
-	//-----------------------------------------------------------------------
+
 	RenderWindowPtr RenderSystem::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
@@ -100,7 +99,7 @@ namespace CamelotFramework {
 		AsyncOp op = queueReturnCommand(boost::bind(&RenderSystem::initialize_internal, this, _1), true);
 		return op.getReturnValue<RenderWindowPtr>();
 	}
-	//-----------------------------------------------------------------------
+
 	void RenderSystem::initialize_internal(AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -109,39 +108,39 @@ namespace CamelotFramework {
 		mGeometryProgramBound = false;
 		mFragmentProgramBound = false;
 	}
-	//-----------------------------------------------------------------------
+
 	void RenderSystem::destroy_internal()
 	{
 		mActiveRenderTarget = nullptr;
 	}
-    //---------------------------------------------------------------------------------------------
+
     void RenderSystem::_notifyWindowCreated(RenderWindow& window)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
     }
-	//---------------------------------------------------------------------------------------------
+
 	const RenderSystemCapabilities* RenderSystem::getCapabilities(void) const 
 	{ 
 		THROW_IF_NOT_RENDER_THREAD;
 
 		return mCurrentCapabilities; 
 	}
-	//---------------------------------------------------------------------------------------------
+
 	const DriverVersion& RenderSystem::getDriverVersion(void) const 
 	{ 
 		THROW_IF_NOT_RENDER_THREAD;
 
 		return mDriverVersion; 
 	}
-    //-----------------------------------------------------------------------
+
     void RenderSystem::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
     {
 		THROW_IF_NOT_RENDER_THREAD;
 
         setTexture(gptype, texUnit, false, sNullTexPtr);
     }
-	//---------------------------------------------------------------------
+
 	void RenderSystem::addClipPlane (const Plane &p)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -149,14 +148,14 @@ namespace CamelotFramework {
 		mClipPlanes.push_back(p);
 		mClipPlanesDirty = true;
 	}
-	//---------------------------------------------------------------------
+
 	void RenderSystem::addClipPlane (float A, float B, float C, float D)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
 		addClipPlane(Plane(A, B, C, D));
 	}
-	//---------------------------------------------------------------------
+
 	void RenderSystem::setClipPlanes(const PlaneList& clipPlanes)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -167,7 +166,7 @@ namespace CamelotFramework {
 			mClipPlanesDirty = true;
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void RenderSystem::resetClipPlanes()
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -178,7 +177,7 @@ namespace CamelotFramework {
 			mClipPlanesDirty = true;
 		}
 	}
-	//-----------------------------------------------------------------------
+
 	void RenderSystem::bindGpuProgram(HGpuProgram prg)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -200,7 +199,7 @@ namespace CamelotFramework {
 			break;
 		}
 	}
-	//-----------------------------------------------------------------------
+
 	void RenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -221,7 +220,7 @@ namespace CamelotFramework {
 			break;
 		}
 	}
-	//-----------------------------------------------------------------------
+
 	bool RenderSystem::isGpuProgramBound(GpuProgramType gptype)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -238,7 +237,7 @@ namespace CamelotFramework {
         // Make compiler happy
         return false;
 	}
-	//-----------------------------------------------------------------------
+
 	void RenderSystem::render(const RenderOperation& op)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
@@ -267,10 +266,28 @@ namespace CamelotFramework {
 		else
 			draw(op.vertexData->vertexCount);
 	}
-	//-----------------------------------------------------------------------
+
 	void RenderSystem::swapBuffers(RenderTargetPtr target)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		target->swapBuffers();
+	}
+
+	void RenderSystem::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceData& data, AsyncOp& asyncOp)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		resource->writeSubresource(subresourceIdx, data);
+		asyncOp.completeOperation();
+	}
+
+	void RenderSystem::readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceData& data, AsyncOp& asyncOp)
+	{
+		THROW_IF_NOT_RENDER_THREAD;
+
+		resource->readSubresource(subresourceIdx, data);
+		asyncOp.completeOperation();
 	}
 
 	/************************************************************************/

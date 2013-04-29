@@ -149,7 +149,8 @@ namespace CamelotFramework {
 	class ImportOptions;
 	struct FontData;
 	class GameObject;
-	class GpuBufferData;
+	class GpuResource;
+	class GpuResourceData;
 	class BindableGpuParams;
 	// Asset import
 	class SpecificImporter;
@@ -222,7 +223,7 @@ namespace CamelotFramework
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
 	typedef std::shared_ptr<InputHandler> InputHandlerPtr;
-	typedef std::shared_ptr<GpuBufferData> GpuBufferDataPtr;
+	typedef std::shared_ptr<GpuResource> GpuResourcePtr;
 }
 
 /************************************************************************/
@@ -279,7 +280,8 @@ namespace CamelotFramework
 		TID_FontData = 1057,
 		TID_IndexElementData = 1058,
 		TID_SceneObject = 1059,
-		TID_GameObject = 1060
+		TID_GameObject = 1060,
+		TID_GpuResource = 1061
 	};
 
 	/**

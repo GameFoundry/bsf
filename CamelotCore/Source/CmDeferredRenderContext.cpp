@@ -4,6 +4,7 @@
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
 #include "CmDepthStencilState.h"
+#include "CmGpuResourceData.h"
 #include "CmGpuParams.h"
 
 namespace CamelotFramework
@@ -153,6 +154,20 @@ namespace CamelotFramework
 	void DeferredRenderContext::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
 	{
 		mCommandQueue->queue(boost::bind(&RenderSystem::drawIndexed, mRenderSystem, startIndex, indexCount, vertexCount));
+	}
+
+	AsyncOp DeferredRenderContext::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceData& data)
+	{
+		data.lock();
+
+		return mCommandQueue->queueReturn(boost::bind(&RenderSystem::writeSubresource, mRenderSystem, resource, subresourceIdx, boost::cref(data), _1));
+	}
+
+	AsyncOp DeferredRenderContext::readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceData& data)
+	{
+		data.lock();
+
+		return mCommandQueue->queueReturn(boost::bind(&RenderSystem::readSubresource, mRenderSystem, resource, subresourceIdx, boost::ref(data), _1));
 	}
 
 	void DeferredRenderContext::submitToGpu()

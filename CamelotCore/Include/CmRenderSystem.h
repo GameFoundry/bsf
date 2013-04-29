@@ -283,6 +283,16 @@ namespace CamelotFramework
          */
         virtual void setRenderTarget(RenderTargetPtr target) = 0;
 
+		/**
+		 * @brief	Updates the resource with the specified data.
+		 */
+		void writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceData& data, AsyncOp& asyncOp);
+
+		/**
+		 * @brief	Reads data from a resource into a pre-allocated GpuResourceData instance.
+		 */
+		void readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceData& data, AsyncOp& asyncOp);
+
 		/************************************************************************/
 		/* 								UTILITY METHODS                    		*/
 		/************************************************************************/
