@@ -28,14 +28,14 @@ THE SOFTWARE.
 #ifndef _PixelFormat_H__
 #define _PixelFormat_H__
 
-#include "CmPrerequisitesUtil.h"
+#include "CmPrerequisites.h"
 #include "CmPixelData.h"
 
 namespace CamelotFramework {
     /**
      * Some utility functions for packing and unpacking pixel data
      */
-    class CM_UTILITY_EXPORT PixelUtil {
+    class CM_EXPORT PixelUtil {
     public:
         /** Returns the size in bytes of an element of the given pixel format.
          @returns

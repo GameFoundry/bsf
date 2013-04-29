@@ -61,15 +61,15 @@ namespace CamelotFramework
 
 		if(flags == D3D11_MAP_READ || flags == D3D11_MAP_READ_WRITE)
 		{
-			lockedArea.setExternalDataPtr((UINT8*)_mapstagingbuffer(flags, face, mipLevel));
+			lockedArea.setExternalBuffer((UINT8*)_mapstagingbuffer(flags, face, mipLevel));
 			mLockedForReading = true;
 		}
 		else
 		{
 			if(mUsage == TU_DYNAMIC)
-				lockedArea.setExternalDataPtr((UINT8*)_map(mTex, flags, face, mipLevel));
+				lockedArea.setExternalBuffer((UINT8*)_map(mTex, flags, face, mipLevel));
 			else
-				lockedArea.setExternalDataPtr((UINT8*)_mapstaticbuffer(lockedArea, mipLevel, face));
+				lockedArea.setExternalBuffer((UINT8*)_mapstaticbuffer(lockedArea, mipLevel, face));
 
 			mLockedForReading = false;
 		}
@@ -520,7 +520,7 @@ namespace CamelotFramework
 
 		mStaticBuffer = CM_NEW(PixelData, PoolAlloc) PixelData(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat());
 
-		return mStaticBuffer->allocData(sizeOfImage);
+		return mStaticBuffer->allocateInternalBuffer(sizeOfImage);
 	}
 
 	void D3D11Texture::_unmapstaticbuffer()

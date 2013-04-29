@@ -626,9 +626,9 @@ namespace CamelotFramework {
 
 	void Win32Window::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
-		if ((dst.left < 0) || (dst.right > mWidth) ||
-			(dst.top < 0) || (dst.bottom > mHeight) ||
-			(dst.front != 0) || (dst.back != 1))
+		if ((dst.getLeft() < 0) || (dst.getRight() > mWidth) ||
+			(dst.getTop() < 0) || (dst.getBottom() > mHeight) ||
+			(dst.getFront() != 0) || (dst.getBack() != 1))
 		{
 			CM_EXCEPT(InvalidParametersException, "Invalid box.");
 		}
@@ -650,7 +650,7 @@ namespace CamelotFramework {
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
 		glReadBuffer((buffer == FB_FRONT)? GL_FRONT : GL_BACK);
-		glReadPixels((GLint)dst.left, (GLint)dst.top,
+		glReadPixels((GLint)dst.getLeft(), (GLint)dst.getTop(),
 					 (GLsizei)dst.getWidth(), (GLsizei)dst.getHeight(),
 					 format, type, dst.getData());
 

@@ -251,7 +251,7 @@ namespace CamelotFramework {
 		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mFormat);
 
 		mLockedBuffer = getBuffer(face, mipLevel);
-		lockedArea.setExternalDataPtr((UINT8*)mLockedBuffer->lock(options));
+		lockedArea.setExternalBuffer((UINT8*)mLockedBuffer->lock(options));
 
 		return lockedArea;
 	}

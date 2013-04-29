@@ -18,7 +18,7 @@ namespace CamelotFramework
 
 		Log& getLog() { return mLog; }
 
-		void writeAsBMP(const PixelData& pixelData, const String& filePath, bool overwrite = true) const;
+		void writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const String& filePath, bool overwrite = true) const;
 
 	private:
 		Log mLog;

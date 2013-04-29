@@ -101,7 +101,6 @@ namespace CamelotFramework
 				UINT32 mipmap = i % (texture->getNumMipmaps() + 1);
 
 				PixelData data(*pixelData->at(i));
-				data.ownsData = false;
 
 				texture->setRawPixels(data, face, mipmap);
 			}

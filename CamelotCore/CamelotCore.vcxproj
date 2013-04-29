@@ -183,6 +183,9 @@
     <ClInclude Include="Include\CmGpuParamBlockBuffer.h" />
     <ClInclude Include="Include\CmGpuResource.h" />
     <ClInclude Include="Include\CmGpuResourceRTTI.h" />
+    <ClInclude Include="Include\CmPixelData.h" />
+    <ClInclude Include="Include\CmPixelDataRTTI.h" />
+    <ClInclude Include="Include\CmPixelUtil.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
     <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmApplication.h" />
@@ -328,6 +331,8 @@
     <ClCompile Include="Source\CmOcclusionQuery.cpp" />
     <ClCompile Include="Source\CmPixelBuffer.cpp" />
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp" />
+    <ClCompile Include="Source\CmPixelData.cpp" />
+    <ClCompile Include="Source\CmPixelUtil.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
     <ClCompile Include="Source\CmVertexBuffer.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgram.cpp" />

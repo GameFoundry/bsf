@@ -1,31 +1,31 @@
 #pragma once
 
-#include "CmPrerequisitesUtil.h"
+#include "CmPrerequisites.h"
 #include "CmPixelData.h"
 #include "CmRTTIType.h"
 #include "CmManagedDataBlock.h"
 
 namespace CamelotFramework
 {
-	class CM_UTILITY_EXPORT PixelDataRTTI : public RTTIType<PixelData, IReflectable, PixelDataRTTI>
+	class CM_EXPORT PixelDataRTTI : public RTTIType<PixelData, IReflectable, PixelDataRTTI>
 	{
-		UINT32& getLeft(PixelData* obj) { return obj->left; }
-		void setLeft(PixelData* obj, UINT32& val) { obj->left = val; }
+		UINT32& getLeft(PixelData* obj) { return obj->mExtents.left; }
+		void setLeft(PixelData* obj, UINT32& val) { obj->mExtents.left = val; }
 
-		UINT32& getTop(PixelData* obj) { return obj->top; }
-		void setTop(PixelData* obj, UINT32& val) { obj->top = val; }
+		UINT32& getTop(PixelData* obj) { return obj->mExtents.top; }
+		void setTop(PixelData* obj, UINT32& val) { obj->mExtents.top = val; }
 
-		UINT32& getRight(PixelData* obj) { return obj->right; }
-		void setRight(PixelData* obj, UINT32& val) { obj->right = val; }
+		UINT32& getRight(PixelData* obj) { return obj->mExtents.right; }
+		void setRight(PixelData* obj, UINT32& val) { obj->mExtents.right = val; }
 
-		UINT32& getBottom(PixelData* obj) { return obj->bottom; }
-		void setBottom(PixelData* obj, UINT32& val) { obj->bottom = val; }
+		UINT32& getBottom(PixelData* obj) { return obj->mExtents.bottom; }
+		void setBottom(PixelData* obj, UINT32& val) { obj->mExtents.bottom = val; }
 
-		UINT32& getFront(PixelData* obj) { return obj->front; }
-		void setFront(PixelData* obj, UINT32& val) { obj->front = val; }
+		UINT32& getFront(PixelData* obj) { return obj->mExtents.front; }
+		void setFront(PixelData* obj, UINT32& val) { obj->mExtents.front = val; }
 
-		UINT32& getBack(PixelData* obj) { return obj->back; }
-		void setBack(PixelData* obj, UINT32& val) { obj->back = val; }
+		UINT32& getBack(PixelData* obj) { return obj->mExtents.back; }
+		void setBack(PixelData* obj, UINT32& val) { obj->mExtents.back = val; }
 
 		UINT32& getRowPitch(PixelData* obj) { return obj->rowPitch; }
 		void setRowPitch(PixelData* obj, UINT32& val) { obj->rowPitch = val; }

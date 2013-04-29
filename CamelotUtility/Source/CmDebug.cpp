@@ -4,8 +4,6 @@
 #include "CmBitmapWriter.h"
 #include "CmFileSystem.h"
 #include "CmDataStream.h"
-#include "CmPixelData.h"
-#include "CmPixelUtil.h"
 
 namespace CamelotFramework
 {
@@ -34,7 +32,7 @@ namespace CamelotFramework
 		mLog.logMsg(msg, channel);
 	}
 
-	void Debug::writeAsBMP(const PixelData& pixelData, const String& filePath, bool overwrite) const
+	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const String& filePath, bool overwrite) const
 	{
 		if(FileSystem::fileExists(filePath))
 		{
@@ -46,12 +44,10 @@ namespace CamelotFramework
 
 		DataStreamPtr ds = FileSystem::create(filePath);
 
-		UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(pixelData.format);
-
-		UINT32 bmpDataSize = BitmapWriter::getBMPSize(pixelData.getWidth(), pixelData.getHeight(), bytesPerPixel);
+		UINT32 bmpDataSize = BitmapWriter::getBMPSize(width, height, bytesPerPixel);
 		UINT8* bmpBuffer = CM_NEW_ARRAY(UINT8, bmpDataSize, ScratchAlloc);
 
-		BitmapWriter::rawPixelsToBMP((UINT8*)pixelData.getData(), bmpBuffer, pixelData.getWidth(), pixelData.getHeight(), bytesPerPixel);
+		BitmapWriter::rawPixelsToBMP(rawPixels, bmpBuffer, width, height, bytesPerPixel);
 
 		ds->write(bmpBuffer, bmpDataSize);
 		ds->close();

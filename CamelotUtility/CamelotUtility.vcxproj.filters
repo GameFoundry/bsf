@@ -117,9 +117,6 @@
     <ClInclude Include="Include\CmBitwise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmPixelUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmBox.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
@@ -201,12 +198,6 @@
     <ClInclude Include="Include\CmAsyncOp.h">
       <Filter>Header Files\Threading</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmPixelData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmPixelDataRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -266,9 +257,6 @@
     <ClCompile Include="Source\CmColor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmPixelUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmDynLibManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -314,9 +302,6 @@
     <ClCompile Include="Source\CmInt2.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmPixelData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmManagedDataBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -327,6 +312,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmORect.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmBox.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>

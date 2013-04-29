@@ -17,6 +17,8 @@ DeferredContext
  - readSubresource - how to avoid casting returned value to either MeshData or PixelData?
    - Have it as a parameter, that is created on main thread, using the source resource. (e.g. Texture::createCPUBuffer)
 
+Remove PixelData::ownsData and instead use a shared_ptr for GpuResourceData. 
+Otherwise it gets very difficult handling the sharing of "mLocked" variable, and also PixelData creation.
 
 All data classes (MeshData, PixelData, etc) derive from GpuBufferData class. 
  - It contains basically just raw bytes.

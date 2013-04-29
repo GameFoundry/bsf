@@ -1136,11 +1136,9 @@ namespace CamelotFramework
 		RenderWindowResources* resources = it->second;
 		bool swapChain = isSwapChainWindow(renderWindow);
 
-
-
-		if ((dst.left < 0) || (dst.right > renderWindow->getWidth()) ||
-			(dst.top < 0) || (dst.bottom > renderWindow->getHeight()) ||
-			(dst.front != 0) || (dst.back != 1))
+		if ((dst.getLeft() < 0) || (dst.getRight() > renderWindow->getWidth()) ||
+			(dst.getTop() < 0) || (dst.getBottom() > renderWindow->getHeight()) ||
+			(dst.getFront() != 0) || (dst.getBack() != 1))
 		{
 			CM_EXCEPT(InvalidParametersException, "Invalid box.");
 		}
@@ -1188,7 +1186,7 @@ namespace CamelotFramework
 
 			if(renderWindow->isFullScreen())
 			{
-				if ((dst.left == 0) && (dst.right == renderWindow->getWidth()) && (dst.top == 0) && (dst.bottom == renderWindow->getHeight()))
+				if ((dst.getLeft() == 0) && (dst.getRight() == renderWindow->getWidth()) && (dst.getTop() == 0) && (dst.getBottom() == renderWindow->getHeight()))
 				{
 					hr = pTempSurf->LockRect(&lockedRect, 0, D3DLOCK_READONLY | D3DLOCK_NOSYSLOCK);
 				}
@@ -1196,10 +1194,10 @@ namespace CamelotFramework
 				{
 					RECT rect;
 
-					rect.left = static_cast<LONG>(dst.left);
-					rect.right = static_cast<LONG>(dst.right);
-					rect.top = static_cast<LONG>(dst.top);
-					rect.bottom = static_cast<LONG>(dst.bottom);
+					rect.left = static_cast<LONG>(dst.getLeft());
+					rect.right = static_cast<LONG>(dst.getRight());
+					rect.top = static_cast<LONG>(dst.getTop());
+					rect.bottom = static_cast<LONG>(dst.getBottom());
 
 					hr = pTempSurf->LockRect(&lockedRect, &rect, D3DLOCK_READONLY | D3DLOCK_NOSYSLOCK);
 				}
@@ -1213,10 +1211,10 @@ namespace CamelotFramework
 			{
 				RECT srcRect;
 				//GetClientRect(mHWnd, &srcRect);
-				srcRect.left = static_cast<LONG>(dst.left);
-				srcRect.top = static_cast<LONG>(dst.top);
-				srcRect.right = static_cast<LONG>(dst.right);
-				srcRect.bottom = static_cast<LONG>(dst.bottom);
+				srcRect.left = static_cast<LONG>(dst.getLeft());
+				srcRect.top = static_cast<LONG>(dst.getTop());
+				srcRect.right = static_cast<LONG>(dst.getRight());
+				srcRect.bottom = static_cast<LONG>(dst.getBottom());
 				POINT point;
 				point.x = srcRect.left;
 				point.y = srcRect.top;
@@ -1298,7 +1296,7 @@ namespace CamelotFramework
 				SAFE_RELEASE(pStretchSurf);
 			}
 
-			if ((dst.left == 0) && (dst.right == renderWindow->getWidth()) && (dst.top == 0) && (dst.bottom == renderWindow->getHeight()))
+			if ((dst.getLeft() == 0) && (dst.getRight() == renderWindow->getWidth()) && (dst.getTop() == 0) && (dst.getBottom() == renderWindow->getHeight()))
 			{
 				hr = pTempSurf->LockRect(&lockedRect, 0, D3DLOCK_READONLY | D3DLOCK_NOSYSLOCK);
 			}
@@ -1306,10 +1304,10 @@ namespace CamelotFramework
 			{
 				RECT rect;
 
-				rect.left = static_cast<LONG>(dst.left);
-				rect.right = static_cast<LONG>(dst.right);
-				rect.top = static_cast<LONG>(dst.top);
-				rect.bottom = static_cast<LONG>(dst.bottom);
+				rect.left = static_cast<LONG>(dst.getLeft());
+				rect.right = static_cast<LONG>(dst.getRight());
+				rect.top = static_cast<LONG>(dst.getTop());
+				rect.bottom = static_cast<LONG>(dst.getBottom());
 
 				hr = pTempSurf->LockRect(&lockedRect, &rect, D3DLOCK_READONLY | D3DLOCK_NOSYSLOCK);
 			}
@@ -1329,7 +1327,7 @@ namespace CamelotFramework
 		}
 
 		PixelData src(dst.getWidth(), dst.getHeight(), 1, format);
-		src.setExternalDataPtr((UINT8*)lockedRect.pBits);
+		src.setExternalBuffer((UINT8*)lockedRect.pBits);
 		src.rowPitch = lockedRect.Pitch / PixelUtil::getNumElemBytes(format);
 		src.slicePitch = desc.Height * src.rowPitch;
 

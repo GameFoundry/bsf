@@ -161,10 +161,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmBitmapWriter.cpp" />
+    <ClCompile Include="Source\CmBox.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
     <ClCompile Include="Source\CmORect.cpp" />
-    <ClCompile Include="Source\CmPixelData.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
     <ClCompile Include="Source\CmUUID.cpp" />
     <ClCompile Include="Source\CmWorkQueue.cpp" />
@@ -190,9 +190,6 @@
     <ClInclude Include="Include\CmModule.h" />
     <ClInclude Include="Include\CmORect.h" />
     <ClInclude Include="Include\CmPath.h" />
-    <ClInclude Include="Include\CmPixelData.h" />
-    <ClInclude Include="Include\CmPixelDataRTTI.h" />
-    <ClInclude Include="Include\CmPixelUtil.h" />
     <ClInclude Include="Include\CmPoint.h" />
     <ClInclude Include="Include\CmRect.h" />
     <ClInclude Include="Include\CmRTTIField.h" />
@@ -245,7 +242,6 @@
     <ClCompile Include="Source\CmMath.cpp" />
     <ClCompile Include="Source\CmMatrix3.cpp" />
     <ClCompile Include="Source\CmMatrix4.cpp" />
-    <ClCompile Include="Source\CmPixelUtil.cpp" />
     <ClCompile Include="Source\CmPlane.cpp" />
     <ClCompile Include="Source\CmQuaternion.cpp" />
     <ClCompile Include="Source\CmString.cpp" />

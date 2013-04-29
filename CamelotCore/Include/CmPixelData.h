@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CmPrerequisitesUtil.h"
+#include "CmPrerequisites.h"
 #include "CmBox.h"
 #include "CmIReflectable.h"
 
@@ -119,14 +119,14 @@ namespace CamelotFramework
      	Pixels are stored as a succession of "depth" slices, each containing "height" rows of 
      	"width" pixels.
     */
-    class CM_UTILITY_EXPORT PixelData: public Box, public IReflectable
+    class CM_EXPORT PixelData : public IReflectable
 	{
     public:
     	/// Parameter constructor for setting the members manually
     	PixelData() {}
 		~PixelData() 
 		{
-			freeData();
+			freeInternalBuffer();
 		}
 		/** Constructor providing extents in the form of a Box object. This constructor
     		assumes the pixel data is laid out consecutively in memory. (this
@@ -135,8 +135,8 @@ namespace CamelotFramework
     		@param pixelFormat	Format of this buffer
     		@param pixelData	Pointer to the actual data
     	*/
-		PixelData(const Box &extents, PixelFormat pixelFormat):
-			Box(extents), data(nullptr), format(pixelFormat), ownsData(false)
+		PixelData(const Box &extents, PixelFormat pixelFormat)
+			:mExtents(extents), data(nullptr), format(pixelFormat), ownsData(false)
 		{
 			setConsecutive();
 		}
@@ -150,8 +150,8 @@ namespace CamelotFramework
     		@param pixelFormat	Format of this buffer
     		@param pixelData    Pointer to the actual data
     	*/
-    	PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat):
-    		Box(0, 0, 0, width, height, depth),
+    	PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat)
+			: mExtents(0, 0, 0, width, height, depth),
     		data(nullptr), format(pixelFormat), ownsData(false)
     	{
     		setConsecutive();
@@ -162,15 +162,15 @@ namespace CamelotFramework
 		/**
 		 * @brief	Allocates an internal buffer for storing data.
 		 */
-		UINT8* allocData(UINT32 size);
+		UINT8* allocateInternalBuffer(UINT32 size);
 
 		/**
 		 * @brief	Frees the buffer data. Normally you don't need to call this manually as the
 		 * 			data will be freed automatically when an instance of PixelData is freed.
 		 */
-		void freeData();
+		void freeInternalBuffer();
 
-		void setExternalDataPtr(UINT8* data);
+		void setExternalBuffer(UINT8* data);
 
 		void* getData() const { return data; }
 
@@ -187,20 +187,7 @@ namespace CamelotFramework
 			for compressed formats.
         */
         UINT32 slicePitch;
-
-		/**
-		 * @brief	If true then PixelData owns the data buffer and will release it when destroyed.
-		 */
-		bool ownsData;
         
-        /** Set the rowPitch and slicePitch so that the buffer is laid out consecutive 
-         	in memory.
-        */        
-        void setConsecutive()
-        {
-            rowPitch = getWidth();
-            slicePitch = getWidth()*getHeight();
-        }
         /**	Get the number of elements between one past the rightmost pixel of 
          	one row and the leftmost pixel of the next row. (IE this is zero if rows
          	are consecutive).
@@ -213,6 +200,19 @@ namespace CamelotFramework
         UINT32 getSliceSkip() const { return slicePitch - (getHeight() * rowPitch); }
 
 		PixelFormat getFormat() const { return format; }
+
+		UINT32 getWidth() const { return mExtents.getWidth(); }
+		UINT32 getHeight() const { return mExtents.getHeight(); }
+		UINT32 getDepth() const { return mExtents.getDepth(); }
+
+		UINT32 getLeft() const { return mExtents.left; }
+		UINT32 getRight() const { return mExtents.right; }
+		UINT32 getTop() const { return mExtents.top; }
+		UINT32 getBottom() const { return mExtents.bottom; }
+		UINT32 getFront() const { return mExtents.front; }
+		UINT32 getBack() const { return mExtents.back; }
+
+		Box getExtents() const { return mExtents; }
 
         /** Return whether this buffer is laid out consecutive in memory (ie the pitches
          	are equal to the dimensions)
@@ -252,6 +252,22 @@ namespace CamelotFramework
 	private:
 		/// The data pointer 
 		void *data;
+
+		/**
+		 * @brief	If true then PixelData owns the data buffer and will release it when destroyed.
+		 */
+		bool ownsData;
+
+		Box mExtents;
+
+		/** Set the rowPitch and slicePitch so that the buffer is laid out consecutive 
+         	in memory.
+        */        
+        void setConsecutive()
+        {
+            rowPitch = getWidth();
+            slicePitch = getWidth()*getHeight();
+        }
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

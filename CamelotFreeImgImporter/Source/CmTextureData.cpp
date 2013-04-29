@@ -53,7 +53,7 @@ namespace CamelotFramework
 
 		// Return subface as pixelbox
 		PixelData src(finalWidth, finalHeight, finalDepth, getFormat());
-		src.setExternalDataPtr(offset);
+		src.setExternalBuffer(offset);
 		return src;
 	}
 }

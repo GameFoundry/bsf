@@ -50,7 +50,7 @@ namespace CamelotFramework
 	GLPixelBuffer::~GLPixelBuffer()
 	{
 		// Force free buffer
-		mBuffer.freeData();
+		mBuffer.freeInternalBuffer();
 	}
 	//-----------------------------------------------------------------------------  
 	void GLPixelBuffer::allocateBuffer()
@@ -59,7 +59,7 @@ namespace CamelotFramework
 			// Already allocated
 			return;
 
-		mBuffer.allocData(mSizeInBytes);
+		mBuffer.allocateInternalBuffer(mSizeInBytes);
 		// TODO: use PBO if we're HBU_DYNAMIC
 	}
 	//-----------------------------------------------------------------------------  
@@ -68,7 +68,7 @@ namespace CamelotFramework
 		// Free buffer if we're STATIC to save memory
 		if(mUsage & GBU_STATIC)
 		{
-			mBuffer.freeData();
+			mBuffer.freeInternalBuffer();
 		}
 	}
 	//-----------------------------------------------------------------------------  
@@ -99,7 +99,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------------  
 	void GLPixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox)
 	{
-		if(!mBuffer.contains(dstBox))
+		if(!mBuffer.getExtents().contains(dstBox))
 			CM_EXCEPT(InvalidParametersException, "destination box out of range");
 		PixelData scaled;
 	
@@ -135,7 +135,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------------  
 	void GLPixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst)
 	{
-		if(!mBuffer.contains(srcBox))
+		if(!mBuffer.getExtents().contains(srcBox))
 			CM_EXCEPT(InvalidParametersException, "source box out of range");
 		if(srcBox.left == 0 && srcBox.right == getWidth() &&
 		   srcBox.top == 0 && srcBox.bottom == getHeight() &&
@@ -333,8 +333,8 @@ namespace CamelotFramework
 				glPixelStorei(GL_UNPACK_ROW_LENGTH, data.rowPitch);
 			if(data.getHeight()*data.getWidth() != data.slicePitch)
 				glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, (data.slicePitch/data.getWidth()));
-			if(data.left > 0 || data.top > 0 || data.front > 0)
-				glPixelStorei(GL_UNPACK_SKIP_PIXELS, data.left + data.rowPitch * data.top + data.slicePitch * data.front);
+			if(data.getLeft() > 0 || data.getTop() > 0 || data.getFront() > 0)
+				glPixelStorei(GL_UNPACK_SKIP_PIXELS, data.getLeft() + data.rowPitch * data.getTop() + data.slicePitch * data.getFront());
 			if((data.getWidth()*PixelUtil::getNumElemBytes(data.format)) & 3) {
 				// Standard alignment of 4 is not right
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -401,8 +401,8 @@ namespace CamelotFramework
 				glPixelStorei(GL_PACK_ROW_LENGTH, data.rowPitch);
 			if(data.getHeight()*data.getWidth() != data.slicePitch)
 				glPixelStorei(GL_PACK_IMAGE_HEIGHT, (data.slicePitch/data.getWidth()));
-			if(data.left > 0 || data.top > 0 || data.front > 0)
-				glPixelStorei(GL_PACK_SKIP_PIXELS, data.left + data.rowPitch * data.top + data.slicePitch * data.front);
+			if(data.getLeft() > 0 || data.getTop() > 0 || data.getFront() > 0)
+				glPixelStorei(GL_PACK_SKIP_PIXELS, data.getLeft() + data.rowPitch * data.getTop() + data.slicePitch * data.getFront());
 			if((data.getWidth()*PixelUtil::getNumElemBytes(data.format)) & 3) {
 				// Standard alignment of 4 is not right
 				glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -687,7 +687,7 @@ namespace CamelotFramework
 			GLPixelBuffer::blitFromMemory(src_orig, dstBox);
 			return;
 		}
-		if(!mBuffer.contains(dstBox))
+		if(!mBuffer.getExtents().contains(dstBox))
 			CM_EXCEPT(InvalidParametersException, "destination box out of range");
 		/// For scoped deletion of conversion buffer
 		PixelData src;
@@ -697,7 +697,7 @@ namespace CamelotFramework
 		{
 			/// Convert to buffer internal format
 			src = PixelData(src_orig.getWidth(), src_orig.getHeight(), src_orig.getDepth(), mFormat);
-			src.allocData(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat));
+			src.allocateInternalBuffer(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat));
 			PixelUtil::bulkPixelConversion(src_orig, src);
 		}
 		else

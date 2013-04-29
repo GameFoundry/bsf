@@ -133,7 +133,7 @@ namespace CamelotFramework
 
 				PixelData pixelData(pageIter->width, pageIter->height, 1, PF_R8G8);
 
-				UINT8* pixelBuffer = pixelData.allocData(bufferSize);
+				UINT8* pixelBuffer = pixelData.allocateInternalBuffer(bufferSize);
 				memset(pixelBuffer, 0, bufferSize);
 
 				for(size_t elementIdx = 0; elementIdx < atlasElements.size(); elementIdx++)

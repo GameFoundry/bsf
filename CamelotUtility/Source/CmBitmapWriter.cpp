@@ -1,5 +1,4 @@
 #include "CmBitmapWriter.h"
-#include "CmPixelData.h"
 
 namespace CamelotFramework
 {

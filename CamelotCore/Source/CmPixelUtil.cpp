@@ -67,15 +67,15 @@ namespace CamelotFramework {
 			// note: ((stepz>>1) - 1) is an extra half-step increment to adjust
 			// for the center of the destination pixel, not the top-left corner
 			UINT64 sz_48 = (stepz >> 1) - 1;
-			for (size_t z = dst.front; z < dst.back; z++, sz_48 += stepz) {
+			for (size_t z = dst.getFront(); z < dst.getBack(); z++, sz_48 += stepz) {
 				size_t srczoff = (size_t)(sz_48 >> 48) * src.slicePitch;
 
 				UINT64 sy_48 = (stepy >> 1) - 1;
-				for (size_t y = dst.top; y < dst.bottom; y++, sy_48 += stepy) {
+				for (size_t y = dst.getTop(); y < dst.getBottom(); y++, sy_48 += stepy) {
 					size_t srcyoff = (size_t)(sy_48 >> 48) * src.rowPitch;
 
 					UINT64 sx_48 = (stepx >> 1) - 1;
-					for (size_t x = dst.left; x < dst.right; x++, sx_48 += stepx) {
+					for (size_t x = dst.getLeft(); x < dst.getRight(); x++, sx_48 += stepx) {
 						UINT8* psrc = srcdata +
 							elemsize*((size_t)(sx_48 >> 48) + srcyoff + srczoff);
 						memcpy(pdst, psrc, elemsize);
@@ -114,7 +114,7 @@ namespace CamelotFramework {
 			// note: ((stepz>>1) - 1) is an extra half-step increment to adjust
 			// for the center of the destination pixel, not the top-left corner
 			UINT64 sz_48 = (stepz >> 1) - 1;
-			for (size_t z = dst.front; z < dst.back; z++, sz_48+=stepz) {
+			for (size_t z = dst.getFront(); z < dst.getBack(); z++, sz_48+=stepz) {
 				temp = static_cast<unsigned int>(sz_48 >> 32);
 				temp = (temp > 0x8000)? temp - 0x8000 : 0;
 				size_t sz1 = temp >> 16;				 // src z, sample #1
@@ -122,7 +122,7 @@ namespace CamelotFramework {
 				float szf = (temp & 0xFFFF) / 65536.f; // weight of sample #2
 
 				UINT64 sy_48 = (stepy >> 1) - 1;
-				for (size_t y = dst.top; y < dst.bottom; y++, sy_48+=stepy) {
+				for (size_t y = dst.getTop(); y < dst.getBottom(); y++, sy_48+=stepy) {
 					temp = static_cast<unsigned int>(sy_48 >> 32);
 					temp = (temp > 0x8000)? temp - 0x8000 : 0;
 					size_t sy1 = temp >> 16;					// src y #1
@@ -130,7 +130,7 @@ namespace CamelotFramework {
 					float syf = (temp & 0xFFFF) / 65536.f; // weight of #2
 
 					UINT64 sx_48 = (stepx >> 1) - 1;
-					for (size_t x = dst.left; x < dst.right; x++, sx_48+=stepx) {
+					for (size_t x = dst.getLeft(); x < dst.getRight(); x++, sx_48+=stepx) {
 						temp = static_cast<unsigned int>(sx_48 >> 32);
 						temp = (temp > 0x8000)? temp - 0x8000 : 0;
 						size_t sx1 = temp >> 16;					// src x #1
@@ -199,7 +199,7 @@ namespace CamelotFramework {
 			// note: ((stepz>>1) - 1) is an extra half-step increment to adjust
 			// for the center of the destination pixel, not the top-left corner
 			UINT64 sz_48 = (stepz >> 1) - 1;
-			for (size_t z = dst.front; z < dst.back; z++, sz_48+=stepz) {
+			for (size_t z = dst.getFront(); z < dst.getBack(); z++, sz_48+=stepz) {
 				temp = static_cast<unsigned int>(sz_48 >> 32);
 				temp = (temp > 0x8000)? temp - 0x8000 : 0;
 				size_t sz1 = temp >> 16;				 // src z, sample #1
@@ -207,7 +207,7 @@ namespace CamelotFramework {
 				float szf = (temp & 0xFFFF) / 65536.f; // weight of sample #2
 
 				UINT64 sy_48 = (stepy >> 1) - 1;
-				for (size_t y = dst.top; y < dst.bottom; y++, sy_48+=stepy) {
+				for (size_t y = dst.getTop(); y < dst.getBottom(); y++, sy_48+=stepy) {
 					temp = static_cast<unsigned int>(sy_48 >> 32);
 					temp = (temp > 0x8000)? temp - 0x8000 : 0;
 					size_t sy1 = temp >> 16;					// src y #1
@@ -215,7 +215,7 @@ namespace CamelotFramework {
 					float syf = (temp & 0xFFFF) / 65536.f; // weight of #2
 
 					UINT64 sx_48 = (stepx >> 1) - 1;
-					for (size_t x = dst.left; x < dst.right; x++, sx_48+=stepx) {
+					for (size_t x = dst.getLeft(); x < dst.getRight(); x++, sx_48+=stepx) {
 						temp = static_cast<unsigned int>(sx_48 >> 32);
 						temp = (temp > 0x8000)? temp - 0x8000 : 0;
 						size_t sx1 = temp >> 16;					// src x #1
@@ -307,22 +307,22 @@ namespace CamelotFramework {
 			unsigned int temp;
 
 			UINT64 sy_48 = (stepy >> 1) - 1;
-			for (size_t y = dst.top; y < dst.bottom; y++, sy_48+=stepy) {
+			for (size_t y = dst.getTop(); y < dst.getBottom(); y++, sy_48+=stepy) {
 				temp = static_cast<unsigned int>(sy_48 >> 36);
 				temp = (temp > 0x800)? temp - 0x800: 0;
 				unsigned int syf = temp & 0xFFF;
 				size_t sy1 = temp >> 12;
-				size_t sy2 = std::min(sy1+1, (size_t)src.bottom-src.top-1);
+				size_t sy2 = std::min(sy1+1, (size_t)src.getBottom()-src.getTop()-1);
 				size_t syoff1 = sy1 * src.rowPitch;
 				size_t syoff2 = sy2 * src.rowPitch;
 
 				UINT64 sx_48 = (stepx >> 1) - 1;
-				for (size_t x = dst.left; x < dst.right; x++, sx_48+=stepx) {
+				for (size_t x = dst.getLeft(); x < dst.getRight(); x++, sx_48+=stepx) {
 					temp = static_cast<unsigned int>(sx_48 >> 36);
 					temp = (temp > 0x800)? temp - 0x800 : 0;
 					unsigned int sxf = temp & 0xFFF;
 					size_t sx1 = temp >> 12;
-					size_t sx2 = std::min(sx1+1, (size_t)src.right-src.left-1);
+					size_t sx2 = std::min(sx1+1, (size_t)src.getRight()-src.getLeft()-1);
 
 					unsigned int sxfsyf = sxf*syf;
 					for (unsigned int k = 0; k < channels; k++) {
@@ -783,15 +783,15 @@ namespace CamelotFramework {
 	{
 		if(PixelUtil::isCompressed(format))
 		{
-			if(def.left == left && def.top == top && def.front == front &&
-			   def.right == right && def.bottom == bottom && def.back == back)
+			if(def.left == getLeft() && def.top == getTop() && def.front == getFront() &&
+			   def.right == getRight() && def.bottom == getBottom() && def.back == getBack())
 			{
 				// Entire buffer is being queried
 				return *this;
 			}
 			CM_EXCEPT(InvalidParametersException, "Cannot return subvolume of compressed PixelBuffer");
 		}
-		if(!contains(def))
+		if(!mExtents.contains(def))
 		{
 			CM_EXCEPT(InvalidParametersException, "Bounds out of range");
 		}
@@ -802,9 +802,9 @@ namespace CamelotFramework {
 		// the returned pointer is already offset
 		PixelData rval(def.getWidth(), def.getHeight(), def.getDepth(), format);
 
-		rval.setExternalDataPtr(((UINT8*)getData()) + ((def.left-left)*elemSize)
-			+ ((def.top-top)*rowPitch*elemSize)
-			+ ((def.front-front)*slicePitch*elemSize));
+		rval.setExternalBuffer(((UINT8*)getData()) + ((def.left-getLeft())*elemSize)
+			+ ((def.top-getTop())*rowPitch*elemSize)
+			+ ((def.front-getFront())*slicePitch*elemSize));
 
 		rval.rowPitch = rowPitch;
 		rval.slicePitch = slicePitch;
@@ -1261,9 +1261,9 @@ namespace CamelotFramework {
             const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.format);
             const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.format);
             UINT8 *srcptr = static_cast<UINT8*>(src.getData())
-                + (src.left + src.top * src.rowPitch + src.front * src.slicePitch) * srcPixelSize;
+                + (src.getLeft() + src.getTop() * src.rowPitch + src.getFront() * src.slicePitch) * srcPixelSize;
             UINT8 *dstptr = static_cast<UINT8*>(dst.getData())
-				+ (dst.left + dst.top * dst.rowPitch + dst.front * dst.slicePitch) * dstPixelSize;
+				+ (dst.getLeft() + dst.getTop() * dst.rowPitch + dst.getFront() * dst.slicePitch) * dstPixelSize;
 
             // Calculate pitches+skips in bytes
             const size_t srcRowPitchBytes = src.rowPitch*srcPixelSize;
@@ -1276,9 +1276,9 @@ namespace CamelotFramework {
 
             // Otherwise, copy per row
             const size_t rowSize = src.getWidth()*srcPixelSize;
-            for(size_t z=src.front; z<src.back; z++)
+            for(size_t z=src.getFront(); z<src.getBack(); z++)
             {
-                for(size_t y=src.top; y<src.bottom; y++)
+                for(size_t y=src.getTop(); y<src.getBottom(); y++)
                 {
 					memcpy(dstptr, srcptr, rowSize);
                     srcptr += srcRowPitchBytes;
@@ -1315,9 +1315,9 @@ namespace CamelotFramework {
         const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.format);
         const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.format);
         UINT8 *srcptr = static_cast<UINT8*>(src.getData())
-            + (src.left + src.top * src.rowPitch + src.front * src.slicePitch) * srcPixelSize;
+            + (src.getLeft() + src.getTop() * src.rowPitch + src.getFront() * src.slicePitch) * srcPixelSize;
         UINT8 *dstptr = static_cast<UINT8*>(dst.getData())
-            + (dst.left + dst.top * dst.rowPitch + dst.front * dst.slicePitch) * dstPixelSize;
+            + (dst.getLeft() + dst.getTop() * dst.rowPitch + dst.getFront() * dst.slicePitch) * dstPixelSize;
 		
 		// Old way, not taking into account box dimensions
 		//UINT8 *srcptr = static_cast<UINT8*>(src.data), *dstptr = static_cast<UINT8*>(dst.data);
@@ -1330,11 +1330,11 @@ namespace CamelotFramework {
 
         // The brute force fallback
         float r,g,b,a;
-        for(size_t z=src.front; z<src.back; z++)
+        for(size_t z=src.getFront(); z<src.getBack(); z++)
         {
-            for(size_t y=src.top; y<src.bottom; y++)
+            for(size_t y=src.getTop(); y<src.getBottom(); y++)
             {
-                for(size_t x=src.left; x<src.right; x++)
+                for(size_t x=src.getLeft(); x<src.getRight(); x++)
                 {
                     unpackColour(&r, &g, &b, &a, src.format, srcptr);
                     packColour(r, g, b, a, dst.format, dstptr);
@@ -1368,7 +1368,7 @@ namespace CamelotFramework {
 			{
 				// Allocate temporary buffer of destination size in source format 
 				temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.format);
-				temp.allocData(temp.getConsecutiveSize());
+				temp.allocateInternalBuffer(temp.getConsecutiveSize());
 			}
 			// super-optimized: no conversion
 			switch (PixelUtil::getNumElemBytes(src.format)) 
@@ -1390,7 +1390,7 @@ namespace CamelotFramework {
 				// Blit temp buffer
 				PixelUtil::bulkPixelConversion(temp, scaled);
 
-				temp.freeData();
+				temp.freeInternalBuffer();
 			}
 			break;
 
@@ -1412,7 +1412,7 @@ namespace CamelotFramework {
 				{
 					// Allocate temp buffer of destination size in source format 
 					temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.format);
-					temp.allocData(temp.getConsecutiveSize());
+					temp.allocateInternalBuffer(temp.getConsecutiveSize());
 				}
 				// super-optimized: byte-oriented math, no conversion
 				switch (PixelUtil::getNumElemBytes(src.format)) 
@@ -1429,7 +1429,7 @@ namespace CamelotFramework {
 				{
 					// Blit temp buffer
 					PixelUtil::bulkPixelConversion(temp, scaled);
-					temp.freeData();
+					temp.freeInternalBuffer();
 				}
 				break;
 			case PF_FLOAT32_RGB:

@@ -110,12 +110,12 @@ namespace CamelotFramework
 				{
 					Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
 					PixelData dstBox(fullBufferBox, mFormat);
-					dstBox.allocData(getSizeInBytes());
+					dstBox.allocateInternalBuffer(getSizeInBytes());
 
 					blitToMemory(fullBufferBox, dstBox, it->second, it->first);
 					blitFromMemory(dstBox, fullBufferBox, bufferResources);
 
-					dstBox.freeData();
+					dstBox.freeInternalBuffer();
 
 					break;
 				}
@@ -169,12 +169,12 @@ namespace CamelotFramework
 				{
 					Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
 					PixelData dstBox(fullBufferBox, mFormat);
-					dstBox.allocData(getSizeInBytes());
+					dstBox.allocateInternalBuffer(getSizeInBytes());
 
 					blitToMemory(fullBufferBox, dstBox, it->second, it->first);
 					blitFromMemory(dstBox, fullBufferBox, bufferResources);
 					
-					dstBox.freeData();
+					dstBox.freeInternalBuffer();
 
 					break;
 				}
@@ -256,7 +256,7 @@ namespace CamelotFramework
 			CM_EXCEPT(InvalidParametersException, "Invalid pixel format");
 		}
 
-		rval.setExternalDataPtr((UINT8*)lrect.pBits);
+		rval.setExternalBuffer((UINT8*)lrect.pBits);
 	}
 	void fromD3DLock(PixelData &rval, const D3DLOCKED_BOX &lbox)
 	{
@@ -277,7 +277,7 @@ namespace CamelotFramework
 		{
 			CM_EXCEPT(InvalidParametersException, "Invalid pixel format");
 		}
-		rval.setExternalDataPtr((UINT8*)lbox.pBits);
+		rval.setExternalBuffer((UINT8*)lbox.pBits);
 	}
 	// Convert Ogre integer Box to D3D rectangle
 	RECT toD3DRECT(const Box &lockBox)
@@ -604,7 +604,7 @@ namespace CamelotFramework
 		if (D3D9Mappings::_getPF(src.format) == D3DFMT_UNKNOWN)
 		{
 			converted = PixelData(src.getWidth(), src.getHeight(), src.getDepth(), mFormat);
-			converted.allocData(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat));
+			converted.allocateInternalBuffer(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat));
 			PixelUtil::bulkPixelConversion(src, converted);
 		}
 
@@ -632,7 +632,7 @@ namespace CamelotFramework
 		if (dstBufferResources->surface)
 		{
 			RECT destRect, srcRect;
-			srcRect = toD3DRECT(converted);
+			srcRect = toD3DRECT(converted.getExtents());
 			destRect = toD3DRECT(dstBox);
 
 			if(D3DXLoadSurfaceFromMemory(dstBufferResources->surface, NULL, &destRect, 
@@ -646,7 +646,7 @@ namespace CamelotFramework
 		else if (dstBufferResources->volume)
 		{
 			D3DBOX destBox, srcBox;
-			srcBox = toD3DBOX(converted);
+			srcBox = toD3DBOX(converted.getExtents());
 			destBox = toD3DBOX(dstBox);
 			UINT32 sliceWidth;
 			if (PixelUtil::isCompressed(converted.format))
@@ -681,7 +681,7 @@ namespace CamelotFramework
 		if(mDoMipmapGen)
 			_genMipmaps(dstBufferResources->mipTex);
 
-		converted.freeData();
+		converted.freeInternalBuffer();
 	}
 
 	//-----------------------------------------------------------------------------  

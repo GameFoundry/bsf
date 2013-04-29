@@ -5,16 +5,17 @@
 namespace CamelotFramework
 {
 	PixelData::PixelData(const PixelData& copy)
-		:Box(copy), IReflectable(copy)
+		:IReflectable(copy)
 	{
 		data = copy.data;
 		format = copy.format;
 		rowPitch = copy.rowPitch;
 		slicePitch = copy.slicePitch;
+		mExtents = copy.mExtents;
 		ownsData = false;
 	}
 
-	UINT8* PixelData::allocData(UINT32 size)
+	UINT8* PixelData::allocateInternalBuffer(UINT32 size)
 	{
 		data = CM_NEW_BYTES(size, ScratchAlloc);
 		ownsData = true;
@@ -22,7 +23,7 @@ namespace CamelotFramework
 		return (UINT8*)data;
 	}
 
-	void PixelData::freeData()
+	void PixelData::freeInternalBuffer()
 	{
 		if(ownsData && getData() != nullptr)
 		{
@@ -32,9 +33,9 @@ namespace CamelotFramework
 		}
 	}
 
-	void PixelData::setExternalDataPtr(UINT8* data)
+	void PixelData::setExternalBuffer(UINT8* data)
 	{
-		freeData();
+		freeInternalBuffer();
 
 		this->data = data;
 		ownsData = false;

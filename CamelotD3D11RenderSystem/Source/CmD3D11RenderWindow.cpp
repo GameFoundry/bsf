@@ -523,7 +523,7 @@ namespace CamelotFramework
 
 		// copy the the texture to the dest
 		PixelData src(mWidth, mHeight, 1, PF_A8B8G8R8);
-		src.setExternalDataPtr((UINT8*)mappedTex2D.pData);
+		src.setExternalBuffer((UINT8*)mappedTex2D.pData);
 		PixelUtil::bulkPixelConversion(src, dst);
 
 		// unmap the temp buffer
