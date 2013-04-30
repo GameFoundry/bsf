@@ -11,7 +11,7 @@ namespace CamelotFramework
 	 * 			will always remain with the initial instance of the class. If that initial instance
 	 * 			is deleted, any potential copies will point to garbage data.
 	 */
-	class CM_EXPORT GpuResourceData
+	class CM_EXPORT GpuResourceData : public IReflectable
 	{
 	public:
 		GpuResourceData();
@@ -61,5 +61,13 @@ namespace CamelotFramework
 		UINT8* mData;
 		bool mOwnsData;
 		mutable bool mLocked;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class GpuResourceDataRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

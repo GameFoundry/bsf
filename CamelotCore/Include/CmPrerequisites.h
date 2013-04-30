@@ -282,7 +282,8 @@ namespace CamelotFramework
 		TID_SceneObject = 1059,
 		TID_GameObject = 1060,
 		TID_GpuResource = 1061,
-		TID_PixelData = 1062
+		TID_PixelData = 1062,
+		TID_GpuResourceData = 1063
 	};
 
 	/**

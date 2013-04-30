@@ -1328,8 +1328,8 @@ namespace CamelotFramework
 
 		PixelData src(dst.getWidth(), dst.getHeight(), 1, format);
 		src.setExternalBuffer((UINT8*)lockedRect.pBits);
-		src.rowPitch = lockedRect.Pitch / PixelUtil::getNumElemBytes(format);
-		src.slicePitch = desc.Height * src.rowPitch;
+		src.setRowPitch(lockedRect.Pitch / PixelUtil::getNumElemBytes(format));
+		src.setSlicePitch(desc.Height * src.getRowPitch());
 
 		PixelUtil::bulkPixelConversion(src, dst);
 

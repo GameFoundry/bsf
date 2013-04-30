@@ -68,11 +68,11 @@ namespace CamelotFramework {
 			// for the center of the destination pixel, not the top-left corner
 			UINT64 sz_48 = (stepz >> 1) - 1;
 			for (size_t z = dst.getFront(); z < dst.getBack(); z++, sz_48 += stepz) {
-				size_t srczoff = (size_t)(sz_48 >> 48) * src.slicePitch;
+				size_t srczoff = (size_t)(sz_48 >> 48) * src.getSlicePitch();
 
 				UINT64 sy_48 = (stepy >> 1) - 1;
 				for (size_t y = dst.getTop(); y < dst.getBottom(); y++, sy_48 += stepy) {
-					size_t srcyoff = (size_t)(sy_48 >> 48) * src.rowPitch;
+					size_t srcyoff = (size_t)(sy_48 >> 48) * src.getRowPitch();
 
 					UINT64 sx_48 = (stepx >> 1) - 1;
 					for (size_t x = dst.getLeft(); x < dst.getRight(); x++, sx_48 += stepx) {
@@ -92,8 +92,8 @@ namespace CamelotFramework {
 	// default floating-point linear resampler, does format conversion
 	struct LinearResampler {
 		static void scale(const PixelData& src, const PixelData& dst) {
-			size_t srcelemsize = PixelUtil::getNumElemBytes(src.format);
-			size_t dstelemsize = PixelUtil::getNumElemBytes(dst.format);
+			size_t srcelemsize = PixelUtil::getNumElemBytes(src.getFormat());
+			size_t dstelemsize = PixelUtil::getNumElemBytes(dst.getFormat());
 
 			// srcdata stays at beginning, pdst is a moving pointer
 			UINT8* srcdata = (UINT8*)src.getData();
@@ -140,8 +140,8 @@ namespace CamelotFramework {
 						Color x1y1z1, x2y1z1, x1y2z1, x2y2z1;
 						Color x1y1z2, x2y1z2, x1y2z2, x2y2z2;
 
-#define UNPACK(dst,x,y,z) PixelUtil::unpackColour(&dst, src.format, \
-	srcdata + srcelemsize*((x)+(y)*src.rowPitch+(z)*src.slicePitch))
+#define UNPACK(dst,x,y,z) PixelUtil::unpackColour(&dst, src.getFormat(), \
+	srcdata + srcelemsize*((x)+(y)*src.getRowPitch()+(z)*src.getSlicePitch()))
 
 						UNPACK(x1y1z1,sx1,sy1,sz1); UNPACK(x2y1z1,sx2,sy1,sz1);
 						UNPACK(x1y2z1,sx1,sy2,sz1); UNPACK(x2y2z1,sx2,sy2,sz1);
@@ -159,7 +159,7 @@ namespace CamelotFramework {
 							x1y2z2 * ((1.0f - sxf)*        syf *        szf ) +
 							x2y2z2 * (        sxf *        syf *        szf );
 
-						PixelUtil::packColour(accum, dst.format, pdst);
+						PixelUtil::packColour(accum, dst.getFormat(), pdst);
 
 						pdst += dstelemsize;
 					}
@@ -175,8 +175,8 @@ namespace CamelotFramework {
 	// avoids overhead of pixel unpack/repack function calls
 	struct LinearResampler_Float32 {
 		static void scale(const PixelData& src, const PixelData& dst) {
-			size_t srcchannels = PixelUtil::getNumElemBytes(src.format) / sizeof(float);
-			size_t dstchannels = PixelUtil::getNumElemBytes(dst.format) / sizeof(float);
+			size_t srcchannels = PixelUtil::getNumElemBytes(src.getFormat()) / sizeof(float);
+			size_t dstchannels = PixelUtil::getNumElemBytes(dst.getFormat()) / sizeof(float);
 			// assert(srcchannels == 3 || srcchannels == 4);
 			// assert(dstchannels == 3 || dstchannels == 4);
 
@@ -227,13 +227,13 @@ namespace CamelotFramework {
 
 #define ACCUM3(x,y,z,factor) \
 						{ float f = factor; \
-						size_t off = (x+y*src.rowPitch+z*src.slicePitch)*srcchannels; \
+						size_t off = (x+y*src.getRowPitch()+z*src.getSlicePitch())*srcchannels; \
 						accum[0]+=srcdata[off+0]*f; accum[1]+=srcdata[off+1]*f; \
 						accum[2]+=srcdata[off+2]*f; }
 
 #define ACCUM4(x,y,z,factor) \
 						{ float f = factor; \
-						size_t off = (x+y*src.rowPitch+z*src.slicePitch)*srcchannels; \
+						size_t off = (x+y*src.getRowPitch()+z*src.getSlicePitch())*srcchannels; \
 						accum[0]+=srcdata[off+0]*f; accum[1]+=srcdata[off+1]*f; \
 						accum[2]+=srcdata[off+2]*f; accum[3]+=srcdata[off+3]*f; }
 
@@ -313,8 +313,8 @@ namespace CamelotFramework {
 				unsigned int syf = temp & 0xFFF;
 				size_t sy1 = temp >> 12;
 				size_t sy2 = std::min(sy1+1, (size_t)src.getBottom()-src.getTop()-1);
-				size_t syoff1 = sy1 * src.rowPitch;
-				size_t syoff2 = sy2 * src.rowPitch;
+				size_t syoff1 = sy1 * src.getRowPitch();
+				size_t syoff2 = sy2 * src.getRowPitch();
 
 				UINT64 sx_48 = (stepx >> 1) - 1;
 				for (size_t x = dst.getLeft(); x < dst.getRight(); x++, sx_48+=stepx) {
@@ -777,11 +777,11 @@ namespace CamelotFramework {
     //-----------------------------------------------------------------------
 	UINT32 PixelData::getConsecutiveSize() const
 	{
-		return PixelUtil::getMemorySize(getWidth(), getHeight(), getDepth(), format);
+		return PixelUtil::getMemorySize(getWidth(), getHeight(), getDepth(), mFormat);
 	}
 	PixelData PixelData::getSubVolume(const Box &def) const
 	{
-		if(PixelUtil::isCompressed(format))
+		if(PixelUtil::isCompressed(mFormat))
 		{
 			if(def.left == getLeft() && def.top == getTop() && def.front == getFront() &&
 			   def.right == getRight() && def.bottom == getBottom() && def.back == getBack())
@@ -796,19 +796,19 @@ namespace CamelotFramework {
 			CM_EXCEPT(InvalidParametersException, "Bounds out of range");
 		}
 
-		const size_t elemSize = PixelUtil::getNumElemBytes(format);
+		const size_t elemSize = PixelUtil::getNumElemBytes(mFormat);
 		// Calculate new data origin
 		// Notice how we do not propagate left/top/front from the incoming box, since
 		// the returned pointer is already offset
-		PixelData rval(def.getWidth(), def.getHeight(), def.getDepth(), format);
+		PixelData rval(def.getWidth(), def.getHeight(), def.getDepth(), mFormat);
 
 		rval.setExternalBuffer(((UINT8*)getData()) + ((def.left-getLeft())*elemSize)
-			+ ((def.top-getTop())*rowPitch*elemSize)
-			+ ((def.front-getFront())*slicePitch*elemSize));
+			+ ((def.top-getTop())*mRowPitch*elemSize)
+			+ ((def.front-getFront())*mSlicePitch*elemSize));
 
-		rval.rowPitch = rowPitch;
-		rval.slicePitch = slicePitch;
-		rval.format = format;
+		rval.mRowPitch = mRowPitch;
+		rval.mSlicePitch = mSlicePitch;
+		rval.mFormat = mFormat;
 
 		return rval;
 	}
@@ -1236,9 +1236,9 @@ namespace CamelotFramework {
 			   src.getDepth() == dst.getDepth());
 
 		// Check for compressed formats, we don't support decompression, compression or recoding
-		if(PixelUtil::isCompressed(src.format) || PixelUtil::isCompressed(dst.format))
+		if(PixelUtil::isCompressed(src.getFormat()) || PixelUtil::isCompressed(dst.getFormat()))
 		{
-			if(src.format == dst.format)
+			if(src.getFormat() == dst.getFormat())
 			{
 				memcpy(dst.getData(), src.getData(), src.getConsecutiveSize());
 				return;
@@ -1250,7 +1250,7 @@ namespace CamelotFramework {
 		}
 
         // The easy case
-        if(src.format == dst.format) {
+        if(src.getFormat() == dst.getFormat()) {
             // Everything consecutive?
             if(src.isConsecutive() && dst.isConsecutive())
             {
@@ -1258,19 +1258,19 @@ namespace CamelotFramework {
                 return;
             }
 
-            const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.format);
-            const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.format);
+            const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.getFormat());
+            const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.getFormat());
             UINT8 *srcptr = static_cast<UINT8*>(src.getData())
-                + (src.getLeft() + src.getTop() * src.rowPitch + src.getFront() * src.slicePitch) * srcPixelSize;
+                + (src.getLeft() + src.getTop() * src.getRowPitch() + src.getFront() * src.getSlicePitch()) * srcPixelSize;
             UINT8 *dstptr = static_cast<UINT8*>(dst.getData())
-				+ (dst.getLeft() + dst.getTop() * dst.rowPitch + dst.getFront() * dst.slicePitch) * dstPixelSize;
+				+ (dst.getLeft() + dst.getTop() * dst.getRowPitch() + dst.getFront() * dst.getSlicePitch()) * dstPixelSize;
 
             // Calculate pitches+skips in bytes
-            const size_t srcRowPitchBytes = src.rowPitch*srcPixelSize;
+            const size_t srcRowPitchBytes = src.getRowPitch()*srcPixelSize;
             //const size_t srcRowSkipBytes = src.getRowSkip()*srcPixelSize;
             const size_t srcSliceSkipBytes = src.getSliceSkip()*srcPixelSize;
 
-            const size_t dstRowPitchBytes = dst.rowPitch*dstPixelSize;
+            const size_t dstRowPitchBytes = dst.getRowPitch()*dstPixelSize;
             //const size_t dstRowSkipBytes = dst.getRowSkip()*dstPixelSize;
             const size_t dstSliceSkipBytes = dst.getSliceSkip()*dstPixelSize;
 
@@ -1291,33 +1291,34 @@ namespace CamelotFramework {
         }
 		// Converting to PF_X8R8G8B8 is exactly the same as converting to
 		// PF_A8R8G8B8. (same with PF_X8B8G8R8 and PF_A8B8G8R8)
-		if(dst.format == PF_X8R8G8B8 || dst.format == PF_X8B8G8R8)
+		if(dst.getFormat() == PF_X8R8G8B8 || dst.getFormat() == PF_X8B8G8R8)
 		{
 			// Do the same conversion, with PF_A8R8G8B8, which has a lot of
 			// optimized conversions
-			PixelData tempdst = dst;
-			tempdst.format = dst.format==PF_X8R8G8B8?PF_A8R8G8B8:PF_A8B8G8R8;
+			PixelFormat tempFormat = dst.getFormat()==PF_X8R8G8B8?PF_A8R8G8B8:PF_A8B8G8R8;
+			PixelData tempdst(dst.getWidth(), dst.getHeight(), dst.getDepth(), tempFormat);
 			bulkPixelConversion(src, tempdst);
 			return;
 		}
 		// Converting from PF_X8R8G8B8 is exactly the same as converting from
 		// PF_A8R8G8B8, given that the destination format does not have alpha.
-		if((src.format == PF_X8R8G8B8||src.format == PF_X8B8G8R8) && !hasAlpha(dst.format))
+		if((src.getFormat() == PF_X8R8G8B8||src.getFormat() == PF_X8B8G8R8) && !hasAlpha(dst.getFormat()))
 		{
 			// Do the same conversion, with PF_A8R8G8B8, which has a lot of
 			// optimized conversions
-			PixelData tempsrc = src;
-			tempsrc.format = src.format==PF_X8R8G8B8?PF_A8R8G8B8:PF_A8B8G8R8;
+			PixelFormat tempFormat = src.getFormat()==PF_X8R8G8B8?PF_A8R8G8B8:PF_A8B8G8R8;
+			PixelData tempsrc(src.getWidth(), src.getHeight(), src.getDepth(), tempFormat);
+			tempsrc.setExternalBuffer(src.getData());
 			bulkPixelConversion(tempsrc, dst);
 			return;
 		}
 
-        const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.format);
-        const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.format);
+        const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.getFormat());
+        const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.getFormat());
         UINT8 *srcptr = static_cast<UINT8*>(src.getData())
-            + (src.getLeft() + src.getTop() * src.rowPitch + src.getFront() * src.slicePitch) * srcPixelSize;
+            + (src.getLeft() + src.getTop() * src.getRowPitch() + src.getFront() * src.getSlicePitch()) * srcPixelSize;
         UINT8 *dstptr = static_cast<UINT8*>(dst.getData())
-            + (dst.getLeft() + dst.getTop() * dst.rowPitch + dst.getFront() * dst.slicePitch) * dstPixelSize;
+            + (dst.getLeft() + dst.getTop() * dst.getRowPitch() + dst.getFront() * dst.getSlicePitch()) * dstPixelSize;
 		
 		// Old way, not taking into account box dimensions
 		//UINT8 *srcptr = static_cast<UINT8*>(src.data), *dstptr = static_cast<UINT8*>(dst.data);
@@ -1336,8 +1337,8 @@ namespace CamelotFramework {
             {
                 for(size_t x=src.getLeft(); x<src.getRight(); x++)
                 {
-                    unpackColour(&r, &g, &b, &a, src.format, srcptr);
-                    packColour(r, g, b, a, dst.format, dstptr);
+                    unpackColour(&r, &g, &b, &a, src.getFormat(), srcptr);
+                    packColour(r, g, b, a, dst.getFormat(), dstptr);
                     srcptr += srcPixelSize;
                     dstptr += dstPixelSize;
                 }
@@ -1351,15 +1352,15 @@ namespace CamelotFramework {
 
 	void PixelUtil::scale(const PixelData &src, const PixelData &scaled, Filter filter)
 	{
-		assert(PixelUtil::isAccessible(src.format));
-		assert(PixelUtil::isAccessible(scaled.format));
+		assert(PixelUtil::isAccessible(src.getFormat()));
+		assert(PixelUtil::isAccessible(scaled.getFormat()));
 
 		PixelData temp;
 		switch (filter) 
 		{
 		default:
 		case FILTER_NEAREST:
-			if(src.format == scaled.format) 
+			if(src.getFormat() == scaled.getFormat()) 
 			{
 				// No intermediate buffer needed
 				temp = scaled;
@@ -1367,11 +1368,11 @@ namespace CamelotFramework {
 			else
 			{
 				// Allocate temporary buffer of destination size in source format 
-				temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.format);
+				temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.getFormat());
 				temp.allocateInternalBuffer(temp.getConsecutiveSize());
 			}
 			// super-optimized: no conversion
-			switch (PixelUtil::getNumElemBytes(src.format)) 
+			switch (PixelUtil::getNumElemBytes(src.getFormat())) 
 			{
 			case 1: NearestResampler<1>::scale(src, temp); break;
 			case 2: NearestResampler<2>::scale(src, temp); break;
@@ -1396,14 +1397,14 @@ namespace CamelotFramework {
 
 		case FILTER_LINEAR:
 		case FILTER_BILINEAR:
-			switch (src.format) 
+			switch (src.getFormat()) 
 			{
 			case PF_R8G8:
 			case PF_R8G8B8: case PF_B8G8R8:
 			case PF_R8G8B8A8: case PF_B8G8R8A8:
 			case PF_A8B8G8R8: case PF_A8R8G8B8:
 			case PF_X8B8G8R8: case PF_X8R8G8B8:
-				if(src.format == scaled.format) 
+				if(src.getFormat() == scaled.getFormat()) 
 				{
 					// No intermediate buffer needed
 					temp = scaled;
@@ -1411,11 +1412,11 @@ namespace CamelotFramework {
 				else
 				{
 					// Allocate temp buffer of destination size in source format 
-					temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.format);
+					temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.getFormat());
 					temp.allocateInternalBuffer(temp.getConsecutiveSize());
 				}
 				// super-optimized: byte-oriented math, no conversion
-				switch (PixelUtil::getNumElemBytes(src.format)) 
+				switch (PixelUtil::getNumElemBytes(src.getFormat())) 
 				{
 				case 1: LinearResampler_Byte<1>::scale(src, temp); break;
 				case 2: LinearResampler_Byte<2>::scale(src, temp); break;
@@ -1434,7 +1435,7 @@ namespace CamelotFramework {
 				break;
 			case PF_FLOAT32_RGB:
 			case PF_FLOAT32_RGBA:
-				if (scaled.format == PF_FLOAT32_RGB || scaled.format == PF_FLOAT32_RGBA)
+				if (scaled.getFormat() == PF_FLOAT32_RGB || scaled.getFormat() == PF_FLOAT32_RGBA)
 				{
 					// float32 to float32, avoid unpack/repack overhead
 					LinearResampler_Float32::scale(src, scaled);
@@ -1493,17 +1494,17 @@ namespace CamelotFramework {
     {
         Color cv;
 
-        UINT32 pixelSize = PixelUtil::getNumElemBytes(format);
-        UINT32 pixelOffset = pixelSize * (z * slicePitch + y * rowPitch + x);
-        PixelUtil::unpackColour(&cv, format, (unsigned char *)getData() + pixelOffset);
+        UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
+        UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
+        PixelUtil::unpackColour(&cv, mFormat, (unsigned char *)getData() + pixelOffset);
 
         return cv;
     }
 
     void PixelData::setColourAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z)
     {
-        UINT32 pixelSize = PixelUtil::getNumElemBytes(format);
-        UINT32 pixelOffset = pixelSize * (z * slicePitch + y * rowPitch + x);
-        PixelUtil::packColour(cv, format, (unsigned char *)getData() + pixelOffset);
+        UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
+        UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
+        PixelUtil::packColour(cv, mFormat, (unsigned char *)getData() + pixelOffset);
     }
 }

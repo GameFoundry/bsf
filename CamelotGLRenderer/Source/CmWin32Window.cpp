@@ -638,8 +638,8 @@ namespace CamelotFramework {
 			buffer = mIsFullScreen? FB_FRONT : FB_BACK;
 		}
 
-		GLenum format = CamelotFramework::GLPixelUtil::getGLOriginFormat(dst.format);
-		GLenum type = CamelotFramework::GLPixelUtil::getGLOriginDataType(dst.format);
+		GLenum format = CamelotFramework::GLPixelUtil::getGLOriginFormat(dst.getFormat());
+		GLenum type = CamelotFramework::GLPixelUtil::getGLOriginDataType(dst.getFormat());
 
 		if ((format == GL_NONE) || (type == 0))
 		{
@@ -659,7 +659,7 @@ namespace CamelotFramework {
 
 		//vertical flip
 		{
-			size_t rowSpan = dst.getWidth() * PixelUtil::getNumElemBytes(dst.format);
+			size_t rowSpan = dst.getWidth() * PixelUtil::getNumElemBytes(dst.getFormat());
 			size_t height = dst.getHeight();
 			UINT8 *tmpData = CM_NEW_BYTES((UINT32)(rowSpan * height), ScratchAlloc);
 			UINT8 *srcRow = (UINT8 *)dst.getData(), *tmpRow = tmpData + (height - 1) * rowSpan;

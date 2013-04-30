@@ -182,6 +182,7 @@
     <ClInclude Include="Include\CmGpuResourceData.h" />
     <ClInclude Include="Include\CmGpuParamBlockBuffer.h" />
     <ClInclude Include="Include\CmGpuResource.h" />
+    <ClInclude Include="Include\CmGpuResourceDataRTTI.h" />
     <ClInclude Include="Include\CmGpuResourceRTTI.h" />
     <ClInclude Include="Include\CmPixelData.h" />
     <ClInclude Include="Include\CmPixelDataRTTI.h" />

@@ -5,40 +5,12 @@
 namespace CamelotFramework
 {
 	PixelData::PixelData(const PixelData& copy)
-		:IReflectable(copy)
+		:GpuResourceData(copy)
 	{
-		data = copy.data;
-		format = copy.format;
-		rowPitch = copy.rowPitch;
-		slicePitch = copy.slicePitch;
+		mFormat = copy.mFormat;
+		mRowPitch = copy.mRowPitch;
+		mSlicePitch = copy.mSlicePitch;
 		mExtents = copy.mExtents;
-		ownsData = false;
-	}
-
-	UINT8* PixelData::allocateInternalBuffer(UINT32 size)
-	{
-		data = CM_NEW_BYTES(size, ScratchAlloc);
-		ownsData = true;
-
-		return (UINT8*)data;
-	}
-
-	void PixelData::freeInternalBuffer()
-	{
-		if(ownsData && getData() != nullptr)
-		{
-			CM_DELETE_BYTES(getData(), ScratchAlloc);
-
-			data = nullptr;
-		}
-	}
-
-	void PixelData::setExternalBuffer(UINT8* data)
-	{
-		freeInternalBuffer();
-
-		this->data = data;
-		ownsData = false;
 	}
 
 	/************************************************************************/

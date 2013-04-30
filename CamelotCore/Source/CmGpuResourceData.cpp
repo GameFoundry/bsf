@@ -1,4 +1,5 @@
 #include "CmGpuResourceData.h"
+#include "CmGpuResourceDataRTTI.h"
 #include "CmRenderSystem.h"
 #include "CmException.h"
 
@@ -92,5 +93,19 @@ namespace CamelotFramework
 	void GpuResourceData::unlock() const
 	{
 		mLocked = false;
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+
+	RTTITypeBase* GpuResourceData::getRTTIStatic()
+	{
+		return GpuResourceDataRTTI::instance();
+	}
+
+	RTTITypeBase* GpuResourceData::getRTTI() const
+	{
+		return GpuResourceData::getRTTIStatic();
 	}
 }

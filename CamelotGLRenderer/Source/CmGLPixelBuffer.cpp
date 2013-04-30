@@ -114,7 +114,7 @@ namespace CamelotFramework
 			scaled = mBuffer.getSubVolume(dstBox);
 			PixelUtil::scale(src, scaled, PixelUtil::FILTER_BILINEAR);
 		}
-		else if(GLPixelUtil::getGLOriginFormat(src.format) == 0)
+		else if(GLPixelUtil::getGLOriginFormat(src.getFormat()) == 0)
 		{
 			// Extents match, but format is not accepted as valid source format for GL
 			// do conversion in temporary buffer
@@ -143,7 +143,7 @@ namespace CamelotFramework
 		   dst.getWidth() == getWidth() &&
 		   dst.getHeight() == getHeight() &&
 		   dst.getDepth() == getDepth() &&
-		   GLPixelUtil::getGLOriginFormat(dst.format) != 0)
+		   GLPixelUtil::getGLOriginFormat(dst.getFormat()) != 0)
 		{
 			// The direct case: the user wants the entire texture in a format supported by GL
 			// so we don't need an intermediate buffer
@@ -248,9 +248,9 @@ namespace CamelotFramework
 			CM_EXCEPT(NotImplementedException, "Writing to render texture from CPU not supported.");
 
 		glBindTexture( mTarget, mTextureID );
-		if(PixelUtil::isCompressed(data.format))
+		if(PixelUtil::isCompressed(data.getFormat()))
 		{
-			if(data.format != mFormat || !data.isConsecutive())
+			if(data.getFormat() != mFormat || !data.isConsecutive())
 				CM_EXCEPT(InvalidParametersException, 
 				"Compressed images must be consecutive, in the source format");
 			GLenum format = GLPixelUtil::getClosestGLInternalFormat(mFormat);
@@ -329,13 +329,13 @@ namespace CamelotFramework
 		} 
 		else
 		{
-			if(data.getWidth() != data.rowPitch)
-				glPixelStorei(GL_UNPACK_ROW_LENGTH, data.rowPitch);
-			if(data.getHeight()*data.getWidth() != data.slicePitch)
-				glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, (data.slicePitch/data.getWidth()));
+			if(data.getWidth() != data.getRowPitch())
+				glPixelStorei(GL_UNPACK_ROW_LENGTH, data.getRowPitch());
+			if(data.getHeight()*data.getWidth() != data.getSlicePitch())
+				glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, (data.getSlicePitch()/data.getWidth()));
 			if(data.getLeft() > 0 || data.getTop() > 0 || data.getFront() > 0)
-				glPixelStorei(GL_UNPACK_SKIP_PIXELS, data.getLeft() + data.rowPitch * data.getTop() + data.slicePitch * data.getFront());
-			if((data.getWidth()*PixelUtil::getNumElemBytes(data.format)) & 3) {
+				glPixelStorei(GL_UNPACK_SKIP_PIXELS, data.getLeft() + data.getRowPitch() * data.getTop() + data.getSlicePitch() * data.getFront());
+			if((data.getWidth()*PixelUtil::getNumElemBytes(data.getFormat())) & 3) {
 				// Standard alignment of 4 is not right
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			}
@@ -344,7 +344,7 @@ namespace CamelotFramework
 					glTexSubImage1D(GL_TEXTURE_1D, mLevel, 
 						dest.left,
 						dest.getWidth(),
-						GLPixelUtil::getGLOriginFormat(data.format), GLPixelUtil::getGLOriginDataType(data.format),
+						GLPixelUtil::getGLOriginFormat(data.getFormat()), GLPixelUtil::getGLOriginDataType(data.getFormat()),
 						data.getData());
 					break;
 				case GL_TEXTURE_2D:
@@ -352,7 +352,7 @@ namespace CamelotFramework
 					glTexSubImage2D(mFaceTarget, mLevel, 
 						dest.left, dest.top, 
 						dest.getWidth(), dest.getHeight(),
-						GLPixelUtil::getGLOriginFormat(data.format), GLPixelUtil::getGLOriginDataType(data.format),
+						GLPixelUtil::getGLOriginFormat(data.getFormat()), GLPixelUtil::getGLOriginDataType(data.getFormat()),
 						data.getData());
 					break;
 				case GL_TEXTURE_3D:
@@ -360,7 +360,7 @@ namespace CamelotFramework
 						GL_TEXTURE_3D, mLevel, 
 						dest.left, dest.top, dest.front,
 						dest.getWidth(), dest.getHeight(), dest.getDepth(),
-						GLPixelUtil::getGLOriginFormat(data.format), GLPixelUtil::getGLOriginDataType(data.format),
+						GLPixelUtil::getGLOriginFormat(data.getFormat()), GLPixelUtil::getGLOriginDataType(data.getFormat()),
 						data.getData());
 					break;
 			}	
@@ -386,9 +386,9 @@ namespace CamelotFramework
 			data.getDepth() != getDepth())
 			CM_EXCEPT(InvalidParametersException, "only download of entire buffer is supported by GL");
 		glBindTexture( mTarget, mTextureID );
-		if(PixelUtil::isCompressed(data.format))
+		if(PixelUtil::isCompressed(data.getFormat()))
 		{
-			if(data.format != mFormat || !data.isConsecutive())
+			if(data.getFormat() != mFormat || !data.isConsecutive())
 				CM_EXCEPT(InvalidParametersException, 
 				"Compressed images must be consecutive, in the source format");
 			// Data must be consecutive and at beginning of buffer as PixelStorei not allowed
@@ -397,19 +397,19 @@ namespace CamelotFramework
 		} 
 		else
 		{
-			if(data.getWidth() != data.rowPitch)
-				glPixelStorei(GL_PACK_ROW_LENGTH, data.rowPitch);
-			if(data.getHeight()*data.getWidth() != data.slicePitch)
-				glPixelStorei(GL_PACK_IMAGE_HEIGHT, (data.slicePitch/data.getWidth()));
+			if(data.getWidth() != data.getRowPitch())
+				glPixelStorei(GL_PACK_ROW_LENGTH, data.getRowPitch());
+			if(data.getHeight()*data.getWidth() != data.getSlicePitch())
+				glPixelStorei(GL_PACK_IMAGE_HEIGHT, (data.getSlicePitch()/data.getWidth()));
 			if(data.getLeft() > 0 || data.getTop() > 0 || data.getFront() > 0)
-				glPixelStorei(GL_PACK_SKIP_PIXELS, data.getLeft() + data.rowPitch * data.getTop() + data.slicePitch * data.getFront());
-			if((data.getWidth()*PixelUtil::getNumElemBytes(data.format)) & 3) {
+				glPixelStorei(GL_PACK_SKIP_PIXELS, data.getLeft() + data.getRowPitch() * data.getTop() + data.getSlicePitch() * data.getFront());
+			if((data.getWidth()*PixelUtil::getNumElemBytes(data.getFormat())) & 3) {
 				// Standard alignment of 4 is not right
 				glPixelStorei(GL_PACK_ALIGNMENT, 1);
 			}
 			// We can only get the entire texture
 			glGetTexImage(mFaceTarget, mLevel, 
-				GLPixelUtil::getGLOriginFormat(data.format), GLPixelUtil::getGLOriginDataType(data.format),
+				GLPixelUtil::getGLOriginFormat(data.getFormat()), GLPixelUtil::getGLOriginDataType(data.getFormat()),
 				data.getData());
 			// Restore defaults
 			glPixelStorei(GL_PACK_ROW_LENGTH, 0);
@@ -693,7 +693,7 @@ namespace CamelotFramework
 		PixelData src;
     
 		/// First, convert the srcbox to a OpenGL compatible pixel format
-		if(GLPixelUtil::getGLOriginFormat(src_orig.format) == 0)
+		if(GLPixelUtil::getGLOriginFormat(src_orig.getFormat()) == 0)
 		{
 			/// Convert to buffer internal format
 			src = PixelData(src_orig.getWidth(), src_orig.getHeight(), src_orig.getDepth(), mFormat);
@@ -712,7 +712,7 @@ namespace CamelotFramework
 		GLsizei width = GLPixelUtil::optionalPO2(src.getWidth());
 		GLsizei height = GLPixelUtil::optionalPO2(src.getHeight());
 		GLsizei depth = GLPixelUtil::optionalPO2(src.getDepth());
-		GLenum format = GLPixelUtil::getClosestGLInternalFormat(src.format);
+		GLenum format = GLPixelUtil::getClosestGLInternalFormat(src.getFormat());
     
 		/// Generate texture name
 		glGenTextures(1, &id);

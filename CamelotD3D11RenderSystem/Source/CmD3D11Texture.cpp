@@ -519,8 +519,9 @@ namespace CamelotFramework
 		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
 
 		mStaticBuffer = CM_NEW(PixelData, PoolAlloc) PixelData(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat());
+		mStaticBuffer->allocateInternalBuffer(sizeOfImage);
 
-		return mStaticBuffer->allocateInternalBuffer(sizeOfImage);
+		return mStaticBuffer->getData();
 	}
 
 	void D3D11Texture::_unmapstaticbuffer()

@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmBox.h"
+#include "CmGpuResourceData.h"
 #include "CmIReflectable.h"
 
 namespace CamelotFramework
@@ -119,15 +120,13 @@ namespace CamelotFramework
      	Pixels are stored as a succession of "depth" slices, each containing "height" rows of 
      	"width" pixels.
     */
-    class CM_EXPORT PixelData : public IReflectable
+    class CM_EXPORT PixelData : public GpuResourceData
 	{
     public:
     	/// Parameter constructor for setting the members manually
     	PixelData() {}
-		~PixelData() 
-		{
-			freeInternalBuffer();
-		}
+		~PixelData() {}
+
 		/** Constructor providing extents in the form of a Box object. This constructor
     		assumes the pixel data is laid out consecutively in memory. (this
     		means row after row, slice after slice, with no space in between)
@@ -136,7 +135,7 @@ namespace CamelotFramework
     		@param pixelData	Pointer to the actual data
     	*/
 		PixelData(const Box &extents, PixelFormat pixelFormat)
-			:mExtents(extents), data(nullptr), format(pixelFormat), ownsData(false)
+			:mExtents(extents), mFormat(pixelFormat)
 		{
 			setConsecutive();
 		}
@@ -151,55 +150,31 @@ namespace CamelotFramework
     		@param pixelData    Pointer to the actual data
     	*/
     	PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat)
-			: mExtents(0, 0, 0, width, height, depth),
-    		data(nullptr), format(pixelFormat), ownsData(false)
+			: mExtents(0, 0, 0, width, height, depth), mFormat(pixelFormat)
     	{
     		setConsecutive();
     	}
 
 		PixelData(const PixelData& copy);
-    	
-		/**
-		 * @brief	Allocates an internal buffer for storing data.
-		 */
-		UINT8* allocateInternalBuffer(UINT32 size);
 
-		/**
-		 * @brief	Frees the buffer data. Normally you don't need to call this manually as the
-		 * 			data will be freed automatically when an instance of PixelData is freed.
-		 */
-		void freeInternalBuffer();
+		UINT32 getRowPitch() const { return mRowPitch; }
+		UINT32 getSlicePitch() const { return mSlicePitch; }
 
-		void setExternalBuffer(UINT8* data);
+		void setRowPitch(UINT32 rowPitch) { mRowPitch = rowPitch; }
+        void setSlicePitch(UINT32 slicePitch) { mSlicePitch = slicePitch; }
 
-		void* getData() const { return data; }
-
-        /// The pixel format 
-        PixelFormat format;
-        /** Number of elements between the leftmost pixel of one row and the left
-         	pixel of the next. This value must always be equal to getWidth() (consecutive) 
-			for compressed formats.
-        */
-        UINT32 rowPitch;
-        /** Number of elements between the top left pixel of one (depth) slice and 
-         	the top left pixel of the next. This can be a negative value. Must be a multiple of
-         	rowPitch. This value must always be equal to getWidth()*getHeight() (consecutive) 
-			for compressed formats.
-        */
-        UINT32 slicePitch;
-        
         /**	Get the number of elements between one past the rightmost pixel of 
          	one row and the leftmost pixel of the next row. (IE this is zero if rows
          	are consecutive).
         */
-        UINT32 getRowSkip() const { return rowPitch - getWidth(); }
+        UINT32 getRowSkip() const { return mRowPitch - getWidth(); }
         /** Get the number of elements between one past the right bottom pixel of
          	one slice and the left top pixel of the next slice. (IE this is zero if slices
          	are consecutive).
         */
-        UINT32 getSliceSkip() const { return slicePitch - (getHeight() * rowPitch); }
+        UINT32 getSliceSkip() const { return mSlicePitch - (getHeight() * mRowPitch); }
 
-		PixelFormat getFormat() const { return format; }
+		PixelFormat getFormat() const { return mFormat; }
 
 		UINT32 getWidth() const { return mExtents.getWidth(); }
 		UINT32 getHeight() const { return mExtents.getHeight(); }
@@ -219,7 +194,7 @@ namespace CamelotFramework
         */        
         bool isConsecutive() const 
 		{ 
-			return rowPitch == getWidth() && slicePitch == getWidth()*getHeight(); 
+			return mRowPitch == getWidth() && mSlicePitch == getWidth()*getHeight(); 
 		}
         /** Return the size (in bytes) this image would take if it was
         	laid out consecutive in memory
@@ -250,23 +225,29 @@ namespace CamelotFramework
         void setColourAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z);
 
 	private:
-		/// The data pointer 
-		void *data;
-
-		/**
-		 * @brief	If true then PixelData owns the data buffer and will release it when destroyed.
-		 */
-		bool ownsData;
-
 		Box mExtents;
+
+        /// The pixel format 
+        PixelFormat mFormat;
+        /** Number of elements between the leftmost pixel of one row and the left
+         	pixel of the next. This value must always be equal to getWidth() (consecutive) 
+			for compressed formats.
+        */
+        UINT32 mRowPitch;
+        /** Number of elements between the top left pixel of one (depth) slice and 
+         	the top left pixel of the next. This can be a negative value. Must be a multiple of
+         	rowPitch. This value must always be equal to getWidth()*getHeight() (consecutive) 
+			for compressed formats.
+        */
+        UINT32 mSlicePitch;
 
 		/** Set the rowPitch and slicePitch so that the buffer is laid out consecutive 
          	in memory.
         */        
         void setConsecutive()
         {
-            rowPitch = getWidth();
-            slicePitch = getWidth()*getHeight();
+            mRowPitch = getWidth();
+            mSlicePitch = getWidth()*getHeight();
         }
 
 		/************************************************************************/

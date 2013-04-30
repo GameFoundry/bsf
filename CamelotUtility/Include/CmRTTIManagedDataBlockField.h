@@ -8,18 +8,12 @@ namespace CamelotFramework
 {
 	struct RTTIManagedDataBlockFieldBase : public RTTIField
 	{
-		boost::function<UINT8*(UINT32)> mCustomAllocator;
+		boost::any mCustomAllocator;
 
 		virtual ManagedDataBlock getValue(void* object) = 0;
 		virtual void setValue(void* object, ManagedDataBlock value) = 0;
 
-		UINT8* allocate(UINT32 bytes)
-		{
-			if(mCustomAllocator.empty())
-				return CM_NEW_BYTES(bytes, ScratchAlloc);
-			else
-				return mCustomAllocator(bytes);
-		}
+		virtual UINT8* allocate(void* object, UINT32 bytes) = 0;
 	};
 
 	template <class DataType, class ObjectType>
@@ -38,7 +32,7 @@ namespace CamelotFramework
 		 * @param	flags		Various flags you can use to specialize how systems handle this field
 		 * @param	customAllocator (optional) Custom allocator that will be used when de-serializing DataBlock memory.
 		 */
-		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::function<UINT8*(UINT32)> customAllocator = 0)
+		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::any customAllocator = boost::any())
 		{
 			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_DataBlock, flags);
 			mCustomAllocator = customAllocator;
@@ -78,6 +72,18 @@ namespace CamelotFramework
 			ObjectType* castObj = static_cast<ObjectType*>(object);
 			boost::function<void(ObjectType*, ManagedDataBlock)> f = boost::any_cast<boost::function<void(ObjectType*, ManagedDataBlock)>>(valueSetter);
 			f(castObj, value);
+		}
+
+		virtual UINT8* allocate(void* object, UINT32 bytes)
+		{
+			if(mCustomAllocator.empty())
+				return CM_NEW_BYTES(bytes, ScratchAlloc);
+			else
+			{
+				ObjectType* castObj = static_cast<ObjectType*>(object);
+				boost::function<UINT8*(ObjectType*, UINT32)> f = boost::any_cast<boost::function<UINT8*(ObjectType*, UINT32)>>(mCustomAllocator);
+				return f(castObj, bytes);
+			}
 		}
 	};
 }

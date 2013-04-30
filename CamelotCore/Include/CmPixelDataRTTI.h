@@ -7,7 +7,7 @@
 
 namespace CamelotFramework
 {
-	class CM_EXPORT PixelDataRTTI : public RTTIType<PixelData, IReflectable, PixelDataRTTI>
+	class CM_EXPORT PixelDataRTTI : public RTTIType<PixelData, GpuResourceData, PixelDataRTTI>
 	{
 		UINT32& getLeft(PixelData* obj) { return obj->mExtents.left; }
 		void setLeft(PixelData* obj, UINT32& val) { obj->mExtents.left = val; }
@@ -27,14 +27,14 @@ namespace CamelotFramework
 		UINT32& getBack(PixelData* obj) { return obj->mExtents.back; }
 		void setBack(PixelData* obj, UINT32& val) { obj->mExtents.back = val; }
 
-		UINT32& getRowPitch(PixelData* obj) { return obj->rowPitch; }
-		void setRowPitch(PixelData* obj, UINT32& val) { obj->rowPitch = val; }
+		UINT32& getRowPitch(PixelData* obj) { return obj->mRowPitch; }
+		void setRowPitch(PixelData* obj, UINT32& val) { obj->mRowPitch = val; }
 
-		UINT32& getSlicePitch(PixelData* obj) { return obj->slicePitch; }
-		void setSlicePitch(PixelData* obj, UINT32& val) { obj->slicePitch = val; }
+		UINT32& getSlicePitch(PixelData* obj) { return obj->mSlicePitch; }
+		void setSlicePitch(PixelData* obj, UINT32& val) { obj->mSlicePitch = val; }
 
-		PixelFormat& getFormat(PixelData* obj) { return obj->format; }
-		void setFormat(PixelData* obj, PixelFormat& val) { obj->format = val; }
+		PixelFormat& getFormat(PixelData* obj) { return obj->mFormat; }
+		void setFormat(PixelData* obj, PixelFormat& val) { obj->mFormat = val; }
 
 		ManagedDataBlock getData(PixelData* obj) 
 		{ 
@@ -44,12 +44,15 @@ namespace CamelotFramework
 
 		void setData(PixelData* obj, ManagedDataBlock val) 
 		{ 
-			obj->data = val.getData();
+			// Nothing to do here, the pointer we provided already belongs to PixelData
+			// so the data is already written
 		}
 
-		static UINT8* allocateData(UINT32 numBytes)
+		static UINT8* allocateData(PixelData* obj, UINT32 numBytes)
 		{
-			return CM_NEW_BYTES(numBytes, ScratchAlloc);
+			obj->allocateInternalBuffer(numBytes);
+
+			return obj->getData();
 		}
 
 	public:
@@ -83,7 +86,6 @@ namespace CamelotFramework
 		{
 			PixelDataPtr newPixelData(CM_NEW(PixelData, PoolAlloc) PixelData(),
 				&MemAllocDeleter<PixelData, PoolAlloc>::deleter);
-			newPixelData->ownsData = true;
 
 			return newPixelData;
 		}

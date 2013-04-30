@@ -458,7 +458,7 @@ namespace CamelotFramework
 
 		template<class ObjectType>
 		void addDataBlockField(const std::string& name, UINT32 uniqueId, ManagedDataBlock (ObjectType::*getter)(), 
-			void (ObjectType::*setter)(ManagedDataBlock) = nullptr, UINT64 flags = 0, boost::function<UINT8*(UINT32)> customAllocator = 0)
+			void (ObjectType::*setter)(ManagedDataBlock) = nullptr, UINT64 flags = 0, UINT8* (customAllocator)(ObjectType*, UINT32) = 0)
 		{
 			addDataBlockField<ObjectType>(name, uniqueId, 
 				boost::function<ManagedDataBlock(ObjectType*)>(getter),  
@@ -558,11 +558,22 @@ namespace CamelotFramework
 
 		template<class InterfaceType, class ObjectType>
 		void addDataBlockField(const std::string& name, UINT32 uniqueId, ManagedDataBlock (InterfaceType::*getter)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, ManagedDataBlock), UINT64 flags = 0, boost::function<UINT8*(UINT32)> customAllocator = 0)
+			void (InterfaceType::*setter)(ObjectType*, ManagedDataBlock), UINT64 flags = 0, 
+			UINT8* (customAllocator)(ObjectType*, UINT32) = 0)
 		{
-			addDataBlockField<ObjectType>(name, uniqueId, 
-				boost::function<ManagedDataBlock(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)),  
-				boost::function<void(ObjectType*, ManagedDataBlock)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags, customAllocator);
+			if(customAllocator != 0)
+			{
+				addDataBlockField<ObjectType>(name, uniqueId, 
+					boost::function<ManagedDataBlock(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)),  
+					boost::function<void(ObjectType*, ManagedDataBlock)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags, 
+					boost::function<UINT8*(ObjectType*, UINT32)>(customAllocator));
+			}
+			else
+			{
+				addDataBlockField<ObjectType>(name, uniqueId, 
+					boost::function<ManagedDataBlock(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)),  
+					boost::function<void(ObjectType*, ManagedDataBlock)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
+			}
 		}	
 
 	private:
@@ -642,7 +653,7 @@ namespace CamelotFramework
 		}
 
 		template<class ObjectType>
-		void addDataBlockField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::function<UINT8*(UINT32)> customAllocator = 0)
+		void addDataBlockField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::any customAllocator = boost::any())
 		{
 			RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>* newField = 
 				CM_NEW(RTTIManagedDataBlockField<ManagedDataBlock BOOST_PP_COMMA() ObjectType>, GenAlloc) RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>();

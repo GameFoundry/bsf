@@ -140,7 +140,9 @@ namespace CamelotFramework {
 
 		PixelDataPtr dst(CM_NEW(PixelData, PoolAlloc) PixelData(width, height, depth, getFormat()),
 			&MemAllocDeleter<PixelData, PoolAlloc>::deleter);
-		UINT8* buffer = (UINT8*)dst->allocateInternalBuffer(totalSize);
+
+		dst->allocateInternalBuffer(totalSize);
+		UINT8* buffer = (UINT8*)dst->getData();
 
 		PixelData myData = lock(GBL_READ_ONLY, mip, face);
 

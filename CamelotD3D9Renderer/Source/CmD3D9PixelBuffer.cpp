@@ -239,17 +239,17 @@ namespace CamelotFramework
 	// Util functions to convert a D3D locked box to a pixel box
 	void fromD3DLock(PixelData &rval, const D3DLOCKED_RECT &lrect)
 	{
-		UINT32 bpp = PixelUtil::getNumElemBytes(rval.format);
+		UINT32 bpp = PixelUtil::getNumElemBytes(rval.getFormat());
 		if (bpp != 0)
 		{
-			rval.rowPitch = lrect.Pitch / bpp;
-			rval.slicePitch = rval.rowPitch * rval.getHeight();
+			rval.setRowPitch(lrect.Pitch / bpp);
+			rval.setSlicePitch(rval.getRowPitch() * rval.getHeight());
 			assert((lrect.Pitch % bpp)==0);
 		}
-		else if (PixelUtil::isCompressed(rval.format))
+		else if (PixelUtil::isCompressed(rval.getFormat()))
 		{
-			rval.rowPitch = rval.getWidth();
-			rval.slicePitch = rval.getWidth() * rval.getHeight();
+			rval.setRowPitch(rval.getWidth());
+			rval.setSlicePitch(rval.getWidth() * rval.getHeight());
 		}
 		else
 		{
@@ -260,18 +260,18 @@ namespace CamelotFramework
 	}
 	void fromD3DLock(PixelData &rval, const D3DLOCKED_BOX &lbox)
 	{
-		UINT32 bpp = PixelUtil::getNumElemBytes(rval.format);
+		UINT32 bpp = PixelUtil::getNumElemBytes(rval.getFormat());
 		if (bpp != 0)
 		{
-			rval.rowPitch = lbox.RowPitch / bpp;
-			rval.slicePitch = lbox.SlicePitch / bpp;
+			rval.setRowPitch(lbox.RowPitch / bpp);
+			rval.setSlicePitch(lbox.SlicePitch / bpp);
 			assert((lbox.RowPitch % bpp)==0);
 			assert((lbox.SlicePitch % bpp)==0);
 		}
-		else if (PixelUtil::isCompressed(rval.format))
+		else if (PixelUtil::isCompressed(rval.getFormat()))
 		{
-			rval.rowPitch = rval.getWidth();
-			rval.slicePitch = rval.getWidth() * rval.getHeight();
+			rval.setRowPitch(rval.getWidth());
+			rval.setSlicePitch(rval.getWidth() * rval.getHeight());
 		}
 		else
 		{
@@ -601,7 +601,7 @@ namespace CamelotFramework
 		PixelData converted = src;
 
 		// convert to pixelbuffer's native format if necessary
-		if (D3D9Mappings::_getPF(src.format) == D3DFMT_UNKNOWN)
+		if (D3D9Mappings::_getPF(src.getFormat()) == D3DFMT_UNKNOWN)
 		{
 			converted = PixelData(src.getWidth(), src.getHeight(), src.getDepth(), mFormat);
 			converted.allocateInternalBuffer(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat));
@@ -609,24 +609,24 @@ namespace CamelotFramework
 		}
 
 		UINT32 rowWidth;
-		if (PixelUtil::isCompressed(converted.format))
+		if (PixelUtil::isCompressed(converted.getFormat()))
 		{
 			// D3D wants the width of one row of cells in bytes
-			if (converted.format == PF_DXT1)
+			if (converted.getFormat() == PF_DXT1)
 			{
 				// 64 bits (8 bytes) per 4x4 block
-				rowWidth = (converted.rowPitch / 4) * 8;
+				rowWidth = (converted.getRowPitch() / 4) * 8;
 			}
 			else
 			{
 				// 128 bits (16 bytes) per 4x4 block
-				rowWidth = (converted.rowPitch / 4) * 16;
+				rowWidth = (converted.getRowPitch() / 4) * 16;
 			}
 
 		}
 		else
 		{
-			rowWidth = converted.rowPitch * PixelUtil::getNumElemBytes(converted.format);
+			rowWidth = converted.getRowPitch() * PixelUtil::getNumElemBytes(converted.getFormat());
 		}
 
 		if (dstBufferResources->surface)
@@ -636,7 +636,7 @@ namespace CamelotFramework
 			destRect = toD3DRECT(dstBox);
 
 			if(D3DXLoadSurfaceFromMemory(dstBufferResources->surface, NULL, &destRect, 
-				converted.getData(), D3D9Mappings::_getPF(converted.format),
+				converted.getData(), D3D9Mappings::_getPF(converted.getFormat()),
 				static_cast<UINT>(rowWidth),
 				NULL, &srcRect, D3DX_DEFAULT, 0) != D3D_OK)
 			{
@@ -649,28 +649,28 @@ namespace CamelotFramework
 			srcBox = toD3DBOX(converted.getExtents());
 			destBox = toD3DBOX(dstBox);
 			UINT32 sliceWidth;
-			if (PixelUtil::isCompressed(converted.format))
+			if (PixelUtil::isCompressed(converted.getFormat()))
 			{
 				// D3D wants the width of one slice of cells in bytes
-				if (converted.format == PF_DXT1)
+				if (converted.getFormat() == PF_DXT1)
 				{
 					// 64 bits (8 bytes) per 4x4 block
-					sliceWidth = (converted.slicePitch / 16) * 8;
+					sliceWidth = (converted.getSlicePitch() / 16) * 8;
 				}
 				else
 				{
 					// 128 bits (16 bytes) per 4x4 block
-					sliceWidth = (converted.slicePitch / 16) * 16;
+					sliceWidth = (converted.getSlicePitch() / 16) * 16;
 				}
 
 			}
 			else
 			{
-				sliceWidth = converted.slicePitch * PixelUtil::getNumElemBytes(converted.format);
+				sliceWidth = converted.getSlicePitch() * PixelUtil::getNumElemBytes(converted.getFormat());
 			}
 
 			if(D3DXLoadVolumeFromMemory(dstBufferResources->volume, NULL, &destBox, 
-				converted.getData(), D3D9Mappings::_getPF(converted.format),
+				converted.getData(), D3D9Mappings::_getPF(converted.getFormat()),
 				static_cast<UINT>(rowWidth), static_cast<UINT>(sliceWidth),
 				NULL, &srcBox, D3DX_DEFAULT, 0) != D3D_OK)
 			{
@@ -702,9 +702,9 @@ namespace CamelotFramework
 	{
 		// Decide on pixel format of temp surface
 		PixelFormat tmpFormat = mFormat; 
-		if(D3D9Mappings::_getPF(dst.format) != D3DFMT_UNKNOWN)
+		if(D3D9Mappings::_getPF(dst.getFormat()) != D3DFMT_UNKNOWN)
 		{
-			tmpFormat = dst.format;
+			tmpFormat = dst.getFormat();
 		}
 
 		if (srcBufferResources->surface)
