@@ -9,7 +9,6 @@ When I'm canceling command queue commands I might be canceling important user co
    - input lag?
 
 <<<<<<<Resource update/read>>>>>>>>
-get rid of thread checks for synced contexts (currently theyre commented out)
 RenderSystem does syncing external to CommandQueue
  - That probably won't be needed once I have syncable CommandQueue
 

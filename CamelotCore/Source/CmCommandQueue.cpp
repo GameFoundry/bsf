@@ -28,30 +28,12 @@ namespace CamelotFramework
 
 	CommandQueueBase::~CommandQueueBase()
 	{
-#if CM_DEBUG_MODE
-#if CM_THREAD_SUPPORT != 0
-		if(!mAllowAllThreads && CM_THREAD_CURRENT_ID != mMyThreadId)
-		{
-			CM_EXCEPT(InternalErrorException, "Command queue accessed outside of its creation thread.");
-		}
-#endif
-#endif
-
 		if(mCommands != nullptr)
 			CM_DELETE(mCommands, queue<QueuedCommand>, PoolAlloc);
 	}
 
 	AsyncOp CommandQueueBase::queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
 	{
-//#if CM_DEBUG_MODE
-//#if CM_THREAD_SUPPORT != 0
-//		if(!mAllowAllThreads && CM_THREAD_CURRENT_ID != mMyThreadId)
-//		{
-//			CM_EXCEPT(InternalErrorException, "Command queue accessed outside of its creation thread.");
-//		}
-//#endif
-//#endif
-
 #if CM_DEBUG_MODE
 		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
 
@@ -72,15 +54,6 @@ namespace CamelotFramework
 
 	void CommandQueueBase::queue(boost::function<void()> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
 	{
-//#if CM_DEBUG_MODE
-//#if CM_THREAD_SUPPORT != 0
-//		if(!mAllowAllThreads && CM_THREAD_CURRENT_ID != mMyThreadId)
-//		{
-//			CM_EXCEPT(InternalErrorException, "Command queue accessed outside of its creation thread.");
-//		}
-//#endif
-//#endif
-
 #if CM_DEBUG_MODE
 		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
 
@@ -165,6 +138,11 @@ namespace CamelotFramework
 			return false;
 
 		return true;
+	}
+
+	void CommandQueueBase::throwInvalidThreadException(const String& message) const
+	{
+		CM_EXCEPT(InternalErrorException, message);
 	}
 
 #if CM_DEBUG_MODE

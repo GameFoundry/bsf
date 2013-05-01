@@ -14,6 +14,11 @@ namespace CamelotFramework
 		CommandQueueNoSync() {}
 		virtual ~CommandQueueNoSync() {}
 
+		bool isValidThread(CM_THREAD_ID_TYPE ownerThread) const
+		{
+			return CM_THREAD_CURRENT_ID == ownerThread;
+		}
+
 		void lock() 
 		{
 		};
@@ -31,6 +36,11 @@ namespace CamelotFramework
 			:mLock(mCommandQueueMutex, boost::defer_lock)
 		{ }
 		virtual ~CommandQueueSync() {}
+
+		bool isValidThread(CM_THREAD_ID_TYPE ownerThread) const
+		{
+			return true;
+		}
 
 		void lock() 
 		{
@@ -178,6 +188,9 @@ namespace CamelotFramework
 		 */
 		bool isEmpty();
 
+	protected:
+		void throwInvalidThreadException(const String& message) const;
+
 	private:
 		std::queue<QueuedCommand>* mCommands;
 
@@ -237,13 +250,28 @@ namespace CamelotFramework
 			:CommandQueueBase(threadId, allowAllThreads)
 		{ }
 
-		~CommandQueue() {}
+		~CommandQueue() 
+		{
+#if CM_DEBUG_MODE
+#if CM_THREAD_SUPPORT != 0
+			if(!isValidThread(getThreadId()))
+				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
+#endif
+#endif
+		}
 
 		/**
 		 * @copydoc CommandQueueBase::queueReturn
 		 */
 		AsyncOp queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 		{
+#if CM_DEBUG_MODE
+#if CM_THREAD_SUPPORT != 0
+			if(!isValidThread(getThreadId()))
+				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
+#endif
+#endif
+
 			lock();
 			AsyncOp asyncOp = CommandQueueBase::queueReturn(commandCallback, _notifyWhenComplete, _callbackId);
 			unlock();
@@ -256,6 +284,13 @@ namespace CamelotFramework
 		 */
 		void queue(boost::function<void()> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 		{
+#if CM_DEBUG_MODE
+#if CM_THREAD_SUPPORT != 0
+			if(!isValidThread(getThreadId()))
+				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
+#endif
+#endif
+
 			lock();
 			CommandQueueBase::queue(commandCallback, _notifyWhenComplete, _callbackId);
 			unlock();
@@ -266,6 +301,13 @@ namespace CamelotFramework
 		 */
 		std::queue<QueuedCommand>* flush()
 		{
+#if CM_DEBUG_MODE
+#if CM_THREAD_SUPPORT != 0
+			if(!isValidThread(getThreadId()))
+				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
+#endif
+#endif
+
 			lock();
 			std::queue<QueuedCommand>* commands = CommandQueueBase::flush();
 			unlock();
@@ -278,6 +320,13 @@ namespace CamelotFramework
 		 */
 		void cancelAll()
 		{
+#if CM_DEBUG_MODE
+#if CM_THREAD_SUPPORT != 0
+			if(!isValidThread(getThreadId()))
+				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
+#endif
+#endif
+
 			lock();
 			CommandQueueBase::cancelAll();
 			unlock();
@@ -288,6 +337,13 @@ namespace CamelotFramework
 		 */
 		bool isEmpty()
 		{
+#if CM_DEBUG_MODE
+#if CM_THREAD_SUPPORT != 0
+			if(!isValidThread(getThreadId()))
+				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
+#endif
+#endif
+
 			lock();
 			bool empty = CommandQueueBase::isEmpty();
 			unlock();

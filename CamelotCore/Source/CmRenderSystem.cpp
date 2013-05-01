@@ -80,7 +80,7 @@ namespace CamelotFramework {
 
 		if(mCommandQueue != nullptr)
 		{
-			CM_DELETE(mCommandQueue, CommandQueue<CommandQueueNoSync>, GenAlloc);
+			CM_DELETE(mCommandQueue, CommandQueue<CommandQueueSync>, GenAlloc);
 			mCommandQueue = nullptr;
 		}
 
@@ -91,7 +91,7 @@ namespace CamelotFramework {
 	RenderWindowPtr RenderSystem::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mCommandQueue = CM_NEW(CommandQueue<CommandQueueNoSync>, GenAlloc) CommandQueue<CommandQueueNoSync>(CM_THREAD_CURRENT_ID, true);
+		mCommandQueue = CM_NEW(CommandQueue<CommandQueueSync>, GenAlloc) CommandQueue<CommandQueueSync>(CM_THREAD_CURRENT_ID, true);
 		mPrimaryWindowDesc = primaryWindowDesc;
 
 		initRenderThread();

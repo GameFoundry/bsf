@@ -436,7 +436,7 @@ namespace CamelotFramework
 		CM_THREAD_TYPE* mRenderThread;
 #endif
 
-		CommandQueue<CommandQueueNoSync>* mCommandQueue;
+		CommandQueue<CommandQueueSync>* mCommandQueue;
 
 		UINT32 mMaxCommandNotifyId; // ID that will be assigned to the next command with a notifier callback
 		vector<UINT32>::type mCommandsCompleted; // Completed commands that have notifier callbacks set up
