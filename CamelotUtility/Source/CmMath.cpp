@@ -115,11 +115,6 @@ namespace CamelotFramework
 		return mTanTable[idx];
     }
     //-----------------------------------------------------------------------
-    int Math::ISign (int iValue)
-    {
-        return ( iValue > 0 ? +1 : ( iValue < 0 ? -1 : 0 ) );
-    }
-    //-----------------------------------------------------------------------
     Radian Math::ACos (float fValue)
     {
         if ( -1.0 < fValue )

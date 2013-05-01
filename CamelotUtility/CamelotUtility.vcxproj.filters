@@ -46,6 +46,9 @@
     <Filter Include="Source Files\Debug">
       <UniqueIdentifier>{1f4518ad-c827-49dc-8e69-f99a37c82871}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Threading">
+      <UniqueIdentifier>{cb0d2667-8d73-4d4c-9b2b-bc18fbd7fd70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmTypes.h">
@@ -316,6 +319,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmBox.cpp">
       <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmAsyncOp.cpp">
+      <Filter>Source Files\Threading</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -8,11 +8,11 @@ namespace CamelotFramework
 {
 	/**
 	 * @brief	Asynchronous operation. Contains uninitialized data until
-	 * 			isResolved returns true.
+	 * 			hasCompleted returns true.
 	 * 			
 	 * @note	You are allowed (and meant to) to copy this by value.
 	 */
-	class AsyncOp
+	class CM_UTILITY_EXPORT AsyncOp
 	{
 	private:
 		struct AsyncOpData
@@ -22,7 +22,7 @@ namespace CamelotFramework
 			{ }
 
 			boost::any mReturnValue;
-			bool mIsCompleted;
+			volatile bool mIsCompleted;
 		};
 
 	public:
@@ -38,12 +38,12 @@ namespace CamelotFramework
 		/**
 		 * @brief	Mark the async operation as completed.
 		 */
-		void completeOperation(boost::any returnValue) { mData->mReturnValue = returnValue; mData->mIsCompleted = true; }
+		void completeOperation(boost::any returnValue);
 
 		/**
 		 * @brief	Mark the async operation as completed, without setting a return value;
 		 */
-		void completeOperation() { mData->mIsCompleted = true; }
+		void completeOperation();
 
 		/**
 		 * @brief	Retrieves the value returned by the async operation.

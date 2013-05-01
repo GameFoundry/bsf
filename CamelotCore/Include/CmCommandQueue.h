@@ -8,43 +8,82 @@
 
 namespace CamelotFramework
 {
+	class CM_EXPORT CommandQueueNoSync
+	{
+	public:
+		CommandQueueNoSync() {}
+		virtual ~CommandQueueNoSync() {}
+
+		void lock() 
+		{
+		};
+
+		void unlock()
+		{
+		}
+
+	};
+
+	class CM_EXPORT CommandQueueSync
+	{
+	public:
+		CommandQueueSync()
+			:mLock(mCommandQueueMutex, boost::defer_lock)
+		{ }
+		virtual ~CommandQueueSync() {}
+
+		void lock() 
+		{
+			mLock.lock();
+		};
+
+		void unlock()
+		{
+			mLock.unlock();
+		}
+
+	private:
+		CM_MUTEX(mCommandQueueMutex);
+		CM_LOCK_TYPE mLock;
+	};
+
+	struct QueuedCommand
+	{
+#ifdef CM_DEBUG_MODE
+		QueuedCommand(boost::function<void(AsyncOp&)> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
+		{ }
+
+		QueuedCommand(boost::function<void()> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+			:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
+		{ }
+
+		UINT32 debugId;
+#else
+		QueuedCommand(boost::function<void(AsyncOp&)> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
+		{ }
+
+		QueuedCommand(boost::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+			:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
+		{ }
+#endif
+
+		boost::function<void()> callback;
+		boost::function<void(AsyncOp&)> callbackWithReturnValue;
+		AsyncOp asyncOp;
+		bool returnsValue;
+		UINT32 callbackId;
+		bool notifyWhenComplete;
+	};
+
 	/**
 	 * @brief	Contains a list of commands that can be queued by one thread,
 	 * 			and executed by another.
 	 */
-	class CM_EXPORT CommandQueue
+	class CM_EXPORT CommandQueueBase
 	{
 	public:
-		struct Command
-		{
-#ifdef CM_DEBUG_MODE
-			Command(boost::function<void(AsyncOp&)> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-				:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
-			{ }
-
-			Command(boost::function<void()> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-				:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
-			{ }
-
-			UINT32 debugId;
-#else
-			Command(boost::function<void(AsyncOp&)> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-				:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
-			{ }
-
-			Command(boost::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-				:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
-			{ }
-#endif
-
-			boost::function<void()> callback;
-			boost::function<void(AsyncOp&)> callbackWithReturnValue;
-			AsyncOp asyncOp;
-			bool returnsValue;
-			UINT32 callbackId;
-			bool notifyWhenComplete;
-		};
-
 		/**
 		 * @brief	Constructor.
 		 *
@@ -57,11 +96,38 @@ namespace CamelotFramework
 		 *							and also make sure you sync access to the queue properly.
 		 *							
 		 */
-		CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads = false);
-		~CommandQueue();
+		CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads = false);
+		virtual ~CommandQueueBase();
 
 		CM_THREAD_ID_TYPE getThreadId() const { return mMyThreadId; }
 
+		/**
+		 * @brief	Plays all provided commands. To get the commands call flush().
+		 *
+		 * @param	notifyCallback  	Callback that will be called if a command that has "notifyOnComplete" flag set.
+		 * 								The callback will receive "callbackId" of the command.
+		 */
+		void playback(std::queue<QueuedCommand>* commands, boost::function<void(UINT32)> notifyCallback);
+
+		/**
+		 * @brief	Plays all provided commands. To get the commands call flush().
+		 */
+		void playback(std::queue<QueuedCommand>* commands);
+
+		/**
+		 * @brief	Allows you to set a breakpoint that will trigger when the specified command is executed.
+		 * 			
+		 * @note	This is helpful when you receive an error on the executing thread and you cannot tell from where was
+		 * 			the command that caused the error queued from. However you can make a note of the queue and command index
+		 * 			and set a breakpoint so that it gets triggered next time you run the program. At that point you can know 
+		 * 			exactly which part of code queued the command by examining the stack trace.
+		 *
+		 * @param	queueIdx  	Zero-based index of the queue the command was queued on.
+		 * @param	commandIdx	Zero-based index of the command.
+		 */
+		static void addBreakpoint(UINT32 queueIdx, UINT32 commandIdx);
+
+	protected:
 		/**
 		 * @brief	Queue up a new command to execute. Make sure the provided function has all of its
 		 * 			parameters properly bound. Last parameter must be unbound and of AsyncOp&amp; type.
@@ -98,9 +164,9 @@ namespace CamelotFramework
 
 		/**
 		 * @brief	Returns a copy of all queued commands and makes room for new ones. Must be called from the thread
-		 * 			that created the command queue. Returned commands MUST be passed to playbackCommands.
+		 * 			that created the command queue. Returned commands MUST be passed to "playback" method.
 		 */
-		std::queue<Command>* flush();
+		std::queue<QueuedCommand>* flush();
 
 		/**
 		 * @brief	Cancels all currently queued commands.
@@ -108,45 +174,16 @@ namespace CamelotFramework
 		void cancelAll();
 
 		/**
-		 * @brief	Plays all provided commands. Should only be called from the render thread. To get the
-		 * 			commands call flushCommands().
-		 *
-		 * @param	notifyCallback  	Callback that will be called if a command that has "notifyOnComplete" flag set.
-		 * 								The callback will receive "callbackId" of the command.
-		 */
-		void playback(std::queue<Command>* commands, boost::function<void(UINT32)> notifyCallback);
-
-		/**
-		 * @brief	Plays all provided commands. Should only be called from the render thread. To get
-		 * 			the commands call flushCommands().
-		 */
-		void playback(std::queue<Command>* commands);
-
-		/**
 		 * @brief	Returns true if no commands are queued.
 		 */
 		bool isEmpty();
 
-		/**
-		 * @brief	Allows you to set a breakpoint that will trigger when the specified command is executed.
-		 * 			
-		 * @note	This is helpful when you receive an error on the executing thread and you cannot tell from where was
-		 * 			the command that caused the error queued from. However you can make a note of the queue and command index
-		 * 			and set a breakpoint so that it gets triggered next time you run the program. At that point you can know 
-		 * 			exactly which part of code queued the command by examining the stack trace.
-		 *
-		 * @param	queueIdx  	Zero-based index of the queue the command was queued on.
-		 * @param	commandIdx	Zero-based index of the command.
-		 */
-		static void addBreakpoint(UINT32 queueIdx, UINT32 commandIdx);
-
 	private:
-		std::queue<Command>* mCommands;
+		std::queue<QueuedCommand>* mCommands;
 
 		bool mAllowAllThreads;
 		
 		CM_THREAD_ID_TYPE mMyThreadId;
-		CM_MUTEX(mCommandBufferMutex);
 
 		// Various variables that allow for easier debugging by allowing us to trigger breakpoints
 		// when a certain command was queued.
@@ -184,5 +221,78 @@ namespace CamelotFramework
 
 		static void breakIfNeeded(UINT32 queueIdx, UINT32 commandIdx);
 #endif
+	};
+
+	/**
+	 * @copydoc CommandQueue
+	 */
+	template<class SyncPolicy = CommandQueueNoSync>
+	class CM_EXPORT CommandQueue : public CommandQueueBase, public SyncPolicy
+	{
+	public:
+		/**
+		 * @copydoc CommandQueueBase::CommandQueueBase
+		 */
+		CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads = false)
+			:CommandQueueBase(threadId, allowAllThreads)
+		{ }
+
+		~CommandQueue() {}
+
+		/**
+		 * @copydoc CommandQueueBase::queueReturn
+		 */
+		AsyncOp queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+		{
+			lock();
+			AsyncOp asyncOp = CommandQueueBase::queueReturn(commandCallback, _notifyWhenComplete, _callbackId);
+			unlock();
+
+			return asyncOp;
+		}
+
+		/**
+		 * @copydoc CommandQueueBase::queue
+		 */
+		void queue(boost::function<void()> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+		{
+			lock();
+			CommandQueueBase::queue(commandCallback, _notifyWhenComplete, _callbackId);
+			unlock();
+		}
+
+		/**
+		 * @copydoc CommandQueueBase::flush
+		 */
+		std::queue<QueuedCommand>* flush()
+		{
+			lock();
+			std::queue<QueuedCommand>* commands = CommandQueueBase::flush();
+			unlock();
+
+			return commands;
+		}
+
+		/**
+		 * @copydoc CommandQueueBase::cancelAll
+		 */
+		void cancelAll()
+		{
+			lock();
+			CommandQueueBase::cancelAll();
+			unlock();
+		}
+
+		/**
+		 * @copydoc CommandQueueBase::isEmpty
+		 */
+		bool isEmpty()
+		{
+			lock();
+			bool empty = CommandQueueBase::isEmpty();
+			unlock();
+
+			return empty;
+		}
 	};
 }

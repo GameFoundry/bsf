@@ -38,6 +38,8 @@ THE SOFTWARE.
 #include "CmSamplerState.h"
 #include "CmCommonEnums.h"
 
+#include "CmCommandQueue.h"
+#include "CmDeferredRenderContextFwd.h"
 #include "CmRenderOperation.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmRenderTarget.h"
@@ -434,10 +436,12 @@ namespace CamelotFramework
 		CM_THREAD_TYPE* mRenderThread;
 #endif
 
-		CommandQueue* mCommandQueue;
+		CommandQueue<CommandQueueNoSync>* mCommandQueue;
 
 		UINT32 mMaxCommandNotifyId; // ID that will be assigned to the next command with a notifier callback
 		vector<UINT32>::type mCommandsCompleted; // Completed commands that have notifier callbacks set up
+
+		SyncedRenderContext* mSyncedRenderContext;
 
 		/**
 		 * @brief	Initializes a separate render thread. Should only be called once.
@@ -483,12 +487,20 @@ namespace CamelotFramework
 		CM_THREAD_ID_TYPE getRenderThreadId() const { return mRenderThreadId; }
 
 		/**
-		 * @brief	Creates a new render system context that you can use for rendering on 
+		 * @brief	Creates a new render system context that you can use for executing GPU commands from 
 		 * 			a non-render thread. You can have as many of these as you wish, the only limitation
 		 * 			is that you do not use a single instance on more than one thread. Each thread
 		 * 			requires its own context. The context will be bound to the thread you call this method on.
 		 */
-		DeferredRenderContextPtr createDeferredContext();
+		RenderContextPtr createDeferredContext();
+
+		/**
+		* @brief	Retrieves a context that may be used for rendering on the executing GPU commands from
+		* 			a non-render thread. There is only one synchronized context and you may access it from any thread you wish.
+		* 			Note however that it is much more efficient to create a separate non-synchronized context for each thread 
+		* 			you will be using it on.
+		 */
+		SyncedRenderContext& getSyncedDeferredContext();
 
 		/**
 		 * @brief	Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,

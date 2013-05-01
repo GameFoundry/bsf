@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "CmDeferredRenderContext.h"
 #include "BsOverlay.h"
 #include "BsTextSprite.h"
 #include "CmORect.h"
@@ -15,7 +16,7 @@ namespace BansheeEngine
 		void setSkin(const GUISkin* skin);
 		const GUISkin* getGUISkin() const;
 
-		virtual void render(const Camera* camera, CM::DeferredRenderContextPtr& renderContext) const;
+		virtual void render(const Camera* camera, CM::RenderContext& renderContext) const;
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;

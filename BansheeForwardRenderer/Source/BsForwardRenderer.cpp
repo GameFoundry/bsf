@@ -1,7 +1,6 @@
 #include "BsForwardRenderer.h"
 #include "BsCamera.h"
 #include "BsSceneManager.h"
-#include "CmDeferredRenderContext.h"
 #include "BsRenderable.h"
 #include "CmMaterial.h"
 #include "CmMesh.h"
@@ -33,7 +32,7 @@ namespace BansheeEngine
 
 	void ForwardRenderer::renderAll() 
 	{
-		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
+		RenderContext& renderContext = gMainRC();
 
 		const vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
 		for(auto iter = allCameras.begin(); iter != allCameras.end(); ++iter)
@@ -46,7 +45,7 @@ namespace BansheeEngine
 				RenderTargetPtr rt = vp->getTarget();
 
 				if(rt != nullptr)
-					renderContext->swapBuffers(rt); // TODO - This is wrong as potentially multiple viewports can share a single render target, and swap shouldn't
+					renderContext.swapBuffers(rt); // TODO - This is wrong as potentially multiple viewports can share a single render target, and swap shouldn't
 				// be done for every one of them
 			}
 		}
@@ -56,17 +55,17 @@ namespace BansheeEngine
 	{
 		vector<HRenderable>::type allRenderables = gSceneManager().getVisibleRenderables(camera);
 
-		DeferredRenderContextPtr renderContext = gApplication().getPrimaryRenderContext();
-		renderContext->setViewport(camera->getViewport());
+		RenderContext& renderContext = gMainRC();
+		renderContext.setViewport(camera->getViewport());
 
 		Matrix4 projMatrixCstm = camera->getProjectionMatrix();
 		Matrix4 viewMatrixCstm = camera->getViewMatrix();
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
-		renderContext->clear(camera->getViewport()->getTarget(), FBT_COLOR | FBT_DEPTH, Color::Blue);
+		renderContext.clear(camera->getViewport()->getTarget(), FBT_COLOR | FBT_DEPTH, Color::Blue);
 
-		renderContext->beginFrame();
+		renderContext.beginFrame();
 
 		// TODO - sort renderables by material/pass/parameters to minimize state changes
 		for(auto iter = allRenderables.begin(); iter != allRenderables.end(); ++iter)
@@ -94,14 +93,14 @@ namespace BansheeEngine
 				PassParametersPtr paramsPtr = material->getPassParameters(i);
 				pass->bindParameters(renderContext, paramsPtr);
 
-				renderContext->render(mesh->getRenderOperation());
+				renderContext.render(mesh->getRenderOperation());
 			}
 		}
 
 		// Render overlays for this camera
 		OverlayManager::instance().render(camera.get(), renderContext);
 
-		renderContext->endFrame();
+		renderContext.endFrame();
 
 		// TODO - Sort renderables
 		// Render them

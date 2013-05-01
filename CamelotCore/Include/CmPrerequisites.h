@@ -124,14 +124,11 @@ namespace CamelotFramework {
 	class InputHandler;
 	class Renderer;
 	class RendererFactory;
-	class RenderCommandBuffer;
 	class WorkQueue;
 	class PassParameters;
 	class AsyncOp;
 	class HardwareBufferManager;
 	class FontManager;
-	class CommandQueue;
-	class DeferredRenderContext;
 	class DepthStencilState;
 	class RenderStateManager;
 	class RasterizerState;
@@ -204,7 +201,6 @@ namespace CamelotFramework
 	typedef std::shared_ptr<PassParameters> PassParametersPtr;
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<SceneObject> GameObjectPtr;
-	typedef std::shared_ptr<DeferredRenderContext> DeferredRenderContextPtr;
 	typedef std::shared_ptr<SamplerState> SamplerStatePtr;
 	typedef std::shared_ptr<DepthStencilState> DepthStencilStatePtr;
 	typedef std::shared_ptr<RasterizerState> RasterizerStatePtr;

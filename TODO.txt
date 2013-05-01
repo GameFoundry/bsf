@@ -9,53 +9,14 @@ When I'm canceling command queue commands I might be canceling important user co
    - input lag?
 
 <<<<<<<Resource update/read>>>>>>>>
-In order to get write/readSubresource usable I probably need to add AsyncOp.waitUntilComplete
- - (Also remove "blockUntilFinished" parameters when queuing commands, as waitUntilComplete can be used instead)
-   - Or can it? Some operations don't return AsyncOp
-DeferredContext
- - updateSubresource
- - readSubresource - how to avoid casting returned value to either MeshData or PixelData?
-   - Have it as a parameter, that is created on main thread, using the source resource. (e.g. Texture::createCPUBuffer)
+get rid of thread checks for synced contexts (currently theyre commented out)
+RenderSystem does syncing external to CommandQueue
+ - That probably won't be needed once I have syncable CommandQueue
 
-Remove PixelData::ownsData and instead use a shared_ptr for GpuResourceData. 
-Otherwise it gets very difficult handling the sharing of "mLocked" variable, and also PixelData creation.
-
-All data classes (MeshData, PixelData, etc) derive from GpuBufferData class. 
- - It contains basically just raw bytes.
- - It has lock/unlock methods (used mostly internally)
- - Upon submitting GpuBufferData to updateResource it gets locked so user cannot change it anymore
-
-QUESTION: How to deal with GpuBufferData for MeshData?
- - It updates two separate buffers
-
-QUESTION: How to implement readResource and have the user be able to accurately read the returned data via
- MeshData/PixelData?
-
-Inherit all buffer classes (texture, mesh, GPUBlock) from IGpuBuffer interface
-
-DeferredRenderContext::updateResource(IGpuBuffer, GpuBufferData)
-AsyncOp DeferredRenderContext::readResource(IGpuBuffer)
- - When Resources::save needs to save a resource how do I easily read the data!?
+MeshData needs to be ported to GpuResourceData format
+ - I don't want to give up the current MeshData interface as it's easy to use. Anything lower level and I might just be using vertex/index buffers directly
 
 --------
-
-Methods to port:
-WRITE:
- - setRawPixels
- - setRawPixels_async
- - setMeshData
- - GpuParamBlock::updateBuffer
- - RenderTarget::swapBuffers
-READ:
- - getMeshData
- - getRawPixels
- - getRawPixels_async
-
---------
-
-Start with just GpuParamBlock and then move to Mesh/Texture later
-
-
 
  - My test model is rendering back faces. I need to flip them.
   - Although more than likely I am loading the model incorrectly since it works in Unity?

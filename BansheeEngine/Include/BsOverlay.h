@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "CmDeferredRenderContext.h"
 #include "CmComponent.h"
 
 namespace BansheeEngine
@@ -16,7 +17,7 @@ namespace BansheeEngine
 	public:
 		virtual ~Overlay();
 
-		virtual void render(const Camera* camera, CM::DeferredRenderContextPtr& renderContext) const = 0;
+		virtual void render(const Camera* camera, CM::RenderContext& renderContext) const = 0;
 		virtual void update() {}
 
 	protected:

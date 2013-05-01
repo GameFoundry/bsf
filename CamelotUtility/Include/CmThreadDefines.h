@@ -46,6 +46,7 @@ THE SOFTWARE
 #define CM_STATIC_MUTEX_CLASS_INSTANCE(name, classTypeName) boost::recursive_mutex classTypeName##::name;
 #define CM_LOCK_MUTEX(name) boost::recursive_mutex::scoped_lock cmnameLock(name);
 #define CM_LOCK_MUTEX_NAMED(mutexName, lockName) boost::recursive_mutex::scoped_lock lockName(mutexName);
+#define CM_LOCK_TYPE boost::recursive_mutex::scoped_lock
 // like CM_AUTO_MUTEX but mutex held by pointer
 #define CM_AUTO_SHARED_MUTEX mutable boost::recursive_mutex *CM_AUTO_MUTEX_NAME;
 #define CM_LOCK_AUTO_SHARED_MUTEX assert(CM_AUTO_MUTEX_NAME); boost::recursive_mutex::scoped_lock cmAutoMutexLock(*CM_AUTO_MUTEX_NAME);
@@ -83,6 +84,7 @@ THE SOFTWARE
 #define CM_STATIC_MUTEX_CLASS_INSTANCE(name, classTypeName)
 #define CM_LOCK_MUTEX(name)
 #define CM_LOCK_MUTEX_NAMED(mutexName, lockName)
+#define CM_LOCK_TYPE UINT32
 #define CM_AUTO_SHARED_MUTEX
 #define CM_LOCK_AUTO_SHARED_MUTEX
 #define CM_COPY_AUTO_SHARED_MUTEX(from)

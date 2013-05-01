@@ -33,14 +33,13 @@ THE SOFTWARE.
 
 #include "CmRenderSystem.h"
 
+#include "CmDeferredRenderContext.h"
 #include "CmViewport.h"
 #include "CmException.h"
 #include "CmRenderTarget.h"
 #include "CmRenderWindow.h"
 #include "CmPixelBuffer.h"
 #include "CmOcclusionQuery.h"
-#include "CmCommandQueue.h"
-#include "CmDeferredRenderContext.h"
 #include "CmGpuResource.h"
 #include "boost/bind.hpp"
 
@@ -68,6 +67,7 @@ namespace CamelotFramework {
 		, mRenderThreadShutdown(false)
 		, mCommandQueue(nullptr)
 		, mMaxCommandNotifyId(0)
+		, mSyncedRenderContext(nullptr)
     {
     }
 
@@ -80,7 +80,7 @@ namespace CamelotFramework {
 
 		if(mCommandQueue != nullptr)
 		{
-			CM_DELETE(mCommandQueue, CommandQueue, GenAlloc);
+			CM_DELETE(mCommandQueue, CommandQueue<CommandQueueNoSync>, GenAlloc);
 			mCommandQueue = nullptr;
 		}
 
@@ -91,7 +91,7 @@ namespace CamelotFramework {
 	RenderWindowPtr RenderSystem::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mCommandQueue = CM_NEW(CommandQueue, GenAlloc) CommandQueue(CM_THREAD_CURRENT_ID, true);
+		mCommandQueue = CM_NEW(CommandQueue<CommandQueueNoSync>, GenAlloc) CommandQueue<CommandQueueNoSync>(CM_THREAD_CURRENT_ID, true);
 		mPrimaryWindowDesc = primaryWindowDesc;
 
 		initRenderThread();
@@ -107,11 +107,18 @@ namespace CamelotFramework {
 		mVertexProgramBound = false;
 		mGeometryProgramBound = false;
 		mFragmentProgramBound = false;
+
+		mSyncedRenderContext = CM_NEW(DeferredRenderContext<CommandQueueSync>, GenAlloc) DeferredRenderContext<CommandQueueSync>(this, CM_THREAD_CURRENT_ID);
 	}
 
 	void RenderSystem::destroy_internal()
 	{
 		mActiveRenderTarget = nullptr;
+
+		if(mSyncedRenderContext != nullptr)
+		{
+			CM_DELETE(mSyncedRenderContext, DeferredRenderContext<CommandQueueSync>, GenAlloc);
+		}
 	}
 
 	const RenderSystemCapabilities* RenderSystem::getCapabilities(void) const 
@@ -273,6 +280,7 @@ namespace CamelotFramework {
 		THROW_IF_NOT_RENDER_THREAD;
 
 		resource->writeSubresource(subresourceIdx, data);
+		data.unlock();
 		asyncOp.completeOperation();
 	}
 
@@ -281,6 +289,7 @@ namespace CamelotFramework {
 		THROW_IF_NOT_RENDER_THREAD;
 
 		resource->readSubresource(subresourceIdx, data);
+		data.unlock();
 		asyncOp.completeOperation();
 	}
 
@@ -324,7 +333,7 @@ namespace CamelotFramework {
 		while(true)
 		{
 			// Wait until we get some ready commands
-			std::queue<CommandQueue::Command>* commands = nullptr;
+			std::queue<QueuedCommand>* commands = nullptr;
 			{
 				CM_LOCK_MUTEX_NAMED(mCommandQueueMutex, lock)
 
@@ -373,10 +382,15 @@ namespace CamelotFramework {
 		mRenderThreadStarted = false;
 	}
 
-	DeferredRenderContextPtr RenderSystem::createDeferredContext()
+	RenderContextPtr RenderSystem::createDeferredContext()
 	{
-		return DeferredRenderContextPtr(CM_NEW(DeferredRenderContext, GenAlloc) DeferredRenderContext(this, CM_THREAD_CURRENT_ID), 
-			&MemAllocDeleter<DeferredRenderContext, GenAlloc>::deleter);
+		return RenderContextPtr(CM_NEW(DeferredRenderContext<CommandQueueNoSync>, GenAlloc) DeferredRenderContext<CommandQueueNoSync>(this, CM_THREAD_CURRENT_ID), 
+			&MemAllocDeleter<DeferredRenderContext<CommandQueueNoSync>, GenAlloc>::deleter);
+	}
+
+	SyncedRenderContext& RenderSystem::getSyncedDeferredContext()
+	{
+		return *mSyncedRenderContext;
 	}
 	
 	AsyncOp RenderSystem::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)

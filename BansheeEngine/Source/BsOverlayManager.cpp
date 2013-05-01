@@ -6,7 +6,7 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	void OverlayManager::render(const Camera* camera, DeferredRenderContextPtr& renderContext) const
+	void OverlayManager::render(const Camera* camera, RenderContext& renderContext) const
 	{
 		auto overlays = mOverlaysPerCamera.find(camera);
 

@@ -160,6 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\CmAsyncOp.cpp" />
     <ClCompile Include="Source\CmBitmapWriter.cpp" />
     <ClCompile Include="Source\CmBox.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />

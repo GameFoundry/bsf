@@ -15,8 +15,5 @@ namespace BansheeEngine
 
 		virtual void renderAll();
 		virtual void render(const HCamera& camera);
-
-	protected:
-		CM::RenderCommandBuffer* mCommandBuffer;
 	};
 }

@@ -7,10 +7,10 @@
 namespace CamelotFramework
 {
 #if CM_DEBUG_MODE
-	CommandQueue::CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
+	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
 		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads), mMaxDebugIdx(0)
 	{
-		mCommands = CM_NEW(std::queue<Command>, PoolAlloc) std::queue<Command>();
+		mCommands = CM_NEW(std::queue<QueuedCommand>, PoolAlloc) std::queue<QueuedCommand>();
 
 		{
 			CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
@@ -19,14 +19,14 @@ namespace CamelotFramework
 		}
 	}
 #else
-	CommandQueue::CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
+	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
 		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads)
 	{
-		mCommands = CM_NEW(std::queue<Command>, PoolAlloc) std::queue<Command>();
+		mCommands = CM_NEW(std::queue<QueuedCommand>, PoolAlloc) std::queue<QueuedCommand>();
 	}
 #endif
 
-	CommandQueue::~CommandQueue()
+	CommandQueueBase::~CommandQueueBase()
 	{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0
@@ -38,79 +38,74 @@ namespace CamelotFramework
 #endif
 
 		if(mCommands != nullptr)
-			CM_DELETE(mCommands, queue<Command>, PoolAlloc);
+			CM_DELETE(mCommands, queue<QueuedCommand>, PoolAlloc);
 	}
 
-	AsyncOp CommandQueue::queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
+	AsyncOp CommandQueueBase::queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
 	{
-#if CM_DEBUG_MODE
-#if CM_THREAD_SUPPORT != 0
-		if(!mAllowAllThreads && CM_THREAD_CURRENT_ID != mMyThreadId)
-		{
-			CM_EXCEPT(InternalErrorException, "Command queue accessed outside of its creation thread.");
-		}
-#endif
-#endif
+//#if CM_DEBUG_MODE
+//#if CM_THREAD_SUPPORT != 0
+//		if(!mAllowAllThreads && CM_THREAD_CURRENT_ID != mMyThreadId)
+//		{
+//			CM_EXCEPT(InternalErrorException, "Command queue accessed outside of its creation thread.");
+//		}
+//#endif
+//#endif
 
 #if CM_DEBUG_MODE
 		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
 
-		Command newCommand(commandCallback, mMaxDebugIdx++, _notifyWhenComplete, _callbackId);
+		QueuedCommand newCommand(commandCallback, mMaxDebugIdx++, _notifyWhenComplete, _callbackId);
 #else
-		Command newCommand(commandCallback, _notifyWhenComplete, _callbackId);
+		QueuedCommand newCommand(commandCallback, _notifyWhenComplete, _callbackId);
 #endif
 
 		mCommands->push(newCommand);
 
 #if CM_FORCE_SINGLETHREADED_RENDERING
-		std::queue<CommandQueue::Command>* commands = flush();
+		std::queue<QueuedCommand>* commands = flush();
 		playback(commands);
 #endif
 
 		return newCommand.asyncOp;
 	}
 
-	void CommandQueue::queue(boost::function<void()> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
+	void CommandQueueBase::queue(boost::function<void()> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
 	{
-#if CM_DEBUG_MODE
-#if CM_THREAD_SUPPORT != 0
-		if(!mAllowAllThreads && CM_THREAD_CURRENT_ID != mMyThreadId)
-		{
-			CM_EXCEPT(InternalErrorException, "Command queue accessed outside of its creation thread.");
-		}
-#endif
-#endif
+//#if CM_DEBUG_MODE
+//#if CM_THREAD_SUPPORT != 0
+//		if(!mAllowAllThreads && CM_THREAD_CURRENT_ID != mMyThreadId)
+//		{
+//			CM_EXCEPT(InternalErrorException, "Command queue accessed outside of its creation thread.");
+//		}
+//#endif
+//#endif
 
 #if CM_DEBUG_MODE
 		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
 
-		Command newCommand(commandCallback, mMaxDebugIdx++, _notifyWhenComplete, _callbackId);
+		QueuedCommand newCommand(commandCallback, mMaxDebugIdx++, _notifyWhenComplete, _callbackId);
 #else
-		Command newCommand(commandCallback, _notifyWhenComplete, _callbackId);
+		QueuedCommand newCommand(commandCallback, _notifyWhenComplete, _callbackId);
 #endif
 
 		mCommands->push(newCommand);
 
 #if CM_FORCE_SINGLETHREADED_RENDERING
-		std::queue<CommandQueue::Command>* commands = flush();
+		std::queue<QueuedCommand>* commands = flush();
 		playback(commands);
 #endif
 	}
 
-	std::queue<CommandQueue::Command>* CommandQueue::flush()
+	std::queue<QueuedCommand>* CommandQueueBase::flush()
 	{
-		std::queue<Command>* oldCommands = nullptr;
-		{
-			CM_LOCK_MUTEX(mCommandBufferMutex);
-
-			oldCommands = mCommands;
-			mCommands = CM_NEW(std::queue<Command>, PoolAlloc) std::queue<Command>();
-		}
+		std::queue<QueuedCommand>* oldCommands = mCommands;
+		mCommands = CM_NEW(std::queue<QueuedCommand>, PoolAlloc) std::queue<QueuedCommand>();
 
 		return oldCommands;
 	}
 
-	void CommandQueue::playback(std::queue<CommandQueue::Command>* commands, boost::function<void(UINT32)> notifyCallback)
+	void CommandQueueBase::playback(std::queue<QueuedCommand>* commands, boost::function<void(UINT32)> notifyCallback)
 	{
 #if CM_DEBUG_MODE
 		RenderSystem* rs = RenderSystem::instancePtr();
@@ -124,7 +119,7 @@ namespace CamelotFramework
 
 		while(!commands->empty())
 		{
-			Command& command = commands->front();
+			QueuedCommand& command = commands->front();
 
 			if(command.returnsValue)
 			{
@@ -150,24 +145,22 @@ namespace CamelotFramework
 			commands->pop();
 		}
 
-		CM_DELETE(commands, queue<Command>, PoolAlloc);
+		CM_DELETE(commands, queue<QueuedCommand>, PoolAlloc);
 	}
 
-	void CommandQueue::playback(std::queue<Command>* commands)
+	void CommandQueueBase::playback(std::queue<QueuedCommand>* commands)
 	{
 		playback(commands, boost::function<void(UINT32)>());
 	}
 
-	void CommandQueue::cancelAll()
+	void CommandQueueBase::cancelAll()
 	{
-		std::queue<CommandQueue::Command>* commands = flush();
-		CM_DELETE(commands, queue<Command>, PoolAlloc);
+		std::queue<QueuedCommand>* commands = flush();
+		CM_DELETE(commands, queue<QueuedCommand>, PoolAlloc);
 	}
 
-	bool CommandQueue::isEmpty()
+	bool CommandQueueBase::isEmpty()
 	{
-		CM_LOCK_MUTEX(mCommandBufferMutex);
-
 		if(mCommands != nullptr && mCommands->size() > 0)
 			return false;
 
@@ -175,12 +168,14 @@ namespace CamelotFramework
 	}
 
 #if CM_DEBUG_MODE
-	CM_STATIC_MUTEX_CLASS_INSTANCE(CommandQueueBreakpointMutex, CommandQueue);
-	UINT32 CommandQueue::MaxCommandQueueIdx = 0;
-	std::unordered_set<CommandQueue::QueueBreakpoint, CommandQueue::QueueBreakpoint::HashFunction, 
-		CommandQueue::QueueBreakpoint::EqualFunction> CommandQueue::SetBreakpoints;
+	CM_STATIC_MUTEX_CLASS_INSTANCE(CommandQueueBreakpointMutex, CommandQueueBase);
 
-	inline size_t CommandQueue::QueueBreakpoint::HashFunction::operator()(const QueueBreakpoint& v) const
+	UINT32 CommandQueueBase::MaxCommandQueueIdx = 0;
+
+	std::unordered_set<CommandQueueBase::QueueBreakpoint, CommandQueueBase::QueueBreakpoint::HashFunction, 
+		CommandQueueBase::QueueBreakpoint::EqualFunction> CommandQueueBase::SetBreakpoints;
+
+	inline size_t CommandQueueBase::QueueBreakpoint::HashFunction::operator()(const QueueBreakpoint& v) const
 	{
 		size_t seed = 0;
 		hash_combine(seed, v.queueIdx);
@@ -188,19 +183,19 @@ namespace CamelotFramework
 		return seed;
 	}
 
-	inline bool CommandQueue::QueueBreakpoint::EqualFunction::operator()(const QueueBreakpoint &a, const QueueBreakpoint &b) const
+	inline bool CommandQueueBase::QueueBreakpoint::EqualFunction::operator()(const QueueBreakpoint &a, const QueueBreakpoint &b) const
 	{
 		return a.queueIdx == b.queueIdx && a.commandIdx == b.commandIdx;
 	}
 
-	void CommandQueue::addBreakpoint(UINT32 queueIdx, UINT32 commandIdx)
+	void CommandQueueBase::addBreakpoint(UINT32 queueIdx, UINT32 commandIdx)
 	{
 		CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
 
 		SetBreakpoints.insert(QueueBreakpoint(queueIdx, commandIdx));
 	}
 
-	void CommandQueue::breakIfNeeded(UINT32 queueIdx, UINT32 commandIdx)
+	void CommandQueueBase::breakIfNeeded(UINT32 queueIdx, UINT32 commandIdx)
 	{
 		// I purposely don't use a mutex here, as this gets called very often. Generally breakpoints
 		// will only be added at the start of the application, so race conditions should not occur.
@@ -212,7 +207,7 @@ namespace CamelotFramework
 		}
 	}
 #else
-	void CommandQueue::addBreakpoint(UINT32 queueIdx, UINT32 commandIdx)
+	void CommandQueueBase::addBreakpoint(UINT32 queueIdx, UINT32 commandIdx)
 	{
 		// Do nothing, no breakpoints in release
 	}

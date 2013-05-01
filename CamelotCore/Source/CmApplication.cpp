@@ -25,7 +25,6 @@
 #include "CmMaterialManager.h"
 #include "CmFontManager.h"
 #include "CmRenderer.h"
-#include "CmDeferredRenderContext.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -60,6 +59,7 @@ namespace CamelotFramework
 		RenderSystem* renderSystem = RenderSystem::instancePtr();
 
 		mPrimaryRenderContext = renderSystem->createDeferredContext();
+		mPrimarySyncedRenderContext = &renderSystem->getSyncedDeferredContext();
 
 		SceneManager::startUp((SceneManager*)loadPlugin(desc.sceneManager));
 
@@ -203,5 +203,15 @@ namespace CamelotFramework
 	{
 		static Application application;
 		return application;
+	}
+
+	RenderContext& gMainRC()
+	{
+		return *gApplication().mPrimaryRenderContext.get();
+	}
+
+	SyncedRenderContext& gMainSyncedRC()
+	{
+		return *gApplication().mPrimarySyncedRenderContext;
 	}
 }

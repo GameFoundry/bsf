@@ -7,6 +7,8 @@
 #include "CmTextureManager.h"
 #include "CmTexture.h"
 #include "CmFileSystem.h"
+#include "CmApplication.h"
+#include "CmDeferredRenderContext.h"
 
 #include "FreeImage.h"
 
@@ -132,7 +134,9 @@ namespace CamelotFramework
 		{
 			PixelData src = imgData->getPixels(mip);
 
-			newTexture->setRawPixels(src, 0, mip);
+			UINT32 subresourceIdx = newTexture->mapToSubresourceIdx(0, mip);
+			gMainSyncedRC().writeSubresource(newTexture.getInternalPtr(), subresourceIdx, src);
+			gMainSyncedRC().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 		}
 
 		fileData->close();

@@ -5,6 +5,8 @@
 #include "CmResources.h"
 #include "CmDebug.h"
 #include "CmTexAtlasGenerator.h"
+#include "CmApplication.h"
+#include "CmDeferredRenderContext.h"
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
@@ -240,7 +242,10 @@ namespace CamelotFramework
 
 				HTexture newTex = Texture::create(TEX_TYPE_2D, pageIter->width, pageIter->height, 0, PF_R8G8);
 				newTex.waitUntilLoaded();
-				newTex->setRawPixels(pixelData);
+
+				UINT32 subresourceIdx = newTex->mapToSubresourceIdx(0, 0);
+				gMainSyncedRC().writeSubresource(newTex.getInternalPtr(), subresourceIdx, pixelData);
+				gMainSyncedRC().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 
 				fontData.texturePages.push_back(newTex);
 

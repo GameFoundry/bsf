@@ -29,7 +29,7 @@ THE SOFTWARE.
 #define _Texture_H__
 
 #include "CmPrerequisites.h"
-#include "CmResource.h"
+#include "CmGpuResource.h"
 #include "CmHardwareBuffer.h"
 #include "CmPixelUtil.h"
 #include "CmTextureView.h"
@@ -85,7 +85,7 @@ namespace CamelotFramework {
             different in reality. Texture objects are created through
             the 'create' method of the TextureManager concrete subclass.
      */
-    class CM_EXPORT Texture : public Resource
+    class CM_EXPORT Texture : public GpuResource
     {
     public:
         /** Gets the type of texture 
@@ -138,59 +138,41 @@ namespace CamelotFramework {
         virtual UINT32 getNumFaces() const;
 
 		/**
-		 * @brief	Sets raw texture pixels for the specified mip level and texture face. Pixel format
-		 * 			must match the format of the texture.
+		 * @copydoc GpuResource::writeSubresource
+		 */
+		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data);
+
+		/**
+		 * @copydoc GpuResource::readSubresource
+		 */
+		virtual void readSubresource(UINT32 subresourceIdx, GpuResourceData& data);
+
+		/**
+		 * @brief	Allocates a buffer you may use for storage when reading a subresource. You
+		 * 			need to allocate such a buffer if you are calling "readSubresource".
 		 * 			
-		 * @note	Not-async. This operation will block the current thread until the render thread
-		 *			executes the command.
+		 * @note	This method is thread safe.
 		 */
-		void setRawPixels(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
+		PixelDataPtr allocateSubresourceBuffer(UINT32 subresourceIdx) const;
 
 		/**
-		 * @brief	Sets raw texture pixels for the specified mip level and texture face. Pixel format
-		 * 			must match the format of the texture. Returns immediately
-		 * 			but the texture won't be updated until the command
-		 * 			executes on the render thread.
+		 * @brief	Maps a subresource index to an exact face and mip level. Subresource indexes
+		 * 			are used when reading or writing to the resource.
 		 * 			
-		 * @see		Texture::setRawPixels		
+		 * @note	Subresource index is only valid for the instance it was created on. You cannot use a subresource
+		 * 			index from a different texture and expect to get valid result. Modifying the resource so the number
+		 * 			of subresources changes, invalidates all subresource indexes.
 		 */
-		void setRawPixels_async(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
+		void mapFromSubresourceIdx(UINT32 subresourceIdx, UINT32& face, UINT32& mip) const;
 
 		/**
-		 * @brief	Internal version of Texture::setRawPixels. Only callable
-		 * 			from the render thread.
-		 *
-		 * @see		Texture::setRawPixels
-		 */
-		virtual void setRawPixels_internal(const PixelData& data, UINT32 face = 0, UINT32 mip = 0);
-
-		/**
-		 * @brief	Gets raw pixels from the texture. This is a slow operation
-		 * 			as it will read data from the GPU. If the texture is compressed
-		 * 			the returned data will be contain compressed pixels as well.
+		 * @brief	Map a face and a mip level to a subresource index you can use for updating or reading
+		 * 			a specific sub-resource.
 		 * 			
-		 * @note	Not-async. This operation will block the current thread until the render thread
-		 *			executes the command.
+		 * @note	Generated subresource index is only valid for the instance it was created on. Modifying the resource so the number
+		 * 			of subresources changes, invalidates all subresource indexes.
 		 */
-		PixelDataPtr getRawPixels(UINT32 face = 0, UINT32 mip = 0);
-		
-
-		/**
-		 * @brief	Async version of Texture::getRawPixels. Returns immediately
-		 * 			but you won't have access to the pixel data until the command
-		 * 			executes on the render thread.
-		 *
-		 * @see		Texture::getRawPixels
-		 */
-		AsyncOp getRawPixels_async(UINT32 face = 0, UINT32 mip = 0);
-
-		/**
-		 * @brief	Internal version of Texture::getRawPixels. Only callable
-		 * 			from the render thread.
-		 *
-		 * @see		Texture::getRawPixels
-		 */
-		virtual void getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op);
+		UINT32 mapToSubresourceIdx(UINT32 face, UINT32 mip) const;
 
 		PixelData lock(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
 		void unlock();
@@ -256,7 +238,6 @@ namespace CamelotFramework {
 		virtual void unlockImpl() = 0;
 
 		virtual void copyImpl(TexturePtr& target) = 0;
-
 		/// @copydoc Resource::calculateSize
 		UINT32 calculateSize(void) const;
 

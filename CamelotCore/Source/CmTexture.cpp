@@ -91,37 +91,54 @@ namespace CamelotFramework {
 		return getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;
 	}
 
-	void Texture::setRawPixels(const PixelData& data, UINT32 face, UINT32 mip)
+	void Texture::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data)
 	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip), true);
-	}
+		if(data.getTypeId() != TID_PixelData)
+			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
 
-	void Texture::setRawPixels_async(const PixelData& data, UINT32 face, UINT32 mip)
-	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&Texture::setRawPixels_internal, this, data, face, mip));
-	}
+		const PixelData& pixelData = static_cast<const PixelData&>(data);
 
-	void Texture::setRawPixels_internal(const PixelData& data, UINT32 face, UINT32 mip)
-	{
+		UINT32 face = 0;
+		UINT32 mip = 0;
+		mapFromSubresourceIdx(subresourceIdx, face, mip);
+
 		PixelData myData = lock(GBL_WRITE_ONLY_DISCARD, mip, face);
-		PixelUtil::bulkPixelConversion(data, myData);
+		PixelUtil::bulkPixelConversion(pixelData, myData);
 		unlock();
 	}
 
-	PixelDataPtr Texture::getRawPixels(UINT32 face, UINT32 mip)
+	void Texture::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)
 	{
-		AsyncOp op = RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1), true);
+		if(data.getTypeId() != TID_PixelData)
+			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
 
-		return op.getReturnValue<PixelDataPtr>();
+		PixelData& pixelData = static_cast<PixelData&>(data);
+
+		UINT32 face = 0;
+		UINT32 mip = 0;
+		mapFromSubresourceIdx(subresourceIdx, face, mip);
+
+		PixelData myData = lock(GBL_READ_ONLY, mip, face);
+
+#if CM_DEBUG_MODE
+		if(pixelData.getConsecutiveSize() != myData.getConsecutiveSize())
+		{
+			unlock();
+			CM_EXCEPT(InternalErrorException, "Buffer sizes don't match");
+		}
+#endif
+
+		PixelUtil::bulkPixelConversion(myData, pixelData);
+
+		unlock();
 	}
 
-	AsyncOp Texture::getRawPixels_async(UINT32 face, UINT32 mip)
+	PixelDataPtr Texture::allocateSubresourceBuffer(UINT32 subresourceIdx) const
 	{
-		return RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&Texture::getRawPixels_internal, this, face, mip, _1));
-	}
+		UINT32 face = 0;
+		UINT32 mip = 0;
+		mapFromSubresourceIdx(subresourceIdx, face, mip);
 
-	void Texture::getRawPixels_internal(UINT32 face, UINT32 mip, AsyncOp& op)
-	{
 		UINT32 numMips = getNumMipmaps();
 		UINT32 width = getWidth();
 		UINT32 height = getHeight();
@@ -142,24 +159,23 @@ namespace CamelotFramework {
 			&MemAllocDeleter<PixelData, PoolAlloc>::deleter);
 
 		dst->allocateInternalBuffer(totalSize);
-		UINT8* buffer = (UINT8*)dst->getData();
 
-		PixelData myData = lock(GBL_READ_ONLY, mip, face);
-
-#if CM_DEBUG_MODE
-		if(dst->getConsecutiveSize() != myData.getConsecutiveSize())
-		{
-			unlock();
-			CM_EXCEPT(InternalErrorException, "Buffer sizes don't match");
-		}
-#endif
-
-		PixelUtil::bulkPixelConversion(myData, *dst);
-
-		unlock();
-
-		op.completeOperation(dst);
+		return dst;
 	}
+
+	void Texture::mapFromSubresourceIdx(UINT32 subresourceIdx, UINT32& face, UINT32& mip) const
+	{
+		UINT32 numMipmaps = getNumMipmaps() + 1;
+
+		face = Math::FloorToInt((subresourceIdx) / (float)numMipmaps);
+		mip = subresourceIdx % numMipmaps;
+	}
+
+	UINT32 Texture::mapToSubresourceIdx(UINT32 face, UINT32 mip) const
+	{
+		return face * (getNumMipmaps() + 1) + mip;
+	}
+
 	//----------------------------------------------------------------------------
 	PixelData Texture::lock(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{

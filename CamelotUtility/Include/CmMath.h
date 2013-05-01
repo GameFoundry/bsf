@@ -231,11 +231,6 @@ namespace CamelotFramework
         */
         ~Math();
 
-		static inline int IAbs (int iValue) { return ( iValue >= 0 ? iValue : -iValue ); }
-		static inline int ICeil (float fValue) { return int(ceil(fValue)); }
-		static inline int IFloor (float fValue) { return int(floor(fValue)); }
-        static int ISign (int iValue);
-
 		static inline float Abs (float fValue) { return float(fabs(fValue)); }
 		static inline Degree Abs (const Degree& dValue) { return Degree(fabs(dValue.valueDegrees())); }
 		static inline Radian Abs (const Radian& rValue) { return Radian(fabs(rValue.valueRadians())); }
@@ -244,6 +239,7 @@ namespace CamelotFramework
 		static inline Radian ATan (float fValue) { return Radian(atan(fValue)); }
 		static inline Radian ATan2 (float fY, float fX) { return Radian(atan2(fY,fX)); }
 		static inline float Ceil (float fValue) { return float(ceil(fValue)); }
+		static inline int CeilToInt (float fValue) { return int(ceil(fValue)); }
 		static inline bool isNaN(float f)
 		{
 			// std::isnan() is C99, not supported by all compilers
@@ -275,6 +271,8 @@ namespace CamelotFramework
 		static inline float Exp (float fValue) { return float(exp(fValue)); }
 
 		static inline float Floor (float fValue) { return float(floor(fValue)); }
+
+		static inline int FloorToInt (float fValue) { return int(floor(fValue)); }
 
 		static inline float Log (float fValue) { return float(log(fValue)); }
 

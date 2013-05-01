@@ -43,17 +43,13 @@ namespace CamelotFramework
 		 */
 		void setExternalBuffer(UINT8* data);
 
-	protected:
-		friend class DeferredRenderContext;
-		friend class RenderSystem;
-
 		/**
-		 * @brief	Locks the data and makes it available only to the render thread.
+		 * @brief	Locks the data and makes it available only to the render thread. Don't call manually.
 		 */
 		void lock() const;
 
 		/**
-		 * @brief	Unlocks the data and makes it available to all threads.
+		 * @brief	Unlocks the data and makes it available to all threads. Don't call manually.
 		 */
 		void unlock() const;
 

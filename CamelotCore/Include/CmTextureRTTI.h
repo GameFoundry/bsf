@@ -5,6 +5,8 @@
 #include "CmTexture.h"
 #include "CmManagedDataBlock.h"
 #include "CmMath.h"
+#include "CmApplication.h"
+#include "CmDeferredRenderContext.h"
 
 // DEBUG ONLY
 #include "CmTextureManager.h"
@@ -32,7 +34,15 @@ namespace CamelotFramework
 			UINT32 face = (size_t)Math::Floor(idx / (float)(obj->getNumMipmaps() + 1));
 			UINT32 mipmap = idx % (obj->getNumMipmaps() + 1);
 
-			return obj->getRawPixels(face, mipmap);
+			UINT32 subresourceIdx = obj->mapToSubresourceIdx(face, mipmap);
+			PixelDataPtr pixelData = obj->allocateSubresourceBuffer(subresourceIdx);
+
+			GpuResourcePtr sharedTexPtr = std::static_pointer_cast<GpuResource>(obj->getThisPtr());
+
+			gMainSyncedRC().readSubresource(sharedTexPtr, subresourceIdx, *pixelData);
+			gMainSyncedRC().submitToGpu(true); // We need the data right away, so execute the context and wait until we get it
+
+			return pixelData;
 		}
 
 		void setPixelData(Texture* obj, UINT32 idx, PixelDataPtr data)
@@ -100,10 +110,13 @@ namespace CamelotFramework
 				UINT32 face = (size_t)Math::Floor(i / (float)(texture->getNumMipmaps() + 1));
 				UINT32 mipmap = i % (texture->getNumMipmaps() + 1);
 
-				PixelData data(*pixelData->at(i));
+				UINT32 subresourceIdx = texture->mapToSubresourceIdx(face, mipmap);
 
-				texture->setRawPixels(data, face, mipmap);
+				GpuResourcePtr sharedTexPtr = std::static_pointer_cast<GpuResource>(texture->getThisPtr());
+				gMainSyncedRC().writeSubresource(sharedTexPtr, subresourceIdx, *pixelData->at(i));
 			}
+
+			gMainSyncedRC().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 
 			CM_DELETE(pixelData, vector<PixelDataPtr>, PoolAlloc);
 			texture->mRTTIData = nullptr;	

@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
+#include "CmDeferredRenderContext.h"
 #include "CmColor.h"
 #include "CmIReflectable.h"
 
@@ -107,12 +108,12 @@ namespace CamelotFramework
 		/**
 		 * @brief	Makes this pass active. Anything rendered after this command will use this pass.
 		 */
-		void activate(DeferredRenderContextPtr& renderContext) const;
+		void activate(RenderContext& renderContext) const;
 
 		/**
 		 * @brief	Applies specified parameters to the active pass. 
 		 */
-		void bindParameters(DeferredRenderContextPtr& renderContext, const PassParametersPtr& params) const;
+		void bindParameters(RenderContext& renderContext, const PassParametersPtr& params) const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

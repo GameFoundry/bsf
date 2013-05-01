@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "CmDeferredRenderContext.h"
 #include "CmModule.h"
 
 namespace BansheeEngine
@@ -16,7 +17,7 @@ namespace BansheeEngine
 	class BS_EXPORT OverlayManager : public CM::Module<OverlayManager>
 	{
 	public:
-		void render(const Camera* camera, CM::DeferredRenderContextPtr& renderContext) const;
+		void render(const Camera* camera, CM::RenderContext& renderContext) const;
 
 		void attachOverlay(const Camera* camera, const Overlay* overlay);
 		void detachOverlay(const Camera* camera, const Overlay* overlay);
