@@ -23,6 +23,13 @@ namespace CamelotFramework
 		/**
 		 * @brief	Allocates an internal buffer of a certain size. If there is another
 		 * 			buffer already allocated, it will be freed and new one will be allocated.
+		 * 			Buffer size is determine based on parameters used for initializing the class.
+		 */
+		void allocateInternalBuffer();
+
+		/**
+		 * @brief	Allocates an internal buffer of a certain size. If there is another
+		 * 			buffer already allocated, it will be freed and new one will be allocated.
 		 *
 		 * @param	size	The size of the buffer in bytes.
 		 */
@@ -52,6 +59,9 @@ namespace CamelotFramework
 		 * @brief	Unlocks the data and makes it available to all threads. Don't call manually.
 		 */
 		void unlock() const;
+
+	protected:
+		virtual UINT32 getInternalBufferSize() = 0;
 
 	private:
 		UINT8* mData;

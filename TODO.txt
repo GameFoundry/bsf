@@ -10,7 +10,10 @@ When I'm canceling command queue commands I might be canceling important user co
 
 <<<<<<<Resource update/read>>>>>>>>
 RenderSystem does syncing external to CommandQueue
- - That probably won't be needed once I have syncable CommandQueue
+ - That probably won't be needed once I have syncable CommandQueue so it's done twice for no reason
+ - I can also probably replace render system command queue with a deferred render context? Since I already
+   need to create a deferred synced context anyway, no point in having a command queue that does exactly the same thing.
+   - (I forgot to submitToGpu() on the deferred context, but I guess it might not be needed if I handle it properly?)
 
 MeshData needs to be ported to GpuResourceData format
  - I don't want to give up the current MeshData interface as it's easy to use. Anything lower level and I might just be using vertex/index buffers directly

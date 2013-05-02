@@ -250,6 +250,8 @@ namespace CamelotFramework
             mSlicePitch = getWidth()*getHeight();
         }
 
+		UINT32 getInternalBufferSize();
+
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/

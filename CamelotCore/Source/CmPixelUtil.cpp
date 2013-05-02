@@ -1369,7 +1369,7 @@ namespace CamelotFramework {
 			{
 				// Allocate temporary buffer of destination size in source format 
 				temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.getFormat());
-				temp.allocateInternalBuffer(temp.getConsecutiveSize());
+				temp.allocateInternalBuffer();
 			}
 			// super-optimized: no conversion
 			switch (PixelUtil::getNumElemBytes(src.getFormat())) 
@@ -1413,7 +1413,7 @@ namespace CamelotFramework {
 				{
 					// Allocate temp buffer of destination size in source format 
 					temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.getFormat());
-					temp.allocateInternalBuffer(temp.getConsecutiveSize());
+					temp.allocateInternalBuffer();
 				}
 				// super-optimized: byte-oriented math, no conversion
 				switch (PixelUtil::getNumElemBytes(src.getFormat())) 

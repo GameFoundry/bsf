@@ -110,7 +110,7 @@ namespace CamelotFramework
 				{
 					Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
 					PixelData dstBox(fullBufferBox, mFormat);
-					dstBox.allocateInternalBuffer(getSizeInBytes());
+					dstBox.allocateInternalBuffer();
 
 					blitToMemory(fullBufferBox, dstBox, it->second, it->first);
 					blitFromMemory(dstBox, fullBufferBox, bufferResources);
@@ -169,7 +169,7 @@ namespace CamelotFramework
 				{
 					Box fullBufferBox(0,0,0,mWidth,mHeight,mDepth);
 					PixelData dstBox(fullBufferBox, mFormat);
-					dstBox.allocateInternalBuffer(getSizeInBytes());
+					dstBox.allocateInternalBuffer();
 
 					blitToMemory(fullBufferBox, dstBox, it->second, it->first);
 					blitFromMemory(dstBox, fullBufferBox, bufferResources);
@@ -604,7 +604,7 @@ namespace CamelotFramework
 		if (D3D9Mappings::_getPF(src.getFormat()) == D3DFMT_UNKNOWN)
 		{
 			converted = PixelData(src.getWidth(), src.getHeight(), src.getDepth(), mFormat);
-			converted.allocateInternalBuffer(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat));
+			converted.allocateInternalBuffer();
 			PixelUtil::bulkPixelConversion(src, converted);
 		}
 

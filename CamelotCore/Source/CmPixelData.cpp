@@ -13,6 +13,11 @@ namespace CamelotFramework
 		mExtents = copy.mExtents;
 	}
 
+	UINT32 PixelData::getInternalBufferSize()
+	{
+		return PixelUtil::getMemorySize(getWidth(), getHeight(), getDepth(), getFormat());
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/

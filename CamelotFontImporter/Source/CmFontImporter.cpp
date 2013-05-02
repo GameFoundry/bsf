@@ -135,7 +135,7 @@ namespace CamelotFramework
 
 				PixelData pixelData(pageIter->width, pageIter->height, 1, PF_R8G8);
 
-				pixelData.allocateInternalBuffer(bufferSize);
+				pixelData.allocateInternalBuffer();
 				UINT8* pixelBuffer = pixelData.getData();
 				memset(pixelBuffer, 0, bufferSize);
 

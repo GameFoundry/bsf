@@ -158,7 +158,7 @@ namespace CamelotFramework {
 		PixelDataPtr dst(CM_NEW(PixelData, PoolAlloc) PixelData(width, height, depth, getFormat()),
 			&MemAllocDeleter<PixelData, PoolAlloc>::deleter);
 
-		dst->allocateInternalBuffer(totalSize);
+		dst->allocateInternalBuffer();
 
 		return dst;
 	}

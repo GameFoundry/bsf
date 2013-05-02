@@ -36,6 +36,11 @@ namespace CamelotFramework
 		return mData;
 	}
 
+	void GpuResourceData::allocateInternalBuffer()
+	{
+		allocateInternalBuffer(getInternalBufferSize());
+	}
+
 	void GpuResourceData::allocateInternalBuffer(UINT32 size)
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING

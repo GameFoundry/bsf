@@ -59,7 +59,7 @@ namespace CamelotFramework
 			// Already allocated
 			return;
 
-		mBuffer.allocateInternalBuffer(mSizeInBytes);
+		mBuffer.allocateInternalBuffer();
 		// TODO: use PBO if we're HBU_DYNAMIC
 	}
 	//-----------------------------------------------------------------------------  
@@ -697,7 +697,7 @@ namespace CamelotFramework
 		{
 			/// Convert to buffer internal format
 			src = PixelData(src_orig.getWidth(), src_orig.getHeight(), src_orig.getDepth(), mFormat);
-			src.allocateInternalBuffer(PixelUtil::getMemorySize(src.getWidth(), src.getHeight(), src.getDepth(), mFormat));
+			src.allocateInternalBuffer();
 			PixelUtil::bulkPixelConversion(src_orig, src);
 		}
 		else
