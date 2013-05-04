@@ -93,6 +93,8 @@ namespace CamelotFramework {
 
 	void Texture::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if(data.getTypeId() != TID_PixelData)
 			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
 
@@ -109,6 +111,8 @@ namespace CamelotFramework {
 
 	void Texture::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if(data.getTypeId() != TID_PixelData)
 			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
 

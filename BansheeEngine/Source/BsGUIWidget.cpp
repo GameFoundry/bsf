@@ -2,6 +2,7 @@
 #include "BsGUIManager.h"
 #include "BsGUISkin.h"
 #include "BsGUILabel.h"
+#include "CmApplication.h"
 #include "CmDeferredRenderContext.h"
 #include "CmMaterial.h"
 #include "CmPass.h"
@@ -164,7 +165,9 @@ namespace BansheeEngine
 		UINT32 meshIdx = 0;
 		for(auto& renderElem : meshDataPerRenderElement)
 		{
-			mCachedMeshes[meshIdx]->setMeshData(renderElem.second.meshData);
+			gMainSyncedRC().writeSubresource(mCachedMeshes[meshIdx].getInternalPtr(), 0, *renderElem.second.meshData);
+			gMainSyncedRC().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
+
 			mCachedMaterials[meshIdx] = renderElem.second.material;
 
 			meshIdx++;

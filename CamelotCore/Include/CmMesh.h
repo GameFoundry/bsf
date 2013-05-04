@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmResource.h"
+#include "CmGpuResource.h"
 #include "CmMeshData.h"
 #include "CmVertexData.h"
 #include "CmIndexData.h"
@@ -23,22 +23,40 @@ namespace CamelotFramework
 		UINT32 indexCount;
 	};
 
-	class CM_EXPORT Mesh : public Resource
+	class CM_EXPORT Mesh : public GpuResource
 	{
 	public:
 		virtual ~Mesh();
 
 		/**
-		 * @brief	Mesh data that is used for initializing the mesh. Needs to be set before calling load.
+		 * @copydoc GpuResource::writeSubresource
 		 */
-		void setMeshData(MeshDataPtr meshData);
-		void setMeshData_internal(MeshDataPtr meshData);
+		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data);
 
 		/**
-		 * @brief	Gets the mesh data from the GPU. This method is slow so be careful when you call it.
+		 * @copydoc GpuResource::readSubresource
 		 */
-		MeshDataPtr getMeshData();
-		void getMeshData_internal(AsyncOp& asyncOp);
+		virtual void readSubresource(UINT32 subresourceIdx, GpuResourceData& data);
+
+		/**
+		 * @brief	Allocates a buffer you may use for storage when reading a subresource. You
+		 * 			need to allocate such a buffer if you are calling "readSubresource".
+		 * 			
+		 * @note	This method is thread safe.
+		 */
+		MeshDataPtr allocateSubresourceBuffer(UINT32 subresourceIdx) const;
+
+		/**
+		 * @brief	TODO - Currently does nothing. But normally it should provide a way to map subresource index to
+		 * 			a specific submesh or buffer stream. Right now you can only work with entire mesh at once, not its subsets.
+		 */
+		void mapFromSubresourceIdx(UINT32 subresourceIdx) const {}
+
+		/**
+		 * @brief	TODO - Currently does nothing. But normally it should provide a way to map submesh or stream index to
+		 * 			a specific subresource index. Right now you can only work with entire mesh at once, not its subsets.
+		 */
+		UINT32 mapToSubresourceIdx() const { return 0; }
 
 		RenderOperation getRenderOperation(UINT32 subMeshIdx = 0) const;
 

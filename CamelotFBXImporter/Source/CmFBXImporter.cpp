@@ -1,5 +1,6 @@
 #include "CmFBXImporter.h"
 #include "CmResource.h"
+#include "CmApplication.h"
 #include "CmDebug.h"
 #include "CmDataStream.h"
 #include "CmPath.h"
@@ -50,7 +51,8 @@ namespace CamelotFramework
 		HMesh mesh = Mesh::create();
 
 		mesh.waitUntilLoaded();
-		mesh->setMeshData(meshData);
+		gMainSyncedRC().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
+		gMainSyncedRC().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 
 		return mesh;
 	}

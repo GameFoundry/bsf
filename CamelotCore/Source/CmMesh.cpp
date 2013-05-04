@@ -27,19 +27,14 @@ namespace CamelotFramework
 	{
 	}
 
-	void Mesh::setMeshData(MeshDataPtr meshData)
-	{
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&Mesh::setMeshData_internal, this, meshData), true);
-	}
-
-	void Mesh::setMeshData_internal(MeshDataPtr meshData)
+	void Mesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data)
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		if(meshData == nullptr)
-		{
-			CM_EXCEPT(InvalidParametersException, "Cannot load mesh. Mesh data is null.");
-		}
+		if(data.getTypeId() != TID_MeshData)
+			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
+
+		const MeshData& meshData = static_cast<const MeshData&>(data);
 
 		mSubMeshes.clear();
 
@@ -50,30 +45,30 @@ namespace CamelotFramework
 			CM_DELETE(mIndexData, IndexData, PoolAlloc);
 
 		// Submeshes
-		for(UINT32 i = 0; i < meshData->getNumSubmeshes(); i++)
+		for(UINT32 i = 0; i < meshData.getNumSubmeshes(); i++)
 		{
-			UINT32 numIndices = meshData->getNumIndices(i);
+			UINT32 numIndices = meshData.getNumIndices(i);
 
 			if(numIndices > 0)
 			{
-				mSubMeshes.push_back(SubMesh(meshData->getIndexBufferOffset(i), numIndices));
+				mSubMeshes.push_back(SubMesh(meshData.getIndexBufferOffset(i), numIndices));
 			}
 		}
 
 		// Indices
 		mIndexData = CM_NEW(IndexData, PoolAlloc) IndexData();
 
-		mIndexData->indexCount = meshData->getNumIndices();
+		mIndexData->indexCount = meshData.getNumIndices();
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
-			meshData->getIndexType(),
+			meshData.getIndexType(),
 			mIndexData->indexCount, 
 			GBU_STATIC);
 
 		UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_WRITE_ONLY_DISCARD));
-		UINT32 idxElementSize = meshData->getIndexElementSize();
+		UINT32 idxElementSize = meshData.getIndexElementSize();
 
-		UINT32 indicesSize = meshData->getIndexBufferSize();
-		UINT8* srcIdxData = meshData->getIndexData(); 
+		UINT32 indicesSize = meshData.getIndexBufferSize();
+		UINT8* srcIdxData = meshData.getIndexData(); 
 
 		memcpy(idxData, srcIdxData, indicesSize);
 
@@ -82,15 +77,15 @@ namespace CamelotFramework
 		// Vertices
 		mVertexData = CM_NEW(VertexData, PoolAlloc) VertexData();
 
-		mVertexData->vertexCount = meshData->getNumVertices();
-		mVertexData->vertexDeclaration = meshData->createDeclaration();
+		mVertexData->vertexCount = meshData.getNumVertices();
+		mVertexData->vertexDeclaration = meshData.createDeclaration();
 
-		for(UINT32 i = 0; i <= meshData->getMaxStreamIdx(); i++)
+		for(UINT32 i = 0; i <= meshData.getMaxStreamIdx(); i++)
 		{
-			if(!meshData->hasStream(i))
+			if(!meshData.hasStream(i))
 				continue;
 
-			UINT32 streamSize = meshData->getStreamSize(i);
+			UINT32 streamSize = meshData.getStreamSize(i);
 
 			VertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
 				mVertexData->vertexDeclaration->getVertexSize(i),
@@ -99,10 +94,10 @@ namespace CamelotFramework
 
 			mVertexData->setBuffer(i, vertexBuffer);
 
-			UINT8* srcVertBufferData = meshData->getStreamData(i);
+			UINT8* srcVertBufferData = meshData.getStreamData(i);
 			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_WRITE_ONLY_DISCARD));
 
-			UINT32 bufferSize = meshData->getStreamSize(i);
+			UINT32 bufferSize = meshData.getStreamSize(i);
 
 			memcpy(vertBufferData, srcVertBufferData, bufferSize);
 
@@ -110,14 +105,61 @@ namespace CamelotFramework
 		}
 	}
 
-	MeshDataPtr Mesh::getMeshData()
+	void Mesh::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)
 	{
-		AsyncOp op = RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&Mesh::getMeshData_internal, this, _1), true);
+		THROW_IF_NOT_RENDER_THREAD;
 
-		return op.getReturnValue<MeshDataPtr>();
+		if(data.getTypeId() != TID_MeshData)
+			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
+
+		IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT;
+		if(mIndexData)
+			indexType = mIndexData->indexBuffer->getType();
+
+		MeshData& meshData = static_cast<MeshData&>(data);
+
+		if(mIndexData)
+		{
+			UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
+			UINT32 idxElemSize = mIndexData->indexBuffer->getIndexSize();
+
+			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
+			{
+				UINT8* indices = nullptr;
+
+				if(indexType == IndexBuffer::IT_16BIT)
+					indices = (UINT8*)meshData.getIndices16(i);
+				else
+					indices = (UINT8*)meshData.getIndices32(i);
+
+				memcpy(indices, &idxData[mSubMeshes[i].indexOffset * idxElemSize], mSubMeshes[i].indexCount * idxElemSize);
+			}
+
+			mIndexData->indexBuffer->unlock();
+		}
+
+		if(mVertexData)
+		{
+			auto vertexBuffers = mVertexData->getBuffers();
+
+			UINT32 streamIdx = 0;
+			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
+			{
+				VertexBufferPtr vertexBuffer = iter->second;
+				UINT32 bufferSize = vertexBuffer->getVertexSize() * vertexBuffer->getNumVertices();
+				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
+
+				UINT8* dest = meshData.getStreamData(streamIdx);
+				memcpy(dest, vertDataPtr, bufferSize);
+
+				vertexBuffer->unlock();
+
+				streamIdx++;
+			}
+		}
 	}
 
-	void Mesh::getMeshData_internal(AsyncOp& asyncOp)
+	MeshDataPtr Mesh::allocateSubresourceBuffer(UINT32 subresourceIdx) const
 	{
 		IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT;
 		if(mIndexData)
@@ -129,13 +171,8 @@ namespace CamelotFramework
 		meshData->beginDesc();
 		if(mIndexData)
 		{
-			UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
-			UINT32 idxElemSize = mIndexData->indexBuffer->getIndexSize();
-
 			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
 				meshData->addSubMesh(mSubMeshes[i].indexCount, i);
-
-			mIndexData->indexBuffer->unlock();
 		}
 
 		if(mVertexData)
@@ -166,47 +203,7 @@ namespace CamelotFramework
 		}
 		meshData->endDesc();
 
-		if(mIndexData)
-		{
-			UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
-			UINT32 idxElemSize = mIndexData->indexBuffer->getIndexSize();
-
-			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
-			{
-				UINT8* indices = nullptr;
-
-				if(indexType == IndexBuffer::IT_16BIT)
-					indices = (UINT8*)meshData->getIndices16(i);
-				else
-					indices = (UINT8*)meshData->getIndices32(i);
-
-				memcpy(indices, &idxData[mSubMeshes[i].indexOffset * idxElemSize], mSubMeshes[i].indexCount * idxElemSize);
-			}
-
-			mIndexData->indexBuffer->unlock();
-		}
-
-		if(mVertexData)
-		{
-			auto vertexBuffers = mVertexData->getBuffers();
-
-			UINT32 streamIdx = 0;
-			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
-			{
-				VertexBufferPtr vertexBuffer = iter->second;
-				UINT32 bufferSize = vertexBuffer->getVertexSize() * vertexBuffer->getNumVertices();
-				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
-
-				UINT8* dest = meshData->getStreamData(streamIdx);
-				memcpy(dest, vertDataPtr, bufferSize);
-
-				vertexBuffer->unlock();
-
-				streamIdx++;
-			}
-		}
-
-		asyncOp.completeOperation(meshData);
+		return meshData;
 	}
 
 	RenderOperation Mesh::getRenderOperation(UINT32 subMeshIdx) const
@@ -234,7 +231,7 @@ namespace CamelotFramework
 		// TODO Low priority - Initialize an empty mesh. A better way would be to only initialize the mesh
 		// once we set the proper mesh data (then we don't have to do it twice), but this makes the code less complex.
 		// Consider changing it if there are performance issues.
-		setMeshData_internal(MeshManager::instance().getNullMeshData());
+		writeSubresource(0, *MeshManager::instance().getNullMeshData());
 
 		Resource::initialize_internal();
 	}

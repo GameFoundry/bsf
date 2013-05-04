@@ -11,7 +11,7 @@ namespace CamelotFramework
 	CM_ALLOW_MEMCPY_SERIALIZATION(MeshData::IndexElementData);
 	CM_ALLOW_MEMCPY_SERIALIZATION(IndexBuffer::IndexType);
 
-	class CM_EXPORT MeshDataRTTI : public RTTIType<MeshData, IReflectable, MeshDataRTTI>
+	class CM_EXPORT MeshDataRTTI : public RTTIType<MeshData, GpuResourceData, MeshDataRTTI>
 	{
 	private:
 		VertexElement& getVertexElementData(MeshData* obj, UINT32 arrayIdx)

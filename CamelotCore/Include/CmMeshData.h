@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmIReflectable.h"
+#include "CmGpuResourceData.h"
 #include "CmVertexBuffer.h"
 #include "CmIndexBuffer.h"
 #include "CmVertexDeclaration.h"
@@ -61,7 +61,7 @@ namespace CamelotFramework
 		UINT32 mNumElements;
 	};
 
-	class CM_EXPORT MeshData : public IReflectable
+	class CM_EXPORT MeshData : public GpuResourceData
 	{
 	public:
 		struct IndexElementData
@@ -212,11 +212,6 @@ namespace CamelotFramework
 		bool hasStream(UINT32 streamIdx) const;
 
 		vector<VertexElement>::type getVertexElements() const;
-
-		void allocateInternalBuffer();
-		void allocateInternalBuffer(UINT32 numBytes);
-
-		UINT8* getData() const { return mData; }
 
 		static MeshDataPtr combine(const vector<MeshDataPtr>::type& elements);
 

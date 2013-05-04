@@ -173,16 +173,6 @@ namespace CamelotFramework
 		return false;
 	}
 
-	void MeshData::allocateInternalBuffer()
-	{
-		mData = CM_NEW_BYTES(getInternalBufferSize(), ScratchAlloc); // TODO! - Not cleaned anywhere, because I won't be using this in the end
-	}
-
-	void MeshData::allocateInternalBuffer(UINT32 numBytes)
-	{
-		mData = CM_NEW_BYTES(numBytes, ScratchAlloc); // TODO! - Not cleaned anywhere, because I won't be using this in the end
-	}
-
 	UINT32 MeshData::getInternalBufferSize()
 	{
 		return getIndexBufferSize() + getStreamSize();
