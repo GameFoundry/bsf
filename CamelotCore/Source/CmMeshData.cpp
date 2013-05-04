@@ -142,11 +142,6 @@ namespace CamelotFramework
 		return (UINT32*)(getData() + indexBufferOffset);
 	}
 
-	vector<VertexElement>::type MeshData::getVertexElements() const
-	{
-		return mVertexElements;
-	}
-
 	UINT32 MeshData::getMaxStreamIdx() const
 	{
 		UINT32 maxStreamIdx = 0;
@@ -209,9 +204,7 @@ namespace CamelotFramework
 		vector<VertexElement>::type combinedVertexElements;
 		for(auto& meshData : meshes)
 		{
-			vector<VertexElement>::type vertexElements = meshData->getVertexElements();
-
-			for(auto& newElement : vertexElements)
+			for(auto& newElement : meshData->mVertexElements)
 			{
 				INT32 alreadyExistsIdx = -1;
 				UINT32 idx = 0;
@@ -267,8 +260,6 @@ namespace CamelotFramework
 		vertexOffset = 0;
 		for(auto& meshData : meshes)
 		{
-			vector<VertexElement>::type vertexElements = meshData->getVertexElements();
-
 			for(auto& element : combinedMeshData->mVertexElements)
 			{
 				UINT32 dstVertexStride = combinedMeshData->getVertexStride(element.getStreamIdx());

@@ -179,10 +179,8 @@ namespace CamelotFramework
 
 		UINT16* getIndices16(UINT32 subMesh = 0) const;
 		UINT32* getIndices32(UINT32 subMesh = 0) const;
+		UINT32 getIndexElementSize() const;
 		IndexBuffer::IndexType getIndexType() const { return mIndexType; }
-
-		UINT8* getIndexData() const { return getData(); }
-		UINT8* getStreamData(UINT32 streamIdx) const;
 
 		/**
 		 * @brief	Returns the pointer to the first element of the specified type. If you want to
@@ -196,29 +194,19 @@ namespace CamelotFramework
 		 * @return	null if it fails, else the element data.
 		 */
 		UINT8* getElementData(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
+		UINT32 getElementSize(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
+		UINT32 getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
 
-		UINT32 getIndexBufferSize() const { return getIndexBufferOffset(getNumSubmeshes()); }
-		UINT32 getStreamSize(UINT32 streamIdx) const;
-		UINT32 getStreamSize() const;
-		UINT32 getIndexElementSize() const;
-
-		UINT32 getIndexBufferOffset(UINT32 subMesh) const;
-		UINT32 getStreamOffset(UINT32 streamIdx = 0) const;
-		UINT32 getElementSize(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const;
-		UINT32 getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const;
 		UINT32 getVertexStride(UINT32 streamIdx = 0) const;
-
-		UINT32 getMaxStreamIdx() const;
-		bool hasStream(UINT32 streamIdx) const;
-
-		vector<VertexElement>::type getVertexElements() const;
-
+		
 		static MeshDataPtr combine(const vector<MeshDataPtr>::type& elements);
 
 	protected:
 		UINT32 getInternalBufferSize();
 
 	private:
+		friend class Mesh; // To avoid polluting the public interface with a bunch of nearly useless methods for outside world
+
 		UINT32 mDescBuilding;
 
 		UINT8* mData;
@@ -228,6 +216,19 @@ namespace CamelotFramework
 
 		vector<IndexElementData>::type mSubMeshes;
 		vector<VertexElement>::type mVertexElements;
+
+		UINT32 getMaxStreamIdx() const;
+		bool hasStream(UINT32 streamIdx) const;
+
+		UINT8* getIndexData() const { return getData(); }
+		UINT8* getStreamData(UINT32 streamIdx) const;
+
+		UINT32 getIndexBufferOffset(UINT32 subMesh) const;
+		UINT32 getStreamOffset(UINT32 streamIdx = 0) const;
+
+		UINT32 getIndexBufferSize() const { return getIndexBufferOffset(getNumSubmeshes()); }
+		UINT32 getStreamSize(UINT32 streamIdx) const;
+		UINT32 getStreamSize() const;
 
 		void getDataForIterator(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx, UINT8*& data, UINT32& stride) const;
 		void clearIfItExists(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx);
