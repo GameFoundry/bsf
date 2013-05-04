@@ -328,7 +328,6 @@
     <ClCompile Include="Source\CmImportOptions.cpp" />
     <ClCompile Include="Source\CmIndexBuffer.cpp" />
     <ClCompile Include="Source\CmIndexData.cpp" />
-    <ClCompile Include="Source\CmMeshDataRTTI.cpp" />
     <ClCompile Include="Source\CmMeshManager.cpp" />
     <ClCompile Include="Source\CmOcclusionQuery.cpp" />
     <ClCompile Include="Source\CmPixelBuffer.cpp" />

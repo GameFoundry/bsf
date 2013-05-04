@@ -17,7 +17,9 @@ RenderSystem does syncing external to CommandQueue
 
 MeshData needs to be ported to GpuResourceData format
  - I don't want to give up the current MeshData interface as it's easy to use. Anything lower level and I might just be using vertex/index buffers directly
-
+ - PixelDataRTTI needs to be modified so it allocates buffer on deserialization end
+   - not possible though
+   - keep both versions for now. Later maybe create GpuResourceDataRTTI where it can only use custom-size method when deserializing
 --------
 
  - My test model is rendering back faces. I need to flip them.

@@ -83,7 +83,7 @@ namespace CamelotFramework
         VertexElement(unsigned short source, UINT32 offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
         /// Gets the vertex buffer index from where this element draws it's values
-        unsigned short getSource(void) const { return mSource; }
+        unsigned short getStreamIdx(void) const { return mSource; }
         /// Gets the offset into the buffer where this element starts
         UINT32 getOffset(void) const { return mOffset; }
         /// Gets the data format of this element
@@ -91,7 +91,7 @@ namespace CamelotFramework
         /// Gets the meaning of this element
         VertexElementSemantic getSemantic(void) const { return mSemantic; }
         /// Gets the index of this element, only applicable for repeating elements
-        unsigned short getIndex(void) const { return mIndex; }
+        unsigned short getSemanticIdx(void) const { return mIndex; }
 		/// Gets the size of this element in bytes
 		UINT32 getSize(void) const;
 		/// Utility method for helping to calculate offsets

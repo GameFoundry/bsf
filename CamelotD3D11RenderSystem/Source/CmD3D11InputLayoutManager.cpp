@@ -101,9 +101,9 @@ namespace CamelotFramework
 		for(auto iter = vertexBufferDecl->getElements().begin(); iter != vertexBufferDecl->getElements().end(); ++iter)
 		{
 			declElements[idx].SemanticName			= D3D11Mappings::get(iter->getSemantic());
-			declElements[idx].SemanticIndex			= iter->getIndex();
+			declElements[idx].SemanticIndex			= iter->getSemanticIdx();
 			declElements[idx].Format				= D3D11Mappings::get(iter->getType());
-			declElements[idx].InputSlot				= iter->getSource();
+			declElements[idx].InputSlot				= iter->getStreamIdx();
 			declElements[idx].AlignedByteOffset		= static_cast<WORD>(iter->getOffset());
 			declElements[idx].InputSlotClass		= D3D11_INPUT_PER_VERTEX_DATA;
 			declElements[idx].InstanceDataStepRate	= 0;
@@ -185,7 +185,7 @@ namespace CamelotFramework
 			const VertexElement* foundElement = nullptr;
 			for(auto bufferIter = vertexBufferDecl->getElements().begin(); bufferIter != vertexBufferDecl->getElements().end(); ++bufferIter)
 			{
-				if(shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getIndex() == bufferIter->getIndex())
+				if(shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getSemanticIdx() == bufferIter->getSemanticIdx())
 				{
 					foundElement = &(*bufferIter);
 					break;
@@ -194,7 +194,7 @@ namespace CamelotFramework
 
 			if(foundElement == nullptr)
 			{
-				LOGWRN("Provided vertex buffer doesn't have a required input attribute: " + toString(shaderIter->getSemantic()) + toString(shaderIter->getIndex()));
+				LOGWRN("Provided vertex buffer doesn't have a required input attribute: " + toString(shaderIter->getSemantic()) + toString(shaderIter->getSemanticIdx()));
 				return false;
 			}
 		}

@@ -62,15 +62,11 @@ namespace BansheeEngine
 		struct TempMeshData
 		{
 			TempMeshData()
-				:numQuads(0), quadOffset(0), vertices(nullptr),
-				uvs(nullptr), indices(nullptr)
+				:numQuads(0), quadOffset(0)
 			{ }
 
 			UINT32 numQuads;
 			UINT32 quadOffset;
-			Vector2* vertices;
-			Vector2* uvs;
-			UINT32* indices;
 			HMaterial material;
 			std::shared_ptr<MeshData> meshData;
 		};
@@ -100,11 +96,16 @@ namespace BansheeEngine
 		UINT32 numMeshes = 0;
 		for(auto& renderElem : meshDataPerRenderElement)
 		{
-			renderElem.second.meshData = std::shared_ptr<MeshData>(CM_NEW(MeshData, PoolAlloc) MeshData(),
+			MeshDataPtr meshData = std::shared_ptr<MeshData>(CM_NEW(MeshData, PoolAlloc) MeshData(renderElem.second.numQuads * 4),
 				&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
-			renderElem.second.vertices = renderElem.second.meshData->addPositionsVec2(renderElem.second.numQuads * 4);
-			renderElem.second.uvs = renderElem.second.meshData->addUV0(renderElem.second.numQuads * 4);
-			renderElem.second.indices = renderElem.second.meshData->addIndices32(renderElem.second.numQuads * 6);
+
+			meshData->beginDesc();
+			meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+			meshData->addVertElem(VET_FLOAT2, VES_TEXCOORD);
+			meshData->addSubMesh(renderElem.second.numQuads * 6);
+			meshData->endDesc();
+
+			renderElem.second.meshData = meshData;
 			numMeshes++;
 		}
 
@@ -127,14 +128,17 @@ namespace BansheeEngine
 			{
 				const HMaterial& mat = elem->getMaterial(i);
 				UINT64 meshGroup = mat->getInternalID(); 
+				MeshDataPtr meshData = meshDataPerRenderElement[meshGroup].meshData;
 
-				Vector2* vertices = meshDataPerRenderElement[meshGroup].vertices;
-				Vector2* uvs = meshDataPerRenderElement[meshGroup].uvs;
-				UINT32* indices = meshDataPerRenderElement[meshGroup].indices;
+				UINT8* vertices = meshData->getElementData(VES_POSITION);
+				UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
+				UINT32* indices = meshData->getIndices32();
 				UINT32 startingQuad = meshDataPerRenderElement[meshGroup].quadOffset;
 				UINT32 maxNumQuads = meshDataPerRenderElement[meshGroup].numQuads;
+				UINT32 vertexStride = meshData->getVertexStride();
+				UINT32 indexStride = meshData->getIndexElementSize();
 
-				elem->fillBuffer(vertices, uvs, indices, startingQuad, maxNumQuads, i);
+				elem->fillBuffer(vertices, uvs, indices, startingQuad, maxNumQuads, vertexStride, indexStride, i);
 
 				UINT32 numQuads = elem->getNumQuads(i);
 				meshDataPerRenderElement[meshGroup].quadOffset += numQuads;

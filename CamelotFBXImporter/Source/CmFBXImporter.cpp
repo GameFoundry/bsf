@@ -175,65 +175,8 @@ namespace CamelotFramework
 
 	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, bool createTangentsIfMissing)
 	{
-		MeshDataPtr meshData = MeshDataPtr(CM_NEW(MeshData, ScratchAlloc) MeshData(), &MemAllocDeleter<MeshData, ScratchAlloc>::deleter);
-
 		if (!mesh->GetNode())
-			return meshData;
-		
-		if(createTangentsIfMissing && mesh->GetElementUVCount() > 0)
-			mesh->GenerateTangentsData(0, false);
-
-		const int lPolygonCount = mesh->GetPolygonCount();
-
-		// Count the polygon count of each material
-		FbxLayerElementArrayTemplate<int>* lMaterialIndice = NULL;
-		FbxGeometryElement::EMappingMode lMaterialMappingMode = FbxGeometryElement::eNone;
-		vector<SubMesh>::type subMeshes;
-		vector<UINT32*>::type indices;
-		if (mesh->GetElementMaterial())
-		{
-			lMaterialIndice = &mesh->GetElementMaterial()->GetIndexArray();
-			lMaterialMappingMode = mesh->GetElementMaterial()->GetMappingMode();
-			if (lMaterialIndice && lMaterialMappingMode == FbxGeometryElement::eByPolygon)
-			{
-				FBX_ASSERT(lMaterialIndice->GetCount() == lPolygonCount);
-				if (lMaterialIndice->GetCount() == lPolygonCount)
-				{
-					// Count the faces of each material
-					for (int lPolygonIndex = 0; lPolygonIndex < lPolygonCount; ++lPolygonIndex)
-					{
-						const UINT32 lMaterialIndex = (UINT32)lMaterialIndice->GetAt(lPolygonIndex);
-						if (subMeshes.size() < lMaterialIndex + 1)
-						{
-							subMeshes.resize(lMaterialIndex + 1);
-						}
-
-						subMeshes[lMaterialIndex].indexCount += 3;
-					}
-
-					// Record the offsets and allocate index arrays
-					indices.resize(subMeshes.size());
-					const int lMaterialCount = (const int)subMeshes.size();
-					int lOffset = 0;
-					for (int lIndex = 0; lIndex < lMaterialCount; ++lIndex)
-					{
-						subMeshes[lIndex].indexOffset = lOffset;
-						lOffset += subMeshes[lIndex].indexCount;
-						indices[lIndex] = meshData->addIndices32(subMeshes[lIndex].indexCount, lIndex);
-					}
-					FBX_ASSERT(lOffset == lPolygonCount * 3);
-				}
-			}
-		}
-
-		// All faces will use the same material.
-		if (subMeshes.size() == 0)
-		{
-			subMeshes.resize(1);
-			indices.resize(1);
-			subMeshes[0].indexCount = lPolygonCount * 3;
-			indices[0] = meshData->addIndices32(subMeshes[0].indexCount);
-		}
+			return MeshDataPtr(CM_NEW(MeshData, ScratchAlloc) MeshData(0), &MemAllocDeleter<MeshData, ScratchAlloc>::deleter);
 
 		// Find out which vertex attributes exist
 		bool allByControlPoint = true;
@@ -256,7 +199,7 @@ namespace CamelotFramework
 
 		bool hasNormal = mesh->GetElementNormalCount() > 0;
 		FbxGeometryElement::EMappingMode lNormalMappingMode = FbxGeometryElement::eNone;
-		
+
 		if (hasNormal)
 		{
 			lNormalMappingMode = mesh->GetElementNormal(0)->GetMappingMode();
@@ -326,45 +269,132 @@ namespace CamelotFramework
 				allByControlPoint = false;
 		}
 
-		// Allocate the array memory, by control point or by polygon vertex.
+		// Create tangents if needed
+		if(createTangentsIfMissing && mesh->GetElementUVCount() > 0)
+			mesh->GenerateTangentsData(0, false);
+
+		// Calculate number of vertices and indexes
+		const int lPolygonCount = mesh->GetPolygonCount();
+
 		int lPolygonVertexCount = mesh->GetControlPointsCount();
 		if (!allByControlPoint)
 			lPolygonVertexCount = lPolygonCount * 3;
 
 		UINT32 vertexCount = lPolygonVertexCount;
-		Vector3* vertex = meshData->addPositionsVec3(vertexCount);
 
-		Color* color = nullptr;
+		MeshDataPtr meshData = MeshDataPtr(CM_NEW(MeshData, ScratchAlloc) MeshData(vertexCount), &MemAllocDeleter<MeshData, ScratchAlloc>::deleter);
+		
+		meshData->beginDesc();
+		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
+
 		if(hasColor)
-			color = meshData->addColorsFloat(vertexCount);
+			meshData->addVertElem(VET_COLOR, VES_COLOR);
 
-		Vector3* normal = nullptr;
-		if (hasNormal)
-			normal = meshData->addNormals(vertexCount);
+		if(hasNormal)
+			meshData->addVertElem(VET_FLOAT3, VES_NORMAL);
 
-		Vector3* tangent = nullptr;
-		if (hasTangent)
-			tangent = meshData->addTangentsVec3(vertexCount);
+		if(hasTangent)
+			meshData->addVertElem(VET_FLOAT3, VES_TANGENT);
 
-		Vector3* bitangent = nullptr;
-		if (hasBitangent)
-			bitangent = meshData->addBitangents(vertexCount);
+		if(hasBitangent)
+			meshData->addVertElem(VET_FLOAT3, VES_BITANGENT);
 
 		FbxStringList lUVNames;
 		mesh->GetUVSetNames(lUVNames);
 		const char * lUVName0 = NULL;
-		Vector2* uv0 = nullptr;
 		if (hasUV0 && lUVNames.GetCount() > 0)
 		{
-			uv0 = meshData->addUV0(vertexCount);
+			meshData->addVertElem(VET_FLOAT2, VES_TEXCOORD, 0);
 			lUVName0 = lUVNames[0];
 		}
 
 		const char * lUVName1 = NULL;
-		Vector2* uv1 = nullptr;
 		if (hasUV1 && lUVNames.GetCount() > 1)
 		{
-			uv1 = meshData->addUV1(vertexCount);
+			meshData->addVertElem(VET_FLOAT2, VES_TEXCOORD, 1);
+			lUVName1 = lUVNames[1];
+		}
+
+		// Count the polygon count of each material
+		FbxLayerElementArrayTemplate<int>* lMaterialIndice = NULL;
+		FbxGeometryElement::EMappingMode lMaterialMappingMode = FbxGeometryElement::eNone;
+		vector<SubMesh>::type subMeshes;
+
+		if (mesh->GetElementMaterial())
+		{
+			lMaterialIndice = &mesh->GetElementMaterial()->GetIndexArray();
+			lMaterialMappingMode = mesh->GetElementMaterial()->GetMappingMode();
+			if (lMaterialIndice && lMaterialMappingMode == FbxGeometryElement::eByPolygon)
+			{
+				FBX_ASSERT(lMaterialIndice->GetCount() == lPolygonCount);
+				if (lMaterialIndice->GetCount() == lPolygonCount)
+				{
+					// Count the faces of each material
+					for (int lPolygonIndex = 0; lPolygonIndex < lPolygonCount; ++lPolygonIndex)
+					{
+						const UINT32 lMaterialIndex = (UINT32)lMaterialIndice->GetAt(lPolygonIndex);
+						if (subMeshes.size() < lMaterialIndex + 1)
+						{
+							subMeshes.resize(lMaterialIndex + 1);
+						}
+
+						subMeshes[lMaterialIndex].indexCount += 3;
+					}
+
+					// Record the offsets and allocate index arrays
+					const int lMaterialCount = (const int)subMeshes.size();
+					int lOffset = 0;
+					for (int lIndex = 0; lIndex < lMaterialCount; ++lIndex)
+					{
+						subMeshes[lIndex].indexOffset = lOffset;
+						lOffset += subMeshes[lIndex].indexCount;
+						meshData->addSubMesh(subMeshes[lIndex].indexCount, lIndex);
+					}
+					FBX_ASSERT(lOffset == lPolygonCount * 3);
+				}
+			}
+		}
+
+		// All faces will use the same material.
+		if (subMeshes.size() == 0)
+		{
+			subMeshes.resize(1);
+			subMeshes[0].indexCount = lPolygonCount * 3;
+			meshData->addSubMesh(subMeshes[0].indexCount);
+		}
+
+		meshData->endDesc();
+
+		// Allocate the array memory, by control point or by polygon vertex.
+		VertexElemIter<Vector3> positions = meshData->getVec3DataIter(VES_POSITION);
+
+		VertexElemIter<Color> colors;
+		if(hasColor)
+			colors = meshData->getColorDataIter(VES_COLOR);
+
+		VertexElemIter<Vector3> normals;
+		if (hasNormal)
+			normals = meshData->getVec3DataIter(VES_NORMAL);
+
+		VertexElemIter<Vector3> tangents;
+		if (hasTangent)
+			tangents = meshData->getVec3DataIter(VES_TANGENT);
+
+		VertexElemIter<Vector3> bitangents;
+		if (hasBitangent)
+			bitangents = meshData->getVec3DataIter(VES_BITANGENT);
+
+		VertexElemIter<Vector2> uv0;
+		if (hasUV0 && lUVNames.GetCount() > 0)
+		{
+			uv0 = meshData->getVec2DataIter(VES_TEXCOORD, 0);
+			lUVName0 = lUVNames[0];
+		}
+
+		VertexElemIter<Vector2> uv1;
+		if (hasUV1 && lUVNames.GetCount() > 1)
+		{
+			uv1 = meshData->getVec2DataIter(VES_TEXCOORD, 1);
 			lUVName1 = lUVNames[1];
 		}
 
@@ -404,9 +434,13 @@ namespace CamelotFramework
 			{
 				// Save the vertex position.
 				lCurrentVertex = lControlPoints[lIndex];
-				vertex[lIndex][0] = static_cast<float>(lCurrentVertex[0]);
-				vertex[lIndex][1] = static_cast<float>(lCurrentVertex[1]);
-				vertex[lIndex][2] = static_cast<float>(lCurrentVertex[2]);
+
+				Vector3 curPosValue;
+				curPosValue[0] = static_cast<float>(lCurrentVertex[0]);
+				curPosValue[1] = static_cast<float>(lCurrentVertex[1]);
+				curPosValue[2] = static_cast<float>(lCurrentVertex[2]);
+
+				positions.addValue(curPosValue);
 
 				// Save vertex color
 				if(hasColor)
@@ -416,10 +450,14 @@ namespace CamelotFramework
 						lColorIndex = lColorElement->GetIndexArray().GetAt(lIndex);
 
 					FbxColor lCurrentColor = lColorElement->GetDirectArray().GetAt(lColorIndex);
-					color[lIndex][0] = static_cast<float>(lCurrentColor[0]);
-					color[lIndex][1] = static_cast<float>(lCurrentColor[1]);
-					color[lIndex][2] = static_cast<float>(lCurrentColor[2]);
-					color[lIndex][3] = static_cast<float>(lCurrentColor[3]);
+
+					Color curColorValue;
+					curColorValue[0] = static_cast<float>(lCurrentColor[0]);
+					curColorValue[1] = static_cast<float>(lCurrentColor[1]);
+					curColorValue[2] = static_cast<float>(lCurrentColor[2]);
+					curColorValue[3] = static_cast<float>(lCurrentColor[3]);
+
+					colors.addValue(curColorValue);
 				}
 
 				// Save the normal.
@@ -430,9 +468,13 @@ namespace CamelotFramework
 						lNormalIndex = lNormalElement->GetIndexArray().GetAt(lIndex);
 
 					lCurrentNormal = lNormalElement->GetDirectArray().GetAt(lNormalIndex);
-					normal[lIndex][0] = static_cast<float>(lCurrentNormal[0]);
-					normal[lIndex][1] = static_cast<float>(lCurrentNormal[1]);
-					normal[lIndex][2] = static_cast<float>(lCurrentNormal[2]);
+
+					Vector3 curNormalValue;
+					curNormalValue[0] = static_cast<float>(lCurrentNormal[0]);
+					curNormalValue[1] = static_cast<float>(lCurrentNormal[1]);
+					curNormalValue[2] = static_cast<float>(lCurrentNormal[2]);
+
+					normals.addValue(curNormalValue);
 				}
 
 				// Save the tangent.
@@ -443,9 +485,13 @@ namespace CamelotFramework
 						lTangentIndex = lTangentElement->GetIndexArray().GetAt(lIndex);
 
 					FbxVector4 lCurrentTangent = lTangentElement->GetDirectArray().GetAt(lTangentIndex);
-					tangent[lIndex][0] = static_cast<float>(lCurrentTangent[0]);
-					tangent[lIndex][1] = static_cast<float>(lCurrentTangent[1]);
-					tangent[lIndex][2] = static_cast<float>(lCurrentTangent[2]);
+
+					Vector3 curTangentValue;
+					curTangentValue[0] = static_cast<float>(lCurrentTangent[0]);
+					curTangentValue[1] = static_cast<float>(lCurrentTangent[1]);
+					curTangentValue[2] = static_cast<float>(lCurrentTangent[2]);
+
+					tangents.addValue(curTangentValue);
 				}
 
 				// Save the bitangent.
@@ -456,9 +502,13 @@ namespace CamelotFramework
 						lBitangentIndex = lBitangentElement->GetIndexArray().GetAt(lIndex);
 
 					FbxVector4 lCurrentBitangent = lBitangentElement->GetDirectArray().GetAt(lBitangentIndex);
-					bitangent[lIndex][0] = static_cast<float>(lCurrentBitangent[0]);
-					bitangent[lIndex][1] = static_cast<float>(lCurrentBitangent[1]);
-					bitangent[lIndex][2] = static_cast<float>(lCurrentBitangent[2]);
+
+					Vector3 curBitangentValue;
+					curBitangentValue[0] = static_cast<float>(lCurrentBitangent[0]);
+					curBitangentValue[1] = static_cast<float>(lCurrentBitangent[1]);
+					curBitangentValue[2] = static_cast<float>(lCurrentBitangent[2]);
+
+					bitangents.addValue(curBitangentValue);
 				}
 
 				// Save the UV.
@@ -469,8 +519,12 @@ namespace CamelotFramework
 						lUVIndex = lUVElement0->GetIndexArray().GetAt(lIndex);
 
 					lCurrentUV = lUVElement0->GetDirectArray().GetAt(lUVIndex);
-					uv0[lIndex][0] = static_cast<float>(lCurrentUV[0]);
-					uv0[lIndex][1] = static_cast<float>(lCurrentUV[1]);
+
+					Vector2 curUV0Value;
+					curUV0Value[0] = static_cast<float>(lCurrentUV[0]);
+					curUV0Value[1] = static_cast<float>(lCurrentUV[1]);
+
+					uv0.addValue(curUV0Value);
 				}
 
 				if (hasUV1)
@@ -480,16 +534,28 @@ namespace CamelotFramework
 						lUVIndex = lUVElement1->GetIndexArray().GetAt(lIndex);
 
 					lCurrentUV = lUVElement1->GetDirectArray().GetAt(lUVIndex);
-					uv1[lIndex][0] = static_cast<float>(lCurrentUV[0]);
-					uv1[lIndex][1] = static_cast<float>(lCurrentUV[1]);
+
+					Vector2 curUV1Value;
+					curUV1Value[0] = static_cast<float>(lCurrentUV[0]);
+					curUV1Value[1] = static_cast<float>(lCurrentUV[1]);
+
+					uv1.addValue(curUV1Value);
 				}
 			}
 		}
 
-		int lVertexCount = 0;
 		vector<UINT32>::type indexOffsetPerSubmesh;
 		indexOffsetPerSubmesh.resize(subMeshes.size(), 0);
 
+		vector<UINT32*>::type indices;
+		indices.resize(subMeshes.size());
+
+		for(UINT32 i = 0; i < (UINT32)indices.size(); i++)
+		{
+			indices[i] = meshData->getIndices32(i);
+		}
+
+		UINT32 lVertexCount = 0;
 		for (int lPolygonIndex = 0; lPolygonIndex < lPolygonCount; ++lPolygonIndex)
 		{
 			// The material for current face.
@@ -515,9 +581,13 @@ namespace CamelotFramework
 					indices[lMaterialIndex][lIndexOffset + lVerticeIndex] = static_cast<unsigned int>(lVertexCount);
 
 					lCurrentVertex = lControlPoints[lControlPointIndex];
-					vertex[lVertexCount][0] = static_cast<float>(lCurrentVertex[0]);
-					vertex[lVertexCount][1] = static_cast<float>(lCurrentVertex[1]);
-					vertex[lVertexCount][2] = static_cast<float>(lCurrentVertex[2]);
+
+					Vector3 curPosValue;
+					curPosValue[0] = static_cast<float>(lCurrentVertex[0]);
+					curPosValue[1] = static_cast<float>(lCurrentVertex[1]);
+					curPosValue[2] = static_cast<float>(lCurrentVertex[2]);
+
+					positions.addValue(curPosValue);
 
 					if(hasColor)
 					{
@@ -526,18 +596,26 @@ namespace CamelotFramework
 							lColorIndex = lColorElement->GetIndexArray().GetAt(lColorIndex);
 
 						FbxColor lCurrentColor = lColorElement->GetDirectArray().GetAt(lColorIndex);
-						color[lVertexCount][0] = static_cast<float>(lCurrentColor[0]);
-						color[lVertexCount][1] = static_cast<float>(lCurrentColor[1]);
-						color[lVertexCount][2] = static_cast<float>(lCurrentColor[2]);
-						color[lVertexCount][3] = static_cast<float>(lCurrentColor[3]);
+
+						Color curColorValue;
+						curColorValue[0] = static_cast<float>(lCurrentColor[0]);
+						curColorValue[1] = static_cast<float>(lCurrentColor[1]);
+						curColorValue[2] = static_cast<float>(lCurrentColor[2]);
+						curColorValue[3] = static_cast<float>(lCurrentColor[3]);
+
+						colors.addValue(curColorValue);
 					}
 
 					if (hasNormal)
 					{
 						mesh->GetPolygonVertexNormal(lPolygonIndex, lVerticeIndex, lCurrentNormal);
-						normal[lVertexCount][0] = static_cast<float>(lCurrentNormal[0]);
-						normal[lVertexCount][1] = static_cast<float>(lCurrentNormal[1]);
-						normal[lVertexCount][2] = static_cast<float>(lCurrentNormal[2]);
+
+						Vector3 curNormalValue;
+						curNormalValue[0] = static_cast<float>(lCurrentNormal[0]);
+						curNormalValue[1] = static_cast<float>(lCurrentNormal[1]);
+						curNormalValue[2] = static_cast<float>(lCurrentNormal[2]);
+
+						normals.addValue(curNormalValue);
 					}
 
 					if (hasTangent)
@@ -547,9 +625,13 @@ namespace CamelotFramework
 							lTangentIndex = lTangentElement->GetIndexArray().GetAt(lTangentIndex);
 
 						FbxVector4 lCurrentTangent = lTangentElement->GetDirectArray().GetAt(lTangentIndex);
-						tangent[lVertexCount][0] = static_cast<float>(lCurrentTangent[0]);
-						tangent[lVertexCount][1] = static_cast<float>(lCurrentTangent[1]);
-						tangent[lVertexCount][2] = static_cast<float>(lCurrentTangent[2]);
+
+						Vector3 curTangentValue;
+						curTangentValue[0] = static_cast<float>(lCurrentTangent[0]);
+						curTangentValue[1] = static_cast<float>(lCurrentTangent[1]);
+						curTangentValue[2] = static_cast<float>(lCurrentTangent[2]);
+
+						tangents.addValue(curTangentValue);
 					}
 
 					if (hasBitangent)
@@ -559,25 +641,38 @@ namespace CamelotFramework
 							lBitangentIndex = lBitangentElement->GetIndexArray().GetAt(lBitangentIndex);
 
 						FbxVector4 lCurrentBitangent = lBitangentElement->GetDirectArray().GetAt(lBitangentIndex);
-						bitangent[lVertexCount][0] = static_cast<float>(lCurrentBitangent[0]);
-						bitangent[lVertexCount][1] = static_cast<float>(lCurrentBitangent[1]);
-						bitangent[lVertexCount][2] = static_cast<float>(lCurrentBitangent[2]);
+
+						Vector3 curBitangentValue;
+						curBitangentValue[0] = static_cast<float>(lCurrentBitangent[0]);
+						curBitangentValue[1] = static_cast<float>(lCurrentBitangent[1]);
+						curBitangentValue[2] = static_cast<float>(lCurrentBitangent[2]);
+
+						bitangents.addValue(curBitangentValue);
 					}
 
 					if (hasUV0)
 					{
 						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName0, lCurrentUV);
-						uv0[lVertexCount][0] = static_cast<float>(lCurrentUV[0]);
-						uv0[lVertexCount][1] = static_cast<float>(lCurrentUV[1]);
+
+						Vector2 curUV0Value;
+						curUV0Value[0] = static_cast<float>(lCurrentUV[0]);
+						curUV0Value[1] = static_cast<float>(lCurrentUV[1]);
+
+						uv0.addValue(curUV0Value);
 					}
 
 					if (hasUV1)
 					{
 						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName1, lCurrentUV);
-						uv1[lVertexCount][0] = static_cast<float>(lCurrentUV[0]);
-						uv1[lVertexCount][1] = static_cast<float>(lCurrentUV[1]);
+
+						Vector2 curUV1Value;
+						curUV1Value[0] = static_cast<float>(lCurrentUV[0]);
+						curUV1Value[1] = static_cast<float>(lCurrentUV[1]);
+
+						uv1.addValue(curUV1Value);
 					}
 				}
+
 				++lVertexCount;
 			}
 

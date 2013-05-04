@@ -41,34 +41,6 @@ namespace CamelotFramework
 			CM_EXCEPT(InvalidParametersException, "Cannot load mesh. Mesh data is null.");
 		}
 
-		// Ensure all vertex elements are of proper size
-		UINT32 numVertices = 0;
-
-		auto vertElemDataPerStream = meshData->mVertexData;
-		MeshData::VertexElementData* firstElemData = nullptr;
-		if(vertElemDataPerStream.size() > 0)
-		{
-			auto vertElemData = vertElemDataPerStream.begin()->second;
-			auto firstVertElem = vertElemData.begin();
-			if(firstVertElem != vertElemData.end())
-			{
-				numVertices = firstVertElem->elementCount;
-			}
-		}
-
-		for(auto& vertElems : meshData->mVertexData)
-		{
-			for(auto& vertElem : vertElems.second)
-			{
-				if(vertElem.elementCount != numVertices)
-				{
-					CM_EXCEPT(InvalidParametersException, "All vertex element arrays in MeshData need to be of the same size. Found an array with semantic: "
-						+ toString(vertElem.element.getSemantic()) + " and element count: " + toString(vertElem.elementCount) + ". This doesn't match with other "
-						+ "element with semantic: " + toString(firstElemData->element.getSemantic()) + " and element count: " + toString(firstElemData->elementCount));
-				}
-			}
-		}
-
 		mSubMeshes.clear();
 
 		if(mVertexData != nullptr)
@@ -78,80 +50,61 @@ namespace CamelotFramework
 			CM_DELETE(mIndexData, IndexData, PoolAlloc);
 
 		// Submeshes
-		UINT32 indexOffset = 0;
-		UINT32 totalIndexCount = 0;
-		for(auto& i : meshData->mIndices)
+		for(UINT32 i = 0; i < meshData->getNumSubmeshes(); i++)
 		{
-			UINT32 numIndices = i.numIndices;
+			UINT32 numIndices = meshData->getNumIndices(i);
 
 			if(numIndices > 0)
 			{
-				mSubMeshes.push_back(SubMesh(indexOffset, numIndices));
-				indexOffset += numIndices;
-				totalIndexCount += numIndices;
+				mSubMeshes.push_back(SubMesh(meshData->getIndexBufferOffset(i), numIndices));
 			}
 		}
 
 		// Indices
 		mIndexData = CM_NEW(IndexData, PoolAlloc) IndexData();
 
-		mIndexData->indexCount = totalIndexCount;
+		mIndexData->indexCount = meshData->getNumIndices();
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
-			meshData->mIndexType,
+			meshData->getIndexType(),
 			mIndexData->indexCount, 
 			GBU_STATIC);
 
-		UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_WRITE_ONLY));
+		UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_WRITE_ONLY_DISCARD));
 		UINT32 idxElementSize = meshData->getIndexElementSize();
 
-		indexOffset = 0;
-		for(auto& i : meshData->mIndices)
-		{
-			memcpy(&idxData[indexOffset], i.indices, i.numIndices * idxElementSize);
-			indexOffset += i.numIndices;
-		}
+		UINT32 indicesSize = meshData->getIndexBufferSize();
+		UINT8* srcIdxData = meshData->getIndexData(); 
+
+		memcpy(idxData, srcIdxData, indicesSize);
 
 		mIndexData->indexBuffer->unlock();
 
 		// Vertices
 		mVertexData = CM_NEW(VertexData, PoolAlloc) VertexData();
 
-		mVertexData->vertexCount = numVertices;
+		mVertexData->vertexCount = meshData->getNumVertices();
 		mVertexData->vertexDeclaration = meshData->createDeclaration();
 
-		for(auto& vertElems : meshData->mVertexData)
+		for(UINT32 i = 0; i <= meshData->getMaxStreamIdx(); i++)
 		{
-			UINT32 streamIdx = vertElems.first;
-
-			if(vertElems.second.size() == 0)
+			if(!meshData->hasStream(i))
 				continue;
 
+			UINT32 streamSize = meshData->getStreamSize(i);
+
 			VertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
-				mVertexData->vertexDeclaration->getVertexSize(streamIdx),
+				mVertexData->vertexDeclaration->getVertexSize(i),
 				mVertexData->vertexCount,
 				GBU_STATIC);
 
-			mVertexData->setBuffer(streamIdx, vertexBuffer);
+			mVertexData->setBuffer(i, vertexBuffer);
 
-			UINT32 vertexSize = vertexBuffer->getVertexSize();
-			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_WRITE_ONLY));
+			UINT8* srcVertBufferData = meshData->getStreamData(i);
+			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_WRITE_ONLY_DISCARD));
 
-			UINT32 numElements = mVertexData->vertexDeclaration->getElementCount();
+			UINT32 bufferSize = meshData->getStreamSize(i);
 
-			for(UINT32 j = 0; j < numElements; j++)
-			{
-				const VertexElement* element = mVertexData->vertexDeclaration->getElement(j);
-				UINT32 offset = element->getOffset();
-				UINT32 elemSize = element->getSize();
-
-				MeshData::VertexElementData& elemData = meshData->getVertElemData(element->getType(), element->getSemantic(), element->getIndex(), streamIdx);
-
-				UINT8* sourceData = elemData.data;
-				for(UINT32 k = 0; k < elemData.elementCount; k++)
-				{
-					memcpy(&vertBufferData[k * vertexSize + offset], &sourceData[k * elemSize], elemSize);
-				}
-			}
+			memcpy(vertBufferData, srcVertBufferData, bufferSize);
 
 			vertexBuffer->unlock();
 		}
@@ -170,8 +123,48 @@ namespace CamelotFramework
 		if(mIndexData)
 			indexType = mIndexData->indexBuffer->getType();
 
-		MeshDataPtr meshData(CM_NEW(MeshData, PoolAlloc) MeshData(indexType),
+		MeshDataPtr meshData(CM_NEW(MeshData, PoolAlloc) MeshData(mVertexData->vertexCount, indexType),
 			&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
+
+		meshData->beginDesc();
+		if(mIndexData)
+		{
+			UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
+			UINT32 idxElemSize = mIndexData->indexBuffer->getIndexSize();
+
+			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
+				meshData->addSubMesh(mSubMeshes[i].indexCount, i);
+
+			mIndexData->indexBuffer->unlock();
+		}
+
+		if(mVertexData)
+		{
+			auto vertexBuffers = mVertexData->getBuffers();
+
+			UINT32 streamIdx = 0;
+			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
+			{
+				VertexBufferPtr vertexBuffer = iter->second;
+				UINT32 vertexSize = vertexBuffer->getVertexSize();
+
+				UINT32 numElements = mVertexData->vertexDeclaration->getElementCount();
+				for(UINT32 j = 0; j < numElements; j++)
+				{
+					const VertexElement* element = mVertexData->vertexDeclaration->getElement(j);
+					VertexElementType type = element->getType();
+					VertexElementSemantic semantic = element->getSemantic(); 
+					UINT32 semanticIdx = element->getSemanticIdx();
+					UINT32 offset = element->getOffset();
+					UINT32 elemSize = element->getSize();
+
+					meshData->addVertElem(type, semantic, semanticIdx, streamIdx);
+				}
+
+				streamIdx++;
+			}
+		}
+		meshData->endDesc();
 
 		if(mIndexData)
 		{
@@ -181,12 +174,12 @@ namespace CamelotFramework
 			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
 			{
 				UINT8* indices = nullptr;
-				
+
 				if(indexType == IndexBuffer::IT_16BIT)
-					indices = (UINT8*)meshData->addIndices16(mSubMeshes[i].indexCount, i);
+					indices = (UINT8*)meshData->getIndices16(i);
 				else
-					indices = (UINT8*)meshData->addIndices32(mSubMeshes[i].indexCount, i);
-				
+					indices = (UINT8*)meshData->getIndices32(i);
+
 				memcpy(indices, &idxData[mSubMeshes[i].indexOffset * idxElemSize], mSubMeshes[i].indexCount * idxElemSize);
 			}
 
@@ -201,23 +194,11 @@ namespace CamelotFramework
 			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
 			{
 				VertexBufferPtr vertexBuffer = iter->second;
-				UINT32 vertexSize = vertexBuffer->getVertexSize();
-				UINT8* vertDataIter = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
+				UINT32 bufferSize = vertexBuffer->getVertexSize() * vertexBuffer->getNumVertices();
+				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
 
-				UINT32 numElements = mVertexData->vertexDeclaration->getElementCount();
-				for(UINT32 j = 0; j < numElements; j++)
-				{
-					const VertexElement* element = mVertexData->vertexDeclaration->getElement(j);
-					VertexElementType type = element->getType();
-					VertexElementSemantic semantic = element->getSemantic(); 
-					UINT32 semanticIdx = element->getIndex();
-					UINT32 offset = element->getOffset();
-					UINT32 elemSize = element->getSize();
-
-					UINT8* dest = meshData->addVertexElementData(type, semantic, mVertexData->vertexCount, semanticIdx, streamIdx);
-					for(UINT32 k = 0; k < mVertexData->vertexCount; k++)
-						memcpy(&dest[k * elemSize], &vertDataIter[k * vertexSize + offset], elemSize);
-				}
+				UINT8* dest = meshData->getStreamData(streamIdx);
+				memcpy(dest, vertDataPtr, bufferSize);
 
 				vertexBuffer->unlock();
 

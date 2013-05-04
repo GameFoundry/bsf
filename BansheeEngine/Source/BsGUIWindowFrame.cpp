@@ -57,8 +57,9 @@ namespace BansheeEngine
 		return mImageSprite->getNumQuads(renderElementIdx);
 	}
 
-	void GUIWindowFrame::fillBuffer(CM::Vector2* vertices, CM::Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const
+	void GUIWindowFrame::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, renderElementIdx);
+		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
 	}
 }

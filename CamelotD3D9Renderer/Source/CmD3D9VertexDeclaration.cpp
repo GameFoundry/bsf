@@ -130,7 +130,7 @@ namespace CamelotFramework {
 			{
 				d3delems[idx].Method = D3DDECLMETHOD_DEFAULT;
 				d3delems[idx].Offset = static_cast<WORD>(i->getOffset());
-				d3delems[idx].Stream = i->getSource();
+				d3delems[idx].Stream = i->getStreamIdx();
 				d3delems[idx].Type = D3D9Mappings::get(i->getType());
 				d3delems[idx].Usage = D3D9Mappings::get(i->getSemantic());
 				// NB force index if colours since D3D uses the same usage for 
@@ -145,7 +145,7 @@ namespace CamelotFramework {
 				}
 				else
 				{
-					d3delems[idx].UsageIndex = static_cast<BYTE>(i->getIndex());
+					d3delems[idx].UsageIndex = static_cast<BYTE>(i->getSemanticIdx());
 				}
 			}
 			// Add terminator

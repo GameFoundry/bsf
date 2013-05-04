@@ -8,208 +8,108 @@
 
 namespace CamelotFramework
 {
+	template<class T>
+	class VertexElemIter
+	{
+	public:
+		VertexElemIter()
+			:mData(nullptr), mEnd(nullptr), mByteStride(0), mNumElements(0)
+		{
+
+		}
+
+		VertexElemIter(UINT8* data, UINT32 byteStride, UINT32 numElements)
+			:mData(data), mByteStride(byteStride), mNumElements(numElements)
+		{
+			mEnd = mData + byteStride * numElements;
+		}
+
+		void addValue(T& value)
+		{
+			setValue(value);
+			moveNext();
+		}
+
+		void setValue(T& value)
+		{
+			memcpy(mData, &value, sizeof(T));
+		}
+
+		T& getValue()
+		{
+			return *((T*)mData);
+		}
+
+		void moveNext()
+		{
+#ifdef CM_DEBUG_MODE
+			if(mData >= mEnd)
+			{
+				CM_EXCEPT(InternalErrorException, "Vertex element iterator out of buffer bounds.");
+			}
+#endif
+
+			mData += mByteStride;
+		}
+
+		UINT32 getNumElements() const { return mNumElements; }
+
+	private:
+		UINT8* mData;
+		UINT8* mEnd;
+		UINT32 mByteStride;
+		UINT32 mNumElements;
+	};
+
 	class CM_EXPORT MeshData : public IReflectable
 	{
 	public:
-		struct VertexElementData : public IReflectable
-		{
-			VertexElementData(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx, UINT8* _data, UINT32 numElements)
-				:data(_data), elementCount(numElements), element(streamIdx, 0, type, semantic, semanticIdx)
-			{ }
-
-			UINT8* data;
-			UINT32 elementCount;
-			VertexElement element;
-
-			/************************************************************************/
-			/* 								SERIALIZATION                      		*/
-			/************************************************************************/
-		public:
-			VertexElementData()
-			:data(nullptr), elementCount(0) 
-			{} // Serialization only constructor
-
-			friend class VertexElementDataRTTI;
-			static RTTITypeBase* getRTTIStatic();
-			virtual RTTITypeBase* getRTTI() const;
-		};
-
-		struct IndexElementData : public IReflectable
+		struct IndexElementData
 		{
 			IndexElementData()
-				:numIndices(0), subMesh(0), elementSize(0), indices(nullptr)
+				:numIndices(0), subMesh(0), elementSize(0)
 			{ }
 
-			UINT8* indices;
 			UINT32 numIndices;
 			UINT32 elementSize;
 			UINT32 subMesh;
-
-			/************************************************************************/
-			/* 								SERIALIZATION                      		*/
-			/************************************************************************/
-		public:
-			friend class IndexElementDataRTTI;
-			static RTTITypeBase* getRTTIStatic();
-			virtual RTTITypeBase* getRTTI() const;
 		};
 
-		MeshData(IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+		MeshData(UINT32 numVertices, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 		~MeshData();
 
 		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex positions, and returns a
-		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
-		 * 			in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
+		 * @brief	Begins the mesh data definition. After this call you may call various add* methods to inform
+		 * 			the internal buffer which data it will need to hold. Each beginDesc() call needs to be followed with
+		 * 			an endDesc().
 		 */
-		Vector2* addPositionsVec2(UINT32 numElements, UINT32 streamIdx = 0);
+		void beginDesc();
 
 		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex positions, and returns a
-		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
-		 * 			in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
+		 * @brief	Call after you are done defining data to actually allocate the internal buffer. Any previous buffer will be overwritten.
+		 * 			Must be called after beginDesc().
 		 */
-		Vector3* addPositionsVec3(UINT32 numElements, UINT32 streamIdx = 0);
+		void endDesc();
 
 		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex positions, and returns a
-		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
-		 * 			in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
-		 */
-		Vector4* addPositionsVec4(UINT32 numElements, UINT32 streamIdx = 0);
-
-		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex normals, and returns a
-		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
-		 * 			in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
-		 */
-		Vector3* addNormals(UINT32 numElements, UINT32 streamIdx = 0);
-
-		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex tangents, and returns a
-		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
-		 * 			in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
-		 */
-		Vector3* addTangentsVec3(UINT32 numElements, UINT32 streamIdx = 0);
-
-		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex tangents, and returns a
-		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
-		 * 			in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
-		 */
-		Vector4* addTangentsVec4(UINT32 numElements, UINT32 streamIdx = 0);
-
-		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex bitangents, and returns a
-		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
-		 * 			in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
-		 */
-		Vector3* addBitangents(UINT32 numElements, UINT32 streamIdx = 0);
-
-		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex texture coordinates, 
-		 * 			and returns a pointer the user can use to populate the buffer. If a previous set 
-		 * 			of data exists in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
-		 */
-		Vector2* addUV0(UINT32 numElements, UINT32 streamIdx = 0);
-
-		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex texture coordinates, 
-		 * 			and returns a pointer the user can use to populate the buffer. If a previous set 
-		 * 			of data exists in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
-		 */
-		Vector2* addUV1(UINT32 numElements, UINT32 streamIdx = 0);
-
-		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex colors, and returns a
-		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
-		 * 			in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
-		 */
-		Color* addColorsFloat(UINT32 numElements, UINT32 streamIdx = 0);
-
-		/**
-		 * @brief	Allocates a buffer for holding a specified amount of vertex colors, and returns a
-		 * 			pointer the user can use to populate the buffer. If a previous set of data exists 
-		 * 			in this same stream slot, it will be deleted.
-		 *
-		 * @param	numElements			Number of elements in the elements array.
-		 * @param	streamIdx			(optional) Zero-based index of the stream. Each stream will 
-		 * 								internally be represented as a single vertex buffer.
-		 */
-		UINT32* addColorsDWORD(UINT32 numElements, UINT32 streamIdx = 0);
-
-		/**
-		* @brief	Allocates a buffer for holding a specified amount of vertex data, and returns a
-		* 			pointer the user can use to populate the buffer. Anything that was previously
-		 * 			present at the same data slot is removed.
+		* @brief	Informs the internal buffer that it needs to make room for the specified vertex element. If a vertex
+		* 			with same stream and semantics already exists it will just be updated. This must be called between beginDesc and endDesc.
 		 *
 		 * @param	type	   	Type of the vertex element. Determines size.
 		 * @param	semantic   	Semantic that allows the engine to connect the data to a shader input slot.
-		 * @param	numElements	Number of elements in the array.
 		 * @param	semanticIdx	(optional) If there are multiple semantics with the same name, use different index to differentiate between them.
 		 * @param	streamIdx  	(optional) Zero-based index of the stream. Each stream will internally be represented as a single vertex buffer.
 		 */
-		UINT8* addVertexElementData(VertexElementType type, VertexElementSemantic semantic, UINT32 numElements, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+		void addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
 
 		/**
-		* @brief	Allocates buffer for the indices for the specified sub mesh, and returns a
-		* 			pointer the user can use to populate the buffer. Any indexes previously
-		 * 			set for the sub mesh are deleted.
+		* @brief	Informs the internal buffer that it needs to make room for an index buffer of the specified size. If specified submesh
+		* 			already exists it will just be updated. This must be called between beginDesc and endDesc.
 		 *
 		 * @param	numIndices	   	Number of indices.
 		 * @param	subMesh		   	(optional) the sub mesh.
 		 */
-		UINT32* addIndices32(UINT32 numIndices, UINT32 subMesh = 0);
-
-		/**
-		* @brief	Allocates buffer for the indices for the specified sub mesh, and returns a
-		* 			pointer the user can use to populate the buffer. Any indexes previously
-		 * 			set for the sub mesh are deleted.
-		 *
-		 * @param	numIndices	   	Number of indices.
-		 * @param	subMesh		   	(optional) the sub mesh.
-		 */
-		UINT16* addIndices16(UINT32 numIndices, UINT32 subMesh = 0);
+		void addSubMesh(UINT32 numIndices, UINT32 subMesh = 0);
 
 		/**
 		 * @brief	Query if we have vertex data for the specified semantic.
@@ -217,41 +117,132 @@ namespace CamelotFramework
 		bool hasElement(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
 
 		/**
+		 * @brief	Copies data from "data" parameter into the internal buffer for the specified semantic.
+		 *
+		 * @param	semantic   		Semantic that allows the engine to connect the data to a shader input slot.
+		 * @param	data			Vertex data, containing at least "size" bytes.
+		 * @param	size			The size of the data. Must be the size of the vertex element type * number of vertices.
+		 * @param	semanticIdx 	(optional) If there are multiple semantics with the same name, use different index to differentiate between them.
+		 * @param	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be represented as a single vertex buffer.
+		 */
+		void setVertexData(VertexElementSemantic semantic, UINT8* data, UINT32 size, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+
+		/**
+		 * @brief	Returns an iterator you can use for easily retrieving or setting Vector2 vertex elements. This is the preferred
+		 * 			method of assigning or reading vertex data. 
+		 * 			
+		 * @note	If vertex data of this type/semantic/index/stream doesn't exist and exception will be thrown.
+		 */
+		VertexElemIter<Vector2> getVec2DataIter(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+
+		/**
+		 * @brief	Returns an iterator you can use for easily retrieving or setting Vector3 vertex elements. This is the preferred
+		 * 			method of assigning or reading vertex data. 
+		 * 			
+		 * @note	If vertex data of this type/semantic/index/stream doesn't exist and exception will be thrown.
+		 */
+		VertexElemIter<Vector3> getVec3DataIter(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+
+		/**
+		 * @brief	Returns an iterator you can use for easily retrieving or setting Vector4 vertex elements. This is the preferred
+		 * 			method of assigning or reading vertex data. 
+		 * 			
+		 * @note	If vertex data of this type/semantic/index/stream doesn't exist and exception will be thrown.
+		 */
+		VertexElemIter<Vector4> getVec4DataIter(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+
+		/**
+		 * @brief	Returns an iterator you can use for easily retrieving or setting Color vertex elements. This is the preferred
+		 * 			method of assigning or reading vertex data. 
+		 * 			
+		 * @note	If vertex data of this type/semantic/index/stream doesn't exist and exception will be thrown.
+		 */
+		VertexElemIter<Color> getColorDataIter(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+
+		/**
+		 * @brief	Returns an iterator you can use for easily retrieving or setting DWORD vertex elements. This is the preferred
+		 * 			method of assigning or reading vertex data. 
+		 * 			
+		 * @note	If vertex data of this type/semantic/index/stream doesn't exist and exception will be thrown.
+		 */
+		VertexElemIter<UINT32> getDWORDDataIter(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+
+		/**
 		 * @brief	Creates a new vertex declaration based on set vertex elements.
 		 */
 		VertexDeclarationPtr createDeclaration() const;
 
-		UINT32 getNumSubmeshes() const { return (UINT32)mIndices.size(); }
-		UINT32 getNumVertices() const;
+		UINT32 getNumSubmeshes() const { return (UINT32)mSubMeshes.size(); }
+		UINT32 getNumVertices() const { return mNumVertices; }
 		UINT32 getNumIndices(UINT32 subMesh) const;
+		UINT32 getNumIndices() const;
 
-		UINT16* getIndices16(UINT32 subMesh) const;
-		UINT32* getIndices32(UINT32 subMesh) const;
+		UINT16* getIndices16(UINT32 subMesh = 0) const;
+		UINT32* getIndices32(UINT32 subMesh = 0) const;
+		IndexBuffer::IndexType getIndexType() const { return mIndexType; }
+
+		UINT8* getIndexData() const { return getData(); }
+		UINT8* getStreamData(UINT32 streamIdx) const;
+
+		/**
+		 * @brief	Returns the pointer to the first element of the specified type. If you want to
+		 * 			iterate over all elements you need to call getVertexStride() to get the number
+		 * 			of bytes you need to advance between each element.
+		 *
+		 * @param	semantic   		Semantic that allows the engine to connect the data to a shader input slot.
+		 * @param	semanticIdx 	(optional) If there are multiple semantics with the same name, use different index to differentiate between them.
+		 * @param	streamIdx   	(optional) Zero-based index of the stream. Each stream will internally be represented as a single vertex buffer.
+		 *
+		 * @return	null if it fails, else the element data.
+		 */
+		UINT8* getElementData(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
+
+		UINT32 getIndexBufferSize() const { return getIndexBufferOffset(getNumSubmeshes()); }
+		UINT32 getStreamSize(UINT32 streamIdx) const;
+		UINT32 getStreamSize() const;
+		UINT32 getIndexElementSize() const;
+
+		UINT32 getIndexBufferOffset(UINT32 subMesh) const;
+		UINT32 getStreamOffset(UINT32 streamIdx = 0) const;
+		UINT32 getElementSize(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const;
+		UINT32 getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const;
+		UINT32 getVertexStride(UINT32 streamIdx = 0) const;
+
+		UINT32 getMaxStreamIdx() const;
+		bool hasStream(UINT32 streamIdx) const;
 
 		vector<VertexElement>::type getVertexElements() const;
 
-		MeshData::VertexElementData& getVertElemData(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx);
+		void allocateInternalBuffer();
+		void allocateInternalBuffer(UINT32 numBytes);
 
-		UINT32 getIndexElementSize()
-		{
-			return mIndexType == IndexBuffer::IT_32BIT ? sizeof(UINT32) : sizeof(UINT16);
-		}
+		UINT8* getData() const { return mData; }
 
 		static MeshDataPtr combine(const vector<MeshDataPtr>::type& elements);
 
+	protected:
+		UINT32 getInternalBufferSize();
+
 	private:
-		friend class Mesh;
+		UINT32 mDescBuilding;
 
-		vector<IndexElementData>::type mIndices;
-		map<UINT32, vector<VertexElementData>::type>::type mVertexData;
+		UINT8* mData;
 
+		UINT32 mNumVertices;
 		IndexBuffer::IndexType mIndexType;
 
+		vector<IndexElementData>::type mSubMeshes;
+		vector<VertexElement>::type mVertexElements;
+
+		void getDataForIterator(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx, UINT8*& data, UINT32& stride) const;
 		void clearIfItExists(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx);
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
+	private:
+		MeshData() {} // Serialization only
+
 	public:
 		friend class MeshDataRTTI;
 		static RTTITypeBase* getRTTIStatic();

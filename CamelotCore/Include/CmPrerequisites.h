@@ -274,7 +274,6 @@ namespace CamelotFramework
 		TID_STDMAP = 1055,
 		TID_FontImportOptions = 1056,
 		TID_FontData = 1057,
-		TID_IndexElementData = 1058,
 		TID_SceneObject = 1059,
 		TID_GameObject = 1060,
 		TID_GpuResource = 1061,

@@ -1610,7 +1610,7 @@ namespace CamelotFramework
 
 		for (elem = decl.begin(); elem != elemEnd; ++elem)
 		{
-			auto iterFind = mBoundVertexBuffers.find(elem->getSource());
+			auto iterFind = mBoundVertexBuffers.find(elem->getStreamIdx());
 
 			if(iterFind == mBoundVertexBuffers.end() || iterFind->second == nullptr)
 				continue; // skip unbound elements
@@ -1621,7 +1621,7 @@ namespace CamelotFramework
 			GLint attribLocation = 0;
 			for(auto iter = inputAttributes.begin(); iter != inputAttributes.end(); ++iter)
 			{
-				if(iter->getSemantic() == elem->getSemantic() && iter->getIndex() == elem->getIndex())
+				if(iter->getSemantic() == elem->getSemantic() && iter->getSemanticIdx() == elem->getSemanticIdx())
 				{
 					foundSemantic = true;
 					attribLocation = iter->getOffset();

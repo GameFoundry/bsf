@@ -291,7 +291,7 @@ namespace CamelotFramework
 		eiend = mElementList.end();
 		for (ei = mElementList.begin(); ei != eiend; ++ei)
 		{
-			if (ei->getSemantic() == semantic && ei->getIndex() == index)
+			if (ei->getSemantic() == semantic && ei->getSemanticIdx() == index)
 			{
 				mElementList.erase(ei);
 				break;
@@ -327,7 +327,7 @@ namespace CamelotFramework
 		eiend = mElementList.end();
 		for (ei = mElementList.begin(); ei != eiend; ++ei)
 		{
-			if (ei->getSemantic() == sem && ei->getIndex() == index)
+			if (ei->getSemantic() == sem && ei->getSemanticIdx() == index)
 			{
 				return &(*ei);
 			}
@@ -344,7 +344,7 @@ namespace CamelotFramework
 		eiend = mElementList.end();
 		for (ei = mElementList.begin(); ei != eiend; ++ei)
 		{
-			if (ei->getSource() == source)
+			if (ei->getStreamIdx() == source)
 			{
 				retList.push_back(*ei);
 			}
@@ -360,7 +360,7 @@ namespace CamelotFramework
 
 		for (i = mElementList.begin(); i != iend; ++i)
 		{
-			if (i->getSource() == source)
+			if (i->getStreamIdx() == source)
 			{
 				sz += i->getSize();
 
@@ -378,7 +378,7 @@ namespace CamelotFramework
 		iend = mElementList.end();
 		for (i = mElementList.begin(); i != iend; ++i)
 		{
-			ret->addElement(i->getSource(), i->getOffset(), i->getType(), i->getSemantic(), i->getIndex());
+			ret->addElement(i->getStreamIdx(), i->getOffset(), i->getType(), i->getSemantic(), i->getSemanticIdx());
 		}
 
 		ret->mHash = mHash;
@@ -389,11 +389,11 @@ namespace CamelotFramework
 	bool VertexDeclaration::vertexElementLess(const VertexElement& e1, const VertexElement& e2)
 	{
 		// Sort by source first
-		if (e1.getSource() < e2.getSource())
+		if (e1.getStreamIdx() < e2.getStreamIdx())
 		{
 			return true;
 		}
-		else if (e1.getSource() == e2.getSource())
+		else if (e1.getStreamIdx() == e2.getStreamIdx())
 		{
 			// Use ordering of semantics to sort
 			if (e1.getSemantic() < e2.getSemantic())
@@ -403,7 +403,7 @@ namespace CamelotFramework
 			else if (e1.getSemantic() == e2.getSemantic())
 			{
 				// Use index to sort
-				if (e1.getIndex() < e2.getIndex())
+				if (e1.getSemanticIdx() < e2.getSemanticIdx())
 				{
 					return true;
 				}
@@ -427,20 +427,20 @@ namespace CamelotFramework
 		VertexElementList::iterator i, iend;
 		iend = mElementList.end();
 		unsigned short targetIdx = 0;
-		unsigned short lastIdx = getElement(0)->getSource();
+		unsigned short lastIdx = getElement(0)->getStreamIdx();
 		unsigned short c = 0;
 		for (i = mElementList.begin(); i != iend; ++i, ++c)
 		{
 			VertexElement& elem = *i;
-			if (lastIdx != elem.getSource())
+			if (lastIdx != elem.getStreamIdx())
 			{
 				targetIdx++;
-				lastIdx = elem.getSource();
+				lastIdx = elem.getStreamIdx();
 			}
-			if (targetIdx != elem.getSource())
+			if (targetIdx != elem.getStreamIdx())
 			{
 				modifyElement(c, targetIdx, elem.getOffset(), elem.getType(), 
-					elem.getSemantic(), elem.getIndex());
+					elem.getSemantic(), elem.getSemanticIdx());
 			}
 
 		}
@@ -453,9 +453,9 @@ namespace CamelotFramework
 		unsigned short ret = 0;
 		for (i = mElementList.begin(); i != iend; ++i)
 		{
-			if (i->getSource() > ret)
+			if (i->getStreamIdx() > ret)
 			{
-				ret = i->getSource();
+				ret = i->getStreamIdx();
 			}
 
 		}

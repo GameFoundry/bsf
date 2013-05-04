@@ -653,9 +653,6 @@
     <ClCompile Include="Source\CmFontImportOptions.cpp">
       <Filter>Source Files\Text</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmMeshDataRTTI.cpp">
-      <Filter>Source Files\RTTI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmGameObjectHandle.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>

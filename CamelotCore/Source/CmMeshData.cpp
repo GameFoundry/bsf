@@ -8,387 +8,521 @@
 
 namespace CamelotFramework
 {
-	MeshData::MeshData(IndexBuffer::IndexType indexType)
-	   :mIndexType(indexType)
+	MeshData::MeshData(UINT32 numVertices, IndexBuffer::IndexType indexType)
+	   :mNumVertices(numVertices), mIndexType(indexType), mData(nullptr), mDescBuilding(false)
 	{
 
 	}
 
 	MeshData::~MeshData()
 	{
-		for(auto& vertElems : mVertexData)
-		{
-			for(auto& vertElem : vertElems.second)
-			{
-				if(vertElem.data != nullptr)
-					CM_DELETE_BYTES(vertElem.data, ScratchAlloc);
-			}
-		}
 
-		for(auto& indexData : mIndices)
-		{
-			if(indexData.indices != nullptr)
-				CM_DELETE_BYTES(indexData.indices, ScratchAlloc);
-		}
 	}
 
-	Vector2* MeshData::addPositionsVec2(UINT32 numElements, UINT32 streamIdx)
+	void MeshData::beginDesc()
 	{
-		return reinterpret_cast<Vector2*>(addVertexElementData(VET_FLOAT2, VES_POSITION, numElements, 0, streamIdx));
+		if(mDescBuilding)
+			CM_EXCEPT(InternalErrorException, "beginDesc() but description building has already began.");
+
+		mVertexElements.clear();
+		mSubMeshes.clear();
+
+		mDescBuilding = true;
 	}
 
-	Vector3* MeshData::addPositionsVec3(UINT32 numElements, UINT32 streamIdx)
+	void MeshData::endDesc()
 	{
-		return reinterpret_cast<Vector3*>(addVertexElementData(VET_FLOAT3, VES_POSITION, numElements, 0, streamIdx));
+		if(!mDescBuilding)
+			CM_EXCEPT(InternalErrorException, "endDesc() called without beginDesc().");
+
+		allocateInternalBuffer();
+
+		mDescBuilding = false;
 	}
 
-	Vector4* MeshData::addPositionsVec4(UINT32 numElements, UINT32 streamIdx)
+	void MeshData::addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
 	{
-		return reinterpret_cast<Vector4*>(addVertexElementData(VET_FLOAT4, VES_POSITION, numElements, 0, streamIdx));
-	}
+		if(!mDescBuilding)
+			CM_EXCEPT(InternalErrorException, "Cannot add vertex element when not building description. Call beginDesc() first.");
 
-	Vector3* MeshData::addNormals(UINT32 numElements, UINT32 streamIdx)
-	{
-		return reinterpret_cast<Vector3*>(addVertexElementData(VET_FLOAT3, VES_NORMAL, numElements, 0, streamIdx));
-	}
-
-	Vector3* MeshData::addTangentsVec3(UINT32 numElements, UINT32 streamIdx)
-	{
-		return reinterpret_cast<Vector3*>(addVertexElementData(VET_FLOAT3, VES_TANGENT, numElements, 0, streamIdx));
-	}
-
-	Vector4* MeshData::addTangentsVec4(UINT32 numElements, UINT32 streamIdx)
-	{
-		return reinterpret_cast<Vector4*>(addVertexElementData(VET_FLOAT4, VES_TANGENT, numElements, 0, streamIdx));
-	}
-
-	Vector3* MeshData::addBitangents(UINT32 numElements, UINT32 streamIdx)
-	{
-		return reinterpret_cast<Vector3*>(addVertexElementData(VET_FLOAT3, VES_BITANGENT, numElements, 0, streamIdx));
-	}
-
-	Vector2* MeshData::addUV0(UINT32 numElements, UINT32 streamIdx)
-	{
-		return reinterpret_cast<Vector2*>(addVertexElementData(VET_FLOAT2, VES_TEXCOORD, numElements, 0, streamIdx));
-	}
-
-	Vector2* MeshData::addUV1(UINT32 numElements, UINT32 streamIdx)
-	{
-		return reinterpret_cast<Vector2*>(addVertexElementData(VET_FLOAT2, VES_TEXCOORD, numElements, 1, streamIdx));
-	}
-
-	Color* MeshData::addColorsFloat(UINT32 numElements, UINT32 streamIdx)
-	{
-		return reinterpret_cast<Color*>(addVertexElementData(VET_FLOAT4, VES_COLOR, numElements, 0, streamIdx));
-	}
-
-	UINT32* MeshData::addColorsDWORD(UINT32 numElements, UINT32 streamIdx)
-	{
-		return reinterpret_cast<UINT32*>(addVertexElementData(VET_COLOR, VES_COLOR, numElements, 0, streamIdx));
-	}
-
-	UINT8* MeshData::addVertexElementData(VertexElementType type, VertexElementSemantic semantic, UINT32 numElements, UINT32 semanticIdx, UINT32 streamIdx)
-	{
 		clearIfItExists(type, semantic, semanticIdx, streamIdx);
 
-		UINT32 elemSize = VertexElement::getTypeSize(type);
-		UINT8* elements = CM_NEW_BYTES(elemSize * numElements, ScratchAlloc);
+		VertexElement newElement(streamIdx, 0, type, semantic, semanticIdx);
 
-		vector<VertexElementData>::type& elemData = mVertexData[streamIdx];
+		// Insert it so it is sorted by stream
+		UINT32 insertToIndex = (UINT32)mVertexElements.size();
+		UINT32 idx = 0;
+		for(auto& elem : mVertexElements)
+		{
+			if(elem.getStreamIdx() > streamIdx)
+			{
+				insertToIndex = idx;
+				break;
+			}
 
-		VertexElementData newElement(type, semantic, semanticIdx, streamIdx, elements, numElements);
-		elemData.push_back(newElement);
+			idx++;
+		}
 
-		return elements;
+		mVertexElements.insert(mVertexElements.begin() + insertToIndex, newElement);
 	}
 
-	UINT32* MeshData::addIndices32(UINT32 numIndices, UINT32 subMesh)
+	void MeshData::addSubMesh(UINT32 numIndices, UINT32 subMesh)
 	{
-		if(mIndexType != IndexBuffer::IT_32BIT)
-			CM_EXCEPT(InvalidParametersException, "Trying to set 32bit indices but the MeshData was initialized as 16bit.");
+		if(!mDescBuilding)
+			CM_EXCEPT(InternalErrorException, "Cannot add indices when not building description. Call beginDesc() first.");
 
-		if(subMesh >= mIndices.size())
-			mIndices.resize(subMesh + 1);
+		if(subMesh >= mSubMeshes.size())
+			mSubMeshes.resize(subMesh + 1);
 
-		IndexElementData indexData = mIndices[subMesh];
+		IndexElementData indexData = mSubMeshes[subMesh];
 
-		if(indexData.indices != nullptr)
-			CM_DELETE_BYTES(indexData.indices, ScratchAlloc);
-
-		UINT32* indices = (UINT32*)CM_NEW_BYTES(numIndices * sizeof(UINT32), ScratchAlloc);
-
-		indexData.indices = (UINT8*)indices;
 		indexData.numIndices = numIndices;
 		indexData.elementSize = getIndexElementSize();
 		indexData.subMesh = subMesh;
 
-		mIndices[subMesh] = indexData;
-
-		return indices;
-	}
-
-	UINT16* MeshData::addIndices16(UINT32 numIndices, UINT32 subMesh)
-	{
-		if(mIndexType != IndexBuffer::IT_16BIT)
-			CM_EXCEPT(InvalidParametersException, "Trying to set 16bit indices but the MeshData was initialized as 32bit.");
-
-		if(subMesh >= mIndices.size())
-			mIndices.resize(subMesh + 1);
-
-		IndexElementData indexData = mIndices[subMesh];
-
-		if(indexData.indices != nullptr)
-			CM_DELETE_BYTES(indexData.indices, ScratchAlloc);
-
-		UINT16* indices = (UINT16*)CM_NEW_BYTES(numIndices * sizeof(UINT16), ScratchAlloc);
-
-		indexData.indices = (UINT8*)indices;
-		indexData.numIndices = numIndices;
-		indexData.elementSize = getIndexElementSize();
-		indexData.subMesh = subMesh;
-
-		mIndices[subMesh] = indexData;
-
-		return indices;
+		mSubMeshes[subMesh] = indexData;
 	}
 
 	VertexDeclarationPtr MeshData::createDeclaration() const
 	{
 		VertexDeclarationPtr declaration = HardwareBufferManager::instance().createVertexDeclaration();
 
-		for(auto& vertElems : mVertexData)
+		UINT32 maxStreamIdx = getMaxStreamIdx();
+
+		UINT32 numStreams = maxStreamIdx + 1;
+		UINT32* streamOffsets = CM_NEW_ARRAY(UINT32, numStreams, ScratchAlloc);
+		for(UINT32 i = 0; i < numStreams; i++)
+			streamOffsets[i] = 0;
+
+		for(auto& vertElem : mVertexElements)
 		{
-			UINT32 offset = 0;
-			for(auto& vertElem : vertElems.second)
-			{
-				declaration->addElement(vertElems.first, offset, vertElem.element.getType(), vertElem.element.getSemantic(), vertElem.element.getIndex());
-				offset += vertElem.element.getSize();
-			}
+			UINT32 streamIdx = vertElem.getStreamIdx();
+			declaration->addElement(streamIdx, streamOffsets[streamIdx], vertElem.getType(), vertElem.getSemantic(), vertElem.getSemanticIdx());
+			streamOffsets[streamIdx] += vertElem.getSize();
 		}
+
+		CM_DELETE_ARRAY(streamOffsets, UINT32, numStreams,ScratchAlloc);
 
 		return declaration;
 	}
 
-	UINT32 MeshData::getNumVertices() const
-	{
-		UINT32 numVertices = 0;
-
-		auto vertElemDataPerStream = mVertexData;
-		MeshData::VertexElementData* firstElemData = nullptr;
-		if(vertElemDataPerStream.size() > 0)
-		{
-			auto vertElemData = vertElemDataPerStream.begin()->second;
-			auto firstVertElem = vertElemData.begin();
-			if(firstVertElem != vertElemData.end())
-			{
-				numVertices = firstVertElem->elementCount;
-			}
-		}
-
-		for(auto& vertElems : mVertexData)
-		{
-			for(auto& vertElem : vertElems.second)
-			{
-				if(vertElem.elementCount != numVertices)
-				{
-					CM_EXCEPT(InvalidParametersException, "All vertex element arrays in MeshData need to be of the same size. Found an array with semantic: " \
-						+ toString(vertElem.element.getSemantic()) + " and element count: " + toString(vertElem.elementCount) + ". This doesn't match with other " \
-						+ "element with semantic: " + toString(firstElemData->element.getSemantic()) + " and element count: " + toString(firstElemData->elementCount));
-				}
-			}
-		}
-
-		return numVertices;
-	}
-
 	UINT32 MeshData::getNumIndices(UINT32 subMesh) const
 	{
-		return mIndices.at(subMesh).numIndices;
+		return mSubMeshes.at(subMesh).numIndices;
+	}
+
+	UINT32 MeshData::getNumIndices() const
+	{
+		UINT32 count = 0;
+		for(UINT32 i = 0; i < getNumSubmeshes(); i++)
+		{
+			count += mSubMeshes[i].numIndices;
+		}
+
+		return count;
 	}
 
 	UINT16* MeshData::getIndices16(UINT32 subMesh) const
 	{
-		return (UINT16*)mIndices.at(subMesh).indices;
+		if(mIndexType != IndexBuffer::IT_16BIT)
+			CM_EXCEPT(InternalErrorException, "Attempting to get 16bit index buffer, but internally allocated buffer is 32 bit.");
+
+		UINT32 indexBufferOffset = getIndexBufferOffset(subMesh);
+
+		return (UINT16*)(getData() + indexBufferOffset);
 	}
 
 	UINT32* MeshData::getIndices32(UINT32 subMesh) const
 	{
-		return (UINT32*)mIndices.at(subMesh).indices;
+		if(mIndexType != IndexBuffer::IT_32BIT)
+			CM_EXCEPT(InternalErrorException, "Attempting to get 32bit index buffer, but internally allocated buffer is 16 bit.");
+
+		UINT32 indexBufferOffset = getIndexBufferOffset(subMesh);
+
+		return (UINT32*)(getData() + indexBufferOffset);
 	}
 
 	vector<VertexElement>::type MeshData::getVertexElements() const
 	{
-		vector<VertexElement>::type elements;
-		for(auto& vertElems : mVertexData)
-		{
-			UINT32 offset = 0;
-			for(auto& vertElem : vertElems.second)
-			{
-				elements.push_back(vertElem.element);
-			}
-		}
-
-		return elements;
+		return mVertexElements;
 	}
 
-	MeshDataPtr MeshData::combine(const vector<MeshDataPtr>::type& elements)
+	UINT32 MeshData::getMaxStreamIdx() const
 	{
-		MeshDataPtr combinedMeshData(CM_NEW(MeshData, PoolAlloc) MeshData(),
-			&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
-
-		UINT32 subMeshIndex = 0;
-		vector<VertexElement>::type combinedVertexElements;
-		vector<UINT8*>::type vertexElemData;
-		vector<UINT32>::type bufferOffsets;
-		UINT32 totalVertexCount = 0;
-
-		UINT32 vertexIndexOffset = 0;
-		for(auto& meshData : elements)
+		UINT32 maxStreamIdx = 0;
+		for(auto& vertElems : mVertexElements)
 		{
-			for(UINT32 i = 0; i < meshData->getNumSubmeshes(); i++)
+			UINT32 offset = 0;
+			for(auto& vertElem : mVertexElements)
 			{
-				UINT32 numIndices = meshData->getNumIndices(i);
-				UINT32* indices = combinedMeshData->addIndices32(numIndices, subMeshIndex);
-
-				UINT32* sourceIndices = meshData->getIndices32(i);
-
-				for(UINT32 j = 0; j < numIndices; j++)
-					indices[j] = sourceIndices[j] + vertexIndexOffset;
-
-				subMeshIndex++;
+				maxStreamIdx = std::max((UINT32)maxStreamIdx, (UINT32)vertElem.getStreamIdx());
 			}
+		}
 
+		return maxStreamIdx;
+	}
+
+	bool MeshData::hasStream(UINT32 streamIdx) const
+	{
+		for(auto& vertElem : mVertexElements)
+		{
+			if(vertElem.getStreamIdx() == streamIdx)
+				return true;
+		}
+
+		return false;
+	}
+
+	void MeshData::allocateInternalBuffer()
+	{
+		mData = CM_NEW_BYTES(getInternalBufferSize(), ScratchAlloc); // TODO! - Not cleaned anywhere, because I won't be using this in the end
+	}
+
+	void MeshData::allocateInternalBuffer(UINT32 numBytes)
+	{
+		mData = CM_NEW_BYTES(numBytes, ScratchAlloc); // TODO! - Not cleaned anywhere, because I won't be using this in the end
+	}
+
+	UINT32 MeshData::getInternalBufferSize()
+	{
+		return getIndexBufferSize() + getStreamSize();
+	}
+
+	MeshDataPtr MeshData::combine(const vector<MeshDataPtr>::type& meshes)
+	{
+		UINT32 totalVertexCount = 0;
+		for(auto& meshData : meshes)
+		{
 			UINT32 numVertices = meshData->getNumVertices();
 			totalVertexCount += numVertices;
-			vertexIndexOffset += numVertices;
 		}
 
-		UINT32 vertexOffset = 0;
-		for(auto& meshData : elements)
-		{
-			vector<VertexElement>::type vertexElements = meshData->getVertexElements();
-			UINT32 numVertices = meshData->getNumVertices();
+		MeshDataPtr combinedMeshData(CM_NEW(MeshData, PoolAlloc) MeshData(totalVertexCount),
+			&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
 
-			for(auto& newElement : vertexElements)
-			{
-				INT32 alreadyExistsIdx = -1;
-				UINT32 idx = 0;
-				for(auto& existingElement : combinedVertexElements)
-				{
-					if(newElement == existingElement)
-					{
-						alreadyExistsIdx = idx;
-						break;
-					}
+		//UINT32 subMeshIndex = 0;
+		//UINT32 vertexIndexOffset = 0;
+		//for(auto& meshData : meshes)
+		//{
+		//	for(UINT32 i = 0; i < meshData->getNumSubmeshes(); i++)
+		//	{
+		//		UINT32 numIndices = meshData->getNumIndices(i);
+		//		UINT32* indices = combinedMeshData->addSubMesh(numIndices, subMeshIndex);
 
-					idx++;
-				}
+		//		UINT32* sourceIndices = meshData->getIndices32(i);
 
-				if(alreadyExistsIdx == -1)
-				{
-					combinedVertexElements.push_back(newElement);
-					
-					UINT8* newBuffer = combinedMeshData->addVertexElementData(newElement.getType(), newElement.getSemantic(), totalVertexCount, newElement.getIndex(), newElement.getSource());
-					
-					UINT32 newBufferSize = totalVertexCount * newElement.getSize();
-					memset(newBuffer, 0, newBufferSize);
+		//		for(UINT32 j = 0; j < numIndices; j++)
+		//			indices[j] = sourceIndices[j] + vertexIndexOffset;
 
-					vertexElemData.push_back(newBuffer);
-					bufferOffsets.push_back(0);
-					alreadyExistsIdx = (UINT32)vertexElemData.size() - 1;
-				}
+		//		subMeshIndex++;
+		//	}
 
-				UINT8* source = meshData->getVertElemData(newElement.getType(), newElement.getSemantic(), newElement.getIndex(), newElement.getSource()).data;
-				UINT32 offset = vertexOffset * newElement.getSize();
+		//	UINT32 numVertices = meshData->getNumVertices();
+		//	vertexIndexOffset += numVertices;
+		//}
 
-				memcpy(&(vertexElemData[alreadyExistsIdx]) + offset, source, numVertices * newElement.getSize());
-			}
+		//vector<VertexElement>::type combinedVertexElements;
+		//for(auto& meshData : meshes)
+		//{
+		//	vector<VertexElement>::type vertexElements = meshData->getVertexElements();
+		//	UINT32 numVertices = meshData->getNumVertices();
 
-			vertexOffset += meshData->getNumVertices();
-		}
+		//	for(auto& newElement : vertexElements)
+		//	{
+		//		INT32 alreadyExistsIdx = -1;
+		//		UINT32 idx = 0;
+		//		for(auto& existingElement : combinedVertexElements)
+		//		{
+		//			if(newElement == existingElement)
+		//			{
+		//				alreadyExistsIdx = idx;
+		//				break;
+		//			}
+
+		//			idx++;
+		//		}
+
+		//		if(alreadyExistsIdx == -1)
+		//		{
+		//			combinedVertexElements.push_back(newElement);
+		//			combinedMeshData->addVertElem(newElement.getType(), newElement.getSemantic(), newElement.getSemanticIdx(), newElement.getStreamIdx());
+		//		}
+		//	}
+		//}
+
+		//combinedMeshData->allocateInternalBuffer();
+
+		//UINT32 vertexOffset = 0;
+		//for(auto& element : combinedVertexElements)
+		//{
+		//	for(auto& meshData : meshes)
+		//	{
+		//		if(meshData->hasElement(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx()))
+		//		{
+
+		//		}
+		//	}
+
+		//	vector<VertexElement>::type vertexElements = meshData->getVertexElements();
+		//	UINT32 numVertices = meshData->getNumVertices();
+
+		//	for(auto& newElement : vertexElements)
+		//	{
+		//		// TODO
+
+
+		//	}
+
+		//	vertexOffset += meshData->getNumVertices();
+		//}
 
 		return combinedMeshData;
 	}
 
 	bool MeshData::hasElement(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const
 	{
-		auto elemDataIter = mVertexData.find(streamIdx);
-
-		if(elemDataIter == mVertexData.end())
-			return false;
-
-		const vector<VertexElementData>::type& elemData = elemDataIter->second;
-
-		auto findIter = std::find_if(elemData.begin(), elemData.end(), 
-			[semantic, semanticIdx] (const VertexElementData& x) 
+		auto findIter = std::find_if(mVertexElements.begin(), mVertexElements.end(), 
+			[semantic, semanticIdx, streamIdx] (const VertexElement& x) 
 		{ 
-			return x.element.getSemantic() == semantic && x.element.getIndex() == semanticIdx; 
+			return x.getSemantic() == semantic && x.getSemanticIdx() == semanticIdx && x.getStreamIdx() == streamIdx; 
 		});
 
-		if(findIter != elemData.end())
+		if(findIter != mVertexElements.end())
+		{
 			return true;
+		}
 
 		return false;
 	}
 
-	void MeshData::clearIfItExists(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
+	void MeshData::setVertexData(VertexElementSemantic semantic, UINT8* data, UINT32 size, UINT32 semanticIdx, UINT32 streamIdx)
 	{
-		vector<VertexElementData>::type& elemData = mVertexData[streamIdx];
+		assert(data != nullptr);
 
-		auto findIter = std::find_if(elemData.begin(), elemData.end(), 
-			[type, semantic, semanticIdx] (const VertexElementData& x) 
-		{ 
-			return x.element.getSemantic() == semantic && x.element.getIndex() == semanticIdx; 
-		});
-
-		if(findIter != elemData.end())
+		if(!hasElement(semantic, semanticIdx, streamIdx))
 		{
-			if(findIter->data != nullptr)
-				CM_DELETE_BYTES(findIter->data, ScratchAlloc);
+			CM_EXCEPT(InvalidParametersException, "MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
+				+ toString(semanticIdx) + ", Stream index: " + toString(streamIdx));
+		}
 
-			elemData.erase(findIter);
+		UINT32 elementSize = getElementSize(semantic, semanticIdx, streamIdx);
+		UINT32 totalSize = elementSize * mNumVertices;
+
+		if(totalSize != size)
+		{
+			CM_EXCEPT(InvalidParametersException, "Buffer sizes don't match. Expected: " + toString(totalSize) + ". Got: " + toString(size));
+		}
+
+		UINT32 indexBufferOffset = getIndexBufferSize();
+
+		UINT32 elementOffset = getElementOffset(semantic, semanticIdx, streamIdx);
+		UINT32 vertexStride = getVertexStride(streamIdx);
+
+		UINT8* dst = getData() + indexBufferOffset + elementOffset;
+		UINT8* src = data;
+		for(UINT32 i = 0; i < mNumVertices; i++)
+		{
+			memcpy(dst, src, elementSize);
+			dst += vertexStride;
+			src += elementSize;
 		}
 	}
 
-	MeshData::VertexElementData& MeshData::getVertElemData(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
+	VertexElemIter<Vector2> MeshData::getVec2DataIter(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
 	{
-		vector<VertexElementData>::type& elemData = mVertexData[streamIdx];
+		UINT8* data;
+		UINT32 vertexStride;
+		getDataForIterator(semantic, semanticIdx, streamIdx, data, vertexStride);
 
-		auto findIter = std::find_if(elemData.begin(), elemData.end(), 
-			[type, semantic, semanticIdx] (const VertexElementData& x) 
+		return VertexElemIter<Vector2>(data, vertexStride, mNumVertices);
+	}
+
+	VertexElemIter<Vector3> MeshData::getVec3DataIter(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
+	{
+		UINT8* data;
+		UINT32 vertexStride;
+		getDataForIterator(semantic, semanticIdx, streamIdx, data, vertexStride);
+
+		return VertexElemIter<Vector3>(data, vertexStride, mNumVertices);
+	}
+
+	VertexElemIter<Vector4> MeshData::getVec4DataIter(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
+	{
+		UINT8* data;
+		UINT32 vertexStride;
+		getDataForIterator(semantic, semanticIdx, streamIdx, data, vertexStride);
+
+		return VertexElemIter<Vector4>(data, vertexStride, mNumVertices);
+	}
+
+	VertexElemIter<Color> MeshData::getColorDataIter(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
+	{
+		UINT8* data;
+		UINT32 vertexStride;
+		getDataForIterator(semantic, semanticIdx, streamIdx, data, vertexStride);
+
+		return VertexElemIter<Color>(data, vertexStride, mNumVertices);
+	}
+
+	VertexElemIter<UINT32> MeshData::getDWORDDataIter(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
+	{
+		UINT8* data;
+		UINT32 vertexStride;
+		getDataForIterator(semantic, semanticIdx, streamIdx, data, vertexStride);
+
+		return VertexElemIter<UINT32>(data, vertexStride, mNumVertices);
+	}
+
+	void MeshData::getDataForIterator(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx, UINT8*& data, UINT32& stride) const
+	{
+		if(!hasElement(semantic, semanticIdx, streamIdx))
+		{
+			CM_EXCEPT(InvalidParametersException, "MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
+				+ toString(semanticIdx) + ", Stream index: " + toString(streamIdx));
+		}
+
+		UINT32 indexBufferOffset = getIndexBufferSize();
+
+		UINT32 elementOffset = getElementOffset(semantic, semanticIdx, streamIdx);
+
+		data = getData() + indexBufferOffset + elementOffset;
+		stride = getVertexStride(streamIdx);
+	}
+
+	UINT32 MeshData::getIndexBufferOffset(UINT32 subMesh) const
+	{
+		if(subMesh < 0 || (subMesh > (UINT32)mSubMeshes.size()))
+		{
+			CM_EXCEPT(InvalidParametersException, "Submesh out of range: " + toString(subMesh) + ". Allowed range: 0 .. " + toString((UINT32)mSubMeshes.size()));
+		}
+
+		UINT32 offset = 0;
+		for(UINT32 i = 0; i < subMesh; i++)
+		{
+			offset += mSubMeshes[i].numIndices * getIndexElementSize();
+		}
+
+		return offset;
+	}
+
+	UINT32 MeshData::getStreamOffset(UINT32 streamIdx) const
+	{
+		UINT32 streamOffset = 0;
+		bool found = false;
+		for(auto& element : mVertexElements)
+		{
+			if(element.getStreamIdx() == streamIdx)
+			{
+				found = true;
+				break;
+			}
+
+			streamOffset += element.getSize();
+		}
+
+		if(!found)
+			CM_EXCEPT(InternalErrorException, "Cannot find the specified stream: " + toString(streamIdx));
+
+		return streamOffset * mNumVertices;
+	}
+
+	UINT32 MeshData::getElementSize(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const
+	{
+		for(auto& element : mVertexElements)
+		{
+			if(element.getSemantic() == semantic && element.getSemanticIdx() == semanticIdx && element.getStreamIdx() == streamIdx)
+				return element.getSize();
+		}
+
+		return -1;
+	}
+
+	UINT8* MeshData::getElementData(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const
+	{ 
+		return getData() + getIndexBufferSize() + getElementOffset(semantic, semanticIdx, streamIdx); 
+	}
+
+	UINT8* MeshData::getStreamData(UINT32 streamIdx) const
+	{ 
+		return getData() + getIndexBufferSize() + getStreamOffset(streamIdx); 
+	}
+
+	UINT32 MeshData::getIndexElementSize() const
+	{
+		return mIndexType == IndexBuffer::IT_32BIT ? sizeof(UINT32) : sizeof(UINT16);
+	}
+
+	UINT32 MeshData::getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const
+	{
+		UINT32 streamOffset = getStreamOffset(streamIdx);
+
+		UINT32 vertexOffset = 0;
+		for(auto& element : mVertexElements)
+		{
+			if(element.getStreamIdx() != streamIdx)
+				continue;
+
+			if(element.getSemantic() == semantic && element.getSemanticIdx() == semanticIdx)
+				break;
+
+			vertexOffset += element.getSize();
+		}
+
+		return streamOffset * mNumVertices + vertexOffset;
+	}
+
+	UINT32 MeshData::getStreamSize(UINT32 streamIdx) const
+	{
+		UINT32 vertexStride = 0;
+		for(auto& element : mVertexElements)
+		{
+			if(element.getStreamIdx() == streamIdx)
+				vertexStride += element.getSize();
+		}
+
+		return vertexStride * mNumVertices;
+	}
+
+	UINT32 MeshData::getStreamSize() const
+	{
+		UINT32 vertexStride = 0;
+		for(auto& element : mVertexElements)
+		{
+			vertexStride += element.getSize();
+		}
+
+		return vertexStride * mNumVertices;
+	}
+
+	UINT32 MeshData::getVertexStride(UINT32 streamIdx) const
+	{
+		UINT32 vertexStride = 0;
+		for(auto& element : mVertexElements)
+		{
+			if(element.getStreamIdx() == streamIdx)
+				vertexStride += element.getSize();
+		}
+
+		return vertexStride;
+	}
+
+	void MeshData::clearIfItExists(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
+	{
+		auto findIter = std::find_if(mVertexElements.begin(), mVertexElements.end(), 
+			[semantic, semanticIdx, streamIdx] (const VertexElement& x) 
 		{ 
-			return x.element.getSemantic() == semantic && x.element.getIndex() == semanticIdx; 
+			return x.getSemantic() == semantic && x.getSemanticIdx() == semanticIdx && x.getStreamIdx() == streamIdx; 
 		});
 
-		if(findIter == elemData.end())
-			CM_EXCEPT(InvalidParametersException, "No vertex element of specified type exists.");
-
-		return *findIter;
+		if(findIter != mVertexElements.end())
+		{
+			mVertexElements.erase(findIter);
+		}
 	}
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/
-
-	RTTITypeBase* MeshData::VertexElementData::getRTTIStatic()
-	{
-		return VertexElementDataRTTI::instance();
-	}
-
-	RTTITypeBase* MeshData::VertexElementData::getRTTI() const
-	{
-		return VertexElementData::getRTTIStatic();
-	}
-
-	RTTITypeBase* MeshData::IndexElementData::getRTTIStatic()
-	{
-		return IndexElementDataRTTI::instance();
-	}
-
-	RTTITypeBase* MeshData::IndexElementData::getRTTI() const
-	{
-		return IndexElementData::getRTTIStatic();
-	}
 
 	RTTITypeBase* MeshData::getRTTIStatic()
 	{

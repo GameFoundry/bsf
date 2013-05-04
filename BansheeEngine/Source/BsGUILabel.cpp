@@ -53,9 +53,10 @@ namespace BansheeEngine
 		return mTextSprite->getNumQuads(renderElementIdx);
 	}
 
-	void GUILabel::fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const
+	void GUILabel::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, renderElementIdx);
+		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
 	}
 
 	GUILabel* GUILabel::create(GUIWidget* parent, const String& text)

@@ -6,15 +6,20 @@ namespace CamelotFramework
 {
 	MeshManager::MeshManager()
 	{
-		mNullMeshData = MeshDataPtr(CM_NEW(MeshData, GenAlloc) MeshData(), &MemAllocDeleter<MeshData, GenAlloc>::deleter);
+		mNullMeshData = MeshDataPtr(CM_NEW(MeshData, GenAlloc) MeshData(1), &MemAllocDeleter<MeshData, GenAlloc>::deleter);
 
-		auto indices = mNullMeshData->addIndices32(3);
+		mNullMeshData->beginDesc();
+		mNullMeshData->addVertElem(VET_FLOAT3, VES_POSITION);
+		mNullMeshData->addSubMesh(3);
+		mNullMeshData->endDesc();
+
+		auto vecIter = mNullMeshData->getVec3DataIter(VES_POSITION);
+		vecIter.setValue(Vector3(0, 0, 0));
+
+		auto indices = mNullMeshData->getIndices32(0);
 		indices[0] = 0;
 		indices[1] = 0;
 		indices[2] = 0;
-
-		auto vertices = mNullMeshData->addPositionsVec3(1);
-		vertices[0] = Vector3(0, 0, 0);
 	}
 
 	MeshManager::~MeshManager()

@@ -156,8 +156,8 @@ namespace CamelotFramework
 						&& elem.getType() != destType))
 					{
 						vertexDeclaration->modifyElement(elemIndex, 
-							elem.getSource(), elem.getOffset(), destType, 
-							elem.getSemantic(), elem.getIndex());
+							elem.getStreamIdx(), elem.getOffset(), destType, 
+							elem.getSemantic(), elem.getSemanticIdx());
 					}
 				}
 			}

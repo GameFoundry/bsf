@@ -37,7 +37,8 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElement::fillBuffer()
 		 */
-		virtual void fillBuffer(CM::Vector2* vertices, CM::Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const;
+		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
 	private:
 		TextSprite* mTextSprite;
 		CM::String mText;

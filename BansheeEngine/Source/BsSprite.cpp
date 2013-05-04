@@ -31,12 +31,12 @@ namespace BansheeEngine
 		return mCachedRenderElements.at(renderElementIdx).numQuads;
 	}
 
-	UINT32 Sprite::fillBuffer(Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const
+	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		auto renderElem = mCachedRenderElements.at(renderElementIdx);
 
 		UINT32 startVert = startingQuad * 4;
-		UINT32 startIndex = startingQuad * 4;
+		UINT32 startIndex = startingQuad * 6;
 
 		UINT32 maxVertIdx = maxNumQuads * 4;
 		UINT32 maxIndexIdx = maxNumQuads * 6;
@@ -47,8 +47,17 @@ namespace BansheeEngine
 		assert((startVert + mNumVertices) <= maxVertIdx);
 		assert((startIndex + mNumIndices) <= maxIndexIdx);
 
-		memcpy(&vertices[startVert], renderElem.vertices, mNumVertices * sizeof(Vector2));
-		memcpy(&uv[startVert], renderElem.uvs, mNumVertices * sizeof(Vector2));
+		UINT8* vertDst = &vertices[startVert];
+		UINT8* uvDst = &uv[startVert];
+		for(UINT32 i = 0; i < mNumVertices; i++)
+		{
+			memcpy(vertDst, &renderElem.vertices[i], sizeof(Vector2));
+			memcpy(uvDst, &renderElem.uvs[i], sizeof(Vector2));
+
+			vertDst += vertexStride;
+			uvDst += vertexStride;
+		}
+
 		memcpy(&indices[startIndex], renderElem.indexes, mNumIndices * sizeof(UINT32));
 
 		return renderElem.numQuads;

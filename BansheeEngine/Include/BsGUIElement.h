@@ -45,19 +45,24 @@ namespace BansheeEngine
 		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const = 0;
 
 		/**
-		 * @brief	Fill the pre-allocated vertex, uv and index buffers with the mesh data for the specified render element.
-		 *
+		 * @brief	Fill the pre-allocated vertex, uv and index buffers with the mesh data for the
+		 * 			specified render element.
+		 * 			
 		 * @see getNumRenderElements()
 		 * @see	getNumQuads()
-		 * 		
-		 * @param   vertices			Previously allocated buffer where to store the vertices.
-		 * @param   uv					Previously allocated buffer where to store the uv coordinates.
-		 * @param   indices 			Previously allocated buffer where to store the indices.
+		 *
+		 * @param	vertices			Previously allocated buffer where to store the vertices.
+		 * @param	uv					Previously allocated buffer where to store the uv coordinates.
+		 * @param	indices				Previously allocated buffer where to store the indices.
 		 * @param	startingQuad		At which quad should the method start filling the buffer.
-		 * @param	maxNumQuads			Total number of quads the buffers were allocated for. Used only for memory safety.
+		 * @param	maxNumQuads			Total number of quads the buffers were allocated for. Used only
+		 * 								for memory safety.
+		 * @param	vertexStride		Number of bytes between of vertices in the provided vertex and uv data.
+		 * @param	indexStride			Number of bytes between two indexes in the provided index data.
 		 * @param	renderElementIdx	Zero-based index of the render element.
 		 */
-		virtual void fillBuffer(CM::Vector2* vertices, CM::Vector2* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 renderElementIdx) const = 0;
+		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const = 0;
 
 		const CM::Rect& getBounds() const { return mBounds; }
 
