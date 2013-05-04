@@ -178,6 +178,8 @@ namespace CamelotFramework
 		return getIndexBufferSize() + getStreamSize();
 	}
 
+	// TODO - This doesn't handle the case where multiple elements in same slot have different data types
+	//  - actually it will likely corrupt memory in that case
 	MeshDataPtr MeshData::combine(const vector<MeshDataPtr>::type& meshes)
 	{
 		UINT32 totalVertexCount = 0;
@@ -190,81 +192,116 @@ namespace CamelotFramework
 		MeshDataPtr combinedMeshData(CM_NEW(MeshData, PoolAlloc) MeshData(totalVertexCount),
 			&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
 
-		//UINT32 subMeshIndex = 0;
-		//UINT32 vertexIndexOffset = 0;
-		//for(auto& meshData : meshes)
-		//{
-		//	for(UINT32 i = 0; i < meshData->getNumSubmeshes(); i++)
-		//	{
-		//		UINT32 numIndices = meshData->getNumIndices(i);
-		//		UINT32* indices = combinedMeshData->addSubMesh(numIndices, subMeshIndex);
+		combinedMeshData->beginDesc();
 
-		//		UINT32* sourceIndices = meshData->getIndices32(i);
+		UINT32 subMeshIndex = 0;
+		for(auto& meshData : meshes)
+		{
+			for(UINT32 i = 0; i < meshData->getNumSubmeshes(); i++)
+			{
+				UINT32 numIndices = meshData->getNumIndices(i);
+				combinedMeshData->addSubMesh(numIndices, subMeshIndex);
 
-		//		for(UINT32 j = 0; j < numIndices; j++)
-		//			indices[j] = sourceIndices[j] + vertexIndexOffset;
+				subMeshIndex++;
+			}
+		}
 
-		//		subMeshIndex++;
-		//	}
+		vector<VertexElement>::type combinedVertexElements;
+		for(auto& meshData : meshes)
+		{
+			vector<VertexElement>::type vertexElements = meshData->getVertexElements();
 
-		//	UINT32 numVertices = meshData->getNumVertices();
-		//	vertexIndexOffset += numVertices;
-		//}
+			for(auto& newElement : vertexElements)
+			{
+				INT32 alreadyExistsIdx = -1;
+				UINT32 idx = 0;
+				for(auto& existingElement : combinedVertexElements)
+				{
+					if(newElement.getSemantic() == existingElement.getSemantic() && newElement.getSemanticIdx() == existingElement.getSemanticIdx()
+						&& newElement.getStreamIdx() == existingElement.getStreamIdx())
+					{
+						if(newElement.getType() != existingElement.getType())
+						{
+							CM_EXCEPT(NotImplementedException, "Two elements have same semantics but different types. This is not supported yet.");
+						}
 
-		//vector<VertexElement>::type combinedVertexElements;
-		//for(auto& meshData : meshes)
-		//{
-		//	vector<VertexElement>::type vertexElements = meshData->getVertexElements();
-		//	UINT32 numVertices = meshData->getNumVertices();
+						alreadyExistsIdx = idx;
+						break;
+					}
 
-		//	for(auto& newElement : vertexElements)
-		//	{
-		//		INT32 alreadyExistsIdx = -1;
-		//		UINT32 idx = 0;
-		//		for(auto& existingElement : combinedVertexElements)
-		//		{
-		//			if(newElement == existingElement)
-		//			{
-		//				alreadyExistsIdx = idx;
-		//				break;
-		//			}
+					idx++;
+				}
 
-		//			idx++;
-		//		}
+				if(alreadyExistsIdx == -1)
+				{
+					combinedVertexElements.push_back(newElement);
+					combinedMeshData->addVertElem(newElement.getType(), newElement.getSemantic(), newElement.getSemanticIdx(), newElement.getStreamIdx());
+				}
+			}
+		}
 
-		//		if(alreadyExistsIdx == -1)
-		//		{
-		//			combinedVertexElements.push_back(newElement);
-		//			combinedMeshData->addVertElem(newElement.getType(), newElement.getSemantic(), newElement.getSemanticIdx(), newElement.getStreamIdx());
-		//		}
-		//	}
-		//}
+		combinedMeshData->endDesc();
 
-		//combinedMeshData->allocateInternalBuffer();
+		// Copy indices
+		subMeshIndex = 0;
+		UINT32 vertexOffset = 0;
+		for(auto& meshData : meshes)
+		{
+			for(UINT32 i = 0; i < meshData->getNumSubmeshes(); i++)
+			{
+				UINT32 numIndices = meshData->getNumIndices(i);
+				UINT32* srcData = meshData->getIndices32(i);
 
-		//UINT32 vertexOffset = 0;
-		//for(auto& element : combinedVertexElements)
-		//{
-		//	for(auto& meshData : meshes)
-		//	{
-		//		if(meshData->hasElement(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx()))
-		//		{
+				UINT32* dstData = combinedMeshData->getIndices32(subMeshIndex);
 
-		//		}
-		//	}
+				for(UINT32 j = 0; j < numIndices; j++)
+					dstData[j] = srcData[j] + vertexOffset;
 
-		//	vector<VertexElement>::type vertexElements = meshData->getVertexElements();
-		//	UINT32 numVertices = meshData->getNumVertices();
+				subMeshIndex++;
+			}
 
-		//	for(auto& newElement : vertexElements)
-		//	{
-		//		// TODO
+			vertexOffset += meshData->getNumVertices();
+		}
 
+		// Copy vertices
+		vertexOffset = 0;
+		for(auto& meshData : meshes)
+		{
+			vector<VertexElement>::type vertexElements = meshData->getVertexElements();
 
-		//	}
+			for(auto& element : combinedMeshData->mVertexElements)
+			{
+				UINT32 dstVertexStride = combinedMeshData->getVertexStride(element.getStreamIdx());
+				UINT8* dstData = combinedMeshData->getElementData(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx());
+				dstData += vertexOffset * dstVertexStride;
 
-		//	vertexOffset += meshData->getNumVertices();
-		//}
+				UINT32 numSrcVertices = meshData->getNumVertices();
+				UINT32 vertexSize = combinedMeshData->getElementSize(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx());
+
+				if(meshData->hasElement(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx()))
+				{
+					UINT32 srcVertexStride = meshData->getVertexStride(element.getStreamIdx());
+					UINT8* srcData = meshData->getElementData(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx());
+
+					for(UINT32 i = 0; i < numSrcVertices; i++)
+					{
+						memcpy(dstData, srcData, vertexSize);
+						dstData += dstVertexStride;
+						srcData += srcVertexStride;
+					}
+				}
+				else
+				{
+					for(UINT32 i = 0; i < numSrcVertices; i++)
+					{
+						memset(dstData, 0, vertexSize);
+						dstData += dstVertexStride;
+					}
+				}
+			}
+
+			vertexOffset += meshData->getNumVertices();
+		}
 
 		return combinedMeshData;
 	}
