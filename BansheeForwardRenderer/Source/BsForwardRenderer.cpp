@@ -53,7 +53,10 @@ namespace BansheeEngine
 
 	void ForwardRenderer::render(const HCamera& camera) 
 	{
-		vector<HRenderable>::type allRenderables = gSceneManager().getVisibleRenderables(camera);
+		vector<HRenderable>::type allRenderables;
+		
+		if(!camera->getIgnoreSceneRenderables())
+			allRenderables = gSceneManager().getVisibleRenderables(camera);
 
 		RenderContext& renderContext = gMainRC();
 		renderContext.setViewport(camera->getViewport());

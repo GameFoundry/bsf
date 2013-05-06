@@ -27,6 +27,7 @@
 #include "CmDebugCamera.h"
 #include "CmTestTextSprite.h"
 #include "CmEditorWindow.h"
+#include "CmRTTIType.h"
 
 #define DX11
 //#define DX9
@@ -81,28 +82,12 @@ int CALLBACK WinMain(
 	HSceneObject testTextGO = SceneObject::create("TestText");
 	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
-	HFont font;
-	
-	{
-		ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions("C:\\arial.ttf");
-		if(rtti_is_of_type<FontImportOptions>(fontImportOptions))
-		{
-			FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
-
-			vector<CamelotFramework::UINT32>::type fontSizes;
-			fontSizes.push_back(12);
-			importOptions->setFontSizes(fontSizes);
-		}
-
-		font = Importer::instance().import("C:\\arial.ttf", fontImportOptions);
-	}
-
 	HTexture windowFrameTex = static_resource_cast<Texture>(Importer::instance().import("C:\\WindowFrameTest.bmp"));
 	gResources().create(windowFrameTex, "C:\\WindowFrameTest.tex", true);
 
 	windowFrameTex.waitUntilLoaded();
 
-	textSprite->init(camera, "Testing in a new row, does this work?", font, 12, windowFrameTex);
+	textSprite->init(camera, "Testing in a new row, does this work?", windowFrameTex);
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
@@ -292,7 +277,7 @@ int CALLBACK WinMain(
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );
 	
-	EditorWindow* newWindow = new EditorWindow("Test window", font, 12);
+	EditorWindow* newWindow = new EditorWindow("Test window");
 
 	gBansheeApp().runMainLoop();
 
@@ -312,7 +297,6 @@ int CALLBACK WinMain(
 	gResources().unload(testMaterial);
 	gResources().unload(windowFrameTex);
 
-	font.reset();
 	testMaterial.reset();
 	testTexRef.reset();
 	dbgMeshRef.reset();

@@ -9,13 +9,11 @@ namespace CamelotFramework
 		friend class CM::SceneObject;
 
 		TestTextSprite(const HSceneObject& parent);
-
-		BansheeEngine::GUISkin* mSkin;
 	public:
 		~TestTextSprite();
 
 		virtual void update();
 
-		void init(const BS::HCamera& camera, const String& text, HFont font, UINT32 fontSize, const HTexture& windowFrameTex);
+		void init(const BS::HCamera& camera, const String& text, const HTexture& windowFrameTex);
 	};
 }

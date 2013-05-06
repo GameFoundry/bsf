@@ -11,35 +11,26 @@
 #include "BsGUISkin.h"
 #include "BsOverlayManager.h"
 #include "BsSpriteTexture.h"
+#include "BsEngineGUI.h"
 
 using namespace BansheeEngine;
 
 namespace CamelotFramework
 {
 	TestTextSprite::TestTextSprite(const HSceneObject& parent)
-		:GUIWidget(parent), mSkin(nullptr)
+		:GUIWidget(parent)
 	{
 	}
 
 	TestTextSprite::~TestTextSprite()
 	{
-		if(mSkin != nullptr)
-			CM_DELETE(mSkin, GUISkin, PoolAlloc);
 	}
 
-	void TestTextSprite::init(const HCamera& camera, const String& text, HFont font, UINT32 fontSize, const HTexture& windowFrameTex)
+	void TestTextSprite::init(const HCamera& camera, const String& text, const HTexture& windowFrameTex)
 	{
-		mSkin = CM_NEW(GUISkin, PoolAlloc) GUISkin();
-
 		OverlayManager::instance().attachOverlay(camera.get(), this);		
 
-		GUIElementStyle labelStyle;
-		labelStyle.font = font;
-		labelStyle.fontSize = fontSize;
-
-		mSkin->setStyle(GUILabel::getGUITypeName(), labelStyle);
-
-		setSkin(mSkin);
+		setSkin(&EngineGUI::instance().getSkin());
 		GUILabel::create(this, text, 400, 400, true, THA_Right, TVA_Bottom);
 
 		SpriteTexturePtr frameSpriteTex(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(windowFrameTex), &MemAllocDeleter<SpriteTexture, PoolAlloc>::deleter);

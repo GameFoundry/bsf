@@ -153,6 +153,7 @@ namespace BansheeEngine {
 		bool mCustomProjMatrix;
 		/// Have the frustum extents been manually set?
 		bool mFrustumExtentsManuallySet;
+		bool mIgnoreSceneRenderables;
 		/// Frustum extents
 		mutable float mLeft, mRight, mTop, mBottom;
 		
@@ -489,6 +490,9 @@ namespace BansheeEngine {
 		@note This is calculated from the orthographic height and the aspect ratio
 		*/
 		virtual float getOrthoWindowWidth() const;
+
+		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; }
+		bool getIgnoreSceneRenderables() const { return mIgnoreSceneRenderables; }
 
         /** Project a sphere onto the near plane and get the bounding rectangle. 
         @param sphere The world-space sphere to project

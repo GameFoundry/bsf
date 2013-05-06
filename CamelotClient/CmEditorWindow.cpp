@@ -7,13 +7,14 @@
 #include "BsGUISkin.h"
 #include "BsOverlayManager.h"
 #include "BsCamera.h"
+#include "BsEngineGUI.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
 
 namespace CamelotEditor
 {
-	EditorWindow::EditorWindow(const String& name, const HFont& dbgFont, CM::UINT32 dbgFontSize)
+	EditorWindow::EditorWindow(const String& name)
 	{
 		RENDER_WINDOW_DESC renderWindowDesc;
 		renderWindowDesc.width = 200;
@@ -26,12 +27,13 @@ namespace CamelotEditor
 		mRenderWindow = RenderWindow::create(renderWindowDesc, gApplication().getPrimaryRenderWindow());
 
 		HSceneObject so = SceneObject::create("EditorWindow-" + name);
-		//HGUIWidget gui = so->addComponent<GUIWidget>();
+		HGUIWidget gui = so->addComponent<GUIWidget>();
 		HCamera camera = so->addComponent<Camera>();
 
 		camera->init(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
 		camera->setNearClipDistance(5);
 		camera->setAspectRatio(1.0f);
+		camera->setIgnoreSceneRenderables(true);
 		
 		//// DEBUG ONLY - Skin should exist externally
 		//mSkin = CM_NEW(GUISkin, GUIAlloc) GUISkin();

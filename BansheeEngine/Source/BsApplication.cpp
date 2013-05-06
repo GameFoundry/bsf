@@ -6,6 +6,7 @@
 #include "BsD3D9BuiltinMaterialFactory.h"
 #include "BsD3D11BuiltinMaterialFactory.h"
 #include "BsGLBuiltinMaterialFactory.h"
+#include "BsEngineGUI.h"
 #include "CmApplication.h"
 
 using namespace CamelotFramework;
@@ -42,6 +43,8 @@ namespace BansheeEngine
 		BuiltinMaterialManager::instance().addFactory(CM_NEW(D3D11BuiltinMaterialFactory, GenAlloc) D3D11BuiltinMaterialFactory());
 		BuiltinMaterialManager::instance().addFactory(CM_NEW(GLBuiltinMaterialFactory, GenAlloc) GLBuiltinMaterialFactory());
 		BuiltinMaterialManager::instance().setActive(desc.renderSystem);
+
+		EngineGUI::startUp(new EngineGUI());
 	}
 
 	void Application::runMainLoop()
@@ -51,6 +54,8 @@ namespace BansheeEngine
 
 	void Application::shutDown()
 	{
+		EngineGUI::shutDown();
+
 		GUIMaterialManager::instance().forceReleaseAllMaterials();
 
 		BuiltinMaterialManager::shutDown();

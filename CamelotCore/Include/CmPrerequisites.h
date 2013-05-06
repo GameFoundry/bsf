@@ -280,30 +280,6 @@ namespace CamelotFramework
 		TID_PixelData = 1062,
 		TID_GpuResourceData = 1063
 	};
-
-	/**
-	 * @brief	Returns true if the provided object can be safely cast into type T.
-	 */
-	template<class T>
-	bool rtti_is_of_type(IReflectable* object)
-	{
-		BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, T>::value), 
-			"Invalid data type for type checking. It needs to derive from CamelotFramework::IReflectable.");
-
-		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
-	}
-
-	/**
-	 * @brief	Returns true if the provided object can be safely cast into type T.
-	 */
-	template<class T>
-	bool rtti_is_of_type(std::shared_ptr<IReflectable> object)
-	{
-		BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, T>::value), 
-			"Invalid data type for type checking. It needs to derive from CamelotFramework::IReflectable.");
-
-		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
-	}
 }
 
 /************************************************************************/
