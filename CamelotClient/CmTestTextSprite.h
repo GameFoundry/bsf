@@ -14,6 +14,6 @@ namespace CamelotFramework
 
 		virtual void update();
 
-		void init(const BS::HCamera& camera, const String& text, const HTexture& windowFrameTex);
+		void init(const BS::HCamera& camera, const String& text);
 	};
 }

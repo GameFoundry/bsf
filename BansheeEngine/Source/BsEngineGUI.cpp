@@ -3,6 +3,7 @@
 
 #include "BsGUILabel.h"
 #include "BsGUIWindowFrame.h"
+#include "BsSpriteTexture.h"
 
 #include "CmFont.h"
 #include "CmFontImportOptions.h"
@@ -16,10 +17,13 @@ namespace BansheeEngine
 	const String EngineGUI::DefaultFontPath = "C:\\arial.ttf";
 	const UINT32 EngineGUI::DefaultFontSize = 12;
 
+	const CM::String EngineGUI::WindowFramePrimaryTexture = "C:\\WindowFrameTest.bmp";
+
 	EngineGUI::EngineGUI()
 	{
 		// TODO - Normally I want to load this from some file
 		
+		// Label
 		// TODO - Instead of importing font every time, try to save a resource and then just load it?
 		HFont font;
 
@@ -42,6 +46,15 @@ namespace BansheeEngine
 		labelStyle.fontSize = DefaultFontSize;
 
 		mSkin.setStyle(GUILabel::getGUITypeName(), labelStyle);
+
+		// Window frame
+		HTexture windowFrameTex = static_resource_cast<Texture>(Importer::instance().import(WindowFramePrimaryTexture));
+		windowFrameTex.waitUntilLoaded();
+
+		GUIElementStyle windowFrameStyle;
+		windowFrameStyle.normal.texture = SpriteTexturePtr(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(windowFrameTex), &MemAllocDeleter<SpriteTexture, PoolAlloc>::deleter);
+
+		mSkin.setStyle(GUIWindowFrame::getGUITypeName(), windowFrameStyle);
 	}
 
 }

@@ -82,12 +82,7 @@ int CALLBACK WinMain(
 	HSceneObject testTextGO = SceneObject::create("TestText");
 	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
 
-	HTexture windowFrameTex = static_resource_cast<Texture>(Importer::instance().import("C:\\WindowFrameTest.bmp"));
-	gResources().create(windowFrameTex, "C:\\WindowFrameTest.tex", true);
-
-	windowFrameTex.waitUntilLoaded();
-
-	textSprite->init(camera, "Testing in a new row, does this work?", windowFrameTex);
+	textSprite->init(camera, "Testing in a new row, does this work?");
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
@@ -295,14 +290,12 @@ int CALLBACK WinMain(
 	gResources().unload(fragProgRef);
 	gResources().unload(vertProgRef);
 	gResources().unload(testMaterial);
-	gResources().unload(windowFrameTex);
 
 	testMaterial.reset();
 	testTexRef.reset();
 	dbgMeshRef.reset();
 	fragProgRef.reset();
 	vertProgRef.reset();
-	windowFrameTex.reset();
 
 	testModelGO->destroy();
 	cameraGO->destroy();

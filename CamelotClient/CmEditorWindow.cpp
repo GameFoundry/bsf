@@ -38,7 +38,7 @@ namespace CamelotEditor
 		//// DEBUG ONLY - Skin should exist externally
 		//mSkin = CM_NEW(GUISkin, GUIAlloc) GUISkin();
 
-		//OverlayManager::instance().attachOverlay(camera.get(), gui.get());		
+		OverlayManager::instance().attachOverlay(camera.get(), gui.get());		
 
 		//GUIElementStyle labelStyle;
 		//labelStyle.font = dbgFont;
@@ -48,8 +48,8 @@ namespace CamelotEditor
 
 		//gui->setSkin(mSkin);
 		//// END DEBUG
-
-		//gui->addLabel("Testing test");
+		gui->setSkin(&EngineGUI::instance().getSkin());
+		GUILabel::create(gui.get(), "Testing test", renderWindowDesc.width);
 	}
 
 	EditorWindow::~EditorWindow()

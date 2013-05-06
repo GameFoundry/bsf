@@ -73,7 +73,6 @@ namespace BansheeEngine
 		Vector2 uvOffset(0.0f, 0.0f);
 		Vector2 uvScale(1.0f, 1.0f);
 		
-
 		if(useScale9Grid)
 		{
 			UINT32 leftBorder = desc.borderLeft;

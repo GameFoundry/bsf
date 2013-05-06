@@ -15,8 +15,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIWindowFrame::GUIWindowFrame(GUIWidget* parent, const SpriteTexturePtr& texture)
-		:GUIElement(parent), mTexture(texture)
+	GUIWindowFrame::GUIWindowFrame(GUIWidget* parent)
+		:GUIElement(parent)
 	{
 		const GUISkin* skin = parent->getGUISkin();
 
@@ -24,9 +24,19 @@ namespace BansheeEngine
 		mImageSprite = CM_NEW(ImageSprite, PoolAlloc) ImageSprite();
 
 		IMAGE_SPRITE_DESC desc;
-		desc.texture = texture;
-		desc.width = texture->getTexture()->getWidth();
-		desc.height = texture->getTexture()->getHeight();
+		desc.texture = mStyle->normal.texture;
+
+		if(desc.texture != nullptr)
+		{
+			desc.width = desc.texture->getTexture()->getWidth();
+			desc.height = desc.texture->getTexture()->getHeight();
+		}
+
+		desc.borderLeft = mStyle->border.left;
+		desc.borderRight = mStyle->border.right;
+		desc.borderTop = mStyle->border.top;
+		desc.borderBottom = mStyle->border.bottom;
+
 		mImageSprite->update(desc);
 
 		mBounds = mImageSprite->getBounds();
@@ -37,9 +47,9 @@ namespace BansheeEngine
 		CM_DELETE(mImageSprite, ImageSprite, PoolAlloc);
 	}
 
-	GUIWindowFrame* GUIWindowFrame::create(GUIWidget* parent, const SpriteTexturePtr& texture)
+	GUIWindowFrame* GUIWindowFrame::create(GUIWidget* parent)
 	{
-		return CM_NEW(GUIWindowFrame, PoolAlloc) GUIWindowFrame(parent, texture);
+		return CM_NEW(GUIWindowFrame, PoolAlloc) GUIWindowFrame(parent);
 	}
 
 	UINT32 GUIWindowFrame::getNumRenderElements() const

@@ -12,9 +12,9 @@ namespace BansheeEngine
 		static const CM::String& getGUITypeName();
 
 		static GUILabel* create(GUIWidget* parent, const CM::String& text);
-		static GUILabel* create(GUIWidget* parent, const CM::String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign);
-		static GUILabel* create(GUIWidget* parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap);
-		static GUILabel* create(GUIWidget* parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign);
+		static GUILabel* create(GUIWidget* parent, const CM::String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign = TVA_Top);
+		static GUILabel* create(GUIWidget* parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight = 0, bool wordWrap = false);
+		static GUILabel* create(GUIWidget* parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign = TVA_Top);
 
 	protected:
 		~GUILabel();

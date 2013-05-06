@@ -11,7 +11,7 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIWindowFrame* create(GUIWidget* parent, const SpriteTexturePtr& texture);
+		static GUIWindowFrame* create(GUIWidget* parent);
 	protected:
 		~GUIWindowFrame();
 
@@ -37,8 +37,7 @@ namespace BansheeEngine
 			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
 	private:
 		ImageSprite* mImageSprite;
-		SpriteTexturePtr mTexture;
 
-		GUIWindowFrame(GUIWidget* parent, const SpriteTexturePtr& texture);
+		GUIWindowFrame(GUIWidget* parent);
 	};
 }

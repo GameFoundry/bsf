@@ -18,5 +18,7 @@ namespace BansheeEngine
 
 		static const CM::String DefaultFontPath;
 		static const UINT32 DefaultFontSize;
+
+		static const CM::String WindowFramePrimaryTexture;
 	};
 }
