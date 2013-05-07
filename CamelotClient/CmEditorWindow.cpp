@@ -26,7 +26,7 @@ namespace BansheeEditor
 		renderWindowDesc.border = WindowBorder::None;
 		renderWindowDesc.toolWindow = true;
 
-		mRenderWindow = RenderWindow::create(renderWindowDesc, gApplication().getPrimaryRenderWindow());
+		mRenderWindow = RenderWindow::create(renderWindowDesc, gApplication().getPrimaryWindow());
 
 		HSceneObject so = SceneObject::create("EditorWindow-" + name);
 		HGUIWidget gui = so->addComponent<GUIWidget>();

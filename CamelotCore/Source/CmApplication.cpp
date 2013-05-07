@@ -30,13 +30,14 @@
 #include "CmShader.h"
 #include "CmTechnique.h"
 #include "CmPass.h"
+#include "CmCursor.h"
 
 #include "CmRendererManager.h"
 
 namespace CamelotFramework
 {
 	Application::Application()
-		:mPrimaryRenderWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false)
+		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false)
 	{ }
 
 	void Application::startUp(START_UP_DESC& desc)
@@ -49,7 +50,7 @@ namespace CamelotFramework
 		HighLevelGpuProgramManager::startUp(CM_NEW(HighLevelGpuProgramManager, GenAlloc) HighLevelGpuProgramManager());
 
 		RenderSystemManager::startUp(CM_NEW(RenderSystemManager, GenAlloc) RenderSystemManager());
-		mPrimaryRenderWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
+		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
 
 		RendererManager::startUp(CM_NEW(RendererManager, GenAlloc) RendererManager());
 
@@ -73,6 +74,8 @@ namespace CamelotFramework
 			loadPlugin(importerName);
 
 		loadPlugin(desc.input);
+
+		Cursor::setCursor(CursorType::Arrow);
 	}
 
 	void Application::runMainLoop()
@@ -134,8 +137,8 @@ namespace CamelotFramework
 
 	void Application::shutDown()
 	{
-		mPrimaryRenderWindow->destroy();
-		mPrimaryRenderWindow = nullptr;
+		mPrimaryWindow->destroy();
+		mPrimaryWindow = nullptr;
 
 		Importer::shutDown();
 		FontManager::shutDown();
@@ -188,13 +191,13 @@ namespace CamelotFramework
 
 	UINT64 Application::getAppWindowId()
 	{
-		if(!mPrimaryRenderWindow)
+		if(!mPrimaryWindow)
 		{
 			CM_EXCEPT(InternalErrorException, "Unable to get window handle. No active window exists!");
 		}
 
 		UINT64 windowId = 0;
-		mPrimaryRenderWindow->getCustomAttribute("WINDOW", &windowId);
+		mPrimaryWindow->getCustomAttribute("WINDOW", &windowId);
 
 		return windowId;
 	}

@@ -1490,7 +1490,7 @@ namespace CamelotFramework {
 		}
 	}
 
-    Color PixelData::getColourAt(UINT32 x, UINT32 y, UINT32 z)
+    Color PixelData::getColorAt(UINT32 x, UINT32 y, UINT32 z)
     {
         Color cv;
 
@@ -1501,7 +1501,7 @@ namespace CamelotFramework {
         return cv;
     }
 
-    void PixelData::setColourAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z)
+    void PixelData::setColorAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z)
     {
         UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
         UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);

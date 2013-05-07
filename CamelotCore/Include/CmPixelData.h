@@ -215,14 +215,14 @@ namespace CamelotFramework
          * is only valid for cubemaps and volume textures. This uses the first (largest)
          * mipmap.
          */
-        Color getColourAt(UINT32 x, UINT32 y, UINT32 z);
+        Color getColorAt(UINT32 x, UINT32 y, UINT32 z = 0);
 
         /**
          * Set colour value at a certain location in the PixelBox. The z coordinate
          * is only valid for cubemaps and volume textures. This uses the first (largest)
          * mipmap.
          */
-        void setColourAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z);
+        void setColorAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z = 0);
 
 	private:
 		Box mExtents;

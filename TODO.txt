@@ -10,6 +10,12 @@ When I'm canceling command queue commands I might be canceling important user co
 
 --------
 
+Avoid updating GUI every frame. Instead remember processed events and only update then.
+I still re-create GUIWidget mesh every frame instead of just updating it.
+Make it so that widgets can be batched together. Probably means GUIWidget::updateMesh methods needs to move up to GUIManager or similar.
+MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to GpuResourceData which means it could get destroyed while still in command queue. Right now it only works because I block right after I call those methods, which ensures nothing is destroyed.
+GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
+
  - My test model is rendering back faces. I need to flip them.
   - Although more than likely I am loading the model incorrectly since it works in Unity?
   - I probably want to determine front faces based on normals

@@ -64,7 +64,7 @@ int CALLBACK WinMain(
 	//CommandQueue::addBreakpoint(0, 12);
 
 	RenderSystem* renderSystem = RenderSystem::instancePtr();
-	RenderWindowPtr renderWindow = gApplication().getPrimaryRenderWindow();
+	RenderWindowPtr renderWindow = gApplication().getPrimaryWindow();
 
 	HSceneObject cameraGO = SceneObject::create("MainCamera");
 	HCamera camera = cameraGO->addComponent<Camera>();
@@ -273,7 +273,15 @@ int CALLBACK WinMain(
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );
 	Cursor::hide();
-	
+
+	HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import("C:\\CursorDbg.psd"));
+	PixelDataPtr cursorPixelData = dbgCursor->allocateSubresourceBuffer(0);
+
+	gMainSyncedRC().readSubresource(dbgCursor.getInternalPtr(), 0, *cursorPixelData);
+	gMainSyncedRC().submitToGpu(true);
+
+	Cursor::setCustomCursor(*cursorPixelData, Int2(0, 0));
+
 	EditorWindow* newWindow = new EditorWindow("Test window");
 
 	gBansheeApp().runMainLoop();

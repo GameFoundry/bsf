@@ -40,7 +40,8 @@ THE SOFTWARE.
 #  include <Carbon/Carbon.h>
 #endif
 
-
+#define WM_CM_HIDECURSOR WM_USER + 101
+#define WM_CM_SHOWCURSOR WM_USER + 102
 
 namespace CamelotFramework
 {

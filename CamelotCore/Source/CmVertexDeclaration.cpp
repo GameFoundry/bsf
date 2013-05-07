@@ -159,12 +159,12 @@ namespace CamelotFramework
 		default:
 #endif
 		case VET_COLOR_ARGB:
-			return src.getAsARGB();
+			return src.getAsBGRA();
 #if CM_PLATFORM != CM_PLATFORM_WIN32
 		default:
 #endif
 		case VET_COLOR_ABGR: 
-			return src.getAsABGR();
+			return src.getAsRGBA();
 		};
 
 	}

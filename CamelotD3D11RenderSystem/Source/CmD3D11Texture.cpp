@@ -59,15 +59,25 @@ namespace CamelotFramework
 
 		D3D11_MAP flags = D3D11Mappings::getLockOptions(options);
 
+		UINT32 rowPitch, slicePitch;
+
 		if(flags == D3D11_MAP_READ || flags == D3D11_MAP_READ_WRITE)
 		{
-			lockedArea.setExternalBuffer((UINT8*)_mapstagingbuffer(flags, face, mipLevel));
+			UINT8* data = (UINT8*)_mapstagingbuffer(flags, face, mipLevel, rowPitch, slicePitch);
+			lockedArea.setExternalBuffer(data);
+			lockedArea.setRowPitch(rowPitch);
+			lockedArea.setSlicePitch(slicePitch);
 			mLockedForReading = true;
 		}
 		else
 		{
 			if(mUsage == TU_DYNAMIC)
-				lockedArea.setExternalBuffer((UINT8*)_map(mTex, flags, face, mipLevel));
+			{
+				UINT8* data = (UINT8*)_map(mTex, flags, face, mipLevel, rowPitch, slicePitch);
+				lockedArea.setExternalBuffer(data);
+				lockedArea.setRowPitch(rowPitch);
+				lockedArea.setSlicePitch(slicePitch);
+			}
 			else
 				lockedArea.setExternalBuffer((UINT8*)_mapstaticbuffer(lockedArea, mipLevel, face));
 
@@ -457,7 +467,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void* D3D11Texture::_map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face)
+	void* D3D11Texture::_map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
 	{
 		D3D11_MAPPED_SUBRESOURCE pMappedResource;
 		pMappedResource.pData = nullptr;
@@ -480,6 +490,10 @@ namespace CamelotFramework
 			CM_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
 		}
 
+		UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(getFormat());
+		rowPitch = pMappedResource.RowPitch / bytesPerPixel;
+		slicePitch = pMappedResource.DepthPitch / bytesPerPixel;
+
 		return pMappedResource.pData;
 	}
 
@@ -496,7 +510,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void* D3D11Texture::_mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face)
+	void* D3D11Texture::_mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
 	{
 		if(!mStagingBuffer)
 			_createStagingBuffer();
@@ -505,7 +519,7 @@ namespace CamelotFramework
 		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->CopyResource(mStagingBuffer, mTex);
 
-		return _map(mStagingBuffer, flags, face, mipLevel);
+		return _map(mStagingBuffer, flags, face, mipLevel, rowPitch, slicePitch);
 	}
 
 	void D3D11Texture::_unmapstagingbuffer()

@@ -61,7 +61,7 @@ namespace CamelotFramework
 
 			UINT64 getAppWindowId();
 
-			RenderWindowPtr getPrimaryRenderWindow() const { return mPrimaryRenderWindow; }
+			RenderWindowPtr getPrimaryWindow() const { return mPrimaryWindow; }
 
 			/**
 			 * @brief	Loads a plugin.
@@ -74,7 +74,7 @@ namespace CamelotFramework
 		friend CM_EXPORT RenderContext& gMainRC();
 		friend CM_EXPORT SyncedRenderContext& gMainSyncedRC();
 
-		RenderWindowPtr mPrimaryRenderWindow;
+		RenderWindowPtr mPrimaryWindow;
 		RenderContextPtr mPrimaryRenderContext;
 		SyncedRenderContext* mPrimarySyncedRenderContext;
 

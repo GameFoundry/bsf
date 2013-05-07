@@ -59,10 +59,10 @@ namespace CamelotFramework
 
 		void _createStagingBuffer();
 
-		void* _map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face);
+		void* _map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch);
 		void _unmap(ID3D11Resource* res);
 
-		void* _mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face);
+		void* _mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch);
 		void _unmapstagingbuffer();
 		
 		void* _mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 slice);

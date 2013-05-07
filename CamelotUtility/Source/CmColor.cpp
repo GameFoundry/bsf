@@ -39,11 +39,7 @@ namespace CamelotFramework {
     const Color Color::Blue = Color(0.0,0.0,1.0);
 
     //---------------------------------------------------------------------
-#if CM_ENDIAN == CM_ENDIAN_BIG
     ABGR Color::getAsABGR(void) const
-#else
-    RGBA Color::getAsRGBA(void) const
-#endif
     {
         UINT8 val8;
         UINT32 val32 = 0;
@@ -70,11 +66,7 @@ namespace CamelotFramework {
         return val32;
     }
     //---------------------------------------------------------------------
-#if CM_ENDIAN == CM_ENDIAN_BIG
     BGRA Color::getAsBGRA(void) const
-#else
-    ARGB Color::getAsARGB(void) const
-#endif
     {
         UINT8 val8;
         UINT32 val32 = 0;
@@ -102,11 +94,7 @@ namespace CamelotFramework {
         return val32;
     }
 	//---------------------------------------------------------------------
-#if CM_ENDIAN == CM_ENDIAN_BIG
 	ARGB Color::getAsARGB(void) const
-#else
-	BGRA Color::getAsBGRA(void) const
-#endif
 	{
 		UINT8 val8;
 		UINT32 val32 = 0;
@@ -134,11 +122,7 @@ namespace CamelotFramework {
 		return val32;
 	}
     //---------------------------------------------------------------------
-#if CM_ENDIAN == CM_ENDIAN_BIG
     RGBA Color::getAsRGBA(void) const
-#else
-    ABGR Color::getAsABGR(void) const
-#endif
     {
         UINT8 val8;
         UINT32 val32 = 0;
@@ -166,11 +150,7 @@ namespace CamelotFramework {
         return val32;
     }
     //---------------------------------------------------------------------
-#if CM_ENDIAN == CM_ENDIAN_BIG
     void Color::setAsABGR(const ABGR val)
-#else
-    void Color::setAsRGBA(const RGBA val)
-#endif
     {
         UINT32 val32 = val;
 
@@ -190,11 +170,7 @@ namespace CamelotFramework {
         a = (val32 & 0xFF) / 255.0f;
     }
     //---------------------------------------------------------------------
-#if CM_ENDIAN == CM_ENDIAN_BIG
     void Color::setAsBGRA(const BGRA val)
-#else
-    void Color::setAsARGB(const ARGB val)
-#endif
     {
         UINT32 val32 = val;
 
@@ -214,11 +190,7 @@ namespace CamelotFramework {
         b = (val32 & 0xFF) / 255.0f;
     }
 	//---------------------------------------------------------------------
-#if CM_ENDIAN == CM_ENDIAN_BIG
 	void Color::setAsARGB(const ARGB val)
-#else
-	void Color::setAsBGRA(const BGRA val)
-#endif
 	{
 		UINT32 val32 = val;
 
@@ -238,11 +210,7 @@ namespace CamelotFramework {
 		a = (val32 & 0xFF) / 255.0f;
 	}
     //---------------------------------------------------------------------
-#if CM_ENDIAN == CM_ENDIAN_BIG
     void Color::setAsRGBA(const RGBA val)
-#else
-    void Color::setAsABGR(const ABGR val)
-#endif
     {
         UINT32 val32 = val;
 

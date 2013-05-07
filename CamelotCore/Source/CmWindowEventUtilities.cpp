@@ -29,6 +29,8 @@ THE SOFTWARE.
 #include "CmRenderWindow.h"
 #include "CmApplication.h"
 #include "CmException.h"
+#include "CmCursor.h"
+
 #if CM_PLATFORM == CM_PLATFORM_LINUX
 #include <X11/Xlib.h>
 void GLXProc( CamelotFramework::RenderWindow *win, const XEvent &event );
@@ -225,9 +227,11 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 			(index->second)->windowResized(win);
 		break;
 	case WM_SETCURSOR:
-		 //SetCursor(0);
-		 //ShowCursor(FALSE);
-		 break;
+		if(Cursor::isHidden())
+			SetCursor(0);
+		else
+			SetCursor(Cursor::getHCursor());
+		return true;
 	case WM_GETMINMAXINFO:
 		// Prevent the window from going smaller than some minimu size
 		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 100;

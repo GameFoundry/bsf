@@ -707,7 +707,7 @@ namespace CamelotFramework
 		THROW_IF_NOT_RENDER_THREAD;
 
 		HRESULT hr;
-		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_BORDERCOLOR, colour.getAsARGB()) ) )
+		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_BORDERCOLOR, colour.getAsBGRA()) ) )
 			CM_EXCEPT(RenderingAPIException, "Failed to set texture border colour");
 	}
 	//---------------------------------------------------------------------
@@ -1404,7 +1404,7 @@ namespace CamelotFramework
 			0, 
 			NULL, 
 			flags,
-			colour.getAsARGB(), 
+			colour.getAsBGRA(), 
 			depth, 
 			stencil ) ) )
 		{
