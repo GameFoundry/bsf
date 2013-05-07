@@ -197,6 +197,8 @@ namespace BansheeEngine
 		// but for now it seems like too much hassle for something like GUI that is pretty dynamic anyway.
 		updateMeshes();
 
+		return;
+
 		// Render the meshes
 		UINT32 meshIdx = 0;
 		for(auto& mesh : mCachedMeshes)

@@ -224,6 +224,10 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 		for(index = start; index != end; ++index)
 			(index->second)->windowResized(win);
 		break;
+	case WM_SETCURSOR:
+		 //SetCursor(0);
+		 //ShowCursor(FALSE);
+		 break;
 	case WM_GETMINMAXINFO:
 		// Prevent the window from going smaller than some minimu size
 		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 100;

@@ -2,17 +2,19 @@
 #include "CmRenderWindow.h"
 #include "CmApplication.h"
 #include "CmSceneObject.h"
+#include "CmCursor.h"
 #include "BsGUIWidget.h"
 #include "BsGUILabel.h"
 #include "BsGUISkin.h"
 #include "BsOverlayManager.h"
 #include "BsCamera.h"
+#include "BsUpdateCallback.h"
 #include "BsEngineGUI.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
 
-namespace CamelotEditor
+namespace BansheeEditor
 {
 	EditorWindow::EditorWindow(const String& name)
 	{
@@ -28,8 +30,12 @@ namespace CamelotEditor
 
 		HSceneObject so = SceneObject::create("EditorWindow-" + name);
 		HGUIWidget gui = so->addComponent<GUIWidget>();
-		HCamera camera = so->addComponent<Camera>();
+		
+		GameObjectHandle<UpdateCallback> updateCallback = so->addComponent<UpdateCallback>();
 
+		updateCallback->onUpdate.connect(boost::bind(&EditorWindow::update, this));
+
+		HCamera camera = so->addComponent<Camera>();
 		camera->init(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
 		camera->setNearClipDistance(5);
 		camera->setAspectRatio(1.0f);
@@ -49,11 +55,18 @@ namespace CamelotEditor
 		//gui->setSkin(mSkin);
 		//// END DEBUG
 		gui->setSkin(&EngineGUI::instance().getSkin());
-		GUILabel::create(gui.get(), "Testing test", renderWindowDesc.width);
+		mDbgLabel = GUILabel::create(gui.get(), "Testing test", renderWindowDesc.width);
 	}
 
 	EditorWindow::~EditorWindow()
 	{
 		mRenderWindow->destroy();
+	}
+
+	void EditorWindow::update()
+	{
+		Int2 cursorPos = Cursor::getWindowPosition(*mRenderWindow);
+
+		//mDbgLabel->setText(toString(cursorPos.x) + ", " + toString(cursorPos.y));
 	}
 }

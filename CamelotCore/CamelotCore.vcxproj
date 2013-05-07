@@ -245,7 +245,7 @@
     <ClInclude Include="Include\CmMeshData.h" />
     <ClInclude Include="Include\CmMeshDataRTTI.h" />
     <ClInclude Include="Include\CmMultiRenderTexture.h" />
-    <ClInclude Include="Include\CmOSCursor.h" />
+    <ClInclude Include="Include\CmCursor.h" />
     <ClInclude Include="Include\CmPass.h" />
     <ClInclude Include="Include\CmPassRTTI.h" />
     <ClInclude Include="Include\CmPrerequisites.h" />
@@ -292,7 +292,7 @@
     <ClInclude Include="Include\targetver.h" />
     <ClInclude Include="Include\CmVertexDeclarationRTTI.h" />
     <ClInclude Include="Include\CmTechnique.h" />
-    <ClInclude Include="Include\Win32\CmOSCursorImpl.h" />
+    <ClInclude Include="Include\Win32\CmCursorImpl.h" />
     <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -373,7 +373,7 @@
     <ClCompile Include="Source\CmSceneObject.cpp" />
     <ClCompile Include="Source\CmComponent.cpp" />
     <ClCompile Include="Source\stdafx.cpp" />
-    <ClCompile Include="Source\Win32\CmOSCursorImpl.cpp" />
+    <ClCompile Include="Source\Win32\CmCursorImpl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

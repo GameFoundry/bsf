@@ -28,13 +28,14 @@
 #include "CmTestTextSprite.h"
 #include "CmEditorWindow.h"
 #include "CmRTTIType.h"
+#include "CmCursor.h"
 
 #define DX11
 //#define DX9
 //#define GL
 
 using namespace CamelotFramework;
-using namespace CamelotEditor;
+using namespace BansheeEditor;
 using namespace BansheeEngine;
 
 int CALLBACK WinMain(
@@ -271,6 +272,7 @@ int CALLBACK WinMain(
 
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );
+	Cursor::hide();
 	
 	EditorWindow* newWindow = new EditorWindow("Test window");
 

@@ -9,11 +9,14 @@ namespace CamelotFramework
 	/**
 	 * @brief	Provides controls for Windows operating system cursor.
 	 */
-	class CM_EXPORT OSCursor
+	class CM_EXPORT Cursor
 	{
 	public:
-		static Int2 getPosition();
-		static void setPosition(const Int2& pos);
+		static Int2 getScreenPosition();
+		static void setScreenPosition(const Int2& pos);
+
+		static Int2 getWindowPosition(RenderWindow& window);
+		static void setWindowPosition(RenderWindow& window, const Int2& pos);
 
 		static void hide();
 		static void show();

@@ -173,6 +173,7 @@
     <ClInclude Include="Include\BsD3D11BuiltinMaterialFactory.h" />
     <ClInclude Include="Include\BsD3D9BuiltinMaterialFactory.h" />
     <ClInclude Include="Include\BsGLBuiltinMaterialFactory.h" />
+    <ClInclude Include="Include\BsUpdateCallback.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />
@@ -197,6 +198,7 @@
     <ClCompile Include="Source\BsD3D11BuiltinMaterialFactory.cpp" />
     <ClCompile Include="Source\BsD3D9BuiltinMaterialFactory.cpp" />
     <ClCompile Include="Source\BsGLBuiltinMaterialFactory.cpp" />
+    <ClCompile Include="Source\BsUpdateCallback.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

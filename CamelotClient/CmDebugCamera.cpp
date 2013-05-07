@@ -5,7 +5,7 @@
 #include "CmMath.h"
 #include "CmSceneObject.h"
 #include "BsCamera.h"
-#include "CmOSCursor.h"
+#include "CmCursor.h"
 
 using namespace BansheeEngine;
 
@@ -71,7 +71,7 @@ namespace CamelotFramework
 		{
 			mCameraRotating = true;
 
-			OSCursor::hide();
+			Cursor::hide();
 		}
 	}
 
@@ -81,7 +81,7 @@ namespace CamelotFramework
 		{
 			mCameraRotating = false;
 
-			OSCursor::show();
+			Cursor::show();
 		}
 	}
 

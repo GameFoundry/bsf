@@ -249,12 +249,6 @@
     <ClInclude Include="Include\CmMaterialRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmOSCursor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Win32\CmOSCursorImpl.h">
-      <Filter>Header Files\Win32</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmSamplerState.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -441,6 +435,12 @@
     <ClInclude Include="Include\CmDeferredRenderContextFwd.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Win32\CmCursorImpl.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmCursor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -544,9 +544,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmMaterialRTTI.cpp">
       <Filter>Source Files\RTTI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Win32\CmOSCursorImpl.cpp">
-      <Filter>Source Files\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmSamplerState.cpp">
       <Filter>Source Files\RenderSystem</Filter>
@@ -676,6 +673,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmPixelData.cpp">
       <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\CmCursorImpl.cpp">
+      <Filter>Source Files\Win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

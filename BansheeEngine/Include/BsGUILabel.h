@@ -16,6 +16,8 @@ namespace BansheeEngine
 		static GUILabel* create(GUIWidget* parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight = 0, bool wordWrap = false);
 		static GUILabel* create(GUIWidget* parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign = TVA_Top);
 
+		void setText(const CM::String& text);
+
 	protected:
 		~GUILabel();
 
@@ -46,6 +48,7 @@ namespace BansheeEngine
 		bool mWordWrap;
 		TextHorzAlign mHorzAlign;
 		TextVertAlign mVertAlign;
+		TEXT_SPRITE_DESC mDesc;
 
 		GUILabel(GUIWidget* parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, 
 			bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign);

@@ -18,17 +18,16 @@ namespace BansheeEngine
 		mStyle = skin->getStyle(getGUITypeName());
 		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite();
 
-		TEXT_SPRITE_DESC desc;
-		desc.text = text;
-		desc.font = mStyle->font;
-		desc.fontSize = mStyle->fontSize;
-		desc.width = fixedWidth;
-		desc.height = fixedHeight;
-		desc.wordWrap = wordWrap;
-		desc.clipRect = Rect(0, 0, fixedWidth, fixedHeight);
-		desc.horzAlign = horzAlign;
-		desc.vertAlign = vertAlign;
-		mTextSprite->update(desc);
+		mDesc.text = text;
+		mDesc.font = mStyle->font;
+		mDesc.fontSize = mStyle->fontSize;
+		mDesc.width = fixedWidth;
+		mDesc.height = fixedHeight;
+		mDesc.wordWrap = wordWrap;
+		mDesc.clipRect = Rect(0, 0, fixedWidth, fixedHeight);
+		mDesc.horzAlign = horzAlign;
+		mDesc.vertAlign = vertAlign;
+		mTextSprite->update(mDesc);
 
 		mBounds = mTextSprite->getBounds();
 	}
@@ -57,6 +56,14 @@ namespace BansheeEngine
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
+	}
+
+	void GUILabel::setText(const CM::String& text)
+	{
+		mDesc.text = text;
+
+		mTextSprite->update(mDesc);
+		mBounds = mTextSprite->getBounds();
 	}
 
 	GUILabel* GUILabel::create(GUIWidget* parent, const String& text)

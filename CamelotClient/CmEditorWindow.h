@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 
-namespace CamelotEditor
+namespace BansheeEditor
 {
 	class EditorWindow
 	{
@@ -10,9 +10,12 @@ namespace CamelotEditor
 		EditorWindow(const CM::String& name);
 		virtual ~EditorWindow();
 
+	protected:
+		virtual void update();
+
 	private:
 		CM::RenderWindowPtr mRenderWindow;
 
-		BS::GUISkin* mSkin; // dbg only
+		BS::GUILabel* mDbgLabel;
 	};
 }
