@@ -30,9 +30,9 @@
 #include "CmRTTIType.h"
 #include "CmCursor.h"
 
-#define DX11
+//#define DX11
 //#define DX9
-//#define GL
+#define GL
 
 using namespace CamelotFramework;
 using namespace BansheeEditor;
@@ -281,6 +281,8 @@ int CALLBACK WinMain(
 	gMainSyncedRC().submitToGpu(true);
 
 	Cursor::setCustomCursor(*cursorPixelData, Int2(0, 0));
+
+	dbgCursor.reset();
 
 	EditorWindow* newWindow = new EditorWindow("Test window");
 
