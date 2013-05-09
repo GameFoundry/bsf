@@ -158,7 +158,7 @@ namespace BansheeEngine
 		float left = (float)clipRect.x;
 		float right = (float)clipRect.x + clipRect.width;
 		float top = (float)clipRect.y;
-		float bottom = (float)clipRect.y - clipRect.height;
+		float bottom = (float)clipRect.y + clipRect.height;
 
 		for(UINT32 i = 0; i < numQuads; i++)
 		{
@@ -166,10 +166,12 @@ namespace BansheeEngine
 
 			// Attempt to skip those that are definitely not clipped
 			if(vertices[vertIdx + 0].x >= left && vertices[vertIdx + 1].x <= right &&
-				vertices[vertIdx + 0].y <= top && vertices[vertIdx + 2].y >= bottom)
+				vertices[vertIdx + 0].y >= top && vertices[vertIdx + 2].y <= bottom)
 			{
 				continue;
 			}
+
+			// TODO - Skip those that are 100% clipped as well
 
 			float du = (uv[vertIdx + 1].x - uv[vertIdx + 0].x) / (vertices[vertIdx + 1].x - vertices[vertIdx + 0].x);
 			float dv = (uv[vertIdx + 0].y - uv[vertIdx + 2].y) / (vertices[vertIdx + 0].y - vertices[vertIdx + 2].y);
@@ -193,22 +195,22 @@ namespace BansheeEngine
 			uv[vertIdx + 3].x -= uvRightOffset;
 
 			// Clip top
-			float newTop = Math::Clamp(vertices[vertIdx + 0].y, bottom, top);
-			float uvTopOffset = (vertices[vertIdx + 0].y - newTop) * dv;
+			float newTop = Math::Clamp(vertices[vertIdx + 0].y, top, bottom);
+			float uvTopOffset = (newTop - vertices[vertIdx + 0].y) * dv;
 
 			vertices[vertIdx + 0].y = newTop;
 			vertices[vertIdx + 1].y = newTop;
-			uv[vertIdx + 0].y -= uvTopOffset;
-			uv[vertIdx + 1].y -= uvTopOffset;
+			uv[vertIdx + 0].y += uvTopOffset;
+			uv[vertIdx + 1].y += uvTopOffset;
 
 			// Clip bottom
-			float newBottom = Math::Clamp(vertices[vertIdx + 2].y, bottom, top);
-			float uvBottomOffset = (newBottom - vertices[vertIdx + 2].y) * dv;
+			float newBottom = Math::Clamp(vertices[vertIdx + 2].y, top, bottom);
+			float uvBottomOffset = (vertices[vertIdx + 2].y - newBottom) * dv;
 
 			vertices[vertIdx + 2].y = newBottom;
 			vertices[vertIdx + 3].y = newBottom;
-			uv[vertIdx + 2].y += uvBottomOffset;
-			uv[vertIdx + 3].y += uvBottomOffset;
+			uv[vertIdx + 2].y -= uvBottomOffset;
+			uv[vertIdx + 3].y -= uvBottomOffset;
 		}
 	}
 }

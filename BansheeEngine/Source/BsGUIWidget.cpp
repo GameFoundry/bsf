@@ -205,8 +205,11 @@ namespace BansheeEngine
 
 			// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
 			// might be more optimal to just scale the mesh as the resolution changes?
-			material->setFloat("halfViewportWidth", camera->getViewport()->getWidth() * 0.5f);
-			material->setFloat("halfViewportHeight", camera->getViewport()->getHeight() * 0.5f);
+			float invViewportWidth = 1.0f / (camera->getViewport()->getWidth() * 0.5f);
+			float invViewportHeight = 1.0f / (camera->getViewport()->getHeight() * 0.5f);
+
+			material->setFloat("invViewportWidth", invViewportWidth);
+			material->setFloat("invViewportHeight", invViewportHeight);
 			material->setMat4("worldTransform", SO()->getWorldTfrm());
 
 			if(material == nullptr || !material.isLoaded())

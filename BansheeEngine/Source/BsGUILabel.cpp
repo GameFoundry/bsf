@@ -27,6 +27,7 @@ namespace BansheeEngine
 		mDesc.clipRect = Rect(0, 0, fixedWidth, fixedHeight);
 		mDesc.horzAlign = horzAlign;
 		mDesc.vertAlign = vertAlign;
+		mDesc.offset = Point(10, 20);
 		mTextSprite->update(mDesc);
 
 		mBounds = mTextSprite->getBounds();

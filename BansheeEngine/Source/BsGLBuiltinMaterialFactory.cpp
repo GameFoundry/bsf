@@ -50,8 +50,8 @@ namespace BansheeEngine
 	{
 		String vsCode = "#version 400\n							\
 						\
-						uniform float halfViewportWidth;		\
-						uniform float halfViewportHeight;		\
+						uniform float invViewportWidth;			\
+						uniform float invViewportHeight;		\
 						uniform mat4 worldTransform;			\
 						\
 						in vec3 cm_position;					\
@@ -61,8 +61,8 @@ namespace BansheeEngine
 						{																	\
 						vec4 tfrmdPos = worldTransform * vec4(cm_position.xy, 0, 1);		\
 						\
-						float tfrmdX = (tfrmdPos.x / halfViewportWidth) - 1.0f;	\
-						float tfrmdY = (tfrmdPos.y / halfViewportHeight) + 1.0f;	\
+						float tfrmdX = -1.0f + (tfrmdPos.x * invViewportWidth);				\
+						float tfrmdY = 1.0f - (tfrmdPos.y * invViewportHeight);				\
 						\
 						gl_Position = vec4(tfrmdX, tfrmdY, 0, 1);							\
 						texcoord0 = cm_texcoord0;											\
@@ -90,8 +90,8 @@ namespace BansheeEngine
 		mSpriteTextShader = Shader::create("TextSpriteShader");
 
 		mSpriteTextShader->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
-		mSpriteTextShader->addParameter("halfViewportWidth", "halfViewportWidth", GPDT_FLOAT1);
-		mSpriteTextShader->addParameter("halfViewportHeight", "halfViewportHeight", GPDT_FLOAT1);
+		mSpriteTextShader->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		mSpriteTextShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
 		mSpriteTextShader->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
 		mSpriteTextShader->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
 
@@ -114,8 +114,8 @@ namespace BansheeEngine
 	{
 		String vsCode = "#version 400\n							\
 						\
-						uniform float halfViewportWidth;		\
-						uniform float halfViewportHeight;		\
+						uniform float invViewportWidth;			\
+						uniform float invViewportHeight;		\
 						uniform mat4 worldTransform;			\
 						\
 						in vec3 cm_position;					\
@@ -125,8 +125,8 @@ namespace BansheeEngine
 						{																	\
 						vec4 tfrmdPos = worldTransform * vec4(cm_position.xy, 0, 1);		\
 						\
-						float tfrmdX = (tfrmdPos.x / halfViewportWidth) - 1.0f;	\
-						float tfrmdY = (tfrmdPos.y / halfViewportHeight) + 1.0f;	\
+						float tfrmdX = -1.0f + (tfrmdPos.x * invViewportWidth);				\
+						float tfrmdY = 1.0f - (tfrmdPos.y * invViewportHeight);				\
 						\
 						gl_Position = vec4(tfrmdX, tfrmdY, 0, 1);							\
 						texcoord0 = cm_texcoord0;											\
@@ -154,8 +154,8 @@ namespace BansheeEngine
 		mSpriteImageShader = Shader::create("ImageSpriteShader");
 
 		mSpriteImageShader->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
-		mSpriteImageShader->addParameter("halfViewportWidth", "halfViewportWidth", GPDT_FLOAT1);
-		mSpriteImageShader->addParameter("halfViewportHeight", "halfViewportHeight", GPDT_FLOAT1);
+		mSpriteImageShader->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		mSpriteImageShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
 		mSpriteImageShader->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
 		mSpriteImageShader->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
 

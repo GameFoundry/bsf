@@ -69,7 +69,7 @@ namespace BansheeEngine
 			renderElem.indexes[i * 6 + 5] = i * 4 + 2;
 		}
 
-		Point offset = desc.offset + getAnchorOffset(desc.anchor, desc.width, desc.height);
+		Point offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
 		Vector2 uvOffset(0.0f, 0.0f);
 		Vector2 uvScale(1.0f, 1.0f);
 		
@@ -92,56 +92,56 @@ namespace BansheeEngine
 			// Top left
 			renderElem.vertices[0] = Vector2((float)offset.x, (float)offset.y);
 			renderElem.vertices[1] = Vector2((float)offset.x + leftBorder, (float)offset.y);
-			renderElem.vertices[2] = Vector2((float)offset.x, (float)offset.y - topBorder);
-			renderElem.vertices[3] = Vector2((float)offset.x + leftBorder, (float)offset.y - topBorder);
+			renderElem.vertices[2] = Vector2((float)offset.x, middleStart);
+			renderElem.vertices[3] = Vector2((float)offset.x + leftBorder, middleStart);
 
 			// Top center
 			renderElem.vertices[4] = Vector2(topCenterStart, (float)offset.y);
 			renderElem.vertices[5] = Vector2(topCenterStart + centerWidth, (float)offset.y);
-			renderElem.vertices[6] = Vector2(topCenterStart, (float)offset.y - topBorder);
-			renderElem.vertices[7] = Vector2(topCenterStart + centerWidth, (float)offset.y - topBorder);
+			renderElem.vertices[6] = Vector2(topCenterStart, middleStart);
+			renderElem.vertices[7] = Vector2(topCenterStart + centerWidth, middleStart);
 
 			// Top right
 			renderElem.vertices[8] = Vector2(topRightStart, (float)offset.y);
 			renderElem.vertices[9] = Vector2(topRightStart + rightBorder, (float)offset.y);
-			renderElem.vertices[10] = Vector2(topRightStart, (float)offset.y - topBorder);
-			renderElem.vertices[11] = Vector2(topRightStart + rightBorder, (float)offset.y - topBorder);
+			renderElem.vertices[10] = Vector2(topRightStart, middleStart);
+			renderElem.vertices[11] = Vector2(topRightStart + rightBorder, middleStart);
 
 			// Middle left
 			renderElem.vertices[12] = Vector2((float)offset.x, middleStart);
 			renderElem.vertices[13] = Vector2((float)offset.x + leftBorder, middleStart);
-			renderElem.vertices[14] = Vector2((float)offset.x, middleStart - centerHeight);
-			renderElem.vertices[15] = Vector2((float)offset.x + leftBorder, middleStart - centerHeight);
+			renderElem.vertices[14] = Vector2((float)offset.x, bottomStart);
+			renderElem.vertices[15] = Vector2((float)offset.x + leftBorder, bottomStart);
 
 			// Middle center
 			renderElem.vertices[16] = Vector2(topCenterStart, middleStart);
 			renderElem.vertices[17] = Vector2(topCenterStart + centerWidth, middleStart);
-			renderElem.vertices[18] = Vector2(topCenterStart, middleStart - centerHeight);
-			renderElem.vertices[19] = Vector2(topCenterStart + centerWidth, middleStart - centerHeight);
+			renderElem.vertices[18] = Vector2(topCenterStart, bottomStart);
+			renderElem.vertices[19] = Vector2(topCenterStart + centerWidth, bottomStart);
 
 			// Middle right
 			renderElem.vertices[20] = Vector2(topRightStart, middleStart);
 			renderElem.vertices[21] = Vector2(topRightStart + rightBorder, middleStart);
-			renderElem.vertices[22] = Vector2(topRightStart, middleStart - centerHeight);
-			renderElem.vertices[23] = Vector2(topRightStart + rightBorder, middleStart - centerHeight);
+			renderElem.vertices[22] = Vector2(topRightStart, bottomStart);
+			renderElem.vertices[23] = Vector2(topRightStart + rightBorder, bottomStart);
 
 			// Bottom left
 			renderElem.vertices[24] = Vector2((float)offset.x, bottomStart);
 			renderElem.vertices[25] = Vector2((float)offset.x + leftBorder, bottomStart);
-			renderElem.vertices[26] = Vector2((float)offset.x, bottomStart - bottomBorder);
-			renderElem.vertices[27] = Vector2((float)offset.x + leftBorder, bottomStart - bottomBorder);
+			renderElem.vertices[26] = Vector2((float)offset.x, bottomStart + bottomBorder);
+			renderElem.vertices[27] = Vector2((float)offset.x + leftBorder, bottomStart + bottomBorder);
 
 			// Bottom center
 			renderElem.vertices[28] = Vector2(topCenterStart, bottomStart);
 			renderElem.vertices[29] = Vector2(topCenterStart + centerWidth, bottomStart);
-			renderElem.vertices[30] = Vector2(topCenterStart, bottomStart - bottomBorder);
-			renderElem.vertices[31] = Vector2(topCenterStart + centerWidth, bottomStart - bottomBorder);
+			renderElem.vertices[30] = Vector2(topCenterStart, bottomStart + bottomBorder);
+			renderElem.vertices[31] = Vector2(topCenterStart + centerWidth, bottomStart + bottomBorder);
 
 			// Bottom right
 			renderElem.vertices[32] = Vector2(topRightStart, bottomStart);
 			renderElem.vertices[33] = Vector2(topRightStart + rightBorder, bottomStart);
-			renderElem.vertices[34] = Vector2(topRightStart, bottomStart - bottomBorder);
-			renderElem.vertices[35] = Vector2(topRightStart + rightBorder, bottomStart - bottomBorder);
+			renderElem.vertices[34] = Vector2(topRightStart, bottomStart + bottomBorder);
+			renderElem.vertices[35] = Vector2(topRightStart + rightBorder, bottomStart + bottomBorder);
 
 			float invWidth = 1.0f / (float)desc.width;
 			float invHeight = 1.0f / (float)desc.height;
@@ -218,8 +218,8 @@ namespace BansheeEngine
 		{
 			renderElem.vertices[0] = Vector2((float)offset.x, (float)offset.y);
 			renderElem.vertices[1] = Vector2((float)offset.x + desc.width, (float)offset.y);
-			renderElem.vertices[2] = Vector2((float)offset.x, (float)offset.y - desc.height);
-			renderElem.vertices[3] = Vector2((float)offset.x + desc.width, (float)offset.y - desc.height);
+			renderElem.vertices[2] = Vector2((float)offset.x, (float)offset.y + desc.height);
+			renderElem.vertices[3] = Vector2((float)offset.x + desc.width, (float)offset.y + desc.height);
 
 			renderElem.uvs[0] = desc.texture->transformUV(Vector2(uvOffset.x, uvOffset.y));
 			renderElem.uvs[1] = desc.texture->transformUV(Vector2(uvOffset.x + uvScale.x, uvOffset.y));
@@ -230,6 +230,14 @@ namespace BansheeEngine
 		if(desc.clipRect.width > 0 && desc.clipRect.height > 0)
 		{
 			clipToRect(renderElem.vertices, renderElem.uvs, renderElem.numQuads, desc.clipRect);
+		}
+
+		// Apply offset
+		UINT32 numVertices = renderElem.numQuads * 4;
+		for(size_t i = 0; i < numVertices; i++)
+		{
+			renderElem.vertices[i].x += (float)desc.offset.x;
+			renderElem.vertices[i].y += (float)desc.offset.y;
 		}
 
 		updateBounds();

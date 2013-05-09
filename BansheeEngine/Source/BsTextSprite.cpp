@@ -201,7 +201,7 @@ namespace BansheeEngine
 					for(auto charIter = chars.begin(); charIter != chars.end(); ++charIter)
 					{
 						INT32 curX = penX + charIter->xOffset;
-						INT32 curY = -((INT32)baselineY - charIter->yOffset);
+						INT32 curY = ((INT32)baselineY - charIter->yOffset);
 
 						UINT32 curVert = faceOffsets[charIter->page] * 4;
 						UINT32 curIndex = faceOffsets[charIter->page] * 6;
@@ -210,8 +210,8 @@ namespace BansheeEngine
 
 						renderElem.vertices[curVert + 0] = Vector2((float)curX, (float)curY);
 						renderElem.vertices[curVert + 1] = Vector2((float)(curX + charIter->width), (float)curY);
-						renderElem.vertices[curVert + 2] = Vector2((float)curX, (float)curY - (float)charIter->height);
-						renderElem.vertices[curVert + 3] = Vector2((float)(curX + charIter->width), (float)curY - (float)charIter->height);
+						renderElem.vertices[curVert + 2] = Vector2((float)curX, (float)curY + (float)charIter->height);
+						renderElem.vertices[curVert + 3] = Vector2((float)(curX + charIter->width), (float)curY + (float)charIter->height);
 
 						renderElem.uvs[curVert + 0] = Vector2(charIter->uvX, charIter->uvY);
 						renderElem.uvs[curVert + 1] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY);
@@ -376,7 +376,7 @@ namespace BansheeEngine
 		}
 
 		// Calc horizontal alignment offset and set final line positions
-		Point offset = desc.offset + getAnchorOffset(desc.anchor, desc.width, desc.height);
+		Point offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
 		UINT32 curY = 0;
 		for(size_t i = 0; i < textLines.size(); i++)
 		{
@@ -443,6 +443,17 @@ namespace BansheeEngine
 			for(auto& renderElem : mCachedRenderElements)
 			{
 				clipToRect(renderElem.vertices, renderElem.uvs, renderElem.numQuads, desc.clipRect);
+			}
+		}
+
+		// Apply offset
+		for(auto& renderElem : mCachedRenderElements)
+		{
+			UINT32 numVertices = renderElem.numQuads * 4;
+			for(size_t i = 0; i < numVertices; i++)
+			{
+				renderElem.vertices[i].x += (float)desc.offset.x;
+				renderElem.vertices[i].y += (float)desc.offset.y;
 			}
 		}
 
