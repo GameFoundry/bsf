@@ -38,6 +38,7 @@ namespace CamelotFramework {
 		mActive(true),
 		mHwGamma(false), 
 		mVSync(false),
+		mHasFocus(false),
 		mFSAA(0)
     {
     }

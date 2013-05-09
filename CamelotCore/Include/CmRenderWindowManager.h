@@ -4,6 +4,8 @@
 #include "CmModule.h"
 #include "CmRenderWindow.h"
 
+#include "boost/signal.hpp"
+
 namespace CamelotFramework
 {
 	class CM_EXPORT RenderWindowManager : public Module<RenderWindowManager>
@@ -13,7 +15,15 @@ namespace CamelotFramework
 		*/
 		RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow);
 
+		boost::signal<void(RenderWindow*)> onWindowCreated;
+		boost::signal<void(RenderWindow*)> onWindowDestroyed;
 	protected:
+		friend class RenderWindow;
+
+		std::vector<RenderWindow*> mCreatedWindows;
+
 		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow) = 0;
+
+		void windowDestroyed(RenderWindow* window);
 	};
 }

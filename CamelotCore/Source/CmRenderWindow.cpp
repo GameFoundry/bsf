@@ -41,7 +41,7 @@ namespace CamelotFramework
 
 	RenderWindow::~RenderWindow() 
 	{
-
+		
 	}
 
     //-----------------------------------------------------------------------
@@ -69,6 +69,13 @@ namespace CamelotFramework
     {
         mAutoDeactivatedOnFocusChange = deactivate;
     }
+
+	void RenderWindow::destroy()
+	{
+		RenderWindowManager::instance().windowDestroyed(this);
+
+		RenderTarget::destroy();
+	}
 
 	RenderWindowPtr RenderWindow::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{

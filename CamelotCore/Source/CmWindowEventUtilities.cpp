@@ -164,6 +164,9 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
         if( active )
         {
 		    win->setActive( true );
+
+			if(!win->getHasFocus())
+				win->setHasFocus(true);
         }
         else
         {
@@ -171,6 +174,9 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
             {
     		    win->setActive( false );
             }
+
+			if(win->getHasFocus())
+				win->setHasFocus(false);
         }
 
 	    for( ; start != end; ++start )

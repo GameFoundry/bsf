@@ -175,6 +175,8 @@ namespace CamelotFramework
           */
         void setDeactivateOnFocusChange(bool deactivate);
 
+		virtual void destroy();
+
 		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);
 
     protected:

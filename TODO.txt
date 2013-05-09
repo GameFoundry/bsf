@@ -24,17 +24,13 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
   - Although more than likely I am loading the model incorrectly since it works in Unity?
   - I probably want to determine front faces based on normals
 
+ GUIManager
+  - It starts before RenderWindowManager, which means I can't register the callbacks.
+    - If I start it after I miss main window creation, and also get an assert (not sure why the assert though - didn't explore)
+  - Keep track of window in focus
+
 Immediate TODO:
- - Issue with rendering same object from multiple cameras:
-   - Material parameters should be copied after being submitted to the render context
-   - Otherwise the last camera that submits the object for rendering ends up being the only one whos view matrix actually gets used.
- - Everything is rendering in both windows
-  - Implement layers for SceneObjects?
-  - Mark EditorWindow GameObjects (containing GUIWidgets and other editor classes) with DontSave and HideInHierarchy flags. User-created elements will exists in the 
-    same hierarchy, they will just not be hidden.
- - Get bounds working correctly
  - (optional) Implement DirectDraw for drawing the bounds so I know they're correct
- - TextSprite bounds are wrong. Y coordinate is flipped
  - Calculate entire GUIWidget bounds and store them
  - Current way of transforming ORect from GUIWidget is almost certainly not correct
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
