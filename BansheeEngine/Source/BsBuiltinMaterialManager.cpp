@@ -33,6 +33,13 @@ namespace BansheeEngine
 		return mActiveFactory->createSpriteImageMaterial();
 	}
 
+	HMaterial BuiltinMaterialManager::createDebugDrawMaterial() const
+	{
+		assert(mActiveFactory != nullptr);
+
+		return mActiveFactory->createDebugDrawMaterial();
+	}
+
 	void BuiltinMaterialManager::addFactory(BuiltinMaterialFactory* factory)
 	{
 		assert(factory != nullptr);

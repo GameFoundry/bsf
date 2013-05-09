@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsApplication.h" />
+    <ClInclude Include="Include\BsDebugDraw.h" />
     <ClInclude Include="Include\BsEngineGUI.h" />
     <ClInclude Include="Include\BsPrerequisites.h" />
     <ClInclude Include="Include\BsGUIElement.h" />
@@ -177,6 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />
+    <ClCompile Include="Source\BsDebugDraw.cpp" />
     <ClCompile Include="Source\BsEngineGUI.cpp" />
     <ClCompile Include="Source\BsGUIElement.cpp" />
     <ClCompile Include="Source\BsGUILabel.cpp" />

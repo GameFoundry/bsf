@@ -120,6 +120,9 @@
     <ClInclude Include="Include\BsUpdateCallback.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsDebugDraw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -190,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsUpdateCallback.cpp">
       <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDebugDraw.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

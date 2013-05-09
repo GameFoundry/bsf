@@ -18,6 +18,9 @@ Reminders:
   - Make editor background have a tileable pattern (see Mini paper app on my cell). Since tileable images wouldn't work with scale9grid, it should be an overlay over the solid background.
     - Maybe use the background type I used for website in WebDIP?
     - Use black with yellow-orange highlights (highlight = selected button, selected frame border, selected entry box, etc.)
+  - Async callbacks. I'd like to be able to assign a callback to an async method, that will execute on the calling thread once the async operation is complete.
+     - For example when setting PixelData for a cursor I need to get PixelData from a texture, which is an async operation, in which case I need to block the calling thread
+	   until I get the result. But I'd rather apply the result once render thread is finished.
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

@@ -15,6 +15,7 @@ namespace BansheeEngine
 	{
 		initSpriteTextShader();
 		initSpriteImageShader();
+		initDebugDrawShader();
 	}
 
 	void D3D11BuiltinMaterialFactory::shutDown()
@@ -38,6 +39,11 @@ namespace BansheeEngine
 	HMaterial D3D11BuiltinMaterialFactory::createSpriteImageMaterial() const
 	{
 		return Material::create(mSpriteImageShader);
+	}
+
+	HMaterial D3D11BuiltinMaterialFactory::createDebugDrawMaterial() const
+	{
+		return Material::create(mDebugDrawShader);
 	}
 
 	void D3D11BuiltinMaterialFactory::initSpriteTextShader()
@@ -162,5 +168,43 @@ namespace BansheeEngine
 
 		HBlendState blendState = BlendState::create(desc);
 		newPass->setBlendState(blendState);
+	}
+
+	void D3D11BuiltinMaterialFactory::initDebugDrawShader()
+	{
+		String vsCode = "						\
+		float4x4 matViewProjection;				\
+												\
+		void vs_main(							\
+			in float4 inPos : POSITION,			\
+			in float4 color : COLOR,			\
+			out float4 oPosition : SV_Position, \
+			out float4 oColor : COLOR)			\
+		{										\
+			oPosition = mul(matViewProjection, inPos); \
+			oColor = color;						\
+		}";
+
+		String psCode = "																		\
+		float4 ps_main(in float4 inPos : SV_Position, in float4 color : COLOR) : SV_Target		\
+		{																						\
+			return color;																		\
+		}																						\
+		";	
+
+		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+
+		vsProgram.waitUntilLoaded();
+		psProgram.waitUntilLoaded();
+
+		mDebugDrawShader = Shader::create("DebugDrawShader");
+
+		mDebugDrawShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
+
+		TechniquePtr newTechnique = mDebugDrawShader->addTechnique("D3D11RenderSystem", RendererManager::getCoreRendererName()); 
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
 	}
 }

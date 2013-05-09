@@ -15,6 +15,7 @@ namespace BansheeEngine
 	{
 		initSpriteTextShader();
 		initSpriteImageShader();
+		initDebugDrawShader();
 	}
 
 	void GLBuiltinMaterialFactory::shutDown()
@@ -38,6 +39,11 @@ namespace BansheeEngine
 	HMaterial GLBuiltinMaterialFactory::createSpriteImageMaterial() const
 	{
 		return Material::create(mSpriteImageShader);
+	}
+
+	HMaterial GLBuiltinMaterialFactory::createDebugDrawMaterial() const
+	{
+		return Material::create(mDebugDrawShader);
 	}
 
 	void GLBuiltinMaterialFactory::initSpriteTextShader()
@@ -166,5 +172,10 @@ namespace BansheeEngine
 
 		HBlendState blendState = BlendState::create(desc);
 		newPass->setBlendState(blendState);
+	}
+
+	void GLBuiltinMaterialFactory::initDebugDrawShader()
+	{
+		// TODO - Not implemented
 	}
 }

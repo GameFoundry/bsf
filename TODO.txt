@@ -10,6 +10,10 @@ When I'm canceling command queue commands I might be canceling important user co
 
 --------
 
+DebugDraw
+ - DebugDraw support for AA lines
+ - Add DX9 and GL debug draw shaders
+
 Avoid updating GUI every frame. Instead remember processed events and only update then.
 I still re-create GUIWidget mesh every frame instead of just updating it.
 Make it so that widgets can be batched together. Probably means GUIWidget::updateMesh methods needs to move up to GUIManager or similar.
