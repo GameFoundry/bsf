@@ -426,7 +426,7 @@ namespace CamelotFramework
 		mSwitchingFullscreen = false;
 	}
 	
-	void D3D9RenderWindow::buildPresentParameters(D3DPRESENT_PARAMETERS* presentParams)
+	void D3D9RenderWindow::buildPresentParameters(D3DPRESENT_PARAMETERS* presentParams) const
 	{		
 		// Set up the presentation parameters		
 		IDirect3D9* pD3D = D3D9RenderSystem::getDirect3D9();
@@ -544,12 +544,15 @@ namespace CamelotFramework
 
 		D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
 
+		D3DMULTISAMPLE_TYPE fsaaType;
+		DWORD fsaaQuality;
+
 		rsys->determineFSAASettings(mDevice->getD3D9Device(),
 			mFSAA, mFSAAHint, presentParams->BackBufferFormat, mIsFullScreen, 
-			&mFSAAType, &mFSAAQuality);
+			&fsaaType, &fsaaQuality);
 
-		presentParams->MultiSampleType = mFSAAType;
-		presentParams->MultiSampleQuality = (mFSAAQuality == 0) ? 0 : mFSAAQuality;
+		presentParams->MultiSampleType = fsaaType;
+		presentParams->MultiSampleQuality = (fsaaQuality == 0) ? 0 : fsaaQuality;
 
 		// Check sRGB
 		if (mHwGamma)
@@ -614,7 +617,7 @@ namespace CamelotFramework
 			mDevice->present(this);		
 	}
 
-	void D3D9RenderWindow::getCustomAttribute( const String& name, void* pData )
+	void D3D9RenderWindow::getCustomAttribute( const String& name, void* pData ) const
 	{
 		// Valid attributes and their equvalent native functions:
 		// D3DDEVICE			: getD3DDevice
@@ -664,13 +667,13 @@ namespace CamelotFramework
 		mDevice->copyContentsToMemory(this, dst, buffer);
 	}
 	//-----------------------------------------------------------------------------
-	IDirect3DDevice9* D3D9RenderWindow::getD3D9Device()
+	IDirect3DDevice9* D3D9RenderWindow::getD3D9Device() const
 	{
 		return mDevice->getD3D9Device();
 	}
 
 	//-----------------------------------------------------------------------------
-	IDirect3DSurface9* D3D9RenderWindow::getRenderSurface()
+	IDirect3DSurface9* D3D9RenderWindow::getRenderSurface() const 
 	{
 		return mDevice->getBackBuffer(this);
 	}
@@ -682,7 +685,7 @@ namespace CamelotFramework
 	}
 
 	//-----------------------------------------------------------------------------
-	D3D9Device* D3D9RenderWindow::getDevice()
+	D3D9Device* D3D9RenderWindow::getDevice() const
 	{
 		return mDevice;
 	}

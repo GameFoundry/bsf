@@ -67,7 +67,7 @@ namespace CamelotFramework
 	}
 
 	//---------------------------------------------------------------------
-	D3D9Device::RenderWindowToResorucesIterator D3D9Device::getRenderWindowIterator(D3D9RenderWindow* renderWindow)
+	D3D9Device::RenderWindowToResorucesIterator D3D9Device::getRenderWindowIterator(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
 
@@ -78,7 +78,7 @@ namespace CamelotFramework
 	}
 
 	//---------------------------------------------------------------------
-	void D3D9Device::attachRenderWindow(D3D9RenderWindow* renderWindow)
+	void D3D9Device::attachRenderWindow(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
 
@@ -95,7 +95,7 @@ namespace CamelotFramework
 	}
 
 	//---------------------------------------------------------------------
-	void D3D9Device::detachRenderWindow(D3D9RenderWindow* renderWindow)
+	void D3D9Device::detachRenderWindow(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
 
@@ -218,7 +218,7 @@ namespace CamelotFramework
 	}
 
 	//---------------------------------------------------------------------
-	bool D3D9Device::acquire(D3D9RenderWindow* renderWindow)
+	bool D3D9Device::acquire(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		
@@ -243,7 +243,7 @@ namespace CamelotFramework
 	}	
 
 	//---------------------------------------------------------------------
-	IDirect3DSurface9* D3D9Device::getDepthBuffer(D3D9RenderWindow* renderWindow)
+	IDirect3DSurface9* D3D9Device::getDepthBuffer(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);		
 
@@ -251,14 +251,14 @@ namespace CamelotFramework
 	}
 
 	//---------------------------------------------------------------------
-	IDirect3DSurface9* D3D9Device::getBackBuffer(D3D9RenderWindow* renderWindow)
+	IDirect3DSurface9* D3D9Device::getBackBuffer(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 	
 		return it->second->backBuffer;		
 	}
 	//---------------------------------------------------------------------
-	void D3D9Device::setAdapterOrdinalIndex(D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex)
+	void D3D9Device::setAdapterOrdinalIndex(const D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 
@@ -461,7 +461,7 @@ namespace CamelotFramework
 	}
 
 	//---------------------------------------------------------------------
-	IDirect3DDevice9* D3D9Device::getD3D9Device()
+	IDirect3DDevice9* D3D9Device::getD3D9Device() const
 	{
 		return mpDevice;
 	}
@@ -483,7 +483,7 @@ namespace CamelotFramework
 
 			while (it != mMapRenderWindowToResoruces.end())
 			{
-				D3D9RenderWindow* renderWindow = it->first;
+				const D3D9RenderWindow* renderWindow = it->first;
 				RenderWindowResources* renderWindowResources = it->second;
 
 				// Ask the render window to build it's own parameters.
@@ -598,7 +598,7 @@ namespace CamelotFramework
 	void D3D9Device::createD3D9Device()
 	{		
 		// Update focus window.
-		D3D9RenderWindow* primaryRenderWindow = getPrimaryWindow();
+		const D3D9RenderWindow* primaryRenderWindow = getPrimaryWindow();
 
 		// Case we have to share the same focus window.
 		if (msSharedFocusWindow != NULL)
@@ -732,7 +732,7 @@ namespace CamelotFramework
 	}
 
 	//---------------------------------------------------------------------
-	void D3D9Device::invalidate(D3D9RenderWindow* renderWindow)
+	void D3D9Device::invalidate(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 
@@ -778,7 +778,7 @@ namespace CamelotFramework
 	}
 
 	//---------------------------------------------------------------------
-	bool D3D9Device::validateDeviceState(D3D9RenderWindow* renderWindow)
+	bool D3D9Device::validateDeviceState(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);		
 		RenderWindowResources* renderWindowResources =  it->second;
@@ -841,7 +841,7 @@ namespace CamelotFramework
 		
 
 	//---------------------------------------------------------------------
-	void D3D9Device::validateBackBufferSize(D3D9RenderWindow* renderWindow)
+	void D3D9Device::validateBackBufferSize(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		RenderWindowResources*	renderWindowResources = it->second;
@@ -870,7 +870,6 @@ namespace CamelotFramework
 		if (renderWindow->isFullScreen())
 			return true;
 
-		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		HMONITOR	hRenderWindowMonitor = NULL;
 
 		// Find the monitor this render window belongs to.
@@ -899,7 +898,7 @@ namespace CamelotFramework
 	}
 
 	//---------------------------------------------------------------------
-	void D3D9Device::present(D3D9RenderWindow* renderWindow)
+	void D3D9Device::present(const D3D9RenderWindow* renderWindow)
 	{		
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		RenderWindowResources*	renderWindowResources = it->second;				
@@ -950,7 +949,7 @@ namespace CamelotFramework
 	void D3D9Device::acquireRenderWindowResources(RenderWindowToResorucesIterator it)
 	{
 		RenderWindowResources*	renderWindowResources = it->second;
-		D3D9RenderWindow*		renderWindow = it->first;			
+		const D3D9RenderWindow*	renderWindow = it->first;			
 		
 		releaseRenderWindowResources(renderWindowResources);
 
@@ -1036,7 +1035,7 @@ namespace CamelotFramework
 		renderWindowResources->acquired = true; 
 	}
 	//---------------------------------------------------------------------
-	bool D3D9Device::isSwapChainWindow(D3D9RenderWindow* renderWindow)
+	bool D3D9Device::isSwapChainWindow(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		
@@ -1047,7 +1046,7 @@ namespace CamelotFramework
 	}
 
 	//---------------------------------------------------------------------
-	D3D9RenderWindow* D3D9Device::getPrimaryWindow()
+	const D3D9RenderWindow* D3D9Device::getPrimaryWindow()
 	{		
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
 	
@@ -1093,7 +1092,7 @@ namespace CamelotFramework
 			UINT32 nextPresParamIndex = 0;
 
 			RenderWindowToResorucesIterator it;
-			D3D9RenderWindow* deviceFocusWindow = NULL;
+			const D3D9RenderWindow* deviceFocusWindow = NULL;
 
 			// In case a d3d9 device exists - try to keep the present parameters order
 			// so that the window that the device is focused on will stay the same and we
@@ -1129,7 +1128,7 @@ namespace CamelotFramework
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9Device::copyContentsToMemory(D3D9RenderWindow* renderWindow, 
+	void D3D9Device::copyContentsToMemory(const D3D9RenderWindow* renderWindow, 
 		const PixelData &dst, RenderTarget::FrameBuffer buffer)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);

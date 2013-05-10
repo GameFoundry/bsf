@@ -12,7 +12,7 @@ namespace CamelotFramework
 		virtual ~D3D11RenderTexture();
 
 		bool requiresTextureFlipping() const { return false; }
-		void getCustomAttribute(const String& name, void* pData);
+		void getCustomAttribute(const String& name, void* pData) const;
 
 	protected:
 		friend class D3D11TextureManager;

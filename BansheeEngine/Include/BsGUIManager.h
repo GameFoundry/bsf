@@ -3,8 +3,6 @@
 #include "BsPrerequisites.h"
 #include "CmModule.h"
 
-#include "boost/signals/connection.hpp"
-
 namespace BansheeEngine
 {
 	/**
@@ -27,13 +25,7 @@ namespace BansheeEngine
 
 		void update();
 	private:
-		boost::signals::connection windowCreateConn;
-		boost::signals::connection windowDestroyConn;
-
 		std::vector<GUIWidget*> mWidgets;
-		std::unordered_map<const CM::RenderWindow*, std::vector<GUIWidget*>> mInputMap;
-
-		void doOnWindowCreated(CM::RenderWindow* window);
-		void doOnWindowDestroyed(CM::RenderWindow* window);
+		std::unordered_map<const CM::RenderWindow*, std::vector<GUIWidget*>> mWindowWidgetMap;
 	};
 }

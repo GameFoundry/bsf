@@ -12,7 +12,7 @@ namespace CamelotFramework
 		virtual ~GLMultiRenderTexture();
 
 		bool requiresTextureFlipping() const { return true; }
-		void getCustomAttribute(const String& name, void* pData);
+		void getCustomAttribute(const String& name, void* pData) const;
 	protected:
 		friend class GLTextureManager;
 

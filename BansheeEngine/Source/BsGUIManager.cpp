@@ -6,6 +6,7 @@
 #include "CmMesh.h"
 #include "CmUtil.h"
 #include "CmRenderWindowManager.h"
+#include "CmCursor.h"
 #include "CmException.h"
 
 using namespace CamelotFramework;
@@ -36,7 +37,7 @@ namespace BansheeEngine
 		if(findIter != end(mWidgets))
 			mWidgets.erase(findIter);
 
-		for(auto& windowMap : mInputMap)
+		for(auto& windowMap : mWindowWidgetMap)
 		{
 			auto& widgets = windowMap.second;
 			auto iterFind = std::find(begin(widgets), end(widgets), widget);
@@ -48,10 +49,13 @@ namespace BansheeEngine
 
 	void GUIManager::attachWidgetToWindow(const RenderWindow* window, GUIWidget* widget)
 	{
-		auto findIter = mInputMap.find(window);
+		auto findIter = mWindowWidgetMap.find(window);
 
-		if(findIter == mInputMap.end())
-			CM_EXCEPT(InternalErrorException, "Cannot find specified window in the window list.");
+		if(findIter == mWindowWidgetMap.end())
+		{
+			mWindowWidgetMap.insert(std::make_pair(window, std::vector<GUIWidget*>()));
+			findIter = mWindowWidgetMap.find(window);
+		}
 
 		std::vector<GUIWidget*>& widgets = findIter->second;
 
@@ -71,21 +75,15 @@ namespace BansheeEngine
 
 	void GUIManager::update()
 	{
+		for(auto& window : mWindowWidgetMap)
+		{
+			if(!window.first->getHasFocus())
+				continue;
 
-	}
-
-	void GUIManager::doOnWindowCreated(RenderWindow* window)
-	{
-		mInputMap.insert(std::make_pair(window, std::vector<GUIWidget*>()));
-	}
-
-	void GUIManager::doOnWindowDestroyed(RenderWindow* window)
-	{
-		auto findIter = mInputMap.find(window);
-
-		if(findIter == mInputMap.end())
-			CM_EXCEPT(InternalErrorException, "Cannot find specified window in the window list.");
-
-		mInputMap.erase(findIter);
+			for(auto& widget : mWidgets)
+			{
+				//Int2 screenPos = Cursor::getWindowPosition(*window.first);
+			}
+		}
 	}
 }

@@ -12,7 +12,7 @@ namespace CamelotFramework
 		virtual ~D3D9RenderTexture();
 
 		bool requiresTextureFlipping() const { return false; }
-		virtual void getCustomAttribute(const String& name, void* pData);
+		virtual void getCustomAttribute(const String& name, void* pData) const;
 
 	protected:
 		friend class D3D9TextureManager;

@@ -44,8 +44,8 @@ namespace CamelotFramework {
 
 	// Interface.
 	public:
-		void					attachRenderWindow		(D3D9RenderWindow* renderWindow);
-		void					detachRenderWindow		(D3D9RenderWindow* renderWindow);
+		void					attachRenderWindow		(const D3D9RenderWindow* renderWindow);
+		void					detachRenderWindow		(const D3D9RenderWindow* renderWindow);
 	
 		bool					acquire					();
 		
@@ -53,7 +53,7 @@ namespace CamelotFramework {
 		void					destroy					();		
 		
 		bool					isDeviceLost			();				
-		IDirect3DDevice9*		getD3D9Device			();
+		IDirect3DDevice9*		getD3D9Device			() const;
 					
 		UINT					getAdapterNumber		() const;
 		D3DDEVTYPE				getDeviceType			() const;
@@ -65,17 +65,17 @@ namespace CamelotFramework {
 		D3DFORMAT				getDepthStencilFormat	() const;
 
 		bool					validate				(D3D9RenderWindow* renderWindow);
-		void					invalidate				(D3D9RenderWindow* renderWindow);
+		void					invalidate				(const D3D9RenderWindow* renderWindow);
 
-		void					present					(D3D9RenderWindow* renderWindow);
+		void					present					(const D3D9RenderWindow* renderWindow);
 		
-		IDirect3DSurface9*		getDepthBuffer			(D3D9RenderWindow* renderWindow);
-		IDirect3DSurface9*		getBackBuffer			(D3D9RenderWindow* renderWindow);
+		IDirect3DSurface9*		getDepthBuffer			(const D3D9RenderWindow* renderWindow);
+		IDirect3DSurface9*		getBackBuffer			(const D3D9RenderWindow* renderWindow);
 
 		UINT32					getLastPresentFrame		() const { return mLastPresentFrame; }
 
-		void					setAdapterOrdinalIndex  (D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex);
-		void					copyContentsToMemory(D3D9RenderWindow* window, const PixelData &dst, RenderTarget::FrameBuffer buffer);
+		void					setAdapterOrdinalIndex  (const D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex);
+		void					copyContentsToMemory(const D3D9RenderWindow* window, const PixelData &dst, RenderTarget::FrameBuffer buffer);
 		void					clearDeviceStreams		();
 	
 	public:
@@ -114,16 +114,16 @@ namespace CamelotFramework {
 			D3DPRESENT_PARAMETERS	presentParameters;				// Present parameters of the render window.
 			bool					acquired;						// True if resources acquired.			
 		};		
-		typedef map<D3D9RenderWindow*, RenderWindowResources*>::type RenderWindowToResorucesMap;
+		typedef map<const D3D9RenderWindow*, RenderWindowResources*>::type RenderWindowToResorucesMap;
 		typedef RenderWindowToResorucesMap::iterator				 RenderWindowToResorucesIterator;
 
 		RenderWindowToResorucesMap mMapRenderWindowToResoruces;		// Map between render window to resources.
 
 
 	protected:
-		RenderWindowToResorucesIterator getRenderWindowIterator (D3D9RenderWindow* renderWindow);
+		RenderWindowToResorucesIterator getRenderWindowIterator (const D3D9RenderWindow* renderWindow);
 
-		bool					acquire							(D3D9RenderWindow* renderWindow);
+		bool					acquire							(const D3D9RenderWindow* renderWindow);
 		bool					reset							();
 		void					updatePresentationParameters	();
 		void					updateRenderWindowsIndices		();
@@ -135,11 +135,11 @@ namespace CamelotFramework {
 		void					notifyDeviceLost				();
 
 		void					validateFocusWindow				();
-		void					validateBackBufferSize			(D3D9RenderWindow* renderWindow);
+		void					validateBackBufferSize			(const D3D9RenderWindow* renderWindow);
 		bool					validateDisplayMonitor			(D3D9RenderWindow* renderWindow);
-		bool					validateDeviceState				(D3D9RenderWindow* renderWindow);
-		bool					isSwapChainWindow				(D3D9RenderWindow* renderWindow);
-		D3D9RenderWindow*		getPrimaryWindow				();
+		bool					validateDeviceState				(const D3D9RenderWindow* renderWindow);
+		bool					isSwapChainWindow				(const D3D9RenderWindow* renderWindow);
+		const D3D9RenderWindow*	getPrimaryWindow				();
 		void					setSharedWindowHandle			(HWND hSharedHWND);
 
 	private:

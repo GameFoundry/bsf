@@ -1570,7 +1570,7 @@ namespace CamelotFramework
 	/************************************************************************/
 
 	//---------------------------------------------------------------------
-	D3D9DriverList* D3D9RenderSystem::getDirect3DDrivers()
+	D3D9DriverList* D3D9RenderSystem::getDirect3DDrivers() const
 	{
 		if( !mDriverList )
 			mDriverList = CM_NEW(D3D9DriverList, GenAlloc) D3D9DriverList();
@@ -2292,7 +2292,7 @@ namespace CamelotFramework
 		for (UINT32 i = 0; i < mDeviceManager->getDeviceCount(); ++i)
 		{
 			D3D9Device* currDevice = mDeviceManager->getDevice(i);
-			D3D9RenderWindow* currDevicePrimaryWindow = currDevice->getPrimaryWindow();
+			const D3D9RenderWindow* currDevicePrimaryWindow = currDevice->getPrimaryWindow();
 			IDirect3DSurface9* pSurface = currDevicePrimaryWindow->getRenderSurface();
 			D3DSURFACE_DESC srfDesc;
 
@@ -2376,7 +2376,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::determineFSAASettings(IDirect3DDevice9* d3d9Device,
 		UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
-		bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality)
+		bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality) const
 	{
 		bool ok = false;
 		bool qualityHint = fsaaHint.find("Quality") != String::npos;

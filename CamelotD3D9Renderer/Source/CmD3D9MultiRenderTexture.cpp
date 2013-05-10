@@ -49,7 +49,7 @@ namespace CamelotFramework
 		MultiRenderTexture::initialize_internal();
 	}
 
-	void D3D9MultiRenderTexture::getCustomAttribute(const String& name, void* pData)
+	void D3D9MultiRenderTexture::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name == "DDBACKBUFFER")
 		{

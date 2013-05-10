@@ -47,11 +47,11 @@ namespace CamelotFramework
 		void 				reposition			(int left, int top);
 		void 				resize				(unsigned int width, unsigned int height);
 		HWND 				getWindowHandle		() const { return mHWnd; }				
-		IDirect3DDevice9*	getD3D9Device		();
-		D3D9Device*			getDevice			();
+		IDirect3DDevice9*	getD3D9Device		() const;
+		D3D9Device*			getDevice			() const;
 		void				setDevice			(D3D9Device* device);
 
-		void				getCustomAttribute	(const String& name, void* pData);
+		void				getCustomAttribute	(const String& name, void* pData) const;
 		
 		/** Overridden - see RenderTarget.
 		*/
@@ -64,10 +64,10 @@ namespace CamelotFramework
 		void				windowMovedOrResized	();
 	
 		/// Build the presentation parameters used with this window
-		void				buildPresentParameters	(D3DPRESENT_PARAMETERS* presentParams);
+		void				buildPresentParameters	(D3DPRESENT_PARAMETERS* presentParams) const;
 		
 		/// Accessor for render surface
-		IDirect3DSurface9* getRenderSurface();
+		IDirect3DSurface9* getRenderSurface() const;
 
 		/// Are we in the middle of switching between fullscreen and windowed
 		bool _getSwitchingFullscreen() const;

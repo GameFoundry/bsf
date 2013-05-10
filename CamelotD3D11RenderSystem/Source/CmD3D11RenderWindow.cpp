@@ -434,7 +434,7 @@ namespace CamelotFramework
 		}
 	} 
 
-	void D3D11RenderWindow::getCustomAttribute( const String& name, void* pData )
+	void D3D11RenderWindow::getCustomAttribute( const String& name, void* pData ) const
 	{
 		if(name == "WINDOW")
 		{

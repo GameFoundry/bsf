@@ -174,7 +174,7 @@ namespace CamelotFramework
 
 		/// Take in some requested FSAA settings and output supported D3D settings
 		void determineFSAASettings(IDirect3DDevice9* d3d9Device, UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
-			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality);
+			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality) const;
 
 		void registerWindow(RenderWindow& renderWindow);
 
@@ -188,7 +188,7 @@ namespace CamelotFramework
 		// Scissor test rectangle
 		RECT mScissorRect;
 		/// List of D3D drivers installed (video cards)
-		D3D9DriverList* mDriverList;
+		mutable D3D9DriverList* mDriverList; // TODO - Mutable because it gets constructed in getDirect3DDrivers(). Change that.
 		/// Currently active driver
 		D3D9Driver* mActiveD3DDriver;
 		/// NVPerfHUD allowed?
@@ -214,7 +214,7 @@ namespace CamelotFramework
 		UINT32 mNumTexStages;
 		sD3DTextureStageDesc* mTexStageDesc;
 
-		D3D9DriverList* getDirect3DDrivers();
+		D3D9DriverList* getDirect3DDrivers() const;
 				
 		// state management methods, very primitive !!!
 		HRESULT __SetRenderState(D3DRENDERSTATETYPE state, DWORD value);

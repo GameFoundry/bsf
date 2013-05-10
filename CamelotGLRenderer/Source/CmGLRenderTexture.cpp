@@ -76,7 +76,7 @@ namespace CamelotFramework
 		RenderTexture::initialize_internal();
 	}
 
-	void GLRenderTexture::getCustomAttribute(const String& name, void* pData)
+	void GLRenderTexture::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name=="FBO")
 		{

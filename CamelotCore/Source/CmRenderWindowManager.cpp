@@ -8,24 +8,33 @@ namespace CamelotFramework
 		renderWindow->setThisPtr(renderWindow);
 		renderWindow->initialize();
 
-		mCreatedWindows.push_back(renderWindow.get());
-		
-		if(!onWindowCreated.empty())
-			onWindowCreated(renderWindow.get());
+		{
+			CM_LOCK_MUTEX(mWindowMutex);
 
+			mCreatedWindows.push_back(renderWindow.get());
+		}
+		
 		return renderWindow;
 	}
 
 	void RenderWindowManager::windowDestroyed(RenderWindow* window)
 	{
-		auto iterFind = std::find(begin(mCreatedWindows), end(mCreatedWindows), window);
+		{
+			CM_LOCK_MUTEX(mWindowMutex);
 
-		if(iterFind == mCreatedWindows.end())
-			CM_EXCEPT(InternalErrorException, "Trying to destroy a window that is not in the created windows list.");
+			auto iterFind = std::find(begin(mCreatedWindows), end(mCreatedWindows), window);
 
-		if(!onWindowDestroyed.empty())
-			onWindowDestroyed(window);
+			if(iterFind == mCreatedWindows.end())
+				CM_EXCEPT(InternalErrorException, "Trying to destroy a window that is not in the created windows list.");
 
-		mCreatedWindows.erase(iterFind);
+			mCreatedWindows.erase(iterFind);
+		}
+	}
+
+	std::vector<RenderWindow*> RenderWindowManager::getRenderWindows() const
+	{
+		CM_LOCK_MUTEX(mWindowMutex);
+
+		return mCreatedWindows;
 	}
 }

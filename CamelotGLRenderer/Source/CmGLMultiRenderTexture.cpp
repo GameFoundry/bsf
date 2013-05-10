@@ -66,7 +66,7 @@ namespace CamelotFramework
 		MultiRenderTexture::destroy_internal();
 	}
 
-	void GLMultiRenderTexture::getCustomAttribute(const String& name, void* pData)
+	void GLMultiRenderTexture::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name=="FBO")
 		{

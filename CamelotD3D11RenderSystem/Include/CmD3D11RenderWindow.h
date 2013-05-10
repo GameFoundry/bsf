@@ -25,7 +25,7 @@ namespace CamelotFramework
 		bool isClosed() const									{ return mClosed; }
 		bool isHidden() const									{ return mHidden; }
 
-		void getCustomAttribute( const String& name, void* pData );
+		void getCustomAttribute( const String& name, void* pData ) const;
 		DXGI_SWAP_CHAIN_DESC* getPresentationParameters(void)	{ return &mSwapChainDesc; }
 		HWND getWindowHandle() const							{ return mHWnd; }
 

@@ -112,7 +112,7 @@ namespace CamelotFramework
             @param
                 pData Pointer to memory of the right kind of structure to receive the info.
         */
-        virtual void getCustomAttribute(const String& name, void* pData);
+        virtual void getCustomAttribute(const String& name, void* pData) const;
 
 		/** Sets the priority of this render target in relation to the others. 
         @remarks

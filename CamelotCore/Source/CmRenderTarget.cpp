@@ -72,7 +72,7 @@ namespace CamelotFramework {
         return mColorDepth;
     }
 
-	void RenderTarget::getCustomAttribute(const String& name, void* pData)
+	void RenderTarget::getCustomAttribute(const String& name, void* pData) const
     {
         CM_EXCEPT(InvalidParametersException, "Attribute not found.");
     }
