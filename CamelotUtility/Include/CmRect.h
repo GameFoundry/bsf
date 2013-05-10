@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
-#include "CmPoint.h"
+#include "CmInt2.h"
 
 namespace CamelotFramework
 {
@@ -21,7 +21,7 @@ namespace CamelotFramework
 			:x(_x), y(_y), width(_width), height(_height)
 		{ }
 
-		bool contains(Point point)
+		bool contains(Int2 point)
 		{
 			if(point.x >= x && point.x <= (x + width))
 			{

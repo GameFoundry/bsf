@@ -10,7 +10,7 @@ namespace CamelotFramework
 	HCURSOR Cursor::mCursor;
 	bool Cursor::mUsingCustom = false;
 
-	Int2 Cursor::getWindowPosition(RenderWindow& window)
+	Int2 Cursor::getWindowPosition(const RenderWindow& window)
 	{
 		POINT screenPos;
 		GetCursorPos(&screenPos);
@@ -23,7 +23,7 @@ namespace CamelotFramework
 		return Int2(screenPos.x, screenPos.y);
 	}
 
-	void Cursor::setWindowPosition(RenderWindow& window, const Int2& pos)
+	void Cursor::setWindowPosition(const RenderWindow& window, const Int2& pos)
 	{
 		POINT screenPos;
 
@@ -85,7 +85,7 @@ namespace CamelotFramework
 		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
-	void Cursor::clipToWindow(RenderWindow& window)
+	void Cursor::clipToWindow(const RenderWindow& window)
 	{
 		HWND hwnd;
 		window.getCustomAttribute("WINDOW", &hwnd);

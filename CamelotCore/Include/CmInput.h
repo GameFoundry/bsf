@@ -54,7 +54,7 @@ namespace CamelotFramework
 		float* mTimesHistoryBuffer;
 		int	mCurrentBufferIdx;
 
-		Point mMouseLastRel;
+		Int2 mMouseLastRel;
 		Rect mClipRect;
 		bool mUsingClipRect;
 

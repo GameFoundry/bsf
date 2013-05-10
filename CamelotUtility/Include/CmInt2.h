@@ -9,6 +9,11 @@ namespace CamelotFramework
 		int x;
 		int y;
 
+		inline Int2()
+			: x(0), y(0)
+		{
+		}
+
 		inline Int2(const int _x, const int _y )
             : x( _x ), y( _y )
         {

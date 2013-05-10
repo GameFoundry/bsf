@@ -177,9 +177,6 @@
     <ClInclude Include="Include\CmFileSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmPoint.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmRect.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>

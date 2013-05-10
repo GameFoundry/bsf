@@ -92,7 +92,7 @@ namespace CamelotFramework
 
 		onMouseMoved(event);
 
-		mMouseLastRel = Point(-event.relCoords.x, -event.relCoords.y);
+		mMouseLastRel = Int2(-event.relCoords.x, -event.relCoords.y);
 	}
 
 	void Input::mouseDown(const MouseEvent& event, MouseButton buttonID)
@@ -159,7 +159,7 @@ namespace CamelotFramework
 		mSmoothHorizontalAxis = Math::Clamp(horizontalTotal / HISTORY_BUFFER_SIZE, -1.0f, 1.0f);
 		mSmoothVerticalAxis = Math::Clamp(verticalTotal / HISTORY_BUFFER_SIZE, -1.0f, 1.0f);
 
-		mMouseLastRel = Point(0, 0);
+		mMouseLastRel = Int2(0, 0);
 	}
 
 	Input& gInput()

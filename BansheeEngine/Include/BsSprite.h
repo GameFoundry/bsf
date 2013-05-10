@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmPoint.h"
+#include "CmInt2.h"
 #include "CmRect.h"
 
 namespace BansheeEngine
@@ -98,6 +98,6 @@ namespace BansheeEngine
 		void clearMesh() const;
 
 		void clipToRect(CM::Vector2* vertices, CM::Vector2* uv, UINT32 numQuads, const CM::Rect& clipRect) const;
-		CM::Point getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height) const;
+		CM::Int2 getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height) const;
 	};
 }

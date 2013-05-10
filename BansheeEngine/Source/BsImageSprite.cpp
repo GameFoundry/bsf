@@ -69,7 +69,7 @@ namespace BansheeEngine
 			renderElem.indexes[i * 6 + 5] = i * 4 + 2;
 		}
 
-		Point offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
+		Int2 offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
 		Vector2 uvOffset(0.0f, 0.0f);
 		Vector2 uvScale(1.0f, 1.0f);
 		

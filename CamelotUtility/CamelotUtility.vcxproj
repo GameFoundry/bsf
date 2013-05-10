@@ -191,7 +191,6 @@
     <ClInclude Include="Include\CmModule.h" />
     <ClInclude Include="Include\CmORect.h" />
     <ClInclude Include="Include\CmPath.h" />
-    <ClInclude Include="Include\CmPoint.h" />
     <ClInclude Include="Include\CmRect.h" />
     <ClInclude Include="Include\CmRTTIField.h" />
     <ClInclude Include="Include\CmRTTIManagedDataBlockField.h" />

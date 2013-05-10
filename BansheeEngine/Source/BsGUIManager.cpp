@@ -82,7 +82,7 @@ namespace BansheeEngine
 
 			for(auto& widget : mWidgets)
 			{
-				//Int2 screenPos = Cursor::getWindowPosition(*window.first);
+				Int2 screenPos = Cursor::getWindowPosition(*window.first);
 			}
 		}
 	}

@@ -181,8 +181,8 @@ namespace BansheeEngine
 		}
 
 		UINT32 getWidth() const { return mWidth; }
-		Point getPosition() const { return mPosition; }
-		void setPosition(const Point& pos) { mPosition = pos; }
+		Int2 getPosition() const { return mPosition; }
+		void setPosition(const Int2& pos) { mPosition = pos; }
 
 		void fillBuffer(const vector<SpriteRenderElement>::type& renderElements, vector<UINT32>::type& faceOffsets, const FontData& fontData)
 		{
@@ -249,7 +249,7 @@ namespace BansheeEngine
 		UINT32 mWidth;
 		vector<TextWord*>::type mWords;
 		TextWord* mLastWord;
-		Point mPosition;
+		Int2 mPosition;
 
 		void calculateBounds()
 		{
@@ -376,7 +376,7 @@ namespace BansheeEngine
 		}
 
 		// Calc horizontal alignment offset and set final line positions
-		Point offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
+		Int2 offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
 		UINT32 curY = 0;
 		for(size_t i = 0; i < textLines.size(); i++)
 		{
@@ -394,7 +394,7 @@ namespace BansheeEngine
 				break;
 			}
 
-			textLines[i]->setPosition(offset + Point(horzOffset, vertOffset + curY));
+			textLines[i]->setPosition(offset + Int2(horzOffset, vertOffset + curY));
 
 			curY += fontData->fontDesc.lineHeight;
 		}

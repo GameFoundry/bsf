@@ -12,7 +12,7 @@ namespace BansheeEngine
 			borderTop(0), borderBottom(0)
 		{ }
 
-		CM::Point offset;
+		CM::Int2 offset;
 		UINT32 width;
 		UINT32 height;
 		CM::Rect clipRect;

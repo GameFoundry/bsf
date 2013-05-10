@@ -22,7 +22,7 @@ namespace BansheeEngine
 			horzAlign(THA_Left), vertAlign(TVA_Top), wordWrap(false)
 		{ }
 
-		CM::Point offset;
+		CM::Int2 offset;
 		UINT32 width;
 		UINT32 height;
 		CM::Rect clipRect;

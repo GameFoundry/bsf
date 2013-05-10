@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include <boost/signal.hpp>
-#include "CmPoint.h"
+#include "CmInt2.h"
 
 namespace CamelotFramework
 {
@@ -163,8 +163,8 @@ namespace CamelotFramework
 
 	struct MouseEvent
 	{
-		Point coords;
-		Point relCoords;
+		Int2 coords;
+		Int2 relCoords;
 
 		int z;
 		int relZ;

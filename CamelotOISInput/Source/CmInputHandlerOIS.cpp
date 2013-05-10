@@ -1,5 +1,5 @@
 #include "CmInputHandlerOIS.h"
-#include "CmPoint.h"
+#include "CmInt2.h"
 #include "OIS/OISException.h"
 
 namespace CamelotFramework
@@ -77,8 +77,8 @@ namespace CamelotFramework
 	bool InputHandlerOIS::mouseMoved(const OIS::MouseEvent& arg)
 	{
 		MouseEvent event;
-		event.coords = Point(arg.state.X.abs, arg.state.Y.abs);
-		event.relCoords = Point(arg.state.X.rel, arg.state.Y.rel);
+		event.coords = Int2(arg.state.X.abs, arg.state.Y.abs);
+		event.relCoords = Int2(arg.state.X.rel, arg.state.Y.rel);
 		event.z = arg.state.Z.abs;
 		event.relZ = arg.state.Z.rel;
 		onMouseMoved(event);
@@ -89,8 +89,8 @@ namespace CamelotFramework
 	bool InputHandlerOIS::mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id)
 	{
 		MouseEvent event;
-		event.coords = Point(arg.state.X.abs, arg.state.Y.abs);
-		event.relCoords = Point(arg.state.X.rel, arg.state.Y.rel);
+		event.coords = Int2(arg.state.X.abs, arg.state.Y.abs);
+		event.relCoords = Int2(arg.state.X.rel, arg.state.Y.rel);
 		event.z = arg.state.Z.abs;
 		event.relZ = arg.state.Z.rel;
 		onMouseDown(event, (MouseButton)(int)id);
@@ -101,8 +101,8 @@ namespace CamelotFramework
 	bool InputHandlerOIS::mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id)
 	{
 		MouseEvent event;
-		event.coords = Point(arg.state.X.abs, arg.state.Y.abs);
-		event.relCoords = Point(0, 0);
+		event.coords = Int2(arg.state.X.abs, arg.state.Y.abs);
+		event.relCoords = Int2(0, 0);
 		event.z = arg.state.Z.abs;
 		onMouseUp(event, (MouseButton)(int)id);
 

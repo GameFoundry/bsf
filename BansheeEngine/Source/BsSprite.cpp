@@ -63,31 +63,31 @@ namespace BansheeEngine
 		return renderElem.numQuads;
 	}
 
-	Point Sprite::getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height) const
+	Int2 Sprite::getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height) const
 	{
 		switch(anchor)
 		{
 		case SA_TopLeft:
-			return -Point(0, 0);
+			return -Int2(0, 0);
 		case SA_TopCenter:
-			return -Point(width / 2, 0);
+			return -Int2(width / 2, 0);
 		case SA_TopRight:
-			return -Point(width, 0);
+			return -Int2(width, 0);
 		case SA_MiddleLeft:
-			return -Point(0, height / 2);
+			return -Int2(0, height / 2);
 		case SA_MiddleCenter:
-			return -Point(width / 2, height / 2);
+			return -Int2(width / 2, height / 2);
 		case SA_MiddleRight:
-			return -Point(width, height / 2);
+			return -Int2(width, height / 2);
 		case SA_BottomLeft:
-			return -Point(0, height);
+			return -Int2(0, height);
 		case SA_BottomCenter:
-			return -Point(width / 2, height);
+			return -Int2(width / 2, height);
 		case SA_BottomRight:
-			return -Point(width, height);
+			return -Int2(width, height);
 		}
 
-		return Point();
+		return Int2();
 	}
 
 	void Sprite::updateBounds() const
