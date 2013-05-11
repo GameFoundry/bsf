@@ -33,22 +33,40 @@ namespace BansheeEngine
 	void ForwardRenderer::renderAll() 
 	{
 		RenderContext& renderContext = gMainRC();
-
 		const vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
-		for(auto iter = allCameras.begin(); iter != allCameras.end(); ++iter)
+
+		// Find all unique render targets
+		std::unordered_set<RenderTargetPtr> renderTargets;
+		for(auto& camera : allCameras)
 		{
-			render(*iter);
+			RenderTargetPtr target = camera->getViewport()->getTarget();
+			auto findIter = renderTargets.find(target);
 
-			ViewportPtr vp = (*iter)->getViewport();
-			if(vp != nullptr)
+			if(findIter == renderTargets.end())
 			{
-				RenderTargetPtr rt = vp->getTarget();
-
-				if(rt != nullptr)
-					renderContext.swapBuffers(rt); // TODO - This is wrong as potentially multiple viewports can share a single render target, and swap shouldn't
-				// be done for every one of them
+				renderTargets.insert(target);
 			}
 		}
+
+		// Clear all targets
+		for(auto& target : renderTargets)
+			renderContext.clear(target, FBT_COLOR | FBT_DEPTH, Color::Blue);
+
+		renderContext.beginFrame();
+
+		// Render all cameras
+		for(auto& camera : allCameras)
+			render(camera);
+
+		// Render overlays for all targets
+		for(auto& camera : allCameras)
+			OverlayManager::instance().render(camera->getViewport(), renderContext);
+
+		renderContext.endFrame();
+
+		// Swap all targets
+		for(auto& target : renderTargets)
+			renderContext.swapBuffers(target);
 	}
 
 	void ForwardRenderer::render(const HCamera& camera) 
@@ -65,10 +83,6 @@ namespace BansheeEngine
 		Matrix4 viewMatrixCstm = camera->getViewMatrix();
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
-
-		renderContext.clear(camera->getViewport()->getTarget(), FBT_COLOR | FBT_DEPTH, Color::Blue);
-
-		renderContext.beginFrame();
 
 		// TODO - sort renderables by material/pass/parameters to minimize state changes
 		for(auto iter = allRenderables.begin(); iter != allRenderables.end(); ++iter)
@@ -99,11 +113,6 @@ namespace BansheeEngine
 				renderContext.render(mesh->getRenderOperation());
 			}
 		}
-
-		// Render overlays for this camera
-		OverlayManager::instance().render(camera.get(), renderContext);
-
-		renderContext.endFrame();
 
 		// TODO - Sort renderables
 		// Render them

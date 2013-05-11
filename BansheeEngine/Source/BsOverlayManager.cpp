@@ -6,32 +6,34 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	void OverlayManager::render(const Camera* camera, RenderContext& renderContext) const
+	void OverlayManager::render(CM::ViewportPtr& target, RenderContext& renderContext) const
 	{
-		auto overlays = mOverlaysPerCamera.find(camera);
+		auto overlays = mOverlaysPerTarget.find(target.get());
 
-		if(overlays == mOverlaysPerCamera.end())
+		if(overlays == mOverlaysPerTarget.end())
 			return;
+
+		renderContext.setViewport(target);
 
 		for(auto& overlay : overlays->second)
 		{
-			overlay->render(camera, renderContext);
+			overlay->render(renderContext);
 		}
 	}
 
-	void OverlayManager::attachOverlay(const Camera* camera, const Overlay* overlay)
+	void OverlayManager::attachOverlay(const CM::Viewport* target, const Overlay* overlay)
 	{
-		mOverlaysPerCamera[camera].insert(overlay);
+		mOverlaysPerTarget[target].insert(overlay);
 	}
 
-	void OverlayManager::detachOverlay(const Camera* camera, const Overlay* overlay)
+	void OverlayManager::detachOverlay(const CM::Viewport* target, const Overlay* overlay)
 	{
-		mOverlaysPerCamera[camera].erase(overlay);
+		mOverlaysPerTarget[target].erase(overlay);
 	}
 
 	void OverlayManager::detachOverlayFromAll(const Overlay* overlay)
 	{
-		for(auto& overlays : mOverlaysPerCamera)
+		for(auto& overlays : mOverlaysPerTarget)
 		{
 			overlays.second.erase(overlay);
 		}

@@ -30,39 +30,26 @@ namespace BansheeEditor
 		mRenderWindow = RenderWindow::create(renderWindowDesc, gApplication().getPrimaryWindow());
 
 		HSceneObject so = SceneObject::create("EditorWindow-" + name);
-		mGUI = so->addComponent<GUIWidget>();
-		GUIManager::instance().attachWidgetToWindow(mRenderWindow.get(), mGUI.get());
 
 		GameObjectHandle<UpdateCallback> updateCallback = so->addComponent<UpdateCallback>();
-
 		updateCallback->onUpdate.connect(boost::bind(&EditorWindow::update, this));
 
 		HCamera camera = so->addComponent<Camera>();
-		camera->init(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
+		camera->initialize(mRenderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
 		camera->setNearClipDistance(5);
 		camera->setAspectRatio(1.0f);
 		camera->setIgnoreSceneRenderables(true);
-		
-		//// DEBUG ONLY - Skin should exist externally
-		//mSkin = CM_NEW(GUISkin, GUIAlloc) GUISkin();
 
-		OverlayManager::instance().attachOverlay(camera.get(), mGUI.get());		
+		mGUI = so->addComponent<GUIWidget>();
+		mGUI->initialize(camera->getViewport().get(), mRenderWindow.get());
 
-		//GUIElementStyle labelStyle;
-		//labelStyle.font = dbgFont;
-		//labelStyle.fontSize = dbgFontSize;
-
-		//mSkin->setStyle(GUILabel::getGUITypeName(), labelStyle);
-
-		//gui->setSkin(mSkin);
-		//// END DEBUG
+		//// DEBUG
 		mGUI->setSkin(&EngineGUI::instance().getSkin());
 		mDbgLabel = GUILabel::create(mGUI.get(), "Testing test", renderWindowDesc.width);
 	}
 
 	EditorWindow::~EditorWindow()
 	{
-		GUIManager::instance().detachWidgetFromWindow(mRenderWindow.get(), mGUI.get());
 		mRenderWindow->destroy();
 	}
 

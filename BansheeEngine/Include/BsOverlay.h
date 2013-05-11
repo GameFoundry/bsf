@@ -17,11 +17,22 @@ namespace BansheeEngine
 	public:
 		virtual ~Overlay();
 
-		virtual void render(const Camera* camera, CM::RenderContext& renderContext) const = 0;
+		/**
+		 * @brief	Initializes the GUIWidget. Must be called in order for GUIWidget to start rendering.
+		 *
+		 * @param 	target			Target onto which we want to render the widget.
+		 */
+		void initialize(CM::Viewport* target);
+
+		virtual void render(CM::RenderContext& renderContext) const = 0;
 		virtual void update() {}
+
+		CM::Viewport* getTarget() const { return mRenderTarget; }
 
 	protected:
 		friend class CM::SceneObject;
+
+		CM::Viewport* mRenderTarget;
 
 		Overlay(const CM::HSceneObject& parent);
 	};

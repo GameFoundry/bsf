@@ -516,7 +516,7 @@ namespace BansheeEngine {
         */
         virtual ~Camera();
 
-		void init(CM::RenderTargetPtr target = nullptr,
+		void initialize(CM::RenderTargetPtr target = nullptr,
 			float left = 0.0f, float top = 0.0f,
 			float width = 1.0f, float height = 1.0f,
 			int ZOrder = 0);

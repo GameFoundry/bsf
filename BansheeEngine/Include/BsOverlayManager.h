@@ -7,9 +7,9 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Takes care which overlay gets rendered on which camera.
+	 * @brief	Takes care which overlay gets rendered on which render target.
 	 * 			
-	 * @note	Overlays could have been stored directly on a Camera but this class
+	 * @note	Overlays could have been stored directly on a RenderTarget but this class
 	 * 			was created to decouple the connection.
 	 * 
 	 * @see Overlay
@@ -17,12 +17,15 @@ namespace BansheeEngine
 	class BS_EXPORT OverlayManager : public CM::Module<OverlayManager>
 	{
 	public:
-		void render(const Camera* camera, CM::RenderContext& renderContext) const;
+		void render(CM::ViewportPtr& target, CM::RenderContext& renderContext) const;
 
-		void attachOverlay(const Camera* camera, const Overlay* overlay);
-		void detachOverlay(const Camera* camera, const Overlay* overlay);
-		void detachOverlayFromAll(const Overlay* overlay);
 	private:
-		std::unordered_map<const Camera*, std::unordered_set<const Overlay*>> mOverlaysPerCamera;
+		friend class Overlay;
+
+		void attachOverlay(const CM::Viewport* target, const Overlay* overlay);
+		void detachOverlay(const CM::Viewport* target, const Overlay* overlay);
+		void detachOverlayFromAll(const Overlay* overlay);
+
+		std::unordered_map<const CM::Viewport*, std::unordered_set<const Overlay*>> mOverlaysPerTarget;
 	};
 }

@@ -89,7 +89,7 @@ namespace BansheeEngine
     Camera::~Camera()
     {
     }
-	void Camera::init(RenderTargetPtr target, float left, float top, float width, float height, int ZOrder)
+	void Camera::initialize(RenderTargetPtr target, float left, float top, float width, float height, int ZOrder)
 	{
 		target->waitUntilInitialized();
 

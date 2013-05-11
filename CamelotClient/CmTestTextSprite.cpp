@@ -28,8 +28,6 @@ namespace CamelotFramework
 
 	void TestTextSprite::init(const HCamera& camera, const String& text)
 	{
-		OverlayManager::instance().attachOverlay(camera.get(), this);		
-
 		setSkin(&EngineGUI::instance().getSkin());
 
 		GUILabel::create(this, text, 400, 400, true, THA_Right, TVA_Bottom);

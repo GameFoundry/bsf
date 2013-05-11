@@ -9,6 +9,7 @@
 #include "CmPass.h"
 #include "CmMesh.h"
 #include "CmInt2.h"
+#include "BsOverlayManager.h"
 #include "BsCamera.h"
 #include "CmViewport.h"
 #include "CmSceneObject.h"
@@ -20,7 +21,7 @@ namespace BansheeEngine
 	GUISkin GUIWidget::DefaultSkin;
 
 	GUIWidget::GUIWidget(const HSceneObject& parent)
-		:Overlay(parent), mSkin(nullptr)
+		:Overlay(parent), mSkin(nullptr), mOwnerWindow(nullptr)
 	{
 		GUIManager::instance().registerWidget(this);
 	}
@@ -35,6 +36,13 @@ namespace BansheeEngine
 		}
 
 		mElements.clear();
+	}
+
+	void GUIWidget::initialize(Viewport* target, const RenderWindow* ownerWindow)
+	{
+		Overlay::initialize(target);
+
+		mOwnerWindow = ownerWindow;
 	}
 
 	void GUIWidget::registerElement(GUIElement* elem)
@@ -224,7 +232,7 @@ namespace BansheeEngine
 		mBounds.applyTransform(worldTfrm);
 	}
 
-	void GUIWidget::render(const Camera* camera, RenderContext& renderContext) const
+	void GUIWidget::render(RenderContext& renderContext) const
 	{
 		// Mesh is re-created every frame. There might be a better approach that only recreates it upon change,
 		// but for now it seems like too much hassle for something like GUI that is pretty dynamic anyway.
@@ -238,8 +246,8 @@ namespace BansheeEngine
 
 			// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
 			// might be more optimal to just scale the mesh as the resolution changes?
-			float invViewportWidth = 1.0f / (camera->getViewport()->getWidth() * 0.5f);
-			float invViewportHeight = 1.0f / (camera->getViewport()->getHeight() * 0.5f);
+			float invViewportWidth = 1.0f / (getTarget()->getWidth() * 0.5f);
+			float invViewportHeight = 1.0f / (getTarget()->getHeight() * 0.5f);
 
 			material->setFloat("invViewportWidth", invViewportWidth);
 			material->setFloat("invViewportHeight", invViewportHeight);

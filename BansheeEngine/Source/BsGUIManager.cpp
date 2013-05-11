@@ -35,61 +35,6 @@ namespace BansheeEngine
 
 		if(findIter != end(mWidgets))
 			mWidgets.erase(findIter);
-
-		for(auto& windowMap : mWindowWidgetMap)
-		{
-			auto& widgets = windowMap.second;
-			auto iterFind = std::find(begin(widgets), end(widgets), widget);
-
-			if(iterFind != end(widgets))
-				widgets.erase(iterFind);
-		}
-	}
-
-	void GUIManager::attachWidgetToWindow(const RenderWindow* window, GUIWidget* widget)
-	{
-		auto findIter = mWindowWidgetMap.find(window);
-
-		if(findIter == mWindowWidgetMap.end())
-		{
-			mWindowWidgetMap.insert(std::make_pair(window, std::vector<GUIWidget*>()));
-			findIter = mWindowWidgetMap.find(window);
-		}
-
-		std::vector<GUIWidget*>& widgets = findIter->second;
-
-		bool found = false;
-		for(auto& existingWidget : widgets)
-		{
-			if(existingWidget == widget)
-			{
-				found = true;
-				break;
-			}
-		}
-
-		if(!found)
-			widgets.push_back(widget);
-	}
-
-	void GUIManager::detachWidgetFromWindow(const CM::RenderWindow* window, GUIWidget* widget)
-	{
-		auto findIter = mWindowWidgetMap.find(window);
-
-		if(findIter == mWindowWidgetMap.end())
-		{
-			CM_EXCEPT(InternalErrorException, "Cannot find window to detach the widget from.");
-		}
-
-		std::vector<GUIWidget*>& widgets = findIter->second;
-		auto findIter2 = std::find(begin(widgets), end(widgets), widget);
-
-		if(findIter2 == widgets.end())
-		{
-			CM_EXCEPT(InternalErrorException, "Cannot find widget attached to the specified window.");
-		}
-
-		widgets.erase(findIter2);
 	}
 
 	void GUIManager::update()
@@ -97,9 +42,9 @@ namespace BansheeEngine
 #if CM_DEBUG_MODE
 		// Checks if all referenced windows actually exist
 		std::vector<RenderWindow*> activeWindows = RenderWindowManager::instance().getRenderWindows();
-		for(auto& window : mWindowWidgetMap)
+		for(auto& widget : mWidgets)
 		{
-			auto iterFind = std::find(begin(activeWindows), end(activeWindows), window.first);
+			auto iterFind = std::find(begin(activeWindows), end(activeWindows), widget->getOwnerWindow());
 
 			if(iterFind == activeWindows.end())
 			{
@@ -109,12 +54,14 @@ namespace BansheeEngine
 		}
 #endif
 
-		for(auto& window : mWindowWidgetMap)
+		for(auto& widget : mWidgets)
 		{
-			if(!window.first->getHasFocus())
+			const RenderWindow* window = widget->getOwnerWindow();
+
+			if(!window->getHasFocus())
 				continue;
 
-			Int2 screenPos = Cursor::getWindowPosition(*window.first);
+			Int2 screenPos = Cursor::getWindowPosition(*window);
 			GUIMouseEvent mouseEvent(screenPos);
 
 			for(auto& widget : mWidgets)

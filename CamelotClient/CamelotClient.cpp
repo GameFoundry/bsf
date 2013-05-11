@@ -69,7 +69,7 @@ int CALLBACK WinMain(
 	HSceneObject cameraGO = SceneObject::create("MainCamera");
 	HCamera camera = cameraGO->addComponent<Camera>();
 
-	camera->init(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
+	camera->initialize(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
 	cameraGO->setPosition(Vector3(0,50,1240));
 	cameraGO->lookAt(Vector3(0,50,-300));
 	camera->setNearClipDistance(5);
@@ -82,6 +82,7 @@ int CALLBACK WinMain(
 
 	HSceneObject testTextGO = SceneObject::create("TestText");
 	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
+	textSprite->initialize(camera->getViewport().get(), renderWindow.get());
 
 	textSprite->init(camera, "Testing in a new row, does this work?");
 
