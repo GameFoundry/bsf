@@ -6,7 +6,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	Overlay::Overlay(const HSceneObject& parent)
-		:Component(parent), mRenderTarget(nullptr)
+		:Component(parent), mRenderTarget(nullptr), mDepth(0)
 	{
 
 	}

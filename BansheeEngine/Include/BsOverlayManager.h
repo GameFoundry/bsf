@@ -16,6 +16,11 @@ namespace BansheeEngine
 	 */
 	class BS_EXPORT OverlayManager : public CM::Module<OverlayManager>
 	{
+		struct OverlayComparer
+		{
+			bool operator() (const Overlay* const& a, const Overlay* const& b);
+		};
+
 	public:
 		void render(CM::ViewportPtr& target, CM::RenderContext& renderContext) const;
 
@@ -26,6 +31,6 @@ namespace BansheeEngine
 		void detachOverlay(const CM::Viewport* target, const Overlay* overlay);
 		void detachOverlayFromAll(const Overlay* overlay);
 
-		std::unordered_map<const CM::Viewport*, std::unordered_set<const Overlay*>> mOverlaysPerTarget;
+		std::unordered_map<const CM::Viewport*, std::set<const Overlay*, OverlayComparer>> mOverlaysPerTarget;
 	};
 }

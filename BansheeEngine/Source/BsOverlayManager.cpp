@@ -6,6 +6,11 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	bool OverlayManager::OverlayComparer::operator() (const Overlay* const& a, const Overlay* const& b)
+	{
+		return a->getDepth() > b->getDepth();
+	}
+
 	void OverlayManager::render(CM::ViewportPtr& target, RenderContext& renderContext) const
 	{
 		auto overlays = mOverlaysPerTarget.find(target.get());
@@ -14,7 +19,8 @@ namespace BansheeEngine
 			return;
 
 		renderContext.setViewport(target);
-
+		
+		// Render all overlays. They should already be sorted by depth, front most rendering last
 		for(auto& overlay : overlays->second)
 		{
 			overlay->render(renderContext);
