@@ -30,11 +30,10 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
   - Keep track of window in focus
 
 Immediate TODO:
+ - Allow only one widget per window (remove direct calls to attach/detach widget, and require parent window to be provided when initializing widget)
+ - And make sure I clip widget to that window when updating bounds
  - (optional) Implement DirectDraw for drawing the bounds so I know they're correct
- - Calculate entire GUIWidget bounds and store them
- - Current way of transforming ORect from GUIWidget is almost certainly not correct
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
- - Transformable GUI elements and their bounds
 
 ------------------------------------------------------------------------------------------------
 Longterm plans:

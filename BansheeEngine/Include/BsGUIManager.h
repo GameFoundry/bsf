@@ -23,6 +23,8 @@ namespace BansheeEngine
 		 */
 		void attachWidgetToWindow(const CM::RenderWindow* window, GUIWidget* widget);
 
+		void detachWidgetFromWindow(const CM::RenderWindow* window, GUIWidget* widget);
+
 		void update();
 	private:
 		std::vector<GUIWidget*> mWidgets;

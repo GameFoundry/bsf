@@ -18,6 +18,8 @@ namespace CamelotFramework {
 	class Vector2;
 	class Vector3;
 	class Vector4;
+	struct Int2;
+	class Rect;
 	class Color;
 	class DynLib;
 	class DynLibManager;

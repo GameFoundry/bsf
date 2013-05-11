@@ -86,6 +86,9 @@ namespace CamelotFramework
 		{
 			gSceneManager().update();
 
+			if(!mainLoopCallback.empty())
+				mainLoopCallback();
+
 			RenderSystem* renderSystem = RenderSystem::instancePtr();
 			RendererManager::instance().getActive()->renderAll();
 

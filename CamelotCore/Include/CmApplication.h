@@ -5,6 +5,8 @@
 #include "CmHighLevelGpuProgram.h"
 #include "CmRenderWindow.h"
 
+#include "boost/signal.hpp"
+
 namespace CamelotFramework
 {
 	class RenderWindow;
@@ -69,6 +71,11 @@ namespace CamelotFramework
 			 * @param	pluginName	Name of the plugin to load, without extension.
 			 */
 			void* loadPlugin(const String& pluginName);
+
+			/**
+			 * @brief	Called every frame by the main loop, after scene update and before rendering.
+			 */
+			boost::signal<void()> mainLoopCallback;
 
 	private:
 		friend CM_EXPORT RenderContext& gMainRC();

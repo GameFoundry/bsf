@@ -11,18 +11,21 @@ namespace CamelotFramework
 		mSides[0] = Vector2((float)rect.width, 0.0f);
 		mSides[1] = Vector2(0.0f, (float)rect.height);
 
-		mSideLengths[0] = mSides[0].normalize();
-		mSideLengths[1] = mSides[1].normalize();
+		mSideLengths[0] = mSides[0].length();
+		mSideLengths[1] = mSides[1].length();
+
+		mSides[0].normalize();
+		mSides[1].normalize();
 	}
 
 	void ORect::applyTransform(const Matrix4& tfrm)
 	{
 		Vector3 oldOrigin = Vector3(mOrigin.x, mOrigin.y, 0);
 
-		Vector3 oldCornerA = oldOrigin + Vector3(mSides[0].x, mSides[0].y, 0.0f);
+		Vector3 oldCornerA = oldOrigin + Vector3(mSides[0].x * mSideLengths[0], mSides[0].y * mSideLengths[0], 0.0f);
 		Vector3 newCornerA = tfrm * oldCornerA;
 
-		Vector3 oldCornerB = oldOrigin + Vector3(mSides[1].x, mSides[1].y, 0.0f);
+		Vector3 oldCornerB = oldOrigin + Vector3(mSides[1].x * mSideLengths[1], mSides[1].y * mSideLengths[1], 0.0f);
 		Vector3 newCornerB = tfrm * oldCornerB;
 
 		Vector3 newOrigin = tfrm * oldOrigin;
@@ -35,8 +38,11 @@ namespace CamelotFramework
 		mSides[1].x = newCornerB.x - newOrigin.x;
 		mSides[1].y = newCornerB.y - newOrigin.y;
 
-		mSideLengths[0] = mSides[0].normalize();
-		mSideLengths[1] = mSides[1].normalize();
+		mSideLengths[0] = mSides[0].length();
+		mSideLengths[1] = mSides[1].length();
+
+		mSides[0].normalize();
+		mSides[1].normalize();
 	}
 
 	bool ORect::contains(const Vector2& point)

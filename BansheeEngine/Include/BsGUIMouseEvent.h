@@ -1,18 +1,19 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmVector2.h"
+#include "CmInt2.h"
 
 namespace BansheeEngine
 {
 	class BS_EXPORT GUIMouseEvent
 	{
 	public:
-		GUIMouseEvent(const CM::Vector2& position)
+		GUIMouseEvent(const CM::Int2& position)
 			:mPosition(position)
 		{ }
 
+		const CM::Int2& getPosition() const { return mPosition; }
 	private:
-		CM::Vector2 mPosition;
+		CM::Int2 mPosition;
 	};
 }

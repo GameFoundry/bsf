@@ -21,6 +21,11 @@ namespace BansheeEngine
 
 	}
 
+	bool GUIElement::mouseEvent(const GUIMouseEvent& ev)
+	{
+		return false;
+	}
+
 	void GUIElement::destroy(GUIElement* element)
 	{
 		CM_DELETE(element, GUIElement, PoolAlloc);

@@ -64,6 +64,8 @@ namespace BansheeEngine
 		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
 			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const = 0;
 
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
+
 		const CM::Rect& getBounds() const { return mBounds; }
 
 		void setDepth(INT32 depth) { mDepth = depth; }

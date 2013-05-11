@@ -16,6 +16,7 @@ namespace BansheeEditor
 	private:
 		CM::RenderWindowPtr mRenderWindow;
 
+		BS::HGUIWidget mGUI;
 		BS::GUILabel* mDbgLabel;
 	};
 }

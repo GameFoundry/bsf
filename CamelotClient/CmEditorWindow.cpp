@@ -3,6 +3,7 @@
 #include "CmApplication.h"
 #include "CmSceneObject.h"
 #include "CmCursor.h"
+#include "BsGUIManager.h"
 #include "BsGUIWidget.h"
 #include "BsGUILabel.h"
 #include "BsGUISkin.h"
@@ -29,8 +30,9 @@ namespace BansheeEditor
 		mRenderWindow = RenderWindow::create(renderWindowDesc, gApplication().getPrimaryWindow());
 
 		HSceneObject so = SceneObject::create("EditorWindow-" + name);
-		HGUIWidget gui = so->addComponent<GUIWidget>();
-		
+		mGUI = so->addComponent<GUIWidget>();
+		GUIManager::instance().attachWidgetToWindow(mRenderWindow.get(), mGUI.get());
+
 		GameObjectHandle<UpdateCallback> updateCallback = so->addComponent<UpdateCallback>();
 
 		updateCallback->onUpdate.connect(boost::bind(&EditorWindow::update, this));
@@ -44,7 +46,7 @@ namespace BansheeEditor
 		//// DEBUG ONLY - Skin should exist externally
 		//mSkin = CM_NEW(GUISkin, GUIAlloc) GUISkin();
 
-		OverlayManager::instance().attachOverlay(camera.get(), gui.get());		
+		OverlayManager::instance().attachOverlay(camera.get(), mGUI.get());		
 
 		//GUIElementStyle labelStyle;
 		//labelStyle.font = dbgFont;
@@ -54,12 +56,13 @@ namespace BansheeEditor
 
 		//gui->setSkin(mSkin);
 		//// END DEBUG
-		gui->setSkin(&EngineGUI::instance().getSkin());
-		mDbgLabel = GUILabel::create(gui.get(), "Testing test", renderWindowDesc.width);
+		mGUI->setSkin(&EngineGUI::instance().getSkin());
+		mDbgLabel = GUILabel::create(mGUI.get(), "Testing test", renderWindowDesc.width);
 	}
 
 	EditorWindow::~EditorWindow()
 	{
+		GUIManager::instance().detachWidgetFromWindow(mRenderWindow.get(), mGUI.get());
 		mRenderWindow->destroy();
 	}
 

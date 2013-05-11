@@ -45,6 +45,8 @@ namespace BansheeEngine
 		BuiltinMaterialManager::instance().setActive(desc.renderSystem);
 
 		EngineGUI::startUp(new EngineGUI());
+
+		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(boost::bind(&Application::update, this));
 	}
 
 	void Application::runMainLoop()
@@ -54,6 +56,8 @@ namespace BansheeEngine
 
 	void Application::shutDown()
 	{
+		CM::gApplication().mainLoopCallback.disconnect(updateCallbackConn);
+
 		EngineGUI::shutDown();
 
 		GUIMaterialManager::instance().forceReleaseAllMaterials();
@@ -65,6 +69,11 @@ namespace BansheeEngine
 		OverlayManager::shutDown();
 		GUIMaterialManager::shutDown();
 		GUIManager::shutDown();
+	}
+
+	void Application::update()
+	{
+		GUIManager::instance().update();
 	}
 
 	Application& gBansheeApp()

@@ -32,6 +32,30 @@ namespace CamelotFramework
 			return false;
 		}
 
+		void encapsulate(const Rect& other)
+		{
+			int myRight = x + width;
+			int myBottom = y + height;
+			int otherRight = other.x + other.width;
+			int otherBottom = other.y + other.height;
+
+			if(other.x < x)
+				x = other.x;
+
+			if(other.y < y)
+				y = other.y;
+
+			if(otherRight > myRight)
+				width = otherRight - x;
+			else
+				width = myRight - x;
+
+			if(otherBottom > myBottom)
+				height = otherBottom - y;
+			else
+				height = myBottom - y;
+		}
+
 		int x, y, width, height;
 	};
 }

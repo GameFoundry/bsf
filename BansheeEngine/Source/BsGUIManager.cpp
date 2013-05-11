@@ -1,6 +1,7 @@
 #include "BsGUIManager.h"
 #include "BsGUIWidget.h"
 #include "BsGUIElement.h"
+#include "BsGUIMouseEvent.h"
 #include "CmMaterial.h"
 #include "CmMeshData.h"
 #include "CmMesh.h"
@@ -15,14 +16,12 @@ namespace BansheeEngine
 {
 	GUIManager::GUIManager()
 	{
-		//windowCreateConn = RenderWindowManager::instance().onWindowCreated.connect(boost::bind(&GUIManager::doOnWindowCreated, this, _1));
-		//windowDestroyConn = RenderWindowManager::instance().onWindowDestroyed.connect(boost::bind(&GUIManager::doOnWindowDestroyed, this, _1));
+
 	}
 
 	GUIManager::~GUIManager()
 	{
-		//RenderWindowManager::instance().onWindowCreated.disconnect(windowCreateConn);
-		//RenderWindowManager::instance().onWindowDestroyed.disconnect(windowDestroyConn);
+
 	}
 
 	void GUIManager::registerWidget(GUIWidget* widget)
@@ -73,16 +72,58 @@ namespace BansheeEngine
 			widgets.push_back(widget);
 	}
 
+	void GUIManager::detachWidgetFromWindow(const CM::RenderWindow* window, GUIWidget* widget)
+	{
+		auto findIter = mWindowWidgetMap.find(window);
+
+		if(findIter == mWindowWidgetMap.end())
+		{
+			CM_EXCEPT(InternalErrorException, "Cannot find window to detach the widget from.");
+		}
+
+		std::vector<GUIWidget*>& widgets = findIter->second;
+		auto findIter2 = std::find(begin(widgets), end(widgets), widget);
+
+		if(findIter2 == widgets.end())
+		{
+			CM_EXCEPT(InternalErrorException, "Cannot find widget attached to the specified window.");
+		}
+
+		widgets.erase(findIter2);
+	}
+
 	void GUIManager::update()
 	{
+#if CM_DEBUG_MODE
+		// Checks if all referenced windows actually exist
+		std::vector<RenderWindow*> activeWindows = RenderWindowManager::instance().getRenderWindows();
+		for(auto& window : mWindowWidgetMap)
+		{
+			auto iterFind = std::find(begin(activeWindows), end(activeWindows), window.first);
+
+			if(iterFind == activeWindows.end())
+			{
+				CM_EXCEPT(InternalErrorException, "GUI manager has a reference to a window that doesn't exist. \
+												  Please detach all GUIWidgets from windows before destroying a window.");
+			}
+		}
+#endif
+
 		for(auto& window : mWindowWidgetMap)
 		{
 			if(!window.first->getHasFocus())
 				continue;
 
+			Int2 screenPos = Cursor::getWindowPosition(*window.first);
+			GUIMouseEvent mouseEvent(screenPos);
+
 			for(auto& widget : mWidgets)
 			{
-				Int2 screenPos = Cursor::getWindowPosition(*window.first);
+				if(widget->inBounds(screenPos))
+				{
+					if(widget->mouseEvent(mouseEvent))
+						break;
+				}
 			}
 		}
 	}

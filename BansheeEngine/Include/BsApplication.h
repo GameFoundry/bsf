@@ -2,6 +2,8 @@
 
 #include "BsPrerequisites.h"
 
+#include "boost/signals/connection.hpp"
+
 namespace BansheeEngine
 {
 	class BS_EXPORT Application
@@ -25,6 +27,11 @@ namespace BansheeEngine
 			 * @brief	Frees up all resources allocated during startUp, and while the application was running.
 			 */
 			void shutDown();
+
+	private:
+		boost::signals::connection updateCallbackConn;
+
+		void update();
 	};
 
 	BS_EXPORT Application& gBansheeApp();

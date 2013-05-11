@@ -2,11 +2,13 @@
 #include "BsGUIManager.h"
 #include "BsGUISkin.h"
 #include "BsGUILabel.h"
+#include "BsGUIMouseEvent.h"
 #include "CmApplication.h"
 #include "CmDeferredRenderContext.h"
 #include "CmMaterial.h"
 #include "CmPass.h"
 #include "CmMesh.h"
+#include "CmInt2.h"
 #include "BsCamera.h"
 #include "CmViewport.h"
 #include "CmSceneObject.h"
@@ -53,9 +55,23 @@ namespace BansheeEngine
 			return &DefaultSkin;
 	}
 
-	void GUIWidget::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIWidget::mouseEvent(const GUIMouseEvent& ev)
 	{
+		Vector2 vecPos((float)ev.getPosition().x, (float)ev.getPosition().y);
 
+		// Elements with lowest depth (most to the front) get handled first
+		for(auto iter = mCachedBounds.rbegin(); iter != mCachedBounds.rend(); ++iter)
+		{
+			ORect& bounds = iter->first;
+
+			if(bounds.contains(vecPos))
+			{
+				if(iter->second->mouseEvent(ev))
+					return true;
+			}
+		}
+
+		return false;
 	}
 
 	void GUIWidget::updateMeshes() const
@@ -176,19 +192,36 @@ namespace BansheeEngine
 		updateBounds();
 	}
 
+	bool GUIWidget::inBounds(const Int2& position) const
+	{
+		Vector2 vecPos((float)position.x, (float)position.y);
+
+		return mBounds.contains(vecPos);
+	}
+
 	void GUIWidget::updateBounds() const
 	{
 		mCachedBounds.clear();
 
 		const Matrix4& worldTfrm = SO()->getWorldTfrm();
 
+		Rect widgetBounds;
+		if(mElements.size() > 0)
+			widgetBounds = mElements[0]->getBounds();
+
 		for(auto& elem : mElements)
 		{
-			ORect elemBounds(elem->getBounds());
-			elemBounds.applyTransform(worldTfrm);
+			Rect elemBounds = elem->getBounds();
+			widgetBounds.encapsulate(elemBounds);
 
-			mCachedBounds.push_back(std::make_pair(elemBounds, elem));
+			ORect orientedElemBounds(elemBounds);
+			orientedElemBounds.applyTransform(worldTfrm);
+
+			mCachedBounds.push_back(std::make_pair(orientedElemBounds, elem));
 		}
+
+		mBounds = ORect(widgetBounds);
+		mBounds.applyTransform(worldTfrm);
 	}
 
 	void GUIWidget::render(const Camera* camera, RenderContext& renderContext) const
