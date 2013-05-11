@@ -58,7 +58,7 @@ namespace BansheeEngine
 		{
 			const RenderWindow* window = widget->getOwnerWindow();
 
-			if(!window->getHasFocus())
+			if(!window->hasFocus())
 				continue;
 
 			Int2 screenPos = Cursor::getWindowPosition(*window);

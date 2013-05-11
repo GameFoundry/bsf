@@ -57,7 +57,6 @@ namespace BansheeEditor
 	{
 		Int2 cursorPos = Cursor::getWindowPosition(*mRenderWindow);
 		
-		mDbgLabel->setText(toString(mDbgLabel->getBounds().x) + ", " + toString(mDbgLabel->getBounds().y) + ", " + 
-			toString(mDbgLabel->getBounds().width) + " - " + toString(mDbgLabel->getBounds().height));
+		mDbgLabel->setText(toString(cursorPos.x) + ", " + toString(cursorPos.y));
 	}
 }

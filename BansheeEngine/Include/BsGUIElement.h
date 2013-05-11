@@ -71,6 +71,10 @@ namespace BansheeEngine
 		void setDepth(INT32 depth) { mDepth = depth; }
 		INT32 getDepth() const { return mDepth; }
 
+		bool isDirty() const { return mIsDirty; }
+		void markAsClean() { mIsDirty = false; }
+		void markAsDirty() { mIsDirty = true; }
+
 		//  onMouseMove
 		//	onMousePress
 		//	onMouseReleased
@@ -84,6 +88,7 @@ namespace BansheeEngine
 		GUIWidget* mParent;
 		CM::Rect mBounds;
 		INT32 mDepth;
+		bool mIsDirty;
 		const GUIElementStyle* mStyle;
 
 		static void destroy(GUIElement* element);

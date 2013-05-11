@@ -64,6 +64,8 @@ namespace BansheeEngine
 
 		mTextSprite->update(mDesc);
 		mBounds = mTextSprite->getBounds();
+
+		markAsDirty();
 	}
 
 	GUILabel* GUILabel::create(GUIWidget* parent, const String& text)

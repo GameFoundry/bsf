@@ -175,7 +175,7 @@ namespace CamelotFramework
 		void setVSync(bool vsync)  { mVSync = vsync; }
 
 		void setHasFocus(bool focus) { mHasFocus = focus; }
-		bool getHasFocus() const { return mHasFocus; }
+		bool hasFocus() const { return mHasFocus; }
 
     protected:
 		RenderTarget();

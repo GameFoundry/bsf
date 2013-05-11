@@ -101,6 +101,19 @@ namespace BansheeEngine
 			std::shared_ptr<MeshData> meshData;
 		};
 
+		bool isDirty = false;
+		for(auto& elem : mElements)
+		{
+			if(elem->isDirty())
+			{
+				isDirty = true;
+				break;
+			}
+		}
+
+		if(!isDirty) // Nothing to update
+			return;
+
 		std::unordered_map<UINT64, TempMeshData> meshDataPerRenderElement;
 
 		// Group meshes based on used materials
@@ -169,6 +182,7 @@ namespace BansheeEngine
 				UINT32 indexStride = meshData->getIndexElementSize();
 
 				elem->fillBuffer(vertices, uvs, indices, startingQuad, maxNumQuads, vertexStride, indexStride, i);
+				elem->markAsClean();
 
 				UINT32 numQuads = elem->getNumQuads(i);
 				meshDataPerRenderElement[meshGroup].quadOffset += numQuads;
