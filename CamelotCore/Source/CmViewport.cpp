@@ -32,9 +32,8 @@ THE SOFTWARE.
 #include "CmMath.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework {
-
-	//---------------------------------------------------------------------
+namespace CamelotFramework 
+{
 	Viewport::Viewport()
 		:mTarget(nullptr)
 		, mRelLeft(0)
@@ -47,7 +46,7 @@ namespace CamelotFramework {
 		// Calculate actual dimensions
 		updateDimensions();
 	}
-    //---------------------------------------------------------------------
+
     Viewport::Viewport(RenderTargetPtr target, float left, float top, float width, float height, int ZOrder)
          :mTarget(target)
         , mRelLeft(left)
@@ -60,12 +59,12 @@ namespace CamelotFramework {
         // Calculate actual dimensions
         updateDimensions();
     }
-    //---------------------------------------------------------------------
+
     Viewport::~Viewport()
     {
 
     }
-    //---------------------------------------------------------------------
+
     void Viewport::updateDimensions(void)
     {
 		if(mTarget != nullptr)
@@ -73,63 +72,63 @@ namespace CamelotFramework {
 			float height = (float) mTarget->getHeight();
 			float width = (float) mTarget->getWidth();
 
-			mActLeft = (int) (mRelLeft * width);
-			mActTop = (int) (mRelTop * height);
-			mActWidth = (int) (mRelWidth * width);
-			mActHeight = (int) (mRelHeight * height);
+			mDimensions.x = (int) (mRelLeft * width);
+			mDimensions.y = (int) (mRelTop * height);
+			mDimensions.width = (int) (mRelWidth * width);
+			mDimensions.height = (int) (mRelHeight * height);
 		}
     }
-	//---------------------------------------------------------------------
+
 	int Viewport::getZOrder(void) const
 	{
 		return mZOrder;
 	}
-	//---------------------------------------------------------------------
+
     RenderTargetPtr Viewport::getTarget(void) const
     {
         return mTarget;
     }
-    //---------------------------------------------------------------------
+
     float Viewport::getNormalizedLeft(void) const
     {
         return mRelLeft;
     }
-    //---------------------------------------------------------------------
+
     float Viewport::getNormalizedTop(void) const
     {
         return mRelTop;
     }
-    //---------------------------------------------------------------------
+
     float Viewport::getNormalizedWidth(void) const
     {
         return mRelWidth;
     }
-    //---------------------------------------------------------------------
+
     float Viewport::getNormalizedHeight(void) const
     {
         return mRelHeight;
     }
-    //---------------------------------------------------------------------
+
     int Viewport::getLeft(void) const
     {
-        return mActLeft;
+        return mDimensions.x;
     }
-    //---------------------------------------------------------------------
+
     int Viewport::getTop(void) const
     {
-        return mActTop;
+        return mDimensions.y;
     }
-    //---------------------------------------------------------------------
+
     int Viewport::getWidth(void) const
     {
-        return mActWidth;
+        return mDimensions.width;
     }
-    //---------------------------------------------------------------------
+
     int Viewport::getHeight(void) const
     {
-        return mActHeight;
+        return mDimensions.height;
     }
-    //---------------------------------------------------------------------
+
     void Viewport::setDimensions(float left, float top, float width, float height)
     {
         mRelLeft = left;
@@ -137,14 +136,5 @@ namespace CamelotFramework {
         mRelWidth = width;
         mRelHeight = height;
         updateDimensions();
-    }
-    //---------------------------------------------------------------------
-    void Viewport::getActualDimensions(int &left, int&top, int &width, int &height) const
-    {
-        left = mActLeft;
-        top = mActTop;
-        width = mActWidth;
-        height = mActHeight;
-
     }
 }

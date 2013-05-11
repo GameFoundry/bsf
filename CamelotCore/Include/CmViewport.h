@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
 #include "CmColor.h"
+#include "CmRect.h"
 
 namespace CamelotFramework {
 	/** \addtogroup Core
@@ -150,15 +151,15 @@ namespace CamelotFramework {
 
 		/** Access to actual dimensions (based on target size).
         */
-        void getActualDimensions(
-            int &left, int &top, int &width, int &height ) const;
+		const Rect& getDimensions() const { return mDimensions; }
 
     protected:
         RenderTargetPtr mTarget;
         // Relative dimensions, irrespective of target dimensions (0..1)
         float mRelLeft, mRelTop, mRelWidth, mRelHeight;
         // Actual dimensions, based on target dimensions
-        int mActLeft, mActTop, mActWidth, mActHeight;
+		Rect mDimensions;
+
         /// ZOrder
         int mZOrder;
 

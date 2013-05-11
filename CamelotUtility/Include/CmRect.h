@@ -21,7 +21,7 @@ namespace CamelotFramework
 			:x(_x), y(_y), width(_width), height(_height)
 		{ }
 
-		bool contains(Int2 point)
+		bool contains(Int2 point) const
 		{
 			if(point.x >= x && point.x <= (x + width))
 			{

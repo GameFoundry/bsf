@@ -240,6 +240,8 @@ namespace CamelotFramework
 		static inline Radian ATan2 (float fY, float fX) { return Radian(atan2(fY,fX)); }
 		static inline float Ceil (float fValue) { return float(ceil(fValue)); }
 		static inline int CeilToInt (float fValue) { return int(ceil(fValue)); }
+		static inline float Round (float fValue) { return floor(fValue + 0.5f); }
+		static inline int RoundToInt (float fValue) { return int(floor(fValue + 0.5f)); }
 		static inline bool isNaN(float f)
 		{
 			// std::isnan() is C99, not supported by all compilers

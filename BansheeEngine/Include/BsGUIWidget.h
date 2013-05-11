@@ -46,8 +46,7 @@ namespace BansheeEngine
 		const CM::RenderWindow* mOwnerWindow;
 		std::vector<GUIElement*> mElements;
 		
-		mutable CM::ORect mBounds;
-		mutable std::vector<std::pair<CM::ORect, GUIElement*>> mCachedBounds;
+		mutable CM::Rect mBounds;
 		mutable std::vector<CM::HMesh> mCachedMeshes;
 		mutable std::vector<CM::HMaterial> mCachedMaterials;
 

@@ -65,16 +65,21 @@ namespace BansheeEngine
 
 	bool GUIWidget::mouseEvent(const GUIMouseEvent& ev)
 	{
-		Vector2 vecPos((float)ev.getPosition().x, (float)ev.getPosition().y);
+		const Matrix4& worldTfrm = SO()->getWorldTfrm();
+		Vector3 vecPos((float)ev.getPosition().x, (float)ev.getPosition().y, 0.0f);
+		vecPos = worldTfrm.inverse() * vecPos;
+
+		Int2 localPos(Math::RoundToInt(vecPos.x), Math::RoundToInt(vecPos.y));
 
 		// Elements with lowest depth (most to the front) get handled first
-		for(auto iter = mCachedBounds.rbegin(); iter != mCachedBounds.rend(); ++iter)
+		for(auto iter = mElements.rbegin(); iter != mElements.rend(); ++iter)
 		{
-			ORect& bounds = iter->first;
+			GUIElement* element = *iter;
+			const Rect& bounds = element->getBounds();
 
-			if(bounds.contains(vecPos))
+			if(bounds.contains(localPos))
 			{
-				if(iter->second->mouseEvent(ev))
+				if(element->mouseEvent(ev))
 					return true;
 			}
 		}
@@ -202,34 +207,30 @@ namespace BansheeEngine
 
 	bool GUIWidget::inBounds(const Int2& position) const
 	{
-		Vector2 vecPos((float)position.x, (float)position.y);
+		// Technically GUI widget bounds can be larger than the viewport, so make sure we clip to viewport first
+		if(!getTarget()->getDimensions().contains(position))
+			return false;
 
-		return mBounds.contains(vecPos);
+		const Matrix4& worldTfrm = SO()->getWorldTfrm();
+		Vector3 vecPos((float)position.x, (float)position.y, 0.0f);
+		vecPos = worldTfrm.inverse() * vecPos;
+
+		Int2 localPos(Math::RoundToInt(vecPos.x), Math::RoundToInt(vecPos.y));
+		return mBounds.contains(localPos);
 	}
 
 	void GUIWidget::updateBounds() const
 	{
-		mCachedBounds.clear();
-
 		const Matrix4& worldTfrm = SO()->getWorldTfrm();
 
-		Rect widgetBounds;
 		if(mElements.size() > 0)
-			widgetBounds = mElements[0]->getBounds();
+			mBounds = mElements[0]->getBounds();
 
 		for(auto& elem : mElements)
 		{
 			Rect elemBounds = elem->getBounds();
-			widgetBounds.encapsulate(elemBounds);
-
-			ORect orientedElemBounds(elemBounds);
-			orientedElemBounds.applyTransform(worldTfrm);
-
-			mCachedBounds.push_back(std::make_pair(orientedElemBounds, elem));
+			mBounds.encapsulate(elemBounds);
 		}
-
-		mBounds = ORect(widgetBounds);
-		mBounds.applyTransform(worldTfrm);
 	}
 
 	void GUIWidget::render(RenderContext& renderContext) const
