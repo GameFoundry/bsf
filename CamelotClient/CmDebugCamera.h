@@ -12,23 +12,10 @@ namespace CamelotFramework
 	private:
 		float mCurrentSpeed;
 
-		bool mGoingForward;
-		bool mGoingBack;
-		bool mGoingLeft;
-		bool mGoingRight;
-		bool mFastMove;
-		bool mCameraRotating;
-
 		Degree mPitch;
 		Degree mYaw;
 
 		BS::HCamera mCamera;
-
-		void keyDown(CamelotFramework::KeyCode keyCode);
-		void keyUp(CamelotFramework::KeyCode keyCode);
-
-		void mouseDown(const CamelotFramework::MouseEvent& event, CamelotFramework::MouseButton buttonID);
-		void mouseUp(const CamelotFramework::MouseEvent& event, CamelotFramework::MouseButton buttonID);
 
 		static const float START_SPEED;
 		static const float TOP_SPEED;

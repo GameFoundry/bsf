@@ -18,8 +18,7 @@ namespace CamelotFramework
 	const float DebugCamera::ROTATION_SPEED = 0.5f; // Degrees/pixel
 
 	DebugCamera::DebugCamera(const HSceneObject& parent)
-		:Component(parent), mGoingForward(false), mGoingBack(false), mGoingLeft(false), mGoingRight(false), 
-		mFastMove(false), mCameraRotating(false), mPitch(0.0f), mYaw(0.0f)
+		:Component(parent), mPitch(0.0f), mYaw(0.0f)
 	{
 		mCamera = sceneObject()->getComponent<Camera>();
 		mCamera->setNearClipDistance(5);
@@ -29,76 +28,29 @@ namespace CamelotFramework
 
 		sceneObject()->setPosition(Vector3(0,0,0));
 		sceneObject()->lookAt(Vector3(0,0,-1));
-
-		gInput().onKeyDown.connect(boost::bind(&DebugCamera::keyDown, this, _1));
-		gInput().onKeyUp.connect(boost::bind(&DebugCamera::keyUp, this, _1));
-
-		gInput().onMouseDown.connect(boost::bind(&DebugCamera::mouseDown, this, _1, _2));
-		gInput().onMouseUp.connect(boost::bind(&DebugCamera::mouseUp, this, _1, _2));
-	}
-
-	void DebugCamera::keyDown(KeyCode keyCode)
-	{
-		if (keyCode == KC_W || keyCode == KC_UP) 
-			mGoingForward = true;
-		else if (keyCode == KC_S || keyCode== KC_DOWN) 
-			mGoingBack = true;
-		else if (keyCode == KC_A || keyCode == KC_LEFT) 
-			mGoingLeft = true;
-		else if (keyCode == KC_D || keyCode == KC_RIGHT) 
-			mGoingRight = true;
-		else if (keyCode == KC_LSHIFT) 
-			mFastMove = true;
-	}
-
-	void DebugCamera::keyUp(KeyCode keyCode)
-	{
-		if (keyCode == KC_W || keyCode == KC_UP) 
-			mGoingForward = false;
-		else if (keyCode == KC_S || keyCode== KC_DOWN) 
-			mGoingBack = false;
-		else if (keyCode == KC_A || keyCode == KC_LEFT) 
-			mGoingLeft = false;
-		else if (keyCode == KC_D || keyCode == KC_RIGHT) 
-			mGoingRight = false;
-		else if (keyCode == KC_LSHIFT) 
-			mFastMove = false;
-	}
-
-	void DebugCamera::mouseDown(const MouseEvent& event, MouseButton buttonID)
-	{
-		if(buttonID == MB_Right)
-		{
-			mCameraRotating = true;
-
-			Cursor::hide();
-		}
-	}
-
-	void DebugCamera::mouseUp(const MouseEvent& event, MouseButton buttonID)
-	{
-		if(buttonID == MB_Right)
-		{
-			mCameraRotating = false;
-
-			Cursor::show();
-		}
 	}
 
 	void DebugCamera::update()
 	{
+		bool goingForward = gInput().isKeyDown(KC_W) || gInput().isKeyDown(KC_UP);
+		bool goingBack = gInput().isKeyDown(KC_S) || gInput().isKeyDown(KC_DOWN);
+		bool goingLeft = gInput().isKeyDown(KC_A) || gInput().isKeyDown(KC_LEFT);
+		bool goingRight = gInput().isKeyDown(KC_D) || gInput().isKeyDown(KC_RIGHT);
+		bool fastMove = gInput().isKeyDown(KC_LSHIFT);
+		bool camRotating = gInput().isButtonDown(MB_Right);
+
 		Vector3 direction = Vector3::ZERO;
-		if (mGoingForward) direction += SO()->getForward();
-		if (mGoingBack) direction -= SO()->getForward();
-		if (mGoingRight) direction += SO()->getRight();
-		if (mGoingLeft) direction -= SO()->getRight();
+		if (goingForward) direction += SO()->getForward();
+		if (goingBack) direction -= SO()->getForward();
+		if (goingRight) direction += SO()->getRight();
+		if (goingLeft) direction -= SO()->getRight();
 
 		if (direction.squaredLength() != 0)
 		{
 			direction.normalize();
 
 			float multiplier = 1.0f;
-			if(mFastMove)
+			if(fastMove)
 				multiplier = FAST_MODE_MULTIPLIER;
 
 			mCurrentSpeed = Math::Clamp(mCurrentSpeed + ACCELERATION * gTime().getFrameDelta(), START_SPEED, TOP_SPEED);
@@ -116,7 +68,7 @@ namespace CamelotFramework
 			SO()->move(velocity * gTime().getFrameDelta());
 		}
 
-		if(mCameraRotating)
+		if(camRotating)
 		{
 			mYaw += Degree(gInput().getHorizontalAxis() * ROTATION_SPEED);
 			mPitch += Degree(gInput().getVerticalAxis() * ROTATION_SPEED);
