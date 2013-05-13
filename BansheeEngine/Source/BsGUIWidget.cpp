@@ -63,30 +63,6 @@ namespace BansheeEngine
 			return &DefaultSkin;
 	}
 
-	bool GUIWidget::mouseEvent(const GUIMouseEvent& ev)
-	{
-		const Matrix4& worldTfrm = SO()->getWorldTfrm();
-		Vector3 vecPos((float)ev.getPosition().x, (float)ev.getPosition().y, 0.0f);
-		vecPos = worldTfrm.inverse() * vecPos;
-
-		Int2 localPos(Math::RoundToInt(vecPos.x), Math::RoundToInt(vecPos.y));
-
-		// Elements with lowest depth (most to the front) get handled first
-		for(auto iter = mElements.rbegin(); iter != mElements.rend(); ++iter)
-		{
-			GUIElement* element = *iter;
-			const Rect& bounds = element->getBounds();
-
-			if(bounds.contains(localPos))
-			{
-				if(element->mouseEvent(ev))
-					return true;
-			}
-		}
-
-		return false;
-	}
-
 	void GUIWidget::updateMeshes() const
 	{
 		struct TempMeshData
@@ -159,7 +135,7 @@ namespace BansheeEngine
 		std::sort(sortedElements.begin(), sortedElements.end(), 
 			[](GUIElement* a, GUIElement* b)
 		{
-			return a->getDepth() > b->getDepth();
+			return a->getDepth() < b->getDepth();
 		});
 
 		// Fill buffers for each group
@@ -180,7 +156,7 @@ namespace BansheeEngine
 				UINT32 maxNumQuads = meshDataPerRenderElement[meshGroup].numQuads;
 				UINT32 vertexStride = meshData->getVertexStride();
 				UINT32 indexStride = meshData->getIndexElementSize();
-
+				
 				elem->fillBuffer(vertices, uvs, indices, startingQuad, maxNumQuads, vertexStride, indexStride, i);
 				elem->markAsClean();
 

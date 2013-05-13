@@ -20,7 +20,6 @@ namespace CamelotFramework
 		boost::signal<void(const MouseEvent&, MouseButton)> onMouseDown;
 		boost::signal<void(const MouseEvent&, MouseButton)> onMouseUp;
 
-
 		void initClipRect(Rect& clipRect);
 		void registerInputHandler(InputHandlerPtr inputHandler);
 
@@ -43,6 +42,9 @@ namespace CamelotFramework
 		 */
 		float getVerticalAxis() const;
 
+		bool isButtonDown(MouseButton button) const;
+		bool isKeyDown(KeyCode keyCode) const;
+
 	private:
 		InputHandlerPtr mInputHandler;
 
@@ -57,6 +59,9 @@ namespace CamelotFramework
 		Int2 mMouseLastRel;
 		Rect mClipRect;
 		bool mUsingClipRect;
+
+		bool mMouseButtonState[MB_Count];
+		bool mKeyState[KC_Count];
 
 		void keyDown(KeyCode keyCode);
 		void keyUp(KeyCode keyCode);

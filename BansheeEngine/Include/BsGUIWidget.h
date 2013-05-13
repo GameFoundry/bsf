@@ -26,11 +26,11 @@ namespace BansheeEngine
 		const GUISkin* getGUISkin() const;
 
 		bool inBounds(const CM::Int2& position) const;
-		bool mouseEvent(const GUIMouseEvent& ev);
 
 		virtual void render(CM::RenderContext& renderContext) const;
 
 		const CM::RenderWindow* getOwnerWindow() const { return mOwnerWindow; }
+		const std::vector<GUIElement*>& getElements() const { return mElements; }
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;

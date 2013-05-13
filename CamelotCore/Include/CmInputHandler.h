@@ -152,13 +152,14 @@ namespace CamelotFramework
 		KC_WEBBACK     = 0xEA,    // Web Back
 		KC_MYCOMPUTER  = 0xEB,    // My Computer
 		KC_MAIL        = 0xEC,    // Mail
-		KC_MEDIASELECT = 0xED     // Media Select
+		KC_MEDIASELECT = 0xED,     // Media Select
+		KC_Count
 	};
 
 	enum MouseButton
 	{
 		MB_Left = 0, MB_Right, MB_Middle,
-		MB_Button3, MB_Button4,	MB_Button5, MB_Button6,	MB_Button7
+		MB_Button3, MB_Button4,	MB_Button5, MB_Button6,	MB_Button7, MB_Count
 	};
 
 	struct MouseEvent

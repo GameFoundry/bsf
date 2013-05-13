@@ -25,6 +25,12 @@ namespace CamelotFramework
 			mVerticalHistoryBuffer[i] = 0.0f;
 			mTimesHistoryBuffer[i] = 0.0f;
 		}
+
+		for(int i = 0; i < MB_Count; i++)
+			mMouseButtonState[i] = false;
+
+		for(int i = 0; i < KC_Count; i++)
+			mKeyState[i] = false;
 	}
 
 	Input::~Input()
@@ -74,11 +80,13 @@ namespace CamelotFramework
 
 	void Input::keyDown(KeyCode keyCode)
 	{
+		mKeyState[keyCode] = true;
 		onKeyDown(keyCode);
 	}
 
 	void Input::keyUp(KeyCode keyCode)
 	{
+		mKeyState[keyCode] = false;
 		onKeyUp(keyCode);
 	}
 
@@ -103,6 +111,7 @@ namespace CamelotFramework
 				return;
 		}
 
+		mMouseButtonState[buttonID] = true;
 		onMouseDown(event, buttonID);
 	}
 
@@ -114,6 +123,7 @@ namespace CamelotFramework
 				return;
 		}
 
+		mMouseButtonState[buttonID] = false;
 		onMouseUp(event, buttonID);
 	}
 
@@ -125,6 +135,16 @@ namespace CamelotFramework
 	float Input::getVerticalAxis() const
 	{
 		return mSmoothVerticalAxis;
+	}
+
+	bool Input::isButtonDown(MouseButton button) const
+	{
+		return mMouseButtonState[button];
+	}
+
+	bool Input::isKeyDown(KeyCode keyCode) const
+	{
+		return mKeyState[keyCode];
 	}
 
 	void Input::updateSmoothInput()

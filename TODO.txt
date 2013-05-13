@@ -19,6 +19,9 @@ I still re-create GUIWidget mesh every frame instead of just updating it.
 MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to GpuResourceData which means it could get destroyed while still in command queue. Right now it only works because I block right after I call those methods, which ensures nothing is destroyed.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
+GUI element grouping is wrong as it doesn't account for transparency
+ - Elements sharing same material cannot be batched unless they are at a nearby depth with no elements between them. I need an algorithm to handle that.
+
  - My test model is rendering back faces. I need to flip them.
   - Although more than likely I am loading the model incorrectly since it works in Unity?
   - I probably want to determine front faces based on normals

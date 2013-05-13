@@ -47,6 +47,7 @@ namespace BansheeEditor
 		//// DEBUG
 		mGUI->setSkin(&EngineGUI::instance().getSkin());
 		mDbgLabel = GUILabel::create(mGUI.get(), "Testing test", renderWindowDesc.width);
+		mDbgLabel->setDepth(-1);
 		GUIWindowFrame::create(mGUI.get());
 	}
 

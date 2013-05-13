@@ -2,6 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "CmModule.h"
+#include "CmInputHandler.h"
 
 namespace BansheeEngine
 {
@@ -20,5 +21,11 @@ namespace BansheeEngine
 		void update();
 	private:
 		std::vector<GUIWidget*> mWidgets;
+
+		GUIWidget* mMouseOverWidget;
+		GUIElement* mMouseOverElement;
+
+		bool mLastFrameButtonState[CM::MB_Count];
+		CM::Int2 mLastCursorPos;
 	};
 }
