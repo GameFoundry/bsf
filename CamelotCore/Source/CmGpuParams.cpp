@@ -270,7 +270,7 @@ namespace CamelotFramework
 		return mTextures[slot];
 	}
 
-	void GpuParams::setSamplerState(const String& name, HSamplerState& val)
+	void GpuParams::setSamplerState(const String& name, const HSamplerState& val)
 	{
 		auto paramIter = mParamDesc.samplers.find(name);
 		if(paramIter == mParamDesc.samplers.end())

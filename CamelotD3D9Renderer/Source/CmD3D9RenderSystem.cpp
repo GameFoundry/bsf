@@ -1412,7 +1412,7 @@ namespace CamelotFramework
 			CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
 		}
 
-		if(target != previousRenderTarget)
+		if(previousRenderTarget != nullptr && target != previousRenderTarget)
 		{
 			setRenderTarget(previousRenderTarget);
 		}

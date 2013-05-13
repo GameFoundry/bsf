@@ -806,21 +806,11 @@ namespace CamelotFramework
 			glStencilMask(mStencilWriteMask);
 		}
 
-		if(target != previousRenderTarget)
+		if(previousRenderTarget != nullptr && target != previousRenderTarget)
 		{
 			setRenderTarget(previousRenderTarget);
 		}
 	}
-
-
-
-
-
-
-
-
-
-
 
 	/************************************************************************/
 	/* 								PRIVATE		                     		*/

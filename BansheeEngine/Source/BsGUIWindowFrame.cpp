@@ -36,6 +36,8 @@ namespace BansheeEngine
 		desc.borderRight = mStyle->border.right;
 		desc.borderTop = mStyle->border.top;
 		desc.borderBottom = mStyle->border.bottom;
+		desc.width = 200;
+		desc.height = 200;
 
 		mImageSprite->update(desc);
 

@@ -32,6 +32,31 @@ Potential optimizations:
 ----------------------------------------------------------------------------------------------
 More detailed thought out system descriptions:
 
+<<<<Reducing render state changes>>>>
+ - Transparent objects get sorted back to front, always
+ - Opaque objects I can choose between front to back, no sort or back to front
+ - Then sort based on material-pass combo, rendering all passes of the same material at once, then moving to next pass, then to next material, etc.
+   - For transucent objects I need to render entire material at once, and not group by pass
+   - Ignore individual state and textures changes, just sort based on material
+ - Use key-based approach as described here: http://realtimecollisiondetection.net/blog/?p=86
+
+Questions/Notes:
+ 1. Could I make use of multiple texture slots so I don't have to re-assign textures for every material when rendering translucent objects pass by pass?
+   - When sorting back to front (or front to back) it's highly unlikely that there will be many objects sharing the same material next to the same depth level anyway. 
+     So probably ignore this problem for now, and just change the states.
+
+ 2. Should sorting be done on main or render thread?
+   - Main thread. It's highly unlikely main thread will be using as much CPU as render thread will, so free up render thread as much as possible.
+
+ 3. Should oct-tree queries be done on main or render thread?
+   - Main thread as I would need to save and copy the state of the entire scene, in order to pass it to the render thread. Otherwise we risk race conditions.
+
+ 4. Since render state and shader changes are much more expensive than shader constant/buffer/mesh (and even texture) changes, it might be a good idea to sort based on these,
+    instead of exact material? A lot of materials might share shaders and render states but not textures.
+
+ 5. This guy: http://home.comcast.net/~tom_forsyth/blog.wiki.html#%5B%5BRenderstate%20change%20costs%5D%5D (who's a driver programmer) sorts all opaque objects based on shader/state
+    into buckets, and then orders elements in these bucks in front to back order. This gives him best of two worlds, early z rejection and low state changes.
+
 <<<<DirectDraw>>>>
  - Used for quickly drawing something, usually for debug and editor purposes.
  - It consists of methods like: DrawLine, DrawPolygon, DrawCube, DrawSphere, etc.

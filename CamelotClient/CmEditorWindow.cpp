@@ -6,6 +6,7 @@
 #include "BsGUIManager.h"
 #include "BsGUIWidget.h"
 #include "BsGUILabel.h"
+#include "BsGUIWindowFrame.h"
 #include "BsGUISkin.h"
 #include "BsOverlayManager.h"
 #include "BsCamera.h"
@@ -46,6 +47,7 @@ namespace BansheeEditor
 		//// DEBUG
 		mGUI->setSkin(&EngineGUI::instance().getSkin());
 		mDbgLabel = GUILabel::create(mGUI.get(), "Testing test", renderWindowDesc.width);
+		GUIWindowFrame::create(mGUI.get());
 	}
 
 	EditorWindow::~EditorWindow()

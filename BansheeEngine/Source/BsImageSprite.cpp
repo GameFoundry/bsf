@@ -1,6 +1,8 @@
 #include "BsImageSprite.h"
 #include "BsSpriteTexture.h"
 #include "BsGUIMaterialManager.h"
+#include "BsSpriteTexture.h"
+#include "CmTexture.h"
 
 using namespace CamelotFramework;
 
@@ -143,8 +145,8 @@ namespace BansheeEngine
 			renderElem.vertices[34] = Vector2(topRightStart, bottomStart + bottomBorder);
 			renderElem.vertices[35] = Vector2(topRightStart + rightBorder, bottomStart + bottomBorder);
 
-			float invWidth = 1.0f / (float)desc.width;
-			float invHeight = 1.0f / (float)desc.height;
+			float invWidth = 1.0f / (float)desc.texture->getTexture()->getWidth();
+			float invHeight = 1.0f / (float)desc.texture->getTexture()->getHeight();
 
 			float uvLeftBorder = desc.borderLeft * invWidth;
 			float uvRightBorder = desc.borderRight * invWidth;

@@ -16,6 +16,13 @@ namespace BansheeEngine
 		initSpriteTextShader();
 		initSpriteImageShader();
 		initDebugDrawShader();
+
+		SAMPLER_STATE_DESC ssDesc;
+		ssDesc.magFilter = FO_POINT;
+		ssDesc.minFilter = FO_POINT;
+		ssDesc.mipFilter = FO_POINT;
+
+		mGUISamplerState = SamplerState::create(ssDesc);
 	}
 
 	void GLBuiltinMaterialFactory::shutDown()
@@ -33,12 +40,18 @@ namespace BansheeEngine
 
 	HMaterial GLBuiltinMaterialFactory::createSpriteTextMaterial() const
 	{
-		return Material::create(mSpriteTextShader);
+		HMaterial newMaterial = Material::create(mSpriteTextShader);
+		newMaterial->setSamplerState("mainTexSamp", mGUISamplerState);
+
+		return newMaterial;
 	}
 
 	HMaterial GLBuiltinMaterialFactory::createSpriteImageMaterial() const
 	{
-		return Material::create(mSpriteImageShader);
+		HMaterial newMaterial = Material::create(mSpriteImageShader);
+		newMaterial->setSamplerState("mainTexSamp", mGUISamplerState);
+
+		return newMaterial;
 	}
 
 	HMaterial GLBuiltinMaterialFactory::createDebugDrawMaterial() const

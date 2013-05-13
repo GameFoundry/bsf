@@ -14,9 +14,8 @@ DebugDraw
  - DebugDraw support for AA lines
  - Add DX9 and GL debug draw shaders
 
-Avoid updating GUI every frame. Instead remember processed events and only update then.
 I still re-create GUIWidget mesh every frame instead of just updating it.
-Make it so that widgets can be batched together. Probably means GUIWidget::updateMesh methods needs to move up to GUIManager or similar.
+
 MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to GpuResourceData which means it could get destroyed while still in command queue. Right now it only works because I block right after I call those methods, which ensures nothing is destroyed.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
@@ -24,14 +23,15 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
   - Although more than likely I am loading the model incorrectly since it works in Unity?
   - I probably want to determine front faces based on normals
 
- GUIManager
-  - It starts before RenderWindowManager, which means I can't register the callbacks.
-    - If I start it after I miss main window creation, and also get an assert (not sure why the assert though - didn't explore)
-  - Keep track of window in focus
-
 Immediate TODO:
- - Allow only one widget per window (remove direct calls to attach/detach widget, and require parent window to be provided when initializing widget)
- - And make sure I clip widget to that window when updating bounds
+ - A way to handle onMouseOver, onMouseOut, onMouseDown, onMouseUp events
+ - Viewports have a Z order as well. I should use that instead of GUIWidget depth
+ - Make it so that widgets can be batched together. Probably means GUIWidget::updateMesh methods needs to move up to GUIManager or similar.
+   - However having widget transform update in shader means I have no way of merging multiple small GUIWidget elements into larger one (useful for batching when game UIs start using animation and stuff)
+     - However this might work with DX11 and newer OpenGL where we can fit in multiple transforms per pass.
+     - So refactor GUIWidget so it is capable of populating a vertex/index buffer, and then have 
+	   GUIManager be in charge of creating a mesh. And if possible we create as little meshes as possible, otherwise we just render them as we do now.
+     - Make sure to only batch widgets belonging to the same viewport
  - (optional) Implement DirectDraw for drawing the bounds so I know they're correct
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
 

@@ -68,7 +68,7 @@ namespace CamelotFramework
 		ShaderPtr getShader() const { return mShader; }
 
 		void setTexture(const String& name, const HTexture& value);
-		void setSamplerState(const String& name, HSamplerState& samplerState);
+		void setSamplerState(const String& name, const HSamplerState& samplerState);
 		void setFloat(const String& name, float value, UINT32 arrayIdx = 0);
 		void setColor(const String& name, const Color& value, UINT32 arrayIdx = 0);
 		void setVec2(const String& name, const Vector2& value, UINT32 arrayIdx = 0);

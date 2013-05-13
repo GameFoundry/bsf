@@ -547,7 +547,7 @@ namespace CamelotFramework
 		mTextureValues[name] = value;
 	}
 
-	void Material::setSamplerState(const String& name, HSamplerState& samplerState)
+	void Material::setSamplerState(const String& name, const HSamplerState& samplerState)
 	{
 		throwIfNotInitialized();
 

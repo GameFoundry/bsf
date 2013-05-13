@@ -16,6 +16,13 @@ namespace BansheeEngine
 		initSpriteTextShader();
 		initSpriteImageShader();
 		initDebugDrawShader();
+
+		SAMPLER_STATE_DESC ssDesc;
+		ssDesc.magFilter = FO_POINT;
+		ssDesc.minFilter = FO_POINT;
+		ssDesc.mipFilter = FO_POINT;
+
+		mGUISamplerState = SamplerState::create(ssDesc);
 	}
 
 	void D3D9BuiltinMaterialFactory::shutDown()
@@ -33,12 +40,18 @@ namespace BansheeEngine
 
 	HMaterial D3D9BuiltinMaterialFactory::createSpriteTextMaterial() const
 	{
-		return Material::create(mSpriteTextShader);
+		HMaterial newMaterial = Material::create(mSpriteTextShader);
+		newMaterial->setSamplerState("mainTexSamp", mGUISamplerState);
+
+		return newMaterial;
 	}
 
 	HMaterial D3D9BuiltinMaterialFactory::createSpriteImageMaterial() const
 	{
-		return Material::create(mSpriteImageShader);
+		HMaterial newMaterial = Material::create(mSpriteImageShader);
+		newMaterial->setSamplerState("mainTexSamp", mGUISamplerState);
+
+		return newMaterial;
 	}
 
 	HMaterial D3D9BuiltinMaterialFactory::createDebugDrawMaterial() const
@@ -62,7 +75,7 @@ namespace BansheeEngine
 				float4 tfrmdPos = mul(worldTransform, float4(inPos.xy, 0, 1));	\
 																\
 				float tfrmdX = -1.0f + ((tfrmdPos.x - 0.5f) * invViewportWidth);			\
-				float tfrmdY = 1.0f - ((tfrmdPos.y + 0.5f) * invViewportHeight);			\
+				float tfrmdY = 1.0f - ((tfrmdPos.y - 0.5f) * invViewportHeight);			\
 																\
 				oPosition = float4(tfrmdX, tfrmdY, 0, 1);		\
 				oUv = uv;										\
@@ -123,7 +136,7 @@ namespace BansheeEngine
 						float4 tfrmdPos = mul(worldTransform, float4(inPos.xy, 0, 1));	\
 						\
 						float tfrmdX = -1.0f + ((tfrmdPos.x - 0.5f) * invViewportWidth);			\
-						float tfrmdY = 1.0f - ((tfrmdPos.y + 0.5f) * invViewportHeight);			\
+						float tfrmdY = 1.0f - ((tfrmdPos.y - 0.5f) * invViewportHeight);			\
 						\
 						oPosition = float4(tfrmdX, tfrmdY, 0, 1);		\
 						oUv = uv;										\

@@ -48,7 +48,7 @@ namespace CamelotFramework
 		void setTexture(const String& name, const HTexture& val);
 		HTexture getTexture(UINT32 slot);
 
-		void setSamplerState(const String& name, HSamplerState& val);
+		void setSamplerState(const String& name, const HSamplerState& val);
 		HSamplerState getSamplerState(UINT32 slot);
 
 		void setTransposeMatrices(bool transpose) { mTransposeMatrices = transpose; }

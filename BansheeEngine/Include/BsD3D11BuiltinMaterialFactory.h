@@ -24,6 +24,8 @@ namespace BansheeEngine
 		CM::ShaderPtr mSpriteImageShader;
 		CM::ShaderPtr mDebugDrawShader;
 
+		CM::HSamplerState mGUISamplerState;
+
 		void initSpriteTextShader();
 		void initSpriteImageShader();
 		void initDebugDrawShader();

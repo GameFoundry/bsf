@@ -17,7 +17,7 @@ namespace BansheeEngine
 	const String EngineGUI::DefaultFontPath = "C:\\arial.ttf";
 	const UINT32 EngineGUI::DefaultFontSize = 12;
 
-	const CM::String EngineGUI::WindowFramePrimaryTexture = "C:\\WindowFrameTest.bmp";
+	const CM::String EngineGUI::WindowFramePrimaryTexture = "C:\\WindowFrame.psd";
 
 	EngineGUI::EngineGUI()
 	{
@@ -53,6 +53,10 @@ namespace BansheeEngine
 
 		GUIElementStyle windowFrameStyle;
 		windowFrameStyle.normal.texture = SpriteTexturePtr(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(windowFrameTex), &MemAllocDeleter<SpriteTexture, PoolAlloc>::deleter);
+		windowFrameStyle.border.left = 1;
+		windowFrameStyle.border.right = 1;
+		windowFrameStyle.border.top = 1;
+		windowFrameStyle.border.bottom = 1;
 
 		mSkin.setStyle(GUIWindowFrame::getGUITypeName(), windowFrameStyle);
 	}
