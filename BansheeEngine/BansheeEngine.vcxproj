@@ -149,6 +149,11 @@
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsDebugDraw.h" />
     <ClInclude Include="Include\BsEngineGUI.h" />
+    <ClInclude Include="Include\BsGUIArea.h" />
+    <ClInclude Include="Include\BsGUILayoutOptions.h" />
+    <ClInclude Include="Include\BsGUILayoutX.h" />
+    <ClInclude Include="Include\BsGUILayout.h" />
+    <ClInclude Include="Include\BsGUILayoutY.h" />
     <ClInclude Include="Include\BsPrerequisites.h" />
     <ClInclude Include="Include\BsGUIElement.h" />
     <ClInclude Include="Include\BsGUIElementStyle.h" />
@@ -180,8 +185,10 @@
     <ClCompile Include="Source\BsApplication.cpp" />
     <ClCompile Include="Source\BsDebugDraw.cpp" />
     <ClCompile Include="Source\BsEngineGUI.cpp" />
+    <ClCompile Include="Source\BsGUIArea.cpp" />
     <ClCompile Include="Source\BsGUIElement.cpp" />
     <ClCompile Include="Source\BsGUILabel.cpp" />
+    <ClCompile Include="Source\BsGUILayout.cpp" />
     <ClCompile Include="Source\BsGUIManager.cpp" />
     <ClCompile Include="Source\BsGUIMaterialManager.cpp" />
     <ClCompile Include="Source\BsGUISkin.cpp" />

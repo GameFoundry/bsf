@@ -8,7 +8,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIElement::GUIElement(GUIWidget* parent)
-		:mParent(parent), mIsDirty(true)
+		:mParent(parent), mIsDirty(true), mParentLayout(nullptr)
 	{
 		if(parent == nullptr)
 			CM_EXCEPT(InvalidParametersException, "Cannot create GUI element without providing a parent!");

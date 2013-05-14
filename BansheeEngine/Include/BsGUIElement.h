@@ -82,10 +82,15 @@ namespace BansheeEngine
 		//	onKeyReleased
 	protected:
 		friend class GUIWidget;
+		friend class GUILayout;
 
 		virtual ~GUIElement();
 
+		GUILayout* getParentLayout() const { return mParentLayout; }
+		void setParentLayout(GUILayout* layout) { mParentLayout = layout; }
+
 		GUIWidget* mParent;
+		GUILayout* mParentLayout;
 		CM::Rect mBounds;
 		INT32 mDepth;
 		bool mIsDirty;

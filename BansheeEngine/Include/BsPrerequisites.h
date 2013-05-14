@@ -49,6 +49,11 @@ namespace BansheeEngine
 	class GUISkin;
 	struct GUIElementStyle;
 	class GUIMouseEvent;
+	class GUIArea;
+	class GUILayout;
+	class GUILayoutX;
+	class GUILayoutY;
+	class GUI_LAYOUT_OPTIONS;
 
 	// 2D
 	class TextSprite;
