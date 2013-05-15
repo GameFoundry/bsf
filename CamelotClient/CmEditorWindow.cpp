@@ -52,7 +52,7 @@ namespace BansheeEditor
 		GUIArea* backgroundArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 0);
 		GUILayout& layout = backgroundArea->getLayout();
 		
-		mDbgLabel = GUILabel::create(*mGUI, "Testing test", renderWindowDesc.width);
+		mDbgLabel = GUILabel::create(*mGUI, "Testing test");
 		layout.addElement(mDbgLabel);
 
 		GUIArea* mainArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 1);

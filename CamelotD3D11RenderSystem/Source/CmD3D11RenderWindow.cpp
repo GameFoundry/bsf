@@ -342,6 +342,8 @@ namespace CamelotFramework
 			return;
 
 		_resizeSwapChainBuffers(width, height);
+
+		RenderWindow::windowMovedOrResized();
 	}
 
 	void D3D11RenderWindow::setActive(bool state)

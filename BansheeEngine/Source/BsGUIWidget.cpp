@@ -14,6 +14,7 @@
 #include "BsCamera.h"
 #include "CmViewport.h"
 #include "CmSceneObject.h"
+#include "CmRenderWindow.h"
 
 using namespace CamelotFramework;
 
@@ -46,13 +47,22 @@ namespace BansheeEngine
 
 	void GUIWidget::initialize(Viewport* target, const RenderWindow* ownerWindow)
 	{
+		assert(target != nullptr);
+		assert(ownerWindow != nullptr);
+
+		if(mOwnerWindow != nullptr)
+			CM_EXCEPT(InvalidStateException, "Widget has already been initialized.");
+
 		Overlay::initialize(target);
 
 		mOwnerWindow = ownerWindow;
+		mOwnerWindow->onWindowMovedOrResized.connect(boost::bind(&GUIWidget::ownerWindowResized, this, _1));
 	}
 
 	void GUIWidget::registerElement(GUIElement* elem)
 	{
+		assert(elem != nullptr);
+
 		mElements.push_back(elem);
 
 		mWidgetIsDirty = true;
@@ -60,6 +70,8 @@ namespace BansheeEngine
 
 	void GUIWidget::unregisterElement(GUIElement* elem)
 	{
+		assert(elem != nullptr);
+
 		auto iterFind = std::find(begin(mElements), end(mElements), elem);
 
 		if(iterFind == mElements.end())
@@ -71,6 +83,8 @@ namespace BansheeEngine
 
 	void GUIWidget::registerArea(GUIArea* area)
 	{
+		assert(area != nullptr);
+
 		mAreas.push_back(area);
 
 		mWidgetIsDirty = true;
@@ -78,6 +92,8 @@ namespace BansheeEngine
 
 	void GUIWidget::unregisterArea(GUIArea* area)
 	{
+		assert(area != nullptr);
+
 		auto iterFind = std::find(begin(mAreas), end(mAreas), area);
 
 		if(iterFind == mAreas.end())
@@ -262,6 +278,14 @@ namespace BansheeEngine
 		{
 			Rect elemBounds = elem->getBounds();
 			mBounds.encapsulate(elemBounds);
+		}
+	}
+
+	void GUIWidget::ownerWindowResized(RenderWindow* window)
+	{
+		for(auto& area : mAreas)
+		{
+			area->notifyWindowResized(window->getWidth(), window->getHeight());
 		}
 	}
 

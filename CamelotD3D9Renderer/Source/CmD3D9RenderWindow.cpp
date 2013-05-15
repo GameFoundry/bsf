@@ -609,6 +609,8 @@ namespace CamelotFramework
 			return;
 	
 		updateWindowRect();
+
+		RenderWindow::windowMovedOrResized();
 	}
 
 	void D3D9RenderWindow::swapBuffers()

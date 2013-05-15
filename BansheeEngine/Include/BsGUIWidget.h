@@ -47,6 +47,8 @@ namespace BansheeEngine
 		void updateMeshes() const;
 		void updateBounds() const;
 
+		void ownerWindowResized(CM::RenderWindow* window);
+
 		const CM::RenderWindow* mOwnerWindow;
 		std::vector<GUIElement*> mElements;
 		std::vector<GUIArea*> mAreas;

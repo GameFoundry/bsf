@@ -614,7 +614,7 @@ namespace CamelotFramework {
 		mWidth = rc.right - rc.left;
 		mHeight = rc.bottom - rc.top;
 
-		// TODO - Notify viewports of resize
+		RenderWindow::windowMovedOrResized();
 	}
 
 	void Win32Window::swapBuffers()

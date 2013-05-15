@@ -8,8 +8,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIElement::GUIElement(GUIWidget& parent)
-		:mParent(parent), mIsDirty(true), mParentLayout(nullptr)
+	GUIElement::GUIElement(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions)
+		:mParent(parent), mIsDirty(true), mParentLayout(nullptr), mLayoutOptions(layoutOptions)
 	{
 		mParent.registerElement(this);
 	}

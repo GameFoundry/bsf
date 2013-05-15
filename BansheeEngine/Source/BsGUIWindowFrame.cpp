@@ -16,8 +16,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIWindowFrame::GUIWindowFrame(GUIWidget& parent, const GUI_LAYOUT_OPTIONS* layoutOptions)
-		:GUIElement(parent)
+	GUIWindowFrame::GUIWindowFrame(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions)
+		:GUIElement(parent, layoutOptions)
 	{
 		const GUISkin* skin = parent.getGUISkin();
 
@@ -41,11 +41,6 @@ namespace BansheeEngine
 		mImageSprite->update(desc);
 
 		mBounds = mImageSprite->getBounds();
-
-		if(layoutOptions != nullptr)
-			mLayoutOptions = *layoutOptions;
-		else
-			mLayoutOptions = getDefaultLayoutOptions();
 	}
 
 	GUIWindowFrame::~GUIWindowFrame()
@@ -53,7 +48,12 @@ namespace BansheeEngine
 		CM_DELETE(mImageSprite, ImageSprite, PoolAlloc);
 	}
 
-	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent, const GUI_LAYOUT_OPTIONS* layoutOptions)
+	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent)
+	{
+		return CM_NEW(GUIWindowFrame, PoolAlloc) GUIWindowFrame(parent, getDefaultLayoutOptions());
+	}
+
+	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions)
 	{
 		return CM_NEW(GUIWindowFrame, PoolAlloc) GUIWindowFrame(parent, layoutOptions);
 	}

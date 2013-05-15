@@ -70,6 +70,12 @@ namespace CamelotFramework
         mAutoDeactivatedOnFocusChange = deactivate;
     }
 
+	void RenderWindow::windowMovedOrResized()
+	{
+		if(!onWindowMovedOrResized.empty())
+			onWindowMovedOrResized(this);
+	}
+
 	void RenderWindow::destroy()
 	{
 		RenderWindowManager::instance().windowDestroyed(this);

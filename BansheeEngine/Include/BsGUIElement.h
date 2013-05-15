@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIElement
 	{
 	public:
-		GUIElement(GUIWidget& parent);
+		GUIElement(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions);
 
 		/**
 		 * @brief	Returns the number of separate render elements in the GUI element.

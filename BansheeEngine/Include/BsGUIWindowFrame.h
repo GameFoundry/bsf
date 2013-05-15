@@ -11,7 +11,8 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIWindowFrame* create(GUIWidget& parent, const GUI_LAYOUT_OPTIONS* layoutOptions = nullptr);
+		static GUIWindowFrame* create(GUIWidget& parent);
+		static GUIWindowFrame* create(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions);
 	protected:
 		~GUIWindowFrame();
 
@@ -40,6 +41,6 @@ namespace BansheeEngine
 	private:
 		ImageSprite* mImageSprite;
 
-		GUIWindowFrame(GUIWidget& parent, const GUI_LAYOUT_OPTIONS* layoutOptions);
+		GUIWindowFrame(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions);
 	};
 }

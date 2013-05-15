@@ -11,6 +11,9 @@ namespace BansheeEngine
 	{
 		mLayout = CM_NEW(GUILayoutX, PoolAlloc) GUILayoutX();
 
+		resizeWidthWithWindow = width == 0;
+		resizeHeightWithWindow = height == 0;
+
 		mWidget.registerArea(this);
 	}
 
@@ -34,5 +37,17 @@ namespace BansheeEngine
 	void GUIArea::destroyInternal(GUIArea* area)
 	{
 		CM_DELETE(area, GUIArea, PoolAlloc);
+	}
+
+	void GUIArea::notifyWindowResized(UINT32 newWidth, UINT32 newHeight)
+	{
+		if(resizeWidthWithWindow)
+			mWidth = newWidth;
+
+		if(resizeHeightWithWindow)
+			mHeight = newHeight;
+
+		if(resizeWidthWithWindow || resizeHeightWithWindow)
+			mLayout->update(mX, mY, mWidth, mHeight, mDepth);
 	}
 }

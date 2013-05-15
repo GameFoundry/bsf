@@ -9,9 +9,9 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUILabel::GUILabel(GUIWidget& parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, 
-		bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign, const GUI_LAYOUT_OPTIONS* layoutOptions)
-		:GUIElement(parent), mText(text), mFixedWidth(fixedWidth), mFixedHeight(fixedHeight), mWordWrap(wordWrap),
+	GUILabel::GUILabel(GUIWidget& parent, const String& text, bool wordWrap, TextHorzAlign horzAlign, 
+		TextVertAlign vertAlign, const GUI_LAYOUT_OPTIONS& layoutOptions)
+		:GUIElement(parent, layoutOptions), mText(text), mWordWrap(wordWrap),
 		mHorzAlign(horzAlign), mVertAlign(vertAlign)
 	{
 		const GUISkin* skin = parent.getGUISkin();
@@ -22,20 +22,12 @@ namespace BansheeEngine
 		mDesc.text = text;
 		mDesc.font = mStyle->font;
 		mDesc.fontSize = mStyle->fontSize;
-		mDesc.width = fixedWidth;
-		mDesc.height = fixedHeight;
 		mDesc.wordWrap = wordWrap;
-		mDesc.clipRect = Rect(0, 0, fixedWidth, fixedHeight);
 		mDesc.horzAlign = horzAlign;
 		mDesc.vertAlign = vertAlign;
-		mTextSprite->update(mDesc);
+		mTextSprite->update(mDesc); // TODO - I probably don't need to call this until I have GUILayout set up
 
 		mBounds = mTextSprite->getBounds();
-
-		if(layoutOptions != nullptr)
-			mLayoutOptions = *layoutOptions;
-		else
-			mLayoutOptions = getDefaultLayoutOptions();
 	}
 
 	GUILabel::~GUILabel()
@@ -92,27 +84,24 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUI_LAYOUT_OPTIONS* layoutOptions)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, bool wordWrap)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, 0, 0, false, THA_Left, TVA_Top, layoutOptions);
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, THA_Left, TVA_Top, getDefaultLayoutOptions());
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign, 
-		const GUI_LAYOUT_OPTIONS* layoutOptions)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUI_LAYOUT_OPTIONS& layoutOptions, bool wordWrap)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, 0, 0, false, horzAlign, vertAlign, layoutOptions);
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, THA_Left, TVA_Top, layoutOptions);
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, 
-		const GUI_LAYOUT_OPTIONS* layoutOptions)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign, bool wordWrap)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, fixedWidth, fixedHeight, wordWrap, THA_Left, TVA_Top, layoutOptions);
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, horzAlign, vertAlign, getDefaultLayoutOptions());
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, 
-		TextHorzAlign horzAlign, TextVertAlign vertAlign, const GUI_LAYOUT_OPTIONS* layoutOptions)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUI_LAYOUT_OPTIONS& layoutOptions, TextHorzAlign horzAlign, TextVertAlign vertAlign, bool wordWrap)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, fixedWidth, fixedHeight, wordWrap, horzAlign, vertAlign, layoutOptions);
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, horzAlign, vertAlign, layoutOptions);
 	}
 
 	const String& GUILabel::getGUITypeName()

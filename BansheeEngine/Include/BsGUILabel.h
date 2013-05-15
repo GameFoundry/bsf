@@ -11,13 +11,13 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUILabel* create(GUIWidget& parent, const CM::String& text, const GUI_LAYOUT_OPTIONS* layoutOptions = nullptr);
+		static GUILabel* create(GUIWidget& parent, const CM::String& text, bool wordWrap = false);
+		static GUILabel* create(GUIWidget& parent, const CM::String& text, const GUI_LAYOUT_OPTIONS& layoutOptions, bool wordWrap = false);
+
 		static GUILabel* create(GUIWidget& parent, const CM::String& text, TextHorzAlign horzAlign, 
-			TextVertAlign vertAlign = TVA_Top, const GUI_LAYOUT_OPTIONS* layoutOptions = nullptr);
-		static GUILabel* create(GUIWidget& parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight = 0, 
-			bool wordWrap = false, const GUI_LAYOUT_OPTIONS* layoutOptions = nullptr);
-		static GUILabel* create(GUIWidget& parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, 
-			TextVertAlign vertAlign = TVA_Top, const GUI_LAYOUT_OPTIONS* layoutOptions = nullptr);
+			TextVertAlign vertAlign = TVA_Top, bool wordWrap = false);
+		static GUILabel* create(GUIWidget& parent, const CM::String& text, const GUI_LAYOUT_OPTIONS& layoutOptions,
+			TextHorzAlign horzAlign, TextVertAlign vertAlign = TVA_Top, bool wordWrap = false);
 
 		void setText(const CM::String& text);
 
@@ -49,13 +49,12 @@ namespace BansheeEngine
 	private:
 		TextSprite* mTextSprite;
 		CM::String mText;
-		UINT32 mFixedWidth, mFixedHeight;
 		bool mWordWrap;
 		TextHorzAlign mHorzAlign;
 		TextVertAlign mVertAlign;
 		TEXT_SPRITE_DESC mDesc;
 		
-		GUILabel(GUIWidget& parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, 
-			bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign, const GUI_LAYOUT_OPTIONS* layoutOptions);
+		GUILabel(GUIWidget& parent, const CM::String& text, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign, 
+			const GUI_LAYOUT_OPTIONS& layoutOptions);
 	};
 }

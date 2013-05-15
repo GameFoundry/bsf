@@ -17,24 +17,26 @@ namespace BansheeEngine
 		static GUIArea* create(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width = 0, UINT32 height = 0, UINT32 depth = 0);
 		static void destroy(GUIArea* area);
 
-		/**
-		 * @brief	Never call this manually. It's used by internal GUI systems.
-		 */
-		static void destroyInternal(GUIArea* area);
-
 		GUILayout& getLayout() const { return *mLayout; }
 
 		UINT32 getDepth() const { return mDepth; }
 		void setDepth(UINT32 depth) { mDepth = depth; }
 
 	private:
+		friend class GUIWidget;
+
 		GUIWidget& mWidget;
 		UINT32 mX, mY, mWidth, mHeight;
 		UINT32 mDepth;
+		bool resizeWidthWithWindow, resizeHeightWithWindow;
 
 		GUILayout* mLayout;
 
 		GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth);
 		~GUIArea();
+
+		void notifyWindowResized(UINT32 newWidth, UINT32 newHeight);
+
+		static void destroyInternal(GUIArea* area);
 	};
 }

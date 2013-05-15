@@ -29,6 +29,7 @@ THE SOFTWARE
 #include "CmPrerequisites.h"
 
 #include "CmRenderTarget.h"
+#include "boost/signal.hpp"
 
 namespace CamelotFramework
 {
@@ -129,7 +130,7 @@ namespace CamelotFramework
         @remarks
             You don't need to call this unless you created the window externally.
         */
-        virtual void windowMovedOrResized() {}
+        virtual void windowMovedOrResized();
 
         /** Reposition the window.
         */
@@ -175,6 +176,8 @@ namespace CamelotFramework
           */
         void setDeactivateOnFocusChange(bool deactivate);
 
+		mutable boost::signal<void(RenderWindow*)> onWindowMovedOrResized;
+		
 		virtual void destroy();
 
 		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);

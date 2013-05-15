@@ -189,6 +189,7 @@
     <ClCompile Include="Source\BsGUIElement.cpp" />
     <ClCompile Include="Source\BsGUILabel.cpp" />
     <ClCompile Include="Source\BsGUILayout.cpp" />
+    <ClCompile Include="Source\BsGUILayoutY.cpp" />
     <ClCompile Include="Source\BsGUIManager.cpp" />
     <ClCompile Include="Source\BsGUIMaterialManager.cpp" />
     <ClCompile Include="Source\BsGUISkin.cpp" />
@@ -208,6 +209,7 @@
     <ClCompile Include="Source\BsD3D9BuiltinMaterialFactory.cpp" />
     <ClCompile Include="Source\BsGLBuiltinMaterialFactory.cpp" />
     <ClCompile Include="Source\BsUpdateCallback.cpp" />
+    <ClCompile Include="Source\BsGUILayoutX.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
