@@ -18,7 +18,7 @@ namespace CamelotFramework
 	const float DebugCamera::ROTATION_SPEED = 0.5f; // Degrees/pixel
 
 	DebugCamera::DebugCamera(const HSceneObject& parent)
-		:Component(parent), mPitch(0.0f), mYaw(0.0f)
+		:Component(parent), mPitch(0.0f), mYaw(0.0f), mLastButtonState(false)
 	{
 		mCamera = sceneObject()->getComponent<Camera>();
 		mCamera->setNearClipDistance(5);
@@ -38,6 +38,16 @@ namespace CamelotFramework
 		bool goingRight = gInput().isKeyDown(KC_D) || gInput().isKeyDown(KC_RIGHT);
 		bool fastMove = gInput().isKeyDown(KC_LSHIFT);
 		bool camRotating = gInput().isButtonDown(MB_Right);
+
+		if(camRotating != mLastButtonState)
+		{
+			if(camRotating)
+				Cursor::hide();
+			else
+				Cursor::show();
+
+			mLastButtonState = camRotating;
+		}
 
 		Vector3 direction = Vector3::ZERO;
 		if (goingForward) direction += SO()->getForward();

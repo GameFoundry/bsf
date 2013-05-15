@@ -3,6 +3,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
+#include "BsGUILayoutOptions.h"
 #include "CmTexture.h"
 
 using namespace CamelotFramework;
@@ -15,10 +16,10 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIWindowFrame::GUIWindowFrame(GUIWidget* parent)
+	GUIWindowFrame::GUIWindowFrame(GUIWidget& parent, const GUI_LAYOUT_OPTIONS* layoutOptions)
 		:GUIElement(parent)
 	{
-		const GUISkin* skin = parent->getGUISkin();
+		const GUISkin* skin = parent.getGUISkin();
 
 		mStyle = skin->getStyle(getGUITypeName());
 		mImageSprite = CM_NEW(ImageSprite, PoolAlloc) ImageSprite();
@@ -36,12 +37,15 @@ namespace BansheeEngine
 		desc.borderRight = mStyle->border.right;
 		desc.borderTop = mStyle->border.top;
 		desc.borderBottom = mStyle->border.bottom;
-		desc.width = 200;
-		desc.height = 200;
 
 		mImageSprite->update(desc);
 
 		mBounds = mImageSprite->getBounds();
+
+		if(layoutOptions != nullptr)
+			mLayoutOptions = *layoutOptions;
+		else
+			mLayoutOptions = getDefaultLayoutOptions();
 	}
 
 	GUIWindowFrame::~GUIWindowFrame()
@@ -49,9 +53,9 @@ namespace BansheeEngine
 		CM_DELETE(mImageSprite, ImageSprite, PoolAlloc);
 	}
 
-	GUIWindowFrame* GUIWindowFrame::create(GUIWidget* parent)
+	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent, const GUI_LAYOUT_OPTIONS* layoutOptions)
 	{
-		return CM_NEW(GUIWindowFrame, PoolAlloc) GUIWindowFrame(parent);
+		return CM_NEW(GUIWindowFrame, PoolAlloc) GUIWindowFrame(parent, layoutOptions);
 	}
 
 	UINT32 GUIWindowFrame::getNumRenderElements() const
@@ -73,5 +77,21 @@ namespace BansheeEngine
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
+	}
+
+	const GUI_LAYOUT_OPTIONS& GUIWindowFrame::getDefaultLayoutOptions()
+	{
+		static GUI_LAYOUT_OPTIONS layoutOptions;
+		static bool layoutOptionsInitialized = false;
+
+		if(!layoutOptionsInitialized)
+		{
+			layoutOptions.fixedWidth = false;
+			layoutOptions.fixedHeight = false;
+
+			layoutOptionsInitialized = true;
+		}
+
+		return layoutOptions;
 	}
 }

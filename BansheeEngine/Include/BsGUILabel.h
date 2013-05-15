@@ -11,10 +11,13 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUILabel* create(GUIWidget* parent, const CM::String& text);
-		static GUILabel* create(GUIWidget* parent, const CM::String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign = TVA_Top);
-		static GUILabel* create(GUIWidget* parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight = 0, bool wordWrap = false);
-		static GUILabel* create(GUIWidget* parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign = TVA_Top);
+		static GUILabel* create(GUIWidget& parent, const CM::String& text, const GUI_LAYOUT_OPTIONS* layoutOptions = nullptr);
+		static GUILabel* create(GUIWidget& parent, const CM::String& text, TextHorzAlign horzAlign, 
+			TextVertAlign vertAlign = TVA_Top, const GUI_LAYOUT_OPTIONS* layoutOptions = nullptr);
+		static GUILabel* create(GUIWidget& parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight = 0, 
+			bool wordWrap = false, const GUI_LAYOUT_OPTIONS* layoutOptions = nullptr);
+		static GUILabel* create(GUIWidget& parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, 
+			TextVertAlign vertAlign = TVA_Top, const GUI_LAYOUT_OPTIONS* layoutOptions = nullptr);
 
 		void setText(const CM::String& text);
 
@@ -41,6 +44,8 @@ namespace BansheeEngine
 		 */
 		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
 			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
+
+		static const GUI_LAYOUT_OPTIONS& getDefaultLayoutOptions();
 	private:
 		TextSprite* mTextSprite;
 		CM::String mText;
@@ -49,8 +54,8 @@ namespace BansheeEngine
 		TextHorzAlign mHorzAlign;
 		TextVertAlign mVertAlign;
 		TEXT_SPRITE_DESC mDesc;
-
-		GUILabel(GUIWidget* parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, 
-			bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign);
+		
+		GUILabel(GUIWidget& parent, const CM::String& text, UINT32 fixedWidth, UINT32 fixedHeight, 
+			bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign, const GUI_LAYOUT_OPTIONS* layoutOptions);
 	};
 }

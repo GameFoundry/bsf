@@ -1,24 +1,23 @@
 #include "BsGUIElement.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
+#include "BsGUILayout.h"
 #include "CmException.h"
 
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIElement::GUIElement(GUIWidget* parent)
+	GUIElement::GUIElement(GUIWidget& parent)
 		:mParent(parent), mIsDirty(true), mParentLayout(nullptr)
 	{
-		if(parent == nullptr)
-			CM_EXCEPT(InvalidParametersException, "Cannot create GUI element without providing a parent!");
-
-		mParent->registerElement(this);
+		mParent.registerElement(this);
 	}
 
 	GUIElement::~GUIElement()
 	{
-
+		if(mParentLayout != nullptr)
+			mParentLayout->removeElement(this);
 	}
 
 	bool GUIElement::mouseEvent(const GUIMouseEvent& ev)
@@ -26,8 +25,15 @@ namespace BansheeEngine
 		return false;
 	}
 
+	void GUIElement::destroyInternal(GUIElement* element)
+	{
+		CM_DELETE(element, GUIElement, PoolAlloc);
+	}
+
 	void GUIElement::destroy(GUIElement* element)
 	{
+		element->mParent.unregisterElement(element);
+
 		CM_DELETE(element, GUIElement, PoolAlloc);
 	}
 }

@@ -3,6 +3,7 @@
 #include "BsGUISkin.h"
 #include "BsGUILabel.h"
 #include "BsGUIMouseEvent.h"
+#include "BsGUIArea.h"
 #include "CmApplication.h"
 #include "CmDeferredRenderContext.h"
 #include "CmMaterial.h"
@@ -21,7 +22,7 @@ namespace BansheeEngine
 	GUISkin GUIWidget::DefaultSkin;
 
 	GUIWidget::GUIWidget(const HSceneObject& parent)
-		:Overlay(parent), mSkin(nullptr), mOwnerWindow(nullptr)
+		:Overlay(parent), mSkin(nullptr), mOwnerWindow(nullptr), mWidgetIsDirty(false)
 	{
 		GUIManager::instance().registerWidget(this);
 	}
@@ -32,7 +33,12 @@ namespace BansheeEngine
 
 		for(auto& elem : mElements)
 		{
-			GUIElement::destroy(elem);
+			GUIElement::destroyInternal(elem);
+		}
+
+		for(auto& area : mAreas)
+		{
+			GUIArea::destroyInternal(area);
 		}
 
 		mElements.clear();
@@ -48,6 +54,37 @@ namespace BansheeEngine
 	void GUIWidget::registerElement(GUIElement* elem)
 	{
 		mElements.push_back(elem);
+
+		mWidgetIsDirty = true;
+	}
+
+	void GUIWidget::unregisterElement(GUIElement* elem)
+	{
+		auto iterFind = std::find(begin(mElements), end(mElements), elem);
+
+		if(iterFind == mElements.end())
+			CM_EXCEPT(InvalidParametersException, "Cannot unregister an element that is not registered on this widget.");
+
+		mElements.erase(iterFind);
+		mWidgetIsDirty = true;
+	}
+
+	void GUIWidget::registerArea(GUIArea* area)
+	{
+		mAreas.push_back(area);
+
+		mWidgetIsDirty = true;
+	}
+
+	void GUIWidget::unregisterArea(GUIArea* area)
+	{
+		auto iterFind = std::find(begin(mAreas), end(mAreas), area);
+
+		if(iterFind == mAreas.end())
+			CM_EXCEPT(InvalidParametersException, "Cannot unregister an area that is not registered on this widget.");
+
+		mAreas.erase(iterFind);
+		mWidgetIsDirty = true;
 	}
 
 	void GUIWidget::setSkin(const GUISkin* skin)
@@ -77,13 +114,18 @@ namespace BansheeEngine
 			std::shared_ptr<MeshData> meshData;
 		};
 
-		bool isDirty = false;
-		for(auto& elem : mElements)
+		bool isDirty = mWidgetIsDirty;
+		mWidgetIsDirty = false;
+
+		if(!isDirty)
 		{
-			if(elem->isDirty())
+			for(auto& elem : mElements)
 			{
-				isDirty = true;
-				break;
+				if(elem->isDirty())
+				{
+					isDirty = true;
+					break;
+				}
 			}
 		}
 

@@ -3,17 +3,18 @@
 #include "BsTextSprite.h"
 #include "BsGUISkin.h"
 #include "BsGUIWidget.h"
+#include "BsGUILayoutOptions.h"
 
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUILabel::GUILabel(GUIWidget* parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, 
-		bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign)
+	GUILabel::GUILabel(GUIWidget& parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, 
+		bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign, const GUI_LAYOUT_OPTIONS* layoutOptions)
 		:GUIElement(parent), mText(text), mFixedWidth(fixedWidth), mFixedHeight(fixedHeight), mWordWrap(wordWrap),
 		mHorzAlign(horzAlign), mVertAlign(vertAlign)
 	{
-		const GUISkin* skin = parent->getGUISkin();
+		const GUISkin* skin = parent.getGUISkin();
 
 		mStyle = skin->getStyle(getGUITypeName());
 		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite();
@@ -30,6 +31,11 @@ namespace BansheeEngine
 		mTextSprite->update(mDesc);
 
 		mBounds = mTextSprite->getBounds();
+
+		if(layoutOptions != nullptr)
+			mLayoutOptions = *layoutOptions;
+		else
+			mLayoutOptions = getDefaultLayoutOptions();
 	}
 
 	GUILabel::~GUILabel()
@@ -58,6 +64,24 @@ namespace BansheeEngine
 		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
 	}
 
+	const GUI_LAYOUT_OPTIONS& GUILabel::getDefaultLayoutOptions()
+	{
+		static GUI_LAYOUT_OPTIONS layoutOptions;
+		static bool layoutOptionsInitialized = false;
+
+		if(!layoutOptionsInitialized)
+		{
+			layoutOptions.fixedWidth = false;
+			layoutOptions.fixedHeight = true;
+			layoutOptions.height = 20;
+			layoutOptions.minWidth = 10;
+
+			layoutOptionsInitialized = true;
+		}
+
+		return layoutOptions;
+	}
+
 	void GUILabel::setText(const CM::String& text)
 	{
 		mDesc.text = text;
@@ -68,24 +92,27 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
-	GUILabel* GUILabel::create(GUIWidget* parent, const String& text)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUI_LAYOUT_OPTIONS* layoutOptions)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, 0, 0, false, THA_Left, TVA_Top);
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, 0, 0, false, THA_Left, TVA_Top, layoutOptions);
 	}
 
-	GUILabel* GUILabel::create(GUIWidget* parent, const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign, 
+		const GUI_LAYOUT_OPTIONS* layoutOptions)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, 0, 0, false, horzAlign, vertAlign);
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, 0, 0, false, horzAlign, vertAlign, layoutOptions);
 	}
 
-	GUILabel* GUILabel::create(GUIWidget* parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, 
+		const GUI_LAYOUT_OPTIONS* layoutOptions)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, fixedWidth, fixedHeight, wordWrap, THA_Left, TVA_Top);
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, fixedWidth, fixedHeight, wordWrap, THA_Left, TVA_Top, layoutOptions);
 	}
 
-	GUILabel* GUILabel::create(GUIWidget* parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, UINT32 fixedWidth, UINT32 fixedHeight, bool wordWrap, 
+		TextHorzAlign horzAlign, TextVertAlign vertAlign, const GUI_LAYOUT_OPTIONS* layoutOptions)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, fixedWidth, fixedHeight, wordWrap, horzAlign, vertAlign);
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, fixedWidth, fixedHeight, wordWrap, horzAlign, vertAlign, layoutOptions);
 	}
 
 	const String& GUILabel::getGUITypeName()

@@ -8,10 +8,12 @@
 #include "BsGUILabel.h"
 #include "BsGUIWindowFrame.h"
 #include "BsGUISkin.h"
+#include "BsGUILayout.h"
 #include "BsOverlayManager.h"
 #include "BsCamera.h"
 #include "BsUpdateCallback.h"
 #include "BsEngineGUI.h"
+#include "BsGUIArea.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -46,9 +48,17 @@ namespace BansheeEditor
 
 		//// DEBUG
 		mGUI->setSkin(&EngineGUI::instance().getSkin());
-		mDbgLabel = GUILabel::create(mGUI.get(), "Testing test", renderWindowDesc.width);
-		mDbgLabel->setDepth(-1);
-		GUIWindowFrame::create(mGUI.get());
+
+		GUIArea* backgroundArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 0);
+		GUILayout& layout = backgroundArea->getLayout();
+		
+		mDbgLabel = GUILabel::create(*mGUI, "Testing test", renderWindowDesc.width);
+		layout.addElement(mDbgLabel);
+
+		GUIArea* mainArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 1);
+		GUILayout& otherLayout = mainArea->getLayout();
+
+		otherLayout.addElement(GUIWindowFrame::create(*mGUI));
 	}
 
 	EditorWindow::~EditorWindow()

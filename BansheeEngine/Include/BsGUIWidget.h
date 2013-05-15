@@ -34,18 +34,24 @@ namespace BansheeEngine
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;
+		friend class GUIArea;
 
 		GUIWidget(const CM::HSceneObject& parent);
 
 		void registerElement(GUIElement* elem);
-	private:
+		void unregisterElement(GUIElement* elem);
 
+		void registerArea(GUIArea* area);
+		void unregisterArea(GUIArea* area);
+	private:
 		void updateMeshes() const;
 		void updateBounds() const;
 
 		const CM::RenderWindow* mOwnerWindow;
 		std::vector<GUIElement*> mElements;
-		
+		std::vector<GUIArea*> mAreas;
+
+		mutable bool mWidgetIsDirty;
 		mutable CM::Rect mBounds;
 		mutable std::vector<CM::HMesh> mCachedMeshes;
 		mutable std::vector<CM::HMaterial> mCachedMaterials;

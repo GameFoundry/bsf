@@ -25,9 +25,11 @@ namespace BansheeEngine
 		void removeElement(GUIElement* element);
 		void insertElement(UINT32 idx, GUIElement* element);
 
-		void addLayout(GUILayout* layout);
-		void removeLayout(GUILayout* layout);
-		void insertLayout(UINT32 idx, GUILayout* layout);
+		GUILayout& addLayoutX();
+		GUILayout& addLayoutY();
+		void removeLayout(GUILayout& layout);
+		GUILayout& insertLayoutX(UINT32 idx);
+		GUILayout& insertLayoutY(UINT32 idx);
 
 		/**
 		 * @brief	Returns a combined number of child elements and layouts.
@@ -36,9 +38,5 @@ namespace BansheeEngine
 
 	private:
 		std::vector<GUILayoutEntry> mChildren;
-		GUILayout* mParentLayout;
-
-		GUILayout* getParentLayout() const { return mParentLayout; }
-		void setParentLayout(GUILayout* layout) { mParentLayout = layout; }
 	};
 }

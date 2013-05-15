@@ -14,6 +14,7 @@ namespace CamelotFramework
 
 		Degree mPitch;
 		Degree mYaw;
+		bool mLastButtonState;
 
 		BS::HCamera mCamera;
 

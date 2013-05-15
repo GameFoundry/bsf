@@ -30,8 +30,8 @@ namespace CamelotFramework
 	{
 		setSkin(&EngineGUI::instance().getSkin());
 
-		GUILabel::create(this, text, 400, 400, true, THA_Right, TVA_Bottom);
-		GUIWindowFrame::create(this);
+		GUILabel::create(*this, text, 400, 400, true, THA_Right, TVA_Bottom);
+		GUIWindowFrame::create(*this);
 	}
 
 	void TestTextSprite::update()

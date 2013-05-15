@@ -53,7 +53,7 @@ namespace BansheeEngine
 	class GUILayout;
 	class GUILayoutX;
 	class GUILayoutY;
-	class GUI_LAYOUT_OPTIONS;
+	struct GUI_LAYOUT_OPTIONS;
 
 	// 2D
 	class TextSprite;

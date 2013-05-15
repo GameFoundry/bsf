@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsGUILayoutOptions.h"
 #include "CmRect.h"
 
 namespace BansheeEngine
@@ -8,7 +9,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIElement
 	{
 	public:
-		GUIElement(GUIWidget* parent);
+		GUIElement(GUIWidget& parent);
 
 		/**
 		 * @brief	Returns the number of separate render elements in the GUI element.
@@ -75,6 +76,8 @@ namespace BansheeEngine
 		void markAsClean() { mIsDirty = false; }
 		void markAsDirty() { mIsDirty = true; }
 
+		static void destroy(GUIElement* element);
+
 		//  onMouseMove
 		//	onMousePress
 		//	onMouseReleased
@@ -89,13 +92,17 @@ namespace BansheeEngine
 		GUILayout* getParentLayout() const { return mParentLayout; }
 		void setParentLayout(GUILayout* layout) { mParentLayout = layout; }
 
-		GUIWidget* mParent;
+		void setLayoutOptions(const GUI_LAYOUT_OPTIONS& layoutOptions) { mLayoutOptions = layoutOptions; }
+		const GUI_LAYOUT_OPTIONS& getLayoutOptions() const { return mLayoutOptions; }
+
+		GUIWidget& mParent;
 		GUILayout* mParentLayout;
+		GUI_LAYOUT_OPTIONS mLayoutOptions;
 		CM::Rect mBounds;
 		INT32 mDepth;
 		bool mIsDirty;
 		const GUIElementStyle* mStyle;
 
-		static void destroy(GUIElement* element);
+		static void destroyInternal(GUIElement* element);
 	};
 }
