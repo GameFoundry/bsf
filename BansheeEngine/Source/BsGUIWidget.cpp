@@ -154,6 +154,9 @@ namespace BansheeEngine
 		// Determine mesh sizes per group
 		for(auto& elem : mElements)
 		{
+			if(elem->isDirty())
+				elem->updateRenderElements();
+
 			UINT32 numRenderElems = elem->getNumRenderElements();
 
 			for(UINT32 i = 0; i < numRenderElems; i++)
@@ -216,7 +219,6 @@ namespace BansheeEngine
 				UINT32 indexStride = meshData->getIndexElementSize();
 				
 				elem->fillBuffer(vertices, uvs, indices, startingQuad, maxNumQuads, vertexStride, indexStride, i);
-				elem->markAsClean();
 
 				UINT32 numQuads = elem->getNumQuads(i);
 				meshDataPerRenderElement[meshGroup].quadOffset += numQuads;

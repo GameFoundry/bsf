@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
-#include "BsTextSprite.h"
+#include "BsImageSprite.h"
 
 namespace BansheeEngine
 {
@@ -37,9 +37,15 @@ namespace BansheeEngine
 		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
 			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
 
+		/**
+		 * @copydoc GUIElement::updateRenderElementsInternal()
+		 */
+		virtual void updateRenderElementsInternal();
+
 		static const GUI_LAYOUT_OPTIONS& getDefaultLayoutOptions();
 	private:
 		ImageSprite* mImageSprite;
+		IMAGE_SPRITE_DESC mDesc;
 
 		GUIWindowFrame(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions);
 	};

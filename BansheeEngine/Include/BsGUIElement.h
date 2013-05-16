@@ -65,16 +65,17 @@ namespace BansheeEngine
 		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
 			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const = 0;
 
+		/**
+		 * @brief	Recreates the internal render elements. Must be called before fillBuffer if element is dirty. 
+		 * 			Marks the element as non dirty.
+		 */
+		void updateRenderElements();
+
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
 		const CM::Rect& getBounds() const { return mBounds; }
-
-		void setDepth(INT32 depth) { mDepth = depth; }
 		INT32 getDepth() const { return mDepth; }
-
 		bool isDirty() const { return mIsDirty; }
-		void markAsClean() { mIsDirty = false; }
-		void markAsDirty() { mIsDirty = true; }
 
 		static void destroy(GUIElement* element);
 
@@ -89,18 +90,33 @@ namespace BansheeEngine
 
 		virtual ~GUIElement();
 
+		virtual void updateRenderElementsInternal() = 0;
+
 		GUILayout* getParentLayout() const { return mParentLayout; }
 		void setParentLayout(GUILayout* layout) { mParentLayout = layout; }
 
+		void setDepth(INT32 depth) { mDepth = depth; }
+		void setOffset(const CM::Int2& offset) { mOffset = offset; }
+		void setWidth(UINT32 width) { mWidth = width; }
+		void setHeight(UINT32 height) { mHeight = height; }
+		void setClipRect(const CM::Rect& clipRect) { mClipRect = clipRect; }
+
 		void setLayoutOptions(const GUI_LAYOUT_OPTIONS& layoutOptions) { mLayoutOptions = layoutOptions; }
 		const GUI_LAYOUT_OPTIONS& getLayoutOptions() const { return mLayoutOptions; }
+
+		void markAsClean() { mIsDirty = false; }
+		void markAsDirty() { mIsDirty = true; }
 
 		GUIWidget& mParent;
 		GUILayout* mParentLayout;
 		GUI_LAYOUT_OPTIONS mLayoutOptions;
 		CM::Rect mBounds;
-		INT32 mDepth;
+
 		bool mIsDirty;
+		INT32 mDepth;
+		CM::Int2 mOffset;
+		UINT32 mWidth, mHeight;
+		CM::Rect mClipRect;
 		const GUIElementStyle* mStyle;
 
 		static void destroyInternal(GUIElement* element);

@@ -25,9 +25,6 @@ namespace BansheeEngine
 		mDesc.wordWrap = wordWrap;
 		mDesc.horzAlign = horzAlign;
 		mDesc.vertAlign = vertAlign;
-		mTextSprite->update(mDesc); // TODO - I probably don't need to call this until I have GUILayout set up
-
-		mBounds = mTextSprite->getBounds();
 	}
 
 	GUILabel::~GUILabel()
@@ -48,6 +45,12 @@ namespace BansheeEngine
 	UINT32 GUILabel::getNumQuads(UINT32 renderElementIdx) const
 	{
 		return mTextSprite->getNumQuads(renderElementIdx);
+	}
+
+	void GUILabel::updateRenderElementsInternal()
+	{		
+		mTextSprite->update(mDesc);
+		mBounds = mTextSprite->getBounds();
 	}
 
 	void GUILabel::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

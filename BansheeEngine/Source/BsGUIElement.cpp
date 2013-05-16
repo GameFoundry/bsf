@@ -9,7 +9,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIElement::GUIElement(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions)
-		:mParent(parent), mIsDirty(true), mParentLayout(nullptr), mLayoutOptions(layoutOptions)
+		:mParent(parent), mIsDirty(true), mParentLayout(nullptr), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0)
 	{
 		mParent.registerElement(this);
 	}
@@ -18,6 +18,12 @@ namespace BansheeEngine
 	{
 		if(mParentLayout != nullptr)
 			mParentLayout->removeElement(this);
+	}
+
+	void GUIElement::updateRenderElements()
+	{
+		updateRenderElementsInternal();
+		markAsClean();
 	}
 
 	bool GUIElement::mouseEvent(const GUIMouseEvent& ev)

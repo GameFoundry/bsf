@@ -24,23 +24,18 @@ namespace BansheeEngine
 		mStyle = skin->getStyle(getGUITypeName());
 		mImageSprite = CM_NEW(ImageSprite, PoolAlloc) ImageSprite();
 
-		IMAGE_SPRITE_DESC desc;
-		desc.texture = mStyle->normal.texture;
+		mDesc.texture = mStyle->normal.texture;
 
-		if(desc.texture != nullptr)
+		if(mDesc.texture != nullptr)
 		{
-			desc.width = desc.texture->getTexture()->getWidth();
-			desc.height = desc.texture->getTexture()->getHeight();
+			mDesc.width = mDesc.texture->getTexture()->getWidth();
+			mDesc.height = mDesc.texture->getTexture()->getHeight();
 		}
 
-		desc.borderLeft = mStyle->border.left;
-		desc.borderRight = mStyle->border.right;
-		desc.borderTop = mStyle->border.top;
-		desc.borderBottom = mStyle->border.bottom;
-
-		mImageSprite->update(desc);
-
-		mBounds = mImageSprite->getBounds();
+		mDesc.borderLeft = mStyle->border.left;
+		mDesc.borderRight = mStyle->border.right;
+		mDesc.borderTop = mStyle->border.top;
+		mDesc.borderBottom = mStyle->border.bottom;
 	}
 
 	GUIWindowFrame::~GUIWindowFrame()
@@ -71,6 +66,12 @@ namespace BansheeEngine
 	UINT32 GUIWindowFrame::getNumQuads(UINT32 renderElementIdx) const
 	{
 		return mImageSprite->getNumQuads(renderElementIdx);
+	}
+
+	void GUIWindowFrame::updateRenderElementsInternal()
+	{		
+		mImageSprite->update(mDesc);
+		mBounds = mImageSprite->getBounds();
 	}
 
 	void GUIWindowFrame::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
