@@ -6,15 +6,54 @@ namespace BansheeEngine
 {
 	class BS_EXPORT GUILayout
 	{
+		enum class Type
+		{
+			Layout,
+			Element,
+			FixedSpace,
+			FlexibleSpace
+		};
+
 		struct GUILayoutEntry
 		{
 			union
 			{
 				GUIElement* element;
 				GUILayout* layout;
+				GUIFixedSpace* space;
+				GUIFlexibleSpace* flexibleSpace;
 			};
 
-			bool isLayout;
+			bool isElement() const { return mType == Type::Element; }
+			bool isLayout() const { return mType == Type::Layout; }
+			bool isFixedSpace() const { return mType == Type::FixedSpace; }
+			bool isFlexibleSpace() const { return mType == Type::FlexibleSpace; }
+
+			void setElement(GUIElement* _element)
+			{
+				element = _element;
+				mType = Type::Element;
+			}
+
+			void setLayout(GUILayout* _layout)
+			{
+				layout = _layout;
+				mType = Type::Layout;
+			}
+
+			void setSpace(GUIFixedSpace* _space)
+			{
+				space = _space;
+				mType = Type::FixedSpace;
+			}
+
+			void setFlexibleSpace(GUIFlexibleSpace* _space)
+			{
+				flexibleSpace = _space;
+				mType = Type::FlexibleSpace;
+			}
+
+			Type mType;
 		};
 
 	public:
@@ -30,6 +69,14 @@ namespace BansheeEngine
 		void removeLayout(GUILayout& layout);
 		GUILayout& insertLayoutX(UINT32 idx);
 		GUILayout& insertLayoutY(UINT32 idx);
+
+		GUIFixedSpace& addSpace(UINT32 size);
+		void removeSpace(GUIFixedSpace& space);
+		GUIFixedSpace& insertSpace(UINT32 idx, UINT32 size);
+
+		GUIFlexibleSpace& addFlexibleSpace();
+		void removeFlexibleSpace(GUIFlexibleSpace& space);
+		GUIFlexibleSpace& insertFlexibleSpace(UINT32 idx);
 
 		/**
 		 * @brief	Returns a combined number of child elements and layouts.

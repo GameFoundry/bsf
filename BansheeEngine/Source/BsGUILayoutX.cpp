@@ -1,5 +1,6 @@
 #include "BsGUILayoutX.h"
 #include "BsGUIElement.h"
+#include "BsGUISpace.h"
 #include "CmMath.h"
 #include "CmInt2.h"
 
@@ -9,16 +10,25 @@ namespace BansheeEngine
 {
 	void GUILayoutX::_update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
 	{
-		// TODO - Handle flexible spaces
+		std::vector<UINT32> flexibleSpaceSizes;
+		for(auto& child : mChildren)
+		{
+			if(child.isFlexibleSpace())
+			{
+				flexibleSpaceSizes.push_back(0);
+			}
+		}
 
+		// TODO - Calculate flexible space sizes
 
 		// Get a basic estimate of the average width
 		UINT32 totalWidth = 0;
 		UINT32 numFreeElems = 0;
 		float avgWidth = 0.0f;
+		UINT32 flexibleSpaceIdx = 0;
 		for(auto& child : mChildren)
 		{
-			if(!child.isLayout)
+			if(child.isElement())
 			{
 				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->getLayoutOptions();
 
@@ -30,6 +40,15 @@ namespace BansheeEngine
 				{
 					numFreeElems++;
 				}
+			}
+			else if(child.isFixedSpace())
+			{
+				totalWidth += child.space->getSize();
+			}
+			else if(child.isFlexibleSpace())
+			{
+				totalWidth += flexibleSpaceSizes[flexibleSpaceIdx];
+				flexibleSpaceIdx++;
 			}
 			else
 			{
@@ -43,7 +62,7 @@ namespace BansheeEngine
 		// Only assign elements with fixed, or clamped width
 		for(auto& child : mChildren)
 		{
-			if(!child.isLayout)
+			if(child.isElement())
 			{
 				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->getLayoutOptions();
 
@@ -102,9 +121,10 @@ namespace BansheeEngine
 		// Assign free scaling elements now that we have a good estimate on average width
 		// Also calculate offset
 		UINT32 xOffset = 0;
+		flexibleSpaceIdx = 0;
 		for(auto& child : mChildren)
 		{
-			if(!child.isLayout)
+			if(child.isElement())
 			{
 				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->getLayoutOptions();
 
@@ -138,7 +158,7 @@ namespace BansheeEngine
 
 				xOffset += child.element->getWidth();
 			}
-			else
+			else if(child.isLayout())
 			{
 				UINT32 elementWidth = std::min((UINT32)Math::CeilToInt(averageWidth), leftoverWidth);
 				leftoverWidth = (UINT32)std::max(0, (INT32)leftoverWidth - (INT32)elementWidth);
@@ -146,6 +166,15 @@ namespace BansheeEngine
 				child.layout->_update(x + xOffset, y, elementWidth, height, depth);
 
 				xOffset += elementWidth;
+			}
+			else if(child.isFixedSpace())
+			{
+				xOffset += child.space->getSize();
+			}
+			else if(child.isFlexibleSpace())
+			{
+				xOffset += flexibleSpaceSizes[flexibleSpaceIdx];
+				flexibleSpaceIdx++;
 			}
 		}
 	}

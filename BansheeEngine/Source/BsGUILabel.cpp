@@ -67,7 +67,7 @@ namespace BansheeEngine
 		{
 			if(getLayoutOptions().fixedWidth)
 				wordWrapWidth = getLayoutOptions().width;
-			else if(getLayoutOptions().maxWidth > 0)
+			else
 				wordWrapWidth = getLayoutOptions().maxWidth;
 		}
 
@@ -86,7 +86,7 @@ namespace BansheeEngine
 		{
 			if(getLayoutOptions().fixedWidth)
 				wordWrapWidth = getLayoutOptions().width;
-			else if(getLayoutOptions().maxWidth > 0)
+			else
 				wordWrapWidth = getLayoutOptions().maxWidth;
 		}
 

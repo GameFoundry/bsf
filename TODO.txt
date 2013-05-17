@@ -22,6 +22,8 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 GUI element grouping is wrong as it doesn't account for transparency
  - Elements sharing same material cannot be batched unless they are at a nearby depth with no elements between them. I need an algorithm to handle that.
 
+ On content change I need to notify parent layout
+Do layouts have isDirty flag? They probably should
 GUILabel::getOptimalWidth/Height
 Add clip rectangles on GUILayoutX
 Add flexible spaces (and fixed spaces)

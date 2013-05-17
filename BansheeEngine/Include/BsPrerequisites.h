@@ -53,6 +53,8 @@ namespace BansheeEngine
 	class GUILayout;
 	class GUILayoutX;
 	class GUILayoutY;
+	class GUIFixedSpace;
+	class GUIFlexibleSpace;
 	struct GUI_LAYOUT_OPTIONS;
 
 	// 2D
