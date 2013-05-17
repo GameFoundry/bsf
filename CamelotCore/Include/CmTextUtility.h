@@ -36,14 +36,19 @@ namespace CamelotFramework
 		};
 
 	public:
-		class TextLine
+		class CM_EXPORT TextLine
 		{
 		public:
-			TextLine();
+			TextLine(UINT32 baselineOffset, UINT32 lineHeight, UINT32 spaceWidth);
 			~TextLine();
 
 			UINT32 getWidth() const { return mWidth; }
 			UINT32 getHeight() const { return mHeight; }
+
+			/**
+			 * @brief	Returns an offset used to separate two lines.
+			 */
+			UINT32 getYOffset() const { return mLineHeight; }
 
 			/**
 			 * @brief	Gets a number quads used by all characters for every page used by this text line.
@@ -55,28 +60,34 @@ namespace CamelotFramework
 			std::vector<UINT32> getNumQuadsPerPage() const;
 
 			/**
-			 * @brief	Fills the vertex/uv/index buffers for the specified page, with all the character data needed for rendering.
+			 * @brief	Fills the vertex/uv/index buffers for the specified page, with all the character data
+			 * 			needed for rendering.
 			 *
-			 * @param	page				The page. 
-			 * @param [out]	vertices		Pre-allocated array where character vertices will be written.
-			 * @param [out]	uvs				Pre-allocated array where character uv coordinates will be written.
-			 * @param [out]	indexes 		Pre-allocated array where character indices will be written.
-			 * @param	offset				Offsets the location at which the method writes to the buffers. Counted as number of quads.
-			 * @param	size				Total number of quads that can fit into the specified buffers.
-			 * @param	fontData			Information describing the font.
+			 * @param	page			The page.
+			 * @param [out]	vertices	Pre-allocated array where character vertices will be written.
+			 * @param [out]	uvs			Pre-allocated array where character uv coordinates will be written.
+			 * @param [out]	indexes 	Pre-allocated array where character indices will be written.
+			 * @param	offset			Offsets the location at which the method writes to the buffers.
+			 * 							Counted as number of quads.
+			 * @param	size			Total number of quads that can fit into the specified buffers.
+			 *
+			 * @return	Number of quads that were written.
 			 */
-			void fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size, const FontData& fontData) const;
+			UINT32 fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size) const;
 
 		private:
 			friend class TextUtility;
 
 			UINT32 mWidth;
 			UINT32 mHeight;
+			UINT32 mBaselineOffset;
+			UINT32 mLineHeight;
+			UINT32 mSpaceWidth;
 			vector<TextWord*>::type mWords;
 			TextWord* mLastWord;
 
 			void add(const CHAR_DESC& charDesc);
-			void addSpace(UINT32 spaceWidth);
+			void addSpace();
 			void addWord(TextWord* word);
 
 			TextWord* removeLastWord();
@@ -84,20 +95,22 @@ namespace CamelotFramework
 			void calculateBounds();
 		};
 
-		class TextData
+		class CM_EXPORT TextData
 		{
 		public:
 			~TextData();
 
 			const std::vector<TextLine*>& getLines() const { return mLines; }
+			const std::vector<HTexture>& getTexturePages() const { return mTexturePages; }
 			const std::vector<UINT32>& getNumQuadsPerPage() const  { return mQuadsPerPage; }
 		private:
 			friend class TextUtility;
 
 			std::vector<UINT32> mQuadsPerPage;
 			std::vector<TextLine*> mLines;
+			std::vector<HTexture> mTexturePages;
 		};
 
-		std::shared_ptr<TextUtility::TextData> getTextData(const String& text, const HFont& font, UINT32 fontSize, UINT32 width = 0, UINT32 height = 0, bool wordWrap = false);
+		static std::shared_ptr<TextUtility::TextData> getTextData(const String& text, const HFont& font, UINT32 fontSize, UINT32 width = 0, UINT32 height = 0, bool wordWrap = false);
 	};
 }

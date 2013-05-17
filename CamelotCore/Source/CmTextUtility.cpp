@@ -72,8 +72,8 @@ namespace CamelotFramework
 		mWidth += mChars[mChars.size() - 1].xAdvance + kerning;
 	}
 
-	TextUtility::TextLine::TextLine()
-		:mWidth(0), mHeight(0), mLastWord(nullptr)
+	TextUtility::TextLine::TextLine(UINT32 baselineOffset, UINT32 lineHeight, UINT32 spaceWidth)
+		:mWidth(0), mHeight(0), mLastWord(nullptr), mBaselineOffset(baselineOffset), mLineHeight(lineHeight), mSpaceWidth(spaceWidth)
 	{
 
 	}
@@ -111,7 +111,7 @@ namespace CamelotFramework
 		calculateBounds();
 	}
 
-	void TextUtility::TextLine::addSpace(UINT32 spaceWidth)
+	void TextUtility::TextLine::addSpace()
 	{
 		if(mLastWord == nullptr)
 		{
@@ -120,7 +120,7 @@ namespace CamelotFramework
 
 			mWords.push_back(mLastWord);
 
-			mLastWord->addSpace(spaceWidth);
+			mLastWord->addSpace(mSpaceWidth);
 		}
 		else
 		{
@@ -129,7 +129,7 @@ namespace CamelotFramework
 
 			mWords.push_back(mLastWord);
 
-			mLastWord->addSpace(spaceWidth);
+			mLastWord->addSpace(mSpaceWidth);
 		}
 
 		calculateBounds();
@@ -183,15 +183,16 @@ namespace CamelotFramework
 		return quadsPerPage;
 	}
 
-	void TextUtility::TextLine::fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size, const FontData& fontData) const
+	UINT32 TextUtility::TextLine::fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size) const
 	{
+		UINT32 numQuads = 0;
+
 		UINT32 penX = 0;
-		UINT32 baselineY = fontData.fontDesc.baselineOffset;
 		for(auto wordIter = mWords.begin(); wordIter != mWords.end(); ++wordIter)
 		{
 			if((*wordIter)->isSpacer())
 			{
-				penX += fontData.fontDesc.spaceWidth;
+				penX += mSpaceWidth;
 			}
 			else
 			{
@@ -200,7 +201,7 @@ namespace CamelotFramework
 				for(auto charIter = chars.begin(); charIter != chars.end(); ++charIter)
 				{
 					INT32 curX = penX + charIter->xOffset;
-					INT32 curY = ((INT32)baselineY - charIter->yOffset);
+					INT32 curY = ((INT32)mBaselineOffset - charIter->yOffset);
 
 					penX += charIter->xAdvance + kerning;
 					
@@ -241,9 +242,15 @@ namespace CamelotFramework
 					indexes[curIndex + 5] = curVert + 2;
 
 					offset++;
+					numQuads++;
+
+					if(offset > size)
+						CM_EXCEPT(InternalErrorException, "Out of buffer bounds. Buffer size: " + toString(size));
 				}
 			}
 		}
+
+		return numQuads;
 	}
 
 	void TextUtility::TextLine::calculateBounds()
@@ -284,7 +291,7 @@ namespace CamelotFramework
 		bool widthIsLimited = width > 0;
 
 		std::shared_ptr<TextUtility::TextData> textData(CM_NEW(TextData, PoolAlloc) TextData(), &MemAllocDeleter<TextData, PoolAlloc>::deleter);
-		TextLine* curLine = CM_NEW(TextLine, ScratchAlloc) TextLine();
+		TextLine* curLine = CM_NEW(TextLine, ScratchAlloc) TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth);
 		textData->mLines.push_back(curLine);
 
 		UINT32 curHeight = fontData->fontDesc.lineHeight;
@@ -300,7 +307,7 @@ namespace CamelotFramework
 				if(heightIsLimited && (curHeight + fontData->fontDesc.lineHeight * 2) > height)
 					break; // Max height reached
 
-				curLine = CM_NEW(TextLine, ScratchAlloc) TextLine();
+				curLine = CM_NEW(TextLine, ScratchAlloc) TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth);
 				textData->mLines.push_back(curLine);
 				curHeight += fontData->fontDesc.lineHeight;
 
@@ -316,12 +323,18 @@ namespace CamelotFramework
 				curLine->add(charDesc);
 
 				if(charDesc.page >= (UINT32)textData->mQuadsPerPage.size())
+				{
 					textData->mQuadsPerPage.resize(charDesc.page + 1);
+					textData->mTexturePages.resize(charDesc.page + 1);
+				}
 
 				textData->mQuadsPerPage[charDesc.page]++;
+
+				if(textData->mTexturePages[charDesc.page] == nullptr)
+					textData->mTexturePages[charDesc.page] = fontData->texturePages[charDesc.page];
 			}
 			else
-				curLine->addSpace(fontData->fontDesc.spaceWidth);
+				curLine->addSpace();
 
 			if(widthIsLimited && curLine->getWidth() > width)
 			{
@@ -335,7 +348,7 @@ namespace CamelotFramework
 					if(heightIsLimited && curHeight > height)
 						break;
 
-					curLine = CM_NEW(TextLine, ScratchAlloc) TextLine();
+					curLine = CM_NEW(TextLine, ScratchAlloc) TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth);
 					textData->mLines.push_back(curLine);
 					curHeight += fontData->fontDesc.lineHeight;
 
