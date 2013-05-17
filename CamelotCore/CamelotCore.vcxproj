@@ -233,6 +233,7 @@
     <ClInclude Include="Include\CmPixelBuffer.h" />
     <ClInclude Include="Include\CmGpuProgIncludeImporter.h" />
     <ClInclude Include="Include\CmTextureView.h" />
+    <ClInclude Include="Include\CmTextUtility.h" />
     <ClInclude Include="Include\CmVertexBuffer.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgram.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgramManager.h" />
@@ -335,6 +336,7 @@
     <ClCompile Include="Source\CmPixelData.cpp" />
     <ClCompile Include="Source\CmPixelUtil.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
+    <ClCompile Include="Source\CmTextUtility.cpp" />
     <ClCompile Include="Source\CmVertexBuffer.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgram.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgramManager.cpp" />

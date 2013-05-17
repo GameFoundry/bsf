@@ -86,6 +86,7 @@ namespace BansheeEngine
 		//	onKeyReleased
 	protected:
 		friend class GUIWidget;
+		friend class GUILayout;
 		friend class GUILayoutX;
 		friend class GUILayoutY;
 
