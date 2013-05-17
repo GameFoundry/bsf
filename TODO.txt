@@ -22,13 +22,10 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 GUI element grouping is wrong as it doesn't account for transparency
  - Elements sharing same material cannot be batched unless they are at a nearby depth with no elements between them. I need an algorithm to handle that.
 
-Finish GUILayoutOptions and integrate them with GUIElement
-Add GUIArea to GUIWidget
-Hide GUIElement depth and use depth from GUIArea instead
-Implement GUILayoutX, GUILayoutY so they properly set up GUIElement offsets and size
-Make sure GUIWidget only renders objects belonging to an GUILayout
-Setup callbacks from RenderWindow so layouts change when window changes
- - Also GUIArea needs different behaviour whether its fixed size or whether is scales
+GUILabel::getOptimalWidth/Height
+Add clip rectangles on GUILayoutX
+Add flexible spaces (and fixed spaces)
+Implement GUILayoutY
 
 Figure out how to deal with callbacks properly. I recently eliminated them from Input but I'll need them for my GUI elements...
  - How do I implement them? I really don't want to do Unitys approach to GUI

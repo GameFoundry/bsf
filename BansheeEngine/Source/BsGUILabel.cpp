@@ -49,8 +49,27 @@ namespace BansheeEngine
 
 	void GUILabel::updateRenderElementsInternal()
 	{		
+		mDesc.offset = mOffset;
+		mDesc.width = mWidth;
+		mDesc.height = mHeight;
+		mDesc.clipRect = mClipRect;
+
 		mTextSprite->update(mDesc);
 		mBounds = mTextSprite->getBounds();
+	}
+
+	UINT32 GUILabel::getOptimalWidth() const
+	{
+
+
+		return 0;
+	}
+
+	UINT32 GUILabel::getOptimalHeight() const
+	{
+
+
+		return 0;
 	}
 
 	void GUILabel::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

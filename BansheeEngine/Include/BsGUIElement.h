@@ -86,7 +86,8 @@ namespace BansheeEngine
 		//	onKeyReleased
 	protected:
 		friend class GUIWidget;
-		friend class GUILayout;
+		friend class GUILayoutX;
+		friend class GUILayoutY;
 
 		virtual ~GUIElement();
 
@@ -101,11 +102,17 @@ namespace BansheeEngine
 		void setHeight(UINT32 height) { mHeight = height; }
 		void setClipRect(const CM::Rect& clipRect) { mClipRect = clipRect; }
 
+		UINT32 getWidth() const { return mWidth; }
+		UINT32 getHeight() const { return mHeight; }
+
 		void setLayoutOptions(const GUI_LAYOUT_OPTIONS& layoutOptions) { mLayoutOptions = layoutOptions; }
 		const GUI_LAYOUT_OPTIONS& getLayoutOptions() const { return mLayoutOptions; }
 
 		void markAsClean() { mIsDirty = false; }
 		void markAsDirty() { mIsDirty = true; }
+
+		virtual UINT32 getOptimalWidth() const = 0;
+		virtual UINT32 getOptimalHeight() const = 0;
 
 		GUIWidget& mParent;
 		GUILayout* mParentLayout;

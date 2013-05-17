@@ -48,6 +48,6 @@ namespace BansheeEngine
 			mHeight = newHeight;
 
 		if(resizeWidthWithWindow || resizeHeightWithWindow)
-			mLayout->update(mX, mY, mWidth, mHeight, mDepth);
+			mLayout->_update(mX, mY, mWidth, mHeight, mDepth);
 	}
 }

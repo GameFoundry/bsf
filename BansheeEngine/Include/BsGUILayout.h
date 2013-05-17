@@ -36,12 +36,12 @@ namespace BansheeEngine
 		 */
 		UINT32 getNumChildren() const;
 
+		/**
+		 * @brief	Re-arranges the elements to fit the layout. You shouldn't need to call this manually
+		 */
+		virtual void _update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth) = 0;
+
 	protected:
-		virtual void update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth) = 0;
-
-	private:
-		friend class GUIArea;
-
-		std::vector<GUILayoutEntry> mChildren;
+		std::vector<GUILayoutEntry> mChildren;		
 	};
 }

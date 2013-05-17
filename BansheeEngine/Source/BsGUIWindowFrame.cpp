@@ -70,8 +70,33 @@ namespace BansheeEngine
 
 	void GUIWindowFrame::updateRenderElementsInternal()
 	{		
+		mDesc.offset = mOffset;
+		mDesc.width = mWidth;
+		mDesc.height = mHeight;
+		mDesc.clipRect = mClipRect;
+
 		mImageSprite->update(mDesc);
 		mBounds = mImageSprite->getBounds();
+	}
+
+	UINT32 GUIWindowFrame::getOptimalWidth() const
+	{
+		if(mDesc.texture != nullptr)
+		{
+			return mDesc.texture->getTexture()->getWidth();
+		}
+
+		return 0;
+	}
+
+	UINT32 GUIWindowFrame::getOptimalHeight() const
+	{
+		if(mDesc.texture != nullptr)
+		{
+			return mDesc.texture->getTexture()->getHeight();
+		}
+
+		return 0;
 	}
 
 	void GUIWindowFrame::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

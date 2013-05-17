@@ -50,6 +50,9 @@ namespace BansheeEngine
 		 */
 		virtual void updateRenderElementsInternal();
 
+		virtual UINT32 getOptimalWidth() const;
+		virtual UINT32 getOptimalHeight() const;
+
 		static const GUI_LAYOUT_OPTIONS& getDefaultLayoutOptions();
 	private:
 		TextSprite* mTextSprite;
