@@ -103,6 +103,9 @@ namespace CamelotFramework
 			const std::vector<TextLine*>& getLines() const { return mLines; }
 			const std::vector<HTexture>& getTexturePages() const { return mTexturePages; }
 			const std::vector<UINT32>& getNumQuadsPerPage() const  { return mQuadsPerPage; }
+			UINT32 getWidth() const;
+			UINT32 getHeight() const;
+
 		private:
 			friend class TextUtility;
 

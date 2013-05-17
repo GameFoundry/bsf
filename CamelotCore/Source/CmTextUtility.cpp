@@ -367,4 +367,24 @@ namespace CamelotFramework
 
 		return textData;
 	}
+
+	UINT32 TextUtility::TextData::getWidth() const
+	{
+		UINT32 width = 0;
+
+		for(auto& line : mLines)
+			width = std::max(width, line->getWidth());
+
+		return width;
+	}
+
+	UINT32 TextUtility::TextData::getHeight() const
+	{
+		UINT32 height = 0;
+
+		for(auto& line : mLines)
+			height += line->getHeight();
+
+		return height;
+	}
 }

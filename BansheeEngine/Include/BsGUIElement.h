@@ -106,7 +106,7 @@ namespace BansheeEngine
 		UINT32 getWidth() const { return mWidth; }
 		UINT32 getHeight() const { return mHeight; }
 
-		void setLayoutOptions(const GUI_LAYOUT_OPTIONS& layoutOptions) { mLayoutOptions = layoutOptions; }
+		void setLayoutOptions(const GUI_LAYOUT_OPTIONS& layoutOptions);
 		const GUI_LAYOUT_OPTIONS& getLayoutOptions() const { return mLayoutOptions; }
 
 		void markAsClean() { mIsDirty = false; }
