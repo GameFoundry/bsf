@@ -320,5 +320,8 @@
     <ClCompile Include="Source\CmAsyncOp.cpp">
       <Filter>Source Files\Threading</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmRect.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

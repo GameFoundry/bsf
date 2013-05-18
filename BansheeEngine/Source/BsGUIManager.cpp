@@ -9,13 +9,38 @@
 #include "CmUtil.h"
 #include "CmRenderWindowManager.h"
 #include "CmCursor.h"
+#include "CmRect.h"
+#include "CmApplication.h"
 #include "CmException.h"
 #include "CmInput.h"
+#include "CmPass.h"
 
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	struct GUIGroupElement
+	{
+		GUIGroupElement()
+		{ }
+
+		GUIGroupElement(GUIElement* _element, UINT32 _renderElement)
+			:element(_element), renderElement(_renderElement)
+		{ }
+
+		GUIElement* element;
+		UINT32 renderElement;
+	};
+
+	struct GUIMaterialGroup
+	{
+		HMaterial material;
+		UINT32 numQuads;
+		UINT32 depth;
+		Rect bounds;
+		std::vector<GUIGroupElement> elements;
+	};
+
 	GUIManager::GUIManager()
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr)
 	{
@@ -31,6 +56,17 @@ namespace BansheeEngine
 	void GUIManager::registerWidget(GUIWidget* widget)
 	{
 		mWidgets.push_back(widget);
+
+		const Viewport* renderTarget = widget->getTarget();
+
+		auto findIter = mCachedGUIData.find(renderTarget);
+
+		if(findIter == end(mCachedGUIData))
+			mCachedGUIData[renderTarget] = GUIRenderData();
+
+		GUIRenderData& windowData = mCachedGUIData[renderTarget];
+		windowData.widgets.push_back(widget);
+		windowData.isDirty = true;
 	}
 
 	void GUIManager::unregisterWidget(GUIWidget* widget)
@@ -45,9 +81,265 @@ namespace BansheeEngine
 			mMouseOverWidget = nullptr;
 			mMouseOverElement = nullptr;
 		}
+
+		const Viewport* renderTarget = widget->getTarget();
+		GUIRenderData& renderData = mCachedGUIData[renderTarget];
+
+		findIter = std::find(begin(renderData.widgets), end(renderData.widgets), widget);
+		if(findIter != end(renderData.widgets))
+			renderData.widgets.erase(findIter);
+
+		if(renderData.widgets.size() == 0)
+			mCachedGUIData.erase(renderTarget);
+		else
+			renderData.isDirty = true;
 	}
 
 	void GUIManager::update()
+	{
+		updateMeshes();
+		updateInput();
+	}
+
+	void GUIManager::render(ViewportPtr& target, RenderContext& renderContext)
+	{
+		auto findIter = mCachedGUIData.find(target.get());
+
+		if(findIter == mCachedGUIData.end())
+			return;
+
+		renderContext.setViewport(target);
+
+		GUIRenderData& renderData = findIter->second;
+
+		// Render the meshes
+		UINT32 meshIdx = 0;
+		for(auto& mesh : renderData.cachedMeshes)
+		{
+			HMaterial material = renderData.cachedMaterials[meshIdx];
+
+			// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
+			// might be more optimal to just scale the mesh as the resolution changes?
+			float invViewportWidth = 1.0f / (target->getWidth() * 0.5f);
+			float invViewportHeight = 1.0f / (target->getHeight() * 0.5f);
+
+			material->setFloat("invViewportWidth", invViewportWidth);
+			material->setFloat("invViewportHeight", invViewportHeight);
+			material->setMat4("worldTransform", Matrix4::IDENTITY);
+			//material->setMat4("worldTransform", SO()->getWorldTfrm());
+
+			if(material == nullptr || !material.isLoaded())
+				continue;
+
+			if(mesh == nullptr || !mesh.isLoaded())
+				continue;
+
+			for(UINT32 i = 0; i < material->getNumPasses(); i++)
+			{
+				PassPtr pass = material->getPass(i);
+				pass->activate(renderContext);
+
+				PassParametersPtr paramsPtr = material->getPassParameters(i);
+				pass->bindParameters(renderContext, paramsPtr);
+
+				renderContext.render(mesh->getRenderOperation());
+			}
+
+			meshIdx++;
+		}
+	}
+
+	void GUIManager::updateMeshes()
+	{
+		for(auto& cachedMeshData : mCachedGUIData)
+		{
+			GUIRenderData& renderData = cachedMeshData.second;
+
+			// Check if anything is dirty. If nothing is we can skip the update
+			bool isDirty = renderData.isDirty;
+			renderData.isDirty = false;
+
+			for(auto& widget : renderData.widgets)
+			{
+				if(widget->isDirty(true))
+				{
+					isDirty = true;
+				}
+			}
+
+			if(!isDirty)
+				continue;
+
+			// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
+			auto elemComp = [](GUIElement* a, GUIElement* b)
+			{
+				return a->getDepth() > b->getDepth() || (a->getDepth() == b->getDepth() && a > b); 
+				// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
+				// requires all elements to be unique
+			};
+
+			std::set<GUIElement*, std::function<bool(GUIElement*, GUIElement*)>> allElements(elemComp);
+
+			for(auto& widget : renderData.widgets)
+			{
+				const std::vector<GUIElement*>& elements = widget->getElements();
+
+				for(auto& element : elements)
+					allElements.insert(element);
+			}
+
+			// Group the elements in such a way so that we end up with a smallest amount of
+			// meshes, without breaking back to front rendering order
+			std::unordered_map<UINT64, std::vector<GUIMaterialGroup>> materialGroups;
+			for(auto& elem : allElements)
+			{
+				Rect tfrmedBounds = elem->getBounds();
+				tfrmedBounds.transform(elem->getParentWidget().SO()->getWorldTfrm());
+
+				UINT32 numRenderElems = elem->getNumRenderElements();
+
+				for(UINT32 i = 0; i < numRenderElems; i++)
+				{
+					const HMaterial& mat = elem->getMaterial(i);
+
+					UINT64 materialId = mat->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
+					// this system won't detect it. Find a better way of determining material similarity?
+
+					// If this is a new material, add a new list of groups
+					auto findIterMaterial = materialGroups.find(materialId);
+					if(findIterMaterial == end(materialGroups))
+						materialGroups[materialId] = std::vector<GUIMaterialGroup>();
+
+					// Try to find a group this material will fit in:
+					//  - Group that has a depth value same or one below elements depth will always be a match
+					//  - Otherwise, we search higher depth values as well, but we only use them if no elements in between those depth values
+					//    overlap the current elements bounds.
+					std::vector<GUIMaterialGroup>& allGroups = materialGroups[materialId];
+					GUIMaterialGroup* foundGroup = nullptr;
+					for(auto groupIter = allGroups.rbegin(); groupIter != allGroups.rend(); ++groupIter)
+					{
+						GUIMaterialGroup& group = *groupIter;
+
+						if(group.depth == elem->getDepth() || group.depth == (elem->getDepth() - 1))
+						{
+							foundGroup = &group;
+							break;
+						}
+						else
+						{
+							UINT32 startDepth = elem->getDepth();
+							UINT32 endDepth = group.depth;
+
+							bool foundOverlap = false;
+							for(auto& material : materialGroups)
+							{
+								for(auto& group : material.second)
+								{
+									if(group.depth > startDepth && group.depth < endDepth)
+									{
+										if(group.bounds.overlaps(tfrmedBounds))
+										{
+											foundOverlap = true;
+											break;
+										}
+									}
+								}
+							}
+
+							if(!foundOverlap)
+							{
+								foundGroup = &group;
+								break;
+							}
+						}
+					}
+
+					if(foundGroup == nullptr)
+					{
+						allGroups.push_back(GUIMaterialGroup());
+						foundGroup = &allGroups[allGroups.size() - 1];
+
+						foundGroup->depth = elem->getDepth();
+						foundGroup->bounds = tfrmedBounds;
+						foundGroup->elements.push_back(GUIGroupElement(elem, i));
+						foundGroup->material = mat;
+						foundGroup->numQuads = elem->getNumQuads(i);
+					}
+					else
+					{
+						foundGroup->bounds.encapsulate(tfrmedBounds);
+						foundGroup->elements.push_back(GUIGroupElement(elem, i));
+						foundGroup->numQuads += elem->getNumQuads(i);
+					}
+				}
+			}
+
+			// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
+			auto groupComp = [](GUIMaterialGroup* a, GUIMaterialGroup* b)
+			{
+				return (a->depth > b->depth) || (a->depth == b->depth && a > b);
+				// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
+				// requires all elements to be unique
+			};
+
+			std::set<GUIMaterialGroup*, std::function<bool(GUIMaterialGroup*, GUIMaterialGroup*)>> sortedGroups(groupComp);
+			for(auto& material : materialGroups)
+			{
+				for(auto& group : material.second)
+				{
+					sortedGroups.insert(&group);
+				}
+			}
+
+			UINT32 numMeshes = (UINT32)sortedGroups.size();
+			UINT32 oldNumMeshes = (UINT32)renderData.cachedMeshes.size();
+			if(numMeshes < oldNumMeshes)
+				renderData.cachedMeshes.resize(numMeshes);
+
+			renderData.cachedMaterials.resize(numMeshes);
+
+			// Fill buffers for each group and update their meshes
+			UINT32 groupIdx = 0;
+			for(auto& group : sortedGroups)
+			{
+				renderData.cachedMaterials[groupIdx] = group->material;
+
+				MeshDataPtr meshData = std::shared_ptr<MeshData>(CM_NEW(MeshData, PoolAlloc) MeshData(group->numQuads * 4),
+					&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
+
+				meshData->beginDesc();
+				meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+				meshData->addVertElem(VET_FLOAT2, VES_TEXCOORD);
+				meshData->addSubMesh(group->numQuads * 6);
+				meshData->endDesc();
+
+				UINT8* vertices = meshData->getElementData(VES_POSITION);
+				UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
+				UINT32* indices = meshData->getIndices32();
+				UINT32 vertexStride = meshData->getVertexStride();
+				UINT32 indexStride = meshData->getIndexElementSize();
+
+				UINT32 quadOffset = 0;
+				for(auto& matElement : group->elements)
+				{
+					matElement.element->fillBuffer(vertices, uvs, indices, quadOffset, group->numQuads, vertexStride, indexStride, matElement.renderElement);
+					quadOffset += matElement.element->getNumQuads(matElement.renderElement);
+				}
+
+				if(groupIdx >= (UINT32)renderData.cachedMeshes.size())
+				{
+					renderData.cachedMeshes.push_back(Mesh::create());
+				}
+
+				gMainSyncedRC().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, *meshData);
+				gMainSyncedRC().submitToGpu(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
+
+				groupIdx++;
+			}
+		}
+	}
+
+	void GUIManager::updateInput()
 	{
 #if CM_DEBUG_MODE
 		// Checks if all referenced windows actually exist
@@ -84,7 +376,7 @@ namespace BansheeEngine
 			const RenderWindow* window = widgetInFocus->getOwnerWindow();
 
 			screenPos = Cursor::getWindowPosition(*window);
-			Vector3 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f);
+			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
 
 			GUIElement* topMostElement = nullptr;
 			INT32 topMostDepth = std::numeric_limits<INT32>::max();
@@ -94,13 +386,18 @@ namespace BansheeEngine
 				{
 					const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
 
-					Vector3 vecLocalPos = worldTfrm.inverse() * vecScreenPos;
+					Vector4 vecLocalPos = worldTfrm.inverse() * vecScreenPos;
 					Int2 localPos(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
 
-					const std::vector<GUIElement*>& elements = widget->getElements();
+					std::vector<GUIElement*> sortedElements = widget->getElements();
+					std::sort(sortedElements.begin(), sortedElements.end(), 
+						[](GUIElement* a, GUIElement* b)
+					{
+						return a->getDepth() < b->getDepth();
+					});
 
 					// Elements with lowest depth (most to the front) get handled first
-					for(auto iter = elements.rbegin(); iter != elements.rend(); ++iter)
+					for(auto iter = sortedElements.begin(); iter != sortedElements.end(); ++iter)
 					{
 						GUIElement* element = *iter;
 						const Rect& bounds = element->getBounds();

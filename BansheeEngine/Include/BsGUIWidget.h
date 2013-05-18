@@ -1,14 +1,12 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmDeferredRenderContext.h"
-#include "BsOverlay.h"
-#include "BsTextSprite.h"
-#include "CmORect.h"
+#include "CmComponent.h"
+#include "CmRect.h"
 
 namespace BansheeEngine
 {
-	class BS_EXPORT GUIWidget : public Overlay
+	class BS_EXPORT GUIWidget : public CM::Component
 	{
 	public:
 		virtual ~GUIWidget();
@@ -27,9 +25,17 @@ namespace BansheeEngine
 
 		bool inBounds(const CM::Int2& position) const;
 
-		virtual void render(CM::RenderContext& renderContext) const;
+		/**
+		 * @brief	Return true if widget or any of its elements are dirty.
+		 *
+		 * @param	cleanIfDirty	If true, all dirty elements will be updated and widget will be marked as clean.
+		 *
+		 * @return	True if dirty, false if not. If "cleanIfDirty" is true, the returned state is the one before cleaning.
+		 */
+		bool isDirty(bool cleanIfDirty);
 
 		const CM::RenderWindow* getOwnerWindow() const { return mOwnerWindow; }
+		CM::Viewport* getTarget() const { return mTarget; }
 		const std::vector<GUIElement*>& getElements() const { return mElements; }
 	protected:
 		friend class CM::SceneObject;
@@ -44,12 +50,14 @@ namespace BansheeEngine
 		void registerArea(GUIArea* area);
 		void unregisterArea(GUIArea* area);
 	private:
-		void updateMeshes() const;
 		void updateBounds() const;
 
 		void ownerWindowResized(CM::RenderWindow* window);
 
+		virtual void update() {}
+
 		const CM::RenderWindow* mOwnerWindow;
+		CM::Viewport* mTarget;
 		std::vector<GUIElement*> mElements;
 		std::vector<GUIArea*> mAreas;
 

@@ -12,6 +12,7 @@
 #include "CmViewport.h"
 #include "CmRenderTarget.h"
 #include "BsOverlayManager.h"
+#include "BsGUIManager.h"
 
 using namespace CamelotFramework;
 
@@ -54,6 +55,8 @@ namespace BansheeEngine
 
 		renderContext.beginFrame();
 
+		// TODO - Attempt to render all different elements in such a way that there is only 1 render target switch per render target
+
 		// Render all cameras
 		for(auto& camera : allCameras)
 			render(camera);
@@ -61,6 +64,10 @@ namespace BansheeEngine
 		// Render overlays for all targets
 		for(auto& camera : allCameras)
 			OverlayManager::instance().render(camera->getViewport(), renderContext);
+
+		// Render all GUI elements
+		for(auto& camera : allCameras)
+			GUIManager::instance().render(camera->getViewport(), renderContext);
 
 		renderContext.endFrame();
 

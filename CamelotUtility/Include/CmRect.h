@@ -1,60 +1,27 @@
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
-#include "CmInt2.h"
 
 namespace CamelotFramework
 {
-	/**
-	 * @brief	A rectangle. Although you may use any coordinate system, Camelot assumes
-	 * 			that X, Y values represent its bottom left corner, where X increases to the right,
-	 * 			and Y increases upwards.
-	 */
-	class Rect
+	class CM_UTILITY_EXPORT Rect
 	{
 	public:
-		Rect()
-			:x(0), y(0), width(0), height(0)
-		{ }
+		Rect();
+		Rect(int _x, int _y, int _width, int _height);
 
-		Rect(int _x, int _y, int _width, int _height)
-			:x(_x), y(_y), width(_width), height(_height)
-		{ }
+		bool contains(const Int2& point) const;
+		bool overlaps(const Rect& other) const;
+		void encapsulate(const Rect& other);
 
-		bool contains(Int2 point) const
-		{
-			if(point.x >= x && point.x <= (x + width))
-			{
-				if(point.y >= y && point.y <= (y + height))
-					return true;
-			}
-
-			return false;
-		}
-
-		void encapsulate(const Rect& other)
-		{
-			int myRight = x + width;
-			int myBottom = y + height;
-			int otherRight = other.x + other.width;
-			int otherBottom = other.y + other.height;
-
-			if(other.x < x)
-				x = other.x;
-
-			if(other.y < y)
-				y = other.y;
-
-			if(otherRight > myRight)
-				width = otherRight - x;
-			else
-				width = myRight - x;
-
-			if(otherBottom > myBottom)
-				height = otherBottom - y;
-			else
-				height = myBottom - y;
-		}
+		/**
+		 * @brief	Transforms the bounds by the given matrix.
+		 * 			Resulting value is an axis aligned rectangle encompassing the transformed points.
+		 * 			
+		 * @note	Since the resulting value is an AA rectangle of the original transformed rectangle, the bounds
+		 * 			will be larger than needed. Oriented rectangle would provide a much tighter fit.
+		 */
+		void transform(const Matrix4& matrix);
 
 		int x, y, width, height;
 	};

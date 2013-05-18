@@ -82,8 +82,8 @@ namespace BansheeEngine
 			UINT32 topBorder = desc.borderTop;
 			UINT32 bottomBorder = desc.borderBottom;
 
-			float centerWidth = (float)std::max((UINT32)0, desc.width - leftBorder - rightBorder);
-			float centerHeight = (float)std::max((UINT32)0, desc.height - topBorder - bottomBorder);
+			float centerWidth = (float)std::max((INT32)0, (INT32)desc.width - (INT32)leftBorder - (INT32)rightBorder);
+			float centerHeight = (float)std::max((INT32)0, (INT32)desc.height - (INT32)topBorder - (INT32)bottomBorder);
 
 			float topCenterStart = (float)(offset.x + leftBorder);
 			float topRightStart = (float)(topCenterStart + centerWidth);

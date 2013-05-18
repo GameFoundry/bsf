@@ -114,8 +114,8 @@ namespace CamelotFramework
 	 * 			from all threads except the render thread. All operations from this context will be executed after
 	 * 			non-synchronized primary context has finished executing.
 	 * 			
-	 * @note	It is more efficient to create your own non-synchronized render context if you plan on using the render context from
-	 * 			threads other than main often.
+	 * @note	It is more efficient to create your own non-synchronized render context if you plan on often using the render context from
+	 * 			threads other than main.
 	 */
 	CM_EXPORT SyncedRenderContext& gMainSyncedRC();
 }

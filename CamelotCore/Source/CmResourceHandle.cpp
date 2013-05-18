@@ -17,7 +17,7 @@ namespace CamelotFramework
 
 	bool ResourceHandleBase::isLoaded() const 
 	{ 
-		return (mData->mIsCreated && mData->mPtr != nullptr && mData->mPtr->isInitialized()); 
+		return (mData->mIsCreated && mData->mPtr != nullptr); 
 	}
 
 	void ResourceHandleBase::waitUntilLoaded() const

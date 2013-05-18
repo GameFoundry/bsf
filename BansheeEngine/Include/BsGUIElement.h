@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUILayoutOptions.h"
 #include "CmRect.h"
+#include "CmInt2.h"
 
 namespace BansheeEngine
 {
@@ -75,6 +76,7 @@ namespace BansheeEngine
 
 		const CM::Rect& getBounds() const { return mBounds; }
 		INT32 getDepth() const { return mDepth; }
+		GUIWidget& getParentWidget() const { return mParent; }
 		bool isDirty() const { return mIsDirty; }
 
 		static void destroy(GUIElement* element);
