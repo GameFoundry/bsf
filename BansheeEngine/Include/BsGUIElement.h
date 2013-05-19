@@ -74,11 +74,6 @@ namespace BansheeEngine
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
-		const CM::Rect& getBounds() const { return mBounds; }
-		INT32 getDepth() const { return mDepth; }
-		GUIWidget& getParentWidget() const { return mParent; }
-		bool isDirty() const { return mIsDirty; }
-
 		static void destroy(GUIElement* element);
 
 		/************************************************************************/
@@ -98,6 +93,11 @@ namespace BansheeEngine
 		UINT32 _getHeight() const { return mHeight; }
 		virtual UINT32 _getOptimalWidth() const = 0;
 		virtual UINT32 _getOptimalHeight() const = 0;
+
+		const CM::Rect& _getBounds() const { return mBounds; }
+		INT32 _getDepth() const { return mDepth; }
+		GUIWidget& _getParentWidget() const { return mParent; }
+		bool _isDirty() const { return mIsDirty; }
 
 		const GUI_LAYOUT_OPTIONS& _getLayoutOptions() const { return mLayoutOptions; }
 

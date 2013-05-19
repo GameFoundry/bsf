@@ -22,6 +22,7 @@ I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
 IMMEDIATE:
+ - Calling GUIElement::getBounds before element was updated
  - I'm not setting worldTransform of GUI material in GUIManager::render
    - I need to separate meshes per-widget and later implement some kind of smart batching using multiple transforms per mesh
  - Widgets should probably have their own depth. Make widget and area depths UINT16, and element depth UINT32, a combination of those two.

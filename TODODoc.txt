@@ -16,3 +16,5 @@
    very weird issues.
  - If you're creating a hierarchy of classes with RTTI support, ALL classes in the hierarchy must have RTTI implementations. You cannot just leave
    some out, even if they contain no data. This would create incomplete RTTI class hierarchy which can cause various issues.
+ - Methods prefixed with "_" are methods you should not normally call. They are used internally by some subset of classes that form a system and are not meant
+   to be called by the user, unless you are working internally with that system. The only reason they are part of the public interface is to avoid friend classes.

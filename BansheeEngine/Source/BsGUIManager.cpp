@@ -173,7 +173,7 @@ namespace BansheeEngine
 			// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
 			auto elemComp = [](GUIElement* a, GUIElement* b)
 			{
-				return a->getDepth() > b->getDepth() || (a->getDepth() == b->getDepth() && a > b); 
+				return a->_getDepth() > b->_getDepth() || (a->_getDepth() == b->_getDepth() && a > b); 
 				// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
 				// requires all elements to be unique
 			};
@@ -193,8 +193,8 @@ namespace BansheeEngine
 			std::unordered_map<UINT64, std::vector<GUIMaterialGroup>> materialGroups;
 			for(auto& elem : allElements)
 			{
-				Rect tfrmedBounds = elem->getBounds();
-				tfrmedBounds.transform(elem->getParentWidget().SO()->getWorldTfrm());
+				Rect tfrmedBounds = elem->_getBounds();
+				tfrmedBounds.transform(elem->_getParentWidget().SO()->getWorldTfrm());
 
 				UINT32 numRenderElems = elem->getNumRenderElements();
 
@@ -220,14 +220,14 @@ namespace BansheeEngine
 					{
 						GUIMaterialGroup& group = *groupIter;
 
-						if(group.depth == elem->getDepth() || group.depth == (elem->getDepth() - 1))
+						if(group.depth == elem->_getDepth() || group.depth == (elem->_getDepth() - 1))
 						{
 							foundGroup = &group;
 							break;
 						}
 						else
 						{
-							UINT32 startDepth = elem->getDepth();
+							UINT32 startDepth = elem->_getDepth();
 							UINT32 endDepth = group.depth;
 
 							bool foundOverlap = false;
@@ -259,7 +259,7 @@ namespace BansheeEngine
 						allGroups.push_back(GUIMaterialGroup());
 						foundGroup = &allGroups[allGroups.size() - 1];
 
-						foundGroup->depth = elem->getDepth();
+						foundGroup->depth = elem->_getDepth();
 						foundGroup->bounds = tfrmedBounds;
 						foundGroup->elements.push_back(GUIGroupElement(elem, i));
 						foundGroup->material = mat;
@@ -393,19 +393,19 @@ namespace BansheeEngine
 					std::sort(sortedElements.begin(), sortedElements.end(), 
 						[](GUIElement* a, GUIElement* b)
 					{
-						return a->getDepth() < b->getDepth();
+						return a->_getDepth() < b->_getDepth();
 					});
 
 					// Elements with lowest depth (most to the front) get handled first
 					for(auto iter = sortedElements.begin(); iter != sortedElements.end(); ++iter)
 					{
 						GUIElement* element = *iter;
-						const Rect& bounds = element->getBounds();
+						const Rect& bounds = element->_getBounds();
 
-						if(bounds.contains(localPos) && element->getDepth() < topMostDepth)
+						if(bounds.contains(localPos) && element->_getDepth() < topMostDepth)
 						{
 							topMostElement = element;
-							topMostDepth = element->getDepth();
+							topMostDepth = element->_getDepth();
 
 							break;
 						}

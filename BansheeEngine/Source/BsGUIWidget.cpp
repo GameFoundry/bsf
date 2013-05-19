@@ -126,7 +126,7 @@ namespace BansheeEngine
 
 			for(auto& elem : mElements)
 			{
-				if(elem->isDirty())
+				if(elem->_isDirty())
 				{
 					dirty = true;
 					elem->updateRenderElements();
@@ -143,7 +143,7 @@ namespace BansheeEngine
 
 			for(auto& elem : mElements)
 			{
-				if(elem->isDirty())
+				if(elem->_isDirty())
 				{
 					return true;
 				}
@@ -170,11 +170,11 @@ namespace BansheeEngine
 	void GUIWidget::updateBounds() const
 	{
 		if(mElements.size() > 0)
-			mBounds = mElements[0]->getBounds();
+			mBounds = mElements[0]->_getBounds();
 
 		for(auto& elem : mElements)
 		{
-			Rect elemBounds = elem->getBounds();
+			Rect elemBounds = elem->_getBounds();
 			mBounds.encapsulate(elemBounds);
 		}
 	}
