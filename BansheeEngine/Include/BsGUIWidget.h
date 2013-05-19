@@ -23,6 +23,9 @@ namespace BansheeEngine
 		void setSkin(const GUISkin* skin);
 		const GUISkin* getGUISkin() const;
 
+		UINT16 getDepth() const { return mDepth; }
+		void setDepth(UINT16 depth) { mDepth = depth; }
+
 		bool inBounds(const CM::Int2& position) const;
 
 		/**
@@ -60,6 +63,7 @@ namespace BansheeEngine
 		CM::Viewport* mTarget;
 		std::vector<GUIElement*> mElements;
 		std::vector<GUIArea*> mAreas;
+		UINT16 mDepth;
 
 		mutable bool mWidgetIsDirty;
 		mutable CM::Rect mBounds;

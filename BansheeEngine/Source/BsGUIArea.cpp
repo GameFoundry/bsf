@@ -6,7 +6,7 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIArea::GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
+	GUIArea::GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth)
 		:mWidget(widget), mX(x), mY(y), mWidth(width), mHeight(height), mDepth(depth)
 	{
 		mLayout = CM_NEW(GUILayoutX, PoolAlloc) GUILayoutX();
@@ -22,7 +22,7 @@ namespace BansheeEngine
 		CM_DELETE(mLayout, GUILayout, PoolAlloc);
 	}
 
-	GUIArea* GUIArea::create(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
+	GUIArea* GUIArea::create(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth)
 	{
 		return CM_NEW(GUIArea, PoolAlloc) GUIArea(widget, x, y, width, height, depth);
 	}
@@ -48,6 +48,10 @@ namespace BansheeEngine
 			mHeight = newHeight;
 
 		if(resizeWidthWithWindow || resizeHeightWithWindow)
-			mLayout->_update(mX, mY, mWidth, mHeight, mDepth);
+		{
+			UINT32 combinedDepth = UINT32(mWidget.getDepth()) << 16 | UINT32(mDepth);
+
+			mLayout->_update(mX, mY, mWidth, mHeight, combinedDepth);
+		}
 	}
 }

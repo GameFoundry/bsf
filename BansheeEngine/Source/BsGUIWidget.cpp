@@ -23,7 +23,7 @@ namespace BansheeEngine
 	GUISkin GUIWidget::DefaultSkin;
 
 	GUIWidget::GUIWidget(const HSceneObject& parent)
-		:Component(parent), mSkin(nullptr), mOwnerWindow(nullptr), mWidgetIsDirty(false), mTarget(nullptr)
+		:Component(parent), mSkin(nullptr), mOwnerWindow(nullptr), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0)
 	{	}
 
 	GUIWidget::~GUIWidget()

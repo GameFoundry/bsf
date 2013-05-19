@@ -14,25 +14,25 @@ namespace BansheeEngine
 		 *			If you want the area to expand vertically or horizontally, together with its parent
 		 *			widget, set height or width to 0, respectively.
 		 */
-		static GUIArea* create(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width = 0, UINT32 height = 0, UINT32 depth = 0);
+		static GUIArea* create(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width = 0, UINT32 height = 0, UINT16 depth = 0);
 		static void destroy(GUIArea* area);
 
 		GUILayout& getLayout() const { return *mLayout; }
 
-		UINT32 getDepth() const { return mDepth; }
-		void setDepth(UINT32 depth) { mDepth = depth; }
+		UINT16 getDepth() const { return mDepth; }
+		void setDepth(UINT16 depth) { mDepth = depth; }
 
 	private:
 		friend class GUIWidget;
 
 		GUIWidget& mWidget;
 		UINT32 mX, mY, mWidth, mHeight;
-		UINT32 mDepth;
+		UINT16 mDepth;
 		bool resizeWidthWithWindow, resizeHeightWithWindow;
 
 		GUILayout* mLayout;
 
-		GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth);
+		GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth);
 		~GUIArea();
 
 		void notifyWindowResized(UINT32 newWidth, UINT32 newHeight);
