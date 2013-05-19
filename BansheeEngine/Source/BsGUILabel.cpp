@@ -59,16 +59,16 @@ namespace BansheeEngine
 		mBounds = mTextSprite->getBounds();
 	}
 
-	UINT32 GUILabel::getOptimalWidth() const
+	UINT32 GUILabel::_getOptimalWidth() const
 	{
 		UINT32 wordWrapWidth = 0;
 
 		if(mDesc.wordWrap)
 		{
-			if(getLayoutOptions().fixedWidth)
-				wordWrapWidth = getLayoutOptions().width;
+			if(_getLayoutOptions().fixedWidth)
+				wordWrapWidth = _getLayoutOptions().width;
 			else
-				wordWrapWidth = getLayoutOptions().maxWidth;
+				wordWrapWidth = _getLayoutOptions().maxWidth;
 		}
 
 		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(mDesc.text, mDesc.font, mDesc.fontSize, wordWrapWidth, 0, mDesc.wordWrap);
@@ -78,16 +78,16 @@ namespace BansheeEngine
 		return textData->getWidth();
 	}
 
-	UINT32 GUILabel::getOptimalHeight() const
+	UINT32 GUILabel::_getOptimalHeight() const
 	{
 		UINT32 wordWrapWidth = 0;
 
 		if(mDesc.wordWrap)
 		{
-			if(getLayoutOptions().fixedWidth)
-				wordWrapWidth = getLayoutOptions().width;
+			if(_getLayoutOptions().fixedWidth)
+				wordWrapWidth = _getLayoutOptions().width;
 			else
-				wordWrapWidth = getLayoutOptions().maxWidth;
+				wordWrapWidth = _getLayoutOptions().maxWidth;
 		}
 
 		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(mDesc.text, mDesc.font, mDesc.fontSize, wordWrapWidth, 0, mDesc.wordWrap);

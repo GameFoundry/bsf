@@ -17,17 +17,19 @@ DebugDraw
 I still re-create GUIWidget mesh every frame instead of just updating it.
 
 MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to GpuResourceData which means it could get destroyed while still in command queue. Right now it only works because I block right after I call those methods, which ensures nothing is destroyed.
+  - When fixed, make sure I remove blocking calls after writeSubresource where they're not needed (GUIManager for example)
+I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function. Each of those calls will wait a single frame.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
-GUI element grouping is wrong as it doesn't account for transparency
- - Elements sharing same material cannot be batched unless they are at a nearby depth with no elements between them. I need an algorithm to handle that.
-
- On content change I need to notify parent layout
-Do layouts have isDirty flag? They probably should
-GUILabel::getOptimalWidth/Height
-Add clip rectangles on GUILayoutX
-Add flexible spaces (and fixed spaces)
-Implement GUILayoutY
+IMMEDIATE:
+ - I'm not setting worldTransform of GUI material in GUIManager::render
+   - I need to separate meshes per-widget and later implement some kind of smart batching using multiple transforms per mesh
+ - Widgets should probably have their own depth. Make widget and area depths UINT16, and element depth UINT32, a combination of those two.
+ - On content change I need to notify parent layout
+ - Do layouts have isDirty flag? They probably should
+   - GUIArea updates on every window resize event. I should instead just make it dirty and make the update during GUIManager::update
+ - Add clip rectangles on GUILayoutX
+ - Implement GUILayoutY
 
 Figure out how to deal with callbacks properly. I recently eliminated them from Input but I'll need them for my GUI elements...
  - How do I implement them? I really don't want to do Unitys approach to GUI
@@ -39,13 +41,6 @@ Figure out how to deal with callbacks properly. I recently eliminated them from 
 
 Immediate TODO:
  - A way to handle onMouseOver, onMouseOut, onMouseDown, onMouseUp events
- - Viewports have a Z order as well. I should use that instead of GUIWidget depth
- - Make it so that widgets can be batched together. Probably means GUIWidget::updateMesh methods needs to move up to GUIManager or similar.
-   - However having widget transform update in shader means I have no way of merging multiple small GUIWidget elements into larger one (useful for batching when game UIs start using animation and stuff)
-     - However this might work with DX11 and newer OpenGL where we can fit in multiple transforms per pass.
-     - So refactor GUIWidget so it is capable of populating a vertex/index buffer, and then have 
-	   GUIManager be in charge of creating a mesh. And if possible we create as little meshes as possible, otherwise we just render them as we do now.
-     - Make sure to only batch widgets belonging to the same viewport
  - (optional) Implement DirectDraw for drawing the bounds so I know they're correct
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
 

@@ -50,8 +50,8 @@ namespace BansheeEngine
 		 */
 		virtual void updateRenderElementsInternal();
 
-		virtual UINT32 getOptimalWidth() const;
-		virtual UINT32 getOptimalHeight() const;
+		virtual UINT32 _getOptimalWidth() const;
+		virtual UINT32 _getOptimalHeight() const;
 
 		static const GUI_LAYOUT_OPTIONS& getDefaultLayoutOptions();
 	private:

@@ -30,7 +30,7 @@ namespace BansheeEngine
 		{
 			if(child.isElement())
 			{
-				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->getLayoutOptions();
+				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->_getLayoutOptions();
 
 				if(layoutOptions.fixedWidth)
 				{
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		{
 			if(child.isElement())
 			{
-				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->getLayoutOptions();
+				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->_getLayoutOptions();
 
 				UINT32 elementWidth = 0;
 
@@ -97,13 +97,13 @@ namespace BansheeEngine
 					}
 				}
 
-				child.element->setWidth(elementWidth);
+				child.element->_setWidth(elementWidth);
 
 				if(layoutOptions.fixedHeight)
-					child.element->setHeight(layoutOptions.fixedHeight);
+					child.element->_setHeight(layoutOptions.fixedHeight);
 				else
 				{
-					UINT32 optimalHeight = child.element->getOptimalHeight();
+					UINT32 optimalHeight = child.element->_getOptimalHeight();
 					
 					if(layoutOptions.minHeight > 0)
 						optimalHeight = std::max(layoutOptions.minHeight, optimalHeight);
@@ -111,7 +111,7 @@ namespace BansheeEngine
 					if(layoutOptions.maxHeight > 0)
 						optimalHeight = std::min(layoutOptions.maxHeight, optimalHeight);
 
-					child.element->setHeight(optimalHeight);
+					child.element->_setHeight(optimalHeight);
 				}
 			}
 		}
@@ -126,20 +126,20 @@ namespace BansheeEngine
 		{
 			if(child.isElement())
 			{
-				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->getLayoutOptions();
+				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->_getLayoutOptions();
 
 				if(!layoutOptions.fixedWidth && layoutOptions.maxWidth == 0 && layoutOptions.minWidth == 0)
 				{
 					UINT32 elementWidth = std::min((UINT32)Math::CeilToInt(averageWidth), leftoverWidth);
 					leftoverWidth = (UINT32)std::max(0, (INT32)leftoverWidth - (INT32)elementWidth);
 
-					child.element->setWidth(elementWidth);
+					child.element->_setWidth(elementWidth);
 
 					if(layoutOptions.fixedHeight)
-						child.element->setHeight(layoutOptions.fixedHeight);
+						child.element->_setHeight(layoutOptions.fixedHeight);
 					else
 					{
-						UINT32 optimalHeight = child.element->getOptimalHeight();
+						UINT32 optimalHeight = child.element->_getOptimalHeight();
 
 						if(layoutOptions.minHeight > 0)
 							optimalHeight = std::max(layoutOptions.minHeight, optimalHeight);
@@ -147,16 +147,16 @@ namespace BansheeEngine
 						if(layoutOptions.maxHeight > 0)
 							optimalHeight = std::min(layoutOptions.maxHeight, optimalHeight);
 
-						child.element->setHeight(optimalHeight);
+						child.element->_setHeight(optimalHeight);
 					}
 				}
 
-				child.element->setOffset(Int2(x + xOffset, y));
-				child.element->setDepth(depth);
+				child.element->_setOffset(Int2(x + xOffset, y));
+				child.element->_setDepth(depth);
 
 				// TODO - Set clip rect
 
-				xOffset += child.element->getWidth();
+				xOffset += child.element->_getWidth();
 			}
 			else if(child.isLayout())
 			{

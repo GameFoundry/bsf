@@ -79,7 +79,7 @@ namespace BansheeEngine
 		mBounds = mImageSprite->getBounds();
 	}
 
-	UINT32 GUIWindowFrame::getOptimalWidth() const
+	UINT32 GUIWindowFrame::_getOptimalWidth() const
 	{
 		if(mDesc.texture != nullptr)
 		{
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	UINT32 GUIWindowFrame::getOptimalHeight() const
+	UINT32 GUIWindowFrame::_getOptimalHeight() const
 	{
 		if(mDesc.texture != nullptr)
 		{

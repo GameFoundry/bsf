@@ -49,7 +49,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIElement::destroyInternal(GUIElement* element)
+	void GUIElement::_destroyInternal(GUIElement* element)
 	{
 		CM_DELETE(element, GUIElement, PoolAlloc);
 	}

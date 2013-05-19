@@ -81,41 +81,42 @@ namespace BansheeEngine
 
 		static void destroy(GUIElement* element);
 
+		/************************************************************************/
+		/* 							INTERNAL METHODS                      		*/
+		/************************************************************************/
+
+		GUILayout* _getParentLayout() const { return mParentLayout; }
+		void _setParentLayout(GUILayout* layout) { mParentLayout = layout; }
+
+		void _setDepth(INT32 depth) { mDepth = depth; }
+		void _setOffset(const CM::Int2& offset) { mOffset = offset; }
+		void _setWidth(UINT32 width) { mWidth = width; }
+		void _setHeight(UINT32 height) { mHeight = height; }
+		void _setClipRect(const CM::Rect& clipRect) { mClipRect = clipRect; }
+
+		UINT32 _getWidth() const { return mWidth; }
+		UINT32 _getHeight() const { return mHeight; }
+		virtual UINT32 _getOptimalWidth() const = 0;
+		virtual UINT32 _getOptimalHeight() const = 0;
+
+		const GUI_LAYOUT_OPTIONS& _getLayoutOptions() const { return mLayoutOptions; }
+
+		static void _destroyInternal(GUIElement* element);
+
 		//  onMouseMove
 		//	onMousePress
 		//	onMouseReleased
 		//	onKeyPressed
 		//	onKeyReleased
 	protected:
-		friend class GUIWidget;
-		friend class GUILayout;
-		friend class GUILayoutX;
-		friend class GUILayoutY;
-
 		virtual ~GUIElement();
 
 		virtual void updateRenderElementsInternal() = 0;
 
-		GUILayout* getParentLayout() const { return mParentLayout; }
-		void setParentLayout(GUILayout* layout) { mParentLayout = layout; }
-
-		void setDepth(INT32 depth) { mDepth = depth; }
-		void setOffset(const CM::Int2& offset) { mOffset = offset; }
-		void setWidth(UINT32 width) { mWidth = width; }
-		void setHeight(UINT32 height) { mHeight = height; }
-		void setClipRect(const CM::Rect& clipRect) { mClipRect = clipRect; }
-
-		UINT32 getWidth() const { return mWidth; }
-		UINT32 getHeight() const { return mHeight; }
-
 		void setLayoutOptions(const GUI_LAYOUT_OPTIONS& layoutOptions);
-		const GUI_LAYOUT_OPTIONS& getLayoutOptions() const { return mLayoutOptions; }
-
+		
 		void markAsClean() { mIsDirty = false; }
 		void markAsDirty() { mIsDirty = true; }
-
-		virtual UINT32 getOptimalWidth() const = 0;
-		virtual UINT32 getOptimalHeight() const = 0;
 
 		GUIWidget& mParent;
 		GUILayout* mParentLayout;
@@ -128,7 +129,5 @@ namespace BansheeEngine
 		UINT32 mWidth, mHeight;
 		CM::Rect mClipRect;
 		const GUIElementStyle* mStyle;
-
-		static void destroyInternal(GUIElement* element);
 	};
 }

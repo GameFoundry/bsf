@@ -33,7 +33,7 @@ namespace BansheeEngine
 
 		for(auto& elem : mElements)
 		{
-			GUIElement::destroyInternal(elem);
+			GUIElement::_destroyInternal(elem);
 		}
 
 		for(auto& area : mAreas)
