@@ -42,7 +42,7 @@ namespace BansheeEngine
 	};
 
 	GUIManager::GUIManager()
-		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr)
+		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true)
 	{
 		for(int i = 0; i < MB_Count; i++)
 			mLastFrameButtonState[i] = false;
@@ -113,39 +113,51 @@ namespace BansheeEngine
 		GUIRenderData& renderData = findIter->second;
 
 		// Render the meshes
-		UINT32 meshIdx = 0;
-		for(auto& mesh : renderData.cachedMeshes)
+		if(mSeparateMeshesByWidget)
 		{
-			HMaterial material = renderData.cachedMaterials[meshIdx];
-
-			// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
-			// might be more optimal to just scale the mesh as the resolution changes?
-			float invViewportWidth = 1.0f / (target->getWidth() * 0.5f);
-			float invViewportHeight = 1.0f / (target->getHeight() * 0.5f);
-
-			material->setFloat("invViewportWidth", invViewportWidth);
-			material->setFloat("invViewportHeight", invViewportHeight);
-			material->setMat4("worldTransform", Matrix4::IDENTITY);
-			//material->setMat4("worldTransform", SO()->getWorldTfrm());
-
-			if(material == nullptr || !material.isLoaded())
-				continue;
-
-			if(mesh == nullptr || !mesh.isLoaded())
-				continue;
-
-			for(UINT32 i = 0; i < material->getNumPasses(); i++)
+			UINT32 meshIdx = 0;
+			for(auto& mesh : renderData.cachedMeshes)
 			{
-				PassPtr pass = material->getPass(i);
-				pass->activate(renderContext);
+				HMaterial material = renderData.cachedMaterials[meshIdx];
+				GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
 
-				PassParametersPtr paramsPtr = material->getPassParameters(i);
-				pass->bindParameters(renderContext, paramsPtr);
+				// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
+				// might be more optimal to just scale the mesh as the resolution changes?
+				float invViewportWidth = 1.0f / (target->getWidth() * 0.5f);
+				float invViewportHeight = 1.0f / (target->getHeight() * 0.5f);
 
-				renderContext.render(mesh->getRenderOperation());
+				material->setFloat("invViewportWidth", invViewportWidth);
+				material->setFloat("invViewportHeight", invViewportHeight);
+				material->setMat4("worldTransform", widget->SO()->getWorldTfrm());
+
+				if(material == nullptr || !material.isLoaded())
+					continue;
+
+				if(mesh == nullptr || !mesh.isLoaded())
+					continue;
+
+				for(UINT32 i = 0; i < material->getNumPasses(); i++)
+				{
+					PassPtr pass = material->getPass(i);
+					pass->activate(renderContext);
+
+					PassParametersPtr paramsPtr = material->getPassParameters(i);
+					pass->bindParameters(renderContext, paramsPtr);
+
+					renderContext.render(mesh->getRenderOperation());
+				}
+
+				meshIdx++;
 			}
+		}
+		else
+		{
+			// TODO: I want to avoid separating meshes by widget in the future. On DX11 and GL I can set up a shader
+			// that accepts multiple world transforms (one for each widget). Then I can add some instance information to vertices
+			// and render elements using multiple different transforms with a single call.
+			// Separating meshes can then be used as a compatibility mode for DX9
 
-			meshIdx++;
+			CM_EXCEPT(NotImplementedException, "Not implemented");
 		}
 	}
 
@@ -218,6 +230,17 @@ namespace BansheeEngine
 					GUIMaterialGroup* foundGroup = nullptr;
 					for(auto groupIter = allGroups.rbegin(); groupIter != allGroups.rend(); ++groupIter)
 					{
+						// If we separate meshes by widget, ignore any groups with widget parents other than mine
+						if(mSeparateMeshesByWidget)
+						{
+							if(groupIter->elements.size() > 0)
+							{
+								GUIElement* otherElem = groupIter->elements.begin()->element; // We only need to check the first element
+								if(&otherElem->_getParentWidget() != &elem->_getParentWidget())
+									continue;
+							}
+						}
+
 						GUIMaterialGroup& group = *groupIter;
 
 						if(group.depth == elem->_getDepth() || group.depth == (elem->_getDepth() - 1))
@@ -298,11 +321,25 @@ namespace BansheeEngine
 
 			renderData.cachedMaterials.resize(numMeshes);
 
+			if(mSeparateMeshesByWidget)
+				renderData.cachedWidgetsPerMesh.resize(numMeshes);
+
 			// Fill buffers for each group and update their meshes
 			UINT32 groupIdx = 0;
 			for(auto& group : sortedGroups)
 			{
 				renderData.cachedMaterials[groupIdx] = group->material;
+
+				if(mSeparateMeshesByWidget)
+				{
+					if(group->elements.size() == 0)
+						renderData.cachedWidgetsPerMesh[groupIdx] = nullptr;
+					else
+					{
+						GUIElement* elem = group->elements.begin()->element;
+						renderData.cachedWidgetsPerMesh[groupIdx] = &elem->_getParentWidget();
+					}
+				}
 
 				MeshDataPtr meshData = std::shared_ptr<MeshData>(CM_NEW(MeshData, PoolAlloc) MeshData(group->numQuads * 4),
 					&MemAllocDeleter<MeshData, PoolAlloc>::deleter);

@@ -20,6 +20,7 @@ namespace BansheeEngine
 
 			std::vector<CM::HMesh> cachedMeshes;
 			std::vector<CM::HMaterial> cachedMaterials;
+			std::vector<GUIWidget*> cachedWidgetsPerMesh;
 			std::vector<GUIWidget*> widgets;
 			bool isDirty;
 		};
@@ -40,6 +41,7 @@ namespace BansheeEngine
 		GUIWidget* mMouseOverWidget;
 		GUIElement* mMouseOverElement;
 
+		bool mSeparateMeshesByWidget;
 		bool mLastFrameButtonState[CM::MB_Count];
 		CM::Int2 mLastCursorPos;
 
