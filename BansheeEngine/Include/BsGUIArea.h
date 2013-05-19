@@ -22,18 +22,22 @@ namespace BansheeEngine
 		UINT16 getDepth() const { return mDepth; }
 		void setDepth(UINT16 depth) { mDepth = depth; }
 
+		void _update();
 	private:
 		friend class GUIWidget;
 
 		GUIWidget& mWidget;
 		UINT32 mX, mY, mWidth, mHeight;
 		UINT16 mDepth;
-		bool resizeWidthWithWindow, resizeHeightWithWindow;
+		bool mResizeWidthWithWindow, mResizeHeightWithWindow;
+		bool mIsDirty;
 
 		GUILayout* mLayout;
 
 		GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth);
 		~GUIArea();
+
+		bool isDirty() const;
 
 		void notifyWindowResized(UINT32 newWidth, UINT32 newHeight);
 

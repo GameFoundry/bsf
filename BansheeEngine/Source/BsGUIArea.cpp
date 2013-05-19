@@ -7,12 +7,12 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIArea::GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth)
-		:mWidget(widget), mX(x), mY(y), mWidth(width), mHeight(height), mDepth(depth)
+		:mWidget(widget), mX(x), mY(y), mWidth(width), mHeight(height), mDepth(depth), mIsDirty(true)
 	{
 		mLayout = CM_NEW(GUILayoutX, PoolAlloc) GUILayoutX();
 
-		resizeWidthWithWindow = width == 0;
-		resizeHeightWithWindow = height == 0;
+		mResizeWidthWithWindow = width == 0;
+		mResizeHeightWithWindow = height == 0;
 
 		mWidget.registerArea(this);
 	}
@@ -39,19 +39,36 @@ namespace BansheeEngine
 		CM_DELETE(area, GUIArea, PoolAlloc);
 	}
 
-	void GUIArea::notifyWindowResized(UINT32 newWidth, UINT32 newHeight)
+	void GUIArea::_update()
 	{
-		if(resizeWidthWithWindow)
-			mWidth = newWidth;
-
-		if(resizeHeightWithWindow)
-			mHeight = newHeight;
-
-		if(resizeWidthWithWindow || resizeHeightWithWindow)
+		if(isDirty())
 		{
 			UINT32 combinedDepth = UINT32(mWidget.getDepth()) << 16 | UINT32(mDepth);
 
 			mLayout->_update(mX, mY, mWidth, mHeight, combinedDepth);
+			mIsDirty = false;
+		}
+	}
+
+	bool GUIArea::isDirty() const
+	{
+		if(mIsDirty)
+			return true;
+
+		return mLayout->_isDirty();
+	}
+
+	void GUIArea::notifyWindowResized(UINT32 newWidth, UINT32 newHeight)
+	{
+		if(mResizeWidthWithWindow)
+			mWidth = newWidth;
+
+		if(mResizeHeightWithWindow)
+			mHeight = newHeight;
+
+		if(mResizeWidthWithWindow || mResizeHeightWithWindow)
+		{
+			mIsDirty = true;
 		}
 	}
 }

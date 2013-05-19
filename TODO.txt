@@ -24,11 +24,10 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 IMMEDIATE:
  - I'm not setting worldTransform of GUI material in GUIManager::render
    - I need to separate meshes per-widget and later implement some kind of smart batching using multiple transforms per mesh
- - Widgets should probably have their own depth. Make widget and area depths UINT16, and element depth UINT32, a combination of those two.
  - On content change I need to notify parent layout
- - Do layouts have isDirty flag? They probably should
-   - GUIArea updates on every window resize event. I should instead just make it dirty and make the update during GUIManager::update
  - Add clip rectangles on GUILayoutX
+ - Calculate flexible spaces in GUILyoutX
+ - Call layout update before remesh and input in GUIManager
  - Implement GUILayoutY
 
 Figure out how to deal with callbacks properly. I recently eliminated them from Input but I'll need them for my GUI elements...

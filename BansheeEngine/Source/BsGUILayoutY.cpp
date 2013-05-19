@@ -2,7 +2,7 @@
 
 namespace BansheeEngine
 {
-	void GUILayoutY::_update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
+	void GUILayoutY::updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
 	{
 
 	}

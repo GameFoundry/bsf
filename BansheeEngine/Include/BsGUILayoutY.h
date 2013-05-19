@@ -12,6 +12,6 @@ namespace BansheeEngine
 		~GUILayoutY() {};
 
 	protected:
-		virtual void _update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth);
+		void updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth);
 	};
 }

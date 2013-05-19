@@ -86,9 +86,14 @@ namespace BansheeEngine
 		/**
 		 * @brief	Re-arranges the elements to fit the layout. You shouldn't need to call this manually
 		 */
-		virtual void _update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth) = 0;
+		void _update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth);
+
+		bool _isDirty();
 
 	protected:
 		std::vector<GUILayoutEntry> mChildren;		
+		bool mIsDirty;
+
+		virtual void updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth) = 0;
 	};
 }

@@ -8,7 +8,7 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	void GUILayoutX::_update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
+	void GUILayoutX::updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
 	{
 		std::vector<UINT32> flexibleSpaceSizes;
 		for(auto& child : mChildren)
