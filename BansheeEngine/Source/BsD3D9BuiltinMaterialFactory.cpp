@@ -5,6 +5,7 @@
 #include "CmPass.h"
 #include "CmMaterial.h"
 #include "CmBlendState.h"
+#include "CmDepthStencilState.h"
 #include "CmRendererManager.h"
 
 using namespace CamelotFramework;
@@ -118,6 +119,13 @@ namespace BansheeEngine
 
 		HBlendState blendState = BlendState::create(desc);
 		newPass->setBlendState(blendState);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
 	}
 
 	void D3D9BuiltinMaterialFactory::initSpriteImageShader()
@@ -179,6 +187,13 @@ namespace BansheeEngine
 
 		HBlendState blendState = BlendState::create(desc);
 		newPass->setBlendState(blendState);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
 	}
 
 	void D3D9BuiltinMaterialFactory::initDebugDrawShader()
