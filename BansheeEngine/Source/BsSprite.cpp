@@ -47,8 +47,8 @@ namespace BansheeEngine
 		assert((startVert + mNumVertices) <= maxVertIdx);
 		assert((startIndex + mNumIndices) <= maxIndexIdx);
 
-		UINT8* vertDst = &vertices[startVert];
-		UINT8* uvDst = &uv[startVert];
+		UINT8* vertDst = vertices + startVert * vertexStride;
+		UINT8* uvDst = uv + startVert * vertexStride;
 		for(UINT32 i = 0; i < mNumVertices; i++)
 		{
 			memcpy(vertDst, &renderElem.vertices[i], sizeof(Vector2));

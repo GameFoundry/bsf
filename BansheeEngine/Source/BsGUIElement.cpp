@@ -49,6 +49,47 @@ namespace BansheeEngine
 		return false;
 	}
 
+	void GUIElement::_setDepth(INT32 depth) 
+	{ 
+		mDepth = depth; 
+		markAsDirty();
+	}
+
+	void GUIElement::_setOffset(const CM::Int2& offset) 
+	{ 
+		mOffset = offset; 
+		markAsDirty();
+	}
+
+	void GUIElement::_setWidth(UINT32 width) 
+	{ 
+		mWidth = width; 
+		markAsDirty();
+	}
+
+	void GUIElement::_setHeight(UINT32 height) 
+	{ 
+		mHeight = height; 
+		markAsDirty();
+	}
+
+	void GUIElement::_setClipRect(const CM::Rect& clipRect) 
+	{ 
+		mClipRect = clipRect; 
+		markAsDirty();
+	}
+
+	void GUIElement::markAsDirty() 
+	{ 
+		if(!mIsDirty)
+		{
+			if(mParentLayout != nullptr)
+				mParentLayout->_markAsDirty();
+
+			mIsDirty = true; 
+		}
+	}
+
 	void GUIElement::_destroyInternal(GUIElement* element)
 	{
 		CM_DELETE(element, GUIElement, PoolAlloc);

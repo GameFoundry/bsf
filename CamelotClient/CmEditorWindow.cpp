@@ -59,6 +59,7 @@ namespace BansheeEditor
 		GUILayout& otherLayout = mainArea->getLayout();
 
 		otherLayout.addElement(GUIWindowFrame::create(*mGUI));
+		otherLayout.addElement(GUIWindowFrame::create(*mGUI));
 	}
 
 	EditorWindow::~EditorWindow()

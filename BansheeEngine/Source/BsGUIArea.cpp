@@ -1,6 +1,7 @@
 #include "BsGUIArea.h"
 #include "BsGUIWidget.h"
 #include "BsGUILayoutX.h"
+#include "CmViewport.h"
 
 using namespace CamelotFramework;
 
@@ -11,8 +12,17 @@ namespace BansheeEngine
 	{
 		mLayout = CM_NEW(GUILayoutX, PoolAlloc) GUILayoutX();
 
-		mResizeWidthWithWindow = width == 0;
-		mResizeHeightWithWindow = height == 0;
+		if(width <= 0)
+		{
+			mWidth = mWidget.getTarget()->getWidth();
+			mResizeWidthWithWindow = true;
+		}
+
+		if(height <= 0)
+		{
+			mHeight = mWidget.getTarget()->getHeight();
+			mResizeHeightWithWindow = true;
+		}
 
 		mWidget.registerArea(this);
 	}

@@ -83,11 +83,11 @@ namespace BansheeEngine
 		GUILayout* _getParentLayout() const { return mParentLayout; }
 		void _setParentLayout(GUILayout* layout) { mParentLayout = layout; }
 
-		void _setDepth(INT32 depth) { mDepth = depth; }
-		void _setOffset(const CM::Int2& offset) { mOffset = offset; }
-		void _setWidth(UINT32 width) { mWidth = width; }
-		void _setHeight(UINT32 height) { mHeight = height; }
-		void _setClipRect(const CM::Rect& clipRect) { mClipRect = clipRect; }
+		void _setDepth(INT32 depth);
+		void _setOffset(const CM::Int2& offset);
+		void _setWidth(UINT32 width);
+		void _setHeight(UINT32 height);
+		void _setClipRect(const CM::Rect& clipRect);
 
 		UINT32 _getWidth() const { return mWidth; }
 		UINT32 _getHeight() const { return mHeight; }
@@ -116,7 +116,7 @@ namespace BansheeEngine
 		void setLayoutOptions(const GUI_LAYOUT_OPTIONS& layoutOptions);
 		
 		void markAsClean() { mIsDirty = false; }
-		void markAsDirty() { mIsDirty = true; }
+		void markAsDirty();
 
 		GUIWidget& mParent;
 		GUILayout* mParentLayout;

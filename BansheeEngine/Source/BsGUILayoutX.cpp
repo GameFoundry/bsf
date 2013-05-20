@@ -77,13 +77,13 @@ namespace BansheeEngine
 					UINT32 availableWidth = std::min((UINT32)Math::CeilToInt(averageWidth), leftoverWidth);
 
 					// Clamp average to min max
-					if(availableWidth < layoutOptions.minWidth)
+					if(layoutOptions.minWidth > 0 && availableWidth < layoutOptions.minWidth)
 					{
 						elementWidth = layoutOptions.minWidth;
 						leftoverWidth = (UINT32)std::max(0, (INT32)leftoverWidth - (INT32)elementWidth);
 						numFreeElems--;
 					}
-					else if(availableWidth > layoutOptions.maxWidth)
+					else if(layoutOptions.maxWidth > 0 && availableWidth > layoutOptions.maxWidth)
 					{
 						elementWidth = layoutOptions.maxWidth;
 						leftoverWidth = (UINT32)std::max(0, (INT32)leftoverWidth - (INT32)elementWidth);

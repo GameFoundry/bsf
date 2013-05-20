@@ -21,6 +21,8 @@ Reminders:
   - Async callbacks. I'd like to be able to assign a callback to an async method, that will execute on the calling thread once the async operation is complete.
      - For example when setting PixelData for a cursor I need to get PixelData from a texture, which is an async operation, in which case I need to block the calling thread
 	   until I get the result. But I'd rather apply the result once render thread is finished.
+  - GUI currently doesn't batch elements belonging to different GUIWidgets because each of them has its own transform. Implement some form of instancing for DX11 and GL
+    so this isn't required. GUIManager already has the ability to properly group meshes, all that is needed is a shader.
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

@@ -60,6 +60,14 @@ namespace BansheeEngine
 		mOwnerWindow->onWindowMovedOrResized.connect(boost::bind(&GUIWidget::ownerWindowResized, this, _1));
 	}
 
+	void GUIWidget::_updateLayout()
+	{
+		for(auto& area : mAreas)
+		{
+			area->_update();
+		}
+	}
+
 	void GUIWidget::registerElement(GUIElement* elem)
 	{
 		assert(elem != nullptr);

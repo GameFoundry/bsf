@@ -97,6 +97,12 @@ namespace BansheeEngine
 
 	void GUIManager::update()
 	{
+		// Update layouts
+		for(auto& widget : mWidgets)
+		{
+			widget->_updateLayout();
+		}
+
 		updateMeshes();
 		updateInput();
 	}
@@ -360,7 +366,16 @@ namespace BansheeEngine
 				for(auto& matElement : group->elements)
 				{
 					matElement.element->fillBuffer(vertices, uvs, indices, quadOffset, group->numQuads, vertexStride, indexStride, matElement.renderElement);
-					quadOffset += matElement.element->getNumQuads(matElement.renderElement);
+
+					UINT32 numQuads = matElement.element->getNumQuads(matElement.renderElement);
+					UINT32 indexStart = quadOffset * 6;
+					UINT32 indexEnd = indexStart + numQuads * 6;
+					UINT32 vertOffset = quadOffset * 4;
+
+					for(UINT32 i = indexStart; i < indexEnd; i++)
+						indices[i] += vertOffset;
+
+					quadOffset += numQuads;
 				}
 
 				if(groupIdx >= (UINT32)renderData.cachedMeshes.size())

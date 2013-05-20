@@ -40,6 +40,8 @@ namespace BansheeEngine
 		const CM::RenderWindow* getOwnerWindow() const { return mOwnerWindow; }
 		CM::Viewport* getTarget() const { return mTarget; }
 		const std::vector<GUIElement*>& getElements() const { return mElements; }
+
+		void _updateLayout();
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;
