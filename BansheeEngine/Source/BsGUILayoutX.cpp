@@ -183,10 +183,14 @@ namespace BansheeEngine
 
 				UINT32 yOffset = (UINT32)Math::CeilToInt((height - child.element->_getHeight()) * 0.5f);
 
-				child.element->_setOffset(Int2(x + xOffset, y + yOffset));
+				Int2 offset(x + xOffset, y + yOffset);
+				child.element->_setOffset(offset);
 				child.element->_setDepth(depth);
 
-				child.element->_setClipRect(Rect(0, 0, child.element->_getWidth(), child.element->_getHeight()));
+				UINT32 clippedWidth = (UINT32)std::min((INT32)child.element->_getWidth(), (INT32)width - offset.x);
+				UINT32 clippedHeight = (UINT32)std::min((INT32)child.element->_getHeight(), (INT32)height - offset.y);
+
+				child.element->_setClipRect(Rect(0, 0, clippedWidth, clippedHeight));
 
 				xOffset += child.element->_getWidth();
 			}
