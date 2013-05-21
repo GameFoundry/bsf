@@ -23,12 +23,8 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 
 IMMEDIATE:
  - Implement GUILayoutY
- - Clip rect: Fixed size (or min clamped) elements that don't fit within the layout?!
-   - Imagine two vertical layouts next to each other, each 100 pixels, and the left one has 200 pix wide elements which crosses over to the next layout.
 
- Test multiple layout elements
 Test nested elements
-Test with clamped min/max elements
 Test with flexible space, left center and right
 
 -----------

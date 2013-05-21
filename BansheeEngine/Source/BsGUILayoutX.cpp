@@ -29,22 +29,30 @@ namespace BansheeEngine
 
 				if(layoutOptions.fixedWidth)
 					minimalTotalSize += layoutOptions.width;
-				else if(layoutOptions.minWidth > 0)
-					minimalTotalSize += layoutOptions.minWidth;
 				else
-					minimalTotalSize += child.element->_getOptimalWidth();
+				{
+					UINT32 optimalWidth = child.element->_getOptimalWidth();
+
+					if(layoutOptions.minHeight > 0)
+						optimalWidth = std::max(layoutOptions.minWidth, optimalWidth);
+
+					if(layoutOptions.maxHeight > 0)
+						optimalWidth = std::min(layoutOptions.maxWidth, optimalWidth);
+
+					minimalTotalSize += optimalWidth;
+				}
 			}
 		}
 
-		float avgFlexibleSpaceSize = minimalTotalSize / (float)flexibleSpaceSizes.size();
-		UINT32 remainingMinSize = minimalTotalSize;
-
+		UINT32 remainingFlexSpaceSize = (UINT32)std::max(0, (INT32)width - (INT32)minimalTotalSize);
+		float avgFlexibleSpaceSize = remainingFlexSpaceSize / (float)flexibleSpaceSizes.size();
+		
 		for(size_t i = 0; i < flexibleSpaceSizes.size(); i++)
 		{
 			UINT32 spaceSize = (UINT32)Math::CeilToInt(avgFlexibleSpaceSize);
-			spaceSize = std::min(remainingMinSize, spaceSize);
+			spaceSize = std::min(remainingFlexSpaceSize, spaceSize);
 
-			remainingMinSize -= spaceSize;
+			remainingFlexSpaceSize -= spaceSize;
 			flexibleSpaceSizes[i] = spaceSize;
 		}
 
