@@ -22,11 +22,19 @@ I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
 IMMEDIATE:
- - On content change I need to notify parent layout
- - Add clip rectangles on GUILayoutX
- - Calculate flexible spaces in GUILyoutX
  - Call layout update before remesh and input in GUIManager
  - Implement GUILayoutY
+
+ Test multiple layout elements
+Test nested elements
+Test with clamped min/max elements
+Test with flexible space, left center and right
+
+-----------
+
+I need to be able to provide smaller bounds used for UI input 
+ - Add padding - reduces the size of the element and that is used for input
+ - Add margins - spacing that is added when laying out multiple controls after each other
 
 Figure out how to deal with callbacks properly. I recently eliminated them from Input but I'll need them for my GUI elements...
  - How do I implement them? I really don't want to do Unitys approach to GUI

@@ -49,16 +49,20 @@ namespace BansheeEditor
 		//// DEBUG
 		mGUI->setSkin(&EngineGUI::instance().getSkin());
 
-		GUIArea* backgroundArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 0);
-		GUILayout& layout = backgroundArea->getLayout();
+		//GUIArea* backgroundArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 0);
+		//GUILayout& layout = backgroundArea->getLayout();
 		
 		mDbgLabel = GUILabel::create(*mGUI, "Testing test");
-		layout.addElement(mDbgLabel);
+		/*layout.addElement(mDbgLabel);*/
 
 		GUIArea* mainArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 1);
 		GUILayout& otherLayout = mainArea->getLayout();
 
-		otherLayout.addElement(GUIWindowFrame::create(*mGUI));
+		otherLayout.addElement(mDbgLabel);
+
+		//GUIFixedSpace& space = otherLayout.addSpace(10); // Due to bug in MSVC compiler I need to store return value
+		otherLayout.addElement(GUIWindowFrame::create(*mGUI, GUI_LAYOUT_OPTIONS(20, 20)));
+		//GUIFixedSpace& space2 = otherLayout.addSpace(10);
 		otherLayout.addElement(GUIWindowFrame::create(*mGUI));
 	}
 
@@ -71,6 +75,6 @@ namespace BansheeEditor
 	{
 		Int2 cursorPos = Cursor::getWindowPosition(*mRenderWindow);
 		
-		mDbgLabel->setText(toString(cursorPos.x) + ", " + toString(cursorPos.y));
+		mDbgLabel->setText("Position: " + toString(cursorPos.x) + ", " + toString(cursorPos.y));
 	}
 }

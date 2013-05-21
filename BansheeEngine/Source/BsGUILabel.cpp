@@ -112,7 +112,7 @@ namespace BansheeEngine
 		{
 			layoutOptions.fixedWidth = false;
 			layoutOptions.fixedHeight = true;
-			layoutOptions.height = 20;
+			layoutOptions.height = 16;
 			layoutOptions.minWidth = 10;
 
 			layoutOptionsInitialized = true;

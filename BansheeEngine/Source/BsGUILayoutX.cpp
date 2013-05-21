@@ -10,16 +10,43 @@ namespace BansheeEngine
 {
 	void GUILayoutX::updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
 	{
+		// Calculate flexible space sizes
 		std::vector<UINT32> flexibleSpaceSizes;
+		UINT32 minimalTotalSize = 0;
 		for(auto& child : mChildren)
 		{
 			if(child.isFlexibleSpace())
 			{
 				flexibleSpaceSizes.push_back(0);
 			}
+			else if(child.isFixedSpace())
+			{
+				minimalTotalSize += child.space->getSize();
+			}
+			else if(child.isElement())
+			{
+				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->_getLayoutOptions();
+
+				if(layoutOptions.fixedWidth)
+					minimalTotalSize += layoutOptions.width;
+				else if(layoutOptions.minWidth > 0)
+					minimalTotalSize += layoutOptions.minWidth;
+				else
+					minimalTotalSize += child.element->_getOptimalWidth();
+			}
 		}
 
-		// TODO - Calculate flexible space sizes
+		float avgFlexibleSpaceSize = minimalTotalSize / (float)flexibleSpaceSizes.size();
+		UINT32 remainingMinSize = minimalTotalSize;
+
+		for(size_t i = 0; i < flexibleSpaceSizes.size(); i++)
+		{
+			UINT32 spaceSize = (UINT32)Math::CeilToInt(avgFlexibleSpaceSize);
+			spaceSize = std::min(remainingMinSize, spaceSize);
+
+			remainingMinSize -= spaceSize;
+			flexibleSpaceSizes[i] = spaceSize;
+		}
 
 		// Get a basic estimate of the average width
 		UINT32 totalWidth = 0;
@@ -98,21 +125,6 @@ namespace BansheeEngine
 				}
 
 				child.element->_setWidth(elementWidth);
-
-				if(layoutOptions.fixedHeight)
-					child.element->_setHeight(layoutOptions.fixedHeight);
-				else
-				{
-					UINT32 optimalHeight = child.element->_getOptimalHeight();
-					
-					if(layoutOptions.minHeight > 0)
-						optimalHeight = std::max(layoutOptions.minHeight, optimalHeight);
-
-					if(layoutOptions.maxHeight > 0)
-						optimalHeight = std::min(layoutOptions.maxHeight, optimalHeight);
-
-					child.element->_setHeight(optimalHeight);
-				}
 			}
 		}
 
@@ -134,27 +146,29 @@ namespace BansheeEngine
 					leftoverWidth = (UINT32)std::max(0, (INT32)leftoverWidth - (INT32)elementWidth);
 
 					child.element->_setWidth(elementWidth);
-
-					if(layoutOptions.fixedHeight)
-						child.element->_setHeight(layoutOptions.fixedHeight);
-					else
-					{
-						UINT32 optimalHeight = child.element->_getOptimalHeight();
-
-						if(layoutOptions.minHeight > 0)
-							optimalHeight = std::max(layoutOptions.minHeight, optimalHeight);
-
-						if(layoutOptions.maxHeight > 0)
-							optimalHeight = std::min(layoutOptions.maxHeight, optimalHeight);
-
-						child.element->_setHeight(optimalHeight);
-					}
 				}
 
-				child.element->_setOffset(Int2(x + xOffset, y));
+				if(layoutOptions.fixedHeight)
+					child.element->_setHeight(layoutOptions.height);
+				else
+				{
+					UINT32 optimalHeight = child.element->_getOptimalHeight();
+
+					if(layoutOptions.minHeight > 0)
+						optimalHeight = std::max(layoutOptions.minHeight, optimalHeight);
+
+					if(layoutOptions.maxHeight > 0)
+						optimalHeight = std::min(layoutOptions.maxHeight, optimalHeight);
+
+					child.element->_setHeight(optimalHeight);
+				}
+
+				UINT32 yOffset = (UINT32)Math::CeilToInt((height - child.element->_getHeight()) * 0.5f);
+
+				child.element->_setOffset(Int2(x + xOffset, y + yOffset));
 				child.element->_setDepth(depth);
 
-				// TODO - Set clip rect
+				child.element->_setClipRect(Rect(0, 0, child.element->_getWidth(), child.element->_getHeight()));
 
 				xOffset += child.element->_getWidth();
 			}
