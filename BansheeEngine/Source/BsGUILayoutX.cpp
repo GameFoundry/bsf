@@ -25,7 +25,7 @@ namespace BansheeEngine
 			}
 			else if(child.isElement())
 			{
-				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->_getLayoutOptions();
+				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
 
 				if(layoutOptions.fixedWidth)
 					minimalTotalSize += layoutOptions.width;
@@ -57,7 +57,7 @@ namespace BansheeEngine
 		{
 			if(child.isElement())
 			{
-				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->_getLayoutOptions();
+				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
 
 				if(layoutOptions.fixedWidth)
 				{
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		{
 			if(child.isElement())
 			{
-				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->_getLayoutOptions();
+				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
 
 				UINT32 elementWidth = 0;
 
@@ -138,7 +138,7 @@ namespace BansheeEngine
 		{
 			if(child.isElement())
 			{
-				const GUI_LAYOUT_OPTIONS& layoutOptions = child.element->_getLayoutOptions();
+				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
 
 				if(!layoutOptions.fixedWidth && layoutOptions.maxWidth == 0 && layoutOptions.minWidth == 0)
 				{

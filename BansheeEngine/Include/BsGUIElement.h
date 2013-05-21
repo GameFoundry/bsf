@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIElement
 	{
 	public:
-		GUIElement(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions);
+		GUIElement(GUIWidget& parent, const GUILayoutOptions& layoutOptions);
 
 		/**
 		 * @brief	Returns the number of separate render elements in the GUI element.
@@ -99,7 +99,7 @@ namespace BansheeEngine
 		GUIWidget& _getParentWidget() const { return mParent; }
 		bool _isDirty() const { return mIsDirty; }
 
-		const GUI_LAYOUT_OPTIONS& _getLayoutOptions() const { return mLayoutOptions; }
+		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
 
 		static void _destroyInternal(GUIElement* element);
 
@@ -113,14 +113,14 @@ namespace BansheeEngine
 
 		virtual void updateRenderElementsInternal() = 0;
 
-		void setLayoutOptions(const GUI_LAYOUT_OPTIONS& layoutOptions);
+		void setLayoutOptions(const GUILayoutOptions& layoutOptions);
 		
 		void markAsClean() { mIsDirty = false; }
 		void markAsDirty();
 
 		GUIWidget& mParent;
 		GUILayout* mParentLayout;
-		GUI_LAYOUT_OPTIONS mLayoutOptions;
+		GUILayoutOptions mLayoutOptions;
 		CM::Rect mBounds;
 
 		bool mIsDirty;

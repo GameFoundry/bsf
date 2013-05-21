@@ -11,7 +11,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUILabel::GUILabel(GUIWidget& parent, const String& text, bool wordWrap, TextHorzAlign horzAlign, 
-		TextVertAlign vertAlign, const GUI_LAYOUT_OPTIONS& layoutOptions)
+		TextVertAlign vertAlign, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, layoutOptions), mText(text), mWordWrap(wordWrap),
 		mHorzAlign(horzAlign), mVertAlign(vertAlign)
 	{
@@ -103,9 +103,9 @@ namespace BansheeEngine
 		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
 	}
 
-	const GUI_LAYOUT_OPTIONS& GUILabel::getDefaultLayoutOptions()
+	const GUILayoutOptions& GUILabel::getDefaultLayoutOptions()
 	{
-		static GUI_LAYOUT_OPTIONS layoutOptions;
+		static GUILayoutOptions layoutOptions;
 		static bool layoutOptionsInitialized = false;
 
 		if(!layoutOptionsInitialized)
@@ -136,7 +136,7 @@ namespace BansheeEngine
 		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, THA_Left, TVA_Top, getDefaultLayoutOptions());
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUI_LAYOUT_OPTIONS& layoutOptions, bool wordWrap)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, bool wordWrap)
 	{
 		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, THA_Left, TVA_Top, layoutOptions);
 	}
@@ -146,7 +146,7 @@ namespace BansheeEngine
 		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, horzAlign, vertAlign, getDefaultLayoutOptions());
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUI_LAYOUT_OPTIONS& layoutOptions, TextHorzAlign horzAlign, TextVertAlign vertAlign, bool wordWrap)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, TextHorzAlign horzAlign, TextVertAlign vertAlign, bool wordWrap)
 	{
 		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, horzAlign, vertAlign, layoutOptions);
 	}

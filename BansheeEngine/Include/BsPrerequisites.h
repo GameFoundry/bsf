@@ -55,7 +55,7 @@ namespace BansheeEngine
 	class GUILayoutY;
 	class GUIFixedSpace;
 	class GUIFlexibleSpace;
-	struct GUI_LAYOUT_OPTIONS;
+	struct GUILayoutOptions;
 
 	// 2D
 	class TextSprite;

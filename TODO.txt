@@ -22,7 +22,6 @@ I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
 IMMEDIATE:
- - Call layout update before remesh and input in GUIManager
  - Implement GUILayoutY
 
  Test multiple layout elements

@@ -12,7 +12,7 @@ namespace BansheeEngine
 		static const CM::String& getGUITypeName();
 
 		static GUIWindowFrame* create(GUIWidget& parent);
-		static GUIWindowFrame* create(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions);
+		static GUIWindowFrame* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions);
 	protected:
 		~GUIWindowFrame();
 
@@ -45,11 +45,11 @@ namespace BansheeEngine
 		virtual UINT32 _getOptimalWidth() const;
 		virtual UINT32 _getOptimalHeight() const;
 
-		static const GUI_LAYOUT_OPTIONS& getDefaultLayoutOptions();
+		static const GUILayoutOptions& getDefaultLayoutOptions();
 	private:
 		ImageSprite* mImageSprite;
 		IMAGE_SPRITE_DESC mDesc;
 
-		GUIWindowFrame(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions);
+		GUIWindowFrame(GUIWidget& parent, const GUILayoutOptions& layoutOptions);
 	};
 }

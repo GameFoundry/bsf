@@ -8,7 +8,7 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIElement::GUIElement(GUIWidget& parent, const GUI_LAYOUT_OPTIONS& layoutOptions)
+	GUIElement::GUIElement(GUIWidget& parent, const GUILayoutOptions& layoutOptions)
 		:mParent(parent), mIsDirty(true), mParentLayout(nullptr), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0)
 	{
 		mParent.registerElement(this);
@@ -26,7 +26,7 @@ namespace BansheeEngine
 		markAsClean();
 	}
 
-	void GUIElement::setLayoutOptions(const GUI_LAYOUT_OPTIONS& layoutOptions) 
+	void GUIElement::setLayoutOptions(const GUILayoutOptions& layoutOptions) 
 	{
 		if(layoutOptions.maxWidth < layoutOptions.minWidth)
 		{
