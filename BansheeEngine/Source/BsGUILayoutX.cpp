@@ -87,6 +87,10 @@ namespace BansheeEngine
 		float averageWidth = leftoverWidth / (float) numFreeElems;
 
 		// Only assign elements with fixed, or clamped width
+		bool* processedElements = CM_NEW_ARRAY(bool, (UINT32)mChildren.size(), ScratchAlloc);
+		memset(processedElements, 0, mChildren.size() * sizeof(bool));
+
+		UINT32 childIdx = 0;
 		for(auto& child : mChildren)
 		{
 			if(child.isElement())
@@ -98,6 +102,7 @@ namespace BansheeEngine
 				if(layoutOptions.fixedWidth)
 				{
 					elementWidth = layoutOptions.width;
+					processedElements[childIdx] = true;
 				}
 				else
 				{
@@ -108,41 +113,54 @@ namespace BansheeEngine
 					{
 						elementWidth = layoutOptions.minWidth;
 						leftoverWidth = (UINT32)std::max(0, (INT32)leftoverWidth - (INT32)elementWidth);
+						
+						processedElements[childIdx] = true;
 						numFreeElems--;
 					}
 					else if(layoutOptions.maxWidth > 0 && availableWidth > layoutOptions.maxWidth)
 					{
 						elementWidth = layoutOptions.maxWidth;
 						leftoverWidth = (UINT32)std::max(0, (INT32)leftoverWidth - (INT32)elementWidth);
-						numFreeElems--;
-					}
-					else if(layoutOptions.maxWidth > 0 || layoutOptions.minWidth > 0)
-					{
-						elementWidth = availableWidth;
-						leftoverWidth = (UINT32)std::max(0, (INT32)leftoverWidth - (INT32)availableWidth);
+						
+						processedElements[childIdx] = true;
 						numFreeElems--;
 					}
 				}
 
 				child.element->_setWidth(elementWidth);
 			}
+
+			childIdx++;
 		}
 
 		averageWidth = leftoverWidth / (float) numFreeElems;
 
 		// Assign free scaling elements now that we have a good estimate on average width
-		// Also calculate offset
+		// Note: Our average value is JUST an estimate. It's hard to predict the actual value because
+		// of min/max constraints and would probably require a few iterations to get a somewhat accurate value,
+		// but I don't think that is worth the trouble. For that reason min/max clamping that might happen in 
+		// the next block might cause elements to either be a bit too small or too large for the layout.
+		// It is the assumption that such clamping won't happen often.
+		// 
+		// Also calculate offset and element height.
 		UINT32 xOffset = 0;
 		flexibleSpaceIdx = 0;
+		childIdx = 0;
 		for(auto& child : mChildren)
 		{
 			if(child.isElement())
 			{
 				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
 
-				if(!layoutOptions.fixedWidth && layoutOptions.maxWidth == 0 && layoutOptions.minWidth == 0)
+				if(!processedElements[childIdx])
 				{
 					UINT32 elementWidth = std::min((UINT32)Math::CeilToInt(averageWidth), leftoverWidth);
+
+					if(layoutOptions.minWidth > 0 && elementWidth < layoutOptions.minWidth)
+						elementWidth = layoutOptions.minWidth;
+					else if(layoutOptions.maxWidth > 0 && elementWidth > layoutOptions.maxWidth)
+						elementWidth = layoutOptions.maxWidth;
+
 					leftoverWidth = (UINT32)std::max(0, (INT32)leftoverWidth - (INT32)elementWidth);
 
 					child.element->_setWidth(elementWidth);
@@ -190,6 +208,10 @@ namespace BansheeEngine
 				xOffset += flexibleSpaceSizes[flexibleSpaceIdx];
 				flexibleSpaceIdx++;
 			}
+
+			childIdx++;
 		}
+
+		CM_DELETE_ARRAY(processedElements, bool, (UINT32)mChildren.size(), ScratchAlloc);
 	}
 }

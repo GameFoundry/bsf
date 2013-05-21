@@ -61,7 +61,7 @@ namespace BansheeEditor
 		otherLayout.addElement(mDbgLabel);
 
 		//GUIFixedSpace& space = otherLayout.addSpace(10); // Due to bug in MSVC compiler I need to store return value
-		otherLayout.addElement(GUIWindowFrame::create(*mGUI, GUILayoutOptions::fixed(20, 20)));
+		otherLayout.addElement(GUIWindowFrame::create(*mGUI, GUILayoutOptions::expandableX(20, 100)));
 		//GUIFixedSpace& space2 = otherLayout.addSpace(10);
 		otherLayout.addElement(GUIWindowFrame::create(*mGUI));
 	}
