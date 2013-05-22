@@ -13,12 +13,16 @@ namespace BansheeEngine
 		UINT32 totalOptimalSize = 0;
 		UINT32 numNonClampedElements = 0;
 		UINT32 numFlexibleSpaces = 0;
+		UINT32 numLayouts = 0;
 
 		bool* processedElements = CM_NEW_ARRAY(bool, (UINT32)mChildren.size(), ScratchAlloc);
 		memset(processedElements, 0, mChildren.size() * sizeof(bool));
 
 		UINT32* elementSizes = CM_NEW_ARRAY(UINT32, (UINT32)mChildren.size(), ScratchAlloc);
 		memset(elementSizes, 0, mChildren.size() * sizeof(UINT32));
+
+		float* elementScaleWeights = CM_NEW_ARRAY(float, (UINT32)mChildren.size(), ScratchAlloc);
+		memset(elementScaleWeights, 0, mChildren.size() * sizeof(float));
 
 		// Set fixed-size elements and determine optimal size
 		UINT32 childIdx = 0;
@@ -57,7 +61,7 @@ namespace BansheeEngine
 			}
 			else if(child.isLayout())
 			{
-				// Layout use any size that's available (quite possibly none), but it might be better to give them a certain minimum size.
+				numLayouts++;
 				numNonClampedElements++;
 			}
 			else if(child.isFlexibleSpace())
@@ -65,6 +69,30 @@ namespace BansheeEngine
 				numFlexibleSpaces++;
 				numNonClampedElements++;
 			}
+
+			childIdx++;
+		}
+
+		// Determine layout size. We could just calculate optimal size of all elements in the layout
+		// but I feel that's an overkill. Instead I just use the average size.
+		childIdx = 0;
+		UINT32 layoutSize = (UINT32)Math::CeilToInt(totalOptimalSize / (float)numLayouts);
+		for(auto& child : mChildren)
+		{
+			if(child.isLayout())
+			{
+				elementSizes[childIdx] += layoutSize;
+				totalOptimalSize += layoutSize;
+			}
+			childIdx++;
+		}
+
+		// Determine weight scale for every element
+		childIdx = 0;
+		float invOptimalSize = 1.0f / totalOptimalSize;
+		for(auto& child : mChildren)
+		{
+			elementScaleWeights[childIdx] = invOptimalSize * elementSizes[childIdx];
 
 			childIdx++;
 		}
@@ -79,7 +107,7 @@ namespace BansheeEngine
 			// equal average sizes 
 			while(remainingSize > 0 && numNonClampedElements > 0)
 			{
-				float avgSize = remainingSize / (float)numNonClampedElements;
+				UINT32 totalRemainingSize = remainingSize;
 
 				childIdx = 0;
 				for(auto& child : mChildren)
@@ -87,6 +115,8 @@ namespace BansheeEngine
 					if(processedElements[childIdx])
 						continue;
 
+					float avgSize = totalRemainingSize * elementScaleWeights[childIdx];
+					
 					UINT32 extraWidth = std::min((UINT32)Math::CeilToInt(avgSize), remainingSize);
 					UINT32 elementWidth = (UINT32)std::max(0, (INT32)elementSizes[childIdx] - (INT32)extraWidth);
 
@@ -172,7 +202,7 @@ namespace BansheeEngine
 				// equal average sizes 
 				while(remainingSize > 0 && numNonClampedElements > 0)
 				{
-					float avgSize = remainingSize / (float)numNonClampedElements;
+					UINT32 totalRemainingSize = remainingSize;
 
 					childIdx = 0;
 					for(auto& child : mChildren)
@@ -180,6 +210,7 @@ namespace BansheeEngine
 						if(processedElements[childIdx])
 							continue;
 
+						float avgSize = totalRemainingSize * elementScaleWeights[childIdx];
 						UINT32 extraWidth = std::min((UINT32)Math::CeilToInt(avgSize), remainingSize);
 						UINT32 elementWidth = elementSizes[childIdx] + extraWidth;
 
@@ -267,6 +298,7 @@ namespace BansheeEngine
 
 		CM_DELETE_ARRAY(processedElements, bool, (UINT32)mChildren.size(), ScratchAlloc);
 		CM_DELETE_ARRAY(elementSizes, UINT32, (UINT32)mChildren.size(), ScratchAlloc);
+		CM_DELETE_ARRAY(elementScaleWeights, float, (UINT32)mChildren.size(), ScratchAlloc);
 
 		//// Calculate flexible space sizes
 		//std::vector<UINT32> flexibleSpaceSizes;
