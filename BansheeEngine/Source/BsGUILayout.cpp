@@ -10,7 +10,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUILayout::GUILayout()
-		:mIsDirty(false)
+		:mIsDirty(false), mOptimalWidth(0), mOptimalHeight(0)
 	{
 
 	}
@@ -261,6 +261,7 @@ namespace BansheeEngine
 
 	void GUILayout::_update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
 	{
+		updateOptimalSizes(); // We calculate optimal sizes of all layouts as a pre-processing step, as they are requested often during update
 		updateInternal(x, y, width, height, depth);
 		mIsDirty = false;
 	}

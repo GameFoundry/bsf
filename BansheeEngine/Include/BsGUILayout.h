@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "CmInt2.h"
 
 namespace BansheeEngine
 {
@@ -84,17 +85,25 @@ namespace BansheeEngine
 		UINT32 getNumChildren() const;
 
 		/**
-		 * @brief	Re-arranges the elements to fit the layout. You shouldn't need to call this manually
+		 * @brief	Re-arranges the elements to fit the layout. (Internal use only)
 		 */
 		void _update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth);
+
+		UINT32 _getOptimalWidth() const { return mOptimalWidth; }
+		UINT32 _getOptimalHeight() const { return mOptimalHeight; }
 
 		void _markAsDirty() { mIsDirty = true; }
 		bool _isDirty();
 
 	protected:
-		std::vector<GUILayoutEntry> mChildren;		
+		std::vector<GUILayoutEntry> mChildren;	
+		std::vector<CM::Int2> mOptimalSizes;
+		UINT32 mOptimalWidth;
+		UINT32 mOptimalHeight;
+
 		bool mIsDirty;
 
+		virtual void updateOptimalSizes() = 0;
 		virtual void updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth) = 0;
 	};
 }

@@ -8,12 +8,84 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	void GUILayoutX::updateOptimalSizes()
+	{
+		// Update all children first, otherwise we can't determine out own optimal size
+		for(auto& child : mChildren)
+		{
+			if(child.isLayout())
+				updateOptimalSizes();
+		}
+
+		if(mChildren.size() != mOptimalSizes.size())
+			mOptimalSizes.resize(mChildren.size());
+
+		mOptimalWidth = 0;
+		mOptimalHeight = 0;
+
+		UINT32 childIdx = 0;
+		for(auto& child : mChildren)
+		{
+			UINT32 optimalWidth = 0;
+			UINT32 optimalHeight = 0;
+
+			if(child.isFixedSpace())
+			{
+				optimalWidth = child.space->getSize();
+			}
+			else if(child.isElement())
+			{
+				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
+
+				if(layoutOptions.fixedWidth)
+				{
+					optimalWidth = layoutOptions.width;
+				}
+				else
+				{
+					optimalWidth = child.element->_getOptimalWidth();
+
+					if(layoutOptions.minWidth > 0)
+						optimalWidth = std::max(layoutOptions.minWidth, optimalWidth);
+
+					if(layoutOptions.maxWidth > 0)
+						optimalWidth = std::min(layoutOptions.maxWidth, optimalWidth);
+				}
+
+				if(layoutOptions.fixedHeight)
+					optimalHeight = layoutOptions.height;
+				else
+				{
+					optimalHeight = child.element->_getOptimalHeight();
+
+					if(layoutOptions.minHeight > 0)
+						optimalHeight = std::max(layoutOptions.minHeight, optimalHeight);
+
+					if(layoutOptions.maxHeight > 0)
+						optimalHeight = std::min(layoutOptions.maxHeight, optimalHeight);
+				}
+			}
+			else if(child.isLayout())
+			{
+				optimalWidth = child.layout->_getOptimalWidth();
+			}
+
+			mOptimalSizes[childIdx].x = optimalWidth;
+			mOptimalWidth += optimalWidth;
+
+			mOptimalSizes[childIdx].y = optimalHeight;
+			mOptimalHeight = std::max(mOptimalHeight, optimalHeight);
+
+			childIdx++;
+		}
+	}
+
 	void GUILayoutX::updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
 	{
-		UINT32 totalOptimalSize = 0;
+		UINT32 totalOptimalSize = _getOptimalWidth();
+		UINT32 totalNonClampedSize = 0;
 		UINT32 numNonClampedElements = 0;
 		UINT32 numFlexibleSpaces = 0;
-		UINT32 numLayouts = 0;
 
 		bool* processedElements = CM_NEW_ARRAY(bool, (UINT32)mChildren.size(), ScratchAlloc);
 		memset(processedElements, 0, mChildren.size() * sizeof(bool));
@@ -24,14 +96,14 @@ namespace BansheeEngine
 		float* elementScaleWeights = CM_NEW_ARRAY(float, (UINT32)mChildren.size(), ScratchAlloc);
 		memset(elementScaleWeights, 0, mChildren.size() * sizeof(float));
 
-		// Set fixed-size elements and determine optimal size
+		// Set initial sizes, count number of children per type and mark fixed elements as already processed
 		UINT32 childIdx = 0;
 		for(auto& child : mChildren)
 		{
+			elementSizes[childIdx] = mOptimalSizes[childIdx].x;
+
 			if(child.isFixedSpace())
 			{
-				elementSizes[childIdx] = child.space->getSize();
-				totalOptimalSize += child.space->getSize();
 				processedElements[childIdx] = true;
 			}
 			else if(child.isElement())
@@ -39,30 +111,17 @@ namespace BansheeEngine
 				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
 
 				if(layoutOptions.fixedWidth)
-				{
-					totalOptimalSize += layoutOptions.width;
-					elementSizes[childIdx] = layoutOptions.width;
 					processedElements[childIdx] = true;
-				}
 				else
 				{
-					UINT32 optimalWidth = child.element->_getOptimalWidth();
-
-					if(layoutOptions.minWidth > 0)
-						optimalWidth = std::max(layoutOptions.minWidth, optimalWidth);
-
-					if(layoutOptions.maxWidth > 0)
-						optimalWidth = std::min(layoutOptions.maxWidth, optimalWidth);
-
-					elementSizes[childIdx] = optimalWidth;
-					totalOptimalSize += optimalWidth;
 					numNonClampedElements++;
+					totalNonClampedSize += elementSizes[childIdx];
 				}
 			}
 			else if(child.isLayout())
 			{
-				numLayouts++;
 				numNonClampedElements++;
+				totalNonClampedSize += elementSizes[childIdx];
 			}
 			else if(child.isFlexibleSpace())
 			{
@@ -73,25 +132,58 @@ namespace BansheeEngine
 			childIdx++;
 		}
 
-		// Determine layout size. We could just calculate optimal size of all elements in the layout
-		// but I feel that's an overkill. Instead I just use the average size.
-		childIdx = 0;
-		UINT32 layoutSize = (UINT32)Math::CeilToInt(totalOptimalSize / (float)numLayouts);
-		for(auto& child : mChildren)
+		// If there is some room left, calculate flexible space sizes (since they will fill up all that extra room)
+		if(width > totalOptimalSize)
 		{
-			if(child.isLayout())
+			UINT32 extraSize = width - totalOptimalSize;
+			UINT32 remainingSize = extraSize;
+
+			// Flexible spaces always expand to fill up all unused space
+			if(numFlexibleSpaces > 0)
 			{
-				elementSizes[childIdx] += layoutSize;
-				totalOptimalSize += layoutSize;
+				float avgSize = remainingSize / (float)numFlexibleSpaces;
+
+				childIdx = 0;
+				for(auto& child : mChildren)
+				{
+					if(processedElements[childIdx])
+					{
+						childIdx++;
+						continue;
+					}
+
+					UINT32 extraWidth = std::min((UINT32)Math::CeilToInt(avgSize), remainingSize);
+					UINT32 elementWidth = elementSizes[childIdx] + extraWidth;
+
+					// Clamp if needed
+					if(child.isFlexibleSpace())
+					{
+						processedElements[childIdx] = true;
+						numNonClampedElements--;
+						elementSizes[childIdx] = elementWidth;
+
+						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
+					}
+
+					childIdx++;
+				}
+
+				totalOptimalSize = width;
 			}
-			childIdx++;
 		}
 
-		// Determine weight scale for every element
+		// Determine weight scale for every element. When scaling elements up/down they will be scaled based on this weight.
+		// Weight is to ensure all elements are scaled fairly, so elements that are large will get effected more than smaller elements.
 		childIdx = 0;
-		float invOptimalSize = 1.0f / totalOptimalSize;
+		float invOptimalSize = 1.0f / totalNonClampedSize;
 		for(auto& child : mChildren)
 		{
+			if(processedElements[childIdx])
+			{
+				childIdx++;
+				continue;
+			}
+
 			elementScaleWeights[childIdx] = invOptimalSize * elementSizes[childIdx];
 
 			childIdx++;
@@ -104,7 +196,7 @@ namespace BansheeEngine
 			UINT32 remainingSize = extraSize;
 
 			// Iterate until we reduce everything so it fits, while maintaining
-			// equal average sizes 
+			// equal average sizes using the weights we calculated earlier
 			while(remainingSize > 0 && numNonClampedElements > 0)
 			{
 				UINT32 totalRemainingSize = remainingSize;
@@ -113,7 +205,10 @@ namespace BansheeEngine
 				for(auto& child : mChildren)
 				{
 					if(processedElements[childIdx])
+					{
+						childIdx++;
 						continue;
+					}
 
 					float avgSize = totalRemainingSize * elementScaleWeights[childIdx];
 					
@@ -170,80 +265,54 @@ namespace BansheeEngine
 			UINT32 extraSize = width - totalOptimalSize;
 			UINT32 remainingSize = extraSize;
 
-			// Flexible spaces always expand to fill up all unused space, so we have a special case for them
-			if(numFlexibleSpaces > 0)
+			// Iterate until we reduce everything so it fits, while maintaining
+			// equal average sizes using the weights we calculated earlier
+			while(remainingSize > 0 && numNonClampedElements > 0)
 			{
-				float avgSize = remainingSize / (float)numFlexibleSpaces;
+				UINT32 totalRemainingSize = remainingSize;
 
 				childIdx = 0;
 				for(auto& child : mChildren)
 				{
 					if(processedElements[childIdx])
+					{
+						childIdx++;
 						continue;
+					}
 
+					float avgSize = totalRemainingSize * elementScaleWeights[childIdx];
 					UINT32 extraWidth = std::min((UINT32)Math::CeilToInt(avgSize), remainingSize);
 					UINT32 elementWidth = elementSizes[childIdx] + extraWidth;
 
 					// Clamp if needed
-					if(child.isFlexibleSpace())
+					if(child.isElement())
 					{
-						processedElements[childIdx] = true;
-						elementSizes[childIdx] = elementWidth;
+						const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
 
-						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
-					}
-
-					childIdx++;
-				}
-			}
-			else // Otherwise, just expand individual elements, as well as their constraints allow it (equal to reduce algorithm above)
-			{
-				// Iterate until we reduce everything so it fits, while maintaining
-				// equal average sizes 
-				while(remainingSize > 0 && numNonClampedElements > 0)
-				{
-					UINT32 totalRemainingSize = remainingSize;
-
-					childIdx = 0;
-					for(auto& child : mChildren)
-					{
-						if(processedElements[childIdx])
-							continue;
-
-						float avgSize = totalRemainingSize * elementScaleWeights[childIdx];
-						UINT32 extraWidth = std::min((UINT32)Math::CeilToInt(avgSize), remainingSize);
-						UINT32 elementWidth = elementSizes[childIdx] + extraWidth;
-
-						// Clamp if needed
-						if(child.isElement())
+						if(layoutOptions.maxWidth > 0 && elementWidth > layoutOptions.maxWidth)
 						{
-							const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
+							extraWidth = elementSizes[childIdx] - layoutOptions.maxWidth;
+							elementWidth = layoutOptions.maxWidth;
 
-							if(layoutOptions.maxWidth > 0 && elementWidth > layoutOptions.maxWidth)
-							{
-								extraWidth = elementSizes[childIdx] - layoutOptions.maxWidth;
-								elementWidth = layoutOptions.maxWidth;
-
-								processedElements[childIdx] = true;
-								numNonClampedElements--;
-							}
-
-							elementSizes[childIdx] = elementWidth;
-							remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
-						}
-						else if(child.isLayout())
-						{
-							elementSizes[childIdx] = elementWidth;
-							remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
-						}
-						else if(child.isFlexibleSpace())
-						{
 							processedElements[childIdx] = true;
 							numNonClampedElements--;
 						}
 
-						childIdx++;
+						elementSizes[childIdx] = elementWidth;
+						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}
+					else if(child.isLayout())
+					{
+						elementSizes[childIdx] = elementWidth;
+						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
+					}
+					else if(child.isFlexibleSpace())
+					{
+						processedElements[childIdx] = true;
+						numNonClampedElements--;
+					}
+
+					childIdx++;
 				}
 			}
 		}
@@ -259,22 +328,7 @@ namespace BansheeEngine
 			if(child.isElement())
 			{
 				child.element->_setWidth(elementWidth);
-
-				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
-				if(layoutOptions.fixedHeight)
-					child.element->_setHeight(layoutOptions.height);
-				else
-				{
-					UINT32 optimalHeight = child.element->_getOptimalHeight();
-
-					if(layoutOptions.minHeight > 0)
-						optimalHeight = std::max(layoutOptions.minHeight, optimalHeight);
-
-					if(layoutOptions.maxHeight > 0)
-						optimalHeight = std::min(layoutOptions.maxHeight, optimalHeight);
-
-					child.element->_setHeight(optimalHeight);
-				}
+				child.element->_setHeight(mOptimalSizes[childIdx].y);
 
 				UINT32 yOffset = (UINT32)Math::CeilToInt((height - child.element->_getHeight()) * 0.5f);
 
