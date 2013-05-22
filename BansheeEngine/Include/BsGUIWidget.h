@@ -3,6 +3,8 @@
 #include "BsPrerequisites.h"
 #include "CmComponent.h"
 #include "CmRect.h"
+#include "CmVector3.h"
+#include "CmQuaternion.h"
 
 namespace BansheeEngine
 {
@@ -59,13 +61,17 @@ namespace BansheeEngine
 
 		void ownerWindowResized(CM::RenderWindow* window);
 
-		virtual void update() {}
+		virtual void update();
 
 		const CM::RenderWindow* mOwnerWindow;
 		CM::Viewport* mTarget;
 		std::vector<GUIElement*> mElements;
 		std::vector<GUIArea*> mAreas;
 		UINT16 mDepth;
+
+		CM::Vector3 mLastFramePosition;
+		CM::Quaternion mLastFrameRotation;
+		CM::Vector3 mLastFrameScale;
 
 		mutable bool mWidgetIsDirty;
 		mutable CM::Rect mBounds;

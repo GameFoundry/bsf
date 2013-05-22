@@ -23,9 +23,6 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 
 IMMEDIATE:
  - Implement GUILayoutY
- - Layout algorithm currently reduces/expands elements based on avg size. However it would be better if each element was resized based on a weighted
-   value which is determined by its optimal size compared to the size of all elements combined. Otherwise very small elements get reduced to 0 size while larger
-   ones still take up plenty of screen.
 
 Test nested elements
 Test with flexible space, left center and right

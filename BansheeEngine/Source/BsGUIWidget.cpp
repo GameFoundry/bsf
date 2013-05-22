@@ -24,7 +24,11 @@ namespace BansheeEngine
 
 	GUIWidget::GUIWidget(const HSceneObject& parent)
 		:Component(parent), mSkin(nullptr), mOwnerWindow(nullptr), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0)
-	{	}
+	{
+		mLastFramePosition = SO()->getWorldPosition();
+		mLastFrameRotation = SO()->getWorldRotation();
+		mLastFrameScale = SO()->getWorldScale();
+	}
 
 	GUIWidget::~GUIWidget()
 	{
@@ -58,6 +62,47 @@ namespace BansheeEngine
 		GUIManager::instance().registerWidget(this);
 
 		mOwnerWindow->onWindowMovedOrResized.connect(boost::bind(&GUIWidget::ownerWindowResized, this, _1));
+	}
+
+	void GUIWidget::update()
+	{
+		// If the widgets parent scene object moved, we need to mark it as dirty
+		// as the GUIManager batching relies on object positions, so it needs to be updated.
+		const float diffEpsilon = 0.0001f;
+
+		Vector3 position = SO()->getWorldPosition();
+		Quaternion rotation = SO()->getWorldRotation();
+		Vector3 scale = SO()->getWorldScale();
+
+		if(!mWidgetIsDirty)
+		{
+			Vector3 posDiff = mLastFramePosition - position;
+			if(Math::Abs(posDiff.x) > diffEpsilon || Math::Abs(posDiff.y) > diffEpsilon || Math::Abs(posDiff.z) > diffEpsilon)
+			{
+				mWidgetIsDirty = true;
+			}
+			else
+			{
+				Quaternion rotDiff = mLastFrameRotation - rotation;
+				if(Math::Abs(rotDiff.x) > diffEpsilon || Math::Abs(rotDiff.y) > diffEpsilon || 
+					Math::Abs(rotDiff.z) > diffEpsilon || Math::Abs(rotDiff.w) > diffEpsilon)
+				{
+					mWidgetIsDirty = true;
+				}
+				else
+				{
+					Vector3 scaleDiff = mLastFrameScale - scale;
+					if(Math::Abs(scaleDiff.x) > diffEpsilon || Math::Abs(scaleDiff.y) > diffEpsilon || Math::Abs(scaleDiff.z) > diffEpsilon)
+					{
+						mWidgetIsDirty = true;
+					}
+				}
+			}
+		}
+
+		mLastFramePosition = position;
+		mLastFrameRotation = rotation;
+		mLastFrameScale = scale;
 	}
 
 	void GUIWidget::_updateLayout()
