@@ -46,7 +46,10 @@ namespace BansheeEngine
 
 	GUIButton* GUIButton::create(GUIWidget& parent)
 	{
-		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, getDefaultLayoutOptions());
+		const GUISkin* skin = parent.getGUISkin();
+		const GUIElementStyle* style = skin->getStyle(getGUITypeName());
+
+		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, getDefaultLayoutOptions(style));
 	}
 
 	GUIButton* GUIButton::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions)
@@ -104,22 +107,6 @@ namespace BansheeEngine
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
-	}
-
-	const GUILayoutOptions& GUIButton::getDefaultLayoutOptions()
-	{
-		static GUILayoutOptions layoutOptions;
-		static bool layoutOptionsInitialized = false;
-
-		if(!layoutOptionsInitialized)
-		{
-			layoutOptions.fixedWidth = false;
-			layoutOptions.fixedHeight = false;
-
-			layoutOptionsInitialized = true;
-		}
-
-		return layoutOptions;
 	}
 
 	bool GUIButton::mouseEvent(const GUIMouseEvent& ev)

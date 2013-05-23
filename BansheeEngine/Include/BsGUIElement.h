@@ -118,6 +118,8 @@ namespace BansheeEngine
 		void markAsClean() { mIsDirty = false; }
 		void markAsDirty();
 
+		static GUILayoutOptions getDefaultLayoutOptions(const GUIElementStyle* style);
+
 		GUIWidget& mParent;
 		GUILayout* mParentLayout;
 		GUILayoutOptions mLayoutOptions;

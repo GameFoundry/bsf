@@ -44,8 +44,6 @@ namespace BansheeEngine
 
 		virtual UINT32 _getOptimalWidth() const;
 		virtual UINT32 _getOptimalHeight() const;
-
-		static const GUILayoutOptions& getDefaultLayoutOptions();
 	private:
 		ImageSprite* mImageSprite;
 		IMAGE_SPRITE_DESC mDesc;

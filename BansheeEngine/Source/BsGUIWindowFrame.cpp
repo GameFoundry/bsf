@@ -45,7 +45,10 @@ namespace BansheeEngine
 
 	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent)
 	{
-		return CM_NEW(GUIWindowFrame, PoolAlloc) GUIWindowFrame(parent, getDefaultLayoutOptions());
+		const GUISkin* skin = parent.getGUISkin();
+		const GUIElementStyle* style = skin->getStyle(getGUITypeName());
+
+		return CM_NEW(GUIWindowFrame, PoolAlloc) GUIWindowFrame(parent, getDefaultLayoutOptions(style));
 	}
 
 	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions)
@@ -103,21 +106,5 @@ namespace BansheeEngine
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
-	}
-
-	const GUILayoutOptions& GUIWindowFrame::getDefaultLayoutOptions()
-	{
-		static GUILayoutOptions layoutOptions;
-		static bool layoutOptionsInitialized = false;
-
-		if(!layoutOptionsInitialized)
-		{
-			layoutOptions.fixedWidth = false;
-			layoutOptions.fixedHeight = false;
-
-			layoutOptionsInitialized = true;
-		}
-
-		return layoutOptions;
 	}
 }

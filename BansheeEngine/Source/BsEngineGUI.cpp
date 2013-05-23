@@ -48,6 +48,10 @@ namespace BansheeEngine
 		GUIElementStyle labelStyle;
 		labelStyle.font = font;
 		labelStyle.fontSize = DefaultFontSize;
+		labelStyle.fixedWidth = false;
+		labelStyle.fixedHeight = true;
+		labelStyle.height = 16;
+		labelStyle.minWidth = 10;
 
 		mSkin.setStyle(GUILabel::getGUITypeName(), labelStyle);
 
@@ -77,6 +81,9 @@ namespace BansheeEngine
 		buttonStyle.border.right = 5;
 		buttonStyle.border.top = 5;
 		buttonStyle.border.bottom = 5;
+		buttonStyle.fixedHeight = true;
+		buttonStyle.height = 21;
+		buttonStyle.minWidth = 10;
 
 		mSkin.setStyle(GUIButton::getGUITypeName(), buttonStyle);
 	}

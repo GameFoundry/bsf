@@ -52,8 +52,6 @@ namespace BansheeEngine
 
 		virtual UINT32 _getOptimalWidth() const;
 		virtual UINT32 _getOptimalHeight() const;
-
-		static const GUILayoutOptions& getDefaultLayoutOptions();
 	private:
 		TextSprite* mTextSprite;
 		CM::String mText;

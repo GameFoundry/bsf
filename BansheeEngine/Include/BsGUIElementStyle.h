@@ -23,7 +23,9 @@ namespace BansheeEngine
 		};
 
 		GUIElementStyle()
-			:fontSize(8)
+			:fontSize(8), width(0), height(0),
+			fixedWidth(false), fixedHeight(false), minWidth(0), maxWidth(0),
+			minHeight(0), maxHeight(0)
 		{
 
 		}
@@ -43,5 +45,12 @@ namespace BansheeEngine
 		GUIElementStateStyle focusedOn;
 
 		RectOffset border;
+
+		UINT32 width;
+		UINT32 height;
+		UINT32 minWidth, maxWidth;
+		UINT32 minHeight, maxHeight;
+		bool fixedWidth;
+		bool fixedHeight;
 	};
 }

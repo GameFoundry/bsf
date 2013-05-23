@@ -103,24 +103,6 @@ namespace BansheeEngine
 		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
 	}
 
-	const GUILayoutOptions& GUILabel::getDefaultLayoutOptions()
-	{
-		static GUILayoutOptions layoutOptions;
-		static bool layoutOptionsInitialized = false;
-
-		if(!layoutOptionsInitialized)
-		{
-			layoutOptions.fixedWidth = false;
-			layoutOptions.fixedHeight = true;
-			layoutOptions.height = 16;
-			layoutOptions.minWidth = 10;
-
-			layoutOptionsInitialized = true;
-		}
-
-		return layoutOptions;
-	}
-
 	void GUILabel::setText(const CM::String& text)
 	{
 		mDesc.text = text;
@@ -133,7 +115,10 @@ namespace BansheeEngine
 
 	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, bool wordWrap)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, THA_Left, TVA_Top, getDefaultLayoutOptions());
+		const GUISkin* skin = parent.getGUISkin();
+		const GUIElementStyle* style = skin->getStyle(getGUITypeName());
+
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, THA_Left, TVA_Top, getDefaultLayoutOptions(style));
 	}
 
 	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, bool wordWrap)
@@ -143,7 +128,10 @@ namespace BansheeEngine
 
 	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign, bool wordWrap)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, horzAlign, vertAlign, getDefaultLayoutOptions());
+		const GUISkin* skin = parent.getGUISkin();
+		const GUIElementStyle* style = skin->getStyle(getGUITypeName());
+
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, horzAlign, vertAlign, getDefaultLayoutOptions(style));
 	}
 
 	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, TextHorzAlign horzAlign, TextVertAlign vertAlign, bool wordWrap)
