@@ -81,6 +81,10 @@ namespace BansheeEngine
 		buttonStyle.border.right = 5;
 		buttonStyle.border.top = 5;
 		buttonStyle.border.bottom = 5;
+		buttonStyle.margins.left = 4;
+		buttonStyle.margins.right = 4;
+		buttonStyle.margins.top = 4;
+		buttonStyle.margins.bottom = 4;
 		buttonStyle.fixedHeight = true;
 		buttonStyle.height = 21;
 		buttonStyle.minWidth = 10;

@@ -44,7 +44,8 @@ namespace BansheeEngine
 		GUIElementStateStyle activeOn;
 		GUIElementStateStyle focusedOn;
 
-		RectOffset border;
+		RectOffset border; // Determines how the element is scaled (using the typical Scale9Grid approach)
+		RectOffset margins; // Determines offset from the background graphics to the content. Input uses bounds offset by this value.
 
 		UINT32 width;
 		UINT32 height;

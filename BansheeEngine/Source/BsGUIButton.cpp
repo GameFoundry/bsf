@@ -113,7 +113,7 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
-			mDesc.texture = mStyle->normal.texture;
+			mDesc.texture = mStyle->hover.texture;
 			markAsDirty();
 			// TODO - What happens when a texture is not set?
 			// 
@@ -121,7 +121,7 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			mDesc.texture = mStyle->hover.texture;
+			mDesc.texture = mStyle->normal.texture;
 			markAsDirty();
 			// TODO - What happens when a texture is not set?
 

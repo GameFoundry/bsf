@@ -281,7 +281,7 @@ int CALLBACK WinMain(
 	gMainSyncedRC().readSubresource(dbgCursor.getInternalPtr(), 0, *cursorPixelData);
 	gMainSyncedRC().submitToGpu(true);
 
-	Cursor::setCustomCursor(*cursorPixelData, Int2(0, 0));
+	//Cursor::setCustomCursor(*cursorPixelData, Int2(0, 0));
 
 	dbgCursor.reset();
 

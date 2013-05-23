@@ -79,6 +79,18 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
+	const Rect GUIElement::_getContentBounds() const
+	{
+		Rect bounds = _getBounds();
+		
+		bounds.x += mStyle->margins.left;
+		bounds.y += mStyle->margins.top;
+		bounds.width = (UINT32)std::max(0, (INT32)bounds.width - (INT32)(mStyle->margins.left + mStyle->margins.right));
+		bounds.height = (UINT32)std::max(0, (INT32)bounds.height - (INT32)(mStyle->margins.top + mStyle->margins.bottom));
+
+		return bounds;
+	}
+
 	void GUIElement::markAsDirty() 
 	{ 
 		if(!mIsDirty)

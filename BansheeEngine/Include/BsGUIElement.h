@@ -95,6 +95,7 @@ namespace BansheeEngine
 		virtual UINT32 _getOptimalHeight() const = 0;
 
 		const CM::Rect& _getBounds() const { return mBounds; }
+		const CM::Rect _getContentBounds() const;
 		INT32 _getDepth() const { return mDepth; }
 		GUIWidget& _getParentWidget() const { return mParent; }
 		bool _isDirty() const { return mIsDirty; }
