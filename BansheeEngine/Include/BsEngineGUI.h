@@ -20,5 +20,8 @@ namespace BansheeEngine
 		static const UINT32 DefaultFontSize;
 
 		static const CM::String WindowFramePrimaryTexture;
+
+		static const CM::String ButtonNormalTex;
+		static const CM::String ButtonHoverTex;
 	};
 }

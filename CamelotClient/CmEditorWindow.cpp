@@ -7,6 +7,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUILabel.h"
 #include "BsGUIWindowFrame.h"
+#include "BsGUIButton.h"
 #include "BsGUISkin.h"
 #include "BsGUILayout.h"
 #include "BsOverlayManager.h"
@@ -65,7 +66,8 @@ namespace BansheeEditor
 		GUIFlexibleSpace& space3 = otherLayout.addFlexibleSpace();
 		otherLayout.addElement(GUIWindowFrame::create(*mGUI, GUILayoutOptions::expandableX(20, 20)));
 		//GUIFixedSpace& space2 = otherLayout.addSpace(10);
-		otherLayout.addElement(GUIWindowFrame::create(*mGUI));
+		otherLayout.addElement(GUIButton::create(*mGUI));
+		//otherLayout.addElement(GUIWindowFrame::create(*mGUI));
 	}
 
 	EditorWindow::~EditorWindow()

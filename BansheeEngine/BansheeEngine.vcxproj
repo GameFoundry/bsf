@@ -150,6 +150,7 @@
     <ClInclude Include="Include\BsDebugDraw.h" />
     <ClInclude Include="Include\BsEngineGUI.h" />
     <ClInclude Include="Include\BsGUIArea.h" />
+    <ClInclude Include="Include\BsGUIButton.h" />
     <ClInclude Include="Include\BsGUILayoutOptions.h" />
     <ClInclude Include="Include\BsGUILayoutX.h" />
     <ClInclude Include="Include\BsGUILayout.h" />
@@ -187,6 +188,7 @@
     <ClCompile Include="Source\BsDebugDraw.cpp" />
     <ClCompile Include="Source\BsEngineGUI.cpp" />
     <ClCompile Include="Source\BsGUIArea.cpp" />
+    <ClCompile Include="Source\BsGUIButton.cpp" />
     <ClCompile Include="Source\BsGUIElement.cpp" />
     <ClCompile Include="Source\BsGUILabel.cpp" />
     <ClCompile Include="Source\BsGUILayout.cpp" />

@@ -3,6 +3,7 @@
 
 #include "BsGUILabel.h"
 #include "BsGUIWindowFrame.h"
+#include "BsGUIButton.h"
 #include "BsSpriteTexture.h"
 
 #include "CmFont.h"
@@ -17,7 +18,10 @@ namespace BansheeEngine
 	const String EngineGUI::DefaultFontPath = "C:\\arial.ttf";
 	const UINT32 EngineGUI::DefaultFontSize = 12;
 
-	const CM::String EngineGUI::WindowFramePrimaryTexture = "C:\\WindowFrame.psd";
+	const String EngineGUI::WindowFramePrimaryTexture = "C:\\WindowFrame.psd";
+
+	const String EngineGUI::ButtonNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ButtonNormal.psd";
+	const String EngineGUI::ButtonHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ButtonHover.psd";
 
 	EngineGUI::EngineGUI()
 	{
@@ -59,6 +63,22 @@ namespace BansheeEngine
 		windowFrameStyle.border.bottom = 1;
 
 		mSkin.setStyle(GUIWindowFrame::getGUITypeName(), windowFrameStyle);
+
+		// Button
+		HTexture buttonNormalTex = static_resource_cast<Texture>(Importer::instance().import(ButtonNormalTex));
+		HTexture buttonHoverTex = static_resource_cast<Texture>(Importer::instance().import(ButtonHoverTex));
+		buttonNormalTex.waitUntilLoaded();
+		buttonHoverTex.waitUntilLoaded();
+
+		GUIElementStyle buttonStyle;
+		buttonStyle.normal.texture = SpriteTexturePtr(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(buttonNormalTex), &MemAllocDeleter<SpriteTexture, PoolAlloc>::deleter);
+		buttonStyle.hover.texture = SpriteTexturePtr(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(buttonHoverTex), &MemAllocDeleter<SpriteTexture, PoolAlloc>::deleter);
+		buttonStyle.border.left = 5;
+		buttonStyle.border.right = 5;
+		buttonStyle.border.top = 5;
+		buttonStyle.border.bottom = 5;
+
+		mSkin.setStyle(GUIButton::getGUITypeName(), buttonStyle);
 	}
 
 }

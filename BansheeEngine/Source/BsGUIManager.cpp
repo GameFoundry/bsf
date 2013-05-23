@@ -409,7 +409,7 @@ namespace BansheeEngine
 #endif
 		GUIWidget* widgetInFocus = nullptr;
 		GUIElement* topMostElement = nullptr;
-		UINT32 topMostDepth = std::numeric_limits<UINT32>::max();
+		INT32 topMostDepth = std::numeric_limits<INT32>::max();
 
 		for(auto& widget : mWidgets)
 		{
@@ -430,8 +430,6 @@ namespace BansheeEngine
 			screenPos = Cursor::getWindowPosition(*window);
 			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
 
-			GUIElement* topMostElement = nullptr;
-			INT32 topMostDepth = std::numeric_limits<INT32>::max();
 			for(auto& widget : mWidgets)
 			{
 				if(widget->inBounds(screenPos))
