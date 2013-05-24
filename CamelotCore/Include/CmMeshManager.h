@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmDeferredRenderContextFwd.h"
 #include "CmModule.h"
 
 namespace CamelotFramework
@@ -19,9 +20,14 @@ namespace CamelotFramework
 		 * 			as 0 sized buffers will cause problems, so it contains 3 indices
 		 * 			and 1 vertex).
 		 */
-		MeshDataPtr getNullMeshData() const { return mNullMeshData; }
+		MeshDataPtr getDummyMeshData() const { return mDummyMeshData; }
 
+		HMesh getDummyMesh() const { return mDummyMesh; }
 	private:
-		MeshDataPtr mNullMeshData;
+		MeshDataPtr mDummyMeshData;
+		HMesh mDummyMesh;
+
+	protected:
+		virtual void onStartUp();
 	};
 }

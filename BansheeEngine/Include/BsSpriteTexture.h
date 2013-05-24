@@ -18,6 +18,7 @@ namespace BansheeEngine
 		const CM::HTexture& getTexture() const;
 		CM::Vector2 transformUV(const CM::Vector2& uv) const;
 
+		static SpriteTexturePtr dummy();
 	private:
 		CM::HTexture mBaseTexture;
 

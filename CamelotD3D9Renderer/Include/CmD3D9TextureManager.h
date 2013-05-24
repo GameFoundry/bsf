@@ -43,7 +43,7 @@ namespace CamelotFramework
 		/// @copydoc TextureManager::getNativeFormat
 		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
 
-	protected:		
+	protected:	
 		TexturePtr createTextureImpl();
 		RenderTexturePtr createRenderTextureImpl();
 		MultiRenderTexturePtr createMultiRenderTextureImpl();

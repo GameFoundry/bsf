@@ -31,71 +31,40 @@ THE SOFTWARE.
 #include "CmGLRenderTexture.h"
 #include "CmGLMultiRenderTexture.h"
 
-namespace CamelotFramework {
-    //-----------------------------------------------------------------------------
-    GLTextureManager::GLTextureManager(GLSupport& support)
-        :TextureManager(), mGLSupport(support), mWarningTextureID(0)
+namespace CamelotFramework
+{
+    GLTextureManager::GLTextureManager( GLSupport& support)
+        :TextureManager(), mGLSupport(support)
     {
-		createWarningTexture();
+
     }
-    //-----------------------------------------------------------------------------
+
     GLTextureManager::~GLTextureManager()
     {
-		// Delete warning texture
-		glDeleteTextures(1, &mWarningTextureID);
+
     }
-    //-----------------------------------------------------------------------------
+
     TexturePtr GLTextureManager::createTextureImpl()
     {
         GLTexture* tex = CM_NEW(GLTexture, PoolAlloc) GLTexture(mGLSupport);
 
 		return TexturePtr(tex, &CoreObject::_deleteDelayed<GLTexture, PoolAlloc>);
     }
-	//-----------------------------------------------------------------------------
+
 	RenderTexturePtr GLTextureManager::createRenderTextureImpl()
 	{
 		GLRenderTexture* tex = CM_NEW(GLRenderTexture, PoolAlloc) GLRenderTexture();
 
 		return RenderTexturePtr(tex, &CoreObject::_deleteDelayed<GLRenderTexture, PoolAlloc>);
 	}
-	//----------------------------------------------------------------------------
+
 	MultiRenderTexturePtr GLTextureManager::createMultiRenderTextureImpl()
 	{
 		GLMultiRenderTexture* tex = CM_NEW(GLMultiRenderTexture, PoolAlloc) GLMultiRenderTexture();
 
 		return MultiRenderTexturePtr(tex, &CoreObject::_deleteDelayed<GLMultiRenderTexture, PoolAlloc>);
 	}
-	//-----------------------------------------------------------------------------
-	void GLTextureManager::createWarningTexture()
-	{
-		// Generate warning texture
-		UINT32 width = 8;
-		UINT32 height = 8;
-		UINT32 *data = (UINT32*)CM_NEW_BYTES(sizeof(UINT32)*width*height, ScratchAlloc);		// 0xXXRRGGBB
-		// Yellow/black stripes
-		for(UINT32 y=0; y<height; ++y)
-		{
-			for(UINT32 x=0; x<width; ++x)
-			{
-				data[y*width+x] = (((x+y)%8)<4)?0x000000:0xFFFF00;
-			}
-		}
-		// Create GL resource
-        glGenTextures(1, &mWarningTextureID);
-		glBindTexture(GL_TEXTURE_2D, mWarningTextureID);
-		if (GLEW_VERSION_1_2)
-		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, (void*)data);
-		}
-		else
-		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_BGRA, GL_UNSIGNED_INT, (void*)data);
-		}
-		// Free memory
-		CM_DELETE_BYTES(data, ScratchAlloc);
-	}
-	//-----------------------------------------------------------------------------
+
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)
 	{
 		// Adjust requested parameters to capabilities

@@ -181,6 +181,11 @@ namespace CamelotFramework {
 			another texture. */
 		void copy(TexturePtr& target);
 
+		/**
+		 * @brief	Returns a dummy 2x2 texture. Don't modify the returned texture.
+		 */
+		static HTexture dummy();
+
 		/************************************************************************/
 		/* 								TEXTURE VIEW                      		*/
 		/************************************************************************/

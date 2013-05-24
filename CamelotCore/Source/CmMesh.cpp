@@ -231,7 +231,7 @@ namespace CamelotFramework
 		// TODO Low priority - Initialize an empty mesh. A better way would be to only initialize the mesh
 		// once we set the proper mesh data (then we don't have to do it twice), but this makes the code less complex.
 		// Consider changing it if there are performance issues.
-		writeSubresource(0, *MeshManager::instance().getNullMeshData());
+		writeSubresource(0, *MeshManager::instance().getDummyMeshData());
 
 		Resource::initialize_internal();
 	}
@@ -247,6 +247,11 @@ namespace CamelotFramework
 			CM_DELETE(mIndexData, IndexData, PoolAlloc);
 
 		Resource::destroy_internal();
+	}
+
+	HMesh Mesh::dummy()
+	{
+		return MeshManager::instance().getDummyMesh();
 	}
 
 	void Mesh::throwIfNotRenderThread() const

@@ -37,13 +37,10 @@ namespace CamelotFramework
 {
 	D3D9TextureManager::D3D9TextureManager()
 		:TextureManager()
-	{		
-	}
+	{ }
 	
 	D3D9TextureManager::~D3D9TextureManager()
-	{
-
-	}
+	{ }
 
     TexturePtr D3D9TextureManager::createTextureImpl()
     {

@@ -63,7 +63,7 @@ namespace CamelotFramework
 			_instance = moduleInstance;
 			isShutDown = false;
 
-			moduleInstance->onStartUp();
+			((Module*)moduleInstance)->onStartUp();
 		}
 
 		/**
@@ -77,7 +77,7 @@ namespace CamelotFramework
 					"Trying to shut down an already shut down module.");
 			}
 
-			_instance->onShutDown();
+			((Module*)_instance)->onShutDown();
 
 			CM_DELETE(_instance, T, GenAlloc);
 			isShutDown = true;

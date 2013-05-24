@@ -60,6 +60,11 @@ namespace CamelotFramework
 
 		RenderOperation getRenderOperation(UINT32 subMeshIdx = 0) const;
 
+		/**
+		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.
+		 */
+		static HMesh dummy();
+
 	protected:
 		friend class MeshManager;
 

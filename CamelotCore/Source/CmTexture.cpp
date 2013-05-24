@@ -336,6 +336,11 @@ namespace CamelotFramework {
 
 		return static_resource_cast<Texture>(Resource::_createResourceHandle(texturePtr));
 	}
+
+	HTexture Texture::dummy()
+	{
+		return TextureManager::instance().getDummyTexture();
+	}
 }
 
 #undef THROW_IF_NOT_RENDER_THREAD

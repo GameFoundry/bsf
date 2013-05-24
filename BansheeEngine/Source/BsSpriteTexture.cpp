@@ -1,4 +1,5 @@
 #include "BsSpriteTexture.h"
+#include "CmTexture.h"
 
 using namespace CamelotFramework;
 
@@ -21,5 +22,18 @@ namespace BansheeEngine
 			return mUVOffset + uv * mUVScale;
 		else
 			return uv;
+	}
+
+	SpriteTexturePtr SpriteTexture::dummy()
+	{
+		static bool initialized = false;
+		static SpriteTexturePtr dummyTex = nullptr;
+
+		if(!initialized)
+		{
+			dummyTex = SpriteTexturePtr(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(Texture::dummy()));
+		}
+
+		return dummyTex;
 	}
 }

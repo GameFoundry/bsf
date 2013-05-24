@@ -26,13 +26,15 @@ IMMEDIATE:
  - GUIButton needs:
   - Padding
   - Icon image
-  - Text
   - Support for text color in GUIStyles
+ - Using linear filtering on scale9grid textures doesn't look good, mostly true if the center get stretched a lot (the border colors seep through)
  - What happens when I don't set a texture for a state of a GUI element. Use a dummy white texture probably?
-    - Add Texture.dummy which can always easily be accessed anywhere in code. Something similar like dummy mesh (which I already have but I might want to also add Mesh.dummy for easier access)
+    - Make sure GUI system uses a dummy texture if one isn't available
+	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
  - GUITexture gui element, with support for tileable textures I can use window background!
  - Add "Arial" size 10 font
   - Add support for bold (and maybe italic) fonts in Font importer
+  - Add support to disable aliasing when importing font
 
 -----------
 

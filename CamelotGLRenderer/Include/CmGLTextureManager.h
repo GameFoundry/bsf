@@ -42,8 +42,6 @@ namespace CamelotFramework {
         GLTextureManager(GLSupport& support);
         virtual ~GLTextureManager();
 
-		GLuint getWarningTextureID() { return mWarningTextureID; }
-
 		/// @copydoc TextureManager::getNativeFormat
 		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
 
@@ -52,11 +50,7 @@ namespace CamelotFramework {
 		RenderTexturePtr createRenderTextureImpl();
 		MultiRenderTexturePtr createMultiRenderTextureImpl();
 
-		/// Internal method to create a warning texture (bound when a texture unit is blank)
-		void createWarningTexture();
-
         GLSupport& mGLSupport;
-		GLuint mWarningTextureID;
     };
 }
 #endif

@@ -59,7 +59,7 @@ namespace CamelotFramework {
     {
     public:
 
-        TextureManager(void);
+        TextureManager();
         virtual ~TextureManager();
 
 		/** Create a manual texture with specified width, height and depth (not loaded from a file).
@@ -212,10 +212,16 @@ namespace CamelotFramework {
 		*/
 		virtual PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage) = 0;
 
+		HTexture getDummyTexture() const { return mDummyTexture; }
+
 	protected:
+		HTexture mDummyTexture;
+
 		virtual TexturePtr createTextureImpl() = 0;
 		virtual RenderTexturePtr createRenderTextureImpl() = 0;
 		virtual MultiRenderTexturePtr createMultiRenderTextureImpl() = 0;
+
+		virtual void onStartUp();
     };
 	/** @} */
 	/** @} */

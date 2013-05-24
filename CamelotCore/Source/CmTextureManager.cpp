@@ -31,18 +31,36 @@ THE SOFTWARE.
 #include "CmMultiRenderTexture.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework {
-    //-----------------------------------------------------------------------
-    TextureManager::TextureManager(void)
+namespace CamelotFramework 
+{
+    TextureManager::TextureManager()
     {
         // Subclasses should register (when this is fully constructed)
     }
-    //-----------------------------------------------------------------------
+
     TextureManager::~TextureManager()
     {
         // subclasses should unregister with resource group manager
     }
-    //-----------------------------------------------------------------------
+
+	void TextureManager::onStartUp()
+	{
+		// Internally this will call our createTextureImpl virtual method. But since this is guaranteed
+		// to be the last class in the hierarchy, we can call a virtual method from constructor.
+		mDummyTexture = Texture::create(TEX_TYPE_2D, 2, 2, 0, PF_R8G8B8A8);
+
+		UINT32 subresourceIdx = mDummyTexture->mapToSubresourceIdx(0, 0);
+		PixelDataPtr data = mDummyTexture->allocateSubresourceBuffer(subresourceIdx);
+
+		data->setColorAt(Color::Red, 0, 0);
+		data->setColorAt(Color::Red, 0, 1);
+		data->setColorAt(Color::Red, 1, 0);
+		data->setColorAt(Color::Red, 1, 1);
+
+		AsyncOp op;
+		RenderSystem::instance().writeSubresource(mDummyTexture.getInternalPtr(), mDummyTexture->mapToSubresourceIdx(0, 0), *data, op);
+	}
+
     TexturePtr TextureManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
         PixelFormat format, int usage, bool hwGamma, 
 		UINT32 fsaa, const String& fsaaHint)
@@ -53,7 +71,7 @@ namespace CamelotFramework {
 
 		return ret;
     }
-	//-----------------------------------------------------------------------
+
 	TexturePtr TextureManager::createEmpty()
 	{
 		TexturePtr texture = createTextureImpl();
@@ -61,7 +79,7 @@ namespace CamelotFramework {
 
 		return texture;
 	}
-	//-----------------------------------------------------------------------
+
 	RenderTexturePtr TextureManager::createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
 			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
 			bool createDepth, PixelFormat depthStencilFormat)
@@ -89,7 +107,7 @@ namespace CamelotFramework {
 
 		return newRT;
 	}
-	//-----------------------------------------------------------------------
+
 	RenderTexturePtr TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
 	{
 		RenderTexturePtr newRT = createRenderTextureImpl();
@@ -98,7 +116,7 @@ namespace CamelotFramework {
 
 		return newRT;
 	}
-	//-----------------------------------------------------------------------
+
 	MultiRenderTexturePtr TextureManager::createEmptyMultiRenderTexture()
 	{
 		MultiRenderTexturePtr newRT = createMultiRenderTextureImpl();
@@ -106,12 +124,12 @@ namespace CamelotFramework {
 
 		return newRT;
 	}
-    //-----------------------------------------------------------------------
+
 	bool TextureManager::isFormatSupported(TextureType ttype, PixelFormat format, int usage)
 	{
 		return getNativeFormat(ttype, format, usage) == format;
 	}
-    //-----------------------------------------------------------------------
+
 	bool TextureManager::isEquivalentFormatSupported(TextureType ttype, PixelFormat format, int usage)
 	{
 		PixelFormat supportedFormat = getNativeFormat(ttype, format, usage);
