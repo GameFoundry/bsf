@@ -59,14 +59,14 @@ namespace BansheeEditor
 		GUIArea* mainArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 1);
 		GUILayout& otherLayout = mainArea->getLayout();
 
-		GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
-		otherLayout.addElement(mDbgLabel);
+		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
+		//otherLayout.addElement(mDbgLabel);
 
 		//GUIFixedSpace& space = otherLayout.addSpace(10); // Due to bug in MSVC compiler I need to store return value
-		GUIFlexibleSpace& space3 = otherLayout.addFlexibleSpace();
-		otherLayout.addElement(GUIWindowFrame::create(*mGUI, GUILayoutOptions::expandableX(20, 20)));
+		//GUIFlexibleSpace& space3 = otherLayout.addFlexibleSpace();
+		otherLayout.addElement(GUIWindowFrame::create(*mGUI, GUILayoutOptions::fixed(100, 100)));
 		//GUIFixedSpace& space2 = otherLayout.addSpace(10);
-		otherLayout.addElement(GUIButton::create(*mGUI));
+		otherLayout.addElement(GUIButton::create(*mGUI, "Test"));
 		//otherLayout.addElement(GUIWindowFrame::create(*mGUI));
 	}
 

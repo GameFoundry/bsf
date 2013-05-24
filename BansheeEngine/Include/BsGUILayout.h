@@ -87,7 +87,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Re-arranges the elements to fit the layout. (Internal use only)
 		 */
-		void _update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth);
+		void _update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT8 widgetDepth, UINT16 areaDepth);
 
 		UINT32 _getOptimalWidth() const { return mOptimalWidth; }
 		UINT32 _getOptimalHeight() const { return mOptimalHeight; }
@@ -104,6 +104,6 @@ namespace BansheeEngine
 		bool mIsDirty;
 
 		virtual void updateOptimalSizes() = 0;
-		virtual void updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth) = 0;
+		virtual void updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT8 widgetDepth, UINT16 areaDepth) = 0;
 	};
 }

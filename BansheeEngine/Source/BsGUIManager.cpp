@@ -189,21 +189,30 @@ namespace BansheeEngine
 				continue;
 
 			// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
-			auto elemComp = [](GUIElement* a, GUIElement* b)
+			auto elemComp = [](const GUIGroupElement& a, const GUIGroupElement& b)
 			{
-				return a->_getDepth() > b->_getDepth() || (a->_getDepth() == b->_getDepth() && a > b); 
+				UINT32 aDepth = a.element->_getRenderElementDepth(a.renderElement);
+				UINT32 bDepth = b.element->_getRenderElementDepth(b.renderElement);
+
 				// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
 				// requires all elements to be unique
+				return aDepth > bDepth || (aDepth ==bDepth && a.element > b.element); 
 			};
 
-			std::set<GUIElement*, std::function<bool(GUIElement*, GUIElement*)>> allElements(elemComp);
+			std::set<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>> allElements(elemComp);
 
 			for(auto& widget : renderData.widgets)
 			{
 				const std::vector<GUIElement*>& elements = widget->getElements();
 
 				for(auto& element : elements)
-					allElements.insert(element);
+				{
+					UINT32 numRenderElems = element->getNumRenderElements();
+					for(UINT32 i = 0; i < numRenderElems; i++)
+					{
+						allElements.insert(GUIGroupElement(element, i));
+					}
+				}
 			}
 
 			// Group the elements in such a way so that we end up with a smallest amount of
@@ -211,95 +220,94 @@ namespace BansheeEngine
 			std::unordered_map<UINT64, std::vector<GUIMaterialGroup>> materialGroups;
 			for(auto& elem : allElements)
 			{
-				Rect tfrmedBounds = elem->_getBounds();
-				tfrmedBounds.transform(elem->_getParentWidget().SO()->getWorldTfrm());
+				GUIElement* guiElem = elem.element;
+				UINT32 renderElemIdx = elem.renderElement;
+				UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
 
-				UINT32 numRenderElems = elem->getNumRenderElements();
+				Rect tfrmedBounds = guiElem->_getBounds();
+				tfrmedBounds.transform(guiElem->_getParentWidget().SO()->getWorldTfrm());
 
-				for(UINT32 i = 0; i < numRenderElems; i++)
+				const HMaterial& mat = guiElem->getMaterial(renderElemIdx);
+
+				UINT64 materialId = mat->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
+				// this system won't detect it. Find a better way of determining material similarity?
+
+				// If this is a new material, add a new list of groups
+				auto findIterMaterial = materialGroups.find(materialId);
+				if(findIterMaterial == end(materialGroups))
+					materialGroups[materialId] = std::vector<GUIMaterialGroup>();
+
+				// Try to find a group this material will fit in:
+				//  - Group that has a depth value same or one below elements depth will always be a match
+				//  - Otherwise, we search higher depth values as well, but we only use them if no elements in between those depth values
+				//    overlap the current elements bounds.
+				std::vector<GUIMaterialGroup>& allGroups = materialGroups[materialId];
+				GUIMaterialGroup* foundGroup = nullptr;
+				for(auto groupIter = allGroups.rbegin(); groupIter != allGroups.rend(); ++groupIter)
 				{
-					const HMaterial& mat = elem->getMaterial(i);
-
-					UINT64 materialId = mat->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
-					// this system won't detect it. Find a better way of determining material similarity?
-
-					// If this is a new material, add a new list of groups
-					auto findIterMaterial = materialGroups.find(materialId);
-					if(findIterMaterial == end(materialGroups))
-						materialGroups[materialId] = std::vector<GUIMaterialGroup>();
-
-					// Try to find a group this material will fit in:
-					//  - Group that has a depth value same or one below elements depth will always be a match
-					//  - Otherwise, we search higher depth values as well, but we only use them if no elements in between those depth values
-					//    overlap the current elements bounds.
-					std::vector<GUIMaterialGroup>& allGroups = materialGroups[materialId];
-					GUIMaterialGroup* foundGroup = nullptr;
-					for(auto groupIter = allGroups.rbegin(); groupIter != allGroups.rend(); ++groupIter)
+					// If we separate meshes by widget, ignore any groups with widget parents other than mine
+					if(mSeparateMeshesByWidget)
 					{
-						// If we separate meshes by widget, ignore any groups with widget parents other than mine
-						if(mSeparateMeshesByWidget)
+						if(groupIter->elements.size() > 0)
 						{
-							if(groupIter->elements.size() > 0)
+							GUIElement* otherElem = groupIter->elements.begin()->element; // We only need to check the first element
+							if(&otherElem->_getParentWidget() != &guiElem->_getParentWidget())
+								continue;
+						}
+					}
+
+					GUIMaterialGroup& group = *groupIter;
+
+					if(group.depth == elemDepth || group.depth == (elemDepth - 1))
+					{
+						foundGroup = &group;
+						break;
+					}
+					else
+					{
+						UINT32 startDepth = elemDepth;
+						UINT32 endDepth = group.depth;
+
+						bool foundOverlap = false;
+						for(auto& material : materialGroups)
+						{
+							for(auto& group : material.second)
 							{
-								GUIElement* otherElem = groupIter->elements.begin()->element; // We only need to check the first element
-								if(&otherElem->_getParentWidget() != &elem->_getParentWidget())
-									continue;
+								if(group.depth > startDepth && group.depth < endDepth)
+								{
+									if(group.bounds.overlaps(tfrmedBounds))
+									{
+										foundOverlap = true;
+										break;
+									}
+								}
 							}
 						}
 
-						GUIMaterialGroup& group = *groupIter;
-
-						if(group.depth == elem->_getDepth() || group.depth == (elem->_getDepth() - 1))
+						if(!foundOverlap)
 						{
 							foundGroup = &group;
 							break;
 						}
-						else
-						{
-							UINT32 startDepth = elem->_getDepth();
-							UINT32 endDepth = group.depth;
-
-							bool foundOverlap = false;
-							for(auto& material : materialGroups)
-							{
-								for(auto& group : material.second)
-								{
-									if(group.depth > startDepth && group.depth < endDepth)
-									{
-										if(group.bounds.overlaps(tfrmedBounds))
-										{
-											foundOverlap = true;
-											break;
-										}
-									}
-								}
-							}
-
-							if(!foundOverlap)
-							{
-								foundGroup = &group;
-								break;
-							}
-						}
 					}
+				}
 
-					if(foundGroup == nullptr)
-					{
-						allGroups.push_back(GUIMaterialGroup());
-						foundGroup = &allGroups[allGroups.size() - 1];
+				if(foundGroup == nullptr)
+				{
+					allGroups.push_back(GUIMaterialGroup());
+					foundGroup = &allGroups[allGroups.size() - 1];
 
-						foundGroup->depth = elem->_getDepth();
-						foundGroup->bounds = tfrmedBounds;
-						foundGroup->elements.push_back(GUIGroupElement(elem, i));
-						foundGroup->material = mat;
-						foundGroup->numQuads = elem->getNumQuads(i);
-					}
-					else
-					{
-						foundGroup->bounds.encapsulate(tfrmedBounds);
-						foundGroup->elements.push_back(GUIGroupElement(elem, i));
-						foundGroup->numQuads += elem->getNumQuads(i);
-					}
+					foundGroup->depth = elemDepth;
+					foundGroup->bounds = tfrmedBounds;
+					foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
+					foundGroup->material = mat;
+					foundGroup->numQuads = guiElem->getNumQuads(renderElemIdx);
+				}
+				else
+				{
+					foundGroup->bounds.encapsulate(tfrmedBounds);
+					foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
+					foundGroup->numQuads += guiElem->getNumQuads(renderElemIdx);
 				}
 			}
 
@@ -409,7 +417,7 @@ namespace BansheeEngine
 #endif
 		GUIWidget* widgetInFocus = nullptr;
 		GUIElement* topMostElement = nullptr;
-		INT32 topMostDepth = std::numeric_limits<INT32>::max();
+		UINT32 topMostDepth = std::numeric_limits<UINT32>::max();
 
 		for(auto& widget : mWidgets)
 		{

@@ -25,8 +25,8 @@ namespace BansheeEngine
 		void setSkin(const GUISkin* skin);
 		const GUISkin* getGUISkin() const;
 
-		UINT16 getDepth() const { return mDepth; }
-		void setDepth(UINT16 depth) { mDepth = depth; }
+		UINT8 getDepth() const { return mDepth; }
+		void setDepth(UINT8 depth) { mDepth = depth; }
 
 		bool inBounds(const CM::Int2& position) const;
 
@@ -67,7 +67,7 @@ namespace BansheeEngine
 		CM::Viewport* mTarget;
 		std::vector<GUIElement*> mElements;
 		std::vector<GUIArea*> mAreas;
-		UINT16 mDepth;
+		UINT8 mDepth;
 
 		CM::Vector3 mLastFramePosition;
 		CM::Quaternion mLastFrameRotation;

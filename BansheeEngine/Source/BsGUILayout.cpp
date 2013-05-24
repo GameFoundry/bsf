@@ -259,10 +259,10 @@ namespace BansheeEngine
 		return (UINT32)mChildren.size();
 	}
 
-	void GUILayout::_update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
+	void GUILayout::_update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		updateOptimalSizes(); // We calculate optimal sizes of all layouts as a pre-processing step, as they are requested often during update
-		updateInternal(x, y, width, height, depth);
+		updateInternal(x, y, width, height, widgetDepth, areaDepth);
 		mIsDirty = false;
 	}
 

@@ -80,7 +80,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUILayoutX::updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT32 depth)
+	void GUILayoutX::updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		UINT32 totalOptimalSize = _getOptimalWidth();
 		UINT32 totalNonClampedSize = 0;
@@ -334,7 +334,8 @@ namespace BansheeEngine
 
 				Int2 offset(x + xOffset, y + yOffset);
 				child.element->_setOffset(offset);
-				child.element->_setDepth(depth);
+				child.element->_setWidgetDepth(widgetDepth);
+				child.element->_setAreaDepth(areaDepth);
 
 				UINT32 clippedWidth = (UINT32)std::min((INT32)child.element->_getWidth(), (INT32)width - offset.x);
 				UINT32 clippedHeight = (UINT32)std::min((INT32)child.element->_getHeight(), (INT32)height - offset.y);
@@ -343,7 +344,7 @@ namespace BansheeEngine
 			}
 			else if(child.isLayout())
 			{
-				child.layout->_update(x + xOffset, y, elementWidth, height, depth);
+				child.layout->_update(x + xOffset, y, elementWidth, height, widgetDepth, areaDepth);
 			}
 
 			xOffset += elementWidth;

@@ -19,8 +19,8 @@ namespace BansheeEngine
 		initDebugDrawShader();
 
 		SAMPLER_STATE_DESC ssDesc;
-		ssDesc.magFilter = FO_POINT;
-		ssDesc.minFilter = FO_POINT;
+		ssDesc.magFilter = FO_LINEAR;
+		ssDesc.minFilter = FO_LINEAR;
 		ssDesc.mipFilter = FO_POINT;
 
 		mGUISamplerState = SamplerState::create(ssDesc);

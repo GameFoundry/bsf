@@ -49,9 +49,15 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIElement::_setDepth(INT32 depth) 
+	void GUIElement::_setWidgetDepth(UINT8 depth) 
 	{ 
-		mDepth = depth; 
+		mDepth |= 24 << depth; 
+		markAsDirty();
+	}
+
+	void GUIElement::_setAreaDepth(UINT16 depth) 
+	{ 
+		mDepth |= 8 << depth; 
 		markAsDirty();
 	}
 
@@ -79,7 +85,7 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
-	const Rect GUIElement::_getContentBounds() const
+	Rect GUIElement::_getContentBounds() const
 	{
 		Rect bounds = _getBounds();
 		

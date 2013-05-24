@@ -23,6 +23,16 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 
 IMMEDIATE:
  - Test GUILayoutY and nested layouts
+ - GUIButton needs:
+  - Padding
+  - Icon image
+  - Text
+  - Support for text color in GUIStyles
+ - What happens when I don't set a texture for a state of a GUI element. Use a dummy white texture probably?
+    - Add Texture.dummy which can always easily be accessed anywhere in code. Something similar like dummy mesh (which I already have but I might want to also add Mesh.dummy for easier access)
+ - GUITexture gui element, with support for tileable textures I can use window background!
+ - Add "Arial" size 10 font
+  - Add support for bold (and maybe italic) fonts in Font importer
 
 -----------
 
@@ -180,6 +190,8 @@ Optional:
  - Vertex buffer start offset is not supported when calling Draw methods
  - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
  - Renderer::render(CameraPtr) is currently commented out because I moved Camera out of Camelot and I didn't want to bother figuring how to port this
+ - When rendering Scale9Grid GUI elements the stretched center will cause linear interpolation to kick in and blend the edges with the border parts of the texture.
+  - I should use point filtering for scale9grid, but that doesn't work in general case for stretched textures as they would look bad
 
  ----------------------------------------------------------------------------------------------
 After polish and ideas:

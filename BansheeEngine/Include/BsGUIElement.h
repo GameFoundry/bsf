@@ -83,7 +83,8 @@ namespace BansheeEngine
 		GUILayout* _getParentLayout() const { return mParentLayout; }
 		void _setParentLayout(GUILayout* layout) { mParentLayout = layout; }
 
-		void _setDepth(INT32 depth);
+		void _setWidgetDepth(UINT8 depth);
+		void _setAreaDepth(UINT16 depth);
 		void _setOffset(const CM::Int2& offset);
 		void _setWidth(UINT32 width);
 		void _setHeight(UINT32 height);
@@ -93,10 +94,11 @@ namespace BansheeEngine
 		UINT32 _getHeight() const { return mHeight; }
 		virtual UINT32 _getOptimalWidth() const = 0;
 		virtual UINT32 _getOptimalHeight() const = 0;
+		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const { return _getDepth(); }
 
 		const CM::Rect& _getBounds() const { return mBounds; }
-		const CM::Rect _getContentBounds() const;
-		INT32 _getDepth() const { return mDepth; }
+		CM::Rect _getContentBounds() const;
+		UINT32 _getDepth() const { return mDepth; }
 		GUIWidget& _getParentWidget() const { return mParent; }
 		bool _isDirty() const { return mIsDirty; }
 
@@ -127,7 +129,7 @@ namespace BansheeEngine
 		CM::Rect mBounds;
 
 		bool mIsDirty;
-		INT32 mDepth;
+		UINT32 mDepth;
 		CM::Int2 mOffset;
 		UINT32 mWidth, mHeight;
 		CM::Rect mClipRect;

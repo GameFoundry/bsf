@@ -53,9 +53,7 @@ namespace BansheeEngine
 	{
 		if(isDirty())
 		{
-			UINT32 combinedDepth = UINT32(mWidget.getDepth()) << 16 | UINT32(mDepth);
-
-			mLayout->_update(mX, mY, mWidth, mHeight, combinedDepth);
+			mLayout->_update(mX, mY, mWidth, mHeight, mWidget.getDepth(), mDepth);
 			mIsDirty = false;
 		}
 	}

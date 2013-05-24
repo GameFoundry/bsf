@@ -3,6 +3,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
+#include "BsTextSprite.h"
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
 #include "CmTexture.h"
@@ -17,77 +18,115 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIButton::GUIButton(GUIWidget& parent, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, layoutOptions)
+	GUIButton::GUIButton(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions)
+		:GUIElement(parent, layoutOptions), mText(text), mNumImageRenderElements(0)
 	{
 		const GUISkin* skin = parent.getGUISkin();
 
 		mStyle = skin->getStyle(getGUITypeName());
 		mImageSprite = CM_NEW(ImageSprite, PoolAlloc) ImageSprite();
+		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite();
 
-		mDesc.texture = mStyle->normal.texture;
+		mImageDesc.texture = mStyle->normal.texture;
 
-		if(mDesc.texture != nullptr)
+		if(mImageDesc.texture != nullptr)
 		{
-			mDesc.width = mDesc.texture->getTexture()->getWidth();
-			mDesc.height = mDesc.texture->getTexture()->getHeight();
+			mImageDesc.width = mImageDesc.texture->getTexture()->getWidth();
+			mImageDesc.height = mImageDesc.texture->getTexture()->getHeight();
 		}
 
-		mDesc.borderLeft = mStyle->border.left;
-		mDesc.borderRight = mStyle->border.right;
-		mDesc.borderTop = mStyle->border.top;
-		mDesc.borderBottom = mStyle->border.bottom;
+		mImageDesc.borderLeft = mStyle->border.left;
+		mImageDesc.borderRight = mStyle->border.right;
+		mImageDesc.borderTop = mStyle->border.top;
+		mImageDesc.borderBottom = mStyle->border.bottom;
 	}
 
 	GUIButton::~GUIButton()
 	{
+		CM_DELETE(mTextSprite, TextSprite, PoolAlloc);
 		CM_DELETE(mImageSprite, ImageSprite, PoolAlloc);
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent)
+	GUIButton* GUIButton::create(GUIWidget& parent, const String& text)
 	{
 		const GUISkin* skin = parent.getGUISkin();
 		const GUIElementStyle* style = skin->getStyle(getGUITypeName());
 
-		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, getDefaultLayoutOptions(style));
+		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, text, getDefaultLayoutOptions(style));
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions)
+	GUIButton* GUIButton::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions)
 	{
-		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, layoutOptions);
+		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, text, layoutOptions);
 	}
 
 	UINT32 GUIButton::getNumRenderElements() const
 	{
-		return mImageSprite->getNumRenderElements();
+		UINT32 numElements = mImageSprite->getNumRenderElements();
+		numElements += mTextSprite->getNumRenderElements();
+
+		return numElements;
 	}
 
 	const HMaterial& GUIButton::getMaterial(UINT32 renderElementIdx) const
 	{
-		return mImageSprite->getMaterial(renderElementIdx);
+		if(renderElementIdx >= mNumImageRenderElements)
+			return mTextSprite->getMaterial(mNumImageRenderElements - renderElementIdx);
+		else
+			return mImageSprite->getMaterial(renderElementIdx);
 	}
 
 	UINT32 GUIButton::getNumQuads(UINT32 renderElementIdx) const
 	{
-		return mImageSprite->getNumQuads(renderElementIdx);
+		UINT32 numQuads = 0;
+		if(renderElementIdx >= mNumImageRenderElements)
+			numQuads = mTextSprite->getNumQuads(mNumImageRenderElements - renderElementIdx);
+		else
+			numQuads = mImageSprite->getNumQuads(renderElementIdx);
+
+		return numQuads;
 	}
 
 	void GUIButton::updateRenderElementsInternal()
 	{		
-		mDesc.offset = mOffset;
-		mDesc.width = mWidth;
-		mDesc.height = mHeight;
-		mDesc.clipRect = mClipRect;
+		mImageDesc.offset = mOffset;
+		mImageDesc.width = mWidth;
+		mImageDesc.height = mHeight;
+		mImageDesc.clipRect = mClipRect;
 
-		mImageSprite->update(mDesc);
+		mImageSprite->update(mImageDesc);
 		mBounds = mImageSprite->getBounds();
+		mNumImageRenderElements = mImageSprite->getNumRenderElements();
+
+		TEXT_SPRITE_DESC textDesc;
+		textDesc.text = mText;
+		textDesc.font = mStyle->font;
+		textDesc.fontSize = mStyle->fontSize;
+
+		Rect contentBounds = mBounds;
+
+		contentBounds.x += mStyle->margins.left + mStyle->contentOffset.left;
+		contentBounds.y += mStyle->margins.top + mStyle->contentOffset.top;
+		contentBounds.width = (UINT32)std::max(0, (INT32)contentBounds.width - 
+			(INT32)(mStyle->margins.left + mStyle->margins.right + mStyle->contentOffset.left + mStyle->contentOffset.right));
+		contentBounds.height = (UINT32)std::max(0, (INT32)contentBounds.height - 
+			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
+
+		textDesc.offset = Int2(contentBounds.x, contentBounds.y);
+		textDesc.width = contentBounds.width;
+		textDesc.height = contentBounds.height;
+		textDesc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
+
+		mTextSprite->update(textDesc);
+
+		
 	}
 
 	UINT32 GUIButton::_getOptimalWidth() const
 	{
-		if(mDesc.texture != nullptr)
+		if(mImageDesc.texture != nullptr)
 		{
-			return mDesc.texture->getTexture()->getWidth();
+			return mImageDesc.texture->getTexture()->getWidth();
 		}
 
 		return 0;
@@ -95,25 +134,36 @@ namespace BansheeEngine
 
 	UINT32 GUIButton::_getOptimalHeight() const
 	{
-		if(mDesc.texture != nullptr)
+		if(mImageDesc.texture != nullptr)
 		{
-			return mDesc.texture->getTexture()->getHeight();
+			return mImageDesc.texture->getTexture()->getHeight();
 		}
 
 		return 0;
 	}
 
+	UINT32 GUIButton::_getRenderElementDepth(UINT32 renderElementIdx) const
+	{
+		if(renderElementIdx >= mNumImageRenderElements)
+			return _getDepth();
+		else
+			return _getDepth() + 1;
+	}
+
 	void GUIButton::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
+		if(renderElementIdx >= mNumImageRenderElements)
+			mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, mNumImageRenderElements - renderElementIdx);
+		else
+			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
 	}
 
 	bool GUIButton::mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
-			mDesc.texture = mStyle->hover.texture;
+			mImageDesc.texture = mStyle->hover.texture;
 			markAsDirty();
 			// TODO - What happens when a texture is not set?
 			// 
@@ -121,7 +171,7 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			mDesc.texture = mStyle->normal.texture;
+			mImageDesc.texture = mStyle->normal.texture;
 			markAsDirty();
 			// TODO - What happens when a texture is not set?
 

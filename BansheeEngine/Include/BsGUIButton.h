@@ -11,8 +11,8 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIButton* create(GUIWidget& parent);
-		static GUIButton* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions);
+		static GUIButton* create(GUIWidget& parent, const CM::String& text);
+		static GUIButton* create(GUIWidget& parent, const CM::String& text, const GUILayoutOptions& layoutOptions);
 	protected:
 		~GUIButton();
 
@@ -44,11 +44,17 @@ namespace BansheeEngine
 
 		virtual UINT32 _getOptimalWidth() const;
 		virtual UINT32 _getOptimalHeight() const;
+
+		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const;
 	private:
 		ImageSprite* mImageSprite;
-		IMAGE_SPRITE_DESC mDesc;
+		TextSprite* mTextSprite;
+		UINT32 mNumImageRenderElements;
 
-		GUIButton(GUIWidget& parent, const GUILayoutOptions& layoutOptions);
+		IMAGE_SPRITE_DESC mImageDesc;
+		CM::String mText;
+
+		GUIButton(GUIWidget& parent, const CM::String& text, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 	};

@@ -16,7 +16,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	const String EngineGUI::DefaultFontPath = "C:\\arial.ttf";
-	const UINT32 EngineGUI::DefaultFontSize = 12;
+	const UINT32 EngineGUI::DefaultFontSize = 10;
 
 	const String EngineGUI::WindowFramePrimaryTexture = "C:\\WindowFrame.psd";
 
@@ -85,9 +85,13 @@ namespace BansheeEngine
 		buttonStyle.margins.right = 4;
 		buttonStyle.margins.top = 4;
 		buttonStyle.margins.bottom = 4;
+		buttonStyle.contentOffset.left = 2;
+		buttonStyle.contentOffset.right = 2;
 		buttonStyle.fixedHeight = true;
 		buttonStyle.height = 21;
 		buttonStyle.minWidth = 10;
+		buttonStyle.font = font;
+		buttonStyle.fontSize = DefaultFontSize;
 
 		mSkin.setStyle(GUIButton::getGUITypeName(), buttonStyle);
 	}

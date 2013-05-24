@@ -2,6 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "CmColor.h"
+#include "CmInt2.h"
 
 namespace BansheeEngine
 {
@@ -46,6 +47,7 @@ namespace BansheeEngine
 
 		RectOffset border; // Determines how the element is scaled (using the typical Scale9Grid approach)
 		RectOffset margins; // Determines offset from the background graphics to the content. Input uses bounds offset by this value.
+		RectOffset contentOffset; // Additional offset to the content, that doesn't effect the bounds. Applied on top of the margins offsets.
 
 		UINT32 width;
 		UINT32 height;
