@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsTextSprite.h"
 #include "CmColor.h"
 #include "CmInt2.h"
 
@@ -26,13 +27,16 @@ namespace BansheeEngine
 		GUIElementStyle()
 			:fontSize(8), width(0), height(0),
 			fixedWidth(false), fixedHeight(false), minWidth(0), maxWidth(0),
-			minHeight(0), maxHeight(0)
+			minHeight(0), maxHeight(0), textHorzAlign(THA_Left), textVertAlign(TVA_Top), wordWrap(false)
 		{
 
 		}
 
 		CM::HFont font;
 		UINT32 fontSize;
+		TextHorzAlign textHorzAlign;
+		TextVertAlign textVertAlign;
+		bool wordWrap;
 
 		GUIElementStateStyle normal;
 		GUIElementStateStyle hover;

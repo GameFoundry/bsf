@@ -4,6 +4,7 @@
 #include "BsGUILabel.h"
 #include "BsGUIWindowFrame.h"
 #include "BsGUIButton.h"
+#include "BsTextSprite.h"
 #include "BsSpriteTexture.h"
 
 #include "CmFont.h"
@@ -92,6 +93,8 @@ namespace BansheeEngine
 		buttonStyle.minWidth = 10;
 		buttonStyle.font = font;
 		buttonStyle.fontSize = DefaultFontSize;
+		buttonStyle.textHorzAlign = THA_Center;
+		buttonStyle.textVertAlign = TVA_Center;
 
 		mSkin.setStyle(GUIButton::getGUITypeName(), buttonStyle);
 	}

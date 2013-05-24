@@ -10,22 +10,17 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUILabel::GUILabel(GUIWidget& parent, const String& text, bool wordWrap, TextHorzAlign horzAlign, 
-		TextVertAlign vertAlign, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, layoutOptions), mText(text), mWordWrap(wordWrap),
-		mHorzAlign(horzAlign), mVertAlign(vertAlign)
+	GUILabel::GUILabel(GUIWidget& parent, const GUIElementStyle* style, const String& text, const GUILayoutOptions& layoutOptions)
+		:GUIElement(parent, style, layoutOptions), mText(text)
 	{
-		const GUISkin* skin = parent.getGUISkin();
-
-		mStyle = skin->getStyle(getGUITypeName());
 		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite();
 
 		mDesc.text = text;
 		mDesc.font = mStyle->font;
 		mDesc.fontSize = mStyle->fontSize;
-		mDesc.wordWrap = wordWrap;
-		mDesc.horzAlign = horzAlign;
-		mDesc.vertAlign = vertAlign;
+		mDesc.wordWrap = mStyle->wordWrap;
+		mDesc.horzAlign = mStyle->textHorzAlign;
+		mDesc.vertAlign = mStyle->textVertAlign;
 	}
 
 	GUILabel::~GUILabel()
@@ -113,30 +108,26 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, bool wordWrap)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUIElementStyle* style)
 	{
-		const GUISkin* skin = parent.getGUISkin();
-		const GUIElementStyle* style = skin->getStyle(getGUITypeName());
+		if(style == nullptr)
+		{
+			const GUISkin* skin = parent.getGUISkin();
+			style = skin->getStyle(getGUITypeName());
+		}
 
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, THA_Left, TVA_Top, getDefaultLayoutOptions(style));
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, style, text, getDefaultLayoutOptions(style));
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, bool wordWrap)
+	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, THA_Left, TVA_Top, layoutOptions);
-	}
+		if(style == nullptr)
+		{
+			const GUISkin* skin = parent.getGUISkin();
+			style = skin->getStyle(getGUITypeName());
+		}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, TextHorzAlign horzAlign, TextVertAlign vertAlign, bool wordWrap)
-	{
-		const GUISkin* skin = parent.getGUISkin();
-		const GUIElementStyle* style = skin->getStyle(getGUITypeName());
-
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, horzAlign, vertAlign, getDefaultLayoutOptions(style));
-	}
-
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, TextHorzAlign horzAlign, TextVertAlign vertAlign, bool wordWrap)
-	{
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, text, wordWrap, horzAlign, vertAlign, layoutOptions);
+		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, style, text, layoutOptions);
 	}
 
 	const String& GUILabel::getGUITypeName()

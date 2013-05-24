@@ -11,13 +11,8 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUILabel* create(GUIWidget& parent, const CM::String& text, bool wordWrap = false);
-		static GUILabel* create(GUIWidget& parent, const CM::String& text, const GUILayoutOptions& layoutOptions, bool wordWrap = false);
-
-		static GUILabel* create(GUIWidget& parent, const CM::String& text, TextHorzAlign horzAlign, 
-			TextVertAlign vertAlign = TVA_Top, bool wordWrap = false);
-		static GUILabel* create(GUIWidget& parent, const CM::String& text, const GUILayoutOptions& layoutOptions,
-			TextHorzAlign horzAlign, TextVertAlign vertAlign = TVA_Top, bool wordWrap = false);
+		static GUILabel* create(GUIWidget& parent, const CM::String& text, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(GUIWidget& parent, const CM::String& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		void setText(const CM::String& text);
 
@@ -55,12 +50,9 @@ namespace BansheeEngine
 	private:
 		TextSprite* mTextSprite;
 		CM::String mText;
-		bool mWordWrap;
-		TextHorzAlign mHorzAlign;
-		TextVertAlign mVertAlign;
+
 		TEXT_SPRITE_DESC mDesc;
 		
-		GUILabel(GUIWidget& parent, const CM::String& text, bool wordWrap, TextHorzAlign horzAlign, TextVertAlign vertAlign, 
-			const GUILayoutOptions& layoutOptions);
+		GUILabel(GUIWidget& parent, const GUIElementStyle* style, const CM::String& text, const GUILayoutOptions& layoutOptions);
 	};
 }

@@ -18,12 +18,9 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIButton::GUIButton(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, layoutOptions), mText(text), mNumImageRenderElements(0)
+	GUIButton::GUIButton(GUIWidget& parent, const GUIElementStyle* style, const String& text, const GUILayoutOptions& layoutOptions)
+		:GUIElement(parent, style, layoutOptions), mText(text), mNumImageRenderElements(0)
 	{
-		const GUISkin* skin = parent.getGUISkin();
-
-		mStyle = skin->getStyle(getGUITypeName());
 		mImageSprite = CM_NEW(ImageSprite, PoolAlloc) ImageSprite();
 		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite();
 
@@ -47,17 +44,26 @@ namespace BansheeEngine
 		CM_DELETE(mImageSprite, ImageSprite, PoolAlloc);
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const String& text)
+	GUIButton* GUIButton::create(GUIWidget& parent, const String& text, const GUIElementStyle* style)
 	{
-		const GUISkin* skin = parent.getGUISkin();
-		const GUIElementStyle* style = skin->getStyle(getGUITypeName());
+		if(style == nullptr)
+		{
+			const GUISkin* skin = parent.getGUISkin();
+			style = skin->getStyle(getGUITypeName());
+		}
 
-		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, text, getDefaultLayoutOptions(style));
+		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, style, text, getDefaultLayoutOptions(style));
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions)
+	GUIButton* GUIButton::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, text, layoutOptions);
+		if(style == nullptr)
+		{
+			const GUISkin* skin = parent.getGUISkin();
+			style = skin->getStyle(getGUITypeName());
+		}
+
+		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, style, text, layoutOptions);
 	}
 
 	UINT32 GUIButton::getNumRenderElements() const
@@ -116,10 +122,10 @@ namespace BansheeEngine
 		textDesc.width = contentBounds.width;
 		textDesc.height = contentBounds.height;
 		textDesc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
+		textDesc.horzAlign = mStyle->textHorzAlign;
+		textDesc.vertAlign = mStyle->textVertAlign;
 
 		mTextSprite->update(textDesc);
-
-		
 	}
 
 	UINT32 GUIButton::_getOptimalWidth() const
