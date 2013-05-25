@@ -87,13 +87,13 @@ namespace BansheeEngine
 		UINT32 numNonClampedElements = 0;
 		UINT32 numFlexibleSpaces = 0;
 
-		bool* processedElements = CM_NEW_ARRAY(bool, (UINT32)mChildren.size(), ScratchAlloc);
+		bool* processedElements = stackAllocN<bool>((UINT32)mChildren.size(), HID_Main);
 		memset(processedElements, 0, mChildren.size() * sizeof(bool));
 
-		UINT32* elementSizes = CM_NEW_ARRAY(UINT32, (UINT32)mChildren.size(), ScratchAlloc);
+		UINT32* elementSizes = stackAllocN<UINT32>((UINT32)mChildren.size(), HID_Main);
 		memset(elementSizes, 0, mChildren.size() * sizeof(UINT32));
 
-		float* elementScaleWeights = CM_NEW_ARRAY(float, (UINT32)mChildren.size(), ScratchAlloc);
+		float* elementScaleWeights = stackAllocN<float>((UINT32)mChildren.size(), HID_Main);
 		memset(elementScaleWeights, 0, mChildren.size() * sizeof(float));
 
 		// Set initial sizes, count number of children per type and mark fixed elements as already processed
@@ -351,8 +351,8 @@ namespace BansheeEngine
 			childIdx++;
 		}
 
-		CM_DELETE_ARRAY(processedElements, bool, (UINT32)mChildren.size(), ScratchAlloc);
-		CM_DELETE_ARRAY(elementSizes, UINT32, (UINT32)mChildren.size(), ScratchAlloc);
-		CM_DELETE_ARRAY(elementScaleWeights, float, (UINT32)mChildren.size(), ScratchAlloc);
+		stackDeallocLast(elementScaleWeights, HID_Main);
+		stackDeallocLast(elementSizes, HID_Main);
+		stackDeallocLast(processedElements, HID_Main);
 	}
 }

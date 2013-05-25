@@ -94,6 +94,7 @@ namespace CamelotFramework {
 		mCommandQueue = CM_NEW(CommandQueue<CommandQueueSync>, GenAlloc) CommandQueue<CommandQueueSync>(CM_THREAD_CURRENT_ID, true);
 		mPrimaryWindowDesc = primaryWindowDesc;
 
+		MemStack::setupHeap(HID_Render);
 		initRenderThread();
 
 		AsyncOp op = queueReturnCommand(boost::bind(&RenderSystem::initialize_internal, this, _1), true);

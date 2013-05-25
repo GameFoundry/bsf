@@ -216,6 +216,9 @@
     <ClInclude Include="Include\CmORect.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmMemStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAxisAlignedBox.cpp">
@@ -322,6 +325,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmRect.cpp">
       <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmMemStack.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

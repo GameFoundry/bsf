@@ -10,12 +10,12 @@ namespace CamelotFramework
 	class MemoryAllocator
 	{
 	public:
-		static inline void* allocate(unsigned int bytes)
+		static inline void* allocate(UINT32 bytes)
 		{
 			return malloc(bytes);
 		}
 
-		static inline void* allocateArray(unsigned int bytes, UINT32 count)
+		static inline void* allocateArray(UINT32 bytes, UINT32 count)
 		{
 			return malloc(bytes * count);
 		}
@@ -52,7 +52,7 @@ namespace CamelotFramework
 	};
 
 	template<class T, class category> 
-	inline T* __cm_construct_array(unsigned int count)
+	inline T* __cm_construct_array(UINT32 count)
 	{
 		T* ptr = (T*)MemoryAllocator<category>::allocateArray(sizeof(T), count);
 
@@ -71,7 +71,7 @@ namespace CamelotFramework
 	}
 
 	template<class T, class category> 
-	inline void __cm_destruct_array(T* ptr, unsigned int count)
+	inline void __cm_destruct_array(T* ptr, UINT32 count)
 	{
 		// This might seem a bit weird if T is a built-in type or a pointer, but
 		// standard allows us to call destructor on such types (they don't do anything)
@@ -81,6 +81,10 @@ namespace CamelotFramework
 		MemoryAllocator<category>::freeArray(ptr, count);
 	}
 
+	/**
+	 * @brief	General allocator provided by the OS. Use for persistent long term allocations,
+	 * 			and allocations that don't happen often.
+	 */
 	class GenAlloc
 	{ };
 
@@ -91,6 +95,10 @@ namespace CamelotFramework
 	class ScratchAlloc
 	{ };
 
+	/**
+	 * @brief	Pool allocator that is only suited for allocating one specific type of data. Most useful when you are
+	 * 			often allocating one certain data type, with no specific allocation or deallocation order.
+	 */
 	class PoolAlloc
 	{ };
 }
@@ -102,4 +110,4 @@ namespace CamelotFramework
 #define CM_DELETE_BYTES(ptr, category) CamelotFramework::MemoryAllocator<category>::free(ptr)
 #define CM_DELETE_ARRAY(ptr, T, count, category) CamelotFramework::__cm_destruct_array<T, category>(ptr, count)
 
-
+#include "CmMemStack.h"

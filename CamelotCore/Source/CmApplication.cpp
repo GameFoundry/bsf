@@ -38,10 +38,14 @@ namespace CamelotFramework
 {
 	Application::Application()
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false)
-	{ }
+	{
+		
+	}
 
 	void Application::startUp(START_UP_DESC& desc)
 	{
+		MemStack::setupHeap(HID_Main);
+
 		Time::startUp(CM_NEW(Time, GenAlloc) Time());
 		Input::startUp(CM_NEW(Input, GenAlloc) Input());
 		DynLibManager::startUp(CM_NEW(DynLibManager, GenAlloc) DynLibManager());

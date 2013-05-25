@@ -36,6 +36,23 @@ IMMEDIATE:
   - Add support for bold (and maybe italic) fonts in Font importer
   - Add support to disable aliasing when importing font
 
+Mem allocation related:
+Following the example of MemStack add:
+ - MemArena - Allows memory to be allocated as needed but everything is freed in one go. (Useful for TextUtility for example)
+ - MemPool - Uses bit masks for querying empty slots, using the fast bit compare operators from GEG2 book allocator. Also make sure slots are split into block so we can easily dismiss large portions of allocated elements.
+ - Organize calls to CM_NEW/CM_DELETE/etc better
+ - Add an allocation counter to the default allocator
+
+Allocation critical areas:
+ - TextUtility does a massive amount of allocs
+ - Binding gpu params. It gets copied in DeferredRenderContext
+ - GameObjectHandle often allocates its internal data
+ - ResourceHandle often allocates its internal data
+ - AsyncOp allocates  AsyncOpData internally
+ - Deserialization, a lot of temporary allocations going on - But how much impact on performance will allocations have considering this is probably limited by disk read?
+ - Creating SceneObjects and Components - I might want to pool them, as I suspect user might alloc many per frame
+ - Log logMsg
+
 -----------
 
 I need to be able to provide smaller bounds used for UI input 
@@ -100,9 +117,6 @@ Longterm plans:
 ----------------------------------------------------------------------------------------------
 Other:
  - Move Debug to CamelotCore and add SetFillMode
- - Add TextUtil class
-  - Ability to calculate a size of a line (will need this if I want to add "..." to text that doesn't fit)
-  - Maybe even move line and word classes to it
 
 -----------------------BACKLOG TODO---------------------------------------------------------------
 

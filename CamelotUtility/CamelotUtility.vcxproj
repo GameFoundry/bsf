@@ -165,6 +165,7 @@
     <ClCompile Include="Source\CmBox.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
+    <ClCompile Include="Source\CmMemStack.cpp" />
     <ClCompile Include="Source\CmORect.cpp" />
     <ClCompile Include="Source\CmRect.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="Include\CmRTTIReflectableField.h" />
     <ClInclude Include="Include\CmRTTIReflectablePtrField.h" />
     <ClInclude Include="Include\CmRTTIType.h" />
+    <ClInclude Include="Include\CmMemStack.h" />
     <ClInclude Include="Include\CmString.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmTime.h" />
