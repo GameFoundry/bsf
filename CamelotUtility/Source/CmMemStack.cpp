@@ -3,21 +3,19 @@
 
 namespace CamelotFramework
 {
-	std::vector<MemStackInternal<1024 * 1024>> MemStack::mStacks;
+	MemStackInternal<1024 * 1024> MemStack::mStacks[256];
 
 #if CM_DEBUG_MODE
-	std::vector<CM_THREAD_ID_TYPE> MemStack::mThreadIds;
+	CM_THREAD_ID_TYPE MemStack::mThreadIds[256];
 #endif
 
 	void MemStack::setupHeap(UINT8 heapId)
 	{
 		assert(heapId < 256);
 
-		mStacks.resize(256);
 		mStacks[heapId] = MemStackInternal<1024 * 1024>();
 
 #if CM_DEBUG_MODE
-		mThreadIds.resize(256);
 		mThreadIds[heapId] = CM_THREAD_CURRENT_ID;
 #endif
 	}

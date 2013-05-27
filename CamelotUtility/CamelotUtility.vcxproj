@@ -189,6 +189,7 @@
     <ClInclude Include="Include\CmLog.h" />
     <ClInclude Include="Include\CmManagedDataBlock.h" />
     <ClInclude Include="Include\CmMathAsm.h" />
+    <ClInclude Include="Include\CmMemBlockPool.h" />
     <ClInclude Include="Include\CmMemoryAllocator.h" />
     <ClInclude Include="Include\CmModule.h" />
     <ClInclude Include="Include\CmORect.h" />

@@ -145,10 +145,10 @@ namespace CamelotFramework
 		static void deallocLast(UINT8* data, UINT32 heapId);
 
 	private:
-		static std::vector<MemStackInternal<1024 * 1024>> mStacks;
+		static MemStackInternal<1024 * 1024> mStacks[256];
 
 #if CM_DEBUG_MODE
-		static std::vector<CM_THREAD_ID_TYPE> mThreadIds;
+		static CM_THREAD_ID_TYPE mThreadIds[256];
 #endif
 	};
 
