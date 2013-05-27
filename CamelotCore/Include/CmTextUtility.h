@@ -83,14 +83,14 @@ namespace CamelotFramework
 			UINT32 mBaselineOffset;
 			UINT32 mLineHeight;
 			UINT32 mSpaceWidth;
-			vector<TextWord*>::type mWords;
+			vector<TextWord>::type mWords;
 			TextWord* mLastWord;
 
 			void add(const CHAR_DESC& charDesc);
 			void addSpace();
-			void addWord(TextWord* word);
+			void addWord(const TextWord& word);
 
-			TextWord* removeLastWord();
+			TextWord removeLastWord();
 
 			void calculateBounds();
 		};
@@ -100,7 +100,7 @@ namespace CamelotFramework
 		public:
 			~TextData();
 
-			const std::vector<TextLine*>& getLines() const { return mLines; }
+			const std::vector<TextLine>& getLines() const { return mLines; }
 			const std::vector<HTexture>& getTexturePages() const { return mTexturePages; }
 			const std::vector<UINT32>& getNumQuadsPerPage() const  { return mQuadsPerPage; }
 			UINT32 getWidth() const;
@@ -110,7 +110,7 @@ namespace CamelotFramework
 			friend class TextUtility;
 
 			std::vector<UINT32> mQuadsPerPage;
-			std::vector<TextLine*> mLines;
+			std::vector<TextLine> mLines;
 			std::vector<HTexture> mTexturePages;
 		};
 

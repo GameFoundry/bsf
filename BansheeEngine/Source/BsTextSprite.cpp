@@ -20,13 +20,13 @@ namespace BansheeEngine
 		if(textData == nullptr)
 			return;
 
-		const std::vector<TextUtility::TextLine*>& lines = textData->getLines();
+		const std::vector<TextUtility::TextLine>& lines = textData->getLines();
 		const std::vector<UINT32>& quadsPerPage = textData->getNumQuadsPerPage();
 
 		UINT32 curHeight = 0;
 		for(auto& line : lines)
 		{
-			curHeight += line->getYOffset();
+			curHeight += line.getYOffset();
 		}
 
 		// Calc vertical alignment offset
@@ -92,22 +92,22 @@ namespace BansheeEngine
 				horzOffset = 0;
 				break;
 			case THA_Right:
-				horzOffset = std::max(0, (INT32)(desc.width - lines[i]->getWidth()));
+				horzOffset = std::max(0, (INT32)(desc.width - lines[i].getWidth()));
 				break;
 			case THA_Center:
-				horzOffset = std::max(0, (INT32)(desc.width - lines[i]->getWidth())) / 2;
+				horzOffset = std::max(0, (INT32)(desc.width - lines[i].getWidth())) / 2;
 				break;
 			}
 
 			Int2 position = offset + Int2(horzOffset, vertOffset + curY);
-			curY += lines[i]->getYOffset();
+			curY += lines[i].getYOffset();
 
 			for(size_t j = 0; j < numPages; j++)
 			{
 				SpriteRenderElement& renderElem = mCachedRenderElements[j];
 				UINT32 offset = faceOffsets[j];
 
-				UINT32 writtenQuads = lines[i]->fillBuffer((UINT32)j, renderElem.vertices, renderElem.uvs, renderElem.indexes, offset, renderElem.numQuads);
+				UINT32 writtenQuads = lines[i].fillBuffer((UINT32)j, renderElem.vertices, renderElem.uvs, renderElem.indexes, offset, renderElem.numQuads);
 				
 				UINT32 numVertices = writtenQuads * 4;
 				for(size_t i = 0; i < numVertices; i++)

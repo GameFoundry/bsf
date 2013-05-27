@@ -30,9 +30,6 @@
 #include "CmRTTIType.h"
 #include "CmCursor.h"
 
-#include "CmMemBlockPool.h"
-
-
 #define DX11
 //#define DX9
 //#define GL
@@ -65,9 +62,6 @@ int CALLBACK WinMain(
 	//CommandQueue::addBreakpoint(0, 19);
 	//CommandQueue::addBreakpoint(0, 22);
 	//CommandQueue::addBreakpoint(0, 12);
-
-	MemBlockPool<> blockPool;
-	void* someMemory = blockPool.alloc(32);
 
 	RenderSystem* renderSystem = RenderSystem::instancePtr();
 	RenderWindowPtr renderWindow = gApplication().getPrimaryWindow();
