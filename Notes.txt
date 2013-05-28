@@ -31,6 +31,17 @@ Potential optimizations:
    - See here how to avoid locks and stalls when updating just parts of a GUI buffer. In need to modify my mesh update code because it currently always updates 100% of the buffer.
   - Maybe get rid of CPU UI buffers completely.
  - UI shader resolution params for gui should be in a separate constant buffer
+
+ Memory allocation critical areas:
+ - TextUtility a lot of allocs
+ - Binding gpu params. It gets copied in DeferredRenderContext
+ - GameObjectHandle often allocates its internal data
+ - ResourceHandle often allocates its internal data
+ - AsyncOp allocates  AsyncOpData internally
+ - Deserialization, a lot of temporary allocations going on - But how much impact on performance will allocations have considering this is probably limited by disk read?
+ - Creating SceneObjects and Components - I might want to pool them, as I suspect user might alloc many per frame
+ - Log logMsg
+
 ----------------------------------------------------------------------------------------------
 More detailed thought out system descriptions:
 

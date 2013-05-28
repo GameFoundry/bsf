@@ -9,7 +9,7 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	std::vector<HRenderable> OctreeSceneManager::getVisibleRenderables(const HCamera& camera) const
+	vector<HRenderable>::type OctreeSceneManager::getVisibleRenderables(const HCamera& camera) const
 	{
 		// TODO - Cull invisible objects
 

@@ -198,7 +198,7 @@ namespace CamelotFramework
 
 		void fromString(const String& versionString)
 		{
-			std::vector<CamelotFramework::String> tokens = StringUtil::split(versionString, ".");
+			vector<CamelotFramework::String>::type tokens = StringUtil::split(versionString, ".");
 			if(!tokens.empty())
 			{
 				major = parseInt(tokens[0]);

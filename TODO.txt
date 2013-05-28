@@ -36,70 +36,18 @@ IMMEDIATE:
   - Add support for bold (and maybe italic) fonts in Font importer
   - Add support to disable aliasing when importing font
 
-Mem allocation related:
-Following the example of MemStack add:
- - MemRegion - Allows user to mark regions and then free entire regions at once (FrameAllocator would be another name for it)
- - MemPool - Uses bit masks for querying empty slots, using the fast bit compare operators from GEG2 book allocator. Also make sure slots are split into block so we can easily dismiss large portions of allocated elements.
-    - Instead of using bit compare use something smarter like in RTSmallAlloc
-	- Also I can't place SceneObjects in the pool, since they hold a vector to a varying amount of components
- - Implement RTSmallAlloc for use in shared_ptrs and handles/asyncop
- - Organize calls to CM_NEW/CM_DELETE/etc better
- - Add an allocation counter to the default allocator
+std::shared_ptr
+std::vector, map, set, unordered_map, unordered_set should all use an allocator. 
+ - Primarily so I can track allocations
 
-Allocation critical areas:
- - TextUtility does a massive amount of allocs
- - Binding gpu params. It gets copied in DeferredRenderContext
- - GameObjectHandle often allocates its internal data
- - ResourceHandle often allocates its internal data
- - AsyncOp allocates  AsyncOpData internally
- - Deserialization, a lot of temporary allocations going on - But how much impact on performance will allocations have considering this is probably limited by disk read?
- - Creating SceneObjects and Components - I might want to pool them, as I suspect user might alloc many per frame
- - Log logMsg
 
-SOLUTION to TextUtility allocation:
- TextLine & TextWord structs are allocated from a per-thread pool as needed (MemObjectPool)
- Array of TextLines in TextData, array of TextWords in TextLine, and array of CHAR_DESC in TextWord are also allocated using the pool allocator. (MemBlockPool)
-  - Although this pool allocator should allocate based on certain size and not data type, but is otherwise the same
-  - But this means the array doesn't grow one by one, and instead grows N elements at a time (depending on the pool block size we choose)
-  - WHEN the array needs to be resized I need to access a larger pool
-   - USe the BSR instruction to quickly determine the pool where to fit the data
-    - Add some guards to ensure that we update the BSR instruction if we ever move to another platform
+make sure to find all std:: calls and replace them with my own
 
-HIERARCHICAL POOL MEM BLOCK ALLOCATOR: - Attempt to implement outside of camelot and test for speed compared to CRT
-MemAlloc::alloc(size(128))
-{
-  int chunkIdx = log2(size(128)); 
+  Make CM_NEW more friendly?
+ Maybe a template instead of macro, with default allocation type?
+ Also CM_DELETE so I don't have to use BOOST_PP_COMMA and specify templates exactly when calling delete
 
-  if(chunkIdx > maxChunkIdx)
-    new UINT8[2^chunkIdx]; // Just alloc directly if its over some maximum  
-
-  if(!chunks[chunkIdx].hasEmptySpace) // Using SmallAlloc approach which is very fast
-     chunks[chunkIdx].addNewChunk(alloc(2^(std::min(maxChunkIdx, chunkIdx + log2(blocksPerChunk))))
-  return chunks[chunkIdx].alloc()
-}
-
-MemAlloc::dealloc(UINT8* data, size(128))
-{
-   int chunkIdx = log2(size(128)); 
-
-   if(chunkIdx > maxChunkIdx)
-      delete[] data;
-
-   chunk myChunk = findChunkForData(data, size) // Using the SmallAlloc approach which is very fast
-   myChunk.dealloc(data)
-   
-   if(myChunk.empty())
-   {
-      chunks.removeChunk(myChunk)
-      dealloc(myChunk.dataPtr, myChunk.size)
-   }
-}
-
-ALLOCATOR - When I try to allocate and cannot find a chunk, try a higher level chunk to see if it has any empty space (without immediately jumping multiple levels?)
-
- MAYBE I should have a MemoryManager class, which can be manually allocated per-thread and then just passed around to methods that need it
-  (like TextUtility). It can contain all the needed allocators - although it might be a bit too coupling as every class will use it. Plus it's hard to extend.
-   - Maybe the actual allocators exist on specific classes, but the allocators accept MemoryManager as input. It's cleaner solution than using enums I think.
+And when I'm adding allocators to SharedPtr attempt to get rid of ugly-ass custom deleters and make just one easier to use shared_ptr wrapper.
 
 -----------
 

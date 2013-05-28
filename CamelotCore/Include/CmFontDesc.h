@@ -96,7 +96,7 @@ namespace CamelotFramework
 				+ sizeof(data.yOffset)
 				+ sizeof(data.xAdvance)
 				+ sizeof(data.yAdvance)
-				+ RTTIPlainType<std::vector<KerningPair>>::getDynamicSize(data.kerningPairs);
+				+ RTTIPlainType<vector<KerningPair>::type>::getDynamicSize(data.kerningPairs);
 
 			dataSize += sizeof(UINT32);
 
@@ -116,7 +116,7 @@ namespace CamelotFramework
 			memcpy(memory, &size, sizeof(UINT32));
 			memory += sizeof(UINT32);
 			
-			RTTIPlainType<std::map<UINT32, CHAR_DESC>>::toMemory(data.characters, memory);
+			RTTIPlainType<map<UINT32, CHAR_DESC>::type>::toMemory(data.characters, memory);
 			rttiWriteElem(data.baselineOffset, memory);
 			rttiWriteElem(data.lineHeight, memory);
 			rttiWriteElem(data.missingGlyph, memory);
@@ -129,7 +129,7 @@ namespace CamelotFramework
 			memcpy(&size, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
 
-			RTTIPlainType<std::map<UINT32, CHAR_DESC>>::fromMemory(data.characters, memory);
+			RTTIPlainType<map<UINT32, CHAR_DESC>::type>::fromMemory(data.characters, memory);
 			rttiReadElem(data.baselineOffset, memory);
 			rttiReadElem(data.lineHeight, memory);
 			rttiReadElem(data.missingGlyph, memory);
@@ -141,7 +141,7 @@ namespace CamelotFramework
 		static UINT32 getDynamicSize(const FONT_DESC& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32);
-			dataSize += RTTIPlainType<std::map<UINT32, CHAR_DESC>>::getDynamicSize(data.characters);
+			dataSize += RTTIPlainType<map<UINT32, CHAR_DESC>::type>::getDynamicSize(data.characters);
 			dataSize += rttiGetElemSize(data.baselineOffset);
 			dataSize += rttiGetElemSize(data.lineHeight);
 			dataSize += rttiGetElemSize(data.missingGlyph);

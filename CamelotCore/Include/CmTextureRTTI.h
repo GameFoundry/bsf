@@ -7,6 +7,7 @@
 #include "CmMath.h"
 #include "CmApplication.h"
 #include "CmDeferredRenderContext.h"
+#include <boost/preprocessor/comma.hpp>
 
 // DEBUG ONLY
 #include "CmTextureManager.h"
@@ -118,7 +119,7 @@ namespace CamelotFramework
 
 			gMainSyncedRC().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 
-			CM_DELETE(pixelData, vector<PixelDataPtr>, PoolAlloc);
+			CM_DELETE(pixelData, vector<PixelDataPtr BOOST_PP_COMMA() StdGenAlloc<PixelDataPtr>>, PoolAlloc);
 			texture->mRTTIData = nullptr;	
 		}
 

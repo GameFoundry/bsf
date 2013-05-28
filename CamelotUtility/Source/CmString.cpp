@@ -75,9 +75,9 @@ namespace CamelotFramework {
     }
 
     //-----------------------------------------------------------------------
-    std::vector<CamelotFramework::String> StringUtil::split( const String& str, const String& delims, unsigned int maxSplits)
+    vector<CamelotFramework::String>::type StringUtil::split( const String& str, const String& delims, unsigned int maxSplits)
     {
-        std::vector<CamelotFramework::String> ret;
+        vector<CamelotFramework::String>::type ret;
         // Pre-allocate some space for performance
         ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
 
@@ -117,9 +117,9 @@ namespace CamelotFramework {
         return ret;
     }
 	//-----------------------------------------------------------------------
-	std::vector<CamelotFramework::String> StringUtil::tokenise( const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
+	vector<CamelotFramework::String>::type StringUtil::tokenise( const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
 	{
-        std::vector<CamelotFramework::String> ret;
+        vector<CamelotFramework::String>::type ret;
         // Pre-allocate some space for performance
         ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
 
@@ -673,7 +673,7 @@ namespace CamelotFramework {
 			return defaultValue;
 	}
 	//-----------------------------------------------------------------------
-	std::vector<CamelotFramework::String> parseStringVector(const String& val)
+	vector<CamelotFramework::String>::type parseStringVector(const String& val)
 	{
 		return StringUtil::split(val);
 	}

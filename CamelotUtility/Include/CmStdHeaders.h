@@ -146,64 +146,64 @@ namespace CamelotFramework
 #endif
 
 	// Standard containers, for easier access in my own namespace
-	template <typename T, typename A = char > 
+	template <typename T, typename A = StdGenAlloc<T>> 
 	struct deque 
 	{ 
-		typedef typename std::deque<T> type;    
+		typedef typename std::deque<T, A> type;    
 	}; 
 
-	template <typename T, typename A = char > 
+	template <typename T, typename A = StdGenAlloc<T>> 
 	struct vector 
 	{ 
-		typedef typename std::vector<T> type;    
+		typedef typename std::vector<T, A> type;    
 	}; 
 
-	template <typename T, typename A = char > 
+	template <typename T, typename A = StdGenAlloc<T>> 
 	struct list 
 	{ 
-		typedef typename std::list<T> type;    
+		typedef typename std::list<T, A> type;    
 	}; 
 
-	template <typename T, typename A = char > 
+	template <typename T, typename A = StdGenAlloc<T>> 
 	struct stack 
 	{ 
-		typedef typename std::stack<T> type;    
+		typedef typename std::stack<T, std::deque<T, A>> type;    
 	}; 
 
-	template <typename T, typename P = std::less<T>, typename A = char > 
+	template <typename T, typename P = std::less<T>, typename A = StdGenAlloc<T>> 
 	struct set 
 	{ 
-		typedef typename std::set<T, P> type;    
+		typedef typename std::set<T, P, A> type;    
 	}; 
 
-	template <typename K, typename V, typename P = std::less<K>, typename A = char > 
+	template <typename K, typename V, typename P = std::less<K>, typename A = StdGenAlloc<std::pair<const K, V>>> 
 	struct map 
 	{ 
-		typedef typename std::map<K, V, P> type; 
+		typedef typename std::map<K, V, P, A> type; 
 	}; 
 
-	template <typename K, typename V, typename P = std::less<K>, typename A = char > 
+	template <typename K, typename V, typename P = std::less<K>, typename A = StdGenAlloc<std::pair<const K, V>>> 
 	struct multimap 
 	{ 
-		typedef typename std::multimap<K, V, P> type; 
+		typedef typename std::multimap<K, V, P, A> type; 
 	}; 
 
-	template <typename T, typename A = char, typename B = char, typename C = char> 
+	template <typename T, typename H = std::hash<T>, typename C = std::equal_to<T>, typename A = StdGenAlloc<T>> 
 	struct unordered_set 
 	{ 
-		typedef typename std::unordered_set<T> type;    
+		typedef typename std::unordered_set<T, H, C, A> type;    
 	}; 
 
-	template <typename K, typename V, typename A = char, typename B = char, typename C = char> 
+	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdGenAlloc<std::pair<const K, V>>> 
 	struct unordered_map 
 	{ 
-		typedef typename std::unordered_map<K, V> type; 
+		typedef typename std::unordered_map<K, V, H, C, A> type; 
 	}; 
 
-	template <typename K, typename V, typename A = char, typename B = char, typename C = char> 
+	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdGenAlloc<std::pair<const K, V>>> 
 	struct unordered_multimap 
 	{ 
-		typedef typename std::unordered_multimap<K, V> type; 
+		typedef typename std::unordered_multimap<K, V, H, C, A> type; 
 	}; 
 
 	// TODO - Once VC2012 grows up and adds proper C++11 support, uncomment this

@@ -89,11 +89,11 @@ namespace CamelotFramework
 	}; 
 
 	// RTTI types for some standard classes
-	template<class T> struct RTTIPlainType<std::vector<T>>
+	template<class T> struct RTTIPlainType<std::vector<T, StdGenAlloc<T>>>
 	{	
 		enum { id = TID_STDVECTOR }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(const std::vector<T>& data, char* memory)
+		static void toMemory(const std::vector<T, StdGenAlloc<T>>& data, char* memory)
 		{ 
 			UINT32 size = (UINT32)data.size();
 
@@ -109,7 +109,7 @@ namespace CamelotFramework
 			}
 		}
 
-		static UINT32 fromMemory(std::vector<T>& data, char* memory)
+		static UINT32 fromMemory(std::vector<T, StdGenAlloc<T>>& data, char* memory)
 		{ 
 			UINT32 size;
 			memcpy(&size, memory, sizeof(UINT32)); 
@@ -127,7 +127,7 @@ namespace CamelotFramework
 			return size;
 		}
 
-		static UINT32 getDynamicSize(const std::vector<T>& data)	
+		static UINT32 getDynamicSize(const std::vector<T, StdGenAlloc<T>>& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32);
 
@@ -140,11 +140,11 @@ namespace CamelotFramework
 		}	
 	}; 
 
-	template<class Key, class Value> struct RTTIPlainType<std::map<Key, Value>>
+	template<class Key, class Value> struct RTTIPlainType<std::map<Key, Value, std::less<Key>, StdGenAlloc<std::pair<const Key, Value>>>>
 	{	
 		enum { id = TID_STDMAP }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(const std::map<Key, Value>& data, char* memory)
+		static void toMemory(const std::map<Key, Value, std::less<Key>, StdGenAlloc<std::pair<const Key, Value>>>& data, char* memory)
 		{ 
 			UINT32 size = (UINT32)data.size();
 
@@ -165,7 +165,7 @@ namespace CamelotFramework
 			}
 		}
 
-		static UINT32 fromMemory(std::map<Key, Value>& data, char* memory)
+		static UINT32 fromMemory(std::map<Key, Value, std::less<Key>, StdGenAlloc<std::pair<const Key, Value>>>& data, char* memory)
 		{ 
 			UINT32 size;
 			memcpy(&size, memory, sizeof(UINT32)); 
@@ -187,7 +187,7 @@ namespace CamelotFramework
 			return size;
 		}
 
-		static UINT32 getDynamicSize(const std::map<Key, Value>& data)	
+		static UINT32 getDynamicSize(const std::map<Key, Value, std::less<Key>, StdGenAlloc<std::pair<const Key, Value>>>& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32);
 

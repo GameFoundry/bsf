@@ -351,7 +351,7 @@ namespace CamelotFramework {
         Strings must not contain spaces since space is used as a delimiter in
         the output.
     */
-    CM_UTILITY_EXPORT std::vector<CamelotFramework::String> parseStringVector(const String& val);
+    CM_UTILITY_EXPORT vector<CamelotFramework::String>::type parseStringVector(const String& val);
     /** Checks the String is a valid number value. */
     CM_UTILITY_EXPORT bool isNumber(const String& val);
 	/** @} */
