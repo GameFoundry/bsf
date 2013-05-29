@@ -53,7 +53,7 @@ namespace CamelotFramework
 
 		freeInternalBuffer();
 
-		mData = CM_NEW_BYTES(size, ScratchAlloc);
+		mData = (UINT8*)cm_alloc<ScratchAlloc>(size);
 		mOwnsData = true;
 	}
 
@@ -70,7 +70,7 @@ namespace CamelotFramework
 		}
 #endif
 
-		CM_DELETE_BYTES(mData, ScratchAlloc);
+		cm_free<ScratchAlloc>(mData);
 		mData = nullptr;
 	}
 

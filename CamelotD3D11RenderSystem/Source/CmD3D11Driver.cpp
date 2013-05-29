@@ -85,26 +85,26 @@ namespace CamelotFramework
 	String D3D11Driver::getDriverName() const
 	{
 		size_t size = wcslen(mAdapterIdentifier.Description);
-		char* str = (char*)CM_NEW_BYTES((UINT32)(size + 1), ScratchAlloc);
+		char* str = (char*)cm_alloc<ScratchAlloc>((UINT32)(size + 1));
 
 		wcstombs(str, mAdapterIdentifier.Description, size);
 		str[size] = '\0';
 		String Description = str;
 		
-		CM_DELETE_BYTES(str, ScratchAlloc);
+		cm_free<ScratchAlloc>(str);
 		return String(Description );
 	}
 
 	String D3D11Driver::getDriverDescription() const
 	{
 		size_t size = wcslen(mAdapterIdentifier.Description);
-		char* str = (char*)CM_NEW_BYTES((UINT32)(size + 1), ScratchAlloc);
+		char* str = (char*)cm_alloc<ScratchAlloc>((UINT32)(size + 1));
 
 		wcstombs(str, mAdapterIdentifier.Description, size);
 		str[size] = '\0';
 		String driverDescription = str;
 
-		CM_DELETE_BYTES(str, ScratchAlloc);
+		cm_free<ScratchAlloc>(str);
 		StringUtil::trim(driverDescription);
 
 		return driverDescription;

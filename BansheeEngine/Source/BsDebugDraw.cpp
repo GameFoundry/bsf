@@ -23,12 +23,12 @@ namespace BansheeEngine
 
 	void DebugDraw::draw2DLine(const Vector2&a, const Vector2& b, const Color& color, float timeout)
 	{
-		UINT32* indices = CM_NEW_ARRAY(UINT32, 2, ScratchAlloc);
-		UINT8* vertices = CM_NEW_BYTES(2 * VertexSize, ScratchAlloc);
+		UINT32* indices = cm_newN<UINT32, ScratchAlloc>(2);
+		UINT8* vertices = (UINT8*)cm_alloc<ScratchAlloc>(2 * VertexSize);
 
 		DebugDrawCommand command;
-		command.indices = CM_NEW_ARRAY(UINT32, 2, ScratchAlloc);
-		command.vertices = CM_NEW_BYTES(2 * VertexSize, ScratchAlloc);
+		command.indices = cm_newN<UINT32, ScratchAlloc>(2);
+		command.vertices = (UINT8*)cm_alloc<ScratchAlloc>(2 * VertexSize);
 		command.numElements = 1;
 		command.type = DebugDrawType::Line;
 		command.timeEnds = gTime().getTime() + timeout;
@@ -150,8 +150,8 @@ namespace BansheeEngine
 					numIndices = command.numElements * 3;
 				}
 
-				CM_DELETE_ARRAY(command.indices, UINT32, numIndices, ScratchAlloc);
-				CM_DELETE_BYTES(command.vertices, ScratchAlloc);
+				cm_deleteN<ScratchAlloc>(command.indices, numIndices);
+				cm_free<ScratchAlloc>(command.vertices);
 			}
 		}
 

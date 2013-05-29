@@ -95,12 +95,12 @@ namespace CamelotFramework
 			{
 				GLint charsWritten  = 0;
 
-				GLchar* infoLog = (GLchar*)CM_NEW_BYTES(sizeof(GLchar) * infologLength, ScratchAlloc);
+				GLchar* infoLog = (GLchar*)cm_alloc<ScratchAlloc>(sizeof(GLchar) * infologLength);
 
 				glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
 				logMessage += String(infoLog);
 
-				CM_DELETE_BYTES(infoLog, ScratchAlloc);
+				cm_free<ScratchAlloc>(infoLog);
 
 				if(charsWritten > 0)
 					return true;
@@ -122,12 +122,12 @@ namespace CamelotFramework
 			{
 				GLint charsWritten  = 0;
 
-				GLchar* infoLog = (GLchar*)CM_NEW_BYTES(sizeof(GLchar) * infologLength, ScratchAlloc);
+				GLchar* infoLog = (GLchar*)cm_alloc<ScratchAlloc>(sizeof(GLchar) * infologLength);
 
 				glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
 				msg += String(infoLog);
 
-				CM_DELETE_BYTES(infoLog, ScratchAlloc);
+				cm_free<ScratchAlloc>(infoLog);
 
 				if(charsWritten > 0)
 					return true;

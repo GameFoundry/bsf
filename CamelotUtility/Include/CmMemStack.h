@@ -16,12 +16,12 @@ namespace CamelotFramework
 			MemBlock(UINT32 size)
 				:mData(nullptr), mFreePtr(0), mSize(size)
 			{
-				mData = static_cast<UINT8*>(CM_NEW_BYTES(mSize, GenAlloc));
+				mData = static_cast<UINT8*>(cm_alloc(mSize));
 			}
 
 			~MemBlock()
 			{
-				CM_DELETE_BYTES(mData, GenAlloc);
+				cm_free(mData);
 			}
 
 			UINT8* alloc(UINT8 amount)
@@ -56,7 +56,7 @@ namespace CamelotFramework
 				MemBlock* curPtr = mBlocks.top();
 				mBlocks.pop();
 
-				CM_DELETE(curPtr, MemBlock, GenAlloc);
+				cm_delete(curPtr);
 			}
 		}
 
@@ -90,7 +90,7 @@ namespace CamelotFramework
 
 			if(topBlock->mFreePtr == 0)
 			{
-				CM_DELETE(topBlock, MemBlock, GenAlloc);
+				cm_delete(topBlock);
 				mBlocks.pop();
 			}
 		}
@@ -105,7 +105,7 @@ namespace CamelotFramework
 			if(wantedSize > blockSize)
 				blockSize = wantedSize;
 
-			MemBlock* newBlock = CM_NEW(MemBlock, GenAlloc) MemBlock(blockSize);
+			MemBlock* newBlock = cm_new<MemBlock>(blockSize);
 			mBlocks.push(newBlock);
 
 			return newBlock;

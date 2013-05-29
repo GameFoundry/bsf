@@ -78,6 +78,27 @@ namespace CamelotFramework
 		MemoryAllocator<category>::freeArray(ptr, count);
 	}
 
+	/**
+	 * @brief	General allocator provided by the OS. Use for persistent long term allocations,
+	 * 			and allocations that don't happen often.
+	 */
+	class GenAlloc
+	{ };
+
+	/**
+	 * @brief	Allocator used for allocating small amounts of temporary memory that
+	 * 			used and then quickly released
+	 */
+	class ScratchAlloc
+	{ };
+
+	/**
+	 * @brief	Pool allocator that is only suited for allocating one specific type of data. Most useful when you are
+	 * 			often allocating one certain data type, with no specific allocation or deallocation order.
+	 */
+	class PoolAlloc
+	{ };
+
 	template<class category> 
 	inline void* cm_alloc(UINT32 count)
 	{
@@ -109,6 +130,8 @@ namespace CamelotFramework
 
 	BOOST_PP_REPEAT(9, MAKE_CM_NEW, ~)
 
+#undef MAKE_CM_NEW
+
 	template<class category> 
 	inline void cm_free(void* ptr)
 	{
@@ -132,33 +155,62 @@ namespace CamelotFramework
 		MemoryAllocator<category>::freeArray(ptr, count);
 	}
 
-	/**
-	 * @brief	General allocator provided by the OS. Use for persistent long term allocations,
-	 * 			and allocations that don't happen often.
-	 */
-	class GenAlloc
-	{ };
+	/*****************************************************************************/
+	/* Default versions of all alloc/free/new/delete methods which call GenAlloc */
+	/*****************************************************************************/
 
-	/**
-	 * @brief	Allocator used for allocating small amounts of temporary memory that
-	 * 			used and then quickly released
-	 */
-	class ScratchAlloc
-	{ };
+	inline void* cm_alloc(UINT32 count)
+	{
+		return MemoryAllocator<GenAlloc>::allocate(count);
+	}
 
-	/**
-	 * @brief	Pool allocator that is only suited for allocating one specific type of data. Most useful when you are
-	 * 			often allocating one certain data type, with no specific allocation or deallocation order.
-	 */
-	class PoolAlloc
-	{ };
+	template<class T> 
+	inline T* cm_newN(UINT32 count)
+	{
+		T* ptr = (T*)MemoryAllocator<GenAlloc>::allocateArray(sizeof(T), count);
+
+		for(unsigned int i = 0; i < count; i++)
+			new ((void*)&ptr[i]) T;
+
+		return ptr;
+	}
+
+#define MAKE_CM_NEW(z, n, unused)                                     \
+	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+	return new (cm_alloc<GenAlloc>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
+	}
+
+	BOOST_PP_REPEAT(9, MAKE_CM_NEW, ~)
+
+#undef MAKE_CM_NEW
+
+	inline void cm_free(void* ptr)
+	{
+		MemoryAllocator<GenAlloc>::free(ptr);
+	}
+
+	template<class T> 
+	inline void cm_delete(T* ptr)
+	{
+		(ptr)->~T();
+
+		MemoryAllocator<GenAlloc>::free(ptr);
+	}
+
+	template<class T> 
+	inline void cm_deleteN(T* ptr, UINT32 count)
+	{
+		for(unsigned int i = 0; i < count; i++)
+			ptr[i].~T();
+
+		MemoryAllocator<GenAlloc>::freeArray(ptr, count);
+	}
 }
 
 #define CM_NEW(T, category) new (CamelotFramework::MemoryAllocator<category>::allocate(sizeof(T)))
-#define CM_NEW_BYTES(count, category) (UINT8*)CamelotFramework::MemoryAllocator<category>::allocate(count)
 #define CM_NEW_ARRAY(T, count, category) CamelotFramework::__cm_construct_array<T, category>(count)
 #define CM_DELETE(ptr, T, category) {(ptr)->~T(); CamelotFramework::MemoryAllocator<category>::free(ptr);}
-#define CM_DELETE_BYTES(ptr, category) CamelotFramework::MemoryAllocator<category>::free(ptr)
 #define CM_DELETE_ARRAY(ptr, T, count, category) CamelotFramework::cm_deleteN<category>(ptr, count)
 
 namespace CamelotFramework
@@ -219,7 +271,7 @@ namespace CamelotFramework
 		// allocate but don't initialize num elements of type T
 		pointer allocate (size_type num, const void* = 0) 
 		{
-			pointer ret = (pointer)(CM_NEW_BYTES((UINT32)num*sizeof(T), Category));
+			pointer ret = (pointer)(cm_alloc<Category>((UINT32)num*sizeof(T)));
 			return ret;
 		}
 
@@ -241,7 +293,7 @@ namespace CamelotFramework
 		void deallocate (pointer p, size_type num) 
 		{
 			// print message and deallocate memory with global delete
-			CM_DELETE_BYTES((void*)p, Category);
+			cm_free<Category>((void*)p);
 		}
 	};
 

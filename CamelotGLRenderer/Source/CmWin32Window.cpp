@@ -150,7 +150,7 @@ namespace CamelotFramework {
 			GetMonitorInfo(hMonitor, &monitorInfoEx);
 
 			size_t devNameLen = strlen(monitorInfoEx.szDevice);
-			mDeviceName = (char*)CM_NEW_BYTES((UINT32)(devNameLen + 1), ScratchAlloc);
+			mDeviceName = (char*)cm_alloc<ScratchAlloc>((UINT32)(devNameLen + 1));
 
 			strcpy_s(mDeviceName, devNameLen + 1, monitorInfoEx.szDevice);
 
@@ -404,7 +404,7 @@ namespace CamelotFramework {
 
 		if (mDeviceName != NULL)
 		{
-			CM_DELETE_BYTES(mDeviceName, ScratchAlloc);
+			cm_free<ScratchAlloc>(mDeviceName);
 			mDeviceName = NULL;
 		}
 
@@ -661,7 +661,7 @@ namespace CamelotFramework {
 		{
 			size_t rowSpan = dst.getWidth() * PixelUtil::getNumElemBytes(dst.getFormat());
 			size_t height = dst.getHeight();
-			UINT8 *tmpData = CM_NEW_BYTES((UINT32)(rowSpan * height), ScratchAlloc);
+			UINT8 *tmpData = (UINT8*)cm_alloc<ScratchAlloc>((UINT32)(rowSpan * height));
 			UINT8 *srcRow = (UINT8 *)dst.getData(), *tmpRow = tmpData + (height - 1) * rowSpan;
 
 			while (tmpRow >= tmpData)
@@ -672,7 +672,7 @@ namespace CamelotFramework {
 			}
 			memcpy(dst.getData(), tmpData, rowSpan * height);
 
-			CM_DELETE_BYTES(tmpData, ScratchAlloc);
+			cm_free<ScratchAlloc>(tmpData);
 		}
 	}
 

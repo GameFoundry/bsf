@@ -33,7 +33,7 @@ namespace CamelotFramework
 
 	void GenericGpuParamBlockBuffer::initialize_internal()
 	{
-		mData = CM_NEW_BYTES(mSize, ScratchAlloc);
+		mData = (UINT8*)cm_alloc<ScratchAlloc>(mSize);
 		memset(mData, 0, mSize);
 
 		GpuParamBlockBuffer::initialize_internal();
@@ -42,7 +42,7 @@ namespace CamelotFramework
 	void GenericGpuParamBlockBuffer::destroy_internal()
 	{
 		if(mData != nullptr)
-			CM_DELETE_BYTES(mData, ScratchAlloc);
+			cm_free<ScratchAlloc>(mData);
 
 		GpuParamBlockBuffer::destroy_internal();
 	}

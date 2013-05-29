@@ -9,14 +9,14 @@ namespace CamelotFramework
 	GpuParamBlock::GpuParamBlock(UINT32 size)
 		:mDirty(true), mData(nullptr), mSize(size)
 	{
-		mData = CM_NEW_BYTES(mSize, ScratchAlloc);
+		mData = (UINT8*)cm_alloc<ScratchAlloc>(mSize);
 		memset(mData, 0, mSize);
 	}
 
 	GpuParamBlock::GpuParamBlock(GpuParamBlock* otherBlock)
 	{
 		mSize = otherBlock->mSize;
-		mData = CM_NEW_BYTES(mSize, ScratchAlloc);
+		mData = (UINT8*)cm_alloc<ScratchAlloc>(mSize);
 		write(0, otherBlock->getData(), otherBlock->getSize());
 		mDirty = otherBlock->mDirty;
 	}
@@ -24,7 +24,7 @@ namespace CamelotFramework
 	GpuParamBlock::~GpuParamBlock()
 	{
 		if(mData != nullptr)
-			CM_DELETE_BYTES(mData, ScratchAlloc);
+			cm_free<ScratchAlloc>(mData);
 	}
 
 	void GpuParamBlock::write(UINT32 offset, const void* data, UINT32 size)

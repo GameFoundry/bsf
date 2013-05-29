@@ -316,7 +316,7 @@ namespace CamelotFramework {
 		mBufferDesc.Pool = eResourcePool;
 
 		// Allocate the system memory buffer.
-		mSystemMemoryBuffer = (char*)CM_NEW_BYTES(getSizeInBytes(), ScratchAlloc);
+		mSystemMemoryBuffer = (char*)cm_alloc<ScratchAlloc>(getSizeInBytes());
 		memset(mSystemMemoryBuffer, 0, getSizeInBytes());	
 
 		// Case we have to create this buffer resource on loading.
@@ -351,7 +351,7 @@ namespace CamelotFramework {
 		mMapDeviceToBufferResources.clear();   
 
 		if(mSystemMemoryBuffer != nullptr)
-			CM_DELETE_BYTES(mSystemMemoryBuffer, ScratchAlloc);
+			cm_free<ScratchAlloc>(mSystemMemoryBuffer);
 
 		VertexBuffer::destroy_internal();
 	}

@@ -382,7 +382,7 @@ namespace CamelotFramework
 			{
 				GpuParamBlockBufferPtr paramBlock = params.getParamBlockBuffer(paramBlockSlot);
 
-				UINT8* data = CM_NEW_BYTES(paramBlock->getSize(), ScratchAlloc);
+				UINT8* data = (UINT8*)cm_alloc<ScratchAlloc>(paramBlock->getSize());
 				paramBlock->readData(data);
 
 				bufferData[paramBlockSlot] = data;
@@ -499,7 +499,7 @@ namespace CamelotFramework
 
 		for(auto& curBufferData : bufferData)
 		{
-			CM_DELETE_BYTES(curBufferData.second, ScratchAlloc);
+			cm_free<ScratchAlloc>(curBufferData.second);
 		}
 	}
 	//---------------------------------------------------------------------

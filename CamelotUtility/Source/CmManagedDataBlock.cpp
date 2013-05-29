@@ -10,7 +10,7 @@ namespace CamelotFramework
 	ManagedDataBlock::ManagedDataBlock(UINT32 size)
 		:mSize(size), mManaged(true), mIsDataOwner(true)
 	{
-		mData = CM_NEW_BYTES(size, ScratchAlloc);
+		mData = (UINT8*)cm_alloc<ScratchAlloc>(size);
 	}
 
 	ManagedDataBlock::ManagedDataBlock(const ManagedDataBlock& source)
@@ -26,6 +26,6 @@ namespace CamelotFramework
 	ManagedDataBlock::~ManagedDataBlock()
 	{
 		if(mManaged && mIsDataOwner)
-			CM_DELETE_BYTES(mData, ScratchAlloc);
+			cm_free<ScratchAlloc>(mData);
 	}
 }

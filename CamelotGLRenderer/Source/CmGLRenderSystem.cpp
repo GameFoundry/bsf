@@ -352,7 +352,7 @@ namespace CamelotFramework
 				// 0 means uniforms are not in block, in which case we handle it specially
 				if(uniformBufferData == nullptr)
 				{
-					uniformBufferData = CM_NEW_BYTES(paramBlockBuffer->getSize(), ScratchAlloc);
+					uniformBufferData = (UINT8*)cm_alloc<ScratchAlloc>(paramBlockBuffer->getSize());
 					paramBlockBuffer->readData(uniformBufferData);
 				}
 
@@ -449,7 +449,7 @@ namespace CamelotFramework
 
 		if(uniformBufferData != nullptr)
 		{
-			CM_DELETE_BYTES(uniformBufferData, ScratchAlloc);
+			cm_free<ScratchAlloc>(uniformBufferData);
 		}
 	}
 	//-----------------------------------------------------------------------------

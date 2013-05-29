@@ -9,13 +9,13 @@ namespace CamelotFramework
 		mFlags(flags), mNumMipmaps(numMipmaps)
 	{
 		mBPP = static_cast<UINT8>(PixelUtil::getNumElemBytes(mFormat)) * 8;
-		mData = CM_NEW_BYTES(size, ScratchAlloc);
+		mData = (UINT8*)cm_alloc<ScratchAlloc>(size);
 	}
 
 	TextureData::~TextureData()
 	{
 		if(mData != nullptr)
-			CM_DELETE_BYTES(mData, ScratchAlloc);
+			cm_free<ScratchAlloc>(mData);
 	}
 
 	PixelData TextureData::getPixels(UINT32 mip)

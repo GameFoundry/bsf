@@ -77,7 +77,7 @@ namespace CamelotFramework
 		virtual UINT8* allocate(void* object, UINT32 bytes)
 		{
 			if(mCustomAllocator.empty())
-				return CM_NEW_BYTES(bytes, ScratchAlloc);
+				return (UINT8*)cm_alloc<ScratchAlloc>(bytes);
 			else
 			{
 				ObjectType* castObj = static_cast<ObjectType*>(object);
