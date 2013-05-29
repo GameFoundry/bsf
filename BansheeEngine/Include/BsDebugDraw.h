@@ -47,7 +47,7 @@ namespace BansheeEngine
 		CM::HMaterial mTriangleMaterial;
 		CM::HMaterial mLineMaterial;
 
-		std::vector<DebugDrawCommand> mCommands;
+		CM::vector<DebugDrawCommand>::type mCommands;
 
 		static const int VertexSize = 16;
 

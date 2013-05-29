@@ -63,7 +63,7 @@ namespace CamelotFramework
 		}
 
 		// Encode pointed to objects and their value types
-		std::unordered_set<UINT32> serializedObjects;
+		unordered_set<UINT32>::type serializedObjects;
 		while(true)
 		{
 			auto iter = mObjectsToEncode.begin();

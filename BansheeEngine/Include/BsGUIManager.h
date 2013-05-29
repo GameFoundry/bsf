@@ -18,10 +18,10 @@ namespace BansheeEngine
 				:isDirty(true)
 			{ }
 
-			std::vector<CM::HMesh> cachedMeshes;
-			std::vector<CM::HMaterial> cachedMaterials;
-			std::vector<GUIWidget*> cachedWidgetsPerMesh;
-			std::vector<GUIWidget*> widgets;
+			CM::vector<CM::HMesh>::type cachedMeshes;
+			CM::vector<CM::HMaterial>::type cachedMaterials;
+			CM::vector<GUIWidget*>::type cachedWidgetsPerMesh;
+			CM::vector<GUIWidget*>::type widgets;
 			bool isDirty;
 		};
 
@@ -35,8 +35,8 @@ namespace BansheeEngine
 		void update();
 		void render(CM::ViewportPtr& target, CM::RenderContext& renderContext);
 	private:
-		std::vector<GUIWidget*> mWidgets;
-		std::unordered_map<const CM::Viewport*, GUIRenderData> mCachedGUIData;
+		CM::vector<GUIWidget*>::type mWidgets;
+		CM::unordered_map<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
 
 		GUIWidget* mMouseOverWidget;
 		GUIElement* mMouseOverElement;

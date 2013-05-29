@@ -34,7 +34,7 @@ namespace CamelotFramework
 	class CM_UTILITY_EXPORT WorkQueue
 	{
 	protected:
-		typedef std::map<String, UINT16> ChannelMap;
+		typedef map<String, UINT16>::type ChannelMap;
 		ChannelMap mChannelMap;
 		UINT16 mNextChannel;
 		CM_MUTEX(mChannelMapMutex)

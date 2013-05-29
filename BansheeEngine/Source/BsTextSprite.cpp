@@ -20,8 +20,8 @@ namespace BansheeEngine
 		if(textData == nullptr)
 			return;
 
-		const std::vector<TextUtility::TextLine>& lines = textData->getLines();
-		const std::vector<UINT32>& quadsPerPage = textData->getNumQuadsPerPage();
+		const CM::vector<TextUtility::TextLine>::type& lines = textData->getLines();
+		const CM::vector<UINT32>::type& quadsPerPage = textData->getNumQuadsPerPage();
 
 		UINT32 curHeight = 0;
 		for(auto& line : lines)
@@ -49,7 +49,7 @@ namespace BansheeEngine
 		if(mCachedRenderElements.size() < quadsPerPage.size())
 			mCachedRenderElements.resize(quadsPerPage.size());
 
-		const std::vector<HTexture>& texturePages = textData->getTexturePages();
+		const CM::vector<HTexture>::type& texturePages = textData->getTexturePages();
 		UINT32 texPage = 0;
 		for(auto& cachedElem : mCachedRenderElements)
 		{

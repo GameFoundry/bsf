@@ -55,7 +55,7 @@ namespace CamelotFramework
 		static const int DECLARATION_BUFFER_SIZE = 1024;
 		static const int NUM_ELEMENTS_TO_PRUNE = 64;
 
-		std::unordered_map<VertexDeclarationKey, InputLayoutEntry*, HashFunc, EqualFunc> mInputLayoutMap;
+		unordered_map<VertexDeclarationKey, InputLayoutEntry*, HashFunc, EqualFunc>::type mInputLayoutMap;
 
 		bool mWarningShown;
 		UINT32 mLastUsedCounter;

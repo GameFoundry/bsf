@@ -595,10 +595,10 @@ namespace CamelotFramework {
 		return stream.str();
 	}
 	//-----------------------------------------------------------------------
-	String toString(const std::vector<CamelotFramework::String>& val)
+	String toString(const vector<CamelotFramework::String>::type& val)
 	{
 		stringstream stream;
-		std::vector<CamelotFramework::String>::const_iterator i, iend, ibegin;
+		vector<CamelotFramework::String>::type::const_iterator i, iend, ibegin;
 		ibegin = val.begin();
 		iend = val.end();
 		for (i = ibegin; i != iend; ++i)

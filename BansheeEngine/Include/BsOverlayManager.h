@@ -31,6 +31,6 @@ namespace BansheeEngine
 		void detachOverlay(const CM::Viewport* target, const Overlay* overlay);
 		void detachOverlayFromAll(const Overlay* overlay);
 
-		std::unordered_map<const CM::Viewport*, std::set<const Overlay*, OverlayComparer>> mOverlaysPerTarget;
+		CM::unordered_map<const CM::Viewport*, CM::set<const Overlay*, OverlayComparer>::type>::type mOverlaysPerTarget;
 	};
 }

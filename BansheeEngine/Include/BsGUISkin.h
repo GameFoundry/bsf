@@ -14,6 +14,6 @@ namespace BansheeEngine
 	private:
 		static GUIElementStyle DefaultStyle;
 
-		std::unordered_map<std::string, GUIElementStyle> mStyles;
+		CM::unordered_map<std::string, GUIElementStyle>::type mStyles;
 	};
 }

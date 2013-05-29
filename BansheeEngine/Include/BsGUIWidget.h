@@ -41,7 +41,7 @@ namespace BansheeEngine
 
 		const CM::RenderWindow* getOwnerWindow() const { return mOwnerWindow; }
 		CM::Viewport* getTarget() const { return mTarget; }
-		const std::vector<GUIElement*>& getElements() const { return mElements; }
+		const CM::vector<GUIElement*>::type& getElements() const { return mElements; }
 
 		void _updateLayout();
 	protected:
@@ -65,8 +65,8 @@ namespace BansheeEngine
 
 		const CM::RenderWindow* mOwnerWindow;
 		CM::Viewport* mTarget;
-		std::vector<GUIElement*> mElements;
-		std::vector<GUIArea*> mAreas;
+		CM::vector<GUIElement*>::type mElements;
+		CM::vector<GUIArea*>::type mAreas;
 		UINT8 mDepth;
 
 		CM::Vector3 mLastFramePosition;
@@ -75,8 +75,8 @@ namespace BansheeEngine
 
 		mutable bool mWidgetIsDirty;
 		mutable CM::Rect mBounds;
-		mutable std::vector<CM::HMesh> mCachedMeshes;
-		mutable std::vector<CM::HMaterial> mCachedMaterials;
+		mutable CM::vector<CM::HMesh>::type mCachedMeshes;
+		mutable CM::vector<CM::HMaterial>::type mCachedMaterials;
 
 		const GUISkin* mSkin;
 		static GUISkin DefaultSkin;

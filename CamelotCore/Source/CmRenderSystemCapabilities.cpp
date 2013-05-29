@@ -73,7 +73,7 @@ namespace CamelotFramework {
 	{
 	}
 	//---------------------------------------------------------------------
-	std::vector<CamelotFramework::String> RenderSystemCapabilities::msGPUVendorStrings;
+	vector<CamelotFramework::String>::type RenderSystemCapabilities::msGPUVendorStrings;
 	//---------------------------------------------------------------------
 	GPUVendor RenderSystemCapabilities::vendorFromString(const String& vendorString)
 	{

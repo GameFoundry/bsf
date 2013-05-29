@@ -39,7 +39,7 @@ namespace BansheeEngine
 		void setActive(const CM::String& renderSystemName);
 
 	private:
-		std::unordered_map<CM::String, BuiltinMaterialFactory*> mAvailableFactories;
+		CM::unordered_map<CM::String, BuiltinMaterialFactory*>::type mAvailableFactories;
 		BuiltinMaterialFactory* mActiveFactory;
 	};
 }

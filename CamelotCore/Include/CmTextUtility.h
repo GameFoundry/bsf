@@ -57,7 +57,7 @@ namespace CamelotFramework
 			 * 			
 			 *			One character is represented with a single quad. Some pages might be empty.
 			 */
-			std::vector<UINT32> getNumQuadsPerPage() const;
+			vector<UINT32>::type getNumQuadsPerPage() const;
 
 			/**
 			 * @brief	Fills the vertex/uv/index buffers for the specified page, with all the character data
@@ -100,18 +100,18 @@ namespace CamelotFramework
 		public:
 			~TextData();
 
-			const std::vector<TextLine>& getLines() const { return mLines; }
-			const std::vector<HTexture>& getTexturePages() const { return mTexturePages; }
-			const std::vector<UINT32>& getNumQuadsPerPage() const  { return mQuadsPerPage; }
+			const vector<TextLine>::type& getLines() const { return mLines; }
+			const vector<HTexture>::type& getTexturePages() const { return mTexturePages; }
+			const vector<UINT32>::type& getNumQuadsPerPage() const  { return mQuadsPerPage; }
 			UINT32 getWidth() const;
 			UINT32 getHeight() const;
 
 		private:
 			friend class TextUtility;
 
-			std::vector<UINT32> mQuadsPerPage;
-			std::vector<TextLine> mLines;
-			std::vector<HTexture> mTexturePages;
+			vector<UINT32>::type mQuadsPerPage;
+			vector<TextLine>::type mLines;
+			vector<HTexture>::type mTexturePages;
 		};
 
 		static std::shared_ptr<TextUtility::TextData> getTextData(const String& text, const HFont& font, UINT32 fontSize, UINT32 width = 0, UINT32 height = 0, bool wordWrap = false);

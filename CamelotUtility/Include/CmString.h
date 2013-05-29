@@ -312,7 +312,7 @@ namespace CamelotFramework {
         Strings must not contain spaces since space is used as a delimiter in
         the output.
     */
-    CM_UTILITY_EXPORT String toString(const std::vector<CamelotFramework::String>& val);
+    CM_UTILITY_EXPORT String toString(const vector<CamelotFramework::String>::type& val);
 
     /** Converts a String to a float. 
     @returns

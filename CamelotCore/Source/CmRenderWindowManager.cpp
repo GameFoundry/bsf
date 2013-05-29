@@ -31,7 +31,7 @@ namespace CamelotFramework
 		}
 	}
 
-	std::vector<RenderWindow*> RenderWindowManager::getRenderWindows() const
+	vector<RenderWindow*>::type RenderWindowManager::getRenderWindows() const
 	{
 		CM_LOCK_MUTEX(mWindowMutex);
 

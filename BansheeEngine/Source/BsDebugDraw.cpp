@@ -104,7 +104,7 @@ namespace BansheeEngine
 		UINT32 lineVertexOffset = 0;
 		UINT32 triangleIndexOffset = 0;
 		UINT32 triangleVertexOffset = 0;
-		std::vector<DebugDrawCommand> newCommands;
+		vector<DebugDrawCommand>::type newCommands;
 		for(auto& command : mCommands)
 		{
 			if(command.type == DebugDrawType::Line)

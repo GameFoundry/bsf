@@ -13,12 +13,12 @@ namespace CamelotFramework
 		*/
 		RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow);
 
-		std::vector<RenderWindow*> getRenderWindows() const;
+		vector<RenderWindow*>::type getRenderWindows() const;
 	protected:
 		friend class RenderWindow;
 
 		CM_MUTEX(mWindowMutex);
-		std::vector<RenderWindow*> mCreatedWindows;
+		vector<RenderWindow*>::type mCreatedWindows;
 
 		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow) = 0;
 

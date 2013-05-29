@@ -92,7 +92,7 @@ namespace BansheeEngine
 
 	protected:
 		mutable CM::Rect mBounds;
-		mutable std::vector<SpriteRenderElement> mCachedRenderElements;
+		mutable CM::vector<SpriteRenderElement>::type mCachedRenderElements;
 
 		void updateBounds() const;
 		void clearMesh() const;

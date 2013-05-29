@@ -251,7 +251,7 @@ namespace CamelotFramework
 		/// GPU Vendor
 		GPUVendor mVendor;
 
-		static std::vector<CamelotFramework::String> msGPUVendorStrings;
+		static vector<CamelotFramework::String>::type msGPUVendorStrings;
 		static void initVendorStrings();
 
 		/// The number of world matrices available

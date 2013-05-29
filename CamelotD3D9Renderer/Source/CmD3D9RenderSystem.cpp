@@ -371,7 +371,7 @@ namespace CamelotFramework
 
 		// Read all the buffer data so we can assign it. Not the most efficient way of accessing data
 		// but it is required in order to have standardized buffer interface.
-		std::unordered_map<UINT32, UINT8*> bufferData;
+		unordered_map<UINT32, UINT8*>::type bufferData;
 
 		for(auto& curParam : paramDesc.params)
 		{

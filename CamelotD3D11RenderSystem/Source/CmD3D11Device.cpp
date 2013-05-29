@@ -124,7 +124,7 @@ namespace CamelotFramework
 
 		D3D11_INFO_QUEUE_FILTER filter;
 		ZeroMemory(&filter, sizeof(D3D11_INFO_QUEUE_FILTER));
-		std::vector<D3D11_MESSAGE_SEVERITY> severityList;
+		vector<D3D11_MESSAGE_SEVERITY>::type severityList;
 
 		switch(exceptionsErrorLevel)
 		{

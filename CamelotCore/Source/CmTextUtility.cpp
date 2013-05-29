@@ -151,9 +151,9 @@ namespace CamelotFramework
 		return word;
 	}
 
-	std::vector<UINT32> TextUtility::TextLine::getNumQuadsPerPage() const
+	vector<UINT32>::type TextUtility::TextLine::getNumQuadsPerPage() const
 	{
-		std::vector<UINT32> quadsPerPage;
+		vector<UINT32>::type quadsPerPage;
 		for(auto wordIter = mWords.begin(); wordIter != mWords.end(); ++wordIter)
 		{
 			if(!wordIter->isSpacer())

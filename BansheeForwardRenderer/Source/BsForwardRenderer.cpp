@@ -37,7 +37,7 @@ namespace BansheeEngine
 		const vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
 
 		// Find all unique render targets
-		std::unordered_set<RenderTargetPtr> renderTargets;
+		unordered_set<RenderTargetPtr>::type renderTargets;
 		for(auto& camera : allCameras)
 		{
 			RenderTargetPtr target = camera->getViewport()->getTarget();

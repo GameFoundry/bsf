@@ -96,8 +96,8 @@ namespace BansheeEngine
 		bool _isDirty();
 
 	protected:
-		std::vector<GUILayoutEntry> mChildren;	
-		std::vector<CM::Int2> mOptimalSizes;
+		CM::vector<GUILayoutEntry>::type mChildren;	
+		CM::vector<CM::Int2>::type mOptimalSizes;
 		UINT32 mOptimalWidth;
 		UINT32 mOptimalHeight;
 

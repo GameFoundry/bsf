@@ -150,8 +150,8 @@ namespace CamelotFramework
 
 	UINT32 CommandQueueBase::MaxCommandQueueIdx = 0;
 
-	std::unordered_set<CommandQueueBase::QueueBreakpoint, CommandQueueBase::QueueBreakpoint::HashFunction, 
-		CommandQueueBase::QueueBreakpoint::EqualFunction> CommandQueueBase::SetBreakpoints;
+	unordered_set<CommandQueueBase::QueueBreakpoint, CommandQueueBase::QueueBreakpoint::HashFunction, 
+		CommandQueueBase::QueueBreakpoint::EqualFunction>::type CommandQueueBase::SetBreakpoints;
 
 	inline size_t CommandQueueBase::QueueBreakpoint::HashFunction::operator()(const QueueBreakpoint& v) const
 	{

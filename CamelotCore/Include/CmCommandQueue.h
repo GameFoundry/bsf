@@ -229,7 +229,7 @@ namespace CamelotFramework
 		UINT32 mCommandQueueIdx;
 
 		static UINT32 MaxCommandQueueIdx;
-		static std::unordered_set<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction> SetBreakpoints;
+		static unordered_set<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction>::type SetBreakpoints;
 		CM_STATIC_MUTEX(CommandQueueBreakpointMutex);
 
 		static void breakIfNeeded(UINT32 queueIdx, UINT32 commandIdx);

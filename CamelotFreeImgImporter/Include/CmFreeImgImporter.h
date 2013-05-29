@@ -37,7 +37,7 @@ namespace CamelotFramework
 		virtual HResource import(const String& filePath, ConstImportOptionsPtr importOptions);
 	private:
 		vector<String>::type mExtensions;
-		std::unordered_map<String, int> mExtensionToFID;
+		unordered_map<String, int>::type mExtensionToFID;
 
 		String magicNumToExtension(const UINT8* magic, UINT32 maxBytes) const;
 		TextureDataPtr importRawImage(DataStreamPtr fileData);

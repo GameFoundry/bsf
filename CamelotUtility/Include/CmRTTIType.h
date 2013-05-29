@@ -288,7 +288,7 @@ namespace CamelotFramework
 		void throwCircularRefException(const String& myType, const String& otherType) const;
 
 	private:
-		std::vector<RTTIField*> mFields;
+		vector<RTTIField*>::type mFields;
 	};
 
 	/**

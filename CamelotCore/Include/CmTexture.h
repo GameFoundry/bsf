@@ -208,7 +208,7 @@ namespace CamelotFramework {
 			UINT32 refCount;
 		};
 
-		std::unordered_map<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction> mTextureViews;
+		unordered_map<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction>::type mTextureViews;
 
     protected:
 		friend class TextureManager;

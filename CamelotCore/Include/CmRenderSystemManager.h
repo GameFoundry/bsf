@@ -15,7 +15,7 @@ namespace CamelotFramework
 
 		void registerRenderSystemFactory(RenderSystemFactoryPtr factory);
 	private:
-		std::vector<RenderSystemFactoryPtr> mAvailableFactories;
+		vector<RenderSystemFactoryPtr>::type mAvailableFactories;
 	};
 }
 
