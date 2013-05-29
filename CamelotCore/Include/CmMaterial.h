@@ -45,7 +45,7 @@ namespace CamelotFramework
 			StructData(void* _data, UINT32 _size)
 				:size(_size)
 			{
-				data = std::shared_ptr<void>(CM_NEW_BYTES(_size, ScratchAlloc), &MemAllocBytesDeleter<ScratchAlloc>::deleter);
+				data = std::shared_ptr<void>(CM_NEW_BYTES(_size, ScratchAlloc), &cm_free<ScratchAlloc>);
 				memcpy(data.get(), _data, size);
 			}
 

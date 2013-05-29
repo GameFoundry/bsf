@@ -18,6 +18,9 @@ namespace CamelotFramework
 		{
 			if(children != nullptr)
 				CM_DELETE_ARRAY(children, TexAtlasNode, 2, ScratchAlloc);
+
+			int myVal = *cm_new<int, GenAlloc>();
+			float myVal2 = *cm_new<float, GenAlloc>();
 		}
 
 		UINT32 x, y, width, height;

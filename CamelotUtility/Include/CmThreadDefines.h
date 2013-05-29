@@ -66,7 +66,7 @@ THE SOFTWARE
 // Thread objects and related functions
 #define CM_THREAD_TYPE boost::thread
 #define CM_THREAD_CREATE(name, worker) boost::thread* name = new (CamelotFramework::MemoryAllocator<CamelotFramework::GenAlloc>::allocate(sizeof(boost::thread))) boost::thread(worker);
-#define CM_THREAD_DESTROY(name) CamelotFramework::__cm_destruct<boost::thread, CamelotFramework::GenAlloc>(name);
+#define CM_THREAD_DESTROY(name) CamelotFramework::cm_delete<CamelotFramework::GenAlloc, boost::thread>(name);
 #define CM_THREAD_HARDWARE_CONCURRENCY boost::thread::hardware_concurrency()
 #define CM_THREAD_CURRENT_ID boost::this_thread::get_id()
 #define CM_THREAD_ID_TYPE boost::thread::id

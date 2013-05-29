@@ -3,6 +3,8 @@
 #undef min
 #undef max
 
+#include <boost/preprocessor.hpp>
+
 namespace CamelotFramework
 {
 	/**
@@ -40,7 +42,7 @@ namespace CamelotFramework
 	public:
 		static void deleter(T* ptr)
 		{
-			__cm_destruct<T, category>(ptr);
+			cm_delete<category, T>(ptr);
 		}
 	};
 
@@ -66,18 +68,64 @@ namespace CamelotFramework
 	}
 
 	template<class T, class category> 
-	inline void __cm_destruct(T* ptr)
+	inline void __cm_destruct_array(T* ptr, UINT32 count)
+	{
+		// This might seem a bit weird if T is a built-in type or a pointer, but
+		// standard allows us to call destructor on such types (they don't do anything)
+		for(unsigned int i = 0; i < count; i++)
+			ptr[i].~T();
+
+		MemoryAllocator<category>::freeArray(ptr, count);
+	}
+
+	template<class category> 
+	inline void* cm_alloc(UINT32 count)
+	{
+		return MemoryAllocator<category>::allocate(count);
+	}
+
+	template<class T, class category> 
+	inline T* cm_new(UINT32 count)
+	{
+		return new (cm_alloc<category>(count)) T();
+	}
+
+	template<class T, class category> 
+	inline T* cm_newN(UINT32 count)
+	{
+		T* ptr = (T*)MemoryAllocator<category>::allocateArray(sizeof(T), count);
+
+		for(unsigned int i = 0; i < count; i++)
+			new ((void*)&ptr[i]) T;
+
+		return ptr;
+	}
+
+#define MAKE_CM_NEW(z, n, unused)                                     \
+	template<class Type, class category BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+		return new (cm_alloc<category>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
+	}
+
+	BOOST_PP_REPEAT(9, MAKE_CM_NEW, ~)
+
+	template<class category> 
+	inline void cm_free(void* ptr)
+	{
+		MemoryAllocator<category>::free(ptr);
+	}
+
+	template<class category, class T> 
+	inline void cm_delete(T* ptr)
 	{
 		(ptr)->~T();
 
 		MemoryAllocator<category>::free(ptr);
 	}
 
-	template<class T, class category> 
-	inline void __cm_destruct_array(T* ptr, UINT32 count)
+	template<class category, class T> 
+	inline void cm_deleteN(T* ptr, UINT32 count)
 	{
-		// This might seem a bit weird if T is a built-in type or a pointer, but
-		// standard allows us to call destructor on such types (they don't do anything)
 		for(unsigned int i = 0; i < count; i++)
 			ptr[i].~T();
 
@@ -111,14 +159,13 @@ namespace CamelotFramework
 #define CM_NEW_ARRAY(T, count, category) CamelotFramework::__cm_construct_array<T, category>(count)
 #define CM_DELETE(ptr, T, category) {(ptr)->~T(); CamelotFramework::MemoryAllocator<category>::free(ptr);}
 #define CM_DELETE_BYTES(ptr, category) CamelotFramework::MemoryAllocator<category>::free(ptr)
-#define CM_DELETE_ARRAY(ptr, T, count, category) CamelotFramework::__cm_destruct_array<T, category>(ptr, count)
+#define CM_DELETE_ARRAY(ptr, T, count, category) CamelotFramework::cm_deleteN<category>(ptr, count)
 
 namespace CamelotFramework
 {
 	// Allocators we can use in the standard library
-	
-	template <class T>
-	class StdGenAlloc 
+    template <class T, class Category = GenAlloc>
+	class StdAlloc 
 	{
 		public:
 		// type definitions
@@ -134,7 +181,7 @@ namespace CamelotFramework
 		template <class U>
 		struct rebind 
 		{
-			typedef StdGenAlloc<U> other;
+			typedef StdAlloc<U, Category> other;
 		};
 
 		// return address of values
@@ -150,17 +197,17 @@ namespace CamelotFramework
 		/* constructors and destructor
 		* - nothing to do because the allocator has no state
 		*/
-		StdGenAlloc() throw() 
+		StdAlloc() throw() 
 		{ }
 
-		StdGenAlloc(const StdGenAlloc&) throw() 
+		StdAlloc(const StdAlloc&) throw() 
 		{ }
 
 		template <class U>
-		StdGenAlloc (const StdGenAlloc<U>&) throw() 
+		StdAlloc (const StdAlloc<U, Category>&) throw() 
 		{ }
 
-		~StdGenAlloc() throw() 
+		~StdAlloc() throw() 
 		{ }
 
 		// return maximum number of elements that can be allocated
@@ -172,7 +219,7 @@ namespace CamelotFramework
 		// allocate but don't initialize num elements of type T
 		pointer allocate (size_type num, const void* = 0) 
 		{
-			pointer ret = (pointer)(CM_NEW_BYTES((UINT32)num*sizeof(T), GenAlloc));
+			pointer ret = (pointer)(CM_NEW_BYTES((UINT32)num*sizeof(T), Category));
 			return ret;
 		}
 
@@ -194,19 +241,19 @@ namespace CamelotFramework
 		void deallocate (pointer p, size_type num) 
 		{
 			// print message and deallocate memory with global delete
-			CM_DELETE_BYTES((void*)p, GenAlloc);
+			CM_DELETE_BYTES((void*)p, Category);
 		}
 	};
 
    // return that all specializations of this allocator are interchangeable
-   template <class T1, class T2>
-   bool operator== (const StdGenAlloc<T1>&,
-                    const StdGenAlloc<T2>&) throw() {
+   template <class T1, class T2, class Category>
+   bool operator== (const StdAlloc<T1, Category>&,
+                    const StdAlloc<T2, Category>&) throw() {
        return true;
    }
-   template <class T1, class T2>
-   bool operator!= (const StdGenAlloc<T1>&,
-                    const StdGenAlloc<T2>&) throw() {
+   template <class T1, class T2, class Category>
+   bool operator!= (const StdAlloc<T1, Category>&,
+                    const StdAlloc<T2, Category>&) throw() {
        return false;
    }
 }

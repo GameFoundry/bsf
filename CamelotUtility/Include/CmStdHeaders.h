@@ -146,65 +146,73 @@ namespace CamelotFramework
 #endif
 
 	// Standard containers, for easier access in my own namespace
-	template <typename T, typename A = StdGenAlloc<T>> 
+	template <typename T, typename A = StdAlloc<T>> 
 	struct deque 
 	{ 
 		typedef typename std::deque<T, A> type;    
 	}; 
 
-	template <typename T, typename A = StdGenAlloc<T>> 
+	template <typename T, typename A = StdAlloc<T>> 
 	struct vector 
 	{ 
 		typedef typename std::vector<T, A> type;    
 	}; 
 
-	template <typename T, typename A = StdGenAlloc<T>> 
+	template <typename T, typename A = StdAlloc<T>> 
 	struct list 
 	{ 
 		typedef typename std::list<T, A> type;    
 	}; 
 
-	template <typename T, typename A = StdGenAlloc<T>> 
+	template <typename T, typename A = StdAlloc<T>> 
 	struct stack 
 	{ 
 		typedef typename std::stack<T, std::deque<T, A>> type;    
 	}; 
 
-	template <typename T, typename P = std::less<T>, typename A = StdGenAlloc<T>> 
+	template <typename T, typename P = std::less<T>, typename A = StdAlloc<T>> 
 	struct set 
 	{ 
 		typedef typename std::set<T, P, A> type;    
 	}; 
 
-	template <typename K, typename V, typename P = std::less<K>, typename A = StdGenAlloc<std::pair<const K, V>>> 
+	template <typename K, typename V, typename P = std::less<K>, typename A = StdAlloc<std::pair<const K, V>>> 
 	struct map 
 	{ 
 		typedef typename std::map<K, V, P, A> type; 
 	}; 
 
-	template <typename K, typename V, typename P = std::less<K>, typename A = StdGenAlloc<std::pair<const K, V>>> 
+	template <typename K, typename V, typename P = std::less<K>, typename A = StdAlloc<std::pair<const K, V>>> 
 	struct multimap 
 	{ 
 		typedef typename std::multimap<K, V, P, A> type; 
 	}; 
 
-	template <typename T, typename H = std::hash<T>, typename C = std::equal_to<T>, typename A = StdGenAlloc<T>> 
+	template <typename T, typename H = std::hash<T>, typename C = std::equal_to<T>, typename A = StdAlloc<T>> 
 	struct unordered_set 
 	{ 
 		typedef typename std::unordered_set<T, H, C, A> type;    
 	}; 
 
-	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdGenAlloc<std::pair<const K, V>>> 
+	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
 	struct unordered_map 
 	{ 
 		typedef typename std::unordered_map<K, V, H, C, A> type; 
 	}; 
 
-	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdGenAlloc<std::pair<const K, V>>> 
+	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
 	struct unordered_multimap 
 	{ 
 		typedef typename std::unordered_multimap<K, V, H, C, A> type; 
 	}; 
+
+//#define MAKE_CM_MAKE_SHARED(z, n, unused)                                     \
+//	template<class Type, class category BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+//	Type* cm_make_shared(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+//	return std::allocate_shared<Type>(StdAlloc<category> BOOST_PP_ENUM_TRAILING_PARAMS (n, t));     \
+//	}
+//
+//	BOOST_PP_REPEAT(9, MAKE_CM_MAKE_SHARED, ~)
 
 	// TODO - Once VC2012 grows up and adds proper C++11 support, uncomment this
 	//template <typename T, typename A = char> 

@@ -57,7 +57,7 @@ namespace CamelotFramework
 		{
 			auto firstElem = mInputLayoutMap.begin();
 
-			CM_DELETE(firstElem->first.bufferDeclElements, list<VertexElement BOOST_PP_COMMA() StdGenAlloc<VertexElement>>, PoolAlloc);
+			CM_DELETE(firstElem->first.bufferDeclElements, list<VertexElement BOOST_PP_COMMA() StdAlloc<VertexElement>>, PoolAlloc);
 			SAFE_RELEASE(firstElem->second->inputLayout);
 			CM_DELETE(firstElem->second, InputLayoutEntry, PoolAlloc);
 
@@ -168,7 +168,7 @@ namespace CamelotFramework
 		{
 			auto inputLayoutIter = mInputLayoutMap.find(iter->second);
 
-			CM_DELETE(inputLayoutIter->first.bufferDeclElements, list<VertexElement BOOST_PP_COMMA() StdGenAlloc<VertexElement>>, PoolAlloc);
+			CM_DELETE(inputLayoutIter->first.bufferDeclElements, list<VertexElement BOOST_PP_COMMA() StdAlloc<VertexElement>>, PoolAlloc);
 			SAFE_RELEASE(inputLayoutIter->second->inputLayout);
 			CM_DELETE(inputLayoutIter->second, InputLayoutEntry, PoolAlloc);
 
