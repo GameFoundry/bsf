@@ -19,11 +19,10 @@ namespace CamelotFramework
 	{
 		ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(req->getData());
 
-		ResourceLoadResponsePtr resResponse = ResourceLoadResponsePtr(CM_NEW(Resources::ResourceLoadResponse, ScratchAlloc) Resources::ResourceLoadResponse(),
-			&MemAllocDeleter<Resources::ResourceLoadResponse, ScratchAlloc>::deleter);
+		ResourceLoadResponsePtr resResponse = cm_shared_ptr<Resources::ResourceLoadResponse, ScratchAlloc>();
 		resResponse->rawResource = gResources().loadFromDiskAndDeserialize(resRequest->filePath);
 
-		return CM_NEW(WorkQueue::Response, ScratchAlloc) WorkQueue::Response(req, true, resResponse);
+		return cm_new<WorkQueue::Response, ScratchAlloc>(req, true, resResponse);
 	}
 
 	bool Resources::ResourceResponseHandler::canHandleResponse(const WorkQueue::Response* res, const WorkQueue* srcQ)
@@ -74,10 +73,10 @@ namespace CamelotFramework
 
 		loadMetaData();
 
-		mWorkQueue = CM_NEW(WorkQueue, GenAlloc) WorkQueue();
+		mWorkQueue = cm_new<WorkQueue>();
 		mWorkQueueChannel = mWorkQueue->getChannel("Resources");
-		mRequestHandler = CM_NEW(ResourceRequestHandler, GenAlloc) ResourceRequestHandler();
-		mResponseHandler = CM_NEW(ResourceResponseHandler, GenAlloc) ResourceResponseHandler();
+		mRequestHandler = cm_new<ResourceRequestHandler>();
+		mResponseHandler = cm_new<ResourceResponseHandler>();
 
 		mWorkQueue->addRequestHandler(mWorkQueueChannel, mRequestHandler);
 		mWorkQueue->addResponseHandler(mWorkQueueChannel, mResponseHandler);
@@ -205,8 +204,7 @@ namespace CamelotFramework
 		HResource newResource;
 		newResource.setUUID(uuid); // UUID needs to be set immediately if the resource gets loaded async
 
-		ResourceLoadRequestPtr resRequest = ResourceLoadRequestPtr(CM_NEW(Resources::ResourceLoadRequest, ScratchAlloc) Resources::ResourceLoadRequest(),
-			&MemAllocDeleter<Resources::ResourceLoadRequest, ScratchAlloc>::deleter);
+		ResourceLoadRequestPtr resRequest = cm_shared_ptr<Resources::ResourceLoadRequest, ScratchAlloc>();
 		resRequest->filePath = filePath;
 		resRequest->resource = newResource;
 
@@ -372,8 +370,7 @@ namespace CamelotFramework
 		if(metaExists_UUID(uuid))
 			CM_EXCEPT(InternalErrorException, "Resource with the same UUID already exists. UUID: " + uuid);
 
-		ResourceMetaDataPtr dbEntry(CM_NEW(ResourceMetaData, GenAlloc) ResourceMetaData(),
-			&MemAllocDeleter<ResourceMetaData, GenAlloc>::deleter);
+		ResourceMetaDataPtr dbEntry = cm_shared_ptr<ResourceMetaData>();
 		dbEntry->mPath = filePath;
 		dbEntry->mUUID = uuid;
 

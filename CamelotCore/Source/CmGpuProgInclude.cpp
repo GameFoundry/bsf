@@ -10,8 +10,8 @@ namespace CamelotFramework
 
 	HGpuProgInclude GpuProgInclude::create(const String& includeString)
 	{
-		GpuProgIncludePtr gpuProgIncludePtr = GpuProgIncludePtr(CM_NEW(GpuProgInclude, PoolAlloc) GpuProgInclude(includeString), 
-			&CoreObject::_deleteDelayed<GpuProgInclude, PoolAlloc>);
+		GpuProgIncludePtr gpuProgIncludePtr = cm_core_ptr<GpuProgInclude, PoolAlloc>(
+			new (cm_alloc<GpuProgInclude, PoolAlloc>()) GpuProgInclude(includeString));
 		gpuProgIncludePtr->setThisPtr(gpuProgIncludePtr);
 		gpuProgIncludePtr->initialize();
 

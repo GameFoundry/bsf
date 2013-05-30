@@ -10,7 +10,7 @@ namespace CamelotFramework
 	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
 		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads), mMaxDebugIdx(0)
 	{
-		mCommands = CM_NEW(std::queue<QueuedCommand>, PoolAlloc) std::queue<QueuedCommand>();
+		mCommands = cm_new<std::queue<QueuedCommand>, PoolAlloc>();
 
 		{
 			CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
@@ -22,14 +22,14 @@ namespace CamelotFramework
 	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
 		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads)
 	{
-		mCommands = CM_NEW(std::queue<QueuedCommand>, PoolAlloc) std::queue<QueuedCommand>();
+		mCommands = cm_new<std::queue<QueuedCommand>, PoolAlloc>();
 	}
 #endif
 
 	CommandQueueBase::~CommandQueueBase()
 	{
 		if(mCommands != nullptr)
-			CM_DELETE(mCommands, queue<QueuedCommand>, PoolAlloc);
+			cm_delete(mCommands);
 	}
 
 	AsyncOp CommandQueueBase::queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
@@ -73,7 +73,7 @@ namespace CamelotFramework
 	std::queue<QueuedCommand>* CommandQueueBase::flush()
 	{
 		std::queue<QueuedCommand>* oldCommands = mCommands;
-		mCommands = CM_NEW(std::queue<QueuedCommand>, PoolAlloc) std::queue<QueuedCommand>();
+		mCommands = cm_new<std::queue<QueuedCommand>, PoolAlloc>();
 
 		return oldCommands;
 	}

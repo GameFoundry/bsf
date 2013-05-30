@@ -5,7 +5,7 @@ namespace CamelotFramework
 {
 	MaterialPtr MaterialManager::create() const
 	{
-		MaterialPtr newMat(CM_NEW(Material, PoolAlloc) Material(), &CoreObject::_deleteDelayed<Material, PoolAlloc>);
+		MaterialPtr newMat = cm_core_ptr<Material, PoolAlloc>(new (cm_alloc<Material, PoolAlloc>()) Material());
 		newMat->setThisPtr(newMat);
 		newMat->initialize();
 
@@ -14,7 +14,7 @@ namespace CamelotFramework
 
 	MaterialPtr MaterialManager::create(ShaderPtr shader) const
 	{
-		MaterialPtr newMat(CM_NEW(Material, PoolAlloc) Material(), &CoreObject::_deleteDelayed<Material, PoolAlloc>);
+		MaterialPtr newMat = cm_core_ptr<Material, PoolAlloc>(new (cm_alloc<Material, PoolAlloc>()) Material());
 		newMat->setThisPtr(newMat);
 		newMat->initialize();
 		newMat->setShader(shader);

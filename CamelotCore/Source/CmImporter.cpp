@@ -14,8 +14,8 @@ namespace CamelotFramework
 {
 	Importer::Importer()
 	{
-		registerAssetImporter(CM_NEW(GpuProgIncludeImporter, GenAlloc) GpuProgIncludeImporter());
-		registerAssetImporter(CM_NEW(GpuProgramImporter, GenAlloc) GpuProgramImporter());
+		registerAssetImporter(cm_new<GpuProgIncludeImporter>());
+		registerAssetImporter(cm_new<GpuProgramImporter>());
 	}
 
 	Importer::~Importer()

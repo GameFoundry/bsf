@@ -75,8 +75,7 @@ namespace CamelotFramework
 		GameObjectHandle()
 			:GameObjectHandleBase()
 		{	
-			mData = std::shared_ptr<GameObjectHandleData>(CM_NEW(GameObjectHandleData, PoolAlloc) GameObjectHandleData(),
-				&MemAllocDeleter<GameObjectHandleData, PoolAlloc>::deleter);
+			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>();
 		}
 
 		template <typename T1>
@@ -114,8 +113,7 @@ namespace CamelotFramework
 		explicit GameObjectHandle(T* ptr, void(*deleter)(GameObject*) = nullptr)
 			:GameObjectHandleBase()
 		{
-			mData = std::shared_ptr<GameObjectHandleData>(CM_NEW(GameObjectHandleData, PoolAlloc) GameObjectHandleData((GameObject*)ptr, deleter),
-				&MemAllocDeleter<GameObjectHandleData, PoolAlloc>::deleter);
+			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>((GameObject*)ptr, deleter);
 		}
 	};
 

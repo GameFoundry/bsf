@@ -50,8 +50,7 @@ namespace CamelotFramework
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return ImportOptionsPtr(CM_NEW(GpuProgramImportOptions, PoolAlloc) GpuProgramImportOptions(),
-				&MemAllocDeleter<GpuProgramImportOptions, PoolAlloc>::deleter);
+			return cm_shared_ptr<GpuProgramImportOptions, PoolAlloc>();
 		}
 	};
 }

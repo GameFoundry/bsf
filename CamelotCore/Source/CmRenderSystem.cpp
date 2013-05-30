@@ -91,7 +91,7 @@ namespace CamelotFramework {
 	RenderWindowPtr RenderSystem::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
 		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mCommandQueue = CM_NEW(CommandQueue<CommandQueueSync>, GenAlloc) CommandQueue<CommandQueueSync>(CM_THREAD_CURRENT_ID, true);
+		mCommandQueue = cm_new<CommandQueue<CommandQueueSync>>(CM_THREAD_CURRENT_ID, true);
 		mPrimaryWindowDesc = primaryWindowDesc;
 
 		MemStack::setupHeap(HID_Render);
@@ -109,7 +109,7 @@ namespace CamelotFramework {
 		mGeometryProgramBound = false;
 		mFragmentProgramBound = false;
 
-		mSyncedRenderContext = CM_NEW(DeferredRenderContext<CommandQueueSync>, GenAlloc) DeferredRenderContext<CommandQueueSync>(this, CM_THREAD_CURRENT_ID);
+		mSyncedRenderContext = cm_new<DeferredRenderContext<CommandQueueSync>>(this, CM_THREAD_CURRENT_ID);
 	}
 
 	void RenderSystem::destroy_internal()
@@ -118,7 +118,7 @@ namespace CamelotFramework {
 
 		if(mSyncedRenderContext != nullptr)
 		{
-			CM_DELETE(mSyncedRenderContext, DeferredRenderContext<CommandQueueSync>, GenAlloc);
+			cm_delete(mSyncedRenderContext);
 		}
 	}
 
@@ -301,7 +301,7 @@ namespace CamelotFramework {
 	void RenderSystem::initRenderThread()
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
-		mRenderThreadFunc = CM_NEW(RenderWorkerFunc, GenAlloc) RenderWorkerFunc(this);
+		mRenderThreadFunc = cm_new<RenderWorkerFunc>(this);
 
 #if CM_THREAD_SUPPORT
 		CM_THREAD_CREATE(t, *mRenderThreadFunc);
@@ -385,8 +385,7 @@ namespace CamelotFramework {
 
 	RenderContextPtr RenderSystem::createDeferredContext()
 	{
-		return RenderContextPtr(CM_NEW(DeferredRenderContext<CommandQueueNoSync>, GenAlloc) DeferredRenderContext<CommandQueueNoSync>(this, CM_THREAD_CURRENT_ID), 
-			&MemAllocDeleter<DeferredRenderContext<CommandQueueNoSync>, GenAlloc>::deleter);
+		return cm_shared_ptr<DeferredRenderContext<CommandQueueNoSync>>(this, CM_THREAD_CURRENT_ID);
 	}
 
 	SyncedRenderContext& RenderSystem::getSyncedDeferredContext()

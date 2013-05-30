@@ -57,16 +57,16 @@ namespace CamelotFramework {
     HighLevelGpuProgramPtr CgProgramFactory::create(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes)
     {
-		CgProgram* prog = CM_NEW(CgProgram, PoolAlloc) CgProgram(mCgContext, source, entryPoint, sLanguageName, gptype, profile, includes);
+		CgProgram* prog = new (cm_alloc<CgProgram, PoolAlloc>()) CgProgram(mCgContext, source, entryPoint, sLanguageName, gptype, profile, includes);
 
-		return HighLevelGpuProgramPtr(prog, &CoreObject::_deleteDelayed<CgProgram, PoolAlloc>);
+		return cm_core_ptr<CgProgram, PoolAlloc>(prog);
     }
 	//----------------------------------------------------------------------
 	HighLevelGpuProgramPtr CgProgramFactory::create()
 	{
-		CgProgram* prog = CM_NEW(CgProgram, PoolAlloc) CgProgram(mCgContext, "", "", sLanguageName, GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
+		CgProgram* prog = new (cm_alloc<CgProgram, PoolAlloc>()) CgProgram(mCgContext, "", "", sLanguageName, GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
 
-		return HighLevelGpuProgramPtr(prog, &CoreObject::_deleteDelayed<CgProgram, PoolAlloc>);
+		return cm_core_ptr<CgProgram, PoolAlloc>(prog);
 	}
     //-----------------------------------------------------------------------
 }

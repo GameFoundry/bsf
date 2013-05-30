@@ -46,17 +46,17 @@ namespace CamelotFramework
 	{
 		MemStack::setupHeap(HID_Main);
 
-		Time::startUp(CM_NEW(Time, GenAlloc) Time());
-		Input::startUp(CM_NEW(Input, GenAlloc) Input());
-		DynLibManager::startUp(CM_NEW(DynLibManager, GenAlloc) DynLibManager());
-		CoreGpuObjectManager::startUp(CM_NEW(CoreGpuObjectManager, GenAlloc) CoreGpuObjectManager());
-		Resources::startUp(CM_NEW(Resources, GenAlloc) Resources(desc.resourceCacheDirectory));
-		HighLevelGpuProgramManager::startUp(CM_NEW(HighLevelGpuProgramManager, GenAlloc) HighLevelGpuProgramManager());
+		Time::startUp(cm_new<Time>());
+		Input::startUp(cm_new<Input>());
+		DynLibManager::startUp(cm_new<DynLibManager>());
+		CoreGpuObjectManager::startUp(cm_new<CoreGpuObjectManager>());
+		Resources::startUp(cm_new<Resources>(desc.resourceCacheDirectory));
+		HighLevelGpuProgramManager::startUp(cm_new<HighLevelGpuProgramManager>());
 
-		RenderSystemManager::startUp(CM_NEW(RenderSystemManager, GenAlloc) RenderSystemManager());
+		RenderSystemManager::startUp(cm_new<RenderSystemManager>());
 		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
 
-		RendererManager::startUp(CM_NEW(RendererManager, GenAlloc) RendererManager());
+		RendererManager::startUp(cm_new<RendererManager>());
 
 		loadPlugin(desc.renderer);
 		RendererManager::instance().setActive(desc.renderer);
@@ -68,11 +68,11 @@ namespace CamelotFramework
 
 		SceneManager::startUp((SceneManager*)loadPlugin(desc.sceneManager));
 
-		MeshManager::startUp(CM_NEW(MeshManager, GenAlloc) MeshManager());
-		MaterialManager::startUp(CM_NEW(MaterialManager, GenAlloc) MaterialManager());
-		FontManager::startUp(CM_NEW(FontManager, GenAlloc) FontManager());
+		MeshManager::startUp(cm_new<MeshManager>());
+		MaterialManager::startUp(cm_new<MaterialManager>());
+		FontManager::startUp(cm_new<FontManager>());
 
-		Importer::startUp(CM_NEW(Importer, GenAlloc) Importer());
+		Importer::startUp(cm_new<Importer>());
 
 		for(auto& importerName : desc.importers)
 			loadPlugin(importerName);

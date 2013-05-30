@@ -6,8 +6,7 @@ namespace CamelotFramework
 {
 	ImportOptionsPtr SpecificImporter::createImportOptions() const
 	{
-		return ImportOptionsPtr(CM_NEW(ImportOptions, PoolAlloc) ImportOptions(),
-			&MemAllocDeleter<ImportOptions, PoolAlloc>::deleter);
+		return cm_shared_ptr<ImportOptions, PoolAlloc>();
 	}
 
 	ConstImportOptionsPtr SpecificImporter::getDefaultImportOptions() const

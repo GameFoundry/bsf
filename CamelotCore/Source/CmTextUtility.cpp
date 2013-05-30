@@ -278,7 +278,7 @@ namespace CamelotFramework
 		bool heightIsLimited = height > 0;
 		bool widthIsLimited = width > 0;
 
-		std::shared_ptr<TextUtility::TextData> textData(CM_NEW(TextData, PoolAlloc) TextData(), &MemAllocDeleter<TextData, PoolAlloc>::deleter);
+		std::shared_ptr<TextUtility::TextData> textData = cm_shared_ptr<TextData, PoolAlloc>();
 		textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));
 		TextLine* curLine = &textData->mLines.back();
 

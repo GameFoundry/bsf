@@ -184,8 +184,7 @@ namespace CamelotFramework
 			totalVertexCount += numVertices;
 		}
 
-		MeshDataPtr combinedMeshData(CM_NEW(MeshData, PoolAlloc) MeshData(totalVertexCount),
-			&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
+		MeshDataPtr combinedMeshData = cm_shared_ptr<MeshData, PoolAlloc>(totalVertexCount);
 
 		combinedMeshData->beginDesc();
 

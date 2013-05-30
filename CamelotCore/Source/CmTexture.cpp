@@ -159,8 +159,7 @@ namespace CamelotFramework {
 			if(depth != 1) depth /= 2;
 		}
 
-		PixelDataPtr dst(CM_NEW(PixelData, PoolAlloc) PixelData(width, height, depth, getFormat()),
-			&MemAllocDeleter<PixelData, PoolAlloc>::deleter);
+		PixelDataPtr dst = cm_shared_ptr<PixelData, PoolAlloc>(width, height, depth, getFormat());
 
 		dst->allocateInternalBuffer();
 
@@ -242,7 +241,7 @@ namespace CamelotFramework {
 
 	TextureViewPtr Texture::createView()
 	{
-		TextureViewPtr viewPtr(CM_NEW(TextureView, PoolAlloc) TextureView(), &CoreObject::_deleteDelayed<TextureView, PoolAlloc>);
+		TextureViewPtr viewPtr = cm_core_ptr<TextureView, PoolAlloc>(new (cm_alloc<TextureView, PoolAlloc>()) TextureView());
 		viewPtr->setThisPtr(viewPtr);
 
 		return viewPtr;
@@ -269,7 +268,7 @@ namespace CamelotFramework {
 		{
 			TextureViewPtr newView = texture->createView();
 			newView->initialize(texture, key);
-			texture->mTextureViews[key] = CM_NEW(TextureViewReference, PoolAlloc) TextureViewReference(newView);
+			texture->mTextureViews[key] = new (cm_alloc<TextureViewReference, PoolAlloc>()) TextureViewReference(newView);
 
 			iterFind = texture->mTextureViews.find(key);
 		}

@@ -35,8 +35,9 @@ namespace CamelotFramework
 
 	HSceneObject SceneObject::createInternal(const String& name)
 	{
-		HSceneObject sceneObject = GameObjectHandle<SceneObject>(CM_NEW(SceneObject, PoolAlloc) SceneObject(name),
-			&MemAllocDeleter<GameObject, PoolAlloc>::deleter);
+		HSceneObject sceneObject = GameObjectHandle<SceneObject>(
+			new (cm_alloc<SceneObject, PoolAlloc>()) SceneObject(name),
+			&cm_delete<PoolAlloc, GameObject>);
 		sceneObject->mThisHandle = sceneObject;
 
 		return sceneObject;

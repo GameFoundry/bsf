@@ -92,6 +92,6 @@ namespace CamelotFramework {
 	//-----------------------------------------------------------------------
 	VertexDeclarationPtr HardwareBufferManager::createVertexDeclarationImpl(void)
 	{
-		return VertexDeclarationPtr(CM_NEW(VertexDeclaration, PoolAlloc) VertexDeclaration(), &CoreObject::_deleteDelayed<VertexDeclaration, PoolAlloc>);
+		return cm_core_ptr<VertexDeclaration, PoolAlloc>(new (cm_alloc<VertexDeclaration, PoolAlloc>()) VertexDeclaration());
 	}
 }

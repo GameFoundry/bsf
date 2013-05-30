@@ -72,8 +72,7 @@ namespace CamelotFramework
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return std::shared_ptr<FontData>(CM_NEW(FontData, PoolAlloc) FontData(),
-				&MemAllocDeleter<FontData, PoolAlloc>::deleter);
+			return cm_shared_ptr<FontData, PoolAlloc>();
 		}
 	};
 
@@ -141,7 +140,7 @@ namespace CamelotFramework
 	protected:
 		virtual void onDeserializationStarted(IReflectable* obj)
 		{
-			FontInitData* initData = CM_NEW(FontInitData, PoolAlloc) FontInitData();
+			FontInitData* initData = cm_new<FontInitData, PoolAlloc>();
 
 			Font* font = static_cast<Font*>(obj);
 			font->mRTTIData = initData;
@@ -154,7 +153,7 @@ namespace CamelotFramework
 
 			font->initialize(initData->fontDataPerSize);
 
-			CM_DELETE(initData, FontInitData, PoolAlloc);
+			cm_delete<PoolAlloc>(initData);
 		}
 	};
 }

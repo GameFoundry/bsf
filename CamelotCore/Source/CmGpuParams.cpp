@@ -44,7 +44,7 @@ namespace CamelotFramework
 	{
 		for(auto& paramBlock : mParamBlocks)
 		{
-			CM_DELETE(paramBlock, GpuParamBlock, PoolAlloc);
+			cm_delete<PoolAlloc>(paramBlock);
 		}
 	}
 
@@ -81,9 +81,9 @@ namespace CamelotFramework
 		}
 
 		if(mParamBlocks[slot] != nullptr)
-			CM_DELETE(mParamBlocks[slot], GpuParamBlock, PoolAlloc);
+			cm_delete<PoolAlloc>(mParamBlocks[slot]);
 
-		mParamBlocks[slot] = CM_NEW(GpuParamBlock, PoolAlloc) GpuParamBlock(paramBlockBuffer->getSize());
+		mParamBlocks[slot] = cm_new<GpuParamBlock, PoolAlloc>(paramBlockBuffer->getSize());
 		mParamBlockBuffers[slot] = paramBlockBuffer;
 	}
 
@@ -100,7 +100,7 @@ namespace CamelotFramework
 		if(mParamBlocks[iterFind->second.slot] != nullptr)
 			CM_DELETE(mParamBlocks[iterFind->second.slot], GpuParamBlock, PoolAlloc);
 
-		mParamBlocks[iterFind->second.slot] = CM_NEW(GpuParamBlock, PoolAlloc) GpuParamBlock(paramBlockBuffer->getSize());
+		mParamBlocks[iterFind->second.slot] = cm_new<GpuParamBlock, PoolAlloc>(paramBlockBuffer->getSize());
 		mParamBlockBuffers[iterFind->second.slot] = paramBlockBuffer;
 	}
 
@@ -304,7 +304,7 @@ namespace CamelotFramework
 
 	BindableGpuParams GpuParams::createBindableCopy(GpuParamsPtr params)
 	{
-		GpuParams* copy = CM_NEW(GpuParams, ScratchAlloc) GpuParams(params->mParamDesc);
+		GpuParams* copy = cm_new<GpuParams, ScratchAlloc>(std::ref(params->mParamDesc));
 
 		copy->mTransposeMatrices = params->mTransposeMatrices;
 		copy->mSamplerStates = params->mSamplerStates;
@@ -314,7 +314,7 @@ namespace CamelotFramework
 		copy->mParamBlocks.clear();
 		for(auto& paramBlock : params->mParamBlocks)
 		{
-			GpuParamBlock* blockCopy = CM_NEW(GpuParamBlock, ScratchAlloc) GpuParamBlock(paramBlock);
+			GpuParamBlock* blockCopy = cm_new<GpuParamBlock, ScratchAlloc>(paramBlock);
 
 			copy->mParamBlocks.push_back(blockCopy);
 		}

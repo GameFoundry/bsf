@@ -56,7 +56,7 @@ namespace CamelotFramework
 		}
 
 		// Indices
-		mIndexData = CM_NEW(IndexData, PoolAlloc) IndexData();
+		mIndexData = cm_new<IndexData, PoolAlloc>();
 
 		mIndexData->indexCount = meshData.getNumIndices();
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
@@ -75,7 +75,7 @@ namespace CamelotFramework
 		mIndexData->indexBuffer->unlock();
 
 		// Vertices
-		mVertexData = CM_NEW(VertexData, PoolAlloc) VertexData();
+		mVertexData = cm_new<VertexData, PoolAlloc>();
 
 		mVertexData->vertexCount = meshData.getNumVertices();
 		mVertexData->vertexDeclaration = meshData.createDeclaration();
@@ -165,8 +165,7 @@ namespace CamelotFramework
 		if(mIndexData)
 			indexType = mIndexData->indexBuffer->getType();
 
-		MeshDataPtr meshData(CM_NEW(MeshData, PoolAlloc) MeshData(mVertexData->vertexCount, indexType),
-			&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, PoolAlloc>(mVertexData->vertexCount, indexType);
 
 		meshData->beginDesc();
 		if(mIndexData)

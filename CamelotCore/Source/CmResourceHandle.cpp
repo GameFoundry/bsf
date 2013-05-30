@@ -11,8 +11,7 @@ namespace CamelotFramework
 
 	ResourceHandleBase::ResourceHandleBase()
 	{
-		mData = std::shared_ptr<ResourceHandleData>(CM_NEW(ResourceHandleData, PoolAlloc) ResourceHandleData(),
-			&MemAllocDeleter<ResourceHandleData, PoolAlloc>::deleter);
+		mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
 	}
 
 	bool ResourceHandleBase::isLoaded() const 

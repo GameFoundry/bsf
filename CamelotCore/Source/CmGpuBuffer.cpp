@@ -47,7 +47,7 @@ namespace CamelotFramework
 		{
 			GpuBufferView* newView = buffer->createView();
 			newView->initialize(buffer, key);
-			buffer->mBufferViews[key] = CM_NEW(GpuBufferReference, PoolAlloc) GpuBufferReference(newView);
+			buffer->mBufferViews[key] = cm_new<GpuBufferReference, PoolAlloc>(newView);
 
 			iterFind = buffer->mBufferViews.find(key);
 		}

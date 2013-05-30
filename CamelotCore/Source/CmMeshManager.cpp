@@ -18,7 +18,7 @@ namespace CamelotFramework
 
 	MeshPtr MeshManager::create()
 	{
-		MeshPtr mesh = MeshPtr(CM_NEW(Mesh, PoolAlloc) Mesh(), &CoreObject::_deleteDelayed<Mesh, PoolAlloc>);
+		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh());
 		mesh->setThisPtr(mesh);
 		mesh->initialize();
 
@@ -27,7 +27,7 @@ namespace CamelotFramework
 
 	MeshPtr MeshManager::createEmpty()
 	{
-		MeshPtr mesh = MeshPtr(CM_NEW(Mesh, PoolAlloc) Mesh(), &CoreObject::_deleteDelayed<Mesh, PoolAlloc>);
+		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh());
 		mesh->setThisPtr(mesh);
 
 		return mesh;
@@ -35,7 +35,7 @@ namespace CamelotFramework
 
 	void MeshManager::onStartUp()
 	{
-		mDummyMeshData = MeshDataPtr(CM_NEW(MeshData, GenAlloc) MeshData(1), &MemAllocDeleter<MeshData, GenAlloc>::deleter);
+		mDummyMeshData = cm_shared_ptr<MeshData>(1);
 
 		mDummyMeshData->beginDesc();
 		mDummyMeshData->addVertElem(VET_FLOAT3, VES_POSITION);

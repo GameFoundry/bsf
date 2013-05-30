@@ -35,12 +35,12 @@ namespace CamelotFramework
 		{
 			assert(mRenderSystem != nullptr);
 
-			mCommandQueue = CM_NEW(CommandQueue<CommandQueueSyncPolicy>, GenAlloc) CommandQueue<CommandQueueSyncPolicy>(threadId);
+			mCommandQueue = cm_new<CommandQueue<CommandQueueSyncPolicy>>(threadId);
 		}
 
 		~DeferredRenderContext()
 		{
-			CM_DELETE(mCommandQueue, CommandQueue<CommandQueueSyncPolicy>, GenAlloc);
+			cm_delete(mCommandQueue);
 		}
 
 		/** @copydoc RenderSystem::disableTextureUnit() */

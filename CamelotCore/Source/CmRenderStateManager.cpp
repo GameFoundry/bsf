@@ -108,21 +108,21 @@ namespace CamelotFramework
 
 	SamplerStatePtr RenderStateManager::createSamplerStateImpl() const
 	{
-		return SamplerStatePtr(CM_NEW(SamplerState, PoolAlloc) SamplerState(), &CoreObject::_deleteDelayed<SamplerState, PoolAlloc>);
+		return cm_core_ptr<SamplerState, PoolAlloc>();
 	}
 
 	BlendStatePtr RenderStateManager::createBlendStateImpl() const
 	{
-		return BlendStatePtr(CM_NEW(BlendState, PoolAlloc) BlendState(), &CoreObject::_deleteDelayed<BlendState, PoolAlloc>);
+		return cm_core_ptr<BlendState, PoolAlloc>();
 	}
 
 	RasterizerStatePtr RenderStateManager::createRasterizerStateImpl() const
 	{
-		return RasterizerStatePtr(CM_NEW(RasterizerState, PoolAlloc) RasterizerState(), &CoreObject::_deleteDelayed<RasterizerState, PoolAlloc>);
+		return cm_core_ptr<RasterizerState, PoolAlloc>();
 	}
 
 	DepthStencilStatePtr RenderStateManager::createDepthStencilStateImpl() const
 	{
-		return DepthStencilStatePtr(CM_NEW(DepthStencilState, PoolAlloc) DepthStencilState(), &CoreObject::_deleteDelayed<DepthStencilState, PoolAlloc>);
+		return cm_core_ptr<DepthStencilState, PoolAlloc>();
 	}
 }
