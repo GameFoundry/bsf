@@ -99,22 +99,31 @@ namespace CamelotFramework
 	class PoolAlloc
 	{ };
 
-	template<class category> 
+	/**
+	 * @brief	Allocates the specified number of bytes.
+	 */
+	template<class Alloc> 
 	inline void* cm_alloc(UINT32 count)
 	{
-		return MemoryAllocator<category>::allocate(count);
+		return MemoryAllocator<Alloc>::allocate(count);
 	}
 
-	template<class T, class category> 
+	/**
+	 * @brief	Allocates enough bytes to hold the specified type, but doesn't construct it.
+	 */
+	template<class T, class Alloc> 
 	inline T* cm_alloc()
 	{
-		return (T*)MemoryAllocator<category>::allocate(sizeof(T));
+		return (T*)MemoryAllocator<Alloc>::allocate(sizeof(T));
 	}
 
-	template<class T, class category> 
+	/**
+	 * @brief	Creates and constructs an array of "count" elements.
+	 */
+	template<class T, class Alloc> 
 	inline T* cm_newN(UINT32 count)
 	{
-		T* ptr = (T*)MemoryAllocator<category>::allocateArray(sizeof(T), count);
+		T* ptr = (T*)MemoryAllocator<Alloc>::allocateArray(sizeof(T), count);
 
 		for(unsigned int i = 0; i < count; i++)
 			new ((void*)&ptr[i]) T;
@@ -122,54 +131,83 @@ namespace CamelotFramework
 		return ptr;
 	}
 
+/**
+ * @brief	Create a new object with the specified allocator and the specified parameters.
+ */
 #define MAKE_CM_NEW(z, n, unused)                                     \
-	template<class Type, class category BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	template<class Type, class Alloc BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
 	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
-		return new (cm_alloc<category>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
+		return new (cm_alloc<Alloc>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
 	}
 
-	BOOST_PP_REPEAT(15, MAKE_CM_NEW, ~)
+	BOOST_PP_REPEAT_FROM_TO(1, 15, MAKE_CM_NEW, ~)
 
 #undef MAKE_CM_NEW
 
-	template<class category> 
-	inline void cm_free(void* ptr)
+	// Create a new object with the specified allocator without any parameters
+	// (Needs to be separate from parameter version so I don't unnecessarily zero-initialize POD types)
+	template<class Type, class Alloc>
+	Type* cm_new() 
 	{
-		MemoryAllocator<category>::free(ptr);
+		return new (cm_alloc<Alloc>(sizeof(Type))) Type;
 	}
 
-	template<class category, class T> 
+	/**
+	 * @brief	Frees all the bytes allocated at the specified location.
+	 */
+	template<class Alloc> 
+	inline void cm_free(void* ptr)
+	{
+		MemoryAllocator<Alloc>::free(ptr);
+	}
+
+	/**
+	 * @brief	Destructs and frees the specified object.
+	 */
+	template<class Alloc, class T> 
 	inline void cm_delete(T* ptr)
 	{
 		(ptr)->~T();
 
-		MemoryAllocator<category>::free(ptr);
+		MemoryAllocator<Alloc>::free(ptr);
 	}
 
-	template<class category, class T> 
+	/**
+	 * @brief	Destructs and frees the specified array of objects.
+	 */
+	template<class Alloc, class T> 
 	inline void cm_deleteN(T* ptr, UINT32 count)
 	{
 		for(unsigned int i = 0; i < count; i++)
 			ptr[i].~T();
 
-		MemoryAllocator<category>::freeArray(ptr, count);
+		MemoryAllocator<Alloc>::freeArray(ptr, count);
 	}
 
 	/*****************************************************************************/
 	/* Default versions of all alloc/free/new/delete methods which call GenAlloc */
 	/*****************************************************************************/
 
+	/**
+	 * @brief	Allocates the specified number of bytes.
+	 */
 	inline void* cm_alloc(UINT32 count)
 	{
 		return MemoryAllocator<GenAlloc>::allocate(count);
 	}
 
+	/**
+	 * @brief	Allocates enough bytes to hold the specified type, but doesn't construct it.
+	 */
 	template<class T> 
 	inline T* cm_alloc()
 	{
 		return (T*)MemoryAllocator<GenAlloc>::allocate(sizeof(T));
 	}
 
+	/**
+	 * @brief	Creates and constructs an array of "count" elements.
+	 */
 	template<class T> 
 	inline T* cm_newN(UINT32 count)
 	{
@@ -181,21 +219,36 @@ namespace CamelotFramework
 		return ptr;
 	}
 
+	// Create a new object with the general allocator and the specified parameters.
 #define MAKE_CM_NEW(z, n, unused)                                     \
 	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
 	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
 	return new (cm_alloc<GenAlloc>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
 	}
 
-		BOOST_PP_REPEAT(15, MAKE_CM_NEW, ~)
+	BOOST_PP_REPEAT_FROM_TO(1, 15, MAKE_CM_NEW, ~)
 
 #undef MAKE_CM_NEW
 
+	// Create a new object with the general allocator without any parameters
+	// (Needs to be separate from parameter version so I don't unnecessarily zero-initialize POD types)
+	template<class Type>
+	Type* cm_new() 
+	{
+		return new (cm_alloc<GenAlloc>(sizeof(Type))) Type;
+	}
+
+	/**
+	 * @brief	Frees all the bytes allocated at the specified location.
+	 */
 	inline void cm_free(void* ptr)
 	{
 		MemoryAllocator<GenAlloc>::free(ptr);
 	}
 
+	/**
+	 * @brief	Destructs and frees the specified object.
+	 */
 	template<class T> 
 	inline void cm_delete(T* ptr)
 	{
@@ -204,6 +257,9 @@ namespace CamelotFramework
 		MemoryAllocator<GenAlloc>::free(ptr);
 	}
 
+	/**
+	 * @brief	Destructs and frees the specified array of objects.
+	 */
 	template<class T> 
 	inline void cm_deleteN(T* ptr, UINT32 count)
 	{
@@ -220,7 +276,7 @@ namespace CamelotFramework
 namespace CamelotFramework
 {
 	// Allocators we can use in the standard library
-    template <class T, class Category = GenAlloc>
+    template <class T, class Alloc = GenAlloc>
 	class StdAlloc 
 	{
 		public:
@@ -237,7 +293,7 @@ namespace CamelotFramework
 		template <class U>
 		struct rebind 
 		{
-			typedef StdAlloc<U, Category> other;
+			typedef StdAlloc<U, Alloc> other;
 		};
 
 		// return address of values
@@ -260,7 +316,7 @@ namespace CamelotFramework
 		{ }
 
 		template <class U>
-		StdAlloc (const StdAlloc<U, Category>&) throw() 
+		StdAlloc (const StdAlloc<U, Alloc>&) throw() 
 		{ }
 
 		~StdAlloc() throw() 
@@ -275,7 +331,7 @@ namespace CamelotFramework
 		// allocate but don't initialize num elements of type T
 		pointer allocate (size_type num, const void* = 0) 
 		{
-			pointer ret = (pointer)(cm_alloc<Category>((UINT32)num*sizeof(T)));
+			pointer ret = (pointer)(cm_alloc<Alloc>((UINT32)num*sizeof(T)));
 			return ret;
 		}
 
@@ -297,19 +353,19 @@ namespace CamelotFramework
 		void deallocate (pointer p, size_type num) 
 		{
 			// print message and deallocate memory with global delete
-			cm_free<Category>((void*)p);
+			cm_free<Alloc>((void*)p);
 		}
 	};
 
    // return that all specializations of this allocator are interchangeable
-   template <class T1, class T2, class Category>
-   bool operator== (const StdAlloc<T1, Category>&,
-                    const StdAlloc<T2, Category>&) throw() {
+   template <class T1, class T2, class Alloc>
+   bool operator== (const StdAlloc<T1, Alloc>&,
+                    const StdAlloc<T2, Alloc>&) throw() {
        return true;
    }
-   template <class T1, class T2, class Category>
-   bool operator!= (const StdAlloc<T1, Category>&,
-                    const StdAlloc<T2, Category>&) throw() {
+   template <class T1, class T2, class Alloc>
+   bool operator!= (const StdAlloc<T1, Alloc>&,
+                    const StdAlloc<T2, Alloc>&) throw() {
        return false;
    }
 }

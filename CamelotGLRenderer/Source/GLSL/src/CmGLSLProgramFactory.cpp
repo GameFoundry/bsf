@@ -43,13 +43,13 @@ namespace CamelotFramework {
     {
 		GLSLProgram* prog = new (cm_alloc<GLSLProgram, PoolAlloc>()) GLSLProgram(source, entryPoint, sLanguageName, gptype, profile, includes);
 
-		return HighLevelGpuProgramPtr(prog, &CoreObject::_deleteDelayed<GLSLProgram, PoolAlloc>);
+		return cm_core_ptr<GLSLProgram, PoolAlloc>(prog);
     }
 	//-----------------------------------------------------------------------
 	HighLevelGpuProgramPtr GLSLProgramFactory::create()
 	{
 		GLSLProgram* prog = new (cm_alloc<GLSLProgram, PoolAlloc>()) GLSLProgram("", "", sLanguageName, GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
 
-		return HighLevelGpuProgramPtr(prog, &CoreObject::_deleteDelayed<GLSLProgram, PoolAlloc>);
+		return cm_core_ptr<GLSLProgram, PoolAlloc>(prog);
 	}
 }
