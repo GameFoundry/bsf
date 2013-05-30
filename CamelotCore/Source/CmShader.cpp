@@ -14,8 +14,7 @@ namespace CamelotFramework
 
 	TechniquePtr Shader::addTechnique(const String& renderSystem, const String& renderer)
 	{
-		TechniquePtr technique = TechniquePtr(CM_NEW(Technique, PoolAlloc) Technique(renderSystem, renderer),
-			&MemAllocDeleter<Technique, PoolAlloc>::deleter);
+		TechniquePtr technique = cm_shared_ptr<Technique, PoolAlloc>(renderSystem, renderer);
 		mTechniques.push_back(technique);
 
 		return technique;
@@ -207,7 +206,7 @@ namespace CamelotFramework
 
 	ShaderPtr Shader::create(const String& name)
 	{
-		ShaderPtr newShader(CM_NEW(Shader, PoolAlloc) Shader(name), &CoreObject::_deleteDelayed<Shader, PoolAlloc>);
+		ShaderPtr newShader = cm_core_ptr<Shader, PoolAlloc>(new (cm_alloc<Shader, PoolAlloc>()) Shader(name));
 		newShader->setThisPtr(newShader);
 		newShader->initialize();
 

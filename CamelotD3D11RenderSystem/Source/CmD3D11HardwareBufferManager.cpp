@@ -19,31 +19,31 @@ namespace CamelotFramework
 	VertexBufferPtr D3D11HardwareBufferManager::createVertexBufferImpl(UINT32 vertexSize, 
 		UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
-		D3D11VertexBuffer* buffer = CM_NEW(D3D11VertexBuffer, PoolAlloc) D3D11VertexBuffer(mDevice, this, vertexSize, numVerts, usage, false, streamOut);
+		D3D11VertexBuffer* buffer = new (cm_alloc<D3D11VertexBuffer, PoolAlloc>()) D3D11VertexBuffer(mDevice, this, vertexSize, numVerts, usage, false, streamOut);
 
-		return VertexBufferPtr(buffer, &CoreObject::_deleteDelayed<D3D11VertexBuffer, PoolAlloc>);
+		return cm_core_ptr<D3D11VertexBuffer, PoolAlloc>(buffer);
 	}
 
 	IndexBufferPtr D3D11HardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, 
 		UINT32 numIndexes, GpuBufferUsage usage)
 	{
-		D3D11IndexBuffer* buffer = CM_NEW(D3D11IndexBuffer, PoolAlloc) D3D11IndexBuffer(mDevice, this, itype, numIndexes, usage, false);
+		D3D11IndexBuffer* buffer = new (cm_alloc<D3D11IndexBuffer, PoolAlloc>()) D3D11IndexBuffer(mDevice, this, itype, numIndexes, usage, false);
 
-		return IndexBufferPtr(buffer, &CoreObject::_deleteDelayed<D3D11IndexBuffer, PoolAlloc>);
+		return cm_core_ptr<D3D11IndexBuffer, PoolAlloc>(buffer);
 	}
 
 	GpuParamBlockBufferPtr D3D11HardwareBufferManager::createGpuParamBlockBufferImpl()
 	{
-		D3D11GpuParamBlockBuffer* paramBlockBuffer = CM_NEW(D3D11GpuParamBlockBuffer, PoolAlloc) D3D11GpuParamBlockBuffer();
+		D3D11GpuParamBlockBuffer* paramBlockBuffer = new (cm_alloc<D3D11GpuParamBlockBuffer, PoolAlloc>()) D3D11GpuParamBlockBuffer();
 
-		return GpuParamBlockBufferPtr(paramBlockBuffer, &CoreObject::_deleteDelayed<D3D11GpuParamBlockBuffer, PoolAlloc>);
+		return cm_core_ptr<D3D11GpuParamBlockBuffer, PoolAlloc>(paramBlockBuffer);
 	}
 
 	GpuBufferPtr D3D11HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		D3D11GpuBuffer* buffer = CM_NEW(D3D11GpuBuffer, PoolAlloc) D3D11GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+		D3D11GpuBuffer* buffer = new (cm_alloc<D3D11GpuBuffer, PoolAlloc>()) D3D11GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
 
-		return GpuBufferPtr(buffer, &CoreObject::_deleteDelayed<D3D11GpuBuffer, PoolAlloc>);
+		return cm_core_ptr<D3D11GpuBuffer, PoolAlloc>(buffer);
 	}
 }

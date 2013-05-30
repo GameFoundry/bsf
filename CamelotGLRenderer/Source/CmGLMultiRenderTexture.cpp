@@ -61,7 +61,7 @@ namespace CamelotFramework
 	void GLMultiRenderTexture::destroy_internal()
 	{
 		if(mFB != nullptr)
-			CM_DELETE(mFB, GLFrameBufferObject, GenAlloc);
+			cm_delete(mFB);
 
 		MultiRenderTexture::destroy_internal();
 	}

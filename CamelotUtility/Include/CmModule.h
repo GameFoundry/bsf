@@ -79,7 +79,7 @@ namespace CamelotFramework
 
 			((Module*)_instance)->onShutDown();
 
-			CM_DELETE(_instance, T, GenAlloc);
+			cm_delete(_instance);
 			isShutDown = true;
 		}
 

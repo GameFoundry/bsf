@@ -119,7 +119,7 @@ namespace BansheeEngine
 
 			if(child.isLayout() && child.layout == &layout)
 			{
-				CM_DELETE(child.layout, GUILayout, PoolAlloc);
+				cm_delete<PoolAlloc>(child.layout);
 
 				mChildren.erase(iter);
 				foundElem = true;

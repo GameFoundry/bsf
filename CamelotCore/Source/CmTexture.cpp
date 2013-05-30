@@ -297,7 +297,7 @@ namespace CamelotFramework {
 
 			texture->mTextureViews.erase(iterFind);
 
-			CM_DELETE(toRemove, TextureViewReference, PoolAlloc);
+			cm_delete<PoolAlloc>(toRemove);
 		}
 	}
 

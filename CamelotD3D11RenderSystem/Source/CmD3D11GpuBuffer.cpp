@@ -47,7 +47,7 @@ namespace CamelotFramework
 
 	void D3D11GpuBuffer::destroy_internal()
 	{
-		CM_DELETE(mBuffer, D3D11HardwareBuffer, PoolAlloc);
+		cm_delete<PoolAlloc>(mBuffer);
 
 		GpuBuffer::destroy_internal();
 	}

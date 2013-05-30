@@ -195,7 +195,7 @@ namespace CamelotFramework
 		{
 			// Remove from manager safely
 			HighLevelGpuProgramManager::instance().removeFactory(mGLSLProgramFactory);
-			CM_DELETE(mGLSLProgramFactory, GLSLProgramFactory, GenAlloc);
+			cm_delete(mGLSLProgramFactory);
 			mGLSLProgramFactory = nullptr;
 		}
 
@@ -204,7 +204,7 @@ namespace CamelotFramework
 		{
 			// Remove from manager safely
 			HighLevelGpuProgramManager::instance().removeFactory(mCgProgramFactory);
-			CM_DELETE(mCgProgramFactory, CgProgramFactory, GenAlloc);
+			cm_delete(mCgProgramFactory);
 			mCgProgramFactory = nullptr;
 		}
 
@@ -235,10 +235,10 @@ namespace CamelotFramework
 		mGLInitialised = 0;
 
 		if(mProgramPipelineManager != nullptr)
-			CM_DELETE(mProgramPipelineManager, GLSLProgramPipelineManager, GenAlloc);
+			cm_delete(mProgramPipelineManager);
 
 		if(mGLSupport)
-			CM_DELETE(mGLSupport, GLSupport, GenAlloc);
+			cm_delete(mGLSupport);
 
 		if(mTextureTypes != nullptr)
 			cm_deleteN(mTextureTypes, mNumTextureTypes);

@@ -138,7 +138,7 @@ namespace CamelotFramework
 		THROW_IF_NOT_RENDER_THREAD;
 
 		// Create the resource manager.
-		mResourceManager = CM_NEW(D3D9ResourceManager, GenAlloc) D3D9ResourceManager();
+		mResourceManager = cm_new<D3D9ResourceManager>();
 
 		// Create our Direct3D object
 		if( NULL == (mpD3D = Direct3DCreate9(D3D_SDK_VERSION)) )
@@ -205,13 +205,13 @@ namespace CamelotFramework
 
 		if(mDeviceManager != nullptr)
 		{
-			CM_DELETE(mDeviceManager, D3D9DeviceManager, GenAlloc);
+			cm_delete(mDeviceManager);
 			mDeviceManager = nullptr;
 		}
 
 		if(mDriverList != nullptr)
 		{
-			CM_DELETE(mDriverList, D3D9DriverList, GenAlloc);
+			cm_delete(mDriverList);
 			mDriverList = nullptr;
 		}
 		mActiveD3DDriver = NULL;	
@@ -226,14 +226,14 @@ namespace CamelotFramework
 		if (mHLSLProgramFactory)
 		{
 			HighLevelGpuProgramManager::instance().removeFactory(mHLSLProgramFactory);
-			CM_DELETE(mHLSLProgramFactory, D3D9HLSLProgramFactory, GenAlloc);
+			cm_delete(mHLSLProgramFactory);
 			mHLSLProgramFactory = 0;
 		}
 
 		if(mCgProgramFactory)
 		{
 			HighLevelGpuProgramManager::instance().removeFactory(mCgProgramFactory);
-			CM_DELETE(mCgProgramFactory, CgProgramFactory, GenAlloc);
+			cm_delete(mCgProgramFactory);
 			mCgProgramFactory = 0;
 		}
 
@@ -241,7 +241,7 @@ namespace CamelotFramework
 
 		if(mResourceManager != nullptr)
 		{
-			CM_DELETE(mResourceManager, D3D9ResourceManager, GenAlloc);
+			cm_delete(mResourceManager);
 			mResourceManager = nullptr;
 		}
 

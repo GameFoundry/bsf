@@ -64,7 +64,7 @@ namespace CamelotFramework
 	D3D9Driver::~D3D9Driver()
 	{
 		if(mpVideoModeList != nullptr)
-			CM_DELETE(mpVideoModeList, D3D9VideoModeList, GenAlloc);
+			cm_delete(mpVideoModeList);
 	}
 
 	String D3D9Driver::DriverName() const

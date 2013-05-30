@@ -554,7 +554,7 @@ namespace CamelotFramework
 		}
 
 		if(mStaticBuffer != nullptr)
-			CM_DELETE(mStaticBuffer, PixelData, PoolAlloc);
+			cm_delete<PoolAlloc>(mStaticBuffer);
 	}
 
 	void D3D11Texture::_createStagingBuffer()
@@ -608,7 +608,7 @@ namespace CamelotFramework
 
 	TextureViewPtr D3D11Texture::createView()
 	{
-		TextureViewPtr viewPtr(CM_NEW(D3D11TextureView, PoolAlloc) D3D11TextureView(), &CoreObject::_deleteDelayed<D3D11TextureView, PoolAlloc>);
+		TextureViewPtr viewPtr = cm_core_ptr<D3D11TextureView, PoolAlloc>(new (cm_alloc<D3D11TextureView, PoolAlloc>()) D3D11TextureView());
 		viewPtr->setThisPtr(viewPtr);
 
 		return viewPtr;

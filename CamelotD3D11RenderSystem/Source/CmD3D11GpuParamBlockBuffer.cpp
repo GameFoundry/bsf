@@ -29,7 +29,7 @@ namespace CamelotFramework
 	void D3D11GpuParamBlockBuffer::destroy_internal()
 	{
 		if(mBuffer != nullptr)
-			CM_DELETE(mBuffer, D3D11HardwareBuffer, PoolAlloc);
+			cm_delete<PoolAlloc>(mBuffer);
 
 		GpuParamBlockBuffer::destroy_internal();
 	}

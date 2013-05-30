@@ -273,7 +273,7 @@ namespace CamelotFramework
 				if (*itDevice == device)
 				{					
 					if(device != nullptr)
-						CM_DELETE(device, D3D9Device, GenAlloc);
+						cm_delete(device);
 
 					mRenderDevices.erase(itDevice);
 					break;

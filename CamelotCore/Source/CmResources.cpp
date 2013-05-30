@@ -100,14 +100,14 @@ namespace CamelotFramework
 
 			mWorkQueue->shutdown();
 
-			CM_DELETE(mWorkQueue, WorkQueue, GenAlloc);
+			cm_delete(mWorkQueue);
 		}
 
 		if(mRequestHandler != nullptr)
-			CM_DELETE(mRequestHandler, ResourceRequestHandler, GenAlloc);
+			cm_delete(mRequestHandler);
 
 		if(mResponseHandler != nullptr)
-			CM_DELETE(mResponseHandler, ResourceResponseHandler, GenAlloc);
+			cm_delete(mResponseHandler);
 	}
 
 	HResource Resources::load(const String& filePath)

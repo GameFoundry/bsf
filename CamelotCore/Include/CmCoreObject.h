@@ -89,7 +89,7 @@ o		 *
 			}
 			else
 			{
-				CM_DELETE((T*)obj, T, MemAlloc);
+				cm_delete<MemAlloc, T>((T*)obj);
 			}
 		}
 

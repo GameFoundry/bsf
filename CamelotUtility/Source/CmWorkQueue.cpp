@@ -45,7 +45,7 @@ namespace CamelotFramework {
 
 		for (RequestQueue::iterator i = mRequestQueue.begin(); i != mRequestQueue.end(); ++i)
 		{
-			CM_DELETE(*i, Request, ScratchAlloc);
+			cm_delete<ScratchAlloc>(*i);
 		}
 		mRequestQueue.clear();
 	}
@@ -385,13 +385,13 @@ namespace CamelotFramework {
 					addRequestWithRID(req->getID(), req->getChannel(), req->getData(), 
 						req->getRetryCount() - 1);
 					// discard response (this also deletes request)
-					CM_DELETE(response, Response, ScratchAlloc);
+					cm_delete<ScratchAlloc>(response);
 					return;
 				}
 			}
 
 			processResponse(response);
-			CM_DELETE(response, Response, ScratchAlloc);
+			cm_delete<ScratchAlloc>(response);
 		}
 		else
 		{
@@ -399,7 +399,7 @@ namespace CamelotFramework {
 			gDebug().logWarning("warning: no handler processed request "
 				+ toString(r->getID()) + ", channel " + toString(r->getChannel()));
 
-			CM_DELETE(r, Request, ScratchAlloc);
+			cm_delete<ScratchAlloc>(r);
 		}
 
 	}
@@ -533,7 +533,7 @@ namespace CamelotFramework {
 	//---------------------------------------------------------------------
 	WorkQueue::Response::~Response()
 	{
-		CM_DELETE(mRequest, Request, ScratchAlloc);
+		cm_delete<ScratchAlloc>(mRequest);
 	}
 	//---------------------------------------------------------------------
 	void WorkQueue::WorkerFunc::operator()()

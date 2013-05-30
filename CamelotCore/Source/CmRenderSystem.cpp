@@ -80,11 +80,11 @@ namespace CamelotFramework {
 
 		if(mCommandQueue != nullptr)
 		{
-			CM_DELETE(mCommandQueue, CommandQueue<CommandQueueSync>, GenAlloc);
+			cm_delete(mCommandQueue);
 			mCommandQueue = nullptr;
 		}
 
-		CM_DELETE(mCurrentCapabilities, RenderSystemCapabilities, GenAlloc);
+		cm_delete(mCurrentCapabilities);
 		mCurrentCapabilities = nullptr;
     }
 
@@ -375,7 +375,7 @@ namespace CamelotFramework {
 
 		if(mRenderThreadFunc != nullptr)
 		{
-			CM_DELETE(mRenderThreadFunc, RenderWorkerFunc, GenAlloc);
+			cm_delete(mRenderThreadFunc);
 			mRenderThreadFunc = nullptr;
 		}
 #endif

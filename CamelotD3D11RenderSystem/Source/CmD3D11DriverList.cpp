@@ -13,7 +13,7 @@ namespace CamelotFramework
 	{
 		for(size_t i = 0; i < mDriverList.size(); i++)
 		{
-			CM_DELETE(mDriverList[i], D3D11Driver, GenAlloc);
+			cm_delete(mDriverList[i]);
 		}
 
 		mDriverList.clear();

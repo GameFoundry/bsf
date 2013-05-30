@@ -301,8 +301,7 @@ namespace CamelotFramework
 		UINT32 size = dstPitch * height;
 
 		// Bind output buffer
-		TextureDataPtr texData(CM_NEW(TextureData, ScratchAlloc) TextureData(width, height, size, format, 1, 0, 0),
-			&MemAllocDeleter<TextureData, ScratchAlloc>::deleter);
+		TextureDataPtr texData = cm_shared_ptr<TextureData, ScratchAlloc>(width, height, size, format, 1, 0, 0);
 		UINT8* output = texData->getData();
 
 		UINT8* pSrc;

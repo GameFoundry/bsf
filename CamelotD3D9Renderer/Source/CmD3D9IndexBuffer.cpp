@@ -91,7 +91,7 @@ namespace CamelotFramework {
 			SAFE_RELEASE(it->second->mBuffer);
 
 			if(it->second != nullptr)
-				CM_DELETE(it->second, BufferResources, PoolAlloc);
+				cm_delete<PoolAlloc>(it->second);
 
 			++it;
 		}	
@@ -208,7 +208,7 @@ namespace CamelotFramework {
 			SAFE_RELEASE(it->second->mBuffer);
 
 			if(it->second != nullptr)
-				CM_DELETE(it->second, BufferResources, PoolAlloc);
+				cm_delete<PoolAlloc>(it->second);
 
 			mMapDeviceToBufferResources.erase(it);
 		}

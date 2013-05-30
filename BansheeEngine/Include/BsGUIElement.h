@@ -11,6 +11,7 @@ namespace BansheeEngine
 	{
 	public:
 		GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		virtual ~GUIElement();
 
 		/**
 		 * @brief	Returns the number of separate render elements in the GUI element.
@@ -112,8 +113,6 @@ namespace BansheeEngine
 		//	onKeyPressed
 		//	onKeyReleased
 	protected:
-		virtual ~GUIElement();
-
 		virtual void updateRenderElementsInternal() = 0;
 
 		void setLayoutOptions(const GUILayoutOptions& layoutOptions);

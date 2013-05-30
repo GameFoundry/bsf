@@ -43,8 +43,8 @@ namespace CamelotFramework
 
 	GpuProgramPtr GLGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
 	{
-		GLSLGpuProgram* prog = CM_NEW(GLSLGpuProgram, PoolAlloc) GLSLGpuProgram(source, entryPoint, language, gptype, profile, nullptr);
+		GLSLGpuProgram* prog = new (cm_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram(source, entryPoint, language, gptype, profile, nullptr);
 
-		return GpuProgramPtr(prog, &CoreObject::_deleteDelayed<GLSLGpuProgram, PoolAlloc>);
+		return cm_core_ptr<GLSLGpuProgram, PoolAlloc>(prog);
 	}
 }

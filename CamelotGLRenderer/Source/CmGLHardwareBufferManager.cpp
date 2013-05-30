@@ -83,8 +83,7 @@ namespace CamelotFramework {
     VertexBufferPtr GLHardwareBufferManager::createVertexBufferImpl(
         UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
-		return VertexBufferPtr(CM_NEW(GLVertexBuffer, PoolAlloc) GLVertexBuffer(this, vertexSize, numVerts, usage),
-			&CoreObject::_deleteDelayed<GLVertexBuffer, PoolAlloc>);
+		return cm_core_ptr<GLVertexBuffer, PoolAlloc>(new (cm_alloc<GLVertexBuffer, PoolAlloc>()) GLVertexBuffer(this, vertexSize, numVerts, usage));
     }
     //-----------------------------------------------------------------------
     IndexBufferPtr 
@@ -92,21 +91,18 @@ namespace CamelotFramework {
         IndexBuffer::IndexType itype, UINT32 numIndexes, 
         GpuBufferUsage usage)
     {
-		return IndexBufferPtr(CM_NEW(GLIndexBuffer, PoolAlloc) GLIndexBuffer(this, itype, numIndexes, usage),
-			&CoreObject::_deleteDelayed<GLIndexBuffer, PoolAlloc>);
+		return cm_core_ptr<GLIndexBuffer, PoolAlloc>(new (cm_alloc<GLIndexBuffer, PoolAlloc>()) GLIndexBuffer(this, itype, numIndexes, usage));
     }
 	//---------------------------------------------------------------------
 	GpuParamBlockBufferPtr GLHardwareBufferManager::createGpuParamBlockBufferImpl()
 	{
-		return GpuParamBlockBufferPtr(CM_NEW(GLGpuParamBlockBuffer, PoolAlloc) GLGpuParamBlockBuffer(),
-			&CoreObject::_deleteDelayed<GLGpuParamBlockBuffer, PoolAlloc>);
+		return cm_core_ptr<GLGpuParamBlockBuffer, PoolAlloc>(new (cm_alloc<GLGpuParamBlockBuffer, PoolAlloc>()) GLGpuParamBlockBuffer());
 	}
 	//---------------------------------------------------------------------
 	GpuBufferPtr GLHardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		return GpuBufferPtr(CM_NEW(GLGpuBuffer, PoolAlloc) GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter), 
-			&CoreObject::_deleteDelayed<GLGpuBuffer, PoolAlloc>);
+		return cm_core_ptr<GLGpuBuffer, PoolAlloc>(new (cm_alloc<GLGpuBuffer, PoolAlloc>()) GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 	}
     //---------------------------------------------------------------------
     GLenum GLHardwareBufferManager::getGLUsage(unsigned int usage)

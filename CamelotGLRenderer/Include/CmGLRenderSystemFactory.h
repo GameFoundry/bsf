@@ -24,8 +24,7 @@ namespace CamelotFramework
 				static RenderSystemFactoryPtr newFactory;
 				if(newFactory == nullptr)
 				{
-					newFactory = RenderSystemFactoryPtr(CM_NEW(GLRenderSystemFactory, GenAlloc) GLRenderSystemFactory(),
-						&MemAllocDeleter<GLRenderSystemFactory, GenAlloc>::deleter);
+					newFactory = cm_shared_ptr<GLRenderSystemFactory>();
 					RenderSystemManager::instance().registerRenderSystemFactory(newFactory);
 				}
 			}

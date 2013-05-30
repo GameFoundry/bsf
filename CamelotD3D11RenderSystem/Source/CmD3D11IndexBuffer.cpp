@@ -25,7 +25,7 @@ namespace CamelotFramework
 	void D3D11IndexBuffer::destroy_internal()
 	{
 		if(mBuffer != nullptr)
-			CM_DELETE(mBuffer, D3D11HardwareBuffer, PoolAlloc) ;
+			cm_delete<PoolAlloc>(mBuffer) ;
 
 		IndexBuffer::destroy_internal();
 	}

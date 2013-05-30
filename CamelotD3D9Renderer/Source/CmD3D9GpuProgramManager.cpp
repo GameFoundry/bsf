@@ -46,15 +46,15 @@ namespace CamelotFramework {
     {
         if (gptype == GPT_VERTEX_PROGRAM)
         {
-            D3D9GpuVertexProgram* prog = CM_NEW(D3D9GpuVertexProgram, PoolAlloc) D3D9GpuVertexProgram(source, entryPoint, language, gptype, profile);
+            D3D9GpuVertexProgram* prog = new (cm_alloc<D3D9GpuVertexProgram, PoolAlloc>()) D3D9GpuVertexProgram(source, entryPoint, language, gptype, profile);
 
-			return GpuProgramPtr(prog, &CoreObject::_deleteDelayed<D3D9GpuVertexProgram, PoolAlloc>);
+			return cm_core_ptr<D3D9GpuVertexProgram, PoolAlloc>(prog);
         }
         else
         {
-            D3D9GpuFragmentProgram* prog = CM_NEW(D3D9GpuFragmentProgram, PoolAlloc) D3D9GpuFragmentProgram(source, entryPoint, language, gptype, profile);
+            D3D9GpuFragmentProgram* prog = new (cm_alloc<D3D9GpuFragmentProgram, PoolAlloc>()) D3D9GpuFragmentProgram(source, entryPoint, language, gptype, profile);
 
-			return GpuProgramPtr(prog, &CoreObject::_deleteDelayed<D3D9GpuFragmentProgram, PoolAlloc>);
+			return cm_core_ptr<D3D9GpuFragmentProgram, PoolAlloc>(prog);
         }
     }
 }

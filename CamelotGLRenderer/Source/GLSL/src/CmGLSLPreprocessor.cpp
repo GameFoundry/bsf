@@ -246,7 +246,7 @@ CPreprocessor::ErrorHandlerFunc CPreprocessor::ErrorHandler = DefaultError;
 CPreprocessor::Macro::~Macro()
 { 
 	cm_deleteN<ScratchAlloc>(Args, NumArgs);
-	CM_DELETE(Next, Macro, ScratchAlloc); 
+	cm_delete<ScratchAlloc>(Next); 
 }
 
 CPreprocessor::CPreprocessor (const Token &iToken, int iLine) : MacroList (NULL)
@@ -261,7 +261,7 @@ CPreprocessor::CPreprocessor (const Token &iToken, int iLine) : MacroList (NULL)
 CPreprocessor::~CPreprocessor ()
 {
 	if(MacroList != nullptr)
-		CM_DELETE(MacroList, Macro, ScratchAlloc);
+		cm_delete<ScratchAlloc>(MacroList);
 }
 
 void CPreprocessor::Error (int iLine, const char *iError, const Token *iToken)
@@ -900,7 +900,7 @@ bool CPreprocessor::HandleDefine (Token &iBody, int iLine)
             break;
 
         case Token::TK_ERROR:
-            CM_DELETE(m, Macro, ScratchAlloc);
+            cm_delete<ScratchAlloc>(m);
             return false;
 
         default:
@@ -1178,7 +1178,7 @@ bool CPreprocessor::Undef (const char *iMacroName, size_t iMacroNameLen)
         {
             Macro *next = (*cur)->Next;
             (*cur)->Next = NULL;
-            CM_DELETE((*cur), Macro, ScratchAlloc);
+            cm_delete<ScratchAlloc>(*cur);
             *cur = next;
             return true;
         }

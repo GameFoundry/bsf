@@ -232,7 +232,7 @@ namespace CamelotFramework
 			TextureResources* textureResource = it->second;
 
 			if(textureResource != nullptr)
-				CM_DELETE(textureResource, TextureResources, PoolAlloc);
+				cm_delete<PoolAlloc>(textureResource);
 
 			++it;
 		}		
@@ -942,8 +942,7 @@ namespace CamelotFramework
 	void D3D9Texture::_createSurfaceList(IDirect3DDevice9* d3d9Device, TextureResources* textureResources)
 	{
 		IDirect3DSurface9 *surface;
-		IDirect3DVolume9 *volume;
-		D3D9PixelBuffer *buffer;				
+		IDirect3DVolume9 *volume;				
 		UINT32 mip, face;
 
 		
@@ -987,8 +986,7 @@ namespace CamelotFramework
 			{
 				for(UINT32 mip=0; mip<=mNumMipmaps; ++mip)
 				{
-					buffer = CM_NEW(D3D9PixelBuffer, PoolAlloc) D3D9PixelBuffer((GpuBufferUsage)bufusage, this);
-					mSurfaceList.push_back(PixelBufferPtr(buffer, &MemAllocDeleter<D3D9PixelBuffer, PoolAlloc>::deleter));
+					mSurfaceList.push_back(cm_shared_ptr<D3D9PixelBuffer, PoolAlloc>((GpuBufferUsage)bufusage, this));
 				}
 			}
 		}
@@ -1147,7 +1145,7 @@ namespace CamelotFramework
 			freeTextureResources(d3d9Device, textureResource);
 
 			if(textureResource != nullptr)
-				CM_DELETE(textureResource, TextureResources, PoolAlloc);
+				cm_delete<PoolAlloc>(textureResource);
 
 			mMapDeviceToTextureResources.erase(it);
 		}	

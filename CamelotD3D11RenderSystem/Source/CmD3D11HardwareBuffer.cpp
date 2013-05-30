@@ -92,7 +92,7 @@ namespace CamelotFramework
 		SAFE_RELEASE(mD3DBuffer);
 
 		if(mpTempStagingBuffer != nullptr)
-			CM_DELETE(mpTempStagingBuffer, D3D11HardwareBuffer, PoolAlloc);
+			cm_delete<PoolAlloc>(mpTempStagingBuffer);
 	}
 
 	void* D3D11HardwareBuffer::lockImpl(UINT32 offset, 
@@ -220,7 +220,7 @@ namespace CamelotFramework
 			// not that efficient, but we should not be locking often
 			if(mpTempStagingBuffer != nullptr)
 			{
-				CM_DELETE(mpTempStagingBuffer, D3D11HardwareBuffer, PoolAlloc);
+				cm_delete<PoolAlloc>(mpTempStagingBuffer);
 				mpTempStagingBuffer = nullptr;
 			}
 		}

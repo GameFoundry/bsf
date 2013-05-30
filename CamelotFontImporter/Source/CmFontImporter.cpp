@@ -42,8 +42,7 @@ namespace CamelotFramework
 
 	ImportOptionsPtr FontImporter::createImportOptions() const
 	{
-		return ImportOptionsPtr(CM_NEW(FontImportOptions, ScratchAlloc) FontImportOptions(),
-			&MemAllocDeleter<FontImportOptions, ScratchAlloc>::deleter);
+		return cm_shared_ptr<FontImportOptions, ScratchAlloc>();
 	}
 
 	HResource FontImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)

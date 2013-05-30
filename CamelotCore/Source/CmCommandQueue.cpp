@@ -118,7 +118,7 @@ namespace CamelotFramework
 			commands->pop();
 		}
 
-		CM_DELETE(commands, queue<QueuedCommand>, PoolAlloc);
+		cm_delete<PoolAlloc>(commands);
 	}
 
 	void CommandQueueBase::playback(std::queue<QueuedCommand>* commands)
@@ -129,7 +129,7 @@ namespace CamelotFramework
 	void CommandQueueBase::cancelAll()
 	{
 		std::queue<QueuedCommand>* commands = flush();
-		CM_DELETE(commands, queue<QueuedCommand>, PoolAlloc);
+		cm_delete<PoolAlloc>(commands);
 	}
 
 	bool CommandQueueBase::isEmpty()

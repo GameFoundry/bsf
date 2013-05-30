@@ -27,7 +27,7 @@ namespace CamelotFramework
 		for(auto iter = mBufferViews.begin(); iter != mBufferViews.end(); ++iter)
 		{
 			destroyView(iter->second->view);
-			CM_DELETE(iter->second, GpuBufferReference, PoolAlloc);
+			cm_delete<PoolAlloc>(iter->second);
 		}
 
 		mBufferViews.clear();
@@ -75,7 +75,7 @@ namespace CamelotFramework
 			buffer->mBufferViews.erase(iterFind);
 
 			buffer->destroyView(toRemove->view);
-			CM_DELETE(toRemove, GpuBufferReference, PoolAlloc);
+			cm_delete<PoolAlloc>(toRemove);
 		}
 	}
 }

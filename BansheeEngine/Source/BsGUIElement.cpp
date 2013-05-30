@@ -126,13 +126,13 @@ namespace BansheeEngine
 
 	void GUIElement::_destroyInternal(GUIElement* element)
 	{
-		CM_DELETE(element, GUIElement, PoolAlloc);
+		cm_delete<PoolAlloc>(element);
 	}
 
 	void GUIElement::destroy(GUIElement* element)
 	{
 		element->mParent.unregisterElement(element);
 
-		CM_DELETE(element, GUIElement, PoolAlloc);
+		cm_delete<PoolAlloc>(element);
 	}
 }

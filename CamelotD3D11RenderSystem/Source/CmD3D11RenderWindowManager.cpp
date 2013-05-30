@@ -24,7 +24,7 @@ namespace CamelotFramework
 		}
 
 		// Create the window
-		D3D11RenderWindow* renderWindow = CM_NEW(D3D11RenderWindow, PoolAlloc) D3D11RenderWindow(desc, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
-		return RenderWindowPtr(renderWindow, &CoreObject::_deleteDelayed<D3D11RenderWindow, PoolAlloc>);
+		D3D11RenderWindow* renderWindow = new (cm_alloc<D3D11RenderWindow, PoolAlloc>()) D3D11RenderWindow(desc, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
+		return cm_core_ptr<D3D11RenderWindow, PoolAlloc>(renderWindow);
 	}
 }

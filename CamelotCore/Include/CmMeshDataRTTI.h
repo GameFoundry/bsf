@@ -110,8 +110,7 @@ namespace CamelotFramework
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return std::shared_ptr<MeshData>(CM_NEW(MeshData, PoolAlloc) MeshData(),
-				&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
+			return cm_shared_ptr<MeshData, PoolAlloc>(new (cm_alloc<MeshData, PoolAlloc>()) MeshData());
 		}
 
 		virtual const String& getRTTIName() 

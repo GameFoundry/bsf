@@ -16,20 +16,15 @@ namespace CamelotFramework
 		switch(gptype)
 		{
 		case GPT_VERTEX_PROGRAM:
-			return GpuProgramPtr(CM_NEW(D3D11GpuVertexProgram, PoolAlloc) D3D11GpuVertexProgram(language), 
-				&CoreObject::_deleteDelayed<D3D11GpuVertexProgram, PoolAlloc>);
+			return cm_core_ptr<D3D11GpuVertexProgram, PoolAlloc>(new (cm_alloc<D3D11GpuVertexProgram, PoolAlloc>()) D3D11GpuVertexProgram(language));
 		case GPT_FRAGMENT_PROGRAM:
-			return GpuProgramPtr(CM_NEW(D3D11GpuFragmentProgram, PoolAlloc) D3D11GpuFragmentProgram(language), 
-				&CoreObject::_deleteDelayed<D3D11GpuFragmentProgram, PoolAlloc>);
+			return cm_core_ptr<D3D11GpuFragmentProgram, PoolAlloc>(new (cm_alloc<D3D11GpuFragmentProgram, PoolAlloc>()) D3D11GpuFragmentProgram(language));
 		case GPT_HULL_PROGRAM:
-			return GpuProgramPtr(CM_NEW(D3D11GpuHullProgram, PoolAlloc) D3D11GpuHullProgram(language), 
-				&CoreObject::_deleteDelayed<D3D11GpuHullProgram, PoolAlloc>);
+			return cm_core_ptr<D3D11GpuHullProgram, PoolAlloc>(new (cm_alloc<D3D11GpuHullProgram, PoolAlloc>()) D3D11GpuHullProgram(language));
 		case GPT_DOMAIN_PROGRAM:
-			return GpuProgramPtr(CM_NEW(D3D11GpuDomainProgram, PoolAlloc) D3D11GpuDomainProgram(language), 
-				&CoreObject::_deleteDelayed<D3D11GpuDomainProgram, PoolAlloc>);
+			return cm_core_ptr<D3D11GpuDomainProgram, PoolAlloc>(new (cm_alloc<D3D11GpuDomainProgram, PoolAlloc>()) D3D11GpuDomainProgram(language));
 		case GPT_GEOMETRY_PROGRAM:
-			return GpuProgramPtr(CM_NEW(D3D11GpuGeometryProgram, PoolAlloc) D3D11GpuGeometryProgram(language), 
-				&CoreObject::_deleteDelayed<D3D11GpuGeometryProgram, PoolAlloc>);
+			return cm_core_ptr<D3D11GpuGeometryProgram, PoolAlloc>(new (cm_alloc<D3D11GpuGeometryProgram, PoolAlloc>()) D3D11GpuGeometryProgram(language));
 		}
 		
 		return nullptr;

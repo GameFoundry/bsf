@@ -145,13 +145,13 @@ namespace CamelotFramework
 
 		if(mIAManager != nullptr)
 		{
-			CM_DELETE(mIAManager, D3D11InputLayoutManager, GenAlloc);
+			cm_delete(mIAManager);
 			mIAManager = nullptr;
 		}
 
 		if(mHLSLFactory != nullptr)
 		{
-			CM_DELETE(mHLSLFactory, D3D11HLSLProgramFactory, GenAlloc);
+			cm_delete(mHLSLFactory);
 			mHLSLFactory = nullptr;
 		}
 
@@ -168,13 +168,13 @@ namespace CamelotFramework
 
 		if(mDevice != nullptr)
 		{
-			CM_DELETE(mDevice, D3D11Device, GenAlloc);
+			cm_delete(mDevice);
 			mDevice = nullptr;
 		}
 
 		if(mDriverList != nullptr)
 		{
-			CM_DELETE(mDriverList, D3D11DriverList, GenAlloc);
+			cm_delete(mDriverList);
 			mDriverList = nullptr;
 		}
 

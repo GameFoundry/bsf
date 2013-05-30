@@ -178,7 +178,7 @@ namespace CamelotFramework
 	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, bool createTangentsIfMissing)
 	{
 		if (!mesh->GetNode())
-			return MeshDataPtr(CM_NEW(MeshData, ScratchAlloc) MeshData(0), &MemAllocDeleter<MeshData, ScratchAlloc>::deleter);
+			return cm_shared_ptr<MeshData, ScratchAlloc>(0);
 
 		// Find out which vertex attributes exist
 		bool allByControlPoint = true;
@@ -284,7 +284,7 @@ namespace CamelotFramework
 
 		UINT32 vertexCount = lPolygonVertexCount;
 
-		MeshDataPtr meshData = MeshDataPtr(CM_NEW(MeshData, ScratchAlloc) MeshData(vertexCount), &MemAllocDeleter<MeshData, ScratchAlloc>::deleter);
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(vertexCount);
 		
 		meshData->beginDesc();
 		meshData->addVertElem(VET_FLOAT3, VES_POSITION);

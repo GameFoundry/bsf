@@ -178,8 +178,7 @@ namespace CamelotFramework
 		virtual UINT32 getRTTIId() { return TID_MaterialParamFloat; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return std::shared_ptr<IReflectable>(CM_NEW(MaterialFloatParam, ScratchAlloc) MaterialFloatParam(),
-				&MemAllocDeleter<MaterialFloatParam, ScratchAlloc>::deleter); 
+			return cm_shared_ptr<MaterialFloatParam, ScratchAlloc>(); 
 		}
 	};
 
@@ -211,8 +210,7 @@ namespace CamelotFramework
 		virtual UINT32 getRTTIId() { return TID_MaterialParamVec2; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return std::shared_ptr<IReflectable>(CM_NEW(MaterialVec2Param, ScratchAlloc) MaterialVec2Param(),
-				&MemAllocDeleter<MaterialVec2Param, ScratchAlloc>::deleter); 
+			return cm_shared_ptr<MaterialVec2Param, ScratchAlloc>(); 
 		}
 	};
 
@@ -244,8 +242,7 @@ namespace CamelotFramework
 		virtual UINT32 getRTTIId() { return TID_MaterialParamVec3; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return std::shared_ptr<IReflectable>(CM_NEW(MaterialVec3Param, ScratchAlloc) MaterialVec3Param(),
-				&MemAllocDeleter<MaterialVec3Param, ScratchAlloc>::deleter); 
+			return cm_shared_ptr<MaterialVec3Param, ScratchAlloc>(); 
 		}
 	};
 
@@ -277,8 +274,7 @@ namespace CamelotFramework
 		virtual UINT32 getRTTIId() { return TID_MaterialParamVec4; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return std::shared_ptr<IReflectable>(CM_NEW(MaterialVec4Param, ScratchAlloc) MaterialVec4Param(),
-				&MemAllocDeleter<MaterialVec4Param, ScratchAlloc>::deleter); 
+			return cm_shared_ptr<MaterialVec4Param, ScratchAlloc>();
 		}
 	};
 
@@ -310,8 +306,7 @@ namespace CamelotFramework
 		virtual UINT32 getRTTIId() { return TID_MaterialParamMat3; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return std::shared_ptr<IReflectable>(CM_NEW(MaterialMat3Param, ScratchAlloc) MaterialMat3Param(),
-				&MemAllocDeleter<MaterialMat3Param, ScratchAlloc>::deleter); 
+			return cm_shared_ptr<MaterialMat3Param, ScratchAlloc>();
 		}
 	};
 
@@ -343,8 +338,7 @@ namespace CamelotFramework
 		virtual UINT32 getRTTIId() { return TID_MaterialParamMat4; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return std::shared_ptr<IReflectable>(CM_NEW(MaterialMat4Param, ScratchAlloc) MaterialMat4Param(),
-				&MemAllocDeleter<MaterialMat4Param, ScratchAlloc>::deleter); 
+			return cm_shared_ptr<MaterialMat4Param, ScratchAlloc>();
 		}
 	};
 
@@ -392,8 +386,7 @@ namespace CamelotFramework
 		virtual UINT32 getRTTIId() { return TID_MaterialParamStruct; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return std::shared_ptr<IReflectable>(CM_NEW(MaterialStructParam, ScratchAlloc) MaterialStructParam(),
-				&MemAllocDeleter<MaterialStructParam, ScratchAlloc>::deleter);
+			return cm_shared_ptr<MaterialStructParam, ScratchAlloc>();
 		}
 	};
 
@@ -421,8 +414,7 @@ namespace CamelotFramework
 		virtual UINT32 getRTTIId() { return TID_MaterialParamTexture; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return std::shared_ptr<IReflectable>(CM_NEW(MaterialTextureParam, ScratchAlloc) MaterialTextureParam(),
-				&MemAllocDeleter<MaterialTextureParam, ScratchAlloc>::deleter);
+			return cm_shared_ptr<MaterialTextureParam, ScratchAlloc>();
 		}
 	};
 
@@ -450,8 +442,7 @@ namespace CamelotFramework
 		virtual UINT32 getRTTIId() { return TID_MaterialParamSamplerState; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return std::shared_ptr<IReflectable>(CM_NEW(MaterialSamplerStateParam, ScratchAlloc) MaterialSamplerStateParam(),
-				&MemAllocDeleter<MaterialSamplerStateParam, ScratchAlloc>::deleter);
+			return cm_shared_ptr<MaterialSamplerStateParam, ScratchAlloc>();
 		}
 	};
 
@@ -542,8 +533,7 @@ namespace CamelotFramework
 		virtual UINT32 getRTTIId() { return TID_MaterialParams; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return std::shared_ptr<IReflectable>(CM_NEW(MaterialParams, ScratchAlloc) MaterialParams(),
-				&MemAllocDeleter<MaterialParams, ScratchAlloc>::deleter);
+			return cm_shared_ptr<MaterialParams, ScratchAlloc>();
 		}
 	};
 

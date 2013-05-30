@@ -15,7 +15,7 @@ namespace BansheeEngine
 		for(auto& iter : mAvailableFactories)
 		{
 			iter.second->shutDown();
-			CM_DELETE(iter.second, BuiltinMaterialFactory, GenAlloc)
+			cm_delete(iter.second);
 		}
 	}
 

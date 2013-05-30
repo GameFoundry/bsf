@@ -376,7 +376,7 @@ namespace CamelotFramework {
 			return;
 
 		// Unregister and destroy GLContext
-		CM_DELETE(mContext, Win32Context, GenAlloc);
+		cm_delete(mContext);
 
 		if (!mIsExternalGLContext && mGlrc)
 		{

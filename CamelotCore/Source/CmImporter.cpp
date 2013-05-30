@@ -23,7 +23,7 @@ namespace CamelotFramework
 		for(auto i = mAssetImporters.begin(); i != mAssetImporters.end(); ++i)
 		{
 			if((*i) != nullptr)
-				CM_DELETE(*i, SpecificImporter, GenAlloc);
+				cm_delete(*i);
 		}
 
 		mAssetImporters.clear();

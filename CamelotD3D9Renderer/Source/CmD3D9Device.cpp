@@ -117,7 +117,7 @@ namespace CamelotFramework
 			releaseRenderWindowResources(renderWindowResources);
 
 			if(renderWindowResources != nullptr)
-				CM_DELETE(renderWindowResources, RenderWindowResources, PoolAlloc);
+				cm_delete<PoolAlloc>(renderWindowResources);
 			
 			mMapRenderWindowToResoruces.erase(it);		
 		}
@@ -283,7 +283,7 @@ namespace CamelotFramework
 				setSharedWindowHandle(NULL);
 
 			if(it->second != nullptr)
-				CM_DELETE(it->second, RenderWindowResources, PoolAlloc);
+				cm_delete<PoolAlloc>(it->second);
 
 			++it;
 		}

@@ -39,10 +39,10 @@ namespace CamelotFramework
 		mSubMeshes.clear();
 
 		if(mVertexData != nullptr)
-			CM_DELETE(mVertexData, VertexData, PoolAlloc);
+			cm_delete<PoolAlloc>(mVertexData);
 
 		if(mIndexData != nullptr)
-			CM_DELETE(mIndexData, IndexData, PoolAlloc);
+			cm_delete<PoolAlloc>(mIndexData);
 
 		// Submeshes
 		for(UINT32 i = 0; i < meshData.getNumSubmeshes(); i++)
@@ -240,10 +240,10 @@ namespace CamelotFramework
 		THROW_IF_NOT_RENDER_THREAD;
 
 		if(mVertexData != nullptr)
-			CM_DELETE(mVertexData, VertexData, PoolAlloc);
+			cm_delete<PoolAlloc>(mVertexData);
 
 		if(mIndexData != nullptr)
-			CM_DELETE(mIndexData, IndexData, PoolAlloc);
+			cm_delete<PoolAlloc>(mIndexData);
 
 		Resource::destroy_internal();
 	}

@@ -8,25 +8,25 @@ namespace CamelotFramework
 {
 	SamplerStatePtr D3D11RenderStateManager::createSamplerStateImpl() const
 	{
-		SamplerStatePtr samplerState = SamplerStatePtr(CM_NEW(D3D11SamplerState, PoolAlloc) D3D11SamplerState(), &CoreObject::_deleteDelayed<D3D11SamplerState, PoolAlloc>);
+		SamplerStatePtr samplerState = cm_core_ptr<D3D11SamplerState, PoolAlloc>(new (cm_alloc<D3D11SamplerState, PoolAlloc>()) D3D11SamplerState());
 		return samplerState;
 	}
 
 	BlendStatePtr D3D11RenderStateManager::createBlendStateImpl() const
 	{
-		BlendStatePtr blendState = BlendStatePtr(CM_NEW(D3D11BlendState, PoolAlloc) D3D11BlendState(), &CoreObject::_deleteDelayed<D3D11BlendState, PoolAlloc>);
+		BlendStatePtr blendState = cm_core_ptr<D3D11BlendState, PoolAlloc>(new (cm_alloc<D3D11BlendState, PoolAlloc>()) D3D11BlendState());
 		return blendState;
 	}
 
 	RasterizerStatePtr D3D11RenderStateManager::createRasterizerStateImpl() const
 	{
-		RasterizerStatePtr rasterizerState = RasterizerStatePtr(CM_NEW(D3D11RasterizerState, PoolAlloc) D3D11RasterizerState(), &CoreObject::_deleteDelayed<D3D11RasterizerState, PoolAlloc>);
+		RasterizerStatePtr rasterizerState = cm_core_ptr<D3D11RasterizerState, PoolAlloc>(new (cm_alloc<D3D11RasterizerState, PoolAlloc>()) D3D11RasterizerState());
 		return rasterizerState;
 	}
 
 	DepthStencilStatePtr D3D11RenderStateManager::createDepthStencilStateImpl() const
 	{
-		DepthStencilStatePtr depthStencilState = DepthStencilStatePtr(CM_NEW(D3D11DepthStencilState, PoolAlloc) D3D11DepthStencilState(), &CoreObject::_deleteDelayed<D3D11DepthStencilState, PoolAlloc>);
+		DepthStencilStatePtr depthStencilState = cm_core_ptr<D3D11DepthStencilState, PoolAlloc>(new (cm_alloc<D3D11DepthStencilState, PoolAlloc>()) D3D11DepthStencilState());
 		return depthStencilState;
 	}
 }

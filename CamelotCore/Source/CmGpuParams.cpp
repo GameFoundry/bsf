@@ -98,7 +98,7 @@ namespace CamelotFramework
 		}
 
 		if(mParamBlocks[iterFind->second.slot] != nullptr)
-			CM_DELETE(mParamBlocks[iterFind->second.slot], GpuParamBlock, PoolAlloc);
+			cm_delete<PoolAlloc>(mParamBlocks[iterFind->second.slot]);
 
 		mParamBlocks[iterFind->second.slot] = cm_new<GpuParamBlock, PoolAlloc>(paramBlockBuffer->getSize());
 		mParamBlockBuffers[iterFind->second.slot] = paramBlockBuffer;
@@ -336,7 +336,7 @@ namespace CamelotFramework
 
 	void GpuParams::releaseBindableCopy(BindableGpuParams& bindableParams)
 	{
-		CM_DELETE(bindableParams.mParams, GpuParams, ScratchAlloc);
+		cm_delete<ScratchAlloc>(bindableParams.mParams);
 	}
 
 	BindableGpuParams::BindableGpuParams(GpuParams* params)

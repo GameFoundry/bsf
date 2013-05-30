@@ -38,7 +38,7 @@ namespace CamelotFramework
 		for(UINT32 i = 0; i < mNumOutputs; i++)
 		{
 			if(mVideoModeList[i] != nullptr)
-				CM_DELETE(mVideoModeList[i], D3D11VideoModeList, GenAlloc);
+				cm_delete(mVideoModeList[i]);
 		}
 
 		if(mVideoModeList != nullptr)

@@ -46,23 +46,23 @@ namespace CamelotFramework
 
     TexturePtr GLTextureManager::createTextureImpl()
     {
-        GLTexture* tex = CM_NEW(GLTexture, PoolAlloc) GLTexture(mGLSupport);
+        GLTexture* tex = new (cm_alloc<GLTexture, PoolAlloc>()) GLTexture(mGLSupport);
 
-		return TexturePtr(tex, &CoreObject::_deleteDelayed<GLTexture, PoolAlloc>);
+		return cm_core_ptr<GLTexture, PoolAlloc>(tex);
     }
 
 	RenderTexturePtr GLTextureManager::createRenderTextureImpl()
 	{
-		GLRenderTexture* tex = CM_NEW(GLRenderTexture, PoolAlloc) GLRenderTexture();
+		GLRenderTexture* tex = new (cm_alloc<GLRenderTexture, PoolAlloc>()) GLRenderTexture();
 
-		return RenderTexturePtr(tex, &CoreObject::_deleteDelayed<GLRenderTexture, PoolAlloc>);
+		return cm_core_ptr<GLRenderTexture, PoolAlloc>(tex);
 	}
 
 	MultiRenderTexturePtr GLTextureManager::createMultiRenderTextureImpl()
 	{
-		GLMultiRenderTexture* tex = CM_NEW(GLMultiRenderTexture, PoolAlloc) GLMultiRenderTexture();
+		GLMultiRenderTexture* tex = new (cm_alloc<GLMultiRenderTexture, PoolAlloc>()) GLMultiRenderTexture();
 
-		return MultiRenderTexturePtr(tex, &CoreObject::_deleteDelayed<GLMultiRenderTexture, PoolAlloc>);
+		return cm_core_ptr<GLMultiRenderTexture, PoolAlloc>(tex);
 	}
 
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)
