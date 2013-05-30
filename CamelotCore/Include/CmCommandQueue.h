@@ -117,12 +117,12 @@ namespace CamelotFramework
 		 * @param	notifyCallback  	Callback that will be called if a command that has "notifyOnComplete" flag set.
 		 * 								The callback will receive "callbackId" of the command.
 		 */
-		void playback(std::queue<QueuedCommand>* commands, boost::function<void(UINT32)> notifyCallback);
+		void playback(queue<QueuedCommand>::type* commands, boost::function<void(UINT32)> notifyCallback);
 
 		/**
 		 * @brief	Plays all provided commands. To get the commands call flush().
 		 */
-		void playback(std::queue<QueuedCommand>* commands);
+		void playback(queue<QueuedCommand>::type* commands);
 
 		/**
 		 * @brief	Allows you to set a breakpoint that will trigger when the specified command is executed.
@@ -176,7 +176,7 @@ namespace CamelotFramework
 		 * @brief	Returns a copy of all queued commands and makes room for new ones. Must be called from the thread
 		 * 			that created the command queue. Returned commands MUST be passed to "playback" method.
 		 */
-		std::queue<QueuedCommand>* flush();
+		CamelotFramework::queue<QueuedCommand>::type* flush();
 
 		/**
 		 * @brief	Cancels all currently queued commands.
@@ -192,7 +192,7 @@ namespace CamelotFramework
 		void throwInvalidThreadException(const String& message) const;
 
 	private:
-		std::queue<QueuedCommand>* mCommands;
+		CamelotFramework::queue<QueuedCommand>::type* mCommands;
 
 		bool mAllowAllThreads;
 		
@@ -299,7 +299,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc CommandQueueBase::flush
 		 */
-		std::queue<QueuedCommand>* flush()
+		CamelotFramework::queue<QueuedCommand>::type* flush()
 		{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0
@@ -309,7 +309,7 @@ namespace CamelotFramework
 #endif
 
 			lock();
-			std::queue<QueuedCommand>* commands = CommandQueueBase::flush();
+			CamelotFramework::queue<QueuedCommand>::type* commands = CommandQueueBase::flush();
 			unlock();
 
 			return commands;

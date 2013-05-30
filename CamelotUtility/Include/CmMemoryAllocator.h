@@ -270,9 +270,6 @@ namespace CamelotFramework
 	}
 }
 
-#define CM_NEW(T, category) new (CamelotFramework::MemoryAllocator<category>::allocate(sizeof(T)))
-#define CM_DELETE(ptr, T, category) {(ptr)->~T(); CamelotFramework::MemoryAllocator<category>::free(ptr);}
-
 namespace CamelotFramework
 {
 	// Allocators we can use in the standard library

@@ -171,6 +171,12 @@ namespace CamelotFramework
 		typedef typename std::stack<T, std::deque<T, A>> type;    
 	}; 
 
+	template <typename T, typename A = StdAlloc<T>> 
+	struct queue
+	{ 
+		typedef typename std::queue<T, std::deque<T, A>> type;    
+	}; 	
+
 	template <typename T, typename P = std::less<T>, typename A = StdAlloc<T>> 
 	struct set 
 	{ 

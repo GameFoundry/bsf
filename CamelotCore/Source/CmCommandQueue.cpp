@@ -10,7 +10,7 @@ namespace CamelotFramework
 	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
 		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads), mMaxDebugIdx(0)
 	{
-		mCommands = cm_new<std::queue<QueuedCommand>, PoolAlloc>();
+		mCommands = cm_new<CamelotFramework::queue<QueuedCommand>::type, PoolAlloc>();
 
 		{
 			CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
@@ -22,7 +22,7 @@ namespace CamelotFramework
 	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
 		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads)
 	{
-		mCommands = cm_new<std::queue<QueuedCommand>, PoolAlloc>();
+		mCommands = cm_new<CamelotFramework::queue<QueuedCommand>::type, PoolAlloc>();
 	}
 #endif
 
@@ -45,7 +45,7 @@ namespace CamelotFramework
 		mCommands->push(newCommand);
 
 #if CM_FORCE_SINGLETHREADED_RENDERING
-		std::queue<QueuedCommand>* commands = flush();
+		queue<QueuedCommand>::type* commands = flush();
 		playback(commands);
 #endif
 
@@ -65,20 +65,20 @@ namespace CamelotFramework
 		mCommands->push(newCommand);
 
 #if CM_FORCE_SINGLETHREADED_RENDERING
-		std::queue<QueuedCommand>* commands = flush();
+		queue<QueuedCommand>::type* commands = flush();
 		playback(commands);
 #endif
 	}
 
-	std::queue<QueuedCommand>* CommandQueueBase::flush()
+	CamelotFramework::queue<QueuedCommand>::type* CommandQueueBase::flush()
 	{
-		std::queue<QueuedCommand>* oldCommands = mCommands;
-		mCommands = cm_new<std::queue<QueuedCommand>, PoolAlloc>();
+		CamelotFramework::queue<QueuedCommand>::type* oldCommands = mCommands;
+		mCommands = cm_new<CamelotFramework::queue<QueuedCommand>::type, PoolAlloc>();
 
 		return oldCommands;
 	}
 
-	void CommandQueueBase::playback(std::queue<QueuedCommand>* commands, boost::function<void(UINT32)> notifyCallback)
+	void CommandQueueBase::playback(CamelotFramework::queue<QueuedCommand>::type* commands, boost::function<void(UINT32)> notifyCallback)
 	{
 #if CM_DEBUG_MODE
 		RenderSystem* rs = RenderSystem::instancePtr();
@@ -121,14 +121,14 @@ namespace CamelotFramework
 		cm_delete<PoolAlloc>(commands);
 	}
 
-	void CommandQueueBase::playback(std::queue<QueuedCommand>* commands)
+	void CommandQueueBase::playback(CamelotFramework::queue<QueuedCommand>::type* commands)
 	{
 		playback(commands, boost::function<void(UINT32)>());
 	}
 
 	void CommandQueueBase::cancelAll()
 	{
-		std::queue<QueuedCommand>* commands = flush();
+		CamelotFramework::queue<QueuedCommand>::type* commands = flush();
 		cm_delete<PoolAlloc>(commands);
 	}
 

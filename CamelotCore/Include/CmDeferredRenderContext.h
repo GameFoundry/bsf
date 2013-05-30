@@ -247,7 +247,7 @@ namespace CamelotFramework
 		 */
 		void submitToGpu(bool blockUntilComplete = false)
 		{
-			std::queue<QueuedCommand>* commands = mCommandQueue->flush();
+			queue<QueuedCommand>::type* commands = mCommandQueue->flush();
 
 			RenderSystem* rs = RenderSystem::instancePtr();
 			rs->queueCommand(boost::bind(&CommandQueueBase::playback, mCommandQueue, commands), blockUntilComplete);
