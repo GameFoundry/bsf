@@ -80,23 +80,23 @@ namespace CamelotFramework {
 		HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, 
 			GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes)
 		{
-			return HighLevelGpuProgramPtr(CM_NEW(NullProgram, PoolAlloc) NullProgram(), &CoreObject::_deleteDelayed<NullProgram, PoolAlloc>);
+			return cm_core_ptr<NullProgram, PoolAlloc>();
 		}
 		HighLevelGpuProgramPtr create()
 		{
-			return HighLevelGpuProgramPtr(CM_NEW(NullProgram, PoolAlloc) NullProgram(), &CoreObject::_deleteDelayed<NullProgram, PoolAlloc>);
+			return cm_core_ptr<NullProgram, PoolAlloc>();
 		}
 	};
 	//-----------------------------------------------------------------------
 	HighLevelGpuProgramManager::HighLevelGpuProgramManager()
 	{
-		mNullFactory = CM_NEW(NullProgramFactory, GenAlloc) NullProgramFactory();
+		mNullFactory = cm_new<NullProgramFactory>();
 		addFactory(mNullFactory);
 	}
 	//-----------------------------------------------------------------------
 	HighLevelGpuProgramManager::~HighLevelGpuProgramManager()
 	{
-		CM_DELETE((NullProgramFactory*)mNullFactory, NullProgramFactory, GenAlloc);
+		cm_delete((NullProgramFactory*)mNullFactory);
 	}
     //---------------------------------------------------------------------------
 	void HighLevelGpuProgramManager::addFactory(HighLevelGpuProgramFactory* factory)

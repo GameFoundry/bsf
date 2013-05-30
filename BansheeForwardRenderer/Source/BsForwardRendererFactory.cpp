@@ -8,7 +8,7 @@ namespace BansheeEngine
 {
 	RendererPtr ForwardRendererFactory::create()
 	{
-		return RendererPtr(CM_NEW(ForwardRenderer, GenAlloc) ForwardRenderer(), &MemAllocDeleter<ForwardRenderer, GenAlloc>::deleter);
+		return cm_shared_ptr<ForwardRenderer>();
 	}
 
 	const std::string& ForwardRendererFactory::name() const

@@ -13,7 +13,7 @@ namespace BansheeEngine
 	GUILabel::GUILabel(GUIWidget& parent, const GUIElementStyle* style, const String& text, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mText(text)
 	{
-		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite();
+		mTextSprite = cm_new<TextSprite, PoolAlloc>();
 
 		mDesc.text = text;
 		mDesc.font = mStyle->font;
@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 	GUILabel::~GUILabel()
 	{
-		CM_DELETE(mTextSprite, TextSprite, PoolAlloc);
+		cm_delete<PoolAlloc>(mTextSprite);
 	}
 
 	UINT32 GUILabel::getNumRenderElements() const
@@ -116,7 +116,7 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, style, text, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(parent, style, text, getDefaultLayoutOptions(style));
 	}
 
 	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
@@ -127,7 +127,7 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return CM_NEW(GUILabel, PoolAlloc) GUILabel(parent, style, text, layoutOptions);
+		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(parent, style, text, layoutOptions);
 	}
 
 	const String& GUILabel::getGUITypeName()

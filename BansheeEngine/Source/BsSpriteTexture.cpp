@@ -31,7 +31,7 @@ namespace BansheeEngine
 
 		if(!initialized)
 		{
-			dummyTex = SpriteTexturePtr(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(Texture::dummy()));
+			dummyTex = cm_shared_ptr<SpriteTexture, PoolAlloc>(Texture::dummy());
 		}
 
 		return dummyTex;

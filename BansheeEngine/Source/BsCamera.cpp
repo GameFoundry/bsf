@@ -93,8 +93,7 @@ namespace BansheeEngine
 	{
 		target->waitUntilInitialized();
 
-		mViewport = ViewportPtr(CM_NEW(Viewport, PoolAlloc) Viewport(target, left, top, width, height, ZOrder),
-			&MemAllocDeleter<Viewport, PoolAlloc>::deleter);
+		mViewport = cm_shared_ptr<Viewport, PoolAlloc>(target, left, top, width, height, ZOrder);
 	}
 	//-----------------------------------------------------------------------
 	void Camera::setFOVy(const Radian& fov)

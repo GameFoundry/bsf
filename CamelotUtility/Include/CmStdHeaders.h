@@ -207,23 +207,49 @@ namespace CamelotFramework
 		typedef typename std::unordered_multimap<K, V, H, C, A> type; 
 	}; 
 
+	//// Create a new shared pointer with a custom allocator category
+	// Implementation for 0-5 parameters uses allocate_shared
 #define MAKE_CM_NEW_SHARED(z, n, unused)                                     \
-	template<class Type, class category BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	template<class Type, class AllocCategory BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
 	std::shared_ptr<Type> cm_shared_ptr(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
-	return std::allocate_shared<Type>(StdAlloc<category>() BOOST_PP_ENUM_TRAILING_PARAMS (n, t));     \
+	return std::allocate_shared<Type>(StdAlloc<AllocCategory>() BOOST_PP_ENUM_TRAILING_PARAMS (n, t));     \
 	}
 
-	BOOST_PP_REPEAT(15, MAKE_CM_NEW_SHARED, ~)
+	BOOST_PP_REPEAT_FROM_TO(0, 6, MAKE_CM_NEW_SHARED, ~)
 
 #undef MAKE_CM_NEW_SHARED
 
+	// Implementation for more than 5 params uses shared_ptr constructor as allocate_shared only accepts up to 5 params
+#define MAKE_CM_NEW_SHARED(z, n, unused)                                     \
+	template<class Type, class AllocCategory BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	std::shared_ptr<Type> cm_shared_ptr(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+	return std::shared_ptr<Type>(cm_new<Type, AllocCategory>(BOOST_PP_ENUM_PARAMS (n, t)), &cm_delete<AllocCategory, Type>, StdAlloc<AllocCategory>());     \
+	}
+
+	BOOST_PP_REPEAT_FROM_TO(6, 15, MAKE_CM_NEW_SHARED, ~)
+
+#undef MAKE_CM_NEW_SHARED
+
+	//// Create a new shared pointer with a general allocator category
+	// Implementation for 0-5 parameters uses allocate_shared
 #define MAKE_CM_NEW_SHARED(z, n, unused)                                     \
 	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
 	std::shared_ptr<Type> cm_shared_ptr(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
 	return std::allocate_shared<Type>(StdAlloc<GenAlloc>() BOOST_PP_ENUM_TRAILING_PARAMS (n, t));     \
 	}
 
-	BOOST_PP_REPEAT(15, MAKE_CM_NEW_SHARED, ~)
+	BOOST_PP_REPEAT_FROM_TO(0, 6, MAKE_CM_NEW_SHARED, ~)
+
+#undef MAKE_CM_NEW_SHARED
+
+	// Implementation for more than 5 params uses shared_ptr constructor as allocate_shared only accepts up to 5 params
+#define MAKE_CM_NEW_SHARED(z, n, unused)                                     \
+	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	std::shared_ptr<Type> cm_shared_ptr(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+	return std::shared_ptr<Type>(cm_new<Type, GenAlloc>(BOOST_PP_ENUM_PARAMS (n, t)), &cm_delete<GenAlloc, Type>, StdAlloc<GenAlloc>());     \
+	}
+
+	BOOST_PP_REPEAT_FROM_TO(6, 15, MAKE_CM_NEW_SHARED, ~)
 
 #undef MAKE_CM_NEW_SHARED
 

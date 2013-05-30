@@ -81,8 +81,8 @@ namespace BansheeEngine
 		}
 
 		// TODO - Somehow avoid creating these every frame?
-		MeshDataPtr lineMeshData(CM_NEW(MeshData, ScratchAlloc) MeshData(totalNumLineVertices), &MemAllocDeleter<MeshData, ScratchAlloc>::deleter);
-		MeshDataPtr triangleMeshData(CM_NEW(MeshData, ScratchAlloc) MeshData(totalNumTriangleVertices), &MemAllocDeleter<MeshData, ScratchAlloc>::deleter);
+		MeshDataPtr lineMeshData = cm_shared_ptr<MeshData, ScratchAlloc>(totalNumLineVertices);
+		MeshDataPtr triangleMeshData = cm_shared_ptr<MeshData, ScratchAlloc>(totalNumTriangleVertices);
 
 		lineMeshData->beginDesc();
 

@@ -45,15 +45,13 @@ namespace CamelotFramework
 		if (!readOnly)
 		{
 			mode |= std::ios::out;
-			rwStream = std::shared_ptr<std::fstream>(CM_NEW(std::fstream, ScratchAlloc) std::fstream(),
-				&MemAllocDeleter<std::fstream, ScratchAlloc>::deleter);
+			rwStream = cm_shared_ptr<std::fstream, ScratchAlloc>();
 			rwStream->open(fullPath.c_str(), mode);
 			baseStream = rwStream;
 		}
 		else
 		{
-			roStream = std::shared_ptr<std::ifstream>(CM_NEW(std::ifstream, ScratchAlloc) std::ifstream(),
-				&MemAllocDeleter<std::ifstream, ScratchAlloc>::deleter);
+			roStream = cm_shared_ptr<std::ifstream, ScratchAlloc>();
 			roStream->open(fullPath.c_str(), mode);
 			baseStream = roStream;
 		}
@@ -82,8 +80,7 @@ namespace CamelotFramework
 		// Always open in binary mode
 		// Also, always include reading
 		std::ios::openmode mode = std::ios::out | std::ios::binary;
-		std::shared_ptr<std::fstream> rwStream(CM_NEW(std::fstream, ScratchAlloc) std::fstream(),
-			&MemAllocDeleter<std::fstream, ScratchAlloc>::deleter);
+		std::shared_ptr<std::fstream> rwStream = cm_shared_ptr<std::fstream, ScratchAlloc>();
 		rwStream->open(fullPath.c_str(), mode);
 
 		// Should check ensure open succeeded, in case fail for some reason.
@@ -91,8 +88,7 @@ namespace CamelotFramework
 			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath);
 
 		/// Construct return stream, tell it to delete on destroy
-		FileDataStream* stream = CM_NEW(FileDataStream, ScratchAlloc) FileDataStream(fullPath, rwStream, 0, true);
-		return DataStreamPtr(stream, &MemAllocDeleter<FileDataStream, ScratchAlloc>::deleter);
+		return cm_shared_ptr<FileDataStream, ScratchAlloc>(fullPath, rwStream, 0, true);
 	}
 
 	void FileSystem::remove(const String& fullPath)

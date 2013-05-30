@@ -61,7 +61,7 @@ namespace BansheeEngine
 		windowFrameTex.waitUntilLoaded();
 
 		GUIElementStyle windowFrameStyle;
-		windowFrameStyle.normal.texture = SpriteTexturePtr(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(windowFrameTex), &MemAllocDeleter<SpriteTexture, PoolAlloc>::deleter);
+		windowFrameStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(windowFrameTex);
 		windowFrameStyle.border.left = 1;
 		windowFrameStyle.border.right = 1;
 		windowFrameStyle.border.top = 1;
@@ -76,8 +76,8 @@ namespace BansheeEngine
 		buttonHoverTex.waitUntilLoaded();
 
 		GUIElementStyle buttonStyle;
-		buttonStyle.normal.texture = SpriteTexturePtr(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(buttonNormalTex), &MemAllocDeleter<SpriteTexture, PoolAlloc>::deleter);
-		buttonStyle.hover.texture = SpriteTexturePtr(CM_NEW(SpriteTexture, PoolAlloc) SpriteTexture(buttonHoverTex), &MemAllocDeleter<SpriteTexture, PoolAlloc>::deleter);
+		buttonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(buttonNormalTex);
+		buttonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(buttonHoverTex);
 		buttonStyle.border.left = 5;
 		buttonStyle.border.right = 5;
 		buttonStyle.border.top = 5;

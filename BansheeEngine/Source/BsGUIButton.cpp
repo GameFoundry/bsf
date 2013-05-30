@@ -21,8 +21,8 @@ namespace BansheeEngine
 	GUIButton::GUIButton(GUIWidget& parent, const GUIElementStyle* style, const String& text, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mText(text), mNumImageRenderElements(0)
 	{
-		mImageSprite = CM_NEW(ImageSprite, PoolAlloc) ImageSprite();
-		mTextSprite = CM_NEW(TextSprite, PoolAlloc) TextSprite();
+		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
+		mTextSprite = cm_new<TextSprite, PoolAlloc>();
 
 		mImageDesc.texture = mStyle->normal.texture;
 
@@ -40,8 +40,8 @@ namespace BansheeEngine
 
 	GUIButton::~GUIButton()
 	{
-		CM_DELETE(mTextSprite, TextSprite, PoolAlloc);
-		CM_DELETE(mImageSprite, ImageSprite, PoolAlloc);
+		cm_delete<PoolAlloc>(mTextSprite);
+		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
 	GUIButton* GUIButton::create(GUIWidget& parent, const String& text, const GUIElementStyle* style)
@@ -52,7 +52,7 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, style, text, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, text, getDefaultLayoutOptions(style));
 	}
 
 	GUIButton* GUIButton::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
@@ -63,7 +63,7 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return CM_NEW(GUIButton, PoolAlloc) GUIButton(parent, style, text, layoutOptions);
+		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, text, layoutOptions);
 	}
 
 	UINT32 GUIButton::getNumRenderElements() const

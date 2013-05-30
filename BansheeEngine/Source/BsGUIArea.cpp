@@ -10,7 +10,7 @@ namespace BansheeEngine
 	GUIArea::GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth)
 		:mWidget(widget), mX(x), mY(y), mWidth(width), mHeight(height), mDepth(depth), mIsDirty(true)
 	{
-		mLayout = CM_NEW(GUILayoutX, PoolAlloc) GUILayoutX();
+		mLayout = cm_new<GUILayoutX, PoolAlloc>();
 
 		if(width <= 0)
 		{
@@ -29,24 +29,24 @@ namespace BansheeEngine
 
 	GUIArea::~GUIArea() 
 	{
-		CM_DELETE(mLayout, GUILayout, PoolAlloc);
+		cm_delete<PoolAlloc>(mLayout);
 	}
 
 	GUIArea* GUIArea::create(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth)
 	{
-		return CM_NEW(GUIArea, PoolAlloc) GUIArea(widget, x, y, width, height, depth);
+		return new (cm_alloc<GUIArea, PoolAlloc>()) GUIArea(widget, x, y, width, height, depth);
 	}
 
 	void GUIArea::destroy(GUIArea* area)
 	{
 		area->mWidget.unregisterArea(area);
 
-		CM_DELETE(area, GUIArea, PoolAlloc);
+		cm_delete<PoolAlloc>(area);
 	}
 
 	void GUIArea::destroyInternal(GUIArea* area)
 	{
-		CM_DELETE(area, GUIArea, PoolAlloc);
+		cm_delete<PoolAlloc>(area);
 	}
 
 	void GUIArea::_update()

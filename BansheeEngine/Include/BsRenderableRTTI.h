@@ -29,8 +29,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
 		{
-			return std::shared_ptr<Renderable>(CM_NEW(Renderable, CM::PoolAlloc) Renderable(),
-				&CM::MemAllocDeleter<Renderable, CM::PoolAlloc>::deleter);
+			return CM::cm_shared_ptr<Renderable, CM::PoolAlloc>(new (CM::cm_alloc<Renderable, CM::PoolAlloc>()) Renderable());
 		}
 	};
 }

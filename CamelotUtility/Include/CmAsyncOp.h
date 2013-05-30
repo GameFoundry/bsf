@@ -27,7 +27,7 @@ namespace CamelotFramework
 
 	public:
 		AsyncOp()
-			:mData(CM_NEW(AsyncOpData, ScratchAlloc) AsyncOpData(), &MemAllocDeleter<AsyncOpData, ScratchAlloc>::deleter)
+			:mData(cm_shared_ptr<AsyncOpData, ScratchAlloc>())
 		{}
 
 		/**

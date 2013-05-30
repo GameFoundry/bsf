@@ -7,6 +7,8 @@ namespace BansheeEngine
 	class BS_EXPORT GUIArea
 	{
 	public:
+		~GUIArea();
+
 		/**
 		 * @brief	Sets up a new GUI area. All the layouts used in the area will be placed
 		 * 			within the specified bounds.
@@ -35,7 +37,6 @@ namespace BansheeEngine
 		GUILayout* mLayout;
 
 		GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth);
-		~GUIArea();
 
 		bool isDirty() const;
 

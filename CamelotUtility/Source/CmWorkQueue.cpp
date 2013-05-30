@@ -123,8 +123,7 @@ namespace CamelotFramework {
 			}
 		}
 		if (!duplicate)
-			handlers.push_back(RequestHandlerHolderPtr(CM_NEW(RequestHandlerHolder, GenAlloc) RequestHandlerHolder(rh),
-				&MemAllocDeleter<RequestHandlerHolder, GenAlloc>::deleter));
+			handlers.push_back(cm_shared_ptr<RequestHandlerHolder>(rh));
 
 	}
 	//---------------------------------------------------------------------

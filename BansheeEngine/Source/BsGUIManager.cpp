@@ -355,8 +355,7 @@ namespace BansheeEngine
 					}
 				}
 
-				MeshDataPtr meshData = std::shared_ptr<MeshData>(CM_NEW(MeshData, PoolAlloc) MeshData(group->numQuads * 4),
-					&MemAllocDeleter<MeshData, PoolAlloc>::deleter);
+				MeshDataPtr meshData = cm_shared_ptr<MeshData, PoolAlloc>(group->numQuads * 4);
 
 				meshData->beginDesc();
 				meshData->addVertElem(VET_FLOAT2, VES_POSITION);

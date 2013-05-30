@@ -23,8 +23,7 @@ namespace CamelotFramework
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return std::shared_ptr<Resources::ResourceMetaData>(CM_NEW(Resources::ResourceMetaData, PoolAlloc) Resources::ResourceMetaData(),
-				&MemAllocDeleter<Resources::ResourceMetaData, PoolAlloc>::deleter);
+			return cm_shared_ptr<Resources::ResourceMetaData, PoolAlloc>();
 		}
 
 		virtual const String& getRTTIName() 
