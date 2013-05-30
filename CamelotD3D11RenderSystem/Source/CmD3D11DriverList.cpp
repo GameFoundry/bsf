@@ -33,7 +33,7 @@ namespace CamelotFramework
 				CM_EXCEPT(InternalErrorException, "Enumerating adapters failed.");
 			}
 
-			mDriverList.push_back(CM_NEW(D3D11Driver, GenAlloc) D3D11Driver(adapterIdx, dxgiAdapter));
+			mDriverList.push_back(cm_new<D3D11Driver>(adapterIdx, dxgiAdapter));
 
 			SAFE_RELEASE(dxgiAdapter);
 			adapterIdx++;

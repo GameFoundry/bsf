@@ -44,7 +44,7 @@ namespace CamelotFramework
 		}
 		else
 		{
-	        DynLib* pLib = CM_NEW(DynLib, GenAlloc) DynLib(filename);
+	        DynLib* pLib = cm_new<DynLib>(filename);
 			pLib->load();        
         	mLibList[filename] = pLib;
 	        return pLib;
@@ -59,7 +59,7 @@ namespace CamelotFramework
 			mLibList.erase(i);
 		}
 		lib->unload();
-		CM_DELETE(lib, DynLib, GenAlloc);
+		cm_delete(lib);
 	}
 	//-----------------------------------------------------------------------
     DynLibManager::~DynLibManager()
@@ -68,7 +68,7 @@ namespace CamelotFramework
         for( DynLibList::iterator it = mLibList.begin(); it != mLibList.end(); ++it )
         {
             it->second->unload();
-			CM_DELETE(it->second, DynLib, GenAlloc);
+			cm_delete(it->second);
         }
 
         // Empty the list

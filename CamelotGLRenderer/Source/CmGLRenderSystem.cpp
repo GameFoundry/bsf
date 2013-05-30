@@ -40,6 +40,7 @@ THE SOFTWARE.s
 #include "CmGLSLExtSupport.h"
 #include "CmGLOcclusionQuery.h"
 #include "CmGLContext.h"
+#include "CmGLSupport.h"
 #include "CmAsyncOp.h"
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
@@ -114,7 +115,7 @@ namespace CamelotFramework
 		mMinFilter = FO_LINEAR;
 		mMipFilter = FO_POINT;
 
-		mProgramPipelineManager = CM_NEW(GLSLProgramPipelineManager, GenAlloc) GLSLProgramPipelineManager();
+		mProgramPipelineManager = cm_new<GLSLProgramPipelineManager>();
 	}
 
 	GLRenderSystem::~GLRenderSystem()
@@ -141,9 +142,9 @@ namespace CamelotFramework
 		THROW_IF_NOT_RENDER_THREAD;
 
 		mGLSupport->start();
-		RenderWindowManager::startUp(CM_NEW(GLRenderWindowManager, GenAlloc) GLRenderWindowManager(this));
+		RenderWindowManager::startUp(cm_new<GLRenderWindowManager>(this));
 
-		RenderStateManager::startUp(CM_NEW(RenderStateManager, GenAlloc) RenderStateManager());
+		RenderStateManager::startUp(cm_new<RenderStateManager>());
 
 		// Initialize a window so we have something to create a GL context with
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
@@ -240,7 +241,7 @@ namespace CamelotFramework
 			CM_DELETE(mGLSupport, GLSupport, GenAlloc);
 
 		if(mTextureTypes != nullptr)
-			CM_DELETE_ARRAY(mTextureTypes, GLenum, mNumTextureTypes, GenAlloc);
+			cm_deleteN(mTextureTypes, mNumTextureTypes);
 	}
 
 	//---------------------------------------------------------------------
@@ -1769,23 +1770,23 @@ namespace CamelotFramework
 			glUnmapBufferARB = glUnmapBuffer;
 		}
 
-		HardwareBufferManager::startUp(CM_NEW(GLHardwareBufferManager, GenAlloc) GLHardwareBufferManager);
+		HardwareBufferManager::startUp(cm_new<GLHardwareBufferManager>());
 		checkForErrors();
 
 		// GPU Program Manager setup
-		GpuProgramManager::startUp(CM_NEW(GLGpuProgramManager, GenAlloc) GLGpuProgramManager());
+		GpuProgramManager::startUp(cm_new<GLGpuProgramManager>());
 		checkForErrors();
 
 		if(caps->isShaderProfileSupported("glsl"))
 		{
-			mGLSLProgramFactory = CM_NEW(GLSLProgramFactory, GenAlloc) GLSLProgramFactory();
+			mGLSLProgramFactory = cm_new<GLSLProgramFactory>();
 			HighLevelGpuProgramManager::instance().addFactory(mGLSLProgramFactory);
 			checkForErrors();
 		}
 
 		if(caps->isShaderProfileSupported("cg"))
 		{
-			mCgProgramFactory = CM_NEW(CgProgramFactory, GenAlloc) CgProgramFactory();
+			mCgProgramFactory = cm_new<CgProgramFactory>();
 			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
 			checkForErrors();
 		}
@@ -1819,7 +1820,7 @@ namespace CamelotFramework
 			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
 			{
 				// Create FBO manager
-				GLRTTManager::startUp(CM_NEW(GLRTTManager, GenAlloc) GLRTTManager());
+				GLRTTManager::startUp(cm_new<GLRTTManager>());
 				checkForErrors();
 			}
 		}
@@ -1845,7 +1846,7 @@ namespace CamelotFramework
 			CM_EXCEPT(InternalErrorException, "Number of combined texture units less than the number of individual units!?");
 
 		mNumTextureTypes = numCombinedTexUnits;
-		mTextureTypes = CM_NEW_ARRAY(GLenum, mNumTextureTypes, GenAlloc);
+		mTextureTypes = cm_newN<GLenum>(mNumTextureTypes);
 		for(UINT16 i = 0; i < numCombinedTexUnits; i++)
 			mTextureTypes[i] = 0;
 
@@ -1867,14 +1868,14 @@ namespace CamelotFramework
 		if(totalNumUniformBlocks > numCombinedUniformBlocks)
 			CM_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
-		/// Create the texture manager        
-		TextureManager::startUp(CM_NEW(GLTextureManager, GenAlloc) GLTextureManager(*mGLSupport)); 
+		/// Create the texture manager   
+		TextureManager::startUp(cm_new<GLTextureManager>(std::ref(*mGLSupport))); 
 		checkForErrors();
 	}
 
 	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
 	{
-		RenderSystemCapabilities* rsc = CM_NEW(RenderSystemCapabilities, GenAlloc) RenderSystemCapabilities();
+		RenderSystemCapabilities* rsc = cm_new<RenderSystemCapabilities>();
 
 		rsc->setCategoryRelevant(CAPS_CATEGORY_GL, true);
 		rsc->setDriverVersion(mDriverVersion);

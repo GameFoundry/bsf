@@ -532,7 +532,7 @@ namespace CamelotFramework
 		UINT32 sizeOfImage = lock.getConsecutiveSize();
 		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
 
-		mStaticBuffer = CM_NEW(PixelData, PoolAlloc) PixelData(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat());
+		mStaticBuffer = cm_new<PixelData, PoolAlloc>(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat());
 		mStaticBuffer->allocateInternalBuffer();
 
 		return mStaticBuffer->getData();

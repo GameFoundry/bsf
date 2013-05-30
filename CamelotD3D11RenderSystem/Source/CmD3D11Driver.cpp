@@ -42,7 +42,7 @@ namespace CamelotFramework
 		}
 
 		if(mVideoModeList != nullptr)
-			CM_DELETE_ARRAY(mVideoModeList, D3D11VideoModeList*, mNumOutputs, GenAlloc);
+			cm_deleteN(mVideoModeList, mNumOutputs);
 
 		SAFE_RELEASE(mDXGIAdapter);
 	}
@@ -61,9 +61,9 @@ namespace CamelotFramework
 
 		mNumOutputs = outputIdx;
 
-		mVideoModeList = CM_NEW_ARRAY(D3D11VideoModeList*, mNumOutputs, GenAlloc);
+		mVideoModeList = cm_newN<D3D11VideoModeList*>(mNumOutputs);
 		for(UINT32 i = 0; i < mNumOutputs; i++)
-			mVideoModeList[i] = CM_NEW(D3D11VideoModeList, GenAlloc) D3D11VideoModeList(this, i);
+			mVideoModeList[i] = cm_new<D3D11VideoModeList>(this, i);
 	}
 
 	D3D11Driver& D3D11Driver::operator=(const D3D11Driver& ob)

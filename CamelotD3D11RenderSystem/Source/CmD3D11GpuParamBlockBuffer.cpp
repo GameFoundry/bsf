@@ -17,9 +17,9 @@ namespace CamelotFramework
 		D3D11Device& device = d3d11rs->getPrimaryDevice();
 
 		if(mUsage == GPBU_STATIC)
-			mBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(D3D11HardwareBuffer::BT_CONSTANT, GBU_STATIC, 1, mSize, device);
+			mBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_CONSTANT, GBU_STATIC, 1, mSize, std::ref(device));
 		else if(mUsage == GPBU_DYNAMIC)
-			mBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(D3D11HardwareBuffer::BT_CONSTANT, GBU_DYNAMIC, 1, mSize, device);
+			mBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_CONSTANT, GBU_DYNAMIC, 1, mSize, std::ref(device));
 		else
 			CM_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
 

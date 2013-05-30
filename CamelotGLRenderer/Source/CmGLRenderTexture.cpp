@@ -45,7 +45,7 @@ namespace CamelotFramework
 	void GLRenderTexture::destroy_internal()
 	{
 		if(mFB != nullptr)
-			CM_DELETE(mFB, GLFrameBufferObject, PoolAlloc);
+			cm_delete<PoolAlloc>(mFB);
 
 		RenderTexture::destroy_internal();
 	}
@@ -53,9 +53,9 @@ namespace CamelotFramework
 	void GLRenderTexture::initialize_internal()
 	{
 		if(mFB != nullptr)
-			CM_DELETE(mFB, GLFrameBufferObject, PoolAlloc);
+			cm_delete<PoolAlloc>(mFB);
 
-		mFB = CM_NEW(GLFrameBufferObject, PoolAlloc) GLFrameBufferObject(mFSAA);
+		mFB = cm_new<GLFrameBufferObject, PoolAlloc>(mFSAA);
 
 		GLSurfaceDesc surfaceDesc;
 		surfaceDesc.numSamples = mFSAA;

@@ -77,7 +77,7 @@ WGLEWContext * wglewGetContext()
 	WGLEWContext * currentWGLEWContextsPtr = CM_THREAD_POINTER_GET(WGLEWContextsPtr);
 	if (currentWGLEWContextsPtr == NULL)
 	{
-		currentWGLEWContextsPtr = CM_NEW(WGLEWContext, GenAlloc) WGLEWContext();
+		currentWGLEWContextsPtr = cm_new<WGLEWContext>();
 		CM_THREAD_POINTER_SET(WGLEWContextsPtr, currentWGLEWContextsPtr);
 		ZeroMemory(currentWGLEWContextsPtr, sizeof(WGLEWContext));
 		wglewInit();

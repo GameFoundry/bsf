@@ -90,7 +90,7 @@ namespace CamelotFramework
 		UINT32 maxStreamIdx = getMaxStreamIdx();
 
 		UINT32 numStreams = maxStreamIdx + 1;
-		UINT32* streamOffsets = CM_NEW_ARRAY(UINT32, numStreams, ScratchAlloc);
+		UINT32* streamOffsets = cm_newN<UINT32, ScratchAlloc>(numStreams);
 		for(UINT32 i = 0; i < numStreams; i++)
 			streamOffsets[i] = 0;
 
@@ -101,7 +101,7 @@ namespace CamelotFramework
 			streamOffsets[streamIdx] += vertElem.getSize();
 		}
 
-		CM_DELETE_ARRAY(streamOffsets, UINT32, numStreams,ScratchAlloc);
+		cm_deleteN<ScratchAlloc>(streamOffsets, numStreams);
 
 		return declaration;
 	}

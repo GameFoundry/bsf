@@ -106,9 +106,9 @@ namespace CamelotFramework
 	}
 
 	template<class T, class category> 
-	inline T* cm_new(UINT32 count)
+	inline T* cm_alloc()
 	{
-		return new (cm_alloc<category>(count)) T();
+		return (T*)MemoryAllocator<category>::allocate(sizeof(T));
 	}
 
 	template<class T, class category> 
@@ -128,7 +128,7 @@ namespace CamelotFramework
 		return new (cm_alloc<category>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
 	}
 
-	BOOST_PP_REPEAT(9, MAKE_CM_NEW, ~)
+	BOOST_PP_REPEAT(15, MAKE_CM_NEW, ~)
 
 #undef MAKE_CM_NEW
 
@@ -165,6 +165,12 @@ namespace CamelotFramework
 	}
 
 	template<class T> 
+	inline T* cm_alloc()
+	{
+		return (T*)MemoryAllocator<GenAlloc>::allocate(sizeof(T));
+	}
+
+	template<class T> 
 	inline T* cm_newN(UINT32 count)
 	{
 		T* ptr = (T*)MemoryAllocator<GenAlloc>::allocateArray(sizeof(T), count);
@@ -181,7 +187,7 @@ namespace CamelotFramework
 	return new (cm_alloc<GenAlloc>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
 	}
 
-	BOOST_PP_REPEAT(9, MAKE_CM_NEW, ~)
+		BOOST_PP_REPEAT(15, MAKE_CM_NEW, ~)
 
 #undef MAKE_CM_NEW
 
@@ -209,9 +215,7 @@ namespace CamelotFramework
 }
 
 #define CM_NEW(T, category) new (CamelotFramework::MemoryAllocator<category>::allocate(sizeof(T)))
-#define CM_NEW_ARRAY(T, count, category) CamelotFramework::__cm_construct_array<T, category>(count)
 #define CM_DELETE(ptr, T, category) {(ptr)->~T(); CamelotFramework::MemoryAllocator<category>::free(ptr);}
-#define CM_DELETE_ARRAY(ptr, T, count, category) CamelotFramework::cm_deleteN<category>(ptr, count)
 
 namespace CamelotFramework
 {

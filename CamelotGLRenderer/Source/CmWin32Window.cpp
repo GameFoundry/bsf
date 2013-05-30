@@ -365,7 +365,7 @@ namespace CamelotFramework {
 		}
 
 		// Create RenderSystem context
-		mContext = CM_NEW(Win32Context, GenAlloc) Win32Context(mHDC, mGlrc);
+		mContext = cm_new<Win32Context>(mHDC, mGlrc);
 
 		RenderWindow::initialize_internal();
 	}

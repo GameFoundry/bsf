@@ -20,7 +20,7 @@ namespace CamelotFramework
 			desc.platformSpecific["parentWindowHandle"] = toString((unsigned long)hWnd);
 		}
 
-		D3D9RenderWindow* window = CM_NEW(D3D9RenderWindow, PoolAlloc) D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle());
+		D3D9RenderWindow* window = new (cm_alloc<D3D9RenderWindow, PoolAlloc>()) D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle());
 
 		return RenderWindowPtr(window, &CoreObject::_deleteDelayed<D3D9RenderWindow, PoolAlloc>);
 	}

@@ -188,7 +188,7 @@ namespace CamelotFramework
 			if (!mpTempStagingBuffer)
 			{
 				// create another buffer instance but use system memory
-				mpTempStagingBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(mBufferType, mUsage, 1, mSizeInBytes, mDevice, true);
+				mpTempStagingBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(mBufferType, mUsage, 1, mSizeInBytes, std::ref(mDevice), true);
 			}
 
 			// schedule a copy to the staging

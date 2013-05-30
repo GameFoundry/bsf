@@ -255,7 +255,7 @@ namespace CamelotFramework {
 		}
 		else
 		{
-			bufferResources = CM_NEW(BufferResources, PoolAlloc) BufferResources;			
+			bufferResources = cm_new<BufferResources, PoolAlloc>();			
 			mMapDeviceToBufferResources[d3d9Device] = bufferResources;
 		}
 

@@ -197,7 +197,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------------  
 	D3D9PixelBuffer::BufferResources* D3D9PixelBuffer::createBufferResources()
 	{
-		BufferResources* newResources = CM_NEW(BufferResources, PoolAlloc) BufferResources;
+		BufferResources* newResources = cm_new<BufferResources, PoolAlloc>();
 
 		memset(newResources, 0, sizeof(BufferResources));
 

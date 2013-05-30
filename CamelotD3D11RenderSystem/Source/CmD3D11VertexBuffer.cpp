@@ -1,4 +1,5 @@
 #include "CmD3D11VertexBuffer.h"
+#include "CmD3D11Device.h"
 
 namespace CamelotFramework
 {
@@ -38,8 +39,8 @@ namespace CamelotFramework
 
 	void D3D11VertexBuffer::initialize_internal()
 	{
-		mBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(D3D11HardwareBuffer::BT_VERTEX, 
-			mUsage, 1, mSizeInBytes, mDevice, mSystemMemory, mStreamOut);
+		mBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_VERTEX, 
+			mUsage, 1, mSizeInBytes, std::ref(mDevice), mSystemMemory, mStreamOut);
 
 		VertexBuffer::initialize_internal();
 	}
@@ -47,7 +48,7 @@ namespace CamelotFramework
 	void D3D11VertexBuffer::destroy_internal()
 	{
 		if(mBuffer != nullptr)
-			CM_DELETE(mBuffer, D3D11HardwareBuffer, PoolAlloc);
+			cm_delete<PoolAlloc>(mBuffer);
 
 		VertexBuffer::destroy_internal();
 	}

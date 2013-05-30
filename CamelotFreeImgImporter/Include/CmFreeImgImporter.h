@@ -22,7 +22,7 @@ namespace CamelotFramework
 			static FreeImgImporter* importer = nullptr;
 			if(importer == nullptr)
 			{
-				importer = CM_NEW(FreeImgImporter, GenAlloc) FreeImgImporter();
+				importer = cm_new<FreeImgImporter>();
 				Importer::instance().registerAssetImporter(importer);
 			}
 		}

@@ -45,14 +45,14 @@ namespace CamelotFramework
 		DataStreamPtr ds = FileSystem::create(filePath);
 
 		UINT32 bmpDataSize = BitmapWriter::getBMPSize(width, height, bytesPerPixel);
-		UINT8* bmpBuffer = CM_NEW_ARRAY(UINT8, bmpDataSize, ScratchAlloc);
+		UINT8* bmpBuffer = cm_newN<UINT8, ScratchAlloc>(bmpDataSize);
 
 		BitmapWriter::rawPixelsToBMP(rawPixels, bmpBuffer, width, height, bytesPerPixel);
 
 		ds->write(bmpBuffer, bmpDataSize);
 		ds->close();
 
-		CM_DELETE_ARRAY(bmpBuffer, UINT8, bmpDataSize, ScratchAlloc);
+		cm_deleteN<ScratchAlloc>(bmpBuffer, bmpDataSize);
 	}
 
 	CM_UTILITY_EXPORT Debug& gDebug()

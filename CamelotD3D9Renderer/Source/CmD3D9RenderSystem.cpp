@@ -159,33 +159,33 @@ namespace CamelotFramework
 		mDriverVersion.build = LOWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.LowPart);
 
 		// Create the device manager.
-		mDeviceManager = CM_NEW(D3D9DeviceManager, GenAlloc) D3D9DeviceManager();
-
-		// Create the texture manager for use by others		
-		TextureManager::startUp(CM_NEW(D3D9TextureManager, GenAlloc) D3D9TextureManager());
+		mDeviceManager = cm_new<D3D9DeviceManager>();
 
 		// Also create hardware buffer manager		
-		HardwareBufferManager::startUp(CM_NEW(D3D9HardwareBufferManager, GenAlloc) D3D9HardwareBufferManager());
+		HardwareBufferManager::startUp(cm_new<D3D9HardwareBufferManager>());
 
 		// Create the GPU program manager		
-		GpuProgramManager::startUp(CM_NEW(D3D9GpuProgramManager, GenAlloc) D3D9GpuProgramManager());
+		GpuProgramManager::startUp(cm_new<D3D9GpuProgramManager>());
 
 		// Create & register HLSL factory		
-		mHLSLProgramFactory = CM_NEW(D3D9HLSLProgramFactory, GenAlloc) D3D9HLSLProgramFactory();
+		mHLSLProgramFactory = cm_new<D3D9HLSLProgramFactory>();
 
 		// Create & register Cg factory		
-		mCgProgramFactory = CM_NEW(CgProgramFactory, GenAlloc) CgProgramFactory();
+		mCgProgramFactory = cm_new<CgProgramFactory>();
 
 		// Create render window manager
-		RenderWindowManager::startUp(CM_NEW(D3D9RenderWindowManager, GenAlloc) D3D9RenderWindowManager(this));
+		RenderWindowManager::startUp(cm_new<D3D9RenderWindowManager>(this));
 
 		// Create render state manager
-		RenderStateManager::startUp(CM_NEW(RenderStateManager, GenAlloc) RenderStateManager());
+		RenderStateManager::startUp(cm_new<RenderStateManager>());
 
 		// Create primary window and finalize initialization
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
 		D3D9RenderWindow* d3d9renderWindow = static_cast<D3D9RenderWindow*>(primaryWindow.get());
 		updateRenderSystemCapabilities(d3d9renderWindow);
+
+		// Create the texture manager for use by others		
+		TextureManager::startUp(cm_new<D3D9TextureManager>());
 
 		// call superclass method
 		RenderSystem::initialize_internal(asyncOp);
@@ -197,7 +197,7 @@ namespace CamelotFramework
 	{
 		if(mTexStageDesc != nullptr)
 		{
-			CM_DELETE_ARRAY(mTexStageDesc, sD3DTextureStageDesc, mNumTexStages, GenAlloc);
+			cm_deleteN(mTexStageDesc, mNumTexStages);
 			mTexStageDesc = nullptr;
 		}
 
@@ -1101,12 +1101,12 @@ namespace CamelotFramework
 
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
-		IDirect3DSurface9** pBack = CM_NEW_ARRAY(IDirect3DSurface9*, maxRenderTargets, ScratchAlloc);
+		IDirect3DSurface9** pBack = cm_newN<IDirect3DSurface9*, ScratchAlloc>(maxRenderTargets);
 		memset(pBack, 0, sizeof(IDirect3DSurface9*) * maxRenderTargets);
 		target->getCustomAttribute( "DDBACKBUFFER", pBack );
 		if (!pBack[0])
 		{
-			CM_DELETE_ARRAY(pBack, IDirect3DSurface9*, maxRenderTargets, ScratchAlloc);
+			cm_deleteN<ScratchAlloc>(pBack, maxRenderTargets);
 			return;
 		}
 
@@ -1126,7 +1126,7 @@ namespace CamelotFramework
 			}
 		}
 
-		CM_DELETE_ARRAY(pBack, IDirect3DSurface9*, maxRenderTargets, ScratchAlloc);
+		cm_deleteN<ScratchAlloc>(pBack, maxRenderTargets);
 
 		hr = getActiveD3D9Device()->SetDepthStencilSurface(pDepth);
 		if (FAILED(hr))
@@ -1573,7 +1573,7 @@ namespace CamelotFramework
 	D3D9DriverList* D3D9RenderSystem::getDirect3DDrivers() const
 	{
 		if( !mDriverList )
-			mDriverList = CM_NEW(D3D9DriverList, GenAlloc) D3D9DriverList();
+			mDriverList = cm_new<D3D9DriverList>();
 
 		return mDriverList;
 	}
@@ -1653,7 +1653,7 @@ namespace CamelotFramework
 	{			
 		RenderSystemCapabilities* rsc = mCurrentCapabilities;
 		if (rsc == NULL)
-			rsc = CM_NEW(RenderSystemCapabilities, GenAlloc) RenderSystemCapabilities();
+			rsc = cm_new<RenderSystemCapabilities>();
 
 		rsc->setCategoryRelevant(CAPS_CATEGORY_D3D9, true);
 		rsc->setDriverVersion(mDriverVersion);
@@ -2269,7 +2269,7 @@ namespace CamelotFramework
 			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
 
 		mNumTexStages = caps->getNumCombinedTextureUnits();
-		mTexStageDesc = CM_NEW_ARRAY(sD3DTextureStageDesc, mNumTexStages, GenAlloc);
+		mTexStageDesc = cm_newN<sD3DTextureStageDesc>(mNumTexStages);
 
 		// set stages desc. to defaults
 		for (UINT32 n = 0; n < mNumTexStages; n++)

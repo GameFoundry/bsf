@@ -7,8 +7,6 @@
 #include "CmDebug.h"
 #include "CmUtil.h"
 
-#include "boost/preprocessor/comma.hpp"
-
 namespace CamelotFramework
 {
 	size_t D3D11InputLayoutManager::HashFunc::operator()
@@ -57,9 +55,9 @@ namespace CamelotFramework
 		{
 			auto firstElem = mInputLayoutMap.begin();
 
-			CM_DELETE(firstElem->first.bufferDeclElements, list<VertexElement BOOST_PP_COMMA() StdAlloc<VertexElement>>, PoolAlloc);
+			cm_delete<PoolAlloc>(firstElem->first.bufferDeclElements);
 			SAFE_RELEASE(firstElem->second->inputLayout);
-			CM_DELETE(firstElem->second, InputLayoutEntry, PoolAlloc);
+			cm_delete<PoolAlloc>(firstElem->second);
 
 			mInputLayoutMap.erase(firstElem);
 		}
@@ -96,7 +94,7 @@ namespace CamelotFramework
 			return; // Error was already reported, so just quit here
 
 		UINT32 numElements = vertexBufferDecl->getElementCount();
-		D3D11_INPUT_ELEMENT_DESC* declElements = CM_NEW_ARRAY(D3D11_INPUT_ELEMENT_DESC, numElements, ScratchAlloc);
+		D3D11_INPUT_ELEMENT_DESC* declElements = cm_newN<D3D11_INPUT_ELEMENT_DESC, ScratchAlloc>(numElements);
 		ZeroMemory(declElements, sizeof(D3D11_INPUT_ELEMENT_DESC) * numElements);
 
 		unsigned int idx = 0;
@@ -118,7 +116,7 @@ namespace CamelotFramework
 
 		const HLSLMicroCode& microcode = vertexProgram.getMicroCode();
 
-		InputLayoutEntry* newEntry = CM_NEW(InputLayoutEntry, PoolAlloc) InputLayoutEntry();
+		InputLayoutEntry* newEntry = cm_new<InputLayoutEntry, PoolAlloc>();
 		newEntry->lastUsedIdx = ++mLastUsedCounter;
 		newEntry->inputLayout = nullptr; 
 		HRESULT hr = device.getD3D11Device()->CreateInputLayout( 
@@ -128,7 +126,7 @@ namespace CamelotFramework
 			microcode.size(),
 			&newEntry->inputLayout);
 
-		//CM_DELETE_ARRAY(declElements, D3D11_INPUT_ELEMENT_DESC, numElements, ScratchAlloc);
+		cm_deleteN<ScratchAlloc>(declElements, numElements);
 
 		if (FAILED(hr)|| device.hasError())
 			CM_EXCEPT(RenderingAPIException, "Unable to set D3D11 vertex declaration" + device.getErrorDescription());
@@ -137,7 +135,7 @@ namespace CamelotFramework
 		VertexDeclarationKey pair;
 		pair.bufferDeclHash = vertexBufferDecl->getHash();
 
-		list<VertexElement>::type* bufferDeclElements = CM_NEW(list<VertexElement>::type, PoolAlloc) list<VertexElement>::type(); 
+		list<VertexElement>::type* bufferDeclElements = cm_new<list<VertexElement>::type, PoolAlloc>(); 
 		pair.bufferDeclElements = bufferDeclElements;
 		pair.vertexProgramId = vertexProgram.getProgramId();
 
@@ -168,9 +166,9 @@ namespace CamelotFramework
 		{
 			auto inputLayoutIter = mInputLayoutMap.find(iter->second);
 
-			CM_DELETE(inputLayoutIter->first.bufferDeclElements, list<VertexElement BOOST_PP_COMMA() StdAlloc<VertexElement>>, PoolAlloc);
+			cm_delete<PoolAlloc>(inputLayoutIter->first.bufferDeclElements);
 			SAFE_RELEASE(inputLayoutIter->second->inputLayout);
-			CM_DELETE(inputLayoutIter->second, InputLayoutEntry, PoolAlloc);
+			cm_delete<PoolAlloc>(inputLayoutIter->second);
 
 			mInputLayoutMap.erase(inputLayoutIter);
 

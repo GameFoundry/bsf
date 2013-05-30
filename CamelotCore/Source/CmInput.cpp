@@ -15,9 +15,9 @@ namespace CamelotFramework
 		:mSmoothHorizontalAxis(0.0f), mSmoothVerticalAxis(0.0f), mCurrentBufferIdx(0), mMouseLastRel(0, 0),
 		mUsingClipRect(false), mClipRect(0, 0, 0, 0), mInputHandler(nullptr)
 	{ 
-		mHorizontalHistoryBuffer = CM_NEW_ARRAY(float, HISTORY_BUFFER_SIZE, GenAlloc);
-		mVerticalHistoryBuffer = CM_NEW_ARRAY(float, HISTORY_BUFFER_SIZE, GenAlloc);
-		mTimesHistoryBuffer = CM_NEW_ARRAY(float, HISTORY_BUFFER_SIZE, GenAlloc);
+		mHorizontalHistoryBuffer = cm_newN<float>(HISTORY_BUFFER_SIZE);
+		mVerticalHistoryBuffer = cm_newN<float>(HISTORY_BUFFER_SIZE);
+		mTimesHistoryBuffer = cm_newN<float>(HISTORY_BUFFER_SIZE);
 
 		for(int i = 0; i < HISTORY_BUFFER_SIZE; i++)
 		{
@@ -35,9 +35,9 @@ namespace CamelotFramework
 
 	Input::~Input()
 	{
-		CM_DELETE_ARRAY(mHorizontalHistoryBuffer, float, HISTORY_BUFFER_SIZE, GenAlloc);
-		CM_DELETE_ARRAY(mVerticalHistoryBuffer, float, HISTORY_BUFFER_SIZE, GenAlloc);
-		CM_DELETE_ARRAY(mTimesHistoryBuffer, float, HISTORY_BUFFER_SIZE, GenAlloc);
+		cm_deleteN(mHorizontalHistoryBuffer, HISTORY_BUFFER_SIZE);
+		cm_deleteN(mVerticalHistoryBuffer, HISTORY_BUFFER_SIZE);
+		cm_deleteN(mTimesHistoryBuffer, HISTORY_BUFFER_SIZE);
 	}
 
 	void Input::initClipRect(Rect& clipRect)

@@ -28,6 +28,7 @@
 
 #include <memory>
 #include <boost/shared_array.hpp>
+#include <boost/preprocessor.hpp>
 
 // STL containers
 #include <vector>
@@ -206,13 +207,25 @@ namespace CamelotFramework
 		typedef typename std::unordered_multimap<K, V, H, C, A> type; 
 	}; 
 
-//#define MAKE_CM_MAKE_SHARED(z, n, unused)                                     \
-//	template<class Type, class category BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
-//	Type* cm_make_shared(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
-//	return std::allocate_shared<Type>(StdAlloc<category> BOOST_PP_ENUM_TRAILING_PARAMS (n, t));     \
-//	}
-//
-//	BOOST_PP_REPEAT(9, MAKE_CM_MAKE_SHARED, ~)
+#define MAKE_CM_NEW_SHARED(z, n, unused)                                     \
+	template<class Type, class category BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	std::shared_ptr<Type> cm_new_shared(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+	return std::allocate_shared<Type>(StdAlloc<category>() BOOST_PP_ENUM_TRAILING_PARAMS (n, t));     \
+	}
+
+	BOOST_PP_REPEAT(9, MAKE_CM_NEW_SHARED, ~)
+
+#undef MAKE_CM_NEW_SHARED
+
+#define MAKE_CM_NEW_SHARED(z, n, unused)                                     \
+	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	std::shared_ptr<Type> cm_new_shared(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+	return std::allocate_shared<Type>(StdAlloc<GenAlloc>() BOOST_PP_ENUM_TRAILING_PARAMS (n, t));     \
+	}
+
+	BOOST_PP_REPEAT(9, MAKE_CM_NEW_SHARED, ~)
+
+#undef MAKE_CM_NEW_SHARED
 
 	// TODO - Once VC2012 grows up and adds proper C++11 support, uncomment this
 	//template <typename T, typename A = char> 

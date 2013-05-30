@@ -67,7 +67,7 @@ namespace CamelotFramework
 		if(FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 DXGIFactory");
 
-		mDriverList = CM_NEW(D3D11DriverList, GenAlloc) D3D11DriverList(mDXGIFactory);
+		mDriverList = cm_new<D3D11DriverList>(mDXGIFactory);
 		mActiveD3DDriver = mDriverList->item(0); // TODO: Always get first driver, for now
 
 		IDXGIAdapter* selectedAdapter = mActiveD3DDriver->getDeviceAdapter();
@@ -96,7 +96,7 @@ namespace CamelotFramework
 		if(FAILED(hr))         
 			CM_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 object. D3D11CreateDeviceN returned this error code: " + toString(hr));
 
-		mDevice = CM_NEW(D3D11Device, GenAlloc) D3D11Device(device);
+		mDevice = cm_new<D3D11Device>(device);
 
 		LARGE_INTEGER driverVersion;
 		if(SUCCEEDED(selectedAdapter->CheckInterfaceSupport(IID_ID3D10Device /* intentionally D3D10, not D3D11 */, &driverVersion)))
@@ -108,29 +108,29 @@ namespace CamelotFramework
 		}
 
 		// Create the texture manager for use by others		
-		TextureManager::startUp(CM_NEW(D3D11TextureManager, GenAlloc) D3D11TextureManager());
+		TextureManager::startUp(cm_new<D3D11TextureManager>());
 
 		// Also create hardware buffer manager		
-		HardwareBufferManager::startUp(CM_NEW(D3D11HardwareBufferManager, GenAlloc) D3D11HardwareBufferManager(*mDevice));
+		HardwareBufferManager::startUp(cm_new<D3D11HardwareBufferManager>(std::ref(*mDevice)));
 
 		// Create the GPU program manager		
-		GpuProgramManager::startUp(CM_NEW(D3D11GpuProgramManager, GenAlloc) D3D11GpuProgramManager(*mDevice));
+		GpuProgramManager::startUp(cm_new<D3D11GpuProgramManager>(std::ref(*mDevice)));
 
 		// Create render window manager
-		RenderWindowManager::startUp(CM_NEW(D3D11RenderWindowManager, GenAlloc) D3D11RenderWindowManager(this));
+		RenderWindowManager::startUp(cm_new<D3D11RenderWindowManager>(this));
 
 		// Create & register HLSL factory		
-		mHLSLFactory = CM_NEW(D3D11HLSLProgramFactory, GenAlloc) D3D11HLSLProgramFactory();
+		mHLSLFactory = cm_new<D3D11HLSLProgramFactory>();
 
 		// Create render state manager
-		RenderStateManager::startUp(CM_NEW(D3D11RenderStateManager, GenAlloc) D3D11RenderStateManager());
+		RenderStateManager::startUp(cm_new<D3D11RenderStateManager>());
 
 		mCurrentCapabilities = createRenderSystemCapabilities();
 
 		mCurrentCapabilities->addShaderProfile("hlsl");
 		HighLevelGpuProgramManager::instance().addFactory(mHLSLFactory);
 
-		mIAManager = CM_NEW(D3D11InputLayoutManager, GenAlloc) D3D11InputLayoutManager();
+		mIAManager = cm_new<D3D11InputLayoutManager>();
 
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
 
@@ -579,13 +579,13 @@ namespace CamelotFramework
 		{
 			UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 
-			ID3D11RenderTargetView** views = CM_NEW_ARRAY(ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
+			ID3D11RenderTargetView** views = cm_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
 			memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 
 			target->getCustomAttribute("RTV", views);
 			if (!views[0])
 			{
-				CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
+				cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
 				return;
 			}
 
@@ -601,7 +601,7 @@ namespace CamelotFramework
 					mDevice->getImmediateContext()->ClearRenderTargetView(views[i], clearColor);
 			}
 
-			CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
+			cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
 		}
 
 		// Clear depth stencil
@@ -632,12 +632,12 @@ namespace CamelotFramework
 
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
-		ID3D11RenderTargetView** views = CM_NEW_ARRAY(ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
+		ID3D11RenderTargetView** views = cm_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
 		memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 		target->getCustomAttribute("RTV", views);
 		if (!views[0])
 		{
-			CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
+			cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
 			return;
 		}
 
@@ -650,7 +650,7 @@ namespace CamelotFramework
 		if (mDevice->hasError())
 			CM_EXCEPT(RenderingAPIException, "Failed to setRenderTarget : " + mDevice->getErrorDescription());
 
-		CM_DELETE_ARRAY(views, ID3D11RenderTargetView*, maxRenderTargets, ScratchAlloc);
+		cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
 	}
 
 	void D3D11RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
@@ -662,7 +662,7 @@ namespace CamelotFramework
 	{
 		THROW_IF_NOT_RENDER_THREAD;
 
-		RenderSystemCapabilities* rsc = CM_NEW(RenderSystemCapabilities, GenAlloc) RenderSystemCapabilities();
+		RenderSystemCapabilities* rsc = cm_new<RenderSystemCapabilities>();
 
 		rsc->setDriverVersion(mDriverVersion);
 		rsc->setDeviceName(mActiveD3DDriver->getDriverDescription());

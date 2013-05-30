@@ -23,7 +23,7 @@ namespace CamelotFramework
 			static FBXImporter* importer = nullptr;
 			if(importer == nullptr)
 			{
-				importer = CM_NEW(FBXImporter, GenAlloc) FBXImporter();
+				importer = cm_new<FBXImporter>();
 				Importer::instance().registerAssetImporter(importer);
 			}
 		}

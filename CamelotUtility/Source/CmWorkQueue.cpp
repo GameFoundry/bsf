@@ -62,7 +62,7 @@ namespace CamelotFramework {
 
 		mShuttingDown = false;
 
-		mWorkerFunc = CM_NEW(WorkerFunc, GenAlloc) WorkerFunc(this);
+		mWorkerFunc = cm_new<WorkerFunc>(this);
 
 #if CM_THREAD_SUPPORT
 		for (UINT8 i = 0; i < mWorkerThreadCount; ++i)
@@ -97,7 +97,7 @@ namespace CamelotFramework {
 
 			if (mWorkerFunc != nullptr)
 			{
-				CM_DELETE(mWorkerFunc, WorkerFunc, GenAlloc);
+				cm_delete(mWorkerFunc);
 				mWorkerFunc = nullptr;
 			}
 
@@ -202,7 +202,7 @@ namespace CamelotFramework {
 					return 0;
 
 			rid = ++mRequestCount;
-			req = CM_NEW(Request, ScratchAlloc) Request(channel, rData, retryCount, rid);
+			req = cm_new<Request, ScratchAlloc>(channel, rData, retryCount, rid);
 
 #if CM_THREAD_SUPPORT
 			if (!forceSynchronous)
@@ -229,7 +229,7 @@ namespace CamelotFramework {
 		if (mShuttingDown)
 			return;
 
-		Request* req = CM_NEW(Request, ScratchAlloc) Request(channel, rData, retryCount, rid);
+		Request* req = cm_new<Request, ScratchAlloc>(channel, rData, retryCount, rid);
 
 #if CM_THREAD_SUPPORT
 		mRequestQueue.push_back(req);

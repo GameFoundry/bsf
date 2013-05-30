@@ -17,7 +17,7 @@ namespace CamelotFramework
 		~TexAtlasNode()
 		{
 			if(children != nullptr)
-				CM_DELETE_ARRAY(children, TexAtlasNode, 2, ScratchAlloc);
+				cm_deleteN<ScratchAlloc>(children, 2);
 
 			int myVal = *cm_new<int, GenAlloc>();
 			float myVal2 = *cm_new<float, GenAlloc>();
@@ -63,7 +63,7 @@ namespace CamelotFramework
 				float dw = (float)(width - element.input.width);
 				float dh = (height - element.input.height) * aspect;
 
-				children = CM_NEW_ARRAY(TexAtlasNode, 2, ScratchAlloc);
+				children = cm_newN<TexAtlasNode, ScratchAlloc>(2);
 
 				if (dw > dh)
 				{

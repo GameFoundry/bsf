@@ -19,7 +19,7 @@ namespace BansheeEngine
 	GUIWindowFrame::GUIWindowFrame(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions)
 	{
-		mImageSprite = CM_NEW(ImageSprite, PoolAlloc) ImageSprite();
+		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
 		mDesc.texture = mStyle->normal.texture;
 
@@ -37,7 +37,7 @@ namespace BansheeEngine
 
 	GUIWindowFrame::~GUIWindowFrame()
 	{
-		CM_DELETE(mImageSprite, ImageSprite, PoolAlloc);
+		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
 	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent, const GUIElementStyle* style)
@@ -48,7 +48,7 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return CM_NEW(GUIWindowFrame, PoolAlloc) GUIWindowFrame(parent, style, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(parent, style, getDefaultLayoutOptions(style));
 	}
 
 	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
@@ -59,7 +59,7 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return CM_NEW(GUIWindowFrame, PoolAlloc) GUIWindowFrame(parent, style, layoutOptions);
+		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(parent, style, layoutOptions);
 	}
 
 	UINT32 GUIWindowFrame::getNumRenderElements() const

@@ -17,12 +17,12 @@ namespace CamelotFramework
 		flush();
 
 		for(auto iter = mEntries.begin(); iter != mEntries.end(); ++iter)
-			CM_DELETE(*iter, LogEntry, PoolAlloc);
+			cm_delete<PoolAlloc>(*iter);
 	}
 
 	void Log::logMsg(const String& message, const String& level)
 	{
-		LogEntry* newEntry = CM_NEW(LogEntry, PoolAlloc) LogEntry(message, level);
+		LogEntry* newEntry = cm_new<LogEntry, PoolAlloc>(message, level);
 		mEntries.push_back(newEntry);
 
 		doOnEntryAdded(*newEntry);
@@ -34,7 +34,7 @@ namespace CamelotFramework
 	void Log::clear()
 	{
 		for(auto iter = mEntries.begin(); iter != mEntries.end(); ++iter)
-			CM_DELETE(*iter, LogEntry, PoolAlloc);
+			cm_delete<PoolAlloc>(*iter);
 
 		mEntries.clear();
 

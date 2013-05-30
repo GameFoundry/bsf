@@ -51,7 +51,7 @@ GLEWContext * glewGetContext()
 	GLEWContext * currentGLEWContextsPtr =  CM_THREAD_POINTER_GET(GLEWContextsPtr);
 	if (currentGLEWContextsPtr == NULL)
 	{
-		currentGLEWContextsPtr = CM_NEW(GLEWContext, GenAlloc) GLEWContext();
+		currentGLEWContextsPtr = cm_new<GLEWContext>();
 		CM_THREAD_POINTER_SET(GLEWContextsPtr, currentGLEWContextsPtr);
 		memset(currentGLEWContextsPtr, 0, sizeof(GLEWContext));
 		glewInit();

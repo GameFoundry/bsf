@@ -1,4 +1,5 @@
 #include "CmD3D11IndexBuffer.h"
+#include "CmD3D11Device.h"
 
 namespace CamelotFramework
 {
@@ -16,7 +17,7 @@ namespace CamelotFramework
 
 	void D3D11IndexBuffer::initialize_internal()
 	{
-		mBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSizeInBytes, mDevice, mSystemMemory);
+		mBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSizeInBytes, std::ref(mDevice), mSystemMemory);
 
 		IndexBuffer::initialize_internal();
 	}

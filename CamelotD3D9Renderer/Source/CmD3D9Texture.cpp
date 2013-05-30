@@ -260,7 +260,7 @@ namespace CamelotFramework
 	{
 		assert(mMapDeviceToTextureResources.find(d3d9Device) == mMapDeviceToTextureResources.end());
 
-		TextureResources* textureResources = CM_NEW(TextureResources, PoolAlloc) TextureResources;
+		TextureResources* textureResources = cm_new<TextureResources, PoolAlloc>();
 
 		textureResources->pNormTex		= NULL;
 		textureResources->pCubeTex		= NULL;

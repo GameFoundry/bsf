@@ -67,12 +67,12 @@ namespace CamelotFramework
 		if (rwStream)
 		{
 			// use the writeable stream 
-			stream = CM_NEW(FileDataStream, ScratchAlloc) FileDataStream(fullPath, rwStream, (size_t)tagStat.st_size, true);
+			stream = cm_new<FileDataStream, ScratchAlloc>(fullPath, rwStream, (size_t)tagStat.st_size, true);
 		}
 		else
 		{
 			// read-only stream
-			stream = CM_NEW(FileDataStream, ScratchAlloc) FileDataStream(fullPath, roStream, (size_t)tagStat.st_size, true);
+			stream = cm_new<FileDataStream, ScratchAlloc>(fullPath, roStream, (size_t)tagStat.st_size, true);
 		}
 		return DataStreamPtr(stream, &MemAllocDeleter<FileDataStream, ScratchAlloc>::deleter);
 	}

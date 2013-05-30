@@ -65,7 +65,7 @@ namespace CamelotFramework
 			desc.platformSpecific["parentWindowHandle"] = toString((unsigned long)hWnd);
 		}
 
-		Win32Window* window = CM_NEW(Win32Window, PoolAlloc) Win32Window(desc, *this);
+		Win32Window* window = new (cm_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, *this);
 		
 		// TODO - Looking for monitors is disabled for now, as it should be done on the render thread and I need to port it but 
 		//  I don't feel like it at the moment. Plus I'll probably implemented a more streamlined approach to this anyway.

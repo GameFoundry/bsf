@@ -39,7 +39,7 @@ namespace CamelotFramework
 			CM_EXCEPT(InvalidParametersException, "Unsupported buffer type " + toString(mType));
 		}
 
-		mBuffer = CM_NEW(D3D11HardwareBuffer, PoolAlloc) D3D11HardwareBuffer(bufferType, mUsage, mElementCount, mElementSize, 
+		mBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(bufferType, mUsage, mElementCount, mElementSize, 
 			d3d11rs->getPrimaryDevice(), false, false, mRandomGpuWrite, mUseCounter);
 
 		GpuBuffer::initialize_internal();
@@ -87,12 +87,12 @@ namespace CamelotFramework
 
 	GpuBufferView* D3D11GpuBuffer::createView()
 	{
-		return CM_NEW(D3D11GpuBufferView, PoolAlloc) D3D11GpuBufferView();
+		return cm_new<D3D11GpuBufferView, PoolAlloc>();
 	}
 
 	void D3D11GpuBuffer::destroyView(GpuBufferView* view)
 	{
 		if(view != nullptr)
-			CM_DELETE(view, GpuBufferView, PoolAlloc);
+			cm_delete<PoolAlloc>(view);
 	}
 }

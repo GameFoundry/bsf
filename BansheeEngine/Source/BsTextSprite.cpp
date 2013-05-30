@@ -59,13 +59,13 @@ namespace BansheeEngine
 				UINT32 oldVertexCount = cachedElem.numQuads * 4;
 				UINT32 oldIndexCount = cachedElem.numQuads * 6;
 
-				if(cachedElem.vertices != nullptr) CM_DELETE_ARRAY(cachedElem.vertices, Vector2, oldVertexCount, ScratchAlloc);
-				if(cachedElem.uvs != nullptr) CM_DELETE_ARRAY(cachedElem.uvs, Vector2, oldVertexCount, ScratchAlloc);
-				if(cachedElem.indexes != nullptr) CM_DELETE_ARRAY(cachedElem.indexes, UINT32, oldIndexCount, ScratchAlloc);
+				if(cachedElem.vertices != nullptr) cm_deleteN<ScratchAlloc>(cachedElem.vertices, oldVertexCount);
+				if(cachedElem.uvs != nullptr) cm_deleteN<ScratchAlloc>(cachedElem.uvs, oldVertexCount);
+				if(cachedElem.indexes != nullptr) cm_deleteN<ScratchAlloc>(cachedElem.indexes, oldIndexCount);
 
-				cachedElem.vertices = CM_NEW_ARRAY(Vector2, newNumQuads * 4, ScratchAlloc);
-				cachedElem.uvs = CM_NEW_ARRAY(Vector2, newNumQuads * 4, ScratchAlloc);
-				cachedElem.indexes = CM_NEW_ARRAY(UINT32, newNumQuads * 6, ScratchAlloc);
+				cachedElem.vertices = cm_newN<Vector2, ScratchAlloc>(newNumQuads * 4);
+				cachedElem.uvs = cm_newN<Vector2, ScratchAlloc>(newNumQuads * 4);
+				cachedElem.indexes = cm_newN<UINT32, ScratchAlloc>(newNumQuads * 6);
 				cachedElem.numQuads = newNumQuads;
 			}
 

@@ -5,7 +5,7 @@ namespace CamelotFramework
 {
 	void D3D11RenderSystemFactory::create()
 	{
-		RenderSystem::startUp(CM_NEW(D3D11RenderSystem, GenAlloc) D3D11RenderSystem());
+		RenderSystem::startUp(new (cm_alloc<D3D11RenderSystem>()) D3D11RenderSystem());
 	}
 
 	D3D11RenderSystemFactory::InitOnStart D3D11RenderSystemFactory::initOnStart;

@@ -2,7 +2,8 @@
 
 #include "CmPrerequisites.h"
 #include "CmAsyncOp.h"
-#include "boost/function.hpp"
+#include <boost/function.hpp>
+#include <boost/preprocessor.hpp>
 
 namespace CamelotFramework
 {
@@ -156,4 +157,34 @@ o		 *
 		static void executeGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func);
 		static void executeReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func, AsyncOp& op); 
 	};
+
+#define MAKE_CM_NEW_CORE(z, n, unused)                                     \
+	template<class Type, class MainAlloc, class PtrDataAlloc BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	std::shared_ptr<Type> cm_new_core(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+	return std::shared_ptr<Type, void(CoreObject*), StdAlloc<PtrDataAlloc>>(cm_new<Type, MainAlloc>(BOOST_PP_ENUM_PARAMS (n, t)), &CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<PtrDataAlloc>());     \
+	}
+
+	BOOST_PP_REPEAT(9, MAKE_CM_NEW_CORE, ~)
+
+#undef MAKE_CM_NEW_CORE
+
+#define MAKE_CM_NEW_CORE(z, n, unused)                                     \
+	template<class Type, class MainAlloc BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	std::shared_ptr<Type> cm_new_core(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+	return std::shared_ptr<Type, void(CoreObject*), StdAlloc<GenAlloc>>(cm_new<Type, MainAlloc>(BOOST_PP_ENUM_PARAMS (n, t)), &CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<GenAlloc>());     \
+	}
+
+	BOOST_PP_REPEAT(9, MAKE_CM_NEW_CORE, ~)
+
+#undef MAKE_CM_NEW_CORE
+
+#define MAKE_CM_NEW_CORE(z, n, unused)                                     \
+	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
+	std::shared_ptr<Type> cm_new_core(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+	return std::shared_ptr<Type, void(CoreObject*), StdAlloc<GenAlloc>>(cm_new<Type, GenAlloc>(BOOST_PP_ENUM_PARAMS (n, t)), &CoreObject::_deleteDelayed<Type, GenAlloc>, StdAlloc<GenAlloc>());     \
+	}
+
+	BOOST_PP_REPEAT(9, MAKE_CM_NEW_CORE, ~)
+
+#undef MAKE_CM_NEW_CORE
 }

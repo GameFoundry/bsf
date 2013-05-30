@@ -85,7 +85,7 @@ namespace CamelotFramework
 	D3D9VideoModeList* D3D9Driver::getVideoModeList()
 	{
 		if( !mpVideoModeList )
-			mpVideoModeList = CM_NEW(D3D9VideoModeList, GenAlloc) D3D9VideoModeList( this );
+			mpVideoModeList = cm_new<D3D9VideoModeList>(this);
 
 		return mpVideoModeList;
 	}	

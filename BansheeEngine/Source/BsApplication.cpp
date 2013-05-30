@@ -32,16 +32,16 @@ namespace BansheeEngine
 		desc.importers.push_back("CamelotFBXImporter");
 		desc.importers.push_back("CamelotFontImporter");
 
-		GUIManager::startUp(CM_NEW(GUIManager, GenAlloc) GUIManager());
-		GUIMaterialManager::startUp(CM_NEW(GUIMaterialManager, GenAlloc) GUIMaterialManager());
-		OverlayManager::startUp(CM_NEW(OverlayManager, GenAlloc) OverlayManager());
+		GUIManager::startUp(cm_new<GUIManager>());
+		GUIMaterialManager::startUp(cm_new<GUIMaterialManager>());
+		OverlayManager::startUp(cm_new<OverlayManager>());
 
 		CM::gApplication().startUp(desc);
 
-		BuiltinMaterialManager::startUp(CM_NEW(BuiltinMaterialManager, GenAlloc) BuiltinMaterialManager());
-		BuiltinMaterialManager::instance().addFactory(CM_NEW(D3D9BuiltinMaterialFactory, GenAlloc) D3D9BuiltinMaterialFactory());
-		BuiltinMaterialManager::instance().addFactory(CM_NEW(D3D11BuiltinMaterialFactory, GenAlloc) D3D11BuiltinMaterialFactory());
-		BuiltinMaterialManager::instance().addFactory(CM_NEW(GLBuiltinMaterialFactory, GenAlloc) GLBuiltinMaterialFactory());
+		BuiltinMaterialManager::startUp(cm_new<BuiltinMaterialManager>());
+		BuiltinMaterialManager::instance().addFactory(cm_new<D3D9BuiltinMaterialFactory>());
+		BuiltinMaterialManager::instance().addFactory(cm_new<D3D11BuiltinMaterialFactory>());
+		BuiltinMaterialManager::instance().addFactory(cm_new<GLBuiltinMaterialFactory>());
 		BuiltinMaterialManager::instance().setActive(desc.renderSystem);
 
 		EngineGUI::startUp(new EngineGUI());

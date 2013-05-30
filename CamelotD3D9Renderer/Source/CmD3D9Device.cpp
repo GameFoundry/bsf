@@ -84,7 +84,7 @@ namespace CamelotFramework
 
 		if (it == mMapRenderWindowToResoruces.end())
 		{
-			RenderWindowResources* renderWindowResources = CM_NEW(RenderWindowResources, PoolAlloc) RenderWindowResources;
+			RenderWindowResources* renderWindowResources = cm_new<RenderWindowResources, PoolAlloc>();
 
 			memset(renderWindowResources, 0, sizeof(RenderWindowResources));						
 			renderWindowResources->adapterOrdinalInGroupIndex = 0;					
@@ -294,7 +294,7 @@ namespace CamelotFramework
 		mD3D9DeviceCapsValid	= false;
 
 		if(mPresentationParams != nullptr)
-			CM_DELETE_ARRAY(mPresentationParams, D3DPRESENT_PARAMETERS, mPresentationParamsCount, PoolAlloc);
+			cm_deleteN<PoolAlloc>(mPresentationParams, mPresentationParamsCount);
 
 		mPresentationParamsCount = 0;
 
@@ -471,13 +471,13 @@ namespace CamelotFramework
 	{		
 		// Clear old presentation parameters.
 		if(mPresentationParams != nullptr)
-			CM_DELETE_ARRAY(mPresentationParams, D3DPRESENT_PARAMETERS, mPresentationParamsCount, PoolAlloc);
+			cm_deleteN<PoolAlloc>(mPresentationParams, mPresentationParamsCount);
 
 		mPresentationParamsCount = 0;		
 
 		if (mMapRenderWindowToResoruces.size() > 0)
 		{
-			mPresentationParams = CM_NEW_ARRAY(D3DPRESENT_PARAMETERS, (UINT32)mMapRenderWindowToResoruces.size(), PoolAlloc);
+			mPresentationParams = cm_newN<D3DPRESENT_PARAMETERS, PoolAlloc>((UINT32)mMapRenderWindowToResoruces.size());
 
 			RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
 
