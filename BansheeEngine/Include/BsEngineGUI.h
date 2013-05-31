@@ -21,8 +21,18 @@ namespace BansheeEngine
 		static const CM::String DefaultFontPath;
 		static const UINT32 DefaultFontSize;
 
-		static const CM::String WindowFramePrimaryTexture;
 		static const CM::String WindowBackgroundTexture;
+
+		static const CM::String WindowFrameNormal;
+		static const CM::String WindowFrameFocused;
+
+		static const CM::String WindowTitleBarBg;
+
+		static const CM::String WindowCloseButtonNormal;
+		static const CM::String WindowCloseButtonHover;
+
+		static const CM::String WindowMinButtonNormal;
+		static const CM::String WindowMinButtonHover;
 
 		static const CM::String ButtonNormalTex;
 		static const CM::String ButtonHoverTex;

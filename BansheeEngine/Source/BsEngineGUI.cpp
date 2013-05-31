@@ -19,11 +19,21 @@ namespace BansheeEngine
 	const String EngineGUI::DefaultFontPath = "C:\\arial.ttf";
 	const UINT32 EngineGUI::DefaultFontSize = 10;
 
-	const String EngineGUI::WindowFramePrimaryTexture = "C:\\WindowFrame.psd";
 	const String EngineGUI::WindowBackgroundTexture = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowBgTile.psd";
 
 	const String EngineGUI::ButtonNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ButtonNormal.psd";
 	const String EngineGUI::ButtonHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ButtonHover.psd";
+
+	const String EngineGUI::WindowFrameNormal = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowFrameNormal.psd";
+	const String EngineGUI::WindowFrameFocused = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowFrameFocused.psd";
+
+	const String EngineGUI::WindowTitleBarBg = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowTitleBarBg.psd";
+
+	const String EngineGUI::WindowCloseButtonNormal = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowCloseBtnNormal.psd";
+	const String EngineGUI::WindowCloseButtonHover = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowCloseBtnHover.psd";
+
+	const String EngineGUI::WindowMinButtonNormal = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowMinBtnNormal.psd";
+	const String EngineGUI::WindowMinButtonHover = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowMinBtnHover.psd";
 
 	EngineGUI::EngineGUI()
 	{
@@ -58,11 +68,12 @@ namespace BansheeEngine
 		mSkin.setStyle(GUILabel::getGUITypeName(), labelStyle);
 
 		// Window frame
-		HTexture windowFrameTex = static_resource_cast<Texture>(Importer::instance().import(WindowFramePrimaryTexture));
-		windowFrameTex.waitUntilLoaded();
+		HTexture windowFrameNormalTex = static_resource_cast<Texture>(Importer::instance().import(WindowFrameNormal));
+		HTexture windowFrameFocusedTex = static_resource_cast<Texture>(Importer::instance().import(WindowFrameFocused));
 
 		GUIElementStyle windowFrameStyle;
-		windowFrameStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowFrameTex));
+		windowFrameStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowFrameNormalTex));
+		windowFrameStyle.focused.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowFrameFocusedTex));
 		windowFrameStyle.border.left = 1;
 		windowFrameStyle.border.right = 1;
 		windowFrameStyle.border.top = 1;
@@ -73,8 +84,6 @@ namespace BansheeEngine
 		// Button
 		HTexture buttonNormalTex = static_resource_cast<Texture>(Importer::instance().import(ButtonNormalTex));
 		HTexture buttonHoverTex = static_resource_cast<Texture>(Importer::instance().import(ButtonHoverTex));
-		buttonNormalTex.waitUntilLoaded();
-		buttonHoverTex.waitUntilLoaded();
 
 		GUIElementStyle buttonStyle;
 		buttonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(buttonNormalTex));
@@ -102,6 +111,14 @@ namespace BansheeEngine
 		// Window background texture
 		HTexture windowBgTexture = static_resource_cast<Texture>(Importer::instance().import(WindowBackgroundTexture));
 		mWindowBgTex = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowBgTexture));
+
+		// Window title bar background
+		HTexture windowTitleBarBg = static_resource_cast<Texture>(Importer::instance().import(WindowTitleBarBg));
+
+		GUIElementStyle titleBarStyle;
+		titleBarStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowTitleBarBg));
+		titleBarStyle.fixedHeight = true;
+		titleBarStyle.height = 11;
 	}
 
 }
