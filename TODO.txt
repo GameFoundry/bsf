@@ -27,7 +27,7 @@ IMMEDIATE:
   - Padding
   - Icon image
   - Support for text color in GUIStyles
- - Using linear filtering on scale9grid textures doesn't look good, mostly true if the center get stretched a lot (the border colors seep through)
+ - I have disabled linear filtering because it doesn't look good on scale9grid textures. (Add another material so it works with stretched textures?)
  - What happens when I don't set a texture for a state of a GUI element. Use a dummy white texture probably?
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
@@ -35,22 +35,6 @@ IMMEDIATE:
  - Add "Arial" size 10 font
   - Add support for bold (and maybe italic) fonts in Font importer
   - Add support to disable aliasing when importing font
-
-  fix up cm_new and cm_newN so they don't use placement new and instead manually call constructor through a func ptr so I can call
-   methods with private constructors. HOWEVER this defeats the purpsoe of a private constructor...So maybe just use macro CM_NEW for those objects?
-
-port remaining CM_NEW/CM_DELETE calls
-port std::shared_ptr. Make specialized versions that call CoreObject deleter and MemAlloc deleter.
- - Make sure it uses a custom allocator
-
- get rid of BOOST_PP_COMMA (remove headers referencing it as well)
- get rid of MemAllocDeleter::deleter
-
- maybe also add cm_stack_alloc, cm_stack_freeAll
-and cm_pool_new, cm_pool_delete
-
-
-And when I'm adding allocators to SharedPtr attempt to get rid of ugly-ass custom deleters and make just one easier to use shared_ptr wrapper.
 
 -----------
 

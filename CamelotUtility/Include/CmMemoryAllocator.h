@@ -36,48 +36,6 @@ namespace CamelotFramework
 		}
 	};
 
-	template<class T, class category>
-	class MemAllocDeleter
-	{
-	public:
-		static void deleter(T* ptr)
-		{
-			cm_delete<category, T>(ptr);
-		}
-	};
-
-	template<class category>
-	class MemAllocBytesDeleter
-	{
-	public:
-		static void deleter(void* ptr)
-		{
-			MemoryAllocator<category>::free(ptr);
-		}
-	};
-
-	template<class T, class category> 
-	inline T* __cm_construct_array(UINT32 count)
-	{
-		T* ptr = (T*)MemoryAllocator<category>::allocateArray(sizeof(T), count);
-
-		for(unsigned int i = 0; i < count; i++)
-			new ((void*)&ptr[i]) T;
-
-		return ptr;
-	}
-
-	template<class T, class category> 
-	inline void __cm_destruct_array(T* ptr, UINT32 count)
-	{
-		// This might seem a bit weird if T is a built-in type or a pointer, but
-		// standard allows us to call destructor on such types (they don't do anything)
-		for(unsigned int i = 0; i < count; i++)
-			ptr[i].~T();
-
-		MemoryAllocator<category>::freeArray(ptr, count);
-	}
-
 	/**
 	 * @brief	General allocator provided by the OS. Use for persistent long term allocations,
 	 * 			and allocations that don't happen often.
@@ -272,7 +230,7 @@ namespace CamelotFramework
 
 namespace CamelotFramework
 {
-	// Allocators we can use in the standard library
+	// Allocator we can use in the standard library
     template <class T, class Alloc = GenAlloc>
 	class StdAlloc 
 	{

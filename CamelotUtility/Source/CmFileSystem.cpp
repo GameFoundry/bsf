@@ -72,7 +72,7 @@ namespace CamelotFramework
 			// read-only stream
 			stream = cm_new<FileDataStream, ScratchAlloc>(fullPath, roStream, (size_t)tagStat.st_size, true);
 		}
-		return DataStreamPtr(stream, &MemAllocDeleter<FileDataStream, ScratchAlloc>::deleter);
+		return cm_shared_ptr<FileDataStream, ScratchAlloc>(stream);
 	}
 
 	DataStreamPtr FileSystem::create(const String& fullPath)
