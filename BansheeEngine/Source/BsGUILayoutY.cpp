@@ -332,7 +332,19 @@ namespace BansheeEngine
 
 			if(child.isElement())
 			{
-				child.element->_setWidth(mOptimalSizes[childIdx].x);
+				UINT32 elemWidth = mOptimalSizes[childIdx].x;
+				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
+				if(!layoutOptions.fixedWidth)
+				{
+					elemWidth = width;
+					if(layoutOptions.minWidth > 0 && elemWidth < layoutOptions.minWidth)
+						elemWidth = layoutOptions.minWidth;
+
+					if(layoutOptions.maxWidth > 0 && elemWidth > layoutOptions.maxWidth)
+						elemWidth = layoutOptions.maxWidth;
+				}
+
+				child.element->_setWidth(elemWidth);
 				child.element->_setHeight(elementHeight);
 
 				UINT32 xOffset = (UINT32)Math::CeilToInt((width - child.element->_getHeight()) * 0.5f);

@@ -72,8 +72,8 @@ namespace BansheeEngine
 		}
 
 		Int2 offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
-		Vector2 uvOffset(0.0f, 0.0f);
-		Vector2 uvScale(1.0f, 1.0f);
+		Vector2 uvOffset = desc.uvOffset;
+		Vector2 uvScale = desc.uvScale;
 		
 		if(useScale9Grid)
 		{

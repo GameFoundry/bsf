@@ -20,6 +20,7 @@ namespace BansheeEngine
 	const UINT32 EngineGUI::DefaultFontSize = 10;
 
 	const String EngineGUI::WindowFramePrimaryTexture = "C:\\WindowFrame.psd";
+	const String EngineGUI::WindowBackgroundTexture = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowBgTile.psd";
 
 	const String EngineGUI::ButtonNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ButtonNormal.psd";
 	const String EngineGUI::ButtonHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ButtonHover.psd";
@@ -61,7 +62,7 @@ namespace BansheeEngine
 		windowFrameTex.waitUntilLoaded();
 
 		GUIElementStyle windowFrameStyle;
-		windowFrameStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(windowFrameTex);
+		windowFrameStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowFrameTex));
 		windowFrameStyle.border.left = 1;
 		windowFrameStyle.border.right = 1;
 		windowFrameStyle.border.top = 1;
@@ -76,8 +77,8 @@ namespace BansheeEngine
 		buttonHoverTex.waitUntilLoaded();
 
 		GUIElementStyle buttonStyle;
-		buttonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(buttonNormalTex);
-		buttonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(buttonHoverTex);
+		buttonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(buttonNormalTex));
+		buttonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(buttonHoverTex));
 		buttonStyle.border.left = 5;
 		buttonStyle.border.right = 5;
 		buttonStyle.border.top = 5;
@@ -97,6 +98,10 @@ namespace BansheeEngine
 		buttonStyle.textVertAlign = TVA_Center;
 
 		mSkin.setStyle(GUIButton::getGUITypeName(), buttonStyle);
+
+		// Window background texture
+		HTexture windowBgTexture = static_resource_cast<Texture>(Importer::instance().import(WindowBackgroundTexture));
+		mWindowBgTex = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowBgTexture));
 	}
 
 }

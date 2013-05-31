@@ -45,6 +45,42 @@ Potential optimizations:
 ----------------------------------------------------------------------------------------------
 More detailed thought out system descriptions:
 
+<<<<SceneManager/SceneObject>>>>
+Two major parts:
+SceneObject update:
+ - Just takes care of updating world/local transforms
+  - Transforms are only updated when requested
+ - Marking a transform dirty will also mark it dirty in the SceneManager
+ - Only SceneObjects that have an Interactable type component (Renderer, Collider, etc.) will reside in SceneManager
+
+SceneManager maintains a list of world matrices, bounds and primitives
+ - We can query them for various collision (ray, frustum, etc.)
+ - Internally they likely use BVH or oct-tree
+ - Uses a binary-tree (unlike SceneObject hierarchy which is n-ary), which is laid out neatly in memory for quick traversal.
+   - What happens when object is removed/added? Tree keeps on growing, empty nodes have their space always reserved. Possibly add a method that can reduce tree size when enough empty nodes exist. 
+     Adding a node might increase tree size which will involve a memcpy while we increase the size.
+ - (Updating an object is SceneManager should optionally transfer its world matrix to its owner object as well)
+
+This separation should work fine, as scripts requesting transforms is unlikely to be something that done often. Or not nearly as much as frustum culling and raycasting will be.
+
+How will Physics update objects (and when?)
+ - It's unlikely there will be a massive amount of rigidbodies in the scene, so updating them should not be a huge matter of performance. 
+   Calling setTransform after physics simulation update (and before SceneManager update) should work fine.
+
+Updating children dirty whenever setPos/rot/tfrm is called is potentially slow. Can it be avoided?
+ - Then again such updates will only be done from the simulation thread, usually from scripts so its unlikely they will be many of them
+
+Do I separate SceneObject and Transform?
+ - I don' think I need to
+
+Make sure to let the user know SceneManager only gets updated after simulation, so changes to objects wont be applied right away. 
+(See that he doesn't transform something and call Raycast just so it fails)
+ - It is unlikely functionality when query results are needed right after transform will be used much. 
+   So it is acceptable to implement it like this. We might add SceneManager::forceUpdate method in case it is not acceptable.
+
+!!!BUG!!! - When I change parent I don't update individual local position/rotation/scale on scene object
+ - Also I don't have a way of setting world pos/rot directly
+
 <<<<Reducing render state changes>>>>
  - Transparent objects get sorted back to front, always
  - Opaque objects I can choose between front to back, no sort or back to front

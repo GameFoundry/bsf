@@ -8,6 +8,7 @@
 #include "BsGUILabel.h"
 #include "BsGUIWindowFrame.h"
 #include "BsGUIButton.h"
+#include "BsGUITexture.h"
 #include "BsGUISkin.h"
 #include "BsGUILayout.h"
 #include "BsOverlayManager.h"
@@ -64,10 +65,13 @@ namespace BansheeEditor
 
 		//GUIFixedSpace& space = otherLayout.addSpace(10); // Due to bug in MSVC compiler I need to store return value
 		//GUIFlexibleSpace& space3 = otherLayout.addFlexibleSpace();
-		otherLayout.addElement(GUIWindowFrame::create(*mGUI, GUILayoutOptions::fixed(100, 100)));
+		//otherLayout.addElement(GUIWindowFrame::create(*mGUI, GUILayoutOptions::fixed(100, 100)));
 		//GUIFixedSpace& space2 = otherLayout.addSpace(10);
 		otherLayout.addElement(GUIButton::create(*mGUI, "Test"));
 		//otherLayout.addElement(GUIWindowFrame::create(*mGUI));
+		
+		GUIArea* backgroundArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 2000);
+		backgroundArea->getLayout().addElement(GUITexture::create(*mGUI, EngineGUI::instance().getWindowBgTex(), GUIImageScaleMode::RepeatToFit, GUILayoutOptions::expandableXY()));
 	}
 
 	EditorWindow::~EditorWindow()

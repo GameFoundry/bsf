@@ -2,6 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsSprite.h"
+#include "CmVector2.h"
 
 namespace BansheeEngine
 {
@@ -9,7 +10,7 @@ namespace BansheeEngine
 	{
 		IMAGE_SPRITE_DESC()
 			:width(0), height(0), anchor(SA_TopLeft), borderLeft(0), borderRight(0), 
-			borderTop(0), borderBottom(0)
+			borderTop(0), borderBottom(0), uvScale(1.0f, 1.0f), uvOffset(0.0f, 0.0f)
 		{ }
 
 		CM::Int2 offset;
@@ -17,6 +18,8 @@ namespace BansheeEngine
 		UINT32 height;
 		CM::Rect clipRect;
 		SpriteAnchor anchor;
+		CM::Vector2 uvScale;
+		CM::Vector2 uvOffset;
 
 		SpriteTexturePtr texture;
 		UINT32 borderLeft, borderRight, borderTop, borderBottom;

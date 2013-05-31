@@ -226,15 +226,11 @@ namespace CamelotFramework
 	void SceneObject::markTfrmDirty() const
 	{
 		mIsCachedLocalTfrmUpToDate = false;
+		mIsCachedWorldTfrmUpToDate = false;
 
-		if(mIsCachedWorldTfrmUpToDate) // If it's already marked as dirty, no point is recursing the hierarchy again
+		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 		{
-			mIsCachedWorldTfrmUpToDate = false;
-
-			for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
-			{
-				(*iter)->markTfrmDirty();
-			}
+			(*iter)->markTfrmDirty();
 		}
 	}
 

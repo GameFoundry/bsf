@@ -328,7 +328,20 @@ namespace BansheeEngine
 			if(child.isElement())
 			{
 				child.element->_setWidth(elementWidth);
-				child.element->_setHeight(mOptimalSizes[childIdx].y);
+
+				UINT32 elemHeight = mOptimalSizes[childIdx].y;
+				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
+				if(!layoutOptions.fixedHeight)
+				{
+					elemHeight = height;
+					if(layoutOptions.minHeight > 0 && elemHeight < layoutOptions.minHeight)
+						elemHeight = layoutOptions.minHeight;
+
+					if(layoutOptions.maxHeight > 0 && elemHeight > layoutOptions.maxHeight)
+						elemHeight = layoutOptions.maxHeight;
+				}
+
+				child.element->_setHeight(elemHeight);
 
 				UINT32 yOffset = (UINT32)Math::CeilToInt((height - child.element->_getHeight()) * 0.5f);
 
