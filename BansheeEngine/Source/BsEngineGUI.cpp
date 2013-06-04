@@ -142,6 +142,10 @@ namespace BansheeEngine
 		tabbedBarButton.activeOn.texture = tabbedBarButton.hover.texture;
 		tabbedBarButton.fixedHeight = true;
 		tabbedBarButton.height = 13;
+		tabbedBarButton.font = font;
+		tabbedBarButton.fontSize = DefaultFontSize;
+		tabbedBarButton.textHorzAlign = THA_Center;
+		tabbedBarButton.textVertAlign = TVA_Center;
 
 		mSkin.setStyle("TabbedBarBtn", tabbedBarButton);
 
@@ -163,7 +167,9 @@ namespace BansheeEngine
 		winMinButtonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winMinBtnHover));
 		winMinButtonStyle.active.texture = winMinButtonStyle.hover.texture;
 		winMinButtonStyle.fixedHeight = true;
-		winMinButtonStyle.height = 13;
+		winMinButtonStyle.fixedWidth = true;
+		winMinButtonStyle.height = 7;
+		winMinButtonStyle.width = 8;
 
 		mSkin.setStyle("WinMinimizeBtn", winMinButtonStyle);
 
@@ -176,7 +182,9 @@ namespace BansheeEngine
 		winCloseButtonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winCloseBtnHover));
 		winCloseButtonStyle.active.texture = winCloseButtonStyle.active.texture;
 		winCloseButtonStyle.fixedHeight = true;
-		winCloseButtonStyle.height = 13;
+		winCloseButtonStyle.fixedWidth = true;
+		winCloseButtonStyle.height = 7;
+		winCloseButtonStyle.width = 8;
 
 		mSkin.setStyle("WinCloseBtn", winCloseButtonStyle);
 	}

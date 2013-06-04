@@ -30,7 +30,7 @@ namespace BansheeEditor
 
 	void TabbedTitleBar::insertTab(UINT32 idx, const CM::String& name)
 	{
-		GUIToggle* newTabToggle = GUIToggle::create(*this, GUILayoutOptions::expandableX(13, 100, 200), name);
+		GUIToggle* newTabToggle = GUIToggle::create(*this, GUILayoutOptions::expandableX(13, 100, 200), name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
 		GUITexture* newDragDropElement = GUITexture::create(*this, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
 
 		idx = Math::Clamp(idx, 0U, (UINT32)mTabButtons.size());
@@ -39,7 +39,7 @@ namespace BansheeEditor
 		mDragDropElements.insert(mDragDropElements.begin() + idx, newDragDropElement);
 
 		mMainArea->getLayout().insertElement(idx * 2, newTabToggle);
-		mMainArea->getLayout().insertElement(idx * 2, newTabToggle);
+		mMainArea->getLayout().insertElement(idx * 2, newDragDropElement);
 	}
 
 	void TabbedTitleBar::removeTab(UINT32 idx)
@@ -64,17 +64,19 @@ namespace BansheeEditor
 		GUITexture* titleBarBg = GUITexture::create(*this, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("TitleBarBackground"));
 		backgroundArea->getLayout().addElement(titleBarBg);
 
-		GUIArea* mainArea = GUIArea::create(*this, 0, 0, 0, 0, 499);
+		mMainArea = GUIArea::create(*this, 0, 0, 0, 0, 499);
 
 		GUITexture* dragDropElement = GUITexture::create(*this, GUILayoutOptions::expandableX(13, 20), GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
 		mLastDropElement = dragDropElement;
 
-		mMinBtn = GUIButton::create(*this, "");
-		mCloseBtn = GUIButton::create(*this, "");
+		mMinBtn = GUIButton::create(*this, "", EngineGUI::instance().getSkin().getStyle("WinMinimizeBtn"));
+		mCloseBtn = GUIButton::create(*this, "", EngineGUI::instance().getSkin().getStyle("WinCloseBtn"));
 
-		mainArea->getLayout().addElement(dragDropElement);
-		mainArea->getLayout().addElement(mMinBtn);
-		mainArea->getLayout().addElement(mCloseBtn);
+		mMainArea->getLayout().addElement(dragDropElement);
+		mMainArea->getLayout().addElement(mMinBtn);
+		mMainArea->getLayout().addElement(mCloseBtn);
+
+		addTab("TEST!");
 	}
 
 	void TabbedTitleBar::update()

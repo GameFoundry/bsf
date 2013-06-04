@@ -194,19 +194,17 @@ namespace BansheeEngine
 			else
 				mImageDesc.texture = mStyle->active.texture;
 
-			mIsToggled = !mIsToggled;
-
 			markAsDirty();
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
+			mIsToggled = !mIsToggled;
+
 			if(mIsToggled)
 				mImageDesc.texture = mStyle->normalOn.texture;
 			else
 				mImageDesc.texture = mStyle->normal.texture;
-
-			mIsToggled = !mIsToggled;
 
 			markAsDirty();
 			return true;
