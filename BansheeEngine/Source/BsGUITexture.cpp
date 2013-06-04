@@ -22,7 +22,10 @@ namespace BansheeEngine
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
-		mDesc.texture = texture;
+		if(texture != nullptr)
+			mDesc.texture = texture;
+		else
+			mDesc.texture = style->normal.texture;
 	
 		mDesc.borderLeft = mStyle->border.left;
 		mDesc.borderRight = mStyle->border.right;
@@ -40,23 +43,45 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getGUISkin();
+			const GUISkin* skin = parent.getSkin();
 			style = skin->getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, getDefaultLayoutOptions(style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const SpriteTexturePtr& texture, 
-		GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUITexture* GUITexture::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const SpriteTexturePtr& texture, 
+		GUIImageScaleMode scale, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getGUISkin();
+			const GUISkin* skin = parent.getSkin();
 			style = skin->getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, layoutOptions);
+	}
+
+	GUITexture* GUITexture::create(GUIWidget& parent, GUIImageScaleMode scale, const GUIElementStyle* style)
+	{
+		if(style == nullptr)
+		{
+			const GUISkin* skin = parent.getSkin();
+			style = skin->getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, getDefaultLayoutOptions(style));
+	}
+
+	GUITexture* GUITexture::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUIImageScaleMode scale, const GUIElementStyle* style)
+	{
+		if(style == nullptr)
+		{
+			const GUISkin* skin = parent.getSkin();
+			style = skin->getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, layoutOptions);
 	}
 
 	UINT32 GUITexture::getNumRenderElements() const

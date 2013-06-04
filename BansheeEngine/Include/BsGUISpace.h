@@ -7,16 +7,16 @@ namespace BansheeEngine
 	class BS_EXPORT GUIFixedSpace
 	{
 	public:
-		GUIFixedSpace(UINT32 size)
+		GUIFixedSpace(CM::UINT32 size)
 			:mSize(size)
 		{
 
 		}
 
-		UINT32 getSize() const { return mSize; }
+		CM::UINT32 getSize() const { return mSize; }
 
 	protected:
-		UINT32 mSize;
+		CM::UINT32 mSize;
 	};
 
 	class BS_EXPORT GUIFlexibleSpace

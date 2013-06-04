@@ -16,31 +16,31 @@ namespace BansheeEngine
 		 *			If you want the area to expand vertically or horizontally, together with its parent
 		 *			widget, set height or width to 0, respectively.
 		 */
-		static GUIArea* create(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width = 0, UINT32 height = 0, UINT16 depth = 0);
+		static GUIArea* create(GUIWidget& widget, CM::UINT32 x, CM::UINT32 y, CM::UINT32 width = 0, CM::UINT32 height = 0, CM::UINT16 depth = 0);
 		static void destroy(GUIArea* area);
 
 		GUILayout& getLayout() const { return *mLayout; }
 
-		UINT16 getDepth() const { return mDepth; }
-		void setDepth(UINT16 depth) { mDepth = depth; }
+		CM::UINT16 getDepth() const { return mDepth; }
+		void setDepth(CM::UINT16 depth) { mDepth = depth; }
 
 		void _update();
 	private:
 		friend class GUIWidget;
 
 		GUIWidget& mWidget;
-		UINT32 mX, mY, mWidth, mHeight;
-		UINT16 mDepth;
+		CM::UINT32 mX, mY, mWidth, mHeight;
+		CM::UINT16 mDepth;
 		bool mResizeWidthWithWindow, mResizeHeightWithWindow;
 		bool mIsDirty;
 
 		GUILayout* mLayout;
 
-		GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth);
+		GUIArea(GUIWidget& widget, CM::UINT32 x, CM::UINT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth);
 
 		bool isDirty() const;
 
-		void notifyWindowResized(UINT32 newWidth, UINT32 newHeight);
+		void notifyWindowResized(CM::UINT32 newWidth, CM::UINT32 newHeight);
 
 		static void destroyInternal(GUIArea* area);
 	};

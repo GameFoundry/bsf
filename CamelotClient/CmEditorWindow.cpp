@@ -16,6 +16,7 @@
 #include "BsUpdateCallback.h"
 #include "BsEngineGUI.h"
 #include "BsGUIArea.h"
+#include "BsGUITabbedTitleBar.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -48,9 +49,13 @@ namespace BansheeEditor
 		mGUI = so->addComponent<GUIWidget>();
 		mGUI->initialize(camera->getViewport().get(), mRenderWindow.get());
 
-		//// DEBUG
 		mGUI->setSkin(&EngineGUI::instance().getSkin());
 
+		GameObjectHandle<TabbedTitleBar> titleBar = so->addComponent<TabbedTitleBar>();
+		titleBar->initialize(camera->getViewport().get(), mRenderWindow.get());
+
+		//// DEBUG
+		
 		//GUIArea* backgroundArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 0);
 		//GUILayout& layout = backgroundArea->getLayout();
 		
@@ -69,7 +74,7 @@ namespace BansheeEditor
 		//otherLayout.addElement(GUIWindowFrame::create(*mGUI));
 		
 		GUIArea* backgroundArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 2000);
-		backgroundArea->getLayout().addElement(GUITexture::create(*mGUI, EngineGUI::instance().getWindowBgTex(), GUIImageScaleMode::RepeatToFit, GUILayoutOptions::expandableXY()));
+		backgroundArea->getLayout().addElement(GUITexture::create(*mGUI, GUILayoutOptions::expandableXY(), GUIImageScaleMode::RepeatToFit, mGUI->getSkin()->getStyle("WindowBackground")));
 
 		GUIArea* windowFrameArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 1999);
 		windowFrameArea->getLayout().addElement(GUIWindowFrame::create(*mGUI));

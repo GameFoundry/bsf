@@ -47,7 +47,7 @@ namespace BansheeEngine
 			{ }
 
 			CM::HMaterial handle;
-			UINT32 refCount;
+			CM::UINT32 refCount;
 		};
 
 		mutable CM::vector<GUIMaterial>::type mTextMaterials;

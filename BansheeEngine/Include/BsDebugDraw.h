@@ -26,9 +26,9 @@ namespace BansheeEngine
 			DebugDrawType type;
 			float timeEnds;
 
-			UINT32* indices;
-			UINT8* vertices;
-			UINT32 numElements;
+			CM::UINT32* indices;
+			CM::UINT8* vertices;
+			CM::UINT32 numElements;
 		};
 
 	public:

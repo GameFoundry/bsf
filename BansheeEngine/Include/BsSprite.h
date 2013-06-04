@@ -27,8 +27,8 @@ namespace BansheeEngine
 
 		CM::Vector2* vertices;
 		CM::Vector2* uvs;
-		UINT32* indexes;
-		UINT32 numQuads;
+		CM::UINT32* indexes;
+		CM::UINT32 numQuads;
 		CM::HMaterial material;
 	};
 
@@ -46,7 +46,7 @@ namespace BansheeEngine
 		 * 			
 		 * @return	The number render elements.
 		 */
-		UINT32 getNumRenderElements() const;
+		CM::UINT32 getNumRenderElements() const;
 
 		/**
 		 * @brief	Gets a material for the specified render element index.
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		 * 		
 		 * @return	Handle to the material.
 		 */
-		const CM::HMaterial& getMaterial(UINT32 renderElementIdx) const;
+		const CM::HMaterial& getMaterial(CM::UINT32 renderElementIdx) const;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this
@@ -69,7 +69,7 @@ namespace BansheeEngine
 		 *			
 		 * @return	Number of quads for the specified render element. 
 		 */
-		UINT32 getNumQuads(UINT32 renderElementIdx) const;
+		CM::UINT32 getNumQuads(CM::UINT32 renderElementIdx) const;
 
 		/**
 		 * @brief	Fill the pre-allocated vertex, uv and index buffers with the mesh data for the
@@ -88,7 +88,8 @@ namespace BansheeEngine
 		 * @param	indexStride			Number of bytes between two indexes in the provided index data.
 		 * @param	renderElementIdx	Zero-based index of the render element.
 		 */
-		UINT32 fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
+		CM::UINT32 fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, CM::UINT32 maxNumQuads, 
+			CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const;
 
 	protected:
 		mutable CM::Rect mBounds;
@@ -97,7 +98,7 @@ namespace BansheeEngine
 		void updateBounds() const;
 		void clearMesh() const;
 
-		void clipToRect(CM::Vector2* vertices, CM::Vector2* uv, UINT32 numQuads, const CM::Rect& clipRect) const;
-		CM::Int2 getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height) const;
+		void clipToRect(CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32 numQuads, const CM::Rect& clipRect) const;
+		CM::Int2 getAnchorOffset(SpriteAnchor anchor, CM::UINT32 width, CM::UINT32 height) const;
 	};
 }

@@ -35,6 +35,9 @@ namespace BansheeEngine
 	const String EngineGUI::WindowMinButtonNormal = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowMinBtnNormal.psd";
 	const String EngineGUI::WindowMinButtonHover = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowMinBtnHover.psd";
 
+	const String EngineGUI::TabbedBarBtnNormal = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\TabbedButtonNormal.psd";
+	const String EngineGUI::TabbedBarBtnActive = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\TabbedButtonActive.psd";
+
 	EngineGUI::EngineGUI()
 	{
 		// TODO - Normally I want to load this from some file
@@ -110,15 +113,72 @@ namespace BansheeEngine
 
 		// Window background texture
 		HTexture windowBgTexture = static_resource_cast<Texture>(Importer::instance().import(WindowBackgroundTexture));
-		mWindowBgTex = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowBgTexture));
+
+		GUIElementStyle windowBgStyle;
+		windowBgStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowBgTexture));
+
+		mSkin.setStyle("WindowBackground", windowBgStyle);
 
 		// Window title bar background
 		HTexture windowTitleBarBg = static_resource_cast<Texture>(Importer::instance().import(WindowTitleBarBg));
 
-		GUIElementStyle titleBarStyle;
-		titleBarStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowTitleBarBg));
-		titleBarStyle.fixedHeight = true;
-		titleBarStyle.height = 11;
+		GUIElementStyle titleBarBgStyle;
+		titleBarBgStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowTitleBarBg));
+		titleBarBgStyle.fixedHeight = true;
+		titleBarBgStyle.height = 13;
+
+		mSkin.setStyle("TitleBarBackground", titleBarBgStyle);
+
+		// Tabbed title bar tab button
+		HTexture tabbedBarBtnNormal = static_resource_cast<Texture>(Importer::instance().import(TabbedBarBtnNormal));
+		HTexture tabbedBarBtnActive = static_resource_cast<Texture>(Importer::instance().import(TabbedBarBtnActive));
+
+		GUIElementStyle tabbedBarButton;
+		tabbedBarButton.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(tabbedBarBtnNormal));
+		tabbedBarButton.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(tabbedBarBtnActive));
+		tabbedBarButton.active.texture = tabbedBarButton.hover.texture;
+		tabbedBarButton.normalOn.texture = tabbedBarButton.hover.texture;
+		tabbedBarButton.hoverOn.texture = tabbedBarButton.hover.texture;
+		tabbedBarButton.activeOn.texture = tabbedBarButton.hover.texture;
+		tabbedBarButton.fixedHeight = true;
+		tabbedBarButton.height = 13;
+
+		mSkin.setStyle("TabbedBarBtn", tabbedBarButton);
+
+		// Tabbed title bar drag/drop button
+		GUIElementStyle tabbedBarDropButton;
+		tabbedBarDropButton.fixedHeight = true;
+		tabbedBarDropButton.fixedWidth = true;
+		tabbedBarDropButton.height = 13;
+		tabbedBarDropButton.width = 15;
+
+		mSkin.setStyle("TabbedBarDropArea", tabbedBarDropButton);
+
+		// Window minimize button
+		HTexture winMinBtnNormal = static_resource_cast<Texture>(Importer::instance().import(WindowMinButtonNormal));
+		HTexture winMinBtnHover = static_resource_cast<Texture>(Importer::instance().import(WindowMinButtonHover));
+
+		GUIElementStyle winMinButtonStyle;
+		winMinButtonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winMinBtnNormal));
+		winMinButtonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winMinBtnHover));
+		winMinButtonStyle.active.texture = winMinButtonStyle.hover.texture;
+		winMinButtonStyle.fixedHeight = true;
+		winMinButtonStyle.height = 13;
+
+		mSkin.setStyle("WinMinimizeBtn", winMinButtonStyle);
+
+		// Window close button
+		HTexture winCloseBtnNormal = static_resource_cast<Texture>(Importer::instance().import(WindowCloseButtonNormal));
+		HTexture winCloseBtnHover = static_resource_cast<Texture>(Importer::instance().import(WindowCloseButtonHover));
+
+		GUIElementStyle winCloseButtonStyle;
+		winCloseButtonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winCloseBtnNormal));
+		winCloseButtonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winCloseBtnHover));
+		winCloseButtonStyle.active.texture = winCloseButtonStyle.active.texture;
+		winCloseButtonStyle.fixedHeight = true;
+		winCloseButtonStyle.height = 13;
+
+		mSkin.setStyle("WinCloseBtn", winCloseButtonStyle);
 	}
 
 }

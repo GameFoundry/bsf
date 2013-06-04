@@ -33,19 +33,19 @@ namespace BansheeEngine
 		 * @brief	Depth determines in which order the overlays render in case they overlap.
 		 * 			Smaller depth means the overlay is in front of anything with larger depth.
 		 */
-		INT32 getDepth() const { return mDepth; }
+		CM::INT32 getDepth() const { return mDepth; }
 
 		/**
 		 * @brief	Depth determines in which order the overlays render in case they overlap.
 		 * 			Smaller depth means the overlay is in front of anything with larger depth.
 		 */
-		void setDepth(INT32 depth) { mDepth = depth; }
+		void setDepth(CM::INT32 depth) { mDepth = depth; }
 
 	protected:
 		friend class CM::SceneObject;
 
 		CM::Viewport* mRenderTarget;
-		INT32 mDepth;
+		CM::INT32 mDepth;
 
 		Overlay(const CM::HSceneObject& parent);
 	};

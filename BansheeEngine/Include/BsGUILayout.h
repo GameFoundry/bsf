@@ -63,34 +63,34 @@ namespace BansheeEngine
 
 		void addElement(GUIElement* element);
 		void removeElement(GUIElement* element);
-		void insertElement(UINT32 idx, GUIElement* element);
+		void insertElement(CM::UINT32 idx, GUIElement* element);
 
 		GUILayout& addLayoutX();
 		GUILayout& addLayoutY();
 		void removeLayout(GUILayout& layout);
-		GUILayout& insertLayoutX(UINT32 idx);
-		GUILayout& insertLayoutY(UINT32 idx);
+		GUILayout& insertLayoutX(CM::UINT32 idx);
+		GUILayout& insertLayoutY(CM::UINT32 idx);
 
-		GUIFixedSpace& addSpace(UINT32 size);
+		GUIFixedSpace& addSpace(CM::UINT32 size);
 		void removeSpace(GUIFixedSpace& space);
-		GUIFixedSpace& insertSpace(UINT32 idx, UINT32 size);
+		GUIFixedSpace& insertSpace(CM::UINT32 idx, CM::UINT32 size);
 
 		GUIFlexibleSpace& addFlexibleSpace();
 		void removeFlexibleSpace(GUIFlexibleSpace& space);
-		GUIFlexibleSpace& insertFlexibleSpace(UINT32 idx);
+		GUIFlexibleSpace& insertFlexibleSpace(CM::UINT32 idx);
 
 		/**
 		 * @brief	Returns a combined number of child elements and layouts.
 		 */
-		UINT32 getNumChildren() const;
+		CM::UINT32 getNumChildren() const;
 
 		/**
 		 * @brief	Re-arranges the elements to fit the layout. (Internal use only)
 		 */
-		void _update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT8 widgetDepth, UINT16 areaDepth);
+		void _update(CM::UINT32 x, CM::UINT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 
-		UINT32 _getOptimalWidth() const { return mOptimalWidth; }
-		UINT32 _getOptimalHeight() const { return mOptimalHeight; }
+		CM::UINT32 _getOptimalWidth() const { return mOptimalWidth; }
+		CM::UINT32 _getOptimalHeight() const { return mOptimalHeight; }
 
 		void _markAsDirty() { mIsDirty = true; }
 		bool _isDirty();
@@ -98,12 +98,12 @@ namespace BansheeEngine
 	protected:
 		CM::vector<GUILayoutEntry>::type mChildren;	
 		CM::vector<CM::Int2>::type mOptimalSizes;
-		UINT32 mOptimalWidth;
-		UINT32 mOptimalHeight;
+		CM::UINT32 mOptimalWidth;
+		CM::UINT32 mOptimalHeight;
 
 		bool mIsDirty;
 
 		virtual void updateOptimalSizes() = 0;
-		virtual void updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT8 widgetDepth, UINT16 areaDepth) = 0;
+		virtual void updateInternal(CM::UINT32 x, CM::UINT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT8 widgetDepth, CM::UINT16 areaDepth) = 0;
 	};
 }

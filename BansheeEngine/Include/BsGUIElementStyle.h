@@ -13,7 +13,7 @@ namespace BansheeEngine
 			:left(0), right(0), top(0), bottom(0)
 		{ }
 
-		INT32 left, right, top, bottom;
+		CM::INT32 left, right, top, bottom;
 	};
 
 	struct BS_EXPORT GUIElementStyle
@@ -33,7 +33,7 @@ namespace BansheeEngine
 		}
 
 		CM::HFont font;
-		UINT32 fontSize;
+		CM::UINT32 fontSize;
 		TextHorzAlign textHorzAlign;
 		TextVertAlign textVertAlign;
 		bool wordWrap;
@@ -53,10 +53,10 @@ namespace BansheeEngine
 		RectOffset margins; // Determines offset from the background graphics to the content. Input uses bounds offset by this value.
 		RectOffset contentOffset; // Additional offset to the content, that doesn't effect the bounds. Applied on top of the margins offsets.
 
-		UINT32 width;
-		UINT32 height;
-		UINT32 minWidth, maxWidth;
-		UINT32 minHeight, maxHeight;
+		CM::UINT32 width;
+		CM::UINT32 height;
+		CM::UINT32 minWidth, maxWidth;
+		CM::UINT32 minHeight, maxHeight;
 		bool fixedWidth;
 		bool fixedHeight;
 	};

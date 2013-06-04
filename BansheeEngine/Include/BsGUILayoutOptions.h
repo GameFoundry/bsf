@@ -20,7 +20,7 @@ namespace BansheeEngine
 		 * @brief	Element is fixed to the specified width/height and will not resize.
 		 * 			If elements doesn't fully fit in the layout it will be clipped.
 		 */
-		static GUILayoutOptions fixed(UINT32 _width, UINT32 _height)
+		static GUILayoutOptions fixed(CM::UINT32 _width, CM::UINT32 _height)
 		{
 			GUILayoutOptions layoutOptions;
 			layoutOptions.width = _width;
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If constraints are zero they will not be used.
 		 */
-		static GUILayoutOptions expandableXY(UINT32 _minWidth = 0, UINT32 _minHeight = 0, UINT32 _maxWidth = 0, UINT32 _maxHeight = 0)
+		static GUILayoutOptions expandableXY(CM::UINT32 _minWidth = 0, CM::UINT32 _minHeight = 0, CM::UINT32 _maxWidth = 0, CM::UINT32 _maxHeight = 0)
 		{
 			GUILayoutOptions layoutOptions;
 			layoutOptions.minWidth = _minWidth;
@@ -56,7 +56,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If constraints are zero they will not be used.
 		 */
-		static GUILayoutOptions expandableX(UINT32 _height, UINT32 _minWidth = 0, UINT32 _maxWidth = 0)
+		static GUILayoutOptions expandableX(CM::UINT32 _height, CM::UINT32 _minWidth = 0, CM::UINT32 _maxWidth = 0)
 		{
 			GUILayoutOptions layoutOptions;
 			layoutOptions.height = _height;
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		 * 			
 		 *			If constraints are zero they will not be used.
 		 */
-		static GUILayoutOptions expandableY(UINT32 _width, UINT32 _minHeight = 0, UINT32 _maxHeight = 0)
+		static GUILayoutOptions expandableY(CM::UINT32 _width, CM::UINT32 _minHeight = 0, CM::UINT32 _maxHeight = 0)
 		{
 			GUILayoutOptions layoutOptions;
 			layoutOptions.width = _width;
@@ -86,8 +86,8 @@ namespace BansheeEngine
 			return layoutOptions;
 		}
 
-		UINT32 width, height;
-		UINT32 minWidth, maxWidth, minHeight, maxHeight;
+		CM::UINT32 width, height;
+		CM::UINT32 minWidth, maxWidth, minHeight, maxHeight;
 		bool fixedWidth, fixedHeight;
 	};
 }

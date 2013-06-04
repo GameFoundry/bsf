@@ -234,9 +234,9 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 		break;
 	case WM_SETCURSOR:
 		if(Cursor::isHidden())
-			SetCursor(0);
+			Cursor::_win32HideCursor();
 		else
-			SetCursor(Cursor::getHCursor());
+			Cursor::_win32ShowCursor();
 		return true;
 	case WM_GETMINMAXINFO:
 		// Prevent the window from going smaller than some minimu size

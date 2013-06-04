@@ -6,27 +6,15 @@
 
 namespace BansheeEngine
 {
-	enum class GUIImageScaleMode
-	{
-		StretchToFit,
-		ScaleToFit,
-		CropToFit,
-		RepeatToFit
-	};
-
-	class BS_EXPORT GUITexture : public GUIElement
+	class BS_EXPORT GUIToggle : public GUIElement
 	{
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUITexture* create(GUIWidget& parent, const SpriteTexturePtr& texture, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, 
-			const GUIElementStyle* style = nullptr);
-		static GUITexture* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const SpriteTexturePtr& texture, 
-			GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
-		static GUITexture* create(GUIWidget& parent, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
-		static GUITexture* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const CM::String& text, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const CM::String& text, const GUIElementStyle* style = nullptr);
 	protected:
-		~GUITexture();
+		~GUIToggle();
 
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
@@ -57,11 +45,18 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getOptimalWidth() const;
 		virtual CM::UINT32 _getOptimalHeight() const;
 
+		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 	private:
 		ImageSprite* mImageSprite;
-		IMAGE_SPRITE_DESC mDesc;
-		GUIImageScaleMode mScaleMode;
+		TextSprite* mTextSprite;
+		CM::UINT32 mNumImageRenderElements;
+		bool mIsToggled;
 
-		GUITexture(GUIWidget& parent, const GUIElementStyle* style, const SpriteTexturePtr& texture, GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions);
+		IMAGE_SPRITE_DESC mImageDesc;
+		CM::String mText;
+
+		GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const CM::String& text, const GUILayoutOptions& layoutOptions);
+
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
 	};
 }

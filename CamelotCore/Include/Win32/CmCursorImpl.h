@@ -3,16 +3,29 @@
 #include "CmPrerequisites.h"
 #include "CmInt2.h"
 #include "CmRect.h"
-#include <windows.h>
 
 namespace CamelotFramework
 {
+	// Encapsulate native cursor type so we can avoid including windows.h as it pollutes the global namespace
+	struct CM_EXPORT NativeCursorData
+	{
+		struct Pimpl;
+
+		NativeCursorData();
+		~NativeCursorData();
+
+		Pimpl* data;
+	};
+
 	/**
 	 * @brief	Provides controls for Windows operating system cursor.
 	 */
 	class CM_EXPORT Cursor
 	{
 	public:
+		Cursor();
+		~Cursor();
+
 		static Int2 getScreenPosition();
 		static void setScreenPosition(const Int2& pos);
 
@@ -30,11 +43,13 @@ namespace CamelotFramework
 		
 		static void setCursor(CursorType type);
 		static void setCustomCursor(PixelData& pixelData, const Int2& hotSpot);
-		static HCURSOR getHCursor() { return mCursor; }
 
+		static void _win32ShowCursor();
+		static void _win32HideCursor();
+		
 	private:
 		static bool mIsHidden;
-		static HCURSOR mCursor;
+		static NativeCursorData mCursor;
 		static bool mUsingCustom;
 	};
 }

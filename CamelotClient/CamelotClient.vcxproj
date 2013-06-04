@@ -167,6 +167,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BsGUITabbedTitleBar.h" />
     <ClInclude Include="CmDebugCamera.h" />
     <ClInclude Include="CmEditorWindow.h" />
     <ClInclude Include="CmTestTextSprite.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BsGUITabbedTitleBar.cpp" />
     <ClCompile Include="CamelotClient.cpp" />
     <ClCompile Include="CmDebugCamera.cpp" />
     <ClCompile Include="CmEditorWindow.cpp" />

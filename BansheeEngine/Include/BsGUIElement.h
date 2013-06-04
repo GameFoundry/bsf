@@ -22,7 +22,7 @@ namespace BansheeEngine
 		 *
 		 * @return	The number render elements.
 		 */
-		virtual UINT32 getNumRenderElements() const = 0;
+		virtual CM::UINT32 getNumRenderElements() const = 0;
 
 		/**
 		 * @brief	Gets a material for the specified render element index.
@@ -31,7 +31,7 @@ namespace BansheeEngine
 		 * 		
 		 * @return	Handle to the material.
 		 */
-		virtual const CM::HMaterial& getMaterial(UINT32 renderElementIdx) const = 0;
+		virtual const CM::HMaterial& getMaterial(CM::UINT32 renderElementIdx) const = 0;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this
@@ -45,7 +45,7 @@ namespace BansheeEngine
 		 *			
 		 * @return	Number of quads for the specified render element. 
 		 */
-		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const = 0;
+		virtual CM::UINT32 getNumQuads(CM::UINT32 renderElementIdx) const = 0;
 
 		/**
 		 * @brief	Fill the pre-allocated vertex, uv and index buffers with the mesh data for the
@@ -64,8 +64,8 @@ namespace BansheeEngine
 		 * @param	indexStride			Number of bytes between two indexes in the provided index data.
 		 * @param	renderElementIdx	Zero-based index of the render element.
 		 */
-		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const = 0;
+		virtual void fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, 
+			CM::UINT32 maxNumQuads, CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const = 0;
 
 		/**
 		 * @brief	Recreates the internal render elements. Must be called before fillBuffer if element is dirty. 
@@ -84,22 +84,22 @@ namespace BansheeEngine
 		GUILayout* _getParentLayout() const { return mParentLayout; }
 		void _setParentLayout(GUILayout* layout) { mParentLayout = layout; }
 
-		void _setWidgetDepth(UINT8 depth);
-		void _setAreaDepth(UINT16 depth);
+		void _setWidgetDepth(CM::UINT8 depth);
+		void _setAreaDepth(CM::UINT16 depth);
 		void _setOffset(const CM::Int2& offset);
-		void _setWidth(UINT32 width);
-		void _setHeight(UINT32 height);
+		void _setWidth(CM::UINT32 width);
+		void _setHeight(CM::UINT32 height);
 		void _setClipRect(const CM::Rect& clipRect);
 
-		UINT32 _getWidth() const { return mWidth; }
-		UINT32 _getHeight() const { return mHeight; }
-		virtual UINT32 _getOptimalWidth() const = 0;
-		virtual UINT32 _getOptimalHeight() const = 0;
-		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const { return _getDepth(); }
+		CM::UINT32 _getWidth() const { return mWidth; }
+		CM::UINT32 _getHeight() const { return mHeight; }
+		virtual CM::UINT32 _getOptimalWidth() const = 0;
+		virtual CM::UINT32 _getOptimalHeight() const = 0;
+		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const { return _getDepth(); }
 
 		const CM::Rect& _getBounds() const { return mBounds; }
 		CM::Rect _getContentBounds() const;
-		UINT32 _getDepth() const { return mDepth; }
+		CM::UINT32 _getDepth() const { return mDepth; }
 		GUIWidget& _getParentWidget() const { return mParent; }
 		bool _isDirty() const { return mIsDirty; }
 
@@ -128,9 +128,9 @@ namespace BansheeEngine
 		CM::Rect mBounds;
 
 		bool mIsDirty;
-		UINT32 mDepth;
+		CM::UINT32 mDepth;
 		CM::Int2 mOffset;
-		UINT32 mWidth, mHeight;
+		CM::UINT32 mWidth, mHeight;
 		CM::Rect mClipRect;
 		const GUIElementStyle* mStyle;
 	};

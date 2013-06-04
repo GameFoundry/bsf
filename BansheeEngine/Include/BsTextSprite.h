@@ -23,14 +23,14 @@ namespace BansheeEngine
 		{ }
 
 		CM::Int2 offset;
-		UINT32 width;
-		UINT32 height;
+		CM::UINT32 width;
+		CM::UINT32 height;
 		CM::Rect clipRect;
 		SpriteAnchor anchor;
 
 		CM::String text;
 		CM::HFont font;
-		UINT32 fontSize;
+		CM::UINT32 fontSize;
 		TextHorzAlign horzAlign;
 		TextVertAlign vertAlign;
 		bool wordWrap;

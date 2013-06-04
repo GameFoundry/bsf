@@ -113,6 +113,11 @@ namespace BansheeEngine
 		}
 	}
 
+	bool GUIWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
+	{
+		return element->mouseEvent(ev);
+	}
+
 	void GUIWidget::registerElement(GUIElement* elem)
 	{
 		assert(elem != nullptr);
@@ -162,7 +167,7 @@ namespace BansheeEngine
 		mSkin = skin;
 	}
 
-	const GUISkin* GUIWidget::getGUISkin() const
+	const GUISkin* GUIWidget::getSkin() const
 	{
 		if(mSkin != nullptr)
 			return mSkin;

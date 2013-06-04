@@ -147,7 +147,7 @@
     <ClInclude Include="Include\BsGUITexture.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUITitleBar.h">
+    <ClInclude Include="Include\BsGUIToggle.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -242,7 +242,7 @@
     <ClCompile Include="Source\BsGUITexture.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUITitleBar.cpp">
+    <ClCompile Include="Source\BsGUIToggle.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>

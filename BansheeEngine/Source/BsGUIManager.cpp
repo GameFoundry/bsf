@@ -480,14 +480,14 @@ namespace BansheeEngine
 				Int2 oldScreenPos = Cursor::getWindowPosition(*window);
 
 				GUIMouseEvent event(GUIMouseEventType::MouseOut, oldScreenPos); // TODO - This pos will be wrong as it might be related to completely other window
-				mMouseOverElement->mouseEvent(event);
+				mMouseOverWidget->_mouseEvent(mMouseOverElement, event);
 			}
 
 			if(topMostElement != nullptr)
 			{
 				// Send MouseOver event
 				GUIMouseEvent event(GUIMouseEventType::MouseOver, screenPos);
-				topMostElement->mouseEvent(event);
+				widgetInFocus->_mouseEvent(topMostElement, event);
 			}
 
 			mMouseOverElement = topMostElement;
@@ -500,7 +500,7 @@ namespace BansheeEngine
 			if(mLastCursorPos != screenPos)
 			{
 				GUIMouseEvent event(GUIMouseEventType::MouseMove, screenPos);
-				mMouseOverElement->mouseEvent(event);
+				mMouseOverWidget->_mouseEvent(mMouseOverElement, event);
 			}
 
 			// Send MouseDown and MouseUp events
@@ -512,12 +512,12 @@ namespace BansheeEngine
 					if(buttonDown)
 					{
 						GUIMouseEvent event(GUIMouseEventType::MouseDown, screenPos, (MouseButton)i);
-						mMouseOverElement->mouseEvent(event);
+						mMouseOverWidget->_mouseEvent(mMouseOverElement, event);
 					}
 					else
 					{
 						GUIMouseEvent event(GUIMouseEventType::MouseUp, screenPos, (MouseButton)i);
-						mMouseOverElement->mouseEvent(event);
+						mMouseOverWidget->_mouseEvent(mMouseOverElement, event);
 					}
 
 					mLastFrameButtonState[i] = buttonDown;

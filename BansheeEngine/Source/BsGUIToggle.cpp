@@ -1,4 +1,4 @@
-#include "BsGUITitleBar.h"
+#include "BsGUIToggle.h"
 #include "BsImageSprite.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
@@ -12,14 +12,14 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	const String& GUITitleBar::getGUITypeName()
+	const String& GUIToggle::getGUITypeName()
 	{
-		static String name = "TitleBar";
+		static String name = "Toggle";
 		return name;
 	}
 
-	GUITitleBar::GUITitleBar(GUIWidget& parent, const GUIElementStyle* style, const String& title, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mText(title), mNumImageRenderElements(0)
+	GUIToggle::GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const String& text, const GUILayoutOptions& layoutOptions)
+		:GUIElement(parent, style, layoutOptions), mText(text), mNumImageRenderElements(0), mIsToggled(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -38,35 +38,35 @@ namespace BansheeEngine
 		mImageDesc.borderBottom = mStyle->border.bottom;
 	}
 
-	GUITitleBar::~GUITitleBar()
+	GUIToggle::~GUIToggle()
 	{
 		cm_delete<PoolAlloc>(mTextSprite);
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUITitleBar* GUITitleBar::create(GUIWidget& parent, const String& title, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const String& text, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getGUISkin();
+			const GUISkin* skin = parent.getSkin();
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITitleBar, PoolAlloc>()) GUITitleBar(parent, style, title, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, text, getDefaultLayoutOptions(style));
 	}
 
-	GUITitleBar* GUITitleBar::create(GUIWidget& parent, const String& title, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const String& text, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getGUISkin();
+			const GUISkin* skin = parent.getSkin();
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITitleBar, PoolAlloc>()) GUITitleBar(parent, style, title, layoutOptions);
+		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, text, layoutOptions);
 	}
 
-	UINT32 GUITitleBar::getNumRenderElements() const
+	UINT32 GUIToggle::getNumRenderElements() const
 	{
 		UINT32 numElements = mImageSprite->getNumRenderElements();
 		numElements += mTextSprite->getNumRenderElements();
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const HMaterial& GUITitleBar::getMaterial(UINT32 renderElementIdx) const
+	const HMaterial& GUIToggle::getMaterial(UINT32 renderElementIdx) const
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
 			return mTextSprite->getMaterial(mNumImageRenderElements - renderElementIdx);
@@ -82,7 +82,7 @@ namespace BansheeEngine
 			return mImageSprite->getMaterial(renderElementIdx);
 	}
 
-	UINT32 GUITitleBar::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIToggle::getNumQuads(UINT32 renderElementIdx) const
 	{
 		UINT32 numQuads = 0;
 		if(renderElementIdx >= mNumImageRenderElements)
@@ -93,7 +93,7 @@ namespace BansheeEngine
 		return numQuads;
 	}
 
-	void GUITitleBar::updateRenderElementsInternal()
+	void GUIToggle::updateRenderElementsInternal()
 	{		
 		mImageDesc.offset = mOffset;
 		mImageDesc.width = mWidth;
@@ -128,7 +128,7 @@ namespace BansheeEngine
 		mTextSprite->update(textDesc);
 	}
 
-	UINT32 GUITitleBar::_getOptimalWidth() const
+	UINT32 GUIToggle::_getOptimalWidth() const
 	{
 		if(mImageDesc.texture != nullptr)
 		{
@@ -138,7 +138,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	UINT32 GUITitleBar::_getOptimalHeight() const
+	UINT32 GUIToggle::_getOptimalHeight() const
 	{
 		if(mImageDesc.texture != nullptr)
 		{
@@ -148,7 +148,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	UINT32 GUITitleBar::_getRenderElementDepth(UINT32 renderElementIdx) const
+	UINT32 GUIToggle::_getRenderElementDepth(UINT32 renderElementIdx) const
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
 			return _getDepth();
@@ -156,12 +156,62 @@ namespace BansheeEngine
 			return _getDepth() + 1;
 	}
 
-	void GUITitleBar::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIToggle::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
 			mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, mNumImageRenderElements - renderElementIdx);
 		else
 			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
+	}
+
+	bool GUIToggle::mouseEvent(const GUIMouseEvent& ev)
+	{
+		if(ev.getType() == GUIMouseEventType::MouseOver)
+		{
+			if(mIsToggled)
+				mImageDesc.texture = mStyle->hoverOn.texture;
+			else
+				mImageDesc.texture = mStyle->hover.texture;
+
+			markAsDirty();
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseOut)
+		{
+			if(mIsToggled)
+				mImageDesc.texture = mStyle->normalOn.texture;
+			else
+				mImageDesc.texture = mStyle->normal.texture;
+
+			markAsDirty();
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseDown)
+		{
+			if(mIsToggled)
+				mImageDesc.texture = mStyle->activeOn.texture;
+			else
+				mImageDesc.texture = mStyle->active.texture;
+
+			mIsToggled = !mIsToggled;
+
+			markAsDirty();
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseUp)
+		{
+			if(mIsToggled)
+				mImageDesc.texture = mStyle->normalOn.texture;
+			else
+				mImageDesc.texture = mStyle->normal.texture;
+
+			mIsToggled = !mIsToggled;
+
+			markAsDirty();
+			return true;
+		}
+
+		return false;
 	}
 }

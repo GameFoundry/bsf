@@ -48,7 +48,7 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getGUISkin();
+			const GUISkin* skin = parent.getSkin();
 			style = skin->getStyle(getGUITypeName());
 		}
 
@@ -59,7 +59,7 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getGUISkin();
+			const GUISkin* skin = parent.getSkin();
 			style = skin->getStyle(getGUITypeName());
 		}
 
@@ -171,15 +171,27 @@ namespace BansheeEngine
 		{
 			mImageDesc.texture = mStyle->hover.texture;
 			markAsDirty();
-			// TODO - What happens when a texture is not set?
-			// 
+
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
 			mImageDesc.texture = mStyle->normal.texture;
 			markAsDirty();
-			// TODO - What happens when a texture is not set?
+
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseDown)
+		{
+			mImageDesc.texture = mStyle->active.texture;
+			markAsDirty();
+
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseUp)
+		{
+			mImageDesc.texture = mStyle->normal.texture;
+			markAsDirty();
 
 			return true;
 		}

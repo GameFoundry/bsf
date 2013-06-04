@@ -3,11 +3,27 @@
 #include "CmWindowEventUtilities.h"
 #include "CmPixelUtil.h"
 #include "CmApplication.h"
+#include <windows.h>
 
 namespace CamelotFramework
 {
+	struct NativeCursorData::Pimpl
+	{
+		HCURSOR cursor;
+	};
+
+	NativeCursorData::NativeCursorData()
+	{
+		data = cm_new<Pimpl>();
+	}
+
+	NativeCursorData::~NativeCursorData()
+	{
+		cm_delete(data);
+	}
+
 	bool Cursor::mIsHidden = false;
-	HCURSOR Cursor::mCursor;
+	NativeCursorData Cursor::mCursor;
 	bool Cursor::mUsingCustom = false;
 
 	Int2 Cursor::getWindowPosition(const RenderWindow& window)
@@ -119,41 +135,41 @@ namespace CamelotFramework
 		if(mUsingCustom)
 		{
 			SetCursor(0);
-			DestroyIcon(mCursor);
+			DestroyIcon(mCursor.data->cursor);
 			mUsingCustom = false;
 		}
 
 		switch(type)
 		{
 		case CursorType::Arrow:
-			mCursor = LoadCursor(0, IDC_ARROW);
+			mCursor.data->cursor = LoadCursor(0, IDC_ARROW);
 			break;
 		case CursorType::Wait:
-			mCursor = LoadCursor(0, IDC_WAIT);
+			mCursor.data->cursor = LoadCursor(0, IDC_WAIT);
 			break;
 		case CursorType::IBeam:
-			mCursor = LoadCursor(0, IDC_IBEAM);
+			mCursor.data->cursor = LoadCursor(0, IDC_IBEAM);
 			break;
 		case CursorType::Help:
-			mCursor = LoadCursor(0, IDC_HELP);
+			mCursor.data->cursor = LoadCursor(0, IDC_HELP);
 			break;
 		case CursorType::Hand:
-			mCursor = LoadCursor(0, IDC_HAND);
+			mCursor.data->cursor = LoadCursor(0, IDC_HAND);
 			break;
 		case CursorType::SizeAll:
-			mCursor = LoadCursor(0, IDC_SIZEALL);
+			mCursor.data->cursor = LoadCursor(0, IDC_SIZEALL);
 			break;
 		case CursorType::SizeNESW:
-			mCursor = LoadCursor(0, IDC_SIZENESW);
+			mCursor.data->cursor = LoadCursor(0, IDC_SIZENESW);
 			break;
 		case CursorType::SizeNS:
-			mCursor = LoadCursor(0, IDC_SIZENS);
+			mCursor.data->cursor = LoadCursor(0, IDC_SIZENS);
 			break;
 		case CursorType::SizeNWSE:
-			mCursor = LoadCursor(0, IDC_SIZENWSE);
+			mCursor.data->cursor = LoadCursor(0, IDC_SIZENWSE);
 			break;
 		case CursorType::SizeWE:
-			mCursor = LoadCursor(0, IDC_SIZEWE);
+			mCursor.data->cursor = LoadCursor(0, IDC_SIZEWE);
 			break;
 		}
 
@@ -171,7 +187,7 @@ namespace CamelotFramework
 		if(mUsingCustom)
 		{
 			SetCursor(0);
-			DestroyIcon(mCursor);
+			DestroyIcon(mCursor.data->cursor);
 		}
 
 		mUsingCustom = true;
@@ -230,7 +246,7 @@ namespace CamelotFramework
 		iconinfo.hbmMask = hMonoBitmap;
 		iconinfo.hbmColor = hBitmap;
 
-		mCursor = CreateIconIndirect(&iconinfo);
+		mCursor.data->cursor = CreateIconIndirect(&iconinfo);
 
 		DeleteObject(hBitmap);          
 		DeleteObject(hMonoBitmap);
@@ -241,66 +257,15 @@ namespace CamelotFramework
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
 		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
+	}
 
+	void Cursor::_win32ShowCursor()
+	{
+		SetCursor(mCursor.data->cursor);
+	}
 
-		//HDC hDC = GetDC(NULL);
-		//HDC hAndMaskDC = CreateCompatibleDC(hDC); 
-		//HDC hXorMaskDC = CreateCompatibleDC(hDC); 
-
-		////Get the dimensions of the source bitmap
-		//HBITMAP hAndMaskBitmap  = CreateCompatibleBitmap(hDC, pixelData.getWidth(), pixelData.getHeight());
-		//HBITMAP hXorMaskBitmap  = CreateCompatibleBitmap(hDC, pixelData.getWidth(), pixelData.getHeight());
-
-		////Select the bitmaps to DC
-		//HBITMAP hOldAndMaskBitmap  = (HBITMAP)SelectObject(hAndMaskDC, hAndMaskBitmap);
-		//HBITMAP hOldXorMaskBitmap  = (HBITMAP)SelectObject(hXorMaskDC, hXorMaskBitmap);
-
-		////Scan each pixel of the souce bitmap and create the masks
-		//Color pixel;
-		//for(UINT32 x = 0; x < pixelData.getWidth(); ++x)
-		//{
-		//	for(UINT32 y = 0; y < pixelData.getHeight(); ++y)
-		//	{
-		//		pixel = pixelData.getColorAt(x, y);
-		//		DWORD pixel32 = pixel.getAsRGBA();
-
-		//		if(pixel.a < 1.0f)
-		//		{
-		//			SetPixel(hAndMaskDC, x, y, RGB(255,255,255));
-		//			/*SetPixel(hXorMaskDC, x, y, RGB(pixel32 & 0xFF, (pixel32 >> 8) & 0xFF, (pixel32 >> 16) & 0xFF));*/
-		//			SetPixel(hXorMaskDC, x, y, RGB(255,255,255));
-		//		}
-		//		else
-		//		{
-		//			SetPixel(hAndMaskDC, x, y, RGB(0,0,0));
-		//			//SetPixel(hXorMaskDC, x, y, RGB(pixel32 & 0xFF, (pixel32 >> 8) & 0xFF, (pixel32 >> 16) & 0xFF));
-		//			SetPixel(hXorMaskDC, x, y, RGB(255,255,255));
-		//		}
-		//	}
-		//}
-
-		//SelectObject(hAndMaskDC, hOldAndMaskBitmap);
-		//SelectObject(hXorMaskDC, hOldXorMaskBitmap);
-
-		//DeleteDC(hXorMaskDC);
-		//DeleteDC(hAndMaskDC);
-
-		//ReleaseDC(NULL, hDC);
-
-		//ICONINFO iconinfo = {0};
-		//iconinfo.fIcon = FALSE;
-		//iconinfo.xHotspot = (DWORD)hotSpot.x;
-		//iconinfo.yHotspot = (DWORD)hotSpot.y;
-		//iconinfo.hbmMask = hAndMaskBitmap;
-		//iconinfo.hbmColor = hXorMaskBitmap;
-
-		//mCursor = CreateIconIndirect(&iconinfo);
-
-		//// Make sure we notify the message loop to perform the actual cursor update
-		//RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
-		//HWND hwnd;
-		//primaryWindow->getCustomAttribute("WINDOW", &hwnd);
-
-		//PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
+	void Cursor::_win32HideCursor()
+	{
+		SetCursor(nullptr);
 	}
 }

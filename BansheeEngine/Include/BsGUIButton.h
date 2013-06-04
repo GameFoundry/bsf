@@ -19,37 +19,37 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
 		 */
-		virtual UINT32 getNumRenderElements() const;
+		virtual CM::UINT32 getNumRenderElements() const;
 
 		/**
 		 * @copydoc GUIElement::getMaterial()
 		 */
-		virtual const CM::HMaterial& getMaterial(UINT32 renderElementIdx) const;
+		virtual const CM::HMaterial& getMaterial(CM::UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::getNumQuads()
 		 */
-		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const;
+		virtual CM::UINT32 getNumQuads(CM::UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::fillBuffer()
 		 */
-		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
+		virtual void fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, 
+			CM::UINT32 maxNumQuads, CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal()
 		 */
 		virtual void updateRenderElementsInternal();
 
-		virtual UINT32 _getOptimalWidth() const;
-		virtual UINT32 _getOptimalHeight() const;
+		virtual CM::UINT32 _getOptimalWidth() const;
+		virtual CM::UINT32 _getOptimalHeight() const;
 
-		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const;
+		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 	private:
 		ImageSprite* mImageSprite;
 		TextSprite* mTextSprite;
-		UINT32 mNumImageRenderElements;
+		CM::UINT32 mNumImageRenderElements;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::String mText;

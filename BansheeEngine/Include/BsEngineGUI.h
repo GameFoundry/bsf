@@ -6,20 +6,19 @@
 
 namespace BansheeEngine
 {
+	// TODO - This class is very Editor related, so move it there?
 	class BS_EXPORT EngineGUI : public CamelotFramework::Module<EngineGUI>
 	{
 	public:
 		EngineGUI();
 
 		const GUISkin& getSkin() const { return mSkin; }
-		const SpriteTexturePtr& getWindowBgTex() const { return mWindowBgTex; }
 
 	private:
 		GUISkin mSkin;
-		SpriteTexturePtr mWindowBgTex;
 
 		static const CM::String DefaultFontPath;
-		static const UINT32 DefaultFontSize;
+		static const CM::UINT32 DefaultFontSize;
 
 		static const CM::String WindowBackgroundTexture;
 
@@ -33,6 +32,9 @@ namespace BansheeEngine
 
 		static const CM::String WindowMinButtonNormal;
 		static const CM::String WindowMinButtonHover;
+
+		static const CM::String TabbedBarBtnNormal;
+		static const CM::String TabbedBarBtnActive;
 
 		static const CM::String ButtonNormalTex;
 		static const CM::String ButtonHoverTex;

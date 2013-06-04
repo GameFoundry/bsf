@@ -14,15 +14,15 @@ namespace BansheeEngine
 		{ }
 
 		CM::Int2 offset;
-		UINT32 width;
-		UINT32 height;
+		CM::UINT32 width;
+		CM::UINT32 height;
 		CM::Rect clipRect;
 		SpriteAnchor anchor;
 		CM::Vector2 uvScale;
 		CM::Vector2 uvOffset;
 
 		SpriteTexturePtr texture;
-		UINT32 borderLeft, borderRight, borderTop, borderBottom;
+		CM::UINT32 borderLeft, borderRight, borderTop, borderBottom;
 	};
 
 	class BS_EXPORT ImageSprite : public Sprite

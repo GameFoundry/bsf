@@ -112,7 +112,7 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getGUISkin();
+			const GUISkin* skin = parent.getSkin();
 			style = skin->getStyle(getGUITypeName());
 		}
 
@@ -123,7 +123,7 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getGUISkin();
+			const GUISkin* skin = parent.getSkin();
 			style = skin->getStyle(getGUITypeName());
 		}
 

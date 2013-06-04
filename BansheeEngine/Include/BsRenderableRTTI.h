@@ -22,7 +22,7 @@ namespace BansheeEngine
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual CM::UINT32 getRTTIId()
 		{
 			return TID_Renderable;
 		}

@@ -20,13 +20,13 @@ namespace BansheeEngine
 		 * @param	ownerWindow   	Window that contains the widget. This will be the source of all input
 		 * 							for the widget. "target" and "ownerWindow" may be the same object.
 		 */
-		void initialize(CM::Viewport* target, const CM::RenderWindow* ownerWindow);
+		virtual void initialize(CM::Viewport* target, const CM::RenderWindow* ownerWindow);
 
 		void setSkin(const GUISkin* skin);
-		const GUISkin* getGUISkin() const;
+		const GUISkin* getSkin() const;
 
-		UINT8 getDepth() const { return mDepth; }
-		void setDepth(UINT8 depth) { mDepth = depth; }
+		CM::UINT8 getDepth() const { return mDepth; }
+		void setDepth(CM::UINT8 depth) { mDepth = depth; }
 
 		bool inBounds(const CM::Int2& position) const;
 
@@ -44,6 +44,12 @@ namespace BansheeEngine
 		const CM::vector<GUIElement*>::type& getElements() const { return mElements; }
 
 		void _updateLayout();
+
+		/**
+		 * @brief	Forwards the specified mouse event to the specified element. The element
+		 * 			must be a child of this widget.
+		 */
+		virtual bool _mouseEvent(GUIElement* element, const GUIMouseEvent& ev);
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;
@@ -67,7 +73,7 @@ namespace BansheeEngine
 		CM::Viewport* mTarget;
 		CM::vector<GUIElement*>::type mElements;
 		CM::vector<GUIArea*>::type mAreas;
-		UINT8 mDepth;
+		CM::UINT8 mDepth;
 
 		CM::Vector3 mLastFramePosition;
 		CM::Quaternion mLastFrameRotation;

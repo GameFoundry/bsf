@@ -28,6 +28,7 @@ IMMEDIATE:
   - Icon image
   - Support for text color in GUIStyles
  - I have disabled linear filtering because it doesn't look good on scale9grid textures. (Add another material so it works with stretched textures?)
+ - Enable alpha test so I don't render completely transparent pixels.
  - What happens when I don't set a texture for a state of a GUI element. Use a dummy white texture probably?
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
@@ -35,6 +36,29 @@ IMMEDIATE:
  - Add "Arial" size 10 font
   - Add support for bold (and maybe italic) fonts in Font importer
   - Add support to disable aliasing when importing font
+
+Window needed systems:
+EditorWindowContainer
+ - TabbedTitleBar widget 
+   - contains minimize/maximize/close buttons
+   - contains window toggle buttons, and in between them invisible buttons that serve as drag drop points and for moving the window
+     - dragging the in-between button will cause the window to move
+     - droping another window will cause the window to be docked at that location
+     - dragging the window toggle button will cause the window to undock. (or if the window is already undocked and is the only one in the titlebar, it will cause the window to move)
+    - contains title bar background
+ - Window frame
+   - contains tiled window background
+   - contains scale9grid frame
+   - frame allows for resize
+   - frame changes color when window is in focus
+ - Contents
+   - Actual Editor Window with custom contents
+
+
+GUIDragManager
+ - GUI system sends startdrag/enddrag/drag events to all elements
+ - startDrag(void* userPtr) changes cursor
+ - releasing the cursor sends enddrag event and then the control can retrieve the user ptr
 
 -----------
 
