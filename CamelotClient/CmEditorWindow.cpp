@@ -58,11 +58,11 @@ namespace BansheeEditor
 
 		//// DEBUG
 		
-		//GUIArea* backgroundArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 0);
-		//GUILayout& layout = backgroundArea->getLayout();
+		GUIArea* dbgArea = GUIArea::create(*mGUI, 0, 13, 0, 0, 1998);
+		GUILayout& layout = dbgArea->getLayout();
 		
 		mDbgLabel = GUILabel::create(*mGUI, "Testing test");
-		/*layout.addElement(mDbgLabel);*/
+		layout.addElement(mDbgLabel);
 
 		
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
@@ -75,11 +75,11 @@ namespace BansheeEditor
 		//otherLayout.addElement(GUIButton::create(*mGUI, "Test"));
 		//otherLayout.addElement(GUIWindowFrame::create(*mGUI));
 		
-		//GUIArea* backgroundArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 2000);
-		//backgroundArea->getLayout().addElement(GUITexture::create(*mGUI, GUILayoutOptions::expandableXY(), GUIImageScaleMode::RepeatToFit, mGUI->getSkin()->getStyle("WindowBackground")));
+		GUIArea* backgroundArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 2000);
+		backgroundArea->getLayout().addElement(GUITexture::create(*mGUI, GUILayoutOptions::expandableXY(), GUIImageScaleMode::RepeatToFit, mGUI->getSkin()->getStyle("WindowBackground")));
 
-		//GUIArea* windowFrameArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 1999);
-		//windowFrameArea->getLayout().addElement(GUIWindowFrame::create(*mGUI));
+		GUIArea* windowFrameArea = GUIArea::create(*mGUI, 0, 0, 0, 0, 1999);
+		windowFrameArea->getLayout().addElement(GUIWindowFrame::create(*mGUI));
 
 		//GUIArea* titleBarBackgroundArea = GUIArea::create(*mGUI, 0, 1, 0, 11, 1999);
 		//titleBarBackgroundArea->getLayout().addSpace(1);

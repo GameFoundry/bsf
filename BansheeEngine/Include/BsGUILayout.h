@@ -95,6 +95,7 @@ namespace BansheeEngine
 		void _markAsDirty() { mIsDirty = true; }
 		bool _isDirty();
 
+		virtual void _updateOptimalSizes() = 0;
 	protected:
 		CM::vector<GUILayoutEntry>::type mChildren;	
 		CM::vector<CM::Int2>::type mOptimalSizes;
@@ -103,7 +104,6 @@ namespace BansheeEngine
 
 		bool mIsDirty;
 
-		virtual void updateOptimalSizes() = 0;
 		virtual void updateInternal(CM::UINT32 x, CM::UINT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT8 widgetDepth, CM::UINT16 areaDepth) = 0;
 	};
 }

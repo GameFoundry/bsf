@@ -13,7 +13,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	TabbedTitleBar::TabbedTitleBar(const HSceneObject& parent)
-		:GUIWidget(parent), mLastDropElement(nullptr), mMinBtn(nullptr), mCloseBtn(nullptr), mMainArea(nullptr)
+		:GUIWidget(parent), mLastDropElement(nullptr), mMinBtn(nullptr), mCloseBtn(nullptr), mMainArea(nullptr), mMainLayout(nullptr)
 	{
 
 	}
@@ -30,7 +30,7 @@ namespace BansheeEditor
 
 	void TabbedTitleBar::insertTab(UINT32 idx, const CM::String& name)
 	{
-		GUIToggle* newTabToggle = GUIToggle::create(*this, GUILayoutOptions::expandableX(13, 100, 200), name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
+		GUIToggle* newTabToggle = GUIToggle::create(*this, name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
 		GUITexture* newDragDropElement = GUITexture::create(*this, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
 
 		idx = Math::Clamp(idx, 0U, (UINT32)mTabButtons.size());
@@ -38,8 +38,8 @@ namespace BansheeEditor
 		mTabButtons.insert(mTabButtons.begin() + idx, newTabToggle);
 		mDragDropElements.insert(mDragDropElements.begin() + idx, newDragDropElement);
 
-		mMainArea->getLayout().insertElement(idx * 2, newTabToggle);
-		mMainArea->getLayout().insertElement(idx * 2, newDragDropElement);
+		mMainLayout->insertElement(idx * 2, newTabToggle);
+		mMainLayout->insertElement(idx * 2, newDragDropElement);
 	}
 
 	void TabbedTitleBar::removeTab(UINT32 idx)
@@ -49,8 +49,8 @@ namespace BansheeEditor
 
 		idx = Math::Clamp(idx, 0U, (UINT32)mTabButtons.size() - 1);
 
-		mMainArea->getLayout().removeElement(mTabButtons[idx]);
-		mMainArea->getLayout().removeElement(mDragDropElements[idx]);
+		mMainLayout->removeElement(mTabButtons[idx]);
+		mMainLayout->removeElement(mDragDropElements[idx]);
 
 		mTabButtons.erase(mTabButtons.begin() + idx);
 		mDragDropElements.erase(mDragDropElements.begin() + idx);
@@ -60,11 +60,13 @@ namespace BansheeEditor
 	{
 		GUIWidget::initialize(target, ownerWindow);
 
-		GUIArea* backgroundArea = GUIArea::create(*this, 0, 0, 0, 0, 500);
+		GUIArea* backgroundArea = GUIArea::create(*this, 0, 1, 0, 13, 500);
 		GUITexture* titleBarBg = GUITexture::create(*this, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("TitleBarBackground"));
+		GUIFixedSpace& space1 = backgroundArea->getLayout().addSpace(1);
 		backgroundArea->getLayout().addElement(titleBarBg);
+		GUIFixedSpace& space2 = backgroundArea->getLayout().addSpace(1);
 
-		mMainArea = GUIArea::create(*this, 0, 0, 0, 0, 499);
+		mMainArea = GUIArea::create(*this, 0, 1, 0, 13, 499);
 
 		GUITexture* dragDropElement = GUITexture::create(*this, GUILayoutOptions::expandableX(13, 20), GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
 		mLastDropElement = dragDropElement;
@@ -72,9 +74,13 @@ namespace BansheeEditor
 		mMinBtn = GUIButton::create(*this, "", EngineGUI::instance().getSkin().getStyle("WinMinimizeBtn"));
 		mCloseBtn = GUIButton::create(*this, "", EngineGUI::instance().getSkin().getStyle("WinCloseBtn"));
 
-		mMainArea->getLayout().addElement(dragDropElement);
-		mMainArea->getLayout().addElement(mMinBtn);
-		mMainArea->getLayout().addElement(mCloseBtn);
+		GUIFixedSpace& space3 = mMainArea->getLayout().addSpace(1);
+		mMainLayout = &mMainArea->getLayout().addLayoutX();
+		mMainLayout->addElement(dragDropElement);
+		mMainLayout->addElement(mMinBtn);
+		GUIFixedSpace& space4 = mMainLayout->addSpace(3);
+		mMainLayout->addElement(mCloseBtn);
+		GUIFixedSpace& space5 = mMainArea->getLayout().addSpace(3);
 
 		addTab("TEST!");
 	}

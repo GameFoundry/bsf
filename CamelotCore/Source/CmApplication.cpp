@@ -54,6 +54,7 @@ namespace CamelotFramework
 		HighLevelGpuProgramManager::startUp(cm_new<HighLevelGpuProgramManager>());
 
 		RenderSystemManager::startUp(cm_new<RenderSystemManager>());
+
 		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
 
 		RendererManager::startUp(cm_new<RendererManager>());

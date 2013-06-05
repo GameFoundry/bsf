@@ -11,8 +11,8 @@ namespace BansheeEngine
 		GUILayoutX() {};
 		~GUILayoutX() {};
 
+		void _updateOptimalSizes();
 	protected:
-		void updateOptimalSizes();
 		void updateInternal(CM::UINT32 x, CM::UINT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 	};
 }

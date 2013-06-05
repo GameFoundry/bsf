@@ -51,13 +51,13 @@ namespace BansheeEngine
 
 	void GUIElement::_setWidgetDepth(UINT8 depth) 
 	{ 
-		mDepth |= 24 << depth; 
+		mDepth |= depth << 24; 
 		markAsDirty();
 	}
 
 	void GUIElement::_setAreaDepth(UINT16 depth) 
 	{ 
-		mDepth |= 8 << depth; 
+		mDepth |= depth << 8; 
 		markAsDirty();
 	}
 

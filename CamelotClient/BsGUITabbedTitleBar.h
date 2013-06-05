@@ -26,6 +26,7 @@ namespace BansheeEditor
 		CM::vector<BS::GUIToggle*>::type mTabButtons;
 
 		BS::GUIArea* mMainArea;
+		BS::GUILayout* mMainLayout;
 		BS::GUIButton* mMinBtn;
 		BS::GUIButton* mCloseBtn;
 		BS::GUITexture* mLastDropElement;

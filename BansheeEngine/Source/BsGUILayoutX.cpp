@@ -8,13 +8,13 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	void GUILayoutX::updateOptimalSizes()
+	void GUILayoutX::_updateOptimalSizes()
 	{
 		// Update all children first, otherwise we can't determine out own optimal size
 		for(auto& child : mChildren)
 		{
 			if(child.isLayout())
-				updateOptimalSizes();
+				child.layout->_updateOptimalSizes();
 		}
 
 		if(mChildren.size() != mOptimalSizes.size())
@@ -350,8 +350,8 @@ namespace BansheeEngine
 				child.element->_setWidgetDepth(widgetDepth);
 				child.element->_setAreaDepth(areaDepth);
 
-				UINT32 clippedWidth = (UINT32)std::min((INT32)child.element->_getWidth(), (INT32)width - offset.x);
-				UINT32 clippedHeight = (UINT32)std::min((INT32)child.element->_getHeight(), (INT32)height - offset.y);
+				UINT32 clippedWidth = (UINT32)std::min((INT32)child.element->_getWidth(), (INT32)width - (INT32)xOffset);
+				UINT32 clippedHeight = (UINT32)std::min((INT32)child.element->_getHeight(), (INT32)height - (INT32)yOffset);
 
 				child.element->_setClipRect(Rect(0, 0, clippedWidth, clippedHeight));
 			}

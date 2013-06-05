@@ -142,6 +142,8 @@ namespace BansheeEngine
 		tabbedBarButton.activeOn.texture = tabbedBarButton.hover.texture;
 		tabbedBarButton.fixedHeight = true;
 		tabbedBarButton.height = 13;
+		tabbedBarButton.minWidth = 10;
+		tabbedBarButton.maxWidth = 110;
 		tabbedBarButton.font = font;
 		tabbedBarButton.fontSize = DefaultFontSize;
 		tabbedBarButton.textHorzAlign = THA_Center;
@@ -154,7 +156,7 @@ namespace BansheeEngine
 		tabbedBarDropButton.fixedHeight = true;
 		tabbedBarDropButton.fixedWidth = true;
 		tabbedBarDropButton.height = 13;
-		tabbedBarDropButton.width = 15;
+		tabbedBarDropButton.width = 6;
 
 		mSkin.setStyle("TabbedBarDropArea", tabbedBarDropButton);
 

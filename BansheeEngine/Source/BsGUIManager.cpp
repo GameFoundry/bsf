@@ -439,7 +439,7 @@ namespace BansheeEngine
 
 			for(auto& widget : mWidgets)
 			{
-				if(widget->inBounds(screenPos))
+				if(widget->getOwnerWindow() == window && widget->inBounds(screenPos))
 				{
 					const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
 

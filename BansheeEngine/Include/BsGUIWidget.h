@@ -26,7 +26,7 @@ namespace BansheeEngine
 		const GUISkin* getSkin() const;
 
 		CM::UINT8 getDepth() const { return mDepth; }
-		void setDepth(CM::UINT8 depth) { mDepth = depth; }
+		void setDepth(CM::UINT8 depth) { mDepth = depth; mWidgetIsDirty = true; }
 
 		bool inBounds(const CM::Int2& position) const;
 
