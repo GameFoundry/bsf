@@ -47,7 +47,7 @@ namespace CamelotFramework
 
 	HResource FontImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
 	{
-		const FontImportOptions* gpuProgImportOptions = static_cast<const FontImportOptions*>(importOptions.get());
+		const FontImportOptions* fontImportOptions = static_cast<const FontImportOptions*>(importOptions.get());
 
 		FT_Library library;
 
@@ -67,9 +67,13 @@ namespace CamelotFramework
 			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath + ". Unknown error.");
 		}
 
-		vector<std::pair<UINT32, UINT32>>::type charIndexRanges = gpuProgImportOptions->getCharIndexRanges();
-		vector<UINT32>::type fontSizes = gpuProgImportOptions->getFontSizes();
-		UINT32 dpi = gpuProgImportOptions->getDPI();
+		vector<std::pair<UINT32, UINT32>>::type charIndexRanges = fontImportOptions->getCharIndexRanges();
+		vector<UINT32>::type fontSizes = fontImportOptions->getFontSizes();
+		UINT32 dpi = fontImportOptions->getDPI();
+
+		FT_Int32 loadFlags = FT_LOAD_RENDER;
+		if(!fontImportOptions->getAntialiasing())
+			loadFlags |= FT_LOAD_TARGET_MONO | FT_LOAD_NO_AUTOHINT;
 
 		vector<FontData>::type dataPerSize;
 		for(size_t i = 0; i < fontSizes.size(); i++)
@@ -87,7 +91,7 @@ namespace CamelotFramework
 			{
 				for(UINT32 charIdx = iter->first; charIdx <= iter->second; charIdx++)
 				{
-					error = FT_Load_Char(face, (FT_ULong)charIdx, FT_LOAD_RENDER);
+					error = FT_Load_Char(face, (FT_ULong)charIdx, loadFlags);
 
 					if(error)
 						CM_EXCEPT(InternalErrorException, "Failed to load a character");
@@ -105,7 +109,7 @@ namespace CamelotFramework
 
 			// Add missing glyph
 			{
-				error = FT_Load_Glyph(face, (FT_ULong)0, FT_LOAD_RENDER);
+				error = FT_Load_Glyph(face, (FT_ULong)0, loadFlags);
 
 				if(error)
 					CM_EXCEPT(InternalErrorException, "Failed to load a character");
@@ -132,6 +136,7 @@ namespace CamelotFramework
 			{
 				UINT32 bufferSize = pageIter->width * pageIter->height * 2;
 
+				// TODO - I don't actually need a 2 channel texture
 				PixelData pixelData(pageIter->width, pageIter->height, 1, PF_R8G8);
 
 				pixelData.allocateInternalBuffer();
@@ -152,11 +157,11 @@ namespace CamelotFramework
 					{
 						charIdx = seqIdxToCharIdx[(UINT32)elementIdx];
 
-						error = FT_Load_Char(face, charIdx, FT_LOAD_RENDER);
+						error = FT_Load_Char(face, charIdx, loadFlags);
 					}
 					else
 					{
-						error = FT_Load_Glyph(face, 0, FT_LOAD_RENDER);
+						error = FT_Load_Glyph(face, 0, loadFlags);
 					}
 
 					if(error)
@@ -169,17 +174,41 @@ namespace CamelotFramework
 
 					UINT8* sourceBuffer = slot->bitmap.buffer;
 					UINT8* dstBuffer = pixelBuffer + (curElement.output.y * pageIter->width * 2) + curElement.output.x * 2;
-					for(INT32 bitmapRow = 0; bitmapRow < slot->bitmap.rows; bitmapRow++)
-					{
-						for(INT32 bitmapColumn = 0; bitmapColumn < slot->bitmap.width; bitmapColumn++)
-						{
-							dstBuffer[bitmapColumn * 2 + 0] = sourceBuffer[bitmapColumn];
-							dstBuffer[bitmapColumn * 2 + 1] = sourceBuffer[bitmapColumn];
-						}
 
-						dstBuffer += pageIter->width * 2;
-						sourceBuffer += slot->bitmap.pitch;
+					if(slot->bitmap.pixel_mode == ft_pixel_mode_grays)
+					{
+						for(INT32 bitmapRow = 0; bitmapRow < slot->bitmap.rows; bitmapRow++)
+						{
+							for(INT32 bitmapColumn = 0; bitmapColumn < slot->bitmap.width; bitmapColumn++)
+							{
+								dstBuffer[bitmapColumn * 2 + 0] = sourceBuffer[bitmapColumn];
+								dstBuffer[bitmapColumn * 2 + 1] = sourceBuffer[bitmapColumn];
+							}
+
+							dstBuffer += pageIter->width * 2;
+							sourceBuffer += slot->bitmap.pitch;
+						}
 					}
+					else if(slot->bitmap.pixel_mode == ft_pixel_mode_mono)
+					{
+						// 8 pixels are packed into a byte, so do some unpacking
+						for(INT32 bitmapRow = 0; bitmapRow < slot->bitmap.rows; bitmapRow++)
+						{
+							for(INT32 bitmapColumn = 0; bitmapColumn < slot->bitmap.width; bitmapColumn++)
+							{
+								UINT8 srcValue = sourceBuffer[bitmapColumn >> 3];
+								UINT8 dstValue = (srcValue & (128 >> (bitmapColumn & 7))) != 0 ? 255 : 0;
+
+								dstBuffer[bitmapColumn * 2 + 0] = dstValue;
+								dstBuffer[bitmapColumn * 2 + 1] = dstValue;
+							}
+
+							dstBuffer += pageIter->width * 2;
+							sourceBuffer += slot->bitmap.pitch;
+						}
+					}
+					else
+						CM_EXCEPT(InternalErrorException, "Unsupported pixel mode for a FreeType bitmap.");
 
 					// Store character information
 					CHAR_DESC charDesc;
@@ -256,7 +285,7 @@ namespace CamelotFramework
 			fontData.fontDesc.lineHeight = lineHeight;
 
 			// Get space size
-			error = FT_Load_Char(face, 32, FT_LOAD_RENDER);
+			error = FT_Load_Char(face, 32, loadFlags);
 
 			if(error)
 				CM_EXCEPT(InternalErrorException, "Failed to load a character");

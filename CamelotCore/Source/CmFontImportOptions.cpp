@@ -4,7 +4,7 @@
 namespace CamelotFramework
 {
 	FontImportOptions::FontImportOptions()
-		:mDPI(96)
+		:mDPI(72), mAntialiasing(true)
 	{
 		mCharIndexRanges.push_back(std::make_pair(33, 166)); // Most used ASCII characters
 	}

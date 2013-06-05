@@ -15,10 +15,12 @@ namespace CamelotFramework
 		void addCharIndexRange(UINT32 from, UINT32 to);
 		void clearCharIndexRanges();
 		void setDPI(UINT32 dpi) { mDPI = dpi; }
+		void setAntialiasing(bool enabled) { mAntialiasing = enabled; }
 
 		vector<UINT32>::type getFontSizes() const { return mFontSizes; }
 		vector<std::pair<UINT32, UINT32>>::type getCharIndexRanges() const { return mCharIndexRanges; }
 		UINT32 getDPI() const { return mDPI; }
+		bool getAntialiasing() const { return mAntialiasing; }
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -32,5 +34,6 @@ namespace CamelotFramework
 		vector<UINT32>::type mFontSizes;
 		vector<std::pair<UINT32, UINT32>>::type mCharIndexRanges;
 		UINT32 mDPI;
+		bool mAntialiasing;
 	};
 }

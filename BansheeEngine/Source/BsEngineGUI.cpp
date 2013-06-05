@@ -55,6 +55,7 @@ namespace BansheeEngine
 				vector<CamelotFramework::UINT32>::type fontSizes;
 				fontSizes.push_back(DefaultFontSize);
 				importOptions->setFontSizes(fontSizes);
+				importOptions->setAntialiasing(false);
 			}
 
 			font = Importer::instance().import(DefaultFontPath, fontImportOptions);
