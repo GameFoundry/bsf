@@ -168,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BsGUITabbedTitleBar.h" />
+    <ClInclude Include="BsGUIWindowFrameWidget.h" />
     <ClInclude Include="CmDebugCamera.h" />
     <ClInclude Include="CmEditorWindow.h" />
     <ClInclude Include="CmTestTextSprite.h" />
@@ -176,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BsGUITabbedTitleBar.cpp" />
+    <ClCompile Include="BsGUIWindowFrameWidget.cpp" />
     <ClCompile Include="CamelotClient.cpp" />
     <ClCompile Include="CmDebugCamera.cpp" />
     <ClCompile Include="CmEditorWindow.cpp" />

@@ -24,6 +24,11 @@ namespace BansheeEngine
 		CM::UINT16 getDepth() const { return mDepth; }
 		void setDepth(CM::UINT16 depth) { mDepth = depth; }
 
+		CM::UINT32 x() const { return mX; }
+		CM::UINT32 y() const { return mY; }
+		CM::UINT32 width() const { return mWidth; }
+		CM::UINT32 height() const { return mHeight; }
+
 		void _update();
 	private:
 		friend class GUIWidget;

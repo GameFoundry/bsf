@@ -174,9 +174,6 @@ namespace CamelotFramework
 		 */
 		void setVSync(bool vsync)  { mVSync = vsync; }
 
-		void setHasFocus(bool focus) { mHasFocus = focus; }
-		bool hasFocus() const { return mHasFocus; }
-
     protected:
 		RenderTarget();
 
@@ -189,7 +186,6 @@ namespace CamelotFramework
         unsigned int mHeight;
         unsigned int mColorDepth;
 
-		bool mHasFocus;
         bool mActive;
 		// Hardware sRGB gamma conversion done on write?
 		bool mHwGamma;

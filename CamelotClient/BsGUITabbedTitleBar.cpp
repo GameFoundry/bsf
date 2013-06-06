@@ -61,18 +61,18 @@ namespace BansheeEditor
 		GUIWidget::initialize(target, ownerWindow);
 
 		GUIArea* backgroundArea = GUIArea::create(*this, 0, 1, 0, 13, 500);
-		GUITexture* titleBarBg = GUITexture::create(*this, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("TitleBarBackground"));
+		GUITexture* titleBarBg = GUITexture::create(*this, GUIImageScaleMode::StretchToFit, getSkin()->getStyle("TitleBarBackground"));
 		GUIFixedSpace& space1 = backgroundArea->getLayout().addSpace(1);
 		backgroundArea->getLayout().addElement(titleBarBg);
 		GUIFixedSpace& space2 = backgroundArea->getLayout().addSpace(1);
 
 		mMainArea = GUIArea::create(*this, 0, 1, 0, 13, 499);
 
-		GUITexture* dragDropElement = GUITexture::create(*this, GUILayoutOptions::expandableX(13, 20), GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
+		GUITexture* dragDropElement = GUITexture::create(*this, GUILayoutOptions::expandableX(13, 20), GUIImageScaleMode::StretchToFit, getSkin()->getStyle("TabbedBarDropArea"));
 		mLastDropElement = dragDropElement;
 
-		mMinBtn = GUIButton::create(*this, "", EngineGUI::instance().getSkin().getStyle("WinMinimizeBtn"));
-		mCloseBtn = GUIButton::create(*this, "", EngineGUI::instance().getSkin().getStyle("WinCloseBtn"));
+		mMinBtn = GUIButton::create(*this, "", getSkin()->getStyle("WinMinimizeBtn"));
+		mCloseBtn = GUIButton::create(*this, "", getSkin()->getStyle("WinCloseBtn"));
 
 		GUIFixedSpace& space3 = mMainArea->getLayout().addSpace(1);
 		mMainLayout = &mMainArea->getLayout().addLayoutX();

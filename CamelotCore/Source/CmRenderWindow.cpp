@@ -35,6 +35,7 @@ namespace CamelotFramework
         : RenderTarget()
 		, mIsFullScreen(false)
 		, mDesc(desc)
+		, mHasFocus(false)
     {
         mAutoDeactivatedOnFocusChange = false;
     }
@@ -74,6 +75,14 @@ namespace CamelotFramework
 	{
 		if(!onWindowMovedOrResized.empty())
 			onWindowMovedOrResized(this);
+	}
+
+	void RenderWindow::setHasFocus(bool focus)
+	{ 
+		mHasFocus = focus; 
+
+		if(!onWindowFocusChanged.empty())
+			onWindowFocusChanged(this);
 	}
 
 	void RenderWindow::destroy()

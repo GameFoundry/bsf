@@ -41,11 +41,16 @@ namespace BansheeEngine
 		GUIWidget* mMouseOverWidget;
 		GUIElement* mMouseOverElement;
 
+		GUIWidget* mDraggedWidget;
+		GUIElement* mDraggedElement;
+
 		bool mSeparateMeshesByWidget;
 		bool mLastFrameButtonState[CM::MB_Count];
-		CM::Int2 mLastCursorPos;
+		CM::Int2 mLastCursorLocalPos;
 
 		void updateMeshes();
 		void updateInput();
+
+		CM::Int2 getWidgetRelativeCursorPos(const GUIWidget& widget);
 	};
 }

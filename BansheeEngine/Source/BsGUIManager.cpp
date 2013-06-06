@@ -42,7 +42,7 @@ namespace BansheeEngine
 	};
 
 	GUIManager::GUIManager()
-		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true)
+		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mDraggedElement(nullptr), mDraggedWidget(nullptr)
 	{
 		for(int i = 0; i < MB_Count; i++)
 			mLastFrameButtonState[i] = false;
@@ -416,7 +416,8 @@ namespace BansheeEngine
 #endif
 		GUIWidget* widgetInFocus = nullptr;
 		GUIElement* topMostElement = nullptr;
-		UINT32 topMostDepth = std::numeric_limits<UINT32>::max();
+		Int2 screenPos;
+		Int2 localPos;
 
 		for(auto& widget : mWidgets)
 		{
@@ -429,7 +430,6 @@ namespace BansheeEngine
 			}
 		}
 
-		Int2 screenPos;
 		if(widgetInFocus != nullptr)
 		{
 			const RenderWindow* window = widgetInFocus->getOwnerWindow();
@@ -437,6 +437,7 @@ namespace BansheeEngine
 			screenPos = Cursor::getWindowPosition(*window);
 			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
 
+			UINT32 topMostDepth = std::numeric_limits<UINT32>::max();
 			for(auto& widget : mWidgets)
 			{
 				if(widget->getOwnerWindow() == window && widget->inBounds(screenPos))
@@ -444,7 +445,7 @@ namespace BansheeEngine
 					const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
 
 					Vector4 vecLocalPos = worldTfrm.inverse() * vecScreenPos;
-					Int2 localPos(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
+					localPos = Int2(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
 
 					vector<GUIElement*>::type sortedElements = widget->getElements();
 					std::sort(sortedElements.begin(), sortedElements.end(), 
@@ -476,31 +477,52 @@ namespace BansheeEngine
 			if(mMouseOverElement != nullptr)
 			{
 				// Send MouseOut event
-				const RenderWindow* window = mMouseOverWidget->getOwnerWindow();
-				Int2 oldScreenPos = Cursor::getWindowPosition(*window);
+				if(mDraggedElement == nullptr || mMouseOverElement == mDraggedElement)
+				{
+					Int2 curLocalPos = getWidgetRelativeCursorPos(*mMouseOverWidget);
 
-				GUIMouseEvent event(GUIMouseEventType::MouseOut, oldScreenPos); // TODO - This pos will be wrong as it might be related to completely other window
-				mMouseOverWidget->_mouseEvent(mMouseOverElement, event);
+					GUIMouseEvent event(GUIMouseEventType::MouseOut, curLocalPos);
+					mMouseOverWidget->_mouseEvent(mMouseOverElement, event);
+				}
 			}
 
 			if(topMostElement != nullptr)
 			{
 				// Send MouseOver event
-				GUIMouseEvent event(GUIMouseEventType::MouseOver, screenPos);
-				widgetInFocus->_mouseEvent(topMostElement, event);
+				if(mDraggedElement == nullptr || topMostElement == mDraggedElement)
+				{
+					GUIMouseEvent event(GUIMouseEventType::MouseOver, localPos);
+					widgetInFocus->_mouseEvent(topMostElement, event);
+				}
 			}
-
-			mMouseOverElement = topMostElement;
-			mMouseOverWidget = widgetInFocus;
 		}
 
-		if(mMouseOverElement != nullptr)
+		if(mDraggedElement != nullptr)
+		{
+			Int2 curLocalPos = getWidgetRelativeCursorPos(*mDraggedWidget);
+
+			if(mLastCursorLocalPos != curLocalPos)
+			{
+				GUIMouseEvent event(GUIMouseEventType::MouseDrag, curLocalPos);
+				event._setDragAmount(curLocalPos - mLastCursorLocalPos);
+				mDraggedWidget->_mouseEvent(mDraggedElement, event);
+
+				mLastCursorLocalPos = curLocalPos;
+			}
+		}
+
+		if(topMostElement != nullptr)
 		{
 			// Send MouseMove event
-			if(mLastCursorPos != screenPos)
+			if(mDraggedElement == nullptr)
 			{
-				GUIMouseEvent event(GUIMouseEventType::MouseMove, screenPos);
-				mMouseOverWidget->_mouseEvent(mMouseOverElement, event);
+				if(mLastCursorLocalPos != localPos)
+				{
+					GUIMouseEvent event(GUIMouseEventType::MouseMove, localPos);
+					widgetInFocus->_mouseEvent(topMostElement, event);
+
+					mLastCursorLocalPos = localPos;
+				}
 			}
 
 			// Send MouseDown and MouseUp events
@@ -511,18 +533,40 @@ namespace BansheeEngine
 				{
 					if(buttonDown)
 					{
-						GUIMouseEvent event(GUIMouseEventType::MouseDown, screenPos, (MouseButton)i);
-						mMouseOverWidget->_mouseEvent(mMouseOverElement, event);
+						GUIMouseEvent event(GUIMouseEventType::MouseDown, localPos, (MouseButton)i);
+						widgetInFocus->_mouseEvent(topMostElement, event);
+
+						mDraggedElement = topMostElement;
+						mDraggedWidget = widgetInFocus;
 					}
 					else
 					{
-						GUIMouseEvent event(GUIMouseEventType::MouseUp, screenPos, (MouseButton)i);
-						mMouseOverWidget->_mouseEvent(mMouseOverElement, event);
+						GUIMouseEvent event(GUIMouseEventType::MouseUp, localPos, (MouseButton)i);
+						widgetInFocus->_mouseEvent(topMostElement, event);
+
+						mDraggedElement = nullptr;
+						mDraggedWidget = nullptr;
 					}
 
 					mLastFrameButtonState[i] = buttonDown;
 				}
 			}
 		}
+
+		mMouseOverElement = topMostElement;
+		mMouseOverWidget = widgetInFocus;
+	}
+
+	Int2 GUIManager::getWidgetRelativeCursorPos(const GUIWidget& widget)
+	{
+		const RenderWindow* window = widget.getOwnerWindow();
+		Int2 screenPos = Cursor::getWindowPosition(*window);
+
+		const Matrix4& worldTfrm = widget.SO()->getWorldTfrm();
+
+		Vector4 vecLocalPos = worldTfrm.inverse() * Vector4((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
+		Int2 curLocalPos(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
+
+		return curLocalPos;
 	}
 }

@@ -158,6 +158,7 @@
     <ClInclude Include="Include\BsGUISpace.h" />
     <ClInclude Include="Include\BsGUITexture.h" />
     <ClInclude Include="Include\BsGUIToggle.h" />
+    <ClInclude Include="Include\BsGUIWindowFrame.h" />
     <ClInclude Include="Include\BsPrerequisites.h" />
     <ClInclude Include="Include\BsGUIElement.h" />
     <ClInclude Include="Include\BsGUIElementStyle.h" />
@@ -167,7 +168,6 @@
     <ClInclude Include="Include\BsGUIMouseEvent.h" />
     <ClInclude Include="Include\BsGUISkin.h" />
     <ClInclude Include="Include\BsGUIWidget.h" />
-    <ClInclude Include="Include\BsGUIWindowFrame.h" />
     <ClInclude Include="Include\BsImageSprite.h" />
     <ClInclude Include="Include\BsSceneManager.h" />
     <ClInclude Include="Include\BsSprite.h" />

@@ -7,7 +7,6 @@
 #include "CmFont.h"
 #include "CmMaterial.h"
 #include "BsGUILabel.h"
-#include "BsGUIWindowFrame.h"
 #include "BsGUISkin.h"
 #include "BsOverlayManager.h"
 #include "BsSpriteTexture.h"
@@ -31,7 +30,6 @@ namespace CamelotFramework
 		setSkin(&EngineGUI::instance().getSkin());
 
 		GUILabel::create(*this, text);
-		GUIWindowFrame::create(*this);
 	}
 
 	void TestTextSprite::update()

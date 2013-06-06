@@ -47,7 +47,10 @@ namespace BansheeEngine
 	private:
 		ImageSprite* mImageSprite;
 		IMAGE_SPRITE_DESC mDesc;
+		bool mResizeCursorSet;
 
 		GUIWindowFrame(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
 	};
 }

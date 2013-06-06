@@ -93,6 +93,7 @@ namespace BansheeEngine
 
 		CM::UINT32 _getWidth() const { return mWidth; }
 		CM::UINT32 _getHeight() const { return mHeight; }
+		CM::Int2 _getOffset() const { return mOffset; }
 		virtual CM::UINT32 _getOptimalWidth() const = 0;
 		virtual CM::UINT32 _getOptimalHeight() const = 0;
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const { return _getDepth(); }
@@ -107,11 +108,6 @@ namespace BansheeEngine
 
 		static void _destroyInternal(GUIElement* element);
 
-		//  onMouseMove
-		//	onMousePress
-		//	onMouseReleased
-		//	onKeyPressed
-		//	onKeyReleased
 	protected:
 		virtual void updateRenderElementsInternal() = 0;
 

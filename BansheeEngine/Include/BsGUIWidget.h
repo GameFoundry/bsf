@@ -6,6 +6,8 @@
 #include "CmVector3.h"
 #include "CmQuaternion.h"
 
+#include <boost/signals/connection.hpp>
+
 namespace BansheeEngine
 {
 	class BS_EXPORT GUIWidget : public CM::Component
@@ -65,7 +67,8 @@ namespace BansheeEngine
 	private:
 		void updateBounds() const;
 
-		void ownerWindowResized(CM::RenderWindow* window);
+		virtual void ownerWindowResized(CM::RenderWindow* window);
+		virtual void ownerWindowFocusChanged(CM::RenderWindow* window);
 
 		virtual void update();
 
@@ -78,6 +81,9 @@ namespace BansheeEngine
 		CM::Vector3 mLastFramePosition;
 		CM::Quaternion mLastFrameRotation;
 		CM::Vector3 mLastFrameScale;
+
+		boost::signals::connection mWinResizeConn;
+		boost::signals::connection mWinFocusConn;
 
 		mutable bool mWidgetIsDirty;
 		mutable CM::Rect mBounds;

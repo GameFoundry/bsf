@@ -2,7 +2,6 @@
 #include "BsGUIElementStyle.h"
 
 #include "BsGUILabel.h"
-#include "BsGUIWindowFrame.h"
 #include "BsGUIButton.h"
 #include "BsTextSprite.h"
 #include "BsSpriteTexture.h"
@@ -83,7 +82,7 @@ namespace BansheeEngine
 		windowFrameStyle.border.top = 1;
 		windowFrameStyle.border.bottom = 1;
 
-		mSkin.setStyle(GUIWindowFrame::getGUITypeName(), windowFrameStyle);
+		mSkin.setStyle("WindowFrame", windowFrameStyle);
 
 		// Button
 		HTexture buttonNormalTex = static_resource_cast<Texture>(Importer::instance().import(ButtonNormalTex));

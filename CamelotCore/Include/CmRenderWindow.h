@@ -176,8 +176,12 @@ namespace CamelotFramework
           */
         void setDeactivateOnFocusChange(bool deactivate);
 
+		void setHasFocus(bool focus);
+		bool hasFocus() const { return mHasFocus; }
+
 		mutable boost::signal<void(RenderWindow*)> onWindowMovedOrResized;
-		
+		mutable boost::signal<void(RenderWindow*)> onWindowFocusChanged;
+
 		virtual void destroy();
 
 		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);
@@ -192,6 +196,7 @@ namespace CamelotFramework
 		bool mAutoDeactivatedOnFocusChange;
 		int mLeft;
 		int mTop;
+		bool mHasFocus;
 
 		RENDER_WINDOW_DESC mDesc;
     };

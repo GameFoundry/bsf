@@ -63,9 +63,6 @@
     <ClInclude Include="Include\BsGUISkin.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIWindowFrame.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsImageSprite.h">
       <Filter>Header Files\2D</Filter>
     </ClInclude>
@@ -150,6 +147,9 @@
     <ClInclude Include="Include\BsGUIToggle.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUIWindowFrame.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -212,9 +212,6 @@
     <ClCompile Include="Source\BsGLBuiltinMaterialFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUIWindowFrame.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsEngineGUI.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
@@ -243,6 +240,9 @@
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIToggle.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIWindowFrame.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>

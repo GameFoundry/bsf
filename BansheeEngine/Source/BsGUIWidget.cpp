@@ -46,6 +46,9 @@ namespace BansheeEngine
 		}
 
 		mElements.clear();
+
+		mWinResizeConn.disconnect();
+		mWinFocusConn.disconnect();
 	}
 
 	void GUIWidget::initialize(Viewport* target, const RenderWindow* ownerWindow)
@@ -61,7 +64,8 @@ namespace BansheeEngine
 
 		GUIManager::instance().registerWidget(this);
 
-		mOwnerWindow->onWindowMovedOrResized.connect(boost::bind(&GUIWidget::ownerWindowResized, this, _1));
+		mWinResizeConn = mOwnerWindow->onWindowMovedOrResized.connect(boost::bind(&GUIWidget::ownerWindowResized, this, _1));
+		mWinFocusConn = mOwnerWindow->onWindowFocusChanged.connect(boost::bind(&GUIWidget::ownerWindowFocusChanged, this, _1));
 	}
 
 	void GUIWidget::update()
@@ -243,5 +247,10 @@ namespace BansheeEngine
 		{
 			area->notifyWindowResized(window->getWidth(), window->getHeight());
 		}
+	}
+
+	void GUIWidget::ownerWindowFocusChanged(RenderWindow* window)
+	{
+
 	}
 }

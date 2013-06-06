@@ -12,7 +12,8 @@ namespace BansheeEngine
 		MouseOut,
 		MouseDown,
 		MouseUp,
-		MouseMove
+		MouseMove,
+		MouseDrag
 	};
 
 	class BS_EXPORT GUIMouseEvent
@@ -25,8 +26,12 @@ namespace BansheeEngine
 		const CM::Int2& getPosition() const { return mPosition; }
 		GUIMouseEventType getType() const { return mType; }
 		CM::MouseButton getButton() const { return mButton; }
+		CM::Int2 getDragAmount() const { return mDragAmount; }
+
+		void _setDragAmount(CM::Int2 dragAmount) { mDragAmount = dragAmount; }
 	private:
 		CM::Int2 mPosition;
+		CM::Int2 mDragAmount;
 		GUIMouseEventType mType;
 		CM::MouseButton mButton;
 	};
