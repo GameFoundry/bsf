@@ -8,7 +8,8 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIArea::GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth)
-		:mWidget(widget), mX(x), mY(y), mWidth(width), mHeight(height), mDepth(depth), mIsDirty(true)
+		:mWidget(widget), mX(x), mY(y), mWidth(width), mHeight(height), mDepth(depth), mIsDirty(true), 
+		mResizeHeightWithWindow(false), mResizeWidthWithWindow(false)
 	{
 		mLayout = cm_new<GUILayoutX, PoolAlloc>();
 

@@ -268,7 +268,7 @@ namespace BansheeEngine
 			}
 		}
 
-		if(ev.getType() == GUIMouseEventType::MouseOut)
+		if(ev.getType() == GUIMouseEventType::MouseOut || ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
 			if(mResizeCursorSet)
 			{

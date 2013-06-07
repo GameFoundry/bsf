@@ -38,11 +38,14 @@ namespace BansheeEngine
 		CM::vector<GUIWidget*>::type mWidgets;
 		CM::unordered_map<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
 
+		// Element and widget mouse is currently over
 		GUIWidget* mMouseOverWidget;
 		GUIElement* mMouseOverElement;
 
-		GUIWidget* mDraggedWidget;
-		GUIElement* mDraggedElement;
+		// Element and widget that's being clicked on
+		GUIWidget* mActiveWidget;
+		GUIElement* mActiveElement;
+		CM::UINT32 mActiveMouseButton;
 
 		bool mSeparateMeshesByWidget;
 		bool mLastFrameButtonState[CM::MB_Count];

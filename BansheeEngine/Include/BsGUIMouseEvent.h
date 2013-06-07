@@ -13,7 +13,8 @@ namespace BansheeEngine
 		MouseDown,
 		MouseUp,
 		MouseMove,
-		MouseDrag
+		MouseDrag,
+		MouseDragEnd
 	};
 
 	class BS_EXPORT GUIMouseEvent

@@ -42,7 +42,8 @@ namespace BansheeEngine
 	};
 
 	GUIManager::GUIManager()
-		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mDraggedElement(nullptr), mDraggedWidget(nullptr)
+		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
+		mActiveWidget(nullptr), mActiveMouseButton(0)
 	{
 		for(int i = 0; i < MB_Count; i++)
 			mLastFrameButtonState[i] = false;
@@ -471,12 +472,14 @@ namespace BansheeEngine
 			}
 		}
 
+		// Send MouseOver/MouseOut events to any elements the mouse passes over, except when
+		// mouse is being held down, in which we only send them to the active element
 		if(topMostElement != mMouseOverElement)
 		{
 			if(mMouseOverElement != nullptr)
 			{
 				// Send MouseOut event
-				if(mDraggedElement == nullptr || mMouseOverElement == mDraggedElement)
+				if(mActiveElement == nullptr || mMouseOverElement == mActiveElement)
 				{
 					Int2 curLocalPos = getWidgetRelativeCursorPos(*mMouseOverWidget);
 
@@ -488,7 +491,7 @@ namespace BansheeEngine
 			if(topMostElement != nullptr)
 			{
 				// Send MouseOver event
-				if(mDraggedElement == nullptr || topMostElement == mDraggedElement)
+				if(mActiveElement == nullptr || topMostElement == mActiveElement)
 				{
 					GUIMouseEvent event(GUIMouseEventType::MouseOver, localPos);
 					widgetInFocus->_mouseEvent(topMostElement, event);
@@ -496,25 +499,25 @@ namespace BansheeEngine
 			}
 		}
 
-		if(mDraggedElement != nullptr)
+		// If mouse is being held down send MouseDrag events
+		if(mActiveElement != nullptr)
 		{
-			Int2 curLocalPos = getWidgetRelativeCursorPos(*mDraggedWidget);
+			Int2 curLocalPos = getWidgetRelativeCursorPos(*mActiveWidget);
 
 			if(mLastCursorLocalPos != curLocalPos)
 			{
 				GUIMouseEvent event(GUIMouseEventType::MouseDrag, curLocalPos);
 				event._setDragAmount(curLocalPos - mLastCursorLocalPos);
-				mDraggedWidget->_mouseEvent(mDraggedElement, event);
+				mActiveWidget->_mouseEvent(mActiveElement, event);
 
 				mLastCursorLocalPos = curLocalPos;
 			}
 		}
-
-		if(topMostElement != nullptr)
+		else // Otherwise, send MouseMove events if we are hovering over any element
 		{
-			// Send MouseMove event
-			if(mDraggedElement == nullptr)
+			if(topMostElement != nullptr)
 			{
+				// Send MouseMove event
 				if(mLastCursorLocalPos != localPos)
 				{
 					GUIMouseEvent event(GUIMouseEventType::MouseMove, localPos);
@@ -523,32 +526,56 @@ namespace BansheeEngine
 					mLastCursorLocalPos = localPos;
 				}
 			}
+		}
 
-			// Send MouseDown and MouseUp events
-			for(int i = 0; i < MB_Count; i++)
+		// Check for MouseDown and MouseUp events.
+		for(int i = 0; i < MB_Count; i++)
+		{
+			bool buttonDown = gInput().isButtonDown((MouseButton)i);
+			if(mLastFrameButtonState[i] != buttonDown)
 			{
-				bool buttonDown = gInput().isButtonDown((MouseButton)i);
-				if(mLastFrameButtonState[i] != buttonDown)
+				// Mouse button is being pressed
+				if(buttonDown)
 				{
-					if(buttonDown)
+					// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
+					bool acceptMouseDown = mActiveElement == nullptr && topMostElement != nullptr;
+					if(acceptMouseDown)
 					{
 						GUIMouseEvent event(GUIMouseEventType::MouseDown, localPos, (MouseButton)i);
 						widgetInFocus->_mouseEvent(topMostElement, event);
 
-						mDraggedElement = topMostElement;
-						mDraggedWidget = widgetInFocus;
+						mActiveElement = topMostElement;
+						mActiveWidget = widgetInFocus;
+						mActiveMouseButton = i;
+
+						mLastFrameButtonState[i] = buttonDown;
 					}
-					else
+				}
+				else
+				{
+					// Send MouseUp event only if we are over the active element (we don't want to accidentally trigger other elements).
+					// And only activate when a button that originally caused the active state is released, otherwise ignore it.
+					bool acceptMouseUp = mActiveMouseButton == i && (topMostElement != nullptr && mActiveElement == topMostElement);
+					if(acceptMouseUp)
 					{
 						GUIMouseEvent event(GUIMouseEventType::MouseUp, localPos, (MouseButton)i);
 						widgetInFocus->_mouseEvent(topMostElement, event);
-
-						mDraggedElement = nullptr;
-						mDraggedWidget = nullptr;
 					}
 
-					mLastFrameButtonState[i] = buttonDown;
+					// Send DragEnd event to whichever element is active
+					bool acceptEndDrag = mActiveMouseButton == i && mActiveElement != nullptr;
+					if(acceptEndDrag)
+					{
+						GUIMouseEvent event(GUIMouseEventType::MouseDragEnd, localPos, (MouseButton)i);
+						mActiveWidget->_mouseEvent(mActiveElement, event);
+
+						mActiveElement = nullptr;
+						mActiveWidget = nullptr;
+						mActiveMouseButton = 0;
+					}	
 				}
+
+				mLastFrameButtonState[i] = buttonDown;
 			}
 		}
 
