@@ -102,9 +102,6 @@ namespace BansheeEngine
 	{
 		mDesc.text = text;
 
-		mTextSprite->update(mDesc);
-		mBounds = mTextSprite->getBounds();
-
 		markAsDirty();
 	}
 

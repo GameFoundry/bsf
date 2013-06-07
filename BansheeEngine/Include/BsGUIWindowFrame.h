@@ -13,6 +13,8 @@ namespace BansheeEngine
 
 		static GUIWindowFrame* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
 		static GUIWindowFrame* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+
+		void setFocused(bool focused);
 	protected:
 		~GUIWindowFrame();
 

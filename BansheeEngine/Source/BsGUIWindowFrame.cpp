@@ -116,6 +116,16 @@ namespace BansheeEngine
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
 	}
 
+	void GUIWindowFrame::setFocused(bool focused)
+	{
+		if(focused)
+			mDesc.texture = mStyle->focused.texture;
+		else
+			mDesc.texture = mStyle->normal.texture;
+
+		markAsDirty();
+	}
+
 	bool GUIWindowFrame::mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseMove || ev.getType() == GUIMouseEventType::MouseDrag)

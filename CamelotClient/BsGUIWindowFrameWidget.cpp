@@ -5,6 +5,7 @@
 #include "BsGUIWindowFrame.h"
 #include "BsEngineGUI.h"
 #include "BsGUIMouseEvent.h"
+#include "CmRenderWindow.h"
 #include "CmMath.h"
 
 using namespace CamelotFramework;
@@ -31,7 +32,9 @@ namespace BansheeEditor
 		backgroundArea->getLayout().addElement(GUITexture::create(*this, GUILayoutOptions::expandableXY(), GUIImageScaleMode::RepeatToFit, getSkin()->getStyle("WindowBackground")));
 
 		mWindowFrameArea = GUIArea::create(*this, 0, 0, 0, 0, 499);
-		mWindowFrameArea->getLayout().addElement(GUIWindowFrame::create(*this, getSkin()->getStyle("WindowFrame")));
+
+		mWindowFrame = GUIWindowFrame::create(*this, getSkin()->getStyle("WindowFrame"));
+		mWindowFrameArea->getLayout().addElement(mWindowFrame);
 	}
 
 	void WindowFrameWidget::update()
@@ -42,5 +45,10 @@ namespace BansheeEditor
 	bool WindowFrameWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
 	{
 		return GUIWidget::_mouseEvent(element, ev);
+	}
+
+	void WindowFrameWidget::ownerWindowFocusChanged(CM::RenderWindow* window)
+	{
+		mWindowFrame->setFocused(window->hasFocus());
 	}
 }

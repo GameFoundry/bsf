@@ -16,9 +16,11 @@ namespace BansheeEditor
 
 	protected:
 		BS::GUIArea* mWindowFrameArea;
+		BS::GUIWindowFrame* mWindowFrame;
 
 		virtual void update();
 
 		virtual bool _mouseEvent(BS::GUIElement* element, const BS::GUIMouseEvent& ev);
+		virtual void ownerWindowFocusChanged(CM::RenderWindow* window);
 	};
 }
