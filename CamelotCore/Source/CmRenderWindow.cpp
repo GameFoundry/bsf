@@ -73,16 +73,16 @@ namespace CamelotFramework
 
 	void RenderWindow::windowMovedOrResized()
 	{
-		if(!onWindowMovedOrResized.empty())
-			onWindowMovedOrResized(this);
+		if(!onMovedOrResized.empty())
+			onMovedOrResized(this);
 	}
 
 	void RenderWindow::setHasFocus(bool focus)
 	{ 
 		mHasFocus = focus; 
 
-		if(!onWindowFocusChanged.empty())
-			onWindowFocusChanged(this);
+		if(!onFocusChanged.empty())
+			onFocusChanged(this);
 	}
 
 	void RenderWindow::destroy()

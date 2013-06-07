@@ -22,7 +22,7 @@ namespace BansheeEngine
 		 * @param	ownerWindow   	Window that contains the widget. This will be the source of all input
 		 * 							for the widget. "target" and "ownerWindow" may be the same object.
 		 */
-		virtual void initialize(CM::Viewport* target, const CM::RenderWindow* ownerWindow);
+		virtual void initialize(CM::Viewport* target, CM::RenderWindow* ownerWindow);
 
 		void setSkin(const GUISkin* skin);
 		const GUISkin* getSkin() const;
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		 */
 		bool isDirty(bool cleanIfDirty);
 
-		const CM::RenderWindow* getOwnerWindow() const { return mOwnerWindow; }
+		CM::RenderWindow* getOwnerWindow() const { return mOwnerWindow; }
 		CM::Viewport* getTarget() const { return mTarget; }
 		const CM::vector<GUIElement*>::type& getElements() const { return mElements; }
 
@@ -67,12 +67,12 @@ namespace BansheeEngine
 	private:
 		void updateBounds() const;
 
-		virtual void ownerWindowResized(CM::RenderWindow* window);
+		virtual void ownerWindowResized(CM::RenderTarget* window);
 		virtual void ownerWindowFocusChanged(CM::RenderWindow* window);
 
 		virtual void update();
 
-		const CM::RenderWindow* mOwnerWindow;
+		CM::RenderWindow* mOwnerWindow;
 		CM::Viewport* mTarget;
 		CM::vector<GUIElement*>::type mElements;
 		CM::vector<GUIArea*>::type mAreas;

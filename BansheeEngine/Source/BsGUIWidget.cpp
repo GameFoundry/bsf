@@ -51,7 +51,7 @@ namespace BansheeEngine
 		mWinFocusConn.disconnect();
 	}
 
-	void GUIWidget::initialize(Viewport* target, const RenderWindow* ownerWindow)
+	void GUIWidget::initialize(Viewport* target, RenderWindow* ownerWindow)
 	{
 		assert(target != nullptr);
 		assert(ownerWindow != nullptr);
@@ -64,8 +64,8 @@ namespace BansheeEngine
 
 		GUIManager::instance().registerWidget(this);
 
-		mWinResizeConn = mOwnerWindow->onWindowMovedOrResized.connect(boost::bind(&GUIWidget::ownerWindowResized, this, _1));
-		mWinFocusConn = mOwnerWindow->onWindowFocusChanged.connect(boost::bind(&GUIWidget::ownerWindowFocusChanged, this, _1));
+		mWinResizeConn = mOwnerWindow->onMovedOrResized.connect(boost::bind(&GUIWidget::ownerWindowResized, this, _1));
+		mWinFocusConn = mOwnerWindow->onFocusChanged.connect(boost::bind(&GUIWidget::ownerWindowFocusChanged, this, _1));
 	}
 
 	void GUIWidget::update()
@@ -241,7 +241,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIWidget::ownerWindowResized(RenderWindow* window)
+	void GUIWidget::ownerWindowResized(RenderTarget* window)
 	{
 		for(auto& area : mAreas)
 		{

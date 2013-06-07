@@ -56,14 +56,24 @@ namespace CamelotFramework
         // Actual dimensions will update later
         , mZOrder(ZOrder)
     {
+		if(target != nullptr)
+		{
+			mTargetConn = target->onMovedOrResized.connect(boost::bind(&Viewport::targetResized, this, _1));
+		}
+
         // Calculate actual dimensions
         updateDimensions();
     }
 
     Viewport::~Viewport()
     {
-
+		mTargetConn.disconnect();
     }
+
+	void Viewport::targetResized(RenderTarget* target)
+	{
+		updateDimensions();
+	}
 
     void Viewport::updateDimensions(void)
     {

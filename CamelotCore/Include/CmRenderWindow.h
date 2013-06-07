@@ -29,7 +29,6 @@ THE SOFTWARE
 #include "CmPrerequisites.h"
 
 #include "CmRenderTarget.h"
-#include "boost/signal.hpp"
 
 namespace CamelotFramework
 {
@@ -179,8 +178,7 @@ namespace CamelotFramework
 		void setHasFocus(bool focus);
 		bool hasFocus() const { return mHasFocus; }
 
-		mutable boost::signal<void(RenderWindow*)> onWindowMovedOrResized;
-		mutable boost::signal<void(RenderWindow*)> onWindowFocusChanged;
+		mutable boost::signal<void(RenderWindow*)> onFocusChanged;
 
 		virtual void destroy();
 

@@ -56,7 +56,7 @@ namespace BansheeEditor
 		mDragDropElements.erase(mDragDropElements.begin() + idx);
 	}
 
-	void TabbedTitleBar::initialize(CM::Viewport* target, const CM::RenderWindow* ownerWindow)
+	void TabbedTitleBar::initialize(CM::Viewport* target, CM::RenderWindow* ownerWindow)
 	{
 		GUIWidget::initialize(target, ownerWindow);
 

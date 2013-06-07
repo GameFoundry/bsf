@@ -12,7 +12,7 @@ namespace BansheeEditor
 		TabbedTitleBar(const CM::HSceneObject& parent);
 		virtual ~TabbedTitleBar();
 
-		virtual void initialize(CM::Viewport* target, const CM::RenderWindow* ownerWindow);
+		virtual void initialize(CM::Viewport* target, CM::RenderWindow* ownerWindow);
 
 		void addTab(const CM::String& name);
 		void insertTab(CM::UINT32 idx, const CM::String& name);

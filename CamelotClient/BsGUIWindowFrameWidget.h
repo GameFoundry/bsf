@@ -12,7 +12,7 @@ namespace BansheeEditor
 		WindowFrameWidget(const CM::HSceneObject& parent);
 		virtual ~WindowFrameWidget();
 
-		virtual void initialize(CM::Viewport* target, const CM::RenderWindow* ownerWindow);
+		virtual void initialize(CM::Viewport* target, CM::RenderWindow* ownerWindow);
 
 	protected:
 		BS::GUIArea* mWindowFrameArea;

@@ -7,6 +7,7 @@
 #include "BsGUIMouseEvent.h"
 #include "CmCursor.h"
 #include "CmTexture.h"
+#include "CmRenderWindow.h"
 
 using namespace CamelotFramework;
 
@@ -257,6 +258,13 @@ namespace BansheeEngine
 				mResizeCursorSet = true;
 
 				return true;
+			}
+
+			Int2 dragAmount = ev.getDragAmount();
+			if(dragAmount.x != 0 || dragAmount.y != 0)
+			{
+				RenderWindow* window = _getParentWidget().getOwnerWindow();
+				window->resize(window->getWidth() + dragAmount.x, window->getHeight() + dragAmount.y);
 			}
 		}
 

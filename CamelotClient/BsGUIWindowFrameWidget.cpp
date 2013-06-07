@@ -24,7 +24,7 @@ namespace BansheeEditor
 
 	}
 
-	void WindowFrameWidget::initialize(CM::Viewport* target, const CM::RenderWindow* ownerWindow)
+	void WindowFrameWidget::initialize(CM::Viewport* target, CM::RenderWindow* ownerWindow)
 	{
 		GUIWidget::initialize(target, ownerWindow);
 

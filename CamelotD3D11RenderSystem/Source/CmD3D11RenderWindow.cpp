@@ -301,7 +301,7 @@ namespace CamelotFramework
 		if (mHWnd && !mIsFullScreen)
 		{
 			SetWindowPos(mHWnd, 0, top, left, 0, 0,
-				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
 		}
 	}
 
@@ -314,7 +314,7 @@ namespace CamelotFramework
 			width = rc.right - rc.left;
 			height = rc.bottom - rc.top;
 			SetWindowPos(mHWnd, 0, 0, 0, width, height,
-				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
 		}
 	}
 

@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "CmPixelUtil.h"
 #include "CmViewport.h"
 #include "CmCoreObject.h"
+#include "boost/signal.hpp"
 
 /* Define the number of priority groups for the render system's render targets. */
 #ifndef CM_NUM_RENDERTARGET_GROUPS
@@ -174,6 +175,7 @@ namespace CamelotFramework
 		 */
 		void setVSync(bool vsync)  { mVSync = vsync; }
 
+		mutable boost::signal<void(RenderTarget*)> onMovedOrResized;
     protected:
 		RenderTarget();
 

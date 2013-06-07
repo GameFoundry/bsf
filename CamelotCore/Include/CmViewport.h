@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "CmCommonEnums.h"
 #include "CmColor.h"
 #include "CmRect.h"
+#include <boost/signals/connection.hpp>
 
 namespace CamelotFramework {
 	/** \addtogroup Core
@@ -160,6 +161,8 @@ namespace CamelotFramework {
         // Actual dimensions, based on target dimensions
 		Rect mDimensions;
 
+		boost::signals::connection mTargetConn;
+
         /// ZOrder
         int mZOrder;
 
@@ -171,6 +174,8 @@ namespace CamelotFramework {
                 Internal use by engine only.
         */
         void updateDimensions(void);
+
+		void targetResized(RenderTarget* target);
     };
 	/** @} */
 	/** @} */
