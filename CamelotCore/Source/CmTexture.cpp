@@ -195,11 +195,15 @@ namespace CamelotFramework {
 	//-----------------------------------------------------------------------------
 	void Texture::unlock()
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		unlockImpl();
 	}
 	//-----------------------------------------------------------------------------
 	void Texture::copy(TexturePtr& target)
 	{
+		THROW_IF_NOT_RENDER_THREAD;
+
 		if (target->getUsage() != this->getUsage() ||
 			target->getTextureType() != this->getTextureType())
 		{

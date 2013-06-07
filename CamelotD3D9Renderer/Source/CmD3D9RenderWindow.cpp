@@ -742,11 +742,8 @@ namespace CamelotFramework
 		if (width != mWidth || height != mHeight)
 		{
 			mWidth  = rc.right - rc.left;
-			mHeight = rc.bottom - rc.top;
-
-			// TODO - Notify viewports of resize		
+			mHeight = rc.bottom - rc.top;	
 		}	
-
 	}
 
 	//-----------------------------------------------------------------------------

@@ -22,20 +22,15 @@ I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
 IMMEDIATE:
- - Test GUILayoutY and nested layouts
- - GUIButton needs:
-  - Padding
-  - Icon image
-  - Support for text color in GUIStyles
+ - Add window-management command to DeferredRenderContext - I already have resource management commands
+   there, few window related ones won't hurt. I can always split the class if needed.
+     - Possibly add guards to render target classes so they aren't accidentaly accessed from the render thread (similar to how Texture is handled)
+
  - I have disabled linear filtering because it doesn't look good on scale9grid textures. (Add another material so it works with stretched textures?)
  - Enable alpha test so I don't render completely transparent pixels.
  - What happens when I don't set a texture for a state of a GUI element. Use a dummy white texture probably?
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
- - GUITexture gui element, with support for tileable textures I can use window background!
- - Add "Arial" size 10 font
-  - Add support for bold (and maybe italic) fonts in Font importer
-  - Add support to disable aliasing when importing font
 
 Window needed systems:
 EditorWindowContainer
