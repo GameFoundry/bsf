@@ -99,10 +99,10 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const { return _getDepth(); }
 
 		const CM::Rect& _getBounds() const { return mBounds; }
-		CM::Rect _getContentBounds() const;
 		CM::UINT32 _getDepth() const { return mDepth; }
 		GUIWidget& _getParentWidget() const { return mParent; }
 		bool _isDirty() const { return mIsDirty; }
+		virtual bool _isInBounds(const CM::Int2 position) const;
 
 		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
 
@@ -115,6 +115,8 @@ namespace BansheeEngine
 		
 		void markAsClean() { mIsDirty = false; }
 		void markAsDirty();
+
+		CM::Rect getContentBounds() const;
 
 		static GUILayoutOptions getDefaultLayoutOptions(const GUIElementStyle* style);
 

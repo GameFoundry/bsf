@@ -12,6 +12,83 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	enum class FrameSubArea
+	{
+		TopLeft, TopCenter, TopRight,
+		MiddleLeft, Middle, MiddleRight,
+		BottomLeft, BottomCenter, BottomRight,
+		None
+	};
+
+	FrameSubArea getFrameSubArea(const Int2& position, const Rect& bounds)
+	{
+		INT32 x0 = bounds.x;
+		INT32 x1 = bounds.x + 3;
+		INT32 x2 = bounds.x + bounds.width - 3;
+		INT32 x3 = bounds.x + bounds.width;
+
+		INT32 y0 = bounds.y;
+		INT32 y1 = bounds.y + 3;
+		INT32 y2 = bounds.y + bounds.height - 3;
+		INT32 y3 = bounds.y + bounds.height;
+
+		if(position.x >= x0 && position.x < x1 &&
+			position.y >= y0 && position.y < y1)
+		{
+			return FrameSubArea::TopLeft;
+		}
+
+		if(position.x >= x1 && position.x < x2 &&
+			position.y >= y0 && position.y < y1)
+		{
+			return FrameSubArea::TopCenter;
+		}
+
+		if(position.x >= x2 && position.x < x3 &&
+			position.y >= y0 && position.y < y1)
+		{
+			return FrameSubArea::TopRight;
+		}
+
+		if(position.x >= x0 && position.x < x1 &&
+			position.y >= y1 && position.y < y2)
+		{
+			return FrameSubArea::MiddleLeft;
+		}
+
+		if(position.x >= x1 && position.x < x2 &&
+			position.y >= y1 && position.y < y2)
+		{
+			return FrameSubArea::Middle;
+		}
+
+		if(position.x >= x2 && position.x < x3 &&
+			position.y >= y1 && position.y < y2)
+		{
+			return FrameSubArea::MiddleRight;
+		}
+
+		if(position.x >= x0 && position.x < x1 &&
+			position.y >= y2 && position.y < y3)
+		{
+			return FrameSubArea::BottomLeft;
+		}
+
+		if(position.x >= x1 && position.x < x2 &&
+			position.y >= y2 && position.y < y3)
+		{
+			return FrameSubArea::BottomCenter;
+		}
+
+		if(position.x >= x2 && position.x < x3 &&
+			position.y >= y2 && position.y < y3)
+		{
+			return FrameSubArea::BottomRight;
+		}
+
+		return FrameSubArea::None;
+	}
+
 	const String& GUIWindowFrame::getGUITypeName()
 	{
 		static String name = "WindowFrame";
@@ -110,6 +187,20 @@ namespace BansheeEngine
 		return 0;
 	}
 
+	bool GUIWindowFrame::_isInBounds(const CM::Int2 position) const
+	{
+		Rect contentBounds = getContentBounds();
+
+		if(!contentBounds.contains(position))
+			return false;
+
+		FrameSubArea subArea = getFrameSubArea(position, contentBounds);
+		if(subArea != FrameSubArea::None && subArea != FrameSubArea::Middle)
+			return true;
+
+		return false;
+	}
+
 	void GUIWindowFrame::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
@@ -130,94 +221,39 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIMouseEventType::MouseMove || ev.getType() == GUIMouseEventType::MouseDrag)
 		{
-			Int2 offset = _getOffset();
-			Int2 cursorPos = ev.getPosition();
+			Rect contentBounds = getContentBounds();
 
-			INT32 x0 = offset.x;
-			INT32 x1 = offset.x + 3;
-			INT32 x2 = offset.x + _getWidth() - 3;
-			INT32 x3 = offset.x + _getWidth();
-
-			INT32 y0 = offset.y;
-			INT32 y1 = offset.y + 3;
-			INT32 y2 = offset.y + _getHeight() - 3;
-			INT32 y3 = offset.y + _getHeight();
-
-			bool overResizeArea = false;
-			// Top left
-			if(cursorPos.x >= x0 && cursorPos.x < x1 &&
-				cursorPos.y >= y0 && cursorPos.y < y1)
+			FrameSubArea subArea = getFrameSubArea(ev.getPosition(), contentBounds);
+			if(subArea != FrameSubArea::None && subArea != FrameSubArea::Middle)
 			{
-				Cursor::setCursor(CursorType::SizeNWSE);
-				overResizeArea = true;
-			}
+				switch (subArea)
+				{
+				case BansheeEngine::FrameSubArea::TopLeft:
+					Cursor::setCursor(CursorType::SizeNWSE);
+					break;
+				case BansheeEngine::FrameSubArea::TopCenter:
+					Cursor::setCursor(CursorType::SizeNS);
+					break;
+				case BansheeEngine::FrameSubArea::TopRight:
+					Cursor::setCursor(CursorType::SizeNESW);
+					break;
+				case BansheeEngine::FrameSubArea::MiddleLeft:
+					Cursor::setCursor(CursorType::SizeWE);
+					break;
+				case BansheeEngine::FrameSubArea::MiddleRight:
+					Cursor::setCursor(CursorType::SizeWE);
+					break;
+				case BansheeEngine::FrameSubArea::BottomLeft:
+					Cursor::setCursor(CursorType::SizeNESW);
+					break;
+				case BansheeEngine::FrameSubArea::BottomCenter:
+					Cursor::setCursor(CursorType::SizeNS);
+					break;
+				case BansheeEngine::FrameSubArea::BottomRight:
+					Cursor::setCursor(CursorType::SizeNWSE);
+					break;
+				}
 
-			// Top center
-			if(cursorPos.x >= x1 && cursorPos.x < x2 &&
-				cursorPos.y >= y0 && cursorPos.y < y1)
-			{
-				Cursor::setCursor(CursorType::SizeNS);
-				overResizeArea = true;
-			}
-
-			// Top right
-			if(cursorPos.x >= x2 && cursorPos.x < x3 &&
-				cursorPos.y >= y0 && cursorPos.y < y1)
-			{
-				Cursor::setCursor(CursorType::SizeNESW);
-				overResizeArea = true;
-			}
-
-			// Middle left
-			if(cursorPos.x >= x0 && cursorPos.x < x1 &&
-				cursorPos.y >= y1 && cursorPos.y < y2)
-			{
-				Cursor::setCursor(CursorType::SizeWE);
-				overResizeArea = true;
-			}
-
-			// Middle center
-			if(cursorPos.x >= x1 && cursorPos.x < x2 &&
-				cursorPos.y >= y1 && cursorPos.y < y2)
-			{
-				Cursor::setCursor(CursorType::Arrow);
-				overResizeArea = false;
-			}
-
-			// Middle right
-			if(cursorPos.x >= x2 && cursorPos.x < x3 &&
-				cursorPos.y >= y1 && cursorPos.y < y2)
-			{
-				Cursor::setCursor(CursorType::SizeWE);
-				overResizeArea = true;
-			}
-
-			// Bottom left
-			if(cursorPos.x >= x0 && cursorPos.x < x1 &&
-				cursorPos.y >= y2 && cursorPos.y < y3)
-			{
-				Cursor::setCursor(CursorType::SizeNESW);
-				overResizeArea = true;
-			}
-
-			// Bottom center
-			if(cursorPos.x >= x1 && cursorPos.x < x2 &&
-				cursorPos.y >= y2 && cursorPos.y < y3)
-			{
-				Cursor::setCursor(CursorType::SizeNS);
-				overResizeArea = true;
-			}
-
-			// Bottom right
-			if(cursorPos.x >= x2 && cursorPos.x < x3 &&
-				cursorPos.y >= y2 && cursorPos.y < y3)
-			{
-				Cursor::setCursor(CursorType::SizeNWSE);
-				overResizeArea = true;
-			}
-
-			if(overResizeArea)
-			{
 				mResizeCursorSet = true;
 
 				return true;

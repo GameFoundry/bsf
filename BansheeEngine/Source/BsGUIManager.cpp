@@ -458,9 +458,8 @@ namespace BansheeEngine
 					for(auto iter = sortedElements.begin(); iter != sortedElements.end(); ++iter)
 					{
 						GUIElement* element = *iter;
-						const Rect& bounds = element->_getContentBounds();
 
-						if(bounds.contains(localPos) && element->_getDepth() < topMostDepth)
+						if(element->_isInBounds(localPos) && element->_getDepth() < topMostDepth)
 						{
 							topMostElement = element;
 							topMostDepth = element->_getDepth();

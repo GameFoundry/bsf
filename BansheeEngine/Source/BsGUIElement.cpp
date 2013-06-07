@@ -85,7 +85,7 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
-	Rect GUIElement::_getContentBounds() const
+	Rect GUIElement::getContentBounds() const
 	{
 		Rect bounds = _getBounds();
 		
@@ -95,6 +95,13 @@ namespace BansheeEngine
 		bounds.height = (UINT32)std::max(0, (INT32)bounds.height - (INT32)(mStyle->margins.top + mStyle->margins.bottom));
 
 		return bounds;
+	}
+
+	bool GUIElement::_isInBounds(const CM::Int2 position) const
+	{
+		Rect contentBounds = getContentBounds();
+
+		return contentBounds.contains(position);
 	}
 
 	void GUIElement::markAsDirty() 

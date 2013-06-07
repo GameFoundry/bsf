@@ -46,6 +46,8 @@ namespace BansheeEngine
 
 		virtual CM::UINT32 _getOptimalWidth() const;
 		virtual CM::UINT32 _getOptimalHeight() const;
+
+		virtual bool _isInBounds(const CM::Int2 position) const;
 	private:
 		ImageSprite* mImageSprite;
 		IMAGE_SPRITE_DESC mDesc;
