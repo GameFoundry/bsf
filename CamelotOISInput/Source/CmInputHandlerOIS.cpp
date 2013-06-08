@@ -58,10 +58,13 @@ namespace CamelotFramework
 	{
 		mMouse->capture();
 		mKeyboard->capture();
+
+		mInputString = "";
 	}
 
 	bool InputHandlerOIS::keyPressed(const OIS::KeyEvent &arg)
 	{
+		mInputString += arg.text;
 		onKeyDown((KeyCode)(int)arg.key);
 
 		return true;
@@ -70,7 +73,6 @@ namespace CamelotFramework
 	bool InputHandlerOIS::keyReleased(const OIS::KeyEvent& arg)
 	{
 		onKeyUp((KeyCode)(int)arg.key);
-
 		return true;
 	}
 

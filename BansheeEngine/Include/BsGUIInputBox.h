@@ -46,6 +46,7 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getOptimalHeight() const;
 
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
+		virtual void _setFocus(bool focus);
 	private:
 		ImageSprite* mImageSprite;
 		TextSprite* mTextSprite;
@@ -54,10 +55,11 @@ namespace BansheeEngine
 		bool mDragInProgress;
 
 		IMAGE_SPRITE_DESC mImageDesc;
-		CM::String mText;
+		CM::WString mText;
 
 		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool keyEvent(const GUIKeyEvent& ev);
 	};
 }

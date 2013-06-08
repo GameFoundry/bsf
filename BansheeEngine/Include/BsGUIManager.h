@@ -2,6 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIMouseEvent.h"
+#include "BsGUIKeyEvent.h"
 #include "CmModule.h"
 #include "CmInputHandler.h"
 #include "CmDeferredRenderContextFwd.h"
@@ -48,11 +49,16 @@ namespace BansheeEngine
 		GUIElement* mActiveElement;
 		CM::UINT32 mActiveMouseButton;
 
+		// Element and widget that currently have the keyboard focus
+		GUIWidget* mKeyboardFocusWidget;
+		GUIElement* mKeyboardFocusElement;
+
 		bool mSeparateMeshesByWidget;
 		bool mLastFrameButtonState[CM::MB_Count];
 		CM::Int2 mLastCursorLocalPos;
 
 		GUIMouseEvent mMouseEvent;
+		GUIKeyEvent mKeyEvent;
 
 		void updateMeshes();
 		void updateInput();

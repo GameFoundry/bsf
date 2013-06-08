@@ -10,7 +10,7 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUILabel::GUILabel(GUIWidget& parent, const GUIElementStyle* style, const String& text, const GUILayoutOptions& layoutOptions)
+	GUILabel::GUILabel(GUIWidget& parent, const GUIElementStyle* style, const WString& text, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mText(text)
 	{
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -98,14 +98,14 @@ namespace BansheeEngine
 		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
 	}
 
-	void GUILabel::setText(const CM::String& text)
+	void GUILabel::setText(const CM::WString& text)
 	{
 		mDesc.text = text;
 
 		markAsDirty();
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(GUIWidget& parent, const WString& text, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -116,7 +116,7 @@ namespace BansheeEngine
 		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(parent, style, text, getDefaultLayoutOptions(style));
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(GUIWidget& parent, const WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{

@@ -16,7 +16,7 @@ namespace BansheeEngine
 		memcpy(mButtonStates, buttonStates, sizeof(mButtonStates));
 	}
 
-	void GUIMouseEvent::_setMouseOverData(GUIElement* mouseOverElement, const Int2& position)
+	void GUIMouseEvent::setMouseOverData(GUIElement* mouseOverElement, const Int2& position)
 	{
 		mType = GUIMouseEventType::MouseOver;
 		mPosition = position;
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		mDragAmount = Int2();
 	}
 
-	void GUIMouseEvent::_setMouseOutData(GUIElement* mouseOverElement, const Int2& position)
+	void GUIMouseEvent::setMouseOutData(GUIElement* mouseOverElement, const Int2& position)
 	{
 		mType = GUIMouseEventType::MouseOut;
 		mPosition = position;
@@ -34,7 +34,7 @@ namespace BansheeEngine
 		mDragAmount = Int2();
 	}
 
-	void GUIMouseEvent::_setMouseMoveData(GUIElement* mouseOverElement, const Int2& position)
+	void GUIMouseEvent::setMouseMoveData(GUIElement* mouseOverElement, const Int2& position)
 	{
 		mType = GUIMouseEventType::MouseMove;
 		mPosition = position;
@@ -43,7 +43,7 @@ namespace BansheeEngine
 		mDragAmount = Int2();
 	}
 
-	void GUIMouseEvent::_setMouseUpData(GUIElement* mouseOverElement, const Int2& position, MouseButton button)
+	void GUIMouseEvent::setMouseUpData(GUIElement* mouseOverElement, const Int2& position, MouseButton button)
 	{
 		mType = GUIMouseEventType::MouseUp;
 		mPosition = position;
@@ -52,7 +52,7 @@ namespace BansheeEngine
 		mDragAmount = Int2();
 	}
 
-	void GUIMouseEvent::_setMouseDownData(GUIElement* mouseOverElement, const Int2& position, MouseButton button)
+	void GUIMouseEvent::setMouseDownData(GUIElement* mouseOverElement, const Int2& position, MouseButton button)
 	{
 		mType = GUIMouseEventType::MouseDown;
 		mPosition = position;
@@ -61,7 +61,7 @@ namespace BansheeEngine
 		mDragAmount = Int2();
 	}
 
-	void GUIMouseEvent::_setMouseDragData(GUIElement* mouseOverElement, const Int2& position, const Int2& dragAmount)
+	void GUIMouseEvent::setMouseDragData(GUIElement* mouseOverElement, const Int2& position, const Int2& dragAmount)
 	{
 		mType = GUIMouseEventType::MouseDrag;
 		mPosition = position;
@@ -70,7 +70,7 @@ namespace BansheeEngine
 		mDragAmount = dragAmount;
 	}
 
-	void GUIMouseEvent::_setMouseDragStartData(GUIElement* mouseOverElement, const Int2& position)
+	void GUIMouseEvent::setMouseDragStartData(GUIElement* mouseOverElement, const Int2& position)
 	{
 		mType = GUIMouseEventType::MouseDragStart;
 		mPosition = position;
@@ -79,7 +79,7 @@ namespace BansheeEngine
 		mDragAmount = Int2();
 	}
 
-	void GUIMouseEvent::_setMouseDragEndData(GUIElement* mouseOverElement, const Int2& position)
+	void GUIMouseEvent::setMouseDragEndData(GUIElement* mouseOverElement, const Int2& position)
 	{
 		mType = GUIMouseEventType::MouseDragEnd;
 		mPosition = position;

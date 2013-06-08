@@ -30,22 +30,24 @@ namespace BansheeEngine
 		CM::Int2 getDragAmount() const { return mDragAmount; }
 		bool isButtonDown(CM::MouseButton button) const { return mButtonStates[(int)button]; }
 		GUIElement* getMouseOverElement() const { return mMouseOverElement; }
-
-		void _setMouseOverData(GUIElement* mouseOverElement, const CM::Int2& position);
-		void _setMouseOutData(GUIElement* mouseOverElement, const CM::Int2& position);
-		void _setMouseMoveData(GUIElement* mouseOverElement, const CM::Int2& position);
-		void _setMouseUpData(GUIElement* mouseOverElement, const CM::Int2& position, CM::MouseButton button);
-		void _setMouseDownData(GUIElement* mouseOverElement, const CM::Int2& position, CM::MouseButton button);
-
-		void _setMouseDragData(GUIElement* mouseOverElement, const CM::Int2& position, const CM::Int2& dragAmount);
-		void _setMouseDragStartData(GUIElement* mouseOverElement, const CM::Int2& position);
-		void _setMouseDragEndData(GUIElement* mouseOverElement, const CM::Int2& position);
 	private:
+		friend class GUIManager;
+
 		CM::Int2 mPosition;
 		CM::Int2 mDragAmount;
 		GUIMouseEventType mType;
 		CM::MouseButton mButton;
 		bool mButtonStates[CM::MB_Count];
 		GUIElement* mMouseOverElement;
+
+		void setMouseOverData(GUIElement* mouseOverElement, const CM::Int2& position);
+		void setMouseOutData(GUIElement* mouseOverElement, const CM::Int2& position);
+		void setMouseMoveData(GUIElement* mouseOverElement, const CM::Int2& position);
+		void setMouseUpData(GUIElement* mouseOverElement, const CM::Int2& position, CM::MouseButton button);
+		void setMouseDownData(GUIElement* mouseOverElement, const CM::Int2& position, CM::MouseButton button);
+
+		void setMouseDragData(GUIElement* mouseOverElement, const CM::Int2& position, const CM::Int2& dragAmount);
+		void setMouseDragStartData(GUIElement* mouseOverElement, const CM::Int2& position);
+		void setMouseDragEndData(GUIElement* mouseOverElement, const CM::Int2& position);
 	};
 }

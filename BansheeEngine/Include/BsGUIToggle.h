@@ -11,8 +11,8 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIToggle* create(GUIWidget& parent, const CM::String& text, const GUIElementStyle* style = nullptr);
-		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const CM::String& text, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const CM::WString& text, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const CM::WString& text, const GUIElementStyle* style = nullptr);
 	protected:
 		~GUIToggle();
 
@@ -53,9 +53,9 @@ namespace BansheeEngine
 		bool mIsToggled;
 
 		IMAGE_SPRITE_DESC mImageDesc;
-		CM::String mText;
+		CM::WString mText;
 
-		GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const CM::String& text, const GUILayoutOptions& layoutOptions);
+		GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const CM::WString& text, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 	};

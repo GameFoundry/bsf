@@ -11,8 +11,8 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUILabel* create(GUIWidget& parent, const CM::String& text, const GUIElementStyle* style = nullptr);
-		static GUILabel* create(GUIWidget& parent, const CM::String& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(GUIWidget& parent, const CM::WString& text, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(GUIWidget& parent, const CM::WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		void setText(const CM::String& text);
 
@@ -49,10 +49,10 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getOptimalHeight() const;
 	private:
 		TextSprite* mTextSprite;
-		CM::String mText;
+		CM::WString mText;
 
 		TEXT_SPRITE_DESC mDesc;
 		
-		GUILabel(GUIWidget& parent, const GUIElementStyle* style, const CM::String& text, const GUILayoutOptions& layoutOptions);
+		GUILabel(GUIWidget& parent, const GUIElementStyle* style, const CM::WString& text, const GUILayoutOptions& layoutOptions);
 	};
 }

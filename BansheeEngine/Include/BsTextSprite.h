@@ -28,7 +28,7 @@ namespace BansheeEngine
 		CM::Rect clipRect;
 		SpriteAnchor anchor;
 
-		CM::String text;
+		CM::WString text;
 		CM::HFont font;
 		CM::UINT32 fontSize;
 		TextHorzAlign horzAlign;

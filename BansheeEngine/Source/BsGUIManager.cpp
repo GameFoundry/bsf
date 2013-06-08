@@ -42,7 +42,7 @@ namespace BansheeEngine
 
 	GUIManager::GUIManager()
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
-		mActiveWidget(nullptr), mActiveMouseButton(0)
+		mActiveWidget(nullptr), mActiveMouseButton(0), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr)
 	{
 		for(int i = 0; i < MB_Count; i++)
 			mLastFrameButtonState[i] = false;
@@ -492,7 +492,7 @@ namespace BansheeEngine
 				{
 					Int2 curLocalPos = getWidgetRelativeCursorPos(*mMouseOverWidget);
 
-					mMouseEvent._setMouseOutData(topMostElement, curLocalPos);
+					mMouseEvent.setMouseOutData(topMostElement, curLocalPos);
 					mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
 				}
 			}
@@ -502,7 +502,7 @@ namespace BansheeEngine
 				// Send MouseOver event
 				if(mActiveElement == nullptr || topMostElement == mActiveElement)
 				{
-					mMouseEvent._setMouseOverData(topMostElement, localPos);
+					mMouseEvent.setMouseOverData(topMostElement, localPos);
 					widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
 				}
 			}
@@ -515,7 +515,7 @@ namespace BansheeEngine
 
 			if(mLastCursorLocalPos != curLocalPos)
 			{
-				mMouseEvent._setMouseDragData(topMostElement, curLocalPos, curLocalPos - mLastCursorLocalPos);
+				mMouseEvent.setMouseDragData(topMostElement, curLocalPos, curLocalPos - mLastCursorLocalPos);
 				mActiveWidget->_mouseEvent(mActiveElement, mMouseEvent);
 
 				mLastCursorLocalPos = curLocalPos;
@@ -528,7 +528,7 @@ namespace BansheeEngine
 				// Send MouseMove event
 				if(mLastCursorLocalPos != localPos)
 				{
-					mMouseEvent._setMouseMoveData(topMostElement, localPos);
+					mMouseEvent.setMouseMoveData(topMostElement, localPos);
 					widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
 
 					mLastCursorLocalPos = localPos;
@@ -537,6 +537,7 @@ namespace BansheeEngine
 		}
 
 		// Check for MouseDown and MouseUp events.
+		bool isAnyMouseButtonDown = false;
 		for(int i = 0; i < MB_Count; i++)
 		{
 			bool buttonDown = buttonStates[i];
@@ -545,16 +546,18 @@ namespace BansheeEngine
 				// Mouse button is being pressed
 				if(buttonDown)
 				{
+					isAnyMouseButtonDown = true;
+
 					// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
 					bool acceptMouseDown = mActiveElement == nullptr && topMostElement != nullptr;
 					if(acceptMouseDown)
 					{
-						mMouseEvent._setMouseDownData(topMostElement, localPos, (MouseButton)i);
+						mMouseEvent.setMouseDownData(topMostElement, localPos, (MouseButton)i);
 						widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
 
 						// DragStart is for all intents and purposes same as mouse down but since I need a DragEnd event, I feel a separate DragStart
 						// event was also needed to make things clearer.
-						mMouseEvent._setMouseDragStartData(topMostElement, localPos);
+						mMouseEvent.setMouseDragStartData(topMostElement, localPos);
 						widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
 
 						mActiveElement = topMostElement;
@@ -571,7 +574,7 @@ namespace BansheeEngine
 					bool acceptMouseUp = mActiveMouseButton == i && (topMostElement != nullptr && mActiveElement == topMostElement);
 					if(acceptMouseUp)
 					{
-						mMouseEvent._setMouseUpData(topMostElement, localPos, (MouseButton)i);
+						mMouseEvent.setMouseUpData(topMostElement, localPos, (MouseButton)i);
 						widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
 					}
 
@@ -579,7 +582,7 @@ namespace BansheeEngine
 					bool acceptEndDrag = mActiveMouseButton == i && mActiveElement != nullptr;
 					if(acceptEndDrag)
 					{
-						mMouseEvent._setMouseDragEndData(topMostElement, localPos);
+						mMouseEvent.setMouseDragEndData(topMostElement, localPos);
 						mActiveWidget->_mouseEvent(mActiveElement, mMouseEvent);
 
 						mActiveElement = nullptr;
@@ -594,6 +597,32 @@ namespace BansheeEngine
 
 		mMouseOverElement = topMostElement;
 		mMouseOverWidget = widgetInFocus;
+
+		// Update keyboard focus if user has pressed any mouse button
+		if(isAnyMouseButtonDown)
+		{
+			if(mKeyboardFocusElement != nullptr && mMouseOverElement != mKeyboardFocusElement)
+				mKeyboardFocusElement->_setFocus(false);
+
+			if(mMouseOverElement != nullptr)
+				mMouseOverElement->_setFocus(true);
+
+			mKeyboardFocusElement = mMouseOverElement;
+			mKeyboardFocusWidget = mMouseOverWidget;
+		}
+
+		/************************************************************************/
+		/* 								KEYBOARD EVENTS                    		*/
+		/************************************************************************/
+		if(mKeyboardFocusElement != nullptr)
+		{
+			mKeyEvent = GUIKeyEvent();
+
+			// TODO - Handle KeyUp/KeyDown states
+			
+			mKeyEvent.setTextInputData(gInput().getInputString());
+			mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
+		}
 	}
 
 	Int2 GUIManager::getWidgetRelativeCursorPos(const GUIWidget& widget)

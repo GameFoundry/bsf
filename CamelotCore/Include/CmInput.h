@@ -38,6 +38,11 @@ namespace CamelotFramework
 		bool isButtonDown(MouseButton button) const;
 		bool isKeyDown(KeyCode keyCode) const;
 
+		/**
+		 * @brief	Gets all the characters inputted since the last frame.
+		 */
+		WString getInputString() const { return mInputHandler->getInputString(); }
+
 	private:
 		InputHandlerPtr mInputHandler;
 

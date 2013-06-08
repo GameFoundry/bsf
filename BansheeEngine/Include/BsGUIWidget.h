@@ -52,6 +52,12 @@ namespace BansheeEngine
 		 * 			must be a child of this widget.
 		 */
 		virtual bool _mouseEvent(GUIElement* element, const GUIMouseEvent& ev);
+				
+		/**
+		 * @brief	Forwards the specified key event to the specified element. The element
+		 * 			must be a child of this widget.
+		 */
+		virtual bool _keyEvent(GUIElement* element, const GUIKeyEvent& ev);
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;

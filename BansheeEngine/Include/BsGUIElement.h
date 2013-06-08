@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIElement
 	{
 	public:
-		GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool acceptsKeyboardFocus = false);
 		virtual ~GUIElement();
 
 		/**
@@ -74,6 +74,7 @@ namespace BansheeEngine
 		void updateRenderElements();
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool keyEvent(const GUIKeyEvent& ev);
 
 		static void destroy(GUIElement* element);
 
@@ -90,6 +91,7 @@ namespace BansheeEngine
 		void _setWidth(CM::UINT32 width);
 		void _setHeight(CM::UINT32 height);
 		void _setClipRect(const CM::Rect& clipRect);
+		virtual void _setFocus(bool focus) {}
 
 		CM::UINT32 _getWidth() const { return mWidth; }
 		CM::UINT32 _getHeight() const { return mHeight; }
@@ -103,6 +105,7 @@ namespace BansheeEngine
 		GUIWidget& _getParentWidget() const { return mParent; }
 		bool _isDirty() const { return mIsDirty; }
 		virtual bool _isInBounds(const CM::Int2 position) const;
+		bool _acceptsKeyboardFocus() const { return mAcceptsKeyboardFocus; }
 
 		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
 
@@ -126,6 +129,7 @@ namespace BansheeEngine
 		CM::Rect mBounds;
 
 		bool mIsDirty;
+		bool mAcceptsKeyboardFocus;
 		CM::UINT32 mDepth;
 		CM::Int2 mOffset;
 		CM::UINT32 mWidth, mHeight;

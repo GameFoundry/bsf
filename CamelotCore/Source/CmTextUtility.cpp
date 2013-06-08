@@ -258,7 +258,7 @@ namespace CamelotFramework
 	{
 	}
 
-	std::shared_ptr<TextUtility::TextData> TextUtility::getTextData(const String& text, const HFont& font, UINT32 fontSize, UINT32 width, UINT32 height, bool wordWrap)
+	std::shared_ptr<TextUtility::TextData> TextUtility::getTextData(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width, UINT32 height, bool wordWrap)
 	{
 		const FontData* fontData = nullptr;
 		if(font != nullptr)

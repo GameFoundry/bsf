@@ -122,6 +122,11 @@ namespace BansheeEngine
 		return element->mouseEvent(ev);
 	}
 
+	bool GUIWidget::_keyEvent(GUIElement* element, const GUIKeyEvent& ev)
+	{
+		return element->keyEvent(ev);
+	}
+
 	void GUIWidget::registerElement(GUIElement* elem)
 	{
 		assert(elem != nullptr);

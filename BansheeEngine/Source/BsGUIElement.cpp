@@ -8,8 +8,9 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIElement::GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:mParent(parent), mIsDirty(true), mParentLayout(nullptr), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style)
+	GUIElement::GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool acceptsKeyboardFocus)
+		:mParent(parent), mIsDirty(true), mParentLayout(nullptr), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
+		mAcceptsKeyboardFocus(acceptsKeyboardFocus)
 	{
 		mParent.registerElement(this);
 	}
@@ -45,6 +46,11 @@ namespace BansheeEngine
 
 
 	bool GUIElement::mouseEvent(const GUIMouseEvent& ev)
+	{
+		return false;
+	}
+
+	bool GUIElement::keyEvent(const GUIKeyEvent& ev)
 	{
 		return false;
 	}

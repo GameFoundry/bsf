@@ -79,6 +79,7 @@ namespace CamelotFramework {
 		typedef _StringBase String;
 		typedef _StringStreamBase StringStream;
 		typedef StringStream stringstream;
+		typedef String WString; // TODO - A temporary value I'll use for things that will need Unicode. I don't use Unicode yet though
 
 	/** \addtogroup Core
 	*  @{

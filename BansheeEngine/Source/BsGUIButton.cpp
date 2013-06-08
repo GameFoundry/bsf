@@ -18,7 +18,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIButton::GUIButton(GUIWidget& parent, const GUIElementStyle* style, const String& text, const GUILayoutOptions& layoutOptions)
+	GUIButton::GUIButton(GUIWidget& parent, const GUIElementStyle* style, const WString& text, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mText(text), mNumImageRenderElements(0)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const String& text, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(GUIWidget& parent, const WString& text, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, text, getDefaultLayoutOptions(style));
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(GUIWidget& parent, const WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{

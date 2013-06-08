@@ -152,6 +152,7 @@
     <ClInclude Include="Include\BsGUIArea.h" />
     <ClInclude Include="Include\BsGUIButton.h" />
     <ClInclude Include="Include\BsGUIInputBox.h" />
+    <ClInclude Include="Include\BsGUIKeyEvent.h" />
     <ClInclude Include="Include\BsGUILayoutOptions.h" />
     <ClInclude Include="Include\BsGUILayoutX.h" />
     <ClInclude Include="Include\BsGUILayout.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="Source\BsGUIButton.cpp" />
     <ClCompile Include="Source\BsGUIElement.cpp" />
     <ClCompile Include="Source\BsGUIInputBox.cpp" />
+    <ClCompile Include="Source\BsGUIKeyEvent.cpp" />
     <ClCompile Include="Source\BsGUILabel.cpp" />
     <ClCompile Include="Source\BsGUILayout.cpp" />
     <ClCompile Include="Source\BsGUILayoutY.cpp" />

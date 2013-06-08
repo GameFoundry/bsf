@@ -18,7 +18,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIToggle::GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const String& text, const GUILayoutOptions& layoutOptions)
+	GUIToggle::GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const WString& text, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mText(text), mNumImageRenderElements(0), mIsToggled(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const String& text, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const WString& text, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, text, getDefaultLayoutOptions(style));
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const String& text, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const WString& text, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{

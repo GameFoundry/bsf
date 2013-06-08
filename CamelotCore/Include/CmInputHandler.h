@@ -192,5 +192,10 @@ namespace CamelotFramework
 		 * @brief	Called every frame by InputManager. Capture input here if needed.
 		 */
 		virtual void update() {}
+
+		/**
+		 * @brief	Gets all the characters inputted since the last frame.
+		 */
+		virtual const WString& getInputString() const = 0;
 	};
 }

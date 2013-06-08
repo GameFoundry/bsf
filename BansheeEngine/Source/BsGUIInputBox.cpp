@@ -5,6 +5,7 @@
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
 #include "BsGUILayoutOptions.h"
+#include "BsGUIKeyEvent.h"
 #include "BsGUIMouseEvent.h"
 #include "CmTexture.h"
 #include "CmCursor.h"
@@ -228,5 +229,33 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	bool GUIInputBox::keyEvent(const GUIKeyEvent& ev)
+	{
+		if(ev.getType() == GUIKeyEventType::TextInput)
+		{
+			// TODO - How are backspace, caps and enter handled?
+			mText += ev.getInputString();
+			markAsDirty();
+
+			return true;
+		}
+
+		return false;
+	}
+
+	void GUIInputBox::_setFocus(bool focus)
+	{
+		if(focus)
+		{
+			mImageDesc.texture = mStyle->focused.texture;
+			markAsDirty();
+		}
+		else
+		{
+			mImageDesc.texture = mStyle->normal.texture;
+			markAsDirty();
+		}
 	}
 }
