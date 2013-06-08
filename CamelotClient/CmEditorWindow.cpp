@@ -8,6 +8,7 @@
 #include "BsGUILabel.h"
 #include "BsGUIWindowFrameWidget.h"
 #include "BsGUIButton.h"
+#include "BsGUIInputBox.h"
 #include "BsGUITexture.h"
 #include "BsGUISkin.h"
 #include "BsGUILayout.h"
@@ -64,12 +65,13 @@ namespace BansheeEditor
 
 		//// DEBUG
 		
-		//GUIArea* dbgArea = GUIArea::create(*mGUI, 0, 13, 0, 0, 1998);
-		//GUILayout& layout = dbgArea->getLayout();
+		GUIArea* dbgArea = GUIArea::create(*mGUI, 0, 13, 0, 0, 475);
+		GUILayout& layout = dbgArea->getLayout();
 		//
 		//mDbgLabel = GUILabel::create(*mGUI, "Testing test");
 		//layout.addElement(mDbgLabel);
 
+		layout.addElement(GUIInputBox::create(*mGUI));
 		
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
 		//otherLayout.addElement(mDbgLabel);

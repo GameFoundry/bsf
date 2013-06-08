@@ -34,6 +34,7 @@ namespace BansheeEngine
 	class GUITexture;
 	class GUIToggle;
 	class GUIWindowFrame;
+	class GUIInputBox;
 	class GUISkin;
 	struct GUIElementStyle;
 	class GUIMouseEvent;

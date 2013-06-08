@@ -38,5 +38,9 @@ namespace BansheeEngine
 
 		static const CM::String ButtonNormalTex;
 		static const CM::String ButtonHoverTex;
+
+		static const CM::String InputBoxNormalTex;
+		static const CM::String InputBoxHoverTex;
+		static const CM::String InputBoxFocusedTex;
 	};
 }

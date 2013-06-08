@@ -3,6 +3,7 @@
 
 #include "BsGUILabel.h"
 #include "BsGUIButton.h"
+#include "BsGUIInputBox.h"
 #include "BsTextSprite.h"
 #include "BsSpriteTexture.h"
 
@@ -36,6 +37,10 @@ namespace BansheeEngine
 
 	const String EngineGUI::TabbedBarBtnNormal = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\TabbedButtonNormal.psd";
 	const String EngineGUI::TabbedBarBtnActive = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\TabbedButtonActive.psd";
+
+	const String EngineGUI::InputBoxNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\InputBoxNormal.psd";
+	const String EngineGUI::InputBoxHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\InputBoxHover.psd";
+	const String EngineGUI::InputBoxFocusedTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\InputBoxFocused.psd";
 
 	EngineGUI::EngineGUI()
 	{
@@ -189,6 +194,36 @@ namespace BansheeEngine
 		winCloseButtonStyle.width = 8;
 
 		mSkin.setStyle("WinCloseBtn", winCloseButtonStyle);
+
+		// Input box
+		HTexture inputBoxNormalTex = static_resource_cast<Texture>(Importer::instance().import(InputBoxNormalTex));
+		HTexture inputBoxHoverTex = static_resource_cast<Texture>(Importer::instance().import(InputBoxHoverTex));
+		HTexture inputBoxFocusedTex = static_resource_cast<Texture>(Importer::instance().import(InputBoxFocusedTex));
+
+		GUIElementStyle inputBoxStyle;
+		inputBoxStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(inputBoxNormalTex));
+		inputBoxStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(inputBoxHoverTex));
+		inputBoxStyle.focused.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(inputBoxFocusedTex));
+		inputBoxStyle.active.texture = inputBoxStyle.focused.texture;
+		inputBoxStyle.border.left = 5;
+		inputBoxStyle.border.right = 5;
+		inputBoxStyle.border.top = 5;
+		inputBoxStyle.border.bottom = 5;
+		inputBoxStyle.margins.left = 4;
+		inputBoxStyle.margins.right = 4;
+		inputBoxStyle.margins.top = 4;
+		inputBoxStyle.margins.bottom = 4;
+		inputBoxStyle.contentOffset.left = 2;
+		inputBoxStyle.contentOffset.right = 2;
+		inputBoxStyle.fixedHeight = true;
+		inputBoxStyle.height = 21;
+		inputBoxStyle.minWidth = 10;
+		inputBoxStyle.font = font;
+		inputBoxStyle.fontSize = DefaultFontSize;
+		inputBoxStyle.textHorzAlign = THA_Left;
+		inputBoxStyle.textVertAlign = TVA_Top;
+
+		mSkin.setStyle(GUIInputBox::getGUITypeName(), inputBoxStyle);
 	}
 
 }

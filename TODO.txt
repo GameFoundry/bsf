@@ -32,6 +32,16 @@ IMMEDIATE:
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
+TextBox needed elements:
+ - Render element: background texture and a text sprite
+ - Keyboard focus: Mouse click gives focus, tabbing between elements gives focus (TODO: explore how will tabbing work)
+ - Input: All characters get forwarded to element with focus
+ - Input cursor - Mouse click within box moves input, arrow keys move input. If cursor goes out of clip limits, move text.
+   - CURSOR needs to flash. Implement it as a GUIManager::showInputCursor(depth, position) method instead of doing it in GUITextBox.
+ - Text selection - Shift + arrow keys select text. Mouse drag selects text, and scrolls the text if needed. Text selection is drawn using another single color image sprite. Selection height is determined by line height.
+ - Text operations - Select all, copy, paste (using shorcuts, possibly also context menu?)
+ - Make sure multi-line text boxes work fine as well.
+
 Window needed systems:
 EditorWindowContainer
  - TabbedTitleBar widget 

@@ -1,4 +1,4 @@
-#include "BsGUIButton.h"
+#include "BsGUIInputBox.h"
 #include "BsImageSprite.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
@@ -12,14 +12,14 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	const String& GUIButton::getGUITypeName()
+	const String& GUIInputBox::getGUITypeName()
 	{
-		static String name = "Button";
+		static String name = "InputBox";
 		return name;
 	}
 
-	GUIButton::GUIButton(GUIWidget& parent, const GUIElementStyle* style, const String& text, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mText(text), mNumImageRenderElements(0)
+	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:GUIElement(parent, style, layoutOptions), mNumImageRenderElements(0)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -38,13 +38,13 @@ namespace BansheeEngine
 		mImageDesc.borderBottom = mStyle->border.bottom;
 	}
 
-	GUIButton::~GUIButton()
+	GUIInputBox::~GUIInputBox()
 	{
 		cm_delete<PoolAlloc>(mTextSprite);
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const String& text, const GUIElementStyle* style)
+	GUIInputBox* GUIInputBox::create(GUIWidget& parent, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -52,10 +52,10 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, text, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, getDefaultLayoutOptions(style));
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const String& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIInputBox* GUIInputBox::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -63,10 +63,10 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, text, layoutOptions);
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, layoutOptions);
 	}
 
-	UINT32 GUIButton::getNumRenderElements() const
+	UINT32 GUIInputBox::getNumRenderElements() const
 	{
 		UINT32 numElements = mImageSprite->getNumRenderElements();
 		numElements += mTextSprite->getNumRenderElements();
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const HMaterial& GUIButton::getMaterial(UINT32 renderElementIdx) const
+	const HMaterial& GUIInputBox::getMaterial(UINT32 renderElementIdx) const
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
 			return mTextSprite->getMaterial(mNumImageRenderElements - renderElementIdx);
@@ -82,7 +82,7 @@ namespace BansheeEngine
 			return mImageSprite->getMaterial(renderElementIdx);
 	}
 
-	UINT32 GUIButton::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIInputBox::getNumQuads(UINT32 renderElementIdx) const
 	{
 		UINT32 numQuads = 0;
 		if(renderElementIdx >= mNumImageRenderElements)
@@ -93,7 +93,7 @@ namespace BansheeEngine
 		return numQuads;
 	}
 
-	void GUIButton::updateRenderElementsInternal()
+	void GUIInputBox::updateRenderElementsInternal()
 	{		
 		mImageDesc.offset = mOffset;
 		mImageDesc.width = mWidth;
@@ -128,7 +128,7 @@ namespace BansheeEngine
 		mTextSprite->update(textDesc);
 	}
 
-	UINT32 GUIButton::_getOptimalWidth() const
+	UINT32 GUIInputBox::_getOptimalWidth() const
 	{
 		if(mImageDesc.texture != nullptr)
 		{
@@ -138,7 +138,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	UINT32 GUIButton::_getOptimalHeight() const
+	UINT32 GUIInputBox::_getOptimalHeight() const
 	{
 		if(mImageDesc.texture != nullptr)
 		{
@@ -148,7 +148,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	UINT32 GUIButton::_getRenderElementDepth(UINT32 renderElementIdx) const
+	UINT32 GUIInputBox::_getRenderElementDepth(UINT32 renderElementIdx) const
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
 			return _getDepth();
@@ -156,7 +156,7 @@ namespace BansheeEngine
 			return _getDepth() + 1;
 	}
 
-	void GUIButton::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIInputBox::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
@@ -165,7 +165,7 @@ namespace BansheeEngine
 			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
 	}
 
-	bool GUIButton::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIInputBox::mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
@@ -195,7 +195,7 @@ namespace BansheeEngine
 
 			return true;
 		}
-		
+
 		return false;
 	}
 }
