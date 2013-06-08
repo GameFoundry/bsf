@@ -251,5 +251,8 @@
     <ClCompile Include="Source\BsGUIInputBox.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\BsGUIMouseEvent.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

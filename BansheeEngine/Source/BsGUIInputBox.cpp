@@ -7,6 +7,7 @@
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
 #include "CmTexture.h"
+#include "CmCursor.h"
 
 using namespace CamelotFramework;
 
@@ -19,7 +20,7 @@ namespace BansheeEngine
 	}
 
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mNumImageRenderElements(0)
+		:GUIElement(parent, style, layoutOptions), mNumImageRenderElements(0), mInputCursorSet(false), mDragInProgress(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -172,12 +173,24 @@ namespace BansheeEngine
 			mImageDesc.texture = mStyle->hover.texture;
 			markAsDirty();
 
+			if(!mInputCursorSet)
+			{
+				Cursor::setCursor(CursorType::IBeam);
+				mInputCursorSet = true;
+			}
+
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
 			mImageDesc.texture = mStyle->normal.texture;
 			markAsDirty();
+
+			if(!mDragInProgress && mInputCursorSet)
+			{
+				Cursor::setCursor(CursorType::Arrow);
+				mInputCursorSet = false;
+			}
 
 			return true;
 		}
@@ -192,6 +205,24 @@ namespace BansheeEngine
 		{
 			mImageDesc.texture = mStyle->hover.texture;
 			markAsDirty();
+
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseDragStart)
+		{
+			mDragInProgress = true;
+
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
+		{
+			mDragInProgress = false;
+
+			if(ev.getMouseOverElement() != this && mInputCursorSet)
+			{
+				Cursor::setCursor(CursorType::Arrow);
+				mInputCursorSet = false;
+			}
 
 			return true;
 		}

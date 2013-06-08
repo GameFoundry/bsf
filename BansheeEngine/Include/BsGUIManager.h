@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsGUIMouseEvent.h"
 #include "CmModule.h"
 #include "CmInputHandler.h"
 #include "CmDeferredRenderContextFwd.h"
@@ -50,6 +51,8 @@ namespace BansheeEngine
 		bool mSeparateMeshesByWidget;
 		bool mLastFrameButtonState[CM::MB_Count];
 		CM::Int2 mLastCursorLocalPos;
+
+		GUIMouseEvent mMouseEvent;
 
 		void updateMeshes();
 		void updateInput();

@@ -50,6 +50,8 @@ namespace BansheeEngine
 		ImageSprite* mImageSprite;
 		TextSprite* mTextSprite;
 		CM::UINT32 mNumImageRenderElements;
+		bool mInputCursorSet;
+		bool mDragInProgress;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::String mText;
