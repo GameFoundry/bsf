@@ -29,6 +29,7 @@ THE SOFTWARE
 #include "CmPrerequisites.h"
 
 #include "CmRenderTarget.h"
+#include "CmInt2.h"
 
 namespace CamelotFramework
 {
@@ -177,6 +178,8 @@ namespace CamelotFramework
 
 		void setHasFocus(bool focus);
 		bool hasFocus() const { return mHasFocus; }
+
+		virtual Int2 screenToWindowPos(const Int2& screenPos) const = 0;
 
 		mutable boost::signal<void(RenderWindow*)> onFocusChanged;
 

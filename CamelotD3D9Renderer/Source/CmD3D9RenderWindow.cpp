@@ -746,6 +746,18 @@ namespace CamelotFramework
 		}	
 	}
 
+	Int2 D3D9RenderWindow::screenToWindowPos(const Int2& screenPos) const
+	{
+		POINT pos;
+
+		// Convert client coordinates to screen coordinates
+		pos.x = screenPos.x;
+		pos.y = screenPos.y;
+
+		ClientToScreen(mHWnd, &pos);
+		return Int2(pos.x, pos.y);
+	}
+
 	//-----------------------------------------------------------------------------
 	bool D3D9RenderWindow::isNvPerfHUDEnable() const
 	{

@@ -44,13 +44,20 @@ namespace BansheeEngine
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(0), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr)
 	{
-		for(int i = 0; i < MB_Count; i++)
-			mLastFrameButtonState[i] = false;
+		mOnKeyDownConn = gInput().onKeyDown.connect(boost::bind(&GUIManager::onKeyDown, this, _1));
+		mOnKeyUpConn = gInput().onKeyUp.connect(boost::bind(&GUIManager::onKeyUp, this, _1));
+		mOnMouseMovedConn = gInput().onMouseMoved.connect(boost::bind(&GUIManager::onMouseMoved, this, _1));
+		mOnMouseDownConn = gInput().onMouseDown.connect(boost::bind(&GUIManager::onMouseDown, this, _1, _2));
+		mOnMouseUpConn = gInput().onMouseUp.connect(boost::bind(&GUIManager::onMouseUp, this, _1, _2));
 	}
 
 	GUIManager::~GUIManager()
 	{
-
+		mOnKeyDownConn.disconnect();
+		mOnKeyUpConn.disconnect();
+		mOnMouseMovedConn.disconnect();
+		mOnMouseDownConn.disconnect();
+		mOnMouseUpConn.disconnect();
 	}
 
 	void GUIManager::registerWidget(GUIWidget* widget)
@@ -400,6 +407,29 @@ namespace BansheeEngine
 
 	void GUIManager::updateInput()
 	{
+
+	}
+
+	void GUIManager::onKeyDown(KeyCode keyCode)
+	{
+		//if(mKeyboardFocusElement != nullptr)
+		//{
+		//	mKeyEvent = GUIKeyEvent();
+
+		//	// TODO - Handle KeyUp/KeyDown states
+
+		//	mKeyEvent.setTextInputData(gInput().getInputString());
+		//	mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
+		//}
+	}
+
+	void GUIManager::onKeyUp(KeyCode keyCode)
+	{
+
+	}
+
+	void GUIManager::onMouseMoved(const MouseEvent& event)
+	{
 #if CM_DEBUG_MODE
 		// Checks if all referenced windows actually exist
 		vector<RenderWindow*>::type activeWindows = RenderWindowManager::instance().getRenderWindows();
@@ -414,6 +444,14 @@ namespace BansheeEngine
 			}
 		}
 #endif
+
+		// TODO - Maybe avoid querying these for every event separately?
+		bool buttonStates[(int)MB_Count];
+		for(int i = 0; i < MB_Count; i++)
+			buttonStates[i] = gInput().isButtonDown((MouseButton)i);
+
+		mMouseEvent = GUIMouseEvent(buttonStates);
+
 		GUIWidget* widgetInFocus = nullptr;
 		GUIElement* topMostElement = nullptr;
 		Int2 screenPos;
@@ -434,6 +472,7 @@ namespace BansheeEngine
 		{
 			const RenderWindow* window = widgetInFocus->getOwnerWindow();
 
+			// TODO - Use position provided by mouse event
 			screenPos = Cursor::getWindowPosition(*window);
 			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
 
@@ -470,16 +509,6 @@ namespace BansheeEngine
 				}
 			}
 		}
-
-		/************************************************************************/
-		/* 								MOUSE EVENTS                      		*/
-		/************************************************************************/
-
-		bool buttonStates[(int)MB_Count];
-		for(int i = 0; i < MB_Count; i++)
-			buttonStates[i] = gInput().isButtonDown((MouseButton)i);
-
-		mMouseEvent = GUIMouseEvent(buttonStates);
 
 		// Send MouseOver/MouseOut events to any elements the mouse passes over, except when
 		// mouse is being held down, in which we only send them to the active element
@@ -536,93 +565,97 @@ namespace BansheeEngine
 			}
 		}
 
-		// Check for MouseDown and MouseUp events.
-		bool isAnyMouseButtonDown = false;
-		for(int i = 0; i < MB_Count; i++)
-		{
-			bool buttonDown = buttonStates[i];
-			if(mLastFrameButtonState[i] != buttonDown)
-			{
-				// Mouse button is being pressed
-				if(buttonDown)
-				{
-					isAnyMouseButtonDown = true;
-
-					// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
-					bool acceptMouseDown = mActiveElement == nullptr && topMostElement != nullptr;
-					if(acceptMouseDown)
-					{
-						mMouseEvent.setMouseDownData(topMostElement, localPos, (MouseButton)i);
-						widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
-
-						// DragStart is for all intents and purposes same as mouse down but since I need a DragEnd event, I feel a separate DragStart
-						// event was also needed to make things clearer.
-						mMouseEvent.setMouseDragStartData(topMostElement, localPos);
-						widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
-
-						mActiveElement = topMostElement;
-						mActiveWidget = widgetInFocus;
-						mActiveMouseButton = i;
-
-						mLastFrameButtonState[i] = buttonDown;
-					}
-				}
-				else
-				{
-					// Send MouseUp event only if we are over the active element (we don't want to accidentally trigger other elements).
-					// And only activate when a button that originally caused the active state is released, otherwise ignore it.
-					bool acceptMouseUp = mActiveMouseButton == i && (topMostElement != nullptr && mActiveElement == topMostElement);
-					if(acceptMouseUp)
-					{
-						mMouseEvent.setMouseUpData(topMostElement, localPos, (MouseButton)i);
-						widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
-					}
-
-					// Send DragEnd event to whichever element is active
-					bool acceptEndDrag = mActiveMouseButton == i && mActiveElement != nullptr;
-					if(acceptEndDrag)
-					{
-						mMouseEvent.setMouseDragEndData(topMostElement, localPos);
-						mActiveWidget->_mouseEvent(mActiveElement, mMouseEvent);
-
-						mActiveElement = nullptr;
-						mActiveWidget = nullptr;
-						mActiveMouseButton = 0;
-					}	
-				}
-
-				mLastFrameButtonState[i] = buttonDown;
-			}
-		}
-
 		mMouseOverElement = topMostElement;
 		mMouseOverWidget = widgetInFocus;
+	}
 
-		// Update keyboard focus if user has pressed any mouse button
-		if(isAnyMouseButtonDown)
+	void GUIManager::onMouseDown(const MouseEvent& event, MouseButton buttonID)
+	{
+		// TODO - Maybe avoid querying these for every event separately?
+		bool buttonStates[(int)MB_Count];
+		for(int i = 0; i < MB_Count; i++)
+			buttonStates[i] = gInput().isButtonDown((MouseButton)i);
+
+		mMouseEvent = GUIMouseEvent(buttonStates);
+
+		// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
+		bool acceptMouseDown = mActiveElement == nullptr && mMouseOverElement != nullptr;
+		if(acceptMouseDown)
 		{
-			if(mKeyboardFocusElement != nullptr && mMouseOverElement != mKeyboardFocusElement)
-				mKeyboardFocusElement->_setFocus(false);
+			// TODO - Use position provided by mouse event
+			Int2 screenPos = Cursor::getWindowPosition(*mMouseOverWidget->getOwnerWindow());
+			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
 
-			if(mMouseOverElement != nullptr)
-				mMouseOverElement->_setFocus(true);
+			const Matrix4& worldTfrm = mMouseOverWidget->SO()->getWorldTfrm();
 
-			mKeyboardFocusElement = mMouseOverElement;
-			mKeyboardFocusWidget = mMouseOverWidget;
+			Vector4 vecLocalPos = worldTfrm.inverse() * vecScreenPos;
+			Int2 localPos = Int2(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
+
+			mMouseEvent.setMouseDownData(mMouseOverElement, localPos, buttonID);
+			mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
+
+			// DragStart is for all intents and purposes same as mouse down but since I need a DragEnd event, I feel a separate DragStart
+			// event was also needed to make things clearer.
+			mMouseEvent.setMouseDragStartData(mMouseOverElement, localPos);
+			mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
+
+			mActiveElement = mMouseOverElement;
+			mActiveWidget = mMouseOverWidget;
+			mActiveMouseButton = (UINT32)buttonID;
 		}
 
-		/************************************************************************/
-		/* 								KEYBOARD EVENTS                    		*/
-		/************************************************************************/
-		if(mKeyboardFocusElement != nullptr)
-		{
-			mKeyEvent = GUIKeyEvent();
+		if(mKeyboardFocusElement != nullptr && mMouseOverElement != mKeyboardFocusElement)
+			mKeyboardFocusElement->_setFocus(false);
 
-			// TODO - Handle KeyUp/KeyDown states
-			
-			mKeyEvent.setTextInputData(gInput().getInputString());
-			mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
+		if(mMouseOverElement != nullptr)
+			mMouseOverElement->_setFocus(true);
+
+		mKeyboardFocusElement = mMouseOverElement;
+		mKeyboardFocusWidget = mMouseOverWidget;
+	}
+
+	void GUIManager::onMouseUp(const MouseEvent& event, MouseButton buttonID)
+	{
+		// TODO - Maybe avoid querying these for every event separately?
+		bool buttonStates[(int)MB_Count];
+		for(int i = 0; i < MB_Count; i++)
+			buttonStates[i] = gInput().isButtonDown((MouseButton)i);
+
+		mMouseEvent = GUIMouseEvent(buttonStates);
+
+		// TODO - Use position provided by mouse event
+		Int2 localPos;
+		if(mMouseOverWidget != nullptr)
+		{
+			Int2 screenPos = Cursor::getWindowPosition(*mMouseOverWidget->getOwnerWindow());
+			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
+
+			const Matrix4& worldTfrm = mMouseOverWidget->SO()->getWorldTfrm();
+
+			Vector4 vecLocalPos = worldTfrm.inverse() * vecScreenPos;
+			localPos = Int2(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
 		}
+
+		// Send MouseUp event only if we are over the active element (we don't want to accidentally trigger other elements).
+		// And only activate when a button that originally caused the active state is released, otherwise ignore it.
+		bool acceptMouseUp = mActiveMouseButton == (UINT32)buttonID && (mMouseOverElement != nullptr && mActiveElement == mMouseOverElement);
+		if(acceptMouseUp)
+		{
+			mMouseEvent.setMouseUpData(mMouseOverElement, localPos, buttonID);
+			mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
+		}
+
+		// Send DragEnd event to whichever element is active
+		bool acceptEndDrag = mActiveMouseButton == (UINT32)buttonID && mActiveElement != nullptr;
+		if(acceptEndDrag)
+		{
+			mMouseEvent.setMouseDragEndData(mMouseOverElement, localPos);
+			mActiveWidget->_mouseEvent(mActiveElement, mMouseEvent);
+
+			mActiveElement = nullptr;
+			mActiveWidget = nullptr;
+			mActiveMouseButton = 0;
+		}	
 	}
 
 	Int2 GUIManager::getWidgetRelativeCursorPos(const GUIWidget& widget)

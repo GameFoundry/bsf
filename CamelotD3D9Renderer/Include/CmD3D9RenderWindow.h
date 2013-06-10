@@ -60,6 +60,8 @@ namespace CamelotFramework
 
 		void				swapBuffers();
 
+		Int2				screenToWindowPos(const Int2& screenPos) const;
+
 		// Method for dealing with resize / move & 3d library
 		void				windowMovedOrResized	();
 	

@@ -81,11 +81,13 @@ namespace CamelotFramework
 	void Input::keyDown(KeyCode keyCode)
 	{
 		mKeyState[keyCode] = true;
+		onKeyDown(keyCode);
 	}
 
 	void Input::keyUp(KeyCode keyCode)
 	{
 		mKeyState[keyCode] = false;
+		onKeyUp(keyCode);
 	}
 
 	void Input::mouseMoved(const MouseEvent& event)
@@ -96,6 +98,7 @@ namespace CamelotFramework
 				return;
 		}
 
+		onMouseMoved(event);
 		mMouseLastRel = Int2(-event.relCoords.x, -event.relCoords.y);
 	}
 
@@ -108,6 +111,7 @@ namespace CamelotFramework
 		}
 
 		mMouseButtonState[buttonID] = true;
+		onMouseDown(event, buttonID);
 	}
 
 	void Input::mouseUp(const MouseEvent& event, MouseButton buttonID)
@@ -119,6 +123,7 @@ namespace CamelotFramework
 		}
 
 		mMouseButtonState[buttonID] = false;
+		onMouseUp(event, buttonID);
 	}
 
 	float Input::getHorizontalAxis() const

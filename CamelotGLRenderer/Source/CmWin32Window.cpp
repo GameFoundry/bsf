@@ -676,6 +676,18 @@ namespace CamelotFramework {
 		}
 	}
 
+	Int2 Win32Window::screenToWindowPos(const Int2& screenPos) const
+	{
+		POINT pos;
+
+		// Convert client coordinates to screen coordinates
+		pos.x = screenPos.x;
+		pos.y = screenPos.y;
+
+		ClientToScreen(mHWnd, &pos);
+		return Int2(pos.x, pos.y);
+	}
+
 	void Win32Window::getCustomAttribute( const String& name, void* pData ) const
 	{
 		if( name == "GLCONTEXT" ) {

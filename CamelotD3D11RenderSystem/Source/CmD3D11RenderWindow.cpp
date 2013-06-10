@@ -536,6 +536,18 @@ namespace CamelotFramework
 		SAFE_RELEASE(backbuffer);
 	}
 
+	Int2 D3D11RenderWindow::screenToWindowPos(const Int2& screenPos) const
+	{
+		POINT pos;
+
+		// Convert client coordinates to screen coordinates
+		pos.x = screenPos.x;
+		pos.y = screenPos.y;
+
+		ClientToScreen(mHWnd, &pos);
+		return Int2(pos.x, pos.y);
+	}
+
 	void D3D11RenderWindow::_createSwapChain()
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));

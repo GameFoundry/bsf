@@ -13,6 +13,14 @@ namespace CamelotFramework
 		Input();
 		~Input();
 
+		boost::signal<void(KeyCode)> onKeyDown;
+		boost::signal<void(KeyCode)> onKeyUp;
+
+		boost::signal<void(const MouseEvent&)> onMouseMoved;
+		boost::signal<void(const MouseEvent&, MouseButton)> onMouseDown;
+		boost::signal<void(const MouseEvent&, MouseButton)> onMouseUp;
+
+
 		void initClipRect(Rect& clipRect);
 		void registerInputHandler(InputHandlerPtr inputHandler);
 

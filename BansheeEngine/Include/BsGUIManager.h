@@ -6,6 +6,7 @@
 #include "CmModule.h"
 #include "CmInputHandler.h"
 #include "CmDeferredRenderContextFwd.h"
+#include <boost/signals/connection.hpp>
 
 namespace BansheeEngine
 {
@@ -54,14 +55,26 @@ namespace BansheeEngine
 		GUIElement* mKeyboardFocusElement;
 
 		bool mSeparateMeshesByWidget;
-		bool mLastFrameButtonState[CM::MB_Count];
 		CM::Int2 mLastCursorLocalPos;
 
 		GUIMouseEvent mMouseEvent;
 		GUIKeyEvent mKeyEvent;
 
+		boost::signals::connection mOnMouseMovedConn;
+		boost::signals::connection mOnMouseDownConn;
+		boost::signals::connection mOnMouseUpConn;
+		boost::signals::connection mOnKeyDownConn;
+		boost::signals::connection mOnKeyUpConn;
+
 		void updateMeshes();
 		void updateInput();
+
+		void onKeyDown(CM::KeyCode keyCode);
+		void onKeyUp(CM::KeyCode keyCode);
+
+		void onMouseMoved(const CM::MouseEvent& event);
+		void onMouseDown(const CM::MouseEvent& event, CM::MouseButton buttonID);
+		void onMouseUp(const CM::MouseEvent& event, CM::MouseButton buttonID);
 
 		CM::Int2 getWidgetRelativeCursorPos(const GUIWidget& widget);
 	};

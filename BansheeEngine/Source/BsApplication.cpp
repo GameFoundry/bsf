@@ -32,11 +32,11 @@ namespace BansheeEngine
 		desc.importers.push_back("CamelotFBXImporter");
 		desc.importers.push_back("CamelotFontImporter");
 
+		CM::gApplication().startUp(desc);
+
 		GUIManager::startUp(cm_new<GUIManager>());
 		GUIMaterialManager::startUp(cm_new<GUIMaterialManager>());
 		OverlayManager::startUp(cm_new<OverlayManager>());
-
-		CM::gApplication().startUp(desc);
 
 		BuiltinMaterialManager::startUp(cm_new<BuiltinMaterialManager>());
 		BuiltinMaterialManager::instance().addFactory(cm_new<D3D9BuiltinMaterialFactory>());

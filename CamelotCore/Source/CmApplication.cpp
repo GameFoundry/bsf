@@ -89,6 +89,7 @@ namespace CamelotFramework
 
 		while(mRunMainLoop)
 		{
+			gInput().update();
 			gSceneManager().update();
 
 			if(!mainLoopCallback.empty())
@@ -121,7 +122,6 @@ namespace CamelotFramework
 				mPrimaryRenderContext->cancelAll();
 
 			gTime().update();
-			gInput().update();
 		}
 	}
 
