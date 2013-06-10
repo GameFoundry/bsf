@@ -13,18 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\OIS">
-      <UniqueIdentifier>{89daf073-a050-4791-9a01-35931b430cea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\OIS">
-      <UniqueIdentifier>{e66fae83-5f33-4f75-a3b1-2e469a8195a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\OIS\Win32">
-      <UniqueIdentifier>{15e5416a-b64b-44a5-9967-982d23d30f78}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\OIS\Win32">
-      <UniqueIdentifier>{e042ada7-f08f-4a4e-8315-042f7cd3d9a7}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmOISPrerequisites.h">
@@ -33,69 +21,6 @@
     <ClInclude Include="Include\CmInputHandlerOIS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\OIS\OIS.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISConfig.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISEffect.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISEvents.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISException.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISFactoryCreator.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISForceFeedback.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISInputManager.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISInterface.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISJoyStick.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISKeyboard.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISMouse.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISMultiTouch.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISObject.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\OISPrereqs.h">
-      <Filter>Header Files\OIS</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\win32\Win32ForceFeedback.h">
-      <Filter>Header Files\OIS\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\win32\Win32InputManager.h">
-      <Filter>Header Files\OIS\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\win32\Win32JoyStick.h">
-      <Filter>Header Files\OIS\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\win32\Win32KeyBoard.h">
-      <Filter>Header Files\OIS\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\win32\Win32Mouse.h">
-      <Filter>Header Files\OIS\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\OIS\win32\Win32Prereqs.h">
-      <Filter>Header Files\OIS\Win32</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmOISPlugin.cpp">
@@ -103,42 +28,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmInputHandlerOIS.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\OISEffect.cpp">
-      <Filter>Source Files\OIS</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\OISException.cpp">
-      <Filter>Source Files\OIS</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\OISForceFeedback.cpp">
-      <Filter>Source Files\OIS</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\OISInputManager.cpp">
-      <Filter>Source Files\OIS</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\OISJoyStick.cpp">
-      <Filter>Source Files\OIS</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\OISKeyboard.cpp">
-      <Filter>Source Files\OIS</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\OISObject.cpp">
-      <Filter>Source Files\OIS</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\win32\Win32ForceFeedback.cpp">
-      <Filter>Source Files\OIS\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\win32\Win32InputManager.cpp">
-      <Filter>Source Files\OIS\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\win32\Win32JoyStick.cpp">
-      <Filter>Source Files\OIS\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\win32\Win32KeyBoard.cpp">
-      <Filter>Source Files\OIS\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OIS\win32\Win32Mouse.cpp">
-      <Filter>Source Files\OIS\Win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
