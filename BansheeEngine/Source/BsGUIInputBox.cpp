@@ -237,6 +237,13 @@ namespace BansheeEngine
 		{
 			// TODO - How are backspace, caps and enter handled?
 			mText += ev.getInputString();
+
+			if(mText != "")
+			{
+
+				int a = 5;
+			}
+
 			markAsDirty();
 
 			return true;

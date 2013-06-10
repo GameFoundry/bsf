@@ -76,6 +76,14 @@ Keyboard input:
   - Add support for joystick and joystick keys - along with keyboard ones
   - Then add support for shortcut keys for certain GUIElements
  - I also need to block input for Components when focus is not on game window...
+ - Add IsKeyTextual to Input (seems to be only an AND with 0x80 with the scan code) - Possibly not needed as OIS returns 0 for non-textual chars
+ - Make sure the input is handled by callbacks
+  - Then if nothing uses up a key-down/up event, send a TextInput event containing the character (taking into consideration shift and/or caps)
+  - Make sure callbacks are called after Update
+ - OIS currently DOESNT properly handle input locale (seems to return US locale)
+  - I might want to include OIS directly in my plugin so I can modify it. (Also remove it from Dependencies)
+
+Later add InputMap class in which you can bind certain actions (like move left, fire, etc.) to Keyboard, Joystick or Mouse buttons.
 
 -----------
 

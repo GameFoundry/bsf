@@ -1,15 +1,33 @@
-#pragma once
+/*
+The zlib/libpng License
 
-#include "CmPrerequisites.h"
-#include <boost/signal.hpp>
-#include "CmInt2.h"
+Copyright (c) 2005-2007 Phillip Castaneda (pjcast -- www.wreckedgames.com)
 
-namespace CamelotFramework
+This software is provided 'as-is', without any express or implied warranty. In no event will
+the authors be held liable for any damages arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose, including commercial 
+applications, and to alter it and redistribute it freely, subject to the following
+restrictions:
+
+    1. The origin of this software must not be misrepresented; you must not claim that 
+		you wrote the original software. If you use this software in a product, 
+		an acknowledgment in the product documentation would be appreciated but is 
+		not required.
+
+    2. Altered source versions must be plainly marked as such, and must not be 
+		misrepresented as being the original software.
+
+    3. This notice may not be removed or altered from any source distribution.
+*/
+#ifndef OIS_Keyboard_H
+#define OIS_Keyboard_H
+#include "OIS/OISObject.h"
+#include "OIS/OISEvents.h"
+
+namespace OIS
 {
-	// Note: These KeyCodes are only keyboard scan codes. This means that exact scan code identifier might 
-	// not correspond to that exact character on users keyboard, depending on users input locale. 
-	// Only for US locale will these scan code names will match the actual keyboard input. Think of the US key
-	// code names as only a convenience for more easily identifying which location on the keyboard a scan code represents.
+	//! Keyboard scan codes
 	enum KeyCode
 	{
 		KC_UNASSIGNED  = 0x00,
@@ -156,53 +174,139 @@ namespace CamelotFramework
 		KC_WEBBACK     = 0xEA,    // Web Back
 		KC_MYCOMPUTER  = 0xEB,    // My Computer
 		KC_MAIL        = 0xEC,    // Mail
-		KC_MEDIASELECT = 0xED,     // Media Select
-		KC_Count
-	};
-
-	enum MouseButton
-	{
-		MB_Left = 0, MB_Right, MB_Middle,
-		MB_Button3, MB_Button4,	MB_Button5, MB_Button6,	MB_Button7, 
-		MB_Button8, MB_Button9, MB_Button10, MB_Button11, MB_Button12, 
-		MB_Button13, MB_Button14, MB_Button15, MB_Button16, MB_Button17,
-		MB_Button18, MB_Button19, MB_Button20, MB_Count
-	};
-
-	struct MouseEvent
-	{
-		Int2 coords;
-		Int2 relCoords;
-
-		int z;
-		int relZ;
+		KC_MEDIASELECT = 0xED     // Media Select
 	};
 
 	/**
-	 * @brief	Represents a specific way of acquiring low-level input. InputManager (which provides a higher level input)
-	 * 			must have at least one InputHandler attached. Attach events handler to the provided signals to handle input.
-	 */
-	class CM_EXPORT InputHandler
+		Specialised for key events
+	*/
+	class _OISExport KeyEvent : public EventArg
 	{
 	public:
-		InputHandler() {}
-		virtual ~InputHandler() {}
+		KeyEvent(Object* obj, KeyCode kc, unsigned int txt) : EventArg(obj), key(kc), text(txt) {}
+		virtual ~KeyEvent() {}
 
-		boost::signal<void(KeyCode)> onKeyDown;
-		boost::signal<void(KeyCode)> onKeyUp;
+		//! KeyCode of event
+		const KeyCode key;
+		//! Text character, depends on current TextTranslationMode
+		unsigned int text;
+	};
 
-		boost::signal<void(const MouseEvent&)> onMouseMoved;
-		boost::signal<void(const MouseEvent&, MouseButton)> onMouseDown;
-		boost::signal<void(const MouseEvent&, MouseButton)> onMouseUp;
+	/**
+		To recieve buffered keyboard input, derive a class from this, and implement the
+		methods here. Then set the call back to your Keyboard instance with Keyboard::setEventCallback
+	*/
+	class _OISExport KeyListener
+	{
+	public:
+		virtual ~KeyListener() {}
+		virtual bool keyPressed(const KeyEvent &arg) = 0;
+		virtual bool keyReleased(const KeyEvent &arg) = 0;		
+	};
+
+	/**
+		Keyboard base class. To be implemented by specific system (ie. DirectX Keyboard)
+		This class is useful as you remain OS independent using this common interface.
+	*/
+	class _OISExport Keyboard : public Object
+	{
+	public:
+		virtual ~Keyboard() {};
+		
+		/**
+		@remarks
+			Returns true if key is donwn
+		@param key
+			A KeyCode to check
+		*/
+		virtual bool isKeyDown(KeyCode key) const = 0;
 
 		/**
-		 * @brief	Called every frame by InputManager. Capture input here if needed.
-		 */
-		virtual void update() {}
+		@remarks
+			Register/unregister a Keyboard Listener - Only one allowed for simplicity. If broadcasting
+			is neccessary, just broadcast from the callback you registered.
+		@param keyListener
+			Send a pointer to a class derived from KeyListener or 0 to clear the callback
+		*/
+		virtual void setEventCallback(KeyListener *keyListener) { mListener = keyListener;}
 
 		/**
-		 * @brief	Gets all the characters inputted since the last frame.
-		 */
-		virtual const WString& getInputString() const = 0;
+		@remarks
+			Returns currently set callback.. or 0
+		*/
+		KeyListener* getEventCallback() const {return mListener;}
+
+		//! TextTranslation Mode
+		enum TextTranslationMode
+		{
+			Off,
+			Unicode,
+			Ascii
+		};
+
+		/**
+		@remarks
+			Enable extra processing to translate KC_*** to an
+			actual text character based off of locale. Different 
+			managers may implement none or all. Check the 
+			translation mode after setting to be sure
+		@param mode
+			Off, Unicode, Ascii
+		*/
+		virtual void setTextTranslation(TextTranslationMode mode);
+
+		/**
+		@remarks
+			Returns current translation mode
+		*/
+		TextTranslationMode getTextTranslation() const {return mTextMode;}
+		
+		/**
+		@remarks
+			Translates KeyCode to string representation.
+			For example, KC_ENTER will be "Enter" - Locale
+			specific of course.
+		@param kc
+			KeyCode to convert
+		@returns
+			The string as determined from the current locale
+		*/
+		virtual const std::string& getAsString(KeyCode kc) = 0;
+
+		//! Enum of bit position of modifer
+		enum Modifier
+		{
+			Shift = 0x0000001,
+			Ctrl  = 0x0000010,
+			Alt   = 0x0000100
+		};
+
+		/**
+		@remarks
+			Check modifier status
+		*/
+		bool isModifierDown(Modifier mod) const;
+
+		/**
+		@remarks
+			Copies the state of the keys into the sent buffer
+			(in the form of 1 is down and 0 is up)
+		*/
+		virtual void copyKeyStates(char keys[256]) const = 0;
+		
+	protected:
+		Keyboard(const std::string &vendor, bool buffered, int devID, InputManager* creator)
+			: Object(vendor, OISKeyboard, buffered, devID, creator),
+			mModifiers(0), mListener(0), mTextMode(Unicode) {}
+
+		//! Bit field that holds status of Alt, Ctrl, Shift
+		unsigned int mModifiers;
+
+		//! Used for buffered/actionmapping callback
+		KeyListener *mListener;
+
+		//! The current translation mode
+		TextTranslationMode mTextMode;
 	};
 }
+#endif

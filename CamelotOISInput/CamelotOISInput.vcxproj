@@ -85,14 +85,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CM_OIS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../lib/$(Configuration);../Dependencies/lib/Debug;./Dependencies/lib/Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;OIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(Configuration);../Dependencies/lib/Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;dxguid.lib;dinput8.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -100,14 +100,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CM_OIS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug;./Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;OIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;dxguid.lib;dinput8.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -117,7 +117,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CM_OIS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -125,8 +125,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../lib/$(Configuration);../Dependencies/lib/Release;./Dependencies/lib/Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;OIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(Configuration);../Dependencies/lib/Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;dxguid.lib;dinput8.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -136,7 +136,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include;./Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../CamelotCore/Include;../CamelotUtility/Include;./Include;../Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CM_OIS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -144,15 +144,48 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Release;./Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;OIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;dxguid.lib;dinput8.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmOISPrerequisites.h" />
+    <ClInclude Include="Include\OIS\OIS.h" />
+    <ClInclude Include="Include\OIS\OISConfig.h" />
+    <ClInclude Include="Include\OIS\OISEffect.h" />
+    <ClInclude Include="Include\OIS\OISEvents.h" />
+    <ClInclude Include="Include\OIS\OISException.h" />
+    <ClInclude Include="Include\OIS\OISFactoryCreator.h" />
+    <ClInclude Include="Include\OIS\OISForceFeedback.h" />
+    <ClInclude Include="Include\OIS\OISInputManager.h" />
+    <ClInclude Include="Include\OIS\OISInterface.h" />
+    <ClInclude Include="Include\OIS\OISJoyStick.h" />
+    <ClInclude Include="Include\OIS\OISKeyboard.h" />
+    <ClInclude Include="Include\OIS\OISMouse.h" />
+    <ClInclude Include="Include\OIS\OISMultiTouch.h" />
+    <ClInclude Include="Include\OIS\OISObject.h" />
+    <ClInclude Include="Include\OIS\OISPrereqs.h" />
+    <ClInclude Include="Include\OIS\win32\Win32ForceFeedback.h" />
+    <ClInclude Include="Include\OIS\win32\Win32InputManager.h" />
+    <ClInclude Include="Include\OIS\win32\Win32JoyStick.h" />
+    <ClInclude Include="Include\OIS\win32\Win32KeyBoard.h" />
+    <ClInclude Include="Include\OIS\win32\Win32Mouse.h" />
+    <ClInclude Include="Include\OIS\win32\Win32Prereqs.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\OIS\OISEffect.cpp" />
+    <ClCompile Include="Source\OIS\OISException.cpp" />
+    <ClCompile Include="Source\OIS\OISForceFeedback.cpp" />
+    <ClCompile Include="Source\OIS\OISInputManager.cpp" />
+    <ClCompile Include="Source\OIS\OISJoyStick.cpp" />
+    <ClCompile Include="Source\OIS\OISKeyboard.cpp" />
+    <ClCompile Include="Source\OIS\OISObject.cpp" />
+    <ClCompile Include="Source\OIS\win32\Win32ForceFeedback.cpp" />
+    <ClCompile Include="Source\OIS\win32\Win32InputManager.cpp" />
+    <ClCompile Include="Source\OIS\win32\Win32JoyStick.cpp" />
+    <ClCompile Include="Source\OIS\win32\Win32KeyBoard.cpp" />
+    <ClCompile Include="Source\OIS\win32\Win32Mouse.cpp" />
     <ClInclude Include="Include\CmInputHandlerOIS.h">
       <FileType>CppCode</FileType>
     </ClInclude>
