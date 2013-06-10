@@ -67,10 +67,6 @@ namespace CamelotFramework
 		if(arg.text != 0)
 		{
 			mInputString += arg.text;
-			if(mInputString != "")
-			{
-				int a = 5;
-			}
 		}
 
 		onKeyDown((KeyCode)(int)arg.key);
