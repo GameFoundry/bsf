@@ -76,6 +76,6 @@ namespace BansheeEngine
 		void onMouseDown(const CM::MouseEvent& event, CM::MouseButton buttonID);
 		void onMouseUp(const CM::MouseEvent& event, CM::MouseButton buttonID);
 
-		CM::Int2 getWidgetRelativeCursorPos(const GUIWidget& widget);
+		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos);
 	};
 }

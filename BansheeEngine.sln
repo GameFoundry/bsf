@@ -102,6 +102,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BansheeOctreeSM", "BansheeO
 		{07B0C186-5173-46F2-BE26-7E4148BD0CCA} = {07B0C186-5173-46F2-BE26-7E4148BD0CCA}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{32E4E2B7-1B4D-4B06-AD87-57CEE00BC247}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True

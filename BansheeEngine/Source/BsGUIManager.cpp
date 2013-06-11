@@ -472,8 +472,7 @@ namespace BansheeEngine
 		{
 			const RenderWindow* window = widgetInFocus->getOwnerWindow();
 
-			// TODO - Use position provided by mouse event
-			screenPos = Cursor::getWindowPosition(*window);
+			Int2 screenPos = window->screenToWindowPos(event.coords);
 			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
 
 			UINT32 topMostDepth = std::numeric_limits<UINT32>::max();
@@ -519,7 +518,7 @@ namespace BansheeEngine
 				// Send MouseOut event
 				if(mActiveElement == nullptr || mMouseOverElement == mActiveElement)
 				{
-					Int2 curLocalPos = getWidgetRelativeCursorPos(*mMouseOverWidget);
+					Int2 curLocalPos = getWidgetRelativePos(*mMouseOverWidget, event.coords);
 
 					mMouseEvent.setMouseOutData(topMostElement, curLocalPos);
 					mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
@@ -540,7 +539,7 @@ namespace BansheeEngine
 		// If mouse is being held down send MouseDrag events
 		if(mActiveElement != nullptr)
 		{
-			Int2 curLocalPos = getWidgetRelativeCursorPos(*mActiveWidget);
+			Int2 curLocalPos = getWidgetRelativePos(*mActiveWidget, event.coords);
 
 			if(mLastCursorLocalPos != curLocalPos)
 			{
@@ -582,14 +581,7 @@ namespace BansheeEngine
 		bool acceptMouseDown = mActiveElement == nullptr && mMouseOverElement != nullptr;
 		if(acceptMouseDown)
 		{
-			// TODO - Use position provided by mouse event
-			Int2 screenPos = Cursor::getWindowPosition(*mMouseOverWidget->getOwnerWindow());
-			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
-
-			const Matrix4& worldTfrm = mMouseOverWidget->SO()->getWorldTfrm();
-
-			Vector4 vecLocalPos = worldTfrm.inverse() * vecScreenPos;
-			Int2 localPos = Int2(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
+			Int2 localPos = getWidgetRelativePos(*mMouseOverWidget, event.coords);
 
 			mMouseEvent.setMouseDownData(mMouseOverElement, localPos, buttonID);
 			mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
@@ -623,17 +615,10 @@ namespace BansheeEngine
 
 		mMouseEvent = GUIMouseEvent(buttonStates);
 
-		// TODO - Use position provided by mouse event
 		Int2 localPos;
 		if(mMouseOverWidget != nullptr)
 		{
-			Int2 screenPos = Cursor::getWindowPosition(*mMouseOverWidget->getOwnerWindow());
-			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
-
-			const Matrix4& worldTfrm = mMouseOverWidget->SO()->getWorldTfrm();
-
-			Vector4 vecLocalPos = worldTfrm.inverse() * vecScreenPos;
-			localPos = Int2(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
+			localPos = getWidgetRelativePos(*mMouseOverWidget, event.coords);
 		}
 
 		// Send MouseUp event only if we are over the active element (we don't want to accidentally trigger other elements).
@@ -658,14 +643,14 @@ namespace BansheeEngine
 		}	
 	}
 
-	Int2 GUIManager::getWidgetRelativeCursorPos(const GUIWidget& widget)
+	Int2 GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Int2& screenPos)
 	{
 		const RenderWindow* window = widget.getOwnerWindow();
-		Int2 screenPos = Cursor::getWindowPosition(*window);
+		Int2 windowPos = window->screenToWindowPos(screenPos);
 
 		const Matrix4& worldTfrm = widget.SO()->getWorldTfrm();
 
-		Vector4 vecLocalPos = worldTfrm.inverse() * Vector4((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
+		Vector4 vecLocalPos = worldTfrm.inverse() * Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f);
 		Int2 curLocalPos(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
 
 		return curLocalPos;

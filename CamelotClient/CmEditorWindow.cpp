@@ -105,7 +105,7 @@ namespace BansheeEditor
 
 	void EditorWindow::update()
 	{
-		Int2 cursorPos = Cursor::getWindowPosition(*mRenderWindow);
+		//Int2 cursorPos = Cursor::getWindowPosition(*mRenderWindow);
 		
 		//mDbgLabel->setText("Position: " + toString(cursorPos.x) + ", " + toString(cursorPos.y));
 		

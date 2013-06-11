@@ -29,9 +29,6 @@ namespace CamelotFramework
 		static Int2 getScreenPosition();
 		static void setScreenPosition(const Int2& pos);
 
-		static Int2 getWindowPosition(const RenderWindow& window);
-		static void setWindowPosition(const RenderWindow& window, const Int2& pos);
-
 		static void clipToWindow(const RenderWindow& window);
 		static void clipToRect(const Rect& screenRect);
 		static void clipDisable();

@@ -27,72 +27,14 @@ CamelotFontImporter (optional) relies on:
   - IMPORTANT NOTE: When compiling as static library make sure to define "FREETYPE2_STATIC". It is not defined by default
     in provided Visual Studio projects, which can cause a headache.
 
+CamelotOISInput relies on:
+ - CamelotOIS - Slightly modified version of OIS 1.3 specifically for Camelot
+  - Supplied with Camelot source code but compiled as a separate project into a dependency
+
 Place plug-in specific dependency files in:
  - Library include files in (BansheeRootDir)/(PluginDir)/Dependencies/Include
  - Static library files in (BansheeRootDir)/(PluginDir)/Dependencies/lib/(Platform)/(Configuration)
  - Dynamic library files in (BansheeRootDir)/bin/(Platform)/(Configuration)
-
- ----------------------------------------------------------------------------------
-
- Banshee editor dependencies:
-  - Qt Toolkit
-    - http://qt-project.org/downloads
-
-Qt setup instructions:
- 1. Make sure to install Qt 5.0.1 (earlier or later versions might possibly work fine)
- 2. Set up CamelotEditor project so it is pre-processed by Qt MOC before compilation. Each header with CmQt* prefix needs to be preproceesed
-     by MOC, and its files output in GeneratedFiles folder.
- 2. Add Qt include files to CamelotEditor/Dependencies/Include
- 3. Add Qt libraries to CamelotEditor/Dependencies/lib/Debug, CamelotEditor/Dependencies/lib/Release, CamelotEditor/Dependencies/lib/x64/Debug and CamelotEditor/Dependencies/lib/x64/Release
-   - You may download pre-compiled 32bit versions of the libraries for some compilers from the Qt web
-   - For other cases you will need to compile them yourself
- 4. Add dynamic Qt libraries in (BansheeRootDir)/bin/(Platform)/(Configuration)
- 5. Only some Qt libraries are used, so you don't need to add them all. We use:
-   - Qt5Core
-   - Qt5Gui
-   - Qt5Widgets
- 6. Add Qt platform plugins:
-   - copy qtbase/plugins/platform/ contents from compiled Qt binaries to (BansheeRootDir)/bin/(Platform)/(Configuration)/qtplugins/platform/
-     - this folder contains platform-specific libraries (e.g. qwindows.dll for Windows)
-   - Create conf.qt file in (BansheeRootDir)/bin/(Platform)/(Configuration) containing:
-      [Paths]
-      Plugins = qtplugins
-
-   - This tells Qt where the plugins are located (i.e. in the "plugins" subfolder of the current folder)
-
-Compiling Qt using MSVC2012 compiler:
- - At the moment there are no provided precompiled libraries for 2012 version of MSVC so
-   you will need to compile them yourself. Qt also doesn't officially provide 64bit
-   versions of their libraries, so this short guide will cover that as well.
- 1. Get Qt 5.0.1. source from http://qt-project.org/downloads
- 2. Extract source to qt-everywhere-opensource-src-5.0.1
- 3. Install:
-   - ActivePerl 5.16.1.1601 (for x64): http://www.activestate.com/activeperl/downloads
-   - Python 2.7.3 (for x64): http://www.python.org/download/
- 4. To compile run Visual Studio 2012 Native Tools Command Prompt 
-    (x64 or x86 version, depending which platform you want to compile for)
- 5. Go to qt-everywhere-opensource-src-5.0.1 in the command prompt
- 6. Run: configure -prefix %CD%\qtbase -opensource -nomake tests -nomake examples -opengl desktop -debug-and-release -platform win32-msvc2012
- 7. Run: nmake
-    OR
- 8. Download and run jom. jom is faster than nmake because it will use multiple CPU cores
-   - Download jom from: http://qt-project.org/wiki/jom
-   - Place it in qt-everywhere-opensource-src-5.0.1 dir
-   - Run: jom -j N 
-   - (N is the number of cores you want to use)
- 9. Wait some time (About 10 minutes on my PC, but I've seen people report waiting for hours)
-
- MOC preproces:
-  1. Each header starting with CmQt* (or, more generally, each file containing Q_OBJECT) needs to be
-     preprocessed by MOC, and MOC output needs to be compiled with the project
-  2. Example command line for preprocessing a single file: 
-    "$(QTDIR)\bin\moc.exe"  ".\Include\CmQtEditor.h" -o ".\GeneratedFiles\moc_CmQtEditor.cpp"  
-	-DUNICODE -DWIN32 -DQT_NO_KEYWORDS -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include"
-	"-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"
-  3. (Optional step) With Visual Studio you can set up a custom build set so this is done automatically
-  4. (Optional step) Qt also provides a Visual Studio Add-In that handles MOC for your, although it is currently very buggy with VS2012 so I do not use it.
-
- ----------------------------------------------------------------------------------
 
  Legend:
   (BansheeRootDir) - Path to BansheeEngine folder

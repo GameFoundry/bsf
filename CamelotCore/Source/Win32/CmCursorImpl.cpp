@@ -26,35 +26,6 @@ namespace CamelotFramework
 	NativeCursorData Cursor::mCursor;
 	bool Cursor::mUsingCustom = false;
 
-	Int2 Cursor::getWindowPosition(const RenderWindow& window)
-	{
-		POINT screenPos;
-		GetCursorPos(&screenPos);
-
-		HWND hwnd;
-		window.getCustomAttribute("WINDOW", &hwnd);
-
-		ScreenToClient(hwnd, &screenPos);
-
-		return Int2(screenPos.x, screenPos.y);
-	}
-
-	void Cursor::setWindowPosition(const RenderWindow& window, const Int2& pos)
-	{
-		POINT screenPos;
-
-		// Convert client coordinates to screen coordinates
-		screenPos.x = pos.x;
-		screenPos.y = pos.y;
-
-		HWND hwnd;
-		window.getCustomAttribute("WINDOW", &hwnd);
-
-		ClientToScreen(hwnd, &screenPos);
-
-		SetCursorPos(screenPos.x, screenPos.y);
-	}
-
 	Int2 Cursor::getScreenPosition()
 	{
 		POINT screenPos;

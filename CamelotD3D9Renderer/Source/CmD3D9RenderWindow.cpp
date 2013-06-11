@@ -754,7 +754,7 @@ namespace CamelotFramework
 		pos.x = screenPos.x;
 		pos.y = screenPos.y;
 
-		ClientToScreen(mHWnd, &pos);
+		ScreenToClient(mHWnd, &pos);
 		return Int2(pos.x, pos.y);
 	}
 
