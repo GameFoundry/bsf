@@ -233,7 +233,20 @@ namespace BansheeEngine
 
 	bool GUIInputBox::keyEvent(const GUIKeyEvent& ev)
 	{
-		if(ev.getType() == GUIKeyEventType::TextInput)
+		if(ev.getType() == GUIKeyEventType::KeyDown)
+		{
+			if(ev.getKey() == KC_BACK)
+			{
+				if(mText.size() > 0)
+				{
+					mText.erase(mText.end() - 1);
+					markAsDirty();
+				}
+
+				return true;
+			}
+		}
+		else if(ev.getType() == GUIKeyEventType::TextInput)
 		{
 			// TODO - How are backspace, caps and enter handled?
 			mText += ev.getInputChar();

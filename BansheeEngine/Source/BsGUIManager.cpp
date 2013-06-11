@@ -413,8 +413,15 @@ namespace BansheeEngine
 		{
 			mKeyEvent = GUIKeyEvent();
 
-			mKeyEvent.setTextInputData(event.textChar);
-			mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
+			mKeyEvent.setKeyDownData(event.keyCode);
+			bool keyDownHandled = mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
+
+			// If key down wasn't handled, send text input event if pressed character is textual
+			if(!keyDownHandled && event.textChar != 0)
+			{
+				mKeyEvent.setTextInputData(event.textChar);
+				mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
+			}
 		}
 		
 		event.markAsUsed();

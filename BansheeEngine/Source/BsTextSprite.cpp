@@ -45,10 +45,36 @@ namespace BansheeEngine
 			break;
 		}
 
-		// Actually generate a mesh
-		if(mCachedRenderElements.size() < quadsPerPage.size())
+		// Resize cached mesh array to needed size
+		if(mCachedRenderElements.size() > quadsPerPage.size())
+		{
+			for(UINT32 i = (UINT32)quadsPerPage.size(); i < (UINT32)mCachedRenderElements.size(); i++)
+			{
+				auto& renderElem = mCachedRenderElements[i];
+
+				UINT32 vertexCount = renderElem.numQuads * 4;
+				UINT32 indexCount = renderElem.numQuads * 6;
+
+				if(renderElem.vertices != nullptr)
+					cm_deleteN<ScratchAlloc>(renderElem.vertices, vertexCount);
+
+				if(renderElem.uvs != nullptr)
+					cm_deleteN<ScratchAlloc>(renderElem.uvs, vertexCount);
+
+				if(renderElem.indexes != nullptr)
+					cm_deleteN<ScratchAlloc>(renderElem.indexes, indexCount);
+
+				if(renderElem.material != nullptr)
+				{
+					GUIMaterialManager::instance().releaseMaterial(renderElem.material);
+				}
+			}
+		}
+
+		if(mCachedRenderElements.size() != quadsPerPage.size())
 			mCachedRenderElements.resize(quadsPerPage.size());
 
+		// Actually generate a mesh
 		const CM::vector<HTexture>::type& texturePages = textData->getTexturePages();
 		UINT32 texPage = 0;
 		for(auto& cachedElem : mCachedRenderElements)
