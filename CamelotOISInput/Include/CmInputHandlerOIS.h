@@ -16,12 +16,10 @@ namespace CamelotFramework
 		InputHandlerOIS(unsigned int hWnd);
 		virtual ~InputHandlerOIS();
 
-		const WString& getInputString() const { return mInputString; }
 	private:
 		OIS::InputManager*	mInputManager;
 		OIS::Mouse*			mMouse;
 		OIS::Keyboard*		mKeyboard;
-		WString				mInputString;
 
 		virtual bool keyPressed(const OIS::KeyEvent& arg);
 		virtual bool keyReleased(const OIS::KeyEvent& arg);

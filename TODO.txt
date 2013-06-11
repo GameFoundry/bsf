@@ -22,7 +22,6 @@ I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
 IMMEDIATE:
- - OIS provides me only with main window cursor coordinates, while I need screen coordinates. Modify OIS project and correct that. Merging it with my plugin is probably a bad idea.
  - Add window-management command to DeferredRenderContext - I already have resource management commands
    there, few window related ones won't hurt. I can always split the class if needed.
      - Possibly add guards to render target classes so they aren't accidentaly accessed from the render thread (similar to how Texture is handled)

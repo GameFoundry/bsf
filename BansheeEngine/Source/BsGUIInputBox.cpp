@@ -236,7 +236,7 @@ namespace BansheeEngine
 		if(ev.getType() == GUIKeyEventType::TextInput)
 		{
 			// TODO - How are backspace, caps and enter handled?
-			mText += ev.getInputString();
+			mText += ev.getInputChar();
 
 			markAsDirty();
 

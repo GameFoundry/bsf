@@ -169,13 +169,40 @@ namespace CamelotFramework
 		MB_Button18, MB_Button19, MB_Button20, MB_Count
 	};
 
+	struct KeyEvent
+	{
+	public:
+		KeyEvent()
+			:mIsUsed(false)
+		{ }
+
+		KeyCode keyCode;
+		UINT32 textChar;
+
+		bool isUsed() const { return mIsUsed; }
+		void markAsUsed() const { mIsUsed = true; }
+	private:
+		mutable bool mIsUsed;
+	};
+
 	struct MouseEvent
 	{
+	public:
+		MouseEvent()
+			:mIsUsed(false)
+		{ }
+
 		Int2 coords;
 		Int2 relCoords;
 
 		int z;
 		int relZ;
+
+		bool isUsed() const { return mIsUsed; }
+		void markAsUsed() const { mIsUsed = true; }
+
+	private:
+		mutable bool mIsUsed;
 	};
 
 	/**
@@ -188,8 +215,8 @@ namespace CamelotFramework
 		InputHandler() {}
 		virtual ~InputHandler() {}
 
-		boost::signal<void(KeyCode)> onKeyDown;
-		boost::signal<void(KeyCode)> onKeyUp;
+		boost::signal<void(const KeyEvent&)> onKeyDown;
+		boost::signal<void(const KeyEvent&)> onKeyUp;
 
 		boost::signal<void(const MouseEvent&)> onMouseMoved;
 		boost::signal<void(const MouseEvent&, MouseButton)> onMouseDown;
@@ -199,10 +226,5 @@ namespace CamelotFramework
 		 * @brief	Called every frame by InputManager. Capture input here if needed.
 		 */
 		virtual void update() {}
-
-		/**
-		 * @brief	Gets all the characters inputted since the last frame.
-		 */
-		virtual const WString& getInputString() const = 0;
 	};
 }

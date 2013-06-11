@@ -67,10 +67,9 @@ namespace BansheeEngine
 		boost::signals::connection mOnKeyUpConn;
 
 		void updateMeshes();
-		void updateInput();
 
-		void onKeyDown(CM::KeyCode keyCode);
-		void onKeyUp(CM::KeyCode keyCode);
+		void onKeyDown(const CM::KeyEvent& event);
+		void onKeyUp(const CM::KeyEvent& event);
 
 		void onMouseMoved(const CM::MouseEvent& event);
 		void onMouseDown(const CM::MouseEvent& event, CM::MouseButton buttonID);

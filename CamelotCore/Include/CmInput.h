@@ -13,13 +13,12 @@ namespace CamelotFramework
 		Input();
 		~Input();
 
-		boost::signal<void(KeyCode)> onKeyDown;
-		boost::signal<void(KeyCode)> onKeyUp;
+		boost::signal<void(const KeyEvent&)> onKeyDown;
+		boost::signal<void(const KeyEvent&)> onKeyUp;
 
 		boost::signal<void(const MouseEvent&)> onMouseMoved;
 		boost::signal<void(const MouseEvent&, MouseButton)> onMouseDown;
 		boost::signal<void(const MouseEvent&, MouseButton)> onMouseUp;
-
 
 		void initClipRect(Rect& clipRect);
 		void registerInputHandler(InputHandlerPtr inputHandler);
@@ -46,11 +45,6 @@ namespace CamelotFramework
 		bool isButtonDown(MouseButton button) const;
 		bool isKeyDown(KeyCode keyCode) const;
 
-		/**
-		 * @brief	Gets all the characters inputted since the last frame.
-		 */
-		WString getInputString() const { return mInputHandler->getInputString(); }
-
 	private:
 		InputHandlerPtr mInputHandler;
 
@@ -69,8 +63,8 @@ namespace CamelotFramework
 		bool mMouseButtonState[MB_Count];
 		bool mKeyState[KC_Count];
 
-		void keyDown(KeyCode keyCode);
-		void keyUp(KeyCode keyCode);
+		void keyDown(const KeyEvent& event);
+		void keyUp(const KeyEvent& event);
 
 		void mouseMoved(const MouseEvent& event);
 		void mouseDown(const MouseEvent& event, MouseButton buttonID);

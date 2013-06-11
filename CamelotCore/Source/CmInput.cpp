@@ -78,16 +78,16 @@ namespace CamelotFramework
 		updateSmoothInput();
 	}
 
-	void Input::keyDown(KeyCode keyCode)
+	void Input::keyDown(const KeyEvent& event)
 	{
-		mKeyState[keyCode] = true;
-		onKeyDown(keyCode);
+		mKeyState[event.keyCode] = true;
+		onKeyDown(event);
 	}
 
-	void Input::keyUp(KeyCode keyCode)
+	void Input::keyUp(const KeyEvent& event)
 	{
-		mKeyState[keyCode] = false;
-		onKeyUp(keyCode);
+		mKeyState[event.keyCode] = false;
+		onKeyUp(event);
 	}
 
 	void Input::mouseMoved(const MouseEvent& event)

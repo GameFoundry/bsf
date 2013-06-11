@@ -56,27 +56,27 @@ namespace CamelotFramework
 
 	void InputHandlerOIS::update()
 	{
-		mInputString = "";
-
 		mMouse->capture();
 		mKeyboard->capture();
 	}
 
 	bool InputHandlerOIS::keyPressed(const OIS::KeyEvent &arg)
 	{
-		if(arg.text != 0)
-		{
-			mInputString += arg.text;
-		}
+		KeyEvent event;
+		event.keyCode = (KeyCode)(int)arg.key;
+		event.textChar = arg.text;
 
-		onKeyDown((KeyCode)(int)arg.key);
-
+		onKeyDown(event);
 		return true;
 	}
 
 	bool InputHandlerOIS::keyReleased(const OIS::KeyEvent& arg)
 	{
-		onKeyUp((KeyCode)(int)arg.key);
+		KeyEvent event;
+		event.keyCode = (KeyCode)(int)arg.key;
+		event.textChar = arg.text;
+
+		onKeyUp(event);
 		return true;
 	}
 
@@ -87,8 +87,8 @@ namespace CamelotFramework
 		event.relCoords = Int2(arg.state.X.rel, arg.state.Y.rel);
 		event.z = arg.state.Z.abs;
 		event.relZ = arg.state.Z.rel;
-		onMouseMoved(event);
 
+		onMouseMoved(event);
 		return true;
 	}
 
@@ -99,8 +99,8 @@ namespace CamelotFramework
 		event.relCoords = Int2(arg.state.X.rel, arg.state.Y.rel);
 		event.z = arg.state.Z.abs;
 		event.relZ = arg.state.Z.rel;
-		onMouseDown(event, (MouseButton)(int)id);
 
+		onMouseDown(event, (MouseButton)(int)id);
 		return true;
 	}
 
@@ -110,8 +110,8 @@ namespace CamelotFramework
 		event.coords = Int2(arg.state.X.abs, arg.state.Y.abs);
 		event.relCoords = Int2(0, 0);
 		event.z = arg.state.Z.abs;
-		onMouseUp(event, (MouseButton)(int)id);
 
+		onMouseUp(event, (MouseButton)(int)id);
 		return true;
 	}
 }

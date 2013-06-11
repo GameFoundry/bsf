@@ -14,20 +14,20 @@ namespace BansheeEngine
 	{
 		mType = GUIKeyEventType::KeyDown;
 		mKey = key;
-		mInputString = "";
+		mInputChar = 0;
 	}
 
 	void GUIKeyEvent::setKeyUpData(KeyCode key)
 	{
 		mType = GUIKeyEventType::KeyUp;
 		mKey = key;
-		mInputString = "";
+		mInputChar = 0;
 	}
 
-	void GUIKeyEvent::setTextInputData(const WString& string)
+	void GUIKeyEvent::setTextInputData(UINT32 inputChar)
 	{
 		mType = GUIKeyEventType::TextInput;
 		mKey = KC_0;
-		mInputString = string;
+		mInputChar = inputChar;
 	}
 }

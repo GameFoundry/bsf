@@ -111,7 +111,6 @@ namespace BansheeEngine
 		}
 
 		updateMeshes();
-		updateInput();
 	}
 
 	void GUIManager::render(ViewportPtr& target, RenderContext& renderContext)
@@ -405,31 +404,35 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::updateInput()
+	void GUIManager::onKeyDown(const KeyEvent& event)
 	{
+		if(event.isUsed())
+			return;
 
+		if(mKeyboardFocusElement != nullptr)
+		{
+			mKeyEvent = GUIKeyEvent();
+
+			mKeyEvent.setTextInputData(event.textChar);
+			mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
+		}
+		
+		event.markAsUsed();
 	}
 
-	void GUIManager::onKeyDown(KeyCode keyCode)
+	void GUIManager::onKeyUp(const KeyEvent& event)
 	{
-		//if(mKeyboardFocusElement != nullptr)
-		//{
-		//	mKeyEvent = GUIKeyEvent();
+		if(event.isUsed())
+			return;
 
-		//	// TODO - Handle KeyUp/KeyDown states
-
-		//	mKeyEvent.setTextInputData(gInput().getInputString());
-		//	mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
-		//}
-	}
-
-	void GUIManager::onKeyUp(KeyCode keyCode)
-	{
-
+		event.markAsUsed();
 	}
 
 	void GUIManager::onMouseMoved(const MouseEvent& event)
 	{
+		if(event.isUsed())
+			return;
+
 #if CM_DEBUG_MODE
 		// Checks if all referenced windows actually exist
 		vector<RenderWindow*>::type activeWindows = RenderWindowManager::instance().getRenderWindows();
@@ -566,10 +569,15 @@ namespace BansheeEngine
 
 		mMouseOverElement = topMostElement;
 		mMouseOverWidget = widgetInFocus;
+
+		event.markAsUsed();
 	}
 
 	void GUIManager::onMouseDown(const MouseEvent& event, MouseButton buttonID)
 	{
+		if(event.isUsed())
+			return;
+
 		// TODO - Maybe avoid querying these for every event separately?
 		bool buttonStates[(int)MB_Count];
 		for(int i = 0; i < MB_Count; i++)
@@ -604,10 +612,15 @@ namespace BansheeEngine
 
 		mKeyboardFocusElement = mMouseOverElement;
 		mKeyboardFocusWidget = mMouseOverWidget;
+
+		event.markAsUsed();
 	}
 
 	void GUIManager::onMouseUp(const MouseEvent& event, MouseButton buttonID)
 	{
+		if(event.isUsed())
+			return;
+
 		// TODO - Maybe avoid querying these for every event separately?
 		bool buttonStates[(int)MB_Count];
 		for(int i = 0; i < MB_Count; i++)
@@ -641,6 +654,8 @@ namespace BansheeEngine
 			mActiveWidget = nullptr;
 			mActiveMouseButton = 0;
 		}	
+
+		event.markAsUsed();
 	}
 
 	Int2 GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Int2& screenPos)

@@ -20,16 +20,16 @@ namespace BansheeEngine
 
 		GUIKeyEventType getType() const { return mType; }
 		CM::KeyCode getKey() const { return mKey; }
-		const CM::WString& getInputString() const { return mInputString; }
+		const CM::UINT32& getInputChar() const { return mInputChar; }
 	private:
 		friend class GUIManager;
 
 		GUIKeyEventType mType;
 		CM::KeyCode mKey;
-		CM::WString mInputString;
+		CM::UINT32 mInputChar;
 
 		void setKeyDownData(CM::KeyCode key);
 		void setKeyUpData(CM::KeyCode key);
-		void setTextInputData(const CM::WString& string);
+		void setTextInputData(CM::UINT32 inputChar);
 	};
 }
