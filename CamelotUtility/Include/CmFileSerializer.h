@@ -12,8 +12,8 @@ namespace CamelotFramework
 		FileSerializer();
 		~FileSerializer();
 
-		void encode(IReflectable* object, std::string fileLocation);
-		std::shared_ptr<IReflectable> decode(std::string fileLocation);
+		void encode(IReflectable* object, String fileLocation);
+		std::shared_ptr<IReflectable> decode(String fileLocation);
 
 	private:
 		std::ofstream mOutputStream;

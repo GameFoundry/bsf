@@ -225,7 +225,7 @@ namespace CamelotFramework
 			if (_wglGetExtensionsStringARB)
 			{
 				std::istringstream wglexts(_wglGetExtensionsStringARB(hdc));
-				std::string ext;
+				String ext;
 				while (wglexts >> ext)
 				{
 					if (ext == "WGL_ARB_pixel_format")

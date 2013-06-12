@@ -62,24 +62,25 @@ namespace __gnu_cxx
 
 #endif
 
-namespace CamelotFramework {
+namespace CamelotFramework 
+{
+	template <typename T>
+	struct BasicString 
+	{ 
+		typedef typename std::basic_string<T, std::char_traits<T>, StdAlloc<T>> type; 
+	}; 
 
-#if CM_WCHAR_T_STRINGS
-		typedef std::wstring _StringBase;
-#else
-		typedef std::string _StringBase;
-#endif
+	template <typename T>
+	struct BasicStringStream
+	{ 
+		typedef typename std::basic_stringstream<T, std::char_traits<T>, StdAlloc<T>> type; 
+	}; 
 
-#if CM_WCHAR_T_STRINGS
-		typedef std::basic_stringstream<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t> > _StringStreamBase;
-#else
-		typedef std::basic_stringstream<char,std::char_traits<char>,std::allocator<char> > _StringStreamBase;
-#endif
+	typedef BasicString<wchar_t>::type WString;
+	typedef BasicString<char>::type String;
 
-		typedef _StringBase String;
-		typedef _StringStreamBase StringStream;
-		typedef StringStream stringstream;
-		typedef String WString; // TODO - A temporary value I'll use for things that will need Unicode. I don't use Unicode yet though
+	typedef BasicStringStream<wchar_t>::type WStringStream;
+	typedef BasicStringStream<char>::type StringStream;
 
 	/** \addtogroup Core
 	*  @{
@@ -92,7 +93,14 @@ namespace CamelotFramework {
     class CM_UTILITY_EXPORT StringUtil
     {
 	public:
-		typedef StringStream StrStreamType;
+        /** Removes any whitespace characters, be it standard space or
+            TABs and so on.
+            @remarks
+                The user may specify wether they want to trim only the
+                beginning or the end of the String ( the default action is
+                to trim both).
+        */
+        static void trim(String& str, bool left = true, bool right = true);
 
         /** Removes any whitespace characters, be it standard space or
             TABs and so on.
@@ -101,7 +109,7 @@ namespace CamelotFramework {
                 beginning or the end of the String ( the default action is
                 to trim both).
         */
-        static void trim( String& str, bool left = true, bool right = true );
+        static void trim(WString& str, bool left = true, bool right = true);
 
         /** Returns a StringVector that contains all the substrings delimited
             by the characters in the passed <code>delims</code> argument.
@@ -111,7 +119,17 @@ namespace CamelotFramework {
                 maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
                 parameters is > 0, the splitting process will stop after this many splits, left to right.
         */
-		static vector<String>::type split( const String& str, const String& delims = "\t\n ", unsigned int maxSplits = 0);
+		static vector<String>::type split(const String& str, const String& delims = "\t\n ", unsigned int maxSplits = 0);
+
+		/** Returns a StringVector that contains all the substrings delimited
+            by the characters in the passed <code>delims</code> argument.
+            @param
+                delims A list of delimiter characters to split by
+            @param
+                maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
+                parameters is > 0, the splitting process will stop after this many splits, left to right.
+        */
+		static vector<WString>::type split(const WString& str, const WString& delims = L"\t\n ", unsigned int maxSplits = 0);
 
 		/** Returns a StringVector that contains all the substrings delimited
             by the characters in the passed <code>delims</code> argument, 
@@ -125,16 +143,37 @@ namespace CamelotFramework {
                 maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
                 parameters is > 0, the splitting process will stop after this many splits, left to right.
         */
-		static vector<String>::type tokenise( const String& str, const String& delims = "\t\n ", const String& doubleDelims = "\"", unsigned int maxSplits = 0);
+		static vector<String>::type tokenise(const String& str, const String& delims = "\t\n ", const String& doubleDelims = "\"", unsigned int maxSplits = 0);
+
+		/** Returns a StringVector that contains all the substrings delimited
+            by the characters in the passed <code>delims</code> argument, 
+			or in the <code>doubleDelims</code> argument, which is used to include (normal) 
+			delimeters in the tokenised string. For example, "strings like this".
+            @param
+                delims A list of delimiter characters to split by
+			@param
+                delims A list of double delimeters characters to tokenise by
+            @param
+                maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
+                parameters is > 0, the splitting process will stop after this many splits, left to right.
+        */
+		static vector<WString>::type tokenise(const WString& str, const WString& delims = L"\t\n ", const WString& doubleDelims = L"\"", unsigned int maxSplits = 0);
 
 		/** Lower-cases all the characters in the string.
         */
-        static void toLowerCase( String& str );
+        static void toLowerCase(String& str);
+
+		/** Lower-cases all the characters in the string.
+        */
+        static void toLowerCase(WString& str);
 
         /** Upper-cases all the characters in the string.
         */
-        static void toUpperCase( String& str );
+        static void toUpperCase(String& str);
 
+        /** Upper-cases all the characters in the string.
+        */
+        static void toUpperCase(WString& str);
 
         /** Returns whether the string begins with the pattern passed in.
         @param pattern The pattern to compare with.
@@ -143,6 +182,13 @@ namespace CamelotFramework {
         */
         static bool startsWith(const String& str, const String& pattern, bool lowerCase = true);
 
+        /** Returns whether the string begins with the pattern passed in.
+        @param pattern The pattern to compare with.
+        @param lowerCase If true, the start of the string will be lower cased before
+            comparison, pattern should also be in lower case.
+        */
+        static bool startsWith(const WString& str, const WString& pattern, bool lowerCase = true);
+
         /** Returns whether the string ends with the pattern passed in.
         @param pattern The pattern to compare with.
         @param lowerCase If true, the end of the string will be lower cased before
@@ -150,33 +196,12 @@ namespace CamelotFramework {
         */
         static bool endsWith(const String& str, const String& pattern, bool lowerCase = true);
 
-        /** Method for standardising paths - use forward slashes only, end with slash.
+        /** Returns whether the string ends with the pattern passed in.
+        @param pattern The pattern to compare with.
+        @param lowerCase If true, the end of the string will be lower cased before
+            comparison, pattern should also be in lower case.
         */
-        static String standardisePath( const String &init);
-
-        /** Method for splitting a fully qualified filename into the base name
-            and path.
-        @remarks
-            Path is standardised as in standardisePath
-        */
-        static void splitFilename(const String& qualifiedName,
-            String& outBasename, String& outPath);
-
-		/** Method for splitting a fully qualified filename into the base name,
-		extension and path.
-		@remarks
-		Path is standardised as in standardisePath
-		*/
-		static void splitFullFilename(const CamelotFramework::String& qualifiedName, 
-			CamelotFramework::String& outBasename, CamelotFramework::String& outExtention, 
-			CamelotFramework::String& outPath);
-
-		/** Method for splitting a filename into the base name
-		and extension.
-		*/
-		static void splitBaseFilename(const CamelotFramework::String& fullName, 
-			CamelotFramework::String& outBasename, CamelotFramework::String& outExtention);
-
+        static bool endsWith(const WString& str, const WString& pattern, bool lowerCase = true);
 
         /** Simple pattern-matching routine allowing a wildcard pattern.
         @param str String to test
@@ -185,8 +210,14 @@ namespace CamelotFramework {
         */
         static bool match(const String& str, const String& pattern, bool caseSensitive = true);
 
+		/** Simple pattern-matching routine allowing a wildcard pattern.
+        @param str String to test
+        @param pattern Pattern to match against; can include simple '*' wildcards
+        @param caseSensitive Whether the match is case sensitive or not
+        */
+        static bool match(const WString& str, const WString& pattern, bool caseSensitive = true);
 
-		/** replace all instances of a sub-string with a another sub-string.
+		/** Replace all instances of a sub-string with a another sub-string.
 		@param source Source string
 		@param replaceWhat Sub-string to find and replace
 		@param replaceWithWhat Sub-string to replace with (the new sub-string)
@@ -194,26 +225,255 @@ namespace CamelotFramework {
 		*/
 		static const String replaceAll(const String& source, const String& replaceWhat, const String& replaceWithWhat);
 
+		/** Replace all instances of a sub-string with a another sub-string.
+		@param source Source string
+		@param replaceWhat Sub-string to find and replace
+		@param replaceWithWhat Sub-string to replace with (the new sub-string)
+		@returns An updated string with the sub-string replaced
+		*/
+		static const WString replaceAll(const WString& source, const WString& replaceWhat, const WString& replaceWithWhat);
+
         /// Constant blank string, useful for returning by ref where local does not exist
         static const String BLANK;
+
+		/// Constant blank string, useful for returning by ref where local does not exist
+		static const WString WBLANK;
+
+	private:
+		template <class T>
+		static typename vector<typename BasicString<T>::type>::type splitInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& delims, unsigned int maxSplits)
+		{
+			vector<BasicString<T>::type>::type ret;
+			// Pre-allocate some space for performance
+			ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
+
+			unsigned int numSplits = 0;
+
+			// Use STL methods 
+			size_t start, pos;
+			start = 0;
+			do 
+			{
+				pos = str.find_first_of(delims, start);
+				if (pos == start)
+				{
+					// Do nothing
+					start = pos + 1;
+				}
+				else if (pos == BasicString<T>::type::npos || (maxSplits && numSplits == maxSplits))
+				{
+					// Copy the rest of the string
+					ret.push_back(str.substr(start));
+					break;
+				}
+				else
+				{
+					// Copy up to delimiter
+					ret.push_back(str.substr(start, pos - start));
+					start = pos + 1;
+				}
+				// parse up to next real data
+				start = str.find_first_not_of(delims, start);
+				++numSplits;
+
+			} while (pos != BasicString<T>::type::npos);
+
+			return ret;
+		}
+
+		template <class T>
+		static typename vector<typename BasicString<T>::type>::type tokeniseInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& singleDelims, 
+			const typename BasicString<T>::type& doubleDelims, unsigned int maxSplits)
+		{
+			vector<BasicString<T>::type>::type ret;
+			// Pre-allocate some space for performance
+			ret.reserve(maxSplits ? maxSplits + 1 : 10);    // 10 is guessed capacity for most case
+
+			unsigned int numSplits = 0;
+			BasicString<T>::type delims = singleDelims + doubleDelims;
+
+			// Use STL methods 
+			size_t start, pos;
+			T curDoubleDelim = 0;
+			start = 0;
+			do 
+			{
+				if (curDoubleDelim != 0)
+				{
+					pos = str.find(curDoubleDelim, start);
+				}
+				else
+				{
+					pos = str.find_first_of(delims, start);
+				}
+
+				if (pos == start)
+				{
+					T curDelim = str.at(pos);
+					if (doubleDelims.find_first_of(curDelim) != BasicString<T>::type::npos)
+					{
+						curDoubleDelim = curDelim;
+					}
+					// Do nothing
+					start = pos + 1;
+				}
+				else if (pos == BasicString<T>::type::npos || (maxSplits && numSplits == maxSplits))
+				{
+					if (curDoubleDelim != 0)
+					{
+						//Missing closer. Warn or throw exception?
+					}
+					// Copy the rest of the string
+					ret.push_back( str.substr(start) );
+					break;
+				}
+				else
+				{
+					if (curDoubleDelim != 0)
+					{
+						curDoubleDelim = 0;
+					}
+
+					// Copy up to delimiter
+					ret.push_back( str.substr(start, pos - start) );
+					start = pos + 1;
+				}
+				if (curDoubleDelim == 0)
+				{
+					// parse up to next real data
+					start = str.find_first_not_of(singleDelims, start);
+				}
+
+				++numSplits;
+
+			} while (pos != BasicString<T>::type::npos);
+
+			return ret;
+		}
+
+		template <class T>
+		static bool startsWithInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& pattern, bool lowerCase)
+		{
+			size_t thisLen = str.length();
+			size_t patternLen = pattern.length();
+			if (thisLen < patternLen || patternLen == 0)
+				return false;
+
+			BasicString<T>::type startOfThis = str.substr(0, patternLen);
+			if (lowerCase)
+				StringUtil::toLowerCase(startOfThis);
+
+			return (startOfThis == pattern);
+		}
+
+		template <class T>
+		static bool endsWithInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& pattern, bool lowerCase)
+		{
+			size_t thisLen = str.length();
+			size_t patternLen = pattern.length();
+			if (thisLen < patternLen || patternLen == 0)
+				return false;
+
+			BasicString<T>::type endOfThis = str.substr(thisLen - patternLen, patternLen);
+			if (lowerCase)
+				StringUtil::toLowerCase(endOfThis);
+
+			return (endOfThis == pattern);
+		}
+
+		template <class T>
+		static bool matchInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& pattern, bool caseSensitive)
+		{
+			BasicString<T>::type tmpStr = str;
+			BasicString<T>::type tmpPattern = pattern;
+			if (!caseSensitive)
+			{
+				StringUtil::toLowerCase(tmpStr);
+				StringUtil::toLowerCase(tmpPattern);
+			}
+
+			BasicString<T>::type::const_iterator strIt = tmpStr.begin();
+			BasicString<T>::type::const_iterator patIt = tmpPattern.begin();
+			BasicString<T>::type::const_iterator lastWildCardIt = tmpPattern.end();
+			while (strIt != tmpStr.end() && patIt != tmpPattern.end())
+			{
+				if (*patIt == '*')
+				{
+					lastWildCardIt = patIt;
+					// Skip over looking for next character
+					++patIt;
+					if (patIt == tmpPattern.end())
+					{
+						// Skip right to the end since * matches the entire rest of the string
+						strIt = tmpStr.end();
+					}
+					else
+					{
+						// scan until we find next pattern character
+						while(strIt != tmpStr.end() && *strIt != *patIt)
+							++strIt;
+					}
+				}
+				else
+				{
+					if (*patIt != *strIt)
+					{
+						if (lastWildCardIt != tmpPattern.end())
+						{
+							// The last wildcard can match this incorrect sequence
+							// rewind pattern to wildcard and keep searching
+							patIt = lastWildCardIt;
+							lastWildCardIt = tmpPattern.end();
+						}
+						else
+						{
+							// no wildwards left
+							return false;
+						}
+					}
+					else
+					{
+						++patIt;
+						++strIt;
+					}
+				}
+
+			}
+
+			// If we reached the end of both the pattern and the string, we succeeded
+			if (patIt == tmpPattern.end() && strIt == tmpStr.end())
+				return true;
+			else
+				return false;
+		}
+
+		template <class T>
+		static const typename BasicString<T>::type replaceAllInternal(const typename BasicString<T>::type& source, 
+			const typename BasicString<T>::type& replaceWhat, const typename BasicString<T>::type& replaceWithWhat)
+		{
+			BasicString<T>::type result = source;
+			BasicString<T>::type::size_type pos = 0;
+			while(1)
+			{
+				pos = result.find(replaceWhat,pos);
+				if (pos == BasicString<T>::type::npos) break;
+				result.replace(pos,replaceWhat.size(), replaceWithWhat);
+				pos += replaceWithWhat.size();
+			}
+			return result;
+		}
     };
 
 
-#if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310 && !defined(STLPORT)
-#   if CM_COMP_VER < 430
-	typedef ::__gnu_cxx::hash< _StringBase > _StringHash;
-#   else
-	typedef ::std::tr1::hash< _StringBase > _StringHash;
-#   endif
-#elif CM_COMPILER == CM_COMPILER_MSVC && CM_COMP_VER >= 1600 && !defined(STLPORT) // VC++ 10.0
-	typedef ::std::tr1::hash< _StringBase > _StringHash;
-#elif !defined( _STLP_HASH_FUN_H )
-	typedef stdext::hash_compare< _StringBase, std::less< _StringBase > > _StringHash;
-#else
-	typedef std::hash< _StringBase > _StringHash;
-#endif 
-	/** @} */
-	/** @} */
+	/**
+	* @brief	Converts a narrow string to a wide string.
+	*/
+	CM_UTILITY_EXPORT WString toWString(const String& source);
+
+	/**
+	* @brief	Converts a wide string to a narrow string.
+	*/
+	CM_UTILITY_EXPORT String toString(const WString& source);
 
 	    /** Converts a float to a String. */
     CM_UTILITY_EXPORT String toString(float val, unsigned short precision = 6, 
@@ -347,12 +607,6 @@ namespace CamelotFramework {
     */
     CM_UTILITY_EXPORT bool parseBool(const String& val, bool defaultValue = 0);
 
-    /** Pareses a StringVector from a string.
-    @remarks
-        Strings must not contain spaces since space is used as a delimiter in
-        the output.
-    */
-    CM_UTILITY_EXPORT vector<CamelotFramework::String>::type parseStringVector(const String& val);
     /** Checks the String is a valid number value. */
     CM_UTILITY_EXPORT bool isNumber(const String& val);
 	/** @} */

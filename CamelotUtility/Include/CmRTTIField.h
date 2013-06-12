@@ -67,7 +67,7 @@ namespace CamelotFramework
 		boost::any arraySizeGetter;
 		boost::any arraySizeSetter;
 
-		std::string mName;
+		String mName;
 		UINT16 mUniqueId;
 		bool mIsVectorType;
 		SerializableFieldType mType;
@@ -122,7 +122,7 @@ namespace CamelotFramework
 
 	protected:
 		void initAll(boost::any valueGetter, boost::any valueSetter, boost::any arraySizeGetter, boost::any arraySizeSetter,
-			std::string mName, UINT16 mUniqueId, bool mIsVectorType, SerializableFieldType type, UINT64 flags)
+			String mName, UINT16 mUniqueId, bool mIsVectorType, SerializableFieldType type, UINT64 flags)
 		{
 			this->valueGetter = valueGetter;
 			this->valueSetter = valueSetter;

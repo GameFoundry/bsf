@@ -7,13 +7,13 @@
 
 namespace CamelotFramework
 {
-	const std::string SystemName = "D3D9RenderSystem";
+	const String SystemName = "D3D9RenderSystem";
 
 	class D3D9RenderSystemFactory : public RenderSystemFactory
 	{
 		public:
 			virtual void create();
-			virtual const std::string& name() const { return SystemName; }
+			virtual const String& name() const { return SystemName; }
 
 		private:
 			class InitOnStart

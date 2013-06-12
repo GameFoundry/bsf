@@ -7,13 +7,13 @@
 
 namespace CamelotFramework
 {
-	const std::string SystemName = "GLRenderSystem";
+	const String SystemName = "GLRenderSystem";
 
 	class GLRenderSystemFactory : public RenderSystemFactory
 	{
 	public:
 		virtual void create();
-		virtual const std::string& name() const { return SystemName; }
+		virtual const String& name() const { return SystemName; }
 
 	private:
 		class InitOnStart

@@ -53,7 +53,7 @@ namespace CamelotFramework
     {
 		if(includes != nullptr)
 		{
-			std::ostringstream stringStream;
+			StringStream stringStream;
 			for(auto iter = includes->begin(); iter != includes->end(); ++iter)
 			{
 				if(*iter != nullptr)

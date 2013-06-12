@@ -32,7 +32,7 @@ namespace CamelotFramework
 		 * @param	flags		Various flags you can use to specialize how systems handle this field
 		 * @param	customAllocator (optional) Custom allocator that will be used when de-serializing DataBlock memory.
 		 */
-		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::any customAllocator = boost::any())
+		void initSingle(const String& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::any customAllocator = boost::any())
 		{
 			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_DataBlock, flags);
 			mCustomAllocator = customAllocator;

@@ -37,36 +37,13 @@ THE SOFTWARE.
 #include "CmVector4.h"
 #include "CmException.h"
 
-namespace CamelotFramework {
-
-	//-----------------------------------------------------------------------
+namespace CamelotFramework 
+{
 	const String StringUtil::BLANK;
-	//-----------------------------------------------------------------------
+	const WString StringUtil::WBLANK;
+
     void StringUtil::trim(String& str, bool left, bool right)
     {
-        /*
-        size_t lspaces, rspaces, len = length(), i;
-
-        lspaces = rspaces = 0;
-
-        if( left )
-        {
-            // Find spaces / tabs on the left
-            for( i = 0;
-                i < len && ( at(i) == ' ' || at(i) == '\t' || at(i) == '\r');
-                ++lspaces, ++i );
-        }
-        
-        if( right && lspaces < len )
-        {
-            // Find spaces / tabs on the right
-            for( i = len - 1;
-                i >= 0 && ( at(i) == ' ' || at(i) == '\t' || at(i) == '\r');
-                rspaces++, i-- );
-        }
-
-        *this = substr(lspaces, len-lspaces-rspaces);
-        */
         static const String delims = " \t\r";
         if(right)
             str.erase(str.find_last_not_of(delims)+1); // trim right
@@ -74,308 +51,113 @@ namespace CamelotFramework {
             str.erase(0, str.find_first_not_of(delims)); // trim left
     }
 
-    //-----------------------------------------------------------------------
-    vector<CamelotFramework::String>::type StringUtil::split( const String& str, const String& delims, unsigned int maxSplits)
-    {
-        vector<CamelotFramework::String>::type ret;
-        // Pre-allocate some space for performance
-        ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
-
-        unsigned int numSplits = 0;
-
-        // Use STL methods 
-        size_t start, pos;
-        start = 0;
-        do 
-        {
-            pos = str.find_first_of(delims, start);
-            if (pos == start)
-            {
-                // Do nothing
-                start = pos + 1;
-            }
-            else if (pos == String::npos || (maxSplits && numSplits == maxSplits))
-            {
-                // Copy the rest of the string
-                ret.push_back( str.substr(start) );
-                break;
-            }
-            else
-            {
-                // Copy up to delimiter
-                ret.push_back( str.substr(start, pos - start) );
-                start = pos + 1;
-            }
-            // parse up to next real data
-            start = str.find_first_not_of(delims, start);
-            ++numSplits;
-
-        } while (pos != String::npos);
-
-
-
-        return ret;
-    }
-	//-----------------------------------------------------------------------
-	vector<CamelotFramework::String>::type StringUtil::tokenise( const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
+	void StringUtil::trim(WString& str, bool left, bool right)
 	{
-        vector<CamelotFramework::String>::type ret;
-        // Pre-allocate some space for performance
-        ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
+		static const WString delims = L" \t\r";
+		if(right)
+			str.erase(str.find_last_not_of(delims)+1); // trim right
+		if(left)
+			str.erase(0, str.find_first_not_of(delims)); // trim left
+	}
 
-        unsigned int numSplits = 0;
-		String delims = singleDelims + doubleDelims;
-
-		// Use STL methods 
-        size_t start, pos;
-		char curDoubleDelim = 0;
-        start = 0;
-        do 
-        {
-			if (curDoubleDelim != 0)
-			{
-				pos = str.find(curDoubleDelim, start);
-			}
-			else
-			{
-				pos = str.find_first_of(delims, start);
-			}
-
-            if (pos == start)
-            {
-				char curDelim = str.at(pos);
-				if (doubleDelims.find_first_of(curDelim) != String::npos)
-				{
-					curDoubleDelim = curDelim;
-				}
-                // Do nothing
-                start = pos + 1;
-            }
-            else if (pos == String::npos || (maxSplits && numSplits == maxSplits))
-            {
-				if (curDoubleDelim != 0)
-				{
-					//Missing closer. Warn or throw exception?
-				}
-                // Copy the rest of the string
-                ret.push_back( str.substr(start) );
-                break;
-            }
-            else
-            {
-				if (curDoubleDelim != 0)
-				{
-					curDoubleDelim = 0;
-				}
-
-				// Copy up to delimiter
-				ret.push_back( str.substr(start, pos - start) );
-				start = pos + 1;
-            }
-			if (curDoubleDelim == 0)
-			{
-				// parse up to next real data
-				start = str.find_first_not_of(singleDelims, start);
-			}
-            
-            ++numSplits;
-
-        } while (pos != String::npos);
-
-        return ret;
+    vector<String>::type StringUtil::split(const String& str, const String& delims, unsigned int maxSplits)
+    {
+        return splitInternal<char>(str, delims, maxSplits);
     }
-    //-----------------------------------------------------------------------
+
+	vector<WString>::type StringUtil::split(const WString& str, const WString& delims, unsigned int maxSplits)
+	{
+		return splitInternal<wchar_t>(str, delims, maxSplits);
+	}
+
+	vector<String>::type StringUtil::tokenise(const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
+	{
+        return tokeniseInternal<char>(str, singleDelims, doubleDelims, maxSplits);
+    }
+
+	vector<WString>::type StringUtil::tokenise(const WString& str, const WString& singleDelims, const WString& doubleDelims, unsigned int maxSplits)
+	{
+		return tokeniseInternal<wchar_t>(str, singleDelims, doubleDelims, maxSplits);
+	}
+
     void StringUtil::toLowerCase(String& str)
     {
-        std::transform(
-            str.begin(),
-            str.end(),
-            str.begin(),
-			tolower);
+        std::transform(str.begin(), str.end(), str.begin(), tolower);
     }
 
-    //-----------------------------------------------------------------------
+	void StringUtil::toLowerCase(WString& str)
+	{
+		std::transform(str.begin(), str.end(), str.begin(), tolower);
+	}
+
     void StringUtil::toUpperCase(String& str) 
     {
-        std::transform(
-            str.begin(),
-            str.end(),
-            str.begin(),
-			toupper);
+        std::transform(str.begin(), str.end(), str.begin(), toupper);
     }
-    //-----------------------------------------------------------------------
+
+	void StringUtil::toUpperCase(WString& str) 
+	{
+		std::transform(str.begin(), str.end(), str.begin(), toupper);
+	}
+
     bool StringUtil::startsWith(const String& str, const String& pattern, bool lowerCase)
     {
-        size_t thisLen = str.length();
-        size_t patternLen = pattern.length();
-        if (thisLen < patternLen || patternLen == 0)
-            return false;
-
-        String startOfThis = str.substr(0, patternLen);
-        if (lowerCase)
-            StringUtil::toLowerCase(startOfThis);
-
-        return (startOfThis == pattern);
+        return startsWithInternal<char>(str, pattern, lowerCase);
     }
-    //-----------------------------------------------------------------------
+
+	bool StringUtil::startsWith(const WString& str, const WString& pattern, bool lowerCase)
+	{
+		return startsWithInternal<wchar_t>(str, pattern, lowerCase);
+	}
+
     bool StringUtil::endsWith(const String& str, const String& pattern, bool lowerCase)
     {
-        size_t thisLen = str.length();
-        size_t patternLen = pattern.length();
-        if (thisLen < patternLen || patternLen == 0)
-            return false;
-
-        String endOfThis = str.substr(thisLen - patternLen, patternLen);
-        if (lowerCase)
-            StringUtil::toLowerCase(endOfThis);
-
-        return (endOfThis == pattern);
+        return endsWithInternal<char>(str, pattern, lowerCase);
     }
-    //-----------------------------------------------------------------------
-    String StringUtil::standardisePath(const String& init)
-    {
-        String path = init;
 
-        std::replace( path.begin(), path.end(), '\\', '/' );
-        if( path[path.length() - 1] != '/' )
-            path += '/';
-
-        return path;
-    }
-    //-----------------------------------------------------------------------
-    void StringUtil::splitFilename(const String& qualifiedName, 
-        String& outBasename, String& outPath)
-    {
-        String path = qualifiedName;
-        // Replace \ with / first
-        std::replace( path.begin(), path.end(), '\\', '/' );
-        // split based on final /
-        size_t i = path.find_last_of('/');
-
-        if (i == String::npos)
-        {
-            outPath.clear();
-			outBasename = qualifiedName;
-        }
-        else
-        {
-            outBasename = path.substr(i+1, path.size() - i - 1);
-            outPath = path.substr(0, i+1);
-        }
-
-    }
-	//-----------------------------------------------------------------------
-	void StringUtil::splitBaseFilename(const CamelotFramework::String& fullName, 
-		CamelotFramework::String& outBasename, CamelotFramework::String& outExtention)
+	bool StringUtil::endsWith(const WString& str, const WString& pattern, bool lowerCase)
 	{
-		size_t i = fullName.find_last_of(".");
-		if (i == CamelotFramework::String::npos)
-		{
-			outExtention.clear();
-			outBasename = fullName;
-		}
-		else
-		{
-			outExtention = fullName.substr(i+1);
-			outBasename = fullName.substr(0, i);
-		}
+		return endsWithInternal<wchar_t>(str, pattern, lowerCase);
 	}
-	// ----------------------------------------------------------------------------------------------------------------------------------------------
-	void StringUtil::splitFullFilename(	const CamelotFramework::String& qualifiedName, 
-		CamelotFramework::String& outBasename, CamelotFramework::String& outExtention, CamelotFramework::String& outPath )
-	{
-		CamelotFramework::String fullName;
-		splitFilename( qualifiedName, fullName, outPath );
-		splitBaseFilename( fullName, outBasename, outExtention );
-	}
-    //-----------------------------------------------------------------------
+
     bool StringUtil::match(const String& str, const String& pattern, bool caseSensitive)
     {
-        String tmpStr = str;
-		String tmpPattern = pattern;
-        if (!caseSensitive)
-        {
-            StringUtil::toLowerCase(tmpStr);
-            StringUtil::toLowerCase(tmpPattern);
-        }
-
-        String::const_iterator strIt = tmpStr.begin();
-        String::const_iterator patIt = tmpPattern.begin();
-		String::const_iterator lastWildCardIt = tmpPattern.end();
-        while (strIt != tmpStr.end() && patIt != tmpPattern.end())
-        {
-            if (*patIt == '*')
-            {
-				lastWildCardIt = patIt;
-                // Skip over looking for next character
-                ++patIt;
-                if (patIt == tmpPattern.end())
-				{
-					// Skip right to the end since * matches the entire rest of the string
-					strIt = tmpStr.end();
-				}
-				else
-                {
-					// scan until we find next pattern character
-                    while(strIt != tmpStr.end() && *strIt != *patIt)
-                        ++strIt;
-                }
-            }
-            else
-            {
-                if (*patIt != *strIt)
-                {
-					if (lastWildCardIt != tmpPattern.end())
-					{
-						// The last wildcard can match this incorrect sequence
-						// rewind pattern to wildcard and keep searching
-						patIt = lastWildCardIt;
-						lastWildCardIt = tmpPattern.end();
-					}
-					else
-					{
-						// no wildwards left
-						return false;
-					}
-                }
-                else
-                {
-                    ++patIt;
-                    ++strIt;
-                }
-            }
-
-        }
-		// If we reached the end of both the pattern and the string, we succeeded
-		if (patIt == tmpPattern.end() && strIt == tmpStr.end())
-		{
-        	return true;
-		}
-		else
-		{
-			return false;
-		}
-
+        return matchInternal<char>(str, pattern, caseSensitive);
     }
-	//-----------------------------------------------------------------------
+
+	bool StringUtil::match(const WString& str, const WString& pattern, bool caseSensitive)
+	{
+		return matchInternal<wchar_t>(str, pattern, caseSensitive);
+	}
+
 	const String StringUtil::replaceAll(const String& source, const String& replaceWhat, const String& replaceWithWhat)
 	{
-		String result = source;
-        String::size_type pos = 0;
-		while(1)
-		{
-			pos = result.find(replaceWhat,pos);
-			if (pos == String::npos) break;
-			result.replace(pos,replaceWhat.size(),replaceWithWhat);
-            pos += replaceWithWhat.size();
-		}
-		return result;
+		return replaceAllInternal<char>(source, replaceWhat, replaceWithWhat);
 	}
-	//-----------------------------------------------------------------------
+
+	const WString StringUtil::replaceAll(const WString& source, const WString& replaceWhat, const WString& replaceWithWhat)
+	{
+		return replaceAllInternal<wchar_t>(source, replaceWhat, replaceWithWhat);
+	}
+
+	/************************************************************************/
+	/* 						VARIOUS TO STRING CONVERSIONS                   */
+	/************************************************************************/
+
+	WString toWString(const String& source)
+	{
+		return WString(source.begin(), source.end());
+	}
+
+	String toString(const WString& source)
+	{
+		return String(source.begin(), source.end());
+	}
+
 	String toString(float val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream.precision(precision);
 		stream.width(width);
 		stream.fill(fill);
@@ -384,23 +166,23 @@ namespace CamelotFramework {
 		stream << val;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(Radian val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		return toString(val.valueAngleUnits(), precision, width, fill, flags);
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(Degree val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		return toString(val.valueAngleUnits(), precision, width, fill, flags);
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(int val, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream.width(width);
 		stream.fill(fill);
 		if (flags)
@@ -408,12 +190,11 @@ namespace CamelotFramework {
 		stream << val;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 #if CM_ARCH_TYPE == CM_ARCHITECTURE_64 || CM_PLATFORM == CM_PLATFORM_APPLE
-	String toString(unsigned int val, 
-		unsigned short width, char fill, std::ios::fmtflags flags)
+	String toString(unsigned int val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream.width(width);
 		stream.fill(fill);
 		if (flags)
@@ -421,11 +202,10 @@ namespace CamelotFramework {
 		stream << val;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
-	String toString(size_t val, 
-		unsigned short width, char fill, std::ios::fmtflags flags)
+
+	String toString(size_t val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream.width(width);
 		stream.fill(fill);
 		if (flags)
@@ -434,11 +214,10 @@ namespace CamelotFramework {
 		return stream.str();
 	}
 #if CM_COMPILER == CM_COMPILER_MSVC
-	//-----------------------------------------------------------------------
-	String toString(unsigned long val, 
-		unsigned short width, char fill, std::ios::fmtflags flags)
+
+	String toString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream.width(width);
 		stream.fill(fill);
 		if (flags)
@@ -448,12 +227,11 @@ namespace CamelotFramework {
 	}
 
 #endif
-	//-----------------------------------------------------------------------
+
 #else
-	String toString(size_t val, 
-		unsigned short width, char fill, std::ios::fmtflags flags)
+	String toString(size_t val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream.width(width);
 		stream.fill(fill);
 		if (flags)
@@ -461,11 +239,10 @@ namespace CamelotFramework {
 		stream << val;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
-	String toString(unsigned long val, 
-		unsigned short width, char fill, std::ios::fmtflags flags)
+
+	String toString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream.width(width);
 		stream.fill(fill);
 		if (flags)
@@ -473,11 +250,10 @@ namespace CamelotFramework {
 		stream << val;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
-	String toString(unsigned long long int val, 
-		unsigned short width, char fill, std::ios::fmtflags flags)
+
+	String toString(unsigned long long int val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream.width(width);
 		stream.fill(fill);
 		if (flags)
@@ -485,12 +261,11 @@ namespace CamelotFramework {
 		stream << val;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
 #endif
 	String toString(long val, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream.width(width);
 		stream.fill(fill);
 		if (flags)
@@ -498,31 +273,31 @@ namespace CamelotFramework {
 		stream << val;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(const Vector2& val)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream << val.x << " " << val.y;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(const Vector3& val)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream << val.x << " " << val.y << " " << val.z;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(const Vector4& val)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream << val.x << " " << val.y << " " << val.z << " " << val.w;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(const Matrix3& val)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream << val[0][0] << " " 
 			<< val[0][1] << " "             
 			<< val[0][2] << " "             
@@ -534,7 +309,7 @@ namespace CamelotFramework {
 			<< val[2][2];
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(bool val, bool yesNo)
 	{
 		if (val)
@@ -558,10 +333,10 @@ namespace CamelotFramework {
 				return "false";
 			}
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(const Matrix4& val)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream << val[0][0] << " " 
 			<< val[0][1] << " "             
 			<< val[0][2] << " "             
@@ -580,24 +355,24 @@ namespace CamelotFramework {
 			<< val[3][3];
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(const Quaternion& val)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream  << val.w << " " << val.x << " " << val.y << " " << val.z;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(const Color& val)
 	{
-		stringstream stream;
+		StringStream stream;
 		stream << val.r << " " << val.g << " " << val.b << " " << val.a;
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 	String toString(const vector<CamelotFramework::String>::type& val)
 	{
-		stringstream stream;
+		StringStream stream;
 		vector<CamelotFramework::String>::type::const_iterator i, iend, ibegin;
 		ibegin = val.begin();
 		iend = val.end();
@@ -610,7 +385,7 @@ namespace CamelotFramework {
 		}
 		return stream.str();
 	}
-	//-----------------------------------------------------------------------
+
 	float parseFloat(const String& val, float defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
@@ -620,7 +395,7 @@ namespace CamelotFramework {
 
 		return ret;
 	}
-	//-----------------------------------------------------------------------
+
 	int parseInt(const String& val, int defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
@@ -630,7 +405,7 @@ namespace CamelotFramework {
 
 		return ret;
 	}
-	//-----------------------------------------------------------------------
+
 	unsigned int parseUnsignedInt(const String& val, unsigned int defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
@@ -640,7 +415,7 @@ namespace CamelotFramework {
 
 		return ret;
 	}
-	//-----------------------------------------------------------------------
+
 	long parseLong(const String& val, long defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
@@ -650,7 +425,7 @@ namespace CamelotFramework {
 
 		return ret;
 	}
-	//-----------------------------------------------------------------------
+
 	unsigned long parseUnsignedLong(const String& val, unsigned long defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
@@ -660,7 +435,7 @@ namespace CamelotFramework {
 
 		return ret;
 	}
-	//-----------------------------------------------------------------------
+
 	bool parseBool(const String& val, bool defaultValue)
 	{
 		if ((StringUtil::startsWith(val, "true") || StringUtil::startsWith(val, "yes")
@@ -672,12 +447,7 @@ namespace CamelotFramework {
 		else
 			return defaultValue;
 	}
-	//-----------------------------------------------------------------------
-	vector<CamelotFramework::String>::type parseStringVector(const String& val)
-	{
-		return StringUtil::split(val);
-	}
-	//-----------------------------------------------------------------------
+
 	bool isNumber(const String& val)
 	{
 		StringStream str(val);
@@ -685,7 +455,7 @@ namespace CamelotFramework {
 		str >> tst;
 		return !str.fail() && str.eof();
 	}
-	//----------------------------------------------------------------------
+
 	void __string_throwDataOverflowException()
 	{
 		CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");

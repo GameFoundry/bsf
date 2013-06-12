@@ -30,7 +30,7 @@ namespace BansheeEditor
 
 	void TabbedTitleBar::insertTab(UINT32 idx, const CM::String& name)
 	{
-		GUIToggle* newTabToggle = GUIToggle::create(*this, name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
+		GUIToggle* newTabToggle = GUIToggle::create(*this, toWString(name), EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
 		GUITexture* newDragDropElement = GUITexture::create(*this, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
 
 		idx = Math::Clamp(idx, 0U, (UINT32)mTabButtons.size());
@@ -71,8 +71,8 @@ namespace BansheeEditor
 		GUITexture* dragDropElement = GUITexture::create(*this, GUILayoutOptions::expandableX(13, 20), GUIImageScaleMode::StretchToFit, getSkin()->getStyle("TabbedBarDropArea"));
 		mLastDropElement = dragDropElement;
 
-		mMinBtn = GUIButton::create(*this, "", getSkin()->getStyle("WinMinimizeBtn"));
-		mCloseBtn = GUIButton::create(*this, "", getSkin()->getStyle("WinCloseBtn"));
+		mMinBtn = GUIButton::create(*this, L"", getSkin()->getStyle("WinMinimizeBtn"));
+		mCloseBtn = GUIButton::create(*this, L"", getSkin()->getStyle("WinCloseBtn"));
 
 		GUIFixedSpace& space3 = mMainArea->getLayout().addSpace(1);
 		mMainLayout = &mMainArea->getLayout().addLayoutX();

@@ -34,7 +34,7 @@ namespace CamelotFramework
 		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, DataType)
 		 * @param	flags		Various flags you can use to specialize how systems handle this field
 		 */
-		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void initSingle(const String& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
 			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_Reflectable, flags);
 		}
@@ -53,7 +53,7 @@ namespace CamelotFramework
 		 * @param	setSize 	Setter method that allows you to resize an array. Can be null. Can be null. Must be a specific signature: void(ObjectType*, UINT32)
 		 * @param	flags		Various flags you can use to specialize how systems handle this field
 		 */
-		void initArray(const std::string& name, UINT16 uniqueId, boost::any getter, 
+		void initArray(const String& name, UINT16 uniqueId, boost::any getter, 
 			boost::any getSize, boost::any setter, boost::any setSize, UINT64 flags)
 		{
 			initAll(getter, setter, getSize, setSize, name, uniqueId, true, SerializableFT_Reflectable, flags);

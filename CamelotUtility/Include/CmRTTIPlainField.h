@@ -150,7 +150,7 @@ namespace CamelotFramework
 		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, DataType)
 		 * @param	flags		Various flags you can use to specialize how systems handle this field
 		 */
-		void initSingle(const std::string& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void initSingle(const String& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
 			int typeId = RTTIPlainType<DataType>::id; // Just making sure provided type has a type ID
 
@@ -176,7 +176,7 @@ namespace CamelotFramework
 		 * @param	setSize 	Setter method that allows you to resize an array. Can be null. Must be a specific signature: void(ObjectType*, UINT32)
 		 * @param	flags		Various flags you can use to specialize how systems handle this field
 		 */
-		void initArray(const std::string& name, UINT16 uniqueId, boost::any getter, 
+		void initArray(const String& name, UINT16 uniqueId, boost::any getter, 
 			boost::any getSize, boost::any setter, boost::any setSize, UINT64 flags)
 		{
 			int typeId = RTTIPlainType<DataType>::id; // Just making sure provided type has a type ID

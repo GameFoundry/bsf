@@ -14,7 +14,7 @@ namespace CamelotFramework
 		mFields.clear();
 	}
 
-	RTTIField* RTTITypeBase::findField(const std::string& name)
+	RTTIField* RTTITypeBase::findField(const String& name)
 	{
 		auto foundElement = std::find_if(mFields.begin(), mFields.end(), [&name](RTTIField* x) { return x->mName == name; });
 
@@ -54,7 +54,7 @@ namespace CamelotFramework
 				"Field with the same ID already exists.");
 		}
 
-		std::string& name = field->mName;
+		String& name = field->mName;
 		auto foundElementByName = std::find_if(mFields.begin(), mFields.end(), [&name](RTTIField* x) { return x->mName == name; });
 
 		if(foundElementByName != mFields.end())

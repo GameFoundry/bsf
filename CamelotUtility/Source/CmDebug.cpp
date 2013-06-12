@@ -7,22 +7,22 @@
 
 namespace CamelotFramework
 {
-	void Debug::logDebug(std::string msg)
+	void Debug::logDebug(const String& msg)
 	{
 		mLog.logMsg(msg, "GlobalDebug");
 	}
 
-	void Debug::logInfo(std::string msg)
+	void Debug::logInfo(const String& msg)
 	{
 		mLog.logMsg(msg, "GlobalInfo");
 	}
 
-	void Debug::logWarning(std::string msg)
+	void Debug::logWarning(const String& msg)
 	{
 		mLog.logMsg(msg, "GlobalWarning");
 	}
 
-	void Debug::logError(std::string msg)
+	void Debug::logError(const String& msg)
 	{
 		mLog.logMsg(msg, "GlobalError");
 	}

@@ -29,7 +29,7 @@ namespace CamelotFramework
 	{
 		setSkin(&EngineGUI::instance().getSkin());
 
-		GUILabel::create(*this, text);
+		GUILabel::create(*this, toWString(text));
 	}
 
 	void TestTextSprite::update()

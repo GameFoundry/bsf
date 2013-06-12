@@ -58,7 +58,7 @@ namespace CamelotFramework
 		virtual void onDeserializationEnded(IReflectable* obj) {}
 
 		template <class ObjectType, class DataType>
-		void setPlainValue(ObjectType* object, const std::string& name, DataType& value)
+		void setPlainValue(ObjectType* object, const String& name, DataType& value)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsPlain(false);
@@ -68,7 +68,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType, class DataType>
-		void setPlainArrayValue(ObjectType* object, const std::string& name, UINT32 index, DataType& value)
+		void setPlainArrayValue(ObjectType* object, const String& name, UINT32 index, DataType& value)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsPlain(true);
@@ -78,7 +78,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType, class DataType>
-		void setReflectableValue(ObjectType* object, const std::string& name, DataType& value)
+		void setReflectableValue(ObjectType* object, const String& name, DataType& value)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
@@ -91,7 +91,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType, class DataType>
-		void setReflectableArrayValue(ObjectType* object, const std::string& name, UINT32 index, DataType& value)
+		void setReflectableArrayValue(ObjectType* object, const String& name, UINT32 index, DataType& value)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
@@ -104,7 +104,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType>
-		void setDataBlockValue(ObjectType* object, const std::string& name, ManagedDataBlock value)
+		void setDataBlockValue(ObjectType* object, const String& name, ManagedDataBlock value)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsDataBlock();
@@ -115,7 +115,7 @@ namespace CamelotFramework
 
 
 		template <class ObjectType, class DataType>
-		void setReflectablePtrValue(ObjectType* object, const std::string& name, std::shared_ptr<DataType> value)
+		void setReflectablePtrValue(ObjectType* object, const String& name, std::shared_ptr<DataType> value)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
@@ -128,7 +128,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType, class DataType>
-		void setReflectablePtrArrayValue(ObjectType* object, const std::string& name, UINT32 index, std::shared_ptr<DataType> value)
+		void setReflectablePtrArrayValue(ObjectType* object, const String& name, UINT32 index, std::shared_ptr<DataType> value)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
@@ -141,7 +141,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType, class DataType>
-		void getPlainValue(ObjectType* object, const std::string& name, DataType& value)
+		void getPlainValue(ObjectType* object, const String& name, DataType& value)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsPlain(false);
@@ -151,7 +151,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType, class DataType>
-		void getPlainArrayValue(ObjectType* object, const std::string& name, UINT32 index, DataType& value)
+		void getPlainArrayValue(ObjectType* object, const String& name, UINT32 index, DataType& value)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsPlain(true);
@@ -161,7 +161,7 @@ namespace CamelotFramework
 		}	
 
 		template <class ObjectType>
-		IReflectable& getReflectableValue(ObjectType* object, const std::string& name)
+		IReflectable& getReflectableValue(ObjectType* object, const String& name)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplex(false);
@@ -171,7 +171,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType>
-		IReflectable& getReflectableArrayValue(ObjectType* object, const std::string& name, UINT32 index)
+		IReflectable& getReflectableArrayValue(ObjectType* object, const String& name, UINT32 index)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplex(true);
@@ -181,7 +181,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType>
-		ManagedDataBlock getDataBlockValue(ObjectType* object, const std::string& name)
+		ManagedDataBlock getDataBlockValue(ObjectType* object, const String& name)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsDataBlock();
@@ -191,7 +191,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType>
-		std::shared_ptr<IReflectable> getReflectablePtrValue(ObjectType* object, const std::string& name)
+		std::shared_ptr<IReflectable> getReflectablePtrValue(ObjectType* object, const String& name)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplexPtr(false);
@@ -201,7 +201,7 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType>
-		std::shared_ptr<IReflectable> getReflectablePtrArrayValue(ObjectType* object, const std::string& name, UINT32 index)
+		std::shared_ptr<IReflectable> getReflectablePtrArrayValue(ObjectType* object, const String& name, UINT32 index)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplexPtr(true);
@@ -211,14 +211,14 @@ namespace CamelotFramework
 		}
 
 		template <class ObjectType>
-		UINT32 getArraySize(ObjectType* object, const std::string& name)
+		UINT32 getArraySize(ObjectType* object, const String& name)
 		{
 			RTTIField* field = findField(name);
 			return field->getArraySize(object);
 		}
 
 		template <class ObjectType>
-		void setArraySize(ObjectType* object, const std::string& name, UINT32 size)
+		void setArraySize(ObjectType* object, const String& name, UINT32 size)
 		{
 			RTTIField* field = findField(name);
 			field->setArraySize(object, size);
@@ -232,7 +232,7 @@ namespace CamelotFramework
 		 *
 		 * @param	name	The name of the field.
 		 */
-		RTTIField* findField(const std::string& name);
+		RTTIField* findField(const String& name);
 
 		/**
 		 * @brief	Tries to find a field with the specified unique ID. Doesn't throw an exception
@@ -397,7 +397,7 @@ namespace CamelotFramework
 		/* 			FIELDS OPERATING DIRECTLY ON SERIALIZABLE OBJECT            */
 		/************************************************************************/
 		template<class ObjectType, class DataType>
-		void addPlainField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
+		void addPlainField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
 			void (ObjectType::*setter)(DataType&) = nullptr, UINT64 flags = 0)
 		{
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
@@ -406,7 +406,7 @@ namespace CamelotFramework
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectableField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
+		void addReflectableField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
 			void (ObjectType::*setter)(DataType&) = nullptr, UINT64 flags = 0)
 		{
 			addReflectableField<ObjectType, DataType>(name, uniqueId, 
@@ -415,7 +415,7 @@ namespace CamelotFramework
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(), 
+		void addReflectablePtrField(const String& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(), 
 			void (ObjectType::*setter)(std::shared_ptr<DataType>) = nullptr, UINT64 flags = 0)
 		{
 			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
@@ -424,7 +424,7 @@ namespace CamelotFramework
 		}
 
 		template<class ObjectType, class DataType>
-		void addPlainArrayField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
+		void addPlainArrayField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
 			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
@@ -435,7 +435,7 @@ namespace CamelotFramework
 		}	
 
 		template<class ObjectType, class DataType>
-		void addReflectableArrayField(const std::string& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
+		void addReflectableArrayField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
 			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addReflectableArrayField<ObjectType, DataType>(name, uniqueId, 
@@ -446,7 +446,7 @@ namespace CamelotFramework
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectablePtrArrayField(const std::string& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
+		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
 			void (ObjectType::*setter)(UINT32, std::shared_ptr<DataType>) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
@@ -457,7 +457,7 @@ namespace CamelotFramework
 		}
 
 		template<class ObjectType>
-		void addDataBlockField(const std::string& name, UINT32 uniqueId, ManagedDataBlock (ObjectType::*getter)(), 
+		void addDataBlockField(const String& name, UINT32 uniqueId, ManagedDataBlock (ObjectType::*getter)(), 
 			void (ObjectType::*setter)(ManagedDataBlock) = nullptr, UINT64 flags = 0, UINT8* (customAllocator)(ObjectType*, UINT32) = 0)
 		{
 			addDataBlockField<ObjectType>(name, uniqueId, 
@@ -473,7 +473,7 @@ namespace CamelotFramework
 		/*		(Needs an extra pointer to the actual object)					*/
 		/************************************************************************/
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addPlainField(const std::string& name, UINT32 uniqueId, 
+		void addPlainField(const String& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, DataType&), UINT64 flags = 0)
 		{
@@ -489,7 +489,7 @@ namespace CamelotFramework
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addReflectableField(const std::string& name, UINT32 uniqueId, 
+		void addReflectableField(const String& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, DataType&), UINT64 flags = 0)
 		{
@@ -499,7 +499,7 @@ namespace CamelotFramework
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, 
+		void addReflectablePtrField(const String& name, UINT32 uniqueId, 
 			std::shared_ptr<DataType> (InterfaceType::*getter)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, std::shared_ptr<DataType>), UINT64 flags = 0)
 		{
@@ -509,7 +509,7 @@ namespace CamelotFramework
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addPlainArrayField(const std::string& name, UINT32 uniqueId, 
+		void addPlainArrayField(const String& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*, UINT32), 
 			UINT32 (InterfaceType::*getSize)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&), 
@@ -529,7 +529,7 @@ namespace CamelotFramework
 		}	
 
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addReflectableArrayField(const std::string& name, UINT32 uniqueId, 
+		void addReflectableArrayField(const String& name, UINT32 uniqueId, 
 			DataType& (InterfaceType::*getter)(ObjectType*, UINT32), 
 			UINT32 (InterfaceType::*getSize)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&), 
@@ -543,7 +543,7 @@ namespace CamelotFramework
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
-		void addReflectablePtrArrayField(const std::string& name, UINT32 uniqueId, 
+		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, 
 			std::shared_ptr<DataType> (InterfaceType::*getter)(ObjectType*, UINT32), 
 			UINT32 (InterfaceType::*getSize)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, UINT32, std::shared_ptr<DataType>), 
@@ -557,7 +557,7 @@ namespace CamelotFramework
 		}
 
 		template<class InterfaceType, class ObjectType>
-		void addDataBlockField(const std::string& name, UINT32 uniqueId, ManagedDataBlock (InterfaceType::*getter)(ObjectType*), 
+		void addDataBlockField(const String& name, UINT32 uniqueId, ManagedDataBlock (InterfaceType::*getter)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, ManagedDataBlock), UINT64 flags = 0, 
 			UINT8* (customAllocator)(ObjectType*, UINT32) = 0)
 		{
@@ -578,7 +578,7 @@ namespace CamelotFramework
 
 	private:
 		template<class ObjectType, class DataType>
-		void addPlainField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void addPlainField(const String& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
 			RTTIPlainField<DataType, ObjectType>* newField = 
 				cm_new<RTTIPlainField<DataType, ObjectType>>();
@@ -587,7 +587,7 @@ namespace CamelotFramework
 		}
 		
 		template<class ObjectType, class DataType>
-		void addReflectableField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void addReflectableField(const String& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
@@ -599,7 +599,7 @@ namespace CamelotFramework
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectablePtrField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void addReflectablePtrField(const String& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
@@ -614,7 +614,7 @@ namespace CamelotFramework
 		}
 
 		template<class ObjectType, class DataType>
-		void addPlainArrayField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
+		void addPlainArrayField(const String& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
 			boost::any setter, boost::any setSize, UINT64 flags)
 		{
 			RTTIPlainField<DataType, ObjectType>* newField = 
@@ -624,7 +624,7 @@ namespace CamelotFramework
 		}	
 
 		template<class ObjectType, class DataType>
-		void addReflectableArrayField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
+		void addReflectableArrayField(const String& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
 			boost::any setter, boost::any setSize, UINT64 flags)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
@@ -637,7 +637,7 @@ namespace CamelotFramework
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectablePtrArrayField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
+		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
 			boost::any setter, boost::any setSize, UINT64 flags)
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
@@ -653,7 +653,7 @@ namespace CamelotFramework
 		}
 
 		template<class ObjectType>
-		void addDataBlockField(const std::string& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::any customAllocator = boost::any())
+		void addDataBlockField(const String& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::any customAllocator = boost::any())
 		{
 			RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>* newField = 
 				cm_new<RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>>();

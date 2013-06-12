@@ -98,7 +98,7 @@ namespace CamelotFramework
 
 	bool FileSystem::fileExists(const String& fullPath)
 	{
-		if(boost::filesystem::exists(fullPath) && !boost::filesystem::is_directory(fullPath))
+		if(boost::filesystem::exists(fullPath.c_str()) && !boost::filesystem::is_directory(fullPath.c_str()))
 			return true;
 
 		return false;
@@ -106,7 +106,7 @@ namespace CamelotFramework
 
 	bool FileSystem::dirExists(const String& fullPath)
 	{
-		if(boost::filesystem::exists(fullPath) && boost::filesystem::is_directory(fullPath))
+		if(boost::filesystem::exists(fullPath.c_str()) && boost::filesystem::is_directory(fullPath.c_str()))
 			return true;
 
 		return false;
@@ -114,24 +114,24 @@ namespace CamelotFramework
 
 	void FileSystem::createDir(const String& fullPath)
 	{
-		boost::filesystem::create_directory(fullPath);
+		boost::filesystem::create_directory(fullPath.c_str());
 	}
 
 	void FileSystem::deleteDir(const String& fullPath)
 	{
-		boost::filesystem::remove_all(fullPath);
+		boost::filesystem::remove_all(fullPath.c_str());
 	}
 
 	vector<String>::type FileSystem::getFiles(const String& dirPath)
 	{
-		boost::filesystem::directory_iterator dirIter(dirPath);
+		boost::filesystem::directory_iterator dirIter(dirPath.c_str());
 
 		vector<String>::type foundFiles;
 		
 		while(dirIter != boost::filesystem::directory_iterator())
 		{
 			if(boost::filesystem::is_regular_file(dirIter->path()))
-				foundFiles.push_back(dirIter->path().string());
+				foundFiles.push_back(dirIter->path().string().c_str());
 
 			dirIter++;
 		}
@@ -141,22 +141,22 @@ namespace CamelotFramework
 
 	String FileSystem::getCurrentPath()
 	{
-		return boost::filesystem::current_path().string();
+		return boost::filesystem::current_path().string().c_str();
 	}
 
 	bool FileSystem::isValidFileName(const String& name)
 	{
-		return boost::filesystem::portable_file_name(name);
+		return boost::filesystem::portable_file_name(name.c_str());
 	}
 
 	String FileSystem::getDirectoryPath(const String& path)
 	{
-		boost::filesystem::path p(path);
+		boost::filesystem::path p(path.c_str());
 
 		if(!is_directory(p))
 		{
 			boost::filesystem::path dir = p.parent_path();
-			return dir.string();
+			return dir.string().c_str();
 		}
 
 		return path;

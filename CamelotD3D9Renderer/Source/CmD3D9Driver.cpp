@@ -74,7 +74,7 @@ namespace CamelotFramework
 
 	String D3D9Driver::DriverDescription() const
 	{       
-		StringUtil::StrStreamType str;
+		StringStream str;
 		str << "Monitor-" << (mAdapterNumber+1) << "-" << mAdapterIdentifier.Description;
 		String driverDescription(str.str());
 		StringUtil::trim(driverDescription);

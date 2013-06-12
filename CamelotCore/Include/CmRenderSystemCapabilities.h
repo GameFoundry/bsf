@@ -191,7 +191,7 @@ namespace CamelotFramework
 
 		String toString() const 
 		{
-			StringUtil::StrStreamType str;
+			StringStream str;
 			str << major << "." << minor << "." << release << "." << build;
 			return str.str();
 		}

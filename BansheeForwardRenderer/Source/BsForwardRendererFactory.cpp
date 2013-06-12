@@ -11,7 +11,7 @@ namespace BansheeEngine
 		return cm_shared_ptr<ForwardRenderer>();
 	}
 
-	const std::string& ForwardRendererFactory::name() const
+	const String& ForwardRendererFactory::name() const
 	{
 		return SystemName;
 	}

@@ -5,12 +5,12 @@
 
 namespace BansheeEngine
 {
-	const std::string SystemName = "BansheeForwardRenderer";
+	const CM::String SystemName = "BansheeForwardRenderer";
 
 	class BS_FWDRND_EXPORT ForwardRendererFactory : public CM::RendererFactory
 	{
 	public:
 		virtual CM::RendererPtr create();
-		virtual const std::string& name() const;
+		virtual const CM::String& name() const;
 	};
 }

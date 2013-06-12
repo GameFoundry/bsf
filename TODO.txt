@@ -22,6 +22,8 @@ I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
 IMMEDIATE:
+ - Get rid of querying mouse states on each mouse event - Include button states in each event?
+ - Handle capital leters - include shift, alt, ctrl, caps states in KeyEvent
  - Add window-management command to DeferredRenderContext - I already have resource management commands
    there, few window related ones won't hurt. I can always split the class if needed.
      - Possibly add guards to render target classes so they aren't accidentaly accessed from the render thread (similar to how Texture is handled)

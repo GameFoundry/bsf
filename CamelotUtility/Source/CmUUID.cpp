@@ -13,6 +13,6 @@ namespace CamelotFramework
 
 		uuid newUUID = gen();
 
-		return to_string(newUUID);
+		return to_string(newUUID).c_str();
 	}
 };

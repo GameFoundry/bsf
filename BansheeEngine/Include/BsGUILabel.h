@@ -14,7 +14,7 @@ namespace BansheeEngine
 		static GUILabel* create(GUIWidget& parent, const CM::WString& text, const GUIElementStyle* style = nullptr);
 		static GUILabel* create(GUIWidget& parent, const CM::WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
-		void setText(const CM::String& text);
+		void setText(const CM::WString& text);
 
 	protected:
 		~GUILabel();

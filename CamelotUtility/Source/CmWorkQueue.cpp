@@ -396,8 +396,7 @@ namespace CamelotFramework {
 		else
 		{
 			// no response, delete request
-			gDebug().logWarning("warning: no handler processed request "
-				+ toString(r->getID()) + ", channel " + toString(r->getChannel()));
+			gDebug().logWarning("warning: no handler processed request " + toString(r->getID()) + ", channel " + toString(r->getChannel()));
 
 			cm_delete<ScratchAlloc>(r);
 		}

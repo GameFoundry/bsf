@@ -28,7 +28,7 @@ namespace CamelotFramework
     {
 		if (mFullDesc.empty())
 		{
-			std::stringstream desc;
+			StringStream desc;
 
 			desc<< "CAMELOT EXCEPTION(" << mTypeName << "): "
 				<< mDescription 

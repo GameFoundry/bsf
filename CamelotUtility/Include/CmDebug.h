@@ -10,10 +10,10 @@ namespace CamelotFramework
 	class CM_UTILITY_EXPORT Debug
 	{
 	public:
-		void logDebug(std::string msg);
-		void logInfo(std::string msg);
-		void logWarning(std::string msg);
-		void logError(std::string msg);
+		void logDebug(const String& msg);
+		void logInfo(const String& msg);
+		void logWarning(const String& msg);
+		void logError(const String& msg);
 		void log(const String& msg, const String& channel);
 
 		Log& getLog() { return mLog; }
@@ -25,14 +25,6 @@ namespace CamelotFramework
 	};
 
 	CM_UTILITY_EXPORT Debug& gDebug();
-
-	template <typename T>
-	std::string toStr(T number)
-	{
-		std::ostringstream ss;
-		ss << number;
-		return ss.str();
-	}
 
 #define LOGDBG(x) CamelotFramework::gDebug().logDebug((x));
 #define LOGINFO(x) CamelotFramework::gDebug().logInfo((x));

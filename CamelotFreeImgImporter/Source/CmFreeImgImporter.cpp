@@ -34,7 +34,7 @@ namespace CamelotFramework
 		FreeImage_Initialise(false);
 
 		// Register codecs
-		StringUtil::StrStreamType strExt;
+		StringStream strExt;
 		strExt << "Supported formats: ";
 		bool first = true;
 		for (int i = 0; i < FreeImage_GetFIFCount(); ++i)
