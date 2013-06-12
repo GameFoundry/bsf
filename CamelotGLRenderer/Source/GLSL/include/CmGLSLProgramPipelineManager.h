@@ -37,7 +37,7 @@ namespace CamelotFramework
 			bool operator()(const ProgramPipelineKey &a, const ProgramPipelineKey &b) const;
 		};
 
-		typedef unordered_map<ProgramPipelineKey, GLSLProgramPipeline, ProgramPipelineKeyHashFunction, ProgramPipelineKeyEqual>::type ProgramPipelineMap;
+		typedef UnorderedMap<ProgramPipelineKey, GLSLProgramPipeline, ProgramPipelineKeyHashFunction, ProgramPipelineKeyEqual>::type ProgramPipelineMap;
 		ProgramPipelineMap mPipelines;
 	};
 }

@@ -151,14 +151,14 @@ namespace CamelotFramework
 		return word;
 	}
 
-	vector<UINT32>::type TextUtility::TextLine::getNumQuadsPerPage() const
+	Vector<UINT32>::type TextUtility::TextLine::getNumQuadsPerPage() const
 	{
-		vector<UINT32>::type quadsPerPage;
+		Vector<UINT32>::type quadsPerPage;
 		for(auto wordIter = mWords.begin(); wordIter != mWords.end(); ++wordIter)
 		{
 			if(!wordIter->isSpacer())
 			{
-				const vector<CHAR_DESC>::type& chars = wordIter->getChars();
+				const Vector<CHAR_DESC>::type& chars = wordIter->getChars();
 				UINT32 kerning = 0;
 				for(auto charIter = chars.begin(); charIter != chars.end(); ++charIter)
 				{
@@ -186,7 +186,7 @@ namespace CamelotFramework
 			}
 			else
 			{
-				const vector<CHAR_DESC>::type& chars = wordIter->getChars();
+				const Vector<CHAR_DESC>::type& chars = wordIter->getChars();
 				UINT32 kerning = 0;
 				for(auto charIter = chars.begin(); charIter != chars.end(); ++charIter)
 				{

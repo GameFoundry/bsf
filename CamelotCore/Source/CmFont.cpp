@@ -32,7 +32,7 @@ namespace CamelotFramework
 	Font::~Font()
 	{ }
 
-	void Font::initialize(vector<FontData>::type& fontData)
+	void Font::initialize(Vector<FontData>::type& fontData)
 	{
 		for(auto iter = fontData.begin(); iter != fontData.end(); ++iter)
 			mFontDataPerSize[iter->size] = *iter;
@@ -82,7 +82,7 @@ namespace CamelotFramework
 		return bestSize;
 	}
 
-	HFont Font::create(vector<FontData>::type& fontData)
+	HFont Font::create(Vector<FontData>::type& fontData)
 	{
 		FontPtr newFont = FontManager::instance().create(fontData);
 

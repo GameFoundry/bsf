@@ -27,7 +27,7 @@ namespace CamelotEditor
 		QStatusBar* mStatusBar;
 		QtDockOverlayWidget* mDockOverlayWidget;
 
-		map<QString, QMenu*>::type mMenus;
+		Map<QString, QMenu*>::type mMenus;
 
 		void setupUi();
 		void retranslateUi();

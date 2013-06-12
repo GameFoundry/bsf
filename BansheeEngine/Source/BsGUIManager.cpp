@@ -37,7 +37,7 @@ namespace BansheeEngine
 		UINT32 numQuads;
 		UINT32 depth;
 		Rect bounds;
-		vector<GUIGroupElement>::type elements;
+		Vector<GUIGroupElement>::type elements;
 	};
 
 	GUIManager::GUIManager()
@@ -205,11 +205,11 @@ namespace BansheeEngine
 				return aDepth > bDepth || (aDepth ==bDepth && a.element > b.element); 
 			};
 
-			set<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>>::type allElements(elemComp);
+			Set<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>>::type allElements(elemComp);
 
 			for(auto& widget : renderData.widgets)
 			{
-				const vector<GUIElement*>::type& elements = widget->getElements();
+				const Vector<GUIElement*>::type& elements = widget->getElements();
 
 				for(auto& element : elements)
 				{
@@ -223,7 +223,7 @@ namespace BansheeEngine
 
 			// Group the elements in such a way so that we end up with a smallest amount of
 			// meshes, without breaking back to front rendering order
-			unordered_map<UINT64, vector<GUIMaterialGroup>::type>::type materialGroups;
+			UnorderedMap<UINT64, Vector<GUIMaterialGroup>::type>::type materialGroups;
 			for(auto& elem : allElements)
 			{
 				GUIElement* guiElem = elem.element;
@@ -241,13 +241,13 @@ namespace BansheeEngine
 				// If this is a new material, add a new list of groups
 				auto findIterMaterial = materialGroups.find(materialId);
 				if(findIterMaterial == end(materialGroups))
-					materialGroups[materialId] = vector<GUIMaterialGroup>::type();
+					materialGroups[materialId] = Vector<GUIMaterialGroup>::type();
 
 				// Try to find a group this material will fit in:
 				//  - Group that has a depth value same or one below elements depth will always be a match
 				//  - Otherwise, we search higher depth values as well, but we only use them if no elements in between those depth values
 				//    overlap the current elements bounds.
-				vector<GUIMaterialGroup>::type& allGroups = materialGroups[materialId];
+				Vector<GUIMaterialGroup>::type& allGroups = materialGroups[materialId];
 				GUIMaterialGroup* foundGroup = nullptr;
 				for(auto groupIter = allGroups.rbegin(); groupIter != allGroups.rend(); ++groupIter)
 				{
@@ -325,7 +325,7 @@ namespace BansheeEngine
 				// requires all elements to be unique
 			};
 
-			set<GUIMaterialGroup*, std::function<bool(GUIMaterialGroup*, GUIMaterialGroup*)>>::type sortedGroups(groupComp);
+			Set<GUIMaterialGroup*, std::function<bool(GUIMaterialGroup*, GUIMaterialGroup*)>>::type sortedGroups(groupComp);
 			for(auto& material : materialGroups)
 			{
 				for(auto& group : material.second)
@@ -442,7 +442,7 @@ namespace BansheeEngine
 
 #if CM_DEBUG_MODE
 		// Checks if all referenced windows actually exist
-		vector<RenderWindow*>::type activeWindows = RenderWindowManager::instance().getRenderWindows();
+		Vector<RenderWindow*>::type activeWindows = RenderWindowManager::instance().getRenderWindows();
 		for(auto& widget : mWidgets)
 		{
 			auto iterFind = std::find(begin(activeWindows), end(activeWindows), widget->getOwnerWindow());
@@ -495,7 +495,7 @@ namespace BansheeEngine
 					Vector4 vecLocalPos = worldTfrm.inverse() * vecScreenPos;
 					localPos = Int2(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
 
-					vector<GUIElement*>::type sortedElements = widget->getElements();
+					Vector<GUIElement*>::type sortedElements = widget->getElements();
 					std::sort(sortedElements.begin(), sortedElements.end(), 
 						[](GUIElement* a, GUIElement* b)
 					{

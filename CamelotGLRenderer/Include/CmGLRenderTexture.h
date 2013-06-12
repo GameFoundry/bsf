@@ -101,7 +101,7 @@ namespace CamelotFramework
                 UINT32 stencil;   // Stencil format (0=no stencil)
             };
             
-            vector<Mode>::type modes;
+            Vector<Mode>::type modes;
         };
         /** Properties for all internal formats defined by the engine
         */

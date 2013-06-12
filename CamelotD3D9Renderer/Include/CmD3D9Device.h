@@ -114,7 +114,7 @@ namespace CamelotFramework {
 			D3DPRESENT_PARAMETERS	presentParameters;				// Present parameters of the render window.
 			bool					acquired;						// True if resources acquired.			
 		};		
-		typedef map<const D3D9RenderWindow*, RenderWindowResources*>::type RenderWindowToResorucesMap;
+		typedef Map<const D3D9RenderWindow*, RenderWindowResources*>::type RenderWindowToResorucesMap;
 		typedef RenderWindowToResorucesMap::iterator				 RenderWindowToResorucesIterator;
 
 		RenderWindowToResorucesMap mMapRenderWindowToResoruces;		// Map between render window to resources.

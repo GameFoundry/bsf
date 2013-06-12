@@ -349,10 +349,10 @@ namespace CamelotFramework
     }
     //-----------------------------------------------------------------------
     std::pair<bool, float> Math::intersects(const Ray& ray, 
-        const vector<Plane>::type& planes, bool normalIsOutside)
+        const Vector<Plane>::type& planes, bool normalIsOutside)
     {
-		list<Plane>::type planesList;
-		for (vector<Plane>::type::const_iterator i = planes.begin(); i != planes.end(); ++i)
+		List<Plane>::type planesList;
+		for (Vector<Plane>::type::const_iterator i = planes.begin(); i != planes.end(); ++i)
 		{
 			planesList.push_back(*i);
 		}
@@ -360,9 +360,9 @@ namespace CamelotFramework
     }
     //-----------------------------------------------------------------------
     std::pair<bool, float> Math::intersects(const Ray& ray, 
-        const list<Plane>::type& planes, bool normalIsOutside)
+        const List<Plane>::type& planes, bool normalIsOutside)
     {
-		list<Plane>::type::const_iterator planeit, planeitend;
+		List<Plane>::type::const_iterator planeit, planeitend;
 		planeitend = planes.end();
 		bool allInside = true;
 		std::pair<bool, float> ret;

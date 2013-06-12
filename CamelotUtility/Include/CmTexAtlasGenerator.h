@@ -67,7 +67,7 @@ namespace CamelotFramework
 		 * @return	One or more descriptors that determine the size of the final atlas textures. Texture elements
 		 * 			will reference these pages with their "output.page" parameter.
 		 */
-		vector<TexAtlasPageDesc>::type createAtlasLayout(vector<TexAtlasElementDesc>::type& elements) const;
+		Vector<TexAtlasPageDesc>::type createAtlasLayout(Vector<TexAtlasElementDesc>::type& elements) const;
 
 	private:
 		bool mSquare;
@@ -75,9 +75,9 @@ namespace CamelotFramework
 		UINT32 mMaxTexWidth;
 		UINT32 mMaxTexHeight;
 
-		int generatePagesForSize(vector<TexAtlasElementDesc>::type& elements, UINT32 width, UINT32 height, UINT32 startPage = 0) const;
-		int addLargestTextureWithoutPageThatFits(vector<TexAtlasElementDesc>::type& elements, TexAtlasNode& node) const;
-		int findLargestTextureWithoutPage(const vector<TexAtlasElementDesc>::type& elements) const;
-		void sortBySize(vector<TexAtlasElementDesc>::type& elements) const;
+		int generatePagesForSize(Vector<TexAtlasElementDesc>::type& elements, UINT32 width, UINT32 height, UINT32 startPage = 0) const;
+		int addLargestTextureWithoutPageThatFits(Vector<TexAtlasElementDesc>::type& elements, TexAtlasNode& node) const;
+		int findLargestTextureWithoutPage(const Vector<TexAtlasElementDesc>::type& elements) const;
+		void sortBySize(Vector<TexAtlasElementDesc>::type& elements) const;
 	};
 }

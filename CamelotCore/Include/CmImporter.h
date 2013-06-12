@@ -69,7 +69,7 @@ namespace CamelotFramework
 		 */
 		void registerAssetImporter(SpecificImporter* importer);
 	private:
-		vector<SpecificImporter*>::type mAssetImporters;
+		Vector<SpecificImporter*>::type mAssetImporters;
 
 		SpecificImporter* getImporterForFile(const String& inputFilePath) const;
 	};

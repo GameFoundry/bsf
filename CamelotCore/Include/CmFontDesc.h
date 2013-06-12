@@ -20,12 +20,12 @@ namespace CamelotFramework
 		INT32 xOffset, yOffset;
 		INT32 xAdvance, yAdvance;
 
-		vector<KerningPair>::type kerningPairs;
+		Vector<KerningPair>::type kerningPairs;
 	};
 
 	struct FONT_DESC
 	{
-		map<UINT32, CHAR_DESC>::type characters;
+		Map<UINT32, CHAR_DESC>::type characters;
 		INT32 baselineOffset;
 		UINT32 lineHeight;
 		CHAR_DESC missingGlyph;
@@ -96,7 +96,7 @@ namespace CamelotFramework
 				+ sizeof(data.yOffset)
 				+ sizeof(data.xAdvance)
 				+ sizeof(data.yAdvance)
-				+ RTTIPlainType<vector<KerningPair>::type>::getDynamicSize(data.kerningPairs);
+				+ RTTIPlainType<Vector<KerningPair>::type>::getDynamicSize(data.kerningPairs);
 
 			dataSize += sizeof(UINT32);
 
@@ -116,7 +116,7 @@ namespace CamelotFramework
 			memcpy(memory, &size, sizeof(UINT32));
 			memory += sizeof(UINT32);
 			
-			RTTIPlainType<map<UINT32, CHAR_DESC>::type>::toMemory(data.characters, memory);
+			RTTIPlainType<Map<UINT32, CHAR_DESC>::type>::toMemory(data.characters, memory);
 			rttiWriteElem(data.baselineOffset, memory);
 			rttiWriteElem(data.lineHeight, memory);
 			rttiWriteElem(data.missingGlyph, memory);
@@ -129,7 +129,7 @@ namespace CamelotFramework
 			memcpy(&size, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
 
-			RTTIPlainType<map<UINT32, CHAR_DESC>::type>::fromMemory(data.characters, memory);
+			RTTIPlainType<Map<UINT32, CHAR_DESC>::type>::fromMemory(data.characters, memory);
 			rttiReadElem(data.baselineOffset, memory);
 			rttiReadElem(data.lineHeight, memory);
 			rttiReadElem(data.missingGlyph, memory);
@@ -141,7 +141,7 @@ namespace CamelotFramework
 		static UINT32 getDynamicSize(const FONT_DESC& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32);
-			dataSize += RTTIPlainType<map<UINT32, CHAR_DESC>::type>::getDynamicSize(data.characters);
+			dataSize += RTTIPlainType<Map<UINT32, CHAR_DESC>::type>::getDynamicSize(data.characters);
 			dataSize += rttiGetElemSize(data.baselineOffset);
 			dataSize += rttiGetElemSize(data.lineHeight);
 			dataSize += rttiGetElemSize(data.missingGlyph);

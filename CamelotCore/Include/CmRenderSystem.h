@@ -61,7 +61,7 @@ namespace CamelotFramework
 	*  @{
 	*/
 
-	typedef multimap<UINT8, RenderTarget * >::type RenderTargetPriorityMap;
+	typedef Multimap<UINT8, RenderTarget * >::type RenderTargetPriorityMap;
 
 	class TextureManager;
 
@@ -439,7 +439,7 @@ namespace CamelotFramework
 		CommandQueue<CommandQueueSync>* mCommandQueue;
 
 		UINT32 mMaxCommandNotifyId; // ID that will be assigned to the next command with a notifier callback
-		vector<UINT32>::type mCommandsCompleted; // Completed commands that have notifier callbacks set up
+		Vector<UINT32>::type mCommandsCompleted; // Completed commands that have notifier callbacks set up
 
 		SyncedRenderContext* mSyncedRenderContext;
 

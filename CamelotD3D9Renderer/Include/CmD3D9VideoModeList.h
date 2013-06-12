@@ -38,7 +38,7 @@ namespace CamelotFramework
 	{
 	private:
 		D3D9Driver* mpDriver;
-		vector<D3D9VideoMode>::type mModeList;
+		Vector<D3D9VideoMode>::type mModeList;
 
 	public:
 		D3D9VideoModeList( D3D9Driver* pDriver );

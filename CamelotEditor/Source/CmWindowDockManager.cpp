@@ -34,7 +34,7 @@ namespace CamelotEditor
 
 		if(!window->isDocked())
 		{
-			vector<UINT32>::type windowsToIgnore;
+			Vector<UINT32>::type windowsToIgnore;
 			windowsToIgnore.push_back(window->getId()); // Ignore myself
 
 			QtEditorWindow* windowUnderMouse = gEditorWindowManager().getWindowAtPosition(mousePos, windowsToIgnore);
@@ -141,7 +141,7 @@ namespace CamelotEditor
 
 		if(wasDragged && !window->isDocked())
 		{
-			vector<UINT32>::type windowsToIgnore;
+			Vector<UINT32>::type windowsToIgnore;
 			windowsToIgnore.push_back(window->getId()); // Ignore myself
 			QtEditorWindow* windowUnderCursor = gEditorWindowManager().getWindowAtPosition(mousePos, windowsToIgnore);
 

@@ -63,7 +63,7 @@ namespace CamelotFramework
 		}
 
 		// Encode pointed to objects and their value types
-		unordered_set<UINT32>::type serializedObjects;
+		UnorderedSet<UINT32>::type serializedObjects;
 		while(true)
 		{
 			auto iter = mObjectsToEncode.begin();
@@ -786,7 +786,7 @@ exit:
 		// Finish serialization (in reverse order then it was started)
 		if(object != nullptr)
 		{
-			stack<RTTITypeBase*>::type typesToProcess;
+			Stack<RTTITypeBase*>::type typesToProcess;
 
 			RTTITypeBase* currentType = object->getRTTI();
 			while(currentType != nullptr)

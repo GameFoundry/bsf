@@ -334,7 +334,7 @@ namespace CamelotFramework {
 		while(true)
 		{
 			// Wait until we get some ready commands
-			queue<QueuedCommand>::type* commands = nullptr;
+			Queue<QueuedCommand>::type* commands = nullptr;
 			{
 				CM_LOCK_MUTEX_NAMED(mCommandQueueMutex, lock)
 

@@ -34,7 +34,7 @@ namespace CamelotEditor
 		QtEditorWindow* mLastDraggedWindow;
 		QPoint mLastDragPosition;
 
-		map<QtEditorWindow*, DockedWindowInfo>::type mDockedWindows;
+		Map<QtEditorWindow*, DockedWindowInfo>::type mDockedWindows;
 
 		bool isPositionInDockArea(const QPoint& globalPos);
 

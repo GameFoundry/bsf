@@ -58,7 +58,7 @@ namespace CamelotFramework
 			mValidShareableParamBlocks.clear();
 			mValidParams.clear();
 
-			vector<const GpuParamDesc*>::type allParamDescs;
+			Vector<const GpuParamDesc*>::type allParamDescs;
 
 			// Make sure all gpu programs are fully loaded
 			for(UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
@@ -109,15 +109,15 @@ namespace CamelotFramework
 			}
 
 			// Fill out various helper structures
-			map<String, const GpuParamDataDesc*>::type validDataParameters = determineValidDataParameters(allParamDescs);
-			set<String>::type validObjectParameters = determineValidObjectParameters(allParamDescs);
+			Map<String, const GpuParamDataDesc*>::type validDataParameters = determineValidDataParameters(allParamDescs);
+			Set<String>::type validObjectParameters = determineValidObjectParameters(allParamDescs);
 
-			set<String>::type validShareableParamBlocks = determineValidShareableParamBlocks(allParamDescs);
-			map<String, String>::type paramToParamBlockMap = determineParameterToBlockMapping(allParamDescs);
-			map<String, GpuParamBlockBufferPtr>::type paramBlockBuffers;
+			Set<String>::type validShareableParamBlocks = determineValidShareableParamBlocks(allParamDescs);
+			Map<String, String>::type paramToParamBlockMap = determineParameterToBlockMapping(allParamDescs);
+			Map<String, GpuParamBlockBufferPtr>::type paramBlockBuffers;
 
 			// Create param blocks
-			const map<String, SHADER_PARAM_BLOCK_DESC>::type& shaderDesc = mShader->getParamBlocks();
+			const Map<String, SHADER_PARAM_BLOCK_DESC>::type& shaderDesc = mShader->getParamBlocks();
 			for(auto iter = validShareableParamBlocks.begin(); iter != validShareableParamBlocks.end(); ++iter)
 			{
 				bool isShared = false;
@@ -154,7 +154,7 @@ namespace CamelotFramework
 			}
 
 			// Create data param mappings
-			const map<String, SHADER_DATA_PARAM_DESC>::type& dataParamDesc = mShader->getDataParams();
+			const Map<String, SHADER_DATA_PARAM_DESC>::type& dataParamDesc = mShader->getDataParams();
 			for(auto iter = dataParamDesc.begin(); iter != dataParamDesc.end(); ++iter)
 			{
 				auto findIter = validDataParameters.find(iter->second.gpuVariableName);
@@ -214,7 +214,7 @@ namespace CamelotFramework
 			}
 
 			// Create object param mappings
-			const map<String, SHADER_OBJECT_PARAM_DESC>::type& objectParamDesc = mShader->getObjectParams();
+			const Map<String, SHADER_OBJECT_PARAM_DESC>::type& objectParamDesc = mShader->getObjectParams();
 			for(auto iter = objectParamDesc.begin(); iter != objectParamDesc.end(); ++iter)
 			{
 				auto findIter = validObjectParameters.find(iter->second.gpuVariableName);
@@ -315,10 +315,10 @@ namespace CamelotFramework
 		}
 	}
 
-	map<String, const GpuParamDataDesc*>::type Material::determineValidDataParameters(const vector<const GpuParamDesc*>::type& paramDescs) const
+	Map<String, const GpuParamDataDesc*>::type Material::determineValidDataParameters(const Vector<const GpuParamDesc*>::type& paramDescs) const
 	{
-		map<String, const GpuParamDataDesc*>::type foundDataParams;
-		map<String, bool>::type validParams;
+		Map<String, const GpuParamDataDesc*>::type foundDataParams;
+		Map<String, bool>::type validParams;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{
@@ -357,9 +357,9 @@ namespace CamelotFramework
 	}
 
 	
-	set<String>::type Material::determineValidObjectParameters(const vector<const GpuParamDesc*>::type& paramDescs) const
+	Set<String>::type Material::determineValidObjectParameters(const Vector<const GpuParamDesc*>::type& paramDescs) const
 	{
-		set<String>::type validParams;
+		Set<String>::type validParams;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{
@@ -390,11 +390,11 @@ namespace CamelotFramework
 		return validParams;
 	}
 
-	set<String>::type Material::determineValidShareableParamBlocks(const vector<const GpuParamDesc*>::type& paramDescs) const
+	Set<String>::type Material::determineValidShareableParamBlocks(const Vector<const GpuParamDesc*>::type& paramDescs) const
 	{
 		// Make sure param blocks with the same name actually are the same
-		map<String, std::pair<String, const GpuParamDesc*>>::type uniqueParamBlocks;
-		map<String, bool>::type validParamBlocks;
+		Map<String, std::pair<String, const GpuParamDesc*>>::type uniqueParamBlocks;
+		Map<String, bool>::type validParamBlocks;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{
@@ -454,7 +454,7 @@ namespace CamelotFramework
 			}
 		}
 
-		set<String>::type validParamBlocksReturn;
+		Set<String>::type validParamBlocksReturn;
 		for(auto iter = validParamBlocks.begin(); iter != validParamBlocks.end(); ++iter)
 		{
 			if(iter->second)
@@ -464,9 +464,9 @@ namespace CamelotFramework
 		return validParamBlocksReturn;
 	}
 
-	map<String, String>::type Material::determineParameterToBlockMapping(const vector<const GpuParamDesc*>::type& paramDescs)
+	Map<String, String>::type Material::determineParameterToBlockMapping(const Vector<const GpuParamDesc*>::type& paramDescs)
 	{
-		map<String, String>::type paramToParamBlock;
+		Map<String, String>::type paramToParamBlock;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{

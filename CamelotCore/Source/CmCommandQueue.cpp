@@ -10,7 +10,7 @@ namespace CamelotFramework
 	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
 		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads), mMaxDebugIdx(0)
 	{
-		mCommands = cm_new<CamelotFramework::queue<QueuedCommand>::type, PoolAlloc>();
+		mCommands = cm_new<CamelotFramework::Queue<QueuedCommand>::type, PoolAlloc>();
 
 		{
 			CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
@@ -22,7 +22,7 @@ namespace CamelotFramework
 	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
 		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads)
 	{
-		mCommands = cm_new<CamelotFramework::queue<QueuedCommand>::type, PoolAlloc>();
+		mCommands = cm_new<CamelotFramework::Queue<QueuedCommand>::type, PoolAlloc>();
 	}
 #endif
 
@@ -70,15 +70,15 @@ namespace CamelotFramework
 #endif
 	}
 
-	CamelotFramework::queue<QueuedCommand>::type* CommandQueueBase::flush()
+	CamelotFramework::Queue<QueuedCommand>::type* CommandQueueBase::flush()
 	{
-		CamelotFramework::queue<QueuedCommand>::type* oldCommands = mCommands;
-		mCommands = cm_new<CamelotFramework::queue<QueuedCommand>::type, PoolAlloc>();
+		CamelotFramework::Queue<QueuedCommand>::type* oldCommands = mCommands;
+		mCommands = cm_new<CamelotFramework::Queue<QueuedCommand>::type, PoolAlloc>();
 
 		return oldCommands;
 	}
 
-	void CommandQueueBase::playback(CamelotFramework::queue<QueuedCommand>::type* commands, boost::function<void(UINT32)> notifyCallback)
+	void CommandQueueBase::playback(CamelotFramework::Queue<QueuedCommand>::type* commands, boost::function<void(UINT32)> notifyCallback)
 	{
 #if CM_DEBUG_MODE
 		RenderSystem* rs = RenderSystem::instancePtr();
@@ -121,14 +121,14 @@ namespace CamelotFramework
 		cm_delete<PoolAlloc>(commands);
 	}
 
-	void CommandQueueBase::playback(CamelotFramework::queue<QueuedCommand>::type* commands)
+	void CommandQueueBase::playback(CamelotFramework::Queue<QueuedCommand>::type* commands)
 	{
 		playback(commands, boost::function<void(UINT32)>());
 	}
 
 	void CommandQueueBase::cancelAll()
 	{
-		CamelotFramework::queue<QueuedCommand>::type* commands = flush();
+		CamelotFramework::Queue<QueuedCommand>::type* commands = flush();
 		cm_delete<PoolAlloc>(commands);
 	}
 
@@ -150,7 +150,7 @@ namespace CamelotFramework
 
 	UINT32 CommandQueueBase::MaxCommandQueueIdx = 0;
 
-	unordered_set<CommandQueueBase::QueueBreakpoint, CommandQueueBase::QueueBreakpoint::HashFunction, 
+	UnorderedSet<CommandQueueBase::QueueBreakpoint, CommandQueueBase::QueueBreakpoint::HashFunction, 
 		CommandQueueBase::QueueBreakpoint::EqualFunction>::type CommandQueueBase::SetBreakpoints;
 
 	inline size_t CommandQueueBase::QueueBreakpoint::HashFunction::operator()(const QueueBreakpoint& v) const

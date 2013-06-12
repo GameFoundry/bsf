@@ -117,12 +117,12 @@ namespace CamelotFramework
 		 * @param	notifyCallback  	Callback that will be called if a command that has "notifyOnComplete" flag set.
 		 * 								The callback will receive "callbackId" of the command.
 		 */
-		void playback(queue<QueuedCommand>::type* commands, boost::function<void(UINT32)> notifyCallback);
+		void playback(Queue<QueuedCommand>::type* commands, boost::function<void(UINT32)> notifyCallback);
 
 		/**
 		 * @brief	Plays all provided commands. To get the commands call flush().
 		 */
-		void playback(queue<QueuedCommand>::type* commands);
+		void playback(Queue<QueuedCommand>::type* commands);
 
 		/**
 		 * @brief	Allows you to set a breakpoint that will trigger when the specified command is executed.
@@ -176,7 +176,7 @@ namespace CamelotFramework
 		 * @brief	Returns a copy of all queued commands and makes room for new ones. Must be called from the thread
 		 * 			that created the command queue. Returned commands MUST be passed to "playback" method.
 		 */
-		CamelotFramework::queue<QueuedCommand>::type* flush();
+		CamelotFramework::Queue<QueuedCommand>::type* flush();
 
 		/**
 		 * @brief	Cancels all currently queued commands.
@@ -192,7 +192,7 @@ namespace CamelotFramework
 		void throwInvalidThreadException(const String& message) const;
 
 	private:
-		CamelotFramework::queue<QueuedCommand>::type* mCommands;
+		CamelotFramework::Queue<QueuedCommand>::type* mCommands;
 
 		bool mAllowAllThreads;
 		
@@ -229,7 +229,7 @@ namespace CamelotFramework
 		UINT32 mCommandQueueIdx;
 
 		static UINT32 MaxCommandQueueIdx;
-		static unordered_set<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction>::type SetBreakpoints;
+		static UnorderedSet<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction>::type SetBreakpoints;
 		CM_STATIC_MUTEX(CommandQueueBreakpointMutex);
 
 		static void breakIfNeeded(UINT32 queueIdx, UINT32 commandIdx);
@@ -299,7 +299,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc CommandQueueBase::flush
 		 */
-		CamelotFramework::queue<QueuedCommand>::type* flush()
+		CamelotFramework::Queue<QueuedCommand>::type* flush()
 		{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0
@@ -309,7 +309,7 @@ namespace CamelotFramework
 #endif
 
 			lock();
-			CamelotFramework::queue<QueuedCommand>::type* commands = CommandQueueBase::flush();
+			CamelotFramework::Queue<QueuedCommand>::type* commands = CommandQueueBase::flush();
 			unlock();
 
 			return commands;

@@ -18,7 +18,7 @@ namespace CamelotFramework
 
 	private:
 		D3D11Driver* mDriver;
-		vector<D3D11VideoMode>::type mModeList;
+		Vector<D3D11VideoMode>::type mModeList;
 
 		void enumerate(UINT32 adapterOutput);
 	};

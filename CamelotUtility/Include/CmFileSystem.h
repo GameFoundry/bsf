@@ -19,7 +19,7 @@ namespace CamelotFramework
 		static void createDir(const String& fullPath);
 		static void deleteDir(const String& fullPath);
 
-		static vector<String>::type getFiles(const String& dirPath);
+		static Vector<String>::type getFiles(const String& dirPath);
 
 		static String getCurrentPath();
 

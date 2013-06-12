@@ -67,15 +67,15 @@ namespace CamelotFramework
 			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath + ". Unknown error.");
 		}
 
-		vector<std::pair<UINT32, UINT32>>::type charIndexRanges = fontImportOptions->getCharIndexRanges();
-		vector<UINT32>::type fontSizes = fontImportOptions->getFontSizes();
+		Vector<std::pair<UINT32, UINT32>>::type charIndexRanges = fontImportOptions->getCharIndexRanges();
+		Vector<UINT32>::type fontSizes = fontImportOptions->getFontSizes();
 		UINT32 dpi = fontImportOptions->getDPI();
 
 		FT_Int32 loadFlags = FT_LOAD_RENDER;
 		if(!fontImportOptions->getAntialiasing())
 			loadFlags |= FT_LOAD_TARGET_MONO | FT_LOAD_NO_AUTOHINT;
 
-		vector<FontData>::type dataPerSize;
+		Vector<FontData>::type dataPerSize;
 		for(size_t i = 0; i < fontSizes.size(); i++)
 		{
 			FT_F26Dot6 ftSize = (FT_F26Dot6)(fontSizes[i] * (1 << 6));
@@ -85,8 +85,8 @@ namespace CamelotFramework
 			FontData fontData;
 
 			// Get all char sizes so we can generate texture layout
-			vector<TexAtlasElementDesc>::type atlasElements;
-			map<UINT32, UINT32>::type seqIdxToCharIdx;
+			Vector<TexAtlasElementDesc>::type atlasElements;
+			Map<UINT32, UINT32>::type seqIdxToCharIdx;
 			for(auto iter = charIndexRanges.begin(); iter != charIndexRanges.end(); ++iter)
 			{
 				for(UINT32 charIdx = iter->first; charIdx <= iter->second; charIdx++)
@@ -125,7 +125,7 @@ namespace CamelotFramework
 
 			// Create an optimal layout for character bitmaps
 			TexAtlasGenerator texAtlasGen(false, MAXIMUM_TEXTURE_SIZE, MAXIMUM_TEXTURE_SIZE);
-			vector<TexAtlasPageDesc>::type pages = texAtlasGen.createAtlasLayout(atlasElements);
+			Vector<TexAtlasPageDesc>::type pages = texAtlasGen.createAtlasLayout(atlasElements);
 
 			INT32 baselineOffset = 0;
 			UINT32 lineHeight = 0;

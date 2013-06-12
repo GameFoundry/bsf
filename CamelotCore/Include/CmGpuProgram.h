@@ -148,7 +148,7 @@ namespace CamelotFramework {
 		friend class GpuProgramManager;
 
 		GpuProgram(const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes, 
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, 
 			bool isAdjacencyInfoRequired = false);
 
         /** Internal method returns whether required capabilities for this program is supported.

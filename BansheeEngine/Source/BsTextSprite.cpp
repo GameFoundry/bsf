@@ -20,8 +20,8 @@ namespace BansheeEngine
 		if(textData == nullptr)
 			return;
 
-		const CM::vector<TextUtility::TextLine>::type& lines = textData->getLines();
-		const CM::vector<UINT32>::type& quadsPerPage = textData->getNumQuadsPerPage();
+		const CM::Vector<TextUtility::TextLine>::type& lines = textData->getLines();
+		const CM::Vector<UINT32>::type& quadsPerPage = textData->getNumQuadsPerPage();
 
 		UINT32 curHeight = 0;
 		for(auto& line : lines)
@@ -75,7 +75,7 @@ namespace BansheeEngine
 			mCachedRenderElements.resize(quadsPerPage.size());
 
 		// Actually generate a mesh
-		const CM::vector<HTexture>::type& texturePages = textData->getTexturePages();
+		const CM::Vector<HTexture>::type& texturePages = textData->getTexturePages();
 		UINT32 texPage = 0;
 		for(auto& cachedElem : mCachedRenderElements)
 		{
@@ -108,7 +108,7 @@ namespace BansheeEngine
 		Int2 offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
 		UINT32 numPages = (UINT32)quadsPerPage.size();
 		UINT32 curY = 0;
-		vector<UINT32>::type faceOffsets(mCachedRenderElements.size(), 0);
+		Vector<UINT32>::type faceOffsets(mCachedRenderElements.size(), 0);
 		for(size_t i = 0; i < lines.size(); i++)
 		{
 			UINT32 horzOffset = 0;

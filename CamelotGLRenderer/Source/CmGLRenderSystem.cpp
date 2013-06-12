@@ -156,7 +156,7 @@ namespace CamelotFramework
 
 		checkForErrors();
 
-		vector<CamelotFramework::String>::type tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+		Vector<CamelotFramework::String>::type tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
 
 		if (!tokens.empty())
 		{

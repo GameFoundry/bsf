@@ -23,10 +23,10 @@ namespace CamelotFramework
 			UINT32 getHeight() const { return mHeight; }
 			bool isSpacer() const { return mSpacer; }
 
-			const vector<CHAR_DESC>::type& getChars() const { return mChars; }
+			const Vector<CHAR_DESC>::type& getChars() const { return mChars; }
 
 		private:
-			vector<CHAR_DESC>::type mChars;
+			Vector<CHAR_DESC>::type mChars;
 			UINT32 mWidth;
 			UINT32 mHeight;
 			bool mSpacer;
@@ -57,7 +57,7 @@ namespace CamelotFramework
 			 * 			
 			 *			One character is represented with a single quad. Some pages might be empty.
 			 */
-			vector<UINT32>::type getNumQuadsPerPage() const;
+			Vector<UINT32>::type getNumQuadsPerPage() const;
 
 			/**
 			 * @brief	Fills the vertex/uv/index buffers for the specified page, with all the character data
@@ -83,7 +83,7 @@ namespace CamelotFramework
 			UINT32 mBaselineOffset;
 			UINT32 mLineHeight;
 			UINT32 mSpaceWidth;
-			vector<TextWord>::type mWords;
+			Vector<TextWord>::type mWords;
 			TextWord* mLastWord;
 
 			void add(const CHAR_DESC& charDesc);
@@ -100,18 +100,18 @@ namespace CamelotFramework
 		public:
 			~TextData();
 
-			const vector<TextLine>::type& getLines() const { return mLines; }
-			const vector<HTexture>::type& getTexturePages() const { return mTexturePages; }
-			const vector<UINT32>::type& getNumQuadsPerPage() const  { return mQuadsPerPage; }
+			const Vector<TextLine>::type& getLines() const { return mLines; }
+			const Vector<HTexture>::type& getTexturePages() const { return mTexturePages; }
+			const Vector<UINT32>::type& getNumQuadsPerPage() const  { return mQuadsPerPage; }
 			UINT32 getWidth() const;
 			UINT32 getHeight() const;
 
 		private:
 			friend class TextUtility;
 
-			vector<UINT32>::type mQuadsPerPage;
-			vector<TextLine>::type mLines;
-			vector<HTexture>::type mTexturePages;
+			Vector<UINT32>::type mQuadsPerPage;
+			Vector<TextLine>::type mLines;
+			Vector<HTexture>::type mTexturePages;
 		};
 
 		static std::shared_ptr<TextUtility::TextData> getTextData(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width = 0, UINT32 height = 0, bool wordWrap = false);

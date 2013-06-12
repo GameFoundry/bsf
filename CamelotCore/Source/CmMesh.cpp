@@ -210,7 +210,7 @@ namespace CamelotFramework
 		if(subMeshIdx < 0 || subMeshIdx >= mSubMeshes.size())
 		{
 			CM_EXCEPT(InvalidParametersException, "Invalid sub-mesh index (" 
-				+ toString(subMeshIdx) + "). Number of sub-meshes available: " + toString(mSubMeshes.size()));
+				+ toString(subMeshIdx) + "). Number of sub-meshes available: " + toString((int)mSubMeshes.size()));
 		}
 
 		// TODO - BIG TODO - Completely ignores subMeshIdx and always renders the entire thing

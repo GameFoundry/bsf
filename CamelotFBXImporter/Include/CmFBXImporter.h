@@ -37,7 +37,7 @@ namespace CamelotFramework
 		/** Inherited from SpecificImporter */
 		virtual HResource import(const String& filePath, ConstImportOptionsPtr importOptions);
 	private:
-		vector<String>::type mExtensions;
+		Vector<String>::type mExtensions;
 
 		void startUpSdk(FbxManager*& manager, FbxScene*& scene);
 		void shutDownSdk(FbxManager* manager);

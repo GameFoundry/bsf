@@ -37,11 +37,11 @@ namespace CamelotFramework
 
 	struct GpuParamDesc
 	{
-		map<String, GpuParamBlockDesc>::type paramBlocks;
-		map<String, GpuParamDataDesc>::type params;
+		Map<String, GpuParamBlockDesc>::type paramBlocks;
+		Map<String, GpuParamDataDesc>::type params;
 
-		map<String, GpuParamObjectDesc>::type samplers;
-		map<String, GpuParamObjectDesc>::type textures;
-		map<String, GpuParamObjectDesc>::type buffers;
+		Map<String, GpuParamObjectDesc>::type samplers;
+		Map<String, GpuParamObjectDesc>::type textures;
+		Map<String, GpuParamObjectDesc>::type buffers;
 	};
 }

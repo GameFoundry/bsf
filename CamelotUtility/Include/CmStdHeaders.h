@@ -122,8 +122,8 @@ namespace CamelotFramework
 {
 #if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310
 #   if CM_COMP_VER >= 430
-#       define HashMap ::std::tr1::unordered_map
-#		define HashSet ::std::tr1::unordered_set
+#       define HashMap ::std::tr1::UnorderedMap
+#		define HashSet ::std::tr1::UnorderedSet
 #    else
 #       define HashMap ::__gnu_cxx::hash_map
 #       define HashSet ::__gnu_cxx::hash_set
@@ -131,8 +131,8 @@ namespace CamelotFramework
 #else
 #   if CM_COMPILER == CM_COMPILER_MSVC
 #       if CM_COMP_VER >= 1600 // VC++ 10.0
-#			define HashMap ::std::tr1::unordered_map
-#           define HashSet ::std::tr1::unordered_set
+#			define HashMap ::std::tr1::UnorderedMap
+#           define HashSet ::std::tr1::UnorderedSet
 #		elif CM_COMP_VER > 1300 && !defined(_STLP_MSVC)
 #           define HashMap ::stdext::hash_map
 #           define HashSet ::stdext::hash_set
@@ -148,67 +148,67 @@ namespace CamelotFramework
 
 	// Standard containers, for easier access in my own namespace
 	template <typename T, typename A = StdAlloc<T>> 
-	struct deque 
+	struct Deque 
 	{ 
 		typedef typename std::deque<T, A> type;    
 	}; 
 
 	template <typename T, typename A = StdAlloc<T>> 
-	struct vector 
+	struct Vector 
 	{ 
 		typedef typename std::vector<T, A> type;    
 	}; 
 
 	template <typename T, typename A = StdAlloc<T>> 
-	struct list 
+	struct List 
 	{ 
 		typedef typename std::list<T, A> type;    
 	}; 
 
 	template <typename T, typename A = StdAlloc<T>> 
-	struct stack 
+	struct Stack 
 	{ 
 		typedef typename std::stack<T, std::deque<T, A>> type;    
 	}; 
 
 	template <typename T, typename A = StdAlloc<T>> 
-	struct queue
+	struct Queue
 	{ 
 		typedef typename std::queue<T, std::deque<T, A>> type;    
 	}; 	
 
 	template <typename T, typename P = std::less<T>, typename A = StdAlloc<T>> 
-	struct set 
+	struct Set 
 	{ 
 		typedef typename std::set<T, P, A> type;    
 	}; 
 
 	template <typename K, typename V, typename P = std::less<K>, typename A = StdAlloc<std::pair<const K, V>>> 
-	struct map 
+	struct Map 
 	{ 
 		typedef typename std::map<K, V, P, A> type; 
 	}; 
 
 	template <typename K, typename V, typename P = std::less<K>, typename A = StdAlloc<std::pair<const K, V>>> 
-	struct multimap 
+	struct Multimap 
 	{ 
 		typedef typename std::multimap<K, V, P, A> type; 
 	}; 
 
 	template <typename T, typename H = std::hash<T>, typename C = std::equal_to<T>, typename A = StdAlloc<T>> 
-	struct unordered_set 
+	struct UnorderedSet 
 	{ 
 		typedef typename std::unordered_set<T, H, C, A> type;    
 	}; 
 
 	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
-	struct unordered_map 
+	struct UnorderedMap 
 	{ 
 		typedef typename std::unordered_map<K, V, H, C, A> type; 
 	}; 
 
 	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
-	struct unordered_multimap 
+	struct UnorderedMultimap 
 	{ 
 		typedef typename std::unordered_multimap<K, V, H, C, A> type; 
 	}; 

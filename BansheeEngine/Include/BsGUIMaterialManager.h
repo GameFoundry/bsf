@@ -50,7 +50,7 @@ namespace BansheeEngine
 			CM::UINT32 refCount;
 		};
 
-		mutable CM::vector<GUIMaterial>::type mTextMaterials;
-		mutable CM::vector<GUIMaterial>::type mImageMaterials;
+		mutable CM::Vector<GUIMaterial>::type mTextMaterials;
+		mutable CM::Vector<GUIMaterial>::type mImageMaterials;
 	};
 }

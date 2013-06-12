@@ -46,7 +46,7 @@ namespace CamelotFramework {
 	{
 	public:
 
-		typedef set<String>::type SyntaxCodes;
+		typedef Set<String>::type SyntaxCodes;
 
 	protected:
 		/** General create method

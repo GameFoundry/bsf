@@ -26,7 +26,7 @@ namespace CamelotFramework
 
 		RENDER_WINDOW_DESC primaryWindowDesc;
 
-		vector<String>::type importers;
+		Vector<String>::type importers;
 
 		String resourceCacheDirectory;
 	};

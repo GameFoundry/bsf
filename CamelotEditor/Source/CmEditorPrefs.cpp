@@ -150,12 +150,12 @@ namespace CamelotEditor
 		return desc;
 	}
 
-	void EditorPrefs::setWindowLayouts(const vector<WindowLayoutDesc>::type& descs)
+	void EditorPrefs::setWindowLayouts(const Vector<WindowLayoutDesc>::type& descs)
 	{
 		mWindowLayouts = descs;
 	}
 
-	const vector<WindowLayoutDesc>::type& EditorPrefs::getWindowLayouts() const
+	const Vector<WindowLayoutDesc>::type& EditorPrefs::getWindowLayouts() const
 	{
 		return mWindowLayouts;
 	}

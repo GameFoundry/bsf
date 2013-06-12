@@ -22,7 +22,7 @@ namespace CamelotFramework
 		String mRenderSystem;
 		String mRenderer;
 
-		vector<PassPtr>::type mPasses;
+		Vector<PassPtr>::type mPasses;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

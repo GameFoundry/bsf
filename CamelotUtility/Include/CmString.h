@@ -119,7 +119,7 @@ namespace CamelotFramework
                 maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
                 parameters is > 0, the splitting process will stop after this many splits, left to right.
         */
-		static vector<String>::type split(const String& str, const String& delims = "\t\n ", unsigned int maxSplits = 0);
+		static Vector<String>::type split(const String& str, const String& delims = "\t\n ", unsigned int maxSplits = 0);
 
 		/** Returns a StringVector that contains all the substrings delimited
             by the characters in the passed <code>delims</code> argument.
@@ -129,7 +129,7 @@ namespace CamelotFramework
                 maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
                 parameters is > 0, the splitting process will stop after this many splits, left to right.
         */
-		static vector<WString>::type split(const WString& str, const WString& delims = L"\t\n ", unsigned int maxSplits = 0);
+		static Vector<WString>::type split(const WString& str, const WString& delims = L"\t\n ", unsigned int maxSplits = 0);
 
 		/** Returns a StringVector that contains all the substrings delimited
             by the characters in the passed <code>delims</code> argument, 
@@ -143,7 +143,7 @@ namespace CamelotFramework
                 maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
                 parameters is > 0, the splitting process will stop after this many splits, left to right.
         */
-		static vector<String>::type tokenise(const String& str, const String& delims = "\t\n ", const String& doubleDelims = "\"", unsigned int maxSplits = 0);
+		static Vector<String>::type tokenise(const String& str, const String& delims = "\t\n ", const String& doubleDelims = "\"", unsigned int maxSplits = 0);
 
 		/** Returns a StringVector that contains all the substrings delimited
             by the characters in the passed <code>delims</code> argument, 
@@ -157,7 +157,7 @@ namespace CamelotFramework
                 maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
                 parameters is > 0, the splitting process will stop after this many splits, left to right.
         */
-		static vector<WString>::type tokenise(const WString& str, const WString& delims = L"\t\n ", const WString& doubleDelims = L"\"", unsigned int maxSplits = 0);
+		static Vector<WString>::type tokenise(const WString& str, const WString& delims = L"\t\n ", const WString& doubleDelims = L"\"", unsigned int maxSplits = 0);
 
 		/** Lower-cases all the characters in the string.
         */
@@ -241,9 +241,9 @@ namespace CamelotFramework
 
 	private:
 		template <class T>
-		static typename vector<typename BasicString<T>::type>::type splitInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& delims, unsigned int maxSplits)
+		static typename Vector<typename BasicString<T>::type>::type splitInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& delims, unsigned int maxSplits)
 		{
-			vector<BasicString<T>::type>::type ret;
+			Vector<BasicString<T>::type>::type ret;
 			// Pre-allocate some space for performance
 			ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
 
@@ -282,10 +282,10 @@ namespace CamelotFramework
 		}
 
 		template <class T>
-		static typename vector<typename BasicString<T>::type>::type tokeniseInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& singleDelims, 
+		static typename Vector<typename BasicString<T>::type>::type tokeniseInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& singleDelims, 
 			const typename BasicString<T>::type& doubleDelims, unsigned int maxSplits)
 		{
-			vector<BasicString<T>::type>::type ret;
+			Vector<BasicString<T>::type>::type ret;
 			// Pre-allocate some space for performance
 			ret.reserve(maxSplits ? maxSplits + 1 : 10);    // 10 is guessed capacity for most case
 
@@ -473,133 +473,128 @@ namespace CamelotFramework
 	/**
 	* @brief	Converts a wide string to a narrow string.
 	*/
-	CM_UTILITY_EXPORT String toString(const WString& source);
+	CM_UTILITY_EXPORT WString toWString(const String& source);
 
-	    /** Converts a float to a String. */
+	/** Converts a float to a String. */
     CM_UTILITY_EXPORT String toString(float val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
     /** Converts a Radian to a String. */
     CM_UTILITY_EXPORT String toString(Radian val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
     /** Converts a Degree to a String. */
     CM_UTILITY_EXPORT String toString(Degree val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
     /** Converts an int to a String. */
     CM_UTILITY_EXPORT String toString(int val, unsigned short width = 0, 
         char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
-#if CM_ARCH_TYPE == CM_ARCHITECTURE_64
+
     /** Converts an unsigned int to a String. */
     CM_UTILITY_EXPORT String toString(unsigned int val, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
-    /** Converts a size_t to a String. */
-    CM_UTILITY_EXPORT String toString(size_t val, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
-    #if CM_COMPILER == CM_COMPILER_MSVC
-            /** Converts an unsigned long to a String. */
-            CM_UTILITY_EXPORT String toString(unsigned long val, 
-                unsigned short width = 0, char fill = ' ', 
-                std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    #endif
-#else
-    /** Converts a size_t to a String. */
-    CM_UTILITY_EXPORT String toString(size_t val, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	/** Converts a long to a String. */
+	CM_UTILITY_EXPORT String toString(long val, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
     /** Converts an unsigned long to a String. */
     CM_UTILITY_EXPORT String toString(unsigned long val, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
-	/** Converts a long long to a String. */
-	CM_UTILITY_EXPORT String toString(unsigned long long int val, 
-		unsigned short width = 0, char fill = ' ', 
-		std::ios::fmtflags flags = std::ios::fmtflags(0) );
-#endif
-    /** Converts a long to a String. */
-    CM_UTILITY_EXPORT String toString(long val, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
-
-	/** Global conversion methods **/
 
     /** Converts a boolean to a String. 
     @param yesNo If set to true, result is 'yes' or 'no' instead of 'true' or 'false'
     */
     CM_UTILITY_EXPORT String toString(bool val, bool yesNo = false);
+
 	/** Converts a Vector2 to a String. 
     @remarks
         Format is "x y" (i.e. 2x float values, space delimited)
     */
     CM_UTILITY_EXPORT String toString(const Vector2& val);
+
     /** Converts a Vector3 to a String. 
     @remarks
         Format is "x y z" (i.e. 3x float values, space delimited)
     */
     CM_UTILITY_EXPORT String toString(const Vector3& val);
+
 	/** Converts a Vector4 to a String. 
     @remarks
         Format is "x y z w" (i.e. 4x float values, space delimited)
     */
     CM_UTILITY_EXPORT String toString(const Vector4& val);
+
     /** Converts a Matrix3 to a String. 
     @remarks
         Format is "00 01 02 10 11 12 20 21 22" where '01' means row 0 column 1 etc.
     */
     CM_UTILITY_EXPORT String toString(const Matrix3& val);
+
     /** Converts a Matrix4 to a String. 
     @remarks
         Format is "00 01 02 03 10 11 12 13 20 21 22 23 30 31 32 33" where 
         '01' means row 0 column 1 etc.
     */
     CM_UTILITY_EXPORT String toString(const Matrix4& val);
+
     /** Converts a Quaternion to a String. 
     @remarks
         Format is "w x y z" (i.e. 4x float values, space delimited)
     */
     CM_UTILITY_EXPORT String toString(const Quaternion& val);
+
     /** Converts a ColourValue to a String. 
     @remarks
         Format is "r g b a" (i.e. 4x float values, space delimited). 
     */
     CM_UTILITY_EXPORT String toString(const Color& val);
+
     /** Converts a StringVector to a string.
     @remarks
         Strings must not contain spaces since space is used as a delimiter in
         the output.
     */
-    CM_UTILITY_EXPORT String toString(const vector<CamelotFramework::String>::type& val);
+    CM_UTILITY_EXPORT String toString(const Vector<CamelotFramework::String>::type& val);
 
     /** Converts a String to a float. 
     @returns
         0.0 if the value could not be parsed, otherwise the float version of the String.
     */
     CM_UTILITY_EXPORT float parseFloat(const String& val, float defaultValue = 0);
+
     /** Converts a String to a whole number. 
     @returns
         0.0 if the value could not be parsed, otherwise the numeric version of the String.
     */
     CM_UTILITY_EXPORT int parseInt(const String& val, int defaultValue = 0);
+
     /** Converts a String to a whole number. 
     @returns
         0.0 if the value could not be parsed, otherwise the numeric version of the String.
     */
     CM_UTILITY_EXPORT unsigned int parseUnsignedInt(const String& val, unsigned int defaultValue = 0);
+
     /** Converts a String to a whole number. 
     @returns
         0.0 if the value could not be parsed, otherwise the numeric version of the String.
     */
     CM_UTILITY_EXPORT long parseLong(const String& val, long defaultValue = 0);
+
     /** Converts a String to a whole number. 
     @returns
         0.0 if the value could not be parsed, otherwise the numeric version of the String.
     */
     CM_UTILITY_EXPORT unsigned long parseUnsignedLong(const String& val, unsigned long defaultValue = 0);
+
     /** Converts a String to a boolean. 
     @remarks
         Returns true if case-insensitive match of the start of the string
@@ -650,6 +645,55 @@ namespace CamelotFramework
 		static UINT32 getDynamicSize(const String& data)	
 		{ 
 			UINT64 dataSize = data.size() * sizeof(String::value_type) + sizeof(UINT32);
+
+#if CM_DEBUG_MODE
+			if(dataSize > std::numeric_limits<UINT32>::max())
+			{
+				__string_throwDataOverflowException();
+			}
+#endif
+
+			return (UINT32)dataSize;
+		}	
+	}; 
+
+	/**
+	 * @brief	Strings need to copy their data in a slightly more intricate way than just memcpy.
+	 */
+	template<> struct RTTIPlainType<WString>
+	{	
+		enum { id = TID_WString }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(const WString& data, char* memory)
+		{ 
+			UINT32 size = getDynamicSize(data);
+
+			memcpy(memory, &size, sizeof(UINT32));
+			memory += sizeof(UINT32);
+			size -= sizeof(UINT32);
+			memcpy(memory, data.data(), size); 
+		}
+
+		static UINT32 fromMemory(WString& data, char* memory)
+		{ 
+			UINT32 size;
+			memcpy(&size, memory, sizeof(UINT32)); 
+			memory += sizeof(UINT32);
+
+			UINT32 stringSize = size - sizeof(UINT32);
+			WString::value_type* buffer = (WString::value_type*)cm_alloc<ScratchAlloc>(stringSize + 1);
+			memcpy(buffer, memory, stringSize); 
+			buffer[stringSize] = '\0';
+			data = WString(buffer);
+
+			cm_free<ScratchAlloc>(buffer);
+
+			return size;
+		}
+
+		static UINT32 getDynamicSize(const WString& data)	
+		{ 
+			UINT64 dataSize = data.size() * sizeof(WString::value_type) + sizeof(UINT32);
 
 #if CM_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())

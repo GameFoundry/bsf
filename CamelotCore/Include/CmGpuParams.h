@@ -74,10 +74,10 @@ namespace CamelotFramework
 
 		GpuParamDataDesc* getParamDesc(const String& name) const;
 
-		vector<GpuParamBlock*>::type mParamBlocks;
-		vector<GpuParamBlockBufferPtr>::type mParamBlockBuffers;
-		vector<HTexture>::type mTextures;
-		vector<HSamplerState>::type mSamplerStates;
+		Vector<GpuParamBlock*>::type mParamBlocks;
+		Vector<GpuParamBlockBufferPtr>::type mParamBlockBuffers;
+		Vector<HTexture>::type mTextures;
+		Vector<HSamplerState>::type mSamplerStates;
 	};
 
 	/**

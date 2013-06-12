@@ -28,7 +28,7 @@ namespace CamelotEditor
 		}
 
 		UINT32 activeWidget;
-		vector<QString>::type childWidgetNames;
+		Vector<QString>::type childWidgetNames;
 		INT32 id;
 		UINT32 width;
 		UINT32 height;
@@ -54,18 +54,18 @@ namespace CamelotEditor
 		void setMainWindowLayout(const WindowLayoutDesc& desc);
 		const WindowLayoutDesc& getMainWindowLayout() const;
 
-		void setWindowLayouts(const vector<WindowLayoutDesc>::type& descs);
-		const vector<WindowLayoutDesc>::type& getWindowLayouts() const;
+		void setWindowLayouts(const Vector<WindowLayoutDesc>::type& descs);
+		const Vector<WindowLayoutDesc>::type& getWindowLayouts() const;
 
 		void save(const QString& path, bool overwrite = true) const;
 		void load(const QString& path);
 
 	private:
-		vector<QString>::type mRecentlyUsedProjects;
+		Vector<QString>::type mRecentlyUsedProjects;
 		QString mLastUsedProjectDirectory;
 
 		WindowLayoutDesc mMainWindowLayout;
-		vector<WindowLayoutDesc>::type mWindowLayouts;
+		Vector<WindowLayoutDesc>::type mWindowLayouts;
 
 		void saveWindowLayout(pugi::xml_node parentNode, const WindowLayoutDesc& desc) const;
 		WindowLayoutDesc loadWindowLayout(pugi::xml_node node) const;

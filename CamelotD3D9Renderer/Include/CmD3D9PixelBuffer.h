@@ -94,7 +94,7 @@ namespace CamelotFramework {
 			IDirect3DBaseTexture9 *mipTex;			
 		};
 
-		typedef map<IDirect3DDevice9*, BufferResources*>::type	DeviceToBufferResourcesMap;
+		typedef Map<IDirect3DDevice9*, BufferResources*>::type	DeviceToBufferResourcesMap;
 		typedef DeviceToBufferResourcesMap::iterator			DeviceToBufferResourcesIterator;
 
 		/// Map between device to buffer resources.

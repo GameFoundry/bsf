@@ -22,8 +22,8 @@ namespace BansheeEditor
 		boost::signal<void(CM::UINT32)> onTabAdded;
 		boost::signal<void(CM::UINT32)> onTabRemoved;
 	protected:
-		CM::vector<BS::GUITexture*>::type mDragDropElements;
-		CM::vector<BS::GUIToggle*>::type mTabButtons;
+		CM::Vector<BS::GUITexture*>::type mDragDropElements;
+		CM::Vector<BS::GUIToggle*>::type mTabButtons;
 
 		BS::GUIArea* mMainArea;
 		BS::GUILayout* mMainLayout;

@@ -97,8 +97,8 @@ namespace BansheeEngine
 
 		virtual void _updateOptimalSizes() = 0;
 	protected:
-		CM::vector<GUILayoutEntry>::type mChildren;	
-		CM::vector<CM::Int2>::type mOptimalSizes;
+		CM::Vector<GUILayoutEntry>::type mChildren;	
+		CM::Vector<CM::Int2>::type mOptimalSizes;
 		CM::UINT32 mOptimalWidth;
 		CM::UINT32 mOptimalHeight;
 

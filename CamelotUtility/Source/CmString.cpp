@@ -60,22 +60,22 @@ namespace CamelotFramework
 			str.erase(0, str.find_first_not_of(delims)); // trim left
 	}
 
-    vector<String>::type StringUtil::split(const String& str, const String& delims, unsigned int maxSplits)
+    Vector<String>::type StringUtil::split(const String& str, const String& delims, unsigned int maxSplits)
     {
         return splitInternal<char>(str, delims, maxSplits);
     }
 
-	vector<WString>::type StringUtil::split(const WString& str, const WString& delims, unsigned int maxSplits)
+	Vector<WString>::type StringUtil::split(const WString& str, const WString& delims, unsigned int maxSplits)
 	{
 		return splitInternal<wchar_t>(str, delims, maxSplits);
 	}
 
-	vector<String>::type StringUtil::tokenise(const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
+	Vector<String>::type StringUtil::tokenise(const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
 	{
         return tokeniseInternal<char>(str, singleDelims, doubleDelims, maxSplits);
     }
 
-	vector<WString>::type StringUtil::tokenise(const WString& str, const WString& singleDelims, const WString& doubleDelims, unsigned int maxSplits)
+	Vector<WString>::type StringUtil::tokenise(const WString& str, const WString& singleDelims, const WString& doubleDelims, unsigned int maxSplits)
 	{
 		return tokeniseInternal<wchar_t>(str, singleDelims, doubleDelims, maxSplits);
 	}
@@ -191,7 +191,6 @@ namespace CamelotFramework
 		return stream.str();
 	}
 
-#if CM_ARCH_TYPE == CM_ARCHITECTURE_64 || CM_PLATFORM == CM_PLATFORM_APPLE
 	String toString(unsigned int val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		StringStream stream;
@@ -203,67 +202,19 @@ namespace CamelotFramework
 		return stream.str();
 	}
 
-	String toString(size_t val, unsigned short width, char fill, std::ios::fmtflags flags)
-	{
-		StringStream stream;
-		stream.width(width);
-		stream.fill(fill);
-		if (flags)
-			stream.setf(flags);
-		stream << val;
-		return stream.str();
-	}
-#if CM_COMPILER == CM_COMPILER_MSVC
-
-	String toString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
-	{
-		StringStream stream;
-		stream.width(width);
-		stream.fill(fill);
-		if (flags)
-			stream.setf(flags);
-		stream << val;
-		return stream.str();
-	}
-
-#endif
-
-#else
-	String toString(size_t val, unsigned short width, char fill, std::ios::fmtflags flags)
-	{
-		StringStream stream;
-		stream.width(width);
-		stream.fill(fill);
-		if (flags)
-			stream.setf(flags);
-		stream << val;
-		return stream.str();
-	}
-
-	String toString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
-	{
-		StringStream stream;
-		stream.width(width);
-		stream.fill(fill);
-		if (flags)
-			stream.setf(flags);
-		stream << val;
-		return stream.str();
-	}
-
-	String toString(unsigned long long int val, unsigned short width, char fill, std::ios::fmtflags flags)
-	{
-		StringStream stream;
-		stream.width(width);
-		stream.fill(fill);
-		if (flags)
-			stream.setf(flags);
-		stream << val;
-		return stream.str();
-	}
-#endif
 	String toString(long val, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		StringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	String toString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		StringStream stream;
 		stream.width(width);
@@ -370,10 +321,10 @@ namespace CamelotFramework
 		return stream.str();
 	}
 
-	String toString(const vector<CamelotFramework::String>::type& val)
+	String toString(const Vector<CamelotFramework::String>::type& val)
 	{
 		StringStream stream;
-		vector<CamelotFramework::String>::type::const_iterator i, iend, ibegin;
+		Vector<CamelotFramework::String>::type::const_iterator i, iend, ibegin;
 		ibegin = val.begin();
 		iend = val.end();
 		for (i = ibegin; i != iend; ++i)

@@ -16,7 +16,7 @@ namespace CamelotFramework
 	UINT32 D3D11HLSLProgram::globalProgramId = 0;
 
 	D3D11HLSLProgram::D3D11HLSLProgram(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
 		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired),
 		mColumnMajorMatrices(true), mEnableBackwardsCompatibility(false), mProgramId(0)
 	{

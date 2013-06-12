@@ -95,7 +95,7 @@ namespace CamelotFramework {
 		PixelBufferPtr mLockedBuffer;
 		
 		/// Vector of pointers to subsurfaces
-		typedef vector<PixelBufferPtr>::type SurfaceList;
+		typedef Vector<PixelBufferPtr>::type SurfaceList;
 		SurfaceList	mSurfaceList;
     };
 

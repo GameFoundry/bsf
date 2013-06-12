@@ -17,7 +17,7 @@ namespace CamelotFramework
 
 	void SceneManager::update()
 	{
-		stack<HSceneObject>::type todo;
+		Stack<HSceneObject>::type todo;
 		todo.push(mRootNode);
 
 		while(!todo.empty())
@@ -25,7 +25,7 @@ namespace CamelotFramework
 			HSceneObject currentGO = todo.top();
 			todo.pop();
 			                  
-			vector<HComponent>::type components = currentGO->getComponents();
+			Vector<HComponent>::type components = currentGO->getComponents();
 
 			for(auto iter = components.begin(); iter != components.end(); ++iter)
 			{

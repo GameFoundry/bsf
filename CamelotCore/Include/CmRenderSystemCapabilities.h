@@ -198,7 +198,7 @@ namespace CamelotFramework
 
 		void fromString(const String& versionString)
 		{
-			vector<CamelotFramework::String>::type tokens = StringUtil::split(versionString, ".");
+			Vector<CamelotFramework::String>::type tokens = StringUtil::split(versionString, ".");
 			if(!tokens.empty())
 			{
 				major = parseInt(tokens[0]);
@@ -242,7 +242,7 @@ namespace CamelotFramework
 
 	public:
 
-		typedef set<String>::type ShaderProfiles;
+		typedef Set<String>::type ShaderProfiles;
 	private:
 		/// This is used to build a database of RSC's
 		/// if a RSC with same name, but newer version is introduced, the older one 
@@ -251,17 +251,17 @@ namespace CamelotFramework
 		/// GPU Vendor
 		GPUVendor mVendor;
 
-		static vector<CamelotFramework::String>::type msGPUVendorStrings;
+		static Vector<CamelotFramework::String>::type msGPUVendorStrings;
 		static void initVendorStrings();
 
 		/// The number of world matrices available
 		UINT16 mNumWorldMatrices;
 		/// The number of texture units available per stage
-		map<GpuProgramType, UINT16>::type mNumTextureUnitsPerStage;
+		Map<GpuProgramType, UINT16>::type mNumTextureUnitsPerStage;
 		/// Total number of texture units available
 		UINT16 mNumCombinedTextureUnits;
 		/// The number of uniform blocks available per stage
-		map<GpuProgramType, UINT16>::type mNumUniformBlocksPerStage;
+		Map<GpuProgramType, UINT16>::type mNumUniformBlocksPerStage;
 		/// Total number of uniform blocks available
 		UINT16 mNumCombinedUniformBlocks;
 		/// The stencil buffer bit depth
@@ -310,7 +310,7 @@ namespace CamelotFramework
 		ShaderProfiles mSupportedShaderProfiles;
 
 		// Allows us to convert a generic shader profile to a render-system specific one
-		unordered_map<GpuProgramProfile, String>::type mGenericToSpecificShaderProfileMap;
+		UnorderedMap<GpuProgramProfile, String>::type mGenericToSpecificShaderProfileMap;
 	public:	
 		RenderSystemCapabilities ();
 		virtual ~RenderSystemCapabilities ();

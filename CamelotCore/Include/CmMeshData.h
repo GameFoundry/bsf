@@ -199,7 +199,7 @@ namespace CamelotFramework
 
 		UINT32 getVertexStride(UINT32 streamIdx = 0) const;
 		
-		static MeshDataPtr combine(const vector<MeshDataPtr>::type& elements);
+		static MeshDataPtr combine(const Vector<MeshDataPtr>::type& elements);
 
 	protected:
 		UINT32 getInternalBufferSize();
@@ -214,8 +214,8 @@ namespace CamelotFramework
 		UINT32 mNumVertices;
 		IndexBuffer::IndexType mIndexType;
 
-		vector<IndexElementData>::type mSubMeshes;
-		vector<VertexElement>::type mVertexElements;
+		Vector<IndexElementData>::type mSubMeshes;
+		Vector<VertexElement>::type mVertexElements;
 
 		UINT32 getMaxStreamIdx() const;
 		bool hasStream(UINT32 streamIdx) const;

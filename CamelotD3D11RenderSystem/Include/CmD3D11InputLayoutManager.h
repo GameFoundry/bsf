@@ -13,7 +13,7 @@ namespace CamelotFramework
 			size_t bufferDeclHash;
 			UINT32 vertexProgramId;
 
-			list<VertexElement>::type* bufferDeclElements;
+			List<VertexElement>::type* bufferDeclElements;
 		};
 
 		class HashFunc 
@@ -55,7 +55,7 @@ namespace CamelotFramework
 		static const int DECLARATION_BUFFER_SIZE = 1024;
 		static const int NUM_ELEMENTS_TO_PRUNE = 64;
 
-		unordered_map<VertexDeclarationKey, InputLayoutEntry*, HashFunc, EqualFunc>::type mInputLayoutMap;
+		UnorderedMap<VertexDeclarationKey, InputLayoutEntry*, HashFunc, EqualFunc>::type mInputLayoutMap;
 
 		bool mWarningShown;
 		UINT32 mLastUsedCounter;

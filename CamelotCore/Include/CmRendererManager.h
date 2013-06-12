@@ -23,7 +23,7 @@ namespace CamelotFramework
 
 		void registerFactory(RendererFactoryPtr factory);
 	private:
-		vector<RendererFactoryPtr>::type mAvailableFactories;
+		Vector<RendererFactoryPtr>::type mAvailableFactories;
 
 		RendererPtr mActiveRenderer;
 	};

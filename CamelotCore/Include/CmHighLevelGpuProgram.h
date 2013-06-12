@@ -73,7 +73,7 @@ namespace CamelotFramework {
 
 		/** Constructor, should be used only by factory classes. */
 		HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes,
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes,
 			bool isAdjacencyInfoRequired = false);
 
 		/**
@@ -94,7 +94,7 @@ namespace CamelotFramework {
 		/************************************************************************/
 	public:
 		static HHighLevelGpuProgram create(const String& source, const String& entryPoint, 
-			const String& language, GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes = nullptr);
+			const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes = nullptr);
     };
 
 	/** @} */

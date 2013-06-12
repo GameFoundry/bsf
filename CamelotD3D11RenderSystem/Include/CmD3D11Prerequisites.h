@@ -58,7 +58,7 @@ namespace CamelotFramework
 		TID_D3D11_HLSLProgram = 12000
 	};
 
-	typedef vector<char*>::type HLSLMicroCode;
+	typedef Vector<char*>::type HLSLMicroCode;
 
 	typedef std::shared_ptr<D3D11GpuVertexProgram> D3D11GpuVertexProgramPtr;
 	typedef std::shared_ptr<D3D11GpuFragmentProgram> D3D11GpuFragmentProgramPtr;

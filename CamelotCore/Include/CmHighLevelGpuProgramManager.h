@@ -50,7 +50,7 @@ namespace CamelotFramework {
 		/// Get the name of the language this factory creates programs for
 		virtual const String& getLanguage(void) const = 0;
         virtual HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, 
-			GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes) = 0;
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes) = 0;
 		virtual HighLevelGpuProgramPtr create() = 0;
 	};
 	/** This ResourceManager manages high-level vertex and fragment programs. 
@@ -69,7 +69,7 @@ namespace CamelotFramework {
 	class CM_EXPORT HighLevelGpuProgramManager : public Module<HighLevelGpuProgramManager>
 	{
 	public:
-		typedef map<String, HighLevelGpuProgramFactory*>::type FactoryMap;
+		typedef Map<String, HighLevelGpuProgramFactory*>::type FactoryMap;
 	protected:
 		/// Factories capable of creating HighLevelGpuProgram instances
 		FactoryMap mFactories;
@@ -100,7 +100,7 @@ namespace CamelotFramework {
 		@param gptype The type of program to create
 		*/
 		HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes);
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes);
 
 		/** Create a new HighLevelGpuProgram. 
 		@par

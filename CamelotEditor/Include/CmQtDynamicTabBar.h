@@ -19,7 +19,7 @@ namespace CamelotEditor
 		void insertTab(UINT32 idx, const QString& name);
 		void removeTab(UINT32 idx);
 
-		vector<QPolygon>::type getDropLocations();
+		Vector<QPolygon>::type getDropLocations();
 
 		void enterEvent(QEvent *e);
 		void leaveEvent(QEvent *e);
@@ -32,7 +32,7 @@ namespace CamelotEditor
 		boost::signal<void(UINT32)> onTabDraggedOff;
 	private:
 		QHBoxLayout* mHLayout;
-		vector<QtTabButton*>::type mTabs;
+		Vector<QtTabButton*>::type mTabs;
 		bool dbg;
 
 		void setupUi();

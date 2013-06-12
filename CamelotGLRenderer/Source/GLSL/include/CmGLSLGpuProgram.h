@@ -61,7 +61,7 @@ namespace CamelotFramework {
 		friend class GLGpuProgramManager;
 
 		GLSLGpuProgram(const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes);
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes);
 
 		/// GL Handle for the shader object
 		GLSLProgram* mGLSLProgram;

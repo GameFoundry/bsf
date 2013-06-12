@@ -157,7 +157,7 @@ namespace CamelotFramework {
         CM_UTILITY_EXPORT friend std::ostream& operator<< (std::ostream& o, const Plane& p);
     };
 
-    typedef vector<Plane>::type PlaneList;
+    typedef Vector<Plane>::type PlaneList;
 	/** @} */
 	/** @} */
 

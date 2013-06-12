@@ -102,7 +102,7 @@ namespace CamelotFramework {
 		// private members
 		//--
 	private:					
-		typedef map<IDirect3DDevice9*, IDirect3DQuery9*>::type DeviceToQueryMap;
+		typedef Map<IDirect3DDevice9*, IDirect3DQuery9*>::type DeviceToQueryMap;
 		typedef DeviceToQueryMap::iterator					   DeviceToQueryIterator;
 
 		DeviceToQueryMap				mMapDeviceToQuery;		

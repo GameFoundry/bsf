@@ -11,13 +11,13 @@ namespace BansheeEngine
 		OctreeSceneManager() {}
 		~OctreeSceneManager() {}
 
-		const CM::vector<HCamera>::type& getAllCameras() const { return mCachedCameras; }
+		const CM::Vector<HCamera>::type& getAllCameras() const { return mCachedCameras; }
 
-		CM::vector<HRenderable>::type getVisibleRenderables(const HCamera& camera) const;
+		CM::Vector<HRenderable>::type getVisibleRenderables(const HCamera& camera) const;
 	private:
 		void notifyComponentAdded(const CM::HComponent& component);
 		void notifyComponentRemoved(const CM::HComponent& component);
 
-		CM::vector<HCamera>::type mCachedCameras;
+		CM::Vector<HCamera>::type mCachedCameras;
 	};
 }

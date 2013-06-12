@@ -63,7 +63,7 @@ namespace CamelotFramework
 		void flush();
 
 	private:
-		vector<LogEntry*>::type mEntries;
+		Vector<LogEntry*>::type mEntries;
 
 		bool mAutoSave;
 		bool mSuppressFileOutput;

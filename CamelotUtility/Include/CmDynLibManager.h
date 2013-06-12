@@ -46,7 +46,7 @@ namespace CamelotFramework {
     class CM_UTILITY_EXPORT DynLibManager: public Module<DynLibManager>
     {
 	protected:
-		typedef map<String, DynLib*>::type DynLibList;
+		typedef Map<String, DynLib*>::type DynLibList;
 		DynLibList mLibList;
     public:
         /** Default constructor.

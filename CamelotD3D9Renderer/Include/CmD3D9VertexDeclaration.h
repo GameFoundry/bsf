@@ -85,7 +85,7 @@ namespace CamelotFramework {
 		void destroy_internal();
 
 	protected:        
-		typedef map<IDirect3DDevice9*, IDirect3DVertexDeclaration9*>::type	DeviceToDeclarationMap;
+		typedef Map<IDirect3DDevice9*, IDirect3DVertexDeclaration9*>::type	DeviceToDeclarationMap;
 		typedef DeviceToDeclarationMap::iterator							DeviceToDeclarationIterator;
 
 		DeviceToDeclarationMap		mMapDeviceToDeclaration;

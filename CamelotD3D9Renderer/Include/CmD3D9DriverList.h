@@ -36,7 +36,7 @@ namespace CamelotFramework
 	class CM_D3D9_EXPORT D3D9DriverList
 	{
 	private:
-		vector<D3D9Driver>::type mDriverList;
+		Vector<D3D9Driver>::type mDriverList;
 		
 	public:
 		D3D9DriverList();

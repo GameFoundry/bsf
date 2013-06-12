@@ -54,7 +54,7 @@ namespace CamelotFramework
 			strExt << exts;
 
 			// Pull off individual formats (separated by comma by FI)
-			vector<String>::type extsVector = StringUtil::split(exts, ",");
+			Vector<String>::type extsVector = StringUtil::split(exts, ",");
 			for (auto v = extsVector.begin(); v != extsVector.end(); ++v)
 			{
 				auto findIter = std::find(mExtensions.begin(), mExtensions.end(), *v);

@@ -38,7 +38,7 @@ THE SOFTWARE.
 namespace CamelotFramework {
 	//-----------------------------------------------------------------------
 	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
 		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired)
 		, mPreprocessorDefines()
 		, mColumnMajorMatrices(true)
@@ -59,7 +59,7 @@ namespace CamelotFramework {
 			// Populate preprocessor defines
 			String stringBuffer;
 
-			vector<D3DXMACRO>::type defines;
+			Vector<D3DXMACRO>::type defines;
 			const D3DXMACRO* pDefines = 0;
 			if (!mPreprocessorDefines.empty())
 			{

@@ -183,10 +183,10 @@ namespace CamelotEditor
 				FileSystem::remove(path);
 		}
 
-		map<String, vector<EntryToSave>::type>::type groups;
+		Map<String, Vector<EntryToSave>::type>::type groups;
 		for(auto iter = mKeys.begin(); iter != mKeys.end(); ++iter)
 		{
-			vector<String>::type splitStr = StringUtil::split(iter->first, ".", 1);
+			Vector<String>::type splitStr = StringUtil::split(iter->first, ".", 1);
 
 			String groupName;
 			String paramName;
@@ -327,7 +327,7 @@ namespace CamelotEditor
 				continue;
 			}
 
-			vector<String>::type paramSplit = StringUtil::split(line, "=");
+			Vector<String>::type paramSplit = StringUtil::split(line, "=");
 			if(paramSplit.size() < 2)
 			{
 				LOGWRN("Cannot parse line in file " + path + ". Invalid number of elements: " + line);
@@ -337,7 +337,7 @@ namespace CamelotEditor
 			String paramName = paramSplit[0];
 			StringUtil::trim(paramName);
 
-			vector<String>::type arrayElemSplit = StringUtil::split(paramName, ",");
+			Vector<String>::type arrayElemSplit = StringUtil::split(paramName, ",");
 			UINT32 arrayIdx = 0;
 			if(arrayElemSplit.size() > 1)
 			{

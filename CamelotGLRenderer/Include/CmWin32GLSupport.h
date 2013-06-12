@@ -42,9 +42,9 @@ namespace CamelotFramework
 		virtual unsigned int getDisplayMonitorCount() const;
 	private:
 		// Allowed video modes
-		vector<DEVMODE>::type mDevModes;
+		Vector<DEVMODE>::type mDevModes;
 		Win32Window *mInitialWindow;
-		vector<int>::type mFSAALevels;
+		Vector<int>::type mFSAALevels;
 		bool mHasPixelFormatARB;
         bool mHasMultisample;
 		bool mHasHardwareGamma;
@@ -55,7 +55,7 @@ namespace CamelotFramework
 			MONITORINFOEX	monitorInfoEx;
 		};
 
-		typedef vector<DisplayMonitorInfo>::type DisplayMonitorInfoList;
+		typedef Vector<DisplayMonitorInfo>::type DisplayMonitorInfoList;
 		typedef DisplayMonitorInfoList::iterator DisplayMonitorInfoIterator;
 
 		DisplayMonitorInfoList mMonitorInfoList;

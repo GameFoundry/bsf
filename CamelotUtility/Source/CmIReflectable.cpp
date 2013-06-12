@@ -27,8 +27,8 @@ namespace CamelotFramework
 
 	RTTITypeBase* IReflectable::getRTTIfromTypeId(UINT32 rttiTypeId)
 	{
-		stack<RTTITypeBase*>::type todo;
-		vector<RTTITypeBase*>::type& rootClasses = getDerivedClasses();
+		Stack<RTTITypeBase*>::type todo;
+		Vector<RTTITypeBase*>::type& rootClasses = getDerivedClasses();
 
 		for(auto iter = rootClasses.begin(); iter != rootClasses.end(); ++iter)
 			todo.push(*iter);
@@ -41,7 +41,7 @@ namespace CamelotFramework
 			if(curType->getRTTIId() == rttiTypeId)
 				return curType;
 
-			vector<RTTITypeBase*>::type& derivedClasses = curType->getDerivedClasses();
+			Vector<RTTITypeBase*>::type& derivedClasses = curType->getDerivedClasses();
 			for(auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
 				todo.push(*iter);
 		}
@@ -61,7 +61,7 @@ namespace CamelotFramework
 	{
 		assert(base != nullptr);
 
-		stack<RTTITypeBase*>::type todo;
+		Stack<RTTITypeBase*>::type todo;
 		todo.push(base);
 
 		while (!todo.empty())
@@ -72,7 +72,7 @@ namespace CamelotFramework
 			if(currentType->getRTTIId() == getRTTI()->getRTTIId())
 				return true;
 
-			vector<RTTITypeBase*>::type& derivedClasses = currentType->getDerivedClasses();
+			Vector<RTTITypeBase*>::type& derivedClasses = currentType->getDerivedClasses();
 			for(auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
 				todo.push(*iter);
 		}

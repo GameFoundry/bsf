@@ -107,14 +107,14 @@ namespace CamelotFramework {
 			IDirect3DSurface9* pDepthStencilSurface;	
 		};
 		
-		typedef map<IDirect3DDevice9*, TextureResources*>::type	DeviceToTextureResourcesMap;
+		typedef Map<IDirect3DDevice9*, TextureResources*>::type	DeviceToTextureResourcesMap;
 		typedef DeviceToTextureResourcesMap::iterator			DeviceToTextureResourcesIterator;
 
 		/// Map between device to texture resources.
 		DeviceToTextureResourcesMap	mMapDeviceToTextureResources;
 
 		/// Vector of pointers to subsurfaces
-		typedef vector<PixelBufferPtr>::type SurfaceList;
+		typedef Vector<PixelBufferPtr>::type SurfaceList;
 		SurfaceList	mSurfaceList;
 		/// cube texture individual face names
 		String							mCubeFaceNames[6];	

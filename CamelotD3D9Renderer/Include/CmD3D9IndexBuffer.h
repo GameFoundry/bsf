@@ -99,7 +99,7 @@ namespace CamelotFramework {
 		void destroy_internal();
 
 	protected:		
-		typedef map<IDirect3DDevice9*, BufferResources*>::type	DeviceToBufferResourcesMap;
+		typedef Map<IDirect3DDevice9*, BufferResources*>::type	DeviceToBufferResourcesMap;
 		typedef DeviceToBufferResourcesMap::iterator			DeviceToBufferResourcesIterator;
 
 		DeviceToBufferResourcesMap	mMapDeviceToBufferResources;	// Map between device to buffer resources.	

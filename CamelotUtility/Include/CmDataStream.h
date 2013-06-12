@@ -193,7 +193,7 @@ namespace CamelotFramework
 	typedef std::shared_ptr<DataStream> DataStreamPtr;
 
 	/// List of DataStream items
-	typedef list<DataStreamPtr>::type DataStreamList;
+	typedef List<DataStreamPtr>::type DataStreamList;
 	/// Shared pointer to list of DataStream items
 	typedef std::shared_ptr<DataStreamList> DataStreamListPtr;
 

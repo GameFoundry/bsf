@@ -26,9 +26,9 @@ namespace CamelotFramework
 		 * 			You can call another version of this method on the returned type class,
 		 * 			to find classes deeper in the hierarchy.
 		 */
-		static vector<RTTITypeBase*>::type& getDerivedClasses()
+		static Vector<RTTITypeBase*>::type& getDerivedClasses()
 		{
-			static vector<RTTITypeBase*>::type mRTTIDerivedClasses;
+			static Vector<RTTITypeBase*>::type mRTTIDerivedClasses;
 			return mRTTIDerivedClasses;
 		}
 

@@ -18,7 +18,7 @@ namespace CamelotFramework
 	private:
 		// Keeps a list of ALL loaded core GPU objects
 		UINT64 mNextAvailableID;
-		map<UINT64, CoreObject*>::type mObjects;
+		Map<UINT64, CoreObject*>::type mObjects;
 		CM_MUTEX(mObjectsMutex);
 	};
 }

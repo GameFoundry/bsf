@@ -6731,7 +6731,7 @@ PUGI__NS_BEGIN
 		}
 	}
 
-	PUGI__FN xpath_variable* get_variable(xpath_variable_set* set, const char_t* begin, const char_t* end)
+	PUGI__FN xpath_variable* get_variable(xpath_variable_set* Set, const char_t* begin, const char_t* end)
 	{
 		char_t buffer[32];
 
@@ -6749,7 +6749,7 @@ PUGI__NS_BEGIN
 		memcpy(scratch, begin, length * sizeof(char_t));
 		scratch[length] = 0;
 
-		xpath_variable* result = set->get(scratch);
+		xpath_variable* result = Set->get(scratch);
 
 		// free dummy buffer
 		if (scratch != buffer) xml_memory::deallocate(scratch);

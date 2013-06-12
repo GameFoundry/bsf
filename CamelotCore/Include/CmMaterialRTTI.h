@@ -131,15 +131,15 @@ namespace CamelotFramework
 	class CM_EXPORT MaterialParams : public IReflectable
 	{
 	public:
-		vector<MaterialFloatParam>::type floatParams;
-		vector<MaterialVec2Param>::type vec2Params;
-		vector<MaterialVec3Param>::type vec3Params;
-		vector<MaterialVec4Param>::type vec4Params;
-		vector<MaterialMat3Param>::type mat3Params;
-		vector<MaterialMat4Param>::type mat4Params;
-		vector<MaterialStructParam>::type structParams;
-		vector<MaterialTextureParam>::type textureParams;
-		vector<MaterialSamplerStateParam>::type samplerStateParams;
+		Vector<MaterialFloatParam>::type floatParams;
+		Vector<MaterialVec2Param>::type vec2Params;
+		Vector<MaterialVec3Param>::type vec3Params;
+		Vector<MaterialVec4Param>::type vec4Params;
+		Vector<MaterialMat3Param>::type mat3Params;
+		Vector<MaterialMat4Param>::type mat4Params;
+		Vector<MaterialStructParam>::type structParams;
+		Vector<MaterialTextureParam>::type textureParams;
+		Vector<MaterialSamplerStateParam>::type samplerStateParams;
 
 		friend class MaterialParamsRTTI;
 		static RTTITypeBase* getRTTIStatic();

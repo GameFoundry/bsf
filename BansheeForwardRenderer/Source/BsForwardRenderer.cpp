@@ -34,10 +34,10 @@ namespace BansheeEngine
 	void ForwardRenderer::renderAll() 
 	{
 		RenderContext& renderContext = gMainRC();
-		const vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
+		const Vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
 
 		// Find all unique render targets
-		unordered_set<RenderTargetPtr>::type renderTargets;
+		UnorderedSet<RenderTargetPtr>::type renderTargets;
 		for(auto& camera : allCameras)
 		{
 			RenderTargetPtr target = camera->getViewport()->getTarget();
@@ -78,7 +78,7 @@ namespace BansheeEngine
 
 	void ForwardRenderer::render(const HCamera& camera) 
 	{
-		vector<HRenderable>::type allRenderables;
+		Vector<HRenderable>::type allRenderables;
 		
 		if(!camera->getIgnoreSceneRenderables())
 			allRenderables = gSceneManager().getVisibleRenderables(camera);

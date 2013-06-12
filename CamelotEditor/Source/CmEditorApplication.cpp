@@ -54,7 +54,7 @@ namespace CamelotEditor
 		gEditorWindowManager().registerWidgetFactory(new SceneWidgetFactory());
 		gEditorWindowManager().registerWidgetFactory(new HierarchyWidgetFactory());
 
-		vector<QString>::type windowTypes = gEditorWindowManager().getAvailableWindowTypes();
+		Vector<QString>::type windowTypes = gEditorWindowManager().getAvailableWindowTypes();
 		for(auto iter = windowTypes.begin(); iter != windowTypes.end(); ++iter)
 		{
 			p->mEditor->addMenuItemCallback("Windows", *iter, gEditorWindowManager().getOpenCallback(*iter));

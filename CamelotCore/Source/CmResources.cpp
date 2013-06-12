@@ -252,7 +252,7 @@ namespace CamelotFramework
 
 	void Resources::unloadAllUnused()
 	{
-		vector<HResource>::type resourcesToUnload;
+		Vector<HResource>::type resourcesToUnload;
 
 		{
 			CM_LOCK_MUTEX(mLoadedResourceMutex);
@@ -321,7 +321,7 @@ namespace CamelotFramework
 
 	void Resources::loadMetaData()
 	{
-		vector<String>::type allFiles = FileSystem::getFiles(mMetaDataFolderPath);
+		Vector<String>::type allFiles = FileSystem::getFiles(mMetaDataFolderPath);
 
 		for(auto iter = allFiles.begin(); iter != allFiles.end(); ++iter)
 		{

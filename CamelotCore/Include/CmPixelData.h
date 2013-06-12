@@ -85,7 +85,7 @@ namespace CamelotFramework
 		// Number of pixel formats currently defined
         PF_COUNT = 30
     };
-	typedef vector<PixelFormat>::type PixelFormatList;
+	typedef Vector<PixelFormat>::type PixelFormatList;
 
     /**
      * Flags defining some on/off properties of pixel formats

@@ -175,7 +175,7 @@ namespace CamelotFramework
 
 	// TODO - This doesn't handle the case where multiple elements in same slot have different data types
 	//  - actually it will likely corrupt memory in that case
-	MeshDataPtr MeshData::combine(const vector<MeshDataPtr>::type& meshes)
+	MeshDataPtr MeshData::combine(const Vector<MeshDataPtr>::type& meshes)
 	{
 		UINT32 totalVertexCount = 0;
 		for(auto& meshData : meshes)
@@ -200,7 +200,7 @@ namespace CamelotFramework
 			}
 		}
 
-		vector<VertexElement>::type combinedVertexElements;
+		Vector<VertexElement>::type combinedVertexElements;
 		for(auto& meshData : meshes)
 		{
 			for(auto& newElement : meshData->mVertexElements)

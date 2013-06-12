@@ -96,12 +96,12 @@ namespace CamelotFramework
 			UINT32 typeId;
 		};
 
-		unordered_map<void*, UINT32>::type mObjectAddrToId;
+		UnorderedMap<void*, UINT32>::type mObjectAddrToId;
 		UINT32 mLastUsedObjectId;
-		vector<ObjectToEncode>::type mObjectsToEncode;
+		Vector<ObjectToEncode>::type mObjectsToEncode;
 		int mTotalBytesWritten;
 
-		unordered_map<UINT32, ObjectToDecode>::type mObjectMap;
+		UnorderedMap<UINT32, ObjectToDecode>::type mObjectMap;
 
 		UINT32 getObjectSize(IReflectable* object);
 

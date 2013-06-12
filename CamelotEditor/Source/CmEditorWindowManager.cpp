@@ -80,7 +80,7 @@ namespace CamelotEditor
 		return iterFind->second;
 	}
 
-	QtEditorWindow* EditorWindowManager::getWindowAtPosition(const QPoint& globalPos, vector<UINT32>::type windowsToIgnore) const
+	QtEditorWindow* EditorWindowManager::getWindowAtPosition(const QPoint& globalPos, Vector<UINT32>::type windowsToIgnore) const
 	{
 		for(auto iter = mOpenWindows.begin(); iter != mOpenWindows.end(); ++iter)
 		{
@@ -102,7 +102,7 @@ namespace CamelotEditor
 
 	void EditorWindowManager::restoreWindowsFromPrefs()
 	{
-		vector<WindowLayoutDesc>::type windowLayouts = gEditorPrefs().getWindowLayouts();
+		Vector<WindowLayoutDesc>::type windowLayouts = gEditorPrefs().getWindowLayouts();
 		
 		UINT32 parentId = -1;
 		bool foundDockedWindow = true;
@@ -137,7 +137,7 @@ namespace CamelotEditor
 
 	void EditorWindowManager::saveWindowsToPrefs()
 	{
-		vector<WindowLayoutDesc>::type windowLayouts;
+		Vector<WindowLayoutDesc>::type windowLayouts;
 		for(auto iter = mOpenWindows.begin(); iter != mOpenWindows.end(); ++iter)
 		{
 			windowLayouts.push_back(iter->second->getLayoutDesc());
@@ -146,9 +146,9 @@ namespace CamelotEditor
 		gEditorPrefs().setWindowLayouts(windowLayouts);
 	}
 
-	vector<QString>::type EditorWindowManager::getAvailableWindowTypes() const
+	Vector<QString>::type EditorWindowManager::getAvailableWindowTypes() const
 	{
-		vector<QString>::type types;
+		Vector<QString>::type types;
 		for(auto iter = mFactories.begin(); iter != mFactories.end(); ++iter)
 		{
 			types.push_back(iter->first);

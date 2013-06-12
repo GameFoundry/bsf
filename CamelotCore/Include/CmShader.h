@@ -82,9 +82,9 @@ namespace CamelotFramework
 		bool hasDataParam(const String& name) const;
 		bool hasObjectParam(const String& name) const;
 
-		const map<String, SHADER_DATA_PARAM_DESC>::type& getDataParams() const { return mDataParams; }
-		const map<String, SHADER_OBJECT_PARAM_DESC>::type& getObjectParams() const { return mObjectParams; }
-		const map<String, SHADER_PARAM_BLOCK_DESC>::type& getParamBlocks() const { return mParamBlocks; }
+		const Map<String, SHADER_DATA_PARAM_DESC>::type& getDataParams() const { return mDataParams; }
+		const Map<String, SHADER_OBJECT_PARAM_DESC>::type& getObjectParams() const { return mObjectParams; }
+		const Map<String, SHADER_PARAM_BLOCK_DESC>::type& getParamBlocks() const { return mParamBlocks; }
 
 		static bool isSampler(GpuParamObjectType type);
 		static bool isTexture(GpuParamObjectType type);
@@ -93,11 +93,11 @@ namespace CamelotFramework
 		static ShaderPtr create(const String& name);
 	private:
 		String mName;
-		vector<TechniquePtr>::type mTechniques;
+		Vector<TechniquePtr>::type mTechniques;
 
-		map<String, SHADER_DATA_PARAM_DESC>::type mDataParams;
-		map<String, SHADER_OBJECT_PARAM_DESC>::type mObjectParams;
-		map<String, SHADER_PARAM_BLOCK_DESC>::type mParamBlocks;
+		Map<String, SHADER_DATA_PARAM_DESC>::type mDataParams;
+		Map<String, SHADER_OBJECT_PARAM_DESC>::type mObjectParams;
+		Map<String, SHADER_PARAM_BLOCK_DESC>::type mParamBlocks;
 
 		Shader(const String& name);
 

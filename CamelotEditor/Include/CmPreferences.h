@@ -27,17 +27,17 @@ namespace CamelotEditor
 	private:
 		struct PrefStringEntries
 		{
-			vector<String>::type entries;
+			Vector<String>::type entries;
 		};
 
 		struct PrefIntEntries
 		{
-			vector<int>::type entries;
+			Vector<int>::type entries;
 		};
 
 		struct PrefFloatEntries
 		{
-			vector<float>::type entries;
+			Vector<float>::type entries;
 		};
 
 		enum ValueMapType
@@ -59,10 +59,10 @@ namespace CamelotEditor
 			String value;
 		};
 
-		map<String, KeyMapIndex>::type	mKeys;
-		vector<PrefStringEntries>::type mStringEntries;
-		vector<PrefIntEntries>::type	mIntEntries;
-		vector<PrefFloatEntries>::type	mFloatEntries;
+		Map<String, KeyMapIndex>::type	mKeys;
+		Vector<PrefStringEntries>::type mStringEntries;
+		Vector<PrefIntEntries>::type	mIntEntries;
+		Vector<PrefFloatEntries>::type	mFloatEntries;
 
 		bool isKeyValid(const String& key) const;
 	};

@@ -9,13 +9,13 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	vector<HRenderable>::type OctreeSceneManager::getVisibleRenderables(const HCamera& camera) const
+	Vector<HRenderable>::type OctreeSceneManager::getVisibleRenderables(const HCamera& camera) const
 	{
 		// TODO - Cull invisible objects
 
-		vector<HRenderable>::type renderables;
+		Vector<HRenderable>::type renderables;
 
-		stack<HSceneObject>::type todo;
+		Stack<HSceneObject>::type todo;
 		todo.push(mRootNode);
 
 		while(!todo.empty())

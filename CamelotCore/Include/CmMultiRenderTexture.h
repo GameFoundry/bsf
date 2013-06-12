@@ -7,7 +7,7 @@ namespace CamelotFramework
 {
 	struct CM_EXPORT MULTI_RENDER_TEXTURE_DESC
 	{
-		vector<RENDER_SURFACE_DESC>::type colorSurfaces;
+		Vector<RENDER_SURFACE_DESC>::type colorSurfaces;
 		RENDER_SURFACE_DESC depthStencilSurface;
 	};
 
@@ -26,7 +26,7 @@ namespace CamelotFramework
 		bool requiresTextureFlipping() const { return false; }
 
 	protected:
-		vector<TextureViewPtr>::type mColorSurfaces;
+		Vector<TextureViewPtr>::type mColorSurfaces;
 		TextureViewPtr mDepthStencilSurface;
 
 		MultiRenderTexture();

@@ -70,7 +70,7 @@ namespace CamelotEditor
 		QTimer* mTimer;
 		bool mIsDocked;
 
-		vector<QtEditorWidget*>::type mEditorWidgets;
+		Vector<QtEditorWidget*>::type mEditorWidgets;
 		UINT32 mActiveWidgetIdx;
 
 		void setupUi();

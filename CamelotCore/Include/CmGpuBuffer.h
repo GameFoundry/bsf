@@ -53,7 +53,7 @@ namespace CamelotFramework
 			UINT32 refCount;
 		};
 
-		unordered_map<GPU_BUFFER_DESC, GpuBufferReference*, GpuBufferView::HashFunction, GpuBufferView::EqualFunction>::type mBufferViews;
+		UnorderedMap<GPU_BUFFER_DESC, GpuBufferReference*, GpuBufferView::HashFunction, GpuBufferView::EqualFunction>::type mBufferViews;
 
 	protected:
 		GpuBufferType mType;

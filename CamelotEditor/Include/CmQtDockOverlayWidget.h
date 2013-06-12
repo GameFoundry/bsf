@@ -35,12 +35,12 @@ namespace CamelotEditor
 	private:
 		WindowDragDropLocation mHighlightedDropLocation;
 		bool mDropOverlayEnabled;
-		vector<QPolygon>::type mDragLocations;
+		Vector<QPolygon>::type mDragLocations;
 		QPoint mOverlayOffset;
 
 		INT32 mHighlightedTabDropLocation;
 		bool mTabDropOverlayEnabled;
-		vector<QPolygon>::type mTabDropLocations;
+		Vector<QPolygon>::type mTabDropLocations;
 		QPoint mTabOverlayOffset;
 
 		void paintEvent(QPaintEvent* event);

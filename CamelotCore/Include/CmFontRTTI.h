@@ -80,14 +80,14 @@ namespace CamelotFramework
 	{
 		struct FontInitData
 		{
-			vector<FontData>::type fontDataPerSize;
+			Vector<FontData>::type fontDataPerSize;
 		};
 
 	private:
 		FontData& getFontData(Font* obj, UINT32 idx)
 		{
 			if(idx >= obj->mFontDataPerSize.size())
-				CM_EXCEPT(InternalErrorException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString(obj->mFontDataPerSize.size()));
+				CM_EXCEPT(InternalErrorException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((int)obj->mFontDataPerSize.size()));
 
 			auto iter = obj->mFontDataPerSize.begin();
 			for(UINT32 i = 0; i < idx; i++, ++iter)

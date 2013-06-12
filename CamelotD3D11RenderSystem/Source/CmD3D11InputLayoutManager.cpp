@@ -67,7 +67,7 @@ namespace CamelotFramework
 	{
 		VertexDeclarationKey pair;
 		pair.bufferDeclHash = vertexBufferDecl->getHash();
-		pair.bufferDeclElements = const_cast<list<VertexElement>::type*>(&vertexBufferDecl->getElements());
+		pair.bufferDeclElements = const_cast<List<VertexElement>::type*>(&vertexBufferDecl->getElements());
 		pair.vertexProgramId = vertexProgram.getProgramId();
 
 		auto iterFind = mInputLayoutMap.find(pair);
@@ -135,7 +135,7 @@ namespace CamelotFramework
 		VertexDeclarationKey pair;
 		pair.bufferDeclHash = vertexBufferDecl->getHash();
 
-		list<VertexElement>::type* bufferDeclElements = cm_new<list<VertexElement>::type, PoolAlloc>(); 
+		List<VertexElement>::type* bufferDeclElements = cm_new<List<VertexElement>::type, PoolAlloc>(); 
 		pair.bufferDeclElements = bufferDeclElements;
 		pair.vertexProgramId = vertexProgram.getProgramId();
 
@@ -155,7 +155,7 @@ namespace CamelotFramework
 			mWarningShown = true;
 		}
 
-		map<UINT32, VertexDeclarationKey>::type leastFrequentlyUsedMap;
+		Map<UINT32, VertexDeclarationKey>::type leastFrequentlyUsedMap;
 
 		for(auto iter = mInputLayoutMap.begin(); iter != mInputLayoutMap.end(); ++iter)
 			leastFrequentlyUsedMap[iter->second->lastUsedIdx] = iter->first;

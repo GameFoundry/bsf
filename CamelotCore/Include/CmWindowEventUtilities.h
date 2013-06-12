@@ -174,10 +174,10 @@ namespace CamelotFramework
 #endif
 
 		//These are public only so GLXProc can access them without adding Xlib headers header
-		typedef multimap<RenderWindow*, WindowEventListener*>::type WindowEventListeners;
+		typedef Multimap<RenderWindow*, WindowEventListener*>::type WindowEventListeners;
 		static WindowEventListeners _msListeners;
 
-		typedef vector<RenderWindow*>::type Windows;
+		typedef Vector<RenderWindow*>::type Windows;
 		static Windows _msWindows;
 	};
 	/** @} */

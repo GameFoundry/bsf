@@ -122,11 +122,11 @@ namespace CamelotFramework
 		boost::filesystem::remove_all(fullPath.c_str());
 	}
 
-	vector<String>::type FileSystem::getFiles(const String& dirPath)
+	Vector<String>::type FileSystem::getFiles(const String& dirPath)
 	{
 		boost::filesystem::directory_iterator dirIter(dirPath.c_str());
 
-		vector<String>::type foundFiles;
+		Vector<String>::type foundFiles;
 		
 		while(dirIter != boost::filesystem::directory_iterator())
 		{

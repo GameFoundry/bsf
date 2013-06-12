@@ -51,7 +51,7 @@ namespace CamelotEditor
 		updateTabs();
 	}
 
-	vector<QPolygon>::type QtDynamicTabBar::getDropLocations()
+	Vector<QPolygon>::type QtDynamicTabBar::getDropLocations()
 	{
 		QPoint topLeft = mapToGlobal(QPoint(0, 0));
 		int curX = topLeft.x();
@@ -61,7 +61,7 @@ namespace CamelotEditor
 
 		QRect rect(topLeft.x(), topLeft.y(), width(), height());
 
-		vector<QPolygon>::type polygons;
+		Vector<QPolygon>::type polygons;
 		QPolygon polygon(4);
 
 		polygon[0] = QPoint(curX, top);

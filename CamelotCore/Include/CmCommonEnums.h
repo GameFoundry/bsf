@@ -327,7 +327,7 @@ namespace CamelotFramework {
 	};
     
 	/// Name / value parameter pair (first = name, second = value)
-	typedef map<String, String>::type NameValuePairList;
+	typedef Map<String, String>::type NameValuePairList;
 
 	/** @} */
 }

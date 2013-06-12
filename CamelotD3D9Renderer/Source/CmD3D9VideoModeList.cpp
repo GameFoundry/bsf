@@ -63,7 +63,7 @@ namespace CamelotFramework
 
 			// Check to see if it is already in the list (to filter out refresh rates)
 			BOOL found = FALSE;
-			vector<D3D9VideoMode>::type::iterator it;
+			Vector<D3D9VideoMode>::type::iterator it;
 			for( it = mModeList.begin(); it != mModeList.end(); it++ )
 			{
 				D3DDISPLAYMODE oldDisp = it->getDisplayMode();
@@ -94,7 +94,7 @@ namespace CamelotFramework
 
 			// Check to see if it is already in the list (to filter out refresh rates)
 			BOOL found = FALSE;
-			vector<D3D9VideoMode>::type::iterator it;
+			Vector<D3D9VideoMode>::type::iterator it;
 			for( it = mModeList.begin(); it != mModeList.end(); it++ )
 			{
 				D3DDISPLAYMODE oldDisp = it->getDisplayMode();
@@ -124,14 +124,14 @@ namespace CamelotFramework
 
 	D3D9VideoMode* D3D9VideoModeList::item( size_t index )
 	{
-		vector<D3D9VideoMode>::type::iterator p = mModeList.begin();
+		Vector<D3D9VideoMode>::type::iterator p = mModeList.begin();
 
 		return &p[index];
 	}
 
 	D3D9VideoMode* D3D9VideoModeList::item( const String &name )
 	{
-		vector<D3D9VideoMode>::type::iterator it = mModeList.begin();
+		Vector<D3D9VideoMode>::type::iterator it = mModeList.begin();
 		if (it == mModeList.end())
 			return NULL;
 

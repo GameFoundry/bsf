@@ -72,7 +72,7 @@ namespace CamelotFramework {
 		CGprofile mSelectedCgProfile;
 
 		CgProgram(CGcontext context, const String& source, const String& entryPoint, const String& language, 
-			GpuProgramType gptype, GpuProgramProfile profile, const vector<HGpuProgInclude>::type* includes, 
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, 
 			bool isAdjacencyInfoRequired = false);
 
         /** Internal load implementation, must be implemented by subclasses.

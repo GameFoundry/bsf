@@ -34,7 +34,7 @@ namespace CamelotFramework
 	class CM_UTILITY_EXPORT WorkQueue
 	{
 	protected:
-		typedef map<String, UINT16>::type ChannelMap;
+		typedef Map<String, UINT16>::type ChannelMap;
 		ChannelMap mChannelMap;
 		UINT16 mNextChannel;
 		CM_MUTEX(mChannelMapMutex)
@@ -179,7 +179,7 @@ namespace CamelotFramework
 		bool mIsRunning;
 		unsigned long mResposeTimeLimitMS;
 
-		typedef deque<Request*>::type RequestQueue;
+		typedef Deque<Request*>::type RequestQueue;
 		RequestQueue mRequestQueue;
 		RequestQueue mProcessQueue;
 
@@ -246,10 +246,10 @@ namespace CamelotFramework
 		// Hold these by shared pointer so they can be copied keeping same instance
 		typedef std::shared_ptr<RequestHandlerHolder> RequestHandlerHolderPtr;
 
-		typedef list<RequestHandlerHolderPtr>::type RequestHandlerList;
-		typedef list<ResponseHandler*>::type ResponseHandlerList;
-		typedef map<UINT16, RequestHandlerList>::type RequestHandlerListByChannel;
-		typedef map<UINT16, ResponseHandlerList>::type ResponseHandlerListByChannel;
+		typedef List<RequestHandlerHolderPtr>::type RequestHandlerList;
+		typedef List<ResponseHandler*>::type ResponseHandlerList;
+		typedef Map<UINT16, RequestHandlerList>::type RequestHandlerListByChannel;
+		typedef Map<UINT16, ResponseHandlerList>::type ResponseHandlerListByChannel;
 
 		RequestHandlerListByChannel mRequestHandlers;
 		ResponseHandlerListByChannel mResponseHandlers;
@@ -270,7 +270,7 @@ namespace CamelotFramework
 		CM_RW_MUTEX(mRequestHandlerMutex);
 
 #if CM_THREAD_SUPPORT
-		typedef vector<CM_THREAD_TYPE*>::type WorkerThreadList;
+		typedef Vector<CM_THREAD_TYPE*>::type WorkerThreadList;
 		WorkerThreadList mWorkers;
 #endif
 

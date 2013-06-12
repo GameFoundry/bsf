@@ -53,7 +53,7 @@ namespace CamelotFramework
 		if(slot < 0 || slot >= (UINT32)mParamBlocks.size())
 		{
 			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
-				toString(mParamBlocks.size() - 1) + ". Requested: " + toString(slot));
+				toString((int)mParamBlocks.size() - 1) + ". Requested: " + toString(slot));
 		}
 
 		return mParamBlockBuffers[slot];
@@ -77,7 +77,7 @@ namespace CamelotFramework
 		if(slot < 0 || slot >= (UINT32)mParamBlocks.size())
 		{
 			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
-				toString(mParamBlocks.size() - 1) + ". Requested: " + toString(slot));
+				toString((int)mParamBlocks.size() - 1) + ". Requested: " + toString(slot));
 		}
 
 		if(mParamBlocks[slot] != nullptr)
@@ -264,7 +264,7 @@ namespace CamelotFramework
 		if(slot < 0 || slot >= (UINT32)mTextures.size())
 		{
 			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
-				toString(mTextures.size() - 1) + ". Requested: " + toString(slot));
+				toString((int)mTextures.size() - 1) + ". Requested: " + toString(slot));
 		}
 
 		return mTextures[slot];
@@ -287,7 +287,7 @@ namespace CamelotFramework
 		if(slot < 0 || slot >= (UINT32)mSamplerStates.size())
 		{
 			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
-				toString(mSamplerStates.size() - 1) + ". Requested: " + toString(slot));
+				toString((int)mSamplerStates.size() - 1) + ". Requested: " + toString(slot));
 		}
 
 		return mSamplerStates[slot];

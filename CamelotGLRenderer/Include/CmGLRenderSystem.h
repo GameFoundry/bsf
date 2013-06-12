@@ -280,7 +280,7 @@ namespace CamelotFramework {
 		UINT32 mDomainUBOffset;
 		UINT32 mComputeUBOffset;
 
-		unordered_map<UINT32, VertexBufferPtr>::type mBoundVertexBuffers;
+		UnorderedMap<UINT32, VertexBufferPtr>::type mBoundVertexBuffers;
 		VertexDeclarationPtr mBoundVertexDeclaration;
 		IndexBufferPtr mBoundIndexBuffer;
 		DrawOperationType mCurrentDrawOperation;
@@ -288,7 +288,7 @@ namespace CamelotFramework {
         GLContext *mMainContext;
         GLContext *mCurrentContext;
 
-		vector<GLuint>::type mBoundAttributes; // Only full between begin/endDraw calls
+		Vector<GLuint>::type mBoundAttributes; // Only full between begin/endDraw calls
 		bool mDrawCallInProgress;
 
 		UINT16 mActiveTextureUnit;

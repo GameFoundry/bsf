@@ -23,10 +23,10 @@ namespace CamelotFramework
 {
 #define CM_SETGET_MEMBER(name, type, parentType)								\
 	type##& get##name(parentType##* obj) { return obj->##name; }				\
-	void set##name(parentType##* obj, type##& val) { obj->##name = val; } 
+	void Set##name(parentType##* obj, type##& val) { obj->##name = val; } 
 
 #define CM_ADD_PLAINFIELD(name, id, parentType) \
-	addPlainField(#name, id##, &##parentType##::get##name, &##parentType##::set##name);
+	addPlainField(#name, id##, &##parentType##::get##name, &##parentType##::Set##name);
 
 	/**
 	 * @brief	Provides an interface for accessing fields of a certain class.
@@ -45,7 +45,7 @@ namespace CamelotFramework
 		RTTITypeBase();
 		virtual ~RTTITypeBase();
 
-		virtual vector<RTTITypeBase*>::type& getDerivedClasses() = 0;
+		virtual Vector<RTTITypeBase*>::type& getDerivedClasses() = 0;
 		virtual RTTITypeBase* getBaseClass() = 0;
 		virtual void registerDerivedClass(RTTITypeBase* derivedClass) = 0;
 		virtual std::shared_ptr<IReflectable> newRTTIObject() = 0;
@@ -288,7 +288,7 @@ namespace CamelotFramework
 		void throwCircularRefException(const String& myType, const String& otherType) const;
 
 	private:
-		vector<RTTIField*>::type mFields;
+		Vector<RTTIField*>::type mFields;
 	};
 
 	/**
@@ -371,9 +371,9 @@ namespace CamelotFramework
 			return &inst;
 		}
 
-		virtual vector<RTTITypeBase*>::type& getDerivedClasses()
+		virtual Vector<RTTITypeBase*>::type& getDerivedClasses()
 		{
-			static vector<RTTITypeBase*>::type mRTTIDerivedClasses;
+			static Vector<RTTITypeBase*>::type mRTTIDerivedClasses;
 			return mRTTIDerivedClasses;
 		}
 

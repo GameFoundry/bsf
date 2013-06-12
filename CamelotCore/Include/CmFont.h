@@ -10,7 +10,7 @@ namespace CamelotFramework
 	{
 		UINT32 size;
 		FONT_DESC fontDesc;
-		vector<HTexture>::type texturePages;
+		Vector<HTexture>::type texturePages;
 
 		const CHAR_DESC& getCharDesc(UINT32 charId) const;
 
@@ -33,7 +33,7 @@ namespace CamelotFramework
 	public:
 		virtual ~Font();
 
-		void initialize(vector<FontData>::type& fontData);
+		void initialize(Vector<FontData>::type& fontData);
 
 		const FontData* getFontDataForSize(UINT32 size) const;
 		INT32 getClosestAvailableSize(UINT32 size) const;
@@ -44,7 +44,7 @@ namespace CamelotFramework
 		Font();
 
 	private:
-		map<UINT32, FontData>::type mFontDataPerSize;
+		Map<UINT32, FontData>::type mFontDataPerSize;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -59,6 +59,6 @@ namespace CamelotFramework
 		/************************************************************************/
 		
 	public:
-		static HFont create(vector<FontData>::type& fontInitData);
+		static HFont create(Vector<FontData>::type& fontInitData);
 	};
 }

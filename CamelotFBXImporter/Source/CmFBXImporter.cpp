@@ -121,10 +121,10 @@ namespace CamelotFramework
 
 	MeshDataPtr FBXImporter::parseScene(FbxManager* manager, FbxScene* scene)
 	{
-		stack<FbxNode*>::type todo;
+		Stack<FbxNode*>::type todo;
 		todo.push(scene->GetRootNode());
 
-		vector<MeshDataPtr>::type allMeshes;
+		Vector<MeshDataPtr>::type allMeshes;
 
 		while(!todo.empty())
 		{
@@ -320,7 +320,7 @@ namespace CamelotFramework
 		// Count the polygon count of each material
 		FbxLayerElementArrayTemplate<int>* lMaterialIndice = NULL;
 		FbxGeometryElement::EMappingMode lMaterialMappingMode = FbxGeometryElement::eNone;
-		vector<SubMesh>::type subMeshes;
+		Vector<SubMesh>::type subMeshes;
 
 		if (mesh->GetElementMaterial())
 		{
@@ -546,10 +546,10 @@ namespace CamelotFramework
 			}
 		}
 
-		vector<UINT32>::type indexOffsetPerSubmesh;
+		Vector<UINT32>::type indexOffsetPerSubmesh;
 		indexOffsetPerSubmesh.resize(subMeshes.size(), 0);
 
-		vector<UINT32*>::type indices;
+		Vector<UINT32*>::type indices;
 		indices.resize(subMeshes.size());
 
 		for(UINT32 i = 0; i < (UINT32)indices.size(); i++)

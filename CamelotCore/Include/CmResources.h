@@ -144,8 +144,8 @@ namespace CamelotFramework
 
 	private:
 		typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
-		map<String, ResourceMetaDataPtr>::type mResourceMetaData;
-		map<String, ResourceMetaDataPtr>::type mResourceMetaData_FilePath;
+		Map<String, ResourceMetaDataPtr>::type mResourceMetaData;
+		Map<String, ResourceMetaDataPtr>::type mResourceMetaData_FilePath;
 
 		CM_MUTEX(mInProgressResourcesMutex);
 		CM_MUTEX(mLoadedResourceMutex);
@@ -156,8 +156,8 @@ namespace CamelotFramework
 		WorkQueue* mWorkQueue;
 		UINT16 mWorkQueueChannel;
 
-		unordered_map<String, HResource>::type mLoadedResources; // TODO Low priority - I'm not sure how will UUID (a string) do as key do performance wise
-		unordered_map<String, ResourceAsyncOp>::type mInProgressResources; // Resources that are being asynchronously loaded
+		UnorderedMap<String, HResource>::type mLoadedResources; // TODO Low priority - I'm not sure how will UUID (a string) do as key do performance wise
+		UnorderedMap<String, ResourceAsyncOp>::type mInProgressResources; // Resources that are being asynchronously loaded
 
 		HResource loadInternal(const String& filePath, bool synchronous); 
 		ResourcePtr loadFromDiskAndDeserialize(const String& filePath);

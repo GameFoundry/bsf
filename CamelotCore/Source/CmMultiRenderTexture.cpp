@@ -24,7 +24,7 @@ namespace CamelotFramework
 			{
 				if(i >= CM_MAX_MULTIPLE_RENDER_TARGETS)
 				{
-					LOGWRN("Render texture index is larger than the maximum number of supported render targets. Index: " + toString(i) + 
+					LOGWRN("Render texture index is larger than the maximum number of supported render targets. Index: " + toString((int)i) + 
 						". Max. number of render targets: " + toString(CM_MAX_MULTIPLE_RENDER_TARGETS));
 
 					continue;

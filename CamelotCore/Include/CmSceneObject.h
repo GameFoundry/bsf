@@ -188,7 +188,7 @@ namespace CamelotFramework
 
 	private:
 		HSceneObject mParent;
-		vector<HSceneObject>::type mChildren;
+		Vector<HSceneObject>::type mChildren;
 
 		/**
 		 * @brief	Adds a child to the child array. This method doesn't check for null or duplicate values.
@@ -286,10 +286,10 @@ namespace CamelotFramework
 		/**
 		 * @brief	Returns all components on this SceneObject.
 		 */
-		vector<HComponent>::type& getComponents() { return mComponents; }
+		Vector<HComponent>::type& getComponents() { return mComponents; }
 
 	private:
-		vector<HComponent>::type mComponents;
+		Vector<HComponent>::type mComponents;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

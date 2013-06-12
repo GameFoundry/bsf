@@ -61,9 +61,6 @@ EditorWindowContainer
  - Contents
    - Actual Editor Window with custom contents
 
-MemoryAllocator - std::string still uses default allocator
- ALSO possibly rename my custom vector/list/etc classes to Vector/List, etc. So its all standardized
-
 GUIDragManager
  - GUI system sends startdrag/enddrag/drag events to all elements
  - startDrag(void* userPtr) changes cursor

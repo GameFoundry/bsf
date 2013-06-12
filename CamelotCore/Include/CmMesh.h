@@ -73,7 +73,7 @@ namespace CamelotFramework
 		VertexData* mVertexData;
 		IndexData* mIndexData;
 
-		vector<SubMesh>::type mSubMeshes;
+		Vector<SubMesh>::type mSubMeshes;
 
 		void throwIfNotRenderThread() const;
 

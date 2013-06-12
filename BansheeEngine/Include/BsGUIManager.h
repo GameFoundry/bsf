@@ -21,10 +21,10 @@ namespace BansheeEngine
 				:isDirty(true)
 			{ }
 
-			CM::vector<CM::HMesh>::type cachedMeshes;
-			CM::vector<CM::HMaterial>::type cachedMaterials;
-			CM::vector<GUIWidget*>::type cachedWidgetsPerMesh;
-			CM::vector<GUIWidget*>::type widgets;
+			CM::Vector<CM::HMesh>::type cachedMeshes;
+			CM::Vector<CM::HMaterial>::type cachedMaterials;
+			CM::Vector<GUIWidget*>::type cachedWidgetsPerMesh;
+			CM::Vector<GUIWidget*>::type widgets;
 			bool isDirty;
 		};
 
@@ -38,8 +38,8 @@ namespace BansheeEngine
 		void update();
 		void render(CM::ViewportPtr& target, CM::RenderContext& renderContext);
 	private:
-		CM::vector<GUIWidget*>::type mWidgets;
-		CM::unordered_map<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
+		CM::Vector<GUIWidget*>::type mWidgets;
+		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
 
 		// Element and widget mouse is currently over
 		GUIWidget* mMouseOverWidget;

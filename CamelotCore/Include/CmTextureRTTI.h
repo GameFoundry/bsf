@@ -47,7 +47,7 @@ namespace CamelotFramework
 
 		void setPixelData(Texture* obj, UINT32 idx, PixelDataPtr data)
 		{
-			vector<PixelDataPtr>::type* pixelData = boost::any_cast<vector<PixelDataPtr>::type*>(obj->mRTTIData);
+			Vector<PixelDataPtr>::type* pixelData = boost::any_cast<Vector<PixelDataPtr>::type*>(obj->mRTTIData);
 
 			(*pixelData)[idx] = data;
 		}
@@ -59,7 +59,7 @@ namespace CamelotFramework
 
 		void setPixelDataArraySize(Texture* obj, UINT32 size)
 		{
-			vector<PixelDataPtr>::type* pixelData = boost::any_cast<vector<PixelDataPtr>::type*>(obj->mRTTIData);
+			Vector<PixelDataPtr>::type* pixelData = boost::any_cast<Vector<PixelDataPtr>::type*>(obj->mRTTIData);
 
 			pixelData->resize(size);
 		}
@@ -88,7 +88,7 @@ namespace CamelotFramework
 		{
 			Texture* texture = static_cast<Texture*>(obj);
 
-			texture->mRTTIData = cm_new<vector<PixelDataPtr>::type, PoolAlloc>();
+			texture->mRTTIData = cm_new<Vector<PixelDataPtr>::type, PoolAlloc>();
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj)
@@ -104,7 +104,7 @@ namespace CamelotFramework
 				texture->getNumMipmaps(), texture->getFormat(), texture->getUsage(), texture->isHardwareGammaEnabled(), 
 				texture->getFSAA(), texture->getFSAAHint());
 
-			vector<PixelDataPtr>::type* pixelData = boost::any_cast<vector<PixelDataPtr>::type*>(texture->mRTTIData);
+			Vector<PixelDataPtr>::type* pixelData = boost::any_cast<Vector<PixelDataPtr>::type*>(texture->mRTTIData);
 			for(size_t i = 0; i < pixelData->size(); i++)
 			{
 				UINT32 face = (size_t)Math::Floor(i / (float)(texture->getNumMipmaps() + 1));

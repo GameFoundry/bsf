@@ -16,7 +16,7 @@ namespace CamelotFramework
 		D3D11Driver* item(const String &name) const;
 
 	private:
-		vector<D3D11Driver*>::type mDriverList;
+		Vector<D3D11Driver*>::type mDriverList;
 
 		void enumerate(IDXGIFactory* dxgiFactory);
 	};

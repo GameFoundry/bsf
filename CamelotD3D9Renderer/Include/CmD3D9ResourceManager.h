@@ -94,7 +94,7 @@ namespace CamelotFramework {
 	
 	// Types.
 	protected:
-		typedef vector<D3D9Resource*>::type		ResourceContainer;
+		typedef Vector<D3D9Resource*>::type		ResourceContainer;
 		typedef ResourceContainer::iterator		ResourceContainerIterator;
 
 	// Attributes.

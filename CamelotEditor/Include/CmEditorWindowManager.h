@@ -30,17 +30,17 @@ namespace CamelotEditor
 		QtEditorWindow* openWindow(INT32 forcedId = -1);
 
 		QtEditorWindow* getOpenWindow(INT32 id) const;
-		QtEditorWindow* getWindowAtPosition(const QPoint& globalPos, vector<UINT32>::type windowsToIgnore = vector<UINT32>::type()) const;
+		QtEditorWindow* getWindowAtPosition(const QPoint& globalPos, Vector<UINT32>::type windowsToIgnore = Vector<UINT32>::type()) const;
 
 		void restoreWindowsFromPrefs();
 		void saveWindowsToPrefs();
 
-		vector<QString>::type getAvailableWindowTypes() const;
+		Vector<QString>::type getAvailableWindowTypes() const;
 
 	private:
-		map<QString, EditorWidgetFactory*>::type mFactories;
-		map<INT32, QtEditorWindow*>::type mOpenWindows;
-		map<QString, QtEditorWidget*>::type mOpenWidgets;
+		Map<QString, EditorWidgetFactory*>::type mFactories;
+		Map<INT32, QtEditorWindow*>::type mOpenWindows;
+		Map<QString, QtEditorWidget*>::type mOpenWidgets;
 		UINT32 mMaxOpenWindowId;
 
 		EditorWidgetFactory* getFactory(const QString& name) const;

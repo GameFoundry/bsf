@@ -107,23 +107,23 @@ namespace CamelotFramework
 		ShaderPtr mShader;
 		TechniquePtr mBestTechnique;
 
-		set<String>::type mValidShareableParamBlocks;
-		map<String, String>::type mValidParams; // Also maps Shader param name -> gpu variable name
+		Set<String>::type mValidShareableParamBlocks;
+		Map<String, String>::type mValidParams; // Also maps Shader param name -> gpu variable name
 
-		vector<PassParametersPtr>::type mParametersPerPass;
-		vector<GpuParamBlockBufferPtr>::type mParamBuffers;
+		Vector<PassParametersPtr>::type mParametersPerPass;
+		Vector<GpuParamBlockBufferPtr>::type mParamBuffers;
 
 		// These maps aren't necessary as we can read these values from the GpuParams directly
 		// but they make many things (especially serializing and getting values) so much easier
-		map<String, vector<float>::type>::type mFloatValues;
-		map<String, vector<Vector2>::type>::type mVec2Values;
-		map<String, vector<Vector3>::type>::type mVec3Values;
-		map<String, vector<Vector4>::type>::type mVec4Values;
-		map<String, vector<Matrix3>::type>::type mMat3Values;
-		map<String, vector<Matrix4>::type>::type mMat4Values;
-		map<String, vector<StructData>::type>::type mStructValues;
-		map<String, HTexture>::type mTextureValues;
-		map<String, HSamplerState>::type mSamplerValues;
+		Map<String, Vector<float>::type>::type mFloatValues;
+		Map<String, Vector<Vector2>::type>::type mVec2Values;
+		Map<String, Vector<Vector3>::type>::type mVec3Values;
+		Map<String, Vector<Vector4>::type>::type mVec4Values;
+		Map<String, Vector<Matrix3>::type>::type mMat3Values;
+		Map<String, Vector<Matrix4>::type>::type mMat4Values;
+		Map<String, Vector<StructData>::type>::type mStructValues;
+		Map<String, HTexture>::type mTextureValues;
+		Map<String, HSamplerState>::type mSamplerValues;
 
 		Material();
 
@@ -148,14 +148,14 @@ namespace CamelotFramework
 			}
 		}
 
-		const map<String, String>::type& getValidParamNames() const { return mValidParams; }
+		const Map<String, String>::type& getValidParamNames() const { return mValidParams; }
 
 		void initBestTechnique();
 
-		map<String, const GpuParamDataDesc*>::type determineValidDataParameters(const vector<const GpuParamDesc*>::type& paramDescs) const;
-		set<String>::type determineValidObjectParameters(const vector<const GpuParamDesc*>::type& paramDescs) const;
-		set<String>::type determineValidShareableParamBlocks(const vector<const GpuParamDesc*>::type& paramDescs) const;
-		map<String, String>::type determineParameterToBlockMapping(const vector<const GpuParamDesc*>::type& paramDescs);
+		Map<String, const GpuParamDataDesc*>::type determineValidDataParameters(const Vector<const GpuParamDesc*>::type& paramDescs) const;
+		Set<String>::type determineValidObjectParameters(const Vector<const GpuParamDesc*>::type& paramDescs) const;
+		Set<String>::type determineValidShareableParamBlocks(const Vector<const GpuParamDesc*>::type& paramDescs) const;
+		Map<String, String>::type determineParameterToBlockMapping(const Vector<const GpuParamDesc*>::type& paramDescs);
 
 		bool areParamsEqual(const GpuParamDataDesc& paramA, const GpuParamDataDesc& paramB, bool ignoreBufferOffsets = false) const;
 
