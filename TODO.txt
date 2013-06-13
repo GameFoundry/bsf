@@ -21,9 +21,45 @@ MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to Gpu
 I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function. Each of those calls will wait a single frame.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
+/************** INPUT REFACTOR *********************/
+
+Remagine render thread:
+ - Its main loop is in CmApplication
+ - Rename it to CoreThread
+
+Reimagine input:
+ - Text input should come from main loop instead of from OIS. This way I can use key repeat and similar functions
+
+I should separate actual games input and text/cursor input. Key presses used for text and absolute cursor position should be provided separately.
+ - Main loop updates gInput with current text string (mutex protected), which gets flushed character by character when update() is called
+ - Same thing with absolute cursor position
+ - Also it will call focusChange as it does now
+
+Add separate classes:
+ RawInputHandler (transform existing InputHandler) - Called from main thread
+ OSInputHandler (new class) - Called from core thread
+
+AT THE END DONT FORGET:
+ Compile new OIS for all other build types (also update libs and includes)
+
+------------
+
+How to design OSInputHandler and how does it interact with msg loop?
+ - Set up key up/down callbacks, and mouse moved callbacks on the main loop
+
+How do I deal with window focus changes for newly created windows (no HWND)?
+ - Calling setFocus(true) on a window calls WindowManager who registers a focus change
+ - WindowManager::update (called from Application main thread) then triggers actual calls to setFocus and triggers focusChanged events
+   - Potentially remove focus events from RenderWindow (used by GUI) and use WindowManager directly
+ - This also solves a problem that ATM focus changes are actually being called directly from render thread which is WRONG! (setFocus called from msg loop directly)
+
+/*******************************************************/
+
 IMMEDIATE:
  - Get rid of querying mouse states on each mouse event - Include button states in each event?
  - Handle capital leters - include shift, alt, ctrl, caps states in KeyEvent
+  - GetAsyncKeyState - possibly can be used for querying Caps Lock state. - Hook that to _translateText and update OIS notes (so I know I need that in Linux/Mac as well)
+ - Ignore input when other window has focus - Possibly foreground mode but switch window input? (Will likely need multiple OIS input handlers...) (Possibly just calling SetCooperativeLevel will work)
  - Add window-management command to DeferredRenderContext - I already have resource management commands
    there, few window related ones won't hurt. I can always split the class if needed.
      - Possibly add guards to render target classes so they aren't accidentaly accessed from the render thread (similar to how Texture is handled)

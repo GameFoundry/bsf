@@ -226,5 +226,10 @@ namespace CamelotFramework
 		 * @brief	Called every frame by InputManager. Capture input here if needed.
 		 */
 		virtual void update() {}
+
+		/**
+		 * @brief	Called by InputManager whenever window in focus changes.
+		 */
+		virtual void inputWindowChanged(const RenderWindow& win) {}
 	};
 }

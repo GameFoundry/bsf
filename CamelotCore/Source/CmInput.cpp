@@ -12,8 +12,7 @@ namespace CamelotFramework
 	const float Input::WEIGHT_MODIFIER = 0.5f;
 
 	Input::Input()
-		:mSmoothHorizontalAxis(0.0f), mSmoothVerticalAxis(0.0f), mCurrentBufferIdx(0), mMouseLastRel(0, 0),
-		mUsingClipRect(false), mClipRect(0, 0, 0, 0), mInputHandler(nullptr)
+		:mSmoothHorizontalAxis(0.0f), mSmoothVerticalAxis(0.0f), mCurrentBufferIdx(0), mMouseLastRel(0, 0), mInputHandler(nullptr)
 	{ 
 		mHorizontalHistoryBuffer = cm_newN<float>(HISTORY_BUFFER_SIZE);
 		mVerticalHistoryBuffer = cm_newN<float>(HISTORY_BUFFER_SIZE);
@@ -38,13 +37,6 @@ namespace CamelotFramework
 		cm_deleteN(mHorizontalHistoryBuffer, HISTORY_BUFFER_SIZE);
 		cm_deleteN(mVerticalHistoryBuffer, HISTORY_BUFFER_SIZE);
 		cm_deleteN(mTimesHistoryBuffer, HISTORY_BUFFER_SIZE);
-	}
-
-	void Input::initClipRect(Rect& clipRect)
-	{
-		mClipRect = clipRect;
-
-		mUsingClipRect = (clipRect.width > 0 && clipRect.height > 0);
 	}
 
 	void Input::registerInputHandler(InputHandlerPtr inputHandler)
@@ -78,6 +70,12 @@ namespace CamelotFramework
 		updateSmoothInput();
 	}
 
+	void Input::inputWindowChanged(const RenderWindow& win)
+	{
+		if(mInputHandler != nullptr)
+			mInputHandler->inputWindowChanged(win);
+	}
+
 	void Input::keyDown(const KeyEvent& event)
 	{
 		mKeyState[event.keyCode] = true;
@@ -92,36 +90,18 @@ namespace CamelotFramework
 
 	void Input::mouseMoved(const MouseEvent& event)
 	{
-		if(mUsingClipRect)
-		{
-			if(!mClipRect.contains(event.coords))
-				return;
-		}
-
 		onMouseMoved(event);
 		mMouseLastRel = Int2(-event.relCoords.x, -event.relCoords.y);
 	}
 
 	void Input::mouseDown(const MouseEvent& event, MouseButton buttonID)
 	{
-		if(mUsingClipRect)
-		{
-			if(!mClipRect.contains(event.coords))
-				return;
-		}
-
 		mMouseButtonState[buttonID] = true;
 		onMouseDown(event, buttonID);
 	}
 
 	void Input::mouseUp(const MouseEvent& event, MouseButton buttonID)
 	{
-		if(mUsingClipRect)
-		{
-			if(!mClipRect.contains(event.coords))
-				return;
-		}
-
 		mMouseButtonState[buttonID] = false;
 		onMouseUp(event, buttonID);
 	}

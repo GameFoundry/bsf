@@ -20,13 +20,23 @@ namespace CamelotFramework
 		boost::signal<void(const MouseEvent&, MouseButton)> onMouseDown;
 		boost::signal<void(const MouseEvent&, MouseButton)> onMouseUp;
 
-		void initClipRect(Rect& clipRect);
 		void registerInputHandler(InputHandlerPtr inputHandler);
 
 		/**
-		 * @brief	Called every frame. Should only be called by Application.
+		 * @brief	Called every frame. Dispatches any callbacks resulting from input by the user. Should only be called by Application.
 		 */
 		void update();
+
+		/**
+		 * @brief	Captures any input between this and last call to capture. MUST be called from the render
+		 * 			thread, because thats the thread that owns the input window.
+		 */
+		void capture();
+
+		/**
+		 * @brief	Should be called any time window in focus changes. Should only be called by Application.
+		 */
+		void inputWindowChanged(const RenderWindow& win);
 
 		/**
 		 * @brief	Returns smoothed mouse/joystick input in the horizontal axis.
@@ -57,8 +67,6 @@ namespace CamelotFramework
 		int	mCurrentBufferIdx;
 
 		Int2 mMouseLastRel;
-		Rect mClipRect;
-		bool mUsingClipRect;
 
 		bool mMouseButtonState[MB_Count];
 		bool mKeyState[KC_Count];

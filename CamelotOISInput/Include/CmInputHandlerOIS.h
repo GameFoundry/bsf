@@ -28,5 +28,6 @@ namespace CamelotFramework
 		virtual bool mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
 
 		virtual void update();
+		virtual void inputWindowChanged(const RenderWindow& win);
 	};
 }

@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "CmApplication.h"
 #include "CmException.h"
 #include "CmCursor.h"
+#include "CmInput.h"
 
 #if CM_PLATFORM == CM_PLATFORM_LINUX
 #include <X11/Xlib.h>
@@ -167,6 +168,8 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 
 			if(!win->hasFocus())
 				win->setHasFocus(true);
+
+			gInput().inputWindowChanged(*win);
         }
         else
         {
