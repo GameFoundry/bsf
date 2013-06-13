@@ -2,6 +2,12 @@
 
 namespace CamelotFramework
 {
+	RenderWindowManager::RenderWindowManager()
+		:mWindowInFocus(nullptr), mNewWindowInFocus(nullptr)
+	{
+
+	}
+
 	RenderWindowPtr RenderWindowManager::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{
 		RenderWindowPtr renderWindow = createImpl(desc, parentWindow);
@@ -28,6 +34,65 @@ namespace CamelotFramework
 				CM_EXCEPT(InternalErrorException, "Trying to destroy a window that is not in the created windows list.");
 
 			mCreatedWindows.erase(iterFind);
+		}
+	}
+
+	void RenderWindowManager::windowGotFocus(RenderWindow* window)
+	{
+		CM_LOCK_MUTEX(mWindowMutex);
+		mNewWindowInFocus = window;
+	}
+
+	void RenderWindowManager::windowMovedOrResized(RenderWindow* window)
+	{
+		CM_LOCK_MUTEX(mWindowMutex);
+
+		auto iterFind = std::find(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), window);
+
+		if(iterFind != end(mMovedOrResizedWindows))
+			mMovedOrResizedWindows.push_back(window);
+	}
+
+	void RenderWindowManager::_update()
+	{
+		RenderWindow* newWinInFocus = nullptr;
+		Vector<RenderWindow*>::type movedOrResizedWindows;
+
+		{
+			CM_LOCK_MUTEX(mWindowMutex);
+			newWinInFocus = mNewWindowInFocus;
+
+			movedOrResizedWindows = mMovedOrResizedWindows;
+			mMovedOrResizedWindows.clear();
+		}
+
+		if(mWindowInFocus != newWinInFocus)
+		{
+			if(mWindowInFocus != nullptr)
+			{
+				mWindowInFocus->_setHasFocus(false);
+
+				if(!onFocusLost.empty())
+					onFocusLost(*mWindowInFocus);
+			}
+
+			if(newWinInFocus != nullptr)
+			{
+				newWinInFocus->_setHasFocus(true);
+
+				if(!onFocusGained.empty())
+					onFocusGained(*newWinInFocus);
+			}
+
+			mWindowInFocus = newWinInFocus;
+		}
+
+		if(!onMovedOrResized.empty())
+		{
+			for(auto& window : movedOrResizedWindows)
+			{
+				onMovedOrResized(*window);
+			}
 		}
 	}
 

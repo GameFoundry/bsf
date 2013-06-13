@@ -24,6 +24,7 @@
 #include "CmMeshManager.h"
 #include "CmMaterialManager.h"
 #include "CmFontManager.h"
+#include "CmRenderWindowManager.h"
 #include "CmRenderer.h"
 
 #include "CmMaterial.h"
@@ -89,6 +90,7 @@ namespace CamelotFramework
 
 		while(mRunMainLoop)
 		{
+			RenderWindowManager::instance()._update();
 			gInput().update();
 			gSceneManager().update();
 

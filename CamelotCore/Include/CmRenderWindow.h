@@ -176,18 +176,21 @@ namespace CamelotFramework
           */
         void setDeactivateOnFocusChange(bool deactivate);
 
-		void setHasFocus(bool focus);
+		/**
+		 * @brief	Internal method. Called when window gets or loses focus.
+		 */
+		void _setHasFocus(bool focus);
 		bool hasFocus() const { return mHasFocus; }
 
 		virtual Int2 screenToWindowPos(const Int2& screenPos) const = 0;
-
-		mutable boost::signal<void(RenderWindow*)> onFocusChanged;
 
 		virtual void destroy();
 
 		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);
 
     protected:
+		friend class RenderWindowManager;
+
         /** Default constructor.
         */
         RenderWindow(const RENDER_WINDOW_DESC& desc);

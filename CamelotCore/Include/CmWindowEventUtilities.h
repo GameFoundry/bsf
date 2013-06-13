@@ -45,72 +45,6 @@ THE SOFTWARE.
 
 namespace CamelotFramework
 {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
-	/**
-	@Remarks
-		Callback class used to send out window events to client app
-	*/
-	class CM_EXPORT WindowEventListener
-	{
-	public:
-		virtual ~WindowEventListener() {}
-
-		/**
-		@Remarks
-			Window has moved position
-		@param rw
-			The RenderWindow which created this events
-		*/
-		virtual void windowMoved(RenderWindow* rw)
-                { (void)rw; }
-
-		/**
-		@Remarks
-			Window has resized
-		@param rw
-			The RenderWindow which created this events
-		*/
-		virtual void windowResized(RenderWindow* rw)
-                { (void)rw; }
-
-		/**
-		@Remarks
-			Window is closing (Only triggered if user pressed the [X] button)
-		@param rw
-			The RenderWindow which created this events
-		@return True will close the window(default).
-		*/
-		virtual bool windowClosing(RenderWindow* rw)
-		{ (void)rw; return true; }
-
-		/**
-		@Remarks
-			Window has been closed (Only triggered if user pressed the [X] button)
-		@param rw
-			The RenderWindow which created this events
-		@note
-			The window has not actually close yet when this event triggers. It's only closed after
-			all windowClosed events are triggered. This allows apps to deinitialise properly if they
-			have services that needs the window to exist when deinitialising.
-		*/
-		virtual void windowClosed(RenderWindow* rw)
-                { (void)rw; }
-
-		/**
-		@Remarks
-			Window has lost/gained focus
-		@param rw
-			The RenderWindow which created this events
-		*/
-		virtual void windowFocusChange(RenderWindow* rw)
-                { (void)rw; }
-	};
-
 	/**
 	@Remarks
 		Utility class to handle Window Events/Pumping/Messages
@@ -124,28 +58,6 @@ namespace CamelotFramework
 			RenderWindows (If using external Windows, you can optionally register those yourself)
 		*/
 		static void messagePump();
-
-		/**
-		@Remarks
-			Add a listener to listen to renderwindow events (multiple listener's per renderwindow is fine)
-			The same listener can listen to multiple windows, as the Window Pointer is sent along with
-			any messages.
-		@param window
-			The RenderWindow you are interested in monitoring
-		@param listner
-			Your callback listener
-		*/
-		static void addWindowEventListener( RenderWindow* window, WindowEventListener* listener );
-
-		/**
-		@Remarks
-			Remove previously added listener
-		@param window
-			The RenderWindow you registered with
-		@param listner
-			The listener registered
-		*/
-		static void removeWindowEventListener( RenderWindow* window, WindowEventListener* listener );
 
 		/**
 		@Remarks
@@ -172,10 +84,6 @@ namespace CamelotFramework
         //! Internal UPP Window Handler (RenderWindow's use this when creating the OS X Carbon Window
         static OSStatus _CarbonWindowHandler(EventHandlerCallRef nextHandler, EventRef event, void* wnd);
 #endif
-
-		//These are public only so GLXProc can access them without adding Xlib headers header
-		typedef Multimap<RenderWindow*, WindowEventListener*>::type WindowEventListeners;
-		static WindowEventListeners _msListeners;
 
 		typedef Vector<RenderWindow*>::type Windows;
 		static Windows _msWindows;

@@ -39,7 +39,6 @@ void GLXProc( CamelotFramework::RenderWindow *win, const XEvent &event );
 
 using namespace CamelotFramework;
 
-WindowEventUtilities::WindowEventListeners WindowEventUtilities::_msListeners;
 WindowEventUtilities::Windows WindowEventUtilities::_msWindows;
 
 //--------------------------------------------------------------------------------//
@@ -99,28 +98,6 @@ void WindowEventUtilities::messagePump()
 	}
 #endif
 }
-
-//--------------------------------------------------------------------------------//
-void WindowEventUtilities::addWindowEventListener( RenderWindow* window, WindowEventListener* listener )
-{
-	_msListeners.insert(std::make_pair(window, listener));
-}
-
-//--------------------------------------------------------------------------------//
-void WindowEventUtilities::removeWindowEventListener( RenderWindow* window, WindowEventListener* listener )
-{
-	WindowEventListeners::iterator i = _msListeners.begin(), e = _msListeners.end();
-
-	for( ; i != e; ++i )
-	{
-		if( i->first == window && i->second == listener )
-		{
-			_msListeners.erase(i);
-			break;
-		}
-	}
-}
-
 //--------------------------------------------------------------------------------//
 void WindowEventUtilities::_addRenderWindow(RenderWindow* window)
 {
@@ -151,12 +128,6 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 	if (!win)
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
-	//LogManager* log = LogManager::getSingletonPtr();
-	//Iterator of all listeners registered to this RenderWindow
-	WindowEventListeners::iterator index,
-        start = _msListeners.lower_bound(win),
-        end = _msListeners.upper_bound(win);
-
 	switch( uMsg )
 	{
 	case WM_ACTIVATE:
@@ -167,7 +138,7 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 		    win->setActive( true );
 
 			if(!win->hasFocus())
-				win->setHasFocus(true);
+				win->_setHasFocus(true);
 
 			gInput().inputWindowChanged(*win);
         }
@@ -179,11 +150,9 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
             }
 
 			if(win->hasFocus())
-				win->setHasFocus(false);
+				win->_setHasFocus(false);
         }
 
-	    for( ; start != end; ++start )
-		    (start->second)->windowFocusChange(win);
 		break;
 	}
 	case WM_SYSKEYDOWN:
@@ -213,27 +182,17 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 			return 0;
 		break;
 	case WM_ENTERSIZEMOVE:
-		//log->logMessage("WM_ENTERSIZEMOVE");
 		break;
 	case WM_EXITSIZEMOVE:
-		//log->logMessage("WM_EXITSIZEMOVE");
 		break;
 	case WM_MOVE:
-		//log->logMessage("WM_MOVE");
 		win->windowMovedOrResized();
-		for(index = start; index != end; ++index)
-			(index->second)->windowMoved(win);
 		break;
 	case WM_DISPLAYCHANGE:
 		win->windowMovedOrResized();
-		for(index = start; index != end; ++index)
-			(index->second)->windowResized(win);
 		break;
 	case WM_SIZE:
-		//log->logMessage("WM_SIZE");
 		win->windowMovedOrResized();
-		for(index = start; index != end; ++index)
-			(index->second)->windowResized(win);
 		break;
 	case WM_SETCURSOR:
 		if(Cursor::isHidden())
@@ -248,18 +207,7 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 		break;
 	case WM_CLOSE:
 	{
-		//log->logMessage("WM_CLOSE");
-		bool close = true;
-		for(index = start; index != end; ++index)
-		{
-			if (!(index->second)->windowClosing(win))
-				close = false;
-		}
-		if (!close) return 0;
-
-		for(index = _msListeners.lower_bound(win); index != end; ++index)
-			(index->second)->windowClosed(win);
-
+		// TODO - Only stop main loop if primary window is closed!!
 		gApplication().stopMainLoop();
 
 		return 0;
@@ -272,11 +220,6 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 //--------------------------------------------------------------------------------//
 void GLXProc( RenderWindow *win, const XEvent &event )
 {
-	//An iterator for the window listeners
-	WindowEventUtilities::WindowEventListeners::iterator index,
-		start = WindowEventUtilities::_msListeners.lower_bound(win),
-		end   = WindowEventUtilities::_msListeners.upper_bound(win);
-
 	switch(event.type)
 	{
 	case ClientMessage:
@@ -284,20 +227,8 @@ void GLXProc( RenderWindow *win, const XEvent &event )
 		::Atom atom;
 		win->getCustomAttribute("ATOM", &atom);
 		if(event.xclient.format == 32 && event.xclient.data.l[0] == (long)atom)
-		{	//Window closed by window manager
-			//Send message first, to allow app chance to unregister things that need done before
-			//window is shutdown
-			bool close = true;
-            for(index = start ; index != end; ++index)
-			{
-				if (!(index->second)->windowClosing(win))
-					close = false;
-			}
-			if (!close) return;
-
-            for(index = start ; index != end; ++index)
-                (index->second)->windowClosed(win);
-
+		{	
+			//Window closed by window manager
 		}
 		break;
 	}
@@ -306,9 +237,6 @@ void GLXProc( RenderWindow *win, const XEvent &event )
 		if (!win->isClosed())
 		{
 			// Window closed without window manager warning.
-            for(index = start ; index != end; ++index)
-                (index->second)->windowClosed(win);
-
 		}
 		break;
 	}
@@ -324,34 +252,17 @@ void GLXProc( RenderWindow *win, const XEvent &event )
 		int newLeft, newTop;
 		win->getMetrics(newWidth, newHeight, newDepth, newLeft, newTop);
 
-		if (newLeft != oldLeft || newTop != oldTop)
-		{
-            for(index = start ; index != end; ++index)
-                (index->second)->windowMoved(win);
-		}
-
-		if (newWidth != oldWidth || newHeight != oldHeight)
-		{
-            for(index = start ; index != end; ++index)
-                (index->second)->windowResized(win);
-		}
 		break;
 	}
 	case FocusIn:     // Gained keyboard focus
 	case FocusOut:    // Lost keyboard focus
-        for(index = start ; index != end; ++index)
-            (index->second)->windowFocusChange(win);
 		break;
 	case MapNotify:   //Restored
 		win->setActive( true );
-        for(index = start ; index != end; ++index)
-            (index->second)->windowFocusChange(win);
 		break;
 	case UnmapNotify: //Minimised
 		win->setActive( false );
 		win->setVisible( false );
-        for(index = start ; index != end; ++index)
-            (index->second)->windowFocusChange(win);
 		break;
 	case VisibilityNotify:
 		switch(event.xvisibility.state)
@@ -369,8 +280,6 @@ void GLXProc( RenderWindow *win, const XEvent &event )
 			win->setVisible( false );
 			break;
 		}
-        for(index = start ; index != end; ++index)
-            (index->second)->windowFocusChange(win);
 		break;
 	default:
 		break;

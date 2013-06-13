@@ -42,6 +42,10 @@ Add separate classes:
 AT THE END DONT FORGET:
  Compile new OIS for all other build types (also update libs and includes)
 
+More concrete changes:
+ - onMovedOrResized is still used by Viewport
+ - Replace list of windows in WIndowEventUtilities with WindowManagers list. No need to keep two lists I think
+
 ------------
 
 How to design OSInputHandler and how does it interact with msg loop?

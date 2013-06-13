@@ -49,6 +49,10 @@ namespace BansheeEngine
 		mOnMouseMovedConn = gInput().onMouseMoved.connect(boost::bind(&GUIManager::onMouseMoved, this, _1));
 		mOnMouseDownConn = gInput().onMouseDown.connect(boost::bind(&GUIManager::onMouseDown, this, _1, _2));
 		mOnMouseUpConn = gInput().onMouseUp.connect(boost::bind(&GUIManager::onMouseUp, this, _1, _2));
+
+		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(boost::bind(&GUIManager::onWindowFocusGained, this, _1));
+		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(boost::bind(&GUIManager::onWindowFocusLost, this, _1));
+		mWindowMovedOrResizedConn = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&GUIManager::onWindowMovedOrResized, this, _1));
 	}
 
 	GUIManager::~GUIManager()
@@ -58,6 +62,10 @@ namespace BansheeEngine
 		mOnMouseMovedConn.disconnect();
 		mOnMouseDownConn.disconnect();
 		mOnMouseUpConn.disconnect();
+
+		mWindowGainedFocusConn.disconnect();
+		mWindowLostFocusConn.disconnect();
+		mWindowMovedOrResizedConn.disconnect();
 	}
 
 	void GUIManager::registerWidget(GUIWidget* widget)
@@ -663,6 +671,33 @@ namespace BansheeEngine
 		}	
 
 		event.markAsUsed();
+	}
+
+	void GUIManager::onWindowFocusGained(RenderWindow& win)
+	{
+		for(auto& widget : mWidgets)
+		{
+			if(widget->getOwnerWindow() == &win)
+				widget->ownerWindowFocusChanged();
+		}
+	}
+
+	void GUIManager::onWindowFocusLost(RenderWindow& win)
+	{
+		for(auto& widget : mWidgets)
+		{
+			if(widget->getOwnerWindow() == &win)
+				widget->ownerWindowFocusChanged();
+		}
+	}
+
+	void GUIManager::onWindowMovedOrResized(RenderWindow& win)
+	{
+		for(auto& widget : mWidgets)
+		{
+			if(widget->getOwnerWindow() == &win)
+				widget->ownerWindowResized();
+		}
 	}
 
 	Int2 GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Int2& screenPos)

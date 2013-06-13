@@ -47,8 +47,8 @@ namespace BansheeEditor
 		return GUIWidget::_mouseEvent(element, ev);
 	}
 
-	void WindowFrameWidget::ownerWindowFocusChanged(CM::RenderWindow* window)
+	void WindowFrameWidget::ownerWindowFocusChanged()
 	{
-		mWindowFrame->setFocused(window->hasFocus());
+		mWindowFrame->setFocused(getOwnerWindow()->hasFocus());
 	}
 }

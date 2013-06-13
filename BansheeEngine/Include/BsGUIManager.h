@@ -66,6 +66,10 @@ namespace BansheeEngine
 		boost::signals::connection mOnKeyDownConn;
 		boost::signals::connection mOnKeyUpConn;
 
+		boost::signals::connection mWindowGainedFocusConn;
+		boost::signals::connection mWindowLostFocusConn;
+		boost::signals::connection mWindowMovedOrResizedConn;
+
 		void updateMeshes();
 
 		void onKeyDown(const CM::KeyEvent& event);
@@ -74,6 +78,10 @@ namespace BansheeEngine
 		void onMouseMoved(const CM::MouseEvent& event);
 		void onMouseDown(const CM::MouseEvent& event, CM::MouseButton buttonID);
 		void onMouseUp(const CM::MouseEvent& event, CM::MouseButton buttonID);
+
+		void onWindowFocusGained(CM::RenderWindow& win);
+		void onWindowFocusLost(CM::RenderWindow& win);
+		void onWindowMovedOrResized(CM::RenderWindow& win);
 
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos);
 	};
