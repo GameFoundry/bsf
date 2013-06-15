@@ -235,7 +235,7 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIKeyEventType::KeyDown)
 		{
-			if(ev.getKey() == KC_BACK)
+			if(ev.getKey() == BC_BACK)
 			{
 				if(mText.size() > 0)
 				{

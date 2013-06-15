@@ -127,7 +127,7 @@ namespace CamelotFramework {
     class VertexData;
     class VertexDeclaration;
 	class Input;
-	class InputHandler;
+	class RawInputHandler;
 	class Renderer;
 	class RendererFactory;
 	class WorkQueue;
@@ -224,7 +224,6 @@ namespace CamelotFramework
 	typedef std::shared_ptr<ImportOptions> ImportOptionsPtr;
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
-	typedef std::shared_ptr<InputHandler> InputHandlerPtr;
 	typedef std::shared_ptr<GpuResource> GpuResourcePtr;
 }
 

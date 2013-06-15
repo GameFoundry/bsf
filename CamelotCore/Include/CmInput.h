@@ -3,7 +3,9 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 #include "CmRect.h"
-#include "CmInputHandler.h"
+#include "CmOSInputHandler.h"
+#include "CmRawInputHandler.h"
+#include "CmInputFwd.h"
 
 namespace CamelotFramework
 {
@@ -13,14 +15,13 @@ namespace CamelotFramework
 		Input();
 		~Input();
 
-		boost::signal<void(const KeyEvent&)> onKeyDown;
-		boost::signal<void(const KeyEvent&)> onKeyUp;
+		boost::signal<void(const ButtonEvent&)> onKeyDown;
+		boost::signal<void(const ButtonEvent&)> onKeyUp;
+		boost::signal<void(const TextInputEvent&)> onCharInput;
 
 		boost::signal<void(const MouseEvent&)> onMouseMoved;
-		boost::signal<void(const MouseEvent&, MouseButton)> onMouseDown;
-		boost::signal<void(const MouseEvent&, MouseButton)> onMouseUp;
 
-		void registerInputHandler(InputHandlerPtr inputHandler);
+		void registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler);
 
 		/**
 		 * @brief	Called every frame. Dispatches any callbacks resulting from input by the user. Should only be called by Application.
@@ -52,11 +53,13 @@ namespace CamelotFramework
 		 */
 		float getVerticalAxis() const;
 
-		bool isButtonDown(MouseButton button) const;
-		bool isKeyDown(KeyCode keyCode) const;
+		bool isButtonDown(ButtonCode keyCode) const;
+
+		Int2 getMousePosition() const { return mMouseAbsPos; }
 
 	private:
-		InputHandlerPtr mInputHandler;
+		std::shared_ptr<RawInputHandler> mRawInputHandler;
+		std::shared_ptr<OSInputHandler> mOSInputHandler;
 
 		float mSmoothHorizontalAxis;
 		float mSmoothVerticalAxis;
@@ -67,19 +70,28 @@ namespace CamelotFramework
 		int	mCurrentBufferIdx;
 
 		Int2 mMouseLastRel;
+		Int2 mMouseAbsPos;
 
-		bool mMouseButtonState[MB_Count];
-		bool mKeyState[KC_Count];
+		RawAxisState mAxes[RawInputAxis::Count];
+		bool mKeyState[BC_Count];
 
-		void keyDown(const KeyEvent& event);
-		void keyUp(const KeyEvent& event);
+		void buttonDown(ButtonCode code);
+		void buttonUp(ButtonCode code);
 
-		void mouseMoved(const MouseEvent& event);
-		void mouseDown(const MouseEvent& event, MouseButton buttonID);
-		void mouseUp(const MouseEvent& event, MouseButton buttonID);
+		void charInput(UINT32 chr);
 
 		/**
-		 * @brief	Updates the input values that need smoothing.
+		 * @brief	Raw mouse/joystick axis input.
+		 */
+		void axisMoved(const RawAxisState& state, RawInputAxis axis);
+
+		/**
+		 * @brief	Mouse movement as OS reports it. Used for screen cursor position.
+		 */
+		void mouseMoved(const Int2& screenPos);
+		
+		/**
+		 * @brief	Updates the axis input values that need smoothing.
 		 */
 		void updateSmoothInput();
 

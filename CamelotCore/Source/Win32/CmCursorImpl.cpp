@@ -26,21 +26,8 @@ namespace CamelotFramework
 	NativeCursorData Cursor::mCursor;
 	bool Cursor::mUsingCustom = false;
 
-	Int2 Cursor::getScreenPosition()
+	void Cursor::setPosition(const Int2& screenPos)
 	{
-		POINT screenPos;
-		GetCursorPos(&screenPos);
-
-		return Int2(screenPos.x, screenPos.y);
-	}
-
-	void Cursor::setScreenPosition(const Int2& pos)
-	{
-		POINT screenPos;
-
-		screenPos.x = pos.x;
-		screenPos.y = pos.y;
-
 		SetCursorPos(screenPos.x, screenPos.y);
 	}
 

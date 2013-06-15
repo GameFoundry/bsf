@@ -12,7 +12,7 @@ namespace CamelotFramework
 	const float Input::WEIGHT_MODIFIER = 0.5f;
 
 	Input::Input()
-		:mSmoothHorizontalAxis(0.0f), mSmoothVerticalAxis(0.0f), mCurrentBufferIdx(0), mMouseLastRel(0, 0), mInputHandler(nullptr)
+		:mSmoothHorizontalAxis(0.0f), mSmoothVerticalAxis(0.0f), mCurrentBufferIdx(0), mMouseLastRel(0, 0), mRawInputHandler(nullptr)
 	{ 
 		mHorizontalHistoryBuffer = cm_newN<float>(HISTORY_BUFFER_SIZE);
 		mVerticalHistoryBuffer = cm_newN<float>(HISTORY_BUFFER_SIZE);
@@ -25,11 +25,13 @@ namespace CamelotFramework
 			mTimesHistoryBuffer[i] = 0.0f;
 		}
 
-		for(int i = 0; i < MB_Count; i++)
-			mMouseButtonState[i] = false;
-
-		for(int i = 0; i < KC_Count; i++)
+		for(int i = 0; i < BC_Count; i++)
 			mKeyState[i] = false;
+
+		mOSInputHandler = cm_shared_ptr<OSInputHandler>();
+
+		mOSInputHandler->onCharInput.connect(boost::bind(&Input::charInput, this, _1));
+		mOSInputHandler->onMouseMoved.connect(boost::bind(&Input::mouseMoved, this, _1));
 	}
 
 	Input::~Input()
@@ -39,71 +41,108 @@ namespace CamelotFramework
 		cm_deleteN(mTimesHistoryBuffer, HISTORY_BUFFER_SIZE);
 	}
 
-	void Input::registerInputHandler(InputHandlerPtr inputHandler)
+	void Input::registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler)
 	{
-		if(mInputHandler != inputHandler)
+		if(mRawInputHandler != inputHandler)
 		{
-			mInputHandler = inputHandler;
+			mRawInputHandler = inputHandler;
 
-			if(mInputHandler != nullptr)
+			if(mRawInputHandler != nullptr)
 			{
-				mInputHandler->onKeyDown.connect(boost::bind(&Input::keyDown, this, _1));
-				mInputHandler->onKeyUp.connect(boost::bind(&Input::keyUp, this, _1));
+				mRawInputHandler->onButtonDown.connect(boost::bind(&Input::buttonDown, this, _1));
+				mRawInputHandler->onButtonUp.connect(boost::bind(&Input::buttonUp, this, _1));
 
-				mInputHandler->onMouseMoved.connect(boost::bind(&Input::mouseMoved, this, _1));
-				mInputHandler->onMouseDown.connect(boost::bind(&Input::mouseDown, this, _1, _2));
-				mInputHandler->onMouseUp.connect(boost::bind(&Input::mouseUp, this, _1, _2));
+				mRawInputHandler->onAxisMoved.connect(boost::bind(&Input::axisMoved, this, _1, _2));
 			}
 		}
 	}
 
 	void Input::update()
 	{
-		if(mInputHandler == nullptr)
+		if(mOSInputHandler == nullptr)
 		{
-			LOGERR("Input handler not initialized!");
+			LOGERR("OS input handler not initialized!");
 			return;
 		}
+		else
+			mOSInputHandler->update();
 
-		mInputHandler->update();
+		if(mRawInputHandler == nullptr)
+		{
+			LOGERR("Raw input handler not initialized!");
+			return;
+		}
+		else
+			mRawInputHandler->update();
 
 		updateSmoothInput();
 	}
 
 	void Input::inputWindowChanged(const RenderWindow& win)
 	{
-		if(mInputHandler != nullptr)
-			mInputHandler->inputWindowChanged(win);
+		if(mRawInputHandler != nullptr)
+			mRawInputHandler->inputWindowChanged(win);
+
+		if(mOSInputHandler != nullptr)
+			mOSInputHandler->inputWindowChanged(win);
 	}
 
-	void Input::keyDown(const KeyEvent& event)
+	void Input::buttonDown(ButtonCode code)
 	{
-		mKeyState[event.keyCode] = true;
-		onKeyDown(event);
+		mKeyState[code & 0x0000FFFF] = true;
+
+		if(!onKeyDown.empty())
+		{
+			ButtonEvent btnEvent;
+			btnEvent.buttonCode = code;
+
+			onKeyDown(btnEvent);
+		}
 	}
 
-	void Input::keyUp(const KeyEvent& event)
+	void Input::buttonUp(ButtonCode code)
 	{
-		mKeyState[event.keyCode] = false;
-		onKeyUp(event);
+		mKeyState[code & 0x0000FFFF] = false;
+
+		if(!onKeyUp.empty())
+		{
+			ButtonEvent btnEvent;
+			btnEvent.buttonCode = code;
+
+			onKeyUp(btnEvent);
+		}
 	}
 
-	void Input::mouseMoved(const MouseEvent& event)
+	void Input::axisMoved(const RawAxisState& state, RawInputAxis axis)
 	{
-		onMouseMoved(event);
-		mMouseLastRel = Int2(-event.relCoords.x, -event.relCoords.y);
+		if(axis == RawInputAxis::Mouse_XY)
+			mMouseLastRel = Int2(-state.rel.x, -state.rel.y);
+
+		mAxes[(int)axis] = state;
 	}
 
-	void Input::mouseDown(const MouseEvent& event, MouseButton buttonID)
+	void Input::mouseMoved(const Int2& screenPos)
 	{
-		mMouseButtonState[buttonID] = true;
-		onMouseDown(event, buttonID);
+		mMouseAbsPos = screenPos;
+
+		if(!onMouseMoved.empty())
+		{
+			MouseEvent mouseEvent;
+			mouseEvent.screenPos = screenPos;
+
+			onMouseMoved(mouseEvent);
+		}
 	}
 
-	void Input::mouseUp(const MouseEvent& event, MouseButton buttonID)
+	void Input::charInput(UINT32 chr)
 	{
-		mMouseButtonState[buttonID] = false;
-		onMouseUp(event, buttonID);
+		if(!onCharInput.empty())
+		{
+			TextInputEvent textInputEvent;
+			textInputEvent.textChar = chr;
+
+			onCharInput(textInputEvent);
+		}
 	}
 
 	float Input::getHorizontalAxis() const
@@ -116,14 +155,9 @@ namespace CamelotFramework
 		return mSmoothVerticalAxis;
 	}
 
-	bool Input::isButtonDown(MouseButton button) const
+	bool Input::isButtonDown(ButtonCode button) const
 	{
-		return mMouseButtonState[button];
-	}
-
-	bool Input::isKeyDown(KeyCode keyCode) const
-	{
-		return mKeyState[keyCode];
+		return mKeyState[button & 0x0000FFFF];
 	}
 
 	void Input::updateSmoothInput()

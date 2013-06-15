@@ -29,6 +29,7 @@ THE SOFTWARE.
 #define __OgreWindowEventUtils_H__
 
 #include "CmPrerequisites.h"
+#include <boost/signals.hpp>
 
 #if CM_PLATFORM == CM_PLATFORM_WIN32
 #  define WIN32_LEAN_AND_MEAN
@@ -36,6 +37,7 @@ THE SOFTWARE.
 #	define NOMINMAX // required to stop windows.h messing up std::min
 #  endif
 #  include <windows.h>
+#  include <windowsx.h>
 #elif CM_PLATFORM == CM_PLATFORM_APPLE && !defined(__LP64__)
 #  include <Carbon/Carbon.h>
 #endif
@@ -87,6 +89,9 @@ namespace CamelotFramework
 
 		typedef Vector<RenderWindow*>::type Windows;
 		static Windows _msWindows;
+
+		static boost::signal<void(const Int2&)> onMouseMoved;
+		static boost::signal<void(UINT32)> onCharInput;
 	};
 	/** @} */
 	/** @} */

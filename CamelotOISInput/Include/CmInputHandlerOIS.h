@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmOISPrerequisites.h"
-#include "CmInputHandler.h"
+#include "CmRawInputHandler.h"
 
 #include <OIS/OISEvents.h>
 #include <OIS/OISInputManager.h>
@@ -10,7 +10,7 @@
 
 namespace CamelotFramework
 {
-	class CM_OIS_EXPORT InputHandlerOIS : public InputHandler, public OIS::KeyListener, public OIS::MouseListener
+	class CM_OIS_EXPORT InputHandlerOIS : public RawInputHandler, public OIS::KeyListener, public OIS::MouseListener
 	{
 	public:
 		InputHandlerOIS(unsigned int hWnd);
@@ -29,5 +29,8 @@ namespace CamelotFramework
 
 		virtual void update();
 		virtual void inputWindowChanged(const RenderWindow& win);
+
+		ButtonCode keyCodeToButtonCode(OIS::KeyCode keyCode) const;
+		ButtonCode mouseButtonToButtonCode(OIS::MouseButtonID mouseBtn) const;
 	};
 }

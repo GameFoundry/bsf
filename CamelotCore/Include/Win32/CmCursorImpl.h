@@ -26,8 +26,10 @@ namespace CamelotFramework
 		Cursor();
 		~Cursor();
 
-		static Int2 getScreenPosition();
-		static void setScreenPosition(const Int2& pos);
+		/**
+		 * @brief	Moves the cursor to the specified screen position.
+		 */
+		static void setPosition(const Int2& screenPos);
 
 		static void clipToWindow(const RenderWindow& window);
 		static void clipToRect(const Rect& screenRect);

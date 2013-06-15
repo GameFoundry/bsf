@@ -2,7 +2,6 @@
 
 #include "BsPrerequisites.h"
 #include "CmComponent.h"
-#include "CmInputHandler.h"
 #include "CmMath.h"
 
 namespace CamelotFramework

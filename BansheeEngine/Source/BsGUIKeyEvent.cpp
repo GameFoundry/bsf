@@ -5,19 +5,19 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIKeyEvent::GUIKeyEvent()
-		:mType(GUIKeyEventType::KeyDown), mKey(KC_0)
+		:mType(GUIKeyEventType::KeyDown), mKey(BC_0)
 	{
 
 	}
 
-	void GUIKeyEvent::setKeyDownData(KeyCode key)
+	void GUIKeyEvent::setKeyDownData(ButtonCode key)
 	{
 		mType = GUIKeyEventType::KeyDown;
 		mKey = key;
 		mInputChar = 0;
 	}
 
-	void GUIKeyEvent::setKeyUpData(KeyCode key)
+	void GUIKeyEvent::setKeyUpData(ButtonCode key)
 	{
 		mType = GUIKeyEventType::KeyUp;
 		mKey = key;
@@ -27,7 +27,7 @@ namespace BansheeEngine
 	void GUIKeyEvent::setTextInputData(UINT32 inputChar)
 	{
 		mType = GUIKeyEventType::TextInput;
-		mKey = KC_0;
+		mKey = BC_0;
 		mInputChar = inputChar;
 	}
 }

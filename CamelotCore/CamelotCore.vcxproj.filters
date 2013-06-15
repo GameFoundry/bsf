@@ -201,9 +201,6 @@
     <ClInclude Include="Include\CmInput.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmInputHandler.h">
-      <Filter>Header Files\Input</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmComponentRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -444,6 +441,15 @@
     <ClInclude Include="Include\CmTextUtility.h">
       <Filter>Header Files\Text</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmOSInputHandler.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRawInputHandler.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmInputFwd.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -682,6 +688,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmTextUtility.cpp">
       <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmOSInputHandler.cpp">
+      <Filter>Source Files\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

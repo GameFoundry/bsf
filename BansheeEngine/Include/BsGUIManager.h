@@ -4,7 +4,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUIKeyEvent.h"
 #include "CmModule.h"
-#include "CmInputHandler.h"
+#include "CmInput.h"
 #include "CmDeferredRenderContextFwd.h"
 #include <boost/signals/connection.hpp>
 
@@ -48,7 +48,7 @@ namespace BansheeEngine
 		// Element and widget that's being clicked on
 		GUIWidget* mActiveWidget;
 		GUIElement* mActiveElement;
-		CM::UINT32 mActiveMouseButton;
+		GUIMouseButton mActiveMouseButton;
 
 		// Element and widget that currently have the keyboard focus
 		GUIWidget* mKeyboardFocusWidget;
@@ -60,11 +60,10 @@ namespace BansheeEngine
 		GUIMouseEvent mMouseEvent;
 		GUIKeyEvent mKeyEvent;
 
+		boost::signals::connection mOnButtonDownConn;
+		boost::signals::connection mOnButtonUpConn;
 		boost::signals::connection mOnMouseMovedConn;
-		boost::signals::connection mOnMouseDownConn;
-		boost::signals::connection mOnMouseUpConn;
-		boost::signals::connection mOnKeyDownConn;
-		boost::signals::connection mOnKeyUpConn;
+		boost::signals::connection mOnTextInputConn;
 
 		boost::signals::connection mWindowGainedFocusConn;
 		boost::signals::connection mWindowLostFocusConn;
@@ -72,17 +71,17 @@ namespace BansheeEngine
 
 		void updateMeshes();
 
-		void onKeyDown(const CM::KeyEvent& event);
-		void onKeyUp(const CM::KeyEvent& event);
+		void onButtonDown(const CM::ButtonEvent& event);
+		void onButtonUp(const CM::ButtonEvent& event);
 
 		void onMouseMoved(const CM::MouseEvent& event);
-		void onMouseDown(const CM::MouseEvent& event, CM::MouseButton buttonID);
-		void onMouseUp(const CM::MouseEvent& event, CM::MouseButton buttonID);
+		void onTextInput(const CM::TextInputEvent& event);
 
 		void onWindowFocusGained(CM::RenderWindow& win);
 		void onWindowFocusLost(CM::RenderWindow& win);
 		void onWindowMovedOrResized(CM::RenderWindow& win);
 
-		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos);
+		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
+		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;
 	};
 }

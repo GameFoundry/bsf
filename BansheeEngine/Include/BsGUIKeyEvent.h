@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmInputHandler.h"
+#include "CmInputFwd.h"
 #include "CmInt2.h"
 
 namespace BansheeEngine
@@ -19,17 +19,17 @@ namespace BansheeEngine
 		GUIKeyEvent();
 
 		GUIKeyEventType getType() const { return mType; }
-		CM::KeyCode getKey() const { return mKey; }
+		CM::ButtonCode getKey() const { return mKey; }
 		const CM::UINT32& getInputChar() const { return mInputChar; }
 	private:
 		friend class GUIManager;
 
 		GUIKeyEventType mType;
-		CM::KeyCode mKey;
+		CM::ButtonCode mKey;
 		CM::UINT32 mInputChar;
 
-		void setKeyDownData(CM::KeyCode key);
-		void setKeyUpData(CM::KeyCode key);
+		void setKeyDownData(CM::ButtonCode key);
+		void setKeyUpData(CM::ButtonCode key);
 		void setTextInputData(CM::UINT32 inputChar);
 	};
 }

@@ -31,7 +31,7 @@ namespace CamelotFramework
 		catch(OIS::Exception &e)
 		{
 			std::cout << e.eText << std::endl;
-		} 
+		}
 
 		mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, true));
 		mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject(OIS::OISMouse, true));
@@ -76,56 +76,54 @@ namespace CamelotFramework
 
 	bool InputHandlerOIS::keyPressed(const OIS::KeyEvent &arg)
 	{
-		KeyEvent event;
-		event.keyCode = (KeyCode)(int)arg.key;
-		event.textChar = arg.text;
-
-		onKeyDown(event);
+		onButtonDown(keyCodeToButtonCode(arg.key));
 		return true;
 	}
 
 	bool InputHandlerOIS::keyReleased(const OIS::KeyEvent& arg)
 	{
-		KeyEvent event;
-		event.keyCode = (KeyCode)(int)arg.key;
-		event.textChar = arg.text;
-
-		onKeyUp(event);
+		onButtonUp(keyCodeToButtonCode(arg.key));
 		return true;
 	}
 
 	bool InputHandlerOIS::mouseMoved(const OIS::MouseEvent& arg)
 	{
-		MouseEvent event;
-		event.coords = Int2(arg.state.X.abs, arg.state.Y.abs);
-		event.relCoords = Int2(arg.state.X.rel, arg.state.Y.rel);
-		event.z = arg.state.Z.abs;
-		event.relZ = arg.state.Z.rel;
+		RawAxisState xyState;
+		xyState.abs = Int2(arg.state.X.abs, arg.state.Y.abs);
+		xyState.rel = Int2(arg.state.X.rel, arg.state.Y.rel);
 
-		onMouseMoved(event);
+		onAxisMoved(xyState, RawInputAxis::Mouse_XY);
+
+		RawAxisState zState;
+		zState.abs = Int2(arg.state.Z.abs, 0);
+		zState.rel = Int2(arg.state.Z.rel, 0);
+
+		onAxisMoved(zState, RawInputAxis::Mouse_Z);
+
 		return true;
 	}
 
 	bool InputHandlerOIS::mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id)
 	{
-		MouseEvent event;
-		event.coords = Int2(arg.state.X.abs, arg.state.Y.abs);
-		event.relCoords = Int2(arg.state.X.rel, arg.state.Y.rel);
-		event.z = arg.state.Z.abs;
-		event.relZ = arg.state.Z.rel;
+		onButtonDown(mouseButtonToButtonCode(id));
 
-		onMouseDown(event, (MouseButton)(int)id);
 		return true;
 	}
 
 	bool InputHandlerOIS::mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id)
 	{
-		MouseEvent event;
-		event.coords = Int2(arg.state.X.abs, arg.state.Y.abs);
-		event.relCoords = Int2(0, 0);
-		event.z = arg.state.Z.abs;
+		onButtonUp(mouseButtonToButtonCode(id));
 
-		onMouseUp(event, (MouseButton)(int)id);
 		return true;
+	}
+
+	ButtonCode InputHandlerOIS::keyCodeToButtonCode(OIS::KeyCode keyCode) const
+	{
+		return (ButtonCode)keyCode;
+	}
+
+	ButtonCode InputHandlerOIS::mouseButtonToButtonCode(OIS::MouseButtonID mouseBtn) const
+	{
+		return (ButtonCode)(((int)mouseBtn + BC_NumKeys) | 0x80000000);
 	}
 }

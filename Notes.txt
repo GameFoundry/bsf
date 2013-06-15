@@ -106,6 +106,14 @@ Questions/Notes:
  5. This guy: http://home.comcast.net/~tom_forsyth/blog.wiki.html#%5B%5BRenderstate%20change%20costs%5D%5D (who's a driver programmer) sorts all opaque objects based on shader/state
     into buckets, and then orders elements in these bucks in front to back order. This gives him best of two worlds, early z rejection and low state changes.
 
+<<<<Input System>>>>
+ - Input is currently ignoring all axes except for mouse axes
+ - Remove/Improve smoothing
+ - Add ability to get raw or smoothed axis input for any axis (currently you can only get mouse X and Y axes)
+ - Allow the user to map axes to custom keys. e.g. Left/right axis can have A and D keys where A returns -1, and D 1
+ - Add a way to handle multiple devices (e.g. 2 or more joysticks)
+ - Hook up OIS joystick callbacks and test joysticks
+
 <<<<DirectDraw>>>>
  - Used for quickly drawing something, usually for debug and editor purposes.
  - It consists of methods like: DrawLine, DrawPolygon, DrawCube, DrawSphere, etc.
