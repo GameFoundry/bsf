@@ -141,8 +141,6 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 
 			if(!win->hasFocus())
 				win->_setHasFocus(true);
-
-			gInput().inputWindowChanged(*win);
         }
         else
         {

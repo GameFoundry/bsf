@@ -66,12 +66,9 @@ namespace CamelotFramework
 		unsigned long long hWnd;
 		win.getCustomAttribute("WINDOW", &hWnd);
 
-		if(hWnd != 0) // DEBUG ONLY
-		{
-			std::string normalString = toString((unsigned long)hWnd).c_str();
-			mKeyboard->setCaptureContext(normalString);
-			mMouse->setCaptureContext(normalString);
-		}
+		std::string normalString = toString((unsigned long)hWnd).c_str();
+		mKeyboard->setCaptureContext(normalString);
+		mMouse->setCaptureContext(normalString);
 	}
 
 	bool InputHandlerOIS::keyPressed(const OIS::KeyEvent &arg)

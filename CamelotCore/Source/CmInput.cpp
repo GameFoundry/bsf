@@ -3,6 +3,7 @@
 #include "CmMath.h"
 #include "CmRect.h"
 #include "CmDebug.h"
+#include "CmRenderWindowManager.h"
 
 #include <boost/bind.hpp>
 
@@ -32,6 +33,8 @@ namespace CamelotFramework
 
 		mOSInputHandler->onCharInput.connect(boost::bind(&Input::charInput, this, _1));
 		mOSInputHandler->onMouseMoved.connect(boost::bind(&Input::mouseMoved, this, _1));
+
+		RenderWindowManager::instance().onFocusGained.connect(boost::bind(&Input::inputWindowChanged, this, _1));
 	}
 
 	Input::~Input()
@@ -78,7 +81,7 @@ namespace CamelotFramework
 		updateSmoothInput();
 	}
 
-	void Input::inputWindowChanged(const RenderWindow& win)
+	void Input::inputWindowChanged(RenderWindow& win)
 	{
 		if(mRawInputHandler != nullptr)
 			mRawInputHandler->inputWindowChanged(win);

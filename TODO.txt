@@ -23,9 +23,6 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 
 /************** INPUT REFACTOR *********************/
 
-AT THE END DONT FORGET:
- Compile new OIS for all other build types (also update libs and includes)
-
 DO LATER:
  - Modifiyng Input focusChange so it gets called from WindowManager
   - After I do remove the HWND == 0 check from Input

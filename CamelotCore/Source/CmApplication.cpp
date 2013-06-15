@@ -48,7 +48,6 @@ namespace CamelotFramework
 		MemStack::setupHeap(HID_Main);
 
 		Time::startUp(cm_new<Time>());
-		Input::startUp(cm_new<Input>());
 		DynLibManager::startUp(cm_new<DynLibManager>());
 		CoreGpuObjectManager::startUp(cm_new<CoreGpuObjectManager>());
 		Resources::startUp(cm_new<Resources>(desc.resourceCacheDirectory));
@@ -58,6 +57,7 @@ namespace CamelotFramework
 
 		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
 
+		Input::startUp(cm_new<Input>());
 		RendererManager::startUp(cm_new<RendererManager>());
 
 		loadPlugin(desc.renderer);
@@ -159,11 +159,11 @@ namespace CamelotFramework
 
 		RendererManager::shutDown();
 		RenderSystem::shutDown();
+		Input::shutDown();
 
 		HighLevelGpuProgramManager::shutDown();
 		Resources::shutDown();
 		CoreGpuObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
-		Input::shutDown();
 		DynLibManager::shutDown();
 		Time::shutDown();
 	}

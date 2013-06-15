@@ -35,11 +35,6 @@ namespace CamelotFramework
 		void capture();
 
 		/**
-		 * @brief	Should be called any time window in focus changes. Should only be called by Application.
-		 */
-		void inputWindowChanged(const RenderWindow& win);
-
-		/**
 		 * @brief	Returns smoothed mouse/joystick input in the horizontal axis.
 		 *
 		 * @return	The horizontal axis value ranging [-1.0f, 1.0f].
@@ -94,6 +89,11 @@ namespace CamelotFramework
 		 * @brief	Updates the axis input values that need smoothing.
 		 */
 		void updateSmoothInput();
+
+		/**
+		 * @brief	Called when window in focus changes, as reported by the OS.
+		 */
+		void inputWindowChanged(RenderWindow& win);
 
 		/************************************************************************/
 		/* 								STATICS		                      		*/
