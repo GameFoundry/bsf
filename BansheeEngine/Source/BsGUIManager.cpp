@@ -402,8 +402,8 @@ namespace BansheeEngine
 					renderData.cachedMeshes.push_back(Mesh::create());
 				}
 
-				gMainSyncedRC().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, *meshData);
-				gMainSyncedRC().submitToGpu(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
+				gMainSyncedCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, *meshData);
+				gMainSyncedCA().submitToGpu(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
 
 				groupIdx++;
 			}

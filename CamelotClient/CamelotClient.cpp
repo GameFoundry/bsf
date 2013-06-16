@@ -278,8 +278,8 @@ int CALLBACK WinMain(
 	HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import("C:\\CursorDbg.psd"));
 	PixelDataPtr cursorPixelData = dbgCursor->allocateSubresourceBuffer(0);
 
-	gMainSyncedRC().readSubresource(dbgCursor.getInternalPtr(), 0, *cursorPixelData);
-	gMainSyncedRC().submitToGpu(true);
+	gMainSyncedCA().readSubresource(dbgCursor.getInternalPtr(), 0, *cursorPixelData);
+	gMainSyncedCA().submitToGpu(true);
 
 	//Cursor::setCustomCursor(*cursorPixelData, Int2(0, 0));
 

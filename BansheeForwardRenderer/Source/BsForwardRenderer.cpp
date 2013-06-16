@@ -33,7 +33,7 @@ namespace BansheeEngine
 
 	void ForwardRenderer::renderAll() 
 	{
-		RenderContext& renderContext = gMainRC();
+		RenderContext& renderContext = gMainCA();
 		const Vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
 
 		// Find all unique render targets
@@ -83,7 +83,7 @@ namespace BansheeEngine
 		if(!camera->getIgnoreSceneRenderables())
 			allRenderables = gSceneManager().getVisibleRenderables(camera);
 
-		RenderContext& renderContext = gMainRC();
+		RenderContext& renderContext = gMainCA();
 		renderContext.setViewport(camera->getViewport());
 
 		Matrix4 projMatrixCstm = camera->getProjectionMatrix();

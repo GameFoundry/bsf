@@ -26,6 +26,7 @@
 #include "CmFontManager.h"
 #include "CmRenderWindowManager.h"
 #include "CmRenderer.h"
+#include "CmCoreThread.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -53,6 +54,7 @@ namespace CamelotFramework
 		Resources::startUp(cm_new<Resources>(desc.resourceCacheDirectory));
 		HighLevelGpuProgramManager::startUp(cm_new<HighLevelGpuProgramManager>());
 
+		CoreThread::startUp(cm_new<CoreThread>());
 		RenderSystemManager::startUp(cm_new<RenderSystemManager>());
 
 		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
@@ -159,6 +161,7 @@ namespace CamelotFramework
 
 		RendererManager::shutDown();
 		RenderSystem::shutDown();
+		CoreThread::shutDown();
 		Input::shutDown();
 
 		HighLevelGpuProgramManager::shutDown();
@@ -218,12 +221,12 @@ namespace CamelotFramework
 		return application;
 	}
 
-	RenderContext& gMainRC()
+	RenderContext& gMainCA()
 	{
 		return *gApplication().mPrimaryRenderContext.get();
 	}
 
-	SyncedRenderContext& gMainSyncedRC()
+	SyncedRenderContext& gMainSyncedCA()
 	{
 		return *gApplication().mPrimarySyncedRenderContext;
 	}

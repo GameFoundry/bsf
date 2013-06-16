@@ -51,8 +51,8 @@ namespace CamelotFramework
 		HMesh mesh = Mesh::create();
 
 		mesh.waitUntilLoaded();
-		gMainSyncedRC().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedRC().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
+		gMainSyncedCA().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 
 		return mesh;
 	}

@@ -24,31 +24,19 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 /************** INPUT REFACTOR *********************/
 
 DO LATER:
- - Modifiyng Input focusChange so it gets called from WindowManager
-  - After I do remove the HWND == 0 check from Input
  - onMovedOrResized is still used by Viewport
  - Replace list of windows in WIndowEventUtilities with WindowManagers list. No need to keep two lists I think
  - Remagine render thread:
    - Its main loop is in CmApplication
    - Rename it to CoreThread
-------------
-
-How to design OSInputHandler and how does it interact with msg loop?
- - Set up key up/down callbacks, and mouse moved callbacks on the main loop
-
-How do I deal with window focus changes for newly created windows (no HWND)?
- - Calling setFocus(true) on a window calls WindowManager who registers a focus change
- - WindowManager::update (called from Application main thread) then triggers actual calls to setFocus and triggers focusChanged events
-   - Potentially remove focus events from RenderWindow (used by GUI) and use WindowManager directly
- - This also solves a problem that ATM focus changes are actually being called directly from render thread which is WRONG! (setFocus called from msg loop directly)
+   - Renamed DeferredRenderContext to DeferredCoreThreadAccessor
+ - Maybe: Attempt to add a global throwIfNotCore thread method
 
 /*******************************************************/
 
 IMMEDIATE:
- - Get rid of querying mouse states on each mouse event - Include button states in each event?
- - Handle capital leters - include shift, alt, ctrl, caps states in KeyEvent
-  - GetAsyncKeyState - possibly can be used for querying Caps Lock state. - Hook that to _translateText and update OIS notes (so I know I need that in Linux/Mac as well)
- - Ignore input when other window has focus - Possibly foreground mode but switch window input? (Will likely need multiple OIS input handlers...) (Possibly just calling SetCooperativeLevel will work)
+ - Update debug camera so it uses callbacks
+ - Add support for diacritical marks
  - Add window-management command to DeferredRenderContext - I already have resource management commands
    there, few window related ones won't hurt. I can always split the class if needed.
      - Possibly add guards to render target classes so they aren't accidentaly accessed from the render thread (similar to how Texture is handled)

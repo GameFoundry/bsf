@@ -78,8 +78,8 @@ namespace CamelotFramework
 			boost::signal<void()> mainLoopCallback;
 
 	private:
-		friend CM_EXPORT RenderContext& gMainRC();
-		friend CM_EXPORT SyncedRenderContext& gMainSyncedRC();
+		friend CM_EXPORT RenderContext& gMainCA();
+		friend CM_EXPORT SyncedRenderContext& gMainSyncedCA();
 
 		RenderWindowPtr mPrimaryWindow;
 		RenderContextPtr mPrimaryRenderContext;
@@ -104,18 +104,18 @@ namespace CamelotFramework
 	CM_EXPORT Application& gApplication();
 
 	/**
-	 * @brief	A shortcut for accessing the primary render context. This render context may only be accessed safely
+	 * @brief	A shortcut for accessing the primary core accessor. It may only be accessed safely
 	 * 			from the main thread.
 	 */
-	CM_EXPORT RenderContext& gMainRC();
+	CM_EXPORT RenderContext& gMainCA();
 
 	/**
-	 * @brief	A shortcut for accessing the primary synchronized render context. This context may be accessed
-	 * 			from all threads except the render thread. All operations from this context will be executed after
-	 * 			non-synchronized primary context has finished executing.
+	 * @brief	A shortcut for accessing the primary synchronized core accessor. This context may be accessed
+	 * 			from all threads except the render thread. All operations from this accessor will be executed after
+	 * 			non-synchronized primary accessor has finished executing.
 	 * 			
-	 * @note	It is more efficient to create your own non-synchronized render context if you plan on often using the render context from
+	 * @note	It is more efficient to create your own non-synchronized core accessor if you plan on often using it from
 	 * 			threads other than main.
 	 */
-	CM_EXPORT SyncedRenderContext& gMainSyncedRC();
+	CM_EXPORT SyncedRenderContext& gMainSyncedCA();
 }

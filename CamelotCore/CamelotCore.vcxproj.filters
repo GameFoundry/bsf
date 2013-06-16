@@ -450,6 +450,9 @@
     <ClInclude Include="Include\CmInputFwd.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmCoreThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -691,6 +694,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmOSInputHandler.cpp">
       <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCoreThread.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

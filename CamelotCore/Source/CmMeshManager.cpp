@@ -50,7 +50,7 @@ namespace CamelotFramework
 		indices[1] = 0;
 		indices[2] = 0;
 
-		SyncedRenderContext& renderContext = gMainSyncedRC();
+		SyncedRenderContext& renderContext = gMainSyncedCA();
 
 		mDummyMesh = Mesh::create();
 		renderContext.writeSubresource(mDummyMesh.getInternalPtr(), 0, *mDummyMeshData);
