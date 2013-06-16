@@ -99,7 +99,7 @@ namespace CamelotFramework
 		 *
 		 * @param	resourceHandle	Handle of the resource.
 		 * 							
-		 * @note	GPU resources held by the resource will be scheduled to be destroyed on the render thread.
+		 * @note	GPU resources held by the resource will be scheduled to be destroyed on the core thread.
 		 * 			Actual resource pointer wont be deleted until all user-held references to it are removed.
 		 */
 		void unload(HResource resource);

@@ -19,7 +19,7 @@ namespace CamelotFramework
 
 		/**
 		 * @brief	Uploads the current data to the specified buffer, and marks the block a non-dirty.
-		 * 			Should only be called from the render thread.
+		 * 			Should only be called from the core thread.
 		 */
 		void uploadToBuffer(GpuParamBlockBufferPtr buffer);
 

@@ -1489,7 +1489,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	D3D9ResourceManager* D3D9RenderSystem::getResourceManager()
 	{
-		// No need to check if we're on render thread as this is synced up internally
+		// No need to check if we're on core thread as this is synced up internally
 
 		return msD3D9RenderSystem->mResourceManager;
 	}

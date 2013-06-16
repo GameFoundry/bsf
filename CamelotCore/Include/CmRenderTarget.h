@@ -95,7 +95,7 @@ namespace CamelotFramework
         /**
          * @brief	Swaps the frame buffers to display the next frame.
          * 			
-		 * @note	Render thread only.
+		 * @note	Core thread only.
          */
 		virtual void swapBuffers() {};
 

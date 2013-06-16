@@ -111,7 +111,7 @@ namespace CamelotFramework
 
 	/**
 	 * @brief	A shortcut for accessing the primary synchronized core accessor. This context may be accessed
-	 * 			from all threads except the render thread. All operations from this accessor will be executed after
+	 * 			from all threads except the core thread. All operations from this accessor will be executed after
 	 * 			non-synchronized primary accessor has finished executing.
 	 * 			
 	 * @note	It is more efficient to create your own non-synchronized core accessor if you plan on often using it from

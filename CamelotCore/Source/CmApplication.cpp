@@ -99,8 +99,8 @@ namespace CamelotFramework
 
 			RendererManager::instance().getActive()->renderAll();
 
-			// Only queue new commands if render thread has finished rendering
-			// TODO - There might be a more optimal way to sync simulation and render threads so we maximize
+			// Only queue new commands if core thread has finished rendering
+			// TODO - There might be a more optimal way to sync simulation and core threads so we maximize
 			// the amount of rendered frames
 			bool readyForNextFrame = false;
 			{

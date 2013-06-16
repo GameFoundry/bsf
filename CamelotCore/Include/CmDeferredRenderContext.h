@@ -13,9 +13,9 @@
 namespace CamelotFramework
 {
 	/**
-	 * @brief	Deferred render context allows you to execute RenderSystem commands outside of the render thread.
+	 * @brief	Deferred render context allows you to execute RenderSystem commands outside of the core thread.
 	 * 			
-	 * @note	All commands are queued and only executed after the call to submitToGpu, in the order they were called.
+	 * @note	All commands are queued and only executed after the call to submitToCoreThread, in the order they were called.
 	 */
 	template <class CommandQueueSyncPolicy = CommandQueueNoSync>
 	class CM_EXPORT DeferredRenderContext
@@ -215,7 +215,7 @@ namespace CamelotFramework
 		 * @copydoc RenderSystem::writeSubresource()
 		 *
 		 * @note Resource is updated with data from "data" parameter when the async operation completes. 
-		 * 		 Until the async operation completes "data" is owned by the render thread and you won't
+		 * 		 Until the async operation completes "data" is owned by the core thread and you won't
 		 * 		 be able to access it. 
 		 */
 		AsyncOp writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceData& data)
@@ -229,7 +229,7 @@ namespace CamelotFramework
 		 * @copydoc RenderSystem::writeSubresource()
 		 *
 		 * @note "data" parameter is populated with subresource data when the async operation completes. 
-		 * 		 Until the async operation completes "data" is owned by the render thread and you won't
+		 * 		 Until the async operation completes "data" is owned by the core thread and you won't
 		 * 		 be able to access it.
 		 */
 		AsyncOp readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceData& data)

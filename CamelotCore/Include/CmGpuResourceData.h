@@ -51,7 +51,7 @@ namespace CamelotFramework
 		void setExternalBuffer(UINT8* data);
 
 		/**
-		 * @brief	Locks the data and makes it available only to the render thread. Don't call manually.
+		 * @brief	Locks the data and makes it available only to the core thread. Don't call manually.
 		 */
 		void lock() const;
 

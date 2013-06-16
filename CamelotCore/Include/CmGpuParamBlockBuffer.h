@@ -8,7 +8,7 @@ namespace CamelotFramework
 {
 	/**
 	 * @brief	Represents an actual GPU buffer. 
-	 * 			Should only be accessed directly from render thread.
+	 * 			Should only be accessed directly from core thread.
 	 */
 	class CM_EXPORT GpuParamBlockBuffer : public CoreObject
 	{

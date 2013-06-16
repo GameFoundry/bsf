@@ -44,7 +44,7 @@ namespace CamelotFramework {
 		// Create the rendering resource on every existing device. 		
 		// This policy should be used when working intensively with a background loader thread.
 		// In that case when multiple devices exist, the resource will be created on each device
-		// and will be ready to use in the rendering thread. 
+		// and will be ready to use in the core thread. 
 		// The draw back can be some video memory waste in case that each device render different
 		// scene and doesn't really need all the resources.
 		RCP_CREATE_ON_ALL_DEVICES

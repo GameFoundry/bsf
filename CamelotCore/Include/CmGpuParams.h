@@ -54,13 +54,13 @@ namespace CamelotFramework
 		void setTransposeMatrices(bool transpose) { mTransposeMatrices = transpose; }
 
 		/**
-		 * @brief	Updates all used hardware parameter buffers. Should ONLY be called from render thread.
+		 * @brief	Updates all used hardware parameter buffers. Should ONLY be called from core thread.
 		 */
 		void updateHardwareBuffers();
 
 		/**
 		 * @brief	Creates the copy of this object in a special way. Should only be called
-		 * 			internally by deferred render context when passing gpu params to the render thread.
+		 * 			internally by deferred render context when passing gpu params to the core thread.
 		 */
 		static BindableGpuParams createBindableCopy(GpuParamsPtr params);
 

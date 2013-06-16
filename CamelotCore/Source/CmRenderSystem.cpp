@@ -62,7 +62,7 @@ namespace CamelotFramework {
 
     RenderSystem::~RenderSystem()
     {
-		// Base classes need to call virtual destroy_internal method (queue it on render thread)
+		// Base classes need to call virtual destroy_internal method (queue it on core thread)
 
 		cm_delete(mCurrentCapabilities);
 		mCurrentCapabilities = nullptr;

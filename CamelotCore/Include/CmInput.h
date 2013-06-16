@@ -28,11 +28,6 @@ namespace CamelotFramework
 		 */
 		void update();
 
-		/**
-		 * @brief	Captures any input between this and last call to capture. MUST be called from the render
-		 * 			thread, because thats the thread that owns the input window.
-		 */
-		void capture();
 
 		/**
 		 * @brief	Returns smoothed mouse/joystick input in the horizontal axis.

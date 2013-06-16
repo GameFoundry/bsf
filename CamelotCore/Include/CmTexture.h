@@ -233,7 +233,7 @@ namespace CamelotFramework {
 		 * 			upon texture creation, so usually you don't want to call this manually.
 		 * 			
 		 * @note	Initialization is not done immediately, and is instead just scheduled on the
-		 * 			render thread. Unless called from render thread, in which case it is initialized
+		 * 			core thread. Unless called from core thread, in which case it is initialized
 		 * 			right away.
 		 */
 		void initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
