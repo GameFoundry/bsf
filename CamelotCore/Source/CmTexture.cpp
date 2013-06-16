@@ -31,14 +31,9 @@ THE SOFTWARE.
 #include "CmDataStream.h"
 #include "CmException.h"
 #include "CmDebug.h"
-#include "CmRenderSystem.h"
+#include "CmCoreThread.h"
 #include "CmAsyncOp.h"
 
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
-#endif
 
 namespace CamelotFramework {
 	//--------------------------------------------------------------------------
@@ -93,7 +88,7 @@ namespace CamelotFramework {
 
 	void Texture::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(data.getTypeId() != TID_PixelData)
 			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
@@ -111,7 +106,7 @@ namespace CamelotFramework {
 
 	void Texture::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(data.getTypeId() != TID_PixelData)
 			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
@@ -182,7 +177,7 @@ namespace CamelotFramework {
 	//----------------------------------------------------------------------------
 	PixelData Texture::lock(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(mipLevel < 0 || mipLevel > mNumMipmaps)
 			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mipLevel) + ". Min is 0, max is " + toString(getNumMipmaps()));
@@ -195,14 +190,14 @@ namespace CamelotFramework {
 	//-----------------------------------------------------------------------------
 	void Texture::unlock()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		unlockImpl();
 	}
 	//-----------------------------------------------------------------------------
 	void Texture::copy(TexturePtr& target)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if (target->getUsage() != this->getUsage() ||
 			target->getTextureType() != this->getTextureType())
@@ -231,12 +226,6 @@ namespace CamelotFramework {
 		}
 
 		copyImpl(target);
-	}
-	//----------------------------------------------------------------------------- 
-	void Texture::throwIfNotRenderThread() const
-	{
-		if(CM_THREAD_CURRENT_ID != RenderSystem::instancePtr()->getRenderThreadId())
-			CM_EXCEPT(InternalErrorException, "Calling an internal texture method from a non-render thread!");
 	}
 
 	/************************************************************************/
@@ -345,5 +334,3 @@ namespace CamelotFramework {
 		return TextureManager::instance().getDummyTexture();
 	}
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD

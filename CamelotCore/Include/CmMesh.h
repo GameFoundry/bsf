@@ -75,8 +75,6 @@ namespace CamelotFramework
 
 		Vector<SubMesh>::type mSubMeshes;
 
-		void throwIfNotRenderThread() const;
-
 		/**
 		 * @copydoc Resource::initialize_internal()
 		 */

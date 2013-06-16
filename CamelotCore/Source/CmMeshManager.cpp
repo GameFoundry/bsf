@@ -54,6 +54,6 @@ namespace CamelotFramework
 
 		mDummyMesh = Mesh::create();
 		renderContext.writeSubresource(mDummyMesh.getInternalPtr(), 0, *mDummyMeshData);
-		renderContext.submitToGpu(true); // TODO - Only temporary until I fix write/read subresource
+		renderContext.submitToCoreThread(true); // TODO - Only temporary until I fix write/read subresource
 	}
 }

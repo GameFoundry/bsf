@@ -41,13 +41,8 @@ THE SOFTWARE.
 #include "CmPixelBuffer.h"
 #include "CmOcclusionQuery.h"
 #include "CmGpuResource.h"
+#include "CmCoreThread.h"
 #include "boost/bind.hpp"
-
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
-#endif
 
 namespace CamelotFramework {
 
@@ -62,12 +57,6 @@ namespace CamelotFramework {
         , mFragmentProgramBound(false)
 		, mClipPlanesDirty(true)
 		, mCurrentCapabilities(nullptr)
-		, mRenderThreadFunc(nullptr)
-		, mRenderThreadStarted(false)
-		, mRenderThreadShutdown(false)
-		, mCommandQueue(nullptr)
-		, mMaxCommandNotifyId(0)
-		, mSyncedRenderContext(nullptr)
     {
     }
 
@@ -75,77 +64,58 @@ namespace CamelotFramework {
     {
 		// Base classes need to call virtual destroy_internal method (queue it on render thread)
 
-		// TODO - What if something gets queued between the queued call to destroy_internal and this!?
-		shutdownRenderThread();
-
-		if(mCommandQueue != nullptr)
-		{
-			cm_delete(mCommandQueue);
-			mCommandQueue = nullptr;
-		}
-
 		cm_delete(mCurrentCapabilities);
 		mCurrentCapabilities = nullptr;
     }
 
 	RenderWindowPtr RenderSystem::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
-		mRenderThreadId = CM_THREAD_CURRENT_ID;
-		mCommandQueue = cm_new<CommandQueue<CommandQueueSync>>(CM_THREAD_CURRENT_ID, true);
 		mPrimaryWindowDesc = primaryWindowDesc;
 
 		MemStack::setupHeap(HID_Render);
-		initRenderThread();
 
-		AsyncOp op = queueReturnCommand(boost::bind(&RenderSystem::initialize_internal, this, _1), true);
+		AsyncOp op = gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::initialize_internal, this, _1), true);
 		return op.getReturnValue<RenderWindowPtr>();
 	}
 
 	void RenderSystem::initialize_internal(AsyncOp& asyncOp)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mVertexProgramBound = false;
 		mGeometryProgramBound = false;
 		mFragmentProgramBound = false;
-
-		mSyncedRenderContext = cm_new<DeferredRenderContext<CommandQueueSync>>(this, CM_THREAD_CURRENT_ID);
 	}
 
 	void RenderSystem::destroy_internal()
 	{
 		mActiveRenderTarget = nullptr;
-
-		if(mSyncedRenderContext != nullptr)
-		{
-			cm_delete(mSyncedRenderContext);
-		}
 	}
 
 	const RenderSystemCapabilities* RenderSystem::getCapabilities(void) const 
 	{ 
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		return mCurrentCapabilities; 
 	}
 
 	const DriverVersion& RenderSystem::getDriverVersion(void) const 
 	{ 
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		return mDriverVersion; 
 	}
 
     void RenderSystem::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
     {
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
         setTexture(gptype, texUnit, false, sNullTexPtr);
     }
 
 	void RenderSystem::addClipPlane (const Plane &p)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mClipPlanes.push_back(p);
 		mClipPlanesDirty = true;
@@ -153,14 +123,14 @@ namespace CamelotFramework {
 
 	void RenderSystem::addClipPlane (float A, float B, float C, float D)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		addClipPlane(Plane(A, B, C, D));
 	}
 
 	void RenderSystem::setClipPlanes(const PlaneList& clipPlanes)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if (clipPlanes != mClipPlanes)
 		{
@@ -171,7 +141,7 @@ namespace CamelotFramework {
 
 	void RenderSystem::resetClipPlanes()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if (!mClipPlanes.empty())
 		{
@@ -182,7 +152,7 @@ namespace CamelotFramework {
 
 	void RenderSystem::bindGpuProgram(HGpuProgram prg)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		switch(prg->getBindingDelegate()->getType())
 		{
@@ -204,7 +174,7 @@ namespace CamelotFramework {
 
 	void RenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		switch(gptype)
 		{
@@ -225,7 +195,7 @@ namespace CamelotFramework {
 
 	bool RenderSystem::isGpuProgramBound(GpuProgramType gptype)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 	    switch(gptype)
 	    {
@@ -242,7 +212,7 @@ namespace CamelotFramework {
 
 	void RenderSystem::render(const RenderOperation& op)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// sort out clip planes
 		// have to do it here in case of matrix issues
@@ -271,14 +241,14 @@ namespace CamelotFramework {
 
 	void RenderSystem::swapBuffers(RenderTargetPtr target)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		target->swapBuffers();
 	}
 
 	void RenderSystem::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceData& data, AsyncOp& asyncOp)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		resource->writeSubresource(subresourceIdx, data);
 		data.unlock();
@@ -287,231 +257,10 @@ namespace CamelotFramework {
 
 	void RenderSystem::readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceData& data, AsyncOp& asyncOp)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		resource->readSubresource(subresourceIdx, data);
 		data.unlock();
 		asyncOp.completeOperation();
 	}
-
-	/************************************************************************/
-	/* 								PRIVATE		                     		*/
-	/************************************************************************/
-
-	void RenderSystem::initRenderThread()
-	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
-		mRenderThreadFunc = cm_new<RenderWorkerFunc>(this);
-
-#if CM_THREAD_SUPPORT
-		CM_THREAD_CREATE(t, *mRenderThreadFunc);
-		mRenderThread = t;
-
-		CM_LOCK_MUTEX_NAMED(mRenderThreadStartMutex, lock);
-
-		while(!mRenderThreadStarted)
-			CM_THREAD_WAIT(mRenderThreadStartCondition, mRenderThreadStartMutex, lock);
-
-#else
-		CM_EXCEPT(InternalErrorException, "Attempting to start a render thread but Camelot isn't compiled with thread support.");
-#endif
-#endif
-	}
-
-	void RenderSystem::runRenderThread()
-	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
-		mRenderThreadId = CM_THREAD_CURRENT_ID;
-
-		{
-			CM_LOCK_MUTEX(mRenderThreadStartMutex);
-
-			mRenderThreadStarted = true;
-		}
-
-		CM_THREAD_NOTIFY_ALL(mRenderThreadStartCondition)
-
-		while(true)
-		{
-			// Wait until we get some ready commands
-			Queue<QueuedCommand>::type* commands = nullptr;
-			{
-				CM_LOCK_MUTEX_NAMED(mCommandQueueMutex, lock)
-
-				while(mCommandQueue->isEmpty())
-				{
-					if(mRenderThreadShutdown)
-						return;
-
-					CM_THREAD_WAIT(mCommandReadyCondition, mCommandQueueMutex, lock);
-				}
-
-				commands = mCommandQueue->flush();
-			}
-
-			// Play commands
-			mCommandQueue->playback(commands, boost::bind(&RenderSystem::commandCompletedNotify, this, _1)); 
-		}
-#endif
-	}
-
-	void RenderSystem::shutdownRenderThread()
-	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
-
-		{
-			CM_LOCK_MUTEX(mCommandQueueMutex);
-			mRenderThreadShutdown = true;
-		}
-
-		// Wake all threads. They will quit after they see the shutdown flag
-		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
-
-		mRenderThread->join();
-		CM_THREAD_DESTROY(mRenderThread);
-
-		mRenderThread = nullptr;
-		mRenderThreadId = CM_THREAD_CURRENT_ID;
-
-		if(mRenderThreadFunc != nullptr)
-		{
-			cm_delete(mRenderThreadFunc);
-			mRenderThreadFunc = nullptr;
-		}
-#endif
-
-		mRenderThreadStarted = false;
-	}
-
-	RenderContextPtr RenderSystem::createDeferredContext()
-	{
-		return cm_shared_ptr<DeferredRenderContext<CommandQueueNoSync>>(this, CM_THREAD_CURRENT_ID);
-	}
-
-	SyncedRenderContext& RenderSystem::getSyncedDeferredContext()
-	{
-		return *mSyncedRenderContext;
-	}
-	
-	AsyncOp RenderSystem::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)
-	{
-		AsyncOp op;
-
-		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
-		{
-			commandCallback(op); // Execute immediately
-			return op;
-		}
-
-		UINT32 commandId = -1;
-		{
-			CM_LOCK_MUTEX(mCommandQueueMutex);
-
-			if(blockUntilComplete)
-			{
-				commandId = mMaxCommandNotifyId++;
-				op = mCommandQueue->queueReturn(commandCallback, true, commandId);
-			}
-			else
-				op = mCommandQueue->queueReturn(commandCallback);
-		}
-
-		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
-
-		if(blockUntilComplete)
-			blockUntilCommandCompleted(commandId);
-
-		return op;
-	}
-
-	void RenderSystem::queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete)
-	{
-		if(CM_THREAD_CURRENT_ID == getRenderThreadId())
-		{
-			commandCallback(); // Execute immediately
-			return;
-		}
-
-		UINT32 commandId = -1;
-		{
-			CM_LOCK_MUTEX(mCommandQueueMutex);
-
-			if(blockUntilComplete)
-			{
-				commandId = mMaxCommandNotifyId++;
-				mCommandQueue->queue(commandCallback, true, commandId);
-			}
-			else
-				mCommandQueue->queue(commandCallback);
-		}
-
-		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
-
-		if(blockUntilComplete)
-			blockUntilCommandCompleted(commandId);
-	}
-
-	void RenderSystem::blockUntilCommandCompleted(UINT32 commandId)
-	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
-		CM_LOCK_MUTEX_NAMED(mCommandNotifyMutex, lock);
-
-		while(true)
-		{
-			// TODO - This might be causing a deadlock in Release mode. I'm thinking because mCommandsCompleted isn't marked as volatile.
-
-			// Check if our command id is in the completed list
-			auto iter = mCommandsCompleted.begin();
-			for(; iter != mCommandsCompleted.end(); ++iter)
-			{
-				if(*iter == commandId)
-					break;
-			}
-
-			if(iter != mCommandsCompleted.end())
-			{
-				mCommandsCompleted.erase(iter);
-				break;
-			}
-
-			CM_THREAD_WAIT(mCommandCompleteCondition, mCommandNotifyMutex, lock);
-		}
-#endif
-	}
-
-	void RenderSystem::commandCompletedNotify(UINT32 commandId)
-	{
-		{
-			CM_LOCK_MUTEX(mCommandNotifyMutex);
-
-			mCommandsCompleted.push_back(commandId);
-		}
-
-		CM_THREAD_NOTIFY_ALL(mCommandCompleteCondition);
-	}
-
-	void RenderSystem::throwIfNotRenderThread() const
-	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
-		if(CM_THREAD_CURRENT_ID != getRenderThreadId())
-			CM_EXCEPT(InternalErrorException, "Calling the render system from a non-render thread!");
-#endif
-	}
-
-	/************************************************************************/
-	/* 								THREAD WORKER                      		*/
-	/************************************************************************/
-
-	RenderSystem::RenderWorkerFunc::RenderWorkerFunc(RenderSystem* rs)
-		:mRS(rs)
-	{
-		assert(mRS != nullptr);
-	}
-
-	void RenderSystem::RenderWorkerFunc::operator()()
-	{
-		mRS->runRenderThread();
-	}
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD

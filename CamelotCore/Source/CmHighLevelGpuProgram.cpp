@@ -27,16 +27,9 @@ THE SOFTWARE.
 */
 #include "CmHighLevelGpuProgram.h"
 #include "CmHighLevelGpuProgramManager.h"
-#include "CmRenderSystem.h"
 #include "CmException.h"
-#include "CmRenderSystem.h"
+#include "CmCoreThread.h"
 #include "CmAsyncOp.h"
-
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
-#endif
 
 namespace CamelotFramework
 {
@@ -82,5 +75,3 @@ namespace CamelotFramework
 		return static_resource_cast<HighLevelGpuProgram>(Resource::_createResourceHandle(programPtr));
 	}
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD 

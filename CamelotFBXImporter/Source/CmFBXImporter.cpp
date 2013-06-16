@@ -52,7 +52,7 @@ namespace CamelotFramework
 
 		mesh.waitUntilLoaded();
 		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
+		gMainSyncedCA().submitToCoreThread(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 
 		return mesh;
 	}

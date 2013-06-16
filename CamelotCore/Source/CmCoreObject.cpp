@@ -1,5 +1,5 @@
 #include "CmCoreObject.h"
-#include "CmRenderSystem.h"
+#include "CmCoreThread.h"
 #include "CmCoreObjectManager.h"
 #include "CmDebug.h"
 
@@ -104,8 +104,8 @@ namespace CamelotFramework
 			if(requiresInitOnRenderThread())
 			{
 #if CM_DEBUG_MODE
-				if(CM_THREAD_CURRENT_ID == RenderSystem::instancePtr()->getRenderThreadId())
-					CM_EXCEPT(InternalErrorException, "You cannot call this method on the render thread. It will cause a deadlock!");
+				if(CM_THREAD_CURRENT_ID == CoreThread::instance().getCoreThreadId())
+					CM_EXCEPT(InternalErrorException, "You cannot call this method on the core thread. It will cause a deadlock!");
 #endif
 
 				CM_LOCK_MUTEX_NAMED(mCoreGpuObjectLoadedMutex, lock);
@@ -137,7 +137,7 @@ namespace CamelotFramework
 		// - If the object wasn't initialized delete it right away
 		// - Otherwise:
 		//  - We re-create the reference to the object by setting mThis pointer
-		//  - We queue the object to be destroyed so all of its GPU resources may be released on the render thread
+		//  - We queue the object to be destroyed so all of its GPU resources may be released on the core thread
 		//    - destroy() makes sure it keeps a reference of mThis so object isn't deleted
 		//    - Once the destroy() finishes the reference is removed and the default shared_ptr deleter is called
 
@@ -157,13 +157,13 @@ namespace CamelotFramework
 		// reference to the obj (saved in the bound function).
 		// We could have called the function directly using "this" pointer but then we couldn't have used a shared_ptr for the object,
 		// in which case there is a possibility that the object would be released and deleted while still being in the command queue.
-		RenderSystem::instancePtr()->queueCommand(boost::bind(&CoreObject::executeGpuCommand, obj, func));
+		CoreThread::instance().queueCommand(boost::bind(&CoreObject::executeGpuCommand, obj, func));
 	}
 
 	AsyncOp CoreObject::queueReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func)
 	{
 		// See queueGpuCommand
-		return RenderSystem::instancePtr()->queueReturnCommand(boost::bind(&CoreObject::executeReturnGpuCommand, obj, func, _1));
+		return CoreThread::instance().queueReturnCommand(boost::bind(&CoreObject::executeReturnGpuCommand, obj, func, _1));
 	}
 
 	void CoreObject::executeGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func)

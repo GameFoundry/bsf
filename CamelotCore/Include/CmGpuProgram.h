@@ -158,8 +158,6 @@ namespace CamelotFramework {
 		/// @copydoc Resource::calculateSize
 		size_t calculateSize(void) const { return 0; } // TODO 
 
-		void throwIfNotRenderThread() const;
-
 	protected:
 		/// The type of the program
 		GpuProgramType mType;

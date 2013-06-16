@@ -33,6 +33,7 @@ THE SOFTWARE.
 
 #include "CmException.h"
 #include "CmBitwise.h"
+#include "CmCoreThread.h"
 #include "CmTextureManager.h"
 
 #include "CmGLRenderTexture.h"
@@ -44,12 +45,6 @@ THE SOFTWARE.
 #  endif
 #  include <windows.h>
 #  include <wingdi.h>
-#endif
-
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
 #endif
 
 namespace CamelotFramework {
@@ -233,7 +228,7 @@ namespace CamelotFramework {
 
 	GLuint GLTexture::getGLID() const
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		return mTextureID;
 	}
@@ -307,7 +302,7 @@ namespace CamelotFramework {
 	//---------------------------------------------------------------------------------------------
 	PixelBufferPtr GLTexture::getBuffer(UINT32 face, UINT32 mipmap)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(face >= getNumFaces())
 			CM_EXCEPT(InvalidParametersException, "Face index out of range");
@@ -318,5 +313,3 @@ namespace CamelotFramework {
 		return mSurfaceList[idx];
 	}
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD

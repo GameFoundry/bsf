@@ -65,10 +65,8 @@ namespace CamelotFramework
 		loadPlugin(desc.renderer);
 		RendererManager::instance().setActive(desc.renderer);
 
-		RenderSystem* renderSystem = RenderSystem::instancePtr();
-
-		mPrimaryRenderContext = renderSystem->createDeferredContext();
-		mPrimarySyncedRenderContext = &renderSystem->getSyncedDeferredContext();
+		mPrimaryRenderContext = gCoreThread().createAccessor();
+		mPrimarySyncedRenderContext = &gCoreThread().getSyncedAccessor();
 
 		SceneManager::startUp((SceneManager*)loadPlugin(desc.sceneManager));
 
@@ -99,7 +97,6 @@ namespace CamelotFramework
 			if(!mainLoopCallback.empty())
 				mainLoopCallback();
 
-			RenderSystem* renderSystem = RenderSystem::instancePtr();
 			RendererManager::instance().getActive()->renderAll();
 
 			// Only queue new commands if render thread has finished rendering
@@ -118,9 +115,9 @@ namespace CamelotFramework
 					mIsFrameRenderingFinished = false;
 				}
 				
-				renderSystem->queueCommand(boost::bind(&Application::updateMessagePump, this));
-				mPrimaryRenderContext->submitToGpu();
-				renderSystem->queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
+				gCoreThread().queueCommand(boost::bind(&Application::updateMessagePump, this));
+				mPrimaryRenderContext->submitToCoreThread();
+				gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
 			}
 			else
 				mPrimaryRenderContext->cancelAll();

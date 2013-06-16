@@ -3,14 +3,9 @@
 #include "CmD3D11Device.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11TextureView.h"
+#include "CmCoreThread.h"
 #include "CmException.h"
 #include "CmAsyncOp.h"
-
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
-#endif
 
 namespace CamelotFramework
 {
@@ -102,7 +97,7 @@ namespace CamelotFramework
 
 	void D3D11Texture::initialize_internal()
 	{
-		THROW_IF_NOT_RENDER_THREAD
+		THROW_IF_NOT_CORE_THREAD;
 
 		Texture::initialize_internal();
 
@@ -614,5 +609,3 @@ namespace CamelotFramework
 		return viewPtr;
 	}
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD

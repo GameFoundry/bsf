@@ -273,7 +273,7 @@ namespace CamelotFramework
 
 				UINT32 subresourceIdx = newTex->mapToSubresourceIdx(0, 0);
 				gMainSyncedCA().writeSubresource(newTex.getInternalPtr(), subresourceIdx, pixelData);
-				gMainSyncedCA().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
+				gMainSyncedCA().submitToCoreThread(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 
 				fontData.texturePages.push_back(newTex);
 

@@ -37,12 +37,6 @@ THE SOFTWARE.
 #include "CmGpuProgInclude.h"
 #include "CmGpuProgramRTTI.h"
 
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
-#endif
-
 namespace CamelotFramework
 {
     //-----------------------------------------------------------------------------
@@ -101,12 +95,6 @@ namespace CamelotFramework
 
         return language;
     }
-	//----------------------------------------------------------------------------- 
-	void GpuProgram::throwIfNotRenderThread() const
-	{
-		if(CM_THREAD_CURRENT_ID != RenderSystem::instancePtr()->getRenderThreadId())
-			CM_EXCEPT(InternalErrorException, "Calling an internal texture method from a non-render thread!");
-	}
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
@@ -121,5 +109,3 @@ namespace CamelotFramework
 		return GpuProgram::getRTTIStatic();
 	}
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD 

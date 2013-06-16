@@ -1,6 +1,6 @@
 #include "CmCommandQueue.h"
 #include "CmException.h"
-#include "CmRenderSystem.h"
+#include "CmCoreThread.h"
 #include "CmDebug.h"
 #include "CmUtil.h"
 
@@ -80,12 +80,7 @@ namespace CamelotFramework
 
 	void CommandQueueBase::playback(CamelotFramework::Queue<QueuedCommand>::type* commands, boost::function<void(UINT32)> notifyCallback)
 	{
-#if CM_DEBUG_MODE
-		RenderSystem* rs = RenderSystem::instancePtr();
-
-		if(rs->getRenderThreadId() != CM_THREAD_CURRENT_ID)
-			CM_EXCEPT(InternalErrorException, "This method should only be called from the render thread.");
-#endif
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(commands == nullptr)
 			return;

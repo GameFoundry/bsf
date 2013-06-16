@@ -21,14 +21,9 @@
 #include "CmD3D11InputLayoutManager.h"
 #include "CmD3D11HLSLProgram.h"
 #include "CmGpuParams.h"
+#include "CmCoreThread.h"
 #include "CmDebug.h"
 #include "CmException.h"
-
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
-#endif
 
 namespace CamelotFramework
 {
@@ -44,7 +39,7 @@ namespace CamelotFramework
 	D3D11RenderSystem::~D3D11RenderSystem()
 	{
 		// This needs to be called from the child class, since destroy_internal is virtual
-		queueCommand(boost::bind(&D3D11RenderSystem::destroy_internal, this), true);
+		gCoreThread().queueCommand(boost::bind(&D3D11RenderSystem::destroy_internal, this), true);
 	}
 
 	const String& D3D11RenderSystem::getName() const
@@ -61,7 +56,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::initialize_internal(AsyncOp& asyncOp)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&mDXGIFactory);
 		if(FAILED(hr))
@@ -141,7 +136,7 @@ namespace CamelotFramework
 
     void D3D11RenderSystem::destroy_internal()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(mIAManager != nullptr)
 		{
@@ -185,7 +180,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// TODO - I'm setting up views one by one, it might be more efficient to hold them in an array
 		//  and then set them all up at once before rendering? Needs testing
@@ -221,7 +216,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setBlendState(const BlendStatePtr& blendState)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(blendState.get()));
 		mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
@@ -229,7 +224,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		D3D11RasterizerState* d3d11RasterizerState = static_cast<D3D11RasterizerState*>(const_cast<RasterizerState*>(rasterizerState.get()));
 		mDevice->getImmediateContext()->RSSetState(d3d11RasterizerState->getInternal());
@@ -237,7 +232,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(depthStencilState.get()));
 		mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencilRefValue);
@@ -245,7 +240,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// TODO - Set up UAVs?
 		// TODO - I'm setting up views one by one, it might be more efficient to hold them in an array
@@ -287,7 +282,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		setTexture(gptype, texUnit, false, nullptr);
 	}
@@ -304,7 +299,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setViewport(ViewportPtr& vp)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		assert(vp != nullptr);
 
@@ -333,7 +328,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		UINT32 maxBoundVertexBuffers = mCurrentCapabilities->getMaxBoundVertexBuffers();
 		if(index < 0 || index >= maxBoundVertexBuffers)
@@ -351,7 +346,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		D3D11IndexBuffer* indexBuffer = static_cast<D3D11IndexBuffer*>(buffer.get());
 
@@ -368,21 +363,21 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mActiveVertexDeclaration = vertexDeclaration;
 	}
 
 	void D3D11RenderSystem::setDrawOperation(DrawOperationType op)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mDevice->getImmediateContext()->IASetPrimitiveTopology(D3D11Mappings::getPrimitiveType(op));
 	}
 
 	void D3D11RenderSystem::bindGpuProgram(HGpuProgram prg)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(!prg.isLoaded())
 			return;
@@ -433,7 +428,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		switch(gptype)
 		{
@@ -463,7 +458,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		GpuParams& params = bindableParams.getParams();
 		params.updateHardwareBuffers();
@@ -532,7 +527,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::draw(UINT32 vertexCount)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		applyInputLayout();
 
@@ -546,7 +541,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		applyInputLayout();
 
@@ -560,7 +555,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mScissorRect.left = static_cast<LONG>(left);
 		mScissorRect.top = static_cast<LONG>(top);
@@ -572,7 +567,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::clear(RenderTargetPtr target, unsigned int buffers, const Color& color, float depth, unsigned short stencil)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// Clear render surfaces
 		if (buffers & FBT_COLOR)
@@ -626,7 +621,7 @@ namespace CamelotFramework
 
 	void D3D11RenderSystem::setRenderTarget(RenderTargetPtr target)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mActiveRenderTarget = target;
 
@@ -660,7 +655,7 @@ namespace CamelotFramework
 
 	RenderSystemCapabilities* D3D11RenderSystem::createRenderSystemCapabilities() const
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		RenderSystemCapabilities* rsc = cm_new<RenderSystemCapabilities>();
 
@@ -1009,5 +1004,3 @@ namespace CamelotFramework
 		mDevice->getImmediateContext()->IASetInputLayout(ia);
 	}
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD

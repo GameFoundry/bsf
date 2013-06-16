@@ -6,14 +6,8 @@
 #include "CmDebug.h"
 #include "CmHardwareBufferManager.h"
 #include "CmMeshManager.h"
-#include "CmRenderSystem.h"
+#include "CmCoreThread.h"
 #include "CmAsyncOp.h"
-
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
-#endif
 
 namespace CamelotFramework
 {
@@ -29,7 +23,7 @@ namespace CamelotFramework
 
 	void Mesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(data.getTypeId() != TID_MeshData)
 			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
@@ -107,7 +101,7 @@ namespace CamelotFramework
 
 	void Mesh::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(data.getTypeId() != TID_MeshData)
 			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
@@ -225,7 +219,7 @@ namespace CamelotFramework
 
 	void Mesh::initialize_internal()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// TODO Low priority - Initialize an empty mesh. A better way would be to only initialize the mesh
 		// once we set the proper mesh data (then we don't have to do it twice), but this makes the code less complex.
@@ -237,7 +231,7 @@ namespace CamelotFramework
 
 	void Mesh::destroy_internal()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(mVertexData != nullptr)
 			cm_delete<PoolAlloc>(mVertexData);
@@ -251,12 +245,6 @@ namespace CamelotFramework
 	HMesh Mesh::dummy()
 	{
 		return MeshManager::instance().getDummyMesh();
-	}
-
-	void Mesh::throwIfNotRenderThread() const
-	{
-		if(CM_THREAD_CURRENT_ID != RenderSystem::instancePtr()->getRenderThreadId())
-			CM_EXCEPT(InternalErrorException, "Calling an internal texture method from a non-render thread!");
 	}
 
 	/************************************************************************/
@@ -284,5 +272,3 @@ namespace CamelotFramework
 		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
 	}
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD

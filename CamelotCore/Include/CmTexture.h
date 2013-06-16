@@ -246,8 +246,6 @@ namespace CamelotFramework {
 		/// @copydoc Resource::calculateSize
 		UINT32 calculateSize(void) const;
 
-		void throwIfNotRenderThread() const;
-
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/

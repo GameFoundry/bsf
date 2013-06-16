@@ -136,7 +136,7 @@ namespace CamelotFramework
 
 			UINT32 subresourceIdx = newTexture->mapToSubresourceIdx(0, mip);
 			gMainSyncedCA().writeSubresource(newTexture.getInternalPtr(), subresourceIdx, src);
-			gMainSyncedCA().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
+			gMainSyncedCA().submitToCoreThread(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 		}
 
 		fileData->close();

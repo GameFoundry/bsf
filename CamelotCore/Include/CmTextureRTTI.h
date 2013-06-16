@@ -40,7 +40,7 @@ namespace CamelotFramework
 			GpuResourcePtr sharedTexPtr = std::static_pointer_cast<GpuResource>(obj->getThisPtr());
 
 			gMainSyncedCA().readSubresource(sharedTexPtr, subresourceIdx, *pixelData);
-			gMainSyncedCA().submitToGpu(true); // We need the data right away, so execute the context and wait until we get it
+			gMainSyncedCA().submitToCoreThread(true); // We need the data right away, so execute the context and wait until we get it
 
 			return pixelData;
 		}
@@ -116,7 +116,7 @@ namespace CamelotFramework
 				gMainSyncedCA().writeSubresource(sharedTexPtr, subresourceIdx, *pixelData->at(i));
 			}
 
-			gMainSyncedCA().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
+			gMainSyncedCA().submitToCoreThread(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 
 			cm_delete<PoolAlloc>(pixelData);
 			texture->mRTTIData = nullptr;	

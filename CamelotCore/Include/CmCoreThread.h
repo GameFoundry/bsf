@@ -132,7 +132,7 @@ private:
 	/**
 		* @brief	Throws an exception if current thread isn't the core thread;
 		*/
-	static void throwIfNotCoreThread();
+	CM_EXPORT void throwIfNotCoreThread();
 
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_CORE_THREAD throwIfNotCoreThread();

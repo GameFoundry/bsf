@@ -52,7 +52,7 @@ namespace CamelotFramework
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
 		mCoreThreadId = CM_THREAD_CURRENT_ID;
-		mSyncedCoreAccessor = cm_new<DeferredRenderContext<CommandQueueSync>>(nullptr, CM_THREAD_CURRENT_ID);
+		mSyncedCoreAccessor = cm_new<DeferredRenderContext<CommandQueueSync>>(CM_THREAD_CURRENT_ID);
 
 		{
 			CM_LOCK_MUTEX(mCoreThreadStartMutex);
@@ -118,7 +118,7 @@ namespace CamelotFramework
 
 	RenderContextPtr CoreThread::createAccessor()
 	{
-		return cm_shared_ptr<DeferredRenderContext<CommandQueueNoSync>>(nullptr, CM_THREAD_CURRENT_ID);
+		return cm_shared_ptr<DeferredRenderContext<CommandQueueNoSync>>(CM_THREAD_CURRENT_ID);
 	}
 
 	SyncedRenderContext& CoreThread::getSyncedAccessor()
@@ -232,7 +232,7 @@ namespace CamelotFramework
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
 		if(CM_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
-			CM_EXCEPT(InternalErrorException, "Calling the render system from a non-render thread!");
+			CM_EXCEPT(InternalErrorException, "This method can only be accessed from the core thread.");
 #endif
 	}
 

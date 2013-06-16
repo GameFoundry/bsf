@@ -55,15 +55,8 @@ THE SOFTWARE.
 #include "CmGpuParams.h"
 #include "CmGpuParamDesc.h"
 #include "CmGpuParamBlockBuffer.h"
+#include "CmCoreThread.h"
 #include "CmDebug.h"
-
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#define THROW_IF_NOT_RENDER_THREAD_STATIC msD3D9RenderSystem->throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
-#define THROW_IF_NOT_RENDER_THREAD_STATIC
-#endif
 
 #define FLOAT2DWORD(f) *((DWORD*)&f)
 
@@ -118,7 +111,7 @@ namespace CamelotFramework
 	D3D9RenderSystem::~D3D9RenderSystem()
 	{
 		// This needs to be called from the child class, since destroy_internal is virtual
-		queueCommand(boost::bind(&D3D9RenderSystem::destroy_internal, this), true);
+		gCoreThread().queueCommand(boost::bind(&D3D9RenderSystem::destroy_internal, this), true);
 	}
 
 	const String& D3D9RenderSystem::getName() const
@@ -135,7 +128,7 @@ namespace CamelotFramework
 
 	void D3D9RenderSystem::initialize_internal(AsyncOp& asyncOp)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// Create the resource manager.
 		mResourceManager = cm_new<D3D9ResourceManager>();
@@ -250,7 +243,7 @@ namespace CamelotFramework
 	//--------------------------------------------------------------------
 	void D3D9RenderSystem::registerWindow(RenderWindow& renderWindow)
 	{		
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		D3D9RenderWindow* d3d9renderWindow = static_cast<D3D9RenderWindow*>(&renderWindow);
 
@@ -276,7 +269,7 @@ namespace CamelotFramework
 
 	void D3D9RenderSystem::bindGpuProgram(HGpuProgram prg)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(!prg.isLoaded())
 			return;
@@ -317,7 +310,7 @@ namespace CamelotFramework
 
 	void D3D9RenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 		switch(gptype)
@@ -343,7 +336,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		GpuParams& params = bindableParams.getParams();
 		params.updateHardwareBuffers();
@@ -505,7 +498,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& tex)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_VERTEX_PROGRAM)
 		{
@@ -575,7 +568,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------
 	void D3D9RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_VERTEX_PROGRAM)
 		{
@@ -609,7 +602,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------
 	void D3D9RenderSystem::setBlendState(const BlendStatePtr& blendState)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// Alpha to coverage
 		setAlphaToCoverage(blendState->getAlphaToCoverageEnabled());
@@ -633,7 +626,7 @@ namespace CamelotFramework
 	//----------------------------------------------------------------------
 	void D3D9RenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		setDepthBias((float)rasterizerState->getDepthBias(), rasterizerState->getSlopeScaledDepthBias());
 
@@ -650,7 +643,7 @@ namespace CamelotFramework
 	//----------------------------------------------------------------------
 	void D3D9RenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// Set stencil buffer options
 		setStencilCheckEnabled(depthStencilState->getStencilEnable());
@@ -675,7 +668,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if (mCurrentCapabilities->hasCapability(RSC_MIPMAP_LOD_BIAS))
 		{
@@ -690,7 +683,7 @@ namespace CamelotFramework
 	void D3D9RenderSystem::setTextureAddressingMode( UINT16 stage, 
 		const UVWAddressingMode& uvw )
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_ADDRESSU, D3D9Mappings::get(uvw.u, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps()) ) ) )
@@ -704,7 +697,7 @@ namespace CamelotFramework
 	void D3D9RenderSystem::setTextureBorderColor(UINT16 stage,
 		const Color& colour)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_BORDERCOLOR, colour.getAsBGRA()) ) )
@@ -713,7 +706,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op )
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 		if( sourceFactor == BF_ONE && destFactor == BF_ZERO)
@@ -742,7 +735,7 @@ namespace CamelotFramework
 	void D3D9RenderSystem::setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
 		BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp )
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 		if( sourceFactor == BF_ONE && destFactor == BF_ZERO && 
@@ -775,7 +768,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setAlphaTest(CompareFunction func, unsigned char value)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 
@@ -798,7 +791,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setAlphaToCoverage(bool enable)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 		static bool lasta2c = false;
@@ -842,7 +835,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setCullingMode( CullingMode mode )
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mCullingMode = mode;
 		HRESULT hr;
@@ -856,7 +849,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setDepthBufferParams( bool depthTest, bool depthWrite, CompareFunction depthFunction )
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		setDepthBufferCheckEnabled( depthTest );
 		setDepthBufferWriteEnabled( depthWrite );
@@ -865,7 +858,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setDepthBufferCheckEnabled( bool enabled )
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 
@@ -880,7 +873,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setDepthBufferWriteEnabled( bool enabled )
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 
@@ -890,7 +883,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setDepthBufferFunction( CompareFunction func )
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 		if( FAILED( hr = __SetRenderState( D3DRS_ZFUNC, D3D9Mappings::get(func) ) ) )
@@ -899,7 +892,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if ((mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().RasterCaps & D3DPRASTERCAPS_DEPTHBIAS) != 0)
 		{
@@ -927,7 +920,7 @@ namespace CamelotFramework
 	void D3D9RenderSystem::setColorBufferWriteEnabled(bool red, bool green, 
 		bool blue, bool alpha)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		DWORD val = 0;
 		if (red) 
@@ -945,7 +938,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setPolygonMode(PolygonMode level)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr = __SetRenderState(D3DRS_FILLMODE, D3D9Mappings::get(level));
 		if (FAILED(hr))
@@ -954,7 +947,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setStencilCheckEnabled(bool enabled)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// Allow stencilling
 		HRESULT hr = __SetRenderState(D3DRS_STENCILENABLE, enabled);
@@ -979,7 +972,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setStencilBufferOperations(StencilOperation stencilFailOp, StencilOperation depthFailOp, StencilOperation passOp, bool ccw)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 
@@ -1051,7 +1044,7 @@ namespace CamelotFramework
 	//----------------------------------------------------------------------
 	void D3D9RenderSystem::setStencilRefValue(UINT32 refValue)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr = __SetRenderState(D3DRS_STENCILREF, refValue);
 		if (FAILED(hr))
@@ -1061,7 +1054,7 @@ namespace CamelotFramework
 	void D3D9RenderSystem::setTextureFiltering(UINT16 unit, FilterType ftype, 
 		FilterOptions filter)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 		D3D9Mappings::eD3DTexType texType = mTexStageDesc[unit].texType;
@@ -1074,7 +1067,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if (static_cast<DWORD>(maxAnisotropy) > mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().MaxAnisotropy)
 			maxAnisotropy = mDeviceManager->getActiveDevice()->getD3D9DeviceCaps().MaxAnisotropy;
@@ -1085,7 +1078,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setRenderTarget(RenderTargetPtr target)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mActiveRenderTarget = target;
 
@@ -1138,7 +1131,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setViewport(ViewportPtr& vp)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		assert(vp != nullptr);
 
@@ -1176,7 +1169,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::beginFrame()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 
@@ -1191,7 +1184,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::endFrame()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 		if( FAILED( hr = getActiveD3D9Device()->EndScene() ) )
@@ -1202,7 +1195,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 
@@ -1218,7 +1211,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		UINT32 maxBoundVertexBuffers = mCurrentCapabilities->getMaxBoundVertexBuffers();
 		if(index < 0 || index >= maxBoundVertexBuffers)
@@ -1247,7 +1240,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		D3D9IndexBuffer* d3dIdxBuf = static_cast<D3D9IndexBuffer*>(buffer.get());
 
@@ -1258,7 +1251,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setDrawOperation(DrawOperationType op)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mCurrentDrawOperation = op;
 	}
@@ -1299,7 +1292,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mScissorRect.left = static_cast<LONG>(left);
 		mScissorRect.top = static_cast<LONG>(top);
@@ -1309,7 +1302,7 @@ namespace CamelotFramework
 	//--------------------------------------------------------------------
 	void D3D9RenderSystem::setScissorTestEnable(bool enable)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 		if (enable)
@@ -1374,7 +1367,7 @@ namespace CamelotFramework
 	void D3D9RenderSystem::clear(RenderTargetPtr target, unsigned int buffers, 
 		const Color& colour, float depth, unsigned short stencil)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		RenderTargetPtr previousRenderTarget = mActiveRenderTarget;
 		if(target != mActiveRenderTarget)
@@ -1420,7 +1413,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	IDirect3D9*	D3D9RenderSystem::getDirect3D9()
 	{
-		THROW_IF_NOT_RENDER_THREAD_STATIC;
+		THROW_IF_NOT_CORE_THREAD;
 
 		IDirect3D9* pDirect3D9 = msD3D9RenderSystem->mpD3D;
 
@@ -1435,7 +1428,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	UINT D3D9RenderSystem::getResourceCreationDeviceCount()
 	{
-		THROW_IF_NOT_RENDER_THREAD_STATIC;
+		THROW_IF_NOT_CORE_THREAD;
 
 		D3D9ResourceCreationPolicy creationPolicy = msD3D9RenderSystem->mResourceManager->getCreationPolicy();
 
@@ -1455,7 +1448,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	IDirect3DDevice9* D3D9RenderSystem::getResourceCreationDevice(UINT index)
 	{
-		THROW_IF_NOT_RENDER_THREAD_STATIC;
+		THROW_IF_NOT_CORE_THREAD;
 
 		D3D9ResourceCreationPolicy creationPolicy = msD3D9RenderSystem->mResourceManager->getCreationPolicy();
 		IDirect3DDevice9* d3d9Device = NULL;
@@ -1479,7 +1472,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	IDirect3DDevice9* D3D9RenderSystem::getActiveD3D9Device()
 	{	
-		THROW_IF_NOT_RENDER_THREAD_STATIC;
+		THROW_IF_NOT_CORE_THREAD;
 
 		D3D9Device* activeDevice = msD3D9RenderSystem->mDeviceManager->getActiveDevice();
 		IDirect3DDevice9* d3d9Device;
@@ -1504,7 +1497,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	D3D9DeviceManager* D3D9RenderSystem::getDeviceManager()
 	{
-		THROW_IF_NOT_RENDER_THREAD_STATIC;
+		THROW_IF_NOT_CORE_THREAD;
 
 		return msD3D9RenderSystem->mDeviceManager;
 	}
@@ -2595,6 +2588,3 @@ namespace CamelotFramework
 		return oldVal;
 	}
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD
-#undef THROW_IF_NOT_RENDER_THREAD_STATIC

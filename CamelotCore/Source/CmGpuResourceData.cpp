@@ -1,6 +1,6 @@
 #include "CmGpuResourceData.h"
 #include "CmGpuResourceDataRTTI.h"
-#include "CmRenderSystem.h"
+#include "CmCoreThread.h"
 #include "CmException.h"
 
 namespace CamelotFramework
@@ -28,8 +28,8 @@ namespace CamelotFramework
 #if !CM_FORCE_SINGLETHREADED_RENDERING
 		if(mLocked)
 		{
-			if(CM_THREAD_CURRENT_ID != RenderSystem::instance().getRenderThreadId())
-				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-render thread when the buffer is locked.");
+			if(CM_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
+				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
 		}
 #endif
 
@@ -46,8 +46,8 @@ namespace CamelotFramework
 #if !CM_FORCE_SINGLETHREADED_RENDERING
 		if(mLocked)
 		{
-			if(CM_THREAD_CURRENT_ID != RenderSystem::instance().getRenderThreadId())
-				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-render thread when the buffer is locked.");
+			if(CM_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
+				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
 		}
 #endif
 
@@ -65,8 +65,8 @@ namespace CamelotFramework
 #if !CM_FORCE_SINGLETHREADED_RENDERING
 		if(mLocked)
 		{
-			if(CM_THREAD_CURRENT_ID != RenderSystem::instance().getRenderThreadId())
-				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-render thread when the buffer is locked.");
+			if(CM_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
+				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
 		}
 #endif
 
@@ -79,8 +79,8 @@ namespace CamelotFramework
 #if !CM_FORCE_SINGLETHREADED_RENDERING
 		if(mLocked)
 		{
-			if(CM_THREAD_CURRENT_ID != RenderSystem::instance().getRenderThreadId())
-				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-render thread when the buffer is locked.");
+			if(CM_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
+				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
 		}
 #endif
 

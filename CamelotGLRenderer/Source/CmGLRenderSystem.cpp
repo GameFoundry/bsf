@@ -51,13 +51,8 @@ THE SOFTWARE.s
 #include "CmRenderStateManager.h"
 #include "CmGpuParams.h"
 #include "CmGLGpuParamBlockBuffer.h"
+#include "CmCoreThread.h"
 #include "CmDebug.h"
-
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
-#endif
 
 // Convenience macro from ARB_vertex_buffer_object spec
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
@@ -121,7 +116,7 @@ namespace CamelotFramework
 	GLRenderSystem::~GLRenderSystem()
 	{
 		// This needs to be called from the child class, since destroy_internal is virtual
-		queueCommand(boost::bind(&GLRenderSystem::destroy_internal, this), true);
+		gCoreThread().queueCommand(boost::bind(&GLRenderSystem::destroy_internal, this), true);
 	}
 
 	const String& GLRenderSystem::getName(void) const
@@ -139,7 +134,7 @@ namespace CamelotFramework
 
 	void GLRenderSystem::initialize_internal(AsyncOp& asyncOp)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mGLSupport->start();
 		RenderWindowManager::startUp(cm_new<GLRenderWindowManager>(this));
@@ -247,7 +242,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void GLRenderSystem::bindGpuProgram(HGpuProgram prg)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		GpuProgramPtr bindingPrg = prg->getBindingDelegate();
 		GLSLGpuProgramPtr glprg = std::static_pointer_cast<GLSLGpuProgram>(bindingPrg);
@@ -297,7 +292,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void GLRenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		setActiveProgram(gptype, nullptr);
 
@@ -306,7 +301,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		GpuParams& params = bindableParams.getParams();
 		params.updateHardwareBuffers();
@@ -456,7 +451,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		unit = getGLTextureUnit(gptype, unit);
 
@@ -486,7 +481,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------
 	void GLRenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		unit = getGLTextureUnit(gptype, unit);
 
@@ -511,7 +506,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setBlendState(const BlendStatePtr& blendState)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// Alpha to coverage
 		setAlphaToCoverage(blendState->getAlphaToCoverageEnabled());
@@ -535,7 +530,7 @@ namespace CamelotFramework
 	//----------------------------------------------------------------------
 	void GLRenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		setDepthBias((float)rasterizerState->getDepthBias(), rasterizerState->getSlopeScaledDepthBias());
 
@@ -548,7 +543,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// Set stencil buffer options
 		setStencilCheckEnabled(depthStencilState->getStencilEnable());
@@ -572,7 +567,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setViewport(ViewportPtr& vp)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		assert(vp != nullptr);
 
@@ -599,7 +594,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setRenderTarget(RenderTargetPtr target)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mActiveRenderTarget = target;
 
@@ -639,7 +634,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::beginFrame(void)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// Activate the viewport clipping
 		glEnable(GL_SCISSOR_TEST);
@@ -648,7 +643,7 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::endFrame(void)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		// Deactivate the viewport clipping.
 		glDisable(GL_SCISSOR_TEST);
@@ -661,28 +656,28 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mBoundVertexBuffers[index] = buffer;
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mBoundVertexDeclaration = vertexDeclaration;
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setDrawOperation(DrawOperationType op)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mCurrentDrawOperation = op;
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mBoundIndexBuffer = buffer;
 	}
@@ -724,7 +719,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mScissorTop = top;
 		mScissorBottom = bottom;
@@ -735,7 +730,7 @@ namespace CamelotFramework
 	void GLRenderSystem::clear(RenderTargetPtr target, unsigned int buffers, 
 		const Color& colour, float depth, unsigned short stencil)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		RenderTargetPtr previousRenderTarget = mActiveRenderTarget;
 		if(target != mActiveRenderTarget)
@@ -1201,7 +1196,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setStencilRefValue(UINT32 refValue)
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		mStencilRefValue = refValue;
 
@@ -2406,5 +2401,3 @@ namespace CamelotFramework
 		dest = matrix;
 	}
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD

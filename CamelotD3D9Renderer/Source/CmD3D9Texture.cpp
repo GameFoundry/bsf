@@ -25,6 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
+#include "CmCoreThread.h"
 #include "CmD3D9Texture.h"
 #include "CmD3D9PixelBuffer.h"
 #include "CmException.h"
@@ -35,12 +36,6 @@ THE SOFTWARE.
 #include "CmD3D9Device.h"
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
-
-#if CM_DEBUG_MODE
-#define THROW_IF_NOT_RENDER_THREAD throwIfNotRenderThread();
-#else
-#define THROW_IF_NOT_RENDER_THREAD 
-#endif
 
 namespace CamelotFramework 
 {
@@ -92,7 +87,7 @@ namespace CamelotFramework
 	/****************************************************************************************/
 	void D3D9Texture::copyImpl(TexturePtr& target)
 	{
-		THROW_IF_NOT_RENDER_THREAD
+		THROW_IF_NOT_CORE_THREAD;
 
         // check if this & target are the same format and type
 		// blitting from or to cube textures is not supported yet
@@ -201,7 +196,7 @@ namespace CamelotFramework
 	/****************************************************************************************/
 	void D3D9Texture::initialize_internal()
 	{ 
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		Texture::initialize_internal();
 
@@ -215,7 +210,7 @@ namespace CamelotFramework
 	/****************************************************************************************/
 	void D3D9Texture::destroy_internal()
 	{ 
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		DeviceToTextureResourcesIterator it = mMapDeviceToTextureResources.begin();
 		while (it != mMapDeviceToTextureResources.end())
@@ -1081,7 +1076,7 @@ namespace CamelotFramework
 	/****************************************************************************************/
 	PixelBufferPtr D3D9Texture::getBuffer(UINT32 face, UINT32 mipmap) 
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		if(face >= getNumFaces())
 			CM_EXCEPT(InvalidParametersException, "A three dimensional cube has six faces");
@@ -1186,7 +1181,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	IDirect3DBaseTexture9* D3D9Texture::getTexture_internal()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		TextureResources* textureResources;			
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
@@ -1206,7 +1201,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	IDirect3DTexture9* D3D9Texture::getNormTexture_internal()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		TextureResources* textureResources;
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
@@ -1226,7 +1221,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	IDirect3DCubeTexture9* D3D9Texture::getCubeTexture_internal()
 	{
-		THROW_IF_NOT_RENDER_THREAD;
+		THROW_IF_NOT_CORE_THREAD;
 
 		TextureResources* textureResources;
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
@@ -1243,5 +1238,3 @@ namespace CamelotFramework
 		return textureResources->pCubeTex;
 	}	
 }
-
-#undef THROW_IF_NOT_RENDER_THREAD

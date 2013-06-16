@@ -17,7 +17,7 @@ namespace CamelotFramework
 			GpuResourcePtr sharedMeshPtr = std::static_pointer_cast<GpuResource>(obj->getThisPtr());
 
 			gMainSyncedCA().readSubresource(sharedMeshPtr, 0, *meshData);
-			gMainSyncedCA().submitToGpu(true); // We need the data right away, so execute the context and wait until we get it
+			gMainSyncedCA().submitToCoreThread(true); // We need the data right away, so execute the context and wait until we get it
 
 			return meshData;
 		}
@@ -27,7 +27,7 @@ namespace CamelotFramework
 			GpuResourcePtr sharedMeshPtr = std::static_pointer_cast<GpuResource>(obj->getThisPtr());
 
 			gMainSyncedCA().writeSubresource(sharedMeshPtr, 0, *meshData);
-			gMainSyncedCA().submitToGpu(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
+			gMainSyncedCA().submitToCoreThread(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 		}
 
 	public:

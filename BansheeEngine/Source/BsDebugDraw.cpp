@@ -157,7 +157,7 @@ namespace BansheeEngine
 
 		gMainSyncedCA().writeSubresource(mLineMesh.getInternalPtr(), 0, *lineMeshData);
 		gMainSyncedCA().writeSubresource(mTriangleMesh.getInternalPtr(), 0, *triangleMeshData);
-		gMainSyncedCA().submitToGpu(true);
+		gMainSyncedCA().submitToCoreThread(true);
 	}
 
 	void DebugDraw::render(const Camera* camera, RenderContext& renderContext)
