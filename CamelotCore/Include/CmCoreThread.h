@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 #include "CmCommandQueue.h"
-#include "CmDeferredRenderContext.h"
+#include "CmCoreThreadAccessor.h"
 
 namespace CamelotFramework
 {
@@ -30,7 +30,7 @@ public:
 		* 			is that you do not use a single instance on more than one thread. Each thread
 		* 			requires its own accessor. The accessor will be bound to the thread you call this method on.
 		*/
-	RenderContextPtr createAccessor();
+	CoreAccessorPtr createAccessor();
 
 	/**
 	* @brief	Retrieves an accessor that you can use for executing commands on the core thread from
@@ -38,7 +38,7 @@ public:
 	* 			Note however that it is much more efficient to create a separate non-synchronized accessor using
 	* 			"createCoreAccessor" for each thread you will be using it on.
 		*/
-	SyncedRenderContext& getSyncedAccessor();
+	SyncedCoreAccessor& getSyncedAccessor();
 
 	/**
 		* @brief	Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,
@@ -94,7 +94,7 @@ private:
 	UINT32 mMaxCommandNotifyId; // ID that will be assigned to the next command with a notifier callback
 	Vector<UINT32>::type mCommandsCompleted; // Completed commands that have notifier callbacks set up
 
-	SyncedRenderContext* mSyncedCoreAccessor;
+	SyncedCoreAccessor* mSyncedCoreAccessor;
 
 	/**
 		* @brief	Initializes a separate core thread. Should only be called once.

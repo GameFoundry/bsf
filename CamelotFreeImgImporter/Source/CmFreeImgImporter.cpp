@@ -8,7 +8,7 @@
 #include "CmTexture.h"
 #include "CmFileSystem.h"
 #include "CmApplication.h"
-#include "CmDeferredRenderContext.h"
+#include "CmCoreThreadAccessor.h"
 
 #include "FreeImage.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmDeferredRenderContext.h"
+#include "CmCoreThreadAccessor.h"
 #include "CmHighLevelGpuProgram.h"
 #include "CmRenderWindow.h"
 
@@ -78,12 +78,12 @@ namespace CamelotFramework
 			boost::signal<void()> mainLoopCallback;
 
 	private:
-		friend CM_EXPORT RenderContext& gMainCA();
-		friend CM_EXPORT SyncedRenderContext& gMainSyncedCA();
+		friend CM_EXPORT CoreAccessor& gMainCA();
+		friend CM_EXPORT SyncedCoreAccessor& gMainSyncedCA();
 
 		RenderWindowPtr mPrimaryWindow;
-		RenderContextPtr mPrimaryRenderContext;
-		SyncedRenderContext* mPrimarySyncedRenderContext;
+		CoreAccessorPtr mPrimaryCoreAccessor;
+		SyncedCoreAccessor* mPrimarySyncedCoreAccessor;
 
 		bool mIsFrameRenderingFinished;
 		CM_MUTEX(mFrameRenderingFinishedMutex);
@@ -107,15 +107,15 @@ namespace CamelotFramework
 	 * @brief	A shortcut for accessing the primary core accessor. It may only be accessed safely
 	 * 			from the main thread.
 	 */
-	CM_EXPORT RenderContext& gMainCA();
+	CM_EXPORT CoreAccessor& gMainCA();
 
 	/**
-	 * @brief	A shortcut for accessing the primary synchronized core accessor. This context may be accessed
+	 * @brief	A shortcut for accessing the primary synchronized core accessor. This accessor may be accessed
 	 * 			from all threads except the core thread. All operations from this accessor will be executed after
 	 * 			non-synchronized primary accessor has finished executing.
 	 * 			
 	 * @note	It is more efficient to create your own non-synchronized core accessor if you plan on often using it from
 	 * 			threads other than main.
 	 */
-	CM_EXPORT SyncedRenderContext& gMainSyncedCA();
+	CM_EXPORT SyncedCoreAccessor& gMainSyncedCA();
 }

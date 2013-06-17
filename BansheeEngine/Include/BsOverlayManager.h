@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmDeferredRenderContext.h"
+#include "CmCoreThreadAccessor.h"
 #include "CmModule.h"
 
 namespace BansheeEngine
@@ -22,7 +22,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		void render(CM::ViewportPtr& target, CM::RenderContext& renderContext) const;
+		void render(CM::ViewportPtr& target, CM::CoreAccessor& coreAccessor) const;
 
 	private:
 		friend class Overlay;

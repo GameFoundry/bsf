@@ -60,12 +60,12 @@ namespace CamelotFramework
 
 		/**
 		 * @brief	Creates the copy of this object in a special way. Should only be called
-		 * 			internally by deferred render context when passing gpu params to the core thread.
+		 * 			internally by core thread accessor when passing gpu params to the core thread.
 		 */
 		static BindableGpuParams createBindableCopy(GpuParamsPtr params);
 
 		/**
-		 * @brief	Needs to be called on any copy created with "createCopyForDeferred" before the object is deleted.
+		 * @brief	Needs to be called on any copy created with "createBindableCopy" before the object is deleted.
 		 */
 		static void releaseBindableCopy(BindableGpuParams& bindableParams);
 	private:

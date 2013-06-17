@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmDeferredRenderContext.h"
+#include "CmCoreThreadAccessor.h"
 #include "CmComponent.h"
 
 namespace BansheeEngine
@@ -24,7 +24,7 @@ namespace BansheeEngine
 		 */
 		void initialize(CM::Viewport* target);
 
-		virtual void render(CM::RenderContext& renderContext) const = 0;
+		virtual void render(CM::CoreAccessor& coreAccessor) const = 0;
 		virtual void update() {}
 
 		CM::Viewport* getTarget() const { return mRenderTarget; }

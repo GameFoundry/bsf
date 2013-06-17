@@ -6,7 +6,7 @@
 #include "CmManagedDataBlock.h"
 #include "CmMath.h"
 #include "CmApplication.h"
-#include "CmDeferredRenderContext.h"
+#include "CmCoreThreadAccessor.h"
 
 // DEBUG ONLY
 #include "CmTextureManager.h"

@@ -105,7 +105,7 @@ namespace CamelotFramework
 		return mStencilRefValue;
 	}
 	//----------------------------------------------------------------------
-	void Pass::activate(RenderContext& renderContext) const
+	void Pass::activate(CoreAccessor& renderContext) const
 	{
 		HGpuProgram vertProgram = getVertexProgram();
 		if(vertProgram)
@@ -162,7 +162,7 @@ namespace CamelotFramework
 			renderContext.setRasterizerState(RasterizerState::getDefault());
 	}
 	//----------------------------------------------------------------------
-	void Pass::bindParameters(RenderContext& renderContext, const PassParametersPtr& params) const
+	void Pass::bindParameters(CoreAccessor& renderContext, const PassParametersPtr& params) const
 	{
 		HGpuProgram vertProgram = getVertexProgram();
 		if(vertProgram)

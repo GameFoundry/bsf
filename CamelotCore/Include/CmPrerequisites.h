@@ -179,6 +179,11 @@ namespace CamelotFramework {
 	struct RENDER_TEXTURE_DESC;
 	struct RENDER_WINDOW_DESC;
 	struct FONT_DESC;
+
+	template<class T>
+	class CoreThreadAccessor;
+	class CommandQueueNoSync;
+	class CommandQueueSync;
 }
 
 /************************************************************************/
@@ -225,6 +230,10 @@ namespace CamelotFramework
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
 	typedef std::shared_ptr<GpuResource> GpuResourcePtr;
+	typedef CoreThreadAccessor<CommandQueueNoSync> CoreAccessor;
+	typedef CoreThreadAccessor<CommandQueueSync> SyncedCoreAccessor;
+	typedef std::shared_ptr<CoreThreadAccessor<CommandQueueNoSync>> CoreAccessorPtr;
+	typedef std::shared_ptr<CoreThreadAccessor<CommandQueueSync>> SyncedCoreAccessorPtr;
 }
 
 /************************************************************************/

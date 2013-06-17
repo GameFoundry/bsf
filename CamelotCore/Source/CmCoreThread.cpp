@@ -52,7 +52,7 @@ namespace CamelotFramework
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
 		mCoreThreadId = CM_THREAD_CURRENT_ID;
-		mSyncedCoreAccessor = cm_new<DeferredRenderContext<CommandQueueSync>>(CM_THREAD_CURRENT_ID);
+		mSyncedCoreAccessor = cm_new<CoreThreadAccessor<CommandQueueSync>>(CM_THREAD_CURRENT_ID);
 
 		{
 			CM_LOCK_MUTEX(mCoreThreadStartMutex);
@@ -116,12 +116,12 @@ namespace CamelotFramework
 		mCoreThreadStarted = false;
 	}
 
-	RenderContextPtr CoreThread::createAccessor()
+	CoreAccessorPtr CoreThread::createAccessor()
 	{
-		return cm_shared_ptr<DeferredRenderContext<CommandQueueNoSync>>(CM_THREAD_CURRENT_ID);
+		return cm_shared_ptr<CoreThreadAccessor<CommandQueueNoSync>>(CM_THREAD_CURRENT_ID);
 	}
 
-	SyncedRenderContext& CoreThread::getSyncedAccessor()
+	SyncedCoreAccessor& CoreThread::getSyncedAccessor()
 	{
 		return *mSyncedCoreAccessor;
 	}

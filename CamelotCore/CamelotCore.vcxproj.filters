@@ -85,6 +85,12 @@
     <Filter Include="Source Files\Text">
       <UniqueIdentifier>{96b913ee-4ffb-4c60-9aa9-a51e0faf8060}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{62281c40-1fc0-47f6-bc61-ff28314d8e13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{402fe837-7d94-4343-a288-c8308fda8c18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmWindowEventUtilities.h">
@@ -258,12 +264,6 @@
     <ClInclude Include="Include\CmResourceHandleRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmCommandQueue.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmDeferredRenderContext.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmDepthStencilState.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -375,12 +375,6 @@
     <ClInclude Include="Include\CmFontManager.h">
       <Filter>Header Files\Text</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmCoreObject.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmCoreObjectManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmFontImportOptions.h">
       <Filter>Header Files\Text</Filter>
     </ClInclude>
@@ -429,9 +423,6 @@
     <ClInclude Include="Include\CmGpuResourceDataRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmDeferredRenderContextFwd.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Win32\CmCursorImpl.h">
       <Filter>Header Files\Win32</Filter>
     </ClInclude>
@@ -450,8 +441,20 @@
     <ClInclude Include="Include\CmInputFwd.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmCommandQueue.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmCoreObject.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmCoreObjectManager.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmCoreThreadAccessor.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
     <ClInclude Include="Include\CmCoreThread.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -566,12 +569,6 @@
     <ClCompile Include="Source\CmSpecificImporter.cpp">
       <Filter>Source Files\Importer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmCommandQueue.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmDeferredRenderContext.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmDepthStencilState.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
@@ -653,12 +650,6 @@
     <ClCompile Include="Source\CmFontManager.cpp">
       <Filter>Source Files\Text</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmCoreObject.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmCoreObjectManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmFontImportOptions.cpp">
       <Filter>Source Files\Text</Filter>
     </ClCompile>
@@ -696,7 +687,19 @@
       <Filter>Source Files\Input</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmCoreThread.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCommandQueue.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCoreObject.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCoreObjectManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCoreThreadAccessor.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

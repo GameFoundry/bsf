@@ -177,7 +177,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmCoreThread.h" />
-    <ClInclude Include="Include\CmDeferredRenderContextFwd.h" />
     <ClInclude Include="Include\CmGameObjectHandle.h" />
     <ClInclude Include="Include\CmGameObject.h" />
     <ClInclude Include="Include\CmGameObjectRTTI.h" />
@@ -203,7 +202,7 @@
     <ClInclude Include="Include\CmComponentRTTI.h" />
     <ClInclude Include="Include\CmCoreObject.h" />
     <ClInclude Include="Include\CmCoreObjectManager.h" />
-    <ClInclude Include="Include\CmDeferredRenderContext.h" />
+    <ClInclude Include="Include\CmCoreThreadAccessor.h" />
     <ClInclude Include="Include\CmDepthStencilStateRTTI.h" />
     <ClInclude Include="Include\CmDepthStencilState.h" />
     <ClInclude Include="Include\CmFont.h" />
@@ -311,7 +310,7 @@
     <ClCompile Include="Source\CmCommandQueue.cpp" />
     <ClCompile Include="Source\CmCoreObject.cpp" />
     <ClCompile Include="Source\CmCoreObjectManager.cpp" />
-    <ClCompile Include="Source\CmDeferredRenderContext.cpp" />
+    <ClCompile Include="Source\CmCoreThreadAccessor.cpp" />
     <ClCompile Include="Source\CmDepthStencilState.cpp" />
     <ClCompile Include="Source\CmFont.cpp" />
     <ClCompile Include="Source\CmFontImportOptions.cpp" />

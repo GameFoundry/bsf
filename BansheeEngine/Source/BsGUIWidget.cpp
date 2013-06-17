@@ -5,7 +5,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUIArea.h"
 #include "CmApplication.h"
-#include "CmDeferredRenderContext.h"
+#include "CmCoreThreadAccessor.h"
 #include "CmMaterial.h"
 #include "CmPass.h"
 #include "CmMesh.h"

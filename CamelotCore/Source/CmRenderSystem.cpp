@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 #include "CmRenderSystem.h"
 
-#include "CmDeferredRenderContext.h"
+#include "CmCoreThreadAccessor.h"
 #include "CmViewport.h"
 #include "CmException.h"
 #include "CmRenderTarget.h"

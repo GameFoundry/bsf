@@ -1,5 +1,5 @@
 #include "CmMeshManager.h"
-#include "CmDeferredRenderContext.h"
+#include "CmCoreThreadAccessor.h"
 #include "CmApplication.h"
 #include "CmVector3.h"
 #include "CmMesh.h"
@@ -50,10 +50,10 @@ namespace CamelotFramework
 		indices[1] = 0;
 		indices[2] = 0;
 
-		SyncedRenderContext& renderContext = gMainSyncedCA();
+		SyncedCoreAccessor& coreAccessor = gMainSyncedCA();
 
 		mDummyMesh = Mesh::create();
-		renderContext.writeSubresource(mDummyMesh.getInternalPtr(), 0, *mDummyMeshData);
-		renderContext.submitToCoreThread(true); // TODO - Only temporary until I fix write/read subresource
+		coreAccessor.writeSubresource(mDummyMesh.getInternalPtr(), 0, *mDummyMeshData);
+		coreAccessor.submitToCoreThread(true); // TODO - Only temporary until I fix write/read subresource
 	}
 }

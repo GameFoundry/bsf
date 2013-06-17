@@ -5,7 +5,6 @@
 #include "BsGUIKeyEvent.h"
 #include "CmModule.h"
 #include "CmInput.h"
-#include "CmDeferredRenderContextFwd.h"
 #include <boost/signals/connection.hpp>
 
 namespace BansheeEngine
@@ -36,7 +35,7 @@ namespace BansheeEngine
 		void unregisterWidget(GUIWidget* widget);
 
 		void update();
-		void render(CM::ViewportPtr& target, CM::RenderContext& renderContext);
+		void render(CM::ViewportPtr& target, CM::CoreAccessor& coreAccessor);
 	private:
 		CM::Vector<GUIWidget*>::type mWidgets;
 		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;

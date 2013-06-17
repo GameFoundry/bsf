@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmDeferredRenderContextFwd.h"
 #include "CmModule.h"
 #include "CmColor.h"
 #include "CmAxisAlignedBox.h"
@@ -38,7 +37,7 @@ namespace BansheeEngine
 		//void drawAABB(const AxisAlignedBox& aab, const Color& color = Color::Green, float timeout = 0.0f);
 		//void drawSphere(const Vector3& center, float radius, const Color& color = Color::Green, float timeout = 0.0f);
 
-		void render(const Camera* camera, CM::RenderContext& renderContext);
+		void render(const Camera* camera, CM::CoreAccessor& coreAccessor);
 
 	private:
 		CM::HMesh mTriangleMesh;

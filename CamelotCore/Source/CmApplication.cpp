@@ -65,8 +65,8 @@ namespace CamelotFramework
 		loadPlugin(desc.renderer);
 		RendererManager::instance().setActive(desc.renderer);
 
-		mPrimaryRenderContext = gCoreThread().createAccessor();
-		mPrimarySyncedRenderContext = &gCoreThread().getSyncedAccessor();
+		mPrimaryCoreAccessor = gCoreThread().createAccessor();
+		mPrimarySyncedCoreAccessor = &gCoreThread().getSyncedAccessor();
 
 		SceneManager::startUp((SceneManager*)loadPlugin(desc.sceneManager));
 
@@ -116,11 +116,11 @@ namespace CamelotFramework
 				}
 				
 				gCoreThread().queueCommand(boost::bind(&Application::updateMessagePump, this));
-				mPrimaryRenderContext->submitToCoreThread();
+				mPrimaryCoreAccessor->submitToCoreThread();
 				gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
 			}
 			else
-				mPrimaryRenderContext->cancelAll();
+				mPrimaryCoreAccessor->cancelAll();
 
 			gTime().update();
 		}
@@ -218,13 +218,13 @@ namespace CamelotFramework
 		return application;
 	}
 
-	RenderContext& gMainCA()
+	CoreAccessor& gMainCA()
 	{
-		return *gApplication().mPrimaryRenderContext.get();
+		return *gApplication().mPrimaryCoreAccessor.get();
 	}
 
-	SyncedRenderContext& gMainSyncedCA()
+	SyncedCoreAccessor& gMainSyncedCA()
 	{
-		return *gApplication().mPrimarySyncedRenderContext;
+		return *gApplication().mPrimarySyncedCoreAccessor;
 	}
 }

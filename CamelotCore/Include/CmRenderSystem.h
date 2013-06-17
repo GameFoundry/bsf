@@ -39,7 +39,6 @@ THE SOFTWARE.
 #include "CmCommonEnums.h"
 
 #include "CmCommandQueue.h"
-#include "CmDeferredRenderContextFwd.h"
 #include "CmRenderOperation.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmRenderTarget.h"

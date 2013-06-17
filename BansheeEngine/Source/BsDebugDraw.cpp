@@ -160,7 +160,7 @@ namespace BansheeEngine
 		gMainSyncedCA().submitToCoreThread(true);
 	}
 
-	void DebugDraw::render(const Camera* camera, RenderContext& renderContext)
+	void DebugDraw::render(const Camera* camera, CoreAccessor& coreAccessor)
 	{
 		if(mCommands.size() == 0)
 			return;
@@ -170,23 +170,23 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < mLineMaterial->getNumPasses(); i++)
 		{
 			PassPtr pass = mLineMaterial->getPass(i);
-			pass->activate(renderContext);
+			pass->activate(coreAccessor);
 
 			PassParametersPtr paramsPtr = mLineMaterial->getPassParameters(i);
-			pass->bindParameters(renderContext, paramsPtr);
+			pass->bindParameters(coreAccessor, paramsPtr);
 
-			renderContext.render(mLineMesh->getRenderOperation());
+			coreAccessor.render(mLineMesh->getRenderOperation());
 		}
 
 		for(UINT32 i = 0; i < mTriangleMaterial->getNumPasses(); i++)
 		{
 			PassPtr pass = mTriangleMaterial->getPass(i);
-			pass->activate(renderContext);
+			pass->activate(coreAccessor);
 
 			PassParametersPtr paramsPtr = mTriangleMaterial->getPassParameters(i);
-			pass->bindParameters(renderContext, paramsPtr);
+			pass->bindParameters(coreAccessor, paramsPtr);
 
-			renderContext.render(mTriangleMesh->getRenderOperation());
+			coreAccessor.render(mTriangleMesh->getRenderOperation());
 		}
 	}
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmDeferredRenderContextFwd.h"
 #include "CmModule.h"
 
 namespace CamelotFramework

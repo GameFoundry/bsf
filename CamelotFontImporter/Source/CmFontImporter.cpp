@@ -6,7 +6,7 @@
 #include "CmDebug.h"
 #include "CmTexAtlasGenerator.h"
 #include "CmApplication.h"
-#include "CmDeferredRenderContext.h"
+#include "CmCoreThreadAccessor.h"
 
 #include <ft2build.h>
 #include <freetype/freetype.h>

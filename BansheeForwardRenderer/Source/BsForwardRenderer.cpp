@@ -33,7 +33,7 @@ namespace BansheeEngine
 
 	void ForwardRenderer::renderAll() 
 	{
-		RenderContext& renderContext = gMainCA();
+		CoreAccessor& coreAccessor = gMainCA();
 		const Vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
 
 		// Find all unique render targets
@@ -51,9 +51,9 @@ namespace BansheeEngine
 
 		// Clear all targets
 		for(auto& target : renderTargets)
-			renderContext.clear(target, FBT_COLOR | FBT_DEPTH, Color::Blue);
+			coreAccessor.clear(target, FBT_COLOR | FBT_DEPTH, Color::Blue);
 
-		renderContext.beginFrame();
+		coreAccessor.beginFrame();
 
 		// TODO - Attempt to render all different elements in such a way that there is only 1 render target switch per render target
 
@@ -63,17 +63,17 @@ namespace BansheeEngine
 
 		// Render overlays for all targets
 		for(auto& camera : allCameras)
-			OverlayManager::instance().render(camera->getViewport(), renderContext);
+			OverlayManager::instance().render(camera->getViewport(), coreAccessor);
 
 		// Render all GUI elements
 		for(auto& camera : allCameras)
-			GUIManager::instance().render(camera->getViewport(), renderContext);
+			GUIManager::instance().render(camera->getViewport(), coreAccessor);
 
-		renderContext.endFrame();
+		coreAccessor.endFrame();
 
 		// Swap all targets
 		for(auto& target : renderTargets)
-			renderContext.swapBuffers(target);
+			coreAccessor.swapBuffers(target);
 	}
 
 	void ForwardRenderer::render(const HCamera& camera) 
@@ -83,8 +83,8 @@ namespace BansheeEngine
 		if(!camera->getIgnoreSceneRenderables())
 			allRenderables = gSceneManager().getVisibleRenderables(camera);
 
-		RenderContext& renderContext = gMainCA();
-		renderContext.setViewport(camera->getViewport());
+		CoreAccessor& coreAccessor = gMainCA();
+		coreAccessor.setViewport(camera->getViewport());
 
 		Matrix4 projMatrixCstm = camera->getProjectionMatrix();
 		Matrix4 viewMatrixCstm = camera->getViewMatrix();
@@ -112,12 +112,12 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < material->getNumPasses(); i++)
 			{
 				PassPtr pass = material->getPass(i);
-				pass->activate(renderContext);
+				pass->activate(coreAccessor);
 
 				PassParametersPtr paramsPtr = material->getPassParameters(i);
-				pass->bindParameters(renderContext, paramsPtr);
+				pass->bindParameters(coreAccessor, paramsPtr);
 
-				renderContext.render(mesh->getRenderOperation());
+				coreAccessor.render(mesh->getRenderOperation());
 			}
 		}
 

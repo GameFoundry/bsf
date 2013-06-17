@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmDeferredRenderContextFwd.h"
 #include "CmCommonEnums.h"
 #include "CmRenderSystem.h"
 #include "CmCommandQueue.h"
@@ -13,30 +12,25 @@
 namespace CamelotFramework
 {
 	/**
-	 * @brief	Deferred render context allows you to execute RenderSystem commands outside of the core thread.
+	 * @brief	Core thread accessor allows you to schedule core commands outside of the core thread.
 	 * 			
 	 * @note	All commands are queued and only executed after the call to submitToCoreThread, in the order they were called.
 	 */
 	template <class CommandQueueSyncPolicy = CommandQueueNoSync>
-	class CM_EXPORT DeferredRenderContext
+	class CM_EXPORT CoreThreadAccessor
 	{
 	public:
 		/**
 		 * @brief	Constructor.
 		 *
-		 * @param	rs  			Render system to be used by the context.
-		 * @param	threadId		Identifier for the thread that created the context.
-		 * @param	syncedAccess	If false, the deferred render context can only be safely accessed from the thread that created it.
-		 * 							If true, deferred render context can be accessed from any thread safely, however there will be a slight performance
-		 * 							hit due to synchronization. In most cases you will want not to use synced access and instead create a separate context
-		 * 							for specific threads.
+		 * @param	threadId		Identifier for the thread that created the accessor.
 		 */
-		DeferredRenderContext(CM_THREAD_ID_TYPE threadId)
+		CoreThreadAccessor(CM_THREAD_ID_TYPE threadId)
 		{
 			mCommandQueue = cm_new<CommandQueue<CommandQueueSyncPolicy>>(threadId);
 		}
 
-		~DeferredRenderContext()
+		~CoreThreadAccessor()
 		{
 			cm_delete(mCommandQueue);
 		}

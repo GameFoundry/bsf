@@ -119,14 +119,14 @@ namespace BansheeEngine
 		updateMeshes();
 	}
 
-	void GUIManager::render(ViewportPtr& target, RenderContext& renderContext)
+	void GUIManager::render(ViewportPtr& target, CoreAccessor& coreAccessor)
 	{
 		auto findIter = mCachedGUIData.find(target.get());
 
 		if(findIter == mCachedGUIData.end())
 			return;
 
-		renderContext.setViewport(target);
+		coreAccessor.setViewport(target);
 
 		GUIRenderData& renderData = findIter->second;
 
@@ -157,12 +157,12 @@ namespace BansheeEngine
 				for(UINT32 i = 0; i < material->getNumPasses(); i++)
 				{
 					PassPtr pass = material->getPass(i);
-					pass->activate(renderContext);
+					pass->activate(coreAccessor);
 
 					PassParametersPtr paramsPtr = material->getPassParameters(i);
-					pass->bindParameters(renderContext, paramsPtr);
+					pass->bindParameters(coreAccessor, paramsPtr);
 
-					renderContext.render(mesh->getRenderOperation());
+					coreAccessor.render(mesh->getRenderOperation());
 				}
 
 				meshIdx++;
