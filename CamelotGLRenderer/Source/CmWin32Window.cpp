@@ -31,6 +31,7 @@ THE SOFTWARE.
 #endif
 #include "CmWin32Window.h"
 #include "CmRenderSystem.h"
+#include "CmCoreThread.h"
 #include "CmException.h"
 #include "CmWin32GLSupport.h"
 #include "CmWin32Context.h"
@@ -411,38 +412,10 @@ namespace CamelotFramework {
 		RenderWindow::destroy_internal();
 	}
 
-	void Win32Window::adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
-		unsigned int* winWidth, unsigned int* winHeight)
-	{
-		// NB only call this for non full screen
-		RECT rc;
-		SetRect(&rc, 0, 0, clientWidth, clientHeight);
-		AdjustWindowRect(&rc, WS_VISIBLE | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW, false);
-		*winWidth = rc.right - rc.left;
-		*winHeight = rc.bottom - rc.top;
-
-		// adjust to monitor
-		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
-
-		// Get monitor info	
-		MONITORINFO monitorInfo;
-
-		memset(&monitorInfo, 0, sizeof(MONITORINFO));
-		monitorInfo.cbSize = sizeof(MONITORINFO);
-		GetMonitorInfo(hMonitor, &monitorInfo);
-
-		LONG maxW = monitorInfo.rcWork.right  - monitorInfo.rcWork.left;
-		LONG maxH = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
-
-		if (*winWidth > (unsigned int)maxW)
-			*winWidth = maxW;
-		if (*winHeight > (unsigned int)maxH)
-			*winHeight = maxH;
-
-	}
-
 	void Win32Window::setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (mIsFullScreen != fullScreen || width != mWidth || height != mHeight)
 		{
 			mIsFullScreen = fullScreen;
@@ -575,6 +548,8 @@ namespace CamelotFramework {
 
 	void Win32Window::reposition(int left, int top)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (mHWnd && !mIsFullScreen)
 		{
 			SetWindowPos(mHWnd, 0, left, top, 0, 0,
@@ -584,6 +559,8 @@ namespace CamelotFramework {
 
 	void Win32Window::resize(unsigned int width, unsigned int height)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (mHWnd && !mIsFullScreen)
 		{
 			RECT rc = { 0, 0, width, height };
@@ -595,37 +572,19 @@ namespace CamelotFramework {
 		}
 	}
 
-	void Win32Window::_windowMovedOrResized()
-	{
-		if (!mHWnd || IsIconic(mHWnd))
-			return;
-
-		RECT rc;
-		// top and left represent outer window position
-		GetWindowRect(mHWnd, &rc);
-		mTop = rc.top;
-		mLeft = rc.left;
-		// width and height represent drawable area only
-		GetClientRect(mHWnd, &rc);
-
-		if (mWidth == rc.right && mHeight == rc.bottom)
-			return;
-
-		mWidth = rc.right - rc.left;
-		mHeight = rc.bottom - rc.top;
-
-		RenderWindow::_windowMovedOrResized();
-	}
-
 	void Win32Window::swapBuffers()
 	{
-	  if (!mIsExternalGLControl) {
-	  	SwapBuffers(mHDC);
-	  }
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (!mIsExternalGLControl) {
+			SwapBuffers(mHDC);
+		}
 	}
 
 	void Win32Window::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if ((dst.getLeft() < 0) || (dst.getRight() > mWidth) ||
 			(dst.getTop() < 0) || (dst.getBottom() > mHeight) ||
 			(dst.getFront() != 0) || (dst.getBack() != 1))
@@ -703,6 +662,8 @@ namespace CamelotFramework {
 
 	void Win32Window::setActive( bool state )
 	{	
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (mDeviceName != NULL && state == false)
 		{
 			HWND hActiveWindow = GetActiveWindow();
@@ -747,5 +708,57 @@ namespace CamelotFramework {
 				ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL);
 			}
 		}
+	}
+
+	void Win32Window::_windowMovedOrResized()
+	{
+		if (!mHWnd || IsIconic(mHWnd))
+			return;
+
+		RECT rc;
+		// top and left represent outer window position
+		GetWindowRect(mHWnd, &rc);
+		mTop = rc.top;
+		mLeft = rc.left;
+		// width and height represent drawable area only
+		GetClientRect(mHWnd, &rc);
+
+		if (mWidth == rc.right && mHeight == rc.bottom)
+			return;
+
+		mWidth = rc.right - rc.left;
+		mHeight = rc.bottom - rc.top;
+
+		RenderWindow::_windowMovedOrResized();
+	}
+
+	void Win32Window::adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
+		unsigned int* winWidth, unsigned int* winHeight)
+	{
+		// NB only call this for non full screen
+		RECT rc;
+		SetRect(&rc, 0, 0, clientWidth, clientHeight);
+		AdjustWindowRect(&rc, WS_VISIBLE | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW, false);
+		*winWidth = rc.right - rc.left;
+		*winHeight = rc.bottom - rc.top;
+
+		// adjust to monitor
+		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
+
+		// Get monitor info	
+		MONITORINFO monitorInfo;
+
+		memset(&monitorInfo, 0, sizeof(MONITORINFO));
+		monitorInfo.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(hMonitor, &monitorInfo);
+
+		LONG maxW = monitorInfo.rcWork.right  - monitorInfo.rcWork.left;
+		LONG maxH = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
+
+		if (*winWidth > (unsigned int)maxW)
+			*winWidth = maxW;
+		if (*winHeight > (unsigned int)maxH)
+			*winHeight = maxH;
+
 	}
 }

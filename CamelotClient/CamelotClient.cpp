@@ -31,8 +31,8 @@
 #include "CmCursor.h"
 
 //#define DX11
-#define DX9
-//#define GL
+//#define DX9
+#define GL
 
 using namespace CamelotFramework;
 using namespace BansheeEditor;

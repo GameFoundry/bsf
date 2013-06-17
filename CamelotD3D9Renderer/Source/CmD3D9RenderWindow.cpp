@@ -435,6 +435,8 @@ namespace CamelotFramework
 
 	void D3D9RenderWindow::swapBuffers()
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (mDeviceValid)
 			mDevice->present(this);		
 	}
@@ -453,6 +455,8 @@ namespace CamelotFramework
 
 	void D3D9RenderWindow::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		mDevice->copyContentsToMemory(this, dst, buffer);
 	}
 

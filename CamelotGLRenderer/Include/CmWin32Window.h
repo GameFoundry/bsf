@@ -26,46 +26,86 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#ifndef __Win32Window_H__
-#define __Win32Window_H__
+#pragma once
 
 #include "CmWin32Prerequisites.h"
 #include "CmRenderWindow.h"
 
-namespace CamelotFramework {
+namespace CamelotFramework 
+{
     class CM_RSGL_EXPORT Win32Window : public RenderWindow
     {
     public:
         ~Win32Window();
 
-	   void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
-		bool isActive(void) const;
-        bool isVisible() const;
-        bool isClosed(void) const;
-        void reposition(int left, int top);
-        void resize(unsigned int width, unsigned int height);
+		/**
+		 * @copydoc RenderWindow::setFullscreen
+		 */
+		void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
 
-		/** Overridden - see RenderTarget. */
-		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
+		/**
+		 * @copydoc RenderWindow::isActive
+		 */
+		bool isActive() const;
 
+		/**
+		 * @copydoc RenderWindow::isVisible
+		 */
+		bool isVisible() const;
+
+		/**
+		 * @copydoc RenderWindow::isClosed
+		 */
+		bool isClosed() const;
+
+		/**
+		 * @copydoc RenderWindow::reposition
+		 */
+		void reposition(int left, int top);
+
+		/**
+		 * @copydoc RenderWindow::resize
+		 */
+		void resize(unsigned int width, unsigned int height);
+
+		/**
+		 * @copydoc RenderWindow::copyContentsToMemory
+		 */
+		void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
+
+		/**
+		 * @copydoc RenderWindow::swapBuffers
+		 */
 		void swapBuffers();
 
+		/**
+		 * @copydoc RenderWindow::requiresTextureFlipping
+		 */
 		bool requiresTextureFlipping() const { return false; }
+
+		/**
+		 * @copydoc RenderWindow::_windowMovedOrResized
+		 */
+		void _windowMovedOrResized(void);
+
+		/**
+		 * @copydoc RenderWindow::screenToWindowPos
+		 */
+		Int2 screenToWindowPos(const Int2& screenPos) const;
+
+		/**
+		 * @copydoc RenderWindow::getCustomAttribute
+		 */
+		void getCustomAttribute(const String& name, void* pData) const;
+
+		/**
+		 * @copydoc RenderWindow::setActive
+		 */
+		virtual void setActive( bool state );
 
 		HWND getWindowHandle() const { return mHWnd; }
 		HDC getHDC() const { return mHDC; }
 		
-		// Method for dealing with resize / move & 3d library
-		virtual void _windowMovedOrResized(void);
-
-		Int2 screenToWindowPos(const Int2& screenPos) const;
-
-		void getCustomAttribute( const String& name, void* pData ) const;
-
-        /** Used to set the active state of the render target.
-        */
-        virtual void setActive( bool state );
-
 		void adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
 			unsigned int* winWidth, unsigned int* winHeight);
 
@@ -99,5 +139,3 @@ namespace CamelotFramework {
 		void destroy_internal();
     };
 }
-
-#endif
