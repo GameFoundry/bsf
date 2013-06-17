@@ -132,7 +132,7 @@ namespace CamelotFramework
 			(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsString");
 		if(!_wglGetExtensionsString)
 			return;
-		const char *wgl_extensions = _wglGetExtensionsString(mInitialWindow->getHDC());
+		const char *wgl_extensions = _wglGetExtensionsString(mInitialWindow->_getHDC());
 
 		// Parse them, and add them to the main list
 		StringStream ext;

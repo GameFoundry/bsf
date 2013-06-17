@@ -41,7 +41,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderWindow::setFullscreen
 		 */
-		void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
+		void setFullscreen(bool fullScreen, UINT32 width, UINT32 height);
 
 		/**
 		 * @copydoc RenderWindow::isActive
@@ -61,12 +61,12 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderWindow::reposition
 		 */
-		void reposition(int left, int top);
+		void reposition(INT32 left, INT32 top);
 
 		/**
 		 * @copydoc RenderWindow::resize
 		 */
-		void resize(unsigned int width, unsigned int height);
+		void resize(UINT32 width, UINT32 height);
 
 		/**
 		 * @copydoc RenderWindow::copyContentsToMemory
@@ -84,11 +84,6 @@ namespace CamelotFramework
 		bool requiresTextureFlipping() const { return false; }
 
 		/**
-		 * @copydoc RenderWindow::_windowMovedOrResized
-		 */
-		void _windowMovedOrResized(void);
-
-		/**
 		 * @copydoc RenderWindow::screenToWindowPos
 		 */
 		Int2 screenToWindowPos(const Int2& screenPos) const;
@@ -103,10 +98,15 @@ namespace CamelotFramework
 		 */
 		virtual void setActive( bool state );
 
-		HWND getWindowHandle() const { return mHWnd; }
-		HDC getHDC() const { return mHDC; }
+		/**
+		 * @copydoc RenderWindow::_windowMovedOrResized
+		 */
+		void _windowMovedOrResized(void);
+
+		HWND _getWindowHandle() const { return mHWnd; }
+		HDC _getHDC() const { return mHDC; }
 		
-		void adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
+		void _adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
 			unsigned int* winWidth, unsigned int* winHeight);
 
 	protected:

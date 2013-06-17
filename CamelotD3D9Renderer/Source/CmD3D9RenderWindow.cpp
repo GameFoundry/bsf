@@ -279,7 +279,7 @@ namespace CamelotFramework
 		RenderWindow::destroy_internal();
 	}
 
-	void D3D9RenderWindow::setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
+	void D3D9RenderWindow::setFullscreen(bool fullScreen, UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -364,7 +364,7 @@ namespace CamelotFramework
 		return (mHWnd && !IsIconic(mHWnd));
 	}
 
-	void D3D9RenderWindow::reposition(int top, int left)
+	void D3D9RenderWindow::reposition(INT32 top, INT32 left)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -375,7 +375,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void D3D9RenderWindow::resize(unsigned int width, unsigned int height)
+	void D3D9RenderWindow::resize(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

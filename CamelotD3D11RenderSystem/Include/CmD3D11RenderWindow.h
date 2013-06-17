@@ -10,45 +10,90 @@ namespace CamelotFramework
 	public:
 		~D3D11RenderWindow();
 
-		void reposition(int left, int top);
-		void resize(unsigned int width, unsigned int height);
+		/**
+		 * @copydoc RenderWindow::reposition
+		 */
+		void reposition(INT32 left, INT32 top);
 
+		/**
+		 * @copydoc RenderWindow::resize
+		 */
+		void resize(UINT32 width, UINT32 height);
+
+		/**
+		 * @copydoc RenderWindow::setHidden
+		 */
 		void setHidden(bool hidden);
-		void setActive(bool state);
-		void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
 
+		/**
+		 * @copydoc RenderWindow::setActive
+		 */
+		void setActive(bool state);
+
+		/**
+		 * @copydoc RenderWindow::setFullscreen
+		 */
+		void setFullscreen(bool fullScreen, UINT32 width, UINT32 height);
+
+		/**
+		 * @copydoc RenderWindow::copyContentsToMemory
+		 */
 		void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
+
+		/**
+		 * @copydoc RenderWindow::swapBuffers
+		 */
 		void swapBuffers();
 
-		void _windowMovedOrResized();
+		/**
+		 * @copydoc RenderWindow::isClosed
+		 */
+		bool isClosed() const { return mClosed; }
 
-		bool isClosed() const									{ return mClosed; }
-		bool isHidden() const									{ return mHidden; }
+		/**
+		 * @copydoc RenderWindow::isHidden
+		 */
+		bool isHidden() const { return mHidden; }
 
+		/**
+		 * @copydoc RenderWindow::screenToWindowPos
+		 */
 		Int2 screenToWindowPos(const Int2& screenPos) const;
 
-		void getCustomAttribute( const String& name, void* pData ) const;
-		DXGI_SWAP_CHAIN_DESC* getPresentationParameters(void)	{ return &mSwapChainDesc; }
-		HWND getWindowHandle() const							{ return mHWnd; }
+		/**
+		 * @copydoc RenderWindow::getCustomAttribute
+		 */
+		void getCustomAttribute(const String& name, void* pData) const;
 
-		bool requiresTextureFlipping() const					{ return false; }
+		/**
+		 * @copydoc RenderWindow::requiresTextureFlipping
+		 */
+		bool requiresTextureFlipping() const { return false; }
+
+		/**
+		 * @copydoc RenderWindow::reposition
+		 */
+		void _windowMovedOrResized();
+
+		DXGI_SWAP_CHAIN_DESC* _getPresentationParameters(void) { return &mSwapChainDesc; }
+		HWND _getWindowHandle() const { return mHWnd; }
 
 	protected:
 		friend class D3D11RenderWindowManager;
 		D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory);
 
-		void _createSizeDependedD3DResources();
-		void _destroySizeDependedD3DResources();
+		void createSizeDependedD3DResources();
+		void destroySizeDependedD3DResources();
 
-		IDXGIDevice* _queryDxgiDevice(); 
+		IDXGIDevice* queryDxgiDevice(); 
 
-		bool _checkMultiSampleQuality(UINT SampleCount, UINT *outQuality, DXGI_FORMAT format);
+		bool checkMultiSampleQuality(UINT32 SampleCount, UINT32 *outQuality, DXGI_FORMAT format);
 
-		void _createSwapChain();
-		void _resizeSwapChainBuffers(unsigned width, unsigned height);
+		void createSwapChain();
+		void resizeSwapChainBuffers(unsigned width, unsigned height);
 
-		bool _getSwitchingFullscreen() const					{ return mSwitchingFullscreen; }
-		void _finishSwitchingFullscreen();
+		bool getSwitchingFullscreen() const	{ return mSwitchingFullscreen; }
+		void finishSwitchingFullscreen();
 		
 		/**
 		 * @copydoc RenderWindow::initialize_internal().

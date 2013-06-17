@@ -41,7 +41,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderWindow::setFullscreen
 		 */
-		void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
+		void setFullscreen(bool fullScreen, UINT32 width, UINT32 height);
 
 		/**
 		 * @copydoc RenderWindow::isActive
@@ -66,12 +66,12 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderWindow::reposition
 		 */
-		void reposition(int left, int top);
+		void reposition(INT32 left, INT32 top);
 
 		/**
 		 * @copydoc RenderWindow::resize
 		 */
-		void resize(unsigned int width, unsigned int height);
+		void resize(UINT32 width, UINT32 height);
 
 		/**
 		 * @copydoc RenderWindow::getCustomAttribute

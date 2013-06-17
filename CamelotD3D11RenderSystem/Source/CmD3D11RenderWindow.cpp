@@ -1,4 +1,5 @@
 #include "CmD3D11RenderWindow.h"
+#include "CmCoreThread.h"
 #include "CmWindowEventUtilities.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
@@ -251,8 +252,8 @@ namespace CamelotFramework
 		mWidth = rc.right;
 		mHeight = rc.bottom;
 
-		_createSwapChain();
-		_createSizeDependedD3DResources();
+		createSwapChain();
+		createSizeDependedD3DResources();
 		mDXGIFactory->MakeWindowAssociation(mHWnd, NULL);
 		setHidden(mHidden);
 
@@ -280,13 +281,15 @@ namespace CamelotFramework
 
 		mHWnd = nullptr;
 
-		_destroySizeDependedD3DResources();
+		destroySizeDependedD3DResources();
 
 		RenderWindow::destroy_internal();
 	}
 
 	void D3D11RenderWindow::swapBuffers()
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if(mDevice.getD3D11Device() != nullptr)
 		{
 			HRESULT hr = mSwapChain->Present(mVSync ? mVSyncInterval : 0, 0);
@@ -298,6 +301,8 @@ namespace CamelotFramework
 
 	void D3D11RenderWindow::reposition(int top, int left)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (mHWnd && !mIsFullScreen)
 		{
 			SetWindowPos(mHWnd, 0, top, left, 0, 0,
@@ -307,6 +312,8 @@ namespace CamelotFramework
 
 	void D3D11RenderWindow::resize(unsigned int width, unsigned int height)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (mHWnd && !mIsFullScreen)
 		{
 			RECT rc = { 0, 0, width, height };
@@ -318,36 +325,10 @@ namespace CamelotFramework
 		}
 	}
 
-	void D3D11RenderWindow::_windowMovedOrResized()
-	{
-		if (!mHWnd || IsIconic(mHWnd))
-			return;
-
-		RECT rc;
-		// top and left represent outer window position
-		GetWindowRect(mHWnd, &rc);
-		mTop = rc.top;
-		mLeft = rc.left;
-		// width and height represent drawable area only
-		GetClientRect(mHWnd, &rc);
-		unsigned int width = rc.right - rc.left;
-		unsigned int height = rc.bottom - rc.top;
-
-		if (width == 0) 
-			width = 1;
-		if (height == 0)
-			height = 1;
-
-		if (mWidth == width && mHeight == height)
-			return;
-
-		_resizeSwapChainBuffers(width, height);
-
-		RenderWindow::_windowMovedOrResized();
-	}
-
 	void D3D11RenderWindow::setActive(bool state)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (mHWnd && mSwapChain)
 		{
 			if (state)
@@ -367,6 +348,8 @@ namespace CamelotFramework
 
 	void D3D11RenderWindow::setHidden(bool hidden)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		mHidden = hidden;
 		if (!mIsExternal)
 		{
@@ -379,6 +362,8 @@ namespace CamelotFramework
 
 	void D3D11RenderWindow::setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (fullScreen != mIsFullScreen || width != mWidth || height != mHeight)
 		{
 			if (fullScreen != mIsFullScreen)
@@ -462,6 +447,8 @@ namespace CamelotFramework
 
 	void D3D11RenderWindow::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if(mBackBuffer == nullptr)
 			return;
 
@@ -548,12 +535,42 @@ namespace CamelotFramework
 		return Int2(pos.x, pos.y);
 	}
 
-	void D3D11RenderWindow::_createSwapChain()
+	void D3D11RenderWindow::_windowMovedOrResized()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (!mHWnd || IsIconic(mHWnd))
+			return;
+
+		RECT rc;
+		// top and left represent outer window position
+		GetWindowRect(mHWnd, &rc);
+		mTop = rc.top;
+		mLeft = rc.left;
+		// width and height represent drawable area only
+		GetClientRect(mHWnd, &rc);
+		unsigned int width = rc.right - rc.left;
+		unsigned int height = rc.bottom - rc.top;
+
+		if (width == 0) 
+			width = 1;
+		if (height == 0)
+			height = 1;
+
+		if (mWidth == width && mHeight == height)
+			return;
+
+		resizeSwapChainBuffers(width, height);
+
+		RenderWindow::_windowMovedOrResized();
+	}
+
+	void D3D11RenderWindow::createSwapChain()
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
 		// get the dxgi device
-		IDXGIDevice* pDXGIDevice = _queryDxgiDevice();
+		IDXGIDevice* pDXGIDevice = queryDxgiDevice();
 
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 		DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -599,7 +616,7 @@ namespace CamelotFramework
 			CM_EXCEPT(RenderingAPIException, "Unable to create swap chain");
 	}
 
-	void D3D11RenderWindow::_createSizeDependedD3DResources()
+	void D3D11RenderWindow::createSizeDependedD3DResources()
 	{
 		// obtain back buffer
 		SAFE_RELEASE(mBackBuffer);
@@ -642,7 +659,7 @@ namespace CamelotFramework
 		mDepthStencilView = Texture::requestView(mDepthStencilBuffer, 0, 1, 0, 1, GVU_DEPTHSTENCIL);
 	}
 
-	void D3D11RenderWindow::_destroySizeDependedD3DResources()
+	void D3D11RenderWindow::destroySizeDependedD3DResources()
 	{
 		SAFE_RELEASE(mBackBuffer);
 		SAFE_RELEASE(mRenderTargetView);
@@ -650,9 +667,9 @@ namespace CamelotFramework
 		mDepthStencilBuffer = nullptr;
 	}
 
-	void D3D11RenderWindow::_resizeSwapChainBuffers(unsigned width, unsigned height)
+	void D3D11RenderWindow::resizeSwapChainBuffers(unsigned width, unsigned height)
 	{
-		_destroySizeDependedD3DResources();
+		destroySizeDependedD3DResources();
 
 		// width and height can be zero to autodetect size, therefore do not rely on them
 		UINT Flags = mIsFullScreen ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;
@@ -662,7 +679,7 @@ namespace CamelotFramework
 		mHeight = mSwapChainDesc.BufferDesc.Height;
 		mIsFullScreen = (0 == mSwapChainDesc.Windowed); // Alt-Enter together with SetWindowAssociation() can change this state
 
-		_createSizeDependedD3DResources();
+		createSizeDependedD3DResources();
 
 		mDevice.getImmediateContext()->OMSetRenderTargets(0, 0, 0);
 		// Additional swap chains need their own depth buffer
@@ -696,7 +713,7 @@ namespace CamelotFramework
 		}
 	}
 
-	IDXGIDevice* D3D11RenderWindow::_queryDxgiDevice()
+	IDXGIDevice* D3D11RenderWindow::queryDxgiDevice()
 	{
 		if (mDevice.getD3D11Device() == nullptr)
 		{
@@ -711,7 +728,7 @@ namespace CamelotFramework
 		return pDXGIDevice;
 	}
 
-	void D3D11RenderWindow::_finishSwitchingFullscreen()
+	void D3D11RenderWindow::finishSwitchingFullscreen()
 	{
 		if(mIsFullScreen)
 		{
@@ -741,7 +758,7 @@ namespace CamelotFramework
 		mSwitchingFullscreen = false;
 	}
 
-	bool D3D11RenderWindow::_checkMultiSampleQuality(UINT SampleCount, UINT *outQuality, DXGI_FORMAT format)
+	bool D3D11RenderWindow::checkMultiSampleQuality(UINT32 SampleCount, UINT32 *outQuality, DXGI_FORMAT format)
 	{
 		if (SUCCEEDED(mDevice.getD3D11Device()->CheckMultisampleQualityLevels(format, SampleCount, outQuality)))
 			return true;

@@ -165,7 +165,7 @@ namespace CamelotFramework {
 				int screenh = monitorInfoEx.rcWork.bottom - monitorInfoEx.rcWork.top;
 
 				unsigned int winWidth, winHeight;
-				adjustWindow(mDesc.width, mDesc.height, &winWidth, &winHeight);
+				_adjustWindow(mDesc.width, mDesc.height, &winWidth, &winHeight);
 
 				// clamp window dimensions to screen size
 				int outerw = (int(winWidth) < screenw)? int(winWidth) : screenw;
@@ -412,7 +412,7 @@ namespace CamelotFramework {
 		RenderWindow::destroy_internal();
 	}
 
-	void Win32Window::setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
+	void Win32Window::setFullscreen(bool fullScreen, UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -500,7 +500,7 @@ namespace CamelotFramework {
 
 				// calculate overall dimensions for requested client area
 				unsigned int winWidth, winHeight;
-				adjustWindow(width, height, &winWidth, &winHeight);
+				_adjustWindow(width, height, &winWidth, &winHeight);
 
 				// deal with centreing when switching down to smaller resolution
 
@@ -546,7 +546,7 @@ namespace CamelotFramework {
 		return mClosed;
 	}
 
-	void Win32Window::reposition(int left, int top)
+	void Win32Window::reposition(INT32 left, INT32 top)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -557,7 +557,7 @@ namespace CamelotFramework {
 		}
 	}
 
-	void Win32Window::resize(unsigned int width, unsigned int height)
+	void Win32Window::resize(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -655,7 +655,7 @@ namespace CamelotFramework {
 		} else if( name == "WINDOW" )
 		{
 			HWND *pHwnd = (HWND*)pData;
-			*pHwnd = getWindowHandle();
+			*pHwnd = _getWindowHandle();
 			return;
 		} 
 	}
@@ -732,7 +732,7 @@ namespace CamelotFramework {
 		RenderWindow::_windowMovedOrResized();
 	}
 
-	void Win32Window::adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
+	void Win32Window::_adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
 		unsigned int* winWidth, unsigned int* winHeight)
 	{
 		// NB only call this for non full screen

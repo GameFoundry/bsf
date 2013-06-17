@@ -110,7 +110,7 @@ namespace CamelotFramework
 		/** 
 			@brief Core method. Alter fullscreen mode options.
 		*/
-		virtual void setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
+		virtual void setFullscreen(bool fullScreen, UINT32 width, UINT32 height)
                 { (void)fullScreen; (void)width; (void)height; }
 
         /**
@@ -162,8 +162,8 @@ namespace CamelotFramework
         * @brief	Overloaded version of getMetrics from RenderTarget, including extra details
 		*			specific to windowing systems.
         */
-        virtual void getMetrics(unsigned int& width, unsigned int& height, unsigned int& colourDepth, 
-			int& left, int& top);
+        virtual void getMetrics(UINT32& width, UINT32& height, UINT32& colourDepth, 
+			INT32& left, INT32& top);
 
 		/**
          * @brief	Internal method. Core method. Called when window is moved or resized.

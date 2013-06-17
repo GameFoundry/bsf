@@ -46,8 +46,8 @@ namespace CamelotFramework
 		
 	}
 
-    void RenderWindow::getMetrics(unsigned int& width, unsigned int& height, unsigned int& colourDepth,
-		int& left, int& top)
+    void RenderWindow::getMetrics(UINT32& width, UINT32& height, UINT32& colourDepth,
+		INT32& left, INT32& top)
     {
         width = mWidth;
         height = mHeight;
