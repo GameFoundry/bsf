@@ -26,6 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmD3D9RenderWindow.h"
+#include "CmCoreThread.h"
 #include "CmViewport.h"
 #include "CmException.h"
 #include "CmD3D9RenderSystem.h"
@@ -48,7 +49,6 @@ namespace CamelotFramework
 		mSwitchingFullscreen = false;
 		mDisplayFrequency = 0;
 		mDeviceValid = false;
-		mUseNVPerfHUD = false;
 	}
 
 	D3D9RenderWindow::~D3D9RenderWindow()
@@ -63,7 +63,6 @@ namespace CamelotFramework
 		mFSAA = mDesc.FSAA;
 		mVSync = mDesc.vsync;
 		mVSyncInterval = mDesc.vsyncInterval;
-		mUseNVPerfHUD = false;
 
 		HWND parentHWnd = 0;
 		HWND externalHandle = 0;
@@ -186,7 +185,7 @@ namespace CamelotFramework
 						dwStyle |= WS_OVERLAPPEDWINDOW;
 				}
 
-				adjustWindow(mDesc.width, mDesc.height, dwStyle, &winWidth, &winHeight);
+				_adjustWindow(mDesc.width, mDesc.height, dwStyle, &winWidth, &winHeight);
 
 				if (!mDesc.outerDimensions)
 				{
@@ -282,6 +281,8 @@ namespace CamelotFramework
 
 	void D3D9RenderWindow::setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if (fullScreen != mIsFullScreen || width != mWidth || height != mHeight)
 		{
 			if (fullScreen != mIsFullScreen)
@@ -332,7 +333,7 @@ namespace CamelotFramework
 				// Calculate window dimensions required
 				// to get the requested client area
 				unsigned int winWidth, winHeight;
-				adjustWindow(mWidth, mHeight, mStyle, &winWidth, &winHeight);
+				_adjustWindow(mWidth, mHeight, mStyle, &winWidth, &winHeight);
 
 				SetWindowLong(mHWnd, GWL_STYLE, mStyle);
 				SetWindowPos(mHWnd, HWND_NOTOPMOST, 0, 0, winWidth, winHeight,
@@ -350,7 +351,128 @@ namespace CamelotFramework
 		}
 	} 
 
-	void D3D9RenderWindow::adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
+	bool D3D9RenderWindow::isActive() const
+	{
+		if (isFullScreen())
+			return isVisible();
+
+		return mActive && isVisible();
+	}
+
+	bool D3D9RenderWindow::isVisible() const
+	{
+		return (mHWnd && !IsIconic(mHWnd));
+	}
+
+	void D3D9RenderWindow::reposition(int top, int left)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd && !mIsFullScreen)
+		{
+			SetWindowPos(mHWnd, 0, top, left, 0, 0,
+				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+		}
+	}
+
+	void D3D9RenderWindow::resize(unsigned int width, unsigned int height)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mHWnd && !mIsFullScreen)
+		{
+			unsigned int winWidth, winHeight;
+			_adjustWindow(width, height, mStyle, &winWidth, &winHeight);
+			SetWindowPos(mHWnd, 0, 0, 0, winWidth, winHeight,
+				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+		}
+	}
+
+	void D3D9RenderWindow::getCustomAttribute( const String& name, void* pData ) const
+	{
+		// Valid attributes and their equvalent native functions:
+		// D3DDEVICE			: getD3DDevice
+		// WINDOW				: getWindowHandle
+
+		if( name == "D3DDEVICE" )
+		{
+			IDirect3DDevice9* *pDev = (IDirect3DDevice9**)pData;
+			*pDev = _getD3D9Device();
+			return;
+		}		
+		else if( name == "WINDOW" )
+		{
+			HWND *pHwnd = (HWND*)pData;
+			*pHwnd = _getWindowHandle();
+			return;
+		}
+		else if( name == "isTexture" )
+		{
+			bool *b = reinterpret_cast< bool * >( pData );
+			*b = false;
+
+			return;
+		}
+		else if( name == "D3DZBUFFER" )
+		{
+			IDirect3DSurface9* *pSurf = (IDirect3DSurface9**)pData;
+			*pSurf = mDevice->getDepthBuffer(this);
+			return;
+		}
+		else if( name == "DDBACKBUFFER" )
+		{
+			IDirect3DSurface9* *pSurf = (IDirect3DSurface9**)pData;
+			*pSurf = mDevice->getBackBuffer(this);
+			return;
+		}
+		else if( name == "DDFRONTBUFFER" )
+		{
+			IDirect3DSurface9* *pSurf = (IDirect3DSurface9**)pData;
+			*pSurf = mDevice->getBackBuffer(this);
+			return;
+		}
+	}
+
+	void D3D9RenderWindow::swapBuffers()
+	{
+		if (mDeviceValid)
+			mDevice->present(this);		
+	}
+
+	Int2 D3D9RenderWindow::screenToWindowPos(const Int2& screenPos) const
+	{
+		POINT pos;
+
+		// Convert client coordinates to screen coordinates
+		pos.x = screenPos.x;
+		pos.y = screenPos.y;
+
+		ScreenToClient(mHWnd, &pos);
+		return Int2(pos.x, pos.y);
+	}
+
+	void D3D9RenderWindow::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
+	{
+		mDevice->copyContentsToMemory(this, dst, buffer);
+	}
+
+	void D3D9RenderWindow::_windowMovedOrResized()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (!mHWnd || IsIconic(mHWnd))
+			return;
+	
+		updateWindowRect();
+
+		RenderWindow::_windowMovedOrResized();
+	}
+
+	/************************************************************************/
+	/* 						D3D9 IMPLEMENTATION SPECIFIC                    */
+	/************************************************************************/
+
+	void D3D9RenderWindow::_adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
 		DWORD style, unsigned int* winWidth, unsigned int* winHeight)
 	{
 		// NB only call this for non full screen
@@ -395,7 +517,7 @@ namespace CamelotFramework
 			// after device has been restored
 			// We may have had a resize event which polluted our desired sizes
 			unsigned int winWidth, winHeight;
-			adjustWindow(mDesiredWidth, mDesiredHeight, mStyle, &winWidth, &winHeight);
+			_adjustWindow(mDesiredWidth, mDesiredHeight, mStyle, &winWidth, &winHeight);
 
 			// deal with centreing when switching down to smaller resolution
 
@@ -426,7 +548,7 @@ namespace CamelotFramework
 		mSwitchingFullscreen = false;
 	}
 	
-	void D3D9RenderWindow::buildPresentParameters(D3DPRESENT_PARAMETERS* presentParams) const
+	void D3D9RenderWindow::_buildPresentParameters(D3DPRESENT_PARAMETERS* presentParams) const
 	{		
 		// Set up the presentation parameters		
 		IDirect3D9* pD3D = D3D9RenderSystem::getDirect3D9();
@@ -570,142 +692,37 @@ namespace CamelotFramework
 		}
 	}
 
-	bool D3D9RenderWindow::isActive() const
-	{
-		if (isFullScreen())
-			return isVisible();
-
-		return mActive && isVisible();
-	}
-
-	bool D3D9RenderWindow::isVisible() const
-	{
-		return (mHWnd && !IsIconic(mHWnd));
-	}
-
-	void D3D9RenderWindow::reposition(int top, int left)
-	{
-		if (mHWnd && !mIsFullScreen)
-		{
-			SetWindowPos(mHWnd, 0, top, left, 0, 0,
-				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-		}
-	}
-
-	void D3D9RenderWindow::resize(unsigned int width, unsigned int height)
-	{
-		if (mHWnd && !mIsFullScreen)
-		{
-			unsigned int winWidth, winHeight;
-			adjustWindow(width, height, mStyle, &winWidth, &winHeight);
-			SetWindowPos(mHWnd, 0, 0, 0, winWidth, winHeight,
-				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-		}
-	}
-
-	void D3D9RenderWindow::windowMovedOrResized()
-	{
-		if (!mHWnd || IsIconic(mHWnd))
-			return;
-	
-		updateWindowRect();
-
-		RenderWindow::windowMovedOrResized();
-	}
-
-	void D3D9RenderWindow::swapBuffers()
-	{
-		if (mDeviceValid)
-			mDevice->present(this);		
-	}
-
-	void D3D9RenderWindow::getCustomAttribute( const String& name, void* pData ) const
-	{
-		// Valid attributes and their equvalent native functions:
-		// D3DDEVICE			: getD3DDevice
-		// WINDOW				: getWindowHandle
-
-		if( name == "D3DDEVICE" )
-		{
-			IDirect3DDevice9* *pDev = (IDirect3DDevice9**)pData;
-			*pDev = getD3D9Device();
-			return;
-		}		
-		else if( name == "WINDOW" )
-		{
-			HWND *pHwnd = (HWND*)pData;
-			*pHwnd = getWindowHandle();
-			return;
-		}
-		else if( name == "isTexture" )
-		{
-			bool *b = reinterpret_cast< bool * >( pData );
-			*b = false;
-
-			return;
-		}
-		else if( name == "D3DZBUFFER" )
-		{
-			IDirect3DSurface9* *pSurf = (IDirect3DSurface9**)pData;
-			*pSurf = mDevice->getDepthBuffer(this);
-			return;
-		}
-		else if( name == "DDBACKBUFFER" )
-		{
-			IDirect3DSurface9* *pSurf = (IDirect3DSurface9**)pData;
-			*pSurf = mDevice->getBackBuffer(this);
-			return;
-		}
-		else if( name == "DDFRONTBUFFER" )
-		{
-			IDirect3DSurface9* *pSurf = (IDirect3DSurface9**)pData;
-			*pSurf = mDevice->getBackBuffer(this);
-			return;
-		}
-	}
-
-	void D3D9RenderWindow::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
-	{
-		mDevice->copyContentsToMemory(this, dst, buffer);
-	}
-	//-----------------------------------------------------------------------------
-	IDirect3DDevice9* D3D9RenderWindow::getD3D9Device() const
+	IDirect3DDevice9* D3D9RenderWindow::_getD3D9Device() const
 	{
 		return mDevice->getD3D9Device();
 	}
 
-	//-----------------------------------------------------------------------------
-	IDirect3DSurface9* D3D9RenderWindow::getRenderSurface() const 
+	IDirect3DSurface9* D3D9RenderWindow::_getRenderSurface() const 
 	{
 		return mDevice->getBackBuffer(this);
 	}
 
-	//-----------------------------------------------------------------------------
 	bool D3D9RenderWindow::_getSwitchingFullscreen() const
 	{
 		return mSwitchingFullscreen;
 	}
 
-	//-----------------------------------------------------------------------------
-	D3D9Device* D3D9RenderWindow::getDevice() const
+	D3D9Device* D3D9RenderWindow::_getDevice() const
 	{
 		return mDevice;
 	}
 
-	//-----------------------------------------------------------------------------
-	void D3D9RenderWindow::setDevice(D3D9Device* device)
+	void D3D9RenderWindow::_setDevice(D3D9Device* device)
 	{
 		mDevice = device;
 		mDeviceValid = false;
 	}
 
-	//-----------------------------------------------------------------------------
-	bool D3D9RenderWindow::isDepthBuffered() const
+	bool D3D9RenderWindow::_isDepthBuffered() const
 	{
 		return mIsDepthBuffered;
 	}
 
-	//-----------------------------------------------------------------------------
 	void D3D9RenderWindow::updateWindowRect()
 	{
 		RECT rc;
@@ -746,24 +763,6 @@ namespace CamelotFramework
 		}	
 	}
 
-	Int2 D3D9RenderWindow::screenToWindowPos(const Int2& screenPos) const
-	{
-		POINT pos;
-
-		// Convert client coordinates to screen coordinates
-		pos.x = screenPos.x;
-		pos.y = screenPos.y;
-
-		ScreenToClient(mHWnd, &pos);
-		return Int2(pos.x, pos.y);
-	}
-
-	//-----------------------------------------------------------------------------
-	bool D3D9RenderWindow::isNvPerfHUDEnable() const
-	{
-		return mUseNVPerfHUD;
-	}
-	//---------------------------------------------------------------------
 	bool D3D9RenderWindow::_validateDevice()
 	{
 		mDeviceValid = mDevice->validate(this);

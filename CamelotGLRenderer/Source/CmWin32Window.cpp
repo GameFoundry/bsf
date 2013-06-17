@@ -550,7 +550,7 @@ namespace CamelotFramework {
 				mWidth = width;
 				mHeight = height;
 
-				windowMovedOrResized();
+				_windowMovedOrResized();
 			}
 		}
 	}
@@ -595,7 +595,7 @@ namespace CamelotFramework {
 		}
 	}
 
-	void Win32Window::windowMovedOrResized()
+	void Win32Window::_windowMovedOrResized()
 	{
 		if (!mHWnd || IsIconic(mHWnd))
 			return;
@@ -614,7 +614,7 @@ namespace CamelotFramework {
 		mWidth = rc.right - rc.left;
 		mHeight = rc.bottom - rc.top;
 
-		RenderWindow::windowMovedOrResized();
+		RenderWindow::_windowMovedOrResized();
 	}
 
 	void Win32Window::swapBuffers()

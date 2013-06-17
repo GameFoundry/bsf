@@ -1088,7 +1088,7 @@ namespace CamelotFramework
 		if (target->isWindow())
 		{
 			D3D9RenderWindow* window = static_cast<D3D9RenderWindow*>(target.get());
-			mDeviceManager->setActiveRenderTargetDevice(window->getDevice());
+			mDeviceManager->setActiveRenderTargetDevice(window->_getDevice());
 			window->_validateDevice();
 		}
 
@@ -2286,7 +2286,7 @@ namespace CamelotFramework
 		{
 			D3D9Device* currDevice = mDeviceManager->getDevice(i);
 			const D3D9RenderWindow* currDevicePrimaryWindow = currDevice->getPrimaryWindow();
-			IDirect3DSurface9* pSurface = currDevicePrimaryWindow->getRenderSurface();
+			IDirect3DSurface9* pSurface = currDevicePrimaryWindow->_getRenderSurface();
 			D3DSURFACE_DESC srfDesc;
 
 			// Get surface desc

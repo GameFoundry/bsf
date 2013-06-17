@@ -20,7 +20,7 @@ namespace CamelotFramework
 		void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
 		void swapBuffers();
 
-		void windowMovedOrResized();
+		void _windowMovedOrResized();
 
 		bool isClosed() const									{ return mClosed; }
 		bool isHidden() const									{ return mHidden; }

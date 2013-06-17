@@ -24,13 +24,9 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 /************** INPUT REFACTOR *********************/
 
 DO LATER:
+ - Rename DeferredRenderContext and everything that references it
  - onMovedOrResized is still used by Viewport
  - Replace list of windows in WIndowEventUtilities with WindowManagers list. No need to keep two lists I think
- - Remagine render thread:
-   - Its main loop is in CmApplication
-   - Rename it to CoreThread
-   - Renamed DeferredRenderContext to DeferredCoreThreadAccessor
- - Maybe: Attempt to add a global throwIfNotCore thread method
 
 /*******************************************************/
 
@@ -56,6 +52,7 @@ TextBox needed elements:
  - Text selection - Shift + arrow keys select text. Mouse drag selects text, and scrolls the text if needed. Text selection is drawn using another single color image sprite. Selection height is determined by line height.
  - Text operations - Select all, copy, paste (using shorcuts, possibly also context menu?)
  - Make sure multi-line text boxes work fine as well.
+ - (Selecting something and then typing anything needs to replace selection with typed character)
 
 Window needed systems:
 EditorWindowContainer

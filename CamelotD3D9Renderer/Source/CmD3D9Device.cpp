@@ -103,13 +103,13 @@ namespace CamelotFramework
 		{		
 			// The focus window in which the d3d9 device created on is detached.
 			// resources must be acquired again.
-			if (mFocusWindow == renderWindow->getWindowHandle())
+			if (mFocusWindow == renderWindow->_getWindowHandle())
 			{
 				mFocusWindow = NULL;				
 			}
 
 			// Case this is the shared focus window.
-			if (renderWindow->getWindowHandle() == msSharedFocusWindow)			
+			if (renderWindow->_getWindowHandle() == msSharedFocusWindow)			
 				setSharedWindowHandle(NULL);		
 			
 			RenderWindowResources* renderWindowResources = it->second;
@@ -279,7 +279,7 @@ namespace CamelotFramework
 
 		if (it != mMapRenderWindowToResoruces.end())
 		{	
-			if (it->first->getWindowHandle() == msSharedFocusWindow)
+			if (it->first->_getWindowHandle() == msSharedFocusWindow)
 				setSharedWindowHandle(NULL);
 
 			if(it->second != nullptr)
@@ -487,14 +487,14 @@ namespace CamelotFramework
 				RenderWindowResources* renderWindowResources = it->second;
 
 				// Ask the render window to build it's own parameters.
-				renderWindow->buildPresentParameters(&renderWindowResources->presentParameters);
+				renderWindow->_buildPresentParameters(&renderWindowResources->presentParameters);
 				
 
 				// Update shared focus window handle.
 				if (renderWindow->isFullScreen() && 
 					renderWindowResources->presentParametersIndex == 0 &&
 					msSharedFocusWindow == NULL)
-					setSharedWindowHandle(renderWindow->getWindowHandle());					
+					setSharedWindowHandle(renderWindow->_getWindowHandle());					
 
 				// This is the primary window or a full screen window that is part of multi head device.
 				if (renderWindowResources->presentParametersIndex == 0 ||
@@ -604,7 +604,7 @@ namespace CamelotFramework
 		if (msSharedFocusWindow != NULL)
 			mFocusWindow = msSharedFocusWindow;
 		else
-			mFocusWindow = primaryRenderWindow->getWindowHandle();		
+			mFocusWindow = primaryRenderWindow->_getWindowHandle();		
 
 		IDirect3D9* pD3D9 = D3D9RenderSystem::getDirect3D9();
 		HRESULT     hr;
@@ -764,7 +764,7 @@ namespace CamelotFramework
 	{
 		// Focus window changed -> device should be re-acquired.
 		if ((msSharedFocusWindow != NULL && mCreationParams.hFocusWindow != msSharedFocusWindow) ||
-			(msSharedFocusWindow == NULL && mCreationParams.hFocusWindow != getPrimaryWindow()->getWindowHandle()))
+			(msSharedFocusWindow == NULL && mCreationParams.hFocusWindow != getPrimaryWindow()->_getWindowHandle()))
 		{
 			// Lock access to rendering device.
 			D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
@@ -873,7 +873,7 @@ namespace CamelotFramework
 		HMONITOR	hRenderWindowMonitor = NULL;
 
 		// Find the monitor this render window belongs to.
-		hRenderWindowMonitor = MonitorFromWindow(renderWindow->getWindowHandle(), MONITOR_DEFAULTTONULL);
+		hRenderWindowMonitor = MonitorFromWindow(renderWindow->_getWindowHandle(), MONITOR_DEFAULTTONULL);
 
 		// This window doesn't intersect with any of the display monitor
 		if (hRenderWindowMonitor == NULL)		
@@ -990,7 +990,7 @@ namespace CamelotFramework
 
 		// Additional swap chains need their own depth buffer
 		// to support resizing them
-		if (renderWindow->isDepthBuffered()) 
+		if (renderWindow->_isDepthBuffered()) 
 		{
 			// if multihead is enabled, depth buffer can be created automatically for 
 			// all the adapters. if multihead is not enabled, depth buffer is just
@@ -1102,7 +1102,7 @@ namespace CamelotFramework
 				it = mMapRenderWindowToResoruces.begin();
 				while (it != mMapRenderWindowToResoruces.end())			
 				{
-					if (it->first->getWindowHandle() == mCreationParams.hFocusWindow)
+					if (it->first->_getWindowHandle() == mCreationParams.hFocusWindow)
 					{
 						deviceFocusWindow = it->first;
 						it->second->presentParametersIndex = nextPresParamIndex;
@@ -1217,7 +1217,7 @@ namespace CamelotFramework
 				POINT point;
 				point.x = srcRect.left;
 				point.y = srcRect.top;
-				ClientToScreen(renderWindow->getWindowHandle(), &point);
+				ClientToScreen(renderWindow->_getWindowHandle(), &point);
 				srcRect.top = point.y;
 				srcRect.left = point.x;
 				srcRect.bottom += point.y;

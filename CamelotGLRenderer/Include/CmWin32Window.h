@@ -56,7 +56,7 @@ namespace CamelotFramework {
 		HDC getHDC() const { return mHDC; }
 		
 		// Method for dealing with resize / move & 3d library
-		virtual void windowMovedOrResized(void);
+		virtual void _windowMovedOrResized(void);
 
 		Int2 screenToWindowPos(const Int2& screenPos) const;
 

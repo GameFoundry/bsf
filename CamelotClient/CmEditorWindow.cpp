@@ -95,7 +95,7 @@ namespace BansheeEditor
 		//titleBarBackgroundArea->getLayout().addSpace(1);
 		
 		//mRenderWindow->resize(300, 250);
-		mRenderWindow->setVisible(false);
+		//mRenderWindow->setVisible(false);
 	}
 
 	EditorWindow::~EditorWindow()

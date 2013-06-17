@@ -318,7 +318,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void D3D11RenderWindow::windowMovedOrResized()
+	void D3D11RenderWindow::_windowMovedOrResized()
 	{
 		if (!mHWnd || IsIconic(mHWnd))
 			return;
@@ -343,7 +343,7 @@ namespace CamelotFramework
 
 		_resizeSwapChainBuffers(width, height);
 
-		RenderWindow::windowMovedOrResized();
+		RenderWindow::_windowMovedOrResized();
 	}
 
 	void D3D11RenderWindow::setActive(bool state)

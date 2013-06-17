@@ -37,7 +37,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void RenderWindowManager::windowGotFocus(RenderWindow* window)
+	void RenderWindowManager::windowFocusReceived(RenderWindow* window)
 	{
 		CM_LOCK_MUTEX(mWindowMutex);
 		mNewWindowInFocus = window;
@@ -70,16 +70,12 @@ namespace CamelotFramework
 		{
 			if(mWindowInFocus != nullptr)
 			{
-				mWindowInFocus->_setHasFocus(false);
-
 				if(!onFocusLost.empty())
 					onFocusLost(*mWindowInFocus);
 			}
 
 			if(newWinInFocus != nullptr)
 			{
-				newWinInFocus->_setHasFocus(true);
-
 				if(!onFocusGained.empty())
 					onFocusGained(*newWinInFocus);
 			}

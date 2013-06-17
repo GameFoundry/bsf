@@ -26,6 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmRenderWindow.h"
+#include "CmCoreThread.h"
 #include "CmRenderWindowManager.h"
 #include "CmViewport.h"
 
@@ -37,7 +38,7 @@ namespace CamelotFramework
 		, mDesc(desc)
 		, mHasFocus(false)
     {
-        mAutoDeactivatedOnFocusChange = false;
+
     }
 
 	RenderWindow::~RenderWindow() 
@@ -45,7 +46,6 @@ namespace CamelotFramework
 		
 	}
 
-    //-----------------------------------------------------------------------
     void RenderWindow::getMetrics(unsigned int& width, unsigned int& height, unsigned int& colourDepth,
 		int& left, int& top)
     {
@@ -55,38 +55,41 @@ namespace CamelotFramework
         left = mLeft;
         top = mTop;
     }
-    //-----------------------------------------------------------------------
+
+	void RenderWindow::setVisible(bool visible)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+	}
+
     bool RenderWindow::isFullScreen(void) const
     {
         return mIsFullScreen;
     }
 
-    bool RenderWindow::isDeactivatedOnFocusChange() const
-    {
-        return mAutoDeactivatedOnFocusChange;
-    }
-
-    void RenderWindow::setDeactivateOnFocusChange(bool deactivate)
-    {
-        mAutoDeactivatedOnFocusChange = deactivate;
-    }
-
-	void RenderWindow::windowMovedOrResized()
+	void RenderWindow::_windowMovedOrResized()
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if(!onMovedOrResized.empty())
 			onMovedOrResized(this);
 
 		RenderWindowManager::instance().windowMovedOrResized(this);
 	}
 
-	void RenderWindow::_setHasFocus(bool focus)
+	void RenderWindow::_windowFocusReceived()
 	{
-		// TODO: Core thread only
+		THROW_IF_NOT_CORE_THREAD;
 
-		mHasFocus = focus; 
+		mHasFocus = true;
 
-		if(mHasFocus)
-			RenderWindowManager::instance().windowGotFocus(this);
+		RenderWindowManager::instance().windowFocusReceived(this);
+	}
+
+	void RenderWindow::_windowFocusLost()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		mHasFocus = false;
 	}
 
 	void RenderWindow::destroy()

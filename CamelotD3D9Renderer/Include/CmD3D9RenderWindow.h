@@ -25,8 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __D3D9RENDERWINDOW_H__
-#define __D3D9RENDERWINDOW_H__
+#pragma once
 
 #include "CmD3D9Prerequisites.h"
 #include "CmRenderWindow.h"
@@ -37,56 +36,109 @@ namespace CamelotFramework
 	class CM_D3D9_EXPORT D3D9RenderWindow : public RenderWindow
 	{
 	public:
-		~D3D9RenderWindow					();
+		~D3D9RenderWindow();
 		
-		void				setFullscreen		(bool fullScreen, unsigned int width, unsigned int height);
-		bool				isActive			() const;
-		bool				isVisible			() const;
-		bool 				isClosed			() const { return mClosed; }
-		bool				isVSync				() const { return mVSync; }
-		void 				reposition			(int left, int top);
-		void 				resize				(unsigned int width, unsigned int height);
-		HWND 				getWindowHandle		() const { return mHWnd; }				
-		IDirect3DDevice9*	getD3D9Device		() const;
-		D3D9Device*			getDevice			() const;
-		void				setDevice			(D3D9Device* device);
+		/**
+		 * @copydoc RenderWindow::setFullscreen
+		 */
+		void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
 
-		void				getCustomAttribute	(const String& name, void* pData) const;
-		
-		/** Overridden - see RenderTarget.
-		*/
-		void				copyContentsToMemory	(const PixelData &dst, FrameBuffer buffer);
-		bool				requiresTextureFlipping	() const { return false; }
+		/**
+		 * @copydoc RenderWindow::isActive
+		 */
+		bool isActive() const;
 
-		void				swapBuffers();
+		/**
+		 * @copydoc RenderWindow::isVisible
+		 */
+		bool isVisible() const;
 
-		Int2				screenToWindowPos(const Int2& screenPos) const;
+		/**
+		 * @copydoc RenderWindow::isClosed
+		 */
+		bool isClosed() const { return mClosed; }
 
-		// Method for dealing with resize / move & 3d library
-		void				windowMovedOrResized	();
-	
-		/// Build the presentation parameters used with this window
-		void				buildPresentParameters	(D3DPRESENT_PARAMETERS* presentParams) const;
-		
-		/// Accessor for render surface
-		IDirect3DSurface9* getRenderSurface() const;
+		/**
+		 * @copydoc RenderWindow::isVSync
+		 */
+		bool isVSync() const { return mVSync; }
 
-		/// Are we in the middle of switching between fullscreen and windowed
+		/**
+		 * @copydoc RenderWindow::reposition
+		 */
+		void reposition(int left, int top);
+
+		/**
+		 * @copydoc RenderWindow::resize
+		 */
+		void resize(unsigned int width, unsigned int height);
+
+		/**
+		 * @copydoc RenderWindow::getCustomAttribute
+		 */
+		void getCustomAttribute(const String& name, void* pData) const;
+
+		/**
+		 * @copydoc RenderWindow::copyContentsToMemory
+		 */
+		void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
+
+		/**
+		 * @copydoc RenderWindow::requiresTextureFlipping
+		 */
+		bool requiresTextureFlipping() const { return false; }
+
+		/**
+		 * @copydoc RenderWindow::swapBuffers
+		 */
+		void swapBuffers();
+
+		/**
+		 * @copydoc RenderWindow::screenToWindowPos
+		 */
+		Int2 screenToWindowPos(const Int2& screenPos) const;
+
+		/**
+		 * @copydoc RenderWindow::_windowMovedOrResized
+		 */
+		void				_windowMovedOrResized	();
+
+		HWND 				_getWindowHandle		() const { return mHWnd; }				
+		IDirect3DDevice9*	_getD3D9Device		() const;
+		D3D9Device*			_getDevice			() const;
+		void				_setDevice			(D3D9Device* device);
+
+		/**
+		 * @brief	Build the presentation parameters used with this window.
+		 */
+		void				_buildPresentParameters	(D3DPRESENT_PARAMETERS* presentParams) const;
+
+		/**
+		 * @brief	Accessor for render surface.
+		 */
+		IDirect3DSurface9* _getRenderSurface() const;
+
+		/**
+		 * @brief	Are we in the middle of switching between fullscreen and windowed.
+		 */
 		bool _getSwitchingFullscreen() const;
-		
-		/// Indicate that fullscreen / windowed switching has finished
+
+		/**
+		 * @brief	Indicate that fullscreen / windowed switching has finished.
+		 */
 		void _finishSwitchingFullscreen();
 	
-		/// Returns true if this window use depth buffer.
-		bool isDepthBuffered() const;
+		/**
+		 * @brief	Returns true if this window use depth buffer.
+		 */
+		bool _isDepthBuffered() const;
 
-		/// Returns true if this window should use NV perf hud adapter.
-		bool isNvPerfHUDEnable() const;
-
-		/** Validate the device for this window. */
+		/**
+		 * @brief	Validate the device for this window.
+		 */
 		bool _validateDevice();
 
-		void adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
+		void _adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
 			DWORD style, unsigned int* winWidth, unsigned int* winHeight);
 
 	protected:
@@ -119,7 +171,6 @@ namespace CamelotFramework
 		UINT						mDisplayFrequency;		// Display frequency.
 		bool						mVSync;					// Use vertical sync or not.
 		unsigned int				mVSyncInterval;		
-		bool						mUseNVPerfHUD;			// Use NV Perf HUD.
 		DWORD						mStyle;					// Window style currently used for this window.
 		bool						mIsDepthBuffered;
 		// Desired width / height after resizing
@@ -127,4 +178,3 @@ namespace CamelotFramework
 		unsigned int mDesiredHeight;
 	};
 }
-#endif

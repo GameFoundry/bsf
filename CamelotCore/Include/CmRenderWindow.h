@@ -107,80 +107,78 @@ namespace CamelotFramework
     public:
 		virtual ~RenderWindow();
 
+		/** 
+			@brief Core method. Alter fullscreen mode options.
+		*/
+		virtual void setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
+                { (void)fullScreen; (void)width; (void)height; }
+
+        /**
+         * @brief	Core method. Set the visibility state.
+         */
+        virtual void setVisible(bool visible);
+
+        /**
+         * @brief	Core method. Alter the size of the window.
+         */
+        virtual void resize(UINT32 width, UINT32 height) = 0;
+
+        /**
+         * @brief	Core method. Reposition the window.
+         */
+        virtual void reposition(INT32 left, INT32 top) = 0;
+
 		/**
 		 * @copydoc RenderTarget::isWindow.
 		 */
 		bool isWindow() const { return true; }
 
-		/** Alter fullscreen mode options. 
-		@note Nothing will happen unless the settings here are different from the
-			current settings.
-		@param fullScreen Whether to use fullscreen mode or not. 
-		@param width The new width to use
-		@param height The new height to use
-		*/
-		virtual void setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
-                { (void)fullScreen; (void)width; (void)height; }
-
-        /** Alter the size of the window.
-        */
-        virtual void resize(unsigned int width, unsigned int height) = 0;
-
-        /** Notify that the window has been resized
-        @remarks
-            You don't need to call this unless you created the window externally.
-        */
-        virtual void windowMovedOrResized();
-
-        /** Reposition the window.
-        */
-        virtual void reposition(int left, int top) = 0;
-
-        /** Indicates whether the window is visible (not minimized or obscured)
-        */
+        /**
+         * @brief	Indicates whether the window is visible (not minimized or obscured).
+         */
         virtual bool isVisible(void) const { return true; }
 
-        /** Set the visibility state
-        */
-        virtual void setVisible(bool visible)
-        { (void)visible; }
+        /** 
+        * @copydoc RenderTarget::isActive
+		*/
+        virtual bool isActive() const { return mActive && isVisible(); }
 
-        /** Overridden from RenderTarget, flags invisible windows as inactive
-        */
-        virtual bool isActive(void) const { return mActive && isVisible(); }
-
-        /** Indicates whether the window has been closed by the user.
-        */
-        virtual bool isClosed(void) const = 0;
+        /** 
+        * @brief Indicates whether the window has been closed by the user.
+		*/
+        virtual bool isClosed() const = 0;
         
-        /** Returns true if window is running in fullscreen mode.
-        */
-        virtual bool isFullScreen(void) const;
+        /** 
+        * @brief Returns true if window is running in fullscreen mode.
+		*/
+        virtual bool isFullScreen() const;
 
-        /** Overloaded version of getMetrics from RenderTarget, including extra details
-            specific to windowing systems.
+		/**
+		 * @brief	Indicates whether the window currently has keyboard focus.
+		 */
+		bool hasFocus() const { return mHasFocus; }
+
+        /**   
+        * @brief	Overloaded version of getMetrics from RenderTarget, including extra details
+		*			specific to windowing systems.
         */
         virtual void getMetrics(unsigned int& width, unsigned int& height, unsigned int& colourDepth, 
 			int& left, int& top);
 
-		/// Override since windows don't usually have alpha
-		PixelFormat suggestPixelFormat() const { return PF_BYTE_RGB; }
-
-        /** Returns true if the window will automatically de-activate itself when it loses focus.
-        */
-        bool isDeactivatedOnFocusChange() const;
-
-        /** Indicates whether the window will automatically deactivate itself when it loses focus.
-          * \param deactivate a value of 'true' will cause the window to deactivate itself when it loses focus.  'false' will allow it to continue to render even when window focus is lost.
-          * \note 'true' is the default behavior.
-          */
-        void setDeactivateOnFocusChange(bool deactivate);
+		/**
+         * @brief	Internal method. Core method. Called when window is moved or resized.
+         */
+        virtual void _windowMovedOrResized();
 
 		/**
-		 * @brief	Internal method. Called when window gets or loses focus.
-		 */
-		void _setHasFocus(bool focus);
-		bool hasFocus() const { return mHasFocus; }
+         * @brief	Internal method. Core method. Called when window has received focus.
+         */
+		virtual void _windowFocusReceived();
+
+		/**
+         * @brief	Internal method. Core method. Called when window has lost focus.
+         */
+		virtual void _windowFocusLost();
 
 		virtual Int2 screenToWindowPos(const Int2& screenPos) const = 0;
 
@@ -197,9 +195,8 @@ namespace CamelotFramework
         
 	protected:
 		bool mIsFullScreen;
-		bool mAutoDeactivatedOnFocusChange;
-		int mLeft;
-		int mTop;
+		INT32 mLeft;
+		INT32 mTop;
 		bool mHasFocus;
 
 		RENDER_WINDOW_DESC mDesc;

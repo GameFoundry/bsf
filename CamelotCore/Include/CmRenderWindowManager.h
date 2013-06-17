@@ -40,7 +40,7 @@ namespace CamelotFramework
 		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow) = 0;
 
 		void windowDestroyed(RenderWindow* window);
-		void windowGotFocus(RenderWindow* window);
+		void windowFocusReceived(RenderWindow* window);
 		void windowMovedOrResized(RenderWindow* window);
 	};
 }

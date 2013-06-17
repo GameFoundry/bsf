@@ -137,20 +137,15 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
         bool active = (LOWORD(wParam) != WA_INACTIVE);
         if( active )
         {
-		    win->setActive( true );
+		    win->setActive(true);
 
 			if(!win->hasFocus())
-				win->_setHasFocus(true);
+				win->_windowFocusReceived();
         }
         else
         {
-            if( win->isDeactivatedOnFocusChange() )
-            {
-    		    win->setActive( false );
-            }
-
 			if(win->hasFocus())
-				win->_setHasFocus(false);
+				win->_windowFocusLost();
         }
 
 		break;
@@ -186,13 +181,13 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 	case WM_EXITSIZEMOVE:
 		break;
 	case WM_MOVE:
-		win->windowMovedOrResized();
+		win->_windowMovedOrResized();
 		break;
 	case WM_DISPLAYCHANGE:
-		win->windowMovedOrResized();
+		win->_windowMovedOrResized();
 		break;
 	case WM_SIZE:
-		win->windowMovedOrResized();
+		win->_windowMovedOrResized();
 		break;
 	case WM_SETCURSOR:
 		if(Cursor::isHidden())
@@ -311,7 +306,7 @@ void GLXProc( RenderWindow *win, const XEvent &event )
 		unsigned int oldWidth, oldHeight, oldDepth;
 		int oldLeft, oldTop;
 		win->getMetrics(oldWidth, oldHeight, oldDepth, oldLeft, oldTop);
-		win->windowMovedOrResized();
+		win->_windowMovedOrResized();
 
 		unsigned int newWidth, newHeight, newDepth;
 		int newLeft, newTop;
@@ -361,11 +356,6 @@ OSStatus WindowEventUtilities::_CarbonWindowHandler(EventHandlerCallRef nextHand
     RenderWindow* curWindow = (RenderWindow*)wnd;
     if(!curWindow) return eventNotHandledErr;
     
-    //Iterator of all listeners registered to this RenderWindow
-	WindowEventListeners::iterator index,
-        start = _msListeners.lower_bound(curWindow),
-        end = _msListeners.upper_bound(curWindow);
-    
     // We only get called if a window event happens
     UInt32 eventKind = GetEventKind( event );
 
@@ -373,51 +363,28 @@ OSStatus WindowEventUtilities::_CarbonWindowHandler(EventHandlerCallRef nextHand
     {
         case kEventWindowActivated:
             curWindow->setActive( true );
-            for( ; start != end; ++start )
-                (start->second)->windowFocusChange(curWindow);
             break;
         case kEventWindowDeactivated:
-            if( curWindow->isDeactivatedOnFocusChange() )
-            {
-                curWindow->setActive( false );
-            }
-
-            for( ; start != end; ++start )
-                (start->second)->windowFocusChange(curWindow);
-
             break;
         case kEventWindowShown:
         case kEventWindowExpanded:
             curWindow->setActive( true );
             curWindow->setVisible( true );
-            for( ; start != end; ++start )
-                (start->second)->windowFocusChange(curWindow);
             break;
         case kEventWindowHidden:
         case kEventWindowCollapsed:
             curWindow->setActive( false );
             curWindow->setVisible( false );
-            for( ; start != end; ++start )
-                (start->second)->windowFocusChange(curWindow);
             break;            
         case kEventWindowDragCompleted:
-            curWindow->windowMovedOrResized();
-            for( ; start != end; ++start )
-				(start->second)->windowMoved(curWindow);
+            curWindow->_windowMovedOrResized();
             break;
         case kEventWindowBoundsChanged:
-            curWindow->windowMovedOrResized();
-            for( ; start != end; ++start )
-				(start->second)->windowResized(curWindow);
+            curWindow->_windowMovedOrResized();
             break;
 		case kEventWindowClose:
 		{
 			bool close = true;
-			for( ; start != end; ++start )
-			{
-				if (!(start->second)->windowClosing(curWindow))
-					close = false;
-			}
 			if (close)
 				// This will cause event handling to continue on to the standard handler, which calls
 				// DisposeWindow(), which leads to the 'kEventWindowClosed' event
@@ -425,9 +392,6 @@ OSStatus WindowEventUtilities::_CarbonWindowHandler(EventHandlerCallRef nextHand
 			break;
 		}
         case kEventWindowClosed:
-
-            for( ; start != end; ++start )
-				(start->second)->windowClosed(curWindow);
             break;
         default:
             status = eventNotHandledErr;

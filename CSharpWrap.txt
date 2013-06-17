@@ -1,0 +1,47 @@
+Classes that need C# wrappers:
+Math (Instead of a wrapper create actual C# classes, but which map 1-1 with C++ code so we can move them through C++/C# boundaries):
+ -Vector2
+ -Vector3
+ -Vector4
+ -Matrix3
+ -Matrix4
+ -Quaternion
+ -Rect
+ -Int2
+ -Color
+
+Resources:
+ - Mesh
+ - Texture
+ - Font
+ - Material
+  - GpuProgram
+  - Technique
+  - Shader
+  - DepthStencil/Blend/Rasterizer/Sampler state
+
+Core objects:
+ - RenderTarget
+  - RenderWindow
+  - RenderTexture
+  - MultiRenderTexture
+ - SceneObject
+ - Component
+  - plus specific components Camera, Renderable, maybe others
+  - (later ofc ability to derive custom C# components)
+
+GUI:
+ - EditorWindow
+ - GUIWidget
+ - GUILabel/GUIButton/GUIToggle/GUIInputBox/GUITexture...
+ - GUILayoutX/GUILayoutY/GUILayoutOptions
+ - GUISkin/GUIElementStyle
+
+Systems:
+ - Resources
+ - Importer
+ - Application (startUp/shutDown)
+ - Cursor
+ - Debug
+ - Input
+ - Time

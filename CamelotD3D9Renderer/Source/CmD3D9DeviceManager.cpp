@@ -121,7 +121,7 @@ namespace CamelotFramework
 		D3D9Device* renderDevice;
 
 		// Detach from previous device.
-		renderDevice = renderWindow->getDevice();		
+		renderDevice = renderWindow->_getDevice();		
 		if (renderDevice != NULL)		
 			renderDevice->detachRenderWindow(renderWindow);						
 
@@ -135,7 +135,7 @@ namespace CamelotFramework
 		{
 			D3D9RenderWindow* currWindow = renderWindowsGroup[i];
 
-			currWindow->setDevice(renderDevice);
+			currWindow->_setDevice(renderDevice);
 			renderDevice->attachRenderWindow(currWindow);
 			renderDevice->setAdapterOrdinalIndex(currWindow, i);
 		}
@@ -160,29 +160,6 @@ namespace CamelotFramework
 
 		// Default group includes at least the given render window.
 		renderWindowsGroup.push_back(renderWindow);
-
-		// Case we use nvidia performance HUD, override the device settings. 
-		if (renderWindow->isNvPerfHUDEnable())
-		{
-			// Look for 'NVIDIA NVPerfHUD' adapter (<= v4)
-			// or 'NVIDIA PerfHUD' (v5)
-			// If it is present, override default settings
-			for (UINT adapter=0; adapter < direct3D9->GetAdapterCount(); ++adapter)
-			{
-				D3D9Driver* currDriver = driverList->item(adapter);
-				const D3DADAPTER_IDENTIFIER9& currAdapterIdentifier = currDriver->getAdapterIdentifier();
-
-				if(strstr(currAdapterIdentifier.Description, "PerfHUD") != NULL)
-				{
-					renderDevice = NULL;
-					nAdapterOrdinal = adapter;
-					renderSystem->mActiveD3DDriver = currDriver;
-					devType = D3DDEVTYPE_REF;
-					nvAdapterFound = true;
-					break;
-				}
-			}		
-		}
 
 		// Try to find a matching device from current device list.
 		if (renderDevice == NULL)
@@ -241,7 +218,7 @@ namespace CamelotFramework
 		D3D9DriverList*			driverList = renderSystem->getDirect3DDrivers();
 
 		// Find the monitor this render window belongs to.
-		hRenderWindowMonitor = MonitorFromWindow(renderWindow->getWindowHandle(), MONITOR_DEFAULTTONEAREST);
+		hRenderWindowMonitor = MonitorFromWindow(renderWindow->_getWindowHandle(), MONITOR_DEFAULTTONEAREST);
 
 
 		// Find the matching driver using window monitor handle.

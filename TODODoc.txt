@@ -16,5 +16,11 @@
    very weird issues.
  - If you're creating a hierarchy of classes with RTTI support, ALL classes in the hierarchy must have RTTI implementations. You cannot just leave
    some out, even if they contain no data. This would create incomplete RTTI class hierarchy which can cause various issues.
- - Methods prefixed with "_" are methods you should not normally call. They are used internally by some subset of classes that form a system and are not meant
-   to be called by the user, unless you are working internally with that system. The only reason they are part of the public interface is to avoid friend classes.
+ - Notation rules:
+    - Method prefixed with _ (i.e. _getDevice()) are internal methods used by the engine systems and normal user should not need to call them unless 
+	  he really knows what is he doing. Those methods might also be marked with "Internal method" notation in their documentation.
+	  Only methods that are part of the public interface have this syntax, as private methods are not visible to the user anyway, so there's no need for special notation.
+	    - When communicating between system I will use "prefix _" notation interchangeably with friend class approach. Sometimes I prefer to extend to public interface and 
+		add a _ prefixed method, and in other cases I prefer not to modify the public interface and make a class a friend and use a private method.
+	- "Core method" notation in method documentation. This means the method is only meant to be called from the core thread. Calling it from another thread
+	  will cause an exception at best, or cause unpredictable behaviour at worst.
