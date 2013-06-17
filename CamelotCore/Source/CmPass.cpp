@@ -105,37 +105,37 @@ namespace CamelotFramework
 		return mStencilRefValue;
 	}
 	//----------------------------------------------------------------------
-	void Pass::activate(CoreAccessor& renderContext) const
+	void Pass::activate(CoreAccessor& coreAccessor) const
 	{
 		HGpuProgram vertProgram = getVertexProgram();
 		if(vertProgram)
-			renderContext.bindGpuProgram(vertProgram);
+			coreAccessor.bindGpuProgram(vertProgram);
 		else
-			renderContext.unbindGpuProgram(GPT_VERTEX_PROGRAM);
+			coreAccessor.unbindGpuProgram(GPT_VERTEX_PROGRAM);
 
 		HGpuProgram fragProgram = getFragmentProgram();
 		if(fragProgram)
-			renderContext.bindGpuProgram(fragProgram);
+			coreAccessor.bindGpuProgram(fragProgram);
 		else
-			renderContext.unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
+			coreAccessor.unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
 
 		HGpuProgram geomProgram = getGeometryProgram();
 		if(geomProgram)
-			renderContext.bindGpuProgram(geomProgram);
+			coreAccessor.bindGpuProgram(geomProgram);
 		else
-			renderContext.unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
+			coreAccessor.unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
 
 		HGpuProgram hullProgram = getHullProgram();
 		if(hullProgram)
-			renderContext.bindGpuProgram(hullProgram);
+			coreAccessor.bindGpuProgram(hullProgram);
 		else
-			renderContext.unbindGpuProgram(GPT_HULL_PROGRAM);
+			coreAccessor.unbindGpuProgram(GPT_HULL_PROGRAM);
 
 		HGpuProgram domainProgram = getDomainProgram();
 		if(domainProgram)
-			renderContext.bindGpuProgram(domainProgram);
+			coreAccessor.bindGpuProgram(domainProgram);
 		else
-			renderContext.unbindGpuProgram(GPT_DOMAIN_PROGRAM);
+			coreAccessor.unbindGpuProgram(GPT_DOMAIN_PROGRAM);
 
 		// TODO - Try to limit amount of state changes, if previous state is already the same (especially with textures)
 
@@ -145,48 +145,48 @@ namespace CamelotFramework
 		// Set up non-texture related pass settings
 		HBlendState blendState = getBlendState();
 		if(blendState != nullptr)
-			renderContext.setBlendState(blendState.getInternalPtr());
+			coreAccessor.setBlendState(blendState.getInternalPtr());
 		else
-			renderContext.setBlendState(BlendState::getDefault());
+			coreAccessor.setBlendState(BlendState::getDefault());
 
 		HDepthStencilState depthStancilState = getDepthStencilState();
 		if(depthStancilState != nullptr)
-			renderContext.setDepthStencilState(depthStancilState.getInternalPtr(), getStencilRefValue());
+			coreAccessor.setDepthStencilState(depthStancilState.getInternalPtr(), getStencilRefValue());
 		else
-			renderContext.setDepthStencilState(DepthStencilState::getDefault(), getStencilRefValue());
+			coreAccessor.setDepthStencilState(DepthStencilState::getDefault(), getStencilRefValue());
 
 		HRasterizerState rasterizerState = getRasterizerState();
 		if(rasterizerState != nullptr)
-			renderContext.setRasterizerState(rasterizerState.getInternalPtr());
+			coreAccessor.setRasterizerState(rasterizerState.getInternalPtr());
 		else
-			renderContext.setRasterizerState(RasterizerState::getDefault());
+			coreAccessor.setRasterizerState(RasterizerState::getDefault());
 	}
 	//----------------------------------------------------------------------
-	void Pass::bindParameters(CoreAccessor& renderContext, const PassParametersPtr& params) const
+	void Pass::bindParameters(CoreAccessor& coreAccessor, const PassParametersPtr& params) const
 	{
 		HGpuProgram vertProgram = getVertexProgram();
 		if(vertProgram)
-			renderContext.bindGpuParams(GPT_VERTEX_PROGRAM, GpuParams::createBindableCopy(params->mVertParams));
+			coreAccessor.bindGpuParams(GPT_VERTEX_PROGRAM, GpuParams::createBindableCopy(params->mVertParams));
 
 		HGpuProgram fragProgram = getFragmentProgram();
 		if(fragProgram)
-			renderContext.bindGpuParams(GPT_FRAGMENT_PROGRAM, GpuParams::createBindableCopy(params->mFragParams));
+			coreAccessor.bindGpuParams(GPT_FRAGMENT_PROGRAM, GpuParams::createBindableCopy(params->mFragParams));
 
 		HGpuProgram geomProgram = getGeometryProgram();
 		if(geomProgram)
-			renderContext.bindGpuParams(GPT_GEOMETRY_PROGRAM, GpuParams::createBindableCopy(params->mGeomParams));
+			coreAccessor.bindGpuParams(GPT_GEOMETRY_PROGRAM, GpuParams::createBindableCopy(params->mGeomParams));
 
 		HGpuProgram hullProgram = getHullProgram();
 		if(hullProgram)
-			renderContext.bindGpuParams(GPT_HULL_PROGRAM, GpuParams::createBindableCopy(params->mHullParams));
+			coreAccessor.bindGpuParams(GPT_HULL_PROGRAM, GpuParams::createBindableCopy(params->mHullParams));
 
 		HGpuProgram domainProgram = getDomainProgram();
 		if(domainProgram)
-			renderContext.bindGpuParams(GPT_DOMAIN_PROGRAM, GpuParams::createBindableCopy(params->mDomainParams));
+			coreAccessor.bindGpuParams(GPT_DOMAIN_PROGRAM, GpuParams::createBindableCopy(params->mDomainParams));
 
 		HGpuProgram computeProgram = getComputeProgram();
 		if(computeProgram)
-			renderContext.bindGpuParams(GPT_COMPUTE_PROGRAM, GpuParams::createBindableCopy(params->mComputeParams));
+			coreAccessor.bindGpuParams(GPT_COMPUTE_PROGRAM, GpuParams::createBindableCopy(params->mComputeParams));
 	}
 	//----------------------------------------------------------------------
 	RTTITypeBase* Pass::getRTTIStatic()

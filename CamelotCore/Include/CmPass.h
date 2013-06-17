@@ -108,12 +108,12 @@ namespace CamelotFramework
 		/**
 		 * @brief	Makes this pass active. Anything rendered after this command will use this pass.
 		 */
-		void activate(CoreAccessor& renderContext) const;
+		void activate(CoreAccessor& coreAccessor) const;
 
 		/**
 		 * @brief	Applies specified parameters to the active pass. 
 		 */
-		void bindParameters(CoreAccessor& renderContext, const PassParametersPtr& params) const;
+		void bindParameters(CoreAccessor& coreAccessor, const PassParametersPtr& params) const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
