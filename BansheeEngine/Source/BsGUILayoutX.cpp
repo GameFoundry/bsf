@@ -289,15 +289,20 @@ namespace BansheeEngine
 					{
 						const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
 
-						if(layoutOptions.maxWidth > 0 && elementWidth > layoutOptions.maxWidth)
+						if(elementWidth == 0)
 						{
-							extraWidth = elementSizes[childIdx] - layoutOptions.maxWidth;
+							processedElements[childIdx] = true;
+							numNonClampedElements--;
+						}
+						else if(layoutOptions.maxWidth > 0 && elementWidth > layoutOptions.maxWidth)
+						{
 							elementWidth = layoutOptions.maxWidth;
 
 							processedElements[childIdx] = true;
 							numNonClampedElements--;
 						}
 
+						extraWidth = elementWidth - elementSizes[childIdx];
 						elementSizes[childIdx] = elementWidth;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}

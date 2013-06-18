@@ -302,7 +302,7 @@ namespace BansheeEngine
 							numNonClampedElements--;
 						}
 
-						extraHeight = elementSizes[childIdx] - elementHeight;
+						extraHeight = elementHeight - elementSizes[childIdx];
 						elementSizes[childIdx] = elementHeight;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraHeight);
 					}

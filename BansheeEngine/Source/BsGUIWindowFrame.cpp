@@ -5,6 +5,7 @@
 #include "BsSpriteTexture.h"
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
+#include "CmApplication.h"
 #include "CmCursor.h"
 #include "CmTexture.h"
 #include "CmRenderWindow.h"
@@ -264,7 +265,12 @@ namespace BansheeEngine
 			if(dragAmount.x != 0 || dragAmount.y != 0)
 			{
 				RenderWindow* window = _getParentWidget().getOwnerWindow();
-				window->resize(window->getWidth() + dragAmount.x, window->getHeight() + dragAmount.y);
+
+				UINT32 newWidth = window->getWidth() + dragAmount.x;
+				UINT32 newHeight = window->getHeight() + dragAmount.y;
+
+				RenderWindowPtr windowPtr = std::static_pointer_cast<RenderWindow>(window->getThisPtr());
+				gMainCA().resizeWindow(windowPtr, newWidth, newHeight);
 			}
 		}
 

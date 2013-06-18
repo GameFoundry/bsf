@@ -49,7 +49,7 @@ namespace CamelotFramework
 
 		auto iterFind = std::find(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), window);
 
-		if(iterFind != end(mMovedOrResizedWindows))
+		if(iterFind == end(mMovedOrResizedWindows))
 			mMovedOrResizedWindows.push_back(window);
 	}
 

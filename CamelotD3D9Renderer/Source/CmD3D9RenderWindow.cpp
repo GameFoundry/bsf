@@ -370,6 +370,9 @@ namespace CamelotFramework
 
 		if (mHWnd && !mIsFullScreen)
 		{
+			mLeft = left;
+			mTop = top;
+
 			SetWindowPos(mHWnd, 0, top, left, 0, 0,
 				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 		}
@@ -381,8 +384,12 @@ namespace CamelotFramework
 
 		if (mHWnd && !mIsFullScreen)
 		{
+			mWidth = width;
+			mHeight = height;
+
 			unsigned int winWidth, winHeight;
 			_adjustWindow(width, height, mStyle, &winWidth, &winHeight);
+
 			SetWindowPos(mHWnd, 0, 0, 0, winWidth, winHeight,
 				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 		}
@@ -756,15 +763,9 @@ namespace CamelotFramework
 			mHeight = 0;
 			return;
 		}
-		unsigned int width = rc.right - rc.left;
-		unsigned int height = rc.bottom - rc.top;
 
-		// Case window resized.
-		if (width != mWidth || height != mHeight)
-		{
-			mWidth  = rc.right - rc.left;
-			mHeight = rc.bottom - rc.top;	
-		}	
+		mWidth  = rc.right - rc.left;
+		mHeight = rc.bottom - rc.top;	
 	}
 
 	bool D3D9RenderWindow::_validateDevice()

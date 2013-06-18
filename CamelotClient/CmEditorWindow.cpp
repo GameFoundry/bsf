@@ -94,6 +94,8 @@ namespace BansheeEditor
 		//titleBarBackgroundArea->getLayout().addElement(GUITexture::create(*mGUI, GUIImageScaleMode::RepeatToFit, GUILayoutOptions::expandableXY(), mGUI->getGUISkin()->getStyle("TitleBarBg")));
 		//titleBarBackgroundArea->getLayout().addSpace(1);
 		
+		gMainCA().resizeWindow(mRenderWindow, 400, 300);
+
 		//mRenderWindow->resize(300, 250);
 		//mRenderWindow->setVisible(false);
 	}

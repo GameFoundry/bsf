@@ -204,7 +204,6 @@ namespace CamelotFramework
 			mCommandQueue->queue(boost::bind(&RenderSystem::drawIndexed, RenderSystem::instancePtr(), startIndex, indexCount, vertexCount));
 		}
 
-
 		/**
 		 * @copydoc RenderSystem::writeSubresource()
 		 *
@@ -231,6 +230,16 @@ namespace CamelotFramework
 			data.lock();
 
 			return mCommandQueue->queueReturn(boost::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), resource, subresourceIdx, boost::ref(data), _1));
+		}
+
+		void resizeWindow(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height)
+		{
+			mCommandQueue->queue(boost::bind(&RenderWindow::resize, renderWindow.get(), width, height));
+		}
+
+		void moveWindow(RenderWindowPtr& renderWindow, INT32 left, INT32 top)
+		{
+			mCommandQueue->queue(boost::bind(&RenderWindow::reposition, renderWindow.get(), left, top));
 		}
 
 		/**

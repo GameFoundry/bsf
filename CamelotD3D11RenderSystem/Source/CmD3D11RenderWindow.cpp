@@ -299,23 +299,29 @@ namespace CamelotFramework
 		}
 	}
 
-	void D3D11RenderWindow::reposition(int top, int left)
+	void D3D11RenderWindow::reposition(INT32 top, INT32 left)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		if (mHWnd && !mIsFullScreen)
 		{
+			mTop = top;
+			mLeft = left;
+
 			SetWindowPos(mHWnd, 0, top, left, 0, 0,
 				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 		}
 	}
 
-	void D3D11RenderWindow::resize(unsigned int width, unsigned int height)
+	void D3D11RenderWindow::resize(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		if (mHWnd && !mIsFullScreen)
 		{
+			mWidth = width;
+			mHeight = height;
+
 			RECT rc = { 0, 0, width, height };
 			AdjustWindowRect(&rc, GetWindowLong(mHWnd, GWL_STYLE), false);
 			width = rc.right - rc.left;
@@ -557,9 +563,6 @@ namespace CamelotFramework
 		if (height == 0)
 			height = 1;
 
-		if (mWidth == width && mHeight == height)
-			return;
-
 		resizeSwapChainBuffers(width, height);
 
 		RenderWindow::_windowMovedOrResized();
@@ -673,44 +676,19 @@ namespace CamelotFramework
 
 		// width and height can be zero to autodetect size, therefore do not rely on them
 		UINT Flags = mIsFullScreen ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;
-		mSwapChain->ResizeBuffers(mSwapChainDesc.BufferCount, width, height, mSwapChainDesc.BufferDesc.Format, Flags);
+		HRESULT hr = mSwapChain->ResizeBuffers(mSwapChainDesc.BufferCount, width, height, mSwapChainDesc.BufferDesc.Format, Flags);
+
+		if(hr != S_OK)
+			CM_EXCEPT(InternalErrorException, "Call to ResizeBuffers failed.");
+
 		mSwapChain->GetDesc(&mSwapChainDesc);
-		mWidth = mSwapChainDesc.BufferDesc.Width;
-		mHeight = mSwapChainDesc.BufferDesc.Height;
+		//mWidth = mSwapChainDesc.BufferDesc.Width;
+		//mHeight = mSwapChainDesc.BufferDesc.Height;
 		mIsFullScreen = (0 == mSwapChainDesc.Windowed); // Alt-Enter together with SetWindowAssociation() can change this state
 
 		createSizeDependedD3DResources();
 
 		mDevice.getImmediateContext()->OMSetRenderTargets(0, 0, 0);
-		// Additional swap chains need their own depth buffer
-		// to support resizing them
-
-		HRESULT hr = mSwapChain->GetBuffer( 0,  __uuidof( ID3D11Texture2D ), (LPVOID*)&mBackBuffer  );
-		if( FAILED(hr) )
-		{
-			CM_EXCEPT(RenderingAPIException, 
-				"Unable to Get Back Buffer for swap chain");
-		}
-
-		// get the backbuffer desc
-		D3D11_TEXTURE2D_DESC BBDesc;
-		mBackBuffer->GetDesc(&BBDesc);
-
-		// create the render target view
-		D3D11_RENDER_TARGET_VIEW_DESC RTVDesc;
-		ZeroMemory( &RTVDesc, sizeof(RTVDesc) );
-
-		RTVDesc.Format = BBDesc.Format;
-		RTVDesc.ViewDimension = mFSAA ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
-		RTVDesc.Texture2D.MipSlice = 0;
-		hr = mDevice.getD3D11Device()->CreateRenderTargetView(mBackBuffer, &RTVDesc, &mRenderTargetView);
-
-		if(FAILED(hr))
-		{
-			String errorDescription = mDevice.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, 
-				"Unable to create rendertagert view\nError Description:" + errorDescription);
-		}
 	}
 
 	IDXGIDevice* D3D11RenderWindow::queryDxgiDevice()

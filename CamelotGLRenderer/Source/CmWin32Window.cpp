@@ -552,6 +552,9 @@ namespace CamelotFramework {
 
 		if (mHWnd && !mIsFullScreen)
 		{
+			mLeft = left;
+			mTop = top;
+
 			SetWindowPos(mHWnd, 0, left, top, 0, 0,
 				SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 		}
@@ -563,6 +566,9 @@ namespace CamelotFramework {
 
 		if (mHWnd && !mIsFullScreen)
 		{
+			mWidth = width;
+			mHeight = height;
+
 			RECT rc = { 0, 0, width, height };
 			AdjustWindowRect(&rc, GetWindowLong(mHWnd, GWL_STYLE), false);
 			width = rc.right - rc.left;
@@ -722,9 +728,6 @@ namespace CamelotFramework {
 		mLeft = rc.left;
 		// width and height represent drawable area only
 		GetClientRect(mHWnd, &rc);
-
-		if (mWidth == rc.right && mHeight == rc.bottom)
-			return;
 
 		mWidth = rc.right - rc.left;
 		mHeight = rc.bottom - rc.top;

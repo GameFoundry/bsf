@@ -93,6 +93,11 @@ o		 *
 			}
 		}
 
+		/**
+		 * @brief	Returns a shared_ptr version of "this" pointer.
+		 */
+		std::shared_ptr<CoreObject> getThisPtr() const { return mThis.lock(); }
+
 	protected:
 		/**
 		 * @brief	Frees all of the objects dynamically allocated memory. All derived classes that have something to free
@@ -109,11 +114,6 @@ o		 *
 		 * @note	Since this is scheduled to be executed on the core thread, normally you want to initialize all GPU specific resources here.
 		 */
 		virtual void initialize_internal();
-
-		/**
-		 * @brief	Returns a shared_ptr version of "this" pointer.
-		 */
-		std::shared_ptr<CoreObject> getThisPtr() const { return mThis.lock(); }
 
 		static void _deleteDelayedInternal(CoreObject* obj);
 
