@@ -99,28 +99,22 @@ namespace CamelotFramework
 
 			RendererManager::instance().getActive()->renderAll();
 
-			// Only queue new commands if core thread has finished rendering
-			// TODO - There might be a more optimal way to sync simulation and core threads so we maximize
-			// the amount of rendered frames
-			bool readyForNextFrame = false;
+			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 
+			// running just a single thread. Latency becomes worse if the core thread takes longer than sim 
+			// thread, in which case sim thread needs to wait. Optimal solution would be to get an average 
+			// difference between sim/core thread and start the sim thread a bit later so they finish at nearly the same time.
 			{
-				CM_LOCK_MUTEX(mFrameRenderingFinishedMutex);
-				readyForNextFrame = mIsFrameRenderingFinished;
+				CM_LOCK_MUTEX_NAMED(mFrameRenderingFinishedMutex, lock);
+
+				while(!mIsFrameRenderingFinished)
+					CM_THREAD_WAIT(mFrameRenderingFinishedCondition, mFrameRenderingFinishedMutex, lock);
+
+				mIsFrameRenderingFinished = false;
 			}
 
-			if(readyForNextFrame)
-			{
-				{
-					CM_LOCK_MUTEX(mFrameRenderingFinishedMutex);
-					mIsFrameRenderingFinished = false;
-				}
-				
-				gCoreThread().queueCommand(boost::bind(&Application::updateMessagePump, this));
-				mPrimaryCoreAccessor->submitToCoreThread();
-				gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
-			}
-			else
-				mPrimaryCoreAccessor->cancelAll();
+			gCoreThread().queueCommand(boost::bind(&Application::updateMessagePump, this));
+			mPrimaryCoreAccessor->submitToCoreThread();
+			gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
 
 			gTime().update();
 		}
@@ -142,6 +136,7 @@ namespace CamelotFramework
 		CM_LOCK_MUTEX(mFrameRenderingFinishedMutex);
 
 		mIsFrameRenderingFinished = true;
+		CM_THREAD_NOTIFY_ONE(mFrameRenderingFinishedCondition);
 	}
 
 	void Application::shutDown()

@@ -87,6 +87,7 @@ namespace CamelotFramework
 
 		bool mIsFrameRenderingFinished;
 		CM_MUTEX(mFrameRenderingFinishedMutex);
+		CM_THREAD_SYNCHRONISER(mFrameRenderingFinishedCondition);
 
 		volatile bool mRunMainLoop;
 

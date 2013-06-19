@@ -25,6 +25,9 @@ IMMEDIATE:
  - It's possible to resize smaller than 0 and cause an exception
  - Cursor doesn't stay inside the window we're resizing, window seems to resize slower than the cursor moves
  - OpenGL resize doesn't work - I believe its because its render thread works too slow and we call "cancelAll" on the command queue. Check out why is the render thread slow, and get rid of cancelAll(), it's not a valid approach
+  - Add special flag for commands that can or can't be dropped so I can still use "cancelAll"
+  - But just getting rid of "cancelAll" altogether is probably a better solution to get better performance, at the lost of some input lag
+    - Core and main threads should run in lockstep
  - Update debug camera so it uses callbacks
  - Add support for diacritical marks
  - onMovedOrResized is still used by Viewport
