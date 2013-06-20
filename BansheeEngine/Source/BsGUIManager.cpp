@@ -438,6 +438,16 @@ namespace BansheeEngine
 
 			GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
 
+			// HACK: This should never happen, as MouseUp was meant to happen before another MouseDown,
+			// and MouseUp will clear the active element. HOWEVER Windows doesn't send a MouseUp message when resizing
+			// a window really fast. My guess is that the cursor gets out of bounds and message is sent to another window.
+			if(mActiveMouseButton == guiButton && mActiveElement != nullptr) 
+			{
+				mActiveElement = nullptr;
+				mActiveWidget = nullptr;
+				mActiveMouseButton = GUIMouseButton::Left;
+			}
+
 			// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
 			bool acceptMouseDown = mActiveElement == nullptr && mMouseOverElement != nullptr;
 			if(acceptMouseDown)

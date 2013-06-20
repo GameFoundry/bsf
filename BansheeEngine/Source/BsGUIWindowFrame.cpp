@@ -260,17 +260,47 @@ namespace BansheeEngine
 
 				return true;
 			}
+		}
 
-			Int2 dragAmount = ev.getDragAmount();
-			if(dragAmount.x != 0 || dragAmount.y != 0)
+		if(ev.getType() == GUIMouseEventType::MouseDown)
+		{
+			Rect contentBounds = getContentBounds();
+
+			FrameSubArea subArea = getFrameSubArea(ev.getPosition(), contentBounds);
+			if(subArea != FrameSubArea::None && subArea != FrameSubArea::Middle)
 			{
 				RenderWindow* window = _getParentWidget().getOwnerWindow();
-
-				UINT32 newWidth = window->getWidth() + dragAmount.x;
-				UINT32 newHeight = window->getHeight() + dragAmount.y;
-
 				RenderWindowPtr windowPtr = std::static_pointer_cast<RenderWindow>(window->getThisPtr());
-				gMainCA().resizeWindow(windowPtr, newWidth, newHeight);
+
+				switch (subArea)
+				{
+				case BansheeEngine::FrameSubArea::TopLeft:
+					gMainCA().startResize(windowPtr, WindowResizeDirection::TopLeft);
+					break;
+				case BansheeEngine::FrameSubArea::TopCenter:
+					gMainCA().startResize(windowPtr, WindowResizeDirection::Top);
+					break;
+				case BansheeEngine::FrameSubArea::TopRight:
+					gMainCA().startResize(windowPtr, WindowResizeDirection::TopRight);
+					break;
+				case BansheeEngine::FrameSubArea::MiddleLeft:
+					gMainCA().startResize(windowPtr, WindowResizeDirection::Left);
+					break;
+				case BansheeEngine::FrameSubArea::MiddleRight:
+					gMainCA().startResize(windowPtr, WindowResizeDirection::Right);
+					break;
+				case BansheeEngine::FrameSubArea::BottomLeft:
+					gMainCA().startResize(windowPtr, WindowResizeDirection::BottomLeft);
+					break;
+				case BansheeEngine::FrameSubArea::BottomCenter:
+					gMainCA().startResize(windowPtr, WindowResizeDirection::Bottom);
+					break;
+				case BansheeEngine::FrameSubArea::BottomRight:
+					gMainCA().startResize(windowPtr, WindowResizeDirection::BottomRight);
+					break;
+				}
+
+				return true;
 			}
 		}
 

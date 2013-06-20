@@ -451,12 +451,20 @@ namespace CamelotFramework
 	Int2 D3D9RenderWindow::screenToWindowPos(const Int2& screenPos) const
 	{
 		POINT pos;
-
-		// Convert client coordinates to screen coordinates
 		pos.x = screenPos.x;
 		pos.y = screenPos.y;
 
 		ScreenToClient(mHWnd, &pos);
+		return Int2(pos.x, pos.y);
+	}
+
+	Int2 D3D9RenderWindow::windowToScreenPos(const Int2& windowPos) const
+	{
+		POINT pos;
+		pos.x = windowPos.x;
+		pos.y = windowPos.y;
+
+		ClientToScreen(mHWnd, &pos);
 		return Int2(pos.x, pos.y);
 	}
 
@@ -465,6 +473,45 @@ namespace CamelotFramework
 		THROW_IF_NOT_CORE_THREAD;
 
 		mDevice->copyContentsToMemory(this, dst, buffer);
+	}
+
+	void D3D9RenderWindow::startResize(WindowResizeDirection direction)
+	{
+		WPARAM dir = HTLEFT;
+		switch(direction)
+		{
+		case WindowResizeDirection::Left:
+			dir = HTLEFT;
+			break;
+		case WindowResizeDirection::TopLeft:
+			dir = HTTOPLEFT;
+			break;
+		case WindowResizeDirection::Top:
+			dir = HTTOP;
+			break;
+		case WindowResizeDirection::TopRight:
+			dir = HTTOPRIGHT;
+			break;
+		case WindowResizeDirection::Right:
+			dir = HTRIGHT;
+			break;
+		case WindowResizeDirection::BottomRight:
+			dir = HTBOTTOMRIGHT;
+			break;
+		case WindowResizeDirection::Bottom:
+			dir = HTBOTTOM;
+			break;
+		case WindowResizeDirection::BottomLeft:
+			dir = HTBOTTOMLEFT;
+			break;
+		}
+
+		SendMessage(mHWnd, WM_NCLBUTTONDOWN, dir, 0);
+	}
+
+	void D3D9RenderWindow::endResize()
+	{
+
 	}
 
 	void D3D9RenderWindow::_windowMovedOrResized()

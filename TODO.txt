@@ -1,15 +1,5 @@
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
-----------------------------------------------------------------------------------------------
-
-When I'm canceling command queue commands I might be canceling important user commands.
- - (e.g. user schedules a resource update and I cancel the command)
- - render commands can be cancelled with no repercussions?
- - maybe I should someone block sim thread if its running too fast?
-   - input lag?
-
---------
-
 DebugDraw
  - DebugDraw support for AA lines
  - Add DX9 and GL debug draw shaders
@@ -22,12 +12,10 @@ I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
 IMMEDIATE:
+ - Resizing twice in a row doesn't work because ButtonUp event apparently doesn't register
+ - Add startMove/endMove
  - It's possible to resize smaller than 0 and cause an exception
  - Cursor doesn't stay inside the window we're resizing, window seems to resize slower than the cursor moves
- - OpenGL resize doesn't work - I believe its because its render thread works too slow and we call "cancelAll" on the command queue. Check out why is the render thread slow, and get rid of cancelAll(), it's not a valid approach
-  - Add special flag for commands that can or can't be dropped so I can still use "cancelAll"
-  - But just getting rid of "cancelAll" altogether is probably a better solution to get better performance, at the lost of some input lag
-    - Core and main threads should run in lockstep
  - Update debug camera so it uses callbacks
  - Add support for diacritical marks
  - onMovedOrResized is still used by Viewport

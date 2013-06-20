@@ -40,6 +40,12 @@ namespace CamelotFramework
 		Fixed
 	};
 
+	enum class WindowResizeDirection
+	{
+		Left, TopLeft, Top, TopRight,
+		Right, BottomRight, Bottom, BottomLeft
+	};
+
 	struct CM_EXPORT RENDER_WINDOW_DESC
 	{
 		RENDER_WINDOW_DESC()
@@ -153,6 +159,9 @@ namespace CamelotFramework
 		*/
         virtual bool isFullScreen() const;
 
+		INT32 getLeft() const { return mLeft; }
+		INT32 getTop() const { return mTop; }
+
 		/**
 		 * @brief	Indicates whether the window currently has keyboard focus.
 		 */
@@ -181,6 +190,10 @@ namespace CamelotFramework
 		virtual void _windowFocusLost();
 
 		virtual Int2 screenToWindowPos(const Int2& screenPos) const = 0;
+		virtual Int2 windowToScreenPos(const Int2& windowPos) const = 0;
+
+		virtual void startResize(WindowResizeDirection direction) = 0;
+		virtual void endResize() = 0;
 
 		virtual void destroy();
 
