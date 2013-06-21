@@ -13,6 +13,7 @@
 #include "CmException.h"
 #include "CmInput.h"
 #include "CmPass.h"
+#include "CmDebug.h"
 
 using namespace CamelotFramework;
 
@@ -44,8 +45,8 @@ namespace BansheeEngine
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr)
 	{
-		mOnButtonDownConn = gInput().onKeyDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
-		mOnButtonUpConn = gInput().onKeyUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
+		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
+		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
 		mOnMouseMovedConn = gInput().onMouseMoved.connect(boost::bind(&GUIManager::onMouseMoved, this, _1));
 		mOnTextInputConn = gInput().onCharInput.connect(boost::bind(&GUIManager::onTextInput, this, _1)); 
 
@@ -605,6 +606,7 @@ namespace BansheeEngine
 						{
 							topMostElement = element;
 							topMostDepth = element->_getDepth();
+							widgetInFocus = widget;
 
 							break;
 						}
@@ -660,6 +662,8 @@ namespace BansheeEngine
 				// Send MouseMove event
 				if(mLastCursorLocalPos != localPos)
 				{
+					LOGWRN(toString(event.screenPos.x) + " - " + toString(event.screenPos.y) + " - " + toString((UINT32)widgetInFocus));
+
 					mMouseEvent.setMouseMoveData(topMostElement, localPos);
 					widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
 

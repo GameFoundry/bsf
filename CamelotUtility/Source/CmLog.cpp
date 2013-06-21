@@ -1,6 +1,8 @@
 #include "CmLog.h"
 #include "boost/signal.hpp"
 
+void dbg_VSLog(const CamelotFramework::String& message);
+
 namespace CamelotFramework
 {
 	LogEntry::LogEntry(const String& msg, const String& level)
@@ -26,6 +28,8 @@ namespace CamelotFramework
 		mEntries.push_back(newEntry);
 
 		doOnEntryAdded(*newEntry);
+
+		dbg_VSLog(message);
 
 		if(mAutoSave)
 			flush();
@@ -58,4 +62,16 @@ namespace CamelotFramework
 	{
 		onEntryAdded(entry);
 	}
+
+
+}
+
+// TODO: Debug only - Remove later
+
+#include <windows.h>
+
+void dbg_VSLog(const CamelotFramework::String& message)
+{
+	OutputDebugString(message.c_str());
+	OutputDebugString("\n");
 }

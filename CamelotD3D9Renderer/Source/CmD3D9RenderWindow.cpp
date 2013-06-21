@@ -26,6 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmD3D9RenderWindow.h"
+#include "CmInput.h"
 #include "CmCoreThread.h"
 #include "CmViewport.h"
 #include "CmException.h"
@@ -37,6 +38,16 @@ THE SOFTWARE.
 
 namespace CamelotFramework
 {
+	// HACK: During the move/resize modal loop no mouse messages will be posted, which means we will
+	// never receive a "mouse up" event, even though user had to release the mouse to stop the loop. But our GUI system
+	// relies on mouse down being followed by mouse up otherwise things end start to break a bit. So here we simulate 
+	// the mouse release. 
+	// Note: This is possible because SendMessage won't return until user releases the mouse and modal loop is done.
+	void HACK_SendLMBUpEvent()
+	{
+		gInput().simulateButtonUp(BC_MOUSE_LEFT);
+	}
+
 	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
         : RenderWindow(desc), mInstance(instance), mIsDepthBuffered(true)  
 	{
@@ -507,6 +518,7 @@ namespace CamelotFramework
 		}
 
 		SendMessage(mHWnd, WM_NCLBUTTONDOWN, dir, 0);
+		HACK_SendLMBUpEvent();
 	}
 
 	void D3D9RenderWindow::endResize()
@@ -517,6 +529,7 @@ namespace CamelotFramework
 	void D3D9RenderWindow::startMove()
 	{
 		SendMessage(mHWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+		HACK_SendLMBUpEvent();
 	}
 
 	void D3D9RenderWindow::endMove()

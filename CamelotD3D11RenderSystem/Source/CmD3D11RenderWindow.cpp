@@ -8,10 +8,16 @@
 #include "CmTextureManager.h"
 #include "CmD3D11DriverList.h"
 #include "CmD3D11Driver.h"
+#include "CmInput.h"
 #include "CmException.h"
 
 namespace CamelotFramework
 {
+	void HACK_SendLMBUpEvent()
+	{
+		gInput().simulateButtonUp(BC_MOUSE_LEFT);
+	}
+
 	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc,D3D11Device& device, IDXGIFactory* DXGIFactory)
 		: RenderWindow(desc)
 		, mDevice(device)
@@ -581,7 +587,11 @@ namespace CamelotFramework
 			break;
 		}
 
-		SendMessage(mHWnd, WM_NCLBUTTONDOWN, dir, 0);
+		SendMessage(mHWnd, WM_SYSCOMMAND, SC_SIZE + 8, 0 );
+		//SetCapture(mHWnd);
+		//SendMessage(mHWnd, WM_NCLBUTTONDOWN, dir, 0);
+		HACK_SendLMBUpEvent();
+		//ReleaseCapture();
 	}
 
 	void D3D11RenderWindow::endResize()
@@ -592,6 +602,7 @@ namespace CamelotFramework
 	void D3D11RenderWindow::startMove()
 	{
 		SendMessage(mHWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+		HACK_SendLMBUpEvent();
 	}
 
 	void D3D11RenderWindow::endMove()
@@ -693,9 +704,6 @@ namespace CamelotFramework
 		D3D11_TEXTURE2D_DESC BBDesc;
 		mBackBuffer->GetDesc(&BBDesc);
 
-		mWidth = BBDesc.Width;
-		mHeight = BBDesc.Height;
-
 		// create the render target view
 		D3D11_RENDER_TARGET_VIEW_DESC RTVDesc;
 		ZeroMemory( &RTVDesc, sizeof(RTVDesc) );
@@ -743,8 +751,8 @@ namespace CamelotFramework
 			CM_EXCEPT(InternalErrorException, "Call to ResizeBuffers failed.");
 
 		mSwapChain->GetDesc(&mSwapChainDesc);
-		//mWidth = mSwapChainDesc.BufferDesc.Width;
-		//mHeight = mSwapChainDesc.BufferDesc.Height;
+		mWidth = mSwapChainDesc.BufferDesc.Width;
+		mHeight = mSwapChainDesc.BufferDesc.Height;
 		mIsFullScreen = (0 == mSwapChainDesc.Windowed); // Alt-Enter together with SetWindowAssociation() can change this state
 
 		createSizeDependedD3DResources();

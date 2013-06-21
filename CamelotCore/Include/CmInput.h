@@ -15,8 +15,8 @@ namespace CamelotFramework
 		Input();
 		~Input();
 
-		boost::signal<void(const ButtonEvent&)> onKeyDown;
-		boost::signal<void(const ButtonEvent&)> onKeyUp;
+		boost::signal<void(const ButtonEvent&)> onButtonDown;
+		boost::signal<void(const ButtonEvent&)> onButtonUp;
 		boost::signal<void(const TextInputEvent&)> onCharInput;
 
 		boost::signal<void(const MouseEvent&)> onMouseMoved;
@@ -27,7 +27,6 @@ namespace CamelotFramework
 		 * @brief	Called every frame. Dispatches any callbacks resulting from input by the user. Should only be called by Application.
 		 */
 		void update();
-
 
 		/**
 		 * @brief	Returns smoothed mouse/joystick input in the horizontal axis.
@@ -47,9 +46,19 @@ namespace CamelotFramework
 
 		Int2 getMousePosition() const { return mMouseAbsPos; }
 
+		// Thread safe. Will only be processed on next "update".
+		void simulateButtonDown(ButtonCode code);
+
+		// Thread safe. Will only be processed on next "update".
+		void simulateButtonUp(ButtonCode code);
+
 	private:
 		std::shared_ptr<RawInputHandler> mRawInputHandler;
 		std::shared_ptr<OSInputHandler> mOSInputHandler;
+
+		CM_MUTEX(mSimulatedInputMutex);
+		Vector<ButtonCode>::type mSimulatedButtonUp;
+		Vector<ButtonCode>::type mSimulatedButtonDown;
 
 		float mSmoothHorizontalAxis;
 		float mSmoothVerticalAxis;

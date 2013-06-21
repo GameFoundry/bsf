@@ -207,6 +207,16 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 
 		return 0;
 	}
+	case WM_NCLBUTTONUP:
+		{
+			int b = 5;
+			break;
+		}
+	case WM_LBUTTONUP:
+		{
+			int a = 5;
+			break;
+		}
 	case WM_MOUSEMOVE:
 		{
 			POINT mousePos;

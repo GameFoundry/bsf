@@ -30,6 +30,7 @@ THE SOFTWARE.
 #define _WIN32_WINNT 0x0500
 #endif
 #include "CmWin32Window.h"
+#include "CmInput.h"
 #include "CmRenderSystem.h"
 #include "CmCoreThread.h"
 #include "CmException.h"
@@ -38,7 +39,17 @@ THE SOFTWARE.
 #include "CmWindowEventUtilities.h"
 #include "CmGLPixelFormat.h"
 
-namespace CamelotFramework {
+namespace CamelotFramework 
+{
+	// HACK: During the move/resize modal loop no mouse messages will be posted, which means we will
+	// never receive a "mouse up" event, even though user had to release the mouse to stop the loop. But our GUI system
+	// relies on mouse down being followed by mouse up otherwise things end start to break a bit. So here we simulate 
+	// the mouse release. 
+	// Note: This is possible because SendMessage won't return until user releases the mouse and modal loop is done.
+	void HACK_SendLMBUpEvent()
+	{
+		gInput().simulateButtonUp(BC_MOUSE_LEFT);
+	}
 
 	#define _MAX_CLASS_NAME_ 128
 
@@ -756,6 +767,7 @@ namespace CamelotFramework {
 		}
 
 		SendMessage(mHWnd, WM_NCLBUTTONDOWN, dir, 0);
+		HACK_SendLMBUpEvent();
 	}
 
 	void Win32Window::endResize()
@@ -766,6 +778,7 @@ namespace CamelotFramework {
 	void Win32Window::startMove()
 	{
 		SendMessage(mHWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+		HACK_SendLMBUpEvent();
 	}
 
 	void Win32Window::endMove()
