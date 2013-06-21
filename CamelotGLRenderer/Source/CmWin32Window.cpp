@@ -763,6 +763,16 @@ namespace CamelotFramework {
 
 	}
 
+	void Win32Window::startMove()
+	{
+		SendMessage(mHWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+	}
+
+	void Win32Window::endMove()
+	{
+
+	}
+
 	void Win32Window::_windowMovedOrResized()
 	{
 		if (!mHWnd || IsIconic(mHWnd))

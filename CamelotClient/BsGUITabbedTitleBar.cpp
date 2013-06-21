@@ -4,6 +4,7 @@
 #include "BsGUITexture.h"
 #include "BsGUIButton.h"
 #include "BsGUIToggle.h"
+#include "BsGUIWindowMover.h"
 #include "BsEngineGUI.h"
 #include "CmMath.h"
 
@@ -31,7 +32,7 @@ namespace BansheeEditor
 	void TabbedTitleBar::insertTab(UINT32 idx, const CM::String& name)
 	{
 		GUIToggle* newTabToggle = GUIToggle::create(*this, toWString(name), EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
-		GUITexture* newDragDropElement = GUITexture::create(*this, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
+		GUIWindowMover* newDragDropElement = GUIWindowMover::create(*this, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
 
 		idx = Math::Clamp(idx, 0U, (UINT32)mTabButtons.size());
 
@@ -61,14 +62,14 @@ namespace BansheeEditor
 		GUIWidget::initialize(target, ownerWindow);
 
 		GUIArea* backgroundArea = GUIArea::create(*this, 0, 1, 0, 13, 500);
-		GUITexture* titleBarBg = GUITexture::create(*this, GUIImageScaleMode::StretchToFit, getSkin()->getStyle("TitleBarBackground"));
+		GUIWindowMover* titleBarBg = GUIWindowMover::create(*this, getSkin()->getStyle("TitleBarBackground"));
 		GUIFixedSpace& space1 = backgroundArea->getLayout().addSpace(1);
 		backgroundArea->getLayout().addElement(titleBarBg);
 		GUIFixedSpace& space2 = backgroundArea->getLayout().addSpace(1);
 
 		mMainArea = GUIArea::create(*this, 0, 1, 0, 13, 499);
 
-		GUITexture* dragDropElement = GUITexture::create(*this, GUILayoutOptions::expandableX(13, 20), GUIImageScaleMode::StretchToFit, getSkin()->getStyle("TabbedBarDropArea"));
+		GUIWindowMover* dragDropElement = GUIWindowMover::create(*this, GUILayoutOptions::expandableX(13, 20), getSkin()->getStyle("TabbedBarDropArea"));
 		mLastDropElement = dragDropElement;
 
 		mMinBtn = GUIButton::create(*this, L"", getSkin()->getStyle("WinMinimizeBtn"));

@@ -514,6 +514,16 @@ namespace CamelotFramework
 
 	}
 
+	void D3D9RenderWindow::startMove()
+	{
+		SendMessage(mHWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+	}
+
+	void D3D9RenderWindow::endMove()
+	{
+
+	}
+
 	void D3D9RenderWindow::_windowMovedOrResized()
 	{
 		THROW_IF_NOT_CORE_THREAD;

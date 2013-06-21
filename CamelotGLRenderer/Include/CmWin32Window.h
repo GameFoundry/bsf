@@ -111,6 +111,9 @@ namespace CamelotFramework
 		void startResize(WindowResizeDirection direction);
 		void endResize();
 
+		void startMove();
+		void endMove();
+
 		HWND _getWindowHandle() const { return mHWnd; }
 		HDC _getHDC() const { return mHDC; }
 		

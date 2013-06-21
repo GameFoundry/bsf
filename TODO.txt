@@ -12,10 +12,6 @@ I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
 IMMEDIATE:
- - Resizing twice in a row doesn't work because ButtonUp event apparently doesn't register
- - Add startMove/endMove
- - It's possible to resize smaller than 0 and cause an exception
- - Cursor doesn't stay inside the window we're resizing, window seems to resize slower than the cursor moves
  - Update debug camera so it uses callbacks
  - Add support for diacritical marks
  - onMovedOrResized is still used by Viewport

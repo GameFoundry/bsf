@@ -78,6 +78,9 @@ namespace CamelotFramework
 		void startResize(WindowResizeDirection direction);
 		void endResize();
 
+		void startMove();
+		void endMove();
+
 		/**
 		 * @copydoc RenderWindow::reposition
 		 */

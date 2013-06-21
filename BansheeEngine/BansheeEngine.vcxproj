@@ -161,6 +161,7 @@
     <ClInclude Include="Include\BsGUITexture.h" />
     <ClInclude Include="Include\BsGUIToggle.h" />
     <ClInclude Include="Include\BsGUIWindowFrame.h" />
+    <ClInclude Include="Include\BsGUIWindowMover.h" />
     <ClInclude Include="Include\BsPrerequisites.h" />
     <ClInclude Include="Include\BsGUIElement.h" />
     <ClInclude Include="Include\BsGUIElementStyle.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="Source\BsGUIToggle.cpp" />
     <ClCompile Include="Source\BsGUIWidget.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrame.cpp" />
+    <ClCompile Include="Source\BsGUIWindowMover.cpp" />
     <ClCompile Include="Source\BsImageSprite.cpp" />
     <ClCompile Include="Source\BsSceneManager.cpp" />
     <ClCompile Include="Source\BsSprite.cpp" />

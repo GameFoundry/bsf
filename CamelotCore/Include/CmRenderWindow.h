@@ -195,6 +195,9 @@ namespace CamelotFramework
 		virtual void startResize(WindowResizeDirection direction) = 0;
 		virtual void endResize() = 0;
 
+		virtual void startMove() = 0;
+		virtual void endMove() = 0;
+
 		virtual void destroy();
 
 		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);
