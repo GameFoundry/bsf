@@ -693,6 +693,9 @@ namespace CamelotFramework
 		D3D11_TEXTURE2D_DESC BBDesc;
 		mBackBuffer->GetDesc(&BBDesc);
 
+		mWidth = BBDesc.Width;
+		mHeight = BBDesc.Height;
+
 		// create the render target view
 		D3D11_RENDER_TARGET_VIEW_DESC RTVDesc;
 		ZeroMemory( &RTVDesc, sizeof(RTVDesc) );
