@@ -177,6 +177,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmCoreThread.h" />
+    <ClInclude Include="Include\CmDeferredCallManager.h" />
     <ClInclude Include="Include\CmGameObjectHandle.h" />
     <ClInclude Include="Include\CmGameObject.h" />
     <ClInclude Include="Include\CmGameObjectRTTI.h" />
@@ -301,6 +302,7 @@
   <ItemGroup>
     <ClCompile Include="Include\CmMaterialManager.cpp" />
     <ClCompile Include="Source\CmCoreThread.cpp" />
+    <ClCompile Include="Source\CmDeferredCallManager.cpp" />
     <ClCompile Include="Source\CmGameObjectHandle.cpp" />
     <ClCompile Include="Source\CmGameObject.cpp" />
     <ClCompile Include="Source\CmApplication.cpp" />

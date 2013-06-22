@@ -456,6 +456,9 @@
     <ClInclude Include="Include\CmCoreThread.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmDeferredCallManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -700,6 +703,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmCoreThreadAccessor.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmDeferredCallManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
