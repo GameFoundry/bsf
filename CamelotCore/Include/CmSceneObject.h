@@ -284,6 +284,13 @@ namespace CamelotFramework
 		void destroyComponent(const HComponent& component);
 
 		/**
+		 * @brief	Removes the component from this SceneObject, and deallocates it.
+		 *
+		 * @param [in]	component	The component to destroy.
+		 */
+		void destroyComponent(Component* component);
+
+		/**
 		 * @brief	Returns all components on this SceneObject.
 		 */
 		Vector<HComponent>::type& getComponents() { return mComponents; }

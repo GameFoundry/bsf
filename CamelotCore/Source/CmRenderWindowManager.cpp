@@ -53,7 +53,7 @@ namespace CamelotFramework
 			mMovedOrResizedWindows.push_back(window);
 	}
 
-	void RenderWindowManager::_update()
+	void RenderWindowManager::update()
 	{
 		RenderWindow* newWinInFocus = nullptr;
 		Vector<RenderWindow*>::type movedOrResizedWindows;

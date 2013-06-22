@@ -19,7 +19,6 @@
 #include "CmDebug.h"
 
 using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	struct GUIGroupElement
@@ -59,12 +58,19 @@ namespace BansheeEngine
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(boost::bind(&GUIManager::onWindowFocusLost, this, _1));
 		mWindowMovedOrResizedConn = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&GUIManager::onWindowMovedOrResized, this, _1));
 
-		updateCaretTexture();
-		updateCaretSprite();
+		// Need to defer these calls because I want to make sure all managers are initialized first
+		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
+		deferredCall(std::bind(&GUIManager::updateCaretSprite, this));
 	}
 
 	GUIManager::~GUIManager()
 	{
+		// Make a copy of widgets, since destroying them will remove them from mWidgets and
+		// we can't iterate over an array thats getting modified
+		Vector<GUIWidget*>::type widgetCopy = mWidgets;
+		for(auto& widget : widgetCopy)
+			widget->destroy();
+
 		mOnButtonDownConn.disconnect();
 		mOnButtonUpConn.disconnect();
 		mOnMouseMovedConn.disconnect();

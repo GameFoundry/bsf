@@ -363,13 +363,28 @@ namespace CamelotFramework
 
 		if(iter != mComponents.end())
 		{
+			gSceneManager().notifyComponentRemoved((*iter));
+
 			(*iter).destroy();
 			mComponents.erase(iter);
-
-			gSceneManager().notifyComponentRemoved((*iter));
 		}
 		else
 			LOGDBG("Trying to remove a component that doesn't exist on this SceneObject.");
+	}
+
+	void SceneObject::destroyComponent(Component* component)
+	{
+		auto iterFind = std::find_if(mComponents.begin(), mComponents.end(), 
+			[component](const HComponent& x) { return x.getHandleData()->mPtr == component; });
+
+		if(iterFind == mComponents.end())
+		{
+			LOGDBG("Trying to remove a component that doesn't exist on this SceneObject.");
+		}
+		else
+		{
+			destroyComponent(*iterFind);
+		}
 	}
 
 	RTTITypeBase* SceneObject::getRTTIStatic()

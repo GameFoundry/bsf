@@ -1,4 +1,5 @@
 #include "CmComponent.h"
+#include "CmSceneObject.h"
 #include "CmComponentRTTI.h"
 
 namespace CamelotFramework
@@ -12,6 +13,11 @@ namespace CamelotFramework
 	Component::~Component()
 	{
 
+	}
+
+	void Component::destroy()
+	{
+		SO()->destroyComponent(this);
 	}
 
 	RTTITypeBase* Component::getRTTIStatic()

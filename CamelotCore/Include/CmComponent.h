@@ -23,6 +23,13 @@ namespace CamelotFramework
 		 */
 		virtual void update() = 0;
 
+		/**
+		 * @brief	Removes the component from parent SceneObject and deletes it. All
+		 * 			the references to this component will be marked as destroyed and you
+		 * 			will get an exception if you try to use them.
+		 */
+		void destroy();
+
 	protected:
 		friend class SceneObject;
 

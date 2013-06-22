@@ -64,11 +64,11 @@ namespace BansheeEngine
 
 		BuiltinMaterialManager::shutDown();
 
-		CM::gApplication().shutDown();
-
 		OverlayManager::shutDown();
-		GUIMaterialManager::shutDown();
 		GUIManager::shutDown();
+		GUIMaterialManager::shutDown();
+		
+		CM::gApplication().shutDown();
 	}
 
 	void Application::update()

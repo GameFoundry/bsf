@@ -26,6 +26,7 @@
 #include "CmFontManager.h"
 #include "CmRenderWindowManager.h"
 #include "CmRenderer.h"
+#include "CmDeferredCallManager.h"
 #include "CmCoreThread.h"
 
 #include "CmMaterial.h"
@@ -48,6 +49,7 @@ namespace CamelotFramework
 	{
 		MemStack::setupHeap(HID_Main);
 
+		DeferredCallManager::startUp(cm_new<DeferredCallManager>());
 		Time::startUp(cm_new<Time>());
 		DynLibManager::startUp(cm_new<DynLibManager>());
 		CoreGpuObjectManager::startUp(cm_new<CoreGpuObjectManager>());
@@ -90,7 +92,8 @@ namespace CamelotFramework
 
 		while(mRunMainLoop)
 		{
-			RenderWindowManager::instance()._update();
+			DeferredCallManager::instance().update();
+			RenderWindowManager::instance().update();
 			gInput().update();
 			gSceneManager().update();
 
@@ -161,6 +164,7 @@ namespace CamelotFramework
 		CoreGpuObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
 		DynLibManager::shutDown();
 		Time::shutDown();
+		DeferredCallManager::shutDown();
 	}
 
 	void* Application::loadPlugin(const String& pluginName)

@@ -20,7 +20,7 @@ namespace CamelotFramework
 		/**
 		 * @brief	Called once per frame. Dispatches events. Internal method.
 		 */
-		void _update();
+		void update();
 
 		Vector<RenderWindow*>::type getRenderWindows() const;
 
