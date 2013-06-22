@@ -1,6 +1,9 @@
 #include "BsGUIManager.h"
 #include "BsGUIWidget.h"
 #include "BsGUIElement.h"
+#include "BsImageSprite.h"
+#include "BsSpriteTexture.h"
+#include "CmTime.h"
 #include "CmSceneObject.h"
 #include "CmMaterial.h"
 #include "CmMeshData.h"
@@ -43,7 +46,9 @@ namespace BansheeEngine
 
 	GUIManager::GUIManager()
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
-		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr)
+		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
+		mCaretSprite(nullptr), mCaretTexture(nullptr), mCaretX(0), mCaretY(0), mCaretDepth(0), mCaretWidth(1), mCaretHeight(8), 
+		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretShown(false), mCaretColor(Color::Black), mCaretOwnerWidget(nullptr)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
 		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
@@ -53,6 +58,9 @@ namespace BansheeEngine
 		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(boost::bind(&GUIManager::onWindowFocusGained, this, _1));
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(boost::bind(&GUIManager::onWindowFocusLost, this, _1));
 		mWindowMovedOrResizedConn = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&GUIManager::onWindowMovedOrResized, this, _1));
+
+		updateCaretTexture();
+		updateCaretSprite();
 	}
 
 	GUIManager::~GUIManager()
@@ -65,6 +73,9 @@ namespace BansheeEngine
 		mWindowGainedFocusConn.disconnect();
 		mWindowLostFocusConn.disconnect();
 		mWindowMovedOrResizedConn.disconnect();
+
+		if(mCaretSprite != nullptr)
+			cm_delete(mCaretSprite);
 	}
 
 	void GUIManager::registerWidget(GUIWidget* widget)
@@ -120,6 +131,16 @@ namespace BansheeEngine
 		updateMeshes();
 	}
 
+	void GUIManager::showCaret(GUIWidget* widget, INT32 x, INT32 y, UINT32 depth)
+	{
+		mCaretX = x;
+		mCaretY = y;
+		mCaretDepth = depth;
+		mCaretLastBlinkTime = 0.0f;
+		mCaretShown = true;
+		mCaretOwnerWidget = widget;
+	}
+
 	void GUIManager::render(ViewportPtr& target, CoreAccessor& coreAccessor)
 	{
 		auto findIter = mCachedGUIData.find(target.get());
@@ -140,30 +161,24 @@ namespace BansheeEngine
 				HMaterial material = renderData.cachedMaterials[meshIdx];
 				GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
 
-				// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
-				// might be more optimal to just scale the mesh as the resolution changes?
-				float invViewportWidth = 1.0f / (target->getWidth() * 0.5f);
-				float invViewportHeight = 1.0f / (target->getHeight() * 0.5f);
+				renderMesh(mesh, material, widget->SO()->getWorldTfrm(), target, coreAccessor);
 
-				material->setFloat("invViewportWidth", invViewportWidth);
-				material->setFloat("invViewportHeight", invViewportHeight);
-				material->setMat4("worldTransform", widget->SO()->getWorldTfrm());
-
-				if(material == nullptr || !material.isLoaded())
-					continue;
-
-				if(mesh == nullptr || !mesh.isLoaded())
-					continue;
-
-				for(UINT32 i = 0; i < material->getNumPasses(); i++)
+				// Draw caret
+				// TODO: Caret is always drawn on top of a single widget. This means it will ignore
+				// depth of individual elements within the widget, so it will draw in front of them.
+				// Having it draw correctly would require updating the mesh whenever caret blinks,
+				// which I don't feel is worth it considering that elements within a widget shouldn't be overlapping
+				// so this is unlikely to be an issue.
+				if(mCaretShown && widget == mCaretOwnerWidget)
 				{
-					PassPtr pass = material->getPass(i);
-					pass->activate(coreAccessor);
+					float curTime = gTime().getTime();
 
-					PassParametersPtr paramsPtr = material->getPassParameters(i);
-					pass->bindParameters(coreAccessor, paramsPtr);
+					if((curTime - mCaretLastBlinkTime) >= mCaretBlinkInterval)
+					{
+						mCaretLastBlinkTime = curTime;
 
-					coreAccessor.render(mesh->getRenderOperation());
+						renderMesh(mCaretMesh, mCaretMaterial, widget->SO()->getWorldTfrm(), target, coreAccessor);
+					}
 				}
 
 				meshIdx++;
@@ -177,6 +192,35 @@ namespace BansheeEngine
 			// Separating meshes can then be used as a compatibility mode for DX9
 
 			CM_EXCEPT(NotImplementedException, "Not implemented");
+		}
+	}
+
+	void GUIManager::renderMesh(const CM::HMesh& mesh, const CM::HMaterial& material, const CM::Matrix4& tfrm, CM::ViewportPtr& target, CM::CoreAccessor& coreAccessor)
+	{
+		// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
+		// might be more optimal to just scale the mesh as the resolution changes?
+		float invViewportWidth = 1.0f / (target->getWidth() * 0.5f);
+		float invViewportHeight = 1.0f / (target->getHeight() * 0.5f);
+
+		material->setFloat("invViewportWidth", invViewportWidth);
+		material->setFloat("invViewportHeight", invViewportHeight);
+		material->setMat4("worldTransform", tfrm);
+
+		if(material == nullptr || !material.isLoaded())
+			return;
+
+		if(mesh == nullptr || !mesh.isLoaded())
+			return;
+
+		for(UINT32 i = 0; i < material->getNumPasses(); i++)
+		{
+			PassPtr pass = material->getPass(i);
+			pass->activate(coreAccessor);
+
+			PassParametersPtr paramsPtr = material->getPassParameters(i);
+			pass->bindParameters(coreAccessor, paramsPtr);
+
+			coreAccessor.render(mesh->getRenderOperation());
 		}
 	}
 
@@ -409,6 +453,63 @@ namespace BansheeEngine
 				groupIdx++;
 			}
 		}
+	}
+
+	void GUIManager::updateCaretSprite()
+	{
+		if(mCaretSprite == nullptr)
+			mCaretSprite = cm_new<ImageSprite>();
+
+		IMAGE_SPRITE_DESC desc;
+		desc.offset = Int2(mCaretX, mCaretY);
+		desc.width = mCaretWidth;
+		desc.height = mCaretHeight;
+		desc.texture = mCaretTexture;
+
+		mCaretSprite->update(desc);
+
+		assert(mCaretSprite->getNumRenderElements() == 1);
+
+		UINT32 numQuads = mCaretSprite->getNumQuads(0);
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, PoolAlloc>(numQuads * 4);
+
+		meshData->beginDesc();
+		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+		meshData->addVertElem(VET_FLOAT2, VES_TEXCOORD);
+		meshData->addSubMesh(numQuads * 6);
+		meshData->endDesc();
+
+		UINT8* vertices = meshData->getElementData(VES_POSITION);
+		UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
+		UINT32* indices = meshData->getIndices32();
+		UINT32 vertexStride = meshData->getVertexStride();
+		UINT32 indexStride = meshData->getIndexElementSize();
+
+		mCaretSprite->fillBuffer(vertices, uvs, indices, 0, numQuads, vertexStride, indexStride, 0);
+
+		if(!mCaretMesh)
+			mCaretMesh = Mesh::create();
+
+		gMainSyncedCA().writeSubresource(mCaretMesh.getInternalPtr(), 0, *meshData);
+		gMainSyncedCA().submitToCoreThread(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
+	}
+
+	void GUIManager::updateCaretTexture()
+	{
+		if(mCaretTexture == nullptr)
+		{
+			HTexture newTex = Texture::create(TEX_TYPE_2D, 1, 1, 0, PF_R8G8B8A8);
+			mCaretTexture = cm_shared_ptr<SpriteTexture>(newTex);
+		}
+
+		const HTexture& tex = mCaretTexture->getTexture();
+		UINT32 subresourceIdx = tex->mapToSubresourceIdx(0, 0);
+		PixelDataPtr data = tex->allocateSubresourceBuffer(subresourceIdx);
+
+		data->setColorAt(Color::Red, 0, 0);
+
+		gMainSyncedCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), *data);
+		gMainSyncedCA().submitToCoreThread(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
 	}
 
 	void GUIManager::onButtonDown(const ButtonEvent& event)
