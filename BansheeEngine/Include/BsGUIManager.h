@@ -2,7 +2,8 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIMouseEvent.h"
-#include "BsGUIKeyEvent.h"
+#include "BsGUIButtonEvent.h"
+#include "BsGUICommandEvent.h"
 #include "CmModule.h"
 #include "CmColor.h"
 #include "CmInput.h"
@@ -38,28 +39,9 @@ namespace BansheeEngine
 		void update();
 		void render(CM::ViewportPtr& target, CM::CoreAccessor& coreAccessor);
 
-		/**
-		 * @brief	Starts rendering the input caret at the specified coordinates.
-		 * 			The coordinates represent top left corner of the caret, relative to the
-		 * 			provided widget.
-		 */
-		void showCaret(GUIWidget* widget, CM::INT32 x, CM::INT32 y, CM::UINT32 depth);
-
-		/**
-		 * @brief	Hides the input caret.
-		 */
-		void hideCaret() { mCaretShown = false; }
-
-		void setCaretWidth(CM::UINT32 width) { mCaretWidth = width; updateCaretSprite(); }
-		void setCaretHeight(CM::UINT32 height) { mCaretHeight = height; updateCaretSprite(); }
-
-		/**
-		 * @brief	Determines how fast the caret blinks.
-		 *
-		 * @param	interval	Blinking interval in seconds.
-		 */
-		void setCaretBlinkInterval(float interval) { mCaretBlinkInterval = interval; }
 		void setCaretColor(const CM::Color& color) { mCaretColor = color; updateCaretTexture(); }
+		const SpriteTexturePtr& getCaretTexture() const { return mCaretTexture; }
+		bool getCaretBlinkState() const { return mIsCaretOn; }
 
 	private:
 		CM::Vector<GUIWidget*>::type mWidgets;
@@ -82,22 +64,14 @@ namespace BansheeEngine
 		CM::Int2 mLastCursorLocalPos;
 
 		GUIMouseEvent mMouseEvent;
-		GUIKeyEvent mKeyEvent;
+		GUIButtonEvent mKeyEvent;
+		GUICommandEvent mCommandEvent;
 
-		// Caret related
-		ImageSprite* mCaretSprite;
 		SpriteTexturePtr mCaretTexture;
-		CM::HMesh mCaretMesh;
-		CM::HMaterial mCaretMaterial;
-
-		GUIWidget* mCaretOwnerWidget;
-		bool mCaretShown;
-		CM::INT32 mCaretX, mCaretY;
-		CM::UINT32 mCaretDepth;
-		CM::UINT32 mCaretWidth, mCaretHeight;
 		CM::Color mCaretColor;
 		float mCaretBlinkInterval;
 		float mCaretLastBlinkTime;
+		bool mIsCaretOn;
 
 		boost::signals::connection mOnButtonDownConn;
 		boost::signals::connection mOnButtonUpConn;
@@ -111,7 +85,6 @@ namespace BansheeEngine
 		void renderMesh(const CM::HMesh& mesh, const CM::HMaterial& material, const CM::Matrix4& tfrm, CM::ViewportPtr& target, CM::CoreAccessor& coreAccessor);
 
 		void updateMeshes();
-		void updateCaretSprite();
 		void updateCaretTexture();
 
 		void onButtonDown(const CM::ButtonEvent& event);

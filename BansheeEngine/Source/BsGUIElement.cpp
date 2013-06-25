@@ -50,7 +50,12 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIElement::keyEvent(const GUIKeyEvent& ev)
+	bool GUIElement::buttonEvent(const GUIButtonEvent& ev)
+	{
+		return false;
+	}
+
+	bool GUIElement::commandEvent(const GUICommandEvent& ev)
 	{
 		return false;
 	}

@@ -46,8 +46,7 @@ namespace BansheeEngine
 	GUIManager::GUIManager()
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
-		mCaretSprite(nullptr), mCaretTexture(nullptr), mCaretX(0), mCaretY(0), mCaretDepth(0), mCaretWidth(1), mCaretHeight(8), 
-		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretShown(false), mCaretColor(Color::Black), mCaretOwnerWidget(nullptr)
+		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(Color::Black), mIsCaretOn(false)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
 		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
@@ -58,9 +57,8 @@ namespace BansheeEngine
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(boost::bind(&GUIManager::onWindowFocusLost, this, _1));
 		mWindowMovedOrResizedConn = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&GUIManager::onWindowMovedOrResized, this, _1));
 
-		// Need to defer these calls because I want to make sure all managers are initialized first
+		// Need to defer this call because I want to make sure all managers are initialized first
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
-		deferredCall(std::bind(&GUIManager::updateCaretSprite, this));
 	}
 
 	GUIManager::~GUIManager()
@@ -79,9 +77,6 @@ namespace BansheeEngine
 		mWindowGainedFocusConn.disconnect();
 		mWindowLostFocusConn.disconnect();
 		mWindowMovedOrResizedConn.disconnect();
-
-		if(mCaretSprite != nullptr)
-			cm_delete(mCaretSprite);
 	}
 
 	void GUIManager::registerWidget(GUIWidget* widget)
@@ -134,17 +129,23 @@ namespace BansheeEngine
 			widget->_updateLayout();
 		}
 
-		updateMeshes();
-	}
+		// Blink caret
+		if(mKeyboardFocusElement != nullptr)
+		{
+			float curTime = gTime().getTime();
 
-	void GUIManager::showCaret(GUIWidget* widget, INT32 x, INT32 y, UINT32 depth)
-	{
-		mCaretX = x;
-		mCaretY = y;
-		mCaretDepth = depth;
-		mCaretLastBlinkTime = 0.0f;
-		mCaretShown = true;
-		mCaretOwnerWidget = widget;
+			if((curTime - mCaretLastBlinkTime) >= mCaretBlinkInterval)
+			{
+				mCaretLastBlinkTime = curTime;
+				mIsCaretOn = !mIsCaretOn;
+
+				mCommandEvent = GUICommandEvent();
+				mCommandEvent.setRedrawData();
+				mKeyboardFocusElement->commandEvent(mCommandEvent);
+			}
+		}
+
+		updateMeshes();
 	}
 
 	void GUIManager::render(ViewportPtr& target, CoreAccessor& coreAccessor)
@@ -168,24 +169,6 @@ namespace BansheeEngine
 				GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
 
 				renderMesh(mesh, material, widget->SO()->getWorldTfrm(), target, coreAccessor);
-
-				// Draw caret
-				// TODO: Caret is always drawn on top of a single widget. This means it will ignore
-				// depth of individual elements within the widget, so it will draw in front of them.
-				// Having it draw correctly would require updating the mesh whenever caret blinks,
-				// which I don't feel is worth it considering that elements within a widget shouldn't be overlapping
-				// so this is unlikely to be an issue.
-				if(mCaretShown && widget == mCaretOwnerWidget)
-				{
-					float curTime = gTime().getTime();
-
-					if((curTime - mCaretLastBlinkTime) >= mCaretBlinkInterval)
-					{
-						mCaretLastBlinkTime = curTime;
-
-						renderMesh(mCaretMesh, mCaretMaterial, widget->SO()->getWorldTfrm(), target, coreAccessor);
-					}
-				}
 
 				meshIdx++;
 			}
@@ -461,45 +444,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::updateCaretSprite()
-	{
-		if(mCaretSprite == nullptr)
-			mCaretSprite = cm_new<ImageSprite>();
-
-		IMAGE_SPRITE_DESC desc;
-		desc.offset = Int2(mCaretX, mCaretY);
-		desc.width = mCaretWidth;
-		desc.height = mCaretHeight;
-		desc.texture = mCaretTexture;
-
-		mCaretSprite->update(desc);
-
-		assert(mCaretSprite->getNumRenderElements() == 1);
-
-		UINT32 numQuads = mCaretSprite->getNumQuads(0);
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, PoolAlloc>(numQuads * 4);
-
-		meshData->beginDesc();
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
-		meshData->addVertElem(VET_FLOAT2, VES_TEXCOORD);
-		meshData->addSubMesh(numQuads * 6);
-		meshData->endDesc();
-
-		UINT8* vertices = meshData->getElementData(VES_POSITION);
-		UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
-		UINT32* indices = meshData->getIndices32();
-		UINT32 vertexStride = meshData->getVertexStride();
-		UINT32 indexStride = meshData->getIndexElementSize();
-
-		mCaretSprite->fillBuffer(vertices, uvs, indices, 0, numQuads, vertexStride, indexStride, 0);
-
-		if(!mCaretMesh)
-			mCaretMesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mCaretMesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
-	}
-
 	void GUIManager::updateCaretTexture()
 	{
 		if(mCaretTexture == nullptr)
@@ -527,7 +471,7 @@ namespace BansheeEngine
 		{
 			if(mKeyboardFocusElement != nullptr)
 			{
-				mKeyEvent = GUIKeyEvent();
+				mKeyEvent = GUIButtonEvent();
 
 				mKeyEvent.setKeyDownData(event.buttonCode);
 				mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
@@ -789,7 +733,7 @@ namespace BansheeEngine
 	{
 		if(mKeyboardFocusElement != nullptr)
 		{
-			mKeyEvent = GUIKeyEvent();
+			mKeyEvent = GUIButtonEvent();
 
 			mKeyEvent.setTextInputData(event.textChar);
 			mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);

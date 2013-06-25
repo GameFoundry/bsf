@@ -55,7 +55,7 @@ namespace BansheeEngine
 		 * @brief	Forwards the specified key event to the specified element. The element
 		 * 			must be a child of this widget.
 		 */
-		virtual bool _keyEvent(GUIElement* element, const GUIKeyEvent& ev);
+		virtual bool _keyEvent(GUIElement* element, const GUIButtonEvent& ev);
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;

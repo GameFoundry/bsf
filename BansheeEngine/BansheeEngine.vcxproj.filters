@@ -153,10 +153,13 @@
     <ClInclude Include="Include\BsGUIInputBox.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIKeyEvent.h">
+    <ClInclude Include="Include\BsGUIWindowMover.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIWindowMover.h">
+    <ClInclude Include="Include\BsGUICommandEvent.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIButtonEvent.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -260,10 +263,10 @@
     <ClCompile Include="Source\BsGUIMouseEvent.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUIKeyEvent.cpp">
+    <ClCompile Include="Source\BsGUIWindowMover.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUIWindowMover.cpp">
+    <ClCompile Include="Source\BsGUIButtonEvent.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>

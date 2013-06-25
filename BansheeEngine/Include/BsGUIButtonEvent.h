@@ -13,10 +13,10 @@ namespace BansheeEngine
 		TextInput
 	};
 
-	class BS_EXPORT GUIKeyEvent
+	class BS_EXPORT GUIButtonEvent
 	{
 	public:
-		GUIKeyEvent();
+		GUIButtonEvent();
 
 		GUIKeyEventType getType() const { return mType; }
 		CM::ButtonCode getKey() const { return mKey; }

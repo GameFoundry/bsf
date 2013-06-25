@@ -116,9 +116,9 @@ namespace BansheeEngine
 		return element->mouseEvent(ev);
 	}
 
-	bool GUIWidget::_keyEvent(GUIElement* element, const GUIKeyEvent& ev)
+	bool GUIWidget::_keyEvent(GUIElement* element, const GUIButtonEvent& ev)
 	{
-		return element->keyEvent(ev);
+		return element->buttonEvent(ev);
 	}
 
 	void GUIWidget::registerElement(GUIElement* elem)

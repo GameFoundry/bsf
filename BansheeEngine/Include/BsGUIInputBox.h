@@ -49,10 +49,18 @@ namespace BansheeEngine
 		virtual void _setFocus(bool focus);
 	private:
 		ImageSprite* mImageSprite;
+		ImageSprite* mCaretSprite;
 		TextSprite* mTextSprite;
+		CM::Vector<ImageSprite*>::type mSelectionSprites;
 		CM::UINT32 mNumImageRenderElements;
 		bool mInputCursorSet;
 		bool mDragInProgress;
+
+		CM::UINT32 mSelectionStart;
+		CM::UINT32 mSelectionEnd;
+		CM::UINT32 mCaretPos;
+		bool mCaretShown;
+		bool mSelectionShown;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::WString mText;
@@ -60,6 +68,20 @@ namespace BansheeEngine
 		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		virtual bool keyEvent(const GUIKeyEvent& ev);
+		virtual bool buttonEvent(const GUIButtonEvent& ev);
+		virtual bool commandEvent(const GUICommandEvent& ev);
+
+		Sprite* renderElemToSprite(CM::UINT32 renderElemIdx, CM::UINT32& localRenderElemIdx) const;
+
+		void showCaret(CM::UINT32 charIdx);
+		void clearCaret();
+		CM::Int2 getCaretPosition() const;
+		CM::UINT32 getCaretHeight() const;
+
+		void showSelection(CM::UINT32 startChar, CM::UINT32 endChar);
+		void clearSelection();
+		CM::Vector<CM::Rect>::type getSelectionRects() const;
+
+		CM::UINT32 getCharAtPosition(const CM::Int2& pos) const;
 	};
 }
