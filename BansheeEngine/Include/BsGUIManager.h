@@ -40,7 +40,9 @@ namespace BansheeEngine
 		void render(CM::ViewportPtr& target, CM::CoreAccessor& coreAccessor);
 
 		void setCaretColor(const CM::Color& color) { mCaretColor = color; updateCaretTexture(); }
+		void setTextSelectionColor(const CM::Color& color) { mTextSelectionColor = color; updateTextSelectionTexture(); }
 		const SpriteTexturePtr& getCaretTexture() const { return mCaretTexture; }
+		const SpriteTexturePtr& getTextSelectionTexture() const { return mTextSelectionTexture; }
 		bool getCaretBlinkState() const { return mIsCaretOn; }
 
 	private:
@@ -73,6 +75,9 @@ namespace BansheeEngine
 		float mCaretLastBlinkTime;
 		bool mIsCaretOn;
 
+		SpriteTexturePtr mTextSelectionTexture;
+		CM::Color mTextSelectionColor;
+
 		boost::signals::connection mOnButtonDownConn;
 		boost::signals::connection mOnButtonUpConn;
 		boost::signals::connection mOnMouseMovedConn;
@@ -86,6 +91,7 @@ namespace BansheeEngine
 
 		void updateMeshes();
 		void updateCaretTexture();
+		void updateTextSelectionTexture();
 
 		void onButtonDown(const CM::ButtonEvent& event);
 		void onButtonUp(const CM::ButtonEvent& event);

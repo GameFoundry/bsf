@@ -9,6 +9,7 @@
 #include "BsGUIButtonEvent.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUICommandEvent.h"
+#include "CmTextUtility.h"
 #include "CmTexture.h"
 #include "CmCursor.h"
 
@@ -24,7 +25,8 @@ namespace BansheeEngine
 
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mNumImageRenderElements(0), mInputCursorSet(false), mDragInProgress(false),
-		mSelectionStart(0), mSelectionEnd(0), mCaretSprite(nullptr), mCaretShown(false), mSelectionShown(false), mCaretPos(0)
+		mSelectionStart(0), mSelectionEnd(0), mCaretSprite(nullptr), mCaretShown(false), mSelectionShown(false), mCaretPos(0),
+		mIsMultiline(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mCaretSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -49,6 +51,9 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mTextSprite);
 		cm_delete<PoolAlloc>(mCaretSprite);
 		cm_delete<PoolAlloc>(mImageSprite);
+
+		for(auto& sprite : mSelectionSprites)
+			cm_delete(sprite);
 	}
 
 	GUIInputBox* GUIInputBox::create(GUIWidget& parent, const GUIElementStyle* style)
@@ -124,18 +129,10 @@ namespace BansheeEngine
 		textDesc.font = mStyle->font;
 		textDesc.fontSize = mStyle->fontSize;
 
-		Rect contentBounds = mBounds;
-
-		contentBounds.x += mStyle->margins.left + mStyle->contentOffset.left;
-		contentBounds.y += mStyle->margins.top + mStyle->contentOffset.top;
-		contentBounds.width = (UINT32)std::max(0, (INT32)contentBounds.width - 
-			(INT32)(mStyle->margins.left + mStyle->margins.right + mStyle->contentOffset.left + mStyle->contentOffset.right));
-		contentBounds.height = (UINT32)std::max(0, (INT32)contentBounds.height - 
-			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
-
-		textDesc.offset = Int2(contentBounds.x, contentBounds.y);
-		textDesc.width = contentBounds.width;
-		textDesc.height = contentBounds.height;
+		Rect textBounds = getTextBounds();
+		textDesc.offset = Int2(textBounds.x, textBounds.y);
+		textDesc.width = textBounds.width;
+		textDesc.height = textBounds.height;
 		textDesc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
 		textDesc.horzAlign = mStyle->textHorzAlign;
 		textDesc.vertAlign = mStyle->textVertAlign;
@@ -157,7 +154,38 @@ namespace BansheeEngine
 		if(mSelectionShown)
 		{
 			Vector<Rect>::type selectionRects = getSelectionRects();
-			// TODO - Update sprites
+
+			INT32 diff = (INT32)(mSelectionSprites.size() - selectionRects.size());
+
+			if(diff > 0)
+			{
+				for(INT32 i = 0; i < diff; i++)
+					cm_delete(mSelectionSprites[i]);
+
+				mSelectionSprites.erase(mSelectionSprites.begin() + selectionRects.size(), mSelectionSprites.end());
+			}
+			else if(diff < 0)
+			{
+				for(INT32 i = diff; i < 0; i++)
+				{
+					ImageSprite* newSprite = cm_new<ImageSprite>();
+					mSelectionSprites.push_back(newSprite);
+				}
+			}
+
+			UINT32 idx = 0;
+			for(auto& sprite : mSelectionSprites)
+			{
+				IMAGE_SPRITE_DESC desc;
+				desc.offset = Int2(selectionRects[idx].x, selectionRects[idx].y);
+				desc.width = selectionRects[idx].width;
+				desc.height = selectionRects[idx].height;
+				desc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
+				desc.texture = GUIManager::instance().getTextSelectionTexture();
+
+				sprite->update(desc);
+				idx++;
+			}
 		}
 	}
 
@@ -423,6 +451,10 @@ namespace BansheeEngine
 
 	void GUIInputBox::clearSelection()
 	{
+		for(auto& sprite : mSelectionSprites)
+			cm_delete(sprite);
+		
+		mSelectionSprites.clear();
 		mSelectionShown = false;
 		markAsDirty();
 	}
@@ -435,8 +467,31 @@ namespace BansheeEngine
 
 	UINT32 GUIInputBox::getCharAtPosition(const Int2& pos) const
 	{
+		Rect textBounds = getTextBounds();
+
+		//std::shared_ptr<TextUtility::TextData> textData = 
+		//	TextUtility::getTextData(mText, mStyle->font, mStyle->fontSize, 
+		//	textBounds.width, textBounds.height, mIsMultiline);
+
+		//textData->getLines()
+
 		// TODO
 		return 0;
+	}
+
+	CM::Rect GUIInputBox::getTextBounds() const
+	{
+		Rect textBounds = mBounds;
+
+		textBounds.x += mStyle->margins.left + mStyle->contentOffset.left;
+		textBounds.y += mStyle->margins.top + mStyle->contentOffset.top;
+		textBounds.width = (UINT32)std::max(0, (INT32)textBounds.width - 
+			(INT32)(mStyle->margins.left + mStyle->margins.right + mStyle->contentOffset.left + mStyle->contentOffset.right));
+		textBounds.height = (UINT32)std::max(0, (INT32)textBounds.height - 
+			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
+
+
+		return textBounds;
 	}
 
 	void GUIInputBox::_setFocus(bool focus)

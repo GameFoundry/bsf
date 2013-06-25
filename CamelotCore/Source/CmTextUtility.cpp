@@ -219,17 +219,23 @@ namespace CamelotFramework
 					vertices[curVert + 2] = Vector2((float)curX, (float)curY + (float)charIter->height);
 					vertices[curVert + 3] = Vector2((float)(curX + charIter->width), (float)curY + (float)charIter->height);
 
-					uvs[curVert + 0] = Vector2(charIter->uvX, charIter->uvY);
-					uvs[curVert + 1] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY);
-					uvs[curVert + 2] = Vector2(charIter->uvX, charIter->uvY + charIter->uvHeight);
-					uvs[curVert + 3] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY + charIter->uvHeight);
+					if(uvs != nullptr)
+					{
+						uvs[curVert + 0] = Vector2(charIter->uvX, charIter->uvY);
+						uvs[curVert + 1] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY);
+						uvs[curVert + 2] = Vector2(charIter->uvX, charIter->uvY + charIter->uvHeight);
+						uvs[curVert + 3] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY + charIter->uvHeight);
+					}
 
-					indexes[curIndex + 0] = curVert + 0;
-					indexes[curIndex + 1] = curVert + 1;
-					indexes[curIndex + 2] = curVert + 2;
-					indexes[curIndex + 3] = curVert + 1;
-					indexes[curIndex + 4] = curVert + 3;
-					indexes[curIndex + 5] = curVert + 2;
+					if(indexes != nullptr)
+					{
+						indexes[curIndex + 0] = curVert + 0;
+						indexes[curIndex + 1] = curVert + 1;
+						indexes[curIndex + 2] = curVert + 2;
+						indexes[curIndex + 3] = curVert + 1;
+						indexes[curIndex + 4] = curVert + 3;
+						indexes[curIndex + 5] = curVert + 2;
+					}
 
 					offset++;
 					numQuads++;

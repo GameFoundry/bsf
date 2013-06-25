@@ -55,6 +55,7 @@ namespace BansheeEngine
 		CM::UINT32 mNumImageRenderElements;
 		bool mInputCursorSet;
 		bool mDragInProgress;
+		bool mIsMultiline;
 
 		CM::UINT32 mSelectionStart;
 		CM::UINT32 mSelectionEnd;
@@ -83,5 +84,6 @@ namespace BansheeEngine
 		CM::Vector<CM::Rect>::type getSelectionRects() const;
 
 		CM::UINT32 getCharAtPosition(const CM::Int2& pos) const;
+		CM::Rect getTextBounds() const;
 	};
 }

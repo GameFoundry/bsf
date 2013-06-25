@@ -23,28 +23,6 @@ namespace BansheeEngine
 		const CM::Vector<TextUtility::TextLine>::type& lines = textData->getLines();
 		const CM::Vector<UINT32>::type& quadsPerPage = textData->getNumQuadsPerPage();
 
-		UINT32 curHeight = 0;
-		for(auto& line : lines)
-		{
-			curHeight += line.getYOffset();
-		}
-
-		// Calc vertical alignment offset
-		UINT32 vertDiff = std::max(0U, desc.height - curHeight);
-		UINT32 vertOffset = 0;
-		switch(desc.vertAlign)
-		{
-		case TVA_Top:
-			vertOffset = 0;
-			break;
-		case TVA_Bottom:
-			vertOffset = std::max(0, (INT32)(desc.height - curHeight));
-			break;
-		case TVA_Center:
-			vertOffset = std::max(0, (INT32)(desc.height - curHeight)) / 2;
-			break;
-		}
-
 		// Resize cached mesh array to needed size
 		if(mCachedRenderElements.size() > quadsPerPage.size())
 		{
@@ -104,6 +82,26 @@ namespace BansheeEngine
 			texPage++;
 		}
 
+		UINT32 curHeight = 0;
+		for(auto& line : lines)
+			curHeight += line.getYOffset();
+
+		// Calc vertical alignment offset
+		UINT32 vertDiff = std::max(0U, desc.height - curHeight);
+		UINT32 vertOffset = 0;
+		switch(desc.vertAlign)
+		{
+		case TVA_Top:
+			vertOffset = 0;
+			break;
+		case TVA_Bottom:
+			vertOffset = std::max(0, (INT32)vertDiff);
+			break;
+		case TVA_Center:
+			vertOffset = std::max(0, (INT32)vertDiff) / 2;
+			break;
+		}
+
 		// Calc horizontal alignment offset and set final line positions
 		Int2 offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
 		UINT32 numPages = (UINT32)quadsPerPage.size();
@@ -138,8 +136,8 @@ namespace BansheeEngine
 				UINT32 numVertices = writtenQuads * 4;
 				for(size_t i = 0; i < numVertices; i++)
 				{
-					renderElem.vertices[offset + i].x += (float)position.x;
-					renderElem.vertices[offset + i].y += (float)position.y;
+					renderElem.vertices[offset * 4 + i].x += (float)position.x;
+					renderElem.vertices[offset * 4 + i].y += (float)position.y;
 				}
 
 				faceOffsets[j] += writtenQuads;
@@ -149,9 +147,7 @@ namespace BansheeEngine
 		if(desc.clipRect.width > 0 && desc.clipRect.height > 0)
 		{
 			for(auto& renderElem : mCachedRenderElements)
-			{
 				clipToRect(renderElem.vertices, renderElem.uvs, renderElem.numQuads, desc.clipRect);
-			}
 		}
 
 		// Apply offset
@@ -166,5 +162,95 @@ namespace BansheeEngine
 		}
 
 		updateBounds();
+	}
+
+	void TextSprite::getTextVertices(const TEXT_SPRITE_DESC& desc, CM::Vector2* vertices, CM::Vector2* uvs)
+	{
+		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap);
+
+		if(textData == nullptr)
+			return;
+
+		const CM::Vector<TextUtility::TextLine>::type& lines = textData->getLines();
+		const CM::Vector<UINT32>::type& quadsPerPage = textData->getNumQuadsPerPage();
+
+		UINT32 numQuads = 0;
+		for(auto& quads : quadsPerPage)
+			numQuads += quads;
+
+		UINT32 curHeight = 0;
+		for(auto& line : lines)
+			curHeight += line.getYOffset();
+
+		// Calc vertical alignment offset
+		UINT32 vertDiff = std::max(0U, desc.height - curHeight);
+		UINT32 vertOffset = 0;
+		switch(desc.vertAlign)
+		{
+		case TVA_Top:
+			vertOffset = 0;
+			break;
+		case TVA_Bottom:
+			vertOffset = std::max(0, (INT32)vertDiff);
+			break;
+		case TVA_Center:
+			vertOffset = std::max(0, (INT32)vertDiff) / 2;
+			break;
+		}
+
+		// Calc horizontal alignment offset and set final line positions
+		Int2 offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
+		UINT32 curY = 0;
+		UINT32 numPages = (UINT32)quadsPerPage.size();
+		UINT32 quadOffset = 0;
+		for(size_t i = 0; i < lines.size(); i++)
+		{
+			UINT32 horzOffset = 0;
+			switch(desc.horzAlign)
+			{
+			case THA_Left:
+				horzOffset = 0;
+				break;
+			case THA_Right:
+				horzOffset = std::max(0, (INT32)(desc.width - lines[i].getWidth()));
+				break;
+			case THA_Center:
+				horzOffset = std::max(0, (INT32)(desc.width - lines[i].getWidth())) / 2;
+				break;
+			}
+
+			Int2 position = offset + Int2(horzOffset, vertOffset + curY);
+			curY += lines[i].getYOffset();
+
+			for(size_t j = 0; j < numPages; j++)
+			{
+				// TODO - fillBuffer won't accept null uv or indexes
+				UINT32 writtenQuads = lines[i].fillBuffer((UINT32)j, vertices, uvs, nullptr, quadOffset, numQuads);
+
+				UINT32 numVertices = writtenQuads * 4;
+				for(size_t i = 0; i < numVertices; i++)
+				{
+					vertices[quadOffset * 4 + i].x += (float)position.x;
+					vertices[quadOffset * 4 + i].y += (float)position.y;
+				}
+
+				quadOffset += writtenQuads;
+			}
+		}
+
+		if(desc.clipRect.width > 0 && desc.clipRect.height > 0)
+		{
+			clipToRect(vertices, uvs, numQuads, desc.clipRect);
+		}
+
+		// Apply offset
+		{
+			UINT32 numVertices = numQuads * 4;
+			for(size_t i = 0; i < numVertices; i++)
+			{
+				vertices[i].x += (float)desc.offset.x;
+				vertices[i].y += (float)desc.offset.y;
+			}
+		}
 	}
 }

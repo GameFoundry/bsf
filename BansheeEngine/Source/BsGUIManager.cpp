@@ -46,7 +46,8 @@ namespace BansheeEngine
 	GUIManager::GUIManager()
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
-		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(Color::Black), mIsCaretOn(false)
+		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(Color::Black), mIsCaretOn(false),
+		mTextSelectionColor(1.0f, 0.6588f, 0.0f)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
 		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
@@ -59,6 +60,7 @@ namespace BansheeEngine
 
 		// Need to defer this call because I want to make sure all managers are initialized first
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
+		deferredCall(std::bind(&GUIManager::updateTextSelectionTexture, this));
 	}
 
 	GUIManager::~GUIManager()
@@ -456,7 +458,25 @@ namespace BansheeEngine
 		UINT32 subresourceIdx = tex->mapToSubresourceIdx(0, 0);
 		PixelDataPtr data = tex->allocateSubresourceBuffer(subresourceIdx);
 
-		data->setColorAt(Color::Red, 0, 0);
+		data->setColorAt(mCaretColor, 0, 0);
+
+		gMainSyncedCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), *data);
+		gMainSyncedCA().submitToCoreThread(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
+	}
+
+	void GUIManager::updateTextSelectionTexture()
+	{
+		if(mTextSelectionTexture == nullptr)
+		{
+			HTexture newTex = Texture::create(TEX_TYPE_2D, 1, 1, 0, PF_R8G8B8A8);
+			mTextSelectionTexture = cm_shared_ptr<SpriteTexture>(newTex);
+		}
+
+		const HTexture& tex = mTextSelectionTexture->getTexture();
+		UINT32 subresourceIdx = tex->mapToSubresourceIdx(0, 0);
+		PixelDataPtr data = tex->allocateSubresourceBuffer(subresourceIdx);
+
+		data->setColorAt(mTextSelectionColor, 0, 0);
 
 		gMainSyncedCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), *data);
 		gMainSyncedCA().submitToCoreThread(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData

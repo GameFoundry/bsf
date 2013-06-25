@@ -42,5 +42,7 @@ namespace BansheeEngine
 		TextSprite();
 
 		void update(const TEXT_SPRITE_DESC& desc);
+
+		static void getTextVertices(const TEXT_SPRITE_DESC& desc, CM::Vector2* vertices, CM::Vector2* uv = nullptr);
 	};
 }

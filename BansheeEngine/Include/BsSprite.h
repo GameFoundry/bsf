@@ -98,7 +98,7 @@ namespace BansheeEngine
 		void updateBounds() const;
 		void clearMesh() const;
 
-		void clipToRect(CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32 numQuads, const CM::Rect& clipRect) const;
-		CM::Int2 getAnchorOffset(SpriteAnchor anchor, CM::UINT32 width, CM::UINT32 height) const;
+		static void clipToRect(CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32 numQuads, const CM::Rect& clipRect);
+		static CM::Int2 getAnchorOffset(SpriteAnchor anchor, CM::UINT32 width, CM::UINT32 height);
 	};
 }

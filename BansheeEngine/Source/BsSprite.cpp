@@ -63,7 +63,7 @@ namespace BansheeEngine
 		return renderElem.numQuads;
 	}
 
-	Int2 Sprite::getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height) const
+	Int2 Sprite::getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height)
 	{
 		switch(anchor)
 		{
@@ -153,7 +153,7 @@ namespace BansheeEngine
 	// This will only properly clip an array of rectangular quads
 	// Vertices in the quad must be in a specific order: top left, top right, bottom left, bottom right
 	// (0, 0) represents top left of the screen
-	void Sprite::clipToRect(Vector2* vertices, Vector2* uv, UINT32 numQuads, const Rect& clipRect) const
+	void Sprite::clipToRect(Vector2* vertices, Vector2* uv, UINT32 numQuads, const Rect& clipRect)
 	{
 		float left = (float)clipRect.x;
 		float right = (float)clipRect.x + clipRect.width;
