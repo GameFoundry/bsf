@@ -24,9 +24,9 @@ namespace BansheeEngine
 	}
 
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mNumImageRenderElements(0), mInputCursorSet(false), mDragInProgress(false),
+		:GUIElement(parent, style, layoutOptions), mInputCursorSet(false), mDragInProgress(false),
 		mSelectionStart(0), mSelectionEnd(0), mCaretSprite(nullptr), mCaretShown(false), mSelectionShown(false), mCaretPos(0),
-		mIsMultiline(false)
+		mIsMultiline(false), mTextVertices(nullptr), mNumTextVertices(0), mTextLineHeight(0)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mCaretSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -122,21 +122,8 @@ namespace BansheeEngine
 
 		mImageSprite->update(mImageDesc);
 		mBounds = mImageSprite->getBounds();
-		mNumImageRenderElements = mImageSprite->getNumRenderElements();
 
-		TEXT_SPRITE_DESC textDesc;
-		textDesc.text = mText;
-		textDesc.font = mStyle->font;
-		textDesc.fontSize = mStyle->fontSize;
-
-		Rect textBounds = getTextBounds();
-		textDesc.offset = Int2(textBounds.x, textBounds.y);
-		textDesc.width = textBounds.width;
-		textDesc.height = textBounds.height;
-		textDesc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
-		textDesc.horzAlign = mStyle->textHorzAlign;
-		textDesc.vertAlign = mStyle->textVertAlign;
-
+		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		mTextSprite->update(textDesc);
 
 		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
@@ -467,16 +454,37 @@ namespace BansheeEngine
 
 	UINT32 GUIInputBox::getCharAtPosition(const Int2& pos) const
 	{
-		Rect textBounds = getTextBounds();
+		TEXT_SPRITE_DESC textDesc = getTextDesc();
+		UINT32 numQuads = TextSprite::getTextVertices(textDesc, nullptr);
 
-		//std::shared_ptr<TextUtility::TextData> textData = 
-		//	TextUtility::getTextData(mText, mStyle->font, mStyle->fontSize, 
-		//	textBounds.width, textBounds.height, mIsMultiline);
+		if(numQuads == 0)
+			return 0;
 
-		//textData->getLines()
+		Vector2* vertices = (Vector2*)cm_alloc(numQuads * 4 * sizeof(Vector2));
+		TextSprite::getTextVertices(textDesc, vertices);
 
-		// TODO
-		return 0;
+		Vector2 vecPos((float)pos.x, (float)pos.y);
+
+		float nearestDist = std::numeric_limits<float>::max();
+		UINT32 nearestChar = 0;
+		for(UINT32 i = 0; i < numQuads; i++)
+		{
+			UINT32 curVert = i * 4;
+
+			Vector2 center = vertices[curVert + 0] + vertices[curVert + 1] + vertices[curVert + 2] + vertices[curVert + 3];
+			center /= 4;
+
+			float dist = center.squaredDistance(vecPos);
+			if(dist < nearestDist)
+			{
+				nearestChar = i;
+				nearestDist = dist;
+			}
+		}
+
+		cm_free(vertices);
+
+		return nearestChar;
 	}
 
 	CM::Rect GUIInputBox::getTextBounds() const
@@ -490,8 +498,23 @@ namespace BansheeEngine
 		textBounds.height = (UINT32)std::max(0, (INT32)textBounds.height - 
 			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
 
-
 		return textBounds;
+	}
+
+	TEXT_SPRITE_DESC GUIInputBox::getTextDesc() const
+	{
+		TEXT_SPRITE_DESC textDesc;
+		textDesc.text = mText;
+		textDesc.font = mStyle->font;
+		textDesc.fontSize = mStyle->fontSize;
+
+		Rect textBounds = getTextBounds();
+		textDesc.offset = Int2(textBounds.x, textBounds.y);
+		textDesc.width = textBounds.width;
+		textDesc.height = textBounds.height;
+		textDesc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
+		textDesc.horzAlign = mStyle->textHorzAlign;
+		textDesc.vertAlign = mStyle->textVertAlign;
 	}
 
 	void GUIInputBox::_setFocus(bool focus)

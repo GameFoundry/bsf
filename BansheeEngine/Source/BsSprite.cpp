@@ -180,37 +180,38 @@ namespace BansheeEngine
 			float newLeft = Math::Clamp(vertices[vertIdx + 0].x, left, right);
 			float uvLeftOffset = (newLeft - vertices[vertIdx + 0].x) * du;
 
-			vertices[vertIdx + 0].x = newLeft;
-			vertices[vertIdx + 2].x = newLeft;
-			uv[vertIdx + 0].x += uvLeftOffset;
-			uv[vertIdx + 2].x += uvLeftOffset;
-
 			// Clip right
 			float newRight = Math::Clamp(vertices[vertIdx + 1].x, left, right);
 			float uvRightOffset = (vertices[vertIdx + 1].x - newRight) * du;
-
-			vertices[vertIdx + 1].x = newRight;
-			vertices[vertIdx + 3].x = newRight;
-			uv[vertIdx + 1].x -= uvRightOffset;
-			uv[vertIdx + 3].x -= uvRightOffset;
 
 			// Clip top
 			float newTop = Math::Clamp(vertices[vertIdx + 0].y, top, bottom);
 			float uvTopOffset = (newTop - vertices[vertIdx + 0].y) * dv;
 
-			vertices[vertIdx + 0].y = newTop;
-			vertices[vertIdx + 1].y = newTop;
-			uv[vertIdx + 0].y += uvTopOffset;
-			uv[vertIdx + 1].y += uvTopOffset;
-
 			// Clip bottom
 			float newBottom = Math::Clamp(vertices[vertIdx + 2].y, top, bottom);
 			float uvBottomOffset = (vertices[vertIdx + 2].y - newBottom) * dv;
 
+			vertices[vertIdx + 0].x = newLeft;
+			vertices[vertIdx + 2].x = newLeft;
+			vertices[vertIdx + 1].x = newRight;
+			vertices[vertIdx + 3].x = newRight;
+			vertices[vertIdx + 0].y = newTop;
+			vertices[vertIdx + 1].y = newTop;
 			vertices[vertIdx + 2].y = newBottom;
 			vertices[vertIdx + 3].y = newBottom;
-			uv[vertIdx + 2].y -= uvBottomOffset;
-			uv[vertIdx + 3].y -= uvBottomOffset;
+			
+			if(uv != nullptr)
+			{
+				uv[vertIdx + 0].x += uvLeftOffset;
+				uv[vertIdx + 2].x += uvLeftOffset;
+				uv[vertIdx + 1].x -= uvRightOffset;
+				uv[vertIdx + 3].x -= uvRightOffset;
+				uv[vertIdx + 0].y += uvTopOffset;
+				uv[vertIdx + 1].y += uvTopOffset;
+				uv[vertIdx + 2].y -= uvBottomOffset;
+				uv[vertIdx + 3].y -= uvBottomOffset;
+			}
 		}
 	}
 }

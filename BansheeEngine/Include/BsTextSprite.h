@@ -43,6 +43,20 @@ namespace BansheeEngine
 
 		void update(const TEXT_SPRITE_DESC& desc);
 
-		static void getTextVertices(const TEXT_SPRITE_DESC& desc, CM::Vector2* vertices, CM::Vector2* uv = nullptr);
+		/**
+		 * @brief	Populates the provided buffer with vertices for the individual characters described
+		 * 			by the descriptor structure. Characters will be in the same position as if they were being drawn on
+		 * 			the screen using TextSprite directly.
+		 *
+		 * @param	desc				What text to get vertices for, what font, what size, etc.
+		 * @param   [out]	vertices	Pre-allocated array with enough space to hold all vertices.						
+		 *
+		 * @return	Number of text quads. (1 quad per character)
+		 * 			
+		 * @note	This method should be called twice. Once with "vertices" as nullptr to receive number
+		 * 			of quads you will need, then you should allocate the vertex array of enough size and
+		 * 			send it to the second call. (4 * numQuads)
+		 */
+		static UINT32 getTextVertices(const TEXT_SPRITE_DESC& desc, CM::Vector2* vertices);
 	};
 }

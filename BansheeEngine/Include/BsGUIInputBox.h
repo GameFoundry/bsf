@@ -48,23 +48,29 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 		virtual void _setFocus(bool focus);
 	private:
+		// Sprites
 		ImageSprite* mImageSprite;
 		ImageSprite* mCaretSprite;
 		TextSprite* mTextSprite;
 		CM::Vector<ImageSprite*>::type mSelectionSprites;
-		CM::UINT32 mNumImageRenderElements;
 		bool mInputCursorSet;
 		bool mDragInProgress;
 		bool mIsMultiline;
 
+		IMAGE_SPRITE_DESC mImageDesc;
+		CM::WString mText;
+
+		// Selection & input caret
 		CM::UINT32 mSelectionStart;
 		CM::UINT32 mSelectionEnd;
 		CM::UINT32 mCaretPos;
 		bool mCaretShown;
 		bool mSelectionShown;
 
-		IMAGE_SPRITE_DESC mImageDesc;
-		CM::WString mText;
+		// Used for caret/selection and in general hit detection with specific chars
+		CM::Vector2* mTextVertices;
+		UINT32 mNumTextVertices;
+		UINT32 mTextLineHeight;
 
 		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
@@ -85,5 +91,6 @@ namespace BansheeEngine
 
 		CM::UINT32 getCharAtPosition(const CM::Int2& pos) const;
 		CM::Rect getTextBounds() const;
+		TEXT_SPRITE_DESC getTextDesc() const;
 	};
 }

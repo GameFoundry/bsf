@@ -164,12 +164,12 @@ namespace BansheeEngine
 		updateBounds();
 	}
 
-	void TextSprite::getTextVertices(const TEXT_SPRITE_DESC& desc, CM::Vector2* vertices, CM::Vector2* uvs)
+	UINT32 TextSprite::getTextVertices(const TEXT_SPRITE_DESC& desc, CM::Vector2* vertices)
 	{
 		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap);
 
 		if(textData == nullptr)
-			return;
+			return 0;
 
 		const CM::Vector<TextUtility::TextLine>::type& lines = textData->getLines();
 		const CM::Vector<UINT32>::type& quadsPerPage = textData->getNumQuadsPerPage();
@@ -177,6 +177,9 @@ namespace BansheeEngine
 		UINT32 numQuads = 0;
 		for(auto& quads : quadsPerPage)
 			numQuads += quads;
+
+		if(vertices == nullptr)
+			return numQuads;
 
 		UINT32 curHeight = 0;
 		for(auto& line : lines)
@@ -225,7 +228,7 @@ namespace BansheeEngine
 			for(size_t j = 0; j < numPages; j++)
 			{
 				// TODO - fillBuffer won't accept null uv or indexes
-				UINT32 writtenQuads = lines[i].fillBuffer((UINT32)j, vertices, uvs, nullptr, quadOffset, numQuads);
+				UINT32 writtenQuads = lines[i].fillBuffer((UINT32)j, vertices, nullptr, nullptr, quadOffset, numQuads);
 
 				UINT32 numVertices = writtenQuads * 4;
 				for(size_t i = 0; i < numVertices; i++)
@@ -240,7 +243,7 @@ namespace BansheeEngine
 
 		if(desc.clipRect.width > 0 && desc.clipRect.height > 0)
 		{
-			clipToRect(vertices, uvs, numQuads, desc.clipRect);
+			clipToRect(vertices, nullptr, numQuads, desc.clipRect);
 		}
 
 		// Apply offset
@@ -252,5 +255,7 @@ namespace BansheeEngine
 				vertices[i].y += (float)desc.offset.y;
 			}
 		}
+
+		return numQuads;
 	}
 }
