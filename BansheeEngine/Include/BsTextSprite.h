@@ -36,6 +36,14 @@ namespace BansheeEngine
 		bool wordWrap;
 	};
 
+	struct SpriteLineDesc
+	{
+		CM::UINT32 startChar;
+		CM::UINT32 endChar;
+		CM::UINT32 lineHeight;
+		CM::INT32 lineYStart;
+	};
+
 	class BS_EXPORT TextSprite : public Sprite
 	{
 	public:
@@ -43,20 +51,13 @@ namespace BansheeEngine
 
 		void update(const TEXT_SPRITE_DESC& desc);
 
-		/**
-		 * @brief	Populates the provided buffer with vertices for the individual characters described
-		 * 			by the descriptor structure. Characters will be in the same position as if they were being drawn on
-		 * 			the screen using TextSprite directly.
-		 *
-		 * @param	desc				What text to get vertices for, what font, what size, etc.
-		 * @param   [out]	vertices	Pre-allocated array with enough space to hold all vertices.						
-		 *
-		 * @return	Number of text quads. (1 quad per character)
-		 * 			
-		 * @note	This method should be called twice. Once with "vertices" as nullptr to receive number
-		 * 			of quads you will need, then you should allocate the vertex array of enough size and
-		 * 			send it to the second call. (4 * numQuads)
-		 */
-		static UINT32 getTextVertices(const TEXT_SPRITE_DESC& desc, CM::Vector2* vertices);
+		CM::UINT32 getNumLines() const { return (CM::UINT32)mLineDescs.size(); }
+		const SpriteLineDesc& getLineDesc(CM::UINT32 lineIdx) const { return mLineDescs.at(lineIdx); }
+		CM::UINT32 getLineForChar(CM::UINT32 charIdx) const;
+		CM::Rect getCharRect(CM::UINT32 charIdx) const;
+		CM::UINT32 getCharIdxAtPos(const CM::Int2& pos) const;
+
+	private:
+		CM::Vector<SpriteLineDesc>::type mLineDescs;
 	};
 }

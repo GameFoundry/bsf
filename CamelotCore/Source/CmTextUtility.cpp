@@ -249,6 +249,20 @@ namespace CamelotFramework
 		return numQuads;
 	}
 
+	UINT32 TextUtility::TextLine::getNumChars() const
+	{
+		UINT32 numChars = 0;
+		for(auto& word : mWords)
+		{
+			if(word.isSpacer())
+				continue;
+
+			numChars += (UINT32)word.getChars().size();
+		}
+
+		return numChars;
+	}
+
 	void TextUtility::TextLine::calculateBounds()
 	{
 		mWidth = 0;

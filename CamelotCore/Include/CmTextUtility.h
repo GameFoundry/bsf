@@ -75,6 +75,10 @@ namespace CamelotFramework
 			 */
 			UINT32 fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size) const;
 
+			/**
+			 * @brief	Returns the total number of characters on this line.
+			 */
+			UINT32 getNumChars() const;
 		private:
 			friend class TextUtility;
 

@@ -9,6 +9,7 @@
 #include "BsGUIButtonEvent.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUICommandEvent.h"
+#include "CmFont.h"
 #include "CmTextUtility.h"
 #include "CmTexture.h"
 #include "CmCursor.h"
@@ -26,7 +27,7 @@ namespace BansheeEngine
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mInputCursorSet(false), mDragInProgress(false),
 		mSelectionStart(0), mSelectionEnd(0), mCaretSprite(nullptr), mCaretShown(false), mSelectionShown(false), mCaretPos(0),
-		mIsMultiline(false), mTextVertices(nullptr), mNumTextVertices(0), mTextLineHeight(0)
+		mIsMultiline(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mCaretSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -299,7 +300,12 @@ namespace BansheeEngine
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
 			mImageDesc.texture = mStyle->active.texture;
-			showCaret(getCharAtPosition(ev.getPosition()));
+
+			if(mText.size() > 0)
+				showCaret(mTextSprite->getCharIdxAtPos(ev.getPosition()) +  1);
+			else
+				showCaret(0);
+
 			clearSelection();
 			markAsDirty();
 
@@ -352,12 +358,13 @@ namespace BansheeEngine
 					if(mSelectionShown)
 					{
 						mText.erase(mSelectionStart, mSelectionEnd);
-						mCaretPos = mSelectionStart;
+						mCaretPos = mSelectionStart + 1;
 						clearSelection();
 					}
 					else
 					{
-						mText.erase(mCaretPos);
+						if(mCaretPos > 0)
+							mText.erase(mCaretPos - 1);
 					}
 
 					markAsDirty();
@@ -377,7 +384,7 @@ namespace BansheeEngine
 			if(mSelectionShown)
 			{
 				mText.erase(mSelectionStart, mSelectionEnd);
-				mCaretPos = mSelectionStart;
+				mCaretPos = mSelectionStart + 1;
 				clearSelection();
 			}
 
@@ -403,9 +410,9 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIInputBox::showCaret(CM::UINT32 charIdx)
+	void GUIInputBox::showCaret(CM::UINT32 caretPos)
 	{
-		mCaretPos = charIdx;
+		mCaretPos = caretPos;
 		mCaretShown = true;
 		markAsDirty();
 	}
@@ -418,14 +425,41 @@ namespace BansheeEngine
 
 	Int2 GUIInputBox::getCaretPosition() const
 	{
-		// TODO
-		return Int2(0, 0);
+		if(mCaretPos > 0)
+		{
+			Rect charRect = mTextSprite->getCharRect(mCaretPos - 1);
+			UINT32 lineIdx = mTextSprite->getLineForChar(mCaretPos - 1);
+			UINT32 yOffset = mTextSprite->getLineDesc(lineIdx).lineYStart;
+
+			return Int2(charRect.x + charRect.width + 1, yOffset);
+		}
+		else
+		{
+			Rect contentBounds = getContentBounds();
+			return Int2(contentBounds.x, contentBounds.y);
+		}		
 	}
 
 	UINT32 GUIInputBox::getCaretHeight() const
 	{
-		// TODO
-		return 8;
+		if(mCaretPos > 0)
+		{
+			UINT32 lineIdx = mTextSprite->getLineForChar(mCaretPos - 1);
+			return mTextSprite->getLineDesc(lineIdx).lineHeight;
+		}
+		else
+		{
+			if(mStyle->font != nullptr)
+			{
+				UINT32 nearestSize = mStyle->font->getClosestAvailableSize(mStyle->fontSize);
+				const FontData* fontData = mStyle->font->getFontDataForSize(nearestSize);
+
+				if(fontData != nullptr)
+					return fontData->fontDesc.lineHeight;
+			}
+		}
+
+		return 0;
 	}
 
 	void GUIInputBox::showSelection(UINT32 startChar, UINT32 endChar)
@@ -448,43 +482,70 @@ namespace BansheeEngine
 
 	Vector<Rect>::type GUIInputBox::getSelectionRects() const
 	{
-		// TODO
-		return Vector<Rect>::type();
-	}
+		Vector<Rect>::type selectionRects;
 
-	UINT32 GUIInputBox::getCharAtPosition(const Int2& pos) const
-	{
-		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		UINT32 numQuads = TextSprite::getTextVertices(textDesc, nullptr);
+		if(mSelectionStart == mSelectionEnd)
+			return selectionRects;
 
-		if(numQuads == 0)
-			return 0;
+		UINT32 startLine = mTextSprite->getLineForChar(mSelectionStart);
+		UINT32 endLine = mTextSprite->getLineForChar(mSelectionEnd);
 
-		Vector2* vertices = (Vector2*)cm_alloc(numQuads * 4 * sizeof(Vector2));
-		TextSprite::getTextVertices(textDesc, vertices);
-
-		Vector2 vecPos((float)pos.x, (float)pos.y);
-
-		float nearestDist = std::numeric_limits<float>::max();
-		UINT32 nearestChar = 0;
-		for(UINT32 i = 0; i < numQuads; i++)
 		{
-			UINT32 curVert = i * 4;
+			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(startLine);
+			Rect startChar = mTextSprite->getCharRect(mSelectionStart);
+			UINT32 endCharIdx = mSelectionEnd;
+			if(endCharIdx >= lineDesc.endChar)
+				endCharIdx = lineDesc.endChar - 1;
+			
+			Rect endChar = mTextSprite->getCharRect(endCharIdx);
 
-			Vector2 center = vertices[curVert + 0] + vertices[curVert + 1] + vertices[curVert + 2] + vertices[curVert + 3];
-			center /= 4;
+			Rect selectionRect;
+			selectionRect.x = startChar.x;
+			selectionRect.y = lineDesc.lineYStart;
+			selectionRect.height = lineDesc.lineHeight;
+			selectionRect.width = (endChar.x + endChar.width) - startChar.x;
 
-			float dist = center.squaredDistance(vecPos);
-			if(dist < nearestDist)
-			{
-				nearestChar = i;
-				nearestDist = dist;
-			}
+			selectionRects.push_back(selectionRect);
 		}
 
-		cm_free(vertices);
+		for(UINT32 i = startLine + 1; i < endLine; i++)
+		{
+			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
+			if(lineDesc.startChar == lineDesc.endChar)
+				continue;
 
-		return nearestChar;
+			Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
+			Rect endChar = mTextSprite->getCharRect(lineDesc.endChar);
+
+			Rect selectionRect;
+			selectionRect.x = startChar.x;
+			selectionRect.y = lineDesc.lineYStart;
+			selectionRect.height = lineDesc.lineHeight;
+			selectionRect.width = (endChar.x + endChar.width) - startChar.x;
+
+			selectionRects.push_back(selectionRect);
+		}
+
+		if(startLine != endLine)
+		{
+			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(endLine);
+
+			if(lineDesc.startChar != lineDesc.endChar)
+			{
+				Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
+				Rect endChar = mTextSprite->getCharRect(mSelectionEnd);
+
+				Rect selectionRect;
+				selectionRect.x = startChar.x;
+				selectionRect.y = lineDesc.lineYStart;
+				selectionRect.height = lineDesc.lineHeight;
+				selectionRect.width = (endChar.x + endChar.width) - startChar.x;
+
+				selectionRects.push_back(selectionRect);
+			}
+		}
+		
+		return selectionRects;
 	}
 
 	CM::Rect GUIInputBox::getTextBounds() const
@@ -515,6 +576,8 @@ namespace BansheeEngine
 		textDesc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
 		textDesc.horzAlign = mStyle->textHorzAlign;
 		textDesc.vertAlign = mStyle->textVertAlign;
+
+		return textDesc;
 	}
 
 	void GUIInputBox::_setFocus(bool focus)

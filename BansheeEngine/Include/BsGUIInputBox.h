@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
 #include "BsImageSprite.h"
+#include "BsTextSprite.h"
 
 namespace BansheeEngine
 {
@@ -67,11 +68,6 @@ namespace BansheeEngine
 		bool mCaretShown;
 		bool mSelectionShown;
 
-		// Used for caret/selection and in general hit detection with specific chars
-		CM::Vector2* mTextVertices;
-		UINT32 mNumTextVertices;
-		UINT32 mTextLineHeight;
-
 		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
@@ -89,7 +85,6 @@ namespace BansheeEngine
 		void clearSelection();
 		CM::Vector<CM::Rect>::type getSelectionRects() const;
 
-		CM::UINT32 getCharAtPosition(const CM::Int2& pos) const;
 		CM::Rect getTextBounds() const;
 		TEXT_SPRITE_DESC getTextDesc() const;
 	};

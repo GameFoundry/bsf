@@ -161,101 +161,95 @@ namespace BansheeEngine
 			}
 		}
 
+		// Store cached line data
+		mLineDescs.clear();
+		UINT32 curCharIdx = 0;
+		UINT32 cachedLineY = 0;
+		for(auto& line : lines)
+		{
+			SpriteLineDesc lineDesc;
+			lineDesc.startChar = curCharIdx;
+			lineDesc.endChar = curCharIdx + line.getNumChars();
+			lineDesc.lineHeight = line.getYOffset();
+			lineDesc.lineYStart = vertOffset + curY + desc.offset.y;
+
+			mLineDescs.push_back(lineDesc);
+
+			curCharIdx = lineDesc.endChar;
+			cachedLineY += lineDesc.lineHeight;
+		}
+
 		updateBounds();
 	}
 
-	UINT32 TextSprite::getTextVertices(const TEXT_SPRITE_DESC& desc, CM::Vector2* vertices)
+	CM::Rect TextSprite::getCharRect(UINT32 charIdx) const
 	{
-		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap);
-
-		if(textData == nullptr)
-			return 0;
-
-		const CM::Vector<TextUtility::TextLine>::type& lines = textData->getLines();
-		const CM::Vector<UINT32>::type& quadsPerPage = textData->getNumQuadsPerPage();
-
-		UINT32 numQuads = 0;
-		for(auto& quads : quadsPerPage)
-			numQuads += quads;
-
-		if(vertices == nullptr)
-			return numQuads;
-
-		UINT32 curHeight = 0;
-		for(auto& line : lines)
-			curHeight += line.getYOffset();
-
-		// Calc vertical alignment offset
-		UINT32 vertDiff = std::max(0U, desc.height - curHeight);
-		UINT32 vertOffset = 0;
-		switch(desc.vertAlign)
+		UINT32 idx = 0;
+		for(auto& renderElem : mCachedRenderElements)
 		{
-		case TVA_Top:
-			vertOffset = 0;
-			break;
-		case TVA_Bottom:
-			vertOffset = std::max(0, (INT32)vertDiff);
-			break;
-		case TVA_Center:
-			vertOffset = std::max(0, (INT32)vertDiff) / 2;
-			break;
-		}
-
-		// Calc horizontal alignment offset and set final line positions
-		Int2 offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
-		UINT32 curY = 0;
-		UINT32 numPages = (UINT32)quadsPerPage.size();
-		UINT32 quadOffset = 0;
-		for(size_t i = 0; i < lines.size(); i++)
-		{
-			UINT32 horzOffset = 0;
-			switch(desc.horzAlign)
+			if(charIdx >= idx && charIdx < renderElem.numQuads)
 			{
-			case THA_Left:
-				horzOffset = 0;
-				break;
-			case THA_Right:
-				horzOffset = std::max(0, (INT32)(desc.width - lines[i].getWidth()));
-				break;
-			case THA_Center:
-				horzOffset = std::max(0, (INT32)(desc.width - lines[i].getWidth())) / 2;
-				break;
+				UINT32 localIdx = charIdx - idx;
+
+				Rect charRect;
+				charRect.x = Math::RoundToInt(renderElem.vertices[localIdx + 0].x);
+				charRect.y = Math::RoundToInt(renderElem.vertices[localIdx + 0].y);
+				charRect.width = Math::RoundToInt(renderElem.vertices[localIdx + 3].x - charRect.x);
+				charRect.height = Math::RoundToInt(renderElem.vertices[localIdx + 3].y - charRect.y);
+
+				return charRect;
 			}
 
-			Int2 position = offset + Int2(horzOffset, vertOffset + curY);
-			curY += lines[i].getYOffset();
+			idx += renderElem.numQuads;
+		}
 
-			for(size_t j = 0; j < numPages; j++)
+		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
+	}
+
+	UINT32 TextSprite::getCharIdxAtPos(const Int2& pos) const
+	{
+		Vector2 vecPos((float)pos.x, (float)pos.y);
+
+		float nearestDist = std::numeric_limits<float>::max();
+		UINT32 nearestChar = 0;
+		UINT32 idx = 0;
+		for(auto& renderElem : mCachedRenderElements)
+		{
+			for(UINT32 i = 0; i < renderElem.numQuads; i++)
 			{
-				// TODO - fillBuffer won't accept null uv or indexes
-				UINT32 writtenQuads = lines[i].fillBuffer((UINT32)j, vertices, nullptr, nullptr, quadOffset, numQuads);
+				UINT32 curVert = idx * 4;
 
-				UINT32 numVertices = writtenQuads * 4;
-				for(size_t i = 0; i < numVertices; i++)
+				Vector2 center = renderElem.vertices[curVert + 0] + renderElem.vertices[curVert + 1] + 
+					renderElem.vertices[curVert + 2] + renderElem.vertices[curVert + 3];
+				center /= 4;
+
+				float dist = center.squaredDistance(vecPos);
+				if(dist < nearestDist)
 				{
-					vertices[quadOffset * 4 + i].x += (float)position.x;
-					vertices[quadOffset * 4 + i].y += (float)position.y;
+					nearestChar = idx;
+					nearestDist = dist;
 				}
 
-				quadOffset += writtenQuads;
+				idx++;
 			}
 		}
 
-		if(desc.clipRect.width > 0 && desc.clipRect.height > 0)
-		{
-			clipToRect(vertices, nullptr, numQuads, desc.clipRect);
-		}
+		return nearestChar;
+	}
 
-		// Apply offset
+	CM::UINT32 TextSprite::getLineForChar(CM::UINT32 charIdx) const
+	{
+		UINT32 idx = 0;
+		for(auto& line : mLineDescs)
 		{
-			UINT32 numVertices = numQuads * 4;
-			for(size_t i = 0; i < numVertices; i++)
+			if(charIdx >= line.startChar && charIdx < line.endChar)
 			{
-				vertices[i].x += (float)desc.offset.x;
-				vertices[i].y += (float)desc.offset.y;
+				return idx;
 			}
-		}
 
-		return numQuads;
+			idx++;
+		}
+		
+		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
 	}
 }

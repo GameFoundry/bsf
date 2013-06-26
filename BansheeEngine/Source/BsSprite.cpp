@@ -48,17 +48,24 @@ namespace BansheeEngine
 		assert((startIndex + mNumIndices) <= maxIndexIdx);
 
 		UINT8* vertDst = vertices + startVert * vertexStride;
-		UINT8* uvDst = uv + startVert * vertexStride;
 		for(UINT32 i = 0; i < mNumVertices; i++)
 		{
 			memcpy(vertDst, &renderElem.vertices[i], sizeof(Vector2));
-			memcpy(uvDst, &renderElem.uvs[i], sizeof(Vector2));
-
 			vertDst += vertexStride;
-			uvDst += vertexStride;
 		}
 
-		memcpy(&indices[startIndex], renderElem.indexes, mNumIndices * sizeof(UINT32));
+		if(uv != nullptr)
+		{
+			UINT8* uvDst = uv + startVert * vertexStride;
+			for(UINT32 i = 0; i < mNumVertices; i++)
+			{
+				memcpy(uvDst, &renderElem.uvs[i], sizeof(Vector2));
+				uvDst += vertexStride;
+			}
+		}
+
+		if(indices != nullptr)
+			memcpy(&indices[startIndex], renderElem.indexes, mNumIndices * sizeof(UINT32));
 
 		return renderElem.numQuads;
 	}
