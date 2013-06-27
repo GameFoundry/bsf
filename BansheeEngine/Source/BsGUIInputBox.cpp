@@ -84,8 +84,9 @@ namespace BansheeEngine
 		UINT32 numElements = mImageSprite->getNumRenderElements();
 		numElements += mTextSprite->getNumRenderElements();
 
-		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
-			numElements += mTextSprite->getNumRenderElements();
+		/*if(mCaretShown && GUIManager::instance().getCaretBlinkState())*/
+		if(mCaretShown)
+			numElements += mCaretSprite->getNumRenderElements();
 
 		if(mSelectionShown)
 		{
@@ -127,7 +128,8 @@ namespace BansheeEngine
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		mTextSprite->update(textDesc);
 
-		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
+		/*if(mCaretShown && GUIManager::instance().getCaretBlinkState())*/
+		if(mCaretShown)
 		{
 			IMAGE_SPRITE_DESC mCaretDesc;
 			mCaretDesc.offset = getCaretPosition();
@@ -196,15 +198,16 @@ namespace BansheeEngine
 			return mImageSprite;
 		}
 
-		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
+		/*if(mCaretShown && GUIManager::instance().getCaretBlinkState())*/
+		if(mCaretShown)
 		{
 			oldNumElements = newNumElements;
-			newNumElements += mImageSprite->getNumRenderElements();
+			newNumElements += mCaretSprite->getNumRenderElements();
 
 			if(renderElemIdx < newNumElements)
 			{
 				localRenderElemIdx = renderElemIdx - oldNumElements;
-				return mImageSprite;
+				return mCaretSprite;
 			}
 		}
 
@@ -255,9 +258,9 @@ namespace BansheeEngine
 		if(sprite == mImageSprite)
 			return _getDepth();
 		else if(sprite == mTextSprite || sprite == mCaretSprite)
-			return _getDepth() + 2;
+			return _getDepth() - 2;
 		else // Selection sprites
-			return _getDepth() + 1;
+			return _getDepth() - 1;
 	}
 
 	void GUIInputBox::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
@@ -364,7 +367,10 @@ namespace BansheeEngine
 					else
 					{
 						if(mCaretPos > 0)
+						{
 							mText.erase(mCaretPos - 1);
+							mCaretPos--;
+						}
 					}
 
 					markAsDirty();

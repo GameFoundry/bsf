@@ -244,7 +244,9 @@ namespace BansheeEngine
 
 				// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
 				// requires all elements to be unique
-				return aDepth > bDepth || (aDepth ==bDepth && a.element > b.element); 
+				return (aDepth > bDepth) || 
+					(aDepth == bDepth && a.element > b.element) || 
+					(aDepth == bDepth && a.element == b.element && a.renderElement > b.renderElement); 
 			};
 
 			Set<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>>::type allElements(elemComp);
@@ -539,14 +541,16 @@ namespace BansheeEngine
 				mActiveMouseButton = guiButton;
 			}
 
-			if(mKeyboardFocusElement != nullptr && mMouseOverElement != mKeyboardFocusElement)
-				mKeyboardFocusElement->_setFocus(false);
-
 			if(mMouseOverElement != nullptr)
+			{
+				if(mKeyboardFocusElement != nullptr && mMouseOverElement != mKeyboardFocusElement)
+					mKeyboardFocusElement->_setFocus(false);
+
 				mMouseOverElement->_setFocus(true);
 
-			mKeyboardFocusElement = mMouseOverElement;
-			mKeyboardFocusWidget = mMouseOverWidget;
+				mKeyboardFocusElement = mMouseOverElement;
+				mKeyboardFocusWidget = mMouseOverWidget;
+			}
 		}
 		
 		event.markAsUsed();

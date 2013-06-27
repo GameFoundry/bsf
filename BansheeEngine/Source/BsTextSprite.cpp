@@ -171,7 +171,7 @@ namespace BansheeEngine
 			lineDesc.startChar = curCharIdx;
 			lineDesc.endChar = curCharIdx + line.getNumChars();
 			lineDesc.lineHeight = line.getYOffset();
-			lineDesc.lineYStart = vertOffset + curY + desc.offset.y;
+			lineDesc.lineYStart = vertOffset + cachedLineY + desc.offset.y;
 
 			mLineDescs.push_back(lineDesc);
 
@@ -189,7 +189,7 @@ namespace BansheeEngine
 		{
 			if(charIdx >= idx && charIdx < renderElem.numQuads)
 			{
-				UINT32 localIdx = charIdx - idx;
+				UINT32 localIdx = (charIdx - idx) * 4;
 
 				Rect charRect;
 				charRect.x = Math::RoundToInt(renderElem.vertices[localIdx + 0].x);
