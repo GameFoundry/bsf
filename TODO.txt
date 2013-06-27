@@ -28,32 +28,15 @@ IMMEDIATE:
 TextBox needed elements:
  - Space doesn't register as a character which means I won't be able to place input caret if the last character is a space
    - Make spaces inivisble characters?
- - Render element: background texture and a text sprite
- - Keyboard focus: Mouse click gives focus, tabbing between elements gives focus (TODO: explore how will tabbing work)
- - Input: All characters get forwarded to element with focus
- - Input cursor - Mouse click within box moves input, arrow keys move input. If cursor goes out of clip limits, move text.
-   - CURSOR needs to flash. Implement it as a GUIManager::showInputCursor(depth, position) method instead of doing it in GUITextBox.
- - Text selection - Shift + arrow keys select text. Mouse drag selects text, and scrolls the text if needed. Text selection is drawn using another single color image sprite. Selection height is determined by line height.
- - Text operations - Select all, copy, paste (using shorcuts, possibly also context menu?)
- - Make sure multi-line text boxes work fine as well.
- - (Selecting something and then typing anything needs to replace selection with typed character)
-
-Window needed systems:
-EditorWindowContainer
- - TabbedTitleBar widget 
-   - contains minimize/maximize/close buttons
-   - contains window toggle buttons, and in between them invisible buttons that serve as drag drop points and for moving the window
-     - dragging the in-between button will cause the window to move
-     - droping another window will cause the window to be docked at that location
-     - dragging the window toggle button will cause the window to undock. (or if the window is already undocked and is the only one in the titlebar, it will cause the window to move)
-    - contains title bar background
- - Window frame
-   - contains tiled window background
-   - contains scale9grid frame
-   - frame allows for resize
-   - frame changes color when window is in focus
- - Contents
-   - Actual Editor Window with custom contents
+ - Clicking to the left of a letter should move the cursor to position BEFORE the letter, 
+   and clicking to the right should move it to the position AFTER the letter. Right now 
+   it is always moved after which makes it impossible to move the cursor before the first letter.
+ - Implement and test multiline text control
+ - Test selection (especially multiline selection)
+ - Cut/Copy/Paste
+ - LATER
+  - TAB between input elements
+  - Context menu with copy/cut/paste
 
 GUIDragManager
  - GUI system sends startdrag/enddrag/drag events to all elements
@@ -61,20 +44,6 @@ GUIDragManager
  - releasing the cursor sends enddrag event and then the control can retrieve the user ptr
  - SINCE currently non-active elements ignore drag events, add GUIElement::acceptsMouseDrop property
    - Such elements will receive mouse drag and mouse up events if other element is active, and they can filter if they want to accept it
-
-Keyboard input:
- - Events like Tab, Backspace, Delete, Ctrl+V, Ctrl+C, Ctrl+A, Ctrl+D use a special CommandEvent
- - How will my GUI system handle joysticks and touchscreens and such?
-  - Key-remapping is not relevant for GUI, only for game controls
-  - Add support for joystick and joystick keys - along with keyboard ones
-  - Then add support for shortcut keys for certain GUIElements
- - I also need to block input for Components when focus is not on game window...
- - Add IsKeyTextual to Input (seems to be only an AND with 0x80 with the scan code) - Possibly not needed as OIS returns 0 for non-textual chars
- - Make sure the input is handled by callbacks
-  - Then if nothing uses up a key-down/up event, send a TextInput event containing the character (taking into consideration shift and/or caps)
-  - Make sure callbacks are called after Update
- - OIS currently DOESNT properly handle input locale (seems to return US locale)
-  - I might want to include OIS directly in my plugin so I can modify it. (Also remove it from Dependencies)
 
 Later add InputMap class in which you can bind certain actions (like move left, fire, etc.) to Keyboard, Joystick or Mouse buttons.
 

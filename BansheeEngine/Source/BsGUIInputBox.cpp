@@ -257,8 +257,10 @@ namespace BansheeEngine
 
 		if(sprite == mImageSprite)
 			return _getDepth();
-		else if(sprite == mTextSprite || sprite == mCaretSprite)
+		else if(sprite == mTextSprite)
 			return _getDepth() - 2;
+		else if(sprite == mCaretSprite)
+			return _getDepth() - 3;
 		else // Selection sprites
 			return _getDepth() - 1;
 	}
@@ -368,7 +370,7 @@ namespace BansheeEngine
 					{
 						if(mCaretPos > 0)
 						{
-							mText.erase(mCaretPos - 1);
+							mText.erase(mCaretPos - 1, 1);
 							mCaretPos--;
 						}
 					}
@@ -378,9 +380,43 @@ namespace BansheeEngine
 
 				return true;
 			}
+			
+			if(ev.getKey() == BC_LEFT)
+			{
+				//if(gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT))
+				//{
 
-			// TODO - Handle newline if it's a multiline control
-			// TODO - left+right arrow to move the cursor
+				//}
+				//else
+				//{
+
+				//}
+				mCaretPos = (UINT32)std::max(0, (INT32)mCaretPos - 1);
+
+				markAsDirty();
+				return true;
+			}
+
+			if(ev.getKey() == BC_RIGHT)
+			{
+				mCaretPos = std::min((UINT32)mText.size(), mCaretPos + 1);
+
+				markAsDirty();
+				return true;
+			}
+
+			if(ev.getKey() == BC_RETURN)
+			{
+				if(mIsMultiline)
+				{
+					mText += '\n';
+
+					markAsDirty();
+					return true;
+				}
+				
+			}
+
 			// TODO - shift + left + right arrow to select
 			// TODO - ctrl + a to select all
 			// TODO - ctrl + c, ctrl + v, ctrl + x to copy/cut/paste

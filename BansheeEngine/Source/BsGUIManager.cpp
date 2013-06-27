@@ -46,7 +46,7 @@ namespace BansheeEngine
 	GUIManager::GUIManager()
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
-		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(Color::Black), mIsCaretOn(false),
+		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
 		mTextSelectionColor(1.0f, 0.6588f, 0.0f)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
