@@ -307,7 +307,16 @@ namespace BansheeEngine
 			mImageDesc.texture = mStyle->active.texture;
 
 			if(mText.size() > 0)
-				showCaret(mTextSprite->getCharIdxAtPos(ev.getPosition()) +  1);
+			{
+				UINT32 charIdx = mTextSprite->getCharIdxAtPos(ev.getPosition());
+				Rect charRect = mTextSprite->getCharRect(charIdx);
+
+				float xCenter = charRect.x + charRect.width * 0.5f;
+				if(ev.getPosition().x <= xCenter)
+					showCaret(charIdx);
+				else
+					showCaret(charIdx + 1);
+			}
 			else
 				showCaret(0);
 

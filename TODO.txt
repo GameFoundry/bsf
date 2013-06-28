@@ -26,8 +26,6 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 TextBox needed elements:
- - Space doesn't register as a character which means I won't be able to place input caret if the last character is a space
-   - Make spaces inivisble characters?
  - Clicking to the left of a letter should move the cursor to position BEFORE the letter, 
    and clicking to the right should move it to the position AFTER the letter. Right now 
    it is always moved after which makes it impossible to move the cursor before the first letter.
