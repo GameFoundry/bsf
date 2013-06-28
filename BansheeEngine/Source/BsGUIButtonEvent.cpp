@@ -5,7 +5,13 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIButtonEvent::GUIButtonEvent()
-		:mType(GUIKeyEventType::KeyDown), mKey(BC_0)
+		:mType(GUIKeyEventType::KeyDown), mKey(BC_0), mShift(false), mCtrl(false), mAlt(false)
+	{
+
+	}
+
+	GUIButtonEvent::GUIButtonEvent(bool shift, bool ctrl, bool alt)
+		:mType(GUIKeyEventType::KeyDown), mKey(BC_0), mShift(shift), mCtrl(ctrl), mAlt(alt)
 	{
 
 	}

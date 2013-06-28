@@ -168,6 +168,8 @@ namespace CamelotFramework
 					quadsPerPage[charIter->page]++;
 				}
 			}
+			else
+				quadsPerPage[0]++;
 		}
 
 		return quadsPerPage;
@@ -182,6 +184,48 @@ namespace CamelotFramework
 		{
 			if(wordIter->isSpacer())
 			{
+				// We store invisible space quads in the first page. Even though they aren't needed
+				// for rendering and we could just leave an empty space, they are needed for intersection tests
+				// for things like determining caret placement and selection areas
+				if(page == 0) 
+				{
+					INT32 curX = penX;
+					INT32 curY = 0;
+
+					UINT32 curVert = offset * 4;
+					UINT32 curIndex = offset * 6;
+
+					vertices[curVert + 0] = Vector2((float)curX, (float)curY);
+					vertices[curVert + 1] = Vector2((float)(curX + mSpaceWidth), (float)curY);
+					vertices[curVert + 2] = Vector2((float)curX, (float)curY + (float)mLineHeight);
+					vertices[curVert + 3] = Vector2((float)(curX + mSpaceWidth), (float)curY + (float)mLineHeight);
+
+					if(uvs != nullptr)
+					{
+						uvs[curVert + 0] = Vector2(0.0f, 0.0f);
+						uvs[curVert + 1] = Vector2(0.0f, 0.0f);
+						uvs[curVert + 2] = Vector2(0.0f, 0.0f);
+						uvs[curVert + 3] = Vector2(0.0f, 0.0f);
+					}
+
+					// Triangles are back-facing which makes them invisible
+					if(indexes != nullptr)
+					{
+						indexes[curIndex + 0] = curVert + 0;
+						indexes[curIndex + 1] = curVert + 2;
+						indexes[curIndex + 2] = curVert + 1;
+						indexes[curIndex + 3] = curVert + 1;
+						indexes[curIndex + 4] = curVert + 2;
+						indexes[curIndex + 5] = curVert + 3;
+					}
+
+					offset++;
+					numQuads++;
+
+					if(offset > size)
+						CM_EXCEPT(InternalErrorException, "Out of buffer bounds. Buffer size: " + toString(size));
+				}
+
 				penX += mSpaceWidth;
 			}
 			else
@@ -255,9 +299,9 @@ namespace CamelotFramework
 		for(auto& word : mWords)
 		{
 			if(word.isSpacer())
-				continue;
-
-			numChars += (UINT32)word.getChars().size();
+				numChars++;
+			else
+				numChars += (UINT32)word.getChars().size();
 		}
 
 		return numChars;
@@ -287,7 +331,7 @@ namespace CamelotFramework
 			fontData = font->getFontDataForSize(nearestSize);
 		}
 
-		if(fontData == nullptr)
+		if(fontData == nullptr || fontData->texturePages.size() == 0)
 			return nullptr;
 
 		if(fontData->size != fontSize)
@@ -343,7 +387,20 @@ namespace CamelotFramework
 					textData->mTexturePages[charDesc.page] = fontData->texturePages[charDesc.page];
 			}
 			else
+			{
 				curLine->addSpace();
+
+				if((UINT32)textData->mQuadsPerPage.size() == 0)
+				{
+					textData->mQuadsPerPage.resize(1);
+					textData->mTexturePages.resize(1);
+				}
+
+				textData->mQuadsPerPage[0]++;
+
+				if(textData->mTexturePages[0] == nullptr)
+					textData->mTexturePages[0] = fontData->texturePages[0];
+			}
 
 			if(widthIsLimited && curLine->getWidth() > width)
 			{

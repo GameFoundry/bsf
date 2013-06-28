@@ -493,7 +493,11 @@ namespace BansheeEngine
 		{
 			if(mKeyboardFocusElement != nullptr)
 			{
-				mKeyEvent = GUIButtonEvent();
+				bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
+				bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
+				bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
+
+				mKeyEvent = GUIButtonEvent(shiftDown, ctrlDown, altDown);
 
 				mKeyEvent.setKeyDownData(event.buttonCode);
 				mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
@@ -757,7 +761,11 @@ namespace BansheeEngine
 	{
 		if(mKeyboardFocusElement != nullptr)
 		{
-			mKeyEvent = GUIButtonEvent();
+			bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
+			bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
+			bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
+
+			mKeyEvent = GUIButtonEvent(shiftDown, ctrlDown, altDown);
 
 			mKeyEvent.setTextInputData(event.textChar);
 			mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);

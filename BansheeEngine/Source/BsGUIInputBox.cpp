@@ -383,26 +383,32 @@ namespace BansheeEngine
 			
 			if(ev.getKey() == BC_LEFT)
 			{
-				//if(gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT))
-				//{
+				if(ev.isShiftDown())
+				{
+					// TODO
+				}
+				else
+				{
+					mCaretPos = (UINT32)std::max(0, (INT32)mCaretPos - 1);
 
-				//}
-				//else
-				//{
-
-				//}
-				mCaretPos = (UINT32)std::max(0, (INT32)mCaretPos - 1);
-
-				markAsDirty();
-				return true;
+					markAsDirty();
+					return true;
+				}
 			}
 
 			if(ev.getKey() == BC_RIGHT)
 			{
-				mCaretPos = std::min((UINT32)mText.size(), mCaretPos + 1);
+				if(ev.isShiftDown())
+				{
+					// TODO
+				}
+				else
+				{
+					mCaretPos = std::min((UINT32)mText.size(), mCaretPos + 1);
 
-				markAsDirty();
-				return true;
+					markAsDirty();
+					return true;
+				}
 			}
 
 			if(ev.getKey() == BC_RETURN)
@@ -477,7 +483,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			Rect contentBounds = getContentBounds();
+			Rect contentBounds = getTextBounds();
 			return Int2(contentBounds.x, contentBounds.y);
 		}		
 	}
