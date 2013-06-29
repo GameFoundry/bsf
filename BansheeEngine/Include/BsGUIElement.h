@@ -74,7 +74,7 @@ namespace BansheeEngine
 		void updateRenderElements();
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		virtual bool buttonEvent(const GUIButtonEvent& ev);
+		virtual bool keyEvent(const GUIKeyEvent& ev);
 		virtual bool commandEvent(const GUICommandEvent& ev);
 
 		static void destroy(GUIElement* element);

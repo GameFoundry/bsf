@@ -39,7 +39,7 @@ namespace BansheeEngine
 	class GUISkin;
 	struct GUIElementStyle;
 	class GUIMouseEvent;
-	class GUIButtonEvent;
+	class GUIKeyEvent;
 	class GUICommandEvent;
 	class GUIArea;
 	class GUILayout;

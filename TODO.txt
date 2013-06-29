@@ -26,11 +26,12 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 TextBox needed elements:
- - Clicking to the left of a letter should move the cursor to position BEFORE the letter, 
-   and clicking to the right should move it to the position AFTER the letter. Right now 
-   it is always moved after which makes it impossible to move the cursor before the first letter.
  - Implement and test multiline text control
  - Test selection (especially multiline selection)
+ - I need to replace mText with clean text without \n because newline will break my char indexes
+ - Ctrl+A doesn't work. Only TextInput event is sent, without button press
+ - Text scroll. Typing outside of textbox should scroll the text so caret is visible.
+ - Get DebugCamera to ignore input if GUI has already processed it
  - Cut/Copy/Paste
  - LATER
   - TAB between input elements

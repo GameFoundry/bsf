@@ -497,7 +497,7 @@ namespace BansheeEngine
 				bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
 				bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
 
-				mKeyEvent = GUIButtonEvent(shiftDown, ctrlDown, altDown);
+				mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
 
 				mKeyEvent.setKeyDownData(event.buttonCode);
 				mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
@@ -506,7 +506,6 @@ namespace BansheeEngine
 
 		if(event.isMouse())
 		{
-			// TODO - Maybe avoid querying these for every event separately?
 			bool buttonStates[(int)GUIMouseButton::Count];
 			buttonStates[0] = gInput().isButtonDown(BC_MOUSE_LEFT);
 			buttonStates[1] = gInput().isButtonDown(BC_MOUSE_MIDDLE);
@@ -565,7 +564,21 @@ namespace BansheeEngine
 		if(event.isUsed())
 			return;
 
-		// TODO - Maybe avoid querying these for every event separately?
+		if(event.isKeyboard())
+		{
+			if(mKeyboardFocusElement != nullptr)
+			{
+				bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
+				bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
+				bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
+
+				mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
+
+				mKeyEvent.setKeyUpData(event.buttonCode);
+				mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
+			}
+		}
+
 		if(event.isMouse())
 		{
 			bool buttonStates[(int)GUIMouseButton::Count];
@@ -765,7 +778,10 @@ namespace BansheeEngine
 			bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
 			bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
 
-			mKeyEvent = GUIButtonEvent(shiftDown, ctrlDown, altDown);
+			if(ctrlDown || altDown) // Ignore text input because key characters + alt/ctrl usually correspond to certain commands
+				return;
+
+			mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
 
 			mKeyEvent.setTextInputData(event.textChar);
 			mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);

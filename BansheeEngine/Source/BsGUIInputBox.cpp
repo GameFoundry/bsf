@@ -26,8 +26,8 @@ namespace BansheeEngine
 
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mInputCursorSet(false), mDragInProgress(false),
-		mSelectionStart(0), mSelectionEnd(0), mCaretSprite(nullptr), mCaretShown(false), mSelectionShown(false), mCaretPos(0),
-		mIsMultiline(false)
+		mSelectionStart(0), mSelectionEnd(0), mSelectionAnchor(0), mCaretSprite(nullptr), mCaretShown(false), 
+		mSelectionShown(false), mCaretPos(0), mIsMultiline(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mCaretSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -306,7 +306,7 @@ namespace BansheeEngine
 		{
 			mImageDesc.texture = mStyle->active.texture;
 
-			if(mText.size() > 0)
+			if(getValidCharCount() > 0)
 			{
 				UINT32 charIdx = mTextSprite->getCharIdxAtPos(ev.getPosition());
 				Rect charRect = mTextSprite->getCharRect(charIdx);
@@ -361,18 +361,18 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIInputBox::buttonEvent(const GUIButtonEvent& ev)
+	bool GUIInputBox::keyEvent(const GUIKeyEvent& ev)
 	{
 		if(ev.getType() == GUIKeyEventType::KeyDown)
 		{
 			if(ev.getKey() == BC_BACK)
 			{
-				if(mText.size() > 0)
+				if(getValidCharCount() > 0)
 				{
 					if(mSelectionShown)
 					{
-						mText.erase(mSelectionStart, mSelectionEnd);
-						mCaretPos = mSelectionStart + 1;
+						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
+						mCaretPos = mSelectionStart;
 						clearSelection();
 					}
 					else
@@ -389,15 +389,46 @@ namespace BansheeEngine
 
 				return true;
 			}
+
+			if(ev.getKey() == BC_DELETE)
+			{
+				if(getValidCharCount() > 0)
+				{
+					if(mSelectionShown)
+					{
+						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
+						mCaretPos = mSelectionStart;
+						clearSelection();
+					}
+					else
+					{
+						mText.erase(mCaretPos, 1);
+					}
+
+					markAsDirty();
+				}
+
+				return true;
+			}
 			
 			if(ev.getKey() == BC_LEFT)
 			{
 				if(ev.isShiftDown())
 				{
-					// TODO
+					if(!mSelectionShown)
+						showSelection(mCaretPos, mCaretPos);
+
+					if(mSelectionAnchor == mSelectionEnd)
+						mSelectionStart = (UINT32)std::max(0, (INT32)mSelectionStart - 1);
+					else
+						mSelectionEnd = (UINT32)std::max(0, (INT32)mSelectionEnd - 1);
+
+					markAsDirty();
+					return true;
 				}
 				else
 				{
+					clearSelection();
 					mCaretPos = (UINT32)std::max(0, (INT32)mCaretPos - 1);
 
 					markAsDirty();
@@ -409,11 +440,21 @@ namespace BansheeEngine
 			{
 				if(ev.isShiftDown())
 				{
-					// TODO
+					if(!mSelectionShown)
+						showSelection(mCaretPos, mCaretPos);
+
+					if(mSelectionAnchor == mSelectionStart)
+						mSelectionEnd = std::min(getValidCharCount(), mSelectionEnd + 1);
+					else
+						mSelectionStart = std::min(getValidCharCount(), mSelectionStart + 1);
+
+					markAsDirty();
+					return true;
 				}
 				else
 				{
-					mCaretPos = std::min((UINT32)mText.size(), mCaretPos + 1);
+					clearSelection();
+					mCaretPos = std::min(getValidCharCount(), mCaretPos + 1);
 
 					markAsDirty();
 					return true;
@@ -424,7 +465,14 @@ namespace BansheeEngine
 			{
 				if(mIsMultiline)
 				{
-					mText += '\n';
+					if(mSelectionShown)
+					{
+						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
+						mCaretPos = mSelectionStart;
+						clearSelection();
+					}
+
+					mText.insert(mText.begin() + mCaretPos, '\n');
 
 					markAsDirty();
 					return true;
@@ -432,16 +480,17 @@ namespace BansheeEngine
 				
 			}
 
-			// TODO - shift + left + right arrow to select
-			// TODO - ctrl + a to select all
-			// TODO - ctrl + c, ctrl + v, ctrl + x to copy/cut/paste
+			if(ev.getKey() == BC_A && ev.isCtrlDown())
+			{
+				showSelection(0, getValidCharCount());
+			}
 		}
 		else if(ev.getType() == GUIKeyEventType::TextInput)
 		{
 			if(mSelectionShown)
 			{
-				mText.erase(mSelectionStart, mSelectionEnd);
-				mCaretPos = mSelectionStart + 1;
+				mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
+				mCaretPos = mSelectionStart;
 				clearSelection();
 			}
 
@@ -449,7 +498,6 @@ namespace BansheeEngine
 			mCaretPos++;
 
 			markAsDirty();
-
 			return true;
 		}
 
@@ -523,6 +571,7 @@ namespace BansheeEngine
 	{
 		mSelectionStart = startChar;
 		mSelectionEnd = endChar;
+		mSelectionAnchor = startChar;
 		mSelectionShown = true;
 		markAsDirty();
 	}
@@ -545,12 +594,12 @@ namespace BansheeEngine
 			return selectionRects;
 
 		UINT32 startLine = mTextSprite->getLineForChar(mSelectionStart);
-		UINT32 endLine = mTextSprite->getLineForChar(mSelectionEnd);
+		UINT32 endLine = mTextSprite->getLineForChar(mSelectionEnd - 1);
 
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(startLine);
 			Rect startChar = mTextSprite->getCharRect(mSelectionStart);
-			UINT32 endCharIdx = mSelectionEnd;
+			UINT32 endCharIdx = mSelectionEnd - 1;
 			if(endCharIdx >= lineDesc.endChar)
 				endCharIdx = lineDesc.endChar - 1;
 			
@@ -590,7 +639,7 @@ namespace BansheeEngine
 			if(lineDesc.startChar != lineDesc.endChar)
 			{
 				Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
-				Rect endChar = mTextSprite->getCharRect(mSelectionEnd);
+				Rect endChar = mTextSprite->getCharRect(mSelectionEnd - 1);
 
 				Rect selectionRect;
 				selectionRect.x = startChar.x;
@@ -635,6 +684,11 @@ namespace BansheeEngine
 		textDesc.vertAlign = mStyle->textVertAlign;
 
 		return textDesc;
+	}
+
+	UINT32 GUIInputBox::getValidCharCount() const
+	{
+		return (UINT32)mText.size(); // TODO - Need to ignore newline chars
 	}
 
 	void GUIInputBox::_setFocus(bool focus)

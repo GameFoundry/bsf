@@ -66,7 +66,7 @@ namespace BansheeEngine
 		CM::Int2 mLastCursorLocalPos;
 
 		GUIMouseEvent mMouseEvent;
-		GUIButtonEvent mKeyEvent;
+		GUIKeyEvent mKeyEvent;
 		GUICommandEvent mCommandEvent;
 
 		SpriteTexturePtr mCaretTexture;

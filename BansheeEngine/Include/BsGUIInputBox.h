@@ -64,6 +64,7 @@ namespace BansheeEngine
 		// Selection & input caret
 		CM::UINT32 mSelectionStart;
 		CM::UINT32 mSelectionEnd;
+		CM::UINT32 mSelectionAnchor;
 		CM::UINT32 mCaretPos;
 		bool mCaretShown;
 		bool mSelectionShown;
@@ -71,7 +72,7 @@ namespace BansheeEngine
 		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		virtual bool buttonEvent(const GUIButtonEvent& ev);
+		virtual bool keyEvent(const GUIKeyEvent& ev);
 		virtual bool commandEvent(const GUICommandEvent& ev);
 
 		Sprite* renderElemToSprite(CM::UINT32 renderElemIdx, CM::UINT32& localRenderElemIdx) const;
@@ -87,5 +88,6 @@ namespace BansheeEngine
 
 		CM::Rect getTextBounds() const;
 		TEXT_SPRITE_DESC getTextDesc() const;
+		CM::UINT32 getValidCharCount() const;
 	};
 }

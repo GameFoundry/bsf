@@ -62,14 +62,6 @@ namespace CamelotFramework
 
 	void Input::update()
 	{
-		if(mOSInputHandler == nullptr)
-		{
-			LOGERR("OS input handler not initialized!");
-			return;
-		}
-		else
-			mOSInputHandler->update();
-
 		if(mRawInputHandler == nullptr)
 		{
 			LOGERR("Raw input handler not initialized!");
@@ -77,6 +69,14 @@ namespace CamelotFramework
 		}
 		else
 			mRawInputHandler->update();
+
+		if(mOSInputHandler == nullptr)
+		{
+			LOGERR("OS input handler not initialized!");
+			return;
+		}
+		else
+			mOSInputHandler->update();
 
 		Vector<ButtonCode>::type simulatedUp;
 		Vector<ButtonCode>::type simulatedDown;
