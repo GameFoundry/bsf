@@ -72,6 +72,7 @@ namespace BansheeEditor
 		//layout.addElement(mDbgLabel);
 
 		layout.addElement(GUIInputBox::create(*mGUI));
+		layout.addElement(GUIInputBox::create(*mGUI, GUILayoutOptions::fixed(100, 100), true));
 		
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
 		//otherLayout.addElement(mDbgLabel);

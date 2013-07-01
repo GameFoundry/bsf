@@ -26,10 +26,9 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 TextBox needed elements:
- - Implement and test multiline text control
- - Test selection (especially multiline selection)
- - I need to replace mText with clean text without \n because newline will break my char indexes
- - Ctrl+A doesn't work. Only TextInput event is sent, without button press
+ - Up/Down arrow keys should move cursor up/down
+ - Drag mouse to update selection
+ - Need to figure out how do I place a cursor on an empty first line?
  - Text scroll. Typing outside of textbox should scroll the text so caret is visible.
  - Get DebugCamera to ignore input if GUI has already processed it
  - Cut/Copy/Paste

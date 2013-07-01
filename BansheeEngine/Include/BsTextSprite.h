@@ -55,7 +55,7 @@ namespace BansheeEngine
 		const SpriteLineDesc& getLineDesc(CM::UINT32 lineIdx) const { return mLineDescs.at(lineIdx); }
 		CM::UINT32 getLineForChar(CM::UINT32 charIdx) const;
 		CM::Rect getCharRect(CM::UINT32 charIdx) const;
-		CM::UINT32 getCharIdxAtPos(const CM::Int2& pos) const;
+		CM::INT32 getCharIdxAtPos(const CM::Int2& pos) const;
 
 	private:
 		CM::Vector<SpriteLineDesc>::type mLineDescs;

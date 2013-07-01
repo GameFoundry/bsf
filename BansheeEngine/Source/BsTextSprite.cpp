@@ -15,6 +15,8 @@ namespace BansheeEngine
 
 	void TextSprite::update(const TEXT_SPRITE_DESC& desc)
 	{
+		mLineDescs.clear();
+
 		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap);
 
 		if(textData == nullptr)
@@ -162,14 +164,16 @@ namespace BansheeEngine
 		}
 
 		// Store cached line data
-		mLineDescs.clear();
 		UINT32 curCharIdx = 0;
 		UINT32 cachedLineY = 0;
+		UINT32 curLineIdx = 0;
 		for(auto& line : lines)
 		{
+			UINT32 newlineChar = (curLineIdx == ((UINT32)lines.size() - 1)) ? 0 : 1;
+
 			SpriteLineDesc lineDesc;
 			lineDesc.startChar = curCharIdx;
-			lineDesc.endChar = curCharIdx + line.getNumChars();
+			lineDesc.endChar = curCharIdx + line.getNumChars() + newlineChar;
 			lineDesc.lineHeight = line.getYOffset();
 			lineDesc.lineYStart = vertOffset + cachedLineY + desc.offset.y;
 
@@ -177,6 +181,7 @@ namespace BansheeEngine
 
 			curCharIdx = lineDesc.endChar;
 			cachedLineY += lineDesc.lineHeight;
+			curLineIdx++;
 		}
 
 		updateBounds();
@@ -184,12 +189,22 @@ namespace BansheeEngine
 
 	CM::Rect TextSprite::getCharRect(UINT32 charIdx) const
 	{
-		UINT32 idx = 0;
+		UINT32 lineIdx = getLineForChar(charIdx);
+
+		// If char is newline we don't have any geometry to return
+		const SpriteLineDesc& lineDesc = getLineDesc(lineIdx);
+		if(lineIdx != (getNumLines() - 1) && lineDesc.endChar == (charIdx - 1))
+			return Rect();
+
+		UINT32 numNewlineChars = lineIdx;
+		UINT32 quadIdx = charIdx - numNewlineChars;
+
+		UINT32 curQuadIdx = 0;
 		for(auto& renderElem : mCachedRenderElements)
 		{
-			if(charIdx >= idx && charIdx < renderElem.numQuads)
+			if(quadIdx >= curQuadIdx && quadIdx < renderElem.numQuads)
 			{
-				UINT32 localIdx = (charIdx - idx) * 4;
+				UINT32 localIdx = (quadIdx - curQuadIdx) * 4;
 
 				Rect charRect;
 				charRect.x = Math::RoundToInt(renderElem.vertices[localIdx + 0].x);
@@ -200,39 +215,71 @@ namespace BansheeEngine
 				return charRect;
 			}
 
-			idx += renderElem.numQuads;
+			curQuadIdx += renderElem.numQuads;
 		}
 
 		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
 	}
 
-	UINT32 TextSprite::getCharIdxAtPos(const Int2& pos) const
+	INT32 TextSprite::getCharIdxAtPos(const Int2& pos) const
 	{
 		Vector2 vecPos((float)pos.x, (float)pos.y);
 
+		UINT32 lineStartChar = 0;
+		UINT32 lineEndChar = 0;
+		UINT32 newlineChars = 0;
+		for(auto& line : mLineDescs)
+		{
+			if(pos.y >= line.lineYStart && pos.y < (line.lineYStart + (INT32)line.lineHeight))
+			{
+				lineStartChar = line.startChar;
+				lineEndChar = line.endChar;
+				break;
+			}
+
+			newlineChars++; // Newline chars count in the startChar/endChar variables, but don't actually exist in the buffers
+			// so we need to filter them out
+		}
+
+		UINT32 lineStartQuad = lineStartChar - newlineChars;
+		UINT32 lineEndQuad = lineEndChar - newlineChars;
+
 		float nearestDist = std::numeric_limits<float>::max();
 		UINT32 nearestChar = 0;
-		UINT32 idx = 0;
+		UINT32 quadIdx = 0;
+		bool foundChar = false;
 		for(auto& renderElem : mCachedRenderElements)
 		{
 			for(UINT32 i = 0; i < renderElem.numQuads; i++)
 			{
-				UINT32 curVert = idx * 4;
-
-				Vector2 center = renderElem.vertices[curVert + 0] + renderElem.vertices[curVert + 1] + 
-					renderElem.vertices[curVert + 2] + renderElem.vertices[curVert + 3];
-				center /= 4;
-
-				float dist = center.squaredDistance(vecPos);
-				if(dist < nearestDist)
+				if(quadIdx < lineStartQuad)
 				{
-					nearestChar = idx;
-					nearestDist = dist;
+					quadIdx++;
+					continue;
 				}
 
-				idx++;
+				if(quadIdx >= lineEndQuad)
+					break;
+
+				UINT32 curVert = quadIdx * 4;
+
+				float centerX = renderElem.vertices[curVert + 0].x + renderElem.vertices[curVert + 1].x;
+				centerX *= 0.5f;
+
+				float dist = Math::Abs(centerX - vecPos.x);
+				if(dist < nearestDist)
+				{
+					nearestChar = quadIdx;
+					nearestDist = dist;
+					foundChar = true;
+				}
+
+				quadIdx++;
 			}
 		}
+
+		if(!foundChar)
+			return -1;
 
 		return nearestChar;
 	}

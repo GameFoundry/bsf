@@ -7,13 +7,19 @@
 
 namespace BansheeEngine
 {
+	enum CaretPos
+	{
+		CARET_BEFORE,
+		CARET_AFTER
+	};
+
 	class BS_EXPORT GUIInputBox : public GUIElement
 	{
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIInputBox* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
-		static GUIInputBox* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIInputBox* create(GUIWidget& parent, bool multiline = false, const GUIElementStyle* style = nullptr);
+		static GUIInputBox* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, bool multiline = false, const GUIElementStyle* style = nullptr);
 	protected:
 		~GUIInputBox();
 
@@ -69,7 +75,7 @@ namespace BansheeEngine
 		bool mCaretShown;
 		bool mSelectionShown;
 
-		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		virtual bool keyEvent(const GUIKeyEvent& ev);
@@ -78,9 +84,16 @@ namespace BansheeEngine
 		Sprite* renderElemToSprite(CM::UINT32 renderElemIdx, CM::UINT32& localRenderElemIdx) const;
 
 		void showCaret(CM::UINT32 charIdx);
+		void showCaretAtPos(const CM::Int2& pos);
 		void clearCaret();
 		CM::Int2 getCaretPosition() const;
 		CM::UINT32 getCaretHeight() const;
+		bool isCaretAtLineStart() const;
+
+		void moveCaretLeft();
+		void moveCaretRight();
+		void moveCaretToChar(CM::UINT32 charIdx, CaretPos caretPos);
+		CM::UINT32 getCharIdxAtCaretPos() const;
 
 		void showSelection(CM::UINT32 startChar, CM::UINT32 endChar);
 		void clearSelection();
@@ -88,6 +101,5 @@ namespace BansheeEngine
 
 		CM::Rect getTextBounds() const;
 		TEXT_SPRITE_DESC getTextDesc() const;
-		CM::UINT32 getValidCharCount() const;
 	};
 }

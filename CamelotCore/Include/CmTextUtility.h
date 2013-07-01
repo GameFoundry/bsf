@@ -119,5 +119,8 @@ namespace CamelotFramework
 		};
 
 		static std::shared_ptr<TextUtility::TextData> getTextData(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width = 0, UINT32 height = 0, bool wordWrap = false);
+
+	private:
+		static void addCharToPage(TextData& data, UINT32 page, const FontData& fontData);
 	};
 }

@@ -354,6 +354,9 @@ namespace CamelotFramework
 			if(charIdx >= text.size())
 				break;
 
+			UINT32 charId = text[charIdx];
+			const CHAR_DESC& charDesc = fontData->getCharDesc(charId);
+
 			if(text[charIdx] == '\n')
 			{
 				if(heightIsLimited && (curHeight + fontData->fontDesc.lineHeight * 2) > height)
@@ -368,38 +371,15 @@ namespace CamelotFramework
 				continue;
 			}
 
-			UINT32 charId = text[charIdx];
-			const CHAR_DESC& charDesc = fontData->getCharDesc(charId);
-
 			if(charId != SPACE_CHAR)
 			{
 				curLine->add(charDesc);
-
-				if(charDesc.page >= (UINT32)textData->mQuadsPerPage.size())
-				{
-					textData->mQuadsPerPage.resize(charDesc.page + 1);
-					textData->mTexturePages.resize(charDesc.page + 1);
-				}
-
-				textData->mQuadsPerPage[charDesc.page]++;
-
-				if(textData->mTexturePages[charDesc.page] == nullptr)
-					textData->mTexturePages[charDesc.page] = fontData->texturePages[charDesc.page];
+				addCharToPage(*textData, charDesc.page, *fontData);
 			}
 			else
 			{
 				curLine->addSpace();
-
-				if((UINT32)textData->mQuadsPerPage.size() == 0)
-				{
-					textData->mQuadsPerPage.resize(1);
-					textData->mTexturePages.resize(1);
-				}
-
-				textData->mQuadsPerPage[0]++;
-
-				if(textData->mTexturePages[0] == nullptr)
-					textData->mTexturePages[0] = fontData->texturePages[0];
+				addCharToPage(*textData, 0, *fontData);
 			}
 
 			if(widthIsLimited && curLine->getWidth() > width)
@@ -433,6 +413,20 @@ namespace CamelotFramework
 		}
 
 		return textData;
+	}
+
+	void TextUtility::addCharToPage(TextUtility::TextData& data, UINT32 page, const FontData& fontData)
+	{
+		if(page >= (UINT32)data.mQuadsPerPage.size())
+		{
+			data.mQuadsPerPage.resize(page + 1);
+			data.mTexturePages.resize(page + 1);
+		}
+
+		data.mQuadsPerPage[page]++;
+
+		if(data.mTexturePages[page] == nullptr)
+			data.mTexturePages[page] = fontData.texturePages[page];
 	}
 
 	UINT32 TextUtility::TextData::getWidth() const
