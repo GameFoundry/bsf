@@ -366,7 +366,7 @@ namespace BansheeEngine
 					}
 					else
 					{
-						INT32 charIdx = getCharIdxAtCaretPos();
+						INT32 charIdx = getCharIdxAtCaretPos() - 1;
 
 						if(charIdx < (UINT32)mText.size())
 						{
@@ -394,7 +394,7 @@ namespace BansheeEngine
 					}
 					else
 					{
-						UINT32 charIdx = getCharIdxAtCaretPos() + 1;
+						UINT32 charIdx = getCharIdxAtCaretPos();
 						if(charIdx < (UINT32)mText.size())
 						{
 							mText.erase(charIdx, 1);
@@ -412,7 +412,7 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(getCharIdxAtCaretPos() + 1, getCharIdxAtCaretPos() + 1);
+						showSelection(getCharIdxAtCaretPos(), getCharIdxAtCaretPos());
 
 					if(mSelectionAnchor == mSelectionEnd)
 						mSelectionStart = (UINT32)std::max(0, (INT32)mSelectionStart - 1);
@@ -437,7 +437,7 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(getCharIdxAtCaretPos() + 1, getCharIdxAtCaretPos() + 1);
+						showSelection(getCharIdxAtCaretPos(), getCharIdxAtCaretPos());
 
 					if(mSelectionAnchor == mSelectionStart)
 						mSelectionEnd = std::min((UINT32)mText.size(), mSelectionEnd + 1);
@@ -510,11 +510,7 @@ namespace BansheeEngine
 						clearSelection();
 					}
 
-					if(mText.size() > 0)
-						mText.insert(mText.begin() + getCharIdxAtCaretPos() + 1, '\n');
-					else
-						mText.insert(mText.begin(), '\n');
-
+					mText.insert(mText.begin() + getCharIdxAtCaretPos(), '\n');
 					moveCaretRight();
 
 					markAsDirty();
@@ -537,11 +533,7 @@ namespace BansheeEngine
 				clearSelection();
 			}
 
-			if(mText.size() > 0)
-				mText.insert(mText.begin() + getCharIdxAtCaretPos() + 1, ev.getInputChar());
-			else
-				mText.insert(mText.begin(), ev.getInputChar());
-
+			mText.insert(mText.begin() + getCharIdxAtCaretPos(), ev.getInputChar());
 			moveCaretRight();
 
 			markAsDirty();
@@ -633,6 +625,9 @@ namespace BansheeEngine
 			}
 
 			UINT32 charIdx = getCharIdxAtCaretPos();
+			if(charIdx > 0)
+				charIdx -= 1;			
+
 			charIdx = std::min((UINT32)(mText.size() - 1), charIdx);
 
 			Rect charRect = mTextSprite->getCharRect(charIdx);
@@ -651,6 +646,8 @@ namespace BansheeEngine
 	UINT32 GUIInputBox::getCaretHeight() const
 	{
 		UINT32 charIdx = getCharIdxAtCaretPos();
+		if(charIdx > 0)
+			charIdx -= 1;	
 
 		if(charIdx < (UINT32)mText.size())
 		{
@@ -729,6 +726,9 @@ namespace BansheeEngine
 
 	UINT32 GUIInputBox::getCharIdxAtCaretPos() const
 	{
+		if(mText.size() == 0)
+			return 0;
+
 		UINT32 numLines = mTextSprite->getNumLines();
 		UINT32 curPos = 0;
 		UINT32 curCharIdx = 0;
@@ -754,7 +754,7 @@ namespace BansheeEngine
 			}
 
 			UINT32 diff = mCaretPos - curPos; 
-			curCharIdx += diff;
+			curCharIdx += diff + 1; // +1 because we want the caret to reference the char in front of it on most cases
 
 			return curCharIdx;
 		}
