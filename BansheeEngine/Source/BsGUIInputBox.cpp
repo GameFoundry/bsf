@@ -679,10 +679,9 @@ namespace BansheeEngine
 
 	void GUIInputBox::moveCaretRight()
 	{
-		//if(isCaretAtLineStart())
-		//	mCaretPos = mCaretPos + 2; // Skip line start char as well
-		//else
-			mCaretPos = mCaretPos + 1; // TODO - Limit this
+		UINT32 maxCaretPos = mText.size(); // One extra because beginning of first line has an extra "fake" char
+
+		mCaretPos = std::min(maxCaretPos, mCaretPos + 1);
 	}
 
 	void GUIInputBox::moveCaretToChar(UINT32 charIdx, CaretPos caretPos)

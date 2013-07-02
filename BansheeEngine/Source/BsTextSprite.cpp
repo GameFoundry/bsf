@@ -228,6 +228,7 @@ namespace BansheeEngine
 		UINT32 lineStartChar = 0;
 		UINT32 lineEndChar = 0;
 		UINT32 newlineChars = 0;
+		UINT32 lineIdx = 0;
 		for(auto& line : mLineDescs)
 		{
 			if(pos.y >= line.lineYStart && pos.y < (line.lineYStart + (INT32)line.lineHeight))
@@ -239,10 +240,13 @@ namespace BansheeEngine
 
 			newlineChars++; // Newline chars count in the startChar/endChar variables, but don't actually exist in the buffers
 			// so we need to filter them out
+			lineIdx++;
 		}
 
+		bool hasNewlineChar = lineIdx < (mLineDescs.size() - 1);
+
 		UINT32 lineStartQuad = lineStartChar - newlineChars;
-		UINT32 lineEndQuad = lineEndChar - newlineChars;
+		UINT32 lineEndQuad = lineEndChar - newlineChars - (hasNewlineChar ? 1 : 0);
 
 		float nearestDist = std::numeric_limits<float>::max();
 		UINT32 nearestChar = 0;
@@ -269,7 +273,7 @@ namespace BansheeEngine
 				float dist = Math::Abs(centerX - vecPos.x);
 				if(dist < nearestDist)
 				{
-					nearestChar = quadIdx;
+					nearestChar = quadIdx + newlineChars;
 					nearestDist = dist;
 					foundChar = true;
 				}

@@ -154,6 +154,7 @@
     <ClInclude Include="Include\BsGUICommandEvent.h" />
     <ClInclude Include="Include\BsGUIInputBox.h" />
     <ClInclude Include="Include\BsGUIButtonEvent.h" />
+    <ClInclude Include="Include\BsGUIInputCaret.h" />
     <ClInclude Include="Include\BsGUILayoutOptions.h" />
     <ClInclude Include="Include\BsGUILayoutX.h" />
     <ClInclude Include="Include\BsGUILayout.h" />

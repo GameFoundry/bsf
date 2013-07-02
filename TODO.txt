@@ -15,9 +15,6 @@ IMMEDIATE:
  - Clicking on a window to focus and immediately trying to drag/resize it, doesn't work. I first need to click, then click again to drag/resize.
  - OpenGL rendering slows to extremely with time (seems to be related to rendering, possibly GUI, possibly in general Pass/Material/Shader/PassParams)
  - Update debug camera so it uses callbacks
- - Add support for diacritical marks
- - onMovedOrResized is still used by Viewport
- - Replace list of windows in WIndowEventUtilities with WindowManagers list. No need to keep two lists I think
 
  - I have disabled linear filtering because it doesn't look good on scale9grid textures. (Add another material so it works with stretched textures?)
  - Enable alpha test so I don't render completely transparent pixels.
@@ -28,7 +25,6 @@ IMMEDIATE:
 TextBox needed elements:
  - Up/Down arrow keys should move cursor up/down
  - Drag mouse to update selection
- - Need to figure out how do I place a cursor on an empty first line?
  - Text scroll. Typing outside of textbox should scroll the text so caret is visible.
  - Get DebugCamera to ignore input if GUI has already processed it
  - Cut/Copy/Paste
@@ -184,6 +180,9 @@ Low priority TODO
  - Shared GPU buffers
    - wouldn't work atm due to the way I update the buffers (and the way I mark them dirty)
    - Material::setParamBlock is commented out
+ - Add support for diacritical marks to the input system (in WindowEventUtilities)
+ - onMovedOrResized is still used by Viewport while that same callback is offered by RenderWindowManager. There is no need to have them in both places.
+ - Replace list of windows in WIndowEventUtilities with RenderWindowManager list. No need to keep two lists I think
 ----------------------------------------------------------------------------------------------
 Optional:
  - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic
@@ -224,3 +223,4 @@ After polish and ideas:
  - Textures and all other buffers keep a copy of their data in system memory. If there are memory constraints we might need a way to avoid this.
  - Move all multiplatform files (window creation, cursor, etc.) into a separate PlatformSpecific folder. So anyone porting it to a new platform
    knows that he only needs to change those files.
+ - Make sure my Log system uses XML + HTML
