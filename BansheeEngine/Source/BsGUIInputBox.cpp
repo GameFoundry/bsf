@@ -26,12 +26,12 @@ namespace BansheeEngine
 
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline)
 		:GUIElement(parent, style, layoutOptions), mInputCursorSet(false), mDragInProgress(false),
-		mSelectionStart(0), mSelectionEnd(0), mSelectionAnchor(0), mCaretSprite(nullptr), mCaretShown(false), 
-		mSelectionShown(false), mCaretPos(0), mIsMultiline(multiline)
+		mSelectionStart(0), mSelectionEnd(0), mSelectionAnchor(0), mInputCaret(nullptr), mCaretShown(false), 
+		mSelectionShown(false), mIsMultiline(multiline)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
-		mCaretSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
+		mInputCaret = cm_new<GUIInputCaret, PoolAlloc>(getTextDesc());
 
 		mImageDesc.texture = mStyle->normal.texture;
 
@@ -50,8 +50,9 @@ namespace BansheeEngine
 	GUIInputBox::~GUIInputBox()
 	{
 		cm_delete<PoolAlloc>(mTextSprite);
-		cm_delete<PoolAlloc>(mCaretSprite);
 		cm_delete<PoolAlloc>(mImageSprite);
+
+		cm_delete<PoolAlloc>(mInputCaret);
 
 		for(auto& sprite : mSelectionSprites)
 			cm_delete(sprite);
@@ -85,7 +86,7 @@ namespace BansheeEngine
 		numElements += mTextSprite->getNumRenderElements();
 
 		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
-			numElements += mCaretSprite->getNumRenderElements();
+			numElements += mInputCaret->getSprite()->getNumRenderElements();
 
 		if(mSelectionShown)
 		{
@@ -129,14 +130,8 @@ namespace BansheeEngine
 
 		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
 		{
-			IMAGE_SPRITE_DESC mCaretDesc;
-			mCaretDesc.offset = getCaretPosition();
-			mCaretDesc.width = 1;
-			mCaretDesc.height = getCaretHeight();
-			mCaretDesc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
-			mCaretDesc.texture = GUIManager::instance().getCaretTexture();
-
-			mCaretSprite->update(mCaretDesc);
+			mInputCaret->updateText(textDesc);
+			mInputCaret->updateSprite();
 		}
 
 		if(mSelectionShown)
@@ -199,12 +194,12 @@ namespace BansheeEngine
 		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
 		{
 			oldNumElements = newNumElements;
-			newNumElements += mCaretSprite->getNumRenderElements();
+			newNumElements += mInputCaret->getSprite()->getNumRenderElements();
 
 			if(renderElemIdx < newNumElements)
 			{
 				localRenderElemIdx = renderElemIdx - oldNumElements;
-				return mCaretSprite;
+				return mInputCaret->getSprite();
 			}
 		}
 
@@ -256,7 +251,7 @@ namespace BansheeEngine
 			return _getDepth();
 		else if(sprite == mTextSprite)
 			return _getDepth() - 2;
-		else if(sprite == mCaretSprite)
+		else if(sprite == mInputCaret->getSprite())
 			return _getDepth() - 3;
 		else // Selection sprites
 			return _getDepth() - 1;
@@ -303,10 +298,12 @@ namespace BansheeEngine
 		{
 			mImageDesc.texture = mStyle->active.texture;
 
+			showCaret();
+
 			if(mText.size() > 0)
-				showCaretAtPos(ev.getPosition());
+				mInputCaret->moveCaretToPos(ev.getPosition());
 			else
-				showCaret(0);
+				mInputCaret->moveCaretToStart();
 
 			clearSelection();
 			markAsDirty();
@@ -360,18 +357,22 @@ namespace BansheeEngine
 					if(mSelectionShown)
 					{
 						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
-						moveCaretToChar(mSelectionStart, CARET_BEFORE);
+						mInputCaret->updateText(getTextDesc());
+
+						mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
 
 						clearSelection();
 					}
 					else
 					{
-						INT32 charIdx = getCharIdxAtCaretPos() - 1;
+						UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos() - 1;
 
 						if(charIdx < (UINT32)mText.size())
 						{
 							mText.erase(charIdx, 1);
-							moveCaretLeft();
+							mInputCaret->updateText(getTextDesc());
+
+							mInputCaret->moveCaretLeft();
 						}
 					}
 
@@ -388,16 +389,18 @@ namespace BansheeEngine
 					if(mSelectionShown)
 					{
 						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
-						moveCaretToChar(mSelectionStart, CARET_BEFORE);
+						mInputCaret->updateText(getTextDesc());
+						mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
 
 						clearSelection();
 					}
 					else
 					{
-						UINT32 charIdx = getCharIdxAtCaretPos();
+						UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
 						if(charIdx < (UINT32)mText.size())
 						{
 							mText.erase(charIdx, 1);
+							mInputCaret->updateText(getTextDesc());
 						}
 					}
 
@@ -412,7 +415,7 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(getCharIdxAtCaretPos(), getCharIdxAtCaretPos());
+						showSelection(mInputCaret->getCharIdxAtCaretPos());
 
 					if(mSelectionAnchor == mSelectionEnd)
 						mSelectionStart = (UINT32)std::max(0, (INT32)mSelectionStart - 1);
@@ -425,7 +428,7 @@ namespace BansheeEngine
 				else
 				{
 					clearSelection();
-					moveCaretLeft();
+					mInputCaret->moveCaretLeft();
 
 					markAsDirty();
 					return true;
@@ -437,7 +440,7 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(getCharIdxAtCaretPos(), getCharIdxAtCaretPos());
+						showSelection(mInputCaret->getCharIdxAtCaretPos());
 
 					if(mSelectionAnchor == mSelectionStart)
 						mSelectionEnd = std::min((UINT32)mText.size(), mSelectionEnd + 1);
@@ -450,7 +453,7 @@ namespace BansheeEngine
 				else
 				{
 					clearSelection();
-					moveCaretRight();
+					mInputCaret->moveCaretRight();
 
 					markAsDirty();
 					return true;
@@ -506,12 +509,16 @@ namespace BansheeEngine
 					if(mSelectionShown)
 					{
 						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
-						moveCaretToChar(mSelectionStart, CARET_BEFORE);
+						mInputCaret->updateText(getTextDesc());
+
+						mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
 						clearSelection();
 					}
 
-					mText.insert(mText.begin() + getCharIdxAtCaretPos(), '\n');
-					moveCaretRight();
+					mText.insert(mText.begin() + mInputCaret->getCharIdxAtCaretPos(), '\n');
+					mInputCaret->updateText(getTextDesc());
+
+					mInputCaret->moveCaretRight();
 
 					markAsDirty();
 					return true;
@@ -521,7 +528,13 @@ namespace BansheeEngine
 
 			if(ev.getKey() == BC_A && ev.isCtrlDown())
 			{
-				showSelection(0, (UINT32)mText.size());
+				showSelection(0);
+
+				mSelectionStart = 0;
+				mSelectionEnd = (UINT32)mText.size();
+
+				markAsDirty();
+				return true;
 			}
 		}
 		else if(ev.getType() == GUIKeyEventType::TextInput)
@@ -529,12 +542,16 @@ namespace BansheeEngine
 			if(mSelectionShown)
 			{
 				mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
-				moveCaretToChar(mSelectionStart, CARET_BEFORE);
+				mInputCaret->updateText(getTextDesc());
+
+				mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
 				clearSelection();
 			}
 
-			mText.insert(mText.begin() + getCharIdxAtCaretPos(), ev.getInputChar());
-			moveCaretRight();
+			mText.insert(mText.begin() + mInputCaret->getCharIdxAtCaretPos(), ev.getInputChar());
+			mInputCaret->updateText(getTextDesc());
+
+			mInputCaret->moveCaretRight();
 
 			markAsDirty();
 			return true;
@@ -554,242 +571,23 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIInputBox::showCaret(CM::UINT32 caretPos)
+	void GUIInputBox::showCaret()
 	{
-		mCaretPos = caretPos;
 		mCaretShown = true;
 		markAsDirty();
 	}
 
-	void GUIInputBox::showCaretAtPos(const CM::Int2& pos)
-	{
-		INT32 charIdx = mTextSprite->getCharIdxAtPos(pos);
 
-		if(charIdx != -1)
-		{
-			Rect charRect = mTextSprite->getCharRect(charIdx);
-
-			float xCenter = charRect.x + charRect.width * 0.5f;
-			if(pos.x <= xCenter)
-				moveCaretToChar(charIdx, CARET_BEFORE);
-			else
-				moveCaretToChar(charIdx, CARET_AFTER);
-		}
-		else
-		{
-			UINT32 numLines = mTextSprite->getNumLines();
-
-			UINT32 curPos = 0;
-			for(UINT32 i = 0; i < numLines; i++)
-			{
-				const SpriteLineDesc& line = mTextSprite->getLineDesc(i);
-
-				if(pos.y >= line.lineYStart && pos.y < (line.lineYStart + (INT32)line.lineHeight))
-				{
-					mCaretPos = curPos;
-					return;
-				}
-
-				UINT32 numChars = line.endChar - line.startChar;
-				curPos += numChars;
-			}
-
-			mCaretPos = curPos;
-		}
-	}
-
-	void GUIInputBox::clearCaret()
+	void GUIInputBox::hideCaret()
 	{
 		mCaretShown = false;
 		markAsDirty();
 	}
 
-	Int2 GUIInputBox::getCaretPosition() const
-	{
-		if(mText.size() > 0)
-		{
-			UINT32 curPos = 0;
-			UINT32 numLines = mTextSprite->getNumLines();
-			for(UINT32 i = 0; i < numLines; i++)
-			{
-				if(mCaretPos == curPos)
-				{
-					// Caret is on line start
-					Rect contentBounds = getTextBounds();
-					return Int2(contentBounds.x, mTextSprite->getLineDesc(i).lineYStart);
-				}
-
-				const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
-				UINT32 numChars = lineDesc.endChar - lineDesc.startChar;
-				curPos += numChars;
-			}
-
-			UINT32 charIdx = getCharIdxAtCaretPos();
-			if(charIdx > 0)
-				charIdx -= 1;			
-
-			charIdx = std::min((UINT32)(mText.size() - 1), charIdx);
-
-			Rect charRect = mTextSprite->getCharRect(charIdx);
-			UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
-			UINT32 yOffset = mTextSprite->getLineDesc(lineIdx).lineYStart;
-
-			return Int2(charRect.x + charRect.width + 1, yOffset);
-		}
-		else
-		{
-			Rect contentBounds = getTextBounds();
-			return Int2(contentBounds.x, contentBounds.y);
-		}		
-	}
-
-	UINT32 GUIInputBox::getCaretHeight() const
-	{
-		UINT32 charIdx = getCharIdxAtCaretPos();
-		if(charIdx > 0)
-			charIdx -= 1;	
-
-		if(charIdx < (UINT32)mText.size())
-		{
-			UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
-			return mTextSprite->getLineDesc(lineIdx).lineHeight;
-		}
-		else
-		{
-			if(mStyle->font != nullptr)
-			{
-				UINT32 nearestSize = mStyle->font->getClosestAvailableSize(mStyle->fontSize);
-				const FontData* fontData = mStyle->font->getFontDataForSize(nearestSize);
-
-				if(fontData != nullptr)
-					return fontData->fontDesc.lineHeight;
-			}
-		}
-
-		return 0;
-	}
-
-	void GUIInputBox::moveCaretLeft()
-	{
-		mCaretPos = (UINT32)std::max(0, (INT32)mCaretPos - 1);
-
-		if(isCaretAtLineStart()) // Skip line start char as well
-			mCaretPos = (UINT32)std::max(0, (INT32)mCaretPos - 1);
-	}
-
-	void GUIInputBox::moveCaretRight()
-	{
-		UINT32 maxCaretPos = mText.size(); // One extra because beginning of first line has an extra "fake" char
-
-		mCaretPos = std::min(maxCaretPos, mCaretPos + 1);
-	}
-
-	void GUIInputBox::moveCaretToChar(UINT32 charIdx, CaretPos caretPos)
-	{
-		if(charIdx >= (UINT32)mText.size())
-		{
-			mCaretPos = 0;
-			return;
-		}
-
-		UINT32 numLines = mTextSprite->getNumLines();
-		UINT32 curPos = 0;
-		UINT32 curCharIdx = 0;
-		for(UINT32 i = 0; i < numLines; i++)
-		{
-			if(i == 0)
-				curPos++; // Beginning of the line has a special caret position, primarily so we can
-			// still place a caret on an empty line
-
-			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
-			UINT32 numChars = lineDesc.endChar - lineDesc.startChar;
-			if(charIdx > (curCharIdx + numChars))
-			{
-				curCharIdx += numChars;
-				curPos += numChars;
-				continue;
-			}
-
-			UINT32 diff = charIdx - curCharIdx;
-
-			if(caretPos == CARET_BEFORE)
-				curPos += diff - 1;
-			else
-				curPos += diff;
-
-			break;
-		}
-
-		showCaret(curPos);
-	}
-
-	UINT32 GUIInputBox::getCharIdxAtCaretPos() const
-	{
-		if(mText.size() == 0)
-			return 0;
-
-		UINT32 numLines = mTextSprite->getNumLines();
-		UINT32 curPos = 0;
-		UINT32 curCharIdx = 0;
-		for(UINT32 i = 0; i < numLines; i++)
-		{
-			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
-
-			if(curPos == mCaretPos)
-			{
-				return lineDesc.startChar;
-			}
-
-			if(i == 0)
-				curPos++; // Beginning of the line has a special caret position, primarily so we can
-						  // still place a caret on an empty line
-
-			UINT32 numChars = lineDesc.endChar - lineDesc.startChar;
-			if(mCaretPos > (curPos + numChars))
-			{
-				curCharIdx += numChars;
-				curPos += numChars;
-				continue;
-			}
-
-			UINT32 diff = mCaretPos - curPos; 
-			curCharIdx += diff + 1; // +1 because we want the caret to reference the char in front of it on most cases
-
-			return curCharIdx;
-		}
-
-		return 0;
-	}
-
-	bool GUIInputBox::isCaretAtLineStart() const
-	{
-		UINT32 numLines = mTextSprite->getNumLines();
-		UINT32 curPos = 0;
-		for(UINT32 i = 0; i < numLines; i++)
-		{
-			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
-
-			if(curPos == mCaretPos)
-				return true;
-
-			if(i == 0)
-				curPos++; // Beginning of the line has a special caret position, primarily so we can
-						  // still place a caret on an empty line
-
-			UINT32 numChars = lineDesc.endChar - lineDesc.startChar;
-			curPos += numChars;
-
-			if(curPos > mCaretPos)
-				return false;
-		}
-
-		return false;
-	}
-
-	void GUIInputBox::showSelection(UINT32 startChar, UINT32 endChar)
+	void GUIInputBox::showSelection(UINT32 startChar)
 	{
 		mSelectionStart = startChar;
-		mSelectionEnd = endChar;
+		mSelectionEnd = startChar;
 		mSelectionAnchor = startChar;
 		mSelectionShown = true;
 		markAsDirty();
@@ -915,7 +713,7 @@ namespace BansheeEngine
 		else
 		{
 			mImageDesc.texture = mStyle->normal.texture;
-			clearCaret();
+			hideCaret();
 			clearSelection();
 			markAsDirty();
 		}

@@ -4,15 +4,10 @@
 #include "BsGUIElement.h"
 #include "BsImageSprite.h"
 #include "BsTextSprite.h"
+#include "BsGUIInputCaret.h"
 
 namespace BansheeEngine
 {
-	enum CaretPos
-	{
-		CARET_BEFORE,
-		CARET_AFTER
-	};
-
 	class BS_EXPORT GUIInputBox : public GUIElement
 	{
 	public:
@@ -57,9 +52,9 @@ namespace BansheeEngine
 	private:
 		// Sprites
 		ImageSprite* mImageSprite;
-		ImageSprite* mCaretSprite;
 		TextSprite* mTextSprite;
 		CM::Vector<ImageSprite*>::type mSelectionSprites;
+		GUIInputCaret* mInputCaret;
 		bool mInputCursorSet;
 		bool mDragInProgress;
 		bool mIsMultiline;
@@ -71,7 +66,6 @@ namespace BansheeEngine
 		CM::UINT32 mSelectionStart;
 		CM::UINT32 mSelectionEnd;
 		CM::UINT32 mSelectionAnchor;
-		CM::UINT32 mCaretPos;
 		bool mCaretShown;
 		bool mSelectionShown;
 
@@ -83,19 +77,10 @@ namespace BansheeEngine
 
 		Sprite* renderElemToSprite(CM::UINT32 renderElemIdx, CM::UINT32& localRenderElemIdx) const;
 
-		void showCaret(CM::UINT32 charIdx);
-		void showCaretAtPos(const CM::Int2& pos);
-		void clearCaret();
-		CM::Int2 getCaretPosition() const;
-		CM::UINT32 getCaretHeight() const;
-		bool isCaretAtLineStart() const;
+		void showCaret();
+		void hideCaret();
 
-		void moveCaretLeft();
-		void moveCaretRight();
-		void moveCaretToChar(CM::UINT32 charIdx, CaretPos caretPos);
-		CM::UINT32 getCharIdxAtCaretPos() const;
-
-		void showSelection(CM::UINT32 startChar, CM::UINT32 endChar);
+		void showSelection(CM::UINT32 startChar);
 		void clearSelection();
 		CM::Vector<CM::Rect>::type getSelectionRects() const;
 

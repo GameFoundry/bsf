@@ -23,6 +23,10 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 TextBox needed elements:
+ - Inputting clipped text breaks my input caret algorithm because entire text lines and text quads get culled
+  - Yet another reason I should split TextSprite functionality I need for caret into a separate class
+  - I can always include proper amount of lines + valid start/end chars
+  - And for quads I can use some internal offsets
  - Up/Down arrow keys should move cursor up/down
  - Drag mouse to update selection
  - Text scroll. Typing outside of textbox should scroll the text so caret is visible.

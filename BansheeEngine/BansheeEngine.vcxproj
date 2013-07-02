@@ -199,6 +199,7 @@
     <ClCompile Include="Source\BsGUIElement.cpp" />
     <ClCompile Include="Source\BsGUIInputBox.cpp" />
     <ClCompile Include="Source\BsGUIButtonEvent.cpp" />
+    <ClCompile Include="Source\BsGUIInputCaret.cpp" />
     <ClCompile Include="Source\BsGUILabel.cpp" />
     <ClCompile Include="Source\BsGUILayout.cpp" />
     <ClCompile Include="Source\BsGUILayoutY.cpp" />
