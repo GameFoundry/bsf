@@ -60,12 +60,34 @@ namespace BansheeEngine
 
 	void GUIInputCaret::moveCaretUp()
 	{
-		// TODO
+		UINT32 charIdx = getCharIdxAtCaretPos();
+		if(charIdx > 0)
+			charIdx -= 1;	
+
+		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
+		if(lineIdx == 0)
+			return;
+
+		Int2 caretCoords = getCaretPosition(mTextDesc.offset);
+		caretCoords.y -= getCaretHeight();
+
+		moveCaretToPos(caretCoords);
 	}
 
 	void GUIInputCaret::moveCaretDown()
 	{
-		// TODO
+		UINT32 charIdx = getCharIdxAtCaretPos();
+		if(charIdx > 0)
+			charIdx -= 1;	
+
+		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
+		if(lineIdx == (mTextSprite->getNumLines() - 1))
+			return;
+
+		Int2 caretCoords = getCaretPosition(mTextDesc.offset);
+		caretCoords.y += getCaretHeight();
+
+		moveCaretToPos(caretCoords);
 	}
 
 	void GUIInputCaret::moveCaretToPos(const CM::Int2& pos)

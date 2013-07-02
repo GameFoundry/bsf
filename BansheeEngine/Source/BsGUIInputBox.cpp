@@ -462,44 +462,40 @@ namespace BansheeEngine
 
 			if(ev.getKey() == BC_UP)
 			{
-				//Int2 caretCoords = getCaretPosition();
-				//UINT32 curLine = 0; mTextSprite->getLineForChar(mCaretPos);
+				if(ev.isShiftDown())
+				{
+					// TODO
 
-				//if(mCaretPos > 0)
-				//	curLine = 0; mTextSprite->getLineForChar(mCaretPos - 1);
+					markAsDirty();
+					return true;
+				}
+				else
+				{
+					clearSelection();
+					mInputCaret->moveCaretUp();
 
-				//if(curLine > 0)
-				//{
-				//	if(ev.isShiftDown())
-				//	{
-				//		if(!mSelectionShown)
-				//			showSelection(mCaretPos, mCaretPos);
-
-				//		// TODO
-				//		//if(mSelectionAnchor == mSelectionEnd)
-				//		//	mSelectionStart = (UINT32)std::max(0, (INT32)mSelectionStart - 1);
-				//		//else
-				//		//	mSelectionEnd = (UINT32)std::max(0, (INT32)mSelectionEnd - 1);
-
-				//		markAsDirty();
-				//		return true;
-				//	}
-				//	else
-				//	{
-				//		clearSelection();
-
-				//		const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(curLine);
-				//		Int2 newCaretCoords = caretCoords;
-				//		newCaretCoords.y -= lineDesc.lineHeight / 2;
-
-				//		showCaretAtPos(newCaretCoords);
-				//	}
-				//}
+					markAsDirty();
+					return true;
+				}
 			}
 
 			if(ev.getKey() == BC_DOWN)
 			{
-				// TODO
+				if(ev.isShiftDown())
+				{
+					// TODO
+
+					markAsDirty();
+					return true;
+				}
+				else
+				{
+					clearSelection();
+					mInputCaret->moveCaretDown();
+
+					markAsDirty();
+					return true;
+				}
 			}
 
 			if(ev.getKey() == BC_RETURN)
