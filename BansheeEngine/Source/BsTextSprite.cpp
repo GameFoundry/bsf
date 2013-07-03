@@ -84,49 +84,15 @@ namespace BansheeEngine
 			texPage++;
 		}
 
-		UINT32 curHeight = 0;
-		for(auto& line : lines)
-			curHeight += line.getYOffset();
-
-		// Calc vertical alignment offset
-		UINT32 vertDiff = std::max(0U, desc.height - curHeight);
-		UINT32 vertOffset = 0;
-		switch(desc.vertAlign)
-		{
-		case TVA_Top:
-			vertOffset = 0;
-			break;
-		case TVA_Bottom:
-			vertOffset = std::max(0, (INT32)vertDiff);
-			break;
-		case TVA_Center:
-			vertOffset = std::max(0, (INT32)vertDiff) / 2;
-			break;
-		}
-
-		// Calc horizontal alignment offset and set final line positions
+		// Calc alignment and anchor offsets and set final line positions
+		Vector<Int2>::type alignmentOffsets = getAlignmentOffsets(lines, desc.width, desc.height, desc.horzAlign, desc.vertAlign);
 		Int2 offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
+
 		UINT32 numPages = (UINT32)quadsPerPage.size();
-		UINT32 curY = 0;
 		Vector<UINT32>::type faceOffsets(mCachedRenderElements.size(), 0);
 		for(size_t i = 0; i < lines.size(); i++)
 		{
-			UINT32 horzOffset = 0;
-			switch(desc.horzAlign)
-			{
-			case THA_Left:
-				horzOffset = 0;
-				break;
-			case THA_Right:
-				horzOffset = std::max(0, (INT32)(desc.width - lines[i].getWidth()));
-				break;
-			case THA_Center:
-				horzOffset = std::max(0, (INT32)(desc.width - lines[i].getWidth())) / 2;
-				break;
-			}
-
-			Int2 position = offset + Int2(horzOffset, vertOffset + curY);
-			curY += lines[i].getYOffset();
+			Int2 position = offset + alignmentOffsets[i];
 
 			for(size_t j = 0; j < numPages; j++)
 			{
@@ -175,7 +141,7 @@ namespace BansheeEngine
 			lineDesc.startChar = curCharIdx;
 			lineDesc.endChar = curCharIdx + line.getNumChars() + newlineChar;
 			lineDesc.lineHeight = line.getYOffset();
-			lineDesc.lineYStart = vertOffset + cachedLineY + desc.offset.y;
+			lineDesc.lineYStart = alignmentOffsets[curLineIdx].y + desc.offset.y;
 
 			mLineDescs.push_back(lineDesc);
 
@@ -302,5 +268,54 @@ namespace BansheeEngine
 		}
 		
 		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
+	}
+
+	Vector<Int2>::type TextSprite::getAlignmentOffsets(const Vector<TextUtility::TextLine>::type& lines, 
+		UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign)
+	{
+		UINT32 curHeight = 0;
+		for(auto& line : lines)
+			curHeight += line.getYOffset();
+
+		// Calc vertical alignment offset
+		UINT32 vertDiff = std::max(0U, height - curHeight);
+		UINT32 vertOffset = 0;
+		switch(vertAlign)
+		{
+		case TVA_Top:
+			vertOffset = 0;
+			break;
+		case TVA_Bottom:
+			vertOffset = std::max(0, (INT32)vertDiff);
+			break;
+		case TVA_Center:
+			vertOffset = std::max(0, (INT32)vertDiff) / 2;
+			break;
+		}
+
+		// Calc horizontal alignment offset
+		UINT32 curY = 0;
+		Vector<Int2>::type lineOffsets;
+		for(size_t i = 0; i < lines.size(); i++)
+		{
+			UINT32 horzOffset = 0;
+			switch(horzAlign)
+			{
+			case THA_Left:
+				horzOffset = 0;
+				break;
+			case THA_Right:
+				horzOffset = std::max(0, (INT32)(width - lines[i].getWidth()));
+				break;
+			case THA_Center:
+				horzOffset = std::max(0, (INT32)(width - lines[i].getWidth())) / 2;
+				break;
+			}
+
+			lineOffsets.push_back(Int2(horzOffset, vertOffset + curY));
+			curY += lines[i].getYOffset();
+		}
+
+		return lineOffsets;
 	}
 }

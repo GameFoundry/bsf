@@ -91,14 +91,13 @@ namespace BansheeEngine
 		CM::UINT32 fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, CM::UINT32 maxNumQuads, 
 			CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const;
 
+		static void clipToRect(CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32 numQuads, const CM::Rect& clipRect);
+		static CM::Int2 getAnchorOffset(SpriteAnchor anchor, CM::UINT32 width, CM::UINT32 height);
 	protected:
 		mutable CM::Rect mBounds;
 		mutable CM::Vector<SpriteRenderElement>::type mCachedRenderElements;
 
 		void updateBounds() const;
 		void clearMesh() const;
-
-		static void clipToRect(CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32 numQuads, const CM::Rect& clipRect);
-		static CM::Int2 getAnchorOffset(SpriteAnchor anchor, CM::UINT32 width, CM::UINT32 height);
 	};
 }

@@ -2,6 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsSprite.h"
+#include "CmTextUtility.h"
 
 namespace BansheeEngine
 {
@@ -57,6 +58,8 @@ namespace BansheeEngine
 		CM::Rect getCharRect(CM::UINT32 charIdx) const;
 		CM::INT32 getCharIdxAtPos(const CM::Int2& pos) const;
 
+		static CM::Vector<CM::Int2>::type getAlignmentOffsets(const CM::Vector<CM::TextUtility::TextLine>::type& lines, 
+			CM::UINT32 width, CM::UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign);
 	private:
 		CM::Vector<SpriteLineDesc>::type mLineDescs;
 	};
