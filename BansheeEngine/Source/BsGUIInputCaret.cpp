@@ -35,7 +35,8 @@ namespace BansheeEngine
 		mCaretDesc.offset = getCaretPosition(mTextDesc.offset);
 		mCaretDesc.width = 1;
 		mCaretDesc.height = getCaretHeight();
-		mCaretDesc.clipRect = Rect(0, 0, mTextDesc.width, mTextDesc.height);
+		mCaretDesc.clipRect = Rect(-mCaretDesc.offset.x + mTextDesc.offset.x, -mCaretDesc.offset.y + mTextDesc.offset.y, 
+			mTextDesc.width, mTextDesc.height);
 		mCaretDesc.texture = GUIManager::instance().getCaretTexture();
 
 		mCaretSprite->update(mCaretDesc);
@@ -65,6 +66,13 @@ namespace BansheeEngine
 			charIdx -= 1;	
 
 		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
+		const SpriteLineDesc& desc = mTextSprite->getLineDesc(lineIdx);
+		if(lineIdx != (mTextSprite->getNumLines() - 1)) // If not the last line
+		{
+			if(charIdx == (desc.endChar - 1)) // If char is a newline, I want that to count as being on the next line because that's
+				lineIdx++;					  // how user sees it
+		}
+
 		if(lineIdx == 0)
 			return;
 

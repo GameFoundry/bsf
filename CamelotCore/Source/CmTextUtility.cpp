@@ -339,7 +339,6 @@ namespace CamelotFramework
 			LOGWRN("Unable to find font with specified size (" + toString(fontSize) + "). Using nearest available size: " + toString(fontData->size));
 		}
 
-		bool heightIsLimited = height > 0;
 		bool widthIsLimited = width > 0;
 
 		std::shared_ptr<TextUtility::TextData> textData = cm_shared_ptr<TextData, PoolAlloc>();
@@ -359,9 +358,6 @@ namespace CamelotFramework
 
 			if(text[charIdx] == '\n')
 			{
-				if(heightIsLimited && (curHeight + fontData->fontDesc.lineHeight * 2) > height)
-					break; // Max height reached
-
 				textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));
 				curLine = &textData->mLines.back();
 
@@ -389,10 +385,6 @@ namespace CamelotFramework
 					TextWord lastWord = curLine->removeLastWord();
 					if(lastWord.isSpacer())
 						curLine->addWord(lastWord); // Spaces can stay on previous line even if they don't technically fit
-
-					// No more lines fit vertically so we're done
-					if(heightIsLimited && curHeight > height)
-						break;
 
 					textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));
 					curLine = &textData->mLines.back();
