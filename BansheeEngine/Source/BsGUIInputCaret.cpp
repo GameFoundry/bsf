@@ -89,6 +89,13 @@ namespace BansheeEngine
 			charIdx -= 1;	
 
 		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
+		const SpriteLineDesc& desc = mTextSprite->getLineDesc(lineIdx);
+		if(lineIdx != (mTextSprite->getNumLines() - 1)) // If not the last line
+		{
+			if(charIdx == (desc.endChar - 1)) // If char is a newline, I want that to count as being on the next line because that's
+				lineIdx++;					  // how user sees it
+		}
+
 		if(lineIdx == (mTextSprite->getNumLines() - 1))
 			return;
 
