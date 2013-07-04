@@ -33,6 +33,9 @@ namespace BansheeEngine
 		CM::Int2 getCaretPosition(const CM::Int2& offset) const;
 		CM::UINT32 getCaretHeight() const;
 
+		bool isCaretAtNewline() const;
+		CM::UINT32 getMaxCaretPos() const;
+		CM::UINT32 getCaretPos() const { return mCaretPos; }
 	private:
 		CM::UINT32 mCaretPos;
 		TextSprite* mTextSprite; // TODO - Try to get rid of this and implement its methods internally?

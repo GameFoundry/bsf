@@ -361,9 +361,17 @@ namespace BansheeEngine
 						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
 						mInputCaret->updateText(getTextDesc());
 
-						mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
-						scrollTextToCaret();
+						if(mSelectionStart > 0)
+						{
+							UINT32 newCaretPos = mSelectionStart - 1;
+							mInputCaret->moveCaretToChar(newCaretPos, CARET_AFTER);
+						}
+						else
+						{
+							mInputCaret->moveCaretToChar(0, CARET_BEFORE);
+						}
 
+						scrollTextToCaret();
 						clearSelection();
 					}
 					else
@@ -394,9 +402,18 @@ namespace BansheeEngine
 					{
 						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
 						mInputCaret->updateText(getTextDesc());
-						mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
-						scrollTextToCaret();
 
+						if(mSelectionStart > 0)
+						{
+							UINT32 newCaretPos = mSelectionStart - 1;
+							mInputCaret->moveCaretToChar(newCaretPos, CARET_AFTER);
+						}
+						else
+						{
+							mInputCaret->moveCaretToChar(0, CARET_BEFORE);
+						}
+
+						scrollTextToCaret();
 						clearSelection();
 					}
 					else
@@ -422,10 +439,21 @@ namespace BansheeEngine
 					if(!mSelectionShown)
 						showSelection(mInputCaret->getCharIdxAtCaretPos());
 
+					bool isAtNewline = false;
+
+					do 
+					{
+						isAtNewline = mInputCaret->isCaretAtNewline();
+						mInputCaret->moveCaretLeft();
+
+					} while (isAtNewline && mInputCaret->getCaretPos() > 0);
+
+					scrollTextToCaret();
+
 					if(mSelectionAnchor == mSelectionEnd)
-						mSelectionStart = (UINT32)std::max(0, (INT32)mSelectionStart - 1);
+						mSelectionStart = std::max(0U, mInputCaret->getCharIdxAtCaretPos());
 					else
-						mSelectionEnd = (UINT32)std::max(0, (INT32)mSelectionEnd - 1);
+						mSelectionEnd = std::max(0U, mInputCaret->getCharIdxAtCaretPos());
 
 					markAsDirty();
 					return true;
@@ -448,11 +476,21 @@ namespace BansheeEngine
 					if(!mSelectionShown)
 						showSelection(mInputCaret->getCharIdxAtCaretPos());
 
-					if(mSelectionAnchor == mSelectionStart)
-						mSelectionEnd = std::min((UINT32)mText.size(), mSelectionEnd + 1);
-					else
-						mSelectionStart = std::min((UINT32)mText.size(), mSelectionStart + 1);
+					mInputCaret->moveCaretRight();
 
+					UINT32 maxCaretPos = mInputCaret->getMaxCaretPos();
+					while (mInputCaret->isCaretAtNewline() && mInputCaret->getCaretPos() <= maxCaretPos)
+					{
+						mInputCaret->moveCaretRight();
+					} 
+
+					scrollTextToCaret();
+
+					if(mSelectionAnchor == mSelectionStart)
+						mSelectionEnd = std::max(0U, mInputCaret->getCharIdxAtCaretPos());
+					else
+						mSelectionStart = std::max(0U, mInputCaret->getCharIdxAtCaretPos());
+						
 					markAsDirty();
 					return true;
 				}
@@ -659,14 +697,22 @@ namespace BansheeEngine
 			return selectionRects;
 
 		UINT32 startLine = mTextSprite->getLineForChar(mSelectionStart);
-		UINT32 endLine = mTextSprite->getLineForChar(mSelectionEnd - 1);
+
+		UINT32 endLine = startLine;
+		if(mSelectionEnd > 0)
+			endLine = mTextSprite->getLineForChar(mSelectionEnd - 1);
 
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(startLine);
 			Rect startChar = mTextSprite->getCharRect(mSelectionStart);
 			UINT32 endCharIdx = mSelectionEnd - 1;
-			if(endCharIdx >= lineDesc.endChar)
+			if(endCharIdx >= lineDesc.endChar && endCharIdx > 0)
+			{
 				endCharIdx = lineDesc.endChar - 1;
+
+				if(startLine != (mTextSprite->getNumLines() - 1) && endCharIdx > 0) // Ignore newline char
+					endCharIdx -= 1;
+			}
 			
 			Rect endChar = mTextSprite->getCharRect(endCharIdx);
 
@@ -684,6 +730,10 @@ namespace BansheeEngine
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
 			if(lineDesc.startChar == lineDesc.endChar)
 				continue;
+
+			UINT32 endCharIdx = lineDesc.endChar;
+			if(endCharIdx > 0) // Ignore newline char
+				endCharIdx -= 1;
 
 			Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
 			Rect endChar = mTextSprite->getCharRect(lineDesc.endChar);
@@ -703,6 +753,15 @@ namespace BansheeEngine
 
 			if(lineDesc.startChar != lineDesc.endChar)
 			{
+				UINT32 endCharIdx = mSelectionEnd - 1;
+				if(endCharIdx > 0) // Ignore newline char
+				{
+					endCharIdx -= 1;
+
+					if(endLine != (mTextSprite->getNumLines() - 1) && endCharIdx > 0) // Ignore newline char
+						endCharIdx -= 1;
+				}
+
 				Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
 				Rect endChar = mTextSprite->getCharRect(mSelectionEnd - 1);
 

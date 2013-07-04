@@ -283,4 +283,51 @@ namespace BansheeEngine
 
 		return 0;
 	}
+
+	bool GUIInputCaret::isCaretAtNewline() const
+	{
+		if(mTextDesc.text.size() == 0)
+			return true;
+
+		UINT32 numLines = mTextSprite->getNumLines();
+		UINT32 curPos = 0;
+		for(UINT32 i = 0; i < numLines; i++)
+		{
+			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
+
+			if(curPos == mCaretPos)
+				return true;
+
+			if(i == 0)
+				curPos++; // Beginning of the line has a special caret position, primarily so we can
+						  // still place a caret on an empty line
+
+			UINT32 numChars = lineDesc.endChar - lineDesc.startChar - 1;
+			curPos += numChars;
+		}
+
+		return false;
+	}
+
+	UINT32 GUIInputCaret::getMaxCaretPos() const
+	{
+		if(mTextDesc.text.size() == 0)
+			return 0;
+
+		UINT32 numLines = mTextSprite->getNumLines();
+		UINT32 maxPos = 0;
+		for(UINT32 i = 0; i < numLines; i++)
+		{
+			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
+
+			if(i == 0)
+				maxPos++; // Beginning of the line has a special caret position, primarily so we can
+						  // still place a caret on an empty line
+
+			UINT32 numChars = lineDesc.endChar - lineDesc.startChar;
+			maxPos += numChars;
+		}
+
+		return maxPos - 1;
+	}
 }

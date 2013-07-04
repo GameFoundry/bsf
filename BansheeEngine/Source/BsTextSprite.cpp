@@ -159,7 +159,7 @@ namespace BansheeEngine
 
 		// If char is newline we don't have any geometry to return
 		const SpriteLineDesc& lineDesc = getLineDesc(lineIdx);
-		if(lineIdx != (getNumLines() - 1) && lineDesc.endChar == (charIdx - 1))
+		if(lineIdx != (getNumLines() - 1) && (lineDesc.endChar - 1) == charIdx)
 			return Rect();
 
 		UINT32 numNewlineChars = lineIdx;
