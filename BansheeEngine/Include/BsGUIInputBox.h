@@ -58,6 +58,7 @@ namespace BansheeEngine
 		bool mInputCursorSet;
 		bool mDragInProgress;
 		bool mIsMultiline;
+		CM::Int2 mTextOffset;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::WString mText;
@@ -79,6 +80,7 @@ namespace BansheeEngine
 
 		void showCaret();
 		void hideCaret();
+		void scrollTextToCaret();
 
 		void showSelection(CM::UINT32 startChar);
 		void clearSelection();

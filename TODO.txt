@@ -8,7 +8,7 @@ I still re-create GUIWidget mesh every frame instead of just updating it.
 
 MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to GpuResourceData which means it could get destroyed while still in command queue. Right now it only works because I block right after I call those methods, which ensures nothing is destroyed.
   - When fixed, make sure I remove blocking calls after writeSubresource where they're not needed (GUIManager for example)
-I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function. Each of those calls will wait a single frame.
+I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function. Each of those calls will be extremely slow.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
 
 IMMEDIATE:
@@ -23,11 +23,6 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 TextBox needed elements:
- - Inputting clipped text breaks my input caret algorithm because entire text lines and text quads get culled
-  - Yet another reason I should split TextSprite functionality I need for caret into a separate class
-  - I can always include proper amount of lines + valid start/end chars
-  - And for quads I can use some internal offsets
- - Up/Down arrow keys should move cursor up/down
  - Drag mouse to update selection
  - Text scroll. Typing outside of textbox should scroll the text so caret is visible.
  - Get DebugCamera to ignore input if GUI has already processed it
@@ -50,10 +45,6 @@ Later add InputMap class in which you can bind certain actions (like move left, 
 I need to be able to provide smaller bounds used for UI input 
  - Add padding - reduces the size of the element and that is used for input
  - Add margins - spacing that is added when laying out multiple controls after each other
-
-Figure out how to deal with callbacks properly. I recently eliminated them from Input but I'll need them for my GUI elements...
- - How do I implement them? I really don't want to do Unitys approach to GUI
- - If I do figure out a good way to keep callbacks, maybe rethink Input and re-add them?
 
  - My test model is rendering back faces. I need to flip them.
   - Although more than likely I am loading the model incorrectly since it works in Unity?

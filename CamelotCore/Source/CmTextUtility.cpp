@@ -394,11 +394,6 @@ namespace CamelotFramework
 					if(!lastWord.isSpacer())
 						curLine->addWord(lastWord);
 				}
-				else
-				{
-					// Nothing else we can do, chars don't fit so we are done
-					break;
-				}
 			}
 
 			charIdx++;

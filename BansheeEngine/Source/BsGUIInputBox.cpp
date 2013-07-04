@@ -131,7 +131,7 @@ namespace BansheeEngine
 		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
 		{
 			mInputCaret->updateText(textDesc);
-			mInputCaret->updateSprite();
+			mInputCaret->updateSprite(mTextOffset);
 		}
 
 		if(mSelectionShown)
@@ -305,6 +305,8 @@ namespace BansheeEngine
 			else
 				mInputCaret->moveCaretToStart();
 
+			scrollTextToCaret();
+
 			clearSelection();
 			markAsDirty();
 
@@ -360,6 +362,7 @@ namespace BansheeEngine
 						mInputCaret->updateText(getTextDesc());
 
 						mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
+						scrollTextToCaret();
 
 						clearSelection();
 					}
@@ -373,6 +376,7 @@ namespace BansheeEngine
 							mInputCaret->updateText(getTextDesc());
 
 							mInputCaret->moveCaretLeft();
+							scrollTextToCaret();
 						}
 					}
 
@@ -391,6 +395,7 @@ namespace BansheeEngine
 						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
 						mInputCaret->updateText(getTextDesc());
 						mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
+						scrollTextToCaret();
 
 						clearSelection();
 					}
@@ -429,6 +434,7 @@ namespace BansheeEngine
 				{
 					clearSelection();
 					mInputCaret->moveCaretLeft();
+					scrollTextToCaret();
 
 					markAsDirty();
 					return true;
@@ -454,6 +460,7 @@ namespace BansheeEngine
 				{
 					clearSelection();
 					mInputCaret->moveCaretRight();
+					scrollTextToCaret();
 
 					markAsDirty();
 					return true;
@@ -473,6 +480,7 @@ namespace BansheeEngine
 				{
 					clearSelection();
 					mInputCaret->moveCaretUp();
+					scrollTextToCaret();
 
 					markAsDirty();
 					return true;
@@ -492,6 +500,7 @@ namespace BansheeEngine
 				{
 					clearSelection();
 					mInputCaret->moveCaretDown();
+					scrollTextToCaret();
 
 					markAsDirty();
 					return true;
@@ -508,6 +517,7 @@ namespace BansheeEngine
 						mInputCaret->updateText(getTextDesc());
 
 						mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
+						scrollTextToCaret();
 						clearSelection();
 					}
 
@@ -515,6 +525,7 @@ namespace BansheeEngine
 					mInputCaret->updateText(getTextDesc());
 
 					mInputCaret->moveCaretRight();
+					scrollTextToCaret();
 
 					markAsDirty();
 					return true;
@@ -548,6 +559,7 @@ namespace BansheeEngine
 			mInputCaret->updateText(getTextDesc());
 
 			mInputCaret->moveCaretRight();
+			scrollTextToCaret();
 
 			markAsDirty();
 			return true;
@@ -577,6 +589,46 @@ namespace BansheeEngine
 	void GUIInputBox::hideCaret()
 	{
 		mCaretShown = false;
+		markAsDirty();
+	}
+
+	void GUIInputBox::scrollTextToCaret()
+	{
+		TEXT_SPRITE_DESC textDesc = getTextDesc();
+
+		Int2 caretPos = mInputCaret->getCaretPosition(textDesc.offset);
+		UINT32 caretHeight = mInputCaret->getCaretHeight();
+		UINT32 caretWidth = 1;
+		INT32 caretRight = caretPos.x + (INT32)caretWidth;
+		INT32 caretBottom = caretPos.y + (INT32)caretHeight;
+
+		INT32 left = textDesc.offset.x - mTextOffset.x;
+		INT32 right = left + (INT32)textDesc.width;
+		INT32 top = textDesc.offset.y - mTextOffset.y;
+		INT32 bottom = top + (INT32)textDesc.height;
+
+		Int2 offset;
+		if(caretPos.x < left)
+		{
+			offset.x = left - caretPos.x;
+		}
+		else if(caretRight > right)
+		{
+			offset.x = -(caretRight - right);
+		}
+
+		if(caretPos.y < top)
+		{
+			offset.y = top - caretPos.y;
+		}
+		else if(caretBottom > bottom)
+		{
+			offset.y = -(caretBottom - bottom);
+		}
+
+		mTextOffset += offset;
+		mInputCaret->updateText(getTextDesc());
+
 		markAsDirty();
 	}
 
@@ -689,10 +741,10 @@ namespace BansheeEngine
 		textDesc.fontSize = mStyle->fontSize;
 
 		Rect textBounds = getTextBounds();
-		textDesc.offset = Int2(textBounds.x, textBounds.y);
+		textDesc.offset = Int2(textBounds.x, textBounds.y) + mTextOffset;
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;
-		textDesc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
+		textDesc.clipRect = Rect(-mTextOffset.x, -mTextOffset.y, textDesc.width, textDesc.height);
 		textDesc.horzAlign = mStyle->textHorzAlign;
 		textDesc.vertAlign = mStyle->textVertAlign;
 

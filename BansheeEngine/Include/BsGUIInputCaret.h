@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 		ImageSprite* getSprite() const { return mCaretSprite; }
 		void updateText(const TEXT_SPRITE_DESC& textDesc);
-		void updateSprite();
+		void updateSprite(const CM::Int2& offset);
 
 		void moveCaretToStart();
 		void moveCaretLeft();
@@ -30,6 +30,8 @@ namespace BansheeEngine
 		void moveCaretToChar(CM::UINT32 charIdx, CaretPos caretPos);
 
 		CM::UINT32 getCharIdxAtCaretPos() const;
+		CM::Int2 getCaretPosition(const CM::Int2& offset) const;
+		CM::UINT32 getCaretHeight() const;
 
 	private:
 		CM::UINT32 mCaretPos;
@@ -37,8 +39,5 @@ namespace BansheeEngine
 		ImageSprite* mCaretSprite;
 
 		TEXT_SPRITE_DESC mTextDesc;
-
-		CM::Int2 getCaretPosition(const CM::Int2& offset) const;
-		CM::UINT32 getCaretHeight() const;
 	};
 }

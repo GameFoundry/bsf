@@ -25,17 +25,19 @@ namespace BansheeEngine
 	void GUIInputCaret::updateText(const TEXT_SPRITE_DESC& textDesc)
 	{
 		mTextDesc = textDesc;
+		mTextDesc.clipRect = Rect(0, 0, 0, 0); // No clipping otherwise we don't know position of chars
+		// outside of the element, which is something we need when moving the cursor
 
 		mTextSprite->update(mTextDesc);
 	}
 
-	void GUIInputCaret::updateSprite()
+	void GUIInputCaret::updateSprite(const CM::Int2& offset)
 	{
 		IMAGE_SPRITE_DESC mCaretDesc;
 		mCaretDesc.offset = getCaretPosition(mTextDesc.offset);
 		mCaretDesc.width = 1;
 		mCaretDesc.height = getCaretHeight();
-		mCaretDesc.clipRect = Rect(-mCaretDesc.offset.x + mTextDesc.offset.x, -mCaretDesc.offset.y + mTextDesc.offset.y, 
+		mCaretDesc.clipRect = Rect(-mCaretDesc.offset.x + mTextDesc.offset.x - offset.x, -mCaretDesc.offset.y + mTextDesc.offset.y - offset.y, 
 			mTextDesc.width, mTextDesc.height);
 		mCaretDesc.texture = GUIManager::instance().getCaretTexture();
 
